@@ -1,0 +1,76 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1786660302716,
+      "tag": "0000_init_platform_meta",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1786671941027,
+      "tag": "0001_auth_core",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1786732063540,
+      "tag": "0002_organization_tenancy",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1786806444635,
+      "tag": "0003_business-profile-foundation",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1786812225324,
+      "tag": "0004_client-services-foundation",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1786814153658,
+      "tag": "0005_platform-service-administration",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1786820018079,
+      "tag": "0006_integration-foundation",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1788789183809,
+      "tag": "0007_business-profile-contact-presence",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1788794841263,
+      "tag": "0008_business-profile-operations",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1788799149484,
+      "tag": "0009_platform-profile-governance",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+const fixture = JSON.parse(readFileSync(process.env.MEMBERS_FIXTURE_FILE, "utf8"));
+const { identities } = fixture;
+const now = Date.now();
+const sql = `INSERT INTO member (id, organization_id, user_id, role, created_at) VALUES ('${crypto.randomUUID()}', '${identities["owner-a"].organizationId}', '${identities["admin-a"].userId}', 'admin', ${now}), ('${crypto.randomUUID()}', '${identities["owner-a"].organizationId}', '${identities["member-a"].userId}', 'member', ${now});`;
+const directory = mkdtempSync(join(tmpdir(), "vecidya-members-"));
+const file = join(directory, "fixture.sql");
+writeFileSync(file, sql);
+const result = spawnSync(process.env.ComSpec ?? "cmd.exe", ["/d", "/c", `pnpm.cmd wrangler d1 execute DB --local --file ${file}`], { cwd: process.cwd(), stdio: "inherit" });
+rmSync(directory, { recursive: true, force: true });
+if (result.status !== 0) process.exit(result.status ?? 1);
+console.log("FIXTURE PASS: memberships insertadas con Worker detenido.");
