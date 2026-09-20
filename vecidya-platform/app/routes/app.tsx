@@ -12,6 +12,7 @@ import {
   requireSession,
 } from "../../server/auth/session.server";
 import { Alert, Badge, Button, Card } from "../components/ui";
+import { PlatformFooter } from "../components/platform-footer";
 import { authClient } from "../lib/auth-client";
 
 import type { Route } from "./+types/app";
@@ -277,6 +278,7 @@ export default function AppPage() {
             </Form>
           </Card>
         </main>
+        <PlatformFooter area="app" />
       </div>
     </div>
   );

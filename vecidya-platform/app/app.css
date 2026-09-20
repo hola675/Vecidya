@@ -35,6 +35,9 @@ button, select { cursor: pointer; }
 button:disabled, select:disabled { cursor: not-allowed; opacity: 0.62; }
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid rgb(255 107 11 / 42%); outline-offset: 3px; }
 .skip-link { position: fixed; z-index: 20; top: 0.7rem; left: 0.7rem; transform: translateY(-150%); border-radius: 0.5rem; padding: 0.65rem 0.8rem; color: #fff; background: var(--ink); text-decoration: none; }.skip-link:focus-visible { transform: translateY(0); }
+.platform-footer { display: flex; align-items: center; justify-content: space-between; gap: .75rem 1.5rem; border-top: 1px solid var(--line); padding: 1rem clamp(1rem, 4vw, 3rem); color: var(--muted); font-size: .78rem; }
+.platform-footer--public { flex-wrap: wrap; margin-top: 1.5rem; background: #fff; }
+.platform-footer--app, .platform-footer--admin { margin-top: auto; background: var(--canvas); }
 
 .button { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; border: 1px solid transparent; border-radius: 0.7rem; padding: 0.65rem 1rem; font-weight: 750; line-height: 1.2; text-align: center; transition: transform 150ms ease, background 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
 .button:hover:not(:disabled) { transform: translateY(-1px); }

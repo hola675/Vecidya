@@ -61,6 +61,14 @@ There is no `test` script. E2E scripts live in `tests/e2e/`; read `vecidya-platf
 - Validate Worker-facing behavior through the real local Cloudflare runtime.
 - Do not deploy unless the user explicitly requests it: `wrangler deploy` publishes directly to `vecidya.com`.
 
+## Versioning and publication policy
+
+- The application version is the `version` field in `vecidya-platform/package.json`; do not duplicate or hard-code release versions in layouts.
+- Public pages, `/app`, and `/app/internal` must render the shared version footer from `app/components/platform-footer.tsx`, including `© 2026 Vecidya`.
+- A version is **published** only after the requested deploy completes and a dated anonymous HTTP check confirms the public domain; code or Git state alone is not publication evidence.
+- Record version, deploy status, migration status, and HTTP evidence in `vecidya-platform/docs/ENVIRONMENTS.md` and the relevant entry in `vecidya-platform/docs/CHANGELOG.md`.
+- Never publish a pilot profile automatically; follow the readiness and authorization gates in `vecidya-platform/docs/ROADMAP.md` and `STATUS.md`.
+
 ## References
 
 | Need | File |

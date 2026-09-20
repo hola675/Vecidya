@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
+import { PlatformFooter } from "./platform-footer";
 
 const navigation = [
   { label: "Inicio", to: "/app/internal", active: "home" },
@@ -35,6 +36,7 @@ export function AdminShell({ active, children }: { active: "home" | "services" |
           <Link className="button button--secondary" to="/app">Volver a Mi Vecidya</Link>
         </header>
         {children}
+        <PlatformFooter area="admin" />
       </div>
     </div>
   );

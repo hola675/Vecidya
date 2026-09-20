@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-20 — Política de versionado visible
+
+- Añadido `PlatformFooter`, con versión derivada de `package.json` y copyright `© 2026 Vecidya`, compartido por páginas públicas, `/app` y administración interna.
+- La política operativa de versiones y publicaciones queda documentada en `AGENTS.md` y `ENVIRONMENTS.md`: una versión publicada exige deploy autorizado y comprobación HTTP anónima fechada.
+
 ## 2026-09-20 — Migración a repositorio limpio
 
 - El proyecto actual se separa del historial anterior para publicar un snapshot inicial limpio en `adsmanager-dev/Vecidya`.
