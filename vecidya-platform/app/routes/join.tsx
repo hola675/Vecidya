@@ -22,7 +22,7 @@ export default function Join() {
               <a className="button button--secondary" href="/contacto">Hablar con Vecidya</a>
             </div>
           </div>
-          <img alt="Formulario de incorporación de negocio local en Vecidya" src={publicAssets.illustrations.businessOnboardingForm} />
+          <img alt="Formulario de incorporación de negocio local en Vecidya" decoding="async" height={1086} src={publicAssets.illustrations.businessOnboardingForm} width={1448} />
         </section>
 
         <section className="public-commercial-section">

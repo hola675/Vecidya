@@ -1,10 +1,10 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-20 (RR-001)**. Evidencia: código, schema, migraciones y 17 E2E locales ejecutados en D1 local limpia; el estado público permanece respaldado únicamente por las peticiones anónimas de solo lectura del baseline. Vocabulario y niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md). Detalle por tema: [PROJECT_STATE.md](PROJECT_STATE.md), [TESTING.md](TESTING.md), [ENVIRONMENTS.md](ENVIRONMENTS.md).
+Última reconciliación: **2026-09-20 (PERF-001)**. Evidencia: código, schema, migraciones y 17 E2E locales ejecutados en D1 local limpia; el estado público permanece respaldado únicamente por las peticiones anónimas de solo lectura del baseline. Vocabulario y niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md). Detalle por tema: [PROJECT_STATE.md](PROJECT_STATE.md), [TESTING.md](TESTING.md), [ENVIRONMENTS.md](ENVIRONMENTS.md).
 
 ## Veredicto
 
-Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**: `typecheck`, `build`, `git diff --check` y 17/17 E2E locales pasan sobre D1 limpia.
+Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local** y PERF-001 en **PASS**: `typecheck`, `build`, `git diff --check` y 17/17 E2E locales pasan sobre D1 limpia. La versión local del código es `0.1.1`; PERF-001 aún no está desplegado.
 
 Lo publicado en `vecidya.com` es código **anterior a 2026-09-07** (comprobado por HTTP; el último despliegue documentado es del 2026-08-27, no verificable sin acceso a Cloudflare). Todo el trabajo de 2026-09-07 (WhatsApp/redes, modalidad/cobertura/horarios, verificación/suspensión/auditoría; migraciones `0007`–`0009`) existe **solo en local**. `vecidya.com` se sirve desde el D1 `vecidya-staging`: **no hay producción independiente**. El repositorio Git se migrará como un snapshot limpio del proyecto actual, sin dependencias generadas ni secretos. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes.
 
@@ -78,6 +78,7 @@ Lo publicado en `vecidya.com` es código **anterior a 2026-09-07** (comprobado p
 | PRODUCT-EVOLUTION-001 D1 Gobierno | PASS TÉCNICO | PASS (local) | `d1` pasa; **no publicado** |
 | PRODUCT-EVOLUTION-001 E1 Piloto local | PASS TÉCNICO LOCAL | NO REPRODUCIBLE | Ningún test ni fixture en el repo; el commit `179784a` solo cambió documentación |
 | DOC-RECON-001 → Baseline 2026-09-20 | PASS DOCUMENTAL | PASS DOCUMENTAL | 13 documentos activos (máx. 20) |
+| PERF-001 Image & Asset Optimization | PASS TÉCNICO | PASS | 14 raster activos migrados a WebP; 18,649,999 → 4,369,378 bytes; typecheck/build/diff-check y QA heredado pasan; no desplegado |
 
 ## Open Debt
 

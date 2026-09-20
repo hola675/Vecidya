@@ -19,30 +19,28 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 | # | Bloque | Objetivo | Depende de |
 | --- | --- | --- | --- |
-| 1 | **RR-001 — Release Readiness & Test Baseline** *(siguiente recomendado)* | Dejar la suite confiable y quitar los defectos que romperían el piloto, sin construir producto nuevo | Baseline aprobado |
-| 2 | Pilot Data & Authorizations | Resolver G3; sin código | usuario |
-| 3 | **Real Proof (E2)** | Publicar vecinos reales con datos autorizados | 1, 2, G3, G4 |
-| 4 | Home Experience Reduction | Reducir texto y mostrar producto real en Home | Independiente de 1–3; puede ir en paralelo |
-| 5 | Visual System Expansion | Ampliar sistema visual y assets | G2 |
-| 6 | Educational Content | Primeros artículos reales | Autor y fuentes reales |
-| 7 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 3 (vecinos) y 6 (artículos) |
-| 8 | Vecindario Experience | Descubrimiento, categorías, negocios relacionados | 3 (necesita vecinos reales) |
-| 9 | Business Profile evolution | Campos y galería según evidencia del piloto | 3 |
-| 10 | Growth & UX QA | Cobertura E2E faltante, a11y, SEO, regresión visual | 4–8 |
-| 11 | Producción y legal | Producción independiente; revisión legal si hay captación/persistencia | G5 |
+| 1 | Pilot Data & Authorizations | Resolver G3; sin código | usuario |
+| 2 | **Real Proof (E2)** | Publicar vecinos reales con datos autorizados | 1, G3, G4 |
+| 3 | Home Experience Reduction | Reducir texto y mostrar producto real en Home | Independiente de 1–2; puede ir en paralelo |
+| 4 | Visual System Expansion | Ampliar sistema visual y assets | G2 |
+| 5 | Educational Content | Primeros artículos reales | Autor y fuentes reales |
+| 6 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 2 (vecinos) y 5 (artículos) |
+| 7 | Vecindario Experience | Descubrimiento, categorías, negocios relacionados | 2 (necesita vecinos reales) |
+| 8 | Business Profile evolution | Campos y galería según evidencia del piloto | 2 |
+| 9 | Growth & UX QA | Cobertura E2E faltante, a11y, SEO, regresión visual | 3–8 |
+| 10 | Producción y legal | Producción independiente; revisión legal si hay captación/persistencia | G5 |
 
-**Corrección 1 — RR-001 precede Real Proof.** La evidencia mostró prerrequisitos técnicos: pruebas stale por el nombre D1 obsoleto, PX-B roto, selección de organización al login, limpieza de sesiones tras retirar membresía y protección server-side de perfiles publicados. La implementación de RR-001 queda separada del push, deploy y piloto.
+**Corrección 1 — RR-001 precede Real Proof.** La evidencia mostró prerrequisitos técnicos: pruebas stale por el nombre D1 obsoleto, PX-B roto, selección de organización al login, limpieza de sesiones tras retirar membresía y protección server-side de perfiles publicados. RR-001 quedó cerrado antes de PERF-001 y permanece separado del deploy y del piloto.
 
 **Corrección 2 — Contenido (6) antes de Interconexión (7).** Las conexiones «Artículo → Diagnóstico/Servicio» y «Diagnóstico → contenido relacionado» no pueden existir sin artículos: hoy hay cero. Interconectar primero produciría enlaces a un hub vacío.
 
-**Nota de paralelismo.** Home (4) es 100 % estático y no depende de datos ni de backend; puede avanzar mientras el usuario resuelve los datos del piloto (2), que es el cuello de botella (depende de terceros). Visual (5) depende de la decisión G2.
+**Nota de paralelismo.** Home (3) es 100 % estático y no depende de datos ni de backend; puede avanzar mientras el usuario resuelve los datos del piloto (1), que es el cuello de botella (depende de terceros). Visual (4) depende de la decisión G2.
 
-## Siguiente bloque recomendado: RR-001 — Release Readiness & Test Baseline
+## Siguiente bloque recomendado: Pilot Data & Authorizations
 
-- **Objetivo**: que `tests/e2e` sea una línea base confiable y que el piloto no tropiece con defectos conocidos.
-- **Alcance**: (a) sustituir `vecidya-dev` por `DB` en los 8 archivos (`TEST-D1-NAME`); (b) arreglar `px-b` (typo, locator, idempotencia) y limpiar fixtures; (c) añadir guarda de `BASE_URL` local a los scripts y blindar/retirar los dos remotos (`TEST-SAFETY-001`, `REMOTE-TEST-RISK-001`); (d) fijar organización activa al iniciar sesión (`MULTIORG-LOGIN-001`) y limpiarla al quitar un miembro (`MULTIORG-STALE-001`); (e) hacer que la API de perfil respete la regla de publicación (`BP-API-001`); (f) script `test:e2e` documentado; (g) tras autorización G1, subir a `origin`.
-- **Fuera de alcance**: UX/Home/visual, features nuevas, schema/migraciones, deploy, migraciones remotas, publicación del piloto, integraciones.
-- **Criterios de cierre**: todas las pruebas locales ejecutables pasan en una D1 limpia; `typecheck`, `build`, `git diff --check` limpios; `TESTING.md`/`STATUS.md` reconciliados; deudas cerradas movidas a «resueltas»; estado de `origin` documentado.
+- **Objetivo**: resolver las decisiones y datos de terceros necesarios antes de cualquier publicación de Real Proof.
+- **Alcance**: confirmar identidad y email real del piloto, nombre público de Asesorar-T y autorización o ajuste de marca SURA; sin código ni publicación.
+- **Fuera de alcance**: nuevas funcionalidades, migraciones, deploy, migraciones remotas y publicación del piloto.
 
 ## Trabajo futuro por área
 

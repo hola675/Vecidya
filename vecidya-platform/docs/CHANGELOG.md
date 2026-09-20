@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-20 — PERF-001 Image & Asset Optimization (`v0.1.1`)
+
+- Optimización compatible de assets visuales: inventario inicial de 18 raster PNG, conversión selectiva de 14 assets activos a WebP y conservación del ícono canónico de marca y 3 recursos seleccionados sin uso.
+- Reducción de `18,649,999` a `4,369,378` bytes: ahorro de `14,280,621` bytes (`13.619 MiB`, `76.57 %`). Se actualizaron las referencias TS/TSX/CSS, se declararon dimensiones de contenido y se aplicó lazy loading únicamente below-the-fold.
+- Validación local: typecheck, build, `git diff --check`, 17 E2E heredados y QA visual desktop/móvil sin imágenes rotas ni overflow. Deploy: **NO**; producción: **NOT PERFORMED**.
+
 ## 2026-09-20 — Política de versionado visible
 
 - Añadido `PlatformFooter`, con versión derivada de `package.json` y copyright `© 2026 Vecidya`, compartido por páginas públicas, `/app` y administración interna.

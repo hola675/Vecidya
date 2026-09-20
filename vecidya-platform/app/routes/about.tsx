@@ -35,7 +35,7 @@ export default function About() {
         <VisualSection
           eyebrow="DOS PERSPECTIVAS"
           title="Tecnología y desarrollo empresarial en una misma visión."
-          visual={<AssetVisual alt="Red de negocios locales conectados alrededor de Vecidya" src={publicAssets.illustrations.neighborhoodMapPins} />}
+          visual={<AssetVisual alt="Red de negocios locales conectados alrededor de Vecidya" height={1086} src={publicAssets.illustrations.neighborhoodMapPins} width={1448} />}
         >
           <p>
             Unimos desarrollo digital, marketing, automatización e infraestructura

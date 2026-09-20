@@ -22,7 +22,7 @@ export default function Contact() {
               <a className="button button--secondary" href="/diagnostico">Hacer diagnóstico</a>
             </div>
           </div>
-          <img alt="Conversación móvil entre una persona y un negocio local en Vecidya" src={publicAssets.illustrations.mobileCustomerChat} />
+          <img alt="Conversación móvil entre una persona y un negocio local en Vecidya" decoding="async" height={1086} src={publicAssets.illustrations.mobileCustomerChat} width={1448} />
         </section>
 
         <section className="public-commercial-grid contact-signal-grid">

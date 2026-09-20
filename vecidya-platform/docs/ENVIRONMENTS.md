@@ -1,6 +1,6 @@
 # Entornos
 
-Última reconciliación: 2026-09-20 (Baseline 2026-09-20).
+Última reconciliación: 2026-09-20 (PERF-001, `v0.1.1` local; no desplegado).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura al dominio público el 2026-09-20, **`DOC`** afirmación histórica de la documentación **no reverificada** (no hubo acceso a Cloudflare remoto en este corte).
 
@@ -67,3 +67,9 @@ Sin `RESEND_API_KEY` + `EMAIL_FROM` + `APP_URL` el envío de invitaciones respon
 - Cambiar la versión requiere actualizar `package.json`, validar `typecheck` y `build`, y registrar el cambio en [CHANGELOG.md](CHANGELOG.md).
 - Una versión solo se declara **publicada** después de un deploy autorizado y una comprobación HTTP anónima fechada contra `vecidya.com`; el commit, el bundle local o la configuración de Wrangler no sustituyen esa evidencia.
 - La ficha de publicación debe conservar: versión, fecha, Worker/ruta, estado de migraciones, resultado HTTP y bloqueos. Si la D1 remota no puede verificarse, se marca `NO VERIFICADO` y no se publican perfiles dependientes.
+
+## PERF-001 — estado de publicación
+
+- Versión fuente/local esperada: `0.1.1` (`vecidya-platform/package.json`).
+- Deploy PERF-001: **NO**; no se ejecutó `wrangler deploy`, no se usó `--remote` y no se modificó D1 remota.
+- Versión pública `0.1.1`: **NO VERIFICADA / NO DESPLEGADA**. No existe `Observed production version` para este bloque.

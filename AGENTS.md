@@ -61,6 +61,12 @@ There is no `test` script. E2E scripts live in `tests/e2e/`; read `vecidya-platf
 - Validate Worker-facing behavior through the real local Cloudflare runtime.
 - Do not deploy unless the user explicitly requests it: `wrangler deploy` publishes directly to `vecidya.com`.
 
+## Visual assets
+
+- Add photographic or complex raster assets in an optimized modern format (prefer WebP when suitable); keep SVG for vector artwork.
+- Avoid oversized originals and unnecessary duplicates; preserve transparency, dimensions, and visual quality required by the layout.
+- Before removing an original, verify references, build output, asset responses, and visual rendering.
+
 ## Versioning and publication policy
 
 - The application version is the `version` field in `vecidya-platform/package.json`; do not duplicate or hard-code release versions in layouts.

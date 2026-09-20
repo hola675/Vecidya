@@ -99,7 +99,7 @@ export default function Services() {
         <VisualSection
           eyebrow="MÉTODO"
           title="Primero se entiende la presencia; después se decide qué construir."
-          visual={<AssetVisual alt="Paneles de crecimiento y presencia digital de Vecidya para negocios locales" src={publicAssets.illustrations.platformGrowthDashboard} />}
+          visual={<AssetVisual alt="Paneles de crecimiento y presencia digital de Vecidya para negocios locales" height={1086} src={publicAssets.illustrations.platformGrowthDashboard} width={1448} />}
         >
           <p>El trabajo empieza por revisar el punto de partida, definir objetivos y ordenar la base. Después se eligen canales, herramientas y mejoras que tengan sentido para el caso.</p>
         </VisualSection>

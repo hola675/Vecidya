@@ -60,7 +60,7 @@ export default function Knowledge() {
         <VisualSection
           eyebrow="CRITERIO EDITORIAL"
           title="Contenido útil, verificable y sin relleno."
-          visual={<AssetVisual alt="Panel de tareas y prioridades para ordenar decisiones digitales" src={publicAssets.illustrations.taskSchedulePanel} />}
+          visual={<AssetVisual alt="Panel de tareas y prioridades para ordenar decisiones digitales" height={1254} src={publicAssets.illustrations.taskSchedulePanel} width={1254} />}
         >
           <p>
             La primera pregunta no debería ser en qué red social estar, sino qué

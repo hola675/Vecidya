@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-20 (Baseline 2026-09-20)**. Rama `main`. Producto activo: `vecidya-platform/`.
+Última reconciliación: **2026-09-20 (PERF-001)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión local esperada: `0.1.1`; PERF-001 está en código/Git y no desplegado.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -101,7 +101,13 @@ Cinco servicios estáticos, cada uno con problema, cómo ayuda, tres entregables
 - `www.vecidya.com` → 301 → apex (`workers/app.ts`).
 - Navegación: desktop (Inicio, Vecindario, Diagnóstico, Aprende, Servicios, Nosotros, Contacto) + «Acceder» y «Únete a Vecidya»; móvil `<details>` con Escape y retorno de foco; footer con 9 enlaces.
 - Accesibilidad: skip-link, `:focus-visible`, `aria-label` en navegaciones, `prefers-reduced-motion`, breakpoints 430/760/820/900 px. Defectos: 8 páginas con `<main>` anidado; sin `role="progressbar"`/foco en cambio de pregunta del Diagnóstico.
-- Assets: 17 PNG seleccionados + 1 ícono de marca; 3 sin uso (dos con nombres de reseñas/ratings); ninguna imagen pública con `width/height/loading`.
+- Assets: 14 WebP activos + 4 PNG conservados (ícono de marca canónico y 3 recursos seleccionados sin uso); PERF-001 redujo `18,649,999` a `4,369,378` bytes (`76.57 %`). Las imágenes de contenido activo tienen dimensiones declaradas y los recursos below-the-fold usan lazy loading sin aplicarlo al visual principal/LCP.
+
+### Política de assets visuales
+
+- Fotografías y raster complejo deben entrar optimizados; WebP es el formato preferido cuando conserva calidad, transparencia y compatibilidad suficientes.
+- SVG se conserva para vectores, iconos y gráficos que no obtienen beneficio al convertirse a bitmap.
+- Se evitan originales sobredimensionados y duplicados innecesarios; antes de retirar un original se comprueban referencias, build, respuestas de assets y renderizado visual.
 
 ## Aplicación privada (`/app`)
 

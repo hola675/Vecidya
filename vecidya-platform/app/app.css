@@ -297,7 +297,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   padding: clamp(2rem, 6vw, 4rem);
   background:
     linear-gradient(90deg, rgb(255 255 255 / 92%), rgb(255 255 255 / 78%)),
-    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.png") center / cover no-repeat,
+    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.webp") center / cover no-repeat,
     var(--public-map-surface);
 }
 
@@ -305,7 +305,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   color: #fff;
   background:
     linear-gradient(135deg, rgb(16 76 157 / 92%), rgb(20 43 74 / 94%)),
-    url("/assets/selected/backgrounds/bg-section-map-wave-dark.png") center / cover no-repeat,
+    url("/assets/selected/backgrounds/bg-section-map-wave-dark.webp") center / cover no-repeat,
     linear-gradient(135deg, #104c9d, #142b4a);
 }
 
@@ -355,7 +355,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   padding: clamp(1.5rem, 4vw, 2.5rem);
   background:
     linear-gradient(135deg, rgb(244 248 255 / 92%), rgb(255 255 255 / 94%)),
-    url("/assets/selected/backgrounds/bg-network-route-pins.png") center / cover no-repeat;
+    url("/assets/selected/backgrounds/bg-network-route-pins.webp") center / cover no-repeat;
 }
 
 .public-v2-empty__asset {
@@ -409,7 +409,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .asset-visual--soft {
   background:
     linear-gradient(135deg, rgb(244 248 255 / 88%), rgb(255 247 241 / 78%)),
-    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.png") center / cover no-repeat;
+    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.webp") center / cover no-repeat;
 }
 
 .asset-visual img {
@@ -477,7 +477,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   padding-inline: clamp(1rem, 4vw, 3rem);
   background:
     linear-gradient(110deg, rgb(255 255 255 / 95%) 0%, rgb(255 255 255 / 86%) 46%, rgb(244 248 255 / 72%) 100%),
-    url("/assets/selected/backgrounds/bg-hero-soft-map-wave.png") center / cover no-repeat,
+    url("/assets/selected/backgrounds/bg-hero-soft-map-wave.webp") center / cover no-repeat,
     #f4f8ff;
 }
 
@@ -488,7 +488,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   width: clamp(4.5rem, 11vw, 8rem);
   height: clamp(4.5rem, 11vw, 8rem);
   opacity: 0.13;
-  background: url("/assets/selected/icons/ui/ui-icon-vecidya-pin.png") center / contain no-repeat;
+  background: url("/assets/selected/icons/ui/ui-icon-vecidya-pin.webp") center / contain no-repeat;
   content: "";
 }
 
@@ -506,7 +506,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   padding: clamp(0.75rem, 2vw, 1rem);
   background:
     linear-gradient(180deg, rgb(255 255 255 / 88%), rgb(255 255 255 / 96%)),
-    url("/assets/selected/backgrounds/bg-network-route-pins.png") center / cover no-repeat;
+    url("/assets/selected/backgrounds/bg-network-route-pins.webp") center / cover no-repeat;
   box-shadow: 0 1.4rem 3rem rgb(20 43 74 / 10%);
 }
 
@@ -521,14 +521,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   margin-top: clamp(1.5rem, 4vw, 3rem);
   background:
     linear-gradient(135deg, rgb(255 255 255 / 92%), rgb(244 248 255 / 88%)),
-    url("/assets/selected/backgrounds/bg-network-route-pins.png") center / cover no-repeat;
+    url("/assets/selected/backgrounds/bg-network-route-pins.webp") center / cover no-repeat;
 }
 
 .home-diagnostic-feature {
   border-color: rgb(21 95 197 / 18%);
   background:
     linear-gradient(135deg, rgb(244 248 255 / 96%), rgb(255 247 241 / 82%)),
-    url("/assets/selected/backgrounds/bg-network-route-pins.png") center / cover no-repeat;
+    url("/assets/selected/backgrounds/bg-network-route-pins.webp") center / cover no-repeat;
 }
 
 .home-services-feature {
@@ -538,14 +538,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .home-audience-feature {
   background:
     linear-gradient(135deg, rgb(255 255 255 / 94%), rgb(255 240 229 / 48%)),
-    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.png") center / cover no-repeat;
+    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.webp") center / cover no-repeat;
 }
 
 .home-learn-feature {
   border-color: rgb(191 71 0 / 16%);
   background:
     linear-gradient(135deg, rgb(255 247 241 / 72%), rgb(255 255 255 / 92%)),
-    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.png") center / cover no-repeat;
+    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.webp") center / cover no-repeat;
 }
 
 .home-preview-grid {
@@ -604,7 +604,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   width: 2.2rem;
   height: 2.2rem;
   margin-bottom: 0.7rem;
-  background: url("/assets/selected/icons/ui/ui-icon-vecidya-pin.png") center / contain no-repeat;
+  background: url("/assets/selected/icons/ui/ui-icon-vecidya-pin.webp") center / contain no-repeat;
   content: "";
 }
 
@@ -639,8 +639,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   padding: clamp(1.75rem, 5vw, 4rem);
   background:
     linear-gradient(90deg, rgb(255 255 255 / 88%), rgb(255 255 255 / 62%)),
-    url("/assets/selected/illustrations/illus-mobile-local-discovery.png") right 8% center / min(36vw, 24rem) auto no-repeat,
-    url("/assets/selected/backgrounds/bg-network-route-pins.png") center / cover no-repeat,
+    url("/assets/selected/illustrations/illus-mobile-local-discovery.webp") right 8% center / min(36vw, 24rem) auto no-repeat,
+    url("/assets/selected/backgrounds/bg-network-route-pins.webp") center / cover no-repeat,
     linear-gradient(135deg, #f4f8ff, #fff7f1);
   box-shadow: 0 1.2rem 3rem rgb(20 43 74 / 6%);
 }
@@ -817,7 +817,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   padding: clamp(1.5rem, 5vw, 4rem);
   background:
     linear-gradient(90deg, rgb(255 255 255 / 86%), rgb(255 255 255 / 70%)),
-    url("/assets/selected/backgrounds/bg-network-route-pins.png") center / cover no-repeat,
+    url("/assets/selected/backgrounds/bg-network-route-pins.webp") center / cover no-repeat,
     radial-gradient(circle at 85% 18%, rgb(255 107 11 / 16%), transparent 13rem),
     linear-gradient(135deg, #f4f8ff, #fff);
   box-shadow: 0 1.4rem 3rem rgb(20 43 74 / 7%);
@@ -1005,7 +1005,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   padding: clamp(1.75rem, 5vw, 4rem);
   background:
     linear-gradient(90deg, rgb(255 255 255 / 88%), rgb(255 255 255 / 78%)),
-    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.png") center / cover no-repeat,
+    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.webp") center / cover no-repeat,
     linear-gradient(135deg, #f4f8ff, #fff 68%);
   box-shadow: 0 1.2rem 3rem rgb(20 43 74 / 6%);
 }
@@ -1115,7 +1115,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   border-radius: var(--radius-lg);
   background:
     linear-gradient(135deg, rgb(255 255 255 / 92%), rgb(244 248 255 / 86%)),
-    url("/assets/selected/backgrounds/bg-hero-soft-map-wave.png") center / cover no-repeat;
+    url("/assets/selected/backgrounds/bg-hero-soft-map-wave.webp") center / cover no-repeat;
 }
 
 .knowledge-category-strip {
@@ -1138,7 +1138,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .public-commercial-section--team .public-v2-service-card:nth-child(2) {
   background:
     linear-gradient(180deg, rgb(255 255 255 / 94%), rgb(244 248 255 / 90%)),
-    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.png") center / cover no-repeat;
+    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.webp") center / cover no-repeat;
 }
 
 .join-choice-grid .public-v2-service-card:nth-child(-n + 2),
@@ -1146,7 +1146,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   border-color: rgb(21 95 197 / 22%);
   background:
     linear-gradient(180deg, rgb(255 255 255 / 96%), rgb(244 248 255 / 92%)),
-    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.png") center / cover no-repeat;
+    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.webp") center / cover no-repeat;
 }
 
 .public-commercial-limits ul {
@@ -1229,7 +1229,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   padding: clamp(1.75rem, 5vw, 4rem);
   background:
     linear-gradient(110deg, rgb(255 255 255 / 96%), rgb(244 248 255 / 86%)),
-    url("/assets/selected/backgrounds/bg-network-route-pins.png") center / cover no-repeat,
+    url("/assets/selected/backgrounds/bg-network-route-pins.webp") center / cover no-repeat,
     #fff;
   box-shadow: 0 1.35rem 3rem rgb(20 43 74 / 8%);
 }
@@ -1241,7 +1241,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   width: clamp(4rem, 10vw, 7rem);
   height: clamp(4rem, 10vw, 7rem);
   opacity: 0.14;
-  background: url("/assets/selected/brand/brand-symbol-primary.png") center / contain no-repeat;
+  background: url("/assets/selected/brand/brand-symbol-primary.webp") center / contain no-repeat;
   content: "";
 }
 
@@ -1334,7 +1334,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   padding: clamp(1rem, 4vw, 2rem);
   background:
     linear-gradient(180deg, rgb(255 255 255 / 96%), rgb(247 249 252 / 96%)),
-    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.png") right top / 18rem auto no-repeat;
+    url("/assets/selected/backgrounds/bg-soft-map-orange-blue.webp") right top / 18rem auto no-repeat;
   box-shadow: 0 1.2rem 3rem rgb(20 43 74 / 7%);
 }
 

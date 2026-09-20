@@ -34,7 +34,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     │   └── business-profile-rules.ts, business-hours-rules.ts
     ├── workers/app.ts          entry point del Worker (+ redirect www → apex)
     ├── worker/                 durable-objects/, queues/, workflows/ vacíos
-    ├── public/                 assets/selected/** (17 PNG) y brand/vecidya-app-icon.png
+    ├── public/                 assets/selected/** (14 WebP activos + 3 PNG conservados) y brand/vecidya-app-icon.png
     ├── tests/e2e/              25 archivos (ver TESTING.md); unit/ e integration/ vacíos
     ├── docs/                   13 documentos canónicos con los READMEs
     ├── wrangler.jsonc, drizzle.config.ts, react-router.config.ts, vite.config.ts,

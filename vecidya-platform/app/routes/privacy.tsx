@@ -47,7 +47,7 @@ export default function Privacy() {
         <VisualSection
           eyebrow="PRINCIPIOS"
           title="Menos datos, más claridad y acceso responsable."
-          visual={<AssetVisual alt="Panel de tareas y prioridades para organizar información en Vecidya" src={publicAssets.illustrations.taskSchedulePanel} />}
+          visual={<AssetVisual alt="Panel de tareas y prioridades para organizar información en Vecidya" height={1254} src={publicAssets.illustrations.taskSchedulePanel} width={1254} />}
         >
           <p>
             Vecidya debe pedir solo lo necesario, explicar el uso previsto y

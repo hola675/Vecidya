@@ -570,7 +570,7 @@ export default function Diagnostic() {
             </p>
           </div>
           <div className="diagnostic-hero__panel">
-            <img alt="" aria-hidden="true" src={publicAssets.icons.vecidyaPin} />
+            <img alt="" aria-hidden="true" decoding="async" height={1254} src={publicAssets.icons.vecidyaPin} width={1254} />
             <span>Recibirás</span>
             <ul>
               {diagnosticDeliverables.map((item) => <li key={item}>{item}</li>)}

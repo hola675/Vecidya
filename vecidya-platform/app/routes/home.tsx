@@ -42,7 +42,7 @@ export default function Home() {
           </div>
         </div>
         <aside className="home-ecosystem" aria-label="Vista conceptual del ecosistema Vecidya">
-          <img alt="Aplicación móvil de Vecidya mostrando descubrimiento de negocios locales" src={publicAssets.illustrations.mobileLocalDiscovery} />
+          <img alt="Aplicación móvil de Vecidya mostrando descubrimiento de negocios locales" decoding="async" height={1086} src={publicAssets.illustrations.mobileLocalDiscovery} width={1448} />
         </aside>
       </section>
 
@@ -75,7 +75,7 @@ export default function Home() {
       <VisualSection
         eyebrow="UNA BASE QUE SE ENTIENDE"
         title="De una presencia difícil de entender a una presencia fácil de contactar."
-        visual={<AssetVisual alt="Perfil digital de un comercio local conectado con señales de presencia pública" src={publicAssets.illustrations.storefrontDigitalProfile} />}
+        visual={<AssetVisual alt="Perfil digital de un comercio local conectado con señales de presencia pública" height={1254} src={publicAssets.illustrations.storefrontDigitalProfile} width={1254} />}
       >
         <p>El problema no suele ser falta de redes o herramientas. Muchas veces la información está incompleta, repartida o escrita de una forma que no ayuda a decidir.</p>
         <div className="home-result-list">

@@ -94,7 +94,7 @@ export function EmptyState({
 }) {
   return (
     <section aria-live="polite" className="public-v2-empty">
-      <img alt="" aria-hidden="true" className="public-v2-empty__asset" src={publicAssets.icons.vecidyaPin} />
+      <img alt="" aria-hidden="true" className="public-v2-empty__asset" height={1254} loading="lazy" src={publicAssets.icons.vecidyaPin} width={1254} />
       <div>
         <p className="eyebrow">{eyebrow}</p>
         <h2>{title}</h2>
@@ -150,14 +150,18 @@ export function AssetVisual({
   src,
   alt = "",
   frame = "standard",
+  width,
+  height,
 }: {
   src: string;
   alt?: string;
   frame?: "standard" | "soft" | "none";
+  width: number;
+  height: number;
 }) {
   return (
     <figure className={`asset-visual asset-visual--${frame}`}>
-      <img alt={alt} src={src} />
+      <img alt={alt} height={height} loading="lazy" src={src} width={width} />
     </figure>
   );
 }
@@ -171,7 +175,7 @@ export function BusinessCardV2({ profile }: { profile: BusinessCardProfile }) {
         {profile.logoUrl ? (
           <img alt={`Logo de ${profile.displayName}`} src={profile.logoUrl} />
         ) : (
-          <img alt="" aria-hidden="true" className="public-v2-business-card__fallback-asset" src={publicAssets.icons.storefrontVerified} />
+          <img alt="" aria-hidden="true" className="public-v2-business-card__fallback-asset" height={1254} loading="lazy" src={publicAssets.icons.storefrontVerified} width={1254} />
         )}
       </div>
       <div className="public-v2-business-card__content">
@@ -194,7 +198,7 @@ export function PublicBusinessHeader({ profile }: { profile: PublicBusinessProfi
         {profile.logoUrl ? (
           <img alt={`Logo de ${profile.displayName}`} src={profile.logoUrl} />
         ) : (
-          <img alt="" aria-hidden="true" className="public-business-profile__fallback-asset" src={publicAssets.icons.storefrontVerified} />
+          <img alt="" aria-hidden="true" className="public-business-profile__fallback-asset" height={1254} src={publicAssets.icons.storefrontVerified} width={1254} />
         )}
       </div>
       <div>
