@@ -1,12 +1,12 @@
 # Entornos
 
-Última reconciliación: 2026-09-21 (PROD-001 pre-cutover; código `v0.1.2`, público `v0.1.1`).
+Última reconciliación: 2026-09-21 (PROD-001B, deploy `v0.1.2`; smoke autenticado pendiente).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura al dominio público el 2026-09-21, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
-`vecidya.com` **todavía se sirve desde infraestructura staging**. El cutover no se ha desplegado. La D1 `vecidya-prod` fue creada y clonada con paridad desde `vecidya-staging`; queda preparada para una revisión y cambio de binding independiente. No se eliminaron recursos ni se modificó el tráfico público.
+`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`. El smoke HTTP anónimo pasó; la comprobación autenticada post-cutover permanece pendiente.
 
 ## Matriz de entornos
 
@@ -15,8 +15,7 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 | **Local** | `react-router dev` con el plugin de Cloudflare (`pnpm run dev`) | Emulada por Miniflare en `.wrangler/state/v3/d1` (binding `DB`); migraciones `0000`–`0009` aplicadas | `http://localhost:*` | Operativo | `RAN` `d1_migrations` local contiene 10 filas (`0000`–`0009`) |
 | **Development** (remoto) | Ninguno versionado | `vecidya-dev` remoto existe, pero no está configurado ni debe usarse | Ninguno | **Abandonado / sin uso** | `CONFIG` |
 | **Staging** | `vecidya-platform-staging` (`env.staging`, `workers_dev: true`) | `vecidya-staging` `d4af6ebc-97c5-42f6-ad3a-51551021e591` | URL workers.dev dedicada aún pendiente de provisionar/verificar | **Preparado; no desplegado en este bloque** | `CONFIG` `REMOTE` |
-| **Public** | `vecidya-platform` (top-level) | `vecidya-staging` hasta cutover | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado**; `v0.1.1`, Version ID `f8936f89-ef27-4d50-ae56-1b6e4ba35fed` | `CONFIG` `HTTP` `REMOTE` |
-| **Production** | `vecidya-platform` (top-level preparado) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com` | **Provisionado y clonado; NO CUTOVER** | `CONFIG` `REMOTE` |
+| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado**; `v0.1.2`, Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`; autenticación post-cutover pendiente | `CONFIG` `HTTP` `REMOTE` |
 
 ## Qué código está publicado
 
@@ -26,7 +25,7 @@ El despliegue público vigente es el Version ID `f8936f89-ef27-4d50-ae56-1b6e4ba
 - `/app/internal` sin sesión devuelve la pantalla de login; el acceso autenticado de `hola@vecidya.com` fue comprobado manualmente en `/app` y `/app/internal`.
 - La D1 remota reporta migraciones `0000`–`0009` aplicadas `REMOTE`.
 
-Conclusión: el código actual y las migraciones `0007`–`0009` están desplegados en el Worker público y aplicados en `vecidya-staging`; la producción independiente está provisionada y clonada, pero no sirve tráfico hasta el cutover.
+Conclusión: el código `0.1.2` y las migraciones `0000`–`0009` están desplegados en el Worker público y el binding reportado por Wrangler es `vecidya-prod`. `vecidya-staging` sigue preservada como D1 independiente de staging.
 
 ## Repositorio Git
 
@@ -53,19 +52,20 @@ Sin `RESEND_API_KEY` + `EMAIL_FROM` + `APP_URL` el envío de invitaciones respon
 
 ## Reglas
 
-1. Cada entorno usa bindings y recursos independientes; Public comparte temporalmente D1 con Staging hasta el cutover autorizado (`PROD-INDEPENDENT-001`).
+1. Producción/Public usa `vecidya-prod`; staging conserva `vecidya-staging` con Worker dedicado aún no desplegado en este bloque.
 2. Los secretos se gestionan fuera de Git; no se leen ni se imprimen archivos `.env*` ni `.dev.vars`.
 3. Ninguna prueba destructiva apunta a producción pública. Las pruebas `remote-staging-*` exigen `RUN_REMOTE_E2E=1`, `TARGET_ENV=staging`, el Worker dedicado `vecidya-platform-staging` y `D1_NAME=vecidya-staging`; rechazan producción (ver `TESTING.md`).
 4. Los despliegues requieren autorización explícita; `wrangler deploy` despliega directamente al dominio público.
 5. Las migraciones se validan en local antes de cualquier aplicación remota; `--remote` requiere autorización explícita.
 6. Los comandos D1 locales usan el **binding** `DB` (`pnpm wrangler d1 execute DB --local …`), no el nombre obsoleto `vecidya-dev`.
-7. `vecidya-prod` fue creada dentro de PROD-001; el deploy/cutover y cualquier migración posterior requieren autorización separada.
+7. `vecidya-prod` está conectada al Worker público; no se eliminó ni modificó destructivamente `vecidya-staging`.
 
-## PROD-001 — baseline remoto pre-cutover
+## PROD-001 / PROD-001B — baseline y cutover
 
 - Backup completo de `vecidya-staging` realizado fuera del repositorio el 2026-09-21 antes de la clonación. El SQL no entra en Git.
 - `vecidya-prod` fue creada con UUID `8edc3f04-258e-4c29-9f33-76fec3d25042` y recibió migraciones `0000`–`0009` más los datos exportados de la D1 pública. Los conteos de las 17 tablas inventariadas coincidieron y se verificaron invariantes de identidad, organización, membresía owner, platform admin activo y perfil publicado.
-- Producción Worker y sus secretos no fueron desplegados ni modificados. `vecidya.com` siguió apuntando a `vecidya-staging` durante todo el bloque.
+- Deploy autorizado de `vecidya-platform` a `vecidya-prod`: Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`, 2026-09-21. Wrangler mostró `env.DB (vecidya-prod)` y `APP_ENV=production`.
+- Smoke anónimo PASS: `/`, `/vecindario`, `/vecindario/vecidya`, `/login`, `/robots.txt`, `/sitemap.xml`, `www` → apex y footer `0.1.2`. Smoke autenticado post-cutover: pendiente.
 
 ## Política de versionado y publicación
 

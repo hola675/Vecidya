@@ -8,6 +8,13 @@
 - Endurecidas las pruebas remotas: requieren intención explícita, `TARGET_ENV=staging`, Worker dedicado `vecidya-platform-staging` y `D1_NAME=vecidya-staging`; rechazan hosts y D1 productivos.
 - `v0.1.2` es versión de código preparada, no publicada. No hubo deploy, cutover, rotación de secretos ni mutación destructiva de `vecidya-staging`.
 
+## 2026-09-21 — PROD-001B Production Cutover (`v0.1.2`, verificación parcial)
+
+- Desplegado `vecidya-platform` con Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`; Wrangler confirmó `DB=vecidya-prod`, UUID `8edc3f04-258e-4c29-9f33-76fec3d25042`, `APP_ENV=production` y rutas `vecidya.com`/`www.vecidya.com`.
+- Smoke HTTP anónimo PASS para `/`, `/vecindario`, `/vecindario/vecidya`, `/login`, `/robots.txt`, `/sitemap.xml`, redirect `www` → apex y footer público `0.1.2`.
+- `vecidya-staging` permanece existente y preservada; no se ejecutaron E2E remotos destructivos ni se rotaron secretos.
+- La verificación autenticada post-cutover de `hola@vecidya.com` queda pendiente por no disponer de sesión/credencial operativa sin exponer secretos. PROD-001B permanece parcial.
+
 ## 2026-09-21 — AUTH-BOOTSTRAP-001 / acceso administrativo
 
 - Recuperada la cuenta existente `hola@vecidya.com` mediante un bootstrap efímero protegido por secreto Cloudflare, usando el hashing y adapter de Better Auth; la contraseña no se guardó en texto plano ni en documentación.
