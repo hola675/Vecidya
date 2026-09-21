@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-21 (PROD-001B, verificación parcial).
+Última reconciliación: 2026-09-21 (PROD-001C, PROD-001 cerrado).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -11,7 +11,7 @@ Este documento contiene **solo trabajo futuro**. Nada aquí está implementado n
 | G2 | Confirmar si `b1` eliminó `archive/` y `resources/assets` a propósito y cómo recuperar la biblioteca de assets (`git show ec79b22^:resources/assets/…`) | Bloquea Visual System Expansion |
 | G3 | Datos y decisiones del piloto: email real de Edgar, nombre público de «Asesorar-T», autorización o ajuste de marca SURA, WhatsApp/web/redes/logo si se quieren mostrar | `PILOT-IDENTITY-001`, `PILOT-NAME-ASESORAR-T`, `PILOT-BRAND-SURA` |
 | G4 | Autorizar deploy y migraciones remotas `0007`–`0009` sobre `vecidya-staging` | `PUBLISH-GAP-001`; sin esto nada de lo construido el 2026-09-07 llega al dominio público |
-| G5 | Completar la verificación autenticada post-cutover | Smoke con `hola@vecidya.com` pendiente |
+| G5 | — | PROD-001C completó la verificación autenticada |
 
 ## Secuencia recomendada (derivada de la evidencia del baseline)
 
@@ -19,7 +19,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 | # | Bloque | Objetivo | Depende de |
 | --- | --- | --- | --- |
-| 1 | **PROD-001 / PROD-001B** | Separar D1, backup, paridad, guards y cutover; autenticación post-cutover pendiente | autorización de infraestructura + sesión operativa |
+| 1 | **PROD-001 / PROD-001B / PROD-001C** | Separar D1, backup, paridad, guards, cutover y verificación autenticada | cerrado |
 | 2 | **EMAIL-001** | Correo y verificación transaccional | PROD-001 y decisiones de correo |
 | 3 | **OPS-001** | Operación y observabilidad post-separación | EMAIL-001 |
 | 4 | Pilot Data & Authorizations | Resolver G3; sin código | OPS-001 / usuario |
@@ -36,11 +36,11 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 **Nota de paralelismo.** Home (3) es 100 % estático y no depende de datos ni de backend; puede avanzar mientras el usuario resuelve los datos del piloto (1), que es el cuello de botella (depende de terceros). Visual (4) depende de la decisión G2.
 
-## Siguiente bloque recomendado: cerrar verificación PROD-001B
+## Siguiente bloque recomendado: EMAIL-001
 
-- **Objetivo**: ejecutar el smoke autenticado post-cutover sin exponer credenciales y cerrar PROD-001B.
-- **Alcance**: confirmar login, `/app`, perfil, organización y administración interna contra `vecidya-prod`.
-- **Fuera de alcance**: borrar `vecidya-staging`, rotar secretos, pruebas destructivas y publicación de pilotos.
+- **Objetivo**: construir la fundación de correo transaccional según autorización independiente.
+- **Alcance**: únicamente EMAIL-001; PROD-001 queda cerrado.
+- **Fuera de alcance**: despliegue del Worker staging dedicado, pruebas destructivas y cambios de producción no relacionados.
 
 ## Trabajo futuro por área
 

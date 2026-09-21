@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-21 (PROD-001B, verificación parcial)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión pública desplegada: `0.1.2`, Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`.
+Última reconciliación: **2026-09-21 (PROD-001C, verificación autenticada)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión pública desplegada: `0.1.2`, Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -8,7 +8,7 @@ Este documento es el snapshot técnico completo. El estado corto y la deuda est�
 
 Vecidya Platform es una aplicación SSR de React Router sobre Cloudflare Workers, Better Auth, Drizzle ORM y D1. Cubre identidad, organizaciones, membresías, permisos, perfil comercial (uno por organización), servicios Vecidya, directorio público (Vecindario), Diagnóstico anónimo, administración interna con gobierno de perfiles y una web pública institucional. Vecidya **no es un CRM**: GHL es el system of record comercial y hoy no existe ninguna integración con GHL.
 
-Publicado en `vecidya.com` (verificado HTTP 2026-09-21): la web pública completa y **un** perfil real (`/vecindario/vecidya`), ahora sobre `vecidya-prod`; migraciones `0000`–`0009` están presentes. La verificación autenticada post-cutover de `hola@vecidya.com` aún está pendiente.
+Publicado en `vecidya.com` (verificado HTTP y manualmente el 2026-09-21): la web pública completa y **un** perfil real (`/vecindario/vecidya`), ahora sobre `vecidya-prod`; migraciones `0000`–`0009` están presentes. `hola@vecidya.com` autenticó en producción y accedió a `/app` y `/app/internal` como administrador de plataforma.
 
 ## Stack real
 

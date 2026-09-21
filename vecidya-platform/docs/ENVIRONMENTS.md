@@ -1,12 +1,12 @@
 # Entornos
 
-Última reconciliación: 2026-09-21 (PROD-001B, deploy `v0.1.2`; smoke autenticado pendiente).
+Última reconciliación: 2026-09-21 (PROD-001C, deploy `v0.1.2`; smoke autenticado PASS).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura al dominio público el 2026-09-21, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
-`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`. El smoke HTTP anónimo pasó; la comprobación autenticada post-cutover permanece pendiente.
+`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`. El smoke HTTP anónimo y la verificación manual autorizada `/login → /app → /app/internal` pasaron.
 
 ## Matriz de entornos
 
@@ -15,14 +15,14 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 | **Local** | `react-router dev` con el plugin de Cloudflare (`pnpm run dev`) | Emulada por Miniflare en `.wrangler/state/v3/d1` (binding `DB`); migraciones `0000`–`0009` aplicadas | `http://localhost:*` | Operativo | `RAN` `d1_migrations` local contiene 10 filas (`0000`–`0009`) |
 | **Development** (remoto) | Ninguno versionado | `vecidya-dev` remoto existe, pero no está configurado ni debe usarse | Ninguno | **Abandonado / sin uso** | `CONFIG` |
 | **Staging** | `vecidya-platform-staging` (`env.staging`, `workers_dev: true`) | `vecidya-staging` `d4af6ebc-97c5-42f6-ad3a-51551021e591` | URL workers.dev dedicada aún pendiente de provisionar/verificar | **Preparado; no desplegado en este bloque** | `CONFIG` `REMOTE` |
-| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado**; `v0.1.2`, Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`; autenticación post-cutover pendiente | `CONFIG` `HTTP` `REMOTE` |
+| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.1.2`, Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`; auth manual PASS | `CONFIG` `HTTP` `REMOTE` `DOC` |
 
 ## Qué código está publicado
 
-El despliegue público vigente es el Version ID `f8936f89-ef27-4d50-ae56-1b6e4ba35fed` (`v0.1.1`, 2026-09-21) `CONFIG`/`RAN`. Comprobación anónima el 2026-09-21 `HTTP` de que las rutas temporales de recuperación fueron retiradas:
+El despliegue público vigente es el Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0` (`v0.1.2`, 2026-09-21) `CONFIG`/`HTTP`:
 
 - `/app/internal/maintenance/auth-bootstrap` y `/app/internal/maintenance/password-rotation` devuelven **404**.
-- `/app/internal` sin sesión devuelve la pantalla de login; el acceso autenticado de `hola@vecidya.com` fue comprobado manualmente en `/app` y `/app/internal`.
+- `/app/internal` sin sesión devuelve la pantalla de login; el acceso autenticado de `hola@vecidya.com` fue comprobado manualmente en producción en `/app` y `/app/internal`.
 - La D1 remota reporta migraciones `0000`–`0009` aplicadas `REMOTE`.
 
 Conclusión: el código `0.1.2` y las migraciones `0000`–`0009` están desplegados en el Worker público y el binding reportado por Wrangler es `vecidya-prod`. `vecidya-staging` sigue preservada como D1 independiente de staging.
@@ -65,7 +65,8 @@ Sin `RESEND_API_KEY` + `EMAIL_FROM` + `APP_URL` el envío de invitaciones respon
 - Backup completo de `vecidya-staging` realizado fuera del repositorio el 2026-09-21 antes de la clonación. El SQL no entra en Git.
 - `vecidya-prod` fue creada con UUID `8edc3f04-258e-4c29-9f33-76fec3d25042` y recibió migraciones `0000`–`0009` más los datos exportados de la D1 pública. Los conteos de las 17 tablas inventariadas coincidieron y se verificaron invariantes de identidad, organización, membresía owner, platform admin activo y perfil publicado.
 - Deploy autorizado de `vecidya-platform` a `vecidya-prod`: Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`, 2026-09-21. Wrangler mostró `env.DB (vecidya-prod)` y `APP_ENV=production`.
-- Smoke anónimo PASS: `/`, `/vecindario`, `/vecindario/vecidya`, `/login`, `/robots.txt`, `/sitemap.xml`, `www` → apex y footer `0.1.2`. Smoke autenticado post-cutover: pendiente.
+- Smoke anónimo PASS: `/`, `/vecindario`, `/vecindario/vecidya`, `/login`, `/robots.txt`, `/sitemap.xml`, `www` → apex y footer `0.1.2`.
+- Smoke autenticado manual autorizado PASS: `hola@vecidya.com`, `/login → /app → /app/internal`. `/app/business-profile`, `/app/organization` y `/app/internal/businesses` no fueron rechecados en este smoke.
 
 ## Política de versionado y publicación
 

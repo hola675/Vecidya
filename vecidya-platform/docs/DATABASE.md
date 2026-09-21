@@ -1,6 +1,6 @@
 # Base de datos
 
-Última reconciliación: 2026-09-21 (PROD-001 pre-cutover). Evidencia: schema (`db/schema/`), las 10 migraciones SQL, `db/migrations/meta/`, consultas, D1 local y D1 remotas (`d1_migrations` = 10 filas, `0000`–`0009`).
+Última reconciliación: 2026-09-21 (PROD-001C, cierre). Evidencia: schema (`db/schema/`), las 10 migraciones SQL, `db/migrations/meta/`, consultas, D1 local y D1 remotas (`d1_migrations` = 10 filas, `0000`–`0009`).
 
 ## Responsabilidades
 

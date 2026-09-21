@@ -1,6 +1,6 @@
 # Pruebas
 
-Última reconciliación: 2026-09-21 (PROD-001 pre-cutover). Evidencia: ejecución de 17 E2E locales contra `pnpm run dev` (`127.0.0.1:5173`, D1 local con `0000`–`0009`) y guards remotos revisados sin ejecutar los remotos. Este documento distingue lo que la documentación *afirma* de lo que las pruebas *protegen*.
+Última reconciliación: 2026-09-21 (PROD-001C, cierre). Evidencia: ejecución de 17 E2E locales, guards remotos revisados sin ejecutar los remotos y verificación manual autorizada de producción `/login → /app → /app/internal`. Este documento distingue lo que la documentación *afirma* de lo que las pruebas *protegen*.
 
 ## Estado de la infraestructura de pruebas
 
