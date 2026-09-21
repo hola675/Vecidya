@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-21 — PROD-001 Production Separation & Post-Recovery Baseline (`v0.1.2`, pre-cutover)
+
+- Respaldada fuera del repositorio la D1 pública `vecidya-staging` y verificados su inventario, migraciones `0000`–`0009` e invariantes de identidad, organización, membresía, autoridad de plataforma y perfil publicado.
+- Creada `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`) y clonada mediante migraciones más exportación de datos, con paridad de conteos y relaciones críticas comprobada.
+- Preparada la separación explícita de Wrangler: producción apunta al nuevo D1 y `env.staging` conserva `vecidya-staging`; se añadió `APP_ENV` y fallback de origen para staging.
+- Endurecidas las pruebas remotas: requieren intención explícita, `TARGET_ENV=staging`, Worker dedicado `vecidya-platform-staging` y `D1_NAME=vecidya-staging`; rechazan hosts y D1 productivos.
+- `v0.1.2` es versión de código preparada, no publicada. No hubo deploy, cutover, rotación de secretos ni mutación destructiva de `vecidya-staging`.
+
 ## 2026-09-21 — AUTH-BOOTSTRAP-001 / acceso administrativo
 
 - Recuperada la cuenta existente `hola@vecidya.com` mediante un bootstrap efímero protegido por secreto Cloudflare, usando el hashing y adapter de Better Auth; la contraseña no se guardó en texto plano ni en documentación.

@@ -2,13 +2,13 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
-import { assertRemoteE2EIntent } from "./test-safety.mjs";
+import { assertRemoteE2EIntent, assertRemoteStagingDatabase } from "./test-safety.mjs";
 
 const baseUrl = process.env.BASE_URL;
 const databaseName = process.env.D1_NAME;
 const suffix = Date.now().toString();
 assertRemoteE2EIntent(baseUrl);
-if (databaseName !== "vecidya-staging") throw new Error("SEO check solo permite D1 vecidya-staging.");
+assertRemoteStagingDatabase(databaseName);
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
 class SessionClient {

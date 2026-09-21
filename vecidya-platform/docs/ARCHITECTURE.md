@@ -1,10 +1,10 @@
 # Arquitectura de Vecidya
 
-Última reconciliación: 2026-09-20 (Baseline 2026-09-20). Describe decisiones y fronteras **vigentes**; lo futuro está marcado `FUTURE` y no debe leerse como implementado.
+Última reconciliación: 2026-09-21 (PROD-001 pre-cutover). Describe decisiones y fronteras **vigentes**; lo futuro está marcado `FUTURE` y no debe leerse como implementado.
 
 ## Arquitectura actual
 
-Vecidya Platform es una aplicación SSR de React Router ejecutada en un único Cloudflare Worker (`workers/app.ts`). Better Auth usa Drizzle sobre D1 (binding `DB`). No hay servicios adicionales.
+Vecidya Platform es una aplicación SSR de React Router ejecutada en Cloudflare Worker (`workers/app.ts`). Better Auth usa Drizzle sobre D1 (binding `DB`). La configuración separa producción (`vecidya-platform` + `vecidya-prod`) de staging (`vecidya-platform-staging` + `vecidya-staging`); el cutover público todavía no se ha desplegado.
 
 ```text
 Browser
@@ -17,7 +17,7 @@ Better Auth + helpers de servidor (server/)
   ↓
 Drizzle ORM (db/queries/)
   ↓
-Cloudflare D1
+Cloudflare D1 (producción: vecidya-prod; staging: vecidya-staging)
 ```
 
 ## Fronteras de seguridad
@@ -98,7 +98,7 @@ GHL es el system of record de contactos, leads, oportunidades, pipelines, conver
 - `service_area` como texto libre (sin geocodificación, radios ni polígonos); `city`/`country` = ubicación de referencia.
 - Logo como URL de texto; sin R2.
 - Sin aislamiento por fila en la base de datos: el aislamiento es responsabilidad de cada consulta y guarda.
-- Un único D1 sirve Public y Staging (`PROD-INDEPENDENT-001`).
+- Producción y staging tienen D1 independientes preparados; `vecidya.com` continúa usando el binding público anterior hasta el cutover autorizado (`PROD-INDEPENDENT-001`).
 
 ## FUTURE (no implementado; requiere fase explícita)
 

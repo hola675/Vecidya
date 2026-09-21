@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-20 (Baseline 2026-09-20).
+Última reconciliación: 2026-09-21 (PROD-001 pre-cutover).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -11,7 +11,7 @@ Este documento contiene **solo trabajo futuro**. Nada aquí está implementado n
 | G2 | Confirmar si `b1` eliminó `archive/` y `resources/assets` a propósito y cómo recuperar la biblioteca de assets (`git show ec79b22^:resources/assets/…`) | Bloquea Visual System Expansion |
 | G3 | Datos y decisiones del piloto: email real de Edgar, nombre público de «Asesorar-T», autorización o ajuste de marca SURA, WhatsApp/web/redes/logo si se quieren mostrar | `PILOT-IDENTITY-001`, `PILOT-NAME-ASESORAR-T`, `PILOT-BRAND-SURA` |
 | G4 | Autorizar deploy y migraciones remotas `0007`–`0009` sobre `vecidya-staging` | `PUBLISH-GAP-001`; sin esto nada de lo construido el 2026-09-07 llega al dominio público |
-| G5 | Decidir si se provisiona producción independiente y cuándo | `PROD-INDEPENDENT-001` |
+| G5 | Autorizar el cutover de producción independiente y cuándo | Cambio público de `vecidya-staging` a `vecidya-prod` |
 
 ## Secuencia recomendada (derivada de la evidencia del baseline)
 
@@ -19,16 +19,16 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 | # | Bloque | Objetivo | Depende de |
 | --- | --- | --- | --- |
-| 1 | Pilot Data & Authorizations | Resolver G3; sin código | usuario |
-| 2 | **Real Proof (E2)** | Publicar vecinos reales con datos autorizados | 1, G3, G4 |
-| 3 | Home Experience Reduction | Reducir texto y mostrar producto real en Home | Independiente de 1–2; puede ir en paralelo |
-| 4 | Visual System Expansion | Ampliar sistema visual y assets | G2 |
-| 5 | Educational Content | Primeros artículos reales | Autor y fuentes reales |
-| 6 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 2 (vecinos) y 5 (artículos) |
-| 7 | Vecindario Experience | Descubrimiento, categorías, negocios relacionados | 2 (necesita vecinos reales) |
-| 8 | Business Profile evolution | Campos y galería según evidencia del piloto | 2 |
-| 9 | Growth & UX QA | Cobertura E2E faltante, a11y, SEO, regresión visual | 3–8 |
-| 10 | Producción y legal | Producción independiente; revisión legal si hay captación/persistencia | G5 |
+| 1 | **PROD-001** | Separar D1, backup, paridad y guards; cutover pendiente | autorización de infraestructura |
+| 2 | **EMAIL-001** | Correo y verificación transaccional | PROD-001 y decisiones de correo |
+| 3 | **OPS-001** | Operación y observabilidad post-separación | EMAIL-001 |
+| 4 | Pilot Data & Authorizations | Resolver G3; sin código | OPS-001 / usuario |
+| 5 | **Real Proof (E2)** | Publicar vecinos reales con datos autorizados | 4, G3 |
+| 6 | Home Experience Reduction | Reducir texto y mostrar producto real en Home | Independiente de 4–5; puede ir en paralelo |
+| 7 | Visual System Expansion | Ampliar sistema visual y assets | G2 |
+| 8 | Educational Content | Primeros artículos reales | Autor y fuentes reales |
+| 9 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 5 (vecinos) y 8 (artículos) |
+| 10 | Vecindario / Business Profile / UX | Descubrimiento, campos, cobertura E2E, a11y y SEO | 5–9 |
 
 **Corrección 1 — RR-001 precede Real Proof.** La evidencia mostró prerrequisitos técnicos: pruebas stale por el nombre D1 obsoleto, PX-B roto, selección de organización al login, limpieza de sesiones tras retirar membresía y protección server-side de perfiles publicados. RR-001 quedó cerrado antes de PERF-001 y permanece separado del deploy y del piloto.
 
@@ -36,11 +36,11 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 **Nota de paralelismo.** Home (3) es 100 % estático y no depende de datos ni de backend; puede avanzar mientras el usuario resuelve los datos del piloto (1), que es el cuello de botella (depende de terceros). Visual (4) depende de la decisión G2.
 
-## Siguiente bloque recomendado: Pilot Data & Authorizations
+## Siguiente bloque recomendado: revisión y cutover PROD-001
 
-- **Objetivo**: resolver las decisiones y datos de terceros necesarios antes de cualquier publicación de Real Proof.
-- **Alcance**: confirmar identidad y email real del piloto, nombre público de Asesorar-T y autorización o ajuste de marca SURA; sin código ni publicación.
-- **Fuera de alcance**: nuevas funcionalidades, migraciones, deploy, migraciones remotas y publicación del piloto.
+- **Objetivo**: revisar el backup, la paridad y la configuración preparada; autorizar por separado el cambio de `vecidya.com` a `vecidya-prod`.
+- **Alcance**: smoke remoto y cutover solo después de aprobación independiente.
+- **Fuera de alcance**: borrar `vecidya-staging`, rotar secretos, pruebas destructivas y publicación de pilotos.
 
 ## Trabajo futuro por área
 
@@ -78,7 +78,7 @@ GHL, Google, Meta, WhatsApp y otros solo con decisión explícita; guardan únic
 
 ### Producción
 
-Pendiente de decisión (G5): D1 productivo independiente, `app.vecidya.com` y `admin.vecidya.com`, secretos productivos, migraciones productivas, smoke remoto, revisión legal final si hay captación o persistencia. Antes, decidir qué hacer con el Worker/D1 «staging» que hoy sirven el dominio público.
+PROD-001 prepara `vecidya-prod` y la separación de configuración, pero el cutover público, smoke remoto, `app.vecidya.com`/`admin.vecidya.com`, secretos productivos dedicados y cualquier manejo posterior de `vecidya-staging` requieren autorización independiente. La secuencia operativa prevista es `PROD-001 → EMAIL-001 → OPS-001 → LEGAL / REAL PROOF → GHL pilot → licenses → UX evolution`.
 
 ## Fuera de alcance permanente
 

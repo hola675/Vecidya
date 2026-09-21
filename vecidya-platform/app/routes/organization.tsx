@@ -10,7 +10,7 @@ import { Alert, Badge, Button, Card } from "../components/ui";
 import type { Route } from "./+types/organization";
 
 function invitationEmailConfig(env: Env) {
-  return { resendApiKey: env.RESEND_API_KEY, emailFrom: env.EMAIL_FROM, appUrl: env.APP_URL };
+  return { resendApiKey: env.RESEND_API_KEY, emailFrom: env.EMAIL_FROM, appUrl: env.APP_URL || undefined };
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {

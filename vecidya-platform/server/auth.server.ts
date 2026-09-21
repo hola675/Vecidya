@@ -37,7 +37,7 @@ export function createAuth(env: AuthEnvironment, request: Request) {
     plugins: createAuthPlugins({
       resendApiKey: env.RESEND_API_KEY,
       emailFrom: env.EMAIL_FROM,
-      appUrl: env.APP_URL ?? browserOrigin,
+      appUrl: env.APP_URL || browserOrigin,
     }, createDatabase(env.DB)),
     secret,
     trustedOrigins: [browserOrigin, workerOrigin],

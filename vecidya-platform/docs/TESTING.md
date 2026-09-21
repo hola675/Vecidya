@@ -1,6 +1,6 @@
 # Pruebas
 
-Última reconciliación: 2026-09-20 (RP-001A). Evidencia: ejecución de 17 E2E locales contra `pnpm run dev` (`127.0.0.1:5173`, D1 local con `0000`–`0009`) y del fixture controlado RP-001A. Este documento distingue lo que la documentación *afirma* de lo que las pruebas *protegen*.
+Última reconciliación: 2026-09-21 (PROD-001 pre-cutover). Evidencia: ejecución de 17 E2E locales contra `pnpm run dev` (`127.0.0.1:5173`, D1 local con `0000`–`0009`) y guards remotos revisados sin ejecutar los remotos. Este documento distingue lo que la documentación *afirma* de lo que las pruebas *protegen*.
 
 ## Estado de la infraestructura de pruebas
 
@@ -21,7 +21,7 @@ node tests/e2e/<archivo>.mjs                     # una a la vez: comparten puert
 
 Requisitos: `BETTER_AUTH_SECRET` en `.dev.vars` (no versionado), Node ≥22.12. `organization-invitations-check` exige `RESEND_API_KEY` y `EMAIL_FROM` **sin definir** (espera 503). Variable opcional `D1_DATABASE_NAME` (por defecto `DB`).
 
-Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP en `localhost` o `127.0.0.1`. Las pruebas remotas requieren además `RUN_REMOTE_E2E=1`, HTTPS y un hostname `workers.dev`; siguen fuera de `test:e2e`.
+Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP en `localhost` o `127.0.0.1`. Las pruebas remotas requieren además `RUN_REMOTE_E2E=1`, `TARGET_ENV=staging`, `D1_NAME=vecidya-staging` y HTTPS sobre un hostname que empiece por `vecidya-platform-staging.` y termine en `.workers.dev`. Rechazan explícitamente `vecidya.com`, `www.vecidya.com`, `vecidya-platform.soporte-8a1.workers.dev` y `vecidya-prod`; siguen fuera de `test:e2e`.
 
 ## Alias usados en la documentación
 
@@ -79,7 +79,7 @@ Los tres casos permanecieron sin publicar porque los datos no confirmados se dej
 | --- | --- | --- |
 | **Local, ejecutable** | `test:e2e` ejecuta secuencialmente los scripts `.mjs` locales aplicables; `rp001a` se ejecuta explícitamente para no mezclar pilotos con la suite general | Una a la vez, con `pnpm run dev` |
 | **Local, corregidas** | `admin-int`, `admin-orgs`, `invitations`, `members`, `members-apply-fixture`, `psa`, `business-profile-tenancy-check.ps1`, `public-business-profile-check.ps1` | Usan el binding local `DB` |
-| **REMOTAS — excluidas** (2) | `remote-staging-e2e.mjs`, `remote-staging-seo-check.mjs` | Requieren `RUN_REMOTE_E2E=1`, HTTPS `workers.dev` y `D1_NAME=vecidya-staging`; nunca las ejecuta `test:e2e` |
+| **REMOTAS — excluidas** (2) | `remote-staging-e2e.mjs`, `remote-staging-seo-check.mjs` | Requieren `RUN_REMOTE_E2E=1`, `TARGET_ENV=staging`, Worker dedicado `vecidya-platform-staging` y `D1_NAME=vecidya-staging`; rechazan producción y nunca las ejecuta `test:e2e` |
 | **Helper** (1) | `organization-members-setup.mjs` | Requiere `MEMBERS_FIXTURE_FILE` |
 
 Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar versión) y de referencias `@eN` codificadas.

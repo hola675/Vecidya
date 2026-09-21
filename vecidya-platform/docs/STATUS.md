@@ -1,12 +1,12 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-21 (AUTH-BOOTSTRAP-001)**. Evidencia: código, schema, migraciones, 17 E2E locales, deploy `v0.1.1`, consultas D1 remotas y comprobación autenticada de `hola@vecidya.com`. Vocabulario y niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md). Detalle por tema: [PROJECT_STATE.md](PROJECT_STATE.md), [TESTING.md](TESTING.md), [ENVIRONMENTS.md](ENVIRONMENTS.md).
+Última reconciliación: **2026-09-21 (PROD-001 pre-cutover)**. Evidencia: código, schema, migraciones, 17 E2E locales, backup e inventario D1 remoto, clonación/paridad de `vecidya-prod` y configuración separada. Vocabulario y niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md). Detalle por tema: [PROJECT_STATE.md](PROJECT_STATE.md), [TESTING.md](TESTING.md), [ENVIRONMENTS.md](ENVIRONMENTS.md).
 
 ## Veredicto
 
-Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local** y PERF-001 en **PASS**: `typecheck`, `build`, `git diff --check` y 17/17 E2E locales pasan sobre D1 limpia. La versión `0.1.1` está desplegada; el dominio público continúa usando la D1 compartida `vecidya-staging`.
+Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS** y PROD-001 en **PASS pre-cutover**: `vecidya-prod` fue creada y clonada con paridad, sin cambiar el tráfico público. La versión de código preparada es `0.1.2`; el dominio público todavía observa `v0.1.1` y continúa usando `vecidya-staging` hasta una revisión y cutover separados.
 
-Lo publicado en `vecidya.com` corresponde a `v0.1.1` (Version ID `f8936f89-ef27-4d50-ae56-1b6e4ba35fed`), y la D1 remota reporta migraciones `0000`–`0009`. `vecidya.com` se sirve desde el D1 `vecidya-staging`: **no hay producción independiente**. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes.
+Lo publicado en `vecidya.com` corresponde a `v0.1.1` (Version ID `f8936f89-ef27-4d50-ae56-1b6e4ba35fed`), y la D1 remota pública reporta migraciones `0000`–`0009`. `vecidya.com` se sirve desde el D1 `vecidya-staging`; `vecidya-prod` ya está provisionada y clonada, pero aún no recibe tráfico. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes.
 
 ## Matriz de capacidades
 
@@ -39,7 +39,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.1.1` (Version ID `f8936f89-ef27-
 | Contenido educativo real | no | hub vacío | n/a | n/a | sí (vacío) | **NOT IMPLEMENTED** | 0 artículos; `/que-debes-saber` es un hub sin contenido |
 | Legal / privacidad | sí (`/privacidad`) | sí | n/a | no | sí | **PARTIAL** | Revisión legal completa pendiente antes de persistir/captar |
 | Real Proof (negocios reales) | sí (validación local) | sí (solo local) | sí | `rp001a` | 1 (dogfooding) | **BLOCKED para publicación remota** | RP-001A valida tres casos controlados sin publicar; siguen bloqueados datos/autorizaciones y G4 |
-| Producción independiente | no | no | no | no | no | **NOT IMPLEMENTED** | Público = staging |
+| Producción independiente | preparada | n/a | sí | sí (pre-cutover) | no | **PARTIAL** | `vecidya-prod` creada y clonada; público = staging hasta cutover |
 
 ## Fases: estado declarado vs reconciliado
 
@@ -89,8 +89,8 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 
 | ID | Descripción | Evidencia | Prio | Estado |
 | --- | --- | --- | --- | --- |
-| `PROD-INDEPENDENT-001` | No hay producción independiente: `vecidya.com` usa el D1 `vecidya-staging`; sin `app.`/`admin.`, R2 ni secretos productivos dedicados | `wrangler.jsonc`; ENVIRONMENTS | A | NO INICIADA |
-| `REMOTE-TEST-RISK-001` | `remote-staging-e2e.mjs` y `remote-staging-seo-check.mjs` ejecutan `wrangler d1 execute --remote` contra el D1 que sirve `vecidya.com`; sus guardas también aceptan la URL workers.dev del Worker público | `tests/e2e/remote-staging-*.mjs:28-75` | A | ABIERTA (no ejecutar) |
+| `PROD-INDEPENDENT-001` | D1 productivo independiente creado y clonado; el cutover de `vecidya.com` aún no se ejecutó | `wrangler.jsonc`; ENVIRONMENTS; consultas D1 remotas 2026-09-21 | A | EN PROGRESO (pre-cutover PASS) |
+| `REMOTE-TEST-RISK-001` | Las pruebas remotas exigen `RUN_REMOTE_E2E=1`, `TARGET_ENV=staging`, Worker `vecidya-platform-staging` y exactamente `D1_NAME=vecidya-staging`; rechazan dominio/Worker productivo y `vecidya-prod` | `tests/e2e/test-safety.mjs`; `tests/e2e/remote-staging-*.mjs` | A | RESUELTA para guards (no ejecutar) |
 | `PUBLISH-GAP-001` | El código y las migraciones `0007`–`0009` ya están publicados/aplicados; el piloto externo continúa requiriendo autorización y datos reales confirmados | ENVIRONMENTS; deploy `v0.1.1` 2026-09-21 | A | RESUELTA para plataforma / pendiente para piloto |
 | `REPO-HYGIENE-001` | `vecidya-platform.zip` (37,9 MB, snapshot de 2026-08-27 sin migraciones `0007`–`0009`) versionado; `b1` eliminó ~1.250 archivos (`archive/`, biblioteca `resources/assets`) sin registro documental; ramas `feature/*` y un worktree `.kilo` desactualizados | `git show --stat ec79b22`; `git ls-files` | M | ABIERTA |
 

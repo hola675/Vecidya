@@ -1,22 +1,22 @@
 # Entornos
 
-Última reconciliación: 2026-09-21 (AUTH-BOOTSTRAP-001, `v0.1.1` desplegado).
+Última reconciliación: 2026-09-21 (PROD-001 pre-cutover; código `v0.1.2`, público `v0.1.1`).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura al dominio público el 2026-09-21, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
-`vecidya.com` **se sirve desde infraestructura staging**. El Worker público `vecidya-platform` usa el D1 `vecidya-staging` `CONFIG`. **No existe producción independiente**: no hay D1 productivo separado, ni `app.`/`admin.vecidya.com`, ni secretos productivos dedicados, ni R2 (`CONFIG`, `DOC`). Las palabras «producción pública» en documentos antiguos significaban «el dominio público real», no «infraestructura productiva independiente».
+`vecidya.com` **todavía se sirve desde infraestructura staging**. El cutover no se ha desplegado. La D1 `vecidya-prod` fue creada y clonada con paridad desde `vecidya-staging`; queda preparada para una revisión y cambio de binding independiente. No se eliminaron recursos ni se modificó el tráfico público.
 
 ## Matriz de entornos
 
 | Entorno | Worker | D1 | Dominio / URL | Estado | Evidencia |
 | --- | --- | --- | --- | --- | --- |
 | **Local** | `react-router dev` con el plugin de Cloudflare (`pnpm run dev`) | Emulada por Miniflare en `.wrangler/state/v3/d1` (binding `DB`); migraciones `0000`–`0009` aplicadas | `http://localhost:*` | Operativo | `RAN` `d1_migrations` local contiene 10 filas (`0000`–`0009`) |
-| **Development** (remoto) | Ninguno versionado | `vecidya-dev` remoto (creado en Foundation 1B; la auditoría 10A halló pendientes `0003`–`0006`) | Ninguno | **Abandonado / sin uso**: ya no aparece en `wrangler.jsonc` y no se reutiliza como staging | `DOC` no reverificado |
-| **Staging** | `vecidya-platform-staging` existió y sirvió el dominio público hasta `PUBLIC-PROD-DIRECT-001` (2026-08-27); ya no está definido en `wrangler.jsonc` | `vecidya-staging` `d4af6ebc-97c5-42f6-ad3a-51551021e591` | — | Su D1 sigue siendo la base de datos del entorno público | `CONFIG` `DOC` no se verificó si el Worker `-staging` sigue existiendo en la cuenta |
-| **Public** | `vecidya-platform` (top-level, `workers_dev: true`) | `vecidya-staging` (mismo D1 anterior) | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado**; `v0.1.1`, Version ID `f8936f89-ef27-4d50-ae56-1b6e4ba35fed` | `CONFIG` `HTTP` `REMOTE` |
-| **Production** independiente | — | — | `app.vecidya.com`, `admin.vecidya.com` no existen | **NO PROVISIONADO** | `CONFIG` un único D1 declarado; sin R2, sin subdominios |
+| **Development** (remoto) | Ninguno versionado | `vecidya-dev` remoto existe, pero no está configurado ni debe usarse | Ninguno | **Abandonado / sin uso** | `CONFIG` |
+| **Staging** | `vecidya-platform-staging` (`env.staging`, `workers_dev: true`) | `vecidya-staging` `d4af6ebc-97c5-42f6-ad3a-51551021e591` | URL workers.dev dedicada aún pendiente de provisionar/verificar | **Preparado; no desplegado en este bloque** | `CONFIG` `REMOTE` |
+| **Public** | `vecidya-platform` (top-level) | `vecidya-staging` hasta cutover | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado**; `v0.1.1`, Version ID `f8936f89-ef27-4d50-ae56-1b6e4ba35fed` | `CONFIG` `HTTP` `REMOTE` |
+| **Production** | `vecidya-platform` (top-level preparado) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com` | **Provisionado y clonado; NO CUTOVER** | `CONFIG` `REMOTE` |
 
 ## Qué código está publicado
 
@@ -26,7 +26,7 @@ El despliegue público vigente es el Version ID `f8936f89-ef27-4d50-ae56-1b6e4ba
 - `/app/internal` sin sesión devuelve la pantalla de login; el acceso autenticado de `hola@vecidya.com` fue comprobado manualmente en `/app` y `/app/internal`.
 - La D1 remota reporta migraciones `0000`–`0009` aplicadas `REMOTE`.
 
-Conclusión: el código actual y las migraciones `0007`–`0009` están desplegados en el Worker público y aplicados en `vecidya-staging`; no existe producción independiente.
+Conclusión: el código actual y las migraciones `0007`–`0009` están desplegados en el Worker público y aplicados en `vecidya-staging`; la producción independiente está provisionada y clonada, pero no sirve tráfico hasta el cutover.
 
 ## Repositorio Git
 
@@ -53,13 +53,19 @@ Sin `RESEND_API_KEY` + `EMAIL_FROM` + `APP_URL` el envío de invitaciones respon
 
 ## Reglas
 
-1. Cada entorno usa bindings y recursos independientes; hoy Local y Development/Staging están separados, pero Public y Staging **comparten D1** (deuda `PROD-INDEPENDENT-001`).
+1. Cada entorno usa bindings y recursos independientes; Public comparte temporalmente D1 con Staging hasta el cutover autorizado (`PROD-INDEPENDENT-001`).
 2. Los secretos se gestionan fuera de Git; no se leen ni se imprimen archivos `.env*` ni `.dev.vars`.
-3. Ninguna prueba destructiva apunta a producción pública. Las pruebas `remote-staging-*` apuntan al dominio público y no deben ejecutarse sin autorización (ver `TESTING.md`).
+3. Ninguna prueba destructiva apunta a producción pública. Las pruebas `remote-staging-*` exigen `RUN_REMOTE_E2E=1`, `TARGET_ENV=staging`, el Worker dedicado `vecidya-platform-staging` y `D1_NAME=vecidya-staging`; rechazan producción (ver `TESTING.md`).
 4. Los despliegues requieren autorización explícita; `wrangler deploy` despliega directamente al dominio público.
 5. Las migraciones se validan en local antes de cualquier aplicación remota; `--remote` requiere autorización explícita.
 6. Los comandos D1 locales usan el **binding** `DB` (`pnpm wrangler d1 execute DB --local …`), no el nombre obsoleto `vecidya-dev`.
-7. No se crean recursos productivos adicionales sin fase correspondiente.
+7. `vecidya-prod` fue creada dentro de PROD-001; el deploy/cutover y cualquier migración posterior requieren autorización separada.
+
+## PROD-001 — baseline remoto pre-cutover
+
+- Backup completo de `vecidya-staging` realizado fuera del repositorio el 2026-09-21 antes de la clonación. El SQL no entra en Git.
+- `vecidya-prod` fue creada con UUID `8edc3f04-258e-4c29-9f33-76fec3d25042` y recibió migraciones `0000`–`0009` más los datos exportados de la D1 pública. Los conteos de las 17 tablas inventariadas coincidieron y se verificaron invariantes de identidad, organización, membresía owner, platform admin activo y perfil publicado.
+- Producción Worker y sus secretos no fueron desplegados ni modificados. `vecidya.com` siguió apuntando a `vecidya-staging` durante todo el bloque.
 
 ## Política de versionado y publicación
 

@@ -1,6 +1,6 @@
 # Base de datos
 
-Última reconciliación: 2026-09-21 (AUTH-BOOTSTRAP-001). Evidencia: schema (`db/schema/`), las 10 migraciones SQL, `db/migrations/meta/`, consultas, D1 local y D1 remota (`d1_migrations` = 10 filas, `0000`–`0009`).
+Última reconciliación: 2026-09-21 (PROD-001 pre-cutover). Evidencia: schema (`db/schema/`), las 10 migraciones SQL, `db/migrations/meta/`, consultas, D1 local y D1 remotas (`d1_migrations` = 10 filas, `0000`–`0009`).
 
 ## Responsabilidades
 
@@ -104,5 +104,5 @@ Detalles de diseño vigentes:
 3. Nunca `--remote` sin autorización explícita.
 4. No usar `drizzle-kit push` como flujo normal.
 5. Nunca modificar manualmente un schema remoto ni guardar secretos en Git.
-6. El D1 `vecidya-staging` sirve hoy el dominio público; producción independiente requiere recursos propios y autorización (`PROD-INDEPENDENT-001`).
+6. El D1 `vecidya-staging` sirve hoy el dominio público; `vecidya-prod` está provisionada y clonada, pero requiere cutover autorizado para servirlo (`PROD-INDEPENDENT-001`).
 7. Todo recurso con `organization_id` se consulta filtrando por la organización verificada (membresía) y nunca por un identificador del cliente sin verificar.

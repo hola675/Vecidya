@@ -19,14 +19,34 @@
   },
   "vars": {
     "APP_URL": "https://vecidya.com",
-    "BETTER_AUTH_URL": "https://vecidya.com"
+    "BETTER_AUTH_URL": "https://vecidya.com",
+    "APP_ENV": "production"
   },
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "vecidya-staging",
-      "database_id": "d4af6ebc-97c5-42f6-ad3a-51551021e591",
+      "database_name": "vecidya-prod",
+      "database_id": "8edc3f04-258e-4c29-9f33-76fec3d25042",
       "migrations_dir": "db/migrations"
     }
-  ]
+  ],
+  "env": {
+    "staging": {
+      "name": "vecidya-platform-staging",
+      "workers_dev": true,
+      "vars": {
+        "APP_ENV": "staging",
+        "APP_URL": "",
+        "BETTER_AUTH_URL": ""
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "vecidya-staging",
+          "database_id": "d4af6ebc-97c5-42f6-ad3a-51551021e591",
+          "migrations_dir": "db/migrations"
+        }
+      ]
+    }
+  }
 }

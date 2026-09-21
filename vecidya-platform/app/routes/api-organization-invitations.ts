@@ -12,7 +12,7 @@ function responseFromError(error: unknown, fallback: string) {
 }
 
 function invitationEmailConfig(env: Env) {
-  return { resendApiKey: env.RESEND_API_KEY, emailFrom: env.EMAIL_FROM, appUrl: env.APP_URL };
+  return { resendApiKey: env.RESEND_API_KEY, emailFrom: env.EMAIL_FROM, appUrl: env.APP_URL || undefined };
 }
 
 export async function loader({ context, params, request }: Route.LoaderArgs) {
