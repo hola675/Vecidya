@@ -34,7 +34,8 @@ Lo publicado en `vecidya.com` corresponde a `v0.1.2` (Version ID `2b655f6b-b2ad-
 | Gobierno de perfiles (verificar/suspender/auditar) | sí | sí | sí | sí | **sí** | **PASS** | `0009`; solo `platform_admin` activo |
 | Integraciones (metadata genérica) | sí | solo lectura | sí | stale | sí | **PARTIAL (foundation)** | Registro tenant-scoped; sin cliente de proveedor |
 | GHL | no | no | no | no | no | **NOT IMPLEMENTED** | Solo texto en documentación |
-| Invitaciones (7B.2) | sí | sí | sí | stale | sí | **BLOCKED** | Entrega sin probar y aceptación imposible sin verificación de email (`INVITE-001`) |
+| Invitaciones (7B.2) | sí | sí | sí | stale | sí | **PARTIAL** | Adaptador Gmail preparado; entrega y aceptación reales pendientes (`INVITE-001`) |
+| Correo transaccional (EMAIL-001) | sí | sí | n/a | 4 unit-like | no | **PARTIAL** | Gmail OAuth/API preparado; proyecto OAuth, secretos y entrega real pendientes |
 | Experiencia de app cliente (`/app`) | sí | sí | sí | sí (RAN 2026-09-20) | sí | **PASS técnico local** | PX-B pasa en desktop y móvil; quedan las deudas de producto fuera de RR-001 |
 | Contenido educativo real | no | hub vacío | n/a | n/a | sí (vacío) | **NOT IMPLEMENTED** | 0 artículos; `/que-debes-saber` es un hub sin contenido |
 | Legal / privacidad | sí (`/privacidad`) | sí | n/a | no | sí | **PARTIAL** | Revisión legal completa pendiente antes de persistir/captar |
@@ -91,6 +92,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | ID | Descripción | Evidencia | Prio | Estado |
 | --- | --- | --- | --- | --- |
 | `PROD-INDEPENDENT-001` | D1 productivo independiente creado, clonado, conectado al Worker público y verificado con autenticación real | `wrangler.jsonc`; deploy `2b655f6b-b2ad-461d-9231-fdb96221dfd0`; HTTP/D1/manual auth 2026-09-21 | A | RESUELTA / PASS |
+| `EMAIL-001` | Adaptador Gmail, UI mínima de reset/verificación y tests locales preparados; falta configuración OAuth/secretos y entrega Gmail real | `server/email/mail.server.ts`; `tests/email/mail-adapter.test.ts`; typecheck/build/E2E local | A | EN PROGRESO / BLOQUEADA por configuración externa |
 | `REMOTE-TEST-RISK-001` | Las pruebas remotas exigen `RUN_REMOTE_E2E=1`, `TARGET_ENV=staging`, Worker `vecidya-platform-staging` y exactamente `D1_NAME=vecidya-staging`; rechazan dominio/Worker productivo y `vecidya-prod` | `tests/e2e/test-safety.mjs`; `tests/e2e/remote-staging-*.mjs` | A | RESUELTA para guards (no ejecutar) |
 | `PUBLISH-GAP-001` | El código y las migraciones `0007`–`0009` ya están publicados/aplicados; el piloto externo continúa requiriendo autorización y datos reales confirmados | ENVIRONMENTS; deploy `v0.1.1` 2026-09-21 | A | RESUELTA para plataforma / pendiente para piloto |
 | `REPO-HYGIENE-001` | `vecidya-platform.zip` (37,9 MB, snapshot de 2026-08-27 sin migraciones `0007`–`0009`) versionado; `b1` eliminó ~1.250 archivos (`archive/`, biblioteca `resources/assets`) sin registro documental; ramas `feature/*` y un worktree `.kilo` desactualizados | `git show --stat ec79b22`; `git ls-files` | M | ABIERTA |
@@ -109,7 +111,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 
 | ID | Descripción | Evidencia | Prio | Estado |
 | --- | --- | --- | --- | --- |
-| `INVITE-001` (ex `7B.2-DELIVERY`) | Invitaciones: (1) entrega Resend nunca probada, `RESEND_API_KEY`/`EMAIL_FROM` no declarados; (2) `requireEmailVerificationOnInvitation: true` y ninguna ruta envía/verifica email → un invitado no puede aceptar sin editar `email_verified` en SQL (así lo hace el test) | `server/auth-plugins.server.ts:8`; `organization-invitations-check.mjs:81` | A | BLOQUEADA |
+| `INVITE-001` (ex `7B.2-DELIVERY`) | Invitaciones: Gmail adapter integrado y `requireEmailVerificationOnInvitation: true`; entrega Gmail y aceptación con verificación real aún no demostradas | `server/auth-plugins.server.ts`; `server/email/invitation.server.ts`; `organization-invitations-check.mjs:81` | A | BLOQUEADA por Gmail externo |
 | `MULTIORG-LOGIN-001` | Login fija la primera organización válida mediante `organization.list` + `organization.setActive` | `app/routes/login.tsx`; E2E `px-b`/`pe-b` | A | RESUELTA (RAN 2026-09-20) |
 | `MULTIORG-STALE-001` | Al retirar una membresía se limpian las sesiones del usuario que aún apuntan a esa organización | `server/auth-plugins.server.ts` `afterRemoveMember`; E2E `members` | M | RESUELTA (RAN 2026-09-20) |
 | `AUTHZ-BA-001` | Los endpoints por defecto de Better Auth (`/api/auth/organization/*`: crear/actualizar/eliminar organización, etc.) no pasan por la matriz propia; creación de organizaciones sin límite ni verificación de email; sin configuración de rate limiting (memoria por isolate) | `api-auth.ts`; `auth-plugins.server.ts` | M | ABIERTA (hipótesis: falta verificar qué puede hacer un `owner` vía Better Auth) |

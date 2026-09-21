@@ -1,6 +1,10 @@
 allowBuilds:
   esbuild: true
   workerd: true
+overrides:
+  '@esbuild-kit/core-utils>esbuild': '0.25.12'
+  morgan: '>=1.12.0'
+  qs: '>=6.16.0'
 minimumReleaseAgeExclude:
   - '@better-auth/core@1.6.28'
   - '@better-auth/drizzle-adapter@1.6.28'
@@ -10,3 +14,4 @@ minimumReleaseAgeExclude:
   - '@better-auth/prisma-adapter@1.6.28'
   - '@better-auth/telemetry@1.6.28'
   - better-auth@1.6.28
+  - drizzle-kit@0.31.11

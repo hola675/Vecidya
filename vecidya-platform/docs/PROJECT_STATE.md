@@ -13,10 +13,10 @@ Publicado en `vecidya.com` (verificado HTTP y manualmente el 2026-09-21): la web
 ## Stack real
 
 - Node `>=22.12.0` (probado con 24.15.0); pnpm `11.21.0`.
-- React `19.2.8`, React Router `8.3.0` (SSR), TypeScript `5.9.3`, Vite `8.2.1`, Tailwind CSS `4.3.3`.
-- Cloudflare Workers (`workers/app.ts`), D1, Wrangler `4.98`.
-- Better Auth `1.6.28` (email + contraseña, plugin Organization) con Drizzle ORM `0.45.2`.
-- Playwright `1.62.1` (solo pruebas). Sin framework de tests, sin CI.
+- React `19.3.0`, React Router `8.4.0` (SSR), TypeScript `7.0.2`, Vite `8.3.0`, Tailwind CSS `4.3.3`.
+- Cloudflare Workers (`workers/app.ts`), D1, Wrangler `4.135.0`.
+- Better Auth `1.7.5` (email + contraseña, plugin Organization) con Drizzle ORM `0.45.2`.
+- Playwright `1.63.0` (solo pruebas). Sin framework de tests, sin CI.
 
 ## Límites permanentes
 
@@ -115,7 +115,7 @@ Cinco servicios estáticos, cada uno con problema, cómo ayuda, tres entregables
 | --- | --- | --- |
 | `/app` | sesión | Organización activa, resumen de perfil y servicios, número de miembros; selector de organización (siempre visible); crear organización; cerrar sesión |
 | `/app/account` | sesión | Datos de Better Auth; actualiza solo el nombre. Email/contraseña/MFA/eliminación: solo texto («no forma parte de esta fase») |
-| `/app/organization` | `member:read` | Miembros, cambio de rol, quitar, invitar, cancelar invitación (invitar responde error si Resend no está configurado) |
+| `/app/organization` | `member:read` | Miembros, cambio de rol, quitar, invitar, cancelar invitación (invitar responde error si Gmail no está configurado) |
 | `/app/business-profile` | `business-profile:read/update/publish` | Editor completo del perfil (ver matriz) |
 | `/app/services` | sesión + organización activa | Lista de solo lectura de servicios asignados; sin solicitud/compra |
 | `/app/invitations/:id` | sesión | Aceptar invitación (Better Auth valida email y `emailVerified`); bloqueada en la práctica (`INVITE-001`) |
@@ -175,7 +175,7 @@ Vecidya **no puede hoy**: listar/banear/suplantar usuarios, transferir ownership
 | Elemento | Clasificación |
 | --- | --- |
 | `integration_connection` + `POST /api/platform/organizations/:id/integrations` + `GET` tenant + overview interno | **FOUNDATION ONLY**: registro de metadata; sin llamadas salientes; proveedor = cualquier kebab-case |
-| Adaptador Resend de invitaciones (`server/email/invitation.server.ts`) | **REAL pero sin probar** (delivery nunca demostrado) |
+| Adaptador Gmail transaccional (`server/email/mail.server.ts`) | **PREPARADO pero sin delivery real** (OAuth/secretos externos pendientes) |
 | GHL | **TEXT ONLY** (solo documentación; 0 código) |
 | Google, Meta, WhatsApp API, Stripe, Twilio | **NOT FOUND** |
 | WhatsApp/Instagram/Facebook/LinkedIn en perfil | Campos y enlaces (`wa.me`), no integración |

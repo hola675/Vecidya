@@ -22,7 +22,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     │   ├── auth/session.server.ts, auth/authorization.server.ts
     │   ├── platform-authorization.server.ts          requirePlatformAdmin
     │   ├── business-profile-validation.server.ts, integration-connection-validation.server.ts
-    │   ├── email/invitation.server.ts                adaptador Resend
+    │   ├── email/mail.server.ts, invitation.server.ts adaptador Gmail + invitaciones
     │   ├── cloudflare-context.ts
     │   └── payments/, permissions/, services/, validation/   solo .gitkeep
     ├── db/

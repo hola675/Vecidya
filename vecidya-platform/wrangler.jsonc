@@ -15,12 +15,20 @@
     }
   ],
   "secrets": {
-    "required": ["BETTER_AUTH_SECRET"]
+    "required": [
+      "BETTER_AUTH_SECRET",
+      "GMAIL_OAUTH_CLIENT_ID",
+      "GMAIL_OAUTH_CLIENT_SECRET",
+      "GMAIL_OAUTH_REFRESH_TOKEN"
+    ]
   },
   "vars": {
     "APP_URL": "https://vecidya.com",
     "BETTER_AUTH_URL": "https://vecidya.com",
-    "APP_ENV": "production"
+    "APP_ENV": "production",
+    "EMAIL_PROVIDER": "gmail",
+    "EMAIL_FROM": "hola@vecidya.com",
+    "EMAIL_REPLY_TO": "hola@vecidya.com"
   },
   "d1_databases": [
     {
@@ -37,7 +45,13 @@
       "vars": {
         "APP_ENV": "staging",
         "APP_URL": "",
-        "BETTER_AUTH_URL": ""
+        "BETTER_AUTH_URL": "",
+        "EMAIL_PROVIDER": "fake",
+        "EMAIL_FROM": "hola@vecidya.com",
+        "EMAIL_REPLY_TO": "hola@vecidya.com"
+      },
+      "secrets": {
+        "required": ["BETTER_AUTH_SECRET"]
       },
       "d1_databases": [
         {

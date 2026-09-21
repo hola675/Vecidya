@@ -36,9 +36,9 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 **Nota de paralelismo.** Home (3) es 100 % estático y no depende de datos ni de backend; puede avanzar mientras el usuario resuelve los datos del piloto (1), que es el cuello de botella (depende de terceros). Visual (4) depende de la decisión G2.
 
-## Siguiente bloque recomendado: EMAIL-001
+## Bloque actual: EMAIL-001 (parcial)
 
-- **Objetivo**: construir la fundación de correo transaccional según autorización independiente.
+- **Objetivo**: completar la configuración OAuth Gmail, secretos y delivery real sin iniciar OPS-001.
 - **Alcance**: únicamente EMAIL-001; PROD-001 queda cerrado.
 - **Fuera de alcance**: despliegue del Worker staging dedicado, pruebas destructivas y cambios de producción no relacionados.
 
@@ -70,7 +70,7 @@ Auditar servicios e integraciones (`AUDIT-COVERAGE-001`); mostrar en el detalle 
 
 ### Invitaciones (7B.2)
 
-Requiere (1) configurar `RESEND_API_KEY`/`EMAIL_FROM` y demostrar entrega real, y (2) definir el camino de verificación de email (o desactivar `requireEmailVerificationOnInvitation` con decisión de seguridad) para que un invitado pueda aceptar (`INVITE-001`).
+Requiere (1) configurar OAuth Gmail y demostrar entrega real, y (2) completar el camino de verificación de email para que un invitado pueda aceptar (`INVITE-001`).
 
 ### Integraciones
 

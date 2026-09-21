@@ -12,31 +12,32 @@
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "test:e2e": "node tests/e2e/run-local-e2e.mjs",
+    "test:email": "node --experimental-strip-types --test tests/email/mail-adapter.test.ts",
     "typecheck": "react-router typegen && tsc",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
-    "@react-router/node": "^8.3.0",
-    "@react-router/serve": "^8.3.0",
-    "better-auth": "1.6.28",
+    "@react-router/node": "^8.4.0",
+    "@react-router/serve": "^8.4.0",
+    "better-auth": "1.7.5",
     "drizzle-orm": "^0.45.2",
-    "isbot": "^5.2.1",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "react-router": "^8.3.0"
+    "isbot": "^5.2.2",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router": "^8.4.0"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.37.1",
-    "@react-router/dev": "^8.3.0",
+    "@cloudflare/vite-plugin": "^1.56.0",
+    "@react-router/dev": "^8.4.0",
     "@tailwindcss/vite": "^4.3.3",
-    "@types/node": "^22.20.1",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.4",
-    "drizzle-kit": "^0.31.10",
-    "playwright": "1.62.1",
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "drizzle-kit": "^0.31.11",
+    "playwright": "1.63.0",
     "tailwindcss": "^4.3.3",
-    "typescript": "^5.9.3",
-    "vite": "^8.2.1",
-    "wrangler": "^4.98.0"
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0",
+    "wrangler": "^4.135.0"
   }
 }

@@ -38,10 +38,14 @@ El repositorio Git se reconstruirá desde el snapshot actual de `main` y se publ
 | `BETTER_AUTH_SECRET` | Firma/seguridad de Better Auth | Sí (`server/auth.server.ts` lanza error si falta) | Secreto remoto gestionado fuera de Git; local en `.dev.vars` (ignorado por Git). Declarado en `wrangler.jsonc` → `secrets.required` |
 | `BETTER_AUTH_URL` | Origen canónico de navegador | No (fallback: origen de la request) | `wrangler.jsonc` → `vars` = `https://vecidya.com` |
 | `APP_URL` | Origen del enlace de invitación | Solo para entrega de invitaciones | `wrangler.jsonc` → `vars` = `https://vecidya.com` |
-| `RESEND_API_KEY` | Proveedor transaccional (Resend) | Solo para entrega de invitaciones | **No configurada** en el repo; estado remoto no verificado |
-| `EMAIL_FROM` | Remitente verificado | Solo para entrega de invitaciones | **No configurada** en el repo; estado remoto no verificado |
+| `EMAIL_PROVIDER` | Proveedor transaccional activo | Sí para envío | `gmail` en producción; `fake` en `env.staging` |
+| `EMAIL_FROM` | Remitente verificado | Sí para envío | `hola@vecidya.com` |
+| `EMAIL_REPLY_TO` | Respuestas transaccionales | No | `hola@vecidya.com` |
+| `GMAIL_OAUTH_CLIENT_ID` | Cliente OAuth Gmail | Sí para Gmail | Secreto Cloudflare, pendiente de configurar |
+| `GMAIL_OAUTH_CLIENT_SECRET` | Cliente OAuth Gmail | Sí para Gmail | Secreto Cloudflare, pendiente de configurar |
+| `GMAIL_OAUTH_REFRESH_TOKEN` | Autorización offline de `hola@vecidya.com` | Sí para Gmail | Secreto Cloudflare, pendiente de configurar |
 
-Sin `RESEND_API_KEY` + `EMAIL_FROM` + `APP_URL` el envío de invitaciones responde `503` explícito. Ninguna variable se envía al cliente. No hay variables de GHL, Google, Meta, Stripe ni WhatsApp. `worker-configuration.d.ts` se regenera con `pnpm run cf-typegen` a partir de `wrangler.jsonc`; nunca a partir de `.env` o `.dev.vars`. `.env.example` está versionado pero **no se inspeccionó en este corte** (lectura bloqueada por regla de permisos); su contenido no está reconciliado con esta tabla.
+Sin la configuración OAuth Gmail completa el envío transaccional responde `503` explícito; el proveedor fake solo existe para pruebas/local staging y no entrega correo. Ninguna variable secreta se envía al cliente. No hay variables de GHL, Meta, Stripe ni WhatsApp. `worker-configuration.d.ts` se regenera con `pnpm run cf-typegen` a partir de `wrangler.jsonc`; nunca a partir de `.env` o `.dev.vars`. `.env.example` está versionado pero **no se inspeccionó en este corte** (lectura bloqueada por regla de permisos); su contenido no está reconciliado con esta tabla.
 
 ## Recursos no habilitados
 

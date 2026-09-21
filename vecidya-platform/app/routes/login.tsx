@@ -71,6 +71,7 @@ export default function Login() {
             required
           />
         </label>
+        <p className="auth-switch"><Link to="/forgot-password">¿Olvidaste tu contraseña?</Link></p>
         {error ? <Alert>{error}</Alert> : null}
         <Button disabled={submitting} type="submit">
           {submitting ? "Entrando…" : "Entrar"}

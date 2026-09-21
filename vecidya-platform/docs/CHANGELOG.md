@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-09-21 — Actualización de dependencias (local, no publicada)
+
+- Actualizadas las dependencias directas de React Router, React, Better Auth, Cloudflare/Vite, TypeScript, tipos de Node/React, Playwright, Wrangler y Drizzle Kit; el lockfile queda sincronizado con pnpm 11.21.0.
+- Añadidos overrides seguros para `qs` y `morgan`, corrigiendo sus avisos transitivos conocidos. Permanece un aviso moderado de `esbuild@0.18.20` heredado por `@esbuild-kit` de Drizzle Kit; no se fuerza una versión incompatible con ese loader.
+- Validado con `pnpm install --frozen-lockfile`, `pnpm run typecheck`, `pnpm run build`, `pnpm run test:email`, `pnpm audit` y `git diff --check`. No hubo deploy ni cambio de versión publicada.
+
+## 2026-09-21 — EMAIL-001 Gmail Transactional Email Foundation (parcial, no publicada)
+
+- Sustituido el camino activo de Resend por un adaptador server-only provider-independent preparado para Gmail API, con MIME UTF-8 texto/HTML, `Reply-To`, validación de headers y clasificación segura de errores.
+- Integrados los callbacks de Better Auth para verificación de email y reset de contraseña, además de UI mínima para solicitar reset, cambiar contraseña y verificar/resolicitar correo, sin activar verificación obligatoria global para no bloquear usuarios existentes.
+- Añadido proveedor fake exclusivamente para pruebas/local staging y cuatro pruebas unit-like del adaptador. No se configuraron OAuth client/refresh token, no se enviaron correos Gmail y no hubo deploy ni bump de versión.
+
 ## 2026-09-21 — PROD-001 Production Separation & Post-Recovery Baseline (`v0.1.2`, pre-cutover)
 
 - Respaldada fuera del repositorio la D1 pública `vecidya-staging` y verificados su inventario, migraciones `0000`–`0009` e invariantes de identidad, organización, membresía, autoridad de plataforma y perfil publicado.
