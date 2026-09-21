@@ -46,7 +46,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ### Real Proof / piloto
 
-`E2 — Remote Pilot Publication`: solo con G3 y G4. Perfil A (SURA) permanece `BLOCKED` hasta acreditar la marca o ajustar nombre/copy; B requiere confirmar el nombre; C es publicable con datos honestos (evaluar el encaje ecosistema/comunidad sin crear un tipo de perfil nuevo). Añadir un test de piloto que asegure «sin datos inventados» (`PILOT-REPRO-001`) y una guarda o proceso para nombres de marcas. `PUBLIC-GROWTH-001 C2` se cierra solo con vecinos externos publicados.
+`RP-001A — Local Real-Proof Validation` queda en **PASS LOCAL**: el fixture controlado reproduce las tres organizaciones documentadas como borradores, bloquea publicación incompleta y confirma aislamiento sin datos privados versionados. `E2 — Remote Pilot Publication` sigue pendiente y requiere G3/G4. Perfil A (SURA) permanece `BLOCKED` hasta acreditar la marca o ajustar nombre/copy; B requiere confirmar el nombre; C presenta `MODEL MISMATCH / PARTIAL` por su naturaleza de ecosistema/comunidad. No se añade schema nuevo ni una guarda de marcas en RP-001A; `PUBLIC-GROWTH-001 C2` se cierra solo con vecinos externos publicados.
 
 ### Diagnóstico
 

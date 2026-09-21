@@ -1,11 +1,11 @@
 # Pruebas
 
-Última reconciliación: 2026-09-20 (RR-001). Evidencia: ejecución de 17 E2E locales contra `pnpm run dev` (`127.0.0.1:5173`, D1 local con `0000`–`0009`). Este documento distingue lo que la documentación *afirma* de lo que las pruebas *protegen*.
+Última reconciliación: 2026-09-20 (RP-001A). Evidencia: ejecución de 17 E2E locales contra `pnpm run dev` (`127.0.0.1:5173`, D1 local con `0000`–`0009`) y del fixture controlado RP-001A. Este documento distingue lo que la documentación *afirma* de lo que las pruebas *protegen*.
 
 ## Estado de la infraestructura de pruebas
 
 - No hay framework de pruebas ni CI (`.github/` no existe), ni pruebas unitarias o de integración (`tests/unit` y `tests/integration` solo tienen `.gitkeep`). `package.json` incluye `test:e2e`, un runner secuencial de los E2E locales aplicables.
-- Solo existe `tests/e2e/`: 21 scripts `.mjs` (Node + `fetch`, algunos con Playwright) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
+- Solo existe `tests/e2e/`: 24 scripts `.mjs` (Node + `fetch`, algunos con Playwright) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
 - Son **solo Windows** (`cmd.exe /d /c pnpm.cmd wrangler d1 execute … --local`).
 - Los scripts Playwright usan Microsoft Edge si existe, luego `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, luego Chromium empaquetado (requiere `playwright install`).
 
@@ -44,6 +44,7 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `c1` | `product-evolution-001-c1-contact-presence-check.mjs` | PRODUCT-EVOLUTION-001 C1 |
 | `c2` | `product-evolution-001-c2-business-operations-check.mjs` | PRODUCT-EVOLUTION-001 C2 |
 | `d1` | `product-evolution-001-d1-admin-governance-check.mjs` | PRODUCT-EVOLUTION-001 D1 |
+| `rp001a` | `rp-001a-local-real-proof-check.mjs` | RP-001A — Real Proof local |
 
 ## Resultado de la ejecución de 2026-09-20
 
@@ -66,11 +67,17 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 
 Resultado RR-001: **17 PASS / 0 FAIL / 0 SKIP** ejecutadas por `pnpm run test:e2e` sobre D1 local limpia. Las dos pruebas remotas no forman parte del runner.
 
-## Clasificación de seguridad de los 25 archivos
+### RP-001A — ejecución local controlada
+
+`node tests/e2e/rp-001a-local-real-proof-check.mjs` → **PASS**. Creó tres organizaciones piloto locales con un owner compartido, confirmó membresía y cambio de contexto, guardó los tres casos como borradores, bloqueó publicaciones incompletas, verificó 404/ausencia de JSON-LD en perfiles no publicados, exclusión de Vecindario y rechazo cross-tenant. El script elimina sus organizaciones, perfiles y usuarios al finalizar; la consulta posterior dejó 0 filas `rp001a-*`.
+
+Los tres casos permanecieron sin publicar porque los datos no confirmados se dejaron vacíos o `MISSING / UNCONFIRMED`. Remote D1, publicación remota y producción no fueron tocadas.
+
+## Clasificación de seguridad de los 28 archivos
 
 | Clase | Archivos | Regla |
 | --- | --- | --- |
-| **Local, ejecutable** | `test:e2e` ejecuta secuencialmente los scripts `.mjs` locales aplicables | Una a la vez, con `pnpm run dev` |
+| **Local, ejecutable** | `test:e2e` ejecuta secuencialmente los scripts `.mjs` locales aplicables; `rp001a` se ejecuta explícitamente para no mezclar pilotos con la suite general | Una a la vez, con `pnpm run dev` |
 | **Local, corregidas** | `admin-int`, `admin-orgs`, `invitations`, `members`, `members-apply-fixture`, `psa`, `business-profile-tenancy-check.ps1`, `public-business-profile-check.ps1` | Usan el binding local `DB` |
 | **REMOTAS — excluidas** (2) | `remote-staging-e2e.mjs`, `remote-staging-seo-check.mjs` | Requieren `RUN_REMOTE_E2E=1`, HTTPS `workers.dev` y `D1_NAME=vecidya-staging`; nunca las ejecuta `test:e2e` |
 | **Helper** (1) | `organization-members-setup.mjs` | Requiere `MEMBERS_FIXTURE_FILE` |
@@ -100,7 +107,7 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 | Invitaciones | `invitations` (stale; imprime «PASS PARCIAL»: inyecta filas y `email_verified` por SQL) | Entrega real y aceptación de extremo a extremo |
 | Integraciones | `psa`, `admin-int` (stale) | Ninguna ejecutable |
 | Staging remoto | script remoto (no ejecutar) | Sin ensayo seguro |
-| Piloto real | **ninguna** | Ningún test contiene Edgar/SURA/Asesorar-T/Agrofanescol |
+| Piloto real | `rp001a` | Validación local controlada de los tres nombres documentados; no publica datos y no sustituye autorización, datos confirmados ni prueba remota |
 
 ## Afirmaciones de la documentación vs pruebas
 
@@ -117,4 +124,4 @@ Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.m
 7. Limpieza de fixtures en los 11 scripts que no limpian.
 8. Pruebas unitarias de módulos puros (`db/business-hours-rules.ts`, `db/business-profile-rules.ts`, validaciones, autorización).
 9. `test:e2e` ya existe; queda pendiente una decisión sobre CI y sustituir `agent-browser` por Playwright.
-10. Fixture de piloto (cuando se resuelvan nombre y marca) que asegure las reglas «sin datos inventados».
+10. Extender `rp001a` únicamente cuando se resuelvan nombre, identidad y marca; cualquier publicación remota requiere un bloque separado y autorización explícita.

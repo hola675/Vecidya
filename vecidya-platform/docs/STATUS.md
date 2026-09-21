@@ -1,16 +1,16 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-20 (PERF-001)**. Evidencia: código, schema, migraciones y 17 E2E locales ejecutados en D1 local limpia; el estado público permanece respaldado únicamente por las peticiones anónimas de solo lectura del baseline. Vocabulario y niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md). Detalle por tema: [PROJECT_STATE.md](PROJECT_STATE.md), [TESTING.md](TESTING.md), [ENVIRONMENTS.md](ENVIRONMENTS.md).
+Última reconciliación: **2026-09-21 (AUTH-BOOTSTRAP-001)**. Evidencia: código, schema, migraciones, 17 E2E locales, deploy `v0.1.1`, consultas D1 remotas y comprobación autenticada de `hola@vecidya.com`. Vocabulario y niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md). Detalle por tema: [PROJECT_STATE.md](PROJECT_STATE.md), [TESTING.md](TESTING.md), [ENVIRONMENTS.md](ENVIRONMENTS.md).
 
 ## Veredicto
 
-Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local** y PERF-001 en **PASS**: `typecheck`, `build`, `git diff --check` y 17/17 E2E locales pasan sobre D1 limpia. La versión local del código es `0.1.1`; PERF-001 aún no está desplegado.
+Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local** y PERF-001 en **PASS**: `typecheck`, `build`, `git diff --check` y 17/17 E2E locales pasan sobre D1 limpia. La versión `0.1.1` está desplegada; el dominio público continúa usando la D1 compartida `vecidya-staging`.
 
-Lo publicado en `vecidya.com` es código **anterior a 2026-09-07** (comprobado por HTTP; el último despliegue documentado es del 2026-08-27, no verificable sin acceso a Cloudflare). Todo el trabajo de 2026-09-07 (WhatsApp/redes, modalidad/cobertura/horarios, verificación/suspensión/auditoría; migraciones `0007`–`0009`) existe **solo en local**. `vecidya.com` se sirve desde el D1 `vecidya-staging`: **no hay producción independiente**. El repositorio Git se migrará como un snapshot limpio del proyecto actual, sin dependencias generadas ni secretos. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes.
+Lo publicado en `vecidya.com` corresponde a `v0.1.1` (Version ID `f8936f89-ef27-4d50-ae56-1b6e4ba35fed`), y la D1 remota reporta migraciones `0000`–`0009`. `vecidya.com` se sirve desde el D1 `vecidya-staging`: **no hay producción independiente**. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes.
 
 ## Matriz de capacidades
 
-`PASS` = código + UI + datos + prueba versionada ejecutada que la protege. `PARTIAL` = existe pero incompleta, sin prueba ejecutable, o solo local. `BLOCKED` = impedida por dependencia externa o decisión. Columna *Publicado*: `sí` (comprobado por HTTP 2026-09-20), `no` (solo local), `n/a`.
+`PASS` = código + UI + datos + prueba versionada ejecutada que la protege. `PARTIAL` = existe pero incompleta, sin prueba ejecutable, o solo local. `BLOCKED` = impedida por dependencia externa o decisión. Columna *Publicado*: `sí` (comprobado por HTTP 2026-09-21), `no` (solo local), `n/a`.
 
 | Capacidad | Código | UI | DB | Test | Publicado | Estado | Nota clave |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -20,8 +20,8 @@ Lo publicado en `vecidya.com` es código **anterior a 2026-09-07** (comprobado p
 | Multi-org (arquitectura y aislamiento) | sí | sí | sí | sí | sí | **PASS** | 1 usuario → N organizaciones → 1 perfil por organización; probado por `pe-b` |
 | Multi-org (experiencia) | sí | parcial | — | sí (RAN 2026-09-20) | sí | **PASS técnico local** | Login fija la primera organización válida y al retirar membresía se limpian sesiones activas |
 | Business Profile (núcleo) | sí | sí | sí | sí | sí | **PASS** | Creación, edición, slug único, publicación, aislamiento |
-| BP: contacto y presencia (`0007`) | sí | sí | sí | sí | **no** | **PASS (local)** | WhatsApp, Instagram, Facebook, LinkedIn |
-| BP: operaciones (`0008`) | sí | sí | sí | sí | **no** | **PASS (local)** | Modalidad, cobertura, horarios (`business_hours`) |
+| BP: contacto y presencia (`0007`) | sí | sí | sí | sí | **sí** | **PASS** | WhatsApp, Instagram, Facebook, LinkedIn |
+| BP: operaciones (`0008`) | sí | sí | sí | sí | **sí** | **PASS** | Modalidad, cobertura, horarios (`business_hours`) |
 | BP: gestión por API | sí | — | — | sí (RAN 2026-09-20) | sí | **PASS técnico local** | La capa server-side rechaza dejar incompleto un perfil publicado; no existe despublicar |
 | Servicios (cliente) | sí | sí | sí | sí | sí | **PASS** | Solo lectura para el cliente; catálogo de 3 servicios sembrado |
 | Servicios (administración) | sí | sí | sí | stale | sí | **PARTIAL** | Test 4B/8D no ejecutable; sin auditoría; `activated_at` nunca se escribe |
@@ -31,14 +31,14 @@ Lo publicado en `vecidya.com` es código **anterior a 2026-09-07** (comprobado p
 | Web pública (rutas y contenido) | sí | sí | n/a | 6 rutas | sí | **PASS** | 10 URLs en sitemap; defectos de calidad en `UX-PUBLIC-001` |
 | SEO/GEO | sí | n/a | n/a | parcial | sí | **PARTIAL** | Sin `og:image`; sitemap/robots sin pruebas; canonical fijo |
 | Administración interna (base) | sí | sí | sí | parcial | sí | **PARTIAL** | 8A/8C pasan; 8B/8E/servicios stale |
-| Gobierno de perfiles (verificar/suspender/auditar) | sí | sí | sí | sí | **no** | **PASS (local)** | `0009`; solo `platform_admin` activo |
+| Gobierno de perfiles (verificar/suspender/auditar) | sí | sí | sí | sí | **sí** | **PASS** | `0009`; solo `platform_admin` activo |
 | Integraciones (metadata genérica) | sí | solo lectura | sí | stale | sí | **PARTIAL (foundation)** | Registro tenant-scoped; sin cliente de proveedor |
 | GHL | no | no | no | no | no | **NOT IMPLEMENTED** | Solo texto en documentación |
 | Invitaciones (7B.2) | sí | sí | sí | stale | sí | **BLOCKED** | Entrega sin probar y aceptación imposible sin verificación de email (`INVITE-001`) |
 | Experiencia de app cliente (`/app`) | sí | sí | sí | sí (RAN 2026-09-20) | sí | **PASS técnico local** | PX-B pasa en desktop y móvil; quedan las deudas de producto fuera de RR-001 |
 | Contenido educativo real | no | hub vacío | n/a | n/a | sí (vacío) | **NOT IMPLEMENTED** | 0 artículos; `/que-debes-saber` es un hub sin contenido |
 | Legal / privacidad | sí (`/privacidad`) | sí | n/a | no | sí | **PARTIAL** | Revisión legal completa pendiente antes de persistir/captar |
-| Real Proof (negocios reales) | — | — | — | ninguno | 1 (dogfooding) | **BLOCKED** | 0 vecinos externos; piloto local no publicado ni reproducible |
+| Real Proof (negocios reales) | sí (validación local) | sí (solo local) | sí | `rp001a` | 1 (dogfooding) | **BLOCKED para publicación remota** | RP-001A valida tres casos controlados sin publicar; siguen bloqueados datos/autorizaciones y G4 |
 | Producción independiente | no | no | no | no | no | **NOT IMPLEMENTED** | Público = staging |
 
 ## Fases: estado declarado vs reconciliado
@@ -73,12 +73,13 @@ Lo publicado en `vecidya.com` es código **anterior a 2026-09-07** (comprobado p
 | PRODUCT-EXPERIENCE-001 B | EN ESPERA | PARTIAL | Test de 260 líneas existe pero falla (defectos del script) |
 | PRODUCT-EVOLUTION-001 A | PASS DOCUMENTAL | PASS | Auditoría; confirmada por este baseline |
 | PRODUCT-EVOLUTION-001 B Multi-Business | PASS TÉCNICO | PASS | `pe-b` pasa |
-| PRODUCT-EVOLUTION-001 C1 Contacto y presencia | PASS TÉCNICO | PASS (local) | `c1` pasa; **no publicado** |
-| PRODUCT-EVOLUTION-001 C2 Operaciones | PASS TÉCNICO | PASS (local) | `c2` pasa; **no publicado** |
-| PRODUCT-EVOLUTION-001 D1 Gobierno | PASS TÉCNICO | PASS (local) | `d1` pasa; **no publicado** |
+| PRODUCT-EVOLUTION-001 C1 Contacto y presencia | PASS TÉCNICO | PASS | `c1` pasa; desplegado en `v0.1.1` |
+| PRODUCT-EVOLUTION-001 C2 Operaciones | PASS TÉCNICO | PASS | `c2` pasa; desplegado en `v0.1.1` |
+| PRODUCT-EVOLUTION-001 D1 Gobierno | PASS TÉCNICO | PASS | `d1` pasa; desplegado en `v0.1.1` |
 | PRODUCT-EVOLUTION-001 E1 Piloto local | PASS TÉCNICO LOCAL | NO REPRODUCIBLE | Ningún test ni fixture en el repo; el commit `179784a` solo cambió documentación |
 | DOC-RECON-001 → Baseline 2026-09-20 | PASS DOCUMENTAL | PASS DOCUMENTAL | 13 documentos activos (máx. 20) |
-| PERF-001 Image & Asset Optimization | PASS TÉCNICO | PASS | 14 raster activos migrados a WebP; 18,649,999 → 4,369,378 bytes; typecheck/build/diff-check y QA heredado pasan; no desplegado |
+| PERF-001 Image & Asset Optimization | PASS TÉCNICO | PASS | 14 raster activos migrados a WebP; 18,649,999 → 4,369,378 bytes; `v0.1.1` desplegado |
+| RP-001A Real Proof / Local Validation | EN ESPERA | **PASS LOCAL** | Tres organizaciones piloto controladas; borradores, publicación incompleta, Vecindario, JSON-LD no publicado y aislamiento verificados; publicación remota no realizada |
 
 ## Open Debt
 
@@ -90,7 +91,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | --- | --- | --- | --- | --- |
 | `PROD-INDEPENDENT-001` | No hay producción independiente: `vecidya.com` usa el D1 `vecidya-staging`; sin `app.`/`admin.`, R2 ni secretos productivos dedicados | `wrangler.jsonc`; ENVIRONMENTS | A | NO INICIADA |
 | `REMOTE-TEST-RISK-001` | `remote-staging-e2e.mjs` y `remote-staging-seo-check.mjs` ejecutan `wrangler d1 execute --remote` contra el D1 que sirve `vecidya.com`; sus guardas también aceptan la URL workers.dev del Worker público | `tests/e2e/remote-staging-*.mjs:28-75` | A | ABIERTA (no ejecutar) |
-| `PUBLISH-GAP-001` | Código y migraciones `0007`–`0009` no están publicados ni aplicados remotamente; publicar el piloto exige deploy + migraciones remotas autorizadas | Probes HTTP 2026-09-20; ENVIRONMENTS | A | ABIERTA |
+| `PUBLISH-GAP-001` | El código y las migraciones `0007`–`0009` ya están publicados/aplicados; el piloto externo continúa requiriendo autorización y datos reales confirmados | ENVIRONMENTS; deploy `v0.1.1` 2026-09-21 | A | RESUELTA para plataforma / pendiente para piloto |
 | `REPO-HYGIENE-001` | `vecidya-platform.zip` (37,9 MB, snapshot de 2026-08-27 sin migraciones `0007`–`0009`) versionado; `b1` eliminó ~1.250 archivos (`archive/`, biblioteca `resources/assets`) sin registro documental; ramas `feature/*` y un worktree `.kilo` desactualizados | `git show --stat ec79b22`; `git ls-files` | M | ABIERTA |
 
 ### Piloto y Real Proof
@@ -100,7 +101,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | `PILOT-IDENTITY-001` | No existe cuenta real de Edgar ni su email confirmado | PROJECT_STATE histórico; ningún fixture en repo | A | BLOQUEADA (dato del usuario) |
 | `PILOT-NAME-ASESORAR-T` | Dos variantes candidatas del nombre público sin confirmación | CHANGELOG 2026-09-07 E1 | A | BLOQUEADA (decisión del usuario) |
 | `PILOT-BRAND-SURA` | Sin acreditación confirmada para asociar «Edgar \| Asesor de Seguros SURA» a la marca; el código no tiene guarda de marcas y el badge público «Perfil verificado por Vecidya» podría reforzar una afiliación implícita | `public-v2.tsx:204`; sin validación de nombres | A | BLOQUEADA (autorización de tercero) |
-| `PILOT-REPRO-001` | El piloto local E1 no es reproducible: sin test ni fixture; «verificado con datos reales» no se puede comprobar desde el repo | grep de los tres nombres: 0 hits en `tests/`, `db/`, `app/`, `server/` | M | ABIERTA |
+| `PILOT-REPRO-001` | El procedimiento E1 efímero fue reemplazado por un fixture local controlado reproducible; no contiene datos privados confirmados ni publica pilotos | `tests/e2e/rp-001a-local-real-proof-check.mjs`; ejecución RP-001A 2026-09-20 | M | **RESUELTA para validación local** |
 | `PII-CHECK-001` | El número `+573244321864` aparece como ejemplo en el editor (`business-profile.tsx:215`), en un mensaje de error y en un test; confirmar que es ficticio | grep | M | ABIERTA |
 
 ### Producto y arquitectura
@@ -113,7 +114,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | `AUTHZ-BA-001` | Los endpoints por defecto de Better Auth (`/api/auth/organization/*`: crear/actualizar/eliminar organización, etc.) no pasan por la matriz propia; creación de organizaciones sin límite ni verificación de email; sin configuración de rate limiting (memoria por isolate) | `api-auth.ts`; `auth-plugins.server.ts` | M | ABIERTA (hipótesis: falta verificar qué puede hacer un `owner` vía Better Auth) |
 | `BP-API-001` | La persistencia server-side rechaza cualquier actualización que dejaría incompleto un perfil publicado; no existe «despublicar» ni redirección al cambiar slug | `db/queries/business-profile.server.ts`; E2E `bpx` | M | RESUELTA (RAN 2026-09-20) |
 | `AUDIT-COVERAGE-001` | `platform_audit_log` solo registra las 4 acciones de gobierno; la asignación de servicios y la creación de integraciones no se auditan; `activated_at`/`ended_at` nunca se escriben | `platform-governance.server.ts:73-86`; `internal-services.tsx` | M | ABIERTA |
-| `PLATFORM-ADMIN-001` | Ninguna ruta ni script concede `platform_admin` (solo SQL); `seedPlatformMeta` nunca se invoca; no hay `CHECK` en roles/estados; `/__health/db` es público | grep; `db/seeds/` | M | ABIERTA |
+| `PLATFORM-ADMIN-001` | La cuenta operativa `hola@vecidya.com` ya tiene `platform_admin` activo, pero no existe flujo permanente de gestión/recuperación de administradores; el bootstrap efímero fue retirado | D1 remota 2026-09-21; rutas temporales 404 | M | ABIERTA (gestión permanente pendiente) |
 | `ADMIN-UI-001` | El detalle de negocio no muestra logo, WhatsApp, redes, modalidad ni horarios (verifica sin ver contactos); `internal.tsx` conserva copy «SIGUIENTE BLOQUE»; enlaces «Ver página pública» a perfiles suspendidos dan 404 | `internal-business-profile-detail.tsx`; `internal.tsx:38-50` | B | ABIERTA |
 | `ORG-UI-001` | `organization.tsx:136` compara con `organization.userId`, inexistente → «Tu cuenta» nunca aparece; ofrece rol `owner` que Better Auth rechaza (hipótesis) | código | B | ABIERTA |
 | `INTEGRATION-001` | POST de integraciones sin manejo de duplicado (500); `(provider, external_id)` único global; cualquier miembro lee `metadata`; sin update/delete | `api-platform-integrations.ts`; schema | B | ABIERTA |

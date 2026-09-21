@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-20 (PERF-001)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión local esperada: `0.1.1`; PERF-001 está en código/Git y no desplegado.
+Última reconciliación: **2026-09-21 (AUTH-BOOTSTRAP-001)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión: `0.1.1`; deploy público observado con Version ID `f8936f89-ef27-4d50-ae56-1b6e4ba35fed`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -8,7 +8,7 @@ Este documento es el snapshot técnico completo. El estado corto y la deuda est�
 
 Vecidya Platform es una aplicación SSR de React Router sobre Cloudflare Workers, Better Auth, Drizzle ORM y D1. Cubre identidad, organizaciones, membresías, permisos, perfil comercial (uno por organización), servicios Vecidya, directorio público (Vecindario), Diagnóstico anónimo, administración interna con gobierno de perfiles y una web pública institucional. Vecidya **no es un CRM**: GHL es el system of record comercial y hoy no existe ninguna integración con GHL.
 
-Publicado en `vecidya.com` (verificado HTTP 2026-09-20): la web pública completa y **un** perfil real (`/vecindario/vecidya`). **No publicado** (solo local): migraciones `0007`–`0009` y sus funcionalidades. `vecidya.com` corre sobre infraestructura **staging** (D1 `vecidya-staging`); producción independiente no existe.
+Publicado en `vecidya.com` (verificado HTTP 2026-09-21): la web pública completa y **un** perfil real (`/vecindario/vecidya`); migraciones `0000`–`0009` aplicadas en la D1 remota. `vecidya.com` corre sobre infraestructura **staging** (D1 `vecidya-staging`); producción independiente no existe.
 
 ## Stack real
 
@@ -142,13 +142,13 @@ Soportado y probado (`pe-b` pasa): un usuario puede pertenecer a varias organiza
 | `public_email` | `0003` | regex ≤254 | sí | sí | `mailto:` | no | `email` | IMPL |
 | `website_url` | `0003` | http/https ≤2048 | sí | sí | botón | no | — | IMPL (sin LD) |
 | `logo_url` | `0003` | http/https | sí (URL) | sí | imagen | imagen | `image` | IMPL solo como **URL de texto** (sin subida ni R2) |
-| `whatsapp` | `0007` | `+` + 8–15 dígitos | sí | sí | CTA `wa.me` | no | (deliberado: no) | IMPL (solo local) |
-| `instagram_url`, `facebook_url`, `linkedin_url` | `0007` | host esperado | sí | sí | enlaces | no | `sameAs` | IMPL (solo local) |
-| `service_mode` | `0008` | enum `in_person/remote/hybrid` | sí | sí | «Cómo atiende» | no | — | IMPL (solo local) |
-| `service_area` | `0008` | ≤280 texto libre | sí | sí | «Cobertura» | no | `areaServed` | IMPL (solo local) |
-| horarios (`business_hours`) | `0008` | `HH:MM`, apertura<cierre, 1–7 | sí (sección propia) | **no** | compactados | no | `openingHoursSpecification` | API MISSING |
+| `whatsapp` | `0007` | `+` + 8–15 dígitos | sí | sí | CTA `wa.me` | no | (deliberado: no) | IMPL |
+| `instagram_url`, `facebook_url`, `linkedin_url` | `0007` | host esperado | sí | sí | enlaces | no | `sameAs` | IMPL |
+| `service_mode` | `0008` | enum `in_person/remote/hybrid` | sí | sí | «Cómo atiende» | no | — | IMPL |
+| `service_area` | `0008` | ≤280 texto libre | sí | sí | «Cobertura» | no | `areaServed` | IMPL |
+| horarios (`business_hours`) | `0008` | `HH:MM`, apertura<cierre, 1–7 | sí (sección propia) | sí | compactados | no | `openingHoursSpecification` | IMPL |
 | `status` draft/published | `0003` | 4 campos obligatorios para publicar | Publicar | no puede publicar | filtro | filtro | — | IMPL; **despublicar = FUTURE** |
-| verificación / suspensión | `0009` | 4 acciones solo `platform_admin` | señal de solo lectura | no | badge / 404 | excluido | (no) | IMPL (solo local); badge en tarjeta: PUBLIC MISSING |
+| verificación / suspensión | `0009` | 4 acciones solo `platform_admin` | señal de solo lectura | no | badge / 404 | excluido | (no) | IMPL; badge en tarjeta: PUBLIC MISSING |
 | galería/imágenes | — | — | — | — | — | — | — | FUTURE |
 | SEO title/description propios, `og:image` | — | — | — | — | — | — | — | FUTURE |
 
@@ -156,7 +156,7 @@ Límites conocidos: los horarios no admiten turnos partidos, nocturnos ni festiv
 
 ## Administración interna (`/app/internal*`)
 
-Guarda única: `requirePlatformAdmin` (fila `platform_member` con rol `platform_admin` y estado `active`; `staff` no pasa). Independiente de `member.role`: owner/admin de organización, `platform_admin` inactivo y usuarios normales reciben 403 (probado en `d1`). No existe UI ni API para conceder autoridad de plataforma: solo SQL.
+Guarda única: `requirePlatformAdmin` (fila `platform_member` con rol `platform_admin` y estado `active`; `staff` no pasa). Independiente de `member.role`: owner/admin de organización, `platform_admin` inactivo y usuarios normales reciben 403 (probado en `d1`). La cuenta operativa `hola@vecidya.com` quedó con `platform_admin` activo y `owner` de Vecidya; no existe UI ni API permanente para gestionar autoridad de plataforma.
 
 | Ruta | Muestra | Mutaciones |
 | --- | --- | --- |
@@ -164,11 +164,11 @@ Guarda única: `requirePlatformAdmin` (fila `platform_member` con rol `platform_
 | `/services` | organizaciones, catálogo activo, asignaciones | upsert de estado (`pending/active/suspended/ended`); sin auditoría |
 | `/organizations`, `/:id` | dueño, miembros (con emails), perfil, servicios, integraciones | solo lectura |
 | `/businesses` | todos los perfiles (borrador y publicados), completitud | solo lectura |
-| `/businesses/:id` | detalle, gobierno, servicios, últimas 20 acciones | verificar, retirar verificación, suspender, reactivar (batch atómico gobierno + auditoría; sin motivo) *(solo local)* |
+| `/businesses/:id` | detalle, gobierno, servicios, últimas 20 acciones | verificar, retirar verificación, suspender, reactivar (batch atómico gobierno + auditoría; sin motivo) |
 | `/integrations` | conexiones (proveedor, `externalId`, estado; `metadata` oculta) | solo lectura |
-| `/audit` | últimas 200 acciones de gobierno | solo lectura *(solo local)* |
+| `/audit` | últimas 200 acciones de gobierno | solo lectura |
 
-Vecidya **no puede hoy**: listar/banear/suplantar usuarios, transferir ownership, moderar antes de publicar, suspender/eliminar organizaciones, editar un perfil tenant, gestionar el catálogo, conceder/revocar `platform_admin`, actualizar/eliminar integraciones, registrar motivo de suspensión, gestionar apelaciones ni enviar emails de moderación.
+Vecidya **no puede hoy**: listar/banear/suplantar usuarios, transferir ownership, moderar antes de publicar, suspender/eliminar organizaciones, editar un perfil tenant, gestionar el catálogo, conceder/revocar `platform_admin` mediante UI permanente, actualizar/eliminar integraciones, registrar motivo de suspensión, gestionar apelaciones ni enviar emails de moderación.
 
 ## Integraciones y frontera Vecidya ↔ GHL
 
@@ -204,15 +204,28 @@ Diagnóstico → contenido relacionado · Diagnóstico → servicio contextual �
 
 ## Piloto de negocios reales (Edgar)
 
-Evidencia disponible: **solo documentación**. No hay fixture, seed, migración ni test con los tres negocios (`grep` de «Agrofanescol», «Asesorar», «SURA»: 0 hits en `tests/`, `db/`, `app/`, `server/`; «Edgar» aparece solo en `about.tsx`). El bloque E1 (2026-09-07) fue una ejecución local efímera cuyo commit final (`179784a`) modificó solo cuatro Markdown. Ningún dato del piloto está publicado. Cuenta real de Edgar: no existe.
+RP-001A añadió `tests/e2e/rp-001a-local-real-proof-check.mjs`: crea localmente tres organizaciones con un owner sintético, deja los datos no confirmados vacíos o `MISSING / UNCONFIRMED`, prueba borradores, intenta publicar sin éxito y elimina todos los fixtures. No contiene cuenta real de Edgar, secretos ni datos privados; ningún dato del piloto está publicado.
 
-| Negocio | Organización | Owner/membresía | Perfil | Publicación | Datos faltantes | Autorización pendiente | Readiness |
+| Negocio | Organización | Owner/membresía | Perfil local RP-001A | Publicación | Datos faltantes | Autorización pendiente | Readiness |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| A «Edgar \| Asesor de Seguros SURA» | 1 org. independiente (modelo multi-org) | Edgar owner (no creado) | nombre, actividad, categoría, ciudad/país, teléfono (según doc.) | no | WhatsApp, email, web, redes, horarios, cobertura, logo, slug, servicios | Marca SURA: acreditación no confirmada | **BLOCKED** |
-| B «Asesorar-T» | 1 org. independiente | ídem | ídem | no | ídem; además nombre público (2 variantes) | Confirmar nombre | **PARTIAL** |
-| C «Agrofanescol» | 1 org. independiente | ídem | ídem | no | ídem | — | **PARTIAL** (publicable honestamente; encaja imperfectamente en `BusinessProfile`: es un ecosistema/comunidad) |
+| A «Edgar \| Asesor de Seguros SURA» | 1 org. independiente (modelo multi-org) | owner sintético local; Edgar no creado | Borrador con nombre documentado; categoría y demás campos vacíos | no | Categoría, descripción corta, ciudad/país, teléfono, WhatsApp, email, web, redes, horarios, cobertura, logo, servicios | Marca SURA: acreditación no confirmada | **BLOCKED** |
+| B «Asesorar-T» | 1 org. independiente | owner sintético local | Borrador con `MISSING / UNCONFIRMED`; no se seleccionó variante pública | no | Nombre público exacto, descripción, categoría y todos los demás campos | Confirmar nombre | **BLOCKED BY MISSING DATA** |
+| C «Agrofanescol» | 1 org. independiente | owner sintético local | Borrador con nombre documentado; categoría y demás campos vacíos | no | Descripción corta, categoría y todos los demás campos | — | **MODEL MISMATCH / PARTIAL** (ecosistema/comunidad con una sola categoría y CTA) |
 
-Consideraciones de producto detectadas: sin guarda de marcas/nombres; categoría libre; un solo CTA y una categoría por perfil; logo requiere URL externa; sin despublicar; el usuario Edgar con tres organizaciones enfrentaría `MULTIORG-LOGIN-001` en cada inicio de sesión; Edgar es además miembro del equipo público de Vecidya (conflicto de interés a declarar). Para publicar hace falta: cuenta/email reales, decisiones de nombre y marca, deploy + migraciones remotas `0007`–`0009` (`PUBLISH-GAP-001`) y autorización explícita.
+Consideraciones de producto detectadas: sin guarda de marcas/nombres; categoría libre pero obligatoria para publicar; un solo CTA y una categoría por perfil; logo requiere URL externa; no existe acción tenant de despublicación; el cambio de organización y aislamiento local sí pasaron en RP-001A. Para publicar pilotos externos aún hacen falta: cuenta/email reales, decisiones de nombre y marca, datos confirmados y autorización explícita.
+
+### Mapeo RP-001A: dato real → modelo actual
+
+| Dato | Campo Vecidya | Soporte | Obligatorio | Limitación/riesgo evidenciado |
+| --- | --- | --- | --- | --- |
+| Identidad y pertenencia | `organization.name`, `member`, `business_profile.displayName` | Parcial | Organización, miembro y nombre visible para guardar | No hay verificación de identidad comercial; una cuenta local no prueba titularidad real |
+| Nombre público estable | `business_profile.displayName`, `slug` | Parcial | Ambos para publicar | El slug es técnico; B no puede elegir variante sin confirmación |
+| Categoría | `business_profile.category` | Parcial | Sí para publicar, aunque nullable en schema | Campo libre; no modela ecosistemas con múltiples facetas |
+| Ubicación | `city`, `country` | Parcial | No | Sin dirección, coordenadas, radio ni geocodificación |
+| Contacto y presencia | `phone`, `publicEmail`, `websiteUrl`, WhatsApp y tres URLs sociales | Sí, opcional | No | No se puede inferir ningún valor faltante; logo solo admite URL externa |
+| Horarios y cobertura | `business_hours`, `serviceMode`, `serviceArea` | Sí, opcional | No | Sin zona horaria, festivos, excepciones ni múltiples turnos |
+| Publicación | `status=draft/published` y gobierno de plataforma | Sí | Reglas mínimas: nombre, slug, descripción corta, categoría | No existe publicación remota ni acción tenant de despublicación en este bloque |
+| Descubrimiento y SEO | Vecindario, meta pública y JSON-LD `LocalBusiness` | Sí para publicados | Solo perfiles publicados | RP-001A confirmó que borradores no aparecen ni emiten JSON-LD; no validó publicación de pilotos |
 
 ## Discrepancias documentales corregidas en este baseline
 

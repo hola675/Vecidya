@@ -35,7 +35,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     ├── workers/app.ts          entry point del Worker (+ redirect www → apex)
     ├── worker/                 durable-objects/, queues/, workflows/ vacíos
     ├── public/                 assets/selected/** (14 WebP activos + 3 PNG conservados) y brand/vecidya-app-icon.png
-    ├── tests/e2e/              25 archivos (ver TESTING.md); unit/ e integration/ vacíos
+    ├── tests/e2e/              28 archivos (ver TESTING.md); unit/ e integration/ vacíos
     ├── docs/                   13 documentos canónicos con los READMEs
     ├── wrangler.jsonc, drizzle.config.ts, react-router.config.ts, vite.config.ts,
     │   tsconfig*.json, better-auth.config.ts, worker-configuration.d.ts (generado)
@@ -57,7 +57,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/unete` | `join.tsx` | estático | — | funcional | ninguno local (solo remoto) | sí |
 | `/contacto` | `contact.tsx` | estático (`mailto`) | — | funcional | `px-a` | sí |
 | `/vecindario` | `directory.tsx` | D1 lista+filtros | — | funcional | `px-a`, `pg-c1`, `d1` | sí |
-| `/vecindario/:slug` | `public-business-profile.tsx` | D1 perfil+horarios | — | funcional (404 si no publicado/suspendido); UI de `0007`–`0009` solo local | `px-a`, `c1`, `c2`, `d1`, `pg-c1` | sí (perfil `vecidya`) |
+| `/vecindario/:slug` | `public-business-profile.tsx` | D1 perfil+horarios | — | funcional (404 si no publicado/suspendido); UI de `0007`–`0009` desplegada | `px-a`, `c1`, `c2`, `d1`, `pg-c1` | sí (perfil `vecidya`) |
 | `/diagnostico` | `diagnostic.tsx` | cliente | — | funcional; motor sin pruebas | `px-a` (solo 200/overflow) | sí |
 | `/sobre-nosotros` | `about.tsx` | estático | — | funcional | ninguno | sí |
 | `/que-debes-saber` | `knowledge.tsx` | estático | — | hub vacío | ninguno | sí |
@@ -81,7 +81,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/app/account` | `account.tsx` | `requireSession` | — | usuario | funcional (solo nombre) | `acct` | sí |
 | `/app/organization` | `organization.tsx` | activa + `member:read`; acciones con permisos propios | activa | miembros, invitaciones | funcional; invitar depende de Resend | `members` (stale) | sí |
 | `/app/invitations/:invitationId` | `invitation.tsx` | `requireSession` | la de la invitación | Better Auth | bloqueada (verificación de email) | `invitations` (stale) | sí |
-| `/app/business-profile` | `business-profile.tsx` | `requireOrganization` + `business-profile:read/update/publish` | activa | perfil, horarios | funcional; secciones `0007`/`0008` solo local | `bpx`, `c1`, `c2`, `pe-b` | sí (sin `0007`–`0009`) |
+| `/app/business-profile` | `business-profile.tsx` | `requireOrganization` + `business-profile:read/update/publish` | activa | perfil, horarios | funcional; secciones `0007`/`0008` desplegadas | `bpx`, `c1`, `c2`, `pe-b` | sí |
 | `/app/services` | `services-app.tsx` | `requireSession` + `getActiveOrganization` | activa | `organization_service` | funcional (solo lectura) | `services-exp`, `pe-b` | sí |
 
 ### INTERNAL ADMIN (8) — todas con `requirePlatformAdmin`

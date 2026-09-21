@@ -1,6 +1,6 @@
 # Base de datos
 
-Última reconciliación: 2026-09-20 (Baseline 2026-09-20). Evidencia: schema (`db/schema/`), las 10 migraciones SQL, `db/migrations/meta/`, consultas y la D1 local (`d1_migrations` = 10 filas, `0000`–`0009`). La D1 remota **no se consultó** en este corte.
+Última reconciliación: 2026-09-21 (AUTH-BOOTSTRAP-001). Evidencia: schema (`db/schema/`), las 10 migraciones SQL, `db/migrations/meta/`, consultas, D1 local y D1 remota (`d1_migrations` = 10 filas, `0000`–`0009`).
 
 ## Responsabilidades
 
@@ -79,7 +79,7 @@ Probado por `pe-b` (aislamiento de perfil y servicios entre dos organizaciones d
 | 0008 | `0008_business-profile-operations.sql` | Operaciones | `business_profile`: `service_mode`, `service_area`; tabla `business_hours` |
 | 0009 | `0009_platform-profile-governance.sql` | Gobierno de plataforma | `business_profile_governance`, `platform_audit_log` |
 
-Estado de aplicación: **local `0000`–`0009`** (verificado). **Remoto `vecidya-staging`**: la documentación histórica registra `0000`–`0006` aplicadas y `0007` «solo local»; `0008`/`0009` no constan como aplicadas (y el sitio público no contiene su código). No verificado directamente.
+Estado de aplicación: **local y remoto `0000`–`0009`** (verificado `RAN`/`REMOTE` el 2026-09-21). No se aplicaron migraciones remotas durante AUTH-BOOTSTRAP-001; el bloque modificó únicamente datos de acceso autorizados.
 
 Detalles de diseño vigentes:
 

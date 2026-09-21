@@ -1,8 +1,8 @@
 # Entornos
 
-Última reconciliación: 2026-09-20 (PERF-001, `v0.1.1` local; no desplegado).
+Última reconciliación: 2026-09-21 (AUTH-BOOTSTRAP-001, `v0.1.1` desplegado).
 
-Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura al dominio público el 2026-09-20, **`DOC`** afirmación histórica de la documentación **no reverificada** (no hubo acceso a Cloudflare remoto en este corte).
+Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura al dominio público el 2026-09-21, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
@@ -15,18 +15,18 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 | **Local** | `react-router dev` con el plugin de Cloudflare (`pnpm run dev`) | Emulada por Miniflare en `.wrangler/state/v3/d1` (binding `DB`); migraciones `0000`–`0009` aplicadas | `http://localhost:*` | Operativo | `RAN` `d1_migrations` local contiene 10 filas (`0000`–`0009`) |
 | **Development** (remoto) | Ninguno versionado | `vecidya-dev` remoto (creado en Foundation 1B; la auditoría 10A halló pendientes `0003`–`0006`) | Ninguno | **Abandonado / sin uso**: ya no aparece en `wrangler.jsonc` y no se reutiliza como staging | `DOC` no reverificado |
 | **Staging** | `vecidya-platform-staging` existió y sirvió el dominio público hasta `PUBLIC-PROD-DIRECT-001` (2026-08-27); ya no está definido en `wrangler.jsonc` | `vecidya-staging` `d4af6ebc-97c5-42f6-ad3a-51551021e591` | — | Su D1 sigue siendo la base de datos del entorno público | `CONFIG` `DOC` no se verificó si el Worker `-staging` sigue existiendo en la cuenta |
-| **Public** | `vecidya-platform` (top-level, `workers_dev: true`) | `vecidya-staging` (mismo D1 anterior) | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado**; código anterior al 2026-09-07 (ver abajo) | `CONFIG` `HTTP` apex 200; `www` 301 → `https://vecidya.com/` |
+| **Public** | `vecidya-platform` (top-level, `workers_dev: true`) | `vecidya-staging` (mismo D1 anterior) | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado**; `v0.1.1`, Version ID `f8936f89-ef27-4d50-ae56-1b6e4ba35fed` | `CONFIG` `HTTP` `REMOTE` |
 | **Production** independiente | — | — | `app.vecidya.com`, `admin.vecidya.com` no existen | **NO PROVISIONADO** | `CONFIG` un único D1 declarado; sin R2, sin subdominios |
 
 ## Qué código está publicado
 
-El despliegue público vigente documentado es el Version ID `6cca1801-d638-4b6f-9849-ae9681716e6a` (2026-08-27, `PUBLIC-PROD-DIRECT-001`) `DOC`. Comprobación anónima el 2026-09-20 `HTTP` de que **el código de 2026-09-07 no está publicado**:
+El despliegue público vigente es el Version ID `f8936f89-ef27-4d50-ae56-1b6e4ba35fed` (`v0.1.1`, 2026-09-21) `CONFIG`/`RAN`. Comprobación anónima el 2026-09-21 `HTTP` de que las rutas temporales de recuperación fueron retiradas:
 
-- `/app/internal/audit` devuelve **404**, igual que una ruta inexistente, mientras que rutas protegidas existentes (`/app/internal`, `/app/internal/businesses`, `/app/internal/integrations`, `/app/business-profile`) devuelven 302 → `/login`.
-- El CSS público desplegado no contiene los selectores añadidos por los commits de contacto/presencia (`public-business-profile__social-links`), horarios (`public-business-profile__hours`) ni gobierno (`public-business-profile__verified`, `admin-governance`, `admin-audit-log`).
-- El HTML de `/vecindario/vecidya` no contiene `wa.me`, «Cómo atiende», «Horarios» ni «verificado por Vecidya».
+- `/app/internal/maintenance/auth-bootstrap` y `/app/internal/maintenance/password-rotation` devuelven **404**.
+- `/app/internal` sin sesión devuelve la pantalla de login; el acceso autenticado de `hola@vecidya.com` fue comprobado manualmente en `/app` y `/app/internal`.
+- La D1 remota reporta migraciones `0000`–`0009` aplicadas `REMOTE`.
 
-Conclusión: migraciones `0007`, `0008` y `0009` y las funcionalidades asociadas (WhatsApp/redes, modalidad/cobertura/horarios, verificación/suspensión/auditoría) existen **solo en local**. La D1 remota `vecidya-staging` no se consultó; la documentación histórica indica que `0007` se aplicó solo en local y no registra `0008`/`0009` remotos.
+Conclusión: el código actual y las migraciones `0007`–`0009` están desplegados en el Worker público y aplicados en `vecidya-staging`; no existe producción independiente.
 
 ## Repositorio Git
 
@@ -71,5 +71,18 @@ Sin `RESEND_API_KEY` + `EMAIL_FROM` + `APP_URL` el envío de invitaciones respon
 ## PERF-001 — estado de publicación
 
 - Versión fuente/local esperada: `0.1.1` (`vecidya-platform/package.json`).
-- Deploy PERF-001: **NO**; no se ejecutó `wrangler deploy`, no se usó `--remote` y no se modificó D1 remota.
-- Versión pública `0.1.1`: **NO VERIFICADA / NO DESPLEGADA**. No existe `Observed production version` para este bloque.
+- Deploy `v0.1.1`: **SÍ**, Version ID observado `f8936f89-ef27-4d50-ae56-1b6e4ba35fed`.
+- D1 remota: migraciones `0000`–`0009` aplicadas; no se aplicaron migraciones durante este bloque de acceso.
+
+## AUTH-BOOTSTRAP-001 — acceso administrativo temporal
+
+- La cuenta existente `hola@vecidya.com` quedó con `platform_admin`/`active` y membresía `owner` de la organización `Vecidya` `REMOTE`.
+- `soporte@vecidya.com` fue eliminado junto con sus sesiones, credenciales y membresías en cascada; la consulta posterior devuelve 0 filas `REMOTE`.
+- Se desplegó temporalmente una recuperación protegida por secreto Cloudflare; el secreto fue eliminado después del login validado y las rutas temporales devuelven 404 `HTTP`.
+- Login, `/app` y `/app/internal` fueron comprobados manualmente con `hola@vecidya.com`; la contraseña no se documenta.
+- Version impact: **NONE**. No se aplicaron migraciones remotas.
+
+## RP-001A — validación local
+
+- El fixture `rp-001a-local-real-proof-check.mjs` usa exclusivamente el Worker y D1 local; crea tres organizaciones controladas, no conserva datos al finalizar y dejó 0 filas de fixture en la comprobación posterior.
+- Remote D1: **NOT TOUCHED**. Pilot publication: **NOT PERFORMED**. Deploy y verificación de producción: **NOT PERFORMED**.

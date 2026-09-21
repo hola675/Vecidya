@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-09-21 — AUTH-BOOTSTRAP-001 / acceso administrativo
+
+- Recuperada la cuenta existente `hola@vecidya.com` mediante un bootstrap efímero protegido por secreto Cloudflare, usando el hashing y adapter de Better Auth; la contraseña no se guardó en texto plano ni en documentación.
+- Comprobados manualmente el login, `/app` y `/app/internal`; `hola` quedó como `platform_admin` activo y `owner` de `Vecidya`.
+- Eliminado `soporte@vecidya.com` de la D1 pública junto con sus sesiones, credenciales y membresía en cascada; no quedaron filas de soporte.
+- Retiradas las rutas temporales de recuperación y rotación; eliminado el secreto bootstrap. Version ID final: `f8936f89-ef27-4d50-ae56-1b6e4ba35fed`; migraciones remotas no ejecutadas; version impact: **NONE**.
+
+## 2026-09-20 — RP-001A Real Proof / Local Validation
+
+- Añadido `tests/e2e/rp-001a-local-real-proof-check.mjs` como procedimiento reproducible y efímero para validar localmente los tres casos documentados (Edgar/SURA, Asesorar-T y Agrofanescol) sin versionar secretos, datos privados ni publicar pilotos.
+- Validado: organizaciones y membresías locales, cambio de contexto, aislamiento cross-tenant, borradores, bloqueo de publicación incompleta, exclusión de Vecindario y ausencia de JSON-LD en perfiles no publicados. Los datos desconocidos permanecen vacíos o `MISSING / UNCONFIRMED`.
+- RP-001A: **PASS LOCAL**. Remote D1, publicación remota, deploy y verificación de producción: **NOT PERFORMED**. Version impact: **NONE**.
+
 ## 2026-09-20 — PERF-001 Image & Asset Optimization (`v0.1.1`)
 
 - Optimización compatible de assets visuales: inventario inicial de 18 raster PNG, conversión selectiva de 14 assets activos a WebP y conservación del ícono canónico de marca y 3 recursos seleccionados sin uso.
