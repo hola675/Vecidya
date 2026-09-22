@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-22 — UX-001C Public Experience Polish (`v0.3.0`, PASS técnico local)
+
+- Auditada y pulida la experiencia pública como un único recorrido: navegación desktop priorizada, estado activo exacto, menú móvil con Escape/retorno de foco y footer agrupado en Explorar, Empezar y Legal.
+- Los resultados filtrados del Vecindario conservan canonical base y pasan a `noindex, follow`; `/que-debes-saber` redirige permanentemente a `/aprende` y deja de competir como ruta indexable.
+- Actualizado el E2E público responsive para cubrir noindex, redirect legado y exclusión del alias en sitemap; no se añadieron páginas, funcionalidades, migraciones ni assets nuevos.
+- Se mantiene `0.3.0`; no hubo push, deploy ni migraciones remotas. Producción continúa en `0.2.0`.
+
 ## 2026-09-22 — UX-001B.10 Legal & Trust Experience (`v0.3.0`, PASS técnico local)
 
 - Reorganizada `/privacidad` como una experiencia clara de confianza: datos actuales, uso/control, límites, derechos y contacto.

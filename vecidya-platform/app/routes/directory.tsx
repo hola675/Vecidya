@@ -8,8 +8,14 @@ import { BusinessCardV2, CTASection, EmptyState, SearchFilters } from "../compon
 
 import type { Route } from "./+types/directory";
 
-export function meta(_: Route.MetaArgs) {
-  return publicMeta("Vecindario", "Explora negocios con perfiles públicos reales en el Vecindario de Vecidya.", "/vecindario");
+export function meta({ location }: Route.MetaArgs) {
+  const hasQuery = Boolean(location.search);
+  return publicMeta(
+    "Vecindario",
+    "Explora negocios con perfiles públicos reales en el Vecindario de Vecidya.",
+    "/vecindario",
+    hasQuery ? "noindex, follow" : "index, follow",
+  );
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {

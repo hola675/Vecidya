@@ -184,6 +184,13 @@ try {
   assert(!literalUnderscore.includes("/vecindario/vecidya"), "La búsqueda interpretó _ como comodín LIKE.");
   const filtered = await fetchHtml("/vecindario?category=Servicios+digitales+y+desarrollo+empresarial");
   assert(filtered.includes("Vecidya"), "El filtro por categoría no encontró Vecidya.");
+  assert(filtered.includes('name="robots" content="noindex, follow"'), "Las páginas filtradas del Vecindario no están marcadas como no indexables.");
+
+  const legacyLearn = await fetch(new URL("/que-debes-saber", baseUrl), { redirect: "manual" });
+  assert(legacyLearn.status === 301, "El alias legado de Aprende no redirige permanentemente.");
+  assert(legacyLearn.headers.get("location")?.endsWith("/aprende"), "El alias legado no redirige a /aprende.");
+  const sitemap = await fetchHtml("/sitemap.xml");
+  assert(!sitemap.includes("que-debes-saber"), "El sitemap conserva el alias legado de Aprende.");
 
   const profile = await fetchHtml("/vecindario/vecidya");
   assert(profile.includes("href=\"/servicios\"") && profile.includes("href=\"/diagnostico\"") && profile.includes("href=\"/contacto\""), "El perfil no enlaza servicios, diagnóstico y contacto.");

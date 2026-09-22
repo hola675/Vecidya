@@ -179,6 +179,48 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .admin-business-detail-grid { grid-template-columns:1fr; }.admin-business-card__heading, .admin-business-card__footer { display:grid; }.admin-business-card dl { grid-template-columns:repeat(2, 1fr); }.admin-business-card__footer .button { width:100%; }.admin-business-card__footer .button + .button { margin-left:0; }
 }
 
+/* Public shell polish */
+.site-footer {
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.site-footer > div:first-child {
+  max-width: 18rem;
+}
+
+.site-footer__nav {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(7rem, 1fr));
+  gap: 1.5rem 2rem !important;
+  min-width: min(100%, 28rem);
+}
+
+.site-footer__nav > div {
+  display: grid;
+  align-content: start;
+  gap: 0.55rem;
+}
+
+.site-footer__nav strong {
+  color: var(--ink);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.site-footer__nav a {
+  font-size: 0.86rem;
+}
+
+@media (max-width: 760px) {
+  .site-footer__nav {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(7rem, 1fr));
+  }
+}
+
 /* Home experience */
 .public-home-hero {
   display: grid;
