@@ -95,7 +95,7 @@ export default function PublicBusinessProfilePage() {
 
         <CTASection
           actions={[
-            { label: "Seguir explorando", to: "/vecindario", variant: "primary" },
+            { label: "Volver al Vecindario", to: "/vecindario", variant: "primary" },
             { label: "Hacer diagnóstico", to: "/diagnostico", variant: "secondary" },
           ]}
           eyebrow="VECIDYA"

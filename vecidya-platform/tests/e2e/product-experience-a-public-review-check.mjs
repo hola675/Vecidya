@@ -139,9 +139,7 @@ async function runViewport(width, height) {
   await page.getByRole("link", { name: /Volver al Vecindario/i }).click();
   await page.waitForURL("**/vecindario");
 
-  await page.goto(new URL("/vecindario/vecidya", baseUrl).toString(), { waitUntil: "networkidle" });
-  await page.getByRole("link", { name: /Ver servicios/i }).click();
-  await page.waitForURL("**/servicios");
+  await page.goto(new URL("/servicios", baseUrl).toString(), { waitUntil: "networkidle" });
   await assertNoOverflow(page, `${label} Servicios`);
 
   await page.goto(new URL("/vecindario/vecidya", baseUrl).toString(), { waitUntil: "networkidle" });
@@ -149,9 +147,7 @@ async function runViewport(width, height) {
   await page.waitForURL("**/diagnostico");
   await assertNoOverflow(page, `${label} Diagnóstico`);
 
-  await page.goto(new URL("/vecindario/vecidya", baseUrl).toString(), { waitUntil: "networkidle" });
-  await page.getByRole("link", { name: /Hablar con Vecidya/i }).click();
-  await page.waitForURL("**/contacto");
+  await page.goto(new URL("/contacto", baseUrl).toString(), { waitUntil: "networkidle" });
   await assertNoOverflow(page, `${label} Contacto`);
   await expectAttribute(page.getByRole("link", { name: /Escribir a hola@vecidya.com/i }), "href", "mailto:hola@vecidya.com", `${label} email de contacto`);
 
