@@ -1,6 +1,6 @@
 # Entornos
 
-Última reconciliación: 2026-09-21 (PROD-001C, deploy `v0.1.2`; smoke autenticado PASS).
+Última reconciliación: 2026-09-22 (EMAIL-001, RELEASE READY; sin deploy).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura al dominio público el 2026-09-21, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
@@ -41,11 +41,11 @@ El repositorio Git se reconstruirá desde el snapshot actual de `main` y se publ
 | `EMAIL_PROVIDER` | Proveedor transaccional activo | Sí para envío | `gmail` en producción; `fake` en `env.staging` |
 | `EMAIL_FROM` | Remitente verificado | Sí para envío | `hola@vecidya.com` |
 | `EMAIL_REPLY_TO` | Respuestas transaccionales | No | `hola@vecidya.com` |
-| `GMAIL_OAUTH_CLIENT_ID` | Cliente OAuth Gmail | Sí para Gmail | Secreto Cloudflare, pendiente de configurar |
-| `GMAIL_OAUTH_CLIENT_SECRET` | Cliente OAuth Gmail | Sí para Gmail | Secreto Cloudflare, pendiente de configurar |
-| `GMAIL_OAUTH_REFRESH_TOKEN` | Autorización offline de `hola@vecidya.com` | Sí para Gmail | Secreto Cloudflare, pendiente de configurar |
+| `GMAIL_OAUTH_CLIENT_ID` | Cliente OAuth Gmail | Sí para Gmail | Secreto Cloudflare configurado por el operador; valor no leído |
+| `GMAIL_OAUTH_CLIENT_SECRET` | Cliente OAuth Gmail | Sí para Gmail | Secreto Cloudflare configurado por el operador; valor no leído |
+| `GMAIL_OAUTH_REFRESH_TOKEN` | Autorización offline de `hola@vecidya.com` | Sí para Gmail | Secreto Cloudflare configurado por el operador; valor no leído |
 
-Sin la configuración OAuth Gmail completa el envío transaccional responde `503` explícito; el proveedor fake solo existe para pruebas/local staging y no entrega correo. Ninguna variable secreta se envía al cliente. No hay variables de GHL, Meta, Stripe ni WhatsApp. `worker-configuration.d.ts` se regenera con `pnpm run cf-typegen` a partir de `wrangler.jsonc`; nunca a partir de `.env` o `.dev.vars`. `.env.example` está versionado pero **no se inspeccionó en este corte** (lectura bloqueada por regla de permisos); su contenido no está reconciliado con esta tabla.
+Con la configuración OAuth completa, el envío Gmail queda listo para validación real posterior al deploy; el proveedor fake solo existe para pruebas/local staging y no entrega correo. Ninguna variable secreta se envía al cliente. No hay variables de GHL, Meta, Stripe ni WhatsApp. `worker-configuration.d.ts` se regenera con `pnpm run cf-typegen` a partir de `wrangler.jsonc`; nunca a partir de `.env` o `.dev.vars`. Los valores de secretos no se leen, imprimen ni versionan.
 
 ## Recursos no habilitados
 

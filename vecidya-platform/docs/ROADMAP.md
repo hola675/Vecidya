@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-21 (PROD-001C, PROD-001 cerrado).
+Última reconciliación: 2026-09-22 (EMAIL-001 RELEASE READY; deploy y prueba Gmail pendientes).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -36,11 +36,11 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 **Nota de paralelismo.** Home (3) es 100 % estático y no depende de datos ni de backend; puede avanzar mientras el usuario resuelve los datos del piloto (1), que es el cuello de botella (depende de terceros). Visual (4) depende de la decisión G2.
 
-## Bloque actual: EMAIL-001 (parcial)
+## Bloque actual: EMAIL-001 (RELEASE READY)
 
-- **Objetivo**: completar la configuración OAuth Gmail, secretos y delivery real sin iniciar OPS-001.
+- **Objetivo**: completar la configuración OAuth Gmail y dejar preparado el release; la entrega Gmail real se prueba únicamente después de un deploy controlado.
 - **Alcance**: únicamente EMAIL-001; PROD-001 queda cerrado.
-- **Fuera de alcance**: despliegue del Worker staging dedicado, pruebas destructivas y cambios de producción no relacionados.
+- **Fuera de alcance**: deploy en este corte, despliegue del Worker staging dedicado, pruebas destructivas y cambios de producción no relacionados.
 
 ## Trabajo futuro por área
 

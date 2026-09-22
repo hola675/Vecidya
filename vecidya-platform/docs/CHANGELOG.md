@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-22 — EMAIL-001 Gmail Release Ready (`v0.2.0`, no publicada)
+
+- Confirmada la configuración top-level de producción: `EMAIL_PROVIDER=gmail`, `EMAIL_FROM=hola@vecidya.com` y `EMAIL_REPLY_TO=hola@vecidya.com`.
+- Confirmados, sin leer ni versionar sus valores, los secretos requeridos por el código: `GMAIL_OAUTH_CLIENT_ID`, `GMAIL_OAUTH_CLIENT_SECRET` y `GMAIL_OAUTH_REFRESH_TOKEN`.
+- Retiradas las rutas y el módulo de bootstrap OAuth temporal; el refresh token ya no se obtiene desde una superficie pública de Vecidya.
+- Validación local y E2E ejecutados en este corte. Estado: **RELEASE READY**; no se declara delivery Gmail PASS, no se ejecutó deploy ni push.
+
 ## 2026-09-21 — Actualización de dependencias (local, no publicada)
 
 - Actualizadas las dependencias directas de React Router, React, Better Auth, Cloudflare/Vite, TypeScript, tipos de Node/React, Playwright, Wrangler y Drizzle Kit; el lockfile queda sincronizado con pnpm 11.21.0.

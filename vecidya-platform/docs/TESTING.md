@@ -1,6 +1,6 @@
 # Pruebas
 
-Última reconciliación: 2026-09-21 (PROD-001C, cierre). Evidencia: ejecución de 17 E2E locales, guards remotos revisados sin ejecutar los remotos y verificación manual autorizada de producción `/login → /app → /app/internal`. Este documento distingue lo que la documentación *afirma* de lo que las pruebas *protegen*.
+Última reconciliación: 2026-09-22 (EMAIL-001 RELEASE READY). Evidencia: `pnpm run test:email` pasó 4/4 y `pnpm run test:e2e` pasó 17/17 contra el Worker local; la entrega real Gmail no se ha probado. También se conserva la verificación histórica de producción `/login → /app → /app/internal` del 2026-09-21. Este documento distingue lo que la documentación *afirma* de lo que las pruebas *protegen*.
 
 ## Estado de la infraestructura de pruebas
 

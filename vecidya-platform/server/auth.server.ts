@@ -13,7 +13,6 @@ export type AuthEnvironment = Env & {
   EMAIL_FROM?: string;
   EMAIL_REPLY_TO?: string;
   APP_URL?: string;
-  GMAIL_OAUTH_BOOTSTRAP_ENABLED?: string;
 } & MailEnvironment;
 
 export function createAuth(env: AuthEnvironment, request: Request) {

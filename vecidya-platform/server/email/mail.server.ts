@@ -13,7 +13,6 @@ export type MailEnvironment = {
   GMAIL_OAUTH_CLIENT_ID?: string;
   GMAIL_OAUTH_CLIENT_SECRET?: string;
   GMAIL_OAUTH_REFRESH_TOKEN?: string;
-  GMAIL_OAUTH_BOOTSTRAP_ENABLED?: string;
 };
 
 export type MailResult = {

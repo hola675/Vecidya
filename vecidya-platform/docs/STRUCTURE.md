@@ -1,6 +1,6 @@
 # Estructura del código
 
-Última reconciliación: 2026-09-20 (Baseline 2026-09-20). Rutas verificadas contra `app/routes.ts`: **39 rutas, 39 archivos, ninguno huérfano ni faltante**. Columna *Pub.*: comprobación HTTP anónima 2026-09-20 (`sí` = responde como se espera; para rutas privadas, `sí` = existe y redirige a `/login`; `no` = no está en el Worker público). Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
+Última reconciliación: 2026-09-22 (EMAIL-001). Rutas verificadas contra `app/routes.ts`: **37 rutas, 37 archivos, ninguno huérfano ni faltante**. Columna *Pub.*: comprobación HTTP anónima 2026-09-20 (`sí` = responde como se espera; para rutas privadas, `sí` = existe y redirige a `/login`; `no` = no está en el Worker público). Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
 
 ## Mapa del repositorio
 
@@ -9,8 +9,8 @@ D:\Proyectos\Vecidya            (raíz Git)
 ├── AGENTS.md, README.md
 └── vecidya-platform/           (único producto activo)
     ├── app/                    interfaz React Router
-    │   ├── routes.ts           tabla de 39 rutas
-    │   ├── routes/             39 archivos (uno por ruta)
+    │   ├── routes.ts           tabla de 37 rutas
+    │   ├── routes/             37 archivos (uno por ruta)
     │   ├── components/         public-layout, public-v2, admin-shell, ui
     │   ├── assets/public-assets.ts   manifiesto de assets públicos
     │   ├── lib/auth-client.ts  cliente Better Auth

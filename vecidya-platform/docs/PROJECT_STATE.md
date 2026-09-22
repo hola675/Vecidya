@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-21 (PROD-001C, verificación autenticada)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión pública desplegada: `0.1.2`, Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`.
+Última reconciliación: **2026-09-22 (EMAIL-001, RELEASE READY sin deploy)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión pública desplegada vigente: `0.1.2`, Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`; versión local preparada: `0.2.0`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -175,7 +175,7 @@ Vecidya **no puede hoy**: listar/banear/suplantar usuarios, transferir ownership
 | Elemento | Clasificación |
 | --- | --- |
 | `integration_connection` + `POST /api/platform/organizations/:id/integrations` + `GET` tenant + overview interno | **FOUNDATION ONLY**: registro de metadata; sin llamadas salientes; proveedor = cualquier kebab-case |
-| Adaptador Gmail transaccional (`server/email/mail.server.ts`) | **PREPARADO pero sin delivery real** (OAuth/secretos externos pendientes) |
+| Adaptador Gmail transaccional (`server/email/mail.server.ts`) | **RELEASE READY sin delivery real probado** (OAuth/secretos configurados; deploy y prueba real pendientes) |
 | GHL | **TEXT ONLY** (solo documentación; 0 código) |
 | Google, Meta, WhatsApp API, Stripe, Twilio | **NOT FOUND** |
 | WhatsApp/Instagram/Facebook/LinkedIn en perfil | Campos y enlaces (`wa.me`), no integración |

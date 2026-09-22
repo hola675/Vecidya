@@ -41,8 +41,6 @@ export default [
   route("app/internal/businesses", "routes/internal-businesses.tsx"),
   route("app/internal/businesses/:businessProfileId", "routes/internal-business-profile-detail.tsx"),
   route("app/internal/integrations", "routes/internal-integrations.tsx"),
-  route("app/internal/integrations/gmail/authorize", "routes/internal-integrations-gmail-authorize.ts"),
-  route("app/internal/integrations/gmail/callback", "routes/internal-integrations-gmail-callback.ts"),
   route("app/internal/audit", "routes/internal-audit.tsx"),
   route("register", "routes/register.tsx"),
   route("login", "routes/login.tsx"),
