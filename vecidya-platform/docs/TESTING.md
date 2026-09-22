@@ -1,6 +1,6 @@
 # Pruebas
 
-Última reconciliación: 2026-09-22 (EMAIL-001C). Evidencia: `pnpm run test:email` 4/4, `pnpm run test:e2e` 17/17 local, smoke público productivo y `forgot-password` productivo HTTP 200 genérico. El endpoint aceptó el envío; la entrega en inbox aún requiere confirmación manual. La autenticación de esta release no se rechecó sin sesión autorizada reutilizable.
+Última reconciliación: 2026-09-22 (EMAIL-001C). Evidencia: `pnpm run test:email` 4/4, `pnpm run test:e2e` 17/17 local, smoke público productivo y `forgot-password` productivo HTTP 200 genérico. El operador confirmó recepción en inbox. El reset no se completó y la contraseña no se mutó; la autenticación de esta release no se rechecó sin sesión autorizada reutilizable.
 
 ## Estado de la infraestructura de pruebas
 

@@ -1,12 +1,12 @@
 # Entornos
 
-Última reconciliación: 2026-09-22 (EMAIL-001C, deploy `v0.2.0`; Gmail API accepted reset request; inbox confirmation pending).
+Última reconciliación: 2026-09-22 (EMAIL-001C, deploy `v0.2.0`; Gmail delivery confirmed).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura al dominio público el 2026-09-21, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
-`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3` (`v0.2.0`). El smoke HTTP anónimo pasó; la verificación autenticada de esta release queda pendiente de sesión autorizada reutilizable.
+`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3` (`v0.2.0`). El smoke HTTP anónimo y la entrega Gmail del reset productivo pasaron; la verificación autenticada de esta release queda pendiente de sesión autorizada reutilizable.
 
 ## Matriz de entornos
 
@@ -69,7 +69,7 @@ Con la configuración OAuth completa, el envío Gmail queda listo para validaci�
 - Deploy autorizado de `vecidya-platform` desde el commit `6b351c4`: Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`, `2026-09-22`. Wrangler confirmó `env.DB (vecidya-prod)`, `APP_ENV=production`, `EMAIL_PROVIDER=gmail`, `EMAIL_FROM=hola@vecidya.com` y `EMAIL_REPLY_TO=hola@vecidya.com`.
 - Secretos top-level presentes por nombre: `BETTER_AUTH_SECRET`, `GMAIL_OAUTH_CLIENT_ID`, `GMAIL_OAUTH_CLIENT_SECRET`, `GMAIL_OAUTH_REFRESH_TOKEN`. Sus valores no fueron leídos.
 - No se ejecutaron migraciones, no se modificó D1 y no se usaron versiones individuales de secretos.
-- Solicitud de `forgot-password` para `hola@vecidya.com` respondió HTTP `200` genérico en producción. Gmail API send queda **PASS técnico**; entrega en inbox pendiente de confirmación manual.
+- Solicitud de `forgot-password` para `hola@vecidya.com` respondió HTTP `200` genérico en producción. Gmail API send y recepción en inbox quedan **PASS**, confirmados por el operador; no se completó el reset ni se mutó la contraseña.
 
 ## PROD-001 / PROD-001B — baseline y cutover
 

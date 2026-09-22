@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-22 (EMAIL-001C, deploy y reset productivo; inbox pendiente)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+Última reconciliación: **2026-09-22 (EMAIL-001C, deploy y Gmail confirmados)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -175,7 +175,7 @@ Vecidya **no puede hoy**: listar/banear/suplantar usuarios, transferir ownership
 | Elemento | Clasificación |
 | --- | --- |
 | `integration_connection` + `POST /api/platform/organizations/:id/integrations` + `GET` tenant + overview interno | **FOUNDATION ONLY**: registro de metadata; sin llamadas salientes; proveedor = cualquier kebab-case |
-| Adaptador Gmail transaccional (`server/email/mail.server.ts`) | **DEPLOYED; Gmail API send PASS técnico; entrega real pendiente de confirmación manual** |
+| Adaptador Gmail transaccional (`server/email/mail.server.ts`) | **PASS en producción; Gmail API send y entrega real confirmados; verificación/invitaciones separadas** |
 | GHL | **TEXT ONLY** (solo documentación; 0 código) |
 | Google, Meta, WhatsApp API, Stripe, Twilio | **NOT FOUND** |
 | WhatsApp/Instagram/Facebook/LinkedIn en perfil | Campos y enlaces (`wa.me`), no integración |
