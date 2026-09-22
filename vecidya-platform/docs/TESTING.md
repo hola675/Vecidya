@@ -1,11 +1,11 @@
 # Pruebas
 
-Última reconciliación: 2026-09-22 (UX-002.2). Evidencia: `licenses-experience-check.mjs` PASS en 1366/768/390/360, `product-experience-a-public-review-check.mjs` PASS, typecheck, build y diff-check PASS. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
+Última reconciliación: 2026-09-22 (UX-002.3). Evidencia: `addons-experience-check.mjs` PASS en 1366/768/390/360, `licenses-experience-check.mjs` PASS, `product-experience-a-public-review-check.mjs` PASS, typecheck, build y diff-check PASS. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
 
 ## Estado de la infraestructura de pruebas
 
 - No hay framework de pruebas ni CI (`.github/` no existe), ni pruebas unitarias o de integración (`tests/unit` y `tests/integration` solo tienen `.gitkeep`). `package.json` incluye `test:e2e`, un runner secuencial de los E2E locales aplicables.
-- Solo existe `tests/e2e/`: 28 scripts `.mjs` (Node + `fetch`, algunos con Playwright) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
+- Solo existe `tests/e2e/`: 29 scripts `.mjs` (Node + `fetch`, algunos con Playwright) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
 - Son **solo Windows** (`cmd.exe /d /c pnpm.cmd wrangler d1 execute … --local`).
 - Los scripts Playwright usan Microsoft Edge si existe, luego `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, luego Chromium empaquetado (requiere `playwright install`).
 
@@ -36,6 +36,7 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `learn` | `learn-experience-check.mjs` | UX-001B.9 |
 | `legal-trust` | `legal-trust-experience-check.mjs` | UX-001B.10 |
 | `licenses` | `licenses-experience-check.mjs` | UX-002.2 |
+| `addons` | `addons-experience-check.mjs` | UX-002.3 |
 | `admin-shell` | `admin-shell-check.mjs` | 8A |
 | `admin-bp` | `admin-business-profiles-check.mjs` | 8C |
 | `admin-orgs` | `admin-organizations-check.mjs` | 8B |
@@ -103,7 +104,7 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 | Business profile | `bpx`, `pg-c1`, `c1`, `c2`, `pe-b`, `d1` | Subida de logo (no existe); publicación vía API |
 | Servicios | `services-exp`, `pe-b` | Escritura admin (4B/8D) stale |
 | Admin interna | `admin-shell` (8A), `admin-bp` (8C), `d1` | 8B, 8E y API de servicios stale; nada ejecutable cubre `/organizations`, `/integrations` ni escritura de servicios |
-| Web pública | `px-a` + `join-contact` + `about` + `learn` + `licenses`: recorrido `/` → `/vecindario` → perfil → `/servicios` → `/diagnostico` → `/contacto`, `/unete`, `/sobre-nosotros`, `/aprende` y `/licencias` (200, metadata, CTAs, mailto, privacidad, equipo real, temas, estado editorial honesto, referencias comerciales explícitas, patrones prohibidos, overflow y responsive 1366/768/390/360); UX-001B.2 además valida Home con hasta 3 perfiles D1, 4 choices y 4 servicios; UX-001C cubre filtros noindex, alias 301 y sitemap | `/privacidad` fuera de smoke dedicado, páginas 404, `www`→apex |
+| Web pública | `px-a` + `join-contact` + `about` + `learn` + `licenses` + `addons`: recorrido `/` → `/vecindario` → perfil → `/servicios` → `/diagnostico` → `/contacto`, `/unete`, `/sobre-nosotros`, `/aprende`, `/licencias` y `/addons` (200, metadata, CTAs, mailto, privacidad, equipo real, temas, estado editorial honesto, referencias comerciales explícitas, separación addon/servicio/consumo, patrones prohibidos, overflow y responsive 1366/768/390/360); UX-001B.2 además valida Home con hasta 3 perfiles D1, 4 choices y 4 servicios; UX-001C cubre filtros noindex, alias 301 y sitemap | `/privacidad` fuera de smoke dedicado, páginas 404, `www`→apex |
 | Vecindario | `q` y categoría en `pg-c1`, `px-a`; exclusión de borradores/suspendidos en `c1`, `d1` | Filtro de ciudad, filtros combinados y estado vacío solo en `.ps1` stale |
 | Diagnóstico | `diagnostic-experience-check.mjs` (selector, 8 preguntas para negocio, progreso accesible, teclado, anterior/siguiente, resultado, reinicio y responsive 1366/768/390/360); `px-a` cubre 200/meta/overflow | Scoring puro sin pruebas unitarias aisladas; persistencia y motor exhaustivo de las siete ramas siguen fuera de esta fase |
 | SEO | meta/canonical en rutas públicas (`px-a`); filtros del Vecindario noindex, alias legado 301 y sitemap sin alias; JSON-LD `LocalBusiness` en `px-a`, `c1`, `c2`, `pg-c1` | `robots.txt`, `favicon.ico`: **0 pruebas**; SEO remoto solo en script remoto |

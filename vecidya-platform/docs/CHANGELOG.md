@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-22 — UX-002.3 Addons Experience (`v0.3.0`, PASS técnico local)
+
+- Añadida la ruta pública `/addons` con hero de expansión, definición de addon, categorías de Comunicación, Automatización, Inteligencia Artificial e Integraciones y cards de capacidades.
+- Explicada la diferencia entre licencia, addon, servicio y consumo externo; los consumos variables permanecen separados y no se publican precios de addons.
+- Conectada la experiencia con Diagnóstico, Licencias y Servicios; reutilizados el sistema visual y los iconos existentes, sin integración GHL activa.
+- Añadido `addons-experience-check.mjs` para metadata, sitemap, categorías, cards, CTAs, keyboard focus y responsive 1366/768/390/360.
+- Se mantiene `0.3.0`; no hubo push, deploy ni migraciones remotas. Producción continúa en `0.2.0`.
+
 ## 2026-09-22 — UX-002.2 Licencias Experience (`v0.3.0`, PASS técnico local)
 
 - Añadida la ruta pública `/licencias` con hero, definición de licencia, tarjetas Cuadra/Barrio/Ciudad, comparador responsive, evolución por necesidad, addons, FAQ y CTA de Diagnóstico.

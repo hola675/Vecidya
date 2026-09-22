@@ -47,6 +47,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
             <NavLink end to="/">Inicio</NavLink>
             <NavLink to="/vecindario">Vecindario</NavLink>
             <NavLink to="/licencias">Licencias</NavLink>
+            <NavLink to="/addons">Addons</NavLink>
             <NavLink to="/diagnostico">Diagnóstico</NavLink>
             <NavLink to="/aprende">Aprende</NavLink>
             <NavLink to="/servicios">Servicios</NavLink>
@@ -72,6 +73,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
             <strong>Explorar</strong>
             <Link to="/vecindario">Vecindario</Link>
             <Link to="/licencias">Licencias</Link>
+            <Link to="/addons">Addons</Link>
             <Link to="/servicios">Servicios</Link>
             <Link to="/aprende">Aprende</Link>
             <Link to="/sobre-nosotros">Nosotros</Link>

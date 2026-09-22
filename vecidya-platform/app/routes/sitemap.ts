@@ -24,6 +24,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const staticPaths = [
     "/",
     "/licencias",
+    "/addons",
     "/servicios",
     "/unete",
     "/contacto",

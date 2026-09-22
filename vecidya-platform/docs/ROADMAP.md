@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-22 (UX-002.2 PASS técnico local; follow-up de verificación/invitaciones).
+Última reconciliación: 2026-09-22 (UX-002.3 PASS técnico local; follow-up de verificación/invitaciones).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -42,7 +42,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 **Corrección 2 — Contenido (6) antes de Interconexión (7).** Las conexiones «Artículo → Diagnóstico/Servicio» y «Diagnóstico → contenido relacionado» no pueden existir sin artículos: hoy hay cero. Interconectar primero produciría enlaces a un hub vacío.
 
-**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7, UX-001B.8, UX-001B.9, UX-001B.10 y UX-001C quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`. UX-002.1 queda **PASS DOCUMENTAL** y UX-002.2 queda **PASS técnico local / release ready**: `/licencias` explica la decisión sin activar checkout, pagos, suscripciones, migraciones o integración GHL. La producción sigue en `0.2.0` porque no hubo deploy. El siguiente bloque es UX-002.3 — Addons Experience.
+**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7, UX-001B.8, UX-001B.9, UX-001B.10 y UX-001C quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`. UX-002.1 queda **PASS DOCUMENTAL**, UX-002.2 y UX-002.3 quedan **PASS técnico local / release ready**: `/licencias` y `/addons` explican la decisión comercial sin activar checkout, pagos, suscripciones, migraciones, GHL ni consumos ocultos. La producción sigue en `0.2.0` porque no hubo deploy. El siguiente bloque es UX-002.4 — Services Experience.
 
 ## UX-002 — evolución comercial
 
@@ -54,9 +54,13 @@ La matriz maestra está en [business/VECIDYA_PRODUCT_CATALOG.md](business/VECIDY
 
 `/licencias` está implementada con hero, definición de licencia, tres niveles, comparador de capacidades, evolución por necesidad, addons, FAQ y CTA a Diagnóstico. Las referencias `USD 39/mes`, `USD 59/mes` y `USD 89/mes` se muestran explícitamente como referencias comerciales; no hay checkout, pagos ni suscripciones.
 
-### UX-002.3 Addons Experience — PENDIENTE DE APROBACIÓN
+### UX-002.3 Addons Experience — PASS técnico local
 
-Separar capacidades adicionales, IA, WhatsApp, telefonía, automatización e integraciones, manteniendo los consumos variables externos fuera del precio del addon.
+`/addons` está implementada con hero, definición, categorías de Comunicación, Automatización, Inteligencia Artificial e Integraciones, cards de capacidades, reglas de elección y CTA de Diagnóstico. No publica precios de addons, no activa consumos, checkout ni integración GHL.
+
+### UX-002.4 Services Experience — PENDIENTE DE APROBACIÓN
+
+Actualizar `/servicios` para separar públicamente licencias, addons y servicios profesionales, sin convertir servicios personalizados en capacidades automáticas de una licencia.
 
 ## Bloque actual: EMAIL-001C (PASS)
 

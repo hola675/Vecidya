@@ -180,6 +180,7 @@ export default function Licenses() {
           <div className="licenses-addons__content">
             <p>Los addons agregan capacidades específicas a una licencia existente. No sustituyen la licencia ni esconden consumos variables de proveedores externos.</p>
             <ul><li>WhatsApp</li><li>Inteligencia Artificial</li><li>Telefonía</li><li>Automatizaciones</li><li>Integraciones</li></ul>
+            <Link className="text-link" to="/addons">Conoce los addons <span aria-hidden="true">→</span></Link>
           </div>
         </section>
 

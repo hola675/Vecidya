@@ -1,6 +1,6 @@
 # Estructura del código
 
-Última reconciliación: 2026-09-22 (UX-002.2). Rutas verificadas contra `app/routes.ts`: **40 rutas, 40 archivos, ninguno huérfano ni faltante**. Columna *Pub.*: comprobación local de la nueva experiencia y evidencia HTTP histórica para el resto (`sí` = responde como se espera; para rutas privadas, `sí` = existe y redirige a `/login`; `no` = no está en el Worker público). Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
+Última reconciliación: 2026-09-22 (UX-002.3). Rutas verificadas contra `app/routes.ts`: **41 rutas, 41 archivos, ninguno huérfano ni faltante**. Columna *Pub.*: comprobación local de la nueva experiencia y evidencia HTTP histórica para el resto (`sí` = responde como se espera; para rutas privadas, `sí` = existe y redirige a `/login`; `no` = no está en el Worker público). Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
 
 ## Mapa del repositorio
 
@@ -9,8 +9,8 @@ D:\Proyectos\Vecidya            (raíz Git)
 ├── AGENTS.md, README.md
 └── vecidya-platform/           (único producto activo)
     ├── app/                    interfaz React Router
-    │   ├── routes.ts           tabla de 40 rutas
-    │   ├── routes/             40 archivos (uno por ruta)
+    │   ├── routes.ts           tabla de 41 rutas
+    │   ├── routes/             41 archivos (uno por ruta)
     │   ├── components/         public-layout, public-v2, admin-shell, ui
     │   ├── assets/public-assets.ts   manifiesto de assets públicos
     │   ├── lib/auth-client.ts  cliente Better Auth
@@ -35,7 +35,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     ├── workers/app.ts          entry point del Worker (+ redirect www → apex)
     ├── worker/                 durable-objects/, queues/, workflows/ vacíos
     ├── public/                 assets/selected/** (14 WebP activos + 3 PNG conservados) y brand/vecidya-app-icon.png
-    ├── tests/e2e/              29 archivos (ver TESTING.md); unit/ e integration/ vacíos
+    ├── tests/e2e/              30 archivos (ver TESTING.md); unit/ e integration/ vacíos
     ├── docs/                   14 documentos canónicos con los READMEs
     ├── wrangler.jsonc, drizzle.config.ts, react-router.config.ts, vite.config.ts,
     │   tsconfig*.json, better-auth.config.ts, worker-configuration.d.ts (generado)
@@ -48,12 +48,13 @@ D:\Proyectos\Vecidya            (raíz Git)
 
 ## Inventario de rutas
 
-### PUBLIC (14)
+### PUBLIC (15)
 
 | Ruta | Archivo | Datos | Auth | Estado | E2E | Pub. |
 | --- | --- | --- | --- | --- | --- | --- |
 | `/` | `home.tsx` | estático | — | funcional | `px-a` (200/meta/overflow) | sí |
 | `/licencias` | `licenses.tsx` | estático | — | funcional local / release ready | `licenses` | sí local; deploy pendiente |
+| `/addons` | `addons.tsx` | estático | — | funcional local / release ready | `addons` | sí local; deploy pendiente |
 | `/servicios` | `services.tsx` | estático | — | funcional | `px-a` (200/overflow) | sí |
 | `/unete` | `join.tsx` | estático | — | funcional | `join-contact` | sí |
 | `/contacto` | `contact.tsx` | estático (`mailto`) | — | funcional | `px-a`, `join-contact` | sí |

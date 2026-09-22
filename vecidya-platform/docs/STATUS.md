@@ -1,10 +1,10 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-22 (UX-002.2, Licencias Experience local release ready; código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: `/licencias` implementada con comparador responsive, referencias comerciales explícitas, CTA de Diagnóstico, E2E responsive, typecheck, build y diff-check.
+Última reconciliación: **2026-09-22 (UX-002.3, Addons Experience local release ready; código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: `/addons` implementada con categorías, cards de capacidades, separación licencia/addon/servicio/consumo, CTA de Diagnóstico, E2E responsive, typecheck, build y diff-check.
 
 ## Veredicto
 
-Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional, UX-001C en **PASS técnico local / release ready** y UX-002.2 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
+Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional, UX-001C en **PASS técnico local / release ready**, UX-002.2 en **PASS técnico local / release ready** y UX-002.3 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
 
 Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`), verificado por HTTP anónimo el 2026-09-22. El Worker reporta binding `DB=vecidya-prod`; `vecidya-staging` permanece existente y preservada. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes. La Home `v0.3.0` aún no está publicada.
 
@@ -27,9 +27,10 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | Servicios (administración) | sí | sí | sí | stale | sí | **PARTIAL** | Test 4B/8D no ejecutable; sin auditoría; `activated_at` nunca se escribe |
 | Servicios públicos (`/servicios`) | sí | sí | n/a | E2E público + responsive | sí | **PASS** | Selector por necesidades, cuatro áreas core y alcance consultivo; no lee `service_catalog` |
 | Licencias públicas (`/licencias`) | sí | sí | n/a | E2E Licencias responsive | no | **PASS técnico local / release ready** | Experiencia de decisión para Cuadra, Barrio y Ciudad; referencias comerciales no publicadas, sin checkout ni pagos |
+| Addons públicos (`/addons`) | sí | sí | n/a | E2E Addons responsive | no | **PASS técnico local / release ready** | Comunicación, automatización, IA e integraciones; sin precios de addons, GHL activo, checkout ni consumos ocultos |
 | Vecindario (lista, búsqueda, filtros, perfil) | sí | sí | sí | sí | sí | **PASS** | Búsqueda solo por nombre; sin paginación; filtro de ciudad sin prueba ejecutable |
 | Diagnóstico | sí | sí | n/a | E2E dedicado + público responsive | sí | **PASS técnico local** | Anónimo, efímero y cliente; progreso accesible, foco, navegación, resultado, reinicio y mapeos reales a Servicios |
-| Web pública (rutas y contenido) | sí | sí | n/a | E2E público + Join/Contact responsive | sí | **PASS** | 10 URLs en sitemap; deuda de contenido/editorial separada |
+| Web pública (rutas y contenido) | sí | sí | n/a | E2E público + Join/Contact responsive | sí | **PASS** | 12 URLs en sitemap; deuda de contenido/editorial separada |
 | Home pública UX-001B.2 | sí | sí | sí | E2E público + QA responsive local | no | **PASS técnico local / release ready** | Seis bloques, preview D1 de perfiles publicados, 8 SVG, OG/social metadata; producción no actualizada |
 | SEO/GEO | sí | n/a | n/a | parcial | sí | **PARTIAL** | Sin `og:image`; sitemap/robots sin pruebas; canonical fijo |
 | Administración interna (base) | sí | sí | sí | parcial | sí | **PARTIAL** | 8A/8C pasan; 8B/8E/servicios stale |
@@ -84,6 +85,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | UX-001C Public Experience Polish | IMPLEMENTADA | PASS técnico local / release ready | Header priorizado, footer agrupado, estados activos corregidos, filtros noindex, alias legado 301, recorrido público responsive y E2E actualizado; deploy pendiente |
 | UX-002.1 Product Catalog Foundation | IMPLEMENTADA | PASS DOCUMENTAL | Catálogo maestro con separación licencia/addon/servicio/consumo, evolución por necesidad, diagnóstico, Aprende, mapa comercial y frontera HighLevel; no implementa páginas, precios públicos ni integración |
 | UX-002.2 Licencias Experience | IMPLEMENTADA | PASS técnico local / release ready | `/licencias` explica el sistema continuo, niveles Cuadra/Barrio/Ciudad, comparador desktop/móvil, evolución, addons, FAQ y CTA de Diagnóstico; sin checkout, pagos, suscripciones ni integración GHL |
+| UX-002.3 Addons Experience | IMPLEMENTADA | PASS técnico local / release ready | `/addons` explica categorías y capacidades adicionales, diferencia licencia/addon/servicio, mantiene consumos separados y conecta con Diagnóstico; sin precios ni integración activa |
 | PUBLIC-PROD-DIRECT-001 | CERRADA | PASS | `wrangler.jsonc` top-level; apex 200, `www` 301 |
 | PRODUCT-EXPERIENCE-001 A | PASS TÉCNICO LOCAL | PASS | `product-experience-a` pasa (45 s) |
 | PRODUCT-EXPERIENCE-001 B | EN ESPERA | PARTIAL | Test de 260 líneas existe pero falla (defectos del script) |
