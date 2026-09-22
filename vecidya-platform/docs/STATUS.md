@@ -1,12 +1,12 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-22 (EMAIL-001C, deploy `v0.2.0`; entrega Gmail confirmada)**. Evidencia: deploy autorizado, smoke HTTP anónimo, solicitud de reset aceptada por el endpoint productivo y recepción confirmada por el operador.
+Última reconciliación: **2026-09-22 (UX-001B.2, código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: Home implementada, E2E público PASS, typecheck, build, QA responsive local y diff-check.
 
 ## Veredicto
 
-Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA** y EMAIL-001 en **PASS** para el núcleo transaccional. EMAIL-001C desplegó `0.2.0` sobre `vecidya-prod`; el smoke público, el endpoint productivo de reset y la entrega Gmail pasaron. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
+Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional y UX-001B.2 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
 
-Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`), verificado por HTTP anónimo el 2026-09-22. El Worker reporta binding `DB=vecidya-prod`; `vecidya-staging` permanece existente y preservada. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes.
+Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`), verificado por HTTP anónimo el 2026-09-22. El Worker reporta binding `DB=vecidya-prod`; `vecidya-staging` permanece existente y preservada. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes. La Home `v0.3.0` aún no está publicada.
 
 ## Matriz de capacidades
 
@@ -29,6 +29,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | Vecindario (lista, búsqueda, filtros, perfil) | sí | sí | sí | sí | sí | **PASS** | Búsqueda solo por nombre; sin paginación; filtro de ciudad sin prueba ejecutable |
 | Diagnóstico | sí | sí | n/a | solo 200/overflow | sí | **PARTIAL** | Anónimo, efímero, cliente; motor sin pruebas; defectos de puntuación (`DIAG-001`) |
 | Web pública (rutas y contenido) | sí | sí | n/a | 6 rutas | sí | **PASS** | 10 URLs en sitemap; defectos de calidad en `UX-PUBLIC-001` |
+| Home pública UX-001B.2 | sí | sí | sí | E2E público + QA responsive local | no | **PASS técnico local / release ready** | Seis bloques, preview D1 de perfiles publicados, 8 SVG, OG/social metadata; producción no actualizada |
 | SEO/GEO | sí | n/a | n/a | parcial | sí | **PARTIAL** | Sin `og:image`; sitemap/robots sin pruebas; canonical fijo |
 | Administración interna (base) | sí | sí | sí | parcial | sí | **PARTIAL** | 8A/8C pasan; 8B/8E/servicios stale |
 | Gobierno de perfiles (verificar/suspender/auditar) | sí | sí | sí | sí | **sí** | **PASS** | `0009`; solo `platform_admin` activo |
@@ -69,6 +70,8 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | PUBLIC-WEB-CONTENT-001, PUBLIC-GROWTH-001 A/B | CERRADA / PASS | PARTIAL | Cierre con QA no versionado; verificable por código, sin pruebas |
 | PUBLIC-GROWTH-001 C1 Real Profile Readiness | PASS TÉCNICO | PASS | `public-growth-c1` pasa |
 | PUBLIC-GROWTH-001 C2 First Real Neighbors | EN PROGRESO | EN PROGRESO | Vecidya publicada (HTTP 200 + sitemap); 0 vecinos externos |
+| UX-001B.1 Home Visual Architecture | PASS / CLOSED | CERRADA | Arquitectura visual y mapa de assets definidos sin cambios de producto |
+| UX-001B.2 Home Implementation | IMPLEMENTADA | PASS técnico local / release ready | Home, assets, metadata social, responsive/a11y básica y E2E público PASS; deploy pendiente |
 | PUBLIC-PROD-DIRECT-001 | CERRADA | PASS | `wrangler.jsonc` top-level; apex 200, `www` 301 |
 | PRODUCT-EXPERIENCE-001 A | PASS TÉCNICO LOCAL | PASS | `product-experience-a` pasa (45 s) |
 | PRODUCT-EXPERIENCE-001 B | EN ESPERA | PARTIAL | Test de 260 líneas existe pero falla (defectos del script) |

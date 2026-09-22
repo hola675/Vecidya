@@ -24,17 +24,18 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 | 3 | **OPS-001** | Operación y observabilidad post-separación | EMAIL-001 |
 | 4 | Pilot Data & Authorizations | Resolver G3; sin código | OPS-001 / usuario |
 | 5 | **Real Proof (E2)** | Publicar vecinos reales con datos autorizados | 4, G3 |
-| 6 | Home Experience Reduction | Reducir texto y mostrar producto real en Home | Independiente de 4–5; puede ir en paralelo |
-| 7 | Visual System Expansion | Ampliar sistema visual y assets | G2 |
-| 8 | Educational Content | Primeros artículos reales | Autor y fuentes reales |
-| 9 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 5 (vecinos) y 8 (artículos) |
-| 10 | Vecindario / Business Profile / UX | Descubrimiento, campos, cobertura E2E, a11y y SEO | 5–9 |
+| 6 | **UX-001B.1 / UX-001B.2** | Arquitectura visual e implementación de Home, assets y metadata social | Independiente de 4–5; **cerrado / PASS técnico local** |
+| 7 | **UX-001B.3** | Vecindario: búsqueda, filtros, cards, estados vacíos, responsive y accesibilidad | UX-001B.2 |
+| 8 | Visual System Expansion | Ampliar sistema visual y assets fuera de Home | G2 |
+| 9 | Educational Content | Primeros artículos reales | Autor y fuentes reales |
+| 10 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 5 (vecinos) y 9 (artículos) |
+| 11 | Business Profile / UX | Campos, cobertura E2E, a11y y SEO del perfil público | UX-001B.3 y Real Proof |
 
 **Corrección 1 — RR-001 precede Real Proof.** La evidencia mostró prerrequisitos técnicos: pruebas stale por el nombre D1 obsoleto, PX-B roto, selección de organización al login, limpieza de sesiones tras retirar membresía y protección server-side de perfiles publicados. RR-001 quedó cerrado antes de PERF-001 y permanece separado del deploy y del piloto.
 
 **Corrección 2 — Contenido (6) antes de Interconexión (7).** Las conexiones «Artículo → Diagnóstico/Servicio» y «Diagnóstico → contenido relacionado» no pueden existir sin artículos: hoy hay cero. Interconectar primero produciría enlaces a un hub vacío.
 
-**Nota de paralelismo.** Home (3) es 100 % estático y no depende de datos ni de backend; puede avanzar mientras el usuario resuelve los datos del piloto (1), que es el cuello de botella (depende de terceros). Visual (4) depende de la decisión G2.
+**Nota de estado.** UX-001B.1 queda **CLOSED** y UX-001B.2 queda **PASS técnico local / release ready** en `0.3.0`; la Home ahora lee hasta tres perfiles públicos reales desde D1. La producción sigue en `0.2.0` porque no hubo deploy. El siguiente bloque autorizado es UX-001B.3.
 
 ## Bloque actual: EMAIL-001C (PASS)
 

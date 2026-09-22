@@ -14,7 +14,15 @@ export const publicAssets = {
     reviewsLocationCard: `${selectedAssetBase}/decorative/decor-reviews-location-card.png`,
   },
   icons: {
+    diagnosticBusiness: `${selectedAssetBase}/icons/diagnostic-business.svg`,
+    diagnosticProfessional: `${selectedAssetBase}/icons/diagnostic-professional.svg`,
+    diagnosticProject: `${selectedAssetBase}/icons/diagnostic-project.svg`,
+    diagnosticCreator: `${selectedAssetBase}/icons/diagnostic-creator.svg`,
     search: `${selectedAssetBase}/icons/ui/ui-icon-search.png`,
+    serviceStructure: `${selectedAssetBase}/icons/service-structure.svg`,
+    serviceFormalization: `${selectedAssetBase}/icons/service-formalization.svg`,
+    serviceDigitalPresence: `${selectedAssetBase}/icons/service-digital-presence.svg`,
+    serviceVisibility: `${selectedAssetBase}/icons/service-visibility.svg`,
     storefrontVerified: `${selectedAssetBase}/icons/ui/ui-icon-storefront-verified.webp`,
     vecidyaPin: `${selectedAssetBase}/icons/ui/ui-icon-vecidya-pin.webp`,
   },
@@ -27,5 +35,8 @@ export const publicAssets = {
     reviewsAndRatingsMobile: `${selectedAssetBase}/illustrations/illus-reviews-and-ratings-mobile.png`,
     storefrontDigitalProfile: `${selectedAssetBase}/illustrations/illus-storefront-digital-profile.webp`,
     taskSchedulePanel: `${selectedAssetBase}/illustrations/illus-task-schedule-panel.webp`,
+  },
+  social: {
+    openGraph: `${selectedAssetBase}/og/og-vecidya-public.svg`,
   },
 } as const;

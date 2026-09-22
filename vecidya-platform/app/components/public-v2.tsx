@@ -108,18 +108,39 @@ export function EmptyState({
 export function ServiceCard({
   eyebrow,
   title,
+  icon,
   children,
 }: {
   eyebrow?: string;
   title: string;
+  icon?: string;
   children: ReactNode;
 }) {
   return (
     <article className="public-v2-card public-v2-service-card">
+      {icon ? <img alt="" aria-hidden="true" className="public-v2-service-card__icon" height={48} src={icon} width={48} /> : null}
       {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
       <h3>{title}</h3>
       <div>{children}</div>
     </article>
+  );
+}
+
+export function DiagnosticChoice({
+  icon,
+  label,
+  description,
+}: {
+  icon: string;
+  label: string;
+  description: string;
+}) {
+  return (
+    <Link className="home-diagnostic-choice" to="/diagnostico">
+      <span className="home-diagnostic-choice__icon"><img alt="" aria-hidden="true" height={48} src={icon} width={48} /></span>
+      <span><strong>{label}</strong><small>{description}</small></span>
+      <span aria-hidden="true" className="home-diagnostic-choice__arrow">→</span>
+    </Link>
   );
 }
 
@@ -141,7 +162,7 @@ export function VisualSection({
         <h2>{title}</h2>
         <div className="public-v2-section__body">{children}</div>
       </div>
-      {visual ? <aside className="public-v2-visual" aria-hidden="true">{visual}</aside> : null}
+      {visual ? <aside className="public-v2-visual">{visual}</aside> : null}
     </section>
   );
 }
@@ -173,7 +194,7 @@ export function BusinessCardV2({ profile }: { profile: BusinessCardProfile }) {
     <article className="public-v2-business-card">
       <div className="public-v2-business-card__identity">
         {profile.logoUrl ? (
-          <img alt={`Logo de ${profile.displayName}`} src={profile.logoUrl} />
+          <img alt={`Logo de ${profile.displayName}`} height={160} loading="lazy" src={profile.logoUrl} width={160} />
         ) : (
           <img alt="" aria-hidden="true" className="public-v2-business-card__fallback-asset" height={1254} loading="lazy" src={publicAssets.icons.storefrontVerified} width={1254} />
         )}

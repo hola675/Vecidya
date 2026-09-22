@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-22 (EMAIL-001C, deploy y Gmail confirmados)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+Última reconciliación: **2026-09-22 (UX-001B.2, Home local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -48,24 +48,21 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` **no exi
 
 CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubrir), Únete (iniciar proceso), Contacto (hablar). **Ninguna página pública enlaza a `/register`** (solo `/login` lo hace).
 
-### Home: inventario por sección (`home.tsx`)
+### Home: arquitectura UX-001B.2 (`home.tsx`)
 
-Ninguna sección lee D1. Sin buscador ni vecinos destacados; no enlaza a ningún `/vecindario/:slug`.
+La Home local `0.3.0` muestra producto real antes de explicarlo. Lee hasta tres perfiles públicos desde D1 mediante `listPublishedBusinessProfiles`, respetando `status = published` y la exclusión de perfiles suspendidos. No requiere sesión, no expone datos privados y mantiene un estado honesto con cero perfiles. La Home publicada todavía corresponde a `0.2.0`; el deploy no forma parte de UX-001B.2.
 
 | # | Sección | Objetivo | ~Palabras | CTA → destino | Visual | Conexión |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Hero | Propuesta de valor | 45 | «Explorar el Vecindario» → `/vecindario`; «Hacer mi diagnóstico» → `/diagnostico` | `illus-mobile-local-discovery` | Vecindario, Diagnóstico |
-| 2 | Vecindario | Buscar/entender/contactar | 95 | «Explorar negocios publicados» → `/vecindario` | ninguno | Vecindario |
-| 3 | «Una base que se entiende» | Problema de presencia dispersa | 50 | ninguno | `illus-storefront-digital-profile` | Concepto de perfil |
-| 4 | Diagnóstico | Presentarlo | 90 | «Conocer mi punto de partida» → `/diagnostico` | ninguno | Diagnóstico |
-| 5 | Servicios | 4 áreas | 70 | «Conoce los servicios» → `/servicios` | ninguno | Servicios |
-| 6 | Para quién | Audiencia | 60 | ninguno | ninguno | — |
-| 7 | Aprende | Biblioteca | 40 | «Leer lo esencial» → `/que-debes-saber` | ninguno | Hub vacío |
-| 8 | Cómo funciona | 3 pasos | 50 | ninguno | ninguno | — |
-| 9 | FAQ | 4 `<details>` | 90 | ninguno | ninguno | — (sin FAQPage JSON-LD) |
-| 10 | CTA final | Cierre | 50 | Diagnóstico y Vecindario (botones); Contacto (enlace) | fondo CSS | Diagnóstico, Vecindario, Contacto |
+| 1 | Hero / Product Entry | Propuesta breve y entrada al producto | corto | «Explorar el Vecindario»; «Hacer mi diagnóstico» | `illus-mobile-local-discovery` + fondo hero | Vecindario, Diagnóstico |
+| 2 | Vecindario real | Preview de hasta 3 perfiles publicados | D1 público | «Explorar todo el Vecindario» | `BusinessCardV2`, logos y fallback | Perfiles publicados |
+| 3 | Diagnóstico interactivo | Cuatro puertas iniciales | Ruta existente `/diagnostico` | Selección → Diagnóstico | 4 SVG de Diagnóstico | Diagnóstico |
+| 4 | Servicios visuales | Cuatro servicios prioritarios | Estático real | «Ver todos los servicios» | 4 SVG de Servicios | Servicios |
+| 5 | Cómo ayuda Vecidya | Información dispersa → presencia clara | Estático conceptual | CTA final | `illus-storefront-digital-profile` | Transformación |
+| 6 | CTA final | Una decisión principal | Estático | Diagnóstico primario; Vecindario secundario | Fondo oscuro existente | Diagnóstico, Vecindario |
+| 7 | Footer | Navegación secundaria, legal y versión | Estático | Enlaces existentes | Marca canónica | Navegación |
 
-Dependencia de texto: 8 de 10 secciones son solo texto. Este inventario es la base de la fase de reducción de contenido (ver [ROADMAP.md](ROADMAP.md)).
+La Home redujo la estructura de diez bloques a seis bloques de experiencia más footer. Se retiraron de la Home los bloques independientes de audiencia, biblioteca, proceso y FAQ; sus páginas no fueron eliminadas.
 
 ### Vecindario
 
@@ -96,12 +93,12 @@ Cinco servicios estáticos, cada uno con problema, cómo ayuda, tres entregables
 
 ### SEO, navegación y accesibilidad (evidencia de código)
 
-- Meta por ruta con `publicMeta`: título `X | Vecidya`, descripción, `index, follow`, `og:title/description/type/locale`, canonical **fijo** `https://vecidya.com`. Sin `og:image`, `og:url` ni Twitter cards. Sitemap, robots y URLs de JSON-LD usan el origen de la request (en `workers.dev` serían inconsistentes con el canonical).
+- Meta por ruta con `publicMeta`: título `X | Vecidya`, descripción, `index, follow`, `og:title/description/type/locale/url/image` y Twitter Cards con imagen Open Graph institucional; canonical **fijo** `https://vecidya.com`. Sitemap, robots y URLs de JSON-LD usan el origen de la request (en `workers.dev` serían inconsistentes con el canonical).
 - Robots: `Allow: /`; `Disallow: /app, /api, /login, /register`; sitemap sin `lastmod`.
 - `www.vecidya.com` → 301 → apex (`workers/app.ts`).
 - Navegación: desktop (Inicio, Vecindario, Diagnóstico, Aprende, Servicios, Nosotros, Contacto) + «Acceder» y «Únete a Vecidya»; móvil `<details>` con Escape y retorno de foco; footer con 9 enlaces.
-- Accesibilidad: skip-link, `:focus-visible`, `aria-label` en navegaciones, `prefers-reduced-motion`, breakpoints 430/760/820/900 px. Defectos: 8 páginas con `<main>` anidado; sin `role="progressbar"`/foco en cambio de pregunta del Diagnóstico.
-- Assets: 14 WebP activos + 4 PNG conservados (ícono de marca canónico y 3 recursos seleccionados sin uso); PERF-001 redujo `18,649,999` a `4,369,378` bytes (`76.57 %`). Las imágenes de contenido activo tienen dimensiones declaradas y los recursos below-the-fold usan lazy loading sin aplicarlo al visual principal/LCP.
+- Accesibilidad: skip-link, `:focus-visible`, `aria-label` en navegaciones, `prefers-reduced-motion`, breakpoints 430/760/820/900 px. UX-001B.2 corrige el landmark de Home/PublicLayout, añade un H1 único, dimensiones de imágenes, foco heredado y navegación keyboard-friendly para las cuatro opciones del Diagnóstico. La auditoría completa de la superficie pública y el progreso interno del Diagnóstico permanecen en UX-001F.
+- Assets: 14 WebP activos + 4 PNG conservados (ícono de marca canónico y 3 recursos seleccionados sin uso); PERF-001 redujo `18,649,999` a `4,369,378` bytes (`76.57 %`). UX-001B.2 añade 8 SVG livianos y `og-vecidya-public.svg` (1200×630, 2,291 bytes), sin usar assets de reviews/ratings ni el icono PNG de búsqueda de 808.6 KB.
 
 ### Política de assets visuales
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-22 — UX-001B.2 Public Home Implementation (`v0.3.0`, PASS técnico local)
+
+- Reemplazada la Home extensa por seis bloques de experiencia: Hero/producto, Vecindario real, Diagnóstico interactivo, Servicios visuales, transformación y CTA final.
+- La Home lee hasta tres perfiles publicados desde D1 mediante la query pública existente, excluye borradores/suspendidos y mantiene estado honesto cuando no hay perfiles.
+- Añadidos ocho SVG individuales: cuatro iconos de Diagnóstico y cuatro iconos de Servicios. Añadida imagen Open Graph institucional `1200×630` (`og-vecidya-public.svg`). No se integraron assets de reviews/ratings.
+- Unificada la etiqueta pública `Aprende` en desktop, móvil y footer; añadidas `og:url`, `og:image` y Twitter Cards; corregido el landmark principal de la Home.
+- Validado con `pnpm run typecheck`, `pnpm run build`, `git diff --check`, `product-experience-a-public-review-check.mjs` (PASS) y QA Playwright Edge en 1366/768/390/360 sin overflow.
+- `0.3.0` queda local/release ready; no hubo deploy, migraciones remotas ni cambio de producción (`0.2.0`).
+
 ## 2026-09-22 — EMAIL-001D Password Reset Production E2E (`v0.2.0`, PASS)
 
 - Evidencia manual autorizada del operador para `hola@vecidya.com`: correo real recibido, enlace de producción abierto, formulario `reset-password` ejecutado y contraseña modificada correctamente.

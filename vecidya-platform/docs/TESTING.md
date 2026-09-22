@@ -1,6 +1,6 @@
 # Pruebas
 
-Última reconciliación: 2026-09-22 (EMAIL-001D). Evidencia: `pnpm run test:email` 4/4, `pnpm run test:e2e` 17/17 local, smoke público productivo y verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada`. La respuesta pública fue genérica. La autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
+Última reconciliación: 2026-09-22 (UX-001B.2). Evidencia: `pnpm run test:email` 4/4, `pnpm run test:e2e` 17/17 local, `product-experience-a-public-review-check.mjs` PASS después de detener el servidor durante el setup D1, QA Playwright Edge en 1366/768/390/360 y verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada`. La autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
 
 ## Estado de la infraestructura de pruebas
 
@@ -97,7 +97,7 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 | Business profile | `bpx`, `pg-c1`, `c1`, `c2`, `pe-b`, `d1` | Subida de logo (no existe); publicación vía API |
 | Servicios | `services-exp`, `pe-b` | Escritura admin (4B/8D) stale |
 | Admin interna | `admin-shell` (8A), `admin-bp` (8C), `d1` | 8B, 8E y API de servicios stale; nada ejecutable cubre `/organizations`, `/integrations` ni escritura de servicios |
-| Web pública | `px-a`: `/`, `/vecindario`, perfil, `/servicios`, `/diagnostico`, `/contacto` (200, título, descripción, canonical, patrones prohibidos, overflow 1366/390/360) | `/unete`, `/sobre-nosotros`, `/que-debes-saber`, `/privacidad`, páginas 404, `www`→apex |
+| Web pública | `px-a`: recorrido `/` → `/vecindario` → perfil → `/servicios` → `/diagnostico` → `/contacto` (200, metadata, JSON-LD, patrones prohibidos, overflow 1366/390/360); UX-001B.2 además valida Home con hasta 3 perfiles D1, 4 choices y 4 servicios en 1366/768/390/360 | `/unete`, `/sobre-nosotros`, `/que-debes-saber`, `/privacidad`, páginas 404, `www`→apex |
 | Vecindario | `q` y categoría en `pg-c1`, `px-a`; exclusión de borradores/suspendidos en `c1`, `d1` | Filtro de ciudad, filtros combinados y estado vacío solo en `.ps1` stale |
 | Diagnóstico | solo 200/sin overflow/patrones prohibidos en `px-a` | **Motor sin pruebas**: puntuación, ramificación, siete puertas, `mailto`, «cero llamadas `/api/`». Las funciones `scoreAnswers`, `getApplicableQuestions`, `getDiagnosticMailto` no se exportan (no son unit-testables como están) |
 | SEO | meta/canonical en 6 rutas (`px-a`); JSON-LD `LocalBusiness` en `px-a`, `c1`, `c2`, `pg-c1` | `sitemap.xml`, `robots.txt`, `favicon.ico`: **0 pruebas**; SEO remoto solo en script remoto |
