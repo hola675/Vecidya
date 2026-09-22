@@ -1,11 +1,11 @@
 # Pruebas
 
-Última reconciliación: 2026-09-22 (UX-001B.6). Evidencia: `diagnostic-experience-check.mjs` PASS en 1366/768/390/360, `product-experience-a-public-review-check.mjs` PASS (incluye Home → Diagnóstico, `/servicios`, anchors, CTAs y metadata), `business-profile-experience-check.mjs` PASS, `public-growth-c1-real-profile-readiness-check.mjs` PASS y typecheck/build/diff-check PASS. El baseline previo de `pnpm run test:e2e` permanece en 17/17 local; una ejecución completa posterior quedó bloqueada en `product-evolution-001-c2-business-operations-check.mjs` por una aserción histórica de compactación de horarios, fuera de UX-001B.6. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
+Última reconciliación: 2026-09-22 (UX-001B.7). Evidencia: `join-contact-experience-check.mjs` PASS en 1366/768/390/360, `diagnostic-experience-check.mjs` PASS, `product-experience-a-public-review-check.mjs` PASS (incluye Home → Diagnóstico, `/servicios`, anchors, CTAs y metadata), `business-profile-experience-check.mjs` PASS, `public-growth-c1-real-profile-readiness-check.mjs` PASS y typecheck/build/diff-check PASS. El baseline previo de `pnpm run test:e2e` permanece en 17/17 local; una ejecución completa posterior quedó bloqueada en `product-evolution-001-c2-business-operations-check.mjs` por una aserción histórica de compactación de horarios, fuera de UX-001B.7. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
 
 ## Estado de la infraestructura de pruebas
 
 - No hay framework de pruebas ni CI (`.github/` no existe), ni pruebas unitarias o de integración (`tests/unit` y `tests/integration` solo tienen `.gitkeep`). `package.json` incluye `test:e2e`, un runner secuencial de los E2E locales aplicables.
-- Solo existe `tests/e2e/`: 24 scripts `.mjs` (Node + `fetch`, algunos con Playwright) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
+- Solo existe `tests/e2e/`: 26 scripts `.mjs` (Node + `fetch`, algunos con Playwright) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
 - Son **solo Windows** (`cmd.exe /d /c pnpm.cmd wrangler d1 execute … --local`).
 - Los scripts Playwright usan Microsoft Edge si existe, luego `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, luego Chromium empaquetado (requiere `playwright install`).
 
@@ -31,6 +31,7 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `bpx` | `business-profile-experience-check.mjs` | 7C |
 | `services-exp` | `services-experience-check.mjs` | 7D |
 | `diagnostic` | `diagnostic-experience-check.mjs` | UX-001B.6 |
+| `join-contact` | `join-contact-experience-check.mjs` | UX-001B.7 |
 | `admin-shell` | `admin-shell-check.mjs` | 8A |
 | `admin-bp` | `admin-business-profiles-check.mjs` | 8C |
 | `admin-orgs` | `admin-organizations-check.mjs` | 8B |
@@ -98,7 +99,7 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 | Business profile | `bpx`, `pg-c1`, `c1`, `c2`, `pe-b`, `d1` | Subida de logo (no existe); publicación vía API |
 | Servicios | `services-exp`, `pe-b` | Escritura admin (4B/8D) stale |
 | Admin interna | `admin-shell` (8A), `admin-bp` (8C), `d1` | 8B, 8E y API de servicios stale; nada ejecutable cubre `/organizations`, `/integrations` ni escritura de servicios |
-| Web pública | `px-a`: recorrido `/` → `/vecindario` → perfil → `/servicios` → `/diagnostico` → `/contacto` (200, metadata, JSON-LD, patrones prohibidos, overflow, H1 único, selector/anchors/CTAs y ausencia de lenguaje de compra en 1366/768/390/360); UX-001B.2 además valida Home con hasta 3 perfiles D1, 4 choices y 4 servicios | `/unete`, `/sobre-nosotros`, `/que-debes-saber`, `/privacidad`, páginas 404, `www`→apex |
+| Web pública | `px-a` + `join-contact`: recorrido `/` → `/vecindario` → perfil → `/servicios` → `/diagnostico` → `/contacto` y `/unete`/`/contacto` (200, metadata, CTAs, mailto, privacidad, patrones prohibidos, overflow y responsive 1366/768/390/360); UX-001B.2 además valida Home con hasta 3 perfiles D1, 4 choices y 4 servicios | `/sobre-nosotros`, `/que-debes-saber`, `/privacidad` fuera de smoke dedicado, páginas 404, `www`→apex |
 | Vecindario | `q` y categoría en `pg-c1`, `px-a`; exclusión de borradores/suspendidos en `c1`, `d1` | Filtro de ciudad, filtros combinados y estado vacío solo en `.ps1` stale |
 | Diagnóstico | `diagnostic-experience-check.mjs` (selector, 8 preguntas para negocio, progreso accesible, teclado, anterior/siguiente, resultado, reinicio y responsive 1366/768/390/360); `px-a` cubre 200/meta/overflow | Scoring puro sin pruebas unitarias aisladas; persistencia y motor exhaustivo de las siete ramas siguen fuera de esta fase |
 | SEO | meta/canonical en 6 rutas (`px-a`); JSON-LD `LocalBusiness` en `px-a`, `c1`, `c2`, `pg-c1` | `sitemap.xml`, `robots.txt`, `favicon.ico`: **0 pruebas**; SEO remoto solo en script remoto |

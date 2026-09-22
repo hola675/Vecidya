@@ -1,10 +1,10 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-22 (UX-001B.6, código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: experiencia de Diagnóstico implementada, E2E dedicado PASS, E2E público PASS, typecheck, build, QA responsive local y diff-check.
+Última reconciliación: **2026-09-22 (UX-001B.7, código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: experiencias de Únete y Contacto implementadas, E2E dedicado PASS, E2E público PASS, typecheck, build, QA responsive local y diff-check.
 
 ## Veredicto
 
-Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5 y UX-001B.6 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
+Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6 y UX-001B.7 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
 
 Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`), verificado por HTTP anónimo el 2026-09-22. El Worker reporta binding `DB=vecidya-prod`; `vecidya-staging` permanece existente y preservada. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes. La Home `v0.3.0` aún no está publicada.
 
@@ -28,7 +28,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | Servicios públicos (`/servicios`) | sí | sí | n/a | E2E público + responsive | sí | **PASS** | Selector por necesidades, cuatro áreas core y alcance consultivo; no lee `service_catalog` |
 | Vecindario (lista, búsqueda, filtros, perfil) | sí | sí | sí | sí | sí | **PASS** | Búsqueda solo por nombre; sin paginación; filtro de ciudad sin prueba ejecutable |
 | Diagnóstico | sí | sí | n/a | E2E dedicado + público responsive | sí | **PASS técnico local** | Anónimo, efímero y cliente; progreso accesible, foco, navegación, resultado, reinicio y mapeos reales a Servicios |
-| Web pública (rutas y contenido) | sí | sí | n/a | 6 rutas | sí | **PASS** | 10 URLs en sitemap; defectos de calidad en `UX-PUBLIC-001` |
+| Web pública (rutas y contenido) | sí | sí | n/a | E2E público + Join/Contact responsive | sí | **PASS** | 10 URLs en sitemap; deuda de contenido/editorial separada |
 | Home pública UX-001B.2 | sí | sí | sí | E2E público + QA responsive local | no | **PASS técnico local / release ready** | Seis bloques, preview D1 de perfiles publicados, 8 SVG, OG/social metadata; producción no actualizada |
 | SEO/GEO | sí | n/a | n/a | parcial | sí | **PARTIAL** | Sin `og:image`; sitemap/robots sin pruebas; canonical fijo |
 | Administración interna (base) | sí | sí | sí | parcial | sí | **PARTIAL** | 8A/8C pasan; 8B/8E/servicios stale |
@@ -76,6 +76,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | UX-001B.4 Public Business Profile | IMPLEMENTADA | PASS técnico local / release ready | Identidad, CTA, detalles, horarios, contacto, redes, metadata/JSON-LD y E2E de perfil PASS; deploy pendiente |
 | UX-001B.5 Services Experience | IMPLEMENTADA | PASS técnico local / release ready | `/servicios` orienta por necesidades, presenta cuatro áreas core, conserva Organización y crecimiento como soporte, elimina lenguaje de compra y valida responsive/anchors/CTAs; deploy pendiente |
 | UX-001B.6 Diagnostic Experience | IMPLEMENTADA | PASS técnico local / release ready | Selector, preguntas, progreso accesible, foco, navegación anterior/siguiente, resultado, reinicio y recomendaciones enlazadas a Servicios; deploy pendiente |
+| UX-001B.7 Join + Contact Experience | IMPLEMENTADA | PASS técnico local / release ready | `/unete` orienta el inicio con dos caminos y preparación breve; `/contacto` expone email real, guidance y privacidad sin canales ficticios; deploy pendiente |
 | PUBLIC-PROD-DIRECT-001 | CERRADA | PASS | `wrangler.jsonc` top-level; apex 200, `www` 301 |
 | PRODUCT-EXPERIENCE-001 A | PASS TÉCNICO LOCAL | PASS | `product-experience-a` pasa (45 s) |
 | PRODUCT-EXPERIENCE-001 B | EN ESPERA | PARTIAL | Test de 260 líneas existe pero falla (defectos del script) |
@@ -146,7 +147,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | --- | --- | --- | --- | --- |
 | `TEST-D1-NAME` | Los scripts locales usan el binding D1 `DB`; no quedan referencias activas a `vecidya-dev` en `tests/e2e` | `tests/e2e`; runner 17/17 PASS | M | RESUELTA (RAN 2026-09-20) |
 | `TEST-PXB-001` | PX-B corrigió locators, lifecycle por viewport, fixture local y overflow responsive en organización | `product-experience-b-client-app-check.mjs`; `app/app.css`; runner PASS | M | RESUELTA (RAN 2026-09-20) |
-| `TEST-GAPS-001` | No hay pruebas unitarias ni de integración, ni script `test`, ni CI. Sin protección: motor del Diagnóstico, `sitemap.xml`/`robots.txt`/`favicon`, credenciales inválidas, `/unete`, `/sobre-nosotros`, `/que-debes-saber`, `/privacidad`, `www`→apex, `/api/organizations/:id/authorization` | `docs/TESTING.md` | M | ABIERTA |
+| `TEST-GAPS-001` | No hay pruebas unitarias ni de integración, ni script `test`, ni CI. Sin protección: motor exhaustivo del Diagnóstico, `sitemap.xml`/`robots.txt`/`favicon`, credenciales inválidas, `/sobre-nosotros`, `/que-debes-saber`, `/privacidad`, `www`→apex, `/api/organizations/:id/authorization` | `docs/TESTING.md`; E2E Join/Contact añadido | M | ABIERTA |
 | `TEST-SAFETY-001` | Los scripts locales validan `BASE_URL`; los remotos requieren intención explícita y hostname workers.dev | `tests/e2e/test-safety.mjs`; pruebas negativas PASS | M | RESUELTA (RAN 2026-09-20) |
 | `TEST-CLEANUP-001` | 11 scripts dejan fixtures en la D1 local (perfiles publicados, `platform_admin`); pueden hacer inestables las aserciones del directorio | `TESTING.md` | B | ABIERTA |
 

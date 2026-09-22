@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-22 (UX-001B.5, Servicios local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+Última reconciliación: **2026-09-22 (UX-001B.7, Join + Contact local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -39,14 +39,20 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` **no exi
 | `/vecindario/:slug` | D1 (perfil + horarios) | Funcional | 404 real si no publicado/suspendido; JSON-LD `LocalBusiness` |
 | `/servicios` | Estático (5 fichas) | Funcional | Sin precios, paquetes ni garantías (grep) |
 | `/diagnostico` | Cliente (`useState`) | Funcional | Ver sección |
-| `/unete` | Estático | Funcional | Solo Diagnóstico y `mailto`; sin registro |
-| `/contacto` | Estático | Funcional | Solo `mailto:hola@vecidya.com`; sin formulario |
+| `/unete` | Estático | Funcional | Dos entradas: Diagnóstico o Contacto; preparación breve y tres pasos; sin registro |
+| `/contacto` | Estático | Funcional | Email `hola@vecidya.com`, guidance contextual, privacidad y Diagnóstico; sin formulario ni canales ficticios |
 | `/sobre-nosotros` | Estático | Funcional | Nombres de pila (Yoan, Edgar) sin fotos |
 | `/que-debes-saber` | Estático | **Hub vacío** | 0 artículos; tarjetas no clicables |
 | `/privacidad` | Estático | Funcional | Base pública; revisión legal pendiente |
 | `/robots.txt`, `/sitemap.xml`, `/favicon.ico` | sitemap: D1 | Funcional | Sitemap: 9 rutas + perfiles publicados no suspendidos (hoy 10 URLs); favicon: redirect 302 |
 
 CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubrir), Únete (iniciar proceso), Contacto (hablar). **Ninguna página pública enlaza a `/register`** (solo `/login` lo hace).
+
+### Únete + Contacto (`join.tsx`, `contact.tsx`)
+
+- UX-001B.7 separa responsabilidades: `/unete` responde cómo empezar y ofrece dos caminos (no sé qué necesito → Diagnóstico; sé qué necesito → Contacto), mientras `/contacto` responde cómo hablar y declara email como único canal directo disponible.
+- `/unete` conserva `illus-business-onboarding-form.webp` como apoyo visual, lista cinco piezas de contexto útiles y reduce el proceso a tres pasos sin prometer SLA, llamadas, registro, compra o propuesta automática.
+- `/contacto` mantiene `mailto:hola@vecidya.com`, explica qué enviar, qué esperar, enlaza `/privacidad` y no muestra teléfono, WhatsApp, chat, booking ni formulario persistente.
 
 ### Home: arquitectura UX-001B.2 (`home.tsx`)
 

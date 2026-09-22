@@ -1,55 +1,82 @@
 import { PublicLayout, publicMeta } from "../components/public-layout";
-import { publicAssets } from "../assets/public-assets";
-import { CTASection, ServiceCard } from "../components/public-v2";
+import { CTASection } from "../components/public-v2";
 
 import type { Route } from "./+types/contact";
 
+const contactMailto = "mailto:hola@vecidya.com";
+
 export function meta(_: Route.MetaArgs) {
-  return publicMeta("Contacto", "Contacta con Vecidya para hacer una pregunta o conversar sobre presencia digital.", "/contacto");
+  return publicMeta("Contacto", "Cómo contactar con Vecidya para hacer una pregunta o conversar sobre tu siguiente paso.", "/contacto");
 }
 
 export default function Contact() {
   return (
     <PublicLayout>
-      <main className="public-page public-commercial-page">
-        <section className="public-commercial-hero public-commercial-hero--media">
-          <div>
-            <p className="eyebrow">CONTACTO</p>
-            <h1>Haz una pregunta o habla directamente con Vecidya.</h1>
-            <p>Contacto es para conversar con una persona. Si todavía no sabes qué necesitas, el diagnóstico puede ayudarte antes de escribir.</p>
-            <div className="public-actions">
-              <a className="button button--primary" href="mailto:hola@vecidya.com">Escribir a hola@vecidya.com</a>
-              <a className="button button--secondary" href="/diagnostico">Hacer diagnóstico</a>
-            </div>
+      <main className="public-page contact-experience-page">
+        <section className="contact-experience-hero" aria-labelledby="contact-title">
+          <p className="eyebrow">CONTACTO</p>
+          <h1 id="contact-title">Hablemos de lo que estás intentando resolver.</h1>
+          <p>Cuéntanos tu contexto y te orientamos sobre el siguiente paso apropiado. El canal directo disponible hoy es el correo electrónico.</p>
+          <div className="public-actions">
+            <a className="button button--primary" href={contactMailto}>Escribir a hola@vecidya.com</a>
+            <a className="button button--secondary" href="/diagnostico">Hacer diagnóstico</a>
           </div>
-          <img alt="Conversación móvil entre una persona y un negocio local en Vecidya" decoding="async" height={1086} src={publicAssets.illustrations.mobileCustomerChat} width={1448} />
         </section>
 
-        <section className="public-commercial-grid contact-signal-grid">
-          <ServiceCard eyebrow="CANAL REAL" title="Email">
-            <p><a className="text-link" href="mailto:hola@vecidya.com">hola@vecidya.com</a></p>
-            <p>Escríbenos con una pregunta concreta o una breve descripción de tu caso.</p>
-          </ServiceCard>
-          <ServiceCard eyebrow="QUÉ ENVIAR" title="Contexto útil">
-            <p>Nombre, actividad, ciudad o zona, qué quieres mejorar y enlaces actuales si existen.</p>
-          </ServiceCard>
-          <ServiceCard eyebrow="QUÉ ESPERAR" title="Orientación inicial">
-            <p>Una respuesta orientada a entender el punto de partida y el siguiente paso razonable.</p>
-          </ServiceCard>
-          <ServiceCard eyebrow="PRIVACIDAD" title="Sin formulario">
-            <p>Esta página no almacena datos. La información se gestiona desde tu aplicación de email.</p>
-          </ServiceCard>
+        <section className="contact-channel" aria-labelledby="contact-channel-title">
+          <div>
+            <p className="eyebrow">CANAL DIRECTO</p>
+            <h2 id="contact-channel-title">Email</h2>
+            <p>Escríbenos desde tu aplicación de correo con una pregunta concreta o una breve descripción de tu caso.</p>
+          </div>
+          <a className="contact-channel__email" href={contactMailto}>hola@vecidya.com</a>
         </section>
 
-        <CTASection
-          actions={[
-            { label: "Enviar correo", href: "mailto:hola@vecidya.com", variant: "primary" },
-            { label: "Hacer diagnóstico", to: "/diagnostico", variant: "secondary" },
-          ]}
-          eyebrow="CONVERSACIÓN"
-          title="Una pregunta concreta también es un buen comienzo."
-        >
-          <p>Actualmente el canal directo de contacto es el correo electrónico.</p>
+        <section className="contact-guidance" aria-labelledby="contact-guidance-title">
+          <div className="contact-section-heading">
+            <p className="eyebrow">PARA AYUDARNOS A ENTENDER</p>
+            <h2 id="contact-guidance-title">Un poco de contexto es suficiente.</h2>
+          </div>
+          <div className="contact-guidance-grid">
+            <article>
+              <span>01</span>
+              <h3>Quién eres</h3>
+              <p>Tu nombre y el nombre de tu negocio, proyecto o perfil.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>Qué quieres resolver</h3>
+              <p>La situación concreta que quieres ordenar o mejorar.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>Qué tienes hoy</h3>
+              <p>Un enlace relevante, ciudad o zona si ayuda a entender el caso.</p>
+            </article>
+          </div>
+        </section>
+
+        <section className="contact-expectations" aria-labelledby="contact-expectations-title">
+          <div>
+            <p className="eyebrow">QUÉ ESPERAR</p>
+            <h2 id="contact-expectations-title">Una conversación situada en tu realidad.</h2>
+          </div>
+          <p>Revisaremos el contexto y responderemos con el siguiente paso apropiado. No hay un formulario propio ni un sistema de tickets detrás de esta página: el mensaje se envía mediante tu aplicación de correo.</p>
+        </section>
+
+        <section className="contact-boundaries" aria-labelledby="contact-boundaries-title">
+          <div>
+            <p className="eyebrow">SI AÚN NO SABES</p>
+            <h2 id="contact-boundaries-title">Empieza por ubicar tu punto de partida.</h2>
+          </div>
+          <div className="public-actions">
+            <a className="button button--secondary" href="/diagnostico">Hacer diagnóstico</a>
+            <a className="text-link" href="/privacidad">Ver privacidad <span aria-hidden="true">→</span></a>
+          </div>
+        </section>
+
+        <CTASection actions={[{ label: "Enviar correo", href: contactMailto, variant: "primary" }]} eyebrow="CONVERSACIÓN" title="Una pregunta concreta también es un buen comienzo.">
+          <p>Actualmente, el correo electrónico es el canal directo para hablar con Vecidya.</p>
         </CTASection>
       </main>
     </PublicLayout>

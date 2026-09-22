@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-22 — UX-001B.7 Join + Contact Experience (`v0.3.0`, PASS técnico local)
+
+- Separadas las responsabilidades de `/unete` y `/contacto`: Únete explica cómo empezar con dos caminos; Contacto declara el email como canal directo real.
+- `/unete` conserva la ilustración de onboarding, reduce el contexto necesario a cinco puntos y el proceso a tres pasos, sin registro, checkout ni promesas operativas.
+- `/contacto` mantiene `mailto:hola@vecidya.com`, añade guidance breve, expectativas honestas y enlace a privacidad sin simular teléfono, WhatsApp, chat, booking o formulario persistente.
+- Añadido `join-contact-experience-check.mjs` con metadata, H1, CTAs, mailto, privacidad, keyboard focus y responsive 1366/768/390/360; la deuda C2 de horarios permanece independiente.
+- Se mantiene `0.3.0`; no hubo push, deploy, migraciones remotas ni cambios en `vecidya-prod` (`0.2.0`).
+
 ## 2026-09-22 — UX-001B.6 Diagnostic Experience (`v0.3.0`, PASS técnico local)
 
 - Mejorada `/diagnostico` con selector visual coherente con Home, preguntas con jerarquía clara, `Pregunta X de Y`, progreso accesible y etapas visibles.
