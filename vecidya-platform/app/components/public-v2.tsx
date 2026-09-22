@@ -313,7 +313,10 @@ export function PublicBusinessHours({ hours }: { hours: BusinessHoursEntry[] }) 
       <p className="eyebrow">HORARIOS</p>
       <h2>Cuándo atiende</h2>
       <ul>
-        {groups.map((group) => <li key={`${group.firstDay}-${group.lastDay}`}><span>{group.label}</span><time>{group.value}</time></li>)}
+        {groups.map((group) => {
+          const label = `${group.label} · ${group.value}`;
+          return <li key={`${group.firstDay}-${group.lastDay}`}><time>{label}</time></li>;
+        })}
       </ul>
     </section>
   );

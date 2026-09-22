@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-22 — Cierre de regresión C2 Business Operations (`v0.3.0`)
+
+- Corregido el render SSR de los horarios compactados del perfil público: la etiqueta completa (`Lun–Vie · 09:00–18:00`) se emite como una unidad legible y estable para HTML/E2E.
+- `product-evolution-001-c2-business-operations-check.mjs` vuelve a **PASS** en validación privada, perfil público, JSON-LD y responsive del editor/perfil.
+- No se modificaron schema, migraciones, scoring, rutas públicas ni versión; no hubo push ni deploy.
+
 ## 2026-09-22 — UX-001B.9 Learn Experience (`v0.3.0`, PASS técnico local)
 
 - Establecida `/aprende` como ruta canónica educativa y conservado `/que-debes-saber` como alias legado; la navegación pública ahora apunta a `/aprende` y el sitemap usa la canonical.

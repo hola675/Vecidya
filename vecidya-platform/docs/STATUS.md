@@ -1,6 +1,6 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-22 (UX-001B.9, código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: experiencia editorial de Aprende implementada sin artículos ficticios, E2E dedicado PASS, E2E público PASS, typecheck, build, QA responsive local y diff-check.
+Última reconciliación: **2026-09-22 (UX-001B.9 + cierre C2, código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: experiencia editorial de Aprende y corrección de compactación de horarios implementadas, E2E dedicado PASS, E2E público PASS, C2 PASS, typecheck, build, QA responsive local y diff-check.
 
 ## Veredicto
 
