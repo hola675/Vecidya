@@ -8,7 +8,7 @@ Este documento es el snapshot técnico completo. El estado corto y la deuda est�
 
 Vecidya Platform es una aplicación SSR de React Router sobre Cloudflare Workers, Better Auth, Drizzle ORM y D1. Cubre identidad, organizaciones, membresías, permisos, perfil comercial (uno por organización), servicios Vecidya, directorio público (Vecindario), Diagnóstico anónimo, administración interna con gobierno de perfiles y una web pública institucional. Vecidya **no es un CRM**: GHL es el system of record comercial y hoy no existe ninguna integración con GHL.
 
-Publicado en `vecidya.com` (verificado HTTP y manualmente el 2026-09-21): la web pública completa y **un** perfil real (`/vecindario/vecidya`), ahora sobre `vecidya-prod`; migraciones `0000`–`0009` están presentes. `hola@vecidya.com` autenticó en producción y accedió a `/app` y `/app/internal` como administrador de plataforma.
+Publicado en `vecidya.com` (verificado HTTP el 2026-09-22 y autenticación histórica manual): la web pública completa y **un** perfil real (`/vecindario/vecidya`), ahora sobre `vecidya-prod`; migraciones `0000`–`0009` están presentes. EMAIL-001 añadió evidencia manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` para `hola@vecidya.com`; la autenticación posterior con la nueva contraseña no fue declarada sin evidencia separada.
 
 ## Stack real
 
@@ -175,7 +175,7 @@ Vecidya **no puede hoy**: listar/banear/suplantar usuarios, transferir ownership
 | Elemento | Clasificación |
 | --- | --- |
 | `integration_connection` + `POST /api/platform/organizations/:id/integrations` + `GET` tenant + overview interno | **FOUNDATION ONLY**: registro de metadata; sin llamadas salientes; proveedor = cualquier kebab-case |
-| Adaptador Gmail transaccional (`server/email/mail.server.ts`) | **PASS en producción; Gmail API send y entrega real confirmados; verificación/invitaciones separadas** |
+| Adaptador Gmail transaccional (`server/email/mail.server.ts`) | **PASS en producción; Gmail API send, entrega real y password reset E2E confirmados; verificación/invitaciones separadas** |
 | GHL | **TEXT ONLY** (solo documentación; 0 código) |
 | Google, Meta, WhatsApp API, Stripe, Twilio | **NOT FOUND** |
 | WhatsApp/Instagram/Facebook/LinkedIn en perfil | Campos y enlaces (`wa.me`), no integración |

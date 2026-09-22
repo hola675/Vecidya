@@ -14,7 +14,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 
 | Capacidad | Código | UI | DB | Test | Publicado | Estado | Nota clave |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Auth (registro, login, logout, sesión) | sí | sí | sí | indirecto | sí | **PARTIAL** | Sin reset de contraseña ni verificación de email; sin pruebas de credenciales inválidas; logout solo en el test PX-B (roto) |
+| Auth (registro, login, logout, sesión) | sí | sí | sí | reset productivo PASS; resto indirecto | sí | **PARTIAL** | Reset de contraseña E2E productivo PASS; verificación de email, credenciales inválidas y logout dedicado siguen pendientes |
 | Organizaciones | sí | sí | sí | sí | sí | **PASS** | Renombrar/eliminar sin pruebas; Better Auth expone endpoints propios (`AUTHZ-BA-001`) |
 | Miembros y roles | sí | sí | sí | stale | sí | **PARTIAL** | Único test (7B.1) usa el nombre D1 obsoleto → no ejecutable |
 | Multi-org (arquitectura y aislamiento) | sí | sí | sí | sí | sí | **PASS** | 1 usuario → N organizaciones → 1 perfil por organización; probado por `pe-b` |

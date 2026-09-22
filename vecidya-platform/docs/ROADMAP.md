@@ -40,7 +40,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 - **Objetivo**: EMAIL-001 queda cerrado para el núcleo transaccional; verificación de cuenta e invitaciones siguen como follow-up separado.
 - **Alcance**: únicamente EMAIL-001; PROD-001 queda cerrado.
-- **Fuera de alcance**: modificar contraseñas, pruebas destructivas, migraciones D1, despliegue staging y verificación de invitaciones con cuentas no controladas.
+- **Fuera de alcance futuro**: repetir resets, pruebas destructivas, migraciones D1, despliegue staging y verificación de invitaciones con cuentas no controladas.
 
 ## Trabajo futuro por área
 
@@ -70,7 +70,7 @@ Auditar servicios e integraciones (`AUDIT-COVERAGE-001`); mostrar en el detalle 
 
 ### Invitaciones (7B.2)
 
-Requiere (1) configurar OAuth Gmail y demostrar entrega real, y (2) completar el camino de verificación de email para que un invitado pueda aceptar (`INVITE-001`).
+OAuth Gmail y entrega real ya están demostrados por EMAIL-001; queda completar el camino de verificación de email para que un invitado pueda aceptar (`INVITE-001`).
 
 ### Integraciones
 
@@ -78,7 +78,7 @@ GHL, Google, Meta, WhatsApp y otros solo con decisión explícita; guardan únic
 
 ### Producción
 
-PROD-001 prepara `vecidya-prod` y la separación de configuración, pero el cutover público, smoke remoto, `app.vecidya.com`/`admin.vecidya.com`, secretos productivos dedicados y cualquier manejo posterior de `vecidya-staging` requieren autorización independiente. La secuencia operativa prevista es `PROD-001 → EMAIL-001 → OPS-001 → LEGAL / REAL PROOF → GHL pilot → licenses → UX evolution`.
+PROD-001 y EMAIL-001 están cerrados en sus alcances; `app.vecidya.com`/`admin.vecidya.com`, el smoke remoto, secretos adicionales y cualquier manejo posterior de `vecidya-staging` requieren autorización independiente. La secuencia operativa vigente es `PROD-001 → EMAIL-001 → OPS-001 → LEGAL / REAL PROOF → GHL pilot → licenses → UX evolution`.
 
 ## Fuera de alcance permanente
 

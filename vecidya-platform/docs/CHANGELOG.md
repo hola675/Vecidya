@@ -1,10 +1,17 @@
 # Changelog
 
+## 2026-09-22 — EMAIL-001D Password Reset Production E2E (`v0.2.0`, PASS)
+
+- Evidencia manual autorizada del operador para `hola@vecidya.com`: correo real recibido, enlace de producción abierto, formulario `reset-password` ejecutado y contraseña modificada correctamente.
+- Flujo verificado: `forgot-password → Gmail real → enlace de recuperación de producción → reset-password → contraseña modificada`.
+- EMAIL-001 permanece **PASS / CLOSED** en `v0.2.0`. La autenticación posterior con la nueva contraseña no se afirma sin evidencia separada.
+- Verificación de email con cuenta secundaria e invitación completa (entrega + aceptación) permanecen **PENDING / follow-up**.
+
 ## 2026-09-22 — EMAIL-001C Production Release (`v0.2.0`, PASS)
 
 - Publicado el commit `6b351c4` en `vecidya-platform` top-level sobre `vecidya-prod`; Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
 - Smoke público PASS: rutas principales, `forgot-password`, `reset-password`, `verify-email`, `robots.txt`, `sitemap.xml` y `www` → apex; footer público reporta `0.2.0`.
-- Solicitud productiva de reset para `hola@vecidya.com` respondió `200` con mensaje genérico; el operador confirmó recepción en inbox. Gmail OAuth refresh, API send y entrega real quedan **PASS**. No se completó el reset ni se mutó la contraseña.
+- Solicitud productiva de reset para `hola@vecidya.com` respondió `200` con mensaje genérico; el operador confirmó recepción en inbox. Gmail OAuth refresh, API send y entrega real quedan **PASS**. El detalle del reset E2E fue reconciliado en EMAIL-001D.
 - No se modificó D1, no se ejecutaron migraciones ni E2E remotos destructivos, y no se expusieron valores de secretos. Verificación autenticada de esta release e invitaciones requieren una sesión/cuenta controlada y permanecen como follow-up explícito.
 
 ## 2026-09-22 — EMAIL-001 Gmail Release Ready (`v0.2.0`, no publicada)
