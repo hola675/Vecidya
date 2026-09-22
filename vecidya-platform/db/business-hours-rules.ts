@@ -29,13 +29,21 @@ function signature(entry: BusinessHoursEntry) {
   return entry.isClosed ? "closed" : `${entry.opensAt}-${entry.closesAt}`;
 }
 
+export type CompactBusinessHoursGroup = {
+  firstDay: number;
+  lastDay: number;
+  entry: BusinessHoursEntry;
+  label: string;
+  value: string;
+};
+
 /**
  * Groups consecutive days (Mon..Sun) that share the exact same schedule into a
  * single readable line. A missing day (no entry) breaks the run instead of
  * being silently treated as "same as neighbor", since the business never
  * declared it.
  */
-export function compactBusinessHours(entries: BusinessHoursEntry[]) {
+export function compactBusinessHoursGroups(entries: BusinessHoursEntry[]): CompactBusinessHoursGroup[] {
   const byDay = new Map(entries.map((entry) => [entry.dayOfWeek, entry]));
   const groups: { firstDay: number; lastDay: number; entry: BusinessHoursEntry }[] = [];
 
@@ -56,6 +64,10 @@ export function compactBusinessHours(entries: BusinessHoursEntry[]) {
       ? dayOfWeekShortLabels[group.firstDay]
       : `${dayOfWeekShortLabels[group.firstDay]}–${dayOfWeekShortLabels[group.lastDay]}`;
     const value = group.entry.isClosed ? "Cerrado" : `${group.entry.opensAt}–${group.entry.closesAt}`;
-    return `${label} · ${value}`;
+    return { ...group, label, value };
   });
+}
+
+export function compactBusinessHours(entries: BusinessHoursEntry[]) {
+  return compactBusinessHoursGroups(entries).map((group) => `${group.label} · ${group.value}`);
 }

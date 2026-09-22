@@ -41,7 +41,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export default function PublicBusinessProfilePage() {
   const { origin, profile, hours } = useLoaderData<typeof loader>();
-  const sameAs = [profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].filter(
+  const sameAs = [profile.websiteUrl, profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].filter(
     (url): url is string => Boolean(url),
   );
   const openingHoursSpecification = hours
@@ -80,15 +80,13 @@ export default function PublicBusinessProfilePage() {
         <PublicBusinessHeader profile={profile} />
 
         <div className="public-business-profile__grid">
-          <section className="public-v2-card public-business-profile__description">
-            <p className="eyebrow">PRESENCIA PUBLICADA</p>
-            <h2>Qué hace este negocio</h2>
-            {profile.description ? (
+          {profile.description ? (
+            <section className="public-v2-card public-business-profile__description">
+              <p className="eyebrow">PRESENCIA PUBLICADA</p>
+              <h2>Qué hace este negocio</h2>
               <p>{profile.description}</p>
-            ) : (
-              <p>Este negocio publicó su perfil con una descripción breve. Los detalles adicionales aparecerán cuando el negocio los complete.</p>
-            )}
-          </section>
+            </section>
+          ) : null}
 
           <PublicBusinessContact profile={profile} />
           <PublicBusinessDetails profile={profile} />
@@ -97,15 +95,13 @@ export default function PublicBusinessProfilePage() {
 
         <CTASection
           actions={[
-            { label: "Volver al Vecindario", to: "/vecindario", variant: "secondary" },
-            { label: "Ver servicios", to: "/servicios", variant: "secondary" },
-            { label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" },
-            { label: "Hablar con Vecidya", to: "/contacto", variant: "secondary" },
+            { label: "Seguir explorando", to: "/vecindario", variant: "primary" },
+            { label: "Hacer diagnóstico", to: "/diagnostico", variant: "secondary" },
           ]}
           eyebrow="VECIDYA"
           title="Cada perfil conecta con una decisión real."
         >
-          <p>Vecidya muestra lo que el negocio ya publicó: identidad, contexto, canales disponibles y horarios reales cuando el negocio los declara, sin reseñas ni contenido inventado. Desde aquí puedes explorar el Vecindario, entender los servicios, diagnosticar tu punto de partida o hablar directamente con Vecidya.</p>
+          <p>Este perfil muestra la información pública que el negocio ya declaró: identidad, contexto, canales disponibles y horarios cuando existen.</p>
         </CTASection>
       </main>
     </PublicLayout>

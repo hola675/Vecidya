@@ -940,9 +940,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .public-business-profile__header h1 {
-  max-width: 14ch;
+  max-width: 18ch;
   margin: 0.55rem 0 0.8rem;
-  font-size: clamp(2.7rem, 7vw, 5.8rem);
+  font-size: clamp(2.6rem, 6vw, 4.7rem);
   letter-spacing: -0.07em;
   line-height: 0.94;
 }
@@ -989,6 +989,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .public-business-profile__contact .button {
   flex: 1 1 10rem;
 }
+.public-business-profile__contact .button--primary { min-height: 3.15rem; box-shadow: 0 .7rem 1.5rem rgb(21 95 197 / 14%); }
 
 .public-business-profile__social-links {
   margin-top: 1.25rem;
@@ -1059,11 +1060,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .public-business-profile__hours li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
   border-top: 1px solid var(--line);
   padding-top: 0.6rem;
   color: var(--ink);
   font-weight: 750;
 }
+.public-business-profile__hours li span { color: var(--muted); font-weight: 800; }
+.public-business-profile__hours li time { white-space: nowrap; }
 
 @media (max-width: 820px) {
   .public-business-profile__header,
@@ -1079,6 +1086,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .public-business-profile__hours {
     grid-column: auto;
   }
+
+  .public-business-profile__hours li { align-items: flex-start; flex-direction: column; gap: .2rem; }
 }
 
 .public-commercial-page {

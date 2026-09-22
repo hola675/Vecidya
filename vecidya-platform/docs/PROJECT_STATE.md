@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-22 (UX-001B.3, Vecindario local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+Última reconciliación: **2026-09-22 (UX-001B.4, perfil público local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -73,8 +73,8 @@ La Home redujo la estructura de diez bloques a seis bloques de experiencia más 
 - Tarjeta: logo o ícono, categoría, nombre, ciudad/país, descripción corta, «Ver perfil». Sin badge de verificado, contacto ni horarios en la tarjeta.
 - Estados vacíos diferenciados para directorio sin perfiles y búsquedas filtradas sin coincidencias; ambos conservan una acción honesta hacia Diagnóstico.
 - Slug: igualdad exacta sensible a mayúsculas; sin redirección si cambia.
-- Perfil: descripción, contacto (WhatsApp → teléfono → web como jerarquía de CTA), redes, detalles, horarios compactados; un `CTASection` fijo (Vecindario, Servicios, Diagnóstico, Contacto) **no contextual**. Sin negocios relacionados ni contenido relacionado.
-- JSON-LD `LocalBusiness`: `name`, `url`, `description`, `image`, `telephone`, `email`, `address` (localidad/país), `sameAs` (solo redes reales), `areaServed`, `openingHoursSpecification` (solo días abiertos). No emite web del negocio, WhatsApp, categoría, `geo` ni `priceRange`.
+- Perfil UX-001B.4: identidad protagonista, categoría, ubicación, descripción solo si existe, CTA primario dinámico (WhatsApp → teléfono → web → email), canales completos, redes reales, detalles operativos solo disponibles, horarios agrupados con etiquetas/datos legibles y cierre contextual con Vecindario/Diagnóstico. Sin negocios relacionados, servicios comerciales inventados ni contenido relacionado.
+- JSON-LD `LocalBusiness`: `name`, `url`, `description`, `image`, `telephone`, `email`, `address` (localidad/país), `sameAs` (sitio web y redes reales), `areaServed`, `openingHoursSpecification` (solo días abiertos). No emite WhatsApp, categoría, `geo`, `priceRange`, reviews ni ratings.
 - Lo que es funcional hoy: filtrado, búsqueda por nombre y perfiles reales. Categoría y ciudad son filtros exactos; no se promete geolocalización, distancia, relevancia ni búsqueda textual por rubro.
 
 ### Diagnóstico (`diagnostic.tsx`, 680 líneas)

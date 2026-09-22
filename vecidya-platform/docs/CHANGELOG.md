@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-22 — UX-001B.4 Public Business Profile (`v0.3.0`, PASS técnico local)
+
+- Mejorada la experiencia de `/vecindario/:slug` como presencia pública del negocio: identidad, ubicación, CTA primario, descripción, detalles operativos, horarios, contacto y redes reales.
+- Los canales de contacto conservan la jerarquía WhatsApp → teléfono → website → email, con URLs seguras y nombres accesibles. Los paneles sin datos no se renderizan.
+- Los horarios se agrupan visualmente con etiquetas de días y valores de tiempo sin introducir “abierto ahora” ni inferencias de timezone.
+- JSON-LD `LocalBusiness` mantiene solo datos existentes e incorpora el website real en `sameAs`; no se agregan reviews, ratings, geo ni servicios comerciales ficticios.
+- Actualizadas pruebas de perfil publicado, draft, opcionales vacíos, JSON-LD y cierre contextual. Validado con E2E de perfil, E2E público, Playwright responsive, typecheck, build y diff-check.
+- Se mantiene `0.3.0`; no hubo deploy, migraciones remotas ni cambios en `vecidya-prod`.
+
 ## 2026-09-22 — UX-001B.3 Vecindario Experience (`v0.3.0`, PASS técnico local)
 
 - Rediseñado `/vecindario` como superficie de descubrimiento: header breve, búsqueda por nombre, filtros exactos de categoría/ciudad, resumen de filtros activos y grid responsive.

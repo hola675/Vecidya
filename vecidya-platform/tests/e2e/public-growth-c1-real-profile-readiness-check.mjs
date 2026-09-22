@@ -160,9 +160,9 @@ try {
 
   const publicProfile = await (await expectStatus(ownerA.client.fetch(`/vecindario/${publishedSlug}`), 200, "Detalle público publicado")).text();
   assert(publicProfile.includes(`C1 Vecino Real ${suffix}`), "El perfil público no mostró el nombre publicado.");
-  assert(publicProfile.includes("Este negocio publicó su perfil con una descripción breve."), "El perfil público no manejó descripción larga opcional ausente.");
-  assert(publicProfile.includes("Este perfil todavía no tiene canales públicos de contacto."), "El perfil público no manejó contacto opcional ausente.");
-  assert(publicProfile.includes('href="/servicios"') && publicProfile.includes('href="/diagnostico"') && publicProfile.includes('href="/contacto"'), "El perfil público no conectó servicios, diagnóstico y contacto.");
+   assert(!publicProfile.includes("Este negocio publicó su perfil con una descripción breve."), "El perfil público renderizó un panel de descripción sin contenido.");
+   assert(publicProfile.includes("Este perfil todavía no tiene canales públicos de contacto."), "El perfil público no manejó contacto opcional ausente.");
+   assert(publicProfile.includes('href="/vecindario"') && publicProfile.includes('href="/diagnostico"'), "El perfil público no mostró sus acciones finales.");
 
   const jsonLd = extractJsonLd(publicProfile);
   assert(jsonLd["@type"] === "LocalBusiness", "El JSON-LD no usa LocalBusiness.");

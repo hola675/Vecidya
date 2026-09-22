@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 
 import { publicAssets } from "../assets/public-assets";
-import { compactBusinessHours, type BusinessHoursEntry } from "../../db/business-hours-rules";
+import { compactBusinessHoursGroups, type BusinessHoursEntry } from "../../db/business-hours-rules";
 import { serviceModeLabels } from "../../db/business-profile-rules";
 
 import type { ReactNode } from "react";
@@ -217,7 +217,7 @@ export function PublicBusinessHeader({ profile }: { profile: PublicBusinessProfi
     <section className="public-business-profile__header">
       <div className="public-business-profile__identity">
         {profile.logoUrl ? (
-          <img alt={`Logo de ${profile.displayName}`} src={profile.logoUrl} />
+          <img alt={`Logo de ${profile.displayName}`} height={256} loading="eager" src={profile.logoUrl} width={256} />
         ) : (
           <img alt="" aria-hidden="true" className="public-business-profile__fallback-asset" height={1254} src={publicAssets.icons.storefrontVerified} width={1254} />
         )}
@@ -226,7 +226,7 @@ export function PublicBusinessHeader({ profile }: { profile: PublicBusinessProfi
         <p className="eyebrow">{profile.category ?? "NEGOCIO LOCAL"}</p>
         <h1>{profile.displayName}</h1>
         {profile.verificationStatus === "verified" ? (
-          <p className="public-business-profile__verified">✓ Perfil verificado por Vecidya</p>
+          <p className="public-business-profile__verified"><span aria-hidden="true">✓</span> Perfil verificado por Vecidya</p>
         ) : null}
         {location ? <p className="public-business-profile__location">{location}</p> : null}
         {profile.shortDescription ? <p className="public-business-profile__summary">{profile.shortDescription}</p> : null}
@@ -251,17 +251,17 @@ export function PublicBusinessContact({ profile }: { profile: PublicBusinessProf
       {hasContact ? (
         <div className="public-actions">
           {profile.whatsapp ? (
-            <a className={`button button--${primaryChannel === "whatsapp" ? "primary" : "secondary"}`} href={`https://wa.me/${profile.whatsapp.replace("+", "")}`} rel="noreferrer" target="_blank">
+            <a aria-label={`Escribir por WhatsApp a ${profile.displayName}`} className={`button button--${primaryChannel === "whatsapp" ? "primary" : "secondary"}`} href={`https://wa.me/${profile.whatsapp.replace(/\D/g, "")}`} rel="noreferrer" target="_blank">
               Escribir por WhatsApp
             </a>
           ) : null}
           {profile.phone ? (
-            <a className={`button button--${primaryChannel === "phone" ? "primary" : "secondary"}`} href={`tel:${profile.phone}`}>Llamar</a>
+            <a aria-label={`Llamar a ${profile.displayName}`} className={`button button--${primaryChannel === "phone" ? "primary" : "secondary"}`} href={`tel:${profile.phone}`}>Llamar</a>
           ) : null}
           {profile.websiteUrl ? (
-            <a className={`button button--${primaryChannel === "website" ? "primary" : "secondary"}`} href={profile.websiteUrl} rel="noreferrer" target="_blank">Visitar sitio web</a>
+            <a aria-label={`Visitar sitio web de ${profile.displayName}`} className={`button button--${primaryChannel === "website" ? "primary" : "secondary"}`} href={profile.websiteUrl} rel="noreferrer" target="_blank">Visitar sitio web</a>
           ) : null}
-          {profile.publicEmail ? <a className="button button--secondary" href={`mailto:${profile.publicEmail}`}>Enviar email</a> : null}
+          {profile.publicEmail ? <a aria-label={`Enviar email a ${profile.displayName}`} className="button button--secondary" href={`mailto:${profile.publicEmail}`}>Enviar email</a> : null}
         </div>
       ) : (
         <p>Este perfil todavía no tiene canales públicos de contacto. Puedes volver al Vecindario para explorar otros negocios.</p>
@@ -271,7 +271,7 @@ export function PublicBusinessContact({ profile }: { profile: PublicBusinessProf
           <p className="eyebrow">PRESENCIA DIGITAL</p>
           <div className="public-actions">
             {socialLinks.map((link) => (
-              <a className="button button--light" href={link.href} key={link.label} rel="noreferrer" target="_blank">{link.label}</a>
+              <a aria-label={`${link.label} de ${profile.displayName}`} className="button button--light" href={link.href} key={link.label} rel="noreferrer" target="_blank">{link.label}</a>
             ))}
           </div>
         </div>
@@ -281,14 +281,9 @@ export function PublicBusinessContact({ profile }: { profile: PublicBusinessProf
 }
 
 export function PublicBusinessDetails({ profile }: { profile: PublicBusinessProfile }) {
-  const location = [profile.city, profile.country].filter(Boolean).join(", ");
   const details = [
-    ["Categoría", profile.category],
-    ["Ubicación", location],
     ["Cómo atiende", profile.serviceMode ? serviceModeLabels[profile.serviceMode] : null],
-    ["Cobertura", profile.serviceArea],
-    ["Teléfono", profile.phone],
-    ["Email", profile.publicEmail],
+    ["Área de atención", profile.serviceArea],
   ].filter((detail): detail is [string, string] => Boolean(detail[1]));
 
   if (!details.length) return null;
@@ -310,15 +305,15 @@ export function PublicBusinessDetails({ profile }: { profile: PublicBusinessProf
 }
 
 export function PublicBusinessHours({ hours }: { hours: BusinessHoursEntry[] }) {
-  const lines = compactBusinessHours(hours);
-  if (!lines.length) return null;
+  const groups = compactBusinessHoursGroups(hours);
+  if (!groups.length) return null;
 
   return (
     <section className="public-v2-card public-business-profile__hours">
       <p className="eyebrow">HORARIOS</p>
       <h2>Cuándo atiende</h2>
       <ul>
-        {lines.map((line) => <li key={line}>{line}</li>)}
+        {groups.map((group) => <li key={`${group.firstDay}-${group.lastDay}`}><span>{group.label}</span><time>{group.value}</time></li>)}
       </ul>
     </section>
   );
