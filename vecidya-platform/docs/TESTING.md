@@ -1,6 +1,6 @@
 # Pruebas
 
-Última reconciliación: 2026-09-22 (UX-001B.8). Evidencia: `about-experience-check.mjs` PASS en 1366/768/390/360, `join-contact-experience-check.mjs` PASS, `diagnostic-experience-check.mjs` PASS, `product-experience-a-public-review-check.mjs` PASS (incluye Home → Diagnóstico, `/servicios`, anchors, CTAs y metadata), `business-profile-experience-check.mjs` PASS, `public-growth-c1-real-profile-readiness-check.mjs` PASS y typecheck/build/diff-check PASS. El baseline previo de `pnpm run test:e2e` permanece en 17/17 local; una ejecución completa posterior quedó bloqueada en `product-evolution-001-c2-business-operations-check.mjs` por una aserción histórica de compactación de horarios, fuera de UX-001B.8. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
+Última reconciliación: 2026-09-22 (UX-001B.9). Evidencia: `learn-experience-check.mjs` PASS en 1366/768/390/360, `about-experience-check.mjs` PASS, `join-contact-experience-check.mjs` PASS, `diagnostic-experience-check.mjs` PASS, `product-experience-a-public-review-check.mjs` PASS (incluye Home → Diagnóstico, `/servicios`, anchors, CTAs y metadata), `business-profile-experience-check.mjs` PASS, `public-growth-c1-real-profile-readiness-check.mjs` PASS y typecheck/build/diff-check PASS. El baseline previo de `pnpm run test:e2e` permanece en 17/17 local; una ejecución completa posterior quedó bloqueada en `product-evolution-001-c2-business-operations-check.mjs` por una aserción histórica de compactación de horarios, fuera de UX-001B.9. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
 
 ## Estado de la infraestructura de pruebas
 
@@ -33,6 +33,7 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `diagnostic` | `diagnostic-experience-check.mjs` | UX-001B.6 |
 | `join-contact` | `join-contact-experience-check.mjs` | UX-001B.7 |
 | `about` | `about-experience-check.mjs` | UX-001B.8 |
+| `learn` | `learn-experience-check.mjs` | UX-001B.9 |
 | `admin-shell` | `admin-shell-check.mjs` | 8A |
 | `admin-bp` | `admin-business-profiles-check.mjs` | 8C |
 | `admin-orgs` | `admin-organizations-check.mjs` | 8B |
@@ -100,7 +101,7 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 | Business profile | `bpx`, `pg-c1`, `c1`, `c2`, `pe-b`, `d1` | Subida de logo (no existe); publicación vía API |
 | Servicios | `services-exp`, `pe-b` | Escritura admin (4B/8D) stale |
 | Admin interna | `admin-shell` (8A), `admin-bp` (8C), `d1` | 8B, 8E y API de servicios stale; nada ejecutable cubre `/organizations`, `/integrations` ni escritura de servicios |
-| Web pública | `px-a` + `join-contact` + `about`: recorrido `/` → `/vecindario` → perfil → `/servicios` → `/diagnostico` → `/contacto` y `/unete`/`/sobre-nosotros` (200, metadata, CTAs, mailto, privacidad, equipo real, ausencia de credenciales ficticias, patrones prohibidos, overflow y responsive 1366/768/390/360); UX-001B.2 además valida Home con hasta 3 perfiles D1, 4 choices y 4 servicios | `/que-debes-saber`, `/privacidad` fuera de smoke dedicado, páginas 404, `www`→apex |
+| Web pública | `px-a` + `join-contact` + `about` + `learn`: recorrido `/` → `/vecindario` → perfil → `/servicios` → `/diagnostico` → `/contacto`, `/unete`, `/sobre-nosotros` y `/aprende` (200, metadata, CTAs, mailto, privacidad, equipo real, temas, estado editorial honesto, ausencia de credenciales ficticias, patrones prohibidos, overflow y responsive 1366/768/390/360); UX-001B.2 además valida Home con hasta 3 perfiles D1, 4 choices y 4 servicios | alias `/que-debes-saber`, `/privacidad` fuera de smoke dedicado, páginas 404, `www`→apex |
 | Vecindario | `q` y categoría en `pg-c1`, `px-a`; exclusión de borradores/suspendidos en `c1`, `d1` | Filtro de ciudad, filtros combinados y estado vacío solo en `.ps1` stale |
 | Diagnóstico | `diagnostic-experience-check.mjs` (selector, 8 preguntas para negocio, progreso accesible, teclado, anterior/siguiente, resultado, reinicio y responsive 1366/768/390/360); `px-a` cubre 200/meta/overflow | Scoring puro sin pruebas unitarias aisladas; persistencia y motor exhaustivo de las siete ramas siguen fuera de esta fase |
 | SEO | meta/canonical en 6 rutas (`px-a`); JSON-LD `LocalBusiness` en `px-a`, `c1`, `c2`, `pg-c1` | `sitemap.xml`, `robots.txt`, `favicon.ico`: **0 pruebas**; SEO remoto solo en script remoto |

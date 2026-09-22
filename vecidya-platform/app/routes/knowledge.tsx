@@ -2,109 +2,97 @@ import { Link } from "react-router";
 
 import { publicAssets } from "../assets/public-assets";
 import { PublicLayout, publicMeta } from "../components/public-layout";
-import { AssetVisual, CTASection, ServiceCard, VisualSection } from "../components/public-v2";
 
 import type { Route } from "./+types/knowledge";
 
+const topics = [
+  { eyebrow: "PRIMEROS PASOS", title: "Presencia digital", copy: "Qué necesita una persona para entender qué haces, dónde estás y cómo contactarte." },
+  { eyebrow: "ORGANIZAR", title: "Orden del negocio", copy: "Cómo reunir información, canales y prioridades antes de sumar herramientas." },
+  { eyebrow: "ENCONTRAR", title: "Visibilidad online", copy: "Qué ayuda a que las personas descubran tu negocio sin prometer posiciones automáticas." },
+  { eyebrow: "ELEGIR", title: "Tecnología útil", copy: "Cuándo una web, un perfil o una herramienta aporta valor y cuándo todavía no hace falta." },
+];
+
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
-    "Qué debes saber",
-    "Guía de Vecidya para entender presencia digital, buscadores, automatización y próximos pasos sin promesas vacías.",
-    "/que-debes-saber",
+    "Aprende",
+    "Ideas claras para entender y mejorar la presencia digital de tu negocio.",
+    "/aprende",
   );
 }
 
 export default function Knowledge() {
   return (
     <PublicLayout>
-      <main className="public-page public-commercial-page">
-        <section className="public-commercial-hero">
-          <p className="eyebrow">QUÉ DEBES SABER</p>
-          <h1>Estar en internet no significa tener una estrategia digital.</h1>
-          <p>
-            Una presencia digital funciona como un sistema: página web, redes,
-            directorios, reseñas, contenido, canales de contacto y seguimiento
-            deberían trabajar hacia un mismo objetivo.
-          </p>
-          <div className="public-actions">
-            <Link className="button button--primary" to="/diagnostico">Ver diagnóstico</Link>
-            <Link className="button button--secondary" to="/contacto">Hacer una pregunta</Link>
+      <main className="public-page learn-experience-page">
+        <section className="learn-experience-hero" aria-labelledby="learn-title">
+          <div>
+            <p className="eyebrow">APRENDE</p>
+            <h1 id="learn-title">Aprende a organizar, mejorar y entender la presencia digital de tu negocio.</h1>
+            <p>Recursos para tomar mejores decisiones digitales, explicados sin tecnicismos innecesarios ni promesas vacías.</p>
+            <div className="public-actions">
+              <Link className="button button--primary" to="/diagnostico">Hacer diagnóstico</Link>
+              <Link className="button button--secondary" to="/contacto">Hacer una pregunta</Link>
+            </div>
+          </div>
+          <div className="learn-experience-hero__visual" aria-hidden="true">
+            <img alt="" decoding="async" height={1254} src={publicAssets.illustrations.taskSchedulePanel} width={1254} />
+            <span>Decisiones claras</span>
           </div>
         </section>
 
-        <section className="public-commercial-section public-commercial-section--knowledge">
-          <p className="eyebrow">TEMAS BASE</p>
-          <h2>La biblioteca crecerá desde decisiones concretas.</h2>
-          <div className="knowledge-category-strip" aria-label="Categorías editoriales futuras">
-            <span>Empezar</span>
-            <span>Organizar</span>
-            <span>Entender</span>
-            <span>Decidir</span>
+        <section className="learn-topics" aria-labelledby="learn-topics-title">
+          <div className="learn-section-heading">
+            <p className="eyebrow">TEMAS PRINCIPALES</p>
+            <h2 id="learn-topics-title">Empieza por la pregunta que tienes hoy.</h2>
           </div>
-          <div className="public-commercial-grid">
-            <ServiceCard eyebrow="EMPEZAR" title="Qué necesita realmente una presencia digital">
-              <p>Lo mínimo para que alguien entienda qué haces, dónde atiendes y cómo contactarte.</p>
-            </ServiceCard>
-            <ServiceCard eyebrow="EMPEZAR" title="Página web vs redes sociales">
-              <p>Qué función cumple cada canal y por qué no conviene tratarlos como si fueran lo mismo.</p>
-            </ServiceCard>
-            <ServiceCard eyebrow="ORGANIZAR" title="Qué es un CRM y cuándo lo necesitas">
-              <p>Cómo saber si necesitas organizar contactos y seguimiento o si todavía basta una base más simple.</p>
-            </ServiceCard>
-            <ServiceCard eyebrow="ENTENDER" title="Dominio, cuentas y control digital">
-              <p>Qué accesos e información deberías controlar antes de depender de terceros.</p>
-            </ServiceCard>
+          <div className="learn-topics-grid">
+            {topics.map((topic, index) => (
+              <article className="learn-topic-card" key={topic.title}>
+                <span className="learn-topic-card__number">{String(index + 1).padStart(2, "0")}</span>
+                <p className="eyebrow">{topic.eyebrow}</p>
+                <h3>{topic.title}</h3>
+                <p>{topic.copy}</p>
+              </article>
+            ))}
           </div>
         </section>
 
-        <VisualSection
-          eyebrow="CRITERIO EDITORIAL"
-          title="Contenido útil, verificable y sin relleno."
-          visual={<AssetVisual alt="Panel de tareas y prioridades para ordenar decisiones digitales" height={1254} src={publicAssets.illustrations.taskSchedulePanel} width={1254} />}
-        >
-          <p>
-            La primera pregunta no debería ser en qué red social estar, sino qué
-            quieres conseguir y dónde están las personas a las que necesitas
-            llegar. Cada contenido futuro debe responder dudas reales con claridad
-            y evidencia.
-          </p>
-        </VisualSection>
-
-        <section className="public-commercial-section">
-          <p className="eyebrow">HOJA DE RUTA</p>
-          <h2>Un avance digital sano empieza por ordenar decisiones.</h2>
-          <ol className="public-commercial-steps">
-            <li><span>01</span><strong>Comprender el punto de partida</strong><p>Ver si el negocio existe, cómo está estructurado y qué presencia digital tiene hoy.</p></li>
-            <li><span>02</span><strong>Definir objetivos</strong><p>Elegir si se busca más visibilidad, contactos, reservas, reputación, organización o crecimiento.</p></li>
-            <li><span>03</span><strong>Ordenar la base</strong><p>Revisar información comercial, canales, mensajes, contacto y señales de confianza.</p></li>
-            <li><span>04</span><strong>Medir y mejorar</strong><p>Avanzar con estrategia, ejecución, medición y mejora sin prometer resultados imposibles de controlar.</p></li>
-          </ol>
+        <section className="learn-resources" aria-labelledby="learn-resources-title">
+          <div className="learn-section-heading">
+            <p className="eyebrow">RECURSOS</p>
+            <h2 id="learn-resources-title">Estamos preparando las primeras guías.</h2>
+          </div>
+          <div className="learn-resources-empty">
+            <span className="learn-resources-empty__mark" aria-hidden="true">+</span>
+            <div>
+              <h3>Contenido útil, no relleno.</h3>
+              <p>Publicaremos recursos desde preguntas reales de negocios, proyectos y profesionales. Cada guía ayudará a tomar una decisión concreta y tendrá su propio contexto.</p>
+            </div>
+            <Link className="text-link" to="/diagnostico">Ubicar mi punto de partida <span aria-hidden="true">→</span></Link>
+          </div>
         </section>
 
-        <section className="public-v2-card public-commercial-limits">
-          <p className="eyebrow">CRITERIO</p>
-          <h2>Cómo crecerá esta biblioteca.</h2>
+        <section className="learn-why" aria-labelledby="learn-why-title">
+          <div>
+            <p className="eyebrow">POR QUÉ APRENDER ESTO</p>
+            <h2 id="learn-why-title">Entender primero ayuda a construir mejor.</h2>
+          </div>
           <ul>
-            <li>Publicaremos contenido desde preguntas reales de negocios, emprendedores y profesionales.</li>
-            <li>Cada tema deberá ayudar a tomar una decisión concreta.</li>
-            <li>No inventamos casos, clientes, métricas, reseñas o resultados.</li>
-            <li>Si una recomendación requiere más contexto, te invitaremos a conversar antes de vender una solución.</li>
+            <li>Evitas sumar herramientas que no resuelven tu problema.</li>
+            <li>Puedes explicar mejor qué haces y para quién.</li>
+            <li>Identificas qué conviene ordenar antes de crecer.</li>
           </ul>
         </section>
 
-        <CTASection
-          actions={[
-            { label: "Explorar diagnóstico", to: "/diagnostico", variant: "primary" },
-            { label: "Contactar", to: "/contacto", variant: "secondary" },
-          ]}
-          eyebrow="SIGUIENTE PASO"
-          title="Si tienes una duda concreta, podemos empezar por ahí."
-        >
-          <p>
-            El contenido crecerá desde preguntas reales y decisiones verificables.
-            Mientras tanto, el diagnóstico y el contacto son las rutas útiles.
-          </p>
-        </CTASection>
+        <section className="learn-final-cta" aria-labelledby="learn-final-title">
+          <p className="eyebrow">SIGUIENTE PASO</p>
+          <h2 id="learn-final-title">¿No sabes qué necesitas todavía?</h2>
+          <p>El diagnóstico te ayuda a convertir una duda general en prioridades iniciales. Si ya tienes una pregunta concreta, también puedes escribirnos.</p>
+          <div className="public-actions">
+            <Link className="button button--primary" to="/diagnostico">Hacer diagnóstico</Link>
+            <Link className="button button--secondary" to="/contacto">Contactar</Link>
+          </div>
+        </section>
       </main>
     </PublicLayout>
   );

@@ -33,7 +33,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           <NavLink to="/">Inicio</NavLink>
           <NavLink to="/vecindario">Vecindario</NavLink>
           <NavLink to="/diagnostico">Diagnóstico</NavLink>
-          <NavLink to="/que-debes-saber">Aprende</NavLink>
+            <NavLink to="/aprende">Aprende</NavLink>
           <NavLink to="/servicios">Servicios</NavLink>
           <NavLink to="/sobre-nosotros">Nosotros</NavLink>
           <NavLink to="/contacto">Contacto</NavLink>
@@ -48,7 +48,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
             <NavLink to="/">Inicio</NavLink>
             <NavLink to="/vecindario">Vecindario</NavLink>
             <NavLink to="/diagnostico">Diagnóstico</NavLink>
-            <NavLink to="/que-debes-saber">Aprende</NavLink>
+          <NavLink to="/aprende">Aprende</NavLink>
             <NavLink to="/servicios">Servicios</NavLink>
             <NavLink to="/sobre-nosotros">Sobre nosotros</NavLink>
             <NavLink to="/unete">Únete</NavLink>
@@ -70,7 +70,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
         <nav aria-label="Enlaces del pie">
           <Link to="/vecindario">Vecindario</Link>
           <Link to="/diagnostico">Diagnóstico</Link>
-          <Link to="/que-debes-saber">Aprende</Link>
+          <Link to="/aprende">Aprende</Link>
           <Link to="/servicios">Servicios</Link>
           <Link to="/sobre-nosotros">Sobre nosotros</Link>
           <Link to="/unete">Únete</Link>

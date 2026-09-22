@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-22 (UX-001B.8, About local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+Última reconciliación: **2026-09-22 (UX-001B.9, Learn local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -30,7 +30,7 @@ Publicado en `vecidya.com` (verificado HTTP el 2026-09-22 y autenticación hist�
 
 ### Recorrido y CTAs
 
-Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` **no existe** (404): el menú de escritorio lo llama «Aprende» pero enlaza a `/que-debes-saber`; el móvil y el footer dicen «Qué debes saber».
+Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` es la ruta canónica de la experiencia educativa; `/que-debes-saber` permanece como alias legado.
 
 | Ruta | Datos | Estado | Notas |
 | --- | --- | --- | --- |
@@ -42,7 +42,8 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` **no exi
 | `/unete` | Estático | Funcional | Dos entradas: Diagnóstico o Contacto; preparación breve y tres pasos; sin registro |
 | `/contacto` | Estático | Funcional | Email `hola@vecidya.com`, guidance contextual, privacidad y Diagnóstico; sin formulario ni canales ficticios |
 | `/sobre-nosotros` | Estático | Funcional | Propósito, historia, equipo real, forma de trabajar y punto de vista; fotos WebP optimizadas |
-| `/que-debes-saber` | Estático | **Hub vacío** | 0 artículos; tarjetas no clicables |
+| `/aprende` | Estático | Funcional | Hero, cuatro temas conceptuales, estado editorial sin artículos ficticios, CTA y metadata |
+| `/que-debes-saber` | Alias estático | Funcional | Compatibilidad legado hacia la experiencia de Aprende; canonical `/aprende` |
 | `/privacidad` | Estático | Funcional | Base pública; revisión legal pendiente |
 | `/robots.txt`, `/sitemap.xml`, `/favicon.ico` | sitemap: D1 | Funcional | Sitemap: 9 rutas + perfiles publicados no suspendidos (hoy 10 URLs); favicon: redirect 302 |
 
@@ -53,6 +54,12 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 - UX-001B.7 separa responsabilidades: `/unete` responde cómo empezar y ofrece dos caminos (no sé qué necesito → Diagnóstico; sé qué necesito → Contacto), mientras `/contacto` responde cómo hablar y declara email como único canal directo disponible.
 - `/unete` conserva `illus-business-onboarding-form.webp` como apoyo visual, lista cinco piezas de contexto útiles y reduce el proceso a tres pasos sin prometer SLA, llamadas, registro, compra o propuesta automática.
 - `/contacto` mantiene `mailto:hola@vecidya.com`, explica qué enviar, qué esperar, enlaza `/privacidad` y no muestra teléfono, WhatsApp, chat, booking ni formulario persistente.
+
+### Aprende (`knowledge.tsx`)
+
+- UX-001B.9 establece `/aprende` como ruta canónica y mantiene `/que-debes-saber` como alias. La página diferencia aprendizaje de Servicios y Diagnóstico: explica cómo entender y mejorar la presencia digital.
+- La experiencia tiene hero, cuatro temas conceptuales (sin categorías CMS vacías), estado editorial honesto mientras no existen artículos publicados, criterio de contenido y CTAs a Diagnóstico/Contacto. No inventa títulos de artículos, autores, fechas, lectores ni schema `Article`.
+- `task-schedule-panel.webp` se reutiliza como apoyo visual; el futuro CMS/editor queda fuera de alcance.
 
 ### Sobre nosotros (`about.tsx`)
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-22 — UX-001B.9 Learn Experience (`v0.3.0`, PASS técnico local)
+
+- Establecida `/aprende` como ruta canónica educativa y conservado `/que-debes-saber` como alias legado; la navegación pública ahora apunta a `/aprende` y el sitemap usa la canonical.
+- Rehecha la experiencia con hero, cuatro temas conceptuales, estado editorial honesto sin artículos ficticios, criterio de contenido y CTAs a Diagnóstico/Contacto.
+- Reutilizada la ilustración de prioridades existente; no se añadieron CMS, artículos, autores, fechas, lectores, comentarios ni structured data editorial.
+- Añadido `learn-experience-check.mjs` con H1, metadata, CTAs, estado vacío, keyboard focus y responsive 1366/768/390/360.
+- Se mantiene `0.3.0`; no hubo push, deploy, migraciones remotas ni cambios en `vecidya-prod` (`0.2.0`).
+
 ## 2026-09-22 — UX-001B.8 About Experience (`v0.3.0`, PASS técnico local)
 
 - Rehecha `/sobre-nosotros` desde una lógica de confianza: propósito real, origen del problema, personas visibles, forma de trabajar y punto de vista sobre lo digital.

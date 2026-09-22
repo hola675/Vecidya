@@ -54,13 +54,14 @@ D:\Proyectos\Vecidya            (raíz Git)
 | --- | --- | --- | --- | --- | --- | --- |
 | `/` | `home.tsx` | estático | — | funcional | `px-a` (200/meta/overflow) | sí |
 | `/servicios` | `services.tsx` | estático | — | funcional | `px-a` (200/overflow) | sí |
-| `/unete` | `join.tsx` | estático | — | funcional | ninguno local (solo remoto) | sí |
-| `/contacto` | `contact.tsx` | estático (`mailto`) | — | funcional | `px-a` | sí |
+| `/unete` | `join.tsx` | estático | — | funcional | `join-contact` | sí |
+| `/contacto` | `contact.tsx` | estático (`mailto`) | — | funcional | `px-a`, `join-contact` | sí |
 | `/vecindario` | `directory.tsx` | D1 lista+filtros | — | funcional | `px-a`, `pg-c1`, `d1` | sí |
 | `/vecindario/:slug` | `public-business-profile.tsx` | D1 perfil+horarios | — | funcional (404 si no publicado/suspendido); UI de `0007`–`0009` desplegada | `px-a`, `c1`, `c2`, `d1`, `pg-c1` | sí (perfil `vecidya`) |
 | `/diagnostico` | `diagnostic.tsx` | cliente | — | funcional; motor sin pruebas | `px-a` (solo 200/overflow) | sí |
-| `/sobre-nosotros` | `about.tsx` | estático | — | funcional | ninguno | sí |
-| `/que-debes-saber` | `knowledge.tsx` | estático | — | hub vacío | ninguno | sí |
+| `/sobre-nosotros` | `about.tsx` | estático + WebP humanos | — | funcional | `about` | sí |
+| `/aprende` | `knowledge.tsx` | estático | — | funcional; base editorial sin artículos ficticios | `learn` | sí |
+| `/que-debes-saber` | `knowledge-legacy.tsx` | alias estático | — | funcional; canonical `/aprende` | ninguno | sí |
 | `/privacidad` | `privacy.tsx` | estático | — | funcional | ninguno | sí |
 | `/robots.txt` | `robots.ts` | estático | — | funcional | ninguno | sí |
 | `/sitemap.xml` | `sitemap.ts` | D1 (publicados no suspendidos) | — | funcional | ninguno | sí (10 URLs) |

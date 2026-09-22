@@ -29,7 +29,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     "/vecindario",
     "/diagnostico",
     "/sobre-nosotros",
-    "/que-debes-saber",
+    "/aprende",
     "/privacidad",
   ];
   const profilePaths = profiles.map((profile) => `/vecindario/${profile.slug}`);

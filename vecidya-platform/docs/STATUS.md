@@ -1,10 +1,10 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-22 (UX-001B.8, código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: experiencia de Nosotros implementada con fotos reales optimizadas, E2E dedicado PASS, E2E público PASS, typecheck, build, QA responsive local y diff-check.
+Última reconciliación: **2026-09-22 (UX-001B.9, código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: experiencia editorial de Aprende implementada sin artículos ficticios, E2E dedicado PASS, E2E público PASS, typecheck, build, QA responsive local y diff-check.
 
 ## Veredicto
 
-Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7 y UX-001B.8 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
+Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7, UX-001B.8 y UX-001B.9 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
 
 Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`), verificado por HTTP anónimo el 2026-09-22. El Worker reporta binding `DB=vecidya-prod`; `vecidya-staging` permanece existente y preservada. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes. La Home `v0.3.0` aún no está publicada.
 
@@ -38,7 +38,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | Invitaciones (7B.2) | sí | sí | sí | stale | sí | **PARTIAL** | Adaptador Gmail preparado; entrega y aceptación reales pendientes (`INVITE-001`) |
 | Correo transaccional (EMAIL-001) | sí | sí | n/a | 4 unit-like + reset productivo | sí | **PASS** | OAuth refresh, Gmail API, reset productivo y recepción real confirmados; verificación/invitaciones siguen separadas |
 | Experiencia de app cliente (`/app`) | sí | sí | sí | sí (RAN 2026-09-20) | sí | **PASS técnico local** | PX-B pasa en desktop y móvil; quedan las deudas de producto fuera de RR-001 |
-| Contenido educativo real | no | hub vacío | n/a | n/a | sí (vacío) | **NOT IMPLEMENTED** | 0 artículos; `/que-debes-saber` es un hub sin contenido |
+| Contenido educativo real | no | base editorial | n/a | E2E `/aprende` | sí (sin artículos) | **PARTIAL** | Experiencia editorial preparada; 0 artículos publicados hasta contar con contenido real |
 | Legal / privacidad | sí (`/privacidad`) | sí | n/a | no | sí | **PARTIAL** | Revisión legal completa pendiente antes de persistir/captar |
 | Real Proof (negocios reales) | sí (validación local) | sí (solo local) | sí | `rp001a` | 1 (dogfooding) | **BLOCKED para publicación remota** | RP-001A valida tres casos controlados sin publicar; siguen bloqueados datos/autorizaciones y G4 |
 | Producción independiente | sí | n/a | sí | smoke anónimo + manual auth | sí (`0.2.0`) | **PASS** | `vecidya-prod` sirve el público; verificación autenticada histórica `/login → /app → /app/internal` permanece válida |
@@ -78,6 +78,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | UX-001B.6 Diagnostic Experience | IMPLEMENTADA | PASS técnico local / release ready | Selector, preguntas, progreso accesible, foco, navegación anterior/siguiente, resultado, reinicio y recomendaciones enlazadas a Servicios; deploy pendiente |
 | UX-001B.7 Join + Contact Experience | IMPLEMENTADA | PASS técnico local / release ready | `/unete` orienta el inicio con dos caminos y preparación breve; `/contacto` expone email real, guidance y privacidad sin canales ficticios; deploy pendiente |
 | UX-001B.8 About Experience | IMPLEMENTADA | PASS técnico local / release ready | `/sobre-nosotros` presenta propósito, historia, Yoan y Edgar, forma de trabajar y punto de vista con fotos reales optimizadas; deploy pendiente |
+| UX-001B.9 Learn Experience | IMPLEMENTADA | PASS técnico local / release ready | `/aprende` tiene propósito, temas conceptuales, estado editorial honesto, CTA y alias legado `/que-debes-saber`; no inventa artículos, autores ni fechas; deploy pendiente |
 | PUBLIC-PROD-DIRECT-001 | CERRADA | PASS | `wrangler.jsonc` top-level; apex 200, `www` 301 |
 | PRODUCT-EXPERIENCE-001 A | PASS TÉCNICO LOCAL | PASS | `product-experience-a` pasa (45 s) |
 | PRODUCT-EXPERIENCE-001 B | EN ESPERA | PARTIAL | Test de 260 líneas existe pero falla (defectos del script) |
@@ -137,7 +138,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | ID | Descripción | Evidencia | Prio | Estado |
 | --- | --- | --- | --- | --- |
 | `DIAG-001` | Diagnóstico: respuestas de un perfil anterior seguían puntuando tras volver y cambiar el perfil; solo genera 1 «oportunidad»; la dimensión `organizacion` solo baja; resultado sin enlaces a Servicios/Vecindario/contenido; ids de dimensión sin acento en pantalla | `diagnostic.tsx`; `diagnostic-experience-check.mjs` | M | RESUELTA en UX-001B.6; persistencia sigue fuera de alcance |
-| `CONTENT-EDU-001` | `/que-debes-saber` es un hub sin artículos (4 tarjetas no clicables); Home promete «SEO/GEO» que no aparece; `/aprende` no existe (el menú de escritorio dice «Aprende» y enlaza a `/que-debes-saber`) | `knowledge.tsx:45-56`; `home.tsx:160` | M | ABIERTA |
+| `CONTENT-EDU-001` | No hay artículos educativos publicados todavía; UX-001B.9 deja `/aprende` preparado sin inventar autores, fechas, lectores o recursos. El alias `/que-debes-saber` conserva compatibilidad; la producción editorial real queda para la fase de contenido | `knowledge.tsx`; `learn-experience-check.mjs` | M | ABIERTA / FUTURO |
 | `UX-PUBLIC-001` | 8 páginas anidan un segundo `<main>`; sin `og:image`/`og:url`/Twitter; ninguna página pública enlaza a `/register`; `alt` de `VisualSection` oculto por `aria-hidden`; imágenes sin `width/height/loading`; overflow de emails/URLs largos en perfil sin `overflow-wrap`; 3 assets sin uso con nombres de reseñas/ratings | greps; `public-layout.tsx:23` | M | ABIERTA |
 | `INTERCONNECT-001` | Perfil → Servicios/Diagnóstico/Contacto es un CTA fijo no contextual; sin negocios/contenido relacionados; Diagnóstico sin salida contextual (ver mapa en PROJECT_STATE) | código | M | ABIERTA (trabajo de roadmap) |
 | `HOME-STATIC-001` | Home es 100 % copy estático (~600 palabras, 2 ilustraciones); sin búsqueda ni vecinos; el buscador del Vecindario solo filtra por nombre aunque su placeholder sugiere rubros; sin paginación | `home.tsx`; `business-profile.server.ts:78` | M | ABIERTA (roadmap) |
@@ -148,7 +149,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | --- | --- | --- | --- | --- |
 | `TEST-D1-NAME` | Los scripts locales usan el binding D1 `DB`; no quedan referencias activas a `vecidya-dev` en `tests/e2e` | `tests/e2e`; runner 17/17 PASS | M | RESUELTA (RAN 2026-09-20) |
 | `TEST-PXB-001` | PX-B corrigió locators, lifecycle por viewport, fixture local y overflow responsive en organización | `product-experience-b-client-app-check.mjs`; `app/app.css`; runner PASS | M | RESUELTA (RAN 2026-09-20) |
-| `TEST-GAPS-001` | No hay pruebas unitarias ni de integración, ni script `test`, ni CI. Sin protección: motor exhaustivo del Diagnóstico, `sitemap.xml`/`robots.txt`/`favicon`, credenciales inválidas, `/sobre-nosotros`, `/que-debes-saber`, `/privacidad`, `www`→apex, `/api/organizations/:id/authorization` | `docs/TESTING.md`; E2E Join/Contact añadido | M | ABIERTA |
+| `TEST-GAPS-001` | No hay pruebas unitarias ni de integración, ni script `test`, ni CI. Sin protección: motor exhaustivo del Diagnóstico, `sitemap.xml`/`robots.txt`/`favicon`, credenciales inválidas, alias `/que-debes-saber`, `/privacidad`, `www`→apex, `/api/organizations/:id/authorization` | `docs/TESTING.md`; E2E Learn añadido | M | ABIERTA |
 | `TEST-SAFETY-001` | Los scripts locales validan `BASE_URL`; los remotos requieren intención explícita y hostname workers.dev | `tests/e2e/test-safety.mjs`; pruebas negativas PASS | M | RESUELTA (RAN 2026-09-20) |
 | `TEST-CLEANUP-001` | 11 scripts dejan fixtures en la D1 local (perfiles publicados, `platform_admin`); pueden hacer inestables las aserciones del directorio | `TESTING.md` | B | ABIERTA |
 
