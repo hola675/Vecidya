@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-22 (EMAIL-001C PASS; follow-up de verificación/invitaciones).
+Última reconciliación: 2026-09-22 (UX-001B.5 PASS técnico local; follow-up de verificación/invitaciones).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -27,17 +27,18 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 | 6 | **UX-001B.1 / UX-001B.2** | Arquitectura visual e implementación de Home, assets y metadata social | Independiente de 4–5; **cerrado / PASS técnico local** |
 | 7 | **UX-001B.3** | Vecindario: búsqueda, filtros, cards, estados vacíos, responsive y accesibilidad | UX-001B.2 — **cerrado / PASS técnico local** |
 | 8 | **UX-001B.4** | Perfil público: micrositio del negocio, datos publicados, CTA, SEO y responsive | UX-001B.3 — **cerrado / PASS técnico local** |
-| 9 | **UX-001B.5** | Servicios: presentación pública de capacidades Vecidya y alcance honesto | UX-001B.4 |
-| 10 | Visual System Expansion | Ampliar sistema visual y assets fuera de Home | G2 |
-| 11 | Educational Content | Primeros artículos reales | Autor y fuentes reales |
-| 12 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 5 (vecinos) y 11 (artículos) |
-| 13 | Business Profile / UX | Campos, cobertura E2E, a11y y SEO del perfil público | UX-001B.4 y Real Proof |
+| 9 | **UX-001B.5** | Servicios: presentación pública de capacidades Vecidya y alcance honesto | UX-001B.4 — **cerrado / PASS técnico local** |
+| 10 | **UX-001B.6** | Diagnóstico: interacción, progreso, accesibilidad y resultado sobre el motor actual | UX-001B.5 |
+| 11 | Visual System Expansion | Ampliar sistema visual y assets fuera de Home | G2 |
+| 12 | Educational Content | Primeros artículos reales | Autor y fuentes reales |
+| 13 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 5 (vecinos) y 12 (artículos) |
+| 14 | Business Profile / UX | Campos, cobertura E2E, a11y y SEO del perfil público | UX-001B.4 y Real Proof |
 
 **Corrección 1 — RR-001 precede Real Proof.** La evidencia mostró prerrequisitos técnicos: pruebas stale por el nombre D1 obsoleto, PX-B roto, selección de organización al login, limpieza de sesiones tras retirar membresía y protección server-side de perfiles publicados. RR-001 quedó cerrado antes de PERF-001 y permanece separado del deploy y del piloto.
 
 **Corrección 2 — Contenido (6) antes de Interconexión (7).** Las conexiones «Artículo → Diagnóstico/Servicio» y «Diagnóstico → contenido relacionado» no pueden existir sin artículos: hoy hay cero. Interconectar primero produciría enlaces a un hub vacío.
 
-**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3 y UX-001B.4 quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`; Home, Vecindario y perfiles públicos leen datos reales desde D1. La producción sigue en `0.2.0` porque no hubo deploy. El siguiente bloque autorizado es UX-001B.5.
+**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4 y UX-001B.5 quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`; Home, Vecindario, perfiles públicos y Servicios están validados localmente. La producción sigue en `0.2.0` porque no hubo deploy. El siguiente bloque autorizado es UX-001B.6 — Diagnóstico.
 
 ## Bloque actual: EMAIL-001C (PASS)
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-22 — UX-001B.5 Services Experience (`v0.3.0`, PASS técnico local)
+
+- Rehecha `/servicios` como guía de decisión: hero breve, selector por necesidades, cuatro áreas core y proceso de tres pasos.
+- Cada servicio comunica problema, resultado, apoyo posible y un CTA real; Organización y crecimiento se conserva como área secundaria sin inventar oferta.
+- Reutilizados los cuatro SVG de Servicios aprobados en B.2; no se añadieron assets, precios, checkout, paquetes ni structured data comercial.
+- Actualizada la prueba pública para validar H1 único, selector, anchors, CTAs, ausencia de «SERVICIOS COMPRABLES» y responsive en 1366/768/390/360.
+- Se mantiene `0.3.0`; no hubo push, deploy, migraciones remotas ni cambios en `vecidya-prod` (`0.2.0`).
+
 ## 2026-09-22 — UX-001B.4 Public Business Profile (`v0.3.0`, PASS técnico local)
 
 - Mejorada la experiencia de `/vecindario/:slug` como presencia pública del negocio: identidad, ubicación, CTA primario, descripción, detalles operativos, horarios, contacto y redes reales.

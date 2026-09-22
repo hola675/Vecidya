@@ -1,118 +1,146 @@
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { publicAssets } from "../assets/public-assets";
-import { AssetVisual, CTASection, ServiceCard, VisualSection } from "../components/public-v2";
+import { CTASection } from "../components/public-v2";
 
 import type { Route } from "./+types/services";
 
 const services = [
   {
-    eyebrow: "01 / ESTRUCTURAR",
+    id: "estructuracion",
+    icon: publicAssets.icons.serviceStructure,
+    eyebrow: "ORDENAR",
     title: "Estructuración",
-    problem: "Hay ideas, canales, mensajes o tareas dispersas y cuesta decidir por dónde empezar.",
-    work: "Ordenamos la situación actual, objetivos, prioridades, público y próximos pasos antes de construir nuevas piezas.",
-    deliverables: ["diagnóstico de punto de partida", "mapa de prioridades", "ruta de trabajo por etapas"],
-    fit: "Cuando necesitas claridad para avanzar sin convertir una necesidad sencilla en un sistema complicado.",
+    problem: "Tengo ideas, canales y tareas dispersas, pero no sé por dónde empezar.",
+    result: "Tu punto de partida queda claro y puedes avanzar con prioridades reales.",
+    support: ["diagnóstico de punto de partida", "mapa de prioridades", "ruta de trabajo por etapas"],
+    cta: "Quiero ordenar mi negocio",
   },
   {
-    eyebrow: "02 / BASE",
+    id: "formalizacion",
+    icon: publicAssets.icons.serviceFormalization,
+    eyebrow: "PREPARAR LA BASE",
     title: "Formalización",
-    problem: "El negocio o proyecto necesita una base más clara para operar, presentarse y crecer con responsabilidad.",
-    work: "Acompañamos decisiones de organización, documentación básica, estructura comercial y criterios para sostener el trabajo.",
-    deliverables: ["revisión de base operativa", "recomendaciones de formalización", "estructura inicial de procesos y responsabilidades"],
-    fit: "Cuando ya existe actividad real, pero falta orden para tomar decisiones y presentarse mejor.",
+    problem: "Ya hay actividad, pero falta una base clara para operar y presentarse con responsabilidad.",
+    result: "Tu negocio cuenta con una base más ordenada para tomar decisiones y sostener el trabajo.",
+    support: ["revisión de base operativa", "recomendaciones de formalización", "estructura inicial de procesos"],
+    cta: "Quiero formalizar mi base",
   },
   {
-    eyebrow: "03 / ENCONTRAR",
-    title: "Visibilidad",
-    problem: "Te buscan, pero encuentran información incompleta, débil o difícil de conectar con lo que haces.",
-    work: "Mejoramos señales, contenido y estructura para que las personas correctas entiendan dónde estás y cómo encontrarte.",
-    deliverables: ["revisión de descubrimiento", "optimización de perfiles o páginas", "recomendaciones de SEO local y contenido"],
-    fit: "Cuando ya tienes algo publicado y necesitas ser encontrado con más claridad, sin prometer posiciones garantizadas.",
-  },
-  {
-    eyebrow: "04 / EXPLICAR",
+    id: "presencia-digital",
+    icon: publicAssets.icons.serviceDigitalPresence,
+    eyebrow: "EXPLICAR",
     title: "Presencia digital",
-    problem: "Lo publicado no explica bien qué haces, para quién es, por qué confiar y cuál es el siguiente paso.",
-    work: "Ordenamos mensajes, activos digitales, canales, web, perfiles y datos de contacto según tu situación.",
-    deliverables: ["estructura de contenidos", "mejora o creación de páginas", "criterios para conectar canales y contacto"],
-    fit: "Cuando necesitas que una persona nueva entienda rápido tu propuesta y pueda actuar sin fricción.",
+    problem: "Lo que está publicado no explica bien qué haces, para quién es ni cuál es el siguiente paso.",
+    result: "Tu negocio se presenta con claridad y sus canales apuntan a una misma identidad.",
+    support: ["estructura de contenidos", "mejora o creación de páginas", "criterios para conectar canales y contacto"],
+    cta: "Quiero mejorar mi presencia",
   },
   {
-    eyebrow: "05 / SEGUIR",
-    title: "Organización y crecimiento",
-    problem: "Llegan consultas, oportunidades o tareas, pero el seguimiento depende de memoria, mensajes sueltos o procesos poco claros.",
-    work: "Revisamos el flujo real antes de sumar herramientas, y definimos qué conviene ordenar, automatizar o integrar.",
-    deliverables: ["mapa de seguimiento", "criterios para CRM o automatización", "mejoras de flujo comercial y operativo"],
-    fit: "Cuando ya hay movimiento suficiente para necesitar orden, pero todavía no está claro qué tecnología aporta valor.",
+    id: "visibilidad",
+    icon: publicAssets.icons.serviceVisibility,
+    eyebrow: "ENCONTRAR",
+    title: "Visibilidad",
+    problem: "Te buscan, pero encuentran información incompleta o difícil de conectar con lo que haces.",
+    result: "Es más fácil entender dónde estás y cómo encontrarte, sin prometer posiciones garantizadas.",
+    support: ["revisión de descubrimiento", "optimización de perfiles o páginas", "recomendaciones de SEO local y contenido"],
+    cta: "Quiero mejorar mi visibilidad",
   },
-];
+] as const;
 
 export function meta(_: Route.MetaArgs) {
-  return publicMeta("Servicios", "Servicios de estructuración, presencia digital, visibilidad y organización para negocios, emprendedores y profesionales.", "/servicios");
+  return publicMeta("Servicios", "Servicios de Vecidya para ordenar, preparar y hacer más clara tu presencia digital.", "/servicios");
 }
 
 export default function Services() {
   return (
     <PublicLayout>
-      <main className="public-page public-commercial-page">
-        <section className="public-commercial-hero">
-          <p className="eyebrow">SERVICIOS</p>
-          <h1>Servicios para entender, ordenar y hacer visible tu presencia.</h1>
-          <p>Vecidya parte de la situación real: qué existe, qué está disperso, cómo te encuentran hoy, qué necesita entender una persona y qué herramientas sí tienen sentido.</p>
-          <div className="public-actions">
-            <a className="button button--primary" href="/diagnostico">Hacer mi diagnóstico</a>
-            <a className="button button--secondary" href="/contacto">Hablar con Vecidya</a>
+      <main className="public-page services-experience-page">
+        <section className="services-experience-hero" aria-labelledby="services-title">
+          <div>
+            <p className="eyebrow">SERVICIOS</p>
+            <h1 id="services-title">¿Qué necesitas ordenar para avanzar?</h1>
+            <p>Vecidya te ayuda a entender el punto de partida, aclarar tu presencia y elegir los siguientes pasos que sí tienen sentido para tu negocio o proyecto.</p>
+            <div className="public-actions">
+              <a className="button button--primary" href="/diagnostico">Hacer mi diagnóstico</a>
+              <a className="button button--secondary" href="/contacto">Hablar con Vecidya</a>
+            </div>
           </div>
+          <aside className="services-experience-hero__note" aria-label="Cómo empezar">
+            <span className="services-experience-hero__mark" aria-hidden="true">→</span>
+            <p className="eyebrow">UN PUNTO DE PARTIDA</p>
+            <strong>Primero entendemos lo que ya existe. Después decidimos qué construir.</strong>
+          </aside>
         </section>
 
-        <section className="public-commercial-section public-commercial-section--services">
-          <p className="eyebrow">SERVICIOS COMPRABLES</p>
-          <h2>Qué problema resuelve cada área y qué podrías recibir.</h2>
-          <div className="public-commercial-grid">
+        <section className="services-needs" aria-labelledby="services-needs-title">
+          <div className="services-section-heading">
+            <p className="eyebrow">ELIGE UNA PUERTA</p>
+            <h2 id="services-needs-title">¿Qué necesitas resolver?</h2>
+          </div>
+          <nav className="services-needs-grid" aria-label="Áreas de apoyo">
             {services.map((service) => (
-              <ServiceCard eyebrow={service.eyebrow} key={service.title} title={service.title}>
-                <div className="service-package">
-                  <section>
-                    <h3>Problema</h3>
-                    <p>{service.problem}</p>
-                  </section>
-                  <section>
-                    <h3>Cómo puede ayudar Vecidya</h3>
-                    <p>{service.work}</p>
-                  </section>
-                  <section>
-                    <h3>Qué puedes recibir</h3>
-                    <ul>
-                      {service.deliverables.map((item) => <li key={item}>{item}</li>)}
-                    </ul>
-                  </section>
-                  <section>
-                    <h3>Cuándo tiene sentido</h3>
-                    <p>{service.fit}</p>
-                  </section>
+              <a className="services-need" href={`#${service.id}`} key={service.id}>
+                <span>{service.eyebrow}</span>
+                <strong>{service.title}</strong>
+                <span aria-hidden="true">↓</span>
+              </a>
+            ))}
+          </nav>
+          <p className="services-needs-note">Si todavía no sabes qué necesitas, empieza por el diagnóstico.</p>
+        </section>
+
+        <section className="services-core" aria-labelledby="services-core-title">
+          <div className="services-section-heading">
+            <p className="eyebrow">ÁREAS DE APOYO</p>
+            <h2 id="services-core-title">De un problema concreto a un siguiente paso claro.</h2>
+          </div>
+          <div className="services-core-grid">
+            {services.map((service) => (
+              <article className="services-core-card" id={service.id} key={service.id}>
+                <div className="services-core-card__top">
+                  <img alt="" aria-hidden="true" height={56} src={service.icon} width={56} />
+                  <p className="eyebrow">{service.eyebrow}</p>
                 </div>
-              </ServiceCard>
+                <h3>{service.title}</h3>
+                <div className="services-core-card__problem">
+                  <span>EL PROBLEMA</span>
+                  <p>{service.problem}</p>
+                </div>
+                <div className="services-core-card__result">
+                  <span>EL RESULTADO</span>
+                  <p>{service.result}</p>
+                </div>
+                <div className="services-core-card__support">
+                  <span>PODEMOS AYUDAR CON</span>
+                  <ul>
+                    {service.support.map((item) => <li key={item}>{item}</li>)}
+                  </ul>
+                </div>
+                <a className="text-link services-core-card__cta" href="/contacto">{service.cta} <span aria-hidden="true">→</span></a>
+              </article>
             ))}
           </div>
         </section>
 
-        <VisualSection
-          eyebrow="MÉTODO"
-          title="Primero se entiende la presencia; después se decide qué construir."
-          visual={<AssetVisual alt="Paneles de crecimiento y presencia digital de Vecidya para negocios locales" height={1086} src={publicAssets.illustrations.platformGrowthDashboard} width={1448} />}
-        >
-          <p>El trabajo empieza por revisar el punto de partida, definir objetivos y ordenar la base. Después se eligen canales, herramientas y mejoras que tengan sentido para el caso.</p>
-        </VisualSection>
+        <section className="services-secondary" aria-labelledby="services-secondary-title">
+          <div>
+            <p className="eyebrow">CUANDO YA HAY MOVIMIENTO</p>
+            <h2 id="services-secondary-title">Organización y crecimiento</h2>
+          </div>
+          <p>Si llegan consultas, oportunidades o tareas y el seguimiento depende de mensajes sueltos, revisamos el flujo real antes de sumar herramientas. El objetivo es ordenar lo que ya existe y decidir qué aporta valor.</p>
+          <a className="text-link" href="/contacto">Quiero ordenar mi seguimiento <span aria-hidden="true">→</span></a>
+        </section>
 
-        <section className="public-v2-card public-commercial-limits">
-          <p className="eyebrow">LÍMITES CLAROS</p>
-          <h2>Trabajo consultivo, entregables reales.</h2>
-          <ul>
-            <li>Primero entendemos qué necesitas. La tecnología viene después.</li>
-            <li>Los entregables se definen según tu situación, tus activos y el momento del negocio.</li>
-            <li>Una integración, CRM o automatización solo tiene sentido cuando mejora un proceso real.</li>
-            <li>La visibilidad se trabaja con método y evidencia, sin prometer posiciones o ventas garantizadas.</li>
-          </ul>
+        <section className="services-process" aria-labelledby="services-process-title">
+          <div className="services-section-heading">
+            <p className="eyebrow">CÓMO TRABAJAMOS</p>
+            <h2 id="services-process-title">La solución empieza por entender.</h2>
+          </div>
+          <ol className="services-process-list">
+            <li><strong>Entendemos tu punto de partida</strong><span>Qué existe, qué falta y qué está disperso.</span></li>
+            <li><strong>Definimos qué necesitas realmente</strong><span>Priorizamos antes de sumar canales o herramientas.</span></li>
+            <li><strong>Construimos el siguiente paso</strong><span>Con entregables claros y adecuados para tu momento.</span></li>
+          </ol>
         </section>
 
         <CTASection
@@ -121,9 +149,9 @@ export default function Services() {
             { label: "Contactar", to: "/contacto", variant: "secondary" },
           ]}
           eyebrow="SIGUIENTE PASO"
-          title="Empieza por ordenar lo esencial."
+          title="¿No sabes por dónde empezar?"
         >
-          <p>El diagnóstico ayuda a entender el punto de partida. Si ya sabes qué necesitas, podemos conversar directamente.</p>
+          <p>El diagnóstico te ayuda a ubicar tu punto de partida. Si ya sabes qué quieres resolver, podemos conversar directamente.</p>
         </CTASection>
       </main>
     </PublicLayout>

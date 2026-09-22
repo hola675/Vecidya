@@ -141,6 +141,14 @@ async function runViewport(width, height) {
 
   await page.goto(new URL("/servicios", baseUrl).toString(), { waitUntil: "networkidle" });
   await assertNoOverflow(page, `${label} Servicios`);
+  assert(await page.locator("h1").count() === 1, `${label} Servicios debe tener un único H1.`);
+  assert(await page.getByRole("heading", { name: "¿Qué necesitas resolver?" }).isVisible(), `${label} Servicios no mostró el selector de necesidades.`);
+  for (const id of ["estructuracion", "formalizacion", "presencia-digital", "visibilidad"]) {
+    assert(await page.locator(`#${id}`).isVisible(), `${label} Servicios no mostró la sección #${id}.`);
+  }
+  assert(await page.getByRole("link", { name: /Hacer mi diagnóstico/i }).first().isVisible(), `${label} Servicios no mostró CTA de diagnóstico.`);
+  assert(await page.getByRole("link", { name: /Hablar con Vecidya/i }).first().isVisible(), `${label} Servicios no mostró CTA de contacto.`);
+  assert(!(await page.content()).includes("SERVICIOS COMPRABLES"), `${label} Servicios conserva lenguaje de compra inexistente.`);
 
   await page.goto(new URL("/vecindario/vecidya", baseUrl).toString(), { waitUntil: "networkidle" });
   await page.getByRole("link", { name: /Hacer diagnóstico/i }).last().click();
@@ -189,6 +197,7 @@ try {
   assert(schema.address?.addressLocality === "Medellín" && schema.address?.addressCountry === "Colombia", "JSON-LD no usa ubicación real.");
 
   await runViewport(1366, 900);
+  await runViewport(768, 900);
   await runViewport(390, 844);
   await runViewport(360, 800);
 

@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-22 (UX-001B.4, perfil público local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+Última reconciliación: **2026-09-22 (UX-001B.5, Servicios local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -90,7 +90,7 @@ Confirmado por código (greps de `fetch`, `localStorage`, `sessionStorage`, `coo
 
 ### Servicios (`/servicios`)
 
-Cinco servicios estáticos, cada uno con problema, cómo ayuda, tres entregables y cuándo tiene sentido: Estructuración, Formalización, Visibilidad, Presencia digital, Organización y crecimiento. CTAs: `/diagnostico` y `/contacto`. Sin precios ni paquetes; el eyebrow «SERVICIOS COMPRABLES» sugiere compra sin mecánica de compra. **No lee `service_catalog`**: el catálogo privado (3 servicios: presencia, marketing, CRM) es un modelo distinto del contenido público.
+UX-001B.5 convierte la página en una guía de decisión SSR: hero breve, selector por necesidades con anchors nativos, cuatro áreas core (Estructuración, Formalización, Presencia digital y Visibilidad) y una tarjeta secundaria de Organización y crecimiento para conservar esa oferta legítima sin competir con el foco principal. Cada área comunica problema, resultado, apoyo posible y CTA real a `/contacto`; el diagnóstico queda como entrada para quien aún no sabe qué necesita. No hay precios, checkout ni lenguaje de compra y **no lee `service_catalog`**: el catálogo privado (3 servicios: presencia, marketing, CRM) es un modelo distinto del contenido público.
 
 ### SEO, navegación y accesibilidad (evidencia de código)
 

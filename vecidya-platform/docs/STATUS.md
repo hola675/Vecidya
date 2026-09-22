@@ -1,10 +1,10 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-22 (UX-001B.4, código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: perfil público implementado, E2E de perfil PASS, E2E público PASS, typecheck, build, QA responsive local y diff-check.
+Última reconciliación: **2026-09-22 (UX-001B.5, código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: experiencia pública de Servicios implementada, E2E público PASS, typecheck, build, QA responsive local y diff-check.
 
 ## Veredicto
 
-Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional, UX-001B.2, UX-001B.3 y UX-001B.4 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
+Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional, UX-001B.2, UX-001B.3, UX-001B.4 y UX-001B.5 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
 
 Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`), verificado por HTTP anónimo el 2026-09-22. El Worker reporta binding `DB=vecidya-prod`; `vecidya-staging` permanece existente y preservada. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes. La Home `v0.3.0` aún no está publicada.
 
@@ -25,7 +25,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | BP: gestión por API | sí | — | — | sí (RAN 2026-09-20) | sí | **PASS técnico local** | La capa server-side rechaza dejar incompleto un perfil publicado; no existe despublicar |
 | Servicios (cliente) | sí | sí | sí | sí | sí | **PASS** | Solo lectura para el cliente; catálogo de 3 servicios sembrado |
 | Servicios (administración) | sí | sí | sí | stale | sí | **PARTIAL** | Test 4B/8D no ejecutable; sin auditoría; `activated_at` nunca se escribe |
-| Servicios públicos (`/servicios`) | sí | sí | n/a | 200/overflow | sí | **PASS** | Contenido estático sin precios; no lee `service_catalog` |
+| Servicios públicos (`/servicios`) | sí | sí | n/a | E2E público + responsive | sí | **PASS** | Selector por necesidades, cuatro áreas core y alcance consultivo; no lee `service_catalog` |
 | Vecindario (lista, búsqueda, filtros, perfil) | sí | sí | sí | sí | sí | **PASS** | Búsqueda solo por nombre; sin paginación; filtro de ciudad sin prueba ejecutable |
 | Diagnóstico | sí | sí | n/a | solo 200/overflow | sí | **PARTIAL** | Anónimo, efímero, cliente; motor sin pruebas; defectos de puntuación (`DIAG-001`) |
 | Web pública (rutas y contenido) | sí | sí | n/a | 6 rutas | sí | **PASS** | 10 URLs en sitemap; defectos de calidad en `UX-PUBLIC-001` |
@@ -74,6 +74,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | UX-001B.2 Home Implementation | IMPLEMENTADA | PASS técnico local / release ready | Home, assets, metadata social, responsive/a11y básica y E2E público PASS; deploy pendiente |
 | UX-001B.3 Vecindario Experience | IMPLEMENTADA | PASS técnico local / release ready | Búsqueda por nombre, filtros exactos, estados vacíos, cards compartidas, responsive/a11y básica y E2E público PASS; deploy pendiente |
 | UX-001B.4 Public Business Profile | IMPLEMENTADA | PASS técnico local / release ready | Identidad, CTA, detalles, horarios, contacto, redes, metadata/JSON-LD y E2E de perfil PASS; deploy pendiente |
+| UX-001B.5 Services Experience | IMPLEMENTADA | PASS técnico local / release ready | `/servicios` orienta por necesidades, presenta cuatro áreas core, conserva Organización y crecimiento como soporte, elimina lenguaje de compra y valida responsive/anchors/CTAs; deploy pendiente |
 | PUBLIC-PROD-DIRECT-001 | CERRADA | PASS | `wrangler.jsonc` top-level; apex 200, `www` 301 |
 | PRODUCT-EXPERIENCE-001 A | PASS TÉCNICO LOCAL | PASS | `product-experience-a` pasa (45 s) |
 | PRODUCT-EXPERIENCE-001 B | EN ESPERA | PARTIAL | Test de 260 líneas existe pero falla (defectos del script) |
