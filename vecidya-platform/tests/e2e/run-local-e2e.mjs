@@ -17,6 +17,7 @@ const scripts = [
   "product-experience-a-public-review-check.mjs",
   "diagnostic-experience-check.mjs",
   "join-contact-experience-check.mjs",
+  "about-experience-check.mjs",
   "product-experience-b-client-app-check.mjs",
   "product-evolution-001-b-multi-organization-check.mjs",
   "product-evolution-001-c1-contact-presence-check.mjs",

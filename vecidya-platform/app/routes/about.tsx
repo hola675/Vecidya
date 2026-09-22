@@ -2,14 +2,14 @@ import { Link } from "react-router";
 
 import { publicAssets } from "../assets/public-assets";
 import { PublicLayout, publicMeta } from "../components/public-layout";
-import { AssetVisual, CTASection, ServiceCard, VisualSection } from "../components/public-v2";
+import { CTASection } from "../components/public-v2";
 
 import type { Route } from "./+types/about";
 
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
     "Sobre nosotros",
-    "Conoce el propósito, equipo y enfoque de Vecidya para unir tecnología, presencia digital y desarrollo empresarial.",
+    "Conoce a las personas, el propósito y la forma de trabajar detrás de Vecidya.",
     "/sobre-nosotros",
   );
 }
@@ -17,98 +17,95 @@ export function meta(_: Route.MetaArgs) {
 export default function About() {
   return (
     <PublicLayout>
-      <main className="public-page public-commercial-page">
-        <section className="public-commercial-hero">
-          <p className="eyebrow">SOBRE VECIDYA</p>
-          <h1>Hacemos visible lo que ya tiene valor.</h1>
-          <p>
-            Vecidya nace para ayudar a negocios locales, emprendedores,
-            profesionales independientes y pequeñas empresas a ser encontrados,
-            comprendidos y contactados con más claridad.
-          </p>
-          <div className="public-actions">
-            <Link className="button button--primary" to="/vecindario">Explorar Vecindario</Link>
-            <Link className="button button--secondary" to="/contacto">Hablar con Vecidya</Link>
+      <main className="public-page about-experience-page">
+        <section className="about-experience-hero" aria-labelledby="about-title">
+          <div>
+            <p className="eyebrow">SOBRE VECIDYA</p>
+            <h1 id="about-title">Construimos claridad digital para negocios reales.</h1>
+            <p>Vecidya nace para ayudar a que los negocios locales tengan una presencia más clara, organizada y conectada.</p>
+            <div className="public-actions">
+              <a className="button button--primary" href="#por-que">Conoce cómo ayudamos</a>
+              <Link className="button button--secondary" to="/diagnostico">Hacer diagnóstico</Link>
+            </div>
+          </div>
+          <figure className="about-experience-hero__photo">
+            <picture>
+              <source media="(max-width: 768px)" srcSet={publicAssets.about.teamMobile} />
+              <img alt="Yoan y Edgar juntos frente al símbolo de Vecidya" decoding="async" height={1086} src={publicAssets.about.team} width={1448} />
+            </picture>
+            <figcaption>Dos perspectivas. Un mismo punto de partida: entender antes de construir.</figcaption>
+          </figure>
+        </section>
+
+        <section className="about-origin" id="por-que" aria-labelledby="about-origin-title">
+          <div className="about-section-heading">
+            <p className="eyebrow">POR QUÉ NACE VECIDYA</p>
+            <h2 id="about-origin-title">La claridad no debería ser un lujo para un negocio pequeño.</h2>
+          </div>
+          <div className="about-origin__copy">
+            <p>Muchos negocios tienen información dispersa, una presencia digital incompleta o herramientas que no están conectadas entre sí.</p>
+            <p>Vecidya nace para ayudar a organizar esa base y convertirla en una presencia más clara: fácil de entender para las personas y más útil para quienes la construyen.</p>
           </div>
         </section>
 
-        <VisualSection
-          eyebrow="DOS PERSPECTIVAS"
-          title="Tecnología y desarrollo empresarial en una misma visión."
-          visual={<AssetVisual alt="Red de negocios locales conectados alrededor de Vecidya" height={1086} src={publicAssets.illustrations.neighborhoodMapPins} width={1448} />}
-        >
-          <p>
-            Unimos desarrollo digital, marketing, automatización e infraestructura
-            con administración empresarial, formalización, estrategia comercial y
-            acompañamiento.
-          </p>
-          <p>
-            La pregunta no es solo qué web necesita un negocio, sino qué negocio
-            está construyendo, qué presencia necesita y qué paso le conviene dar.
-          </p>
-        </VisualSection>
-
-        <section className="public-commercial-section public-commercial-section--team">
-          <p className="eyebrow">EQUIPO</p>
-          <h2>Perfiles complementarios para mirar el negocio completo.</h2>
-          <div className="public-commercial-grid">
-            <ServiceCard eyebrow="TECNOLOGÍA" title="Yoan">
-              <p>CEO y líder de Tecnología y Estrategia Digital. Dirige la evolución tecnológica de Vecidya y la construcción de soluciones útiles, seguras, comprensibles y preparadas para crecer.</p>
-            </ServiceCard>
-            <ServiceCard eyebrow="DESARROLLO" title="Edgar">
-              <p>Gerente Comercial y de Desarrollo Empresarial. Acompaña estructuración, formalización empresarial, estrategia comercial, procesos y prioridades de crecimiento.</p>
-            </ServiceCard>
-            <ServiceCard eyebrow="DISTINCIÓN" title="Formalización responsable">
-              <p>La formalización empresarial se comunica como orientación y acompañamiento. Cuando exista una necesidad jurídica especializada, debe diferenciarse y atenderse con el profesional correspondiente.</p>
-            </ServiceCard>
-            <ServiceCard eyebrow="MISIÓN" title="Una mirada completa">
-              <p>La tecnología necesita objetivos claros; la estrategia necesita herramientas capaces de convertirlos en acciones. Vecidya trabaja donde esas dos piezas se encuentran.</p>
-            </ServiceCard>
+        <section className="about-team" aria-labelledby="about-team-title">
+          <div className="about-section-heading">
+            <p className="eyebrow">LAS PERSONAS DETRÁS</p>
+            <h2 id="about-team-title">Tecnología y desarrollo empresarial en la misma conversación.</h2>
+          </div>
+          <div className="about-team-grid">
+            <article className="about-person-card">
+              <img alt="Yoan Ortiz" decoding="async" height={750} loading="lazy" src={publicAssets.about.yoan} width={600} />
+              <div>
+                <p className="eyebrow">TECNOLOGÍA · PRODUCTO</p>
+                <h3>Yoan Ortiz</h3>
+                <strong>CEO &amp; Líder de Soporte Técnico</strong>
+                <p>Responsable de la visión técnica de Vecidya: construir sistemas, herramientas y experiencias digitales que ayuden a los negocios a avanzar con una base sólida.</p>
+              </div>
+            </article>
+            <article className="about-person-card">
+              <img alt="Edgar" decoding="async" height={750} loading="lazy" src={publicAssets.about.edgar} width={600} />
+              <div>
+                <p className="eyebrow">CLIENTES · DESARROLLO</p>
+                <h3>Edgar</h3>
+                <strong>Gerente Comercial</strong>
+                <p>Conecta las necesidades de cada negocio con soluciones prácticas, acompañando la conversación desde el primer contexto hasta el siguiente paso.</p>
+              </div>
+            </article>
           </div>
         </section>
 
-        <section className="public-commercial-section">
-          <p className="eyebrow">CRITERIO</p>
-          <h2>Lo que guía el producto.</h2>
-          <div className="public-commercial-grid">
-            <ServiceCard eyebrow="01" title="Existir">
-              <p>Ayudar a que una presencia pública tenga identidad, contexto y una acción siguiente comprensible.</p>
-            </ServiceCard>
-            <ServiceCard eyebrow="02" title="Ser encontrado">
-              <p>Conectar perfiles reales con personas que buscan opciones locales sin inventar datos ni métricas.</p>
-            </ServiceCard>
-            <ServiceCard eyebrow="03" title="Organizarse">
-              <p>Distinguir lo que debe mostrarse al público de lo que necesita seguimiento, procesos y herramientas internas.</p>
-            </ServiceCard>
-            <ServiceCard eyebrow="04" title="Avanzar">
-              <p>Convertir claridad en próximos pasos pequeños, verificables y adecuados al estado actual.</p>
-            </ServiceCard>
+        <section className="about-practice" aria-labelledby="about-practice-title">
+          <div className="about-section-heading">
+            <p className="eyebrow">CÓMO TRABAJAMOS</p>
+            <h2 id="about-practice-title">Nuestros valores se notan en lo que hacemos.</h2>
+          </div>
+          <div className="about-practice-grid">
+            <article><span>01</span><h3>Entender primero</h3><p>Antes de construir, buscamos entender dónde está el negocio y qué necesita realmente.</p></article>
+            <article><span>02</span><h3>Construir con propósito</h3><p>Creamos soluciones útiles y evitamos herramientas innecesarias o complejidad que no aporte.</p></article>
+            <article><span>03</span><h3>Acompañar el proceso</h3><p>No entregamos solamente tecnología; ayudamos a que las personas puedan utilizarla y aprovecharla.</p></article>
           </div>
         </section>
 
-        <section className="public-v2-card public-commercial-limits">
-          <p className="eyebrow">COMPROMISOS</p>
-          <h2>Límites que protegen la plataforma.</h2>
+        <section className="about-point-of-view" aria-labelledby="about-point-title">
+          <div>
+            <p className="eyebrow">NUESTRA FORMA DE VER EL DIGITAL</p>
+            <h2 id="about-point-title">Un negocio no necesita estar en todos lados. Necesita estar bien organizado donde sus clientes lo buscan.</h2>
+          </div>
           <ul>
-            <li>No usamos negocios, testimonios, equipo, cifras o autoridad ficticia.</li>
-            <li>No recomendamos herramientas por moda, sino por necesidad y momento.</li>
-            <li>No prometemos resultados que dependan de factores que nadie controla por completo.</li>
-            <li>No pedimos datos personales sin explicar para qué se usan.</li>
+            <li>Identidad clara</li>
+            <li>Presencia digital</li>
+            <li>Información organizada</li>
+            <li>Conexiones útiles</li>
           </ul>
         </section>
 
         <CTASection
-          actions={[
-            { label: "Ver negocios publicados", to: "/vecindario", variant: "primary" },
-            { label: "Contactar", to: "/contacto", variant: "secondary" },
-          ]}
+          actions={[{ label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" }, { label: "Hablar con Vecidya", to: "/contacto", variant: "secondary" }]}
           eyebrow="SIGUIENTE PASO"
-          title="Si compartes este enfoque, podemos empezar por lo esencial."
+          title="¿Quieres ubicar lo que tu negocio necesita ahora?"
         >
-          <p>
-            Explora el Vecindario o escríbenos para revisar cómo hacer más clara
-            la presencia digital de tu negocio, proyecto u organización.
-          </p>
+          <p>Empieza por el diagnóstico si necesitas orientación. Si ya tienes claro el reto, escríbenos directamente.</p>
         </CTASection>
       </main>
     </PublicLayout>

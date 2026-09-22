@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-22 (UX-001B.7, Join + Contact local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+Última reconciliación: **2026-09-22 (UX-001B.8, About local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -41,7 +41,7 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` **no exi
 | `/diagnostico` | Cliente (`useState`) | Funcional | Ver sección |
 | `/unete` | Estático | Funcional | Dos entradas: Diagnóstico o Contacto; preparación breve y tres pasos; sin registro |
 | `/contacto` | Estático | Funcional | Email `hola@vecidya.com`, guidance contextual, privacidad y Diagnóstico; sin formulario ni canales ficticios |
-| `/sobre-nosotros` | Estático | Funcional | Nombres de pila (Yoan, Edgar) sin fotos |
+| `/sobre-nosotros` | Estático | Funcional | Propósito, historia, equipo real, forma de trabajar y punto de vista; fotos WebP optimizadas |
 | `/que-debes-saber` | Estático | **Hub vacío** | 0 artículos; tarjetas no clicables |
 | `/privacidad` | Estático | Funcional | Base pública; revisión legal pendiente |
 | `/robots.txt`, `/sitemap.xml`, `/favicon.ico` | sitemap: D1 | Funcional | Sitemap: 9 rutas + perfiles publicados no suspendidos (hoy 10 URLs); favicon: redirect 302 |
@@ -53,6 +53,12 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 - UX-001B.7 separa responsabilidades: `/unete` responde cómo empezar y ofrece dos caminos (no sé qué necesito → Diagnóstico; sé qué necesito → Contacto), mientras `/contacto` responde cómo hablar y declara email como único canal directo disponible.
 - `/unete` conserva `illus-business-onboarding-form.webp` como apoyo visual, lista cinco piezas de contexto útiles y reduce el proceso a tres pasos sin prometer SLA, llamadas, registro, compra o propuesta automática.
 - `/contacto` mantiene `mailto:hola@vecidya.com`, explica qué enviar, qué esperar, enlaza `/privacidad` y no muestra teléfono, WhatsApp, chat, booking ni formulario persistente.
+
+### Sobre nosotros (`about.tsx`)
+
+- UX-001B.8 presenta primero el propósito y una foto conjunta real de Yoan y Edgar; después explica el problema que origina Vecidya, muestra ambos perfiles individuales, convierte valores en comportamientos concretos y cierra con Diagnóstico/Contacto.
+- Assets humanos incorporados en `public/assets/about/`: `team-yoan-edgar.webp`, `team-yoan-edgar-mobile.webp`, `yoan-profile.webp` y `edgar-profile.webp`, convertidos desde los PNG entregados a WebP sin alterar identidad ni añadir datos comerciales.
+- No se inventan años de experiencia, clientes, premios, equipo adicional o métricas. La página permanece SSR, sin structured data nuevo ni persistencia.
 
 ### Home: arquitectura UX-001B.2 (`home.tsx`)
 

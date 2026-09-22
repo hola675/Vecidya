@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-22 — UX-001B.8 About Experience (`v0.3.0`, PASS técnico local)
+
+- Rehecha `/sobre-nosotros` desde una lógica de confianza: propósito real, origen del problema, personas visibles, forma de trabajar y punto de vista sobre lo digital.
+- Incorporadas las fotos reales entregadas de Yoan y Edgar como WebP optimizados: imagen conjunta desktop/mobile y perfiles individuales; no se alteró la identidad de las personas ni se añadieron credenciales no verificadas.
+- Los CTAs finales mantienen la separación de B.7: Diagnóstico para orientarse y Contacto para hablar con Vecidya.
+- Añadido `about-experience-check.mjs` con equipo, propósito, metadata, keyboard focus, ausencia de métricas ficticias y responsive 1366/768/390/360.
+- Se mantiene `0.3.0`; no hubo push, deploy, migraciones remotas ni cambios en `vecidya-prod` (`0.2.0`).
+
 ## 2026-09-22 — UX-001B.7 Join + Contact Experience (`v0.3.0`, PASS técnico local)
 
 - Separadas las responsabilidades de `/unete` y `/contacto`: Únete explica cómo empezar con dos caminos; Contacto declara el email como canal directo real.

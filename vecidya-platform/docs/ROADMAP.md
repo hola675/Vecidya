@@ -30,17 +30,18 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 | 9 | **UX-001B.5** | Servicios: presentación pública de capacidades Vecidya y alcance honesto | UX-001B.4 — **cerrado / PASS técnico local** |
 | 10 | **UX-001B.6** | Diagnóstico: interacción, progreso, accesibilidad y resultado sobre el motor actual | UX-001B.5 — **cerrado / PASS técnico local** |
 | 11 | **UX-001B.7** | Únete + Contacto: entrada institucional y conversación pública | UX-001B.6 — **cerrado / PASS técnico local** |
-| 12 | **UX-001B.8** | Sobre nosotros: historia, personas y credibilidad institucional | UX-001B.7 |
-| 13 | Visual System Expansion | Ampliar sistema visual y assets fuera de Home | G2 |
-| 14 | Educational Content | Primeros artículos reales | Autor y fuentes reales |
-| 15 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 5 (vecinos) y 14 (artículos) |
-| 16 | Business Profile / UX | Campos, cobertura E2E, a11y y SEO del perfil público | UX-001B.4 y Real Proof |
+| 12 | **UX-001B.8** | Sobre nosotros: historia, personas y credibilidad institucional | UX-001B.7 — **cerrado / PASS técnico local** |
+| 13 | **UX-001B.9** | Aprende: contenido educativo público y SEO honesto | UX-001B.8 |
+| 14 | Visual System Expansion | Ampliar sistema visual y assets fuera de Home | G2 |
+| 15 | Educational Content | Primeros contenidos reales | UX-001B.9 y autor/fuentes reales |
+| 16 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 5 (vecinos) y 15 (artículos) |
+| 17 | Business Profile / UX | Campos, cobertura E2E, a11y y SEO del perfil público | UX-001B.4 y Real Proof |
 
 **Corrección 1 — RR-001 precede Real Proof.** La evidencia mostró prerrequisitos técnicos: pruebas stale por el nombre D1 obsoleto, PX-B roto, selección de organización al login, limpieza de sesiones tras retirar membresía y protección server-side de perfiles publicados. RR-001 quedó cerrado antes de PERF-001 y permanece separado del deploy y del piloto.
 
 **Corrección 2 — Contenido (6) antes de Interconexión (7).** Las conexiones «Artículo → Diagnóstico/Servicio» y «Diagnóstico → contenido relacionado» no pueden existir sin artículos: hoy hay cero. Interconectar primero produciría enlaces a un hub vacío.
 
-**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6 y UX-001B.7 quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`; Home, Vecindario, perfiles públicos, Servicios, Diagnóstico, Únete y Contacto están validados localmente. La producción sigue en `0.2.0` porque no hubo deploy. El siguiente bloque autorizado es UX-001B.8 — Sobre nosotros.
+**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7 y UX-001B.8 quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`; Home, Vecindario, perfiles públicos, Servicios, Diagnóstico, Únete, Contacto y Nosotros están validados localmente. La producción sigue en `0.2.0` porque no hubo deploy. El siguiente bloque autorizado es UX-001B.9 — Aprende.
 
 ## Bloque actual: EMAIL-001C (PASS)
 

@@ -10,6 +10,12 @@ export const publicAssets = {
   brand: {
     symbol: `${selectedAssetBase}/brand/brand-symbol-primary.webp`,
   },
+  about: {
+    team: "/assets/about/team-yoan-edgar.webp",
+    teamMobile: "/assets/about/team-yoan-edgar-mobile.webp",
+    yoan: "/assets/about/yoan-profile.webp",
+    edgar: "/assets/about/edgar-profile.webp",
+  },
   decorative: {
     reviewsLocationCard: `${selectedAssetBase}/decorative/decor-reviews-location-card.png`,
   },
