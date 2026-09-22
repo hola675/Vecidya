@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-22 (UX-001B.9, Learn local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+Última reconciliación: **2026-09-22 (UX-001B.10, Legal & Trust local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -44,7 +44,7 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` es la ru
 | `/sobre-nosotros` | Estático | Funcional | Propósito, historia, equipo real, forma de trabajar y punto de vista; fotos WebP optimizadas |
 | `/aprende` | Estático | Funcional | Hero, cuatro temas conceptuales, estado editorial sin artículos ficticios, CTA y metadata |
 | `/que-debes-saber` | Alias estático | Funcional | Compatibilidad legado hacia la experiencia de Aprende; canonical `/aprende` |
-| `/privacidad` | Estático | Funcional | Base pública; revisión legal pendiente |
+| `/privacidad` | Estático | Funcional | Datos actuales, uso/control, límites, derechos y email de contacto; sin entidad legal inventada |
 | `/robots.txt`, `/sitemap.xml`, `/favicon.ico` | sitemap: D1 | Funcional | Sitemap: 9 rutas + perfiles publicados no suspendidos (hoy 10 URLs); favicon: redirect 302 |
 
 CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubrir), Únete (iniciar proceso), Contacto (hablar). **Ninguna página pública enlaza a `/register`** (solo `/login` lo hace).
@@ -60,6 +60,12 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 - UX-001B.9 establece `/aprende` como ruta canónica y mantiene `/que-debes-saber` como alias. La página diferencia aprendizaje de Servicios y Diagnóstico: explica cómo entender y mejorar la presencia digital.
 - La experiencia tiene hero, cuatro temas conceptuales (sin categorías CMS vacías), estado editorial honesto mientras no existen artículos publicados, criterio de contenido y CTAs a Diagnóstico/Contacto. No inventa títulos de artículos, autores, fechas, lectores ni schema `Article`.
 - `task-schedule-panel.webp` se reutiliza como apoyo visual; el futuro CMS/editor queda fuera de alcance.
+
+### Legal & Trust (`privacy.tsx`, `public-layout.tsx`)
+
+- UX-001B.10 reorganiza `/privacidad` como una explicación pública breve: datos de cuenta/organización/perfil/correo, uso y control, límites actuales y contacto para revisión o corrección.
+- El footer conserva enlaces reales a Privacidad, Contacto, Nosotros y Aprende. No existe `/terminos`; no se creó un documento legal ficticio ni se añadió un enlace roto.
+- La página mantiene `robots=index, follow`, canonical `/privacidad`, Open Graph institucional y mailto `hola@vecidya.com`; cualquier futura captura persistente queda explícitamente condicionada a definir finalidad, acceso, retención y eliminación.
 
 ### Sobre nosotros (`about.tsx`)
 

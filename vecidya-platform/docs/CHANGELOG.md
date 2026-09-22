@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-22 — UX-001B.10 Legal & Trust Experience (`v0.3.0`, PASS técnico local)
+
+- Reorganizada `/privacidad` como una experiencia clara de confianza: datos actuales, uso/control, límites, derechos y contacto.
+- Confirmado `mailto:hola@vecidya.com`, canonical `/privacidad`, robots indexables y Open Graph institucional.
+- El footer conserva enlaces reales a Privacidad, Contacto, Nosotros y Aprende; no se creó `/terminos` porque no existe contenido legal aprobado para esa página.
+- Añadido `legal-trust-experience-check.mjs` con 200, metadata, footer, mailto, ausencia de enlaces legales ficticios, keyboard focus y responsive 1366/768/390/360.
+- Se mantiene `0.3.0`; no hubo push, deploy ni migraciones remotas.
+
 ## 2026-09-22 — Cierre de regresión C2 Business Operations (`v0.3.0`)
 
 - Corregido el render SSR de los horarios compactados del perfil público: la etiqueta completa (`Lun–Vie · 09:00–18:00`) se emite como una unidad legible y estable para HTML/E2E.

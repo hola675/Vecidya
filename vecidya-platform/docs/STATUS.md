@@ -1,6 +1,6 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-22 (UX-001B.9 + cierre C2, código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: experiencia editorial de Aprende y corrección de compactación de horarios implementadas, E2E dedicado PASS, E2E público PASS, C2 PASS, typecheck, build, QA responsive local y diff-check.
+Última reconciliación: **2026-09-22 (UX-001B.10 + cierre C2, código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: experiencia legal/trust de Privacidad implementada, E2E dedicado PASS, E2E público PASS, C2 PASS, typecheck, build, QA responsive local y diff-check.
 
 ## Veredicto
 
@@ -39,7 +39,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | Correo transaccional (EMAIL-001) | sí | sí | n/a | 4 unit-like + reset productivo | sí | **PASS** | OAuth refresh, Gmail API, reset productivo y recepción real confirmados; verificación/invitaciones siguen separadas |
 | Experiencia de app cliente (`/app`) | sí | sí | sí | sí (RAN 2026-09-20) | sí | **PASS técnico local** | PX-B pasa en desktop y móvil; quedan las deudas de producto fuera de RR-001 |
 | Contenido educativo real | no | base editorial | n/a | E2E `/aprende` | sí (sin artículos) | **PARTIAL** | Experiencia editorial preparada; 0 artículos publicados hasta contar con contenido real |
-| Legal / privacidad | sí (`/privacidad`) | sí | n/a | no | sí | **PARTIAL** | Revisión legal completa pendiente antes de persistir/captar |
+| Legal / privacidad | sí (`/privacidad`) | sí | n/a | E2E legal/trust | sí | **PASS técnico local** | Lenguaje claro y límites actuales; no se inventan términos, entidad legal ni datos jurídicos |
 | Real Proof (negocios reales) | sí (validación local) | sí (solo local) | sí | `rp001a` | 1 (dogfooding) | **BLOCKED para publicación remota** | RP-001A valida tres casos controlados sin publicar; siguen bloqueados datos/autorizaciones y G4 |
 | Producción independiente | sí | n/a | sí | smoke anónimo + manual auth | sí (`0.2.0`) | **PASS** | `vecidya-prod` sirve el público; verificación autenticada histórica `/login → /app → /app/internal` permanece válida |
 
@@ -79,6 +79,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | UX-001B.7 Join + Contact Experience | IMPLEMENTADA | PASS técnico local / release ready | `/unete` orienta el inicio con dos caminos y preparación breve; `/contacto` expone email real, guidance y privacidad sin canales ficticios; deploy pendiente |
 | UX-001B.8 About Experience | IMPLEMENTADA | PASS técnico local / release ready | `/sobre-nosotros` presenta propósito, historia, Yoan y Edgar, forma de trabajar y punto de vista con fotos reales optimizadas; deploy pendiente |
 | UX-001B.9 Learn Experience | IMPLEMENTADA | PASS técnico local / release ready | `/aprende` tiene propósito, temas conceptuales, estado editorial honesto, CTA y alias legado `/que-debes-saber`; no inventa artículos, autores ni fechas; deploy pendiente |
+| UX-001B.10 Legal & Trust Experience | IMPLEMENTADA | PASS técnico local / release ready | `/privacidad` explica datos, uso, límites y contacto; footer conserva enlaces reales y no crea términos inexistentes; deploy pendiente |
 | PUBLIC-PROD-DIRECT-001 | CERRADA | PASS | `wrangler.jsonc` top-level; apex 200, `www` 301 |
 | PRODUCT-EXPERIENCE-001 A | PASS TÉCNICO LOCAL | PASS | `product-experience-a` pasa (45 s) |
 | PRODUCT-EXPERIENCE-001 B | EN ESPERA | PARTIAL | Test de 260 líneas existe pero falla (defectos del script) |

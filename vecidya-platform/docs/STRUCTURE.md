@@ -62,7 +62,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/sobre-nosotros` | `about.tsx` | estático + WebP humanos | — | funcional | `about` | sí |
 | `/aprende` | `knowledge.tsx` | estático | — | funcional; base editorial sin artículos ficticios | `learn` | sí |
 | `/que-debes-saber` | `knowledge-legacy.tsx` | alias estático | — | funcional; canonical `/aprende` | ninguno | sí |
-| `/privacidad` | `privacy.tsx` | estático | — | funcional | ninguno | sí |
+| `/privacidad` | `privacy.tsx` | estático | — | funcional; datos, límites y contacto claros | `legal-trust` | sí |
 | `/robots.txt` | `robots.ts` | estático | — | funcional | ninguno | sí |
 | `/sitemap.xml` | `sitemap.ts` | D1 (publicados no suspendidos) | — | funcional | ninguno | sí (10 URLs) |
 | `/favicon.ico` | `favicon.ts` | redirect 302 → `/brand/vecidya-app-icon.png` | — | funcional | ninguno | sí |

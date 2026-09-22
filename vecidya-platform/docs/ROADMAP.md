@@ -32,7 +32,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 | 11 | **UX-001B.7** | Únete + Contacto: entrada institucional y conversación pública | UX-001B.6 — **cerrado / PASS técnico local** |
 | 12 | **UX-001B.8** | Sobre nosotros: historia, personas y credibilidad institucional | UX-001B.7 — **cerrado / PASS técnico local** |
 | 13 | **UX-001B.9** | Aprende: contenido educativo público y SEO honesto | UX-001B.8 — **cerrado / PASS técnico local** |
-| 14 | **UX-001B.10** | Legal & Trust: privacidad, términos y señales de confianza | UX-001B.9 |
+| 14 | **UX-001B.10** | Legal & Trust: privacidad, términos y señales de confianza | UX-001B.9 — **cerrado / PASS técnico local** |
 | 15 | Visual System Expansion | Ampliar sistema visual y assets fuera de Home | G2 |
 | 16 | Educational Content | Primeros contenidos reales | UX-001B.9 y autor/fuentes reales |
 | 17 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 5 (vecinos) y 16 (artículos) |
@@ -42,7 +42,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 **Corrección 2 — Contenido (6) antes de Interconexión (7).** Las conexiones «Artículo → Diagnóstico/Servicio» y «Diagnóstico → contenido relacionado» no pueden existir sin artículos: hoy hay cero. Interconectar primero produciría enlaces a un hub vacío.
 
-**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7, UX-001B.8 y UX-001B.9 quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`; Home, Vecindario, perfiles públicos, Servicios, Diagnóstico, Únete, Contacto, Nosotros y Aprende están validados localmente. La producción sigue en `0.2.0` porque no hubo deploy. El siguiente bloque autorizado es UX-001B.10 — Legal & Trust.
+**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7, UX-001B.8, UX-001B.9 y UX-001B.10 quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`; Home, Vecindario, perfiles públicos, Servicios, Diagnóstico, Únete, Contacto, Nosotros, Aprende y Privacidad están validados localmente. La producción sigue en `0.2.0` porque no hubo deploy. El siguiente bloque autorizado es UX-001C — Public Experience Polish.
 
 ## Bloque actual: EMAIL-001C (PASS)
 

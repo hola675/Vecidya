@@ -1,11 +1,11 @@
 # Pruebas
 
-Última reconciliación: 2026-09-22 (UX-001B.9 + cierre C2). Evidencia: `learn-experience-check.mjs` PASS en 1366/768/390/360, `about-experience-check.mjs` PASS, `join-contact-experience-check.mjs` PASS, `diagnostic-experience-check.mjs` PASS, `product-experience-a-public-review-check.mjs` PASS, `product-evolution-001-c2-business-operations-check.mjs` PASS (incluye compactación, JSON-LD y overflow), `business-profile-experience-check.mjs` PASS, `public-growth-c1-real-profile-readiness-check.mjs` PASS y typecheck/build/diff-check PASS. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
+Última reconciliación: 2026-09-22 (UX-001B.10 + cierre C2). Evidencia: `legal-trust-experience-check.mjs` PASS en 1366/768/390/360, `learn-experience-check.mjs` PASS, `about-experience-check.mjs` PASS, `join-contact-experience-check.mjs` PASS, `diagnostic-experience-check.mjs` PASS, `product-experience-a-public-review-check.mjs` PASS, `product-evolution-001-c2-business-operations-check.mjs` PASS (incluye compactación, JSON-LD y overflow), `business-profile-experience-check.mjs` PASS, `public-growth-c1-real-profile-readiness-check.mjs` PASS y typecheck/build/diff-check PASS. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
 
 ## Estado de la infraestructura de pruebas
 
 - No hay framework de pruebas ni CI (`.github/` no existe), ni pruebas unitarias o de integración (`tests/unit` y `tests/integration` solo tienen `.gitkeep`). `package.json` incluye `test:e2e`, un runner secuencial de los E2E locales aplicables.
-- Solo existe `tests/e2e/`: 26 scripts `.mjs` (Node + `fetch`, algunos con Playwright) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
+- Solo existe `tests/e2e/`: 27 scripts `.mjs` (Node + `fetch`, algunos con Playwright) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
 - Son **solo Windows** (`cmd.exe /d /c pnpm.cmd wrangler d1 execute … --local`).
 - Los scripts Playwright usan Microsoft Edge si existe, luego `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, luego Chromium empaquetado (requiere `playwright install`).
 
@@ -34,6 +34,7 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `join-contact` | `join-contact-experience-check.mjs` | UX-001B.7 |
 | `about` | `about-experience-check.mjs` | UX-001B.8 |
 | `learn` | `learn-experience-check.mjs` | UX-001B.9 |
+| `legal-trust` | `legal-trust-experience-check.mjs` | UX-001B.10 |
 | `admin-shell` | `admin-shell-check.mjs` | 8A |
 | `admin-bp` | `admin-business-profiles-check.mjs` | 8C |
 | `admin-orgs` | `admin-organizations-check.mjs` | 8B |
