@@ -1,6 +1,6 @@
 # Pruebas
 
-Última reconciliación: 2026-09-22 (EMAIL-001 RELEASE READY). Evidencia: `pnpm run test:email` pasó 4/4 y `pnpm run test:e2e` pasó 17/17 contra el Worker local; la entrega real Gmail no se ha probado. También se conserva la verificación histórica de producción `/login → /app → /app/internal` del 2026-09-21. Este documento distingue lo que la documentación *afirma* de lo que las pruebas *protegen*.
+Última reconciliación: 2026-09-22 (EMAIL-001C). Evidencia: `pnpm run test:email` 4/4, `pnpm run test:e2e` 17/17 local, smoke público productivo y `forgot-password` productivo HTTP 200 genérico. El endpoint aceptó el envío; la entrega en inbox aún requiere confirmación manual. La autenticación de esta release no se rechecó sin sesión autorizada reutilizable.
 
 ## Estado de la infraestructura de pruebas
 

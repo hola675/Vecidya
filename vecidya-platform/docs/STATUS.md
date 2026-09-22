@@ -1,12 +1,12 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-21 (PROD-001C, verificación autenticada)**. Evidencia: despliegue público `0.1.2`, smoke HTTP anónimo, binding D1 explícito, consultas remotas read-only y verificación manual autorizada de producción.
+Última reconciliación: **2026-09-22 (EMAIL-001C, deploy `v0.2.0`; entrega Gmail pendiente de confirmación)**. Evidencia: deploy autorizado, smoke HTTP anónimo y solicitud de reset aceptada por el endpoint productivo.
 
 ## Veredicto
 
-Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS** y PROD-001 en **CERRADA**. PROD-001B desplegó `0.1.2` sobre `vecidya-prod`; el smoke público y la verificación manual autorizada `/login → /app → /app/internal` pasaron.
+Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA** y EMAIL-001C en **AWAITING MANUAL DELIVERY CONFIRMATION**. EMAIL-001C desplegó `0.2.0` sobre `vecidya-prod`; el smoke público y el endpoint productivo de reset pasaron.
 
-Lo publicado en `vecidya.com` corresponde a `v0.1.2` (Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`), verificado por HTTP anónimo y manualmente en producción el 2026-09-21. El Worker reporta binding `DB=vecidya-prod`; `vecidya-staging` permanece existente y preservada. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes.
+Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`), verificado por HTTP anónimo el 2026-09-22. El Worker reporta binding `DB=vecidya-prod`; `vecidya-staging` permanece existente y preservada. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes.
 
 ## Matriz de capacidades
 
@@ -35,12 +35,12 @@ Lo publicado en `vecidya.com` corresponde a `v0.1.2` (Version ID `2b655f6b-b2ad-
 | Integraciones (metadata genérica) | sí | solo lectura | sí | stale | sí | **PARTIAL (foundation)** | Registro tenant-scoped; sin cliente de proveedor |
 | GHL | no | no | no | no | no | **NOT IMPLEMENTED** | Solo texto en documentación |
 | Invitaciones (7B.2) | sí | sí | sí | stale | sí | **PARTIAL** | Adaptador Gmail preparado; entrega y aceptación reales pendientes (`INVITE-001`) |
-| Correo transaccional (EMAIL-001) | sí | sí | n/a | 4 unit-like | no | **RELEASE READY** | OAuth y secretos de producción confirmados; entrega Gmail real aún no probada |
+| Correo transaccional (EMAIL-001) | sí | sí | n/a | 4 unit-like + reset productivo | sí (transporte; inbox pendiente) | **PARTIAL / AWAITING MANUAL DELIVERY CONFIRMATION** | OAuth refresh y endpoint productivo aceptan la solicitud; falta confirmar recepción real |
 | Experiencia de app cliente (`/app`) | sí | sí | sí | sí (RAN 2026-09-20) | sí | **PASS técnico local** | PX-B pasa en desktop y móvil; quedan las deudas de producto fuera de RR-001 |
 | Contenido educativo real | no | hub vacío | n/a | n/a | sí (vacío) | **NOT IMPLEMENTED** | 0 artículos; `/que-debes-saber` es un hub sin contenido |
 | Legal / privacidad | sí (`/privacidad`) | sí | n/a | no | sí | **PARTIAL** | Revisión legal completa pendiente antes de persistir/captar |
 | Real Proof (negocios reales) | sí (validación local) | sí (solo local) | sí | `rp001a` | 1 (dogfooding) | **BLOCKED para publicación remota** | RP-001A valida tres casos controlados sin publicar; siguen bloqueados datos/autorizaciones y G4 |
-| Producción independiente | sí | n/a | sí | smoke anónimo + manual auth | sí (`0.1.2`) | **PASS** | `vecidya-prod` sirve el público; `/login → /app → /app/internal` verificado |
+| Producción independiente | sí | n/a | sí | smoke anónimo + manual auth | sí (`0.2.0`) | **PASS** | `vecidya-prod` sirve el público; verificación autenticada histórica `/login → /app → /app/internal` permanece válida |
 
 ## Fases: estado declarado vs reconciliado
 
@@ -92,7 +92,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | ID | Descripción | Evidencia | Prio | Estado |
 | --- | --- | --- | --- | --- |
 | `PROD-INDEPENDENT-001` | D1 productivo independiente creado, clonado, conectado al Worker público y verificado con autenticación real | `wrangler.jsonc`; deploy `2b655f6b-b2ad-461d-9231-fdb96221dfd0`; HTTP/D1/manual auth 2026-09-21 | A | RESUELTA / PASS |
-| `EMAIL-001` | Adaptador Gmail, UI mínima de reset/verificación, configuración de producción y tests locales preparados; falta probar entrega Gmail real tras deploy | `server/email/mail.server.ts`; `wrangler.jsonc`; `tests/email/mail-adapter.test.ts`; validaciones de release | A | RELEASE READY / pendiente deploy controlado y prueba real |
+| `EMAIL-001` | Adaptador Gmail, UI mínima de reset/verificación, deploy productivo y solicitud reset aceptada; falta confirmar recepción real | `server/email/mail.server.ts`; `wrangler.jsonc`; Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`; smoke/reset 2026-09-22 | A | AWAITING MANUAL DELIVERY CONFIRMATION |
 | `REMOTE-TEST-RISK-001` | Las pruebas remotas exigen `RUN_REMOTE_E2E=1`, `TARGET_ENV=staging`, Worker `vecidya-platform-staging` y exactamente `D1_NAME=vecidya-staging`; rechazan dominio/Worker productivo y `vecidya-prod` | `tests/e2e/test-safety.mjs`; `tests/e2e/remote-staging-*.mjs` | A | RESUELTA para guards (no ejecutar) |
 | `PUBLISH-GAP-001` | El código y las migraciones `0007`–`0009` ya están publicados/aplicados; el piloto externo continúa requiriendo autorización y datos reales confirmados | ENVIRONMENTS; deploy `v0.1.1` 2026-09-21 | A | RESUELTA para plataforma / pendiente para piloto |
 | `REPO-HYGIENE-001` | `vecidya-platform.zip` (37,9 MB, snapshot de 2026-08-27 sin migraciones `0007`–`0009`) versionado; `b1` eliminó ~1.250 archivos (`archive/`, biblioteca `resources/assets`) sin registro documental; ramas `feature/*` y un worktree `.kilo` desactualizados | `git show --stat ec79b22`; `git ls-files` | M | ABIERTA |

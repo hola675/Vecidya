@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-22 — EMAIL-001C Production Release (`v0.2.0`, Gmail inbox pendiente)
+
+- Publicado el commit `6b351c4` en `vecidya-platform` top-level sobre `vecidya-prod`; Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+- Smoke público PASS: rutas principales, `forgot-password`, `reset-password`, `verify-email`, `robots.txt`, `sitemap.xml` y `www` → apex; footer público reporta `0.2.0`.
+- Solicitud productiva de reset para `hola@vecidya.com` respondió `200` con mensaje genérico. El transporte Gmail/API queda PASS técnico; la recepción efectiva queda **AWAITING MANUAL DELIVERY CONFIRMATION**.
+- No se modificó D1, no se ejecutaron migraciones ni E2E remotos destructivos, y no se expusieron valores de secretos. Verificación autenticada de esta release e invitaciones requieren una sesión/cuenta controlada.
+
 ## 2026-09-22 — EMAIL-001 Gmail Release Ready (`v0.2.0`, no publicada)
 
 - Confirmada la configuración top-level de producción: `EMAIL_PROVIDER=gmail`, `EMAIL_FROM=hola@vecidya.com` y `EMAIL_REPLY_TO=hola@vecidya.com`.

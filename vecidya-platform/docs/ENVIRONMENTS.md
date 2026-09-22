@@ -1,12 +1,12 @@
 # Entornos
 
-Última reconciliación: 2026-09-22 (EMAIL-001, RELEASE READY; sin deploy).
+Última reconciliación: 2026-09-22 (EMAIL-001C, deploy `v0.2.0`; Gmail API accepted reset request; inbox confirmation pending).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura al dominio público el 2026-09-21, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
-`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`. El smoke HTTP anónimo y la verificación manual autorizada `/login → /app → /app/internal` pasaron.
+`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3` (`v0.2.0`). El smoke HTTP anónimo pasó; la verificación autenticada de esta release queda pendiente de sesión autorizada reutilizable.
 
 ## Matriz de entornos
 
@@ -15,17 +15,17 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 | **Local** | `react-router dev` con el plugin de Cloudflare (`pnpm run dev`) | Emulada por Miniflare en `.wrangler/state/v3/d1` (binding `DB`); migraciones `0000`–`0009` aplicadas | `http://localhost:*` | Operativo | `RAN` `d1_migrations` local contiene 10 filas (`0000`–`0009`) |
 | **Development** (remoto) | Ninguno versionado | `vecidya-dev` remoto existe, pero no está configurado ni debe usarse | Ninguno | **Abandonado / sin uso** | `CONFIG` |
 | **Staging** | `vecidya-platform-staging` (`env.staging`, `workers_dev: true`) | `vecidya-staging` `d4af6ebc-97c5-42f6-ad3a-51551021e591` | URL workers.dev dedicada aún pendiente de provisionar/verificar | **Preparado; no desplegado en este bloque** | `CONFIG` `REMOTE` |
-| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.1.2`, Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0`; auth manual PASS | `CONFIG` `HTTP` `REMOTE` `DOC` |
+| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`; smoke PASS; auth de esta release pendiente | `CONFIG` `HTTP` `REMOTE` `DOC` |
 
 ## Qué código está publicado
 
-El despliegue público vigente es el Version ID `2b655f6b-b2ad-461d-9231-fdb96221dfd0` (`v0.1.2`, 2026-09-21) `CONFIG`/`HTTP`:
+El despliegue público vigente es el Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3` (`v0.2.0`, 2026-09-22) `CONFIG`/`HTTP`:
 
 - `/app/internal/maintenance/auth-bootstrap` y `/app/internal/maintenance/password-rotation` devuelven **404**.
 - `/app/internal` sin sesión devuelve la pantalla de login; el acceso autenticado de `hola@vecidya.com` fue comprobado manualmente en producción en `/app` y `/app/internal`.
 - La D1 remota reporta migraciones `0000`–`0009` aplicadas `REMOTE`.
 
-Conclusión: el código `0.1.2` y las migraciones `0000`–`0009` están desplegados en el Worker público y el binding reportado por Wrangler es `vecidya-prod`. `vecidya-staging` sigue preservada como D1 independiente de staging.
+Conclusión: el código `0.2.0` está desplegado en el Worker público, el binding reportado por Wrangler es `vecidya-prod` y no se ejecutaron migraciones. `vecidya-staging` sigue preservada como D1 independiente de staging.
 
 ## Repositorio Git
 
@@ -63,6 +63,13 @@ Con la configuración OAuth completa, el envío Gmail queda listo para validaci�
 5. Las migraciones se validan en local antes de cualquier aplicación remota; `--remote` requiere autorización explícita.
 6. Los comandos D1 locales usan el **binding** `DB` (`pnpm wrangler d1 execute DB --local …`), no el nombre obsoleto `vecidya-dev`.
 7. `vecidya-prod` está conectada al Worker público; no se eliminó ni modificó destructivamente `vecidya-staging`.
+
+## EMAIL-001C — release de producción
+
+- Deploy autorizado de `vecidya-platform` desde el commit `6b351c4`: Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`, `2026-09-22`. Wrangler confirmó `env.DB (vecidya-prod)`, `APP_ENV=production`, `EMAIL_PROVIDER=gmail`, `EMAIL_FROM=hola@vecidya.com` y `EMAIL_REPLY_TO=hola@vecidya.com`.
+- Secretos top-level presentes por nombre: `BETTER_AUTH_SECRET`, `GMAIL_OAUTH_CLIENT_ID`, `GMAIL_OAUTH_CLIENT_SECRET`, `GMAIL_OAUTH_REFRESH_TOKEN`. Sus valores no fueron leídos.
+- No se ejecutaron migraciones, no se modificó D1 y no se usaron versiones individuales de secretos.
+- Solicitud de `forgot-password` para `hola@vecidya.com` respondió HTTP `200` genérico en producción. Gmail API send queda **PASS técnico**; entrega en inbox pendiente de confirmación manual.
 
 ## PROD-001 / PROD-001B — baseline y cutover
 
