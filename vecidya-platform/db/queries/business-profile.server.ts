@@ -1,4 +1,4 @@
-import { and, asc, eq, getTableColumns, isNotNull, isNull, like, ne, or } from "drizzle-orm";
+import { and, asc, eq, getTableColumns, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 
 import type { Database } from "../client.server";
 import { businessProfile, businessProfileGovernance } from "../schema";
@@ -59,7 +59,13 @@ export async function getPublishedBusinessProfileBySlug(database: Database, slug
 
 export type PublishedBusinessProfileFilters = { q?: string; category?: string; city?: string };
 
+function escapeLikePattern(value: string) {
+  return value.replace(/[\\%_]/g, "\\$&");
+}
+
 export async function listPublishedBusinessProfiles(database: Database, filters: PublishedBusinessProfileFilters = {}) {
+  const search = filters.q ? escapeLikePattern(filters.q) : undefined;
+
   return database
     .select({
       slug: businessProfile.slug,
@@ -75,7 +81,7 @@ export async function listPublishedBusinessProfiles(database: Database, filters:
     .where(and(
       eq(businessProfile.status, "published"),
       notSuspended,
-      filters.q ? like(businessProfile.displayName, `%${filters.q}%`) : undefined,
+      search ? sql`${businessProfile.displayName} LIKE ${`%${search}%`} ESCAPE '\\'` : undefined,
       filters.category ? eq(businessProfile.category, filters.category) : undefined,
       filters.city ? eq(businessProfile.city, filters.city) : undefined,
     ))

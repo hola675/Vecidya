@@ -174,6 +174,10 @@ try {
 
   const directory = await fetchHtml("/vecindario?q=Vecidya");
   assert(directory.includes("Vecidya") && directory.includes("/vecindario/vecidya"), "La búsqueda no encontró Vecidya.");
+  const literalPercent = await fetchHtml("/vecindario?q=%25");
+  assert(!literalPercent.includes("/vecindario/vecidya"), "La búsqueda interpretó % como comodín LIKE.");
+  const literalUnderscore = await fetchHtml("/vecindario?q=_");
+  assert(!literalUnderscore.includes("/vecindario/vecidya"), "La búsqueda interpretó _ como comodín LIKE.");
   const filtered = await fetchHtml("/vecindario?category=Servicios+digitales+y+desarrollo+empresarial");
   assert(filtered.includes("Vecidya"), "El filtro por categoría no encontró Vecidya.");
 

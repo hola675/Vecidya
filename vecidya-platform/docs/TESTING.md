@@ -1,6 +1,6 @@
 # Pruebas
 
-Última reconciliación: 2026-09-22 (UX-001B.2). Evidencia: `pnpm run test:email` 4/4, `pnpm run test:e2e` 17/17 local, `product-experience-a-public-review-check.mjs` PASS después de detener el servidor durante el setup D1, QA Playwright Edge en 1366/768/390/360 y verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada`. La autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
+Última reconciliación: 2026-09-22 (UX-001B.3). Evidencia: `pnpm run test:email` 4/4, `pnpm run test:e2e` 17/17 local, `product-experience-a-public-review-check.mjs` PASS incluyendo búsquedas literales `%`/`_`, QA Playwright Edge en 1366/768/390/360 y verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada`. La autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
 
 ## Estado de la infraestructura de pruebas
 

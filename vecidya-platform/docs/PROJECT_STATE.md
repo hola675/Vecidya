@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-22 (UX-001B.2, Home local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+Última reconciliación: **2026-09-22 (UX-001B.3, Vecindario local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -66,15 +66,16 @@ La Home redujo la estructura de diez bloques a seis bloques de experiencia más 
 
 ### Vecindario
 
-- Lista: `<form method="get">` renderizado en servidor sin JS; `q` = `LIKE %q%` **solo sobre `displayName`** (sin escapar `%`/`_`); `category` y `city` por igualdad exacta con opciones DISTINCT de perfiles publicados; tira de categorías (máx. 8, alfabética).
+- UX-001B.3 implementa una superficie de descubrimiento SSR con header breve, búsqueda honesta por nombre, filtros GET, resumen de filtros activos y grid de cards compartido con Home.
+- Lista: `<form method="get">` renderizado en servidor sin JS; `q` busca **solo sobre `displayName`** y escapa `%`, `_` y `\\` para tratarlos literalmente; `category` y `city` por igualdad exacta con opciones DISTINCT de perfiles publicados; tira de categorías (máx. 8, alfabética).
 - Orden `displayName ASC, slug ASC`; **sin paginación ni límite**.
 - Excluye borradores y perfiles suspendidos (lista, opciones de filtro, perfil por slug y sitemap).
 - Tarjeta: logo o ícono, categoría, nombre, ciudad/país, descripción corta, «Ver perfil». Sin badge de verificado, contacto ni horarios en la tarjeta.
-- Estado vacío con CTAs (Limpiar / Diagnóstico); su texto dice «con esos filtros» incluso sin filtros.
+- Estados vacíos diferenciados para directorio sin perfiles y búsquedas filtradas sin coincidencias; ambos conservan una acción honesta hacia Diagnóstico.
 - Slug: igualdad exacta sensible a mayúsculas; sin redirección si cambia.
 - Perfil: descripción, contacto (WhatsApp → teléfono → web como jerarquía de CTA), redes, detalles, horarios compactados; un `CTASection` fijo (Vecindario, Servicios, Diagnóstico, Contacto) **no contextual**. Sin negocios relacionados ni contenido relacionado.
 - JSON-LD `LocalBusiness`: `name`, `url`, `description`, `image`, `telephone`, `email`, `address` (localidad/país), `sameAs` (solo redes reales), `areaServed`, `openingHoursSpecification` (solo días abiertos). No emite web del negocio, WhatsApp, categoría, `geo` ni `priceRange`.
-- Lo que es funcional hoy: filtrado y perfiles reales. Lo que es solo presentación: los ejemplos de rubros del placeholder del buscador (no buscan por rubro).
+- Lo que es funcional hoy: filtrado, búsqueda por nombre y perfiles reales. Categoría y ciudad son filtros exactos; no se promete geolocalización, distancia, relevancia ni búsqueda textual por rubro.
 
 ### Diagnóstico (`diagnostic.tsx`, 680 líneas)
 

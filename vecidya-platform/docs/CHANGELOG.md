@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-22 — UX-001B.3 Vecindario Experience (`v0.3.0`, PASS técnico local)
+
+- Rediseñado `/vecindario` como superficie de descubrimiento: header breve, búsqueda por nombre, filtros exactos de categoría/ciudad, resumen de filtros activos y grid responsive.
+- Reutilizada `BusinessCardV2` entre Home y Vecindario; se mantiene información pública mínima y no se agregan badges, rankings ni datos ficticios.
+- Diferenciados los estados vacíos de directorio sin perfiles y búsqueda filtrada sin coincidencias.
+- La búsqueda escapa `%`, `_` y `\\` para evitar que caracteres LIKE actúen como comodines.
+- Validado con E2E público, QA responsive local, `pnpm run typecheck`, `pnpm run build` y `git diff --check`.
+- Se mantiene `0.3.0`; no hubo deploy, migraciones remotas ni cambios en `vecidya-prod`.
+
 ## 2026-09-22 — UX-001B.2 Public Home Implementation (`v0.3.0`, PASS técnico local)
 
 - Reemplazada la Home extensa por seis bloques de experiencia: Hero/producto, Vecindario real, Diagnóstico interactivo, Servicios visuales, transformación y CTA final.

@@ -337,7 +337,7 @@ export function SearchFilters({
 
   return (
     <form className="directory-filters public-v2-search-filters" method="get">
-      <label>Buscar por nombre<input defaultValue={filters.q} name="q" placeholder="Ej. cafetería, taller, barbería" type="search" /></label>
+      <label className="directory-search-field"><span>Buscar por nombre</span><span className="directory-search-input"><svg aria-hidden="true" className="directory-search-icon" fill="none" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" strokeWidth="1.8" /><path d="m16 16 5 5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" /></svg><input defaultValue={filters.q} name="q" placeholder="Ej. Vecidya" type="search" /></span></label>
       <label>Categoría<select defaultValue={filters.category ?? ""} name="category"><option value="">Todas</option>{categories.map((category) => <option key={category} value={category}>{category}</option>)}</select></label>
       <label>Ciudad<select defaultValue={filters.city ?? ""} name="city"><option value="">Todas</option>{cities.map((city) => <option key={city} value={city}>{city}</option>)}</select></label>
       <button className="button button--primary" type="submit">Buscar</button>

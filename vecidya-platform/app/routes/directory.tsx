@@ -9,13 +9,17 @@ import { BusinessCardV2, CTASection, EmptyState, SearchFilters } from "../compon
 import type { Route } from "./+types/directory";
 
 export function meta(_: Route.MetaArgs) {
-  return publicMeta("Vecindario", "Perfiles publicados reales en el vecindario digital de Vecidya.", "/vecindario");
+  return publicMeta("Vecindario", "Explora negocios con perfiles públicos reales en el Vecindario de Vecidya.", "/vecindario");
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   const params = new URL(request.url).searchParams;
-  const filters = { q: params.get("q")?.trim().slice(0, 100) || undefined, category: params.get("category")?.trim().slice(0, 100) || undefined, city: params.get("city")?.trim().slice(0, 100) || undefined };
+  const filters = {
+    q: params.get("q")?.trim().slice(0, 100) || undefined,
+    category: params.get("category")?.trim().slice(0, 100) || undefined,
+    city: params.get("city")?.trim().slice(0, 100) || undefined,
+  };
   const database = createDatabase(env.DB);
   const [profiles, options] = await Promise.all([listPublishedBusinessProfiles(database, filters), getPublishedBusinessProfileFilterOptions(database)]);
   return { profiles, filters, ...options };
@@ -29,61 +33,85 @@ function categoryUrl(category: string) {
 export default function DirectoryPage() {
   const { profiles, filters, categories, cities } = useLoaderData<typeof loader>();
   const hasFilters = Boolean(filters.q || filters.category || filters.city);
+  const filterSummary = [
+    filters.q ? `Nombre: ${filters.q}` : null,
+    filters.category ? `Categoría: ${filters.category}` : null,
+    filters.city ? `Ciudad: ${filters.city}` : null,
+  ].filter((value): value is string => value !== null);
+  const resultLabel = profiles.length === 1 ? "1 perfil encontrado" : `${profiles.length} perfiles encontrados`;
 
   return (
     <PublicLayout>
-      <section className="public-page directory-page directory-page-v2">
-        <div className="directory-hero">
-          <div>
-            <p className="eyebrow">VECINDARIO</p>
-            <h1>Explora presencias reales publicadas en Vecidya.</h1>
-            <p>Busca negocios con información pública existente. Sin inventario artificial, sin reseñas fabricadas y sin promesas añadidas por la plataforma.</p>
+      <main>
+        <section className="public-page directory-page directory-page-v2" aria-labelledby="directory-title">
+          <div className="directory-hero">
+            <div>
+              <p className="eyebrow">VECINDARIO</p>
+              <h1 id="directory-title">Descubre negocios con una presencia clara.</h1>
+              <p>Busca por nombre, categoría o ciudad entre los perfiles publicados en Vecidya.</p>
+            </div>
           </div>
-        </div>
 
-        <SearchFilters categories={categories} cities={cities} filters={filters} />
+          <SearchFilters categories={categories} cities={cities} filters={filters} />
 
-        {categories.length ? (
-          <nav aria-label="Categorías disponibles" className="directory-category-list">
-            {categories.slice(0, 8).map((category) => <Link key={category} to={categoryUrl(category)}>{category}</Link>)}
-          </nav>
-        ) : null}
+          {categories.length ? (
+            <nav aria-label="Categorías disponibles" className="directory-category-list">
+              {categories.slice(0, 8).map((category) => <Link key={category} to={categoryUrl(category)}>{category}</Link>)}
+            </nav>
+          ) : null}
 
-        <div className="directory-results-heading">
-          <div>
-            <p className="eyebrow">RESULTADOS</p>
-            <h2>{profiles.length ? `${profiles.length} ${profiles.length === 1 ? "perfil publicado" : "perfiles publicados"}` : "Sin resultados"}</h2>
+          <div aria-live="polite" className="directory-results-heading">
+            <div>
+              <p className="eyebrow">RESULTADOS</p>
+              <h2>{profiles.length ? resultLabel : hasFilters ? "Sin coincidencias" : "El Vecindario está empezando"}</h2>
+            </div>
+            {hasFilters ? <Link className="text-link" to="/vecindario">Limpiar filtros <span aria-hidden="true">→</span></Link> : null}
           </div>
-          {hasFilters ? <Link className="text-link" to="/vecindario">Ver todos los negocios <span aria-hidden="true">→</span></Link> : null}
-        </div>
 
-        {profiles.length === 0 ? (
-          <EmptyState
-            actions={[
-              { label: "Limpiar filtros", to: "/vecindario", variant: "secondary" },
-              { label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" },
-            ]}
-            title="No encontramos negocios con esos filtros"
-          >
-            <p>El Vecindario solo muestra perfiles publicados reales. Prueba con otra búsqueda, vuelve a todos los resultados o usa el diagnóstico para preparar una presencia pública clara antes de aparecer aquí.</p>
-          </EmptyState>
-        ) : (
-          <ul className="directory-grid directory-grid-v2" aria-label="Perfiles publicados">
-            {profiles.map((profile) => <li key={profile.slug}><BusinessCardV2 profile={profile} /></li>)}
-          </ul>
-        )}
-      </section>
+          {hasFilters && filterSummary.length ? (
+            <div aria-label="Filtros activos" className="directory-active-filters" role="group">
+              {filterSummary.map((filter) => <span key={filter}>{filter}</span>)}
+            </div>
+          ) : null}
 
-      <CTASection
-        eyebrow="PARA NEGOCIOS"
-        title="¿Tu negocio también debería aparecer aquí?"
-        actions={[
-          { label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" },
-          { label: "Hablar con Vecidya", to: "/contacto", variant: "secondary" },
-        ]}
-      >
-        <p>Vecidya ayuda a ordenar lo esencial para que tu negocio pueda ser encontrado, entendido y contactado con claridad.</p>
-      </CTASection>
+          {profiles.length === 0 ? (
+            hasFilters ? (
+              <EmptyState
+                actions={[
+                  { label: "Limpiar filtros", to: "/vecindario", variant: "secondary" },
+                  { label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" },
+                ]}
+                title="No encontramos coincidencias"
+              >
+                <p>Prueba con otro nombre, categoría o ciudad. El Vecindario solo muestra información pública real.</p>
+              </EmptyState>
+            ) : (
+              <EmptyState
+                actions={[{ label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" }]}
+                eyebrow="VECINDARIO EN CRECIMIENTO"
+                title="El Vecindario está empezando a crecer"
+              >
+                <p>Cuando existan perfiles publicados, aparecerán aquí para que puedas explorarlos.</p>
+              </EmptyState>
+            )
+          ) : (
+            <ul aria-label="Perfiles publicados" className="directory-grid directory-grid-v2">
+              {profiles.map((profile) => <li key={profile.slug}><BusinessCardV2 profile={profile} /></li>)}
+            </ul>
+          )}
+        </section>
+
+        <CTASection
+          eyebrow="PARA NEGOCIOS"
+          title="¿Tu negocio también debería aparecer aquí?"
+          actions={[
+            { label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" },
+            { label: "Hablar con Vecidya", to: "/contacto", variant: "secondary" },
+          ]}
+        >
+          <p>Ordena lo esencial para que tu negocio pueda ser encontrado, entendido y contactado con claridad.</p>
+        </CTASection>
+      </main>
     </PublicLayout>
   );
 }
