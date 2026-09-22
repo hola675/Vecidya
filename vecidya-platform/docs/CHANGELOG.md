@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-22 — UX-002.4 Services Experience (`v0.3.0`, PASS técnico local)
+
+- Actualizada `/servicios` para presentar servicios profesionales de Organización del negocio, Formalización de base, Presencia digital, Automatización, Inteligencia artificial y Marketing y crecimiento.
+- Añadida la separación pública entre Licencia, Addon, Servicio y Consumo externo, con enlaces a `/licencias` y `/addons` y CTA de Diagnóstico.
+- Sustituido el lenguaje de catálogo genérico por resultados, problemas y apoyos posibles; no se publican precios generales ni se expone GHL como producto.
+- Ampliado el E2E público para validar las áreas nuevas, el modelo comercial y los enlaces de navegación.
+- Se mantiene `0.3.0`; no hubo push, deploy ni migraciones remotas. Producción continúa en `0.2.0`.
+
 ## 2026-09-22 — UX-002.3 Addons Experience (`v0.3.0`, PASS técnico local)
 
 - Añadida la ruta pública `/addons` con hero de expansión, definición de addon, categorías de Comunicación, Automatización, Inteligencia Artificial e Integraciones y cards de capacidades.

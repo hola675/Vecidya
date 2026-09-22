@@ -146,6 +146,12 @@ async function runViewport(width, height) {
   for (const id of ["estructuracion", "formalizacion", "presencia-digital", "visibilidad"]) {
     assert(await page.locator(`#${id}`).isVisible(), `${label} Servicios no mostró la sección #${id}.`);
   }
+  for (const heading of ["Automatización", "Inteligencia artificial", "Marketing y crecimiento"]) {
+    assert(await page.getByRole("heading", { name: heading, exact: true }).isVisible(), `${label} Servicios no mostró ${heading}.`);
+  }
+  assert(await page.getByRole("heading", { name: "¿Licencia, addon o servicio?" }).isVisible(), `${label} Servicios no mostró la separación comercial.`);
+  assert(await page.locator(".services-model").getByRole("link", { name: /Ver licencias/i }).getAttribute("href") === "/licencias", `${label} Servicios no enlazó Licencias.`);
+  assert(await page.locator(".services-model").getByRole("link", { name: /Ver addons/i }).getAttribute("href") === "/addons", `${label} Servicios no enlazó Addons.`);
   assert(await page.getByRole("link", { name: /Hacer mi diagnóstico/i }).first().isVisible(), `${label} Servicios no mostró CTA de diagnóstico.`);
   assert(await page.getByRole("link", { name: /Hablar con Vecidya/i }).first().isVisible(), `${label} Servicios no mostró CTA de contacto.`);
   assert(!(await page.content()).includes("SERVICIOS COMPRABLES"), `${label} Servicios conserva lenguaje de compra inexistente.`);

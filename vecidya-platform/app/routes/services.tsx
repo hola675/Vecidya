@@ -1,54 +1,84 @@
-import { PublicLayout, publicMeta } from "../components/public-layout";
+import { Link } from "react-router";
+
 import { publicAssets } from "../assets/public-assets";
 import { CTASection } from "../components/public-v2";
+import { PublicLayout, publicMeta } from "../components/public-layout";
 
 import type { Route } from "./+types/services";
 
-const services = [
+type ServiceArea = {
+  id: string;
+  icon: string;
+  eyebrow: string;
+  title: string;
+  problem: string;
+  result: string;
+  support: string[];
+};
+
+const services: ServiceArea[] = [
   {
     id: "estructuracion",
     icon: publicAssets.icons.serviceStructure,
-    eyebrow: "ORDENAR",
-    title: "Estructuración",
-    problem: "Tengo ideas, canales y tareas dispersas, pero no sé por dónde empezar.",
-    result: "Tu punto de partida queda claro y puedes avanzar con prioridades reales.",
-    support: ["diagnóstico de punto de partida", "mapa de prioridades", "ruta de trabajo por etapas"],
-    cta: "Quiero ordenar mi negocio",
+    eyebrow: "ORGANIZAR",
+    title: "Organización del negocio",
+    problem: "La información, las prioridades y los procesos están dispersos.",
+    result: "Una base ordenada para tomar decisiones y saber qué construir primero.",
+    support: ["diagnóstico y mapa de prioridades", "estructura de información", "ruta de trabajo por etapas"],
   },
   {
     id: "formalizacion",
     icon: publicAssets.icons.serviceFormalization,
-    eyebrow: "PREPARAR LA BASE",
-    title: "Formalización",
-    problem: "Ya hay actividad, pero falta una base clara para operar y presentarse con responsabilidad.",
-    result: "Tu negocio cuenta con una base más ordenada para tomar decisiones y sostener el trabajo.",
-    support: ["revisión de base operativa", "recomendaciones de formalización", "estructura inicial de procesos"],
-    cta: "Quiero formalizar mi base",
+    eyebrow: "PREPARAR",
+    title: "Formalización de base",
+    problem: "Ya hay actividad, pero falta una estructura clara para operar y presentarse.",
+    result: "Una base más responsable para sostener el trabajo y explicar cómo funciona.",
+    support: ["revisión de base operativa", "criterios de organización", "estructura inicial de procesos"],
   },
   {
     id: "presencia-digital",
     icon: publicAssets.icons.serviceDigitalPresence,
     eyebrow: "EXPLICAR",
     title: "Presencia digital",
-    problem: "Lo que está publicado no explica bien qué haces, para quién es ni cuál es el siguiente paso.",
-    result: "Tu negocio se presenta con claridad y sus canales apuntan a una misma identidad.",
-    support: ["estructura de contenidos", "mejora o creación de páginas", "criterios para conectar canales y contacto"],
-    cta: "Quiero mejorar mi presencia",
+    problem: "Lo publicado no explica bien qué haces, para quién es ni cuál es el siguiente paso.",
+    result: "Una presencia clara donde quienes te buscan puedan encontrarte y entenderte.",
+    support: ["páginas web y landing pages", "estructura de contenidos", "conexión entre canales y contacto"],
+  },
+  {
+    id: "automatizacion",
+    icon: publicAssets.icons.diagnosticBusiness,
+    eyebrow: "SIMPLIFICAR",
+    title: "Automatización",
+    problem: "Las tareas repetitivas consumen tiempo y dependen de recordatorios manuales.",
+    result: "Procesos más ordenados para sostener formularios, seguimiento e integraciones.",
+    support: ["CRM y seguimiento", "workflows y formularios", "integraciones y seguimiento"],
+  },
+  {
+    id: "inteligencia-artificial",
+    icon: publicAssets.icons.diagnosticProfessional,
+    eyebrow: "ASISTIR",
+    title: "Inteligencia artificial",
+    problem: "Quieres atender, clasificar o acompañar conversaciones con más capacidad.",
+    result: "Asistentes conversacionales o de voz definidos para un caso concreto.",
+    support: ["agentes conversacionales", "asistentes de voz", "automatización inteligente"],
   },
   {
     id: "visibilidad",
     icon: publicAssets.icons.serviceVisibility,
-    eyebrow: "ENCONTRAR",
-    title: "Visibilidad",
-    problem: "Te buscan, pero encuentran información incompleta o difícil de conectar con lo que haces.",
-    result: "Es más fácil entender dónde estás y cómo encontrarte, sin prometer posiciones garantizadas.",
-    support: ["revisión de descubrimiento", "optimización de perfiles o páginas", "recomendaciones de SEO local y contenido"],
-    cta: "Quiero mejorar mi visibilidad",
+    eyebrow: "CONECTAR",
+    title: "Marketing y crecimiento",
+    problem: "Tu negocio necesita más visibilidad, pero no quieres sumar acciones sin dirección.",
+    result: "Mejores criterios para conectar contenido, campañas y descubrimiento.",
+    support: ["Google Ads y Meta Ads", "SEO y GEO/AEO", "contenido y medición"],
   },
-] as const;
+];
 
 export function meta(_: Route.MetaArgs) {
-  return publicMeta("Servicios", "Servicios de Vecidya para ordenar, preparar y hacer más clara tu presencia digital.", "/servicios");
+  return publicMeta(
+    "Servicios",
+    "Servicios digitales, automatización e inteligencia artificial para negocios.",
+    "/servicios",
+  );
 }
 
 export default function Services() {
@@ -57,27 +87,28 @@ export default function Services() {
       <main className="public-page services-experience-page">
         <section className="services-experience-hero" aria-labelledby="services-title">
           <div>
-            <p className="eyebrow">SERVICIOS</p>
-            <h1 id="services-title">¿Qué necesitas ordenar para avanzar?</h1>
-            <p>Vecidya te ayuda a entender el punto de partida, aclarar tu presencia y elegir los siguientes pasos que sí tienen sentido para tu negocio o proyecto.</p>
+            <p className="eyebrow">SERVICIOS PROFESIONALES</p>
+            <h1 id="services-title">Construimos soluciones digitales adaptadas a tu negocio.</h1>
+            <p>Una licencia te da una base. Un servicio nos permite crear, configurar o mejorar algo específico para tu momento y tus objetivos.</p>
             <div className="public-actions">
-              <a className="button button--primary" href="/diagnostico">Hacer mi diagnóstico</a>
-              <a className="button button--secondary" href="/contacto">Hablar con Vecidya</a>
+              <Link className="button button--primary" to="/diagnostico">Hacer mi diagnóstico</Link>
+              <Link className="button button--secondary" to="/contacto">Hablar con Vecidya</Link>
             </div>
           </div>
-          <aside className="services-experience-hero__note" aria-label="Cómo empezar">
+          <aside className="services-experience-hero__note" aria-label="Cómo se relacionan las soluciones">
             <span className="services-experience-hero__mark" aria-hidden="true">→</span>
-            <p className="eyebrow">UN PUNTO DE PARTIDA</p>
+            <p className="eyebrow">DE LA IDEA AL SISTEMA</p>
             <strong>Primero entendemos lo que ya existe. Después decidimos qué construir.</strong>
           </aside>
         </section>
 
         <section className="services-needs" aria-labelledby="services-needs-title">
           <div className="services-section-heading">
-            <p className="eyebrow">ELIGE UNA PUERTA</p>
+            <p className="eyebrow">ÁREAS DE SERVICIO</p>
             <h2 id="services-needs-title">¿Qué necesitas resolver?</h2>
+            <p className="services-intro">Cada servicio parte de un problema concreto y termina en un resultado que puedes entender.</p>
           </div>
-          <nav className="services-needs-grid" aria-label="Áreas de apoyo">
+          <nav className="services-needs-grid" aria-label="Áreas de servicio">
             {services.map((service) => (
               <a className="services-need" href={`#${service.id}`} key={service.id}>
                 <span>{service.eyebrow}</span>
@@ -91,8 +122,8 @@ export default function Services() {
 
         <section className="services-core" aria-labelledby="services-core-title">
           <div className="services-section-heading">
-            <p className="eyebrow">ÁREAS DE APOYO</p>
-            <h2 id="services-core-title">De un problema concreto a un siguiente paso claro.</h2>
+            <p className="eyebrow">LO QUE PODEMOS CONSTRUIR</p>
+            <h2 id="services-core-title">Del problema concreto a un siguiente paso claro.</h2>
           </div>
           <div className="services-core-grid">
             {services.map((service) => (
@@ -112,23 +143,25 @@ export default function Services() {
                 </div>
                 <div className="services-core-card__support">
                   <span>PODEMOS AYUDAR CON</span>
-                  <ul>
-                    {service.support.map((item) => <li key={item}>{item}</li>)}
-                  </ul>
+                  <ul>{service.support.map((item) => <li key={item}>{item}</li>)}</ul>
                 </div>
-                <a className="text-link services-core-card__cta" href="/contacto">{service.cta} <span aria-hidden="true">→</span></a>
+                <Link className="text-link services-core-card__cta" to="/contacto">Conversar sobre este servicio <span aria-hidden="true">→</span></Link>
               </article>
             ))}
           </div>
         </section>
 
-        <section className="services-secondary" aria-labelledby="services-secondary-title">
-          <div>
-            <p className="eyebrow">CUANDO YA HAY MOVIMIENTO</p>
-            <h2 id="services-secondary-title">Organización y crecimiento</h2>
+        <section className="services-model" aria-labelledby="services-model-title">
+          <div className="services-section-heading">
+            <p className="eyebrow">CADA COSA TIENE SU LUGAR</p>
+            <h2 id="services-model-title">¿Licencia, addon o servicio?</h2>
           </div>
-          <p>Si llegan consultas, oportunidades o tareas y el seguimiento depende de mensajes sueltos, revisamos el flujo real antes de sumar herramientas. El objetivo es ordenar lo que ya existe y decidir qué aporta valor.</p>
-          <a className="text-link" href="/contacto">Quiero ordenar mi seguimiento <span aria-hidden="true">→</span></a>
+          <div className="services-model__grid">
+            <div><span>BASE CONTINUA</span><strong>Necesitas una plataforma para tu operación.</strong><p>→ Licencia</p><Link className="text-link" to="/licencias">Ver licencias <span aria-hidden="true">→</span></Link></div>
+            <div><span>CAPACIDAD ADICIONAL</span><strong>Necesitas ampliar una capacidad específica.</strong><p>→ Addon</p><Link className="text-link" to="/addons">Ver addons <span aria-hidden="true">→</span></Link></div>
+            <div><span>TRABAJO PERSONALIZADO</span><strong>Necesitas que construyamos algo para tu contexto.</strong><p>→ Servicio</p><span className="services-model__current">Estás aquí</span></div>
+          </div>
+          <p className="services-model__note">Los consumos variables de canales, proveedores o publicidad se informan aparte. No se esconden dentro de una licencia, addon o servicio.</p>
         </section>
 
         <section className="services-process" aria-labelledby="services-process-title">
@@ -144,14 +177,11 @@ export default function Services() {
         </section>
 
         <CTASection
-          actions={[
-            { label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" },
-            { label: "Contactar", to: "/contacto", variant: "secondary" },
-          ]}
+          actions={[{ label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" }, { label: "Contactar", to: "/contacto", variant: "secondary" }]}
           eyebrow="SIGUIENTE PASO"
           title="¿No sabes por dónde empezar?"
         >
-          <p>El diagnóstico te ayuda a ubicar tu punto de partida. Si ya sabes qué quieres resolver, podemos conversar directamente.</p>
+          <p>El diagnóstico te ayuda a ubicar si necesitas una licencia, un addon o un servicio personalizado.</p>
         </CTASection>
       </main>
     </PublicLayout>

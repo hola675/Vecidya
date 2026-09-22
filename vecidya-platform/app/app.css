@@ -2860,6 +2860,83 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .services-need { min-height:6.5rem; }
 }
 
+/* UX-002.4 — services commercial model */
+.services-intro {
+  max-width: 42rem;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.services-model {
+  display: grid;
+  gap: 1.5rem;
+  border-radius: var(--radius-lg);
+  padding: clamp(2rem, 6vw, 4rem);
+  background:
+    linear-gradient(135deg, rgb(244 248 255 / 94%), rgb(255 247 241 / 92%)),
+    url("/assets/selected/backgrounds/bg-network-route-pins.webp") center / cover no-repeat;
+}
+
+.services-model__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.services-model__grid > div {
+  display: grid;
+  align-content: start;
+  gap: .55rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  background: #fff;
+}
+
+.services-model__grid span:not(.services-model__current) {
+  color: var(--orange);
+  font-size: .7rem;
+  font-weight: 850;
+  letter-spacing: .12em;
+}
+
+.services-model__grid strong {
+  font-size: 1.1rem;
+  line-height: 1.3;
+}
+
+.services-model__grid p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.services-model__current {
+  color: var(--blue) !important;
+  font-size: .85rem !important;
+  font-weight: 800 !important;
+}
+
+.services-model__note {
+  max-width: 48rem;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+@media (max-width: 820px) {
+  .services-model__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .services-model__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* UX-001B.7 — join + contact experience */
 .join-experience-page,.contact-experience-page { display:grid; gap:clamp(3rem,7vw,6rem); padding-block:clamp(2rem,6vw,5rem); }
 .join-experience-hero { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(18rem,.9fr); gap:clamp(2rem,7vw,6rem); align-items:center; padding:clamp(2rem,6vw,5rem); overflow:hidden; border:1px solid rgb(21 95 197 / 18%); border-radius:var(--radius-lg); background:radial-gradient(circle at 86% 15%,rgb(255 107 11 / 17%),transparent 11rem),linear-gradient(135deg,#f4f8ff 0%,#fff 65%); }
