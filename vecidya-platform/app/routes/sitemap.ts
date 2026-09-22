@@ -23,6 +23,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const profiles = await listPublishedBusinessProfiles(createDatabase(env.DB));
   const staticPaths = [
     "/",
+    "/licencias",
     "/servicios",
     "/unete",
     "/contacto",

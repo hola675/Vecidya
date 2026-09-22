@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-22 (UX-001C, Public Experience Polish local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+Última reconciliación: **2026-09-22 (UX-002.2, Licencias Experience local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -28,6 +28,12 @@ Publicado en `vecidya.com` (verificado HTTP el 2026-09-22 y autenticación hist�
 
 ## Producto público
 
+### Catálogo comercial UX-002.1
+
+La matriz comercial de referencia está documentada en [business/VECIDYA_PRODUCT_CATALOG.md](business/VECIDYA_PRODUCT_CATALOG.md). Define las fronteras entre licencia, addon, servicio y consumo externo; documenta Cuadra, Barrio y Ciudad; separa diagnóstico inicial y profesional; fija la estructura editorial de Aprende; y registra la frontera prevista con HighLevel.
+
+Este catálogo es **diseño comercial documental**, no una capacidad implementada. Los precios (`$39`, `$59`, `$89`) y la referencia externa de HighLevel (`USD 97/mes`, hasta 3 subcuentas) no están publicados, facturados ni configurados. La plataforma actual sigue sin integrar HighLevel y no implementa un CRM paralelo.
+
 ### Recorrido y CTAs
 
 Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` es la ruta canónica de la experiencia educativa; `/que-debes-saber` permanece como alias legado.
@@ -38,6 +44,7 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` es la ru
 | `/vecindario` | D1 (`listPublishedBusinessProfiles`, opciones de filtro) | Funcional | GET `q`, `category`, `city`; sin paginación |
 | `/vecindario/:slug` | D1 (perfil + horarios) | Funcional | 404 real si no publicado/suspendido; JSON-LD `LocalBusiness` |
 | `/servicios` | Estático (5 fichas) | Funcional | Sin precios, paquetes ni garantías (grep) |
+| `/licencias` | Estático | Funcional local / release ready | Cuadra, Barrio y Ciudad; comparador, evolución, addons, FAQ y CTA; referencias comerciales explícitas, sin checkout |
 | `/diagnostico` | Cliente (`useState`) | Funcional | Ver sección |
 | `/unete` | Estático | Funcional | Dos entradas: Diagnóstico o Contacto; preparación breve y tres pasos; sin registro |
 | `/contacto` | Estático | Funcional | Email `hola@vecidya.com`, guidance contextual, privacidad y Diagnóstico; sin formulario ni canales ficticios |
@@ -45,7 +52,7 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` es la ru
 | `/aprende` | Estático | Funcional | Hero, cuatro temas conceptuales, estado editorial sin artículos ficticios, CTA y metadata |
 | `/que-debes-saber` | Redirect 301 | Funcional | Compatibilidad legado hacia la experiencia canónica `/aprende`; no compite como página indexable |
 | `/privacidad` | Estático | Funcional | Datos actuales, uso/control, límites, derechos y email de contacto; sin entidad legal inventada |
-| `/robots.txt`, `/sitemap.xml`, `/favicon.ico` | sitemap: D1 | Funcional | Sitemap: 9 rutas + perfiles publicados no suspendidos (hoy 10 URLs); favicon: redirect 302 |
+| `/robots.txt`, `/sitemap.xml`, `/favicon.ico` | sitemap: D1 | Funcional | Sitemap: 10 rutas + perfiles publicados no suspendidos (hoy 11 URLs); favicon: redirect 302 |
 
 CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubrir), Únete (iniciar proceso), Contacto (hablar). **Ninguna página pública enlaza a `/register`** (solo `/login` lo hace).
 
@@ -123,7 +130,7 @@ UX-001B.5 convierte la página en una guía de decisión SSR: hero breve, select
 - Meta por ruta con `publicMeta`: título `X | Vecidya`, descripción, `index, follow`, `og:title/description/type/locale/url/image` y Twitter Cards con imagen Open Graph institucional; canonical **fijo** `https://vecidya.com`. Sitemap, robots y URLs de JSON-LD usan el origen de la request (en `workers.dev` serían inconsistentes con el canonical).
 - Robots: `Allow: /`; `Disallow: /app, /api, /login, /register`; sitemap sin `lastmod`.
 - `www.vecidya.com` → 301 → apex (`workers/app.ts`).
-- Navegación: desktop (Inicio, Vecindario, Aprende, Diagnóstico, Servicios, Contacto) + «Acceder» y «Únete a Vecidya»; móvil `<details>` con Escape y retorno de foco; footer agrupado en Explorar, Empezar y Legal, sin rutas inexistentes. El inicio usa estado activo exacto y las búsquedas filtradas del Vecindario son `noindex`.
+- Navegación: desktop (Vecindario, Licencias, Aprende, Diagnóstico, Servicios, Contacto) + «Acceder» y «Únete a Vecidya»; móvil `<details>` con Escape y retorno de foco; footer agrupado en Explorar, Empezar y Legal, sin rutas inexistentes. El inicio usa el logo como entrada, las búsquedas filtradas del Vecindario son `noindex` y Licencias es la nueva entrada comercial de decisión.
 - Accesibilidad: skip-link, `:focus-visible`, `aria-label` en navegaciones, `prefers-reduced-motion`, breakpoints 430/760/820/900 px. UX-001B.2 corrige el landmark de Home/PublicLayout, añade un H1 único, dimensiones de imágenes, foco heredado y navegación keyboard-friendly para las cuatro opciones del Diagnóstico. La auditoría completa de la superficie pública y el progreso interno del Diagnóstico permanecen en UX-001F.
 - Assets: 14 WebP activos + 4 PNG conservados (ícono de marca canónico y 3 recursos seleccionados sin uso); PERF-001 redujo `18,649,999` a `4,369,378` bytes (`76.57 %`). UX-001B.2 añade 8 SVG livianos y `og-vecidya-public.svg` (1200×630, 2,291 bytes), sin usar assets de reviews/ratings ni el icono PNG de búsqueda de 808.6 KB.
 

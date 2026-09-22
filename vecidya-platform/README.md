@@ -54,5 +54,6 @@ No hay script `test`. Las pruebas E2E son scripts independientes contra un Worke
 | Cómo trabajar y reconciliar | [docs/GOVERNANCE.md](docs/GOVERNANCE.md) |
 | Trabajo futuro | [docs/ROADMAP.md](docs/ROADMAP.md) |
 | Historia relevante | [docs/CHANGELOG.md](docs/CHANGELOG.md) |
+| Catálogo comercial de productos | [docs/business/VECIDYA_PRODUCT_CATALOG.md](docs/business/VECIDYA_PRODUCT_CATALOG.md) |
 
 Reglas para agentes: [../AGENTS.md](../AGENTS.md).

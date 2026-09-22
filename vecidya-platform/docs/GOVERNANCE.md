@@ -32,7 +32,7 @@ Antes de implementar se leen `PROJECT_STATE.md`, `STATUS.md` y la documentación
 
 ## Documentos canónicos
 
-El proyecto mantiene un **máximo de 20 documentos Markdown activos**; hoy son 13. No se crea un documento por fase, auditoría o hallazgo: se consolida en el que ya tiene esa responsabilidad. Crear uno nuevo exige un vacío real que no pueda resolverse actualizando otro, y autorización del usuario.
+El proyecto mantiene un **máximo de 20 documentos Markdown activos**; hoy son 14. No se crea un documento por fase, auditoría o hallazgo: se consolida en el que ya tiene esa responsabilidad. Crear uno nuevo exige un vacío real que no pueda resolverse actualizando otro, y autorización del usuario.
 
 | Documento | Responsabilidad única |
 | --- | --- |
@@ -49,6 +49,7 @@ El proyecto mantiene un **máximo de 20 documentos Markdown activos**; hoy son 1
 | `docs/GOVERNANCE.md` | Cómo trabajar y reconciliar (este documento) |
 | `docs/ROADMAP.md` | Solo trabajo futuro real |
 | `docs/CHANGELOG.md` | Historia relevante ya realizada |
+| `docs/business/VECIDYA_PRODUCT_CATALOG.md` | Matriz comercial de productos, niveles y consumos |
 
 ## Vocabulario de estados
 

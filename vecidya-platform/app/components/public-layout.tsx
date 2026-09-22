@@ -30,8 +30,8 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           <img alt="" src="/brand/vecidya-app-icon.png" />Vecidya
         </Link>
         <nav className="site-nav" aria-label="Navegación pública">
-          <NavLink end to="/">Inicio</NavLink>
           <NavLink to="/vecindario">Vecindario</NavLink>
+          <NavLink to="/licencias">Licencias</NavLink>
           <NavLink to="/aprende">Aprende</NavLink>
           <NavLink to="/diagnostico">Diagnóstico</NavLink>
           <NavLink to="/servicios">Servicios</NavLink>
@@ -46,6 +46,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           <nav aria-label="Navegación pública móvil" onClick={closeMobileMenu}>
             <NavLink end to="/">Inicio</NavLink>
             <NavLink to="/vecindario">Vecindario</NavLink>
+            <NavLink to="/licencias">Licencias</NavLink>
             <NavLink to="/diagnostico">Diagnóstico</NavLink>
             <NavLink to="/aprende">Aprende</NavLink>
             <NavLink to="/servicios">Servicios</NavLink>
@@ -70,6 +71,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           <div>
             <strong>Explorar</strong>
             <Link to="/vecindario">Vecindario</Link>
+            <Link to="/licencias">Licencias</Link>
             <Link to="/servicios">Servicios</Link>
             <Link to="/aprende">Aprende</Link>
             <Link to="/sobre-nosotros">Nosotros</Link>

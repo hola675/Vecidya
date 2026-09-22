@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-09-22 — UX-002.2 Licencias Experience (`v0.3.0`, PASS técnico local)
+
+- Añadida la ruta pública `/licencias` con hero, definición de licencia, tarjetas Cuadra/Barrio/Ciudad, comparador responsive, evolución por necesidad, addons, FAQ y CTA de Diagnóstico.
+- Las referencias `USD 39/mes`, `USD 59/mes` y `USD 89/mes` se muestran como referencias comerciales, sin presentarlas como precio publicado ni activar checkout, pagos o suscripciones.
+- Reutilizados el sistema visual, iconos existentes, metadata institucional, navegación pública y footer; no se generaron assets nuevos.
+- Añadido `licenses-experience-check.mjs` para metadata, CTAs, accesibilidad básica, comparador desktop/móvil y responsive 1366/768/390/360.
+- Se mantiene `0.3.0`; no hubo push, deploy ni migraciones remotas. Producción continúa en `0.2.0`.
+
+## 2026-09-22 — UX-002.1 Product Catalog Foundation (`v0.3.0`, PASS documental)
+
+- Creado `docs/business/VECIDYA_PRODUCT_CATALOG.md` como matriz comercial maestra de licencias Cuadra, Barrio y Ciudad.
+- Separadas las categorías licencia, addon, servicio y consumo externo; documentadas las reglas de evolución por necesidad, el diagnóstico inicial/profesional, Aprende y los mapas comerciales.
+- Registrada HighLevel como infraestructura externa prevista, con la referencia Starter entregada, sin declarar integración activa ni crear CRM propio.
+- No se modificaron páginas públicas, precios publicados, componentes, rutas, schema, migraciones, checkout, push ni deploy.
+
 ## 2026-09-22 — UX-001C Public Experience Polish (`v0.3.0`, PASS técnico local)
 
 - Auditada y pulida la experiencia pública como un único recorrido: navegación desktop priorizada, estado activo exacto, menú móvil con Escape/retorno de foco y footer agrupado en Explorar, Empezar y Legal.
