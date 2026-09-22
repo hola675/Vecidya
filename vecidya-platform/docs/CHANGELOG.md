@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-22 — UX-001B.6 Diagnostic Experience (`v0.3.0`, PASS técnico local)
+
+- Mejorada `/diagnostico` con selector visual coherente con Home, preguntas con jerarquía clara, `Pregunta X de Y`, progreso accesible y etapas visibles.
+- Añadidos foco al encabezado de cada pregunta, navegación anterior/siguiente, estados seleccionados con `aria-pressed`, soporte de teclado y reinicio sin persistencia.
+- El resultado ahora explica posición, confianza, dimensiones con labels humanos, fortalezas, oportunidades y próximos focos; las prioridades compatibles enlazan a anchors reales de `/servicios`.
+- Corregida la contaminación de respuestas al cambiar de perfil: se limpian respuestas dependientes sin alterar el algoritmo de scoring para respuestas equivalentes.
+- Añadido `diagnostic-experience-check.mjs` con selector, keyboard, progreso, back/next, resultado, reinicio y responsive 1366/768/390/360. La deuda C2 de horarios permanece independiente y fuera de alcance.
+- Se mantiene `0.3.0`; no hubo push, deploy, migraciones remotas ni cambios en `vecidya-prod` (`0.2.0`).
+
 ## 2026-09-22 — UX-001B.5 Services Experience (`v0.3.0`, PASS técnico local)
 
 - Rehecha `/servicios` como guía de decisión: hero breve, selector por necesidades, cuatro áreas core y proceso de tres pasos.

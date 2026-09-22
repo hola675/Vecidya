@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
 
 import { publicAssets } from "../assets/public-assets";
@@ -38,6 +38,13 @@ const profileTypes: Record<ProfileType, string> = {
   organization: "Una organización o comunidad",
   public_figure: "Una candidatura o figura pública",
   idea: "Todavía estoy construyendo mi idea",
+};
+
+const profileIcons: Partial<Record<ProfileType, string>> = {
+  business: publicAssets.icons.diagnosticBusiness,
+  professional: publicAssets.icons.diagnosticProfessional,
+  project: publicAssets.icons.diagnosticProject,
+  creator: publicAssets.icons.diagnosticCreator,
 };
 
 const questions: Question[] = [
@@ -256,6 +263,16 @@ const questions: Question[] = [
 
 const stageOrder = ["Identidad", "Presencia", "Confianza", "Conexión", "Comunidad", "Evolución", "Resultado"];
 const dimensions: Dimension[] = ["identidad", "presencia", "visibilidad", "confianza", "conexion", "comunidad", "evolucion", "organizacion"];
+const dimensionLabels: Record<Dimension, string> = {
+  identidad: "Identidad",
+  presencia: "Presencia",
+  visibilidad: "Visibilidad",
+  confianza: "Confianza",
+  conexion: "Conexión",
+  comunidad: "Comunidad",
+  evolucion: "Evolución",
+  organizacion: "Organización",
+};
 
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
@@ -514,20 +531,30 @@ function getDiagnosticMailto(result: ReturnType<typeof scoreAnswers>, answers: A
   return `mailto:hola@vecidya.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
+function getRecommendationLink(item: string) {
+  if (/encontr|descubr|visibilidad/i.test(item)) return "/servicios#visibilidad";
+  if (/mensaje|explicación|presencia pública|canales|contacto|base pública/i.test(item)) return "/servicios#presencia-digital";
+  if (/organizar|seguimiento|desorden/i.test(item)) return "/servicios#estructuracion";
+  if (/formaliz|responsabilidad/i.test(item)) return "/servicios#formalizacion";
+  return null;
+}
+
 export default function Diagnostic() {
   const [answers, setAnswers] = useState<Answers>({});
   const [step, setStep] = useState(0);
+  const questionHeadingRef = useRef<HTMLHeadingElement>(null);
   const applicableQuestions = useMemo(() => getApplicableQuestions(answers), [answers]);
   const currentQuestion = applicableQuestions[step];
   const result = useMemo(() => scoreAnswers(answers, applicableQuestions), [answers, applicableQuestions]);
   const complete = step >= applicableQuestions.length;
-  const answeredCount = Object.keys(answers).filter((id) => applicableQuestions.some((question) => question.id === id)).length;
   const currentStage = complete ? "Resultado" : currentQuestion.stage;
-  const progress = complete ? 100 : Math.round((answeredCount / applicableQuestions.length) * 100);
+  const progress = complete ? 100 : Math.round((step / applicableQuestions.length) * 100);
   const contactHref = complete ? getDiagnosticMailto(result, answers) : "mailto:hola@vecidya.com";
+  const questionNumber = complete ? applicableQuestions.length : step + 1;
 
   const answerQuestion = (question: Question, value: string) => {
     setAnswers((current) => {
+      if (question.id === "profile") return { profile: value };
       if (question.type !== "multi") return { ...current, [question.id]: value };
 
       const option = question.options.find((item) => item.value === value);
@@ -556,6 +583,10 @@ export default function Diagnostic() {
     setStep(0);
   };
 
+  useEffect(() => {
+    questionHeadingRef.current?.focus();
+  }, [complete, currentQuestion?.id]);
+
   return (
     <PublicLayout>
       <main className="public-page diagnostic-page">
@@ -579,33 +610,46 @@ export default function Diagnostic() {
         </section>
 
         <section className="diagnostic-shell" aria-labelledby="diagnostic-title">
-          <nav className="diagnostic-progress" aria-label="Progreso del diagnóstico">
+          <nav className="diagnostic-progress" aria-label="Etapas del diagnóstico">
             {stageOrder.map((stage) => (
-              <span className={stage === currentStage ? "is-active" : undefined} key={stage}>{stage}</span>
+              <span aria-current={stage === currentStage ? "step" : undefined} className={stage === currentStage ? "is-active" : undefined} key={stage}>{stage}</span>
             ))}
           </nav>
-          <div className="diagnostic-meter" aria-label={`Progreso ${progress}%`}>
+          <div
+            aria-label={`Pregunta ${questionNumber} de ${applicableQuestions.length}`}
+            aria-valuemax={applicableQuestions.length}
+            aria-valuemin={0}
+            aria-valuenow={complete ? applicableQuestions.length : step}
+            className="diagnostic-meter"
+            role="progressbar"
+          >
             <span style={{ width: `${progress}%` }} />
           </div>
+          <p aria-live="polite" className="diagnostic-progress-label">
+            {complete ? "Diagnóstico completo" : `Pregunta ${questionNumber} de ${applicableQuestions.length} · ${currentStage}`}
+          </p>
 
           {!complete && currentQuestion ? (
             <article className="diagnostic-question">
-              <p className="eyebrow">{currentQuestion.eyebrow}</p>
-              <h2 id="diagnostic-title">{currentQuestion.prompt}</h2>
-              <p>{currentQuestion.helper}</p>
+              <p className="eyebrow">{currentQuestion.stage} · {currentQuestion.eyebrow}</p>
+              <h2 id="diagnostic-title" ref={questionHeadingRef} tabIndex={-1}>{currentQuestion.prompt}</h2>
+              <p id="diagnostic-helper">{currentQuestion.helper}</p>
               <div className={`diagnostic-options diagnostic-options--${currentQuestion.type}`}>
                 {currentQuestion.options.map((option) => {
                   const selected = includesAnswer(answers[currentQuestion.id], option.value);
+                  const icon = currentQuestion.id === "profile" ? profileIcons[option.value as ProfileType] : undefined;
                   return (
                     <button
                       aria-pressed={selected}
+                      aria-describedby="diagnostic-helper"
                       className={selected ? "is-selected" : undefined}
                       key={option.value}
                       onClick={() => answerQuestion(currentQuestion, option.value)}
                       type="button"
                     >
+                      {icon ? <img alt="" aria-hidden="true" className="diagnostic-option__icon" height={36} src={icon} width={36} /> : null}
                       <span className="diagnostic-option__mark" aria-hidden="true" />
-                      {option.label}
+                      <span>{option.label}</span>
                     </button>
                   );
                 })}
@@ -618,7 +662,7 @@ export default function Diagnostic() {
           ) : (
             <article className="diagnostic-result">
               <p className="eyebrow">TU DIAGNÓSTICO</p>
-              <h2>{result.position}</h2>
+              <h2 ref={questionHeadingRef} tabIndex={-1}>{result.position}</h2>
               <p>
                 Esta orientación resume tu punto de partida, lo que ya funciona y
                 dónde conviene concentrar el próximo avance. Confianza del
@@ -642,14 +686,14 @@ export default function Diagnostic() {
 
               <div className="diagnostic-result-grid">
                 <section className="diagnostic-result-card diagnostic-result-card--dimensions">
-                  <h3>Tus dimensiones</h3>
-                  <dl className="diagnostic-dimensions">
-                    {dimensions.map((dimension) => (
-                      <div key={dimension}>
-                        <dt>{dimension}</dt>
-                        <dd><span style={{ width: `${result.scores[dimension]}%` }} />{result.scores[dimension]}</dd>
-                      </div>
-                    ))}
+                    <h3>Tus dimensiones</h3>
+                    <dl className="diagnostic-dimensions">
+                      {dimensions.map((dimension) => (
+                        <div key={dimension}>
+                          <dt>{dimensionLabels[dimension]}</dt>
+                          <dd><span style={{ width: `${result.scores[dimension]}%` }} />{result.scores[dimension]}</dd>
+                        </div>
+                      ))}
                   </dl>
                 </section>
                 <section className="diagnostic-result-card diagnostic-result-card--strengths">
@@ -661,8 +705,11 @@ export default function Diagnostic() {
                   <ul>{result.opportunities.map((item) => <li key={item}>{item}</li>)}</ul>
                 </section>
                 <section className="diagnostic-result-card diagnostic-result-card--steps">
-                  <h3>Próximos pasos</h3>
-                  <ol>{result.priorities.map((item) => <li key={item}>{item}</li>)}</ol>
+                  <h3>Tus próximos focos</h3>
+                  <ol>{result.priorities.map((item) => {
+                    const href = getRecommendationLink(item);
+                    return <li key={item}>{href ? <Link to={href}>{item}</Link> : item}</li>;
+                  })}</ol>
                 </section>
               </div>
 

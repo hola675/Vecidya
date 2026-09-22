@@ -1,6 +1,6 @@
 # Pruebas
 
-Última reconciliación: 2026-09-22 (UX-001B.5). Evidencia: `product-experience-a-public-review-check.mjs` PASS (incluye `/servicios`, anchors, CTAs, ausencia de lenguaje de compra y 1366/768/390/360), `business-profile-experience-check.mjs` PASS, `public-growth-c1-real-profile-readiness-check.mjs` PASS y typecheck/build/diff-check PASS. El baseline previo de `pnpm run test:e2e` permanece en 17/17 local; una ejecución completa posterior quedó bloqueada en `product-evolution-001-c2-business-operations-check.mjs` por una aserción histórica de compactación de horarios, fuera de `/servicios`. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
+Última reconciliación: 2026-09-22 (UX-001B.6). Evidencia: `diagnostic-experience-check.mjs` PASS en 1366/768/390/360, `product-experience-a-public-review-check.mjs` PASS (incluye Home → Diagnóstico, `/servicios`, anchors, CTAs y metadata), `business-profile-experience-check.mjs` PASS, `public-growth-c1-real-profile-readiness-check.mjs` PASS y typecheck/build/diff-check PASS. El baseline previo de `pnpm run test:e2e` permanece en 17/17 local; una ejecución completa posterior quedó bloqueada en `product-evolution-001-c2-business-operations-check.mjs` por una aserción histórica de compactación de horarios, fuera de UX-001B.6. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
 
 ## Estado de la infraestructura de pruebas
 
@@ -30,6 +30,7 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `acct` | `account-personal-settings-check.mjs` | 7A |
 | `bpx` | `business-profile-experience-check.mjs` | 7C |
 | `services-exp` | `services-experience-check.mjs` | 7D |
+| `diagnostic` | `diagnostic-experience-check.mjs` | UX-001B.6 |
 | `admin-shell` | `admin-shell-check.mjs` | 8A |
 | `admin-bp` | `admin-business-profiles-check.mjs` | 8C |
 | `admin-orgs` | `admin-organizations-check.mjs` | 8B |
@@ -99,7 +100,7 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 | Admin interna | `admin-shell` (8A), `admin-bp` (8C), `d1` | 8B, 8E y API de servicios stale; nada ejecutable cubre `/organizations`, `/integrations` ni escritura de servicios |
 | Web pública | `px-a`: recorrido `/` → `/vecindario` → perfil → `/servicios` → `/diagnostico` → `/contacto` (200, metadata, JSON-LD, patrones prohibidos, overflow, H1 único, selector/anchors/CTAs y ausencia de lenguaje de compra en 1366/768/390/360); UX-001B.2 además valida Home con hasta 3 perfiles D1, 4 choices y 4 servicios | `/unete`, `/sobre-nosotros`, `/que-debes-saber`, `/privacidad`, páginas 404, `www`→apex |
 | Vecindario | `q` y categoría en `pg-c1`, `px-a`; exclusión de borradores/suspendidos en `c1`, `d1` | Filtro de ciudad, filtros combinados y estado vacío solo en `.ps1` stale |
-| Diagnóstico | solo 200/sin overflow/patrones prohibidos en `px-a` | **Motor sin pruebas**: puntuación, ramificación, siete puertas, `mailto`, «cero llamadas `/api/`». Las funciones `scoreAnswers`, `getApplicableQuestions`, `getDiagnosticMailto` no se exportan (no son unit-testables como están) |
+| Diagnóstico | `diagnostic-experience-check.mjs` (selector, 8 preguntas para negocio, progreso accesible, teclado, anterior/siguiente, resultado, reinicio y responsive 1366/768/390/360); `px-a` cubre 200/meta/overflow | Scoring puro sin pruebas unitarias aisladas; persistencia y motor exhaustivo de las siete ramas siguen fuera de esta fase |
 | SEO | meta/canonical en 6 rutas (`px-a`); JSON-LD `LocalBusiness` en `px-a`, `c1`, `c2`, `pg-c1` | `sitemap.xml`, `robots.txt`, `favicon.ico`: **0 pruebas**; SEO remoto solo en script remoto |
 | Responsive | overflow en `px-a`, `c1`, `c2` (perfil y editor a 360) | Sin tablet, regresión visual ni axe/a11y |
 | Gobierno y auditoría | `d1` (verificar, suspender, badge, 404, exclusión, auditoría) | Paginación/orden de auditoría; efecto de suspensión en sitemap |
@@ -119,7 +120,7 @@ Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.m
 2. Mantener `DB` como binding único en los scripts locales.
 3. Mantener guardas de `BASE_URL` local y la intención explícita para los dos remotos.
 4. Pruebas para `/sitemap.xml`, `/robots.txt`, `/favicon.ico`, `/unete`, `/sobre-nosotros`, `/que-debes-saber`, `/privacidad`, 404 y `www`→apex.
-5. Extraer y probar el motor del Diagnóstico (unitario) o cubrirlo con Playwright.
+5. Extraer y probar el motor del Diagnóstico (unitario) para cubrir combinaciones de scoring y las siete ramas.
 6. Pruebas de auth negativas, `/api/organizations/:id[/authorization]` y unicidad de membresía.
 7. Limpieza de fixtures en los 11 scripts que no limpian.
 8. Pruebas unitarias de módulos puros (`db/business-hours-rules.ts`, `db/business-profile-rules.ts`, validaciones, autorización).

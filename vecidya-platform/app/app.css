@@ -1685,6 +1685,46 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   background: var(--blue);
 }
 
+.diagnostic-progress-label {
+  margin: -0.45rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.diagnostic-question h2:focus-visible,
+.diagnostic-result h2:focus-visible {
+  outline: 3px solid rgb(255 107 11 / 55%);
+  outline-offset: 0.35rem;
+  border-radius: 0.25rem;
+}
+
+.diagnostic-options button {
+  grid-template-columns: auto auto minmax(0, 1fr);
+}
+
+.diagnostic-option__icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  object-fit: contain;
+}
+
+.diagnostic-result-card--steps a {
+  color: var(--blue);
+  font-weight: 750;
+}
+
+@media (max-width: 520px) {
+  .diagnostic-question,
+  .diagnostic-result {
+    min-height: 0;
+  }
+
+  .diagnostic-options button {
+    min-height: 3.7rem;
+  }
+}
+
 @media (max-width: 820px) {
   .diagnostic-hero,
   .diagnostic-result-summary,
@@ -1697,16 +1737,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   }
 
   .diagnostic-progress {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 0.25rem;
-    scroll-snap-type: x proximity;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .diagnostic-progress span {
-    min-width: max-content;
-    scroll-snap-align: start;
+    min-width: 0;
   }
 
   .diagnostic-actions .button,

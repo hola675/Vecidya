@@ -77,16 +77,17 @@ La Home redujo la estructura de diez bloques a seis bloques de experiencia más 
 - JSON-LD `LocalBusiness`: `name`, `url`, `description`, `image`, `telephone`, `email`, `address` (localidad/país), `sameAs` (sitio web y redes reales), `areaServed`, `openingHoursSpecification` (solo días abiertos). No emite WhatsApp, categoría, `geo`, `priceRange`, reviews ni ratings.
 - Lo que es funcional hoy: filtrado, búsqueda por nombre y perfiles reales. Categoría y ciudad son filtros exactos; no se promete geolocalización, distancia, relevancia ni búsqueda textual por rubro.
 
-### Diagnóstico (`diagnostic.tsx`, 680 líneas)
+### Diagnóstico (`diagnostic.tsx`, experiencia UX-001B.6)
 
 Confirmado por código (greps de `fetch`, `localStorage`, `sessionStorage`, `cookie`, `indexedDB`, `<form`, `/api/`, `ghl`, `crm`: 0 coincidencias): **anónimo, efímero, solo cliente, sin persistencia, sin API, sin CRM/GHL, sin email obligatorio**.
 
 - 7 «puertas» de entrada (`business`, `professional`, `creator`, `project`, `organization`, `public_figure`, `idea`); 14 preguntas definidas, cada camino recibe 7–8; ramificación por el tipo de presencia.
 - 4 preguntas de multiselección con opciones exclusivas («ninguno», «no sé»).
 - Puntuación: 8 dimensiones (identidad, presencia, visibilidad, confianza, conexión, comunidad, evolución, organización), base 46, acotadas a [18, 92]; 5 posiciones; confianza alta/media/baja.
-- Resultado: máx. 3 fortalezas y 3 próximos pasos (prioridades críticas primero); **siempre 1 oportunidad**; CTA adaptativo con 4 etiquetas.
-- CTAs: `mailto:hola@vecidya.com` prellenado en cliente (tipo, posición, área prioritaria, objetivo; sin respuestas completas) y `/contacto`; «Rehacer». **Sin enlaces a Servicios, Vecindario ni contenido.**
-- Defectos (ver `DIAG-001`): respuestas antiguas siguen puntuando si se cambia el perfil; `organizacion` solo disminuye; ids de dimensión sin acento en pantalla; ayuda que promete «revisar tus respuestas» sin pantalla de revisión.
+- Resultado: máx. 3 fortalezas y 3 próximos pasos (prioridades críticas primero); **siempre 1 oportunidad**; CTA adaptativo con 4 etiquetas, dimensiones con labels humanos y enlaces de prioridad a anchors reales de Servicios cuando aplica.
+- El flujo muestra `Pregunta X de Y`, barra `role="progressbar"`, etapa actual, foco en la pregunta nueva, anterior/siguiente, estados seleccionados accesibles, resultado y «Rehacer diagnóstico». Las cuatro puertas visuales principales reutilizan los SVG de B.2; las demás puertas funcionales permanecen disponibles.
+- CTAs: `mailto:hola@vecidya.com` prellenado en cliente (tipo, posición, área prioritaria, objetivo; sin respuestas completas), `/contacto` y recomendaciones a `/servicios#estructuracion`, `#formalizacion`, `#presencia-digital` o `#visibilidad` solo cuando corresponde.
+- Al cambiar el perfil se limpian las respuestas dependientes para evitar contaminación de scoring. Sigue siendo anónimo, efímero, solo cliente y sin persistencia; la prueba `diagnostic-experience-check.mjs` cubre selector, teclado, navegación, resultado, reinicio y responsive 1366/768/390/360.
 
 ### Servicios (`/servicios`)
 

@@ -1,10 +1,10 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-22 (UX-001B.5, código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: experiencia pública de Servicios implementada, E2E público PASS, typecheck, build, QA responsive local y diff-check.
+Última reconciliación: **2026-09-22 (UX-001B.6, código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: experiencia de Diagnóstico implementada, E2E dedicado PASS, E2E público PASS, typecheck, build, QA responsive local y diff-check.
 
 ## Veredicto
 
-Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional, UX-001B.2, UX-001B.3, UX-001B.4 y UX-001B.5 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
+Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5 y UX-001B.6 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
 
 Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`), verificado por HTTP anónimo el 2026-09-22. El Worker reporta binding `DB=vecidya-prod`; `vecidya-staging` permanece existente y preservada. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes. La Home `v0.3.0` aún no está publicada.
 
@@ -27,7 +27,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | Servicios (administración) | sí | sí | sí | stale | sí | **PARTIAL** | Test 4B/8D no ejecutable; sin auditoría; `activated_at` nunca se escribe |
 | Servicios públicos (`/servicios`) | sí | sí | n/a | E2E público + responsive | sí | **PASS** | Selector por necesidades, cuatro áreas core y alcance consultivo; no lee `service_catalog` |
 | Vecindario (lista, búsqueda, filtros, perfil) | sí | sí | sí | sí | sí | **PASS** | Búsqueda solo por nombre; sin paginación; filtro de ciudad sin prueba ejecutable |
-| Diagnóstico | sí | sí | n/a | solo 200/overflow | sí | **PARTIAL** | Anónimo, efímero, cliente; motor sin pruebas; defectos de puntuación (`DIAG-001`) |
+| Diagnóstico | sí | sí | n/a | E2E dedicado + público responsive | sí | **PASS técnico local** | Anónimo, efímero y cliente; progreso accesible, foco, navegación, resultado, reinicio y mapeos reales a Servicios |
 | Web pública (rutas y contenido) | sí | sí | n/a | 6 rutas | sí | **PASS** | 10 URLs en sitemap; defectos de calidad en `UX-PUBLIC-001` |
 | Home pública UX-001B.2 | sí | sí | sí | E2E público + QA responsive local | no | **PASS técnico local / release ready** | Seis bloques, preview D1 de perfiles publicados, 8 SVG, OG/social metadata; producción no actualizada |
 | SEO/GEO | sí | n/a | n/a | parcial | sí | **PARTIAL** | Sin `og:image`; sitemap/robots sin pruebas; canonical fijo |
@@ -75,6 +75,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | UX-001B.3 Vecindario Experience | IMPLEMENTADA | PASS técnico local / release ready | Búsqueda por nombre, filtros exactos, estados vacíos, cards compartidas, responsive/a11y básica y E2E público PASS; deploy pendiente |
 | UX-001B.4 Public Business Profile | IMPLEMENTADA | PASS técnico local / release ready | Identidad, CTA, detalles, horarios, contacto, redes, metadata/JSON-LD y E2E de perfil PASS; deploy pendiente |
 | UX-001B.5 Services Experience | IMPLEMENTADA | PASS técnico local / release ready | `/servicios` orienta por necesidades, presenta cuatro áreas core, conserva Organización y crecimiento como soporte, elimina lenguaje de compra y valida responsive/anchors/CTAs; deploy pendiente |
+| UX-001B.6 Diagnostic Experience | IMPLEMENTADA | PASS técnico local / release ready | Selector, preguntas, progreso accesible, foco, navegación anterior/siguiente, resultado, reinicio y recomendaciones enlazadas a Servicios; deploy pendiente |
 | PUBLIC-PROD-DIRECT-001 | CERRADA | PASS | `wrangler.jsonc` top-level; apex 200, `www` 301 |
 | PRODUCT-EXPERIENCE-001 A | PASS TÉCNICO LOCAL | PASS | `product-experience-a` pasa (45 s) |
 | PRODUCT-EXPERIENCE-001 B | EN ESPERA | PARTIAL | Test de 260 líneas existe pero falla (defectos del script) |
@@ -133,7 +134,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 
 | ID | Descripción | Evidencia | Prio | Estado |
 | --- | --- | --- | --- | --- |
-| `DIAG-001` | Diagnóstico: respuestas de un perfil anterior siguen puntuando tras volver y cambiar el perfil; solo genera 1 «oportunidad»; la dimensión `organizacion` solo baja; resultado sin enlaces a Servicios/Vecindario/contenido; ids de dimensión sin acento en pantalla | `diagnostic.tsx:276-487,649,670` | M | ABIERTA |
+| `DIAG-001` | Diagnóstico: respuestas de un perfil anterior seguían puntuando tras volver y cambiar el perfil; solo genera 1 «oportunidad»; la dimensión `organizacion` solo baja; resultado sin enlaces a Servicios/Vecindario/contenido; ids de dimensión sin acento en pantalla | `diagnostic.tsx`; `diagnostic-experience-check.mjs` | M | RESUELTA en UX-001B.6; persistencia sigue fuera de alcance |
 | `CONTENT-EDU-001` | `/que-debes-saber` es un hub sin artículos (4 tarjetas no clicables); Home promete «SEO/GEO» que no aparece; `/aprende` no existe (el menú de escritorio dice «Aprende» y enlaza a `/que-debes-saber`) | `knowledge.tsx:45-56`; `home.tsx:160` | M | ABIERTA |
 | `UX-PUBLIC-001` | 8 páginas anidan un segundo `<main>`; sin `og:image`/`og:url`/Twitter; ninguna página pública enlaza a `/register`; `alt` de `VisualSection` oculto por `aria-hidden`; imágenes sin `width/height/loading`; overflow de emails/URLs largos en perfil sin `overflow-wrap`; 3 assets sin uso con nombres de reseñas/ratings | greps; `public-layout.tsx:23` | M | ABIERTA |
 | `INTERCONNECT-001` | Perfil → Servicios/Diagnóstico/Contacto es un CTA fijo no contextual; sin negocios/contenido relacionados; Diagnóstico sin salida contextual (ver mapa en PROJECT_STATE) | código | M | ABIERTA (trabajo de roadmap) |
