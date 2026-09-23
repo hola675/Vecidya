@@ -1,6 +1,6 @@
 # Entornos
 
-Última reconciliación: 2026-09-23 (REL-003.1, `v0.3.0` publicada en staging y producción).
+Última reconciliación: 2026-09-23 (REL-003.1 + fotografía del equipo, `v0.3.0` publicada en staging y producción).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura al dominio público el 2026-09-21, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
@@ -12,8 +12,8 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 
 - Fuente local: `vecidya-platform/package.json` = `0.3.0`.
 - Estado: **LIVE / PUBLICADA**, con deploy autorizado posterior al push de `ca629eb`.
-- Staging: Worker `vecidya-platform-staging`, Version ID `58365cf8-2e1b-4b7a-b131-8631d9e96f22`, URL `https://vecidya-platform-staging.soporte-8a1.workers.dev`; `DB=vecidya-staging`, `APP_ENV=staging`.
-- Producción: Worker `vecidya-platform`, Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f`, `DB=vecidya-prod`, `APP_ENV=production`; `vecidya.com` y `www.vecidya.com` siguen en las rutas configuradas.
+- Staging: Worker `vecidya-platform-staging`, Version ID `934810c2-db8d-4126-960a-cd302d1d45cb`, URL `https://vecidya-platform-staging.soporte-8a1.workers.dev`; `DB=vecidya-staging`, `APP_ENV=staging`, fotografías nuevas verificadas por hash.
+- Producción: Worker `vecidya-platform`, Version ID `fd6d0a4c-da2f-437f-8074-75a989050633`, `DB=vecidya-prod`, `APP_ENV=production`; `vecidya.com` y `www.vecidya.com` siguen en las rutas configuradas, fotografías nuevas verificadas por hash.
 - El primer intento con `--env staging` usó el `build/server/wrangler.json` generado y resolvió el Worker top-level; se corrigió con `wrangler deploy build/server/index.js --config wrangler.jsonc --env staging`. No se ejecutaron migraciones ni se modificaron secrets.
 - Git: push confirmado `origin/main=ca629eb`; el commit documental posterior de esta evidencia queda local hasta nueva autorización de push.
 - Smoke HTTP anónimo de producción PASS el 2026-09-23 para rutas públicas, artículo Aprende, versión `0.3.0`, sitemap, robots y redirect legado.
