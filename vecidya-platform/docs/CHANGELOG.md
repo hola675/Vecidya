@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-23 — REL-004A Restore Git Traceability for `v0.4.1` (documental)
+
+Recuperación de la fuente de verdad. No modifica producto.
+
+- **`origin/main` sincronizado:** publicados `41986a4`, `b59d614` y `142b9c1` con `git push origin main` (`732d6c2..142b9c1`), sin force push, rebase ni reescritura de historia. La rama queda 0 adelante / 0 atrás en ese punto.
+- **Tag anotado `v0.4.1`** creado sobre `b59d614`, el árbol realmente desplegado, y publicado en el remoto; `142b9c1` (reconciliación documental) queda deliberadamente después del commit etiquetado. No se fabricó ningún commit `0.4.0` artificial.
+- **Auditoría de fase retirada:** `docs/UX-003-APP-ADMIN-AUDIT.md` no se promueve a documento canónico. Su contenido único se consolidó en `ROADMAP.md` (alcance de las fases pendientes UX-003.3, UX-003.6 y UX-003.7) y en `STATUS.md` (`ADMIN-SCALE-001`, `ADMIN-A11Y-001`); el resto ya estaba cubierto por deuda existente. El documento sigue recuperable desde `41986a4`. Documentos canónicos: 15.
+- **Artefactos locales:** `.serena/` (estado de herramienta, nada versionado) pasa a `.gitignore`. `vecidya-platform/screenshots/` **no** se ignoró: 16 capturas ya están versionadas en `032208e` y 18 no, de modo que la decisión queda registrada como `REPO-SCREENSHOTS-001` en lugar de aplicarse a ciegas.
+- Sin deploy y sin mutación de producción. Las tres pruebas `TEST-UX003-*` siguen abiertas y se corrigen en UX-003.6, no aquí.
+
 ## 2026-09-23 — VIS-001 Visual audit and UX/UI improvements (en progreso local)
 
 - Iniciado el shell compartido para login, registro y recuperación de contraseña, preservando handlers y autenticación actuales.
