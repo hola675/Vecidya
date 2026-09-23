@@ -1,6 +1,6 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-23 (UX-002.7, Commercial Experience Review local release ready; código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: auditoría de recorrido comercial, CTAs cruzados, navegación, SEO, referencias de precio, exclusión de rutas privadas y E2E responsive.
+Última reconciliación: **2026-09-23 (REL-003, release candidate local `v0.3.0` ready to publish; producción continúa en `v0.2.0`)**. Evidencia: typecheck, build, diff-check, runner E2E local completo (25 scripts, con invitaciones clasificado PASS PARCIAL), smoke responsive comercial y auditoría SEO/seguridad/catálogo.
 
 ## Veredicto
 
@@ -91,6 +91,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | UX-002.5 Diagnostic Experience 2.0 | IMPLEMENTADA | PASS técnico local / release ready | Resultado ampliado con situación, prioridades, camino Vecidya y recomendaciones comerciales/educativas; scoring conservado, sin persistencia ni venta agresiva |
 | UX-002.6 Content & Learn Experience | IMPLEMENTADA | PASS técnico local / release ready | Aprende incluye 5 categorías, 4 artículos estáticos atribuidos a Yoan Ortiz, assets educativos, índice, CTAs, metadata por artículo y sitemap; sin CMS ni persistencia editorial |
 | UX-002.7 Commercial Experience Review | IMPLEMENTADA | PASS técnico local / release ready | Auditoría del recorrido Aprende → Diagnóstico → Licencias → Addons → Servicios → Contacto; CTAs cruzados, navegación, precios de referencia, GHL no público, sitemap, rutas privadas excluidas y responsive PASS |
+| REL-003 Release 0.3.0 Gate | IMPLEMENTADA | **READY TO PUBLISH** | Documentación reconciliada, Git limpio, 0 ahead/behind respecto origin/main, typecheck/build/diff-check PASS, 25 E2E locales PASS o PASS PARCIAL documentado, smoke responsive y auditorías de seguridad/catálogo PASS; sin push/deploy/migraciones |
 | PUBLIC-PROD-DIRECT-001 | CERRADA | PASS | `wrangler.jsonc` top-level; apex 200, `www` 301 |
 | PRODUCT-EXPERIENCE-001 A | PASS TÉCNICO LOCAL | PASS | `product-experience-a` pasa (45 s) |
 | PRODUCT-EXPERIENCE-001 B | EN ESPERA | PARTIAL | Test de 260 líneas existe pero falla (defectos del script) |

@@ -1,6 +1,6 @@
 # Pruebas
 
-Última reconciliación: 2026-09-23 (UX-002.7 + hardening público). Evidencia: `commercial-experience-review-check.mjs` PASS en 1366/768/390/360 para el recorrido comercial, CTAs, navegación, SEO, precios de referencia, sitemap, robots, favicon, alias legado, único `<main>`, alt/dimensiones y overflow; regresiones `services`, `licenses`, `addons`, `diagnostic` y `learn` PASS; typecheck, build y diff-check PASS. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
+Última reconciliación: 2026-09-23 (REL-003). Evidencia: runner E2E local completo ejecutado con **25 scripts**: 24 PASS y `organization-invitations-check.mjs` PASS PARCIAL por delivery Gmail externo no ejecutado; `commercial-experience-review-check.mjs` PASS en 1366/768/390/360; typecheck, build y diff-check PASS. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
 
 ## Estado de la infraestructura de pruebas
 
@@ -56,7 +56,7 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 
 ## Resultado de la ejecución de 2026-09-20
 
-`typecheck` PASS, `build` PASS (`RAN`). E2E locales:
+`typecheck` PASS, `build` PASS (`RAN`). E2E locales (REL-003): **24 PASS / 1 PASS PARCIAL / 0 FAIL / 0 SKIP**, 25 scripts ejecutados contra Worker local. El resultado parcial corresponde exclusivamente a `organization-invitations-check.mjs`: el camino de autorización y aceptación se valida, pero la entrega Gmail externa no se ejecuta sin configuración/autorización de correo.
 
 | Prueba | Resultado | Tiempo | Notas |
 | --- | --- | --- | --- |

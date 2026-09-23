@@ -1,12 +1,20 @@
 # Entornos
 
-Última reconciliación: 2026-09-22 (EMAIL-001C, deploy `v0.2.0`; Gmail delivery confirmed).
+Última reconciliación: 2026-09-23 (REL-003, release candidate local `v0.3.0`; producción `v0.2.0`).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura al dominio público el 2026-09-21, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
 `vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3` (`v0.2.0`). El smoke HTTP anónimo y la entrega Gmail del reset productivo pasaron; la verificación autenticada de esta release queda pendiente de sesión autorizada reutilizable.
+
+## REL-003 — release candidate local
+
+- Fuente local: `vecidya-platform/package.json` = `0.3.0`.
+- Estado: **READY TO PUBLISH**, validado localmente sin deploy, push, migraciones remotas ni cambios en `vecidya-prod`.
+- Git: `main`, working tree limpio, `HEAD` `aaa7fb1`, `origin/main...HEAD` = `0 0` en este corte.
+- Validación: `pnpm run typecheck`, `pnpm run build`, `git diff --check`, runner E2E local `25` scripts y smoke responsive/SEO público PASS; `organization-invitations-check.mjs` imprime PASS PARCIAL únicamente por delivery Gmail externo no ejecutado.
+- Producción permanece en `0.2.0`; `0.3.0` no se considera publicada hasta deploy autorizado y comprobación HTTP anónima fechada.
 
 ## Matriz de entornos
 

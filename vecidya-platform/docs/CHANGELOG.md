@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-23 — REL-003 Release 0.3.0 Gate (`v0.3.0`, READY TO PUBLISH)
+
+- Reconciliada la documentación canónica para distinguir la release candidate local `0.3.0` de la producción publicada `0.2.0`.
+- Ejecutados typecheck, build, diff-check, runner E2E local completo (25 scripts: 24 PASS y 1 PASS PARCIAL por delivery Gmail externo) y smoke responsive/SEO público.
+- Confirmadas ausencia de CRM propio, GHL activo, checkout, pagos, Stripe, secretos versionados y migraciones nuevas; el catálogo comercial mantiene la separación Licencia/Addon/Servicio/Consumo y Cuadra/Barrio/Ciudad.
+- REL-003 queda **READY TO PUBLISH**. No hubo push, deploy, migraciones remotas ni cambios en `vecidya-prod`.
+
 ## 2026-09-23 — Public hardening follow-up (`v0.3.0`)
 
 - Corregidas brechas públicas de accesibilidad y robustez: imágenes del header con dimensiones explícitas, datos de perfil con `overflow-wrap` y auditoría de un único `<main>`, alt/dimensiones, metadata y overflow.
