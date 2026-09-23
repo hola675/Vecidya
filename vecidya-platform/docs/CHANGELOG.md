@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-23 — Actualización de fotografía del equipo (`v0.3.0`, local)
+
+- Reemplazadas las fotografías de Yoan Ortiz, Edgar y el equipo por los assets entregados en `C:\Users\Admin\Downloads\fotos`.
+- Convertidas a WebP optimizado y conservadas las rutas públicas existentes para no romper referencias.
+- Ajustadas las dimensiones declaradas de las imágenes en `/sobre-nosotros` para evitar layout shift.
+- Cambio local sin push ni deploy; producción conserva la fotografía anterior hasta una publicación autorizada.
+
 ## 2026-09-23 — REL-003.1 Publish `0.3.0` (`LIVE`)
 
 - Push autorizado completado: `origin/main` apunta a `ca629eb`.

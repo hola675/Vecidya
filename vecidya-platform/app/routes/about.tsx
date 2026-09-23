@@ -31,7 +31,7 @@ export default function About() {
           <figure className="about-experience-hero__photo">
             <picture>
               <source media="(max-width: 768px)" srcSet={publicAssets.about.teamMobile} />
-              <img alt="Yoan y Edgar juntos frente al símbolo de Vecidya" decoding="async" height={1086} src={publicAssets.about.team} width={1448} />
+              <img alt="Yoan y Edgar juntos frente al símbolo de Vecidya" decoding="async" height={1080} src={publicAssets.about.team} width={1440} />
             </picture>
             <figcaption>Dos perspectivas. Un mismo punto de partida: entender antes de construir.</figcaption>
           </figure>
@@ -55,7 +55,7 @@ export default function About() {
           </div>
           <div className="about-team-grid">
             <article className="about-person-card">
-              <img alt="Yoan Ortiz" decoding="async" height={750} loading="lazy" src={publicAssets.about.yoan} width={600} />
+              <img alt="Yoan Ortiz" decoding="async" height={1402} loading="lazy" src={publicAssets.about.yoan} width={1122} />
               <div>
                 <p className="eyebrow">TECNOLOGÍA · PRODUCTO</p>
                 <h3>Yoan Ortiz</h3>
@@ -64,7 +64,7 @@ export default function About() {
               </div>
             </article>
             <article className="about-person-card">
-              <img alt="Edgar" decoding="async" height={750} loading="lazy" src={publicAssets.about.edgar} width={600} />
+              <img alt="Edgar" decoding="async" height={1402} loading="lazy" src={publicAssets.about.edgar} width={1122} />
               <div>
                 <p className="eyebrow">CLIENTES · DESARROLLO</p>
                 <h3>Edgar</h3>
