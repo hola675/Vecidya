@@ -1,6 +1,6 @@
 # Pruebas
 
-Última reconciliación: 2026-09-23 (REL-003). Evidencia: runner E2E local completo ejecutado con **25 scripts**: 24 PASS y `organization-invitations-check.mjs` PASS PARCIAL por delivery Gmail externo no ejecutado; `commercial-experience-review-check.mjs` PASS en 1366/768/390/360; typecheck, build y diff-check PASS. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
+Última reconciliación: 2026-09-23 (REL-003.1). Evidencia: runner E2E local completo ejecutado con **25 scripts**: 24 PASS y `organization-invitations-check.mjs` PASS PARCIAL por delivery Gmail externo no ejecutado; `commercial-experience-review-check.mjs` PASS en 1366/768/390/360; typecheck, build y diff-check PASS. Smoke HTTP anónimo de producción `0.3.0` PASS el 2026-09-23 para rutas públicas, artículo Aprende, sitemap, robots y redirect legado.
 
 ## Estado de la infraestructura de pruebas
 

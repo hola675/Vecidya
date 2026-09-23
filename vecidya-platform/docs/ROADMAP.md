@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-23 (REL-003 release candidate `0.3.0` READY TO PUBLISH; follow-up de verificación/invitaciones permanece separado).
+Última reconciliación: 2026-09-23 (REL-003.1 `0.3.0` LIVE; follow-up de verificación/invitaciones permanece separado).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -42,7 +42,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 **Corrección 2 — Contenido (6) antes de Interconexión (7).** Las conexiones «Artículo → Diagnóstico/Servicio» y «Diagnóstico → contenido relacionado» no pueden existir sin artículos: hoy hay cero. Interconectar primero produciría enlaces a un hub vacío.
 
-**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7, UX-001B.8, UX-001B.9, UX-001B.10 y UX-001C quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`. UX-002.1 queda **PASS DOCUMENTAL** y UX-002.2–UX-002.7 quedan **PASS técnico local / release ready**. REL-003 deja `0.3.0` **READY TO PUBLISH**: documentación, validación local y Git reconciliados; producción sigue en `0.2.0` porque no hubo deploy. Push y deploy requieren autorización explícita.
+**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7, UX-001B.8, UX-001B.9, UX-001B.10 y UX-001C quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`. UX-002.1 queda **PASS DOCUMENTAL** y UX-002.2–UX-002.7 quedan **PASS técnico local / release ready**. REL-003.1 confirma `0.3.0` **LIVE** en staging y producción con smoke HTTP anónimo PASS, sin migraciones ni cambios de secrets. El siguiente bloque, aún no iniciado, es OPS-001 — GHL Pilot Foundation.
 
 ## UX-002 — evolución comercial
 

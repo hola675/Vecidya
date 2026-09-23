@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-23 (REL-003, release candidate local `0.3.0` ready to publish)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+Última reconciliación: **2026-09-23 (REL-003.1, `0.3.0` LIVE)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.3.0`, Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -93,7 +93,7 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 
 ### Home: arquitectura UX-001B.2 (`home.tsx`)
 
-La Home local `0.3.0` muestra producto real antes de explicarlo. Lee hasta tres perfiles públicos desde D1 mediante `listPublishedBusinessProfiles`, respetando `status = published` y la exclusión de perfiles suspendidos. No requiere sesión, no expone datos privados y mantiene un estado honesto con cero perfiles. La Home publicada todavía corresponde a `0.2.0`; el deploy no forma parte de UX-001B.2.
+La Home `0.3.0` muestra producto real antes de explicarlo. Lee hasta tres perfiles públicos desde D1 mediante `listPublishedBusinessProfiles`, respetando `status = published` y la exclusión de perfiles suspendidos. No requiere sesión, no expone datos privados y mantiene un estado honesto con cero perfiles. La release fue publicada y verificada por HTTP anónimo el 2026-09-23.
 
 | # | Sección | Objetivo | ~Palabras | CTA → destino | Visual | Conexión |
 | --- | --- | --- | --- | --- | --- | --- |

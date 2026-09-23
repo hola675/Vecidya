@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-23 — REL-003.1 Publish `0.3.0` (`LIVE`)
+
+- Push autorizado completado: `origin/main` apunta a `ca629eb`.
+- Staging publicado en `vecidya-platform-staging`, Version ID `58365cf8-2e1b-4b7a-b131-8631d9e96f22`, con `DB=vecidya-staging` y `APP_ENV=staging`; la URL workers.dev responde 200.
+- Producción publicada en `vecidya-platform`, Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f`, con `DB=vecidya-prod` y `APP_ENV=production`; `vecidya.com` responde `0.3.0`.
+- Smoke HTTP anónimo PASS para rutas públicas, artículo de Aprende, sitemap, robots, canonical/metadata y redirect `/que-debes-saber → /aprende`; no se ejecutaron migraciones ni se modificaron secrets.
+- El trigger de zona de staging no se reasignó por conflicto con la ruta existente de producción; el Worker staging queda operativo en `workers.dev`.
+
+
 ## 2026-09-23 — REL-003 Release 0.3.0 Gate (`v0.3.0`, READY TO PUBLISH)
 
 - Reconciliada la documentación canónica para distinguir la release candidate local `0.3.0` de la producción publicada `0.2.0`.

@@ -1,20 +1,22 @@
 # Entornos
 
-Última reconciliación: 2026-09-23 (REL-003, release candidate local `v0.3.0`; producción `v0.2.0`).
+Última reconciliación: 2026-09-23 (REL-003.1, `v0.3.0` publicada en staging y producción).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura al dominio público el 2026-09-21, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
-`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3` (`v0.2.0`). El smoke HTTP anónimo y la entrega Gmail del reset productivo pasaron; la verificación autenticada de esta release queda pendiente de sesión autorizada reutilizable.
+`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f` (`v0.3.0`). El smoke HTTP anónimo de rutas públicas, versión, sitemap, robots, canonical y redirect legado pasó el 2026-09-23.
 
-## REL-003 — release candidate local
+## REL-003.1 — publicación de `v0.3.0`
 
 - Fuente local: `vecidya-platform/package.json` = `0.3.0`.
-- Estado: **READY TO PUBLISH**, validado localmente sin deploy, push, migraciones remotas ni cambios en `vecidya-prod`.
-- Git: `main`, working tree limpio, `HEAD` `aaa7fb1`, `origin/main...HEAD` = `0 0` en este corte.
-- Validación: `pnpm run typecheck`, `pnpm run build`, `git diff --check`, runner E2E local `25` scripts y smoke responsive/SEO público PASS; `organization-invitations-check.mjs` imprime PASS PARCIAL únicamente por delivery Gmail externo no ejecutado.
-- Producción permanece en `0.2.0`; `0.3.0` no se considera publicada hasta deploy autorizado y comprobación HTTP anónima fechada.
+- Estado: **LIVE / PUBLICADA**, con deploy autorizado posterior al push de `ca629eb`.
+- Staging: Worker `vecidya-platform-staging`, Version ID `58365cf8-2e1b-4b7a-b131-8631d9e96f22`, URL `https://vecidya-platform-staging.soporte-8a1.workers.dev`; `DB=vecidya-staging`, `APP_ENV=staging`.
+- Producción: Worker `vecidya-platform`, Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f`, `DB=vecidya-prod`, `APP_ENV=production`; `vecidya.com` y `www.vecidya.com` siguen en las rutas configuradas.
+- El primer intento con `--env staging` usó el `build/server/wrangler.json` generado y resolvió el Worker top-level; se corrigió con `wrangler deploy build/server/index.js --config wrangler.jsonc --env staging`. No se ejecutaron migraciones ni se modificaron secrets.
+- Git: push confirmado `origin/main=ca629eb`; el commit documental posterior de esta evidencia queda local hasta nueva autorización de push.
+- Smoke HTTP anónimo de producción PASS el 2026-09-23 para rutas públicas, artículo Aprende, versión `0.3.0`, sitemap, robots y redirect legado.
 
 ## Matriz de entornos
 
@@ -22,18 +24,18 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 | --- | --- | --- | --- | --- | --- |
 | **Local** | `react-router dev` con el plugin de Cloudflare (`pnpm run dev`) | Emulada por Miniflare en `.wrangler/state/v3/d1` (binding `DB`); migraciones `0000`–`0009` aplicadas | `http://localhost:*` | Operativo | `RAN` `d1_migrations` local contiene 10 filas (`0000`–`0009`) |
 | **Development** (remoto) | Ninguno versionado | `vecidya-dev` remoto existe, pero no está configurado ni debe usarse | Ninguno | **Abandonado / sin uso** | `CONFIG` |
-| **Staging** | `vecidya-platform-staging` (`env.staging`, `workers_dev: true`) | `vecidya-staging` `d4af6ebc-97c5-42f6-ad3a-51551021e591` | URL workers.dev dedicada aún pendiente de provisionar/verificar | **Preparado; no desplegado en este bloque** | `CONFIG` `REMOTE` |
-| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`; smoke PASS; auth de esta release pendiente | `CONFIG` `HTTP` `REMOTE` `DOC` |
+| **Staging** | `vecidya-platform-staging` (`env.staging`, `workers_dev: true`) | `vecidya-staging` `d4af6ebc-97c5-42f6-ad3a-51551021e591` | `https://vecidya-platform-staging.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.3.0`, Version ID `58365cf8-2e1b-4b7a-b131-8631d9e96f22`; trigger de rutas de zona no se reasignó por conflicto existente, workers.dev operativo | `CONFIG` `HTTP` |
+| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.3.0`, Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f`; smoke HTTP PASS | `CONFIG` `HTTP` `REMOTE` |
 
 ## Qué código está publicado
 
-El despliegue público vigente es el Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3` (`v0.2.0`, 2026-09-22) `CONFIG`/`HTTP`:
+El despliegue público vigente es el Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f` (`v0.3.0`, 2026-09-23) `CONFIG`/`HTTP`:
 
 - `/app/internal/maintenance/auth-bootstrap` y `/app/internal/maintenance/password-rotation` devuelven **404**.
 - `/app/internal` sin sesión devuelve la pantalla de login; el acceso autenticado de `hola@vecidya.com` fue comprobado manualmente en producción en `/app` y `/app/internal`.
 - La D1 remota reporta migraciones `0000`–`0009` aplicadas `REMOTE`.
 
-Conclusión: el código `0.2.0` está desplegado en el Worker público, el binding reportado por Wrangler es `vecidya-prod` y no se ejecutaron migraciones. `vecidya-staging` sigue preservada como D1 independiente de staging.
+Conclusión: el código `0.3.0` está desplegado en el Worker público, el binding reportado por Wrangler es `vecidya-prod` y no se ejecutaron migraciones. `vecidya-staging` sigue preservada como D1 independiente de staging.
 
 ## Repositorio Git
 
@@ -64,7 +66,7 @@ Con la configuración OAuth completa, el envío Gmail queda listo para validaci�
 
 ## Reglas
 
-1. Producción/Public usa `vecidya-prod`; staging conserva `vecidya-staging` con Worker dedicado aún no desplegado en este bloque.
+1. Producción/Public usa `vecidya-prod`; staging conserva `vecidya-staging` y el Worker dedicado está publicado en su URL `workers.dev`.
 2. Los secretos se gestionan fuera de Git; no se leen ni se imprimen archivos `.env*` ni `.dev.vars`.
 3. Ninguna prueba destructiva apunta a producción pública. Las pruebas `remote-staging-*` exigen `RUN_REMOTE_E2E=1`, `TARGET_ENV=staging`, el Worker dedicado `vecidya-platform-staging` y `D1_NAME=vecidya-staging`; rechazan producción (ver `TESTING.md`).
 4. Los despliegues requieren autorización explícita; `wrangler deploy` despliega directamente al dominio público.

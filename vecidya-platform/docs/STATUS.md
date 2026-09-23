@@ -1,12 +1,12 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-23 (REL-003, release candidate local `v0.3.0` ready to publish; producción continúa en `v0.2.0`)**. Evidencia: typecheck, build, diff-check, runner E2E local completo (25 scripts, con invitaciones clasificado PASS PARCIAL), smoke responsive comercial y auditoría SEO/seguridad/catálogo.
+Última reconciliación: **2026-09-23 (REL-003.1, `v0.3.0` LIVE en staging y producción)**. Evidencia: push `ca629eb`, deploy staging/production, smoke HTTP anónimo de rutas públicas, versión, SEO, sitemap y redirect legado.
 
 ## Veredicto
 
 Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional, UX-001C en **PASS técnico local / release ready** y UX-002.2–UX-002.7 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
 
-Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`), verificado por HTTP anónimo el 2026-09-22. El Worker reporta binding `DB=vecidya-prod`; `vecidya-staging` permanece existente y preservada. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes. La Home `v0.3.0` aún no está publicada.
+Lo publicado en `vecidya.com` corresponde a `v0.3.0` (Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f`), verificado por HTTP anónimo el 2026-09-23. El Worker reporta binding `DB=vecidya-prod`; `vecidya-staging` permanece existente y preservada. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes.
 
 ## Matriz de capacidades
 
@@ -44,7 +44,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | Contenido educativo real | sí (estático) | sí | n/a | E2E `/aprende` + validación responsive | no | **PASS técnico local / release ready** | 4 artículos de Yoan Ortiz, 5 categorías, assets SVG y CTAs; sin CMS, comentarios ni newsletter |
 | Legal / privacidad | sí (`/privacidad`) | sí | n/a | E2E legal/trust | sí | **PASS técnico local** | Lenguaje claro y límites actuales; no se inventan términos, entidad legal ni datos jurídicos |
 | Real Proof (negocios reales) | sí (validación local) | sí (solo local) | sí | `rp001a` | 1 (dogfooding) | **BLOCKED para publicación remota** | RP-001A valida tres casos controlados sin publicar; siguen bloqueados datos/autorizaciones y G4 |
-| Producción independiente | sí | n/a | sí | smoke anónimo + manual auth | sí (`0.2.0`) | **PASS** | `vecidya-prod` sirve el público; verificación autenticada histórica `/login → /app → /app/internal` permanece válida |
+| Producción independiente | sí | n/a | sí | smoke anónimo `0.3.0` + manual auth histórica | sí (`0.3.0`) | **PASS** | `vecidya-prod` sirve el público; Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f`; no hubo migraciones ni cambios de secrets |
 
 ## Fases: estado declarado vs reconciliado
 
@@ -91,7 +91,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | UX-002.5 Diagnostic Experience 2.0 | IMPLEMENTADA | PASS técnico local / release ready | Resultado ampliado con situación, prioridades, camino Vecidya y recomendaciones comerciales/educativas; scoring conservado, sin persistencia ni venta agresiva |
 | UX-002.6 Content & Learn Experience | IMPLEMENTADA | PASS técnico local / release ready | Aprende incluye 5 categorías, 4 artículos estáticos atribuidos a Yoan Ortiz, assets educativos, índice, CTAs, metadata por artículo y sitemap; sin CMS ni persistencia editorial |
 | UX-002.7 Commercial Experience Review | IMPLEMENTADA | PASS técnico local / release ready | Auditoría del recorrido Aprende → Diagnóstico → Licencias → Addons → Servicios → Contacto; CTAs cruzados, navegación, precios de referencia, GHL no público, sitemap, rutas privadas excluidas y responsive PASS |
-| REL-003 Release 0.3.0 Gate | IMPLEMENTADA | **READY TO PUBLISH** | Documentación reconciliada, Git limpio, 0 ahead/behind respecto origin/main, typecheck/build/diff-check PASS, 25 E2E locales PASS o PASS PARCIAL documentado, smoke responsive y auditorías de seguridad/catálogo PASS; sin push/deploy/migraciones |
+| REL-003 Release 0.3.0 Gate | IMPLEMENTADA | **LIVE / PASS** | Push `ca629eb`, staging `58365cf8-2e1b-4b7a-b131-8631d9e96f22`, producción `26358c8b-70c4-41f3-8f10-34d1bd60916f`, smoke HTTP anónimo PASS; sin migraciones ni cambios de secrets |
 | PUBLIC-PROD-DIRECT-001 | CERRADA | PASS | `wrangler.jsonc` top-level; apex 200, `www` 301 |
 | PRODUCT-EXPERIENCE-001 A | PASS TÉCNICO LOCAL | PASS | `product-experience-a` pasa (45 s) |
 | PRODUCT-EXPERIENCE-001 B | EN ESPERA | PARTIAL | Test de 260 líneas existe pero falla (defectos del script) |
