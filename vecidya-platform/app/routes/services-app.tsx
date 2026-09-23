@@ -1,6 +1,7 @@
 import { Link, useLoaderData } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
+import { ClientAreaShell } from "../components/client-area-shell";
 import { listOrganizationServices } from "../../db/queries/organization-services.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getActiveOrganization, requireSession } from "../../server/auth/session.server";
@@ -51,8 +52,8 @@ export default function AppServices() {
   const { organization, services } = useLoaderData<typeof loader>();
 
   return (
-    <main className="app-main services-page">
-      <Link className="back-link" to="/app">← Volver a Mi Vecidya</Link>
+    <ClientAreaShell active="services">
+    <main className="app-main services-page" id="client-page-content">
       <div className="page-heading">
         <div>
           <p className="eyebrow">MIS SERVICIOS</p>
@@ -95,5 +96,6 @@ export default function AppServices() {
         </section>
       )}
     </main>
+    </ClientAreaShell>
   );
 }

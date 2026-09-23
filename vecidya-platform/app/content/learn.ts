@@ -27,7 +27,7 @@ export const learnArticles: LearnArticle[] = [
     excerpt: "Contactos, seguimiento y organización explicados con un ejemplo sencillo.",
     image: "/assets/learn/diagram-crm.svg",
     imageAlt: "Diagrama de una persona interesada que se convierte en cliente con seguimiento",
-    cta: { label: "Quiero organizar mis clientes", to: "/diagnostico", copy: "El diagnóstico ayuda a ubicar si hoy necesitas ordenar contactos, oportunidades o canales." },
+    cta: { label: "Quiero organizar mis clientes", to: "/diagnostico?objetivo=organize", copy: "El diagnóstico ayuda a ubicar si hoy necesitas ordenar contactos, oportunidades o canales." },
     sections: [
       { heading: "El problema no es tener pocos contactos", paragraphs: ["Cuando las consultas llegan por distintos canales, el reto es conservar el contexto: qué preguntó cada persona, cuándo responder y qué se acordó.", "Un CRM reúne esa información en un solo lugar. No hace que el negocio venda automáticamente; hace visible el trabajo que ya necesita hacerse."] },
       { heading: "¿Qué guarda un CRM?", paragraphs: ["Como mínimo, una ficha de contacto, notas, tareas y el estado de una oportunidad. Así puedes distinguir entre alguien que apenas preguntó y una conversación que ya necesita seguimiento."], bullets: ["Quién es la persona y cómo prefiere contactarte.", "Qué necesita y qué conversación tuvieron.", "Cuál es el siguiente paso y quién debe hacerlo."] },

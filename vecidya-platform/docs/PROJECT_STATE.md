@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-23 (REL-003.1, `0.3.0` LIVE)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.3.0`, Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f`.
+Última reconciliación: **2026-09-23 (`0.4.0` LIVE; release candidate local `0.4.1` UX-003.2/003.5)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.4.1`; versión desplegada en producción: `0.4.0`, Version ID `8c7d38e6-d560-4f27-9a40-b9d102033eff`; staging Version ID `57c2f319-7de4-4995-a4ba-2a10db82fa7a`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -16,7 +16,7 @@ Publicado en `vecidya.com` (verificado HTTP el 2026-09-22 y autenticación hist�
 - React `19.3.0`, React Router `8.4.0` (SSR), TypeScript `7.0.2`, Vite `8.3.0`, Tailwind CSS `4.3.3`.
 - Cloudflare Workers (`workers/app.ts`), D1, Wrangler `4.135.0`.
 - Better Auth `1.7.5` (email + contraseña, plugin Organization) con Drizzle ORM `0.45.2`.
-- Playwright `1.63.0` (solo pruebas). Sin framework de tests, sin CI.
+- Playwright `1.63.0` (E2E) y `node:test` con type stripping para pruebas unitarias (`tests/unit`, `tests/email`). Sin framework externo ni CI.
 
 ## Límites permanentes
 
@@ -32,7 +32,7 @@ Publicado en `vecidya.com` (verificado HTTP el 2026-09-22 y autenticación hist�
 
 La matriz comercial de referencia está documentada en [business/VECIDYA_PRODUCT_CATALOG.md](business/VECIDYA_PRODUCT_CATALOG.md). Define las fronteras entre licencia, addon, servicio y consumo externo; documenta Cuadra, Barrio y Ciudad; separa diagnóstico inicial y profesional; fija la estructura editorial de Aprende; y registra la frontera prevista con HighLevel.
 
-Este catálogo es **diseño comercial documental**, no una capacidad implementada. Los precios (`$39`, `$59`, `$89`) y la referencia externa de HighLevel (`USD 97/mes`, hasta 3 subcuentas) no están publicados, facturados ni configurados. La plataforma actual sigue sin integrar HighLevel y no implementa un CRM paralelo.
+Este catálogo es **diseño comercial documental**, no una capacidad implementada. Los precios (`$39`, `$59`, `$89`) no están facturados ni conectados a checkout. OPS-001 añade una fundación documental de HighLevel: la cuenta real y el plan contratado siguen **NOT VERIFIED**, la plataforma actual sigue sin integrar HighLevel y no implementa un CRM paralelo.
 
 ### Recorrido y CTAs
 
@@ -46,7 +46,7 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` es la ru
 | `/servicios` | Estático (5 fichas) | Funcional | Sin precios, paquetes ni garantías (grep) |
 | `/licencias` | Estático | Funcional local / release ready | Cuadra, Barrio y Ciudad; comparador, evolución, addons, FAQ y CTA; referencias comerciales explícitas, sin checkout |
 | `/addons` | Estático | Funcional local / release ready | Categorías de comunicación, automatización, IA e integraciones; cards de capacidades y separación comercial; sin precios ni checkout |
-| `/diagnostico` | Cliente (`useState`) | Funcional | Ver sección |
+| `/diagnostico` | Cliente: motor puro `app/features/diagnostic` + `useState`; entrada contextual `?perfil=` y `?objetivo=` | Funcional y publicada (`0.4.0`) | Ver sección |
 | `/unete` | Estático | Funcional | Dos entradas: Diagnóstico o Contacto; preparación breve y tres pasos; sin registro |
 | `/contacto` | Estático | Funcional | Email `hola@vecidya.com`, guidance contextual, privacidad y Diagnóstico; sin formulario ni canales ficticios |
 | `/sobre-nosotros` | Estático | Funcional | Propósito, historia, equipo real, forma de trabajar y punto de vista; fotos WebP optimizadas |
@@ -120,17 +120,23 @@ La Home redujo la estructura de diez bloques a seis bloques de experiencia más 
 - JSON-LD `LocalBusiness`: `name`, `url`, `description`, `image`, `telephone`, `email`, `address` (localidad/país), `sameAs` (sitio web y redes reales), `areaServed`, `openingHoursSpecification` (solo días abiertos). No emite WhatsApp, categoría, `geo`, `priceRange`, reviews ni ratings.
 - Lo que es funcional hoy: filtrado, búsqueda por nombre y perfiles reales. Categoría y ciudad son filtros exactos; no se promete geolocalización, distancia, relevancia ni búsqueda textual por rubro.
 
-### Diagnóstico (`diagnostic.tsx`, experiencia UX-001B.6)
+### Diagnóstico (`diagnostic.tsx` + `app/features/diagnostic/`, DIAG-002)
 
-Confirmado por código (greps de `fetch`, `localStorage`, `sessionStorage`, `cookie`, `indexedDB`, `<form`, `/api/`, `ghl`, `crm`: 0 coincidencias): **anónimo, efímero, solo cliente, sin persistencia, sin API, sin CRM/GHL, sin email obligatorio**.
+Confirmado por código (greps de `fetch`, `localStorage`, `sessionStorage`, `cookie`, `indexedDB`, `<form`, `/api/`, `ghl`, `crm` en la ruta y en el motor: 0 coincidencias): **anónimo, efímero, solo cliente, sin persistencia, sin API, sin CRM/GHL, sin email obligatorio**. La `0.4.0` publicada sirve DIAG-002B; no se ejecutaron migraciones ni cambios de secrets.
 
-- 7 «puertas» de entrada (`business`, `professional`, `creator`, `project`, `organization`, `public_figure`, `idea`); 14 preguntas definidas, cada camino recibe 7–8; ramificación por el tipo de presencia.
-- 4 preguntas de multiselección con opciones exclusivas («ninguno», «no sé»).
-- Puntuación: 8 dimensiones (identidad, presencia, visibilidad, confianza, conexión, comunidad, evolución, organización), base 46, acotadas a [18, 92]; 5 posiciones; confianza alta/media/baja.
-- Resultado: máx. 3 fortalezas y 3 próximos pasos (prioridades críticas primero); **siempre 1 oportunidad**; CTA adaptativo con 4 etiquetas, dimensiones con labels humanos y enlaces de prioridad a anchors reales de Servicios cuando aplica. UX-002.5 añade situación actual, observaciones, camino recomendado y mapeo orientativo a Licencia, Addon, Servicio y Aprende sin alterar el scoring.
-- El flujo muestra `Pregunta X de Y`, barra `role="progressbar"`, etapa actual, foco en la pregunta nueva, anterior/siguiente, estados seleccionados accesibles, resultado y «Rehacer diagnóstico». Las cuatro puertas visuales principales reutilizan los SVG de B.2; las demás puertas funcionales permanecen disponibles.
-- CTAs: `mailto:hola@vecidya.com` prellenado en cliente (tipo, posición, área prioritaria, objetivo; sin respuestas completas), `/contacto`, `/licencias`, `/addons`, `/servicios` y `/aprende`; recomendaciones a `/servicios#estructuracion`, `#formalizacion`, `#presencia-digital` o `#visibilidad` solo cuando corresponde.
-- Al cambiar el perfil se limpian las respuestas dependientes para evitar contaminación de scoring. Sigue siendo anónimo, efímero, solo cliente y sin persistencia; la prueba `diagnostic-experience-check.mjs` cubre selector, teclado, navegación, resultado, reinicio y responsive 1366/768/390/360.
+- **Motor puro** en `app/features/diagnostic/` (`types`, `profiles`, `questions`, `answers`, `flow`, `scoring`, `result`, `recommendations`, `deep-link`, `catalog`, `index`): sin React ni red; `runDiagnostic(answers)` es determinista y la ruta solo renderiza.
+- **Perfiles**: `business`, `professional`, `creator`, `project`, `organization`. «Idea» pasó a ser un momento (`stage`) y «candidatura o figura pública» se retiró por no tener un mapeo honesto a producto.
+- **Contexto**: objetivo (9 opciones), momento (idea, lanzamiento, ocasional, regular, estable/crecimiento) y equipo por rangos (solo yo, 2–5, 6–10, 11–25, +25). El contexto ramifica y pondera relevancia; nunca aporta evidencia ni decide la licencia.
+- **Preguntas**: 26 en el banco; recorrido mínimo 6 (idea), típico 13–16, máximo 19. Cada pregunta documenta `purpose`, dimensiones, pesos y condición `applies`. Multiselección con exclusivas: «nada de esto» puntúa 0 de forma sustantiva, «no estoy seguro» es incertidumbre; «no aplica» no puntúa ni afecta la confianza.
+- **Puntuación**: 7 dimensiones (claridad, presencia, alcance, confianza, contacto, seguimiento, medición) de 0 a 100 normalizadas sobre la evidencia aplicable y respondida (`null` = sin evaluar); niveles inicial/parcial/sólida/consolidada.
+- **Estado** por reglas, no por promedio (DIAG-002B): punto de partida (no opera) → base en construcción (claridad baja; o presencia baja / sin consultas, con resumen distinto si el proceso ya funciona) → operación activa con datos por confirmar (llegan consultas pero registro/seguimiento son «no lo sé») → operación activa con fugas (contacto o seguimiento bajos, o una fuga grave concreta como «no hay seguimiento» aunque el resto sea fuerte) → sistema en marcha → sistema consolidado. El estado cita las respuestas que lo originan. **Confianza** separada de la debilidad: cobertura, respuestas «no lo sé», dimensiones sin evidencia y contradicciones declaradas (idea + primera venta; actividad regular + sin consultas; presencia clara + propuesta sin resumir), con razones en texto.
+- **Prioridades**: hallazgos con gravedad × clase (fundacional > fuga comercial > confianza/alcance > cuello de botella > madurez) × relevancia del objetivo × confianza, con dependencias (`after`: automatizar no encabeza si la captura o el seguimiento fallan); máximo 3, cada una con «por qué» citando la respuesta dada y «qué hacer» sin contratar nada. Un hallazgo derivado de «no lo sé» usa títulos de comprobación («Confirmar si…», «Averiguar…»), nunca de ausencia; «presencia escasa» y «no apareces en Google» no se duplican; «varios canales» solo es brecha si las consultas no quedan registradas; un negocio local con buen proceso y sin reseñas recibe «pedir reseñas». Las fortalezas de dimensión exigen evidencia ≥ 2, sin dudas y sin brecha grave confirmada en la misma dimensión. Una **nota de objetivo** explica los prerrequisitos cuando el objetivo declarado (automatizar, medir, que te encuentren, confianza) no puede abordarse aún.
+- **Encaje Vecidya** (DIAG-002C): una licencia solo se recomienda cuando la necesidad diagnosticada exige una capacidad recurrente del sistema, alineada con lo que incluye cada nivel en `/licencias`: Ciudad = automatizar y controlar (captura y seguimiento definidos más señal de repetición, equipo u objetivo); Barrio = captar y seguir (brecha sustantiva de seguimiento o respuesta con consultas reales); Cuadra = ordenar (brecha de registro/pipeline, o consultas reales casi sin base pública propia). Sin consultas, sin operación, o con registro y seguimiento ya resueltos y ninguna necesidad recurrente, el resultado es «Ninguna necesaria por ahora» aunque un servicio o una lectura sí ayuden (no existe «Barrio opcional»). Una prioridad fundacional limita la licencia a Cuadra; las dudas no deciden licencia. Servicio ≠ licencia: hasta 2 servicios solo por prioridad real (nunca derivados de la licencia; sin relleno cuando no hay prioridades), addons solo con prerrequisitos y licencia ≥ Barrio, hasta 2 artículos de Aprende por slug real; enlaces a `/licencias#<nivel>` y `/addons#<addon>`. Vocabulario público de addons: «WhatsApp», «SMS», «Telefonía», «Automatizaciones», «IA conversacional», «AI Voice», «Integraciones». Home mantiene cuatro puertas por decisión; «organización» se elige dentro de `/diagnostico` o por `?perfil=organization`.
+- **Deep link** canónico `/diagnostico?perfil=<business|professional|creator|project|organization>` y opcional `objetivo=<goal>`; lista cerrada, valores inválidos → inicio normal, nada de la URL se renderiza. Home (4 puertas) y el artículo de CRM (`?objetivo=organize`) entran con contexto; al cambiar de perfil dentro del flujo la URL se actualiza con `replace`; «Rehacer diagnóstico» vuelve a `/diagnostico` limpio.
+- **Aislamiento**: cambiar de perfil descarta las demás respuestas y `deriveActiveAnswers` filtra cualquier respuesta no aplicable antes de puntuar (probado en unitarias y E2E).
+- **UI**: `fieldset`/`legend` con radios y checkboxes nativos, foco en cada pregunta nueva, stepper por secciones más `progressbar` con `aria-valuetext`, un único H1, reduced motion; resultado con estado, cómo llegamos, confianza, dimensiones, fortalezas, brechas, prioridades, siguientes pasos, encaje y límites explícitos; `mailto:hola@vecidya.com` prellenado con perfil, momento, objetivo, estado, prioridad y siguiente paso, sin respuestas crudas.
+- **Resultado (jerarquía DIAG-002B)**: estado y resumen → línea de confianza → nota de objetivo (si aplica) → prioridades con la principal destacada → siguientes pasos en orden (incluye «Después: …» para lo que depende de las prioridades) → cómo llegamos y confianza → dimensiones por nivel (sin números visibles) con fortalezas y brechas → encaje Vecidya → límites → contacto. Los activos ya no alimentan «contacto» ni «confianza» (salvo dominio y correo propio); las reseñas pesan más que las demás señales de un negocio.
+- **Pruebas**: `pnpm run test:unit` (70 pruebas del motor: 43 de DIAG-002 y 27 semánticas de DIAG-002B) y `diagnostic-experience-check.mjs` (deep links, Home → Profesional, aislamiento, a11y, recorrido de negocio, resultado, anclas, reinicio y responsive 1366/768/390/360).
 
 ### Servicios (`/servicios`)
 
@@ -218,11 +224,11 @@ Vecidya **no puede hoy**: listar/banear/suplantar usuarios, transferir ownership
 | --- | --- |
 | `integration_connection` + `POST /api/platform/organizations/:id/integrations` + `GET` tenant + overview interno | **FOUNDATION ONLY**: registro de metadata; sin llamadas salientes; proveedor = cualquier kebab-case |
 | Adaptador Gmail transaccional (`server/email/mail.server.ts`) | **PASS en producción; Gmail API send, entrega real y password reset E2E confirmados; verificación/invitaciones separadas** |
-| GHL | **TEXT ONLY** (solo documentación; 0 código) |
+| GHL | **OPS-001 DOCUMENTAL** (capacidad/contrato definido; cuenta real NOT VERIFIED; 0 código) |
 | Google, Meta, WhatsApp API, Stripe, Twilio | **NOT FOUND** |
 | WhatsApp/Instagram/Facebook/LinkedIn en perfil | Campos y enlaces (`wa.me`), no integración |
 
-Vecidya es responsable de cuentas, organizaciones, membresías, permisos, perfiles, servicios, directorio, experiencia pública, portal y metadata de integraciones. GHL será el system of record de contactos, leads, oportunidades, pipelines, conversaciones, citas, workflows, automatizaciones y seguimiento. No se implementa un CRM paralelo.
+Vecidya es responsable de cuentas, organizaciones, membresías, permisos, perfiles, servicios, directorio, experiencia pública, portal y metadata de integraciones. GHL será el system of record de contactos, leads, oportunidades, pipelines, conversaciones, citas, workflows, automatizaciones y seguimiento. OPS-001 define un piloto mínimo de una location, pero no lo ejecuta. No se implementa un CRM paralelo.
 
 ## Mapa de producto
 
@@ -231,9 +237,9 @@ Vecidya es responsable de cuentas, organizaciones, membresías, permisos, perfil
 ```text
 Home ──► Vecindario ──► Perfil ──(CTA fijo)──► Vecindario | Servicios | Diagnóstico | Contacto
 Home ──► Servicios ──► Diagnóstico | Contacto
-Home ──► Diagnóstico ──► Resultado ──► mailto prellenado | Contacto | Rehacer
+Home ──► Diagnóstico (puertas con ?perfil=) ──► Resultado ──► Aprende (artículo) | Servicios (#anchor) | Licencias | Addons | mailto prellenado | Contacto | Rehacer
 Home ──► Contacto (solo enlace contextual del CTA final)
-Home ──► Qué debes saber (hub vacío) ──► Diagnóstico | Contacto
+Home ──► Aprende (4 artículos) ──► Diagnóstico (artículo CRM con ?objetivo=organize) | Servicios | Contacto
 Vecindario (lista) ──► Diagnóstico | Contacto (estado vacío)
 App: sesión ──► /app ──► organización activa (selector) ──► Perfil (/app/business-profile) ──► página pública
                                                      └─────► Servicios (/app/services)
@@ -242,7 +248,7 @@ Internal Admin: /app/internal ──► Organizaciones | Negocios (gobierno) | S
 
 ### Conexiones deseadas — todas FUTURE (no existen)
 
-Diagnóstico → contenido relacionado · Diagnóstico → servicio contextual · Perfil → negocios relacionados · Perfil → contenido relacionado · Artículo → Diagnóstico · Artículo → Servicio · Home → vecinos reales/búsqueda · Perfil → CTA contextual al negocio · Web pública → registro.
+Perfil → negocios relacionados · Perfil → contenido relacionado · Artículo → Servicio contextual (hoy CTA fijo) · Home → vecinos reales/búsqueda · Perfil → CTA contextual al negocio · Web pública → registro. (Diagnóstico → contenido/servicio contextual y Home/artículo → Diagnóstico con contexto existen desde DIAG-002.)
 
 ## Piloto de negocios reales (Edgar)
 

@@ -32,7 +32,7 @@ Antes de implementar se leen `PROJECT_STATE.md`, `STATUS.md` y la documentación
 
 ## Documentos canónicos
 
-El proyecto mantiene un **máximo de 20 documentos Markdown activos**; hoy son 14. No se crea un documento por fase, auditoría o hallazgo: se consolida en el que ya tiene esa responsabilidad. Crear uno nuevo exige un vacío real que no pueda resolverse actualizando otro, y autorización del usuario.
+El proyecto mantiene un **máximo de 20 documentos Markdown activos**; hoy son 15. No se crea un documento por fase, auditoría o hallazgo: se consolida en el que ya tiene esa responsabilidad. OPS-001 es una excepción autorizada por el usuario porque requiere una matriz operativa autónoma antes de implementar integración. Crear otro documento exige un vacío real que no pueda resolverse actualizando otro, y autorización del usuario.
 
 | Documento | Responsabilidad única |
 | --- | --- |
@@ -50,6 +50,7 @@ El proyecto mantiene un **máximo de 20 documentos Markdown activos**; hoy son 1
 | `docs/ROADMAP.md` | Solo trabajo futuro real |
 | `docs/CHANGELOG.md` | Historia relevante ya realizada |
 | `docs/business/VECIDYA_PRODUCT_CATALOG.md` | Matriz comercial de productos, niveles y consumos |
+| `docs/OPS-001-GHL-PILOT-FOUNDATION.md` | Fundación operativa y contractual del piloto HighLevel |
 
 ## Vocabulario de estados
 

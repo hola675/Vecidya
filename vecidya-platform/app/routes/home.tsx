@@ -23,11 +23,11 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 }
 
 const diagnosticChoices = [
-  { icon: publicAssets.icons.diagnosticBusiness, label: "Negocio", description: "Una actividad comercial" },
-  { icon: publicAssets.icons.diagnosticProfessional, label: "Profesional", description: "Tu trabajo y experiencia" },
-  { icon: publicAssets.icons.diagnosticProject, label: "Proyecto", description: "Una idea en construcción" },
-  { icon: publicAssets.icons.diagnosticCreator, label: "Creador", description: "Una voz o trabajo creativo" },
-];
+  { icon: publicAssets.icons.diagnosticBusiness, label: "Negocio", description: "Una actividad comercial", profile: "business" },
+  { icon: publicAssets.icons.diagnosticProfessional, label: "Profesional", description: "Tu trabajo y experiencia", profile: "professional" },
+  { icon: publicAssets.icons.diagnosticProject, label: "Proyecto", description: "Una idea en construcción", profile: "project" },
+  { icon: publicAssets.icons.diagnosticCreator, label: "Creador", description: "Una voz o trabajo creativo", profile: "creator" },
+] as const;
 
 export default function Home() {
   const { origin, profiles } = useLoaderData<typeof loader>();

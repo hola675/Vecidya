@@ -1,12 +1,37 @@
 # Entornos
 
-Última reconciliación: 2026-09-23 (REL-003.1 + fotografía del equipo, `v0.3.0` publicada en staging y producción).
+Última reconciliación: 2026-09-23 (deploy autorizado de `v0.4.0` — DIAG-002B + UX-003.1/003.4 — en staging y producción).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura al dominio público el 2026-09-21, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
-`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f` (`v0.3.0`). El smoke HTTP anónimo de rutas públicas, versión, sitemap, robots, canonical y redirect legado pasó el 2026-09-23.
+`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `8c7d38e6-d560-4f27-9a40-b9d102033eff` (`v0.4.0`). El smoke HTTP anónimo de rutas públicas, versión, sitemap, robots y rutas privadas protegidas pasó el 2026-09-23.
+
+## Deploy `0.4.0` — DIAG-002B + UX-003.1/003.4
+
+- Autorización: deploy explícitamente solicitado por el usuario el 2026-09-23.
+- Validación previa `RAN`: `pnpm run typecheck`, `pnpm run build`, `pnpm run test:unit` (70/70 PASS) y `git diff --check` PASS.
+- Staging: `vecidya-platform-staging`, Version ID `57c2f319-7de4-4995-a4ba-2a10db82fa7a`, `DB=vecidya-staging`, `APP_ENV=staging`, URL `https://vecidya-platform-staging.soporte-8a1.workers.dev`.
+- Producción: `vecidya-platform`, Version ID `8c7d38e6-d560-4f27-9a40-b9d102033eff`, `DB=vecidya-prod`, `APP_ENV=production`, `vecidya.com` y `www.vecidya.com`.
+- HTTP anónimo `2026-09-23`: `/`, `/login`, `/robots.txt`, `/sitemap.xml`, `/contacto`, `/diagnostico`, `/aprende`, `/licencias`, `/addons`, `/servicios`, `/privacidad` respondieron `200` en ambos entornos; `/app` y `/app/internal` respondieron `302` sin sesión; CSS principal respondió `200`.
+- Migraciones remotas: **NO ejecutadas**. Secrets: **NO modificados**.
+- Wrangler informó que el trigger de zona de staging no pudo reasignarse porque `vecidya.com/*` ya pertenece al Worker de producción; el Worker staging y su URL `workers.dev` quedaron desplegados correctamente.
+
+## WhatsApp comunidad y contacto — `v0.3.0`
+
+- Staging: `vecidya-platform-staging`, Version ID `35c0961f-ccdd-4c76-a7d3-5bd347132a91`, desplegado el 2026-09-23 desde el build validado; `https://vecidya-platform-staging.soporte-8a1.workers.dev/contacto` respondió HTTP `200` y mostró los enlaces comercial y comunitario.
+- Producción: `vecidya-platform`, Version ID `5d7278d3-6db6-4378-b497-39dc82f0aeb8`; `https://vecidya.com/contacto` respondió HTTP `200` y mostró los enlaces comercial y comunitario.
+- Staging conserva el aviso operativo de ruta de zona ya existente: el patrón de dominio está asignado al Worker de producción; el Worker staging queda verificable en `workers.dev`.
+- No se ejecutaron migraciones, no se modificaron secrets y la versión permanece `0.3.0`.
+
+## Corrección de assets estáticos — `v0.3.0`
+
+- Incidente detectado por comprobación visual del operador: un despliegue anterior no incluyó CSS, JavaScript ni assets de `public/`, por ausencia de la sección `assets` en `wrangler.jsonc`; las páginas respondían HTML `200` pero se mostraban sin estilos y con imágenes `404`.
+- Corrección aplicada: `assets.directory = ./build/client`, regeneración de tipos (`pnpm run cf-typegen`), build y redespliegue.
+- Staging corregido: Version ID `742c4f5b-f8c7-4634-8dba-9fae522cacbb`.
+- Producción corregida: Version ID `cd3f247e-64dc-4ca8-aff1-92ce137c0de0`.
+- HTTP anónimo posterior: `/`, `/contacto`, CSS, PNG de marca, ilustración WebP e icono WhatsApp respondieron `200` en producción.
 
 ## REL-003.1 — publicación de `v0.3.0`
 
@@ -24,18 +49,18 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 | --- | --- | --- | --- | --- | --- |
 | **Local** | `react-router dev` con el plugin de Cloudflare (`pnpm run dev`) | Emulada por Miniflare en `.wrangler/state/v3/d1` (binding `DB`); migraciones `0000`–`0009` aplicadas | `http://localhost:*` | Operativo | `RAN` `d1_migrations` local contiene 10 filas (`0000`–`0009`) |
 | **Development** (remoto) | Ninguno versionado | `vecidya-dev` remoto existe, pero no está configurado ni debe usarse | Ninguno | **Abandonado / sin uso** | `CONFIG` |
-| **Staging** | `vecidya-platform-staging` (`env.staging`, `workers_dev: true`) | `vecidya-staging` `d4af6ebc-97c5-42f6-ad3a-51551021e591` | `https://vecidya-platform-staging.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.3.0`, Version ID `58365cf8-2e1b-4b7a-b131-8631d9e96f22`; trigger de rutas de zona no se reasignó por conflicto existente, workers.dev operativo | `CONFIG` `HTTP` |
-| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.3.0`, Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f`; smoke HTTP PASS | `CONFIG` `HTTP` `REMOTE` |
+| **Staging** | `vecidya-platform-staging` (`env.staging`, `workers_dev: true`) | `vecidya-staging` `d4af6ebc-97c5-42f6-ad3a-51551021e591` | `https://vecidya-platform-staging.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.4.0`, Version ID `57c2f319-7de4-4995-a4ba-2a10db82fa7a`; trigger de rutas de zona no se reasignó por conflicto existente, workers.dev operativo | `CONFIG` `HTTP` `REMOTE` |
+| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.4.0`, Version ID `8c7d38e6-d560-4f27-9a40-b9d102033eff`; smoke HTTP PASS | `CONFIG` `HTTP` `REMOTE` |
 
 ## Qué código está publicado
 
-El despliegue público vigente es el Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f` (`v0.3.0`, 2026-09-23) `CONFIG`/`HTTP`:
+El despliegue público vigente es el Version ID `8c7d38e6-d560-4f27-9a40-b9d102033eff` (`v0.4.0`, 2026-09-23) `CONFIG`/`HTTP`:
 
 - `/app/internal/maintenance/auth-bootstrap` y `/app/internal/maintenance/password-rotation` devuelven **404**.
 - `/app/internal` sin sesión devuelve la pantalla de login; el acceso autenticado de `hola@vecidya.com` fue comprobado manualmente en producción en `/app` y `/app/internal`.
 - La D1 remota reporta migraciones `0000`–`0009` aplicadas `REMOTE`.
 
-Conclusión: el código `0.3.0` está desplegado en el Worker público, el binding reportado por Wrangler es `vecidya-prod` y no se ejecutaron migraciones. `vecidya-staging` sigue preservada como D1 independiente de staging.
+Conclusión: el código `0.4.0` está desplegado en el Worker público, el binding reportado por Wrangler es `vecidya-prod` y no se ejecutaron migraciones. `vecidya-staging` sigue preservada como D1 independiente de staging.
 
 ## Repositorio Git
 

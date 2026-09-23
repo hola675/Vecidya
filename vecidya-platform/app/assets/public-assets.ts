@@ -31,6 +31,7 @@ export const publicAssets = {
     serviceVisibility: `${selectedAssetBase}/icons/service-visibility.svg`,
     storefrontVerified: `${selectedAssetBase}/icons/ui/ui-icon-storefront-verified.webp`,
     vecidyaPin: `${selectedAssetBase}/icons/ui/ui-icon-vecidya-pin.webp`,
+    whatsapp: `${selectedAssetBase}/icons/ui/ui-icon-whatsapp.svg`,
   },
   illustrations: {
     businessOnboardingForm: `${selectedAssetBase}/illustrations/illus-business-onboarding-form.webp`,

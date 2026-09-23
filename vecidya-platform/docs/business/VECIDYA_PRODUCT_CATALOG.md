@@ -3,7 +3,7 @@
 > **UX-002.1 — Product Catalog Foundation**
 > Estado: **propuesta comercial documentada / no implementada**
 > Versión de referencia: `0.3.0`
-> Última actualización: 2026-09-22
+> Última actualización: 2026-09-23
 
 Este documento define la matriz comercial base de Vecidya antes de construir páginas públicas, precios publicados, checkout o componentes de catálogo.
 
@@ -114,9 +114,9 @@ Un addon agrega capacidad a una licencia existente. El addon no absorbe los cost
 | WhatsApp | Centralizar conversaciones de WhatsApp en el flujo de trabajo | Por definir | Precio de addon por definir + consumo externo separado |
 | SMS | Enviar avisos y seguimientos por mensajes de texto | Por definir | Precio de addon por definir + consumo externo separado |
 | Telefonía | Gestionar llamadas y números desde el sistema operativo | Por definir | Precio de addon por definir + números/minutos separados |
-| AI Chat | Responder o clasificar conversaciones con asistencia de IA | Por definir | Precio de addon por definir + consumo de IA separado |
+| IA conversacional | Responder o clasificar conversaciones con asistencia de IA | Por definir | Precio de addon por definir + consumo de IA separado |
 | AI Voice | Atender o asistir llamadas mediante voz de IA | Por definir | Precio de addon por definir + minutos de IA separados |
-| Automatización inteligente | Resolver reglas y tareas avanzadas que exceden la automatización estándar | Por definir | Precio de addon por definir |
+| Automatizaciones | Resolver reglas y tareas avanzadas que exceden la automatización estándar | Por definir | Precio de addon por definir |
 | Campañas y seguimiento | Extender la ejecución y medición de campañas | Por definir | Precio de addon por definir + medios o mensajes separados |
 | Medición de marketing | Ordenar atribución y señales de rendimiento | Por definir | Precio de addon por definir |
 | Integraciones externas | Conectar un sistema tercero con el flujo acordado | Por definir | Precio de addon por definir + coste del proveedor/API separado |
@@ -124,9 +124,11 @@ Un addon agrega capacidad a una licencia existente. El addon no absorbe los cost
 ### Categorías iniciales
 
 - **Comunicación:** WhatsApp, SMS y telefonía.
-- **IA:** AI Chat, AI Voice y automatización inteligente.
+- **IA:** IA conversacional, AI Voice y Automatizaciones.
 - **Marketing:** campañas, seguimiento y medición.
 - **Integraciones:** conexiones externas, APIs y sistemas terceros.
+
+> **Vocabulario público canónico (DIAG-002C):** «WhatsApp», «SMS», «Telefonía», «Automatizaciones», «IA conversacional», «AI Voice» e «Integraciones» son los únicos nombres públicos vigentes de los addons, iguales en `/addons`, en el Diagnóstico y en esta matriz; los identificadores internos (`ai-conversacional`, `automatizaciones`) no cambian y `catalog.test.ts` verifica la coincidencia. Los nombres anteriores solo sobreviven en entradas históricas del CHANGELOG.
 
 ## Servicios Vecidya
 
@@ -201,6 +203,8 @@ Reglas:
 
 El diagnóstico inicial actual es anónimo, efímero y solo cliente. No crea una cuenta, no persiste respuestas y no constituye una propuesta comercial automática.
 
+Desde DIAG-002 (`0.4.0`, local) el diagnóstico inicial entrega estado, cómo se llegó a él, confianza, dimensiones, fortalezas, brechas, hasta tres prioridades explicadas, siguientes pasos y encaje Vecidya. El encaje de licencia se deriva de la capacidad necesaria (ordenar → captar y seguir → automatizar y controlar), nunca del tamaño del equipo ni de un umbral global de puntuación, y puede concluir «ninguna todavía»; Ciudad solo se propone con captura y seguimiento ya definidos. Servicios, addons y artículos recomendados son referencias reales de `/servicios`, `/addons` y Aprende, verificadas por prueba.
+
 ### Diagnóstico profesional
 
 **Tipo:** servicio de consultoría.
@@ -239,7 +243,7 @@ Cada artículo futuro debe incluir:
 6. conclusión;
 7. siguiente paso.
 
-No hay artículos publicados en el estado actual. La autoría y las categorías de esta sección son una definición editorial de trabajo, no contenido publicado.
+Existen cuatro artículos iniciales atribuidos a Yoan Ortiz (UX-002.6, publicados en `0.3.0`; ver `app/content/learn.ts`), que el diagnóstico enlaza desde sus prioridades. La autoría y las categorías siguen siendo una definición editorial de trabajo.
 
 ## Mapa comercial
 
@@ -273,7 +277,7 @@ Los consumos externos se muestran junto al elemento que los habilita, pero siemp
 
 ## Infraestructura HighLevel
 
-HighLevel será la infraestructura externa considerada para la operación comercial futura, sujeto a contratación, credenciales, alcance y validación independientes.
+HighLevel será la infraestructura externa considerada para la operación comercial futura, sujeto a contratación, credenciales, alcance y validación independientes. El detalle operativo de OPS-001 está en [OPS-001-GHL-PILOT-FOUNDATION.md](../OPS-001-GHL-PILOT-FOUNDATION.md).
 
 Capacidades previstas en esa frontera:
 
@@ -287,9 +291,11 @@ Capacidades previstas en esa frontera:
 - automatizaciones;
 - conversaciones.
 
-**Plan de referencia inicial:** HighLevel Starter — `USD 97/mes`, hasta 3 subcuentas.
+**Referencias oficiales consultadas el 2026-09-23:** Starter `USD 97/mes`, 3 subcuentas; Unlimited `USD 297/mes`, subcuentas ilimitadas y API básica; Agency Pro `USD 497/mes`, SaaS Mode, alta automática y API avanzada. Estas son referencias públicas, no el plan contratado por Vecidya.
 
-Este dato es una referencia comercial externa proporcionada para el diseño de UX-002.1. Debe confirmarse directamente con el proveedor antes de contratarlo, publicarlo o trasladarlo a una propuesta.
+AI y comunicaciones permanecen fuera de la licencia base: AI Employee Growth `USD 50/location/mes`, Unlimited `USD 97/location/mes`, WhatsApp `USD 10/location/mes`, más consumos variables de mensajes, email, telefonía, carrier fees, minutos, tokens y modelos según corresponda.
+
+El plan contratado, ciclo de facturación, límites, Labs y capacidades habilitadas de la cuenta Vecidya están **NOT VERIFIED**. Deben confirmarse dentro de Agency View antes de contratar, publicarlo o trasladarlo a una propuesta.
 
 HighLevel no está integrado actualmente con Vecidya. La plataforma actual solo documenta la frontera: no realiza llamadas a HighLevel, no guarda un CRM paralelo y no debe presentar estas capacidades como implementadas.
 

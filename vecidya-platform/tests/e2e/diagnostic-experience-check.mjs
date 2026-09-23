@@ -6,9 +6,26 @@ import { assertLocalBaseUrl, baseUrl } from "./test-safety.mjs";
 
 assertLocalBaseUrl();
 
+// DIAG-002 — Diagnóstico: contrato de deep link, aislamiento de perfil, semántica accesible,
+// recorrido completo de negocio, resultado explicable, mapeo real a Licencias/Servicios/Addons/Aprende,
+// reinicio y responsive 1366/768/390/360.
+
 const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
 const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
+const url = (path) => new URL(path, baseUrl).toString();
+
+const profiles = {
+  business: "Un negocio o empresa",
+  professional: "Mi perfil profesional",
+  creator: "Mi marca o trabajo como creador",
+  project: "Un proyecto o iniciativa",
+  organization: "Una organización o comunidad",
+};
+
+const PROFILE_PROMPT = "¿Qué quieres entender mejor?";
+const GOAL_PROMPT = "¿Qué te gustaría resolver primero?";
+const STAGE_PROMPT = "¿En qué momento estás?";
 
 async function assertNoOverflow(page, label) {
   const overflow = await page.evaluate(() => {
@@ -24,73 +41,233 @@ async function assertNoOverflow(page, label) {
   assert(overflow.length === 0, `${label} tiene overflow horizontal: ${JSON.stringify(overflow)}`);
 }
 
-async function chooseAndContinue(page, label, optionName) {
-  const option = page.getByRole("button", { name: optionName, exact: true });
-  await option.click();
-  assert(await option.getAttribute("aria-pressed") === "true", `${label}: la opción ${optionName} no quedó seleccionada.`);
-  const next = page.getByRole("button", { name: "Continuar" });
-  assert(!(await next.isDisabled()), `${label}: Continuar quedó deshabilitado tras responder.`);
-  await next.click();
+async function currentPrompt(page) {
+  return (await page.locator("#diagnostic-title").textContent())?.trim();
 }
 
-async function runViewport(width, height) {
+async function expectPrompt(page, label, expected) {
+  const prompt = await currentPrompt(page);
+  const ok = expected instanceof RegExp ? expected.test(prompt ?? "") : prompt === expected;
+  assert(ok, `${label}: se esperaba «${expected}» y apareció «${prompt}».`);
+}
+
+async function pick(page, label, options) {
+  for (const name of options) {
+    const input = page.getByLabel(name, { exact: true });
+    const id = await input.getAttribute("id");
+    assert(id, `${label}: la opción «${name}» no tiene input asociado.`);
+    // Como una persona real: se pulsa la etiqueta visible, no el input oculto.
+    await page.locator(`label[for="${id}"]`).click();
+    assert(await input.isChecked(), `${label}: la opción «${name}» no quedó marcada.`);
+  }
+}
+
+async function next(page, label) {
+  const button = page.getByRole("button", { name: /^(Continuar|Ver resultado)$/ });
+  assert(!(await button.isDisabled()), `${label}: Continuar quedó deshabilitado tras responder.`);
+  await button.click();
+}
+
+async function back(page) {
+  await page.getByRole("button", { name: "Volver" }).click();
+}
+
+const businessPath = [
+  [GOAL_PROMPT, ["Dejar de perder consultas o seguimientos"]],
+  [STAGE_PROMPT, ["Funciona con clientes o actividad regular"]],
+  ["¿Cuántas personas participan hoy en la operación, incluyéndote?", ["Entre 2 y 5"]],
+  ["¿Qué tienes hoy funcionando y actualizado?", ["Redes sociales activas", "WhatsApp Business (cuenta de negocio, no personal)", "Perfil de Google (Maps o Perfil de Negocio)"]],
+  [/entiende rápido qué haces/, ["Sí, con claridad"]],
+  ["¿Qué señales de confianza puede ver un cliente nuevo antes de decidir?", ["Reseñas públicas (Google, redes o plataformas)", "Fotos reales del negocio, productos o trabajo"]],
+  ["¿Por dónde llegan hoy la mayoría de tus consultas, clientes o participantes?", ["Redes sociales", "Recomendaciones de boca en boca"]],
+  ["Si alguien busca en Google lo que ofreces en tu zona, ¿apareces?", ["Aparezco, pero no destaco"]],
+  ["Cuando alguien quiere escribirte o llamarte, ¿tiene una vía clara y atendida?", ["Sí, varios canales; respondo donde llegue"]],
+  ["Cuando llega una consulta, ¿queda registrada en un mismo lugar para darle seguimiento?", ["No; queda en el chat o en la memoria"]],
+  ["¿Cuánto suele tardar la primera respuesta a una consulta nueva?", ["El mismo día"]],
+  ["Si la persona no decide en la primera conversación, ¿qué pasa después?", ["Normalmente no hay seguimiento"]],
+  ["¿Está claro quién responde y quién da seguimiento a cada consulta?", ["En parte"]],
+  ["Después de una venta o servicio, ¿pides una reseña, haces seguimiento o vuelves a contactar?", ["No"]],
+  ["¿Qué sabes hoy con datos y no solo por intuición?", ["Cuántas consultas llegan por semana o por mes"]],
+];
+
+async function runBusinessPath(page, label) {
+  await page.goto(url("/diagnostico"), { waitUntil: "networkidle" });
+  assert(await page.locator("h1").count() === 1, `${label}: Diagnóstico debe tener un único H1.`);
+  await expectPrompt(page, label, PROFILE_PROMPT);
+  assert(await page.getByRole("group", { name: /¿Qué quieres entender mejor\?/ }).count() === 1, `${label}: la pregunta no es un grupo (fieldset/legend).`);
+  assert(await page.getByRole("radio").count() === 5, `${label}: se esperaban 5 perfiles como radios.`);
+
+  const progress = page.getByRole("progressbar");
+  assert(await progress.getAttribute("aria-valuemin") === "0", `${label}: progreso sin aria-valuemin.`);
+  assert(Number(await progress.getAttribute("aria-valuemax")) >= 1, `${label}: progreso sin total de secciones.`);
+  assert((await progress.getAttribute("aria-valuetext") ?? "").includes("Sección"), `${label}: progreso sin texto de sección.`);
+  assert(await page.locator('ol[aria-label="Secciones del diagnóstico"] li[aria-current="step"]').count() === 1, `${label}: stepper sin sección actual.`);
+  assert((await page.getByText(/Sección 1 de 5 · Contexto · Elige un perfil/i).count()) > 0, `${label}: no mostró el contexto de progreso inicial.`);
+  assert(await page.getByRole("button", { name: "Continuar" }).isDisabled(), `${label}: Continuar debe estar deshabilitado sin perfil.`);
+
+  // Teclado: las flechas mueven la selección dentro del grupo de radios.
+  await page.getByLabel(profiles.business, { exact: true }).focus();
+  await page.keyboard.press("ArrowDown");
+  assert(await page.getByLabel(profiles.professional, { exact: true }).isChecked(), `${label}: la selección por teclado no funcionó.`);
+  assert((await page.locator("label.is-selected").count()) === 1, `${label}: el estado seleccionado no se refleja fuera del color.`);
+
+  await pick(page, label, [profiles.business]);
+  assert((await page.getByText(/Sección 1 de \d+ · Contexto · Pregunta 1 de \d+/i).count()) > 0, `${label}: con perfil el progreso debe mostrar el total.`);
+  await next(page, label);
+  await expectPrompt(page, label, GOAL_PROMPT);
+  assert(await page.evaluate(() => document.activeElement?.id) === "diagnostic-title", `${label}: el foco no pasó a la nueva pregunta.`);
+  assert(new URL(page.url()).searchParams.get("perfil") === "business", `${label}: la URL no refleja el perfil elegido.`);
+
+  await back(page);
+  await expectPrompt(page, label, PROFILE_PROMPT);
+  assert(await page.getByLabel(profiles.business, { exact: true }).isChecked(), `${label}: Volver no conservó la respuesta.`);
+  await next(page, label);
+
+  for (const [prompt, options] of businessPath) {
+    await expectPrompt(page, label, prompt);
+    await assertNoOverflow(page, `${label} pregunta «${prompt}»`);
+    await pick(page, label, options);
+    await next(page, label);
+  }
+
+  // Resultado
+  await assertNoOverflow(page, `${label} resultado`);
+  assert(await page.evaluate(() => document.activeElement?.id) === "diagnostic-title", `${label}: el foco no pasó al resultado.`);
+  assert(await page.getByRole("heading", { level: 2, name: "Operación activa con fugas" }).isVisible(), `${label}: el estado no corresponde al escenario (consultas sin registro ni seguimiento).`);
+  for (const heading of ["Cómo llegamos a este resultado", "Confianza alta", "Tus dimensiones", "Fortalezas", "Brechas y riesgos", "Prioridades", "Siguientes pasos", "Encaje con Vecidya"]) {
+    assert(await page.getByRole("heading", { level: 3, name: heading }).isVisible(), `${label}: falta la sección «${heading}».`);
+  }
+  assert(await page.getByText("Diagnóstico completo").first().isVisible(), `${label}: el progreso no marcó el final.`);
+  const priorities = page.locator(".diagnostic-priority");
+  const priorityCount = await priorities.count();
+  assert(priorityCount >= 1 && priorityCount <= 3, `${label}: ${priorityCount} prioridades; se esperaban entre 1 y 3.`);
+  assert(/Registrar cada consulta/.test(await priorities.first().locator("h4").textContent()), `${label}: la primera prioridad debería ser registrar consultas.`);
+  assert(/Por qué:.*«No; queda en el chat o en la memoria»/.test(await priorities.first().textContent()), `${label}: la prioridad no explica con la respuesta dada.`);
+  const commercial = page.locator(".diagnostic-commercial");
+  assert(/Barrio/.test(await commercial.textContent()), `${label}: la licencia esperada era Barrio.`);
+  assert(await commercial.getByRole("link", { name: /Ver Barrio en Licencias/i }).getAttribute("href") === "/licencias#barrio", `${label}: no enlazó la licencia recomendada a su ancla.`);
+  assert(await commercial.getByRole("link", { name: /^Ver addons/i }).getAttribute("href") === "/addons", `${label}: no enlazó Addons.`);
+  assert(await commercial.locator('a[href="/addons#whatsapp"]').count() > 0, `${label}: el addon recomendado no enlaza a su ancla.`);
+  assert(await commercial.getByRole("link", { name: /Ver todos los servicios/i }).getAttribute("href") === "/servicios", `${label}: no enlazó Servicios.`);
+  assert(await page.locator(".diagnostic-priority--primary").count() === 1, `${label}: la prioridad principal no está destacada.`);
+  assert(await page.locator(".diagnostic-dimensions strong").count() === 0, `${label}: el resultado muestra números de puntuación en lugar de niveles.`);
+  assert(await page.getByText(/Registro y seguimiento|registro de consultas respondiste/i).count() > 0, `${label}: el estado no cita la evidencia comercial.`);
+  assert(await commercial.getByRole("link", { name: /Explorar Aprende/i }).getAttribute("href") === "/aprende", `${label}: no enlazó Aprende.`);
+  assert(await page.locator('a[href="/servicios#estructuracion"]').count() > 0, `${label}: no enlazó el servicio de organización.`);
+  assert(await page.locator('a[href^="/aprende/que-es-un-crm"]').count() > 0, `${label}: no enlazó el artículo de CRM.`);
+  assert(/WhatsApp/.test(await commercial.textContent()), `${label}: con WhatsApp Business, equipo y sin registro, el addon WhatsApp debía aparecer.`);
+  assert(await page.getByText(/no es una auditoría/i).count() > 0, `${label}: faltan los límites del diagnóstico.`);
+
+  const contact = page.getByRole("link", { name: "Revisar este resultado con Vecidya" });
+  const mailto = await contact.getAttribute("href");
+  assert(mailto?.startsWith("mailto:hola@vecidya.com?subject="), `${label}: el CTA de contacto no es un mailto prellenado.`);
+  const body = decodeURIComponent(mailto.split("body=")[1] ?? "");
+  assert(body.includes("Estado: Operación activa con fugas") && !body.includes("assets") && !body.includes("["), `${label}: el correo expone respuestas crudas o no resume el estado.`);
+  assert(await page.getByRole("link", { name: "Ir a Contacto" }).getAttribute("href") === "/contacto", `${label}: no enlazó Contacto.`);
+
+  await page.getByRole("button", { name: "Rehacer diagnóstico" }).click();
+  await expectPrompt(page, label, PROFILE_PROMPT);
+  assert(new URL(page.url()).search === "", `${label}: rehacer no limpió los parámetros de la URL.`);
+  assert(await page.locator('input[name="profile"]:checked').count() === 0, `${label}: rehacer conservó un perfil.`);
+}
+
+async function runDeepLinks(page, label) {
+  for (const [id, name] of Object.entries(profiles)) {
+    await page.goto(url(`/diagnostico?perfil=${id}`), { waitUntil: "networkidle" });
+    await expectPrompt(page, `${label} perfil=${id}`, GOAL_PROMPT);
+    assert(await page.locator('input[name="profile"]').count() === 0, `${label} perfil=${id}: la pregunta de perfil no debería estar visible.`);
+    await back(page);
+    await expectPrompt(page, `${label} perfil=${id} volver`, PROFILE_PROMPT);
+    assert(await page.getByLabel(name, { exact: true }).isChecked(), `${label} perfil=${id}: el perfil no quedó preseleccionado.`);
+    await assertNoOverflow(page, `${label} perfil=${id}`);
+  }
+
+  for (const invalid of ["%3Cscript%3Ealert(1)%3C%2Fscript%3E", "public_figure", "idea", "BUSINESS%00", "' OR 1=1"]) {
+    await page.goto(url(`/diagnostico?perfil=${invalid}`), { waitUntil: "networkidle" });
+    await expectPrompt(page, `${label} perfil inválido ${invalid}`, PROFILE_PROMPT);
+    assert(await page.locator('input[name="profile"]:checked').count() === 0, `${label}: un valor inválido preseleccionó un perfil (${invalid}).`);
+    assert(!(await page.content()).includes("<script>alert"), `${label}: la URL se reflejó en el HTML.`);
+  }
+
+  await page.goto(url("/diagnostico?perfil=business&objetivo=stop_losing"), { waitUntil: "networkidle" });
+  await expectPrompt(page, `${label} perfil+objetivo`, STAGE_PROMPT);
+  await back(page);
+  await expectPrompt(page, `${label} perfil+objetivo volver`, GOAL_PROMPT);
+  assert(await page.getByLabel("Dejar de perder consultas o seguimientos", { exact: true }).isChecked(), `${label}: el objetivo del enlace no quedó preseleccionado.`);
+
+  await page.goto(url("/diagnostico?perfil=creator"), { waitUntil: "networkidle" });
+  await page.reload({ waitUntil: "networkidle" });
+  await expectPrompt(page, `${label} recarga`, GOAL_PROMPT);
+  await back(page);
+  assert(await page.getByLabel(profiles.creator, { exact: true }).isChecked(), `${label}: la recarga perdió el perfil del enlace.`);
+}
+
+async function runHomeEntry(page, label) {
+  await page.goto(url("/"), { waitUntil: "networkidle" });
+  const expected = { Negocio: "business", Profesional: "professional", Proyecto: "project", Creador: "creator" };
+  for (const [text, id] of Object.entries(expected)) {
+    const href = await page.locator("a.home-diagnostic-choice", { hasText: text }).getAttribute("href");
+    assert(href === `/diagnostico?perfil=${id}`, `${label}: la puerta «${text}» enlaza ${href}.`);
+  }
+  await page.locator("a.home-diagnostic-choice", { hasText: "Profesional" }).click();
+  await page.waitForURL(/\/diagnostico\?perfil=professional$/);
+  await page.waitForSelector("#diagnostic-title");
+  await expectPrompt(page, `${label} Home → Profesional`, GOAL_PROMPT);
+  await back(page);
+  assert(await page.getByLabel(profiles.professional, { exact: true }).isChecked(), `${label}: Home → Profesional no preseleccionó Profesional.`);
+  assert(await page.locator("h1").count() === 1, `${label}: H1 duplicado tras navegación cliente.`);
+}
+
+async function runProfileIsolation(page, label) {
+  await page.goto(url("/diagnostico?perfil=business"), { waitUntil: "networkidle" });
+  await pick(page, label, ["Ordenar contactos, tareas y procesos"]);
+  await next(page, label);
+  await pick(page, label, ["Funciona con clientes o actividad regular"]);
+  await next(page, label);
+  await pick(page, label, ["Entre 2 y 5"]);
+  await next(page, label);
+  await pick(page, label, ["Redes sociales activas"]);
+  await next(page, label);
+  await expectPrompt(page, label, /entiende rápido qué haces/);
+  for (let index = 0; index < 5; index += 1) await back(page);
+  await expectPrompt(page, `${label} volver al perfil`, PROFILE_PROMPT);
+  assert(await page.getByLabel(profiles.business, { exact: true }).isChecked(), `${label}: el perfil original no aparece marcado.`);
+
+  await pick(page, label, [profiles.professional]);
+  assert(new URL(page.url()).searchParams.get("perfil") === "professional", `${label}: cambiar de perfil no actualizó la URL.`);
+  await next(page, label);
+  await expectPrompt(page, `${label} tras cambiar perfil`, GOAL_PROMPT);
+  assert(await page.locator('input[name="goal"]:checked').count() === 0, `${label}: el objetivo del perfil anterior sobrevivió al cambio de perfil.`);
+  assert((await page.getByText(/Pregunta 2 de/).count()) > 0, `${label}: el progreso no se reinició tras cambiar de perfil.`);
+
+  await page.reload({ waitUntil: "networkidle" });
+  await expectPrompt(page, `${label} recarga tras cambio`, GOAL_PROMPT);
+  await back(page);
+  assert(await page.getByLabel(profiles.professional, { exact: true }).isChecked(), `${label}: la recarga no conservó el perfil cambiado.`);
+}
+
+async function runViewport(width, height, extended) {
   const browser = await chromium.launch(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {});
   const page = await browser.newPage({ viewport: { width, height } });
   const label = `${width}x${height}`;
+  const consoleErrors = [];
+  page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(message.text()); });
+  page.on("pageerror", (error) => consoleErrors.push(error.message));
+  if (extended) await page.emulateMedia({ reducedMotion: "reduce" });
 
-  await page.goto(new URL("/", baseUrl).toString(), { waitUntil: "networkidle" });
-  await page.getByRole("link", { name: "Hacer mi diagnóstico" }).first().click();
-  await page.waitForURL("**/diagnostico");
-  await page.goto(new URL("/diagnostico", baseUrl).toString(), { waitUntil: "networkidle" });
-  assert(await page.locator("h1").count() === 1, `${label}: Diagnóstico debe tener un único H1.`);
-  assert(await page.getByRole("heading", { name: "¿Qué quieres hacer visible?" }).isVisible(), `${label}: no mostró la pregunta inicial.`);
-  const progress = page.getByRole("progressbar");
-  assert(await progress.getAttribute("aria-valuemin") === "0", `${label}: progreso sin aria-valuemin.`);
-  assert(Number(await progress.getAttribute("aria-valuemax")) >= 7, `${label}: progreso sin total de preguntas.`);
-  assert((await page.getByText(/Pregunta 1 de/i).count()) > 0, `${label}: no mostró el contexto de progreso.`);
+  await runBusinessPath(page, label);
+  if (extended) {
+    await runDeepLinks(page, label);
+    await runHomeEntry(page, label);
+    await runProfileIsolation(page, label);
+  }
 
-  const business = page.getByRole("button", { name: "Un negocio o empresa", exact: true });
-  await business.focus();
-  await page.keyboard.press("Enter");
-  assert(await business.getAttribute("aria-pressed") === "true", `${label}: selección por teclado no funcionó.`);
-  await page.getByRole("button", { name: "Continuar" }).click();
-  assert(await page.getByRole("heading", { name: "¿Qué te gustaría mejorar principalmente?" }).isVisible(), `${label}: no avanzó a la segunda pregunta.`);
-
-  await page.getByRole("button", { name: "Volver" }).click();
-  assert(await page.getByRole("button", { name: "Un negocio o empresa", exact: true }).getAttribute("aria-pressed") === "true", `${label}: Volver no conservó la respuesta.`);
-  await page.getByRole("button", { name: "Continuar" }).click();
-
-  await chooseAndContinue(page, label, "Que más personas me encuentren");
-  await chooseAndContinue(page, label, "Sitio web");
-  await chooseAndContinue(page, label, "Sí");
-  await chooseAndContinue(page, label, "No me encuentran");
-  await chooseAndContinue(page, label, "Teléfono o llamadas");
-  await chooseAndContinue(page, label, "Sí");
-
-  assert(await page.getByRole("heading", { name: "¿Qué tan urgente es mejorar esto?" }).isVisible(), `${label}: no llegó a la última pregunta.`);
-  await chooseAndContinue(page, label, "Este mes");
-  await assertNoOverflow(page, `${label} resultado`);
-  assert(await page.getByRole("heading", { name: /Presencia activa|Base en construcción|Punto de partida|Sistema en crecimiento|Presencia madura/ }).isVisible(), `${label}: no mostró resultado.`);
-  assert(await page.getByRole("heading", { name: "¿Dónde estás?" }).isVisible(), `${label}: no mostró la situación actual.`);
-  assert(await page.getByRole("heading", { name: "Tu siguiente camino" }).isVisible(), `${label}: no mostró el camino recomendado.`);
-  assert(await page.getByRole("heading", { name: "Tu recomendación Vecidya" }).isVisible(), `${label}: no mostró el mapeo comercial.`);
-  assert(await page.locator(".diagnostic-commercial").getByRole("link", { name: /Ver licencias/i }).getAttribute("href") === "/licencias", `${label}: no enlazó la licencia recomendada.`);
-  assert(await page.locator(".diagnostic-commercial").getByRole("link", { name: /Ver addons/i }).getAttribute("href") === "/addons", `${label}: no enlazó los addons.`);
-  assert(await page.locator(".diagnostic-commercial").getByRole("link", { name: /Ver servicios/i }).getAttribute("href") === "/servicios", `${label}: no enlazó los servicios.`);
-  assert(await page.getByRole("link", { name: "Explorar Aprende" }).getAttribute("href") === "/aprende", `${label}: no enlazó Aprende.`);
-  assert(await page.getByRole("heading", { name: "Tus dimensiones" }).isVisible(), `${label}: no mostró dimensiones.`);
-  assert(await page.getByRole("heading", { name: "Tus próximos focos" }).isVisible(), `${label}: no mostró prioridades.`);
-  const serviceLink = page.locator('a[href="/servicios#visibilidad"]');
-  assert(await serviceLink.count() > 0, `${label}: no enlazó la prioridad de visibilidad a Servicios.`);
-  assert(await page.getByRole("button", { name: "Rehacer diagnóstico" }).isVisible(), `${label}: no mostró reinicio.`);
-  await page.getByRole("button", { name: "Rehacer diagnóstico" }).click();
-  assert(await page.getByRole("heading", { name: "¿Qué quieres hacer visible?" }).isVisible(), `${label}: reinicio no volvió al inicio.`);
-
+  assert(consoleErrors.length === 0, `${label} registró errores de consola: ${consoleErrors.join(" | ")}`);
   await browser.close();
 }
 
-for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]]) {
-  await runViewport(width, height);
+for (const [width, height, extended] of [[1366, 900, true], [768, 900, false], [390, 844, true], [360, 800, false]]) {
+  await runViewport(width, height, extended);
 }
 
-console.log("PASS: Diagnóstico verificó selector, progreso accesible, teclado, navegación anterior/siguiente, resultado, mapeo a Servicios, reinicio y responsive 1366/768/390/360.");
+console.log("PASS: Diagnóstico verificó deep links por perfil y objetivo, valores inválidos, entrada desde Home, aislamiento al cambiar de perfil, fieldset/radios accesibles, teclado, foco, progreso por secciones, recorrido de negocio, resultado explicable, mapeo real a Licencias/Servicios/Addons/Aprende, mailto sin respuestas crudas, reinicio y responsive 1366/768/390/360.");

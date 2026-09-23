@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-23 (REL-003.1 `0.3.0` LIVE; follow-up de verificación/invitaciones permanece separado).
+Última reconciliación: 2026-09-23 (DIAG-002B + UX-003.1/003.4 publicados en `0.4.0`; OPS-001 documental; follow-up de verificación/invitaciones permanece separado).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -21,28 +21,31 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 | --- | --- | --- | --- |
 | 1 | **PROD-001 / PROD-001B / PROD-001C** | Separar D1, backup, paridad, guards, cutover y verificación autenticada | cerrado |
 | 2 | **EMAIL-001** | Correo y verificación transaccional | PROD-001 y decisiones de correo |
-| 3 | **OPS-001** | Operación y observabilidad post-separación | EMAIL-001 |
+| 3 | **OPS-001** | Fundar y validar documentalmente el piloto HighLevel | EMAIL-001 — **PASS DOCUMENTAL; cuenta real pendiente** |
 | 4 | Pilot Data & Authorizations | Resolver G3; sin código | OPS-001 / usuario |
-| 5 | **Real Proof (E2)** | Publicar vecinos reales con datos autorizados | 4, G3 |
-| 6 | **UX-001B.1 / UX-001B.2** | Arquitectura visual e implementación de Home, assets y metadata social | Independiente de 4–5; **cerrado / PASS técnico local** |
-| 7 | **UX-001B.3** | Vecindario: búsqueda, filtros, cards, estados vacíos, responsive y accesibilidad | UX-001B.2 — **cerrado / PASS técnico local** |
-| 8 | **UX-001B.4** | Perfil público: micrositio del negocio, datos publicados, CTA, SEO y responsive | UX-001B.3 — **cerrado / PASS técnico local** |
-| 9 | **UX-001B.5** | Servicios: presentación pública de capacidades Vecidya y alcance honesto | UX-001B.4 — **cerrado / PASS técnico local** |
-| 10 | **UX-001B.6** | Diagnóstico: interacción, progreso, accesibilidad y resultado sobre el motor actual | UX-001B.5 — **cerrado / PASS técnico local** |
-| 11 | **UX-001B.7** | Únete + Contacto: entrada institucional y conversación pública | UX-001B.6 — **cerrado / PASS técnico local** |
-| 12 | **UX-001B.8** | Sobre nosotros: historia, personas y credibilidad institucional | UX-001B.7 — **cerrado / PASS técnico local** |
-| 13 | **UX-001B.9** | Aprende: contenido educativo público y SEO honesto | UX-001B.8 — **cerrado / PASS técnico local** |
-| 14 | **UX-001B.10** | Legal & Trust: privacidad, términos y señales de confianza | UX-001B.9 — **cerrado / PASS técnico local** |
-| 15 | Visual System Expansion | Ampliar sistema visual y assets fuera de Home | G2 |
-| 16 | Educational Content | Primeros contenidos reales | UX-001B.9 y autor/fuentes reales |
-| 17 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 5 (vecinos) y 16 (artículos) |
-| 18 | Business Profile / UX | Campos, cobertura E2E, a11y y SEO del perfil público | UX-001B.4 y Real Proof |
+| 5 | **OPS-002** | Implementar el piloto GHL mínimo tras autorización | OPS-001, cuenta/cliente/datos |
+| 6 | **Real Proof (E2)** | Publicar vecinos reales con datos autorizados | 4, G3 |
+| 7 | **UX-001B.1 / UX-001B.2** | Arquitectura visual e implementación de Home, assets y metadata social | Independiente de 4–6; **cerrado / PASS técnico local** |
+| 8 | **UX-001B.3** | Vecindario: búsqueda, filtros, cards, estados vacíos, responsive y accesibilidad | UX-001B.2 — **cerrado / PASS técnico local** |
+| 9 | **UX-001B.4** | Perfil público: micrositio del negocio, datos publicados, CTA, SEO y responsive | UX-001B.3 — **cerrado / PASS técnico local** |
+| 10 | **UX-001B.5** | Servicios: presentación pública de capacidades Vecidya y alcance honesto | UX-001B.4 — **cerrado / PASS técnico local** |
+| 11 | **UX-001B.6** | Diagnóstico: interacción, progreso, accesibilidad y resultado sobre el motor actual | UX-001B.5 — **cerrado / PASS técnico local** |
+| 12 | **UX-001B.7** | Únete + Contacto: entrada institucional y conversación pública | UX-001B.6 — **cerrado / PASS técnico local** |
+| 13 | **UX-001B.8** | Sobre nosotros: historia, personas y credibilidad institucional | UX-001B.7 — **cerrado / PASS técnico local** |
+| 14 | **UX-001B.9** | Aprende: contenido educativo público y SEO honesto | UX-001B.8 — **cerrado / PASS técnico local** |
+| 15 | **UX-001B.10** | Legal & Trust: privacidad, términos y señales de confianza | UX-001B.9 — **cerrado / PASS técnico local** |
+| 16 | Visual System Expansion | Ampliar sistema visual y assets fuera de Home | G2; motion visual inicial de Home implementado localmente en 2026-09-23, expansión pendiente |
+| 17 | Educational Content | Primeros contenidos reales | UX-001B.9 y autor/fuentes reales |
+| 18 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 6 (vecinos) y 17 (artículos) |
+| 19 | Business Profile / UX | Campos, cobertura E2E, a11y y SEO del perfil público | UX-001B.4 y Real Proof |
 
 **Corrección 1 — RR-001 precede Real Proof.** La evidencia mostró prerrequisitos técnicos: pruebas stale por el nombre D1 obsoleto, PX-B roto, selección de organización al login, limpieza de sesiones tras retirar membresía y protección server-side de perfiles publicados. RR-001 quedó cerrado antes de PERF-001 y permanece separado del deploy y del piloto.
 
 **Corrección 2 — Contenido (6) antes de Interconexión (7).** Las conexiones «Artículo → Diagnóstico/Servicio» y «Diagnóstico → contenido relacionado» no pueden existir sin artículos: hoy hay cero. Interconectar primero produciría enlaces a un hub vacío.
 
-**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7, UX-001B.8, UX-001B.9, UX-001B.10 y UX-001C quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`. UX-002.1 queda **PASS DOCUMENTAL** y UX-002.2–UX-002.7 quedan **PASS técnico local / release ready**. REL-003.1 confirma `0.3.0` **LIVE** en staging y producción con smoke HTTP anónimo PASS, sin migraciones ni cambios de secrets. El siguiente bloque, aún no iniciado, es OPS-001 — GHL Pilot Foundation.
+**Nota de estado.** UX-001B.1–UX-001B.10 y UX-001C quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`. UX-002.1 queda **PASS DOCUMENTAL** y UX-002.2–UX-002.7 **PASS técnico local / release ready**. REL-003.1 queda histórica como `0.3.0` LIVE. OPS-001 queda **PASS DOCUMENTAL**, con la cuenta real HighLevel pendiente; GHL continúa pausado y no se inicia OPS-002. DIAG-002/DIAG-002B y UX-003.1/003.4 están desplegados como `0.4.0` en staging y producción. UX-003.2/003.5 tiene una segunda entrega local lista para publicar como `0.4.1`; falta evidencia HTTP de esa versión. UX-003.3, UX-003.6 y UX-003.7 continúan pendientes.
+
+**UX-003** fue autorizado por solicitud directa del usuario el 2026-09-23. Se completaron localmente mejoras responsive a Login, dashboard, Admin Home, navegación de las subpáginas cliente y contexto operativo del detalle de negocios. No se cierra el bloque: equipo/invitaciones, listas administrativas, filtros, prueba visual autenticada y QA accesible aún requieren trabajo.
 
 ## UX-002 — evolución comercial
 
@@ -64,7 +67,7 @@ La matriz maestra está en [business/VECIDYA_PRODUCT_CATALOG.md](business/VECIDY
 
 ### UX-002.5 Diagnostic Experience 2.0 — PASS técnico local
 
-El resultado conserva el scoring y añade situación actual, observaciones, prioridades, camino recomendado y mapeo orientativo a Licencia, Addon, Servicio y Aprende. No hay persistencia, checkout ni recomendación de precio agresiva.
+El resultado conserva el scoring y añade situación actual, observaciones, prioridades, camino recomendado y mapeo orientativo a Licencia, Addon, Servicio y Aprende. No hay persistencia, checkout ni recomendación de precio agresiva. Sustituido por DIAG-002B, publicado en `0.4.0`; la persistencia continúa fuera de alcance.
 
 ### UX-002.6 Content & Learn Experience — PASS técnico local
 
@@ -88,7 +91,7 @@ Se auditó el recorrido `Aprende → Diagnóstico → Licencias → Addons → S
 
 ### Diagnóstico
 
-UX-001B.6 queda cerrado para la experiencia local. Sin persistencia hasta cumplir: consentimiento explícito, política de retención, schema/migración, autorización tenant si se asocia a usuario u organización, revisión legal, pruebas de privacidad, exportación/eliminación. La cobertura futura del scoring debe ser unitaria y cubrir las siete ramas; no forma parte de B.6.
+DIAG-002 cerró el motor 2.0 y DIAG-002B lo endureció semánticamente (27 pruebas semánticas, 6 estados, lenguaje de comprobación, licencia alineada con lo que incluye cada nivel, vocabulario de addons unificado) y quedó publicado en `0.4.0`. Trabajo futuro real: persistencia solo tras consentimiento explícito, política de retención, schema/migración, autorización tenant si se asocia a usuario u organización, revisión legal, pruebas de privacidad y exportación/eliminación (`LEGAL-PRIV-001`); auditoría axe automatizada; recorridos E2E de los perfiles profesional, creador, proyecto y organización (hoy cubiertos en unitarias). DIAG-002C cerró las tres decisiones de producto que quedaban (sin Barrio «opcional», servicio ≠ licencia, vocabulario público de addons «IA conversacional»/«Automatizaciones», Home con cuatro puertas y «organización» solo dentro del Diagnóstico); no queda ninguna ambigüedad de producto abierta en DIAG-002 y sus cambios están en local, pendientes del gate de release.
 
 ### Contenido editorial
 
@@ -112,7 +115,7 @@ OAuth Gmail y entrega real ya están demostrados por EMAIL-001; queda completar 
 
 ### Integraciones
 
-GHL, Google, Meta, WhatsApp y otros solo con decisión explícita; guardan únicamente metadata tenant-scoped justificada y nunca duplican el CRM.
+OPS-001 define GHL como infraestructura externa y el contrato `ghl_location_id`, sin integración activa. OPS-002, Google, Meta, WhatsApp y otros solo con decisión explícita; guardan únicamente metadata tenant-scoped justificada y nunca duplican el CRM.
 
 ### Producción
 

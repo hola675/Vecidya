@@ -1,6 +1,6 @@
 {
   "name": "vecidya-platform",
-  "version": "0.3.0",
+  "version": "0.4.1",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.21.0",
@@ -13,6 +13,7 @@
     "start": "react-router-serve ./build/server/index.js",
     "test:e2e": "node tests/e2e/run-local-e2e.mjs",
     "test:email": "node --experimental-strip-types --test tests/email/mail-adapter.test.ts",
+    "test:unit": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test \"tests/unit/**/*.test.ts\"",
     "typecheck": "react-router typegen && tsc",
     "cf-typegen": "wrangler types"
   },

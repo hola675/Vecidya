@@ -1,6 +1,6 @@
 # Estructura del código
 
-Última reconciliación: 2026-09-23 (REL-003). Rutas verificadas contra `app/routes.ts`; las rutas públicas comerciales y sus pruebas de release están reconciliadas. Columna *Pub.*: comprobación local de la nueva experiencia y evidencia HTTP histórica para el resto (`sí` = responde como se espera; para rutas privadas, `sí` = existe y redirige a `/login`; `no` = no está en el Worker público). Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
+Última reconciliación: 2026-09-23 (DIAG-002; REL-003). Rutas verificadas contra `app/routes.ts`; las rutas públicas comerciales y sus pruebas de release están reconciliadas. Columna *Pub.*: comprobación local de la nueva experiencia y evidencia HTTP histórica para el resto (`sí` = responde como se espera; para rutas privadas, `sí` = existe y redirige a `/login`; `no` = no está en el Worker público). Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
 
 ## Mapa del repositorio
 
@@ -15,7 +15,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     │   ├── assets/public-assets.ts   manifiesto de assets públicos
     │   ├── lib/auth-client.ts  cliente Better Auth
     │   ├── root.tsx, entry.server.tsx, app.css (Tailwind 4 + estilos propios)
-    │   ├── features/*          9 carpetas solo con .gitkeep (placeholders)
+    │   ├── features/diagnostic/ motor puro del Diagnóstico (11 módulos, DIAG-002); las otras 9 carpetas de features/* solo tienen .gitkeep
     │   └── layouts/            solo .gitkeep
     ├── server/                 lógica exclusiva del servidor
     │   ├── auth.server.ts, auth-plugins.server.ts   Better Auth + plugin Organization
@@ -35,7 +35,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     ├── workers/app.ts          entry point del Worker (+ redirect www → apex)
     ├── worker/                 durable-objects/, queues/, workflows/ vacíos
     ├── public/                 assets/selected/** (14 WebP activos + 3 PNG conservados) y brand/vecidya-app-icon.png
-    ├── tests/e2e/              30 archivos (ver TESTING.md); unit/ e integration/ vacíos
+    ├── tests/e2e/              30 archivos (ver TESTING.md); tests/unit/ (7 suites del Diagnóstico + 2 archivos de personas + 2 hooks de resolución TS); integration/ vacío
     ├── docs/                   14 documentos canónicos con los READMEs
     ├── wrangler.jsonc, drizzle.config.ts, react-router.config.ts, vite.config.ts,
     │   tsconfig*.json, better-auth.config.ts, worker-configuration.d.ts (generado)
@@ -60,7 +60,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/contacto` | `contact.tsx` | estático (`mailto`) | — | funcional | `px-a`, `join-contact` | sí |
 | `/vecindario` | `directory.tsx` | D1 lista+filtros | — | funcional | `px-a`, `pg-c1`, `d1` | sí |
 | `/vecindario/:slug` | `public-business-profile.tsx` | D1 perfil+horarios | — | funcional (404 si no publicado/suspendido); UI de `0007`–`0009` desplegada | `px-a`, `c1`, `c2`, `d1`, `pg-c1` | sí (perfil `vecidya`) |
-| `/diagnostico` | `diagnostic.tsx` | cliente | — | funcional; motor sin pruebas | `px-a` (solo 200/overflow) | sí |
+| `/diagnostico` | `diagnostic.tsx` + `features/diagnostic/` | cliente; `?perfil=`, `?objetivo=` (lista cerrada) | — | funcional local / release ready (DIAG-002, `0.4.0`); motor con 43 unitarias | `diagnostic`, `unit-diag`, `px-a` (200/overflow) | sí (`0.3.0` con motor anterior); deploy pendiente |
 | `/sobre-nosotros` | `about.tsx` | estático + WebP humanos | — | funcional | `about` | sí |
 | `/aprende` | `knowledge.tsx` | estático | — | funcional local / release ready; 5 categorías y 4 artículos | `learn`, `commercial-review` | sí local; deploy pendiente |
 | `/aprende/:slug` | `learn-article.tsx` | estático | — | funcional local / release ready; artículo, índice, CTA y metadata | `learn`, `commercial-review` | sí local; deploy pendiente |
@@ -125,13 +125,14 @@ Sin autenticación, las rutas privadas y de API responden **302 → `/login`** (
 
 ## Módulos clave
 
+- **Diagnóstico** (`app/features/diagnostic/`, puro, sin React): `types` (dominio), `profiles` (5 perfiles y listas cerradas), `questions` (26 preguntas con propósito, dimensiones, pesos y `applies`), `answers` (selección, exclusivas, cambio de perfil y `deriveActiveAnswers`), `flow` (secciones y progreso), `scoring` (7 dimensiones normalizadas y confianza), `result` (estado, hallazgos, prioridades con dependencias, fortalezas), `recommendations` (licencia por capacidad, servicios, addons, Aprende), `catalog` (referencias reales), `deep-link` (`perfil`/`objetivo`) e `index` (`runDiagnostic`, `buildContactMailto`). `routes/diagnostic.tsx` solo renderiza; `components/public-v2.tsx` genera las puertas de Home con `buildDiagnosticPath`.
 - **Autorización**: `server/auth/session.server.ts` (`requireSession`, `getActiveOrganization`, `requireOrganization`, `requireMembership`), `server/auth/authorization.server.ts` (matriz de roles y `requireOrganizationPermission`), `server/platform-authorization.server.ts` (`requirePlatformAdmin`). `requireRole` y `requirePermission` existen sin uso.
 - **Consultas**: `db/queries/` (perfil, horarios, servicios, integraciones, organizaciones, gobierno y vistas de plataforma). Toda consulta tenant filtra por `organization_id`.
 - **UI compartida**: `components/public-v2.tsx` (tarjeta, perfil, JSON-LD, secciones visuales), `components/public-layout.tsx` (shell público, metadatos, navegación), `components/admin-shell.tsx`, `components/ui.tsx`.
 
 ## Placeholders sin implementación
 
-`app/features/{admin,auth,billing,business,chat,community,notifications,projects,support}`, `app/layouts`, `server/{payments,permissions,services,validation}`, `worker/{durable-objects,queues,workflows}`, `tests/unit`, `tests/integration`. No deben citarse como capacidades.
+`app/features/{admin,auth,billing,business,chat,community,notifications,projects,support}` (solo `features/diagnostic` tiene código), `app/layouts`, `server/{payments,permissions,services,validation}`, `worker/{durable-objects,queues,workflows}`, `tests/integration`. No deben citarse como capacidades.
 
 ## Archivos de configuración
 

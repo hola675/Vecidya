@@ -1,636 +1,117 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 
 import { publicAssets } from "../assets/public-assets";
 import { PublicLayout, publicMeta } from "../components/public-layout";
+import {
+  applyAnswer,
+  buildContactMailto,
+  DIAGNOSTIC_PATH,
+  dimensionDescriptions,
+  entryToAnswers,
+  getApplicableQuestions,
+  getInitialStep,
+  getProfile,
+  getProgress,
+  isAnswered,
+  isSelected,
+  learnPath,
+  levelLabels,
+  optionLabel,
+  parseDiagnosticEntry,
+  PROFILE_PARAM,
+  questionCopy,
+  runDiagnostic,
+  servicePath,
+  type Answers,
+  type DiagnosticResult,
+  type Issue,
+  type ProfileId,
+  type Question,
+} from "../features/diagnostic";
 
 import type { Route } from "./+types/diagnostic";
 
-type AnswerValue = string | string[];
-type Answers = Record<string, AnswerValue>;
-type QuestionType = "single" | "multi" | "scale" | "yes_no_unknown";
-type ProfileType = "business" | "professional" | "creator" | "project" | "organization" | "public_figure" | "idea";
-type Dimension = "identidad" | "presencia" | "visibilidad" | "confianza" | "conexion" | "comunidad" | "evolucion" | "organizacion";
-type CommercialPath = {
-  situation: string;
-  observations: string[];
-  license: { name: string; reason: string };
-  addons: string[];
-  services: string[];
-  steps: string[];
-};
-
-type Question = {
-  id: string;
-  stage: string;
-  eyebrow: string;
-  prompt: string;
-  helper: string;
-  type: QuestionType;
-  options: { value: string; label: string; exclusive?: boolean }[];
-  applies?: (answers: Answers) => boolean;
-};
-
 const diagnosticDeliverables = [
-  "Tu posición digital actual",
-  "Fortalezas que ya puedes aprovechar",
-  "Oportunidades de mejora",
-  "Hasta 3 próximos pasos priorizados",
+  "Tu estado actual y cómo llegamos a él",
+  "Qué te frena primero y por qué",
+  "Hasta tres prioridades explicadas con tus respuestas",
+  "Siguiente paso y encaje Vecidya, si aplica",
 ];
 
-const profileTypes: Record<ProfileType, string> = {
-  business: "Un negocio o empresa",
-  professional: "Mi perfil profesional",
-  creator: "Mi marca o trabajo como creador",
-  project: "Un proyecto o iniciativa",
-  organization: "Una organización o comunidad",
-  public_figure: "Una candidatura o figura pública",
-  idea: "Todavía estoy construyendo mi idea",
-};
-
-const profileIcons: Partial<Record<ProfileType, string>> = {
+const profileIcons: Record<ProfileId, string> = {
   business: publicAssets.icons.diagnosticBusiness,
   professional: publicAssets.icons.diagnosticProfessional,
-  project: publicAssets.icons.diagnosticProject,
   creator: publicAssets.icons.diagnosticCreator,
+  project: publicAssets.icons.diagnosticProject,
+  organization: publicAssets.icons.serviceStructure,
 };
 
-const questions: Question[] = [
-  {
-    id: "profile",
-    stage: "Identidad",
-    eyebrow: "PRIMERA PUERTA",
-    prompt: "¿Qué quieres hacer visible?",
-    helper: "Esto adapta el diagnóstico a tu realidad, no a un formulario genérico.",
-    type: "single",
-    options: Object.entries(profileTypes).map(([value, label]) => ({ value, label })),
-  },
-  {
-    id: "goal",
-    stage: "Identidad",
-    eyebrow: "OBJETIVO",
-    prompt: "¿Qué te gustaría mejorar principalmente?",
-    helper: "Elige lo que más pesa ahora. Después podrás revisar tus respuestas.",
-    type: "single",
-    options: [
-      { value: "visibility", label: "Que más personas me encuentren" },
-      { value: "trust", label: "Generar más confianza" },
-      { value: "contacts", label: "Recibir más contactos u oportunidades" },
-      { value: "clarity", label: "Explicar mejor lo que hago" },
-      { value: "community", label: "Construir comunidad" },
-      { value: "unknown", label: "Entender qué necesito realmente" },
-    ],
-  },
-  {
-    id: "assets",
-    stage: "Presencia",
-    eyebrow: "PRESENCIA ACTUAL",
-    prompt: "¿Dónde existe hoy tu presencia digital?",
-    helper: "Marca los lugares reales. Si eliges ninguna o no sé, limpiaremos las demás opciones.",
-    type: "multi",
-    options: [
-      { value: "website", label: "Sitio web" },
-      { value: "social", label: "Redes sociales" },
-      { value: "google", label: "Google o mapas" },
-      { value: "directory", label: "Directorios o perfiles públicos" },
-      { value: "whatsapp", label: "Solo WhatsApp o mensajería" },
-      { value: "none", label: "No tengo presencia todavía", exclusive: true },
-      { value: "unknown", label: "No estoy seguro", exclusive: true },
-    ],
-  },
-  {
-    id: "clarity",
-    stage: "Confianza",
-    eyebrow: "CLARIDAD",
-    prompt: "¿Una persona nueva entiende rápido qué haces y cómo contactarte?",
-    helper: "No se trata de juzgar tu presencia, sino de detectar fricción.",
-    type: "yes_no_unknown",
-    options: [
-      { value: "yes", label: "Sí" },
-      { value: "no", label: "No" },
-      { value: "unknown", label: "No estoy seguro" },
-    ],
-  },
-  {
-    id: "obstacle",
-    stage: "Evolución",
-    eyebrow: "OBSTÁCULO",
-    prompt: "¿Cuál es el principal obstáculo que sientes hoy?",
-    helper: "Esta respuesta ayuda a priorizar el resultado final.",
-    type: "single",
-    options: [
-      { value: "not_found", label: "No me encuentran" },
-      { value: "unclear", label: "No explico bien lo que hago" },
-      { value: "few_contacts", label: "No llegan contactos suficientes" },
-      { value: "messy_contacts", label: "Llegan contactos desordenados" },
-      { value: "no_time", label: "No tengo tiempo para ordenarlo" },
-      { value: "where_start", label: "No sé por dónde empezar" },
-    ],
-  },
-  {
-    id: "contact_channels",
-    stage: "Conexión",
-    eyebrow: "CONTACTO",
-    prompt: "¿Qué canales usan las personas para contactarte hoy?",
-    helper: "Una presencia útil necesita una acción siguiente clara.",
-    type: "multi",
-    applies: (answers) => answers.profile !== "idea",
-    options: [
-      { value: "phone", label: "Teléfono o llamadas" },
-      { value: "whatsapp", label: "WhatsApp o mensajería" },
-      { value: "email", label: "Correo electrónico" },
-      { value: "social", label: "Redes sociales" },
-      { value: "external_form", label: "Formulario o agenda externa" },
-      { value: "none", label: "Ninguno claro", exclusive: true },
-    ],
-  },
-  {
-    id: "business_location",
-    stage: "Visibilidad",
-    eyebrow: "NEGOCIO",
-    prompt: "¿Tu negocio tiene una ubicación o zona de atención clara?",
-    helper: "Para lo local, la ubicación suele cambiar la prioridad.",
-    type: "yes_no_unknown",
-    applies: (answers) => answers.profile === "business",
-    options: [
-      { value: "yes", label: "Sí" },
-      { value: "no", label: "No" },
-      { value: "unknown", label: "No estoy seguro" },
-    ],
-  },
-  {
-    id: "professional_proof",
-    stage: "Confianza",
-    eyebrow: "AUTORIDAD",
-    prompt: "¿Dónde muestras tu trabajo o experiencia?",
-    helper: "No inventamos autoridad: buscamos señales reales que ya existan.",
-    type: "multi",
-    applies: (answers) => answers.profile === "professional",
-    options: [
-      { value: "portfolio", label: "Portafolio o casos" },
-      { value: "linkedin", label: "LinkedIn o perfil profesional" },
-      { value: "credentials", label: "Credenciales o experiencia pública" },
-      { value: "recommendations", label: "Recomendaciones reales" },
-      { value: "none", label: "No lo muestro", exclusive: true },
-      { value: "unknown", label: "No estoy seguro", exclusive: true },
-    ],
-  },
-  {
-    id: "creator_consistency",
-    stage: "Comunidad",
-    eyebrow: "CREADOR",
-    prompt: "¿Publicas con alguna consistencia?",
-    helper: "La constancia ayuda, pero no reemplaza claridad ni camino de contacto.",
-    type: "scale",
-    applies: (answers) => answers.profile === "creator",
-    options: [
-      { value: "never", label: "Nunca" },
-      { value: "sometimes", label: "A veces" },
-      { value: "often", label: "Frecuentemente" },
-      { value: "constant", label: "De forma constante" },
-    ],
-  },
-  {
-    id: "project_stage",
-    stage: "Evolución",
-    eyebrow: "PROYECTO",
-    prompt: "¿En qué etapa está tu proyecto?",
-    helper: "Un proyecto temprano necesita claridad antes que piezas digitales complejas.",
-    type: "single",
-    applies: (answers) => answers.profile === "project",
-    options: [
-      { value: "idea", label: "Solo tengo la idea" },
-      { value: "validating", label: "Estoy validando si interesa" },
-      { value: "shown", label: "Ya lo mostré a algunas personas" },
-      { value: "community", label: "Ya tengo primera comunidad o usuarios" },
-      { value: "growing", label: "Ya funciona y quiero hacerlo crecer" },
-    ],
-  },
-  {
-    id: "community_channel",
-    stage: "Comunidad",
-    eyebrow: "COMUNIDAD",
-    prompt: "¿Dónde se informa o reúne hoy la comunidad?",
-    helper: "Buscamos el canal oficial y la forma de participar.",
-    type: "multi",
-    applies: (answers) => answers.profile === "organization",
-    options: [
-      { value: "website", label: "Web o página central" },
-      { value: "social", label: "Redes sociales" },
-      { value: "chat", label: "Grupo de mensajería" },
-      { value: "events", label: "Eventos o encuentros" },
-      { value: "email", label: "Correo" },
-      { value: "none", label: "No hay canal claro", exclusive: true },
-    ],
-  },
-  {
-    id: "public_transparency",
-    stage: "Confianza",
-    eyebrow: "TRANSPARENCIA",
-    prompt: "¿Tu información pública es clara y verificable?",
-    helper: "En perfiles públicos sensibles, Vecidya solo orienta presencia y transparencia.",
-    type: "yes_no_unknown",
-    applies: (answers) => answers.profile === "public_figure",
-    options: [
-      { value: "yes", label: "Sí" },
-      { value: "no", label: "No" },
-      { value: "unknown", label: "No estoy seguro" },
-    ],
-  },
-  {
-    id: "idea_next_step",
-    stage: "Evolución",
-    eyebrow: "IDEA",
-    prompt: "¿Qué sería un avance pequeño esta semana?",
-    helper: "Si todavía estás construyendo, el resultado debe ayudarte a ordenar, no a correr.",
-    type: "single",
-    applies: (answers) => answers.profile === "idea",
-    options: [
-      { value: "proposal", label: "Escribir una propuesta breve" },
-      { value: "profile", label: "Crear un perfil básico" },
-      { value: "channels", label: "Ordenar canales" },
-      { value: "feedback", label: "Pedir opinión" },
-      { value: "talk", label: "Hablar con Vecidya" },
-    ],
-  },
-  {
-    id: "urgency",
-    stage: "Resultado",
-    eyebrow: "URGENCIA",
-    prompt: "¿Qué tan urgente es mejorar esto?",
-    helper: "La urgencia ajusta el tono del siguiente paso, no crea una promesa automática.",
-    type: "scale",
-    options: [
-      { value: "exploring", label: "Estoy explorando" },
-      { value: "this_month", label: "Este mes" },
-      { value: "soon", label: "Lo necesito pronto" },
-      { value: "critical", label: "Es crítico" },
-    ],
-  },
-];
-
-const stageOrder = ["Identidad", "Presencia", "Confianza", "Conexión", "Comunidad", "Evolución", "Resultado"];
-const dimensions: Dimension[] = ["identidad", "presencia", "visibilidad", "confianza", "conexion", "comunidad", "evolucion", "organizacion"];
-const dimensionLabels: Record<Dimension, string> = {
-  identidad: "Identidad",
-  presencia: "Presencia",
-  visibilidad: "Visibilidad",
-  confianza: "Confianza",
-  conexion: "Conexión",
-  comunidad: "Comunidad",
-  evolucion: "Evolución",
-  organizacion: "Organización",
-};
+const confidenceCopy = {
+  alta: "Alta",
+  media: "Media",
+  baja: "Baja",
+} as const;
 
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
     "Diagnóstico Vecidya",
-    "Descubre qué necesita tu negocio para mejorar su presencia digital con un diagnóstico anónimo y sin guardar respuestas.",
-    "/diagnostico",
+    "Entiende dónde estás, qué funciona, qué te frena y qué conviene hacer primero. Diagnóstico anónimo, adaptado a tu perfil y sin guardar respuestas.",
+    DIAGNOSTIC_PATH,
   );
 }
 
-function includesAnswer(answer: AnswerValue | undefined, value: string) {
-  return Array.isArray(answer) ? answer.includes(value) : answer === value;
-}
-
-function getApplicableQuestions(answers: Answers) {
-  return questions.filter((question) => !question.applies || question.applies(answers));
-}
-
-function scoreAnswers(answers: Answers, applicableQuestions: Question[]) {
-  const scores: Record<Dimension, number> = Object.fromEntries(dimensions.map((dimension) => [dimension, 46])) as Record<Dimension, number>;
-  let confidenceHits = 0;
-  let confidenceTotal = 0;
-  const strengths = new Set<string>();
-  const opportunities = new Set<string>();
-  const priorities = new Set<string>();
-  const primaryPriorities = new Set<string>();
-
-  const add = (dimension: Dimension, amount: number) => {
-    scores[dimension] = Math.max(18, Math.min(92, scores[dimension] + amount));
-  };
-  const prioritize = (item: string, primary = false) => {
-    priorities.add(item);
-    if (primary) primaryPriorities.add(item);
-  };
-
-  for (const question of applicableQuestions) {
-    const answer = answers[question.id];
-    if (!answer) continue;
-
-    confidenceTotal += 1;
-    if (!includesAnswer(answer, "unknown")) confidenceHits += 1;
-  }
-
-  const profile = answers.profile as ProfileType | undefined;
-  const assets = answers.assets;
-  const contactChannels = answers.contact_channels;
-  const hasUsefulMultiAnswer = (answer: AnswerValue | undefined): answer is string[] => Array.isArray(answer) && answer.length > 0 && !answer.includes("none") && !answer.includes("unknown");
-
-  if (profile) {
-    add("identidad", 10);
-    strengths.add(`Definiste el tipo de presencia principal: ${profileTypes[profile].toLowerCase()}.`);
-  }
-
-  if (answers.goal && answers.goal !== "unknown") {
-    add("evolucion", 10);
-    if (answers.goal === "visibility") add("visibilidad", 8);
-    if (answers.goal === "trust") add("confianza", 8);
-    if (answers.goal === "contacts") add("conexion", 8);
-    if (answers.goal === "clarity") add("identidad", 6);
-    if (answers.goal === "community") add("comunidad", 8);
-    strengths.add("Tienes una prioridad inicial para orientar el avance.");
-  } else if (answers.goal === "unknown") {
-    prioritize("Aclarar qué quieres conseguir antes de construir nuevas piezas digitales.");
-  }
-
-  if (hasUsefulMultiAnswer(assets)) {
-    add("presencia", 12);
-    add("visibilidad", assets.includes("google") || assets.includes("directory") ? 9 : 3);
-    if (assets.includes("website")) add("confianza", 4);
-    if (assets.includes("whatsapp")) add("conexion", 4);
-    strengths.add("Ya tienes al menos un lugar donde tu presencia puede encontrarse.");
-  }
-
-  if (includesAnswer(assets, "none")) {
-    add("presencia", -14);
-    add("visibilidad", -10);
-    prioritize("Crear una base pública mínima con identidad, explicación y contacto.", true);
-  }
-
-  if (includesAnswer(assets, "unknown")) {
-    add("confianza", -4);
-    prioritize("Verificar qué presencia existe hoy y quién puede actualizarla.");
-  }
-
-  if (answers.clarity === "yes") {
-    add("confianza", 12);
-    add("conexion", 8);
-    strengths.add("Tu propuesta parece entendible para una persona nueva.");
-  } else if (answers.clarity === "no") {
-    add("confianza", -12);
-    prioritize("Escribir una explicación breve de quién eres, qué haces y cómo avanzar contigo.", true);
-  } else if (answers.clarity === "unknown") {
-    opportunities.add("Conviene revisar si una persona externa entiende tu presencia sin explicación adicional.");
-  }
-
-  if (hasUsefulMultiAnswer(contactChannels)) {
-    add("conexion", 12);
-    strengths.add("Las personas tienen una vía concreta para contactarte.");
-    if (contactChannels.length > 2) {
-      add("organizacion", -7);
-      prioritize("Ordenar los canales de contacto para no perder oportunidades.", true);
-    }
-  }
-
-  if (includesAnswer(contactChannels, "none")) {
-    add("conexion", -14);
-    prioritize("Definir una acción clara de contacto o participación.", true);
-  }
-
-  if (answers.obstacle === "not_found") {
-    add("visibilidad", -12);
-    prioritize("Mejorar cómo te descubren las personas correctas.");
-  }
-  if (answers.obstacle === "unclear") {
-    add("identidad", -8);
-    add("confianza", -8);
-    prioritize("Ordenar el mensaje principal antes de ampliar canales.", true);
-  }
-  if (answers.obstacle === "few_contacts") {
-    add("conexion", -10);
-    add("visibilidad", -5);
-    prioritize("Revisar si la presencia actual deja claro cómo contactarte y por qué hacerlo ahora.", true);
-  }
-  if (answers.obstacle === "messy_contacts") {
-    add("organizacion", -12);
-    prioritize("Separar conversación inicial de seguimiento para reducir desorden.", true);
-  }
-  if (answers.obstacle === "no_time") {
-    add("organizacion", -8);
-    add("evolucion", -5);
-    prioritize("Reducir la presencia a una base mantenible antes de sumar canales o tareas.", true);
-  }
-  if (answers.obstacle === "where_start") {
-    add("evolucion", -8);
-    prioritize("Definir un primer avance pequeño y verificable.");
-  }
-
-  if (answers.business_location === "yes") add("visibilidad", 9);
-  if (answers.business_location === "no") prioritize("Aclarar ubicación, zona de atención o alcance del servicio.", true);
-  if (answers.business_location === "unknown") {
-    add("visibilidad", -4);
-    prioritize("Confirmar si la ubicación o zona de atención debe aparecer en tu presencia pública.", true);
-  }
-
-  if (hasUsefulMultiAnswer(answers.professional_proof)) {
-    add("confianza", 12);
-    strengths.add("Ya cuentas con señales públicas para respaldar tu experiencia.");
-  }
-  if (includesAnswer(answers.professional_proof, "none")) {
-    add("confianza", -10);
-    prioritize("Publicar una señal real de experiencia: caso, portafolio, credencial o recomendación verificable.", true);
-  }
-  if (includesAnswer(answers.professional_proof, "unknown")) {
-    add("confianza", -4);
-    prioritize("Revisar qué evidencia profesional existe y cuál conviene mostrar primero.", true);
-  }
-
-  if (answers.creator_consistency === "often" || answers.creator_consistency === "constant") {
-    add("comunidad", 12);
-    add("visibilidad", 7);
-    strengths.add("Tu ritmo de publicación puede sostener descubrimiento y comunidad.");
-  }
-  if (answers.creator_consistency === "never" || answers.creator_consistency === "sometimes") {
-    add("comunidad", -8);
-    prioritize("Definir un ritmo de publicación sostenible antes de intentar crecer audiencia.", true);
-  }
-
-  if (answers.project_stage === "idea" || answers.project_stage === "validating") {
-    add("evolucion", -4);
-    prioritize("Explicar propósito, público inicial y próximo paso antes de crecer canales.", true);
-  }
-  if (answers.project_stage === "community" || answers.project_stage === "growing") {
-    add("comunidad", 8);
-    add("evolucion", 8);
-    strengths.add("El proyecto ya tiene señales de validación o crecimiento que pueden ordenarse.");
-  }
-
-  if (hasUsefulMultiAnswer(answers.community_channel)) {
-    add("comunidad", 12);
-    strengths.add("La comunidad ya tiene algún punto de encuentro o información.");
-  }
-  if (includesAnswer(answers.community_channel, "none")) {
-    add("comunidad", -12);
-    add("conexion", -6);
-    prioritize("Definir un canal oficial donde la comunidad pueda informarse o participar.", true);
-  }
-
-  if (answers.public_transparency === "no" || answers.public_transparency === "unknown") {
-    add("confianza", -8);
-    prioritize("Revisar transparencia, coherencia y verificabilidad antes de automatizar recomendaciones.", true);
-  }
-  if (answers.public_transparency === "yes") {
-    add("confianza", 10);
-    strengths.add("Tu información pública ya tiene señales de claridad y verificabilidad.");
-  }
-
-  if (answers.idea_next_step) {
-    add("evolucion", 8);
-    prioritize("Convertir la idea en una propuesta breve que pueda revisarse esta semana.", true);
-  }
-
-  if (answers.urgency === "critical" || answers.urgency === "soon") {
-    prioritize("Priorizar lo que reduzca fricción ahora: claridad, contacto y presencia mínima.");
-  }
-
-  if (!strengths.size) strengths.add("Ya diste el primer paso: ubicar tu situación antes de construir más.");
-  if (!opportunities.size) opportunities.add("La siguiente mejora debe concentrarse en claridad, confianza o contacto según tus respuestas.");
-
-  const average = Math.round(dimensions.reduce((sum, dimension) => sum + scores[dimension], 0) / dimensions.length);
-  const confidence = confidenceTotal === 0 ? "baja" : confidenceHits / confidenceTotal >= 0.78 ? "alta" : confidenceHits / confidenceTotal >= 0.55 ? "media" : "baja";
-  const position = average < 40 ? "Punto de partida" : average < 55 ? "Base en construcción" : average < 70 ? "Presencia activa" : average < 82 ? "Sistema en crecimiento" : "Presencia madura";
-  const cta = answers.obstacle === "not_found"
-    ? "Quiero que más personas me encuentren"
-    : answers.obstacle === "messy_contacts"
-      ? "Quiero organizar mis oportunidades"
-      : answers.profile === "idea" || answers.project_stage === "idea"
-        ? "Quiero definir mi siguiente paso"
-        : "Quiero una orientación profesional";
-
-  return {
-    average,
-    confidence,
-    position,
-    strengths: [...strengths].slice(0, 3),
-    opportunities: [...opportunities].slice(0, 3),
-    priorities: [...primaryPriorities, ...priorities].filter((item, index, list) => list.indexOf(item) === index).slice(0, 3),
-    scores,
-    cta,
-    commercialPath: getCommercialPath(average, answers, scores),
-  };
-}
-
-function getCommercialPath(average: number, answers: Answers, scores: Record<Dimension, number>): CommercialPath {
-  const startingNeeds = answers.profile === "idea" || includesAnswer(answers.assets, "none") || average < 55;
-  const processNeeds = answers.obstacle === "no_time" || answers.obstacle === "messy_contacts" || scores.organizacion < 42;
-  const activeNeeds = answers.goal === "contacts" || answers.obstacle === "few_contacts" || answers.obstacle === "messy_contacts" || average >= 55;
-
-  if (startingNeeds) {
-    return {
-      situation: "Tu negocio está construyendo una base digital.",
-      observations: ["Conviene ordenar lo esencial antes de sumar más canales.", "Una presencia clara puede convertirse en tu primer punto de apoyo."],
-      license: { name: "Cuadra", reason: "Una base continua para organizar tu negocio y saber qué construir primero." },
-      addons: [],
-      services: ["Organización del negocio", "Presencia digital"],
-      steps: ["Ordenar tu base digital", "Explicar con claridad qué haces", "Ampliar capacidades cuando aparezca una necesidad real"],
-    };
-  }
-
-  if (processNeeds || (activeNeeds && average >= 72)) {
-    return {
-      situation: "Tu negocio tiene una base activa y está listo para conectar procesos.",
-      observations: ["Ya existe movimiento que puede ordenarse mejor.", "La siguiente mejora debería reducir tareas repetitivas y dar más continuidad al seguimiento."],
-      license: { name: "Ciudad", reason: "Un sistema continuo para automatizar y controlar cuando los procesos ya tienen volumen." },
-      addons: ["AI Conversacional", "Integraciones"],
-      services: ["Automatización", "Inteligencia artificial"],
-      steps: ["Ordenar tus procesos actuales", "Automatizar lo repetitivo", "Conectar herramientas cuando aporte valor"],
-    };
-  }
-
-  return {
-    situation: "Tu negocio ya tiene movimiento y necesita ordenar cómo seguir.",
-    observations: ["Hay una base sobre la que se puede trabajar.", "El siguiente avance está en captar y seguir mejor las oportunidades."],
-    license: { name: "Barrio", reason: "Un sistema continuo para captar oportunidades y mantener el seguimiento." },
-    addons: ["WhatsApp", "Automatizaciones"],
-    services: ["Organización del negocio", "Automatización"],
-    steps: ["Organizar la información que ya tienes", "Crear procesos de seguimiento", "Automatizar cuando estés preparado"],
-  };
-}
-
-function formatAnswer(questionId: string, answer: AnswerValue | undefined) {
-  if (!answer) return "Sin respuesta";
-  const values = Array.isArray(answer) ? answer : [answer];
-  const question = questions.find((item) => item.id === questionId);
-  return values
-    .map((value) => question?.options.find((option) => option.value === value)?.label ?? value)
-    .join(", ");
-}
-
-function getDiagnosticMailto(result: ReturnType<typeof scoreAnswers>, answers: Answers) {
-  const profile = answers.profile as ProfileType | undefined;
-  const subject = `Quiero revisar mi diagnostico Vecidya: ${result.position}`;
-  const body = [
-    "Hola Vecidya,",
-    "",
-    "Acabo de completar el diagnostico y quiero revisar como avanzar.",
-    "",
-    `Tipo de presencia: ${profile ? profileTypes[profile] : "Sin definir"}`,
-    `Posicion digital: ${result.position}`,
-    `Area prioritaria: ${result.priorities[0] ?? "Por definir"}`,
-    `Objetivo marcado: ${formatAnswer("goal", answers.goal)}`,
-    "",
-    "No estoy enviando mis respuestas completas ni se esta guardando informacion en Vecidya.",
-  ].join("\n");
-
-  return `mailto:hola@vecidya.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-}
-
-function getRecommendationLink(item: string) {
-  if (/encontr|descubr|visibilidad/i.test(item)) return "/servicios#visibilidad";
-  if (/mensaje|explicación|presencia pública|canales|contacto|base pública/i.test(item)) return "/servicios#presencia-digital";
-  if (/organizar|seguimiento|desorden/i.test(item)) return "/servicios#estructuracion";
-  if (/formaliz|responsabilidad/i.test(item)) return "/servicios#formalizacion";
-  return null;
-}
-
 export default function Diagnostic() {
-  const [answers, setAnswers] = useState<Answers>({});
-  const [step, setStep] = useState(0);
-  const questionHeadingRef = useRef<HTMLHeadingElement>(null);
-  const applicableQuestions = useMemo(() => getApplicableQuestions(answers), [answers]);
-  const currentQuestion = applicableQuestions[step];
-  const result = useMemo(() => scoreAnswers(answers, applicableQuestions), [answers, applicableQuestions]);
-  const complete = step >= applicableQuestions.length;
-  const currentStage = complete ? "Resultado" : currentQuestion.stage;
-  const progress = complete ? 100 : Math.round((step / applicableQuestions.length) * 100);
-  const contactHref = complete ? getDiagnosticMailto(result, answers) : "mailto:hola@vecidya.com";
-  const questionNumber = complete ? applicableQuestions.length : step + 1;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const initialAnswers = useMemo(() => entryToAnswers(parseDiagnosticEntry(searchParams)), [searchParams]);
+  const [answers, setAnswers] = useState<Answers>(initialAnswers);
+  const [step, setStep] = useState(() => getInitialStep(initialAnswers));
+  const headingRef = useRef<HTMLHeadingElement>(null);
 
-  const answerQuestion = (question: Question, value: string) => {
-    setAnswers((current) => {
-      if (question.id === "profile") return { profile: value };
-      if (question.type !== "multi") return { ...current, [question.id]: value };
+  const applicable = useMemo(() => getApplicableQuestions(answers), [answers]);
+  const safeStep = Math.min(step, applicable.length);
+  const complete = safeStep >= applicable.length;
+  const currentQuestion: Question | undefined = complete ? undefined : applicable[safeStep];
+  const progress = useMemo(() => getProgress(answers, safeStep), [answers, safeStep]);
+  const result = useMemo(() => (complete ? runDiagnostic(answers) : null), [answers, complete]);
+  const profile = typeof answers.profile === "string" ? (answers.profile as ProfileId) : undefined;
+  const copy = currentQuestion ? questionCopy(currentQuestion, profile) : undefined;
 
-      const option = question.options.find((item) => item.value === value);
-      const previous = Array.isArray(current[question.id]) ? current[question.id] as string[] : [];
-      const next = previous.includes(value) ? previous.filter((item) => item !== value) : [...previous, value];
+  const sectionQuestions = currentQuestion ? applicable.filter((question) => question.section === currentQuestion.section) : [];
+  const withinSection = currentQuestion ? Math.max(0, sectionQuestions.findIndex((question) => question.id === currentQuestion.id)) : 0;
+  const meterFraction = complete
+    ? 1
+    : progress.sectionCount
+      ? (progress.sectionIndex + (sectionQuestions.length ? withinSection / sectionQuestions.length : 0)) / progress.sectionCount
+      : 0;
 
-      if (option?.exclusive) return { ...current, [question.id]: next.includes(value) ? [value] : [] };
+  const canContinue = Boolean(currentQuestion && isAnswered(currentQuestion, answers));
+  const isLast = !complete && progress.known && safeStep === applicable.length - 1;
 
-      return {
-        ...current,
-        [question.id]: next.filter((item) => !question.options.find((choice) => choice.value === item)?.exclusive),
-      };
-    });
+  const answer = (question: Question, value: string) => {
+    const next = applyAnswer(answers, question, value);
+    setAnswers(next);
+    if (question.id === "profile" && next.profile !== answers.profile && typeof next.profile === "string") {
+      setSearchParams(new URLSearchParams({ [PROFILE_PARAM]: next.profile }), { replace: true, preventScrollReset: true });
+    }
   };
-
-  const canContinue = complete || Boolean(currentQuestion && answers[currentQuestion.id] && (!Array.isArray(answers[currentQuestion.id]) || (answers[currentQuestion.id] as string[]).length));
 
   const goNext = () => {
     if (!canContinue) return;
-    setStep((current) => Math.min(current + 1, getApplicableQuestions(answers).length));
+    setStep(Math.min(safeStep + 1, applicable.length));
   };
 
-  const goBack = () => setStep((current) => Math.max(0, current - 1));
+  const goBack = () => setStep(Math.max(0, safeStep - 1));
+
   const restart = () => {
     setAnswers({});
     setStep(0);
+    navigate(DIAGNOSTIC_PATH, { replace: true, preventScrollReset: true });
   };
 
   useEffect(() => {
-    questionHeadingRef.current?.focus();
+    headingRef.current?.focus({ preventScroll: false });
   }, [complete, currentQuestion?.id]);
 
   return (
@@ -639,11 +120,11 @@ export default function Diagnostic() {
         <section className="diagnostic-hero">
           <div>
             <p className="eyebrow">DIAGNÓSTICO VECIDYA</p>
-            <h1>Entiende qué mejorar primero.</h1>
+            <h1>Entiende dónde estás y qué conviene hacer primero.</h1>
             <p>
-              Responde unas preguntas breves y recibe una orientación inmediata
-              sobre cómo te encuentran, qué confianza generas y qué paso conviene
-              priorizar. No necesitas dejar tu correo para ver el resultado.
+              Responde preguntas breves adaptadas a tu perfil y recibe una orientación inicial:
+              qué funciona, qué te frena y cuál es el siguiente paso razonable. No necesitas dejar
+              tu correo y no guardamos tus respuestas.
             </p>
           </div>
           <div className="diagnostic-hero__panel">
@@ -656,176 +137,259 @@ export default function Diagnostic() {
         </section>
 
         <section className="diagnostic-shell" aria-labelledby="diagnostic-title">
-          <nav className="diagnostic-progress" aria-label="Etapas del diagnóstico">
-            {stageOrder.map((stage) => (
-              <span aria-current={stage === currentStage ? "step" : undefined} className={stage === currentStage ? "is-active" : undefined} key={stage}>{stage}</span>
+          <ol className="diagnostic-stepper" aria-label="Secciones del diagnóstico">
+            {progress.sections.map((section) => (
+              <li aria-current={section.state === "current" ? "step" : undefined} className={`is-${section.state}`} key={section.id}>{section.label}</li>
             ))}
-          </nav>
+          </ol>
           <div
-            aria-label={`Pregunta ${questionNumber} de ${applicableQuestions.length}`}
-            aria-valuemax={applicableQuestions.length}
+            aria-label="Avance del diagnóstico por secciones"
+            aria-valuemax={progress.sectionCount}
             aria-valuemin={0}
-            aria-valuenow={complete ? applicableQuestions.length : step}
+            aria-valuenow={complete ? progress.sectionCount : progress.sectionIndex}
+            aria-valuetext={complete ? "Diagnóstico completo" : `Sección ${progress.sectionIndex + 1} de ${progress.sectionCount}: ${progress.sectionLabel}`}
             className="diagnostic-meter"
             role="progressbar"
           >
-            <span style={{ width: `${progress}%` }} />
+            <span style={{ width: `${Math.round(meterFraction * 100)}%` }} />
           </div>
           <p aria-live="polite" className="diagnostic-progress-label">
-            {complete ? "Diagnóstico completo" : `Pregunta ${questionNumber} de ${applicableQuestions.length} · ${currentStage}`}
+            {complete
+              ? "Diagnóstico completo"
+              : progress.known
+                ? `Sección ${progress.sectionIndex + 1} de ${progress.sectionCount} · ${progress.sectionLabel} · Pregunta ${progress.questionNumber} de ${progress.questionCount}`
+                : `Sección ${progress.sectionIndex + 1} de ${progress.sectionCount} · ${progress.sectionLabel} · Elige un perfil para adaptar el recorrido`}
           </p>
 
-          {!complete && currentQuestion ? (
+          {currentQuestion && copy ? (
             <article className="diagnostic-question">
-              <p className="eyebrow">{currentQuestion.stage} · {currentQuestion.eyebrow}</p>
-              <h2 id="diagnostic-title" ref={questionHeadingRef} tabIndex={-1}>{currentQuestion.prompt}</h2>
-              <p id="diagnostic-helper">{currentQuestion.helper}</p>
-              <div className={`diagnostic-options diagnostic-options--${currentQuestion.type}`}>
-                {currentQuestion.options.map((option) => {
-                  const selected = includesAnswer(answers[currentQuestion.id], option.value);
-                  const icon = currentQuestion.id === "profile" ? profileIcons[option.value as ProfileType] : undefined;
-                  return (
-                    <button
-                      aria-pressed={selected}
-                      aria-describedby="diagnostic-helper"
-                      className={selected ? "is-selected" : undefined}
-                      key={option.value}
-                      onClick={() => answerQuestion(currentQuestion, option.value)}
-                      type="button"
-                    >
-                      {icon ? <img alt="" aria-hidden="true" className="diagnostic-option__icon" height={36} src={icon} width={36} /> : null}
-                      <span className="diagnostic-option__mark" aria-hidden="true" />
-                      <span>{option.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+              <fieldset aria-describedby="diagnostic-helper" className="diagnostic-fieldset">
+                <legend>
+                  <span className="eyebrow">{progress.sectionLabel} · {currentQuestion.eyebrow}</span>
+                  <h2 id="diagnostic-title" ref={headingRef} tabIndex={-1}>{copy.prompt}</h2>
+                </legend>
+                <p id="diagnostic-helper">{copy.helper}</p>
+                <div className={`diagnostic-options diagnostic-options--${currentQuestion.type}`}>
+                  {currentQuestion.options.map((option) => {
+                    const selected = isSelected(answers[currentQuestion.id], option.value);
+                    const inputId = `diagnostic-${currentQuestion.id}-${option.value}`;
+                    const icon = currentQuestion.id === "profile" ? profileIcons[option.value as ProfileId] : undefined;
+                    return (
+                      <label className={`diagnostic-choice${selected ? " is-selected" : ""}`} htmlFor={inputId} key={option.value}>
+                        <input
+                          checked={selected}
+                          className="diagnostic-choice__input"
+                          id={inputId}
+                          name={currentQuestion.id}
+                          onChange={() => answer(currentQuestion, option.value)}
+                          type={currentQuestion.type === "multi" ? "checkbox" : "radio"}
+                          value={option.value}
+                        />
+                        {icon ? <img alt="" aria-hidden="true" className="diagnostic-option__icon" height={36} src={icon} width={36} /> : null}
+                        <span className="diagnostic-option__mark" aria-hidden="true" />
+                        <span className="diagnostic-choice__label">{option.label}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </fieldset>
               <div className="diagnostic-actions">
-                <button className="button button--secondary" disabled={step === 0} onClick={goBack} type="button">Volver</button>
-                <button className="button button--primary" disabled={!canContinue} onClick={goNext} type="button">Continuar</button>
+                <button className="button button--secondary" disabled={safeStep === 0} onClick={goBack} type="button">Volver</button>
+                <button className="button button--primary" disabled={!canContinue} onClick={goNext} type="button">{isLast ? "Ver resultado" : "Continuar"}</button>
               </div>
             </article>
-          ) : (
-            <article className="diagnostic-result">
-              <p className="eyebrow">TU DIAGNÓSTICO</p>
-              <h2 ref={questionHeadingRef} tabIndex={-1}>{result.position}</h2>
-               <p>
-                 Esta orientación resume tu punto de partida, lo que ya funciona y
-                 dónde conviene concentrar el próximo avance. Confianza del
-                 diagnóstico: <strong>{result.confidence}</strong>.
-               </p>
-
-               <section className="diagnostic-situation" aria-labelledby="diagnostic-situation-title">
-                 <div>
-                   <p className="eyebrow">TU SITUACIÓN ACTUAL</p>
-                   <h3 id="diagnostic-situation-title">¿Dónde estás?</h3>
-                   <p>{result.commercialPath.situation}</p>
-                 </div>
-                 <div>
-                   <p className="eyebrow">LO QUE OBSERVAMOS</p>
-                   <h3>¿Qué observamos?</h3>
-                   <ul>{result.commercialPath.observations.map((item) => <li key={item}>{item}</li>)}</ul>
-                 </div>
-               </section>
-
-               <div className="diagnostic-scoreline" aria-label={`Posición digital estimada ${result.average} de 100`}>
-                <span style={{ width: `${result.average}%` }} />
-              </div>
-
-              <section className="diagnostic-result-summary" aria-label="Resumen del resultado">
-                <div>
-                  <span>Posición digital</span>
-                  <strong>{result.position}</strong>
-                </div>
-                <div>
-                  <span>Área prioritaria</span>
-                  <strong>{result.priorities[0] ?? "Definir el siguiente paso"}</strong>
-                </div>
-              </section>
-
-              <div className="diagnostic-result-grid">
-                <section className="diagnostic-result-card diagnostic-result-card--dimensions">
-                    <h3>Tus dimensiones</h3>
-                    <dl className="diagnostic-dimensions">
-                      {dimensions.map((dimension) => (
-                        <div key={dimension}>
-                          <dt>{dimensionLabels[dimension]}</dt>
-                          <dd><span style={{ width: `${result.scores[dimension]}%` }} />{result.scores[dimension]}</dd>
-                        </div>
-                      ))}
-                  </dl>
-                </section>
-                <section className="diagnostic-result-card diagnostic-result-card--strengths">
-                  <h3>Tus fortalezas</h3>
-                  <ul>{result.strengths.map((item) => <li key={item}>{item}</li>)}</ul>
-                </section>
-                <section className="diagnostic-result-card diagnostic-result-card--opportunities">
-                  <h3>Oportunidades</h3>
-                  <ul>{result.opportunities.map((item) => <li key={item}>{item}</li>)}</ul>
-                </section>
-                <section className="diagnostic-result-card diagnostic-result-card--steps">
-                  <h3>Tus próximos focos</h3>
-                  <ol>{result.priorities.map((item) => {
-                    const href = getRecommendationLink(item);
-                    return <li key={item}>{href ? <Link to={href}>{item}</Link> : item}</li>;
-                  })}</ol>
-                 </section>
-               </div>
-
-               <section className="diagnostic-path" aria-labelledby="diagnostic-path-title">
-                 <div>
-                   <p className="eyebrow">TU SIGUIENTE CAMINO</p>
-                   <h3 id="diagnostic-path-title">Tu siguiente camino</h3>
-                   <p>Un camino recomendado, no una obligación.</p>
-                 </div>
-                 <ol>{result.commercialPath.steps.map((item) => <li key={item}>{item}</li>)}</ol>
-               </section>
-
-               <section className="diagnostic-commercial" aria-labelledby="diagnostic-commercial-title">
-                 <div className="diagnostic-commercial__heading">
-                   <p className="eyebrow">CÓMO PUEDE CONTINUAR</p>
-                   <h3 id="diagnostic-commercial-title">Tu recomendación Vecidya</h3>
-                 </div>
-                 <div className="diagnostic-commercial__grid">
-                   <article>
-                     <span>LICENCIA RECOMENDADA</span>
-                     <strong>{result.commercialPath.license.name}</strong>
-                     <p>{result.commercialPath.license.reason}</p>
-                     <Link className="text-link" to="/licencias">Ver licencias <span aria-hidden="true">→</span></Link>
-                   </article>
-                   <article>
-                     <span>ADDONS POSIBLES</span>
-                     <strong>{result.commercialPath.addons.length ? result.commercialPath.addons.join(" · ") : "Cuando aparezca la necesidad"}</strong>
-                     <p>{result.commercialPath.addons.length ? "Capacidades adicionales que podrían tener sentido después de ordenar la base." : "No necesitas agregar una capacidad antes de tener clara tu base."}</p>
-                     <Link className="text-link" to="/addons">Ver addons <span aria-hidden="true">→</span></Link>
-                   </article>
-                   <article>
-                     <span>SERVICIOS ÚTILES</span>
-                     <strong>{result.commercialPath.services.join(" · ")}</strong>
-                     <p>Trabajo personalizado para convertir la recomendación en un siguiente paso concreto.</p>
-                     <Link className="text-link" to="/servicios">Ver servicios <span aria-hidden="true">→</span></Link>
-                   </article>
-                 </div>
-               </section>
-
-               <section className="diagnostic-learning" aria-labelledby="diagnostic-learning-title">
-                 <div>
-                   <p className="eyebrow">PARA SEGUIR ENTENDIENDO</p>
-                   <h3 id="diagnostic-learning-title">Aprende antes de decidir.</h3>
-                 </div>
-                 <p>Explora explicaciones sencillas sobre presencia digital, organización y herramientas antes de dar el siguiente paso.</p>
-                 <Link className="text-link" to="/aprende">Explorar Aprende <span aria-hidden="true">→</span></Link>
-               </section>
-
-               <div className="diagnostic-result__cta">
-                 <a className="button button--primary" href={contactHref}>{result.cta}</a>
-                <Link className="button button--secondary" to="/contacto">Quiero revisar esto con Vecidya</Link>
-                <button className="button button--secondary" onClick={restart} type="button">Rehacer diagnóstico</button>
-              </div>
-            </article>
-          )}
+          ) : result ? (
+            <ResultView headingRef={headingRef} onRestart={restart} result={result} />
+          ) : null}
         </section>
       </main>
     </PublicLayout>
+  );
+}
+
+function PriorityCard({ issue, primary }: { issue: Issue; primary: boolean }) {
+  return (
+    <li className={`diagnostic-priority${primary ? " diagnostic-priority--primary" : ""}`}>
+      <h4>{issue.title}{issue.tentative ? <em className="diagnostic-tag"> por confirmar</em> : null}</h4>
+      <p><strong>Por qué:</strong> {issue.why}</p>
+      <p><strong>Qué hacer:</strong> {issue.action}</p>
+      <p className="diagnostic-priority__links">
+        {issue.learn ? <Link className="text-link" to={learnPath(issue.learn as never)}>Leer en Aprende <span aria-hidden="true">→</span></Link> : null}
+        {issue.service ? <Link className="text-link" to={servicePath(issue.service as never)}>Ver el servicio relacionado <span aria-hidden="true">→</span></Link> : null}
+      </p>
+    </li>
+  );
+}
+
+function ResultView({
+  headingRef,
+  onRestart,
+  result,
+}: {
+  headingRef: React.RefObject<HTMLHeadingElement | null>;
+  onRestart: () => void;
+  result: DiagnosticResult;
+}) {
+  const contactHref = buildContactMailto(result);
+  const contextChips = [
+    { label: "Perfil", value: getProfile(result.profile).label },
+    { label: "Momento", value: result.context.stage ? optionLabel("stage", result.context.stage) : "Sin definir" },
+    { label: "Equipo", value: result.context.team ? optionLabel("team", result.context.team) : "No aplica" },
+    { label: "Objetivo", value: result.context.goal ? optionLabel("goal", result.context.goal) : "Sin definir" },
+  ];
+  const { license, services, addons, learn } = result.recommendation;
+  const licenseHref = license.level === "none" ? "/licencias" : `/licencias#${license.level}`;
+
+  return (
+    <article className="diagnostic-result">
+      <p className="eyebrow">TU DIAGNÓSTICO</p>
+      <h2 id="diagnostic-title" ref={headingRef} tabIndex={-1}>{result.state.label}</h2>
+      <p>{result.state.summary}</p>
+      <p className="diagnostic-confidence-line">
+        Confianza del resultado: <strong>{confidenceCopy[result.confidence.level].toLowerCase()}</strong>. {result.confidence.reasons[0]}
+      </p>
+
+      {result.goalNote ? (
+        <aside className="diagnostic-goal-note" aria-label="Sobre tu objetivo">
+          <p className="eyebrow">SOBRE TU OBJETIVO</p>
+          <p>{result.goalNote}</p>
+        </aside>
+      ) : null}
+
+      <section className="diagnostic-priorities" aria-labelledby="diagnostic-priorities-title">
+        <div className="diagnostic-section-heading">
+          <p className="eyebrow">QUÉ TE FRENA PRIMERO</p>
+          <h3 id="diagnostic-priorities-title">Prioridades</h3>
+        </div>
+        {result.priorities.length ? (
+          <ol>
+            {result.priorities.map((issue, index) => <PriorityCard issue={issue} key={issue.id} primary={index === 0} />)}
+          </ol>
+        ) : (
+          <p>Tus respuestas no muestran una brecha que priorizar ahora. Mantén lo que funciona y revisa el diagnóstico cuando cambie tu momento.</p>
+        )}
+      </section>
+
+      <section className="diagnostic-path" aria-labelledby="diagnostic-path-title">
+        <div>
+          <p className="eyebrow">EN ORDEN</p>
+          <h3 id="diagnostic-path-title">Siguientes pasos</h3>
+          <p>Cada paso prepara el siguiente; ninguno depende de contratar algo.</p>
+        </div>
+        <ol>{result.nextActions.map((action) => <li key={action.step}>{action.text}</li>)}</ol>
+      </section>
+
+      <section className="diagnostic-state" aria-labelledby="diagnostic-state-title">
+        <div>
+          <p className="eyebrow">CÓMO LLEGAMOS AQUÍ</p>
+          <h3 id="diagnostic-state-title">Cómo llegamos a este resultado</h3>
+          <ul className="diagnostic-chips" aria-label="Contexto que indicaste">
+            {contextChips.map((chip) => <li key={chip.label}><span>{chip.label}</span><strong>{chip.value}</strong></li>)}
+          </ul>
+          <ul>{result.state.because.map((item) => <li key={item}>{item}</li>)}</ul>
+        </div>
+        <div className={`diagnostic-confidence diagnostic-confidence--${result.confidence.level}`}>
+          <p className="eyebrow">CONFIANZA DEL RESULTADO</p>
+          <h3>Confianza {confidenceCopy[result.confidence.level].toLowerCase()}</h3>
+          <p>Refleja cuántas preguntas aplicables respondiste, cuántas dudas quedaron abiertas y si hubo respuestas contradictorias; no mide tu negocio.</p>
+          <ul>{result.confidence.reasons.map((item) => <li key={item}>{item}</li>)}</ul>
+        </div>
+      </section>
+
+      <div className="diagnostic-result-grid">
+        <section className="diagnostic-result-card diagnostic-result-card--dimensions" aria-labelledby="diagnostic-dimensions-title">
+          <h3 id="diagnostic-dimensions-title">Tus dimensiones</h3>
+          <dl className="diagnostic-dimensions">
+            {result.dimensions.map((dimension) => (
+              <div key={dimension.id}>
+                <dt title={dimensionDescriptions[dimension.id]}>{dimension.label}</dt>
+                <dd>
+                  {dimension.score === null || dimension.level === null ? (
+                    <em>Sin evaluar en tu recorrido</em>
+                  ) : (
+                    <>
+                      <span
+                        aria-label={`${dimension.label}: ${levelLabels[dimension.level]}`}
+                        className={`diagnostic-dimensions__bar diagnostic-dimensions__bar--${dimension.level}`}
+                        role="img"
+                        style={{ width: `${dimension.score}%` }}
+                      />
+                      <small>{levelLabels[dimension.level]}{dimension.unknown ? " · con dudas" : ""}</small>
+                    </>
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p className="diagnostic-dimensions__note">Cada nivel resume tus respuestas aplicables. «No lo sé» y «no aplica» no puntúan; «con dudas» marca dimensiones con alguna respuesta «no lo sé».</p>
+        </section>
+        <section className="diagnostic-result-card diagnostic-result-card--strengths" aria-labelledby="diagnostic-strengths-title">
+          <h3 id="diagnostic-strengths-title">Fortalezas</h3>
+          <ul>{result.strengths.map((item) => <li key={item.text}>{item.text}</li>)}</ul>
+        </section>
+        <section className="diagnostic-result-card diagnostic-result-card--opportunities" aria-labelledby="diagnostic-gaps-title">
+          <h3 id="diagnostic-gaps-title">Brechas y riesgos</h3>
+          {result.gaps.length ? (
+            <ul>{result.gaps.map((issue) => <li key={issue.id}>{issue.title}{issue.tentative ? <em className="diagnostic-tag"> por confirmar</em> : null}</li>)}</ul>
+          ) : (
+            <p>No detectamos brechas adicionales más allá de las prioridades.</p>
+          )}
+        </section>
+      </div>
+
+      <section className="diagnostic-commercial" aria-labelledby="diagnostic-commercial-title">
+        <div className="diagnostic-commercial__heading">
+          <p className="eyebrow">SI QUIERES APOYO</p>
+          <h3 id="diagnostic-commercial-title">Encaje con Vecidya</h3>
+          <p>Una orientación, no una obligación. Se deriva de tus prioridades; puede decir que todavía no necesitas nada.</p>
+        </div>
+        <div className="diagnostic-commercial__grid">
+          <article>
+            <span>LICENCIA</span>
+            <strong>{license.name}</strong>
+            <p>{license.reason}</p>
+            {license.notYet ? <p className="diagnostic-commercial__note">{license.notYet}</p> : null}
+            <Link className="text-link" to={licenseHref}>{license.level === "none" ? "Conocer las licencias" : `Ver ${license.name} en Licencias`} <span aria-hidden="true">→</span></Link>
+          </article>
+          <article>
+            <span>SERVICIOS</span>
+            <strong>{services.length ? services.map((service) => service.title).join(" · ") : "Ninguno necesario ahora"}</strong>
+            {services.length ? (
+              <ul>{services.map((service) => <li key={service.id}><Link to={servicePath(service.id as never)}>{service.title}</Link>: {service.reason}</li>)}</ul>
+            ) : (
+              <p>Tus prioridades no requieren trabajo personalizado por ahora.</p>
+            )}
+            <Link className="text-link" to="/servicios">Ver todos los servicios <span aria-hidden="true">→</span></Link>
+          </article>
+          <article>
+            <span>ADDONS</span>
+            <strong>{addons.length ? addons.map((addon) => addon.name).join(" · ") : "Ninguno todavía"}</strong>
+            {addons.length ? (
+              <ul>{addons.map((addon) => <li key={addon.id}><Link to={`/addons#${addon.id}`}>{addon.name}</Link>: {addon.reason}</li>)}</ul>
+            ) : (
+              <p>No necesitas una capacidad adicional antes de resolver las prioridades.</p>
+            )}
+            <Link className="text-link" to="/addons">{addons.length ? "Ver addons" : "Conocer los addons para más adelante"} <span aria-hidden="true">→</span></Link>
+          </article>
+          <article>
+            <span>APRENDE</span>
+            <strong>Antes de decidir</strong>
+            <ul>{learn.map((item) => <li key={item.slug}><Link to={`/aprende/${item.slug}`}>{item.title}</Link></li>)}</ul>
+            <Link className="text-link" to="/aprende">Explorar Aprende <span aria-hidden="true">→</span></Link>
+          </article>
+        </div>
+      </section>
+
+      <p className="diagnostic-limits">
+        Este diagnóstico es una orientación inicial basada en tus respuestas: no es una auditoría, una certificación ni una evaluación garantizada.
+        Es anónimo y efímero; al cerrar la página, las respuestas desaparecen. Puedes rehacerlo cuando cambie tu situación.
+      </p>
+
+      <div className="diagnostic-result__cta">
+        <a className="button button--primary" href={contactHref}>Revisar este resultado con Vecidya</a>
+        <Link className="button button--secondary" to="/contacto">Ir a Contacto</Link>
+        <button className="button button--secondary" onClick={onRestart} type="button">Rehacer diagnóstico</button>
+      </div>
+    </article>
   );
 }

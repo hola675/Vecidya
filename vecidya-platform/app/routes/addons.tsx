@@ -35,7 +35,7 @@ const categories = [
     eyebrow: "ASISTIR",
     title: "Inteligencia Artificial",
     description: "Para ayudar en conversaciones, atención inicial y clasificación de necesidades.",
-    addons: ["AI Conversacional", "AI Voice"],
+    addons: ["IA conversacional", "AI Voice"],
   },
   {
     id: "integraciones",
@@ -82,7 +82,7 @@ const addons: Addon[] = [
   {
     id: "ai-conversacional",
     category: "INTELIGENCIA ARTIFICIAL",
-    name: "AI Conversacional",
+    name: "IA conversacional",
     problem: "Quieres responder o clasificar conversaciones sin perder el criterio humano.",
     solution: "Añade asistencia para respuestas iniciales, clasificación y orientación de conversaciones.",
     icon: publicAssets.icons.serviceDigitalPresence,

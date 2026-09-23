@@ -1,5 +1,89 @@
 # Changelog
 
+## 2026-09-23 — DIAG-002C Product Decision Closure (local, PASS técnico local)
+
+- Licencia solo por necesidad recurrente real: una operación con registro y seguimiento resueltos y sin capacidad recurrente pendiente recibe «Ninguna necesaria por ahora» aunque un servicio o una lectura ayuden (escenarios G e I dejan de recibir «Barrio opcional»); sin consultas tampoco hay licencia; Barrio exige brecha sustantiva de seguimiento; Ciudad conserva sus prerrequisitos; una prioridad fundacional limita a Cuadra.
+- Servicio ≠ licencia, protegido por invariantes: los servicios solo se derivan de prioridades reales y nunca de la licencia; un servicio puede recomendarse con licencia «ninguna».
+- Vocabulario público canónico de addons: «IA conversacional» y «Automatizaciones» (con «WhatsApp», «SMS», «Telefonía», «AI Voice» e «Integraciones») unificado en `/addons`, el motor del Diagnóstico y el catálogo comercial; identificadores internos sin cambio; los nombres anteriores solo permanecen en entradas históricas de este CHANGELOG.
+- Decisión registrada: Home mantiene cuatro puertas (Negocio, Profesional, Proyecto, Creador); «organización» sigue siendo perfil del motor y `/diagnostico?perfil=organization` sigue válido. Deuda `DIAG-002-HOME-DOORS` cerrada como intencional.
+- Pruebas: 5 unitarias nuevas (`test:unit` 75/75); E2E de Addons actualizado al nombre público. Sin cambios de versión propios (el árbol local ya estaba en `0.4.1` por UX-003.2/003.5); sin commit, push ni deploy.
+
+## 2026-09-23 — UX-003.2/003.5 App y Admin (`0.4.1`, listo para publicar)
+
+- Añadido shell compartido con navegación activa a Cuenta, Organización, Perfil y Servicios; oculta destinos de organización cuando el usuario todavía no pertenece a una.
+- El detalle Admin del perfil ahora reúne contacto, sitio, WhatsApp, redes, modalidad, área y horarios guardados para revisión, en modo solo lectura.
+- Estilos responsive para desktop y móvil; la navegación conserva landmarks y foco visibles, y sus transiciones respetan movimiento reducido.
+- Sin cambios de permisos, escrituras, schema, migraciones, datos, dependencias ni proveedores. Deploy pendiente de esta versión.
+
+## 2026-09-23 — Deploy `0.4.0` a staging y producción (`LIVE`)
+
+- Deploy autorizado explícitamente del estado local `0.4.0` (DIAG-002B + primera entrega UX-003.1/003.4) en `vecidya-platform-staging` y `vecidya-platform`.
+- Staging: Version ID `57c2f319-7de4-4995-a4ba-2a10db82fa7a`; producción: Version ID `8c7d38e6-d560-4f27-9a40-b9d102033eff`.
+- Validación previa: `pnpm run typecheck`, `pnpm run build`, `pnpm run test:unit` (70/70 PASS) y `git diff --check` PASS.
+- Smoke HTTP anónimo PASS el 2026-09-23 en ambos entornos para rutas públicas, CSS principal, `/robots.txt` y `/sitemap.xml`; `/app` y `/app/internal` devuelven `302` sin sesión.
+- No se ejecutaron migraciones remotas ni se modificaron secrets. Staging continúa accesible por `workers.dev`; su trigger de zona no se reasignó por conflicto con producción.
+
+## 2026-09-23 — DIAG-002B Semantic, Decision & Result Integrity Hardening (`v0.4.0`, PASS técnico local)
+
+- Revisión hostil del recorrido pregunta → respuesta → evidencia → dimensión → estado → prioridad → recomendación → CTA sobre el grafo ejecutable del motor; 17 defectos semánticos reproducidos primero como pruebas y corregidos después.
+- Evidencia: los activos ya no fabrican «contacto» (WhatsApp Business) ni «confianza» (web, Google); las reseñas pesan más en la prueba de un negocio; medición, responsabilidades y posventa solo se preguntan cuando llegan consultas.
+- Estado: seis estados por reglas; una fuga grave concreta no queda enmascarada por el promedio; sin consultas no se afirma «captas y das seguimiento»; «operación activa con datos por confirmar» cuando registro y seguimiento son «no lo sé»; el estado cita las respuestas que lo originan.
+- Hallazgos: sin duplicados entre «presencia escasa» y «no apareces en Google»; «varios canales» solo es brecha sin registro; «pedir reseñas» para negocios con buen proceso y sin reseñas; los hallazgos derivados de «no lo sé» usan lenguaje de comprobación; fortalezas de dimensión solo con evidencia suficiente, sin dudas y sin brecha grave confirmada.
+- Contradicciones declaradas (idea + primera venta, actividad regular + sin consultas, presencia clara + propuesta sin resumir) bajan la confianza y se explican; nota de objetivo cuando automatizar, medir, ser encontrado o generar confianza requieren prerrequisitos.
+- Licencia alineada con lo que incluye cada nivel: Cuadra cubre una brecha solo de registro; Barrio exige brecha de seguimiento con consultas reales; Ciudad exige captura y seguimiento definidos; una prioridad fundacional limita a Cuadra; las dudas no deciden licencia; sin servicio de relleno cuando no hay prioridades.
+- Resultado reordenado (estado → prioridad principal destacada → siguientes pasos → evidencia → dimensiones por nivel sin números → encaje), enunciados por perfil en posventa, anclas reales a `/licencias#<nivel>` (ids añadidos a las tarjetas) y `/addons#<addon>`.
+- Vocabulario de addons unificado: `/addons` es la fuente de verdad pública; el catálogo comercial conserva «AI Chat» y «Automatización inteligente» como alias históricos.
+- Pruebas: `semantics.test.ts` (27) con personas adversariales A–L; `pnpm run test:unit` 70/70; `diagnostic-experience-check.mjs` actualizado; runner E2E local 25/25; typecheck, build y diff-check PASS. Mismo release candidate `0.4.0`; sin push ni deploy.
+
+## 2026-09-23 — UX-003.1/003.4: primera mejora de App y Admin (`0.4.0`, local)
+
+- Login reorganizado con composición responsive, ilustración existente, foco visible y jerarquía del formulario; el flujo de Better Auth no se alteró.
+- Dashboard de cliente prioriza el perfil, muestra completitud con `progressbar` accesible y traduce roles al español.
+- Home Admin ahora enlaza organizaciones, perfiles, servicios, integraciones y auditoría existentes; incorpora una ilustración ya versionada.
+- Añadidos motion de entrada e interacción para las superficies autenticadas, con `prefers-reduced-motion`; sin librerías, assets binarios, migraciones, cambios de datos, deploy ni push.
+- Typecheck y build PASS; login, CSS e imagen dieron HTTP 200 local. Revisión de navegador y E2E autenticado pendientes (Browser integrado no disponible; scripts usan D1 local).
+
+## 2026-09-23 — Pulido de motion en Home (`0.4.0`, local)
+
+- Añadidas entradas breves al copy y la ilustración principal, flotación sutil del pin y realces de interacción en opciones de Diagnóstico y tarjetas del Vecindario, usando el arte ya versionado.
+- Las animaciones solo se activan cuando el usuario no solicita movimiento reducido; no se añadieron dependencias, datos, assets nuevos ni cambios de publicación.
+- Pendiente ejecutar validación visual y typecheck/build para este cambio; producción continúa en `0.3.0`.
+
+## 2026-09-23 — DIAG-002 Professional Diagnostic Engine (`v0.4.0`, PASS técnico local)
+
+- Extraído el motor del Diagnóstico a `app/features/diagnostic/` (tipos, perfiles, banco de 26 preguntas con propósito y evidencia por opción, respuestas con aislamiento de ramas, secuencia por secciones, puntuación normalizada, estado por reglas, prioridades con dependencias, recomendaciones y contrato de deep link); `diagnostic.tsx` solo renderiza.
+- Cinco perfiles (negocio, profesional, creador, proyecto, organización); «idea» pasa a ser un momento y se retira «candidatura o figura pública». Contexto de momento, equipo por rangos y objetivo; recorrido mínimo 6, típico 13–16 y máximo 19 preguntas.
+- Siete dimensiones (claridad, presencia, alcance, confianza, contacto, seguimiento, medición) de 0 a 100 sobre evidencia aplicable; «no lo sé» reduce la confianza sin puntuar como «no»; «no aplica» no puntúa ni afecta la confianza; las dimensiones sin evidencia se muestran como «sin evaluar».
+- Resultado explicable: estado, cómo llegamos, confianza separada, dimensiones, fortalezas, brechas, hasta tres prioridades con «por qué» (citando la respuesta) y «qué hacer», siguientes pasos en orden y encaje Vecidya (licencia por capacidad, que puede ser «ninguna todavía»; servicios, addons y artículos reales verificados por prueba).
+- Contrato canónico `/diagnostico?perfil=<perfil>` con `objetivo=` opcional y lista cerrada; Home (Negocio, Profesional, Proyecto, Creador) y el artículo de CRM entran con contexto sin repetir la selección; valores inválidos caen al inicio normal.
+- UI con `fieldset`/`legend`, radios y checkboxes nativos, stepper por secciones, `progressbar` con `aria-valuetext`, foco en cada pregunta, reduced motion y límites explícitos del diagnóstico; `mailto` prellenado sin respuestas crudas.
+- Nuevas pruebas: `pnpm run test:unit` (node:test, 43 pruebas: contrato, exclusivas, aislamiento, secuencia, cotas, determinismo, escenarios A–E, invariantes sobre 1.125 combinaciones, catálogo real) y `diagnostic-experience-check.mjs` reescrito (deep links, Home, aislamiento, a11y, resultado, responsive 1366/768/390/360).
+- Investigación aplicada y citada en el reporte: marco DMA de la Comisión Europea (normalización por dimensión), Pew Research (opción «no sé»), HBR 2011 (respuesta a leads), guía de ranking local de Google, GOV.UK «one thing per page», NN/g (carga cognitiva), W3C WAI (agrupación de controles) y datos de longitud de encuestas de SurveyMonkey.
+- Versión `0.3.0` → `0.4.0` (MINOR, compatible: `/diagnostico` sin parámetros sigue funcionando). Sin persistencia, cookies, `localStorage`, CRM, GHL, migraciones, secretos, push ni deploy.
+
+## 2026-09-23 — Comunidad y contacto WhatsApp (`v0.3.0`, LIVE)
+
+- Añadido el enlace autorizado del grupo de WhatsApp de Vecidya/Vecindario en el footer público y en `/contacto`.
+- Incorporado un icono SVG de WhatsApp accesible y CTAs externos que abren el grupo en una pestaña nueva.
+- Añadido el WhatsApp comercial directo `https://wa.me/573244321864` como canal de contacto con Vecidya, separado del grupo comunitario.
+- No se modificaron precios, modelo de datos, integración GHL, secretos, migraciones ni versión.
+- Desplegado en staging (`vecidya-platform-staging`, Version ID `35c0961f-ccdd-4c76-a7d3-5bd347132a91`) y producción (`vecidya-platform`, Version ID `5d7278d3-6db6-4378-b497-39dc82f0aeb8`).
+- HTTP anónimo de `/contacto` respondió `200` en staging y producción; ambos enlaces fueron encontrados en el HTML servido.
+
+## 2026-09-23 — Corrección de assets de publicación (`v0.3.0`, LIVE)
+
+- Corregido el despliegue de CSS, JavaScript y assets públicos: `wrangler.jsonc` ahora declara `assets.directory = ./build/client`.
+- El incidente se detectó visualmente porque el HTML respondía `200`, pero los recursos estáticos devolvían `404`; no fue una caída del Worker ni un cambio de datos.
+- Regenerados tipos Cloudflare, ejecutados build y `git diff --check`; redesplegados staging (`742c4f5b-f8c7-4634-8dba-9fae522cacbb`) y producción (`cd3f247e-64dc-4ca8-aff1-92ce137c0de0`).
+- Comprobación HTTP anónima posterior PASS en producción para HTML, CSS, logo PNG, ilustración WebP, icono WhatsApp y `/contacto`.
+
+## 2026-09-23 — OPS-001 GHL Pilot Foundation (`v0.3.0`, PASS DOCUMENTAL)
+
+- Creado `docs/OPS-001-GHL-PILOT-FOUNDATION.md` con inventario de capacidades HighLevel, clasificación de costes, validación documental de Cuadra/Barrio/Ciudad, definición de configuración estándar, mapa de fuente de verdad, modelo de subaccount/location, piloto mínimo y contrato futuro.
+- Verificada documentación oficial vigente de HighLevel: Starter USD 97/mes/3 subcuentas, Unlimited USD 297/mes, Agency Pro USD 497/mes, WhatsApp USD 10/location/mes, AI Employee Growth USD 50/location/mes y Unlimited USD 97/location/mes; consumos de telefonía, mensajería e IA permanecen separados.
+- La cuenta contratada, plan real, ciclo de facturación, Labs, límites y capacidades habilitadas quedan `NOT VERIFIED` por falta de acceso autenticado; no se presentan referencias públicas como contratación de Vecidya.
+- No se crearon tablas, migraciones, OAuth, API calls, webhooks, secretos, CRM propio, checkout, billing automático, páginas, precios públicos ni cambios de producción. La versión se mantiene en `0.3.0`.
+
 ## 2026-09-23 — Actualización de fotografía del equipo (`v0.3.0`, LIVE)
 
 - Reemplazadas las fotografías de Yoan Ortiz, Edgar y el equipo por los assets entregados en `C:\Users\Admin\Downloads\fotos`.

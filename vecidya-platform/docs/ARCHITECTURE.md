@@ -1,6 +1,6 @@
 # Arquitectura de Vecidya
 
-Última reconciliación: 2026-09-21 (PROD-001C, cierre). Describe decisiones y fronteras **vigentes**; lo futuro está marcado `FUTURE` y no debe leerse como implementado.
+Última reconciliación: 2026-09-23 (OPS-001 documental). Describe decisiones y fronteras **vigentes**; lo futuro está marcado `FUTURE` y no debe leerse como implementado.
 
 ## Arquitectura actual
 
@@ -79,13 +79,13 @@ Comportamiento vigente: el flujo de login usa las operaciones soportadas `organi
 
 ## Web pública
 
-La web pública consume contenido institucional estático y perfiles publicados reales (`status = published` y no suspendidos). `BusinessProfile` es comercial: que el Diagnóstico admita otros tipos de presencia no convierte el modelo en un perfil universal. El canonical es fijo (`https://vecidya.com`); sitemap, robots y JSON-LD usan el origen de la request. El Diagnóstico es 100 % cliente: sin API, sin persistencia, sin CRM.
+La web pública consume contenido institucional estático y perfiles publicados reales (`status = published` y no suspendidos). `BusinessProfile` es comercial: que el Diagnóstico admita otros tipos de presencia no convierte el modelo en un perfil universal. El canonical es fijo (`https://vecidya.com`); sitemap, robots y JSON-LD usan el origen de la request. El Diagnóstico es 100 % cliente: sin API, sin persistencia, sin CRM. Desde DIAG-002 el motor (`app/features/diagnostic/`) es puro y está separado de la UI; los parámetros `perfil` y `objetivo` de la URL se validan contra una lista cerrada, solo preseleccionan una elección explícita del usuario y nunca aportan evidencia ni alteran la puntuación.
 
 ## Límite Vecidya ↔ GHL
 
 Vecidya es responsable de cuentas, usuarios, organizaciones, membresías, perfiles de negocio, web pública, directorio, portal de cliente, servicios propios y metadata tenant-scoped de integraciones.
 
-GHL es el system of record de contactos, leads, oportunidades, pipelines, conversaciones comerciales, citas CRM, workflows, automatizaciones y seguimiento. **Hoy no existe ninguna integración con GHL** (0 líneas de código; solo documentación). Vecidya no implementará un CRM paralelo sin una decisión arquitectónica posterior. (Consolida el antiguo `ADR-0001`.)
+GHL es el system of record de contactos, leads, oportunidades, pipelines, conversaciones comerciales, citas CRM, workflows, automatizaciones y seguimiento. OPS-001 define operativamente esa frontera, el contrato futuro de `ghl_location_id` y un piloto mínimo, pero **hoy no existe ninguna integración con GHL** (0 líneas de código). La cuenta y plan reales no están verificados. Vecidya no implementará un CRM paralelo sin una decisión arquitectónica posterior. (Consolida el antiguo `ADR-0001`.)
 
 ## Legacy
 
@@ -102,4 +102,4 @@ GHL es el system of record de contactos, leads, oportunidades, pipelines, conver
 
 ## FUTURE (no implementado; requiere fase explícita)
 
-Integración con GHL y otros proveedores (Google, Meta, WhatsApp API); envío y verificación de email transaccional; R2 y subida de imágenes; Durable Objects, Queues y Workflows; perfiles universales (`Business`, `Professional`, `Creator`, `Organization`, `Project`, `Public Figure`; requiere ADR, privacidad, moderación, schema y autorización); persistencia del Diagnóstico (consentimiento, retención, schema, autorización tenant, revisión legal); producción independiente y subdominios `app.`/`admin.`; despublicar perfiles, motivos de suspensión y apelaciones; auditoría de servicios e integraciones; rate limiting durable.
+Integración con GHL y otros proveedores (Google, Meta, WhatsApp API), incluida OPS-002; envío y verificación de email transaccional; R2 y subida de imágenes; Durable Objects, Queues y Workflows; perfiles universales (`Business`, `Professional`, `Creator`, `Organization`, `Project`, `Public Figure`; requiere ADR, privacidad, moderación, schema y autorización); persistencia del Diagnóstico (consentimiento, retención, schema, autorización tenant, revisión legal); producción independiente y subdominios `app.`/`admin.`; despublicar perfiles, motivos de suspensión y apelaciones; auditoría de servicios e integraciones; rate limiting durable.

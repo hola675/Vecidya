@@ -1,4 +1,4 @@
-import { Form, Link, useActionData, useLoaderData, useNavigation } from "react-router";
+import { Form, useActionData, useLoaderData, useNavigation } from "react-router";
 
 import { createAuth } from "../../server/auth.server";
 import { hasPermission, requireOrganizationPermission } from "../../server/auth/authorization.server";
@@ -6,6 +6,7 @@ import { cloudflareContext } from "../../server/cloudflare-context";
 import { getActiveOrganization } from "../../server/auth/session.server";
 import { isOrganizationInvitationEmailConfigured } from "../../server/email/invitation.server";
 import { Alert, Badge, Button, Card } from "../components/ui";
+import { ClientAreaShell } from "../components/client-area-shell";
 
 import type { Route } from "./+types/organization";
 
@@ -110,8 +111,8 @@ export default function OrganizationPage() {
   const memberList = members.members ?? [];
 
   return (
-    <main className="app-main organization-page">
-      <Link className="back-link" to="/app">← Volver a Mi Vecidya</Link>
+    <ClientAreaShell active="organization">
+    <main className="app-main organization-page" id="client-page-content">
       <div className="page-heading">
         <div>
           <p className="eyebrow">MI ORGANIZACIÓN</p>
@@ -163,5 +164,6 @@ export default function OrganizationPage() {
         {invitations.map((invitation) => <div className="member-row" key={invitation.id}><div><strong>{invitation.email}</strong><span>Rol: {invitation.role ?? "member"}</span></div><span>{invitation.status}</span><Form method="post"><input name="operation" type="hidden" value="cancel-invitation" /><input name="invitationId" type="hidden" value={invitation.id} /><Button tone="ghost" type="submit">Cancelar</Button></Form></div>)}
       </Card> : null}
     </main>
+    </ClientAreaShell>
   );
 }

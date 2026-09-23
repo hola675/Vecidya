@@ -1,6 +1,9 @@
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "react-router";
 
 import { getPlatformBusinessProfileDetail } from "../../db/queries/platform-business-profiles.server";
+import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
+import { dayOfWeekLabels } from "../../db/business-hours-rules";
+import { serviceModeLabels } from "../../db/business-profile-rules";
 import {
   applyGovernanceAction,
   isGovernanceAction,
@@ -39,8 +42,11 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   const businessProfileId = params.businessProfileId ?? "";
   const detail = await getPlatformBusinessProfileDetail(database, businessProfileId);
   if (!detail) throw new Response("Business Profile no encontrado", { status: 404 });
-  const activity = await listPlatformAuditLog(database, { entityId: businessProfileId, limit: 20 });
-  return { ...detail, activity };
+  const [activity, businessHours] = await Promise.all([
+    listPlatformAuditLog(database, { entityId: businessProfileId, limit: 20 }),
+    listBusinessHoursForOrganization(database, detail.profile.organizationId),
+  ]);
+  return { ...detail, activity, businessHours };
 }
 
 export async function action({ context, params, request }: Route.ActionArgs) {
@@ -62,7 +68,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 }
 
 export default function InternalBusinessProfileDetail() {
-  const { activity, profile, completion, services } = useLoaderData<typeof loader>();
+  const { activity, profile, completion, services, businessHours } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isSaving = navigation.state === "submitting";
@@ -101,6 +107,24 @@ export default function InternalBusinessProfileDetail() {
           <section className="card"><p className="eyebrow">ESTADO DE PUBLICACIÓN</p><h2>{completion.percentage}% completo</h2>{completion.issues.length ? <><p>Campos pendientes:</p><ul className="admin-pending-list">{completion.issues.map((issue) => <li key={issue}>{issue}</li>)}</ul></> : <p>El perfil cumple los campos requeridos para publicar.</p>}{profile.status === "published" && !isSuspended ? <Link className="button button--secondary" to={`/vecindario/${profile.slug}`}>Ver página pública</Link> : null}</section>
           <section className="card"><p className="eyebrow">NEGOCIO Y ORGANIZACIÓN</p><dl className="admin-detail-list"><div><dt>Organización</dt><dd>{profile.organizationName}</dd></div><div><dt>Slug organización</dt><dd>{profile.organizationSlug}</dd></div><div><dt>Slug público</dt><dd>{profile.slug}</dd></div><div><dt>Categoría</dt><dd>{profile.category || "Pendiente"}</dd></div><div><dt>Ciudad / país</dt><dd>{[profile.city, profile.country].filter(Boolean).join(", ") || "Pendiente"}</dd></div></dl></section>
         </div>
+
+        <section className="card admin-review-context" aria-labelledby="admin-review-context-title">
+          <div className="section-heading"><div><p className="eyebrow">CONTEXTO DE REVISIÓN</p><h2 id="admin-review-context-title">Contacto y operación pública</h2></div><span>Solo lectura</span></div>
+          <dl className="admin-review-context__grid">
+            <div><dt>Teléfono</dt><dd>{profile.phone ? <a href={`tel:${profile.phone}`}>{profile.phone}</a> : "No informado"}</dd></div>
+            <div><dt>Correo público</dt><dd>{profile.publicEmail ? <a href={`mailto:${profile.publicEmail}`}>{profile.publicEmail}</a> : "No informado"}</dd></div>
+            <div><dt>Sitio web</dt><dd>{profile.websiteUrl ? <a href={profile.websiteUrl} rel="noreferrer" target="_blank">Abrir sitio ↗</a> : "No informado"}</dd></div>
+            <div><dt>WhatsApp</dt><dd>{profile.whatsapp || "No informado"}</dd></div>
+            <div><dt>Modalidad</dt><dd>{profile.serviceMode ? serviceModeLabels[profile.serviceMode] ?? profile.serviceMode : "No informada"}</dd></div>
+            <div><dt>Área de servicio</dt><dd>{profile.serviceArea || "No informada"}</dd></div>
+            <div><dt>Instagram</dt><dd>{profile.instagramUrl ? <a href={profile.instagramUrl} rel="noreferrer" target="_blank">Ver perfil ↗</a> : "No informado"}</dd></div>
+            <div><dt>Facebook</dt><dd>{profile.facebookUrl ? <a href={profile.facebookUrl} rel="noreferrer" target="_blank">Ver perfil ↗</a> : "No informado"}</dd></div>
+            <div><dt>LinkedIn</dt><dd>{profile.linkedinUrl ? <a href={profile.linkedinUrl} rel="noreferrer" target="_blank">Ver perfil ↗</a> : "No informado"}</dd></div>
+          </dl>
+          <div className="admin-review-hours"><h3>Horarios declarados</h3>
+            {businessHours.length ? <ul>{businessHours.map((hours) => <li key={hours.dayOfWeek}><span>{dayOfWeekLabels[hours.dayOfWeek] ?? `Día ${hours.dayOfWeek}`}</span><strong>{hours.isClosed ? "Cerrado" : hours.opensAt && hours.closesAt ? `${hours.opensAt}–${hours.closesAt}` : "Horario incompleto"}</strong></li>)}</ul> : <p>Este perfil no tiene horarios declarados.</p>}
+          </div>
+        </section>
 
         <section className="card admin-governance">
           <p className="eyebrow">GOBIERNO DE PLATAFORMA</p>

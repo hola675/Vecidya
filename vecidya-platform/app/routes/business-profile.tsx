@@ -23,6 +23,7 @@ import {
   parseBusinessProfileForm,
 } from "../../server/business-profile-validation.server";
 import { Alert, Badge, Button, Card } from "../components/ui";
+import { ClientAreaShell } from "../components/client-area-shell";
 
 import type { Route } from "./+types/business-profile";
 
@@ -135,8 +136,8 @@ export default function BusinessProfilePage() {
   const isSaving = navigation.state === "submitting";
 
   return (
-    <main className="business-profile-page">
-      <Link className="back-link" to="/app">← Volver a Mi Vecidya</Link>
+    <ClientAreaShell active="business">
+    <main className="business-profile-page" id="client-page-content">
       <div className="page-heading">
         <div>
           <p className="eyebrow">MI NEGOCIO</p>
@@ -293,5 +294,6 @@ export default function BusinessProfilePage() {
         </Card>
       ) : null}
     </main>
+    </ClientAreaShell>
   );
 }

@@ -115,7 +115,7 @@ export default function Licenses() {
           </div>
           <div className="licenses-grid">
             {licenses.map((license, index) => (
-              <article className={`license-card license-card--${license.id}`} key={license.id}>
+              <article className={`license-card license-card--${license.id}`} id={license.id} key={license.id}>
                 <div className="license-card__top">
                   <span aria-hidden="true" className="license-card__marker">{license.marker}{index + 1}</span>
                   <img alt="" aria-hidden="true" height={56} src={license.icon} width={56} />

@@ -53,7 +53,10 @@ async function runViewport(width, height) {
   assert(await emailLinks.first().evaluate((element) => document.activeElement === element), `${label} Contacto no permite enfocar el email.`);
   assert(await page.getByRole("link", { name: "Hacer diagnóstico" }).first().getAttribute("href") === "/diagnostico", `${label} Contacto no enlazó Diagnóstico.`);
   assert(await page.getByRole("link", { name: /Ver privacidad/i }).getAttribute("href") === "/privacidad", `${label} Contacto no enlazó Privacidad.`);
-  assert(!(await page.content()).match(/WhatsApp|chat en vivo|teléfono|booking|calendario/i), `${label} Contacto sugiere un canal no disponible.`);
+  // WhatsApp (directo y grupo comunitario) es un canal autorizado desde 2026-09-23; el resto sigue sin existir.
+  assert(!(await page.content()).match(/chat en vivo|teléfono|booking|calendario/i), `${label} Contacto sugiere un canal no disponible.`);
+  assert(await page.locator('a[href^="https://wa.me/"]').count() >= 1, `${label} Contacto no mostró el WhatsApp directo.`);
+  assert(await page.locator('a[href^="https://chat.whatsapp.com/"]').count() >= 1, `${label} Contacto no mostró el grupo comunitario de WhatsApp.`);
 
   await browser.close();
 }

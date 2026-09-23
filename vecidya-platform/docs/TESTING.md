@@ -1,10 +1,10 @@
 # Pruebas
 
-Última reconciliación: 2026-09-23 (REL-003.1). Evidencia: runner E2E local completo ejecutado con **25 scripts**: 24 PASS y `organization-invitations-check.mjs` PASS PARCIAL por delivery Gmail externo no ejecutado; `commercial-experience-review-check.mjs` PASS en 1366/768/390/360; typecheck, build y diff-check PASS. Smoke HTTP anónimo de producción `0.3.0` PASS el 2026-09-23 para rutas públicas, artículo Aprende, sitemap, robots y redirect legado.
+Última reconciliación: 2026-09-23 (DIAG-002C; DIAG-002B; DIAG-002; REL-003.1; UX-003.1/003.4). Evidencia DIAG-002C (RAN 2026-09-23): `pnpm run test:unit` **75/75 PASS** (5 nuevas: G/I → ninguna licencia, servicio ≠ licencia, Barrio/Ciudad positivos y sin dudas ni sin consultas, vocabulario de addons único, «organización» + cuatro puertas de Home); runner E2E local completo y `diagnostic` en 1366/768/390/360 reejecutados (ver STATUS). Evidencia DIAG-002B (RAN 2026-09-23): `pnpm run test:unit` **70/70 PASS** (27 semánticas nuevas: monotonía, aislamiento por pregunta, multiselección, irrelevancia sistemática sobre 19 personas × 26 preguntas, metamórficas, pares, contradicciones, estados límite, fortalezas, licencia, coherencia interna); `diagnostic-experience-check.mjs` PASS en 1366/768/390/360 con la jerarquía reordenada; `pnpm run test:e2e` **25/25 PASS**; typecheck, build y diff-check PASS. Evidencia DIAG-002 (RAN 2026-09-23): `pnpm run test:unit` **43/43 PASS**; `diagnostic-experience-check.mjs` PASS en 1366/768/390/360; `px-a`, `commercial-review`, `learn`, `licenses`, `addons`, `join-contact`, `about` y `pg-c1` reejecutados tras el cambio (ver STATUS). Evidencia REL-003.1: runner E2E local completo ejecutado con **25 scripts**: 24 PASS y `organization-invitations-check.mjs` PASS PARCIAL por delivery Gmail externo no ejecutado; `commercial-experience-review-check.mjs` PASS en 1366/768/390/360; typecheck, build y diff-check PASS. Smoke HTTP anónimo de producción `0.3.0` PASS el 2026-09-23 para rutas públicas, artículo Aprende, sitemap, robots y redirect legado. Evidencia UX-003 (`RAN`): typecheck/build PASS y `/login`, CSS e ilustración responden 200 en Worker local. Browser integrado no disponible; scripts autenticados omitidos para preservar D1 local.
 
 ## Estado de la infraestructura de pruebas
 
-- No hay framework de pruebas ni CI (`.github/` no existe), ni pruebas unitarias o de integración (`tests/unit` y `tests/integration` solo tienen `.gitkeep`). `package.json` incluye `test:e2e`, un runner secuencial de los E2E locales aplicables.
+- No hay framework de pruebas externo ni CI (`.github/` no existe). `tests/unit/diagnostic/` contiene siete suites `node:test` (75 pruebas) del motor del Diagnóstico más dos archivos de personas (`personas.ts`, `adversarial-personas.ts`), ejecutables con `pnpm run test:unit` sin Worker ni D1; `tests/unit/register-ts.mjs` y `ts-resolve-hooks.mjs` resuelven importaciones relativas sin extensión sobre el type stripping de Node (≥22.12 con `--experimental-strip-types`). `tests/integration` sigue vacío. `package.json` incluye además `test:e2e` (runner secuencial de los E2E locales aplicables) y `test:email`.
 - Solo existe `tests/e2e/`: 29 scripts `.mjs` (Node + `fetch`, algunos con Playwright) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
 - Son **solo Windows** (`cmd.exe /d /c pnpm.cmd wrangler d1 execute … --local`).
 - Los scripts Playwright usan Microsoft Edge si existe, luego `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, luego Chromium empaquetado (requiere `playwright install`).
@@ -19,6 +19,8 @@ $env:BASE_URL = "http://localhost:5173"          # terminal 2 (es el valor por d
 node tests/e2e/<archivo>.mjs                     # una a la vez: comparten puerto y D1 local
 ```
 
+`pnpm run test:unit` no necesita Worker ni D1: ejecuta en Node las 75 pruebas del motor del Diagnóstico (`tests/unit/diagnostic`).
+
 Requisitos: `BETTER_AUTH_SECRET` en `.dev.vars` (no versionado), Node ≥22.12. `organization-invitations-check` espera `503` si Gmail OAuth no está configurado. `tests/email/mail-adapter.test.ts` usa el proveedor fake y nunca contacta Gmail. Variable opcional `D1_DATABASE_NAME` (por defecto `DB`).
 
 Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP en `localhost` o `127.0.0.1`. Las pruebas remotas requieren además `RUN_REMOTE_E2E=1`, `TARGET_ENV=staging`, `D1_NAME=vecidya-staging` y HTTPS sobre un hostname que empiece por `vecidya-platform-staging.` y termine en `.workers.dev`. Rechazan explícitamente `vecidya.com`, `www.vecidya.com`, `vecidya-platform.soporte-8a1.workers.dev` y `vecidya-prod`; siguen fuera de `test:e2e`.
@@ -30,7 +32,8 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `acct` | `account-personal-settings-check.mjs` | 7A |
 | `bpx` | `business-profile-experience-check.mjs` | 7C |
 | `services-exp` | `services-experience-check.mjs` | 7D |
-| `diagnostic` | `diagnostic-experience-check.mjs` | UX-001B.6 / UX-002.5 |
+| `diagnostic` | `diagnostic-experience-check.mjs` | UX-001B.6 / UX-002.5 / DIAG-002 |
+| `unit-diag` | `tests/unit/diagnostic/*.test.ts` (`pnpm run test:unit`) | DIAG-002 |
 | `join-contact` | `join-contact-experience-check.mjs` | UX-001B.7 |
 | `about` | `about-experience-check.mjs` | UX-001B.8 |
 | `learn` | `learn-experience-check.mjs` | UX-001B.9 |
@@ -85,7 +88,7 @@ Los tres casos permanecieron sin publicar porque los datos no confirmados se dej
 
 | Clase | Archivos | Regla |
 | --- | --- | --- |
-| **Local, ejecutable** | `test:e2e` ejecuta secuencialmente los scripts `.mjs` locales aplicables; `rp001a` se ejecuta explícitamente para no mezclar pilotos con la suite general | Una a la vez, con `pnpm run dev` |
+| **Local, ejecutable** | `test:unit` (Node, sin servidor ni D1); `test:e2e` ejecuta secuencialmente los scripts `.mjs` locales aplicables; `rp001a` se ejecuta explícitamente para no mezclar pilotos con la suite general | Unitarias en cualquier momento; E2E una a la vez, con `pnpm run dev` |
 | **Local, corregidas** | `admin-int`, `admin-orgs`, `invitations`, `members`, `members-apply-fixture`, `psa`, `business-profile-tenancy-check.ps1`, `public-business-profile-check.ps1` | Usan el binding local `DB` |
 | **REMOTAS — excluidas** (2) | `remote-staging-e2e.mjs`, `remote-staging-seo-check.mjs` | Requieren `RUN_REMOTE_E2E=1`, `TARGET_ENV=staging`, Worker dedicado `vecidya-platform-staging` y `D1_NAME=vecidya-staging`; rechazan producción y nunca las ejecuta `test:e2e` |
 | **Helper** (1) | `organization-members-setup.mjs` | Requiere `MEMBERS_FIXTURE_FILE` |
@@ -107,7 +110,7 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 | Admin interna | `admin-shell` (8A), `admin-bp` (8C), `d1` | 8B, 8E y API de servicios stale; nada ejecutable cubre `/organizations`, `/integrations` ni escritura de servicios |
 | Web pública | `px-a` + `join-contact` + `about` + `learn` + `licenses` + `addons` + `commercial-review`: recorrido comercial completo con 200, metadata, CTAs cruzados, mailto, autoría, referencias comerciales explícitas, separación addon/servicio/consumo, ausencia de GHL público, exclusión de rutas privadas del sitemap, overflow y responsive 1366/768/390/360; UX-001B.2 además valida Home con hasta 3 perfiles D1, 4 choices y 4 servicios; UX-001C cubre filtros noindex, alias 301 y sitemap | `/privacidad` fuera de smoke dedicado, páginas 404, `robots.txt`, `favicon.ico`, `www`→apex y auditoría a11y completa |
 | Vecindario | `q` y categoría en `pg-c1`, `px-a`; exclusión de borradores/suspendidos en `c1`, `d1` | Filtro de ciudad, filtros combinados y estado vacío solo en `.ps1` stale |
-| Diagnóstico | `diagnostic-experience-check.mjs` (selector, 8 preguntas para negocio, progreso accesible, teclado, anterior/siguiente, resultado, reinicio y responsive 1366/768/390/360); `px-a` cubre 200/meta/overflow | Scoring puro sin pruebas unitarias aisladas; persistencia y motor exhaustivo de las siete ramas siguen fuera de esta fase |
+| Diagnóstico | `unit-diag` (75: contrato de deep link con inyecciones y perfiles retirados, exclusivas de multiselección, cambio de perfil y aislamiento de ramas, secuencia y longitud por perfil × momento, cotas [0,100] y determinismo, «no lo sé» ≠ «no», «no aplica» sin penalización, dimensiones sin evidencia, confianza, escenarios A–E y patrón generalizado del piloto, invariantes sobre 1.125 combinaciones, Ciudad solo con captura y seguimiento, catálogo real contra `/licencias`, `/servicios`, `/addons` y `learn.ts`; DIAG-002B añade `semantics.test.ts`: monotonía por pregunta ordinal con orden declarado, aislamiento por pregunta, multiselección monótona, irrelevancia sistemática, metamórficas «no lo sé» → evidencia, pares seguimiento/registro, «varios canales» condicionado al registro, activos sin contaminar contacto/confianza, Google sin contradicción, ramificación sin consultas, contradicciones declaradas, estados límite A/B/H/I/K, fortalezas con evidencia, licencia Cuadra/Barrio/Ciudad/none, objetivo sin prerrequisitos, reseñas, coherencia interna; DIAG-002C añade: operación sana sin necesidad recurrente → ninguna licencia (G, I), servicio sin licencia y servicios nunca derivados de la licencia, Barrio/Ciudad positivos y nunca sobre dudas ni sin consultas, sin «opcional» en ninguna razón de licencia, vocabulario de addons único, «organización» como perfil y deep link con Home de cuatro puertas); `diagnostic` (deep links por perfil y objetivo, valores inválidos, Home → Profesional, aislamiento al cambiar de perfil, fieldset/radios, teclado, foco, `progressbar`, recorrido de negocio, resultado explicable con prioridad principal destacada y niveles sin números, anclas de licencia y addon, `mailto` sin respuestas crudas, reinicio y responsive 1366/768/390/360); `px-a` cubre 200/meta/overflow | Sin auditoría axe automatizada; los otros cuatro perfiles solo se recorren en unitarias; persistencia fuera de alcance |
 | SEO | `commercial-review` verifica meta/canonical, `og:image`, robots, favicon, alias legado 301, sitemap y exclusión de rutas privadas; JSON-LD `LocalBusiness` en `px-a`, `c1`, `c2`, `pg-c1` | SEO remoto solo en script remoto; canonical usa dominio público fijo por diseño |
 | Responsive | `commercial-review` verifica overflow, imágenes dimensionadas, un único `<main>` y recorrido comercial en 1366/768/390/360; `px-a`, `c1`, `c2` cubren perfil/editor | Sin auditoría axe automatizada ni regresión visual por comparación de screenshots |
 | Gobierno y auditoría | `d1` (verificar, suspender, badge, 404, exclusión, auditoría) | Paginación/orden de auditoría; efecto de suspensión en sitemap |
@@ -127,7 +130,7 @@ Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.m
 2. Mantener `DB` como binding único en los scripts locales.
 3. Mantener guardas de `BASE_URL` local y la intención explícita para los dos remotos.
 4. Pruebas para `/sitemap.xml`, `/robots.txt`, `/favicon.ico`, `/unete`, `/sobre-nosotros`, `/que-debes-saber`, `/privacidad`, 404 y `www`→apex.
-5. Extraer y probar el motor del Diagnóstico (unitario) para cubrir combinaciones de scoring y las siete ramas.
+5. ~~Extraer y probar el motor del Diagnóstico (unitario)~~ Resuelto por DIAG-002 (`tests/unit/diagnostic`, 43 pruebas).
 6. Pruebas de auth negativas, `/api/organizations/:id[/authorization]` y unicidad de membresía.
 7. Limpieza de fixtures en los 11 scripts que no limpian.
 8. Pruebas unitarias de módulos puros (`db/business-hours-rules.ts`, `db/business-profile-rules.ts`, validaciones, autorización).

@@ -57,6 +57,8 @@ const serviceStatusLabels: Record<string, string> = {
   suspended: "Suspendido",
 };
 
+const roleLabels: Record<string, string> = { owner: "Propietario", admin: "Administrador", member: "Miembro" };
+
 function getServiceStatusLabel(status: string) {
   return serviceStatusLabels[status] ?? "Estado informado por Vecidya";
 }
@@ -215,7 +217,7 @@ export default function AppPage() {
               <h1>Bienvenido, {user.name.split(" ")[0]}</h1>
               <p>Consulta el estado real de tu negocio, organización y servicios Vecidya.</p>
             </div>
-            {activeOrganization ? <Badge tone="brand">Rol: {activeOrganization.role}</Badge> : null}
+            {activeOrganization ? <Badge tone="brand">{roleLabels[activeOrganization.role] ?? "Miembro"}</Badge> : null}
           </div>
 
           {error ? <Alert>{error}</Alert> : null}
@@ -242,11 +244,15 @@ export default function AppPage() {
           )}
 
           {activeOrganization ? (
-            <Card className="business-profile-summary">
+            <Card className="business-profile-summary business-profile-summary--primary">
               <div>
-                <p className="eyebrow">PERFIL DE NEGOCIO</p>
+                <p className="eyebrow">TU PERFIL PÚBLICO</p>
                 <h2>{businessProfile ? businessProfile.displayName : `Da identidad a ${activeOrganization.name}`}</h2>
-                <p>{businessProfile?.status === "published" ? `Tu página pública está disponible para el vecindario. Completitud: ${businessProfileCompletion.percentage}%.` : businessProfile ? `Completa los datos pendientes para publicar (${businessProfileCompletion.percentage}% completo).` : "Crea el perfil que presentará tu negocio."}</p>
+                <p>{businessProfile?.status === "published" ? "Tu página está publicada en Vecindario." : businessProfile ? "Completa la información pendiente para preparar la publicación." : "Crea el perfil que presentará tu negocio en Vecindario."}</p>
+                {businessProfile ? <div className="app-profile-progress">
+                  <div><span>Completitud del perfil</span><strong>{businessProfileCompletion.percentage}%</strong></div>
+                  <div aria-label={`Perfil completo al ${businessProfileCompletion.percentage}%`} aria-valuemax={100} aria-valuemin={0} aria-valuenow={businessProfileCompletion.percentage} className="app-profile-progress__track" role="progressbar"><span style={{ width: `${businessProfileCompletion.percentage}%` }} /></div>
+                </div> : null}
               </div>
               <div className="business-profile-actions">
                 <Link className="button button--primary" to="/app/business-profile">{businessProfile ? "Editar perfil" : "Crear perfil"}</Link>
@@ -255,7 +261,7 @@ export default function AppPage() {
             </Card>
           ) : null}
           {activeOrganization ? <Card className="business-profile-summary"><div><p className="eyebrow">MIS SERVICIOS</p><h2>{services.length ? `${services.length} servicio${services.length === 1 ? "" : "s"} asociado${services.length === 1 ? "" : "s"}` : "Servicios Vecidya"}</h2><p>{services.length ? services.map((service) => `${service.name}: ${getServiceStatusLabel(service.status)}`).join(" · ") : "Aún no hay servicios asociados a esta organización."}</p></div><Link className="button button--secondary" to="/app/services">Ver servicios</Link></Card> : null}
-          {activeOrganization ? <Card className="business-profile-summary"><div><p className="eyebrow">MI ORGANIZACIÓN</p><h2>{activeOrganization.name}</h2><p>Tu rol es {activeOrganization.role}. Esta organización tiene {memberCount} miembro{memberCount === 1 ? "" : "s"}.</p></div><div className="business-profile-actions"><Badge tone="brand">Activa</Badge><Link className="button button--secondary" to="/app/organization">Ver organización</Link></div></Card> : null}
+          {activeOrganization ? <Card className="business-profile-summary"><div><p className="eyebrow">MI ORGANIZACIÓN</p><h2>{activeOrganization.name}</h2><p>Tu rol es {roleLabels[activeOrganization.role] ?? "Miembro"}. Esta organización tiene {memberCount} miembro{memberCount === 1 ? "" : "s"}.</p></div><div className="business-profile-actions"><Badge tone="brand">Activa</Badge><Link className="button button--secondary" to="/app/organization">Ver organización</Link></div></Card> : null}
 
           <Card className="setup-card" id="organization-setup">
             <div>

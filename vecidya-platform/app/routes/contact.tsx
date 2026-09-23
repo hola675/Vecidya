@@ -1,4 +1,5 @@
-import { PublicLayout, publicMeta } from "../components/public-layout";
+import { commercialWhatsAppUrl, communityWhatsAppUrl, PublicLayout, publicMeta } from "../components/public-layout";
+import { publicAssets } from "../assets/public-assets";
 import { CTASection } from "../components/public-v2";
 
 import type { Route } from "./+types/contact";
@@ -19,17 +20,38 @@ export default function Contact() {
           <p>Cuéntanos tu contexto y te orientamos sobre el siguiente paso apropiado. El canal directo disponible hoy es el correo electrónico.</p>
           <div className="public-actions">
             <a className="button button--primary" href={contactMailto}>Escribir a hola@vecidya.com</a>
-            <a className="button button--secondary" href="/diagnostico">Hacer diagnóstico</a>
+            <a className="button button--secondary" href={commercialWhatsAppUrl} rel="noreferrer" target="_blank">
+              <img alt="" height={20} src={publicAssets.icons.whatsapp} width={20} />
+              Escribir por WhatsApp
+            </a>
           </div>
         </section>
 
         <section className="contact-channel" aria-labelledby="contact-channel-title">
           <div>
-            <p className="eyebrow">CANAL DIRECTO</p>
-            <h2 id="contact-channel-title">Email</h2>
-            <p>Escríbenos desde tu aplicación de correo con una pregunta concreta o una breve descripción de tu caso.</p>
+            <p className="eyebrow">CANALES DIRECTOS</p>
+            <h2 id="contact-channel-title">Habla con Vecidya</h2>
+            <p>Elige el canal que te resulte más cómodo para compartir una pregunta o una breve descripción de tu caso.</p>
           </div>
-          <a className="contact-channel__email" href={contactMailto}>hola@vecidya.com</a>
+          <div className="contact-channel__actions">
+            <a className="contact-channel__email" href={contactMailto}>hola@vecidya.com</a>
+            <a className="button button--secondary contact-community__link" href={commercialWhatsAppUrl} rel="noreferrer" target="_blank">
+              <img alt="" height={20} src={publicAssets.icons.whatsapp} width={20} />
+              WhatsApp directo
+            </a>
+          </div>
+        </section>
+
+        <section className="contact-community" aria-labelledby="contact-community-title">
+          <div>
+            <p className="eyebrow">COMUNIDAD</p>
+            <h2 id="contact-community-title">Conversa con Vecidya y otros miembros.</h2>
+            <p>Únete al grupo de WhatsApp de Vecidya/Vecindario para compartir preguntas, aprendizajes y próximos pasos.</p>
+          </div>
+          <a className="button button--secondary contact-community__link" href={communityWhatsAppUrl} rel="noreferrer" target="_blank">
+            <img alt="" height={20} src={publicAssets.icons.whatsapp} width={20} />
+            Abrir grupo de WhatsApp
+          </a>
         </section>
 
         <section className="contact-guidance" aria-labelledby="contact-guidance-title">

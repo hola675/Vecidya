@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import { publicAssets } from "../assets/public-assets";
+import { buildDiagnosticPath, type ProfileId } from "../features/diagnostic";
 import { compactBusinessHoursGroups, type BusinessHoursEntry } from "../../db/business-hours-rules";
 import { serviceModeLabels } from "../../db/business-profile-rules";
 
@@ -130,13 +131,16 @@ export function DiagnosticChoice({
   icon,
   label,
   description,
+  profile,
 }: {
   icon: string;
   label: string;
   description: string;
+  /** Perfil del Diagnóstico que esta puerta preselecciona (contrato `/diagnostico?perfil=`). */
+  profile: ProfileId;
 }) {
   return (
-    <Link className="home-diagnostic-choice" to="/diagnostico">
+    <Link className="home-diagnostic-choice" to={buildDiagnosticPath({ profile })}>
       <span className="home-diagnostic-choice__icon"><img alt="" aria-hidden="true" height={48} src={icon} width={48} /></span>
       <span><strong>{label}</strong><small>{description}</small></span>
       <span aria-hidden="true" className="home-diagnostic-choice__arrow">→</span>

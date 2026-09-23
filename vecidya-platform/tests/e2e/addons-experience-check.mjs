@@ -41,7 +41,7 @@ async function runViewport(width, height) {
   for (const name of ["Comunicación", "Automatización", "Inteligencia Artificial", "Integraciones"]) {
     assert(await page.locator(".addons-category").getByRole("heading", { name, exact: true }).isVisible(), `${label} no mostró la categoría ${name}.`);
   }
-  for (const name of ["WhatsApp", "SMS", "Telefonía", "Automatizaciones", "AI Conversacional", "AI Voice", "Integraciones"]) {
+  for (const name of ["WhatsApp", "SMS", "Telefonía", "Automatizaciones", "IA conversacional", "AI Voice", "Integraciones"]) {
     assert(await page.locator(".addon-card").getByRole("heading", { name, exact: true }).isVisible(), `${label} no mostró el addon ${name}.`);
   }
   assert(await page.locator(".addons-hero").getByRole("link", { name: "Encontrar qué necesito" }).getAttribute("href") === "/diagnostico", `${label} CTA de Diagnóstico incorrecto.`);

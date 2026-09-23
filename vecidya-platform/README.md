@@ -15,12 +15,12 @@ El estado exacto de cada capacidad está en [docs/STATUS.md](docs/STATUS.md) y [
 ## Estructura
 
 ```text
-app/       rutas, componentes y estilos (React Router)
+app/       rutas, componentes, estilos y features/diagnostic (motor puro del Diagnóstico)
 server/    autenticación, autorización, validación y correo de invitaciones
 db/        schema Drizzle, consultas, migraciones SQL y seeds
 workers/   entry point del Worker
 public/    assets públicos
-tests/     E2E host-side (tests/unit y tests/integration están vacíos)
+tests/     E2E host-side y unitarias del Diagnóstico en tests/unit (tests/integration está vacío)
 docs/      documentación canónica
 ```
 
@@ -36,9 +36,10 @@ pnpm run cf-typegen   # solo tras cambiar wrangler.jsonc
 pnpm run dev
 pnpm run typecheck
 pnpm run build
+pnpm run test:unit    # unitarias del motor de Diagnóstico (sin servidor)
 ```
 
-No hay script `test`. Las pruebas E2E son scripts independientes contra un Worker local; ver [docs/TESTING.md](docs/TESTING.md). **No ejecutes `wrangler deploy` ni comandos `--remote` sin autorización explícita**: `wrangler deploy` publica directamente en `vecidya.com`.
+No hay script `test` global: `pnpm run test:unit` ejecuta las unitarias del motor de Diagnóstico y las pruebas E2E son scripts independientes contra un Worker local; ver [docs/TESTING.md](docs/TESTING.md). **No ejecutes `wrangler deploy` ni comandos `--remote` sin autorización explícita**: `wrangler deploy` publica directamente en `vecidya.com`.
 
 ## Documentación
 
@@ -55,5 +56,6 @@ No hay script `test`. Las pruebas E2E son scripts independientes contra un Worke
 | Trabajo futuro | [docs/ROADMAP.md](docs/ROADMAP.md) |
 | Historia relevante | [docs/CHANGELOG.md](docs/CHANGELOG.md) |
 | Catálogo comercial de productos | [docs/business/VECIDYA_PRODUCT_CATALOG.md](docs/business/VECIDYA_PRODUCT_CATALOG.md) |
+| Fundación documental del piloto GHL | [docs/OPS-001-GHL-PILOT-FOUNDATION.md](docs/OPS-001-GHL-PILOT-FOUNDATION.md) |
 
 Reglas para agentes: [../AGENTS.md](../AGENTS.md).
