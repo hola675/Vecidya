@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-23 — UX-002.6 Content & Learn Experience (`v0.3.0`, PASS técnico local)
+
+- Evolucionada `/aprende` a centro de conocimiento con cinco categorías y cuatro artículos iniciales atribuidos a Yoan Ortiz.
+- Añadidas páginas `/aprende/:slug` con introducción, problema, explicación sencilla, ejemplos, índice accesible, siguiente paso y CTA contextual a Diagnóstico o Servicios.
+- Añadidos tres diagramas educativos SVG para CRM, IA y automatización; se reutiliza una ilustración existente para presencia digital.
+- Añadidas metadata canonical/Open Graph por artículo y entradas dinámicas en `sitemap.xml`; sin CMS, newsletter, comentarios, cursos ni datos comerciales ficticios.
+- Se mantiene `0.3.0`; no hubo push, deploy ni migraciones remotas. Producción continúa en `0.2.0`.
+
 ## 2026-09-23 — UX-002.5 Diagnostic Experience 2.0 (`v0.3.0`, PASS técnico local)
 
 - Evolucionado el resultado de `/diagnostico` sin modificar el algoritmo de scoring: ahora muestra situación actual, observaciones, prioridades y un camino recomendado.

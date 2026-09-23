@@ -42,6 +42,11 @@ export const publicAssets = {
     storefrontDigitalProfile: `${selectedAssetBase}/illustrations/illus-storefront-digital-profile.webp`,
     taskSchedulePanel: `${selectedAssetBase}/illustrations/illus-task-schedule-panel.webp`,
   },
+  learn: {
+    crm: "/assets/learn/diagram-crm.svg",
+    ai: "/assets/learn/diagram-ai.svg",
+    automation: "/assets/learn/diagram-automation.svg",
+  },
   social: {
     openGraph: `${selectedAssetBase}/og/og-vecidya-public.svg`,
   },

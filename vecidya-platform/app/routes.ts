@@ -11,6 +11,7 @@ export default [
   route("diagnostico", "routes/diagnostic.tsx"),
   route("sobre-nosotros", "routes/about.tsx"),
   route("aprende", "routes/knowledge.tsx"),
+  route("aprende/:slug", "routes/learn-article.tsx"),
   route("que-debes-saber", "routes/knowledge-legacy.tsx"),
   route("privacidad", "routes/privacy.tsx"),
   route("favicon.ico", "routes/favicon.ts"),

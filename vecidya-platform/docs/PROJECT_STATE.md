@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-23 (UX-002.5, Diagnostic Experience 2.0 local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+Última reconciliación: **2026-09-23 (UX-002.6, Content & Learn Experience local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -50,7 +50,8 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` es la ru
 | `/unete` | Estático | Funcional | Dos entradas: Diagnóstico o Contacto; preparación breve y tres pasos; sin registro |
 | `/contacto` | Estático | Funcional | Email `hola@vecidya.com`, guidance contextual, privacidad y Diagnóstico; sin formulario ni canales ficticios |
 | `/sobre-nosotros` | Estático | Funcional | Propósito, historia, equipo real, forma de trabajar y punto de vista; fotos WebP optimizadas |
-| `/aprende` | Estático | Funcional | Hero, cuatro temas conceptuales, estado editorial sin artículos ficticios, CTA y metadata |
+| `/aprende` | Estático | Funcional local / release ready | Centro de conocimiento, 5 categorías, 4 artículos, tarjetas, CTA y metadata |
+| `/aprende/:slug` | Estático | Funcional local / release ready | Artículo con autor Yoan Ortiz, imagen educativa, índice, CTA relacionado y metadata canonical/OG |
 | `/que-debes-saber` | Redirect 301 | Funcional | Compatibilidad legado hacia la experiencia canónica `/aprende`; no compite como página indexable |
 | `/privacidad` | Estático | Funcional | Datos actuales, uso/control, límites, derechos y email de contacto; sin entidad legal inventada |
 | `/robots.txt`, `/sitemap.xml`, `/favicon.ico` | sitemap: D1 | Funcional | Sitemap: 11 rutas + perfiles publicados no suspendidos (hoy 12 URLs); favicon: redirect 302 |
@@ -63,11 +64,12 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 - `/unete` conserva `illus-business-onboarding-form.webp` como apoyo visual, lista cinco piezas de contexto útiles y reduce el proceso a tres pasos sin prometer SLA, llamadas, registro, compra o propuesta automática.
 - `/contacto` mantiene `mailto:hola@vecidya.com`, explica qué enviar, qué esperar, enlaza `/privacidad` y no muestra teléfono, WhatsApp, chat, booking ni formulario persistente.
 
-### Aprende (`knowledge.tsx`)
+### Aprende (`knowledge.tsx`, `learn-article.tsx`)
 
 - UX-001B.9 establece `/aprende` como ruta canónica y mantiene `/que-debes-saber` como alias. La página diferencia aprendizaje de Servicios y Diagnóstico: explica cómo entender y mejorar la presencia digital.
-- La experiencia tiene hero, cuatro temas conceptuales (sin categorías CMS vacías), estado editorial honesto mientras no existen artículos publicados, criterio de contenido y CTAs a Diagnóstico/Contacto. No inventa títulos de artículos, autores, fechas, lectores ni schema `Article`.
-- `task-schedule-panel.webp` se reutiliza como apoyo visual; el futuro CMS/editor queda fuera de alcance.
+- UX-002.6 convierte `/aprende` en un centro de conocimiento estático: cinco categorías iniciales y cuatro artículos reales escritos/atribuidos a Yoan Ortiz, con tarjetas, excerpt, imagen y enlaces a `/aprende/:slug`.
+- Cada artículo incluye problema, explicación sencilla, ejemplos, siguiente paso, índice accesible, CTA contextual a Diagnóstico o Servicios, metadata canonical/Open Graph y aparece en sitemap. Los diagramas propios viven en `public/assets/learn/` como SVG optimizados.
+- El contenido se mantiene deliberadamente sin CMS, autores dinámicos, fechas editoriales inventadas, comentarios, newsletter, buscador avanzado o cursos.
 
 ### Legal & Trust (`privacy.tsx`, `public-layout.tsx`)
 

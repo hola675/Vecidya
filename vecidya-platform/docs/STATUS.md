@@ -1,6 +1,6 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-23 (UX-002.5, Diagnostic Experience 2.0 local release ready; código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: scoring existente conservado, resultado ampliado con situación, prioridades, camino y mapeo Licencia/Addon/Servicio/Aprende, E2E responsive, typecheck, build y diff-check.
+Última reconciliación: **2026-09-23 (UX-002.6, Content & Learn Experience local release ready; código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: sistema editorial estático, 4 artículos reales atribuidos a Yoan Ortiz, assets educativos SVG, rutas indexables y validación local.
 
 ## Veredicto
 
@@ -41,7 +41,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | Invitaciones (7B.2) | sí | sí | sí | stale | sí | **PARTIAL** | Adaptador Gmail preparado; entrega y aceptación reales pendientes (`INVITE-001`) |
 | Correo transaccional (EMAIL-001) | sí | sí | n/a | 4 unit-like + reset productivo | sí | **PASS** | OAuth refresh, Gmail API, reset productivo y recepción real confirmados; verificación/invitaciones siguen separadas |
 | Experiencia de app cliente (`/app`) | sí | sí | sí | sí (RAN 2026-09-20) | sí | **PASS técnico local** | PX-B pasa en desktop y móvil; quedan las deudas de producto fuera de RR-001 |
-| Contenido educativo real | no | base editorial | n/a | E2E `/aprende` | sí (sin artículos) | **PARTIAL** | Experiencia editorial preparada; 0 artículos publicados hasta contar con contenido real |
+| Contenido educativo real | sí (estático) | sí | n/a | E2E `/aprende` + validación responsive | no | **PASS técnico local / release ready** | 4 artículos de Yoan Ortiz, 5 categorías, assets SVG y CTAs; sin CMS, comentarios ni newsletter |
 | Legal / privacidad | sí (`/privacidad`) | sí | n/a | E2E legal/trust | sí | **PASS técnico local** | Lenguaje claro y límites actuales; no se inventan términos, entidad legal ni datos jurídicos |
 | Real Proof (negocios reales) | sí (validación local) | sí (solo local) | sí | `rp001a` | 1 (dogfooding) | **BLOCKED para publicación remota** | RP-001A valida tres casos controlados sin publicar; siguen bloqueados datos/autorizaciones y G4 |
 | Producción independiente | sí | n/a | sí | smoke anónimo + manual auth | sí (`0.2.0`) | **PASS** | `vecidya-prod` sirve el público; verificación autenticada histórica `/login → /app → /app/internal` permanece válida |
@@ -89,6 +89,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | UX-002.3 Addons Experience | IMPLEMENTADA | PASS técnico local / release ready | `/addons` explica categorías y capacidades adicionales, diferencia licencia/addon/servicio, mantiene consumos separados y conecta con Diagnóstico; sin precios ni integración activa |
 | UX-002.4 Services Experience | IMPLEMENTADA | PASS técnico local / release ready | `/servicios` explica presencia, organización, automatización, IA y marketing; separa licencia/addon/servicio/consumo y conecta con Diagnóstico; sin precios generales ni GHL visible |
 | UX-002.5 Diagnostic Experience 2.0 | IMPLEMENTADA | PASS técnico local / release ready | Resultado ampliado con situación, prioridades, camino Vecidya y recomendaciones comerciales/educativas; scoring conservado, sin persistencia ni venta agresiva |
+| UX-002.6 Content & Learn Experience | IMPLEMENTADA | PASS técnico local / release ready | Aprende incluye 5 categorías, 4 artículos estáticos atribuidos a Yoan Ortiz, assets educativos, índice, CTAs, metadata por artículo y sitemap; sin CMS ni persistencia editorial |
 | PUBLIC-PROD-DIRECT-001 | CERRADA | PASS | `wrangler.jsonc` top-level; apex 200, `www` 301 |
 | PRODUCT-EXPERIENCE-001 A | PASS TÉCNICO LOCAL | PASS | `product-experience-a` pasa (45 s) |
 | PRODUCT-EXPERIENCE-001 B | EN ESPERA | PARTIAL | Test de 260 líneas existe pero falla (defectos del script) |
@@ -148,7 +149,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | ID | Descripción | Evidencia | Prio | Estado |
 | --- | --- | --- | --- | --- |
 | `DIAG-001` | Diagnóstico: respuestas de un perfil anterior seguían puntuando tras volver y cambiar el perfil; solo genera 1 «oportunidad»; la dimensión `organizacion` solo baja; resultado sin enlaces a Servicios/Vecindario/contenido; ids de dimensión sin acento en pantalla | `diagnostic.tsx`; `diagnostic-experience-check.mjs` | M | RESUELTA en UX-001B.6; persistencia sigue fuera de alcance |
-| `CONTENT-EDU-001` | No hay artículos educativos publicados todavía; UX-001B.9 deja `/aprende` preparado sin inventar autores, fechas, lectores o recursos. El alias `/que-debes-saber` conserva compatibilidad; la producción editorial real queda para la fase de contenido | `knowledge.tsx`; `learn-experience-check.mjs` | M | ABIERTA / FUTURO |
+| `CONTENT-EDU-001` | Contenido educativo real implementado localmente como catálogo estático; publicación remota y ampliación editorial futura siguen separadas | `content/learn.ts`; `knowledge.tsx`; `learn-article.tsx`; `sitemap.ts` | M | RESUELTA para UX-002.6 local; publicación pendiente |
 | `UX-PUBLIC-001` | 8 páginas anidan un segundo `<main>`; sin `og:image`/`og:url`/Twitter; ninguna página pública enlaza a `/register`; `alt` de `VisualSection` oculto por `aria-hidden`; imágenes sin `width/height/loading`; overflow de emails/URLs largos en perfil sin `overflow-wrap`; 3 assets sin uso con nombres de reseñas/ratings | greps; `public-layout.tsx:23` | M | ABIERTA |
 | `INTERCONNECT-001` | Perfil → Servicios/Diagnóstico/Contacto es un CTA fijo no contextual; sin negocios/contenido relacionados; Diagnóstico sin salida contextual (ver mapa en PROJECT_STATE) | código | M | ABIERTA (trabajo de roadmap) |
 | `HOME-STATIC-001` | Home es 100 % copy estático (~600 palabras, 2 ilustraciones); sin búsqueda ni vecinos; el buscador del Vecindario solo filtra por nombre aunque su placeholder sugiere rubros; sin paginación | `home.tsx`; `business-profile.server.ts:78` | M | ABIERTA (roadmap) |

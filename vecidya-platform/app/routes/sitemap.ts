@@ -1,6 +1,7 @@
 import { createDatabase } from "../../db/client.server";
 import { listPublishedBusinessProfiles } from "../../db/queries/business-profile.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
+import { learnArticles } from "../content/learn";
 
 import type { Route } from "./+types/sitemap";
 
@@ -35,7 +36,8 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     "/privacidad",
   ];
   const profilePaths = profiles.map((profile) => `/vecindario/${profile.slug}`);
-  const entries = [...staticPaths, ...profilePaths].map((path) => urlEntry(`${origin}${path}`));
+  const articlePaths = learnArticles.map((article) => `/aprende/${article.slug}`);
+  const entries = [...staticPaths, ...articlePaths, ...profilePaths].map((path) => urlEntry(`${origin}${path}`));
   const body = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
