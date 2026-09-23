@@ -71,6 +71,13 @@ async function runViewport(width, height) {
   await chooseAndContinue(page, label, "Este mes");
   await assertNoOverflow(page, `${label} resultado`);
   assert(await page.getByRole("heading", { name: /Presencia activa|Base en construcción|Punto de partida|Sistema en crecimiento|Presencia madura/ }).isVisible(), `${label}: no mostró resultado.`);
+  assert(await page.getByRole("heading", { name: "¿Dónde estás?" }).isVisible(), `${label}: no mostró la situación actual.`);
+  assert(await page.getByRole("heading", { name: "Tu siguiente camino" }).isVisible(), `${label}: no mostró el camino recomendado.`);
+  assert(await page.getByRole("heading", { name: "Tu recomendación Vecidya" }).isVisible(), `${label}: no mostró el mapeo comercial.`);
+  assert(await page.locator(".diagnostic-commercial").getByRole("link", { name: /Ver licencias/i }).getAttribute("href") === "/licencias", `${label}: no enlazó la licencia recomendada.`);
+  assert(await page.locator(".diagnostic-commercial").getByRole("link", { name: /Ver addons/i }).getAttribute("href") === "/addons", `${label}: no enlazó los addons.`);
+  assert(await page.locator(".diagnostic-commercial").getByRole("link", { name: /Ver servicios/i }).getAttribute("href") === "/servicios", `${label}: no enlazó los servicios.`);
+  assert(await page.getByRole("link", { name: "Explorar Aprende" }).getAttribute("href") === "/aprende", `${label}: no enlazó Aprende.`);
   assert(await page.getByRole("heading", { name: "Tus dimensiones" }).isVisible(), `${label}: no mostró dimensiones.`);
   assert(await page.getByRole("heading", { name: "Tus próximos focos" }).isVisible(), `${label}: no mostró prioridades.`);
   const serviceLink = page.locator('a[href="/servicios#visibilidad"]');

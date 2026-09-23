@@ -11,6 +11,14 @@ type Answers = Record<string, AnswerValue>;
 type QuestionType = "single" | "multi" | "scale" | "yes_no_unknown";
 type ProfileType = "business" | "professional" | "creator" | "project" | "organization" | "public_figure" | "idea";
 type Dimension = "identidad" | "presencia" | "visibilidad" | "confianza" | "conexion" | "comunidad" | "evolucion" | "organizacion";
+type CommercialPath = {
+  situation: string;
+  observations: string[];
+  license: { name: string; reason: string };
+  addons: string[];
+  services: string[];
+  steps: string[];
+};
 
 type Question = {
   id: string;
@@ -277,7 +285,7 @@ const dimensionLabels: Record<Dimension, string> = {
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
     "Diagnóstico Vecidya",
-    "Autodiagnóstico anónimo para entender tu presencia digital, visibilidad, confianza y próximos pasos sin guardar respuestas.",
+    "Descubre qué necesita tu negocio para mejorar su presencia digital con un diagnóstico anónimo y sin guardar respuestas.",
     "/diagnostico",
   );
 }
@@ -500,6 +508,44 @@ function scoreAnswers(answers: Answers, applicableQuestions: Question[]) {
     priorities: [...primaryPriorities, ...priorities].filter((item, index, list) => list.indexOf(item) === index).slice(0, 3),
     scores,
     cta,
+    commercialPath: getCommercialPath(average, answers, scores),
+  };
+}
+
+function getCommercialPath(average: number, answers: Answers, scores: Record<Dimension, number>): CommercialPath {
+  const startingNeeds = answers.profile === "idea" || includesAnswer(answers.assets, "none") || average < 55;
+  const processNeeds = answers.obstacle === "no_time" || answers.obstacle === "messy_contacts" || scores.organizacion < 42;
+  const activeNeeds = answers.goal === "contacts" || answers.obstacle === "few_contacts" || answers.obstacle === "messy_contacts" || average >= 55;
+
+  if (startingNeeds) {
+    return {
+      situation: "Tu negocio está construyendo una base digital.",
+      observations: ["Conviene ordenar lo esencial antes de sumar más canales.", "Una presencia clara puede convertirse en tu primer punto de apoyo."],
+      license: { name: "Cuadra", reason: "Una base continua para organizar tu negocio y saber qué construir primero." },
+      addons: [],
+      services: ["Organización del negocio", "Presencia digital"],
+      steps: ["Ordenar tu base digital", "Explicar con claridad qué haces", "Ampliar capacidades cuando aparezca una necesidad real"],
+    };
+  }
+
+  if (processNeeds || (activeNeeds && average >= 72)) {
+    return {
+      situation: "Tu negocio tiene una base activa y está listo para conectar procesos.",
+      observations: ["Ya existe movimiento que puede ordenarse mejor.", "La siguiente mejora debería reducir tareas repetitivas y dar más continuidad al seguimiento."],
+      license: { name: "Ciudad", reason: "Un sistema continuo para automatizar y controlar cuando los procesos ya tienen volumen." },
+      addons: ["AI Conversacional", "Integraciones"],
+      services: ["Automatización", "Inteligencia artificial"],
+      steps: ["Ordenar tus procesos actuales", "Automatizar lo repetitivo", "Conectar herramientas cuando aporte valor"],
+    };
+  }
+
+  return {
+    situation: "Tu negocio ya tiene movimiento y necesita ordenar cómo seguir.",
+    observations: ["Hay una base sobre la que se puede trabajar.", "El siguiente avance está en captar y seguir mejor las oportunidades."],
+    license: { name: "Barrio", reason: "Un sistema continuo para captar oportunidades y mantener el seguimiento." },
+    addons: ["WhatsApp", "Automatizaciones"],
+    services: ["Organización del negocio", "Automatización"],
+    steps: ["Organizar la información que ya tienes", "Crear procesos de seguimiento", "Automatizar cuando estés preparado"],
   };
 }
 
@@ -663,13 +709,26 @@ export default function Diagnostic() {
             <article className="diagnostic-result">
               <p className="eyebrow">TU DIAGNÓSTICO</p>
               <h2 ref={questionHeadingRef} tabIndex={-1}>{result.position}</h2>
-              <p>
-                Esta orientación resume tu punto de partida, lo que ya funciona y
-                dónde conviene concentrar el próximo avance. Confianza del
-                diagnóstico: <strong>{result.confidence}</strong>.
-              </p>
+               <p>
+                 Esta orientación resume tu punto de partida, lo que ya funciona y
+                 dónde conviene concentrar el próximo avance. Confianza del
+                 diagnóstico: <strong>{result.confidence}</strong>.
+               </p>
 
-              <div className="diagnostic-scoreline" aria-label={`Posición digital estimada ${result.average} de 100`}>
+               <section className="diagnostic-situation" aria-labelledby="diagnostic-situation-title">
+                 <div>
+                   <p className="eyebrow">TU SITUACIÓN ACTUAL</p>
+                   <h3 id="diagnostic-situation-title">¿Dónde estás?</h3>
+                   <p>{result.commercialPath.situation}</p>
+                 </div>
+                 <div>
+                   <p className="eyebrow">LO QUE OBSERVAMOS</p>
+                   <h3>¿Qué observamos?</h3>
+                   <ul>{result.commercialPath.observations.map((item) => <li key={item}>{item}</li>)}</ul>
+                 </div>
+               </section>
+
+               <div className="diagnostic-scoreline" aria-label={`Posición digital estimada ${result.average} de 100`}>
                 <span style={{ width: `${result.average}%` }} />
               </div>
 
@@ -710,11 +769,56 @@ export default function Diagnostic() {
                     const href = getRecommendationLink(item);
                     return <li key={item}>{href ? <Link to={href}>{item}</Link> : item}</li>;
                   })}</ol>
-                </section>
-              </div>
+                 </section>
+               </div>
 
-              <div className="diagnostic-result__cta">
-                <a className="button button--primary" href={contactHref}>{result.cta}</a>
+               <section className="diagnostic-path" aria-labelledby="diagnostic-path-title">
+                 <div>
+                   <p className="eyebrow">TU SIGUIENTE CAMINO</p>
+                   <h3 id="diagnostic-path-title">Tu siguiente camino</h3>
+                   <p>Un camino recomendado, no una obligación.</p>
+                 </div>
+                 <ol>{result.commercialPath.steps.map((item) => <li key={item}>{item}</li>)}</ol>
+               </section>
+
+               <section className="diagnostic-commercial" aria-labelledby="diagnostic-commercial-title">
+                 <div className="diagnostic-commercial__heading">
+                   <p className="eyebrow">CÓMO PUEDE CONTINUAR</p>
+                   <h3 id="diagnostic-commercial-title">Tu recomendación Vecidya</h3>
+                 </div>
+                 <div className="diagnostic-commercial__grid">
+                   <article>
+                     <span>LICENCIA RECOMENDADA</span>
+                     <strong>{result.commercialPath.license.name}</strong>
+                     <p>{result.commercialPath.license.reason}</p>
+                     <Link className="text-link" to="/licencias">Ver licencias <span aria-hidden="true">→</span></Link>
+                   </article>
+                   <article>
+                     <span>ADDONS POSIBLES</span>
+                     <strong>{result.commercialPath.addons.length ? result.commercialPath.addons.join(" · ") : "Cuando aparezca la necesidad"}</strong>
+                     <p>{result.commercialPath.addons.length ? "Capacidades adicionales que podrían tener sentido después de ordenar la base." : "No necesitas agregar una capacidad antes de tener clara tu base."}</p>
+                     <Link className="text-link" to="/addons">Ver addons <span aria-hidden="true">→</span></Link>
+                   </article>
+                   <article>
+                     <span>SERVICIOS ÚTILES</span>
+                     <strong>{result.commercialPath.services.join(" · ")}</strong>
+                     <p>Trabajo personalizado para convertir la recomendación en un siguiente paso concreto.</p>
+                     <Link className="text-link" to="/servicios">Ver servicios <span aria-hidden="true">→</span></Link>
+                   </article>
+                 </div>
+               </section>
+
+               <section className="diagnostic-learning" aria-labelledby="diagnostic-learning-title">
+                 <div>
+                   <p className="eyebrow">PARA SEGUIR ENTENDIENDO</p>
+                   <h3 id="diagnostic-learning-title">Aprende antes de decidir.</h3>
+                 </div>
+                 <p>Explora explicaciones sencillas sobre presencia digital, organización y herramientas antes de dar el siguiente paso.</p>
+                 <Link className="text-link" to="/aprende">Explorar Aprende <span aria-hidden="true">→</span></Link>
+               </section>
+
+               <div className="diagnostic-result__cta">
+                 <a className="button button--primary" href={contactHref}>{result.cta}</a>
                 <Link className="button button--secondary" to="/contacto">Quiero revisar esto con Vecidya</Link>
                 <button className="button button--secondary" onClick={restart} type="button">Rehacer diagnóstico</button>
               </div>

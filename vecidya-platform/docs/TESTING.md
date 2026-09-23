@@ -1,6 +1,6 @@
 # Pruebas
 
-Última reconciliación: 2026-09-22 (UX-002.4). Evidencia: `product-experience-a-public-review-check.mjs` PASS con `/servicios`, `/licencias` y `/addons`, `addons-experience-check.mjs` PASS en 1366/768/390/360, typecheck, build y diff-check PASS. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
+Última reconciliación: 2026-09-23 (UX-002.5). Evidencia: `diagnostic-experience-check.mjs` PASS en 1366/768/390/360 con el resultado comercial y educativo, `product-experience-a-public-review-check.mjs` PASS con `/servicios`, `/licencias` y `/addons`, typecheck, build y diff-check PASS. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
 
 ## Estado de la infraestructura de pruebas
 
@@ -30,7 +30,7 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `acct` | `account-personal-settings-check.mjs` | 7A |
 | `bpx` | `business-profile-experience-check.mjs` | 7C |
 | `services-exp` | `services-experience-check.mjs` | 7D |
-| `diagnostic` | `diagnostic-experience-check.mjs` | UX-001B.6 |
+| `diagnostic` | `diagnostic-experience-check.mjs` | UX-001B.6 / UX-002.5 |
 | `join-contact` | `join-contact-experience-check.mjs` | UX-001B.7 |
 | `about` | `about-experience-check.mjs` | UX-001B.8 |
 | `learn` | `learn-experience-check.mjs` | UX-001B.9 |

@@ -2937,6 +2937,184 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   }
 }
 
+/* UX-002.5 — diagnostic ecosystem path */
+.diagnostic-situation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.diagnostic-situation > div,
+.diagnostic-commercial__grid article {
+  display: grid;
+  align-content: start;
+  gap: .55rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  background: #fff;
+}
+
+.diagnostic-situation h3,
+.diagnostic-commercial h3,
+.diagnostic-learning h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.25rem;
+  letter-spacing: -.03em;
+}
+
+.diagnostic-situation p:not(.eyebrow),
+.diagnostic-commercial p,
+.diagnostic-learning > p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.diagnostic-situation .eyebrow,
+.diagnostic-commercial__grid article > span,
+.diagnostic-learning .eyebrow {
+  margin: 0;
+  color: var(--orange);
+  font-size: .7rem;
+  font-weight: 850;
+  letter-spacing: .12em;
+}
+
+.diagnostic-situation ul {
+  display: grid;
+  gap: .45rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.diagnostic-path {
+  display: grid;
+  grid-template-columns: minmax(12rem, .8fr) minmax(0, 1.2fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  border-radius: var(--radius-md);
+  padding: clamp(1.35rem, 4vw, 2rem);
+  color: #fff;
+  background: linear-gradient(145deg, #155fc5, #104c9d);
+}
+
+.diagnostic-path .eyebrow {
+  color: #ffb27a;
+}
+
+.diagnostic-path h3 {
+  max-width: 18ch;
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.diagnostic-path ol {
+  display: grid;
+  gap: .7rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: path;
+}
+
+.diagnostic-path li {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  align-items: center;
+  gap: .7rem;
+  counter-increment: path;
+  color: #eff5ff;
+  line-height: 1.4;
+}
+
+.diagnostic-path li::before {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #104c9d;
+  content: counter(path);
+  font-size: .8rem;
+  font-weight: 900;
+  background: #ffb27a;
+}
+
+.diagnostic-commercial {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.diagnostic-commercial__heading {
+  display: grid;
+  gap: .4rem;
+}
+
+.diagnostic-commercial__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.diagnostic-commercial__grid article {
+  min-width: 0;
+}
+
+.diagnostic-commercial__grid article > span {
+  color: var(--blue);
+}
+
+.diagnostic-commercial__grid strong {
+  font-size: 1.15rem;
+  line-height: 1.3;
+}
+
+.diagnostic-learning {
+  display: grid;
+  grid-template-columns: minmax(12rem, .8fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 1.25rem 0;
+}
+
+.diagnostic-learning > .text-link {
+  white-space: nowrap;
+}
+
+@media (max-width: 820px) {
+  .diagnostic-situation,
+  .diagnostic-commercial__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .diagnostic-path {
+    grid-template-columns: 1fr;
+  }
+
+  .diagnostic-path h3 {
+    max-width: none;
+  }
+
+  .diagnostic-learning {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .diagnostic-learning > .text-link {
+    white-space: normal;
+  }
+}
+
 /* UX-001B.7 — join + contact experience */
 .join-experience-page,.contact-experience-page { display:grid; gap:clamp(3rem,7vw,6rem); padding-block:clamp(2rem,6vw,5rem); }
 .join-experience-hero { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(18rem,.9fr); gap:clamp(2rem,7vw,6rem); align-items:center; padding:clamp(2rem,6vw,5rem); overflow:hidden; border:1px solid rgb(21 95 197 / 18%); border-radius:var(--radius-lg); background:radial-gradient(circle at 86% 15%,rgb(255 107 11 / 17%),transparent 11rem),linear-gradient(135deg,#f4f8ff 0%,#fff 65%); }

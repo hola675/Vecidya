@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-23 — UX-002.5 Diagnostic Experience 2.0 (`v0.3.0`, PASS técnico local)
+
+- Evolucionado el resultado de `/diagnostico` sin modificar el algoritmo de scoring: ahora muestra situación actual, observaciones, prioridades y un camino recomendado.
+- Añadido mapeo orientativo a licencia Cuadra/Barrio/Ciudad, addons posibles, servicios útiles y hub educativo `/aprende`.
+- Conservados posición, confianza, dimensiones, fortalezas, oportunidades, CTAs, reinicio, anonimato, carácter efímero y ausencia de persistencia.
+- Actualizada metadata SEO y ampliado el E2E responsive para validar el nuevo resultado y sus enlaces comerciales.
+- Se mantiene `0.3.0`; no hubo push, deploy ni migraciones remotas. Producción continúa en `0.2.0`.
+
 ## 2026-09-22 — UX-002.4 Services Experience (`v0.3.0`, PASS técnico local)
 
 - Actualizada `/servicios` para presentar servicios profesionales de Organización del negocio, Formalización de base, Presencia digital, Automatización, Inteligencia artificial y Marketing y crecimiento.

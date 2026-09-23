@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-22 (UX-002.4 PASS técnico local; follow-up de verificación/invitaciones).
+Última reconciliación: 2026-09-23 (UX-002.5 PASS técnico local; follow-up de verificación/invitaciones).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -42,7 +42,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 **Corrección 2 — Contenido (6) antes de Interconexión (7).** Las conexiones «Artículo → Diagnóstico/Servicio» y «Diagnóstico → contenido relacionado» no pueden existir sin artículos: hoy hay cero. Interconectar primero produciría enlaces a un hub vacío.
 
-**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7, UX-001B.8, UX-001B.9, UX-001B.10 y UX-001C quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`. UX-002.1 queda **PASS DOCUMENTAL** y UX-002.2, UX-002.3 y UX-002.4 quedan **PASS técnico local / release ready**: `/licencias`, `/addons` y `/servicios` explican la decisión comercial sin activar checkout, pagos, suscripciones, migraciones, GHL ni consumos ocultos. La producción sigue en `0.2.0` porque no hubo deploy. El siguiente bloque es UX-002.5 — Diagnostic Experience 2.0.
+**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7, UX-001B.8, UX-001B.9, UX-001B.10 y UX-001C quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`. UX-002.1 queda **PASS DOCUMENTAL** y UX-002.2–UX-002.5 quedan **PASS técnico local / release ready**: la superficie comercial pública conecta Licencias, Addons, Servicios y Diagnóstico sin activar checkout, pagos, suscripciones, migraciones, GHL ni consumos ocultos. La producción sigue en `0.2.0` porque no hubo deploy. El siguiente bloque es UX-002.6 — Content & Learn Experience.
 
 ## UX-002 — evolución comercial
 
@@ -62,9 +62,13 @@ La matriz maestra está en [business/VECIDYA_PRODUCT_CATALOG.md](business/VECIDY
 
 `/servicios` está actualizada con seis áreas profesionales: Organización del negocio, Formalización de base, Presencia digital, Automatización, Inteligencia artificial y Marketing y crecimiento. La sección de relación separa licencia, addon, servicio y consumo externo; no hay precios generales, checkout, integración GHL ni capacidades ficticias.
 
-### UX-002.5 Diagnostic Experience 2.0 — PENDIENTE DE APROBACIÓN
+### UX-002.5 Diagnostic Experience 2.0 — PASS técnico local
 
-Conectar el diagnóstico con una recomendación explícita de licencia, addon o servicio, sin persistencia ni automatización comercial hasta cerrar las garantías de privacidad, autorización y contenido.
+El resultado conserva el scoring y añade situación actual, observaciones, prioridades, camino recomendado y mapeo orientativo a Licencia, Addon, Servicio y Aprende. No hay persistencia, checkout ni recomendación de precio agresiva.
+
+### UX-002.6 Content & Learn Experience — PENDIENTE DE APROBACIÓN
+
+Conectar contenido educativo real de Yoan Ortiz con las rutas públicas sin inventar artículos, autores, fechas, imágenes o resultados.
 
 ## Bloque actual: EMAIL-001C (PASS)
 

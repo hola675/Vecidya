@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-22 (UX-002.4, Services Experience local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
+Última reconciliación: **2026-09-23 (UX-002.5, Diagnostic Experience 2.0 local release ready)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.3.0`; versión pública desplegada vigente: `0.2.0`, Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -117,9 +117,9 @@ Confirmado por código (greps de `fetch`, `localStorage`, `sessionStorage`, `coo
 - 7 «puertas» de entrada (`business`, `professional`, `creator`, `project`, `organization`, `public_figure`, `idea`); 14 preguntas definidas, cada camino recibe 7–8; ramificación por el tipo de presencia.
 - 4 preguntas de multiselección con opciones exclusivas («ninguno», «no sé»).
 - Puntuación: 8 dimensiones (identidad, presencia, visibilidad, confianza, conexión, comunidad, evolución, organización), base 46, acotadas a [18, 92]; 5 posiciones; confianza alta/media/baja.
-- Resultado: máx. 3 fortalezas y 3 próximos pasos (prioridades críticas primero); **siempre 1 oportunidad**; CTA adaptativo con 4 etiquetas, dimensiones con labels humanos y enlaces de prioridad a anchors reales de Servicios cuando aplica.
+- Resultado: máx. 3 fortalezas y 3 próximos pasos (prioridades críticas primero); **siempre 1 oportunidad**; CTA adaptativo con 4 etiquetas, dimensiones con labels humanos y enlaces de prioridad a anchors reales de Servicios cuando aplica. UX-002.5 añade situación actual, observaciones, camino recomendado y mapeo orientativo a Licencia, Addon, Servicio y Aprende sin alterar el scoring.
 - El flujo muestra `Pregunta X de Y`, barra `role="progressbar"`, etapa actual, foco en la pregunta nueva, anterior/siguiente, estados seleccionados accesibles, resultado y «Rehacer diagnóstico». Las cuatro puertas visuales principales reutilizan los SVG de B.2; las demás puertas funcionales permanecen disponibles.
-- CTAs: `mailto:hola@vecidya.com` prellenado en cliente (tipo, posición, área prioritaria, objetivo; sin respuestas completas), `/contacto` y recomendaciones a `/servicios#estructuracion`, `#formalizacion`, `#presencia-digital` o `#visibilidad` solo cuando corresponde.
+- CTAs: `mailto:hola@vecidya.com` prellenado en cliente (tipo, posición, área prioritaria, objetivo; sin respuestas completas), `/contacto`, `/licencias`, `/addons`, `/servicios` y `/aprende`; recomendaciones a `/servicios#estructuracion`, `#formalizacion`, `#presencia-digital` o `#visibilidad` solo cuando corresponde.
 - Al cambiar el perfil se limpian las respuestas dependientes para evitar contaminación de scoring. Sigue siendo anónimo, efímero, solo cliente y sin persistencia; la prueba `diagnostic-experience-check.mjs` cubre selector, teclado, navegación, resultado, reinicio y responsive 1366/768/390/360.
 
 ### Servicios (`/servicios`)
