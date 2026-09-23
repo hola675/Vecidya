@@ -8,12 +8,17 @@ export const commercialWhatsAppUrl = "https://wa.me/573244321864";
 
 export function PublicLayout({ children }: { children: React.ReactNode }) {
   const mobileMenuRef = useRef<HTMLDetailsElement>(null);
+  const solutionsMenuRef = useRef<HTMLDetailsElement>(null);
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape" && mobileMenuRef.current?.open) {
         mobileMenuRef.current.open = false;
         mobileMenuRef.current.querySelector("summary")?.focus();
+      }
+      if (event.key === "Escape" && solutionsMenuRef.current?.open) {
+        solutionsMenuRef.current.open = false;
+        solutionsMenuRef.current.querySelector("summary")?.focus();
       }
     };
 
@@ -34,12 +39,19 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
         </Link>
         <nav className="site-nav" aria-label="Navegación pública">
           <NavLink to="/vecindario">Vecindario</NavLink>
-          <NavLink to="/licencias">Licencias</NavLink>
           <NavLink to="/aprende">Aprende</NavLink>
           <NavLink to="/diagnostico">Diagnóstico</NavLink>
           <NavLink to="/servicios">Servicios</NavLink>
-          <NavLink to="/sobre-nosotros">Nosotros</NavLink>
           <NavLink to="/contacto">Contacto</NavLink>
+          <details className="site-nav__group" ref={solutionsMenuRef}>
+            <summary>Soluciones</summary>
+            <div className="site-nav__panel" onClick={(event) => { if ((event.target as HTMLElement).closest("a") && solutionsMenuRef.current) solutionsMenuRef.current.open = false; }}>
+              <NavLink to="/licencias">Licencias</NavLink>
+              <NavLink to="/addons">Addons</NavLink>
+              <NavLink to="/servicios">Servicios</NavLink>
+              <NavLink to="/sobre-nosotros">Sobre nosotros</NavLink>
+            </div>
+          </details>
         </nav>
         <div className="site-header__actions">
           <Link className="site-login-link" to="/login">Acceder</Link>

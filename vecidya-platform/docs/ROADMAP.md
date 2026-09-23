@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-23 (DIAG-002C + UX-003.1–003.5 publicados en `0.4.1`; OPS-001 documental; follow-up de verificación/invitaciones permanece separado).
+Última reconciliación: 2026-09-23 (DIAG-002C + UX-003.1–003.5 publicados en `0.4.1`; VIS-001 autorizado e iniciado localmente; OPS-001 documental; follow-up de verificación/invitaciones permanece separado).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -38,6 +38,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 | 17 | Educational Content | Primeros contenidos reales | UX-001B.9 y autor/fuentes reales |
 | 18 | Ecosystem Interconnection | Diagnóstico → contenido/servicio; perfil → relacionados; artículo → diagnóstico/servicio | 6 (vecinos) y 17 (artículos) |
 | 19 | Business Profile / UX | Campos, cobertura E2E, a11y y SEO del perfil público | UX-001B.4 y Real Proof |
+| 20 | **VIS-001 UI/UX visual audit implementation** | AuthShell compartido; foundations visuales; mejoras públicas específicas a Home, navegación, licencias, addons, Aprende y Vecindario; revisión responsive/accesible de todas las páginas priorizadas | autorizado por solicitud del usuario 2026-09-23; revisión pegada |
 
 **Corrección 1 — RR-001 precede Real Proof.** La evidencia mostró prerrequisitos técnicos: pruebas stale por el nombre D1 obsoleto, PX-B roto, selección de organización al login, limpieza de sesiones tras retirar membresía y protección server-side de perfiles publicados. RR-001 quedó cerrado antes de PERF-001 y permanece separado del deploy y del piloto.
 
@@ -49,13 +50,17 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
+## VIS-001 — auditoría visual y mejora de UX/UI (EN PROGRESO LOCAL)
+
+El usuario autorizó implementar la revisión visual pegada el 2026-09-23. La primera pasada consolida shell de Login/Registro/recuperación, tokens semánticos, Home, footer, navegación pública, referencias de Licencias, escaneo de Addons/Aprende y directorio compacto. Alcance excluye cambios de modelo comercial, rutas, modelo Cuadra/Barrio/Ciudad, scoring, contenido editorial, GHL, D1 y backend de autenticación. `RAN`: typecheck/build y E2E de Licencias, Addons, recorrido comercial y Nosotros PASS; capturas de ocho páginas en desktop y móvil. Sin publicación. Queda el siguiente barrido de páginas y responsive y completar la cobertura de acceso.
+
 ### UX-002.1 Product Catalog Foundation — PASS DOCUMENTAL
 
 La matriz maestra está en [business/VECIDYA_PRODUCT_CATALOG.md](business/VECIDYA_PRODUCT_CATALOG.md). Separa licencias, addons, servicios y consumos externos; define la evolución por necesidad; distingue diagnóstico inicial/profesional; y registra Aprende y la frontera HighLevel. No hubo cambios de código, rutas, schema, precios públicos, pagos ni integraciones.
 
 ### UX-002.2 Licencias Experience — PASS técnico local
 
-`/licencias` está implementada con hero, definición de licencia, tres niveles, comparador de capacidades, evolución por necesidad, addons, FAQ y CTA a Diagnóstico. Las referencias `USD 39/mes`, `USD 59/mes` y `USD 89/mes` se muestran explícitamente como referencias comerciales; no hay checkout, pagos ni suscripciones.
+`/licencias` está implementada con hero, definición de licencia, tres niveles, comparador de capacidades, evolución por necesidad, addons, FAQ y CTA a Diagnóstico. Los importes comerciales de trabajo no se muestran al público; no hay checkout, pagos ni suscripciones.
 
 ### UX-002.3 Addons Experience — PASS técnico local
 

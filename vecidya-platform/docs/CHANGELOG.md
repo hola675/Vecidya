@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-23 — VIS-001 Visual audit and UX/UI improvements (en progreso local)
+
+- Iniciado el shell compartido para login, registro y recuperación de contraseña, preservando handlers y autenticación actuales.
+- Home, navegación, footer público y legibilidad de metadatos reciben ajustes visuales; Licencias deja de mostrar referencias de precio de trabajo como importes públicos y Addons aclara disponibilidad en un solo punto.
+- Aprende cambia la composición de cinco categorías y Vecindario centra/compacta uno o dos resultados y nombra los filtros activos.
+- Validado localmente con `typecheck` y `build`; capturas full-page desktop/móvil en `screenshots/` para Login, Registro, Home, Licencias, Addons, Aprende, Vecindario y Nosotros. Sin publicar.
+
 ## 2026-09-23 — REL-004 Release Reconciliation `0.4.1` (documental)
 
 Reconciliación de trazabilidad del release ya publicado. No modifica producto: sin cambios de motor, UX, páginas públicas, scoring, recomendaciones ni pruebas.

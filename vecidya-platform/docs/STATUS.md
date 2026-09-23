@@ -1,6 +1,6 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-23 (`0.4.1` LIVE; DIAG-002C + UX-003.1–003.5; `RAN`: `test:unit` 75/75, typecheck/build PASS)**. Staging y producción desplegados; smoke HTTP anónimo PASS.
+Última reconciliación: **2026-09-23 (`0.4.1` LIVE; DIAG-002C + UX-003.1–003.5; `RAN`: `test:unit` 75/75, typecheck/build PASS)**. Staging y producción desplegados; los ajustes VIS-001 están en progreso local, sin publicación.
 
 ## Veredicto
 
@@ -26,7 +26,8 @@ Lo publicado en `vecidya.com` corresponde a `v0.4.1` (Version ID `eec3de6a-6711-
 | Servicios (cliente) | sí | sí | sí | sí | sí | **PASS** | Solo lectura para el cliente; catálogo de 3 servicios sembrado |
 | Servicios (administración) | sí | sí | sí | stale | sí | **PARTIAL** | Test 4B/8D no ejecutable; sin auditoría; `activated_at` nunca se escribe |
 | Servicios públicos (`/servicios`) | sí | sí | n/a | E2E público + responsive | sí | **PASS técnico local / release ready** | Seis áreas profesionales, separación licencia/addon/servicio/consumo y alcance consultivo; no lee `service_catalog` |
-| Licencias públicas (`/licencias`) | sí | sí | n/a | E2E Licencias responsive | no | **PASS técnico local / release ready** | Experiencia de decisión para Cuadra, Barrio y Ciudad; referencias comerciales no publicadas, sin checkout ni pagos |
+| Licencias públicas (`/licencias`) | sí | sí | n/a | E2E Licencias responsive | no | **PASS técnico local / release ready** | Experiencia de decisión para Cuadra, Barrio y Ciudad; consulta de disponibilidad, sin importes públicos, checkout ni pagos |
+| Revisión VIS-001 (UI/UX público + autenticación) | parcial local | parcial | n/a | typecheck/build PASS; E2E Licencias/Addons/UX-002.7 PASS; inspección visual hecha | no | **EN PROGRESO LOCAL** | AuthShell compartido y primera pasada de Home, navegación, Licencias, Addons, Aprende, Vecindario y Nosotros; no desplegado |
 | Addons públicos (`/addons`) | sí | sí | n/a | E2E Addons responsive | no | **PASS técnico local / release ready** | Comunicación, automatización, IA e integraciones; sin precios de addons, GHL activo, checkout ni consumos ocultos |
 | Vecindario (lista, búsqueda, filtros, perfil) | sí | sí | sí | sí | sí | **PASS** | Búsqueda solo por nombre; sin paginación; filtro de ciudad sin prueba ejecutable |
 | Diagnóstico (motor 2.0, DIAG-002 + DIAG-002B + DIAG-002C) | sí | sí | n/a | 75 unitarias (`test:unit`: 43 de DIAG-002, 27 semánticas de DIAG-002B y 5 de decisión de producto de DIAG-002C) + E2E dedicado responsive | sí (`0.4.1`, HTTP 2026-09-23) | **PASS / LIVE** | Motor puro en `app/features/diagnostic`; 5 perfiles + momento/equipo/objetivo; 7 dimensiones normalizadas sobre evidencia aplicable sin contaminación cruzada; «no lo sé» y «no aplica» separados de «no»; 6 estados por reglas (incluido «datos por confirmar»); prioridades con dependencias, sin duplicados y con lenguaje de comprobación cuando derivan de dudas; contradicciones detectadas y explicadas; deep link `?perfil=`/`?objetivo=` con lista cerrada; aislamiento al cambiar de perfil; anónimo, efímero y sin persistencia |
@@ -98,6 +99,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.4.1` (Version ID `eec3de6a-6711-
 | OPS-001 GHL Pilot Foundation | AUTORIZADA | **PASS DOCUMENTAL / cuenta pendiente** | `OPS-001-GHL-PILOT-FOUNDATION.md`; documentación oficial consultada 2026-09-23; sin integración, migraciones, secretos ni cambios de producción |
 | UX-003.1 / UX-003.4 | IMPLEMENTADA | **LIVE `0.4.1`** | Login y Home cliente; Home Admin enlaza sus operaciones activas; motion respeta `prefers-reduced-motion` |
 | UX-003.2 / UX-003.5 initial delivery | IMPLEMENTADA | **LIVE `0.4.1`** | Shell navegable en Cuenta, Organización, Perfil y Servicios; detalles de contacto/operación read-only en Admin. Desplegado; equipo/invitaciones, listados, filtros y QA autenticada siguen abiertos |
+| VIS-001 UI/UX visual audit | EN PROGRESO | **LOCAL; no desplegado** | AuthShell compartido, foundations visuales y primera pasada de páginas públicas; capturas desktop/móvil en `screenshots/`; typecheck/build y E2E de Licencias, Addons y recorrido comercial PASS |
 | PUBLIC-PROD-DIRECT-001 | CERRADA | PASS | `wrangler.jsonc` top-level; apex 200, `www` 301 |
 | PRODUCT-EXPERIENCE-001 A | PASS TÉCNICO LOCAL | PASS | `product-experience-a` pasa (45 s) |
 | PRODUCT-EXPERIENCE-001 B | EN ESPERA | PARTIAL | Test de 260 líneas existe pero falla (defectos del script) |

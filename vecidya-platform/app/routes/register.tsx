@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Form, Link, useNavigate } from "react-router";
 
 import { authClient } from "../lib/auth-client";
-import { Alert, Button, Card } from "../components/ui";
+import { Alert, Button } from "../components/ui";
+import { AuthShell } from "../components/auth-shell";
 
 export function meta() {
   return [{ title: "Crear cuenta | Vecidya" }, { name: "robots", content: "noindex" }];
@@ -36,16 +37,13 @@ export default function Register() {
   }
 
   return (
-    <main className="auth-shell">
-      <Card className="auth-card">
-        <div className="auth-brand">
-          <img alt="" height="691" src="/brand/vecidya-app-icon.png" width="691" />
-          <span>Vecidya</span>
-        </div>
-        <p className="eyebrow">PRIMER PASO</p>
-        <h1>Crear cuenta</h1>
-        <p>Comienza con tu espacio Vecidya.</p>
-        <Form className="auth-form" method="post" onSubmit={handleSubmit}>
+    <AuthShell
+      description="Empieza con tu espacio Vecidya."
+      eyebrow="PRIMER PASO"
+      privacyNote="Crea tu cuenta para organizar el perfil de tu negocio o proyecto."
+      title="Crear cuenta"
+    >
+      <Form className="auth-form" method="post" onSubmit={handleSubmit}>
         <label>
           Nombre
           <input name="name" autoComplete="name" required />
@@ -56,23 +54,14 @@ export default function Register() {
         </label>
         <label>
           Contraseña
-          <input
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            minLength={8}
-            required
-          />
+          <input name="password" type="password" autoComplete="new-password" minLength={8} required />
         </label>
         {error ? <Alert>{error}</Alert> : null}
         <Button disabled={submitting} type="submit">
           {submitting ? "Creando…" : "Registrarme"}
         </Button>
-        </Form>
-        <p className="auth-switch">
-          ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
-        </p>
-      </Card>
-    </main>
+      </Form>
+      <p className="auth-switch">¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></p>
+    </AuthShell>
   );
 }

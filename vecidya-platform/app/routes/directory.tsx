@@ -49,7 +49,7 @@ export default function DirectoryPage() {
   return (
     <PublicLayout>
       <main>
-        <section className="public-page directory-page directory-page-v2" aria-labelledby="directory-title">
+        <section className={`public-page directory-page directory-page-v2${profiles.length > 0 && profiles.length <= 2 ? " directory-page-v2--compact" : ""}`} aria-labelledby="directory-title">
           <div className="directory-hero">
             <div>
               <p className="eyebrow">VECINDARIO</p>
@@ -76,6 +76,7 @@ export default function DirectoryPage() {
 
           {hasFilters && filterSummary.length ? (
             <div aria-label="Filtros activos" className="directory-active-filters" role="group">
+              <strong>Filtros activos</strong>
               {filterSummary.map((filter) => <span key={filter}>{filter}</span>)}
             </div>
           ) : null}
@@ -108,6 +109,7 @@ export default function DirectoryPage() {
         </section>
 
         <CTASection
+          className="public-v2-cta--soft"
           eyebrow="PARA NEGOCIOS"
           title="¿Tu negocio también debería aparecer aquí?"
           actions={[

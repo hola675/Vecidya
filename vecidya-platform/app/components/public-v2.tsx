@@ -63,15 +63,17 @@ export function CTASection({
   children,
   actions,
   tone = "light",
+  className,
 }: {
   eyebrow?: string;
   title: string;
   children: ReactNode;
   actions: CTAAction[];
   tone?: "light" | "dark";
+  className?: string;
 }) {
   return (
-    <section className={`public-v2-cta public-v2-cta--${tone}`}>
+    <section className={`public-v2-cta public-v2-cta--${tone}${className ? ` ${className}` : ""}`}>
       {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
       <h2>{title}</h2>
       <div className="public-v2-cta__body">{children}</div>

@@ -9,7 +9,6 @@ import type { Route } from "./+types/licenses";
 type License = {
   id: "cuadra" | "barrio" | "ciudad";
   name: string;
-  price: string;
   objective: string;
   idealFor: string;
   marker: string;
@@ -22,7 +21,6 @@ const licenses: License[] = [
   {
     id: "cuadra",
     name: "Cuadra",
-    price: "USD 39/mes",
     objective: "Ordenar el negocio.",
     idealFor: "Para un negocio que necesita una base organizada para empezar.",
     marker: "C",
@@ -33,7 +31,6 @@ const licenses: License[] = [
   {
     id: "barrio",
     name: "Barrio",
-    price: "USD 59/mes",
     objective: "Captar oportunidades y hacer seguimiento.",
     idealFor: "Para un negocio que necesita convertir consultas en procesos.",
     marker: "B",
@@ -44,7 +41,6 @@ const licenses: License[] = [
   {
     id: "ciudad",
     name: "Ciudad",
-    price: "USD 89/mes",
     objective: "Automatizar y escalar.",
     idealFor: "Para un negocio con volumen y procesos repetitivos.",
     marker: "C",
@@ -112,6 +108,7 @@ export default function Licenses() {
             <p className="eyebrow">TRES MOMENTOS</p>
             <h2 id="licenses-levels-title">Elige la base que corresponde a tu momento.</h2>
             <p>No tienes que empezar con todo. Cada licencia responde a una necesidad distinta.</p>
+            <p className="licenses-price-note">Aún no hay precios públicos ni contratación en línea. Consulta disponibilidad y condiciones para tu caso.</p>
           </div>
           <div className="licenses-grid">
             {licenses.map((license, index) => (
@@ -124,7 +121,7 @@ export default function Licenses() {
                 <h3>{license.name}</h3>
                 <p className="license-card__objective">{license.objective}</p>
                 <p className="license-card__ideal">{license.idealFor}</p>
-                <p className="license-card__price"><span>Referencia comercial</span>{license.price}</p>
+                <Link className="license-card__availability" to="/contacto">Consultar disponibilidad <span aria-hidden="true">→</span></Link>
                 <div className="license-card__includes">
                   <strong>Incluye</strong>
                   <ul>{license.includes.map((item) => <li key={item}><span aria-hidden="true">✓</span>{item}</li>)}</ul>
@@ -132,7 +129,6 @@ export default function Licenses() {
               </article>
             ))}
           </div>
-          <p className="licenses-price-note">Los importes son referencias comerciales de trabajo. No son precios publicados ni activan pagos o suscripciones.</p>
         </section>
 
         <section aria-labelledby="licenses-compare-title" className="licenses-comparison public-v2-section">

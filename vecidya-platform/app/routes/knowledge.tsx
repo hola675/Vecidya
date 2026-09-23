@@ -43,7 +43,6 @@ export default function Knowledge() {
             {learnCategories.map((topic, index) => (
               <article className="learn-topic-card" key={topic.name}>
                 <span className="learn-topic-card__number">{String(index + 1).padStart(2, "0")}</span>
-                <p className="eyebrow">TEMA</p>
                 <h3>{topic.name}</h3>
                 <p>{topic.description}</p>
               </article>

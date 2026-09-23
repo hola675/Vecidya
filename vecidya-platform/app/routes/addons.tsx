@@ -182,13 +182,12 @@ export default function Addons() {
                   <p className="eyebrow">{addon.category}</p>
                 </div>
                 <h3>{addon.name}</h3>
-                <div className="addon-card__problem"><span>EL PROBLEMA</span><p>{addon.problem}</p></div>
-                <div className="addon-card__solution"><span>LA CAPACIDAD</span><p>{addon.solution}</p></div>
-                <p className="addon-card__availability">Disponible según necesidad</p>
+                <div className="addon-card__problem"><span>Problema</span><p>{addon.problem}</p></div>
+                <div className="addon-card__solution"><span>Qué aporta</span><p>{addon.solution}</p></div>
               </article>
             ))}
           </div>
-          <p className="addons-price-note">Los addons no tienen precios publicados en esta fase. Su coste depende del proveedor, la configuración, el volumen y los consumos externos aplicables.</p>
+          <p className="addons-price-note">El alcance y la disponibilidad se confirman para cada caso. Los consumos externos se informan por separado; aún no hay precios públicos ni contratación en línea.</p>
         </section>
 
         <section aria-labelledby="addons-choice-title" className="addons-choice">

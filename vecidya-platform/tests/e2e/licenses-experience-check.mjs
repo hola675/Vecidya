@@ -45,7 +45,9 @@ async function runViewport(width, height) {
   assert(await page.getByRole("heading", { name: "La evolución empieza con una señal real." }).isVisible(), `${label} no mostró evolución.`);
   assert(await page.getByRole("heading", { name: "Amplía tu sistema cuando lo necesites." }).isVisible(), `${label} no mostró addons.`);
   assert(await page.getByRole("heading", { name: "Decidir también puede ser sencillo." }).isVisible(), `${label} no mostró FAQ.`);
-  assert(await page.getByText("Referencia comercial", { exact: true }).count() === 3, `${label} no marcó las tres referencias comerciales.`);
+  assert(await page.getByText("Aún no hay precios públicos ni contratación en línea.").isVisible(), `${label} no aclaró el estado público de los precios.`);
+  assert(await page.getByRole("link", { name: "Consultar disponibilidad" }).count() === 3, `${label} no ofrece consultar disponibilidad para cada nivel.`);
+  assert(!(await page.content()).match(/USD\s*(39|59|89)\/mes/), `${label} mostró importes internos como precios públicos.`);
   assert(!(await page.content()).match(/oferta limitada|promoción|compra inmediata|checkout/i), `${label} contiene lenguaje comercial no autorizado.`);
 
   if (width > 760) {
@@ -66,4 +68,4 @@ for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]])
   await runViewport(width, height);
 }
 
-console.log("PASS: Licencias verificó hero, niveles, referencias, comparador desktop/móvil, evolución, addons, FAQ, CTAs, metadata, keyboard focus y responsive 1366/768/390/360.");
+console.log("PASS: Licencias verificó hero, niveles, disponibilidad, ausencia de precios públicos, comparador desktop/móvil, evolución, addons, FAQ, CTAs, metadata, keyboard focus y responsive 1366/768/390/360.");

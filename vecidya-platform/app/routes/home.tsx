@@ -48,7 +48,7 @@ export default function Home() {
         <section aria-labelledby="home-hero-title" className="public-home-hero">
         <div className="public-home-hero__copy">
           <p className="eyebrow">VECINDARIO DIGITAL</p>
-          <h1 id="home-hero-title">Haz que tu presencia pueda encontrarse.</h1>
+          <h1 id="home-hero-title">Haz que tu presencia sea fácil de encontrar.</h1>
           <p>Explora negocios reales, entiende dónde estás y descubre qué puedes ordenar primero.</p>
           <div className="public-actions">
             <Link className="button button--primary" to="/vecindario">Explorar el Vecindario</Link>
@@ -121,7 +121,7 @@ export default function Home() {
 
       <VisualSection
         eyebrow="CÓMO AYUDA VECIDYA"
-        title="De información dispersa a un siguiente paso visible."
+        title="De información dispersa a un siguiente paso claro."
         visual={<img alt="Perfil digital de un comercio local conectado con señales de presencia pública" height={1254} loading="lazy" src={publicAssets.illustrations.storefrontDigitalProfile} width={1254} />}
       >
         <div className="home-transformation" aria-label="Transformación de presencia digital">

@@ -1,8 +1,10 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-23 (`0.4.1` LIVE en staging y producción; DIAG-002C + UX-003.1–003.5)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.4.1`; versión desplegada en producción: `0.4.1`, Version ID `eec3de6a-6711-4eff-91de-b413406e3618`; staging Version ID `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454`.
+Última reconciliación: **2026-09-23 (`0.4.1` LIVE en staging y producción; DIAG-002C + UX-003.1–003.5; VIS-001 en progreso local)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.4.1`; versión desplegada en producción: `0.4.1`, Version ID `eec3de6a-6711-4eff-91de-b413406e3618`; staging Version ID `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
+
+VIS-001 está en progreso local: Login, Registro y recuperación comparten `AuthShell`; Home, navegación pública, footer, Licencias, Addons, Aprende y Vecindario recibieron una primera revisión visual. `typecheck` y `build` pasaron, y hay capturas en `screenshots/`; estos cambios no están publicados ni alteran rutas, arquitectura comercial, scoring, GHL, D1 o auth backend. Véase [STATUS.md](STATUS.md) y [ROADMAP.md](ROADMAP.md).
 
 ## Resumen ejecutivo
 
@@ -44,7 +46,7 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` es la ru
 | `/vecindario` | D1 (`listPublishedBusinessProfiles`, opciones de filtro) | Funcional | GET `q`, `category`, `city`; sin paginación |
 | `/vecindario/:slug` | D1 (perfil + horarios) | Funcional | 404 real si no publicado/suspendido; JSON-LD `LocalBusiness` |
 | `/servicios` | Estático (5 fichas) | Funcional | Sin precios, paquetes ni garantías (grep) |
-| `/licencias` | Estático | Funcional local / release ready | Cuadra, Barrio y Ciudad; comparador, evolución, addons, FAQ y CTA; referencias comerciales explícitas, sin checkout |
+| `/licencias` | Estático | Funcional local / release ready | Cuadra, Barrio y Ciudad; comparador, evolución, addons, FAQ y CTA; consulta de disponibilidad, sin importes públicos ni checkout |
 | `/addons` | Estático | Funcional local / release ready | Categorías de comunicación, automatización, IA e integraciones; cards de capacidades y separación comercial; sin precios ni checkout |
 | `/diagnostico` | Cliente: motor puro `app/features/diagnostic` + `useState`; entrada contextual `?perfil=` y `?objetivo=` | Funcional y publicada (`0.4.1`) | Ver sección |
 | `/unete` | Estático | Funcional | Dos entradas: Diagnóstico o Contacto; preparación breve y tres pasos; sin registro |
@@ -62,7 +64,7 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 
 - El recorrido público queda auditado como `Aprende → Diagnóstico → Licencias → Addons → Servicios → Contacto`: Aprende explica, Diagnóstico orienta, Licencias presentan una base continua, Addons amplían capacidades, Servicios comunican trabajo personalizado y Contacto abre conversación.
 - CTAs verificados: Aprende → Diagnóstico/Contacto; Diagnóstico → Licencias/Addons/Servicios/Aprende/Contacto; Licencias → Diagnóstico/Servicios/Addons; Addons → Diagnóstico/Licencias/Servicios; Servicios → Diagnóstico/Contacto/Licencias/Addons.
-- La separación comercial permanece explícita: licencia ≠ servicio, addon ≠ consumo y herramienta ≠ resultado. Cuadra/Barrio/Ciudad muestran `USD 39/mes`, `USD 59/mes` y `USD 89/mes` únicamente como referencias comerciales; no hay checkout, pagos ni suscripciones.
+- La separación comercial permanece explícita: licencia ≠ servicio, addon ≠ consumo y herramienta ≠ resultado. Los importes de trabajo de Cuadra/Barrio/Ciudad no se publican; no hay checkout, pagos ni suscripciones.
 - La auditoría no encontró GHL/HighLevel en la superficie pública ni rutas privadas (`/app`, `/app/internal`, `/api`, `/login`, `/register`) en el sitemap. Header y footer mantienen navegación pública real, incluido Nosotros, Aprende, Diagnóstico, Servicios, Licencias, Addons, Contacto y Legal.
 - Validación versionada: `commercial-experience-review-check.mjs` PASS en 1366/768/390/360; las brechas SEO globales preexistentes (robots/favicon dedicados y a11y completa) siguen registradas en `STATUS.md`.
 
