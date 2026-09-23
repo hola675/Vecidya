@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-23 — UX-002.7 Commercial Experience Review (`v0.3.0`, PASS técnico local)
+
+- Auditado el recorrido comercial completo `Aprende → Diagnóstico → Licencias → Addons → Servicios → Contacto` sin crear nuevas páginas ni activar funcionalidades comerciales.
+- Verificados CTAs cruzados, navegación pública desktop/móvil, separación Licencia/Addon/Servicio/Consumo, referencias Cuadra/Barrio/Ciudad etiquetadas y ausencia de GHL/HighLevel público.
+- Añadido `commercial-experience-review-check.mjs` al runner local: sitemap, metadata, exclusión de `/app`, `/api`, `/login` y `/register`, overflow y responsive 1366/768/390/360.
+- Añadido «Nosotros» a la navegación desktop para completar la entrada institucional; no se modificó el modelo de datos.
+- Se mantiene `0.3.0`; no hubo push, deploy ni migraciones remotas. Producción continúa en `0.2.0`.
+
 ## 2026-09-23 — UX-002.6 Content & Learn Experience (`v0.3.0`, PASS técnico local)
 
 - Evolucionada `/aprende` a centro de conocimiento con cinco categorías y cuatro artículos iniciales atribuidos a Yoan Ortiz.

@@ -1,10 +1,10 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-23 (UX-002.6, Content & Learn Experience local release ready; código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: sistema editorial estático, 4 artículos reales atribuidos a Yoan Ortiz, assets educativos SVG, rutas indexables y validación local.
+Última reconciliación: **2026-09-23 (UX-002.7, Commercial Experience Review local release ready; código local `v0.3.0`; producción continúa en `v0.2.0`)**. Evidencia: auditoría de recorrido comercial, CTAs cruzados, navegación, SEO, referencias de precio, exclusión de rutas privadas y E2E responsive.
 
 ## Veredicto
 
-Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional, UX-001C en **PASS técnico local / release ready** y UX-002.2–UX-002.5 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
+Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organización, perfil comercial por organización, directorio público, administración interna con gobierno y una web pública completa. RR-001 queda en **PASS técnico local**, PERF-001 en **PASS**, PROD-001 en **CERRADA**, EMAIL-001 en **PASS** para el núcleo transaccional, UX-001C en **PASS técnico local / release ready** y UX-002.2–UX-002.7 en **PASS técnico local / release ready**. El código local es `0.3.0`; producción continúa publicada y verificada como `0.2.0`. Verificación autenticada de esta release e invitaciones permanecen como follow-up explícito.
 
 Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-438c-a796-f20f7bf8e4b3`), verificado por HTTP anónimo el 2026-09-22. El Worker reporta binding `DB=vecidya-prod`; `vecidya-staging` permanece existente y preservada. Hay **un solo vecino real publicado (Vecidya, dogfooding)**; el piloto con negocios reales no está publicado y está bloqueado por decisiones y datos pendientes. La Home `v0.3.0` aún no está publicada.
 
@@ -90,6 +90,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | UX-002.4 Services Experience | IMPLEMENTADA | PASS técnico local / release ready | `/servicios` explica presencia, organización, automatización, IA y marketing; separa licencia/addon/servicio/consumo y conecta con Diagnóstico; sin precios generales ni GHL visible |
 | UX-002.5 Diagnostic Experience 2.0 | IMPLEMENTADA | PASS técnico local / release ready | Resultado ampliado con situación, prioridades, camino Vecidya y recomendaciones comerciales/educativas; scoring conservado, sin persistencia ni venta agresiva |
 | UX-002.6 Content & Learn Experience | IMPLEMENTADA | PASS técnico local / release ready | Aprende incluye 5 categorías, 4 artículos estáticos atribuidos a Yoan Ortiz, assets educativos, índice, CTAs, metadata por artículo y sitemap; sin CMS ni persistencia editorial |
+| UX-002.7 Commercial Experience Review | IMPLEMENTADA | PASS técnico local / release ready | Auditoría del recorrido Aprende → Diagnóstico → Licencias → Addons → Servicios → Contacto; CTAs cruzados, navegación, precios de referencia, GHL no público, sitemap, rutas privadas excluidas y responsive PASS |
 | PUBLIC-PROD-DIRECT-001 | CERRADA | PASS | `wrangler.jsonc` top-level; apex 200, `www` 301 |
 | PRODUCT-EXPERIENCE-001 A | PASS TÉCNICO LOCAL | PASS | `product-experience-a` pasa (45 s) |
 | PRODUCT-EXPERIENCE-001 B | EN ESPERA | PARTIAL | Test de 260 líneas existe pero falla (defectos del script) |

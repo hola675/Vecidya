@@ -1,6 +1,6 @@
 # Pruebas
 
-Última reconciliación: 2026-09-23 (UX-002.5). Evidencia: `diagnostic-experience-check.mjs` PASS en 1366/768/390/360 con el resultado comercial y educativo, `product-experience-a-public-review-check.mjs` PASS con `/servicios`, `/licencias` y `/addons`, typecheck, build y diff-check PASS. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
+Última reconciliación: 2026-09-23 (UX-002.7). Evidencia: `commercial-experience-review-check.mjs` PASS en 1366/768/390/360 para el recorrido comercial, CTAs, navegación, SEO, precios de referencia y sitemap; regresiones `services`, `licenses`, `addons`, `diagnostic` y `learn` PASS; typecheck, build y diff-check PASS. La verificación manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` permanece registrada; la autenticación posterior con la nueva contraseña no se declara sin evidencia separada.
 
 ## Estado de la infraestructura de pruebas
 
@@ -34,6 +34,7 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `join-contact` | `join-contact-experience-check.mjs` | UX-001B.7 |
 | `about` | `about-experience-check.mjs` | UX-001B.8 |
 | `learn` | `learn-experience-check.mjs` | UX-001B.9 |
+| `commercial-review` | `commercial-experience-review-check.mjs` | UX-002.7 |
 | `legal-trust` | `legal-trust-experience-check.mjs` | UX-001B.10 |
 | `licenses` | `licenses-experience-check.mjs` | UX-002.2 |
 | `addons` | `addons-experience-check.mjs` | UX-002.3 |
@@ -104,7 +105,7 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 | Business profile | `bpx`, `pg-c1`, `c1`, `c2`, `pe-b`, `d1` | Subida de logo (no existe); publicación vía API |
 | Servicios | `services-exp`, `pe-b` | Escritura admin (4B/8D) stale |
 | Admin interna | `admin-shell` (8A), `admin-bp` (8C), `d1` | 8B, 8E y API de servicios stale; nada ejecutable cubre `/organizations`, `/integrations` ni escritura de servicios |
-| Web pública | `px-a` + `join-contact` + `about` + `learn` + `licenses` + `addons`: recorrido `/` → `/vecindario` → perfil → `/servicios` → `/diagnostico` → `/contacto`, `/unete`, `/sobre-nosotros`, `/aprende`, `/licencias` y `/addons` (200, metadata, CTAs, mailto, privacidad, equipo real, temas, estado editorial honesto, seis áreas de servicios profesionales, referencias comerciales explícitas, separación addon/servicio/consumo, patrones prohibidos, overflow y responsive 1366/768/390/360); UX-001B.2 además valida Home con hasta 3 perfiles D1, 4 choices y 4 servicios; UX-001C cubre filtros noindex, alias 301 y sitemap | `/privacidad` fuera de smoke dedicado, páginas 404, `www`→apex |
+| Web pública | `px-a` + `join-contact` + `about` + `learn` + `licenses` + `addons` + `commercial-review`: recorrido comercial completo con 200, metadata, CTAs cruzados, mailto, autoría, referencias comerciales explícitas, separación addon/servicio/consumo, ausencia de GHL público, exclusión de rutas privadas del sitemap, overflow y responsive 1366/768/390/360; UX-001B.2 además valida Home con hasta 3 perfiles D1, 4 choices y 4 servicios; UX-001C cubre filtros noindex, alias 301 y sitemap | `/privacidad` fuera de smoke dedicado, páginas 404, `robots.txt`, `favicon.ico`, `www`→apex y auditoría a11y completa |
 | Vecindario | `q` y categoría en `pg-c1`, `px-a`; exclusión de borradores/suspendidos en `c1`, `d1` | Filtro de ciudad, filtros combinados y estado vacío solo en `.ps1` stale |
 | Diagnóstico | `diagnostic-experience-check.mjs` (selector, 8 preguntas para negocio, progreso accesible, teclado, anterior/siguiente, resultado, reinicio y responsive 1366/768/390/360); `px-a` cubre 200/meta/overflow | Scoring puro sin pruebas unitarias aisladas; persistencia y motor exhaustivo de las siete ramas siguen fuera de esta fase |
 | SEO | meta/canonical en rutas públicas (`px-a`); filtros del Vecindario noindex, alias legado 301 y sitemap sin alias; JSON-LD `LocalBusiness` en `px-a`, `c1`, `c2`, `pg-c1` | `robots.txt`, `favicon.ico`: **0 pruebas**; SEO remoto solo en script remoto |

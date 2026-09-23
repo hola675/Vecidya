@@ -62,11 +62,12 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/vecindario/:slug` | `public-business-profile.tsx` | D1 perfil+horarios | — | funcional (404 si no publicado/suspendido); UI de `0007`–`0009` desplegada | `px-a`, `c1`, `c2`, `d1`, `pg-c1` | sí (perfil `vecidya`) |
 | `/diagnostico` | `diagnostic.tsx` | cliente | — | funcional; motor sin pruebas | `px-a` (solo 200/overflow) | sí |
 | `/sobre-nosotros` | `about.tsx` | estático + WebP humanos | — | funcional | `about` | sí |
-| `/aprende` | `knowledge.tsx` | estático | — | funcional; base editorial sin artículos ficticios | `learn` | sí |
+| `/aprende` | `knowledge.tsx` | estático | — | funcional local / release ready; 5 categorías y 4 artículos | `learn`, `commercial-review` | sí local; deploy pendiente |
+| `/aprende/:slug` | `learn-article.tsx` | estático | — | funcional local / release ready; artículo, índice, CTA y metadata | `learn`, `commercial-review` | sí local; deploy pendiente |
 | `/que-debes-saber` | `knowledge-legacy.tsx` | alias estático | — | funcional; canonical `/aprende` | ninguno | sí |
 | `/privacidad` | `privacy.tsx` | estático | — | funcional; datos, límites y contacto claros | `legal-trust` | sí |
 | `/robots.txt` | `robots.ts` | estático | — | funcional | ninguno | sí |
-| `/sitemap.xml` | `sitemap.ts` | D1 (publicados no suspendidos) | — | funcional | ninguno | sí (10 URLs) |
+| `/sitemap.xml` | `sitemap.ts` | D1 + catálogo editorial | — | funcional; incluye artículos y excluye rutas privadas | `commercial-review` | sí local; deploy pendiente |
 | `/favicon.ico` | `favicon.ts` | redirect 302 → `/brand/vecidya-app-icon.png` | — | funcional | ninguno | sí |
 
 ### AUTH (2)

@@ -35,6 +35,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           <NavLink to="/aprende">Aprende</NavLink>
           <NavLink to="/diagnostico">Diagnóstico</NavLink>
           <NavLink to="/servicios">Servicios</NavLink>
+          <NavLink to="/sobre-nosotros">Nosotros</NavLink>
           <NavLink to="/contacto">Contacto</NavLink>
         </nav>
         <div className="site-header__actions">

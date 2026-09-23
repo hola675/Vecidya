@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-23 (UX-002.6 PASS técnico local; follow-up de verificación/invitaciones).
+Última reconciliación: 2026-09-23 (UX-002.7 PASS técnico local; follow-up de verificación/invitaciones).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -42,7 +42,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 **Corrección 2 — Contenido (6) antes de Interconexión (7).** Las conexiones «Artículo → Diagnóstico/Servicio» y «Diagnóstico → contenido relacionado» no pueden existir sin artículos: hoy hay cero. Interconectar primero produciría enlaces a un hub vacío.
 
-**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7, UX-001B.8, UX-001B.9, UX-001B.10 y UX-001C quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`. UX-002.1 queda **PASS DOCUMENTAL** y UX-002.2–UX-002.6 quedan **PASS técnico local / release ready**: la superficie pública conecta Aprende, Diagnóstico, Licencias, Addons y Servicios sin activar checkout, pagos, suscripciones, migraciones, GHL ni consumos ocultos. La producción sigue en `0.2.0` porque no hubo deploy. El siguiente bloque recomendado es UX-002.7 — Commercial Experience Review.
+**Nota de estado.** UX-001B.1, UX-001B.2, UX-001B.3, UX-001B.4, UX-001B.5, UX-001B.6, UX-001B.7, UX-001B.8, UX-001B.9, UX-001B.10 y UX-001C quedan **CLOSED / PASS técnico local / release ready** en `0.3.0`. UX-002.1 queda **PASS DOCUMENTAL** y UX-002.2–UX-002.7 quedan **PASS técnico local / release ready**: la superficie pública conecta Aprende, Diagnóstico, Licencias, Addons, Servicios y Contacto sin activar checkout, pagos, suscripciones, migraciones, GHL ni consumos ocultos. La producción sigue en `0.2.0` porque no hubo deploy. UX-002 queda cerrado; el siguiente bloque requiere autorización explícita.
 
 ## UX-002 — evolución comercial
 
@@ -69,6 +69,10 @@ El resultado conserva el scoring y añade situación actual, observaciones, prio
 ### UX-002.6 Content & Learn Experience — PASS técnico local
 
 Se añadieron cinco categorías y cuatro artículos estáticos reales atribuidos a Yoan Ortiz, con diagramas SVG educativos, tarjetas en `/aprende`, páginas `/aprende/:slug`, índice, CTAs contextuales, metadata canonical/Open Graph y sitemap. No se añadió CMS ni persistencia editorial.
+
+### UX-002.7 Commercial Experience Review — PASS técnico local
+
+Se auditó el recorrido `Aprende → Diagnóstico → Licencias → Addons → Servicios → Contacto`, con CTAs cruzados, navegación desktop/móvil, separación entre licencia/addon/servicio/consumo, referencias de precio etiquetadas, ausencia de GHL/HighLevel público, sitemap con rutas públicas y exclusión de rutas privadas. `commercial-experience-review-check.mjs` pasó en 1366/768/390/360 junto con las regresiones de las experiencias comerciales. Las brechas SEO/a11y globales preexistentes permanecen en `STATUS.md` y no bloquean este cierre local.
 
 ## Bloque actual: EMAIL-001C (PASS)
 
