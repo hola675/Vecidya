@@ -138,11 +138,11 @@ UX-001B.5 convirtió la página en una guía de decisión SSR. UX-002.4 la actua
 
 ### SEO, navegación y accesibilidad (evidencia de código)
 
-- Meta por ruta con `publicMeta`: título `X | Vecidya`, descripción, `index, follow`, `og:title/description/type/locale/url/image` y Twitter Cards con imagen Open Graph institucional; canonical **fijo** `https://vecidya.com`. Sitemap, robots y URLs de JSON-LD usan el origen de la request (en `workers.dev` serían inconsistentes con el canonical).
+- Meta por ruta con `publicMeta`: título `X | Vecidya`, descripción, `index, follow`, `og:title/description/type/locale/url/image` y Twitter Cards con imagen Open Graph institucional; canonical **fijo** `https://vecidya.com`. UX-002.7 verifica Open Graph, canonical, robots, favicon, alias legado y sitemap en el smoke público. Sitemap, robots y URLs de JSON-LD usan el origen de la request (en `workers.dev` serían inconsistentes con el canonical).
 - Robots: `Allow: /`; `Disallow: /app, /api, /login, /register`; sitemap sin `lastmod`.
 - `www.vecidya.com` → 301 → apex (`workers/app.ts`).
 - Navegación: desktop (Vecindario, Licencias, Aprende, Diagnóstico, Servicios, Nosotros, Contacto) + «Acceder» y «Únete a Vecidya»; móvil `<details>` con Escape y retorno de foco; footer agrupado en Explorar, Empezar y Legal, sin rutas inexistentes. Addons se descubre desde Licencias, el footer y el menú móvil. El inicio usa el logo como entrada y las búsquedas filtradas del Vecindario son `noindex`.
-- Accesibilidad: skip-link, `:focus-visible`, `aria-label` en navegaciones, `prefers-reduced-motion`, breakpoints 430/760/820/900 px. UX-001B.2 corrige el landmark de Home/PublicLayout, añade un H1 único, dimensiones de imágenes, foco heredado y navegación keyboard-friendly para las cuatro opciones del Diagnóstico. La auditoría completa de la superficie pública y el progreso interno del Diagnóstico permanecen en UX-001F.
+- Accesibilidad: skip-link, `:focus-visible`, `aria-label` en navegaciones, `prefers-reduced-motion`, breakpoints 430/760/820/900 px. UX-001B.2 corrige el landmark de Home/PublicLayout, añade un H1 único, dimensiones de imágenes, foco heredado y navegación keyboard-friendly para las cuatro opciones del Diagnóstico. UX-002.7 añade verificación de un único `<main>`, alt/dimensiones de imágenes, overflow y navegación cross-page en los cuatro viewports.
 - Assets: 14 WebP activos + 4 PNG conservados (ícono de marca canónico y 3 recursos seleccionados sin uso); PERF-001 redujo `18,649,999` a `4,369,378` bytes (`76.57 %`). UX-001B.2 añade 8 SVG livianos y `og-vecidya-public.svg` (1200×630, 2,291 bytes), sin usar assets de reviews/ratings ni el icono PNG de búsqueda de 808.6 KB.
 
 ### Política de assets visuales

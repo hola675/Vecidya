@@ -37,6 +37,9 @@ async function runViewport(width, height) {
   for (const path of commercialPaths) {
     await page.goto(new URL(path, baseUrl).toString(), { waitUntil: "networkidle" });
     assert(await page.locator("h1").count() === 1, `${label} ${path} debe tener un único H1.`);
+    assert(await page.locator("main").count() === 1, `${label} ${path} debe tener un único main.`);
+    assert(await page.locator('meta[property="og:image"]').count() === 1, `${label} ${path} no tiene og:image.`);
+    assert(await page.locator("img").evaluateAll((images) => images.every((image) => image.hasAttribute("alt") && image.hasAttribute("width") && image.hasAttribute("height"))), `${label} ${path} tiene imágenes sin alt o dimensiones.`);
     await assertNoOverflow(page, `${label} ${path}`);
   }
   await page.goto(new URL("/aprende", baseUrl).toString(), { waitUntil: "networkidle" });
@@ -59,6 +62,13 @@ async function runViewport(width, height) {
 for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]]) await runViewport(width, height);
 
 for (const path of commercialPaths) await fetchPage(path);
+const robotsResponse = await fetch(new URL("/robots.txt", baseUrl));
+const robots = await robotsResponse.text();
+assert(robotsResponse.status === 200 && robots.includes("Disallow: /app") && robots.includes("Sitemap:"), "robots.txt no contiene las guardas esperadas.");
+const faviconResponse = await fetch(new URL("/favicon.ico", baseUrl), { redirect: "manual" });
+assert(faviconResponse.status === 302 && faviconResponse.headers.get("location")?.includes("vecidya-app-icon.png"), "favicon.ico no redirige al asset canónico.");
+const legacyResponse = await fetch(new URL("/que-debes-saber", baseUrl), { redirect: "manual" });
+assert(legacyResponse.status === 301 && legacyResponse.headers.get("location")?.endsWith("/aprende"), "El alias legado no conserva su redirect 301.");
 const sitemapResponse = await fetch(new URL("/sitemap.xml", baseUrl));
 const sitemap = await sitemapResponse.text();
 assert(sitemapResponse.status === 200, `Sitemap devolvió ${sitemapResponse.status}.`);

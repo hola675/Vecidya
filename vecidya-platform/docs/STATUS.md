@@ -33,7 +33,7 @@ Lo publicado en `vecidya.com` corresponde a `v0.2.0` (Version ID `c38ce78b-648c-
 | Diagnóstico 2.0 comercial | sí | sí | n/a | E2E dedicado responsive | no | **PASS técnico local / release ready** | Situación, observaciones, camino recomendado y mapeo a Licencia/Addon/Servicio/Aprende; scoring sin cambios |
 | Web pública (rutas y contenido) | sí | sí | n/a | E2E público + Join/Contact responsive | sí | **PASS** | 12 URLs en sitemap; deuda de contenido/editorial separada |
 | Home pública UX-001B.2 | sí | sí | sí | E2E público + QA responsive local | no | **PASS técnico local / release ready** | Seis bloques, preview D1 de perfiles publicados, 8 SVG, OG/social metadata; producción no actualizada |
-| SEO/GEO | sí | n/a | n/a | parcial | sí | **PARTIAL** | Sin `og:image`; sitemap/robots sin pruebas; canonical fijo |
+| SEO/GEO | sí | n/a | n/a | E2E comercial público | sí | **PASS técnico local / release ready** | Metadata Open Graph/canonical, robots, favicon, sitemap y alias legado verificados; canonical público fijo por diseño |
 | Administración interna (base) | sí | sí | sí | parcial | sí | **PARTIAL** | 8A/8C pasan; 8B/8E/servicios stale |
 | Gobierno de perfiles (verificar/suspender/auditar) | sí | sí | sí | sí | **sí** | **PASS** | `0009`; solo `platform_admin` activo |
 | Integraciones (metadata genérica) | sí | solo lectura | sí | stale | sí | **PARTIAL (foundation)** | Registro tenant-scoped; sin cliente de proveedor |
@@ -151,7 +151,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | --- | --- | --- | --- | --- |
 | `DIAG-001` | Diagnóstico: respuestas de un perfil anterior seguían puntuando tras volver y cambiar el perfil; solo genera 1 «oportunidad»; la dimensión `organizacion` solo baja; resultado sin enlaces a Servicios/Vecindario/contenido; ids de dimensión sin acento en pantalla | `diagnostic.tsx`; `diagnostic-experience-check.mjs` | M | RESUELTA en UX-001B.6; persistencia sigue fuera de alcance |
 | `CONTENT-EDU-001` | Contenido educativo real implementado localmente como catálogo estático; publicación remota y ampliación editorial futura siguen separadas | `content/learn.ts`; `knowledge.tsx`; `learn-article.tsx`; `sitemap.ts` | M | RESUELTA para UX-002.6 local; publicación pendiente |
-| `UX-PUBLIC-001` | 8 páginas anidan un segundo `<main>`; sin `og:image`/`og:url`/Twitter; ninguna página pública enlaza a `/register`; `alt` de `VisualSection` oculto por `aria-hidden`; imágenes sin `width/height/loading`; overflow de emails/URLs largos en perfil sin `overflow-wrap`; 3 assets sin uso con nombres de reseñas/ratings | greps; `public-layout.tsx:23` | M | ABIERTA |
+| `UX-PUBLIC-001` | Auditoría pública corregida: un único `<main>`, metadata Open Graph/canonical, dimensiones de imágenes, alt/aria coherentes, overflow de datos públicos y navegación verificados en responsive | `commercial-experience-review-check.mjs`; `public-layout.tsx`; `app.css` | M | RESUELTA en UX-002.7 |
 | `INTERCONNECT-001` | Perfil → Servicios/Diagnóstico/Contacto es un CTA fijo no contextual; sin negocios/contenido relacionados; Diagnóstico sin salida contextual (ver mapa en PROJECT_STATE) | código | M | ABIERTA (trabajo de roadmap) |
 | `HOME-STATIC-001` | Home es 100 % copy estático (~600 palabras, 2 ilustraciones); sin búsqueda ni vecinos; el buscador del Vecindario solo filtra por nombre aunque su placeholder sugiere rubros; sin paginación | `home.tsx`; `business-profile.server.ts:78` | M | ABIERTA (roadmap) |
 
@@ -161,7 +161,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | --- | --- | --- | --- | --- |
 | `TEST-D1-NAME` | Los scripts locales usan el binding D1 `DB`; no quedan referencias activas a `vecidya-dev` en `tests/e2e` | `tests/e2e`; runner 17/17 PASS | M | RESUELTA (RAN 2026-09-20) |
 | `TEST-PXB-001` | PX-B corrigió locators, lifecycle por viewport, fixture local y overflow responsive en organización | `product-experience-b-client-app-check.mjs`; `app/app.css`; runner PASS | M | RESUELTA (RAN 2026-09-20) |
-| `TEST-GAPS-001` | No hay pruebas unitarias ni de integración, ni script `test`, ni CI. Sin protección: motor exhaustivo del Diagnóstico, `sitemap.xml`/`robots.txt`/`favicon`, credenciales inválidas, alias `/que-debes-saber`, `/privacidad`, `www`→apex, `/api/organizations/:id/authorization` | `docs/TESTING.md`; E2E Learn añadido | M | ABIERTA |
+| `TEST-GAPS-001` | La superficie pública UX-002 queda protegida por E2E; permanecen fuera de este cierre las pruebas unitarias/CI, auth negativa, API de autorización, privacidad dedicada y www→apex | `commercial-experience-review-check.mjs`; `docs/TESTING.md` | M | ABIERTA fuera del alcance UX-002 |
 | `TEST-SAFETY-001` | Los scripts locales validan `BASE_URL`; los remotos requieren intención explícita y hostname workers.dev | `tests/e2e/test-safety.mjs`; pruebas negativas PASS | M | RESUELTA (RAN 2026-09-20) |
 | `TEST-CLEANUP-001` | 11 scripts dejan fixtures en la D1 local (perfiles publicados, `platform_admin`); pueden hacer inestables las aserciones del directorio | `TESTING.md` | B | ABIERTA |
 

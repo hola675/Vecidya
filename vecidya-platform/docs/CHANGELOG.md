@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-23 — Public hardening follow-up (`v0.3.0`)
+
+- Corregidas brechas públicas de accesibilidad y robustez: imágenes del header con dimensiones explícitas, datos de perfil con `overflow-wrap` y auditoría de un único `<main>`, alt/dimensiones, metadata y overflow.
+- Ampliado `commercial-experience-review-check.mjs` para verificar `robots.txt`, `favicon.ico`, alias `/que-debes-saber`, `og:image`, sitemap y rutas privadas excluidas.
+- `UX-PUBLIC-001` queda resuelta en el alcance público; las pruebas de auth negativa, APIs privadas, CI y auditoría axe permanecen fuera de UX-002 y documentadas como brechas separadas.
+
 ## 2026-09-23 — UX-002.7 Commercial Experience Review (`v0.3.0`, PASS técnico local)
 
 - Auditado el recorrido comercial completo `Aprende → Diagnóstico → Licencias → Addons → Servicios → Contacto` sin crear nuevas páginas ni activar funcionalidades comerciales.

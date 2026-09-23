@@ -27,7 +27,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
       <a className="skip-link" href="#contenido">Saltar al contenido</a>
       <header className="site-header">
         <Link aria-label="Vecidya, inicio" className="site-brand" to="/">
-          <img alt="" src="/brand/vecidya-app-icon.png" />Vecidya
+          <img alt="" height={32} src="/brand/vecidya-app-icon.png" width={32} />Vecidya
         </Link>
         <nav className="site-nav" aria-label="Navegación pública">
           <NavLink to="/vecindario">Vecindario</NavLink>
@@ -65,7 +65,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
       <footer className="site-footer">
         <div>
           <Link aria-label="Vecidya, inicio" className="site-brand" to="/">
-            <img alt="" src="/brand/vecidya-app-icon.png" />Vecidya
+            <img alt="" height={32} src="/brand/vecidya-app-icon.png" width={32} />Vecidya
           </Link>
           <p>Comunidad digital para ordenar presencia, aprendizaje y próximos pasos.</p>
         </div>
