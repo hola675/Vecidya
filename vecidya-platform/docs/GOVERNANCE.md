@@ -32,7 +32,9 @@ Antes de implementar se leen `PROJECT_STATE.md`, `STATUS.md` y la documentación
 
 ## Documentos canónicos
 
-El proyecto mantiene un **máximo de 20 documentos Markdown activos**; hoy son 15. No se crea un documento por fase, auditoría o hallazgo: se consolida en el que ya tiene esa responsabilidad. OPS-001 es una excepción autorizada por el usuario porque requiere una matriz operativa autónoma antes de implementar integración. Crear otro documento exige un vacío real que no pueda resolverse actualizando otro, y autorización del usuario.
+El proyecto mantiene un **máximo de 20 documentos Markdown activos**; hoy son **16** (recuento verificado en REL-004). No se crea un documento por fase, auditoría o hallazgo: se consolida en el que ya tiene esa responsabilidad. OPS-001 es una excepción autorizada por el usuario porque requiere una matriz operativa autónoma antes de implementar integración. Crear otro documento exige un vacío real que no pueda resolverse actualizando otro, y autorización del usuario.
+
+> **Pendiente de decisión (REL-004):** `docs/UX-003-APP-ADMIN-AUDIT.md` existe en el árbol y entró en el release `0.4.1`, pero no figura en la tabla de documentos canónicos y no consta su autorización. Requiere una decisión del usuario: incorporarlo a la tabla como documento canónico, o consolidar su contenido en `STATUS.md`/`ROADMAP.md` y eliminarlo.
 
 | Documento | Responsabilidad única |
 | --- | --- |

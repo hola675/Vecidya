@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-23 — REL-004 Release Reconciliation `0.4.1` (documental)
+
+Reconciliación de trazabilidad del release ya publicado. No modifica producto: sin cambios de motor, UX, páginas públicas, scoring, recomendaciones ni pruebas.
+
+- **Contenido real de `0.4.1`** (61 archivos en `41986a4` + 5 documentos en `b59d614`): DIAG-002 (motor de Diagnóstico extraído a `app/features/diagnostic`), DIAG-002B (hardening semántico), DIAG-002C (cierre de decisiones de producto), UX-003.1–003.5 (Login, dashboard, shell del área cliente, Home Admin y detalle de negocio), OPS-001 (fundación documental GHL), comunidad/contacto WhatsApp y la corrección de `assets.directory` en `wrangler.jsonc`.
+- **Brechas de trazabilidad registradas, no reescritas:** el commit `41986a4` lleva el mensaje `feat(ux): improve client and admin experience`, que describe solo uno de los cuatro bloques que contiene; y la versión salta de `0.3.0` a `0.4.1` sin que exista ningún commit `0.4.0`, pese a que `0.4.0` llegó a desplegarse en staging y producción desde un árbol sin commit.
+- **Validación sobre `b59d614`** (`RAN` 2026-09-23): `typecheck`, `build`, `git diff --check` PASS; `test:unit` 75/75 PASS; 25 scripts E2E ejecutados con 21 PASS, 1 PASS PARCIAL (invitaciones, Gmail externo) y 3 FAIL de alcance UX-003 (`px-a`, `px-b`, `pe-b`), registrados como deuda `TEST-UX003-*`. Smoke HTTP anónimo de producción `0.4.1` PASS en 12 rutas públicas.
+- **Correcciones documentales:** matriz de capacidades del Diagnóstico actualizada a DIAG-002C y 75 pruebas, con el encaje comercial marcado como publicado; recuento de documentos canónicos corregido a 16 y señalado que `UX-003-APP-ADMIN-AUDIT.md` no figura en la tabla canónica ni consta su autorización.
+- Sin push y sin deploy. `origin/main` permanece en `732d6c2` (`0.3.0`), dos commits por detrás del código publicado.
+
 ## 2026-09-23 — DIAG-002C Product Decision Closure (`0.4.1`, LIVE)
 
 - Licencia solo por necesidad recurrente real: una operación con registro y seguimiento resueltos y sin capacidad recurrente pendiente recibe «Ninguna necesaria por ahora» aunque un servicio o una lectura ayuden (escenarios G e I dejan de recibir «Barrio opcional»); sin consultas tampoco hay licencia; Barrio exige brecha sustantiva de seguimiento; Ciudad conserva sus prerrequisitos; una prioridad fundacional limita a Cuadra.
