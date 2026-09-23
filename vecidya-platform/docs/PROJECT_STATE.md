@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-23 (`0.4.0` LIVE; release candidate local `0.4.1` UX-003.2/003.5)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.4.1`; versión desplegada en producción: `0.4.0`, Version ID `8c7d38e6-d560-4f27-9a40-b9d102033eff`; staging Version ID `57c2f319-7de4-4995-a4ba-2a10db82fa7a`.
+Última reconciliación: **2026-09-23 (`0.4.1` LIVE en staging y producción; DIAG-002C + UX-003.1–003.5)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.4.1`; versión desplegada en producción: `0.4.1`, Version ID `eec3de6a-6711-4eff-91de-b413406e3618`; staging Version ID `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454`.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -46,7 +46,7 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` es la ru
 | `/servicios` | Estático (5 fichas) | Funcional | Sin precios, paquetes ni garantías (grep) |
 | `/licencias` | Estático | Funcional local / release ready | Cuadra, Barrio y Ciudad; comparador, evolución, addons, FAQ y CTA; referencias comerciales explícitas, sin checkout |
 | `/addons` | Estático | Funcional local / release ready | Categorías de comunicación, automatización, IA e integraciones; cards de capacidades y separación comercial; sin precios ni checkout |
-| `/diagnostico` | Cliente: motor puro `app/features/diagnostic` + `useState`; entrada contextual `?perfil=` y `?objetivo=` | Funcional y publicada (`0.4.0`) | Ver sección |
+| `/diagnostico` | Cliente: motor puro `app/features/diagnostic` + `useState`; entrada contextual `?perfil=` y `?objetivo=` | Funcional y publicada (`0.4.1`) | Ver sección |
 | `/unete` | Estático | Funcional | Dos entradas: Diagnóstico o Contacto; preparación breve y tres pasos; sin registro |
 | `/contacto` | Estático | Funcional | Email `hola@vecidya.com`, guidance contextual, privacidad y Diagnóstico; sin formulario ni canales ficticios |
 | `/sobre-nosotros` | Estático | Funcional | Propósito, historia, equipo real, forma de trabajar y punto de vista; fotos WebP optimizadas |
@@ -122,7 +122,7 @@ La Home redujo la estructura de diez bloques a seis bloques de experiencia más 
 
 ### Diagnóstico (`diagnostic.tsx` + `app/features/diagnostic/`, DIAG-002)
 
-Confirmado por código (greps de `fetch`, `localStorage`, `sessionStorage`, `cookie`, `indexedDB`, `<form`, `/api/`, `ghl`, `crm` en la ruta y en el motor: 0 coincidencias): **anónimo, efímero, solo cliente, sin persistencia, sin API, sin CRM/GHL, sin email obligatorio**. La `0.4.0` publicada sirve DIAG-002B; no se ejecutaron migraciones ni cambios de secrets.
+Confirmado por código (greps de `fetch`, `localStorage`, `sessionStorage`, `cookie`, `indexedDB`, `<form`, `/api/`, `ghl`, `crm` en la ruta y en el motor: 0 coincidencias): **anónimo, efímero, solo cliente, sin persistencia, sin API, sin CRM/GHL, sin email obligatorio**. La `0.4.1` publicada sirve DIAG-002C; no se ejecutaron migraciones ni cambios de secrets.
 
 - **Motor puro** en `app/features/diagnostic/` (`types`, `profiles`, `questions`, `answers`, `flow`, `scoring`, `result`, `recommendations`, `deep-link`, `catalog`, `index`): sin React ni red; `runDiagnostic(answers)` es determinista y la ruta solo renderiza.
 - **Perfiles**: `business`, `professional`, `creator`, `project`, `organization`. «Idea» pasó a ser un momento (`stage`) y «candidatura o figura pública» se retiró por no tener un mapeo honesto a producto.

@@ -1,19 +1,21 @@
 # Changelog
 
-## 2026-09-23 — DIAG-002C Product Decision Closure (local, PASS técnico local)
+## 2026-09-23 — DIAG-002C Product Decision Closure (`0.4.1`, LIVE)
 
 - Licencia solo por necesidad recurrente real: una operación con registro y seguimiento resueltos y sin capacidad recurrente pendiente recibe «Ninguna necesaria por ahora» aunque un servicio o una lectura ayuden (escenarios G e I dejan de recibir «Barrio opcional»); sin consultas tampoco hay licencia; Barrio exige brecha sustantiva de seguimiento; Ciudad conserva sus prerrequisitos; una prioridad fundacional limita a Cuadra.
 - Servicio ≠ licencia, protegido por invariantes: los servicios solo se derivan de prioridades reales y nunca de la licencia; un servicio puede recomendarse con licencia «ninguna».
 - Vocabulario público canónico de addons: «IA conversacional» y «Automatizaciones» (con «WhatsApp», «SMS», «Telefonía», «AI Voice» e «Integraciones») unificado en `/addons`, el motor del Diagnóstico y el catálogo comercial; identificadores internos sin cambio; los nombres anteriores solo permanecen en entradas históricas de este CHANGELOG.
 - Decisión registrada: Home mantiene cuatro puertas (Negocio, Profesional, Proyecto, Creador); «organización» sigue siendo perfil del motor y `/diagnostico?perfil=organization` sigue válido. Deuda `DIAG-002-HOME-DOORS` cerrada como intencional.
-- Pruebas: 5 unitarias nuevas (`test:unit` 75/75); E2E de Addons actualizado al nombre público. Sin cambios de versión propios (el árbol local ya estaba en `0.4.1` por UX-003.2/003.5); sin commit, push ni deploy.
+- Pruebas: 5 unitarias nuevas (`test:unit` 75/75); E2E de Addons actualizado al nombre público. Incluido en `0.4.1`; `test:unit` 75/75 PASS; publicado en staging y producción (evidencia en `ENVIRONMENTS.md`).
 
-## 2026-09-23 — UX-003.2/003.5 App y Admin (`0.4.1`, listo para publicar)
+## 2026-09-23 — Release `0.4.1` DIAG-002C + UX-003 App y Admin (`LIVE`)
 
 - Añadido shell compartido con navegación activa a Cuenta, Organización, Perfil y Servicios; oculta destinos de organización cuando el usuario todavía no pertenece a una.
 - El detalle Admin del perfil ahora reúne contacto, sitio, WhatsApp, redes, modalidad, área y horarios guardados para revisión, en modo solo lectura.
 - Estilos responsive para desktop y móvil; la navegación conserva landmarks y foco visibles, y sus transiciones respetan movimiento reducido.
-- Sin cambios de permisos, escrituras, schema, migraciones, datos, dependencias ni proveedores. Deploy pendiente de esta versión.
+- Publicado en staging: `vecidya-platform-staging`, Version ID `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454` (versión #35); en producción: `vecidya-platform`, Version ID `eec3de6a-6711-4eff-91de-b413406e3618`.
+- Staging sigue accesible por `workers.dev`; Wrangler no pudo reasignar el trigger de zona `vecidya.com/*` porque ya pertenece al Worker de producción. Sin migraciones remotas ni cambios de secrets.
+- Sin cambios de permisos, escrituras, schema, migraciones, datos, dependencias ni proveedores. `test:unit` 75/75 PASS; `typecheck`, `build` y `git diff --check` PASS. Smoke anónimo `2026-09-23`: `/`, `/login`, `/contacto` y SVG WhatsApp `200`; Home/Contacto muestran `v0.4.1`; `/app` y `/app/internal` redirigen a `/login` con `302` en staging y producción.
 
 ## 2026-09-23 — Deploy `0.4.0` a staging y producción (`LIVE`)
 
