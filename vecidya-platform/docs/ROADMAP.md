@@ -200,7 +200,9 @@ OPS-001 define GHL como infraestructura externa y el contrato `ghl_location_id`,
 
 ### Producción
 
-PROD-001 y EMAIL-001 están cerrados en sus alcances; `app.vecidya.com`/`admin.vecidya.com`, el smoke remoto, secretos adicionales y cualquier manejo posterior de `vecidya-staging` requieren autorización independiente. La secuencia operativa vigente es `PROD-001 → EMAIL-001 → OPS-001 → LEGAL / REAL PROOF → GHL pilot → licenses → UX evolution`.
+PROD-001 y EMAIL-001 están cerrados en sus alcances; `app.vecidya.com`/`admin.vecidya.com`, el smoke remoto, secretos adicionales y cualquier manejo posterior de `vecidya-staging` requieren autorización independiente.
+
+**Gate de la release `0.5.1` (QA-005A, 2026-09-24): BLOQUEADA.** Antes de cualquier deploy de `0.5.1` hay que corregir `SLUG-EDIT-001` en un bloque autorizado que decida la política (¿un borrador ya guardado congela su slug o solo uno publicado?) y el impacto de versión, y después repetir la validación de QA-005A (slug en runtime, `services-exp`, E2E de aislamiento, `typecheck`/`build`/`git diff --check`). `SLUG-LEN-001` (prioridad B) no bloquea. La secuencia operativa vigente es `PROD-001 → EMAIL-001 → OPS-001 → LEGAL / REAL PROOF → GHL pilot → licenses → UX evolution`.
 
 ## Fuera de alcance permanente
 

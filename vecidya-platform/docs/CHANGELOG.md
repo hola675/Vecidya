@@ -1,5 +1,29 @@
 # Changelog
 
+## 2026-09-24 — QA-005A v0.5.1 Release Readiness & Test Signal Cleanup (`0.5.1` local; RELEASE BLOCKED)
+
+Bloque de QA sin funcionalidad nueva ni cambio de versión (`0.5.1`), con el objetivo de decidir si `0.5.1` es candidata limpia a release. Resultado: **no lo es todavía**. Un defecto real del slug automático, `SLUG-EDIT-001`, bloquea la release.
+
+- **`SERVICES-EXP-TAGLINE-001` RESUELTA, solo en el test:**
+  - Causa confirmada: `services-experience-check.mjs` escaneaba el HTML completo, y la tagline del sidebar de `ClientAreaShell` («Presencia digital para negocios locales», UX-003.9) contiene el nombre del servicio «Presencia digital». En el HTML de B había 1 coincidencia, en el sidebar, y 0 de «CRM»: no había fuga. El escaneo total también dejaba sin efecto la aserción positiva de A.
+  - Las aserciones de tenant pasan a leer solo las tarjetas `.service-card` de la lista `aria-label="Servicios de la organización"` dentro del `<main>` de la ruta, con el `<h1>` de la organización activa y el conjunto exacto nombre/estado por organización.
+  - Producto sin cambios. `services-exp` 2/2 PASS. La lógica se verificó offline inyectando tarjetas de A en el HTML real de B: FAIL como corresponde, 5/5 escenarios.
+  - No se pudo demostrar la detección con una mutación viva del loader: el clasificador de permisos la bloqueó y se revirtió sin ejecutarse.
+- **Slug automático (`bc93a31`) validado:**
+  - Correcto en normalización (tildes, `ñ`, mayúsculas, espacios, símbolos), entrada inutilizable (slug vacío; el `required` nativo bloquea), override manual y reanudación al vaciarlo, y edición tras recarga (el slug publicado no cambia).
+  - Colisión: la unicidad es global y solo server-side. El servidor devuelve 400 con un mensaje claro y el cliente no añade sufijo automático.
+  - **Defecto `SLUG-EDIT-001` (A, bloqueante):** `useRef(Boolean(profile?.slug))` solo se evalúa al montar. Si el perfil se crea o publica en esa misma montura, editar el nombre reescribe el slug y al guardar cambia la URL pública: la anterior pasa a 404, sin redirección. Reproducido 2/2 en Edge.
+  - **Defecto `SLUG-LEN-001` (B):** el slug asignado por script no respeta `maxLength`. Un nombre de más de 80 caracteres termina en un rechazo del servidor con mensaje genérico.
+  - No se corrigieron: cambiarían comportamiento de producto y la política del slug, que queda para decisión del usuario.
+- **Regresión:** E2E 11/11 PASS (`services-exp`, `bpx`, `admin-shell`, `admin-orgs`, `admin-bp`, `admin-int`, `commercial-review`, `c1`, `c2`, `d1`, `pg-c1`); `typecheck`, `build` y `git diff --check` PASS.
+- **Responsive, accesibilidad y assets:** smoke 1366/768/390/360 en Login, `/app`, `/app/services`, `/app/business-profile` y Admin. Sin overflow, imágenes cargadas y con `alt` correcto, sin errores de assets y sin originales pesados cargados.
+  - `SETUP-CARD-WRAP-001` sin cambios; sigue fuera de alcance.
+  - Observación nueva `AUTH-LOCKUP-CONTRAST-001` (B): bajo contraste del lockup 3D sobre el panel oscuro de Auth, con la exención WCAG para logotipos.
+  - La ilustración con fondo blanco del Login es opaca por diseño (WebP sin alpha) y ya estaba desde `0.4.1`.
+- **Documentación reconciliada:** `STATUS.md`, `TESTING.md` y `ROADMAP.md` (gate de release). En `PROJECT_STATE.md`, la cabecera pasa de `0.5.0` a `0.5.1`, que había quedado desfasada tras VIS-002B, y se anota el slug autogenerado.
+
+`AUTHZ-BA-001` e `INVITE-001` quedan sin tocar. Sin deploy, sin `--remote` y sin migraciones. Producción sigue en `0.4.1`: la última evidencia HTTP es del 2026-09-23.
+
 ## 2026-09-24 — VIS-002B CLOSED (`0.5.0` → `0.5.1` local, PATCH)
 
 Cierre formal de VIS-002B. El usuario aceptó el checkpoint final y decidió explícitamente **no abrir Batch 02**: los cinco assets ya integrados (símbolo, wordmark, lockup, y los dos de Batch 01) cubren una necesidad real; generar más ahora sería relleno visual sin justificación de la sección 17 de la propia spec.
