@@ -1,8 +1,23 @@
 # Changelog
 
-## 2026-09-24 — VIS-002B Cross-Surface Brand Integration, checkpoint 1 (`0.5.0` local, EN PROGRESO)
+## 2026-09-24 — VIS-002B CLOSED (`0.5.0` → `0.5.1` local, PATCH)
 
-Primer checkpoint del loop cerrado de assets (auditar → integrar lo existente → QA en runtime → identificar huecos → pedir batch ≤4 → STOP). No cierra VIS-002B; continúa tras el batch de assets solicitado al usuario.
+Cierre formal de VIS-002B. El usuario aceptó el checkpoint final y decidió explícitamente **no abrir Batch 02**: los cinco assets ya integrados (símbolo, wordmark, lockup, y los dos de Batch 01) cubren una necesidad real; generar más ahora sería relleno visual sin justificación de la sección 17 de la propia spec.
+
+- **Versión:** `0.5.0` → `0.5.1` (PATCH — cambio visual visible e integrado, sin capacidad nueva) en `package.json`, única fuente canónica. `platform-footer.tsx` la lee dinámicamente (`packageJson.version`); no hay valores hardcodeados en componentes. No aplica cambio en `pnpm-lock.yaml` (no registra la versión del paquete raíz).
+- **Test de cierre corregido:** `commercial-experience-review-check.mjs` aseraba el nombre de archivo exacto del favicon plano anterior; se actualizó al nuevo `vecidya-icon-3d.png` porque prueba directamente un cambio intencional de este trabajo, no deuda histórica ajena.
+- **Hallazgo durante la validación final — no es de VIS-002B:** `services-experience-check.mjs` falla de forma reproducible por un falso positivo preexistente de UX-003.9 (`client-area-shell.tsx:70` imprime la tagline «Presencia digital para negocios locales» en el sidebar de toda página `/app`, y el test comprueba ese substring literal creyendo que solo aparecería si hubiera fuga de datos entre organizaciones). Verificado manualmente que no hay fuga real de servicios entre tenants. Registrado como `SERVICES-EXP-TAGLINE-001` en `STATUS.md`; no corregido aquí para no ampliar el alcance de VIS-002B.
+- **`vecidya-app-icon.png` (PNG plano original) se conserva deliberadamente**, aunque ya no lo usa ningún componente de `app/`: sigue siendo la fuente de la imagen Open Graph (`og-vecidya-public.svg`) y de dos fixtures de prueba (`px-a`, `px-b`). No es un asset huérfano.
+- **Confirmado sin variantes descartadas en `public/`:** `git status --short public/` limpio antes de este commit; los únicos archivos nuevos son los seis derivados finales ya committeados en el checkpoint anterior.
+- **Datos QA locales preservados** (`qa-vis002b@developer.serveryogoms.com`, `platform_admin`, organización de prueba): el esquema confirma riesgo real de cascada (`platform_audit_log.organizationId`/`actorUserId` sin `onDelete: cascade`; borrar `user`/`organization` tocaría `session`, `account`, `member`, `invitation`, `platform_member`, `business_profile`, etc.). Por la regla explícita del usuario («si hay duda, no limpiar»), se preservan; no bloquea el cierre.
+
+`RAN` (contra Worker local reiniciado tras una caída del proceso anterior, sin causa fatal visible en su log): `pnpm run typecheck` PASS, `pnpm run build` PASS, `git diff --check` PASS. E2E de cierre — **6/7 PASS**: `admin-shell-check`, `admin-organizations-check`, `admin-business-profiles-check`, `admin-integrations-check`, `business-profile-experience-check`, `commercial-experience-review-check` (confirma la corrección del favicon); **1 FAIL** `services-experience-check` (`SERVICES-EXP-TAGLINE-001`, ver arriba, reproducido 2/2, diagnosticado como falso positivo no relacionado, no reparado). Smoke visual final (Playwright, Worker local) en `/login`, `/app`, `/app/services` y Admin (`overview`, `organizations`) en 1366/768/390/360: sin overflow nuevo, sin clipping, alpha correcto, sin fondos accidentales, sin halos, texto accesible, `alt=""` en todo lo decorativo, sin regresiones. `SETUP-CARD-WRAP-001` permanece `PREEXISTING / OUT OF SCOPE`, no corregido.
+
+No deploy. `0.5.1` es únicamente local/Git tras este cierre.
+
+## 2026-09-24 — VIS-002B Cross-Surface Brand Integration, checkpoint 1 (`0.5.0` local)
+
+Primer checkpoint del loop cerrado de assets (auditar → integrar lo existente → QA en runtime → identificar huecos → pedir batch ≤4 → STOP).
 
 - **Inventario de `../Assets Generados/`:** tres assets 3D aprobados por el usuario — `Icono.png` (símbolo, 1254×1254), `nombre.png` (wordmark, 2172×724) y `Marca.png` (lockup + tagline, 1254×1254), los tres PNG con alpha real confirmado. Se detectó fringing rojo residual (halo de recorte de fondo) en `Icono.png`/`Marca.png`; un intento de corrección automática con la herramienta `repair_transparency` (radios 2 y 15) corrompió la imagen en vez de limpiarla y se descartó sin tocar los originales — el defecto es imperceptible en los tamaños de uso actuales (≤512px) y queda como debt cosmético menor si se usa en un tamaño mayor.
 - **Derivado optimizado creado:** `public/assets/selected/brand/brand-symbol-3d.webp` (512×512, alpha real, 99 KB — 86% más liviano que el PNG plano de 691 KB que reemplaza en estos dos usos) vía `resize_asset`, sin degradar el alpha.

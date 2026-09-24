@@ -69,7 +69,7 @@ const robotsResponse = await fetch(new URL("/robots.txt", baseUrl));
 const robots = await robotsResponse.text();
 assert(robotsResponse.status === 200 && robots.includes("Disallow: /app") && robots.includes("Sitemap:"), "robots.txt no contiene las guardas esperadas.");
 const faviconResponse = await fetch(new URL("/favicon.ico", baseUrl), { redirect: "manual" });
-assert(faviconResponse.status === 302 && faviconResponse.headers.get("location")?.includes("vecidya-app-icon.png"), "favicon.ico no redirige al asset canónico.");
+assert(faviconResponse.status === 302 && faviconResponse.headers.get("location")?.includes("vecidya-icon-3d.png"), "favicon.ico no redirige al asset canónico.");
 const legacyResponse = await fetch(new URL("/que-debes-saber", baseUrl), { redirect: "manual" });
 assert(legacyResponse.status === 301 && legacyResponse.headers.get("location")?.endsWith("/aprende"), "El alias legado no conserva su redirect 301.");
 const sitemapResponse = await fetch(new URL("/sitemap.xml", baseUrl));

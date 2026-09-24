@@ -86,7 +86,18 @@ Evidencia de cierre: `pnpm run typecheck` PASS, `pnpm run build` PASS (CSS `142.
 - **Vídeo:** no añadir todavía. Una propuesta futura debe incluir WebM/MP4, poster, muted, playsinline, carga condicionada, alternativa estática, peso medido y variante móvil cuando aplique. Nunca contenido esencial ni GIF pesado. Rive, vídeo y dotLottie son assets/runtime especializados, no sustitutos generales de CSS.
 - **Estados honestos:** ninguna ilustración o animación puede presentar «Publicado», éxito, verificación o conexión operativa sin estado real que lo respalde.
 
-Secuencia conceptual: **VIS-001A → VIS-001B → VIS-001C solo si se justifica → evaluar Rive → retomar App/Admin mediante autorización separada**. VIS-001A y VIS-001B están cerrados en local (2026-09-24). **STOP tras VIS-001B**: no se inicia VIS-001C automáticamente, no se instala Motion/framer-motion/GSAP/Lottie/Three/Lenis, y no hay push ni deploy sin autorización explícita. Queda pendiente revisión visual y técnica del usuario antes de continuar.
+Secuencia conceptual: **VIS-001A → VIS-001B → VIS-002B → VIS-001C solo si se justifica → evaluar Rive → retomar App/Admin mediante autorización separada**. VIS-001A, VIS-001B y VIS-002B están cerrados en local (2026-09-24). **STOP tras VIS-002B**: no se inicia VIS-001C automáticamente, no se instala Motion/framer-motion/GSAP/Lottie/Three/Lenis, y no hay push ni deploy sin autorización explícita. Queda pendiente revisión visual y técnica del usuario antes de continuar.
+
+### VIS-002B — Cross-Surface Brand Integration — CERRADA (local, 2026-09-24)
+
+Objetivo cumplido: integrar los tres assets 3D de marca aprobados por el usuario (símbolo, wordmark, lockup) más los dos de Batch 01 generados a partir de los prompts del checkpoint, en las cuatro familias de layout compartidas (`PublicLayout`, `AuthShell`, `ClientAreaShell`, `AdminShell`), sin abrir Batch 02, sin tocar `/sobre-nosotros`, sin auditoría nueva de Public y sin tocar `AUTHZ-BA-001`/`INVITE-001`.
+
+1. **Loop cerrado ejecutado completo:** inventario físico de `../Assets Generados/` → clasificación (APPROVED / APPROVED AFTER OPTIMIZATION) → integración de lo ya aprobado primero → QA en runtime → Asset Gap Audit → Batch 01 (2 assets, prompts entregados y STOP) → el usuario los generó → inspección → optimización → integración → QA responsive/a11y/performance.
+2. **Assets finales integrados** (`public/assets/selected/brand/`, `public/brand/`): símbolo 3D (favicon/pestaña, header y footer públicos, sidebars de App y Admin, panel de Auth, empty-state de `/app`), wordmark (footer público, recortado a su proporción real 3:1 solo con CSS `object-fit:cover` porque las herramientas de resize disponibles no preservan aspecto no cuadrado), lockup completo (panel de Auth), más las dos ilustraciones de Batch 01 (conexión de servicios en `/app/services`; lupa+pin reutilizada en las 6 páginas de Admin). El símbolo plano se conserva únicamente donde sigue siendo la elección correcta: el watermark de fondo de `.diagnostic-hero` (un 3D perdería el detalle al 14% de opacidad).
+3. **Sin assets reservados sin usar:** los tres assets originales y los dos de Batch 01 quedan completamente integrados.
+4. **Deuda separada, no corregida aquí:** `SETUP-CARD-WRAP-001` (envoltura de texto preexistente en `/app` a ~768px, sin relación con este trabajo).
+
+Evidencia de cierre: `pnpm run typecheck` PASS, `pnpm run build` PASS, `git diff --check` PASS. Verificado en runtime real (Playwright contra el Worker local) en las 4 familias de layout — Público, Auth, App, Admin —, incluida una sesión `platform_admin` real, en 1366/768/390/360. Versión local `0.5.1` (PATCH: cambio visual visible e integrado, sin capacidad nueva). No push automático de este cierre; deploy no autorizado.
 
 ### UX-002.1 Product Catalog Foundation — PASS DOCUMENTAL
 
