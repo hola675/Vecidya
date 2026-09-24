@@ -153,7 +153,7 @@ Antes de nuevas fases SEO, gate remoto: host canónico y redirect, canonical, ro
 
 ### Perfiles públicos
 
-No convertir `BusinessProfile` en perfil universal por arrastre del Diagnóstico. Requiere especificación, política de identidad, autenticidad, moderación, reclamación de perfiles, schema y ADR. Pendientes de Business Profile ya identificados: despublicar, galería/R2, categorías normalizadas, CTA contextual, badge de verificación en la tarjeta, logo sin URL externa.
+No convertir `BusinessProfile` en perfil universal por arrastre del Diagnóstico. Requiere especificación, política de identidad, autenticidad, moderación, reclamación de perfiles, schema y ADR. Pendientes de Business Profile ya identificados: despublicar, galería/R2, categorías normalizadas, CTA contextual, badge de verificación en la tarjeta, logo sin URL externa. Cambio explícito de slug de un perfil ya guardado: debe ser una acción deliberada, con advertencia sobre enlaces, SEO, QR y URLs compartidas, y preferiblemente con redirección del slug anterior (historial o alias con schema y migración propios). No está autorizado; hoy SLUG-005B solo impide que la URL cambie por accidente.
 
 ### UX-003 — App y Admin: fases pendientes
 
@@ -202,7 +202,7 @@ OPS-001 define GHL como infraestructura externa y el contrato `ghl_location_id`,
 
 PROD-001 y EMAIL-001 están cerrados en sus alcances; `app.vecidya.com`/`admin.vecidya.com`, el smoke remoto, secretos adicionales y cualquier manejo posterior de `vecidya-staging` requieren autorización independiente.
 
-**Gate de la release `0.5.1` (QA-005A, 2026-09-24): BLOQUEADA.** Antes de cualquier deploy de `0.5.1` hay que corregir `SLUG-EDIT-001` en un bloque autorizado que decida la política (¿un borrador ya guardado congela su slug o solo uno publicado?) y el impacto de versión, y después repetir la validación de QA-005A (slug en runtime, `services-exp`, E2E de aislamiento, `typecheck`/`build`/`git diff --check`). `SLUG-LEN-001` (prioridad B) no bloquea. La secuencia operativa vigente es `PROD-001 → EMAIL-001 → OPS-001 → LEGAL / REAL PROOF → GHL pilot → licenses → UX evolution`.
+**Siguiente paso de publicación: deploy de `0.5.1`, pendiente de autorización explícita.** QA-005A bloqueó la release por `SLUG-EDIT-001`; SLUG-005B lo resolvió junto con `SLUG-LEN-001` sin cambiar la versión (la candidata nunca llegó a producción). El deploy debe publicar exactamente la candidata validada, sin features intermedias, y registrar la evidencia HTTP fechada en `ENVIRONMENTS.md` y `CHANGELOG.md`. Después, el siguiente bloque propuesto es `AUTHZ-BA-001`, antes de incorporar clientes reales. La secuencia operativa vigente es `PROD-001 → EMAIL-001 → OPS-001 → LEGAL / REAL PROOF → GHL pilot → licenses → UX evolution`.
 
 ## Fuera de alcance permanente
 

@@ -35,7 +35,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     ├── workers/app.ts          entry point del Worker (+ redirect www → apex)
     ├── worker/                 durable-objects/, queues/, workflows/ vacíos
     ├── public/                 assets/selected/** (14 WebP activos + 3 PNG conservados) y brand/vecidya-app-icon.png
-    ├── tests/e2e/              30 archivos (ver TESTING.md); tests/unit/ (7 suites del Diagnóstico + 2 archivos de personas + 2 hooks de resolución TS); integration/ vacío
+    ├── tests/e2e/              33 `.mjs` + 4 `.ps1` (ver TESTING.md); tests/unit/ (7 suites del Diagnóstico + 2 archivos de personas + 1 suite de slug de Business Profile + 2 hooks de resolución TS); integration/ vacío
     ├── docs/                   14 documentos canónicos con los READMEs
     ├── wrangler.jsonc, drizzle.config.ts, react-router.config.ts, vite.config.ts,
     │   tsconfig*.json, better-auth.config.ts, worker-configuration.d.ts (generado)

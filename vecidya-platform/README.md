@@ -20,7 +20,7 @@ server/    autenticación, autorización, validación y correo de invitaciones
 db/        schema Drizzle, consultas, migraciones SQL y seeds
 workers/   entry point del Worker
 public/    assets públicos
-tests/     E2E host-side y unitarias del Diagnóstico en tests/unit (tests/integration está vacío)
+tests/     E2E host-side y unitarias (Diagnóstico y slug de Business Profile) en tests/unit (tests/integration está vacío)
 docs/      documentación canónica
 ```
 
@@ -36,7 +36,7 @@ pnpm run cf-typegen   # solo tras cambiar wrangler.jsonc
 pnpm run dev
 pnpm run typecheck
 pnpm run build
-pnpm run test:unit    # unitarias del motor de Diagnóstico (sin servidor)
+pnpm run test:unit    # unitarias del Diagnóstico y del slug de Business Profile (sin servidor)
 ```
 
 No hay script `test` global: `pnpm run test:unit` ejecuta las unitarias del motor de Diagnóstico y las pruebas E2E son scripts independientes contra un Worker local; ver [docs/TESTING.md](docs/TESTING.md). **No ejecutes `wrangler deploy` ni comandos `--remote` sin autorización explícita**: `wrangler deploy` publica directamente en `vecidya.com`.

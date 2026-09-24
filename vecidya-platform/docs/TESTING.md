@@ -1,6 +1,22 @@
 # Pruebas
 
-Última reconciliación: 2026-09-24 (QA-005A; UX-003.9; UX-003.8; VIS-001B; REL-004; DIAG-002C; DIAG-002B; DIAG-002; REL-003.1; UX-003.1/003.4).
+Última reconciliación: 2026-09-24 (SLUG-005B; QA-005A; UX-003.9; UX-003.8; VIS-001B; REL-004; DIAG-002C; DIAG-002B; DIAG-002; REL-003.1; UX-003.1/003.4).
+
+**Evidencia SLUG-005B (RAN 2026-09-24, Worker local `pnpm run dev`; versión `0.5.1`):**
+
+- **TDD:**
+  - `unit-bp`: primero RED por no existir la API; tras mover `slugify` sin cambios a `db/business-profile-rules.ts`, **4/6** (fallan justo las 2 de longitud: el servidor rechazaba el slug de 119 caracteres); con el recorte, **6/6**.
+  - `slug-life`: RED en «Sin recargar, renombrar el borrador guardado cambió su slug a `borrador-renombrado-<n>`»; GREEN con el fix. Tras endurecer la espera de hidratación se repitió el RED retirando temporalmente solo el fix de la ruta, y falló en la misma aserción.
+- **Hidratación:** la primera ejecución sobre un Worker recién reiniciado falló con «“Mi Negocio” generó “”», porque el test rellenaba antes de que React hidratara el formulario. El script ahora espera a que React adjunte sus props al input del nombre tras cada `goto`/`reload`. Resultado en frío (solo la Home calentada): **5/5 PASS**.
+- **Validación:** `typecheck`, `build` y `git diff --check` PASS; `test:unit` **81/81**.
+- **E2E, 27 scripts:**
+  - Runner `test:e2e`: `acct`, `bpx`, `slug-life`, `services-exp`, `admin-shell`, `admin-bp`, `admin-orgs`, `admin-int` y `psa` PASS; se detuvo en `members` (`TEST-D1-RESET-001`).
+  - Uno a uno: `invitations` PASS PARCIAL (Gmail); `licenses`, `addons`, `diagnostic`, `join-contact`, `about`, `learn`, `commercial-review`, `legal-trust`, `c1`, `c2`, `d1`, `pg-c1` y `rp001a` PASS.
+  - Fallos, todos deuda conocida y ajena: `px-a` (`TEST-UX003-PXA`, mismo patrón), `pe-b` (`TEST-UX003-PEB`, mismo mensaje), `px-b` (`TEST-UX003-PXB`, mismo paso una vez superado el `ECONNRESET`) y `members` (`TEST-D1-RESET-001`; con un único reintento de red en una copia no versionada, la matriz 7B.1 da PASS).
+  - `commercial-review` falló una vez por timeout de conexión del Worker anterior (escucha solo en `[::1]`: `ETIMEDOUT ::1`, `ECONNREFUSED 127.0.0.1`) y pasó al repetirlo.
+  - El Worker anterior (proceso de una sesión previa) se reinició para obtener evidencia limpia. Sobre el Worker nuevo pasaron `slug-life`, `pg-c1`, `bpx`, `services-exp`, `commercial-review`, `c1` y `c2`.
+- **Diagnóstico de `TEST-D1-RESET-001`:** `members` también fallaba con el código previo al fix (`git stash` temporal de los 3 archivos de producto). La reproducción mínima aislada: una escritura inocua con `wrangler d1 execute --local` hace que la 1.ª petición reciba `ECONNRESET` y la 2.ª y 3.ª respondan 200. El log del Worker y las trazas de observabilidad local no registran error de aplicación.
+- **Fixtures:** `slug-life` elimina los suyos (tras las ejecuciones quedan 0 filas `slug-life-*`). Los fixtures `qa005a-*` se preservaron (12 organizaciones).
 
 **Evidencia QA-005A (RAN 2026-09-24, contra Worker local `pnpm run dev` sobre `b70ac98` + corrección del test; versión `0.5.1`):** `pnpm run typecheck` PASS, `pnpm run build` PASS, `git diff --check` PASS.
 
@@ -29,8 +45,8 @@ Evidencia DIAG-002C (RAN 2026-09-23): `pnpm run test:unit` **75/75 PASS** (5 nue
 
 ## Estado de la infraestructura de pruebas
 
-- No hay framework de pruebas externo ni CI (`.github/` no existe). `tests/unit/diagnostic/` contiene siete suites `node:test` (75 pruebas) del motor del Diagnóstico más dos archivos de personas (`personas.ts`, `adversarial-personas.ts`), ejecutables con `pnpm run test:unit` sin Worker ni D1; `tests/unit/register-ts.mjs` y `ts-resolve-hooks.mjs` resuelven importaciones relativas sin extensión sobre el type stripping de Node (≥22.12 con `--experimental-strip-types`). `tests/integration` sigue vacío. `package.json` incluye además `test:e2e` (runner secuencial de los E2E locales aplicables) y `test:email`.
-- Solo existe `tests/e2e/`: 29 scripts `.mjs` (Node + `fetch`, algunos con Playwright) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
+- No hay framework de pruebas externo ni CI (`.github/` no existe). `tests/unit/diagnostic/` contiene siete suites `node:test` (75 pruebas) del motor del Diagnóstico más dos archivos de personas (`personas.ts`, `adversarial-personas.ts`), y `tests/unit/business-profile/slug.test.ts` (6 pruebas) cubre la generación de slug contra la validación real del servidor; en total 81, ejecutables con `pnpm run test:unit` sin Worker ni D1; `tests/unit/register-ts.mjs` y `ts-resolve-hooks.mjs` resuelven importaciones relativas sin extensión sobre el type stripping de Node (≥22.12 con `--experimental-strip-types`). `tests/integration` sigue vacío. `package.json` incluye además `test:e2e` (runner secuencial de los E2E locales aplicables) y `test:email`.
+- Solo existe `tests/e2e/`: 33 scripts `.mjs` (Node + `fetch`, algunos con Playwright; incluye el runner `run-local-e2e.mjs` y el helper `test-safety.mjs`) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
 - Son **solo Windows** (`cmd.exe /d /c pnpm.cmd wrangler d1 execute … --local`).
 - Los scripts Playwright usan Microsoft Edge si existe, luego `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, luego Chromium empaquetado (requiere `playwright install`).
 
@@ -44,7 +60,7 @@ $env:BASE_URL = "http://localhost:5173"          # terminal 2 (es el valor por d
 node tests/e2e/<archivo>.mjs                     # una a la vez: comparten puerto y D1 local
 ```
 
-`pnpm run test:unit` no necesita Worker ni D1: ejecuta en Node las 75 pruebas del motor del Diagnóstico (`tests/unit/diagnostic`).
+`pnpm run test:unit` no necesita Worker ni D1: ejecuta en Node las 81 pruebas unitarias (75 del motor del Diagnóstico en `tests/unit/diagnostic` y 6 de slug en `tests/unit/business-profile`).
 
 Requisitos: `BETTER_AUTH_SECRET` en `.dev.vars` (no versionado), Node ≥22.12. `organization-invitations-check` espera `503` si Gmail OAuth no está configurado. `tests/email/mail-adapter.test.ts` usa el proveedor fake y nunca contacta Gmail. Variable opcional `D1_DATABASE_NAME` (por defecto `DB`).
 
@@ -59,6 +75,8 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `services-exp` | `services-experience-check.mjs` | 7D |
 | `diagnostic` | `diagnostic-experience-check.mjs` | UX-001B.6 / UX-002.5 / DIAG-002 |
 | `unit-diag` | `tests/unit/diagnostic/*.test.ts` (`pnpm run test:unit`) | DIAG-002 |
+| `unit-bp` | `tests/unit/business-profile/slug.test.ts` (`pnpm run test:unit`) | SLUG-005B |
+| `slug-life` | `business-profile-slug-lifecycle-check.mjs` | SLUG-005B |
 | `join-contact` | `join-contact-experience-check.mjs` | UX-001B.7 |
 | `about` | `about-experience-check.mjs` | UX-001B.8 |
 | `learn` | `learn-experience-check.mjs` | UX-001B.9 |
@@ -130,7 +148,7 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 | Organizaciones | crear/activar en casi todos; multi-org en `pe-b` | Renombrar, eliminar, unicidad de slug, `GET /api/organizations/:id` |
 | Permisos | matrices 403 en `admin-shell`, `admin-bp`, `d1`; roles de perfil en `bpx`/`c1` | `/api/organizations/:id/authorization`; unicidad de membresía (TECH-002); matriz 7B.1 (stale) |
 | Aislamiento tenant | fuerte en perfil (`pe-b`, `bpx`, `c1`, `c2`, `pg-c1`) y servicios (`services-exp` —conjunto exacto de tarjetas por organización desde QA-005A—, `pe-b`) | Miembros/integraciones solo en scripts stale |
-| Business profile | `bpx`, `pg-c1`, `c1`, `c2`, `pe-b`, `d1` | Subida de logo (no existe); publicación vía API; el slug autogenerado en cliente (`bc93a31`) solo tiene validación ad hoc no versionada (QA-005A) |
+| Business profile | `bpx`, `pg-c1`, `c1`, `c2`, `pe-b`, `d1`; slug automático: `unit-bp` (normalización, recorte a 80 y aceptación por la validación real del servidor) y `slug-life` (sugerencia solo antes del primer guardado, override manual, bloqueo sin caracteres utilizables, estabilidad de borrador y publicado sin recargar y tras recargar, URL pública original 200 con el nombre nuevo y canónica intacta, sin ruta nueva, colisión 400 sin sufijo, longitud) | Subida de logo (no existe); publicación vía API; cambio explícito de slug con redirección (no existe) |
 | Servicios | `services-exp`, `pe-b` | Escritura admin (4B/8D) stale |
 | Admin interna | `admin-shell` (8A), `admin-bp` (8C), `d1` | 8B, 8E y API de servicios stale; nada ejecutable cubre `/organizations`, `/integrations` ni escritura de servicios |
 | Web pública | `px-a` + `join-contact` + `about` + `learn` + `licenses` + `addons` + `commercial-review`: recorrido comercial completo con 200, metadata, CTAs cruzados, mailto, autoría, disponibilidad sin precios públicos, navegación agrupada, separación addon/servicio/consumo, ausencia de GHL público, exclusión de rutas privadas del sitemap, overflow y responsive 1366/768/390/360; UX-001B.2 además valida Home con hasta 3 perfiles D1, 4 choices y 4 servicios; UX-001C cubre filtros noindex, alias 301 y sitemap | `/privacidad` fuera de smoke dedicado, páginas 404, `robots.txt`, `favicon.ico`, `www`→apex y auditoría a11y completa |
@@ -158,6 +176,6 @@ Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.m
 5. ~~Extraer y probar el motor del Diagnóstico (unitario)~~ Resuelto por DIAG-002 (`tests/unit/diagnostic`, 43 pruebas).
 6. Pruebas de auth negativas, `/api/organizations/:id[/authorization]` y unicidad de membresía.
 7. Limpieza de fixtures en los 11 scripts que no limpian.
-8. Pruebas unitarias de módulos puros (`db/business-hours-rules.ts`, `db/business-profile-rules.ts`, validaciones, autorización).
+8. Pruebas unitarias de módulos puros (`db/business-hours-rules.ts`, el resto de `db/business-profile-rules.ts` —la generación de slug ya está cubierta por `unit-bp`—, validaciones, autorización).
 9. `test:e2e` ya existe; queda pendiente una decisión sobre CI y sustituir `agent-browser` por Playwright.
 10. Extender `rp001a` únicamente cuando se resuelvan nombre, identidad y marca; cualquier publicación remota requiere un bloque separado y autorización explícita.

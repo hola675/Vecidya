@@ -4,6 +4,20 @@ export const serviceModeLabels: Record<string, string> = {
   hybrid: "Presencial y remoto",
 };
 
+export const businessProfileSlugMaxLength = 80;
+
+export function slugifyBusinessName(input: string) {
+  return input
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, businessProfileSlugMaxLength)
+    .replace(/-+$/, "");
+}
+
 export type BusinessProfilePublishableFields = {
   displayName: string | null;
   slug: string | null;

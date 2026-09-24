@@ -1,7 +1,7 @@
 import type { BusinessProfileInput } from "../db/queries/business-profile.server";
 import type { BusinessHoursEntry } from "../db/queries/business-hours.server";
 export { getBusinessProfileCompletion, getBusinessProfilePublicationIssues } from "../db/business-profile-rules";
-import { getBusinessProfilePublicationIssues } from "../db/business-profile-rules";
+import { businessProfileSlugMaxLength, getBusinessProfilePublicationIssues } from "../db/business-profile-rules";
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -63,7 +63,7 @@ function optionalServiceMode(value: FormDataEntryValue | null) {
 
 export function parseBusinessProfileForm(formData: FormData): BusinessProfileInput {
   const displayName = optionalText(formData.get("displayName"), 120);
-  const slug = optionalText(formData.get("slug"), 80);
+  const slug = optionalText(formData.get("slug"), businessProfileSlugMaxLength);
 
   if (!displayName) throw new Response("El nombre visible es obligatorio.", { status: 400 });
   if (!slug || !slugPattern.test(slug)) {

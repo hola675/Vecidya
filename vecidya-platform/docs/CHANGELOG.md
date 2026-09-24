@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-09-24 — SLUG-005B Stable Public Slug Policy & Release Unblock (`0.5.1` local; release candidate)
+
+Corrige el único bloqueante real de `0.5.1` detectado en QA-005A, sin funcionalidad nueva ni cambio de versión: la candidata nunca llegó a producción y no hay motivo para abrir `0.5.2`.
+
+- **Política autorizada por el usuario, `SLUG-EDIT-001` RESUELTA:**
+  - Mientras el perfil nunca se ha guardado con éxito, el nombre visible sugiere el slug. Se mantienen el override manual y la reanudación al vaciarlo.
+  - Tras el primer guardado exitoso, sea borrador o publicado, el slug queda estable: cambiar nombre, descripción, categoría, contacto u horarios no lo toca.
+  - La condición es `suggestsSlug = !profile` y se deriva del perfil persistido que devuelven loader y action. La protección se activa en la misma sesión, sin recargar, y un guardado rechazado (por ejemplo, una colisión) sigue sugiriendo.
+  - Sin redirecciones, historial de slugs, schema ni migraciones. El cambio explícito de slug con redirección queda como trabajo futuro no autorizado en `ROADMAP.md`.
+- **Longitud, `SLUG-LEN-001` RESUELTA:**
+  - `slugifyBusinessName` pasa de la ruta a `db/business-profile-rules.ts`. Recorta a `businessProfileSlugMaxLength` (80) y quita el guion final.
+  - La constante es ahora la única fuente del límite: la usan el generador, el `maxLength` del input y `parseBusinessProfileForm` (antes era un `80` repetido en dos sitios).
+  - Los slugs escritos a mano no se recortan.
+- **El servidor sigue siendo la autoridad:** formato, longitud y unicidad global sin cambios. Una colisión se rechaza con 400 «El slug ya está en uso…» y no se añade sufijo automático.
+- **Pruebas nuevas, en TDD (RED y luego GREEN):**
+  - `tests/unit/business-profile/slug.test.ts`, con 6 pruebas: normalización, tildes, símbolos, vacío, recorte y aceptación por la validación real del servidor. `test:unit` pasa de 75 a 81.
+  - `tests/e2e/business-profile-slug-lifecycle-check.mjs`, incluido en `test:e2e`: perfil nuevo, borrador y publicado estables sin recargar y tras recargar, URL pública original 200 con el nombre nuevo y canónica intacta, sin ruta nueva, colisión y longitud. Limpia sus fixtures y espera la hidratación de React, porque en un Worker en frío falló una vez al rellenar antes de hidratar.
+- **Deuda de pruebas nueva, `TEST-D1-RESET-001` (M):** tras una escritura externa en la D1 local con `wrangler d1 execute --local`, la primera petición al Worker de desarrollo recibe `ECONNRESET`. Los scripts sin reintento de red (`members` y `px-b`) caen antes de sus aserciones. No es de producto: `members` pasa con un reintento. No se corrigió aquí.
+- **Validación:** `typecheck`, `build` y `git diff --check` PASS; `test:unit` 81/81. E2E: 22 PASS, `invitations` PASS PARCIAL, y fallos solo en deuda conocida y ajena (`px-a`, `pe-b`, `px-b`) y en `members` (`TEST-D1-RESET-001`). Detalle en `TESTING.md`.
+- **Git:** antes del fix se publicó `a4485dd` (QA-005A) en `origin/main`, con autorización explícita.
+
+`SETUP-CARD-WRAP-001`, `AUTH-LOCKUP-CONTRAST-001`, `AUTHZ-BA-001` e `INVITE-001` quedan sin tocar. Sin deploy, sin `--remote` y sin migraciones. Producción sigue en `0.4.1`: la última evidencia HTTP es del 2026-09-23.
+
 ## 2026-09-24 — QA-005A v0.5.1 Release Readiness & Test Signal Cleanup (`0.5.1` local; RELEASE BLOCKED)
 
 Bloque de QA sin funcionalidad nueva ni cambio de versión (`0.5.1`), con el objetivo de decidir si `0.5.1` es candidata limpia a release. Resultado: **no lo es todavía**. Un defecto real del slug automático, `SLUG-EDIT-001`, bloquea la release.

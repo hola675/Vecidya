@@ -6,6 +6,7 @@ assertLocalBaseUrl();
 const scripts = [
   "account-personal-settings-check.mjs",
   "business-profile-experience-check.mjs",
+  "business-profile-slug-lifecycle-check.mjs",
   "services-experience-check.mjs",
   "admin-shell-check.mjs",
   "admin-business-profiles-check.mjs",

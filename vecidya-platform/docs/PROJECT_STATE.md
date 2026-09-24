@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-24 (`0.5.1` local; `0.4.1` sigue LIVE en staging y producción; DIAG-002C + UX-003.1–003.5; VIS-001B, UX-003.8, UX-003.9 y VIS-002B cerrados en local; QA-005A: release `0.5.1` BLOQUEADA por `SLUG-EDIT-001`)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.5.1`; versión desplegada en producción: `0.4.1`, Version ID `eec3de6a-6711-4eff-91de-b413406e3618`; staging Version ID `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454`. `0.5.1` no está desplegada.
+Última reconciliación: **2026-09-24 (`0.5.1` local; `0.4.1` sigue LIVE en staging y producción; DIAG-002C + UX-003.1–003.5; VIS-001B, UX-003.8, UX-003.9 y VIS-002B cerrados en local; QA-005A bloqueó la release por `SLUG-EDIT-001` y SLUG-005B la desbloqueó: `0.5.1` es release candidate, sin desplegar)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.5.1`; versión desplegada en producción: `0.4.1`, Version ID `eec3de6a-6711-4eff-91de-b413406e3618`; staging Version ID `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454`. `0.5.1` no está desplegada.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -185,7 +185,7 @@ Soportado y probado (`pe-b` pasa): un usuario puede pertenecer a varias organiza
 | Campo | Schema | Validación | Editor | API | Público | Tarjeta | LD | Clase |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `display_name` | `0003` | requerido ≤120 | sí | sí | sí | sí | `name` | IMPL |
-| `slug` | `0003` | `^[a-z0-9]+(-[a-z0-9]+)*$` ≤80; único global (el servidor rechaza colisiones con 400; no hay sufijo automático) | sí; autogenerado en cliente desde el nombre visible hasta que el usuario lo edita (`bc93a31`; defectos `SLUG-EDIT-001`, `SLUG-LEN-001`) | sí | URL | enlace | `url` | IMPL |
+| `slug` | `0003` | `^[a-z0-9]+(-[a-z0-9]+)*$` ≤80; único global (el servidor rechaza colisiones con 400; no hay sufijo automático) | sí; sugerido en cliente desde el nombre visible (recortado a 80) solo mientras el perfil no se ha guardado con éxito y el usuario no lo ha editado; tras el primer guardado queda estable (`bc93a31` + SLUG-005B) | sí | URL | enlace | `url` | IMPL |
 | `short_description` | `0003` | ≤280; requerido para publicar | sí | sí | sí | sí | fallback | IMPL |
 | `description` | `0003` | ≤5000 | sí (input de una línea) | sí | sí | no | `description` | IMPL (editor débil) |
 | `category` | `0003` | ≤100 libre; requerido para publicar | sí | sí | sí | eyebrow | — | IMPL (sin LD; texto libre fragmenta filtros) |
