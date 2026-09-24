@@ -148,11 +148,15 @@ No convertir `BusinessProfile` en perfil universal por arrastre del Diagnóstico
 
 Definición de alcance consolidada desde la auditoría UX-003.0 (documento de fase retirado en REL-004A; su contenido único vive aquí y en `STATUS.md`). Entregadas y publicadas en `0.4.1`: UX-003.1 (arquitectura de información del área cliente), UX-003.2 (dashboard y experiencia de perfil), UX-003.4 (operaciones de Admin Home) y UX-003.5 (contexto de revisión del detalle de negocio). Quedan:
 
-- **UX-003.3 — Organización y equipo.** Estabilizar el lenguaje de roles, los controles de miembros, los estados de invitación y el contexto multi-organización. Depende de `AUTHZ-BA-001` e `INVITE-001`: no se rediseña el flujo de invitación mientras la entrega y la aceptación verificada sigan bloqueadas por correo externo. Incluye corregir `ORG-UI-001`.
+- **UX-003.3 — Organización y equipo.** Estabilizar el lenguaje de roles, los controles de miembros, los estados de invitación y el contexto multi-organización. Depende de `AUTHZ-BA-001` e `INVITE-001`: no se rediseña el flujo de invitación mientras la entrega y la aceptación verificada sigan bloqueadas por correo externo. Incluye corregir `ORG-UI-001` y `ORG-UI-002` (colapso de `.member-row` a 0px en móvil, confirmado en runtime por UX-003.8).
 - **UX-003.6 — Ajustes e integraciones.** Solo después de una decisión explícita de proveedor. Metadata tenant-scoped, nunca duplicación de CRM; facturación permanece como bloque separado.
 - **UX-003.7 — QA de App y Admin.** Cobertura de auth negativa, revisión axe/accesibilidad, responsive 1366/768/390/360, matriz tenant y validación en runtime local; incluye `ADMIN-A11Y-001` y las tres pruebas desalineadas `TEST-UX003-*`.
 
 Transversal a las fases anteriores: `ADMIN-SCALE-001` (búsqueda, filtros, paginación y densidad en la administración interna) y las acciones de ciclo de vida que aún no existen (despublicar un perfil, motivo de suspensión, ajustes completos de seguridad de cuenta).
+
+### UX-003.8 — Authenticated App + Admin Visual Baseline — PASS local (2026-09-24)
+
+Auditoría en runtime con sesión real (usuario QA local `qa.visual@vecidya.local`, `owner` de `Vecidya QA Local` + `platform_admin`), sin cambios de código. Se eligió el número `.8` porque `.1/.2/.4/.5` ya están asignados a fases publicadas en `0.4.1`; no reutiliza esos identificadores. Confirmó que `platform_admin` no contamina la experiencia normal de `/app` (un solo usuario QA es suficiente) y recorrió 11 de las 14 rutas privadas (se omitió `/app/invitations/:id`, que exige una invitación real). Halló `ORG-UI-002` (nuevo, arriba) y reprodujo visualmente `ADMIN-SCALE-001` (lista de Organizaciones con más de 60 tarjetas de fixtures de pruebas E2E sin limpiar, `TEST-CLEANUP-001`, sin paginación ni filtros). Detalle completo, matriz visual y capturas (fuera de Git, `screenshots/ux-003-baseline/`, ignorado) en el reporte de la sesión 2026-09-24. Próxima fase propuesta: **UX-003.3** (ya priorizada arriba), no autorizada aquí.
 
 ### Administración interna
 
