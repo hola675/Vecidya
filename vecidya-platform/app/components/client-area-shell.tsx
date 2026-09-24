@@ -4,6 +4,7 @@ import { Form, Link, useNavigate, useRevalidator } from "react-router";
 import { authClient } from "../lib/auth-client";
 import { Button, Icon, type IconName } from "./ui";
 import { PlatformFooter } from "./platform-footer";
+import { publicAssets } from "../assets/public-assets";
 
 type NavLink = { id: string; label: string; to: string; icon: IconName };
 type NavGroup = { label: string | null; links: NavLink[] };
@@ -62,7 +63,7 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
       <aside className="app-sidebar" data-open={navigationOpen}>
         <Link className="brand" to="/app" onClick={() => setNavigationOpen(false)}>
           <span className="brand-symbol-frame" aria-hidden="true">
-            <img alt="" className="brand-symbol" height="691" src="/brand/vecidya-app-icon.png" width="691" />
+            <img alt="" className="brand-symbol" height="512" src={publicAssets.brand.symbol3d} width="512" />
           </span>
           <span>
             <strong>Vecidya</strong>

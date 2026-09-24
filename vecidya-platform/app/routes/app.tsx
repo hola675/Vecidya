@@ -12,6 +12,7 @@ import { getClientWorkspaceContext } from "../../server/auth/client-workspace.se
 import { Alert, Badge, Button, Card, Icon } from "../components/ui";
 import { ClientAreaShell } from "../components/client-area-shell";
 import { authClient } from "../lib/auth-client";
+import { publicAssets } from "../assets/public-assets";
 
 import type { Route } from "./+types/app";
 
@@ -119,7 +120,7 @@ export default function AppPage() {
 
       {!activeOrganization ? (
         <Card className="empty-state">
-          <img alt="" height="691" src="/brand/vecidya-app-icon.png" width="691" />
+          <img alt="" height="512" src={publicAssets.brand.symbol3d} width="512" />
           <div>
             <p className="eyebrow">PRIMER PASO</p>
             <h2>Crea tu primera organización</h2>

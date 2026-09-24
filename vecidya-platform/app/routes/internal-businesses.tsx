@@ -6,6 +6,7 @@ import { listPlatformBusinessProfiles } from "../../db/queries/platform-business
 import { createDatabase } from "../../db/client.server";
 import { AdminShell } from "../components/admin-shell";
 import { Badge, Icon } from "../components/ui";
+import { publicAssets } from "../assets/public-assets";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { requirePlatformAdmin } from "../../server/platform-authorization.server";
 import type { Route } from "./+types/internal-businesses";
@@ -93,11 +94,11 @@ export default function InternalBusinesses() {
               </table>
             </div>
           ) : (
-            <section className="empty-state card"><div><p className="eyebrow">SIN RESULTADOS</p><h2>Ningún negocio coincide</h2><p>Ajusta la búsqueda o el filtro de estado.</p></div></section>
+            <section className="empty-state card"><img alt="" height="320" src={publicAssets.illustrations.adminEmptySearch} width="320" /><div><p className="eyebrow">SIN RESULTADOS</p><h2>Ningún negocio coincide</h2><p>Ajusta la búsqueda o el filtro de estado.</p></div></section>
           )}
         </>
       ) : (
-        <section className="empty-state card"><div><p className="eyebrow">SIN PERFILES</p><h2>No hay Business Profiles registrados</h2><p>Los perfiles aparecerán aquí cuando existan datos reales en la plataforma.</p></div></section>
+        <section className="empty-state card"><img alt="" height="320" src={publicAssets.illustrations.adminEmptySearch} width="320" /><div><p className="eyebrow">SIN PERFILES</p><h2>No hay Business Profiles registrados</h2><p>Los perfiles aparecerán aquí cuando existan datos reales en la plataforma.</p></div></section>
       )}
     </main>
   </AdminShell>;

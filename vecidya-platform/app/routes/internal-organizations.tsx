@@ -5,6 +5,7 @@ import { createDatabase } from "../../db/client.server";
 import { listPlatformOrganizations } from "../../db/queries/platform-organizations.server";
 import { AdminShell } from "../components/admin-shell";
 import { Badge, Icon } from "../components/ui";
+import { publicAssets } from "../assets/public-assets";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { requirePlatformAdmin } from "../../server/platform-authorization.server";
 
@@ -98,11 +99,11 @@ export default function InternalOrganizations() {
                 </table>
               </div>
             ) : (
-              <section className="empty-state card"><div><p className="eyebrow">SIN RESULTADOS</p><h2>Ninguna organización coincide</h2><p>Ajusta la búsqueda o el filtro de perfil.</p></div></section>
+              <section className="empty-state card"><img alt="" height="320" src={publicAssets.illustrations.adminEmptySearch} width="320" /><div><p className="eyebrow">SIN RESULTADOS</p><h2>Ninguna organización coincide</h2><p>Ajusta la búsqueda o el filtro de perfil.</p></div></section>
             )}
           </>
         ) : (
-          <section className="empty-state card"><div><p className="eyebrow">SIN ORGANIZACIONES</p><h2>No hay organizaciones registradas</h2><p>Las organizaciones aparecerán aquí cuando existan datos reales en la plataforma.</p></div></section>
+          <section className="empty-state card"><img alt="" height="320" src={publicAssets.illustrations.adminEmptySearch} width="320" /><div><p className="eyebrow">SIN ORGANIZACIONES</p><h2>No hay organizaciones registradas</h2><p>Las organizaciones aparecerán aquí cuando existan datos reales en la plataforma.</p></div></section>
         )}
       </main>
     </AdminShell>

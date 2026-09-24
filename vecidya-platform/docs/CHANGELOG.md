@@ -1,5 +1,56 @@
 # Changelog
 
+## 2026-09-24 — VIS-002B Cross-Surface Brand Integration, checkpoint 1 (`0.5.0` local, EN PROGRESO)
+
+Primer checkpoint del loop cerrado de assets (auditar → integrar lo existente → QA en runtime → identificar huecos → pedir batch ≤4 → STOP). No cierra VIS-002B; continúa tras el batch de assets solicitado al usuario.
+
+- **Inventario de `../Assets Generados/`:** tres assets 3D aprobados por el usuario — `Icono.png` (símbolo, 1254×1254), `nombre.png` (wordmark, 2172×724) y `Marca.png` (lockup + tagline, 1254×1254), los tres PNG con alpha real confirmado. Se detectó fringing rojo residual (halo de recorte de fondo) en `Icono.png`/`Marca.png`; un intento de corrección automática con la herramienta `repair_transparency` (radios 2 y 15) corrompió la imagen en vez de limpiarla y se descartó sin tocar los originales — el defecto es imperceptible en los tamaños de uso actuales (≤512px) y queda como debt cosmético menor si se usa en un tamaño mayor.
+- **Derivado optimizado creado:** `public/assets/selected/brand/brand-symbol-3d.webp` (512×512, alpha real, 99 KB — 86% más liviano que el PNG plano de 691 KB que reemplaza en estos dos usos) vía `resize_asset`, sin degradar el alpha.
+- **Integración (solo assets ya aprobados, sin generar nada nuevo):**
+  - `auth-shell.tsx`: el icono plano de 2.2rem del brand panel de Auth pasa al símbolo 3D a 3.4rem con `drop-shadow`, manteniendo el texto «Vecidya» en HTML (no se hornea en la imagen).
+  - `app.tsx`: el empty-state «Crea tu primera organización» (sin organización activa) pasa del icono plano al símbolo 3D — caso explícitamente recomendado por la especificación para empty states.
+  - `admin-shell.tsx`: el marcador de marca, que era únicamente una letra «V» sin imagen (`.admin-brand__mark`), pasa a reutilizar el símbolo plano ya aprobado con el mismo patrón `.brand-symbol-frame`/`.brand-symbol` que ya usa `client-area-shell.tsx` — unifica el tratamiento entre sidebar de App y de Admin en vez de duplicar estilos; CSS muerta de `.admin-brand__mark` eliminada.
+  - Wordmark (`nombre.png`) y lockup completo (`Marca.png`) quedan **aprobados y reservados sin integrar**: no hay hueco concreto hoy (`/sobre-nosotros` ya usa una foto en su hero) y la regla de la especificación es no integrar una imagen solo porque existe.
+- **QA en runtime (Playwright contra Worker local):** `/login` before/after real vía `git stash`/`pop` en 1366 y 390 (mejora visible, sin regresión, sin overflow). `/app` empty-state en 1366/768/360 con una cuenta QA creada por el flujo de registro real (`qa-vis002b@developer.serveryogoms.com`, solo local). Admin **no verificado en runtime**: elevar la cuenta QA a `platform_admin` vía `wrangler d1 execute DB --local` fue bloqueado por el clasificador de permisos de la sesión (`ADMIN-BRAND-RUNTIME-001`); el cambio se apoya en revisión de código y en el mismo patrón ya verificado en App.
+- **Hallazgo fuera de alcance:** `.setup-card`/`.organization-form` en `/app` envuelve texto palabra por palabra solo en ~768px, preexistente y no relacionado con este cambio (`SETUP-CARD-WRAP-001`); no se corrigió para no ampliar el alcance de VIS-002B.
+- **AUTHZ-BA-001 e INVITE-001 sin tocar**, como exige la especificación.
+
+`RAN`: `typecheck`, `build`, `git diff --check` PASS. Sin cambios de ruta, schema, backend, GHL ni dependencias nuevas. Sin bump de versión (cambio integrado pero checkpoint intermedio, no cierre de VIS-002B). Sin push, sin deploy.
+
+**Extensión del mismo checkpoint (mismo día, a pedido explícito del usuario):**
+
+- **Favicon / pestaña / header y footer públicos pasan al símbolo 3D:** nuevo derivado `public/brand/vecidya-icon-3d.png` (512×512 PNG, alpha real, 149 KB) referenciado desde `root.tsx` (`<link rel="icon">`), `favicon.ts` (redirect) y `public-layout.tsx` (header 32px + footer). Decisión explícita del usuario, quien prefirió el 3D sobre la marca plana en estos cuatro puntos pese a que la propia VIS-002B recomienda plano para tamaños tan pequeños — verificado en runtime (1366/390) que sigue siendo legible.
+- **Wordmark (`nombre.png`) integrado en el footer público**, reemplazando el icono+texto por `public/assets/selected/brand/brand-wordmark.webp` (1024×1024 con letterbox transparente — las herramientas de resize disponibles fuerzan lienzo cuadrado y no existe una que preserve el aspecto 3:1 original). Recorte al wordmark real resuelto solo con CSS (`object-fit:cover` sobre una caja `84×32`, proporción 3:1 idéntica al contenido), sin volver a tocar el archivo — verificado en captura de primer plano que no queda banda transparente visible.
+- **Lockup completo (`Marca.png`) integrado en el brand panel de Auth**, reemplazando el icono+«Vecidya» en `auth-shell.tsx` por `public/assets/selected/brand/brand-lockup-tagline.webp` (512×512, 124 KB) a 10rem, con `alt` descriptivo (deja de ser decorativo porque ya no hay texto HTML equivalente al lado). No es redundante con el encabezado existente del panel («Tu presencia, más clara y organizada.») porque son dos textos distintos, no una repetición.
+- Los tres assets aprobados en el checkpoint 1 quedan así completamente integrados; ninguno permanece reservado sin uso.
+
+`RAN`: `typecheck`, `build` PASS.
+
+**Batch 01 recibido y cerrado (mismo día):** el usuario generó y entregó los dos assets propuestos en el checkpoint 1 (`Assets1.png` → conexión de servicios, `Asset2.png` → lupa+pin) directamente en `../Assets Generados/`. Ambos inspeccionados (1254×1254, alpha real, sin artefactos visibles, familia visual coherente con el símbolo aprobado) y clasificados **APPROVED** sin necesidad de fix. Optimizados a `illus-services-empty-connection.webp` (384×384, 60,9 KB) e `illus-admin-empty-search.webp` (320×320, 49,7 KB) en `public/assets/selected/illustrations/`:
+
+- **P1 resuelto:** `/app/services` (`services-app.tsx`) — empty-state «Sin servicios» pasa de texto puro al icono de conexión; verificado en runtime (1366/390) con la organización QA recién creada (`qa-barrio-centro`, cero servicios asignados, estado real).
+- **P2 resuelto:** `/app/internal/organizations`, `/app/internal/businesses`, `/app/internal/integrations` y `/app/internal/audit` (6 variantes de empty-state en total, incluidas las 2 páginas que no estaban en el checkpoint 1) pasan del mismo icono de lupa+pin.
+
+`RAN`: `typecheck`, `build`, `git diff --check` PASS. Sin bump de versión (checkpoint intermedio). Sin push, sin deploy.
+
+**`ADMIN-BRAND-RUNTIME-001` resuelto (autorización explícita del usuario):** el usuario autorizó el `INSERT` en `platform_member` que el clasificador de permisos había bloqueado antes; verificado en runtime real (Playwright, sesión `platform_admin` real) en `/app/internal` (overview), `/app/internal/organizations` y `/app/internal/businesses` (empty-state «SIN RESULTADOS» disparado con un filtro real de 608/109 registros) en 1366 y 390 — marca, iconos e integración correctos, sin regresión.
+
+**Icono 3D también en los sidebars de App y Admin** (a pedido explícito del usuario, con capturas anotadas): `client-area-shell.tsx` y `admin-shell.tsx` pasan de `vecidya-app-icon.png` (plano) a `brand-symbol-3d.webp`, reutilizando `.brand-symbol-frame`/`.brand-symbol`. Se ajustó esa clase compartida (`app.css`): el `transform: scale(1.38)` que recortaba el marco blanco propio del PNG plano sobre-recortaba el símbolo 3D (que ya ocupa casi todo su lienzo); se reemplazó por `object-fit: contain` al 78% del marco. De paso, el título del sidebar de Admin pasa de «Vecidya Admin» a «Vecidya» (el contexto de administración ya lo da el subtítulo «Operaciones de plataforma»), coherente con usar siempre el mismo nombre de marca.
+
+`RAN`: `typecheck`, `build` PASS. Verificado en runtime (Playwright) en `/app` y `/app/internal`, 1366 y 390.
+
+**Confirmación de plataforma completa (mismo día, a pedido del usuario):** recorrido sistemático de las 4 familias de layout (`PublicLayout`, `AuthShell`, `ClientAreaShell`, `AdminShell`) verificando uso correcto de los 5 assets de marca. Resultado: consistente en las 15 superficies revisadas (Home; Login y Registro; `/app`, `/app/services`, `/app/business-profile`; las 6 páginas de Admin incluidas Integraciones con datos reales y Auditoría con «SIN ACTIVIDAD» real). Único ajuste encontrado: el `logo` de JSON-LD `Organization` en `home.tsx` seguía apuntando al PNG plano antiguo (`vecidya-app-icon.png`); se actualizó a `vecidya-icon-3d.png` para consistencia. `public/assets/selected/brand/brand-symbol-primary.webp` (plano) se mantiene intencionalmente como el único uso restante, en el watermark de fondo de `.diagnostic-hero` (`app.css:2504`) — un 3D a 14% de opacidad perdería el detalle, así que el plano es la elección correcta ahí, no una omisión.
+
+`RAN`: `typecheck`, `build` PASS. Sin bump de versión. Sin push, sin deploy.
+
+## 2026-09-24 — Autogeneración de slug en Perfil de negocio (fuera de VIS-002B)
+
+A pedido explícito del usuario, sin relación con el trabajo visual: en `/app/business-profile`, el campo «Slug» se autogenera a partir de «Nombre visible» mientras el usuario no edite el slug directamente (normaliza acentos/ñ, minúsculas, guiones; cumple el mismo patrón `[a-z0-9]+(-[a-z0-9]+)*` que ya exigía el input). En cuanto el usuario toca el campo Slug manualmente, se «bloquea» y deja de sobrescribirse con cambios posteriores al nombre; si lo vacía, se reanuda la autogeneración. Implementado sin convertir el formulario a controlado (sigue usando `Form`/`defaultValue` de React Router; solo el campo slug se referencia via `useRef` para leer/escribir su valor).
+
+Verificado en runtime (Playwright): «Café La Esquina Ñoño» → `cafe-la-esquina-nono`; edición manual del slug bloquea la autogeneración correctamente.
+
+`RAN`: `typecheck`, `build` PASS. Sin cambios de servidor/validación (la normalización servidor en `business-profile-validation.server.ts` no se tocó). Sin push, sin deploy.
+
 ## 2026-09-24 — UX-003.8 Authenticated App + Admin Visual Baseline + UX-003.9 App + Admin Experience Upgrade (`0.5.0` local)
 
 UX-003.8 auditó Client App e Internal Admin con una sesión real (usuario QA local `qa.visual@vecidya.local`: registro, organización y `platform_admin` creados por los flujos reales, no por INSERT manual salvo el propio `platform_member`, cuyo esquema se inspeccionó primero). Sin cambios de código. Confirmó que `platform_admin` no contamina la experiencia normal de `/app`; recorrió 11 de 14 rutas privadas; encontró `ORG-UI-002` y reprodujo `ADMIN-SCALE-001` con datos reales (566 organizaciones, 98 perfiles de fixtures E2E sin limpiar). Capturas y `storageState` de sesión quedaron fuera de Git.
@@ -159,7 +210,6 @@ Reconciliación de trazabilidad del release ya publicado. No modifica producto: 
 - Producción publicada en `vecidya-platform`, Version ID `26358c8b-70c4-41f3-8f10-34d1bd60916f`, con `DB=vecidya-prod` y `APP_ENV=production`; `vecidya.com` responde `0.3.0`.
 - Smoke HTTP anónimo PASS para rutas públicas, artículo de Aprende, sitemap, robots, canonical/metadata y redirect `/que-debes-saber → /aprende`; no se ejecutaron migraciones ni se modificaron secrets.
 - El trigger de zona de staging no se reasignó por conflicto con la ruta existente de producción; el Worker staging queda operativo en `workers.dev`.
-
 
 ## 2026-09-23 — REL-003 Release 0.3.0 Gate (`v0.3.0`, READY TO PUBLISH)
 

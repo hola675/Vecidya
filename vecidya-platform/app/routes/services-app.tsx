@@ -7,6 +7,7 @@ import { cloudflareContext } from "../../server/cloudflare-context";
 import { getActiveOrganization, requireSession } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
 import { Badge, Card } from "../components/ui";
+import { publicAssets } from "../assets/public-assets";
 
 import type { Route } from "./+types/services-app";
 
@@ -94,6 +95,7 @@ export default function AppServices() {
         </div>
       ) : (
         <section aria-labelledby="services-empty-title" className="empty-state card">
+          <img alt="" height="384" src={publicAssets.illustrations.servicesEmptyConnection} width="384" />
           <div>
             <p className="eyebrow">SIN SERVICIOS</p>
             <h2 id="services-empty-title">Aún no hay servicios asociados</h2>

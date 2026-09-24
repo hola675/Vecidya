@@ -9,6 +9,9 @@ export const publicAssets = {
   },
   brand: {
     symbol: `${selectedAssetBase}/brand/brand-symbol-primary.webp`,
+    symbol3d: `${selectedAssetBase}/brand/brand-symbol-3d.webp`,
+    wordmark: `${selectedAssetBase}/brand/brand-wordmark.webp`,
+    lockup: `${selectedAssetBase}/brand/brand-lockup-tagline.webp`,
   },
   about: {
     team: "/assets/about/team-yoan-edgar.webp",
@@ -34,6 +37,8 @@ export const publicAssets = {
     whatsapp: `${selectedAssetBase}/icons/ui/ui-icon-whatsapp.svg`,
   },
   illustrations: {
+    adminEmptySearch: `${selectedAssetBase}/illustrations/illus-admin-empty-search.webp`,
+    servicesEmptyConnection: `${selectedAssetBase}/illustrations/illus-services-empty-connection.webp`,
     businessOnboardingForm: `${selectedAssetBase}/illustrations/illus-business-onboarding-form.webp`,
     mobileCustomerChat: `${selectedAssetBase}/illustrations/illus-mobile-customer-chat.webp`,
     mobileLocalDiscovery: `${selectedAssetBase}/illustrations/illus-mobile-local-discovery.webp`,

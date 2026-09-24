@@ -5,6 +5,7 @@ import { Form, Link, useNavigate } from "react-router";
 import { authClient } from "../lib/auth-client";
 import { Button, Icon, type IconName } from "./ui";
 import { PlatformFooter } from "./platform-footer";
+import { publicAssets } from "../assets/public-assets";
 
 const navigation: { label: string; to: string; active: string; icon: IconName }[] = [
   { label: "Resumen", to: "/app/internal", active: "home", icon: "home" },
@@ -36,8 +37,10 @@ export function AdminShell({ active, children, workspaceUser }: AdminShellProps)
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <Link className="admin-brand" to="/app/internal">
-          <span className="admin-brand__mark" aria-hidden="true">V</span>
-          <span><strong>Vecidya Admin</strong><small>Operaciones de plataforma</small></span>
+          <span className="brand-symbol-frame" aria-hidden="true">
+            <img alt="" className="brand-symbol" height="512" src={publicAssets.brand.symbol3d} width="512" />
+          </span>
+          <span><strong>Vecidya</strong><small>Operaciones de plataforma</small></span>
         </Link>
         <nav aria-label="Navegación administrativa" className="admin-navigation">
           {navigation.map((item) => (

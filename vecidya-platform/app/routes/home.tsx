@@ -36,7 +36,7 @@ export default function Home() {
     "@type": "Organization",
     name: "Vecidya",
     url: origin,
-    logo: `${origin}/brand/vecidya-app-icon.png`,
+    logo: `${origin}/brand/vecidya-icon-3d.png`,
     description: "Plataforma para explorar negocios reales y ordenar la presencia digital.",
   };
 
