@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
@@ -121,6 +122,16 @@ function value(value: string | null | undefined) {
   return value ?? "";
 }
 
+function slugify(input: string) {
+  return input
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 export default function BusinessProfilePage() {
   const { completion: loaderCompletion, governance, hours: loaderHours, membership, profile: loaderProfile, workspaceUser, organizations, isPlatformAdmin, activeOrganization } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
@@ -133,6 +144,8 @@ export default function BusinessProfilePage() {
   const hoursByDay = new Map(hours.map((entry) => [entry.dayOfWeek, entry]));
   const canEdit = membership.role === "owner" || membership.role === "admin";
   const isSaving = navigation.state === "submitting";
+  const slugInputRef = useRef<HTMLInputElement>(null);
+  const slugTouchedRef = useRef(Boolean(profile?.slug));
 
   return (
     <ClientAreaShell active="business" workspaceUser={workspaceUser} organizations={organizations} activeOrganization={activeOrganization} isPlatformAdmin={isPlatformAdmin}>
@@ -195,8 +208,8 @@ export default function BusinessProfilePage() {
             <fieldset disabled={isSaving}>
               <legend>Información del negocio</legend>
               <div className="form-grid">
-                <label>Nombre visible<input defaultValue={value(profile?.displayName)} name="displayName" required maxLength={120} /></label>
-                <label>Slug<input defaultValue={value(profile?.slug)} name="slug" required maxLength={80} pattern="[a-z0-9]+(-[a-z0-9]+)*" spellCheck={false} /></label>
+                <label>Nombre visible<input defaultValue={value(profile?.displayName)} name="displayName" onChange={(event) => { if (!slugTouchedRef.current && slugInputRef.current) slugInputRef.current.value = slugify(event.currentTarget.value); }} required maxLength={120} /></label>
+                <label>Slug<input defaultValue={value(profile?.slug)} name="slug" onChange={(event) => { slugTouchedRef.current = event.currentTarget.value.trim() !== ""; }} ref={slugInputRef} required maxLength={80} pattern="[a-z0-9]+(-[a-z0-9]+)*" spellCheck={false} /></label>
                 <label className="form-grid__full">Descripción corta<textarea defaultValue={value(profile?.shortDescription)} name="shortDescription" maxLength={280} rows={3} /></label>
                 <label className="form-grid__full">Descripción<input defaultValue={value(profile?.description)} name="description" maxLength={5000} /></label>
                 <label>Categoría<input defaultValue={value(profile?.category)} name="category" maxLength={100} /></label>
