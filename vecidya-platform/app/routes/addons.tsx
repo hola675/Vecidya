@@ -175,17 +175,24 @@ export default function Addons() {
             <h2 id="addons-list-title">Agrega solo lo que tenga sentido para tu operación.</h2>
           </div>
           <div className="addons-grid">
-            {addons.map((addon) => (
-              <article className="addon-card" id={addon.id} key={addon.id}>
-                <div className="addon-card__top">
-                  <img alt="" aria-hidden="true" height={48} src={addon.icon} width={48} />
-                  <p className="eyebrow">{addon.category}</p>
-                </div>
-                <h3>{addon.name}</h3>
-                <div className="addon-card__problem"><span>Problema</span><p>{addon.problem}</p></div>
-                <div className="addon-card__solution"><span>Qué aporta</span><p>{addon.solution}</p></div>
-              </article>
-            ))}
+            {addons.map((addon, index) => {
+              const isFirstInCategory = addons.findIndex((item) => item.category === addon.category) === index;
+              const anchorCategory = isFirstInCategory
+                ? categories.find((category) => category.title.toUpperCase() === addon.category)
+                : undefined;
+              return (
+                <article className="addon-card" id={addon.id} key={addon.id}>
+                  {anchorCategory ? <span aria-hidden="true" className="addon-card__anchor" id={anchorCategory.id} /> : null}
+                  <div className="addon-card__top">
+                    <img alt="" aria-hidden="true" height={48} src={addon.icon} width={48} />
+                    <p className="eyebrow">{addon.category}</p>
+                  </div>
+                  <h3>{addon.name}</h3>
+                  <div className="addon-card__problem"><span>Problema</span><p>{addon.problem}</p></div>
+                  <div className="addon-card__solution"><span>Qué aporta</span><p>{addon.solution}</p></div>
+                </article>
+              );
+            })}
           </div>
           <p className="addons-price-note">El alcance y la disponibilidad se confirman para cada caso. Los consumos externos se informan por separado; aún no hay precios públicos ni contratación en línea.</p>
         </section>

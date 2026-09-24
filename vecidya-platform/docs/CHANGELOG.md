@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-09-24 — VIS-001A Visual Foundations Audit (documental) + VIS-001B Foundations Implementation (`0.4.2` local)
+
+VIS-001A confirmó el baseline real (`0.4.1`; React 19.3.0, React Router 8.4.0, Vite 8.3.0, Tailwind 4.3.3, TypeScript 7.0.2), que Motion/framer-motion no es necesario todavía (los efectos previstos se resuelven con CSS) y que Rive sigue bloqueado (no instalado, sin `.riv` aprobado). Fue solo lectura, sin cambios de código.
+
+VIS-001B, autorizada y ejecutada el mismo día, corrigió tres defectos concretos que la auditoría dejó reproducibles en código y confirmó en navegador (Playwright + Chrome DevTools contra el Worker local):
+
+- **Reduced motion roto:** `.auth-card{animation:none}` perdía la guerra de especificidad contra `.auth-layout > .auth-card`, así que la animación de entrada nunca se desactivaba con `prefers-reduced-motion: reduce`. Se movió la animación a `@media (prefers-reduced-motion: no-preference)` (mismo patrón ya usado en Home); verificado que `animationName`/`transform` resuelven a `none` bajo reduced motion real.
+- **Anclas de Addons sin destino:** las cuatro categorías (`#comunicacion`, `#automatizacion`, `#inteligencia-artificial`, `#integraciones`) apuntaban a ids inexistentes. Se añadieron anclas invisibles (`position:absolute`, sin alterar el grid) en la primera tarjeta de cada categoría; verificado con navegación real por hash y sin regresión visual.
+- **Grid compacto de Vecindario:** con 1–2 resultados, `.directory-page-v2--compact .directory-grid-v2` (dos columnas de 26rem) ganaba por especificidad a la regla móvil de una columna. Se añadió una regla de igual especificidad dentro de `@media (max-width: 760px)`; verificado 1 columna a 500px y 2 columnas a 1368px.
+
+Al deduplicar el bloque Auth de `app.css` (dos declaraciones casi idénticas de `.auth-shell`/`.auth-layout`/`.auth-card`) apareció un cuarto defecto no listado en la auditoría: `.auth-brand` resolvía a texto blanco por ser la última de tres declaraciones con la misma especificidad, dejando el wordmark «Vecidya» invisible sobre la tarjeta blanca de `/verify-email`. Se corrigió acotando la variante blanca a `.auth-welcome .auth-brand`; verificado color computado `rgb(20, 43, 74)` en runtime.
+
+Además: el estado vacío compartido (`.empty-state` sin imagen) confinaba el texto a una columna de 4.25rem/68px cuando `services-app.tsx` o `internal-audit.tsx` no renderizaban imagen — reproducido y corregido a nivel de foundation con `:has()`, sin tocar lógica de App/Admin (no quedó como follow-up UX-003, a diferencia de lo previsto en la auditoría). Se consolidaron 60 usos de pesos de fuente arbitrarios (650/750/850/950 → 700/800), verificado empíricamente sin diferencia de renderizado en Arial, y 29 duplicados literales de `--ink`/`--blue`/`--blue-dark` se alias-earon a sus tokens. Sin cambio de paleta, familia tipográfica, modelo comercial, rutas, backend ni nuevas dependencias.
+
+`RAN`: `typecheck`, `build` (CSS `142.86 kB → 143.12 kB` gzip, sin regresión), `test:unit` 75/75, `git diff --check`, y E2E `addons`, `licenses`, `commercial-review` y `pg-c1` PASS (cubren 1366/768/390/360). QA visual manual (no exhaustiva) en Home, Licencias, Addons, Servicios, Aprende, Diagnóstico, Login, Registro y Verificar correo. Versión local `0.4.2` (impacto PATCH: solo correcciones y consolidación CSS, sin capacidad nueva). Sin push, sin deploy.
+
 ## 2026-09-23 — REL-004A Restore Git Traceability for `v0.4.1` (documental)
 
 Recuperación de la fuente de verdad. No modifica producto.

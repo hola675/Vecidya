@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-23 (DIAG-002C + UX-003.1–003.5 publicados en `0.4.1`; VIS-001 autorizado e iniciado localmente; OPS-001 documental; follow-up de verificación/invitaciones permanece separado).
+Última reconciliación: 2026-09-24 (VIS-001A y VIS-001B cerrados en local, versión local `0.4.2`; DIAG-002C + UX-003.1–003.5 siguen publicados en `0.4.1`; OPS-001 documental; follow-up de verificación/invitaciones permanece separado).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -50,9 +50,43 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## VIS-001 — auditoría visual y mejora de UX/UI (EN PROGRESO LOCAL)
+## VIS-001 — siguiente trabajo visual y gates
 
-El usuario autorizó implementar la revisión visual pegada el 2026-09-23. La primera pasada consolida shell de Login/Registro/recuperación, tokens semánticos, Home, footer, navegación pública, referencias de Licencias, escaneo de Addons/Aprende y directorio compacto. Alcance excluye cambios de modelo comercial, rutas, modelo Cuadra/Barrio/Ciudad, scoring, contenido editorial, GHL, D1 y backend de autenticación. `RAN`: typecheck/build y E2E de Licencias, Addons, recorrido comercial y Nosotros PASS; capturas de ocho páginas en desktop y móvil. Sin publicación. Queda el siguiente barrido de páginas y responsive y completar la cobertura de acceso.
+**VIS-001A (auditoría documental, 2026-09-23) y VIS-001B (Foundations Implementation, autorizada y ejecutada 2026-09-24) están cerrados en local.** VIS-001A no cambió producto. VIS-001B sí modificó código: corrigió los tres defectos concretos que la auditoría dejó identificados y consolidó foundation CSS existente, sin nuevas librerías, sin rediseño y sin tocar rutas, modelo comercial, backend ni GHL. Detalle de cierre más abajo. No confundir con VIS-001C (Motion Pilot), que sigue sin autorizar.
+
+### Conflictos que deben reconciliarse antes de ampliar alcance
+
+- **Entrada histórica:** `package.json` y el lockfile fijan fuente `0.4.1`; `ENVIRONMENTS.md` registra HTTP de producción del 2026-09-23. El commit local `032208e` ya contiene AuthShell compartido y motion CSS, sin publicación documentada. No partir de una UI anterior ni inferir publicación porque coincide el número de versión; VIS-001A no repite el smoke remoto.
+- **G2 sigue pendiente de decisión:** la fila G2 y la fila 16 conservan el bloqueo histórico de Visual System Expansion. `resources/assets` y `archive` no están en el árbol actual; `public/assets/selected`, `public/assets/about`, `public/assets/learn` y `public/brand` sí proporcionan recursos al código. No se demostró que sustituyan toda la biblioteca histórica ni que haga falta recuperarla. Además, `git cat-file -t ec79b22` falla en este clon: la receta histórica de recuperación no es ejecutable aquí. No cerrar G2, recuperar ni versionar assets automáticamente. La auditoría de lo existente no exige esa recuperación; cualquier expansión de biblioteca sigue detrás de G2.
+- **App/Admin:** el encabezado y `STATUS.md` registran entregas UX-003.1/.2/.4/.5, mientras la nota general usa el intervalo ambiguo «003.1–003.5» y declara 003.3 pendiente. `PROJECT_STATE.md` aún conserva descripciones antiguas de shells; la tabla inicial mantiene G4 por migraciones que `STATUS.md` da por publicadas. Estos conflictos se reportan, no se resuelven por inferencia en VIS-001A. Equipo/invitaciones, listas, filtros y QA autenticada siguen separados; no se autorizan aquí. GHL permanece pausado.
+
+### VIS-001B — Foundations Implementation — CERRADA (local, 2026-09-24)
+
+Objetivo cumplido: normalizar la foundation existente sin cambiar familia tipográfica, paleta, modelo comercial, contenido editorial, rutas, backend ni assets, y sin nuevas librerías.
+
+1. **Tokens y tipografía:** se conservaron los valores de `--ink`/`--blue`/`--blue-dark`/`--orange`; los duplicados literales de esos tres colores (29 ocurrencias) se alias-earon a sus tokens. Se consolidaron 60 usos de pesos de fuente arbitrarios (650/750/850/950) a pesos reales (700/800), verificado empíricamente: en Arial, 600–750 renderiza idéntico y 800–950 renderiza idéntico (medición de ancho de glifo en navegador), por lo que el cambio no altera la jerarquía visual. No se introdujo una escala tipográfica nueva ni se tocó la familia de fuente.
+2. **Cascada y accesibilidad — corregido y verificado:** el bloque Auth duplicado (`app.css:123–149` y `3886–3917`) se eliminó a una sola declaración. La animación de entrada de `.auth-layout > .auth-card` se movió a `@media (prefers-reduced-motion: no-preference)` (mismo patrón que el resto del archivo) en vez de intentar cancelarla con `.auth-card{animation:none}`, que perdía la guerra de especificidad; verificado en navegador con `prefers-reduced-motion: reduce` real (Playwright): `animationName` y `transform` resuelven a `none`. La deduplicación además reveló que `.auth-brand` resolvía a texto blanco (última de tres declaraciones con la misma especificidad), invisible sobre la tarjeta blanca de `/verify-email`; se corrigió acotando la variante blanca a `.auth-welcome .auth-brand` y verificando el color computado (`rgb(20, 43, 74)`) en runtime.
+3. **Contratos visuales:** `Button`/`Card`/`Badge`/`Alert` (`app/components/ui.tsx`) y el contrato de interacción existente (hover ≤1–2px, `transition: none` bajo reduced motion) ya cumplían el criterio; no requirieron cambio. Header/Footer públicos revisados (tokens, foco, hover, versión desde `package.json`): sin hallazgos. Ningún rediseño de App/Admin.
+4. **Hallazgos reproducidos y corregidos:** anclas de categorías de Addons (apuntaban a ids inexistentes) corregidas con anclas invisibles posicionadas dentro de la primera tarjeta de cada categoría, verificado con navegación real por hash; grid compacto de Vecindario (1–2 resultados) corregido con una regla `@media (max-width: 760px)` de igual especificidad para forzar una columna en móvil, verificado en runtime a 500px y 1368px. El estado vacío compartido (`.empty-state` sin imagen, `app.css`, consumido por `services-app.tsx` y `internal-audit.tsx`) sí pudo corregirse a nivel de foundation con `:has()` sin tocar lógica de App/Admin — reproducido (el texto quedaba confinado a una columna de 4.25rem/68px) y verificado corregido en runtime, sin necesidad de follow-up UX-003.
+5. **Sin rediseño:** no se tocó composición de Login/Registro/About/Aprende; solo foundation compartida.
+
+Evidencia de cierre: `pnpm run typecheck` PASS, `pnpm run build` PASS (CSS `142.86 kB → 143.12 kB` gzip, sin regresión significativa), `pnpm run test:unit` 75/75 PASS, `git diff --check` PASS (solo avisos de fin de línea CRLF/LF preexistentes), E2E `addons-experience-check.mjs`, `licenses-experience-check.mjs`, `commercial-experience-review-check.mjs` y `public-growth-c1-real-profile-readiness-check.mjs` PASS (cubren 1366/768/390/360). Verificación en runtime real (Playwright + Chrome DevTools contra el Worker local) para reduced motion, anclas, grid y contraste. QA visual manual (no exhaustiva en las 4 resoluciones) en Home, Licencias, Addons, Servicios, Aprende, Diagnóstico, Login, Registro y Verificar correo; zoom 200% y axe automatizado no se ejecutaron (`VIS-001B-QA-001` en `STATUS.md`). Versión local `0.4.2`; no desplegada. No push, no deploy.
+
+### VIS-001C — Motion Pilot (condicional; no autorizado)
+
+- **CSS primero:** hover/focus, color, fondo, borde, sombra, desplazamiento 1–3 px, flechas, tap y progreso simple. Entradas y stagger sencillos tampoco justifican automáticamente una librería.
+- **Candidato JS/Motion:** presencia con salida, layout dinámico o secuencia coordinada cuyo comportamiento no se resuelva bien con CSS. Exigir un caso concreto y comparación contra CSS/JS nativo; comprobar compatibilidad de las APIs contra las dependencias reales antes de proponer instalación. View Transitions/AnimateView no están aprobados por la versión de React.
+- **Diseño provisional, no tokens definitivos:** micro 120–220 ms, componente 250–400 ms, sección 400–650 ms; desplazamiento de entrada 8–20 px, stagger 60–100 ms, hover 1–3 px y tap hasta 0.98. Probar `ease-out` o la curva existente `cubic-bezier(.2,.75,.25,1)` en la UI real; secuencias cortas, sin ocultar contenido esencial ni retrasar interacción.
+- **Fallback obligatorio:** con reduced motion, contenido visible, flujos independientes de animación, sin parallax ni autoplay decorativo, sin transformaciones residuales y con transiciones eliminadas o mínimas. Los loops CSS actuales de 4.5/7 s necesitan evaluación de pausa y coste fuera de viewport antes de añadir más; no se encontró control de pausa en `app/`.
+- **Rendimiento:** medir baseline y delta de JS/CSS transferido, assets, LCP/CLS/INP y coste de ejecución en móvil. Cargar solo lo necesario por ruta; pausar decoraciones fuera de viewport. Ningún presupuesto numérico queda certificado por esta auditoría.
+
+### Gates posteriores: identidad animada y vídeo (no autorizados)
+
+- **Rive: NOT INSTALLED / NOT APPROVED.** Requiere pieza `.riv` propia aprobada, objetivo concreto, fallback estático, peso medido, responsive, reduced motion y comparación antes/después, además de autorización del runtime. Rutas, puntos, pins y conexiones ya aparecen en los assets actuales; derivar de ellos la identidad, sin reinterpretar el logo.
+- **Vídeo:** no añadir todavía. Una propuesta futura debe incluir WebM/MP4, poster, muted, playsinline, carga condicionada, alternativa estática, peso medido y variante móvil cuando aplique. Nunca contenido esencial ni GIF pesado. Rive, vídeo y dotLottie son assets/runtime especializados, no sustitutos generales de CSS.
+- **Estados honestos:** ninguna ilustración o animación puede presentar «Publicado», éxito, verificación o conexión operativa sin estado real que lo respalde.
+
+Secuencia conceptual: **VIS-001A → VIS-001B → VIS-001C solo si se justifica → evaluar Rive → retomar App/Admin mediante autorización separada**. VIS-001A y VIS-001B están cerrados en local (2026-09-24). **STOP tras VIS-001B**: no se inicia VIS-001C automáticamente, no se instala Motion/framer-motion/GSAP/Lottie/Three/Lenis, y no hay push ni deploy sin autorización explícita. Queda pendiente revisión visual y técnica del usuario antes de continuar.
 
 ### UX-002.1 Product Catalog Foundation — PASS DOCUMENTAL
 
