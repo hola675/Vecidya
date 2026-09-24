@@ -15,20 +15,20 @@ export function meta({}: Route.MetaArgs) { return [{ title: "Integraciones | Adm
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  await requirePlatformAdmin(env, request);
+  const access = await requirePlatformAdmin(env, request);
   const integrations = await listPlatformIntegrations(createDatabase(env.DB));
   const selectedOrganizationId = new URL(request.url).searchParams.get("organizationId");
-  return { integrations, selectedOrganizationId };
+  return { integrations, selectedOrganizationId, workspaceUser: access.workspaceUser };
 }
 
 export default function InternalIntegrations() {
-  const { integrations, selectedOrganizationId } = useLoaderData<typeof loader>();
+  const { integrations, selectedOrganizationId, workspaceUser } = useLoaderData<typeof loader>();
   const orderedIntegrations = selectedOrganizationId
     ? [...integrations].sort((left, right) => Number(right.organizationId === selectedOrganizationId) - Number(left.organizationId === selectedOrganizationId))
     : integrations;
   const selectedOrganization = integrations.find((item) => item.organizationId === selectedOrganizationId);
 
-  return <AdminShell active="integrations">
+  return <AdminShell active="integrations" workspaceUser={workspaceUser}>
     <main className="admin-main admin-integration-page">
       <div className="page-heading"><div><p className="eyebrow">OPERACIONES INTERNAS</p><h1>Integraciones</h1><p>Consulta las conexiones genéricas registradas por organización. Esta vista no conecta proveedores ni modifica datos.</p></div><Badge tone="neutral">{integrations.length} conexiones</Badge></div>
       {selectedOrganizationId ? <p className="admin-selected-context" role="status">Organización seleccionada: <strong>{selectedOrganization?.organizationName ?? "no encontrada"}</strong></p> : null}

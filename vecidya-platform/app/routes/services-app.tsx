@@ -5,6 +5,7 @@ import { ClientAreaShell } from "../components/client-area-shell";
 import { listOrganizationServices } from "../../db/queries/organization-services.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getActiveOrganization, requireSession } from "../../server/auth/session.server";
+import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
 import { Badge, Card } from "../components/ui";
 
 import type { Route } from "./+types/services-app";
@@ -40,19 +41,24 @@ export function meta({}: Route.MetaArgs) {
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   await requireSession(env, request);
-  const organization = await getActiveOrganization(env, request);
+  const [organization, shell] = await Promise.all([
+    getActiveOrganization(env, request),
+    getClientWorkspaceContext(env, request),
+  ]);
   if (!organization) throw new Response("Organización activa requerida", { status: 403 });
   return {
     organization,
     services: await listOrganizationServices(createDatabase(env.DB), organization.id),
+    ...shell,
+    activeOrganization: organization,
   };
 }
 
 export default function AppServices() {
-  const { organization, services } = useLoaderData<typeof loader>();
+  const { organization, services, workspaceUser, organizations, isPlatformAdmin, activeOrganization } = useLoaderData<typeof loader>();
 
   return (
-    <ClientAreaShell active="services">
+    <ClientAreaShell active="services" workspaceUser={workspaceUser} organizations={organizations} activeOrganization={activeOrganization} isPlatformAdmin={isPlatformAdmin}>
     <main className="app-main services-page" id="client-page-content">
       <div className="page-heading">
         <div>

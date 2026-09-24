@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-09-24 — UX-003.8 Authenticated App + Admin Visual Baseline + UX-003.9 App + Admin Experience Upgrade (`0.5.0` local)
+
+UX-003.8 auditó Client App e Internal Admin con una sesión real (usuario QA local `qa.visual@vecidya.local`: registro, organización y `platform_admin` creados por los flujos reales, no por INSERT manual salvo el propio `platform_member`, cuyo esquema se inspeccionó primero). Sin cambios de código. Confirmó que `platform_admin` no contamina la experiencia normal de `/app`; recorrió 11 de 14 rutas privadas; encontró `ORG-UI-002` y reprodujo `ADMIN-SCALE-001` con datos reales (566 organizaciones, 98 perfiles de fixtures E2E sin limpiar). Capturas y `storageState` de sesión quedaron fuera de Git.
+
+UX-003.9, autorizada el mismo día sobre ese baseline, sí modificó código:
+
+- **Shell de Client App unificado:** las 5 rutas (`/app`, `/app/business-profile`, `/app/organization`, `/app/services`, `/app/account`) comparten ahora `ClientAreaShell` (sidebar agrupado con iconos, selector de organización, menú de usuario) en vez de dos shells distintos (uno con sidebar solo en `/app`, otro con navegación horizontal en las demás). Nuevo helper `server/auth/client-workspace.server.ts` evita repetir la consulta de organizaciones/`platform_admin` en cada loader.
+- **`/app` rediseñado:** acción principal derivada de datos reales (Crear/Completar/Revisar para publicar/Administrar perfil), resumen de estado (perfil, servicios, equipo) y accesos rápidos.
+- **`ORG-UI-001` y `ORG-UI-002` resueltos:** el marcador «Tu cuenta» ahora compara contra el id de usuario correcto; `.member-row` dejó de colapsar a 0px en móvil (dos media queries con la misma especificidad competían por el mismo selector — el mismo patrón que VIS-001B ya había corregido tres veces en Addons, Vecindario y reduced motion).
+- **AdminShell:** iconos en la navegación y pie con usuario/«Platform Admin»/cerrar sesión, ausentes antes.
+- **Admin Home con datos reales:** conteos de organizaciones/perfiles/servicios/integraciones (reutilizando queries ya existentes) y sección «Requiere atención» condicionada a datos reales, sin incidencias inventadas.
+- **`ADMIN-SCALE-001` parcialmente resuelto:** Organizaciones y Negocios pasaron de tarjetas repetidas a tablas densas con búsqueda y filtro client-side (verificado filtrando 566→1 en runtime). Servicios, Integraciones y Auditoría quedan pendientes del mismo tratamiento.
+- **P3:** regex inválida del slug de organización corregida; `<title>` añadido donde faltaba (`/app/organization`, lista y detalle de negocio en Admin).
+
+`RAN`: `typecheck`, `build`, `git diff --check` PASS; `test:unit` 75/75 PASS; E2E `admin-shell`, `bpx`, `admin-bp`, `admin-orgs`, `members`, `c1`, `c2`, `d1` PASS. `px-b` falló en un punto distinto al que documentaba `TEST-UX003-PXB`; verificado manualmente (tres veces, una con el mismo ejecutable Edge del script) que el flujo real funciona correctamente — se registra como script poco fiable, no como regresión confirmada. Sin cambios de ruta, schema, backend, GHL ni dependencias nuevas. Versión local `0.4.2` → `0.5.0` (MINOR). Sin push, sin deploy.
+
 ## 2026-09-24 — VIS-001A Visual Foundations Audit (documental) + VIS-001B Foundations Implementation (`0.4.2` local)
 
 VIS-001A confirmó el baseline real (`0.4.1`; React 19.3.0, React Router 8.4.0, Vite 8.3.0, Tailwind 4.3.3, TypeScript 7.0.2), que Motion/framer-motion no es necesario todavía (los efectos previstos se resuelven con CSS) y que Rive sigue bloqueado (no instalado, sin `.riv` aprobado). Fue solo lectura, sin cambios de código.

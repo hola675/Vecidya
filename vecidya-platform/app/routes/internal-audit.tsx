@@ -25,16 +25,16 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  await requirePlatformAdmin(env, request);
+  const access = await requirePlatformAdmin(env, request);
   const activity = await listPlatformAuditLog(createDatabase(env.DB), { limit: 200 });
-  return { activity };
+  return { activity, workspaceUser: access.workspaceUser };
 }
 
 export default function InternalAudit() {
-  const { activity } = useLoaderData<typeof loader>();
+  const { activity, workspaceUser } = useLoaderData<typeof loader>();
 
   return (
-    <AdminShell active="audit">
+    <AdminShell active="audit" workspaceUser={workspaceUser}>
       <main className="admin-content">
         <div className="page-heading">
           <div><p className="eyebrow">GOBIERNO</p><h1>Auditoría</h1><p>Acciones administrativas sensibles ejecutadas sobre Business Profiles: quién, qué, sobre qué perfil y cuándo.</p></div>

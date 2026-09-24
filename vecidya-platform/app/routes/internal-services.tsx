@@ -23,7 +23,7 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  await requirePlatformAdmin(env, request);
+  const access = await requirePlatformAdmin(env, request);
 
   const database = createDatabase(env.DB);
   const [organizations, catalog, assignments] = await Promise.all([
@@ -32,7 +32,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     database.select().from(organizationService),
   ]);
 
-  return { organizations, catalog, assignments, selectedOrganizationId: new URL(request.url).searchParams.get("organizationId") };
+  return { organizations, catalog, assignments, selectedOrganizationId: new URL(request.url).searchParams.get("organizationId"), workspaceUser: access.workspaceUser };
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
@@ -84,7 +84,7 @@ export async function action({ context, request }: Route.ActionArgs) {
 }
 
 export default function InternalServices() {
-  const { assignments, catalog, organizations, selectedOrganizationId } = useLoaderData<typeof loader>();
+  const { assignments, catalog, organizations, selectedOrganizationId, workspaceUser } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isSaving = navigation.state === "submitting";
@@ -93,7 +93,7 @@ export default function InternalServices() {
     : organizations;
 
   return (
-    <AdminShell active="services">
+    <AdminShell active="services" workspaceUser={workspaceUser}>
     <main className="admin-main admin-service-page">
       <div className="page-heading">
         <div>

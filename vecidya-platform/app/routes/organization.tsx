@@ -4,11 +4,16 @@ import { createAuth } from "../../server/auth.server";
 import { hasPermission, requireOrganizationPermission } from "../../server/auth/authorization.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getActiveOrganization } from "../../server/auth/session.server";
+import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
 import { isOrganizationInvitationEmailConfigured } from "../../server/email/invitation.server";
 import { Alert, Badge, Button, Card } from "../components/ui";
 import { ClientAreaShell } from "../components/client-area-shell";
 
 import type { Route } from "./+types/organization";
+
+export function meta() {
+  return [{ title: "Equipo | Vecidya" }, { name: "description", content: "Consulta y administra el equipo de tu organización en Vecidya." }];
+}
 
 function invitationEmailConfig(env: Env) {
   return { ...env, appUrl: env.APP_URL || undefined };
@@ -18,7 +23,10 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   const organization = await getActiveOrganization(env, request);
   if (!organization) throw new Response("An active organization is required", { status: 403 });
-  await requireOrganizationPermission(env, request, organization.id, "member:read");
+  const [, shell] = await Promise.all([
+    requireOrganizationPermission(env, request, organization.id, "member:read"),
+    getClientWorkspaceContext(env, request),
+  ]);
   const auth = createAuth(env, request);
   const members = await auth.api.listMembers({
     headers: request.headers,
@@ -27,7 +35,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const invitations = hasPermission(organization.role, "member:invite")
     ? await auth.api.listInvitations({ headers: request.headers, query: { organizationId: organization.id } })
     : null;
-  return { organization, members, invitations };
+  return { organization, members, invitations, ...shell, activeOrganization: organization };
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
@@ -104,14 +112,14 @@ export async function action({ context, request }: Route.ActionArgs) {
 }
 
 export default function OrganizationPage() {
-  const { organization, members, invitations } = useLoaderData<typeof loader>();
+  const { organization, members, invitations, workspaceUser, organizations, isPlatformAdmin, activeOrganization } = useLoaderData<typeof loader>();
   const result = useActionData<typeof action>();
   const navigation = useNavigation();
   const busy = navigation.state !== "idle";
   const memberList = members.members ?? [];
 
   return (
-    <ClientAreaShell active="organization">
+    <ClientAreaShell active="organization" workspaceUser={workspaceUser} organizations={organizations} activeOrganization={activeOrganization} isPlatformAdmin={isPlatformAdmin}>
     <main className="app-main organization-page" id="client-page-content">
       <div className="page-heading">
         <div>
@@ -134,7 +142,7 @@ export default function OrganizationPage() {
               <div className="member-row" key={member.id} role="listitem">
                 <div><strong>{member.user.name}</strong><span>{member.user.email}</span></div>
                 <Badge tone={member.role === "owner" ? "brand" : "neutral"}>{member.role}</Badge>
-                {member.user.id === organization.userId ? <span className="member-self">Tu cuenta</span> : null}
+                {member.user.id === workspaceUser.id ? <span className="member-self">Tu cuenta</span> : null}
                 <Form method="post" className="member-controls">
                   <input name="memberId" type="hidden" value={member.id} />
                   <input name="operation" type="hidden" value="update-role" />

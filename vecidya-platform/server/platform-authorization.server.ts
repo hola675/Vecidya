@@ -15,5 +15,5 @@ export async function requirePlatformAdmin(env: AuthEnvironment, request: Reques
     throw new Response("Platform administration is required", { status: 403 });
   }
 
-  return access;
+  return { ...access, workspaceUser: { name: session.user.name, email: session.user.email } };
 }

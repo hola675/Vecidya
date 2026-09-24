@@ -15,6 +15,7 @@ import {
 import { getBusinessProfileGovernance } from "../../db/queries/platform-governance.server";
 import { requireOrganizationPermission } from "../../server/auth/authorization.server";
 import { requireOrganization } from "../../server/auth/session.server";
+import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import {
   getBusinessProfileCompletion,
@@ -44,12 +45,10 @@ const daysOfWeek = [1, 2, 3, 4, 5, 6, 7] as const;
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   const organization = await requireOrganization(env, request);
-  const membership = await requireOrganizationPermission(
-    env,
-    request,
-    organization.id,
-    "business-profile:read",
-  );
+  const [membership, shell] = await Promise.all([
+    requireOrganizationPermission(env, request, organization.id, "business-profile:read"),
+    getClientWorkspaceContext(env, request),
+  ]);
   const database = createDatabase(env.DB);
   const [profile, hours] = await Promise.all([
     getBusinessProfileForOrganization(database, organization.id),
@@ -57,7 +56,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   ]);
   const governance = profile ? await getBusinessProfileGovernance(database, profile.id) : null;
 
-  return { completion: getBusinessProfileCompletion(profile), governance, membership, profile, hours };
+  return { completion: getBusinessProfileCompletion(profile), governance, membership, profile, hours, ...shell, activeOrganization: organization };
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
@@ -123,7 +122,7 @@ function value(value: string | null | undefined) {
 }
 
 export default function BusinessProfilePage() {
-  const { completion: loaderCompletion, governance, hours: loaderHours, membership, profile: loaderProfile } = useLoaderData<typeof loader>();
+  const { completion: loaderCompletion, governance, hours: loaderHours, membership, profile: loaderProfile, workspaceUser, organizations, isPlatformAdmin, activeOrganization } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const profileActionData = actionData?.kind === "profile" ? actionData : undefined;
@@ -136,7 +135,7 @@ export default function BusinessProfilePage() {
   const isSaving = navigation.state === "submitting";
 
   return (
-    <ClientAreaShell active="business">
+    <ClientAreaShell active="business" workspaceUser={workspaceUser} organizations={organizations} activeOrganization={activeOrganization} isPlatformAdmin={isPlatformAdmin}>
     <main className="business-profile-page" id="client-page-content">
       <div className="page-heading">
         <div>

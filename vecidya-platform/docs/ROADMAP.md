@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-24 (VIS-001A y VIS-001B cerrados en local, versión local `0.4.2`; DIAG-002C + UX-003.1–003.5 siguen publicados en `0.4.1`; OPS-001 documental; follow-up de verificación/invitaciones permanece separado).
+Última reconciliación: 2026-09-24 (VIS-001A, VIS-001B, UX-003.8 y UX-003.9 cerrados en local, versión local `0.5.0`; DIAG-002C + UX-003.1–003.5 siguen publicados en `0.4.1`; OPS-001 documental; follow-up de verificación/invitaciones permanece separado).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -148,15 +148,32 @@ No convertir `BusinessProfile` en perfil universal por arrastre del Diagnóstico
 
 Definición de alcance consolidada desde la auditoría UX-003.0 (documento de fase retirado en REL-004A; su contenido único vive aquí y en `STATUS.md`). Entregadas y publicadas en `0.4.1`: UX-003.1 (arquitectura de información del área cliente), UX-003.2 (dashboard y experiencia de perfil), UX-003.4 (operaciones de Admin Home) y UX-003.5 (contexto de revisión del detalle de negocio). Quedan:
 
-- **UX-003.3 — Organización y equipo.** Estabilizar el lenguaje de roles, los controles de miembros, los estados de invitación y el contexto multi-organización. Depende de `AUTHZ-BA-001` e `INVITE-001`: no se rediseña el flujo de invitación mientras la entrega y la aceptación verificada sigan bloqueadas por correo externo. Incluye corregir `ORG-UI-001` y `ORG-UI-002` (colapso de `.member-row` a 0px en móvil, confirmado en runtime por UX-003.8).
+- **UX-003.3 — Organización y equipo.** Estabilizar el lenguaje de roles, los controles de miembros, los estados de invitación y el contexto multi-organización. Depende de `AUTHZ-BA-001` e `INVITE-001`: no se rediseña el flujo de invitación mientras la entrega y la aceptación verificada sigan bloqueadas por correo externo. `ORG-UI-001` y `ORG-UI-002` ya quedaron **resueltos por UX-003.9** (ver abajo); lo que queda de esta fase es específicamente invitaciones/roles/multi-org.
 - **UX-003.6 — Ajustes e integraciones.** Solo después de una decisión explícita de proveedor. Metadata tenant-scoped, nunca duplicación de CRM; facturación permanece como bloque separado.
 - **UX-003.7 — QA de App y Admin.** Cobertura de auth negativa, revisión axe/accesibilidad, responsive 1366/768/390/360, matriz tenant y validación en runtime local; incluye `ADMIN-A11Y-001` y las tres pruebas desalineadas `TEST-UX003-*`.
 
-Transversal a las fases anteriores: `ADMIN-SCALE-001` (búsqueda, filtros, paginación y densidad en la administración interna) y las acciones de ciclo de vida que aún no existen (despublicar un perfil, motivo de suspensión, ajustes completos de seguridad de cuenta).
+Transversal a las fases anteriores: `ADMIN-SCALE-001` (búsqueda, filtros, paginación y densidad en la administración interna — **parcialmente resuelto por UX-003.9** para Organizaciones y Negocios; Servicios/Integraciones/Auditoría siguen pendientes) y las acciones de ciclo de vida que aún no existen (despublicar un perfil, motivo de suspensión, ajustes completos de seguridad de cuenta).
 
 ### UX-003.8 — Authenticated App + Admin Visual Baseline — PASS local (2026-09-24)
 
-Auditoría en runtime con sesión real (usuario QA local `qa.visual@vecidya.local`, `owner` de `Vecidya QA Local` + `platform_admin`), sin cambios de código. Se eligió el número `.8` porque `.1/.2/.4/.5` ya están asignados a fases publicadas en `0.4.1`; no reutiliza esos identificadores. Confirmó que `platform_admin` no contamina la experiencia normal de `/app` (un solo usuario QA es suficiente) y recorrió 11 de las 14 rutas privadas (se omitió `/app/invitations/:id`, que exige una invitación real). Halló `ORG-UI-002` (nuevo, arriba) y reprodujo visualmente `ADMIN-SCALE-001` (lista de Organizaciones con más de 60 tarjetas de fixtures de pruebas E2E sin limpiar, `TEST-CLEANUP-001`, sin paginación ni filtros). Detalle completo, matriz visual y capturas (fuera de Git, `screenshots/ux-003-baseline/`, ignorado) en el reporte de la sesión 2026-09-24. Próxima fase propuesta: **UX-003.3** (ya priorizada arriba), no autorizada aquí.
+Auditoría en runtime con sesión real (usuario QA local `qa.visual@vecidya.local`, `owner` de `Vecidya QA Local` + `platform_admin`), sin cambios de código. Se eligió el número `.8` porque `.1/.2/.4/.5` ya están asignados a fases publicadas en `0.4.1`; no reutiliza esos identificadores. Confirmó que `platform_admin` no contamina la experiencia normal de `/app` (un solo usuario QA es suficiente) y recorrió 11 de las 14 rutas privadas (se omitió `/app/invitations/:id`, que exige una invitación real). Halló `ORG-UI-002` (nuevo, arriba) y reprodujo visualmente `ADMIN-SCALE-001` (lista de Organizaciones con más de 60 tarjetas de fixtures de pruebas E2E sin limpiar, `TEST-CLEANUP-001`, sin paginación ni filtros). Detalle completo, matriz visual y capturas (fuera de Git, `screenshots/ux-003-baseline/`, ignorado) en el reporte de la sesión 2026-09-24.
+
+### UX-003.9 — App + Admin Experience Upgrade — PASS técnico local (2026-09-24)
+
+Autorizada explícitamente el mismo día sobre el baseline de UX-003.8, con permiso de modificar UI/CSS/componentes/copy/navegación (no schema, no GHL, no Motion). Cambios reales:
+
+- **Shell de Client App unificado:** `ClientAreaShell` pasó de navegación horizontal (usada por 4 de 5 rutas) a un sidebar agrupado (Inicio · Mi negocio: Perfil/Servicios · Organización: Equipo · Cuenta) con selector de organización y menú de usuario, igual que ya tenía `/app`. `app.tsx` se migró a ese mismo shell (antes tenía uno propio, duplicado); se creó `server/auth/client-workspace.server.ts` para no repetir la consulta de organizaciones/usuario/`platform_admin` en cada loader.
+- **`/app` rediseñado:** saludo por hora, acción principal derivada de `businessProfile`/`completion` reales (Crear/Completar/Revisar para publicar/Administrar perfil — nunca un estado inventado), resumen de estado (perfil, servicios, equipo) y accesos rápidos con iconos.
+- **`ORG-UI-001`/`ORG-UI-002` resueltos** (ver `STATUS.md`), verificados en runtime a 390×844: «Tu cuenta» visible, sin superposición del nombre/rol.
+- **AdminShell:** iconos en la navegación (reutilizando los mismos SVG que ya usaban las cards de Admin Home) y pie con usuario/«Platform Admin»/«Volver al espacio cliente»/cerrar sesión, que antes no existían.
+- **Admin Home con datos reales:** conteos de organizaciones/perfiles/servicios/integraciones vía las mismas queries ya usadas en otras vistas (sin queries nuevas más allá de un `count()` de servicios pendientes) y sección «Requiere atención» condicionada a datos reales (nada se muestra si no hay nada que revisar).
+- **`ADMIN-SCALE-001` parcialmente resuelto:** Organizaciones y Negocios pasaron de tarjetas gigantes a tablas densas con búsqueda y filtro client-side; verificado filtrando 566→1 resultado en runtime. Servicios, Integraciones y Auditoría **no se tocaron** (quedan en tarjetas, con menor pero real fixture pollution).
+- **P3 cerrados:** `pattern="[a-z0-9-]+"` corregido a una expresión válida en navegadores modernos; `<title>` añadido a `/app/organization`, `/app/internal/businesses` y el detalle de negocio en Admin.
+- **Un ajuste encontrado durante la propia implementación:** el primer intento de revalidar el selector de organización usaba `navigate()` + `window.location.reload()`; se corrigió a `useRevalidator()` (mismo patrón que ya usa `/app/account`), más simple y correcto.
+
+Validación: `typecheck`, `build`, `git diff --check` PASS; `test:unit` 75/75 PASS; E2E `admin-shell`, `bpx` (business-profile-experience), `admin-bp` (admin-business-profiles), `admin-orgs`, `members` (organization-members), `c1`, `c2`, `d1` PASS. `px-b` (`product-experience-b-client-app-check.mjs`) falló de forma reproducible en un paso distinto al que documentaba `TEST-UX003-PXB`; verificado manualmente tres veces (incluida una reproducción con el mismo ejecutable Edge que usa el script) que el flujo real funciona — no se identificó como regresión de producto, pero tampoco se depuró la causa raíz del script; permanece como `TEST-UX003-PXB` actualizado en `STATUS.md`. Versión local `0.4.2` → **`0.5.0`** (MINOR: nueva capacidad de UI, sin cambios de ruta/schema/backend). Capturas antes/después en `screenshots/ux-003-baseline/` (fuera de Git). Sin push, sin deploy.
+
+**STOP tras UX-003.9.** No se inicia Motion, Rive, GHL ni deploy. Próxima fase propuesta: **UX-003.3** (invitaciones/roles/multi-org, ya priorizada arriba) — no autorizada aquí.
 
 ### Administración interna
 

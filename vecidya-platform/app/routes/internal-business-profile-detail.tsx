@@ -37,7 +37,7 @@ function formatTimestamp(date: Date) {
 
 export async function loader({ context, params, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  await requirePlatformAdmin(env, request);
+  const access = await requirePlatformAdmin(env, request);
   const database = createDatabase(env.DB);
   const businessProfileId = params.businessProfileId ?? "";
   const detail = await getPlatformBusinessProfileDetail(database, businessProfileId);
@@ -46,7 +46,11 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
     listPlatformAuditLog(database, { entityId: businessProfileId, limit: 20 }),
     listBusinessHoursForOrganization(database, detail.profile.organizationId),
   ]);
-  return { ...detail, activity, businessHours };
+  return { ...detail, activity, businessHours, workspaceUser: access.workspaceUser };
+}
+
+export function meta({ data }: Route.MetaArgs) {
+  return [{ title: data ? `${data.profile.displayName} | Administración Vecidya` : "Negocio | Administración Vecidya" }];
 }
 
 export async function action({ context, params, request }: Route.ActionArgs) {
@@ -68,7 +72,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 }
 
 export default function InternalBusinessProfileDetail() {
-  const { activity, profile, completion, services, businessHours } = useLoaderData<typeof loader>();
+  const { activity, profile, completion, services, businessHours, workspaceUser } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isSaving = navigation.state === "submitting";
@@ -88,7 +92,7 @@ export default function InternalBusinessProfileDetail() {
   }
 
   return (
-    <AdminShell active="businesses">
+    <AdminShell active="businesses" workspaceUser={workspaceUser}>
       <main className="admin-content">
         <Link className="back-link" to="/app/internal/businesses">← Volver a Business Profiles</Link>
         <div className="page-heading">

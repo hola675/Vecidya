@@ -13,19 +13,19 @@ export function meta({}: Route.MetaArgs) { return [{ title: "Detalle de organiza
 
 export async function loader({ context, params, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  await requirePlatformAdmin(env, request);
+  const access = await requirePlatformAdmin(env, request);
   const detail = await getPlatformOrganizationDetail(createDatabase(env.DB), params.organizationId);
   if (!detail) throw new Response("Organización no encontrada", { status: 404 });
-  return detail;
+  return { ...detail, workspaceUser: access.workspaceUser };
 }
 
 const serviceStatus = { active: "Activo", pending: "Pendiente", suspended: "Suspendido", ended: "Finalizado" } as const;
 const integrationStatus = { active: "Activa", pending: "Pendiente", inactive: "Inactiva", error: "Error" } as const;
 
 export default function InternalOrganizationDetail() {
-  const { organization, members, profile, services, integrations } = useLoaderData<typeof loader>();
+  const { organization, members, profile, services, integrations, workspaceUser } = useLoaderData<typeof loader>();
   return (
-    <AdminShell active="organizations">
+    <AdminShell active="organizations" workspaceUser={workspaceUser}>
       <main className="admin-main">
         <Link className="back-link" to="/app/internal/organizations">← Volver a organizaciones</Link>
         <div className="page-heading"><div><p className="eyebrow">ORGANIZACIÓN</p><h1>{organization.name}</h1><p>{organization.slug}</p></div><Badge tone={profile?.status === "published" ? "success" : "neutral"}>{profile ? profile.status === "published" ? "Perfil publicado" : "Perfil borrador" : "Sin perfil"}</Badge></div>
