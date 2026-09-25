@@ -1,12 +1,33 @@
 # Entornos
 
-Última reconciliación: 2026-09-25 (deploy de `v0.5.4` — INVITE-UI-001 — en producción; antes, `v0.5.3` — INVITE-001 y canal de WhatsApp —; staging sigue en `v0.4.1`).
+Última reconciliación: 2026-09-25 (deploy de `v0.5.5` — precio público de licencias en USD — en producción; antes, `v0.5.4` — INVITE-UI-001 —; staging sigue en `v0.4.1`).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura a los dominios publicados, fecha indicada por release, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
-`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `cce6aa0b-7988-4525-81c1-f44a5ef3accd` (`v0.5.4`). El smoke HTTP anónimo (rutas públicas, versión, CSS de equipo, `www`, rutas privadas protegidas, allowlist de Better Auth, invitación sin sesión y WhatsApp público) pasó el 2026-09-25.
+`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `cebd0a92-3560-4298-8a3b-5df0c6209477` (`v0.5.5`). El smoke HTTP anónimo (rutas públicas, versión, precio de licencias en USD, `www`, rutas privadas protegidas) pasó el 2026-09-25.
+
+## Deploy `0.5.5` — Precio público de licencias en USD (2026-09-25)
+
+- **Autorización:** el usuario pidió explícitamente agregar el precio en USD de las licencias y, en un mensaje aparte, «y despliega». Antes de implementar se confirmó con el usuario (pregunta directa) que los montos a usar eran los `$39`/`$59`/`$89` ya existentes como referencia comercial, y que esto era una decisión de negocio real (no un borrador para ver cómo se vería).
+- **Commit publicado:** `87ca30b` (`feat(licenses): publish USD monthly prices for Cuadra, Barrio and Ciudad`).
+- **Gate:** `typecheck` y `build` PASS; `test:unit` 105/105 (sin cambios, este bloque no tocó unitarias). E2E: `licenses`, `commercial-review`, `addons` y `join-contact` PASS; `px-a` falla por el falso positivo preexistente `TEST-UX003-PXA` (coincide con la clase CSS `.admin-review-context`, no con copy de este cambio; confirmado que ninguno de los archivos tocados contiene la palabra «review»).
+  - Reconstruido en el propio corte del deploy (`server-build-Du8SIYrb.js`, `root-BOdyOL4F.css`): contenía `"0.5.5"`, la plantilla del precio (`` USD ${license.priceUsd}/mes ``) y la regla `.license-card__price`.
+  - Migraciones: NINGUNA.
+- **Deploy:** `--dry-run` confirmó `DB=vecidya-prod` y `APP_ENV=production`. `pnpm wrangler deploy` a las 2026-09-25T23:20:06Z. Version ID **`cebd0a92-3560-4298-8a3b-5df0c6209477`**. Staging, secrets y D1 remota no se tocaron.
+- **HTTP anónimo de solo lectura** (`curl --ssl-no-revoke`):
+
+  | Comprobación | Antes (23:19Z, `0.5.4`) | Después (23:21Z) |
+  | --- | --- | --- |
+  | Pie de `/` | «Versión pública 0.5.4» | «Versión pública 0.5.5» |
+  | `/licencias`: `USD 39/mes` / `USD 59/mes` / `USD 89/mes` | 0 / 0 / 0 | 1 / 1 / 1 |
+  | `/licencias`: «Aún no hay precios públicos» / «Precio mensual de referencia en USD» | — / — | 0 / 1 |
+  | 17 rutas públicas, `/login`, `/register`, `/api/auth/ok` | — | `200` |
+  | `/app`, `/app/organization`, `/app/internal` | — | `302` |
+  | `www` | — | `301` |
+
+- **Resultado:** `0.5.5 PRODUCTION PASS`.
 
 ## Deploy `0.5.4` — INVITE-UI-001 (2026-09-25)
 
@@ -158,17 +179,17 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 | **Local** | `react-router dev` con el plugin de Cloudflare (`pnpm run dev`) | Emulada por Miniflare en `.wrangler/state/v3/d1` (binding `DB`); migraciones `0000`–`0009` aplicadas | `http://localhost:*` | Operativo | `RAN` `d1_migrations` local contiene 10 filas (`0000`–`0009`) |
 | **Development** (remoto) | Ninguno versionado | `vecidya-dev` remoto existe, pero no está configurado ni debe usarse | Ninguno | **Abandonado / sin uso** | `CONFIG` |
 | **Staging** | `vecidya-platform-staging` (`env.staging`, `workers_dev: true`) | `vecidya-staging` `d4af6ebc-97c5-42f6-ad3a-51551021e591` | `https://vecidya-platform-staging.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.4.1`, Version ID `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454`; trigger de rutas de zona no se reasignó por conflicto existente, workers.dev operativo | `CONFIG` `HTTP` `REMOTE` |
-| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.5.4`, Version ID `cce6aa0b-7988-4525-81c1-f44a5ef3accd` (2026-09-25); smoke HTTP anónimo PASS | `CONFIG` `HTTP` `REMOTE` |
+| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.5.5`, Version ID `cebd0a92-3560-4298-8a3b-5df0c6209477` (2026-09-25); smoke HTTP anónimo PASS | `CONFIG` `HTTP` `REMOTE` |
 
 ## Qué código está publicado
 
-El despliegue público vigente es el Version ID `cce6aa0b-7988-4525-81c1-f44a5ef3accd` (`v0.5.4`, 2026-09-25; el anterior fue `8dfe3c1d-208e-4aaa-bd91-62409b18e252`, `v0.5.3`) `CONFIG`/`HTTP`:
+El despliegue público vigente es el Version ID `cebd0a92-3560-4298-8a3b-5df0c6209477` (`v0.5.5`, 2026-09-25; el anterior fue `cce6aa0b-7988-4525-81c1-f44a5ef3accd`, `v0.5.4`) `CONFIG`/`HTTP`:
 
 - `/app/internal/maintenance/auth-bootstrap` y `/app/internal/maintenance/password-rotation` devuelven **404**.
 - `/app/internal` sin sesión devuelve la pantalla de login; el acceso autenticado de `hola@vecidya.com` fue comprobado manualmente en producción en `/app` y `/app/internal`.
 - La D1 remota reporta migraciones `0000`–`0009` aplicadas `REMOTE`.
 
-Conclusión: el código `0.5.4` está desplegado en el Worker público, el binding reportado por Wrangler es `vecidya-prod` y no se ejecutaron migraciones (las migraciones `0000`–`0009` ya estaban aplicadas y `0.5.4` no añade ninguna). `vecidya-staging` sigue preservada como D1 independiente de staging.
+Conclusión: el código `0.5.5` está desplegado en el Worker público, el binding reportado por Wrangler es `vecidya-prod` y no se ejecutaron migraciones (las migraciones `0000`–`0009` ya estaban aplicadas y `0.5.5` no añade ninguna). `vecidya-staging` sigue preservada como D1 independiente de staging.
 
 ## Repositorio Git
 
