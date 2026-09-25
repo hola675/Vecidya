@@ -570,6 +570,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   letter-spacing: -.05em;
 }
 
+.license-card__price {
+  margin: -.35rem 0 0;
+  color: var(--ink);
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -.02em;
+}
+
 .license-card__objective,
 .license-card__ideal {
   margin: 0;

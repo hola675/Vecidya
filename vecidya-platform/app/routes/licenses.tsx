@@ -15,8 +15,11 @@ type License = {
   icon: string;
   includes: string[];
   level: string;
+  priceUsd: number;
 };
 
+// Precios de referencia de docs/business/VECIDYA_PRODUCT_CATALOG.md, confirmados por el usuario
+// el 2026-09-25 como precio público real (no un checkout: activación sigue siendo por contacto).
 const licenses: License[] = [
   {
     id: "cuadra",
@@ -27,6 +30,7 @@ const licenses: License[] = [
     icon: publicAssets.icons.serviceStructure,
     includes: ["Perfil público", "Información organizada", "Contactos, notas y tareas", "Oportunidades y pipeline", "Calendario y capacidades base"],
     level: "Base",
+    priceUsd: 39,
   },
   {
     id: "barrio",
@@ -37,6 +41,7 @@ const licenses: License[] = [
     icon: publicAssets.icons.serviceDigitalPresence,
     includes: ["Todo Cuadra", "Formularios y landing estándar", "Agenda", "Automatizaciones estándar", "Seguimiento, posventa y reportes básicos"],
     level: "Crecimiento",
+    priceUsd: 59,
   },
   {
     id: "ciudad",
@@ -47,6 +52,7 @@ const licenses: License[] = [
     icon: publicAssets.icons.serviceVisibility,
     includes: ["Todo Barrio", "Automatización avanzada", "Segmentación y reactivación", "Procesos avanzados", "Control operativo"],
     level: "Escala",
+    priceUsd: 89,
   },
 ];
 
@@ -108,7 +114,7 @@ export default function Licenses() {
             <p className="eyebrow">TRES MOMENTOS</p>
             <h2 id="licenses-levels-title">Elige la base que corresponde a tu momento.</h2>
             <p>No tienes que empezar con todo. Cada licencia responde a una necesidad distinta.</p>
-            <p className="licenses-price-note">Aún no hay precios públicos ni contratación en línea. Consulta disponibilidad y condiciones para tu caso.</p>
+            <p className="licenses-price-note">Precio mensual de referencia en USD. Aún no hay contratación en línea: escríbenos para activar tu licencia.</p>
           </div>
           <div className="licenses-grid">
             {licenses.map((license, index) => (
@@ -119,6 +125,7 @@ export default function Licenses() {
                 </div>
                 <p className="eyebrow">{license.level}</p>
                 <h3>{license.name}</h3>
+                <p className="license-card__price">{`USD ${license.priceUsd}/mes`}</p>
                 <p className="license-card__objective">{license.objective}</p>
                 <p className="license-card__ideal">{license.idealFor}</p>
                 <Link className="license-card__availability" to="/contacto">Consultar disponibilidad <span aria-hidden="true">→</span></Link>

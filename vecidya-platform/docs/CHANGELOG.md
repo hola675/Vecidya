@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-25 — Precio público de licencias en USD (`0.5.5`, LIVE)
+
+A pedido explícito del usuario, que confirmó moneda, periodicidad y que es precio real listo para publicar (no un borrador): `/licencias` deja de decir «Aún no hay precios públicos» y muestra el precio mensual de cada licencia.
+
+- **Montos:** Cuadra `USD 39/mes`, Barrio `USD 59/mes`, Ciudad `USD 89/mes`. Son los mismos que ya existían como referencia comercial en `docs/business/VECIDYA_PRODUCT_CATALOG.md` desde UX-002.1 (`$39`/`$59`/`$89`, sin moneda confirmada); ese documento se actualiza para reflejar que ahora son precio público, no borrador.
+- **Qué no cambia:** sigue sin existir contratación en línea, checkout ni cobro automático. La nota bajo el título lo aclara y el CTA de cada tarjeta sigue siendo «Consultar disponibilidad» hacia `/contacto`. Addons y servicios siguen sin precio público (`docs/business/VECIDYA_PRODUCT_CATALOG.md` los deja «por definir»); este cambio es solo de licencias.
+- **TDD:** `licenses-experience-check.mjs` y `commercial-experience-review-check.mjs` se editaron primero para exigir el precio público y quedaron en RED contra el código anterior (que todavía afirmaba la ausencia de precios). Al mostrar el precio como interpolación de texto simple con `strong`/`span`, el HTML separaba «USD 39» de «/mes» con la etiqueta intermedia y el primer intento de implementación seguía en RED; se resolvió componiendo el texto como una sola cadena (`` `USD ${precio}/mes` ``) antes de interpolarlo, evitando el mismo problema de nodos de texto partidos por comentarios de hidratación ya visto en INVITE-UI-001. GREEN después.
+- **Deploy:** autorizado explícitamente por el usuario. Detalle de Version ID y verificación HTTP en `ENVIRONMENTS.md`.
+
 ## 2026-09-25 — INVITE-UI-001 Team & Invitation UX (`0.5.4`, LIVE)
 
 Pule `/app/organization` sin tocar la lógica de INVITE-001 ni la matriz de AUTHZ-BA-001. Las acciones del servidor conservan las mismas guardas y llamadas a Better Auth; solo cambian la presentación, el feedback y el texto de éxito al crear.

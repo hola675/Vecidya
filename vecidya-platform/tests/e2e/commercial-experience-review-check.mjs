@@ -79,10 +79,10 @@ for (const path of ["/", "/vecindario", "/servicios", "/licencias", "/addons", "
 for (const path of ["/app", "/app/internal", "/api/auth", "/login", "/register"]) assert(!sitemap.includes(path), `Sitemap incluye ruta privada ${path}.`);
 
 const licenses = await fetchPage("/licencias");
-assert(licenses.includes("Aún no hay precios públicos ni contratación en línea"), "Licencias no aclara que los precios no son públicos.");
-assert(!/USD\s*(39|59|89)\/mes/.test(licenses), "Licencias muestra importes comerciales de trabajo.");
+assert(licenses.includes("Precio mensual de referencia en USD."), "Licencias no aclara que el precio es de referencia.");
+assert(/USD\s*39\/mes/.test(licenses) && /USD\s*59\/mes/.test(licenses) && /USD\s*89\/mes/.test(licenses), "Licencias no muestra los tres precios públicos.");
 assert((licenses.match(/Consultar disponibilidad/g) ?? []).length === 3, "Licencias no ofrece el CTA de disponibilidad en cada nivel.");
 const addons = await fetchPage("/addons");
 assert(/no hay precios públicos/i.test(addons), "Addons no mantiene la separación de precios.");
 
-console.log("PASS: UX-002.7 verificó flujo comercial, CTAs cruzados, navegación agrupada, SEO, ausencia de precios públicos, exclusión de rutas privadas y responsive 1366/768/390/360.");
+console.log("PASS: UX-002.7 verificó flujo comercial, CTAs cruzados, navegación agrupada, SEO, precios públicos de licencias en USD, exclusión de rutas privadas y responsive 1366/768/390/360.");

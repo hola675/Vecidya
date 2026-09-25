@@ -3,7 +3,7 @@
 > **UX-002.1 — Product Catalog Foundation**
 > Estado: **propuesta comercial documentada / no implementada**
 > Versión de referencia: `0.3.0`
-> Última actualización: 2026-09-23
+> Última actualización: 2026-09-25 (precios de licencias publicados en USD)
 
 Este documento define la matriz comercial base de Vecidya antes de construir páginas públicas, precios publicados, checkout o componentes de catálogo.
 
@@ -19,20 +19,20 @@ La matriz separa cuatro conceptos que no deben mezclarse:
 ## Límites de esta matriz
 
 - Este catálogo es una **fuente comercial de diseño**, no una descripción de funcionalidades activas en la plataforma actual.
-- Los precios indicados son referencias de trabajo proporcionadas para esta fase; no están publicados, facturados ni conectados a un checkout.
+- Los precios de **licencias** están publicados en USD/mes en `/licencias` desde 2026-09-25 (decisión del usuario); no hay checkout ni facturación automática todavía, así que la activación sigue siendo por contacto directo. Los precios de **addons** y **servicios** siguen sin definir y no están publicados.
 - No crea rutas, componentes, tablas, migraciones, APIs, CRM propio ni integraciones externas.
 - Vecidya no duplica el CRM de HighLevel. Contactos, oportunidades, pipelines, conversaciones, automatizaciones y seguimiento pertenecen al system of record externo definido para cada operación.
 - La activación de cualquier producto futuro exige alcance, autorización, datos reales, revisión legal y validación técnica separados.
 
 ## Licencias Vecidya
 
-| Licencia | Precio de referencia | Objetivo | Cliente ideal | Evolución |
+| Licencia | Precio público | Objetivo | Cliente ideal | Evolución |
 | --- | ---: | --- | --- | --- |
-| **Cuadra** | `$39` | Ordenar el negocio | Negocio que necesita una base organizada para empezar | Punto de partida: organizarse. |
-| **Barrio** | `$59` | Captar oportunidades y hacer seguimiento | Negocio que ya necesita convertir consultas en procesos de seguimiento | Evolución desde Cuadra cuando aparece una necesidad real de captación y seguimiento. |
-| **Ciudad** | `$89` | Automatizar y escalar | Negocio con volumen, procesos repetibles y necesidad de control operativo | Evolución desde Barrio cuando aparece una necesidad real de automatización y escala. |
+| **Cuadra** | `USD 39/mes` | Ordenar el negocio | Negocio que necesita una base organizada para empezar | Punto de partida: organizarse. |
+| **Barrio** | `USD 59/mes` | Captar oportunidades y hacer seguimiento | Negocio que ya necesita convertir consultas en procesos de seguimiento | Evolución desde Cuadra cuando aparece una necesidad real de captación y seguimiento. |
+| **Ciudad** | `USD 89/mes` | Automatizar y escalar | Negocio con volumen, procesos repetibles y necesidad de control operativo | Evolución desde Barrio cuando aparece una necesidad real de automatización y escala. |
 
-> **Moneda:** no definida en esta fase. Los importes se conservan como referencia comercial tal como fueron entregados y requieren confirmación antes de cualquier publicación.
+> **Moneda y publicación:** USD/mes, confirmado y autorizado por el usuario el 2026-09-25. Publicado en `/licencias` (`app/routes/licenses.tsx`); sin contratación en línea, sin checkout y sin cobro automático. Activación por contacto directo.
 
 ### Cuadra
 

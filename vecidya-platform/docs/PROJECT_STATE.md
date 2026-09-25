@@ -48,7 +48,7 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` es la ru
 | `/vecindario` | D1 (`listPublishedBusinessProfiles`, opciones de filtro) | Funcional | GET `q`, `category`, `city`; sin paginación |
 | `/vecindario/:slug` | D1 (perfil + horarios) | Funcional | 404 real si no publicado/suspendido; JSON-LD `LocalBusiness` |
 | `/servicios` | Estático (5 fichas) | Funcional | Sin precios, paquetes ni garantías (grep) |
-| `/licencias` | Estático | Funcional local / release ready | Cuadra, Barrio y Ciudad; comparador, evolución, addons, FAQ y CTA; consulta de disponibilidad, sin importes públicos ni checkout |
+| `/licencias` | Estático | Funcional | Cuadra, Barrio y Ciudad con precio público en USD/mes (`$39`/`$59`/`$89`, 2026-09-25); comparador, evolución, addons, FAQ y CTA; consulta de disponibilidad por contacto, sin checkout ni cobro automático |
 | `/addons` | Estático | Funcional local / release ready | Categorías de comunicación, automatización, IA e integraciones; cards de capacidades y separación comercial; sin precios ni checkout |
 | `/diagnostico` | Cliente: motor puro `app/features/diagnostic` + `useState`; entrada contextual `?perfil=` y `?objetivo=` | Funcional y publicada (`0.4.1`) | Ver sección |
 | `/unete` | Estático | Funcional | Dos entradas: Diagnóstico o Contacto; preparación breve y tres pasos; sin registro |

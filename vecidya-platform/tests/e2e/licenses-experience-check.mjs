@@ -45,10 +45,13 @@ async function runViewport(width, height) {
   assert(await page.getByRole("heading", { name: "La evolución empieza con una señal real." }).isVisible(), `${label} no mostró evolución.`);
   assert(await page.getByRole("heading", { name: "Amplía tu sistema cuando lo necesites." }).isVisible(), `${label} no mostró addons.`);
   assert(await page.getByRole("heading", { name: "Decidir también puede ser sencillo." }).isVisible(), `${label} no mostró FAQ.`);
-  assert(await page.getByText("Aún no hay precios públicos ni contratación en línea.").isVisible(), `${label} no aclaró el estado público de los precios.`);
+  assert(await page.getByText("Precio mensual de referencia en USD.").isVisible(), `${label} no aclaró que el precio es de referencia.`);
   assert(await page.getByRole("link", { name: "Consultar disponibilidad" }).count() === 3, `${label} no ofrece consultar disponibilidad para cada nivel.`);
-  assert(!(await page.content()).match(/USD\s*(39|59|89)\/mes/), `${label} mostró importes internos como precios públicos.`);
-  assert(!(await page.content()).match(/oferta limitada|promoción|compra inmediata|checkout/i), `${label} contiene lenguaje comercial no autorizado.`);
+  const html = await page.content();
+  for (const price of ["USD 39/mes", "USD 59/mes", "USD 89/mes"]) {
+    assert(html.includes(price), `${label} no mostró el precio público ${price}.`);
+  }
+  assert(!html.match(/oferta limitada|promoción|compra inmediata|checkout/i), `${label} contiene lenguaje comercial no autorizado.`);
 
   if (width > 760) {
     assert(await page.locator(".licenses-compare-table").isVisible(), `${label} no mostró la tabla comparativa.`);
@@ -68,4 +71,4 @@ for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]])
   await runViewport(width, height);
 }
 
-console.log("PASS: Licencias verificó hero, niveles, disponibilidad, ausencia de precios públicos, comparador desktop/móvil, evolución, addons, FAQ, CTAs, metadata, keyboard focus y responsive 1366/768/390/360.");
+console.log("PASS: Licencias verificó hero, niveles, precios públicos en USD, disponibilidad, comparador desktop/móvil, evolución, addons, FAQ, CTAs, metadata, keyboard focus y responsive 1366/768/390/360.");
