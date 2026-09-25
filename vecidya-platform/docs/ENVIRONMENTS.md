@@ -8,6 +8,12 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 
 `vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `8dfe3c1d-208e-4aaa-bd91-62409b18e252` (`v0.5.3`). El smoke HTTP anónimo (rutas públicas, versión, `www`, rutas privadas protegidas, allowlist de Better Auth, invitación sin sesión y WhatsApp público) pasó el 2026-09-25.
 
+## Candidata local `0.5.4` — INVITE-UI-001 (2026-09-25)
+
+- **Estado:** validada en local y **no desplegada**, por instrucción explícita del bloque («STOP BEFORE DEPLOY»). Producción sigue en `0.5.3` (`8dfe3c1d-208e-4aaa-bd91-62409b18e252`).
+- **Migraciones:** ninguna. **Staging, secrets y D1 remota:** no tocados.
+- **Checks manuales en producción** (login y cambio de organización; invitación real con un correo controlado): **NOT PERFORMED**, porque no hay una cuenta ni un buzón controlados disponibles.
+
 ## Deploy `0.5.3` — INVITE-001 y canal de WhatsApp (2026-09-25)
 
 - **Autorización:** el usuario eligió «desplegar al pasar todo» al preguntarle cómo seguir. El texto de INVITE-001 que pegó decía «NO deploy»; prevaleció su respuesta directa, y así se le informa.

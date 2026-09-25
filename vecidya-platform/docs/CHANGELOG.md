@@ -1,5 +1,27 @@
 # Changelog
 
+## 2026-09-25 — INVITE-UI-001 Team & Invitation UX (`0.5.4` candidata, sin deploy)
+
+Pule `/app/organization` sin tocar la lógica de INVITE-001 ni la matriz de AUTHZ-BA-001. Las acciones del servidor conservan las mismas guardas y llamadas a Better Auth; solo cambian la presentación, el feedback y el texto de éxito al crear.
+
+- **Formulario «Invitar miembro»:** reutiliza `.form-grid`, `.field-note` y `Button` («Enviar invitación»). Lleva «Correo electrónico» y «Rol» (Administrador o Miembro, con Miembro por defecto) y el texto de apoyo «La persona recibirá un correo con un enlace para unirse a tu organización.». `.invite-form` no tenía ninguna regla CSS: por eso se veía roto.
+- **Ayuda de roles derivada de la matriz real:** el loader pasa `getPermissionsForRole(...)` y `app/lib/team-labels.ts` lo redacta. Administrador: «Puede editar y publicar el perfil del negocio y gestionar el equipo: invitar personas, cambiar roles y retirar miembros.» Miembro: «Puede ver el perfil del negocio y quién forma parte del equipo, sin hacer cambios.»
+- **Roles y estados en español:** Propietario, Administrador y Miembro; Pendiente, Aceptada, Cancelada, Expirada y Rechazada. Los valores internos no cambian.
+- **Pendientes e historial separados:**
+  - Pendientes vigentes: correo, rol, «Enviada el … · vence el …», estado y «Cancelar invitación», con nombre accesible que incluye el correo.
+  - Historial (aceptadas, canceladas y expiradas) debajo, sin acciones.
+  - Estados vacíos «Todavía no tienes invitaciones pendientes.» y «Aún no hay invitaciones anteriores.».
+- **Feedback junto a la tarjeta de la acción** (`role="status"` para éxito, `Alert` con `role="alert"` para error): «Invitación cancelada.», «Rol actualizado.» y los errores. Al crear dice «Invitación creada para …» y ya no «enviada», porque Better Auth no informa si el correo falló (`INVITE-DELIVERY-SILENT-001`). El formulario se vacía tras crear.
+- **Texto obsoleto retirado:** «No se simula la entrega: el proveedor de correo está pendiente.» y «Las invitaciones requieren correo transaccional real.».
+- **Miembros:** nombre, correo, «Tu cuenta» y rol en español. Los controles de rol y retirada solo aparecen a quien tiene el permiso, y nunca en filas de propietario (Better Auth protege al owner). «Propietario» solo se ofrece si quien mira es propietario. El servidor sigue decidiendo: ocultar no es la guarda.
+- **Responsive y jerarquía:** los títulos de tarjeta y de sección tenían el tamaño del texto normal por el reset de Tailwind; ahora `1.4rem` y `800`. En móvil (≤900 px) la identidad va a lo ancho y los badges y controles en línea; la regla nueva usa `.members-list > .member-row` para no depender del orden de la cascada. La cabecera de la tarjeta se envuelve.
+- **Pruebas:**
+  - `tests/e2e/organization-team-ui-check.mjs` (`team-ui`, en `test:e2e`): 91 comprobaciones en 1366/768/390/360, feedback, vistas de admin y de member y organización vacía.
+  - `tests/unit/invitations/team-labels.test.ts` (5).
+  - El RED de `team-ui` quedó en 14/16 tras corregir el arnés: Playwright exige declarar `secure` en la cookie `__Secure-` de Better Auth.
+  - En el GREEN, 81/91 al principio, por dos motivos: el nombre accesible del selector envuelto en su etiqueta incluía la opción elegida («Rol Miembro»), resuelto con `aria-label="Rol"`; y la lectura del historial justo tras cancelar era una carrera de renderizado, resuelta con una espera explícita. Luego 91/91.
+- **Producción:** no se desplegó; se espera autorización explícita para `0.5.4`. Los checks manuales en producción (login y cambio de organización; invitación real con correo controlado) no se realizaron: no hay una cuenta ni un buzón controlados disponibles.
+
 ## 2026-09-25 — INVITE-001 Functional Invitation & Onboarding Flow (`0.5.3`)
 
 Cierra el flujo funcional de invitaciones sin rediseño visual (`INVITE-UI-001` sigue abierta) y sin tocar la matriz de AUTHZ-BA-001.

@@ -1,6 +1,23 @@
 # Pruebas
 
-Última reconciliación: 2026-09-25 (INVITE-001; contacto sin grupo de WhatsApp; AUTHZ-BA-001; SLUG-005B; QA-005A; UX-003.9; UX-003.8; VIS-001B; REL-004; DIAG-002C; DIAG-002B; DIAG-002; REL-003.1; UX-003.1/003.4).
+Última reconciliación: 2026-09-25 (INVITE-UI-001; INVITE-001; contacto sin grupo de WhatsApp; AUTHZ-BA-001; SLUG-005B; QA-005A; UX-003.9; UX-003.8; VIS-001B; REL-004; DIAG-002C; DIAG-002B; DIAG-002; REL-003.1; UX-003.1/003.4).
+
+**Evidencia INVITE-UI-001 (RAN 2026-09-25, Worker local `pnpm run dev`; candidata `0.5.4`, sin deploy):**
+
+- **TDD:**
+  - `team-ui` (`organization-team-ui-check.mjs`), primer RED 8/8 en fallo de arnés. Playwright rechazaba la cookie `__Secure-` de Better Auth sin `secure: true`; se corrigió en el arnés y ahora ese error se clasifica como HARNESS.
+  - RED real **14/16** contra `0.5.3`. Solo pasaban «Miembro: no ve el formulario» y «sin overflow a 390», que ya eran ciertas.
+  - GREEN: primero 81/91, por el nombre accesible del selector de rol (Chrome incluye la opción elegida: «Rol Miembro»; se añadió `aria-label="Rol"`) y por una carrera de renderizado al leer el historial tras cancelar (espera explícita). Luego **91/91**.
+  - `unit-team` (`tests/unit/invitations/team-labels.test.ts`): RED por módulo inexistente; luego 5/5.
+- **Qué cubre `team-ui`:**
+  - En 1366/768/390/360: formulario «Invitar miembro» con «Correo electrónico» y «Rol» (Administrador/Miembro; valores `admin`/`member`), ayuda de roles derivada de la matriz, texto de apoyo sin prometer entrega, ningún texto obsoleto ni rol o estado en inglés.
+  - Pendientes con correo, rol, estado, fecha, recuento y «Cancelar invitación a <correo>»; historial debajo, sin acciones.
+  - Miembros con nombre, correo y rol en español; correo muy largo sin desbordar; sin overflow; todos los campos con etiqueta; botones con texto; foco visible.
+  - Feedback: «Invitación cancelada.» con `role="status"`, paso al historial, estado vacío y error al crear con `role="alert"`.
+  - Vistas: el admin no ve «Propietario» en el selector; el member no ve ni formulario ni controles; una organización sin invitaciones muestra los dos estados vacíos.
+- **Revisión visual:** capturas de `/app/organization` a 1366 y 390, fuera de Git. Detectó jerarquía débil en los títulos, un badge por renglón en móvil y el recuento partido en la cabecera; los tres se corrigieron y se recapturaron.
+- **Validación del bloque (uno a uno):** `typecheck` y `build` PASS; `test:unit` **105/105**. E2E: `team-ui` 91/91, `invite-flow` 28/28, `authz` 143/143; PASS en `acct` y `c2` (login por la UI); `invitations` PASS PARCIAL; `members` PASS con calentamiento en la copia no versionada. Fixtures `teamui-*`, `authz-*`, `inviteflow-*` y `shots-*` finales: 0.
+- **Producción:** los checks manuales (login y cambio de organización; invitación real con correo controlado) **NOT PERFORMED**, por falta de una cuenta y un buzón controlados.
 
 **Evidencia INVITE-001 (RAN 2026-09-25, Worker local `pnpm run dev`; versión `0.5.3`):**
 
@@ -84,8 +101,8 @@ Evidencia DIAG-002C (RAN 2026-09-23): `pnpm run test:unit` **75/75 PASS** (5 nue
 
 ## Estado de la infraestructura de pruebas
 
-- No hay framework de pruebas externo ni CI (`.github/` no existe). `tests/unit/diagnostic/` contiene siete suites `node:test` (75 pruebas) del motor del Diagnóstico más dos archivos de personas (`personas.ts`, `adversarial-personas.ts`), y `tests/unit/business-profile/slug.test.ts` (6 pruebas) cubre la generación de slug contra la validación real del servidor `tests/unit/auth/organization-http-surface.test.ts` (6) fija la allowlist HTTP del plugin Organization contra el plugin instalado y `tests/unit/invitations/invitation-rules.test.ts` (13) cubre los estados de invitación y `redirectTo`; en total 100, ejecutables con `pnpm run test:unit` sin Worker ni D1; `tests/unit/register-ts.mjs` y `ts-resolve-hooks.mjs` resuelven importaciones relativas sin extensión sobre el type stripping de Node (≥22.12 con `--experimental-strip-types`). `tests/integration` sigue vacío. `package.json` incluye además `test:e2e` (runner secuencial de los E2E locales aplicables) y `test:email`.
-- Solo existe `tests/e2e/`: 35 scripts `.mjs` (Node + `fetch`, algunos con Playwright; incluye el runner `run-local-e2e.mjs` y el helper `test-safety.mjs`) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
+- No hay framework de pruebas externo ni CI (`.github/` no existe). `tests/unit/diagnostic/` contiene siete suites `node:test` (75 pruebas) del motor del Diagnóstico más dos archivos de personas (`personas.ts`, `adversarial-personas.ts`), y `tests/unit/business-profile/slug.test.ts` (6 pruebas) cubre la generación de slug contra la validación real del servidor `tests/unit/auth/organization-http-surface.test.ts` (6) fija la allowlist HTTP del plugin Organization contra el plugin instalado `tests/unit/invitations/invitation-rules.test.ts` (13) cubre los estados de invitación y `redirectTo` y `tests/unit/invitations/team-labels.test.ts` (5) cubre las etiquetas en español y la ayuda de roles; en total 105, ejecutables con `pnpm run test:unit` sin Worker ni D1; `tests/unit/register-ts.mjs` y `ts-resolve-hooks.mjs` resuelven importaciones relativas sin extensión sobre el type stripping de Node (≥22.12 con `--experimental-strip-types`). `tests/integration` sigue vacío. `package.json` incluye además `test:e2e` (runner secuencial de los E2E locales aplicables) y `test:email`.
+- Solo existe `tests/e2e/`: 36 scripts `.mjs` (Node + `fetch`, algunos con Playwright; incluye el runner `run-local-e2e.mjs` y el helper `test-safety.mjs`) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
 - Son **solo Windows** (`cmd.exe /d /c pnpm.cmd wrangler d1 execute … --local`).
 - Los scripts Playwright usan Microsoft Edge si existe, luego `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, luego Chromium empaquetado (requiere `playwright install`).
 
@@ -99,7 +116,7 @@ $env:BASE_URL = "http://localhost:5173"          # terminal 2 (es el valor por d
 node tests/e2e/<archivo>.mjs                     # una a la vez: comparten puerto y D1 local
 ```
 
-`pnpm run test:unit` no necesita Worker ni D1: ejecuta en Node las 100 pruebas unitarias (75 del motor del Diagnóstico en `tests/unit/diagnostic`, 6 de slug en `tests/unit/business-profile`, 6 de la allowlist en `tests/unit/auth` y 13 de invitaciones en `tests/unit/invitations`).
+`pnpm run test:unit` no necesita Worker ni D1: ejecuta en Node las 105 pruebas unitarias (75 del motor del Diagnóstico en `tests/unit/diagnostic`, 6 de slug en `tests/unit/business-profile`, 6 de la allowlist en `tests/unit/auth` y 18 de invitaciones y equipo en `tests/unit/invitations`).
 
 Requisitos: `BETTER_AUTH_SECRET` en `.dev.vars` (no versionado), Node ≥22.12. `organization-invitations-check` espera `503` si Gmail OAuth no está configurado. `tests/email/mail-adapter.test.ts` usa el proveedor fake y nunca contacta Gmail. Variable opcional `D1_DATABASE_NAME` (por defecto `DB`).
 
@@ -134,6 +151,8 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `unit-authz` | `tests/unit/auth/organization-http-surface.test.ts` (`pnpm run test:unit`) | AUTHZ-BA-001 |
 | `invite-flow` | `organization-invitation-flow-check.mjs` | INVITE-001 |
 | `unit-invite` | `tests/unit/invitations/invitation-rules.test.ts` (`pnpm run test:unit`) | INVITE-001 |
+| `team-ui` | `organization-team-ui-check.mjs` | INVITE-UI-001 |
+| `unit-team` | `tests/unit/invitations/team-labels.test.ts` (`pnpm run test:unit`) | INVITE-UI-001 |
 | `pg-c1` | `public-growth-c1-real-profile-readiness-check.mjs` | PUBLIC-GROWTH-001 C1 |
 | `px-a` | `product-experience-a-public-review-check.mjs` | PRODUCT-EXPERIENCE-001 A |
 | `px-b` | `product-experience-b-client-app-check.mjs` | PRODUCT-EXPERIENCE-001 B |
@@ -201,7 +220,7 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 | Responsive | `commercial-review` verifica overflow, imágenes dimensionadas, un único `<main>` y recorrido comercial en 1366/768/390/360; `px-a`, `c1`, `c2` cubren perfil/editor | Sin auditoría axe automatizada ni regresión visual por comparación de screenshots |
 | Gobierno y auditoría | `d1` (verificar, suspender, badge, 404, exclusión, auditoría) | Paginación/orden de auditoría; efecto de suspensión en sitemap |
 | Multi-org | `pe-b`, `bpx`, `services-exp` | Invitar a un miembro existente a una segunda organización |
-| Invitaciones | `invite-flow` (flujo completo con navegador y estados controlados); `unit-invite`; `invitations` (imprime «PASS PARCIAL»: inyecta filas y `email_verified` por SQL); `authz` (frontera de crear, cancelar, listar y aceptar, incluida la organización ajena) | Entrega real del correo de verificación (solo en producción); UI (`INVITE-UI-001`) |
+| Invitaciones | `invite-flow` (flujo completo con navegador y estados controlados); `team-ui` (experiencia de `/app/organization`: formulario, roles y estados en español, pendientes, historial, feedback, responsive y a11y básica); `unit-invite`; `unit-team`; `invitations` (imprime «PASS PARCIAL»: inyecta filas y `email_verified` por SQL); `authz` (frontera de crear, cancelar, listar y aceptar, incluida la organización ajena) | Entrega real del correo de verificación (solo en producción); sin auditoría axe automatizada |
 | Integraciones | `psa`, `admin-int` (stale) | Ninguna ejecutable |
 | Staging remoto | script remoto (no ejecutar) | Sin ensayo seguro |
 | Piloto real | `rp001a` | Validación local controlada de los tres nombres documentados; no publica datos y no sustituye autorización, datos confirmados ni prueba remota |
