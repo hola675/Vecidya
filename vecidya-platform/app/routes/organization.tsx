@@ -1,7 +1,12 @@
 import { Form, useActionData, useLoaderData, useNavigation } from "react-router";
 
 import { createAuth } from "../../server/auth.server";
-import { hasPermission, requireOrganizationPermission } from "../../server/auth/authorization.server";
+import {
+  hasPermission,
+  requireOrganizationInvitationTarget,
+  requireOrganizationMemberTarget,
+  requireOrganizationPermission,
+} from "../../server/auth/authorization.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getActiveOrganization } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
@@ -53,6 +58,7 @@ export async function action({ context, request }: Route.ActionArgs) {
       return { error: "El rol solicitado no es válido." };
     }
     await requireOrganizationPermission(env, request, organization.id, "member:role:update");
+    await requireOrganizationMemberTarget(env, organization.id, memberId);
     try {
       await auth.api.updateMemberRole({
         headers: request.headers,
@@ -66,6 +72,7 @@ export async function action({ context, request }: Route.ActionArgs) {
 
   if (operation === "remove") {
     await requireOrganizationPermission(env, request, organization.id, "member:remove");
+    await requireOrganizationMemberTarget(env, organization.id, memberId);
     try {
       await auth.api.removeMember({
         headers: request.headers,
@@ -99,9 +106,11 @@ export async function action({ context, request }: Route.ActionArgs) {
   }
 
   if (operation === "cancel-invitation") {
+    const invitationId = String(formData.get("invitationId"));
     await requireOrganizationPermission(env, request, organization.id, "member:invite");
+    await requireOrganizationInvitationTarget(env, organization.id, invitationId);
     try {
-      await auth.api.cancelInvitation({ headers: request.headers, body: { invitationId: String(formData.get("invitationId")) } });
+      await auth.api.cancelInvitation({ headers: request.headers, body: { invitationId } });
     } catch {
       return { error: "No se pudo cancelar la invitación." };
     }

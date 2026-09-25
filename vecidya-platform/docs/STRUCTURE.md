@@ -1,6 +1,6 @@
 # Estructura del código
 
-Última reconciliación: 2026-09-23 (DIAG-002; REL-003). Rutas verificadas contra `app/routes.ts`; las rutas públicas comerciales y sus pruebas de release están reconciliadas. Columna *Pub.*: comprobación local de la nueva experiencia y evidencia HTTP histórica para el resto (`sí` = responde como se espera; para rutas privadas, `sí` = existe y redirige a `/login`; `no` = no está en el Worker público). Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
+Última reconciliación: 2026-09-25 (AUTHZ-BA-001: guardas de organización, miembros e invitaciones; DIAG-002; REL-003). Rutas verificadas contra `app/routes.ts`; las rutas públicas comerciales y sus pruebas de release están reconciliadas. Columna *Pub.*: comprobación local de la nueva experiencia y evidencia HTTP histórica para el resto (`sí` = responde como se espera; para rutas privadas, `sí` = existe y redirige a `/login`; `no` = no está en el Worker público). Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
 
 ## Mapa del repositorio
 
@@ -19,7 +19,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     │   └── layouts/            solo .gitkeep
     ├── server/                 lógica exclusiva del servidor
     │   ├── auth.server.ts, auth-plugins.server.ts   Better Auth + plugin Organization
-    │   ├── auth/session.server.ts, auth/authorization.server.ts
+    │   ├── auth/session.server.ts, auth/authorization.server.ts, auth/organization-http-surface.ts (allowlist HTTP del plugin Organization)
     │   ├── platform-authorization.server.ts          requirePlatformAdmin
     │   ├── business-profile-validation.server.ts, integration-connection-validation.server.ts
     │   ├── email/mail.server.ts, invitation.server.ts adaptador Gmail + invitaciones
@@ -81,12 +81,12 @@ D:\Proyectos\Vecidya            (raíz Git)
 
 | Ruta | Archivo | Guarda | Organización | Datos | Estado | E2E | Pub. |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `/app` | `app.tsx` | `requireSession` + `getActiveOrganization` | activa (revalidada) | org, perfil, servicios, miembros | funcional; org activa nula tras login | `pe-b`, `px-b` (roto) | sí |
-| `/app/account` | `account.tsx` | `requireSession` | — | usuario | funcional (solo nombre) | `acct` | sí |
-| `/app/organization` | `organization.tsx` | activa + `member:read`; acciones con permisos propios | activa | miembros, invitaciones | funcional; invitar depende de Resend | `members` (stale) | sí |
-| `/app/invitations/:invitationId` | `invitation.tsx` | `requireSession` | la de la invitación | Better Auth | bloqueada (verificación de email) | `invitations` (stale) | sí |
-| `/app/business-profile` | `business-profile.tsx` | `requireOrganization` + `business-profile:read/update/publish` | activa | perfil, horarios | funcional; secciones `0007`/`0008` desplegadas | `bpx`, `c1`, `c2`, `pe-b` | sí |
-| `/app/services` | `services-app.tsx` | `requireSession` + `getActiveOrganization` | activa | `organization_service` | funcional (solo lectura) | `services-exp`, `pe-b` | sí |
+| `/app` | `app.tsx` | `requireSession` + `getActiveOrganization` | activa (revalidada; stale o ajena → 403) | org, perfil, servicios, miembros | funcional | `pe-b`, `px-b` (roto), `authz` | sí |
+| `/app/account` | `account.tsx` | `requireSession` + `getActiveOrganization` | activa (stale o ajena → 403) | usuario | funcional (solo nombre) | `acct`, `authz` | sí |
+| `/app/organization` | `organization.tsx` | activa + `member:read`; acciones con permiso propio + recurso de la organización (`requireOrganizationMemberTarget`, `requireOrganizationInvitationTarget`) | activa | miembros, invitaciones | funcional; invitar depende del correo transaccional (`INVITE-UI-001`) | `authz`, `members` (`TEST-D1-RESET-001`) | sí |
+| `/app/invitations/:invitationId` | `invitation.tsx` | `requireSession`; Better Auth liga la invitación al correo verificado de la sesión | la de la invitación | Better Auth | aceptación rota para invitados reales (`INVITE-001`) | `invitations`, `authz` | sí |
+| `/app/business-profile` | `business-profile.tsx` | `requireOrganization` + `business-profile:read/update/publish` | activa | perfil, horarios | funcional; secciones `0007`/`0008` desplegadas | `bpx`, `c1`, `c2`, `pe-b`, `authz` | sí |
+| `/app/services` | `services-app.tsx` | `requireSession` + `getActiveOrganization` | activa | `organization_service` | funcional (solo lectura) | `services-exp`, `pe-b`, `authz` | sí |
 
 ### INTERNAL ADMIN (8) — todas con `requirePlatformAdmin`
 
@@ -105,14 +105,14 @@ D:\Proyectos\Vecidya            (raíz Git)
 
 | Ruta | Archivo | Métodos | Guarda | Estado | E2E | Pub. |
 | --- | --- | --- | --- | --- | --- | --- |
-| `/api/auth/*` | `api-auth.ts` | todos | Better Auth (público por diseño) | funcional; expone endpoints por defecto de Better Auth | indirecto | sí |
-| `/api/organizations/:id` | `api-organization.ts` | GET | `requireMembership` | funcional | ninguno | sí |
-| `…/authorization` | `api-organization-authorization.ts` | GET, POST | `organization:read` | funcional; JSON inválido → 500 | ninguno | sí |
-| `…/members` | `api-organization-members.ts` | GET; acciones | `member:read`/`member:role:update`/`member:remove` + Better Auth | funcional | `members` (stale) | sí |
-| `…/invitations` | `api-organization-invitations.ts` | GET; acciones | `member:invite` | 503 si no hay correo configurado | `invitations` (stale) | sí |
-| `…/business-profile` | `api-business-profile.ts` | GET, POST | `business-profile:read/update` | funcional; omite reglas de publicación y horarios | `bpx`, `c1`, `c2`, `px-b` | sí |
-| `…/integrations` | `api-organization-integrations.ts` | GET | solo membresía (cualquier rol, incluye `metadata`) | funcional | `psa` (stale) | sí |
-| `/api/platform/organizations/:id/services` | `api-platform-services.ts` | GET, POST | `requirePlatformAdmin` | funcional; org inexistente → 500 FK | `psa` (stale) | sí |
+| `/api/auth/*` | `api-auth.ts` | todos | Better Auth (público por diseño). Del plugin Organization solo responden por HTTP `create`, `list`, `set-active` y `accept-invitation`; los otros 18 dan 404 (hook `before` en `auth.server.ts`, AUTHZ-BA-001) | funcional | `authz`, `unit-authz`; registro/sesión indirectos | sí (allowlist solo local hasta el próximo deploy) |
+| `/api/organizations/:id` | `api-organization.ts` | GET | `requireMembership` | funcional | `authz` | sí |
+| `…/authorization` | `api-organization-authorization.ts` | GET, POST | `organization:read`; POST comprueba el permiso pedido | funcional; JSON inválido → 500 | `authz` (matriz 3 roles × 10 permisos) | sí |
+| `…/members` | `api-organization-members.ts` | GET; acciones | `member:read`/`member:role:update`/`member:remove` + `requireOrganizationMemberTarget` + Better Auth | funcional | `authz`, `members` (`TEST-D1-RESET-001`) | sí |
+| `…/invitations` | `api-organization-invitations.ts` | GET; acciones | `member:invite`; cancelar + `requireOrganizationInvitationTarget` | 503 si no hay correo configurado | `authz`, `invitations` | sí |
+| `…/business-profile` | `api-business-profile.ts` | GET, POST | `business-profile:read/update` | funcional; omite reglas de publicación y horarios | `bpx`, `c1`, `c2`, `px-b`, `authz` | sí |
+| `…/integrations` | `api-organization-integrations.ts` | GET | solo membresía (cualquier rol, incluye `metadata`) | funcional | `authz` (403 sin membresía), `psa` | sí |
+| `/api/platform/organizations/:id/services` | `api-platform-services.ts` | GET, POST | `requirePlatformAdmin` | funcional; org inexistente → 500 FK | `psa`, `authz` (403 para owner/admin/member de la organización) | sí |
 | `/api/platform/organizations/:id/integrations` | `api-platform-integrations.ts` | GET, POST | `requirePlatformAdmin` | funcional; duplicado → 500 | `psa` (stale) | sí |
 
 Sin autenticación, las rutas privadas y de API responden **302 → `/login`** (nunca 401).
@@ -126,7 +126,7 @@ Sin autenticación, las rutas privadas y de API responden **302 → `/login`** (
 ## Módulos clave
 
 - **Diagnóstico** (`app/features/diagnostic/`, puro, sin React): `types` (dominio), `profiles` (5 perfiles y listas cerradas), `questions` (26 preguntas con propósito, dimensiones, pesos y `applies`), `answers` (selección, exclusivas, cambio de perfil y `deriveActiveAnswers`), `flow` (secciones y progreso), `scoring` (7 dimensiones normalizadas y confianza), `result` (estado, hallazgos, prioridades con dependencias, fortalezas), `recommendations` (licencia por capacidad, servicios, addons, Aprende), `catalog` (referencias reales), `deep-link` (`perfil`/`objetivo`) e `index` (`runDiagnostic`, `buildContactMailto`). `routes/diagnostic.tsx` solo renderiza; `components/public-v2.tsx` genera las puertas de Home con `buildDiagnosticPath`.
-- **Autorización**: `server/auth/session.server.ts` (`requireSession`, `getActiveOrganization`, `requireOrganization`, `requireMembership`), `server/auth/authorization.server.ts` (matriz de roles y `requireOrganizationPermission`), `server/platform-authorization.server.ts` (`requirePlatformAdmin`). `requireRole` y `requirePermission` existen sin uso.
+- **Autorización**: `server/auth/session.server.ts` (`requireSession`, `getActiveOrganization`, `requireOrganization`, `requireMembership`), `server/auth/authorization.server.ts` (matriz de roles, `requireOrganizationPermission` y las guardas de recurso `requireOrganizationMemberTarget`/`requireOrganizationInvitationTarget`), `server/auth/organization-http-surface.ts` (allowlist HTTP del plugin Organization), `server/platform-authorization.server.ts` (`requirePlatformAdmin`). `requireRole` y `requirePermission` existen sin uso. Frontera completa en [ARCHITECTURE.md](ARCHITECTURE.md).
 - **Consultas**: `db/queries/` (perfil, horarios, servicios, integraciones, organizaciones, gobierno y vistas de plataforma). Toda consulta tenant filtra por `organization_id`.
 - **UI compartida**: `components/public-v2.tsx` (tarjeta, perfil, JSON-LD, secciones visuales), `components/public-layout.tsx` (shell público, metadatos, navegación), `components/admin-shell.tsx`, `components/ui.tsx`.
 

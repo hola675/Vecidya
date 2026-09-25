@@ -1,3 +1,8 @@
+import { createDatabase } from "../../db/client.server";
+import {
+  getOrganizationInvitationById,
+  getOrganizationMemberById,
+} from "../../db/queries/organization.server";
 import type { AuthEnvironment } from "../auth.server";
 import {
   getActiveOrganization,
@@ -94,4 +99,34 @@ export async function requireOrganizationPermission(
   }
 
   return membership;
+}
+
+// Las dos guardas siguientes comprueban el recurso, no a quien pide: se usan después de
+// `requireOrganizationPermission`. Un ID inexistente y uno de otra organización dan el mismo 403.
+export async function requireOrganizationMemberTarget(
+  env: AuthEnvironment,
+  organizationId: string,
+  memberId: string,
+) {
+  const target = await getOrganizationMemberById(createDatabase(env.DB), memberId);
+
+  if (!target || target.organizationId !== organizationId) {
+    throw new Response("Organization member is not accessible", { status: 403 });
+  }
+
+  return target;
+}
+
+export async function requireOrganizationInvitationTarget(
+  env: AuthEnvironment,
+  organizationId: string,
+  invitationId: string,
+) {
+  const target = await getOrganizationInvitationById(createDatabase(env.DB), invitationId);
+
+  if (!target || target.organizationId !== organizationId) {
+    throw new Response("Organization invitation is not accessible", { status: 403 });
+  }
+
+  return target;
 }

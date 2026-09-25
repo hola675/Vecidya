@@ -1,5 +1,8 @@
 import { createAuth } from "../../server/auth.server";
-import { requireOrganizationPermission } from "../../server/auth/authorization.server";
+import {
+  requireOrganizationInvitationTarget,
+  requireOrganizationPermission,
+} from "../../server/auth/authorization.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { EmailDeliveryUnavailableError, isOrganizationInvitationEmailConfigured } from "../../server/email/invitation.server";
 
@@ -51,6 +54,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 
   if (body.operation === "cancel") {
     if (typeof body.invitationId !== "string") return Response.json({ error: "Invalid invitation" }, { status: 400 });
+    await requireOrganizationInvitationTarget(env, params.organizationId, body.invitationId);
     try {
       const result = await auth.api.cancelInvitation({ headers: request.headers, body: { invitationId: body.invitationId } });
       return Response.json(result);

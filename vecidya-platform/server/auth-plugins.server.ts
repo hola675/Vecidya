@@ -8,6 +8,9 @@ export function createAuthPlugins(emailConfig: InvitationEmailConfig, database: 
   return [
     organization({
       allowUserToCreateOrganization: true,
+      // Sin flujo de borrado: la cascada eliminaría servicios, integraciones y gobierno asignados
+      // por la plataforma, y `platform_audit_log` no admite cascada.
+      disableOrganizationDeletion: true,
       requireEmailVerificationOnInvitation: true,
       sendInvitationEmail: (data) => sendOrganizationInvitation(data, emailConfig),
       organizationHooks: {

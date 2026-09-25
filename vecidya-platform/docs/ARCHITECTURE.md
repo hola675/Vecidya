@@ -1,6 +1,6 @@
 # Arquitectura de Vecidya
 
-Última reconciliación: 2026-09-23 (OPS-001 documental). Describe decisiones y fronteras **vigentes**; lo futuro está marcado `FUTURE` y no debe leerse como implementado.
+Última reconciliación: 2026-09-25 (AUTHZ-BA-001: frontera con Better Auth). Describe decisiones y fronteras **vigentes**; lo futuro está marcado `FUTURE` y no debe leerse como implementado.
 
 ## Arquitectura actual
 
@@ -25,6 +25,8 @@ Cloudflare D1 (producción: vecidya-prod; staging: vecidya-staging)
 - Las rutas privadas requieren sesión. Sin sesión, páginas **y APIs** responden **302 → `/login`** (nunca 401).
 - Todo recurso con `organizationId` requiere membresía verificada; el `organizationId` de la URL nunca se confía sin comprobar `member`, y la organización de sesión se revalida contra `member` en cada request.
 - Las operaciones tenant-scoped requieren un permiso de la matriz propia, salvo lecturas que solo exigen membresía (`GET /api/organizations/:id`, `…/integrations`, `/app`, `/app/services`).
+- Un ID de recurso recibido del cliente (miembro, invitación) debe pertenecer a la organización verificada; si no existe o es de otra organización, la respuesta es el mismo 403.
+- `activeOrganizationId` solo selecciona contexto: no concede autorización. Una organización activa sin membresía (stale o ajena) responde 403.
 - La administración interna usa `platform_member` (rol `platform_admin` y estado `active`); no deriva autoridad de `member.role`. `staff` existe en el schema pero no otorga ninguna capacidad.
 - Un owner/admin/member de organización no obtiene privilegios de plataforma por ese rol.
 
@@ -37,6 +39,8 @@ Cloudflare D1 (producción: vecidya-prod; staging: vecidya-staging)
 | `requireOrganization` | organización activa no nula | 403 |
 | `requireMembership` | sesión + fila `member` para `(usuario, organización de la URL)` | 403 (igual exista o no la organización: sin oráculo de existencia) |
 | `requireOrganizationPermission` | membresía + permiso del rol | 403 |
+| `requireOrganizationMemberTarget` | el miembro indicado pertenece a la organización (se usa después del permiso) | 403 |
+| `requireOrganizationInvitationTarget` | la invitación indicada pertenece a la organización (se usa después del permiso) | 403 |
 | `requirePlatformAdmin` | fila `platform_member` activa con rol `platform_admin` | 403 |
 
 `requireRole` y `requirePermission` existen sin uso.
@@ -49,11 +53,29 @@ Cloudflare D1 (producción: vecidya-prod; staging: vecidya-staging)
 | `admin` | todos menos `organization:delete` |
 | `member` | `organization:read`, `member:read`, `business-profile:read` |
 
-`organization:update` y `organization:delete` están declarados pero ninguna ruta propia los consume.
+`organization:update` y `organization:delete` están declarados, pero no hay ninguna operación que los use: renombrar no existe y el borrado está deshabilitado (ver abajo). La matriz completa (3 roles × 10 permisos) la protege el E2E `authz`.
 
-### Dos sistemas de autorización en paralelo
+### Frontera con Better Auth (AUTHZ-BA-001)
 
-`/api/auth/*` entrega todo el tráfico a Better Auth (`api-auth.ts`). Los endpoints por defecto del plugin Organization (`/api/auth/organization/*`: crear, actualizar, eliminar organización; invitar, quitar, cambiar rol) se gobiernan **solo** por el RBAC por defecto de Better Auth, no por la matriz propia. Consecuencias abiertas: creación de organizaciones sin límite ni verificación de email, y posible actualización/eliminación por un `owner` fuera de las rutas propias (hipótesis, `AUTHZ-BA-001`). Los endpoints propios de miembros e invitaciones delegan además en Better Auth (doble comprobación).
+`/api/auth/*` entrega el tráfico a Better Auth (`api-auth.ts`). Hasta `0.5.1`, el plugin Organization exponía por HTTP todos sus endpoints y bastaba su RBAC por defecto: un `member` leía invitaciones y un `owner` renombraba o borraba la organización sin pasar por la matriz propia. Desde AUTHZ-BA-001 hay una sola autoridad:
+
+- **Allowlist HTTP.** Un hook `before` (`server/auth.server.ts`) aplica `server/auth/organization-http-surface.ts`. Por HTTP solo responden `create`, `list`, `set-active` y `accept-invitation`. Los otros 18 endpoints del plugin instalado devuelven 404, y también cualquiera que aparezca al actualizar Better Auth. El hook evalúa la ruta ya resuelta del endpoint, así que variantes de URL (barra final, `%2F`) no lo esquivan. Las llamadas `auth.api.*` del servidor no llegan por HTTP y no se bloquean.
+- **Sin borrado.** `disableOrganizationDeletion` está activo. La cascada borraría perfil, horarios, servicios e integraciones asignados por la plataforma, y `platform_audit_log` no admite cascada.
+- **Mutaciones solo por rutas propias**, en este orden: sesión → membresía en la organización de la URL o activa → permiso de la matriz → el recurso pertenece a esa organización → Better Auth, que vuelve a comprobar.
+
+| Operación | Entrada | Vecidya comprueba | Better Auth 1.7.5 comprueba (fuente leída) |
+| --- | --- | --- | --- |
+| Crear organización | HTTP `create` | — | sesión; el owner es siempre la sesión (ignora un `userId` del cuerpo) |
+| Listar organizaciones | HTTP `list` | — | solo las del usuario |
+| Activar organización | HTTP `set-active` | revalida la membresía en cada request | membresía; ajena o inexistente → 403 y limpia la activa |
+| Perfil, servicios, equipo (páginas) | `/app/*` | `getActiveOrganization` + permiso | — |
+| Miembros: listar, rol, quitar | `/api/organizations/:id/members`, `/app/organization` | membresía + permiso + miembro de la organización | membresía, RBAC y reglas de owner |
+| Invitaciones: listar, crear, cancelar | `/api/organizations/:id/invitations`, `/app/organization` | membresía + `member:invite` + invitación de la organización | listar: solo membresía; crear y cancelar: RBAC sobre la organización de la invitación |
+| Aceptar invitación | HTTP `accept-invitation`, `/app/invitations/:id` | sesión | correo de la sesión = invitado, correo verificado, pendiente y vigente |
+| Abandonar, renombrar, borrar | — | 404 por HTTP (sin UI); borrado deshabilitado | `leave` no ejecuta los hooks de retirada |
+| Fijar `activeOrganizationId` | `/update-session` | — | rechazado: el campo es `input: false` |
+
+Retirar un miembro por la ruta propia limpia sus sesiones activas (`afterRemoveMember`). Si aun así queda un ID stale (escritura fuera de banda), las guardas responden 403. Límite de creación de organizaciones y rate limiting quedan fuera de esta frontera (`AUTH-ABUSE-001`).
 
 ## Modelo de producto
 

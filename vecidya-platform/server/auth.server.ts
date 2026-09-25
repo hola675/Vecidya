@@ -1,9 +1,11 @@
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { betterAuth } from "better-auth/minimal";
 
 import { createDatabase } from "../db/client.server";
 import * as schema from "../db/schema";
 import { createAuthPlugins } from "./auth-plugins.server";
+import { isBlockedOrganizationHttpCall } from "./auth/organization-http-surface";
 import { createTransactionalMailer, escapeHtml, type MailEnvironment } from "./email/mail.server";
 
 export type AuthEnvironment = Env & {
@@ -59,6 +61,15 @@ export function createAuth(env: AuthEnvironment, request: Request) {
         });
       },
       sendOnSignUp: false,
+    },
+    hooks: {
+      // `ctx.path` es la ruta ya resuelta del endpoint y `ctx.request` solo existe cuando la
+      // llamada llega por HTTP: las llamadas `auth.api.*` de las rutas propias no se bloquean.
+      before: createAuthMiddleware(async (ctx) => {
+        if (isBlockedOrganizationHttpCall(ctx.path, Boolean(ctx.request))) {
+          throw new APIError("NOT_FOUND");
+        }
+      }),
     },
     plugins: createAuthPlugins(emailConfig, createDatabase(env.DB)),
     secret,

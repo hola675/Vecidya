@@ -1,7 +1,8 @@
 import { createAuth } from "../../server/auth.server";
-import { createDatabase } from "../../db/client.server";
-import { getOrganizationMemberById } from "../../db/queries/organization.server";
-import { requireOrganizationPermission } from "../../server/auth/authorization.server";
+import {
+  requireOrganizationMemberTarget,
+  requireOrganizationPermission,
+} from "../../server/auth/authorization.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 
 import type { Route } from "./+types/api-organization-members";
@@ -36,20 +37,13 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   const { env } = context.get(cloudflareContext);
   const auth = createAuth(env, request);
 
-  async function requireTargetMember() {
-    const target = await getOrganizationMemberById(createDatabase(env.DB), body.memberId as string);
-    if (!target || target.organizationId !== organizationId) {
-      throw new Response("Organization member is not accessible", { status: 403 });
-    }
-  }
-
   if (body.operation === "update-role") {
     if (typeof body.memberId !== "string" || !isEditableRole(body.role)) {
       return Response.json({ error: "Invalid member role update" }, { status: 400 });
     }
 
     await requireOrganizationPermission(env, request, organizationId, "member:role:update");
-    await requireTargetMember();
+    await requireOrganizationMemberTarget(env, organizationId, body.memberId);
     try {
       const result = await auth.api.updateMemberRole({
         headers: request.headers,
@@ -68,7 +62,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
     }
 
     await requireOrganizationPermission(env, request, organizationId, "member:remove");
-    await requireTargetMember();
+    await requireOrganizationMemberTarget(env, organizationId, body.memberId);
     try {
       const result = await auth.api.removeMember({
         headers: request.headers,
