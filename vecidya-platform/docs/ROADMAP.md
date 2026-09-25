@@ -202,7 +202,7 @@ OPS-001 define GHL como infraestructura externa y el contrato `ghl_location_id`,
 
 PROD-001 y EMAIL-001 están cerrados en sus alcances; `app.vecidya.com`/`admin.vecidya.com`, el smoke remoto, secretos adicionales y cualquier manejo posterior de `vecidya-staging` requieren autorización independiente.
 
-**Siguiente paso de publicación: deploy de `0.5.1`, pendiente de autorización explícita.** QA-005A bloqueó la release por `SLUG-EDIT-001`; SLUG-005B lo resolvió junto con `SLUG-LEN-001` sin cambiar la versión (la candidata nunca llegó a producción). El deploy debe publicar exactamente la candidata validada, sin features intermedias, y registrar la evidencia HTTP fechada en `ENVIRONMENTS.md` y `CHANGELOG.md`. Después, el siguiente bloque propuesto es `AUTHZ-BA-001`, antes de incorporar clientes reales. La secuencia operativa vigente es `PROD-001 → EMAIL-001 → OPS-001 → LEGAL / REAL PROOF → GHL pilot → licenses → UX evolution`.
+**`0.5.1` está LIVE en producción (REL-005B, 2026-09-24).** Secuencia propuesta por el usuario, con cada bloque pendiente de su propia autorización: **`AUTHZ-BA-001` → `MEDIA-001`** en tres cortes (R2 Foundation → subida de logo → galería/carrusel). Objetivo: que cada cliente construya y publique su propio espacio con identidad e imágenes reales. R2 va después de cerrar la autorización, porque subir y borrar archivos persistentes exige primero el aislamiento tenant. Pendiente de priorizar por el usuario: la reparación de invitaciones (`INVITE-001` e `INVITE-UI-001`, reportadas tras el deploy). Gran parte depende de la misma capa de Better Auth que `AUTHZ-BA-001`. La secuencia operativa vigente es `PROD-001 → EMAIL-001 → OPS-001 → LEGAL / REAL PROOF → GHL pilot → licenses → UX evolution`.
 
 ## Fuera de alcance permanente
 

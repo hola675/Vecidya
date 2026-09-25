@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-09-24 — REL-005B Production Release `0.5.1` (LIVE)
+
+Publicación autorizada explícitamente por el usuario de la candidata `0.5.1` validada (commit `55f9700`), sin features, refactors, migraciones ni limpieza de deuda.
+
+- **Gate previo:** `main` sincronizado 0/0 y árbol limpio. `typecheck`, `build` y `git diff --check` PASS. E2E críticos PASS: `slug-life`, `services-exp`, `pg-c1`, `bpx` y `commercial-review`. Migraciones: NINGUNA (sin cambios en `db/schema`, `db/migrations` ni `wrangler.jsonc` desde `0.4.1`). `wrangler deploy --dry-run` confirmó `DB=vecidya-prod` y `APP_ENV=production`.
+- **Deploy:** `pnpm wrangler deploy`, Version ID **`195b737c-d838-4c64-96a2-a6fd195ee018`** (2026-09-24T23:52Z), triggers `vecidya.com/*` y `www.vecidya.com/*`. El primer intento abortó sin subir nada porque la sesión de Wrangler ve dos cuentas. La cuenta correcta se confirmó con `wrangler deployments list` (solo lectura) y se pasó con `CLOUDFLARE_ACCOUNT_ID` solo para ese comando. Staging, secrets y datos productivos no se tocaron.
+- **Verificación en producción:**
+  - HTTP anónimo: 15 rutas `200`, `/app` y `/app/internal` → `302` a login, `www` → `301`, pie «Versión pública 0.5.1».
+  - `/vecindario/vecidya`: canonical y `og:url` intactos.
+  - Assets de VIS-002B `200` con el mismo tamaño que en local, y favicon 3D.
+  - Visual con la sesión que inició el propio usuario, en solo lectura: App, Servicios (empty-state real), Perfil (slug `vecidya` intacto) y Admin (marca 3D, «Versión Admin 0.5.1», empty-state con filtro client-side, sin peticiones de red).
+  - Detalle en `ENVIRONMENTS.md`.
+- **Reportado por el usuario tras el deploy, clasificado como anterior a `0.5.1`:** la gestión de invitaciones está mal. El correo sale, pero aceptar da «Error inesperado», el formulario se ve roto, las canceladas no desaparecen y sigue un texto obsoleto sobre el proveedor de correo. Un análisis de solo lectura (código de la app y de Better Auth 1.7.5) lo documenta en `INVITE-001` e `INVITE-UI-001`. No se corrigió: queda fuera de la release y requiere un bloque autorizado.
+- Deuda preservada sin tocar: `SETUP-CARD-WRAP-001`, `AUTH-LOCKUP-CONTRAST-001`, `AUTHZ-BA-001`, `INVITE-001` y `TEST-D1-RESET-001`.
+
 ## 2026-09-24 — SLUG-005B Stable Public Slug Policy & Release Unblock (`0.5.1` local; release candidate)
 
 Corrige el único bloqueante real de `0.5.1` detectado en QA-005A, sin funcionalidad nueva ni cambio de versión: la candidata nunca llegó a producción y no hay motivo para abrir `0.5.2`.

@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-24 (`0.5.1` local; `0.4.1` sigue LIVE en staging y producción; DIAG-002C + UX-003.1–003.5; VIS-001B, UX-003.8, UX-003.9 y VIS-002B cerrados en local; QA-005A bloqueó la release por `SLUG-EDIT-001` y SLUG-005B la desbloqueó: `0.5.1` es release candidate, sin desplegar)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.5.1`; versión desplegada en producción: `0.4.1`, Version ID `eec3de6a-6711-4eff-91de-b413406e3618`; staging Version ID `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454`. `0.5.1` no está desplegada.
+Última reconciliación: **2026-09-24 (`0.5.1` LIVE en producción, REL-005B; staging sigue en `0.4.1`; publicados VIS-001B, UX-003.8/003.9, VIS-002B, el slug automático, QA-005A y SLUG-005B)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.5.1`; versión desplegada en producción: `0.5.1`, Version ID `195b737c-d838-4c64-96a2-a6fd195ee018` (HTTP 2026-09-24; la anterior fue `0.4.1`, `eec3de6a-6711-4eff-91de-b413406e3618`); staging Version ID `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454` (`0.4.1`). Gestión de invitaciones con defectos anteriores a `0.5.1` reportados tras el deploy (`INVITE-001`, `INVITE-UI-001` en [STATUS.md](STATUS.md)).
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 

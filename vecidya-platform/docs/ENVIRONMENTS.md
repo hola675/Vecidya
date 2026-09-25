@@ -1,12 +1,44 @@
 # Entornos
 
-Última reconciliación: 2026-09-23 (deploy autorizado de `v0.4.1` — DIAG-002C + UX-003.1–003.5 — en staging y producción).
+Última reconciliación: 2026-09-24 (deploy autorizado de `v0.5.1` — REL-005B — en producción; staging sigue en `v0.4.1`).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura a los dominios publicados, fecha indicada por release, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
-`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `eec3de6a-6711-4eff-91de-b413406e3618` (`v0.4.1`). El smoke HTTP anónimo de rutas públicas, versión, asset y rutas privadas protegidas pasó el 2026-09-23.
+`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `195b737c-d838-4c64-96a2-a6fd195ee018` (`v0.5.1`). El smoke HTTP anónimo (rutas públicas, versión, assets, `www` y rutas privadas protegidas) y el smoke visual con la sesión de `platform_admin` del usuario pasaron el 2026-09-24.
+
+## Deploy `0.5.1` — REL-005B (2026-09-24)
+
+- **Commit publicado:** `55f9700` (`fix(profile): keep saved public slugs stable`), versión `package.json` `0.5.1`. Incluye VIS-001B, UX-003.8/003.9, VIS-002B, `bc93a31` (slug automático), QA-005A y SLUG-005B.
+- **Gate previo (RAN 2026-09-24):**
+  - `typecheck`, `build` y `git diff --check` PASS.
+  - E2E críticos PASS: `slug-life`, `services-exp`, `pg-c1`, `bpx` y `commercial-review`.
+  - Migraciones: **NINGUNA**. Desde `41986a4` (`0.4.1`) no cambian `db/schema`, `db/migrations` ni `wrangler.jsonc`.
+  - `wrangler deploy --dry-run` confirmó `DB=vecidya-prod` y `APP_ENV=production`.
+- **Cuenta de Cloudflare:** la sesión de Wrangler de esta máquina ve dos cuentas, y en modo no interactivo el primer intento abortó antes de subir nada. La cuenta correcta (`Soporte@vecidya.com`, `CLOUDFLARE_ACCOUNT_ID=8a13de3ea584f9055f78565b9860c125`) se confirmó con `wrangler deployments list --name vecidya-platform`, de solo lectura: su último deployment era `eec3de6a…` (`0.4.1`). La variable se fijó solo para el comando, sin cambiar configuración versionada.
+- **Deploy** (`pnpm wrangler deploy`, 2026-09-24T23:51:01Z–23:52:28Z, exit 0):
+  - Version ID `195b737c-d838-4c64-96a2-a6fd195ee018`; 50 assets nuevos o modificados (57 ya existentes).
+  - Bindings `env.DB (vecidya-prod)`, `APP_URL`/`BETTER_AUTH_URL` `https://vecidya.com`, `APP_ENV=production` y variables de correo sin cambios.
+  - Triggers `vecidya.com/*`, `www.vecidya.com/*` y `vecidya-platform.soporte-8a1.workers.dev`.
+- **HTTP anónimo (2026-09-24T23:53Z):**
+  - Todas las rutas del bloque responden `200`: `/`, `/login`, `/vecindario`, `/vecindario/vecidya`, `/servicios`, `/diagnostico`, `/licencias`, `/addons`, `/aprende`, `/contacto`, `/sobre-nosotros`, `/privacidad`, `/robots.txt`, `/sitemap.xml` y `/forgot-password`.
+  - `/app` y `/app/internal` → `302` a `/login`. `www` → `301` al apex, conservando la ruta.
+  - Pie «Versión pública 0.5.1». Auth no muestra pie de versión, igual que en `0.4.1`.
+  - Canonical y `og:url` de `/vecindario/vecidya` sin cambios (`https://vecidya.com/vecindario/vecidya`).
+  - Assets de VIS-002B con `200` y el mismo tamaño que en local; `/favicon.ico` → `302` a `vecidya-icon-3d.png`; CSS y JS de entrada `200`.
+- **Visual:**
+  - Anónimo, con el navegador del MCP de Playwright a 1366: `/login` con el lockup 3D y el favicon 3D, sin overflow.
+  - Con la sesión que el propio usuario inició (sin manejar credenciales), solo lectura:
+    - `/app`: símbolo 3D y «Versión App 0.5.1».
+    - `/app/services`: empty-state real con la ilustración de Batch 01.
+    - `/app/business-profile`: slug `vecidya` intacto, `maxLength` 80.
+    - `/app/internal`: marca 3D y «Versión Admin 0.5.1».
+    - `/app/internal/organizations`: empty-state provocado con el filtro client-side, sin peticiones de red.
+  - A 390 px en producción: `/`, `/app/services` y `/vecindario/vecidya` sin overflow. Imágenes no diferidas cargadas; la única imagen «sin cargar» de la Home era `loading="lazy"`, a 3879 px, y carga al acercarse (`200 image/webp`). Pie `0.5.1`, canonical intacta.
+- **Hallazgo tras el deploy:** el usuario reportó defectos en la gestión de invitaciones. Se verificó que son anteriores a `0.5.1` (`INVITE-001`, `INVITE-UI-001` en `STATUS.md`).
+- **Comprobación de red:** `curl` usa `--ssl-no-revoke` por un fallo local de consulta de revocación (schannel `CRYPT_E_REVOCATION_OFFLINE`). No se desactivó ninguna otra verificación TLS.
+- **Migraciones remotas:** NO ejecutadas. **Secrets:** NO modificados. **Staging:** no tocado, sigue en `0.4.1`. **Datos productivos:** no modificados.
 
 ## Deploy `0.4.1` — DIAG-002C + UX-003.1–003.5
 
@@ -58,17 +90,17 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 | **Local** | `react-router dev` con el plugin de Cloudflare (`pnpm run dev`) | Emulada por Miniflare en `.wrangler/state/v3/d1` (binding `DB`); migraciones `0000`–`0009` aplicadas | `http://localhost:*` | Operativo | `RAN` `d1_migrations` local contiene 10 filas (`0000`–`0009`) |
 | **Development** (remoto) | Ninguno versionado | `vecidya-dev` remoto existe, pero no está configurado ni debe usarse | Ninguno | **Abandonado / sin uso** | `CONFIG` |
 | **Staging** | `vecidya-platform-staging` (`env.staging`, `workers_dev: true`) | `vecidya-staging` `d4af6ebc-97c5-42f6-ad3a-51551021e591` | `https://vecidya-platform-staging.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.4.1`, Version ID `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454`; trigger de rutas de zona no se reasignó por conflicto existente, workers.dev operativo | `CONFIG` `HTTP` `REMOTE` |
-| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.4.1`, Version ID `eec3de6a-6711-4eff-91de-b413406e3618`; smoke HTTP PASS | `CONFIG` `HTTP` `REMOTE` |
+| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.5.1`, Version ID `195b737c-d838-4c64-96a2-a6fd195ee018` (2026-09-24); smoke HTTP y visual PASS | `CONFIG` `HTTP` `REMOTE` |
 
 ## Qué código está publicado
 
-El despliegue público vigente es el Version ID `eec3de6a-6711-4eff-91de-b413406e3618` (`v0.4.1`, 2026-09-23) `CONFIG`/`HTTP`:
+El despliegue público vigente es el Version ID `195b737c-d838-4c64-96a2-a6fd195ee018` (`v0.5.1`, 2026-09-24; el anterior fue `eec3de6a-6711-4eff-91de-b413406e3618`, `v0.4.1`) `CONFIG`/`HTTP`:
 
 - `/app/internal/maintenance/auth-bootstrap` y `/app/internal/maintenance/password-rotation` devuelven **404**.
 - `/app/internal` sin sesión devuelve la pantalla de login; el acceso autenticado de `hola@vecidya.com` fue comprobado manualmente en producción en `/app` y `/app/internal`.
 - La D1 remota reporta migraciones `0000`–`0009` aplicadas `REMOTE`.
 
-Conclusión: el código `0.4.1` está desplegado en el Worker público, el binding reportado por Wrangler es `vecidya-prod` y no se ejecutaron migraciones. `vecidya-staging` sigue preservada como D1 independiente de staging.
+Conclusión: el código `0.5.1` está desplegado en el Worker público, el binding reportado por Wrangler es `vecidya-prod` y no se ejecutaron migraciones (las migraciones `0000`–`0009` ya estaban aplicadas y `0.5.1` no añade ninguna). `vecidya-staging` sigue preservada como D1 independiente de staging.
 
 ## Repositorio Git
 
