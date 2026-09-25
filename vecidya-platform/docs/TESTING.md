@@ -2,7 +2,7 @@
 
 Última reconciliación: 2026-09-25 (INVITE-UI-001; INVITE-001; contacto sin grupo de WhatsApp; AUTHZ-BA-001; SLUG-005B; QA-005A; UX-003.9; UX-003.8; VIS-001B; REL-004; DIAG-002C; DIAG-002B; DIAG-002; REL-003.1; UX-003.1/003.4).
 
-**Evidencia INVITE-UI-001 (RAN 2026-09-25, Worker local `pnpm run dev`; candidata `0.5.4`, sin deploy):**
+**Evidencia INVITE-UI-001 (RAN 2026-09-25, Worker local `pnpm run dev`; LIVE `0.5.4`):**
 
 - **TDD:**
   - `team-ui` (`organization-team-ui-check.mjs`), primer RED 8/8 en fallo de arnés. Playwright rechazaba la cookie `__Secure-` de Better Auth sin `secure: true`; se corrigió en el arnés y ahora ese error se clasifica como HARNESS.

@@ -1,18 +1,36 @@
 # Entornos
 
-Última reconciliación: 2026-09-25 (deploy de `v0.5.3` — INVITE-001 y canal de WhatsApp — en producción; antes, `v0.5.2` — AUTHZ-BA-001 —; staging sigue en `v0.4.1`).
+Última reconciliación: 2026-09-25 (deploy de `v0.5.4` — INVITE-UI-001 — en producción; antes, `v0.5.3` — INVITE-001 y canal de WhatsApp —; staging sigue en `v0.4.1`).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura a los dominios publicados, fecha indicada por release, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
-`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `8dfe3c1d-208e-4aaa-bd91-62409b18e252` (`v0.5.3`). El smoke HTTP anónimo (rutas públicas, versión, `www`, rutas privadas protegidas, allowlist de Better Auth, invitación sin sesión y WhatsApp público) pasó el 2026-09-25.
+`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `cce6aa0b-7988-4525-81c1-f44a5ef3accd` (`v0.5.4`). El smoke HTTP anónimo (rutas públicas, versión, CSS de equipo, `www`, rutas privadas protegidas, allowlist de Better Auth, invitación sin sesión y WhatsApp público) pasó el 2026-09-25.
 
-## Candidata local `0.5.4` — INVITE-UI-001 (2026-09-25)
+## Deploy `0.5.4` — INVITE-UI-001 (2026-09-25)
 
-- **Estado:** validada en local y **no desplegada**, por instrucción explícita del bloque («STOP BEFORE DEPLOY»). Producción sigue en `0.5.3` (`8dfe3c1d-208e-4aaa-bd91-62409b18e252`).
-- **Migraciones:** ninguna. **Staging, secrets y D1 remota:** no tocados.
-- **Checks manuales en producción** (login y cambio de organización; invitación real con un correo controlado): **NOT PERFORMED**, porque no hay una cuenta ni un buzón controlados disponibles.
+- **Autorización:** el usuario autorizó explícitamente el deploy de la candidata `0.5.4`, con el mismo criterio que REL-005B, y pidió detener el bloque al cerrar la release (sin iniciar `AUTH-ABUSE-001` ni `MEDIA-001A`).
+- **Commits publicados:** `a7a4961` (`feat(invites): polish team invitation experience`) y `0b0797e` (`chore(release): 0.5.4 candidate`), sobre `3af9331` (`v0`, cambio de asset ajeno a este bloque).
+- **Gate:** validación completa registrada en `TESTING.md`: `typecheck`, `build` y `git diff --check` PASS; `test:unit` 105/105; `team-ui` 91/91; `invite-flow` 28/28; `authz` 143/143; `acct` y `c2` PASS; `invitations` PASS PARCIAL; `members` PASS con calentamiento (copia no versionada).
+  - Reconstruido en el propio corte del deploy (`server-build-Bl9oLdXA.js`, `root-Ov9cK09F.css`): contenía `"0.5.4"`, la UI de equipo (`Invitaciones pendientes`) y el canal de WhatsApp; el CSS contenía `invitation-section` y `role-guide`.
+  - Migraciones: NINGUNA (sin cambios en `db/schema`, `db/migrations` ni `wrangler.jsonc` desde `0.5.3`).
+- **Deploy:** `--dry-run` confirmó `DB=vecidya-prod` y `APP_ENV=production`. `pnpm wrangler deploy` a las 2026-09-25T18:15:33Z. Version ID **`cce6aa0b-7988-4525-81c1-f44a5ef3accd`**. Staging, secrets y D1 remota no se tocaron.
+- **HTTP anónimo de solo lectura** (`curl --ssl-no-revoke`):
+
+  | Comprobación | Antes (18:14Z, `0.5.3`) | Después (23:00Z) |
+  | --- | --- | --- |
+  | Pie de `/` | «Versión pública 0.5.3» | «Versión pública 0.5.4» |
+  | CSS de `/login`: `invitation-section` / `role-guide` | `root-C4A-bG9s.css`, 0 / 0 | `root-Ov9cK09F.css` (= bundle local), 1 / 1 |
+  | `/app/invitations/<id>` sin sesión | — | `200` con «Crear cuenta» |
+  | `/contacto`: grupo / canal | — | 0 / 2 |
+  | 15 rutas públicas, `/login`, `/register`, `/api/auth/ok` | — | `200` |
+  | `/app`, `/app/organization`, `/app/internal` | `302` | `302` → `/login` |
+  | `www` | — | `301` |
+  | `organization/list` / `list-invitations` / `get-full-organization` | — | `401` / `404` / `404` (allowlist intacta) |
+
+- **Checks manuales pendientes del usuario** (login y cambio de organización; invitación real con correo controlado): **NOT PERFORMED**, sin cuenta ni buzón controlados disponibles — no bloquean el cierre, según indicó el usuario.
+- **Resultado:** `0.5.4 PRODUCTION PASS`.
 
 ## Deploy `0.5.3` — INVITE-001 y canal de WhatsApp (2026-09-25)
 
@@ -140,17 +158,17 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 | **Local** | `react-router dev` con el plugin de Cloudflare (`pnpm run dev`) | Emulada por Miniflare en `.wrangler/state/v3/d1` (binding `DB`); migraciones `0000`–`0009` aplicadas | `http://localhost:*` | Operativo | `RAN` `d1_migrations` local contiene 10 filas (`0000`–`0009`) |
 | **Development** (remoto) | Ninguno versionado | `vecidya-dev` remoto existe, pero no está configurado ni debe usarse | Ninguno | **Abandonado / sin uso** | `CONFIG` |
 | **Staging** | `vecidya-platform-staging` (`env.staging`, `workers_dev: true`) | `vecidya-staging` `d4af6ebc-97c5-42f6-ad3a-51551021e591` | `https://vecidya-platform-staging.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.4.1`, Version ID `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454`; trigger de rutas de zona no se reasignó por conflicto existente, workers.dev operativo | `CONFIG` `HTTP` `REMOTE` |
-| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.5.3`, Version ID `8dfe3c1d-208e-4aaa-bd91-62409b18e252` (2026-09-25); smoke HTTP anónimo PASS | `CONFIG` `HTTP` `REMOTE` |
+| **Public / Production** | `vecidya-platform` (top-level) | `vecidya-prod` `8edc3f04-258e-4c29-9f33-76fec3d25042` | `https://vecidya.com`, `https://www.vecidya.com` (301 → apex), `vecidya-platform.soporte-8a1.workers.dev` | **Publicado y verificado**; `v0.5.4`, Version ID `cce6aa0b-7988-4525-81c1-f44a5ef3accd` (2026-09-25); smoke HTTP anónimo PASS | `CONFIG` `HTTP` `REMOTE` |
 
 ## Qué código está publicado
 
-El despliegue público vigente es el Version ID `8dfe3c1d-208e-4aaa-bd91-62409b18e252` (`v0.5.3`, 2026-09-25; el anterior fue `1c99089b-f095-499d-9958-bad360693a33`, `v0.5.2`) `CONFIG`/`HTTP`:
+El despliegue público vigente es el Version ID `cce6aa0b-7988-4525-81c1-f44a5ef3accd` (`v0.5.4`, 2026-09-25; el anterior fue `8dfe3c1d-208e-4aaa-bd91-62409b18e252`, `v0.5.3`) `CONFIG`/`HTTP`:
 
 - `/app/internal/maintenance/auth-bootstrap` y `/app/internal/maintenance/password-rotation` devuelven **404**.
 - `/app/internal` sin sesión devuelve la pantalla de login; el acceso autenticado de `hola@vecidya.com` fue comprobado manualmente en producción en `/app` y `/app/internal`.
 - La D1 remota reporta migraciones `0000`–`0009` aplicadas `REMOTE`.
 
-Conclusión: el código `0.5.3` está desplegado en el Worker público, el binding reportado por Wrangler es `vecidya-prod` y no se ejecutaron migraciones (las migraciones `0000`–`0009` ya estaban aplicadas y `0.5.3` no añade ninguna). `vecidya-staging` sigue preservada como D1 independiente de staging.
+Conclusión: el código `0.5.4` está desplegado en el Worker público, el binding reportado por Wrangler es `vecidya-prod` y no se ejecutaron migraciones (las migraciones `0000`–`0009` ya estaban aplicadas y `0.5.4` no añade ninguna). `vecidya-staging` sigue preservada como D1 independiente de staging.
 
 ## Repositorio Git
 

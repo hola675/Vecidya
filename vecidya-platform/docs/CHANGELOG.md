@@ -1,6 +1,6 @@
 # Changelog
 
-## 2026-09-25 — INVITE-UI-001 Team & Invitation UX (`0.5.4` candidata, sin deploy)
+## 2026-09-25 — INVITE-UI-001 Team & Invitation UX (`0.5.4`, LIVE)
 
 Pule `/app/organization` sin tocar la lógica de INVITE-001 ni la matriz de AUTHZ-BA-001. Las acciones del servidor conservan las mismas guardas y llamadas a Better Auth; solo cambian la presentación, el feedback y el texto de éxito al crear.
 
@@ -20,7 +20,8 @@ Pule `/app/organization` sin tocar la lógica de INVITE-001 ni la matriz de AUTH
   - `tests/unit/invitations/team-labels.test.ts` (5).
   - El RED de `team-ui` quedó en 14/16 tras corregir el arnés: Playwright exige declarar `secure` en la cookie `__Secure-` de Better Auth.
   - En el GREEN, 81/91 al principio, por dos motivos: el nombre accesible del selector envuelto en su etiqueta incluía la opción elegida («Rol Miembro»), resuelto con `aria-label="Rol"`; y la lectura del historial justo tras cancelar era una carrera de renderizado, resuelta con una espera explícita. Luego 91/91.
-- **Producción:** no se desplegó; se espera autorización explícita para `0.5.4`. Los checks manuales en producción (login y cambio de organización; invitación real con correo controlado) no se realizaron: no hay una cuenta ni un buzón controlados disponibles.
+- **Deploy** (autorizado explícitamente por el usuario, mismo criterio que REL-005B): commits `a7a4961` y `0b0797e`, Version ID **`cce6aa0b-7988-4525-81c1-f44a5ef3accd`** (2026-09-25T18:15:33Z), sin migraciones. HTTP anónimo: pie `0.5.4`; CSS de `/login` con `invitation-section`/`role-guide` (misma huella que el bundle local); invitación sin sesión `200` con «Crear cuenta»; allowlist de AUTHZ intacta; WhatsApp sin grupo. Detalle en `ENVIRONMENTS.md`. Resultado: **`0.5.4 PRODUCTION PASS`**.
+- **Checks manuales pendientes del usuario** (login y cambio de organización; invitación real con correo controlado): **NOT PERFORMED**, sin cuenta ni buzón controlados; no bloquean el cierre, según indicó el usuario.
 
 ## 2026-09-25 — INVITE-001 Functional Invitation & Onboarding Flow (`0.5.3`)
 
