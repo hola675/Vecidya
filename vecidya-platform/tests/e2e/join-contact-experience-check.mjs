@@ -9,6 +9,9 @@ assertLocalBaseUrl();
 const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
 const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
+// Canal oficial de WhatsApp de Vecidya (difusión), autorizado por el usuario el 2026-09-25.
+const whatsAppChannelUrl = "https://whatsapp.com/channel/0029VbEBsKH2phHMnAgPOT1f";
+const channelLinks = (page) => page.locator(`a[href="${whatsAppChannelUrl}"]`);
 
 async function assertNoOverflow(page, label) {
   const overflow = await page.evaluate(() => {
@@ -43,6 +46,8 @@ async function runViewport(width, height) {
   assert(await page.getByRole("link", { name: "Hacer diagnóstico" }).first().getAttribute("href") === "/diagnostico", `${label} Únete no enlazó Diagnóstico.`);
   assert(await page.getByRole("link", { name: "Hablar con Vecidya" }).first().getAttribute("href") === "/contacto", `${label} Únete no enlazó Contacto.`);
   assert(!(await page.content()).match(/comprar|checkout|carrito|ver planes|crear cuenta/i), `${label} Únete contiene onboarding comercial inexistente.`);
+  assert(await page.locator('a[href^="https://chat.whatsapp.com/"]').count() === 0, `${label} El pie público sigue enlazando el grupo comunitario de WhatsApp.`);
+  assert(await channelLinks(page).count() === 1, `${label} El pie público no enlaza el canal de WhatsApp de Vecidya.`);
 
   await page.goto(new URL("/contacto", baseUrl).toString(), { waitUntil: "networkidle" });
   await assertMetadata(page, `${label} Contacto`);
@@ -53,13 +58,22 @@ async function runViewport(width, height) {
   assert(await emailLinks.first().evaluate((element) => document.activeElement === element), `${label} Contacto no permite enfocar el email.`);
   assert(await page.getByRole("link", { name: "Hacer diagnóstico" }).first().getAttribute("href") === "/diagnostico", `${label} Contacto no enlazó Diagnóstico.`);
   assert(await page.getByRole("link", { name: /Ver privacidad/i }).getAttribute("href") === "/privacidad", `${label} Contacto no enlazó Privacidad.`);
-  // WhatsApp (directo y grupo comunitario) es un canal autorizado desde 2026-09-23; el resto sigue sin existir.
+  // WhatsApp directo para escribir y canal oficial para seguir novedades; el grupo comunitario se retiró el 2026-09-25.
   assert(!(await page.content()).match(/chat en vivo|teléfono|booking|calendario/i), `${label} Contacto sugiere un canal no disponible.`);
   assert(await page.locator('a[href^="https://wa.me/"]').count() >= 1, `${label} Contacto no mostró el WhatsApp directo.`);
-  assert(await page.locator('a[href^="https://chat.whatsapp.com/"]').count() >= 1, `${label} Contacto no mostró el grupo comunitario de WhatsApp.`);
+  assert(await page.locator('a[href^="https://chat.whatsapp.com/"]').count() === 0, `${label} Contacto sigue mostrando el grupo comunitario de WhatsApp.`);
+  assert(!(await page.locator("main").innerText()).match(/grupo de WhatsApp/i), `${label} Contacto sigue mencionando el grupo de WhatsApp.`);
+  assert(await page.locator("main").locator(`a[href="${whatsAppChannelUrl}"]`).count() === 1, `${label} Contacto no ofrece el canal de WhatsApp de Vecidya.`);
+  assert(await channelLinks(page).first().getAttribute("rel") === "noreferrer" && await channelLinks(page).first().getAttribute("target") === "_blank", `${label} El canal de WhatsApp no abre en una pestaña nueva sin referrer.`);
 
   await browser.close();
 }
+
+const homeHtml = await (await fetch(new URL("/", baseUrl))).text();
+const organizationJsonLd = [...homeHtml.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+  .map((match) => JSON.parse(match[1]))
+  .find((data) => data["@type"] === "Organization");
+assert(organizationJsonLd?.sameAs?.includes(whatsAppChannelUrl), "El JSON-LD Organization de la Home no declara el canal de WhatsApp en sameAs.");
 
 for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]]) {
   await runViewport(width, height);

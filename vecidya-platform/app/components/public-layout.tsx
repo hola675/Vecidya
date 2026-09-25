@@ -3,8 +3,9 @@ import { useEffect, useRef } from "react";
 import { publicAssets } from "../assets/public-assets";
 import { PlatformFooter } from "./platform-footer";
 
-export const communityWhatsAppUrl = "https://chat.whatsapp.com/EYAHpOUaNHGBn3ymrlsYJO?s=sh&p=a&mlu=4&ilr=4";
 export const commercialWhatsAppUrl = "https://wa.me/573244321864";
+// Canal oficial de difusión de Vecidya en WhatsApp (sustituye al grupo comunitario retirado).
+export const whatsAppChannelUrl = "https://whatsapp.com/channel/0029VbEBsKH2phHMnAgPOT1f";
 
 export function PublicLayout({ children }: { children: React.ReactNode }) {
   const mobileMenuRef = useRef<HTMLDetailsElement>(null);
@@ -105,10 +106,10 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
             </a>
           </div>
           <div>
-            <strong>Comunidad</strong>
-            <a className="site-footer__community-link" href={communityWhatsAppUrl} rel="noreferrer" target="_blank">
+            <strong>Síguenos</strong>
+            <a className="site-footer__community-link" href={whatsAppChannelUrl} rel="noreferrer" target="_blank">
               <img alt="" height={18} src={publicAssets.icons.whatsapp} width={18} />
-              Grupo de WhatsApp
+              Canal de WhatsApp
             </a>
           </div>
           <div>

@@ -1,4 +1,4 @@
-import { commercialWhatsAppUrl, communityWhatsAppUrl, PublicLayout, publicMeta } from "../components/public-layout";
+import { commercialWhatsAppUrl, PublicLayout, publicMeta, whatsAppChannelUrl } from "../components/public-layout";
 import { publicAssets } from "../assets/public-assets";
 import { CTASection } from "../components/public-v2";
 
@@ -44,13 +44,13 @@ export default function Contact() {
 
         <section className="contact-community" aria-labelledby="contact-community-title">
           <div>
-            <p className="eyebrow">COMUNIDAD</p>
-            <h2 id="contact-community-title">Conversa con Vecidya y otros miembros.</h2>
-            <p>Únete al grupo de WhatsApp de Vecidya/Vecindario para compartir preguntas, aprendizajes y próximos pasos.</p>
+            <p className="eyebrow">CANAL DE WHATSAPP</p>
+            <h2 id="contact-community-title">Sigue a Vecidya en WhatsApp.</h2>
+            <p>Recibe novedades, aprendizajes y avisos de Vecidya en nuestro canal oficial. Es un canal de difusión: para escribirnos usa el WhatsApp directo o el correo.</p>
           </div>
-          <a className="button button--secondary contact-community__link" href={communityWhatsAppUrl} rel="noreferrer" target="_blank">
+          <a className="button button--secondary contact-community__link" href={whatsAppChannelUrl} rel="noreferrer" target="_blank">
             <img alt="" height={20} src={publicAssets.icons.whatsapp} width={20} />
-            Abrir grupo de WhatsApp
+            Seguir el canal
           </a>
         </section>
 

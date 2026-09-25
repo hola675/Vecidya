@@ -5,7 +5,7 @@ import { listPublishedBusinessProfiles } from "../../db/queries/business-profile
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { publicAssets } from "../assets/public-assets";
 import { BusinessCardV2, CTASection, DiagnosticChoice, JsonLd, ServiceCard, VisualSection } from "../components/public-v2";
-import { PublicLayout, publicMeta } from "../components/public-layout";
+import { PublicLayout, publicMeta, whatsAppChannelUrl } from "../components/public-layout";
 
 import type { Route } from "./+types/home";
 
@@ -38,6 +38,7 @@ export default function Home() {
     url: origin,
     logo: `${origin}/brand/vecidya-icon-3d.png`,
     description: "Plataforma para explorar negocios reales y ordenar la presencia digital.",
+    sameAs: [whatsAppChannelUrl],
   };
 
   return (
