@@ -24,9 +24,10 @@ Cierra el flujo funcional de invitaciones sin rediseño visual (`INVITE-UI-001` 
   - `tests/e2e/organization-invitation-flow-check.mjs` (`invite-flow`, en `test:e2e`): RED 20/23 y GREEN 28/28. Recorre en navegador el usuario nuevo y el usuario existente.
   - `tests/unit/invitations/invitation-rules.test.ts` (13). `test:unit` pasa de 87 a 100.
 - **Límite honesto:** en local el proveedor `fake` descarta el correo y el token lo firma el secreto, así que el clic de verificación se simuló con `email_verified = 1`. La entrega real de la verificación no se ejecutó.
+- **Deploy** («desplegar al pasar todo», respuesta directa del usuario): commit `aee3081`, Version ID **`8dfe3c1d-208e-4aaa-bd91-62409b18e252`**, sin migraciones. HTTP anónimo: pie `0.5.3`; invitación sin sesión de `302` a `200` con «Crear cuenta»; allowlist intacta. Detalle en `ENVIRONMENTS.md`.
 - **Deuda:** `INVITE-001` CERRADA. `INVITE-UI-001` parcialmente resuelta. Nueva `INVITE-DELIVERY-SILENT-001`: Better Auth se traga los fallos de Gmail al invitar. Reenviar, rechazar y eliminar quedan como capacidades futuras. La regla de propiedad por plan del usuario se incorpora a `AUTH-ABUSE-001`.
 
-## 2026-09-25 — WhatsApp público: sin grupo comunitario, con canal oficial (`0.5.3`)
+## 2026-09-25 — WhatsApp público: sin grupo comunitario, con canal oficial (`0.5.3`, LIVE)
 
 A pedido del usuario:
 
