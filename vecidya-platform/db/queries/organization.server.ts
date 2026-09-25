@@ -51,8 +51,32 @@ export async function getOrganizationMemberById(database: Database, memberId: st
 
 export async function getOrganizationInvitationById(database: Database, invitationId: string) {
   const [record] = await database
-    .select({ id: invitation.id, organizationId: invitation.organizationId })
+    .select({
+      id: invitation.id,
+      organizationId: invitation.organizationId,
+      status: invitation.status,
+      expiresAt: invitation.expiresAt,
+    })
     .from(invitation)
+    .where(eq(invitation.id, invitationId))
+    .limit(1);
+
+  return record ?? null;
+}
+
+export async function getInvitationWithOrganization(database: Database, invitationId: string) {
+  const [record] = await database
+    .select({
+      id: invitation.id,
+      organizationId: invitation.organizationId,
+      organizationName: organization.name,
+      email: invitation.email,
+      role: invitation.role,
+      status: invitation.status,
+      expiresAt: invitation.expiresAt,
+    })
+    .from(invitation)
+    .innerJoin(organization, eq(invitation.organizationId, organization.id))
     .where(eq(invitation.id, invitationId))
     .limit(1);
 

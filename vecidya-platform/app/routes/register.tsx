@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Form, Link, useNavigate } from "react-router";
+import { Form, Link, useNavigate, useSearchParams } from "react-router";
 
 import { authClient } from "../lib/auth-client";
+import { isInvitationPath, safeAppRedirect } from "../lib/safe-redirect";
 import { Alert, Button } from "../components/ui";
 import { AuthShell } from "../components/auth-shell";
 
@@ -11,6 +12,8 @@ export function meta() {
 
 export default function Register() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = safeAppRedirect(searchParams.get("redirectTo"));
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -20,20 +23,29 @@ export default function Register() {
     setSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email"));
     const result = await authClient.signUp.email({
-      email: String(formData.get("email")),
+      email,
       name: String(formData.get("name")),
       password: String(formData.get("password")),
     });
 
-    setSubmitting(false);
-
     if (result.error) {
+      setSubmitting(false);
       setError(result.error.message ?? "No se pudo crear la cuenta.");
       return;
     }
 
-    navigate("/app");
+    // Quien llega desde una invitación necesita un correo verificado para aceptarla: se envía el
+    // enlace ya, con retorno a la invitación, y la página muestra si el envío funcionó.
+    if (redirectTo && isInvitationPath(redirectTo)) {
+      const verification = await authClient.sendVerificationEmail({ email, callbackURL: redirectTo });
+      navigate(`${redirectTo}${redirectTo.includes("?") ? "&" : "?"}verificacion=${verification.error ? "fallida" : "enviada"}`);
+      return;
+    }
+
+    setSubmitting(false);
+    navigate(redirectTo ?? "/app");
   }
 
   return (
@@ -61,7 +73,7 @@ export default function Register() {
           {submitting ? "Creando…" : "Registrarme"}
         </Button>
       </Form>
-      <p className="auth-switch">¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></p>
+      <p className="auth-switch">¿Ya tienes cuenta? <Link to={redirectTo ? `/login?redirectTo=${encodeURIComponent(redirectTo)}` : "/login"}>Inicia sesión</Link></p>
     </AuthShell>
   );
 }

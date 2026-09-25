@@ -16,6 +16,7 @@ const scripts = [
   "organization-members-check.mjs",
   "organization-invitations-check.mjs",
   "organization-authorization-check.mjs",
+  "organization-invitation-flow-check.mjs",
   "product-experience-a-public-review-check.mjs",
   "licenses-experience-check.mjs",
   "addons-experience-check.mjs",

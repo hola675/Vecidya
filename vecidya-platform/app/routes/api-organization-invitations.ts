@@ -1,3 +1,4 @@
+import { getInvitationListState } from "../../db/invitation-rules";
 import { createAuth } from "../../server/auth.server";
 import {
   requireOrganizationInvitationTarget,
@@ -54,7 +55,11 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 
   if (body.operation === "cancel") {
     if (typeof body.invitationId !== "string") return Response.json({ error: "Invalid invitation" }, { status: 400 });
-    await requireOrganizationInvitationTarget(env, params.organizationId, body.invitationId);
+    const target = await requireOrganizationInvitationTarget(env, params.organizationId, body.invitationId);
+    // Better Auth marcaría como cancelada incluso una invitación aceptada o ya cancelada.
+    if (getInvitationListState(target, new Date()) !== "pending") {
+      return Response.json({ error: "Invitation is no longer pending" }, { status: 409 });
+    }
     try {
       const result = await auth.api.cancelInvitation({ headers: request.headers, body: { invitationId: body.invitationId } });
       return Response.json(result);

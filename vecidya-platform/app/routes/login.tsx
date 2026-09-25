@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Form, Link, useNavigate } from "react-router";
+import { Form, Link, useNavigate, useSearchParams } from "react-router";
 
 import { authClient } from "../lib/auth-client";
+import { safeAppRedirect } from "../lib/safe-redirect";
 import { Alert, Button } from "../components/ui";
 import { AuthShell } from "../components/auth-shell";
 
@@ -11,6 +12,8 @@ export function meta() {
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = safeAppRedirect(searchParams.get("redirectTo"));
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -45,7 +48,7 @@ export default function Login() {
       }
     }
 
-    navigate("/app");
+    navigate(redirectTo ?? "/app");
   }
 
   return (
@@ -70,7 +73,7 @@ export default function Login() {
           {submitting ? "Entrando…" : "Entrar a mi espacio"}
         </Button>
       </Form>
-      <p className="auth-switch">¿No tienes cuenta? <Link to="/register">Regístrate</Link></p>
+      <p className="auth-switch">¿No tienes cuenta? <Link to={redirectTo ? `/register?redirectTo=${encodeURIComponent(redirectTo)}` : "/register"}>Regístrate</Link></p>
     </AuthShell>
   );
 }

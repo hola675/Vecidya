@@ -1,5 +1,6 @@
 import { Form, useActionData, useLoaderData, useNavigation } from "react-router";
 
+import { getInvitationListState, invitationCreateErrorMessage, type InvitationListState } from "../../db/invitation-rules";
 import { createAuth } from "../../server/auth.server";
 import {
   hasPermission,
@@ -24,6 +25,19 @@ function invitationEmailConfig(env: Env) {
   return { ...env, appUrl: env.APP_URL || undefined };
 }
 
+function betterAuthErrorCode(error: unknown) {
+  const body = typeof error === "object" && error && "body" in error ? (error as { body?: { code?: unknown } }).body : undefined;
+  return typeof body?.code === "string" ? body.code : undefined;
+}
+
+const pastInvitationLabels: Record<Exclude<InvitationListState, "pending">, string> = {
+  expired: "Expirada",
+  accepted: "Aceptada",
+  canceled: "Cancelada",
+  rejected: "Rechazada",
+  unknown: "Sin estado",
+};
+
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   const organization = await getActiveOrganization(env, request);
@@ -37,8 +51,11 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     headers: request.headers,
     query: { organizationId: organization.id },
   });
+  const now = new Date();
+  // Solo una invitación pendiente y vigente cuenta como pendiente y se puede cancelar.
   const invitations = hasPermission(organization.role, "member:invite")
-    ? await auth.api.listInvitations({ headers: request.headers, query: { organizationId: organization.id } })
+    ? (await auth.api.listInvitations({ headers: request.headers, query: { organizationId: organization.id } }))
+      .map((invitation) => ({ id: invitation.id, email: invitation.email, role: invitation.role, state: getInvitationListState(invitation, now) }))
     : null;
   return { organization, members, invitations, ...shell, activeOrganization: organization };
 }
@@ -99,8 +116,8 @@ export async function action({ context, request }: Route.ActionArgs) {
         headers: request.headers,
         body: { email, role, organizationId: organization.id },
       });
-    } catch {
-      return { error: "La invitación no se pudo entregar: el correo transaccional todavía no está configurado." };
+    } catch (error) {
+      return { error: invitationCreateErrorMessage(betterAuthErrorCode(error)) };
     }
     return { success: "Invitación creada y enviada." };
   }
@@ -108,7 +125,10 @@ export async function action({ context, request }: Route.ActionArgs) {
   if (operation === "cancel-invitation") {
     const invitationId = String(formData.get("invitationId"));
     await requireOrganizationPermission(env, request, organization.id, "member:invite");
-    await requireOrganizationInvitationTarget(env, organization.id, invitationId);
+    const target = await requireOrganizationInvitationTarget(env, organization.id, invitationId);
+    if (getInvitationListState(target, new Date()) !== "pending") {
+      return { error: "Esta invitación ya no está pendiente." };
+    }
     try {
       await auth.api.cancelInvitation({ headers: request.headers, body: { invitationId } });
     } catch {
@@ -126,6 +146,8 @@ export default function OrganizationPage() {
   const navigation = useNavigation();
   const busy = navigation.state !== "idle";
   const memberList = members.members ?? [];
+  const pendingInvitations = invitations?.filter((invitation) => invitation.state === "pending") ?? [];
+  const pastInvitations = invitations?.filter((invitation) => invitation.state !== "pending") ?? [];
 
   return (
     <ClientAreaShell active="organization" workspaceUser={workspaceUser} organizations={organizations} activeOrganization={activeOrganization} isPlatformAdmin={isPlatformAdmin}>
@@ -171,14 +193,15 @@ export default function OrganizationPage() {
         )}
       </Card>
       {invitations ? <Card className="members-card invitation-management-card">
-        <div className="members-card__heading"><div><p className="eyebrow">INVITACIONES</p><h2>{invitations.length} pendiente{invitations.length === 1 ? "" : "s"}</h2></div><p>No se simula la entrega: el proveedor de correo está pendiente.</p></div>
+        <div className="members-card__heading"><div><p className="eyebrow">INVITACIONES</p><h2>{pendingInvitations.length} pendiente{pendingInvitations.length === 1 ? "" : "s"}</h2></div><p>No se simula la entrega: el proveedor de correo está pendiente.</p></div>
         <Form className="invite-form" method="post">
           <input name="operation" type="hidden" value="invite" />
           <label>Correo<input autoComplete="email" name="email" required type="email" /></label>
           <label>Rol<select defaultValue="member" name="role"><option value="member">member</option><option value="admin">admin</option></select></label>
           <Button type="submit">Invitar</Button>
         </Form>
-        {invitations.map((invitation) => <div className="member-row" key={invitation.id}><div><strong>{invitation.email}</strong><span>Rol: {invitation.role ?? "member"}</span></div><span>{invitation.status}</span><Form method="post"><input name="operation" type="hidden" value="cancel-invitation" /><input name="invitationId" type="hidden" value={invitation.id} /><Button tone="ghost" type="submit">Cancelar</Button></Form></div>)}
+        {pendingInvitations.map((invitation) => <div className="member-row" key={invitation.id}><div><strong>{invitation.email}</strong><span>Rol: {invitation.role ?? "member"}</span></div><span>Pendiente</span><Form method="post"><input name="operation" type="hidden" value="cancel-invitation" /><input name="invitationId" type="hidden" value={invitation.id} /><Button tone="ghost" type="submit">Cancelar</Button></Form></div>)}
+        {pastInvitations.length ? <><p className="eyebrow">HISTORIAL</p>{pastInvitations.map((invitation) => <div className="member-row" key={invitation.id}><div><strong>{invitation.email}</strong><span>Rol: {invitation.role ?? "member"}</span></div><span>{pastInvitationLabels[invitation.state as Exclude<InvitationListState, "pending">]}</span></div>)}</> : null}
       </Card> : null}
     </main>
     </ClientAreaShell>
