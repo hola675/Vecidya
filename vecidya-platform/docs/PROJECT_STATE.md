@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-24 (`0.5.1` LIVE en producción, REL-005B; staging sigue en `0.4.1`; publicados VIS-001B, UX-003.8/003.9, VIS-002B, el slug automático, QA-005A y SLUG-005B)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.5.1`; versión desplegada en producción: `0.5.1`, Version ID `195b737c-d838-4c64-96a2-a6fd195ee018` (HTTP 2026-09-24; la anterior fue `0.4.1`, `eec3de6a-6711-4eff-91de-b413406e3618`); staging Version ID `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454` (`0.4.1`). Gestión de invitaciones con defectos anteriores a `0.5.1` reportados tras el deploy (`INVITE-001`, `INVITE-UI-001` en [STATUS.md](STATUS.md)).
+Última reconciliación: **2026-09-25 (`0.5.2` LIVE en producción: AUTHZ-BA-001; staging sigue en `0.4.1`)**. Rama `main`. Producto activo: `vecidya-platform/`. Versión fuente/local: `0.5.2`; versión desplegada en producción: `0.5.2`, Version ID `1c99089b-f095-499d-9958-bad360693a33` (HTTP 2026-09-25; la anterior fue `0.5.1`, `195b737c-d838-4c64-96a2-a6fd195ee018`, que publicó VIS-001B, UX-003.8/003.9, VIS-002B, el slug automático, QA-005A y SLUG-005B); staging Version ID `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454` (`0.4.1`). Gestión de invitaciones con defectos anteriores a `0.5.1` reportados tras el deploy (`INVITE-001`, `INVITE-UI-001` en [STATUS.md](STATUS.md)).
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -167,12 +167,12 @@ UX-001B.5 convirtió la página en una guía de decisión SSR. UX-002.4 la actua
 | --- | --- | --- |
 | `/app` | sesión | Organización activa, resumen de perfil y servicios, número de miembros; selector de organización (siempre visible); crear organización; cerrar sesión |
 | `/app/account` | sesión | Datos de Better Auth; actualiza solo el nombre. Email/contraseña/MFA/eliminación: solo texto («no forma parte de esta fase») |
-| `/app/organization` | `member:read` | Miembros, cambio de rol, quitar, invitar, cancelar invitación (invitar responde error si Gmail no está configurado) |
+| `/app/organization` | `member:read`; cada acción, su permiso y que el miembro o la invitación sean de la organización activa | Miembros, cambio de rol, quitar, invitar, cancelar invitación (invitar responde error si Gmail no está configurado). La UI de invitaciones está rota (`INVITE-UI-001`) |
 | `/app/business-profile` | `business-profile:read/update/publish` | Editor completo del perfil (ver matriz) |
 | `/app/services` | sesión + organización activa | Lista de solo lectura de servicios asignados; sin solicitud/compra |
 | `/app/invitations/:id` | sesión | Aceptar invitación (Better Auth valida email y `emailVerified`); bloqueada en la práctica (`INVITE-001`) |
 
-Solo `/app` tiene el shell; las demás páginas son rutas hermanas con enlace «Volver». Después del login, el cliente usa `organization.list` y `organization.setActive` de Better Auth para fijar la primera organización válida; el selector permite cambiarla. No hay enlace de `/app` a `/app/internal`.
+Las cinco rutas comparten `ClientAreaShell` desde UX-003.9. Después del login, el cliente usa `organization.list` y `organization.setActive` de Better Auth para fijar la primera organización válida; el selector permite cambiarla. Desde AUTHZ-BA-001, esas dos operaciones, `organization.create` y `accept-invitation` son lo único del plugin Organization que responde por HTTP. Todo lo demás (miembros, roles, invitaciones) pasa por las rutas propias con la matriz de permisos, y no existe renombrar, abandonar ni eliminar organizaciones. Una organización activa sin membresía (stale o ajena) responde 403. Detalle en [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Multi-organización
 

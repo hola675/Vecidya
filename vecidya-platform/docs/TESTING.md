@@ -1,6 +1,21 @@
 # Pruebas
 
-Última reconciliación: 2026-09-24 (SLUG-005B; QA-005A; UX-003.9; UX-003.8; VIS-001B; REL-004; DIAG-002C; DIAG-002B; DIAG-002; REL-003.1; UX-003.1/003.4).
+Última reconciliación: 2026-09-25 (AUTHZ-BA-001; SLUG-005B; QA-005A; UX-003.9; UX-003.8; VIS-001B; REL-004; DIAG-002C; DIAG-002B; DIAG-002; REL-003.1; UX-003.1/003.4).
+
+**Evidencia AUTHZ-BA-001 (RAN 2026-09-25, Worker local `pnpm run dev`; versión `0.5.2`):**
+
+- **TDD:**
+  - `authz` (`organization-authorization-check.mjs`) contra `0.5.1`: RED **22/143**. Fallaron las 15 sondas directas a Better Auth (un `member` lee invitaciones, un `owner` renombra y borra la organización, `leave`, `invite-member`, `cancel-invitation`, `update-member-role`, `remove-member`), la cancelación de invitaciones de otra organización por API y página, y los IDs de miembro ajenos en la página (200 en vez de 403). Tras el fix: GREEN **143/143**.
+  - `unit-authz` (`tests/unit/auth/organization-http-surface.test.ts`): RED porque el módulo no existía; tras crearlo, 6/6.
+- **Qué cubre `authz`:** allowlist HTTP (incluidas las variantes con barra final y `%2F`), `/update-session` sin poder fijar `activeOrganizationId`, `create` con `userId` ajeno, organización activa (sin organización, válida, cambio A→C, ajena por `set-active`, inexistente, ajena inyectada en la sesión), sesión stale (retirada por la ruta propia con limpieza de sesión, y membresía borrada fuera de banda con la sesión apuntando aún a A), matriz de 3 roles × 10 permisos, perfil y publicación, servicios (solo `platform_admin`), cambio de rol y retirada, cross-tenant sobre las 6 APIs de B y los IDs de B, e invitaciones (listar, crear, cancelar y aceptar, con destinatario incorrecto, cancelada, correo sin verificar, doble aceptación y organización ajena).
+- **Arnés:** acumula resultados para que un RED liste todos los huecos. Tras cada uso de Wrangler hace una petición de calentamiento (`TEST-D1-RESET-001`) y nunca reintenta las peticiones que evalúa. Un fallo de preparación o de red sale con código 2 y la etiqueta `HARNESS`. Elimina sus fixtures por prefijo (`authz-*-<suffix>`); tras las ejecuciones quedaron 0 organizaciones, 0 usuarios y 0 perfiles.
+  - Una primera ejecución RED abortó como HARNESS con `ETIMEDOUT`: la petición no dejó span en el Worker (`TEST-LOCALHOST-001`). `authz` amplía la ventana IPv6 de Node a 5 s.
+  - Tras añadir el import `better-auth/api`, Vite re-optimizó dependencias y el Worker de desarrollo empezó a dar 500 (`No value found for context`). Se resolvió reiniciando `pnpm run dev`, sin cambiar código.
+- **Validación:** `typecheck`, `build` y `git diff --check` PASS. `test:unit` **87/87** (81 + 6).
+- **E2E de regresión, uno a uno:** `invitations` PASS PARCIAL (Gmail). PASS: `bpx`, `slug-life`, `services-exp`, `c1`, `c2`, `d1`, `admin-shell`, `admin-bp`, `admin-orgs`, `admin-int`, `psa`, `acct` y `pg-c1`.
+- **Fallos, deuda conocida y ajena:**
+  - `members`: `ECONNRESET` antes de sus aserciones (`TEST-D1-RESET-001`). Una copia no versionada que solo añade un calentamiento tras su escritura en D1 da PASS de la matriz 7B.1.
+  - `pe-b`: aserción del literal `Rol:` (`TEST-UX003-PEB`, mismo mensaje).
 
 **Evidencia SLUG-005B (RAN 2026-09-24, Worker local `pnpm run dev`; versión `0.5.1`):**
 
@@ -45,8 +60,8 @@ Evidencia DIAG-002C (RAN 2026-09-23): `pnpm run test:unit` **75/75 PASS** (5 nue
 
 ## Estado de la infraestructura de pruebas
 
-- No hay framework de pruebas externo ni CI (`.github/` no existe). `tests/unit/diagnostic/` contiene siete suites `node:test` (75 pruebas) del motor del Diagnóstico más dos archivos de personas (`personas.ts`, `adversarial-personas.ts`), y `tests/unit/business-profile/slug.test.ts` (6 pruebas) cubre la generación de slug contra la validación real del servidor; en total 81, ejecutables con `pnpm run test:unit` sin Worker ni D1; `tests/unit/register-ts.mjs` y `ts-resolve-hooks.mjs` resuelven importaciones relativas sin extensión sobre el type stripping de Node (≥22.12 con `--experimental-strip-types`). `tests/integration` sigue vacío. `package.json` incluye además `test:e2e` (runner secuencial de los E2E locales aplicables) y `test:email`.
-- Solo existe `tests/e2e/`: 33 scripts `.mjs` (Node + `fetch`, algunos con Playwright; incluye el runner `run-local-e2e.mjs` y el helper `test-safety.mjs`) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
+- No hay framework de pruebas externo ni CI (`.github/` no existe). `tests/unit/diagnostic/` contiene siete suites `node:test` (75 pruebas) del motor del Diagnóstico más dos archivos de personas (`personas.ts`, `adversarial-personas.ts`), y `tests/unit/business-profile/slug.test.ts` (6 pruebas) cubre la generación de slug contra la validación real del servidor y `tests/unit/auth/organization-http-surface.test.ts` (6) fija la allowlist HTTP del plugin Organization contra el plugin instalado; en total 87, ejecutables con `pnpm run test:unit` sin Worker ni D1; `tests/unit/register-ts.mjs` y `ts-resolve-hooks.mjs` resuelven importaciones relativas sin extensión sobre el type stripping de Node (≥22.12 con `--experimental-strip-types`). `tests/integration` sigue vacío. `package.json` incluye además `test:e2e` (runner secuencial de los E2E locales aplicables) y `test:email`.
+- Solo existe `tests/e2e/`: 34 scripts `.mjs` (Node + `fetch`, algunos con Playwright; incluye el runner `run-local-e2e.mjs` y el helper `test-safety.mjs`) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
 - Son **solo Windows** (`cmd.exe /d /c pnpm.cmd wrangler d1 execute … --local`).
 - Los scripts Playwright usan Microsoft Edge si existe, luego `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, luego Chromium empaquetado (requiere `playwright install`).
 
@@ -60,7 +75,7 @@ $env:BASE_URL = "http://localhost:5173"          # terminal 2 (es el valor por d
 node tests/e2e/<archivo>.mjs                     # una a la vez: comparten puerto y D1 local
 ```
 
-`pnpm run test:unit` no necesita Worker ni D1: ejecuta en Node las 81 pruebas unitarias (75 del motor del Diagnóstico en `tests/unit/diagnostic` y 6 de slug en `tests/unit/business-profile`).
+`pnpm run test:unit` no necesita Worker ni D1: ejecuta en Node las 87 pruebas unitarias (75 del motor del Diagnóstico en `tests/unit/diagnostic`, 6 de slug en `tests/unit/business-profile` y 6 de la allowlist en `tests/unit/auth`).
 
 Requisitos: `BETTER_AUTH_SECRET` en `.dev.vars` (no versionado), Node ≥22.12. `organization-invitations-check` espera `503` si Gmail OAuth no está configurado. `tests/email/mail-adapter.test.ts` usa el proveedor fake y nunca contacta Gmail. Variable opcional `D1_DATABASE_NAME` (por defecto `DB`).
 
@@ -91,6 +106,8 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `psa` | `platform-service-administration-check.mjs` | 4A/4B/4C/5A/8D |
 | `members` | `organization-members-check.mjs` (+ `-setup`, `-apply-fixture`, `-stable-check.ps1`) | 7B.1 |
 | `invitations` | `organization-invitations-check.mjs` | 7B.2 |
+| `authz` | `organization-authorization-check.mjs` | AUTHZ-BA-001 |
+| `unit-authz` | `tests/unit/auth/organization-http-surface.test.ts` (`pnpm run test:unit`) | AUTHZ-BA-001 |
 | `pg-c1` | `public-growth-c1-real-profile-readiness-check.mjs` | PUBLIC-GROWTH-001 C1 |
 | `px-a` | `product-experience-a-public-review-check.mjs` | PRODUCT-EXPERIENCE-001 A |
 | `px-b` | `product-experience-b-client-app-check.mjs` | PRODUCT-EXPERIENCE-001 B |
@@ -145,9 +162,9 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 | Categoría | Protegida por (ejecutable) | Brecha |
 | --- | --- | --- |
 | Auth | registro por API en 17 scripts; `get-session` en `acct`; login UI en `c2`; 302 anónimo en `d1` | Sin pruebas de credenciales inválidas, duplicados, contraseña débil, reset, verificación de email, expiración de sesión, límites; logout solo en `px-b` (roto); persistencia de sesión no probada entre reinicios |
-| Organizaciones | crear/activar en casi todos; multi-org en `pe-b` | Renombrar, eliminar, unicidad de slug, `GET /api/organizations/:id` |
-| Permisos | matrices 403 en `admin-shell`, `admin-bp`, `d1`; roles de perfil en `bpx`/`c1` | `/api/organizations/:id/authorization`; unicidad de membresía (TECH-002); matriz 7B.1 (stale) |
-| Aislamiento tenant | fuerte en perfil (`pe-b`, `bpx`, `c1`, `c2`, `pg-c1`) y servicios (`services-exp` —conjunto exacto de tarjetas por organización desde QA-005A—, `pe-b`) | Miembros/integraciones solo en scripts stale |
+| Organizaciones | crear/activar en casi todos; multi-org en `pe-b`; `authz`: `GET /api/organizations/:id`, allowlist HTTP (renombrar, abandonar y eliminar → 404), `set-active` ajeno o inexistente → 403 | Unicidad del slug de organización |
+| Permisos | matrices 403 en `admin-shell`, `admin-bp`, `d1`; roles de perfil en `bpx`/`c1`; `authz`: `/api/organizations/:id/authorization` (3 roles × 10 permisos) y permitido/prohibido en perfil, publicación, servicios, rol, retirada e invitaciones | Unicidad de membresía (TECH-002); `members` solo con calentamiento (`TEST-D1-RESET-001`) |
+| Aislamiento tenant | fuerte en perfil (`pe-b`, `bpx`, `c1`, `c2`, `pg-c1`) y servicios (`services-exp` —conjunto exacto de tarjetas por organización desde QA-005A—, `pe-b`); `authz`: miembros, invitaciones, integraciones, organización activa stale o ajena y los IDs de otra organización | — |
 | Business profile | `bpx`, `pg-c1`, `c1`, `c2`, `pe-b`, `d1`; slug automático: `unit-bp` (normalización, recorte a 80 y aceptación por la validación real del servidor) y `slug-life` (sugerencia solo antes del primer guardado, override manual, bloqueo sin caracteres utilizables, estabilidad de borrador y publicado sin recargar y tras recargar, URL pública original 200 con el nombre nuevo y canónica intacta, sin ruta nueva, colisión 400 sin sufijo, longitud) | Subida de logo (no existe); publicación vía API; cambio explícito de slug con redirección (no existe) |
 | Servicios | `services-exp`, `pe-b` | Escritura admin (4B/8D) stale |
 | Admin interna | `admin-shell` (8A), `admin-bp` (8C), `d1` | 8B, 8E y API de servicios stale; nada ejecutable cubre `/organizations`, `/integrations` ni escritura de servicios |
@@ -158,7 +175,7 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 | Responsive | `commercial-review` verifica overflow, imágenes dimensionadas, un único `<main>` y recorrido comercial en 1366/768/390/360; `px-a`, `c1`, `c2` cubren perfil/editor | Sin auditoría axe automatizada ni regresión visual por comparación de screenshots |
 | Gobierno y auditoría | `d1` (verificar, suspender, badge, 404, exclusión, auditoría) | Paginación/orden de auditoría; efecto de suspensión en sitemap |
 | Multi-org | `pe-b`, `bpx`, `services-exp` | Invitar a un miembro existente a una segunda organización |
-| Invitaciones | `invitations` (stale; imprime «PASS PARCIAL»: inyecta filas y `email_verified` por SQL) | Entrega real y aceptación de extremo a extremo |
+| Invitaciones | `invitations` (imprime «PASS PARCIAL»: inyecta filas y `email_verified` por SQL); `authz` (frontera de crear, cancelar, listar y aceptar, incluida la organización ajena) | Entrega real y aceptación de extremo a extremo (`INVITE-001`); estados y UI (`INVITE-UI-001`) |
 | Integraciones | `psa`, `admin-int` (stale) | Ninguna ejecutable |
 | Staging remoto | script remoto (no ejecutar) | Sin ensayo seguro |
 | Piloto real | `rp001a` | Validación local controlada de los tres nombres documentados; no publica datos y no sustituye autorización, datos confirmados ni prueba remota |

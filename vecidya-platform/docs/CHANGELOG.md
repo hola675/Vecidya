@@ -1,5 +1,25 @@
 # Changelog
 
+## 2026-09-25 — AUTHZ-BA-001 Better Auth Authorization Boundary (`0.5.2`, LIVE)
+
+Cierra la frontera sesión → organización activa → membresía → rol → recurso antes de invitaciones completas y R2. Sin invitaciones nuevas (`INVITE-001`), sin R2, sin schema ni migraciones.
+
+- **Causa raíz (RAN, TDD):** el plugin Organization de Better Auth exponía por HTTP sus 22 endpoints y solo aplicaba su RBAC por defecto. La prueba nueva `authz` falló en rojo 22/143 contra `0.5.1`:
+  - un `member` leía las invitaciones de su organización por `list-invitations` y `get-full-organization`, cuando la matriz propia lo reserva a owner/admin;
+  - un `owner` renombraba y **borraba** la organización. La cascada borra perfil, horarios, servicios e integraciones asignados por la plataforma;
+  - `leave`, `invite-member` (creaba la invitación aunque el correo no estuviera configurado), `cancel-invitation`, `update-member-role` y `remove-member` funcionaban sin pasar por las rutas propias;
+  - cancelar una invitación no comprobaba que fuera de la organización de la ruta: un owner de A y C cancelaba invitaciones de C desde la ruta de A. No había escalada, porque Better Auth exige permiso en la organización de la invitación;
+  - en `/app/organization`, un ID de miembro de otra organización lo rechazaba Better Auth, pero la página respondía 200 con un error genérico.
+- **Corrección:**
+  - Allowlist HTTP de denegación por defecto (`server/auth/organization-http-surface.ts`), aplicada con un hook `before` de Better Auth sobre la ruta ya resuelta. Por HTTP solo responden `create`, `list`, `set-active` y `accept-invitation`; los otros 18 devuelven 404. Las llamadas `auth.api.*` de las rutas propias no se ven afectadas.
+  - `disableOrganizationDeletion`: no existe flujo de borrado.
+  - Guardas comunes de recurso `requireOrganizationMemberTarget` y `requireOrganizationInvitationTarget`, usadas por la API y la página. Un ID inexistente y uno ajeno dan el mismo 403.
+- **Verificado sin cambios:** `activeOrganizationId` no concede acceso. Stale, ajena inyectada o inexistente → 403. `set-active` ajeno → 403. `/update-session` no puede fijarla (400). `create` ignora un `userId` ajeno. La aceptación está ligada al correo verificado del destinatario.
+- **Pruebas:** `tests/e2e/organization-authorization-check.mjs` (`authz`, 143 comprobaciones, en `test:e2e`, limpia sus fixtures) y `tests/unit/auth/organization-http-surface.test.ts` (6, fija la allowlist contra el plugin instalado). `test:unit` pasa de 81 a 87.
+- **Validación:** `typecheck`, `build` y `git diff --check` PASS. `authz` GREEN 143/143. `test:unit` 87/87. E2E de regresión 14 PASS e `invitations` PASS PARCIAL. `members` cae por `TEST-D1-RESET-001`; con un calentamiento de red en una copia no versionada, PASS. `pe-b` falla por `TEST-UX003-PEB`. Detalle en `TESTING.md`.
+- **Deploy autorizado explícitamente por el usuario durante el bloque:** commit `e9e413a`, Version ID **`1c99089b-f095-499d-9958-bad360693a33`** (2026-09-25T14:56Z), `DB=vecidya-prod`. Sin migraciones ni cambios de secrets; staging no tocado. HTTP anónimo antes/después en `ENVIRONMENTS.md`: pie `0.5.2`, 12 rutas públicas `200`, privadas `302`, `www` `301`, `list` `401`, y `list-invitations`, `get-full-organization`, `list-members` y `get-invitation` pasan de `401` a `404`.
+- **Deuda:** `AUTHZ-BA-001` CERRADA. Nuevas: `AUTH-ABUSE-001` (creación ilimitada de organizaciones y rate limiting en memoria, separadas de la frontera tenant) y `TEST-LOCALHOST-001` (`ETIMEDOUT` del arnés por IPv6).
+
 ## 2026-09-24 — REL-005B Production Release `0.5.1` (LIVE)
 
 Publicación autorizada explícitamente por el usuario de la candidata `0.5.1` validada (commit `55f9700`), sin features, refactors, migraciones ni limpieza de deuda.
