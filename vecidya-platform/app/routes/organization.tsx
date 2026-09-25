@@ -1,8 +1,10 @@
+import { useEffect, useRef } from "react";
 import { Form, useActionData, useLoaderData, useNavigation } from "react-router";
 
-import { getInvitationListState, invitationCreateErrorMessage, type InvitationListState } from "../../db/invitation-rules";
+import { getInvitationListState, invitationCreateErrorMessage } from "../../db/invitation-rules";
 import { createAuth } from "../../server/auth.server";
 import {
+  getPermissionsForRole,
   hasPermission,
   requireOrganizationInvitationTarget,
   requireOrganizationMemberTarget,
@@ -14,6 +16,7 @@ import { getClientWorkspaceContext } from "../../server/auth/client-workspace.se
 import { isOrganizationInvitationEmailConfigured } from "../../server/email/invitation.server";
 import { Alert, Badge, Button, Card } from "../components/ui";
 import { ClientAreaShell } from "../components/client-area-shell";
+import { describeRolePermissions, invitationStateLabels, roleLabel } from "../lib/team-labels";
 
 import type { Route } from "./+types/organization";
 
@@ -30,13 +33,13 @@ function betterAuthErrorCode(error: unknown) {
   return typeof body?.code === "string" ? body.code : undefined;
 }
 
-const pastInvitationLabels: Record<Exclude<InvitationListState, "pending">, string> = {
-  expired: "Expirada",
-  accepted: "Aceptada",
-  canceled: "Cancelada",
-  rejected: "Rechazada",
-  unknown: "Sin estado",
-};
+// Fecha formateada en el servidor para que el HTML y la hidratación coincidan.
+const dateFormat = new Intl.DateTimeFormat("es-CO", { dateStyle: "medium", timeZone: "America/Bogota" });
+function formatDate(value: Date | string) {
+  return dateFormat.format(new Date(value));
+}
+
+type Feedback = { scope: "members" | "invitations" | "page"; success?: string; error?: string; invited?: boolean };
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
@@ -55,12 +58,26 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   // Solo una invitación pendiente y vigente cuenta como pendiente y se puede cancelar.
   const invitations = hasPermission(organization.role, "member:invite")
     ? (await auth.api.listInvitations({ headers: request.headers, query: { organizationId: organization.id } }))
-      .map((invitation) => ({ id: invitation.id, email: invitation.email, role: invitation.role, state: getInvitationListState(invitation, now) }))
+      .map((invitation) => ({
+        id: invitation.id,
+        email: invitation.email,
+        role: invitation.role,
+        state: getInvitationListState(invitation, now),
+        sentAt: formatDate(invitation.createdAt),
+        expiresAt: formatDate(invitation.expiresAt),
+      }))
     : null;
-  return { organization, members, invitations, ...shell, activeOrganization: organization };
+  // Las acciones visibles y la ayuda del formulario salen de la matriz real de permisos.
+  const can = {
+    updateRoles: hasPermission(organization.role, "member:role:update"),
+    remove: hasPermission(organization.role, "member:remove"),
+    grantOwner: organization.role === "owner",
+  };
+  const roleGuide = (["admin", "member"] as const).map((role) => ({ role, description: describeRolePermissions(getPermissionsForRole(role)) }));
+  return { organization, members, invitations, can, roleGuide, ...shell, activeOrganization: organization };
 }
 
-export async function action({ context, request }: Route.ActionArgs) {
+export async function action({ context, request }: Route.ActionArgs): Promise<Feedback> {
   const { env } = context.get(cloudflareContext);
   const organization = await getActiveOrganization(env, request);
   if (!organization) throw new Response("An active organization is required", { status: 403 });
@@ -72,7 +89,7 @@ export async function action({ context, request }: Route.ActionArgs) {
   if (operation === "update-role") {
     const role = String(formData.get("role"));
     if (!(["owner", "admin", "member"] as const).includes(role as "owner" | "admin" | "member")) {
-      return { error: "El rol solicitado no es válido." };
+      return { scope: "members", error: "El rol solicitado no es válido." };
     }
     await requireOrganizationPermission(env, request, organization.id, "member:role:update");
     await requireOrganizationMemberTarget(env, organization.id, memberId);
@@ -82,9 +99,9 @@ export async function action({ context, request }: Route.ActionArgs) {
         body: { memberId, organizationId: organization.id, role: role as "owner" | "admin" | "member" },
       });
     } catch {
-      return { error: "No se pudo actualizar el rol; la política de la organización lo rechazó." };
+      return { scope: "members", error: "No se pudo actualizar el rol; la política de la organización lo rechazó." };
     }
-    return { success: "Rol actualizado." };
+    return { scope: "members", success: "Rol actualizado." };
   }
 
   if (operation === "remove") {
@@ -96,20 +113,20 @@ export async function action({ context, request }: Route.ActionArgs) {
         body: { memberIdOrEmail: memberId, organizationId: organization.id },
       });
     } catch {
-      return { error: "No se pudo retirar el miembro; la política de ownership lo rechazó." };
+      return { scope: "members", error: "No se pudo retirar a esta persona; la organización debe conservar al menos un propietario." };
     }
-    return { success: "Miembro retirado." };
+    return { scope: "members", success: "Miembro retirado." };
   }
 
   if (operation === "invite") {
     const email = String(formData.get("email")).trim().toLowerCase();
     const role = String(formData.get("role"));
     if (!/^\S+@\S+\.\S+$/.test(email) || !(role === "admin" || role === "member")) {
-      return { error: "Introduce un correo válido y un rol permitido." };
+      return { scope: "invitations", error: "Introduce un correo válido y un rol permitido." };
     }
     await requireOrganizationPermission(env, request, organization.id, "member:invite");
     if (!isOrganizationInvitationEmailConfigured(invitationEmailConfig(env))) {
-      return { error: "La invitación no se creó: el correo transaccional todavía no está configurado." };
+      return { scope: "invitations", error: "La invitación no se creó: el envío de correos no está disponible en este momento." };
     }
     try {
       await auth.api.createInvitation({
@@ -117,9 +134,10 @@ export async function action({ context, request }: Route.ActionArgs) {
         body: { email, role, organizationId: organization.id },
       });
     } catch (error) {
-      return { error: invitationCreateErrorMessage(betterAuthErrorCode(error)) };
+      return { scope: "invitations", error: invitationCreateErrorMessage(betterAuthErrorCode(error)) };
     }
-    return { success: "Invitación creada y enviada." };
+    // Solo consta que se creó: Better Auth no informa si el correo falló (INVITE-DELIVERY-SILENT-001).
+    return { scope: "invitations", success: `Invitación creada para ${email}.`, invited: true };
   }
 
   if (operation === "cancel-invitation") {
@@ -127,27 +145,41 @@ export async function action({ context, request }: Route.ActionArgs) {
     await requireOrganizationPermission(env, request, organization.id, "member:invite");
     const target = await requireOrganizationInvitationTarget(env, organization.id, invitationId);
     if (getInvitationListState(target, new Date()) !== "pending") {
-      return { error: "Esta invitación ya no está pendiente." };
+      return { scope: "invitations", error: "Esta invitación ya no está pendiente." };
     }
     try {
       await auth.api.cancelInvitation({ headers: request.headers, body: { invitationId } });
     } catch {
-      return { error: "No se pudo cancelar la invitación." };
+      return { scope: "invitations", error: "No se pudo cancelar la invitación." };
     }
-    return { success: "Invitación cancelada." };
+    return { scope: "invitations", success: "Invitación cancelada." };
   }
 
-  return { error: "Operación no reconocida." };
+  return { scope: "page", error: "Operación no reconocida." };
 }
 
+function FeedbackMessage({ result, scope }: { result: Feedback | undefined; scope: Feedback["scope"] }) {
+  if (result?.scope !== scope) return null;
+  if (result.error) return <Alert>{result.error}</Alert>;
+  return result.success ? <p className="success-message" role="status">{result.success}</p> : null;
+}
+
+const stateTones = { pending: "brand", accepted: "success", canceled: "neutral", expired: "neutral", rejected: "neutral", unknown: "neutral" } as const;
+
 export default function OrganizationPage() {
-  const { organization, members, invitations, workspaceUser, organizations, isPlatformAdmin, activeOrganization } = useLoaderData<typeof loader>();
+  const { organization, members, invitations, can, roleGuide, workspaceUser, organizations, isPlatformAdmin, activeOrganization } = useLoaderData<typeof loader>();
   const result = useActionData<typeof action>();
   const navigation = useNavigation();
   const busy = navigation.state !== "idle";
+  const inviteFormRef = useRef<HTMLFormElement>(null);
   const memberList = members.members ?? [];
   const pendingInvitations = invitations?.filter((invitation) => invitation.state === "pending") ?? [];
   const pastInvitations = invitations?.filter((invitation) => invitation.state !== "pending") ?? [];
+  const roleOptions = can.grantOwner ? (["member", "admin", "owner"] as const) : (["member", "admin"] as const);
+
+  useEffect(() => {
+    if (result?.invited) inviteFormRef.current?.reset();
+  }, [result]);
 
   return (
     <ClientAreaShell active="organization" workspaceUser={workspaceUser} organizations={organizations} activeOrganization={activeOrganization} isPlatformAdmin={isPlatformAdmin}>
@@ -156,52 +188,110 @@ export default function OrganizationPage() {
         <div>
           <p className="eyebrow">MI ORGANIZACIÓN</p>
           <h1>{organization.name}</h1>
-          <p>Consulta y administra las personas que ya pertenecen a este espacio.</p>
+          <p>Consulta y administra las personas que forman parte de este espacio.</p>
         </div>
-        <Badge tone="brand">Rol: {organization.role}</Badge>
+        <Badge tone="brand">Tu rol: {roleLabel(organization.role)}</Badge>
       </div>
-      {result?.error ? <Alert>{result.error}</Alert> : null}
-      {result?.success ? <p className="success-message" role="status">{result.success}</p> : null}
-      <Card className="members-card">
+      <FeedbackMessage result={result} scope="page" />
+
+      <Card aria-labelledby="team-members-title" className="members-card">
         <div className="members-card__heading">
-          <div><p className="eyebrow">MIEMBROS</p><h2>{members.total} persona{members.total === 1 ? "" : "s"}</h2></div>
-          <p>Las invitaciones requieren correo transaccional real.</p>
+          <div><p className="eyebrow">EQUIPO</p><h2 id="team-members-title">Miembros del equipo</h2></div>
+          <p>{members.total} persona{members.total === 1 ? "" : "s"}</p>
         </div>
+        <FeedbackMessage result={result} scope="members" />
         {memberList.length === 0 ? <p className="empty-copy">Todavía no hay miembros para mostrar.</p> : (
-          <div className="members-list" role="list">
-            {memberList.map((member) => (
-              <div className="member-row" key={member.id} role="listitem">
-                <div><strong>{member.user.name}</strong><span>{member.user.email}</span></div>
-                <Badge tone={member.role === "owner" ? "brand" : "neutral"}>{member.role}</Badge>
-                {member.user.id === workspaceUser.id ? <span className="member-self">Tu cuenta</span> : null}
-                <Form method="post" className="member-controls">
-                  <input name="memberId" type="hidden" value={member.id} />
-                  <input name="operation" type="hidden" value="update-role" />
-                  <label className="sr-only" htmlFor={`role-${member.id}`}>Nuevo rol para {member.user.name}</label>
-                  <select defaultValue={member.role} id={`role-${member.id}`} name="role" disabled={busy || member.role === "owner"}>
-                    <option value="member">member</option><option value="admin">admin</option><option value="owner">owner</option>
-                  </select>
-                  <Button disabled={busy || member.role === "owner"} tone="secondary" type="submit">Guardar rol</Button>
-                </Form>
-                <Form method="post" className="member-controls">
-                  <input name="memberId" type="hidden" value={member.id} /><input name="operation" type="hidden" value="remove" />
-                  <Button disabled={busy || member.role === "owner"} tone="ghost" type="submit">Retirar</Button>
-                </Form>
-              </div>
-            ))}
-          </div>
+          <ul className="members-list">
+            {memberList.map((member) => {
+              // El propietario no se edita desde aquí: Better Auth protege al owner y los controles serían inútiles.
+              const editable = member.role !== "owner";
+              return (
+                <li className="member-row" key={member.id}>
+                  <div>
+                    <strong>{member.user.name}</strong>
+                    <span>{member.user.email}</span>
+                    {member.user.id === workspaceUser.id ? <span className="member-self">Tu cuenta</span> : null}
+                  </div>
+                  <Badge tone={member.role === "owner" ? "brand" : "neutral"}>{roleLabel(member.role)}</Badge>
+                  {editable && can.updateRoles ? (
+                    <Form method="post" className="member-controls">
+                      <input name="memberId" type="hidden" value={member.id} />
+                      <input name="operation" type="hidden" value="update-role" />
+                      <label className="sr-only" htmlFor={`role-${member.id}`}>Nuevo rol para {member.user.name}</label>
+                      <select defaultValue={member.role} id={`role-${member.id}`} name="role" disabled={busy}>
+                        {roleOptions.map((role) => <option key={role} value={role}>{roleLabel(role)}</option>)}
+                      </select>
+                      <Button aria-label={`Guardar rol de ${member.user.name}`} disabled={busy} tone="secondary" type="submit">Guardar rol</Button>
+                    </Form>
+                  ) : null}
+                  {editable && can.remove ? (
+                    <Form method="post" className="member-controls">
+                      <input name="memberId" type="hidden" value={member.id} /><input name="operation" type="hidden" value="remove" />
+                      <Button aria-label={`Retirar a ${member.user.name}`} disabled={busy} tone="ghost" type="submit">Retirar</Button>
+                    </Form>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
         )}
       </Card>
-      {invitations ? <Card className="members-card invitation-management-card">
-        <div className="members-card__heading"><div><p className="eyebrow">INVITACIONES</p><h2>{pendingInvitations.length} pendiente{pendingInvitations.length === 1 ? "" : "s"}</h2></div><p>No se simula la entrega: el proveedor de correo está pendiente.</p></div>
-        <Form className="invite-form" method="post">
+
+      {invitations ? <Card aria-labelledby="invite-title" className="members-card invitation-management-card">
+        <div className="members-card__heading">
+          <div><p className="eyebrow">INVITACIONES</p><h2 id="invite-title">Invitar miembro</h2></div>
+        </div>
+        <FeedbackMessage result={result} scope="invitations" />
+        <Form className="form-grid invite-form" method="post" ref={inviteFormRef}>
           <input name="operation" type="hidden" value="invite" />
-          <label>Correo<input autoComplete="email" name="email" required type="email" /></label>
-          <label>Rol<select defaultValue="member" name="role"><option value="member">member</option><option value="admin">admin</option></select></label>
-          <Button type="submit">Invitar</Button>
+          <label>Correo electrónico<input autoComplete="email" name="email" placeholder="nombre@correo.com" required type="email" /></label>
+          <label>Rol<select aria-describedby="invite-role-guide" aria-label="Rol" defaultValue="member" name="role">
+            {(["admin", "member"] as const).map((role) => <option key={role} value={role}>{roleLabel(role)}</option>)}
+          </select></label>
+          <dl className="role-guide form-grid__full" id="invite-role-guide">
+            {roleGuide.map((entry) => <div key={entry.role}><dt>{roleLabel(entry.role)}</dt><dd>{entry.description}</dd></div>)}
+          </dl>
+          <p className="field-note form-grid__full">La persona recibirá un correo con un enlace para unirse a tu organización.</p>
+          <div className="form-grid__full"><Button disabled={busy} type="submit">{busy ? "Enviando…" : "Enviar invitación"}</Button></div>
         </Form>
-        {pendingInvitations.map((invitation) => <div className="member-row" key={invitation.id}><div><strong>{invitation.email}</strong><span>Rol: {invitation.role ?? "member"}</span></div><span>Pendiente</span><Form method="post"><input name="operation" type="hidden" value="cancel-invitation" /><input name="invitationId" type="hidden" value={invitation.id} /><Button tone="ghost" type="submit">Cancelar</Button></Form></div>)}
-        {pastInvitations.length ? <><p className="eyebrow">HISTORIAL</p>{pastInvitations.map((invitation) => <div className="member-row" key={invitation.id}><div><strong>{invitation.email}</strong><span>Rol: {invitation.role ?? "member"}</span></div><span>{pastInvitationLabels[invitation.state as Exclude<InvitationListState, "pending">]}</span></div>)}</> : null}
+
+        <section aria-labelledby="pending-invitations-title" className="invitation-section">
+          <div className="invitation-section__heading">
+            <h3 id="pending-invitations-title">Invitaciones pendientes</h3>
+            <p>{pendingInvitations.length} pendiente{pendingInvitations.length === 1 ? "" : "s"}</p>
+          </div>
+          {pendingInvitations.length === 0 ? <p className="empty-copy">Todavía no tienes invitaciones pendientes.</p> : (
+            <ul className="members-list">
+              {pendingInvitations.map((invitation) => (
+                <li className="member-row invitation-row" key={invitation.id}>
+                  <div><strong>{invitation.email}</strong><span>Enviada el {invitation.sentAt} · vence el {invitation.expiresAt}</span></div>
+                  <Badge>{roleLabel(invitation.role)}</Badge>
+                  <Badge tone={stateTones.pending}>{invitationStateLabels.pending}</Badge>
+                  <Form method="post">
+                    <input name="operation" type="hidden" value="cancel-invitation" />
+                    <input name="invitationId" type="hidden" value={invitation.id} />
+                    <Button aria-label={`Cancelar invitación a ${invitation.email}`} disabled={busy} tone="ghost" type="submit">Cancelar invitación</Button>
+                  </Form>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section aria-labelledby="past-invitations-title" className="invitation-section invitation-section--history">
+          <div className="invitation-section__heading"><h3 id="past-invitations-title">Historial de invitaciones</h3></div>
+          {pastInvitations.length === 0 ? <p className="empty-copy">Aún no hay invitaciones anteriores.</p> : (
+            <ul className="members-list">
+              {pastInvitations.map((invitation) => (
+                <li className="member-row invitation-row" key={invitation.id}>
+                  <div><strong>{invitation.email}</strong><span>Enviada el {invitation.sentAt}</span></div>
+                  <Badge>{roleLabel(invitation.role)}</Badge>
+                  <Badge tone={stateTones[invitation.state]}>{invitationStateLabels[invitation.state]}</Badge>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </Card> : null}
     </main>
     </ClientAreaShell>
