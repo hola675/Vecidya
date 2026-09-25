@@ -52,7 +52,7 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` es la ru
 | `/addons` | Estático | Funcional local / release ready | Categorías de comunicación, automatización, IA e integraciones; cards de capacidades y separación comercial; sin precios ni checkout |
 | `/diagnostico` | Cliente: motor puro `app/features/diagnostic` + `useState`; entrada contextual `?perfil=` y `?objetivo=` | Funcional y publicada (`0.4.1`) | Ver sección |
 | `/unete` | Estático | Funcional | Dos entradas: Diagnóstico o Contacto; preparación breve y tres pasos; sin registro |
-| `/contacto` | Estático | Funcional | Email `hola@vecidya.com`, guidance contextual, privacidad y Diagnóstico; sin formulario ni canales ficticios |
+| `/contacto` | Estático | Funcional | Email `hola@vecidya.com`, WhatsApp directo (`wa.me`), canal oficial de WhatsApp (difusión), guidance contextual, privacidad y Diagnóstico; sin formulario ni canales ficticios. El grupo comunitario se retiró el 2026-09-25 y lo sustituye el canal |
 | `/sobre-nosotros` | Estático | Funcional | Propósito, historia, equipo real, forma de trabajar y punto de vista; fotos WebP optimizadas |
 | `/aprende` | Estático | Funcional local / release ready | Centro de conocimiento, 5 categorías, 4 artículos, tarjetas, CTA y metadata |
 | `/aprende/:slug` | Estático | Funcional local / release ready | Artículo con autor Yoan Ortiz, imagen educativa, índice, CTA relacionado y metadata canonical/OG |
@@ -74,7 +74,7 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 
 - UX-001B.7 separa responsabilidades: `/unete` responde cómo empezar y ofrece dos caminos (no sé qué necesito → Diagnóstico; sé qué necesito → Contacto), mientras `/contacto` responde cómo hablar y declara email como único canal directo disponible.
 - `/unete` conserva `illus-business-onboarding-form.webp` como apoyo visual, lista cinco piezas de contexto útiles y reduce el proceso a tres pasos sin prometer SLA, llamadas, registro, compra o propuesta automática.
-- `/contacto` mantiene `mailto:hola@vecidya.com`, explica qué enviar, qué esperar, enlaza `/privacidad` y no muestra teléfono, WhatsApp, chat, booking ni formulario persistente.
+- `/contacto` mantiene `mailto:hola@vecidya.com` y el WhatsApp directo (`wa.me`), explica qué enviar, qué esperar, enlaza `/privacidad` e invita a seguir el canal oficial de WhatsApp de Vecidya (`whatsapp.com/channel/…`, difusión). No muestra teléfono, chat, booking, grupo comunitario ni formulario persistente. El pie público enlaza «WhatsApp Vecidya» (directo) y «Canal de WhatsApp», y el JSON-LD `Organization` de la Home declara el canal en `sameAs`.
 
 ### Aprende (`knowledge.tsx`, `learn-article.tsx`)
 
@@ -170,7 +170,7 @@ UX-001B.5 convirtió la página en una guía de decisión SSR. UX-002.4 la actua
 | `/app/organization` | `member:read`; cada acción, su permiso y que el miembro o la invitación sean de la organización activa | Miembros, cambio de rol, quitar, invitar, cancelar invitación (invitar responde error si Gmail no está configurado). La UI de invitaciones está rota (`INVITE-UI-001`) |
 | `/app/business-profile` | `business-profile:read/update/publish` | Editor completo del perfil (ver matriz) |
 | `/app/services` | sesión + organización activa | Lista de solo lectura de servicios asignados; sin solicitud/compra |
-| `/app/invitations/:id` | sesión | Aceptar invitación (Better Auth valida email y `emailVerified`); bloqueada en la práctica (`INVITE-001`) |
+| `/app/invitations/:id` | pública; los detalles solo para el destinatario | INVITE-001. Sin sesión ofrece crear cuenta o iniciar sesión y vuelve a la invitación (`redirectTo`). Con otra cuenta, 403 con el correo enmascarado. Sin verificar, envía el enlace de verificación con retorno a la invitación. Cancelada, rechazada o expirada, 410; inexistente, 404; ya aceptada, «Ya formas parte de…». Aceptar lo hace Better Auth y lleva a `/app` con la organización activa. Invitar crea membresía con el rol invitado, nunca propiedad |
 
 Las cinco rutas comparten `ClientAreaShell` desde UX-003.9. Después del login, el cliente usa `organization.list` y `organization.setActive` de Better Auth para fijar la primera organización válida; el selector permite cambiarla. Desde AUTHZ-BA-001, esas dos operaciones, `organization.create` y `accept-invitation` son lo único del plugin Organization que responde por HTTP. Todo lo demás (miembros, roles, invitaciones) pasa por las rutas propias con la matriz de permisos, y no existe renombrar, abandonar ni eliminar organizaciones. Una organización activa sin membresía (stale o ajena) responde 403. Detalle en [ARCHITECTURE.md](ARCHITECTURE.md).
 

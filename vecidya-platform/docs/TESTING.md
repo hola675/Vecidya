@@ -1,6 +1,30 @@
 # Pruebas
 
-Última reconciliación: 2026-09-25 (AUTHZ-BA-001; SLUG-005B; QA-005A; UX-003.9; UX-003.8; VIS-001B; REL-004; DIAG-002C; DIAG-002B; DIAG-002; REL-003.1; UX-003.1/003.4).
+Última reconciliación: 2026-09-25 (INVITE-001; contacto sin grupo de WhatsApp; AUTHZ-BA-001; SLUG-005B; QA-005A; UX-003.9; UX-003.8; VIS-001B; REL-004; DIAG-002C; DIAG-002B; DIAG-002; REL-003.1; UX-003.1/003.4).
+
+**Evidencia INVITE-001 (RAN 2026-09-25, Worker local `pnpm run dev`; versión `0.5.3`):**
+
+- **Reproducción previa:** un script no versionado recorrió 9 estados con Better Auth 1.7.5 real:
+  - sin sesión, `302 /login`;
+  - cuenta equivocada, sin verificar, cancelada, expirada, ya aceptada e inexistente, página `500`;
+  - `accept-invitation` respondió `403 YOU_ARE_NOT_THE_RECIPIENT…`, `403 EMAIL_VERIFICATION_REQUIRED…` y `400 INVITATION_NOT_FOUND` (el mismo para los cuatro estados terminales);
+  - recargar tras aceptar, `500`.
+- **TDD:**
+  - `invite-flow` (`organization-invitation-flow-check.mjs`): RED **20/23** contra `0.5.2`; GREEN **28/28** en dos ejecuciones.
+    - En el primer GREEN falló 1 comprobación por el propio extractor de la prueba: el SSR de React escribe `3<!-- --> pendiente<!-- -->s` y el extractor convertía los comentarios en espacios. Se corrigió el extractor, no el producto.
+    - Una expectativa de la prueba sobre el correo enmascarado estaba mal escrita (`e***` en lugar de `i***`); en el RED ya fallaba por el `500`.
+  - `unit-invite` (`tests/unit/invitations/invitation-rules.test.ts`): RED porque el módulo no existía. Luego 12/13: detectó que el correo enmascarado conservaba mayúsculas, se normalizó a minúsculas, y 13/13.
+- **Qué cubre `invite-flow`:**
+  - Estados por HTTP: sin sesión `200` sin revelar la organización; inexistente `404`; cuenta equivocada `403` con correo enmascarado; sin verificar `200` y aceptar `403`; reenviar verificación sin correo configurado `503` honesto; cancelada y expirada `410`; segunda cancelación y cancelar una expirada `409`.
+  - Equipo: solo cuentan las pendientes vigentes y las demás no tienen botón Cancelar.
+  - Navegador (Edge): usuario nuevo invitación → «Crear cuenta» → registro → vuelve a la invitación en el paso de verificación (el envío informa que no hubo correo) → verificación simulada con `email_verified = 1` → aceptar → `/app` en la organización, con rol `admin` (nunca owner) y organización activa. Usuario existente → «Iniciar sesión» → vuelve → aceptar.
+  - Ya aceptada: «Ya formas parte de…», aceptar dos veces no duplica la membresía y continuar activa la organización.
+- **Límite:** la entrega real del correo de verificación no ocurre en local, porque el proveedor `fake` descarta el mensaje y el token lo firma el secreto.
+- **Validación final sobre `0.5.3` (una sola tanda, uno a uno):** `typecheck`, `build` y `git diff --check` PASS; `test:unit` **100/100**.
+  - E2E: `invite-flow` 28/28, `authz` 143/143; PASS en `bpx`, `services-exp`, `c2` (login por la UI con el `redirectTo` nuevo), `acct`, `commercial-review`, `join-contact`, `pg-c1`, `slug-life`, `admin-shell`, `d1` y `psa`.
+  - `invitations` PASS PARCIAL. `members` PASS con calentamiento en la copia no versionada (`TEST-D1-RESET-001`). `pe-b` falla por `TEST-UX003-PEB`, mismo mensaje.
+  - Fixtures `authz-*` e `inviteflow-*` finales: 0.
+- **WhatsApp público:** `join-contact` exige que no haya enlaces `chat.whatsapp.com` en `/unete` (pie) ni en `/contacto`, que siga el `wa.me` directo, que el canal oficial esté una vez en el pie y una vez en el `<main>` de `/contacto` (`target="_blank"`, `rel="noreferrer"`) y que el JSON-LD `Organization` de la Home lo declare en `sameAs`. RED en cada paso antes de implementarlo («El pie público sigue enlazando…», «…no declara el canal de WhatsApp en sameAs.»), GREEN después, en 1366/768/390/360. Capturas del pie y de `/contacto` revisadas a 1366 y 390, fuera de Git.
 
 **Evidencia AUTHZ-BA-001 (RAN 2026-09-25, Worker local `pnpm run dev`; versión `0.5.2`):**
 
@@ -60,8 +84,8 @@ Evidencia DIAG-002C (RAN 2026-09-23): `pnpm run test:unit` **75/75 PASS** (5 nue
 
 ## Estado de la infraestructura de pruebas
 
-- No hay framework de pruebas externo ni CI (`.github/` no existe). `tests/unit/diagnostic/` contiene siete suites `node:test` (75 pruebas) del motor del Diagnóstico más dos archivos de personas (`personas.ts`, `adversarial-personas.ts`), y `tests/unit/business-profile/slug.test.ts` (6 pruebas) cubre la generación de slug contra la validación real del servidor y `tests/unit/auth/organization-http-surface.test.ts` (6) fija la allowlist HTTP del plugin Organization contra el plugin instalado; en total 87, ejecutables con `pnpm run test:unit` sin Worker ni D1; `tests/unit/register-ts.mjs` y `ts-resolve-hooks.mjs` resuelven importaciones relativas sin extensión sobre el type stripping de Node (≥22.12 con `--experimental-strip-types`). `tests/integration` sigue vacío. `package.json` incluye además `test:e2e` (runner secuencial de los E2E locales aplicables) y `test:email`.
-- Solo existe `tests/e2e/`: 34 scripts `.mjs` (Node + `fetch`, algunos con Playwright; incluye el runner `run-local-e2e.mjs` y el helper `test-safety.mjs`) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
+- No hay framework de pruebas externo ni CI (`.github/` no existe). `tests/unit/diagnostic/` contiene siete suites `node:test` (75 pruebas) del motor del Diagnóstico más dos archivos de personas (`personas.ts`, `adversarial-personas.ts`), y `tests/unit/business-profile/slug.test.ts` (6 pruebas) cubre la generación de slug contra la validación real del servidor `tests/unit/auth/organization-http-surface.test.ts` (6) fija la allowlist HTTP del plugin Organization contra el plugin instalado y `tests/unit/invitations/invitation-rules.test.ts` (13) cubre los estados de invitación y `redirectTo`; en total 100, ejecutables con `pnpm run test:unit` sin Worker ni D1; `tests/unit/register-ts.mjs` y `ts-resolve-hooks.mjs` resuelven importaciones relativas sin extensión sobre el type stripping de Node (≥22.12 con `--experimental-strip-types`). `tests/integration` sigue vacío. `package.json` incluye además `test:e2e` (runner secuencial de los E2E locales aplicables) y `test:email`.
+- Solo existe `tests/e2e/`: 35 scripts `.mjs` (Node + `fetch`, algunos con Playwright; incluye el runner `run-local-e2e.mjs` y el helper `test-safety.mjs`) y 4 `.ps1`. Cada script usa un `assert()` propio que lanza; el éxito imprime una línea `PASS: …`. Ningún archivo tiene cabecera de uso.
 - Son **solo Windows** (`cmd.exe /d /c pnpm.cmd wrangler d1 execute … --local`).
 - Los scripts Playwright usan Microsoft Edge si existe, luego `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, luego Chromium empaquetado (requiere `playwright install`).
 
@@ -75,7 +99,7 @@ $env:BASE_URL = "http://localhost:5173"          # terminal 2 (es el valor por d
 node tests/e2e/<archivo>.mjs                     # una a la vez: comparten puerto y D1 local
 ```
 
-`pnpm run test:unit` no necesita Worker ni D1: ejecuta en Node las 87 pruebas unitarias (75 del motor del Diagnóstico en `tests/unit/diagnostic`, 6 de slug en `tests/unit/business-profile` y 6 de la allowlist en `tests/unit/auth`).
+`pnpm run test:unit` no necesita Worker ni D1: ejecuta en Node las 100 pruebas unitarias (75 del motor del Diagnóstico en `tests/unit/diagnostic`, 6 de slug en `tests/unit/business-profile`, 6 de la allowlist en `tests/unit/auth` y 13 de invitaciones en `tests/unit/invitations`).
 
 Requisitos: `BETTER_AUTH_SECRET` en `.dev.vars` (no versionado), Node ≥22.12. `organization-invitations-check` espera `503` si Gmail OAuth no está configurado. `tests/email/mail-adapter.test.ts` usa el proveedor fake y nunca contacta Gmail. Variable opcional `D1_DATABASE_NAME` (por defecto `DB`).
 
@@ -108,6 +132,8 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `invitations` | `organization-invitations-check.mjs` | 7B.2 |
 | `authz` | `organization-authorization-check.mjs` | AUTHZ-BA-001 |
 | `unit-authz` | `tests/unit/auth/organization-http-surface.test.ts` (`pnpm run test:unit`) | AUTHZ-BA-001 |
+| `invite-flow` | `organization-invitation-flow-check.mjs` | INVITE-001 |
+| `unit-invite` | `tests/unit/invitations/invitation-rules.test.ts` (`pnpm run test:unit`) | INVITE-001 |
 | `pg-c1` | `public-growth-c1-real-profile-readiness-check.mjs` | PUBLIC-GROWTH-001 C1 |
 | `px-a` | `product-experience-a-public-review-check.mjs` | PRODUCT-EXPERIENCE-001 A |
 | `px-b` | `product-experience-b-client-app-check.mjs` | PRODUCT-EXPERIENCE-001 B |
@@ -175,7 +201,7 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 | Responsive | `commercial-review` verifica overflow, imágenes dimensionadas, un único `<main>` y recorrido comercial en 1366/768/390/360; `px-a`, `c1`, `c2` cubren perfil/editor | Sin auditoría axe automatizada ni regresión visual por comparación de screenshots |
 | Gobierno y auditoría | `d1` (verificar, suspender, badge, 404, exclusión, auditoría) | Paginación/orden de auditoría; efecto de suspensión en sitemap |
 | Multi-org | `pe-b`, `bpx`, `services-exp` | Invitar a un miembro existente a una segunda organización |
-| Invitaciones | `invitations` (imprime «PASS PARCIAL»: inyecta filas y `email_verified` por SQL); `authz` (frontera de crear, cancelar, listar y aceptar, incluida la organización ajena) | Entrega real y aceptación de extremo a extremo (`INVITE-001`); estados y UI (`INVITE-UI-001`) |
+| Invitaciones | `invite-flow` (flujo completo con navegador y estados controlados); `unit-invite`; `invitations` (imprime «PASS PARCIAL»: inyecta filas y `email_verified` por SQL); `authz` (frontera de crear, cancelar, listar y aceptar, incluida la organización ajena) | Entrega real del correo de verificación (solo en producción); UI (`INVITE-UI-001`) |
 | Integraciones | `psa`, `admin-int` (stale) | Ninguna ejecutable |
 | Staging remoto | script remoto (no ejecutar) | Sin ensayo seguro |
 | Piloto real | `rp001a` | Validación local controlada de los tres nombres documentados; no publica datos y no sustituye autorización, datos confirmados ni prueba remota |

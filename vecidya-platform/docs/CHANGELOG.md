@@ -1,5 +1,43 @@
 # Changelog
 
+## 2026-09-25 — INVITE-001 Functional Invitation & Onboarding Flow (`0.5.3`)
+
+Cierra el flujo funcional de invitaciones sin rediseño visual (`INVITE-UI-001` sigue abierta) y sin tocar la matriz de AUTHZ-BA-001.
+
+- **Reproducción previa (RAN, Better Auth 1.7.5):**
+  - Sin sesión, `302 /login` y la invitación se perdía.
+  - Con cuenta equivocada, sin verificar, cancelada, expirada, ya aceptada o inexistente, la página daba `500` «Error inesperado».
+  - Better Auth responde el mismo `400 INVITATION_NOT_FOUND` a cancelada, expirada, aceptada e inexistente.
+  - El registro navegaba fijo a `/app` sin enviar verificación, y recargar tras aceptar daba `500`.
+- **Flujo nuevo:**
+  - `/app/invitations/:id` resuelve el estado con reglas puras (`db/invitation-rules.ts`) leyendo la invitación en D1. Aceptar sigue siendo exclusivo de Better Auth.
+  - Sin sesión: «Crear cuenta» e «Iniciar sesión» con `redirectTo`, restringido a rutas `/app` (`app/lib/safe-redirect.ts`).
+  - Registro desde una invitación: envía el enlace de verificación con retorno a la invitación e informa si el envío funcionó. La página permite reenviarlo; si el correo no está configurado responde `503` con un mensaje honesto.
+  - Aceptar lleva a `/app` con la organización invitada activa. La membresía toma el rol invitado, nunca owner.
+  - Ya aceptada: «Ya formas parte de…» y un botón que activa la organización.
+- **Errores controlados:** cuenta equivocada `403`, con el correo enmascarado y sin organización ni estado; inexistente `404`; cancelada, rechazada o expirada `410`, con «Esta invitación fue cancelada.» y «Esta invitación ha expirado.». Solo un fallo inesperado del servidor llega al mensaje genérico.
+- **Cancelación:**
+  - Solo cuentan como pendientes, y solo se pueden cancelar, las invitaciones pendientes y vigentes. El resto aparece en un historial con su estado.
+  - Cancelar algo que ya no está pendiente devuelve `409` por API y un error controlado en la página; Better Auth, por su cuenta, lo volvería a marcar como cancelado. No se borra ninguna invitación.
+  - Invitar a un correo que ya tiene invitación pendiente, o que ya es miembro, se explica con precisión en vez de culpar al correo.
+- **Pruebas:**
+  - `tests/e2e/organization-invitation-flow-check.mjs` (`invite-flow`, en `test:e2e`): RED 20/23 y GREEN 28/28. Recorre en navegador el usuario nuevo y el usuario existente.
+  - `tests/unit/invitations/invitation-rules.test.ts` (13). `test:unit` pasa de 87 a 100.
+- **Límite honesto:** en local el proveedor `fake` descarta el correo y el token lo firma el secreto, así que el clic de verificación se simuló con `email_verified = 1`. La entrega real de la verificación no se ejecutó.
+- **Deuda:** `INVITE-001` CERRADA. `INVITE-UI-001` parcialmente resuelta. Nueva `INVITE-DELIVERY-SILENT-001`: Better Auth se traga los fallos de Gmail al invitar. Reenviar, rechazar y eliminar quedan como capacidades futuras. La regla de propiedad por plan del usuario se incorpora a `AUTH-ABUSE-001`.
+
+## 2026-09-25 — WhatsApp público: sin grupo comunitario, con canal oficial (`0.5.3`)
+
+A pedido del usuario:
+
+- **Grupo retirado:** el grupo comunitario de WhatsApp (`chat.whatsapp.com`) desapareció de todas las páginas públicas.
+- **Canal añadido:** el usuario creó el canal oficial `https://whatsapp.com/channel/0029VbEBsKH2phHMnAgPOT1f`, que ocupa su lugar:
+  - columna «Síguenos → Canal de WhatsApp» en el pie de todas las páginas públicas;
+  - sección «Canal de WhatsApp» en `/contacto`, que aclara que es un canal de difusión y que para escribir están el WhatsApp directo y el correo;
+  - `sameAs` del JSON-LD `Organization` de la Home.
+- **Sin cambios:** el contacto directo (`wa.me`), con «WhatsApp Vecidya» en el pie y «WhatsApp directo» en `/contacto`.
+- **Prueba:** `join-contact` exige ahora ningún enlace al grupo, el canal en el pie y en `/contacto` con `target="_blank"` y `rel="noreferrer"`, y el canal en `sameAs`. Quedó RED en cada paso antes de implementarlo y GREEN después, en 1366/768/390/360. Capturas revisadas a 1366 y 390.
+
 ## 2026-09-25 — AUTHZ-BA-001 Better Auth Authorization Boundary (`0.5.2`, LIVE)
 
 Cierra la frontera sesión → organización activa → membresía → rol → recurso antes de invitaciones completas y R2. Sin invitaciones nuevas (`INVITE-001`), sin R2, sin schema ni migraciones.

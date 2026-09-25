@@ -1,6 +1,6 @@
 # Arquitectura de Vecidya
 
-Última reconciliación: 2026-09-25 (AUTHZ-BA-001: frontera con Better Auth). Describe decisiones y fronteras **vigentes**; lo futuro está marcado `FUTURE` y no debe leerse como implementado.
+Última reconciliación: 2026-09-25 (AUTHZ-BA-001: frontera con Better Auth; INVITE-001: aceptación de invitaciones). Describe decisiones y fronteras **vigentes**; lo futuro está marcado `FUTURE` y no debe leerse como implementado.
 
 ## Arquitectura actual
 
@@ -71,11 +71,12 @@ Cloudflare D1 (producción: vecidya-prod; staging: vecidya-staging)
 | Perfil, servicios, equipo (páginas) | `/app/*` | `getActiveOrganization` + permiso | — |
 | Miembros: listar, rol, quitar | `/api/organizations/:id/members`, `/app/organization` | membresía + permiso + miembro de la organización | membresía, RBAC y reglas de owner |
 | Invitaciones: listar, crear, cancelar | `/api/organizations/:id/invitations`, `/app/organization` | membresía + `member:invite` + invitación de la organización | listar: solo membresía; crear y cancelar: RBAC sobre la organización de la invitación |
-| Aceptar invitación | HTTP `accept-invitation`, `/app/invitations/:id` | sesión | correo de la sesión = invitado, correo verificado, pendiente y vigente |
+| Aceptar invitación | HTTP `accept-invitation`, `/app/invitations/:id` | la página resuelve el estado leyendo la invitación en D1 (`db/invitation-rules.ts`). Sin sesión no revela nada; a otra cuenta solo le muestra el correo enmascarado. Aceptar siempre lo hace Better Auth | correo de la sesión = invitado, correo verificado, pendiente y vigente |
+| Cancelar invitación (estado) | rutas propias | solo si sigue pendiente y vigente; si no, 409 o error controlado | ninguno: `cancel-invitation` volvería a cancelar una aceptada o cancelada |
 | Abandonar, renombrar, borrar | — | 404 por HTTP (sin UI); borrado deshabilitado | `leave` no ejecuta los hooks de retirada |
 | Fijar `activeOrganizationId` | `/update-session` | — | rechazado: el campo es `input: false` |
 
-Retirar un miembro por la ruta propia limpia sus sesiones activas (`afterRemoveMember`). Si aun así queda un ID stale (escritura fuera de banda), las guardas responden 403. Límite de creación de organizaciones y rate limiting quedan fuera de esta frontera (`AUTH-ABUSE-001`).
+Login y registro aceptan `redirectTo` solo hacia rutas internas de `/app` (`app/lib/safe-redirect.ts`), para que el retorno a una invitación no sirva de open redirect. Retirar un miembro por la ruta propia limpia sus sesiones activas (`afterRemoveMember`). Si aun así queda un ID stale (escritura fuera de banda), las guardas responden 403. Límite de creación de organizaciones y rate limiting quedan fuera de esta frontera (`AUTH-ABUSE-001`).
 
 ## Modelo de producto
 

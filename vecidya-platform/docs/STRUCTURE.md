@@ -57,7 +57,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/addons` | `addons.tsx` | estático | — | funcional local / release ready | `addons` | sí local; deploy pendiente |
 | `/servicios` | `services.tsx` | estático | — | funcional | `px-a` (200/overflow) | sí |
 | `/unete` | `join.tsx` | estático | — | funcional | `join-contact` | sí |
-| `/contacto` | `contact.tsx` | estático (`mailto`) | — | funcional | `px-a`, `join-contact` | sí |
+| `/contacto` | `contact.tsx` | estático (`mailto`, WhatsApp directo `wa.me` y canal oficial de WhatsApp; sin grupo comunitario desde 2026-09-25) | — | funcional | `px-a`, `join-contact` | sí |
 | `/vecindario` | `directory.tsx` | D1 lista+filtros | — | funcional | `px-a`, `pg-c1`, `d1` | sí |
 | `/vecindario/:slug` | `public-business-profile.tsx` | D1 perfil+horarios | — | funcional (404 si no publicado/suspendido); UI de `0007`–`0009` desplegada | `px-a`, `c1`, `c2`, `d1`, `pg-c1` | sí (perfil `vecidya`) |
 | `/diagnostico` | `diagnostic.tsx` + `features/diagnostic/` | cliente; `?perfil=`, `?objetivo=` (lista cerrada) | — | funcional local / release ready (DIAG-002, `0.4.0`); motor con 43 unitarias | `diagnostic`, `unit-diag`, `px-a` (200/overflow) | sí (`0.3.0` con motor anterior); deploy pendiente |
@@ -83,8 +83,8 @@ D:\Proyectos\Vecidya            (raíz Git)
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `/app` | `app.tsx` | `requireSession` + `getActiveOrganization` | activa (revalidada; stale o ajena → 403) | org, perfil, servicios, miembros | funcional | `pe-b`, `px-b` (roto), `authz` | sí |
 | `/app/account` | `account.tsx` | `requireSession` + `getActiveOrganization` | activa (stale o ajena → 403) | usuario | funcional (solo nombre) | `acct`, `authz` | sí |
-| `/app/organization` | `organization.tsx` | activa + `member:read`; acciones con permiso propio + recurso de la organización (`requireOrganizationMemberTarget`, `requireOrganizationInvitationTarget`) | activa | miembros, invitaciones | funcional; invitar depende del correo transaccional (`INVITE-UI-001`) | `authz`, `members` (`TEST-D1-RESET-001`) | sí |
-| `/app/invitations/:invitationId` | `invitation.tsx` | `requireSession`; Better Auth liga la invitación al correo verificado de la sesión | la de la invitación | Better Auth | aceptación rota para invitados reales (`INVITE-001`) | `invitations`, `authz` | sí |
+| `/app/organization` | `organization.tsx` | activa + `member:read`; acciones con permiso propio + recurso de la organización (`requireOrganizationMemberTarget`, `requireOrganizationInvitationTarget`); cancelar solo si la invitación sigue pendiente | activa | miembros, invitaciones pendientes vigentes e historial | funcional; UI de invitar pendiente (`INVITE-UI-001`) | `authz`, `invite-flow`, `members` (`TEST-D1-RESET-001`) | sí |
+| `/app/invitations/:invitationId` | `invitation.tsx` | pública; detalles solo para el destinatario (`db/invitation-rules.ts`); aceptar lo hace Better Auth con el correo verificado de la sesión | la de la invitación | invitación + organización (D1), Better Auth | funcional: estados controlados 200/403/404/410 (INVITE-001) | `invite-flow`, `invitations`, `authz` | sí |
 | `/app/business-profile` | `business-profile.tsx` | `requireOrganization` + `business-profile:read/update/publish` | activa | perfil, horarios | funcional; secciones `0007`/`0008` desplegadas | `bpx`, `c1`, `c2`, `pe-b`, `authz` | sí |
 | `/app/services` | `services-app.tsx` | `requireSession` + `getActiveOrganization` | activa | `organization_service` | funcional (solo lectura) | `services-exp`, `pe-b`, `authz` | sí |
 

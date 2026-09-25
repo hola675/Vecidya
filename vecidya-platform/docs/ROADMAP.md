@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-25 (AUTHZ-BA-001 CERRADA y LIVE en `0.5.2`; siguiente bloque propuesto `INVITE-001`; gestión de usuarios en Admin pedida por el usuario, sin decidir). Anterior: 2026-09-24 (VIS-001A, VIS-001B, UX-003.8 y UX-003.9 cerrados en local, versión local `0.5.0`; DIAG-002C + UX-003.1–003.5 siguen publicados en `0.4.1`; OPS-001 documental; follow-up de verificación/invitaciones permanece separado).
+Última reconciliación: 2026-09-25 (AUTHZ-BA-001 CERRADA y LIVE en `0.5.2`; INVITE-001 CERRADA en `0.5.3`; siguiente bloque `INVITE-UI-001`; gestión de usuarios en Admin con decisiones tomadas y sin iniciar). Anterior: 2026-09-24 (VIS-001A, VIS-001B, UX-003.8 y UX-003.9 cerrados en local, versión local `0.5.0`; DIAG-002C + UX-003.1–003.5 siguen publicados en `0.4.1`; OPS-001 documental; follow-up de verificación/invitaciones permanece separado).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -192,18 +192,21 @@ Auditar servicios e integraciones (`AUDIT-COVERAGE-001`); mostrar en el detalle 
 
 ### Invitaciones (7B.2)
 
-OAuth Gmail y entrega real ya están demostrados por EMAIL-001, y AUTHZ-BA-001 cerró la frontera de autorización de las invitaciones. Quedan dos bloques, en este orden:
+OAuth Gmail y entrega real ya están demostrados por EMAIL-001. AUTHZ-BA-001 cerró la frontera de autorización e INVITE-001 cerró el flujo funcional: invitación → registro o login → verificación → aceptar → organización correcta (ver `CHANGELOG.md`). Queda:
 
-- **`INVITE-001` — Functional Invitation Flow.** Registro y verificación del correo del invitado → aceptación → errores comprensibles en lugar de «Error inesperado» (el loader de `/app/invitations/:id` no captura los rechazos de Better Auth) → canceladas fuera de las pendientes → estados de expiradas y aceptadas. Si necesita llamar por HTTP a `get-invitation`, `reject-invitation` o `list-user-invitations`, debe añadirlos de forma explícita a `server/auth/organization-http-surface.ts`, con su prueba.
-- **`INVITE-UI-001` — acabado visual.** Formulario de invitar, estados y roles en español, botones, jerarquía visual y retirada del texto obsoleto sobre el proveedor de correo.
+- **`INVITE-UI-001` — acabado visual (siguiente bloque).** Formulario de invitar (hoy sin estilos), roles en español en la lista de miembros e invitaciones, botones, jerarquía visual y retirada del texto obsoleto «No se simula la entrega: el proveedor de correo está pendiente.».
+- **Capacidades futuras, no implementadas y distintas entre sí:** *reenviar* (Better Auth lo soporta con `resend: true` en `invite-member`), *rechazar* (`reject-invitation`, hoy 404 por HTTP) y *eliminar* una invitación del historial (Better Auth 1.7.5 no lo ofrece; cancelar solo cambia el estado). Abrir un endpoint de Better Auth por HTTP exige añadirlo a `server/auth/organization-http-surface.ts`, con su prueba.
 
 ### Gestión de usuarios en Admin (pedida por el usuario el 2026-09-25; no iniciada)
 
-El usuario pidió poder crear y eliminar usuarios a mano desde la administración de Vecidya. Hoy `/app/internal` no gestiona usuarios. Es una capacidad nueva de plataforma que requiere decidir antes de implementarla:
+El usuario pidió poder crear y eliminar usuarios a mano desde la administración de Vecidya. Hoy `/app/internal` no gestiona usuarios. Decisiones tomadas por el usuario el 2026-09-25:
 
-- **Crear:** contraseña temporal, o enlace de invitación o restablecimiento por correo.
-- **Eliminar:** borrado real o desactivación (ban). Hay que resolver qué pasa con las organizaciones donde es el único owner, y `platform_audit_log.actor_user_id` no admite cascada.
-- **Auditoría** de cada acción y autoridad exclusiva de `platform_admin`.
+- **Crear:** el usuario recibe un enlace por correo para fijar su propia contraseña. Vecidya nunca conoce ni comunica contraseñas.
+- **Eliminar = desactivar:** bloquea el acceso y cierra sus sesiones, conserva datos y auditoría, y es reversible. No hay borrado definitivo. Queda por definir qué pasa con las organizaciones donde es el único owner.
+- **Límites:** autoridad exclusiva de `platform_admin` y cada acción auditada en `platform_audit_log`.
+- **Usuario ≠ miembro:** un usuario es la cuenta; la membresía (owner, admin o member) es por organización.
+
+Relacionada con `PLATFORM-ADMIN-001`. Falta decidir en qué punto de la secuencia entra.
 
 Relacionada con `PLATFORM-ADMIN-001`.
 
@@ -215,7 +218,7 @@ OPS-001 define GHL como infraestructura externa y el contrato `ghl_location_id`,
 
 PROD-001 y EMAIL-001 están cerrados en sus alcances; `app.vecidya.com`/`admin.vecidya.com`, el smoke remoto, secretos adicionales y cualquier manejo posterior de `vecidya-staging` requieren autorización independiente.
 
-**`0.5.1` está LIVE en producción (REL-005B, 2026-09-24).** Secuencia fijada por el usuario el 2026-09-25, con cada bloque pendiente de su propia autorización: **`AUTHZ-BA-001` (CERRADA, LIVE `0.5.2`) → `INVITE-001` → `INVITE-UI-001` → `MEDIA-001A` R2 Foundation → `MEDIA-001B` logo → `MEDIA-001C` galería/carrusel**. La gestión de usuarios en Admin está pedida, pero falta decidir dónde entra en esta secuencia. Objetivo: que cada cliente construya y publique su propio espacio con identidad e imágenes reales. R2 va después de cerrar la autorización, porque subir y borrar archivos persistentes exige primero el aislamiento tenant. La secuencia operativa vigente es `PROD-001 → EMAIL-001 → OPS-001 → LEGAL / REAL PROOF → GHL pilot → licenses → UX evolution`.
+**`0.5.1` está LIVE en producción (REL-005B, 2026-09-24).** Secuencia fijada por el usuario el 2026-09-25, con cada bloque pendiente de su propia autorización: **`AUTHZ-BA-001` (CERRADA, LIVE `0.5.2`) → `INVITE-001` (CERRADA, `0.5.3`) → `INVITE-UI-001` → `AUTH-ABUSE-001` → `MEDIA-001A` R2 Foundation (buckets, binding, metadata, autorización, subida y borrado) → `MEDIA-001B` logo gestionado por Vecidya → `MEDIA-001C` galería y carrusel → QA de publicación autónoma**. `AUTH-ABUSE-001` va antes de R2 porque crear organizaciones y subir archivos son las dos operaciones de autoservicio con coste. Incluye la regla de producto del usuario: un usuario puede ser owner de las organizaciones que su plan activo permita; sin plan activo, solo de una; y puede ser miembro de otras sin límite. Hoy no existe modelo de planes activos (las licencias son diseño comercial sin facturación), así que el bloque debe definirlo. La gestión de usuarios en Admin está pedida y decidida, pero sin posición en la secuencia. Objetivo: que cada cliente construya y publique su propio espacio con identidad e imágenes reales. R2 va después de cerrar la autorización, porque subir y borrar archivos persistentes exige primero el aislamiento tenant. La secuencia operativa vigente es `PROD-001 → EMAIL-001 → OPS-001 → LEGAL / REAL PROOF → GHL pilot → licenses → UX evolution`.
 
 ## Fuera de alcance permanente
 
