@@ -1,6 +1,13 @@
 # Pruebas
 
-Última reconciliación: 2026-09-26 (DIAG-V3-01; TYPECHECK-001; REPO-EOL-001; DIAG-V3-00 y micro-checkpoint de terminología; DIAG-003; LICENSE-STRATEGY-001; INVITE-UI-001; INVITE-001; contacto sin grupo de WhatsApp; AUTHZ-BA-001; SLUG-005B; QA-005A; UX-003.9; UX-003.8; VIS-001B; REL-004; DIAG-002C; DIAG-002B; DIAG-002; REL-003.1; UX-003.1/003.4).
+Última reconciliación: 2026-09-26 (G6 / `0.5.7`; DIAG-V3-01; TYPECHECK-001; REPO-EOL-001; DIAG-V3-00 y micro-checkpoint de terminología; DIAG-003; LICENSE-STRATEGY-001; INVITE-UI-001; INVITE-001; contacto sin grupo de WhatsApp; AUTHZ-BA-001; SLUG-005B; QA-005A; UX-003.9; UX-003.8; VIS-001B; REL-004; DIAG-002C; DIAG-002B; DIAG-002; REL-003.1; UX-003.1/003.4).
+
+**Evidencia G6 / release `0.5.7` (RAN 2026-09-26, HEAD `f5ab660`; Worker local y producción):**
+
+- `test:unit` **150/150**, `test:email` 4/4, `typecheck` real 0 errores, `build` PASS (único aviso: `ENV-LOCAL-SECRETS-001`), `git diff --check` PASS. El bundle contiene `0.5.7` y no `0.5.6`.
+- E2E locales PASS: `diagnostic`, `learn`, `authz` (143), `team-ui` (91), `acct`, `bpx` y `admin-business-profiles`. `px-a` («Home contiene patrón prohibido: /\breviews?\b/i») y `pe-b` («/app no reflejó el rol de owner en la organización A.») fallan con los mismos mensajes que sobre el código base. `invite-flow` no se usó como evidencia (`TEST-INVITE-FLAKY-001`).
+- `LEARN-META-001` verificado en local y en producción (antes/después) sobre los 4 artículos y un slug inexistente; ver `ENVIRONMENTS.md`.
+- Smoke de producción en navegador (Playwright MCP) 14/14. El Edge del arnés local no abre destinos remotos en esta máquina (`ERR_ADDRESS_INVALID`), con DNS correcto.
 
 **Evidencia DIAG-V3-01, TYPECHECK-001 y REPO-EOL-001 (RAN 2026-09-26, Worker local `pnpm run dev`; solo local, sin deploy):**
 

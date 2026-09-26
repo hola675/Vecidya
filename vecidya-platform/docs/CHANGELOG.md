@@ -1,6 +1,11 @@
 # Changelog
 
-## 2026-09-26 — Release `0.5.7` (G6: reconciliar producción con `main`)
+## 2026-09-26 — Release `0.5.7` (G6: reconciliar producción con `main`, LIVE)
+
+- **Publicado:** `pnpm wrangler deploy` a las 17:51Z, Version ID `f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`, commit `f5ab660`. Rollback identificado, no usado: `582a5c38-d1d4-4f3c-8ba5-e9424717fcb3`.
+- **`LEARN-META-001` resuelta en producción:** antes, los 4 artículos de Aprende salían como «Artículo no encontrado», `noindex, nofollow` y canonical a `/aprende`; ahora tienen título real, `index, follow`, canonical individual y descripción propia. El slug inexistente sigue en 404.
+- **Smoke de producción:** HTTP y navegador 14/14 (Home, puerta «Artista o creador de contenido», «Director Comercial», Diagnóstico completo, login, `/app` 302, `www` 301, sin errores JS).
+- **Migración `0010`:** pendiente en `vecidya-prod`. El usuario pidió aplicarla, pero el clasificador de permisos del agente bloqueó el `apply` remoto; D1 sin cambios (`LICENSE-MIGRATION-001`, G7).
 
 - **Versión:** `0.5.6` → `0.5.7` (PATCH). Sigue el precedente del proyecto: cada release publicado recibe su versión, y un PATCH es un cambio visible sin capacidad nueva (`0.5.1`). Este release lleva la corrección de producción `LEARN-META-001`, dos cambios de texto visibles (terminología) y cambios internos sin efecto observable (DIAG-V3-01, TYPECHECK-001, REPO-EOL-001).
 - **Contenido:** `c60979f`, `0887707`, `905d310`, `d0235d8`, `bdae3fc`, `b0264ce` y este commit. Sin migraciones, bindings, secretos, D1 ni KV.

@@ -1,14 +1,38 @@
 # Entornos
 
-Última reconciliación: 2026-09-26 (deploy de `v0.5.6` — DIAG-003, puntaje global y exportación a PDF del Diagnóstico — en producción; antes, `v0.5.5` — precio público de licencias en USD —; staging sigue en `v0.4.1`).
+Última reconciliación: 2026-09-26 (deploy de `v0.5.7` — G6, Version ID `f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`; `0010` sigue pendiente en `vecidya-prod`). Anterior: 2026-09-26 (deploy de `v0.5.6` — DIAG-003, puntaje global y exportación a PDF del Diagnóstico — en producción; antes, `v0.5.5` — precio público de licencias en USD —; staging sigue en `v0.4.1`).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura a los dominios publicados, fecha indicada por release, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
-**Defecto conocido en `0.5.6` (`LEARN-META-001`, `HTTP` 2026-09-26T16:40Z):** `/aprende/que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo` responde 200 con el artículo correcto, pero con `<title>Artículo no encontrado | Vecidya</title>`, `robots: noindex, nofollow` y canonical a `/aprende`. Afecta a todos los artículos. Está corregido en local (`d0235d8`) y **sigue publicado hasta un deploy autorizado**. `main` va por delante de producción con `c60979f`, `905d310`, `d0235d8` y `bdae3fc`, ninguno desplegado.
+`vecidya.com` sirve **`v0.5.7`** desde el Worker `vecidya-platform` con `vecidya-prod`, Version ID **`f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`** (2026-09-26T17:51Z). El pie muestra «Versión pública 0.5.7». `LEARN-META-001` está resuelto en producción. La D1 remota tiene `0000`–`0009` y **`0010` pendiente** (`LICENSE-MIGRATION-001`). El párrafo siguiente describe el corte anterior (`0.5.6`).
 
 `vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `582a5c38-d1d4-4f3c-8ba5-e9424717fcb3` (`v0.5.6`, tercer corte — reordena el resultado del Diagnóstico y lo hace más compacto; ver «Deploy (3.º...)» abajo). El smoke HTTP anónimo (rutas públicas, versión, puntaje global y exportación a PDF del Diagnóstico, `www`, rutas privadas protegidas) pasó el 2026-09-26.
+
+## Deploy `0.5.7` — G6: reconciliar producción con `main` (2026-09-26)
+
+- **Autorización:** el usuario aprobó DIAG-V3-01, TYPECHECK-001 y REPO-EOL-001 y pidió publicarlos de forma controlada por `LEARN-META-001`. Después pidió «aplica migraciones y despliega».
+- **Commits publicados:** `c60979f`, `0887707`, `905d310`, `d0235d8`, `bdae3fc`, `b0264ce` y `f5ab660` (`0.5.7`). Push sin force; `origin/main` = `f5ab660`. Los seis primeros ya estaban en `origin` cuando se hizo el push: alguien los subió entre el pre-flight y el push.
+- **Pre-flight:** `main`, 0 commits por detrás; el rango no toca migraciones, `wrangler.jsonc` ni bindings. `--dry-run`: Worker `vecidya-platform`, rutas `vecidya.com/*` y `www.vecidya.com/*`, `DB=vecidya-prod`, 6 variables, KV vacío, secretos requeridos sin cambios (solo nombres). Preview: **no aplica** (sin `preview_urls` ni flujo de versiones configurado; staging en `0.4.1` con G4 pendiente).
+- **Rollback identificado:** `582a5c38-d1d4-4f3c-8ba5-e9424717fcb3` (`0.5.6`, 01:56Z). No hizo falta.
+- **Deploy:** `pnpm wrangler deploy` (con `CLOUDFLARE_ACCOUNT_ID` de la cuenta de soporte solo para el comando), 17:50:11Z–17:51:17Z, **Version ID `f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`**.
+- **HTTP anónimo de solo lectura** (`curl --ssl-no-revoke`, 17:42Z antes / 17:51Z después):
+
+  | Comprobación | Antes (`0.5.6`) | Después (`0.5.7`) |
+  | --- | --- | --- |
+  | `<title>` de los 4 artículos de Aprende | «Artículo no encontrado \| Vecidya» | título real del artículo |
+  | `robots` de los artículos | `noindex, nofollow` | `index, follow` |
+  | canonical de los artículos | `https://vecidya.com/aprende` | URL individual del artículo |
+  | description de los artículos | «El artículo que buscas no está disponible.» | descripción propia |
+  | `/aprende/slug-que-no-existe-g6` | 404 «Página no encontrada» | 404 «Página no encontrada» (sin cambios) |
+  | Pie de `/` | «Versión pública 0.5.6» | «Versión pública 0.5.7» |
+  | `/`, `/diagnostico`, `/diagnostico?perfil=creator`, `/aprende`, `/login`, `/licencias`, `/sobre-nosotros` | — | 200 |
+  | `/app` · `www` | — | 302 → `/login` · 301 → apex |
+
+- **Smoke en navegador (Playwright MCP, anónimo, sin escrituras):** 14/14. Incluye la puerta «Artista o creador de contenido» → `?perfil=creator`, el perfil preseleccionado con la etiqueta nueva, un recorrido completo con resultado («Sistema en marcha», 81 %), prioridades, porcentajes, PDF, sin desborde a 1366/390, login renderizado y sin errores JavaScript. `/sobre-nosotros` muestra «Director Comercial». El Edge lanzado por el arnés local no puede abrir destinos remotos en esta máquina (`ERR_ADDRESS_INVALID`), de ahí el uso del navegador MCP.
+- **Migraciones:** `wrangler d1 migrations list DB --remote` → solo `0010_licensing-foundation.sql` pendiente. SQL revisado: puramente aditivo. Bookmark Time Travel previo `000000c0-00000000-000050f2-bd6dcf14fcf9dc39fcf5be2110c39253`. **El `apply` remoto fue bloqueado por el clasificador de permisos del agente y no se ejecutó**: `vecidya-prod` no cambió (`LICENSE-MIGRATION-001`, G7).
+- **Resultado:** `0.5.7 PRODUCTION PASS`. La reindexación de los artículos depende de los buscadores; Vecidya ya sirve las señales correctas.
 
 ## Deploy `0.5.6` — DIAG-003 puntaje global y exportación a PDF (2026-09-26)
 
@@ -221,13 +245,13 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 
 ## Qué código está publicado
 
-El despliegue público vigente es el Version ID `cebd0a92-3560-4298-8a3b-5df0c6209477` (`v0.5.5`, 2026-09-25; el anterior fue `cce6aa0b-7988-4525-81c1-f44a5ef3accd`, `v0.5.4`) `CONFIG`/`HTTP`:
+El despliegue público vigente es el Version ID `f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0` (`v0.5.7`, 2026-09-26T17:51Z; el anterior fue `582a5c38-d1d4-4f3c-8ba5-e9424717fcb3`, `v0.5.6`) `CONFIG`/`HTTP`:
 
 - `/app/internal/maintenance/auth-bootstrap` y `/app/internal/maintenance/password-rotation` devuelven **404**.
 - `/app/internal` sin sesión devuelve la pantalla de login; el acceso autenticado de `hola@vecidya.com` fue comprobado manualmente en producción en `/app` y `/app/internal`.
 - La D1 remota reporta migraciones `0000`–`0009` aplicadas `REMOTE`.
 
-Conclusión: el código `0.5.5` está desplegado en el Worker público, el binding reportado por Wrangler es `vecidya-prod` y no se ejecutaron migraciones (las migraciones `0000`–`0009` ya estaban aplicadas y `0.5.5` no añade ninguna). `vecidya-staging` sigue preservada como D1 independiente de staging.
+Conclusión: el código `0.5.7` está desplegado en el Worker público y el binding reportado por Wrangler es `vecidya-prod`. La D1 remota tiene `0000`–`0009` aplicadas y **`0010` pendiente** (`REMOTE`, 2026-09-26), aunque el código de licenciamiento que la usa está publicado desde `0.5.6` (`LICENSE-MIGRATION-001`). `vecidya-staging` sigue preservada como D1 independiente de staging.
 
 ## Repositorio Git
 
