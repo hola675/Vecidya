@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-09-25 — LICENSE-STRATEGY-001 Multi-Business Licensing & Pricing Foundation (solo local, sin deploy)
+
+Cierra la foundation del modelo de licencias multi-negocio: separa quién paga (`billing_account`) de la membresía de Better Auth, versiona el precio de cada plan (grandfathering real), configura el descuento por portafolio como datos en vez de `if`s, y prepara —sin implementar el cálculo— un motor de promociones. Sin checkout, sin proveedor de cobro, sin UI de Admin nueva y sin deploy, todo por instrucción explícita del bloque.
+
+- **Principio:** 1 organización = 1 negocio = 1 licencia. La cantidad de organizaciones de una persona nunca depende del plan de ninguna de ellas.
+- **`billing_account` ≠ `member`:** pertenecer a una organización (incluida una invitación aceptada) nunca hace que su licencia cuente para el portafolio de otra persona. En V1, una persona controla como máximo un `billing_account` (único `owner_user_id`).
+- **6 tablas nuevas** (`db/schema/licensing.ts`, migración `0010`, 23 tablas totales): `billing_account`, `license_price` (versión de precio con `effective_from`/`effective_to`, 3 filas sembradas: Cuadra `USD 39/mes`, Barrio `USD 59/mes`, Ciudad `USD 89/mes`, las mismas que publica `/licencias`), `organization_license` (conserva su `price_id` contratado), `portfolio_pricing_tier` (4 filas sembradas: 1→0%, 2→10%, 3-4→15%, 5+→20%, la escalera aprobada por el usuario), `promotion` y `billing_account_promotion`. Todo en centavos enteros y basis points; ningún `float`.
+- **Calculador puro** (`db/pricing/calculator.ts`, sin acceso a base de datos, determinístico): 21 pruebas unitarias, incluidos los montos exactos del usuario (1 Cuadra $39.00, 2 Cuadra $70.20, 3 Cuadra $99.45, 5 Cuadra $156.00, Cuadra+Barrio $88.20, Cuadra+Barrio+Ciudad $158.95), líneas no activas excluidas, y las reglas de promoción: expirada o aún no vigente no se aplica, un mínimo de organizaciones no cumplido no se aplica, una promoción no apilable nunca se combina con otra —ni con una apilable—, y dos apilables sí se suman. `free_license` queda representable en el schema desde V1 pero su cálculo no está implementado, tal como autorizaba el encargo.
+- **Grandfathering real:** una licencia ya contratada resuelve su precio por el `price_id` que guarda, nunca por `plan_code` + fecha actual. Publicar un precio nuevo no cambia lo que ya paga quien contrató antes.
+- **Cambio de plan sin mutar en el sitio:** `changeOrganizationLicensePlan` cancela la fila vigente (conserva historial) y crea una nueva; nunca toca otras organizaciones del mismo `billing_account`.
+- **Solo `platform_admin`:** `/api/platform/organizations/:id/license` (mismo patrón que `/services` e `/integrations`) asigna, cambia de plan, suspende/reactiva y transfiere de `billing_account`, auditado en `platform_audit_log`. Crear una organización no activa una licencia pagada por sí sola.
+- **Hallazgo de build:** una ruta de React Router no puede importar directamente un módulo `db/` sin sufijo `.server`, aunque sea puro y sin efectos secundarios (el análisis de fronteras servidor/cliente lo rechaza igual). Se resolvió envolviendo el calculador en la capa `.server`. Detalle en `TESTING.md`.
+- **Hallazgo de limpieza de fixtures:** `billing_account.owner_user_id` y `platform_audit_log.organization_id`/`actor_user_id` no cascadan desde `user`/`organization` (a propósito: conservan historial de facturación y auditoría). El orden correcto de borrado es auditoría → organización → billing_account → usuario.
+- **Pruebas:** `tests/unit/licensing/calculator.test.ts` (21) y `tests/e2e/platform-licensing-check.mjs` (`platform-licensing`, 27, en `test:e2e`). `test:unit` pasa de 105 a 126. Regresión (`authz`, `psa`, `admin-shell`, `admin-orgs`, `acct`) PASS sin cambios.
+- **Validación:** `typecheck`, `build` y `git diff --check` PASS. Migración `0010` aplicada y verificada **solo en D1 local**; no se tocó D1 remota.
+- **Deliberadamente fuera de alcance:** UI de Admin (ver `LICENSE-ADMIN-UI-001`), checkout, proveedor de cobro, entitlement enforcement (todavía no se bloquea ninguna capacidad por plan) y aplicar `0010` a remoto.
+- **Deuda:** `LICENSE-STRATEGY-001` CERRADA. Nuevas: `LICENSE-ADMIN-UI-001`, `LICENSE-REMOTE-MIGRATION-001`. `AUTH-ABUSE-001` se actualiza: el modelo de «plan activo» ya existe, pero `organization/create` todavía no hace cumplir ningún límite.
+- **Siguiente bloque propuesto por el usuario:** `ACCOUNT-001 — Registration & Multi-Business Portfolio`. No autorizado; no se inicia automáticamente.
+
 ## 2026-09-25 — Precio público de licencias en USD (`0.5.5`, LIVE)
 
 A pedido explícito del usuario, que confirmó moneda, periodicidad y que es precio real listo para publicar (no un borrador): `/licencias` deja de decir «Aún no hay precios públicos» y muestra el precio mensual de cada licencia.

@@ -1,6 +1,6 @@
 # Arquitectura de Vecidya
 
-Última reconciliación: 2026-09-25 (AUTHZ-BA-001: frontera con Better Auth; INVITE-001: aceptación de invitaciones). Describe decisiones y fronteras **vigentes**; lo futuro está marcado `FUTURE` y no debe leerse como implementado.
+Última reconciliación: 2026-09-25 (LICENSE-STRATEGY-001: foundation de licenciamiento multi-negocio, solo local; AUTHZ-BA-001: frontera con Better Auth; INVITE-001: aceptación de invitaciones). Describe decisiones y fronteras **vigentes**; lo futuro está marcado `FUTURE` y no debe leerse como implementado.
 
 ## Arquitectura actual
 
@@ -77,6 +77,16 @@ Cloudflare D1 (producción: vecidya-prod; staging: vecidya-staging)
 | Fijar `activeOrganizationId` | `/update-session` | — | rechazado: el campo es `input: false` |
 
 Login y registro aceptan `redirectTo` solo hacia rutas internas de `/app` (`app/lib/safe-redirect.ts`), para que el retorno a una invitación no sirva de open redirect. Retirar un miembro por la ruta propia limpia sus sesiones activas (`afterRemoveMember`). Si aun así queda un ID stale (escritura fuera de banda), las guardas responden 403. Límite de creación de organizaciones y rate limiting quedan fuera de esta frontera (`AUTH-ABUSE-001`).
+
+## Licenciamiento multi-negocio (LICENSE-STRATEGY-001, foundation)
+
+1 organización = 1 negocio = 1 licencia. `billing_account` (quien paga) es una entidad propia,
+independiente de `member`: pertenecer a una organización nunca hace que su licencia cuente para el
+portafolio de otra persona. Detalle completo del modelo, las tablas, el calculador puro
+(`db/pricing/calculator.ts`) y el grandfathering de precio en [DATABASE.md](DATABASE.md#licenciamiento-multi-negocio-license-strategy-001).
+Solo `platform_admin` puede asignar, cambiar de plan, suspender/reactivar o transferir una licencia
+(`/api/platform/organizations/:id/license`, mismo patrón que `/services` e `/integrations`); no hay
+checkout, cobro automático ni proveedor de pago integrado. Migración `0010` aplicada solo en local.
 
 ## Modelo de producto
 

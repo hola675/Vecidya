@@ -1,6 +1,6 @@
 # Estructura del código
 
-Última reconciliación: 2026-09-25 (AUTHZ-BA-001: guardas de organización, miembros e invitaciones; DIAG-002; REL-003). Rutas verificadas contra `app/routes.ts`; las rutas públicas comerciales y sus pruebas de release están reconciliadas. Columna *Pub.*: comprobación local de la nueva experiencia y evidencia HTTP histórica para el resto (`sí` = responde como se espera; para rutas privadas, `sí` = existe y redirige a `/login`; `no` = no está en el Worker público). Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
+Última reconciliación: 2026-09-25 (LICENSE-STRATEGY-001: foundation de licenciamiento multi-negocio, solo local; AUTHZ-BA-001: guardas de organización, miembros e invitaciones; DIAG-002; REL-003). Rutas verificadas contra `app/routes.ts`; las rutas públicas comerciales y sus pruebas de release están reconciliadas. Columna *Pub.*: comprobación local de la nueva experiencia y evidencia HTTP histórica para el resto (`sí` = responde como se espera; para rutas privadas, `sí` = existe y redirige a `/login`; `no` = no está en el Worker público). Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
 
 ## Mapa del repositorio
 
@@ -114,6 +114,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `…/integrations` | `api-organization-integrations.ts` | GET | solo membresía (cualquier rol, incluye `metadata`) | funcional | `authz` (403 sin membresía), `psa` | sí |
 | `/api/platform/organizations/:id/services` | `api-platform-services.ts` | GET, POST | `requirePlatformAdmin` | funcional; org inexistente → 500 FK | `psa`, `authz` (403 para owner/admin/member de la organización) | sí |
 | `/api/platform/organizations/:id/integrations` | `api-platform-integrations.ts` | GET, POST | `requirePlatformAdmin` | funcional; duplicado → 500 | `psa` (stale) | sí |
+| `/api/platform/organizations/:id/license` | `api-platform-licensing.ts` | GET, POST | `requirePlatformAdmin` | funcional; sin checkout, sin cobro automático (LICENSE-STRATEGY-001) | `platform-licensing` | no (solo local; `0010` sin aplicar a remoto) |
 
 Sin autenticación, las rutas privadas y de API responden **302 → `/login`** (nunca 401).
 
