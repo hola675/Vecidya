@@ -6,7 +6,7 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 
 ## Veredicto sobre producción
 
-`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `f6c3c25e-16fe-4fa4-8b15-ad00fe352bc0` (`v0.5.6`, segundo corte — ver «Regresión visual encontrada tras el primer deploy» abajo). El smoke HTTP anónimo (rutas públicas, versión, puntaje global y exportación a PDF del Diagnóstico, `www`, rutas privadas protegidas) pasó el 2026-09-26.
+`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `582a5c38-d1d4-4f3c-8ba5-e9424717fcb3` (`v0.5.6`, tercer corte — reordena el resultado del Diagnóstico y lo hace más compacto; ver «Deploy (3.º...)» abajo). El smoke HTTP anónimo (rutas públicas, versión, puntaje global y exportación a PDF del Diagnóstico, `www`, rutas privadas protegidas) pasó el 2026-09-26.
 
 ## Deploy `0.5.6` — DIAG-003 puntaje global y exportación a PDF (2026-09-26)
 
@@ -30,7 +30,19 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
   | `/app` | — | `302` |
   | Verificación visual (Playwright, 1366/900/761/390) | roto (icono+% apilados y superpuestos) | correcto en las 4 anchuras |
 
-- **Resultado:** `0.5.6 PRODUCTION PASS`.
+- **Reestructuración del resultado pedida por el usuario tras el 2.º deploy:** «necesitamos mejorar [la] estructura del resultado del diagnóstico, para hacerlo más compacto y organizado... y las recomendaciones de planes y servicios de Vecidya sería al final, después de los botones..., y mejorar la estructura visual y ancho del resultado» (mensaje con errores de tipeo, interpretado y confirmado por el sentido). Cambios: la sección «Encaje con Vecidya» (licencia/servicios/addons/Aprende) se movió a después de la fila de botones de acción, como lo último del resultado; el título del resultado (`h2`) dejó de compartir el tamaño tipo-portada de las preguntas (`clamp(2rem,4vw,3.5rem)`) y bajó a `clamp(1.6rem,2.6vw,2.35rem)`; los párrafos del resultado pasaron de `max-width:44rem` a `58rem` (menos líneas, mejor uso del ancho de la tarjeta); el espaciado entre secciones bajó de `1.2rem` a `1rem`; y `@media print` recibió su propio ajuste más compacto (gap, tamaño de título y márgenes reducidos) para que el PDF generado quede más denso. Verificado visualmente con Playwright en pantalla (1366/390) y en vista de impresión (`emulateMedia("print")`) antes de desplegar.
+- **Deploy (3.º, con la reestructuración):** `--dry-run` confirmó `DB=vecidya-prod` y `APP_ENV=production`. `pnpm wrangler deploy` a las 2026-09-26T01:56Z aprox. Version ID **`582a5c38-d1d4-4f3c-8ba5-e9424717fcb3`**. Staging, secrets y D1 remota no se tocaron.
+- **HTTP anónimo de solo lectura del 3.º corte** (`curl --ssl-no-revoke`):
+
+  | Comprobación | Antes (01:53Z, `0.5.6`, 2.º corte) | Después (01:56Z) |
+  | --- | --- | --- |
+  | Pie de `/` | «Versión pública 0.5.6» | «Versión pública 0.5.6» |
+  | `/diagnostico` | `200` | `200` |
+  | CSS: `diagnostic-result h2{font-size:1.6rem!important}` (regla de impresión) / `max-width:32ch` (título de pantalla) / `max-width:58rem` (párrafos) | — | 1 / 1 / 1 |
+  | `www` | — | `301` |
+  | `/app` | — | `302` |
+
+- **Resultado:** `0.5.6 PRODUCTION PASS` (3.º corte).
 
 ## Deploy `0.5.5` — Precio público de licencias en USD (2026-09-25)
 
