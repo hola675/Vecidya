@@ -5,7 +5,8 @@
  * y devuelve un resultado explicable. La UI vive en `app/routes/diagnostic.tsx`.
  */
 
-import type { DiagnosticVersion, IssueId, QuestionId } from "./contracts";
+import type { DiagnosticVersion, IssueId, QuestionVersion } from "./contracts";
+import type { AnswerFor, QuestionId } from "./questions";
 
 export type ProfileId = "business" | "professional" | "creator" | "project" | "organization";
 
@@ -40,24 +41,72 @@ export type OptionKind = "value" | "none" | "unknown" | "not_applicable";
 /** Pesos de evidencia de una opción (entrada del scoring). No es `DiagnosticEvidence` (observación explicable, `contracts.ts`). */
 export type Evidence = Partial<Record<DimensionId, number>>;
 
-export type QuestionOption = {
+type OptionBase = {
+  /** ID estable de la opción dentro de su pregunta (identidad histórica). La etiqueta puede cambiar; el ID no. */
   value: string;
   label: string;
-  kind?: OptionKind;
-  /** Evidencia por dimensión en [0, 1]. Solo para `kind: "value"`. */
+  /** Evidencia por dimensión en [0, 1]. Solo para opciones sustantivas. */
   evidence?: Evidence;
   /** Dimensiones sobre las que esta opción declara incertidumbre aunque sea sustantiva. */
-  uncertainFor?: DimensionId[];
-  /** En preguntas multi, una opción exclusiva desmarca a las demás. */
-  exclusive?: boolean;
+  uncertainFor?: readonly DimensionId[];
 };
+
+/** Opción de una pregunta de respuesta única: no admite `none` ni `exclusive` (solo tienen sentido al marcar varias). */
+export type SingleChoiceOption = OptionBase & { kind?: Exclude<OptionKind, "none">; exclusive?: never };
+
+/** Opción de una pregunta multi. Una opción exclusiva desmarca a las demás. */
+export type MultiChoiceOption = OptionBase & { kind?: OptionKind; exclusive?: boolean };
+
+export type QuestionOption = SingleChoiceOption | MultiChoiceOption;
 
 export type QuestionType = "single" | "multi";
 
+type QuestionDefinitionBase = {
+  /** ID estable de la pregunta. Nunca se reutiliza con otro significado. */
+  id: string;
+  /** Versión semántica (ver `QuestionVersion` en `contracts.ts`). */
+  version: QuestionVersion;
+  section: SectionId;
+  eyebrow: string;
+  prompt: string;
+  helper?: string;
+  /** Por qué existe la pregunta (documentación interna, no se muestra). */
+  purpose: string;
+  /** Dimensiones que puede alimentar. Vacío si solo alimenta prioridades/recomendaciones. */
+  dimensions: readonly DimensionId[];
+  /** Peso por dimensión (por defecto 1). */
+  weight?: Partial<Record<DimensionId, number>>;
+  /** Redacción alternativa por perfil (misma pregunta, mismas opciones y evidencia). */
+  variants?: Partial<Record<ProfileId, { prompt?: string; helper?: string }>>;
+};
+
+export type SingleChoiceDefinition = QuestionDefinitionBase & {
+  type: "single";
+  options: readonly SingleChoiceOption[];
+  target?: never;
+  noneDimensions?: never;
+};
+
+export type MultiChoiceDefinition = QuestionDefinitionBase & {
+  type: "multi";
+  options: readonly MultiChoiceOption[];
+  /** Suma de evidencia considerada «suficiente» por dimensión (por defecto, la suma máxima). */
+  target?: Partial<Record<DimensionId, number>>;
+  /** Dimensiones que una opción `none` pone en 0 (por defecto, todas las de la pregunta). */
+  noneDimensions?: readonly DimensionId[];
+};
+
+/** Definición declarativa de una pregunta: datos puros, sin reglas de aplicabilidad (DIAG-V3-02). */
+export type QuestionDefinition = SingleChoiceDefinition | MultiChoiceDefinition;
+
+/** Valor crudo de una respuesta (entrada no confiable o manipulación genérica). */
 export type AnswerValue = string | string[];
 
-/** Solo claves de preguntas existentes: una pregunta renombrada o retirada rompe la compilación de sus reglas. */
-export type Answers = Partial<Record<QuestionId, AnswerValue>>;
+/**
+ * Respuestas tipadas por pregunta: cada clave es un `QuestionId` y su valor, un ID de opción de ESA
+ * pregunta (o una lista, si la pregunta es multi). Una pregunta u opción retirada rompe la compilación.
+ */
+export type Answers = { [Q in QuestionId]?: AnswerFor<Q> };
 
 export type Context = {
   profile?: ProfileId;
@@ -67,28 +116,10 @@ export type Context = {
   answers: Answers;
 };
 
-export type Question = {
+/** Pregunta del recorrido: definición del registro + condición de aplicabilidad (ausente = aplica siempre que haya perfil). */
+export type Question = QuestionDefinition & {
   id: QuestionId;
-  section: SectionId;
-  type: QuestionType;
-  eyebrow: string;
-  prompt: string;
-  helper?: string;
-  /** Por qué existe la pregunta (documentación interna, no se muestra). */
-  purpose: string;
-  /** Dimensiones que puede alimentar. Vacío si solo alimenta prioridades/recomendaciones. */
-  dimensions: DimensionId[];
-  /** Peso por dimensión (por defecto 1). */
-  weight?: Partial<Record<DimensionId, number>>;
-  /** Preguntas multi: suma de evidencia considerada «suficiente» por dimensión (por defecto, la suma máxima). */
-  target?: Partial<Record<DimensionId, number>>;
-  /** Dimensiones que una opción `none` pone en 0 (por defecto, todas las de la pregunta). */
-  noneDimensions?: DimensionId[];
-  options: QuestionOption[];
-  /** Condición de aplicabilidad; ausente = aplica siempre que haya perfil. */
   applies?: (context: Context) => boolean;
-  /** Redacción alternativa por perfil (misma pregunta, mismas opciones y evidencia). */
-  variants?: Partial<Record<ProfileId, { prompt?: string; helper?: string }>>;
 };
 
 export type DimensionLevel = "inicial" | "parcial" | "solida" | "consolidada";

@@ -1,7 +1,7 @@
 import { selectedValues } from "./answers";
 import { addonCatalog, learnCatalog, licenseCatalog, serviceCatalog, type AddonId, type LearnId, type ServiceId } from "./catalog";
-import type { QuestionId } from "./contracts";
 import { hasTeam, isEstablished, isOperating } from "./profiles";
+import { singleAnswer, type SingleQuestionId } from "./questions";
 import { inquiriesArrive, processSolid, type Scores } from "./result";
 import type { AddonFit, Context, DiagnosticState, Issue, LearnFit, LicenseFit, Recommendation, ServiceFit } from "./types";
 
@@ -18,7 +18,7 @@ import type { AddonFit, Context, DiagnosticState, Issue, LearnFit, LicenseFit, R
 
 export function recommendLicense(context: Context, scores: Scores, priorities: Issue[]): LicenseFit {
   const { answers, stage, goal } = context;
-  const one = (questionId: QuestionId) => (typeof answers[questionId] === "string" ? (answers[questionId] as string) : undefined);
+  const one = <Q extends SingleQuestionId>(questionId: Q) => singleAnswer(answers, questionId);
   const inquiries = inquiriesArrive(answers);
   const capture = one("capture");
   const followUp = one("follow_up");

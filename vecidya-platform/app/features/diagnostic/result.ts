@@ -1,7 +1,7 @@
 import { selectedValues } from "./answers";
 import type { IssueId, QuestionId } from "./contracts";
 import { getProfile, hasTeam, isEstablished, isOperating } from "./profiles";
-import { optionLabel } from "./questions";
+import { inquiriesArrive, multiAnswer, optionLabel, singleAnswer, type MultiQuestionId } from "./questions";
 import { dimensionLabels } from "./scoring";
 import type {
   Answers,
@@ -37,13 +37,11 @@ const said = (questionId: QuestionId, answers: Answers) =>
     .map((value) => `«${optionLabel(questionId, value)}»`)
     .join(", ");
 
-const one = (answers: Answers, questionId: QuestionId) => (typeof answers[questionId] === "string" ? (answers[questionId] as string) : undefined);
-const many = (answers: Answers, questionId: QuestionId) => selectedValues(answers[questionId]);
+/** Accessors tipados del registro: una pregunta u opción inexistente, o una pregunta del tipo equivocado, no compila. */
+const one = singleAnswer;
+const many = multiAnswer;
 
-export function inquiriesArrive(answers: Answers): boolean {
-  const sources = many(answers, "sources");
-  return sources.length > 0 && !sources.includes("none");
-}
+export { inquiriesArrive };
 
 export function processSolid(answers: Answers): boolean {
   return one(answers, "capture") === "always" && one(answers, "follow_up") === "system";
@@ -331,7 +329,7 @@ export function generateIssues(context: Context, scores: Scores): IssueDraft[] {
   }
 
   // Confianza
-  const proofQuestions: QuestionId[] = ["proof_professional", "proof_business", "proof_creator", "proof_org"];
+  const proofQuestions = ["proof_professional", "proof_business", "proof_creator", "proof_org"] as const satisfies readonly MultiQuestionId[];
   const proofId = proofQuestions.find((id) => answers[id] !== undefined);
   const proof = proofId ? many(answers, proofId) : [];
   const proofCopy: Record<ProfileId, { title: string; action: string; check: string }> = {

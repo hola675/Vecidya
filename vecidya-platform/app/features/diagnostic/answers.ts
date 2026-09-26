@@ -1,7 +1,9 @@
 import { isGoalId, isProfileId, isStageId, isTeamId } from "./profiles";
-import { getOption, questions } from "./questions";
+import { getOption, questions, selectedValues } from "./questions";
 import type { QuestionId } from "./contracts";
 import type { AnswerValue, Answers, Context, Question } from "./types";
+
+export { selectedValues };
 
 /**
  * Estado de respuestas: operaciones puras sobre `Answers`.
@@ -10,11 +12,6 @@ import type { AnswerValue, Answers, Context, Question } from "./types";
  * de preguntas aplicables al contexto vigente; una respuesta de una rama
  * abandonada (por ejemplo, tras cambiar de perfil) nunca llega al motor.
  */
-
-export function selectedValues(answer: AnswerValue | undefined): string[] {
-  if (answer === undefined) return [];
-  return Array.isArray(answer) ? answer : [answer];
-}
 
 export function isSelected(answer: AnswerValue | undefined, value: string): boolean {
   return selectedValues(answer).includes(value);
@@ -56,16 +53,24 @@ export function deriveActiveAnswers(answers: Answers): Answers {
   let current: Answers = { ...answers };
   for (let iteration = 0; iteration < questions.length + 1; iteration += 1) {
     const applicable = getApplicableQuestions(current);
-    const next: Answers = {};
+    const next: Record<string, AnswerValue> = {};
     for (const question of applicable) {
       const value = normalizeAnswer(question, current[question.id]);
       if (value !== undefined) next[question.id] = value;
     }
-    const stable = Object.keys(next).length === Object.keys(current).length && Object.keys(next).every((key) => sameAnswer(byKey(next)[key], byKey(current)[key]));
-    current = next;
+    const stable = Object.keys(next).length === Object.keys(current).length && Object.keys(next).every((key) => sameAnswer(next[key], byKey(current)[key]));
+    current = validated(next);
     if (stable) break;
   }
   return current;
+}
+
+/**
+ * Único punto donde una escritura genérica se reinterpreta como `Answers` tipadas: cada valor ya pasó
+ * por `normalizeAnswer`/`getOption`, que solo dejan IDs de opción existentes en su pregunta.
+ */
+function validated(record: Record<string, AnswerValue>): Answers {
+  return record as Answers;
 }
 
 /** Vista por clave arbitraria: las respuestas crudas pueden traer claves que no son preguntas. */
@@ -88,14 +93,14 @@ export function applyAnswer(answers: Answers, question: Question, value: string)
   if (!option) return answers;
 
   if (question.id === "profile") {
-    return answers.profile === value ? answers : { profile: value };
+    return answers.profile === value ? answers : validated({ profile: value });
   }
 
   if (question.type === "single") {
     return { ...answers, [question.id]: value };
   }
 
-  const previous = selectedValues(answers[question.id]);
+  const previous: string[] = selectedValues<string>(answers[question.id]);
   const wasSelected = previous.includes(value);
   if (wasSelected) {
     const remaining = previous.filter((item) => item !== value);

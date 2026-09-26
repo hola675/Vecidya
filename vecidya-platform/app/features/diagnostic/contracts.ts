@@ -1,4 +1,5 @@
-import type { Answers, Confidence, ConfidenceLevel, DiagnosticResult, DimensionId, GoalId, ProfileId, StageId } from "./types";
+import { QUESTION_DEFINITIONS, type OptionIdOf, type QuestionId, type SectionOrderId } from "./questions";
+import type { Answers, Confidence, ConfidenceLevel, DiagnosticResult, DimensionId, GoalId, ProfileId, SectionId, StageId, TeamId } from "./types";
 
 /**
  * Contratos del Diagnostic Engine V3 (DIAG-V3-01).
@@ -27,9 +28,12 @@ export type DiagnosticVersionV3 = Extract<DiagnosticVersion, `3.${string}`>;
 export const CURRENT_DIAGNOSTIC_VERSION: DiagnosticVersion = "2.0";
 
 /**
- * Versión semántica de una pregunta: sube cuando cambia lo que significa una respuesta (no por
- * una corrección de redacción). Todas las preguntas actuales están en su versión inicial. Protege
- * respuestas guardadas en el futuro frente a una pregunta que cambie de significado con el mismo ID.
+ * Versión semántica de una pregunta (campo `version` de cada definición del registro).
+ * - SUBE cuando cambia el significado: qué se pregunta, qué significa una opción, qué opciones
+ *   existen o cómo puntúa una respuesta.
+ * - NO sube por una corrección de redacción, puntuación, ortografía o presentación.
+ * Todas las preguntas actuales están en su versión inicial. Una respuesta guardada en el futuro se
+ * interpretará siempre con la versión con la que se respondió.
  */
 export type QuestionVersion = 1;
 export const INITIAL_QUESTION_VERSION: QuestionVersion = 1;
@@ -37,36 +41,12 @@ export type QuestionRef = { id: QuestionId; version: QuestionVersion };
 
 // ── Identificadores estables ────────────────────────────────────────────────
 
-/** IDs de pregunta. `questions.ts` solo acepta estos IDs y `contracts.test.ts` exige que cada uno tenga pregunta. */
-export const QUESTION_IDS = [
-  "profile",
-  "goal",
-  "stage",
-  "team",
-  "assets",
-  "clarity_presence",
-  "offer_clarity",
-  "validation",
-  "proof_professional",
-  "proof_business",
-  "proof_creator",
-  "proof_org",
-  "control",
-  "sources",
-  "discoverability",
-  "audience",
-  "reach",
-  "contact_path",
-  "capture",
-  "response",
-  "follow_up",
-  "pipeline",
-  "responsibilities",
-  "repetitive",
-  "post_sale",
-  "measurement",
-] as const;
-export type QuestionId = (typeof QUESTION_IDS)[number];
+/**
+ * IDs de pregunta derivados del registro (`QUESTION_DEFINITIONS` en `questions.ts`), única fuente de
+ * verdad desde DIAG-V3-02: añadir o retirar una pregunta no exige tocar otra lista.
+ */
+export const QUESTION_IDS: readonly QuestionId[] = QUESTION_DEFINITIONS.map((definition) => definition.id);
+export type { AnswerFor, MultiQuestionId, OptionIdOf, OptionRef, QuestionId, SingleQuestionId } from "./questions";
 
 /** IDs de hallazgo que puede generar `generateIssues`. */
 export const ISSUE_IDS = [
@@ -301,5 +281,11 @@ const contractChecks = {
   coreDimensionsMatchDimensionId: true satisfies Equals<(typeof CORE_DIMENSION_IDS)[number], DimensionId>,
   primaryGoalsAreGoalsWithoutUnsure: true satisfies Equals<PrimaryGoal, Exclude<GoalId, "unsure">>,
   legacyStageIsCurrentStage: true satisfies Equals<LegacyStageId, StageId>,
+  // Las listas cerradas del contexto coinciden exactamente con las opciones de sus preguntas.
+  profileOptionsAreProfileIds: true satisfies Equals<OptionIdOf<"profile">, ProfileId>,
+  stageOptionsAreStageIds: true satisfies Equals<OptionIdOf<"stage">, StageId>,
+  teamOptionsAreTeamIds: true satisfies Equals<OptionIdOf<"team">, TeamId>,
+  goalOptionsAreGoalIds: true satisfies Equals<OptionIdOf<"goal">, GoalId>,
+  sectionOrderCoversSections: true satisfies Equals<SectionOrderId, SectionId>,
 };
 void contractChecks;

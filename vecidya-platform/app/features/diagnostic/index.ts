@@ -15,7 +15,22 @@ export { addonCatalog, learnCatalog, learnPath, licenseCatalog, serviceCatalog, 
 export { buildDiagnosticPath, DIAGNOSTIC_PATH, entryToAnswers, GOAL_PARAM, parseDiagnosticEntry, PROFILE_PARAM, type DiagnosticEntry } from "./deep-link";
 export { getInitialStep, getProgress, getSections, pathLength, type Progress } from "./flow";
 export { getProfile, goalIds, isGoalId, isProfileId, profileIds, profiles, stageIds, teamIds } from "./profiles";
-export { getOption, getQuestion, optionLabel, questionCopy, questions, sectionLabels, sectionOrder } from "./questions";
+export {
+  APPLICABILITY,
+  findDependencyCycles,
+  getDependencyGraph,
+  getOption,
+  getQuestion,
+  multiAnswer,
+  optionLabel,
+  QUESTION_DEFINITIONS,
+  questionCopy,
+  questions,
+  sectionLabels,
+  sectionOrder,
+  singleAnswer,
+  type ApplicabilityRule,
+} from "./questions";
 export { computeOverallScore, dimensionDescriptions, dimensionLabels, dimensionOrder, levelLabels, visualStatusFor, visualStatusLabels, type VisualStatus } from "./scoring";
 export { PRIORITY_LIMIT } from "./result";
 

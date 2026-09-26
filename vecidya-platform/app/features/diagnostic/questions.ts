@@ -1,14 +1,20 @@
 import { hasTeam, isEstablished, isOperating, profiles } from "./profiles";
-import type { QuestionId } from "./contracts";
-import type { AnswerValue, Context, DimensionId, ProfileId, Question, QuestionOption, SectionId } from "./types";
+import type { Answers, Context, DimensionId, ProfileId, Question, QuestionDefinition, QuestionOption, SectionId } from "./types";
 
 /**
- * Banco de preguntas del Diagnóstico.
+ * Registro de preguntas del Diagnóstico (DIAG-V3-02).
  *
- * Cada pregunta documenta su propósito (`purpose`), las dimensiones que alimenta,
- * la condición de aplicabilidad y la evidencia de cada opción. Las opciones
- * «no lo sé» (`unknown`) no puntúan; «no aplica» (`not_applicable`) tampoco;
- * «nada de esto» (`none`) puntúa 0 de forma sustantiva.
+ * Fuente canónica única en dos partes:
+ * - `QUESTION_DEFINITIONS`: datos puros de cada pregunta (ID, versión, sección, tipo, opciones,
+ *   dimensiones, pesos, textos). De aquí se derivan `QuestionId`, los IDs de opción por pregunta y
+ *   el tipo de cada respuesta.
+ * - `APPLICABILITY`: la condición de cada pregunta que no aplica siempre, con las preguntas de las
+ *   que depende declaradas en `dependsOn`. Los closures se conservan tal cual hasta el Routing
+ *   Engine (DIAG-V3-03).
+ *
+ * Las opciones «no lo sé» (`unknown`) no puntúan; «no aplica» (`not_applicable`) tampoco;
+ * «nada de esto» (`none`) puntúa 0 de forma sustantiva. El `value` de una opción es su ID estable:
+ * la etiqueta puede cambiar, el ID no.
  */
 
 const yesNoUnknown = (evidence: Record<"yes" | "partly" | "no", number>, dimensions: DimensionId[]) => {
@@ -17,8 +23,8 @@ const yesNoUnknown = (evidence: Record<"yes" | "partly" | "no", number>, dimensi
     { value: "yes", label: "Sí", evidence: spread(evidence.yes) },
     { value: "partly", label: "En parte", evidence: spread(evidence.partly) },
     { value: "no", label: "No", evidence: spread(evidence.no) },
-    { value: "unknown", label: "No lo sé", kind: "unknown" as const },
-  ] satisfies QuestionOption[];
+    { value: "unknown", label: "No lo sé", kind: "unknown" },
+  ] as const satisfies readonly QuestionOption[];
 };
 
 export const sectionLabels: Record<SectionId, string> = {
@@ -29,38 +35,13 @@ export const sectionLabels: Record<SectionId, string> = {
   medicion: "Medición",
 };
 
-export const sectionOrder: SectionId[] = ["contexto", "presencia", "alcance", "proceso", "medicion"];
+export const sectionOrder = ["contexto", "presencia", "alcance", "proceso", "medicion"] as const satisfies readonly SectionId[];
+export type SectionOrderId = (typeof sectionOrder)[number];
 
-function selectedValues(answer: AnswerValue | undefined): string[] {
-  if (answer === undefined) return [];
-  return Array.isArray(answer) ? answer : [answer];
-}
-
-function hasAssets(context: Context): boolean {
-  const values = selectedValues(context.answers.assets);
-  return values.length > 0 && !values.includes("none") && !values.includes("unknown");
-}
-
-function hasAnyAsset(context: Context, assets: string[]): boolean {
-  const values = selectedValues(context.answers.assets);
-  return assets.some((asset) => values.includes(asset));
-}
-
-function inquiriesArrive(context: Context): boolean {
-  const values = selectedValues(context.answers.sources);
-  return values.length > 0 && !values.includes("none");
-}
-
-function captureExists(context: Context): boolean {
-  const capture = context.answers.capture;
-  return typeof capture === "string" && capture !== "no";
-}
-
-const localSearchProfiles = profiles.filter((profile) => profile.localSearch).map((profile) => profile.id);
-
-export const questions: Question[] = [
+export const QUESTION_DEFINITIONS = [
   {
     id: "profile",
+    version: 1,
     section: "contexto",
     type: "single",
     eyebrow: "PRIMERA PUERTA",
@@ -72,6 +53,7 @@ export const questions: Question[] = [
   },
   {
     id: "goal",
+    version: 1,
     section: "contexto",
     type: "single",
     eyebrow: "OBJETIVO",
@@ -93,6 +75,7 @@ export const questions: Question[] = [
   },
   {
     id: "stage",
+    version: 1,
     section: "contexto",
     type: "single",
     eyebrow: "MOMENTO",
@@ -110,6 +93,7 @@ export const questions: Question[] = [
   },
   {
     id: "team",
+    version: 1,
     section: "contexto",
     type: "single",
     eyebrow: "EQUIPO",
@@ -117,7 +101,6 @@ export const questions: Question[] = [
     helper: "Es contexto, no una calificación: un equipo grande no significa más madurez.",
     purpose: "Activa preguntas de responsabilidades y matiza recomendaciones; nunca decide la licencia.",
     dimensions: [],
-    applies: (context) => Boolean(context.stage) && context.stage !== "idea",
     options: [
       { value: "only_me", label: "Solo yo" },
       { value: "small", label: "Entre 2 y 5" },
@@ -128,6 +111,7 @@ export const questions: Question[] = [
   },
   {
     id: "assets",
+    version: 1,
     section: "presencia",
     type: "multi",
     eyebrow: "LO QUE EXISTE",
@@ -137,7 +121,6 @@ export const questions: Question[] = [
     dimensions: ["presencia", "alcance", "confianza"],
     target: { presencia: 3, alcance: 2, confianza: 1 },
     noneDimensions: ["presencia", "alcance"],
-    applies: (context) => Boolean(context.stage),
     options: [
       { value: "domain", label: "Dominio propio (por ejemplo, tunegocio.com)", evidence: { presencia: 1, confianza: 0.5 } },
       { value: "website", label: "Sitio web o página propia", evidence: { presencia: 1, alcance: 1 } },
@@ -152,6 +135,7 @@ export const questions: Question[] = [
   },
   {
     id: "clarity_presence",
+    version: 1,
     section: "presencia",
     type: "single",
     eyebrow: "CLARIDAD",
@@ -160,7 +144,6 @@ export const questions: Question[] = [
     purpose: "Claridad de la presencia existente; es la señal más fuerte de la dimensión Claridad.",
     dimensions: ["claridad"],
     weight: { claridad: 2 },
-    applies: (context) => hasAssets(context),
     options: [
       { value: "yes", label: "Sí, con claridad", evidence: { claridad: 1 } },
       { value: "partly", label: "En parte: falta información o está desactualizada", evidence: { claridad: 0.5 } },
@@ -170,6 +153,7 @@ export const questions: Question[] = [
   },
   {
     id: "offer_clarity",
+    version: 1,
     section: "presencia",
     type: "single",
     eyebrow: "PROPUESTA",
@@ -177,12 +161,6 @@ export const questions: Question[] = [
     helper: "Si cuesta resumirlo, suele costar también explicarlo en línea.",
     purpose: "Claridad de la oferta cuando aún no hay presencia o el perfil depende de una propuesta explícita.",
     dimensions: ["claridad"],
-    applies: (context) =>
-      context.stage === "idea" ||
-      context.stage === "launching" ||
-      context.profile === "creator" ||
-      context.profile === "project" ||
-      (Boolean(context.answers.assets) && !hasAssets(context)),
     options: [
       { value: "yes", label: "Sí, con claridad", evidence: { claridad: 1 } },
       { value: "partly", label: "Más o menos; me cuesta resumirlo", evidence: { claridad: 0.5 } },
@@ -191,6 +169,7 @@ export const questions: Question[] = [
   },
   {
     id: "validation",
+    version: 1,
     section: "alcance",
     type: "single",
     eyebrow: "VALIDACIÓN",
@@ -198,7 +177,6 @@ export const questions: Question[] = [
     helper: "Antes de construir piezas digitales conviene saber si alguien lo quiere.",
     purpose: "En etapa de idea o lanzamiento, mide alcance real y ordena prioridades (validar antes de construir).",
     dimensions: ["alcance"],
-    applies: (context) => context.stage === "idea" || context.stage === "launching",
     options: [
       { value: "none", label: "Nada todavía", evidence: { alcance: 0 } },
       { value: "talked", label: "He hablado con posibles clientes o usuarios", evidence: { alcance: 0.35 } },
@@ -208,6 +186,7 @@ export const questions: Question[] = [
   },
   {
     id: "proof_professional",
+    version: 1,
     section: "presencia",
     type: "multi",
     eyebrow: "CREDIBILIDAD",
@@ -216,7 +195,6 @@ export const questions: Question[] = [
     purpose: "Prueba pública de experiencia profesional (dimensión Confianza).",
     dimensions: ["confianza"],
     target: { confianza: 2 },
-    applies: (context) => context.profile === "professional" && context.stage !== "idea",
     options: [
       { value: "portfolio", label: "Portafolio, casos o trabajos visibles", evidence: { confianza: 1 } },
       { value: "credentials", label: "Credenciales, formación o experiencia verificable", evidence: { confianza: 1 } },
@@ -228,6 +206,7 @@ export const questions: Question[] = [
   },
   {
     id: "proof_business",
+    version: 1,
     section: "presencia",
     type: "multi",
     eyebrow: "CONFIANZA",
@@ -236,7 +215,6 @@ export const questions: Question[] = [
     purpose: "Prueba pública que respalda a un negocio (dimensión Confianza). Las reseñas pesan más porque en búsquedas locales son la señal más consultada; sin ellas la dimensión no pasa de «en construcción».",
     dimensions: ["confianza"],
     target: { confianza: 3.5 },
-    applies: (context) => context.profile === "business" && context.stage !== "idea",
     options: [
       { value: "reviews", label: "Reseñas públicas (Google, redes o plataformas)", evidence: { confianza: 1.5 } },
       { value: "photos", label: "Fotos reales del negocio, productos o trabajo", evidence: { confianza: 1 } },
@@ -248,6 +226,7 @@ export const questions: Question[] = [
   },
   {
     id: "proof_creator",
+    version: 1,
     section: "presencia",
     type: "multi",
     eyebrow: "CREDIBILIDAD",
@@ -257,7 +236,6 @@ export const questions: Question[] = [
     dimensions: ["confianza", "claridad"],
     target: { confianza: 2, claridad: 0.5 },
     noneDimensions: ["confianza"],
-    applies: (context) => context.profile === "creator" && context.stage !== "idea",
     options: [
       { value: "body", label: "Contenido o trabajos publicados de forma sostenida", evidence: { confianza: 1 } },
       { value: "results", label: "Resultados, testimonios o colaboraciones visibles", evidence: { confianza: 1 } },
@@ -268,6 +246,7 @@ export const questions: Question[] = [
   },
   {
     id: "proof_org",
+    version: 1,
     section: "presencia",
     type: "multi",
     eyebrow: "TRANSPARENCIA",
@@ -277,7 +256,6 @@ export const questions: Question[] = [
     dimensions: ["confianza", "claridad", "contacto"],
     target: { confianza: 2, claridad: 0.5, contacto: 0.5 },
     noneDimensions: ["confianza"],
-    applies: (context) => (context.profile === "project" || context.profile === "organization") && context.stage !== "idea",
     options: [
       { value: "who", label: "Quiénes están detrás", evidence: { confianza: 1 } },
       { value: "purpose", label: "Propósito y actividades explicadas", evidence: { confianza: 1, claridad: 0.5 } },
@@ -289,6 +267,7 @@ export const questions: Question[] = [
   },
   {
     id: "control",
+    version: 1,
     section: "presencia",
     type: "single",
     eyebrow: "CONTROL",
@@ -296,7 +275,6 @@ export const questions: Question[] = [
     helper: "Un activo que administra otra persona sin acceso tuyo es un riesgo, aunque funcione.",
     purpose: "Riesgo de propiedad de activos digitales; sostiene la dimensión Presencia y una prioridad fundacional.",
     dimensions: ["presencia"],
-    applies: (context) => hasAnyAsset(context, ["domain", "website"]),
     options: [
       { value: "yes", label: "Sí: está a mi nombre y tengo acceso", evidence: { presencia: 1 } },
       { value: "partly", label: "En parte: algo lo administra otra persona y no tengo acceso", evidence: { presencia: 0.4 } },
@@ -306,6 +284,7 @@ export const questions: Question[] = [
   },
   {
     id: "sources",
+    version: 1,
     section: "alcance",
     type: "multi",
     eyebrow: "ORIGEN",
@@ -315,7 +294,6 @@ export const questions: Question[] = [
     dimensions: ["alcance", "medicion"],
     target: { alcance: 2 },
     noneDimensions: ["alcance"],
-    applies: (context) => isOperating(context.stage),
     options: [
       { value: "referrals", label: "Recomendaciones de boca en boca", evidence: { alcance: 0.5 } },
       { value: "social", label: "Redes sociales", evidence: { alcance: 1 } },
@@ -330,6 +308,7 @@ export const questions: Question[] = [
   },
   {
     id: "discoverability",
+    version: 1,
     section: "alcance",
     type: "single",
     eyebrow: "BÚSQUEDA",
@@ -338,7 +317,6 @@ export const questions: Question[] = [
     purpose: "Descubribilidad local para perfiles que dependen de búsquedas (negocio, profesional, organización).",
     dimensions: ["alcance"],
     weight: { alcance: 2 },
-    applies: (context) => isOperating(context.stage) && context.profile !== undefined && localSearchProfiles.includes(context.profile),
     options: [
       { value: "top", label: "Sí, entre los primeros resultados", evidence: { alcance: 1 } },
       { value: "some", label: "Aparezco, pero no destaco", evidence: { alcance: 0.5 } },
@@ -349,6 +327,7 @@ export const questions: Question[] = [
   },
   {
     id: "audience",
+    version: 1,
     section: "alcance",
     type: "single",
     eyebrow: "AUDIENCIA",
@@ -357,7 +336,6 @@ export const questions: Question[] = [
     purpose: "Alcance de un creador; sustituye la pregunta de búsqueda local.",
     dimensions: ["alcance"],
     weight: { alcance: 2 },
-    applies: (context) => context.profile === "creator" && context.stage !== "idea",
     options: [
       { value: "none", label: "Todavía no tengo audiencia", evidence: { alcance: 0 } },
       { value: "small", label: "Pequeña y esporádica", evidence: { alcance: 0.35 } },
@@ -367,6 +345,7 @@ export const questions: Question[] = [
   },
   {
     id: "reach",
+    version: 1,
     section: "alcance",
     type: "single",
     eyebrow: "ALCANCE",
@@ -375,7 +354,6 @@ export const questions: Question[] = [
     purpose: "Alcance de un proyecto; sustituye la pregunta de búsqueda local.",
     dimensions: ["alcance"],
     weight: { alcance: 2 },
-    applies: (context) => context.profile === "project" && context.stage !== "idea",
     options: [
       { value: "nobody", label: "Casi nadie fuera de quienes lo construyen", evidence: { alcance: 0 } },
       { value: "circle", label: "Mi círculo cercano", evidence: { alcance: 0.3 } },
@@ -385,6 +363,7 @@ export const questions: Question[] = [
   },
   {
     id: "contact_path",
+    version: 1,
     section: "proceso",
     type: "single",
     eyebrow: "CONTACTO",
@@ -393,7 +372,6 @@ export const questions: Question[] = [
     purpose: "Existencia de un camino de contacto claro (dimensión Contacto).",
     dimensions: ["contacto"],
     weight: { contacto: 2 },
-    applies: (context) => Boolean(context.stage) && context.stage !== "idea",
     options: [
       { value: "one", label: "Sí: un canal principal, claro y atendido", evidence: { contacto: 1 } },
       { value: "many", label: "Sí, varios canales; respondo donde llegue", evidence: { contacto: 0.6 } },
@@ -403,6 +381,7 @@ export const questions: Question[] = [
   },
   {
     id: "capture",
+    version: 1,
     section: "proceso",
     type: "single",
     eyebrow: "REGISTRO",
@@ -411,7 +390,6 @@ export const questions: Question[] = [
     purpose: "Captura consistente de consultas: base del seguimiento y de cualquier automatización.",
     dimensions: ["contacto", "seguimiento"],
     weight: { contacto: 1, seguimiento: 2 },
-    applies: (context) => isOperating(context.stage) && inquiriesArrive(context),
     options: [
       { value: "always", label: "Sí, siempre en un mismo lugar", evidence: { contacto: 1, seguimiento: 1 } },
       { value: "sometimes", label: "A veces; depende del canal o de quién atiende", evidence: { contacto: 0.4, seguimiento: 0.4 } },
@@ -421,6 +399,7 @@ export const questions: Question[] = [
   },
   {
     id: "response",
+    version: 1,
     section: "proceso",
     type: "single",
     eyebrow: "RESPUESTA",
@@ -428,7 +407,6 @@ export const questions: Question[] = [
     helper: "Las consultas en línea pierden valor en horas, no en días.",
     purpose: "Velocidad de respuesta: fuga comercial temprana (dimensión Seguimiento).",
     dimensions: ["seguimiento"],
-    applies: (context) => isOperating(context.stage) && inquiriesArrive(context),
     options: [
       { value: "hour", label: "Menos de una hora", evidence: { seguimiento: 1 } },
       { value: "day", label: "El mismo día", evidence: { seguimiento: 0.7 } },
@@ -439,6 +417,7 @@ export const questions: Question[] = [
   },
   {
     id: "follow_up",
+    version: 1,
     section: "proceso",
     type: "single",
     eyebrow: "SEGUIMIENTO",
@@ -447,7 +426,6 @@ export const questions: Question[] = [
     purpose: "Persistencia del seguimiento: núcleo de la dimensión Seguimiento.",
     dimensions: ["seguimiento"],
     weight: { seguimiento: 2 },
-    applies: (context) => isOperating(context.stage) && inquiriesArrive(context),
     options: [
       { value: "system", label: "Hay un seguimiento definido: recordatorio, tarea o mensaje programado", evidence: { seguimiento: 1 } },
       { value: "manual", label: "Le escribo si me acuerdo", evidence: { seguimiento: 0.35 } },
@@ -457,6 +435,7 @@ export const questions: Question[] = [
   },
   {
     id: "pipeline",
+    version: 1,
     section: "proceso",
     type: "single",
     eyebrow: "OPORTUNIDADES",
@@ -465,7 +444,6 @@ export const questions: Question[] = [
     purpose: "Visibilidad del estado de las oportunidades; solo con actividad regular y algún registro.",
     dimensions: ["seguimiento"],
     weight: { seguimiento: 1.5 },
-    applies: (context) => isEstablished(context.stage) && inquiriesArrive(context) && captureExists(context),
     options: [
       { value: "tool", label: "Sí, en una herramienta o lista que se actualiza", evidence: { seguimiento: 1 } },
       { value: "partial", label: "Más o menos: de memoria o en notas sueltas", evidence: { seguimiento: 0.4 } },
@@ -475,6 +453,7 @@ export const questions: Question[] = [
   },
   {
     id: "responsibilities",
+    version: 1,
     section: "proceso",
     type: "single",
     eyebrow: "EQUIPO",
@@ -482,11 +461,11 @@ export const questions: Question[] = [
     helper: "Cuando nadie es responsable, las consultas se duplican o se quedan sin dueño.",
     purpose: "Reparto de responsabilidades cuando hay equipo y llegan consultas (dimensión Seguimiento).",
     dimensions: ["seguimiento"],
-    applies: (context) => hasTeam(context.team) && isOperating(context.stage) && inquiriesArrive(context),
     options: yesNoUnknown({ yes: 1, partly: 0.4, no: 0 }, ["seguimiento"]),
   },
   {
     id: "repetitive",
+    version: 1,
     section: "proceso",
     type: "single",
     eyebrow: "TRABAJO REPETITIVO",
@@ -494,7 +473,6 @@ export const questions: Question[] = [
     helper: "No suma ni resta puntos: sirve para saber si automatizar tiene sentido.",
     purpose: "Señal de oportunidad de automatización; no es evidencia de madurez.",
     dimensions: [],
-    applies: (context) => isEstablished(context.stage) && inquiriesArrive(context) && captureExists(context),
     options: [
       { value: "a_lot", label: "Mucho: consume horas cada semana" },
       { value: "some", label: "Algo, pero es manejable" },
@@ -504,6 +482,7 @@ export const questions: Question[] = [
   },
   {
     id: "post_sale",
+    version: 1,
     section: "proceso",
     type: "single",
     eyebrow: "DESPUÉS DE LA VENTA",
@@ -512,7 +491,6 @@ export const questions: Question[] = [
     purpose: "Ciclo posventa: reputación (Confianza) y continuidad (Seguimiento). Solo con actividad regular y consultas reales.",
     dimensions: ["confianza", "seguimiento"],
     weight: { confianza: 1, seguimiento: 0.5 },
-    applies: (context) => isEstablished(context.stage) && inquiriesArrive(context),
     variants: {
       project: { prompt: "Después de una actividad o participación, ¿pides opinión, haces seguimiento o vuelves a contactar?", helper: "La confianza y la continuidad se construyen después de la primera participación." },
       organization: { prompt: "Después de una actividad o servicio a la comunidad, ¿pides opinión, haces seguimiento o vuelves a contactar?", helper: "La confianza y la continuidad se construyen después de la primera participación." },
@@ -527,6 +505,7 @@ export const questions: Question[] = [
   },
   {
     id: "measurement",
+    version: 1,
     section: "medicion",
     type: "multi",
     eyebrow: "DATOS",
@@ -535,7 +514,6 @@ export const questions: Question[] = [
     purpose: "Capacidad de medir: origen, volumen, conversión y pérdida (dimensión Medición). Solo cuando llegan consultas: no se mide lo que no existe.",
     dimensions: ["medicion"],
     target: { medicion: 3 },
-    applies: (context) => isOperating(context.stage) && inquiriesArrive(context),
     options: [
       { value: "sources", label: "De dónde llegan las consultas", evidence: { medicion: 1 } },
       { value: "volume", label: "Cuántas consultas llegan por semana o por mes", evidence: { medicion: 1 } },
@@ -545,7 +523,150 @@ export const questions: Question[] = [
       { value: "none", label: "Nada de esto; me guío por intuición", kind: "none", exclusive: true },
     ],
   },
-];
+] as const satisfies readonly QuestionDefinition[];
+
+type QuestionDefinitionEntry = (typeof QUESTION_DEFINITIONS)[number];
+type DefinitionOf<Q extends QuestionId> = Extract<QuestionDefinitionEntry, { id: Q }>;
+
+/** ID estable de pregunta, derivado del registro (única fuente de verdad). */
+export type QuestionId = QuestionDefinitionEntry["id"];
+export type SingleQuestionId = Extract<QuestionDefinitionEntry, { type: "single" }>["id"];
+export type MultiQuestionId = Extract<QuestionDefinitionEntry, { type: "multi" }>["id"];
+
+/** IDs de opción válidos para UNA pregunta: una opción de `capture` no sirve para `follow_up`. */
+export type OptionIdOf<Q extends QuestionId> = DefinitionOf<Q>["options"][number]["value"];
+
+/** Forma de la respuesta de una pregunta: un ID de opción (single) o una lista (multi). */
+export type AnswerFor<Q extends QuestionId> = DefinitionOf<Q> extends { type: "multi" } ? OptionIdOf<Q>[] : OptionIdOf<Q>;
+
+/** Referencia tipada a una opción concreta de una pregunta concreta. */
+export type OptionRef<Q extends QuestionId = QuestionId> = { [K in Q]: { question: K; option: OptionIdOf<K> } }[Q];
+
+/** Valores seleccionados como lista (misma semántica que antes: una lista se devuelve tal cual). */
+export function selectedValues<T extends string>(answer: T | readonly T[] | undefined): T[] {
+  if (answer === undefined) return [];
+  return Array.isArray(answer) ? (answer as T[]) : [answer as T];
+}
+
+/** Respuesta de una pregunta single (solo si es un string, igual que las reglas anteriores). */
+export function singleAnswer<Q extends SingleQuestionId>(answers: Answers, id: Q): OptionIdOf<Q> | undefined {
+  const value: unknown = answers[id];
+  return (typeof value === "string" ? value : undefined) as OptionIdOf<Q> | undefined;
+}
+
+/** Opciones marcadas de una pregunta multi. */
+export function multiAnswer<Q extends MultiQuestionId>(answers: Answers, id: Q): OptionIdOf<Q>[] {
+  return selectedValues(answers[id] as OptionIdOf<Q> | readonly OptionIdOf<Q>[] | undefined);
+}
+
+/** Llegan consultas: hay orígenes marcados y ninguno es «todavía no llegan». */
+export function inquiriesArrive(answers: Answers): boolean {
+  const values = multiAnswer(answers, "sources");
+  return values.length > 0 && !values.includes("none");
+}
+
+function hasAssets(context: Context): boolean {
+  const values = multiAnswer(context.answers, "assets");
+  return values.length > 0 && !values.includes("none") && !values.includes("unknown");
+}
+
+function hasAnyAsset(context: Context, assets: readonly OptionIdOf<"assets">[]): boolean {
+  const values = multiAnswer(context.answers, "assets");
+  return assets.some((asset) => values.includes(asset));
+}
+
+function captureExists(context: Context): boolean {
+  const capture = context.answers.capture;
+  return typeof capture === "string" && capture !== "no";
+}
+
+const localSearchProfiles = profiles.filter((profile) => profile.localSearch).map((profile) => profile.id);
+
+/**
+ * Regla de aplicabilidad. `dependsOn` declara qué respuestas lee la condición (además del perfil,
+ * que habilita todo el recorrido); `registry.test.ts` comprueba que la declaración sea completa y
+ * exacta. Los closures son los mismos que tenía cada pregunta antes de DIAG-V3-02.
+ */
+export type ApplicabilityRule = {
+  dependsOn: readonly QuestionId[];
+  applies: (context: Context) => boolean;
+};
+
+/** Preguntas sin entrada aplican siempre que haya perfil (`profile`, `goal`, `stage`). */
+export const APPLICABILITY: Partial<Record<QuestionId, ApplicabilityRule>> = {
+  team: { dependsOn: ["stage"], applies: (context) => Boolean(context.stage) && context.stage !== "idea" },
+  assets: { dependsOn: ["stage"], applies: (context) => Boolean(context.stage) },
+  clarity_presence: { dependsOn: ["assets"], applies: (context) => hasAssets(context) },
+  offer_clarity: {
+    dependsOn: ["stage", "profile", "assets"],
+    applies: (context) =>
+      context.stage === "idea" ||
+      context.stage === "launching" ||
+      context.profile === "creator" ||
+      context.profile === "project" ||
+      (Boolean(context.answers.assets) && !hasAssets(context)),
+  },
+  validation: { dependsOn: ["stage"], applies: (context) => context.stage === "idea" || context.stage === "launching" },
+  proof_professional: { dependsOn: ["profile", "stage"], applies: (context) => context.profile === "professional" && context.stage !== "idea" },
+  proof_business: { dependsOn: ["profile", "stage"], applies: (context) => context.profile === "business" && context.stage !== "idea" },
+  proof_creator: { dependsOn: ["profile", "stage"], applies: (context) => context.profile === "creator" && context.stage !== "idea" },
+  proof_org: { dependsOn: ["profile", "stage"], applies: (context) => (context.profile === "project" || context.profile === "organization") && context.stage !== "idea" },
+  control: { dependsOn: ["assets"], applies: (context) => hasAnyAsset(context, ["domain", "website"]) },
+  sources: { dependsOn: ["stage"], applies: (context) => isOperating(context.stage) },
+  discoverability: {
+    dependsOn: ["stage", "profile"],
+    applies: (context) => isOperating(context.stage) && context.profile !== undefined && localSearchProfiles.includes(context.profile),
+  },
+  audience: { dependsOn: ["profile", "stage"], applies: (context) => context.profile === "creator" && context.stage !== "idea" },
+  reach: { dependsOn: ["profile", "stage"], applies: (context) => context.profile === "project" && context.stage !== "idea" },
+  contact_path: { dependsOn: ["stage"], applies: (context) => Boolean(context.stage) && context.stage !== "idea" },
+  capture: { dependsOn: ["stage", "sources"], applies: (context) => isOperating(context.stage) && inquiriesArrive(context.answers) },
+  response: { dependsOn: ["stage", "sources"], applies: (context) => isOperating(context.stage) && inquiriesArrive(context.answers) },
+  follow_up: { dependsOn: ["stage", "sources"], applies: (context) => isOperating(context.stage) && inquiriesArrive(context.answers) },
+  pipeline: {
+    dependsOn: ["stage", "sources", "capture"],
+    applies: (context) => isEstablished(context.stage) && inquiriesArrive(context.answers) && captureExists(context),
+  },
+  responsibilities: {
+    dependsOn: ["team", "stage", "sources"],
+    applies: (context) => hasTeam(context.team) && isOperating(context.stage) && inquiriesArrive(context.answers),
+  },
+  repetitive: {
+    dependsOn: ["stage", "sources", "capture"],
+    applies: (context) => isEstablished(context.stage) && inquiriesArrive(context.answers) && captureExists(context),
+  },
+  post_sale: { dependsOn: ["stage", "sources"], applies: (context) => isEstablished(context.stage) && inquiriesArrive(context.answers) },
+  measurement: { dependsOn: ["stage", "sources"], applies: (context) => isOperating(context.stage) && inquiriesArrive(context.answers) },
+};
+
+/** Recorrido completo en orden del registro: definición + condición. Mismo orden y mismas condiciones que antes. */
+export const questions: Question[] = QUESTION_DEFINITIONS.map((definition) => {
+  const rule = APPLICABILITY[definition.id];
+  return rule ? { ...definition, applies: rule.applies } : definition;
+});
+
+/** Grafo de dependencias declaradas: pregunta → preguntas cuyas respuestas lee su condición. */
+export function getDependencyGraph(): Record<QuestionId, readonly QuestionId[]> {
+  return Object.fromEntries(QUESTION_DEFINITIONS.map((definition) => [definition.id, APPLICABILITY[definition.id]?.dependsOn ?? []])) as Record<QuestionId, readonly QuestionId[]>;
+}
+
+/** Ciclos en un grafo de dependencias (búsqueda en profundidad). Vacío = acíclico. */
+export function findDependencyCycles(graph: Readonly<Record<string, readonly string[]>>): string[][] {
+  const cycles: string[][] = [];
+  const state = new Map<string, "visiting" | "done">();
+  const visit = (node: string, path: string[]) => {
+    if (state.get(node) === "done") return;
+    if (state.get(node) === "visiting") {
+      cycles.push([...path.slice(path.indexOf(node)), node]);
+      return;
+    }
+    state.set(node, "visiting");
+    for (const dependency of graph[node] ?? []) visit(dependency, [...path, node]);
+    state.set(node, "done");
+  };
+  for (const node of Object.keys(graph)) visit(node, []);
+  return cycles;
+}
 
 export const questionById: Record<string, Question> = Object.fromEntries(questions.map((question) => [question.id, question]));
 
