@@ -1,0 +1,5822 @@
+{
+  "cases": {
+    "persona:professionalReputation": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_professional",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 25,
+          "level": "inicial",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 40,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 30,
+          "level": "inicial",
+          "evidence": 5.5,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 35,
+      "confidence": {
+        "level": "alta",
+        "answered": 14,
+        "applicable": 14,
+        "unknown": 0
+      },
+      "state": "fugas",
+      "issues": [
+        {
+          "id": "capture_inquiries",
+          "priority": 1.2,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 1.17,
+          "severity": 0.9,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "diversify_sources",
+          "priority": 0.585,
+          "severity": 0.45,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 0.48,
+          "severity": 0.4,
+          "tentative": false
+        },
+        {
+          "id": "start_measuring",
+          "priority": 0.45,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.39,
+          "severity": 0.65,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "capture_inquiries",
+        "improve_discoverability",
+        "define_offer"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "estructuracion",
+          "visibilidad"
+        ],
+        "addons": [],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "7f2d0b9b7769f6c9b233c94f4e663315d78e2a4ccabda7efa57bcb541464e6ad"
+    },
+    "persona:localBusinessLeaks": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_business",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "responsibilities",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 83,
+          "level": "solida",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 63,
+          "level": "parcial",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 24,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 40,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 17,
+          "level": "inicial",
+          "evidence": 6.5,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 33,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 42,
+      "confidence": {
+        "level": "alta",
+        "answered": 15,
+        "applicable": 15,
+        "unknown": 0
+      },
+      "state": "fugas",
+      "issues": [
+        {
+          "id": "capture_inquiries",
+          "priority": 1.56,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.78,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 0.624,
+          "severity": 0.4,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.6,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "post_sale_loop",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "assign_responsibilities",
+          "priority": 0.475,
+          "severity": 0.5,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "capture_inquiries",
+        "structure_follow_up",
+        "define_contact_path"
+      ],
+      "strengths": [
+        "claridad:dimension"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "estructuracion"
+        ],
+        "addons": [
+          "whatsapp"
+        ],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09"
+    },
+    "persona:growingBusinessManual": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_business",
+        "control",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "responsibilities",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 8,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 100,
+      "confidence": {
+        "level": "alta",
+        "answered": 18,
+        "applicable": 18,
+        "unknown": 0
+      },
+      "state": "sistema",
+      "issues": [
+        {
+          "id": "automate_repetitive",
+          "priority": 0.682,
+          "severity": 0.7,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "automate_repetitive"
+      ],
+      "strengths": [
+        "claridad:dimension",
+        "presencia:dimension",
+        "alcance:dimension",
+        "confianza:dimension"
+      ],
+      "recommendation": {
+        "license": "ciudad",
+        "services": [
+          "automatizacion"
+        ],
+        "addons": [
+          "automatizaciones"
+        ],
+        "learn": [
+          "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "5bdc52e52f1c42ce5fe8417005f3674fd6162c8ba9ffb2219cab900d83ef1873"
+    },
+    "persona:ideaStage": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "assets",
+        "offer_clarity",
+        "validation"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 13,
+      "confidence": {
+        "level": "alta",
+        "answered": 5,
+        "applicable": 5,
+        "unknown": 0
+      },
+      "state": "inicio",
+      "issues": [
+        {
+          "id": "validate_offer",
+          "priority": 1.125,
+          "severity": 0.9,
+          "tentative": false
+        },
+        {
+          "id": "build_presence",
+          "priority": 0.875,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "validate_offer",
+        "build_presence",
+        "define_offer"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "estructuracion",
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "e2801e2bed0c555a23ade41a7dcb418cb1c4edb8fc9a122ba1d1658284f35376"
+    },
+    "persona:creatorAudience": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "offer_clarity",
+        "proof_creator",
+        "sources",
+        "audience",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 25,
+          "level": "inicial",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 33,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 69,
+          "level": "solida",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 25,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 17,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 28,
+          "level": "inicial",
+          "evidence": 5,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 33,
+      "confidence": {
+        "level": "alta",
+        "answered": 15,
+        "applicable": 15,
+        "unknown": 0
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "capture_inquiries",
+          "priority": 1.2,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 1.092,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "build_presence",
+          "priority": 0.938,
+          "severity": 0.75,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.6,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "start_measuring",
+          "priority": 0.45,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.39,
+          "severity": 0.65,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "define_offer",
+        "capture_inquiries",
+        "define_contact_path"
+      ],
+      "strengths": [
+        "alcance:dimension"
+      ],
+      "recommendation": {
+        "license": "cuadra",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": true,
+      "resultDigest": "9b13ff886d18e7ca5388cb20a251684bf8256c8dccc4cc89669f04a35ad88bbd"
+    },
+    "persona:multiSourceTeam": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_business",
+        "control",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "responsibilities",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 70,
+          "level": "solida",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 75,
+          "level": "solida",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 57,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 53,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 31,
+          "level": "inicial",
+          "evidence": 8,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 33,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 54,
+      "confidence": {
+        "level": "alta",
+        "answered": 18,
+        "applicable": 18,
+        "unknown": 0
+      },
+      "state": "fugas",
+      "issues": [
+        {
+          "id": "speed_up_response",
+          "priority": 1.02,
+          "severity": 0.85,
+          "tentative": false
+        },
+        {
+          "id": "capture_inquiries",
+          "priority": 1.014,
+          "severity": 0.65,
+          "tentative": false
+        },
+        {
+          "id": "assign_responsibilities",
+          "priority": 0.988,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "secure_ownership",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.507,
+          "severity": 0.65,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 0.48,
+          "severity": 0.4,
+          "tentative": false
+        },
+        {
+          "id": "track_pipeline",
+          "priority": 0.278,
+          "severity": 0.45,
+          "tentative": false
+        },
+        {
+          "id": "automate_repetitive",
+          "priority": 0.262,
+          "severity": 0.7,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "speed_up_response",
+        "capture_inquiries",
+        "assign_responsibilities"
+      ],
+      "strengths": [
+        "claridad:dimension",
+        "presencia:dimension",
+        "alcance:dimension"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "estructuracion",
+          "formalizacion"
+        ],
+        "addons": [
+          "whatsapp"
+        ],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "f86aae062833b6f6166dddae3480df6a25bb275134349214028aaf05b665d41c"
+    },
+    "persona:organizationCommunity": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_org",
+        "control",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "responsibilities",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 83,
+          "level": "solida",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 75,
+          "level": "solida",
+          "evidence": 2,
+          "unknown": 1
+        },
+        {
+          "id": "confianza",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 85,
+          "level": "consolidada",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 43,
+          "level": "parcial",
+          "evidence": 7.5,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 33,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 66,
+      "confidence": {
+        "level": "alta",
+        "answered": 18,
+        "applicable": 18,
+        "unknown": 1
+      },
+      "state": "fugas",
+      "issues": [
+        {
+          "id": "capture_inquiries",
+          "priority": 0.78,
+          "severity": 0.65,
+          "tentative": false
+        },
+        {
+          "id": "assign_responsibilities",
+          "priority": 0.475,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.39,
+          "severity": 0.65,
+          "tentative": false
+        },
+        {
+          "id": "check_discoverability",
+          "priority": 0.315,
+          "severity": 0.45,
+          "tentative": true
+        },
+        {
+          "id": "track_pipeline",
+          "priority": 0.214,
+          "severity": 0.45,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "capture_inquiries",
+        "assign_responsibilities",
+        "structure_follow_up"
+      ],
+      "strengths": [
+        "claridad:dimension",
+        "presencia:dimension",
+        "contacto:dimension"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "estructuracion",
+          "formalizacion"
+        ],
+        "addons": [],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "7148535c1c42e7c0ff60b1023e6de48bf17a901b9baf318612055e91ba288069"
+    },
+    "adversarial:strongPresenceNoFollowUp": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_business",
+        "control",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 83,
+          "level": "solida",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 67,
+          "level": "solida",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 17,
+          "level": "inicial",
+          "evidence": 5.5,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 33,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 67,
+      "confidence": {
+        "level": "alta",
+        "answered": 15,
+        "applicable": 15,
+        "unknown": 0
+      },
+      "state": "fugas",
+      "issues": [
+        {
+          "id": "capture_inquiries",
+          "priority": 1.56,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.78,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "post_sale_loop",
+          "priority": 0.3,
+          "severity": 0.3,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "capture_inquiries",
+        "structure_follow_up",
+        "post_sale_loop"
+      ],
+      "strengths": [
+        "claridad:dimension",
+        "presencia:dimension",
+        "alcance:dimension",
+        "confianza:dimension"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "b6208087be16d6b29667fb5b1906790f1e17350f552f139b98e6c9dace3ee596"
+    },
+    "adversarial:weakPresenceStrongProcess": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_business",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 33,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 13,
+          "level": "inicial",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 48,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 7,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 68,
+      "confidence": {
+        "level": "alta",
+        "answered": 16,
+        "applicable": 16,
+        "unknown": 0
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "improve_discoverability",
+          "priority": 1.17,
+          "severity": 0.9,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "diversify_sources",
+          "priority": 0.585,
+          "severity": 0.45,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "improve_discoverability",
+        "define_offer",
+        "diversify_sources"
+      ],
+      "strengths": [
+        "contacto:dimension",
+        "seguimiento:dimension",
+        "confianza:answer"
+      ],
+      "recommendation": {
+        "license": "cuadra",
+        "services": [
+          "presencia-digital",
+          "visibilidad"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "2ff0a051c56034debe569e3fba1ae6cb16c8d64ddfa0d870f44bc31b76ef3844"
+    },
+    "adversarial:bigTeamDisorganized": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_business",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "responsibilities",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 56,
+          "level": "parcial",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 10,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 53,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 30,
+          "level": "inicial",
+          "evidence": 8,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 37,
+      "confidence": {
+        "level": "alta",
+        "answered": 17,
+        "applicable": 17,
+        "unknown": 0
+      },
+      "state": "fugas",
+      "issues": [
+        {
+          "id": "capture_inquiries",
+          "priority": 1.014,
+          "severity": 0.65,
+          "tentative": false
+        },
+        {
+          "id": "assign_responsibilities",
+          "priority": 0.988,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "speed_up_response",
+          "priority": 0.72,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.6,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.507,
+          "severity": 0.65,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "post_sale_loop",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 0.48,
+          "severity": 0.4,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "capture_inquiries",
+        "assign_responsibilities",
+        "define_offer"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "estructuracion",
+          "formalizacion"
+        ],
+        "addons": [
+          "whatsapp"
+        ],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "53072db6e7777ad40f268d644648d32d755679d7aaa7776a1c5f75416ffb2042"
+    },
+    "adversarial:soloProSophisticated": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_professional",
+        "control",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 7,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 100,
+      "confidence": {
+        "level": "alta",
+        "answered": 17,
+        "applicable": 17,
+        "unknown": 0
+      },
+      "state": "sistema",
+      "issues": [
+        {
+          "id": "automate_repetitive",
+          "priority": 0.682,
+          "severity": 0.7,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "automate_repetitive"
+      ],
+      "strengths": [
+        "claridad:dimension",
+        "presencia:dimension",
+        "alcance:dimension",
+        "confianza:dimension"
+      ],
+      "recommendation": {
+        "license": "ciudad",
+        "services": [
+          "automatizacion"
+        ],
+        "addons": [
+          "automatizaciones"
+        ],
+        "learn": [
+          "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "4259f44c39d85bca1861107271f2418c93200689748ddb29e503138062baf925"
+    },
+    "adversarial:ideaWithFollowing": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "assets",
+        "clarity_presence",
+        "offer_clarity",
+        "validation"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 33,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 30,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 35,
+      "confidence": {
+        "level": "alta",
+        "answered": 6,
+        "applicable": 6,
+        "unknown": 0
+      },
+      "state": "inicio",
+      "issues": [
+        {
+          "id": "define_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "validate_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "define_offer",
+        "validate_offer"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "c99ec085e01bbfa0aee0f335c8af761fd35395236bc490be5f6c71f7890c3fa6"
+    },
+    "adversarial:creatorNoOffer": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "offer_clarity",
+        "proof_creator",
+        "sources",
+        "audience",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 25,
+          "level": "inicial",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 33,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 69,
+          "level": "solida",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 25,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 17,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 28,
+          "level": "inicial",
+          "evidence": 5,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 33,
+      "confidence": {
+        "level": "alta",
+        "answered": 15,
+        "applicable": 15,
+        "unknown": 0
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "capture_inquiries",
+          "priority": 1.2,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 1.092,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "build_presence",
+          "priority": 0.938,
+          "severity": 0.75,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.6,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "start_measuring",
+          "priority": 0.45,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.39,
+          "severity": 0.65,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "define_offer",
+        "capture_inquiries",
+        "define_contact_path"
+      ],
+      "strengths": [
+        "alcance:dimension"
+      ],
+      "recommendation": {
+        "license": "cuadra",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": true,
+      "resultDigest": "9b13ff886d18e7ca5388cb20a251684bf8256c8dccc4cc89669f04a35ad88bbd"
+    },
+    "adversarial:localNoReviewsGoodProcess": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_business",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "responsibilities",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 83,
+          "level": "solida",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 63,
+          "level": "parcial",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 36,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 97,
+          "level": "consolidada",
+          "evidence": 8,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 67,
+          "level": "solida",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 81,
+      "confidence": {
+        "level": "alta",
+        "answered": 17,
+        "applicable": 17,
+        "unknown": 0
+      },
+      "state": "sistema",
+      "issues": [
+        {
+          "id": "ask_reviews",
+          "priority": 0.65,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "post_sale_loop",
+          "priority": 0.39,
+          "severity": 0.3,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "ask_reviews",
+        "improve_discoverability",
+        "post_sale_loop"
+      ],
+      "strengths": [
+        "claridad:dimension",
+        "contacto:dimension",
+        "seguimiento:dimension"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital",
+          "visibilidad"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "6a117c1b9991290533c2dc40b8376c9d62fee3b7c7770646f26a510ca86b9e72"
+    },
+    "adversarial:mostlyUnknown": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "offer_clarity",
+        "proof_business",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "responsibilities",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 1
+        },
+        {
+          "id": "alcance",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 3
+        },
+        {
+          "id": "confianza",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 2
+        },
+        {
+          "id": "contacto",
+          "score": 25,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 1
+        },
+        {
+          "id": "seguimiento",
+          "score": 43,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 4
+        },
+        {
+          "id": "medicion",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 30,
+      "confidence": {
+        "level": "baja",
+        "answered": 17,
+        "applicable": 17,
+        "unknown": 9
+      },
+      "state": "incierto",
+      "issues": [
+        {
+          "id": "define_contact_path",
+          "priority": 0.84,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "inventory_assets",
+          "priority": 0.525,
+          "severity": 0.6,
+          "tentative": true
+        },
+        {
+          "id": "start_measuring",
+          "priority": 0.525,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "capture_inquiries",
+          "priority": 0.42,
+          "severity": 0.5,
+          "tentative": true
+        },
+        {
+          "id": "speed_up_response",
+          "priority": 0.336,
+          "severity": 0.4,
+          "tentative": true
+        },
+        {
+          "id": "check_discoverability",
+          "priority": 0.315,
+          "severity": 0.45,
+          "tentative": true
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.315,
+          "severity": 0.45,
+          "tentative": true
+        },
+        {
+          "id": "assign_responsibilities",
+          "priority": 0.266,
+          "severity": 0.4,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "define_contact_path",
+        "define_offer",
+        "inventory_assets"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "cuadra",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "643035a6798e5980be033b77249ceede6d9b3bfde96d203b8b992668776cb6b4"
+    },
+    "adversarial:manyNotApplicable": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_business",
+        "control",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 88,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 61,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 94,
+          "level": "consolidada",
+          "evidence": 5,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 67,
+          "level": "solida",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 90,
+      "confidence": {
+        "level": "alta",
+        "answered": 17,
+        "applicable": 17,
+        "unknown": 0
+      },
+      "state": "consolidado",
+      "issues": [],
+      "priorities": [],
+      "strengths": [
+        "claridad:dimension",
+        "presencia:dimension",
+        "alcance:dimension",
+        "contacto:dimension"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [],
+        "addons": [],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "ee3b3ed6e58c9feb6751f2d6b239726e2a667718ac50176df995a6869c5bd813"
+    },
+    "adversarial:wantsAutomationNoProcess": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_business",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "responsibilities",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 67,
+          "level": "solida",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 56,
+          "level": "parcial",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 14,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 40,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 11,
+          "level": "inicial",
+          "evidence": 6.5,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 35,
+      "confidence": {
+        "level": "alta",
+        "answered": 15,
+        "applicable": 15,
+        "unknown": 0
+      },
+      "state": "fugas",
+      "issues": [
+        {
+          "id": "capture_inquiries",
+          "priority": 1.2,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.78,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "speed_up_response",
+          "priority": 0.72,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.6,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "post_sale_loop",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 0.48,
+          "severity": 0.4,
+          "tentative": false
+        },
+        {
+          "id": "assign_responsibilities",
+          "priority": 0.475,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "start_measuring",
+          "priority": 0.45,
+          "severity": 0.6,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "capture_inquiries",
+        "structure_follow_up",
+        "speed_up_response"
+      ],
+      "strengths": [
+        "claridad:dimension"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": true,
+      "resultDigest": "2a335cde310631dc499b49504532558d975463439dc6e24e73ad5db3175699be"
+    },
+    "adversarial:strongExceptFollowUp": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_professional",
+        "control",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 71,
+          "level": "solida",
+          "evidence": 7,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 91,
+      "confidence": {
+        "level": "alta",
+        "answered": 17,
+        "applicable": 17,
+        "unknown": 0
+      },
+      "state": "fugas",
+      "issues": [
+        {
+          "id": "structure_follow_up",
+          "priority": 1.2,
+          "severity": 1,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "structure_follow_up"
+      ],
+      "strengths": [
+        "claridad:dimension",
+        "presencia:dimension",
+        "alcance:dimension",
+        "confianza:dimension"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "24b02e3ebe9ae831e273e486348ef938a78e951f5ed5040856ee769464972b5d"
+    },
+    "adversarial:weakExceptResponse": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_business",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 33,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 13,
+          "level": "inicial",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 17,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 20,
+          "level": "inicial",
+          "evidence": 5,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 13,
+      "confidence": {
+        "level": "alta",
+        "answered": 13,
+        "applicable": 13,
+        "unknown": 0
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "capture_inquiries",
+          "priority": 1.2,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.9,
+          "severity": 0.9,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 0.84,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.6,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "diversify_sources",
+          "priority": 0.45,
+          "severity": 0.45,
+          "tentative": false
+        },
+        {
+          "id": "start_measuring",
+          "priority": 0.45,
+          "severity": 0.6,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "define_offer",
+        "capture_inquiries",
+        "improve_discoverability"
+      ],
+      "strengths": [
+        "seguimiento:answer"
+      ],
+      "recommendation": {
+        "license": "cuadra",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "25b2bc6cbd8b10411b29058fd14db69c055ef9efcfa865485f96dc4c3ece7777"
+    },
+    "sweep:business/idea": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "assets",
+        "offer_clarity",
+        "validation"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 1
+        },
+        {
+          "id": "alcance",
+          "score": 35,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "confianza",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 1
+        },
+        {
+          "id": "contacto",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 18,
+      "confidence": {
+        "level": "media",
+        "answered": 5,
+        "applicable": 5,
+        "unknown": 1
+      },
+      "state": "inicio",
+      "issues": [
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "validate_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "inventory_assets",
+          "priority": 0.525,
+          "severity": 0.6,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "define_offer",
+        "validate_offer",
+        "inventory_assets"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "339a6b451a139e62233ca3e7b9545bbf5c82b18a8494fb03bee9b4f910c952a7"
+    },
+    "sweep:business/launching": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "offer_clarity",
+        "validation",
+        "proof_business",
+        "contact_path"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 1
+        },
+        {
+          "id": "alcance",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "confianza",
+          "score": 43,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "contacto",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 29,
+      "confidence": {
+        "level": "media",
+        "answered": 8,
+        "applicable": 8,
+        "unknown": 1
+      },
+      "state": "inicio",
+      "issues": [
+        {
+          "id": "define_contact_path",
+          "priority": 1.56,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "inventory_assets",
+          "priority": 0.525,
+          "severity": 0.6,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "define_contact_path",
+        "define_offer",
+        "inventory_assets"
+      ],
+      "strengths": [
+        "alcance:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "4fa574cf91c6e1e102e8892a1add439109320e987d4b75a264554d08d8926462"
+    },
+    "sweep:business/occasional": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "offer_clarity",
+        "proof_business",
+        "sources",
+        "discoverability",
+        "contact_path"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 1
+        },
+        {
+          "id": "confianza",
+          "score": 29,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 4,
+      "confidence": {
+        "level": "media",
+        "answered": 9,
+        "applicable": 9,
+        "unknown": 1
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "define_contact_path",
+          "priority": 1.56,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "build_presence",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.6,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "check_discoverability",
+          "priority": 0.315,
+          "severity": 0.45,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "define_contact_path",
+        "build_presence",
+        "define_offer"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "802264807d5ae1e6d81297a990ff77e13454111617e02be1ca790500f3f11f59"
+    },
+    "sweep:business/regular": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "offer_clarity",
+        "proof_business",
+        "sources",
+        "discoverability",
+        "contact_path"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 1
+        },
+        {
+          "id": "confianza",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 0,
+      "confidence": {
+        "level": "media",
+        "answered": 9,
+        "applicable": 9,
+        "unknown": 1
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "define_contact_path",
+          "priority": 1.56,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "build_presence",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "check_discoverability",
+          "priority": 0.315,
+          "severity": 0.45,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "define_contact_path",
+        "build_presence",
+        "define_offer"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "2742949997dd21fee05a2c63fa10170c84cd3a478316d5a601c9ebbcb96499ae"
+    },
+    "sweep:business/growing": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_business",
+        "control",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "responsibilities",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 33,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 1
+        },
+        {
+          "id": "confianza",
+          "score": 67,
+          "level": "solida",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 34,
+          "level": "inicial",
+          "evidence": 6.5,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 17,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 34,
+      "confidence": {
+        "level": "alta",
+        "answered": 16,
+        "applicable": 16,
+        "unknown": 1
+      },
+      "state": "fugas",
+      "issues": [
+        {
+          "id": "capture_inquiries",
+          "priority": 1.56,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 1.56,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "secure_ownership",
+          "priority": 1.125,
+          "severity": 0.9,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.9,
+          "severity": 0.9,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "assign_responsibilities",
+          "priority": 0.76,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "start_measuring",
+          "priority": 0.525,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.507,
+          "severity": 0.65,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "capture_inquiries",
+        "define_contact_path",
+        "secure_ownership"
+      ],
+      "strengths": [
+        "claridad:dimension",
+        "seguimiento:answer",
+        "confianza:answer"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "estructuracion",
+          "presencia-digital"
+        ],
+        "addons": [
+          "whatsapp"
+        ],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "4781849cb429201adacbc08246827db673c7dbe082fbfb99315df9d46fc9cf2c"
+    },
+    "sweep:professional/idea": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "assets",
+        "clarity_presence",
+        "offer_clarity",
+        "validation",
+        "control"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 33,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "alcance",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 28,
+      "confidence": {
+        "level": "media",
+        "answered": 7,
+        "applicable": 7,
+        "unknown": 1
+      },
+      "state": "inicio",
+      "issues": [
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "validate_offer",
+          "priority": 1.125,
+          "severity": 0.9,
+          "tentative": false
+        },
+        {
+          "id": "secure_ownership",
+          "priority": 0.438,
+          "severity": 0.5,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "define_offer",
+        "validate_offer",
+        "secure_ownership"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "2d4fec54e685ad92cb6fd80dfe5b3e033ce0ba1172fab127fae1bb4219f66d1e"
+    },
+    "sweep:professional/launching": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "offer_clarity",
+        "validation",
+        "proof_professional",
+        "contact_path"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 35,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 53,
+      "confidence": {
+        "level": "alta",
+        "answered": 8,
+        "applicable": 8,
+        "unknown": 0
+      },
+      "state": "inicio",
+      "issues": [
+        {
+          "id": "build_presence",
+          "priority": 0.875,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "build_presence",
+        "define_offer"
+      ],
+      "strengths": [
+        "contacto:dimension"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "3e4dffcdeeb108fc3e319916814b66409f3bab609cad3191873175ffed5b9d40"
+    },
+    "sweep:professional/occasional": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "offer_clarity",
+        "proof_professional",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "responsibilities",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 1
+        },
+        {
+          "id": "alcance",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 2
+        },
+        {
+          "id": "confianza",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "contacto",
+          "score": 40,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 12,
+          "level": "inicial",
+          "evidence": 6,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 23,
+      "confidence": {
+        "level": "media",
+        "answered": 14,
+        "applicable": 14,
+        "unknown": 2
+      },
+      "state": "fugas",
+      "issues": [
+        {
+          "id": "capture_inquiries",
+          "priority": 1.56,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.78,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "assign_responsibilities",
+          "priority": 0.76,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 0.624,
+          "severity": 0.4,
+          "tentative": false
+        },
+        {
+          "id": "inventory_assets",
+          "priority": 0.525,
+          "severity": 0.6,
+          "tentative": true
+        },
+        {
+          "id": "start_measuring",
+          "priority": 0.525,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "capture_inquiries",
+        "show_proof",
+        "structure_follow_up"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "estructuracion",
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "b370d6311e0b3247e8559746e751a13b28c521de13c99c8a9bab6de7daea6317"
+    },
+    "sweep:professional/regular": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_professional",
+        "control",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "responsibilities",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 25,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 6,
+          "level": "inicial",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 92,
+          "level": "consolidada",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 17,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 23,
+          "level": "inicial",
+          "evidence": 6.5,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 26,
+      "confidence": {
+        "level": "alta",
+        "answered": 16,
+        "applicable": 16,
+        "unknown": 0
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "capture_inquiries",
+          "priority": 1.56,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "secure_ownership",
+          "priority": 1.125,
+          "severity": 0.9,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 1.092,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "speed_up_response",
+          "priority": 0.936,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.9,
+          "severity": 0.9,
+          "tentative": false
+        },
+        {
+          "id": "assign_responsibilities",
+          "priority": 0.76,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.507,
+          "severity": 0.65,
+          "tentative": false
+        },
+        {
+          "id": "ask_reviews",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "capture_inquiries",
+        "define_offer",
+        "secure_ownership"
+      ],
+      "strengths": [
+        "confianza:dimension"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "estructuracion",
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "1107e8c5a3d9f1fcea82b090c3e3deed0ce9b8e78a8d6aca7de00f0acdf408e1"
+    },
+    "sweep:professional/growing": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "offer_clarity",
+        "proof_professional",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "responsibilities",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 1
+        },
+        {
+          "id": "alcance",
+          "score": 67,
+          "level": "solida",
+          "evidence": 3,
+          "unknown": 1
+        },
+        {
+          "id": "confianza",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 1
+        },
+        {
+          "id": "contacto",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 1
+        },
+        {
+          "id": "seguimiento",
+          "score": 30,
+          "level": "inicial",
+          "evidence": 6,
+          "unknown": 1
+        },
+        {
+          "id": "medicion",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 32,
+      "confidence": {
+        "level": "media",
+        "answered": 17,
+        "applicable": 17,
+        "unknown": 2
+      },
+      "state": "fugas",
+      "issues": [
+        {
+          "id": "define_contact_path",
+          "priority": 1.56,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "speed_up_response",
+          "priority": 0.936,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.78,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "assign_responsibilities",
+          "priority": 0.76,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "capture_inquiries",
+          "priority": 0.546,
+          "severity": 0.5,
+          "tentative": true
+        },
+        {
+          "id": "inventory_assets",
+          "priority": 0.525,
+          "severity": 0.6,
+          "tentative": true
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "post_sale_loop",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "define_contact_path",
+        "speed_up_response",
+        "show_proof"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "2eca414ff256dd2b38388dadda5fb2aec4e2f25d7011966ee0bc077e7152ab85"
+    },
+    "sweep:creator/idea": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "assets",
+        "clarity_presence",
+        "offer_clarity",
+        "validation",
+        "control"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "presencia",
+          "score": 70,
+          "level": "solida",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 68,
+          "level": "solida",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 54,
+      "confidence": {
+        "level": "media",
+        "answered": 7,
+        "applicable": 7,
+        "unknown": 1
+      },
+      "state": "inicio",
+      "issues": [
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "secure_ownership",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "validate_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "define_offer",
+        "secure_ownership",
+        "validate_offer"
+      ],
+      "strengths": [
+        "presencia:dimension",
+        "alcance:dimension"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "8db67f1a47875928fadde94290b312199bcf87a7d0f1d5ff04ed659448203cc4"
+    },
+    "sweep:creator/launching": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "offer_clarity",
+        "validation",
+        "proof_creator",
+        "audience",
+        "contact_path"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 1
+        },
+        {
+          "id": "alcance",
+          "score": 58,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 1
+        },
+        {
+          "id": "confianza",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "contacto",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 61,
+      "confidence": {
+        "level": "media",
+        "answered": 9,
+        "applicable": 9,
+        "unknown": 1
+      },
+      "state": "inicio",
+      "issues": [
+        {
+          "id": "show_proof",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "validate_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "inventory_assets",
+          "priority": 0.525,
+          "severity": 0.6,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "show_proof",
+        "define_offer",
+        "validate_offer"
+      ],
+      "strengths": [
+        "contacto:dimension"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "db22f3a866314536940d5106345591bd457142fe67a9f49922ebcb08857f1719"
+    },
+    "sweep:creator/occasional": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "offer_clarity",
+        "proof_creator",
+        "sources",
+        "audience",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "responsibilities",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 1
+        },
+        {
+          "id": "alcance",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 2
+        },
+        {
+          "id": "confianza",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "contacto",
+          "score": 60,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 1
+        },
+        {
+          "id": "seguimiento",
+          "score": 15,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 3
+        },
+        {
+          "id": "medicion",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 48,
+      "confidence": {
+        "level": "baja",
+        "answered": 14,
+        "applicable": 14,
+        "unknown": 5
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "speed_up_response",
+          "priority": 1.326,
+          "severity": 0.85,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 0.624,
+          "severity": 0.4,
+          "tentative": false
+        },
+        {
+          "id": "capture_inquiries",
+          "priority": 0.546,
+          "severity": 0.5,
+          "tentative": true
+        },
+        {
+          "id": "inventory_assets",
+          "priority": 0.525,
+          "severity": 0.6,
+          "tentative": true
+        },
+        {
+          "id": "start_measuring",
+          "priority": 0.525,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.273,
+          "severity": 0.5,
+          "tentative": true
+        },
+        {
+          "id": "assign_responsibilities",
+          "priority": 0.266,
+          "severity": 0.4,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "speed_up_response",
+        "define_offer",
+        "show_proof"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "estructuracion",
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "af4be8cfbc4f70fc90262cbb166b87179bdf7557d596df22c07d644fab52ad21"
+    },
+    "sweep:creator/regular": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "offer_clarity",
+        "proof_creator",
+        "sources",
+        "audience",
+        "contact_path"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 1
+        },
+        {
+          "id": "alcance",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 1
+        },
+        {
+          "id": "confianza",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "contacto",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 43,
+      "confidence": {
+        "level": "media",
+        "answered": 9,
+        "applicable": 9,
+        "unknown": 1
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "improve_discoverability",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "inventory_assets",
+          "priority": 0.525,
+          "severity": 0.6,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "improve_discoverability",
+        "show_proof",
+        "inventory_assets"
+      ],
+      "strengths": [
+        "contacto:dimension"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "7be0cace8e5892ba71d3193142db2b882ebd5877238a0d29f6541fe2fbe86207"
+    },
+    "sweep:creator/growing": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "offer_clarity",
+        "proof_creator",
+        "sources",
+        "audience",
+        "contact_path"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 83,
+          "level": "solida",
+          "evidence": 3,
+          "unknown": 1
+        },
+        {
+          "id": "presencia",
+          "score": 83,
+          "level": "solida",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 43,
+          "level": "parcial",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "contacto",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 46,
+      "confidence": {
+        "level": "media",
+        "answered": 10,
+        "applicable": 10,
+        "unknown": 1
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "define_contact_path",
+          "priority": 1.56,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.315,
+          "severity": 0.45,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "define_contact_path",
+        "define_offer",
+        "improve_discoverability"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "38855c887c0451a2298653a64f02f6d32ad1f592fdabe70f74939bd4fc359c3c"
+    },
+    "sweep:project/idea": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "assets",
+        "clarity_presence",
+        "offer_clarity",
+        "validation",
+        "control"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "presencia",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "alcance",
+          "score": 18,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 57,
+      "confidence": {
+        "level": "media",
+        "answered": 7,
+        "applicable": 7,
+        "unknown": 2
+      },
+      "state": "inicio",
+      "issues": [
+        {
+          "id": "validate_offer",
+          "priority": 0.75,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 0.438,
+          "severity": 0.5,
+          "tentative": true
+        },
+        {
+          "id": "secure_ownership",
+          "priority": 0.438,
+          "severity": 0.5,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "validate_offer",
+        "define_offer",
+        "secure_ownership"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "estructuracion",
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "ef128cbe25a0c8710f877e5a5f33dce13575738ff71cbf3fb51e93021ec4cc64"
+    },
+    "sweep:project/launching": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "offer_clarity",
+        "validation",
+        "proof_org",
+        "reach",
+        "contact_path"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "presencia",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 1
+        },
+        {
+          "id": "alcance",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 3,
+          "unknown": 1
+        },
+        {
+          "id": "confianza",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 2
+        },
+        {
+          "id": "contacto",
+          "score": 25,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 1
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 58,
+      "confidence": {
+        "level": "media",
+        "answered": 9,
+        "applicable": 9,
+        "unknown": 2
+      },
+      "state": "inicio",
+      "issues": [
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 1.092,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "inventory_assets",
+          "priority": 0.525,
+          "severity": 0.6,
+          "tentative": true
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.315,
+          "severity": 0.45,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "define_offer",
+        "define_contact_path",
+        "inventory_assets"
+      ],
+      "strengths": [
+        "alcance:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "40c55790c2c727b2550eae46bddea0f8dbf3e3e71e59ce7899afdea570330a93"
+    },
+    "sweep:project/occasional": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "offer_clarity",
+        "proof_org",
+        "sources",
+        "reach",
+        "contact_path"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 17,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 67,
+          "level": "solida",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 19,
+          "level": "inicial",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 33,
+      "confidence": {
+        "level": "alta",
+        "answered": 10,
+        "applicable": 10,
+        "unknown": 0
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "define_offer",
+        "improve_discoverability",
+        "show_proof"
+      ],
+      "strengths": [
+        "contacto:dimension"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "577b255fc90aae70e47ce511d52b6585b0f518117d8c26b1dda2db9b2e19de8d"
+    },
+    "sweep:project/regular": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "offer_clarity",
+        "proof_org",
+        "sources",
+        "reach",
+        "contact_path"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 1
+        },
+        {
+          "id": "presencia",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 45,
+          "level": "parcial",
+          "evidence": 4,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 25,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 40,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 42,
+      "confidence": {
+        "level": "media",
+        "answered": 10,
+        "applicable": 10,
+        "unknown": 1
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.6,
+          "severity": 0.6,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "define_offer",
+        "improve_discoverability",
+        "show_proof"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "8cd82f17525b65c34063d0f34e63a1e0d67349a7c1354357c6cd29819a3af272"
+    },
+    "sweep:project/growing": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "offer_clarity",
+        "proof_org",
+        "sources",
+        "reach",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "responsibilities",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 17,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 1
+        },
+        {
+          "id": "presencia",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 37,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 1
+        },
+        {
+          "id": "confianza",
+          "score": 25,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 1
+        },
+        {
+          "id": "contacto",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 2
+        },
+        {
+          "id": "seguimiento",
+          "score": 38,
+          "level": "parcial",
+          "evidence": 2.5,
+          "unknown": 2
+        },
+        {
+          "id": "medicion",
+          "score": 17,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 38,
+      "confidence": {
+        "level": "media",
+        "answered": 18,
+        "applicable": 18,
+        "unknown": 4
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "assign_responsibilities",
+          "priority": 0.76,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "capture_inquiries",
+          "priority": 0.546,
+          "severity": 0.5,
+          "tentative": true
+        },
+        {
+          "id": "start_measuring",
+          "priority": 0.525,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.5,
+          "severity": 0.5,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.315,
+          "severity": 0.45,
+          "tentative": true
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.273,
+          "severity": 0.5,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "define_offer",
+        "assign_responsibilities",
+        "capture_inquiries"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital",
+          "formalizacion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "e57cc309c1b7b6e25d588402ee79a2f6973fc04e37e2fefe82a9827075f01f12"
+    },
+    "sweep:organization/idea": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "assets",
+        "offer_clarity",
+        "validation"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 25,
+      "confidence": {
+        "level": "alta",
+        "answered": 5,
+        "applicable": 5,
+        "unknown": 0
+      },
+      "state": "inicio",
+      "issues": [
+        {
+          "id": "validate_offer",
+          "priority": 1.125,
+          "severity": 0.9,
+          "tentative": false
+        },
+        {
+          "id": "build_presence",
+          "priority": 0.875,
+          "severity": 0.7,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "validate_offer",
+        "build_presence"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "estructuracion",
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "d476654454cc223eddecc96f8f6eae52c5c6aba50bee2fe5f3267f5517cdc294"
+    },
+    "sweep:organization/launching": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "offer_clarity",
+        "validation",
+        "proof_org",
+        "contact_path"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 35,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 40,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 38,
+      "confidence": {
+        "level": "alta",
+        "answered": 8,
+        "applicable": 8,
+        "unknown": 0
+      },
+      "state": "inicio",
+      "issues": [
+        {
+          "id": "build_presence",
+          "priority": 0.875,
+          "severity": 0.7,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "build_presence"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "ce2aacaf1cd4f50e26f28e1aff9057da4fe5212ab965773fe700f6bfa5e85bd2"
+    },
+    "sweep:organization/occasional": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_org",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "responsibilities",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": 33,
+          "level": "inicial",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 17,
+          "level": "inicial",
+          "evidence": 3,
+          "unknown": 1
+        },
+        {
+          "id": "confianza",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 55,
+          "level": "parcial",
+          "evidence": 6,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 30,
+      "confidence": {
+        "level": "alta",
+        "answered": 14,
+        "applicable": 14,
+        "unknown": 1
+      },
+      "state": "base",
+      "issues": [
+        {
+          "id": "structure_follow_up",
+          "priority": 1.56,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 1.25,
+          "severity": 1,
+          "tentative": false
+        },
+        {
+          "id": "define_contact_path",
+          "priority": 1.092,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "speed_up_response",
+          "priority": 0.936,
+          "severity": 0.6,
+          "tentative": false
+        },
+        {
+          "id": "improve_discoverability",
+          "priority": 0.9,
+          "severity": 0.9,
+          "tentative": false
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "start_measuring",
+          "priority": 0.525,
+          "severity": 0.7,
+          "tentative": false
+        }
+      ],
+      "priorities": [
+        "structure_follow_up",
+        "define_offer",
+        "define_contact_path"
+      ],
+      "strengths": [
+        "contacto:answer"
+      ],
+      "recommendation": {
+        "license": "barrio",
+        "services": [
+          "estructuracion",
+          "presencia-digital"
+        ],
+        "addons": [],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "acb563828d5f130efdfedd852a23ff2ff391493fc350ce6c61b4c1651b76133f"
+    },
+    "sweep:organization/regular": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "clarity_presence",
+        "proof_org",
+        "control",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "responsibilities",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 2
+        },
+        {
+          "id": "presencia",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": 75,
+          "level": "solida",
+          "evidence": 1,
+          "unknown": 2
+        },
+        {
+          "id": "confianza",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 1,
+          "unknown": 1
+        },
+        {
+          "id": "contacto",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 2,
+          "unknown": 2
+        },
+        {
+          "id": "seguimiento",
+          "score": 0,
+          "level": "inicial",
+          "evidence": 1.5,
+          "unknown": 4
+        },
+        {
+          "id": "medicion",
+          "score": 17,
+          "level": "inicial",
+          "evidence": 2,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 48,
+      "confidence": {
+        "level": "baja",
+        "answered": 18,
+        "applicable": 18,
+        "unknown": 8
+      },
+      "state": "incierto",
+      "issues": [
+        {
+          "id": "secure_ownership",
+          "priority": 1.125,
+          "severity": 0.9,
+          "tentative": false
+        },
+        {
+          "id": "capture_inquiries",
+          "priority": 0.546,
+          "severity": 0.5,
+          "tentative": true
+        },
+        {
+          "id": "start_measuring",
+          "priority": 0.525,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "define_offer",
+          "priority": 0.438,
+          "severity": 0.5,
+          "tentative": true
+        },
+        {
+          "id": "speed_up_response",
+          "priority": 0.437,
+          "severity": 0.4,
+          "tentative": true
+        },
+        {
+          "id": "track_pipeline",
+          "priority": 0.332,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "check_discoverability",
+          "priority": 0.315,
+          "severity": 0.45,
+          "tentative": true
+        },
+        {
+          "id": "show_proof",
+          "priority": 0.315,
+          "severity": 0.45,
+          "tentative": true
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.273,
+          "severity": 0.5,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "secure_ownership",
+        "capture_inquiries",
+        "start_measuring"
+      ],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "cuadra",
+        "services": [
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "b2ca3a4f9b43a9b957d5c6fe3d26c13ce47fe8084697c7102cf4faa1890c78b7"
+    },
+    "sweep:organization/growing": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "team",
+        "assets",
+        "offer_clarity",
+        "proof_org",
+        "sources",
+        "discoverability",
+        "contact_path",
+        "capture",
+        "response",
+        "follow_up",
+        "pipeline",
+        "responsibilities",
+        "repetitive",
+        "post_sale",
+        "measurement"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 1,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 1
+        },
+        {
+          "id": "alcance",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 1,
+          "unknown": 2
+        },
+        {
+          "id": "confianza",
+          "score": 50,
+          "level": "parcial",
+          "evidence": 2,
+          "unknown": 1
+        },
+        {
+          "id": "contacto",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 3,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": 64,
+          "level": "parcial",
+          "evidence": 5,
+          "unknown": 2
+        },
+        {
+          "id": "medicion",
+          "score": 100,
+          "level": "consolidada",
+          "evidence": 1,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 78,
+      "confidence": {
+        "level": "media",
+        "answered": 17,
+        "applicable": 17,
+        "unknown": 5
+      },
+      "state": "incierto",
+      "issues": [
+        {
+          "id": "show_proof",
+          "priority": 0.8,
+          "severity": 0.8,
+          "tentative": false
+        },
+        {
+          "id": "track_pipeline",
+          "priority": 0.665,
+          "severity": 0.7,
+          "tentative": false
+        },
+        {
+          "id": "structure_follow_up",
+          "priority": 0.546,
+          "severity": 0.5,
+          "tentative": true
+        },
+        {
+          "id": "inventory_assets",
+          "priority": 0.525,
+          "severity": 0.6,
+          "tentative": true
+        },
+        {
+          "id": "check_discoverability",
+          "priority": 0.315,
+          "severity": 0.45,
+          "tentative": true
+        },
+        {
+          "id": "assign_responsibilities",
+          "priority": 0.266,
+          "severity": 0.4,
+          "tentative": true
+        }
+      ],
+      "priorities": [
+        "show_proof",
+        "track_pipeline",
+        "structure_follow_up"
+      ],
+      "strengths": [
+        "contacto:dimension",
+        "confianza:answer"
+      ],
+      "recommendation": {
+        "license": "cuadra",
+        "services": [
+          "presencia-digital",
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "1b3621c3590be0bc0bddc0ac1cd93cca14a40ceaf208ac06be9e752d3f5ed878"
+    },
+    "entry:empty": {
+      "applicable": [
+        "profile"
+      ],
+      "result": null
+    },
+    "entry:creator-deep-link": {
+      "applicable": [
+        "profile",
+        "goal",
+        "stage",
+        "offer_clarity",
+        "proof_creator",
+        "audience"
+      ],
+      "dimensions": [
+        {
+          "id": "claridad",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "presencia",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "alcance",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "confianza",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "contacto",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "seguimiento",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        },
+        {
+          "id": "medicion",
+          "score": null,
+          "level": null,
+          "evidence": 0,
+          "unknown": 0
+        }
+      ],
+      "overallScore": 0,
+      "confidence": {
+        "level": "baja",
+        "answered": 0,
+        "applicable": 5,
+        "unknown": 0
+      },
+      "state": "inicio",
+      "issues": [],
+      "priorities": [],
+      "strengths": [
+        "claridad:answer"
+      ],
+      "recommendation": {
+        "license": "none",
+        "services": [
+          "estructuracion"
+        ],
+        "addons": [],
+        "learn": [
+          "antes-de-hacer-publicidad-organiza-tu-presencia-digital"
+        ]
+      },
+      "goalNote": false,
+      "resultDigest": "43cddb3faf7f6fcca1e829f3b24e6a4f0c557816b0333c8ee11ab0010730a01a"
+    }
+  },
+  "sweep": {
+    "count": 1125,
+    "digest": "6338c336b0aee27cb4db224871f6ef05e06f0e8bab1d5aaa9564023276ec175a"
+  }
+}

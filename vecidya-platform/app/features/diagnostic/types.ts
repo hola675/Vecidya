@@ -5,6 +5,8 @@
  * y devuelve un resultado explicable. La UI vive en `app/routes/diagnostic.tsx`.
  */
 
+import type { DiagnosticVersion, IssueId, QuestionId } from "./contracts";
+
 export type ProfileId = "business" | "professional" | "creator" | "project" | "organization";
 
 export type StageId = "idea" | "launching" | "occasional" | "regular" | "growing";
@@ -35,6 +37,7 @@ export type SectionId = "contexto" | "presencia" | "alcance" | "proceso" | "medi
  */
 export type OptionKind = "value" | "none" | "unknown" | "not_applicable";
 
+/** Pesos de evidencia de una opción (entrada del scoring). No es `DiagnosticEvidence` (observación explicable, `contracts.ts`). */
 export type Evidence = Partial<Record<DimensionId, number>>;
 
 export type QuestionOption = {
@@ -53,7 +56,8 @@ export type QuestionType = "single" | "multi";
 
 export type AnswerValue = string | string[];
 
-export type Answers = Record<string, AnswerValue>;
+/** Solo claves de preguntas existentes: una pregunta renombrada o retirada rompe la compilación de sus reglas. */
+export type Answers = Partial<Record<QuestionId, AnswerValue>>;
 
 export type Context = {
   profile?: ProfileId;
@@ -64,7 +68,7 @@ export type Context = {
 };
 
 export type Question = {
-  id: string;
+  id: QuestionId;
   section: SectionId;
   type: QuestionType;
   eyebrow: string;
@@ -124,7 +128,7 @@ export type DiagnosticState = {
 export type IssueKind = "foundational" | "leakage" | "trust" | "discoverability" | "bottleneck" | "maturity";
 
 export type Issue = {
-  id: string;
+  id: IssueId;
   kind: IssueKind;
   dimension: DimensionId;
   /** 0–1: gravedad intrínseca del hallazgo. */
@@ -137,7 +141,7 @@ export type Issue = {
   why: string;
   action: string;
   /** Ids de hallazgos que conviene resolver antes. */
-  after?: string[];
+  after?: IssueId[];
   learn?: string;
   service?: string;
 };
@@ -171,6 +175,8 @@ export type Recommendation = {
 };
 
 export type DiagnosticResult = {
+  /** Versión del contrato que produjo el resultado (DIAG-V3-01). */
+  version: DiagnosticVersion;
   profile: ProfileId;
   context: { stage?: StageId; team?: TeamId; goal?: GoalId };
   state: DiagnosticState;

@@ -1,4 +1,5 @@
 import { deriveActiveAnswers, deriveContext, getApplicableQuestions } from "./answers";
+import { CURRENT_DIAGNOSTIC_VERSION } from "./contracts";
 import { getProfile } from "./profiles";
 import { optionLabel } from "./questions";
 import { recommend } from "./recommendations";
@@ -7,6 +8,8 @@ import { computeConfidence, computeOverallScore, scoreDimensions } from "./scori
 import type { Answers, DiagnosticResult } from "./types";
 
 export * from "./types";
+export * from "./contracts";
+export { deriveContextV3, LEGACY_PROFILE_MAPPING, LEGACY_STAGE_MAPPING, mapLegacyGoal, mapLegacyStage } from "./mappings";
 export { applyAnswer, clearAnswer, deriveActiveAnswers, deriveContext, getApplicableQuestions, isAnswered, isSelected, selectedValues } from "./answers";
 export { addonCatalog, learnCatalog, learnPath, licenseCatalog, serviceCatalog, servicePath } from "./catalog";
 export { buildDiagnosticPath, DIAGNOSTIC_PATH, entryToAnswers, GOAL_PARAM, parseDiagnosticEntry, PROFILE_PARAM, type DiagnosticEntry } from "./deep-link";
@@ -39,6 +42,7 @@ export function runDiagnostic(rawAnswers: Answers): DiagnosticResult | null {
   const goalNote = explainGoal(context, issues, scores);
 
   return {
+    version: CURRENT_DIAGNOSTIC_VERSION,
     profile: context.profile,
     context: { stage: context.stage, team: context.team, goal: context.goal },
     state,

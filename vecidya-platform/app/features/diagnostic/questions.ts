@@ -1,4 +1,5 @@
 import { hasTeam, isEstablished, isOperating, profiles } from "./profiles";
+import type { QuestionId } from "./contracts";
 import type { AnswerValue, Context, DimensionId, ProfileId, Question, QuestionOption, SectionId } from "./types";
 
 /**
@@ -556,7 +557,7 @@ export function getOption(question: Question, value: string): QuestionOption | u
   return question.options.find((option) => option.value === value);
 }
 
-export function optionLabel(questionId: string, value: string): string {
+export function optionLabel(questionId: QuestionId, value: string): string {
   const question = getQuestion(questionId);
   return (question && getOption(question, value)?.label) ?? value;
 }

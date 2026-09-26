@@ -1,5 +1,6 @@
 import { isGoalId, isProfileId, isStageId, isTeamId } from "./profiles";
 import { getOption, questions } from "./questions";
+import type { QuestionId } from "./contracts";
 import type { AnswerValue, Answers, Context, Question } from "./types";
 
 /**
@@ -60,11 +61,16 @@ export function deriveActiveAnswers(answers: Answers): Answers {
       const value = normalizeAnswer(question, current[question.id]);
       if (value !== undefined) next[question.id] = value;
     }
-    const stable = Object.keys(next).length === Object.keys(current).length && Object.keys(next).every((key) => sameAnswer(next[key], current[key]));
+    const stable = Object.keys(next).length === Object.keys(current).length && Object.keys(next).every((key) => sameAnswer(byKey(next)[key], byKey(current)[key]));
     current = next;
     if (stable) break;
   }
   return current;
+}
+
+/** Vista por clave arbitraria: las respuestas crudas pueden traer claves que no son preguntas. */
+function byKey(answers: Answers): Readonly<Record<string, AnswerValue | undefined>> {
+  return answers;
 }
 
 function sameAnswer(a: AnswerValue | undefined, b: AnswerValue | undefined): boolean {
@@ -106,7 +112,7 @@ export function applyAnswer(answers: Answers, question: Question, value: string)
   return { ...answers, [question.id]: [...withoutExclusive, value] };
 }
 
-export function clearAnswer(answers: Answers, questionId: string): Answers {
+export function clearAnswer(answers: Answers, questionId: QuestionId): Answers {
   const { [questionId]: _removed, ...rest } = answers;
   return rest;
 }

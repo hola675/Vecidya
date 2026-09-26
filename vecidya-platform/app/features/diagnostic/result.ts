@@ -1,4 +1,5 @@
 import { selectedValues } from "./answers";
+import type { IssueId, QuestionId } from "./contracts";
 import { getProfile, hasTeam, isEstablished, isOperating } from "./profiles";
 import { optionLabel } from "./questions";
 import { dimensionLabels } from "./scoring";
@@ -13,6 +14,7 @@ import type {
   Issue,
   IssueKind,
   NextAction,
+  ProfileId,
   Strength,
 } from "./types";
 
@@ -30,13 +32,13 @@ export function toScores(dimensions: DimensionScore[]): Scores {
 
 const below = (score: number | null, threshold: number) => score !== null && score < threshold;
 
-const said = (questionId: string, answers: Answers) =>
+const said = (questionId: QuestionId, answers: Answers) =>
   selectedValues(answers[questionId])
     .map((value) => `«${optionLabel(questionId, value)}»`)
     .join(", ");
 
-const one = (answers: Answers, questionId: string) => (typeof answers[questionId] === "string" ? (answers[questionId] as string) : undefined);
-const many = (answers: Answers, questionId: string) => selectedValues(answers[questionId]);
+const one = (answers: Answers, questionId: QuestionId) => (typeof answers[questionId] === "string" ? (answers[questionId] as string) : undefined);
+const many = (answers: Answers, questionId: QuestionId) => selectedValues(answers[questionId]);
 
 export function inquiriesArrive(answers: Answers): boolean {
   const sources = many(answers, "sources");
@@ -76,7 +78,7 @@ export function classifyState(context: Context, scores: Scores, dimensions: Dime
     }
     return false;
   };
-  const cite = (questionId: string, prefix: string) => {
+  const cite = (questionId: QuestionId, prefix: string) => {
     if (answers[questionId] !== undefined) because.push(`${prefix} ${said(questionId, answers)}.`);
   };
 
@@ -197,7 +199,7 @@ const kindWeight: Record<IssueKind, number> = {
   maturity: 0.75,
 };
 
-const goalBoost: Record<GoalId, string[]> = {
+const goalBoost: Record<GoalId, IssueId[]> = {
   be_found: ["improve_discoverability", "check_discoverability", "diversify_sources", "build_presence"],
   explain: ["define_offer"],
   trust: ["show_proof", "ask_reviews", "post_sale_loop"],
@@ -329,9 +331,10 @@ export function generateIssues(context: Context, scores: Scores): IssueDraft[] {
   }
 
   // Confianza
-  const proofId = ["proof_professional", "proof_business", "proof_creator", "proof_org"].find((id) => answers[id] !== undefined);
+  const proofQuestions: QuestionId[] = ["proof_professional", "proof_business", "proof_creator", "proof_org"];
+  const proofId = proofQuestions.find((id) => answers[id] !== undefined);
   const proof = proofId ? many(answers, proofId) : [];
-  const proofCopy: Record<string, { title: string; action: string; check: string }> = {
+  const proofCopy: Record<ProfileId, { title: string; action: string; check: string }> = {
     professional: {
       title: "Mostrar evidencia real de tu experiencia",
       action: "Publica un caso o un portafolio breve y pide dos recomendaciones a clientes recientes.",
@@ -710,7 +713,7 @@ export function buildNextActions(priorities: Issue[], gaps: Issue[], context: Co
 /** Nota sobre el objetivo cuando la evidencia no permite ir directo a él. */
 export function explainGoal(context: Context, issues: Issue[], scores: Scores): string | undefined {
   const { goal, answers } = context;
-  const has = (id: string) => issues.some((issue) => issue.id === id && !issue.tentative);
+  const has = (id: IssueId) => issues.some((issue) => issue.id === id && !issue.tentative);
   const solid = processSolid(answers);
   if (goal === "automate" && !solid && inquiriesArrive(answers)) {
     return "Quieres automatizar o delegar, pero hoy la captura o el seguimiento no son consistentes. Automatizar sobre un proceso irregular multiplica el desorden: primero registrar cada consulta y definir el seguimiento; después, automatizar lo que se repita.";

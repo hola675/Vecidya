@@ -1,6 +1,6 @@
 import { selectedValues } from "./answers";
 import { getOption } from "./questions";
-import type { Answers, Confidence, DimensionId, DimensionLevel, DimensionScore, Question } from "./types";
+import type { AnswerValue, Answers, Confidence, DimensionId, DimensionLevel, DimensionScore, Question } from "./types";
 
 /**
  * Puntuación por dimensión (0–100) normalizada sobre la evidencia aplicable
@@ -42,7 +42,7 @@ export type Contribution = {
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0));
 
-export function questionContribution(question: Question, answer: Answers[string] | undefined): Contribution {
+export function questionContribution(question: Question, answer: AnswerValue | undefined): Contribution {
   const empty: Contribution = { evidence: {}, unknownFor: [], unknown: false, notApplicable: false };
   const values = selectedValues(answer);
   if (!values.length) return empty;
