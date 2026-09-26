@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-26 — DIAG-V3-00 Auditoría del Diagnóstico y micro-checkpoint de terminología (solo local, sin deploy)
+
+Abre el bloque **DIAG-V3 (Diagnostic Engine V3)**, autorizado por el usuario fase a fase. El prefijo `DIAG-V3-XX` evita reutilizar `DIAG-001/002/003`, que ya pertenecen al historial.
+
+- **DIAG-V3-00 (auditoría de solo lectura, aprobada):** baseline sobre `bb8ba3b` en verde (`test:unit` 135/135, 84 del Diagnóstico; `test:email` 4/4; `typecheck`; `build`; E2E `diagnostic` en 4 viewports). Se trazó el flujo real (entrada por deep link → 26 preguntas filtradas por `applies` → scoring por 7 dimensiones → estado, prioridades y recomendación → sin almacenamiento) y se comparó con el plan V3. Conclusión aceptada: V3 evoluciona el motor existente, no lo reemplaza. Hallazgos registrados en `STATUS.md` (`DIAG-V3-BUG-01`, `-DEBT-01`, `-DEBT-02`, `-UX-01`, `-PDF-01` y `-PRIVACY-01`); el PDF actual mide 4–5 páginas.
+- **Terminología (`c60979f`):** la etiqueta visible del perfil `creator` pasa de «Mi marca o trabajo como creador» (Diagnóstico) y «Creador» (puerta de Home) a «Artista o creador de contenido», conservando el ID `creator`. En `/nosotros`, «Gerente Comercial» pasa a «Director Comercial». Solo cambió el E2E que dependía de esas etiquetas. «Cuentas → Clientes» no se aplicó: todas las apariciones actuales de «cuenta» son de autenticación o internas (`billing_account`); la regla queda en `ROADMAP.md`.
+- **Documentación:** `ROADMAP.md` registra DIAG-V3 con sus fases, el gate PRIVACY + DATA CONTRACT antes de DIAG-V3-06 y las restricciones de KV. Se corrigen dos desviaciones verificadas: `AGENTS.md` decía 13 documentos canónicos y hay 15 versionados; `TESTING.md` y `TEST-GAPS-001` decían 75 pruebas del Diagnóstico y son 84.
+- **Sin cambios de** routing, scoring, resultado, PDF, esquema, migraciones, bindings ni versión (`package.json` sigue en `0.5.6`, que es la versión en producción; la versión sube con el próximo release autorizado).
+
 ## 2026-09-26 — DIAG-003 Puntaje global y exportación a PDF (`0.5.6`, LIVE)
 
 Corrige el nombre de un plan externo pegado por el usuario («DIAG-002») al identificador real disponible: DIAG-002/DIAG-002B/DIAG-002C ya estaban cerrados y LIVE, así que este bloque se abrió como `DIAG-003`, aditivo sobre el motor existente (`app/features/diagnostic`) y sin reabrir ninguna decisión ya cerrada de DIAG-002B.
