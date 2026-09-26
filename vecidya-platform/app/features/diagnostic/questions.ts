@@ -9,9 +9,9 @@ import type { Answers, Context, DimensionId, ProfileId, Question, QuestionDefini
  * - `QUESTION_DEFINITIONS`: datos puros de cada pregunta (ID, versión, sección, tipo, opciones,
  *   dimensiones, pesos, textos). De aquí se derivan `QuestionId`, los IDs de opción por pregunta y
  *   el tipo de cada respuesta.
- * - `APPLICABILITY`: la condición de cada pregunta que no aplica siempre, con las preguntas de las
- *   que depende declaradas en `dependsOn`. Los closures se conservan tal cual hasta el Routing
- *   Engine (DIAG-V3-03).
+ * - `APPLICABILITY`: la condición de cada pregunta que no aplica siempre, derivada de una regla
+ *   declarativa (`ROUTING_RULES`, ver `routing.ts`); `dependsOn` sale de recorrer el árbol de esa
+ *   regla (`collectDependencies`), no está declarado a mano (DIAG-V3-03).
  *
  * Las opciones «no lo sé» (`unknown`) no puntúan; «no aplica» (`not_applicable`) tampoco;
  * «nada de esto» (`none`) puntúa 0 de forma sustantiva. El `value` de una opción es su ID estable:
@@ -560,18 +560,23 @@ export function multiAnswer<Q extends MultiQuestionId>(answers: Answers, id: Q):
   return selectedValues(answers[id] as OptionIdOf<Q> | readonly OptionIdOf<Q>[] | undefined);
 }
 
-/** Llegan consultas: hay orígenes marcados y ninguno es «todavía no llegan». */
-export function inquiriesArrive(answers: Answers): boolean {
-  const values = multiAnswer(answers, "sources");
-  return values.length > 0 && !values.includes("none");
-}
-
 const OPERATING_STAGES = ["occasional", "regular", "growing"] as const;
 const ESTABLISHED_STAGES = ["regular", "growing"] as const;
 const LOCAL_SEARCH_PROFILES = profiles.filter((profile) => profile.localSearch).map((profile) => profile.id);
 
 const inquiriesArriveRule = multiExcluding("sources", ["none"]);
 const captureExistsRule = and(answered("capture"), notEq("capture", "no"));
+
+/**
+ * Llegan consultas: hay orígenes marcados y ninguno es «todavía no llegan». Usada por
+ * `result.ts`/`recommendations.ts` (scoring/resultado, no routing) e implementada sobre la MISMA
+ * regla declarativa que usa el router para `capture`/`response`/`follow_up`/etc. (DIAG-V3-03):
+ * antes de este fix existían dos implementaciones de la misma condición que podían divergir en
+ * silencio si alguien cambiaba solo una.
+ */
+export function inquiriesArrive(answers: Answers): boolean {
+  return evaluateRule(inquiriesArriveRule, { answers });
+}
 
 /**
  * Reglas de aplicabilidad declarativas (DIAG-V3-03): datos serializables evaluados por un único

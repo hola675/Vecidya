@@ -1,6 +1,5 @@
 import type { Context } from "./types";
-import type { QuestionId } from "./questions";
-import { selectedValues } from "./questions";
+import type { OptionIdOf, QuestionId } from "./questions";
 
 /**
  * DIAG-V3-03: motor de reglas declarativo.
@@ -19,12 +18,16 @@ import { selectedValues } from "./questions";
  * `Ref = { question: QuestionId }` basta: en este registro, `profile`/`goal`/`stage`/`team`
  * son a la vez preguntas reales y proyecciones validadas de esas mismas respuestas, por lo
  * que no se necesita un `ContextRef` separado de `AnswerRef<QuestionId>`.
+ *
+ * Este módulo no importa nada en tiempo de valor de `./questions` (solo tipos): así
+ * `questions.ts` puede importar los builders de aquí y usarlos en su propio ámbito de
+ * módulo sin depender de qué archivo cargue primero (evita un ciclo de importación por
+ * valor entre ambos módulos).
  */
 
 export type Ref = { question: QuestionId };
 
 export type Rule =
-  | { op: "always" }
   | { op: "answered"; ref: Ref }
   | { op: "eq"; ref: Ref; value: string }
   | { op: "notEq"; ref: Ref; value: string }
@@ -42,35 +45,70 @@ function resolve(context: Context, question: QuestionId): string | readonly stri
   return context.answers[question] as string | readonly string[] | undefined;
 }
 
+/** Equivalente local de `selectedValues` (sin importar `./questions` en tiempo de valor; ver nota de módulo). */
+function toList(value: string | readonly string[] | undefined): string[] {
+  if (value === undefined) return [];
+  return Array.isArray(value) ? (value as string[]) : [value as string];
+}
+
+export type RuleTrace = { rule: Rule; result: boolean; observed?: string | readonly string[] | undefined; children?: RuleTrace[] };
+
+/**
+ * Único evaluador: recorre el árbol una vez y produce la traza completa. `evaluateRule` es un
+ * envoltorio de esta misma función (§7: nunca una segunda semántica de evaluación, ni siquiera
+ * para combinar `and`/`or`/`not` — antes de este fix, `evaluateRuleTrace` recalculaba esa
+ * combinación por su cuenta en vez de reutilizarla).
+ */
+export function evaluateRuleTrace(rule: Rule, context: Context): { result: boolean; trace: RuleTrace } {
+  const build = (node: Rule): RuleTrace => {
+    switch (node.op) {
+      case "and": {
+        const children = node.rules.map(build);
+        return { rule: node, result: children.every((child) => child.result), children };
+      }
+      case "or": {
+        const children = node.rules.map(build);
+        return { rule: node, result: children.some((child) => child.result), children };
+      }
+      case "not": {
+        const child = build(node.rule);
+        return { rule: node, result: !child.result, children: [child] };
+      }
+      case "answered": {
+        const observed = resolve(context, node.ref.question);
+        return { rule: node, result: Boolean(observed), observed };
+      }
+      case "eq": {
+        const observed = resolve(context, node.ref.question);
+        return { rule: node, result: observed === node.value, observed };
+      }
+      case "notEq": {
+        const observed = resolve(context, node.ref.question);
+        return { rule: node, result: observed !== node.value, observed };
+      }
+      case "in": {
+        const observed = resolve(context, node.ref.question);
+        return { rule: node, result: typeof observed === "string" && node.values.includes(observed), observed };
+      }
+      case "multiExcluding": {
+        const observed = resolve(context, node.ref.question);
+        const values = toList(observed);
+        return { rule: node, result: values.length > 0 && !node.exclude.some((excluded) => values.includes(excluded)), observed };
+      }
+      case "multiIntersects": {
+        const observed = resolve(context, node.ref.question);
+        const values = toList(observed);
+        return { rule: node, result: node.values.some((candidate) => values.includes(candidate)), observed };
+      }
+    }
+  };
+  const trace = build(rule);
+  return { result: trace.result, trace };
+}
+
+/** Envoltorio de `evaluateRuleTrace`: el árbol se recorre una sola vez, con una sola semántica. */
 export function evaluateRule(rule: Rule, context: Context): boolean {
-  switch (rule.op) {
-    case "always":
-      return true;
-    case "answered":
-      return Boolean(resolve(context, rule.ref.question));
-    case "eq":
-      return resolve(context, rule.ref.question) === rule.value;
-    case "notEq":
-      return resolve(context, rule.ref.question) !== rule.value;
-    case "in": {
-      const value = resolve(context, rule.ref.question);
-      return typeof value === "string" && rule.values.includes(value);
-    }
-    case "multiExcluding": {
-      const values = selectedValues<string>(resolve(context, rule.ref.question));
-      return values.length > 0 && !rule.exclude.some((excluded) => values.includes(excluded));
-    }
-    case "multiIntersects": {
-      const values = selectedValues<string>(resolve(context, rule.ref.question));
-      return rule.values.some((candidate) => values.includes(candidate));
-    }
-    case "and":
-      return rule.rules.every((child) => evaluateRule(child, context));
-    case "or":
-      return rule.rules.some((child) => evaluateRule(child, context));
-    case "not":
-      return !evaluateRule(rule.rule, context);
-  }
+  return evaluateRuleTrace(rule, context).result;
 }
 
 /** Deriva `dependsOn` directamente del árbol de la regla (§8): nunca una segunda fuente manual. */
@@ -78,8 +116,6 @@ export function collectDependencies(rule: Rule): QuestionId[] {
   const seen = new Set<QuestionId>();
   const visit = (node: Rule): void => {
     switch (node.op) {
-      case "always":
-        return;
       case "answered":
       case "eq":
       case "notEq":
@@ -100,29 +136,9 @@ export function collectDependencies(rule: Rule): QuestionId[] {
   return [...seen];
 }
 
-export type RuleTrace = { rule: Rule; result: boolean; observed?: string | readonly string[] | undefined; children?: RuleTrace[] };
-
-/** Traza de una sola pasada: `explainApplicability` deriva su código de razón de ESTA traza, nunca de un segundo evaluador. */
-export function evaluateRuleTrace(rule: Rule, context: Context): { result: boolean; trace: RuleTrace } {
-  const build = (node: Rule): RuleTrace => {
-    if (node.op === "and" || node.op === "or") {
-      const children = node.rules.map(build);
-      const result = node.op === "and" ? children.every((child) => child.result) : children.some((child) => child.result);
-      return { rule: node, result, children };
-    }
-    if (node.op === "not") {
-      const child = build(node.rule);
-      return { rule: node, result: !child.result, children: [child] };
-    }
-    if (node.op === "always") return { rule: node, result: true };
-    return { rule: node, result: evaluateRule(node, context), observed: resolve(context, node.ref.question) };
-  };
-  const trace = build(rule);
-  return { result: trace.result, trace };
-}
-
 export type ReasonCode = "rule_true" | "stage_mismatch" | "profile_mismatch" | "dependency_unanswered" | "rule_false";
 
+/** El código de razón se deriva de la traza que ya produjo `evaluateRuleTrace`; nunca reevalúa. */
 export function explainApplicability(rule: Rule, context: Context): { applicable: boolean; reasonCode: ReasonCode; trace: RuleTrace } {
   const { result, trace } = evaluateRuleTrace(rule, context);
   if (result) return { applicable: true, reasonCode: "rule_true", trace };
@@ -134,12 +150,18 @@ export function explainApplicability(rule: Rule, context: Context): { applicable
   return { applicable: false, reasonCode, trace };
 }
 
+/**
+ * Builders: producen datos `Rule` planos, tipados por pregunta (`OptionIdOf<Q>`, igual que
+ * DIAG-V3-02) para que un literal que no es una opción real de esa pregunta no compile — la
+ * regla almacenada guarda `value`/`values` como `string` porque `Rule` es una unión uniforme,
+ * pero el literal ya pasó por esta comprobación al construirla.
+ */
 export const answered = (question: QuestionId): Rule => ({ op: "answered", ref: { question } });
-export const eq = (question: QuestionId, value: string): Rule => ({ op: "eq", ref: { question }, value });
-export const notEq = (question: QuestionId, value: string): Rule => ({ op: "notEq", ref: { question }, value });
-export const isIn = (question: QuestionId, values: readonly string[]): Rule => ({ op: "in", ref: { question }, values });
-export const multiExcluding = (question: QuestionId, exclude: readonly string[]): Rule => ({ op: "multiExcluding", ref: { question }, exclude });
-export const multiIntersects = (question: QuestionId, values: readonly string[]): Rule => ({ op: "multiIntersects", ref: { question }, values });
+export const eq = <Q extends QuestionId>(question: Q, value: OptionIdOf<Q>): Rule => ({ op: "eq", ref: { question }, value });
+export const notEq = <Q extends QuestionId>(question: Q, value: OptionIdOf<Q>): Rule => ({ op: "notEq", ref: { question }, value });
+export const isIn = <Q extends QuestionId>(question: Q, values: readonly OptionIdOf<Q>[]): Rule => ({ op: "in", ref: { question }, values });
+export const multiExcluding = <Q extends QuestionId>(question: Q, exclude: readonly OptionIdOf<Q>[]): Rule => ({ op: "multiExcluding", ref: { question }, exclude });
+export const multiIntersects = <Q extends QuestionId>(question: Q, values: readonly OptionIdOf<Q>[]): Rule => ({ op: "multiIntersects", ref: { question }, values });
 export const and = (...rules: Rule[]): Rule => ({ op: "and", rules });
 export const or = (...rules: Rule[]): Rule => ({ op: "or", rules });
 export const not = (rule: Rule): Rule => ({ op: "not", rule });

@@ -3,7 +3,7 @@ import { test } from "node:test";
 
 import { deriveContext } from "../../../app/features/diagnostic/answers.ts";
 import { findDependencyCycles, getDependencyGraph, QUESTION_DEFINITIONS, ROUTING_RULES } from "../../../app/features/diagnostic/questions.ts";
-import { and, answered, collectDependencies, eq, evaluateRule, explainApplicability, isIn, multiExcluding, multiIntersects, not, notEq, or, type Rule } from "../../../app/features/diagnostic/routing.ts";
+import { and, answered, collectDependencies, eq, evaluateRule, evaluateRuleTrace, explainApplicability, isIn, multiExcluding, multiIntersects, not, notEq, or, type Rule } from "../../../app/features/diagnostic/routing.ts";
 
 /**
  * DIAG-V3-03: contrato del DSL de routing. Un único evaluador puro (`evaluateRule`);
@@ -52,6 +52,15 @@ test("evaluateRule es determinista: misma regla + mismo contexto => mismo result
   assert.ok(runs.every((r) => r === runs[0]));
 });
 
+test("contrato: evaluateRule y evaluateRuleTrace nunca divergen (una sola semántica de evaluación)", () => {
+  const cases: { rule: Rule; ctx: ReturnType<typeof deriveContext> }[] = [
+    { rule: and(eq("stage", "regular"), notEq("profile", "creator")), ctx: deriveContext({ profile: "business", stage: "regular" } as never) },
+    { rule: or(eq("stage", "idea"), multiIntersects("assets", ["domain"])), ctx: deriveContext({ stage: "launching", assets: ["domain"] } as never) },
+    { rule: not(and(answered("team"), notEq("team", "only_me"))), ctx: deriveContext({} as never) },
+  ];
+  for (const { rule, ctx } of cases) assert.equal(evaluateRule(rule, ctx), evaluateRuleTrace(rule, ctx).result);
+});
+
 test("contrato: el grafo derivado de ROUTING_RULES es acíclico y sin auto-dependencia", () => {
   const graph = getDependencyGraph();
   for (const [id, deps] of Object.entries(graph)) assert.ok(!deps.includes(id as never), `${id} depende de sí misma`);
@@ -81,6 +90,10 @@ test("explainApplicability: código de razón derivado de la misma traza que eva
   const wrongProfile = explainApplicability(rule, deriveContext({ profile: "business", stage: "regular" } as never));
   assert.deepEqual(wrongProfile.applicable, false);
   assert.deepEqual(wrongProfile.reasonCode, "profile_mismatch");
+
+  const wrongStage = explainApplicability(rule, deriveContext({ profile: "professional", stage: "idea" } as never));
+  assert.deepEqual(wrongStage.applicable, false);
+  assert.deepEqual(wrongStage.reasonCode, "stage_mismatch");
 
   const applicable = explainApplicability(rule, deriveContext({ profile: "professional", stage: "regular" } as never));
   assert.deepEqual(applicable, { applicable: true, reasonCode: "rule_true", trace: applicable.trace });

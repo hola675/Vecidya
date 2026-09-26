@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-09-26 — DIAG-V3-03 Routing Engine (solo local, sin deploy)
+
+- **Motor de reglas declarativo:** las 23 closures `applies` de `APPLICABILITY` pasan a `ROUTING_RULES: Partial<Record<QuestionId, Rule>>` (`app/features/diagnostic/routing.ts`), un DSL de datos serializables (`answered`/`eq`/`notEq`/`in`/`multiExcluding`/`multiIntersects`/`and`/`or`/`not`) evaluado por un único evaluador puro (`evaluateRule`, envoltorio de `evaluateRuleTrace`: una sola pasada, sin una segunda semántica para combinar `and`/`or`/`not`).
+- **`dependsOn` derivado, no declarado:** `collectDependencies(rule)` recorre el árbol de cada regla; cierra `DIAG-V3-CYCLE-001` (el grafo que valida `findDependencyCycles()` es, por construcción, el mismo que evalúa `evaluateRule()`).
+- **Opción safety preservada (DIAG-V3-02):** los builders (`eq`, `notEq`, `isIn`, `multiExcluding`, `multiIntersects`) son genéricos sobre `OptionIdOf<Q>`; un literal que no es opción real de su pregunta no compila.
+- **Inspección interna:** `evaluateRuleTrace`/`explainApplicability` añaden traza y código de razón (`stage_mismatch`/`profile_mismatch`/`dependency_unanswered`/`rule_false`/`rule_true`) derivados de la misma evaluación; no se exponen en UI ni se persisten.
+- **`routing.ts` sin dependencia de valor hacia `./questions`:** solo importa tipos, así que no depende de qué archivo del módulo se cargue primero.
+- **Sin cambio de comportamiento:** las 23 closures originales (congeladas verbatim, nunca importadas en producción) frente al evaluador declarativo sobre 20.000 contextos aleatorios → 0 divergencias, mismo digest SHA-256 antes y después de la migración; caracterización de DIAG-V3-01 (46 casos + digest de 1.125) idéntica.
+- **Pruebas:** 30 nuevas (`routing.test.ts`, `routing-equivalence.test.ts`, `routing-standalone.test.ts`, `invalidation.test.ts`). 4 mutaciones manuales (regla con `QuestionId` inexistente, valor de opción inexistente, dependencia circular, auto-dependencia) aplicadas y revertidas para demostrar que las protecciones funcionan (ver `TESTING.md`).
+- **Revisión final:** un revisor independiente (`feature-dev:code-reviewer`, modelo `opus`) encontró 6 hallazgos "Important" (option safety débil en los builders, doble semántica de evaluación en `evaluateRuleTrace`, duplicación de `inquiriesArrive`, un ciclo de importación latente entre `routing.ts`/`questions.ts`, una prueba de "cambio hacia atrás" que no podía fallar bajo ningún comportamiento real, y esta entrada de changelog ausente); los seis se corrigieron en el mismo corte, cada uno verificado con TDD o una mutación en vivo, más la suite completa en verde.
+- **Validación:** `test:unit` 181/181 (130 del Diagnóstico), `test:email` 4/4, `typecheck` real 0 errores, `build` PASS, `git diff --check` PASS, `diagnostic` E2E PASS. Cero cambios de UI, PDF, persistencia, D1 o KV.
+
 ## 2026-09-26 — DIAG-V3-02 Question Registry (solo local, sin deploy)
 
 - **Fuente canónica única:** `QUESTION_DEFINITIONS` en `questions.ts` (26 preguntas, `version: 1`) reemplaza al array `questions` como definición; `QuestionId`/`QUESTION_IDS` se derivan de ahí (antes eran una lista paralela mantenida a mano en `contracts.ts`).

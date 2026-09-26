@@ -154,8 +154,8 @@ DIAG-002 cerró el motor 2.0 y DIAG-002B lo endureció semánticamente (27 prueb
 | `team`, `assets`, `validation`, `sources`, `contact_path` | `stage` |
 | `clarity_presence`, `control` | `assets` |
 | `offer_clarity` | `stage`, `profile`, `assets` |
-| `proof_professional`, `proof_business`, `proof_creator`, `proof_org`, `discoverability`, `audience`, `reach`, `post_sale`, `measurement` | `profile`/`stage` (según pregunta) |
-| `capture`, `response`, `follow_up` | `stage`, `sources` |
+| `proof_professional`, `proof_business`, `proof_creator`, `proof_org`, `discoverability`, `audience`, `reach` | `profile`/`stage` (según pregunta) |
+| `capture`, `response`, `follow_up`, `post_sale`, `measurement` | `stage`, `sources` |
 | `pipeline`, `repetitive` | `stage`, `sources`, `capture` |
 | `responsibilities` | `team`, `stage`, `sources` |
 
