@@ -1,12 +1,36 @@
 # Entornos
 
-Última reconciliación: 2026-09-25 (deploy de `v0.5.5` — precio público de licencias en USD — en producción; antes, `v0.5.4` — INVITE-UI-001 —; staging sigue en `v0.4.1`).
+Última reconciliación: 2026-09-26 (deploy de `v0.5.6` — DIAG-003, puntaje global y exportación a PDF del Diagnóstico — en producción; antes, `v0.5.5` — precio público de licencias en USD —; staging sigue en `v0.4.1`).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura a los dominios publicados, fecha indicada por release, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
-`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `cebd0a92-3560-4298-8a3b-5df0c6209477` (`v0.5.5`). El smoke HTTP anónimo (rutas públicas, versión, precio de licencias en USD, `www`, rutas privadas protegidas) pasó el 2026-09-25.
+`vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `f6c3c25e-16fe-4fa4-8b15-ad00fe352bc0` (`v0.5.6`, segundo corte — ver «Regresión visual encontrada tras el primer deploy» abajo). El smoke HTTP anónimo (rutas públicas, versión, puntaje global y exportación a PDF del Diagnóstico, `www`, rutas privadas protegidas) pasó el 2026-09-26.
+
+## Deploy `0.5.6` — DIAG-003 puntaje global y exportación a PDF (2026-09-26)
+
+- **Autorización:** el usuario pidió explícitamente el bloque (corrigiendo el nombre pegado de un plan externo de «DIAG-002» al identificador real disponible, `DIAG-003`, ya que DIAG-002/002B/002C estaban cerrados), luego «Disnostico Assest.png sald e asui lso res icnos con el mcp» (usar ese archivo con el MCP `motonexo-assets` para los iconos en vez de SVG dibujados a mano), «recura limpiar y boror lso assesa que no se utlizan» y «y despliega cueno termines».
+- **Commits publicados:** `feat(diagnostic): add overall score, visual status and PDF export (DIAG-003)`, un commit de corrección visual y el commit de documentación de este release.
+- **Gate:** `typecheck`, `build` y `git diff --check` PASS (solo avisos CRLF/LF preexistentes); `test:unit` **135/135** (84 del motor del Diagnóstico, +9 sobre las 75 previas); `diagnostic-experience-check.mjs` PASS en 1366/768/390/360 (deep links, aislamiento, a11y, recorrido de negocio, resultado, puntaje global visible, porcentaje por dimensión, exportación a PDF, sin superposición de filas). `product-experience-a-public-review-check.mjs` falla en `px-a` por el falso positivo preexistente `TEST-UX003-PXA` (coincide con la clase CSS `.admin-review-context`, ajena a este bloque; ver `STATUS.md`).
+  - Reconstruido en el propio corte del deploy: el bundle de `/diagnostico` contiene `diagnostic-overall-score`, `diagnostic-status__score` y «Descargar mi diagn[óstico]»; el CSS contiene `diagnostic-print-header`, `diagnostic-overall-score__value`, `@media print` y el selector corregido `dd span.diagnostic-dimensions__bar`.
+  - Migraciones: NINGUNA.
+- **Regresión visual encontrada tras el primer deploy (RAN, Playwright, 2026-09-26):** el usuario reportó por captura que «Tus dimensiones» se veía roto en un ancho intermedio. Reproducido con Playwright en 600–1366px: el icono de estado y el porcentaje de cada dimensión se apilaban verticalmente y se dibujaban fuera de su fila, superpuestos con la dimensión siguiente. Causa: un selector preexistente `.diagnostic-dimensions dd span` (pensado solo para la barra) tiene mayor especificidad que la nueva clase `.diagnostic-dimensions__value` y le imponía `display:block; height:0.55rem`, apilando el icono (`img`, bloque) sobre el porcentaje (`strong`, bloque) en vez de mantenerlos en línea; el desbordamiento fue puramente de pintado (la caja de layout de la fila no crecía), por lo que `assertNoOverflow` (que solo mide el borde derecho contra el viewport) no lo detectaba. Corregido acotando el selector a `dd span.diagnostic-dimensions__bar`. Se agregó una regresión E2E que falla si `.diagnostic-dimensions__value` deja de ser un contenedor flex o si el icono y el porcentaje dejan de estar en la misma línea; confirmada en RED contra el bug y GREEN tras el fix.
+- **Deploy (1.º, con el bug):** `pnpm wrangler deploy` a las 2026-09-26T01:09Z aprox. Version ID `1ce335f5-b7dd-422a-80a4-9ac9a6a9ff33`.
+- **Deploy (2.º, con la corrección):** `--dry-run` confirmó `DB=vecidya-prod` y `APP_ENV=production`. `pnpm wrangler deploy` a las 2026-09-26T01:34Z aprox. Version ID **`f6c3c25e-16fe-4fa4-8b15-ad00fe352bc0`**. Staging, secrets y D1 remota no se tocaron (este bloque no usa D1).
+- **HTTP anónimo de solo lectura** (`curl --ssl-no-revoke`):
+
+  | Comprobación | Antes (01:32Z, `0.5.5`) | Después del 2.º deploy (01:34Z) |
+  | --- | --- | --- |
+  | Pie de `/` | «Versión pública 0.5.6» (1.º deploy) | «Versión pública 0.5.6» |
+  | `/diagnostico` | `200` | `200` |
+  | CSS: `diagnostic-print-header` / `diagnostic-overall-score__value` / `@media print` / `dd span.diagnostic-dimensions__bar` | — | 1 / 1 / 1 / 1 |
+  | `/assets/selected/icons/status/diagnostic-status-priority.webp` | — | `200` |
+  | `www` | — | `301` |
+  | `/app` | — | `302` |
+  | Verificación visual (Playwright, 1366/900/761/390) | roto (icono+% apilados y superpuestos) | correcto en las 4 anchuras |
+
+- **Resultado:** `0.5.6 PRODUCTION PASS`.
 
 ## Deploy `0.5.5` — Precio público de licencias en USD (2026-09-25)
 
