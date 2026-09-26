@@ -38,6 +38,7 @@ export default [
   route("api/organizations/:organizationId/integrations", "routes/api-organization-integrations.ts"),
   route("api/platform/organizations/:organizationId/services", "routes/api-platform-services.ts"),
   route("api/platform/organizations/:organizationId/integrations", "routes/api-platform-integrations.ts"),
+  route("api/platform/organizations/:organizationId/license", "routes/api-platform-licensing.ts"),
   route("app/internal/services", "routes/internal-services.tsx"),
   route("app/internal", "routes/internal.tsx"),
   route("app/internal/organizations", "routes/internal-organizations.tsx"),
