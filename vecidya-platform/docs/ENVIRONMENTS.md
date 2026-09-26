@@ -6,6 +6,8 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 
 ## Veredicto sobre producción
 
+**Defecto conocido en `0.5.6` (`LEARN-META-001`, `HTTP` 2026-09-26T16:40Z):** `/aprende/que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo` responde 200 con el artículo correcto, pero con `<title>Artículo no encontrado | Vecidya</title>`, `robots: noindex, nofollow` y canonical a `/aprende`. Afecta a todos los artículos. Está corregido en local (`d0235d8`) y **sigue publicado hasta un deploy autorizado**. `main` va por delante de producción con `c60979f`, `905d310`, `d0235d8` y `bdae3fc`, ninguno desplegado.
+
 `vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `582a5c38-d1d4-4f3c-8ba5-e9424717fcb3` (`v0.5.6`, tercer corte — reordena el resultado del Diagnóstico y lo hace más compacto; ver «Deploy (3.º...)» abajo). El smoke HTTP anónimo (rutas públicas, versión, puntaje global y exportación a PDF del Diagnóstico, `www`, rutas privadas protegidas) pasó el 2026-09-26.
 
 ## Deploy `0.5.6` — DIAG-003 puntaje global y exportación a PDF (2026-09-26)

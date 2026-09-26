@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-26 (DIAG-V3 autorizado como bloque por fases; DIAG-V3-00 y el micro-checkpoint de terminología cerrados; DIAG-V3-01 pendiente de aprobación). Anterior, mismo día: (DIAG-003 CERRADA y LIVE en `0.5.6`: puntaje global, clasificación visual de 3 niveles adicional, porcentaje visible por dimensión/prioridad y exportación a PDF en el Diagnóstico). Anterior: 2026-09-25 (AUTHZ-BA-001 CERRADA y LIVE en `0.5.2`; INVITE-001 CERRADA en `0.5.3`; INVITE-UI-001 CERRADA y LIVE en `0.5.4`; el precio público de licencias en USD LIVE en `0.5.5`; LICENSE-STRATEGY-001 CERRADA solo local (sin deploy, por instrucción explícita); siguiente bloque propuesto por el usuario `ACCOUNT-001 — Registration & Multi-Business Portfolio`, no autorizado; gestión de usuarios en Admin con decisiones tomadas y sin iniciar).
+Última reconciliación: 2026-09-26 (DIAG-V3-01 cerrada técnicamente y pendiente de aprobación; TYPECHECK-001 y REPO-EOL-001 cerrados en local; `LEARN-META-001` espera deploy). Anterior, mismo día: (DIAG-V3 autorizado como bloque por fases; DIAG-V3-00 y el micro-checkpoint de terminología cerrados; DIAG-V3-01 pendiente de aprobación). Anterior, mismo día: (DIAG-003 CERRADA y LIVE en `0.5.6`: puntaje global, clasificación visual de 3 niveles adicional, porcentaje visible por dimensión/prioridad y exportación a PDF en el Diagnóstico). Anterior: 2026-09-25 (AUTHZ-BA-001 CERRADA y LIVE en `0.5.2`; INVITE-001 CERRADA en `0.5.3`; INVITE-UI-001 CERRADA y LIVE en `0.5.4`; el precio público de licencias en USD LIVE en `0.5.5`; LICENSE-STRATEGY-001 CERRADA solo local (sin deploy, por instrucción explícita); siguiente bloque propuesto por el usuario `ACCOUNT-001 — Registration & Multi-Business Portfolio`, no autorizado; gestión de usuarios en Admin con decisiones tomadas y sin iniciar).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -12,6 +12,7 @@ Este documento contiene **solo trabajo futuro**. Nada aquí está implementado n
 | G3 | Datos y decisiones del piloto: email real de Edgar, nombre público de «Asesorar-T», autorización o ajuste de marca SURA, WhatsApp/web/redes/logo si se quieren mostrar | `PILOT-IDENTITY-001`, `PILOT-NAME-ASESORAR-T`, `PILOT-BRAND-SURA` |
 | G4 | Autorizar deploy y migraciones remotas `0007`–`0009` sobre `vecidya-staging` | `PUBLISH-GAP-001`; sin esto nada de lo construido el 2026-09-07 llega al dominio público |
 | G5 | — | PROD-001C completó la verificación autenticada |
+| G6 | Autorizar el deploy de los checkpoints locales (`c60979f` a `bdae3fc`) | `LEARN-META-001`: hasta publicarlo, los artículos de Aprende siguen en producción con `noindex, nofollow` y título «Artículo no encontrado» |
 
 ## Secuencia recomendada (derivada de la evidencia del baseline)
 
@@ -152,10 +153,10 @@ Estrategia aprobada tras DIAG-V3-00: **evolucionar → generalizar → versionar
 | --- | --- | --- |
 | DIAG-V3-00 | Auditoría del estado actual | CERRADA (ver `STATUS.md`) |
 | — | Micro-checkpoint de terminología | CERRADO solo local (`c60979f`) |
-| DIAG-V3-01 | Domain contracts: tipos versionados (`DiagnosticVersion`, `QuestionId`, `QuestionVersion`, `EntityType`, `OperationalArchetype`, `Niche`, `GrowthStage`, `CustomerModel`, `PrimaryGoal`, `PrimaryFriction`, `DimensionId`, `Evidence`, `DiagnosticContext`, `DiagnosticResult`) y **mapeo explícito** de los IDs actuales, sin cambiar el comportamiento observable. Ejemplo de riesgo: el `growing` actual («estable y quiero crecer») no equivale al `growing` de V3 (volumen creciente) | Pendiente de aprobación |
-| DIAG-V3-02 | Registro declarativo de preguntas | No iniciada |
+| DIAG-V3-01 | Domain contracts: tipos versionados (`DiagnosticVersion`, `QuestionId`, `QuestionVersion`, `EntityType`, `OperationalArchetype`, `Niche`, `GrowthStage`, `CustomerModel`, `PrimaryGoal`, `PrimaryFriction`, `DimensionId`, `Evidence`, `DiagnosticContext`, `DiagnosticResult`) y **mapeo explícito** de los IDs actuales, sin cambiar el comportamiento observable. Ejemplo de riesgo: el `growing` actual («estable y quiero crecer») no equivale al `growing` de V3 (volumen creciente) | CERRADA técnicamente (`905d310`), pendiente de aprobación |
+| DIAG-V3-02 | Registro declarativo de preguntas; incluye tipar los valores de opción (resto de `DIAG-V3-DEBT-01`) y decidir dónde viven `inquiriesArrive` y `selectedValues` (`DIAG-V3-DEBT-02`) | Siguiente; requiere aprobación |
 | DIAG-V3-03 | Routing engine | No iniciada |
-| DIAG-V3-04 | Scoring + evidencia | No iniciada |
+| DIAG-V3-04 | Scoring + evidencia; primer productor de `DiagnosticEvidence` | No iniciada |
 | DIAG-V3-05 | Result engine (incluye `DIAG-V3-BUG-01` y `DIAG-V3-UX-01`) | No iniciada |
 | Gate | **PRIVACY + DATA CONTRACT** (`DIAG-V3-PRIVACY-01`, `LEGAL-PRIV-001`): qué se guarda, por qué, dónde y cuánto tiempo; qué sigue anónimo; qué va temporalmente a KV y qué llega a D1; diagnósticos abandonados; «Guardar para después»; expiración; recovery token; eliminación; textos públicos; `/privacidad`; aviso o consentimiento | Obligatorio antes de DIAG-V3-06 |
 | DIAG-V3-06 | Persistencia Browser → KV → D1 | No iniciada |

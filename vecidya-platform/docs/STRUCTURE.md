@@ -15,7 +15,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     │   ├── assets/public-assets.ts   manifiesto de assets públicos
     │   ├── lib/auth-client.ts  cliente Better Auth
     │   ├── root.tsx, entry.server.tsx, app.css (Tailwind 4 + estilos propios)
-    │   ├── features/diagnostic/ motor puro del Diagnóstico (11 módulos, DIAG-002); las otras 9 carpetas de features/* solo tienen .gitkeep
+    │   ├── features/diagnostic/ motor puro del Diagnóstico (13 módulos + `contracts.typecheck.ts`; DIAG-002, DIAG-V3-01); las otras 9 carpetas de features/* solo tienen .gitkeep
     │   └── layouts/            solo .gitkeep
     ├── server/                 lógica exclusiva del servidor
     │   ├── auth.server.ts, auth-plugins.server.ts   Better Auth + plugin Organization
@@ -60,7 +60,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/contacto` | `contact.tsx` | estático (`mailto`, WhatsApp directo `wa.me` y canal oficial de WhatsApp; sin grupo comunitario desde 2026-09-25) | — | funcional | `px-a`, `join-contact` | sí |
 | `/vecindario` | `directory.tsx` | D1 lista+filtros | — | funcional | `px-a`, `pg-c1`, `d1` | sí |
 | `/vecindario/:slug` | `public-business-profile.tsx` | D1 perfil+horarios | — | funcional (404 si no publicado/suspendido); UI de `0007`–`0009` desplegada | `px-a`, `c1`, `c2`, `d1`, `pg-c1` | sí (perfil `vecidya`) |
-| `/diagnostico` | `diagnostic.tsx` + `features/diagnostic/` | cliente; `?perfil=`, `?objetivo=` (lista cerrada) | — | funcional local / release ready (DIAG-002, `0.4.0`); motor con 43 unitarias | `diagnostic`, `unit-diag`, `px-a` (200/overflow) | sí (`0.3.0` con motor anterior); deploy pendiente |
+| `/diagnostico` | `diagnostic.tsx` + `features/diagnostic/` | cliente; `?perfil=`, `?objetivo=` (lista cerrada) | — | funcional y publicada (DIAG-003, `0.5.6`); motor con 99 unitarias | `diagnostic`, `unit-diag`, `px-a` (200/overflow) | sí (`0.5.6`, HTTP 2026-09-26) |
 | `/sobre-nosotros` | `about.tsx` | estático + WebP humanos | — | funcional | `about` | sí |
 | `/aprende` | `knowledge.tsx` | estático | — | funcional local / release ready; 5 categorías y 4 artículos | `learn`, `commercial-review` | sí local; deploy pendiente |
 | `/aprende/:slug` | `learn-article.tsx` | estático | — | funcional local / release ready; artículo, índice, CTA y metadata | `learn`, `commercial-review` | sí local; deploy pendiente |
@@ -126,7 +126,7 @@ Sin autenticación, las rutas privadas y de API responden **302 → `/login`** (
 
 ## Módulos clave
 
-- **Diagnóstico** (`app/features/diagnostic/`, puro, sin React): `types` (dominio), `profiles` (5 perfiles y listas cerradas), `questions` (26 preguntas con propósito, dimensiones, pesos y `applies`), `answers` (selección, exclusivas, cambio de perfil y `deriveActiveAnswers`), `flow` (secciones y progreso), `scoring` (7 dimensiones normalizadas y confianza), `result` (estado, hallazgos, prioridades con dependencias, fortalezas), `recommendations` (licencia por capacidad, servicios, addons, Aprende), `catalog` (referencias reales), `deep-link` (`perfil`/`objetivo`) e `index` (`runDiagnostic`, `buildContactMailto`). `routes/diagnostic.tsx` solo renderiza; `components/public-v2.tsx` genera las puertas de Home con `buildDiagnosticPath`.
+- **Diagnóstico** (`app/features/diagnostic/`, puro, sin React): `types` (dominio), `profiles` (5 perfiles y listas cerradas), `questions` (26 preguntas con propósito, dimensiones, pesos y `applies`), `answers` (selección, exclusivas, cambio de perfil y `deriveActiveAnswers`), `flow` (secciones y progreso), `scoring` (7 dimensiones normalizadas y confianza), `result` (estado, hallazgos, prioridades con dependencias, fortalezas), `recommendations` (licencia por capacidad, servicios, addons, Aprende), `catalog` (referencias reales), `deep-link` (`perfil`/`objetivo`), `contracts` (versiones, IDs cerrados, `Resolution<T>` y conceptos V3; DIAG-V3-01), `mappings` (traducción explícita legacy → V3) e `index` (`runDiagnostic`, `buildContactMailto`). `contracts.typecheck.ts` solo contiene afirmaciones de compilación y no entra en el bundle. `routes/diagnostic.tsx` solo renderiza; `components/public-v2.tsx` genera las puertas de Home con `buildDiagnosticPath`.
 - **Autorización**: `server/auth/session.server.ts` (`requireSession`, `getActiveOrganization`, `requireOrganization`, `requireMembership`), `server/auth/authorization.server.ts` (matriz de roles, `requireOrganizationPermission` y las guardas de recurso `requireOrganizationMemberTarget`/`requireOrganizationInvitationTarget`), `server/auth/organization-http-surface.ts` (allowlist HTTP del plugin Organization), `server/platform-authorization.server.ts` (`requirePlatformAdmin`). `requireRole` y `requirePermission` existen sin uso. Frontera completa en [ARCHITECTURE.md](ARCHITECTURE.md).
 - **Consultas**: `db/queries/` (perfil, horarios, servicios, integraciones, organizaciones, gobierno y vistas de plataforma). Toda consulta tenant filtra por `organization_id`.
 - **UI compartida**: `components/public-v2.tsx` (tarjeta, perfil, JSON-LD, secciones visuales), `components/public-layout.tsx` (shell público, metadatos, navegación), `components/admin-shell.tsx`, `components/ui.tsx`.

@@ -1,5 +1,30 @@
 # Changelog
 
+## 2026-09-26 — DIAG-V3-01 Domain contracts, TYPECHECK-001 y REPO-EOL-001 (solo local, sin deploy)
+
+- **DIAG-V3-01 (`905d310`, cerrada técnicamente y pendiente de aprobación):**
+  - `contracts.ts` define:
+    - `DiagnosticVersion`: «2.0» es el motor actual; `DiagnosticVersionV3` es `never` hasta que exista un motor V3.
+    - `QuestionVersion`, y las listas cerradas `QUESTION_IDS`, `ISSUE_IDS` y `CORE_DIMENSION_IDS`.
+    - `Resolution<T>`, una unión discriminada `resolved | unresolved` con motivo y candidatos.
+    - Los conceptos V3 `EntityType`, `BusinessModel`, `OperationalArchetype`, `NicheId` (nominal y validado), `GrowthStage`, `CustomerModel` (alcance × comprador), `PrimaryGoal`, `PrimaryFriction`, `DiagnosticEvidence` y `DimensionConfidence`, más `DiagnosticContextV3` y `DiagnosticResultV3`.
+  - `mappings.ts` traduce legacy → V3 sin casts:
+    - Etapa: solo «idea» se resuelve; el `growing` actual queda sin resolver frente al `growing` V3.
+    - Perfil → entidad + arquetipo, solo donde la equivalencia es segura.
+    - «unsure» es la ausencia declarada de un objetivo.
+  - `Answers`, `Question.id` e `Issue.id`/`after` usan IDs tipados: solo cambian anotaciones y el resultado añade `version`.
+  - La caracterización se fijó sobre `0887707` antes del cambio y sigue idéntica. Se añaden 14 pruebas de contrato y 13 afirmaciones de compilación.
+- **TYPECHECK-001 (`d0235d8`), por instrucción del usuario («0 errores ni warnings heredados»):**
+  - `pnpm run typecheck` ejecutaba `tsc` sin `-b` sobre un tsconfig «solution» y no comprobaba ningún archivo. Ahora usa `tsc -b` e incluye `db/` y los archivos de configuración raíz.
+  - Corregidos 20 TS6307, 5 errores reales y 1 TS2883. Uno de ellos era un **defecto de producción** (`LEARN-META-001`): `meta({ data })` no recibe datos en React Router 8, así que cada artículo de Aprende se publica como «Artículo no encontrado», con `noindex, nofollow` (HTTP 2026-09-26T16:40Z). Se añade la regresión en `learn-experience-check.mjs`.
+  - Better Auth perdía la inferencia de `activeOrganizationId` cuando el array de plugins salía de una función. Ahora el plugin se crea con un factory y `plugins: [...]` va en línea, con la misma política compartida con el CLI.
+- **REPO-EOL-001 (`bdae3fc`):** `.gitattributes` `* text=auto eol=lf`. El working tree se normalizó sin cambios de contenido versionado.
+- **Validación:**
+  - Estáticas: `test:unit` 150/150, `test:email` 4/4, `typecheck` 0 errores, `build` PASS y `git diff --check` PASS.
+  - E2E PASS: `diagnostic`, `learn`, `authz` 143/143, `team-ui` 91/91, `acct`, `bpx` y `admin-business-profiles`.
+  - E2E que fallan como en la base: `px-a` y `pe-b` (deuda conocida). `invite-flow` es intermitente en ambos lados (`TEST-INVITE-FLAKY-001`).
+- **Sin** cambios de routing, scoring, resultados visibles, PDF, D1, KV, endpoints ni versión. `LEARN-META-001` sigue en producción hasta un deploy autorizado.
+
 ## 2026-09-26 — DIAG-V3-00 Auditoría del Diagnóstico y micro-checkpoint de terminología (solo local, sin deploy)
 
 Abre el bloque **DIAG-V3 (Diagnostic Engine V3)**, autorizado por el usuario fase a fase. El prefijo `DIAG-V3-XX` evita reutilizar `DIAG-001/002/003`, que ya pertenecen al historial.

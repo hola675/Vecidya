@@ -114,6 +114,14 @@ Comportamiento vigente: el flujo de login usa las operaciones soportadas `organi
 
 La web pública consume contenido institucional estático y perfiles publicados reales (`status = published` y no suspendidos). `BusinessProfile` es comercial: que el Diagnóstico admita otros tipos de presencia no convierte el modelo en un perfil universal. El canonical es fijo (`https://vecidya.com`); sitemap, robots y JSON-LD usan el origen de la request. El Diagnóstico es 100 % cliente: sin API, sin persistencia, sin CRM. Desde DIAG-002 el motor (`app/features/diagnostic/`) es puro y está separado de la UI; los parámetros `perfil` y `objetivo` de la URL se validan contra una lista cerrada, solo preseleccionan una elección explícita del usuario y nunca aportan evidencia ni alteran la puntuación.
 
+## Diagnóstico: contratos y versionado (DIAG-V3-01)
+
+- El motor es puro y determinista. Su contrato vive en `app/features/diagnostic/contracts.ts`; `DiagnosticVersion` identifica algoritmo y forma del resultado (`"2.0"` = motor actual). Ningún resultado puede declararse V3 hasta que exista una versión `3.x`.
+- Las preguntas, los hallazgos y las dimensiones son listas cerradas: `Answers` solo admite claves de `QUESTION_IDS`, y retirar o renombrar un ID rompe la compilación de las reglas que lo usan.
+- Un concepto aún desconocido es `Resolution<T>` `unresolved` con motivo y candidatos; nunca se rellena con un valor por defecto. Los conceptos del motor actual se traducen a V3 solo en `mappings.ts`, y un mismo nombre no implica el mismo significado (el `growing` actual ≠ el `growing` V3).
+- Las fronteras de datos no confiables usan guardas de lista cerrada sin dependencias (`isOneOf`, `isQuestionId`, `toNicheId`), el mismo patrón que `isProfileId`.
+- Sigue vigente «cero API»: el Diagnóstico no persiste nada. La persistencia exige antes el gate PRIVACY + DATA CONTRACT (`ROADMAP.md`).
+
 ## Límite Vecidya ↔ GHL
 
 Vecidya es responsable de cuentas, usuarios, organizaciones, membresías, perfiles de negocio, web pública, directorio, portal de cliente, servicios propios y metadata tenant-scoped de integraciones.
