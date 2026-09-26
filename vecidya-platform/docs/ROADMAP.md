@@ -1,6 +1,6 @@
 # Roadmap
 
-Última reconciliación: 2026-09-26 (G6 cerrado: `0.5.7` LIVE, `f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`; DIAG-V3-01 aprobada y publicada; DIAG-V3-02 pendiente de aprobación; G7 PASS: `0010` aplicada en producción el mismo día). Anterior, mismo día: (DIAG-V3-01 cerrada técnicamente y pendiente de aprobación; TYPECHECK-001 y REPO-EOL-001 cerrados en local; `LEARN-META-001` espera deploy). Anterior, mismo día: (DIAG-V3 autorizado como bloque por fases; DIAG-V3-00 y el micro-checkpoint de terminología cerrados; DIAG-V3-01 pendiente de aprobación). Anterior, mismo día: (DIAG-003 CERRADA y LIVE en `0.5.6`: puntaje global, clasificación visual de 3 niveles adicional, porcentaje visible por dimensión/prioridad y exportación a PDF en el Diagnóstico). Anterior: 2026-09-25 (AUTHZ-BA-001 CERRADA y LIVE en `0.5.2`; INVITE-001 CERRADA en `0.5.3`; INVITE-UI-001 CERRADA y LIVE en `0.5.4`; el precio público de licencias en USD LIVE en `0.5.5`; LICENSE-STRATEGY-001 CERRADA solo local (sin deploy, por instrucción explícita); siguiente bloque propuesto por el usuario `ACCOUNT-001 — Registration & Multi-Business Portfolio`, no autorizado; gestión de usuarios en Admin con decisiones tomadas y sin iniciar).
+Última reconciliación: 2026-09-26 (DIAG-V3-02 cerrada técnicamente, pendiente de aprobación: registro declarativo de preguntas). Anterior, mismo día: (G6 cerrado: `0.5.7` LIVE, `f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`; DIAG-V3-01 aprobada y publicada; DIAG-V3-02 pendiente de aprobación; G7 PASS: `0010` aplicada en producción el mismo día). Anterior, mismo día: (DIAG-V3-01 cerrada técnicamente y pendiente de aprobación; TYPECHECK-001 y REPO-EOL-001 cerrados en local; `LEARN-META-001` espera deploy). Anterior, mismo día: (DIAG-V3 autorizado como bloque por fases; DIAG-V3-00 y el micro-checkpoint de terminología cerrados; DIAG-V3-01 pendiente de aprobación). Anterior, mismo día: (DIAG-003 CERRADA y LIVE en `0.5.6`: puntaje global, clasificación visual de 3 niveles adicional, porcentaje visible por dimensión/prioridad y exportación a PDF en el Diagnóstico). Anterior: 2026-09-25 (AUTHZ-BA-001 CERRADA y LIVE en `0.5.2`; INVITE-001 CERRADA en `0.5.3`; INVITE-UI-001 CERRADA y LIVE en `0.5.4`; el precio público de licencias en USD LIVE en `0.5.5`; LICENSE-STRATEGY-001 CERRADA solo local (sin deploy, por instrucción explícita); siguiente bloque propuesto por el usuario `ACCOUNT-001 — Registration & Multi-Business Portfolio`, no autorizado; gestión de usuarios en Admin con decisiones tomadas y sin iniciar).
 
 Este documento contiene **solo trabajo futuro**. Nada aquí está implementado ni autorizado por existir en esta lista: cada bloque requiere autorización explícita del usuario. Lo ya hecho vive en [CHANGELOG.md](CHANGELOG.md) y [STATUS.md](STATUS.md).
 
@@ -146,6 +146,21 @@ Se auditó el recorrido `Aprende → Diagnóstico → Licencias → Addons → S
 
 DIAG-002 cerró el motor 2.0 y DIAG-002B lo endureció semánticamente (27 pruebas semánticas, 6 estados, lenguaje de comprobación, licencia alineada con lo que incluye cada nivel, vocabulario de addons unificado) y quedó publicado en `0.4.0`. DIAG-002C cerró las tres decisiones de producto que quedaban (sin Barrio «opcional», servicio ≠ licencia, vocabulario público de addons «IA conversacional»/«Automatizaciones», Home con cuatro puertas y «organización» solo dentro del Diagnóstico); no queda ninguna ambigüedad de producto abierta en DIAG-002 y sus cambios se publicaron como `0.4.1`. DIAG-003 (`0.5.6`, LIVE) añadió puntaje global (`overallScore`), una clasificación visual de 3 niveles adicional a los 4 niveles de madurez existentes, porcentaje visible por dimensión/prioridad (cerrando una brecha real de accesibilidad) y exportación a PDF por impresión del navegador. Trabajo futuro real: persistencia solo tras consentimiento explícito, política de retención, schema/migración, autorización tenant si se asocia a usuario u organización, revisión legal, pruebas de privacidad y exportación/eliminación (`LEGAL-PRIV-001`); auditoría axe automatizada; recorridos E2E de los perfiles profesional, creador, proyecto y organización (hoy cubiertos en unitarias). La persistencia, los recorridos por perfil y el PDF quedan absorbidos por DIAG-V3.
 
+**Matriz de dependencias (DIAG-V3-02).** 23 de las 26 preguntas tienen una condición de aplicabilidad; solo `profile`, `goal` y `stage` aplican siempre (con perfil elegido). Ninguna dependencia salta hacia adelante: toda pregunta de la que depende una condición se pregunta antes.
+
+| Pregunta | Depende de |
+| --- | --- |
+| `profile`, `goal`, `stage` | (siempre aplicable con perfil) |
+| `team`, `assets`, `validation`, `sources`, `contact_path` | `stage` |
+| `clarity_presence`, `control` | `assets` |
+| `offer_clarity` | `stage`, `profile`, `assets` |
+| `proof_professional`, `proof_business`, `proof_creator`, `proof_org`, `discoverability`, `audience`, `reach`, `post_sale`, `measurement` | `profile`/`stage` (según pregunta) |
+| `capture`, `response`, `follow_up` | `stage`, `sources` |
+| `pipeline`, `repetitive` | `stage`, `sources`, `capture` |
+| `responsibilities` | `team`, `stage`, `sources` |
+
+El grafo completo (`getDependencyGraph()`) es acíclico: toda dependencia precede a la pregunta que la usa, verificado por `registry.test.ts`.
+
 #### DIAG-V3 — Diagnostic Engine V3
 
 Estrategia aprobada tras DIAG-V3-00: **evolucionar → generalizar → versionar → desacoplar** el motor de `app/features/diagnostic`, sin reemplazarlo y conservando el comportamiento y las pruebas actuales mientras sean compatibles con los nuevos contratos. Las capas se mantienen separadas: routing ≠ scoring ≠ resultado ≠ presentación ≠ persistencia ≠ analítica. Los IDs `DIAG-001`, `DIAG-002` y `DIAG-003` pertenecen al historial y no se reutilizan.
@@ -155,8 +170,8 @@ Estrategia aprobada tras DIAG-V3-00: **evolucionar → generalizar → versionar
 | DIAG-V3-00 | Auditoría del estado actual | CERRADA (ver `STATUS.md`) |
 | — | Micro-checkpoint de terminología | CERRADO; LIVE `0.5.7` (`c60979f`) |
 | DIAG-V3-01 | Domain contracts: tipos versionados (`DiagnosticVersion`, `QuestionId`, `QuestionVersion`, `EntityType`, `OperationalArchetype`, `Niche`, `GrowthStage`, `CustomerModel`, `PrimaryGoal`, `PrimaryFriction`, `DimensionId`, `Evidence`, `DiagnosticContext`, `DiagnosticResult`) y **mapeo explícito** de los IDs actuales, sin cambiar el comportamiento observable. Ejemplo de riesgo: el `growing` actual («estable y quiero crecer») no equivale al `growing` de V3 (volumen creciente) | CERRADA, aprobada y LIVE `0.5.7` (`905d310`) |
-| DIAG-V3-02 | Registro declarativo de preguntas; incluye tipar los valores de opción (resto de `DIAG-V3-DEBT-01`) y decidir dónde viven `inquiriesArrive` y `selectedValues` (`DIAG-V3-DEBT-02`) | Siguiente; requiere aprobación |
-| DIAG-V3-03 | Routing engine | No iniciada |
+| DIAG-V3-02 | Registro declarativo de preguntas (`QUESTION_DEFINITIONS`), opciones tipadas por pregunta (`DIAG-V3-DEBT-01`), `inquiriesArrive`/`selectedValues` unificadas (`DIAG-V3-DEBT-02`) y matriz de dependencias de `applies` (ver «Diagnóstico») | CERRADA técnicamente (solo local), pendiente de aprobación |
+| DIAG-V3-03 Routing engine | Usará la matriz de dependencias de DIAG-V3-02 para diseñar el router; las closures `applies` se conservan hasta entonces | Pendiente de aprobación |
 | DIAG-V3-04 | Scoring + evidencia; primer productor de `DiagnosticEvidence` | No iniciada |
 | DIAG-V3-05 | Result engine (incluye `DIAG-V3-BUG-01` y `DIAG-V3-UX-01`) | No iniciada |
 | Gate | **PRIVACY + DATA CONTRACT** (`DIAG-V3-PRIVACY-01`, `LEGAL-PRIV-001`): qué se guarda, por qué, dónde y cuánto tiempo; qué sigue anónimo; qué va temporalmente a KV y qué llega a D1; diagnósticos abandonados; «Guardar para después»; expiración; recovery token; eliminación; textos públicos; `/privacidad`; aviso o consentimiento | Obligatorio antes de DIAG-V3-06 |

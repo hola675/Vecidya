@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-09-26 — DIAG-V3-02 Question Registry (solo local, sin deploy)
+
+- **Fuente canónica única:** `QUESTION_DEFINITIONS` en `questions.ts` (26 preguntas, `version: 1`) reemplaza al array `questions` como definición; `QuestionId`/`QUESTION_IDS` se derivan de ahí (antes eran una lista paralela mantenida a mano en `contracts.ts`).
+- **Opciones tipadas por pregunta:** `OptionIdOf<Q>` liga cada opción a su pregunta; `AnswerFor<Q>` calcula la forma de la respuesta (opción única o lista); `Answers` pasa a `{ [Q in QuestionId]?: AnswerFor<Q> }`. Una opción de `capture` ya no compila como opción de `follow_up`, y `singleAnswer`/`multiAnswer` sustituyen las comparaciones de string sin tipar en `result.ts` y `recommendations.ts` (cierra `DIAG-V3-DEBT-01`).
+- **Opciones single/multi como unión discriminada:** una pregunta `single` no admite `exclusive` ni `kind: "none"` (ni compila); antes eran campos opcionales sin relación con el tipo.
+- **Aplicabilidad separada de la definición:** `APPLICABILITY` documenta, por pregunta, su `dependsOn` (qué otras respuestas lee la condición) junto al mismo closure `applies` de siempre; `getDependencyGraph()`/`findDependencyCycles()` confirman que el grafo es acíclico. Las closures no se tocan: eso es DIAG-V3-03.
+- **Deuda resuelta:** `inquiriesArrive` y `selectedValues`, antes duplicadas en dos archivos, viven una sola vez en `questions.ts` (`DIAG-V3-DEBT-02`).
+- **Sin cambio de comportamiento:** caracterización de DIAG-V3-01 (46 casos + digest de 1.125) idéntica; tabla de verdad de `applies` sobre 20.000 contextos aleatorios con el mismo digest; volcado estructural del banco de preguntas con igualdad profunda exacta (mismo orden, mismas opciones, mismos textos).
+- **Pruebas:** 11 nuevas en `registry.test.ts` (integridad, dependencias completas y exactas sobre 150 contextos, ausencia de preguntas inalcanzables y de referencias muertas). 4 mutaciones manuales aplicadas y revertidas para demostrar que las protecciones funcionan (ver `TESTING.md`).
+- **Validación:** `test:unit` 161/161 (110 del Diagnóstico), `test:email` 4/4, `typecheck` real 0 errores, `build` PASS, `git diff --check` PASS, `diagnostic` E2E PASS. Cero cambios de UI, PDF, persistencia, D1 o KV.
+
 ## 2026-09-26 — G7: migración `0010` en producción (sin redeploy)
 
 - `0010_licensing-foundation` aplicada en `vecidya-prod` con `wrangler d1 migrations apply vecidya-prod --remote` (18:13:50Z–18:13:55Z). Era la única pendiente; el SQL no cambió desde `406268c` y es puramente aditivo.
