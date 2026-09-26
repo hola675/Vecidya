@@ -2633,7 +2633,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .diagnostic-question,
 .diagnostic-result {
   display: grid;
-  gap: 1.2rem;
+  gap: 1rem;
   min-height: 30rem;
   min-width: 0;
   align-content: start;
@@ -2644,8 +2644,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 70%);
 }
 
-.diagnostic-question h2,
-.diagnostic-result h2 {
+.diagnostic-question h2 {
   max-width: 22ch;
   margin: 0;
   font-size: clamp(2rem, 4vw, 3.5rem);
@@ -2653,12 +2652,26 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   line-height: 1;
 }
 
-.diagnostic-question > p:not(.eyebrow),
-.diagnostic-result > p:not(.eyebrow) {
+.diagnostic-result h2 {
+  max-width: 32ch;
+  margin: 0;
+  font-size: clamp(1.6rem, 2.6vw, 2.35rem);
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.diagnostic-question > p:not(.eyebrow) {
   max-width: 44rem;
   margin: 0;
   color: var(--muted);
   line-height: 1.6;
+}
+
+.diagnostic-result > p:not(.eyebrow) {
+  max-width: 58rem;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
 }
 
 .diagnostic-options {
@@ -4201,6 +4214,23 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     border: none !important;
     box-shadow: none !important;
     padding: 0 !important;
+    background: none !important;
+  }
+
+  .diagnostic-result {
+    gap: 0.65rem !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    background: none !important;
+  }
+
+  .diagnostic-result h2 {
+    font-size: 1.6rem !important;
+  }
+
+  .diagnostic-result-grid {
+    gap: 0.65rem !important;
   }
 
   .diagnostic-priority,

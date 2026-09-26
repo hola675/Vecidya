@@ -402,6 +402,18 @@ function ResultView({
         </section>
       </div>
 
+      <p className="diagnostic-limits">
+        Este diagnóstico es una orientación inicial basada en tus respuestas: no es una auditoría, una certificación ni una evaluación garantizada.
+        Es anónimo y efímero; al cerrar la página, las respuestas desaparecen. Puedes rehacerlo cuando cambie tu situación.
+      </p>
+
+      <div className="diagnostic-result__cta">
+        <a className="button button--primary" href={contactHref}>Revisar este resultado con Vecidya</a>
+        <Link className="button button--secondary" to="/contacto">Ir a Contacto</Link>
+        <button className="button button--secondary" onClick={() => window.print()} type="button">Descargar mi diagnóstico (PDF)</button>
+        <button className="button button--secondary" onClick={onRestart} type="button">Rehacer diagnóstico</button>
+      </div>
+
       <section className="diagnostic-commercial" aria-labelledby="diagnostic-commercial-title">
         <div className="diagnostic-commercial__heading">
           <p className="eyebrow">SI QUIERES APOYO</p>
@@ -444,18 +456,6 @@ function ResultView({
           </article>
         </div>
       </section>
-
-      <p className="diagnostic-limits">
-        Este diagnóstico es una orientación inicial basada en tus respuestas: no es una auditoría, una certificación ni una evaluación garantizada.
-        Es anónimo y efímero; al cerrar la página, las respuestas desaparecen. Puedes rehacerlo cuando cambie tu situación.
-      </p>
-
-      <div className="diagnostic-result__cta">
-        <a className="button button--primary" href={contactHref}>Revisar este resultado con Vecidya</a>
-        <Link className="button button--secondary" to="/contacto">Ir a Contacto</Link>
-        <button className="button button--secondary" onClick={() => window.print()} type="button">Descargar mi diagnóstico (PDF)</button>
-        <button className="button button--secondary" onClick={onRestart} type="button">Rehacer diagnóstico</button>
-      </div>
     </article>
   );
 }
