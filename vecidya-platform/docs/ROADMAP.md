@@ -146,7 +146,7 @@ Se auditó el recorrido `Aprende → Diagnóstico → Licencias → Addons → S
 
 DIAG-002 cerró el motor 2.0 y DIAG-002B lo endureció semánticamente (27 pruebas semánticas, 6 estados, lenguaje de comprobación, licencia alineada con lo que incluye cada nivel, vocabulario de addons unificado) y quedó publicado en `0.4.0`. DIAG-002C cerró las tres decisiones de producto que quedaban (sin Barrio «opcional», servicio ≠ licencia, vocabulario público de addons «IA conversacional»/«Automatizaciones», Home con cuatro puertas y «organización» solo dentro del Diagnóstico); no queda ninguna ambigüedad de producto abierta en DIAG-002 y sus cambios se publicaron como `0.4.1`. DIAG-003 (`0.5.6`, LIVE) añadió puntaje global (`overallScore`), una clasificación visual de 3 niveles adicional a los 4 niveles de madurez existentes, porcentaje visible por dimensión/prioridad (cerrando una brecha real de accesibilidad) y exportación a PDF por impresión del navegador. Trabajo futuro real: persistencia solo tras consentimiento explícito, política de retención, schema/migración, autorización tenant si se asocia a usuario u organización, revisión legal, pruebas de privacidad y exportación/eliminación (`LEGAL-PRIV-001`); auditoría axe automatizada; recorridos E2E de los perfiles profesional, creador, proyecto y organización (hoy cubiertos en unitarias). La persistencia, los recorridos por perfil y el PDF quedan absorbidos por DIAG-V3.
 
-**Matriz de dependencias (DIAG-V3-02).** 23 de las 26 preguntas tienen una condición de aplicabilidad; solo `profile`, `goal` y `stage` aplican siempre (con perfil elegido). Ninguna dependencia salta hacia adelante: toda pregunta de la que depende una condición se pregunta antes.
+**Matriz de dependencias (DIAG-V3-02, derivada desde DIAG-V3-03).** 23 de las 26 preguntas tienen una condición de aplicabilidad; solo `profile`, `goal` y `stage` aplican siempre (con perfil elegido). Ninguna dependencia salta hacia adelante: toda pregunta de la que depende una condición se pregunta antes. Desde DIAG-V3-03, esta tabla ya no es metadata declarada a mano: `collectDependencies(rule)` la calcula recorriendo el árbol de cada regla declarativa en `ROUTING_RULES`, así que una regla que cambie sin actualizar su dependencia (el riesgo que documentaba `DIAG-V3-CYCLE-001`) ya no puede ocurrir.
 
 | Pregunta | Depende de |
 | --- | --- |
@@ -159,7 +159,7 @@ DIAG-002 cerró el motor 2.0 y DIAG-002B lo endureció semánticamente (27 prueb
 | `pipeline`, `repetitive` | `stage`, `sources`, `capture` |
 | `responsibilities` | `team`, `stage`, `sources` |
 
-El grafo completo (`getDependencyGraph()`) es acíclico: toda dependencia precede a la pregunta que la usa, verificado por `registry.test.ts`.
+El grafo completo (`getDependencyGraph()`) es acíclico: toda dependencia precede a la pregunta que la usa, verificado por `registry.test.ts` y, desde DIAG-V3-03, también por `routing.test.ts` sobre el grafo derivado de `ROUTING_RULES`.
 
 #### DIAG-V3 — Diagnostic Engine V3
 
@@ -171,7 +171,7 @@ Estrategia aprobada tras DIAG-V3-00: **evolucionar → generalizar → versionar
 | — | Micro-checkpoint de terminología | CERRADO; LIVE `0.5.7` (`c60979f`) |
 | DIAG-V3-01 | Domain contracts: tipos versionados (`DiagnosticVersion`, `QuestionId`, `QuestionVersion`, `EntityType`, `OperationalArchetype`, `Niche`, `GrowthStage`, `CustomerModel`, `PrimaryGoal`, `PrimaryFriction`, `DimensionId`, `Evidence`, `DiagnosticContext`, `DiagnosticResult`) y **mapeo explícito** de los IDs actuales, sin cambiar el comportamiento observable. Ejemplo de riesgo: el `growing` actual («estable y quiero crecer») no equivale al `growing` de V3 (volumen creciente) | CERRADA, aprobada y LIVE `0.5.7` (`905d310`) |
 | DIAG-V3-02 | Registro declarativo de preguntas (`QUESTION_DEFINITIONS`), opciones tipadas por pregunta (`DIAG-V3-DEBT-01`), `inquiriesArrive`/`selectedValues` unificadas (`DIAG-V3-DEBT-02`) y matriz de dependencias de `applies` (ver «Diagnóstico») | CERRADA técnicamente (solo local), pendiente de aprobación |
-| DIAG-V3-03 Routing engine | Usará la matriz de dependencias de DIAG-V3-02 para diseñar el router; las closures `applies` se conservan hasta entonces | Pendiente de aprobación |
+| DIAG-V3-03 Routing engine | Motor de reglas declarativo (`ROUTING_RULES` + `evaluateRule`) que sustituye las 23 closures `applies`; `dependsOn` derivado, no declarado; 0 cambio de comportamiento (ver «Diagnóstico» y `STATUS.md`) | CERRADA técnicamente (solo local), pendiente de aprobación |
 | DIAG-V3-04 | Scoring + evidencia; primer productor de `DiagnosticEvidence` | No iniciada |
 | DIAG-V3-05 | Result engine (incluye `DIAG-V3-BUG-01` y `DIAG-V3-UX-01`) | No iniciada |
 | Gate | **PRIVACY + DATA CONTRACT** (`DIAG-V3-PRIVACY-01`, `LEGAL-PRIV-001`): qué se guarda, por qué, dónde y cuánto tiempo; qué sigue anónimo; qué va temporalmente a KV y qué llega a D1; diagnósticos abandonados; «Guardar para después»; expiración; recovery token; eliminación; textos públicos; `/privacidad`; aviso o consentimiento | Obligatorio antes de DIAG-V3-06 |
