@@ -11,9 +11,9 @@ export function loader({ params }: Route.LoaderArgs) {
   return { article };
 }
 
-export function meta({ data }: Route.MetaArgs) {
-  if (!data?.article) return publicMeta("Artículo no encontrado", "El artículo que buscas no está disponible.", "/aprende", "noindex, nofollow");
-  const { article } = data;
+export function meta({ loaderData }: Route.MetaArgs) {
+  if (!loaderData?.article) return publicMeta("Artículo no encontrado", "El artículo que buscas no está disponible.", "/aprende", "noindex, nofollow");
+  const { article } = loaderData;
   return [
     ...publicMeta(article.title, article.intro, `/aprende/${article.slug}`),
     { property: "article:author", content: "Yoan Ortiz" },

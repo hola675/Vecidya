@@ -38,7 +38,7 @@ export function getBusinessProfilePublicationIssues(profile: BusinessProfilePubl
     .map(([label]) => label);
 }
 
-export function getBusinessProfileCompletion(profile: BusinessProfilePublishableFields | null) {
+export function getBusinessProfileCompletion(profile: BusinessProfilePublishableFields | null | undefined) {
   const issues = profile ? getBusinessProfilePublicationIssues(profile) : requiredFields.map(([label]) => label);
   const total = requiredFields.length;
   const completed = total - issues.length;

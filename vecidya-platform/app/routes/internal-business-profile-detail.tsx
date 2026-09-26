@@ -49,8 +49,8 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   return { ...detail, activity, businessHours, workspaceUser: access.workspaceUser };
 }
 
-export function meta({ data }: Route.MetaArgs) {
-  return [{ title: data ? `${data.profile.displayName} | Administración Vecidya` : "Negocio | Administración Vecidya" }];
+export function meta({ loaderData }: Route.MetaArgs) {
+  return [{ title: loaderData ? `${loaderData.profile.displayName} | Administración Vecidya` : "Negocio | Administración Vecidya" }];
 }
 
 export async function action({ context, params, request }: Route.ActionArgs) {

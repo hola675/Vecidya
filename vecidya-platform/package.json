@@ -14,7 +14,7 @@
     "test:e2e": "node tests/e2e/run-local-e2e.mjs",
     "test:email": "node --experimental-strip-types --test tests/email/mail-adapter.test.ts",
     "test:unit": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test \"tests/unit/**/*.test.ts\"",
-    "typecheck": "react-router typegen && tsc",
+    "typecheck": "react-router typegen && tsc -b",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {

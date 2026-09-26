@@ -4,7 +4,7 @@ import { betterAuth } from "better-auth/minimal";
 
 import { createDatabase } from "../db/client.server";
 import * as schema from "../db/schema";
-import { createAuthPlugins } from "./auth-plugins.server";
+import { createOrganizationPlugin } from "./auth-plugins.server";
 import { isBlockedOrganizationHttpCall } from "./auth/organization-http-surface";
 import { createTransactionalMailer, escapeHtml, type MailEnvironment } from "./email/mail.server";
 
@@ -71,7 +71,7 @@ export function createAuth(env: AuthEnvironment, request: Request) {
         }
       }),
     },
-    plugins: createAuthPlugins(emailConfig, createDatabase(env.DB)),
+    plugins: [createOrganizationPlugin(emailConfig, createDatabase(env.DB))],
     secret,
     trustedOrigins: [browserOrigin, workerOrigin],
   });

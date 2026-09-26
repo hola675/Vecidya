@@ -5,6 +5,8 @@
     "app/**/*",
     "app/**/.server/**/*",
     "app/**/.client/**/*",
+    "db/**/*",
+    "better-auth.config.ts",
     "server/**/*",
     "workers/**/*",
     "worker-configuration.d.ts"

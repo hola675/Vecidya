@@ -48,6 +48,12 @@ async function runViewport(width, height) {
   const articleUrl = new URL((await articleLink.getAttribute("href")), baseUrl).toString();
   await page.goto(articleUrl, { waitUntil: "networkidle" });
   assert(await page.locator("h1").count() === 1, `${label} artículo debe tener un único H1.`);
+  // Regresión TYPECHECK-001: `meta({ data })` dejó de recibir datos en React Router 8 y cada artículo
+  // se publicaba como «Artículo no encontrado», `noindex, nofollow` y canonical a /aprende.
+  const articleTitle = (await page.locator("h1").textContent())?.trim() ?? "";
+  assert((await page.title()).startsWith(articleTitle), `${label} el título del documento no es el del artículo: «${await page.title()}».`);
+  assert(!/noindex/i.test((await page.locator('meta[name="robots"]').getAttribute("content")) ?? ""), `${label} el artículo se sirve con noindex.`);
+  assert(await page.locator('link[rel="canonical"]').getAttribute("href") === `https://vecidya.com${new URL(articleUrl).pathname}`, `${label} canonical del artículo incorrecta.`);
   assert(await page.getByText("Por Yoan Ortiz").isVisible(), `${label} artículo no muestra autoría.`);
   assert(await page.getByText("En esta guía", { exact: true }).isVisible(), `${label} artículo no muestra índice.`);
   assert(await page.getByRole("link", { name: /Quiero organizar mis clientes|Explorar si IA tiene sentido|Hablar sobre un proceso/i }).count() > 0, `${label} artículo no muestra CTA contextual.`);
