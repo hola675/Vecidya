@@ -1,0 +1,2 @@
+# El repositorio usa LF en el índice y en el working tree (evita la conversión de core.autocrlf y sus avisos).
+* text=auto eol=lf
