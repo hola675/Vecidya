@@ -50,7 +50,10 @@ test("multi-choice: assets con varias opciones produce confidence moderate (agre
   assert.ok(evidences.every((e) => e.confidence === "moderate"));
 });
 
-test("collectEvidence solo usa respuestas activas: una respuesta invalidada por routing no produce evidencia", () => {
+test("integración: deriveActiveAnswers + getApplicableQuestions + collectEvidence excluyen una pregunta invalidada por routing", () => {
+  // Esta prueba caracteriza el recorrido completo (routing → active answers → evidencia), no a
+  // `collectEvidence` en solitario: si `capture` ya no está en `applicableAtIdea`, ningún cambio
+  // dentro de `collectEvidence` podría hacerla fallar (el siguiente test cubre eso).
   const raw = { profile: "business", stage: "regular", sources: ["social"], capture: "always" } as never;
   const active = deriveActiveAnswers(raw);
   const applicableAtRegular = getApplicableQuestions(active);
@@ -61,6 +64,17 @@ test("collectEvidence solo usa respuestas activas: una respuesta invalidada por 
   const applicableAtIdea = getApplicableQuestions(regressed);
   const evidenceAtIdea = collectEvidence(regressed, applicableAtIdea);
   assert.ok(!evidenceAtIdea.some((e) => e.source.question.id === "capture"), "capture ya no aplica: no debe producir evidencia aunque la respuesta cruda siga existiendo en algún estado intermedio");
+});
+
+test("collectEvidence respeta estrictamente la lista `applicable`: nunca produce evidencia para una pregunta fuera de ella, aunque exista en activeAnswers", () => {
+  const active = deriveActiveAnswers({ profile: "business", stage: "growing", assets: ["domain"], control: "yes", sources: ["social"] } as never);
+  assert.ok(active.control !== undefined, "control debe seguir teniendo una respuesta activa real para que esta prueba sea significativa");
+  const applicableWithoutControl = getApplicableQuestions(active).filter((question) => question.id !== "control");
+  const evidences = collectEvidence(active, applicableWithoutControl);
+  assert.ok(
+    !evidences.some((e) => e.source.question.id === "control"),
+    "collectEvidence no debe producir evidencia para preguntas fuera de `applicable`, aunque su respuesta exista en activeAnswers — el llamador es responsable de pasar la lista correcta, y collectEvidence debe respetarla estrictamente",
+  );
 });
 
 test("integridad: ninguna evidencia se duplica por pregunta+dimensión", () => {

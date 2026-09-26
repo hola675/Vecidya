@@ -1,7 +1,7 @@
-import { selectedValues } from "./answers";
+import { normalizeAnswer, selectedValues } from "./answers";
 import type { DiagnosticEvidence, EvidenceSeverity, EvidenceSignal, EvidenceStrength, QuestionRef } from "./contracts";
 import { questionContribution } from "./scoring";
-import type { AnswerValue, Answers, DimensionId, Question } from "./types";
+import type { AnswerValue, Answers, Question } from "./types";
 
 /**
  * DIAG-V3-04: deriva `DiagnosticEvidence` (definida en `contracts.ts`, DIAG-V3-01, sin productor
@@ -41,12 +41,15 @@ export function deriveEvidence(question: Question, answer: AnswerValue | undefin
   if (contribution.notApplicable) return [];
 
   const ref: QuestionRef = { id: question.id, version: question.version };
-  const observed = selectedValues(answer);
+  // Normalizado, no la respuesta cruda: `source.answer` nunca debe poder cargar un valor que no sea
+  // una opción real de esta pregunta (revisión final, DIAG-V3-04, spec §10).
+  const observed = selectedValues(normalizeAnswer(question, answer));
   const confidence: EvidenceStrength = question.type === "single" ? "strong" : "moderate";
   const evidences: DiagnosticEvidence[] = [];
 
-  for (const dimension of Object.keys(contribution.evidence) as DimensionId[]) {
-    const item = contribution.evidence[dimension]!;
+  for (const dimension of question.dimensions) {
+    const item = contribution.evidence[dimension];
+    if (!item) continue;
     evidences.push({ dimension, signal: signalFor(item.value), severity: severityFor(item.value), confidence, source: { question: ref, answer: observed } });
   }
   for (const dimension of contribution.unknownFor) {

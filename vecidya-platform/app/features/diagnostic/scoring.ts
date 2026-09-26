@@ -125,13 +125,6 @@ export function visualStatusFor(score: number): VisualStatus {
   return "healthy";
 }
 
-/**
- * Resultado general 0-100 (DIAG-003): media de las dimensiones con puntuación, ponderada por su
- * `evidence` (la misma suma de pesos que ya usa `scoreDimensions` para calcular cada dimensión) —
- * mismo criterio en cascada, no un promedio simple. Una dimensión sin evidencia (`score: null`) no
- * participa. Es solo una lectura de conjunto: nunca sustituye ni oculta una dimensión crítica, que
- * sigue mostrando su propio porcentaje y color sin importar cuánto suba el general.
- */
 export type OverallScoreTrace = {
   included: { dimension: DimensionId; score: number; evidence: number }[];
   excluded: DimensionId[];
@@ -140,7 +133,15 @@ export type OverallScoreTrace = {
   value: number;
 };
 
-/** Traza del cálculo del puntaje global; `computeOverallScore` es un envoltorio de `.value` (mismo cálculo, no una segunda implementación — DIAG-V3-04, spec §18/§19). */
+/**
+ * Traza del puntaje general 0-100 (DIAG-003): media de las dimensiones con puntuación, ponderada
+ * por su `evidence` (la misma suma de pesos que ya usa `scoreDimensions` para calcular cada
+ * dimensión) — mismo criterio en cascada, no un promedio simple. Una dimensión sin evidencia
+ * (`score: null`) no participa (queda en `excluded`). Es solo una lectura de conjunto: nunca
+ * sustituye ni oculta una dimensión crítica, que sigue mostrando su propio porcentaje y color sin
+ * importar cuánto suba el general. `computeOverallScore` es un envoltorio de `.value` (mismo
+ * cálculo, no una segunda implementación — DIAG-V3-04, spec §18/§19).
+ */
 export function explainOverallScore(dimensions: DimensionScore[]): OverallScoreTrace {
   const scored = dimensions.filter((dimension): dimension is DimensionScore & { score: number } => dimension.score !== null);
   const excluded = dimensions.filter((dimension) => dimension.score === null).map((dimension) => dimension.id);
@@ -185,18 +186,39 @@ function accumulateDimension(dimension: DimensionId, activeAnswers: Answers, app
   return { entries, unknownQuestionIds, weighted, weight };
 }
 
+export type DimensionScoreTrace = {
+  dimension: DimensionId;
+  entries: DimensionContributionEntry[];
+  unknownQuestionIds: QuestionId[];
+  weighted: number;
+  weight: number;
+  hasEvidence: boolean;
+  score: number | null;
+};
+
+/**
+ * Traza de una sola dimensión, derivada de `accumulateDimension`. `scoreDimensions` (abajo) es un
+ * envoltorio de esta función para las 7 dimensiones a la vez — antes de este fix, `scoreDimensions`
+ * recalculaba `hasEvidence`/`score` por su cuenta en vez de reusar esta traza (revisión final,
+ * DIAG-V3-04, spec §18). No se expone en UI ni se persiste.
+ */
+export function explainDimensionScore(dimension: DimensionId, activeAnswers: Answers, applicable: Question[]): DimensionScoreTrace {
+  const total = accumulateDimension(dimension, activeAnswers, applicable);
+  const hasEvidence = total.weight >= MIN_EVIDENCE;
+  const score = hasEvidence ? Math.min(100, Math.max(0, Math.round((100 * total.weighted) / total.weight))) : null;
+  return { dimension, entries: total.entries, unknownQuestionIds: total.unknownQuestionIds, weighted: total.weighted, weight: total.weight, hasEvidence, score };
+}
+
 export function scoreDimensions(activeAnswers: Answers, applicable: Question[]): DimensionScore[] {
   return dimensionOrder.map((dimension) => {
-    const total = accumulateDimension(dimension, activeAnswers, applicable);
-    const hasEvidence = total.weight >= MIN_EVIDENCE;
-    const score = hasEvidence ? Math.round((100 * total.weighted) / total.weight) : null;
+    const trace = explainDimensionScore(dimension, activeAnswers, applicable);
     return {
       id: dimension,
       label: dimensionLabels[dimension],
-      score: score === null ? null : Math.min(100, Math.max(0, score)),
-      level: score === null ? null : levelFor(score),
-      evidence: Math.round(total.weight * 100) / 100,
-      unknown: total.unknownQuestionIds.length,
+      score: trace.score,
+      level: trace.score === null ? null : levelFor(trace.score),
+      evidence: Math.round(trace.weight * 100) / 100,
+      unknown: trace.unknownQuestionIds.length,
     };
   });
 }
@@ -212,32 +234,26 @@ export type DimensionConfidenceInputs = {
 
 /**
  * Insumos, no una fórmula: una fase posterior decide cómo combinarlos en un `ConfidenceLevel` por
- * dimensión. `contradictionCount` es GLOBAL: `detectContradictions` (result.ts) no clasifica hoy
+ * dimensión. `contradictionCount` es GLOBAL (sin valor por defecto — un llamador debe decidirlo
+ * explícitamente, nunca heredar 0 en silencio): `detectContradictions` (result.ts) no clasifica hoy
  * por dimensión, y clasificarlo pertenece al Result Engine (DIAG-V3-05), no a esta fase.
+ *
+ * `coverage` excluye las respuestas "no aplica" del denominador por completo (ni ayudan ni
+ * penalizan, igual que en `computeConfidence` global) y cuenta "no lo sé" en el numerador junto a
+ * la evidencia real (igual que `computeConfidence` trata cualquier respuesta con valor definido
+ * como "respondida" a efectos de cobertura, aunque *no* cuente como evidencia real ni como score).
+ * Antes de este fix, una respuesta "no aplica" SÍ reducía `coverage` (se contaba en el denominador
+ * pero nunca en el numerador) — contradecía el invariante "N/A no afecta la confianza" (revisión
+ * final, DIAG-V3-04).
  */
-export function computeDimensionConfidenceInputs(dimension: DimensionId, activeAnswers: Answers, applicable: Question[], contradictionCount = 0): DimensionConfidenceInputs {
+export function computeDimensionConfidenceInputs(dimension: DimensionId, activeAnswers: Answers, applicable: Question[], contradictionCount: number): DimensionConfidenceInputs {
   const total = accumulateDimension(dimension, activeAnswers, applicable);
-  const applicableCount = applicable.filter((question) => question.dimensions.includes(dimension)).length;
+  const relevant = applicable.filter((question) => question.dimensions.includes(dimension));
+  const notApplicableCount = relevant.filter((question) => questionContribution(question, activeAnswers[question.id]).notApplicable).length;
+  const applicableCount = relevant.length - notApplicableCount;
   const evidenceCount = total.entries.length;
-  return { dimension, evidenceCount, applicableCount, unknownCount: total.unknownQuestionIds.length, contradictionCount, coverage: applicableCount > 0 ? evidenceCount / applicableCount : 0 };
-}
-
-export type DimensionScoreTrace = {
-  dimension: DimensionId;
-  entries: DimensionContributionEntry[];
-  unknownQuestionIds: QuestionId[];
-  weighted: number;
-  weight: number;
-  hasEvidence: boolean;
-  score: number | null;
-};
-
-/** Traza de una sola dimensión, derivada de `accumulateDimension` (el mismo cálculo que `scoreDimensions`). No se expone en UI ni se persiste. */
-export function explainDimensionScore(dimension: DimensionId, activeAnswers: Answers, applicable: Question[]): DimensionScoreTrace {
-  const total = accumulateDimension(dimension, activeAnswers, applicable);
-  const hasEvidence = total.weight >= MIN_EVIDENCE;
-  const score = hasEvidence ? Math.min(100, Math.max(0, Math.round((100 * total.weighted) / total.weight))) : null;
-  return { dimension, entries: total.entries, unknownQuestionIds: total.unknownQuestionIds, weighted: total.weighted, weight: total.weight, hasEvidence, score };
+  const unknownCount = total.unknownQuestionIds.length;
+  return { dimension, evidenceCount, applicableCount, unknownCount, contradictionCount, coverage: applicableCount > 0 ? (evidenceCount + unknownCount) / applicableCount : 0 };
 }
 
 export function computeConfidence(activeAnswers: Answers, applicable: Question[], dimensions: DimensionScore[], contradictions: string[] = []): Confidence {

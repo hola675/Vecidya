@@ -66,23 +66,67 @@ test("computeDimensionConfidenceInputs expone insumos, no una fórmula nueva de 
   assert.ok(!("level" in inputs), "no debe existir un nivel de confianza calculado: solo insumos");
 });
 
-test("coverage = evidenceCount / applicableCount, y 0 si no hay preguntas aplicables para la dimensión", () => {
+test("coverage = 0 si no hay preguntas aplicables para la dimensión", () => {
   const active = deriveActiveAnswers({ profile: "creator", stage: "idea" } as never);
   const applicable = getApplicableQuestions(active);
-  const inputs = computeDimensionConfidenceInputs("medicion", active, applicable);
+  const inputs = computeDimensionConfidenceInputs("medicion", active, applicable, 0);
   assert.equal(inputs.applicableCount, 0);
   assert.equal(inputs.coverage, 0);
 });
 
-test("orden independiente: el mismo conjunto de respuestas activas en distinto orden de claves produce el mismo score/evidencia", () => {
-  const a = { profile: "business", stage: "regular", assets: ["domain", "website"], control: "yes" } as never;
-  const b = { control: "yes", assets: ["domain", "website"], stage: "regular", profile: "business" } as never;
-  const activeA = deriveActiveAnswers(a);
-  const activeB = deriveActiveAnswers(b);
-  const applicableA = getApplicableQuestions(activeA);
-  const applicableB = getApplicableQuestions(activeB);
-  assert.deepEqual(scoreDimensions(activeA, applicableA), scoreDimensions(activeB, applicableB));
-  assert.deepEqual(collectEvidence(activeA, applicableA), collectEvidence(activeB, applicableB));
+test("coverage: «no aplica» se excluye por completo del denominador (no penaliza, revisión final)", () => {
+  // seguimiento: capture/response/follow_up/post_sale responden con valor real; pipeline="na".
+  // Sin la corrección de revisión, pipeline contaba en el denominador (5) pero nunca en el
+  // numerador → coverage 4/5 = 0.8, contradiciendo "N/A no afecta la confianza". Con la
+  // corrección, pipeline queda fuera del denominador → coverage 4/4 = 1.
+  const active = deriveActiveAnswers({
+    profile: "business",
+    stage: "growing",
+    sources: ["social"],
+    capture: "always",
+    response: "hour",
+    follow_up: "system",
+    pipeline: "na",
+    post_sale: "regular",
+  } as never);
+  const applicable = getApplicableQuestions(active);
+  const inputs = computeDimensionConfidenceInputs("seguimiento", active, applicable, 0);
+  assert.equal(inputs.applicableCount, 4, "pipeline (na) no debe contarse en el denominador");
+  assert.equal(inputs.evidenceCount, 4);
+  assert.equal(inputs.coverage, 1);
+});
+
+test("coverage: «no lo sé» cuenta en el numerador junto a la evidencia real (igual que computeConfidence trata «respondida»)", () => {
+  const active = deriveActiveAnswers({
+    profile: "business",
+    stage: "growing",
+    sources: ["social"],
+    capture: "always",
+    response: "unknown",
+    follow_up: "system",
+    pipeline: "na",
+    post_sale: "regular",
+  } as never);
+  const applicable = getApplicableQuestions(active);
+  const inputs = computeDimensionConfidenceInputs("seguimiento", active, applicable, 0);
+  assert.equal(inputs.applicableCount, 4, "pipeline (na) sigue excluido; response sí cuenta (no es na)");
+  assert.equal(inputs.evidenceCount, 3, "response=unknown no aporta evidencia real");
+  assert.equal(inputs.unknownCount, 1);
+  assert.equal(inputs.coverage, 1, "(evidenceCount + unknownCount) / applicableCount = (3+1)/4");
+});
+
+test("orden independiente: scoreDimensions y collectEvidence no dependen del orden de claves de activeAnswers", () => {
+  // A propósito NO se vuelve a pasar por `deriveActiveAnswers` para la segunda variante: esa
+  // función ya normaliza el orden de claves al reconstruir `next` iterando `applicable` (orden
+  // fijo del registro), así que comparar dos llamadas a `deriveActiveAnswers` con distinto orden
+  // de entrada no demuestra nada (ambas salidas ya tendrían el mismo orden). Aquí se compara
+  // directamente `scoreDimensions`/`collectEvidence` sobre el MISMO objeto activo, una vez con sus
+  // claves en orden normal y una vez invertidas.
+  const active = deriveActiveAnswers({ profile: "business", stage: "regular", assets: ["domain", "website"], control: "yes" } as never);
+  const reversedKeys = Object.fromEntries(Object.entries(active).reverse()) as typeof active;
+  const applicable = getApplicableQuestions(active);
+  assert.deepEqual(scoreDimensions(active, applicable), scoreDimensions(reversedKeys, applicable));
+  assert.deepEqual(collectEvidence(active, applicable), collectEvidence(reversedKeys, applicable));
 });
 
 test("determinismo: mismas respuestas activas, mismas evidencias/puntuaciones en 10 corridas", () => {
