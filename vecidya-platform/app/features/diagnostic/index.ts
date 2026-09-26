@@ -3,7 +3,7 @@ import { getProfile } from "./profiles";
 import { optionLabel } from "./questions";
 import { recommend } from "./recommendations";
 import { buildNextActions, classifyState, collectStrengths, detectContradictions, explainGoal, generateIssues, prioritize, splitPriorities, toScores } from "./result";
-import { computeConfidence, scoreDimensions } from "./scoring";
+import { computeConfidence, computeOverallScore, scoreDimensions } from "./scoring";
 import type { Answers, DiagnosticResult } from "./types";
 
 export * from "./types";
@@ -13,7 +13,7 @@ export { buildDiagnosticPath, DIAGNOSTIC_PATH, entryToAnswers, GOAL_PARAM, parse
 export { getInitialStep, getProgress, getSections, pathLength, type Progress } from "./flow";
 export { getProfile, goalIds, isGoalId, isProfileId, profileIds, profiles, stageIds, teamIds } from "./profiles";
 export { getOption, getQuestion, optionLabel, questionCopy, questions, sectionLabels, sectionOrder } from "./questions";
-export { dimensionDescriptions, dimensionLabels, dimensionOrder, levelLabels } from "./scoring";
+export { computeOverallScore, dimensionDescriptions, dimensionLabels, dimensionOrder, levelLabels, visualStatusFor, visualStatusLabels, type VisualStatus } from "./scoring";
 export { PRIORITY_LIMIT } from "./result";
 
 /**
@@ -27,6 +27,7 @@ export function runDiagnostic(rawAnswers: Answers): DiagnosticResult | null {
 
   const applicable = getApplicableQuestions(active);
   const dimensions = scoreDimensions(active, applicable);
+  const overallScore = computeOverallScore(dimensions);
   const scores = toScores(dimensions);
   const confidence = computeConfidence(active, applicable, dimensions, detectContradictions(context));
   const state = classifyState(context, scores, dimensions);
@@ -42,6 +43,7 @@ export function runDiagnostic(rawAnswers: Answers): DiagnosticResult | null {
     context: { stage: context.stage, team: context.team, goal: context.goal },
     state,
     confidence,
+    overallScore,
     dimensions,
     strengths,
     gaps,

@@ -175,6 +175,8 @@ export type DiagnosticResult = {
   context: { stage?: StageId; team?: TeamId; goal?: GoalId };
   state: DiagnosticState;
   confidence: Confidence;
+  /** 0-100 (DIAG-003). Ver `computeOverallScore` en `scoring.ts`: media ponderada por evidencia, nunca oculta una dimensión crítica. */
+  overallScore: number;
   dimensions: DimensionScore[];
   strengths: Strength[];
   gaps: Issue[];

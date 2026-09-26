@@ -8,6 +8,7 @@ import {
   buildContactMailto,
   DIAGNOSTIC_PATH,
   dimensionDescriptions,
+  dimensionLabels,
   entryToAnswers,
   getApplicableQuestions,
   getInitialStep,
@@ -23,11 +24,14 @@ import {
   questionCopy,
   runDiagnostic,
   servicePath,
+  visualStatusFor,
+  visualStatusLabels,
   type Answers,
   type DiagnosticResult,
   type Issue,
   type ProfileId,
   type Question,
+  type VisualStatus,
 } from "../features/diagnostic";
 
 import type { Route } from "./+types/diagnostic";
@@ -207,10 +211,37 @@ export default function Diagnostic() {
   );
 }
 
-function PriorityCard({ issue, primary }: { issue: Issue; primary: boolean }) {
+const visualStatusTone: Record<VisualStatus, "danger" | "warning" | "success"> = {
+  priority: "danger",
+  developing: "warning",
+  healthy: "success",
+};
+
+const visualStatusIcons: Record<VisualStatus, string> = {
+  priority: publicAssets.icons.diagnosticStatusPriority,
+  developing: publicAssets.icons.diagnosticStatusDeveloping,
+  healthy: publicAssets.icons.diagnosticStatusHealthy,
+};
+
+/** Porcentaje + icono + estado. El porcentaje es el dato principal: color e icono ayudan a leerlo, nunca lo sustituyen (DIAG-003). */
+function StatusBadge({ label, score }: { label?: string; score: number }) {
+  const status = visualStatusFor(score);
+  return (
+    <span className="diagnostic-status" role="img" aria-label={`${label ? `${label}: ` : ""}${score} por ciento, ${visualStatusLabels[status]}`}>
+      <img alt="" aria-hidden="true" className="diagnostic-status__icon" height={20} src={visualStatusIcons[status]} width={20} />
+      <strong className="diagnostic-status__score">{score}%</strong>
+      <span aria-hidden="true" className={`badge badge--${visualStatusTone[status]}`}>{visualStatusLabels[status]}</span>
+    </span>
+  );
+}
+
+function PriorityCard({ dimensionScore, issue, primary }: { dimensionScore: number | null; issue: Issue; primary: boolean }) {
   return (
     <li className={`diagnostic-priority${primary ? " diagnostic-priority--primary" : ""}`}>
-      <h4>{issue.title}{issue.tentative ? <em className="diagnostic-tag"> por confirmar</em> : null}</h4>
+      <div className="diagnostic-priority__heading">
+        <h4>{issue.title}{issue.tentative ? <em className="diagnostic-tag"> por confirmar</em> : null}</h4>
+        {dimensionScore !== null ? <StatusBadge label={dimensionLabels[issue.dimension]} score={dimensionScore} /> : null}
+      </div>
       <p><strong>Por qué:</strong> {issue.why}</p>
       <p><strong>Qué hacer:</strong> {issue.action}</p>
       <p className="diagnostic-priority__links">
@@ -231,6 +262,8 @@ function ResultView({
   result: DiagnosticResult;
 }) {
   const contactHref = buildContactMailto(result);
+  const overallStatus = visualStatusFor(result.overallScore);
+  const printDate = new Intl.DateTimeFormat("es", { dateStyle: "long" }).format(new Date());
   const contextChips = [
     { label: "Perfil", value: getProfile(result.profile).label },
     { label: "Momento", value: result.context.stage ? optionLabel("stage", result.context.stage) : "Sin definir" },
@@ -242,9 +275,27 @@ function ResultView({
 
   return (
     <article className="diagnostic-result">
+      <div className="diagnostic-print-header">
+        <img alt="Vecidya" height={28} src={publicAssets.brand.wordmark} width={84} />
+        <span>Diagnóstico generado el {printDate}</span>
+      </div>
       <p className="eyebrow">TU DIAGNÓSTICO</p>
       <h2 id="diagnostic-title" ref={headingRef} tabIndex={-1}>{result.state.label}</h2>
       <p>{result.state.summary}</p>
+
+      <div
+        aria-label={`Tu diagnóstico: ${result.overallScore} por ciento, ${visualStatusLabels[overallStatus]}`}
+        className="diagnostic-overall-score"
+        role="img"
+      >
+        <img alt="" aria-hidden="true" className="diagnostic-overall-score__icon" height={56} src={visualStatusIcons[overallStatus]} width={56} />
+        <div className="diagnostic-overall-score__body">
+          <p className="diagnostic-overall-score__label">Tu diagnóstico</p>
+          <p className="diagnostic-overall-score__value">{result.overallScore}%</p>
+        </div>
+        <span aria-hidden="true" className={`badge badge--${visualStatusTone[overallStatus]}`}>{visualStatusLabels[overallStatus]}</span>
+      </div>
+
       <p className="diagnostic-confidence-line">
         Confianza del resultado: <strong>{confidenceCopy[result.confidence.level].toLowerCase()}</strong>. {result.confidence.reasons[0]}
       </p>
@@ -263,7 +314,14 @@ function ResultView({
         </div>
         {result.priorities.length ? (
           <ol>
-            {result.priorities.map((issue, index) => <PriorityCard issue={issue} key={issue.id} primary={index === 0} />)}
+            {result.priorities.map((issue, index) => (
+              <PriorityCard
+                dimensionScore={result.dimensions.find((dimension) => dimension.id === issue.dimension)?.score ?? null}
+                issue={issue}
+                key={issue.id}
+                primary={index === 0}
+              />
+            ))}
           </ol>
         ) : (
           <p>Tus respuestas no muestran una brecha que priorizar ahora. Mantén lo que funciona y revisa el diagnóstico cuando cambie tu momento.</p>
@@ -309,11 +367,18 @@ function ResultView({
                   ) : (
                     <>
                       <span
-                        aria-label={`${dimension.label}: ${levelLabels[dimension.level]}`}
+                        aria-hidden="true"
                         className={`diagnostic-dimensions__bar diagnostic-dimensions__bar--${dimension.level}`}
-                        role="img"
                         style={{ width: `${dimension.score}%` }}
                       />
+                      <span
+                        aria-label={`${dimension.label}: ${dimension.score} por ciento, ${levelLabels[dimension.level]}`}
+                        className="diagnostic-dimensions__value"
+                        role="img"
+                      >
+                        <img alt="" aria-hidden="true" className="diagnostic-dimensions__icon" height={16} src={visualStatusIcons[visualStatusFor(dimension.score)]} width={16} />
+                        <strong>{dimension.score}%</strong>
+                      </span>
                       <small>{levelLabels[dimension.level]}{dimension.unknown ? " · con dudas" : ""}</small>
                     </>
                   )}
@@ -388,6 +453,7 @@ function ResultView({
       <div className="diagnostic-result__cta">
         <a className="button button--primary" href={contactHref}>Revisar este resultado con Vecidya</a>
         <Link className="button button--secondary" to="/contacto">Ir a Contacto</Link>
+        <button className="button button--secondary" onClick={() => window.print()} type="button">Descargar mi diagnóstico (PDF)</button>
         <button className="button button--secondary" onClick={onRestart} type="button">Rehacer diagnóstico</button>
       </div>
     </article>

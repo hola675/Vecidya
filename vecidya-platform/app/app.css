@@ -60,6 +60,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .badge--brand { color: var(--blue); background: #e7efff; }
 .badge--success { color: var(--success); background: #e7f7ef; }
 .badge--danger { color: #b3261e; background: #fbe9e7; }
+.badge--warning { color: #8a6d00; background: #fff6da; }
 .alert { margin: 0; border: 1px solid #ffbd94; border-radius: var(--radius-sm); padding: 0.85rem 1rem; color: #913600; background: var(--orange-soft); }
 .eyebrow { margin: 0; color: var(--orange); font-size: var(--text-label); font-weight: 800; letter-spacing: 0.13em; text-transform: uppercase; }
 
@@ -2634,6 +2635,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   display: grid;
   gap: 1.2rem;
   min-height: 30rem;
+  min-width: 0;
   align-content: start;
   border: 1px solid rgb(21 95 197 / 13%);
   border-radius: var(--radius-md);
@@ -2793,7 +2795,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   font-weight: 800;
 }
 
-.diagnostic-dimensions dd span {
+.diagnostic-dimensions dd span.diagnostic-dimensions__bar {
   display: block;
   height: 0.55rem;
   border-radius: 999px;
@@ -3690,7 +3692,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .diagnostic-dimensions dd {
-  grid-template-columns: minmax(0, 1fr) minmax(7.5rem, auto);
+  grid-template-columns: minmax(0, 1fr) auto auto;
 }
 
 .diagnostic-dimensions__bar--inicial {
@@ -3858,6 +3860,87 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   display: none;
 }
 
+.diagnostic-priority__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 0.85rem;
+}
+
+.diagnostic-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.diagnostic-status__icon {
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.diagnostic-status__score {
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+
+.diagnostic-dimensions__value {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--ink);
+  font-size: 0.85rem;
+}
+
+.diagnostic-dimensions__icon {
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.diagnostic-overall-score {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.9rem;
+  border: 1px solid rgb(21 95 197 / 22%);
+  border-radius: var(--radius-md);
+  margin: 0.9rem 0;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(180deg, #fff, #f4f8ff);
+}
+
+.diagnostic-overall-score__icon {
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.diagnostic-overall-score__body {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+  margin-right: auto;
+}
+
+.diagnostic-overall-score__label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.diagnostic-overall-score__value {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.diagnostic-print-header {
+  display: none;
+}
+
 .diagnostic-commercial__heading p:not(.eyebrow) {
   max-width: 44rem;
 }
@@ -3910,7 +3993,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .diagnostic-dimensions dd small {
+  .diagnostic-dimensions dd small,
+  .diagnostic-dimensions__value {
     grid-column: 1 / -1;
   }
 
@@ -4089,4 +4173,47 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 @media (prefers-reduced-motion: reduce) {
   .app-navigation a,.admin-navigation a,.client-area-navigation a,.business-profile-summary,.admin-overview-card,.admin-organization-card,.admin-business-card,.admin-integration-card,.auth-form input,.app-profile-progress__track span,.button { transition:none; }
+}
+
+@media print {
+  .skip-link,
+  .site-header,
+  .site-footer,
+  .diagnostic-hero,
+  .diagnostic-stepper,
+  .diagnostic-meter,
+  .diagnostic-progress-label,
+  .diagnostic-result__cta {
+    display: none !important;
+  }
+
+  .diagnostic-print-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .diagnostic-shell {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .diagnostic-priority,
+  .diagnostic-result-card,
+  .diagnostic-overall-score {
+    break-inside: avoid;
+  }
+
+  .badge,
+  .diagnostic-dimensions__bar,
+  .diagnostic-overall-score,
+  .diagnostic-priority {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }

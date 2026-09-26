@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { runDiagnostic, type DiagnosticResult } from "../../../app/features/diagnostic/index.ts";
+import { computeOverallScore, runDiagnostic, visualStatusFor, visualStatusLabels, type DiagnosticResult } from "../../../app/features/diagnostic/index.ts";
 import { personas } from "./personas.ts";
 
 const run = (answers: Record<string, string | string[]>): DiagnosticResult => {
@@ -92,4 +92,76 @@ test("la confianza refleja cobertura y dudas, no la calidad del negocio", () => 
   const partial = run({ profile: "business", goal: "organize", stage: "regular", team: "small", assets: ["website"] });
   assert.equal(partial.confidence.level, "baja");
   assert.ok(partial.confidence.answered < partial.confidence.applicable);
+});
+
+// DIAG-003: clasificación visual de apoyo (0-49 prioridad, 50-74 en desarrollo, 75-100 buen estado)
+// y puntuación general 0-100. No sustituyen el porcentaje ni el nivel de 4 niveles ya existente.
+
+test("visualStatusFor clasifica en los tres tramos exactos, con los límites 49/50 y 74/75", () => {
+  assert.equal(visualStatusFor(0), "priority");
+  assert.equal(visualStatusFor(49), "priority");
+  assert.equal(visualStatusFor(50), "developing");
+  assert.equal(visualStatusFor(74), "developing");
+  assert.equal(visualStatusFor(75), "healthy");
+  assert.equal(visualStatusFor(100), "healthy");
+});
+
+test("visualStatusLabels cubre los tres estados en español", () => {
+  assert.equal(visualStatusLabels.priority, "Prioridad");
+  assert.equal(visualStatusLabels.developing, "En desarrollo");
+  assert.equal(visualStatusLabels.healthy, "Buen estado");
+});
+
+test("computeOverallScore: todas las dimensiones en el mismo valor da ese mismo valor", () => {
+  const dimensions = ["claridad", "presencia", "alcance", "confianza", "contacto", "seguimiento", "medicion"].map((id) => ({
+    id: id as never, label: id, score: 70, level: "solida" as const, evidence: 2, unknown: 0,
+  }));
+  assert.equal(computeOverallScore(dimensions), 70);
+});
+
+test("computeOverallScore: mínimo y máximo posibles", () => {
+  const at = (value: number) => [{ id: "claridad" as const, label: "Claridad", score: value, level: "inicial" as const, evidence: 3, unknown: 0 }];
+  assert.equal(computeOverallScore(at(0)), 0);
+  assert.equal(computeOverallScore(at(100)), 100);
+});
+
+test("computeOverallScore: se pondera por evidencia, no es un promedio simple", () => {
+  const dimensions = [
+    { id: "claridad" as const, label: "Claridad", score: 100, level: "consolidada" as const, evidence: 1, unknown: 0 },
+    { id: "presencia" as const, label: "Presencia", score: 0, level: "inicial" as const, evidence: 4, unknown: 0 },
+  ];
+  // (100*1 + 0*4) / (1+4) = 20, no (100+0)/2 = 50.
+  assert.equal(computeOverallScore(dimensions), 20);
+});
+
+test("computeOverallScore: una dimensión sin evidencia (score null) no participa", () => {
+  const dimensions = [
+    { id: "claridad" as const, label: "Claridad", score: 80, level: "solida" as const, evidence: 2, unknown: 0 },
+    { id: "medicion" as const, label: "Medición", score: null, level: null, evidence: 0, unknown: 0 },
+  ];
+  assert.equal(computeOverallScore(dimensions), 80);
+});
+
+test("computeOverallScore: sin ninguna dimensión con evidencia, da 0 y no NaN", () => {
+  const dimensions = [{ id: "claridad" as const, label: "Claridad", score: null, level: null, evidence: 0, unknown: 0 }];
+  assert.equal(computeOverallScore(dimensions), 0);
+});
+
+test("una dimensión crítica sigue siendo prioridad aunque el resultado general sea alto: el promedio no la esconde", () => {
+  // Base: las 7 dimensiones en 100 (growingBusinessManual). Se anula solo la prueba pública y los
+  // activos que aportan confianza, para que esa única dimensión caiga y el resto se mantenga fuerte.
+  const result = run({ ...personas.growingBusinessManual, proof_business: ["none"], assets: ["website", "google", "social"] });
+  const confianza = score(result, "confianza");
+  assert.ok(confianza !== null && confianza < 50, `confianza debería ser baja (real: ${confianza})`);
+  assert.equal(visualStatusFor(confianza!), "priority");
+  assert.equal(visualStatusFor(result.overallScore), "healthy", `el general (${result.overallScore}) debería seguir en buen estado`);
+  assert.ok(result.overallScore > confianza! + 40, `el general (${result.overallScore}) debería quedar muy por encima de confianza (${confianza}), no arrastrado por ella`);
+});
+
+test("overallScore está en el resultado, acotado en [0, 100] y coincide con computeOverallScore(dimensions)", () => {
+  for (const answers of Object.values(personas)) {
+    const result = run(answers);
+    assert.ok(Number.isInteger(result.overallScore) && result.overallScore >= 0 && result.overallScore <= 100);
+    assert.equal(result.overallScore, computeOverallScore(result.dimensions));
+  }
 });

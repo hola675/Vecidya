@@ -9,6 +9,8 @@ assertLocalBaseUrl();
 // DIAG-002 — Diagnóstico: contrato de deep link, aislamiento de perfil, semántica accesible,
 // recorrido completo de negocio, resultado explicable, mapeo real a Licencias/Servicios/Addons/Aprende,
 // reinicio y responsive 1366/768/390/360.
+// DIAG-003 — Puntaje global visible, porcentaje por dimensión, estado visual con icono real
+// junto a cada prioridad y exportación a PDF vía impresión del navegador.
 
 const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
 const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
@@ -39,6 +41,21 @@ async function assertNoOverflow(page, label) {
       .map((element) => ({ tag: element.tagName, className: element.className, right: element.getBoundingClientRect().right, width }));
   });
   assert(overflow.length === 0, `${label} tiene overflow horizontal: ${JSON.stringify(overflow)}`);
+}
+
+async function assertNoRowOverlap(page, label, selector) {
+  const overlaps = await page.evaluate((sel) => {
+    const rows = [...document.querySelectorAll(sel)];
+    const rects = rows.map((row) => row.getBoundingClientRect());
+    const bad = [];
+    for (let i = 0; i < rects.length - 1; i += 1) {
+      if (rects[i].bottom > rects[i + 1].top + 1) {
+        bad.push({ index: i, bottom: rects[i].bottom, nextTop: rects[i + 1].top });
+      }
+    }
+    return bad;
+  }, selector);
+  assert(overlaps.length === 0, `${label}: filas de «${selector}» se superponen verticalmente: ${JSON.stringify(overlaps)}`);
 }
 
 async function currentPrompt(page) {
@@ -150,7 +167,48 @@ async function runBusinessPath(page, label) {
   assert(await commercial.locator('a[href="/addons#whatsapp"]').count() > 0, `${label}: el addon recomendado no enlaza a su ancla.`);
   assert(await commercial.getByRole("link", { name: /Ver todos los servicios/i }).getAttribute("href") === "/servicios", `${label}: no enlazó Servicios.`);
   assert(await page.locator(".diagnostic-priority--primary").count() === 1, `${label}: la prioridad principal no está destacada.`);
-  assert(await page.locator(".diagnostic-dimensions strong").count() === 0, `${label}: el resultado muestra números de puntuación en lugar de niveles.`);
+
+  // DIAG-003: cada dimensión muestra su porcentaje como texto visible (no solo el ancho de la barra).
+  const dimensionValues = await page.locator(".diagnostic-dimensions__value").allTextContents();
+  assert(dimensionValues.length > 0, `${label}: ninguna dimensión muestra su porcentaje visible.`);
+  assert(dimensionValues.every((text) => /\d{1,3}%/.test(text)), `${label}: alguna dimensión no muestra un porcentaje válido: ${JSON.stringify(dimensionValues)}`);
+  assert(await page.locator(".diagnostic-dimensions__icon").first().isVisible(), `${label}: falta el icono de estado junto al porcentaje de la dimensión.`);
+  await assertNoRowOverlap(page, label, ".diagnostic-dimensions > div");
+  // Regresión: un selector genérico preexistente (`.diagnostic-dimensions dd span`) forzaba
+  // `display:block` sobre CUALQUIER span dentro de `dd`, incluido el nuevo `.diagnostic-dimensions__value`,
+  // apilando el icono y el porcentaje verticalmente y desbordándolos sobre la fila siguiente (visible mucho
+  // más allá de su propia caja de layout, así que `assertNoRowOverlap` por sí solo no lo detecta).
+  const firstValueLayout = await page.evaluate(() => {
+    const value = document.querySelector(".diagnostic-dimensions__value");
+    const icon = value?.querySelector("img");
+    const score = value?.querySelector("strong");
+    if (!value || !icon || !score) return null;
+    return {
+      display: getComputedStyle(value).display,
+      iconTop: icon.getBoundingClientRect().top,
+      scoreTop: score.getBoundingClientRect().top,
+    };
+  });
+  assert(firstValueLayout, `${label}: no se encontró el icono y el porcentaje de una dimensión evaluada.`);
+  // Como elemento de grid dentro de `dd`, el navegador "blockifica" inline-flex a flex (spec CSS Display);
+  // lo que importa es que siga siendo un contenedor flex, no `block` (la regresión real).
+  assert(firstValueLayout.display.includes("flex"), `${label}: «.diagnostic-dimensions__value» no es un contenedor flex (${firstValueLayout.display}); el icono y el porcentaje se apilan en vez de quedar en línea.`);
+  // Con `align-items: center` el icono (16px) y el texto (línea ~19px) difieren unos pocos px por centrado
+  // vertical normal; la regresión real los desplazaba ~16px (una fila completa apilada sobre la otra).
+  assert(Math.abs(firstValueLayout.iconTop - firstValueLayout.scoreTop) < 10, `${label}: el icono y el porcentaje de la dimensión no están en la misma línea (icono top=${firstValueLayout.iconTop}, porcentaje top=${firstValueLayout.scoreTop}).`);
+
+  // DIAG-003: puntaje global destacado cerca del inicio del resultado.
+  assert(await page.locator(".diagnostic-overall-score__label").isVisible(), `${label}: falta el bloque destacado «Tu diagnóstico».`);
+  const overallScoreText = (await page.locator(".diagnostic-overall-score__value").textContent())?.trim();
+  assert(/^\d{1,3}%$/.test(overallScoreText ?? ""), `${label}: el puntaje global «${overallScoreText}» no es un porcentaje válido.`);
+  assert(await page.locator(".diagnostic-overall-score__icon").isVisible(), `${label}: falta el icono de estado del puntaje global.`);
+
+  // DIAG-003: la prioridad principal muestra el porcentaje de la dimensión afectada, no solo el texto.
+  assert(await priorities.first().locator(".diagnostic-status__score").count() === 1, `${label}: la prioridad principal no muestra el porcentaje de su dimensión.`);
+  assert(await priorities.first().locator(".diagnostic-status__icon").isVisible(), `${label}: falta el icono de estado en la prioridad principal.`);
+
+  // DIAG-003: exportación a PDF vía impresión del navegador, sin dependencias nuevas.
+  assert(await page.getByRole("button", { name: /Descargar mi diagnóstico/i }).isVisible(), `${label}: falta el botón para descargar el diagnóstico en PDF.`);
   assert(await page.getByText(/Registro y seguimiento|registro de consultas respondiste/i).count() > 0, `${label}: el estado no cita la evidencia comercial.`);
   assert(await commercial.getByRole("link", { name: /Explorar Aprende/i }).getAttribute("href") === "/aprende", `${label}: no enlazó Aprende.`);
   assert(await page.locator('a[href="/servicios#estructuracion"]').count() > 0, `${label}: no enlazó el servicio de organización.`);
@@ -270,4 +328,4 @@ for (const [width, height, extended] of [[1366, 900, true], [768, 900, false], [
   await runViewport(width, height, extended);
 }
 
-console.log("PASS: Diagnóstico verificó deep links por perfil y objetivo, valores inválidos, entrada desde Home, aislamiento al cambiar de perfil, fieldset/radios accesibles, teclado, foco, progreso por secciones, recorrido de negocio, resultado explicable, mapeo real a Licencias/Servicios/Addons/Aprende, mailto sin respuestas crudas, reinicio y responsive 1366/768/390/360.");
+console.log("PASS: Diagnóstico verificó deep links por perfil y objetivo, valores inválidos, entrada desde Home, aislamiento al cambiar de perfil, fieldset/radios accesibles, teclado, foco, progreso por secciones, recorrido de negocio, resultado explicable, mapeo real a Licencias/Servicios/Addons/Aprende, mailto sin respuestas crudas, reinicio, responsive 1366/768/390/360, puntaje global visible, porcentaje por dimensión y exportación a PDF (DIAG-003).");

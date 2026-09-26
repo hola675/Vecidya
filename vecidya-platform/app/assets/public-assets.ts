@@ -23,6 +23,9 @@ export const publicAssets = {
     reviewsLocationCard: `${selectedAssetBase}/decorative/decor-reviews-location-card.png`,
   },
   icons: {
+    diagnosticStatusPriority: `${selectedAssetBase}/icons/status/diagnostic-status-priority.webp`,
+    diagnosticStatusDeveloping: `${selectedAssetBase}/icons/status/diagnostic-status-developing.webp`,
+    diagnosticStatusHealthy: `${selectedAssetBase}/icons/status/diagnostic-status-healthy.webp`,
     diagnosticBusiness: `${selectedAssetBase}/icons/diagnostic-business.svg`,
     diagnosticProfessional: `${selectedAssetBase}/icons/diagnostic-professional.svg`,
     diagnosticProject: `${selectedAssetBase}/icons/diagnostic-project.svg`,

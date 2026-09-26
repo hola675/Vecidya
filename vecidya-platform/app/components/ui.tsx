@@ -62,7 +62,7 @@ export function Card({
   );
 }
 
-export function Badge({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | "brand" | "success" | "danger" }) {
+export function Badge({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | "brand" | "success" | "danger" | "warning" }) {
   return <span className={`badge badge--${tone}`}>{children}</span>;
 }
 

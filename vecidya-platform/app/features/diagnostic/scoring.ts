@@ -103,6 +103,42 @@ export const levelLabels: Record<DimensionLevel, string> = {
   consolidada: "Consolidada",
 };
 
+/**
+ * Clasificación visual de apoyo (DIAG-003): una lectura rápida del mismo porcentaje, no un
+ * reemplazo. `levelFor`/`DimensionLevel` (4 niveles) sigue siendo lo que usa el resto del motor
+ * (`classifyState`, fortalezas, etc.); esta clasificación de 3 tramos es exclusivamente para la UI
+ * (color + icono junto al porcentaje, que siempre se muestra como texto). Límites centralizados
+ * aquí y solo aquí: 0-49 prioridad, 50-74 en desarrollo, 75-100 buen estado.
+ */
+export type VisualStatus = "priority" | "developing" | "healthy";
+
+export const visualStatusLabels: Record<VisualStatus, string> = {
+  priority: "Prioridad",
+  developing: "En desarrollo",
+  healthy: "Buen estado",
+};
+
+export function visualStatusFor(score: number): VisualStatus {
+  if (score < 50) return "priority";
+  if (score < 75) return "developing";
+  return "healthy";
+}
+
+/**
+ * Resultado general 0-100 (DIAG-003): media de las dimensiones con puntuación, ponderada por su
+ * `evidence` (la misma suma de pesos que ya usa `scoreDimensions` para calcular cada dimensión) —
+ * mismo criterio en cascada, no un promedio simple. Una dimensión sin evidencia (`score: null`) no
+ * participa. Es solo una lectura de conjunto: nunca sustituye ni oculta una dimensión crítica, que
+ * sigue mostrando su propio porcentaje y color sin importar cuánto suba el general.
+ */
+export function computeOverallScore(dimensions: DimensionScore[]): number {
+  const scored = dimensions.filter((dimension): dimension is DimensionScore & { score: number } => dimension.score !== null);
+  const totalWeight = scored.reduce((sum, dimension) => sum + dimension.evidence, 0);
+  if (totalWeight <= 0) return 0;
+  const weighted = scored.reduce((sum, dimension) => sum + dimension.score * dimension.evidence, 0);
+  return Math.min(100, Math.max(0, Math.round(weighted / totalWeight)));
+}
+
 /** Evidencia mínima (suma de pesos) para mostrar una puntuación. */
 export const MIN_EVIDENCE = 1;
 
