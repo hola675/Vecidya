@@ -178,7 +178,14 @@ test("ninguna pregunta es imposible: cada una aplica en algún contexto", () => 
 
 test("reglas de resultado y recomendación: toda pregunta citada existe en el registro", () => {
   const ids = new Set<string>(QUESTION_IDS);
-  const patterns = [/\b(?:one|many|said|cite)\((?:answers, )?"([a-z_]+)"/g, /\banswers\.([a-z_]+)\b/g, /\bsingleAnswer\(answers, "([a-z_]+)"/g];
+  const patterns = [
+    /\b(?:one|many|said|cite)\((?:answers, )?"([a-z_]+)"/g,
+    /\banswers\.([a-z_]+)\b/g,
+    /\bsingleAnswer\(answers, "([a-z_]+)"/g,
+    // DIAG-V3-03: las reglas de routing citan preguntas como el primer argumento de sus builders
+    // (`eq("stage", ...)`, `answered("team")`, ...) en vez de `answers.x`/`singleAnswer`.
+    /\b(?:eq|notEq|isIn|answered|multiExcluding|multiIntersects)\("([a-z_]+)"/g,
+  ];
   for (const file of ["result.ts", "recommendations.ts", "questions.ts"]) {
     const source = readFileSync(new URL(`../../../app/features/diagnostic/${file}`, import.meta.url), "utf8");
     const cited = new Set<string>();

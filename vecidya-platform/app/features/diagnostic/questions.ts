@@ -1,4 +1,5 @@
-import { hasTeam, isEstablished, isOperating, profiles } from "./profiles";
+import { profiles } from "./profiles";
+import { and, answered, collectDependencies, eq, evaluateRule, isIn, multiExcluding, multiIntersects, not, notEq, or, type Rule } from "./routing";
 import type { Answers, Context, DimensionId, ProfileId, Question, QuestionDefinition, QuestionOption, SectionId } from "./types";
 
 /**
@@ -565,79 +566,64 @@ export function inquiriesArrive(answers: Answers): boolean {
   return values.length > 0 && !values.includes("none");
 }
 
-function hasAssets(context: Context): boolean {
-  const values = multiAnswer(context.answers, "assets");
-  return values.length > 0 && !values.includes("none") && !values.includes("unknown");
-}
+const OPERATING_STAGES = ["occasional", "regular", "growing"] as const;
+const ESTABLISHED_STAGES = ["regular", "growing"] as const;
+const LOCAL_SEARCH_PROFILES = profiles.filter((profile) => profile.localSearch).map((profile) => profile.id);
 
-function hasAnyAsset(context: Context, assets: readonly OptionIdOf<"assets">[]): boolean {
-  const values = multiAnswer(context.answers, "assets");
-  return assets.some((asset) => values.includes(asset));
-}
-
-function captureExists(context: Context): boolean {
-  const capture = context.answers.capture;
-  return typeof capture === "string" && capture !== "no";
-}
-
-const localSearchProfiles = profiles.filter((profile) => profile.localSearch).map((profile) => profile.id);
+const inquiriesArriveRule = multiExcluding("sources", ["none"]);
+const captureExistsRule = and(answered("capture"), notEq("capture", "no"));
 
 /**
- * Regla de aplicabilidad. `dependsOn` declara qué respuestas lee la condición (además del perfil,
- * que habilita todo el recorrido); `registry.test.ts` comprueba que la declaración sea completa y
- * exacta. Los closures son los mismos que tenía cada pregunta antes de DIAG-V3-02.
+ * Reglas de aplicabilidad declarativas (DIAG-V3-03): datos serializables evaluados por un único
+ * evaluador (`evaluateRule`), en vez de 23 closures independientes. Ver `routing.ts` para el DSL,
+ * el evaluador y cómo se resuelven las referencias (`profile`/`goal`/`stage`/`team` contra el
+ * `Context` ya validado; el resto contra la respuesta cruda).
  */
+export const ROUTING_RULES: Partial<Record<QuestionId, Rule>> = {
+  team: and(answered("stage"), notEq("stage", "idea")),
+  assets: answered("stage"),
+  clarity_presence: multiExcluding("assets", ["none", "unknown"]),
+  offer_clarity: or(
+    eq("stage", "idea"),
+    eq("stage", "launching"),
+    eq("profile", "creator"),
+    eq("profile", "project"),
+    and(answered("assets"), not(multiExcluding("assets", ["none", "unknown"]))),
+  ),
+  validation: or(eq("stage", "idea"), eq("stage", "launching")),
+  proof_professional: and(eq("profile", "professional"), notEq("stage", "idea")),
+  proof_business: and(eq("profile", "business"), notEq("stage", "idea")),
+  proof_creator: and(eq("profile", "creator"), notEq("stage", "idea")),
+  proof_org: and(isIn("profile", ["project", "organization"]), notEq("stage", "idea")),
+  control: multiIntersects("assets", ["domain", "website"]),
+  sources: isIn("stage", OPERATING_STAGES),
+  discoverability: and(isIn("stage", OPERATING_STAGES), isIn("profile", LOCAL_SEARCH_PROFILES)),
+  audience: and(eq("profile", "creator"), notEq("stage", "idea")),
+  reach: and(eq("profile", "project"), notEq("stage", "idea")),
+  contact_path: and(answered("stage"), notEq("stage", "idea")),
+  capture: and(isIn("stage", OPERATING_STAGES), inquiriesArriveRule),
+  response: and(isIn("stage", OPERATING_STAGES), inquiriesArriveRule),
+  follow_up: and(isIn("stage", OPERATING_STAGES), inquiriesArriveRule),
+  pipeline: and(isIn("stage", ESTABLISHED_STAGES), inquiriesArriveRule, captureExistsRule),
+  responsibilities: and(and(answered("team"), notEq("team", "only_me")), isIn("stage", OPERATING_STAGES), inquiriesArriveRule),
+  repetitive: and(isIn("stage", ESTABLISHED_STAGES), inquiriesArriveRule, captureExistsRule),
+  post_sale: and(isIn("stage", ESTABLISHED_STAGES), inquiriesArriveRule),
+  measurement: and(isIn("stage", OPERATING_STAGES), inquiriesArriveRule),
+};
+
+/** `dependsOn` derivado del árbol de la regla (`collectDependencies`), nunca declarado a mano (DIAG-V3-03). */
 export type ApplicabilityRule = {
   dependsOn: readonly QuestionId[];
   applies: (context: Context) => boolean;
 };
 
 /** Preguntas sin entrada aplican siempre que haya perfil (`profile`, `goal`, `stage`). */
-export const APPLICABILITY: Partial<Record<QuestionId, ApplicabilityRule>> = {
-  team: { dependsOn: ["stage"], applies: (context) => Boolean(context.stage) && context.stage !== "idea" },
-  assets: { dependsOn: ["stage"], applies: (context) => Boolean(context.stage) },
-  clarity_presence: { dependsOn: ["assets"], applies: (context) => hasAssets(context) },
-  offer_clarity: {
-    dependsOn: ["stage", "profile", "assets"],
-    applies: (context) =>
-      context.stage === "idea" ||
-      context.stage === "launching" ||
-      context.profile === "creator" ||
-      context.profile === "project" ||
-      (Boolean(context.answers.assets) && !hasAssets(context)),
-  },
-  validation: { dependsOn: ["stage"], applies: (context) => context.stage === "idea" || context.stage === "launching" },
-  proof_professional: { dependsOn: ["profile", "stage"], applies: (context) => context.profile === "professional" && context.stage !== "idea" },
-  proof_business: { dependsOn: ["profile", "stage"], applies: (context) => context.profile === "business" && context.stage !== "idea" },
-  proof_creator: { dependsOn: ["profile", "stage"], applies: (context) => context.profile === "creator" && context.stage !== "idea" },
-  proof_org: { dependsOn: ["profile", "stage"], applies: (context) => (context.profile === "project" || context.profile === "organization") && context.stage !== "idea" },
-  control: { dependsOn: ["assets"], applies: (context) => hasAnyAsset(context, ["domain", "website"]) },
-  sources: { dependsOn: ["stage"], applies: (context) => isOperating(context.stage) },
-  discoverability: {
-    dependsOn: ["stage", "profile"],
-    applies: (context) => isOperating(context.stage) && context.profile !== undefined && localSearchProfiles.includes(context.profile),
-  },
-  audience: { dependsOn: ["profile", "stage"], applies: (context) => context.profile === "creator" && context.stage !== "idea" },
-  reach: { dependsOn: ["profile", "stage"], applies: (context) => context.profile === "project" && context.stage !== "idea" },
-  contact_path: { dependsOn: ["stage"], applies: (context) => Boolean(context.stage) && context.stage !== "idea" },
-  capture: { dependsOn: ["stage", "sources"], applies: (context) => isOperating(context.stage) && inquiriesArrive(context.answers) },
-  response: { dependsOn: ["stage", "sources"], applies: (context) => isOperating(context.stage) && inquiriesArrive(context.answers) },
-  follow_up: { dependsOn: ["stage", "sources"], applies: (context) => isOperating(context.stage) && inquiriesArrive(context.answers) },
-  pipeline: {
-    dependsOn: ["stage", "sources", "capture"],
-    applies: (context) => isEstablished(context.stage) && inquiriesArrive(context.answers) && captureExists(context),
-  },
-  responsibilities: {
-    dependsOn: ["team", "stage", "sources"],
-    applies: (context) => hasTeam(context.team) && isOperating(context.stage) && inquiriesArrive(context.answers),
-  },
-  repetitive: {
-    dependsOn: ["stage", "sources", "capture"],
-    applies: (context) => isEstablished(context.stage) && inquiriesArrive(context.answers) && captureExists(context),
-  },
-  post_sale: { dependsOn: ["stage", "sources"], applies: (context) => isEstablished(context.stage) && inquiriesArrive(context.answers) },
-  measurement: { dependsOn: ["stage", "sources"], applies: (context) => isOperating(context.stage) && inquiriesArrive(context.answers) },
-};
+export const APPLICABILITY: Partial<Record<QuestionId, ApplicabilityRule>> = Object.fromEntries(
+  Object.entries(ROUTING_RULES).map(([id, rule]) => [
+    id,
+    { dependsOn: collectDependencies(rule as Rule), applies: (context: Context) => evaluateRule(rule as Rule, context) },
+  ]),
+) as Partial<Record<QuestionId, ApplicabilityRule>>;
 
 /** Recorrido completo en orden del registro: definición + condición. Mismo orden y mismas condiciones que antes. */
 export const questions: Question[] = QUESTION_DEFINITIONS.map((definition) => {

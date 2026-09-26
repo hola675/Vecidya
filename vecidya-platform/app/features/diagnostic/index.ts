@@ -26,11 +26,13 @@ export {
   QUESTION_DEFINITIONS,
   questionCopy,
   questions,
+  ROUTING_RULES,
   sectionLabels,
   sectionOrder,
   singleAnswer,
   type ApplicabilityRule,
 } from "./questions";
+export { collectDependencies, evaluateRule, evaluateRuleTrace, explainApplicability, type ReasonCode, type Ref, type Rule, type RuleTrace } from "./routing";
 export { computeOverallScore, dimensionDescriptions, dimensionLabels, dimensionOrder, levelLabels, visualStatusFor, visualStatusLabels, type VisualStatus } from "./scoring";
 export { PRIORITY_LIMIT } from "./result";
 
