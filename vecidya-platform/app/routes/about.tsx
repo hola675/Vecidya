@@ -68,7 +68,7 @@ export default function About() {
               <div>
                 <p className="eyebrow">CLIENTES · DESARROLLO</p>
                 <h3>Edgar</h3>
-                <strong>Gerente Comercial</strong>
+                <strong>Director Comercial</strong>
                 <p>Conecta las necesidades de cada negocio con soluciones prácticas, acompañando la conversación desde el primer contexto hasta el siguiente paso.</p>
               </div>
             </article>

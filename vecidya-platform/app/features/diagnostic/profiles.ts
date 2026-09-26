@@ -11,7 +11,7 @@ export type ProfileDefinition = {
 export const profiles: ProfileDefinition[] = [
   { id: "business", label: "Un negocio o empresa", description: "Una actividad comercial con clientes", localSearch: true },
   { id: "professional", label: "Mi perfil profesional", description: "Tu trabajo, experiencia y reputación", localSearch: true },
-  { id: "creator", label: "Mi marca o trabajo como creador", description: "Una voz, audiencia o trabajo creativo", localSearch: false },
+  { id: "creator", label: "Artista o creador de contenido", description: "Una voz, audiencia o trabajo creativo", localSearch: false },
   { id: "project", label: "Un proyecto o iniciativa", description: "Una idea o proyecto en construcción", localSearch: false },
   { id: "organization", label: "Una organización o comunidad", description: "Un grupo, colectivo o comunidad", localSearch: true },
 ];

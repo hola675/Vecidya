@@ -20,7 +20,7 @@ const url = (path) => new URL(path, baseUrl).toString();
 const profiles = {
   business: "Un negocio o empresa",
   professional: "Mi perfil profesional",
-  creator: "Mi marca o trabajo como creador",
+  creator: "Artista o creador de contenido",
   project: "Un proyecto o iniciativa",
   organization: "Una organización o comunidad",
 };
@@ -262,7 +262,7 @@ async function runDeepLinks(page, label) {
 
 async function runHomeEntry(page, label) {
   await page.goto(url("/"), { waitUntil: "networkidle" });
-  const expected = { Negocio: "business", Profesional: "professional", Proyecto: "project", Creador: "creator" };
+  const expected = { Negocio: "business", Profesional: "professional", Proyecto: "project", "Artista o creador de contenido": "creator" };
   for (const [text, id] of Object.entries(expected)) {
     const href = await page.locator("a.home-diagnostic-choice", { hasText: text }).getAttribute("href");
     assert(href === `/diagnostico?perfil=${id}`, `${label}: la puerta «${text}» enlaza ${href}.`);
