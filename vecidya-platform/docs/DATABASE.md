@@ -1,6 +1,6 @@
 # Base de datos
 
-Última reconciliación: 2026-09-25 (LICENSE-STRATEGY-001: foundation de licenciamiento multi-negocio, solo local). Evidencia: schema (`db/schema/`), las 11 migraciones SQL, `db/migrations/meta/`, consultas, D1 local (`d1_migrations` = 11 filas, `0000`–`0010`). No aplicado a D1 remota.
+Última reconciliación: 2026-09-26 (G7: `0010` aplicada en `vecidya-prod`; local y remoto en `0000`–`0010`). Anterior: 2026-09-25 (LICENSE-STRATEGY-001: foundation de licenciamiento multi-negocio, solo local). Evidencia: schema (`db/schema/`), las 11 migraciones SQL, `db/migrations/meta/`, consultas, D1 local (`d1_migrations` = 11 filas, `0000`–`0010`). No aplicado a D1 remota.
 
 ## Responsabilidades
 
@@ -139,7 +139,7 @@ grandfathering de precio. Ver [TESTING.md](TESTING.md).
 | 0009 | `0009_platform-profile-governance.sql` | Gobierno de plataforma | `business_profile_governance`, `platform_audit_log` |
 | 0010 | `0010_licensing-foundation.sql` | Licenciamiento multi-negocio | `billing_account`, `license_price` (+3 filas sembradas: Cuadra/Barrio/Ciudad), `organization_license`, `portfolio_pricing_tier` (+4 filas sembradas: 1→0%, 2→10%, 3-4→15%, 5+→20%), `promotion`, `billing_account_promotion` |
 
-Estado de aplicación: **local `0000`–`0010`** (verificado `RAN` el 2026-09-25); **remoto `0000`–`0009`** (verificado `REMOTE` el 2026-09-21, sin cambios desde entonces). `0010` es exclusivamente local: LICENSE-STRATEGY-001 no autoriza `--remote`.
+Estado de aplicación: **local `0000`–`0010`** (verificado `RAN` el 2026-09-25); **remoto (`vecidya-prod`) `0000`–`0010`** (`REMOTE` 2026-09-26: `0010` aplicada en G7 a las 18:13:55Z, registrada como `d1_migrations.id = 11`; ninguna pendiente). Esquema y semillas verificados contra el SQL: 6 tablas, 6 índices, 6 claves foráneas, 3 precios y 4 tramos, 0 duplicados y `foreign_key_check` sin violaciones. Bookmark Time Travel previo: `000000c2-00000000-000050f2-004d78b46378f119dd422e95a4ce30e4`. `vecidya-staging` no se tocó.
 
 Detalles de diseño vigentes:
 

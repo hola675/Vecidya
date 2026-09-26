@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-26 — G7: migración `0010` en producción (sin redeploy)
+
+- `0010_licensing-foundation` aplicada en `vecidya-prod` con `wrangler d1 migrations apply vecidya-prod --remote` (18:13:50Z–18:13:55Z). Era la única pendiente; el SQL no cambió desde `406268c` y es puramente aditivo.
+- Bookmark Time Travel previo: `000000c2-00000000-000050f2-004d78b46378f119dd422e95a4ce30e4` (no usado).
+- Verificado en remoto: ninguna migración pendiente; 6 tablas, 6 índices y 6 FK idénticos al SQL; precios Cuadra/Barrio/Ciudad `USD 39/59/89` y 4 tramos de portafolio, cada uno una vez; sin violaciones de FK. Smoke HTTP PASS; rutas protegidas siguen en 302 `/login`; `/__health/db` `ok`.
+- Sin redeploy (el Worker sigue en `f7fc35a6`), sin cambios de código, KV, bindings, secretos ni versión (`0.5.7`). Cierra `LICENSE-MIGRATION-001`. Nueva deuda menor: `HEALTH-ENV-001`.
+
 ## 2026-09-26 — Release `0.5.7` (G6: reconciliar producción con `main`, LIVE)
 
 - **Publicado:** `pnpm wrangler deploy` a las 17:51Z, Version ID `f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`, commit `f5ab660`. Rollback identificado, no usado: `582a5c38-d1d4-4f3c-8ba5-e9424717fcb3`.

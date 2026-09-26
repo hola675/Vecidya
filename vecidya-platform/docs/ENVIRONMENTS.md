@@ -1,14 +1,30 @@
 # Entornos
 
-Última reconciliación: 2026-09-26 (deploy de `v0.5.7` — G6, Version ID `f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`; `0010` sigue pendiente en `vecidya-prod`). Anterior: 2026-09-26 (deploy de `v0.5.6` — DIAG-003, puntaje global y exportación a PDF del Diagnóstico — en producción; antes, `v0.5.5` — precio público de licencias en USD —; staging sigue en `v0.4.1`).
+Última reconciliación: 2026-09-26 (deploy de `v0.5.7` — G6, Version ID `f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`; `0010` aplicada en `vecidya-prod` en G7 a las 18:13Z, sin redeploy). Anterior: 2026-09-26 (deploy de `v0.5.6` — DIAG-003, puntaje global y exportación a PDF del Diagnóstico — en producción; antes, `v0.5.5` — precio público de licencias en USD —; staging sigue en `v0.4.1`).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura a los dominios publicados, fecha indicada por release, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.
 
 ## Veredicto sobre producción
 
-`vecidya.com` sirve **`v0.5.7`** desde el Worker `vecidya-platform` con `vecidya-prod`, Version ID **`f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`** (2026-09-26T17:51Z). El pie muestra «Versión pública 0.5.7». `LEARN-META-001` está resuelto en producción. La D1 remota tiene `0000`–`0009` y **`0010` pendiente** (`LICENSE-MIGRATION-001`). El párrafo siguiente describe el corte anterior (`0.5.6`).
+`vecidya.com` sirve **`v0.5.7`** desde el Worker `vecidya-platform` con `vecidya-prod`, Version ID **`f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`** (2026-09-26T17:51Z). El pie muestra «Versión pública 0.5.7». `LEARN-META-001` está resuelto en producción. La D1 remota tiene `0000`–`0010` aplicadas desde G7 (2026-09-26T18:13Z); código `0.5.7` y esquema reconciliados. El párrafo siguiente describe el corte anterior (`0.5.6`).
 
 `vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `582a5c38-d1d4-4f3c-8ba5-e9424717fcb3` (`v0.5.6`, tercer corte — reordena el resultado del Diagnóstico y lo hace más compacto; ver «Deploy (3.º...)» abajo). El smoke HTTP anónimo (rutas públicas, versión, puntaje global y exportación a PDF del Diagnóstico, `www`, rutas privadas protegidas) pasó el 2026-09-26.
+
+## G7 — Migración `0010` en `vecidya-prod` (2026-09-26, sin redeploy)
+
+- **Autorización:** el usuario autorizó en G7 aplicar exclusivamente `0010_licensing-foundation` sobre `vecidya-prod`, sin redeploy ni cambios de código.
+- **Pre-flight:** `main` en `ca208ea`, sincronizado con `origin`, working tree limpio. `DB` → `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`). `migrations list --remote`: solo `0010` pendiente. SQL sin cambios desde `406268c` (SHA-256 `3c936593e7f31147d7ccb308fe9c436eb84aa28887af703549b643605f87fe7e`), puramente aditivo. Ninguna de las 6 tablas existía.
+- **PRE_MIGRATION_BOOKMARK:** `000000c2-00000000-000050f2-004d78b46378f119dd422e95a4ce30e4` (2026-09-26T18:12:52Z). Solo para restauración de emergencia; no se usó.
+- **Apply:** `pnpm wrangler d1 migrations apply vecidya-prod --remote` (con `CLOUDFLARE_ACCOUNT_ID` de la cuenta de soporte), 18:13:50Z–18:13:55Z, 15 sentencias, `0010` ✅.
+- **Verificación `REMOTE` (solo lectura):**
+  - «No migrations to apply»; `d1_migrations.id = 11`.
+  - 6 tablas con columnas, tipos, `NOT NULL` y PK idénticos al SQL; 6 índices con DDL idéntico; 6 claves foráneas (`CASCADE` y `NO ACTION` según el SQL).
+  - `license_price`: Cuadra 3900, Barrio 5900 y Ciudad 8900 centavos USD, mensuales y activos.
+  - `portfolio_pricing_tier`: 1→0, 2→1000, 3–4→1500 y 5+→2000 bps.
+  - Cada semilla existe exactamente una vez; las 4 tablas sin semillas están vacías; `foreign_key_check` sin violaciones; las tablas existentes siguen legibles (18 usuarios, 13 organizaciones, 8 perfiles).
+- **Smoke HTTP anónimo (18:15Z):** `/`, `/diagnostico`, `/aprende`, un artículo, `/login`, `/licencias` y `/vecindario` → 200. `/app`, `/app/internal` y `api/platform/organizations/:id/license` (GET y POST) → 302 `/login`. `/__health/db` → 200 `ok`. Pie «Versión pública 0.5.7».
+- **Worker:** sin redeploy; `wrangler deployments list` sigue mostrando `f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0` (17:51:17Z, 100 %). KV, bindings y secretos sin cambios. Versión sin cambios (`0.5.7`).
+- **Resultado:** `G7 PASS`; `LICENSE-MIGRATION-001` cerrada.
 
 ## Deploy `0.5.7` — G6: reconciliar producción con `main` (2026-09-26)
 
@@ -251,7 +267,7 @@ El despliegue público vigente es el Version ID `f7fc35a6-cb4f-48f0-ba73-5d2eea3
 - `/app/internal` sin sesión devuelve la pantalla de login; el acceso autenticado de `hola@vecidya.com` fue comprobado manualmente en producción en `/app` y `/app/internal`.
 - La D1 remota reporta migraciones `0000`–`0009` aplicadas `REMOTE`.
 
-Conclusión: el código `0.5.7` está desplegado en el Worker público y el binding reportado por Wrangler es `vecidya-prod`. La D1 remota tiene `0000`–`0009` aplicadas y **`0010` pendiente** (`REMOTE`, 2026-09-26), aunque el código de licenciamiento que la usa está publicado desde `0.5.6` (`LICENSE-MIGRATION-001`). `vecidya-staging` sigue preservada como D1 independiente de staging.
+Conclusión: el código `0.5.7` está desplegado en el Worker público y el binding reportado por Wrangler es `vecidya-prod`. La D1 remota tiene `0000`–`0010` aplicadas (`REMOTE`, 2026-09-26T18:13Z, G7); el esquema de licenciamiento ya coincide con el código publicado. `vecidya-staging` sigue preservada como D1 independiente de staging.
 
 ## Repositorio Git
 
