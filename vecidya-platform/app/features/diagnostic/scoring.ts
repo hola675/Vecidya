@@ -1,5 +1,6 @@
 import { selectedValues } from "./answers";
 import { getOption } from "./questions";
+import type { QuestionId } from "./questions";
 import type { AnswerValue, Answers, Confidence, DimensionId, DimensionLevel, DimensionScore, Question } from "./types";
 
 /**
@@ -131,36 +132,62 @@ export function visualStatusFor(score: number): VisualStatus {
  * participa. Es solo una lectura de conjunto: nunca sustituye ni oculta una dimensión crítica, que
  * sigue mostrando su propio porcentaje y color sin importar cuánto suba el general.
  */
-export function computeOverallScore(dimensions: DimensionScore[]): number {
+export type OverallScoreTrace = {
+  included: { dimension: DimensionId; score: number; evidence: number }[];
+  excluded: DimensionId[];
+  totalWeight: number;
+  weightedSum: number;
+  value: number;
+};
+
+/** Traza del cálculo del puntaje global; `computeOverallScore` es un envoltorio de `.value` (mismo cálculo, no una segunda implementación — DIAG-V3-04, spec §18/§19). */
+export function explainOverallScore(dimensions: DimensionScore[]): OverallScoreTrace {
   const scored = dimensions.filter((dimension): dimension is DimensionScore & { score: number } => dimension.score !== null);
+  const excluded = dimensions.filter((dimension) => dimension.score === null).map((dimension) => dimension.id);
   const totalWeight = scored.reduce((sum, dimension) => sum + dimension.evidence, 0);
-  if (totalWeight <= 0) return 0;
-  const weighted = scored.reduce((sum, dimension) => sum + dimension.score * dimension.evidence, 0);
-  return Math.min(100, Math.max(0, Math.round(weighted / totalWeight)));
+  const weightedSum = scored.reduce((sum, dimension) => sum + dimension.score * dimension.evidence, 0);
+  const value = totalWeight <= 0 ? 0 : Math.min(100, Math.max(0, Math.round(weightedSum / totalWeight)));
+  return { included: scored.map((dimension) => ({ dimension: dimension.id, score: dimension.score, evidence: dimension.evidence })), excluded, totalWeight, weightedSum, value };
+}
+
+export function computeOverallScore(dimensions: DimensionScore[]): number {
+  return explainOverallScore(dimensions).value;
 }
 
 /** Evidencia mínima (suma de pesos) para mostrar una puntuación. */
 export const MIN_EVIDENCE = 1;
 
-export function scoreDimensions(activeAnswers: Answers, applicable: Question[]): DimensionScore[] {
-  const totals: Record<DimensionId, { weighted: number; weight: number; unknown: number }> = Object.fromEntries(
-    dimensionOrder.map((dimension) => [dimension, { weighted: 0, weight: 0, unknown: 0 }]),
-  ) as Record<DimensionId, { weighted: number; weight: number; unknown: number }>;
+export type DimensionContributionEntry = { questionId: QuestionId; value: number; weight: number };
 
+type DimensionAccumulation = { entries: DimensionContributionEntry[]; unknownQuestionIds: QuestionId[]; weighted: number; weight: number };
+
+/**
+ * Primitivo compartido: acumula value*weight y las preguntas «no lo sé» para UNA dimensión, sobre
+ * las preguntas aplicables. Usado por `scoreDimensions` (las 7 dimensiones a la vez) y
+ * `explainDimensionScore` (detalle de una sola) — es el MISMO cálculo, no una segunda
+ * implementación (DIAG-V3-04, spec §18).
+ */
+function accumulateDimension(dimension: DimensionId, activeAnswers: Answers, applicable: Question[]): DimensionAccumulation {
+  const entries: DimensionContributionEntry[] = [];
+  const unknownQuestionIds: QuestionId[] = [];
+  let weighted = 0;
+  let weight = 0;
   for (const question of applicable) {
     const contribution = questionContribution(question, activeAnswers[question.id]);
-    for (const dimension of dimensionOrder) {
-      const item = contribution.evidence[dimension];
-      if (item) {
-        totals[dimension].weighted += item.value * item.weight;
-        totals[dimension].weight += item.weight;
-      }
+    const item = contribution.evidence[dimension];
+    if (item) {
+      entries.push({ questionId: question.id, value: item.value, weight: item.weight });
+      weighted += item.value * item.weight;
+      weight += item.weight;
     }
-    for (const dimension of contribution.unknownFor) totals[dimension].unknown += 1;
+    if (contribution.unknownFor.includes(dimension)) unknownQuestionIds.push(question.id);
   }
+  return { entries, unknownQuestionIds, weighted, weight };
+}
 
+export function scoreDimensions(activeAnswers: Answers, applicable: Question[]): DimensionScore[] {
   return dimensionOrder.map((dimension) => {
-    const total = totals[dimension];
+    const total = accumulateDimension(dimension, activeAnswers, applicable);
     const hasEvidence = total.weight >= MIN_EVIDENCE;
     const score = hasEvidence ? Math.round((100 * total.weighted) / total.weight) : null;
     return {
@@ -169,9 +196,48 @@ export function scoreDimensions(activeAnswers: Answers, applicable: Question[]):
       score: score === null ? null : Math.min(100, Math.max(0, score)),
       level: score === null ? null : levelFor(score),
       evidence: Math.round(total.weight * 100) / 100,
-      unknown: total.unknown,
+      unknown: total.unknownQuestionIds.length,
     };
   });
+}
+
+export type DimensionConfidenceInputs = {
+  dimension: DimensionId;
+  evidenceCount: number;
+  applicableCount: number;
+  unknownCount: number;
+  contradictionCount: number;
+  coverage: number;
+};
+
+/**
+ * Insumos, no una fórmula: una fase posterior decide cómo combinarlos en un `ConfidenceLevel` por
+ * dimensión. `contradictionCount` es GLOBAL: `detectContradictions` (result.ts) no clasifica hoy
+ * por dimensión, y clasificarlo pertenece al Result Engine (DIAG-V3-05), no a esta fase.
+ */
+export function computeDimensionConfidenceInputs(dimension: DimensionId, activeAnswers: Answers, applicable: Question[], contradictionCount = 0): DimensionConfidenceInputs {
+  const total = accumulateDimension(dimension, activeAnswers, applicable);
+  const applicableCount = applicable.filter((question) => question.dimensions.includes(dimension)).length;
+  const evidenceCount = total.entries.length;
+  return { dimension, evidenceCount, applicableCount, unknownCount: total.unknownQuestionIds.length, contradictionCount, coverage: applicableCount > 0 ? evidenceCount / applicableCount : 0 };
+}
+
+export type DimensionScoreTrace = {
+  dimension: DimensionId;
+  entries: DimensionContributionEntry[];
+  unknownQuestionIds: QuestionId[];
+  weighted: number;
+  weight: number;
+  hasEvidence: boolean;
+  score: number | null;
+};
+
+/** Traza de una sola dimensión, derivada de `accumulateDimension` (el mismo cálculo que `scoreDimensions`). No se expone en UI ni se persiste. */
+export function explainDimensionScore(dimension: DimensionId, activeAnswers: Answers, applicable: Question[]): DimensionScoreTrace {
+  const total = accumulateDimension(dimension, activeAnswers, applicable);
+  const hasEvidence = total.weight >= MIN_EVIDENCE;
+  const score = hasEvidence ? Math.min(100, Math.max(0, Math.round((100 * total.weighted) / total.weight))) : null;
+  return { dimension, entries: total.entries, unknownQuestionIds: total.unknownQuestionIds, weighted: total.weighted, weight: total.weight, hasEvidence, score };
 }
 
 export function computeConfidence(activeAnswers: Answers, applicable: Question[], dimensions: DimensionScore[], contradictions: string[] = []): Confidence {
