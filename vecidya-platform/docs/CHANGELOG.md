@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-26 — Release `0.5.7` (G6: reconciliar producción con `main`)
+
+- **Versión:** `0.5.6` → `0.5.7` (PATCH). Sigue el precedente del proyecto: cada release publicado recibe su versión, y un PATCH es un cambio visible sin capacidad nueva (`0.5.1`). Este release lleva la corrección de producción `LEARN-META-001`, dos cambios de texto visibles (terminología) y cambios internos sin efecto observable (DIAG-V3-01, TYPECHECK-001, REPO-EOL-001).
+- **Contenido:** `c60979f`, `0887707`, `905d310`, `d0235d8`, `bdae3fc`, `b0264ce` y este commit. Sin migraciones, bindings, secretos, D1 ni KV.
+
 ## 2026-09-26 — DIAG-V3-01 Domain contracts, TYPECHECK-001 y REPO-EOL-001 (solo local, sin deploy)
 
 - **DIAG-V3-01 (`905d310`, cerrada técnicamente y pendiente de aprobación):**
