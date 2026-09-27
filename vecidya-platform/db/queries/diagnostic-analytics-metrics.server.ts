@@ -3,7 +3,7 @@ import { and, eq, gt, lt, lte, sql } from "drizzle-orm";
 import { ANALYTICS_ABANDONMENT_THRESHOLD_MS } from "../../app/features/diagnostic/analytics";
 import type { PersistedVersions } from "../../app/features/diagnostic/contracts";
 import type { Database } from "../client.server";
-import { diagnosticSavedSnapshot, diagnosticSession } from "../schema";
+import { diagnosticEvent, diagnosticSavedSnapshot, diagnosticSession } from "../schema";
 
 /**
  * Capa de consultas analíticas (DIAG-V3-08 §41). Server-side únicamente: nada aquí se expone por HTTP
@@ -111,4 +111,110 @@ async function saveResume(database: Database, options: { versions?: VersionFilte
   };
 }
 
-export const diagnosticAnalytics = { lifecycle, saveResume };
+export type DropoffRow = { questionId: string; shownAndValid: number; droppedOff: number; dropoffRate: number };
+
+/**
+ * Denominador (spec §17): sesiones donde Q fue mostrada Y seguía siendo válida en la ruta (sin
+ * `QUESTION_INVALIDATED` posterior al último `QUESTION_SHOWN`). Numerador: ese mismo conjunto, sin
+ * `ANSWER_SUBMITTED` posterior, Y la sesión terminó "definitivamente" sin completar — abandonada por
+ * inactividad (STARTED/IN_PROGRESS) o con snapshot guardado ya expirado (`expired_saved`). Una sesión
+ * SAVED con snapshot vivo, o todavía activa dentro del umbral, NUNCA cuenta como dropoff de Q (spec
+ * §17 punto 5, §20): solo cuenta cuando ya está clasificada analíticamente como terminada.
+ */
+async function dropoffByQuestion(database: Database, options: { now?: Date; thresholdMs?: number } = {}): Promise<DropoffRow[]> {
+  const now = options.now ?? new Date();
+  const thresholdMs = options.thresholdMs ?? ANALYTICS_ABANDONMENT_THRESHOLD_MS;
+
+  const rows = await database.all<{ question_id: string; shown_and_valid: number; dropped_off: number }>(sql`
+    WITH shown AS (
+      SELECT session_id, question_id, MAX(received_at) AS last_shown_at
+      FROM diagnostic_event WHERE event_type = 'QUESTION_SHOWN' AND question_id IS NOT NULL
+      GROUP BY session_id, question_id
+    ),
+    invalidated AS (
+      SELECT session_id, question_id, MAX(received_at) AS last_invalidated_at
+      FROM diagnostic_event WHERE event_type = 'QUESTION_INVALIDATED' AND question_id IS NOT NULL
+      GROUP BY session_id, question_id
+    ),
+    answered AS (
+      SELECT DISTINCT session_id, question_id
+      FROM diagnostic_event WHERE event_type = 'ANSWER_SUBMITTED' AND question_id IS NOT NULL
+    ),
+    valid AS (
+      SELECT s.session_id, s.question_id
+      FROM shown s
+      LEFT JOIN invalidated i ON i.session_id = s.session_id AND i.question_id = s.question_id
+      WHERE i.last_invalidated_at IS NULL OR i.last_invalidated_at < s.last_shown_at
+    )
+    SELECT
+      v.question_id AS question_id,
+      COUNT(*) AS shown_and_valid,
+      SUM(CASE
+        WHEN a.session_id IS NOT NULL THEN 0
+        WHEN ds.status = 'COMPLETED' THEN 0
+        WHEN ds.status IN ('STARTED','IN_PROGRESS') AND (${now.getTime()} - ds.last_activity_at) >= ${thresholdMs} THEN 1
+        WHEN ds.status = 'SAVED' AND EXISTS (SELECT 1 FROM diagnostic_saved_snapshot sn WHERE sn.session_id = ds.id AND sn.expires_at < ${now.getTime()}) THEN 1
+        ELSE 0
+      END) AS dropped_off
+    FROM valid v
+    JOIN diagnostic_session ds ON ds.id = v.session_id
+    LEFT JOIN answered a ON a.session_id = v.session_id AND a.question_id = v.question_id
+    GROUP BY v.question_id
+  `);
+
+  return rows.map((row) => ({
+    questionId: row.question_id,
+    shownAndValid: row.shown_and_valid,
+    droppedOff: row.dropped_off,
+    dropoffRate: row.shown_and_valid > 0 ? row.dropped_off / row.shown_and_valid : 0,
+  }));
+}
+
+export type ChangeRateRow = { questionId: string; sessionsAnswered: number; sessionsChanged: number; sessionChangeRate: number; totalChangeEvents: number };
+
+async function answerChangeRateByQuestion(database: Database): Promise<ChangeRateRow[]> {
+  const rows = await database.all<{ question_id: string; sessions_answered: number; sessions_changed: number; total_change_events: number }>(sql`
+    WITH answered AS (
+      SELECT DISTINCT session_id, question_id FROM diagnostic_event WHERE event_type = 'ANSWER_SUBMITTED' AND question_id IS NOT NULL
+    ),
+    changes AS (
+      SELECT session_id, question_id, COUNT(*) AS change_count FROM diagnostic_event WHERE event_type = 'ANSWER_CHANGED' AND question_id IS NOT NULL GROUP BY session_id, question_id
+    )
+    SELECT
+      a.question_id AS question_id,
+      COUNT(DISTINCT a.session_id) AS sessions_answered,
+      COUNT(DISTINCT c.session_id) AS sessions_changed,
+      COALESCE(SUM(c.change_count), 0) AS total_change_events
+    FROM answered a
+    LEFT JOIN changes c ON c.session_id = a.session_id AND c.question_id = a.question_id
+    GROUP BY a.question_id
+  `);
+
+  return rows.map((row) => ({
+    questionId: row.question_id,
+    sessionsAnswered: row.sessions_answered,
+    sessionsChanged: row.sessions_changed,
+    sessionChangeRate: row.sessions_answered > 0 ? row.sessions_changed / row.sessions_answered : 0,
+    totalChangeEvents: row.total_change_events,
+  }));
+}
+
+export type AnswerKindRateRow = { questionId: string; interactions: number; matching: number; rate: number };
+
+async function rateByAnswerKind(database: Database, kind: "unknown" | "not_applicable"): Promise<AnswerKindRateRow[]> {
+  const rows = await database.all<{ question_id: string; interactions: number; matching: number }>(sql`
+    SELECT
+      question_id,
+      COUNT(*) AS interactions,
+      SUM(CASE WHEN answer_kind = ${kind} THEN 1 ELSE 0 END) AS matching
+    FROM diagnostic_event
+    WHERE event_type = 'ANSWER_SUBMITTED' AND question_id IS NOT NULL
+    GROUP BY question_id
+  `);
+  return rows.map((row) => ({ questionId: row.question_id, interactions: row.interactions, matching: row.matching, rate: row.interactions > 0 ? row.matching / row.interactions : 0 }));
+}
+
+const unknownRateByQuestion = (database: Database) => rateByAnswerKind(database, "unknown");
+const naRateByQuestion = (database: Database) => rateByAnswerKind(database, "not_applicable");
+
+export const diagnosticAnalytics = { lifecycle, saveResume, dropoffByQuestion, answerChangeRateByQuestion, unknownRateByQuestion, naRateByQuestion };
