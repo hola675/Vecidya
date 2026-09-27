@@ -1,5 +1,6 @@
 import { selectedValues } from "./answers";
 import { addonCatalog, learnCatalog, licenseCatalog, serviceCatalog, type AddonId, type LearnId, type ServiceId } from "./catalog";
+import type { IssueId } from "./contracts";
 import { hasTeam, isEstablished, isOperating } from "./profiles";
 import { singleAnswer, type SingleQuestionId } from "./questions";
 import { inquiriesArrive, processSolid, type Scores } from "./result";
@@ -16,7 +17,15 @@ import type { AddonFit, Context, DiagnosticState, Issue, LearnFit, LicenseFit, R
  * Las respuestas «no lo sé» no cuentan como brecha para decidir la licencia.
  */
 
-export function recommendLicense(context: Context, scores: Scores, priorities: Issue[]): LicenseFit {
+export type LicenseRecommendationTrace = { fit: LicenseFit; foundationalOverrideApplied: boolean };
+
+/**
+ * Única evaluación real del encaje de licencia (DIAG-V3-05 §22). `recommendLicense` es un
+ * envoltorio (`.fit`). `foundationalOverrideApplied` es verdadero exactamente cuando la prioridad
+ * fundacional sin dudas reemplazó a Barrio/Ciudad por Cuadra (única rama que cambia el nivel ya
+ * decidido); no es una reconstrucción aproximada, es el mismo booleano que decide esa rama.
+ */
+export function explainLicenseRecommendation(context: Context, scores: Scores, priorities: Issue[]): LicenseRecommendationTrace {
   const { answers, stage, goal } = context;
   const one = <Q extends SingleQuestionId>(questionId: Q) => singleAnswer(answers, questionId);
   const inquiries = inquiriesArrive(answers);
@@ -36,14 +45,17 @@ export function recommendLicense(context: Context, scores: Scores, priorities: I
   const none = (reason: string, notYet?: string): LicenseFit => ({ level: "none", name: "Ninguna necesaria por ahora", reason, notYet });
 
   if (!isOperating(stage)) {
-    return none("Antes de una licencia conviene definir la propuesta y comprobarla con personas reales. Vuelve a hacer el diagnóstico cuando empieces a atender.");
+    return { fit: none("Antes de una licencia conviene definir la propuesta y comprobarla con personas reales. Vuelve a hacer el diagnóstico cuando empieces a atender."), foundationalOverrideApplied: false };
   }
 
   if (!inquiries) {
-    return none(
-      "Todavía no llegan consultas: la prioridad es que las personas correctas te encuentren, y una licencia ordena lo que aún no existe.",
-      "Cuadra puede encajar cuando haya contactos e información que ordenar.",
-    );
+    return {
+      fit: none(
+        "Todavía no llegan consultas: la prioridad es que las personas correctas te encuentren, y una licencia ordena lo que aún no existe.",
+        "Cuadra puede encajar cuando haya contactos e información que ordenar.",
+      ),
+      foundationalOverrideApplied: false,
+    };
   }
 
   // Necesidad recurrente real, de mayor a menor capacidad.
@@ -89,32 +101,52 @@ export function recommendLicense(context: Context, scores: Scores, priorities: I
 
   if (foundationalFirst && (fit.level === "barrio" || fit.level === "ciudad")) {
     return {
-      level: "cuadra",
-      name: licenseCatalog.cuadra.name,
-      reason: `Tu primera prioridad es fundacional («${priorities[0].title.toLowerCase()}»). Cuadra aporta la base ordenada (perfil público, información y contactos) sobre la que tiene sentido lo demás.`,
-      notYet: `${fit.name} todavía no: captar, seguir o automatizar rinde poco mientras la propuesta o la base pública no estén claras.`,
+      fit: {
+        level: "cuadra",
+        name: licenseCatalog.cuadra.name,
+        reason: `Tu primera prioridad es fundacional («${priorities[0].title.toLowerCase()}»). Cuadra aporta la base ordenada (perfil público, información y contactos) sobre la que tiene sentido lo demás.`,
+        notYet: `${fit.name} todavía no: captar, seguir o automatizar rinde poco mientras la propuesta o la base pública no estén claras.`,
+      },
+      foundationalOverrideApplied: true,
     };
   }
   if (foundationalFirst && fit.level === "cuadra" && !fit.notYet) {
     fit.notYet = "Barrio todavía no: primero la prioridad fundacional.";
   }
 
-  return fit;
+  return { fit, foundationalOverrideApplied: false };
+}
+
+export function recommendLicense(context: Context, scores: Scores, priorities: Issue[]): LicenseFit {
+  return explainLicenseRecommendation(context, scores, priorities).fit;
+}
+
+/** Procedencia de una recomendación: de qué hallazgo salió, o `null` si es un fallback sin hallazgo que la respalde (DIAG-V3-05 §22/§23). */
+export type RecommendationTrace<T> = { fit: T; sourceIssueId: IssueId | null };
+
+/**
+ * Única evaluación real de servicios recomendados (DIAG-V3-05 §20/§22). `recommendServices` es un
+ * envoltorio (`.map(t => t.fit)`): mismo criterio, sin una segunda pasada. El fallback de "inicio"
+ * queda marcado con `sourceIssueId: null`: no hay un hallazgo real que lo respalde (deuda documentada,
+ * no una provenance inventada).
+ */
+export function explainServiceRecommendations(priorities: Issue[], state: DiagnosticState): RecommendationTrace<ServiceFit>[] {
+  const traces: RecommendationTrace<ServiceFit>[] = [];
+  for (const issue of priorities) {
+    const id = issue.service as ServiceId | undefined;
+    if (!id || !(id in serviceCatalog) || traces.some((trace) => trace.fit.id === id)) continue;
+    traces.push({ fit: { id, title: serviceCatalog[id].title, reason: `Por la prioridad «${issue.title}».` }, sourceIssueId: issue.id });
+    if (traces.length === 2) break;
+  }
+  // Sin prioridades no se inventa un servicio: solo en el punto de partida hay una necesidad genérica (ordenar antes de construir).
+  if (!traces.length && state.id === "inicio") {
+    traces.push({ fit: { id: "estructuracion", title: serviceCatalog.estructuracion.title, reason: "Para ordenar prioridades antes de construir." }, sourceIssueId: null });
+  }
+  return traces;
 }
 
 export function recommendServices(priorities: Issue[], state: DiagnosticState): ServiceFit[] {
-  const services: ServiceFit[] = [];
-  for (const issue of priorities) {
-    const id = issue.service as ServiceId | undefined;
-    if (!id || !(id in serviceCatalog) || services.some((service) => service.id === id)) continue;
-    services.push({ id, title: serviceCatalog[id].title, reason: `Por la prioridad «${issue.title}».` });
-    if (services.length === 2) break;
-  }
-  // Sin prioridades no se inventa un servicio: solo en el punto de partida hay una necesidad genérica (ordenar antes de construir).
-  if (!services.length && state.id === "inicio") {
-    services.push({ id: "estructuracion", title: serviceCatalog.estructuracion.title, reason: "Para ordenar prioridades antes de construir." });
-  }
-  return services;
+  return explainServiceRecommendations(priorities, state).map((trace) => trace.fit);
 }
 
 export function recommendAddons(context: Context, license: LicenseFit): AddonFit[] {
@@ -138,27 +170,88 @@ export function recommendAddons(context: Context, license: LicenseFit): AddonFit
   return addons.slice(0, 2);
 }
 
-export function recommendLearn(priorities: Issue[], state: DiagnosticState): LearnFit[] {
-  const learn: LearnFit[] = [];
+/**
+ * Única evaluación real de lecturas recomendadas. `recommendLearn` es un envoltorio. El fallback
+ * por momento (`state.id`) queda marcado con `sourceIssueId: null`, igual que en servicios.
+ */
+export function explainLearnRecommendations(priorities: Issue[], state: DiagnosticState): RecommendationTrace<LearnFit>[] {
+  const traces: RecommendationTrace<LearnFit>[] = [];
   for (const issue of priorities) {
     const id = issue.learn as LearnId | undefined;
-    if (!id || !(id in learnCatalog) || learn.some((item) => item.slug === learnCatalog[id].slug)) continue;
-    learn.push({ slug: learnCatalog[id].slug, title: learnCatalog[id].title, reason: `Relacionado con «${issue.title}».` });
-    if (learn.length === 2) break;
+    if (!id || !(id in learnCatalog) || traces.some((trace) => trace.fit.slug === learnCatalog[id].slug)) continue;
+    traces.push({ fit: { slug: learnCatalog[id].slug, title: learnCatalog[id].title, reason: `Relacionado con «${issue.title}».` }, sourceIssueId: issue.id });
+    if (traces.length === 2) break;
   }
-  if (!learn.length) {
+  if (!traces.length) {
     const id: LearnId = state.id === "inicio" || state.id === "base" ? "presence" : "crm";
-    learn.push({ slug: learnCatalog[id].slug, title: learnCatalog[id].title, reason: "Lectura recomendada para tu momento." });
+    traces.push({ fit: { slug: learnCatalog[id].slug, title: learnCatalog[id].title, reason: "Lectura recomendada para tu momento." }, sourceIssueId: null });
   }
-  return learn;
+  return traces;
+}
+
+export function recommendLearn(priorities: Issue[], state: DiagnosticState): LearnFit[] {
+  return explainLearnRecommendations(priorities, state).map((trace) => trace.fit);
+}
+
+/**
+ * Procedencia completa de la recomendación (DIAG-V3-05 §22). `license` y `addons` se derivan de
+ * señales de contexto (`Context`/`Scores`), no de un hallazgo puntual: documentado como tal, no
+ * inventado (§12: algunas recomendaciones dependen legítimamente de objetivo/perfil/etapa/equipo,
+ * no de evidencia puntuable). `services` y `learn` sí citan el hallazgo que las produjo cuando
+ * existe uno; el fallback sin hallazgo queda explícito (`sourceIssueId: null`), no oculto.
+ */
+export type RecommendationProvenance = {
+  license: { basis: "context_signals"; foundationalOverride: boolean };
+  services: RecommendationTrace<ServiceFit>[];
+  addons: { basis: "context_signals" }[];
+  learn: RecommendationTrace<LearnFit>[];
+};
+
+export function explainRecommendations(context: Context, scores: Scores, priorities: Issue[], state: DiagnosticState): { recommendation: Recommendation; provenance: RecommendationProvenance } {
+  const licenseTrace = explainLicenseRecommendation(context, scores, priorities);
+  const serviceTraces = explainServiceRecommendations(priorities, state);
+  const addons = recommendAddons(context, licenseTrace.fit);
+  const learnTraces = explainLearnRecommendations(priorities, state);
+  return {
+    recommendation: { license: licenseTrace.fit, services: serviceTraces.map((trace) => trace.fit), addons, learn: learnTraces.map((trace) => trace.fit) },
+    provenance: {
+      license: { basis: "context_signals", foundationalOverride: licenseTrace.foundationalOverrideApplied },
+      services: serviceTraces,
+      addons: addons.map(() => ({ basis: "context_signals" as const })),
+      learn: learnTraces,
+    },
+  };
 }
 
 export function recommend(context: Context, scores: Scores, priorities: Issue[], state: DiagnosticState): Recommendation {
-  const license = recommendLicense(context, scores, priorities);
-  return {
-    license,
-    services: recommendServices(priorities, state),
-    addons: recommendAddons(context, license),
-    learn: recommendLearn(priorities, state),
-  };
+  return explainRecommendations(context, scores, priorities, state).recommendation;
+}
+
+/**
+ * Detección de recomendaciones sin causa rastreable (DIAG-V3-05 §23): una recomendación de
+ * servicio o lectura con `sourceIssueId: null` que NO sea uno de los dos fallbacks declarados
+ * (servicio de "estructuración", únicamente en estado "inicio"; lectura de momento, únicamente sin
+ * prioridades) sería una recomendación inventada sin provenance real. Hoy no existe ninguna.
+ *
+ * Recibe `state`/`priorities` y los revisa de forma independiente (no se limita a inspeccionar el
+ * ID resultante): si la condición real que habilita cada fallback dejara de cumplirse — por
+ * ejemplo, si el guardia `state.id === "inicio"` desapareciera de `explainServiceRecommendations`
+ * — esta función lo detecta igual, porque vuelve a comprobar esa misma condición contra el estado
+ * real recibido, no contra lo que la traza afirma de sí misma.
+ */
+export function findRecommendationsWithoutProvenance(provenance: RecommendationProvenance, state: DiagnosticState, priorities: Issue[]): { kind: "service" | "learn"; id: string }[] {
+  const orphaned: { kind: "service" | "learn"; id: string }[] = [];
+  const hasServiceMatch = priorities.some((issue) => issue.service !== undefined && issue.service in serviceCatalog);
+  const hasLearnMatch = priorities.some((issue) => issue.learn !== undefined && issue.learn in learnCatalog);
+  for (const trace of provenance.services) {
+    if (trace.sourceIssueId !== null) continue;
+    const isKnownFallback = !hasServiceMatch && state.id === "inicio" && trace.fit.id === "estructuracion";
+    if (!isKnownFallback) orphaned.push({ kind: "service", id: trace.fit.id });
+  }
+  for (const trace of provenance.learn) {
+    if (trace.sourceIssueId !== null) continue;
+    const isKnownFallback = !hasLearnMatch && (trace.fit.slug === learnCatalog.presence.slug || trace.fit.slug === learnCatalog.crm.slug);
+    if (!isKnownFallback) orphaned.push({ kind: "learn", id: trace.fit.slug });
+  }
+  return orphaned;
 }

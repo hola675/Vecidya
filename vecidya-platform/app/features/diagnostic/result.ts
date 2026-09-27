@@ -47,25 +47,116 @@ export function processSolid(answers: Answers): boolean {
   return one(answers, "capture") === "always" && one(answers, "follow_up") === "system";
 }
 
-/** Contradicciones entre respuestas: no se calculan en silencio; bajan la confianza y se explican. */
-export function detectContradictions(context: Context): string[] {
-  const { answers, stage } = context;
-  const notes: string[] = [];
-  if (stage === "idea" && one(answers, "validation") === "first") {
-    notes.push("Indicaste que solo tienes la idea, pero también que ya hubo una primera venta, inscripción o participante: si ya atiendes a alguien, el momento «preparando el lanzamiento» u «ocasional» describe mejor tu situación.");
-  }
-  if (isEstablished(stage) && many(answers, "sources").includes("none")) {
-    notes.push("Indicaste actividad regular, pero también que todavía no llegan consultas: si tus clientes llegan de forma directa o presencial, marca «local físico, ferias o contacto directo» para evaluar el seguimiento.");
-  }
-  if (one(answers, "clarity_presence") === "yes" && one(answers, "offer_clarity") === "no") {
-    notes.push("Indicaste que tu presencia se entiende con claridad, pero que todavía no puedes resumir qué ofreces: conviene revisar cuál de las dos respuestas describe mejor tu caso.");
-  }
-  return notes;
+export type ContradictionId = "idea_with_prior_sale" | "established_without_sources" | "clear_presence_unclear_offer";
+
+export type ContradictionFact = {
+  id: ContradictionId;
+  message: string;
+  inputs: { questionId: QuestionId; value: string }[];
+};
+
+type ContradictionRule = {
+  id: ContradictionId;
+  applies: (context: Context) => boolean;
+  message: string;
+  inputs: (context: Context) => { questionId: QuestionId; value: string }[];
+};
+
+/**
+ * Las tres contradicciones actuales, formalizadas con ID estable (DIAG-V3-05 §15). Detección, peso
+ * (bajan la confianza a lo sumo a "media", nunca la excluyen), efecto sobre confianza y copy quedan
+ * exactamente iguales que antes de esta fase: `explainContradictions` es la única evaluación real;
+ * `detectContradictions` es un envoltorio (mismo patrón que `evaluateRule`/`explainApplicability`).
+ */
+const CONTRADICTION_RULES: ContradictionRule[] = [
+  {
+    id: "idea_with_prior_sale",
+    applies: (context) => context.stage === "idea" && one(context.answers, "validation") === "first",
+    message:
+      "Indicaste que solo tienes la idea, pero también que ya hubo una primera venta, inscripción o participante: si ya atiendes a alguien, el momento «preparando el lanzamiento» u «ocasional» describe mejor tu situación.",
+    inputs: (context) => [
+      { questionId: "stage", value: String(context.stage) },
+      { questionId: "validation", value: String(one(context.answers, "validation")) },
+    ],
+  },
+  {
+    id: "established_without_sources",
+    applies: (context) => isEstablished(context.stage) && many(context.answers, "sources").includes("none"),
+    message:
+      "Indicaste actividad regular, pero también que todavía no llegan consultas: si tus clientes llegan de forma directa o presencial, marca «local físico, ferias o contacto directo» para evaluar el seguimiento.",
+    inputs: (context) => [
+      { questionId: "stage", value: String(context.stage) },
+      { questionId: "sources", value: many(context.answers, "sources").join(",") },
+    ],
+  },
+  {
+    id: "clear_presence_unclear_offer",
+    applies: (context) => one(context.answers, "clarity_presence") === "yes" && one(context.answers, "offer_clarity") === "no",
+    message: "Indicaste que tu presencia se entiende con claridad, pero que todavía no puedes resumir qué ofreces: conviene revisar cuál de las dos respuestas describe mejor tu caso.",
+    inputs: (context) => [
+      { questionId: "clarity_presence", value: String(one(context.answers, "clarity_presence")) },
+      { questionId: "offer_clarity", value: String(one(context.answers, "offer_clarity")) },
+    ],
+  },
+];
+
+export function explainContradictions(context: Context): ContradictionFact[] {
+  return CONTRADICTION_RULES.filter((rule) => rule.applies(context)).map((rule) => ({ id: rule.id, message: rule.message, inputs: rule.inputs(context) }));
 }
 
-export function classifyState(context: Context, scores: Scores, dimensions: DimensionScore[]): DiagnosticState {
+/** Contradicciones entre respuestas: no se calculan en silencio; bajan la confianza y se explican. */
+export function detectContradictions(context: Context): string[] {
+  return explainContradictions(context).map((fact) => fact.message);
+}
+
+export type StateRuleId =
+  | "not_operating"
+  | "clarity_weak"
+  | "inquiries_core_uncertain"
+  | "inquiries_severe_leak"
+  | "no_inquiries_base"
+  | "presence_weak_base"
+  | "growth_gap"
+  | "consolidated";
+
+export type StateRuleObservation = { id: StateRuleId; matched: boolean };
+
+/**
+ * Caracterización de `DIAG-V3-BUG-01` (estado: CHARACTERIZED / NOT FIXED, ver DIAG-V3-05 §9). La
+ * rama `clarity_weak` evalúa `clarityWeak && (!inquiries || below(contacto,50) || below(seguimiento,50) || true)`.
+ * El `|| true` final hace que el paréntesis completo sea siempre verdadero: en la práctica la rama
+ * solo depende de `clarityWeak`, y `!inquiries`/`below(contacto,50)`/`below(seguimiento,50)` quedan
+ * escritos pero son inalcanzables como condición de corte. `changedOutcome` es el contrafactual sin
+ * el `|| true`: verdadero cuando, sin el bug, esta rama NO habría emparejado (porque hay consultas y
+ * ni contacto ni seguimiento están débiles) — es decir, los casos donde el bug cambia el estado
+ * resultante. No se corrige aquí: no se modifica el operador, los thresholds ni la interpretación.
+ */
+export type Bug01Trace = {
+  clarityWeak: boolean;
+  conditionWithoutBug: boolean;
+  matchedWithBug: boolean;
+  changedOutcome: boolean;
+};
+
+export type StateClassificationTrace = {
+  observations: StateRuleObservation[];
+  winningRule: StateRuleId;
+  state: DiagnosticState;
+  bug01: Bug01Trace;
+};
+
+/**
+ * Única evaluación real de estado (DIAG-V3-05 §8). `classifyState` es un envoltorio de `.state`
+ * (mismo patrón que `evaluateRule`/`evaluateRuleTrace` y `scoreDimensions`/`explainDimensionScore`):
+ * no existe un segundo clasificador que reinterprete el resultado para explicarlo. La secuencia de
+ * comprobaciones, el orden de evaluación de `low(...)` (que acumula texto en `because` como efecto
+ * colateral, tal como hacía el código antes de esta fase) y cada mensaje quedan idénticos; lo único
+ * añadido es el registro de qué regla se evaluó y cuál ganó.
+ */
+export function explainStateClassification(context: Context, scores: Scores, dimensions: DimensionScore[]): StateClassificationTrace {
   const { stage, answers } = context;
   const because: string[] = [];
+  const observations: StateRuleObservation[] = [];
   const dimension = (id: DimensionId) => dimensions.find((item) => item.id === id);
   const inquiries = inquiriesArrive(answers);
   const low = (id: DimensionId, threshold: number) => {
@@ -79,26 +170,43 @@ export function classifyState(context: Context, scores: Scores, dimensions: Dime
   const cite = (questionId: QuestionId, prefix: string) => {
     if (answers[questionId] !== undefined) because.push(`${prefix} ${said(questionId, answers)}.`);
   };
+  const observe = (id: StateRuleId, matched: boolean) => {
+    observations.push({ id, matched });
+    return matched;
+  };
+  const neutralBug01: Bug01Trace = { clarityWeak: false, conditionWithoutBug: false, matchedWithBug: false, changedOutcome: false };
 
-  if (!isOperating(stage)) {
+  if (observe("not_operating", !isOperating(stage))) {
     cite("stage", "Indicaste que");
     return {
-      id: "inicio",
-      label: "Punto de partida",
-      summary: "Todavía no hay una operación que ordenar. Lo útil ahora es definir qué ofreces y comprobarlo con personas reales antes de construir piezas digitales.",
-      because,
+      observations,
+      winningRule: "not_operating",
+      state: {
+        id: "inicio",
+        label: "Punto de partida",
+        summary: "Todavía no hay una operación que ordenar. Lo útil ahora es definir qué ofreces y comprobarlo con personas reales antes de construir piezas digitales.",
+        because,
+      },
+      bug01: neutralBug01,
     };
   }
 
   const clarityWeak = low("claridad", 35);
-  if (clarityWeak && (!inquiries || below(scores.contacto, 50) || below(scores.seguimiento, 50) || true)) {
+  const conditionWithoutBug = !inquiries || below(scores.contacto, 50) || below(scores.seguimiento, 50);
+  const bug01: Bug01Trace = { clarityWeak, conditionWithoutBug, matchedWithBug: clarityWeak, changedOutcome: clarityWeak && !conditionWithoutBug };
+  if (observe("clarity_weak", clarityWeak && (conditionWithoutBug || true))) {
     cite("offer_clarity", "Sobre tu propuesta respondiste");
     cite("clarity_presence", "Sobre si una persona nueva te entiende respondiste");
     return {
-      id: "base",
-      label: "Base en construcción",
-      summary: "Ya hay actividad, pero cuesta entender qué ofreces y a quién. Aclarar la propuesta va antes que sumar canales o herramientas: sin eso, cada consulta cuesta más.",
-      because,
+      observations,
+      winningRule: "clarity_weak",
+      state: {
+        id: "base",
+        label: "Base en construcción",
+        summary: "Ya hay actividad, pero cuesta entender qué ofreces y a quién. Aclarar la propuesta va antes que sumar canales o herramientas: sin eso, cada consulta cuesta más.",
+        because,
+      },
+      bug01,
     };
   }
 
@@ -106,77 +214,118 @@ export function classifyState(context: Context, scores: Scores, dimensions: Dime
     const contacto = dimension("contacto");
     const seguimiento = dimension("seguimiento");
     const coreUncertain = !seguimiento || seguimiento.score === null || seguimiento.unknown >= 2 || !contacto || contacto.score === null;
-    if (coreUncertain) {
+    if (observe("inquiries_core_uncertain", coreUncertain)) {
       because.push("Las respuestas «no lo sé» sobre registro, respuesta o seguimiento impiden confirmar qué pasa con las consultas después de llegar.");
       return {
-        id: "incierto",
-        label: "Operación activa con datos por confirmar",
-        summary: "Llegan consultas, pero no sabemos qué pasa con ellas después. Antes de concluir si se pierden, conviene comprobar cómo se registran y quién les da seguimiento.",
-        because,
+        observations,
+        winningRule: "inquiries_core_uncertain",
+        state: {
+          id: "incierto",
+          label: "Operación activa con datos por confirmar",
+          summary: "Llegan consultas, pero no sabemos qué pasa con ellas después. Antes de concluir si se pierden, conviene comprobar cómo se registran y quién les da seguimiento.",
+          because,
+        },
+        bug01,
       };
     }
     // Una fuga grave concreta cuenta aunque el resto de la dimensión sea fuerte: el promedio no la puede enmascarar.
     const severeLeak =
       one(answers, "capture") === "no" || one(answers, "follow_up") === "none" || one(answers, "response") === "varies" || one(answers, "contact_path") === "none";
     const leak = [low("contacto", 50), low("seguimiento", 50)].some(Boolean) || severeLeak;
-    if (leak) {
+    if (observe("inquiries_severe_leak", leak)) {
       cite("capture", "Sobre el registro de consultas respondiste");
       cite("follow_up", "Sobre el seguimiento respondiste");
       cite("response", "Sobre la primera respuesta respondiste");
       return {
-        id: "fugas",
-        label: "Operación activa con fugas",
-        summary: "Llegan consultas, pero parte de ellas se pierde entre el primer contacto y el seguimiento. Ordenar ese tramo suele rendir más que sumar canales.",
-        because,
+        observations,
+        winningRule: "inquiries_severe_leak",
+        state: {
+          id: "fugas",
+          label: "Operación activa con fugas",
+          summary: "Llegan consultas, pero parte de ellas se pierde entre el primer contacto y el seguimiento. Ordenar ese tramo suele rendir más que sumar canales.",
+          because,
+        },
+        bug01,
       };
     }
+  } else {
+    observe("inquiries_core_uncertain", false);
+    observe("inquiries_severe_leak", false);
   }
 
   const presenceWeak = low("presencia", 35);
   if (presenceWeak || !inquiries) {
-    if (!inquiries) {
+    if (observe("no_inquiries_base", !inquiries)) {
       cite("sources", "Sobre el origen de tus consultas respondiste");
       return {
-        id: "base",
-        label: "Base en construcción",
-        summary: "Tu presencia existe, pero todavía no genera consultas. El trabajo está en que las personas correctas te encuentren y entiendan cómo avanzar contigo; el seguimiento se evaluará cuando lleguen.",
-        because,
+        observations,
+        winningRule: "no_inquiries_base",
+        state: {
+          id: "base",
+          label: "Base en construcción",
+          summary: "Tu presencia existe, pero todavía no genera consultas. El trabajo está en que las personas correctas te encuentren y entiendan cómo avanzar contigo; el seguimiento se evaluará cuando lleguen.",
+          because,
+        },
+        bug01,
       };
     }
+    observe("presence_weak_base", true);
     cite("assets", "Como activos funcionando marcaste");
     const solidProcess = processSolid(answers);
     return {
-      id: "base",
-      label: "Base en construcción",
-      summary: solidProcess
-        ? "Tu operación ya funciona: registras y das seguimiento. Lo que falta es una base pública que te permita crecer más allá del boca a boca."
-        : "Ya hay actividad, pero la base pública (qué haces, dónde encontrarte y cómo contactarte) todavía no sostiene el resto.",
-      because,
+      observations,
+      winningRule: "presence_weak_base",
+      state: {
+        id: "base",
+        label: "Base en construcción",
+        summary: solidProcess
+          ? "Tu operación ya funciona: registras y das seguimiento. Lo que falta es una base pública que te permita crecer más allá del boca a boca."
+          : "Ya hay actividad, pero la base pública (qué haces, dónde encontrarte y cómo contactarte) todavía no sostiene el resto.",
+        because,
+      },
+      bug01,
     };
   }
+  observe("no_inquiries_base", false);
+  observe("presence_weak_base", false);
 
   const repetitive = one(answers, "repetitive") === "a_lot";
   const teamGap = one(answers, "responsibilities") === "no" || one(answers, "responsibilities") === "partly";
   const growthGap = [low("medicion", 50), low("alcance", 50), low("confianza", 50)].some(Boolean);
   if (repetitive) because.push(`Indicaste que el trabajo repetitivo es ${said("repetitive", answers).toLowerCase()}.`);
   if (teamGap) because.push(`Sobre responsabilidades respondiste ${said("responsibilities", answers).toLowerCase()}.`);
-  if (growthGap || repetitive || teamGap) {
+  if (observe("growth_gap", growthGap || repetitive || teamGap)) {
     because.push("Registro y seguimiento funcionan: las consultas no se pierden por proceso.");
     return {
-      id: "sistema",
-      label: "Sistema en marcha",
-      summary: "Lo esencial funciona: registras y das seguimiento. Las siguientes mejoras están en medir mejor, ampliar alcance, reforzar la confianza o quitar trabajo repetitivo.",
-      because,
+      observations,
+      winningRule: "growth_gap",
+      state: {
+        id: "sistema",
+        label: "Sistema en marcha",
+        summary: "Lo esencial funciona: registras y das seguimiento. Las siguientes mejoras están en medir mejor, ampliar alcance, reforzar la confianza o quitar trabajo repetitivo.",
+        because,
+      },
+      bug01,
     };
   }
 
   because.push("Contacto, seguimiento, alcance, confianza y medición están en nivel sólido o consolidado.");
+  observe("consolidated", true);
   return {
-    id: "consolidado",
-    label: "Sistema consolidado",
-    summary: "Presencia, contacto, seguimiento y medición funcionan de forma consistente. El siguiente paso es afinar, no reconstruir.",
-    because,
+    observations,
+    winningRule: "consolidated",
+    state: {
+      id: "consolidado",
+      label: "Sistema consolidado",
+      summary: "Presencia, contacto, seguimiento y medición funcionan de forma consistente. El siguiente paso es afinar, no reconstruir.",
+      because,
+    },
+    bug01,
   };
+}
+
+export function classifyState(context: Context, scores: Scores, dimensions: DimensionScore[]): DiagnosticState {
+  return explainStateClassification(context, scores, dimensions).state;
 }
 
 function levelText(score: number): string {
@@ -186,7 +335,7 @@ function levelText(score: number): string {
   return "consolidado";
 }
 
-type IssueDraft = Omit<Issue, "priority">;
+export type IssueDraft = Omit<Issue, "priority">;
 
 const kindWeight: Record<IssueKind, number> = {
   foundational: 1.25,
@@ -197,7 +346,7 @@ const kindWeight: Record<IssueKind, number> = {
   maturity: 0.75,
 };
 
-const goalBoost: Record<GoalId, IssueId[]> = {
+export const goalBoost: Record<GoalId, IssueId[]> = {
   be_found: ["improve_discoverability", "check_discoverability", "diversify_sources", "build_presence"],
   explain: ["define_offer"],
   trust: ["show_proof", "ask_reviews", "post_sale_loop"],
@@ -627,23 +776,61 @@ export function generateIssues(context: Context, scores: Scores): IssueDraft[] {
   return issues;
 }
 
-export function prioritize(drafts: IssueDraft[], context: Context): Issue[] {
+export const GOAL_BOOST_FACTOR = 1.3;
+export const TENTATIVE_FACTOR = 0.7;
+export const BLOCKED_FACTOR = 0.5;
+export const BLOCKER_SEVERITY_THRESHOLD = 0.5;
+
+/**
+ * Traza de un hallazgo por la tubería de prioridad (DIAG-V3-05 §16/§17): severidad base → peso por
+ * tipo → impulso de objetivo (×1.3, exclusivo de esta etapa, nunca movido a scoring) → penalización
+ * por ser tentativo (×0.7) → bloqueo por dependencia sin resolver (×0.5) → prioridad final. Cada
+ * factor queda visible por separado para que la prioridad resultante se pueda explicar sin
+ * recalcularla con una fórmula distinta.
+ */
+export type PriorityTrace = {
+  id: IssueId;
+  baseSeverity: number;
+  kindWeight: number;
+  basePriority: number;
+  goalBoosted: boolean;
+  afterGoalBoost: number;
+  tentativeApplied: boolean;
+  afterTentative: number;
+  blockers: IssueId[];
+  blocked: boolean;
+  finalPriority: number;
+  issue: Issue;
+};
+
+/**
+ * Única evaluación real de prioridad. `prioritize` es un envoltorio (`.map(t => t.issue)`, mismo
+ * patrón que el resto del motor): no hay una segunda fórmula de prioridad para explicarla.
+ */
+export function explainPrioritization(drafts: IssueDraft[], context: Context): PriorityTrace[] {
   const boosted = new Set(context.goal ? goalBoost[context.goal] : []);
   const byId = new Map(drafts.map((draft) => [draft.id, draft]));
 
-  const scored = drafts.map((draft) => {
-    let priority = draft.severity * kindWeight[draft.kind];
-    if (boosted.has(draft.id)) priority *= 1.3;
-    if (draft.tentative) priority *= 0.7;
-    const blockers = (draft.after ?? []).filter((id) => (byId.get(id)?.severity ?? 0) >= 0.5);
-    if (blockers.length) priority *= 0.5;
-    const why = blockers.length
-      ? `${draft.why} Antes conviene resolver: ${blockers.map((id) => byId.get(id)?.title.toLowerCase()).join("; ")}.`
-      : draft.why;
-    return { ...draft, why, priority: Math.round(priority * 1000) / 1000 };
+  const traces = drafts.map((draft): PriorityTrace => {
+    const weight = kindWeight[draft.kind];
+    const basePriority = draft.severity * weight;
+    const goalBoosted = boosted.has(draft.id);
+    const afterGoalBoost = goalBoosted ? basePriority * GOAL_BOOST_FACTOR : basePriority;
+    const tentativeApplied = draft.tentative;
+    const afterTentative = tentativeApplied ? afterGoalBoost * TENTATIVE_FACTOR : afterGoalBoost;
+    const blockers = (draft.after ?? []).filter((id) => (byId.get(id)?.severity ?? 0) >= BLOCKER_SEVERITY_THRESHOLD);
+    const blocked = blockers.length > 0;
+    const finalPriority = Math.round((blocked ? afterTentative * BLOCKED_FACTOR : afterTentative) * 1000) / 1000;
+    const why = blocked ? `${draft.why} Antes conviene resolver: ${blockers.map((id) => byId.get(id)?.title.toLowerCase()).join("; ")}.` : draft.why;
+    const issue: Issue = { ...draft, why, priority: finalPriority };
+    return { id: draft.id, baseSeverity: draft.severity, kindWeight: weight, basePriority, goalBoosted, afterGoalBoost, tentativeApplied, afterTentative, blockers, blocked, finalPriority, issue };
   });
 
-  return scored.sort((a, b) => b.priority - a.priority || kindWeight[b.kind] - kindWeight[a.kind] || a.id.localeCompare(b.id));
+  return traces.sort((a, b) => b.finalPriority - a.finalPriority || b.kindWeight - a.kindWeight || a.id.localeCompare(b.id));
+}
+
+export function prioritize(drafts: IssueDraft[], context: Context): Issue[] {
+  return explainPrioritization(drafts, context).map((trace) => trace.issue);
 }
 
 export const PRIORITY_LIMIT = 3;

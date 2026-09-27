@@ -1,10 +1,6 @@
-import { deriveActiveAnswers, deriveContext, getApplicableQuestions } from "./answers";
-import { CURRENT_DIAGNOSTIC_VERSION } from "./contracts";
+import { explainResult } from "./facts";
 import { getProfile } from "./profiles";
 import { optionLabel } from "./questions";
-import { recommend } from "./recommendations";
-import { buildNextActions, classifyState, collectStrengths, detectContradictions, explainGoal, generateIssues, prioritize, splitPriorities, toScores } from "./result";
-import { computeConfidence, computeOverallScore, scoreDimensions } from "./scoring";
 import type { Answers, DiagnosticResult } from "./types";
 
 export * from "./types";
@@ -53,44 +49,27 @@ export {
   type VisualStatus,
 } from "./scoring";
 export { PRIORITY_LIMIT } from "./result";
+export {
+  explainLearnRecommendations,
+  explainLicenseRecommendation,
+  explainRecommendations,
+  explainServiceRecommendations,
+  findRecommendationsWithoutProvenance,
+  type RecommendationProvenance,
+  type RecommendationTrace,
+} from "./recommendations";
+export { buildResultFacts, explainResult, type DimensionResult, type ResultFacts, type ResultTrace } from "./facts";
 
 /**
  * Ejecuta el diagnóstico completo sobre un conjunto de respuestas.
  * Devuelve `null` si todavía no hay perfil válido. Es determinista y puro.
+ *
+ * Envoltorio de `explainResult(...).result` (DIAG-V3-05 §24/§25): una sola tubería productiva
+ * (respuestas activas → puntuación → evidencia → hechos → estado → hallazgos → prioridad →
+ * recomendaciones → resultado); `runDiagnostic` no repite ningún cálculo por su cuenta.
  */
 export function runDiagnostic(rawAnswers: Answers): DiagnosticResult | null {
-  const active = deriveActiveAnswers(rawAnswers);
-  const context = deriveContext(active);
-  if (!context.profile) return null;
-
-  const applicable = getApplicableQuestions(active);
-  const dimensions = scoreDimensions(active, applicable);
-  const overallScore = computeOverallScore(dimensions);
-  const scores = toScores(dimensions);
-  const confidence = computeConfidence(active, applicable, dimensions, detectContradictions(context));
-  const state = classifyState(context, scores, dimensions);
-  const issues = prioritize(generateIssues(context, scores), context);
-  const { priorities, gaps } = splitPriorities(issues);
-  const strengths = collectStrengths(context, dimensions, issues);
-  const nextActions = buildNextActions(priorities, gaps, context, confidence);
-  const recommendation = recommend(context, scores, priorities, state);
-  const goalNote = explainGoal(context, issues, scores);
-
-  return {
-    version: CURRENT_DIAGNOSTIC_VERSION,
-    profile: context.profile,
-    context: { stage: context.stage, team: context.team, goal: context.goal },
-    state,
-    confidence,
-    overallScore,
-    dimensions,
-    strengths,
-    gaps,
-    priorities,
-    nextActions,
-    recommendation,
-    ...(goalNote ? { goalNote } : {}),
-  };
+  return explainResult(rawAnswers)?.result ?? null;
 }
 
 /** Resumen seguro para el correo de contacto: sin respuestas crudas ni internos de puntuación. */

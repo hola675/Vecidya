@@ -12,9 +12,11 @@ import {
   explainOverallScore,
   getApplicableQuestions,
   getQuestion,
+  profileIds,
   QUESTION_DEFINITIONS,
   runDiagnostic,
   scoreDimensions,
+  stageIds,
 } from "../../../app/features/diagnostic/index.ts";
 import { classifyState, toScores } from "../../../app/features/diagnostic/result.ts";
 import { questionContribution } from "../../../app/features/diagnostic/scoring.ts";
@@ -174,11 +176,34 @@ test("invariante 2: «no lo sé» no penaliza el score cuando corresponde (unkno
   assert.equal(withUnknown.unknown, true);
 });
 
-test("invariante 3: solo dimensiones con evidencia (weight >= MIN_EVIDENCE) tienen score numérico", () => {
-  const active = deriveActiveAnswers({ profile: "creator", stage: "idea" } as never);
-  const applicable = getApplicableQuestions(active);
-  const dimensions = scoreDimensions(active, applicable);
-  for (const dimension of dimensions) assert.equal(dimension.score === null, dimension.evidence < 1);
+test("invariante 3 (fortalecido en DIAG-V3-05 §38: Result Engine depende de él para `DimensionResult.evaluated`): solo dimensiones con evidencia (weight >= MIN_EVIDENCE) tienen score numérico, sobre todas las personas y un barrido", () => {
+  for (const raw of [...Object.values(personas), ...Object.values(adversarial)]) {
+    const active = deriveActiveAnswers(raw as never);
+    const applicable = getApplicableQuestions(active);
+    const dimensions = scoreDimensions(active, applicable);
+    for (const dimension of dimensions) assert.equal(dimension.score === null, dimension.evidence < 1, `${dimension.id} en ${JSON.stringify(raw)}`);
+  }
+  let seed = 20260930;
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+  for (const profile of profileIds) {
+    for (const stage of stageIds) {
+      const answers: Record<string, string | string[]> = { profile, stage };
+      for (let iteration = 0; iteration < 6; iteration += 1) {
+        for (const question of getApplicableQuestions(answers as never)) {
+          if (answers[question.id] !== undefined) continue;
+          const options = question.options;
+          answers[question.id] = question.type === "single" ? options[Math.floor(random() * options.length)].value : [options[0].value];
+        }
+      }
+      const active = deriveActiveAnswers(answers as never);
+      const applicable = getApplicableQuestions(active);
+      const dimensions = scoreDimensions(active, applicable);
+      for (const dimension of dimensions) assert.equal(dimension.score === null, dimension.evidence < 1, `${dimension.id} en ${profile}/${stage}`);
+    }
+  }
 });
 
 test("invariantes 4 y 5: score y overall siempre en [0,100]", () => {
@@ -191,6 +216,15 @@ test("invariantes 4 y 5: score y overall siempre en [0,100]", () => {
   }
 });
 
+/**
+ * Invariante 6, documentado como débil en DIAG-V3-04 (llama a `scoreDimensions` dos veces con el
+ * MISMO objeto ya construido: no ejercita nada que el test de determinismo de arriba no cubra
+ * mejor). Pertenece a la capa de scoring, no al Result Engine: DIAG-V3-05 §38 lo deja diferido tal
+ * cual (no se borra un test en verde) y lo fortalece donde de verdad importa — la determinación y
+ * la orden-independencia del RESULTADO completo (estado, hallazgos, prioridades, recomendación)
+ * quedan cubiertas de forma mucho más exigente por `result-engine.test.ts` y `result.test.ts`
+ * (múltiples personas + barrido, no una sola llamada repetida).
+ */
 test("invariante 6: misma entrada, mismo resultado (cubierto también por el test de determinismo)", () => {
   const active = deriveActiveAnswers({ profile: "organization", stage: "regular", sources: ["social"] } as never);
   const applicable = getApplicableQuestions(active);
