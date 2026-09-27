@@ -3,7 +3,7 @@ import { and, eq, gt, lt, lte, sql } from "drizzle-orm";
 import { ANALYTICS_ABANDONMENT_THRESHOLD_MS } from "../../app/features/diagnostic/analytics";
 import type { PersistedVersions } from "../../app/features/diagnostic/contracts";
 import type { Database } from "../client.server";
-import { diagnosticEvent, diagnosticSavedSnapshot, diagnosticSession } from "../schema";
+import { diagnosticEvent, diagnosticResult, diagnosticSavedSnapshot, diagnosticSession } from "../schema";
 
 /**
  * Capa de consultas analíticas (DIAG-V3-08 §41). Server-side únicamente: nada aquí se expone por HTTP
@@ -217,4 +217,112 @@ async function rateByAnswerKind(database: Database, kind: "unknown" | "not_appli
 const unknownRateByQuestion = (database: Database) => rateByAnswerKind(database, "unknown");
 const naRateByQuestion = (database: Database) => rateByAnswerKind(database, "not_applicable");
 
-export const diagnosticAnalytics = { lifecycle, saveResume, dropoffByQuestion, answerChangeRateByQuestion, unknownRateByQuestion, naRateByQuestion };
+export type ResultDistribution = {
+  byState: Array<{ state: string; count: number }>;
+  overallScoreBuckets: Array<{ bucket: string; count: number }>;
+  dimensionAverageScores: Array<{ dimension: string; averageScore: number; evaluatedCount: number }>;
+};
+
+async function resultDistribution(database: Database, options: { versions?: VersionFilter } = {}): Promise<ResultDistribution> {
+  const stateRows = await database
+    .select({ state: diagnosticResult.state, count: sql<number>`count(*)` })
+    .from(diagnosticResult)
+    .innerJoin(diagnosticSession, eq(diagnosticSession.id, diagnosticResult.sessionId))
+    .where(and(...versionWhere(options.versions)))
+    .groupBy(diagnosticResult.state);
+
+  const bucketRows = await database.all<{ bucket: string; count: number }>(sql`
+    SELECT
+      CASE
+        WHEN overall_score IS NULL THEN 'withheld'
+        WHEN overall_score < 25 THEN '0-24'
+        WHEN overall_score < 50 THEN '25-49'
+        WHEN overall_score < 75 THEN '50-74'
+        ELSE '75-100'
+      END AS bucket,
+      COUNT(*) AS count
+    FROM diagnostic_result dr
+    JOIN diagnostic_session ds ON ds.id = dr.session_id
+    GROUP BY bucket
+  `);
+
+  // dimension_results_json holds DimensionResult[] (facts.ts) per completed session — parsed in JS,
+  // not SQL: SQLite's json_each is available in D1 but the codebase has no existing precedent for it,
+  // and this keeps the aggregation readable and testable with plain fixtures.
+  const resultRows = await database.select({ dimensionResultsJson: diagnosticResult.dimensionResultsJson }).from(diagnosticResult).innerJoin(diagnosticSession, eq(diagnosticSession.id, diagnosticResult.sessionId)).where(and(...versionWhere(options.versions)));
+
+  const perDimension = new Map<string, { sum: number; evaluatedCount: number }>();
+  for (const row of resultRows) {
+    const dimensionResults = JSON.parse(row.dimensionResultsJson) as Array<{ id: string; evaluated: boolean; score: { score: number | null } }>;
+    for (const dimension of dimensionResults) {
+      if (!dimension.evaluated || dimension.score.score === null) continue;
+      const entry = perDimension.get(dimension.id) ?? { sum: 0, evaluatedCount: 0 };
+      entry.sum += dimension.score.score;
+      entry.evaluatedCount += 1;
+      perDimension.set(dimension.id, entry);
+    }
+  }
+
+  return {
+    byState: stateRows.map((row) => ({ state: row.state, count: row.count })),
+    overallScoreBuckets: bucketRows,
+    dimensionAverageScores: [...perDimension.entries()].map(([dimension, entry]) => ({ dimension, averageScore: entry.sum / entry.evaluatedCount, evaluatedCount: entry.evaluatedCount })),
+  };
+}
+
+export type EvidenceCoverageRow = { dimension: string; evaluatedCount: number; averageEvidenceCount: number; averageCoverage: number; unknownCount: number };
+
+/**
+ * `confidenceInputs.contradictionCount` en cada `DimensionResult` es el conteo GLOBAL de
+ * contradicciones de la sesión (facts.ts pasa `contradictions.length` a las 7 dimensiones por igual),
+ * no una cifra específica de esa dimensión — no se reporta "por dimensión" aquí para no fabricar una
+ * métrica que el motor no produce (spec §43: nada inventado). Un `contradictionRatePerCompletedSession`
+ * separado (no por dimensión) cubre ese ángulo honestamente.
+ */
+async function evidenceCoverageByDimension(database: Database, options: { versions?: VersionFilter } = {}): Promise<{ byDimension: EvidenceCoverageRow[]; contradictionsPerCompletedSession: number }> {
+  const rows = await database.select({ dimensionResultsJson: diagnosticResult.dimensionResultsJson }).from(diagnosticResult).innerJoin(diagnosticSession, eq(diagnosticSession.id, diagnosticResult.sessionId)).where(and(...versionWhere(options.versions)));
+
+  type Accumulator = { evaluatedCount: number; evidenceSum: number; coverageSum: number; unknownSum: number };
+  const perDimension = new Map<string, Accumulator>();
+  let contradictionSum = 0;
+
+  for (const row of rows) {
+    const dimensionResults = JSON.parse(row.dimensionResultsJson) as Array<{
+      id: string;
+      evaluated: boolean;
+      confidenceInputs: { evidenceCount: number; unknownCount: number; coverage: number; contradictionCount: number };
+    }>;
+    contradictionSum += dimensionResults[0]?.confidenceInputs.contradictionCount ?? 0;
+    for (const dimension of dimensionResults) {
+      const entry = perDimension.get(dimension.id) ?? { evaluatedCount: 0, evidenceSum: 0, coverageSum: 0, unknownSum: 0 };
+      if (dimension.evaluated) entry.evaluatedCount += 1;
+      entry.evidenceSum += dimension.confidenceInputs.evidenceCount;
+      entry.coverageSum += dimension.confidenceInputs.coverage;
+      entry.unknownSum += dimension.confidenceInputs.unknownCount;
+      perDimension.set(dimension.id, entry);
+    }
+  }
+
+  const total = rows.length;
+  return {
+    byDimension: [...perDimension.entries()].map(([dimension, entry]) => ({
+      dimension,
+      evaluatedCount: entry.evaluatedCount,
+      averageEvidenceCount: total > 0 ? entry.evidenceSum / total : 0,
+      averageCoverage: total > 0 ? entry.coverageSum / total : 0,
+      unknownCount: entry.unknownSum,
+    })),
+    contradictionsPerCompletedSession: total > 0 ? contradictionSum / total : 0,
+  };
+}
+
+export const diagnosticAnalytics = {
+  lifecycle,
+  saveResume,
+  dropoffByQuestion,
+  answerChangeRateByQuestion,
+  unknownRateByQuestion,
+  naRateByQuestion,
+  resultDistribution,
+  evidenceCoverageByDimension,
+};
