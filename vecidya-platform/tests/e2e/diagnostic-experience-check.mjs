@@ -316,6 +316,64 @@ async function runProfileIsolation(page, label) {
   assert(await page.getByLabel(profiles.professional, { exact: true }).isChecked(), `${label}: la recarga no conservó el perfil cambiado.`);
 }
 
+function readDiagnosticSessionId(page) {
+  return page.evaluate(() => {
+    try {
+      const raw = window.localStorage.getItem("vecidya.diagnostic.session.v1");
+      return raw ? JSON.parse(raw).sessionId : null;
+    } catch {
+      return null;
+    }
+  });
+}
+
+// DIAG-V3-06 §11/§59: la única diferencia funcional de esta fase — recargar en el mismo navegador
+// vuelve exactamente a donde quedó, sin depender de la URL, y reutiliza la MISMA sesión de servidor
+// (hallazgo I2 de la revisión independiente: antes, cada recarga creaba una sesión nueva y dejaba la
+// anterior huérfana en D1 sin escribirla nunca más).
+async function runSameBrowserResume(page, label) {
+  await clearBrowserDiagnosticStore(page);
+  await page.goto(url("/diagnostico"), { waitUntil: "networkidle" });
+  await pick(page, label, [profiles.business]);
+  await next(page, label);
+  await pick(page, label, ["Dejar de perder consultas o seguimientos"]);
+  await next(page, label);
+  await pick(page, label, ["Funciona con clientes o actividad regular"]);
+  await next(page, label);
+
+  await page.waitForFunction(
+    () => {
+      try {
+        return Boolean(JSON.parse(window.localStorage.getItem("vecidya.diagnostic.session.v1")).sessionId);
+      } catch {
+        return false;
+      }
+    },
+    { timeout: 5000 },
+  );
+  const promptBeforeReload = await currentPrompt(page);
+  const sessionIdBeforeReload = await readDiagnosticSessionId(page);
+  assert(sessionIdBeforeReload, `${label}: debería existir una sesión de servidor tras responder varias preguntas.`);
+
+  // La app ya fija `?perfil=business` en la URL al elegir perfil (para que el enlace sea compartible);
+  // eso no es lo que hace que la recarga funcione aquí. Lo real es que sobreviven las respuestas
+  // POSTERIORES al perfil (objetivo y momento), que la URL nunca codifica.
+  await page.reload({ waitUntil: "networkidle" });
+  await expectPrompt(page, `${label} restauración same-browser`, promptBeforeReload);
+
+  const sessionIdAfterReload = await readDiagnosticSessionId(page);
+  assert(
+    sessionIdAfterReload === sessionIdBeforeReload,
+    `${label}: hallazgo I2 — la recarga debe reutilizar la misma sesión de servidor (antes: ${sessionIdBeforeReload}, después: ${sessionIdAfterReload}), no crear una nueva y dejar la anterior huérfana.`,
+  );
+
+  await back(page);
+  assert(
+    await page.getByLabel("Funciona con clientes o actividad regular", { exact: true }).isChecked(),
+    `${label}: la recarga perdió una respuesta intermedia, no solo el perfil.`,
+  );
+}
+
 async function runViewport(width, height, extended) {
   const browser = await chromium.launch(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {});
   const page = await browser.newPage({ viewport: { width, height } });
@@ -330,6 +388,7 @@ async function runViewport(width, height, extended) {
     await runDeepLinks(page, label);
     await runHomeEntry(page, label);
     await runProfileIsolation(page, label);
+    await runSameBrowserResume(page, label);
   }
 
   assert(consoleErrors.length === 0, `${label} registró errores de consola: ${consoleErrors.join(" | ")}`);

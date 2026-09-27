@@ -68,7 +68,7 @@ const confidenceCopy = {
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
     "Diagnóstico Vecidya",
-    "Entiende dónde estás, qué funciona, qué te frena y qué conviene hacer primero. Diagnóstico anónimo, adaptado a tu perfil y sin guardar respuestas.",
+    "Entiende dónde estás, qué funciona, qué te frena y qué conviene hacer primero. Diagnóstico anónimo, adaptado a tu perfil y sin necesidad de crear una cuenta.",
     DIAGNOSTIC_PATH,
   );
 }
@@ -76,20 +76,37 @@ export function meta(_: Route.MetaArgs) {
 export default function Diagnostic() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const initialAnswers = useMemo(() => entryToAnswers(parseDiagnosticEntry(searchParams)), [searchParams]);
   const browserStore = useMemo(() => new DiagnosticBrowserStore(), []);
-  // DIAG-V3-06 §11: restauración automática en el mismo navegador. Un deep link explícito
-  // (`?perfil=`) siempre gana sobre un snapshot local; sin deep link, se restaura si hay un
-  // snapshot válido, de versión compatible y sin completar.
-  const restoredAnswers = useMemo(() => {
-    if (Object.keys(initialAnswers).length > 0) return initialAnswers;
-    return browserStore.canAutoResume() ? (browserStore.read()?.answers ?? initialAnswers) : initialAnswers;
-  }, [browserStore, initialAnswers]);
-  const [answers, setAnswers] = useState<Answers>(restoredAnswers);
-  const [step, setStep] = useState(() => getInitialStep(restoredAnswers));
+  // El estado inicial de render (servidor Y primer render de cliente, antes de hidratar) usa
+  // ÚNICAMENTE el deep link de la URL — nunca `localStorage`. Leer el Browser Store en el cálculo de
+  // este estado inicial rompía la hidratación: el servidor nunca ve `window`, así que produciría un
+  // primer HTML distinto al que el cliente esperaría reconstruir, y React descartaría el árbol
+  // servido (visto en vivo: "Hydration failed", con recarga completa cliente-side). La restauración
+  // real ocurre después, en un efecto que solo corre en el cliente (ver más abajo).
+  const initialAnswers = useMemo(() => entryToAnswers(parseDiagnosticEntry(searchParams)), [searchParams]);
+  const [answers, setAnswers] = useState<Answers>(initialAnswers);
+  const [step, setStep] = useState(() => getInitialStep(initialAnswers));
   const headingRef = useRef<HTMLHeadingElement>(null);
   const sessionRef = useRef<{ sessionId: string; writeToken: string } | null>(null);
-  const syncMetaRef = useRef({ lastSnapshotAt: 0, answeredSinceLastSnapshot: 0, lastSectionIndex: -1, creatingSession: false });
+  // Coalesce concurrent session-creation attempts (snapshot effect and completion effect can both
+  // need a session in the same tick) into a single request, in-flight promise shared between them.
+  const sessionCreationRef = useRef<Promise<{ sessionId: string; writeToken: string } | null> | null>(null);
+  const syncMetaRef = useRef({ lastSnapshotAt: 0, answeredSinceLastSnapshot: 0, lastSectionIndex: -1 });
+  const hasCheckedResumeRef = useRef(false);
+
+  async function ensureServerSession(): Promise<{ sessionId: string; writeToken: string } | null> {
+    if (sessionRef.current) return sessionRef.current;
+    if (!sessionCreationRef.current) {
+      sessionCreationRef.current = createServerSession().then((created) => {
+        sessionCreationRef.current = null;
+        if (!created) return null;
+        const session = { sessionId: created.sessionId, writeToken: created.writeToken };
+        sessionRef.current = session;
+        return session;
+      });
+    }
+    return sessionCreationRef.current;
+  }
 
   const applicable = useMemo(() => getApplicableQuestions(answers), [answers]);
   const safeStep = Math.min(step, applicable.length);
@@ -131,7 +148,8 @@ export default function Diagnostic() {
     setStep(0);
     browserStore.clear();
     sessionRef.current = null;
-    syncMetaRef.current = { lastSnapshotAt: 0, answeredSinceLastSnapshot: 0, lastSectionIndex: -1, creatingSession: false };
+    sessionCreationRef.current = null;
+    syncMetaRef.current = { lastSnapshotAt: 0, answeredSinceLastSnapshot: 0, lastSectionIndex: -1 };
     navigate(DIAGNOSTIC_PATH, { replace: true, preventScrollReset: true });
   };
 
@@ -139,19 +157,66 @@ export default function Diagnostic() {
     headingRef.current?.focus({ preventScroll: false });
   }, [complete, currentQuestion?.id]);
 
-  // DIAG-V3-06 §10/§16/§37: cada respuesta se guarda localmente sin red (Browser Store); la red solo
-  // se usa para snapshots espaciados (`shouldFlushSnapshot`), best-effort. Una caída de red o de KV
-  // nunca bloquea la siguiente pregunta: el estado en memoria de React ya es la fuente de verdad de
-  // lo que se renderiza.
+  // DIAG-V3-06 §10/§11/§16/§37: un único efecto de sincronización, no dos. La restauración
+  // (same-browser auto-resume) y el guardado local/red viven en el MISMO efecto para que la primera
+  // pasada (con el estado inicial "de servidor", antes de resumir) nunca alcance a escribir un
+  // registro incompleto en `localStorage` que una segunda pasada (con las respuestas ya resumidas)
+  // no llegue a corregir a tiempo. Repartirlo en dos efectos separados es exactamente lo que producía
+  // el hallazgo empírico más grave de esta fase: en desarrollo, React invoca los efectos dos veces por
+  // montaje (StrictMode); la restauración corría primero y programaba `setAnswers(merged)`, pero el
+  // efecto de guardado, declarado después, corría en la MISMA pasada todavía con las respuestas del
+  // deep link nada más y sobrescribía el registro completo con uno de una sola respuesta — verificado
+  // en vivo con logging temporal contra el Worker local antes de esta corrección.
+  //
+  // Restaurar solo puede pasar en el cliente (nunca durante SSR ni en el primer render de hidratación,
+  // ver el comentario de `initialAnswers` arriba) y solo una vez por montaje real — nunca cuando
+  // `searchParams` cambia dentro de la misma sesión (cambiar de perfil no es una recarga), de ahí
+  // `hasCheckedResumeRef`. `answer()` fija `?perfil=` en la URL en cuanto se elige un perfil (para que
+  // el enlace sea compartible) y esa marca sobrevive el resto del recorrido — así que la URL de una
+  // recarga a mitad de diagnóstico normalmente SIGUE teniendo el mismo `?perfil=` que ya se había
+  // resuelto. Tratar cualquier `?perfil=` como "deep link nuevo" descartaría el resto de las
+  // respuestas en cada recarga real. La regla real: un deep link "gana" únicamente cuando CONTRADICE
+  // lo que ya había en el snapshot (perfil u objetivo distintos al guardado); si coincide o el
+  // snapshot no tiene ese campo todavía, se resume con todo lo demás, combinando el deep link sobre lo
+  // resumido (nunca reemplazándolo entero). Si no se resume, se limpia cualquier registro viejo
+  // (hallazgo I1 de la revisión independiente): nunca debe sobrevivir un `serverCompleted`/`sessionId`
+  // de un intento anterior hacia uno nuevo.
   useEffect(() => {
+    if (!hasCheckedResumeRef.current) {
+      hasCheckedResumeRef.current = true;
+      const resumable = browserStore.canAutoResume() ? browserStore.read() : null;
+      const storedAnswers = resumable?.answers as Record<string, unknown> | undefined;
+      const deepLinkConflicts = storedAnswers
+        ? Object.entries(initialAnswers as Record<string, unknown>).some(([key, value]) => storedAnswers[key] !== undefined && storedAnswers[key] !== value)
+        : false;
+      const resumed = resumable && !deepLinkConflicts ? resumable : null;
+
+      if (resumed) {
+        const merged = { ...resumed.answers, ...initialAnswers };
+        // Hallazgo I2: adoptar la sesión resumida aquí, o cada recarga con auto-resume crearía una
+        // sesión de servidor nueva y dejaría huérfana la anterior en D1.
+        if (resumed.sessionId && resumed.writeToken) sessionRef.current = { sessionId: resumed.sessionId, writeToken: resumed.writeToken };
+        setAnswers(merged);
+        setStep(getInitialStep(merged));
+        // Esta pasada no escribe nada: `answers` todavía es el estado previo a resumir. La próxima
+        // ejecución de este mismo efecto, disparada por el cambio de estado de arriba, ya verá
+        // `merged` y seguirá el camino normal de guardado más abajo.
+        return;
+      }
+
+      browserStore.clear();
+    }
+
+    // Nada que persistir todavía (ni siquiera un perfil elegido): no escribir un registro vacío.
+    if (Object.keys(answers).length === 0) return;
+
     const now = Date.now();
     const previous = browserStore.read();
     const questionsAnswered = applicable.filter((question) => isAnswered(question, answers)).length;
-    const sessionFromStore = sessionRef.current ?? (previous?.sessionId && previous.writeToken ? { sessionId: previous.sessionId, writeToken: previous.writeToken } : null);
 
     const record: DiagnosticBrowserRecord = {
-      sessionId: (sessionFromStore?.sessionId ?? null) as DiagnosticSessionId | null,
-      writeToken: sessionFromStore?.writeToken ?? null,
+      sessionId: (sessionRef.current?.sessionId ?? null) as DiagnosticSessionId | null,
+      writeToken: sessionRef.current?.writeToken ?? null,
       versions: CURRENT_PERSISTED_VERSIONS,
       status: previous?.status ?? "STARTED",
       startedAt: previous?.startedAt ?? now,
@@ -165,7 +230,12 @@ export default function Diagnostic() {
     };
     browserStore.write(record);
 
-    if (questionsAnswered === 0) return;
+    // Hallazgo C1 de la revisión independiente: nunca enviar un snapshot de red al mismo tiempo que
+    // se completa. Antes, ambas llamadas competían y una `snapshotDiagnosticSession` en vuelo podía
+    // llegar después de `completeDiagnosticSession` y devolver la sesión a IN_PROGRESS, rompiendo la
+    // idempotencia y el orden de borrado de KV. La finalización ya envía las respuestas completas: no
+    // hace falta un snapshot final adicional (spec §16 se cumple igual, con una sola escritura).
+    if (questionsAnswered === 0 || complete) return;
 
     const meta = syncMetaRef.current;
     const crossedSectionBoundary = meta.lastSectionIndex !== -1 && meta.lastSectionIndex !== progress.sectionIndex;
@@ -174,25 +244,21 @@ export default function Diagnostic() {
 
     let cancelled = false;
     (async () => {
-      let session = sessionRef.current;
-      if (!session && !meta.creatingSession) {
-        meta.creatingSession = true;
-        const created = await createServerSession();
-        meta.creatingSession = false;
-        if (cancelled) return;
-        if (created) {
-          session = { sessionId: created.sessionId, writeToken: created.writeToken };
-          sessionRef.current = session;
-          browserStore.write({ ...record, sessionId: created.sessionId as DiagnosticSessionId, writeToken: created.writeToken });
-        }
+      // Hallazgo I3: la sesión ya existe en D1 en cuanto el servidor responde, aunque este efecto se
+      // haya cancelado mientras tanto (por ejemplo, varias respuestas seguidas en menos de un RTT).
+      // `ensureServerSession` la adopta siempre (vía `sessionRef.current`, compartido con el efecto de
+      // finalización); solo el envío del snapshot en sí se cancela.
+      const session = await ensureServerSession();
+      if (!session || cancelled) return;
+      if (session.sessionId !== record.sessionId) {
+        browserStore.write({ ...record, sessionId: session.sessionId as DiagnosticSessionId, writeToken: session.writeToken });
       }
-      if (!session) return;
 
       const shouldFlush = shouldFlushSnapshot({
         answeredSinceLastSnapshot: meta.answeredSinceLastSnapshot,
         msSinceLastSnapshot: now - meta.lastSnapshotAt,
         crossedSectionBoundary,
-        isBeforeCompletion: complete,
+        isBeforeCompletion: false,
       });
       if (!shouldFlush) return;
 
@@ -216,19 +282,24 @@ export default function Diagnostic() {
 
   // DIAG-V3-06 §26/§27: la finalización siempre la recalcula el servidor a partir de las respuestas;
   // esta llamada es informativa para persistencia y nunca cambia lo que ya se renderiza (§59: cero
-  // rediseño). Un fallo de red deja el resultado local visible igual, sin fingir que se guardó.
+  // rediseño). Un fallo de red deja el resultado local visible igual, sin fingir que se guardó. Es la
+  // ÚNICA llamada de red que se hace mientras `complete` es verdadero (ver hallazgo C1 arriba).
   useEffect(() => {
     if (!complete) return;
-    const record = browserStore.read();
-    const session = sessionRef.current ?? (record?.sessionId && record.writeToken ? { sessionId: record.sessionId, writeToken: record.writeToken } : null);
-    if (!session || record?.serverCompleted) return;
+    if (browserStore.read()?.serverCompleted) return;
 
     let cancelled = false;
     (async () => {
+      // Comparte `ensureServerSession` con el efecto de snapshot (arriba): si ambos se disparan en el
+      // mismo tick (una sesión típica de pocas preguntas puede completarse antes de que termine su
+      // propia creación), coalescen en la misma petición de creación en vez de competir o de que la
+      // finalización se quede sin sesión y nunca se envíe.
+      const session = await ensureServerSession();
+      if (!session || cancelled) return;
       const outcome = await sendCompletion(session.sessionId, session.writeToken, answers);
       if (cancelled || !outcome) return;
       const latest = browserStore.read();
-      if (latest) browserStore.write({ ...latest, serverCompleted: true });
+      if (latest) browserStore.write({ ...latest, sessionId: session.sessionId as DiagnosticSessionId, writeToken: session.writeToken, serverCompleted: true });
     })();
 
     return () => {
@@ -247,7 +318,8 @@ export default function Diagnostic() {
             <p>
               Responde preguntas breves adaptadas a tu perfil y recibe una orientación inicial:
               qué funciona, qué te frena y cuál es el siguiente paso razonable. No necesitas dejar
-              tu correo y no guardamos tus respuestas.
+              tu correo ni crear una cuenta: usamos un identificador aleatorio para que puedas
+              continuar si recargas la página.
             </p>
           </div>
           <div className="diagnostic-hero__panel">
@@ -523,7 +595,7 @@ function ResultView({
 
       <p className="diagnostic-limits">
         Este diagnóstico es una orientación inicial basada en tus respuestas: no es una auditoría, una certificación ni una evaluación garantizada.
-        Es anónimo y efímero; al cerrar la página, las respuestas desaparecen. Puedes rehacerlo cuando cambie tu situación.
+        Es anónimo: no necesitas cuenta ni datos de identidad. Si recargas la página en este mismo navegador puedes continuar donde quedaste; puedes rehacerlo cuando cambie tu situación.
       </p>
 
       <div className="diagnostic-result__cta">

@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 
 import { AUTOSAVE_SNAPSHOT_RETENTION_DAYS, COMPLETED_RESULT_RETENTION_DAYS, isCurrentPersistedVersions, isDiagnosticSessionId, ONE_DAY_MS, type PersistedVersions } from "../../app/features/diagnostic/contracts";
 import { deriveContext, explainResult, type Answers, type DiagnosticResult, type QuestionId } from "../../app/features/diagnostic/index";
@@ -71,6 +71,11 @@ export type SnapshotInput = {
  * Actualiza únicamente la metadata de la sesión en D1 (spec §13: nunca resultados ni respuestas
  * completas durante el autosave; eso vive en el snapshot de KV). Rechaza una sesión ya finalizada
  * (spec §33) y una sesión con versiones incompatibles con el motor actual (spec §45: sin casts).
+ *
+ * El `UPDATE` es condicional (`status <> 'COMPLETED'`), no solo el chequeo previo en memoria: entre
+ * leer la sesión y escribir puede colarse una finalización concurrente (hallazgo C1 de la revisión
+ * independiente — antes, un snapshot en vuelo podía escribirse después de completar y devolver la
+ * sesión a `IN_PROGRESS`). `meta.changes === 0` en la respuesta de D1 es la señal de esa carrera.
  */
 export async function snapshotDiagnosticSession(database: Database, input: SnapshotInput) {
   const now = input.now ?? new Date();
@@ -84,7 +89,7 @@ export async function snapshotDiagnosticSession(database: Database, input: Snaps
   const nextStatus = input.questionsAnswered > 0 ? ("IN_PROGRESS" as const) : (session.status as "STARTED" | "IN_PROGRESS");
   const snapshotExpiresAt = new Date(now.getTime() + AUTOSAVE_SNAPSHOT_RETENTION_DAYS * ONE_DAY_MS);
 
-  await database
+  const result = await database
     .update(diagnosticSession)
     .set({
       status: nextStatus,
@@ -99,7 +104,9 @@ export async function snapshotDiagnosticSession(database: Database, input: Snaps
       goal: context.goal ?? session.goal,
       updatedAt: now,
     })
-    .where(eq(diagnosticSession.id, input.sessionId));
+    .where(and(eq(diagnosticSession.id, input.sessionId), ne(diagnosticSession.status, "COMPLETED")));
+
+  if (result.meta.changes === 0) throw new DiagnosticSessionError("Session is already completed");
 
   return { revision: nextRevision, status: nextStatus, snapshotExpiresAt };
 }
@@ -179,10 +186,24 @@ export async function completeDiagnosticSession(
       stage: trace.facts.context.stage ?? null,
       goal: trace.facts.context.goal ?? null,
     })
-    .where(eq(diagnosticSession.id, input.sessionId));
+    .where(and(eq(diagnosticSession.id, input.sessionId), ne(diagnosticSession.status, "COMPLETED")));
 
   const statements = [...answerInserts, resultInsert, sessionUpdate];
-  await database.batch(statements as [(typeof statements)[number], ...(typeof statements)[number][]]);
+  try {
+    await database.batch(statements as [(typeof statements)[number], ...(typeof statements)[number][]]);
+  } catch (error) {
+    // Hallazgo m1 de la revisión independiente: dos finalizaciones concurrentes (dos pestañas, o un
+    // reintento superpuesto) pueden llegar aquí a la vez; solo una gana la restricción única de
+    // `diagnostic_result_session_unique`. La otra no debe propagar un 500: se relee el estado y se
+    // resuelve exactamente como una finalización repetida (spec §28), nunca como una completion parcial
+    // — el batch entero de la perdedora ya se revirtió atómicamente.
+    const already = await database.query.diagnosticResult.findFirst({ where: eq(diagnosticResult.sessionId, input.sessionId) });
+    if (!already) throw error;
+    if (already.completionHash !== completionHash) {
+      throw new DiagnosticCompletionConflictError("Session already completed with a different canonical payload");
+    }
+    return { status: "already_completed", result: JSON.parse(already.structuredResultJson) as DiagnosticResult };
+  }
 
   return { status: "completed", result: trace.result };
 }

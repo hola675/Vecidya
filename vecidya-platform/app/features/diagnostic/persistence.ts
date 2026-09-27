@@ -53,7 +53,14 @@ export function validateAnswersPayload(candidate: unknown): AnswersValidationRes
     for (const item of value) {
       if (!getOption(question, item)) return { ok: false, error: `unknown option for question ${key}: ${item}` };
     }
-    result[key] = [...new Set(value as string[])];
+    const deduped = [...new Set(value as string[])];
+    // Una opción `exclusive` (p. ej. "nada de esto") desmarca a las demás en la UI (`applyAnswer`);
+    // el servidor debe rechazar la misma combinación imposible, no persistirla (hallazgo m3 de la
+    // revisión independiente).
+    if (deduped.length > 1 && deduped.some((item) => getOption(question, item)?.exclusive)) {
+      return { ok: false, error: `question ${key} combines an exclusive option with others` };
+    }
+    result[key] = deduped;
   }
 
   return { ok: true, answers: result as Answers };

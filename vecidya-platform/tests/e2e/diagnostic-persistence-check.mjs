@@ -253,6 +253,39 @@ try {
   check(answersAfterFailure[0]?.n === 0, "mutación E: ningún diagnostic_answer se insertó pese a que el batch alcanzó a ejecutar ese INSERT (rollback atómico real de D1 .batch())");
   const resultsAfterFailure = await d1(`SELECT COUNT(*) as n FROM diagnostic_result WHERE session_id = '${failureSession.sessionId}';`);
   check(resultsAfterFailure[0]?.n === 1, "mutación E: sigue existiendo solo la fila preexistente, el INSERT nuevo no se coló");
+
+  // --- 14. Hallazgo C1 (revisión independiente): un snapshot que llega DESPUÉS de completar nunca
+  // debe devolver la sesión a IN_PROGRESS ni sobrevivir como snapshot de KV. -------------------------
+  const raceSession = await createSession();
+  createdSessionIds.push(raceSession.sessionId);
+  const raceCompleteResponse = await fetch(new URL(completePath(raceSession.sessionId), baseUrl), post({ writeToken: raceSession.writeToken, answers: { profile: "business" } }));
+  check(raceCompleteResponse.status === 200, "hallazgo C1: completar antes de la ráfaga → 200");
+  const raceSnapshotAfterComplete = await fetch(
+    new URL(sessionPath(raceSession.sessionId), baseUrl),
+    patch({ writeToken: raceSession.writeToken, answers: { profile: "business" }, currentQuestionId: null, questionsSeen: 1, questionsAnswered: 1 }),
+  );
+  check(raceSnapshotAfterComplete.status === 409, "hallazgo C1: un snapshot que llega después de completar se rechaza (UPDATE condicional, no solo el chequeo en memoria)");
+  const [raceRow] = await d1(`SELECT status FROM diagnostic_session WHERE id = '${raceSession.sessionId}';`);
+  check(raceRow?.status === "COMPLETED", "hallazgo C1: la sesión permanece COMPLETED; el snapshot tardío no la revierte a IN_PROGRESS");
+
+  // --- 15. Hallazgo m1 (revisión independiente): dos finalizaciones concurrentes con el mismo
+  // contenido nunca producen un 500 ni filas duplicadas — la perdedora de la restricción única se
+  // resuelve como `already_completed`, igual que un reintento secuencial. --------------------------
+  const concurrentSession = await createSession();
+  createdSessionIds.push(concurrentSession.sessionId);
+  const concurrentBody = { writeToken: concurrentSession.writeToken, answers: { profile: "professional" } };
+  const [concurrentA, concurrentB] = await Promise.all([
+    fetch(new URL(completePath(concurrentSession.sessionId), baseUrl), post(concurrentBody)),
+    fetch(new URL(completePath(concurrentSession.sessionId), baseUrl), post(concurrentBody)),
+  ]);
+  check(concurrentA.status === 200 && concurrentB.status === 200, "mutación m1: dos finalizaciones concurrentes idénticas → ambas 200, ninguna 500");
+  const [bodyA, bodyB] = await Promise.all([jsonOf(concurrentA), jsonOf(concurrentB)]);
+  const statuses = [bodyA.status, bodyB.status].sort();
+  check(JSON.stringify(statuses) === JSON.stringify(["already_completed", "completed"]), `exactamente una gana la carrera ('completed') y la otra ve el resultado ya guardado ('already_completed'); recibido: ${JSON.stringify(statuses)}`);
+  const concurrentAnswerRows = await d1(`SELECT COUNT(*) as n FROM diagnostic_answer WHERE session_id = '${concurrentSession.sessionId}';`);
+  check(concurrentAnswerRows[0]?.n === 1, "mutación m1: sin filas duplicadas en diagnostic_answer pese a la carrera");
+  const concurrentResultRows = await d1(`SELECT COUNT(*) as n FROM diagnostic_result WHERE session_id = '${concurrentSession.sessionId}';`);
+  check(concurrentResultRows[0]?.n === 1, "mutación m1: sin filas duplicadas en diagnostic_result pese a la carrera");
 } catch (error) {
   if (!(error instanceof HarnessError || (error instanceof TypeError && error.message === "fetch failed"))) throw error;
   harnessFailure = error;
