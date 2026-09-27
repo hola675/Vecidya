@@ -89,6 +89,25 @@ export {
   type SnapshotPayload,
 } from "./sync";
 export { canOfferSaveForLater } from "./save-eligibility";
+export {
+  ANALYTICS_ABANDONMENT_THRESHOLD_MS,
+  ANALYTICS_EVENT_RETENTION_DAYS,
+  ANALYTICS_EVENT_TYPES,
+  ANALYTICS_SCHEMA_VERSION,
+  ANALYTICS_SECTION_IDS,
+  ANSWER_KINDS,
+  isAnalyticallyAbandoned,
+  isAnalyticsEventType,
+  isAnalyticsSectionId,
+  isAnswerKind,
+  MAX_ANALYTICS_EVENTS_PER_BATCH,
+  MAX_ANALYTICS_EVENTS_PER_SESSION,
+  MAX_ANALYTICS_STRING_LENGTH,
+  type AbandonmentCandidate,
+  type AnalyticsEventType,
+  type AnalyticsSchemaVersion,
+  type AnswerKind,
+} from "./analytics";
 
 /**
  * Ejecuta el diagnóstico completo sobre un conjunto de respuestas.
