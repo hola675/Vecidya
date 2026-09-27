@@ -1,4 +1,4 @@
-import { and, eq, gte, lt, sql } from "drizzle-orm";
+import { and, eq, gt, lt, lte, sql } from "drizzle-orm";
 
 import { ANALYTICS_ABANDONMENT_THRESHOLD_MS } from "../../app/features/diagnostic/analytics";
 import type { PersistedVersions } from "../../app/features/diagnostic/contracts";
@@ -40,6 +40,13 @@ async function lifecycle(database: Database, options: { versions?: VersionFilter
   const cutoff = new Date(now.getTime() - thresholdMs);
   const extra = versionWhere(options.versions);
 
+  // Boundary must match the canonical pure predicate `isAnalyticallyAbandoned`
+  // (`nowMs - lastActivityAt >= thresholdMs`, inclusive — see
+  // app/features/diagnostic/analytics.ts and its unit test "boundary is inclusive"). Expressed
+  // against `cutoff = now - thresholdMs`: abandoned is `lastActivityAt <= cutoff` (lte), active is
+  // `lastActivityAt > cutoff` (gt, strict) — together they partition every STARTED/IN_PROGRESS
+  // session with no gap and no overlap at `lastActivityAt === cutoff`.
+
   const [{ value: starts }] = await database.select({ value: sql<number>`count(*)` }).from(diagnosticSession).where(and(...extra));
   const [{ value: completions }] = await database
     .select({ value: sql<number>`count(*)` })
@@ -48,11 +55,11 @@ async function lifecycle(database: Database, options: { versions?: VersionFilter
   const [{ value: activeIncomplete }] = await database
     .select({ value: sql<number>`count(*)` })
     .from(diagnosticSession)
-    .where(and(sql`${diagnosticSession.status} in ('STARTED','IN_PROGRESS')`, gte(diagnosticSession.lastActivityAt, cutoff), ...extra));
+    .where(and(sql`${diagnosticSession.status} in ('STARTED','IN_PROGRESS')`, gt(diagnosticSession.lastActivityAt, cutoff), ...extra));
   const [{ value: analyticallyAbandoned }] = await database
     .select({ value: sql<number>`count(*)` })
     .from(diagnosticSession)
-    .where(and(sql`${diagnosticSession.status} in ('STARTED','IN_PROGRESS')`, lt(diagnosticSession.lastActivityAt, cutoff), ...extra));
+    .where(and(sql`${diagnosticSession.status} in ('STARTED','IN_PROGRESS')`, lte(diagnosticSession.lastActivityAt, cutoff), ...extra));
   const [{ value: expiredSaved }] = await database
     .select({ value: sql<number>`count(*)` })
     .from(diagnosticSession)
