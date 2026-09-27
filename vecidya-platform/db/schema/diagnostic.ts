@@ -93,3 +93,43 @@ export const diagnosticResult = sqliteTable(
   },
   (table) => [uniqueIndex("diagnostic_result_session_unique").on(table.sessionId), index("diagnostic_result_completion_hash_idx").on(table.completionHash)],
 );
+
+// "Guardar para después" (DIAG-V3-07). Un snapshot durable por sesión (PK = session_id, nunca dos
+// filas para la misma sesión): la fila se reemplaza en cada guardado con contenido nuevo, nunca se
+// acumulan filas históricas de saves — eso es responsabilidad de `diagnostic_answer`/`diagnostic_result`
+// tras completar, no de este checkpoint intermedio (spec §7). `recovery_lookup_digest` es
+// `HMAC-SHA-256` del recovery code normalizado (spec §12): el código en claro nunca se persiste, y el
+// índice único permite localizar la sesión directamente por el digest, sin escanear la tabla (spec §14).
+// `canonical_hash` es el mismo mecanismo de idempotencia que `diagnostic_result.completion_hash`
+// (spec §11): un retry de SAVE con contenido idéntico no dispara un código nuevo.
+export const diagnosticSavedSnapshot = sqliteTable(
+  "diagnostic_saved_snapshot",
+  {
+    sessionId: text("session_id").primaryKey().references(() => diagnosticSession.id, { onDelete: "cascade" }),
+    revision: integer("revision").notNull(),
+    currentQuestionId: text("current_question_id"),
+    activeAnswersJson: text("active_answers_json").notNull(),
+    questionsSeen: integer("questions_seen").notNull(),
+    questionsAnswered: integer("questions_answered").notNull(),
+    diagnosticVersion: text("diagnostic_version").notNull(),
+    questionBankVersion: integer("question_bank_version").notNull(),
+    routingVersion: integer("routing_version").notNull(),
+    scoringVersion: integer("scoring_version").notNull(),
+    resultSchemaVersion: integer("result_schema_version").notNull(),
+    canonicalHash: text("canonical_hash").notNull(),
+    recoveryLookupDigest: text("recovery_lookup_digest").notNull(),
+    savedAt: integer("saved_at", { mode: "timestamp_ms" }).notNull(),
+    expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+      .notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+      .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex("diagnostic_saved_snapshot_recovery_digest_unique").on(table.recoveryLookupDigest),
+    index("diagnostic_saved_snapshot_expires_idx").on(table.expiresAt),
+  ],
+);

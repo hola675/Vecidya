@@ -4,7 +4,7 @@ import { AUTOSAVE_SNAPSHOT_RETENTION_DAYS, COMPLETED_RESULT_RETENTION_DAYS, isCu
 import { deriveContext, explainResult, type Answers, type DiagnosticResult, type QuestionId } from "../../app/features/diagnostic/index";
 import { buildCanonicalCompletionPayload, computeCompletionHash } from "../../app/features/diagnostic/persistence";
 import type { Database } from "../client.server";
-import { diagnosticAnswer, diagnosticResult, diagnosticSession } from "../schema";
+import { diagnosticAnswer, diagnosticResult, diagnosticSavedSnapshot, diagnosticSession } from "../schema";
 
 /**
  * Consultas de sesión anónima del Diagnóstico (DIAG-V3-06). El servidor nunca confía en un objeto de
@@ -188,7 +188,12 @@ export async function completeDiagnosticSession(
     })
     .where(and(eq(diagnosticSession.id, input.sessionId), ne(diagnosticSession.status, "COMPLETED")));
 
-  const statements = [...answerInserts, resultInsert, sessionUpdate];
+  // DIAG-V3-07 §21: completar invalida la capacidad de recuperación editable — el saved snapshot (si
+  // existe) se borra en la MISMA transacción atómica que marca COMPLETED, nunca en un paso best-effort
+  // separado (a diferencia del borrado de KV, que sí es best-effort por spec §29: aquí no hay una
+  // razón equivalente para tolerar una fila huérfana, ya que ambas tablas viven en la misma D1).
+  const savedSnapshotDelete = database.delete(diagnosticSavedSnapshot).where(eq(diagnosticSavedSnapshot.sessionId, input.sessionId));
+  const statements = [...answerInserts, resultInsert, sessionUpdate, savedSnapshotDelete];
   try {
     await database.batch(statements as [(typeof statements)[number], ...(typeof statements)[number][]]);
   } catch (error) {

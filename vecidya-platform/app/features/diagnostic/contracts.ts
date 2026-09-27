@@ -357,6 +357,22 @@ export const AUTOSAVE_SNAPSHOT_RETENTION_DAYS = 7;
 export const COMPLETED_RESULT_RETENTION_DAYS = 180;
 export const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
+/**
+ * Retención de "Guardar para después" (DIAG-V3-07 §8): más larga que el autosave temporal (KV,
+ * 7 días) porque es una decisión explícita de la persona, no un checkpoint de trabajo en curso.
+ * Centralizada aquí, igual que las constantes de arriba: nada de "30" suelto en otro archivo.
+ */
+export const SAVED_SNAPSHOT_RETENTION_DAYS = 30;
+
+/**
+ * Elegibilidad de "Guardar para después" (DIAG-V3-07 §4): condición determinista derivada del
+ * recorrido real (denominador = preguntas aplicables vigentes, no un conteo fijo que la matriz de
+ * dependencias pueda invalidar). No depende de copy ni de texto de UI.
+ */
+export const SAVE_ELIGIBILITY_MIN_PROGRESS_RATIO = 0.35;
+/** Evita que una rama muy corta (pocas preguntas aplicables) se declare elegible tras 1-2 respuestas. */
+export const SAVE_ELIGIBILITY_MIN_APPLICABLE_QUESTIONS = 4;
+
 // ── Comprobaciones de compilación ───────────────────────────────────────────
 
 type Equals<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;

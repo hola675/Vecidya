@@ -77,7 +77,18 @@ export {
   SNAPSHOT_MIN_INTERVAL_MS,
   type SnapshotDecisionInput,
 } from "./snapshot-policy";
-export { createServerSession, sendCompletion, sendSnapshot, type CreateSessionResult, type SnapshotPayload } from "./sync";
+export {
+  createServerSession,
+  recoverSession,
+  saveSessionForLater,
+  sendCompletion,
+  sendSnapshot,
+  type CreateSessionResult,
+  type RecoverSessionResult,
+  type SaveSessionResult,
+  type SnapshotPayload,
+} from "./sync";
+export { canOfferSaveForLater } from "./save-eligibility";
 
 /**
  * Ejecuta el diagnóstico completo sobre un conjunto de respuestas.

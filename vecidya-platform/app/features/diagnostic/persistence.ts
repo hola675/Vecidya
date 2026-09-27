@@ -143,8 +143,46 @@ export function buildCanonicalCompletionPayload(sessionId: string, versions: Per
 }
 
 /** SHA-256 hexadecimal del payload canónico, vía Web Crypto (disponible en Workers y en Node ≥18). */
-export async function computeCompletionHash(canonicalPayload: string): Promise<string> {
-  const bytes = new TextEncoder().encode(canonicalPayload);
+async function sha256Hex(payload: string): Promise<string> {
+  const bytes = new TextEncoder().encode(payload);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+export async function computeCompletionHash(canonicalPayload: string): Promise<string> {
+  return sha256Hex(canonicalPayload);
+}
+
+// ── Hash de "Guardar para después" (idempotencia, DIAG-V3-07 §11) ──────────
+
+/**
+ * Payload canónico de un SAVE: a diferencia de la finalización, incluye progreso de navegación
+ * (`currentQuestionId`/contadores) porque un retry legítimo de SAVE (mismo contenido exacto) debe
+ * distinguirse de un "guardar de nuevo" deliberado tras seguir avanzando — ese es justo el caso en el
+ * que SÍ conviene mostrar un recovery code nuevo (spec §36). El prefijo `save|` separa este dominio
+ * del de `buildCanonicalCompletionPayload` aunque el contenido coincidiera.
+ */
+export function buildCanonicalSavePayload(
+  sessionId: string,
+  versions: PersistedVersions,
+  activeAnswers: Answers,
+  progress: { currentQuestionId: string | null; questionsSeen: number; questionsAnswered: number },
+): string {
+  return [
+    "save",
+    `session=${sessionId}`,
+    `diagnosticVersion=${versions.diagnosticVersion}`,
+    `questionBankVersion=${versions.questionBankVersion}`,
+    `routingVersion=${versions.routingVersion}`,
+    `scoringVersion=${versions.scoringVersion}`,
+    `resultSchemaVersion=${versions.resultSchemaVersion}`,
+    `currentQuestionId=${progress.currentQuestionId ?? ""}`,
+    `questionsSeen=${progress.questionsSeen}`,
+    `questionsAnswered=${progress.questionsAnswered}`,
+    canonicalAnswersString(activeAnswers),
+  ].join("|");
+}
+
+export async function computeSaveHash(canonicalPayload: string): Promise<string> {
+  return sha256Hex(canonicalPayload);
 }

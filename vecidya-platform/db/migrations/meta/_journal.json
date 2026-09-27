@@ -85,6 +85,13 @@
       "when": 1790474192437,
       "tag": "0011_diagnostic-persistence-foundation",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1790532670715,
+      "tag": "0012_diagnostic-save-resume",
+      "breakpoints": true
     }
   ]
 }
