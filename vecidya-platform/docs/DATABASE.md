@@ -1,12 +1,12 @@
 # Base de datos
 
-Última reconciliación: 2026-09-26 (G7: `0010` aplicada en `vecidya-prod`; local y remoto en `0000`–`0010`). Anterior: 2026-09-25 (LICENSE-STRATEGY-001: foundation de licenciamiento multi-negocio, solo local). Evidencia: schema (`db/schema/`), las 11 migraciones SQL, `db/migrations/meta/`, consultas, D1 local (`d1_migrations` = 11 filas, `0000`–`0010`). No aplicado a D1 remota.
+Última reconciliación: 2026-09-27 (DIAG-V3-06: persistencia del Diagnóstico — `diagnostic_session`/`diagnostic_answer`/`diagnostic_result`, migración `0011`, solo local). Anterior: 2026-09-26 (G7: `0010` aplicada en `vecidya-prod`; local y remoto en `0000`–`0010`). Anterior: 2026-09-25 (LICENSE-STRATEGY-001: foundation de licenciamiento multi-negocio, solo local). Evidencia: schema (`db/schema/`), las 12 migraciones SQL, `db/migrations/meta/`, consultas, D1 local (`d1_migrations` = 12 filas, `0000`–`0011`). `0011` **no** aplicado a D1 remota.
 
 ## Responsabilidades
 
 - `db/schema/` (TypeScript/Drizzle) es la fuente de verdad; `drizzle-kit generate` produce SQL en `db/migrations/`; Wrangler lo aplica a D1.
 - `db/client.server.ts` es el único punto de creación del cliente Drizzle; `db/queries/` contiene las consultas reutilizables.
-- Las tablas de auth/tenancy/gobierno están en `db/schema/auth.ts` (16 tablas); `platform_meta` está en `db/schema/platform-meta.ts` (1); licenciamiento multi-negocio está en `db/schema/licensing.ts` (6, LICENSE-STRATEGY-001). Total: **23 tablas**.
+- Las tablas de auth/tenancy/gobierno están en `db/schema/auth.ts` (16 tablas); `platform_meta` está en `db/schema/platform-meta.ts` (1); licenciamiento multi-negocio está en `db/schema/licensing.ts` (6, LICENSE-STRATEGY-001); persistencia del Diagnóstico está en `db/schema/diagnostic.ts` (3, DIAG-V3-06). Total: **26 tablas**.
 
 ## Modelo vigente
 
@@ -56,6 +56,9 @@ en «Licenciamiento multi-negocio» más abajo.
 | `portfolio_pricing_tier` | escalera de descuento por cantidad de organizaciones activas del mismo `billing_account` | — | — | global (configuración) | `0010` (4 filas sembradas) |
 | `promotion` | incentivo configurable (porcentaje/monto fijo/bundle/licencia gratis); `free_license` sin cálculo implementado todavía | — | único `code` (nulo permitido, no toda promoción tiene código) | global (configuración) | `0010` |
 | `billing_account_promotion` | promoción asignada a un `billing_account` (código canjeado o asignación manual) | billing_account (cascade); `promotion_id` → promotion (**sin acción**) | índice `billing_account_id` | `billing_account_id` | `0010` |
+| `diagnostic_session` | ciclo de vida de una sesión anónima del Diagnóstico; `id` ES el identificador público (no un rowid interno); `token_hash` = `SHA-256(writeToken)`, nunca el token en claro | — (sin FK entrantes; `diagnostic_answer`/`diagnostic_result` referencian `id`) | índices `status`, `last_activity_at` | ninguna (anónimo; sin `user`/`organization`) | `0011` |
+| `diagnostic_answer` | respuestas ACTIVAS finales de un diagnóstico completado (nunca una descartada por routing); una fila por pregunta | `session_id` → diagnostic_session (**cascade**) | único `(session_id, question_id)`; índice `session_id` | ninguna | `0011` |
+| `diagnostic_result` | resultado canónico recalculado en servidor; `structured_result_json` = `DiagnosticResult` real del motor, `dimension_results_json` = `DimensionResult[]` con evidencia real; `completion_hash` = idempotencia | `session_id` → diagnostic_session (**cascade**) | único `session_id`; índice `completion_hash` | ninguna | `0011` |
 
 Notas de integridad:
 
@@ -138,8 +141,20 @@ grandfathering de precio. Ver [TESTING.md](TESTING.md).
 | 0008 | `0008_business-profile-operations.sql` | Operaciones | `business_profile`: `service_mode`, `service_area`; tabla `business_hours` |
 | 0009 | `0009_platform-profile-governance.sql` | Gobierno de plataforma | `business_profile_governance`, `platform_audit_log` |
 | 0010 | `0010_licensing-foundation.sql` | Licenciamiento multi-negocio | `billing_account`, `license_price` (+3 filas sembradas: Cuadra/Barrio/Ciudad), `organization_license`, `portfolio_pricing_tier` (+4 filas sembradas: 1→0%, 2→10%, 3-4→15%, 5+→20%), `promotion`, `billing_account_promotion` |
+| 0011 | `0011_diagnostic-persistence-foundation.sql` | Persistencia del Diagnóstico (DIAG-V3-06) | `diagnostic_session`, `diagnostic_answer`, `diagnostic_result` |
 
-Estado de aplicación: **local `0000`–`0010`** (verificado `RAN` el 2026-09-25); **remoto (`vecidya-prod`) `0000`–`0010`** (`REMOTE` 2026-09-26: `0010` aplicada en G7 a las 18:13:55Z, registrada como `d1_migrations.id = 11`; ninguna pendiente). Esquema y semillas verificados contra el SQL: 6 tablas, 6 índices, 6 claves foráneas, 3 precios y 4 tramos, 0 duplicados y `foreign_key_check` sin violaciones. Bookmark Time Travel previo: `000000c2-00000000-000050f2-004d78b46378f119dd422e95a4ce30e4`. `vecidya-staging` no se tocó.
+Estado de aplicación: **local `0000`–`0011`** (`0011` verificado `RAN` el 2026-09-27); **remoto (`vecidya-prod`) `0000`–`0010`** (`REMOTE` 2026-09-26: `0010` aplicada en G7 a las 18:13:55Z, registrada como `d1_migrations.id = 11`; `0011` **no** aplicada a remoto, DIAG-V3-06 no autorizó `--remote`). Esquema y semillas de `0010` verificados contra el SQL: 6 tablas, 6 índices, 6 claves foráneas, 3 precios y 4 tramos, 0 duplicados y `foreign_key_check` sin violaciones. Bookmark Time Travel previo: `000000c2-00000000-000050f2-004d78b46378f119dd422e95a4ce30e4`. `vecidya-staging` no se tocó.
+
+## Persistencia del Diagnóstico (DIAG-V3-06)
+
+Anónima por defecto: ninguna de las tres tablas nuevas tiene columna de usuario, organización, IP ni user-agent; `diagnostic_session.id` es el identificador público aleatorio de la sesión, no un `member`/`user` vinculado. `token_hash` es `SHA-256` del write token; el token en claro nunca se persiste.
+
+- **`diagnostic_session`**: ciclo de vida (`status`: `STARTED`/`IN_PROGRESS`/`SAVED`/`COMPLETED`/`EXPIRED`, esta fase solo produce los tres primeros), las cinco versiones persistidas (`diagnostic_version`, `question_bank_version`, `routing_version`, `scoring_version`, `result_schema_version`), `profile`/`stage`/`goal` solo cuando ya están resueltos (nunca `entity`/`archetype`/`niche`/`primaryFriction`: el motor actual no los produce), `revision` (trazabilidad, no CAS distribuido), `current_question_id`, contadores de progreso y `snapshot_expires_at` (TTL del snapshot de KV, no la retención del resultado).
+- **`diagnostic_answer`**: respuestas ACTIVAS finales de un diagnóstico completado, escritas una sola vez en la transacción de finalización; único `(session_id, question_id)` evita duplicados ante un reintento.
+- **`diagnostic_result`**: `structured_result_json` es exactamente `DiagnosticResult` (Result Engine de DIAG-V3-05), nunca un objeto armado por la UI; `dimension_results_json` conserva `DimensionResult[]` (evidencia real + insumos de confianza) tal como los produce el motor. **Decisión documentada:** no se creó una tabla `diagnostic_dimension_result` separada porque nada en esta fase necesita consultar por dimensión en SQL — normalizarla ahora sería dogma, no necesidad; queda disponible normalizarla después si una fase futura lo requiere, sin haber perdido el dato. `completion_hash` (SHA-256 del payload canónico) es la clave de idempotencia de finalización, no una restricción `UNIQUE` global: dos sesiones distintas con el mismo contenido no son un conflicto entre sí.
+- **Completación transaccional e idempotente**: `completeDiagnosticSession` (`db/queries/diagnostic-sessions.server.ts`) valida, deriva las respuestas activas y recalcula el resultado completo con el motor real (`explainResult`), y persiste answers+result+session en un único `database.batch(...)`. Verificado en vivo (`diagnostic-persistence-check.mjs`) que una violación de restricción a mitad del batch revierte TODAS las sentencias — ningún `diagnostic_answer` quedó insertado cuando el `diagnostic_result` colisionó deliberadamente. Repetir la misma finalización (mismo hash canónico) devuelve el resultado ya guardado; dos finalizaciones concurrentes de la misma sesión se resuelven de la misma forma, capturando la violación de la restricción única en vez de propagar un error.
+- **KV (`DIAGNOSTIC_SNAPSHOTS`) es exclusivamente snapshot temporal de trabajo**, nunca base histórica ni fuente de concurrencia: TTL de 7 días, escrituras coalescidas (≈cada 5 respuestas o al cruzar de sección, nunca más de 1/segundo a la misma key), y borrado solo después de confirmar D1 (best-effort: un fallo de borrado no revierte ni invalida la finalización, el snapshot simplemente expira por TTL). El `id` del `kv_namespaces` en `wrangler.jsonc` es un placeholder local explícito (`remote: false`); no se creó ningún namespace remoto (`DIAG-V3-KV-PLACEHOLDER-001` en `STATUS.md`).
+- **Límites explícitos**: sin edición concurrente real entre dos dispositivos/pestañas; sin lectura-tras-escritura garantizada en KV; sin recovery code ni continuación entre dispositivos (`DIAG-V3-07`); sin scheduler de expiración/abandono (`DIAG-V3-08`).
 
 Detalles de diseño vigentes:
 

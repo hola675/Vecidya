@@ -107,7 +107,7 @@ export function buildContactMailto(result: DiagnosticResult): string {
     `Siguiente paso sugerido: ${result.nextActions[0]?.text ?? "por definir"}`,
     `Encaje de licencia: ${result.recommendation.license.name}`,
     "",
-    "No envio mis respuestas completas y Vecidya no guarda informacion del diagnostico.",
+    "No envio mis respuestas completas en este correo.",
   ];
   return `mailto:hola@vecidya.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
 }

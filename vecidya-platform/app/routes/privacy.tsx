@@ -37,6 +37,7 @@ export default function Privacy() {
             <article><span>02</span><h3>Organización</h3><p>Organizaciones, membresías, roles y permisos para separar el acceso de cada equipo.</p></article>
             <article><span>03</span><h3>Perfil público</h3><p>La organización decide qué nombre, categoría, ubicación, descripción y contacto publicar.</p></article>
             <article><span>04</span><h3>Correo externo</h3><p>Los enlaces email abren tu aplicación de correo; la web pública no almacena esos mensajes.</p></article>
+            <article><span>05</span><h3>Diagnóstico</h3><p>No necesitas crear una cuenta: usamos un identificador aleatorio para que puedas continuar donde quedaste. Tus respuestas pueden conservarse temporalmente para eso, y el diagnóstico completo puede guardarse de forma estructurada para operar y mejorar el servicio. Por defecto no te pedimos nombre, correo ni teléfono para nada de esto.</p></article>
           </div>
         </section>
 
@@ -57,7 +58,7 @@ export default function Privacy() {
           <h2 id="privacy-boundaries-title">Lo que no ocurre desde la web pública.</h2>
           <ul>
             <li>No hay formularios propios persistentes en las páginas públicas actuales.</li>
-            <li>El diagnóstico no guarda respuestas ni resultados personalizados.</li>
+            <li>El diagnóstico no exige registro, nombre, correo ni teléfono para completarse.</li>
             <li>No se crean historiales comerciales internos desde estas páginas.</li>
             <li>No se venden datos personales ni se publican datos privados de organizaciones.</li>
           </ul>
