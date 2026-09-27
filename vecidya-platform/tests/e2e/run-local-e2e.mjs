@@ -24,6 +24,7 @@ const scripts = [
   "addons-experience-check.mjs",
   "diagnostic-experience-check.mjs",
   "diagnostic-persistence-check.mjs",
+  "diagnostic-save-resume-check.mjs",
   "join-contact-experience-check.mjs",
   "about-experience-check.mjs",
   "learn-experience-check.mjs",

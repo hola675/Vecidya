@@ -45,3 +45,13 @@ test("privacy.tsx explica el identificador aleatorio y la persistencia estructur
   assert.match(source, /identificador aleatorio/i);
   assert.match(source, /guardarse de forma estructurada/i);
 });
+
+/**
+ * DIAG-V3-07 §31/§32: distinguir el autoguardado temporal (same-browser) de "Guardar para después"
+ * (acción explícita con recovery code) y no presentar el código como cifrado de las respuestas.
+ */
+test("privacy.tsx distingue \"Guardar para después\" del autoguardado temporal y aclara que el código no es un cifrado", () => {
+  const source = read("app/routes/privacy.tsx");
+  assert.match(source, /Guardar para después/);
+  assert.match(source, /no es un cifrado/i);
+});
