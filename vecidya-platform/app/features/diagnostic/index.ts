@@ -108,6 +108,7 @@ export {
   type AnalyticsSchemaVersion,
   type AnswerKind,
 } from "./analytics";
+export { computeRouteSignature } from "./route-signature";
 
 /**
  * Ejecuta el diagnóstico completo sobre un conjunto de respuestas.
