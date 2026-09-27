@@ -42,6 +42,14 @@ export const diagnosticSession = sqliteTable(
       .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
+    // DIAG-V3-08 §5: contadores de ciclo de vida actualizados junto con la operación real (SAVE,
+    // RECOVER), nunca inferidos solo de telemetría cliente. `saveCount` cuenta invocaciones SAVE que
+    // el servidor aceptó (incluye retries idempóticos que solo tocan `expires_at`: cada uno es una
+    // llamada SAVE real, aunque no mine un código nuevo). `resumeCount` cuenta recuperaciones exitosas.
+    saveCount: integer("save_count").default(0).notNull(),
+    resumeCount: integer("resume_count").default(0).notNull(),
+    lastSavedAt: integer("last_saved_at", { mode: "timestamp_ms" }),
+    lastResumedAt: integer("last_resumed_at", { mode: "timestamp_ms" }),
   },
   (table) => [index("diagnostic_session_status_idx").on(table.status), index("diagnostic_session_last_activity_idx").on(table.lastActivityAt)],
 );
@@ -131,5 +139,40 @@ export const diagnosticSavedSnapshot = sqliteTable(
   (table) => [
     uniqueIndex("diagnostic_saved_snapshot_recovery_digest_unique").on(table.recoveryLookupDigest),
     index("diagnostic_saved_snapshot_expires_idx").on(table.expiresAt),
+  ],
+);
+
+// Telemetría de interacción anónima (DIAG-V3-08). Observa el diagnóstico, no lo controla: un fallo al
+// insertar aquí nunca debe impedir responder, guardar o completar (spec §2/§30) — por eso esta tabla no
+// tiene ninguna FK que un flujo de producto dependa de escribir con éxito, solo la FK de limpieza en
+// cascada hacia `diagnostic_session`. `id` es un rowid interno autoincremental (a diferencia del resto
+// del schema, donde `id` es el identificador público): sirve únicamente para conservar el orden de
+// recepción del servidor (spec §62), nunca se expone. `event_uuid` es la clave de idempotencia real
+// (spec §9): un mismo evento reintentado por el cliente nunca produce una segunda fila. Ningún campo
+// aquí es un valor de respuesta (spec §12/§32): `answer_kind` distingue answered/unknown/not_applicable,
+// nunca el `OptionId` real. `write_token` NUNCA se guarda en esta tabla (spec §31).
+export const diagnosticEvent = sqliteTable(
+  "diagnostic_event",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    eventUuid: text("event_uuid").notNull(),
+    sessionId: text("session_id").notNull().references(() => diagnosticSession.id, { onDelete: "cascade" }),
+    analyticsSchemaVersion: integer("analytics_schema_version").notNull(),
+    eventType: text("event_type").notNull(),
+    questionId: text("question_id"),
+    sectionId: text("section_id"),
+    answerKind: text("answer_kind"),
+    routeSignature: text("route_signature"),
+    questionsSeen: integer("questions_seen"),
+    questionsAnswered: integer("questions_answered"),
+    applicableQuestions: integer("applicable_questions"),
+    receivedAt: integer("received_at", { mode: "timestamp_ms" }).notNull(),
+    retentionUntil: integer("retention_until", { mode: "timestamp_ms" }).notNull(),
+  },
+  (table) => [
+    uniqueIndex("diagnostic_event_uuid_unique").on(table.eventUuid),
+    index("diagnostic_event_session_idx").on(table.sessionId),
+    index("diagnostic_event_type_question_idx").on(table.eventType, table.questionId),
+    index("diagnostic_event_retention_idx").on(table.retentionUntil),
   ],
 );
