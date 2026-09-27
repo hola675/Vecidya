@@ -127,12 +127,12 @@ async function dropoffByQuestion(database: Database, options: { now?: Date; thre
 
   const rows = await database.all<{ question_id: string; shown_and_valid: number; dropped_off: number }>(sql`
     WITH shown AS (
-      SELECT session_id, question_id, MAX(received_at) AS last_shown_at
+      SELECT session_id, question_id, MAX(id) AS last_shown_id
       FROM diagnostic_event WHERE event_type = 'QUESTION_SHOWN' AND question_id IS NOT NULL
       GROUP BY session_id, question_id
     ),
     invalidated AS (
-      SELECT session_id, question_id, MAX(received_at) AS last_invalidated_at
+      SELECT session_id, question_id, MAX(id) AS last_invalidated_id
       FROM diagnostic_event WHERE event_type = 'QUESTION_INVALIDATED' AND question_id IS NOT NULL
       GROUP BY session_id, question_id
     ),
@@ -144,7 +144,7 @@ async function dropoffByQuestion(database: Database, options: { now?: Date; thre
       SELECT s.session_id, s.question_id
       FROM shown s
       LEFT JOIN invalidated i ON i.session_id = s.session_id AND i.question_id = s.question_id
-      WHERE i.last_invalidated_at IS NULL OR i.last_invalidated_at < s.last_shown_at
+      WHERE i.last_invalidated_id IS NULL OR i.last_invalidated_id < s.last_shown_id
     )
     SELECT
       v.question_id AS question_id,
