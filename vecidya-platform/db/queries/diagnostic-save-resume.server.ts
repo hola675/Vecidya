@@ -1,4 +1,4 @@
-import { and, eq, ne } from "drizzle-orm";
+import { and, eq, ne, sql } from "drizzle-orm";
 
 import { SAVED_SNAPSHOT_RETENTION_DAYS, isCurrentPersistedVersions, ONE_DAY_MS, type PersistedVersions } from "../../app/features/diagnostic/contracts";
 import { buildCanonicalSavePayload, computeSaveHash, type DiagnosticSessionSnapshot } from "../../app/features/diagnostic/persistence";
@@ -70,7 +70,7 @@ export async function saveDiagnosticSession(database: Database, recoveryHmacSecr
   const buildSessionStatusUpdate = () =>
     database
       .update(diagnosticSession)
-      .set({ status: "SAVED", lastActivityAt: now, updatedAt: now })
+      .set({ status: "SAVED", lastActivityAt: now, updatedAt: now, saveCount: sql`${diagnosticSession.saveCount} + 1`, lastSavedAt: now })
       .where(and(eq(diagnosticSession.id, input.sessionId), ne(diagnosticSession.status, "COMPLETED")));
 
   /**
@@ -180,7 +180,7 @@ export async function recoverDiagnosticSession(database: Database, recoveryHmacS
   const newTokenHash = await hashWriteToken(newWriteToken);
   const rotation = await database
     .update(diagnosticSession)
-    .set({ tokenHash: newTokenHash, status: "IN_PROGRESS", lastActivityAt: now, updatedAt: now })
+    .set({ tokenHash: newTokenHash, status: "IN_PROGRESS", lastActivityAt: now, updatedAt: now, resumeCount: sql`${diagnosticSession.resumeCount} + 1`, lastResumedAt: now })
     .where(and(eq(diagnosticSession.id, saved.sessionId), ne(diagnosticSession.status, "COMPLETED")));
   if (rotation.meta.changes === 0) return { ok: false, reason: "invalid" };
 
