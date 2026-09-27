@@ -6,7 +6,10 @@ import { PublicLayout, publicMeta } from "../components/public-layout";
 import {
   applyAnswer,
   buildContactMailto,
+  createServerSession,
+  CURRENT_PERSISTED_VERSIONS,
   DIAGNOSTIC_PATH,
+  DiagnosticBrowserStore,
   dimensionDescriptions,
   dimensionLabels,
   entryToAnswers,
@@ -23,11 +26,16 @@ import {
   PROFILE_PARAM,
   questionCopy,
   runDiagnostic,
+  sendCompletion,
+  sendSnapshot,
   servicePath,
+  shouldFlushSnapshot,
   visualStatusFor,
   visualStatusLabels,
   type Answers,
+  type DiagnosticBrowserRecord,
   type DiagnosticResult,
+  type DiagnosticSessionId,
   type Issue,
   type ProfileId,
   type Question,
@@ -69,9 +77,19 @@ export default function Diagnostic() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const initialAnswers = useMemo(() => entryToAnswers(parseDiagnosticEntry(searchParams)), [searchParams]);
-  const [answers, setAnswers] = useState<Answers>(initialAnswers);
-  const [step, setStep] = useState(() => getInitialStep(initialAnswers));
+  const browserStore = useMemo(() => new DiagnosticBrowserStore(), []);
+  // DIAG-V3-06 §11: restauración automática en el mismo navegador. Un deep link explícito
+  // (`?perfil=`) siempre gana sobre un snapshot local; sin deep link, se restaura si hay un
+  // snapshot válido, de versión compatible y sin completar.
+  const restoredAnswers = useMemo(() => {
+    if (Object.keys(initialAnswers).length > 0) return initialAnswers;
+    return browserStore.canAutoResume() ? (browserStore.read()?.answers ?? initialAnswers) : initialAnswers;
+  }, [browserStore, initialAnswers]);
+  const [answers, setAnswers] = useState<Answers>(restoredAnswers);
+  const [step, setStep] = useState(() => getInitialStep(restoredAnswers));
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const sessionRef = useRef<{ sessionId: string; writeToken: string } | null>(null);
+  const syncMetaRef = useRef({ lastSnapshotAt: 0, answeredSinceLastSnapshot: 0, lastSectionIndex: -1, creatingSession: false });
 
   const applicable = useMemo(() => getApplicableQuestions(answers), [answers]);
   const safeStep = Math.min(step, applicable.length);
@@ -111,12 +129,113 @@ export default function Diagnostic() {
   const restart = () => {
     setAnswers({});
     setStep(0);
+    browserStore.clear();
+    sessionRef.current = null;
+    syncMetaRef.current = { lastSnapshotAt: 0, answeredSinceLastSnapshot: 0, lastSectionIndex: -1, creatingSession: false };
     navigate(DIAGNOSTIC_PATH, { replace: true, preventScrollReset: true });
   };
 
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: false });
   }, [complete, currentQuestion?.id]);
+
+  // DIAG-V3-06 §10/§16/§37: cada respuesta se guarda localmente sin red (Browser Store); la red solo
+  // se usa para snapshots espaciados (`shouldFlushSnapshot`), best-effort. Una caída de red o de KV
+  // nunca bloquea la siguiente pregunta: el estado en memoria de React ya es la fuente de verdad de
+  // lo que se renderiza.
+  useEffect(() => {
+    const now = Date.now();
+    const previous = browserStore.read();
+    const questionsAnswered = applicable.filter((question) => isAnswered(question, answers)).length;
+    const sessionFromStore = sessionRef.current ?? (previous?.sessionId && previous.writeToken ? { sessionId: previous.sessionId, writeToken: previous.writeToken } : null);
+
+    const record: DiagnosticBrowserRecord = {
+      sessionId: (sessionFromStore?.sessionId ?? null) as DiagnosticSessionId | null,
+      writeToken: sessionFromStore?.writeToken ?? null,
+      versions: CURRENT_PERSISTED_VERSIONS,
+      status: previous?.status ?? "STARTED",
+      startedAt: previous?.startedAt ?? now,
+      lastActivityAt: now,
+      revision: previous?.revision ?? 0,
+      currentQuestionId: currentQuestion?.id ?? null,
+      answers,
+      questionsSeen: applicable.length,
+      questionsAnswered,
+      serverCompleted: previous?.serverCompleted ?? false,
+    };
+    browserStore.write(record);
+
+    if (questionsAnswered === 0) return;
+
+    const meta = syncMetaRef.current;
+    const crossedSectionBoundary = meta.lastSectionIndex !== -1 && meta.lastSectionIndex !== progress.sectionIndex;
+    meta.lastSectionIndex = progress.sectionIndex;
+    meta.answeredSinceLastSnapshot += 1;
+
+    let cancelled = false;
+    (async () => {
+      let session = sessionRef.current;
+      if (!session && !meta.creatingSession) {
+        meta.creatingSession = true;
+        const created = await createServerSession();
+        meta.creatingSession = false;
+        if (cancelled) return;
+        if (created) {
+          session = { sessionId: created.sessionId, writeToken: created.writeToken };
+          sessionRef.current = session;
+          browserStore.write({ ...record, sessionId: created.sessionId as DiagnosticSessionId, writeToken: created.writeToken });
+        }
+      }
+      if (!session) return;
+
+      const shouldFlush = shouldFlushSnapshot({
+        answeredSinceLastSnapshot: meta.answeredSinceLastSnapshot,
+        msSinceLastSnapshot: now - meta.lastSnapshotAt,
+        crossedSectionBoundary,
+        isBeforeCompletion: complete,
+      });
+      if (!shouldFlush) return;
+
+      const outcome = await sendSnapshot(session.sessionId, {
+        writeToken: session.writeToken,
+        answers,
+        currentQuestionId: currentQuestion?.id ?? null,
+        questionsSeen: applicable.length,
+        questionsAnswered,
+      });
+      if (cancelled || !outcome) return;
+      meta.lastSnapshotAt = Date.now();
+      meta.answeredSinceLastSnapshot = 0;
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answers, complete]);
+
+  // DIAG-V3-06 §26/§27: la finalización siempre la recalcula el servidor a partir de las respuestas;
+  // esta llamada es informativa para persistencia y nunca cambia lo que ya se renderiza (§59: cero
+  // rediseño). Un fallo de red deja el resultado local visible igual, sin fingir que se guardó.
+  useEffect(() => {
+    if (!complete) return;
+    const record = browserStore.read();
+    const session = sessionRef.current ?? (record?.sessionId && record.writeToken ? { sessionId: record.sessionId, writeToken: record.writeToken } : null);
+    if (!session || record?.serverCompleted) return;
+
+    let cancelled = false;
+    (async () => {
+      const outcome = await sendCompletion(session.sessionId, session.writeToken, answers);
+      if (cancelled || !outcome) return;
+      const latest = browserStore.read();
+      if (latest) browserStore.write({ ...latest, serverCompleted: true });
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [complete]);
 
   return (
     <PublicLayout>

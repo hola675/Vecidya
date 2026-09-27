@@ -59,6 +59,25 @@ export {
   type RecommendationTrace,
 } from "./recommendations";
 export { buildResultFacts, explainResult, type DimensionResult, type ResultFacts, type ResultTrace } from "./facts";
+export {
+  buildCanonicalCompletionPayload,
+  computeCompletionHash,
+  hasSnapshotShape,
+  MAX_ANSWERS_PER_PAYLOAD,
+  MAX_REQUEST_BODY_BYTES,
+  validateAnswersPayload,
+  type AnswersValidationResult,
+  type DiagnosticSessionSnapshot,
+} from "./persistence";
+export { DiagnosticBrowserStore, type DiagnosticBrowserRecord, type StorageLike } from "./browser-store";
+export {
+  estimatedSnapshotWrites,
+  shouldFlushSnapshot,
+  SNAPSHOT_ANSWER_INTERVAL,
+  SNAPSHOT_MIN_INTERVAL_MS,
+  type SnapshotDecisionInput,
+} from "./snapshot-policy";
+export { createServerSession, sendCompletion, sendSnapshot, type CreateSessionResult, type SnapshotPayload } from "./sync";
 
 /**
  * Ejecuta el diagnóstico completo sobre un conjunto de respuestas.

@@ -229,7 +229,16 @@ async function runBusinessPath(page, label) {
   assert(await page.locator('input[name="profile"]:checked').count() === 0, `${label}: rehacer conservó un perfil.`);
 }
 
+// DIAG-V3-06: la restauración automática en el mismo navegador (Browser Store) reutiliza
+// intencionalmente el estado local entre navegaciones; estos escenarios necesitan partir de un
+// diagnóstico realmente en blanco, así que limpian el snapshot local explícitamente, igual que un
+// usuario que nunca empezó uno.
+async function clearBrowserDiagnosticStore(page) {
+  await page.evaluate(() => window.localStorage.removeItem("vecidya.diagnostic.session.v1"));
+}
+
 async function runDeepLinks(page, label) {
+  await clearBrowserDiagnosticStore(page);
   for (const [id, name] of Object.entries(profiles)) {
     await page.goto(url(`/diagnostico?perfil=${id}`), { waitUntil: "networkidle" });
     await expectPrompt(page, `${label} perfil=${id}`, GOAL_PROMPT);
@@ -240,6 +249,7 @@ async function runDeepLinks(page, label) {
     await assertNoOverflow(page, `${label} perfil=${id}`);
   }
 
+  await clearBrowserDiagnosticStore(page);
   for (const invalid of ["%3Cscript%3Ealert(1)%3C%2Fscript%3E", "public_figure", "idea", "BUSINESS%00", "' OR 1=1"]) {
     await page.goto(url(`/diagnostico?perfil=${invalid}`), { waitUntil: "networkidle" });
     await expectPrompt(page, `${label} perfil inválido ${invalid}`, PROFILE_PROMPT);
@@ -261,6 +271,7 @@ async function runDeepLinks(page, label) {
 }
 
 async function runHomeEntry(page, label) {
+  await clearBrowserDiagnosticStore(page);
   await page.goto(url("/"), { waitUntil: "networkidle" });
   const expected = { Negocio: "business", Profesional: "professional", Proyecto: "project", "Artista o creador de contenido": "creator" };
   for (const [text, id] of Object.entries(expected)) {
@@ -277,6 +288,7 @@ async function runHomeEntry(page, label) {
 }
 
 async function runProfileIsolation(page, label) {
+  await clearBrowserDiagnosticStore(page);
   await page.goto(url("/diagnostico?perfil=business"), { waitUntil: "networkidle" });
   await pick(page, label, ["Ordenar contactos, tareas y procesos"]);
   await next(page, label);

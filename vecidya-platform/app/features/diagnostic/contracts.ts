@@ -28,6 +28,61 @@ export type DiagnosticVersionV3 = Extract<DiagnosticVersion, `3.${string}`>;
 export const CURRENT_DIAGNOSTIC_VERSION: DiagnosticVersion = "2.0";
 
 /**
+ * Versiones persistidas (DIAG-V3-06 §7): identifican qué lógica produjo un resultado histórico.
+ * Cada una sube de forma independiente cuando cambia SU capa, no cuando cambia cualquier otra:
+ * - `QuestionBankVersion`: qué preguntas/opciones existen (`QUESTION_DEFINITIONS`).
+ * - `RoutingVersion`: qué reglas de aplicabilidad rigen (`ROUTING_RULES`).
+ * - `ScoringVersion`: cómo se calculan evidencia/score/confianza (`evidence.ts`, `scoring.ts`).
+ * - `ResultSchemaVersion`: la forma de `DiagnosticResult` (`types.ts`).
+ * Todas empiezan en `1` porque nunca antes hubo un resultado persistido con el que compararlas.
+ * Deliberadamente no es `appVersion` (`package.json`): esas versiones describen el software, estas
+ * describen qué produjo un dato guardado, y pueden avanzar en momentos distintos.
+ */
+export type QuestionBankVersion = 1;
+export const CURRENT_QUESTION_BANK_VERSION: QuestionBankVersion = 1;
+export type RoutingVersion = 1;
+export const CURRENT_ROUTING_VERSION: RoutingVersion = 1;
+export type ScoringVersion = 1;
+export const CURRENT_SCORING_VERSION: ScoringVersion = 1;
+export type ResultSchemaVersion = 1;
+export const CURRENT_RESULT_SCHEMA_VERSION: ResultSchemaVersion = 1;
+
+/** Conjunto de versiones que identifican qué lógica puede reconstruir/leer un dato persistido. */
+export type PersistedVersions = {
+  diagnosticVersion: DiagnosticVersion;
+  questionBankVersion: QuestionBankVersion;
+  routingVersion: RoutingVersion;
+  scoringVersion: ScoringVersion;
+  resultSchemaVersion: ResultSchemaVersion;
+};
+
+/** Las versiones vigentes del motor actual. Toda sesión/snapshot nueva se crea con este valor exacto. */
+export const CURRENT_PERSISTED_VERSIONS: PersistedVersions = {
+  diagnosticVersion: CURRENT_DIAGNOSTIC_VERSION,
+  questionBankVersion: CURRENT_QUESTION_BANK_VERSION,
+  routingVersion: CURRENT_ROUTING_VERSION,
+  scoringVersion: CURRENT_SCORING_VERSION,
+  resultSchemaVersion: CURRENT_RESULT_SCHEMA_VERSION,
+};
+
+/**
+ * Compara un valor no confiable (snapshot de navegador, fila de D1) contra las versiones vigentes.
+ * No hay casts ni migración histórica en V1 (DIAG-V3-06 §12): una versión distinta es simplemente
+ * incompatible, nunca "parecida".
+ */
+export function isCurrentPersistedVersions(value: unknown): value is PersistedVersions {
+  if (typeof value !== "object" || value === null) return false;
+  const candidate = value as Record<string, unknown>;
+  return (
+    candidate.diagnosticVersion === CURRENT_PERSISTED_VERSIONS.diagnosticVersion &&
+    candidate.questionBankVersion === CURRENT_PERSISTED_VERSIONS.questionBankVersion &&
+    candidate.routingVersion === CURRENT_PERSISTED_VERSIONS.routingVersion &&
+    candidate.scoringVersion === CURRENT_PERSISTED_VERSIONS.scoringVersion &&
+    candidate.resultSchemaVersion === CURRENT_PERSISTED_VERSIONS.resultSchemaVersion
+  );
+}
+
+/**
  * Versión semántica de una pregunta (campo `version` de cada definición del registro).
  * - SUBE cuando cambia el significado: qué se pregunta, qué significa una opción, qué opciones
  *   existen o cómo puntúa una respuesta.
@@ -273,6 +328,34 @@ export type DiagnosticResultV3 = Omit<DiagnosticResult, "version" | "overallScor
   secondaryBottleneck: Bottleneck | null;
   evidence: readonly DiagnosticEvidence[];
 };
+
+// ── Persistencia: sesiones anónimas (DIAG-V3-06) ────────────────────────────
+
+/**
+ * Estados de sesión. Esta fase produce y transiciona solo `STARTED` → `IN_PROGRESS` → `COMPLETED`.
+ * `SAVED` queda reservado para Save & Resume (DIAG-V3-07); `EXPIRED` existe en el contrato para que
+ * un sweep futuro (DIAG-V3-08) pueda escribirlo, pero nada lo produce todavía. `ABANDONED` no es un
+ * estado persistido: el abandono es una condición analítica derivada, no una transición (spec §21).
+ */
+export const DIAGNOSTIC_SESSION_STATUSES = ["STARTED", "IN_PROGRESS", "SAVED", "COMPLETED", "EXPIRED"] as const;
+export type DiagnosticSessionStatus = (typeof DIAGNOSTIC_SESSION_STATUSES)[number];
+export const isDiagnosticSessionStatus = (value: unknown): value is DiagnosticSessionStatus => isOneOf(DIAGNOSTIC_SESSION_STATUSES, value);
+
+/** Identificador público de sesión: aleatorio (UUID v4), no secuencial, sin datos del usuario. */
+export type DiagnosticSessionId = string & { readonly __brand: "DiagnosticSessionId" };
+const SESSION_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export function isDiagnosticSessionId(value: unknown): value is DiagnosticSessionId {
+  return typeof value === "string" && SESSION_ID_PATTERN.test(value);
+}
+
+/**
+ * Retención V1 (DIAG-V3-06 §5). Constantes centrales: nada de esto vive enterrado en el código que
+ * las consume. La política definitiva puede revisarse antes de producción; esto es el default de
+ * ingeniería mientras no exista una decisión distinta.
+ */
+export const AUTOSAVE_SNAPSHOT_RETENTION_DAYS = 7;
+export const COMPLETED_RESULT_RETENTION_DAYS = 180;
+export const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 // ── Comprobaciones de compilación ───────────────────────────────────────────
 

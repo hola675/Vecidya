@@ -78,6 +78,13 @@
       "when": 1790379700811,
       "tag": "0010_licensing-foundation",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1790474192437,
+      "tag": "0011_diagnostic-persistence-foundation",
+      "breakpoints": true
     }
   ]
 }
