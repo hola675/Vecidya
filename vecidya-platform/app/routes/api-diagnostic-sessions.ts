@@ -22,7 +22,12 @@ export async function action({ context, request }: Route.ActionArgs) {
 
   try {
     const created = await createDiagnosticSession(database, { tokenHash, versions: CURRENT_PERSISTED_VERSIONS });
-    return Response.json({ sessionId: created.id, writeToken, versions: created.versions, status: created.status }, { status: 201 });
+    // El writeToken viaja en claro exactamente aquí, una única vez (spec §9): un intermediario HTTP
+    // nunca debe guardar esta respuesta (auditoría DIAG-V3-06-C1 §9).
+    return Response.json(
+      { sessionId: created.id, writeToken, versions: created.versions, status: created.status },
+      { status: 201, headers: { "cache-control": "no-store" } },
+    );
   } catch {
     // D1 no disponible: el diagnóstico puede continuar en modo solo-navegador (spec §38). No se
     // inventa una promesa de persistencia; el cliente decide cómo seguir sin sesión de servidor.

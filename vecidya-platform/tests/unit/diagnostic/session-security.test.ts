@@ -54,3 +54,14 @@ test("mutación F: comparar el token en claro contra el hash almacenado nunca co
   const hash = await hashWriteToken(token);
   assert.notEqual(token, hash, "un intento de guardar/comparar el token raw debe fallar esta aserción");
 });
+
+/**
+ * Auditoría DIAG-V3-06-C1 §12: una credencial malformada o de longitud inesperada nunca debe lanzar
+ * (500 no controlado); debe resolver como credencial inválida, igual que cualquier otro mismatch.
+ */
+test("verifyWriteToken: candidato absurdamente largo o con caracteres no base64url → false, nunca lanza", async () => {
+  const hash = await hashWriteToken(generateWriteToken());
+  assert.equal(await verifyWriteToken("x".repeat(100_000), hash), false);
+  assert.equal(await verifyWriteToken("¡token-con-acentos-y-emoji-🔒!", hash), false);
+  assert.equal(await verifyWriteToken("a", hash), false);
+});

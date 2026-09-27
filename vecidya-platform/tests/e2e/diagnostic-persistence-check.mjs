@@ -83,7 +83,8 @@ const completePath = (id) => `/api/diagnostic/sessions/${id}/complete`;
 async function createSession() {
   const response = await fetch(new URL(sessionsPath, baseUrl), post({}));
   harness(response.status === 201, `crear sesión devolvió ${response.status}`);
-  return jsonOf(response);
+  const body = await jsonOf(response);
+  return { ...body, __response: response };
 }
 
 let harnessFailure = null;
@@ -97,6 +98,9 @@ try {
   check(typeof created.writeToken === "string" && created.writeToken.length >= 40, "writeToken presente y de alta entropía");
   check(created.status === "STARTED", "estado inicial STARTED");
   check(!("tokenHash" in created), "la respuesta de creación nunca expone el hash del token");
+  // Auditoría DIAG-V3-06-C1 §9: la única respuesta que entrega el writeToken en claro no debe ser
+  // cacheable por ningún intermediario HTTP.
+  check(created.__response.headers.get("cache-control") === "no-store", "spec §9: la respuesta de creación lleva Cache-Control: no-store");
 
   const [sessionRow] = await d1(`SELECT status, token_hash, revision, questions_answered FROM diagnostic_session WHERE id = '${created.sessionId}';`);
   check(Boolean(sessionRow), "la sesión existe en D1 tras crearla");
@@ -110,6 +114,14 @@ try {
   check(noToken.status === 400, "snapshot sin writeToken → 400");
   const wrongToken = await fetch(new URL(sessionPath(created.sessionId), baseUrl), patch({ ...snapshotBody, writeToken: "not-the-real-token" }));
   check(wrongToken.status === 403, "snapshot con writeToken incorrecto → 403 (sessionId solo no autoriza)");
+  const wrongTokenBody = await jsonOf(wrongToken);
+  check(!("writeToken" in wrongTokenBody) && !JSON.stringify(wrongTokenBody).includes(created.writeToken), "auditoría C1 §6/§11: un error de credencial nunca refleja ningún token en el body");
+  // Auditoría DIAG-V3-06-C1 §12: un writeToken de longitud absurda o con caracteres inesperados
+  // debe fallar como credencial inválida (403), nunca como excepción no controlada (500).
+  // 20 KB deja margen bajo el límite de payload de 32 KB (spec §34): esto prueba la verificación del
+  // token, no el límite de tamaño (ya cubierto más abajo con un payload deliberadamente por encima).
+  const malformedToken = await fetch(new URL(sessionPath(created.sessionId), baseUrl), patch({ ...snapshotBody, writeToken: "x".repeat(20_000) }));
+  check(malformedToken.status === 403, "snapshot con writeToken de longitud absurda (dentro del límite de payload) → 403 controlado, nunca 500");
   const unknownSession = await fetch(new URL(sessionPath("11111111-1111-4111-8111-111111111111"), baseUrl), patch(snapshotBody));
   check(unknownSession.status === 404, "snapshot sobre una sesión inexistente → 404");
 
@@ -149,11 +161,14 @@ try {
   if (kvRaw) {
     const kvSnapshot = JSON.parse(kvRaw);
     check(kvSnapshot.revision === 1 && kvSnapshot.answers?.profile === "business", "KV: el blob refleja las respuestas y la revisión enviadas");
+    // Auditoría DIAG-V3-06-C1 §8: KV solo identifica sesión/snapshot, nunca replica el writeToken.
+    check(!kvRaw.includes(created.writeToken), "KV: el blob del snapshot no contiene el writeToken en claro");
   }
 
   // --- 6. Version mismatch: sesión con versiones incompatibles → error controlado, sin cast ------
   const mismatchSession = await createSession();
   createdSessionIds.push(mismatchSession.sessionId);
+  check(mismatchSession.writeToken !== created.writeToken, "dos sesiones distintas reciben writeTokens distintos");
   await d1(`UPDATE diagnostic_session SET scoring_version = 999 WHERE id = '${mismatchSession.sessionId}';`);
   const mismatchSnapshot = await fetch(new URL(sessionPath(mismatchSession.sessionId), baseUrl), patch({ ...snapshotBody, writeToken: mismatchSession.writeToken }));
   check(mismatchSnapshot.status === 409, "mutación I: snapshot con versiones incompatibles → 409 controlado (conflicto de estado de sesión), no 500 ni cast");
@@ -205,6 +220,9 @@ try {
   check(firstComplete.status === 200, "primera finalización → 200");
   const firstBody = await jsonOf(firstComplete);
   check(firstBody.status === "completed", "primera finalización: status 'completed'");
+  // Auditoría DIAG-V3-06-C1 §6: la respuesta de completar nunca vuelve a exponer el token ni su hash.
+  check(!("writeToken" in firstBody) && !("tokenHash" in firstBody), "la respuesta de finalización nunca devuelve el token ni su hash");
+  check(JSON.stringify(firstBody).includes(idempotentSession.writeToken) === false, "la respuesta de finalización no contiene el writeToken en ningún campo");
 
   const [completedRow] = await d1(`SELECT status, completed_at FROM diagnostic_session WHERE id = '${idempotentSession.sessionId}';`);
   check(completedRow?.status === "COMPLETED" && completedRow?.completed_at !== null, "D1: sesión marcada COMPLETED con completed_at");
