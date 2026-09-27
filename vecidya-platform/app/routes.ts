@@ -44,6 +44,7 @@ export default [
   route("api/diagnostic/sessions/:sessionId/complete", "routes/api-diagnostic-session-complete.ts"),
   route("api/diagnostic/sessions/:sessionId/save", "routes/api-diagnostic-session-save.ts"),
   route("api/diagnostic/recover", "routes/api-diagnostic-recover.ts"),
+  route("api/diagnostic/events", "routes/api-diagnostic-events.ts"),
   route("app/internal/services", "routes/internal-services.tsx"),
   route("app/internal", "routes/internal.tsx"),
   route("app/internal/organizations", "routes/internal-organizations.tsx"),
