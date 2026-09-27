@@ -1,6 +1,7 @@
 import { getOption, getQuestion } from "./questions";
 import { isDiagnosticSessionId, isQuestionId, type DiagnosticSessionId, type PersistedVersions, type QuestionId } from "./contracts";
 import type { AnswerValue, Answers } from "./types";
+import { sha256Hex } from "./hashing";
 
 /**
  * Contratos de persistencia (DIAG-V3-06): validación de un payload no confiable contra el registro
@@ -140,13 +141,6 @@ export function buildCanonicalCompletionPayload(sessionId: string, versions: Per
     `resultSchemaVersion=${versions.resultSchemaVersion}`,
     canonicalAnswersString(activeAnswers),
   ].join("|");
-}
-
-/** SHA-256 hexadecimal del payload canónico, vía Web Crypto (disponible en Workers y en Node ≥18). */
-async function sha256Hex(payload: string): Promise<string> {
-  const bytes = new TextEncoder().encode(payload);
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 export async function computeCompletionHash(canonicalPayload: string): Promise<string> {
