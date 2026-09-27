@@ -175,11 +175,13 @@ Estrategia aprobada tras DIAG-V3-00: **evolucionar → generalizar → versionar
 | DIAG-V3-04 | Scoring + evidencia; primer productor de `DiagnosticEvidence` (`evidence.ts` deriva de `Contribution`, ya existente en `scoring.ts`); trazas `explainDimensionScore`/`explainOverallScore`; insumos de confianza por dimensión; BUG-01 caracterizado (conclusión C, sin corrección); `result.ts` sin tocar | CERRADA técnicamente (solo local), pendiente de aprobación |
 | DIAG-V3-05 | Result engine: `classifyState`/`generateIssues`/`prioritize`/recomendaciones se reorganizan en `explain*` trazables (`explainStateClassification`, `explainContradictions`, `explainPrioritization`, `explainRecommendations`, `explainResult`), sin cambiar comportamiento; `DIAG-V3-BUG-01` fortalecido (CHARACTERIZED / NOT FIXED, sigue sin corrección); tabla de disposición de `DiagnosticResultV3` (ver `CHANGELOG.md`); `DIAG-V3-UX-01` (cuándo `overallScore` puede retenerse) queda `UNRESOLVED`, no decidido | CERRADA técnicamente (solo local), pendiente de aprobación |
 | Gate | **PRIVACY + DATA CONTRACT** (`DIAG-V3-PRIVACY-01`, `LEGAL-PRIV-001`): qué se guarda, por qué, dónde y cuánto tiempo; qué sigue anónimo; qué va temporalmente a KV y qué llega a D1; diagnósticos abandonados; «Guardar para después»; expiración; recovery token; eliminación; textos públicos; `/privacidad`; aviso o consentimiento | **RESUELTO localmente en DIAG-V3-06** (`DIAG-V3-PRIVACY-01` en `STATUS.md`); `LEGAL-PRIV-001` (revisión legal formal) sigue abierta, no bloquea más fases locales |
-| DIAG-V3-06 | Persistencia Browser → KV → D1 | **CERRADA técnicamente, pendiente de aprobación (solo local; sin deploy)** — ver `STATUS.md` |
-| DIAG-V3-07 | Save & Resume | No iniciada |
-| DIAG-V3-08 | Analítica | No iniciada |
-| DIAG-V3-09 | Frontend del diagnóstico | No iniciada |
-| DIAG-V3-10 | Experiencia de resultado | No iniciada |
+| DIAG-V3-06 | Persistencia Browser → KV → D1; auditoría `DIAG-V3-06-C1` del transporte del `writeToken` | **APROBADA** (2026-09-27); commits `32741f3`/`cbcf702`/`3a1b52a`/`9c7185a` en `main`/`origin/main` |
+| DIAG-V3-07 | Save & Resume: recovery code anónimo, snapshot durable en D1, rotación de `writeToken` en recuperación | Autorizada (2026-09-27), en curso |
+| DIAG-V3-08 | Analítica (eventos, sweep de expiración) | No iniciada |
+| DIAG-V3-08B | Niche Intelligence & Adaptive Question Bank: nichos, modelos de negocio, arquetipos, ~100–150 preguntas disponibles, rutas especializadas | No iniciada — **no opcional**: fase donde se implementa la inteligencia de nicho que DIAG-V3-06/07 dejan preparada pero no construyen |
+| DIAG-V3-08C | Contextual Scoring Calibration: recalibración de porcentajes según relevancia contextual derivada de DIAG-V3-08B | No iniciada — **no opcional**, depende de DIAG-V3-08B |
+| DIAG-V3-09 | Frontend adaptativo del diagnóstico (10–16 preguntas típicas por usuario sobre el banco ampliado) | No iniciada |
+| DIAG-V3-10 | Experiencia de resultado V3 | No iniciada |
 | DIAG-V3-11 | PDF ≤ 3 páginas mediante un view model derivado de `DiagnosticResult` (`DIAG-V3-PDF-01`) | No iniciada |
 | DIAG-V3-12 | Matriz E2E de personas | No iniciada |
 | DIAG-V3-13 | Accesibilidad, rendimiento y seguridad | No iniciada |
@@ -192,6 +194,7 @@ Reglas del bloque:
 - **Persistencia:** implementada desde DIAG-V3-06 (solo local, sin deploy), tras resolver el gate de privacidad — no se implementó de forma silenciosa. KV es estado de trabajo temporal (snapshot coalescido desde el navegador, sin escribir por cada clic; consistencia eventual, máximo 1 escritura/s por clave, lecturas stale, sin garantía de concurrencia entre dispositivos ni entre pestañas — `revision` es solo trazabilidad). D1 es el histórico; la analítica consolidada queda para DIAG-V3-08. Esas responsabilidades no se intercambian; un fallo al finalizar en D1 no borra el estado recuperable en KV ni en el navegador, y la finalización es idempotente y transaccional (verificado con rollback atómico real de `database.batch()` de D1 ante una colisión de restricción).
 - **Terminología:** «Cliente/Clientes» para el concepto comercial (empresa o persona atendida por Vecidya) cuando exista; «Cuenta» para autenticación. No se hacen reemplazos globales de `account`.
 - **Fuera de alcance de V3 por ahora:** IA generativa decidiendo el diagnóstico, machine learning, CRM, campañas, nurturing, emails automáticos, cuentas obligatorias y BI complejo.
+- **DIAG-V3-08B/08C no son opcionales.** Son las fases donde se implementan nichos, modelos de negocio, arquetipos, nuevos módulos de pregunta (~100–150 preguntas disponibles en el banco, 10–16 típicas por persona) y la recalibración de porcentajes según relevancia contextual. DIAG-V3-06/07 dejan el contrato de persistencia y recuperación listo para ese banco ampliado, pero no implementan nada de nichos/arquetipos/recalibración todavía.
 
 ### Contenido editorial
 
