@@ -6,6 +6,7 @@ import { PublicLayout, publicMeta } from "../components/public-layout";
 import {
   applyAnswer,
   buildContactMailto,
+  canOfferSaveForLater,
   createServerSession,
   CURRENT_PERSISTED_VERSIONS,
   DIAGNOSTIC_PATH,
@@ -25,7 +26,9 @@ import {
   parseDiagnosticEntry,
   PROFILE_PARAM,
   questionCopy,
+  recoverSession,
   runDiagnostic,
+  saveSessionForLater,
   sendCompletion,
   sendSnapshot,
   servicePath,
@@ -94,6 +97,21 @@ export default function Diagnostic() {
   const syncMetaRef = useRef({ lastSnapshotAt: 0, answeredSinceLastSnapshot: 0, lastSectionIndex: -1 });
   const hasCheckedResumeRef = useRef(false);
 
+  // DIAG-V3-07: estado de "Guardar para después" y de recuperación por código. Ninguno de los dos se
+  // persiste en `localStorage` (spec §29/§33: el recovery code nunca vive en el Browser Store, solo
+  // en memoria de React mientras la persona lo copia); una recarga de página lo descarta, como
+  // corresponde a un secreto de exposición única.
+  const [saveState, setSaveState] = useState<
+    | { status: "idle" }
+    | { status: "saving" }
+    | { status: "saved"; recoveryCode: string; expiresAt: string }
+    | { status: "already_saved"; expiresAt: string }
+    | { status: "error"; error: string }
+  >({ status: "idle" });
+  const [showRecoverForm, setShowRecoverForm] = useState(false);
+  const [recoverInput, setRecoverInput] = useState("");
+  const [recoverState, setRecoverState] = useState<{ status: "idle" | "recovering" | "error"; error?: string }>({ status: "idle" });
+
   async function ensureServerSession(): Promise<{ sessionId: string; writeToken: string } | null> {
     if (sessionRef.current) return sessionRef.current;
     if (!sessionCreationRef.current) {
@@ -127,6 +145,7 @@ export default function Diagnostic() {
 
   const canContinue = Boolean(currentQuestion && isAnswered(currentQuestion, answers));
   const isLast = !complete && progress.known && safeStep === applicable.length - 1;
+  const saveEligible = !complete && canOfferSaveForLater(answers);
 
   const answer = (question: Question, value: string) => {
     const next = applyAnswer(answers, question, value);
@@ -134,6 +153,11 @@ export default function Diagnostic() {
     if (question.id === "profile" && next.profile !== answers.profile && typeof next.profile === "string") {
       setSearchParams(new URLSearchParams({ [PROFILE_PARAM]: next.profile }), { replace: true, preventScrollReset: true });
     }
+    // Hallazgo de la revisión independiente de DIAG-V3-07: sin esto, la tarjeta/nota de un SAVE
+    // anterior seguía mostrándose (y el botón "Guardar para después" desaparecía) aunque la persona
+    // ya hubiera respondido preguntas nuevas que ESE código/checkpoint no cubre — la copy prometía
+    // continuar exactamente donde se guardó, no donde se guardó más lo respondido después.
+    if (saveState.status !== "idle") setSaveState({ status: "idle" });
   };
 
   const goNext = () => {
@@ -150,6 +174,79 @@ export default function Diagnostic() {
     sessionRef.current = null;
     sessionCreationRef.current = null;
     syncMetaRef.current = { lastSnapshotAt: 0, answeredSinceLastSnapshot: 0, lastSectionIndex: -1 };
+    setSaveState({ status: "idle" });
+    setShowRecoverForm(false);
+    setRecoverInput("");
+    setRecoverState({ status: "idle" });
+    navigate(DIAGNOSTIC_PATH, { replace: true, preventScrollReset: true });
+  };
+
+  /**
+   * DIAG-V3-07 §27/§36: acción explícita, distinta del autosave silencioso — sí informa el resultado.
+   * `regenerateCode` es la salida explícita cuando la persona perdió el código de un SAVE anterior sin
+   * haber cambiado ninguna respuesta desde entonces (retry idéntico → normalmente no vuelve a
+   * exponerlo, spec §11); nunca se dispara automáticamente, solo desde el botón dedicado.
+   */
+  const handleSaveForLater = async (options: { regenerate?: boolean } = {}) => {
+    setSaveState({ status: "saving" });
+    const session = await ensureServerSession();
+    if (!session) {
+      setSaveState({ status: "error", error: "No se pudo conectar con el servidor. Intenta de nuevo en un momento." });
+      return;
+    }
+    const questionsAnsweredNow = applicable.filter((question) => isAnswered(question, answers)).length;
+    const outcome = await saveSessionForLater(session.sessionId, {
+      writeToken: session.writeToken,
+      answers,
+      currentQuestionId: currentQuestion?.id ?? null,
+      questionsSeen: applicable.length,
+      questionsAnswered: questionsAnsweredNow,
+      regenerateCode: options.regenerate,
+    });
+    if (!outcome.ok) {
+      setSaveState({ status: "error", error: outcome.error });
+      return;
+    }
+    setSaveState(outcome.status === "saved" ? { status: "saved", recoveryCode: outcome.recoveryCode, expiresAt: outcome.expiresAt } : { status: "already_saved", expiresAt: outcome.expiresAt });
+  };
+
+  /**
+   * DIAG-V3-07 §18/§19/§33: adopta la sesión recuperada (nuevo `writeToken`, respuestas canónicas del
+   * servidor) igual que el auto-resume same-browser, pero disparado por una persona, no por leer el
+   * Browser Store. `hasCheckedResumeRef` se marca para que el efecto de restauración no compita con
+   * este resultado en la misma pasada.
+   */
+  const handleRecover = async () => {
+    setRecoverState({ status: "recovering" });
+    const outcome = await recoverSession(recoverInput);
+    if (!outcome.ok) {
+      setRecoverState({ status: "error", error: outcome.error });
+      return;
+    }
+    hasCheckedResumeRef.current = true;
+    sessionCreationRef.current = null;
+    sessionRef.current = { sessionId: outcome.sessionId, writeToken: outcome.writeToken };
+    const now = Date.now();
+    browserStore.write({
+      sessionId: outcome.sessionId as DiagnosticSessionId,
+      writeToken: outcome.writeToken,
+      versions: outcome.versions,
+      status: outcome.snapshot.status,
+      startedAt: now,
+      lastActivityAt: now,
+      revision: outcome.snapshot.revision,
+      currentQuestionId: outcome.snapshot.currentQuestionId,
+      answers: outcome.snapshot.answers,
+      questionsSeen: outcome.snapshot.questionsSeen,
+      questionsAnswered: outcome.snapshot.questionsAnswered,
+      serverCompleted: false,
+    });
+    setAnswers(outcome.snapshot.answers);
+    setStep(getInitialStep(outcome.snapshot.answers));
+    setShowRecoverForm(false);
+    setRecoverInput("");
+    setRecoverState({ status: "idle" });
+    setSaveState({ status: "idle" });
     navigate(DIAGNOSTIC_PATH, { replace: true, preventScrollReset: true });
   };
 
@@ -337,6 +434,50 @@ export default function Diagnostic() {
               <li aria-current={section.state === "current" ? "step" : undefined} className={`is-${section.state}`} key={section.id}>{section.label}</li>
             ))}
           </ol>
+
+          {!complete ? (
+            <div className="diagnostic-recover">
+              {showRecoverForm ? (
+                <form
+                  className="diagnostic-recover__form"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    if (recoverState.status !== "recovering") void handleRecover();
+                  }}
+                >
+                  <label htmlFor="diagnostic-recover-code">Código de recuperación</label>
+                  <div className="diagnostic-recover__row">
+                    <input
+                      autoComplete="off"
+                      id="diagnostic-recover-code"
+                      onChange={(event) => setRecoverInput(event.target.value)}
+                      placeholder="XXXX-XXXX-XXXX"
+                      value={recoverInput}
+                    />
+                    <button className="button button--secondary" disabled={recoverState.status === "recovering" || !recoverInput.trim()} type="submit">
+                      {recoverState.status === "recovering" ? "Buscando…" : "Continuar"}
+                    </button>
+                    <button
+                      className="button button--secondary"
+                      onClick={() => {
+                        setShowRecoverForm(false);
+                        setRecoverState({ status: "idle" });
+                      }}
+                      type="button"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                  {recoverState.status === "error" ? <p className="diagnostic-recover__error" role="alert">{recoverState.error}</p> : null}
+                </form>
+              ) : (
+                <button className="text-link diagnostic-recover__toggle" onClick={() => setShowRecoverForm(true)} type="button">
+                  ¿Ya tienes un código? Continuar diagnóstico
+                </button>
+              )}
+            </div>
+          ) : null}
+
           <div
             aria-label="Avance del diagnóstico por secciones"
             aria-valuemax={progress.sectionCount}
@@ -392,6 +533,30 @@ export default function Diagnostic() {
                 <button className="button button--secondary" disabled={safeStep === 0} onClick={goBack} type="button">Volver</button>
                 <button className="button button--primary" disabled={!canContinue} onClick={goNext} type="button">{isLast ? "Ver resultado" : "Continuar"}</button>
               </div>
+              {saveEligible ? (
+                <div className="diagnostic-save-for-later">
+                  {saveState.status === "saved" ? (
+                    <SaveForLaterCard expiresAt={saveState.expiresAt} recoveryCode={saveState.recoveryCode} />
+                  ) : saveState.status === "already_saved" ? (
+                    <div className="diagnostic-save-for-later__note">
+                      <p>Ya guardamos este diagnóstico antes; tu código de recuperación sigue siendo el mismo que copiaste.</p>
+                      <button className="text-link" onClick={() => void handleSaveForLater({ regenerate: true })} type="button">
+                        ¿Perdiste tu código? Generar uno nuevo <span aria-hidden="true">→</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      className="button button--secondary diagnostic-save-for-later__button"
+                      disabled={saveState.status === "saving"}
+                      onClick={() => void handleSaveForLater()}
+                      type="button"
+                    >
+                      {saveState.status === "saving" ? "Guardando…" : "Guardar para después"}
+                    </button>
+                  )}
+                  {saveState.status === "error" ? <p className="diagnostic-save-for-later__error" role="alert">{saveState.error}</p> : null}
+                </div>
+              ) : null}
             </article>
           ) : result ? (
             <ResultView headingRef={headingRef} onRestart={restart} result={result} />
@@ -423,6 +588,43 @@ function StatusBadge({ label, score }: { label?: string; score: number }) {
       <strong className="diagnostic-status__score">{score}%</strong>
       <span aria-hidden="true" className={`badge badge--${visualStatusTone[status]}`}>{visualStatusLabels[status]}</span>
     </span>
+  );
+}
+
+/**
+ * DIAG-V3-07 §27/§32: muestra el código UNA sola vez (nunca vuelve a pedirse al servidor). Aclara
+ * explícitamente que no es cifrado y que quien lo tenga puede recuperar este diagnóstico concreto,
+ * sin prometer anonimato absoluto ni identidad (spec §31/§32).
+ */
+function SaveForLaterCard({ expiresAt, recoveryCode }: { expiresAt: string; recoveryCode: string }) {
+  const [copied, setCopied] = useState(false);
+  const expiresLabel = new Intl.DateTimeFormat("es", { dateStyle: "long" }).format(new Date(expiresAt));
+
+  return (
+    <aside aria-label="Código para continuar más tarde" className="diagnostic-save-for-later__card" role="status">
+      <p className="eyebrow">GUARDA ESTE CÓDIGO</p>
+      <p className="diagnostic-save-for-later__code" aria-label={`Tu código: ${recoveryCode}`}>{recoveryCode}</p>
+      <button
+        className="button button--secondary"
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(recoveryCode);
+            setCopied(true);
+          } catch {
+            setCopied(false);
+          }
+        }}
+        type="button"
+      >
+        {copied ? "Copiado" : "Copiar código"}
+      </button>
+      <p>
+        Con este código puedes continuar el diagnóstico desde otro dispositivo o navegador, sin cuenta
+        ni correo. No es un cifrado de tus respuestas: quien lo tenga puede continuar este diagnóstico.
+        Guárdalo en un lugar seguro — no podremos volver a mostrártelo.
+      </p>
+      <p className="diagnostic-save-for-later__expiry">Disponible hasta el {expiresLabel}.</p>
+    </aside>
   );
 }
 

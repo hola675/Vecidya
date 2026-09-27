@@ -2844,6 +2844,100 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   font-weight: 700;
 }
 
+/* DIAG-V3-07: Save & Resume — recuperación por código y "Guardar para después". */
+.diagnostic-recover {
+  margin: -0.25rem 0 0.5rem;
+}
+
+.diagnostic-recover__form {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 32rem;
+}
+
+.diagnostic-recover__form label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.diagnostic-recover__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.diagnostic-recover__row input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.diagnostic-recover__error,
+.diagnostic-save-for-later__error {
+  margin: 0;
+  color: #b3261e;
+  font-weight: 600;
+}
+
+.diagnostic-save-for-later {
+  margin-top: -0.25rem;
+}
+
+.diagnostic-save-for-later__button {
+  width: auto;
+}
+
+.diagnostic-save-for-later__note {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+}
+
+.diagnostic-save-for-later__note p {
+  margin: 0;
+}
+
+.diagnostic-save-for-later__card {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+  max-width: 32rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.diagnostic-save-for-later__code {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.4rem;
+  background: var(--surface-soft);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  word-break: break-all;
+}
+
+.diagnostic-save-for-later__card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.diagnostic-save-for-later__expiry {
+  font-weight: 700;
+}
+
 @media (max-width: 520px) {
   .diagnostic-question,
   .diagnostic-result {
@@ -2867,6 +2961,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
   .diagnostic-actions .button,
   .diagnostic-result__cta .button {
+    width: 100%;
+  }
+
+  .diagnostic-recover__row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .diagnostic-save-for-later__button {
     width: 100%;
   }
 
