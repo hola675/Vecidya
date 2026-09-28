@@ -4,9 +4,11 @@ import { Link, useNavigate, useSearchParams } from "react-router";
 import { publicAssets } from "../assets/public-assets";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import {
+  AnalyticsEventQueue,
   applyAnswer,
   buildContactMailto,
   canOfferSaveForLater,
+  computeRouteSignature,
   createServerSession,
   CURRENT_PERSISTED_VERSIONS,
   DIAGNOSTIC_PATH,
@@ -16,6 +18,7 @@ import {
   entryToAnswers,
   getApplicableQuestions,
   getInitialStep,
+  getOption,
   getProfile,
   getProgress,
   isAnswered,
@@ -29,19 +32,26 @@ import {
   recoverSession,
   runDiagnostic,
   saveSessionForLater,
+  selectedValues,
+  sendAnalyticsEvents,
   sendCompletion,
   sendSnapshot,
   servicePath,
   shouldFlushSnapshot,
   visualStatusFor,
   visualStatusLabels,
+  type AnalyticsEventType,
+  type AnalyticsQueueEventInput,
   type Answers,
+  type AnswerKind,
   type DiagnosticBrowserRecord,
   type DiagnosticResult,
   type DiagnosticSessionId,
   type Issue,
   type ProfileId,
   type Question,
+  type QuestionId,
+  type SectionId,
   type VisualStatus,
 } from "../features/diagnostic";
 
@@ -67,6 +77,24 @@ const confidenceCopy = {
   media: "Media",
   baja: "Baja",
 } as const;
+
+/** DIAG-V3-08: un evento de telemetría con todo lo no indicado en `null` (spec §12: nunca el valor de la respuesta). */
+function analyticsEvent(eventType: AnalyticsEventType, fields: Partial<Omit<AnalyticsQueueEventInput, "eventType">> = {}): AnalyticsQueueEventInput {
+  return { eventType, questionId: null, sectionId: null, answerKind: null, routeSignature: null, questionsSeen: null, questionsAnswered: null, applicableQuestions: null, ...fields };
+}
+
+/**
+ * DIAG-V3-08 §12: clase de la respuesta sin su valor. Mismo discriminador y misma precedencia que el
+ * motor (`questionContribution` en `scoring.ts`): `kind` de cada opción elegida vía `getOption`, «no
+ * aplica» antes que «no lo sé»; cualquier otra opción (incluida `none`, «nada de esto», que sí puntúa)
+ * es una respuesta sustantiva.
+ */
+function answerKindOf(question: Question, values: readonly string[]): AnswerKind {
+  const options = values.map((value) => getOption(question, value));
+  if (options.some((option) => option?.kind === "not_applicable")) return "not_applicable";
+  if (options.some((option) => option?.kind === "unknown")) return "unknown";
+  return "answered";
+}
 
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
@@ -96,6 +124,17 @@ export default function Diagnostic() {
   const sessionCreationRef = useRef<Promise<{ sessionId: string; writeToken: string } | null> | null>(null);
   const syncMetaRef = useRef({ lastSnapshotAt: 0, answeredSinceLastSnapshot: 0, lastSectionIndex: -1 });
   const hasCheckedResumeRef = useRef(false);
+  // DIAG-V3-08: cola de telemetría anónima. Nunca bloquea la respuesta a una pregunta — `enqueue` es
+  // síncrono y en memoria; el flush es fire-and-forget (spec §2/§25/§30).
+  const analyticsQueueRef = useRef(new AnalyticsEventQueue());
+  const analyticsFlushMetaRef = useRef({ lastFlushAt: 0 });
+  // Última pregunta/sección ya reportada (QUESTION_SHOWN/SECTION_ENTERED una vez por cambio real, no
+  // por render ni por la doble invocación de efectos de StrictMode) y si SAVE_OFFERED ya se emitió.
+  // Seguimiento propio, no `syncMetaRef.lastSectionIndex`: ese índice se actualiza solo al RESPONDER
+  // (el efecto de snapshot depende de `answers`, no de `step`), así que marca "primera respuesta en
+  // una sección nueva", no "entró a la sección"; escribirlo desde aquí además cambiaría
+  // `crossedSectionBoundary` y con él la política de snapshots ya publicada.
+  const analyticsViewRef = useRef<{ questionId: QuestionId | null; sectionId: SectionId | null; saveOffered: boolean }>({ questionId: null, sectionId: null, saveOffered: false });
 
   // DIAG-V3-07: estado de "Guardar para después" y de recuperación por código. Ninguno de los dos se
   // persiste en `localStorage` (spec §29/§33: el recovery code nunca vive en el Browser Store, solo
@@ -124,6 +163,54 @@ export default function Diagnostic() {
       });
     }
     return sessionCreationRef.current;
+  }
+
+  /**
+   * DIAG-V3-08 §25/§30: envía lo pendiente si la política de la cola lo pide (o siempre, con `force`,
+   * antes de completar/al ocultar la página). Nunca crea una sesión de servidor por su cuenta: sin
+   * `sessionRef` los eventos esperan en la cola al siguiente flush candidato. Sesión y eventos se leen
+   * de forma SÍNCRONA antes del primer `await`, así un reinicio/recuperación que cambia de sesión justo
+   * después nunca manda eventos de una sesión con las credenciales de otra. Un batch que falla de
+   * forma reintentable vuelve a SU cola (la capturada aquí), nunca a una cola nueva.
+   */
+  async function flushAnalytics(options: { force?: boolean } = {}) {
+    const queue = analyticsQueueRef.current;
+    if (queue.size() === 0) return;
+    if (!options.force && !queue.shouldFlush(Date.now() - analyticsFlushMetaRef.current.lastFlushAt)) return;
+    const session = sessionRef.current;
+    if (!session) return; // sin sesión de servidor todavía: se reintenta en el próximo flush candidato
+    const batches: ReturnType<AnalyticsEventQueue["drain"]>[] = [];
+    while (queue.size() > 0) batches.push(queue.drain());
+    analyticsFlushMetaRef.current.lastFlushAt = Date.now();
+    await Promise.all(
+      batches.map(async (batch) => {
+        const outcome = await sendAnalyticsEvents(session.sessionId, session.writeToken, batch);
+        if (!outcome) queue.requeue(batch);
+      }),
+    );
+  }
+
+  /**
+   * Único punto de entrada de la UI a la telemetría. `try/catch` porque la analítica nunca puede romper
+   * el producto (spec §2): si `crypto.randomUUID` no existiera (contexto no seguro), se pierde el
+   * evento, no la respuesta. `queue` se pasa explícita cuando el evento se construye tras un `await`
+   * (firma de ruta), para que caiga en la cola de la sesión en la que ocurrió.
+   */
+  function trackAnalytics(events: AnalyticsQueueEventInput[], queue: AnalyticsEventQueue = analyticsQueueRef.current) {
+    try {
+      for (const event of events) queue.enqueue(event);
+    } catch {
+      return;
+    }
+    void flushAnalytics();
+  }
+
+  /** Reinicio/recuperación: lo pendiente se envía con la sesión anterior y la telemetría empieza de cero. */
+  function resetAnalytics(view: { saveOffered: boolean }) {
+    void flushAnalytics({ force: true });
+    analyticsQueueRef.current = new AnalyticsEventQueue();
+    analyticsFlushMetaRef.current = { lastFlushAt: 0 };
+    analyticsViewRef.current = { questionId: null, sectionId: null, saveOffered: view.saveOffered };
   }
 
   const applicable = useMemo(() => getApplicableQuestions(answers), [answers]);
@@ -158,6 +245,26 @@ export default function Diagnostic() {
     // ya hubiera respondido preguntas nuevas que ESE código/checkpoint no cubre — la copy prometía
     // continuar exactamente donde se guardó, no donde se guardó más lo respondido después.
     if (saveState.status !== "idle") setSaveState({ status: "idle" });
+
+    // DIAG-V3-08 §12: después de toda la lógica existente, para que ningún fallo de telemetría pueda
+    // impedirla. Sin valores de respuesta: solo si es la primera respuesta a la pregunta o un cambio, y
+    // la clase de la respuesta nueva cuando es la primera.
+    if (next === answers) return;
+    const previousValues = isAnswered(question, answers) ? selectedValues(answers[question.id]) : [];
+    const nextValues = isAnswered(question, next) ? selectedValues(next[question.id]) : [];
+    const events: AnalyticsQueueEventInput[] = [];
+    if (!previousValues.length && nextValues.length) {
+      events.push(analyticsEvent("ANSWER_SUBMITTED", { questionId: question.id, sectionId: question.section, answerKind: answerKindOf(question, nextValues) }));
+    } else if (previousValues.length && (previousValues.length !== nextValues.length || previousValues.some((value) => !nextValues.includes(value)))) {
+      events.push(analyticsEvent("ANSWER_CHANGED", { questionId: question.id, sectionId: question.section }));
+    }
+    // Spec §17: preguntas que la ruta ya ofrecía y dejan de aplicar por esta respuesta. Una ya
+    // respondida que sale de la ruta la descarta `deriveActiveAnswers`; no es una invalidación nueva.
+    const nextApplicableIds = new Set(getApplicableQuestions(next).map((item) => item.id));
+    for (const item of applicable) {
+      if (!nextApplicableIds.has(item.id) && !isAnswered(item, answers)) events.push(analyticsEvent("QUESTION_INVALIDATED", { questionId: item.id }));
+    }
+    if (events.length) trackAnalytics(events);
   };
 
   const goNext = () => {
@@ -171,6 +278,8 @@ export default function Diagnostic() {
     setAnswers({});
     setStep(0);
     browserStore.clear();
+    // Antes de soltar `sessionRef`: lo pendiente pertenece a la sesión que termina.
+    resetAnalytics({ saveOffered: false });
     sessionRef.current = null;
     sessionCreationRef.current = null;
     syncMetaRef.current = { lastSnapshotAt: 0, answeredSinceLastSnapshot: 0, lastSectionIndex: -1 };
@@ -224,6 +333,10 @@ export default function Diagnostic() {
       return;
     }
     hasCheckedResumeRef.current = true;
+    // DIAG-V3-08: lo pendiente pertenece a la sesión anterior (o a ninguna, si todavía no existía) y se
+    // envía con SUS credenciales antes de adoptar la recuperada. Una sesión recuperada por código ya
+    // pasó por "Guardar para después", así que no se vuelve a reportar SAVE_OFFERED para ella.
+    resetAnalytics({ saveOffered: true });
     sessionCreationRef.current = null;
     sessionRef.current = { sessionId: outcome.sessionId, writeToken: outcome.writeToken };
     const now = Date.now();
@@ -295,6 +408,23 @@ export default function Diagnostic() {
         if (resumed.sessionId && resumed.writeToken) sessionRef.current = { sessionId: resumed.sessionId, writeToken: resumed.writeToken };
         setAnswers(merged);
         setStep(getInitialStep(merged));
+        // DIAG-V3-08 §33: SAME_BROWSER_RESUMED solo si de verdad se restauró progreso — al menos una
+        // respuesta que el deep link no traía —, nunca por montar el componente ni por un registro que
+        // solo repite el `?perfil=` de la URL. La pregunta de esta pasada es la del estado previo a
+        // resumir (la del deep link): si la restauración la reemplaza por otra, se marca como ya
+        // reportada para que el efecto de QUESTION_SHOWN, que corre después de este en la misma pasada,
+        // no reporte como mostrada una pregunta que la persona nunca llega a ver.
+        const resumedApplicable = getApplicableQuestions(merged);
+        const resumedQuestionId = resumedApplicable[getInitialStep(merged)]?.id ?? null;
+        if (currentQuestion && currentQuestion.id !== resumedQuestionId) analyticsViewRef.current = { ...analyticsViewRef.current, questionId: currentQuestion.id };
+        if (Object.keys(resumed.answers).some((key) => !(key in initialAnswers))) {
+          trackAnalytics([
+            analyticsEvent("SAME_BROWSER_RESUMED", {
+              questionsAnswered: resumedApplicable.filter((question) => isAnswered(question, merged)).length,
+              applicableQuestions: resumedApplicable.length,
+            }),
+          ]);
+        }
         // Esta pasada no escribe nada: `answers` todavía es el estado previo a resumir. La próxima
         // ejecución de este mismo efecto, disparada por el cambio de estado de arriba, ya verá
         // `merged` y seguirá el camino normal de guardado más abajo.
@@ -380,7 +510,8 @@ export default function Diagnostic() {
   // DIAG-V3-06 §26/§27: la finalización siempre la recalcula el servidor a partir de las respuestas;
   // esta llamada es informativa para persistencia y nunca cambia lo que ya se renderiza (§59: cero
   // rediseño). Un fallo de red deja el resultado local visible igual, sin fingir que se guardó. Es la
-  // ÚNICA llamada de red que se hace mientras `complete` es verdadero (ver hallazgo C1 arriba).
+  // ÚNICA llamada de red que escribe la sesión mientras `complete` es verdadero (ver hallazgo C1
+  // arriba); el flush de telemetría de DIAG-V3-08 solo inserta eventos, nunca toca su estado.
   useEffect(() => {
     if (!complete) return;
     if (browserStore.read()?.serverCompleted) return;
@@ -393,6 +524,9 @@ export default function Diagnostic() {
       // finalización se quede sin sesión y nunca se envíe.
       const session = await ensureServerSession();
       if (!session || cancelled) return;
+      // DIAG-V3-08 §25: vaciar la cola antes de completar, sin esperar su resultado — la finalización
+      // nunca depende de la telemetría (spec §2).
+      void flushAnalytics({ force: true });
       const outcome = await sendCompletion(session.sessionId, session.writeToken, answers);
       if (cancelled || !outcome) return;
       const latest = browserStore.read();
@@ -404,6 +538,65 @@ export default function Diagnostic() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complete]);
+
+  // DIAG-V3-08 §13/§14/§22: QUESTION_SHOWN (y SECTION_ENTERED cuando la pregunta en pantalla cambia de
+  // sección) una vez por cambio real de la pregunta visible — mismo disparador que el foco del título
+  // (arriba). Declarado DESPUÉS del efecto de sincronización a propósito: en el montaje con auto-resume,
+  // ese efecto marca antes la pregunta del deep link que está por reemplazarse (ver arriba). La guarda
+  // se actualiza de forma síncrona, así que la doble invocación de StrictMode no duplica eventos; la
+  // firma de ruta es asíncrona (SHA-256), por eso el evento se encola cuando la firma resuelve, en la
+  // cola de la sesión vigente al momento de mostrarse.
+  useEffect(() => {
+    if (complete || !currentQuestion) return;
+    const view = analyticsViewRef.current;
+    if (view.questionId === currentQuestion.id) return;
+    const enteredSection = view.sectionId !== currentQuestion.section;
+    view.questionId = currentQuestion.id;
+    view.sectionId = currentQuestion.section;
+
+    const queue = analyticsQueueRef.current;
+    const counts = {
+      questionsSeen: safeStep + 1,
+      questionsAnswered: applicable.filter((question) => isAnswered(question, answers)).length,
+      applicableQuestions: applicable.length,
+    };
+    const { id: questionId, section: sectionId } = currentQuestion;
+    void computeRouteSignature(applicable.map((question) => question.id))
+      .catch(() => null)
+      .then((routeSignature) => {
+        const events = [analyticsEvent("QUESTION_SHOWN", { questionId, sectionId, routeSignature, ...counts })];
+        if (enteredSection) events.unshift(analyticsEvent("SECTION_ENTERED", { sectionId, routeSignature, ...counts }));
+        trackAnalytics(events, queue);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [complete, currentQuestion?.id]);
+
+  // DIAG-V3-08 §15: SAVE_OFFERED cuando "Guardar para después" pasa a estar disponible, una sola vez
+  // por sesión (no en cada render mientras siga elegible, ni si la elegibilidad oscila).
+  useEffect(() => {
+    if (!saveEligible || analyticsViewRef.current.saveOffered) return;
+    analyticsViewRef.current.saveOffered = true;
+    trackAnalytics([analyticsEvent("SAVE_OFFERED", { questionId: currentQuestion?.id ?? null, sectionId: currentQuestion?.section ?? null })]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saveEligible]);
+
+  // DIAG-V3-08 §25: flush best-effort al ocultar la página (cambio de pestaña, cierre, navegación) y al
+  // salir de la ruta dentro de la SPA. `flushAnalytics` solo lee refs, así que la versión del primer
+  // render sirve para toda la vida del componente.
+  useEffect(() => {
+    const flushWhenHidden = () => {
+      if (document.visibilityState === "hidden") void flushAnalytics({ force: true });
+    };
+    const flushOnPageHide = () => void flushAnalytics({ force: true });
+    document.addEventListener("visibilitychange", flushWhenHidden);
+    window.addEventListener("pagehide", flushOnPageHide);
+    return () => {
+      document.removeEventListener("visibilitychange", flushWhenHidden);
+      window.removeEventListener("pagehide", flushOnPageHide);
+      void flushAnalytics({ force: true });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <PublicLayout>

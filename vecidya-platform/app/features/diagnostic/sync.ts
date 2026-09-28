@@ -1,3 +1,5 @@
+import { ANALYTICS_SCHEMA_VERSION } from "./analytics";
+import type { AnalyticsQueueEvent } from "./analytics-queue";
 import type { PersistedVersions } from "./contracts";
 import type { DiagnosticSessionSnapshot } from "./persistence";
 import type { Answers, DiagnosticResult } from "./types";
@@ -128,6 +130,34 @@ export async function sendCompletion(
     });
     if (!response.ok) return null;
     return (await response.json()) as { status: "completed" | "already_completed"; result: DiagnosticResult };
+  } catch {
+    return null;
+  }
+}
+
+// ── Telemetría de interacción (DIAG-V3-08) ──────────────────────────────────
+// Best-effort silencioso, igual que `sendSnapshot` (spec §2/§30): un fallo nunca llega a la UI, la
+// cola de `analytics-queue.ts` decide si reintenta.
+
+/**
+ * `null` significa "fallo reintentable" (red, 429, 5xx): quien llama devuelve el batch a la cola. Un
+ * 4xx definitivo (payload inválido, credenciales rechazadas, sesión inexistente) responde
+ * `{ accepted: 0 }`: reintentar exactamente el mismo batch nunca va a cambiar la respuesta, y
+ * reencolarlo lo dejaría al frente de la cola reintentándose en cada flush (spec §30/§65: la
+ * analítica se degrada, nunca insiste). `keepalive` permite que el flush de `pagehide` sobreviva a la
+ * navegación (spec §25, "cuando sea seguro"); un batch máximo (25 eventos) queda muy por debajo del
+ * límite de cuerpo de una petición `keepalive`.
+ */
+export async function sendAnalyticsEvents(sessionId: string, writeToken: string, events: AnalyticsQueueEvent[], fetchImpl: FetchLike = fetch): Promise<{ accepted: number } | null> {
+  try {
+    const response = await fetchImpl("/api/diagnostic/events", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ sessionId, writeToken, analyticsSchemaVersion: ANALYTICS_SCHEMA_VERSION, events }),
+      keepalive: true,
+    });
+    if (!response.ok) return response.status === 429 || response.status >= 500 ? null : { accepted: 0 };
+    return (await response.json()) as { accepted: number };
   } catch {
     return null;
   }

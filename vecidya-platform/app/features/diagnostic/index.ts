@@ -81,6 +81,7 @@ export {
   createServerSession,
   recoverSession,
   saveSessionForLater,
+  sendAnalyticsEvents,
   sendCompletion,
   sendSnapshot,
   type CreateSessionResult,
