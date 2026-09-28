@@ -55,3 +55,17 @@ test("privacy.tsx distingue \"Guardar para después\" del autoguardado temporal 
   assert.match(source, /Guardar para después/);
   assert.match(source, /no es un cifrado/i);
 });
+
+/**
+ * DIAG-V3-08 (Task 15): la copy debe cubrir la telemetría de interacción anónima (qué preguntas
+ * generan dudas, dónde se abandona, contadores de guardado/reanudación) sin afirmar que no se
+ * almacena y sin inventar un mecanismo formal de consentimiento (LEGAL-PRIV-001 sigue abierto).
+ */
+test("privacy.tsx cubre la telemetría anónima de uso del diagnóstico: identificador de sesión, sin contenido de respuestas y retención de 180 días", () => {
+  const source = read("app/routes/privacy.tsx");
+  assert.match(source, /m[eé]tricas de uso del propio diagn[oó]stico/i);
+  assert.match(source, /ligada al mismo identificador de sesi[oó]n/i);
+  assert.match(source, /no incluyen el contenido de tus respuestas/i);
+  assert.match(source, /180 d[ií]as/i);
+  for (const pattern of RETIRED_ABSOLUTE_CLAIMS) assert.doesNotMatch(source, pattern);
+});
