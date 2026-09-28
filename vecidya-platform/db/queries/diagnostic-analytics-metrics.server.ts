@@ -1,18 +1,23 @@
-import { and, eq, gt, lt, lte, sql } from "drizzle-orm";
+import { and, eq, gt, gte, lt, lte, not, sql, type SQL } from "drizzle-orm";
 
 import { ANALYTICS_ABANDONMENT_THRESHOLD_MS } from "../../app/features/diagnostic/analytics";
-import type { PersistedVersions } from "../../app/features/diagnostic/contracts";
+import type { PersistedVersions, QuestionId } from "../../app/features/diagnostic/contracts";
 import type { Database } from "../client.server";
 import { diagnosticEvent, diagnosticResult, diagnosticSavedSnapshot, diagnosticSession } from "../schema";
 
 /**
  * Capa de consultas analíticas (DIAG-V3-08 §41). Server-side únicamente: nada aquí se expone por HTTP
- * (spec §52). Toda consulta relevante acepta `versions` para segmentar (spec §38); un `undefined`
+ * (spec §52). Toda consulta relevante acepta `versions` para segmentar (spec §38) — también las de SQL
+ * crudo (`dropoffByQuestion`, `answerChangeRateByQuestion`, `unknown/naRateByQuestion` y los buckets de
+ * `resultDistribution`), vía `sessionInVersions`; un `undefined`
  * consulta sobre TODAS las versiones presentes — solo aceptable mientras exista una única versión real
  * en producción (hoy). `now`/`thresholdMs` son inyectables (spec §51/§58): nunca `Date.now()` interno,
  * para que las pruebas fijen el boundary exacto.
  */
 export type VersionFilter = Partial<PersistedVersions>;
+
+/** La pregunta cuyo cambio de respuesta reinicia todas las demás (`applyAnswer` en `answers.ts`). */
+const PROFILE_QUESTION_ID: QuestionId = "profile";
 
 function versionWhere(versions: VersionFilter | undefined) {
   const clauses = [];
@@ -22,6 +27,32 @@ function versionWhere(versions: VersionFilter | undefined) {
   if (versions?.scoringVersion) clauses.push(eq(diagnosticSession.scoringVersion, versions.scoringVersion));
   if (versions?.resultSchemaVersion) clauses.push(eq(diagnosticSession.resultSchemaVersion, versions.resultSchemaVersion));
   return clauses;
+}
+
+/**
+ * `versionWhere` para las consultas de SQL crudo (`database.all(sql\`...\`)`). Esas consultas usan alias
+ * (`ds`, `dr`, `v`...) y Drizzle renderiza cada columna calificada con el nombre de su tabla
+ * (`"diagnostic_session"."question_bank_version"`), que no resuelve contra un alias. Por eso el filtro
+ * se aplica como `<columna session_id> IN (SELECT id FROM diagnostic_session WHERE <versionWhere>)`:
+ * la subconsulta referencia la tabla sin alias y reutiliza EXACTAMENTE las mismas cláusulas que las
+ * consultas del query builder. Sin filtro devuelve `1 = 1`: la consulta queda igual que antes.
+ */
+function sessionInVersions(sessionIdColumn: SQL, versions: VersionFilter | undefined): SQL {
+  const clauses = versionWhere(versions);
+  if (clauses.length === 0) return sql`1 = 1`;
+  return sql`${sessionIdColumn} IN (SELECT ${diagnosticSession.id} FROM ${diagnosticSession} WHERE ${and(...clauses)})`;
+}
+
+/**
+ * Spec §20: una sesión con un "Guardar para después" VIGENTE nunca es abandono ordinario, sea cual sea
+ * su status ACTUAL. Tras guardar, seguir respondiendo en la misma pestaña devuelve la sesión a
+ * IN_PROGRESS (`snapshotDiagnosticSession`, comportamiento publicado de DIAG-V3-06/07 que aquí no se
+ * toca) mientras su fila de `diagnostic_saved_snapshot` sigue vigente hasta 30 días: el código de
+ * recuperación funciona, así que la sesión no terminó. "Vigente" es `expires_at >= now`, complemento
+ * lógico de `expires_at < now` que usan `expiredSaved` y la rama SAVED de `dropoffByQuestion`.
+ */
+function hasLiveSavedSnapshot(now: Date): SQL {
+  return sql`exists (select 1 from ${diagnosticSavedSnapshot} where ${and(eq(diagnosticSavedSnapshot.sessionId, diagnosticSession.id), gte(diagnosticSavedSnapshot.expiresAt, now))})`;
 }
 
 export type LifecycleMetrics = {
@@ -46,6 +77,12 @@ async function lifecycle(database: Database, options: { versions?: VersionFilter
   // against `cutoff = now - thresholdMs`: abandoned is `lastActivityAt <= cutoff` (lte), active is
   // `lastActivityAt > cutoff` (gt, strict) — together they partition every STARTED/IN_PROGRESS
   // session with no gap and no overlap at `lastActivityAt === cutoff`.
+  //
+  // Excepción deliberada a esa partición (spec §20, `hasLiveSavedSnapshot`): una sesión STARTED/
+  // IN_PROGRESS inactiva más allá del umbral pero con un snapshot guardado VIGENTE no es abandonada. No
+  // cae en `activeIncomplete` (no está activa) ni en `analyticallyAbandoned` (su recovery code sigue
+  // funcionando): queda, como una sesión SAVED vigente, fuera de ambos conteos hasta que el snapshot
+  // venza; a partir de ahí cuenta como abandonada.
 
   const [{ value: starts }] = await database.select({ value: sql<number>`count(*)` }).from(diagnosticSession).where(and(...extra));
   const [{ value: completions }] = await database
@@ -59,7 +96,7 @@ async function lifecycle(database: Database, options: { versions?: VersionFilter
   const [{ value: analyticallyAbandoned }] = await database
     .select({ value: sql<number>`count(*)` })
     .from(diagnosticSession)
-    .where(and(sql`${diagnosticSession.status} in ('STARTED','IN_PROGRESS')`, lte(diagnosticSession.lastActivityAt, cutoff), ...extra));
+    .where(and(sql`${diagnosticSession.status} in ('STARTED','IN_PROGRESS')`, lte(diagnosticSession.lastActivityAt, cutoff), not(hasLiveSavedSnapshot(now)), ...extra));
   const [{ value: expiredSaved }] = await database
     .select({ value: sql<number>`count(*)` })
     .from(diagnosticSession)
@@ -119,9 +156,23 @@ export type DropoffRow = { questionId: string; shownAndValid: number; droppedOff
  * `ANSWER_SUBMITTED` posterior, Y la sesión terminó "definitivamente" sin completar — abandonada por
  * inactividad (STARTED/IN_PROGRESS) o con snapshot guardado ya expirado (`expired_saved`). Una sesión
  * SAVED con snapshot vivo, o todavía activa dentro del umbral, NUNCA cuenta como dropoff de Q (spec
- * §17 punto 5, §20): solo cuenta cuando ya está clasificada analíticamente como terminada.
+ * §17 punto 5, §20): solo cuenta cuando ya está clasificada analíticamente como terminada. Lo mismo
+ * para una STARTED/IN_PROGRESS inactiva con snapshot guardado vigente (ver `hasLiveSavedSnapshot`):
+ * guardó, siguió respondiendo en la misma pestaña (vuelve a IN_PROGRESS) y su código sigue sirviendo.
+ *
+ * Reinicio por cambio de perfil (`resets`): `applyAnswer` descarta TODAS las respuestas salvo el perfil
+ * nuevo cuando el perfil cambia, sin emitir `QUESTION_INVALIDATED` por cada una (motor publicado, no se
+ * toca aquí); el único rastro en la telemetría es el `ANSWER_CHANGED` de `profile` que el cliente emite
+ * en ese mismo clic. Ese evento se trata como una invalidación implícita de todo lo anterior de la
+ * sesión, excepto de la propia pregunta `profile` (cuyo `ANSWER_CHANGED` ES su respuesta vigente):
+ *  - una muestra de Q anterior al reinicio ya no vale para el denominador (Q se mostró en otro contexto);
+ *  - un `ANSWER_SUBMITTED` de Q anterior al reinicio ya no cuenta como respuesta: si Q se vuelve a
+ *    mostrar tras el reinicio y la persona abandona sin responderla de nuevo, SÍ es dropoff de Q.
+ * No se exige que la respuesta sea posterior a la ÚLTIMA muestra de Q: volver atrás a una pregunta ya
+ * respondida la muestra otra vez (`QUESTION_SHOWN` por cada cambio de pregunta visible) sin que su
+ * respuesta desaparezca, y abandonar ahí no es dejarla sin responder.
  */
-async function dropoffByQuestion(database: Database, options: { now?: Date; thresholdMs?: number } = {}): Promise<DropoffRow[]> {
+async function dropoffByQuestion(database: Database, options: { versions?: VersionFilter; now?: Date; thresholdMs?: number } = {}): Promise<DropoffRow[]> {
   const now = options.now ?? new Date();
   const thresholdMs = options.thresholdMs ?? ANALYTICS_ABANDONMENT_THRESHOLD_MS;
 
@@ -136,15 +187,23 @@ async function dropoffByQuestion(database: Database, options: { now?: Date; thre
       FROM diagnostic_event WHERE event_type = 'QUESTION_INVALIDATED' AND question_id IS NOT NULL
       GROUP BY session_id, question_id
     ),
+    resets AS (
+      SELECT session_id, MAX(id) AS last_reset_id
+      FROM diagnostic_event WHERE event_type = 'ANSWER_CHANGED' AND question_id = ${PROFILE_QUESTION_ID}
+      GROUP BY session_id
+    ),
     answered AS (
-      SELECT DISTINCT session_id, question_id
+      SELECT session_id, question_id, MAX(id) AS last_answered_id
       FROM diagnostic_event WHERE event_type = 'ANSWER_SUBMITTED' AND question_id IS NOT NULL
+      GROUP BY session_id, question_id
     ),
     valid AS (
-      SELECT s.session_id, s.question_id
+      SELECT s.session_id, s.question_id, r.last_reset_id
       FROM shown s
       LEFT JOIN invalidated i ON i.session_id = s.session_id AND i.question_id = s.question_id
-      WHERE i.last_invalidated_id IS NULL OR i.last_invalidated_id < s.last_shown_id
+      LEFT JOIN resets r ON r.session_id = s.session_id AND s.question_id <> ${PROFILE_QUESTION_ID}
+      WHERE (i.last_invalidated_id IS NULL OR i.last_invalidated_id < s.last_shown_id)
+        AND (r.last_reset_id IS NULL OR r.last_reset_id < s.last_shown_id)
     )
     SELECT
       v.question_id AS question_id,
@@ -152,13 +211,16 @@ async function dropoffByQuestion(database: Database, options: { now?: Date; thre
       SUM(CASE
         WHEN a.session_id IS NOT NULL THEN 0
         WHEN ds.status = 'COMPLETED' THEN 0
-        WHEN ds.status IN ('STARTED','IN_PROGRESS') AND (${now.getTime()} - ds.last_activity_at) >= ${thresholdMs} THEN 1
+        WHEN ds.status IN ('STARTED','IN_PROGRESS') AND (${now.getTime()} - ds.last_activity_at) >= ${thresholdMs}
+          AND NOT EXISTS (SELECT 1 FROM diagnostic_saved_snapshot live WHERE live.session_id = ds.id AND live.expires_at >= ${now.getTime()}) THEN 1
         WHEN ds.status = 'SAVED' AND EXISTS (SELECT 1 FROM diagnostic_saved_snapshot sn WHERE sn.session_id = ds.id AND sn.expires_at < ${now.getTime()}) THEN 1
         ELSE 0
       END) AS dropped_off
     FROM valid v
     JOIN diagnostic_session ds ON ds.id = v.session_id
     LEFT JOIN answered a ON a.session_id = v.session_id AND a.question_id = v.question_id
+      AND (v.last_reset_id IS NULL OR a.last_answered_id > v.last_reset_id)
+    WHERE ${sessionInVersions(sql`v.session_id`, options.versions)}
     GROUP BY v.question_id
   `);
 
@@ -172,7 +234,7 @@ async function dropoffByQuestion(database: Database, options: { now?: Date; thre
 
 export type ChangeRateRow = { questionId: string; sessionsAnswered: number; sessionsChanged: number; sessionChangeRate: number; totalChangeEvents: number };
 
-async function answerChangeRateByQuestion(database: Database): Promise<ChangeRateRow[]> {
+async function answerChangeRateByQuestion(database: Database, options: { versions?: VersionFilter } = {}): Promise<ChangeRateRow[]> {
   const rows = await database.all<{ question_id: string; sessions_answered: number; sessions_changed: number; total_change_events: number }>(sql`
     WITH answered AS (
       SELECT DISTINCT session_id, question_id FROM diagnostic_event WHERE event_type = 'ANSWER_SUBMITTED' AND question_id IS NOT NULL
@@ -187,6 +249,7 @@ async function answerChangeRateByQuestion(database: Database): Promise<ChangeRat
       COALESCE(SUM(c.change_count), 0) AS total_change_events
     FROM answered a
     LEFT JOIN changes c ON c.session_id = a.session_id AND c.question_id = a.question_id
+    WHERE ${sessionInVersions(sql`a.session_id`, options.versions)}
     GROUP BY a.question_id
   `);
 
@@ -201,7 +264,7 @@ async function answerChangeRateByQuestion(database: Database): Promise<ChangeRat
 
 export type AnswerKindRateRow = { questionId: string; interactions: number; matching: number; rate: number };
 
-async function rateByAnswerKind(database: Database, kind: "unknown" | "not_applicable"): Promise<AnswerKindRateRow[]> {
+async function rateByAnswerKind(database: Database, kind: "unknown" | "not_applicable", options: { versions?: VersionFilter } = {}): Promise<AnswerKindRateRow[]> {
   const rows = await database.all<{ question_id: string; interactions: number; matching: number }>(sql`
     SELECT
       question_id,
@@ -209,13 +272,14 @@ async function rateByAnswerKind(database: Database, kind: "unknown" | "not_appli
       SUM(CASE WHEN answer_kind = ${kind} THEN 1 ELSE 0 END) AS matching
     FROM diagnostic_event
     WHERE event_type = 'ANSWER_SUBMITTED' AND question_id IS NOT NULL
+      AND ${sessionInVersions(sql`diagnostic_event.session_id`, options.versions)}
     GROUP BY question_id
   `);
   return rows.map((row) => ({ questionId: row.question_id, interactions: row.interactions, matching: row.matching, rate: row.interactions > 0 ? row.matching / row.interactions : 0 }));
 }
 
-const unknownRateByQuestion = (database: Database) => rateByAnswerKind(database, "unknown");
-const naRateByQuestion = (database: Database) => rateByAnswerKind(database, "not_applicable");
+const unknownRateByQuestion = (database: Database, options: { versions?: VersionFilter } = {}) => rateByAnswerKind(database, "unknown", options);
+const naRateByQuestion = (database: Database, options: { versions?: VersionFilter } = {}) => rateByAnswerKind(database, "not_applicable", options);
 
 export type ResultDistribution = {
   byState: Array<{ state: string; count: number }>;
@@ -243,6 +307,7 @@ async function resultDistribution(database: Database, options: { versions?: Vers
       COUNT(*) AS count
     FROM diagnostic_result dr
     JOIN diagnostic_session ds ON ds.id = dr.session_id
+    WHERE ${sessionInVersions(sql`dr.session_id`, options.versions)}
     GROUP BY bucket
   `);
 

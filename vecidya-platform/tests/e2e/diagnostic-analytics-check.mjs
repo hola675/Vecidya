@@ -163,13 +163,18 @@ async function eventCount(whereSql) {
  * `diagnosticAnalytics.dropoffByQuestion` en `db/queries/diagnostic-analytics-metrics.server.ts`, en su
  * versión vigente con orden por `id` autoincremental (`MAX(id) AS last_shown_id`/`last_invalidated_id`,
  * comparados con `i.last_invalidated_id < s.last_shown_id`, fix de revisión e3a3a24 que resuelve los
- * empates de `received_at` dentro de un mismo batch). Diferencias deliberadas, y solo estas: `now` y
- * `thresholdMs` van como literales (en el `.server.ts` son parámetros enlazados de Drizzle), y el SELECT
- * exterior lleva un `WHERE` que lo limita a la pregunta y a las sesiones de este fixture (la D1 local
- * puede tener eventos de otras pruebas). La función real no es alcanzable por HTTP (spec §52), por eso
- * se verifica así. Si la consulta real cambia, esta copia debe cambiar con ella.
+ * empates de `received_at` dentro de un mismo batch), más lo que añadió la revisión de rama completa
+ * (Task 16): CTE `resets` (el `ANSWER_CHANGED` de `profile` invalida implícitamente muestras y
+ * respuestas anteriores de las demás preguntas), `answered` con `MAX(id)` comparado contra ese reinicio,
+ * la exclusión `NOT EXISTS` de un snapshot guardado vigente en la rama STARTED/IN_PROGRESS, y el filtro
+ * de versión (`sessionInVersions`: `v.session_id IN (SELECT id FROM diagnostic_session WHERE ...)`).
+ * Diferencias deliberadas, y solo estas: `now`, `thresholdMs`, `'profile'` y la versión van como
+ * literales (en el `.server.ts` son parámetros enlazados de Drizzle), y el `WHERE` exterior además lo
+ * limita a la pregunta y a las sesiones de este fixture (la D1 local puede tener eventos de otras
+ * pruebas). La función real no es alcanzable por HTTP (spec §52), por eso se verifica así. Si la
+ * consulta real cambia, esta copia debe cambiar con ella.
  */
-function dropoffSql(questionId, sessionIds, nowMs, thresholdMs = ANALYTICS_ABANDONMENT_THRESHOLD_MS) {
+function dropoffSql(questionId, sessionIds, nowMs, { thresholdMs = ANALYTICS_ABANDONMENT_THRESHOLD_MS, questionBankVersion } = {}) {
   return `
     WITH shown AS (
       SELECT session_id, question_id, MAX(id) AS last_shown_id
@@ -181,15 +186,23 @@ function dropoffSql(questionId, sessionIds, nowMs, thresholdMs = ANALYTICS_ABAND
       FROM diagnostic_event WHERE event_type = 'QUESTION_INVALIDATED' AND question_id IS NOT NULL
       GROUP BY session_id, question_id
     ),
+    resets AS (
+      SELECT session_id, MAX(id) AS last_reset_id
+      FROM diagnostic_event WHERE event_type = 'ANSWER_CHANGED' AND question_id = 'profile'
+      GROUP BY session_id
+    ),
     answered AS (
-      SELECT DISTINCT session_id, question_id
+      SELECT session_id, question_id, MAX(id) AS last_answered_id
       FROM diagnostic_event WHERE event_type = 'ANSWER_SUBMITTED' AND question_id IS NOT NULL
+      GROUP BY session_id, question_id
     ),
     valid AS (
-      SELECT s.session_id, s.question_id
+      SELECT s.session_id, s.question_id, r.last_reset_id
       FROM shown s
       LEFT JOIN invalidated i ON i.session_id = s.session_id AND i.question_id = s.question_id
-      WHERE i.last_invalidated_id IS NULL OR i.last_invalidated_id < s.last_shown_id
+      LEFT JOIN resets r ON r.session_id = s.session_id AND s.question_id <> 'profile'
+      WHERE (i.last_invalidated_id IS NULL OR i.last_invalidated_id < s.last_shown_id)
+        AND (r.last_reset_id IS NULL OR r.last_reset_id < s.last_shown_id)
     )
     SELECT
       v.question_id AS question_id,
@@ -197,22 +210,59 @@ function dropoffSql(questionId, sessionIds, nowMs, thresholdMs = ANALYTICS_ABAND
       SUM(CASE
         WHEN a.session_id IS NOT NULL THEN 0
         WHEN ds.status = 'COMPLETED' THEN 0
-        WHEN ds.status IN ('STARTED','IN_PROGRESS') AND (${nowMs} - ds.last_activity_at) >= ${thresholdMs} THEN 1
+        WHEN ds.status IN ('STARTED','IN_PROGRESS') AND (${nowMs} - ds.last_activity_at) >= ${thresholdMs}
+          AND NOT EXISTS (SELECT 1 FROM diagnostic_saved_snapshot live WHERE live.session_id = ds.id AND live.expires_at >= ${nowMs}) THEN 1
         WHEN ds.status = 'SAVED' AND EXISTS (SELECT 1 FROM diagnostic_saved_snapshot sn WHERE sn.session_id = ds.id AND sn.expires_at < ${nowMs}) THEN 1
         ELSE 0
       END) AS dropped_off
     FROM valid v
     JOIN diagnostic_session ds ON ds.id = v.session_id
     LEFT JOIN answered a ON a.session_id = v.session_id AND a.question_id = v.question_id
-    WHERE v.question_id = '${questionId}' AND v.session_id IN (${sqlList(sessionIds)})
+      AND (v.last_reset_id IS NULL OR a.last_answered_id > v.last_reset_id)
+    WHERE ${versionScopeSql("v.session_id", questionBankVersion)}
+      AND v.question_id = '${questionId}' AND v.session_id IN (${sqlList(sessionIds)})
     GROUP BY v.question_id;
   `;
 }
 
+/**
+ * Réplica de `sessionInVersions` (mismo `.server.ts`): sin versión, `1 = 1` (consulta idéntica a la de
+ * antes del filtro); con versión, subconsulta sobre `diagnostic_session` sin alias. Solo se ejercita
+ * `question_bank_version`, la misma dimensión que la mutación F; las otras cuatro reutilizan la misma
+ * `versionWhere` en el `.server.ts`.
+ */
+const versionScopeSql = (sessionIdColumn, questionBankVersion) =>
+  questionBankVersion === undefined ? "1 = 1" : `${sessionIdColumn} IN (SELECT id FROM diagnostic_session WHERE question_bank_version = ${questionBankVersion})`;
+
 /** Sin fila = la pregunta no entró al denominador para esas sesiones (0/0), nunca "desconocido". */
-async function dropoff(questionId, sessionIds, nowMs) {
-  const [row] = await d1(dropoffSql(questionId, sessionIds, nowMs));
+async function dropoff(questionId, sessionIds, nowMs, options = {}) {
+  const [row] = await d1(dropoffSql(questionId, sessionIds, nowMs, options));
   return { shownAndValid: Number(row?.shown_and_valid ?? 0), droppedOff: Number(row?.dropped_off ?? 0) };
+}
+
+/**
+ * Copia literal de la consulta de buckets de `resultDistribution().overallScoreBuckets`, con el filtro
+ * de versión que antes ignoraba (hallazgo I2 de la revisión de rama completa), limitada a las sesiones
+ * del fixture. Devuelve el total de filas contadas en todos los buckets.
+ */
+async function overallScoreBucketTotal(sessionIds, questionBankVersion) {
+  const rows = await d1(`
+    SELECT
+      CASE
+        WHEN overall_score IS NULL THEN 'withheld'
+        WHEN overall_score < 25 THEN '0-24'
+        WHEN overall_score < 50 THEN '25-49'
+        WHEN overall_score < 75 THEN '50-74'
+        ELSE '75-100'
+      END AS bucket,
+      COUNT(*) AS count
+    FROM diagnostic_result dr
+    JOIN diagnostic_session ds ON ds.id = dr.session_id
+    WHERE ${versionScopeSql("dr.session_id", questionBankVersion)}
+      AND dr.session_id IN (${sqlList(sessionIds)})
+    GROUP BY bucket;
+  `);
+  return rows.reduce((total, row) => total + Number(row.count), 0);
 }
 
 /** Copia literal de `answerChangeRateByQuestion` (mismo archivo), con el mismo tipo de filtro de fixture. */
@@ -231,14 +281,15 @@ async function changeRate(questionId, sessionIds) {
       COALESCE(SUM(c.change_count), 0) AS total_change_events
     FROM answered a
     LEFT JOIN changes c ON c.session_id = a.session_id AND c.question_id = a.question_id
-    WHERE a.question_id = '${questionId}' AND a.session_id IN (${sqlList(sessionIds)})
+    WHERE ${versionScopeSql("a.session_id", undefined)}
+      AND a.question_id = '${questionId}' AND a.session_id IN (${sqlList(sessionIds)})
     GROUP BY a.question_id;
   `);
   return { sessionsAnswered: Number(row?.sessions_answered ?? 0), sessionsChanged: Number(row?.sessions_changed ?? 0), totalChangeEvents: Number(row?.total_change_events ?? 0) };
 }
 
 /** Copia literal de `rateByAnswerKind` (base de `unknownRateByQuestion`/`naRateByQuestion`), filtrada al fixture. */
-async function answerKindRate(kind, questionId, sessionIds) {
+async function answerKindRate(kind, questionId, sessionIds, questionBankVersion) {
   const [row] = await d1(`
     SELECT
       question_id,
@@ -246,6 +297,7 @@ async function answerKindRate(kind, questionId, sessionIds) {
       SUM(CASE WHEN answer_kind = '${kind}' THEN 1 ELSE 0 END) AS matching
     FROM diagnostic_event
     WHERE event_type = 'ANSWER_SUBMITTED' AND question_id IS NOT NULL
+      AND ${versionScopeSql("diagnostic_event.session_id", questionBankVersion)}
       AND question_id = '${questionId}' AND session_id IN (${sqlList(sessionIds)})
     GROUP BY question_id;
   `);
@@ -258,14 +310,18 @@ async function answerKindRate(kind, questionId, sessionIds) {
  * runtime de Workers ni por HTTP (spec §52). Lo que estos checks prueban es la LÓGICA de clasificación
  * sobre estado real persistido por los endpoints (status SAVED, `expires_at` del snapshot); no prueban
  * que el `.server.ts` compile a esta misma SQL. Abandonada ⟺ STARTED/IN_PROGRESS con
- * `last_activity_at <= now - umbral`; `expired_saved` ⟺ SAVED con snapshot cuyo `expires_at < now`.
+ * `last_activity_at <= now - umbral` y SIN snapshot guardado vigente (`expires_at >= now`,
+ * `hasLiveSavedSnapshot`, hallazgo I3 de la revisión de rama completa); `expired_saved` ⟺ SAVED con
+ * snapshot cuyo `expires_at < now`.
  */
 async function lifecycleCounts(sessionIds, nowMs) {
   const cutoff = nowMs - ANALYTICS_ABANDONMENT_THRESHOLD_MS;
   const ids = sqlList(sessionIds);
   const [row] = await d1(`
     SELECT
-      (SELECT count(*) FROM diagnostic_session WHERE status in ('STARTED','IN_PROGRESS') AND last_activity_at <= ${cutoff} AND id IN (${ids})) AS analytically_abandoned,
+      (SELECT count(*) FROM diagnostic_session WHERE status in ('STARTED','IN_PROGRESS') AND last_activity_at <= ${cutoff}
+        AND NOT EXISTS (SELECT 1 FROM diagnostic_saved_snapshot WHERE diagnostic_saved_snapshot.session_id = diagnostic_session.id AND diagnostic_saved_snapshot.expires_at >= ${nowMs})
+        AND id IN (${ids})) AS analytically_abandoned,
       (SELECT count(*) FROM diagnostic_session INNER JOIN diagnostic_saved_snapshot ON diagnostic_saved_snapshot.session_id = diagnostic_session.id
         WHERE diagnostic_session.status = 'SAVED' AND diagnostic_saved_snapshot.expires_at < ${nowMs} AND diagnostic_session.id IN (${ids})) AS expired_saved;
   `);
@@ -493,6 +549,40 @@ try {
   const boundaryInside = await createSession(); // inactiva umbral − 1 ms. NO.
   await seed(boundaryInside, [shownEvent("goal")]);
 
+  // Revisión de rama completa (Task 16), hallazgo I4b: cambiar de perfil borra TODAS las demás
+  // respuestas (`applyAnswer`) y el único rastro es el ANSWER_CHANGED de 'profile'.
+  const caseResetStale = await createSession(); // responde goal y stage, cambia de perfil, goal se muestra de nuevo y abandona sin re-responder.
+  await seed(caseResetStale, [shownEvent("profile"), submittedEvent("profile"), shownEvent("goal"), submittedEvent("goal"), shownEvent("stage"), submittedEvent("stage"), shownEvent("profile"), changedEvent("profile"), shownEvent("goal")]);
+  const caseResetReanswered = await createSession(); // control: tras el reinicio vuelve a responder goal.
+  await seed(caseResetReanswered, [shownEvent("goal"), submittedEvent("goal"), shownEvent("profile"), changedEvent("profile"), shownEvent("goal"), submittedEvent("goal")]);
+  const caseBackNav = await createSession(); // responde goal, avanza a stage, vuelve ATRÁS a goal (nuevo QUESTION_SHOWN, respuesta intacta) y abandona.
+  await seed(caseBackNav, [shownEvent("goal"), submittedEvent("goal"), shownEvent("stage"), shownEvent("goal")]);
+
+  // Hallazgo I3: guarda ("Guardar para después"), sigue respondiendo en la MISMA pestaña (el PATCH de
+  // snapshot devuelve la sesión a IN_PROGRESS, comportamiento publicado) y se va. El snapshot guardado
+  // sigue en D1; lo que decide es si sigue vigente.
+  const caseSavedContinuedLive = await createSession(); // snapshot vigente (30 días) → NO abandono, NO dropoff.
+  await seed(caseSavedContinuedLive, [shownEvent("goal")]);
+  const caseSavedContinuedBoundary = await createSession(); // expires_at === now → todavía vigente → NO.
+  await seed(caseSavedContinuedBoundary, [shownEvent("goal")]);
+  const caseSavedContinuedExpired = await createSession(); // control: snapshot vencido → SÍ abandono y SÍ dropoff.
+  await seed(caseSavedContinuedExpired, [shownEvent("goal")]);
+  const savedThenContinued = [caseSavedContinuedLive, caseSavedContinuedBoundary, caseSavedContinuedExpired];
+  for (const session of savedThenContinued) {
+    const saved = await saveSession(session.sessionId, session.writeToken, { profile: "business", stage: "growing" });
+    harness(saved.status === 200, `SAVE de un fixture I3 devolvió ${saved.status}`);
+    const continued = await fetch(new URL(sessionPath(session.sessionId), baseUrl), { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ writeToken: session.writeToken, answers: { profile: "business", stage: "growing", team: "only_me" }, currentQuestionId: null, questionsSeen: 3, questionsAnswered: 3 }) });
+    kvWrittenSessionIds.push(session.sessionId);
+    harness(continued.status === 200, `PATCH posterior al SAVE de un fixture I3 devolvió ${continued.status}`);
+  }
+
+  // Hallazgo I2: segmentación por versión en las consultas de SQL crudo. Dos sesiones idénticas; una
+  // pasa a question_bank_version 999 (mismo patrón que la mutación F).
+  const versionDropCurrent = await createSession();
+  await seed(versionDropCurrent, [shownEvent("goal"), shownEvent("stage"), submittedEvent("stage", "unknown")]);
+  const versionDropOther = await createSession();
+  await seed(versionDropOther, [shownEvent("goal"), shownEvent("stage"), submittedEvent("stage", "unknown")]);
+
   const firstSave = await saveSession(caseSavedLive.sessionId, caseSavedLive.writeToken, { profile: "business", stage: "growing" });
   const retrySave = await saveSession(caseSavedLive.sessionId, caseSavedLive.writeToken, { profile: "business", stage: "growing" });
   harness(firstSave.status === 200 && retrySave.status === 200 && (await jsonOf(retrySave))?.status === "already_saved", "los dos SAVE de la sesión SAVED vigente debían ser saved + already_saved");
@@ -503,21 +593,35 @@ try {
 
   const nowMs = Date.now();
   const twoHoursAgo = nowMs - 2 * ANALYTICS_ABANDONMENT_THRESHOLD_MS;
-  const inactiveIds = [caseA, caseB, caseC, tieInvalidatedLast, tieReshown, caseSavedLive, caseSavedExpired, caseCompleted, caseUnknown, caseNotApplicable].map((session) => session.sessionId);
+  const inactiveIds = [
+    caseA, caseB, caseC, tieInvalidatedLast, tieReshown, caseSavedLive, caseSavedExpired, caseCompleted, caseUnknown, caseNotApplicable,
+    caseResetStale, caseResetReanswered, caseBackNav, ...savedThenContinued, versionDropCurrent, versionDropOther,
+  ].map((session) => session.sessionId);
   await d1(`
     UPDATE diagnostic_session SET last_activity_at = ${twoHoursAgo} WHERE id IN (${sqlList(inactiveIds)});
     UPDATE diagnostic_session SET last_activity_at = ${nowMs - 60_000} WHERE id = '${caseActive.sessionId}';
     UPDATE diagnostic_session SET last_activity_at = ${nowMs - ANALYTICS_ABANDONMENT_THRESHOLD_MS} WHERE id = '${boundaryExact.sessionId}';
     UPDATE diagnostic_session SET last_activity_at = ${nowMs - ANALYTICS_ABANDONMENT_THRESHOLD_MS + 1} WHERE id = '${boundaryInside.sessionId}';
     UPDATE diagnostic_saved_snapshot SET expires_at = ${nowMs - 1000} WHERE session_id = '${caseSavedExpired.sessionId}';
+    UPDATE diagnostic_saved_snapshot SET expires_at = ${nowMs} WHERE session_id = '${caseSavedContinuedBoundary.sessionId}';
+    UPDATE diagnostic_saved_snapshot SET expires_at = ${nowMs - 1000} WHERE session_id = '${caseSavedContinuedExpired.sessionId}';
+    UPDATE diagnostic_session SET question_bank_version = 999 WHERE id = '${versionDropOther.sessionId}';
   `);
 
   // Precondición: cada fixture está en el status que su caso declara (si no, el caso no prueba nada).
-  const dropoffFixtureSessions = [caseA, caseB, caseC, tieInvalidatedLast, tieReshown, caseSavedLive, caseSavedExpired, caseActive, caseCompleted, caseUnknown, caseNotApplicable, boundaryExact, boundaryInside];
+  const dropoffFixtureSessions = [
+    caseA, caseB, caseC, tieInvalidatedLast, tieReshown, caseSavedLive, caseSavedExpired, caseActive, caseCompleted, caseUnknown, caseNotApplicable, boundaryExact, boundaryInside,
+    caseResetStale, caseResetReanswered, caseBackNav, ...savedThenContinued, versionDropCurrent, versionDropOther,
+  ];
   const statusRows = await d1(`SELECT id, status FROM diagnostic_session WHERE id IN (${sqlList(dropoffFixtureSessions.map((session) => session.sessionId))});`);
   const statusOf = new Map(statusRows.map((row) => [row.id, row.status]));
-  const expectedStatus = (session) => (session === caseSavedLive || session === caseSavedExpired ? "SAVED" : session === caseCompleted ? "COMPLETED" : "STARTED");
+  const expectedStatus = (session) =>
+    session === caseSavedLive || session === caseSavedExpired ? "SAVED" : session === caseCompleted ? "COMPLETED" : savedThenContinued.includes(session) ? "IN_PROGRESS" : "STARTED";
   for (const session of dropoffFixtureSessions) harness(statusOf.get(session.sessionId) === expectedStatus(session), `fixture ${session.sessionId} en status ${statusOf.get(session.sessionId)}, se esperaba ${expectedStatus(session)}`);
+  // Precondición I3: los tres conservan su fila de snapshot guardado tras el PATCH, con el vencimiento pedido.
+  const continuedSnapshots = new Map((await d1(`SELECT session_id, expires_at FROM diagnostic_saved_snapshot WHERE session_id IN (${sqlList(savedThenContinued.map((session) => session.sessionId))});`)).map((row) => [row.session_id, row.expires_at]));
+  harness(continuedSnapshots.get(caseSavedContinuedLive.sessionId) > nowMs, "el fixture I3 vigente debía conservar un snapshot guardado con expires_at futuro tras el PATCH");
+  harness(continuedSnapshots.get(caseSavedContinuedBoundary.sessionId) === nowMs && continuedSnapshots.get(caseSavedContinuedExpired.sessionId) === nowMs - 1000, "los fixtures I3 de boundary/vencido debían quedar con expires_at = now y now − 1 s");
 
   // Caso A / B y su agregado (el ejemplo del spec §54).
   const dropoffA = await dropoff("goal", [caseA.sessionId], nowMs);
@@ -572,6 +676,48 @@ try {
   const savedLifecycle = await lifecycleCounts([caseSavedLive.sessionId, caseSavedExpired.sessionId], nowMs);
   check(savedLifecycle.analyticallyAbandoned === 0, "réplica SQL de lifecycle() (no ejecuta la función real) / mutación E: con el status SAVED que dejó el endpoint real, ninguna sesión SAVED (vigente o vencida) cae en abandonada");
   check(savedLifecycle.expiredSaved === 1, "réplica SQL de lifecycle() (no ejecuta la función real): solo la SAVED cuyo snapshot real se venció cae en expired_saved; la vigente (expires_at futuro puesto por SAVE) no");
+
+  // Hallazgo I3: guardó y siguió respondiendo en la misma pestaña (IN_PROGRESS) con snapshot vigente.
+  const dropoffContinuedLive = await dropoff("goal", [caseSavedContinuedLive.sessionId], nowMs);
+  check(dropoffContinuedLive.shownAndValid === 1 && dropoffContinuedLive.droppedOff === 0, "I3 (copia literal de dropoffByQuestion): SAVE → PATCH (IN_PROGRESS) con snapshot guardado vigente, inactiva 2 h → NO dropoff");
+  const dropoffContinuedBoundary = await dropoff("goal", [caseSavedContinuedBoundary.sessionId], nowMs);
+  check(dropoffContinuedBoundary.shownAndValid === 1 && dropoffContinuedBoundary.droppedOff === 0, "I3 (copia literal de dropoffByQuestion): snapshot con expires_at === now sigue vigente → NO dropoff");
+  const dropoffContinuedExpired = await dropoff("goal", [caseSavedContinuedExpired.sessionId], nowMs);
+  check(dropoffContinuedExpired.shownAndValid === 1 && dropoffContinuedExpired.droppedOff === 1, "control de I3 (copia literal de dropoffByQuestion): mismo recorrido con el snapshot ya vencido → SÍ dropoff");
+  const continuedLiveLifecycle = await lifecycleCounts([caseSavedContinuedLive.sessionId, caseSavedContinuedBoundary.sessionId], nowMs);
+  check(continuedLiveLifecycle.analyticallyAbandoned === 0, "I3, réplica SQL de lifecycle() (no ejecuta la función real): IN_PROGRESS inactivas 2 h con snapshot vigente (incluido expires_at === now) → 0 abandonadas");
+  const continuedExpiredLifecycle = await lifecycleCounts([caseSavedContinuedExpired.sessionId], nowMs);
+  check(continuedExpiredLifecycle.analyticallyAbandoned === 1 && continuedExpiredLifecycle.expiredSaved === 0, "control de I3, réplica SQL de lifecycle() (no ejecuta la función real): con el snapshot vencido sí es abandonada, y no cae además en expired_saved (exige status SAVED): sin doble conteo");
+
+  // Hallazgo I4b: el ANSWER_CHANGED de 'profile' invalida muestras y respuestas anteriores.
+  const dropoffResetGoal = await dropoff("goal", [caseResetStale.sessionId], nowMs);
+  check(dropoffResetGoal.shownAndValid === 1 && dropoffResetGoal.droppedOff === 1, "I4b (copia literal de dropoffByQuestion): goal respondida ANTES del cambio de perfil, mostrada otra vez después y abandonada → la respuesta vieja no cuenta: SÍ dropoff");
+  const dropoffResetStage = await dropoff("stage", [caseResetStale.sessionId], nowMs);
+  check(dropoffResetStage.shownAndValid === 0 && dropoffResetStage.droppedOff === 0, "I4b (copia literal de dropoffByQuestion): stage mostrada solo antes del cambio de perfil → fuera del denominador");
+  const dropoffResetProfile = await dropoff("profile", [caseResetStale.sessionId], nowMs);
+  check(dropoffResetProfile.shownAndValid === 1 && dropoffResetProfile.droppedOff === 0, "I4b (copia literal de dropoffByQuestion): el propio 'profile' no se invalida con su cambio → válido y respondido, NO dropoff");
+  const dropoffResetReanswered = await dropoff("goal", [caseResetReanswered.sessionId], nowMs);
+  check(dropoffResetReanswered.shownAndValid === 1 && dropoffResetReanswered.droppedOff === 0, "control de I4b (copia literal de dropoffByQuestion): goal re-respondida tras el cambio de perfil → NO dropoff");
+  const dropoffBackNav = await dropoff("goal", [caseBackNav.sessionId], nowMs);
+  check(dropoffBackNav.shownAndValid === 1 && dropoffBackNav.droppedOff === 0, "I4b (copia literal de dropoffByQuestion): volver ATRÁS a una pregunta ya respondida (nuevo QUESTION_SHOWN sin re-responder) y abandonar → NO dropoff");
+
+  // Hallazgo I2: segmentación por versión de las consultas de SQL crudo (patrón de la mutación F).
+  const versionDropScope = [versionDropCurrent.sessionId, versionDropOther.sessionId];
+  const dropoffAllVersions = await dropoff("goal", versionDropScope, nowMs);
+  check(dropoffAllVersions.shownAndValid === 2 && dropoffAllVersions.droppedOff === 2, "I2 control (copia literal de dropoffByQuestion): sin filtro de versión, las 2 sesiones (versión vigente y 999) mezclan su dropoff de 'goal': 2/2");
+  const dropoffCurrentVersion = await dropoff("goal", versionDropScope, nowMs, { questionBankVersion: currentQuestionBankVersion });
+  const dropoffOtherOnlyCurrentFilter = await dropoff("goal", [versionDropOther.sessionId], nowMs, { questionBankVersion: currentQuestionBankVersion });
+  check(dropoffCurrentVersion.shownAndValid === 1 && dropoffCurrentVersion.droppedOff === 1 && dropoffOtherOnlyCurrentFilter.shownAndValid === 0, "I2 (copia literal de dropoffByQuestion): filtrando por el question_bank_version vigente solo queda la sesión vigente (1/1); la de versión 999 no aporta nada");
+  const dropoffOtherVersion = await dropoff("goal", versionDropScope, nowMs, { questionBankVersion: 999 });
+  check(dropoffOtherVersion.shownAndValid === 1 && dropoffOtherVersion.droppedOff === 1, "I2 (copia literal de dropoffByQuestion): filtrando por question_bank_version 999 solo queda la sesión 999 (1/1)");
+  const unknownAllVersions = await answerKindRate("unknown", "stage", versionDropScope);
+  const unknownCurrentVersion = await answerKindRate("unknown", "stage", versionDropScope, currentQuestionBankVersion);
+  check(unknownAllVersions.interactions === 2 && unknownCurrentVersion.interactions === 1 && unknownCurrentVersion.matching === 1, "I2 (copia literal de rateByAnswerKind): unknown rate('stage') sin filtro mezcla 2 sesiones; con la versión vigente, 1 interacción y 1 'No sé'");
+  const bucketScope = [resilientSession.sessionId, versionSession.sessionId];
+  const bucketsAll = await overallScoreBucketTotal(bucketScope, undefined);
+  const bucketsCurrent = await overallScoreBucketTotal(bucketScope, currentQuestionBankVersion);
+  const bucketsOther = await overallScoreBucketTotal(bucketScope, 999);
+  check(bucketsAll === 2 && bucketsCurrent === 1 && bucketsOther === 1, "I2 (copia literal de overallScoreBuckets): 2 resultados completados sin filtro; el filtro de versión que antes se ignoraba deja 1 por versión (vigente / 999)");
 
   // --- 13. Save/resume counters (spec §5/§33-§35) -----------------------------------------------------
   const [freshCounters] = await d1(`SELECT save_count, resume_count, last_saved_at, last_resumed_at FROM diagnostic_session WHERE id = '${created.sessionId}';`);
