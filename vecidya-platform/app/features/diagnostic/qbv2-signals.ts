@@ -2,6 +2,7 @@ import type {
   CustomerBuyer,
   CustomerReach,
   EntityType,
+  NicheGroup,
   NicheId,
   PrimaryFriction,
   PrimaryGoal,
@@ -34,6 +35,7 @@ export type SignalProduction =
   | { readonly kind: "deliveryMode"; readonly slot: "primary" | "secondary"; readonly value: DeliveryMode; readonly provenance: SignalProvenance }
   | { readonly kind: "niche"; readonly value: NicheId; readonly provenance: SignalProvenance }
   | { readonly kind: "nicheGroupOther"; readonly value: boolean; readonly provenance: SignalProvenance }
+  | { readonly kind: "nicheGroup"; readonly value: NicheGroup; readonly provenance: SignalProvenance }
   | { readonly kind: "customerReach"; readonly value: CustomerReach; readonly provenance: SignalProvenance }
   | { readonly kind: "customerBuyer"; readonly value: CustomerBuyer; readonly provenance: SignalProvenance }
   | { readonly kind: "hasRealCustomers"; readonly value: boolean; readonly provenance: SignalProvenance }
@@ -53,6 +55,7 @@ export const SIGNAL_PRODUCTION_KINDS = [
   "deliveryMode",
   "niche",
   "nicheGroupOther",
+  "nicheGroup",
   "customerReach",
   "customerBuyer",
   "hasRealCustomers",
@@ -78,6 +81,7 @@ export const SIGNAL_PRODUCTION_CONTEXT_FIELD: Readonly<Record<(typeof SIGNAL_PRO
   deliveryMode: "archetype",
   niche: "niche",
   nicheGroupOther: "nicheGroup",
+  nicheGroup: "nicheGroup",
   customerReach: "customerReach",
   customerBuyer: "customerBuyer",
   hasRealCustomers: "growthStage",
@@ -117,6 +121,7 @@ const PRODUCTION_TO_FIELD: Partial<Record<SignalProduction["kind"], ScalarSignal
   hasOtherPaidStaff: "hasOtherPaidStaff",
   niche: "declaredNicheId",
   nicheGroupOther: "declaredNicheGroupOther",
+  nicheGroup: "declaredNicheGroup",
   customerReach: "customerReach",
   customerBuyer: "buyerType",
   hasRealCustomers: "hasRealCustomers",

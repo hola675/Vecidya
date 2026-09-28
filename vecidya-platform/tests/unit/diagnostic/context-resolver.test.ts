@@ -162,6 +162,37 @@ test("caso 22: declaración explícita de \"otro\" — nicheGroup resuelto other
   assert.deepEqual(result.context.nicheGroup, { status: "resolved", value: "other", source: "signal" });
 });
 
+// ── DIAG-V3-08B.3 (regla sector-first): NicheGroup declarado directamente ──
+
+test("caso 24 (sector-first): NicheGroup se resuelve por declaración directa de sector sin ningún NicheId — NicheId queda unresolved, no es un estado degradado", () => {
+  const result = resolve({ declaredNicheGroup: { value: "health_wellness", provenance: "explicit_declaration" } });
+  assert.deepEqual(result.context.nicheGroup, { status: "resolved", value: "health_wellness", source: "signal" });
+  assert.equal(result.context.niche.status, "unresolved");
+});
+
+test("caso 25 (sector-first): un NicheId conocido en catálogo tiene prioridad sobre una declaración directa de sector distinta (el lookup específico gana)", () => {
+  const nicheId = toNicheId("dentist")!;
+  const result = resolve({
+    declaredNicheId: { value: nicheId, provenance: "explicit_declaration" },
+    declaredNicheGroup: { value: "b2b_services", provenance: "explicit_declaration" },
+  });
+  assert.deepEqual(result.context.nicheGroup, { status: "resolved", value: "health_wellness", source: "signal" });
+});
+
+test("caso 26 (sector-first): sin señal de sector directo ni NicheId, NicheGroup sigue unresolved not_asked", () => {
+  const result = resolve({});
+  assert.equal(result.context.nicheGroup.status, "unresolved");
+  assert.equal((result.context.nicheGroup as { reason?: string }).reason, "not_asked");
+});
+
+test("mutación K (sector-first): declaredNicheGroupOther sigue ganando sobre una declaración de sector directa si ambas están presentes (contradicción declarada explícitamente, other es más fuerte que un sector sin refinar)", () => {
+  const result = resolve({
+    declaredNicheGroupOther: { value: true, provenance: "explicit_declaration" },
+    declaredNicheGroup: { value: "retail", provenance: "explicit_declaration" },
+  });
+  assert.deepEqual(result.context.nicheGroup, { status: "resolved", value: "other", source: "signal" });
+});
+
 test("caso 23: reach local con archetype ecommerce — ejes independientes, sin forzar consistencia", () => {
   const result = resolve({ deliveryMode: { value: "online_checkout", provenance: "observed_fact" }, customerReach: { value: "local", provenance: "explicit_declaration" } });
   assert.deepEqual(result.context.archetype, { status: "resolved", value: "ecommerce", source: "signal" });

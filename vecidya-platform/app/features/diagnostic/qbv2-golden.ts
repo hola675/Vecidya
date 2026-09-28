@@ -1,6 +1,5 @@
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
 import { contextEquals, eqV2 } from "./qbv2-rules";
-import { registerQuestionBankV2 } from "./qbv2-engine";
 
 /**
  * Banco semilla ("golden questions", §40-41 de DIAG-V3-08B.2): 14 preguntas, NO el banco de 100-150 de
@@ -262,5 +261,3 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
 ] as const;
 
 export type QuestionIdV2 = (typeof GOLDEN_QUESTIONS_V2)[number]["id"];
-
-registerQuestionBankV2(GOLDEN_QUESTIONS_V2);

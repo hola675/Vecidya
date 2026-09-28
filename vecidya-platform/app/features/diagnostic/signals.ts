@@ -1,4 +1,4 @@
-import type { BusinessModel, CustomerBuyer, CustomerReach, EntityType, NicheId, OperationalArchetype, PrimaryFriction, PrimaryGoal } from "./contracts";
+import type { BusinessModel, CustomerBuyer, CustomerReach, EntityType, NicheGroup, NicheId, OperationalArchetype, PrimaryFriction, PrimaryGoal } from "./contracts";
 
 /**
  * Señales de dominio de DIAG-V3-08B.1 (Context Resolver).
@@ -171,6 +171,14 @@ export type DiagnosticSignalsV3 = {
   declaredNicheId?: Signal<NicheId>;
   /** Declaración explícita de que el nicho no encaja en ningún grupo conocido (§18: único camino válido a `NicheGroup: "other"`). */
   declaredNicheGroupOther?: Signal<boolean>;
+  /**
+   * Sector amplio declarado directamente (DIAG-V3-08B.3, regla "sector-first": el cuestionario nunca
+   * debe forzar a elegir un `NicheId` específico de catálogo para resolver `NicheGroup`). Más débil que
+   * un `NicheId` conocido resuelto por catálogo (`resolveNicheGroup` en `context-resolver.ts` le da
+   * prioridad a ese lookup cuando ambos existen), pero suficiente por sí solo para resolver `NicheGroup`
+   * sin que `NicheId` deje de estar `unresolved` — eso es válido y esperado, no un estado degradado.
+   */
+  declaredNicheGroup?: Signal<NicheGroup>;
 
   customerReach?: Signal<CustomerReach>;
   buyerType?: Signal<CustomerBuyer>;

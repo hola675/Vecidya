@@ -161,15 +161,30 @@ function resolveNiche(signals: DiagnosticSignalsV3): { resolution: Resolution<Ni
   return { resolution: resolved(declared.value, "signal"), trace: resolvedTrace("niche", declared.value, ["declaredNicheId"], "nicho declarado") };
 }
 
+/**
+ * Prioridad de evidencia (DIAG-V3-08B.3, regla "sector-first"): (1) un `NicheId` conocido resuelto por
+ * catálogo es la evidencia más específica y gana siempre que exista; (2) `declaredNicheGroupOther` es
+ * una declaración explícita de que ningún grupo conocido aplica; (3) `declaredNicheGroup` resuelve el
+ * sector directamente cuando el cuestionario preguntó la categoría amplia sin forzar un `NicheId`
+ * específico — `NicheId` puede quedar legítimamente `unresolved` en ese caso (§8-9 del checkpoint de
+ * contenido: no es un estado degradado). Antes de esta fase, un `NicheId` conocido podía quedar
+ * enmascarado por `declaredNicheGroupOther` si ambos estaban presentes; ahora el lookup por catálogo,
+ * al ser más específico, tiene prioridad real.
+ */
 function resolveNicheGroup(nicheResolution: Resolution<NicheId>, signals: DiagnosticSignalsV3): { resolution: Resolution<NicheGroup>; trace: FieldTrace } {
+  if (isResolved(nicheResolution)) {
+    // FACT registry (DIAG-V3-08B.0 §18): un nicho conocido mapea a su grupo. Nunca se adivina "other".
+    const group = lookupNicheGroup(nicheResolution.value);
+    if (group) return { resolution: resolved(group, "signal"), trace: resolvedTrace("nicheGroup", group, ["declaredNicheId"], "nicho conocido en el catálogo (FACT registry, taxonomy.ts)") };
+  }
   if (signals.declaredNicheGroupOther?.value === true) {
     return { resolution: resolved("other", "signal"), trace: resolvedTrace("nicheGroup", "other", ["declaredNicheGroupOther"], "declaración explícita de que el nicho no encaja en ningún grupo conocido (§18)") };
   }
-  if (!isResolved(nicheResolution)) return { resolution: unresolved("not_asked"), trace: unresolvedTrace("nicheGroup", "not_asked", [], ["declaredNicheId"]) };
-  // FACT registry (DIAG-V3-08B.0 §18): un nicho conocido mapea a su grupo. Nunca se adivina "other".
-  const group = lookupNicheGroup(nicheResolution.value);
-  if (group) return { resolution: resolved(group, "signal"), trace: resolvedTrace("nicheGroup", group, ["declaredNicheId"], "nicho conocido en el catálogo (FACT registry, taxonomy.ts)") };
-  return { resolution: unresolved("insufficient_evidence", []), trace: unresolvedTrace("nicheGroup", "insufficient_evidence", [], ["declaredNicheId (fuera de catálogo)"]) };
+  if (isMaterial(signals.declaredNicheGroup)) {
+    return { resolution: resolved(signals.declaredNicheGroup.value, "signal"), trace: resolvedTrace("nicheGroup", signals.declaredNicheGroup.value, ["declaredNicheGroup"], "sector amplio declarado directamente, sin necesidad de resolver un NicheId específico (DIAG-V3-08B.3, regla sector-first)") };
+  }
+  if (!isResolved(nicheResolution)) return { resolution: unresolved("not_asked"), trace: unresolvedTrace("nicheGroup", "not_asked", [], ["declaredNicheId", "declaredNicheGroup"]) };
+  return { resolution: unresolved("insufficient_evidence", []), trace: unresolvedTrace("nicheGroup", "insufficient_evidence", [], ["declaredNicheId (fuera de catálogo)", "declaredNicheGroup"]) };
 }
 
 // ── CustomerModel ────────────────────────────────────────────────────────────
