@@ -128,6 +128,9 @@ export default function Diagnostic() {
   // síncrono y en memoria; el flush es fire-and-forget (spec §2/§25/§30).
   const analyticsQueueRef = useRef(new AnalyticsEventQueue());
   const analyticsFlushMetaRef = useRef({ lastFlushAt: 0 });
+  // Cola de promesas de `flushAnalytics`: cada invocación se encadena detrás de la anterior para que dos
+  // flushes solapados nunca envíen batches en paralelo (ver el comentario de `flushAnalytics`).
+  const analyticsFlushChainRef = useRef<Promise<void>>(Promise.resolve());
   // Última pregunta/sección ya reportada (QUESTION_SHOWN/SECTION_ENTERED una vez por cambio real, no
   // por render ni por la doble invocación de efectos de StrictMode) y si SAVE_OFFERED ya se emitió.
   // Seguimiento propio, no `syncMetaRef.lastSectionIndex`: ese índice se actualiza solo al RESPONDER
@@ -178,38 +181,56 @@ export default function Diagnostic() {
   /**
    * DIAG-V3-08 §25/§30: envía lo pendiente si la política de la cola lo pide (o siempre, con `force`,
    * antes de completar/al ocultar la página). Nunca crea una sesión de servidor por su cuenta: sin
-   * `sessionRef` los eventos esperan en la cola al siguiente flush candidato. Sesión y eventos se leen
-   * de forma SÍNCRONA antes del primer `await`, así un reinicio/recuperación que cambia de sesión justo
-   * después nunca manda eventos de una sesión con las credenciales de otra. Un batch que falla de
-   * forma reintentable vuelve a SU cola (la capturada aquí), nunca a una cola nueva.
+   * `sessionRef` los eventos esperan en la cola al siguiente flush candidato. La sesión y la COLA se
+   * capturan de forma SÍNCRONA al llamar, antes de cualquier espera, así un reinicio/recuperación que
+   * cambia de sesión (y de cola, `resetAnalytics`) justo después nunca manda eventos de una sesión con
+   * las credenciales de otra: el trabajo encadenado vacía la cola capturada y usa la sesión capturada,
+   * nunca las vigentes cuando por fin le toca. Un batch que falla de forma reintentable vuelve a SU cola
+   * (la capturada aquí), nunca a una cola nueva.
    *
-   * Varios batches se envían EN SERIE, cada uno después de que el anterior respondió: el `id`
-   * autoincremental de `diagnostic_event` es el orden en que llegan al servidor, y `dropoffByQuestion`
-   * depende de él para saber si una pregunta se invalidó después de mostrarse o se mostró otra vez
-   * después. Enviados en paralelo, un batch posterior podía insertarse antes que uno anterior. Si un
-   * batch falla, ni él ni los siguientes se envían en esta pasada: vuelven juntos, en su orden, al frente
-   * de la cola. Quien llama nunca espera esta función (`void flushAnalytics(...)`), así que enviar en
-   * serie no retrasa ninguna acción de la persona. Límite aceptado (best-effort, spec §30): al descargar
-   * la página solo el primer batch sale con seguridad (`keepalive`); los siguientes, que esperan la
-   * respuesta del anterior, pueden perderse. Solo ocurre con más de 25 eventos pendientes (la cola se
-   * vacía a los 20), es decir, tras fallos de red acumulados.
+   * El orden importa porque el `id` autoincremental de `diagnostic_event` es el orden en que los eventos
+   * llegan al servidor, y `dropoffByQuestion` depende de él para saber si una pregunta se invalidó
+   * después de mostrarse o se mostró otra vez después (un `QUESTION_INVALIDATED` que llega antes que su
+   * `QUESTION_SHOWN` deja la pregunta "válida" y puede contarla como dropoff). Dos niveles de serie:
+   *  - DENTRO de una llamada, varios batches se envían uno tras otro, cada uno después de que el
+   *    anterior respondió. Si un batch falla, ni él ni los siguientes se envían en esta pasada: vuelven
+   *    juntos, en su orden, al frente de la cola.
+   *  - ENTRE llamadas, cada invocación se encadena en `analyticsFlushChainRef` detrás de la anterior
+   *    (un flush por tiempo compitiendo con uno forzado por `visibilitychange`/`pagehide`, o el reintento
+   *    de un batch fallido compitiendo con un flush posterior). La cola se vacía cuando le toca el turno,
+   *    no al llamar: así lo que un flush anterior devolvió con `requeue` sale antes que lo encolado
+   *    después. Un eslabón fallido nunca bloquea la cadena (`.catch` antes de guardarla).
+   * Quien llama nunca espera esta función (`void flushAnalytics(...)`, 6 puntos de llamada): la espera
+   * ocurre dentro de la cadena, nunca retrasa ninguna acción de la persona.
+   *
+   * Límite aceptado (best-effort, spec §2/§30): al descargar la página solo sale con seguridad lo que ya
+   * estaba en vuelo (`keepalive`). Un flush forzado por `pagehide`/`visibilitychange` que queda
+   * encadenado detrás de otro todavía en vuelo, o los batches de una misma llamada que esperan la
+   * respuesta del anterior, pueden perderse si la página termina de descargarse antes de que la cadena
+   * llegue a ellos.
    */
-  async function flushAnalytics(options: { force?: boolean } = {}) {
+  function flushAnalytics(options: { force?: boolean } = {}): Promise<void> {
     const queue = analyticsQueueRef.current;
-    if (queue.size() === 0) return;
-    if (!options.force && !queue.shouldFlush(Date.now() - analyticsFlushMetaRef.current.lastFlushAt)) return;
+    if (queue.size() === 0) return Promise.resolve();
+    if (!options.force && !queue.shouldFlush(Date.now() - analyticsFlushMetaRef.current.lastFlushAt)) return Promise.resolve();
     const session = sessionRef.current;
-    if (!session) return; // sin sesión de servidor todavía: se reintenta en el próximo flush candidato
-    const batches: ReturnType<AnalyticsEventQueue["drain"]>[] = [];
-    while (queue.size() > 0) batches.push(queue.drain());
+    if (!session) return Promise.resolve(); // sin sesión de servidor todavía: se reintenta en el próximo flush candidato
     analyticsFlushMetaRef.current.lastFlushAt = Date.now();
-    for (let index = 0; index < batches.length; index += 1) {
-      const outcome = await sendAnalyticsEvents(session.sessionId, session.writeToken, batches[index]);
-      if (!outcome) {
-        queue.requeue(batches.slice(index).flat());
-        return;
-      }
-    }
+    const run = analyticsFlushChainRef.current
+      .then(async () => {
+        const batches: ReturnType<AnalyticsEventQueue["drain"]>[] = [];
+        while (queue.size() > 0) batches.push(queue.drain());
+        for (let index = 0; index < batches.length; index += 1) {
+          const outcome = await sendAnalyticsEvents(session.sessionId, session.writeToken, batches[index]);
+          if (!outcome) {
+            queue.requeue(batches.slice(index).flat());
+            return;
+          }
+        }
+      })
+      .catch(() => undefined);
+    analyticsFlushChainRef.current = run;
+    return run;
   }
 
   /**
