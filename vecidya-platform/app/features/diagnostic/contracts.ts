@@ -159,7 +159,14 @@ export function assertNever(value: never, context: string): never {
 
 // ── Clasificación resuelta o pendiente ──────────────────────────────────────
 
-export type ResolutionSource = "answer" | "legacy_mapping";
+/**
+ * `signal` se añade en DIAG-V3-08B.1: el Context Resolver (`context-resolver.ts`) produce valores a
+ * partir de `DiagnosticSignalsV3` (`signals.ts`), una capa intermedia que no es directamente ni una
+ * respuesta cruda de QBV1 (`answer`) ni una traducción histórica de perfil/etapa legacy
+ * (`legacy_mapping`) — es deliberadamente independiente de cómo se preguntó, según el principio de la
+ * fase (§2: "qué significa la respuesta" no debe acoplarse a "cómo la preguntamos").
+ */
+export type ResolutionSource = "answer" | "legacy_mapping" | "signal";
 
 /**
  * - `not_asked`: todavía no hay respuesta que lo determine.
@@ -226,29 +233,17 @@ export type BusinessModel = (typeof BUSINESS_MODELS)[number];
  * diseño. `retail` se separa de `local` (DIAG-V3-08B.0): un comercio con inventario/exhibición físico
  * necesita preguntas de catálogo/inventario que un negocio local genérico (gimnasio, spa) no necesita.
  *
- * Tensión conocida, sin resolver todavía (hallazgo de revisión de dominio independiente): la mayoría de
- * estos valores describe CÓMO ocurre la transacción con el cliente (`local`, `appointments`, `retail`,
- * `ecommerce`, `hospitality`, `b2b`, `local_service`), pero `organization` y `startup` describen en
- * cambio un estado estructural/de ciclo de vida, no un mecanismo de entrega — una cocina comunitaria
- * sin fines de lucro opera día a día más parecido a `local`/`hospitality` que a una abstracción de
- * gobernanza. DIAG-V3-08B.1 (Context Resolver) deberá decidir si `organization`/`startup` siguen siendo
- * archetypes o si se derivan en su lugar de `EntityType` + `GrowthStage`; no se resuelve en 08B.0 para
- * no acoplar la taxonomía a un resolver que todavía no existe.
+ * RESUELTO en DIAG-V3-08B.1 (`DIAG-V3-08B0-ARCHETYPE-LIFECYCLE-001`): la versión de 08B.0 incluía
+ * `organization` y `startup`, pero ambos describían un estado estructural/de ciclo de vida, no un
+ * mecanismo de entrega — una cocina comunitaria sin fines de lucro opera día a día más parecido a
+ * `local`/`hospitality` que a una abstracción de gobernanza, y un "startup" no tiene todavía ningún
+ * mecanismo operativo propio que resolver (es, por definición, lo que `GrowthStage: idea/starting`
+ * ya describe). Ninguno de los dos superó la prueba de "¿qué pregunta responde este valor que las
+ * demás listas no respondan ya?": `organization` = `EntityType: organization`; `startup` = ausencia
+ * de operación establecida, ya cubierta por `GrowthStage`. Se retiran ambos. El Context Resolver
+ * (`context-resolver.ts`) nunca los produce; `EntityType.organization` sigue existiendo sin cambios.
  */
-export const OPERATIONAL_ARCHETYPES = [
-  "local",
-  "appointments",
-  "local_service",
-  "professional",
-  "ecommerce",
-  "retail",
-  "hospitality",
-  "b2b",
-  "creator",
-  "organization",
-  "startup",
-  "hybrid",
-] as const;
+export const OPERATIONAL_ARCHETYPES = ["local", "appointments", "local_service", "professional", "ecommerce", "retail", "hospitality", "b2b", "creator", "hybrid"] as const;
 export type OperationalArchetype = (typeof OPERATIONAL_ARCHETYPES)[number];
 
 /**
@@ -408,6 +403,14 @@ export type DiagnosticContextV3 = {
   businessModel: Resolution<BusinessModel>;
   archetype: Resolution<OperationalArchetype>;
   niche: Resolution<NicheId>;
+  /**
+   * Añadido en DIAG-V3-08B.1: familia cerrada del nicho (`NicheGroup`), separada de `niche` (el
+   * `NicheId` abierto) porque el routing/analítica necesita la familia incluso cuando el nicho
+   * específico no está en catálogo. Solo se resuelve por FACT (nicho conocido en `NICHE_REGISTRY`) o
+   * por declaración explícita de "otro"; nunca se infiere `other` por defecto (`DIAG-V3-08B.0` §18/§40
+   * mutación E, `DIAG-V3-08B.1` §18).
+   */
+  nicheGroup: Resolution<NicheGroup>;
   growthStage: Resolution<GrowthStage>;
   customerModel: CustomerModel;
   primaryGoal: Resolution<PrimaryGoal>;
@@ -415,7 +418,7 @@ export type DiagnosticContextV3 = {
   answers: Answers;
 };
 
-export type DiagnosticFingerprint = Pick<DiagnosticContextV3, "entity" | "archetype" | "niche" | "growthStage">;
+export type DiagnosticFingerprint = Pick<DiagnosticContextV3, "entity" | "archetype" | "niche" | "nicheGroup" | "growthStage">;
 
 /** Un freno solo existe con evidencia que lo respalde (al menos una observación). */
 export type Bottleneck = { issueId: IssueId; dimension: DimensionKey; evidence: readonly [DiagnosticEvidence, ...DiagnosticEvidence[]] };

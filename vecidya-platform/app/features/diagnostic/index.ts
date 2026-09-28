@@ -6,6 +6,17 @@ import type { Answers, DiagnosticResult } from "./types";
 export * from "./types";
 export * from "./contracts";
 export * from "./taxonomy";
+export * from "./signals";
+export {
+  resolveDiagnosticContext,
+  type ContextResolutionResult,
+  type ContextResolutionTrace,
+  type FieldTrace,
+  type ResolvedDomainContext,
+  type ResolvedFieldTrace,
+  type UnresolvedFieldTrace,
+} from "./context-resolver";
+export { deriveSignalsFromLegacyContext } from "./legacy-signal-adapter";
 export { deriveContextV3, LEGACY_PROFILE_MAPPING, LEGACY_STAGE_MAPPING, mapLegacyGoal, mapLegacyStage } from "./mappings";
 export { applyAnswer, clearAnswer, deriveActiveAnswers, deriveContext, getApplicableQuestions, isAnswered, isSelected, selectedValues } from "./answers";
 export { addonCatalog, learnCatalog, learnPath, licenseCatalog, serviceCatalog, servicePath } from "./catalog";

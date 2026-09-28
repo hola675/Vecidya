@@ -71,16 +71,14 @@ export const BUSINESS_MODEL_REGISTRY: readonly TaxonomyEntry<BusinessModel>[] = 
 
 export const OPERATIONAL_ARCHETYPE_REGISTRY: readonly TaxonomyEntry<OperationalArchetype>[] = toEntries<OperationalArchetype>({
   local: { label: "Local físico", definition: "Opera desde una ubicación física sin que citas o inventario de reventa sean el eje central (p. ej. gimnasio, spa, taller)." },
-  appointments: { label: "Por citas", definition: "La operación gira en torno a reservar bloques de tiempo; no-shows y confirmación son relevantes." },
+  appointments: { label: "Por citas (varios proveedores)", definition: "Agenda de VARIOS proveedores/recursos (una clínica con varios dentistas, un spa con varias salas); gestionar no-shows/confirmaciones entre proveedores es en sí mismo un problema operativo. Se distingue de `professional` (revisión de dominio DIAG-V3-08B.1): un único profesional licenciado sin colega que preste el mismo servicio es `professional`, no `appointments`." },
   local_service: { label: "Servicio local a domicilio", definition: "Se desplaza a atender clientes fuera de un local propio — a una dirección fija (plomería, electricidad) o a ubicaciones variables dentro de un área (food truck, catering); no es una ubicación fija que el cliente visita." },
-  professional: { label: "Profesional independiente", definition: "Una persona con expertise especializada que trabaja por proyecto/consulta, con o sin citas formales." },
+  professional: { label: "Profesional independiente", definition: "Un único profesional licenciado que trabaja por proyecto/consulta, con o sin citas formales, sin otro colega que preste el mismo servicio (dentista solo, terapeuta solo, abogado solo). Con más de un proveedor agendándose, es `appointments`." },
   ecommerce: { label: "Comercio electrónico", definition: "La venta ocurre en un checkout en línea; el inventario físico/exhibición no es el canal principal." },
   retail: { label: "Comercio minorista físico", definition: "El cliente visita un local con inventario/exhibición física para comprar; se distingue de `local` porque el catálogo/inventario es el eje operativo, no solo la ubicación." },
   hospitality: { label: "Hospitalidad", definition: "Restaurantes, cafés y negocios de consumo/estadía en el lugar, con o sin reservas." },
   b2b: { label: "Negocio a negocio", definition: "El comprador es otra empresa/organización, con ciclo de decisión y pipeline propios." },
   creator: { label: "Creador de audiencia", definition: "La operación gira en torno a contenido/audiencia propia, no un local ni un pipeline de ventas B2B." },
-  organization: { label: "Organización", definition: "Opera con una estructura formal orientada a misión/comunidad, no primariamente a ingresos (ver tensión documentada en `contracts.ts`: describe estructura, no mecanismo de entrega, a diferencia del resto de esta lista)." },
-  startup: { label: "Proyecto nuevo", definition: "Sin operación establecida todavía; la validación y el lanzamiento son la prioridad, no la retención." },
   hybrid: { label: "Híbrido", definition: "Combina dos o más archetypes de forma real (p. ej. `retail` + `ecommerce`); no es sinónimo de `unresolved` — ver mutación F." },
 });
 
@@ -196,8 +194,13 @@ export const NICHE_REGISTRY: readonly NicheDefinition[] = [
   niche("photographer", "Fotógrafo por encargo", "creative_media", ["professional", "local_service"]),
   niche("content_creator", "Creador de contenido", "creator", ["creator"]),
   niche("marketing_agency", "Agencia de marketing", "b2b_services", ["b2b"]),
-  niche("software_startup", "Startup de software", "technology_software", ["startup", "b2b"]),
-  niche("nonprofit_org", "Organización sin fines de lucro", "nonprofit_community", ["organization"]),
+  // "startup" y "organization" se retiraron de OperationalArchetype en DIAG-V3-08B.1
+  // (`DIAG-V3-08B0-ARCHETYPE-LIFECYCLE-001`): ninguno era un mecanismo de entrega real. El hint de un
+  // startup de software es su mecanismo de venta una vez operando (b2b); la fase de validación sin
+  // operación establecida la describe `GrowthStage`, no un archetype. El de una organización sin fines
+  // de lucro es el mecanismo más común de entrega (atención presencial), no su estructura de gobernanza.
+  niche("software_startup", "Startup de software", "technology_software", ["b2b"]),
+  niche("nonprofit_org", "Organización sin fines de lucro", "nonprofit_community", ["local"]),
 ] as const;
 
 /**

@@ -50,8 +50,13 @@ export const LEGACY_PROFILE_MAPPING: Readonly<Record<ProfileId, { entity: Resolu
   },
   professional: { entity: resolved("individual", "legacy_mapping"), archetype: resolved("professional", "legacy_mapping") },
   creator: { entity: unresolved("ambiguous_legacy", ["individual", "organization"]), archetype: resolved("creator", "legacy_mapping") },
-  project: { entity: resolved("project", "legacy_mapping"), archetype: unresolved("ambiguous_legacy", ["startup", "organization", "hybrid"]) },
-  organization: { entity: resolved("organization", "legacy_mapping"), archetype: resolved("organization", "legacy_mapping") },
+  // Un "project" recién declarado no tiene todavía ningún mecanismo operativo que candidatear
+  // (DIAG-V3-08B.1): antes listaba "startup"/"organization" como candidatos, pero ambos se retiraron
+  // de OperationalArchetype por no ser mecanismos de entrega reales (`DIAG-V3-08B0-ARCHETYPE-LIFECYCLE-001`).
+  project: { entity: resolved("project", "legacy_mapping"), archetype: unresolved("ambiguous_legacy", []) },
+  // Una "organización" no implica un mecanismo operativo concreto: puede operar como local, por citas,
+  // B2B, etc. — a diferencia de 08B.0, ya no colapsa al archetype "organization" (retirado).
+  organization: { entity: resolved("organization", "legacy_mapping"), archetype: unresolved("ambiguous_legacy", ["local", "hospitality", "b2b", "professional", "hybrid"]) },
 };
 
 /** Objetivo actual → objetivo principal V3. Mismos IDs y significado, salvo «unsure», que es su ausencia declarada. */
@@ -84,6 +89,7 @@ export function deriveContextV3(context: Context): DiagnosticContextV3 {
     businessModel: unresolved("not_asked"),
     archetype: profile?.archetype ?? unresolved("not_asked"),
     niche: unresolved("not_asked"),
+    nicheGroup: unresolved("not_asked"),
     growthStage: mapLegacyStage(context.stage),
     customerModel: { reach: unresolved("not_asked"), buyer: unresolved("not_asked") },
     primaryGoal: mapLegacyGoal(context.goal),
