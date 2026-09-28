@@ -253,22 +253,23 @@ async function answerKindRate(kind, questionId, sessionIds) {
 }
 
 /**
- * Equivalente SQL de las ramas de `diagnosticAnalytics.lifecycle` (allí construidas con el query builder
- * de Drizzle): abandonada ⟺ STARTED/IN_PROGRESS con `last_activity_at <= now - umbral` (inclusivo, igual
- * que `isAnalyticallyAbandoned`); activa ⟺ `last_activity_at > now - umbral`; `expired_saved` ⟺ SAVED con
- * snapshot cuyo `expires_at < now`.
+ * RÉPLICA SQL escrita a mano en este script, NO la función real: `diagnosticAnalytics.lifecycle` arma
+ * estas ramas con el query builder de Drizzle (`gt`/`lte`/`lt`) y no es invocable desde Node fuera del
+ * runtime de Workers ni por HTTP (spec §52). Lo que estos checks prueban es la LÓGICA de clasificación
+ * sobre estado real persistido por los endpoints (status SAVED, `expires_at` del snapshot); no prueban
+ * que el `.server.ts` compile a esta misma SQL. Abandonada ⟺ STARTED/IN_PROGRESS con
+ * `last_activity_at <= now - umbral`; `expired_saved` ⟺ SAVED con snapshot cuyo `expires_at < now`.
  */
 async function lifecycleCounts(sessionIds, nowMs) {
   const cutoff = nowMs - ANALYTICS_ABANDONMENT_THRESHOLD_MS;
   const ids = sqlList(sessionIds);
   const [row] = await d1(`
     SELECT
-      (SELECT count(*) FROM diagnostic_session WHERE status in ('STARTED','IN_PROGRESS') AND last_activity_at > ${cutoff} AND id IN (${ids})) AS active_incomplete,
       (SELECT count(*) FROM diagnostic_session WHERE status in ('STARTED','IN_PROGRESS') AND last_activity_at <= ${cutoff} AND id IN (${ids})) AS analytically_abandoned,
       (SELECT count(*) FROM diagnostic_session INNER JOIN diagnostic_saved_snapshot ON diagnostic_saved_snapshot.session_id = diagnostic_session.id
         WHERE diagnostic_session.status = 'SAVED' AND diagnostic_saved_snapshot.expires_at < ${nowMs} AND diagnostic_session.id IN (${ids})) AS expired_saved;
   `);
-  return { activeIncomplete: Number(row?.active_incomplete), analyticallyAbandoned: Number(row?.analytically_abandoned), expiredSaved: Number(row?.expired_saved) };
+  return { analyticallyAbandoned: Number(row?.analytically_abandoned), expiredSaved: Number(row?.expired_saved) };
 }
 
 try {
@@ -440,8 +441,8 @@ try {
     SELECT count(*) AS starts, SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) AS completions FROM diagnostic_session WHERE id IN (${versionScope});
     SELECT count(*) AS starts, SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) AS completions FROM diagnostic_session WHERE id IN (${versionScope}) AND question_bank_version = ${currentQuestionBankVersion};
   `);
-  check(mixedVersions?.starts === 3 && mixedVersions?.completions === 2, "control F: sin segmentar, las 3 sesiones mezclan versiones (2 completadas de 3)");
-  check(segmented?.starts === 2 && segmented?.completions === 1, "mutación F: segmentado por question_bank_version vigente (filtro de versionWhere), la sesión de versión 999 queda fuera: 1 de 2");
+  check(mixedVersions?.starts === 3 && mixedVersions?.completions === 2, "réplica SQL de lifecycle() (no ejecuta la función real) / control F: sin segmentar, las 3 sesiones mezclan versiones (2 completadas de 3)");
+  check(segmented?.starts === 2 && segmented?.completions === 1, "réplica SQL de lifecycle()+versionWhere() (no ejecuta la función real) / mutación F: filtrando por el question_bank_version persistido, la sesión de versión 999 queda fuera: 1 de 2");
 
   // --- 11. Purga de eventos expirados (spec §49/§50) -------------------------------------------------
   const purgeSession = await createSession();
@@ -457,7 +458,7 @@ try {
   // (`lt(retention_until, now)`) limitado a la sesión de este fixture, nunca sobre toda la tabla.
   await d1(`DELETE FROM diagnostic_event WHERE retention_until < ${purgeNow} AND session_id = '${purgeSession.sessionId}';`);
   const remainingAfterPurge = (await d1(`SELECT event_uuid FROM diagnostic_event WHERE session_id = '${purgeSession.sessionId}' ORDER BY id;`)).map((row) => row.event_uuid);
-  check(JSON.stringify(remainingAfterPurge) === JSON.stringify([boundaryEvent.eventUuid, liveEvent.eventUuid]), "purga (predicado retention_until < now): borra solo el vencido; el que vence justo en now y el vigente de 180 días se conservan");
+  check(JSON.stringify(remainingAfterPurge) === JSON.stringify([boundaryEvent.eventUuid, liveEvent.eventUuid]), "réplica SQL de purgeExpiredAnalyticsEvents() (no ejecuta la función real; predicado retention_until < now acotado a la sesión): borra solo el vencido; el que vence justo en now y el vigente de 180 días se conservan");
 
   // --- 12. Fixture dataset para dropoff (spec §17/§54, matriz A-F) y abandono (§18-§20/§58) -------
   // Todas las sesiones se siembran por HTTP; los tiempos se fijan después, en un solo paso, contra un
@@ -564,12 +565,13 @@ try {
   const dropoffGoalMatrix = await dropoff("goal", goalMatrix, nowMs);
   check(dropoffGoalMatrix.shownAndValid === 10 && dropoffGoalMatrix.droppedOff === 3, "matriz completa de 'goal': 3 dropoffs de 10 (B, SAVED vencido, boundary exacto)");
 
-  // Clasificación de ciclo de vida (lifecycle) sobre los mismos fixtures.
+  // Clasificación de ciclo de vida sobre los mismos fixtures, vía la RÉPLICA SQL de `lifecycle()` (ver
+  // `lifecycleCounts`). El boundary inclusivo del umbral NO se repite aquí: réplica contra réplica solo
+  // probaría el `<=`/`>` de SQLite sobre el propio corte de este script; el boundary ya queda cubierto más
+  // arriba contra la copia literal de la SQL real de `dropoffByQuestion`.
   const savedLifecycle = await lifecycleCounts([caseSavedLive.sessionId, caseSavedExpired.sessionId], nowMs);
-  check(savedLifecycle.analyticallyAbandoned === 0, "mutación E: una sesión SAVED (vigente o vencida) nunca cuenta como abandonada por inactividad");
-  check(savedLifecycle.expiredSaved === 1, "solo la SAVED con snapshot vencido cae en expired_saved, nunca la vigente");
-  const boundaryLifecycle = await lifecycleCounts([boundaryExact.sessionId, boundaryInside.sessionId], nowMs);
-  check(boundaryLifecycle.analyticallyAbandoned === 1 && boundaryLifecycle.activeIncomplete === 1, "lifecycle en el boundary: exacto → abandonada, umbral − 1 ms → activa (partición sin hueco ni solape)");
+  check(savedLifecycle.analyticallyAbandoned === 0, "réplica SQL de lifecycle() (no ejecuta la función real) / mutación E: con el status SAVED que dejó el endpoint real, ninguna sesión SAVED (vigente o vencida) cae en abandonada");
+  check(savedLifecycle.expiredSaved === 1, "réplica SQL de lifecycle() (no ejecuta la función real): solo la SAVED cuyo snapshot real se venció cae en expired_saved; la vigente (expires_at futuro puesto por SAVE) no");
 
   // --- 13. Save/resume counters (spec §5/§33-§35) -----------------------------------------------------
   const [freshCounters] = await d1(`SELECT save_count, resume_count, last_saved_at, last_resumed_at FROM diagnostic_session WHERE id = '${created.sessionId}';`);
