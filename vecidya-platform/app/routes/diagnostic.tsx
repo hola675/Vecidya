@@ -135,8 +135,9 @@ export default function Diagnostic() {
   // una sección nueva", no "entró a la sección"; escribirlo desde aquí además cambiaría
   // `crossedSectionBoundary` y con él la política de snapshots ya publicada.
   // `answeredAtShown`/`submitted` describen la VISITA actual a la pregunta (de un QUESTION_SHOWN al
-  // siguiente): si ya tenía respuesta al mostrarse (revisión → cada cambio es ANSWER_CHANGED) o si es
-  // su primera respuesta (construcción → un único ANSWER_SUBMITTED, aunque un multi tome varios clics).
+  // siguiente) y solo se usan en preguntas multi: si ya tenía respuesta al mostrarse (revisión → cada
+  // cambio es ANSWER_CHANGED) o si es su primera respuesta (construcción → un único ANSWER_SUBMITTED,
+  // aunque tome varios clics).
   const analyticsViewRef = useRef<{ questionId: QuestionId | null; sectionId: SectionId | null; answeredAtShown: boolean; submitted: boolean; saveOffered: boolean }>({
     questionId: null,
     sectionId: null,
@@ -257,25 +258,36 @@ export default function Diagnostic() {
 
     // DIAG-V3-08 §12: después de toda la lógica existente, para que ningún fallo de telemetría pueda
     // impedirla. Sin valores de respuesta, solo su clase (`answerKind`, recalculada en cada evento).
-    // La decisión SUBMITTED/CHANGED depende de la VISITA (ver `analyticsViewRef`), no de si la pregunta
-    // tiene valor justo antes de este clic: marcar A y luego B en un multi nuevo es construir la PRIMERA
-    // respuesta, no cambiarla — contarlo como cambio convertiría `answerChangeRateByQuestion` en "eligió
+    // Single: cada clic reemplaza la respuesta entera, así que el primero es SUBMITTED y cualquier otro
+    // con valor distinto es un cambio de opinión real (CHANGED), aunque ocurra en la misma visita.
+    // Multi: la decisión depende de la VISITA (ver `analyticsViewRef`), no de si la pregunta tiene
+    // valor justo antes de este clic — marcar A y luego B en un multi nuevo es construir la PRIMERA
+    // respuesta, no cambiarla; contarlo como cambio convertiría `answerChangeRateByQuestion` en "eligió
     // dos o más opciones", y sin valores en el evento no se podría corregir después.
     if (next === answers) return;
     const previousValues = isAnswered(question, answers) ? selectedValues(answers[question.id]) : [];
     const nextValues = isAnswered(question, next) ? selectedValues(next[question.id]) : [];
     const valuesChanged = previousValues.length !== nextValues.length || previousValues.some((value) => !nextValues.includes(value));
-    const view = analyticsViewRef.current;
-    // Salvaguarda: si la visita no corresponde a esta pregunta (no debería ocurrir; `answer` solo se
-    // invoca sobre la pregunta en pantalla), se abre una visita con el estado previo a este clic.
-    if (view.questionId !== question.id) Object.assign(view, { questionId: question.id, sectionId: question.section, answeredAtShown: previousValues.length > 0, submitted: false });
     const answerKind = nextValues.length ? answerKindOf(question, nextValues) : null;
+    const submitted = analyticsEvent("ANSWER_SUBMITTED", { questionId: question.id, sectionId: question.section, answerKind });
+    const changed = analyticsEvent("ANSWER_CHANGED", { questionId: question.id, sectionId: question.section, answerKind });
     const events: AnalyticsQueueEventInput[] = [];
-    if (view.answeredAtShown) {
-      if (valuesChanged) events.push(analyticsEvent("ANSWER_CHANGED", { questionId: question.id, sectionId: question.section, answerKind }));
-    } else if (!view.submitted && nextValues.length) {
-      view.submitted = true;
-      events.push(analyticsEvent("ANSWER_SUBMITTED", { questionId: question.id, sectionId: question.section, answerKind }));
+    if (question.type !== "multi") {
+      if (!previousValues.length && nextValues.length) events.push(submitted);
+      else if (previousValues.length && valuesChanged) events.push(changed);
+    } else {
+      const view = analyticsViewRef.current;
+      // Salvaguarda: si la visita no corresponde a esta pregunta (no debería ocurrir; `answer` solo se
+      // invoca sobre la pregunta en pantalla), se abre una visita con el estado previo a este clic.
+      if (view.questionId !== question.id) Object.assign(view, { questionId: question.id, sectionId: question.section, answeredAtShown: previousValues.length > 0, submitted: false });
+      if (view.answeredAtShown) {
+        if (valuesChanged) events.push(changed);
+      } else if (!view.submitted && nextValues.length) {
+        // Limitación aceptada (spec §2/§30, best-effort): el `answerKind` de una primera respuesta multi
+        // es el del primer clic; pasar después a «no lo sé»/«no aplica» en la misma visita no emite nada.
+        view.submitted = true;
+        events.push(submitted);
+      }
     }
     // Spec §17: preguntas que la ruta ya ofrecía y dejan de aplicar por esta respuesta. Una ya
     // respondida que sale de la ruta la descarta `deriveActiveAnswers`; no es una invalidación nueva.
