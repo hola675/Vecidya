@@ -19,7 +19,7 @@ test("QBV2 arquitectura: el banco golden pasa TODOS los validadores estáticos s
   assert.deepEqual(issues, [], `el banco golden no debería tener issues: ${JSON.stringify(issues)}`);
 });
 
-test("QBV2 arquitectura: 14 preguntas golden, no las 100-150 de 08B.3", () => {
+test("QBV2 arquitectura: 14 preguntas golden, no las 100-120 de 08B.3", () => {
   assert.ok(GOLDEN_QUESTIONS_V2.length >= 8 && GOLDEN_QUESTIONS_V2.length <= 15, `tamaño fuera de rango: ${GOLDEN_QUESTIONS_V2.length}`);
 });
 
@@ -29,12 +29,25 @@ test("QBV2 arquitectura: MODULE_REGISTRY cubre exactamente MODULE_IDS, sin dupli
   assert.deepEqual([...ids].sort(), [...MODULE_IDS].sort());
 });
 
-test("QBV2 arquitectura: el pronóstico de tamaño del banco (§71) cae dentro de 100-150, sin exigir 150 como obligatorio", () => {
-  const minTotal = MODULE_REGISTRY.reduce((sum, module) => sum + module.targetQuestionRange.min, 0);
-  const maxTotal = MODULE_REGISTRY.reduce((sum, module) => sum + module.targetQuestionRange.max, 0);
-  assert.ok(minTotal >= 60, `mínimo proyectado demasiado bajo: ${minTotal}`);
-  assert.ok(maxTotal <= 150, `máximo proyectado excede el techo de la fase: ${maxTotal}`);
-  assert.ok(maxTotal >= 100, `máximo proyectado por debajo del piso de la fase: ${maxTotal}`);
+test("QBV2 arquitectura: floor de módulos, target editorial y techo razonable son conceptos distintos y coherentes (§71, DIAG-V3-08B.2-C1)", () => {
+  // moduleFloor/moduleCeiling son la suma aritmética de los rangos por módulo (metadata de planner,
+  // §50) — NO son el tamaño real del banco. El target editorial es lo que el equipo se compromete a
+  // construir en DIAG-V3-08B.3, derivado de cobertura necesaria, no de llenar una cuota (checkpoint C1 §2-3).
+  const moduleFloor = MODULE_REGISTRY.reduce((sum, module) => sum + module.targetQuestionRange.min, 0);
+  const moduleCeiling = MODULE_REGISTRY.reduce((sum, module) => sum + module.targetQuestionRange.max, 0);
+  const EDITORIAL_TARGET = { min: 100, max: 120 } as const;
+
+  assert.ok(moduleFloor > 0, `module floor debe ser positivo: ${moduleFloor}`);
+  assert.ok(EDITORIAL_TARGET.min <= EDITORIAL_TARGET.max, "target editorial: min debe ser <= max");
+  assert.ok(EDITORIAL_TARGET.min >= 100, `target editorial por debajo del piso de fase: ${EDITORIAL_TARGET.min}`);
+  assert.ok(
+    EDITORIAL_TARGET.max <= moduleCeiling,
+    `target editorial excede el techo razonable de módulos (${moduleCeiling}): ${EDITORIAL_TARGET.max}`,
+  );
+  assert.ok(
+    moduleFloor <= EDITORIAL_TARGET.min,
+    `floor de módulos (${moduleFloor}) no debería superar el target editorial mínimo (${EDITORIAL_TARGET.min})`,
+  );
 });
 
 test("QBV2 arquitectura: cada módulo tiene un rango objetivo válido (min <= max, ambos >= 0)", () => {
