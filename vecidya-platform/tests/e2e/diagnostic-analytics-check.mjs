@@ -266,7 +266,7 @@ async function overallScoreBucketTotal(sessionIds, questionBankVersion) {
 }
 
 /** Copia literal de `answerChangeRateByQuestion` (mismo archivo), con el mismo tipo de filtro de fixture. */
-async function changeRate(questionId, sessionIds) {
+async function changeRate(questionId, sessionIds, questionBankVersion) {
   const [row] = await d1(`
     WITH answered AS (
       SELECT DISTINCT session_id, question_id FROM diagnostic_event WHERE event_type = 'ANSWER_SUBMITTED' AND question_id IS NOT NULL
@@ -281,7 +281,7 @@ async function changeRate(questionId, sessionIds) {
       COALESCE(SUM(c.change_count), 0) AS total_change_events
     FROM answered a
     LEFT JOIN changes c ON c.session_id = a.session_id AND c.question_id = a.question_id
-    WHERE ${versionScopeSql("a.session_id", undefined)}
+    WHERE ${versionScopeSql("a.session_id", questionBankVersion)}
       AND a.question_id = '${questionId}' AND a.session_id IN (${sqlList(sessionIds)})
     GROUP BY a.question_id;
   `);
@@ -579,9 +579,9 @@ try {
   // Hallazgo I2: segmentación por versión en las consultas de SQL crudo. Dos sesiones idénticas; una
   // pasa a question_bank_version 999 (mismo patrón que la mutación F).
   const versionDropCurrent = await createSession();
-  await seed(versionDropCurrent, [shownEvent("goal"), shownEvent("stage"), submittedEvent("stage", "unknown")]);
+  await seed(versionDropCurrent, [shownEvent("goal"), shownEvent("stage"), submittedEvent("stage", "unknown"), changedEvent("stage")]);
   const versionDropOther = await createSession();
-  await seed(versionDropOther, [shownEvent("goal"), shownEvent("stage"), submittedEvent("stage", "unknown")]);
+  await seed(versionDropOther, [shownEvent("goal"), shownEvent("stage"), submittedEvent("stage", "unknown"), changedEvent("stage")]);
 
   const firstSave = await saveSession(caseSavedLive.sessionId, caseSavedLive.writeToken, { profile: "business", stage: "growing" });
   const retrySave = await saveSession(caseSavedLive.sessionId, caseSavedLive.writeToken, { profile: "business", stage: "growing" });
@@ -713,6 +713,11 @@ try {
   const unknownAllVersions = await answerKindRate("unknown", "stage", versionDropScope);
   const unknownCurrentVersion = await answerKindRate("unknown", "stage", versionDropScope, currentQuestionBankVersion);
   check(unknownAllVersions.interactions === 2 && unknownCurrentVersion.interactions === 1 && unknownCurrentVersion.matching === 1, "I2 (copia literal de rateByAnswerKind): unknown rate('stage') sin filtro mezcla 2 sesiones; con la versión vigente, 1 interacción y 1 'No sé'");
+  const changeAllVersions = await changeRate("stage", versionDropScope);
+  const changeCurrentVersion = await changeRate("stage", versionDropScope, currentQuestionBankVersion);
+  const changeOtherVersion = await changeRate("stage", versionDropScope, 999);
+  check(changeAllVersions.sessionsAnswered === 2 && changeAllVersions.sessionsChanged === 2, "DIAG-V3-08-CHANGE-RATE-VERSION-E2E-001 control (copia literal de answerChangeRateByQuestion): change rate('stage') sin filtro mezcla las 2 sesiones (vigente y 999)");
+  check(changeCurrentVersion.sessionsAnswered === 1 && changeCurrentVersion.sessionsChanged === 1 && changeOtherVersion.sessionsAnswered === 1 && changeOtherVersion.sessionsChanged === 1, "DIAG-V3-08-CHANGE-RATE-VERSION-E2E-001 (copia literal de answerChangeRateByQuestion): filtrando por versión, cada question_bank_version (vigente / 999) deja solo su propia sesión (1/1)");
   const bucketScope = [resilientSession.sessionId, versionSession.sessionId];
   const bucketsAll = await overallScoreBucketTotal(bucketScope, undefined);
   const bucketsCurrent = await overallScoreBucketTotal(bucketScope, currentQuestionBankVersion);
