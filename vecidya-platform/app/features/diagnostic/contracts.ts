@@ -173,8 +173,14 @@ export type ResolutionSource = "answer" | "legacy_mapping" | "signal";
  * - `declared_unknown`: la persona respondió «no lo sé» (o equivalente).
  * - `ambiguous_legacy`: un dato del motor actual no tiene equivalencia V3 segura; `candidates` acota.
  * - `insufficient_evidence`: hay respuestas, pero no bastan para clasificar.
+ * - `conflicting_evidence` (DIAG-V3-08B.3, domain review R1 del Lote A): dos o más señales MATERIALES
+ *   declaran valores distintos para el mismo campo (p. ej. un `NicheId` de catálogo resuelve un
+ *   `NicheGroup` y una declaración directa de sector dice otro). Una señal más específica puede
+ *   COMPLETAR información que falta, pero nunca debe sobrescribir en silencio una declaración material
+ *   incompatible — eso se resuelve aquí, nunca eligiendo la de mayor prioridad sin más. `candidates`
+ *   lista los valores en conflicto.
  */
-export type UnresolvedReason = "not_asked" | "declared_unknown" | "ambiguous_legacy" | "insufficient_evidence";
+export type UnresolvedReason = "not_asked" | "declared_unknown" | "ambiguous_legacy" | "insufficient_evidence" | "conflicting_evidence";
 
 export type Resolved<T extends string> = { readonly status: "resolved"; readonly value: T; readonly source: ResolutionSource };
 export type Unresolved<T extends string> = { readonly status: "unresolved"; readonly reason: UnresolvedReason; readonly candidates: readonly T[] };
@@ -324,8 +330,20 @@ export const GROWTH_STAGES = ["idea", "starting", "operating", "growing", "scali
 export type GrowthStage = (typeof GROWTH_STAGES)[number];
 export type LegacyStageId = StageId;
 
-/** Modelo de cliente en dos ejes independientes: un negocio B2B puede ser local. */
-export const CUSTOMER_REACHES = ["local", "regional", "online", "mixed"] as const;
+/**
+ * Modelo de cliente en dos ejes independientes: un negocio B2B puede ser local.
+ *
+ * `CustomerReach` es ALCANCE GEOGRÁFICO puro (DIAG-V3-08B.3, domain review R1 del Lote A) — nunca
+ * canal/mecanismo de entrega. La versión original de 08B.0 tenía `"online"` como valor, conflando dos
+ * ejes reales: un consultor que atiende en línea a clientes de todo el país es geográficamente
+ * `national`, no una categoría aparte de `local`/`regional`; y un negocio físico con clientes en varias
+ * regiones por distribución (`national`) no implica ecommerce ni ningún canal digital. El canal (en
+ * línea vs. presencial) ya lo captura `deliveryMode`/`OperationalArchetype` (`online_checkout`, etc.) —
+ * un eje aparte, deliberadamente independiente de este (§6 del checkpoint de revisión: "no confundir
+ * reach con archetype"). `"mixed"` sigue siendo real (alcance local Y más amplio a la vez, no
+ * incertidumbre), no una combinación con canal.
+ */
+export const CUSTOMER_REACHES = ["local", "regional", "national", "global", "mixed"] as const;
 export type CustomerReach = (typeof CUSTOMER_REACHES)[number];
 export const CUSTOMER_BUYERS = ["b2c", "b2b", "mixed"] as const;
 export type CustomerBuyer = (typeof CUSTOMER_BUYERS)[number];

@@ -84,7 +84,7 @@ test("taxonomía: CustomerModel representa cada combinación de reach/buyer, inc
   assert.equal(localB2b.reach.value, "local");
   assert.equal(localB2b.buyer.value, "b2b");
   // Los dos ejes son independientes: uno puede resolverse sin que el otro lo esté.
-  const partial: CustomerModel = { reach: { status: "resolved", value: "online", source: "answer" }, buyer: unresolved("not_asked") };
+  const partial: CustomerModel = { reach: { status: "resolved", value: "global", source: "answer" }, buyer: unresolved("not_asked") };
   assert.equal(partial.reach.status, "resolved");
   assert.equal(partial.buyer.status, "unresolved");
 });

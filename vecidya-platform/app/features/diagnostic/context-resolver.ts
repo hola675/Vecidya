@@ -162,26 +162,42 @@ function resolveNiche(signals: DiagnosticSignalsV3): { resolution: Resolution<Ni
 }
 
 /**
- * Prioridad de evidencia (DIAG-V3-08B.3, regla "sector-first"): (1) un `NicheId` conocido resuelto por
- * catálogo es la evidencia más específica y gana siempre que exista; (2) `declaredNicheGroupOther` es
- * una declaración explícita de que ningún grupo conocido aplica; (3) `declaredNicheGroup` resuelve el
- * sector directamente cuando el cuestionario preguntó la categoría amplia sin forzar un `NicheId`
- * específico — `NicheId` puede quedar legítimamente `unresolved` en ese caso (§8-9 del checkpoint de
- * contenido: no es un estado degradado). Antes de esta fase, un `NicheId` conocido podía quedar
- * enmascarado por `declaredNicheGroupOther` si ambos estaban presentes; ahora el lookup por catálogo,
- * al ser más específico, tiene prioridad real.
+ * Evidencia posible para `NicheGroup` (DIAG-V3-08B.3, regla "sector-first" + domain review R1): tres
+ * fuentes independientes pueden declarar un valor. Una fuente más específica puede COMPLETAR
+ * información que falta, pero nunca debe sobrescribir en silencio una declaración material
+ * incompatible de otra fuente — si dos fuentes están presentes y DIFIEREN, el campo queda
+ * `conflicting_evidence`, con ambas señales visibles en el trace, nunca una resolución silenciosa por
+ * prioridad fija. Solo cuando hay UNA sola fuente materialmente presente (o varias que coinciden) se
+ * resuelve normalmente.
  */
-function resolveNicheGroup(nicheResolution: Resolution<NicheId>, signals: DiagnosticSignalsV3): { resolution: Resolution<NicheGroup>; trace: FieldTrace } {
+function nicheGroupCandidates(nicheResolution: Resolution<NicheId>, signals: DiagnosticSignalsV3): readonly { readonly source: string; readonly value: NicheGroup }[] {
+  const candidates: { source: string; value: NicheGroup }[] = [];
   if (isResolved(nicheResolution)) {
     // FACT registry (DIAG-V3-08B.0 §18): un nicho conocido mapea a su grupo. Nunca se adivina "other".
     const group = lookupNicheGroup(nicheResolution.value);
-    if (group) return { resolution: resolved(group, "signal"), trace: resolvedTrace("nicheGroup", group, ["declaredNicheId"], "nicho conocido en el catálogo (FACT registry, taxonomy.ts)") };
+    if (group) candidates.push({ source: "declaredNicheId", value: group });
   }
-  if (signals.declaredNicheGroupOther?.value === true) {
-    return { resolution: resolved("other", "signal"), trace: resolvedTrace("nicheGroup", "other", ["declaredNicheGroupOther"], "declaración explícita de que el nicho no encaja en ningún grupo conocido (§18)") };
+  if (signals.declaredNicheGroupOther?.value === true) candidates.push({ source: "declaredNicheGroupOther", value: "other" });
+  if (isMaterial(signals.declaredNicheGroup)) candidates.push({ source: "declaredNicheGroup", value: signals.declaredNicheGroup.value });
+  return candidates;
+}
+
+function resolveNicheGroup(nicheResolution: Resolution<NicheId>, signals: DiagnosticSignalsV3): { resolution: Resolution<NicheGroup>; trace: FieldTrace } {
+  const candidates = nicheGroupCandidates(nicheResolution, signals);
+  const distinctValues = [...new Set(candidates.map((candidate) => candidate.value))];
+
+  if (distinctValues.length > 1) {
+    const sourceLabels = candidates.map((candidate) => `${candidate.source}=${candidate.value}`);
+    return {
+      resolution: unresolved("conflicting_evidence", distinctValues),
+      trace: unresolvedTrace("nicheGroup", "conflicting_evidence", distinctValues, sourceLabels),
+    };
   }
-  if (isMaterial(signals.declaredNicheGroup)) {
-    return { resolution: resolved(signals.declaredNicheGroup.value, "signal"), trace: resolvedTrace("nicheGroup", signals.declaredNicheGroup.value, ["declaredNicheGroup"], "sector amplio declarado directamente, sin necesidad de resolver un NicheId específico (DIAG-V3-08B.3, regla sector-first)") };
+  if (distinctValues.length === 1) {
+    const value = distinctValues[0]!;
+    const sources = candidates.map((candidate) => candidate.source);
+    const reason = value === "other" ? "declaración explícita de que el nicho no encaja en ningún grupo conocido (§18)" : sources.includes("declaredNicheId") ? "nicho conocido en el catálogo (FACT registry, taxonomy.ts)" : "sector amplio declarado directamente, sin necesidad de resolver un NicheId específico (DIAG-V3-08B.3, regla sector-first)";
+    return { resolution: resolved(value, "signal"), trace: resolvedTrace("nicheGroup", value, sources, reason) };
   }
   if (!isResolved(nicheResolution)) return { resolution: unresolved("not_asked"), trace: unresolvedTrace("nicheGroup", "not_asked", [], ["declaredNicheId", "declaredNicheGroup"]) };
   return { resolution: unresolved("insufficient_evidence", []), trace: unresolvedTrace("nicheGroup", "insufficient_evidence", [], ["declaredNicheId (fuera de catálogo)", "declaredNicheGroup"]) };

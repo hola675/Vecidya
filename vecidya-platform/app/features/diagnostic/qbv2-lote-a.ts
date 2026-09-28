@@ -14,11 +14,20 @@ import { eqV2 } from "./qbv2-rules";
  *
  * Añade a `GOLDEN_QUESTIONS_V2` (que ya cubre `q2_entity`/`q2_other_staff`/`q2_monetization`/
  * `q2_delivery` en `core`/`classification`, `q2_has_customers`/`q2_regularity`/`q2_demand_trend` en
- * `maturity`, y `q2_goal`/`q2_friction` en `goal_friction`) las señales de fundación que faltaban:
- * sector (`nicheGroup`), alcance/comprador (`customerReach`/`customerBuyer`, sin los cuales
- * `CustomerModel` nunca se resuelve), y la operacionalización de `systemization`/`capacityPressure`/
- * `capacityExpansion` (checkpoint original §12: "growing" vs "operating" no puede depender de un solo
- * eje `demandTrend`).
+ * `maturity` — `q2_demand_trend` YA es el productor real de `demandTrend`, incluida su rama
+ * `decreasing_observed` — y `q2_goal`/`q2_friction` en `goal_friction`) las señales de fundación que
+ * faltaban: sector (`nicheGroup`), alcance geográfico/comprador (`customerReach`/`customerBuyer`, sin
+ * los cuales `CustomerModel` nunca se resuelve), y la operacionalización de `systemization`/
+ * `capacityPressure`/`capacityExpansion` (checkpoint original §12: "growing" vs "operating" no puede
+ * depender de un solo eje `demandTrend`, y `capacityPressure`/`capacityExpansion` son evidencia
+ * ADICIONAL, no un sustituto de `demandTrend`).
+ *
+ * Domain review R1 (revisión de dominio del Lote A, antes de aprobar Lote B) corrigió tres puntos:
+ * (1) `CustomerReach` mezclaba geografía con canal (`"online"` conflaba ambos ejes) — ver `contracts.ts`
+ * para el rediseño geográfico puro; (2) `q2_team_systemization` se renombra a `q2_process_systemization`
+ * y su wording deja de mencionar tamaño de equipo: mide procesos/documentación repetibles, no personas;
+ * (3) la resolución de `NicheGroup` (`context-resolver.ts`) ya no deja que una fuente más específica
+ * sobrescriba en silencio una declaración material incompatible de otra fuente — ver `conflicting_evidence`.
  */
 export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
   {
@@ -26,7 +35,7 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "core",
     type: "single",
-    prompt: "¿A qué sector se parece más lo que haces?",
+    prompt: "¿En qué sector o tipo de actividad encaja mejor lo que haces?",
     helper: "Elige la categoría más amplia que aplique; las siguientes preguntas ajustan los detalles.",
     purpose: ["anchor", "classification"],
     priority: "high",
@@ -49,7 +58,7 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "technology_software", label: "Tecnología o software", produces: [{ kind: "nicheGroup", value: "technology_software", provenance: "explicit_declaration" }] },
       { value: "nonprofit_community", label: "Organización sin fines de lucro o comunidad", produces: [{ kind: "nicheGroup", value: "nonprofit_community", provenance: "explicit_declaration" }] },
       // Escape hatch legítimo (§18 de 08B.0/08B.1): "other" solo se resuelve por declaración explícita, nunca por defecto.
-      { value: "other", label: "Ninguna de las anteriores", produces: [{ kind: "nicheGroupOther", value: true, provenance: "explicit_declaration" }] },
+      { value: "other", label: "Otro sector, no encaja en los anteriores", produces: [{ kind: "nicheGroupOther", value: true, provenance: "explicit_declaration" }] },
     ],
     scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: false, allowsNotApplicable: false },
   },
@@ -58,14 +67,16 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "classification",
     type: "single",
-    prompt: "¿Dónde están principalmente tus clientes?",
+    prompt: "¿Qué tan amplio es el alcance geográfico de tus clientes?",
+    helper: "Esto es sobre DÓNDE están tus clientes, no sobre si les vendes en línea o en persona (eso ya se preguntó por separado).",
     purpose: ["classification"],
     priority: "high",
     options: [
-      { value: "local", label: "En mi zona o ciudad", produces: [{ kind: "customerReach", value: "local", provenance: "explicit_declaration" }] },
-      { value: "regional", label: "En varias ciudades de mi región o país", produces: [{ kind: "customerReach", value: "regional", provenance: "explicit_declaration" }] },
-      { value: "online", label: "En cualquier lugar; todo ocurre en línea", produces: [{ kind: "customerReach", value: "online", provenance: "explicit_declaration" }] },
-      { value: "mixed", label: "Una mezcla de zona local y alcance más amplio", produces: [{ kind: "customerReach", value: "mixed", provenance: "explicit_declaration" }] },
+      { value: "local", label: "Mi zona o ciudad", produces: [{ kind: "customerReach", value: "local", provenance: "explicit_declaration" }] },
+      { value: "regional", label: "Varias ciudades o mi región, sin llegar a todo el país", produces: [{ kind: "customerReach", value: "regional", provenance: "explicit_declaration" }] },
+      { value: "national", label: "Todo el país", produces: [{ kind: "customerReach", value: "national", provenance: "explicit_declaration" }] },
+      { value: "global", label: "Más de un país", produces: [{ kind: "customerReach", value: "global", provenance: "explicit_declaration" }] },
+      { value: "mixed", label: "Una mezcla real de alcance local y más amplio", produces: [{ kind: "customerReach", value: "mixed", provenance: "explicit_declaration" }] },
     ],
     scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: false, allowsNotApplicable: false },
   },
@@ -79,25 +90,30 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     priority: "high",
     options: [
       { value: "b2c", label: "Personas, como consumidor final", produces: [{ kind: "customerBuyer", value: "b2c", provenance: "explicit_declaration" }] },
-      { value: "b2b", label: "Otras empresas", produces: [{ kind: "customerBuyer", value: "b2b", provenance: "explicit_declaration" }] },
+      { value: "b2b", label: "Otras empresas u organizaciones", produces: [{ kind: "customerBuyer", value: "b2b", provenance: "explicit_declaration" }] },
       { value: "mixed", label: "Ambos, en proporciones similares", produces: [{ kind: "customerBuyer", value: "mixed", provenance: "explicit_declaration" }] },
     ],
     scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: false, allowsNotApplicable: false },
   },
   {
-    id: "q2_team_systemization",
+    // Renombrada desde q2_team_systemization (domain review R1, §12-14): el nombre y el wording
+    // originales sugerían tamaño de equipo. `systemization` mide procesos/documentación repetibles,
+    // independiente de cuánta gente hay — un profesional solo puede tener systemization alta y una
+    // empresa de 15 personas puede tener systemization baja.
+    id: "q2_process_systemization",
     version: 1,
     module: "maturity",
     type: "single",
-    prompt: "¿Ya tienes procesos y responsabilidades definidas para el trabajo del día a día (aunque el equipo seas solo tú), o cada tarea se resuelve de forma improvisada según va surgiendo?",
+    prompt: "Cuando se repite una tarea del negocio (atender un pedido, dar seguimiento a un cliente, resolver una consulta habitual), ¿existe una forma definida de hacerlo (documentada, con una plantilla o herramienta), o depende de la memoria o el criterio de la persona en el momento?",
+    helper: "No se trata de cuánta gente trabaja contigo, sino de si el conocimiento vive en un proceso o en la cabeza de alguien.",
     purpose: ["maturity"],
     priority: "normal",
     // Encadenada a otra respuesta UNIVERSAL de este mismo lote (§67 answer applicability): solo tiene
     // sentido preguntar por sistematización una vez que hay operación real con clientes.
     appliesWhen: eqV2("q2_has_customers", "yes"),
     options: [
-      { value: "defined", label: "Sí, hay procesos y responsabilidades claras", produces: [{ kind: "systemization", value: true, provenance: "observed_fact" }] },
-      { value: "adhoc", label: "No, cada cosa se resuelve según va surgiendo", produces: [{ kind: "systemization", value: false, provenance: "observed_fact" }] },
+      { value: "documented_process", label: "Sigue un proceso definido, sin importar quién lo haga", produces: [{ kind: "systemization", value: true, provenance: "observed_fact" }] },
+      { value: "memory_dependent", label: "Depende de la memoria o el criterio de la persona en el momento", produces: [{ kind: "systemization", value: false, provenance: "observed_fact" }] },
       { value: "unsure", label: "No lo había pensado de esa forma", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
@@ -108,14 +124,14 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     module: "maturity",
     type: "multi",
     prompt: "En los últimos meses, ¿cuál de estas describe lo que ha pasado con tu capacidad para atender la demanda? (elige todas las que apliquen)",
-    helper: "Piensa en los últimos 2-3 periodos, no en una sola semana buena o mala.",
+    helper: "Piensa en los últimos 2-3 periodos, no en una sola semana buena o mala. Esto es evidencia ADICIONAL a la pregunta anterior sobre clientes/pedidos, no un sustituto: pueden coexistir demanda estable con capacidad que igual se amplió, o demanda creciente sin ninguna presión de capacidad todavía.",
     purpose: ["maturity"],
     priority: "normal",
     // Misma cadena que q2_demand_trend (hermana, mismo padre): solo aplica una vez que la operación ya es regular.
     appliesWhen: eqV2("q2_regularity", "regular"),
     options: [
-      { value: "waitlist_growing", label: "La lista de espera o el trabajo pendiente ha ido creciendo", produces: [{ kind: "capacityPressure", value: true, provenance: "observed_fact" }] },
-      { value: "expanded", label: "Contraté o expandí capacidad (más personas, más espacio, más horas) para cubrir la demanda", produces: [{ kind: "capacityExpansion", value: true, provenance: "observed_fact" }] },
+      { value: "waitlist_growing", label: "La lista de espera o el trabajo pendiente ha ido creciendo (no que ya esté lleno, sino que sigue aumentando)", produces: [{ kind: "capacityPressure", value: true, provenance: "observed_fact" }] },
+      { value: "expanded", label: "Contraté o expandí capacidad (más personas, más espacio, más horas) específicamente para cubrir más demanda", produces: [{ kind: "capacityExpansion", value: true, provenance: "observed_fact" }] },
       {
         value: "stable",
         label: "Ninguna de las anteriores: mi capacidad se ha mantenido estable",

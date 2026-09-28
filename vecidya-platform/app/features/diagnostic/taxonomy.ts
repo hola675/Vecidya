@@ -120,8 +120,9 @@ export const GROWTH_STAGE_REGISTRY: readonly TaxonomyEntry<GrowthStage>[] = toEn
 export const CUSTOMER_REACH_REGISTRY: readonly TaxonomyEntry<CustomerReach>[] = toEntries<CustomerReach>({
   local: { label: "Local", definition: "Sirve a un área geográfica acotada (ciudad, barrio)." },
   regional: { label: "Regional", definition: "Sirve a varias ciudades o una región, sin ser nacional ni global." },
-  online: { label: "En línea / global", definition: "Sirve sin límite geográfico relevante, principalmente a través de canales digitales." },
-  mixed: { label: "Mixto", definition: "Combina alcance local con alcance regional/en línea de forma real, no por incertidumbre." },
+  national: { label: "Nacional", definition: "Sirve a clientes de todo el país, sin importar el canal (en línea, distribución física, etc.)." },
+  global: { label: "Internacional / global", definition: "Sirve a clientes fuera del país, sin un límite geográfico relevante." },
+  mixed: { label: "Mixto", definition: "Combina alcance local con alcance regional/nacional/global de forma real, no por incertidumbre." },
 });
 
 export const CUSTOMER_BUYER_REGISTRY: readonly TaxonomyEntry<CustomerBuyer>[] = toEntries<CustomerBuyer>({
