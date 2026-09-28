@@ -61,11 +61,16 @@ test("privacy.tsx distingue \"Guardar para después\" del autoguardado temporal 
  * generan dudas, dónde se abandona, contadores de guardado/reanudación) sin afirmar que no se
  * almacena y sin inventar un mecanismo formal de consentimiento (LEGAL-PRIV-001 sigue abierto).
  */
-test("privacy.tsx cubre la telemetría anónima de uso del diagnóstico: identificador de sesión, sin contenido de respuestas y retención de 180 días", () => {
+test("privacy.tsx cubre la telemetría anónima de uso del diagnóstico: identificador de sesión, sin contenido de respuestas y plazo objetivo de retención de 180 días", () => {
   const source = read("app/routes/privacy.tsx");
   assert.match(source, /m[eé]tricas de uso del propio diagn[oó]stico/i);
   assert.match(source, /ligada al mismo identificador de sesi[oó]n/i);
   assert.match(source, /no incluyen el contenido de tus respuestas/i);
-  assert.match(source, /180 d[ií]as/i);
+  // 180 días es el plazo objetivo (política), no un borrado automático ya en ejecución: no existe
+  // scheduler que invoque `purgeExpiredAnalyticsEvents` todavía (Open Debt), así que la copy no
+  // puede afirmar que los registros "se conservan hasta" ese plazo como si se hiciera cumplir.
+  assert.match(source, /plazo objetivo de conservaci[oó]n es de 180 d[ií]as/i);
+  assert.match(source, /eliminaci[oó]n autom[aá]tica[^.]*todav[ií]a no est[aá] activa/i);
+  assert.doesNotMatch(source, /se conservan hasta 180 d[ií]as/i);
   for (const pattern of RETIRED_ABSOLUTE_CLAIMS) assert.doesNotMatch(source, pattern);
 });
