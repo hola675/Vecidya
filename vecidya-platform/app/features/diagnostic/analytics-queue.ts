@@ -59,7 +59,7 @@ export class AnalyticsEventQueue {
   requeue(events: AnalyticsQueueEvent[]): void {
     this.pending.unshift(...events);
     if (this.pending.length > ANALYTICS_QUEUE_MAX_PENDING) {
-      this.pending.length = ANALYTICS_QUEUE_MAX_PENDING;
+      this.pending.splice(0, this.pending.length - ANALYTICS_QUEUE_MAX_PENDING);
     }
   }
 

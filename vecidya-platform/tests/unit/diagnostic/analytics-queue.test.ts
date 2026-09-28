@@ -74,3 +74,54 @@ test("size() reflects pending events accurately after enqueue/drain", () => {
   queue.drain(25);
   assert.equal(queue.size(), 0);
 });
+
+test("requeue-induced overflow drops oldest (requeued) events, not newest (fresh enqueued) ones (spec §30/§65)", () => {
+  let idCounter = 0;
+  const queue = new AnalyticsEventQueue({ generateId: () => `event-${idCounter++}` });
+
+  // Fill queue: 160 events (event-0 through event-159)
+  for (let index = 0; index < 160; index += 1) {
+    queue.enqueue({ eventType: "QUESTION_SHOWN", questionId: null, sectionId: null, answerKind: null, routeSignature: null, questionsSeen: null, questionsAnswered: null, applicableQuestions: null });
+  }
+  assert.equal(queue.size(), 160);
+
+  // Drain 80 events (event-0 through event-79) to simulate a failed flush
+  const drained = queue.drain(80);
+  assert.equal(drained.length, 80);
+  assert.equal(queue.size(), 80);
+  const drainedIds = new Set(drained.map(e => e.eventUuid));
+
+  // Enqueue 100 new fresh events while the failed batch is in-flight
+  // Total will be 80 (old) + 100 (new) = 180, still under cap
+  for (let index = 0; index < 100; index += 1) {
+    queue.enqueue({ eventType: "SECTION_ENTERED", questionId: null, sectionId: "contexto", answerKind: null, routeSignature: null, questionsSeen: null, questionsAnswered: null, applicableQuestions: null });
+  }
+  assert.equal(queue.size(), 180); // 80 old + 100 new
+
+  // Requeue the failed batch: unshift 80 events at the front, pushing total to 260
+  // After overflow trim to 200 (60 removed from front), we verify old requeued events are dropped
+  queue.requeue(drained);
+  assert.equal(queue.size(), ANALYTICS_QUEUE_MAX_PENDING);
+
+  // Verify the OLDEST requeued events were dropped, but fresh ones remain
+  // This is the critical check: under the wrong implementation (using .length = cap),
+  // fresh events would be dropped from the end. Under the correct implementation (using splice from front),
+  // oldest (requeued) events are dropped.
+  const remaining = queue.drain(ANALYTICS_QUEUE_MAX_PENDING);
+  const remainingIds = new Set(remaining.map(e => e.eventUuid));
+
+  // The oldest 60 requeued events (event-0 through event-59) should be gone
+  for (let i = 0; i < 60; i += 1) {
+    assert.equal(remainingIds.has(`event-${i}`), false, `event-${i} should have been dropped during requeue overflow`);
+  }
+
+  // But the newest 20 requeued events (event-60 through event-79) should still be there
+  for (let i = 60; i < 80; i += 1) {
+    assert.equal(remainingIds.has(`event-${i}`), true, `event-${i} should remain after requeue overflow`);
+  }
+
+  // And all fresh events (event-160 through event-259) should definitely still be there
+  for (let i = 160; i < 260; i += 1) {
+    assert.equal(remainingIds.has(`event-${i}`), true, `event-${i} (fresh) should remain after requeue overflow`);
+  }
+});
