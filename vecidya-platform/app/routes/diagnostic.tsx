@@ -134,7 +134,16 @@ export default function Diagnostic() {
   // (el efecto de snapshot depende de `answers`, no de `step`), así que marca "primera respuesta en
   // una sección nueva", no "entró a la sección"; escribirlo desde aquí además cambiaría
   // `crossedSectionBoundary` y con él la política de snapshots ya publicada.
-  const analyticsViewRef = useRef<{ questionId: QuestionId | null; sectionId: SectionId | null; saveOffered: boolean }>({ questionId: null, sectionId: null, saveOffered: false });
+  // `answeredAtShown`/`submitted` describen la VISITA actual a la pregunta (de un QUESTION_SHOWN al
+  // siguiente): si ya tenía respuesta al mostrarse (revisión → cada cambio es ANSWER_CHANGED) o si es
+  // su primera respuesta (construcción → un único ANSWER_SUBMITTED, aunque un multi tome varios clics).
+  const analyticsViewRef = useRef<{ questionId: QuestionId | null; sectionId: SectionId | null; answeredAtShown: boolean; submitted: boolean; saveOffered: boolean }>({
+    questionId: null,
+    sectionId: null,
+    answeredAtShown: false,
+    submitted: false,
+    saveOffered: false,
+  });
 
   // DIAG-V3-07: estado de "Guardar para después" y de recuperación por código. Ninguno de los dos se
   // persiste en `localStorage` (spec §29/§33: el recovery code nunca vive en el Browser Store, solo
@@ -210,7 +219,7 @@ export default function Diagnostic() {
     void flushAnalytics({ force: true });
     analyticsQueueRef.current = new AnalyticsEventQueue();
     analyticsFlushMetaRef.current = { lastFlushAt: 0 };
-    analyticsViewRef.current = { questionId: null, sectionId: null, saveOffered: view.saveOffered };
+    analyticsViewRef.current = { questionId: null, sectionId: null, answeredAtShown: false, submitted: false, saveOffered: view.saveOffered };
   }
 
   const applicable = useMemo(() => getApplicableQuestions(answers), [answers]);
@@ -247,16 +256,26 @@ export default function Diagnostic() {
     if (saveState.status !== "idle") setSaveState({ status: "idle" });
 
     // DIAG-V3-08 §12: después de toda la lógica existente, para que ningún fallo de telemetría pueda
-    // impedirla. Sin valores de respuesta: solo si es la primera respuesta a la pregunta o un cambio, y
-    // la clase de la respuesta nueva cuando es la primera.
+    // impedirla. Sin valores de respuesta, solo su clase (`answerKind`, recalculada en cada evento).
+    // La decisión SUBMITTED/CHANGED depende de la VISITA (ver `analyticsViewRef`), no de si la pregunta
+    // tiene valor justo antes de este clic: marcar A y luego B en un multi nuevo es construir la PRIMERA
+    // respuesta, no cambiarla — contarlo como cambio convertiría `answerChangeRateByQuestion` en "eligió
+    // dos o más opciones", y sin valores en el evento no se podría corregir después.
     if (next === answers) return;
     const previousValues = isAnswered(question, answers) ? selectedValues(answers[question.id]) : [];
     const nextValues = isAnswered(question, next) ? selectedValues(next[question.id]) : [];
+    const valuesChanged = previousValues.length !== nextValues.length || previousValues.some((value) => !nextValues.includes(value));
+    const view = analyticsViewRef.current;
+    // Salvaguarda: si la visita no corresponde a esta pregunta (no debería ocurrir; `answer` solo se
+    // invoca sobre la pregunta en pantalla), se abre una visita con el estado previo a este clic.
+    if (view.questionId !== question.id) Object.assign(view, { questionId: question.id, sectionId: question.section, answeredAtShown: previousValues.length > 0, submitted: false });
+    const answerKind = nextValues.length ? answerKindOf(question, nextValues) : null;
     const events: AnalyticsQueueEventInput[] = [];
-    if (!previousValues.length && nextValues.length) {
-      events.push(analyticsEvent("ANSWER_SUBMITTED", { questionId: question.id, sectionId: question.section, answerKind: answerKindOf(question, nextValues) }));
-    } else if (previousValues.length && (previousValues.length !== nextValues.length || previousValues.some((value) => !nextValues.includes(value)))) {
-      events.push(analyticsEvent("ANSWER_CHANGED", { questionId: question.id, sectionId: question.section }));
+    if (view.answeredAtShown) {
+      if (valuesChanged) events.push(analyticsEvent("ANSWER_CHANGED", { questionId: question.id, sectionId: question.section, answerKind }));
+    } else if (!view.submitted && nextValues.length) {
+      view.submitted = true;
+      events.push(analyticsEvent("ANSWER_SUBMITTED", { questionId: question.id, sectionId: question.section, answerKind }));
     }
     // Spec §17: preguntas que la ruta ya ofrecía y dejan de aplicar por esta respuesta. Una ya
     // respondida que sale de la ruta la descarta `deriveActiveAnswers`; no es una invalidación nueva.
@@ -553,6 +572,8 @@ export default function Diagnostic() {
     const enteredSection = view.sectionId !== currentQuestion.section;
     view.questionId = currentQuestion.id;
     view.sectionId = currentQuestion.section;
+    view.answeredAtShown = isAnswered(currentQuestion, answers);
+    view.submitted = false;
 
     const queue = analyticsQueueRef.current;
     const counts = {
@@ -572,7 +593,10 @@ export default function Diagnostic() {
   }, [complete, currentQuestion?.id]);
 
   // DIAG-V3-08 §15: SAVE_OFFERED cuando "Guardar para después" pasa a estar disponible, una sola vez
-  // por sesión (no en cada render mientras siga elegible, ni si la elegibilidad oscila).
+  // por CARGA DE PÁGINA de la sesión (no en cada render mientras siga elegible, ni si la elegibilidad
+  // oscila). La bandera vive en memoria: una recarga con auto-resume vuelve a emitirlo para la misma
+  // sesión si sigue elegible. "Rehacer" lo rearma (sesión nueva); recuperar por código no (esa sesión
+  // ya pasó por "Guardar para después").
   useEffect(() => {
     if (!saveEligible || analyticsViewRef.current.saveOffered) return;
     analyticsViewRef.current.saveOffered = true;
