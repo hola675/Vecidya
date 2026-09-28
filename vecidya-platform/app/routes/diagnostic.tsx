@@ -182,6 +182,17 @@ export default function Diagnostic() {
    * de forma SÍNCRONA antes del primer `await`, así un reinicio/recuperación que cambia de sesión justo
    * después nunca manda eventos de una sesión con las credenciales de otra. Un batch que falla de
    * forma reintentable vuelve a SU cola (la capturada aquí), nunca a una cola nueva.
+   *
+   * Varios batches se envían EN SERIE, cada uno después de que el anterior respondió: el `id`
+   * autoincremental de `diagnostic_event` es el orden en que llegan al servidor, y `dropoffByQuestion`
+   * depende de él para saber si una pregunta se invalidó después de mostrarse o se mostró otra vez
+   * después. Enviados en paralelo, un batch posterior podía insertarse antes que uno anterior. Si un
+   * batch falla, ni él ni los siguientes se envían en esta pasada: vuelven juntos, en su orden, al frente
+   * de la cola. Quien llama nunca espera esta función (`void flushAnalytics(...)`), así que enviar en
+   * serie no retrasa ninguna acción de la persona. Límite aceptado (best-effort, spec §30): al descargar
+   * la página solo el primer batch sale con seguridad (`keepalive`); los siguientes, que esperan la
+   * respuesta del anterior, pueden perderse. Solo ocurre con más de 25 eventos pendientes (la cola se
+   * vacía a los 20), es decir, tras fallos de red acumulados.
    */
   async function flushAnalytics(options: { force?: boolean } = {}) {
     const queue = analyticsQueueRef.current;
@@ -192,12 +203,13 @@ export default function Diagnostic() {
     const batches: ReturnType<AnalyticsEventQueue["drain"]>[] = [];
     while (queue.size() > 0) batches.push(queue.drain());
     analyticsFlushMetaRef.current.lastFlushAt = Date.now();
-    await Promise.all(
-      batches.map(async (batch) => {
-        const outcome = await sendAnalyticsEvents(session.sessionId, session.writeToken, batch);
-        if (!outcome) queue.requeue(batch);
-      }),
-    );
+    for (let index = 0; index < batches.length; index += 1) {
+      const outcome = await sendAnalyticsEvents(session.sessionId, session.writeToken, batches[index]);
+      if (!outcome) {
+        queue.requeue(batches.slice(index).flat());
+        return;
+      }
+    }
   }
 
   /**
@@ -289,11 +301,15 @@ export default function Diagnostic() {
         events.push(submitted);
       }
     }
-    // Spec §17: preguntas que la ruta ya ofrecía y dejan de aplicar por esta respuesta. Una ya
-    // respondida que sale de la ruta la descarta `deriveActiveAnswers`; no es una invalidación nueva.
+    // Spec §17: preguntas que la ruta ya ofrecía y dejan de aplicar por esta respuesta, respondidas o
+    // no. Una respondida que sale de la ruta tampoco sigue "mostrada y válida": sin este evento quedaba
+    // para siempre en el denominador de `dropoffByQuestion` (diluyéndolo). Si la ruta vuelve a
+    // incluirla, su respuesta cruda reaparece (el estado conserva las respuestas de ramas inactivas) y
+    // un nuevo QUESTION_SHOWN la vuelve válida con su ANSWER_SUBMITTED original. El cambio de perfil,
+    // que además BORRA las respuestas, lo modela aparte `dropoffByQuestion` (CTE `resets`).
     const nextApplicableIds = new Set(getApplicableQuestions(next).map((item) => item.id));
     for (const item of applicable) {
-      if (!nextApplicableIds.has(item.id) && !isAnswered(item, answers)) events.push(analyticsEvent("QUESTION_INVALIDATED", { questionId: item.id }));
+      if (!nextApplicableIds.has(item.id)) events.push(analyticsEvent("QUESTION_INVALIDATED", { questionId: item.id }));
     }
     if (events.length) trackAnalytics(events);
   };
