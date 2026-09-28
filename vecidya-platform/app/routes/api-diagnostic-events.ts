@@ -58,12 +58,13 @@ export async function action({ context, request }: Route.ActionArgs) {
 
   // Spec §29/§65: cupo por sesión, generoso para el uso normal (10-16 preguntas típicas), sin romper
   // el producto — se descarta el excedente, nunca se rechaza el batch completo ni se devuelve 500.
-  const alreadyStored = await countAnalyticsEventsForSession(database, candidate.sessionId);
-  const remainingCapacity = Math.max(0, MAX_ANALYTICS_EVENTS_PER_SESSION - alreadyStored);
-  const accepted = validated.events.slice(0, remainingCapacity).map((event) => ({ ...event, sessionId: candidate.sessionId as string }));
-  const dropped = validated.events.length - accepted.length;
-
+  // El conteo vive dentro del mismo try que la inserción: un fallo de D1 aquí también es un 503 con
+  // `no-store`, nunca una excepción sin capturar (500 sin la cabecera).
   try {
+    const alreadyStored = await countAnalyticsEventsForSession(database, candidate.sessionId);
+    const remainingCapacity = Math.max(0, MAX_ANALYTICS_EVENTS_PER_SESSION - alreadyStored);
+    const accepted = validated.events.slice(0, remainingCapacity).map((event) => ({ ...event, sessionId: candidate.sessionId as string }));
+    const dropped = validated.events.length - accepted.length;
     const { inserted } = await insertAnalyticsEventBatch(database, accepted);
     return Response.json({ accepted: inserted, dropped }, { headers: NO_STORE });
   } catch {
