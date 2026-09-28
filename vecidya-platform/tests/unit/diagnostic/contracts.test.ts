@@ -144,7 +144,7 @@ test("contexto V3: lo que el motor actual no pregunta queda sin resolver, nunca 
   for (const [name, answers] of Object.entries(allPersonas)) {
     const context = deriveContextV3(deriveContext(answers));
     assert.equal(context.version, CURRENT_DIAGNOSTIC_VERSION);
-    for (const field of ["businessModel", "niche", "primaryFriction"] as const) {
+    for (const field of ["businessModel", "niche", "nicheGroup", "primaryFriction"] as const) {
       assert.deepEqual(context[field], { status: "unresolved", reason: "not_asked", candidates: [] }, `${name}: ${field} inventado`);
     }
     assert.equal(context.customerModel.reach.status, "unresolved", `${name}: alcance de clientes inventado`);

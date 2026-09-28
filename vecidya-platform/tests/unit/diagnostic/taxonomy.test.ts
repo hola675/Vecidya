@@ -160,16 +160,16 @@ test("taxonomía edge case: un NicheId malformado nunca llega a buscarse", () =>
   assert.equal(toNicheId("Not A Valid Niche!"), undefined);
 });
 
-test("taxonomía edge case: marketing_agency (B2B) y software_startup (startup+B2B) están representados sin colapsar en un solo hint", () => {
+test("taxonomía edge case: marketing_agency y software_startup comparten el hint b2b sin necesitar un archetype propio de \"startup\" (retirado en DIAG-V3-08B.1)", () => {
   const agency = toNicheId("marketing_agency")!;
   const startup = toNicheId("software_startup")!;
   assert.deepEqual(lookupNicheArchetypeHints(agency), ["b2b"]);
-  assert.deepEqual(lookupNicheArchetypeHints(startup), ["startup", "b2b"]);
+  assert.deepEqual(lookupNicheArchetypeHints(startup), ["b2b"]);
 });
 
-test("taxonomía edge case: nonprofit_org no asume archetype comercial", () => {
+test("taxonomía edge case: nonprofit_org tiene un hint de mecanismo de entrega (local), no de estructura (\"organization\", retirado en DIAG-V3-08B.1)", () => {
   const org = toNicheId("nonprofit_org")!;
-  assert.deepEqual(lookupNicheArchetypeHints(org), ["organization"]);
+  assert.deepEqual(lookupNicheArchetypeHints(org), ["local"]);
   assert.equal(lookupNicheGroup(org), "nonprofit_community");
 });
 
