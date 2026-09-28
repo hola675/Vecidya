@@ -46,7 +46,7 @@ export function mapLegacyStage(stage: LegacyStageId | undefined): Resolution<Gro
 export const LEGACY_PROFILE_MAPPING: Readonly<Record<ProfileId, { entity: Resolution<EntityType>; archetype: Resolution<OperationalArchetype> }>> = {
   business: {
     entity: resolved("business", "legacy_mapping"),
-    archetype: unresolved("ambiguous_legacy", ["local", "appointments", "local_service", "ecommerce", "hospitality", "b2b", "hybrid"]),
+    archetype: unresolved("ambiguous_legacy", ["local", "appointments", "local_service", "ecommerce", "retail", "hospitality", "b2b", "hybrid"]),
   },
   professional: { entity: resolved("individual", "legacy_mapping"), archetype: resolved("professional", "legacy_mapping") },
   creator: { entity: unresolved("ambiguous_legacy", ["individual", "organization"]), archetype: resolved("creator", "legacy_mapping") },

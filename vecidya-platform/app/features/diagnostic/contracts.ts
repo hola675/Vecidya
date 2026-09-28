@@ -38,7 +38,14 @@ export const CURRENT_DIAGNOSTIC_VERSION: DiagnosticVersion = "2.0";
  * Deliberadamente no es `appVersion` (`package.json`): esas versiones describen el software, estas
  * describen qué produjo un dato guardado, y pueden avanzar en momentos distintos.
  */
-export type QuestionBankVersion = 1;
+/**
+ * `2` queda reservada como identidad contractual para el banco adaptativo de DIAG-V3-08B (nichos +
+ * banco de preguntas ampliado), sin activarse todavía: `CURRENT_QUESTION_BANK_VERSION` sigue en `1`
+ * y ninguna sesión puede producirse con `2` mientras `isCurrentPersistedVersions` siga comparando
+ * contra `CURRENT_PERSISTED_VERSIONS`. Pasa a productiva recién en DIAG-V3-08B.2/.3 (arquitectura y
+ * contenido del banco), no en 08B.0 (taxonomía).
+ */
+export type QuestionBankVersion = 1 | 2;
 export const CURRENT_QUESTION_BANK_VERSION: QuestionBankVersion = 1;
 export type RoutingVersion = 1;
 export const CURRENT_ROUTING_VERSION: RoutingVersion = 1;
@@ -172,33 +179,69 @@ export const isResolved = <T extends string>(resolution: Resolution<T>): resolut
 
 // ── Conceptos V3 ─────────────────────────────────────────────────────────────
 
-/** Qué tipo de entidad responde. Separa lo que hoy mezcla `ProfileId` (entidad + pista operacional). */
+/**
+ * Qué tipo de entidad responde. Separa lo que hoy mezcla `ProfileId` (entidad + pista operacional).
+ *
+ * KEEP en la auditoría de DIAG-V3-08B.0: no se añaden `professional` ni `creator` aquí aunque el
+ * spec de la fase los mencione como "tipos de entidad" a nivel conceptual, porque ya tienen un lugar
+ * correcto y sin solapamiento en `OperationalArchetype` — "profesional independiente" y "creador de
+ * contenido" describen CÓMO opera la entidad (archetype), no QUÉ TIPO DE ENTIDAD es: un profesional
+ * independiente sigue siendo `individual` como entidad, solo que con `archetype: "professional"`.
+ * Mantener esa separación es justo lo que el principio semántico de la fase (§4) exige: si dos
+ * conceptos no se pueden distinguir con una frase, hay que revisar el modelo, no duplicarlo.
+ *
+ * Regla de frontera `individual`/`business` (añadida tras revisión de dominio independiente): lo que
+ * distingue a los dos NO es si una sola persona responde, sino si hay otro personal remunerado además
+ * de quien responde. Un dentista dueño único sin más empleados es `individual`; el mismo dentista con
+ * higienista o recepcionista contratados es `business`, aunque siga siendo "su" consultorio.
+ */
 export const ENTITY_TYPES = ["business", "individual", "organization", "project"] as const;
 export type EntityType = (typeof ENTITY_TYPES)[number];
 
-/** Borrador: cómo genera ingresos o valor. Sin productor todavía; DIAG-V3-02 lo conecta a preguntas. */
-export const BUSINESS_MODELS = [
-  "services",
-  "products",
-  "retail",
-  "ecommerce",
-  "appointments",
-  "hospitality",
-  "professional_services",
-  "creator_audience",
-  "membership",
-  "nonprofit",
-  "hybrid",
-] as const;
+/**
+ * Borrador: CÓMO CREA/ENTREGA Y MONETIZA VALOR. Sin productor todavía; DIAG-V3-08B.3 lo conecta a
+ * preguntas. KEEP en la auditoría de DIAG-V3-08B.0: se mantiene `membership` (no se renombra a
+ * `membership_subscription`) porque no hay ganancia semántica real en el cambio y evita churn en
+ * `mappings.ts`/tests sin necesidad.
+ *
+ * REPLACE tras revisión de dominio independiente de DIAG-V3-08B.0: la lista inicial incluía `retail`,
+ * `ecommerce`, `hospitality` y `appointments`, pero sus definiciones resultaron ser paráfrasis exactas
+ * de los mismos valores en `OperationalArchetype` — ningún negocio real puede tener
+ * `BusinessModel: "retail"` sin `OperationalArchetype: "retail"` también, porque ambos se probaban con
+ * el mismo criterio físico (inventario/exhibición en un local). Eso viola el principio de la fase (§4):
+ * si dos conceptos no se distinguen con una frase, hay que corregir el modelo, no duplicarlo. Esos
+ * cuatro valores se retiran de aquí: `OperationalArchetype` es ahora el único dueño del eje "mecanismo
+ * de entrega"; `BusinessModel` responde solo "de dónde sale el ingreso", con `products`/`services`
+ * cubriendo también los casos que antes vivían en los valores retirados.
+ */
+export const BUSINESS_MODELS = ["services", "products", "professional_services", "creator_audience", "membership", "nonprofit", "hybrid"] as const;
 export type BusinessModel = (typeof BUSINESS_MODELS)[number];
 
-/** Borrador: comportamiento operacional que decide rutas, pesos y prioridades en V3. */
+/**
+ * Borrador: comportamiento operacional que decide rutas, pesos y prioridades en V3. Responde "CÓMO
+ * FUNCIONA operativamente", no "cómo monetiza" (`BusinessModel`) ni "en qué mercado" (`Niche`): un
+ * mismo `BusinessModel` puede mapear a más de un archetype (p. ej. `professional_services` +
+ * `appointments` es válido) y un mismo archetype puede admitir varios modelos de negocio; la
+ * auditoría de DIAG-V3-08B.0 confirma que esa superposición parcial es intencional, no un error de
+ * diseño. `retail` se separa de `local` (DIAG-V3-08B.0): un comercio con inventario/exhibición físico
+ * necesita preguntas de catálogo/inventario que un negocio local genérico (gimnasio, spa) no necesita.
+ *
+ * Tensión conocida, sin resolver todavía (hallazgo de revisión de dominio independiente): la mayoría de
+ * estos valores describe CÓMO ocurre la transacción con el cliente (`local`, `appointments`, `retail`,
+ * `ecommerce`, `hospitality`, `b2b`, `local_service`), pero `organization` y `startup` describen en
+ * cambio un estado estructural/de ciclo de vida, no un mecanismo de entrega — una cocina comunitaria
+ * sin fines de lucro opera día a día más parecido a `local`/`hospitality` que a una abstracción de
+ * gobernanza. DIAG-V3-08B.1 (Context Resolver) deberá decidir si `organization`/`startup` siguen siendo
+ * archetypes o si se derivan en su lugar de `EntityType` + `GrowthStage`; no se resuelve en 08B.0 para
+ * no acoplar la taxonomía a un resolver que todavía no existe.
+ */
 export const OPERATIONAL_ARCHETYPES = [
   "local",
   "appointments",
   "local_service",
   "professional",
   "ecommerce",
+  "retail",
   "hospitality",
   "b2b",
   "creator",
@@ -209,6 +252,42 @@ export const OPERATIONAL_ARCHETYPES = [
 export type OperationalArchetype = (typeof OPERATIONAL_ARCHETYPES)[number];
 
 /**
+ * Conjunto cerrado de familias de nicho, útil para routing y analítica (DIAG-V3-08B.0 §9-10). No es
+ * una taxonomía publicitaria de industrias: el objetivo es que el planner adaptativo pueda seleccionar
+ * módulos de preguntas por familia sin depender de un catálogo abierto de miles de nichos específicos.
+ *
+ * `creator` es una excepción deliberada a "nicho = mercado/tema": agrupa por MECANISMO de monetización
+ * (audiencia propia), no por tema de contenido, porque un creador de cocina, uno de fitness y uno de
+ * finanzas comparten casi todas sus preguntas de diagnóstico relevantes (captura de audiencia, canales,
+ * consistencia, monetización) independientemente del tema — al contrario que, por ejemplo, una tienda
+ * de retail y un restaurante, donde el tema sí cambia qué se pregunta. Revisión de dominio independiente
+ * de DIAG-V3-08B.0 señaló esto como tensión real con el resto del grupo; se mantiene con esta
+ * justificación explícita en vez de forzar a cada creador a un grupo temático que perdería la pregunta
+ * más relevante (mecánica de audiencia) a cambio de una que casi nunca lo es (el tema del contenido).
+ */
+export const NICHE_GROUPS = [
+  "health_wellness",
+  "beauty_personal_care",
+  "legal",
+  "financial_tax_insurance",
+  "professional_services",
+  "home_services",
+  "automotive",
+  "real_estate",
+  "food_hospitality",
+  "retail",
+  "ecommerce",
+  "education_coaching",
+  "creative_media",
+  "creator",
+  "b2b_services",
+  "technology_software",
+  "nonprofit_community",
+  "other",
+] as const;
+export type NicheGroup = (typeof NICHE_GROUPS)[number];
+
+/**
  * Nicho: conjunto abierto (barbería, clínica, cafetería…) que complementa al arquetipo; nunca lo
  * sustituye. Es el único ID con marca nominal porque no es una lista cerrada: solo se obtiene
  * validando con `toNicheId`.
@@ -217,8 +296,14 @@ export type NicheId = string & { readonly __brand: "NicheId" };
 export type NicheDefinition = {
   id: NicheId;
   label: string;
-  /** Arquetipos a los que se superpone; al menos uno. */
-  archetypes: readonly [OperationalArchetype, ...OperationalArchetype[]];
+  /** Familia cerrada para routing/analítica (`NICHE_GROUPS`). */
+  group: NicheGroup;
+  /**
+   * Arquetipos con los que este nicho suele superponerse. Es un HINT editorial (DIAG-V3-08B.0 §19-20),
+   * no un hecho resuelto: un dentista suele operar por citas, pero el resolver de contexto (08B.1)
+   * decide el archetype real a partir de respuestas, nunca a partir de esta lista. Al menos uno.
+   */
+  archetypeHints: readonly [OperationalArchetype, ...OperationalArchetype[]];
 };
 
 const NICHE_PATTERN = /^[a-z][a-z0-9_]{1,39}$/;
@@ -226,10 +311,19 @@ export function toNicheId(value: unknown): NicheId | undefined {
   return typeof value === "string" && NICHE_PATTERN.test(value) ? (value as NicheId) : undefined;
 }
 
+export const isNicheGroup = (value: unknown): value is NicheGroup => isOneOf(NICHE_GROUPS, value);
+
 /**
  * Etapa V3, definida por señales observables. No comparte significado con `StageId` (autodeclarada)
  * aunque coincidan palabras: el `growing` actual es «estable y quiero crecer»; el V3 es volumen
  * creciente con cuellos de botella. La traducción vive solo en `mapLegacyStage`.
+ *
+ * Frontera sin operacionalizar todavía (hallazgo de revisión de dominio independiente): `operating` vs
+ * `growing` se distinguen aquí por adjetivo ("estable" vs "aumento demostrable"), pero ninguna señal
+ * concreta está definida todavía — sin eso, una futura pregunta corre el riesgo de colapsar de nuevo en
+ * la misma autopercepción que este contrato existe para evitar. DIAG-V3-08B.3 debe operacionalizar esto
+ * con al menos una señal observable de ejemplo (p. ej. "tendencia de volumen de consultas en ≥2 períodos
+ * consecutivos" o "existe lista de espera/backlog"), no dejarlo en un adjetivo sin criterio.
  */
 export const GROWTH_STAGES = ["idea", "starting", "operating", "growing", "scaling"] as const;
 export type GrowthStage = (typeof GROWTH_STAGES)[number];
@@ -246,18 +340,34 @@ export type CustomerModel = { reach: Resolution<CustomerReach>; buyer: Resolutio
 export const PRIMARY_GOALS = ["be_found", "explain", "trust", "opportunities", "stop_losing", "organize", "automate", "measure"] as const;
 export type PrimaryGoal = (typeof PRIMARY_GOALS)[number];
 
-/** Borrador: principal fricción declarada. La pregunta no existe todavía. */
-export const PRIMARY_FRICTIONS = [
-  "not_found",
-  "unclear_offer",
-  "low_trust",
-  "few_inquiries",
-  "lost_inquiries",
-  "slow_follow_up",
-  "disorganized",
-  "repetitive_work",
-  "no_data",
-] as const;
+/**
+ * Borrador: principal fricción declarada. La pregunta no existe todavía (llega en DIAG-V3-08B.3).
+ *
+ * REPLACE en DIAG-V3-08B.0: el conjunto anterior (`not_found`, `unclear_offer`, `low_trust`,
+ * `few_inquiries`, `lost_inquiries`, `slow_follow_up`, `disorganized`, `repetitive_work`, `no_data`)
+ * nunca tuvo productor ni consumidor (siempre `unresolved("not_asked")`, cero apariciones fuera de
+ * este archivo), así que la política del encabezado de este módulo ("las listas de borrador pueden
+ * cambiar libremente hasta que algo se persista") aplica sin reservas. Se sustituye por 6 categorías
+ * mutuamente distinguibles, cada una con una prueba de pertenencia explícita para evitar que dos
+ * preguntas futuras terminen clasificando la misma señal en categorías distintas:
+ * - `visibility`: nadie encuentra el negocio (poco o ningún tráfico/consultas de entrada).
+ * - `trust`: lo encuentran pero dudan (falta de prueba social, reputación o claridad de la oferta).
+ * - `conversion`: llegan consultas pero pocas se cierran (el problema es la oferta/negociación, no el
+ *   volumen de entrada ni el seguimiento).
+ * - `follow_up`: las consultas se pierden por falta de respuesta o proceso, no por la oferta en sí
+ *   (distinción clave frente a `conversion`: aquí la consulta nunca llega a evaluarse de verdad).
+ * - `operations`: el cuello de botella es interno (desorganización, trabajo repetitivo manual, falta
+ *   de datos para decidir), no de cara al cliente.
+ * - `scale`: ya funciona de forma repetible pero no soporta más volumen sin romperse (capacidad,
+ *   equipo, procesos).
+ *
+ * Decisión explícita sobre retención/postventa (hallazgo de revisión de dominio independiente): el
+ * hallazgo `post_sale_loop` de `ISSUE_IDS` no tiene una categoría de fricción dedicada; una fricción de
+ * "no vuelven ni refieren después de una buena venta" se clasifica en `operations` para V1 (es un vacío
+ * de proceso interno de retención, no de cara al primer contacto). Si 08B.3 encuentra que esto pierde
+ * señal real, añadir una séptima categoría entonces — no se añade especulativamente aquí.
+ */
+export const PRIMARY_FRICTIONS = ["visibility", "trust", "conversion", "follow_up", "operations", "scale"] as const;
 export type PrimaryFriction = (typeof PRIMARY_FRICTIONS)[number];
 
 // ── Evidencia ────────────────────────────────────────────────────────────────
