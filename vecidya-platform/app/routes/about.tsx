@@ -64,10 +64,10 @@ export default function About() {
               </div>
             </article>
             <article className="about-person-card">
-              <img alt="Edgar" decoding="async" height={1402} loading="lazy" src={publicAssets.about.edgar} width={1122} />
+              <img alt="Edgar Betin" decoding="async" height={1402} loading="lazy" src={publicAssets.about.edgar} width={1122} />
               <div>
                 <p className="eyebrow">CLIENTES · DESARROLLO</p>
-                <h3>Edgar</h3>
+                <h3>Edgar Betin</h3>
                 <strong>Director Comercial</strong>
                 <p>Conecta las necesidades de cada negocio con soluciones prácticas, acompañando la conversación desde el primer contexto hasta el siguiente paso.</p>
               </div>
