@@ -17,6 +17,54 @@ export {
   type UnresolvedFieldTrace,
 } from "./context-resolver";
 export { deriveSignalsFromLegacyContext } from "./legacy-signal-adapter";
+export { foldSignalProductions, scalarSlotForProduction, SIGNAL_PRODUCTION_CONTEXT_FIELD, SIGNAL_PRODUCTION_KINDS, type SignalOrigin, type SignalProduction } from "./qbv2-signals";
+export {
+  andV2,
+  answeredV2,
+  CONTEXT_FIELD_REFS,
+  contextEquals,
+  contextIn,
+  contextUnresolved,
+  eqV2,
+  evaluateRuleV2,
+  evaluateRuleV2Trace,
+  collectAnswerDependencies,
+  collectAnswerRefValueChecks,
+  collectContextDependencies,
+  inV2,
+  multiExcludingV2,
+  multiIntersectsV2,
+  notEqV2,
+  notV2,
+  orV2,
+  type AnswerRefV2,
+  type AnswersV2,
+  type ContextFieldRef,
+  type RuleV2,
+  type RuleV2Trace,
+} from "./qbv2-rules";
+export {
+  MODULE_IDS,
+  MODULE_REGISTRY,
+  QUESTION_PRIORITIES,
+  QUESTION_PURPOSES,
+  type ContradictionRole,
+  type CopyVariantTarget,
+  type CopyVariantV2,
+  type ModuleDefinition,
+  type ModuleId,
+  type MultiQuestionDefinitionV2,
+  type OptionKindV2,
+  type OptionV2,
+  type QuestionDefinitionV2,
+  type QuestionPriority,
+  type QuestionPurpose,
+  type ScoringReadiness,
+  type SingleQuestionDefinitionV2,
+} from "./qbv2-contract";
+export { getQuestionBank, NonConvergentRoutingError, registerQuestionBankV2, resolveEligibleQuestionsV2, type QuestionBankV2, type QuestionBankVersionNumber, type ResolveEligibleQuestionsResult } from "./qbv2-engine";
+export { GOLDEN_QUESTIONS_V2, type QuestionIdV2 } from "./qbv2-golden";
+export { validateQuestionBankV2, type ValidationIssue } from "./qbv2-validators";
 export { deriveContextV3, LEGACY_PROFILE_MAPPING, LEGACY_STAGE_MAPPING, mapLegacyGoal, mapLegacyStage } from "./mappings";
 export { applyAnswer, clearAnswer, deriveActiveAnswers, deriveContext, getApplicableQuestions, isAnswered, isSelected, selectedValues } from "./answers";
 export { addonCatalog, learnCatalog, learnPath, licenseCatalog, serviceCatalog, servicePath } from "./catalog";
