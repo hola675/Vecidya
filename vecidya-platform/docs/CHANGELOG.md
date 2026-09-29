@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-29 — DIAG-V3-08B.4 Adaptive Planner (solo local, sin deploy)
+
+- Implementado `AdaptivePlannerVersion=1` determinista para QBV2 inactivo: `RouteBudgetV1` con target 10–16, hard cap acumulativo 18 y confirmation reserve 2; `buildQuestionPlan`, `planNextQuestion`, completion status, trace y skip reasons.
+- La selección prioriza contexto esencial, routing, goal/friction, componentes especializados y cross-cutting relevante; recalcula desde respuestas activas, cuenta evidencia previa por componente y evita duplicar shared evidence. Professional+appointments, retail+ecommerce y creator+ecommerce tienen fairness acumulativa.
+- Resultado final: peor caso **23 elegibles → 11 nuevas → ruta total 16**; 17 fixtures y 20 personas dinámicas permanecen ≤18. `DIAG-V3-08B3-ROUTE-BUDGET-001` queda **RESUELTA por 08B.4**.
+- Validación: **674/674 tests PASS**, planner específico 12/12, typecheck PASS, build PASS y diff-check PASS. QBV2 sigue inactive (`CURRENT_QUESTION_BANK_VERSION=1`); sin D1, KV ni deploy. Route-signature design queda preparado documentalmente sin modificar analytics QBV1.
+
 ## 2026-09-29 — DIAG-V3-08B.3 Lote F: cierre de contenido QBV2 (solo local, sin deploy)
 
 - **6 preguntas nuevas** en `startup` (`qbv2-lote-f.ts`): claridad problema/público, aprendizaje sobre el problema, oferta lista para probar, demanda observable, canal inicial y próximo hito. Solo para `EntityType=project` con `GrowthStage=idea|starting`; sin exigir empresa, web, marca o CRM. Banco final: **80 preguntas productivas** + 1 `confirmation` golden fixture-only (secondary monetization aún no producible).

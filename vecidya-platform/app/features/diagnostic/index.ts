@@ -72,6 +72,7 @@ export { LOTE_E_QUESTIONS_V2 } from "./qbv2-lote-e";
 export { LOTE_F_QUESTIONS_V2 } from "./qbv2-lote-f";
 export { QUESTION_BANK_V2 } from "./qbv2-bank";
 export { validateQuestionBankV2, type ValidationIssue } from "./qbv2-validators";
+export { ADAPTIVE_PLANNER_VERSION, DEFAULT_ROUTE_BUDGET_V1, buildQuestionPlan, isDiagnosticReadyToComplete, planNextQuestion, plannerRouteSignatureParts, type AdaptivePlannerVersion, type CompletionStatus, type DiagnosticPlannerState, type PlannerSkipReason, type PlannerTraceEntry, type QuestionPlan, type QuestionRankMetadata, type QuestionSelectionReason, type RouteBudgetV1 } from "./qbv2-planner";
 export { deriveContextV3, LEGACY_PROFILE_MAPPING, LEGACY_STAGE_MAPPING, mapLegacyGoal, mapLegacyStage } from "./mappings";
 export { applyAnswer, clearAnswer, deriveActiveAnswers, deriveContext, getApplicableQuestions, isAnswered, isSelected, selectedValues } from "./answers";
 export { addonCatalog, learnCatalog, learnPath, licenseCatalog, serviceCatalog, servicePath } from "./catalog";
