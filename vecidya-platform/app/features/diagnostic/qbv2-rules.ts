@@ -1,4 +1,5 @@
 import type { ResolvedDomainContext } from "./context-resolver";
+import type { OperationalArchetype } from "./contracts";
 
 /**
  * Motor de reglas declarativo de QBV2 (DIAG-V3-08B.2 §20-23), compatible en espíritu con DIAG-V3-03
@@ -31,6 +32,15 @@ export type RuleV2 =
   | { readonly op: "contextResolvedEquals"; readonly field: ContextFieldRef; readonly value: string }
   | { readonly op: "contextResolvedIn"; readonly field: ContextFieldRef; readonly values: readonly string[] }
   | { readonly op: "contextUnresolved"; readonly field: ContextFieldRef }
+  /**
+   * Pertenencia a `archetypeComponents` (DIAG-V3-08B.3 Lote B, C1), DISTINTA a propósito de
+   * `contextResolvedEquals("archetype", ...)`: esa compara el valor EXACTO de `archetype` (nunca es
+   * cierto que `archetype === "professional"` cuando el negocio es `hybrid`), mientras que esta pregunta
+   * si `"professional"` es uno de los componentes reales, sea o no `archetype` un valor único o
+   * `"hybrid"`. Un valor no-hybrid con un solo componente sigue siendo compatible con ambas — nunca
+   * cambia silenciosamente el significado de `contextResolvedEquals`/`contextResolvedIn` existentes.
+   */
+  | { readonly op: "archetypeIncludes"; readonly value: OperationalArchetype }
   | { readonly op: "and"; readonly rules: readonly RuleV2[] }
   | { readonly op: "or"; readonly rules: readonly RuleV2[] }
   | { readonly op: "not"; readonly rule: RuleV2 };
@@ -98,6 +108,9 @@ export function evaluateRuleV2Trace(rule: RuleV2, answers: AnswersV2, context: R
         const field = readContextField(context, node.field);
         return { rule: node, result: field.status === "unresolved" };
       }
+      case "archetypeIncludes": {
+        return { rule: node, result: context.archetypeComponents.includes(node.value) };
+      }
     }
   };
   const trace = build(rule);
@@ -131,6 +144,7 @@ export function collectAnswerDependencies(rule: RuleV2): string[] {
       case "contextResolvedEquals":
       case "contextResolvedIn":
       case "contextUnresolved":
+      case "archetypeIncludes":
         return;
     }
   };
@@ -147,6 +161,12 @@ export function collectContextDependencies(rule: RuleV2): ContextFieldRef[] {
       case "contextResolvedIn":
       case "contextUnresolved":
         seen.add(node.field);
+        return;
+      // Lee `archetypeComponents`, derivado de la MISMA resolución que "archetype" (§43-49 sigue
+      // aplicando: una pregunta no puede producir una señal que afecte "archetype" y gatear en su
+      // pertenencia a la vez).
+      case "archetypeIncludes":
+        seen.add("archetype");
         return;
       case "and":
       case "or":
@@ -197,6 +217,7 @@ export function collectAnswerRefValueChecks(rule: RuleV2): AnswerRefValueCheck[]
       case "contextResolvedEquals":
       case "contextResolvedIn":
       case "contextUnresolved":
+      case "archetypeIncludes":
         return;
     }
   };
@@ -218,3 +239,7 @@ export const contextUnresolved = (field: ContextFieldRef): RuleV2 => ({ op: "con
 export const andV2 = (...rules: RuleV2[]): RuleV2 => ({ op: "and", rules });
 export const orV2 = (...rules: RuleV2[]): RuleV2 => ({ op: "or", rules });
 export const notV2 = (rule: RuleV2): RuleV2 => ({ op: "not", rule });
+/** Pertenencia a `archetypeComponents` (§ arriba, DIAG-V3-08B.3 Lote B C1) — NUNCA usar `contextEquals("archetype", ...)` para "este negocio opera de esta manera": eso pierde composición híbrida. */
+export const archetypeIncludes = (value: OperationalArchetype): RuleV2 => ({ op: "archetypeIncludes", value });
+/** Azúcar sintáctico sobre `archetypeIncludes` + `orV2` para preguntas compartidas entre varios archetypes (p. ej. reputación). */
+export const archetypeIncludesAny = (values: readonly OperationalArchetype[]): RuleV2 => orV2(...values.map(archetypeIncludes));

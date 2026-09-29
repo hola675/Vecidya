@@ -253,6 +253,20 @@ export const OPERATIONAL_ARCHETYPES = ["local", "appointments", "local_service",
 export type OperationalArchetype = (typeof OPERATIONAL_ARCHETYPES)[number];
 
 /**
+ * Deriva `archetypeComponents` (§ arriba en `DiagnosticContextV3`) a partir de una `Resolution<OperationalArchetype>`
+ * AISLADA, sin acceso a las señales primaria/secundaria que produjeron un eventual `"hybrid"` (uso: el
+ * adapter legacy de QBV1, `mappings.ts`, donde `archetype` nunca se resuelve a `"hybrid"` — ver
+ * `LEGACY_PROFILE_MAPPING`, siempre `unresolved` en esos casos). El Context Resolver de QBV2
+ * (`context-resolver.ts`) NO usa esta función: calcula los componentes reales directamente porque sí
+ * tiene ambos mecanismos de entrega disponibles en el momento de resolver.
+ */
+export function deriveSingleArchetypeComponents(resolution: Resolution<OperationalArchetype>): readonly OperationalArchetype[] {
+  if (resolution.status !== "resolved") return [];
+  if (resolution.value === "hybrid") return []; // un "hybrid" sin componentes reales conocidos nunca satisface el invariante ">=2 componentes" fabricando uno.
+  return [resolution.value];
+}
+
+/**
  * Conjunto cerrado de familias de nicho, útil para routing y analítica (DIAG-V3-08B.0 §9-10). No es
  * una taxonomía publicitaria de industrias: el objetivo es que el planner adaptativo pueda seleccionar
  * módulos de preguntas por familia sin depender de un catálogo abierto de miles de nichos específicos.
@@ -420,6 +434,20 @@ export type DiagnosticContextV3 = {
   entity: Resolution<EntityType>;
   businessModel: Resolution<BusinessModel>;
   archetype: Resolution<OperationalArchetype>;
+  /**
+   * Componentes reales de `archetype` (DIAG-V3-08B.3 Lote B, C1 — bloqueante arquitectónico corregido):
+   * cuando `archetype` resuelve a un valor NO-`hybrid`, es exactamente `[archetype.value]`; cuando
+   * resuelve a `"hybrid"`, son los ≥2 mecanismos de entrega reales e independientes que lo produjeron
+   * (nunca `"hybrid"` como componente); cuando `archetype` está `unresolved`, es `[]`. Existe porque una
+   * pregunta especializada debe poder preguntar "¿este negocio opera de esta manera?" (pertenencia,
+   * `archetypeIncludes` en `qbv2-rules.ts`) sin perder AMBAS familias de preguntas cuando el negocio
+   * combina dos mecanismos reales — antes de esto, `professional + appointments` resolvía
+   * `archetype: "hybrid"` y ninguna pregunta gateada con `archetype === "professional"` ni
+   * `archetype === "appointments"` (comparación exacta) volvía a ser elegible. Se deriva del MISMO
+   * resolver/señales que `archetype` (nunca una segunda fuente de verdad); determinista, sin duplicados,
+   * en orden canónico (alfabético).
+   */
+  archetypeComponents: readonly OperationalArchetype[];
   niche: Resolution<NicheId>;
   /**
    * Añadido en DIAG-V3-08B.1: familia cerrada del nicho (`NicheGroup`), separada de `niche` (el

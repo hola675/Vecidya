@@ -50,6 +50,12 @@ export const MODULE_IDS = [
   "follow_up",
   "measurement",
   "confirmation",
+  // Cross-cutting por PERTENENCIA de archetype, no por valor exacto (DIAG-V3-08B.3 Lote B C1, §19-21 del
+  // checkpoint): reputación/reviews aplica a varios archetypes (`local`/`appointments`/`professional`,
+  // más `retail`/`ecommerce`/`hospitality` esperados en Lote C) sin ser universal a TODOS. Mismo patrón
+  // que `operations`/`follow_up`/`measurement`, que ya son cross-cutting por friction/goal en vez de por
+  // archetype — este es el primer cross-cutting por `archetypeIncludes`.
+  "reputation",
 ] as const;
 export type ModuleId = (typeof MODULE_IDS)[number];
 
@@ -92,6 +98,7 @@ export const MODULE_REGISTRY: readonly ModuleDefinition[] = [
   { id: "follow_up", purpose: "Consultas perdidas por falta de respuesta/proceso.", relevantWhen: { frictions: ["follow_up"] }, targetQuestionRange: { min: 3, max: 5 } },
   { id: "measurement", purpose: "Quiere entender qué funciona y qué no.", relevantWhen: { goals: ["measure"] }, targetQuestionRange: { min: 2, max: 3 } },
   { id: "confirmation", purpose: "Solo ante ambigüedad/contradicción real (§53-54); nunca elegible por defecto.", relevantWhen: {}, targetQuestionRange: { min: 0, max: 2 } },
+  { id: "reputation", purpose: "Reseñas/reputación, compartida entre archetypes que la necesitan (no universal).", relevantWhen: { archetypes: ["local", "appointments", "professional"] }, targetQuestionRange: { min: 1, max: 3 } },
 ];
 
 // ── Purpose / Priority (§5-6) ────────────────────────────────────────────────

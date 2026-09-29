@@ -150,9 +150,14 @@ test("contexto V3: lo que el motor actual no pregunta queda sin resolver, nunca 
     assert.equal(context.customerModel.reach.status, "unresolved", `${name}: alcance de clientes inventado`);
     assert.equal(context.customerModel.buyer.status, "unresolved", `${name}: tipo de comprador inventado`);
     assert.ok(isWellFormed(context.archetype, OPERATIONAL_ARCHETYPES) && isWellFormed(context.growthStage, GROWTH_STAGES) && isWellFormed(context.entity, ENTITY_TYPES));
+    // archetypeComponents (DIAG-V3-08B.3 Lote B, C1): QBV1 nunca resuelve archetype a "hybrid" (ver
+    // LEGACY_PROFILE_MAPPING), así que siempre debe ser exactamente [] (unresolved) o [archetype.value] (resolved).
+    const expectedComponents = context.archetype.status === "resolved" ? [context.archetype.value] : [];
+    assert.deepEqual(context.archetypeComponents, expectedComponents, `${name}: archetypeComponents no coincide con archetype`);
   }
   const empty = deriveContextV3(deriveContext({}));
   for (const field of ["profile", "entity", "archetype", "growthStage", "primaryGoal"] as const) assert.equal(empty[field].status, "unresolved");
+  assert.deepEqual(empty.archetypeComponents, []);
 });
 
 test("validación en fronteras: guardas de lista cerrada y nicho con formato", () => {

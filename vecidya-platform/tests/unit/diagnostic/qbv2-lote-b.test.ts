@@ -14,6 +14,8 @@ import {
 } from "../../../app/features/diagnostic/index.ts";
 
 const SPECIALIZED_MODULES = new Set(["local", "local_service", "appointments", "professional"]);
+// "reputation" es el módulo cross-cutting nuevo de C1 (§19-21): comparte q2_reputation_flow entre los 3 archetypes de arriba.
+const LOTE_B_MODULES = new Set([...SPECIALIZED_MODULES, "reputation"]);
 
 // ── DIAG-V3-08B.3, Lote B: local/local_service/appointments/professional ───
 
@@ -28,11 +30,16 @@ test("Lote B: sin IDs duplicados contra golden ni Lote A", () => {
   assert.deepEqual(overlap, [], `Lote B no debería reusar ningún QuestionId previo: ${JSON.stringify(overlap.map((q) => q.id))}`);
 });
 
-test("Lote B: cada pregunta usa un módulo real de local/local_service/appointments/professional", () => {
+test("Lote B: cada pregunta usa un módulo real de local/local_service/appointments/professional/reputation", () => {
   for (const question of LOTE_B_QUESTIONS_V2) {
     assert.ok((MODULE_IDS as readonly string[]).includes(question.module), `${question.id}: módulo inválido`);
-    assert.ok(SPECIALIZED_MODULES.has(question.module), `${question.id}: módulo fuera de alcance de Lote B (${question.module})`);
+    assert.ok(LOTE_B_MODULES.has(question.module), `${question.id}: módulo fuera de alcance de Lote B (${question.module})`);
   }
+});
+
+test("q2_reputation_flow vive en su propio módulo cross-cutting \"reputation\", no en \"local\" (C1 §19-21: module=local habría sido semánticamente engañoso)", () => {
+  const question = LOTE_B_QUESTIONS_V2.find((q) => q.id === "q2_reputation_flow")!;
+  assert.equal(question.module, "reputation");
 });
 
 test("Lote B: ninguna pregunta gatea en NicheId/NicheGroup como condición de activación (sector-first, §1)", () => {
@@ -131,7 +138,7 @@ test("fixture 1: profesional solo (individual, sin colega) → módulo professio
   }
 });
 
-test("fixture 2 (gap conocido, no regresión de Lote B): profesional + appointments como dos mecanismos de entrega independientes resuelve archetype=hybrid, y NINGUNA pregunta especializada de professional NI de appointments es elegible bajo ese contexto — confirma DIAG-V3-08B2-HYBRID-ARCHETYPE-MODULE-001 (deferida a 08B.4), no es un fixture artificial de Lote B", () => {
+test("fixture 2 / mutación H / §11 (C1 de Lote B): profesional + appointments como dos mecanismos de entrega independientes resuelve archetype=hybrid, y CONSERVA AMBAS familias de preguntas especializadas — DIAG-V3-08B2-HYBRID-ARCHETYPE-MODULE-001 queda resuelto para el gating de contenido (el ORDEN/budget de cuáles se muestran sigue siendo DIAG-V3-08B.4)", () => {
   // Ninguna pregunta REAL del banco produce dos deliveryMode independientes a la vez (q2_delivery es de
   // opción única); se construye la señal directamente sobre el Context Resolver, igual que hace
   // context-resolver.test.ts, para probar el estado real del sistema ante esa composición.
@@ -140,13 +147,58 @@ test("fixture 2 (gap conocido, no regresión de Lote B): profesional + appointme
     secondaryDeliveryMode: { value: "scheduled_time_blocks", provenance: "explicit_declaration" },
   }).context;
   assert.deepEqual(context.archetype, { status: "resolved", value: "hybrid", source: "signal" });
+  assert.deepEqual([...context.archetypeComponents].sort(), ["appointments", "professional"]);
 
   const professionalQuestions = LOTE_B_QUESTIONS_V2.filter((q) => q.module === "professional");
   const appointmentsQuestions = [...GOLDEN_QUESTIONS_V2, ...LOTE_B_QUESTIONS_V2].filter((q) => q.module === "appointments");
+  assert.ok(professionalQuestions.length > 0 && appointmentsQuestions.length > 0, "sanity: ambas familias existen en el banco");
   for (const q of [...professionalQuestions, ...appointmentsQuestions]) {
     const eligible = !q.appliesWhen || evaluateRuleV2(q.appliesWhen, {}, context);
-    assert.ok(!eligible, `${q.id}: gateado en un archetype exacto (professional/appointments) — con archetype=hybrid queda inelegible, confirmando el gap documentado`);
+    assert.ok(eligible, `${q.id}: debería seguir elegible bajo archetype=hybrid (professional+appointments) — perderla sería el bug de C1`);
   }
+});
+
+test("mutación (C1 §14): local + appointments con evidencia independiente real también conserva ambas familias, sin depender del sector", () => {
+  const context = resolveDiagnosticContext({
+    deliveryMode: { value: "fixed_location_no_inventory", provenance: "observed_fact" },
+    secondaryDeliveryMode: { value: "scheduled_time_blocks", provenance: "observed_fact" },
+  }).context;
+  assert.deepEqual(context.archetype, { status: "resolved", value: "hybrid", source: "signal" });
+  assert.deepEqual([...context.archetypeComponents].sort(), ["appointments", "local"]);
+
+  // q2_local_repeat_customers también depende de q2_has_customers=yes (encadenada, no solo de archetype).
+  const answers = { q2_has_customers: "yes" };
+  const localQuestions = LOTE_B_QUESTIONS_V2.filter((q) => q.module === "local");
+  const appointmentsQuestions = [...GOLDEN_QUESTIONS_V2, ...LOTE_B_QUESTIONS_V2].filter((q) => q.module === "appointments");
+  for (const q of [...localQuestions, ...appointmentsQuestions]) {
+    const eligible = !q.appliesWhen || evaluateRuleV2(q.appliesWhen, answers, context);
+    assert.ok(eligible, `${q.id}: debería seguir elegible bajo archetype=hybrid (local+appointments)`);
+  }
+});
+
+test("§12/§13 (C1 de Lote B): un archetype NO-hybrid sigue activando SOLO su propia familia — la corrección de C1 no abre las compuertas de más", () => {
+  const professionalOnly = resolveDiagnosticContext({ deliveryMode: { value: "specialized_individual_practice", provenance: "explicit_declaration" } }).context;
+  const appointmentsOnly = resolveDiagnosticContext({ deliveryMode: { value: "scheduled_time_blocks", provenance: "explicit_declaration" } }).context;
+
+  const appointmentsQuestions = [...GOLDEN_QUESTIONS_V2, ...LOTE_B_QUESTIONS_V2].filter((q) => q.module === "appointments");
+  for (const q of appointmentsQuestions) {
+    const eligible = !q.appliesWhen || evaluateRuleV2(q.appliesWhen, {}, professionalOnly);
+    assert.ok(!eligible, `${q.id}: professional puro NO debería activar preguntas de appointments`);
+  }
+  const professionalQuestions = LOTE_B_QUESTIONS_V2.filter((q) => q.module === "professional");
+  for (const q of professionalQuestions) {
+    const eligible = !q.appliesWhen || evaluateRuleV2(q.appliesWhen, {}, appointmentsOnly);
+    assert.ok(!eligible, `${q.id}: appointments puro NO debería activar preguntas de professional`);
+  }
+});
+
+test("§15 (fixture contractual futuro para Lote C): retail + ecommerce con evidencia independiente ya resuelve hybrid con ambos componentes HOY, sin necesitar contenido de Lote C todavía — protege la arquitectura antes de escribir esas preguntas", () => {
+  const context = resolveDiagnosticContext({
+    deliveryMode: { value: "fixed_location_with_inventory", provenance: "observed_fact" },
+    secondaryDeliveryMode: { value: "online_checkout", provenance: "observed_fact" },
+  }).context;
+  assert.deepEqual(context.archetype, { status: "resolved", value: "hybrid", source: "signal" });
+  assert.deepEqual([...context.archetypeComponents].sort(), ["ecommerce", "retail"]);
 });
 
 test("fixture 3: sector health_wellness + delivery por citas de varios proveedores → archetype=appointments, SIN usar ningún NicheId (\"dentist\")", () => {
@@ -262,6 +314,21 @@ test("route pressure A-D: un solo archetype (local/local_service/appointments/pr
 });
 
 // ── Duplicate audit: Lote B nunca reintroduce señales de fundación ──────────
+
+test("§23 (route pressure, hybrid): professional + appointments compuestos elevan la presión especializada elegible por encima de un solo archetype — registrado como dato, no resuelto aquí (08B.4 debe demostrar selección)", () => {
+  const context = resolveDiagnosticContext({
+    deliveryMode: { value: "specialized_individual_practice", provenance: "explicit_declaration" },
+    secondaryDeliveryMode: { value: "scheduled_time_blocks", provenance: "explicit_declaration" },
+  }).context;
+  const bank = [...GOLDEN_QUESTIONS_V2, ...LOTE_A_QUESTIONS_V2, ...LOTE_B_QUESTIONS_V2];
+  const eligibleSpecialized = bank.filter((q) => {
+    if (!SPECIALIZED_MODULES.has(q.module) && q.module !== "reputation") return false;
+    return !q.appliesWhen || evaluateRuleV2(q.appliesWhen, {}, context);
+  });
+  // Single-archetype pressure máxima observada (appointments) era 7; hybrid debe ser mayor o igual a la
+  // suma de ambas familias que compone (professional 5 + appointments 7 + reputation compartida, sin duplicar).
+  assert.ok(eligibleSpecialized.length >= 10, `presión especializada bajo hybrid demasiado baja para representar ambas familias: ${eligibleSpecialized.length}`);
+});
 
 test("Lote B no vuelve a preguntar sector/reach/buyer/growth-stage general/goal/friction general (§3): ninguna pregunta produce esas señales de nuevo", () => {
   const serialized = JSON.stringify(LOTE_B_QUESTIONS_V2);

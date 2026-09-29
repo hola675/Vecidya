@@ -1,5 +1,5 @@
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
-import { andV2, contextEquals, contextIn, eqV2, inV2 } from "./qbv2-rules";
+import { andV2, archetypeIncludes, archetypeIncludesAny, eqV2, inV2 } from "./qbv2-rules";
 
 /**
  * DIAG-V3-08B.3 — Lote B: `local`/`local_service`/`appointments`/`professional` (contenido especializado).
@@ -15,9 +15,18 @@ import { andV2, contextEquals, contextIn, eqV2, inV2 } from "./qbv2-rules";
  * archetype. Este lote solo añade evidencia ADICIONAL específica de cómo opera cada archetype.
  *
  * `q2_reputation_flow` es deliberadamente COMPARTIDA entre `local`/`appointments`/`professional` (§23
- * del checkpoint: reviews no se duplica por módulo) — un solo `QuestionId`, `module: "local"` por
- * convención de origen, gateada con `contextIn("archetype", [...])` en vez de tres preguntas casi
- * idénticas.
+ * del checkpoint: reviews no se duplica por módulo) — un solo `QuestionId`, gateada por PERTENENCIA de
+ * archetype (`archetypeIncludes`, no comparación exacta) en vez de tres preguntas casi idénticas. Vive
+ * en su propio módulo cross-cutting `reputation` (C1 de Lote B, §19-21 del checkpoint): `module: "local"`
+ * habría dejado semántica de módulo engañosa para el futuro planner/budget — Lote C probablemente
+ * también necesitará reputación para `retail`/`ecommerce`/`hospitality`, mismo patrón que `operations`/
+ * `follow_up`/`measurement` (cross-cutting, no propiedad de un solo archetype).
+ *
+ * Toda la applicability especializada de este lote usa `archetypeIncludes`/`archetypeIncludesAny`, NUNCA
+ * `contextEquals("archetype", ...)`: esa última compara el valor EXACTO de `archetype` y pierde
+ * información cuando el negocio combina dos mecanismos reales (`archetype: "hybrid"`) — bloqueante
+ * arquitectónico real encontrado y corregido en C1 (ver `contracts.ts`/`context-resolver.ts`/
+ * `qbv2-rules.ts`: `archetypeComponents`, `archetypeIncludes`).
  */
 export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
   // ── LOCAL ──────────────────────────────────────────────────────────────────
@@ -29,7 +38,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Cuando alguien nuevo en tu zona te encuentra por primera vez, ¿cómo suele pasar más seguido?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("archetype", "local"),
+    appliesWhen: archetypeIncludes("local"),
     options: [
       { value: "maps_search", label: "Buscándome en Google o Maps" },
       { value: "referral", label: "Alguien se lo recomendó" },
@@ -48,7 +57,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Si alguien te busca en línea ahora mismo, ¿encuentra tu dirección, horario y forma de contactarte, todo correcto y consistente?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("archetype", "local"),
+    appliesWhen: archetypeIncludes("local"),
     options: [
       { value: "consistent", label: "Sí, todo está correcto y consistente" },
       { value: "partial", label: "Una parte está desactualizada o incompleta" },
@@ -66,7 +75,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     purpose: ["diagnostic"],
     priority: "normal",
     // Encadenada a q2_has_customers (foundation): no tiene sentido preguntar recurrencia sin operación real.
-    appliesWhen: andV2(contextEquals("archetype", "local"), eqV2("q2_has_customers", "yes")),
+    appliesWhen: andV2(archetypeIncludes("local"), eqV2("q2_has_customers", "yes")),
     options: [
       { value: "yes_regular", label: "Sí, con cierta regularidad" },
       { value: "rarely", label: "Pocas veces" },
@@ -79,12 +88,12 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
   {
     id: "q2_reputation_flow",
     version: 1,
-    module: "local",
+    module: "reputation",
     type: "single",
     prompt: "¿Qué tan seguido te llegan reseñas o recomendaciones nuevas de clientes?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextIn("archetype", ["local", "appointments", "professional"]),
+    appliesWhen: archetypeIncludesAny(["local", "appointments", "professional"]),
     variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Qué tan seguido te llegan reseñas o recomendaciones nuevas de pacientes?" }],
     options: [
       { value: "steady", label: "Me llegan con cierta regularidad" },
@@ -104,7 +113,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     helper: "Esto es sobre DÓNDE puedes prestar el servicio, no sobre de dónde son tus clientes (eso ya se preguntó por separado).",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("archetype", "local_service"),
+    appliesWhen: archetypeIncludes("local_service"),
     options: [
       { value: "defined_area", label: "Tengo un área definida y la sigo" },
       { value: "flexible_but_aware", label: "Soy flexible, pero sé cuándo no me conviene" },
@@ -121,7 +130,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Cuando entra una consulta nueva pidiendo tu servicio, ¿qué suele pasar?",
     purpose: ["diagnostic", "friction"],
     priority: "high",
-    appliesWhen: contextEquals("archetype", "local_service"),
+    appliesWhen: archetypeIncludes("local_service"),
     options: [
       { value: "fast", label: "Respondo rápido, casi siempre el mismo día" },
       { value: "delayed", label: "Respondo, pero puede tardar más de un día" },
@@ -138,7 +147,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Sueles dar una cotización o estimado antes de hacer el trabajo?",
     purpose: ["diagnostic", "routing"],
     priority: "normal",
-    appliesWhen: contextEquals("archetype", "local_service"),
+    appliesWhen: archetypeIncludes("local_service"),
     options: [
       { value: "yes", label: "Sí, casi siempre" },
       { value: "no", label: "No, cobro directamente o es tarifa fija" },
@@ -158,7 +167,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     // ("yes"/"varies"). notEqV2 no serviría aquí: una respuesta ausente satisface "!= no" igual que "yes",
     // así que la pregunta quedaría elegible ANTES de que exista la respuesta que la habilita — inV2 exige
     // que exista una respuesta real y sea una de las permitidas.
-    appliesWhen: andV2(contextEquals("archetype", "local_service"), inV2("q2_service_quote_practice", ["yes", "varies"])),
+    appliesWhen: andV2(archetypeIncludes("local_service"), inV2("q2_service_quote_practice", ["yes", "varies"])),
     options: [
       { value: "always", label: "Siempre hago seguimiento" },
       { value: "sometimes", label: "A veces" },
@@ -175,7 +184,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "De los clientes que ya atendiste, ¿sueles recibir referidos o que te vuelvan a llamar para otro trabajo?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: andV2(contextEquals("archetype", "local_service"), eqV2("q2_has_customers", "yes")),
+    appliesWhen: andV2(archetypeIncludes("local_service"), eqV2("q2_has_customers", "yes")),
     options: [
       { value: "both", label: "Sí, ambas cosas con cierta regularidad" },
       { value: "referrals_only", label: "Sobre todo referidos" },
@@ -195,7 +204,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Cómo se agenda la mayoría de tus citas hoy?",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
-    appliesWhen: contextEquals("archetype", "appointments"),
+    appliesWhen: archetypeIncludes("appointments"),
     variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Cómo se agenda la mayoría de las citas de tus pacientes hoy?" }],
     options: [
       { value: "self_book_online", label: "La persona agenda sola en línea" },
@@ -215,7 +224,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Qué tan seguido cuesta trabajo encontrar un horario que funcione, yendo y viniendo con la persona antes de confirmar?",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
-    appliesWhen: contextEquals("archetype", "appointments"),
+    appliesWhen: archetypeIncludes("appointments"),
     options: [
       { value: "rarely", label: "Casi nunca" },
       { value: "sometimes", label: "A veces" },
@@ -231,7 +240,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Envías confirmaciones o recordatorios antes de la cita?",
     purpose: ["diagnostic", "friction"],
     priority: "high",
-    appliesWhen: contextEquals("archetype", "appointments"),
+    appliesWhen: archetypeIncludes("appointments"),
     variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Envías confirmaciones o recordatorios a tus pacientes antes de la cita?" }],
     options: [
       { value: "automatic", label: "Sí, de forma automática" },
@@ -248,7 +257,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "De las personas que preguntan por una cita, ¿qué proporción termina realmente agendando?",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
-    appliesWhen: contextEquals("archetype", "appointments"),
+    appliesWhen: archetypeIncludes("appointments"),
     options: [
       { value: "most", label: "La mayoría" },
       { value: "about_half", label: "Como la mitad" },
@@ -266,7 +275,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     helper: "Evidencia para retención/postventa (DIAG-V3-08B0-FRICTION-RETENTION-001), sin decidir todavía si necesita su propia categoría.",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("archetype", "appointments"),
+    appliesWhen: archetypeIncludes("appointments"),
     variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "Cuando el tratamiento normalmente requiere que el paciente regrese, ¿sueles ayudarlo a agendar la siguiente cita antes de que se vaya?" }],
     options: [
       { value: "yes_proactive", label: "Sí, lo propongo antes de que se vaya" },
@@ -287,7 +296,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Qué tan visible es tu experiencia o credenciales para alguien que te está evaluando por primera vez (casos, testimonios, credenciales, contenido que explique lo que haces)?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("archetype", "professional"),
+    appliesWhen: archetypeIncludes("professional"),
     options: [
       { value: "clearly_visible", label: "Está claro y es fácil de encontrar" },
       { value: "partial", label: "Existe, pero está disperso o incompleto" },
@@ -304,7 +313,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Cuando alguien muestra interés en trabajar contigo, ¿qué pasa antes de convertirse en cliente?",
     purpose: ["diagnostic", "classification"],
     priority: "normal",
-    appliesWhen: contextEquals("archetype", "professional"),
+    appliesWhen: archetypeIncludes("professional"),
     options: [
       { value: "defined_consult", label: "Tengo un paso definido, como una consulta o llamada inicial" },
       { value: "ad_hoc", label: "Varía según el caso, sin un paso fijo" },
@@ -322,7 +331,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     helper: "Ni mucho ni poco referido es automáticamente bueno o malo: esto es solo un hecho sobre cómo llegan tus clientes hoy.",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("archetype", "professional"),
+    appliesWhen: archetypeIncludes("professional"),
     options: [
       { value: "mostly_referrals", label: "Casi todos llegan por referidos" },
       { value: "mixed", label: "Una mezcla real de referidos y otras formas" },
@@ -339,7 +348,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Después de una consulta o primera llamada, si la persona no responde enseguida, ¿le das seguimiento?",
     purpose: ["diagnostic", "friction"],
     priority: "high",
-    appliesWhen: contextEquals("archetype", "professional"),
+    appliesWhen: archetypeIncludes("professional"),
     options: [
       { value: "always", label: "Siempre" },
       { value: "sometimes", label: "A veces" },

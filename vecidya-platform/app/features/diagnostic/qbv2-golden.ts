@@ -1,5 +1,5 @@
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
-import { contextEquals, eqV2 } from "./qbv2-rules";
+import { archetypeIncludes, contextEquals, eqV2 } from "./qbv2-rules";
 
 /**
  * Banco semilla ("golden questions", §40-41 de DIAG-V3-08B.2): 14 preguntas, NO el banco de 100-150 de
@@ -171,7 +171,7 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     purpose: ["diagnostic", "friction"],
     priority: "normal",
     // Applicability de CONTEXTO (§21, §67 "specialized appointment"): depende del archetype YA resuelto, no de una respuesta directa.
-    appliesWhen: contextEquals("archetype", "appointments"),
+    appliesWhen: archetypeIncludes("appointments"),
     variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Qué tan seguido los pacientes no llegan a su cita (no-show)?" }],
     options: [
       { value: "rarely", label: "Casi nunca" },
@@ -188,7 +188,7 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿De dónde llegan principalmente tus visitas o pedidos?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("archetype", "ecommerce"),
+    appliesWhen: archetypeIncludes("ecommerce"),
     options: [
       { value: "social", label: "Redes sociales" },
       { value: "search", label: "Buscadores" },
@@ -207,7 +207,7 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Tienes un proceso definido para dar seguimiento a oportunidades de venta?",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
-    appliesWhen: contextEquals("archetype", "b2b"),
+    appliesWhen: archetypeIncludes("b2b"),
     options: [
       { value: "yes", label: "Sí, definido y consistente" },
       { value: "no", label: "No, es ad hoc", produces: [{ kind: "friction", value: "follow_up", provenance: "derived_fact" }] },
@@ -223,7 +223,7 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Qué tanto depende tu negocio de gente que pasa cerca y entra sin planearlo?",
     purpose: ["diagnostic"],
     priority: "refinement",
-    appliesWhen: contextEquals("archetype", "local"),
+    appliesWhen: archetypeIncludes("local"),
     options: [
       { value: "high", label: "Mucho" },
       { value: "low", label: "Poco" },

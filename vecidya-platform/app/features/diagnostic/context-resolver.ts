@@ -134,23 +134,27 @@ function resolveBusinessModel(signals: DiagnosticSignalsV3): { resolution: Resol
 
 // ── OperationalArchetype ─────────────────────────────────────────────────────
 
-function resolveOperationalArchetype(signals: DiagnosticSignalsV3, nicheHints: readonly OperationalArchetype[] | undefined): { resolution: Resolution<OperationalArchetype>; trace: FieldTrace } {
+function resolveOperationalArchetype(signals: DiagnosticSignalsV3, nicheHints: readonly OperationalArchetype[] | undefined): { resolution: Resolution<OperationalArchetype>; trace: FieldTrace; components: readonly OperationalArchetype[] } {
   const primary = signals.deliveryMode;
   if (!isMaterial(primary)) {
     // Un hint de nicho NUNCA resuelve por sí solo (§6, mutación A) — a lo sumo aporta candidatos a un `unresolved`.
-    if (nicheHints && nicheHints.length > 0) return { resolution: unresolved("insufficient_evidence", nicheHints), trace: unresolvedTrace("archetype", "insufficient_evidence", nicheHints, ["deliveryMode"]) };
-    return { resolution: unresolved("not_asked"), trace: unresolvedTrace("archetype", "not_asked", [], ["deliveryMode"]) };
+    if (nicheHints && nicheHints.length > 0) return { resolution: unresolved("insufficient_evidence", nicheHints), trace: unresolvedTrace("archetype", "insufficient_evidence", nicheHints, ["deliveryMode"]), components: [] };
+    return { resolution: unresolved("not_asked"), trace: unresolvedTrace("archetype", "not_asked", [], ["deliveryMode"]), components: [] };
   }
   const primaryValue = DELIVERY_MODE_TO_ARCHETYPE[primary.value];
   const secondary = signals.secondaryDeliveryMode;
   if (areIndependent(primary, secondary)) {
     const secondaryValue = DELIVERY_MODE_TO_ARCHETYPE[secondary!.value];
+    // Componentes reales (DIAG-V3-08B.3 Lote B C1, §4-6 del checkpoint): orden canónico (alfabético),
+    // sin duplicados, derivados de la MISMA evidencia que resolvió "hybrid" — nunca "hybrid" como componente.
+    const components = [...new Set([primaryValue, secondaryValue])].sort();
     return {
       resolution: resolved("hybrid", "signal"),
       trace: resolvedTrace("archetype", "hybrid", ["deliveryMode", "secondaryDeliveryMode"], `dos mecanismos de entrega reales e independientes: ${primaryValue} + ${secondaryValue}`),
+      components,
     };
   }
-  return { resolution: resolved(primaryValue, "signal"), trace: resolvedTrace("archetype", primaryValue, ["deliveryMode"], "mecanismo de entrega declarado/observado") };
+  return { resolution: resolved(primaryValue, "signal"), trace: resolvedTrace("archetype", primaryValue, ["deliveryMode"], "mecanismo de entrega declarado/observado"), components: [primaryValue] };
 }
 
 // ── Niche / NicheGroup ───────────────────────────────────────────────────────
@@ -338,6 +342,7 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
       entity: entity.resolution,
       businessModel: businessModel.resolution,
       archetype: archetype.resolution,
+      archetypeComponents: archetype.components,
       niche: niche.resolution,
       nicheGroup: nicheGroup.resolution,
       growthStage: growthStage.resolution,

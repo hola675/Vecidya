@@ -1,6 +1,7 @@
 import {
   assertNever,
   CURRENT_DIAGNOSTIC_VERSION,
+  deriveSingleArchetypeComponents,
   resolved,
   unresolved,
   type DiagnosticContextV3,
@@ -82,12 +83,16 @@ export function mapLegacyGoal(goal: GoalId | undefined): Resolution<PrimaryGoal>
 /** Contexto actual → contexto V3. Lo que el motor actual no pregunta queda `not_asked`. */
 export function deriveContextV3(context: Context): DiagnosticContextV3 {
   const profile = context.profile ? LEGACY_PROFILE_MAPPING[context.profile] : undefined;
+  const archetype = profile?.archetype ?? unresolved("not_asked");
   return {
     version: CURRENT_DIAGNOSTIC_VERSION,
     profile: context.profile ? resolved(context.profile, "answer") : unresolved("not_asked"),
     entity: profile?.entity ?? unresolved("not_asked"),
     businessModel: unresolved("not_asked"),
-    archetype: profile?.archetype ?? unresolved("not_asked"),
+    archetype,
+    // QBV1 nunca resuelve `archetype` a "hybrid" (ver `LEGACY_PROFILE_MAPPING`: esos casos quedan
+    // `unresolved`), así que derivarlo de la resolución aislada es seguro aquí.
+    archetypeComponents: deriveSingleArchetypeComponents(archetype),
     niche: unresolved("not_asked"),
     nicheGroup: unresolved("not_asked"),
     growthStage: mapLegacyStage(context.stage),

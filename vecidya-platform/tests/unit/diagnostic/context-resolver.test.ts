@@ -64,9 +64,45 @@ test("caso 4: ecommerce de productos — businessModel products, archetype ecomm
   assert.deepEqual(result.context.archetype, { status: "resolved", value: "ecommerce", source: "signal" });
 });
 
-test("caso 5: retail físico + ecommerce con evidencia independiente → archetype hybrid", () => {
+test("caso 5: retail físico + ecommerce con evidencia independiente → archetype hybrid, con AMBOS componentes reales conservados (fixture contractual de Lote C, §15 del checkpoint C1 de Lote B)", () => {
   const result = resolve({ deliveryMode: { value: "fixed_location_with_inventory", provenance: "observed_fact" }, secondaryDeliveryMode: { value: "online_checkout", provenance: "observed_fact" } });
   assert.deepEqual(result.context.archetype, { status: "resolved", value: "hybrid", source: "signal" });
+  assert.deepEqual([...result.context.archetypeComponents].sort(), ["ecommerce", "retail"]);
+});
+
+// ── archetypeComponents (DIAG-V3-08B.3 Lote B, C1): invariantes §5 del checkpoint ──
+
+test("archetypeComponents: no-hybrid resuelto → exactamente 1 componente, igual al valor de archetype", () => {
+  const result = resolve({ deliveryMode: { value: "specialized_individual_practice", provenance: "explicit_declaration" } });
+  assert.deepEqual(result.context.archetype, { status: "resolved", value: "professional", source: "signal" });
+  assert.deepEqual(result.context.archetypeComponents, ["professional"]);
+});
+
+test("archetypeComponents: hybrid resuelto → >= 2 componentes, nunca incluye \"hybrid\" como componente", () => {
+  const result = resolve({ deliveryMode: { value: "specialized_individual_practice", provenance: "explicit_declaration" }, secondaryDeliveryMode: { value: "scheduled_time_blocks", provenance: "explicit_declaration" } });
+  assert.deepEqual(result.context.archetype, { status: "resolved", value: "hybrid", source: "signal" });
+  assert.ok(result.context.archetypeComponents.length >= 2);
+  assert.ok(!result.context.archetypeComponents.includes("hybrid"));
+  assert.deepEqual([...result.context.archetypeComponents].sort(), ["appointments", "professional"]);
+});
+
+test("archetypeComponents: archetype unresolved → componentes vacíos", () => {
+  const result = resolve({});
+  assert.equal(result.context.archetype.status, "unresolved");
+  assert.deepEqual(result.context.archetypeComponents, []);
+});
+
+test("archetypeComponents: sin duplicados y en orden canónico (alfabético), independiente del orden de las señales de entrada", () => {
+  const a = resolve({ deliveryMode: { value: "fixed_location_with_inventory", provenance: "observed_fact" }, secondaryDeliveryMode: { value: "online_checkout", provenance: "observed_fact" } });
+  const b = resolve({ deliveryMode: { value: "online_checkout", provenance: "observed_fact" }, secondaryDeliveryMode: { value: "fixed_location_with_inventory", provenance: "observed_fact" } });
+  assert.deepEqual(a.context.archetypeComponents, b.context.archetypeComponents);
+  assert.deepEqual(a.context.archetypeComponents, ["ecommerce", "retail"]);
+});
+
+test("mutación (C1 de Lote B): local + appointments con evidencia independiente real también resuelve hybrid con ambos componentes — no depende de qué dos archetypes sean", () => {
+  const result = resolve({ deliveryMode: { value: "fixed_location_no_inventory", provenance: "observed_fact" }, secondaryDeliveryMode: { value: "scheduled_time_blocks", provenance: "observed_fact" } });
+  assert.deepEqual(result.context.archetype, { status: "resolved", value: "hybrid", source: "signal" });
+  assert.deepEqual([...result.context.archetypeComponents].sort(), ["appointments", "local"]);
 });
 
 test("caso 6: profesional independiente por citas — entity individual, archetype professional", () => {
@@ -252,6 +288,12 @@ test("fixture: sin ninguna señal, todo el contexto es unresolved y ningún camp
     if (field === "customerModel") {
       assert.equal(result.context.customerModel.reach.status, "unresolved");
       assert.equal(result.context.customerModel.buyer.status, "unresolved");
+      continue;
+    }
+    // archetypeComponents no es una Resolution (§4-6 de C1 de Lote B): es un array plano derivado de
+    // archetype, vacío cuando archetype está unresolved — invariante probado aparte más abajo.
+    if (field === "archetypeComponents") {
+      assert.deepEqual(resolution, []);
       continue;
     }
     assert.equal((resolution as { status: string }).status, "unresolved", `${field} no debería resolverse sin señales`);
