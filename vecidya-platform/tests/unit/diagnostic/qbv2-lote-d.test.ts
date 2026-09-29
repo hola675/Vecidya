@@ -147,6 +147,11 @@ test("mutación B: creator+ecommerce nunca pierde el módulo ecommerce (ver fixt
   assert.ok(context.archetypeComponents.includes("ecommerce"));
 });
 
+// Mutación C ("B2B question requiere CRM/vendor → fail") no se repite como test local: ya está cubierta
+// a nivel de banco completo por "mutación G: ningún nombre de herramienta/plataforma/proveedor
+// específico aparece en el copy visible..." en `qbv2-architecture.test.ts` (escanea TODO QUESTION_BANK_V2,
+// incluido Lote D) — citada aquí por nombre exacto en vez de "cubierto en otra parte" (§17 del checkpoint C1).
+
 test("mutación D: q2_b2b_lead_source no produce ninguna señal — depender de referidos no se interpreta automáticamente como friction", () => {
   const question = LOTE_D_QUESTIONS_V2.find((q) => q.id === "q2_b2b_lead_source")!;
   for (const option of question.options) assert.deepEqual(option.produces ?? [], []);
@@ -182,15 +187,33 @@ test("mutación G (auditoría de CustomerModel, §26/§39): ninguna pregunta de 
       assert.ok(!producesBuyer, `${question.id}.${option.value}: no debería producir customerBuyer`);
     }
   }
-  // Hallazgo de auditoría (documentado, sin cambio de código en este lote): el EJE de CustomerBuyer
-  // (persona vs. organización) sigue siendo generalizable a un donante/miembro individual vs. una
-  // fundación/empresa donante — pero el WORDING de la pregunta de fundación `q2_customer_buyer`
-  // ("¿Quién es principalmente tu comprador?", opciones "consumidor final"/"otras empresas") usa
-  // lenguaje comercial que no encaja bien si se le muestra literalmente a una organización sostenida por
-  // donaciones. `CopyVariantTarget` (`qbv2-contract.ts`) hoy solo admite `archetype`/`nicheGroup`/
-  // `entityType`, NO `businessModel` — así que hoy no existe una forma de darle a `q2_customer_buyer` un
-  // copy variant específico para `businessModel: "nonprofit"`. Reportado para decisión del usuario, no
-  // resuelto aquí (sería un cambio de contrato + de una pregunta de Lote A ya aprobada).
+  // El EJE de CustomerBuyer (persona vs. organización) sigue siendo generalizable a un donante/miembro
+  // individual vs. una fundación/empresa donante — nunca se necesitó taxonomía nueva. Lo que sí se
+  // corrigió en C1: el WORDING de `q2_customer_buyer` ("¿Quién es principalmente tu comprador?") usaba
+  // lenguaje comercial que no encajaba mostrado a una organización sostenida por donaciones. Ver el test
+  // siguiente para la corrección real (copy variant por businessModel, semántica intacta).
+});
+
+test("C1: q2_customer_buyer tiene un copy variant para businessModel=nonprofit que cambia SOLO el prompt — options/produces siguen siendo exactamente b2c/b2b/mixed, sin taxonomía nueva", () => {
+  const question = [...GOLDEN_QUESTIONS_V2, ...LOTE_A_QUESTIONS_V2].find((q) => q.id === "q2_customer_buyer")!;
+  const nonprofitVariant = question.variants?.find((v) => "businessModel" in v.target && v.target.businessModel === "nonprofit");
+  assert.ok(nonprofitVariant, "q2_customer_buyer debería tener un variant para businessModel: nonprofit");
+  assert.ok(nonprofitVariant!.prompt && !nonprofitVariant!.prompt.toLowerCase().includes("comprador"), "el variant debe reemplazar el prompt comercial (\"comprador\")");
+  // La semántica NO cambia: mismas 3 opciones, mismos OptionId, misma señal customerBuyer por opción.
+  assert.deepEqual(question.options.map((o) => o.value).sort(), ["b2b", "b2c", "mixed"]);
+  for (const option of question.options) {
+    const produces = option.produces?.find((p) => p.kind === "customerBuyer");
+    assert.ok(produces && produces.value === option.value, `${option.value}: debería seguir produciendo customerBuyer=${option.value} sin importar el variant`);
+  }
+});
+
+test("C1 (fresh domain review, blocker corregido): la opción \"b2c\" de q2_customer_buyer ya NO dice \"consumidor final\" — el prompt-variant por sí solo no bastaba mientras esa opción siguiera sonando comercial bajo el nuevo prompt de nonprofit", () => {
+  const question = [...GOLDEN_QUESTIONS_V2, ...LOTE_A_QUESTIONS_V2].find((q) => q.id === "q2_customer_buyer")!;
+  const b2c = question.options.find((o) => o.value === "b2c")!;
+  assert.ok(!b2c.label.toLowerCase().includes("consumidor"), "el label de b2c no debería usar lenguaje de transacción comercial (\"consumidor final\")");
+  // CopyVariantV2 no admite override por opción (solo prompt/helper): la corrección fue al label BASE,
+  // universal para cualquier businessModel, en vez de ampliar el contrato sin necesidad (§4 del checkpoint C1).
+  assert.equal(question.variants?.length, 1, "no se añadió un mecanismo de variant por opción — la corrección fue al label base");
 });
 
 test("mutación H: ninguna pregunta de creator produce friction — audiencia concentrada en una plataforma NUNCA se interpreta automáticamente como friction=scale", () => {

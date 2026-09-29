@@ -35,9 +35,9 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     appliesWhen: archetypeIncludes("b2b"),
     options: [
       { value: "referrals", label: "Referidos de clientes o contactos" },
-      { value: "outbound", label: "Yo los busco activamente (prospección)" },
+      { value: "outbound", label: "Yo los busco activamente" },
       { value: "inbound", label: "Me contactan por mi presencia o contenido" },
-      { value: "partnerships", label: "Alianzas o partners" },
+      { value: "partnerships", label: "Alianzas" },
       { value: "paid", label: "Publicidad pagada" },
       { value: "unknown", label: "No lo he identificado con claridad", kind: "unknown" },
     ],
@@ -216,7 +216,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     options: [
       { value: "donations", label: "Donaciones" },
       { value: "membership_dues", label: "Cuotas de membresía" },
-      { value: "grants", label: "Fondos o subvenciones (grants)" },
+      { value: "grants", label: "Fondos o subvenciones" },
       { value: "mixed", label: "Una combinación real de las anteriores" },
       { value: "unknown", label: "No estoy seguro", kind: "unknown" },
     ],

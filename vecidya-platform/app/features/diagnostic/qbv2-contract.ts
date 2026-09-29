@@ -127,8 +127,16 @@ export type ContradictionRole = { readonly type: "confirms"; readonly targetFiel
 
 // ── Copy variants (§25-28) ───────────────────────────────────────────────────
 
-/** Nunca cambia `options`/`produces` bajo la misma `QuestionVersion` (§26) — solo `prompt`/`helper`. Verificado por validador (§37). */
-export type CopyVariantTarget = { readonly archetype?: OperationalArchetype } | { readonly nicheGroup?: NicheGroup } | { readonly entityType?: EntityType };
+/**
+ * Nunca cambia `options`/`produces` bajo la misma `QuestionVersion` (§26) — solo `prompt`/`helper`.
+ * Verificado por validador (§37). `businessModel` añadido en DIAG-V3-08B.3 Lote D C1: una pregunta de
+ * fundación (p. ej. `q2_customer_buyer`) puede necesitar copy distinto para `businessModel: "nonprofit"`
+ * sin que eso cambie el eje interno que mide (`customerBuyer: b2c|b2b|mixed` sigue siendo la señal
+ * producida) — la variante es solo wording, nunca una taxonomía nueva. Metadata puramente declarativa,
+ * como el resto de `CopyVariantTarget`: ningún renderer la consulta todavía (QBV2 sigue sin UI), así que
+ * añadirla no rompe ningún selector existente.
+ */
+export type CopyVariantTarget = { readonly archetype?: OperationalArchetype } | { readonly nicheGroup?: NicheGroup } | { readonly entityType?: EntityType } | { readonly businessModel?: BusinessModel };
 export type CopyVariantV2 = { readonly target: CopyVariantTarget; readonly prompt?: string; readonly helper?: string };
 
 // ── Opción y pregunta (§4, §16-19) ───────────────────────────────────────────

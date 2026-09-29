@@ -10,6 +10,7 @@ import {
   QUESTION_BANK_V2,
   QUESTION_PRIORITIES,
   QUESTION_PURPOSES,
+  resolveDiagnosticContext,
   validateQuestionBankV2,
 } from "../../../app/features/diagnostic/index.ts";
 
@@ -222,4 +223,31 @@ test("mutación G: ningún nombre de herramienta/plataforma/proveedor específic
     }
   }
   assert.deepEqual(offenders, [], `el banco no debe mencionar herramientas/proveedores específicos: ${JSON.stringify(offenders)}`);
+});
+
+// ── DIAG-V3-08B3-BUSINESSMODEL-HYBRID-001 (Lote D C1): guarda de la decisión DEFER WITH PROOF ──
+// Reproducido: businessModel SÍ colapsa a "hybrid" ante dos monetizationMechanism independientes (p. ej.
+// mission_funded + goods_for_resale), perdiendo el valor "nonprofit" exacto — la misma clase de problema
+// que archetype:"hybrid" tenía antes de que Lote B C1 introdujera archetypeComponents/archetypeIncludes.
+// Se DIFIERE (no se corrige) porque, HOY, ninguna pregunta real del banco puede producir ese segundo
+// mecanismo: q2_monetization es de opción única y ninguna pregunta declara `slot: "secondary"` para
+// monetizationMechanism. Esta prueba es la CONDICIÓN DE GATE explícita (§9/§12 del checkpoint): si deja
+// de pasar, significa que una pregunta nueva ya permite declarar un segundo mecanismo de monetización, y
+// ANTES de mergear esa pregunta hay que implementar `businessModelComponents`/`businessModelIncludes`
+// (mismo patrón que `archetypeComponents`/`archetypeIncludes`) — no basta con corregir este test.
+test("DIAG-V3-08B3-BUSINESSMODEL-HYBRID-001: ninguna pregunta del banco produce secondaryMonetizationMechanism todavía — mientras esto sea cierto, businessModel nunca puede colapsar a \"hybrid\" desde una respuesta real, así que la deuda queda diferida con seguridad", () => {
+  const serialized = JSON.stringify(QUESTION_BANK_V2);
+  assert.ok(!serialized.includes('"kind":"monetizationMechanism","slot":"secondary"') && !serialized.includes('"slot":"secondary","value"') && !serialized.includes("secondaryMonetizationMechanism"), "si esta aserción falla, implementar businessModelComponents/businessModelIncludes ANTES de mergear la pregunta que la rompió (ver DIAG-V3-08B3-BUSINESSMODEL-HYBRID-001 en STATUS.md)");
+  const q2Monetization = QUESTION_BANK_V2.find((q) => q.id === "q2_monetization")!;
+  assert.equal(q2Monetization.type, "single", "q2_monetization debe seguir siendo de opción única; volverla multi reabriría este mismo riesgo");
+});
+
+// ── Reproducción documentada del caso businessModel=hybrid (via señal directa, no vía respuesta real) ──
+test("businessModel=hybrid (reproducido con señales sintéticas, no alcanzable hoy por ninguna respuesta real): el trace preserva ambos componentes en resolutionReason aunque no exista un campo businessModelComponents formal", () => {
+  const context = resolveDiagnosticContext({
+    monetizationMechanism: { value: "mission_funded", provenance: "observed_fact" },
+    secondaryMonetizationMechanism: { value: "goods_for_resale", provenance: "observed_fact" },
+  });
+  assert.deepEqual(context.context.businessModel, { status: "resolved", value: "hybrid", source: "signal" });
+  assert.ok(context.trace.businessModel.status === "resolved" && context.trace.businessModel.resolutionReason.includes("nonprofit") && context.trace.businessModel.resolutionReason.includes("products"), "el trace debe seguir nombrando ambos modelos componentes en texto, aunque no haya un campo estructurado todavía");
 });

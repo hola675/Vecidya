@@ -104,8 +104,20 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Quién es principalmente tu comprador?",
     purpose: ["classification"],
     priority: "high",
+    // Copy variant por businessModel (DIAG-V3-08B.3 Lote D C1): "comprador" es lenguaje comercial que no
+    // encaja para una organización sostenida por donaciones/membresías — pero el EJE interno que mide
+    // (persona vs. organización) sigue siendo útil sin cambios, así que solo cambia el prompt, nunca
+    // `options`/`produces`: `customerBuyer` sigue resolviendo exactamente b2c/b2b/mixed para nonprofit.
+    // El fresh domain review de C1 encontró que el prompt-variant NO bastaba solo: la opción "b2c" decía
+    // "consumidor final" (lenguaje de transacción comercial), que seguía sonando fuera de lugar bajo el
+    // nuevo prompt para nonprofit. En vez de ampliar `CopyVariantV2` para permitir variants por opción
+    // (el mecanismo actual solo cubre `prompt`/`helper`, §4 del checkpoint: "no ampliar el contrato sin
+    // necesidad"), se corrigió el label BASE a un wording universal ("Personas individuales") que
+    // funciona igual de bien para un negocio comercial que para una organización sin fines de lucro —
+    // sin necesitar un variant de opción en absoluto.
+    variants: [{ target: { businessModel: "nonprofit" }, prompt: "¿Con quién se relaciona principalmente tu organización?" }],
     options: [
-      { value: "b2c", label: "Personas, como consumidor final", produces: [{ kind: "customerBuyer", value: "b2c", provenance: "explicit_declaration" }] },
+      { value: "b2c", label: "Personas individuales", produces: [{ kind: "customerBuyer", value: "b2c", provenance: "explicit_declaration" }] },
       { value: "b2b", label: "Otras empresas u organizaciones", produces: [{ kind: "customerBuyer", value: "b2b", provenance: "explicit_declaration" }] },
       { value: "mixed", label: "Ambos, en proporciones similares", produces: [{ kind: "customerBuyer", value: "mixed", provenance: "explicit_declaration" }] },
     ],
