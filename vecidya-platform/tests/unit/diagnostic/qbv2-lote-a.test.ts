@@ -270,10 +270,10 @@ test("matriz de PrimaryFriction: los 6 valores (visibility/trust/conversion/foll
   assert.ok(reinforcedFollowUp, "follow_up debería tener refuerzo diagnóstico fuera de goal_friction (q2_b2b_pipeline)");
 });
 
-// ── Tamaño del bank en progreso (Lote A) — no es el target final de 100-120 todavía ──
+// ── Tamaño del Lote A en sí (estable; el tamaño del banco COMBINADO crece con cada lote y se prueba en el test file del lote más reciente) ──
 
-test("Lote A: el banco combinado tiene 19 preguntas (14 golden + 5 de Lote A); todavía lejos del target editorial de 100-120", () => {
-  assert.equal(QUESTION_BANK_V2.length, 19);
+test("Lote A: aporta exactamente 5 preguntas nuevas (sector, reach, buyer, systemization, capacity)", () => {
+  assert.equal(LOTE_A_QUESTIONS_V2.length, 5);
 });
 
 test("module counts reales: core=2, classification=5, maturity=5, goal_friction=2 (domain review R2: metadata de MODULE_REGISTRY reconciliada a core 2-3 / classification 4-6 / maturity 4-6 para reflejar esta auditoría)", () => {

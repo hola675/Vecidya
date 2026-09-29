@@ -65,6 +65,7 @@ export {
 export { getQuestionBank, NonConvergentRoutingError, registerQuestionBankV2, resolveEligibleQuestionsV2, type QuestionBankV2, type QuestionBankVersionNumber, type ResolveEligibleQuestionsResult } from "./qbv2-engine";
 export { GOLDEN_QUESTIONS_V2, type QuestionIdV2 } from "./qbv2-golden";
 export { LOTE_A_QUESTIONS_V2 } from "./qbv2-lote-a";
+export { LOTE_B_QUESTIONS_V2 } from "./qbv2-lote-b";
 export { QUESTION_BANK_V2 } from "./qbv2-bank";
 export { validateQuestionBankV2, type ValidationIssue } from "./qbv2-validators";
 export { deriveContextV3, LEGACY_PROFILE_MAPPING, LEGACY_STAGE_MAPPING, mapLegacyGoal, mapLegacyStage } from "./mappings";
