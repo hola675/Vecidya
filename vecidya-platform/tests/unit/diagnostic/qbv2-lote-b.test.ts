@@ -75,7 +75,9 @@ test("§45: sin jerga de marketing en el copy visible (prompt/label/helper) — 
 // ── Reviews compartidas, no duplicadas por módulo (§23, mutación E) ─────────
 
 test("mutación E: reviews/reputación es UNA sola pregunta compartida (q2_reputation_flow), no local_reviews/appointment_reviews/professional_reviews duplicadas", () => {
-  const reputationQuestions = QUESTION_BANK_V2.filter((q) => q.id.includes("reputation") || q.id.includes("review"));
+  // "reputation"/"reseña" en vez de un match de "review" demasiado amplio: Lote E introduce
+  // q2_measurement_decision_review, que contiene la palabra "review" sin ser una pregunta de reputación.
+  const reputationQuestions = QUESTION_BANK_V2.filter((q) => q.id.includes("reputation") || q.id.includes("resena"));
   assert.equal(reputationQuestions.length, 1, `debería existir exactamente 1 pregunta de reputación, hay ${reputationQuestions.length}: ${reputationQuestions.map((q) => q.id)}`);
 });
 

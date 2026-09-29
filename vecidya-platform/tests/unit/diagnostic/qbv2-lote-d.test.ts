@@ -297,7 +297,6 @@ test("route pressure D/E: creator+ecommerce y creator+professional hybrid elevan
 
 // ── Bank size ────────────────────────────────────────────────────────────────
 
-test("Lote D: el banco combinado tiene 64 preguntas (50 de A+B+C + 14 de Lote D: 5 b2b + 5 creator + 4 nonprofit)", () => {
-  assert.equal(QUESTION_BANK_V2.length, 64);
+test("Lote D: aporta exactamente 14 preguntas nuevas (5 b2b + 5 creator + 4 nonprofit; el tamaño del banco COMBINADO se prueba en el test file del lote más reciente)", () => {
   assert.equal(LOTE_D_QUESTIONS_V2.length, 14);
 });
