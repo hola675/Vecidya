@@ -7,6 +7,7 @@ import {
   getQuestionBank,
   MODULE_IDS,
   MODULE_REGISTRY,
+  QUESTION_BANK_V2,
   QUESTION_PRIORITIES,
   QUESTION_PURPOSES,
   validateQuestionBankV2,
@@ -180,4 +181,45 @@ test("mutación F / §43-49: una pregunta que lee y escribe el mismo campo de co
   };
   const issues = validateQuestionBankV2([selfReferential] as never);
   assert.ok(issues.some((issue) => issue.code === "SELF_REFERENTIAL_CONTEXT_GATE"), JSON.stringify(issues));
+});
+
+// ── mutación G (§ checkpoint de Lote C, endurecida a nivel de banco completo): ──
+// "un nombre de herramienta/proveedor específico se vuelve requisito del diagnóstico" debe fallar. Los
+// tests por lote (Lote B/C) ya cubrían esto localmente; este test protege el BANCO COMPLETO hacia
+// adelante, para que un lote futuro no pueda reintroducir vendor lock-in sin que algo lo señale. La
+// denylist es representativa de categorías reales (agendamiento, ecommerce, delivery, CRM/comunicación,
+// sitio web), no la definición exhaustiva de "vendor neutrality" — el mecanismo real es la disciplina de
+// escribir capability/outcome en vez de nombre de marca, verificada aquí como red de seguridad.
+test("mutación G: ningún nombre de herramienta/plataforma/proveedor específico aparece en el copy visible (prompt/helper/label) de TODO el banco — verificación explícita, no una omisión", () => {
+  const VENDOR_DENYLIST = [
+    "shopify",
+    "woocommerce",
+    "toast",
+    "square",
+    "doordash",
+    "ubereats",
+    "uber eats",
+    "grubhub",
+    "google merchant",
+    "gohighlevel",
+    "calendly",
+    "google business profile",
+    "whatsapp business",
+    "squarespace",
+    "wix",
+    "mailchimp",
+    "salesforce",
+    "hubspot",
+  ];
+  const offenders: string[] = [];
+  for (const question of QUESTION_BANK_V2) {
+    const visibleCopy = [question.prompt, question.helper, ...question.options.map((option) => option.label)]
+      .filter((text): text is string => Boolean(text))
+      .join(" ")
+      .toLowerCase();
+    for (const vendor of VENDOR_DENYLIST) {
+      if (visibleCopy.includes(vendor)) offenders.push(`${question.id}: menciona "${vendor}"`);
+    }
+  }
+  assert.deepEqual(offenders, [], `el banco no debe mencionar herramientas/proveedores específicos: ${JSON.stringify(offenders)}`);
 });
