@@ -38,7 +38,10 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Cuando alguien nuevo en tu zona te encuentra por primera vez, ¿cómo suele pasar más seguido?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("local"),
+    // Extendida a retail/hospitality en DIAG-V3-08B.3 Lote C (§9 del checkpoint de Lote C): descubrimiento
+    // local es el MISMO concepto para cualquier negocio con presencia física, sin importar si tiene
+    // inventario de reventa (retail) o consumo en el lugar (hospitality) — no se duplica por archetype.
+    appliesWhen: archetypeIncludesAny(["local", "retail", "hospitality"]),
     options: [
       { value: "maps_search", label: "Buscándome en Google o Maps" },
       { value: "referral", label: "Alguien se lo recomendó" },
@@ -57,7 +60,8 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Si alguien te busca en línea ahora mismo, ¿encuentra tu dirección, horario y forma de contactarte, todo correcto y consistente?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("local"),
+    // Extendida a retail/hospitality (Lote C, mismo motivo que q2_local_discovery).
+    appliesWhen: archetypeIncludesAny(["local", "retail", "hospitality"]),
     options: [
       { value: "consistent", label: "Sí, todo está correcto y consistente" },
       { value: "partial", label: "Una parte está desactualizada o incompleta" },
@@ -75,7 +79,9 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     purpose: ["diagnostic"],
     priority: "normal",
     // Encadenada a q2_has_customers (foundation): no tiene sentido preguntar recurrencia sin operación real.
-    appliesWhen: andV2(archetypeIncludes("local"), eqV2("q2_has_customers", "yes")),
+    // Extendida a retail/hospitality (Lote C, §17: repeat purchase/repeat visits es el MISMO concepto que
+    // repeat customers — reutilizar en vez de crear q2_retail_repeat_purchase/q2_hospitality_repeat_visits).
+    appliesWhen: andV2(archetypeIncludesAny(["local", "retail", "hospitality"]), eqV2("q2_has_customers", "yes")),
     options: [
       { value: "yes_regular", label: "Sí, con cierta regularidad" },
       { value: "rarely", label: "Pocas veces" },
@@ -93,7 +99,9 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Qué tan seguido te llegan reseñas o recomendaciones nuevas de clientes?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludesAny(["local", "appointments", "professional"]),
+    // Extendida a retail/hospitality en Lote C (§21 del checkpoint de Lote C): mismo concepto, misma
+    // pregunta — reputación no cambia de significado entre "local", "retail" y "hospitality".
+    appliesWhen: archetypeIncludesAny(["local", "appointments", "professional", "retail", "hospitality"]),
     variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Qué tan seguido te llegan reseñas o recomendaciones nuevas de pacientes?" }],
     options: [
       { value: "steady", label: "Me llegan con cierta regularidad" },

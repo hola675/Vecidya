@@ -339,6 +339,6 @@ test("Lote B no vuelve a preguntar sector/reach/buyer/growth-stage general/goal/
 
 // ── QBV2 sigue inactivo ──────────────────────────────────────────────────────
 
-test("Lote B: QBV2 sigue sin activarse (CURRENT_QUESTION_BANK_VERSION intacto, verificado ya en qbv2-architecture.test.ts) — banco combinado ahora en 37 preguntas", () => {
-  assert.equal(QUESTION_BANK_V2.length, 37);
+test("Lote B: aporta exactamente 18 preguntas nuevas (el tamaño del banco COMBINADO crece con cada lote y se prueba en el test file del lote más reciente)", () => {
+  assert.equal(LOTE_B_QUESTIONS_V2.length, 18);
 });

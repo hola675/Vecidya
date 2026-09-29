@@ -1,5 +1,5 @@
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
-import { archetypeIncludes, contextEquals, eqV2 } from "./qbv2-rules";
+import { archetypeIncludes, archetypeIncludesAny, contextEquals, eqV2 } from "./qbv2-rules";
 
 /**
  * Banco semilla ("golden questions", §40-41 de DIAG-V3-08B.2): 14 preguntas, NO el banco de 100-150 de
@@ -223,7 +223,10 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Qué tanto depende tu negocio de gente que pasa cerca y entra sin planearlo?",
     purpose: ["diagnostic"],
     priority: "refinement",
-    appliesWhen: archetypeIncludes("local"),
+    // Extendida a retail en DIAG-V3-08B.3 Lote C: una tienda física también depende de tráfico peatonal
+    // sin planear, el mismo concepto que "local". No extendida a hospitality: q2_hospitality_flow_type
+    // ya distingue walk-in de reserva/pedido con más precisión, así que sería redundante ahí.
+    appliesWhen: archetypeIncludesAny(["local", "retail"]),
     options: [
       { value: "high", label: "Mucho" },
       { value: "low", label: "Poco" },
