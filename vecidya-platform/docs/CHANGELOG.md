@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-28 — DIAG-V3-08B.3 Lote B C2: reconciliación de MODULE_REGISTRY tras `reputation` (aprueba Lote B, solo local, sin deploy)
+
+- **Micro-cierre antes del push del Lote B/C1:** al añadir el módulo cross-cutting `reputation` (C1), `MODULE_IDS` dejó de tener 19 módulos. Auditado: ahora son **20**. `docs/ARCHITECTURE.md` actualizado para dejar de afirmar "19 módulos" como estado actual (las menciones a "19" en entradas fechadas de este mismo `CHANGELOG.md`/`STATUS.md` quedan intactas como historia real de 08B.2/C1, no se reescribe el pasado).
+- **Forecast recalculado** (dinámicamente, nunca hardcodeado): module floor 76→**77**, techo razonable 123→**126** tras `reputation` (target 1-3). El target editorial (100-120) sigue sin tocarse — 120 ≤ 126 sigue cumpliendo la coherencia `moduleFloor <= target.min <= target.max <= moduleCeiling`.
+- **`reputation` metadata confirmada coherente, sin rango artificial**: `purpose` describe su rol compartido real; `relevantWhen.archetypes: [local, appointments, professional]` coincide exactamente con el `appliesWhen` real de `q2_reputation_flow`; `targetQuestionRange: {min:1, max:3}` refleja 1 pregunta compartida real hoy, con margen para que Lote C sume reputación de `retail`/`ecommerce`/`hospitality` a la MISMA pregunta/módulo en vez de duplicar.
+- **Test nuevo** que fija `MODULE_IDS.length === 20` y valida la metadata de `reputation`, para que un futuro módulo silencioso no vuelva a desalinear el conteo documentado.
+- **Sin cambios de contenido ni de arquitectura fuera de esto.** `test:unit` 556/556 (1 nueva), `typecheck`/`build`/`git diff --check` PASS. **Lote B queda APROBADO** con este micro-cierre; autoriza el push de `bbe1bb1`/`07ffcb2`/este commit.
+
 ## 2026-09-28 — DIAG-V3-08B.3 Lote B C1: composición de archetypes híbridos (EN PROGRESO, solo local, sin deploy)
 
 - **Bloqueante arquitectónico real corregido:** `archetype: "hybrid"` (dos mecanismos de entrega independientes, p. ej. `professional` + `appointments`) hacía que NINGUNA pregunta gateada con `contextEquals("archetype", "professional")` ni `contextEquals("archetype", "appointments")` volviera a ser elegible — el negocio perdía AMBAS familias de preguntas especializadas. Se habría repetido con `retail` + `ecommerce` en Lote C.

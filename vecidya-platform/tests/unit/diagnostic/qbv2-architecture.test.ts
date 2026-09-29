@@ -29,6 +29,14 @@ test("QBV2 arquitectura: MODULE_REGISTRY cubre exactamente MODULE_IDS, sin dupli
   assert.deepEqual([...ids].sort(), [...MODULE_IDS].sort());
 });
 
+test("QBV2 arquitectura: 20 módulos (19 de 08B.2 + \"reputation\", cross-cutting añadido en DIAG-V3-08B.3 Lote B C2) — no hardcodear 19 en ningún sitio que describa el estado actual", () => {
+  assert.equal(MODULE_IDS.length, 20);
+  const reputation = MODULE_REGISTRY.find((module) => module.id === "reputation")!;
+  assert.ok(reputation, "el módulo reputation debe existir en MODULE_REGISTRY");
+  assert.deepEqual([...reputation.relevantWhen.archetypes ?? []].sort(), ["appointments", "local", "professional"]);
+  assert.ok(reputation.targetQuestionRange.min >= 1 && reputation.targetQuestionRange.max <= 3, "target de reputation no debería inflarse artificialmente");
+});
+
 test("QBV2 arquitectura: floor de módulos, target editorial y techo razonable son conceptos distintos y coherentes (§71, DIAG-V3-08B.2-C1)", () => {
   // moduleFloor/moduleCeiling son la suma aritmética de los rangos por módulo (metadata de planner,
   // §50) — NO son el tamaño real del banco. El target editorial es lo que el equipo se compromete a
