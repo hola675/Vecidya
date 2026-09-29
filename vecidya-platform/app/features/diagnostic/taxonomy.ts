@@ -202,6 +202,16 @@ export const NICHE_REGISTRY: readonly NicheDefinition[] = [
   // de lucro es el mecanismo más común de entrega (atención presencial), no su estructura de gobernanza.
   niche("software_startup", "Startup de software", "technology_software", ["b2b"]),
   niche("nonprofit_org", "Organización sin fines de lucro", "nonprofit_community", ["local"]),
+  // Cobertura representativa del catálogo: el mecanismo sigue siendo local_service/retail/ecommerce;
+  // estos ejemplos no crean nuevos NicheGroup ni gobiernan el routing por sí solos.
+  niche("mobile_detailing", "Detallado automotriz móvil", "automotive", ["local_service"]),
+  niche("mobile_pet_grooming", "Estética de mascotas móvil", "beauty_personal_care", ["local_service"]),
+  niche("mobile_repair", "Reparación móvil", "home_services", ["local_service"]),
+  // Manufactura queda en `other` a propósito: no se fuerza a servicios profesionales ni a servicio móvil;
+  // su mecanismo B2B sí queda representado por el hint operativo, sin hacer que el hint gobierne routing.
+  niche("manufacturing", "Fabricación", "other", ["b2b"]),
+  niche("wholesale_distribution", "Distribución mayorista", "b2b_services", ["b2b"]),
+  niche("two_sided_marketplace", "Mercado de dos lados", "technology_software", ["b2b", "ecommerce"]),
 ] as const;
 
 /**

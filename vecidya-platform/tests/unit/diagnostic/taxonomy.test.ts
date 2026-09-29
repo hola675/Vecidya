@@ -66,7 +66,7 @@ test("taxonomía: NICHE_GROUPS es cerrado y isNicheGroup lo respeta", () => {
 
 test("taxonomía: el catálogo inicial de nichos no tiene IDs duplicados y cada uno pertenece a un NicheGroup real", () => {
   assert.equal(hasDuplicateIds(NICHE_REGISTRY), false, "hay un nicho duplicado en el catálogo");
-  assert.ok(NICHE_REGISTRY.length >= 15 && NICHE_REGISTRY.length <= 25, `catálogo inicial fuera de rango (${NICHE_REGISTRY.length})`);
+  assert.ok(NICHE_REGISTRY.length >= 15 && NICHE_REGISTRY.length <= 40, `catálogo representativo fuera de rango (${NICHE_REGISTRY.length})`);
   for (const entry of NICHE_REGISTRY) {
     assert.equal(isNicheGroup(entry.group), true, `«${entry.id}» tiene un group inválido`);
     assert.ok(entry.archetypeHints.length >= 1, `«${entry.id}» necesita al menos un archetype hint`);

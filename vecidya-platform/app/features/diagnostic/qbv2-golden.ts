@@ -74,7 +74,7 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "scheduled", label: "En citas agendadas, con varios proveedores/recursos", produces: [{ kind: "deliveryMode", slot: "primary", value: "scheduled_time_blocks", provenance: "explicit_declaration" }] },
       { value: "travels", label: "Yo me desplazo a atender al cliente", produces: [{ kind: "deliveryMode", slot: "primary", value: "travels_to_customer", provenance: "explicit_declaration" }] },
       { value: "solo_practice", label: "Soy el único profesional, sin colega en el mismo servicio", produces: [{ kind: "deliveryMode", slot: "primary", value: "specialized_individual_practice", provenance: "explicit_declaration" }] },
-      { value: "online_checkout", label: "El cliente compra en línea (checkout)", produces: [{ kind: "deliveryMode", slot: "primary", value: "online_checkout", provenance: "explicit_declaration" }] },
+      { value: "online_checkout", label: "El cliente compra en línea (proceso de pago)", produces: [{ kind: "deliveryMode", slot: "primary", value: "online_checkout", provenance: "explicit_declaration" }] },
       { value: "fixed_with_inventory", label: "En un local físico, con inventario/exhibición", produces: [{ kind: "deliveryMode", slot: "primary", value: "fixed_location_with_inventory", provenance: "explicit_declaration" }] },
       { value: "onsite", label: "El cliente consume/permanece en el lugar", produces: [{ kind: "deliveryMode", slot: "primary", value: "onsite_consumption", provenance: "explicit_declaration" }] },
       { value: "b2b_pipeline", label: "Vendo a otras empresas, con un proceso de decisión propio", produces: [{ kind: "deliveryMode", slot: "primary", value: "b2b_sales_pipeline", provenance: "explicit_declaration" }] },
@@ -167,12 +167,12 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "appointments",
     type: "single",
-    prompt: "¿Qué tan seguido tus clientes no llegan a su cita (no-show)?",
+    prompt: "¿Qué tan seguido tus clientes no se presentan a su cita?",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
     // Applicability de CONTEXTO (§21, §67 "specialized appointment"): depende del archetype YA resuelto, no de una respuesta directa.
     appliesWhen: archetypeIncludes("appointments"),
-    variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Qué tan seguido los pacientes no llegan a su cita (no-show)?" }],
+    variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Qué tan seguido los pacientes no se presentan a su cita?" }],
     options: [
       { value: "rarely", label: "Casi nunca" },
       { value: "sometimes", label: "A veces" },
@@ -210,7 +210,7 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     appliesWhen: archetypeIncludes("b2b"),
     options: [
       { value: "yes", label: "Sí, definido y consistente" },
-      { value: "no", label: "No, es ad hoc", produces: [{ kind: "friction", value: "follow_up", provenance: "derived_fact" }] },
+      { value: "no", label: "No, se hace de forma improvisada", produces: [{ kind: "friction", value: "follow_up", provenance: "derived_fact" }] },
       { value: "unknown", label: "No estoy seguro", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: [], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },

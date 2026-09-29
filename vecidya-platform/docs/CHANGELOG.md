@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-29 — DIAG-V3-08B.3 Lote F: cierre de contenido QBV2 (solo local, sin deploy)
+
+- **6 preguntas nuevas** en `startup` (`qbv2-lote-f.ts`): claridad problema/público, aprendizaje sobre el problema, oferta lista para probar, demanda observable, canal inicial y próximo hito. Solo para `EntityType=project` con `GrowthStage=idea|starting`; sin exigir empresa, web, marca o CRM. Banco final: **80 preguntas productivas** + 1 `confirmation` golden fixture-only (secondary monetization aún no producible).
+- **Gap analysis cerrado con evidencia**: startup/project era el hueco real; mobile no-food, manufacturing/wholesale y two-sided marketplace quedan representados mediante nichos existentes (`local_service`/`b2b`/`ecommerce`) sin nuevos `NicheGroup` ni archetypes.
+- Auditorías de reachability, duplicados, variants, unknown/N/A, friction allowlist, scoring-readiness y guard de secondary monetization protegidas por tests. `DIAG-V3-08B3-ROUTE-BUDGET-001` permanece abierta para 08B.4; no se implementó planner ni selection logic. QBV2 continúa inactivo (`CURRENT_QUESTION_BANK_VERSION=1`).
+- `pnpm run test:unit`: **657/657 PASS**. Sin D1, KV, UI ni deploy.
+
 ## 2026-09-28 — DIAG-V3-08B.3 Lote E: operations/follow_up/measurement (EN PROGRESO, solo local, sin deploy)
 
 - **11 preguntas nuevas** (`qbv2-lote-e.ts`): `operations` (process ownership, handoffs, bottleneck, manual impact, dependencia de una sola persona), `follow_up` (proceso general, ownership, frecuencia de repaso proactivo de pendientes), `measurement` (confianza en el origen de los números, seguimiento de resultado concreto, frecuencia de revisión comparativa). Banco combinado: **75 preguntas** (64 de A+B+C+D + 11 de Lote E).

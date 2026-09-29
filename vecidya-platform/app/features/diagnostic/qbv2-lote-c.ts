@@ -207,7 +207,7 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "hospitality",
     type: "single",
-    prompt: "¿Qué tan seguido una reserva no se presenta (no-show)?",
+    prompt: "¿Qué tan seguido las personas no se presentan a una reserva?",
     helper: "Esto es distinto de una cita médica o de servicio — aquí es sobre mesas, habitaciones o reservas de tu negocio.",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
@@ -253,7 +253,8 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "takeaway_only", label: "Solo para llevar" },
       { value: "delivery_only", label: "Solo entrega a domicilio" },
       { value: "no", label: "No, solo se consume en el lugar" },
+      { value: "not_applicable", label: "No aplica: el hospedaje no ofrece alimentos ni entrega", kind: "not_applicable" },
     ],
-    scoringReadiness: { candidateDimensions: ["alcance"], signalDirection: "neutral", allowsUnknown: false, allowsNotApplicable: false },
+    scoringReadiness: { candidateDimensions: ["alcance"], signalDirection: "neutral", allowsUnknown: false, allowsNotApplicable: true },
   },
 ] as const;

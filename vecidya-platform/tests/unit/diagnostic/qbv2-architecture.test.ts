@@ -35,7 +35,7 @@ test("QBV2 arquitectura: 20 módulos (19 de 08B.2 + \"reputation\", cross-cuttin
   assert.equal(MODULE_IDS.length, 20);
   const reputation = MODULE_REGISTRY.find((module) => module.id === "reputation")!;
   assert.ok(reputation, "el módulo reputation debe existir en MODULE_REGISTRY");
-  assert.deepEqual([...reputation.relevantWhen.archetypes ?? []].sort(), ["appointments", "local", "professional"]);
+  assert.deepEqual([...reputation.relevantWhen.archetypes ?? []].sort(), ["appointments", "hospitality", "local", "professional", "retail"]);
   assert.ok(reputation.targetQuestionRange.min >= 1 && reputation.targetQuestionRange.max <= 3, "target de reputation no debería inflarse artificialmente");
 });
 

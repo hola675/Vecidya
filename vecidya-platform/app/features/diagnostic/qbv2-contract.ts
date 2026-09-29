@@ -88,17 +88,17 @@ export const MODULE_REGISTRY: readonly ModuleDefinition[] = [
   { id: "local_service", purpose: "Servicio que se desplaza al cliente.", relevantWhen: { archetypes: ["local_service"] }, targetQuestionRange: { min: 5, max: 8 } },
   { id: "professional", purpose: "Profesional independiente solo, sin colega.", relevantWhen: { archetypes: ["professional"] }, targetQuestionRange: { min: 5, max: 8 } },
   { id: "retail", purpose: "Comercio minorista físico con inventario/exhibición.", relevantWhen: { archetypes: ["retail"] }, targetQuestionRange: { min: 5, max: 8 } },
-  { id: "ecommerce", purpose: "Venta por checkout en línea.", relevantWhen: { archetypes: ["ecommerce"] }, targetQuestionRange: { min: 6, max: 10 } },
+  { id: "ecommerce", purpose: "Venta mediante proceso de pago en línea.", relevantWhen: { archetypes: ["ecommerce"] }, targetQuestionRange: { min: 6, max: 10 } },
   { id: "hospitality", purpose: "Restaurantes/cafés/hospedaje, consumo en el lugar.", relevantWhen: { archetypes: ["hospitality"] }, targetQuestionRange: { min: 5, max: 8 } },
   { id: "b2b", purpose: "El comprador es otra empresa.", relevantWhen: { archetypes: ["b2b"] }, targetQuestionRange: { min: 6, max: 10 } },
   { id: "creator", purpose: "Monetiza audiencia/contenido propio.", relevantWhen: { archetypes: ["creator"], businessModels: ["creator_audience"] }, targetQuestionRange: { min: 5, max: 8 } },
-  { id: "nonprofit", purpose: "Misión sin fines de lucro; no asume ingresos/ventas como objetivo.", relevantWhen: { businessModels: ["nonprofit"], entityTypes: ["organization"] }, targetQuestionRange: { min: 4, max: 6 } },
+  { id: "nonprofit", purpose: "Misión sin fines de lucro; no asume ingresos/ventas como objetivo.", relevantWhen: { businessModels: ["nonprofit"] }, targetQuestionRange: { min: 4, max: 6 } },
   { id: "startup", purpose: "Sin operación establecida: validación y lanzamiento, no retención.", relevantWhen: { growthStages: ["idea", "starting"], entityTypes: ["project"] }, targetQuestionRange: { min: 4, max: 6 } },
   { id: "operations", purpose: "Cuello de botella interno (desorganización, trabajo repetitivo, falta de datos).", relevantWhen: { frictions: ["operations"] }, targetQuestionRange: { min: 3, max: 5 } },
   { id: "follow_up", purpose: "Consultas perdidas por falta de respuesta/proceso.", relevantWhen: { frictions: ["follow_up"] }, targetQuestionRange: { min: 3, max: 5 } },
   { id: "measurement", purpose: "Quiere entender qué funciona y qué no.", relevantWhen: { goals: ["measure"] }, targetQuestionRange: { min: 2, max: 3 } },
   { id: "confirmation", purpose: "Solo ante ambigüedad/contradicción real (§53-54); nunca elegible por defecto.", relevantWhen: {}, targetQuestionRange: { min: 0, max: 2 } },
-  { id: "reputation", purpose: "Reseñas/reputación, compartida entre archetypes que la necesitan (no universal).", relevantWhen: { archetypes: ["local", "appointments", "professional"] }, targetQuestionRange: { min: 1, max: 3 } },
+  { id: "reputation", purpose: "Reseñas/reputación, compartida entre archetypes que la necesitan (no universal).", relevantWhen: { archetypes: ["local", "appointments", "professional", "retail", "hospitality"] }, targetQuestionRange: { min: 1, max: 3 } },
 ];
 
 // ── Purpose / Priority (§5-6) ────────────────────────────────────────────────
