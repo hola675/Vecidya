@@ -63,6 +63,7 @@ export {
   type SingleQuestionDefinitionV2,
 } from "./qbv2-contract";
 export { getQuestionBank, NonConvergentRoutingError, registerQuestionBankV2, resolveEligibleQuestionsV2, type QuestionBankV2, type QuestionBankVersionNumber, type ResolveEligibleQuestionsResult } from "./qbv2-engine";
+export { CONTRADICTION_RULES_VERSION, DEFAULT_CONTRADICTION_RULES_V1, detectContradictionsV2, getTriggeredConfirmations, validateContradictionRulesV1, type ContradictionEvidenceRef, type ContradictionMateriality, type ContradictionRegistryIssue, type ContradictionRuleV1, type ContradictionRulesVersion, type ContradictionStatus, type DetectedContradiction } from "./qbv2-contradictions";
 export { GOLDEN_QUESTIONS_V2, type QuestionIdV2 } from "./qbv2-golden";
 export { LOTE_A_QUESTIONS_V2 } from "./qbv2-lote-a";
 export { LOTE_B_QUESTIONS_V2 } from "./qbv2-lote-b";

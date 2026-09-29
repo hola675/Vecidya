@@ -1,8 +1,8 @@
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
-import { archetypeIncludes, archetypeIncludesAny, contextEquals, eqV2 } from "./qbv2-rules";
+import { andV2, archetypeIncludes, archetypeIncludesAny, contextEquals, eqV2 } from "./qbv2-rules";
 
 /**
- * Banco semilla ("golden questions", §40-41 de DIAG-V3-08B.2): 14 preguntas, NO el banco de 100-150 de
+ * Banco semilla ("golden questions", §40-41 de DIAG-V3-08B.2): 15 preguntas, NO el banco de 100-150 de
  * DIAG-V3-08B.3. Suficientes para demostrar la arquitectura de extremo a extremo (una de cada patrón:
  * anchor, classification, maturity, friction, specializada por archetype con applicability de CONTEXTO,
  * applicability de RESPUESTA, multi-choice, `unknown`, `not_applicable` legítimo, copy variant,
@@ -235,6 +235,24 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     ],
     // Idem: diagnóstica pura, sin candidateDimensions prematura.
     scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: false, allowsNotApplicable: true },
+  },
+  {
+    id: "q2_confirm_primary_friction",
+    version: 1,
+    module: "confirmation",
+    type: "single",
+    prompt: "La evidencia apunta a una fricción distinta de la que declaraste. ¿Qué describe mejor el problema principal hoy?",
+    purpose: ["confirmation"],
+    priority: "critical",
+    // Fixture-only hasta que el banco productivo tenga una ruta de confirmación aprobada.
+    appliesWhen: contextEquals("primaryFriction", "visibility"),
+    contradictionRole: { type: "confirms", targetField: "primaryFriction", note: "Confirma la interpretación de la fricción principal sin mutar q2_friction ni las observaciones que la contradicen." },
+    options: [
+      { value: "visibility", label: "La visibilidad sigue siendo el problema principal" },
+      { value: "follow_up", label: "El seguimiento de consultas es el problema principal" },
+      { value: "unsure", label: "Todavía no estoy seguro", kind: "unknown" },
+    ],
+    scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
   },
   {
     id: "q2_confirm_hybrid_friction",

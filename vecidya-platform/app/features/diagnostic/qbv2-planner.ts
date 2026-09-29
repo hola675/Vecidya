@@ -1,6 +1,8 @@
 import type { DimensionId } from "./types";
+import { CURRENT_ROUTING_VERSION } from "./contracts";
 import { type ModuleId, type QuestionDefinitionV2, type QuestionPriority, type QuestionPurpose } from "./qbv2-contract";
 import { resolveEligibleQuestionsV2, type QuestionBankV2, type ResolveEligibleQuestionsResult } from "./qbv2-engine";
+import { CONTRADICTION_RULES_VERSION, DEFAULT_CONTRADICTION_RULES_V1, detectContradictionsV2, getTriggeredConfirmations, type ContradictionRuleV1, type DetectedContradiction } from "./qbv2-contradictions";
 import { CONTEXT_FIELD_REFS, type AnswersV2, type ContextFieldRef, type RuleV2 } from "./qbv2-rules";
 import { SIGNAL_PRODUCTION_CONTEXT_FIELD } from "./qbv2-signals";
 
@@ -29,6 +31,18 @@ export const DEFAULT_ROUTE_BUDGET_V1: RouteBudgetV1 = {
   },
 };
 
+function normalizeRouteBudget(budget: RouteBudgetV1, activeAnswerCount: number): RouteBudgetV1 {
+  const hardMax = Math.min(18, Math.max(1, budget.hardMax, activeAnswerCount));
+  const targetMax = Math.min(hardMax, Math.max(0, budget.targetMax));
+  return {
+    ...budget,
+    targetMin: Math.min(targetMax, Math.max(0, budget.targetMin)),
+    targetMax,
+    hardMax,
+    confirmationReserve: Math.min(hardMax, Math.max(0, budget.confirmationReserve)),
+  };
+}
+
 export type PlannerSkipReason = "module_budget" | "redundant_evidence" | "lower_priority" | "hard_cap" | "context_already_resolved" | "component_covered" | "refinement_not_needed";
 export type QuestionSelectionReason = "required_context" | "unlock_routing" | "goal_or_friction" | "specialized_evidence" | "cross_cutting_evidence" | "refinement" | "confirmation";
 
@@ -48,6 +62,7 @@ export type DiagnosticPlannerState = {
   readonly answers: AnswersV2;
   readonly bank: QuestionBankV2;
   readonly budget?: RouteBudgetV1;
+  readonly contradictionRules?: readonly ContradictionRuleV1[];
 };
 
 export type QuestionPlan = {
@@ -63,11 +78,13 @@ export type QuestionPlan = {
   readonly completion: CompletionStatus;
   readonly trace: readonly PlannerTraceEntry[];
   readonly routingIterations: number;
+  readonly contradictions: readonly DetectedContradiction[];
+  readonly triggeredConfirmationIds: readonly string[];
 };
 
 export type CompletionStatus = {
   readonly ready: boolean;
-  readonly reason: readonly ("minimum_context_resolved" | "required_questions_answered" | "evidence_sufficient" | "route_budget_reached" | "no_more_eligible_questions" | "no_actionable_questions")[];
+  readonly reason: readonly ("minimum_context_resolved" | "required_questions_answered" | "evidence_sufficient" | "route_budget_reached" | "no_more_eligible_questions" | "no_actionable_questions" | "confirmation_required" | "confirmation_answered" | "confirmation_ambiguous" | "confirmation_invalidated")[];
 };
 
 const PRIORITY_RANK: Record<QuestionPriority, number> = { critical: 4, high: 3, normal: 2, refinement: 1 };
@@ -146,7 +163,7 @@ function compareRank(a: QuestionRankMetadata, b: QuestionRankMetadata): number {
   return a.questionId.localeCompare(b.questionId);
 }
 
-function completionStatus(result: ResolveEligibleQuestionsResult, trace: readonly PlannerTraceEntry[], budget: RouteBudgetV1, bank: QuestionBankV2): CompletionStatus {
+function completionStatus(result: ResolveEligibleQuestionsResult, trace: readonly PlannerTraceEntry[], budget: RouteBudgetV1, bank: QuestionBankV2, rawAnswers: AnswersV2, triggeredConfirmationIds: readonly string[], contradictions: readonly DetectedContradiction[]): CompletionStatus {
   const status = fieldStatus(result.context);
   const minimumContextResolved = CORE_FIELDS.every((field) => status[field] === "resolved");
   const requiredQuestionsAnswered = trace.every((entry) => !entry.required || result.activeAnswers[entry.questionId] !== undefined);
@@ -163,10 +180,16 @@ function completionStatus(result: ResolveEligibleQuestionsResult, trace: readonl
   for (const id of result.eligibleQuestionIds) for (const dimension of bank.find((question) => question.id === id)?.scoringReadiness?.candidateDimensions ?? []) relevantDimensions.add(dimension);
   const evidenceSufficient = diagnosticCount >= 8 && coveredDimensions.size >= Math.min(3, relevantDimensions.size) || status.growthStage === "resolved" && status.primaryGoal === "resolved" && diagnosticCount >= 5 && coveredDimensions.size >= Math.min(2, relevantDimensions.size);
   const noMoreEligibleQuestions = result.eligibleQuestionIds.length === 0;
+  const confirmationQuestionIds = new Set(bank.filter((question) => question.contradictionRole?.type === "confirms").map((question) => question.id));
+  const pendingConfirmations = triggeredConfirmationIds.filter((id) => result.activeAnswers[id] === undefined);
+  const confirmationAnswered = contradictions.some((item) => item.status === "confirmed");
+  const confirmationAmbiguous = contradictions.some((item) => item.status === "remains_ambiguous");
+  const invalidatedConfirmation = [...confirmationQuestionIds].some((id) => rawAnswers[id] !== undefined && result.activeAnswers[id] === undefined && !triggeredConfirmationIds.includes(id));
   const routeBudgetReached = Object.keys(result.activeAnswers).length + trace.filter((entry) => entry.selected).length >= budget.targetMax;
   const hardCapReached = Object.keys(result.activeAnswers).length + trace.filter((entry) => entry.selected).length >= budget.hardMax;
-  const noActionableQuestions = minimumContextResolved && requiredQuestionsAnswered && trace.length > 0 && trace.every((entry) => entry.selected || ["module_budget", "component_covered", "context_already_resolved", "redundant_evidence", "hard_cap"].includes(entry.skipReason ?? ""));
-  const ready = noMoreEligibleQuestions || noActionableQuestions || hardCapReached || minimumContextResolved && requiredQuestionsAnswered && evidenceSufficient;
+  const confirmationRequired = pendingConfirmations.length > 0 && !hardCapReached;
+  const noActionableQuestions = minimumContextResolved && requiredQuestionsAnswered && !confirmationRequired && trace.length > 0 && trace.every((entry) => entry.selected || ["module_budget", "component_covered", "context_already_resolved", "redundant_evidence", "hard_cap"].includes(entry.skipReason ?? ""));
+  const ready = !confirmationRequired && (noMoreEligibleQuestions || noActionableQuestions || hardCapReached || minimumContextResolved && requiredQuestionsAnswered && evidenceSufficient);
   const reason: CompletionStatus["reason"] = [
     ...(minimumContextResolved ? ["minimum_context_resolved" as const] : []),
     ...(requiredQuestionsAnswered ? ["required_questions_answered" as const] : []),
@@ -174,18 +197,27 @@ function completionStatus(result: ResolveEligibleQuestionsResult, trace: readonl
     ...(routeBudgetReached ? ["route_budget_reached" as const] : []),
     ...(noMoreEligibleQuestions ? ["no_more_eligible_questions" as const] : []),
     ...(noActionableQuestions ? ["no_actionable_questions" as const] : []),
+    ...(confirmationRequired ? ["confirmation_required" as const] : []),
+    ...(confirmationAnswered && !confirmationRequired ? ["confirmation_answered" as const] : []),
+    ...(confirmationAmbiguous && !confirmationRequired ? ["confirmation_ambiguous" as const] : []),
+    ...(invalidatedConfirmation && !confirmationRequired ? ["confirmation_invalidated" as const] : []),
   ];
   return { ready, reason };
 }
 
 /** Pure deterministic planner. It never registers or serves QBV2 and stores no next-question state. */
-export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET_V1 }: DiagnosticPlannerState): QuestionPlan {
+export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET_V1, contradictionRules = DEFAULT_CONTRADICTION_RULES_V1 }: DiagnosticPlannerState): QuestionPlan {
+  budget = normalizeRouteBudget(budget, Object.keys(answers).length);
   const result = resolveEligibleQuestionsV2(answers, bank);
+  const contradictions = detectContradictionsV2({ result, bank, rules: contradictionRules });
+  const triggeredConfirmationIds = getTriggeredConfirmations(contradictions).filter((id) => result.eligibleQuestionIds.includes(id)).slice(0, 2);
   const status = fieldStatus(result.context);
   const questions = new Map(bank.map((question) => [question.id, question]));
   const routingPrerequisites = new Set<string>();
   for (const question of bank) collectAnswerRefs(question.appliesWhen, routingPrerequisites);
-  const ranked = result.eligibleQuestionIds.map((id) => rankQuestion(questions.get(id)!, status, result.activeAnswers, result.context, routingPrerequisites)).sort(compareRank);
+  const confirmationIds = new Set(bank.filter((question) => question.contradictionRole?.type === "confirms").map((question) => question.id));
+  const plannerEligibleQuestionIds = result.eligibleQuestionIds.filter((id) => !confirmationIds.has(id) || triggeredConfirmationIds.includes(id));
+  const ranked = plannerEligibleQuestionIds.map((id) => rankQuestion(questions.get(id)!, status, result.activeAnswers, result.context, routingPrerequisites)).sort(compareRank);
   const selected: string[] = [];
   const alreadyAskedCount = Math.min(Object.keys(result.activeAnswers).length, budget.hardMax);
   const moduleCounts: Partial<Record<ModuleId, number>> = {};
@@ -205,10 +237,11 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
       componentCounts[component] = (componentCounts[component] ?? 0) + 1;
     }
   }
-  const confirmationAvailable = ranked.some((entry) => entry.reason === "confirmation");
+  const confirmationAvailable = triggeredConfirmationIds.length > 0;
+  const hasUnselectedConfirmation = () => triggeredConfirmationIds.some((id) => !selected.includes(id));
   const canSelect = (entry: QuestionRankMetadata): boolean => {
     if (alreadyAskedCount + selected.length >= budget.hardMax) return false;
-    if (confirmationAvailable && entry.reason !== "confirmation" && alreadyAskedCount + selected.length >= budget.hardMax - budget.confirmationReserve) return false;
+    if (confirmationAvailable && entry.reason !== "confirmation" && !entry.required && alreadyAskedCount + selected.length >= budget.hardMax - Math.min(budget.confirmationReserve, triggeredConfirmationIds.length)) return false;
     if ((moduleCounts[entry.module] ?? 0) >= moduleLimit(entry.module, budget)) return false;
     const component = componentFor(entry.module);
     const contextRelevant = entry.module === "startup" && startupMinimum > 0 || entry.module === "nonprofit" && result.context.businessModel.status === "resolved" && result.context.businessModel.value === "nonprofit" || component !== undefined && result.context.archetypeComponents.includes(component as (typeof result.context.archetypeComponents)[number]) || entry.module === "measurement" && result.context.primaryGoal.status === "resolved" && result.context.primaryGoal.value === "measure" || entry.module === "follow_up" && result.context.primaryFriction.status === "resolved" && result.context.primaryFriction.value === "follow_up" || entry.module === "operations" && result.context.primaryFriction.status === "resolved" && result.context.primaryFriction.value === "operations";
@@ -233,7 +266,7 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
       componentCounts[component] = (componentCounts[component] ?? 0) + 1;
     }
     const startupComplete = (moduleCounts.startup ?? 0) >= startupMinimum;
-    if (alreadyAskedCount + selected.length >= budget.targetMax && startupComplete && ranked.filter((candidate) => candidate.required && !selected.includes(candidate.questionId)).length === 0) break;
+    if (alreadyAskedCount + selected.length >= budget.targetMax && startupComplete && ranked.filter((candidate) => candidate.required && !selected.includes(candidate.questionId)).length === 0 && !hasUnselectedConfirmation()) break;
   }
   const selectedSet = new Set(selected);
   const trace = ranked.map((entry): PlannerTraceEntry => {
@@ -248,8 +281,23 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
     const skipReason: PlannerSkipReason = alreadyAskedCount + selected.length >= budget.hardMax ? "hard_cap" : (moduleCounts[entry.module] ?? 0) >= moduleLimit(entry.module, budget) ? "module_budget" : resolvedFields ? "context_already_resolved" : componentCovered ? "component_covered" : entry.reason === "refinement" ? "refinement_not_needed" : entry.dimensions.every((dimension) => seenDimensions.has(dimension)) ? "redundant_evidence" : "lower_priority";
     return { ...entry, selected: false, skipReason, budgetState: { routeLength: alreadyAskedCount + selected.length, moduleCount: moduleCounts[entry.module] ?? 0, hardMax: budget.hardMax } };
   });
-  const completion = completionStatus(result, trace, budget, bank);
-  return { plannerVersion: ADAPTIVE_PLANNER_VERSION, context: result.context, contextResolution: status, eligibleQuestionIds: result.eligibleQuestionIds, selectedQuestionIds: selected, nextQuestionId: selected[0], routeLength: alreadyAskedCount + selected.length, budget, moduleCounts, completion, trace, routingIterations: result.iterations };
+  const completion = completionStatus(result, trace, budget, bank, answers, triggeredConfirmationIds, contradictions);
+  return {
+    plannerVersion: ADAPTIVE_PLANNER_VERSION,
+    context: result.context,
+    contextResolution: status,
+    eligibleQuestionIds: plannerEligibleQuestionIds,
+    selectedQuestionIds: selected,
+    nextQuestionId: selected[0],
+    routeLength: alreadyAskedCount + selected.length,
+    budget,
+    moduleCounts,
+    completion,
+    trace,
+    routingIterations: result.iterations,
+    contradictions,
+    triggeredConfirmationIds,
+  };
 }
 
 export function planNextQuestion(state: DiagnosticPlannerState): QuestionPlan {
@@ -262,5 +310,11 @@ export function isDiagnosticReadyToComplete(state: DiagnosticPlannerState): Comp
 
 /** Future route-signature input; existing QBV1 analytics signature is intentionally untouched. */
 export function plannerRouteSignatureParts(plan: QuestionPlan): readonly string[] {
-  return [`plannerVersion=${plan.plannerVersion}`, `selected=${plan.selectedQuestionIds.join(",")}`];
+  return [
+    "questionBankVersion=2",
+    `routingVersion=${CURRENT_ROUTING_VERSION}`,
+    `plannerVersion=${plan.plannerVersion}`,
+    `contradictionRulesVersion=${CONTRADICTION_RULES_VERSION}`,
+    `selected=${plan.selectedQuestionIds.join(",")}`,
+  ];
 }

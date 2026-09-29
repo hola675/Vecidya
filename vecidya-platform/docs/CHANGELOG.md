@@ -1,11 +1,17 @@
 # Changelog
 
+## 2026-09-29 — DIAG-V3-08B.5 Contradictions & Confirmation V1 (solo local, sin deploy)
+
+- Implementados `ContradictionRuleV1`, `CONTRADICTION_RULES_VERSION=1`, validación del registry, detección desde evidencia activa, materialidad `material`/`soft`, orden determinista y triggers explícitos de confirmation. El planner consume reserve 2 solo por triggers materiales y mantiene hard cap 18, máximo 2 confirmations, invalidación upstream, respuestas originales inmutables y recomputación para save/resume.
+- El registry V1 contiene 2 reglas: 1 material confirmable y 1 soft trace-only. `q2_confirm_primary_friction` y `q2_confirm_hybrid_friction` permanecen fixture-only; production bank continúa en 80 preguntas y confirmation count productivo = 0. No se declaran confirmations para usuarios.
+- Validación local final: `pnpm run test:unit` **692/692 PASS**, contradiction suite **16/16 PASS**, `pnpm run typecheck` PASS, `pnpm run build` PASS y `git diff --check` PASS; sin D1/KV, migraciones ni deploy.
+
 ## 2026-09-29 — DIAG-V3-08B.4 Adaptive Planner (solo local, sin deploy)
 
 - Implementado `AdaptivePlannerVersion=1` determinista para QBV2 inactivo: `RouteBudgetV1` con target 10–16, hard cap acumulativo 18 y confirmation reserve 2; `buildQuestionPlan`, `planNextQuestion`, completion status, trace y skip reasons.
 - La selección prioriza contexto esencial, routing, goal/friction, componentes especializados y cross-cutting relevante; recalcula desde respuestas activas, cuenta evidencia previa por componente y evita duplicar shared evidence. Professional+appointments, retail+ecommerce y creator+ecommerce tienen fairness acumulativa.
 - Resultado final: peor caso **23 elegibles → 11 nuevas → ruta total 16**; 17 fixtures y 20 personas dinámicas permanecen ≤18. `DIAG-V3-08B3-ROUTE-BUDGET-001` queda **RESUELTA por 08B.4**.
-- Validación: **674/674 tests PASS**, planner específico 12/12, typecheck PASS, build PASS y diff-check PASS. QBV2 sigue inactive (`CURRENT_QUESTION_BANK_VERSION=1`); sin D1, KV ni deploy. Route-signature design queda preparado documentalmente sin modificar analytics QBV1.
+- Validación histórica de 08B.4: **674/674 tests PASS**, planner específico 12/12, typecheck PASS, build PASS y diff-check PASS. QBV2 sigue inactive (`CURRENT_QUESTION_BANK_VERSION=1`); sin D1, KV ni deploy. Route-signature design queda preparado documentalmente sin modificar analytics QBV1.
 
 ## 2026-09-29 — DIAG-V3-08B.3 Lote F: cierre de contenido QBV2 (solo local, sin deploy)
 

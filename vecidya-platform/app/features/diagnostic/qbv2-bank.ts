@@ -19,11 +19,9 @@ import { registerQuestionBankV2 } from "./qbv2-engine";
  * COMPLETO (golden + cada lote de contenido, en el orden en que se van cerrando). `GOLDEN_QUESTIONS_V2`
  * sigue siendo un export independiente y estable para los tests que validan solo el set de arquitectura.
  */
-// El hook golden `q2_confirm_hybrid_friction` queda fixture-only: ninguna respuesta productiva declara
-// secondaryMonetizationMechanism todavía y, por tanto, su gate `businessModel=hybrid` sería inalcanzable.
-// Se conserva en `qbv2-golden.ts` para proteger el contrato de confirmation y el test sintético de 08B.5,
-// pero no se cuenta como pregunta productiva del banco.
-const PRODUCTION_GOLDEN_QUESTIONS_V2 = GOLDEN_QUESTIONS_V2.filter((question) => question.id !== "q2_confirm_hybrid_friction");
+// Las dos confirmations golden quedan fixture-only: el banco productivo todavía no activa rutas de
+// confirmación. El planner solo puede seleccionarlas cuando una ContradictionRuleV1 las dispara.
+const PRODUCTION_GOLDEN_QUESTIONS_V2 = GOLDEN_QUESTIONS_V2.filter((question) => !["q2_confirm_primary_friction", "q2_confirm_hybrid_friction"].includes(question.id));
 
 export const QUESTION_BANK_V2: readonly QuestionDefinitionV2[] = [...PRODUCTION_GOLDEN_QUESTIONS_V2, ...LOTE_A_QUESTIONS_V2, ...LOTE_B_QUESTIONS_V2, ...LOTE_C_QUESTIONS_V2, ...LOTE_D_QUESTIONS_V2, ...LOTE_E_QUESTIONS_V2, ...LOTE_F_QUESTIONS_V2];
 

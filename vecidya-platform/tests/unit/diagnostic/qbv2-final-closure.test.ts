@@ -49,11 +49,13 @@ function pressure(answers: Record<string, string>) {
   return { ...buckets, total: result.eligibleQuestionIds.length, iterations: result.iterations };
 }
 
-test("08B.3 C1: production bank has 80 questions; one golden confirmation remains fixture-only", () => {
+test("08B.3 C1: production bank has 80 questions; golden confirmations remain fixture-only", () => {
   assert.equal(productionQuestions.length, 80);
-  assert.equal(GOLDEN_QUESTIONS_V2.length, 14);
+  assert.equal(GOLDEN_QUESTIONS_V2.length, 15);
   assert.equal(GOLDEN_QUESTIONS_V2.find((question) => question.id === "q2_confirm_hybrid_friction") !== undefined, true);
+  assert.equal(GOLDEN_QUESTIONS_V2.find((question) => question.id === "q2_confirm_primary_friction") !== undefined, true);
   assert.equal(productionQuestions.some((question) => question.id === "q2_confirm_hybrid_friction"), false);
+  assert.equal(productionQuestions.some((question) => question.id === "q2_confirm_primary_friction"), false);
   assert.deepEqual(validateQuestionBankV2(productionQuestions), []);
 });
 

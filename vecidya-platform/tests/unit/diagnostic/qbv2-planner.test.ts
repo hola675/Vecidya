@@ -8,6 +8,7 @@ import {
   buildQuestionPlan,
   isDiagnosticReadyToComplete,
   planNextQuestion,
+  plannerRouteSignatureParts,
   type QuestionDefinitionV2,
 } from "../../../app/features/diagnostic/index.ts";
 
@@ -60,6 +61,11 @@ test("planner contract: deterministic version, explicit budget and no QBV2 activ
   assert.deepEqual(first.budget, DEFAULT_ROUTE_BUDGET_V1);
   assert.equal(first.nextQuestionId, second.nextQuestionId);
   assert.ok(first.routeLength <= 18);
+});
+
+test("future QBV2 route identity includes independent contradiction rules version", () => {
+  const plan = planNextQuestion({ answers: {}, bank: QUESTION_BANK_V2 });
+  assert.deepEqual(plannerRouteSignatureParts(plan).slice(0, 4), ["questionBankVersion=2", "routingVersion=1", "plannerVersion=1", "contradictionRulesVersion=1"]);
 });
 
 test("17 route fixtures are bounded and idea/project receives startup evidence without mature leakage", () => {
@@ -130,6 +136,17 @@ test("hard cap is a terminal completion state, never a blocked route", () => {
   const plan = buildQuestionPlan({ answers: { q2_delivery: "scheduled", q2_has_customers: "yes", q2_regularity: "regular", q2_goal: "measure", q2_friction: "operations" }, bank: QUESTION_BANK_V2, budget: { ...DEFAULT_ROUTE_BUDGET_V1, targetMax: 18 } });
   assert.ok(plan.routeLength <= plan.budget.hardMax);
   if (plan.routeLength === plan.budget.hardMax) assert.equal(plan.completion.ready, true);
+});
+
+test("planner clamps caller budgets to the absolute hard cap of 18", () => {
+  const plan = buildQuestionPlan({ answers: {}, bank: QUESTION_BANK_V2, budget: { ...DEFAULT_ROUTE_BUDGET_V1, targetMax: 100, hardMax: 100 } });
+  assert.equal(plan.budget.hardMax, 18);
+  assert.equal(plan.budget.targetMax, 18);
+  assert.ok(plan.routeLength <= 18);
+  assert.ok(plan.trace.every((entry) => entry.budgetState.routeLength <= 18));
+  const resumed = buildQuestionPlan({ answers: { q2_entity: "individual" }, bank: QUESTION_BANK_V2, budget: { ...DEFAULT_ROUTE_BUDGET_V1, targetMax: 0, hardMax: 0 } });
+  assert.equal(resumed.budget.hardMax, 1);
+  assert.ok(resumed.routeLength <= resumed.budget.hardMax);
 });
 
 test("a non-ready plan always exposes a next question while eligible candidates remain", () => {

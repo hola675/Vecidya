@@ -49,6 +49,10 @@ function deriveSignalsV2(activeAnswers: AnswersV2, bank: QuestionBankV2): Return
   for (const [questionId, answer] of Object.entries(activeAnswers)) {
     const question = byId.get(questionId);
     if (!question) continue;
+    // A confirmation is evidence for a contradiction rule, not an ordinary
+    // context producer. The explicit role—not the purpose label alone—keeps
+    // its semantic answer active without allowing it to rewrite its gate.
+    if (question.contradictionRole?.type === "confirms") continue;
     const selected = new Set(selectedOptionValues(answer));
     for (const option of question.options) {
       if (!selected.has(option.value)) continue;
