@@ -3,6 +3,7 @@ import { GOLDEN_QUESTIONS_V2 } from "./qbv2-golden";
 import { LOTE_A_QUESTIONS_V2 } from "./qbv2-lote-a";
 import { LOTE_B_QUESTIONS_V2 } from "./qbv2-lote-b";
 import { LOTE_C_QUESTIONS_V2 } from "./qbv2-lote-c";
+import { LOTE_D_QUESTIONS_V2 } from "./qbv2-lote-d";
 import { registerQuestionBankV2 } from "./qbv2-engine";
 
 /**
@@ -16,6 +17,6 @@ import { registerQuestionBankV2 } from "./qbv2-engine";
  * COMPLETO (golden + cada lote de contenido, en el orden en que se van cerrando). `GOLDEN_QUESTIONS_V2`
  * sigue siendo un export independiente y estable para los tests que validan solo el set de arquitectura.
  */
-export const QUESTION_BANK_V2: readonly QuestionDefinitionV2[] = [...GOLDEN_QUESTIONS_V2, ...LOTE_A_QUESTIONS_V2, ...LOTE_B_QUESTIONS_V2, ...LOTE_C_QUESTIONS_V2];
+export const QUESTION_BANK_V2: readonly QuestionDefinitionV2[] = [...GOLDEN_QUESTIONS_V2, ...LOTE_A_QUESTIONS_V2, ...LOTE_B_QUESTIONS_V2, ...LOTE_C_QUESTIONS_V2, ...LOTE_D_QUESTIONS_V2];
 
 registerQuestionBankV2(QUESTION_BANK_V2);

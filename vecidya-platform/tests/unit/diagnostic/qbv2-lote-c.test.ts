@@ -269,7 +269,6 @@ test("route pressure D: retail+ecommerce hybrid eleva la presión por encima de 
 
 // ── Bank size ────────────────────────────────────────────────────────────────
 
-test("Lote C: el banco combinado tiene 50 preguntas (37 de A+B + 13 de Lote C: 3 retail + 6 ecommerce + 4 hospitality)", () => {
-  assert.equal(QUESTION_BANK_V2.length, 50);
+test("Lote C: aporta exactamente 13 preguntas nuevas (3 retail + 6 ecommerce + 4 hospitality; el tamaño del banco COMBINADO se prueba en el test file del lote más reciente)", () => {
   assert.equal(LOTE_C_QUESTIONS_V2.length, 13);
 });
