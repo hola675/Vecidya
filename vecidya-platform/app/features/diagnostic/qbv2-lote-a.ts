@@ -22,12 +22,24 @@ import { eqV2 } from "./qbv2-rules";
  * depender de un solo eje `demandTrend`, y `capacityPressure`/`capacityExpansion` son evidencia
  * ADICIONAL, no un sustituto de `demandTrend`).
  *
- * Domain review R1 (revisión de dominio del Lote A, antes de aprobar Lote B) corrigió tres puntos:
- * (1) `CustomerReach` mezclaba geografía con canal (`"online"` conflaba ambos ejes) — ver `contracts.ts`
- * para el rediseño geográfico puro; (2) `q2_team_systemization` se renombra a `q2_process_systemization`
- * y su wording deja de mencionar tamaño de equipo: mide procesos/documentación repetibles, no personas;
- * (3) la resolución de `NicheGroup` (`context-resolver.ts`) ya no deja que una fuente más específica
- * sobrescriba en silencio una declaración material incompatible de otra fuente — ver `conflicting_evidence`.
+ * Domain review R1 corrigió tres puntos: (1) `CustomerReach` mezclaba geografía con canal (`"online"`
+ * conflaba ambos ejes) — ver `contracts.ts` para el rediseño geográfico puro; (2) `q2_team_systemization`
+ * se renombra a `q2_process_systemization`, wording sin mencionar tamaño de equipo; (3) `NicheGroup`
+ * (`context-resolver.ts`) ya no deja que una fuente más específica sobrescriba en silencio una
+ * declaración material incompatible de otra fuente — ver `conflicting_evidence`.
+ *
+ * Domain review R2 corrigió tres puntos más, antes de cerrar el lote: (1) `q2_sector` ofrecía
+ * `ecommerce`/`creator`/`b2b_services` como si fueran sectores — son modelo operativo/canal, ya
+ * resolubles por `q2_delivery`+monetización+`q2_customer_buyer`; retirados de las opciones (el valor de
+ * `NicheGroup` sigue existiendo en el contrato para catálogo/analítica, solo deja de ofrecerse aquí como
+ * elección directa). `retail` se mantiene deliberadamente: es un mercado/industria ("comercio general"),
+ * no un canal — a diferencia de `ecommerce`, no describe CÓMO se vende sino QUÉ tipo de comercio es,
+ * igual que `food_hospitality`/`automotive` también coexisten con su propio `OperationalArchetype` sin
+ * ambigüedad real. (2) `mixed` en `q2_customer_reach` se redefine como una combinación OPERATIVAMENTE
+ * real (una parte del negocio local y otra que atiende más lejos de forma habitual), no dispersión
+ * geográfica incidental. (3) `q2_process_systemization` gana un estado "parcial" que no fuerza
+ * `true`/`false`: la opción no produce ninguna señal (§9 del checkpoint R2), y el prompt se acorta
+ * moviendo los ejemplos al helper.
  */
 export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
   {
@@ -49,12 +61,12 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "automotive", label: "Automotriz", produces: [{ kind: "nicheGroup", value: "automotive", provenance: "explicit_declaration" }] },
       { value: "real_estate", label: "Bienes raíces", produces: [{ kind: "nicheGroup", value: "real_estate", provenance: "explicit_declaration" }] },
       { value: "food_hospitality", label: "Alimentos y hospitalidad (restaurantes, cafés, hospedaje)", produces: [{ kind: "nicheGroup", value: "food_hospitality", provenance: "explicit_declaration" }] },
-      { value: "retail", label: "Comercio o tienda física", produces: [{ kind: "nicheGroup", value: "retail", provenance: "explicit_declaration" }] },
-      { value: "ecommerce", label: "Comercio electrónico (venta en línea)", produces: [{ kind: "nicheGroup", value: "ecommerce", provenance: "explicit_declaration" }] },
+      // "retail" se mantiene deliberadamente (domain review R2 §6): es un mercado ("comercio general"),
+      // no un canal — a diferencia de "ecommerce"/"creator"/"b2b_services" (retirados abajo), no describe
+      // CÓMO se vende. Un negocio de retail puede vender en línea Y/O en tienda física sin contradicción.
+      { value: "retail", label: "Comercio o tienda", produces: [{ kind: "nicheGroup", value: "retail", provenance: "explicit_declaration" }] },
       { value: "education_coaching", label: "Educación o coaching", produces: [{ kind: "nicheGroup", value: "education_coaching", provenance: "explicit_declaration" }] },
       { value: "creative_media", label: "Creativo o medios", produces: [{ kind: "nicheGroup", value: "creative_media", provenance: "explicit_declaration" }] },
-      { value: "creator", label: "Creador de contenido o audiencia propia", produces: [{ kind: "nicheGroup", value: "creator", provenance: "explicit_declaration" }] },
-      { value: "b2b_services", label: "Servicios para otras empresas (B2B)", produces: [{ kind: "nicheGroup", value: "b2b_services", provenance: "explicit_declaration" }] },
       { value: "technology_software", label: "Tecnología o software", produces: [{ kind: "nicheGroup", value: "technology_software", provenance: "explicit_declaration" }] },
       { value: "nonprofit_community", label: "Organización sin fines de lucro o comunidad", produces: [{ kind: "nicheGroup", value: "nonprofit_community", provenance: "explicit_declaration" }] },
       // Escape hatch legítimo (§18 de 08B.0/08B.1): "other" solo se resuelve por declaración explícita, nunca por defecto.
@@ -76,7 +88,11 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "regional", label: "Varias ciudades o mi región, sin llegar a todo el país", produces: [{ kind: "customerReach", value: "regional", provenance: "explicit_declaration" }] },
       { value: "national", label: "Todo el país", produces: [{ kind: "customerReach", value: "national", provenance: "explicit_declaration" }] },
       { value: "global", label: "Más de un país", produces: [{ kind: "customerReach", value: "global", provenance: "explicit_declaration" }] },
-      { value: "mixed", label: "Una mezcla real de alcance local y más amplio", produces: [{ kind: "customerReach", value: "mixed", provenance: "explicit_declaration" }] },
+      {
+        value: "mixed",
+        label: "Tengo dos alcances reales a la vez: una parte de mi negocio es local y otra atiende mercados más amplios de forma habitual (no un caso aislado)",
+        produces: [{ kind: "customerReach", value: "mixed", provenance: "explicit_declaration" }],
+      },
     ],
     scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: false, allowsNotApplicable: false },
   },
@@ -104,16 +120,20 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "maturity",
     type: "single",
-    prompt: "Cuando se repite una tarea del negocio (atender un pedido, dar seguimiento a un cliente, resolver una consulta habitual), ¿existe una forma definida de hacerlo (documentada, con una plantilla o herramienta), o depende de la memoria o el criterio de la persona en el momento?",
-    helper: "No se trata de cuánta gente trabaja contigo, sino de si el conocimiento vive en un proceso o en la cabeza de alguien.",
+    prompt: "En las tareas que se repiten, ¿hay una forma definida de hacerlas o suelen depender de la memoria y el criterio de cada persona?",
+    helper: "Piensa en seguimiento, pedidos, consultas o tareas habituales. No depende del tamaño del equipo.",
     purpose: ["maturity"],
     priority: "normal",
     // Encadenada a otra respuesta UNIVERSAL de este mismo lote (§67 answer applicability): solo tiene
     // sentido preguntar por sistematización una vez que hay operación real con clientes.
     appliesWhen: eqV2("q2_has_customers", "yes"),
     options: [
-      { value: "documented_process", label: "Sigue un proceso definido, sin importar quién lo haga", produces: [{ kind: "systemization", value: true, provenance: "observed_fact" }] },
-      { value: "memory_dependent", label: "Depende de la memoria o el criterio de la persona en el momento", produces: [{ kind: "systemization", value: false, provenance: "observed_fact" }] },
+      { value: "documented_process", label: "Hay una forma definida (documentada, con plantilla o herramienta)", produces: [{ kind: "systemization", value: true, provenance: "observed_fact" }] },
+      // Estado parcial (domain review R2 §9-10): no produce NINGUNA señal, ni true ni false — un negocio
+      // a medio camino no debe quedar forzado a una respuesta booleana. Distinto de "unsure": aquí la
+      // persona SÍ sabe cómo funciona su negocio (es una mezcla real), no que lo desconozca.
+      { value: "partial", label: "Es una mezcla: algunas tareas tienen proceso definido y otras todavía dependen de cada persona" },
+      { value: "memory_dependent", label: "Depende de la memoria o el criterio de cada persona", produces: [{ kind: "systemization", value: false, provenance: "observed_fact" }] },
       { value: "unsure", label: "No lo había pensado de esa forma", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },

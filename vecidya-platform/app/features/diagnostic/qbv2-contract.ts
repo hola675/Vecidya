@@ -70,9 +70,12 @@ export type ModuleDefinition = {
 };
 
 export const MODULE_REGISTRY: readonly ModuleDefinition[] = [
-  { id: "core", purpose: "Anclas comparables entre casi todas las rutas.", relevantWhen: {}, targetQuestionRange: { min: 4, max: 5 } },
-  { id: "classification", purpose: "Resolver BusinessModel/Archetype/CustomerModel con el mínimo de preguntas posible.", relevantWhen: {}, targetQuestionRange: { min: 2, max: 4 } },
-  { id: "maturity", purpose: "Resolver GrowthStage por señales observables.", relevantWhen: {}, targetQuestionRange: { min: 2, max: 3 } },
+  // core/classification/maturity: rangos reconciliados en DIAG-V3-08B.3 Lote A domain review R2, tras
+  // auditar qué anchors/señales de fundación hacían falta de verdad (la estimación original de 08B.2 era
+  // previa a esa auditoría). Sigue siendo metadata de planner (§50), no una cuota obligatoria.
+  { id: "core", purpose: "Anclas comparables entre casi todas las rutas.", relevantWhen: {}, targetQuestionRange: { min: 2, max: 3 } },
+  { id: "classification", purpose: "Resolver BusinessModel/Archetype/CustomerModel con el mínimo de preguntas posible.", relevantWhen: {}, targetQuestionRange: { min: 4, max: 6 } },
+  { id: "maturity", purpose: "Resolver GrowthStage por señales observables.", relevantWhen: {}, targetQuestionRange: { min: 4, max: 6 } },
   { id: "goal_friction", purpose: "Resolver PrimaryGoal y PrimaryFriction.", relevantWhen: {}, targetQuestionRange: { min: 2, max: 3 } },
   { id: "local", purpose: "Negocio local físico sin citas ni inventario de reventa como eje.", relevantWhen: { archetypes: ["local"] }, targetQuestionRange: { min: 5, max: 8 } },
   { id: "appointments", purpose: "Varios proveedores/recursos agendándose.", relevantWhen: { archetypes: ["appointments"] }, targetQuestionRange: { min: 6, max: 10 } },

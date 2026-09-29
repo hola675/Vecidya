@@ -149,17 +149,78 @@ test("systemization: un individual solo (q2_entity=individual, sin staff continu
   assert.deepEqual(staffedWithoutProcess.context.growthStage, { status: "resolved", value: "growing", source: "signal" }, "una empresa con evidencia de crecimiento pero SIN proceso documentado resuelve growing, no scaling — el tamaño/tipo de entidad no decide esto, el proceso sí");
 });
 
-// ── CustomerReach: geografía pura, casos obligatorios A-G del checkpoint de revisión R1 (§5) ──
+// ── systemización: estado "parcial", distinto de true/false y distinto de "unsure" (domain review R2 §9-10) ──
+
+test("q2_process_systemization=partial no produce señal true NI false — un negocio a medio camino no queda forzado a una respuesta booleana", () => {
+  const question = LOTE_A_QUESTIONS_V2.find((q) => q.id === "q2_process_systemization")!;
+  const partial = question.options.find((o) => o.value === "partial")!;
+  assert.deepEqual(partial.produces ?? [], [], "\"partial\" no debe producir ninguna señal de systemization");
+  assert.notEqual(partial.kind, "unknown", "\"partial\" es una respuesta SABIDA (una mezcla real), no debe marcarse como unknown");
+});
+
+test("q2_process_systemization=partial + evidencia de crecimiento → growthStage=growing, NO scaling (parcial no cuenta como systemization=true)", () => {
+  const result = resolveEligibleQuestionsV2(
+    { q2_has_customers: "yes", q2_regularity: "regular", q2_capacity_signal: ["expanded"], q2_process_systemization: "partial" },
+    QUESTION_BANK_V2,
+  );
+  assert.deepEqual(result.context.growthStage, { status: "resolved", value: "growing", source: "signal" });
+});
+
+test("\"unsure\" (unknown) y \"partial\" son respuestas semánticamente distintas: unsure es kind=unknown (no sabe), partial no lo es (sabe que es una mezcla real)", () => {
+  const question = LOTE_A_QUESTIONS_V2.find((q) => q.id === "q2_process_systemization")!;
+  const unsure = question.options.find((o) => o.value === "unsure")!;
+  const partial = question.options.find((o) => o.value === "partial")!;
+  assert.equal(unsure.kind, "unknown");
+  assert.notEqual(partial.kind, "unknown");
+});
+
+// ── CustomerReach: geografía pura, casos obligatorios A-G del checkpoint de revisión (§5) ──
 
 test("CustomerReach caso A: restaurante local → local (geografía pura, sin mencionar canal)", () => {
   const result = resolveEligibleQuestionsV2({ q2_customer_reach: "local" }, QUESTION_BANK_V2);
   assert.deepEqual(result.context.customerModel.reach, { status: "resolved", value: "local", source: "signal" });
 });
 
-test("CustomerReach caso B: consultor que atiende en línea a clientes de todo el país → national (el canal en línea es un eje aparte, no cambia la geografía)", () => {
-  const result = resolveEligibleQuestionsV2({ q2_customer_reach: "national", q2_delivery: "online_checkout" }, QUESTION_BANK_V2);
+test("CustomerReach caso B (corregido en R2): agencia de marketing B2B → sector professional_services/creative_media + buyer b2b + archetype b2b, SIN necesitar un sector \"b2b_services\" ni \"ecommerce\"", () => {
+  const result = resolveEligibleQuestionsV2(
+    { q2_sector: "professional_services", q2_customer_buyer: "b2b", q2_delivery: "b2b_pipeline" },
+    QUESTION_BANK_V2,
+  );
+  assert.deepEqual(result.context.nicheGroup, { status: "resolved", value: "professional_services", source: "signal" });
+  assert.deepEqual(result.context.customerModel.buyer, { status: "resolved", value: "b2b", source: "signal" });
+  assert.equal(result.context.archetype.status === "resolved" ? result.context.archetype.value : undefined, "b2b");
+});
+
+test("caso online != ecommerce (§8 del checkpoint de revisión R2): un consultor/profesional remoto con alcance nacional NUNCA se convierte en ecommerce solo por trabajar en línea", () => {
+  const result = resolveEligibleQuestionsV2({ q2_customer_reach: "national", q2_delivery: "solo_practice" }, QUESTION_BANK_V2);
   assert.deepEqual(result.context.customerModel.reach, { status: "resolved", value: "national", source: "signal" });
+  const archetype = result.context.archetype.status === "resolved" ? result.context.archetype.value : undefined;
+  assert.equal(archetype, "professional");
+  assert.notEqual(archetype, "ecommerce");
+});
+
+test("caso ecommerce real (tienda en línea de cosméticos, §5 caso A): sector beauty_personal_care + delivery online_checkout → archetype ecommerce, SIN necesitar elegir \"ecommerce\" como sector", () => {
+  const result = resolveEligibleQuestionsV2({ q2_sector: "beauty_personal_care", q2_delivery: "online_checkout" }, QUESTION_BANK_V2);
+  assert.deepEqual(result.context.nicheGroup, { status: "resolved", value: "beauty_personal_care", source: "signal" });
   assert.equal(result.context.archetype.status === "resolved" ? result.context.archetype.value : undefined, "ecommerce");
+});
+
+test("caso creator real (creador de fitness, §5 caso C): sector health_wellness + monetización por audiencia + delivery por contenido propio → archetype creator, SIN necesitar elegir \"creator\" como sector", () => {
+  const result = resolveEligibleQuestionsV2(
+    { q2_sector: "health_wellness", q2_monetization: "audience", q2_delivery: "audience_content" },
+    QUESTION_BANK_V2,
+  );
+  assert.deepEqual(result.context.nicheGroup, { status: "resolved", value: "health_wellness", source: "signal" });
+  assert.equal(result.context.archetype.status === "resolved" ? result.context.archetype.value : undefined, "creator");
+});
+
+test("q2_sector ya NO ofrece ecommerce/creator/b2b_services como opciones (domain review R2 §1-4): son modelo operativo/canal, no sector — siguen existiendo como NicheGroup internos, solo dejan de ofrecerse aquí", () => {
+  const sectorQuestion = LOTE_A_QUESTIONS_V2.find((q) => q.id === "q2_sector")!;
+  const offeredValues = new Set(sectorQuestion.options.map((o) => o.value));
+  for (const removed of ["ecommerce", "creator", "b2b_services"]) {
+    assert.ok(!offeredValues.has(removed), `q2_sector no debería ofrecer "${removed}" como opción directa`);
+  }
+  assert.ok(offeredValues.has("retail"), "retail se mantiene deliberadamente (es mercado, no canal)");
 });
 
 test("CustomerReach caso D: SaaS internacional → global", () => {
@@ -213,4 +274,13 @@ test("matriz de PrimaryFriction: los 6 valores (visibility/trust/conversion/foll
 
 test("Lote A: el banco combinado tiene 19 preguntas (14 golden + 5 de Lote A); todavía lejos del target editorial de 100-120", () => {
   assert.equal(QUESTION_BANK_V2.length, 19);
+});
+
+test("module counts reales: core=2, classification=5, maturity=5, goal_friction=2 (domain review R2: metadata de MODULE_REGISTRY reconciliada a core 2-3 / classification 4-6 / maturity 4-6 para reflejar esta auditoría)", () => {
+  const counts: Record<string, number> = {};
+  for (const q of QUESTION_BANK_V2) counts[q.module] = (counts[q.module] ?? 0) + 1;
+  assert.equal(counts.core, 2);
+  assert.equal(counts.classification, 5);
+  assert.equal(counts.maturity, 5);
+  assert.equal(counts.goal_friction, 2);
 });
