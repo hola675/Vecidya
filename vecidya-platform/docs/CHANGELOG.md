@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-09-30 — DIAG-V3-08B.7 Coverage Gap Resolution (solo local, sin deploy)
+
+- Resueltos los gaps de `measurement_optimization` y ecommerce → `digital_foundation` reutilizando evidencia de preguntas existentes; no se añadieron preguntas productivas ni se modificó el planner.
+- La cobertura ahora considera respuestas activas y preguntas seleccionadas, preservando rutas adaptativas de 15–16 preguntas y el hard cap de 18. Sin scoring, porcentajes, pesos ni confidence.
+
+## 2026-09-30 — DIAG-V3-08B.6R Compact Coverage & Diagnostic State Foundation (solo local, sin deploy)
+
+- Añadidos `MATURITY_MODEL`, `DIGITAL_DIMENSIONS` y `EVIDENCE_MAPPING` en `qbv2-coverage.ts`, con trazabilidad declarativa para las 80 preguntas productivas sin pesos ni porcentajes.
+- Añadidas 12 golden personas y análisis de cobertura determinista sobre la ruta adaptativa existente, incluida una matriz generada de 2.400 combinaciones y clasificación explícita de cobertura confirmada, gaps confirmados y mejoras posibles.
+- No se modificaron preguntas, planner, contradicciones, scoring, UI, persistencia, schema, auth, analytics ni versión pública. DIAG-V3-08C queda como siguiente fase, no iniciada.
+
 ## 2026-09-29 — DIAG-V3-08B.5 Contradictions & Confirmation V1 (solo local, sin deploy)
 
 - Implementados `ContradictionRuleV1`, `CONTRADICTION_RULES_VERSION=1`, validación del registry, detección desde evidencia activa, materialidad `material`/`soft`, orden determinista y triggers explícitos de confirmation. El planner consume reserve 2 solo por triggers materiales y mantiene hard cap 18, máximo 2 confirmations, invalidación upstream, respuestas originales inmutables y recomputación para save/resume.

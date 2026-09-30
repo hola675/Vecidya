@@ -180,6 +180,21 @@ export {
 } from "./analytics";
 export { ANALYTICS_QUEUE_FLUSH_INTERVAL_MS, ANALYTICS_QUEUE_FLUSH_SIZE, ANALYTICS_QUEUE_MAX_PENDING, AnalyticsEventQueue, type AnalyticsQueueEvent, type AnalyticsQueueEventInput } from "./analytics-queue";
 export { computeRouteSignature } from "./route-signature";
+export {
+  DIGITAL_DIMENSIONS,
+  DIGITAL_DIMENSION_IDS,
+  EVIDENCE_KINDS,
+  EVIDENCE_MAPPING,
+  MATURITY_MODEL,
+  validateEvidenceMapping,
+  type DigitalDimensionDefinition,
+  type DigitalDimensionId,
+  type EvidenceKind,
+  type MaturityId,
+  type QuestionEvidenceMapping,
+} from "./qbv2-coverage";
+export { GOLDEN_PERSONAS, type GoldenPersona } from "./qbv2-personas";
+export { analyzeCoverage, generateCoverageMatrix, mappingForQuestion, type CoverageAnalysisReport, type CoverageFinding, type CoverageFindingClassification, type CoverageMatrixCase, type DimensionCoverageReport, type PersonaCoverageReport } from "./qbv2-coverage-analysis";
 
 /**
  * Ejecuta el diagnóstico completo sobre un conjunto de respuestas.

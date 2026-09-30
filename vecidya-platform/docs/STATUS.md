@@ -1,6 +1,6 @@
 # Estado de implementación
 
-Última reconciliación: **2026-09-29 (DIAG-V3-08B.5: Contradictions & Confirmation V1 implementado y validado; registry determinista, active evidence, material/soft, trigger-only, máximo 2, hard cap 18 e invalidación upstream; confirmations aún fixture-only, 692 tests PASS, solo local y sin deploy)**.
+Última reconciliación: **2026-09-30 (DIAG-V3-08B.7: gaps de cobertura resueltos por reutilización semántica de evidencia existente; sin scoring ni cambio público, solo local y sin deploy)**. Anterior: **2026-09-30 (DIAG-V3-08B.6R: foundation de cobertura compacta, madurez, ocho dimensiones, mapping declarativo de 80 preguntas y 12 golden personas; sin scoring ni cambio público, solo local y sin deploy)**.
 
 ## Veredicto
 
@@ -47,6 +47,9 @@ Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organizac
 | Legal / privacidad | sí (`/privacidad`) | sí | n/a | E2E legal/trust | sí | **PASS técnico local** | Lenguaje claro y límites actuales; no se inventan términos, entidad legal ni datos jurídicos |
 | Real Proof (negocios reales) | sí (validación local) | sí (solo local) | sí | `rp001a` | 1 (dogfooding) | **BLOCKED para publicación remota** | RP-001A valida tres casos controlados sin publicar; siguen bloqueados datos/autorizaciones y G4 |
 | Producción independiente | sí | n/a | sí | smoke anónimo `0.5.5` (2026-09-25); visual autenticado del `0.5.1` | sí (`0.5.5`) | **PASS** | `vecidya-prod` sirve el público; Version ID `cebd0a92-3560-4298-8a3b-5df0c6209477`; sin migraciones ni cambios de secrets |
+
+| DIAG-V3-08B.6R Compact Coverage & Diagnostic State Foundation | AUTORIZADA (2026-09-30) | **IMPLEMENTADA técnicamente, solo local y sin deploy; pendiente de aprobación formal** | `MATURITY_MODEL` (5 estados), `DIGITAL_DIMENSIONS` (8 dimensiones), `EVIDENCE_MAPPING` (80/80 preguntas productivas), 12 golden personas y matriz declarativa de 2.400 combinaciones `stage × archetype × goal × friction`. El análisis distingue cobertura confirmada, gaps confirmados y mejoras posibles. No cambia QBV2, planner, contradicciones, scoring, porcentajes, UI, persistencia ni schema. Siguiente fase: DIAG-V3-08C, no iniciada |
+| DIAG-V3-08B.7 Coverage Gap Resolution | AUTORIZADA (2026-09-30) | **IMPLEMENTADA técnicamente, solo local y sin deploy; pendiente de aprobación formal** | Los dos gaps confirmados se resuelven sin nuevas preguntas ni ajuste de planner: origen de demanda aporta medición cuando existe, y `q2_ecommerce_product_discovery` aporta foundation ecommerce. La cobertura distingue respuestas activas de preguntas nuevas seleccionadas; 80/80 mappings, 12 personas, 2.400 combinaciones, rutas 15–16 y hard cap 18. DIAG-V3-08C aún no iniciada |
 
 ## Fases: estado declarado vs reconciliado
 
