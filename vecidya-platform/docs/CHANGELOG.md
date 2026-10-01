@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-30 — DIAG-V3-08D Constraints & Priorities foundation (solo local, sin deploy, sin commit)
+
+- DIAG-V3-08C cerrada y aprobada en el commit local `51a7230` (sin push ni deploy).
+- Añadido el motor puro `qbv2-priorities.ts`: taxonomía de 10 restricciones, grafo acíclico de dependencias entre dimensiones (`enables`, `sustains`, `feeds`, `informs`), relevancia por goal/friction/etapa y hasta tres prioridades ordenadas con certeza `actionable`/`likely`/`verify_first`.
+- La prioridad no es el score más bajo: prerrequisitos, cuellos de botella activos y compuertas de capacidad pasan delante; una capacidad muy débil pero irrelevante no ocupa el primer lugar. `null` se trata como gap de evidencia, nunca como debilidad.
+- Golden 12: 1 prioridad primaria con evidencia (follow-up en professional_appointments), 9 de verificación (`verify_first`) y 2 sin restricciones relevantes. Las rutas golden casi nunca recogen evidencia directa débil sobre la dimensión de su goal/fricción; queda registrado como observación de producto.
+- Sin cambios de scoring, planner, banco, UI, persistencia, schema, PDF ni analytics. Sin cambio de versión.
+
 ## 2026-09-30 — DIAG-V3-08B.7 Coverage Gap Resolution (solo local, sin deploy)
 
 - Resueltos los gaps de `measurement_optimization` y ecommerce → `digital_foundation` reutilizando evidencia de preguntas existentes; no se añadieron preguntas productivas ni se modificó el planner.
