@@ -97,6 +97,7 @@ export const ANSWER_SEMANTICS: Readonly<Record<string, AnswerSemantics>> = {
   q2_hospitality_delivery_takeaway: { values: { both: "strong", takeaway_only: "partial", delivery_only: "partial", no: "constraint" } },
   q2_b2b_decision_makers: { values: { single: "constraint", multiple: "constraint", varies: "constraint" } },
   q2_creator_conversion: { values: { regularly: "established", occasionally: "partial", rarely: "weak" } },
+  q2_conversion_interest_to_action: { values: { most: "strong", about_half: "partial", few: "weak" } },
   // Relationship & recurrence
   q2_local_repeat_customers: { values: { yes_regular: "established", rarely: "weak", no: "missing" } },
   q2_service_repeat_referral: { values: { both: "strong", repeat_only: "established", referrals_only: "partial", rarely: "missing" } },
@@ -127,6 +128,8 @@ export const ANSWER_SEMANTICS: Readonly<Record<string, AnswerSemantics>> = {
   q2_operations_bottleneck: { values: { no_clear_bottleneck: "established", manual_tasks: "weak", scattered_info: "weak", one_person: "dependency", approvals: "constraint" } },
   q2_operations_manual_impact: { values: { not_really: "established", somewhat: "partial", significant: "weak" } },
   q2_operations_dependency: { values: { yes_would_continue: "strong", partially: "partial", no_would_stop: "dependency" } },
+  q2_operations_information_base: { values: { shared_system: "strong", scattered_digital: "partial", paper_or_memory: "missing" } },
+  q2_operations_automation_adoption: { values: { most_automated: "strong", some_automated: "partial", none_automated: "missing" } },
 };
 
 /** Questions that only resolve context/applicability: no dimension mapping, no capability points. */

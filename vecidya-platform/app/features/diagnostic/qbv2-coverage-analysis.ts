@@ -103,7 +103,8 @@ function reportPersona(persona: GoldenPersona): PersonaCoverageReport {
     evidenceQuestionIds,
     selectedModules: modules,
     eligibleModules: eligible,
-    missingExpectedModules: persona.expectedModules.filter((module) => !eligible.includes(module)),
+    // A module the route actually asked is reachable even though its answered questions leave the eligible list.
+    missingExpectedModules: persona.expectedModules.filter((module) => !eligible.includes(module) && !modules.includes(module)),
     excludedModulesSelected: persona.excludedModules.filter((module) => modules.includes(module)),
     duplicateQuestionIds: duplicates(plan.selectedQuestionIds),
     coveredDimensions: selectedDimensions(evidenceQuestionIds),

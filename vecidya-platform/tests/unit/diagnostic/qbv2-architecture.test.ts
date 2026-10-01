@@ -31,8 +31,8 @@ test("QBV2 arquitectura: MODULE_REGISTRY cubre exactamente MODULE_IDS, sin dupli
   assert.deepEqual([...ids].sort(), [...MODULE_IDS].sort());
 });
 
-test("QBV2 arquitectura: 20 módulos (19 de 08B.2 + \"reputation\", cross-cutting añadido en DIAG-V3-08B.3 Lote B C2) — no hardcodear 19 en ningún sitio que describa el estado actual", () => {
-  assert.equal(MODULE_IDS.length, 20);
+test("QBV2 arquitectura: 21 módulos (19 de 08B.2 + \"reputation\" de 08B.3 Lote B C2 + \"conversion\" de DIAG-V3-08D.1) — no hardcodear 19 en ningún sitio que describa el estado actual", () => {
+  assert.equal(MODULE_IDS.length, 21);
   const reputation = MODULE_REGISTRY.find((module) => module.id === "reputation")!;
   assert.ok(reputation, "el módulo reputation debe existir en MODULE_REGISTRY");
   assert.deepEqual([...reputation.relevantWhen.archetypes ?? []].sort(), ["appointments", "hospitality", "local", "professional", "retail"]);

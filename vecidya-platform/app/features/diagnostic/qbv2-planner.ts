@@ -3,8 +3,11 @@ import { CURRENT_ROUTING_VERSION } from "./contracts";
 import { type ModuleId, type QuestionDefinitionV2, type QuestionPriority, type QuestionPurpose } from "./qbv2-contract";
 import { resolveEligibleQuestionsV2, type QuestionBankV2, type ResolveEligibleQuestionsResult } from "./qbv2-engine";
 import { CONTRADICTION_RULES_VERSION, DEFAULT_CONTRADICTION_RULES_V1, detectContradictionsV2, getTriggeredConfirmations, type ContradictionRuleV1, type DetectedContradiction } from "./qbv2-contradictions";
-import { CONTEXT_FIELD_REFS, type AnswersV2, type ContextFieldRef, type RuleV2 } from "./qbv2-rules";
+import { CONTEXT_FIELD_REFS, evaluateRuleV2, type AnswersV2, type ContextFieldRef, type RuleV2 } from "./qbv2-rules";
 import { SIGNAL_PRODUCTION_CONTEXT_FIELD } from "./qbv2-signals";
+import { deriveContextualEvidence, scoreContextualDimensions } from "./qbv2-contextual-scoring";
+import { EVIDENCE_DIRECTNESS, EVIDENCE_MAPPING, type DigitalDimensionId } from "./qbv2-coverage";
+import { FRICTION_RELEVANCE, GOAL_RELEVANCE, deriveConstraintsAndPriorities } from "./qbv2-priorities";
 
 /** DIAG-V3-08B.4: planner version is deliberately independent from QBV1/QBV2 activation. */
 export const ADAPTIVE_PLANNER_VERSION = 1 as const;
@@ -15,27 +18,37 @@ export type RouteBudgetV1 = {
   readonly targetMax: number;
   readonly hardMax: number;
   readonly confirmationReserve: number;
+  /**
+   * DIAG-V3-08D.1: the last N slots below `hardMax` are reserved for material evidence. Every other
+   * selection stops at `hardMax - materialEvidenceReserve`, so routes without an open need are unchanged.
+   */
+  readonly materialEvidenceReserve?: number;
   readonly moduleMax: Readonly<Partial<Record<ModuleId, number>>>;
 };
+
+/** Absolute product limit for productive questions in one route (DIAG-V3-08D.1; previously 18). */
+export const ROUTE_HARD_CAP = 20;
 
 export const DEFAULT_ROUTE_BUDGET_V1: RouteBudgetV1 = {
   targetMin: 10,
   targetMax: 16,
-  hardMax: 18,
+  hardMax: ROUTE_HARD_CAP,
   confirmationReserve: 2,
+  materialEvidenceReserve: 2,
   moduleMax: {
     core: 3, classification: 6, maturity: 6, goal_friction: 3,
     startup: 6, operations: 3, follow_up: 3, measurement: 3, confirmation: 2,
     local: 3, local_service: 3, appointments: 5, professional: 5, retail: 3,
-    ecommerce: 5, hospitality: 4, b2b: 5, creator: 4, nonprofit: 4, reputation: 1,
+    ecommerce: 5, hospitality: 4, b2b: 5, creator: 4, nonprofit: 4, reputation: 1, conversion: 1,
   },
 };
 
 function normalizeRouteBudget(budget: RouteBudgetV1, activeAnswerCount: number): RouteBudgetV1 {
-  const hardMax = Math.min(18, Math.max(1, budget.hardMax, activeAnswerCount));
+  const hardMax = Math.min(ROUTE_HARD_CAP, Math.max(1, budget.hardMax, activeAnswerCount));
   const targetMax = Math.min(hardMax, Math.max(0, budget.targetMax));
   return {
     ...budget,
+    materialEvidenceReserve: Math.min(hardMax - 1, Math.max(0, budget.materialEvidenceReserve ?? 0)),
     targetMin: Math.min(targetMax, Math.max(0, budget.targetMin)),
     targetMax,
     hardMax,
@@ -46,6 +59,49 @@ function normalizeRouteBudget(budget: RouteBudgetV1, activeAnswerCount: number):
 export type PlannerSkipReason = "module_budget" | "redundant_evidence" | "lower_priority" | "hard_cap" | "context_already_resolved" | "component_covered" | "refinement_not_needed";
 export type QuestionSelectionReason = "required_context" | "unlock_routing" | "goal_or_friction" | "specialized_evidence" | "cross_cutting_evidence" | "refinement" | "confirmation";
 
+// ── Material evidence need (DIAG-V3-08D.1) ──────────────────────────────────
+
+/**
+ * A dimension the user's own declaration makes material: the friction's primary dimension (a declared
+ * problem; two direct observations so one thin reading does not settle it), the goal's primary dimension
+ * (one) and an unknown prerequisite of a detected relevant constraint (one). Answers decide capability;
+ * these only decide which eligible direct question is worth asking first. Not dimension completion.
+ */
+export type MaterialEvidenceSource = "friction" | "goal" | "prerequisite";
+export type MaterialEvidenceNeed = { readonly dimension: DigitalDimensionId; readonly source: MaterialEvidenceSource; readonly target: number; readonly observed: number; readonly remaining: number };
+export const MATERIAL_EVIDENCE_TARGET: Readonly<Record<MaterialEvidenceSource, number>> = { friction: 2, goal: 1, prerequisite: 1 };
+const MATERIAL_SOURCE_RANK: Readonly<Record<MaterialEvidenceSource, number>> = { friction: 3, goal: 2, prerequisite: 1 };
+
+function directDimensions(questionId: string): readonly DigitalDimensionId[] {
+  const mapping = EVIDENCE_MAPPING[questionId];
+  return mapping ? mapping.dimensions.filter((dimension) => (EVIDENCE_DIRECTNESS[questionId]?.[dimension] ?? mapping.semanticRole) === "direct") : [];
+}
+
+function materialEvidenceNeeds(result: ResolveEligibleQuestionsResult, bank: QuestionBankV2): readonly MaterialEvidenceNeed[] {
+  const goal = result.context.primaryGoal.status === "resolved" ? result.context.primaryGoal.value : undefined;
+  const friction = result.context.primaryFriction.status === "resolved" ? result.context.primaryFriction.value : undefined;
+  const evidence = deriveContextualEvidence(result.activeAnswers, bank);
+  const scoring = scoreContextualDimensions({ answers: result.activeAnswers, context: result.context, evidence, bank });
+  const applicable = new Set(scoring.dimensions.filter((item) => item.applicability !== "not_applicable").map((item) => item.id));
+  const wanted = new Map<DigitalDimensionId, MaterialEvidenceSource>();
+  const want = (dimension: DigitalDimensionId | undefined, source: MaterialEvidenceSource) => {
+    if (!dimension || !applicable.has(dimension)) return;
+    const current = wanted.get(dimension);
+    if (!current || MATERIAL_SOURCE_RANK[source] > MATERIAL_SOURCE_RANK[current]) wanted.set(dimension, source);
+  };
+  want(friction ? FRICTION_RELEVANCE[friction][0] : undefined, "friction");
+  want(goal ? GOAL_RELEVANCE[goal][0] : undefined, "goal");
+  const constraints = deriveConstraintsAndPriorities(scoring).constraints;
+  const constrained = new Set(constraints.filter((item) => item.severity === "material" || item.severity === "moderate").map((item) => item.dimension));
+  for (const gap of constraints.filter((item) => item.kind === "evidence_gap" && item.score === null && item.dependency.blocks.some((blocked) => constrained.has(blocked)))) want(gap.dimension, "prerequisite");
+  return [...wanted.entries()].map(([dimension, source]) => {
+    // Any answered direct question counts, including "unknown": the planner already made the effort.
+    const observed = new Set(evidence.filter((item) => item.dimension === dimension && item.directness === "direct").map((item) => item.questionId)).size;
+    const target = MATERIAL_EVIDENCE_TARGET[source];
+    return { dimension, source, target, observed, remaining: Math.max(0, target - observed) };
+  });
+}
+
 export type QuestionRankMetadata = {
   readonly questionId: string;
   readonly module: ModuleId;
@@ -53,6 +109,8 @@ export type QuestionRankMetadata = {
   readonly required: boolean;
   readonly priority: QuestionPriority;
   readonly dimensions: readonly DimensionId[];
+  /** Serves an open material evidence need at ranking time (direct evidence for that dimension). */
+  readonly materialEvidence: boolean;
   readonly rank: readonly number[];
 };
 
@@ -80,6 +138,8 @@ export type QuestionPlan = {
   readonly routingIterations: number;
   readonly contradictions: readonly DetectedContradiction[];
   readonly triggeredConfirmationIds: readonly string[];
+  /** Material evidence needs as observed before this plan's selections. */
+  readonly materialEvidence: readonly MaterialEvidenceNeed[];
 };
 
 export type CompletionStatus = {
@@ -90,7 +150,7 @@ export type CompletionStatus = {
 const PRIORITY_RANK: Record<QuestionPriority, number> = { critical: 4, high: 3, normal: 2, refinement: 1 };
 const PURPOSE_RANK: Record<QuestionPurpose, number> = { anchor: 4, classification: 4, maturity: 3, goal: 4, friction: 4, routing: 3, diagnostic: 2, confirmation: 5 };
 const CORE_FIELDS: readonly ContextFieldRef[] = ["entity", "businessModel", "archetype", "growthStage", "primaryGoal", "primaryFriction", "customerReach", "customerBuyer"];
-const CROSS_CUTTING = new Set<ModuleId>(["operations", "follow_up", "measurement"]);
+const CROSS_CUTTING = new Set<ModuleId>(["operations", "follow_up", "measurement", "conversion"]);
 const FOUNDATION = new Set<ModuleId>(["core", "classification", "maturity", "goal_friction"]);
 
 function fieldStatus(context: ResolveEligibleQuestionsResult["context"]): Readonly<Record<ContextFieldRef, "resolved" | "unresolved">> {
@@ -136,6 +196,13 @@ function selectionReason(question: QuestionDefinitionV2, status: Readonly<Record
   return "specialized_evidence";
 }
 
+function crossCuttingRelevant(module: ModuleId, context: ResolveEligibleQuestionsResult["context"]): boolean {
+  const goal = context.primaryGoal.status === "resolved" ? context.primaryGoal.value : undefined;
+  const friction = context.primaryFriction.status === "resolved" ? context.primaryFriction.value : undefined;
+  // `conversion` is deliberately absent: its question only enters as tail material evidence, never displacing.
+  return module === "measurement" && goal === "measure" || module === "follow_up" && friction === "follow_up" || module === "operations" && friction === "operations";
+}
+
 function moduleLimit(module: ModuleId, budget: RouteBudgetV1): number {
   return budget.moduleMax[module] ?? 3;
 }
@@ -144,16 +211,19 @@ function diagnosticUtility(question: QuestionDefinitionV2): number {
   return (question.scoringReadiness?.candidateDimensions.length ?? 0) * 2 + (question.purpose.includes("diagnostic") ? 2 : 0) + Math.max(...question.purpose.map((purpose) => PURPOSE_RANK[purpose]));
 }
 
-function rankQuestion(question: QuestionDefinitionV2, status: Readonly<Record<ContextFieldRef, "resolved" | "unresolved">>, answers: AnswersV2, context: ResolveEligibleQuestionsResult["context"], routingPrerequisites: ReadonlySet<string>): QuestionRankMetadata {
+function rankQuestion(question: QuestionDefinitionV2, status: Readonly<Record<ContextFieldRef, "resolved" | "unresolved">>, answers: AnswersV2, context: ResolveEligibleQuestionsResult["context"], routingPrerequisites: ReadonlySet<string>, needs: readonly MaterialEvidenceNeed[]): QuestionRankMetadata {
   const required = isRequired(question, status);
   const reason = selectionReason(question, status, routingPrerequisites);
   const dimensions = question.scoringReadiness?.candidateDimensions ?? [];
   const priority = PRIORITY_RANK[question.priority];
-  const relevantCrossCutting = question.module === "measurement" && context.primaryGoal.status === "resolved" && context.primaryGoal.value === "measure" || question.module === "follow_up" && context.primaryFriction.status === "resolved" && context.primaryFriction.value === "follow_up" || question.module === "operations" && context.primaryFriction.status === "resolved" && context.primaryFriction.value === "operations";
+  const relevantCrossCutting = crossCuttingRelevant(question.module, context);
   const contextRank = reason === "required_context" ? 3 : reason === "unlock_routing" ? 2 : reason === "goal_or_friction" ? 1 : relevantCrossCutting ? 2 : 0;
-  const goalOrFrictionRelevance = question.module === "measurement" && context.primaryGoal.status === "resolved" && context.primaryGoal.value === "measure" || question.module === "follow_up" && context.primaryFriction.status === "resolved" && context.primaryFriction.value === "follow_up" || question.module === "operations" && context.primaryFriction.status === "resolved" && context.primaryFriction.value === "operations" ? 2 : 0;
+  const goalOrFrictionRelevance = relevantCrossCutting ? 2 : 0;
+  // Material relevance is metadata only: the base order is the pre-08D.1 order, so it never displaces evidence.
+  const direct = directDimensions(question.id);
+  const materialEvidence = needs.some((need) => need.remaining > 0 && direct.includes(need.dimension));
   const rank = [required ? 1 : 0, contextRank, goalOrFrictionRelevance, diagnosticUtility(question), priority, dimensions.length, isAnswered(question, answers) ? 0 : 1];
-  return { questionId: question.id, module: question.module, reason, required, priority: question.priority, dimensions, rank };
+  return { questionId: question.id, module: question.module, reason, required, priority: question.priority, dimensions, materialEvidence, rank };
 }
 
 function compareRank(a: QuestionRankMetadata, b: QuestionRankMetadata): number {
@@ -163,7 +233,7 @@ function compareRank(a: QuestionRankMetadata, b: QuestionRankMetadata): number {
   return a.questionId.localeCompare(b.questionId);
 }
 
-function completionStatus(result: ResolveEligibleQuestionsResult, trace: readonly PlannerTraceEntry[], budget: RouteBudgetV1, bank: QuestionBankV2, rawAnswers: AnswersV2, triggeredConfirmationIds: readonly string[], contradictions: readonly DetectedContradiction[]): CompletionStatus {
+function completionStatus(result: ResolveEligibleQuestionsResult, trace: readonly PlannerTraceEntry[], budget: RouteBudgetV1, bank: QuestionBankV2, rawAnswers: AnswersV2, triggeredConfirmationIds: readonly string[], contradictions: readonly DetectedContradiction[], baseMax: number): CompletionStatus {
   const status = fieldStatus(result.context);
   const minimumContextResolved = CORE_FIELDS.every((field) => status[field] === "resolved");
   const requiredQuestionsAnswered = trace.every((entry) => !entry.required || result.activeAnswers[entry.questionId] !== undefined);
@@ -186,7 +256,8 @@ function completionStatus(result: ResolveEligibleQuestionsResult, trace: readonl
   const confirmationAmbiguous = contradictions.some((item) => item.status === "remains_ambiguous");
   const invalidatedConfirmation = [...confirmationQuestionIds].some((id) => rawAnswers[id] !== undefined && result.activeAnswers[id] === undefined && !triggeredConfirmationIds.includes(id));
   const routeBudgetReached = Object.keys(result.activeAnswers).length + trace.filter((entry) => entry.selected).length >= budget.targetMax;
-  const hardCapReached = Object.keys(result.activeAnswers).length + trace.filter((entry) => entry.selected).length >= budget.hardMax;
+  // The base cap ends a route: reserved slots above it only ever hold material evidence already selected here.
+  const hardCapReached = Object.keys(result.activeAnswers).length + trace.filter((entry) => entry.selected).length >= Math.min(budget.hardMax, baseMax);
   const confirmationRequired = pendingConfirmations.length > 0 && !hardCapReached;
   const noActionableQuestions = minimumContextResolved && requiredQuestionsAnswered && !confirmationRequired && trace.length > 0 && trace.every((entry) => entry.selected || ["module_budget", "component_covered", "context_already_resolved", "redundant_evidence", "hard_cap"].includes(entry.skipReason ?? ""));
   const ready = !confirmationRequired && (noMoreEligibleQuestions || noActionableQuestions || hardCapReached || minimumContextResolved && requiredQuestionsAnswered && evidenceSufficient);
@@ -214,10 +285,18 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
   const status = fieldStatus(result.context);
   const questions = new Map(bank.map((question) => [question.id, question]));
   const routingPrerequisites = new Set<string>();
-  for (const question of bank) collectAnswerRefs(question.appliesWhen, routingPrerequisites);
+  for (const question of bank) { collectAnswerRefs(question.appliesWhen, routingPrerequisites); collectAnswerRefs(question.materialAppliesWhen, routingPrerequisites); }
   const confirmationIds = new Set(bank.filter((question) => question.contradictionRole?.type === "confirms").map((question) => question.id));
   const plannerEligibleQuestionIds = result.eligibleQuestionIds.filter((id) => !confirmationIds.has(id) || triggeredConfirmationIds.includes(id));
-  const ranked = plannerEligibleQuestionIds.map((id) => rankQuestion(questions.get(id)!, status, result.activeAnswers, result.context, routingPrerequisites)).sort(compareRank);
+  const needs = materialEvidenceNeeds(result, bank);
+  const remainingNeed = new Map(needs.map((need) => [need.dimension, need.remaining]));
+  const ranked = plannerEligibleQuestionIds.map((id) => rankQuestion(questions.get(id)!, status, result.activeAnswers, result.context, routingPrerequisites, needs)).sort(compareRank);
+  const baseMax = budget.hardMax - (budget.materialEvidenceReserve ?? 0);
+  const servesMaterial = (entry: QuestionRankMetadata) => directDimensions(entry.questionId).some((dimension) => (remainingNeed.get(dimension) ?? 0) > 0);
+  const capFor = (entry: QuestionRankMetadata) => (servesMaterial(entry) ? budget.hardMax : baseMax);
+  // Eligible through `materialAppliesWhen` only: such a question may enter the tail, never the base route.
+  const nativelyEligible = (entry: QuestionRankMetadata) => { const question = questions.get(entry.questionId)!; return question.appliesWhen ? evaluateRuleV2(question.appliesWhen, result.activeAnswers, result.context) : !question.materialAppliesWhen; };
+  const consumeNeed = (entry: QuestionRankMetadata) => { for (const dimension of directDimensions(entry.questionId)) if ((remainingNeed.get(dimension) ?? 0) > 0) remainingNeed.set(dimension, remainingNeed.get(dimension)! - 1); };
   const selected: string[] = [];
   const alreadyAskedCount = Math.min(Object.keys(result.activeAnswers).length, budget.hardMax);
   const moduleCounts: Partial<Record<ModuleId, number>> = {};
@@ -239,12 +318,13 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
   }
   const confirmationAvailable = triggeredConfirmationIds.length > 0;
   const hasUnselectedConfirmation = () => triggeredConfirmationIds.some((id) => !selected.includes(id));
+  /** Base phase: the pre-08D.1 rules, capped at `baseMax` (18). */
   const canSelect = (entry: QuestionRankMetadata): boolean => {
-    if (alreadyAskedCount + selected.length >= budget.hardMax) return false;
-    if (confirmationAvailable && entry.reason !== "confirmation" && !entry.required && alreadyAskedCount + selected.length >= budget.hardMax - Math.min(budget.confirmationReserve, triggeredConfirmationIds.length)) return false;
+    if (alreadyAskedCount + selected.length >= baseMax || !nativelyEligible(entry)) return false;
+    if (confirmationAvailable && entry.reason !== "confirmation" && !entry.required && alreadyAskedCount + selected.length >= baseMax - Math.min(budget.confirmationReserve, triggeredConfirmationIds.length)) return false;
     if ((moduleCounts[entry.module] ?? 0) >= moduleLimit(entry.module, budget)) return false;
     const component = componentFor(entry.module);
-    const contextRelevant = entry.module === "startup" && startupMinimum > 0 || entry.module === "nonprofit" && result.context.businessModel.status === "resolved" && result.context.businessModel.value === "nonprofit" || component !== undefined && result.context.archetypeComponents.includes(component as (typeof result.context.archetypeComponents)[number]) || entry.module === "measurement" && result.context.primaryGoal.status === "resolved" && result.context.primaryGoal.value === "measure" || entry.module === "follow_up" && result.context.primaryFriction.status === "resolved" && result.context.primaryFriction.value === "follow_up" || entry.module === "operations" && result.context.primaryFriction.status === "resolved" && result.context.primaryFriction.value === "operations";
+    const contextRelevant = entry.module === "startup" && startupMinimum > 0 || entry.module === "nonprofit" && result.context.businessModel.status === "resolved" && result.context.businessModel.value === "nonprofit" || component !== undefined && result.context.archetypeComponents.includes(component as (typeof result.context.archetypeComponents)[number]) || crossCuttingRelevant(entry.module, result.context);
     const businessModelRelevant = entry.module === "nonprofit" && result.context.businessModel.status === "resolved" && result.context.businessModel.value === "nonprofit";
     if (materialComponents.length > 0) {
       const deficient = materialComponents.filter((candidate) => (componentCounts[candidate] ?? 0) < 2 && ranked.some((item) => !selected.includes(item.questionId) && componentFor(item.module) === candidate));
@@ -253,9 +333,8 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
     if (entry.dimensions.length > 0 && entry.dimensions.every((dimension) => seenDimensions.has(dimension)) && !entry.required && entry.reason !== "confirmation" && !contextRelevant) return false;
     return true;
   };
-  while (selected.length < ranked.length) {
-    const entry = ranked.find((candidate) => !selected.includes(candidate.questionId) && canSelect(candidate));
-    if (!entry) break;
+  const record = (entry: QuestionRankMetadata) => {
+    consumeNeed(entry);
     selected.push(entry.questionId);
     moduleCounts[entry.module] = (moduleCounts[entry.module] ?? 0) + 1;
     selectionBudgetState.set(entry.questionId, { routeLength: alreadyAskedCount + selected.length, moduleCount: moduleCounts[entry.module] ?? 0 });
@@ -265,8 +344,22 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
       selectedComponents.add(component);
       componentCounts[component] = (componentCounts[component] ?? 0) + 1;
     }
+  };
+  while (selected.length < ranked.length) {
+    const entry = ranked.find((candidate) => !selected.includes(candidate.questionId) && canSelect(candidate));
+    if (!entry) break;
+    record(entry);
     const startupComplete = (moduleCounts.startup ?? 0) >= startupMinimum;
     if (alreadyAskedCount + selected.length >= budget.targetMax && startupComplete && ranked.filter((candidate) => candidate.required && !selected.includes(candidate.questionId)).length === 0 && !hasUnselectedConfirmation()) break;
+  }
+  // Tail phase (DIAG-V3-08D.1): the base route is final; append direct evidence only for still-open material
+  // needs, strongest source first, up to `hardMax`. The declared problem outranks module/component balancing.
+  const sourceRank = (entry: QuestionRankMetadata) => Math.max(0, ...needs.filter((need) => (remainingNeed.get(need.dimension) ?? 0) > 0 && directDimensions(entry.questionId).includes(need.dimension)).map((need) => MATERIAL_SOURCE_RANK[need.source]));
+  while (alreadyAskedCount + selected.length < budget.hardMax) {
+    const candidates = ranked.filter((candidate) => !selected.includes(candidate.questionId) && !candidate.required && candidate.reason !== "confirmation" && servesMaterial(candidate));
+    if (candidates.length === 0) break;
+    const best = Math.max(...candidates.map(sourceRank));
+    record(candidates.find((candidate) => sourceRank(candidate) === best)!);
   }
   const selectedSet = new Set(selected);
   const trace = ranked.map((entry): PlannerTraceEntry => {
@@ -278,10 +371,10 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
     const resolvedFields = (question.purpose.some((purpose) => purpose === "anchor" || purpose === "classification" || purpose === "maturity") || question.module === "goal_friction") && producedContextFields(question).length > 0 && producedContextFields(question).every((field) => status[field] === "resolved");
     const component = componentFor(entry.module);
     const componentCovered = component !== undefined && (componentCounts[component] ?? 0) >= 2;
-    const skipReason: PlannerSkipReason = alreadyAskedCount + selected.length >= budget.hardMax ? "hard_cap" : (moduleCounts[entry.module] ?? 0) >= moduleLimit(entry.module, budget) ? "module_budget" : resolvedFields ? "context_already_resolved" : componentCovered ? "component_covered" : entry.reason === "refinement" ? "refinement_not_needed" : entry.dimensions.every((dimension) => seenDimensions.has(dimension)) ? "redundant_evidence" : "lower_priority";
+    const skipReason: PlannerSkipReason = alreadyAskedCount + selected.length >= capFor(entry) ? "hard_cap" : (moduleCounts[entry.module] ?? 0) >= moduleLimit(entry.module, budget) ? "module_budget" : resolvedFields ? "context_already_resolved" : componentCovered ? "component_covered" : entry.reason === "refinement" ? "refinement_not_needed" : entry.dimensions.every((dimension) => seenDimensions.has(dimension)) ? "redundant_evidence" : "lower_priority";
     return { ...entry, selected: false, skipReason, budgetState: { routeLength: alreadyAskedCount + selected.length, moduleCount: moduleCounts[entry.module] ?? 0, hardMax: budget.hardMax } };
   });
-  const completion = completionStatus(result, trace, budget, bank, answers, triggeredConfirmationIds, contradictions);
+  const completion = completionStatus(result, trace, budget, bank, answers, triggeredConfirmationIds, contradictions, baseMax);
   return {
     plannerVersion: ADAPTIVE_PLANNER_VERSION,
     context: result.context,
@@ -297,6 +390,7 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
     routingIterations: result.iterations,
     contradictions,
     triggeredConfirmationIds,
+    materialEvidence: needs,
   };
 }
 

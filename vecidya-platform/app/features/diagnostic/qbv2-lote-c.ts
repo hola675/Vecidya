@@ -104,7 +104,8 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Qué tan seguido las personas empiezan a comprar pero no terminan el proceso de pago?",
     purpose: ["diagnostic", "friction"],
     priority: "high",
-    appliesWhen: archetypeIncludes("ecommerce"),
+    // DIAG-V3-08D.1: abandono de pago presupone compradores reales.
+    appliesWhen: andV2(archetypeIncludes("ecommerce"), eqV2("q2_has_customers", "yes")),
     options: [
       { value: "rarely", label: "Casi nunca" },
       { value: "sometimes", label: "A veces" },
@@ -112,6 +113,7 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo he medido", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["contacto"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si quien decide comprar logra terminar el pago.", distinction: "Piensa en compras empezadas y no terminadas, no en visitas que solo miran." },
   },
   {
     id: "q2_ecommerce_cart_visibility",
@@ -173,7 +175,8 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "De tu tráfico o pedidos, ¿dependes principalmente de un solo canal (por ejemplo solo redes, o solo un tipo de anuncio), o viene de varias fuentes reales?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("ecommerce"),
+    // DIAG-V3-08D.1: pregunta por el tráfico o pedidos existentes; sin clientes todavía no hay nada que observar.
+    appliesWhen: andV2(archetypeIncludes("ecommerce"), eqV2("q2_has_customers", "yes")),
     options: [
       { value: "single_channel", label: "Casi todo depende de un solo canal" },
       { value: "few_channels", label: "Dos o tres canales, sin mucho más" },
@@ -181,6 +184,7 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo he revisado", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["alcance"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si las ventas dependen de un único canal que podría fallar.", distinction: "Mira de dónde vienen los pedidos reales, no dónde publicas." },
   },
 
   // ── HOSPITALITY ──────────────────────────────────────────────────────────────

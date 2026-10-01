@@ -4,6 +4,7 @@ import { test } from "node:test";
 import {
   ADAPTIVE_PLANNER_VERSION,
   DEFAULT_ROUTE_BUDGET_V1,
+  ROUTE_HARD_CAP,
   QUESTION_BANK_V2,
   buildQuestionPlan,
   isDiagnosticReadyToComplete,
@@ -80,11 +81,11 @@ test("17 route fixtures are bounded and idea/project receives startup evidence w
   assert.ok(appointments.selectedQuestionIds.findIndex((id) => id.startsWith("q2_appointments_")) > appointments.selectedQuestionIds.findIndex((id) => id === "q2_entity"));
 });
 
-test("worst eligible route is reduced from 23 and explains skipped candidates", () => {
+test("worst eligible route (25 since 08D.1) is reduced and explains skipped candidates", () => {
   const plan = buildQuestionPlan({ answers: { q2_delivery: "scheduled", q2_has_customers: "yes", q2_regularity: "regular", q2_goal: "measure", q2_friction: "operations" }, bank: QUESTION_BANK_V2 });
-  assert.equal(plan.eligibleQuestionIds.length, 23);
+  assert.equal(plan.eligibleQuestionIds.length, 25);
   assert.ok(plan.selectedQuestionIds.length < plan.eligibleQuestionIds.length);
-  assert.ok(plan.selectedQuestionIds.length <= 18);
+  assert.ok(plan.routeLength <= ROUTE_HARD_CAP);
   assert.ok(plan.trace.some((entry) => !entry.selected && entry.skipReason));
   assert.ok(plan.trace.every((entry) => entry.budgetState.routeLength <= entry.budgetState.hardMax));
 });
@@ -138,12 +139,12 @@ test("hard cap is a terminal completion state, never a blocked route", () => {
   if (plan.routeLength === plan.budget.hardMax) assert.equal(plan.completion.ready, true);
 });
 
-test("planner clamps caller budgets to the absolute hard cap of 18", () => {
+test("planner clamps caller budgets to the absolute hard cap of 20 (08D.1)", () => {
   const plan = buildQuestionPlan({ answers: {}, bank: QUESTION_BANK_V2, budget: { ...DEFAULT_ROUTE_BUDGET_V1, targetMax: 100, hardMax: 100 } });
-  assert.equal(plan.budget.hardMax, 18);
-  assert.equal(plan.budget.targetMax, 18);
-  assert.ok(plan.routeLength <= 18);
-  assert.ok(plan.trace.every((entry) => entry.budgetState.routeLength <= 18));
+  assert.equal(plan.budget.hardMax, ROUTE_HARD_CAP);
+  assert.equal(plan.budget.targetMax, ROUTE_HARD_CAP);
+  assert.ok(plan.routeLength <= ROUTE_HARD_CAP);
+  assert.ok(plan.trace.every((entry) => entry.budgetState.routeLength <= ROUTE_HARD_CAP));
   const resumed = buildQuestionPlan({ answers: { q2_entity: "individual" }, bank: QUESTION_BANK_V2, budget: { ...DEFAULT_ROUTE_BUDGET_V1, targetMax: 0, hardMax: 0 } });
   assert.equal(resumed.budget.hardMax, 1);
   assert.ok(resumed.routeLength <= resumed.budget.hardMax);

@@ -56,6 +56,10 @@ export const MODULE_IDS = [
   // que `operations`/`follow_up`/`measurement`, que ya son cross-cutting por friction/goal en vez de por
   // archetype — este es el primer cross-cutting por `archetypeIncludes`.
   "reputation",
+  // DIAG-V3-08D.1: cross-cutting por friction `conversion`/goal `opportunities`, mismo patrón que
+  // `operations`/`follow_up`/`measurement`. Existe porque ningún archetype salvo appointments tenía una
+  // observación directa de si el interés termina en clientes (ver `qbv2-lote-g.ts`).
+  "conversion",
 ] as const;
 export type ModuleId = (typeof MODULE_IDS)[number];
 
@@ -99,6 +103,7 @@ export const MODULE_REGISTRY: readonly ModuleDefinition[] = [
   { id: "measurement", purpose: "Quiere entender qué funciona y qué no.", relevantWhen: { goals: ["measure"] }, targetQuestionRange: { min: 2, max: 3 } },
   { id: "confirmation", purpose: "Solo ante ambigüedad/contradicción real (§53-54); nunca elegible por defecto.", relevantWhen: {}, targetQuestionRange: { min: 0, max: 2 } },
   { id: "reputation", purpose: "Reseñas/reputación, compartida entre archetypes que la necesitan (no universal).", relevantWhen: { archetypes: ["local", "appointments", "professional", "retail", "hospitality"] }, targetQuestionRange: { min: 1, max: 3 } },
+  { id: "conversion", purpose: "Interés que no termina en clientes, compras o participación.", relevantWhen: { frictions: ["conversion"], goals: ["opportunities"] }, targetQuestionRange: { min: 1, max: 1 } },
 ];
 
 // ── Purpose / Priority (§5-6) ────────────────────────────────────────────────
@@ -163,9 +168,27 @@ type QuestionDefinitionV2Base = {
   readonly priority: QuestionPriority;
   /** Ausente = siempre elegible en cuanto su módulo es relevante (equivalente a "core"). */
   readonly appliesWhen?: RuleV2;
+  /**
+   * DIAG-V3-08D.1: contextos donde la pregunta es elegible SOLO para cubrir una necesidad material de
+   * evidencia (cola del planner), nunca para la ruta base. Elegibilidad = `appliesWhen` OR esta regla; si
+   * solo existe esta regla, la pregunta es material-only en todos sus contextos.
+   */
+  readonly materialAppliesWhen?: RuleV2;
   readonly variants?: readonly CopyVariantV2[];
   readonly scoringReadiness?: ScoringReadiness;
   readonly contradictionRole?: ContradictionRole;
+  readonly helpIntent?: QuestionHelpIntent;
+};
+
+/**
+ * DIAG-V3-08D.1: metadata interna para el futuro sistema de ayuda (sin UI ni citas todavía). Conserva la
+ * intención de la pregunta para no redescubrirla en la fase de UI.
+ */
+export type QuestionHelpIntent = {
+  /** Qué intenta entender la pregunta. */
+  readonly understand: string;
+  /** Qué distinción debería considerar la persona al responder. */
+  readonly distinction: string;
 };
 
 export type SingleQuestionDefinitionV2 = QuestionDefinitionV2Base & { readonly type: "single"; readonly options: readonly OptionV2[] };

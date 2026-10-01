@@ -2,7 +2,7 @@ import { CORE_DIMENSION_IDS } from "./contracts";
 import { findDependencyCycles } from "./questions";
 import { MODULE_IDS, type QuestionDefinitionV2 } from "./qbv2-contract";
 import type { QuestionBankV2 } from "./qbv2-engine";
-import { collectAnswerDependencies, collectAnswerRefValueChecks, collectContextDependencies } from "./qbv2-rules";
+import { collectAnswerDependencies, collectAnswerRefValueChecks, collectContextDependencies, type RuleV2 } from "./qbv2-rules";
 import { scalarSlotForProduction, SIGNAL_PRODUCTION_CONTEXT_FIELD } from "./qbv2-signals";
 
 /**
@@ -11,6 +11,11 @@ import { scalarSlotForProduction, SIGNAL_PRODUCTION_CONTEXT_FIELD } from "./qbv2
  */
 
 export type ValidationIssue = { readonly code: string; readonly questionId?: string; readonly message: string };
+
+/** DIAG-V3-08D.1: both eligibility rules are validated (`appliesWhen` and `materialAppliesWhen`). */
+function gateRules(question: QuestionBankV2[number]): readonly RuleV2[] {
+  return [question.appliesWhen, question.materialAppliesWhen].filter((rule): rule is RuleV2 => rule !== undefined);
+}
 
 function validateUniqueIds(bank: QuestionBankV2): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
@@ -92,8 +97,7 @@ function validateAnswerRefs(bank: QuestionBankV2): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   const validIds = new Set(bank.map((question) => question.id));
   for (const question of bank) {
-    if (!question.appliesWhen) continue;
-    for (const dependency of collectAnswerDependencies(question.appliesWhen)) {
+    for (const dependency of gateRules(question).flatMap(collectAnswerDependencies)) {
       if (!validIds.has(dependency)) issues.push({ code: "INVALID_ANSWER_REF", questionId: question.id, message: `referencia a QuestionId inexistente: ${dependency}` });
     }
   }
@@ -105,8 +109,7 @@ function validateAnswerRefOptionValues(bank: QuestionBankV2): ValidationIssue[] 
   const issues: ValidationIssue[] = [];
   const optionsByQuestion = new Map(bank.map((question) => [question.id, new Set(question.options.map((option) => option.value))]));
   for (const question of bank) {
-    if (!question.appliesWhen) continue;
-    for (const { question: targetId, values } of collectAnswerRefValueChecks(question.appliesWhen)) {
+    for (const { question: targetId, values } of gateRules(question).flatMap(collectAnswerRefValueChecks)) {
       const validOptions = optionsByQuestion.get(targetId);
       if (!validOptions) continue; // ya reportado por validateAnswerRefs
       for (const value of values) {
@@ -149,7 +152,7 @@ function validateProducerCollisions(bank: QuestionBankV2): ValidationIssue[] {
 
 /** §49, §37: sin ciclos en el grafo AnswerRef-only (reutiliza el mismo detector que DIAG-V3-03, `questions.ts`). */
 function validateNoAnswerCycles(bank: QuestionBankV2): ValidationIssue[] {
-  const graph: Record<string, readonly string[]> = Object.fromEntries(bank.map((question) => [question.id, question.appliesWhen ? collectAnswerDependencies(question.appliesWhen) : []]));
+  const graph: Record<string, readonly string[]> = Object.fromEntries(bank.map((question) => [question.id, gateRules(question).length > 0 ? gateRules(question).flatMap(collectAnswerDependencies) : []]));
   const cycles = findDependencyCycles(graph);
   return cycles.map((cycle) => ({ code: "ANSWER_DEPENDENCY_CYCLE", message: `ciclo de dependencias de respuesta: ${cycle.join(" → ")}` }));
 }
@@ -167,7 +170,7 @@ function validateNoAnswerCycles(bank: QuestionBankV2): ValidationIssue[] {
 function validateNoSelfReferentialContextGating(bank: QuestionBankV2): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   for (const question of bank) {
-    const readFields = question.appliesWhen ? new Set(collectContextDependencies(question.appliesWhen)) : new Set<string>();
+    const readFields = new Set<string>(gateRules(question).flatMap(collectContextDependencies));
     if (readFields.size === 0) continue;
     const writtenFields = new Set<string>();
     for (const option of question.options) for (const production of option.produces ?? []) writtenFields.add(SIGNAL_PRODUCTION_CONTEXT_FIELD[production.kind]);

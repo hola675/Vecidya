@@ -119,6 +119,10 @@ export const EVIDENCE_MAPPING: Readonly<Record<string, QuestionEvidenceMapping>>
   q2_creator_conversion: { questionId: "q2_creator_conversion", dimensions: ["conversion_access"], evidenceTypes: ["established", "partial", "missing", "uncertainty"], subcriteria: ["audience-to-action conversion"], semanticRole: "direct" },
   q2_professional_referral_dependency: { questionId: "q2_professional_referral_dependency", dimensions: ["discovery"], evidenceTypes: ["established", "partial", "dependency", "uncertainty"], subcriteria: ["discovery-source concentration"], semanticRole: "direct" },
   q2_nonprofit_participation: { questionId: "q2_nonprofit_participation", dimensions: [], evidenceTypes: ["established", "partial", "missing", "uncertainty"], subcriteria: ["participation-mode context"], semanticRole: "contextual" },
+  // DIAG-V3-08D.1 targeted evidence: each answer directly observes the mapped capability.
+  q2_conversion_interest_to_action: { questionId: "q2_conversion_interest_to_action", dimensions: ["conversion_access"], evidenceTypes: ["established", "partial", "missing", "uncertainty"], subcriteria: ["interest-to-action outcome"], semanticRole: "direct" },
+  q2_operations_information_base: { questionId: "q2_operations_information_base", dimensions: ["digital_readiness"], evidenceTypes: ["established", "partial", "missing", "uncertainty"], subcriteria: ["digital information base"], semanticRole: "direct" },
+  q2_operations_automation_adoption: { questionId: "q2_operations_automation_adoption", dimensions: ["digital_readiness"], evidenceTypes: ["established", "partial", "missing", "uncertainty"], subcriteria: ["automation of repetitive work"], semanticRole: "direct" },
 };
 
 /** Per-question/per-dimension audit overrides. Unlisted dimensional mappings are direct. */

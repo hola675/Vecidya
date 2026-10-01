@@ -110,7 +110,8 @@ export type DiagnosticConstraint = {
   readonly certainty: PriorityCertainty;
   /** Question IDs from the scoring explainability; never invented. */
   readonly evidence: readonly string[];
-  readonly relevance: { readonly goal: RelevanceLevel; readonly friction: RelevanceLevel; readonly tier: RelevanceTier };
+  /** `ownTier` comes from goal/friction/stage alone; `tier` may be lifted by dependencies (inherited relevance). */
+  readonly relevance: { readonly goal: RelevanceLevel; readonly friction: RelevanceLevel; readonly tier: RelevanceTier; readonly ownTier: RelevanceTier };
   readonly dependency: ConstraintDependencyTrace;
   readonly reasonCodes: readonly PriorityReasonCode[];
 };
@@ -189,7 +190,7 @@ export function deriveConstraintsAndPriorities(scoring: ContextualScoringResult)
     if (weakUpstream && certainty === "actionable") certainty = "likely";
     return {
       id: `${kind}:${item.id}`, kind, dimension: item.id, severity, score: item.score, confidence: item.confidence.level, certainty,
-      evidence: [...new Set(evidence)], relevance: { goal: own.goal, friction: own.friction, tier },
+      evidence: [...new Set(evidence)], relevance: { goal: own.goal, friction: own.friction, tier, ownTier: own.tier },
       dependency: { blocks: blocks.map((edge) => edge.to), upstream, informs }, reasonCodes: codes,
     };
   };
@@ -212,8 +213,13 @@ export function deriveConstraintsAndPriorities(scoring: ContextualScoringResult)
     }
   }
 
+  // DIAG-V3-08D.1 policy: an evidenced constraint relevant in its own right (declared goal/friction or an
+  // evidence-backed active bottleneck) is never displaced by a prerequisite whose relevance is only inherited —
+  // not by severity, not by a lower score. The prerequisite moves ahead only where it blocks that very
+  // dimension, which the topological pass below establishes from the dependency graph.
+  const precedence = (item: DiagnosticConstraint) => (item.severity === "material" || item.severity === "moderate" ? (item.relevance.tier < item.relevance.ownTier && !item.reasonCodes.includes("active_bottleneck") ? 1 : 0) : 2);
   const order = (a: DiagnosticConstraint, b: DiagnosticConstraint) =>
-    a.relevance.tier - b.relevance.tier || SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] || CERTAINTY_ORDER[a.certainty] - CERTAINTY_ORDER[b.certainty]
+    a.relevance.tier - b.relevance.tier || precedence(a) - precedence(b) || SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] || CERTAINTY_ORDER[a.certainty] - CERTAINTY_ORDER[b.certainty]
     || (a.score ?? 101) - (b.score ?? 101) || DIGITAL_DIMENSION_IDS.indexOf(a.dimension) - DIGITAL_DIMENSION_IDS.indexOf(b.dimension);
   const sorted = [...detected].sort(order);
 

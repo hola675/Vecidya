@@ -6,6 +6,7 @@ import { LOTE_C_QUESTIONS_V2 } from "./qbv2-lote-c";
 import { LOTE_D_QUESTIONS_V2 } from "./qbv2-lote-d";
 import { LOTE_E_QUESTIONS_V2 } from "./qbv2-lote-e";
 import { LOTE_F_QUESTIONS_V2 } from "./qbv2-lote-f";
+import { LOTE_G_QUESTIONS_V2 } from "./qbv2-lote-g";
 import { registerQuestionBankV2 } from "./qbv2-engine";
 
 /**
@@ -23,6 +24,6 @@ import { registerQuestionBankV2 } from "./qbv2-engine";
 // confirmación. El planner solo puede seleccionarlas cuando una ContradictionRuleV1 las dispara.
 const PRODUCTION_GOLDEN_QUESTIONS_V2 = GOLDEN_QUESTIONS_V2.filter((question) => !["q2_confirm_primary_friction", "q2_confirm_hybrid_friction"].includes(question.id));
 
-export const QUESTION_BANK_V2: readonly QuestionDefinitionV2[] = [...PRODUCTION_GOLDEN_QUESTIONS_V2, ...LOTE_A_QUESTIONS_V2, ...LOTE_B_QUESTIONS_V2, ...LOTE_C_QUESTIONS_V2, ...LOTE_D_QUESTIONS_V2, ...LOTE_E_QUESTIONS_V2, ...LOTE_F_QUESTIONS_V2];
+export const QUESTION_BANK_V2: readonly QuestionDefinitionV2[] = [...PRODUCTION_GOLDEN_QUESTIONS_V2, ...LOTE_A_QUESTIONS_V2, ...LOTE_B_QUESTIONS_V2, ...LOTE_C_QUESTIONS_V2, ...LOTE_D_QUESTIONS_V2, ...LOTE_E_QUESTIONS_V2, ...LOTE_F_QUESTIONS_V2, ...LOTE_G_QUESTIONS_V2];
 
 registerQuestionBankV2(QUESTION_BANK_V2);

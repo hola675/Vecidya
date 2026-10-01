@@ -1,6 +1,18 @@
 # Changelog
 
-## 2026-09-30 — DIAG-V3-08D Constraints & Priorities foundation (solo local, sin deploy, sin commit)
+## 2026-09-30 — DIAG-V3-08D.1 Targeted Evidence Enrichment (solo local, sin deploy, sin commit)
+
+- DIAG-V3-08D cerrada y aprobada en el commit local `bfe97fb` (sin push ni deploy).
+- Planner: `ROUTE_HARD_CAP` 20 con `materialEvidenceReserve` 2. La ruta base conserva sus reglas y el cap 18; una cola añade evidencia directa solo para necesidades materiales abiertas (fricción declarada ×2, meta ×1, prerrequisito de restricción relevante ×1).
+- Contrato: `materialAppliesWhen` (elegible solo como evidencia material, nunca en la ruta base) y `helpIntent` opcional. Nuevo módulo cross-cutting `conversion`.
+- Banco 80 → 83: `q2_conversion_interest_to_action`, `q2_operations_information_base`, `q2_operations_automation_adoption`, cada una justificada por una capacidad sin observación directa posible en el banco anterior.
+- Gates corregidos: descubrimiento local para local_service/appointments y confianza para cualquier archetype cuando se declaran (material-only); preguntas de tráfico/abandono/dependencia ecommerce exigen clientes existentes.
+- Fixture golden: la ejecución dejaba sin responder la última pregunta seleccionada en 11/12 personas; ahora responde cada lote completo.
+- Golden 12: `verify_first` primario 9 → 1 (idea pre-lanzamiento, incertidumbre legítima); 38 resultados numéricos (antes 29), 56,3 % aplicables nulos (antes 66,3 %), 13 resultados en 100 (antes 16). Rutas 17–19 (antes 16–17).
+- Política de prioridad: una fricción declarada con evidencia no se desplaza por un prerrequisito de relevancia heredada solo por menor score; el prerrequisito pasa delante solo si bloquea esa dimensión. En professional_appointments, follow-up (33) vuelve a primaria y Trust (25) queda secundaria, antes de la conversión que bloquea.
+- Scoring 08C sin cambios. Sin UI, persistencia, schema, PDF, analytics ni cambio de versión.
+
+## 2026-09-30 — DIAG-V3-08D Constraints & Priorities foundation (solo local, sin deploy; commit `bfe97fb`)
 
 - DIAG-V3-08C cerrada y aprobada en el commit local `51a7230` (sin push ni deploy).
 - Añadido el motor puro `qbv2-priorities.ts`: taxonomía de 10 restricciones, grafo acíclico de dependencias entre dimensiones (`enables`, `sustains`, `feeds`, `informs`), relevancia por goal/friction/etapa y hasta tres prioridades ordenadas con certeza `actionable`/`likely`/`verify_first`.

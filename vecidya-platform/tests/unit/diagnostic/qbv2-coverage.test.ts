@@ -23,12 +23,12 @@ test("08B.6R contracts define five maturity states and exactly eight digital dim
 
 test("08B.6R maps every productive QBV2 question to semantically meaningful evidence", () => {
   const report = analyzeCoverage();
-  assert.equal(report.productiveQuestionCount, 80);
-  assert.equal(report.mappedQuestionCount, 80);
+  assert.equal(report.productiveQuestionCount, 83);
+  assert.equal(report.mappedQuestionCount, 83);
   assert.deepEqual(report.unmappedQuestionIds, []);
   assert.deepEqual(report.mappingIssues, []);
   assert.ok(report.dimensionCoverage.every((coverage) => coverage.questionCount > 0));
-  assert.ok(Object.keys(EVIDENCE_MAPPING).length >= 80);
+  assert.ok(Object.keys(EVIDENCE_MAPPING).length >= 83);
 });
 
 test("08B.6R has exactly twelve deterministic golden personas", () => {
@@ -37,8 +37,8 @@ test("08B.6R has exactly twelve deterministic golden personas", () => {
   const first = analyzeCoverage();
   const second = analyzeCoverage();
   assert.deepEqual(first.personas, second.personas);
-  assert.ok(first.personas.every((persona) => persona.routeLength >= 15 && persona.routeLength <= 18));
-  assert.ok(first.personas.every((persona) => persona.routeLength <= 18));
+  // 08D.1: base route keeps the 18 cap; slots 19-20 only hold material evidence.
+  assert.ok(first.personas.every((persona) => persona.routeLength >= 15 && persona.routeLength <= 20));
   assert.ok(first.personas.every((persona) => persona.duplicateQuestionIds.length === 0));
   assert.ok(first.personas.every((persona) => persona.routeReady));
   assert.ok(first.personas.every((persona) => persona.missingExpectedModules.length === 0));
@@ -54,10 +54,10 @@ test("08B.6R generated coverage combinations remain declarative and bounded by p
   assert.ok(report.matrixRouteFailures.every((failure) => failure.routeLength <= 18));
 });
 
-test("08B.6R productive bank keeps 80 questions and exactly two fixture-only confirmations", () => {
-  assert.equal(QUESTION_BANK_V2.filter((question) => !question.purpose.includes("confirmation")).length, 80);
+test("08D.1 productive bank has 83 questions and exactly two fixture-only confirmations", () => {
+  assert.equal(QUESTION_BANK_V2.filter((question) => !question.purpose.includes("confirmation")).length, 83);
   assert.equal(GOLDEN_QUESTIONS_V2.filter((question) => question.purpose.includes("confirmation")).length, 2);
-  assert.equal(QUESTION_BANK_V2.length, 80);
+  assert.equal(QUESTION_BANK_V2.length, 83);
 });
 
 test("08C mapping audit assigns every question-dimension pair an explicit effective role", () => {
@@ -68,8 +68,8 @@ test("08C mapping audit assigns every question-dimension pair an explicit effect
   })));
   assert.ok(pairs.length > 0);
   assert.ok(pairs.every((pair) => ["direct", "supporting", "contextual"].includes(pair.role)));
-  assert.equal(pairs.length, 73);
-  assert.equal(pairs.filter((pair) => pair.role === "direct").length, 47);
+  assert.equal(pairs.length, 76);
+  assert.equal(pairs.filter((pair) => pair.role === "direct").length, 50);
   assert.equal(pairs.filter((pair) => pair.role === "supporting").length, 26);
   assert.equal(pairs.filter((pair) => pair.role === "contextual").length, 0);
   assert.equal(QUESTION_BANK_V2.filter((question) => EVIDENCE_MAPPING[question.id]?.dimensions.length === 0).length, 22);

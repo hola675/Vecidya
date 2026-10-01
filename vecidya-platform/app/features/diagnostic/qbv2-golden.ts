@@ -188,7 +188,8 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿De dónde llegan principalmente tus visitas o pedidos?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("ecommerce"),
+    // DIAG-V3-08D.1: visitas o pedidos existentes; sin clientes todavía no hay origen que observar.
+    appliesWhen: andV2(archetypeIncludes("ecommerce"), eqV2("q2_has_customers", "yes")),
     options: [
       { value: "social", label: "Redes sociales" },
       { value: "search", label: "Buscadores" },

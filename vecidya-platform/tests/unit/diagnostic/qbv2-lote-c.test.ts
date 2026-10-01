@@ -119,7 +119,8 @@ test("fixture 3: ecommerce puro → preguntas de ecommerce elegibles, retail/hos
 });
 
 test("fixture 4: ecommerce con tráfico pero fricción de checkout alta → friction=conversion", () => {
-  const result = resolveEligibleQuestionsV2({ q2_delivery: "online_checkout", q2_ecommerce_checkout_friction: "often" }, QUESTION_BANK_V2);
+  // 08D.1: abandoned checkouts presuppose buyers, so the question requires existing customers.
+  const result = resolveEligibleQuestionsV2({ q2_delivery: "online_checkout", q2_has_customers: "yes", q2_ecommerce_checkout_friction: "often" }, QUESTION_BANK_V2);
   assert.ok(result.context.primaryFriction.status === "resolved" && result.context.primaryFriction.value === "conversion");
 });
 

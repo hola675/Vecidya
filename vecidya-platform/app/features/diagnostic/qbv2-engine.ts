@@ -70,7 +70,8 @@ function resolveWithNicheHints(activeAnswers: AnswersV2, bank: QuestionBankV2): 
 }
 
 function isEligible(question: QuestionDefinitionV2, answers: AnswersV2, context: ResolvedDomainContext): boolean {
-  return !question.appliesWhen || evaluateRuleV2(question.appliesWhen, answers, context);
+  const native = question.appliesWhen ? evaluateRuleV2(question.appliesWhen, answers, context) : !question.materialAppliesWhen;
+  return native || (question.materialAppliesWhen !== undefined && evaluateRuleV2(question.materialAppliesWhen, answers, context));
 }
 
 function sameKeys(a: AnswersV2, b: AnswersV2): boolean {

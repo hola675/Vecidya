@@ -1,5 +1,5 @@
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
-import { andV2, archetypeIncludes, archetypeIncludesAny, eqV2, inV2 } from "./qbv2-rules";
+import { andV2, archetypeIncludes, archetypeIncludesAny, contextEquals, eqV2, inV2, orV2 } from "./qbv2-rules";
 
 /**
  * DIAG-V3-08B.3 — Lote B: `local`/`local_service`/`appointments`/`professional` (contenido especializado).
@@ -42,6 +42,9 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     // local es el MISMO concepto para cualquier negocio con presencia física, sin importar si tiene
     // inventario de reventa (retail) o consumo en el lugar (hospitality) — no se duplica por archetype.
     appliesWhen: archetypeIncludesAny(["local", "retail", "hospitality"]),
+    // DIAG-V3-08D.1: un servicio a domicilio o con citas también es descubierto dentro de una zona. Ahí solo
+    // entra como evidencia material cuando descubrimiento es la meta o fricción declarada; no altera su ruta base.
+    materialAppliesWhen: andV2(archetypeIncludesAny(["local_service", "appointments"]), orV2(contextEquals("primaryGoal", "be_found"), contextEquals("primaryFriction", "visibility"))),
     options: [
       { value: "maps_search", label: "Buscándome en Google o Maps" },
       { value: "referral", label: "Alguien se lo recomendó" },
@@ -51,6 +54,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No estoy seguro", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["presencia", "alcance"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Por qué vía llega por primera vez la gente nueva de tu zona.", distinction: "Elige la vía más frecuente, no la que te gustaría que fuera." },
   },
   {
     id: "q2_local_presence_consistency",
@@ -102,6 +106,9 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     // Extendida a retail/hospitality en Lote C (§21 del checkpoint de Lote C): mismo concepto, misma
     // pregunta — reputación no cambia de significado entre "local", "retail" y "hospitality".
     appliesWhen: archetypeIncludesAny(["local", "appointments", "professional", "retail", "hospitality"]),
+    // DIAG-V3-08D.1: fuera de estos archetypes (creator, b2b, ecommerce, local_service) solo entra como
+    // evidencia material cuando confianza es la meta o fricción declarada: no tenían ninguna observación.
+    materialAppliesWhen: orV2(contextEquals("primaryGoal", "trust"), contextEquals("primaryFriction", "trust")),
     variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Qué tan seguido te llegan reseñas o recomendaciones nuevas de pacientes?" }],
     options: [
       { value: "steady", label: "Me llegan con cierta regularidad" },
@@ -109,6 +116,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo sé, no lo reviso seguido", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["confianza"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si llegan señales nuevas de clientes satisfechos que otros puedan ver.", distinction: "Piensa en reseñas o recomendaciones recientes, no en la buena opinión general que tengan de ti." },
   },
 
   // ── LOCAL_SERVICE ────────────────────────────────────────────────────────────
@@ -305,6 +313,9 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     purpose: ["diagnostic"],
     priority: "normal",
     appliesWhen: archetypeIncludes("professional"),
+    // DIAG-V3-08D.1: casos, testimonios y contenido son prueba visible para cualquier archetype; fuera de
+    // professional solo entra como evidencia material cuando confianza es la meta o fricción declarada.
+    materialAppliesWhen: orV2(contextEquals("primaryGoal", "trust"), contextEquals("primaryFriction", "trust")),
     options: [
       { value: "clearly_visible", label: "Está claro y es fácil de encontrar" },
       { value: "partial", label: "Existe, pero está disperso o incompleto" },
@@ -312,6 +323,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo he revisado desde fuera", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["confianza", "claridad"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si alguien que no te conoce encuentra pruebas de tu experiencia antes de decidir.", distinction: "Cuenta lo que se ve desde fuera sin preguntarte, no lo que podrías mostrar si te lo piden." },
   },
   {
     id: "q2_professional_intake_flow",

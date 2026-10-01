@@ -49,8 +49,8 @@ function pressure(answers: Record<string, string>) {
   return { ...buckets, total: result.eligibleQuestionIds.length, iterations: result.iterations };
 }
 
-test("08B.3 C1: production bank has 80 questions; golden confirmations remain fixture-only", () => {
-  assert.equal(productionQuestions.length, 80);
+test("08B.3 C1 + 08D.1: production bank has 83 questions (80 + 3 targeted evidence); golden confirmations remain fixture-only", () => {
+  assert.equal(productionQuestions.length, 83);
   assert.equal(GOLDEN_QUESTIONS_V2.length, 15);
   assert.equal(GOLDEN_QUESTIONS_V2.find((question) => question.id === "q2_confirm_hybrid_friction") !== undefined, true);
   assert.equal(GOLDEN_QUESTIONS_V2.find((question) => question.id === "q2_confirm_primary_friction") !== undefined, true);
@@ -61,17 +61,18 @@ test("08B.3 C1: production bank has 80 questions; golden confirmations remain fi
 
 test("08B.3 C1: module registry coverage is explicit and owned counts are recorded", () => {
   const owned = Object.fromEntries(MODULE_REGISTRY.map((module) => [module.id, productionQuestions.filter((question) => question.module === module.id).length]));
-  assert.deepEqual(owned, { core: 2, classification: 5, maturity: 5, goal_friction: 2, local: 4, appointments: 6, local_service: 5, professional: 4, retail: 3, ecommerce: 7, hospitality: 4, b2b: 6, creator: 5, nonprofit: 4, startup: 6, operations: 5, follow_up: 3, measurement: 3, confirmation: 0, reputation: 1 });
+  assert.deepEqual(owned, { core: 2, classification: 5, maturity: 5, goal_friction: 2, local: 4, appointments: 6, local_service: 5, professional: 4, retail: 3, ecommerce: 7, hospitality: 4, b2b: 6, creator: 5, nonprofit: 4, startup: 6, operations: 7, follow_up: 3, measurement: 3, confirmation: 0, reputation: 1, conversion: 1 });
   assert.ok(owned.startup! >= 4 && owned.startup! <= 6);
 });
 
-test("08B.3 C1: all 17 route-pressure fixtures are measurable and worst case remains 23", () => {
+test("08B.3 C1 + 08D.1: all 17 route-pressure fixtures are measurable; worst eligible case is 25 (two operations readiness questions)", () => {
   const report = Object.fromEntries(Object.entries(contexts).map(([name, answers]) => [name, pressure(answers)]));
   assert.equal(Object.keys(report).length, 17);
   assert.ok(Object.values(report).every((entry) => entry.total > 0));
   const worst = pressure({ q2_delivery: "scheduled", q2_has_customers: "yes", q2_regularity: "regular", q2_goal: "measure", q2_friction: "operations" });
-  assert.equal(worst.total, 23);
-  assert.equal(Math.max(...Object.values(report).map((entry) => entry.total)), 18);
+  assert.equal(worst.total, 25);
+  // 08D.1: the operations fixture gains the two readiness questions (eligible pressure, not route length).
+  assert.equal(Math.max(...Object.values(report).map((entry) => entry.total)), 21);
   assert.ok(Object.values(report).every((entry) => entry.iterations <= 2));
 });
 
@@ -92,11 +93,11 @@ test("08B.3 C1: readiness, unknown/N-A, multi-choice and dimension coverage are 
     } else if (question.purpose.some((purpose) => ["anchor", "classification", "maturity", "goal"].includes(purpose))) readiness.contextRouting += 1;
     else readiness.diagnosticEvidence += 1;
   }
-  assert.deepEqual(readiness, { contextRouting: 15, diagnosticEvidence: 9, scoringReady: 56, futureConfirmation: 0 });
-  assert.equal(unknown, 59);
+  assert.deepEqual(readiness, { contextRouting: 15, diagnosticEvidence: 9, scoringReady: 59, futureConfirmation: 0 });
+  assert.equal(unknown, 62);
   assert.equal(notApplicable, 6);
   assert.equal(multi, 2);
-  assert.deepEqual(Object.fromEntries(dimensions), { claridad: 14, presencia: 5, alcance: 15, confianza: 4, contacto: 11, seguimiento: 22 });
+  assert.deepEqual(Object.fromEntries(dimensions), { claridad: 14, presencia: 5, alcance: 15, confianza: 4, contacto: 12, seguimiento: 24 });
 });
 
 test("mutations A-L: idea safety, variants, hints, reachability, friction, hybrid guard and QBV2 inactivity", () => {
@@ -108,7 +109,7 @@ test("mutations A-L: idea safety, variants, hints, reachability, friction, hybri
   assert.ok(GOLDEN_QUESTIONS_V2.find((q) => q.id === "q2_appointments_noshow")!.variants?.some((variant) => "nicheGroup" in variant.target));
   // D/E/F/G: hints are not rules; all production questions are reachable in representative routes; unknown/N-A are bounded.
   assert.equal(NICHE_REGISTRY.some((entry) => entry.archetypeHints.includes("startup" as never)), false);
-  assert.equal(productionQuestions.filter((q) => q.options.some((o) => o.kind === "unknown")).length, 59);
+  assert.equal(productionQuestions.filter((q) => q.options.some((o) => o.kind === "unknown")).length, 62);
   assert.equal(productionQuestions.filter((q) => q.options.some((o) => o.kind === "not_applicable")).length, 6);
   let seed = 0x12345678;
   const random = () => {

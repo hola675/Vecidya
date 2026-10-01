@@ -291,7 +291,8 @@ test("route pressure D/E: creator+ecommerce y creator+professional hybrid elevan
     deliveryMode: { value: "own_audience_content", provenance: "observed_fact" },
     secondaryDeliveryMode: { value: "online_checkout", provenance: "observed_fact" },
   }).context;
-  const eligible = bank.filter((q) => SPECIALIZED_MODULES.has(q.module) && (!q.appliesWhen || evalRule(q.appliesWhen, {}, creatorEcommerce)));
+  // 08D.1: questions about existing traffic/checkouts require customers; pressure is measured for an operating business.
+  const eligible = bank.filter((q) => SPECIALIZED_MODULES.has(q.module) && (!q.appliesWhen || evalRule(q.appliesWhen, { q2_has_customers: "yes" }, creatorEcommerce)));
   assert.ok(eligible.length >= 8, `presión bajo creator+ecommerce demasiado baja: ${eligible.length}`);
 });
 

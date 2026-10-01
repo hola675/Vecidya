@@ -116,6 +116,27 @@ test("a sound dimension can still expose a single-point dependency", () => {
   assert.deepEqual(risk.evidence, ["q2_ecommerce_acquisition_dependency"]);
 });
 
+test("08D.1 policy: a declared friction is never displaced by an inherited prerequisite; a prerequisite that blocks it moves first", () => {
+  const order = (result: ReturnType<typeof run>) => result.priorities.map((item) => item.dimension);
+  const cases = [
+    // Trust blocks conversion (the goal), not follow-up (the declared friction): lower score or higher severity alone never displaces.
+    { name: "lower score", specs: { relationship_recurrence: { score: 33 }, trust_reputation: { score: 25 }, conversion_access: { score: 50 } }, ctx: { goal: "opportunities", friction: "follow_up" }, expected: ["relationship_recurrence", "trust_reputation", "conversion_access"] },
+    { name: "higher severity", specs: { relationship_recurrence: { score: 60 }, trust_reputation: { score: 20 }, conversion_access: { score: 50 } }, ctx: { goal: "opportunities", friction: "follow_up" }, expected: ["relationship_recurrence", "trust_reputation", "conversion_access"] },
+    // Inverse: trust blocks the declared friction's own dimension, so the prerequisite leads.
+    { name: "explicit blocking", specs: { conversion_access: { score: 50 }, trust_reputation: { score: 25 } }, ctx: { friction: "conversion" }, expected: ["trust_reputation", "conversion_access"] },
+  ] as const;
+  for (const item of cases) {
+    const result = run(item.specs, item.ctx);
+    assert.deepEqual(order(result).slice(0, item.expected.length), item.expected, item.name);
+  }
+  const inverse = run(cases[2].specs, cases[2].ctx).priorities[0]!;
+  assert.ok(inverse.reasonCodes.includes("sequenced_before_dependent") && inverse.dependency.blocks.includes("conversion_access"));
+  // Real golden regression: professional_appointments (Trust 25, Relationship 33, friction follow_up).
+  const persona = GOLDEN_PERSONAS.find((entry) => entry.id === "professional_appointments")!;
+  const real = deriveConstraintsAndPriorities(scoreContextualDimensions({ answers: runGoldenPersonaPipeline(persona).answers, context: {}, evidence: [] }));
+  assert.deepEqual(real.priorities.map((entry) => [entry.dimension, entry.score]), [["relationship_recurrence", 33], ["trust_reputation", 25], ["conversion_access", 50]]);
+});
+
 test("golden personas run planner → scoring → constraints → priorities with valid, sequenced structures", () => {
   const primaries = new Set<string>();
   for (const persona of GOLDEN_PERSONAS) {
