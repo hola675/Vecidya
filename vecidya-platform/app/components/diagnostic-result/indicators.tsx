@@ -34,13 +34,13 @@ export function StatusIndicator({ label, status }: { label: string; status: Dime
 }
 
 /** Confianza: barras ascendentes + texto. Lenguaje visual propio, distinto del porcentaje. */
-export function ConfidenceIndicator({ confidence }: { confidence: NonNullable<DimensionDisplay["confidence"]> }) {
+export function ConfidenceIndicator({ confidence, label }: { confidence: NonNullable<DimensionDisplay["confidence"]>; label?: string }) {
   return (
     <span className={`dr-confidence dr-confidence--${confidence.steps}`}>
       <span aria-hidden="true" className="dr-confidence__bars">
         {[1, 2, 3].map((step) => <span className={step <= confidence.steps ? "is-on" : undefined} key={step} />)}
       </span>
-      <span>Confianza {confidence.label.toLowerCase()}</span>
+      <span>{label ?? `Confianza ${confidence.label.toLowerCase()}`}</span>
     </span>
   );
 }
@@ -55,7 +55,7 @@ export function ScoreMeter({ display }: { display: DimensionDisplay }) {
     <span className="dr-meter">
       <strong className="dr-meter__value">{display.percent}</strong>
       <span aria-hidden="true" className="dr-meter__track">
-        <span className={`dr-meter__fill${display.preliminary ? " dr-meter__fill--preliminary" : ""}`} style={{ width: `${display.dimension.score}%` }} />
+        <span className={`dr-meter__fill dr-meter__fill--${modifier(display.dimension.status)}${display.preliminary ? " dr-meter__fill--preliminary" : ""}`} style={{ width: `${display.dimension.score}%` }} />
       </span>
     </span>
   );

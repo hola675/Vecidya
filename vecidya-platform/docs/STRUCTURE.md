@@ -11,7 +11,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     ├── app/                    interfaz React Router
     │   ├── routes.ts           tabla de 41 rutas
     │   ├── routes/             41 archivos (uno por ruta)
-    │   ├── components/         public-layout, public-v2, admin-shell, ui, diagnostic-result/ (resultado V3, DIAG-V3-09)
+    │   ├── components/         public-layout, public-v2, admin-shell, ui, diagnostic-result/ (resultado V3, DIAG-V3-09/10)
     │   ├── assets/public-assets.ts   manifiesto de assets públicos
     │   ├── lib/auth-client.ts  cliente Better Auth
     │   ├── root.tsx, entry.server.tsx, app.css (Tailwind 4 + estilos propios)
@@ -132,7 +132,7 @@ Solo desarrollo (no se cuenta en la tabla de rutas ni entra en el build): `/__de
 - **Autorización**: `server/auth/session.server.ts` (`requireSession`, `getActiveOrganization`, `requireOrganization`, `requireMembership`), `server/auth/authorization.server.ts` (matriz de roles, `requireOrganizationPermission` y las guardas de recurso `requireOrganizationMemberTarget`/`requireOrganizationInvitationTarget`), `server/auth/organization-http-surface.ts` (allowlist HTTP del plugin Organization), `server/platform-authorization.server.ts` (`requirePlatformAdmin`). `requireRole` y `requirePermission` existen sin uso. Frontera completa en [ARCHITECTURE.md](ARCHITECTURE.md).
 - **Consultas**: `db/queries/` (perfil, horarios, servicios, integraciones, organizaciones, gobierno y vistas de plataforma). Toda consulta tenant filtra por `organization_id`.
 - **UI compartida**: `components/public-v2.tsx` (tarjeta, perfil, JSON-LD, secciones visuales), `components/public-layout.tsx` (shell público, metadatos, navegación), `components/admin-shell.tsx`, `components/ui.tsx`.
-- **Resultado del Diagnóstico V3** (`components/diagnostic-result/`, DIAG-V3-09): `diagnostic-result` (composición y `MethodNote`), `result-hero`, `focus-section` (restricción y prioridades), `reading-sections` (fortalezas, áreas, señales cruzadas, incertidumbres), `dimension-overview`, `indicators` (estado, porcentaje, confianza, certeza), `disclosures` (ayuda y evidencia), `presentation.ts` (mapeo de presentación sin JSX) y `result-debug-panel` (solo la vista previa local). Consume solo el `DiagnosticNarrative`; ninguna ruta pública lo renderiza todavía.
+- **Resultado del Diagnóstico V3** (`components/diagnostic-result/`, DIAG-V3-09/10): `diagnostic-result` (composición y `MethodNote` con el alcance), `result-hero` (portada y `ExecutiveSummary`), `presence-status` (estado general), `action-path` (plan de acción y «Cómo puede ayudarte Vecidya»), `status-assets.ts` (ranuras y briefs de los iconos de estado), `focus-section` (restricción y prioridades), `reading-sections` (fortalezas, áreas, señales cruzadas, incertidumbres), `dimension-overview`, `indicators` (estado, porcentaje, confianza, certeza), `disclosures` (ayuda y evidencia), `presentation.ts` (mapeo de presentación sin JSX) y `result-debug-panel` (solo la vista previa local). Consume el `DiagnosticNarrative` y el `DiagnosticOutcome`; ninguna ruta pública lo renderiza todavía. Capa de decisión en `features/diagnostic/`: `qbv2-overall` (índice y estado general), `qbv2-recommendations`, `qbv2-solutions` y `qbv2-offerings` (catálogo comercial y `buildDiagnosticOutcome`).
 
 ## Placeholders sin implementación
 

@@ -205,6 +205,8 @@ El diagnóstico inicial actual es anónimo, efímero y solo cliente. No crea una
 
 Desde DIAG-002 (`0.4.0`, local) el diagnóstico inicial entrega estado, cómo se llegó a él, confianza, dimensiones, fortalezas, brechas, hasta tres prioridades explicadas, siguientes pasos y encaje Vecidya. El encaje de licencia se deriva de la capacidad necesaria (ordenar → captar y seguir → automatizar y controlar), nunca del tamaño del equipo ni de un umbral global de puntuación, y puede concluir «ninguna todavía»; Ciudad solo se propone con captura y seguimiento ya definidos. Servicios, addons y artículos recomendados son referencias reales de `/servicios`, `/addons` y Aprende, verificadas por prueba.
 
+Desde DIAG-V3-10 (solo local, sin integración pública) el resultado V3 empareja recomendaciones con un subconjunto de este catálogo (licencias, el addon SMS y servicios) sin precios ni niveles inventados; las reglas están en `ARCHITECTURE.md` y una prueba verifica que cada nombre exista en esta matriz.
+
 ### Diagnóstico profesional
 
 **Tipo:** servicio de consultoría.

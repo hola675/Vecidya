@@ -4,24 +4,33 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import {
-  areaItems, CONFIDENCE_DISPLAY, DiagnosticResult, dimensionDisplay, dimensionOverview, PRIORITY_SLOT_DISPLAY, strengthItems, uncertaintyGroups,
+  areaItems, CONFIDENCE_DISPLAY, DiagnosticResult, dimensionDisplay, dimensionOverview, PRIORITY_SLOT_DISPLAY, riskItems, strengthItems, uncertaintyGroups,
 } from "../../../app/components/diagnostic-result/index.ts";
 import {
-  DIGITAL_DIMENSION_IDS, DIMENSION_PRESENTATION_STATUSES, GOLDEN_PERSONAS, NARRATIVE_BLOCK_KINDS, TERMINOLOGY, buildDiagnosticNarrative, deriveConstraintsAndPriorities, deriveSemanticFacts,
-  narrativeBlocks, runGoldenPersonaPipeline, scoreContextualDimensions, type DiagnosticNarrative,
+  DIGITAL_DIMENSION_IDS, DIMENSION_PRESENTATION_STATUSES, GOLDEN_PERSONAS, NARRATIVE_BLOCK_KINDS, TERMINOLOGY, buildDiagnosticNarrative, buildDiagnosticOutcome, deriveConstraintsAndPriorities, deriveSemanticFacts,
+  narrativeBlocks, runGoldenPersonaPipeline, scoreContextualDimensions, type DiagnosticNarrative, type DiagnosticOutcome,
 } from "../../../app/features/diagnostic/index.ts";
 
-/** DIAG-V3-09 — experiencia de resultado: la UI ordena, etiqueta y pliega el `DiagnosticNarrative`, nunca lo reinterpreta. */
+/**
+ * DIAG-V3-09 — experiencia de resultado: la UI ordena, etiqueta y pliega el `DiagnosticNarrative`, nunca lo reinterpreta.
+ * DIAG-V3-10 cambió dos contratos de forma intencional: ahora existe un porcentaje general (en la tarjeta de presencia,
+ * nunca en las prioridades) y las dependencias se muestran como riesgos, no como áreas para fortalecer.
+ */
 
-function narrativeOf(personaId: string): DiagnosticNarrative {
+function resultOf(personaId: string): { narrative: DiagnosticNarrative; outcome: DiagnosticOutcome } {
   const persona = GOLDEN_PERSONAS.find((item) => item.id === personaId)!;
   const answers = runGoldenPersonaPipeline(persona).answers;
   const scoring = scoreContextualDimensions({ answers, context: {}, evidence: [] });
   const priorities = deriveConstraintsAndPriorities(scoring);
-  return buildDiagnosticNarrative({ answers, scoring, priorities, semanticFacts: deriveSemanticFacts({ answers, scoring, priorities }) });
+  const semanticFacts = deriveSemanticFacts({ answers, scoring, priorities });
+  const narrative = buildDiagnosticNarrative({ answers, scoring, priorities, semanticFacts });
+  return { narrative, outcome: buildDiagnosticOutcome({ scoring, priorities, semanticFacts, narrative }) };
 }
-const GOLDEN = Object.fromEntries(GOLDEN_PERSONAS.map((persona) => [persona.id, narrativeOf(persona.id)]));
-const render = (narrative: DiagnosticNarrative) => renderToStaticMarkup(createElement(DiagnosticResult, { narrative }));
+const RESULTS = Object.fromEntries(GOLDEN_PERSONAS.map((persona) => [persona.id, resultOf(persona.id)]));
+const GOLDEN = Object.fromEntries(Object.entries(RESULTS).map(([id, result]) => [id, result.narrative]));
+const OUTCOMES = Object.fromEntries(Object.entries(RESULTS).map(([id, result]) => [id, result.outcome]));
+const outcomeFor = (narrative: DiagnosticNarrative) => Object.values(RESULTS).find((result) => result.narrative.profile === narrative.profile && result.narrative.currentState.text === narrative.currentState.text)!.outcome;
+const render = (narrative: DiagnosticNarrative) => renderToStaticMarkup(createElement(DiagnosticResult, { narrative, outcome: outcomeFor(narrative) }));
 const decode = (html: string) => html.replace(/&quot;/g, "\"").replace(/&#x27;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
 const textOf = (html: string) => decode(html.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
 const all = (html: string, pattern: RegExp) => [...html.matchAll(pattern)].map((match) => decode(match[1]!));
@@ -40,7 +49,7 @@ test("09 all 12 golden results render the full hierarchy with the eight dimensio
   }
 });
 
-test("09 score display: a reading shows its percentage paired with state and confidence; there is no overall score", () => {
+test("09/10 score display: a reading shows its percentage paired with state and confidence; the only other percentage is the overall presence", () => {
   for (const [id, html] of Object.entries(HTML)) {
     const narrative = GOLDEN[id]!;
     const rows = dimensionRows(html);
@@ -52,9 +61,12 @@ test("09 score display: a reading shows its percentage paired with state and con
         assert.ok(textOf(row).includes(dimensionDisplay(dimension).statusLabel), `${id}: state label next to the score`);
       }
     });
-    const percentages = textOf(html).match(/\d+%/g) ?? [];
-    assert.equal(percentages.length, narrative.dimensions.filter((item) => item.score !== null).length, `${id}: only dimension percentages, no global score`);
-    assert.ok(!/%/.test(textOf(between(html, /<header class="dr-hero/, "</header>"))), `${id}: no score in the hero`);
+    const overall = OUTCOMES[id]!.overall.index.displayScore;
+    const percentages = textOf(html.replace(/<details class="dr-help">[\s\S]*?<\/details>/g, "")).match(/\d+%/g) ?? [];
+    assert.equal(percentages.length, narrative.dimensions.filter((item) => item.score !== null).length + (overall === null ? 0 : 1), `${id}: dimension percentages plus at most the overall presence`);
+    const hero = textOf(between(html, /<header class="dr-hero/, "</header>").replace(/<details class="dr-help">[\s\S]*?<\/details>/g, ""));
+    assert.deepEqual(hero.match(/\d+%/g) ?? [], overall === null ? [] : [`${overall}%`], `${id}: the hero only shows the overall presence`);
+    assert.ok(!/%/.test(textOf(between(html, /<section aria-labelledby="dr-focus-title"/, "</section>"))), `${id}: priorities never show a percentage`);
   }
 });
 
@@ -131,7 +143,7 @@ test("09 strengths and areas: confirmed vs signal, partial vs probable vs confir
   for (const [id, narrative] of Object.entries(GOLDEN)) {
     for (const item of strengthItems(narrative)) assert.equal(item.label, item.block.certainty === "confirmed" ? "Fortaleza confirmada" : "Señal positiva", id);
     for (const item of areaItems(narrative)) {
-      assert.ok(["weakness", "partial", "dependency"].includes(item.block.kind), `${id}: ${item.block.kind}`);
+      assert.ok(["weakness", "partial"].includes(item.block.kind), `${id}: ${item.block.kind}`);
       if (item.block.kind === "partial") assert.equal(item.label, "Funciona en parte");
       if (item.block.kind === "weakness") assert.equal(item.label, item.block.certainty === "confirmed" ? "Necesita refuerzo" : "Posible debilidad");
     }
@@ -150,7 +162,8 @@ test("09 contradictions and uncertainties keep both sides and stay separate from
     for (const block of narrative.contradictions) assert.ok(textOf(html).includes(block.text), `${id}: ${block.id}`);
     assert.equal(/Lo que encontramos al cruzar tus respuestas/.test(html), narrative.contradictions.length > 0);
     assert.ok(!/contradicci/i.test(textOf(html)), `${id}: no «contradicción» in prominent copy`);
-    assert.equal(/Lo que todavía no podemos confirmar/.test(html), narrative.uncertainties.length > 0, `${id}: uncertainty section only when needed`);
+    assert.equal(/id="dr-uncertain-title"/.test(html), narrative.uncertainties.length > 0 || riskItems(narrative).length > 0, `${id}: risk/uncertainty section only when needed`);
+    for (const risk of riskItems(narrative)) assert.ok(risk.block.sourceQuestionIds.length > 0 && textOf(between(html, /<section aria-labelledby="dr-uncertain-title"/, "</section>")).includes(risk.block.text), `${id}: risk with provenance in the risk section`);
     const uncertaintyText = textOf(between(html, /<section aria-labelledby="dr-uncertain-title"/, "</section>"));
     assert.ok(!/No aplica/.test(uncertaintyText), `${id}: not-applicable is not an uncertainty`);
   }

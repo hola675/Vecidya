@@ -1,4 +1,7 @@
-import type { ContextualConfidenceLevel, DiagnosticNarrative, DimensionInterpretation, DimensionPresentationStatus, NarrativeBlock, NarrativePriority, ResultCertainty, TerminologyProfileId } from "../../features/diagnostic";
+import type {
+  CommercialMatch, CommercialRole, ContextualConfidenceLevel, DiagnosticNarrative, DiagnosticOutcome, DiagnosticRecommendation, DigitalPresenceStatus, DimensionInterpretation,
+  DimensionPresentationStatus, HelpItem, NarrativeBlock, NarrativePriority, NoOfferingReason, RecommendationFraming, ResultCertainty, TerminologyProfileId,
+} from "../../features/diagnostic";
 
 /**
  * DIAG-V3-09 — mapeo de presentación del resultado. Solo traduce valores del `DiagnosticNarrative` a etiquetas
@@ -114,15 +117,21 @@ export function strengthItems(narrative: DiagnosticNarrative): readonly Strength
     : { block, kind: "signal" as const, label: "Señal positiva" }));
 }
 
-/** Áreas para fortalecer: conserva la diferencia entre parcial, debilidad probable o confirmada y dependencia. */
+/**
+ * Áreas para fortalecer: conserva la diferencia entre parcial y debilidad probable o confirmada. Las dependencias
+ * de un solo canal o persona son riesgos y se muestran en «Riesgos y lo que falta confirmar» (DIAG-V3-10).
+ */
 export type AreaDisplay = { readonly block: NarrativeBlock; readonly tone: "partial" | "weak" | "dependency"; readonly label: string };
 
 export function areaItems(narrative: DiagnosticNarrative): readonly AreaDisplay[] {
-  return narrative.weaknesses.map((block) => {
-    if (block.kind === "partial") return { block, tone: "partial" as const, label: "Funciona en parte" };
-    if (block.kind === "dependency") return { block, tone: "dependency" as const, label: block.certainty === "confirmed" ? "Dependencia" : "Posible dependencia" };
-    return { block, tone: "weak" as const, label: block.certainty === "confirmed" ? "Necesita refuerzo" : "Posible debilidad" };
-  });
+  return narrative.weaknesses.filter((block) => block.kind !== "dependency").map((block) => (block.kind === "partial"
+    ? { block, tone: "partial" as const, label: "Funciona en parte" }
+    : { block, tone: "weak" as const, label: block.certainty === "confirmed" ? "Necesita refuerzo" : "Posible debilidad" }));
+}
+
+/** Riesgos observados: dependencias respaldadas por respuestas concretas (cada bloque conserva su procedencia). */
+export function riskItems(narrative: DiagnosticNarrative): readonly AreaDisplay[] {
+  return narrative.weaknesses.filter((block) => block.kind === "dependency").map((block) => ({ block, tone: "dependency" as const, label: block.certainty === "confirmed" ? "Dependencia" : "Posible dependencia" }));
 }
 
 /** Incertidumbres: lo que se podrá verificar tras el lanzamiento se separa de lo que falta confirmar hoy. */
@@ -133,6 +142,92 @@ export function uncertaintyGroups(narrative: DiagnosticNarrative): readonly { re
     { title: "Lo que falta confirmar", items: pending },
     { title: "Para verificar después del lanzamiento", items: afterLaunch },
   ].filter((group) => group.items.length > 0);
+}
+
+// ── DIAG-V3-10: estado general, plan de acción y ayuda de Vecidya ─────────────
+
+/** Estado general: porcentaje, nombre, explicación y, por separado, confianza y cobertura. */
+export type PresenceDisplay = {
+  readonly status: DigitalPresenceStatus;
+  /** `null` cuando no hay índice: nunca se muestra como 0%. */
+  readonly percent: string | null;
+  readonly confidence: (typeof CONFIDENCE_DISPLAY)[ContextualConfidenceLevel];
+  readonly coverage: string;
+};
+
+export function presenceDisplay(status: DigitalPresenceStatus): PresenceDisplay {
+  return {
+    status,
+    percent: status.index.displayScore === null ? null : `${status.index.displayScore}%`,
+    confidence: CONFIDENCE_DISPLAY[status.confidence.level],
+    coverage: `${status.index.assessed} de ${status.index.applicable} áreas aplicables con lectura`,
+  };
+}
+
+export const FRAMING_DISPLAY: Readonly<Record<RecommendationFraming, string>> = {
+  recommended: "Recomendado",
+  probable: "Probablemente conveniente",
+  verify_first: "Conviene verificar primero",
+};
+
+/** Un paso del plan: resume una prioridad ya justificada, sin repetir su «por qué». */
+export type ActionStep = {
+  readonly recommendation: DiagnosticRecommendation;
+  readonly tag: string;
+  readonly area: string | undefined;
+  /** Pasos anteriores de los que depende, como números de paso. */
+  readonly after: readonly number[];
+};
+
+const stepOf = (recommendationId: string) => Number(recommendationId.split(":")[1]);
+
+export function actionSteps(narrative: DiagnosticNarrative, outcome: DiagnosticOutcome): readonly ActionStep[] {
+  return outcome.recommendations.items.map((recommendation) => ({
+    recommendation,
+    tag: recommendation.mode === "prepare" ? "Para preparar el lanzamiento" : FRAMING_DISPLAY[recommendation.framing],
+    area: dimensionLabelOf(narrative, recommendation.dimension),
+    after: recommendation.prerequisites.filter((item) => !item.satisfied && item.recommendationId).map((item) => stepOf(item.recommendationId!)),
+  }));
+}
+
+export const COMMERCIAL_ROLE_DISPLAY: Readonly<Record<CommercialRole, string>> = {
+  recommended_service: "Servicio",
+  optional_license: "Licencia opcional",
+  optional_addon: "Addon opcional",
+  required_license: "Licencia requerida",
+};
+
+export const NO_OFFERING_DISPLAY: Readonly<Record<NoOfferingReason, string>> = {
+  verify_first: "Primero conviene confirmar este punto; por ahora no corresponde proponer un producto.",
+  no_solution: "Con la evidencia actual no corresponde proponer una intervención concreta.",
+  not_in_catalog: "Vecidya no tiene hoy una oferta específica para esto. Puedes avanzar con la solución descrita por tu cuenta o con quien prefieras.",
+  prelaunch_no_license: "Antes del lanzamiento no se propone una licencia: primero conviene definir y validar la propuesta.",
+};
+
+export type HelpDisplay = {
+  readonly item: HelpItem;
+  readonly step: number;
+  readonly recommendation: DiagnosticRecommendation;
+  readonly offerings: readonly CommercialMatch[];
+  readonly noOffering: string | null;
+  /** Cadena «¿Por qué te recomendamos esto?», del dato al producto. */
+  readonly proof: readonly { readonly label: string; readonly text: string }[];
+};
+
+export function helpItems(narrative: DiagnosticNarrative, outcome: DiagnosticOutcome): readonly HelpDisplay[] {
+  return outcome.help.items.map((item) => {
+    const recommendation = outcome.recommendations.items.find((entry) => entry.id === item.recommendationId)!;
+    const proof = item.offerings[0]?.proof;
+    const chain = proof ? [
+      { label: "Lo que respondiste", text: proof.evidenceTopics.length > 0 ? `${capitalize(proof.evidenceTopics.join("; "))}.` : "Tus respuestas sobre esta área." },
+      { label: "Lo que encontramos", text: proof.finding },
+      { label: `${PRIORITY_SLOT_DISPLAY[proof.priority.slot]} · ${dimensionLabelOf(narrative, proof.constraint.dimension) ?? ""}`, text: proof.priority.statement },
+      { label: "Mejora recomendada", text: proof.recommendation.title },
+      { label: "Tipo de solución", text: proof.solution.label },
+      { label: "Cómo puede ayudar Vecidya", text: item.offerings.map((match) => match.offering.name).join(", ") },
+    ] : [];
+    return { item, step: recommendation.rank, recommendation, offerings: item.offerings, noOffering: item.noOffering ? NO_OFFERING_DISPLAY[item.noOffering] : null, proof: chain };
+  });
 }
 
 export function dimensionLabelOf(narrative: DiagnosticNarrative, dimension: NarrativeBlock["dimension"]): string | undefined {
@@ -169,6 +264,15 @@ export const RESULT_HELP = {
       "Un área sin porcentaje no es una debilidad. Puede faltar información, no haberse evaluado en este recorrido o no aplicar a tu situación.",
     ],
   },
+  presence: {
+    question: "¿Cómo se calcula este porcentaje?",
+    paragraphs: [
+      "Es el promedio, con el mismo peso, de las áreas que aplican a tu situación y tienen lectura. Las áreas sin lectura o que no aplican no cuentan como cero; con menos de tres áreas con lectura no se calcula.",
+      "El estado se decide con el promedio exacto, antes de redondear: por debajo de 40 es una presencia por fortalecer, desde 40 y por debajo de 70 una presencia en desarrollo, y desde 70 una presencia sólida.",
+      "Una presencia solo se llama sólida si ningún área muestra un freno importante y si hay evidencia suficiente; si no, se presenta como en desarrollo, aunque el promedio sea alto.",
+      "La confianza del resultado va aparte: indica cuánta evidencia respalda las lecturas, no qué tan bien estás. Este porcentaje tampoco decide las prioridades.",
+    ],
+  },
   priorities: {
     question: "¿Cómo se decide este orden?",
     paragraphs: [
@@ -178,8 +282,11 @@ export const RESULT_HELP = {
 } as const;
 
 /** Reserva de «Cómo se evaluó»: solo lo que ya es cierto del método, sin fuentes externas todavía. */
+export const RESULT_DISCLAIMER = "Este resultado es una orientación basada en tus respuestas, no una auditoría ni una certificación. Las opciones de Vecidya aparecen solo cuando se relacionan con una prioridad del diagnóstico, y el resultado sirve aunque no contrates nada.";
+
 export const METHOD_NOTES = [
   "Tus respuestas se evaluaron por área: cada una se lee según lo que mide.",
   "No todas las áreas necesitan el mismo número de preguntas; el recorrido profundiza donde importa más para tu situación.",
   "La confianza indica cuánta evidencia respalda cada lectura, por eso se muestra junto a cada porcentaje.",
+  "El porcentaje de presencia digital es el promedio, con el mismo peso, de las áreas aplicables con lectura; las áreas sin lectura no cuentan como cero.",
 ] as const;

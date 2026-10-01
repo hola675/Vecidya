@@ -4365,17 +4365,42 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .dr-note { margin: 0; max-width: 68ch; color: var(--muted); line-height: 1.55; }
 .dr-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.9rem; }
 
-/* Nivel 1: resumen. Sin puntaje global ni cifras decorativas; el titular es la primera frase del resumen. */
+/* Nivel 1: portada con la presencia digital actual (DIAG-V3-10); nivel 2: resumen ejecutivo. */
 .dr-hero { display: grid; gap: 0.9rem; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(1.25rem, 4vw, 2.5rem); background: var(--surface); box-shadow: var(--shadow); }
 .dr-hero--prelaunch { border: 1px dashed #b8c9df; background: var(--surface-soft); box-shadow: none; }
 .dr-hero__title:focus { outline: none; }
 .dr-context { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
 .dr-context li { border: 1px solid var(--line); border-radius: 99px; padding: 0.3rem 0.75rem; color: var(--muted); background: #fff; font-size: var(--text-label); font-weight: 700; }
-.dr-hero__headline { margin: 0.35rem 0 0; max-width: 32ch; font-size: clamp(1.5rem, 3.8vw, 2.2rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.18; text-wrap: balance; overflow-wrap: break-word; }
-.dr-hero__lead { margin: 0; max-width: 62ch; font-size: 1.0625rem; line-height: 1.6; }
-.dr-hero__state { max-width: 62ch; margin-top: 0.4rem; border-top: 1px solid var(--line); padding-top: 1rem; }
-.dr-hero__state p { margin: 0; line-height: 1.6; }
-.dr-hero__state .dr-hero__state-label { margin-bottom: 0.25rem; color: var(--muted); font-size: var(--text-meta); font-weight: 700; }
+.dr-summary__headline { margin: 0; max-width: 32ch; font-size: clamp(1.5rem, 3.8vw, 2.2rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.18; text-wrap: balance; overflow-wrap: break-word; }
+.dr-summary__lead { margin: 0; max-width: 62ch; font-size: 1.0625rem; line-height: 1.6; }
+.dr-summary__state { max-width: 62ch; margin-top: 0.4rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+.dr-summary__state p { margin: 0; line-height: 1.6; }
+.dr-summary__state .dr-summary__state-label { margin-bottom: 0.25rem; color: var(--muted); font-size: var(--text-meta); font-weight: 700; }
+
+/* Presencia digital actual: el color es un apoyo (fondo tenue + icono); el estado siempre se lee en texto. */
+.dr-presence { --dr-state: var(--muted); --dr-state-soft: var(--surface-soft); --dr-state-line: var(--line); display: grid; gap: 0.85rem; min-width: 0; margin-top: 0.35rem; border: 1px solid var(--dr-state-line); border-radius: var(--radius-md); padding: clamp(1rem, 3vw, 1.5rem); background: var(--dr-state-soft); }
+.dr-presence--low { --dr-state: #a33d00; --dr-state-soft: #fff6f0; --dr-state-line: #f2c6a8; }
+.dr-presence--developing { --dr-state: #7a5d00; --dr-state-soft: #fffaeb; --dr-state-line: #ecd68f; }
+.dr-presence--solid { --dr-state: #0d6248; --dr-state-soft: #f1faf5; --dr-state-line: #a9dcc6; }
+.dr-presence--insufficient { border-style: dashed; --dr-state-line: #b8c9df; --dr-state-soft: #fff; }
+.dr-presence__main { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; }
+.dr-presence__asset { display: grid; flex: 0 0 auto; width: 3.5rem; height: 3.5rem; place-items: center; color: var(--dr-state); }
+.dr-presence__asset img { width: 100%; height: 100%; object-fit: contain; }
+.dr-presence__reading { display: grid; gap: 0.1rem; min-width: 0; }
+.dr-presence__kicker { margin: 0; color: var(--muted); font-size: var(--text-label); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.dr-presence__value { margin: 0; color: var(--ink); font-size: clamp(2.4rem, 7vw, 3.25rem); font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.04em; line-height: 1; }
+.dr-presence__value--none { font-size: clamp(1.3rem, 3.5vw, 1.6rem); letter-spacing: -0.02em; }
+.dr-presence__label { margin: 0; color: var(--dr-state); font-size: 1.125rem; font-weight: 800; line-height: 1.3; overflow-wrap: break-word; }
+.dr-presence--insufficient .dr-presence__label { color: var(--ink); }
+.dr-presence__text { margin: 0; max-width: 62ch; line-height: 1.6; overflow-wrap: break-word; }
+.dr-presence__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 1.5rem; border-top: 1px solid var(--dr-state-line); padding-top: 0.75rem; }
+.dr-presence__meta p { margin: 0; }
+.dr-presence__confidence { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; }
+.dr-presence__meta-label { color: var(--ink); font-size: var(--text-meta); font-weight: 700; }
+.dr-presence__confidence .dr-confidence { color: var(--ink); }
+.dr-presence__coverage { color: var(--muted); font-size: var(--text-meta); }
+.dr-subsection__title { margin: 0 0 0.65rem; font-size: 1.1rem; font-weight: 800; line-height: 1.3; }
+.dr-evidence-section .dr-mixed { margin-top: 0.5rem; }
 
 /* Nivel 2: restricción principal y prioridades. */
 .dr-constraint { display: grid; gap: 0.6rem; min-width: 0; border: 1px solid rgb(191 71 0 / 32%); border-radius: var(--radius-md); padding: clamp(1.1rem, 3vw, 1.75rem); background: var(--surface-warm); }
@@ -4453,7 +4478,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .dr-meter__value { min-width: 3.1rem; font-size: 1.25rem; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
 .dr-meter__track { display: block; width: 7.5rem; height: 0.4rem; overflow: hidden; border-radius: 99px; background: #e5edf8; }
 .dr-meter__fill { display: block; min-width: 0.25rem; height: 100%; border-radius: inherit; background: var(--blue); }
-.dr-meter__fill--preliminary { background: repeating-linear-gradient(135deg, var(--blue) 0 3px, #9dbbe8 3px 6px); }
+/* Color contenido por familia de estado (DIAG-V3-10); el texto del estado ya dice lo mismo. */
+.dr-meter__fill--strong, .dr-meter__fill--positive-signal { --dr-fill: #2f8a68; --dr-fill-soft: #a6d8c2; }
+.dr-meter__fill--partial { --dr-fill: #b38600; --dr-fill-soft: #ead48a; }
+.dr-meter__fill--weak { --dr-fill: #c25a24; --dr-fill-soft: #f0bc9c; }
+.dr-meter__fill[class*="dr-meter__fill--"] { background: var(--dr-fill, var(--blue)); }
+.dr-meter__fill.dr-meter__fill--preliminary { background: repeating-linear-gradient(135deg, var(--dr-fill, var(--blue)) 0 3px, var(--dr-fill-soft, #9dbbe8) 3px 6px); }
 .dr-confidence { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--muted); font-size: var(--text-meta); font-weight: 700; }
 .dr-confidence__bars { display: inline-flex; align-items: flex-end; gap: 2px; }
 .dr-confidence__bars span { display: block; width: 4px; border-radius: 1px; background: #d3deec; }
@@ -4462,12 +4492,59 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .dr-confidence__bars span:nth-child(3) { height: 12px; }
 .dr-confidence__bars span.is-on { background: var(--ink); }
 
+/* Plan de acción: pasos cortos que resumen prioridades ya justificadas. */
+.dr-step-list { display: grid; gap: 0.75rem; margin: 0; padding: 0; list-style: none; counter-reset: dr-step; }
+.dr-step { position: relative; display: grid; gap: 0.4rem; min-width: 0; border-top: 1px solid var(--line); padding: 1rem 0 0 3rem; counter-increment: dr-step; }
+.dr-step::before { position: absolute; top: 0.95rem; left: 0; display: grid; width: 2rem; height: 2rem; place-items: center; border-radius: 0.55rem; color: var(--ink); background: var(--surface-soft); content: counter(dr-step); font-weight: 800; }
+.dr-step p { margin: 0; max-width: 62ch; overflow-wrap: break-word; }
+.dr-step__title { font-size: 1.0625rem; font-weight: 800; line-height: 1.35; }
+.dr-step__what { line-height: 1.55; }
+.dr-step__outcome { color: var(--muted); line-height: 1.5; }
+.dr-step__outcome span { color: var(--ink); font-weight: 700; }
+.dr-step__tag { border: 1px solid #c4d6f5; border-radius: 99px; padding: 0.15rem 0.55rem; color: var(--blue-dark); background: #eef4ff; font-size: 0.78rem; font-weight: 800; }
+.dr-step__tag--recommended { border-color: #9bd6be; color: #0d6248; background: #e7f7ef; }
+.dr-step__tag--verify-first, .dr-step__tag--prepare { border-style: dashed; border-color: #b8c9df; color: var(--muted); background: #fff; }
+.dr-step__after { color: var(--muted); font-size: var(--text-meta); font-weight: 700; }
+
+/* Cómo puede ayudar Vecidya: al final, separado del diagnóstico, sin precios ni llamadas a comprar. */
+.dr-vecidya { border-top: 1px solid var(--line); padding-top: 1.75rem; }
+.dr-help-list { display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; }
+.dr-help-item { display: grid; gap: 0.7rem; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-md); padding: clamp(1rem, 3vw, 1.4rem); background: #fff; }
+.dr-help-item__title { margin: 0; font-size: 1.05rem; font-weight: 800; line-height: 1.35; overflow-wrap: break-word; }
+.dr-help-item__step { margin-right: 0.35rem; color: var(--muted); font-size: var(--text-label); font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.dr-help-item__none { margin: 0; max-width: 62ch; color: var(--muted); line-height: 1.55; }
+.dr-solution { display: grid; gap: 0.25rem; }
+.dr-solution p { margin: 0; max-width: 62ch; line-height: 1.55; overflow-wrap: break-word; }
+.dr-solution__label { font-weight: 700; }
+.dr-solution__label span, .dr-solution__alt { color: var(--muted); }
+.dr-offer-list { display: grid; gap: 0.6rem; margin: 0; padding: 0; list-style: none; }
+.dr-offer { display: grid; gap: 0.3rem; min-width: 0; border-radius: var(--radius-sm); padding: 0.8rem 0.9rem; background: var(--surface-soft); }
+.dr-offer--shared { padding-block: 0.55rem; background: #fff; border: 1px dashed #c9d6e6; }
+.dr-offer p { margin: 0; max-width: 62ch; line-height: 1.5; overflow-wrap: break-word; }
+.dr-offer__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.6rem; }
+.dr-offer__name { font-size: 1rem; }
+.dr-offer__role { color: var(--muted); font-size: var(--text-meta); font-weight: 700; }
+.dr-offer__condition, .dr-offer__dependency, .dr-offer__cost, .dr-offer__contract, .dr-offer__timing { color: var(--muted); font-size: var(--text-meta); }
+.dr-offer__dependency { color: var(--ink); }
+.dr-offer__link { display: inline-flex; align-items: center; min-height: 2.75rem; width: fit-content; color: var(--blue); font-weight: 700; }
+.dr-proof summary { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 2.75rem; color: var(--blue); font-weight: 700; list-style: none; cursor: pointer; }
+.dr-proof summary::-webkit-details-marker { display: none; }
+.dr-proof summary::after { width: 0.45rem; height: 0.45rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; content: ""; transform: translateY(-2px) rotate(45deg); }
+.dr-proof[open] summary::after { transform: translateY(1px) rotate(225deg); }
+.dr-proof summary:hover { color: var(--blue-dark); text-decoration: underline; }
+.dr-proof__chain { display: grid; gap: 0.55rem; margin: 0.25rem 0 0.25rem; padding-left: 1.25rem; }
+.dr-proof__chain li { max-width: 62ch; line-height: 1.5; overflow-wrap: break-word; }
+.dr-proof__label { display: block; color: var(--muted); font-size: var(--text-meta); font-weight: 700; }
+@media (prefers-reduced-motion: no-preference) { .dr-proof summary::after { transition: transform 160ms ease; } }
+
 /* Niveles 4 y 5: lo que falta confirmar y cómo se evaluó. */
 .dr-uncertain__group h3 { margin: 0 0 0.5rem; font-size: 1rem; font-weight: 800; }
+.dr-uncertain .dr-reading-list { max-width: 68ch; }
 .dr-uncertain ul, .dr-method ul { display: grid; gap: 0.5rem; max-width: 68ch; margin: 0; padding-left: 1.1rem; line-height: 1.55; overflow-wrap: break-word; }
 .dr-uncertain__group + .dr-uncertain__group { margin-top: 0.5rem; }
 .dr-method { border-top: 1px solid var(--line); padding-top: 1.75rem; }
 .dr-method ul { color: var(--muted); }
+.dr-disclaimer { margin: 0.5rem 0 0; max-width: 68ch; color: var(--muted); font-size: var(--text-meta); line-height: 1.55; }
 
 @media (min-width: 52rem) {
   .dr-readings { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; align-items: start; }
@@ -4476,6 +4553,25 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .dr-dim { grid-template-columns: minmax(0, 13rem) minmax(0, 12.5rem) minmax(0, 1fr); column-gap: 1.75rem; align-items: start; }
   .dr-dim__head { flex-direction: column; align-items: flex-start; }
   .dr-dim__measure { flex-direction: column; align-items: flex-start; gap: 0.5rem; padding-top: 0.1rem; }
+}
+
+/* Impresión: una columna, sin ayudas plegables ni barras de la vista previa; ningún bloque se parte ni se superpone. */
+@media print {
+  .dr-preview-bar, .dr-debug, .dr-help, .dr-offer__link { display: none !important; }
+  /* Un pequeño margen interior evita que el borde de 1 px de las tarjetas caiga en el límite del área imprimible. */
+  .dr-page { width: auto; margin: 0; padding: 0 3px; }
+  .dr-result { gap: 1.5rem; }
+  .dr-hero { box-shadow: none; }
+  .dr-presence, .dr-constraint, .dr-priority, .dr-step, .dr-reading, .dr-dim, .dr-help-item, .dr-offer, .dr-summary__state, .dr-method, .dr-uncertain__group { break-inside: avoid; }
+  .dr-section__title, .dr-subsection__title, .dr-subhead, .dr-help-item__title, .dr-uncertain__group h3 { break-after: avoid; }
+  .dr-presence, .dr-meter__fill, .dr-confidence__bars span, .dr-certainty, .dr-step::before, .dr-priority::before { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .dr-readings { grid-template-columns: 1fr !important; }
+  html:has(.dr-result), body:has(.dr-result) { background: #fff; }
+  /* En papel no se puede abrir un desplegable: la procedencia y la cadena de la oferta se imprimen abiertas. */
+  .dr-proof::details-content, .dr-evidence::details-content { display: block; content-visibility: visible; }
+  .dr-proof summary, .dr-evidence summary { min-height: 0; color: var(--ink); }
+  .dr-proof summary::after, .dr-evidence summary::after { display: none; }
+  .dr-dim { grid-template-columns: minmax(0, 11rem) minmax(0, 11rem) minmax(0, 1fr); column-gap: 1.25rem; }
 }
 
 /* Vista previa local (solo desarrollo). */

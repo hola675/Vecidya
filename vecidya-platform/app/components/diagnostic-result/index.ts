@@ -1,8 +1,11 @@
+export { ActionPath, VecidyaHelpSection } from "./action-path";
 export { DiagnosticResult, MethodNote } from "./diagnostic-result";
 export { DimensionCard, DimensionOverview } from "./dimension-overview";
 export { EvidenceDisclosure, HelpDisclosure } from "./disclosures";
 export { FocusSection, PrimaryConstraint, PriorityList } from "./focus-section";
 export { CertaintyTag, ConfidenceIndicator, ScoreMeter, StatusIndicator } from "./indicators";
+export { DigitalPresenceStatusCard } from "./presence-status";
 export * from "./presentation";
-export { AreasSection, MixedSignalsSection, StrengthsSection, UncertaintySection } from "./reading-sections";
-export { ResultHero } from "./result-hero";
+export { AreasSection, EvidenceSection, MixedSignalsSection, StrengthsSection, UncertaintySection } from "./reading-sections";
+export { ExecutiveSummary, ResultHero } from "./result-hero";
+export { STATUS_ASSETS, type StatusAssetBrief } from "./status-assets";

@@ -5,17 +5,19 @@ import { ResultDebugPanel } from "../components/diagnostic-result/result-debug-p
 import { PublicLayout } from "../components/public-layout";
 import {
   buildDiagnosticNarrative,
+  buildDiagnosticOutcome,
   deriveConstraintsAndPriorities,
   deriveSemanticFacts,
   GOLDEN_PERSONAS,
   runGoldenPersonaPipeline,
   scoreContextualDimensions,
   type DiagnosticNarrative,
+  type DiagnosticOutcome,
   type NarrativeBlock,
 } from "../features/diagnostic";
 
 /**
- * DIAG-V3-09 — vista previa local del resultado sobre las 12 personas golden. Solo existe en desarrollo:
+ * DIAG-V3-09/10 — vista previa local del resultado sobre las 12 personas golden. Solo existe en desarrollo:
  * `routes.ts` no la registra en el build de producción y el loader responde 404 fuera de `import.meta.env.DEV`.
  * No es un punto de entrada del producto ni muestra resultados reales. Al no existir en typegen (que evalúa
  * `routes.ts` en modo producción), se tipa con los tipos públicos de React Router en lugar de `+types`.
@@ -46,6 +48,23 @@ function stressNarrative(narrative: DiagnosticNarrative): DiagnosticNarrative {
   };
 }
 
+/** Alarga también el estado general, el plan y las ofertas para revisar desbordes. */
+function stressOutcome(outcome: DiagnosticOutcome): DiagnosticOutcome {
+  const triple = (text: string) => `${text} ${text} ${text}`;
+  return {
+    ...outcome,
+    overall: { ...outcome.overall, label: `${outcome.overall.label} con un nombre de estado bastante más largo`, explanation: { ...outcome.overall.explanation, text: triple(outcome.overall.explanation.text) } },
+    recommendations: { ...outcome.recommendations, items: outcome.recommendations.items.map((item) => ({ ...item, title: triple(item.title), whatToImprove: triple(item.whatToImprove), expectedOutcome: triple(item.expectedOutcome) })) },
+    help: {
+      ...outcome.help,
+      items: outcome.help.items.map((item) => ({
+        ...item,
+        offerings: item.offerings.map((match) => ({ ...match, offering: { ...match.offering, summary: triple(match.offering.summary) }, condition: match.condition ? triple(match.condition) : null, proof: { ...match.proof, finding: triple(match.proof.finding) } })),
+      })),
+    },
+  };
+}
+
 export function loader({ params, request }: LoaderFunctionArgs) {
   if (!import.meta.env.DEV) throw new Response("Not Found", { status: 404 });
   const persona = GOLDEN_PERSONAS.find((item) => item.id === (params.personaId ?? GOLDEN_PERSONAS[0]!.id));
@@ -55,19 +74,21 @@ export function loader({ params, request }: LoaderFunctionArgs) {
   const priorities = deriveConstraintsAndPriorities(scoring);
   const semanticFacts = deriveSemanticFacts({ answers, scoring, priorities });
   const narrative = buildDiagnosticNarrative({ answers, scoring, priorities, semanticFacts });
+  const outcome = buildDiagnosticOutcome({ scoring, priorities, semanticFacts, narrative });
   const url = new URL(request.url);
   const stress = url.searchParams.get("stress") === "1";
   return {
     personaId: persona.id,
     personas: GOLDEN_PERSONAS.map((item) => ({ id: item.id, label: item.label })),
     narrative: stress ? stressNarrative(narrative) : narrative,
+    outcome: stress ? stressOutcome(outcome) : outcome,
     debug: url.searchParams.get("debug") === "1",
     stress,
   };
 }
 
 export default function DevDiagnosticResult() {
-  const { debug, narrative, personaId, personas, stress } = useLoaderData<typeof loader>();
+  const { debug, narrative, outcome, personaId, personas, stress } = useLoaderData<typeof loader>();
   const query = (next: { debug?: boolean; stress?: boolean }) => {
     const params = new URLSearchParams();
     if (next.debug ?? debug) params.set("debug", "1");
@@ -95,7 +116,7 @@ export default function DevDiagnosticResult() {
             <Link to={query({ stress: !stress })}>{stress ? "Contenido normal" : "Contenido extremo"}</Link>
           </p>
         </aside>
-        <DiagnosticResult narrative={narrative} />
+        <DiagnosticResult narrative={narrative} outcome={outcome} />
         {debug ? <ResultDebugPanel narrative={narrative} /> : null}
       </main>
     </PublicLayout>
