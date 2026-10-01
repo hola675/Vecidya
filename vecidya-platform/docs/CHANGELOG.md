@@ -1,6 +1,13 @@
 # Changelog
 
-## 2026-10-01 — DIAG-V3-08F.1 Answer Scale Closure & Language Freeze (solo local, sin deploy, sin commit)
+## 2026-10-01 — DIAG-V3-08G Natural Narrative & Result Interpretation (solo local, sin deploy, sin commit)
+
+- 08F + 08F.1 cerradas en el commit local `da24dee` (`feat(diagnostic): finalize language and answer semantics`); capa de lenguaje congelada.
+- Nueva capa `qbv2-narrative.ts` + `qbv2-narrative-phrases.ts`: resultado estructurado y determinista (resumen ejecutivo, estado actual, fortalezas, debilidades/parciales, restricción principal, prioridades 08D con su porqué, contradicciones, incertidumbres, 8 dimensiones y siguiente foco) con procedencia por bloque.
+- Consume los Semantic Facts sin recalcular; certeza de 08F; terminología y continuidad de etapa congeladas; pre-lanzamiento descrito como preparación; sin IA en tiempo de ejecución, sin marcado de UI ni recomendaciones tácticas.
+- `qbv2-narrative.test.ts` 14/14 (incluye 972 rutas generadas); barrido de 3.240 rutas sin incidencias; unitarias 781/781. Sin cambio de motor, lenguaje ni versión.
+
+## 2026-10-01 — DIAG-V3-08F.1 Answer Scale Closure & Language Freeze (solo local, sin deploy; commit `da24dee`)
 
 - `q2_reputation_flow` pasa a la versión 2 con el nivel intermedio `occasional` («De vez en cuando, pero no de forma constante», partial); `steady` y `rare` conservan su significado y estado.
 - `q2_ecommerce_traffic_sources` pasa a la versión 2: `marketplace`, `email`, `direct` y `other` (distinta de `unknown`). Nombrar una fuente apoya Medición sin probarla; correo y visitas directas no cuentan como diversidad de Descubrimiento.
@@ -8,7 +15,7 @@
 - Sin cambios de ruta, scoring, prioridades ni hechos en las 12 personas golden ni en 3.240 rutas generadas; huella fuera de las dos preguntas idéntica a `0bd6a73`. `DIAG-V3-08F-ANSWER-SCALE-001` resuelta.
 - Capa de lenguaje congelada. `qbv2-answer-scale.test.ts` 9/9; unitarias 767/767. Sin cambio de versión.
 
-## 2026-10-01 — DIAG-V3-08F Language, Terminology & Question Semantics Audit (solo local, sin deploy, sin commit)
+## 2026-10-01 — DIAG-V3-08F Language, Terminology & Question Semantics Audit (solo local, sin deploy; commit `da24dee`)
 
 - Motor congelado antes de la auditoría: 08E.1 + 08E.2 + 08E.3 en el commit local `0bd6a73` (`feat(diagnostic): finalize adaptive diagnostic engine`), sin push ni deploy.
 - Modelo de terminología (`qbv2-terminology.ts`): 13 perfiles de lenguaje × 10 roles de ciclo de vida, con términos a evitar por perfil. «Pacientes» pasa de todo `health_wellness` (incluía gimnasios y spas) a la práctica clínica con licencia.

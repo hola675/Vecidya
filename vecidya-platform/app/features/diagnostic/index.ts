@@ -204,6 +204,8 @@ export { deriveSemanticFacts, DIMENSION_READING_CODES, FACT_IMPORTANCE, PRIORITY
 export { resolveTerm, resolveTerminologyProfile, TERM_ROLES, TERMINOLOGY, TERMINOLOGY_PROFILE_IDS, type TermRole, type TerminologyProfile, type TerminologyProfileId } from "./qbv2-terminology";
 export { HINT_MAX_LENGTH, renderQuestionV2, validateQuestionCopyV2, visibleCopyOf, type CopyContext, type RenderedOptionV2, type RenderedQuestionV2 } from "./qbv2-copy";
 export { AUDIT_CLASSES, canClaimStage, COPY_MODES, DIMENSION_RESULT_CONCEPT, factSubjectStages, HARSH_RESULT_PHRASES, HELP_LEVELS, LIFECYCLE_ORDER, LIVE_ONLY_STAGES, QUESTION_LANGUAGE, RESULT_CATEGORIES, RESULT_CERTAINTY_FRAMES, RESULT_CERTAINTY_LEVELS, RESULT_VOCABULARY, resultCategory, resultCertainty, resultSubject, STAGE_TERM, SUBJECT_STAGES, type AuditClass, type CopyMode, type HelpLevel, type QuestionLanguageEntry, type ResultCategory, type ResultCertainty, type SubjectStage } from "./qbv2-language";
+export { buildDiagnosticNarrative, CONFIDENCE_LABELS, DIMENSION_PRESENTATION_STATUSES, DIMENSION_STATUS_LABELS, NARRATIVE_BLOCK_KINDS, NARRATIVE_VERSION, narrativeBlocks, type DiagnosticNarrative, type DimensionInterpretation, type DimensionPresentationStatus, type NarrativeBlock, type NarrativeBlockKind, type NarrativeInput, type NarrativePriority } from "./qbv2-narrative";
+export { DIMENSION_NARRATIVE, DIMENSION_STATEMENTS, NARRATIVE_FILLER_PHRASES, PRIORITY_FOCUS, QUESTION_TOPICS } from "./qbv2-narrative-phrases";
 
 /**
  * Ejecuta el diagnóstico completo sobre un conjunto de respuestas.
