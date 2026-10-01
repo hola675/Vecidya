@@ -74,7 +74,7 @@ const MAPPING_GROUPS: readonly MappingGroup[] = [
   group(["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_sector", "q2_customer_reach", "q2_customer_buyer", "q2_process_systemization", "q2_capacity_signal"], [], ["business context and operational capacity"]),
   group(["q2_goal", "q2_friction"], [], ["declared priority and contextual constraint"]),
   group(["q2_local_discovery", "q2_creator_channel_concentration", "q2_retail_promotions", "q2_ecommerce_acquisition_dependency", "q2_startup_first_channel"], ["discovery"], ["source of discovery", "channel dependency"]),
-  group(["q2_local_discovery", "q2_ecommerce_traffic_sources", "q2_b2b_lead_source"], ["discovery", "measurement_optimization"], ["known source of demand and source confidence"], ["established", "missing", "partial", "dependency", "uncertainty", "not_applicable"]),
+  group(["q2_local_discovery", "q2_ecommerce_traffic_sources", "q2_b2b_lead_source"], ["discovery", "measurement_optimization"], ["known source of demand and source confidence"], ["established", "missing", "partial", "dependency", "constraint", "uncertainty", "not_applicable"]),
   group(["q2_local_presence_consistency"], ["digital_foundation", "discovery"], ["presence availability", "audience access"]),
   group(["q2_creator_content_consistency"], ["discovery"], ["content channel activity"]),
   group(["q2_local_foot_traffic"], ["discovery"], ["observed local demand source"]),

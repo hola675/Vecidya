@@ -30,14 +30,23 @@ export const LOTE_G_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "conversion",
     type: "single",
-    prompt: "De las personas que muestran interés en lo que ofreces (preguntan, piden información o una cotización), ¿qué proporción termina comprando o contratando?",
+    prompt: "De las personas que muestran interés en lo que ofreces (preguntan, piden información o una cotización), ¿cuántas terminan comprando o contratando?",
+    hint: "Una estimación aproximada basta; piensa en lo que ocurre normalmente.",
     purpose: ["diagnostic"],
     priority: "normal",
     // Material-only: entra solo para cubrir una necesidad de conversión abierta. Sin clientes no hay
     // proporción que observar; appointments ya tiene su versión específica. DIAG-V3-08E.3: el alcance describe
     // dónde aplica (no qué meta/fricción la pide) — p. ej. la meta `stop_losing` al inicio, vía conversión.
     materialAppliesWhen: andV2(eqV2("q2_has_customers", "yes"), notV2(archetypeIncludes("appointments"))),
-    variants: [{ target: { businessModel: "nonprofit" }, prompt: "De las personas que muestran interés en apoyar o participar en tu organización, ¿qué proporción termina haciéndolo?" }],
+    // DIAG-V3-08F: misma etapa en todos los contextos (personas interesadas → un paso concreto); solo cambian el
+    // ejemplo de interés y el paso que lo concreta. Nunca habla de clientes perdidos: mide interés que no avanza.
+    variants: [
+      { target: { businessModel: "nonprofit" }, prompt: "De las personas que muestran interés en apoyar o participar en tu organización, ¿cuántas terminan haciéndolo?" },
+      { target: { terminology: ["ecommerce", "retail"] }, prompt: "De las personas que muestran interés en tus productos (preguntan, piden información o los guardan para después), ¿cuántas terminan comprando?" },
+      { target: { terminology: ["b2b"] }, prompt: "De las empresas que muestran interés (piden información, una reunión o una propuesta), ¿cuántas terminan contratando?" },
+      { target: { terminology: ["hospitality"] }, prompt: "De las personas que preguntan o piden información (por mensaje, teléfono o redes), ¿cuántas terminan reservando o viniendo?" },
+      { target: { terminology: ["clinical"] }, prompt: "De las personas que solicitan información sobre tu atención, ¿cuántas terminan agendando una cita?" },
+    ],
     options: [
       { value: "most", label: "La mayoría" },
       { value: "about_half", label: "Más o menos la mitad" },
@@ -46,8 +55,9 @@ export const LOTE_G_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     ],
     scoringReadiness: { candidateDimensions: ["contacto"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
     helpIntent: {
-      understand: "Si el interés que ya llega se convierte en clientes o participación.",
+      understand: "Si el interés que ya llega termina en un paso concreto: una compra, una contratación, una reserva o un apoyo.",
       distinction: "Piensa en lo que realmente ocurre con quienes preguntan, no en cuántas personas te encuentran.",
+      why: "Muestra si el interés avanza o se queda en el camino, antes de buscar más personas interesadas.",
     },
   },
   {
@@ -55,7 +65,8 @@ export const LOTE_G_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "operations",
     type: "single",
-    prompt: "¿Dónde vive hoy la información de tus clientes, pedidos o pendientes?",
+    // DIAG-V3-08F: ejemplos neutrales (contactos, pedidos, pendientes) válidos también para organizaciones y salud.
+    prompt: "¿Dónde se guarda hoy la información con la que trabajas a diario (contactos, pedidos o pendientes)?",
     purpose: ["diagnostic"],
     priority: "normal",
     appliesWhen: andV2(eqV2("q2_has_customers", "yes"), contextIn("primaryFriction", ["operations", "scale"])),
@@ -70,8 +81,9 @@ export const LOTE_G_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     ],
     scoringReadiness: { candidateDimensions: ["seguimiento"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
     helpIntent: {
-      understand: "Si existe una base digital sobre la que el negocio pueda organizarse y crecer.",
+      understand: "Si existe una base digital sobre la que organizar el trabajo y crecer.",
       distinction: "Lo que importa es dónde se consulta la información en el día a día, no si existe alguna copia digital.",
+      why: "Ordenar o automatizar algo exige primero que la información esté en un solo lugar.",
     },
   },
   {
@@ -94,6 +106,7 @@ export const LOTE_G_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     helpIntent: {
       understand: "Qué parte del trabajo repetitivo ya se sostiene sin intervención manual.",
       distinction: "Cuenta solo lo que ocurre sin que alguien lo dispare a mano cada vez.",
+      why: "Muestra cuánto del trabajo repetitivo todavía depende de tiempo manual.",
     },
   },
   // ── DIAG-V3-08E.1: final evidence completion (confirmed bank gaps) ─────────
@@ -113,8 +126,10 @@ export const LOTE_G_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     materialAppliesWhen: eqV2("q2_has_customers", "yes"),
     variants: [{ target: { businessModel: "nonprofit" }, prompt: "Cuando alguien que no conoce tu organización ve tu página, perfil o publicación por primera vez, ¿entiende rápido qué hacen, a quién ayudan y por qué apoyarlos?" }],
     options: [
-      { value: "all_clear", label: "Sí, se entiende qué ofrezco, para quién y por qué elegirme" },
-      { value: "offer_only", label: "Se entiende qué ofrezco, pero no tanto para quién ni por qué elegirme" },
+      // DIAG-V3-08F: etiquetas neutrales — las anteriores ("qué ofrezco… elegirme") contradecían la variante nonprofit
+      // ("qué hacen… por qué apoyarlos"). Mismos valores y estados.
+      { value: "all_clear", label: "Sí, se entienden las tres cosas" },
+      { value: "offer_only", label: "Se entiende qué es, pero no tanto para quién ni por qué" },
       { value: "not_clear", label: "No, suelen tener que preguntar para entenderlo" },
       { value: "unknown", label: "No lo he comprobado con alguien de fuera", kind: "unknown" },
     ],
@@ -122,6 +137,7 @@ export const LOTE_G_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     helpIntent: {
       understand: "Si alguien de fuera entiende la oferta sin explicación adicional.",
       distinction: "Piensa en lo que entiende una persona nueva al verlo, no en lo que tú explicas cuando te preguntan.",
+      why: "Si no se entiende a la primera, quien te descubre suele seguir de largo.",
     },
   },
   // Foundation: only local/retail/hospitality (address, hours, contact) and ecommerce (storefront) had a direct
@@ -132,7 +148,7 @@ export const LOTE_G_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "presence",
     type: "single",
-    prompt: "Si alguien te busca en internet, ¿encuentra un lugar propio y actualizado (página web, perfil de negocio o similar) donde ver lo que haces y cómo contactarte?",
+    prompt: "Si alguien te busca en internet, ¿encuentra un lugar propio y actualizado (página web, ficha en buscadores o mapas, o similar) donde ver lo que haces y cómo contactarte?",
     purpose: ["diagnostic"],
     priority: "normal",
     // Material-only: entra solo cuando la base digital es una necesidad material (p. ej. prerrequisito
@@ -148,8 +164,9 @@ export const LOTE_G_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     ],
     scoringReadiness: { candidateDimensions: ["presencia"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
     helpIntent: {
-      understand: "Si existe una base digital propia que el negocio controla y mantiene al día.",
+      understand: "Si existe una base digital propia que controlas y mantienes al día.",
       distinction: "Un perfil en una plataforma ajena cuenta distinto que un lugar propio: piensa en cuál controlas tú.",
+      why: "Un lugar propio no depende de las reglas ni del alcance de otra plataforma.",
     },
   },
 ];

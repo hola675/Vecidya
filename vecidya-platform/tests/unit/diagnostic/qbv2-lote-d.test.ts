@@ -160,7 +160,7 @@ test("mutación D: q2_b2b_lead_source no produce ninguna señal — depender de 
 test("mutación E: ninguna pregunta de nonprofit usa lenguaje de venta/compra (\"vender\", \"comprador\", \"cliente\", \"ingresos\")", () => {
   const banned = ["vender", "venta", "comprador", "cliente", "ingreso", "revenue"];
   for (const question of LOTE_D_QUESTIONS_V2.filter((q) => q.module === "nonprofit")) {
-    const visibleCopy = [question.prompt, question.helper, ...question.options.map((o) => o.label)].filter(Boolean).join(" ").toLowerCase();
+    const visibleCopy = [question.prompt, question.hint, ...question.options.map((o) => o.label)].filter(Boolean).join(" ").toLowerCase();
     for (const word of banned) {
       assert.ok(!visibleCopy.includes(word), `${question.id}: usa lenguaje comercial "${word}"`);
     }
@@ -211,9 +211,10 @@ test("C1 (fresh domain review, blocker corregido): la opción \"b2c\" de q2_cust
   const question = [...GOLDEN_QUESTIONS_V2, ...LOTE_A_QUESTIONS_V2].find((q) => q.id === "q2_customer_buyer")!;
   const b2c = question.options.find((o) => o.value === "b2c")!;
   assert.ok(!b2c.label.toLowerCase().includes("consumidor"), "el label de b2c no debería usar lenguaje de transacción comercial (\"consumidor final\")");
-  // CopyVariantV2 no admite override por opción (solo prompt/helper): la corrección fue al label BASE,
-  // universal para cualquier businessModel, en vez de ampliar el contrato sin necesidad (§4 del checkpoint C1).
-  assert.equal(question.variants?.length, 1, "no se añadió un mecanismo de variant por opción — la corrección fue al label base");
+  // En C1 CopyVariantV2 no admitía override por opción: la corrección fue al label BASE, universal para cualquier
+  // businessModel (§4 del checkpoint C1). DIAG-V3-08F añadió `optionLabels`, pero aquí la etiqueta universal sigue bastando.
+  assert.equal(question.variants?.length, 1, "la corrección sigue en el label base, sin variante de opción");
+  assert.equal(question.variants?.[0]?.optionLabels, undefined);
 });
 
 test("mutación H: ninguna pregunta de creator produce friction — audiencia concentrada en una plataforma NUNCA se interpreta automáticamente como friction=scale", () => {

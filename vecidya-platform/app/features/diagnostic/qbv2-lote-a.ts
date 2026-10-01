@@ -39,7 +39,7 @@ import { eqV2 } from "./qbv2-rules";
  * real (una parte del negocio local y otra que atiende más lejos de forma habitual), no dispersión
  * geográfica incidental. (3) `q2_process_systemization` gana un estado "parcial" que no fuerza
  * `true`/`false`: la opción no produce ninguna señal (§9 del checkpoint R2), y el prompt se acorta
- * moviendo los ejemplos al helper.
+ * moviendo los ejemplos a la pista (`hint`, antes `helper`).
  */
 export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
   {
@@ -48,7 +48,7 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     module: "core",
     type: "single",
     prompt: "¿En qué sector o tipo de actividad encaja mejor lo que haces?",
-    helper: "Elige la categoría más amplia que aplique; las siguientes preguntas ajustan los detalles.",
+    hint: "Elige la categoría más amplia que aplique; las siguientes preguntas ajustan los detalles.",
     purpose: ["anchor", "classification"],
     priority: "high",
     options: [
@@ -79,10 +79,16 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "classification",
     type: "single",
-    prompt: "¿Qué tan amplio es el alcance geográfico de tus clientes?",
-    helper: "Esto es sobre DÓNDE están tus clientes, no sobre si les vendes en línea o en persona (eso ya se preguntó por separado).",
+    // DIAG-V3-08F: la pista ya no remite a otra pregunta (el orden lo decide el planner); variantes para quien
+    // todavía no tiene clientes y para organizaciones.
+    prompt: "¿Hasta dónde llegan geográficamente tus clientes?",
+    hint: "Piensa en dónde están, no en si los atiendes en línea o en persona.",
     purpose: ["classification"],
     priority: "high",
+    variants: [
+      { target: { terminology: ["prelaunch"] }, prompt: "¿Dónde estarán principalmente las personas a las que quieres llegar?", hint: "Piensa en dónde están, no en si las atenderás en línea o en persona." },
+      { target: { terminology: ["nonprofit"] }, prompt: "¿Dónde están principalmente las personas a las que atiende tu organización?", hint: "Piensa en dónde están, no en si las atiendes en línea o en persona." },
+    ],
     options: [
       { value: "local", label: "Mi zona o ciudad", produces: [{ kind: "customerReach", value: "local", provenance: "explicit_declaration" }] },
       { value: "regional", label: "Varias ciudades o mi región, sin llegar a todo el país", produces: [{ kind: "customerReach", value: "regional", provenance: "explicit_declaration" }] },
@@ -90,7 +96,7 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "global", label: "Más de un país", produces: [{ kind: "customerReach", value: "global", provenance: "explicit_declaration" }] },
       {
         value: "mixed",
-        label: "Tengo dos alcances reales a la vez: una parte de mi negocio es local y otra atiende mercados más amplios de forma habitual (no un caso aislado)",
+        label: "Las dos cosas: una parte es local y otra llega más lejos de forma habitual, no como caso aislado",
         produces: [{ kind: "customerReach", value: "mixed", provenance: "explicit_declaration" }],
       },
     ],
@@ -101,7 +107,8 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "classification",
     type: "single",
-    prompt: "¿Quién es principalmente tu comprador?",
+    // DIAG-V3-08F: base sin "comprador" — también se pregunta antes del lanzamiento, cuando aún no hay compradores.
+    prompt: "¿A quién se dirige principalmente lo que ofreces?",
     purpose: ["classification"],
     priority: "high",
     // Copy variant por businessModel (DIAG-V3-08B.3 Lote D C1): "comprador" es lenguaje comercial que no
@@ -114,7 +121,8 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     // (el mecanismo actual solo cubre `prompt`/`helper`, §4 del checkpoint: "no ampliar el contrato sin
     // necesidad"), se corrigió el label BASE a un wording universal ("Personas individuales") que
     // funciona igual de bien para un negocio comercial que para una organización sin fines de lucro —
-    // sin necesitar un variant de opción en absoluto.
+    // sin necesitar un variant de opción en absoluto. (DIAG-V3-08F añadió `optionLabels` para casos donde una
+    // etiqueta neutral no basta; aquí sigue sin hacer falta.)
     variants: [{ target: { businessModel: "nonprofit" }, prompt: "¿Con quién se relaciona principalmente tu organización?" }],
     options: [
       { value: "b2c", label: "Personas individuales", produces: [{ kind: "customerBuyer", value: "b2c", provenance: "explicit_declaration" }] },
@@ -133,7 +141,7 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     module: "maturity",
     type: "single",
     prompt: "En las tareas que se repiten, ¿hay una forma definida de hacerlas o suelen depender de la memoria y el criterio de cada persona?",
-    helper: "Piensa en seguimiento, pedidos, consultas o tareas habituales. No depende del tamaño del equipo.",
+    hint: "Piensa en responder mensajes, registrar pedidos o dar seguimiento. No depende del tamaño del equipo.",
     purpose: ["maturity"],
     priority: "normal",
     // Encadenada a otra respuesta UNIVERSAL de este mismo lote (§67 answer applicability): solo tiene
@@ -149,21 +157,28 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unsure", label: "No lo había pensado de esa forma", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: {
+      understand: "Si las tareas habituales se hacen siempre de la misma forma o dependen de quién las haga.",
+      distinction: "Una forma definida existe aunque no esté escrita, si todos la siguen igual; la mezcla real es una opción válida.",
+      why: "Ayuda a distinguir una operación que crece con orden de una que depende del esfuerzo de cada persona.",
+    },
   },
   {
     id: "q2_capacity_signal",
     version: 1,
     module: "maturity",
     type: "multi",
-    prompt: "En los últimos meses, ¿cuál de estas describe lo que ha pasado con tu capacidad para atender la demanda? (elige todas las que apliquen)",
-    helper: "Piensa en los últimos 2-3 periodos, no en una sola semana buena o mala. Esto es evidencia ADICIONAL a la pregunta anterior sobre clientes/pedidos, no un sustituto: pueden coexistir demanda estable con capacidad que igual se amplió, o demanda creciente sin ninguna presión de capacidad todavía.",
+    // DIAG-V3-08F: la pista anterior explicaba el modelo interno (evidencia adicional a otra pregunta); ahora solo
+    // ayuda a responder.
+    prompt: "En los últimos meses, ¿qué ha pasado con tu capacidad para atender la demanda? Elige todas las que apliquen.",
+    hint: "Piensa en los últimos meses en conjunto, no en una semana buena o mala.",
     purpose: ["maturity"],
     priority: "normal",
     // Misma cadena que q2_demand_trend (hermana, mismo padre): solo aplica una vez que la operación ya es regular.
     appliesWhen: eqV2("q2_regularity", "regular"),
     options: [
-      { value: "waitlist_growing", label: "La lista de espera o el trabajo pendiente ha ido creciendo (no que ya esté lleno, sino que sigue aumentando)", produces: [{ kind: "capacityPressure", value: true, provenance: "observed_fact" }] },
-      { value: "expanded", label: "Contraté o expandí capacidad (más personas, más espacio, más horas) específicamente para cubrir más demanda", produces: [{ kind: "capacityExpansion", value: true, provenance: "observed_fact" }] },
+      { value: "waitlist_growing", label: "La lista de espera o el trabajo pendiente ha ido creciendo", produces: [{ kind: "capacityPressure", value: true, provenance: "observed_fact" }] },
+      { value: "expanded", label: "Amplié la capacidad (personas, espacio u horas) para atender más demanda", produces: [{ kind: "capacityExpansion", value: true, provenance: "observed_fact" }] },
       {
         value: "stable",
         label: "Ninguna de las anteriores: mi capacidad se ha mantenido estable",
@@ -176,5 +191,10 @@ export const LOTE_A_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No estoy seguro", kind: "unknown", exclusive: true },
     ],
     scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: {
+      understand: "Si en los últimos meses te ha faltado capacidad o la has tenido que ampliar.",
+      distinction: "Puedes marcar las dos primeras a la vez; elige «Ninguna» solo si la capacidad no cambió.",
+      why: "Junto con la evolución de la demanda, ayuda a distinguir una actividad estable de una que está creciendo.",
+    },
   },
 ] as const;

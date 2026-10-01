@@ -63,9 +63,9 @@ test("mutación J: ninguna pregunta menciona una herramienta/proveedor específi
   }
 });
 
-test("§45: sin jerga de marketing en el copy visible (prompt/label/helper) — funnel/CRM/attribution/nurture/pipeline", () => {
+test("§45: sin jerga de marketing en el copy visible (prompt/label/hint) — funnel/CRM/attribution/nurture/pipeline", () => {
   for (const question of LOTE_B_QUESTIONS_V2) {
-    const visibleCopy = [question.prompt, question.helper, ...question.options.map((o) => o.label)].filter(Boolean).join(" ").toLowerCase();
+    const visibleCopy = [question.prompt, question.hint, ...question.options.map((o) => o.label)].filter(Boolean).join(" ").toLowerCase();
     for (const jargon of ["funnel", "crm", "attribution", "nurture", "pipeline"]) {
       assert.ok(!visibleCopy.includes(jargon), `${question.id}: usa jerga de marketing "${jargon}" en copy visible`);
     }

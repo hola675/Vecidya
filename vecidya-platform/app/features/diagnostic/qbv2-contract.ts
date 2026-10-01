@@ -1,7 +1,8 @@
-import type { BusinessModel, EntityType, GrowthStage, NicheGroup, OperationalArchetype, PrimaryFriction, PrimaryGoal, QuestionVersion } from "./contracts";
+import type { BusinessModel, EntityType, GrowthStage, NicheGroup, OperationalArchetype, PrimaryFriction, PrimaryGoal } from "./contracts";
 import type { DimensionId } from "./types";
 import type { SignalProduction } from "./qbv2-signals";
 import type { RuleV2 } from "./qbv2-rules";
+import type { TerminologyProfileId } from "./qbv2-terminology";
 
 /**
  * Contrato de pregunta de DIAG-V3-08B.2 (Question Bank Architecture). Define la FÁBRICA — no las
@@ -137,18 +138,34 @@ export type ContradictionRole = { readonly type: "confirms"; readonly targetFiel
 // ── Copy variants (§25-28) ───────────────────────────────────────────────────
 
 /**
- * Nunca cambia `options`/`produces` bajo la misma `QuestionVersion` (§26) — solo `prompt`/`helper`.
+ * Nunca cambia `options`/`produces` bajo la misma `QuestionVersion` (§26) — solo wording.
  * Verificado por validador (§37). `businessModel` añadido en DIAG-V3-08B.3 Lote D C1: una pregunta de
  * fundación (p. ej. `q2_customer_buyer`) puede necesitar copy distinto para `businessModel: "nonprofit"`
  * sin que eso cambie el eje interno que mide (`customerBuyer: b2c|b2b|mixed` sigue siendo la señal
- * producida) — la variante es solo wording, nunca una taxonomía nueva. Metadata puramente declarativa,
- * como el resto de `CopyVariantTarget`: ningún renderer la consulta todavía (QBV2 sigue sin UI), así que
- * añadirla no rompe ningún selector existente.
+ * producida) — la variante es solo wording, nunca una taxonomía nueva.
+ *
+ * DIAG-V3-08F: `terminology` apunta a un perfil de lenguaje (`qbv2-terminology.ts`) y es el objetivo
+ * preferido; `optionLabels` reescribe la etiqueta VISIBLE de opciones existentes (por `value`), nunca su
+ * valor, tipo ni producción. Resuelve `renderQuestionV2` (`qbv2-copy.ts`): gana la primera variante que
+ * coincide, en orden de declaración.
  */
-export type CopyVariantTarget = { readonly archetype?: OperationalArchetype } | { readonly nicheGroup?: NicheGroup } | { readonly entityType?: EntityType } | { readonly businessModel?: BusinessModel };
-export type CopyVariantV2 = { readonly target: CopyVariantTarget; readonly prompt?: string; readonly helper?: string };
+export type CopyVariantTarget =
+  | { readonly archetype?: OperationalArchetype }
+  | { readonly nicheGroup?: NicheGroup }
+  | { readonly entityType?: EntityType }
+  | { readonly businessModel?: BusinessModel }
+  | { readonly terminology?: readonly TerminologyProfileId[] };
+export type CopyVariantV2 = { readonly target: CopyVariantTarget; readonly prompt?: string; readonly hint?: string; readonly optionLabels?: Readonly<Record<string, string>> };
 
 // ── Opción y pregunta (§4, §16-19) ───────────────────────────────────────────
+
+/**
+ * Versión semántica de una pregunta QBV2, con la misma regla que `QuestionVersion` de QBV1: sube cuando cambia
+ * qué se pregunta, qué significa una opción, qué opciones existen o cómo puntúa una respuesta; no sube por
+ * redacción. DIAG-V3-08F.1: `q2_reputation_flow` y `q2_ecommerce_traffic_sources` están en la versión 2 (opciones
+ * añadidas); el resto sigue en la 1. QBV1 conserva su propio tipo (solo versión 1).
+ */
+export type QuestionVersionV2 = 1 | 2;
 
 export type OptionKindV2 = "value" | "none" | "unknown" | "not_applicable";
 
@@ -164,10 +181,15 @@ export type OptionV2 = {
 
 type QuestionDefinitionV2Base = {
   readonly id: string;
-  readonly version: QuestionVersion;
+  readonly version: QuestionVersionV2;
   readonly module: ModuleId;
+  /** Copy canónico, neutral para todos los contextos donde la pregunta aplica (DIAG-V3-08F). */
   readonly prompt: string;
-  readonly helper?: string;
+  /**
+   * DIAG-V3-08F: pista breve visible junto a la pregunta, para responder sin abrir la ayuda. Una frase,
+   * ≤ 140 caracteres, sin referencias internas ni a otras preguntas, y nunca sugiere qué respuesta puntúa mejor.
+   */
+  readonly hint?: string;
   readonly purpose: readonly [QuestionPurpose, ...QuestionPurpose[]];
   readonly priority: QuestionPriority;
   /**
@@ -190,13 +212,17 @@ type QuestionDefinitionV2Base = {
 
 /**
  * DIAG-V3-08D.1: metadata interna para el futuro sistema de ayuda (sin UI ni citas todavía). Conserva la
- * intención de la pregunta para no redescubrirla en la fase de UI.
+ * intención de la pregunta para no redescubrirla en la fase de UI. DIAG-V3-08F: es la fuente del panel `?`
+ * — «¿Qué preguntamos?» (`understand`), «¿Cómo responder?» (`distinction`), «¿Por qué importa?» (`why`) —
+ * con el mismo vocabulario que la pregunta; nunca expone fórmulas ni qué respuesta puntúa mejor.
  */
 export type QuestionHelpIntent = {
   /** Qué intenta entender la pregunta. */
   readonly understand: string;
   /** Qué distinción debería considerar la persona al responder. */
   readonly distinction: string;
+  /** DIAG-V3-08F: por qué importa para el diagnóstico, sin revelar el efecto de cada respuesta. */
+  readonly why?: string;
   /** DIAG-V3-08E.3: intención de cada opción (por `value`) cuando la elección distingue intenciones, p. ej. `q2_goal`. */
   readonly options?: Readonly<Record<string, string>>;
 };

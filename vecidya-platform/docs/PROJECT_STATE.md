@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-10-01 (DIAG-V3-08E.1, 08E.2 y 08E.3 implementadas localmente, pendientes de revisión, sin commit ni deploy: banco 85, 22 módulos, bandas 18/20/24, gating por ciclo de vida, `q2_goal` con las 8 metas del motor y criterios de congelamiento cumplidos; ver `STATUS.md`, `ARCHITECTURE.md` y `TESTING.md`)**. Anterior: **2026-09-30 (DIAG-V3-08E cerrada en el commit local `d927f39`)**; previa: **2026-09-29 (DIAG-V3-08B.5 cerrada técnicamente, pendiente de aprobación: Contradictions & Confirmation V1 — registry determinista desde evidencia activa, material/soft, trigger-only, máximo 2, hard cap 18 e invalidación upstream; confirmations fixture-only, sin cambio de QBV1/QBV2 activo, sin deploy; ver detalle en `STATUS.md`, `ARCHITECTURE.md` y `TESTING.md`)**. Anterior: **2026-09-28 (DIAG-V3-08 cerrada técnicamente, pendiente de aprobación: analítica de eventos anónima del Diagnóstico; sin cambio de comportamiento del motor; sin deploy; ver detalle en `STATUS.md` y `ARCHITECTURE.md`)**. Anterior: **2026-09-27 (DIAG-V3-06 cerrada técnicamente, pendiente de aprobación: persistencia anónima del Diagnóstico; sin cambio de comportamiento del motor; sin deploy; ver detalle en `STATUS.md` y `ARCHITECTURE.md`)**.
+Última reconciliación: **2026-10-01 (DIAG-V3-08F.1 implementada localmente, pendiente de revisión, sin commit ni deploy: escalas de `q2_reputation_flow` y `q2_ecommerce_traffic_sources` cerradas y capa de lenguaje congelada)**. Anterior, mismo día: **(DIAG-V3-08F implementada localmente, pendiente de revisión, sin commit ni deploy: modelo de terminología, render determinista del copy, `hint`, ayuda «qué/cómo/por qué», auditoría de las 85 preguntas y contrato de lenguaje de resultados; motor congelado en el commit local `0bd6a73`; ver `STATUS.md`, `ARCHITECTURE.md` y `TESTING.md`)**. Anterior, mismo día: **(DIAG-V3-08E.1, 08E.2 y 08E.3 cerradas en el commit local `0bd6a73`, sin deploy: banco 85, 22 módulos, bandas 18/20/24, gating por ciclo de vida, `q2_goal` con las 8 metas del motor y criterios de congelamiento cumplidos; ver `STATUS.md`, `ARCHITECTURE.md` y `TESTING.md`)**. Anterior: **2026-09-30 (DIAG-V3-08E cerrada en el commit local `d927f39`)**; previa: **2026-09-29 (DIAG-V3-08B.5 cerrada técnicamente, pendiente de aprobación: Contradictions & Confirmation V1 — registry determinista desde evidencia activa, material/soft, trigger-only, máximo 2, hard cap 18 e invalidación upstream; confirmations fixture-only, sin cambio de QBV1/QBV2 activo, sin deploy; ver detalle en `STATUS.md`, `ARCHITECTURE.md` y `TESTING.md`)**. Anterior: **2026-09-28 (DIAG-V3-08 cerrada técnicamente, pendiente de aprobación: analítica de eventos anónima del Diagnóstico; sin cambio de comportamiento del motor; sin deploy; ver detalle en `STATUS.md` y `ARCHITECTURE.md`)**. Anterior: **2026-09-27 (DIAG-V3-06 cerrada técnicamente, pendiente de aprobación: persistencia anónima del Diagnóstico; sin cambio de comportamiento del motor; sin deploy; ver detalle en `STATUS.md` y `ARCHITECTURE.md`)**.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -148,23 +148,37 @@ Publicado (`0.5.6`/`0.5.7`): **anónimo, efímero, solo cliente, sin persistenci
 - `deriveSemanticFacts` traduce contexto, evidencia, scores, confianza, restricciones y prioridades a hechos estructurados con procedencia, sin prosa ni recálculo. El motor queda congelado desde `a96ce99`.
 - No se usa en rutas públicas, UI, persistencia ni analítica.
 
-#### DIAG-V3-08E.1 — completitud final de evidencia (solo local, pendiente de revisión)
+#### DIAG-V3-08E.1 — completitud final de evidencia (solo local, commit `0bd6a73`)
 
 - Fuera de pre-lanzamiento, toda dimensión material aplicable tiene una pregunta directa observable (auditoría de 1.296 rutas). Banco 85, base 18/hard cap 20.
 - El conflicto de presupuesto (prerrequisitos sin verificar al alcanzar 20) se resolvió en DIAG-V3-08E.2.
 
-#### DIAG-V3-08E.2 — completitud de ruta y estabilización final (solo local, pendiente de revisión)
+#### DIAG-V3-08E.2 — completitud de ruta y estabilización final (solo local, commit `0bd6a73`)
 
 - Ruta base ≤ 18, extensión material 19–20, reserva de completitud 21–24 (hard cap 24); solo evidencia material pasa de la base. Pre-lanzamiento sin preguntas operativas.
 - 0 huecos materiales causados solo por presupuesto en 1.440 rutas simuladas; mediana 18, p90 21, máx 24. Banco 85, 22 módulos.
 - Garantía de cierre: una dimensión aplicable sin score significa no aplicable, incertidumbre legítima pre-lanzamiento, respuesta "no sé" o evidencia no material; nunca una pregunta material disponible que el presupuesto impidió hacer.
 - El hallazgo de `q2_goal` (solo 3 de 8 metas declarables) se resolvió en DIAG-V3-08E.3.
 
-#### DIAG-V3-08E.3 — taxonomía de metas y congelamiento final (solo local, pendiente de revisión)
+#### DIAG-V3-08E.3 — taxonomía de metas y congelamiento final (solo local, commit `0bd6a73`)
 
 - `q2_goal`: `be_found`, `opportunities`, `explain`, `trust`, `stop_losing`, `organize`, `automate`, `measure` + `unsure`. Toda meta resuelve como contexto con camino de evidencia; ninguna crea score ni capacidad.
 - 3.240 rutas (etapa × entrega + nonprofit × 9 respuestas de meta × fricción × 2 políticas): 0 huecos materiales solo por presupuesto, 0 `unobservable_in_context`; mín 15, mediana 18, p75 19, p90 21, p95 21, máx 24; ≥ 21 en 12,5 %, 23–24 en 1,0 %; pre-lanzamiento mediana 16, máx 18.
-- Incertidumbre legítima: pre-lanzamiento, respuestas "no sé" y fricción sin segunda pregunta disponible; los `insufficient_evidence` restantes son prerrequisitos no materiales. Motor listo para congelar tras aprobación.
+- Incertidumbre legítima: pre-lanzamiento, respuestas "no sé" y fricción sin segunda pregunta disponible; los `insufficient_evidence` restantes son prerrequisitos no materiales. Motor congelado en el commit local `0bd6a73`.
+
+#### DIAG-V3-08F — lenguaje, terminología y semántica de preguntas (solo local, pendiente de revisión)
+
+- Cada pregunta tiene un copy base neutral y, solo donde el sentido lo exige, variantes por perfil de lenguaje (13 perfiles: neutral, pre-lanzamiento, 9 archetypes, clínico y nonprofit). «Pacientes» solo en salud con práctica con licencia; una organización habla en plural («nos encuentran»); antes del lanzamiento no se habla de clientes existentes.
+- Las variantes cambian solo texto visible (pregunta, pista, etiquetas): valores, tipos, señales, reglas y `ANSWER_SEMANTICS` son idénticos al commit congelado (huella verificada por test).
+- Auditoría de las 85: keep 28, refinamiento de copy 31, variante de contexto 13, refinamiento de opciones 7, desalineación semántica 1 (`q2_ecommerce_traffic_sources`: «principalmente» frente a la lectura por número de fuentes), ayuda necesaria 5. Ayuda requerida en 18, recomendada en 25, no necesaria en 42.
+- Dos hallazgos no se corregían con copy (`DIAG-V3-08F-ANSWER-SCALE-001`); resueltos en DIAG-V3-08F.1.
+- Contrato para 08G: tres certezas (confirmado / señales / sin información), ocho categorías de resultado, frases prohibidas por tono y continuidad de etapa (un interés que no avanza nunca se describe como clientes perdidos). Banco 85, 22 módulos, sin cambio de versión.
+
+#### DIAG-V3-08F.1 — cierre de escalas de respuesta y congelación del lenguaje (solo local, pendiente de revisión)
+
+- `q2_reputation_flow` (versión 2): «con cierta regularidad» (established), **«de vez en cuando, pero no de forma constante» (`occasional`, partial, nuevo)**, «muy rara vez o nunca» (weak) y «no lo sé». El resultado puede distinguir prueba social irregular de prueba social ausente.
+- `q2_ecommerce_traffic_sources` (versión 2): redes, búsquedas, anuncios, recomendaciones y, nuevas, plataformas de venta de terceros, correos o boletines, visitas directas y «otra» (fuente conocida, distinta de «no sé»). Nombrar fuentes apoya Medición sin probarla; en Descubrimiento correo y visitas directas son demanda de quien ya conoce el negocio y no cuentan como diversidad.
+- Sin cambios fuera de las dos preguntas: rutas, scores, confianza, prioridades y hechos idénticos en las 12 personas golden y en 3.240 rutas generadas. La capa de lenguaje queda congelada.
 
 #### Matriz de reutilización QBV1 → QBV2 (DIAG-V3-08B.2 §68)
 

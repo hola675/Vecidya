@@ -35,7 +35,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "local",
     type: "single",
-    prompt: "Cuando alguien nuevo en tu zona te encuentra por primera vez, ¿cómo suele pasar más seguido?",
+    prompt: "Cuando alguien de tu zona te descubre por primera vez, ¿cómo suele ocurrir con más frecuencia?",
     purpose: ["diagnostic"],
     priority: "normal",
     // Extendida a retail/hospitality en DIAG-V3-08B.3 Lote C (§9 del checkpoint de Lote C): descubrimiento
@@ -47,34 +47,36 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     // DIAG-V3-08E.2: presupone clientes reales confirmados (la cola material corre con el contexto resuelto).
     materialAppliesWhen: andV2(archetypeIncludesAny(["local_service", "appointments"]), eqV2("q2_has_customers", "yes")),
     options: [
-      { value: "maps_search", label: "Buscándome en Google o Maps" },
-      { value: "referral", label: "Alguien se lo recomendó" },
-      { value: "social", label: "Redes sociales" },
+      { value: "maps_search", label: "Buscando en Google o en mapas" },
+      { value: "referral", label: "Por recomendación de alguien" },
+      { value: "social", label: "Por redes sociales" },
       { value: "walk_by", label: "Pasando cerca, de forma directa" },
-      { value: "paid_ads", label: "Un anuncio pagado" },
+      { value: "paid_ads", label: "Por un anuncio pagado" },
       { value: "unknown", label: "No estoy seguro", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["presencia", "alcance"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
-    helpIntent: { understand: "Por qué vía llega por primera vez la gente nueva de tu zona.", distinction: "Elige la vía más frecuente, no la que te gustaría que fuera." },
+    helpIntent: { understand: "Por qué vía te descubre por primera vez la gente nueva de tu zona.", distinction: "Elige la vía más frecuente, no la que te gustaría que fuera.", why: "Muestra si te encuentran cuando te buscan o sobre todo por casualidad o recomendación." },
   },
   {
     id: "q2_local_presence_consistency",
     version: 1,
     module: "local",
     type: "single",
-    prompt: "Si alguien te busca en línea ahora mismo, ¿encuentra tu dirección, horario y forma de contactarte, todo correcto y consistente?",
+    prompt: "Si alguien te busca en internet ahora mismo, ¿encuentra tu dirección, horario y forma de contacto correctos y coincidentes en todos los sitios?",
     purpose: ["diagnostic"],
     priority: "normal",
     // Extendida a retail/hospitality (Lote C, mismo motivo que q2_local_discovery).
     appliesWhen: archetypeIncludesAny(["local", "retail", "hospitality"]),
+    // DIAG-V3-08F: también se pregunta antes de abrir; ahí "no encuentra nada" es que aún no está publicado.
+    variants: [{ target: { terminology: ["prelaunch"] }, prompt: "Si alguien buscara hoy tu negocio en internet, ¿encontraría ya tu dirección, horario y forma de contacto correctos?", optionLabels: { no: "No, todavía no está publicado" } }],
     options: [
-      { value: "consistent", label: "Sí, todo está correcto y consistente" },
+      { value: "consistent", label: "Sí, todo está correcto y coincide" },
       { value: "partial", label: "Una parte está desactualizada o incompleta" },
       { value: "no", label: "No, es difícil encontrar esa información" },
       { value: "unknown", label: "No lo he revisado", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["presencia", "contacto"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
-    helpIntent: { understand: "Si los datos básicos para encontrarte y contactarte están correctos en línea.", distinction: "Basta con que un dato esté desactualizado en un sitio visible para que no sea consistente." },
+    helpIntent: { understand: "Si los datos básicos para encontrarte y contactarte están correctos en internet.", distinction: "Basta con que un dato esté desactualizado en un sitio visible para que no coincida.", why: "Un dato equivocado puede hacer que alguien que ya te buscó no llegue." },
   },
   {
     id: "q2_local_repeat_customers",
@@ -88,6 +90,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     // Extendida a retail/hospitality (Lote C, §17: repeat purchase/repeat visits es el MISMO concepto que
     // repeat customers — reutilizar en vez de crear q2_retail_repeat_purchase/q2_hospitality_repeat_visits).
     appliesWhen: andV2(archetypeIncludesAny(["local", "retail", "hospitality"]), eqV2("q2_has_customers", "yes")),
+    variants: [{ target: { terminology: ["nonprofit"] }, prompt: "De las personas que ya participaron o recibieron apoyo de tu organización, ¿vuelven con cierta frecuencia?" }],
     options: [
       { value: "yes_regular", label: "Sí, con cierta regularidad" },
       { value: "rarely", label: "Pocas veces" },
@@ -99,7 +102,10 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
   // ── COMPARTIDA: local + appointments + professional (§23) ───────────────────
   {
     id: "q2_reputation_flow",
-    version: 1,
+    // DIAG-V3-08F.1: versión 2 — se añade `occasional`. Con solo dos niveles, quien recibe reseñas o
+    // recomendaciones algunos meses sí y otros no tenía que elegir entre «con cierta regularidad» y «muy rara vez
+    // o nunca»; ningún wording de esas dos opciones podía representarlo sin cambiar su significado.
+    version: 2,
     module: "reputation",
     type: "single",
     prompt: "¿Qué tan seguido te llegan reseñas o recomendaciones nuevas de clientes?",
@@ -112,14 +118,25 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     // evidencia material (confianza declarada o prerrequisito de una restricción): no tenían otra observación.
     // DIAG-V3-08E.2: solo con clientes reales confirmados; en pre-lanzamiento Confianza no es aplicable.
     materialAppliesWhen: eqV2("q2_has_customers", "yes"),
-    variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Qué tan seguido te llegan reseñas o recomendaciones nuevas de pacientes?" }],
+    // DIAG-V3-08F: "pacientes" solo en práctica clínica (antes, todo health_wellness).
+    variants: [
+      { target: { terminology: ["clinical"] }, prompt: "¿Qué tan seguido te llegan reseñas o recomendaciones nuevas de pacientes?" },
+      { target: { terminology: ["nonprofit"] }, prompt: "¿Qué tan seguido te llegan opiniones o recomendaciones nuevas de personas que conocen tu labor?" },
+      { target: { terminology: ["creator"] }, prompt: "¿Qué tan seguido te llegan reseñas, testimonios o recomendaciones nuevas de quienes te compran o te siguen?" },
+    ],
     options: [
       { value: "steady", label: "Me llegan con cierta regularidad" },
+      { value: "occasional", label: "De vez en cuando, pero no de forma constante" },
       { value: "rare", label: "Muy rara vez o nunca" },
       { value: "unknown", label: "No lo sé, no lo reviso seguido", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["confianza"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
-    helpIntent: { understand: "Si llegan señales nuevas de clientes satisfechos que otros puedan ver.", distinction: "Piensa en reseñas o recomendaciones recientes, no en la buena opinión general que tengan de ti." },
+    hint: "Piensa en los últimos meses: reseñas en internet, testimonios o recomendaciones que te llegan.",
+    helpIntent: {
+      understand: "Si llegan opiniones nuevas de personas satisfechas que otros puedan ver o escuchar.",
+      distinction: "«Con cierta regularidad» es casi todos los meses; «de vez en cuando», algunos meses sí y otros no. Cuenta lo reciente, no la buena opinión general que tengan de ti.",
+      why: "Quien no te conoce suele decidir por lo que otros dicen de ti.",
+    },
   },
 
   // ── LOCAL_SERVICE ────────────────────────────────────────────────────────────
@@ -128,16 +145,17 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "local_service",
     type: "single",
-    prompt: "¿Tienes claro qué tan lejos te conviene ir a atender un servicio, o aceptas cualquier dirección que te contacte?",
-    helper: "Esto es sobre DÓNDE puedes prestar el servicio, no sobre de dónde son tus clientes (eso ya se preguntó por separado).",
+    // DIAG-V3-08F: también se pregunta antes del lanzamiento; sin presuponer servicios ya prestados ni remitir a otra pregunta.
+    prompt: "¿Tienes definida la zona hasta donde te conviene desplazarte para atender un servicio?",
+    hint: "Se trata de hasta dónde te desplazas tú, no de dónde está tu público.",
     purpose: ["diagnostic"],
     priority: "normal",
     appliesWhen: archetypeIncludes("local_service"),
     options: [
-      { value: "defined_area", label: "Tengo un área definida y la sigo" },
-      { value: "flexible_but_aware", label: "Soy flexible, pero sé cuándo no me conviene" },
-      { value: "no_limit", label: "Acepto cualquier lugar sin pensarlo" },
-      { value: "unknown", label: "No lo he definido", kind: "unknown" },
+      { value: "defined_area", label: "Sí, tengo una zona definida y la respeto" },
+      { value: "flexible_but_aware", label: "Soy flexible, pero sé cuándo no me conviene ir" },
+      { value: "no_limit", label: "No, voy a cualquier lugar sin evaluarlo" },
+      { value: "unknown", label: "No estoy seguro", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["alcance"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
   },
@@ -146,14 +164,14 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "local_service",
     type: "single",
-    prompt: "Cuando entra una consulta nueva pidiendo tu servicio, ¿qué suele pasar?",
+    prompt: "Cuando alguien te contacta por primera vez pidiendo tu servicio, ¿qué suele pasar?",
     purpose: ["diagnostic", "friction"],
     priority: "high",
     appliesWhen: andV2(archetypeIncludes("local_service"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "fast", label: "Respondo rápido, casi siempre el mismo día" },
       { value: "delayed", label: "Respondo, pero puede tardar más de un día" },
-      { value: "some_lost", label: "Algunas se me pierden o tardo demasiado en contestar", produces: [{ kind: "friction", value: "follow_up", provenance: "derived_fact" }] },
+      { value: "some_lost", label: "Algunos contactos se me pierden o tardo demasiado en contestar", produces: [{ kind: "friction", value: "follow_up", provenance: "derived_fact" }] },
       { value: "unknown", label: "No lo he medido", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["seguimiento", "contacto"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
@@ -200,19 +218,19 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "local_service",
     type: "single",
-    prompt: "De los clientes que ya atendiste, ¿sueles recibir referidos o que te vuelvan a llamar para otro trabajo?",
+    prompt: "De los clientes que ya atendiste, ¿te recomiendan con otras personas o te vuelven a llamar para otro trabajo?",
     purpose: ["diagnostic"],
     priority: "normal",
     appliesWhen: andV2(archetypeIncludes("local_service"), eqV2("q2_has_customers", "yes")),
     options: [
       { value: "both", label: "Sí, ambas cosas con cierta regularidad" },
-      { value: "referrals_only", label: "Sobre todo referidos" },
-      { value: "repeat_only", label: "Sobre todo que me vuelvan a llamar" },
+      { value: "referrals_only", label: "Sobre todo me recomiendan" },
+      { value: "repeat_only", label: "Sobre todo me vuelven a llamar" },
       { value: "rarely", label: "Casi ninguna de las dos" },
       { value: "unknown", label: "No lo he seguido de cerca", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["alcance", "confianza"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
-    helpIntent: { understand: "Si los clientes atendidos vuelven a llamar o recomiendan el servicio.", distinction: "Piensa en lo que pasa con la mayoría de los clientes, no en los más fieles." },
+    helpIntent: { understand: "Si los clientes atendidos vuelven a llamar o recomiendan el servicio.", distinction: "Piensa en lo que pasa con la mayoría de los clientes, no en los más fieles.", why: "Que vuelvan o recomienden muestra si la relación continúa después del trabajo." },
   },
 
   // ── APPOINTMENTS ─────────────────────────────────────────────────────────────
@@ -221,28 +239,30 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "appointments",
     type: "single",
-    prompt: "¿Cómo se agenda la mayoría de tus citas hoy?",
+    prompt: "¿Cómo se agenda hoy la mayoría de las citas?",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
     appliesWhen: andV2(archetypeIncludes("appointments"), notEqV2("q2_has_customers", "no")),
-    variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Cómo se agenda la mayoría de las citas de tus pacientes hoy?" }],
+    variants: [{ target: { terminology: ["clinical"] }, prompt: "¿Cómo agendan hoy sus citas la mayoría de tus pacientes?" }],
+    // DIAG-V3-08F (opciones solapadas corregidas): "lo agendamos manualmente" y "por llamada o mensaje" describían a
+    // menudo lo mismo con estados distintos (partial/weak). La diferencia real es si existe una agenda central.
     options: [
-      { value: "self_book_online", label: "La persona agenda sola en línea" },
-      { value: "staff_manual", label: "Mi equipo o yo lo agendamos manualmente" },
-      { value: "call_message", label: "Por llamada o mensaje, sin un sistema" },
+      { value: "self_book_online", label: "La persona reserva sola en línea" },
+      { value: "staff_manual", label: "Mi equipo o yo las anotamos a mano en una agenda o sistema" },
+      { value: "call_message", label: "Se acuerdan por llamada o mensaje, sin una agenda central" },
       // Hecho operativo fuerte y no ambiguo (mismo criterio que el "often" de q2_appointments_noshow): sin ningún proceso, no una preferencia entre canales.
-      { value: "informal", label: "No hay un proceso definido, se acomoda como se puede", produces: [{ kind: "friction", value: "operations", provenance: "derived_fact" }] },
+      { value: "informal", label: "No hay una forma definida; se acomodan como se puede", produces: [{ kind: "friction", value: "operations", provenance: "derived_fact" }] },
       { value: "unknown", label: "No estoy seguro", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["contacto"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
-    helpIntent: { understand: "Cómo se agenda hoy la mayoría de las citas.", distinction: "Elige la vía por la que entra la mayoría, aunque existan otras." },
+    helpIntent: { understand: "Cómo se agenda hoy la mayoría de las citas.", distinction: "Elige la vía por la que entra la mayoría, aunque existan otras; lo que distingue las opciones es si hay una agenda central.", why: "Reservar con facilidad influye en cuántas personas interesadas terminan con una cita." },
   },
   {
     id: "q2_appointments_booking_friction",
     version: 1,
     module: "appointments",
     type: "single",
-    prompt: "¿Qué tan seguido cuesta trabajo encontrar un horario que funcione, yendo y viniendo con la persona antes de confirmar?",
+    prompt: "¿Qué tan seguido cuesta encontrar un horario que le sirva a la persona, con varios mensajes o llamadas antes de confirmar?",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
     appliesWhen: andV2(archetypeIncludes("appointments"), notEqV2("q2_has_customers", "no")),
@@ -262,7 +282,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     purpose: ["diagnostic", "friction"],
     priority: "high",
     appliesWhen: andV2(archetypeIncludes("appointments"), notEqV2("q2_has_customers", "no")),
-    variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Envías confirmaciones o recordatorios a tus pacientes antes de la cita?" }],
+    variants: [{ target: { terminology: ["clinical"] }, prompt: "¿Envías confirmaciones o recordatorios a tus pacientes antes de la cita?" }],
     options: [
       { value: "automatic", label: "Sí, de forma automática" },
       { value: "manual", label: "Sí, pero yo o mi equipo lo hacemos a mano cada vez" },
@@ -275,29 +295,36 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "appointments",
     type: "single",
-    prompt: "De las personas que preguntan por una cita, ¿qué proporción termina realmente agendando?",
+    prompt: "De las personas que preguntan por una cita, ¿cuántas terminan agendándola?",
+    hint: "Una estimación aproximada basta; no hace falta un dato exacto.",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
     appliesWhen: andV2(archetypeIncludes("appointments"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "most", label: "La mayoría" },
-      { value: "about_half", label: "Como la mitad" },
+      { value: "about_half", label: "Más o menos la mitad" },
       { value: "few", label: "Pocas", produces: [{ kind: "friction", value: "conversion", provenance: "derived_fact" }] },
-      { value: "unknown", label: "No lo he medido", kind: "unknown" },
+      { value: "unknown", label: "No lo he observado", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["contacto"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: {
+      understand: "Qué parte de quienes preguntan por una cita termina agendándola.",
+      distinction: "Cuenta personas que preguntaron de verdad, no visitas a tu perfil ni seguidores.",
+      why: "Muestra si el interés que ya llega se convierte en citas.",
+    },
   },
   {
     id: "q2_appointments_rebooking",
     version: 1,
     module: "appointments",
     type: "single",
-    prompt: "Cuando el servicio normalmente requiere que la persona regrese (seguimiento, mantenimiento, control, etc.), ¿sueles ayudarla a agendar la siguiente cita antes de que se vaya?",
-    helper: "Evidencia para retención/postventa (DIAG-V3-08B0-FRICTION-RETENTION-001), sin decidir todavía si necesita su propia categoría.",
+    // DIAG-V3-08F: la pista visible anterior era una nota interna (`DIAG-V3-08B0-FRICTION-RETENTION-001`, ya resuelta).
+    prompt: "Cuando el servicio requiere que la persona vuelva (seguimiento, mantenimiento o control), ¿le ayudas a agendar la siguiente cita antes de que se vaya?",
+    hint: "Si tu servicio normalmente no requiere que la persona vuelva, elige «No aplica».",
     purpose: ["diagnostic"],
     priority: "normal",
     appliesWhen: andV2(archetypeIncludes("appointments"), notEqV2("q2_has_customers", "no")),
-    variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "Cuando el tratamiento normalmente requiere que el paciente regrese, ¿sueles ayudarlo a agendar la siguiente cita antes de que se vaya?" }],
+    variants: [{ target: { terminology: ["clinical"] }, prompt: "Cuando el tratamiento requiere que el paciente vuelva, ¿le ayudas a agendar la siguiente cita antes de que se vaya?" }],
     options: [
       { value: "yes_proactive", label: "Sí, lo propongo antes de que se vaya" },
       { value: "reactive", label: "Solo si la persona lo pide" },
@@ -314,7 +341,9 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     version: 1,
     module: "professional",
     type: "single",
-    prompt: "¿Qué tan visible es tu experiencia o credenciales para alguien que te está evaluando por primera vez (casos, testimonios, credenciales, contenido que explique lo que haces)?",
+    // DIAG-V3-08F: también es evidencia material para comercio, B2B, creator y organizaciones; la base ya no
+    // presupone una profesión ("experiencia o credenciales") y mide lo mismo: prueba visible de confianza.
+    prompt: "Para alguien que te evalúa por primera vez, ¿qué tan fácil es ver pruebas de que puede confiar en ti (casos, testimonios, opiniones, credenciales o resultados)?",
     purpose: ["diagnostic"],
     priority: "normal",
     appliesWhen: andV2(archetypeIncludes("professional"), notEqV2("q2_has_customers", "no")),
@@ -322,24 +351,29 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     // professional solo entra como evidencia material (confianza declarada o prerrequisito de una restricción).
     // DIAG-V3-08E.2: solo con clientes reales confirmados; en pre-lanzamiento Confianza no es aplicable.
     materialAppliesWhen: eqV2("q2_has_customers", "yes"),
+    variants: [
+      { target: { terminology: ["nonprofit"] }, prompt: "Para alguien que conoce tu organización por primera vez, ¿qué tan fácil es ver pruebas de su labor (resultados, testimonios, informes o reconocimientos)?" },
+      { target: { terminology: ["ecommerce", "retail"] }, prompt: "Para alguien que te evalúa por primera vez, ¿qué tan fácil es ver pruebas de que puede confiar en ti (opiniones de otros compradores, reseñas o casos reales)?" },
+    ],
     options: [
-      { value: "clearly_visible", label: "Está claro y es fácil de encontrar" },
-      { value: "partial", label: "Existe, pero está disperso o incompleto" },
-      { value: "not_really", label: "Casi no hay nada de esto visible" },
+      { value: "clearly_visible", label: "Es fácil verlas y encontrarlas" },
+      { value: "partial", label: "Existen, pero están dispersas o incompletas" },
+      { value: "not_really", label: "Casi no hay nada de esto a la vista" },
       { value: "unknown", label: "No lo he revisado desde fuera", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["confianza", "claridad"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
-    helpIntent: { understand: "Si alguien que no te conoce encuentra pruebas de tu experiencia antes de decidir.", distinction: "Cuenta lo que se ve desde fuera sin preguntarte, no lo que podrías mostrar si te lo piden." },
+    helpIntent: { understand: "Si alguien que no te conoce encuentra pruebas para confiar antes de decidir.", distinction: "Cuenta lo que se ve desde fuera sin preguntarte, no lo que podrías mostrar si te lo piden.", why: "Quien no te conoce decide con lo que puede ver por su cuenta." },
   },
   {
     id: "q2_professional_intake_flow",
     version: 1,
     module: "professional",
     type: "single",
-    prompt: "Cuando alguien muestra interés en trabajar contigo, ¿qué pasa antes de convertirse en cliente?",
+    prompt: "Cuando alguien muestra interés en trabajar contigo, ¿qué pasa antes de que se convierta en cliente?",
     purpose: ["diagnostic", "classification"],
     priority: "normal",
     appliesWhen: andV2(archetypeIncludes("professional"), notEqV2("q2_has_customers", "no")),
+    variants: [{ target: { terminology: ["clinical"] }, prompt: "Cuando alguien muestra interés en atenderse contigo, ¿qué pasa antes de que se convierta en paciente?" }],
     options: [
       { value: "defined_consult", label: "Tengo un paso definido, como una consulta o llamada inicial" },
       { value: "ad_hoc", label: "Varía según el caso, sin un paso fijo" },
@@ -347,26 +381,29 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo había pensado de esa forma", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["claridad"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
-    helpIntent: { understand: "Qué pasa entre el primer interés y que alguien se vuelva cliente.", distinction: "Describe lo que ocurre en la mayoría de los casos, no el proceso ideal." },
+    helpIntent: { understand: "Qué pasa entre el primer interés y el inicio del trabajo.", distinction: "Describe lo que ocurre en la mayoría de los casos, no el proceso ideal.", why: "Un primer paso claro ayuda a que el interés se convierta en trabajo." },
   },
   {
     id: "q2_professional_referral_dependency",
     version: 1,
     module: "professional",
     type: "single",
-    prompt: "¿Qué tan seguido llegan nuevos clientes por referidos, comparado con otras formas de encontrarte?",
-    helper: "Ni mucho ni poco referido es automáticamente bueno o malo: esto es solo un hecho sobre cómo llegan tus clientes hoy.",
+    // DIAG-V3-08F: la pista anterior afirmaba que ninguna respuesta es mejor o peor, en contradicción con la lectura
+    // de dependencia; la pista neutral pide describir lo que ocurre hoy.
+    prompt: "¿Cuántos de tus clientes nuevos llegan por recomendación, comparado con otras vías?",
+    hint: "Responde según lo que ocurre hoy, no según lo que te gustaría.",
     purpose: ["diagnostic"],
     priority: "normal",
     appliesWhen: andV2(archetypeIncludes("professional"), notEqV2("q2_has_customers", "no")),
+    variants: [{ target: { terminology: ["clinical"] }, prompt: "¿Cuántos de tus pacientes nuevos llegan por recomendación, comparado con otras vías?" }],
     options: [
-      { value: "mostly_referrals", label: "Casi todos llegan por referidos" },
-      { value: "mixed", label: "Una mezcla real de referidos y otras formas" },
-      { value: "mostly_other", label: "Casi todos llegan por otras formas, pocos referidos" },
+      { value: "mostly_referrals", label: "Casi todos llegan por recomendación" },
+      { value: "mixed", label: "Una mezcla real de recomendaciones y otras vías" },
+      { value: "mostly_other", label: "La mayoría llega por otras vías; pocos por recomendación" },
       { value: "unknown", label: "No lo he seguido de cerca", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["alcance"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
-    helpIntent: { understand: "Qué tanto dependen los clientes nuevos de recomendaciones personales.", distinction: "Compara los referidos con todas las demás formas en que te encuentran, no solo con una." },
+    helpIntent: { understand: "Qué tanto dependen los clientes nuevos de recomendaciones personales.", distinction: "Compara las recomendaciones con todas las demás vías por las que te encuentran, no solo con una.", why: "Muestra de qué depende hoy que lleguen clientes nuevos." },
   },
   {
     id: "q2_professional_followup_after_consult",

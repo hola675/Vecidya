@@ -82,7 +82,7 @@ test("QBV2 arquitectura: el módulo `confirmation` tiene rango objetivo 0-2 (nun
 });
 
 test("QBV2 arquitectura: ninguna variante de copy cambia `options`/produces bajo la misma versión (garantía estructural del tipo, §26)", () => {
-  // CopyVariantV2 solo puede llevar `prompt`/`helper` (ver qbv2-contract.ts) — no hay forma de que un
+  // CopyVariantV2 solo puede llevar `prompt`/`hint`/`optionLabels` (ver qbv2-contract.ts) — no hay forma de que un
   // variant exprese `options` en su tipo; esta prueba confirma que el golden set no intenta rodear eso
   // con una propiedad adicional no tipada.
   for (const question of GOLDEN_QUESTIONS_V2) {
@@ -191,7 +191,7 @@ test("mutación F / §43-49: una pregunta que lee y escribe el mismo campo de co
 // denylist es representativa de categorías reales (agendamiento, ecommerce, delivery, CRM/comunicación,
 // sitio web), no la definición exhaustiva de "vendor neutrality" — el mecanismo real es la disciplina de
 // escribir capability/outcome en vez de nombre de marca, verificada aquí como red de seguridad.
-test("mutación G: ningún nombre de herramienta/plataforma/proveedor específico aparece en el copy visible (prompt/helper/label) de TODO el banco — verificación explícita, no una omisión", () => {
+test("mutación G: ningún nombre de herramienta/plataforma/proveedor específico aparece en el copy visible (prompt/hint/label) de TODO el banco — verificación explícita, no una omisión", () => {
   const VENDOR_DENYLIST = [
     "shopify",
     "woocommerce",
@@ -214,7 +214,7 @@ test("mutación G: ningún nombre de herramienta/plataforma/proveedor específic
   ];
   const offenders: string[] = [];
   for (const question of QUESTION_BANK_V2) {
-    const visibleCopy = [question.prompt, question.helper, ...question.options.map((option) => option.label)]
+    const visibleCopy = [question.prompt, question.hint, ...question.options.map((option) => option.label)]
       .filter((text): text is string => Boolean(text))
       .join(" ")
       .toLowerCase();

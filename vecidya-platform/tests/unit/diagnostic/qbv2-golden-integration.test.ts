@@ -113,7 +113,7 @@ test("golden D-G: cambiar la respuesta previa retira el contexto, la especializa
 
 test("golden H: un copy variant cambia el wording pero no la identidad ni la semántica de la pregunta", () => {
   const question = GOLDEN_QUESTIONS_V2.find((q) => q.id === "q2_appointments_noshow")!;
-  const variant = question.variants!.find((v) => "nicheGroup" in v.target && v.target.nicheGroup === "health_wellness")!;
+  const variant = question.variants!.find((v) => "terminology" in v.target && v.target.terminology?.includes("clinical"))!;
   assert.notEqual(variant.prompt, question.prompt, "el variant debe cambiar el texto");
   assert.equal(question.options.length, question.options.length); // identidad de opciones intacta (mismo array de referencia)
   assert.ok(!("options" in variant) && !("produces" in variant), "el variant nunca redefine options/produces");

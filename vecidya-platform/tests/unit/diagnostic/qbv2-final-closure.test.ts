@@ -108,9 +108,9 @@ test("mutations A-L: idea safety, variants, hints, reachability, friction, hybri
   // A/B/C: project/prelaunch copy and mature evidence are not leaked; health wording is variant-gated.
   const idea = resolveEligibleQuestionsV2({ q2_entity: "project", q2_has_customers: "no", q2_goal: "measure" }, productionQuestions);
   assert.deepEqual(idea.eligibleQuestionIds.filter((id) => /reputation|repeat|noshow|cart|measurement|handoff|pipeline/i.test(id)), []);
-  const projectCopy = productionQuestions.filter((q) => q.module === "startup").flatMap((q) => [q.prompt, q.helper, ...q.options.map((o) => o.label)]).join(" ").toLowerCase();
+  const projectCopy = productionQuestions.filter((q) => q.module === "startup").flatMap((q) => [q.prompt, q.hint, ...q.options.map((o) => o.label)]).join(" ").toLowerCase();
   assert.ok(!projectCopy.includes("requiere una empresa") && !projectCopy.includes("exige una empresa"));
-  assert.ok(GOLDEN_QUESTIONS_V2.find((q) => q.id === "q2_appointments_noshow")!.variants?.some((variant) => "nicheGroup" in variant.target));
+  assert.ok(GOLDEN_QUESTIONS_V2.find((q) => q.id === "q2_appointments_noshow")!.variants?.some((variant) => "terminology" in variant.target && variant.target.terminology?.includes("clinical")));
   // D/E/F/G: hints are not rules; all production questions are reachable in representative routes; unknown/N-A are bounded.
   assert.equal(NICHE_REGISTRY.some((entry) => entry.archetypeHints.includes("startup" as never)), false);
   assert.equal(productionQuestions.filter((q) => q.options.some((o) => o.kind === "unknown")).length, 64);

@@ -59,6 +59,7 @@ export {
   type QuestionDefinitionV2,
   type QuestionPriority,
   type QuestionPurpose,
+  type QuestionVersionV2,
   type ScoringReadiness,
   type SingleQuestionDefinitionV2,
 } from "./qbv2-contract";
@@ -200,6 +201,9 @@ export { analyzeCoverage, generateCoverageMatrix, mappingForQuestion, type Cover
 export { deriveContextualEvidence, scoreContextualDimensions, validateAnswerSemantics, ANSWER_SEMANTICS, CAPABILITY_CONTRIBUTION, CAPABILITY_STATES, CONFIDENCE_MODEL, CONTEXT_ONLY_QUESTION_IDS, SCORING_MODEL, type AnswerSemantics, type CapabilityState, type ContextualEvidence, type ContextualScoringContext, type ContextualScoringResult, type ContextualDimensionResult, type DimensionApplicability, type DimensionConfidence, type DimensionExplainability, type ContextualConfidenceLevel, type ScoreBasis } from "./qbv2-contextual-scoring";
 export { deriveConstraintsAndPriorities, CONSTRAINT_KINDS, DEPENDENCY_RELATIONS, DIMENSION_CONSTRAINT, DIMENSION_DEPENDENCIES, FRICTION_RELEVANCE, GOAL_RELEVANCE, SEVERITY_BANDS, type ConstraintKind, type ConstraintPriorityResult, type ConstraintSeverity, type DependencyRelation, type DiagnosticConstraint, type DiagnosticPriority, type DimensionDependency, type PriorityCertainty, type PriorityReasonCode } from "./qbv2-priorities";
 export { deriveSemanticFacts, DIMENSION_READING_CODES, FACT_IMPORTANCE, PRIORITY_CODES, SEMANTIC_FACT_TYPES, type ContextFact, type EvidenceGapKind, type FactCertainty, type FactSignal, type SemanticDiagnosticFacts, type SemanticFact, type SemanticFactsInput, type SemanticFactType } from "./qbv2-semantic-facts";
+export { resolveTerm, resolveTerminologyProfile, TERM_ROLES, TERMINOLOGY, TERMINOLOGY_PROFILE_IDS, type TermRole, type TerminologyProfile, type TerminologyProfileId } from "./qbv2-terminology";
+export { HINT_MAX_LENGTH, renderQuestionV2, validateQuestionCopyV2, visibleCopyOf, type CopyContext, type RenderedOptionV2, type RenderedQuestionV2 } from "./qbv2-copy";
+export { AUDIT_CLASSES, canClaimStage, COPY_MODES, DIMENSION_RESULT_CONCEPT, factSubjectStages, HARSH_RESULT_PHRASES, HELP_LEVELS, LIFECYCLE_ORDER, LIVE_ONLY_STAGES, QUESTION_LANGUAGE, RESULT_CATEGORIES, RESULT_CERTAINTY_FRAMES, RESULT_CERTAINTY_LEVELS, RESULT_VOCABULARY, resultCategory, resultCertainty, resultSubject, STAGE_TERM, SUBJECT_STAGES, type AuditClass, type CopyMode, type HelpLevel, type QuestionLanguageEntry, type ResultCategory, type ResultCertainty, type SubjectStage } from "./qbv2-language";
 
 /**
  * Ejecuta el diagnóstico completo sobre un conjunto de respuestas.

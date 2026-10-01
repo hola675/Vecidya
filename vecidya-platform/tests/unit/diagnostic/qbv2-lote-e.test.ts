@@ -139,7 +139,7 @@ test("un solo operator SÍ puede recibir process dependency/manual work/follow-u
 test("mutación G: ninguna pregunta de Lote E fuerza lenguaje de venta/compra visible (\"vender\", \"comprador\", \"cliente\" como término obligatorio) — usa \"resultado real\"/\"pendientes\" genéricos", () => {
   const banned = ["comprador", "vender"];
   for (const question of LOTE_E_QUESTIONS_V2) {
-    const visibleCopy = [question.prompt, question.helper, ...question.options.map((o) => o.label)].filter(Boolean).join(" ").toLowerCase();
+    const visibleCopy = [question.prompt, question.hint, ...question.options.map((o) => o.label)].filter(Boolean).join(" ").toLowerCase();
     for (const word of banned) assert.ok(!visibleCopy.includes(word), `${question.id}: usa "${word}"`);
   }
 });

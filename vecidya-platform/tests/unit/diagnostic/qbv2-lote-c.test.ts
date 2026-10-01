@@ -51,7 +51,7 @@ test("mutación J / §32: ninguna pregunta menciona una herramienta/proveedor es
 
 test("§33: sin jerga de marketing visible (ROAS, CAC, AOV, funnel, cart recovery automation)", () => {
   for (const question of LOTE_C_QUESTIONS_V2) {
-    const visibleCopy = [question.prompt, question.helper, ...question.options.map((o) => o.label)].filter(Boolean).join(" ").toLowerCase();
+    const visibleCopy = [question.prompt, question.hint, ...question.options.map((o) => o.label)].filter(Boolean).join(" ").toLowerCase();
     for (const jargon of ["roas", "cac", "aov", "funnel", "automation", "conversion funnel"]) {
       assert.ok(!visibleCopy.includes(jargon), `${question.id}: usa jerga "${jargon}"`);
     }

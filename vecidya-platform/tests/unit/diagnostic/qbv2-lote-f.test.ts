@@ -33,7 +33,7 @@ test("mutación A: idea/prelaunch nunca recibe preguntas maduras de reputación,
 });
 
 test("mutación B/C/D: project copy no exige empresa, y niche hints no activan preguntas", () => {
-  const visible = LOTE_F_QUESTIONS_V2.flatMap((question) => [question.prompt, question.helper, ...question.options.map((option) => option.label)]).join(" ").toLowerCase();
+  const visible = LOTE_F_QUESTIONS_V2.flatMap((question) => [question.prompt, question.hint, ...question.options.map((option) => option.label)]).join(" ").toLowerCase();
   assert.ok(!visible.includes("requiere una empresa") && !visible.includes("exige una empresa"));
   const withoutNiche = resolveEligibleQuestionsV2({ q2_entity: "project", q2_has_customers: "no" }, QUESTION_BANK_V2);
   const withNiche = resolveEligibleQuestionsV2({ q2_entity: "project", q2_has_customers: "no", q2_niche: "mobile_detailing" }, QUESTION_BANK_V2);

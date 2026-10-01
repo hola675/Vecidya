@@ -1,6 +1,24 @@
 # Changelog
 
-## 2026-10-01 — DIAG-V3-08E.3 Goal Taxonomy Alignment & Final Engine Freeze (solo local, sin deploy, sin commit)
+## 2026-10-01 — DIAG-V3-08F.1 Answer Scale Closure & Language Freeze (solo local, sin deploy, sin commit)
+
+- `q2_reputation_flow` pasa a la versión 2 con el nivel intermedio `occasional` («De vez en cuando, pero no de forma constante», partial); `steady` y `rare` conservan su significado y estado.
+- `q2_ecommerce_traffic_sources` pasa a la versión 2: `marketplace`, `email`, `direct` y `other` (distinta de `unknown`). Nombrar una fuente apoya Medición sin probarla; correo y visitas directas no cuentan como diversidad de Descubrimiento.
+- `QuestionVersionV2 = 1 | 2` en el contrato QBV2 (QBV1 conserva solo la versión 1). Pista y ayuda de ambas preguntas actualizadas.
+- Sin cambios de ruta, scoring, prioridades ni hechos en las 12 personas golden ni en 3.240 rutas generadas; huella fuera de las dos preguntas idéntica a `0bd6a73`. `DIAG-V3-08F-ANSWER-SCALE-001` resuelta.
+- Capa de lenguaje congelada. `qbv2-answer-scale.test.ts` 9/9; unitarias 767/767. Sin cambio de versión.
+
+## 2026-10-01 — DIAG-V3-08F Language, Terminology & Question Semantics Audit (solo local, sin deploy, sin commit)
+
+- Motor congelado antes de la auditoría: 08E.1 + 08E.2 + 08E.3 en el commit local `0bd6a73` (`feat(diagnostic): finalize adaptive diagnostic engine`), sin push ni deploy.
+- Modelo de terminología (`qbv2-terminology.ts`): 13 perfiles de lenguaje × 10 roles de ciclo de vida, con términos a evitar por perfil. «Pacientes» pasa de todo `health_wellness` (incluía gimnasios y spas) a la práctica clínica con licencia.
+- Render determinista (`qbv2-copy.ts`) con variantes por perfil (`terminology`) y etiquetas visibles por opción (`optionLabels`); `helper` pasa a `hint` (pista breve, sin referencias internas); `helpIntent.why` completa la ayuda «qué/cómo/por qué».
+- Auditoría de las 85 preguntas (`qbv2-language.ts`): keep 28, copy 31, variante de contexto 13, opciones 7, desalineación semántica 1, ayuda 5. Corregidos: sujeto de `q2_entity`, `q2_ecommerce_traffic_sources` («principalmente» frente a la lectura por número de fuentes), opciones solapadas de `q2_appointments_booking_method` y `q2_measurement_outcome_tracking`, opciones de `q2_presence_offer_clarity` incompatibles con su variante nonprofit, una nota interna visible en `q2_appointments_rebooking`, una pista que contradecía la semántica en `q2_professional_referral_dependency`, lenguaje comercial en preguntas de organizaciones y presupuestos de clientes antes del lanzamiento.
+- Valores, tipos, señales, reglas y `ANSWER_SEMANTICS` sin cambios (huella idéntica a `0bd6a73`). Dos refinamientos de escala diferidos: `DIAG-V3-08F-ANSWER-SCALE-001`.
+- Contrato de lenguaje de resultados para 08G (sin prosa final): tres certezas, ocho categorías, frases prohibidas por tono y continuidad de etapa pregunta → evidencia → resultado.
+- Banco 85, 22 módulos. Sin UI, persistencia, schema, PDF, analytics ni cambio de versión. `qbv2-language.test.ts` 13/13; unitarias 758/758.
+
+## 2026-10-01 — DIAG-V3-08E.3 Goal Taxonomy Alignment & Final Engine Freeze (solo local, sin deploy; commit `0bd6a73`)
 
 - `q2_goal` expone las 8 metas del motor: `be_found`, `opportunities`, `explain`, `trust`, `stop_losing`, `organize`, `automate`, `measure` + `unsure`; copy basado en QBV1 e intención por opción en `helpIntent`. Banco 85 y 22 módulos sin cambios.
 - La necesidad material de una meta apunta a su primera dimensión relevante aplicable; seguimiento genérico y conversión genérica describen dónde aplican (negocio con clientes) para que `stop_losing` tenga camino de evidencia.
@@ -9,7 +27,7 @@
 - Simulación: 3.240 rutas (etapa × entrega + nonprofit × 9 respuestas de meta × fricción × 2 políticas): 0 huecos materiales solo por presupuesto, 0 `unobservable_in_context`; mín 15, mediana 18, p75 19, p90 21, p95 21, máx 24; ≥ 21 en 12,5 %, 23–24 en 1,0 %; pre-lanzamiento mediana 16, máx 18.
 - Sin UI, persistencia, schema, PDF, analytics ni cambio de versión.
 
-## 2026-10-01 — DIAG-V3-08E.2 Route Completeness & Final Engine Stabilization (solo local, sin deploy, sin commit)
+## 2026-10-01 — DIAG-V3-08E.2 Route Completeness & Final Engine Stabilization (solo local, sin deploy; commit `0bd6a73`)
 
 - Presupuesto: ruta base 18 (sin cambios), extensión material 19–20, reserva de completitud 21–24; hard cap 20 → 24. Solo evidencia material pasa de la base.
 - Ciclo de vida: 41 preguntas operativas excluidas en pre-lanzamiento declarado (`notEqV2("q2_has_customers", "no")`); los alcances materiales exigen clientes confirmados.
@@ -20,7 +38,7 @@
 - Hallazgo: `q2_goal` solo exponía 3 de las 8 metas del motor (resuelto en DIAG-V3-08E.3).
 - Sin UI, persistencia, schema, PDF, analytics ni cambio de versión.
 
-## 2026-09-30 — DIAG-V3-08E.1 Final Evidence Completion (solo local, sin deploy, sin commit)
+## 2026-09-30 — DIAG-V3-08E.1 Final Evidence Completion (solo local, sin deploy; commit `0bd6a73`)
 
 - DIAG-V3-08E cerrada en el commit local `d927f39` (sin push ni deploy).
 - Auditoría parametrizada de 1.296 rutas alcanzables: Clarity y Digital Foundation eran huecos reales del banco; Trust y Readiness, huecos de enrutamiento.

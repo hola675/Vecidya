@@ -59,11 +59,20 @@ export type AnswerSemantics = {
   readonly selectionCount?: { readonly dimension: DigitalDimensionId; readonly states: readonly CapabilityState[] };
 };
 
-const SOURCE_KNOWN = { measurement_optimization: { social: "partial", search: "partial", ads: "partial", referral: "partial", unknown: "missing" } } as const;
+/**
+ * DIAG-V3-08F.1: toda fuente nombrada (incluida `other`) es una fuente conocida para Medición (apoyo parcial,
+ * nunca prueba de atribución); solo `unknown` es su ausencia. En Descubrimiento, correo y visitas directas son
+ * demanda de quien ya conoce el negocio: describen el contexto (`constraint`) y no cuentan como vía de
+ * descubrimiento, así que no inflan la diversidad de `selectionCount`.
+ */
+const SOURCE_KNOWN = {
+  measurement_optimization: { social: "partial", search: "partial", ads: "partial", referral: "partial", marketplace: "partial", email: "partial", direct: "partial", other: "partial", unknown: "missing" },
+  discovery: { email: "constraint", direct: "constraint" },
+} as const;
 
 export const ANSWER_SEMANTICS: Readonly<Record<string, AnswerSemantics>> = {
   // Discovery
-  q2_ecommerce_traffic_sources: { values: { social: "partial", search: "partial", ads: "partial", referral: "partial" }, byDimension: SOURCE_KNOWN, selectionCount: { dimension: "discovery", states: ["dependency", "partial", "partial", "established"] } },
+  q2_ecommerce_traffic_sources: { values: { social: "partial", search: "partial", ads: "partial", referral: "partial", marketplace: "partial", email: "partial", direct: "partial", other: "partial" }, byDimension: SOURCE_KNOWN, selectionCount: { dimension: "discovery", states: ["dependency", "partial", "partial", "established"] } },
   q2_local_foot_traffic: { values: { high: "dependency", low: "constraint" } },
   q2_local_discovery: { values: { maps_search: "established", social: "established", referral: "partial", paid_ads: "partial", walk_by: "weak" }, byDimension: { measurement_optimization: { maps_search: "partial", social: "partial", referral: "partial", paid_ads: "partial", walk_by: "partial", unknown: "weak" } } },
   q2_retail_promotions: { values: { yes_regular: "established", rarely: "weak", no: "missing" } },
@@ -79,7 +88,8 @@ export const ANSWER_SEMANTICS: Readonly<Record<string, AnswerSemantics>> = {
   // An own base outranks rented profiles: a platform-only presence exists but rests on a channel the business does not control.
   q2_presence_digital_base: { values: { own_updated: "strong", outdated: "partial", third_party_only: "dependency", nothing: "missing" } },
   // Trust & reputation
-  q2_reputation_flow: { values: { steady: "established", rare: "weak" } },
+  // DIAG-V3-08F.1: `occasional` = flujo irregular de prueba social (partial); `steady`/`rare` conservan su estado.
+  q2_reputation_flow: { values: { steady: "established", occasional: "partial", rare: "weak" } },
   q2_professional_authority_signals: { values: { clearly_visible: "strong", partial: "partial", not_really: "missing" } },
   // Clarity & conversion
   q2_retail_product_visibility: { values: { yes_clear: "strong", partially: "partial", no: "missing" } },
