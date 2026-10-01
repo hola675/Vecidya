@@ -69,7 +69,11 @@ export default [
   route("app/services", "routes/services-app.tsx"),
   route("vecindario/:slug", "routes/public-business-profile.tsx"),
   route("__health/db", "routes/health-db.ts"),
-  // DIAG-V3-09: vista previa local del resultado (12 personas golden). Solo con `react-router dev`: build y typegen
-  // cargan este archivo con NODE_ENV=production, así que nunca entra en el bundle publicado.
-  ...(isDevelopmentServer ? [route("__dev/diagnostico/resultado/:personaId?", "routes/dev-diagnostic-result.tsx")] : []),
+  // DIAG-V3-09/10B: vista previa local del resultado (12 personas golden) e integración privada del diagnóstico
+  // adaptativo V3. Solo con `react-router dev`: build y typegen cargan este archivo con NODE_ENV=production, así que
+  // nunca entran en el bundle publicado.
+  ...(isDevelopmentServer ? [
+    route("__dev/diagnostico/resultado/:personaId?", "routes/dev-diagnostic-result.tsx"),
+    route("__dev/diagnostico/v3", "routes/dev-diagnostic-v3.tsx"),
+  ] : []),
 ] satisfies RouteConfig;

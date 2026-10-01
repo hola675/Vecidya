@@ -184,7 +184,7 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     ],
     scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
     helpIntent: {
-      understand: "Lo principal que la persona más quiere mejorar ahora mismo; orienta qué revisar primero y no suma puntos.",
+      understand: "Lo principal que quieres mejorar ahora mismo.",
       distinction: "Si varias aplican, elige la que más quieres mejorar ahora, no todo lo que te gustaría tener.",
       options: {
         be_found: "Que más personas adecuadas puedan encontrarte.",
@@ -197,7 +197,7 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
         measure: "Entender qué funciona y decidir mejor a partir de resultados.",
         unsure: "Aún no hay una prioridad clara; el diagnóstico no inventa una.",
       },
-      why: "Orienta qué revisar primero; no cambia la evaluación de lo que ya funciona.",
+      why: "Tu objetivo nos ayuda a orientar el diagnóstico hacia las áreas más relevantes para lo que quieres mejorar. No determina por sí solo si un área está bien o mal.",
     },
   },
   {

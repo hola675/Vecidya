@@ -82,9 +82,10 @@ test("every dimension-mapped answer value has a declared semantic state; context
   assert.deepEqual(deriveContextualEvidence(contextAnswers), []);
   assert.ok(scoreContextualDimensions({ answers: contextAnswers, context: {}, evidence: [] }).dimensions.every((item) => item.score === null));
   const derived = deriveContextualEvidence({ q2_local_presence_consistency: "consistent", q2_creator_channel_concentration: "well_diversified", q2_b2b_sales_cycle: "almost_always" });
+  // Canonical bank order (b2b precedes creator in the bank), not the key order of the input.
   assert.deepEqual(derived.map((item) => `${item.questionId}:${item.dimension}:${item.state}`), [
     "q2_local_presence_consistency:digital_foundation:strong", "q2_local_presence_consistency:discovery:strong",
-    "q2_creator_channel_concentration:discovery:strong", "q2_b2b_sales_cycle:relationship_recurrence:constraint",
+    "q2_b2b_sales_cycle:relationship_recurrence:constraint", "q2_creator_channel_concentration:discovery:strong",
   ]);
 });
 

@@ -26,6 +26,7 @@ const scripts = [
   "diagnostic-persistence-check.mjs",
   "diagnostic-save-resume-check.mjs",
   "diagnostic-analytics-check.mjs",
+  "diagnostic-v3-flow-check.mjs",
   "join-contact-experience-check.mjs",
   "about-experience-check.mjs",
   "learn-experience-check.mjs",

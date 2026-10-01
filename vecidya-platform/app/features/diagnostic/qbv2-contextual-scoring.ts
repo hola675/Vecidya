@@ -200,12 +200,16 @@ function stateForAnswer(question: QuestionDefinitionV2, dimension: DigitalDimens
   return states.includes("not_applicable") ? "not_applicable" : states.includes("constraint") ? "constraint" : "uncertainty";
 }
 
+/**
+ * Evidence follows the canonical bank order, never the key order of `answers`: insertion order is interaction
+ * history (back/edit, restore), not evidence. Every downstream list (explainability, fact signals and provenance,
+ * narrative topics) inherits this order, so equal active answers always read the same (DIAG-V3-ANSWER-ORDER-01).
+ */
 export function deriveContextualEvidence(answers: AnswersV2, bank: QuestionBankV2 = QUESTION_BANK_V2): readonly ContextualEvidence[] {
-  const byId = new Map(bank.map((question) => [question.id, question]));
   const entries: ContextualEvidence[] = [];
-  for (const [questionId, answer] of Object.entries(answers)) {
-    const question = byId.get(questionId); const mapping = EVIDENCE_MAPPING[questionId];
-    if (!question || !mapping || CONTEXT_ONLY_QUESTION_IDS.has(questionId)) continue;
+  for (const question of bank) {
+    const questionId = question.id; const answer = answers[questionId]; const mapping = EVIDENCE_MAPPING[questionId];
+    if (answer === undefined || !mapping || CONTEXT_ONLY_QUESTION_IDS.has(questionId)) continue;
     const values = selectedValues(answer); if (values.length === 0) continue;
     for (const dimension of mapping.dimensions) {
       const directness = EVIDENCE_DIRECTNESS[questionId]?.[dimension] ?? mapping.semanticRole;
