@@ -32,7 +32,7 @@ Antes de implementar se leen `PROJECT_STATE.md`, `STATUS.md` y la documentación
 
 ## Documentos canónicos
 
-El proyecto mantiene un **máximo de 20 documentos Markdown activos**; hoy son **15** (recuento verificado en REL-004A). No se crea un documento por fase, auditoría o hallazgo: se consolida en el que ya tiene esa responsabilidad. OPS-001 es una excepción autorizada por el usuario porque requiere una matriz operativa autónoma antes de implementar integración. Crear otro documento exige un vacío real que no pueda resolverse actualizando otro, y autorización del usuario.
+El proyecto mantiene un **máximo de 20 documentos Markdown activos**; hoy son **16** (recuento verificado en REL-004A; `PRODUCT.md` se sumó el 2026-10-01 con autorización del usuario). No se crea un documento por fase, auditoría o hallazgo: se consolida en el que ya tiene esa responsabilidad. OPS-001 es una excepción autorizada por el usuario porque requiere una matriz operativa autónoma antes de implementar integración. Crear otro documento exige un vacío real que no pueda resolverse actualizando otro, y autorización del usuario.
 
 > **Precedente (REL-004A):** `docs/UX-003-APP-ADMIN-AUDIT.md` se creó como informe de una sola fase y entró en el release `0.4.1` sin figurar en esta tabla. En lugar de promoverlo a documento canónico se consolidó su contenido único en `ROADMAP.md` (fases UX-003 pendientes) y `STATUS.md` (`ADMIN-SCALE-001`, `ADMIN-A11Y-001`) y se retiró del árbol; sigue recuperable desde `41986a4`. La regla se mantiene: una auditoría de fase no se conserva como documento permanente.
 
@@ -53,6 +53,7 @@ El proyecto mantiene un **máximo de 20 documentos Markdown activos**; hoy son *
 | `docs/CHANGELOG.md` | Historia relevante ya realizada |
 | `docs/business/VECIDYA_PRODUCT_CATALOG.md` | Matriz comercial de productos, niveles y consumos |
 | `docs/OPS-001-GHL-PILOT-FOUNDATION.md` | Fundación operativa y contractual del piloto HighLevel |
+| `vecidya-platform/PRODUCT.md` | Verdad de producto para el trabajo de diseño (usuarios, propósito, posicionamiento, voz, evidencia disponible, accesibilidad); lo lee la skill `impeccable`. No registra estado de implementación |
 
 ## Vocabulario de estados
 

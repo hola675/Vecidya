@@ -11,7 +11,7 @@
 - Do not introduce fictitious commercial data, create a CRM that duplicates GHL, or import Legacy architecture.
 - Do not assume authorization to associate a business with a third-party brand (for example SURA) because a name appears in text.
 - Require session, membership, and permission checks for every organization-scoped resource.
-- The Markdown ceiling is 20 canonical documents (currently 15; list in `GOVERNANCE.md`). Do not create phase, audit, ADR, or report files; consolidate into the existing document that owns the topic.
+- The Markdown ceiling is 20 canonical documents (currently 16; list in `GOVERNANCE.md`). Do not create phase, audit, ADR, or report files; consolidate into the existing document that owns the topic.
 
 ## Scope
 

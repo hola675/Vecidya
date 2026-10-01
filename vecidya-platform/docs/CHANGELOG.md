@@ -1,6 +1,20 @@
 # Changelog
 
-## 2026-10-01 — DIAG-V3-08G Natural Narrative & Result Interpretation (solo local, sin deploy, sin commit)
+## 2026-10-01 — PRODUCT.md (solo documentación, sin commit)
+
+- Nuevo documento canónico `vecidya-platform/PRODUCT.md` (16 de 20), autorizado por el usuario: verdad de producto para el trabajo de diseño con la skill `impeccable` (usuarios, propósito, posicionamiento, contexto de uso, límites, voz, evidencia disponible y ausencias que no se fabrican, principios y accesibilidad). Confirmados por el usuario: mercado (Latinoamérica hispana), posicionamiento (Vecindario + diagnóstico honesto + licencias Cuadra/Barrio/Ciudad, sin CRM paralelo a GHL) y estándar WCAG 2.2 AA. No registra estado de implementación: prevalecen `STATUS.md` y `PROJECT_STATE.md`.
+- Se instaló localmente el motor de `impeccable` 0.1.6 (fuera del repositorio, SHA-256 verificado); la descarga con `curl` fallaba por `CRYPT_E_REVOCATION_OFFLINE` de Schannel.
+- Detector de `impeccable` sobre DIAG-V3-09: 3 avisos `side-tab` en el bloque `dr-*` (bordes laterales gruesos de la restricción principal y de la ayuda) corregidos con fondos de tokens existentes (`--surface-warm`, `--surface-soft`) y una regla de 1 px; 0 avisos restantes en el bloque. Los 12 avisos restantes de `app.css` son previos y quedan fuera de alcance.
+
+## 2026-10-01 — DIAG-V3-09 Result Experience & UI (solo local, sin deploy, sin commit)
+
+- 08G cerrada en el commit local `4bfc6c9` (`feat(diagnostic): add deterministic result narrative`); la capa de narrativa queda congelada.
+- Nueva experiencia de resultado en `app/components/diagnostic-result/`: resumen ejecutivo sin puntaje global, restricción principal y prioridades en el orden del dominio, fortalezas confirmadas frente a señales, áreas para fortalecer, señales cruzadas, las 8 áreas como registro con porcentaje + estado + confianza (lecturas preliminares rayadas), estados sin lectura sin `0%`, evidencia legible plegable, ayuda contextual, incertidumbres y reserva «Cómo se evaluó». Consume solo el `DiagnosticNarrative`.
+- Vista previa local `/__dev/diagnostico/resultado/:personaId?` con las 12 golden (solo `react-router dev`; excluida del build). Sin integración pública: `/diagnostico` sigue con QBV1.
+- `result-ui.test.ts` 16/16 (render real con `react-dom/server`; el cargador de pruebas compila `.tsx` con el transformador Oxc de Vite, sin dependencias nuevas). Unitarias 797/797. QA visual de las 12 golden en 375/768/1280 px y contenido extremo sin desbordes. Sin cambio de motor, lenguaje, narrativa ni versión.
+- ROADMAP: por instrucción del usuario, DIAG-V3-09 pasa a ser la experiencia de resultado y el frontend adaptativo se renumera como DIAG-V3-10.
+
+## 2026-10-01 — DIAG-V3-08G Natural Narrative & Result Interpretation (solo local, sin deploy; commit `4bfc6c9`)
 
 - 08F + 08F.1 cerradas en el commit local `da24dee` (`feat(diagnostic): finalize language and answer semantics`); capa de lenguaje congelada.
 - Nueva capa `qbv2-narrative.ts` + `qbv2-narrative-phrases.ts`: resultado estructurado y determinista (resumen ejecutivo, estado actual, fortalezas, debilidades/parciales, restricción principal, prioridades 08D con su porqué, contradicciones, incertidumbres, 8 dimensiones y siguiente foco) con procedencia por bloque.

@@ -1,5 +1,8 @@
 import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
+// Este archivo se evalúa en Node; la configuración de tipos de la app no incluye los tipos de Node.
+const isDevelopmentServer = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.NODE_ENV === "development";
+
 export default [
   index("routes/home.tsx"),
   route("licencias", "routes/licenses.tsx"),
@@ -66,4 +69,7 @@ export default [
   route("app/services", "routes/services-app.tsx"),
   route("vecindario/:slug", "routes/public-business-profile.tsx"),
   route("__health/db", "routes/health-db.ts"),
+  // DIAG-V3-09: vista previa local del resultado (12 personas golden). Solo con `react-router dev`: build y typegen
+  // cargan este archivo con NODE_ENV=production, así que nunca entra en el bundle publicado.
+  ...(isDevelopmentServer ? [route("__dev/diagnostico/resultado/:personaId?", "routes/dev-diagnostic-result.tsx")] : []),
 ] satisfies RouteConfig;

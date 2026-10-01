@@ -57,5 +57,6 @@ No hay script `test` global: `pnpm run test:unit` ejecuta las unitarias del moto
 | Historia relevante | [docs/CHANGELOG.md](docs/CHANGELOG.md) |
 | Catálogo comercial de productos | [docs/business/VECIDYA_PRODUCT_CATALOG.md](docs/business/VECIDYA_PRODUCT_CATALOG.md) |
 | Fundación documental del piloto GHL | [docs/OPS-001-GHL-PILOT-FOUNDATION.md](docs/OPS-001-GHL-PILOT-FOUNDATION.md) |
+| Verdad de producto para diseño (usuarios, posicionamiento, voz, accesibilidad) | [PRODUCT.md](PRODUCT.md) |
 
 Reglas para agentes: [../AGENTS.md](../AGENTS.md).
