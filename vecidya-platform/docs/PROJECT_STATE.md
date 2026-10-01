@@ -1,6 +1,6 @@
 # VECIDYA — Estado del proyecto
 
-Última reconciliación: **2026-09-30 (DIAG-V3-08D cerrada y aprobada en el commit local `bfe97fb`; DIAG-V3-08D.1 Targeted Evidence Enrichment implementada localmente, pendiente de revisión, sin commit ni deploy: banco 83, hard cap 20 con slots 19–20 solo para evidencia material; ver `STATUS.md`, `ARCHITECTURE.md` y `TESTING.md`)**. Anterior: **2026-09-29 (DIAG-V3-08B.5 cerrada técnicamente, pendiente de aprobación: Contradictions & Confirmation V1 — registry determinista desde evidencia activa, material/soft, trigger-only, máximo 2, hard cap 18 e invalidación upstream; confirmations fixture-only, sin cambio de QBV1/QBV2 activo, sin deploy; ver detalle en `STATUS.md`, `ARCHITECTURE.md` y `TESTING.md`)**. Anterior: **2026-09-28 (DIAG-V3-08 cerrada técnicamente, pendiente de aprobación: analítica de eventos anónima del Diagnóstico; sin cambio de comportamiento del motor; sin deploy; ver detalle en `STATUS.md` y `ARCHITECTURE.md`)**. Anterior: **2026-09-27 (DIAG-V3-06 cerrada técnicamente, pendiente de aprobación: persistencia anónima del Diagnóstico; sin cambio de comportamiento del motor; sin deploy; ver detalle en `STATUS.md` y `ARCHITECTURE.md`)**.
+Última reconciliación: **2026-09-30 (DIAG-V3-08D.1 cerrada en el commit local `a96ce99`, motor diagnóstico congelado; DIAG-V3-08E Semantic Diagnostic Facts implementada como capa interna, pendiente de revisión, sin commit ni deploy; ver `STATUS.md`, `ARCHITECTURE.md` y `TESTING.md`)**. Anterior: **2026-09-29 (DIAG-V3-08B.5 cerrada técnicamente, pendiente de aprobación: Contradictions & Confirmation V1 — registry determinista desde evidencia activa, material/soft, trigger-only, máximo 2, hard cap 18 e invalidación upstream; confirmations fixture-only, sin cambio de QBV1/QBV2 activo, sin deploy; ver detalle en `STATUS.md`, `ARCHITECTURE.md` y `TESTING.md`)**. Anterior: **2026-09-28 (DIAG-V3-08 cerrada técnicamente, pendiente de aprobación: analítica de eventos anónima del Diagnóstico; sin cambio de comportamiento del motor; sin deploy; ver detalle en `STATUS.md` y `ARCHITECTURE.md`)**. Anterior: **2026-09-27 (DIAG-V3-06 cerrada técnicamente, pendiente de aprobación: persistencia anónima del Diagnóstico; sin cambio de comportamiento del motor; sin deploy; ver detalle en `STATUS.md` y `ARCHITECTURE.md`)**.
 
 Este documento es el snapshot técnico completo. El estado corto y la deuda están en [STATUS.md](STATUS.md); entornos y publicación en [ENVIRONMENTS.md](ENVIRONMENTS.md); rutas y módulos en [STRUCTURE.md](STRUCTURE.md); pruebas en [TESTING.md](TESTING.md). Niveles de evidencia: [GOVERNANCE.md](GOVERNANCE.md).
 
@@ -138,10 +138,15 @@ Publicado (`0.5.6`/`0.5.7`): **anónimo, efímero, solo cliente, sin persistenci
 - `deriveConstraintsAndPriorities` lee el resultado del scoring sin mutarlo y devuelve restricciones con evidencia y hasta tres prioridades. Goal/friction/etapa ordenan; no alteran capacidad. `null` se convierte en gap de verificación solo cuando la dimensión es relevante.
 - Golden 12: 1 primaria con evidencia, 9 `verify_first` y 2 sin restricciones relevantes. No se usa en rutas públicas, UI, persistencia ni analítica.
 
-#### DIAG-V3-08D.1 — enriquecimiento dirigido de evidencia (solo local, pendiente de revisión)
+#### DIAG-V3-08D.1 — enriquecimiento dirigido de evidencia (solo local, cerrada; commit `a96ce99`)
 
 - El planner busca evidencia directa para la dimensión de la fricción/meta declarada y para prerrequisitos desconocidos de restricciones relevantes, sin desplazar la ruta base (cap 18) y con hard cap 20. Banco 83 (+3 preguntas justificadas), `materialAppliesWhen` y `helpIntent`.
 - Golden 12: `verify_first` primario 9 → 1; rutas 17–19. No se usa en rutas públicas, UI, persistencia ni analítica.
+
+#### DIAG-V3-08E — hechos semánticos del diagnóstico (solo local, pendiente de revisión)
+
+- `deriveSemanticFacts` traduce contexto, evidencia, scores, confianza, restricciones y prioridades a hechos estructurados con procedencia, sin prosa ni recálculo. El motor queda congelado desde `a96ce99`.
+- No se usa en rutas públicas, UI, persistencia ni analítica.
 
 #### Matriz de reutilización QBV1 → QBV2 (DIAG-V3-08B.2 §68)
 

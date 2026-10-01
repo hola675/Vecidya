@@ -248,6 +248,16 @@ La web pública consume contenido institucional estático y perfiles publicados 
 - **Golden pipeline:** `completion.ready` describe el plan incluyendo sus selecciones pendientes; la ejecución golden responde cada lote y termina cuando el planner no selecciona nada nuevo.
 - Scoring 08C sin cambios; la mejora de prioridades proviene de mejor evidencia. Única política añadida al motor 08D: una restricción con evidencia relevante por sí misma (meta/fricción declarada o cuello de botella activo) nunca es desplazada por un prerrequisito de relevancia solo heredada, ni por menor score ni por mayor severidad; el prerrequisito pasa delante solo si bloquea esa misma dimensión (pase topológico). `relevance.ownTier` separa la relevancia propia de la heredada.
 
+## Diagnóstico: Semantic Diagnostic Facts (DIAG-V3-08E, foundation interna)
+
+- `qbv2-semantic-facts.ts` (`deriveSemanticFacts`) traduce, sin recalcular ni mutar, las salidas congeladas (contexto, evidencia, scores, confianza, restricciones y prioridades 08D) a hechos estructurados para la futura narrativa/UI. No genera prosa ni recomendaciones. El motor (banco 83, planner, contradicciones, mapping, scoring, restricciones y prioridades) queda congelado desde `a96ce99`.
+- Taxonomía (9 tipos): `priority`, `weakness`, `dependency`, `contradiction`, `strength`, `partial`, `risk`, `uncertainty`, `evidence_gap`. El contexto de negocio (entidad, modelo, archetype, etapa, meta, fricción, cliente) vive en una lista `context` separada y nunca produce conclusiones de capacidad.
+- Contrato de hecho: `id` determinista, `type`, `semanticCode`, `importance`, `order`, `dimension?`, `certainty?`, `severity?`, `score?`, `confidence?`, relevancia meta/fricción y `provenance` (question IDs, `constraintId`, `priorityRank`, reason codes). Extensiones por tipo: `signals` (lecturas positivas y negativas dentro de una dimensión, con faceta), `priority` (rango, accionabilidad y hecho objetivo), `dependency`, `contradiction` y `gap`.
+- Certeza de lectura: la banda viene de la escala 08D (`strength` ≥ 75, `partial` 50–74, `weakness` < 50) y la certeza de la confianza y las contradicciones: `confirmed` con confianza media/alta y sin contradicción; si no, `signal` para fortalezas y `likely` para debilidades. Un 100 con confianza baja es `positive_signal`, nunca fortaleza confirmada. `null` no produce lectura.
+- Contradicciones explícitas con ambos lados (`mixed_signals`) y `declared_friction_not_observed` cuando la dimensión de la fricción declarada es una fortaleza confirmada.
+- Gaps: `insufficient_evidence` (había pregunta directa observable), `unobservable_in_context` (el banco no observa esa dimensión en ese contexto), `legitimate_uncertainty` (no observable en un proyecto pre-lanzamiento), `declared_friction_unconfirmed` y `not_applicable`.
+- Orden: bandas de importancia (prioridad → debilidad material → dependencias/contradicciones → fortalezas relevantes → parciales/riesgos → incertidumbre/gaps); dentro de cada banda manda el orden de restricciones 08D. Golden 12: 3–11 hechos por persona.
+
 ## Límite Vecidya ↔ GHL
 
 Vecidya es responsable de cuentas, usuarios, organizaciones, membresías, perfiles de negocio, web pública, directorio, portal de cliente, servicios propios y metadata tenant-scoped de integraciones.

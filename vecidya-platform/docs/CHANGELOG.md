@@ -1,6 +1,13 @@
 # Changelog
 
-## 2026-09-30 — DIAG-V3-08D.1 Targeted Evidence Enrichment (solo local, sin deploy, sin commit)
+## 2026-09-30 — DIAG-V3-08E Semantic Diagnostic Facts foundation (solo local, sin deploy, sin commit)
+
+- DIAG-V3-08D.1 cerrada en el commit local `a96ce99` (sin push ni deploy) con una política de prioridad: una fricción declarada con evidencia no se desplaza por un prerrequisito de relevancia heredada salvo bloqueo explícito. El motor diagnóstico queda congelado.
+- Añadida la capa pura `qbv2-semantic-facts.ts`: 9 tipos de hecho con procedencia, contexto separado, certeza de lectura por banda + confianza + contradicciones, contradicciones explícitas (incluida fricción declarada no observada), cinco clases de gap y orden por bandas guiado por las prioridades 08D.
+- Golden 12: conjuntos de hechos distintos para las 12 personas, 3–11 hechos cada una; sin recalcular scoring ni prioridades.
+- Sin prosa, recomendaciones, UI, persistencia, schema, PDF, analytics ni cambio de versión.
+
+## 2026-09-30 — DIAG-V3-08D.1 Targeted Evidence Enrichment (solo local, sin deploy; commit `a96ce99`)
 
 - DIAG-V3-08D cerrada y aprobada en el commit local `bfe97fb` (sin push ni deploy).
 - Planner: `ROUTE_HARD_CAP` 20 con `materialEvidenceReserve` 2. La ruta base conserva sus reglas y el cap 18; una cola añade evidencia directa solo para necesidades materiales abiertas (fricción declarada ×2, meta ×1, prerrequisito de restricción relevante ×1).
