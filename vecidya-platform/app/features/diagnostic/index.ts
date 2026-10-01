@@ -184,6 +184,7 @@ export {
   DIGITAL_DIMENSIONS,
   DIGITAL_DIMENSION_IDS,
   EVIDENCE_KINDS,
+  EVIDENCE_DIRECTNESS,
   EVIDENCE_MAPPING,
   MATURITY_MODEL,
   validateEvidenceMapping,
@@ -192,9 +193,11 @@ export {
   type EvidenceKind,
   type MaturityId,
   type QuestionEvidenceMapping,
+  type EvidenceDirectness,
 } from "./qbv2-coverage";
-export { GOLDEN_PERSONAS, type GoldenPersona } from "./qbv2-personas";
+export { GOLDEN_PERSONAS, resolveGoldenPersonaAnswers, runGoldenPersonaPipeline, type GoldenPersona, type GoldenPersonaExecution } from "./qbv2-personas";
 export { analyzeCoverage, generateCoverageMatrix, mappingForQuestion, type CoverageAnalysisReport, type CoverageFinding, type CoverageFindingClassification, type CoverageMatrixCase, type DimensionCoverageReport, type PersonaCoverageReport } from "./qbv2-coverage-analysis";
+export { deriveContextualEvidence, scoreContextualDimensions, validateAnswerSemantics, ANSWER_SEMANTICS, CAPABILITY_CONTRIBUTION, CAPABILITY_STATES, CONFIDENCE_MODEL, CONTEXT_ONLY_QUESTION_IDS, SCORING_MODEL, type AnswerSemantics, type CapabilityState, type ContextualEvidence, type ContextualScoringContext, type ContextualScoringResult, type ContextualDimensionResult, type DimensionApplicability, type DimensionConfidence, type DimensionExplainability, type ContextualConfidenceLevel, type ScoreBasis } from "./qbv2-contextual-scoring";
 
 /**
  * Ejecuta el diagnóstico completo sobre un conjunto de respuestas.

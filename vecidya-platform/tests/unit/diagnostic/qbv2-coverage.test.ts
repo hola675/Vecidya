@@ -3,11 +3,14 @@ import { test } from "node:test";
 
 import {
   DIGITAL_DIMENSIONS,
+  EVIDENCE_DIRECTNESS,
   EVIDENCE_MAPPING,
+  GOLDEN_QUESTIONS_V2,
   MATURITY_MODEL,
   analyzeCoverage,
   generateCoverageMatrix,
   GOLDEN_PERSONAS,
+  QUESTION_BANK_V2,
   type DigitalDimensionId,
 } from "../../../app/features/diagnostic/index.ts";
 
@@ -34,6 +37,7 @@ test("08B.6R has exactly twelve deterministic golden personas", () => {
   const first = analyzeCoverage();
   const second = analyzeCoverage();
   assert.deepEqual(first.personas, second.personas);
+  assert.ok(first.personas.every((persona) => persona.routeLength >= 15 && persona.routeLength <= 18));
   assert.ok(first.personas.every((persona) => persona.routeLength <= 18));
   assert.ok(first.personas.every((persona) => persona.duplicateQuestionIds.length === 0));
   assert.ok(first.personas.every((persona) => persona.routeReady));
@@ -43,11 +47,63 @@ test("08B.6R has exactly twelve deterministic golden personas", () => {
 
 test("08B.6R generated coverage combinations remain declarative and bounded by planner invariants", () => {
   const matrix = generateCoverageMatrix();
-  assert.ok(matrix.length > 100);
+  assert.equal(matrix.length, 2400);
   assert.ok(matrix.every((entry) => entry.stage && entry.archetype && entry.goal && entry.friction));
   const report = analyzeCoverage();
   assert.equal(report.matrixCaseCount, matrix.length);
   assert.ok(report.matrixRouteFailures.every((failure) => failure.routeLength <= 18));
+});
+
+test("08B.6R productive bank keeps 80 questions and exactly two fixture-only confirmations", () => {
+  assert.equal(QUESTION_BANK_V2.filter((question) => !question.purpose.includes("confirmation")).length, 80);
+  assert.equal(GOLDEN_QUESTIONS_V2.filter((question) => question.purpose.includes("confirmation")).length, 2);
+  assert.equal(QUESTION_BANK_V2.length, 80);
+});
+
+test("08C mapping audit assigns every question-dimension pair an explicit effective role", () => {
+  const pairs = QUESTION_BANK_V2.flatMap((question) => EVIDENCE_MAPPING[question.id]!.dimensions.map((dimension) => ({
+    questionId: question.id,
+    dimension,
+    role: EVIDENCE_DIRECTNESS[question.id]?.[dimension] ?? EVIDENCE_MAPPING[question.id]!.semanticRole,
+  })));
+  assert.ok(pairs.length > 0);
+  assert.ok(pairs.every((pair) => ["direct", "supporting", "contextual"].includes(pair.role)));
+  assert.equal(pairs.length, 73);
+  assert.equal(pairs.filter((pair) => pair.role === "direct").length, 47);
+  assert.equal(pairs.filter((pair) => pair.role === "supporting").length, 26);
+  assert.equal(pairs.filter((pair) => pair.role === "contextual").length, 0);
+  assert.equal(QUESTION_BANK_V2.filter((question) => EVIDENCE_MAPPING[question.id]?.dimensions.length === 0).length, 22);
+  assert.ok(QUESTION_BANK_V2.filter((question) => EVIDENCE_MAPPING[question.id]?.dimensions.length === 0).every((question) => EVIDENCE_MAPPING[question.id]?.semanticRole === "contextual"));
+  assert.equal(EVIDENCE_MAPPING.q2_nonprofit_support_type?.dimensions.length, 0);
+  assert.equal(EVIDENCE_MAPPING.q2_service_area_clarity?.dimensions.length, 0);
+  assert.equal(EVIDENCE_MAPPING.q2_service_quote_practice?.dimensions.length, 0);
+  assert.equal(EVIDENCE_MAPPING.q2_startup_next_milestone?.dimensions.length, 0);
+  assert.deepEqual(EVIDENCE_MAPPING.q2_ecommerce_cart_visibility?.dimensions, ["measurement_optimization"]);
+  assert.equal(EVIDENCE_DIRECTNESS.q2_ecommerce_traffic_sources?.measurement_optimization, "supporting");
+  assert.deepEqual(EVIDENCE_MAPPING.q2_startup_validation_evidence?.dimensions, ["clarity_positioning"]);
+  assert.deepEqual(EVIDENCE_MAPPING.q2_creator_content_consistency?.dimensions, ["discovery"]);
+  assert.deepEqual(EVIDENCE_MAPPING.q2_creator_conversion?.dimensions, ["conversion_access"]);
+  assert.deepEqual(EVIDENCE_MAPPING.q2_professional_referral_dependency?.dimensions, ["discovery"]);
+  assert.equal(EVIDENCE_MAPPING.q2_nonprofit_participation?.dimensions.length, 0);
+  assert.equal(EVIDENCE_DIRECTNESS.q2_operations_bottleneck?.digital_readiness, "supporting");
+  assert.equal(EVIDENCE_DIRECTNESS.q2_retail_product_visibility?.conversion_access, "supporting");
+  for (const id of ["q2_appointments_noshow", "q2_hospitality_flow_type", "q2_hospitality_reservation_noshow"]) assert.equal(EVIDENCE_MAPPING[id]?.dimensions.length, 0, `${id} is attendance/routing context, not conversion access`);
+  assert.equal(EVIDENCE_MAPPING.q2_b2b_decision_makers?.dimensions.includes("clarity_positioning"), false);
+  assert.equal(EVIDENCE_MAPPING.q2_professional_intake_flow?.dimensions.includes("conversion_access"), true);
+});
+
+test("08C mapping audit records unresolved context axes and single-dimension direct evidence", () => {
+  const representedGoals = new Set(QUESTION_BANK_V2.flatMap((question) => question.options.flatMap((option) => option.produces?.filter((production) => production.kind === "goal").map((production) => production.value) ?? [])));
+  const generatedGoals = new Set(generateCoverageMatrix().map((item) => item.goal));
+  const unrepresentableGoals = [...generatedGoals].filter((goal) => !representedGoals.has(goal)).sort();
+  const secondaryDeliveryQuestions = QUESTION_BANK_V2.filter((question) => question.options.some((option) => option.produces?.some((production) => production.kind === "deliveryMode" && production.slot === "secondary")));
+  const directDimensionsByQuestion = QUESTION_BANK_V2.map((question) => EVIDENCE_MAPPING[question.id]!.dimensions.filter((dimension) => (EVIDENCE_DIRECTNESS[question.id]?.[dimension] ?? EVIDENCE_MAPPING[question.id]!.semanticRole) === "direct").length);
+  const directQuestions = (dimension: (typeof DIGITAL_DIMENSIONS)[number]["id"]) => QUESTION_BANK_V2.filter((question) => EVIDENCE_MAPPING[question.id]!.dimensions.includes(dimension) && (EVIDENCE_DIRECTNESS[question.id]?.[dimension] ?? EVIDENCE_MAPPING[question.id]!.semanticRole) === "direct").map((question) => question.id).sort();
+  assert.deepEqual(unrepresentableGoals, ["automate", "explain", "organize", "stop_losing", "trust"]);
+  assert.deepEqual(secondaryDeliveryQuestions, [], "hybrid contexts need a second delivery signal the current bank cannot collect");
+  assert.ok(directDimensionsByQuestion.every((count) => count <= 1), "no current productive question directly saves evidence budget across dimensions");
+  assert.deepEqual(directQuestions("digital_foundation"), ["q2_ecommerce_product_discovery", "q2_local_presence_consistency"]);
+  assert.deepEqual(directQuestions("trust_reputation"), ["q2_professional_authority_signals", "q2_reputation_flow"]);
 });
 
 test("08B.6R distinguishes confirmed coverage, gaps, and possible improvements", () => {

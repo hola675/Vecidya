@@ -5,6 +5,16 @@
 - Resueltos los gaps de `measurement_optimization` y ecommerce → `digital_foundation` reutilizando evidencia de preguntas existentes; no se añadieron preguntas productivas ni se modificó el planner.
 - La cobertura ahora considera respuestas activas y preguntas seleccionadas, preservando rutas adaptativas de 15–16 preguntas y el hard cap de 18. Sin scoring, porcentajes, pesos ni confidence.
 
+## 2026-09-30 — DIAG-V3-08C Contextual Scoring V3 foundation (solo local, sin deploy)
+
+- Añadido el motor puro `qbv2-contextual-scoring.ts`: ocho resultados dimensionales con observaciones por pregunta/dimensión, applicability, score, confidence y explainability. Sin score global.
+- Scoring reconstruido alrededor del planner adaptativo: se retiró el umbral universal (2 directas, 3 en medición) y el audit set-cover/evidence-budget dejó de ser requisito. Una dimensión con evidencia directa produce score aunque tenga una sola observación; la confianza refleja esa limitación.
+- Modelo declarativo: `ANSWER_SEMANTICS` (estado por valor para las 58 preguntas con dimensión, validado sin fallback), `CAPABILITY_CONTRIBUTION`, `SCORING_MODEL` (supporting ≤ mitad del peso directo) y `CONFIDENCE_MODEL` (fuerza de evidencia con penalización por contradicción directa y `unknown`). Solo supporting o sin evidencia → `null`.
+- Corregido: el mapeo genérico anterior asignaba `partial` a valores no listados (p. ej. `consistent`, `well_diversified`, `defined_consult`, `maps_search`), puntuando la mejor respuesta como 50.
+- Etapa `idea`: Trust/Relationship/Measurement no aplican aunque un módulo haya preguntado; la evidencia permanece en explainability.
+- Matriz golden 12 × 8 con la ruta real: 86 celdas aplicables, 29 numéricas, 57 `null` (66,3 %; antes 87/4/83, 95,4 %). 42 nulls no tienen ninguna observación en la ruta y 15 solo tienen evidencia supporting.
+- No se modificaron banco, planner, hard cap, contradicciones, dimensiones, maturity, persistencia, schema, UI, PDF ni analytics. Sin cambio de versión, commit, push o deploy.
+
 ## 2026-09-30 — DIAG-V3-08B.6R Compact Coverage & Diagnostic State Foundation (solo local, sin deploy)
 
 - Añadidos `MATURITY_MODEL`, `DIGITAL_DIMENSIONS` y `EVIDENCE_MAPPING` en `qbv2-coverage.ts`, con trazabilidad declarativa para las 80 preguntas productivas sin pesos ni porcentajes.

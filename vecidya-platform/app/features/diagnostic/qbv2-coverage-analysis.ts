@@ -1,7 +1,7 @@
 import { buildQuestionPlan, type QuestionPlan } from "./qbv2-planner";
 import { QUESTION_BANK_V2 } from "./qbv2-bank";
 import { DIGITAL_DIMENSIONS, EVIDENCE_MAPPING, validateEvidenceMapping, type DigitalDimensionId, type QuestionEvidenceMapping } from "./qbv2-coverage";
-import { GOLDEN_PERSONAS, type GoldenPersona } from "./qbv2-personas";
+import { GOLDEN_PERSONAS, runGoldenPersonaPipeline, type GoldenPersona } from "./qbv2-personas";
 import type { ModuleId } from "./qbv2-contract";
 import type { AnswersV2 } from "./qbv2-rules";
 import type { GrowthStage, OperationalArchetype, PrimaryFriction, PrimaryGoal } from "./contracts";
@@ -85,15 +85,21 @@ function duplicates(values: readonly string[]): readonly string[] {
 }
 
 function reportPersona(persona: GoldenPersona): PersonaCoverageReport {
-  const plan = buildQuestionPlan({ answers: persona.answers, bank: QUESTION_BANK_V2 });
-  const modules = selectedModules(plan);
-  const eligible = eligibleModules(plan);
-  const evidenceQuestionIds = [...new Set([...Object.keys(persona.answers), ...plan.selectedQuestionIds])];
+  const startingAnswers = { ...persona.answers, ...persona.preexistingAnswers };
+  const selectedPlan = buildQuestionPlan({ answers: startingAnswers, bank: QUESTION_BANK_V2 });
+  const execution = runGoldenPersonaPipeline(persona);
+  const routeAnswers = execution.answers;
+  const plan = buildQuestionPlan({ answers: routeAnswers, bank: QUESTION_BANK_V2 });
+  const executedModules = execution.selectedQuestionIds.map((id) => QUESTION_BANK_V2.find((question) => question.id === id)?.module).filter((module): module is ModuleId => module !== undefined);
+  const preexistingModules = Object.keys(persona.preexistingAnswers ?? {}).map((id) => QUESTION_BANK_V2.find((question) => question.id === id)?.module).filter((module): module is ModuleId => module !== undefined);
+  const modules = [...new Set([...selectedModules(selectedPlan), ...selectedModules(plan), ...executedModules, ...preexistingModules])].sort();
+  const eligible = [...new Set([...eligibleModules(selectedPlan), ...eligibleModules(plan)])].sort();
+  const evidenceQuestionIds = [...new Set([...Object.keys(routeAnswers), ...execution.selectedQuestionIds, ...plan.selectedQuestionIds])];
   return {
     id: persona.id,
     label: persona.label,
-    routeLength: plan.routeLength,
-    selectedQuestionIds: plan.selectedQuestionIds,
+    routeLength: Math.max(...execution.routeLengths),
+    selectedQuestionIds: execution.selectedQuestionIds,
     evidenceQuestionIds,
     selectedModules: modules,
     eligibleModules: eligible,
