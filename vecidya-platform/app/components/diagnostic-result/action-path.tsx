@@ -1,7 +1,7 @@
 import { offeringDependencies, type DiagnosticNarrative, type DiagnosticOutcome } from "../../features/diagnostic";
 
 import { modifier } from "./indicators";
-import { actionSteps, COMMERCIAL_ROLE_DISPLAY, helpItems } from "./presentation";
+import { actionSteps, COMMERCIAL_ROLE_DISPLAY, EMPTY_ACTION_PATH_NOTE, helpItems, VECIDYA_HELP_NOTE } from "./presentation";
 
 /**
  * Plan de acción: un paso corto por recomendación, en el orden de las prioridades. Resume lo que ya se justificó
@@ -13,7 +13,7 @@ export function ActionPath({ narrative, outcome }: { narrative: DiagnosticNarrat
     <section aria-labelledby="dr-plan-title" className="dr-section dr-plan">
       <h2 className="dr-section__title" id="dr-plan-title">Plan de acción recomendado</h2>
       {steps.length === 0 ? (
-        <p className="dr-note">Con lo evaluado no aparece una mejora prioritaria. Lo más útil es mantener lo que ya funciona y volver a revisar cuando cambie tu situación.</p>
+        <p className="dr-note">{EMPTY_ACTION_PATH_NOTE}</p>
       ) : (
         <ol className="dr-step-list" role="list">
           {steps.map((step) => (
@@ -45,9 +45,7 @@ export function VecidyaHelpSection({ narrative, outcome }: { narrative: Diagnost
     <section aria-labelledby="dr-vecidya-title" className="dr-section dr-vecidya">
       <h2 className="dr-section__title" id="dr-vecidya-title">Cómo puede ayudarte Vecidya</h2>
       <p className="dr-note">
-        {items.length === 0
-          ? "Con lo evaluado no hay nada que convenga contratar por ahora."
-          : "Es opcional: solo aparece lo que se relaciona con tus prioridades, en el mismo orden del plan."}
+        {items.length === 0 ? VECIDYA_HELP_NOTE.none : VECIDYA_HELP_NOTE.some}
       </p>
       {items.length > 0 ? (
         <ol className="dr-help-list" role="list">

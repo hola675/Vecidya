@@ -281,5 +281,17 @@ export const RESULT_HELP = {
   },
 } as const;
 
+/** Textos compartidos por el resultado web y el informe PDF (DIAG-V3-12): un solo copy para los estados vacíos. */
+export const CONSTRAINT_COPY = {
+  kicker: "Lo que más limita hoy",
+  verifyKicker: "Lo primero por confirmar",
+  clearTitle: "Ningún freno destaca en lo evaluado",
+} as const;
+export const EMPTY_ACTION_PATH_NOTE = "Con lo evaluado no aparece una mejora prioritaria. Lo más útil es mantener lo que ya funciona y volver a revisar cuando cambie tu situación.";
+export const VECIDYA_HELP_NOTE = {
+  none: "Con lo evaluado no hay nada que convenga contratar por ahora.",
+  some: "Es opcional: solo aparece lo que se relaciona con tus prioridades, en el mismo orden del plan.",
+} as const;
+
 /** Alcance del resultado, al pie de «Cómo se evaluó». Las explicaciones del método viven en `qbv2-methodology.ts` (DIAG-V3-11). */
 export const RESULT_DISCLAIMER = "Este resultado es una orientación basada en tus respuestas, no una auditoría ni una certificación. Las opciones de Vecidya aparecen solo cuando se relacionan con una prioridad del diagnóstico, y el resultado sirve aunque no contrates nada.";

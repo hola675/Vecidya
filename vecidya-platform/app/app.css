@@ -4775,3 +4775,120 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .dm-area, .dm-sources > li { break-inside: avoid; }
   .dm-section__title, .dm-area__title { break-after: avoid; }
 }
+
+/* DIAG-V3-12 — informe PDF: tres hojas del tamaño del papel. Mismo sistema visual que el resultado, adaptado a papel. */
+.rp-page { min-height: 100vh; padding: 1.25rem 0 3rem; background: #e9eef5; color: var(--ink); }
+.rp-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; width: min(100% - 2rem, 52rem); margin: 0 auto 1.25rem; }
+.rp-toolbar p { margin: 0; }
+.rp-toolbar a { color: var(--blue); font-weight: 700; }
+.rp-toolbar__meta { color: var(--muted); font-size: var(--text-meta); }
+.rp { --rp-fs: 9.5pt; display: grid; justify-content: center; gap: 1.25rem; font-family: var(--font-sans); }
+.rp-doc { display: contents; }
+.rp-sheet { position: relative; display: flex; flex-direction: column; box-sizing: border-box; width: var(--rp-w); height: var(--rp-h); overflow: hidden; padding: 11mm 12mm 9mm; background: #fff; box-shadow: 0 0.5rem 2rem rgb(20 43 74 / 12%); font-size: var(--rp-fs); line-height: 1.32; break-after: page; }
+.rp-sheet:last-child { break-after: auto; }
+/* Piso tipográfico: 8,5 pt es el tamaño más pequeño que se permite (nivel 2, el último de `REPORT_DENSITY_LEVELS`). */
+.rp-sheet[data-density="1"] { --rp-fs: 9pt; }
+.rp-sheet[data-density="2"] { --rp-fs: 8.5pt; }
+.rp-stack { display: grid; gap: 0.28em; }
+.rp-sheet__body { display: flex; flex: 1; flex-direction: column; gap: 0.6em; min-height: 0; overflow: hidden; }
+.rp-block { flex: none; min-width: 0; }
+/* Hoja de medida: idéntica a una hoja real, fuera de la vista; nunca se imprime. */
+.rp-sheet--measure { position: absolute; top: 0; left: -10000px; visibility: hidden; }
+/* Último recurso si no cabe ni en la densidad mínima: flujo normal sin recortes (la QA lo marca). */
+.rp-doc--flow { display: grid; gap: 0.7em; box-sizing: border-box; width: var(--rp-w); padding: 12mm 13mm; background: #fff; font-size: 7.5pt; line-height: 1.34; }
+.rp-sheet__footer { display: flex; justify-content: space-between; gap: 1rem; margin: 0.6em 0 0; border-top: 1px solid var(--line); padding-top: 0.45em; color: var(--muted); font-size: 0.78em; }
+.rp p, .rp ul, .rp ol, .rp dl, .rp dd { margin: 0; }
+.rp ul, .rp ol { padding-left: 1.15em; }
+.rp ul { list-style: disc; }
+.rp ol { list-style: decimal; }
+.rp li + li { margin-top: 0.25em; }
+.rp a { color: var(--blue); text-decoration: underline; text-underline-offset: 0.15em; }
+.rp-h2 { margin: 0; padding: 0.35em 0 0.2em; border-bottom: 1px solid var(--line); font-size: 1.22em; font-weight: 800; letter-spacing: -0.01em; line-height: 1.2; }
+.rp-h3 { margin: 0; font-size: 1em; font-weight: 800; line-height: 1.25; }
+.rp-label { font-weight: 700; }
+.rp-kicker { color: var(--muted); font-size: 0.82em; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; }
+.rp-muted { color: var(--muted); }
+.rp-meta { color: var(--muted); font-size: 0.86em; }
+
+/* Hoja 1: cabecera (sin portada aparte: el límite de tres páginas no deja una hoja solo para la marca). */
+.rp-cover { display: grid; gap: 0.3em; border-bottom: 2px solid var(--ink); padding-bottom: 0.5em; }
+.rp-brand { display: flex; align-items: center; gap: 0.4em; font-size: 1.05em; font-weight: 900; letter-spacing: -0.04em; }
+.rp-brand__mark { width: 1.6em; height: 1.6em; object-fit: contain; }
+.rp-title { margin: 0; font-size: 2em; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.rp-business { font-size: 1.15em; font-weight: 700; overflow-wrap: anywhere; }
+.rp-cover__meta { display: flex; flex-wrap: wrap; gap: 0.2em 1.4em; color: var(--muted); font-size: 0.86em; }
+.rp-cover__meta div { display: flex; gap: 0.35em; }
+.rp-cover__meta dt { font-weight: 700; }
+
+.rp-presence { --dr-state: var(--muted); --rp-state-soft: #f6f8fb; --rp-state-line: var(--line); display: grid; grid-template-columns: minmax(0, 15em) minmax(0, 1fr); gap: 0.5em 1.4em; border: 1px solid var(--rp-state-line); border-radius: 0.6em; padding: 0.65em 1em; background: var(--rp-state-soft); break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.rp-presence--low { --dr-state: #a33d00; --rp-state-soft: #fff6f0; --rp-state-line: #f2c6a8; }
+.rp-presence--developing { --dr-state: #7a5d00; --rp-state-soft: #fffaeb; --rp-state-line: #ecd68f; }
+.rp-presence--solid { --dr-state: #0d6248; --rp-state-soft: #f1faf5; --rp-state-line: #a9dcc6; }
+.rp-presence--insufficient { border-style: dashed; --rp-state-line: #b8c9df; --rp-state-soft: #fff; }
+.rp-presence__main { display: flex; align-items: center; gap: 0.8em; }
+.rp-presence .dr-presence__asset { width: 3.6em; height: 3.6em; }
+.rp-presence .dr-presence__placeholder { width: 100%; height: 100%; }
+.rp-presence__kicker { margin: 0; font-size: 0.86em; font-weight: 800; letter-spacing: 0.02em; text-transform: uppercase; }
+.rp-presence__value { font-size: 2.6em; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; line-height: 1; }
+.rp-presence__label { color: var(--dr-state); font-size: 1.15em; font-weight: 800; line-height: 1.2; }
+.rp-presence__side { display: grid; gap: 0.45em; align-content: center; }
+.rp-presence__meta { display: flex; flex-wrap: wrap; gap: 0.3em 1.2em; color: var(--muted); font-size: 0.88em; }
+.rp-headline { font-size: 1.12em; font-weight: 700; line-height: 1.3; }
+.rp-state { border-radius: 0.35em; padding: 0.35em 0.6em; background: var(--surface-soft); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.rp-constraint { display: grid; gap: 0.2em; }
+.rp-constraint .rp-h3 { font-size: 1.15em; }
+.rp-priority { display: grid; gap: 0.12em; border: 1px solid var(--line); border-radius: 0.45em; padding: 0.38em 0.65em; }
+.rp-priority__statement { font-weight: 700; }
+.rp-steps { display: grid; gap: 0.2em; }
+
+/* Hoja 2: lectura por área, sin tableros; el estado se lee por texto y forma, nunca solo por color. */
+.rp-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5em 1.2em; }
+.rp-columns > div { display: grid; gap: 0.3em; align-content: start; min-width: 0; }
+.rp-dims { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1.2em; }
+.rp-dim { display: grid; gap: 0.2em; align-content: start; border-top: 1px solid var(--line); padding-top: 0.35em; }
+.rp-dim__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6em; }
+.rp-dim__status { display: flex; flex-wrap: wrap; align-items: center; gap: 0.2em 0.9em; }
+.rp .dr-status, .rp .dr-confidence { font-size: 0.86em; }
+.rp .dr-status__glyph { width: 1.15em; height: 1.15em; }
+.rp .dr-confidence__bars span.is-on { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.rp-evidence { color: var(--muted); font-size: 0.86em; }
+.rp-meter { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 0.45em; }
+.rp-meter strong { font-size: 1.1em; font-variant-numeric: tabular-nums; }
+.rp-meter__track { display: block; width: 5.5em; height: 0.45em; overflow: hidden; border-radius: 99px; background: #e5edf8; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.rp-meter__fill { display: block; min-width: 0.25em; height: 100%; border-radius: inherit; background: var(--rp-fill, var(--blue)); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.rp-meter__fill--strong, .rp-meter__fill--positive-signal { --rp-fill: #2f8a68; --rp-fill-soft: #a6d8c2; }
+.rp-meter__fill--partial { --rp-fill: #b38600; --rp-fill-soft: #ead48a; }
+.rp-meter__fill--weak { --rp-fill: #c25a24; --rp-fill-soft: #f0bc9c; }
+.rp-meter__fill--preliminary { background: repeating-linear-gradient(135deg, var(--rp-fill, var(--blue)) 0 2px, var(--rp-fill-soft, #9dbbe8) 2px 4px); }
+
+/* Hoja 3: recomendación → solución → Vecidya, después método, fuentes y límites. */
+.rp-rec { display: grid; gap: 0.15em; border-top: 1px solid var(--line); padding-top: 0.35em; }
+.rp-rec__facts { display: grid; gap: 0.12em; }
+.rp-rec__facts div { display: grid; grid-template-columns: 9.6em minmax(0, 1fr); gap: 0.6em; }
+.rp-rec__facts dt { color: var(--muted); font-weight: 700; }
+.rp-help { display: grid; gap: 0.15em; }
+.rp-offer__role { display: inline-block; border: 1px solid var(--line); border-radius: 99px; padding: 0 0.45em; color: var(--muted); font-size: 0.82em; font-weight: 700; }
+.rp-offer--recommended-service .rp-offer__role { border-color: var(--ink); color: var(--ink); }
+.rp-cta { border-top: 1px dashed var(--line); padding-top: 0.35em; }
+/* Método: «Cómo se evaluó» y los límites a la izquierda, las fuentes a la derecha; el DOM conserva el orden 12 → 13 → 14. */
+.rp-method { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); grid-template-areas: "evaluated sources" "limits sources"; gap: 0.5em 1.2em; align-items: start; }
+.rp-method > div { display: grid; gap: 0.3em; min-width: 0; }
+.rp-method__evaluated { grid-area: evaluated; }
+.rp-method__sources { grid-area: sources; }
+.rp-method__limits { grid-area: limits; }
+.rp-sources { display: grid; gap: 0.15em; font-size: 0.9em; }
+.rp-sources li + li { margin-top: 0; }
+.rp-info { display: grid; gap: 0.2em; border-top: 1px solid var(--line); padding-top: 0.45em; color: var(--muted); font-size: 0.84em; }
+
+/* Depuración (solo desarrollo): límites de sección y densidad aplicada por hoja. */
+.rp--debug .rp-block { outline: 1px dashed #f0a; }
+.rp-debug-tag { color: #c06; font-weight: 700; }
+
+@media print {
+  html:has(.rp), body:has(.rp) { background: #fff; }
+  .rp-page { min-height: 0; padding: 0; background: #fff; }
+  .rp-toolbar, .rp-sheet--measure { display: none; }
+  .rp { display: block; }
+  .rp-sheet { box-shadow: none; }
+  .rp p { orphans: 2; widows: 2; }
+}

@@ -2,7 +2,7 @@ import type { DiagnosticNarrative, NarrativePriority } from "../../features/diag
 
 import { HelpDisclosure } from "./disclosures";
 import { CertaintyTag, ConfidenceIndicator, modifier } from "./indicators";
-import { dimensionDisplay, dimensionLabelOf, PRIORITY_SLOT_DISPLAY, RESULT_HELP, showNextFocus } from "./presentation";
+import { CONSTRAINT_COPY, dimensionDisplay, dimensionLabelOf, PRIORITY_SLOT_DISPLAY, RESULT_HELP, showNextFocus } from "./presentation";
 
 /** Restricción principal: el bloque con más jerarquía después del resumen. */
 export function PrimaryConstraint({ narrative }: { narrative: DiagnosticNarrative }) {
@@ -11,8 +11,8 @@ export function PrimaryConstraint({ narrative }: { narrative: DiagnosticNarrativ
     // Sin restricción material (p. ej. la persona golden de citas): un resultado válido, no un hueco.
     return (
       <div className="dr-constraint dr-constraint--clear">
-        <p className="dr-constraint__kicker">Lo que más limita hoy</p>
-        <h3 className="dr-constraint__title">Ningún freno destaca en lo evaluado</h3>
+        <p className="dr-constraint__kicker">{CONSTRAINT_COPY.kicker}</p>
+        <h3 className="dr-constraint__title">{CONSTRAINT_COPY.clearTitle}</h3>
         <p className="dr-constraint__text">{narrative.nextFocus.text}</p>
       </div>
     );
@@ -21,7 +21,7 @@ export function PrimaryConstraint({ narrative }: { narrative: DiagnosticNarrativ
   const confidence = dimension ? dimensionDisplay(dimension).confidence : null;
   return (
     <div className={`dr-constraint dr-constraint--${constraint.certainty}`}>
-      <p className="dr-constraint__kicker">{constraint.certainty === "unknown" ? "Lo primero por confirmar" : "Lo que más limita hoy"}</p>
+      <p className="dr-constraint__kicker">{constraint.certainty === "unknown" ? CONSTRAINT_COPY.verifyKicker : CONSTRAINT_COPY.kicker}</p>
       {dimension ? <h3 className="dr-constraint__title">{dimension.label}</h3> : null}
       <p className="dr-constraint__text">{constraint.text}</p>
       <div className="dr-meta">

@@ -4,7 +4,7 @@ export { DimensionCard, DimensionOverview } from "./dimension-overview";
 export { EvidenceDisclosure, HelpDisclosure } from "./disclosures";
 export { FocusSection, PrimaryConstraint, PriorityList } from "./focus-section";
 export { CertaintyTag, ConfidenceIndicator, ScoreMeter, StatusIndicator } from "./indicators";
-export { DigitalPresenceStatusCard } from "./presence-status";
+export { DigitalPresenceStatusCard, StatusAsset } from "./presence-status";
 export * from "./presentation";
 export { AreasSection, EvidenceSection, MixedSignalsSection, StrengthsSection, UncertaintySection } from "./reading-sections";
 export { ExecutiveSummary, ResultHero } from "./result-hero";

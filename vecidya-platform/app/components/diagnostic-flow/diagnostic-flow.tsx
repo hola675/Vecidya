@@ -5,6 +5,7 @@ import {
   QUESTION_BANK_V2, submitAnswerV3, toggleMultiValueV3, type AnswerValueV3, type DiagnosticResultV3, type DiagnosticSessionV3,
 } from "../../features/diagnostic";
 import { DiagnosticResult } from "../diagnostic-result";
+import { REPORT_PATH } from "../diagnostic-report/report-path";
 
 import { ERROR_COPY, REQUIRED_MULTI } from "./flow-copy";
 import { FlowErrorScreen, PreparingScreen, ReadyScreen, ResetConfirm, ResumeScreen, StartScreen } from "./flow-screens";
@@ -125,6 +126,8 @@ export function DiagnosticFlow({ renderDebug }: DiagnosticFlowProps) {
       <>
         <DiagnosticResult narrative={view.result.narrative} outcome={view.result.outcome} />
         <div className="df-result-actions">
+          {/* DIAG-V3-12: el informe se arma en su propia página, con el mismo resultado, y abre el diálogo para guardar PDF. */}
+          <a className="button" href={`${REPORT_PATH}?print=1`} rel="noopener" target="_blank">Descargar informe PDF<span className="dr-sr-only"> (se abre en una pestaña nueva)</span></a>
           <button className="button button--secondary" onClick={requestReset} type="button">Empezar un diagnóstico nuevo</button>
         </div>
       </>

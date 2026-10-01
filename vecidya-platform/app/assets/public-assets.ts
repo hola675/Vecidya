@@ -9,6 +9,8 @@ export const publicAssets = {
   },
   brand: {
     symbol: `${selectedAssetBase}/brand/brand-symbol-primary.webp`,
+    /** 96 px, derivado del símbolo principal para el informe PDF (DIAG-V3-12): el original de 1254 px inflaba cada PDF. */
+    symbolPrint: `${selectedAssetBase}/brand/brand-symbol-report.webp`,
     symbol3d: `${selectedAssetBase}/brand/brand-symbol-3d.webp`,
     wordmark: `${selectedAssetBase}/brand/brand-wordmark.webp`,
     lockup: `${selectedAssetBase}/brand/brand-lockup-tagline.webp`,

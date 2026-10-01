@@ -26,7 +26,7 @@ function StatusAssetPlaceholder({ state }: { state: OverallState }) {
   );
 }
 
-function StatusAsset({ state }: { state: OverallState }) {
+export function StatusAsset({ state }: { state: OverallState }) {
   const asset = STATUS_ASSETS[state];
   return (
     <span className="dr-presence__asset" data-asset-slot={asset.slot}>
