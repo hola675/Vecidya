@@ -4689,3 +4689,89 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .df-debug summary { min-height: 2.75rem; font-weight: 700; cursor: pointer; }
 .df-debug dt { margin-top: 0.5rem; font-weight: 700; }
 .df-debug dd { margin: 0; }
+
+/* DIAG-V3-11 — enlace a la metodología desde «Cómo se evaluó». */
+.dr-method__more { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 1rem; margin: 0.25rem 0 0; }
+.dr-method__more a { display: inline-flex; align-items: center; min-height: 2.75rem; color: var(--blue); font-weight: 700; text-decoration: underline; text-underline-offset: 0.2em; }
+.dr-method__more a:hover { color: var(--blue-dark); }
+.dr-method__version { color: var(--muted); font-size: var(--text-meta); }
+@media print { .dr-method__more a { display: none; } }
+
+/* DIAG-V3-11 — metodología del diagnóstico: mismo sistema visual que el resultado; documento de lectura. */
+.dm-page { width: min(100% - 2rem, 60rem); margin: 0 auto; padding: clamp(1.25rem, 4vw, 3rem) 0 3rem; }
+.dm { display: grid; gap: clamp(2rem, 5vw, 3rem); color: var(--ink); }
+.dm ::selection { background: #d6e4fa; }
+.dm a { color: var(--blue); text-decoration: underline; text-underline-offset: 0.2em; }
+.dm a:hover { color: var(--blue-dark); }
+.dm-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.dm-hero { display: grid; gap: 0.75rem; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(1.25rem, 4vw, 2.5rem); background: var(--surface); box-shadow: var(--shadow); }
+.dm-eyebrow { margin: 0; color: var(--muted); font-size: var(--text-label); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.dm-hero__title { margin: 0; max-width: 24ch; font-size: clamp(1.75rem, 4.5vw, 2.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.12; text-wrap: balance; }
+.dm-hero__lead { margin: 0; max-width: 62ch; font-size: 1.0625rem; line-height: 1.6; }
+.dm-section { display: grid; gap: 1rem; min-width: 0; scroll-margin-top: 1.5rem; }
+.dm-section__title { margin: 0; font-size: clamp(1.3rem, 2.6vw, 1.55rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+.dm-simple { margin: 0; max-width: var(--content-reading); font-size: 1.0625rem; line-height: 1.6; }
+
+/* Nivel A: lo esencial, en una sola lectura. */
+.dm-essentials { display: grid; gap: 1rem; min-width: 0; border-radius: var(--radius-md); padding: clamp(1.1rem, 3vw, 1.75rem); background: var(--surface-soft); }
+.dm-essentials ul { display: grid; gap: 1rem; max-width: var(--content-reading); margin: 0; padding: 0; list-style: none; }
+.dm-essentials__link { display: inline-block; padding: 0.15rem 0; font-weight: 700; line-height: 1.35; }
+.dm-essentials li p { margin: 0.2rem 0 0; line-height: 1.55; }
+
+.dm-toc { min-width: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 1rem 0; }
+.dm-toc__title { margin: 0 0 0.5rem; color: var(--muted); font-size: var(--text-meta); font-weight: 700; }
+.dm-toc ol { display: grid; gap: 0.15rem 1.5rem; margin: 0; padding-left: 1.6rem; list-style: decimal; }
+.dm-toc li::marker { color: var(--muted); font-size: var(--text-meta); }
+.dm-toc a { display: inline-block; padding: 0.35rem 0; }
+@media (min-width: 40rem) { .dm-toc ol { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Nivel B: afirmaciones con su tipo visible solo cuando importa (criterio propio o fuentes). */
+.dm-claims { display: grid; gap: 0.6rem; max-width: var(--content-reading); margin: 0; padding-left: 1.2rem; list-style: disc; line-height: 1.55; overflow-wrap: break-word; }
+.dm-claims li::marker { color: var(--muted); }
+.dm-claim--limitation::marker { color: var(--orange); }
+.dm-tag { display: inline-block; margin-right: 0.45rem; border: 1px solid var(--line); border-radius: 99px; padding: 0.05rem 0.55rem; color: var(--muted); background: #fff; font-size: var(--text-label); font-weight: 700; vertical-align: 0.1em; }
+.dm-refs { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; margin-left: 0.4rem; color: var(--muted); font-size: var(--text-meta); vertical-align: 0.05em; }
+.dm .dm-refs a { display: inline-grid; min-width: 1.5rem; min-height: 1.5rem; place-items: center; border: 1px solid var(--line); border-radius: 99px; padding: 0 0.35rem; background: #fff; font-weight: 700; line-height: 1; text-decoration: none; }
+.dm .dm-refs a:hover { border-color: var(--blue); }
+
+/* Las ocho áreas. */
+.dm-areas { display: grid; gap: 1rem; min-width: 0; }
+.dm-area { display: grid; gap: 0.75rem; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-md); padding: clamp(1rem, 3vw, 1.4rem); background: var(--surface); }
+.dm-area__title { margin: 0; font-size: 1.15rem; font-weight: 800; line-height: 1.3; }
+.dm-area__lead { margin: 0; line-height: 1.55; }
+.dm-area__facts { display: grid; gap: 0.75rem; margin: 0; }
+.dm-area__facts dt { color: var(--muted); font-size: var(--text-meta); font-weight: 700; }
+.dm-area__facts dd { margin: 0.15rem 0 0; line-height: 1.5; overflow-wrap: break-word; }
+.dm-area__facts ul { display: grid; gap: 0.2rem; margin: 0; padding-left: 1.2rem; list-style: disc; }
+@media (min-width: 52rem) { .dm-areas { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; } }
+
+/* Cadena de una recomendación: del dato a la opción de Vecidya. */
+.dm-chain { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; list-style: none; counter-reset: dm-chain; }
+.dm-chain li { counter-increment: dm-chain; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.45rem 0.75rem; background: var(--surface); font-size: var(--text-meta); font-weight: 700; line-height: 1.35; }
+.dm-chain li::before { content: counter(dm-chain) ". "; color: var(--muted); }
+
+/* Fuentes. */
+.dm-sources { display: grid; gap: 1.25rem; max-width: var(--content-reading); margin: 0; padding-left: 1.6rem; list-style: decimal; }
+.dm-sources > li::marker { color: var(--muted); font-weight: 700; }
+.dm-sources > li { scroll-margin-top: 1.5rem; padding-left: 0.25rem; }
+.dm-sources > li:focus { outline: none; }
+.dm-sources > li:target { border-radius: var(--radius-sm); background: var(--surface-soft); box-shadow: 0 0 0 0.5rem var(--surface-soft); }
+.dm-source__title { margin: 0; font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; }
+.dm-source__title a { display: inline-block; padding: 0.2rem 0; }
+.dm-source__meta { margin: 0.2rem 0 0.4rem; color: var(--muted); font-size: var(--text-meta); }
+.dm-source__supports { display: grid; gap: 0.3rem; margin: 0; padding-left: 1.2rem; list-style: disc; line-height: 1.5; }
+
+/* Versiones. */
+.dm-table-wrap { max-width: var(--content-reading); overflow-x: auto; }
+.dm-table { width: 100%; border-collapse: collapse; line-height: 1.45; }
+.dm-table th, .dm-table td { border-bottom: 1px solid var(--line); padding: 0.6rem 0.75rem 0.6rem 0; text-align: left; vertical-align: top; }
+.dm-table th { color: var(--muted); font-size: var(--text-meta); }
+
+@media print {
+  .dm-page { width: auto; margin: 0; padding: 0 3px; }
+  .dm-hero { box-shadow: none; }
+  .dm-toc { display: none; }
+  .dm-areas { grid-template-columns: 1fr; }
+  .dm-area, .dm-sources > li { break-inside: avoid; }
+  .dm-section__title, .dm-area__title { break-after: avoid; }
+}

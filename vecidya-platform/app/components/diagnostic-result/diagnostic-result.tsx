@@ -1,18 +1,22 @@
 import type { DiagnosticNarrative, DiagnosticOutcome } from "../../features/diagnostic";
+// Import directo, fuera del barrel: la metodología no entra en el chunk compartido que cargan las rutas públicas.
+import { METHODOLOGY_LINK_LABEL, METHODOLOGY_VERSION, RESULT_METHOD_NOTES } from "../../features/diagnostic/qbv2-methodology";
+import { METHODOLOGY_PATH } from "../diagnostic-methodology";
 
 import { ActionPath, VecidyaHelpSection } from "./action-path";
 import { DimensionOverview } from "./dimension-overview";
 import { FocusSection } from "./focus-section";
-import { METHOD_NOTES, RESULT_DISCLAIMER } from "./presentation";
+import { RESULT_DISCLAIMER } from "./presentation";
 import { EvidenceSection, UncertaintySection } from "./reading-sections";
 import { ExecutiveSummary, ResultHero } from "./result-hero";
 
-/** Cierre — «Cómo se evaluó» y el alcance del resultado. Las fuentes y marcos externos llegan en la capa de metodología. */
+/** Cierre — «Cómo se evaluó» (nivel A de la metodología, DIAG-V3-11), el alcance del resultado y el enlace a la metodología completa. */
 export function MethodNote() {
   return (
     <section aria-labelledby="dr-method-title" className="dr-section dr-method">
       <h2 className="dr-section__title" id="dr-method-title">Cómo se evaluó</h2>
-      <ul>{METHOD_NOTES.map((note) => <li key={note}>{note}</li>)}</ul>
+      <ul>{RESULT_METHOD_NOTES.map((note) => <li key={note}>{note}</li>)}</ul>
+      <p className="dr-method__more"><a href={METHODOLOGY_PATH}>{METHODOLOGY_LINK_LABEL}</a> <span className="dr-method__version">Metodología {METHODOLOGY_VERSION}</span></p>
       <p className="dr-disclaimer">{RESULT_DISCLAIMER}</p>
     </section>
   );

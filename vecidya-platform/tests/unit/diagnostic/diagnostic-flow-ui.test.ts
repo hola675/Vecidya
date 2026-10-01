@@ -72,9 +72,9 @@ test("10B hint is visible secondary text linked to the group; help «?» shows t
   assert.equal(renderToStaticMarkup(createElement(QuestionHelp, { question: renderQuestionV2(noHelp, { context: {} }) })), "");
 });
 
-test("10B questionnaire hints and help explain meaning, never scoring internals (points, weights, evidence roles, planner, formulas)", () => {
+test("10B questionnaire hints and help explain meaning, never scoring internals (points, weights, evidence, planner, formulas)", () => {
   // Solo pistas y ayuda del cuestionario; «porcentaje» y similares son legítimos en el resultado.
-  const internal = /\bpoints?\b|score contribution|\bscor(e|es|ing)\b|\bweights?\b|direct evidence|supporting evidence|\bplanner\b|priority formula|\bpuntos?\b|puntaje|puntuaci[oó]n|contribuci[oó]n|\bpesos?\b|ponderaci[oó]n|ponderad[oa]|evidencia directa|evidencia de apoyo|planificador|f[oó]rmula/i;
+  const internal = /\bpoints?\b|score contribution|\bscor(e|es|ing)\b|\bweights?\b|\bevidence\b|\bplanner\b|priority formula|\bpuntos?\b|puntaje|puntuaci[oó]n|contribuci[oó]n|\bpesos?\b|ponderaci[oó]n|ponderad[oa]|\bevidencias?\b|planificador|f[oó]rmula/i;
   let texts = 0;
   for (const definition of QUESTION_BANK_V2) {
     const help = definition.helpIntent;
@@ -87,6 +87,8 @@ test("10B questionnaire hints and help explain meaning, never scoring internals 
   const goal = renderQuestionV2(QUESTION_BANK_V2.find((question) => question.id === "q2_goal")!, { context: {} }).help!;
   assert.equal(goal.understand, "Lo principal que quieres mejorar ahora mismo.");
   assert.equal(goal.why, "Tu objetivo nos ayuda a orientar el diagnóstico hacia las áreas más relevantes para lo que quieres mejorar. No determina por sí solo si un área está bien o mal.");
+  const friction = renderQuestionV2(QUESTION_BANK_V2.find((question) => question.id === "q2_friction")!, { context: {} }).help!;
+  assert.equal(friction.why, "Nos ayuda a enfocar primero las preguntas en el área donde notas más dificultad. Si las demás respuestas apuntan a otra cosa, el diagnóstico lo señala.");
 });
 
 test("10B every question of the bank renders without crashing and uses the rendered copy verbatim", () => {

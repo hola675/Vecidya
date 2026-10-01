@@ -228,7 +228,7 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     helpIntent: {
       understand: "El obstáculo que más pesa hoy, según tu experiencia.",
       distinction: "Elige el que más te frena ahora, no el que parece más grave en general.",
-      why: "Indica dónde buscar evidencia primero; si las demás respuestas apuntan a otra cosa, el diagnóstico lo señala.",
+      why: "Nos ayuda a enfocar primero las preguntas en el área donde notas más dificultad. Si las demás respuestas apuntan a otra cosa, el diagnóstico lo señala.",
     },
   },
   {

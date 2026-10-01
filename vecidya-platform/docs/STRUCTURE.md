@@ -11,7 +11,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     ├── app/                    interfaz React Router
     │   ├── routes.ts           tabla de 41 rutas
     │   ├── routes/             41 archivos (uno por ruta)
-    │   ├── components/         public-layout, public-v2, admin-shell, ui, diagnostic-result/ (resultado V3, DIAG-V3-09/10), diagnostic-flow/ (cuestionario V3, DIAG-V3-10B)
+    │   ├── components/         public-layout, public-v2, admin-shell, ui, diagnostic-result/ (resultado V3, DIAG-V3-09/10), diagnostic-flow/ (cuestionario V3, DIAG-V3-10B), diagnostic-methodology/ (metodología V3, DIAG-V3-11)
     │   ├── assets/public-assets.ts   manifiesto de assets públicos
     │   ├── lib/auth-client.ts  cliente Better Auth
     │   ├── root.tsx, entry.server.tsx, app.css (Tailwind 4 + estilos propios)
@@ -124,7 +124,7 @@ Sin autenticación, las rutas privadas y de API responden **302 → `/login`** (
 | --- | --- | --- | --- |
 | `/__health/db` | `health-db.ts` | Lee solo `platform_meta`; **público**; `environment` fijo en `"LOCAL"`; devuelve 503 en una D1 recién migrada porque nada inserta `platform_meta` | sí (200) |
 
-Solo desarrollo (no se cuentan en la tabla de rutas ni entran en el build): `/__dev/diagnostico/resultado/:personaId?` → `dev-diagnostic-result.tsx`, vista previa del resultado V3 con las 12 personas golden (DIAG-V3-09), y `/__dev/diagnostico/v3` → `dev-diagnostic-v3.tsx`, cuestionario adaptativo V3 completo hasta el resultado (DIAG-V3-10B; `?debug=1` muestra la sesión). `routes.ts` la registra solo con `NODE_ENV=development` y el loader responde 404 fuera de `import.meta.env.DEV`.
+Solo desarrollo (no se cuentan en la tabla de rutas ni entran en el build): `/__dev/diagnostico/resultado/:personaId?` → `dev-diagnostic-result.tsx`, vista previa del resultado V3 con las 12 personas golden (DIAG-V3-09), y `/__dev/diagnostico/v3` → `dev-diagnostic-v3.tsx`, cuestionario adaptativo V3 completo hasta el resultado (DIAG-V3-10B; `?debug=1` muestra la sesión), y `/__dev/diagnostico/metodologia` → `dev-diagnostic-methodology.tsx`, metodología y fuentes del diagnóstico V3 (DIAG-V3-11). `routes.ts` la registra solo con `NODE_ENV=development` y el loader responde 404 fuera de `import.meta.env.DEV`.
 
 ## Módulos clave
 
@@ -134,6 +134,7 @@ Solo desarrollo (no se cuentan en la tabla de rutas ni entran en el build): `/__
 - **UI compartida**: `components/public-v2.tsx` (tarjeta, perfil, JSON-LD, secciones visuales), `components/public-layout.tsx` (shell público, metadatos, navegación), `components/admin-shell.tsx`, `components/ui.tsx`.
 - **Resultado del Diagnóstico V3** (`components/diagnostic-result/`, DIAG-V3-09/10): `diagnostic-result` (composición y `MethodNote` con el alcance), `result-hero` (portada y `ExecutiveSummary`), `presence-status` (estado general), `action-path` (plan de acción y «Cómo puede ayudarte Vecidya»), `status-assets.ts` (ranuras y briefs de los iconos de estado), `focus-section` (restricción y prioridades), `reading-sections` (fortalezas, áreas, señales cruzadas, incertidumbres), `dimension-overview`, `indicators` (estado, porcentaje, confianza, certeza), `disclosures` (ayuda y evidencia), `presentation.ts` (mapeo de presentación sin JSX) y `result-debug-panel` (solo la vista previa local). Consume el `DiagnosticNarrative` y el `DiagnosticOutcome`; ninguna ruta pública lo renderiza todavía. Capa de decisión en `features/diagnostic/`: `qbv2-overall` (índice y estado general), `qbv2-recommendations`, `qbv2-solutions` y `qbv2-offerings` (catálogo comercial y `buildDiagnosticOutcome`).
 - **Cuestionario del Diagnóstico V3** (`components/diagnostic-flow/`, DIAG-V3-10B): `diagnostic-flow` (contenedor: vistas, persistencia y límite de errores), `question-step` (pregunta, opciones, ayuda y progreso), `flow-screens` (inicio, reanudación, listo, preparando, error y confirmación de reinicio), `flow-copy.ts` (copy de la experiencia, sin JSX) y `flow-debug-panel` (solo la ruta privada). Sesión pura en `features/diagnostic/qbv2-session.ts`.
+- **Metodología del Diagnóstico V3** (`components/diagnostic-methodology/`, DIAG-V3-11): `methodology-article` (`MethodologyArticle`: «Lo esencial», índice, secciones, ocho áreas, cadena de recomendación, fuentes numeradas y tabla de versiones) y `METHODOLOGY_PATH`. Los datos viven en `features/diagnostic/qbv2-methodology.ts`, que se importa directamente (no está en el barrel del dominio).
 
 ## Placeholders sin implementación
 

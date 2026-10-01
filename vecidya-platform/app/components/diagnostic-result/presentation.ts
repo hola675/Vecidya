@@ -281,12 +281,5 @@ export const RESULT_HELP = {
   },
 } as const;
 
-/** Reserva de «Cómo se evaluó»: solo lo que ya es cierto del método, sin fuentes externas todavía. */
+/** Alcance del resultado, al pie de «Cómo se evaluó». Las explicaciones del método viven en `qbv2-methodology.ts` (DIAG-V3-11). */
 export const RESULT_DISCLAIMER = "Este resultado es una orientación basada en tus respuestas, no una auditoría ni una certificación. Las opciones de Vecidya aparecen solo cuando se relacionan con una prioridad del diagnóstico, y el resultado sirve aunque no contrates nada.";
-
-export const METHOD_NOTES = [
-  "Tus respuestas se evaluaron por área: cada una se lee según lo que mide.",
-  "No todas las áreas necesitan el mismo número de preguntas; el recorrido profundiza donde importa más para tu situación.",
-  "La confianza indica cuánta evidencia respalda cada lectura, por eso se muestra junto a cada porcentaje.",
-  "El porcentaje de presencia digital es el promedio, con el mismo peso, de las áreas aplicables con lectura; las áreas sin lectura no cuentan como cero.",
-] as const;
