@@ -131,10 +131,19 @@ test("08D.1 policy: a declared friction is never displaced by an inherited prere
   }
   const inverse = run(cases[2].specs, cases[2].ctx).priorities[0]!;
   assert.ok(inverse.reasonCodes.includes("sequenced_before_dependent") && inverse.dependency.blocks.includes("conversion_access"));
-  // Real golden regression: professional_appointments (Trust 25, Relationship 33, friction follow_up).
+  // 08E.1: a low-certainty prerequisite never displaces a more certain constraint it blocks.
+  const uncertain = run({ conversion_access: { score: 50, level: "medium" }, trust_reputation: { score: 50, level: "low" } }, { friction: "conversion" });
+  assert.deepEqual(order(uncertain).slice(0, 2), ["conversion_access", "trust_reputation"]);
+  // Real golden regression (professional_appointments, friction follow_up): whatever precedes the declared
+  // friction must block it with evidence at least as certain; Trust (which only blocks conversion) never does.
   const persona = GOLDEN_PERSONAS.find((entry) => entry.id === "professional_appointments")!;
   const real = deriveConstraintsAndPriorities(scoreContextualDimensions({ answers: runGoldenPersonaPipeline(persona).answers, context: {}, evidence: [] }));
-  assert.deepEqual(real.priorities.map((entry) => [entry.dimension, entry.score]), [["relationship_recurrence", 33], ["trust_reputation", 25], ["conversion_access", 50]]);
+  const certainty = { actionable: 0, likely: 1, verify_first: 2 } as const;
+  const friction = real.constraints.findIndex((entry) => entry.dimension === "relationship_recurrence");
+  const followUp = real.constraints[friction]!;
+  assert.ok(friction >= 0 && friction < 3, "declared follow-up friction stays among the priorities");
+  assert.ok(real.constraints.slice(0, friction).every((entry) => entry.dependency.blocks.includes("relationship_recurrence") && certainty[entry.certainty] <= certainty[followUp.certainty]), "only a blocker at least as certain precedes the declared friction");
+  assert.ok(real.constraints.findIndex((entry) => entry.dimension === "trust_reputation") === -1 || real.constraints.findIndex((entry) => entry.dimension === "trust_reputation") > friction);
 });
 
 test("golden personas run planner → scoring → constraints → priorities with valid, sequenced structures", () => {
@@ -156,7 +165,8 @@ test("golden personas run planner → scoring → constraints → priorities wit
       assert.equal(constraint.score, byId.get(constraint.dimension)!.score, `${persona.id}: score copied, never recomputed`);
       assert.ok(constraint.evidence.every((id) => questionIds.has(id)), `${persona.id}: evidence IDs come from scoring`);
       if (constraint.score === null) assert.equal(constraint.kind, "evidence_gap", `${persona.id}: null only as a gap`);
-      const blockers = output.constraints.filter((other) => other.severity !== "unknown" && other.dependency.blocks.includes(constraint.dimension));
+      const rank = { actionable: 0, likely: 1, verify_first: 2 } as const;
+      const blockers = output.constraints.filter((other) => other.severity !== "unknown" && other.dependency.blocks.includes(constraint.dimension) && rank[other.certainty] <= rank[constraint.certainty]);
       assert.ok(blockers.every((blocker) => output.constraints.indexOf(blocker) < index), `${persona.id}: prerequisite precedes ${constraint.dimension}`);
     }
     primaries.add(output.priorities[0]?.dimension ?? "none");

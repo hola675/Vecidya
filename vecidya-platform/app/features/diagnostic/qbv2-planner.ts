@@ -26,15 +26,21 @@ export type RouteBudgetV1 = {
   readonly moduleMax: Readonly<Partial<Record<ModuleId, number>>>;
 };
 
-/** Absolute product limit for productive questions in one route (DIAG-V3-08D.1; previously 18). */
-export const ROUTE_HARD_CAP = 20;
+/** Absolute product limit for productive questions in one route (DIAG-V3-08E.2; 20 in 08D.1, 18 before). */
+export const ROUTE_HARD_CAP = 24;
+
+/**
+ * DIAG-V3-08E.2 route bands: the adaptive base route (1–18), the material extension (19–20) and the
+ * evidence-completion reserve (21–24). Slots past the base only serve open material evidence needs.
+ */
+export const ROUTE_BANDS = { base: 18, materialExtension: 20, hardCap: ROUTE_HARD_CAP } as const;
 
 export const DEFAULT_ROUTE_BUDGET_V1: RouteBudgetV1 = {
   targetMin: 10,
   targetMax: 16,
   hardMax: ROUTE_HARD_CAP,
   confirmationReserve: 2,
-  materialEvidenceReserve: 2,
+  materialEvidenceReserve: ROUTE_HARD_CAP - ROUTE_BANDS.base,
   moduleMax: {
     core: 3, classification: 6, maturity: 6, goal_friction: 3,
     startup: 6, operations: 3, follow_up: 3, measurement: 3, confirmation: 2,
@@ -56,7 +62,7 @@ function normalizeRouteBudget(budget: RouteBudgetV1, activeAnswerCount: number):
   };
 }
 
-export type PlannerSkipReason = "module_budget" | "redundant_evidence" | "lower_priority" | "hard_cap" | "context_already_resolved" | "component_covered" | "refinement_not_needed";
+export type PlannerSkipReason = "module_budget" | "redundant_evidence" | "lower_priority" | "hard_cap" | "context_already_resolved" | "component_covered" | "refinement_not_needed" | "material_not_needed";
 export type QuestionSelectionReason = "required_context" | "unlock_routing" | "goal_or_friction" | "specialized_evidence" | "cross_cutting_evidence" | "refinement" | "confirmation";
 
 // ── Material evidence need (DIAG-V3-08D.1) ──────────────────────────────────
@@ -64,13 +70,15 @@ export type QuestionSelectionReason = "required_context" | "unlock_routing" | "g
 /**
  * A dimension the user's own declaration makes material: the friction's primary dimension (a declared
  * problem; two direct observations so one thin reading does not settle it), the goal's primary dimension
- * (one) and an unknown prerequisite of a detected relevant constraint (one). Answers decide capability;
+ * (one) and an unknown prerequisite (one) — DIAG-V3-08E.2: only one that blocks a constrained primary or
+ * secondary priority or the declared goal/friction dimension; a capacity gate (`sustains`) ranks last.
+ * An active constraint already has direct evidence, so it never opens a need. Answers decide capability;
  * these only decide which eligible direct question is worth asking first. Not dimension completion.
  */
-export type MaterialEvidenceSource = "friction" | "goal" | "prerequisite";
+export type MaterialEvidenceSource = "friction" | "goal" | "prerequisite" | "capacity_gate";
 export type MaterialEvidenceNeed = { readonly dimension: DigitalDimensionId; readonly source: MaterialEvidenceSource; readonly target: number; readonly observed: number; readonly remaining: number };
-export const MATERIAL_EVIDENCE_TARGET: Readonly<Record<MaterialEvidenceSource, number>> = { friction: 2, goal: 1, prerequisite: 1 };
-const MATERIAL_SOURCE_RANK: Readonly<Record<MaterialEvidenceSource, number>> = { friction: 3, goal: 2, prerequisite: 1 };
+export const MATERIAL_EVIDENCE_TARGET: Readonly<Record<MaterialEvidenceSource, number>> = { friction: 2, goal: 1, prerequisite: 1, capacity_gate: 1 };
+const MATERIAL_SOURCE_RANK: Readonly<Record<MaterialEvidenceSource, number>> = { friction: 4, goal: 3, prerequisite: 2, capacity_gate: 1 };
 
 function directDimensions(questionId: string): readonly DigitalDimensionId[] {
   const mapping = EVIDENCE_MAPPING[questionId];
@@ -89,14 +97,28 @@ function materialEvidenceNeeds(result: ResolveEligibleQuestionsResult, bank: Que
     const current = wanted.get(dimension);
     if (!current || MATERIAL_SOURCE_RANK[source] > MATERIAL_SOURCE_RANK[current]) wanted.set(dimension, source);
   };
-  want(friction ? FRICTION_RELEVANCE[friction][0] : undefined, "friction");
-  want(goal ? GOAL_RELEVANCE[goal][0] : undefined, "goal");
-  const constraints = deriveConstraintsAndPriorities(scoring).constraints;
+  const frictionDimension = friction ? FRICTION_RELEVANCE[friction][0] : undefined;
+  // DIAG-V3-08E.3: a goal targets its first applicable relevant dimension, so a goal whose primary dimension
+  // does not apply yet (e.g. `stop_losing` while starting, where recurrence is not applicable) still has an
+  // evidence path through its related dimension (conversion leakage) instead of becoming a bare label.
+  const goalDimension = goal ? GOAL_RELEVANCE[goal].find((dimension) => applicable.has(dimension)) : undefined;
+  want(frictionDimension, "friction");
+  want(goalDimension, "goal");
+  const { constraints, priorities } = deriveConstraintsAndPriorities(scoring);
+  // A prerequisite is verified only where it can change the diagnosis: it occupies or blocks one of the
+  // two leading priorities, or blocks the declared goal/friction dimension — and what it blocks is weak.
+  const leading = priorities.slice(0, 2);
+  const key = new Set([...leading.map((item) => item.dimension), frictionDimension, goalDimension]);
   const constrained = new Set(constraints.filter((item) => item.severity === "material" || item.severity === "moderate").map((item) => item.dimension));
-  for (const gap of constraints.filter((item) => item.kind === "evidence_gap" && item.score === null && item.dependency.blocks.some((blocked) => constrained.has(blocked)))) want(gap.dimension, "prerequisite");
+  for (const gap of constraints.filter((item) => item.kind === "evidence_gap" && item.score === null)) {
+    const material = gap.dependency.blocks.some((blocked) => constrained.has(blocked) && (key.has(blocked) || leading.some((item) => item.id === gap.id)));
+    if (material) want(gap.dimension, gap.reasonCodes.includes("prerequisite_of_relevant") ? "prerequisite" : "capacity_gate");
+  }
   return [...wanted.entries()].map(([dimension, source]) => {
     // Any answered direct question counts, including "unknown": the planner already made the effort.
-    const observed = new Set(evidence.filter((item) => item.dimension === dimension && item.directness === "direct").map((item) => item.questionId)).size;
+    // DIAG-V3-08E.2: an answer that observes no capability (not applicable, or a business constraint such
+    // as "no takeaway") is not an observation of the dimension.
+    const observed = new Set(evidence.filter((item) => item.dimension === dimension && item.directness === "direct" && item.state !== "not_applicable" && item.state !== "constraint").map((item) => item.questionId)).size;
     const target = MATERIAL_EVIDENCE_TARGET[source];
     return { dimension, source, target, observed, remaining: Math.max(0, target - observed) };
   });
@@ -114,7 +136,13 @@ export type QuestionRankMetadata = {
   readonly rank: readonly number[];
 };
 
-export type PlannerTraceEntry = QuestionRankMetadata & { readonly selected: boolean; readonly skipReason?: PlannerSkipReason; readonly budgetState: { readonly routeLength: number; readonly moduleCount: number; readonly hardMax: number } };
+export type PlannerTraceEntry = QuestionRankMetadata & {
+  readonly selected: boolean;
+  /** DIAG-V3-08E.2: selection phase — the adaptive base route, or the material tail (extension + reserve). */
+  readonly selectedIn?: "base" | "material";
+  readonly skipReason?: PlannerSkipReason;
+  readonly budgetState: { readonly routeLength: number; readonly moduleCount: number; readonly hardMax: number };
+};
 
 export type DiagnosticPlannerState = {
   readonly answers: AnswersV2;
@@ -233,7 +261,7 @@ function compareRank(a: QuestionRankMetadata, b: QuestionRankMetadata): number {
   return a.questionId.localeCompare(b.questionId);
 }
 
-function completionStatus(result: ResolveEligibleQuestionsResult, trace: readonly PlannerTraceEntry[], budget: RouteBudgetV1, bank: QuestionBankV2, rawAnswers: AnswersV2, triggeredConfirmationIds: readonly string[], contradictions: readonly DetectedContradiction[], baseMax: number): CompletionStatus {
+function completionStatus(result: ResolveEligibleQuestionsResult, trace: readonly PlannerTraceEntry[], budget: RouteBudgetV1, bank: QuestionBankV2, rawAnswers: AnswersV2, triggeredConfirmationIds: readonly string[], contradictions: readonly DetectedContradiction[], capReached: boolean): CompletionStatus {
   const status = fieldStatus(result.context);
   const minimumContextResolved = CORE_FIELDS.every((field) => status[field] === "resolved");
   const requiredQuestionsAnswered = trace.every((entry) => !entry.required || result.activeAnswers[entry.questionId] !== undefined);
@@ -249,18 +277,23 @@ function completionStatus(result: ResolveEligibleQuestionsResult, trace: readonl
   const relevantDimensions = new Set<DimensionId>();
   for (const id of result.eligibleQuestionIds) for (const dimension of bank.find((question) => question.id === id)?.scoringReadiness?.candidateDimensions ?? []) relevantDimensions.add(dimension);
   const evidenceSufficient = diagnosticCount >= 8 && coveredDimensions.size >= Math.min(3, relevantDimensions.size) || status.growthStage === "resolved" && status.primaryGoal === "resolved" && diagnosticCount >= 5 && coveredDimensions.size >= Math.min(2, relevantDimensions.size);
-  const noMoreEligibleQuestions = result.eligibleQuestionIds.length === 0;
+  // A question eligible only as material evidence, with no open need for it, is not a pending question.
+  const unneeded = new Set(trace.filter((entry) => entry.skipReason === "material_not_needed").map((entry) => entry.questionId));
+  const noMoreEligibleQuestions = result.eligibleQuestionIds.filter((id) => !unneeded.has(id)).length === 0;
   const confirmationQuestionIds = new Set(bank.filter((question) => question.contradictionRole?.type === "confirms").map((question) => question.id));
   const pendingConfirmations = triggeredConfirmationIds.filter((id) => result.activeAnswers[id] === undefined);
   const confirmationAnswered = contradictions.some((item) => item.status === "confirmed");
   const confirmationAmbiguous = contradictions.some((item) => item.status === "remains_ambiguous");
   const invalidatedConfirmation = [...confirmationQuestionIds].some((id) => rawAnswers[id] !== undefined && result.activeAnswers[id] === undefined && !triggeredConfirmationIds.includes(id));
   const routeBudgetReached = Object.keys(result.activeAnswers).length + trace.filter((entry) => entry.selected).length >= budget.targetMax;
-  // The base cap ends a route: reserved slots above it only ever hold material evidence already selected here.
-  const hardCapReached = Object.keys(result.activeAnswers).length + trace.filter((entry) => entry.selected).length >= Math.min(budget.hardMax, baseMax);
+  // The base route reached its cap (material extras excluded) or the whole route reached the hard cap.
+  const hardCapReached = capReached;
   const confirmationRequired = pendingConfirmations.length > 0 && !hardCapReached;
-  const noActionableQuestions = minimumContextResolved && requiredQuestionsAnswered && !confirmationRequired && trace.length > 0 && trace.every((entry) => entry.selected || ["module_budget", "component_covered", "context_already_resolved", "redundant_evidence", "hard_cap"].includes(entry.skipReason ?? ""));
-  const ready = !confirmationRequired && (noMoreEligibleQuestions || noActionableQuestions || hardCapReached || minimumContextResolved && requiredQuestionsAnswered && evidenceSufficient);
+  const noActionableQuestions = minimumContextResolved && requiredQuestionsAnswered && !confirmationRequired && trace.length > 0 && trace.every((entry) => entry.selected || ["module_budget", "component_covered", "context_already_resolved", "redundant_evidence", "hard_cap", "material_not_needed"].includes(entry.skipReason ?? ""));
+  // DIAG-V3-08E.2: nothing left to select (e.g. a goal declared "unsure" never resolves) ends the route
+  // instead of leaving it open with no next question.
+  const exhausted = requiredQuestionsAnswered && trace.every((entry) => !entry.selected);
+  const ready = !confirmationRequired && (noMoreEligibleQuestions || noActionableQuestions || hardCapReached || exhausted || minimumContextResolved && requiredQuestionsAnswered && evidenceSufficient);
   const reason: CompletionStatus["reason"] = [
     ...(minimumContextResolved ? ["minimum_context_resolved" as const] : []),
     ...(requiredQuestionsAnswered ? ["required_questions_answered" as const] : []),
@@ -293,12 +326,16 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
   const ranked = plannerEligibleQuestionIds.map((id) => rankQuestion(questions.get(id)!, status, result.activeAnswers, result.context, routingPrerequisites, needs)).sort(compareRank);
   const baseMax = budget.hardMax - (budget.materialEvidenceReserve ?? 0);
   const servesMaterial = (entry: QuestionRankMetadata) => directDimensions(entry.questionId).some((dimension) => (remainingNeed.get(dimension) ?? 0) > 0);
-  const capFor = (entry: QuestionRankMetadata) => (servesMaterial(entry) ? budget.hardMax : baseMax);
   // Eligible through `materialAppliesWhen` only: such a question may enter the tail, never the base route.
-  const nativelyEligible = (entry: QuestionRankMetadata) => { const question = questions.get(entry.questionId)!; return question.appliesWhen ? evaluateRuleV2(question.appliesWhen, result.activeAnswers, result.context) : !question.materialAppliesWhen; };
+  const nativelyEligible = (entry: QuestionRankMetadata) => isNativelyEligible(entry.questionId);
   const consumeNeed = (entry: QuestionRankMetadata) => { for (const dimension of directDimensions(entry.questionId)) if ((remainingNeed.get(dimension) ?? 0) > 0) remainingNeed.set(dimension, remainingNeed.get(dimension)! - 1); };
   const selected: string[] = [];
   const alreadyAskedCount = Math.min(Object.keys(result.activeAnswers).length, budget.hardMax);
+  // DIAG-V3-08E.1: answers given only through `materialAppliesWhen` are tail extras; they never consume the
+  // base route's budget, so a later-unlocked base question is not displaced by earlier material evidence.
+  const isNativelyEligible = (questionId: string) => { const question = questions.get(questionId); return !question || (question.appliesWhen ? evaluateRuleV2(question.appliesWhen, result.activeAnswers, result.context) : !question.materialAppliesWhen); };
+  const baseAskedCount = alreadyAskedCount - Object.keys(result.activeAnswers).filter((questionId) => !isNativelyEligible(questionId)).length;
+  let baseSelectedCount = 0;
   const moduleCounts: Partial<Record<ModuleId, number>> = {};
   const selectionBudgetState = new Map<string, { readonly routeLength: number; readonly moduleCount: number }>();
   const seenDimensions = new Set<DimensionId>();
@@ -320,8 +357,8 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
   const hasUnselectedConfirmation = () => triggeredConfirmationIds.some((id) => !selected.includes(id));
   /** Base phase: the pre-08D.1 rules, capped at `baseMax` (18). */
   const canSelect = (entry: QuestionRankMetadata): boolean => {
-    if (alreadyAskedCount + selected.length >= baseMax || !nativelyEligible(entry)) return false;
-    if (confirmationAvailable && entry.reason !== "confirmation" && !entry.required && alreadyAskedCount + selected.length >= baseMax - Math.min(budget.confirmationReserve, triggeredConfirmationIds.length)) return false;
+    if (baseAskedCount + baseSelectedCount >= baseMax || alreadyAskedCount + selected.length >= budget.hardMax || !nativelyEligible(entry)) return false;
+    if (confirmationAvailable && entry.reason !== "confirmation" && !entry.required && baseAskedCount + baseSelectedCount >= baseMax - Math.min(budget.confirmationReserve, triggeredConfirmationIds.length)) return false;
     if ((moduleCounts[entry.module] ?? 0) >= moduleLimit(entry.module, budget)) return false;
     const component = componentFor(entry.module);
     const contextRelevant = entry.module === "startup" && startupMinimum > 0 || entry.module === "nonprofit" && result.context.businessModel.status === "resolved" && result.context.businessModel.value === "nonprofit" || component !== undefined && result.context.archetypeComponents.includes(component as (typeof result.context.archetypeComponents)[number]) || crossCuttingRelevant(entry.module, result.context);
@@ -349,32 +386,41 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
     const entry = ranked.find((candidate) => !selected.includes(candidate.questionId) && canSelect(candidate));
     if (!entry) break;
     record(entry);
+    baseSelectedCount += 1;
     const startupComplete = (moduleCounts.startup ?? 0) >= startupMinimum;
-    if (alreadyAskedCount + selected.length >= budget.targetMax && startupComplete && ranked.filter((candidate) => candidate.required && !selected.includes(candidate.questionId)).length === 0 && !hasUnselectedConfirmation()) break;
+    if (baseAskedCount + baseSelectedCount >= budget.targetMax && startupComplete && ranked.filter((candidate) => candidate.required && !selected.includes(candidate.questionId)).length === 0 && !hasUnselectedConfirmation()) break;
   }
   // Tail phase (DIAG-V3-08D.1): the base route is final; append direct evidence only for still-open material
   // needs, strongest source first, up to `hardMax`. The declared problem outranks module/component balancing.
+  // DIAG-V3-08E.2: the same loop fills the extension (19–20) and then the completion reserve (21–24); a route
+  // with no open need never enters either band.
+  const tailSelected = new Set<string>();
   const sourceRank = (entry: QuestionRankMetadata) => Math.max(0, ...needs.filter((need) => (remainingNeed.get(need.dimension) ?? 0) > 0 && directDimensions(entry.questionId).includes(need.dimension)).map((need) => MATERIAL_SOURCE_RANK[need.source]));
   while (alreadyAskedCount + selected.length < budget.hardMax) {
     const candidates = ranked.filter((candidate) => !selected.includes(candidate.questionId) && !candidate.required && candidate.reason !== "confirmation" && servesMaterial(candidate));
     if (candidates.length === 0) break;
     const best = Math.max(...candidates.map(sourceRank));
-    record(candidates.find((candidate) => sourceRank(candidate) === best)!);
+    const entry = candidates.find((candidate) => sourceRank(candidate) === best)!;
+    record(entry);
+    tailSelected.add(entry.questionId);
   }
   const selectedSet = new Set(selected);
   const trace = ranked.map((entry): PlannerTraceEntry => {
     if (selectedSet.has(entry.questionId)) {
       const state = selectionBudgetState.get(entry.questionId)!;
-      return { ...entry, selected: true, budgetState: { ...state, hardMax: budget.hardMax } };
+      return { ...entry, selected: true, selectedIn: tailSelected.has(entry.questionId) ? "material" : "base", budgetState: { ...state, hardMax: budget.hardMax } };
     }
     const question = questions.get(entry.questionId)!;
     const resolvedFields = (question.purpose.some((purpose) => purpose === "anchor" || purpose === "classification" || purpose === "maturity") || question.module === "goal_friction") && producedContextFields(question).length > 0 && producedContextFields(question).every((field) => status[field] === "resolved");
     const component = componentFor(entry.module);
     const componentCovered = component !== undefined && (componentCounts[component] ?? 0) >= 2;
-    const skipReason: PlannerSkipReason = alreadyAskedCount + selected.length >= capFor(entry) ? "hard_cap" : (moduleCounts[entry.module] ?? 0) >= moduleLimit(entry.module, budget) ? "module_budget" : resolvedFields ? "context_already_resolved" : componentCovered ? "component_covered" : entry.reason === "refinement" ? "refinement_not_needed" : entry.dimensions.every((dimension) => seenDimensions.has(dimension)) ? "redundant_evidence" : "lower_priority";
+    // Eligible only as material evidence and no open need for it: not a pending base candidate.
+    const capped = servesMaterial(entry) ? alreadyAskedCount + selected.length >= budget.hardMax : baseAskedCount + baseSelectedCount >= baseMax || alreadyAskedCount + selected.length >= budget.hardMax;
+    const skipReason: PlannerSkipReason = !nativelyEligible(entry) && !servesMaterial(entry) ? "material_not_needed" : capped ? "hard_cap" : (moduleCounts[entry.module] ?? 0) >= moduleLimit(entry.module, budget) ? "module_budget" : resolvedFields ? "context_already_resolved" : componentCovered ? "component_covered" : entry.reason === "refinement" ? "refinement_not_needed" : entry.dimensions.every((dimension) => seenDimensions.has(dimension)) ? "redundant_evidence" : "lower_priority";
     return { ...entry, selected: false, skipReason, budgetState: { routeLength: alreadyAskedCount + selected.length, moduleCount: moduleCounts[entry.module] ?? 0, hardMax: budget.hardMax } };
   });
-  const completion = completionStatus(result, trace, budget, bank, answers, triggeredConfirmationIds, contradictions, baseMax);
+  const capReached = baseAskedCount + baseSelectedCount >= baseMax || alreadyAskedCount + selected.length >= budget.hardMax;
+  const completion = completionStatus(result, trace, budget, bank, answers, triggeredConfirmationIds, contradictions, capReached);
   return {
     plannerVersion: ADAPTIVE_PLANNER_VERSION,
     context: result.context,

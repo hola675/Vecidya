@@ -66,6 +66,7 @@ export const LOTE_F_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo había revisado como una oferta", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["claridad"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si ya existe algo concreto que una persona podría aceptar o rechazar hoy.", distinction: "Responde por lo que podrías ofrecer mañana, no por la versión final que imaginas." },
   },
   {
     id: "q2_startup_demand_signal",

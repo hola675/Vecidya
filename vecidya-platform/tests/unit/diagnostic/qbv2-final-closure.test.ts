@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { evaluateRuleV2 } from "../../../app/features/diagnostic/qbv2-rules.ts";
 
 import {
   CURRENT_QUESTION_BANK_VERSION,
@@ -38,19 +39,21 @@ const contexts: Record<string, Record<string, string>> = {
 
 function pressure(answers: Record<string, string>) {
   const result = resolveEligibleQuestionsV2(answers, productionQuestions);
+  // 08E.1: pressure measures base-route candidates; questions eligible only as material evidence never compete there.
+  const native = (id: string) => { const question = productionQuestions.find((item) => item.id === id)!; return question.appliesWhen ? evaluateRuleV2(question.appliesWhen, result.activeAnswers, result.context) : !question.materialAppliesWhen; };
   const buckets = { foundation: 0, specialized: 0, "cross-cutting": 0, other: 0 };
-  for (const id of result.eligibleQuestionIds) {
+  for (const id of result.eligibleQuestionIds.filter(native)) {
     const module = productionQuestions.find((question) => question.id === id)!.module;
     if (FOUNDATION.has(module)) buckets.foundation += 1;
     else if (SPECIALIZED.has(module)) buckets.specialized += 1;
     else if (CROSS_CUTTING.has(module)) buckets["cross-cutting"] += 1;
     else buckets.other += 1;
   }
-  return { ...buckets, total: result.eligibleQuestionIds.length, iterations: result.iterations };
+  return { ...buckets, total: result.eligibleQuestionIds.filter(native).length, iterations: result.iterations };
 }
 
-test("08B.3 C1 + 08D.1: production bank has 83 questions (80 + 3 targeted evidence); golden confirmations remain fixture-only", () => {
-  assert.equal(productionQuestions.length, 83);
+test("08B.3 C1 + 08D.1 + 08E.1: production bank has 85 questions (80 + 3 targeted evidence + 2 final completion); golden confirmations remain fixture-only", () => {
+  assert.equal(productionQuestions.length, 85);
   assert.equal(GOLDEN_QUESTIONS_V2.length, 15);
   assert.equal(GOLDEN_QUESTIONS_V2.find((question) => question.id === "q2_confirm_hybrid_friction") !== undefined, true);
   assert.equal(GOLDEN_QUESTIONS_V2.find((question) => question.id === "q2_confirm_primary_friction") !== undefined, true);
@@ -61,18 +64,19 @@ test("08B.3 C1 + 08D.1: production bank has 83 questions (80 + 3 targeted eviden
 
 test("08B.3 C1: module registry coverage is explicit and owned counts are recorded", () => {
   const owned = Object.fromEntries(MODULE_REGISTRY.map((module) => [module.id, productionQuestions.filter((question) => question.module === module.id).length]));
-  assert.deepEqual(owned, { core: 2, classification: 5, maturity: 5, goal_friction: 2, local: 4, appointments: 6, local_service: 5, professional: 4, retail: 3, ecommerce: 7, hospitality: 4, b2b: 6, creator: 5, nonprofit: 4, startup: 6, operations: 7, follow_up: 3, measurement: 3, confirmation: 0, reputation: 1, conversion: 1 });
+  assert.deepEqual(owned, { core: 2, classification: 5, maturity: 5, goal_friction: 2, local: 4, appointments: 6, local_service: 5, professional: 4, retail: 3, ecommerce: 7, hospitality: 4, b2b: 6, creator: 5, nonprofit: 4, startup: 6, operations: 7, follow_up: 3, measurement: 3, confirmation: 0, reputation: 1, conversion: 1, presence: 2 });
   assert.ok(owned.startup! >= 4 && owned.startup! <= 6);
 });
 
-test("08B.3 C1 + 08D.1: all 17 route-pressure fixtures are measurable; worst eligible case is 25 (two operations readiness questions)", () => {
+test("08B.3 C1 + 08D.1 + 08E.1: all 17 route-pressure fixtures are measurable; worst native eligible case is 25 (material-only scopes excluded)", () => {
   const report = Object.fromEntries(Object.entries(contexts).map(([name, answers]) => [name, pressure(answers)]));
   assert.equal(Object.keys(report).length, 17);
   assert.ok(Object.values(report).every((entry) => entry.total > 0));
   const worst = pressure({ q2_delivery: "scheduled", q2_has_customers: "yes", q2_regularity: "regular", q2_goal: "measure", q2_friction: "operations" });
   assert.equal(worst.total, 25);
   // 08D.1: the operations fixture gains the two readiness questions (eligible pressure, not route length).
-  assert.equal(Math.max(...Object.values(report).map((entry) => entry.total)), 21);
+  // 08E.1: counted natively the maximum is 20; the earlier 21 included a material-only question.
+  assert.equal(Math.max(...Object.values(report).map((entry) => entry.total)), 20);
   assert.ok(Object.values(report).every((entry) => entry.iterations <= 2));
 });
 
@@ -93,11 +97,11 @@ test("08B.3 C1: readiness, unknown/N-A, multi-choice and dimension coverage are 
     } else if (question.purpose.some((purpose) => ["anchor", "classification", "maturity", "goal"].includes(purpose))) readiness.contextRouting += 1;
     else readiness.diagnosticEvidence += 1;
   }
-  assert.deepEqual(readiness, { contextRouting: 15, diagnosticEvidence: 9, scoringReady: 59, futureConfirmation: 0 });
-  assert.equal(unknown, 62);
+  assert.deepEqual(readiness, { contextRouting: 15, diagnosticEvidence: 9, scoringReady: 61, futureConfirmation: 0 });
+  assert.equal(unknown, 64);
   assert.equal(notApplicable, 6);
   assert.equal(multi, 2);
-  assert.deepEqual(Object.fromEntries(dimensions), { claridad: 14, presencia: 5, alcance: 15, confianza: 4, contacto: 12, seguimiento: 24 });
+  assert.deepEqual(Object.fromEntries(dimensions), { claridad: 15, presencia: 6, alcance: 15, confianza: 4, contacto: 12, seguimiento: 24 });
 });
 
 test("mutations A-L: idea safety, variants, hints, reachability, friction, hybrid guard and QBV2 inactivity", () => {
@@ -109,7 +113,7 @@ test("mutations A-L: idea safety, variants, hints, reachability, friction, hybri
   assert.ok(GOLDEN_QUESTIONS_V2.find((q) => q.id === "q2_appointments_noshow")!.variants?.some((variant) => "nicheGroup" in variant.target));
   // D/E/F/G: hints are not rules; all production questions are reachable in representative routes; unknown/N-A are bounded.
   assert.equal(NICHE_REGISTRY.some((entry) => entry.archetypeHints.includes("startup" as never)), false);
-  assert.equal(productionQuestions.filter((q) => q.options.some((o) => o.kind === "unknown")).length, 62);
+  assert.equal(productionQuestions.filter((q) => q.options.some((o) => o.kind === "unknown")).length, 64);
   assert.equal(productionQuestions.filter((q) => q.options.some((o) => o.kind === "not_applicable")).length, 6);
   let seed = 0x12345678;
   const random = () => {

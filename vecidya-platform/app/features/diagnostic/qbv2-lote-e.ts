@@ -1,5 +1,5 @@
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
-import { andV2, contextEquals, eqV2 } from "./qbv2-rules";
+import { andV2, contextEquals, eqV2, notEqV2 } from "./qbv2-rules";
 
 /**
  * DIAG-V3-08B.3 — Lote E: `operations`/`follow_up`/`measurement` (salud operativa transversal).
@@ -54,7 +54,7 @@ export const LOTE_E_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     helper: "Esto aplica igual si trabajas solo: la claridad es sobre la tarea, no sobre el tamaño del equipo.",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("primaryFriction", "operations"),
+    appliesWhen: andV2(contextEquals("primaryFriction", "operations"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "yes_clear", label: "Sí, está claro" },
       { value: "somewhat", label: "Más o menos, depende del caso" },
@@ -76,7 +76,7 @@ export const LOTE_E_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Cuando hay más de una persona involucrada en el trabajo (por ejemplo, de quien atiende al cliente a quien lo resuelve), ¿la información se transfiere completa, o se pierde o duplica seguido?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("primaryFriction", "operations"),
+    appliesWhen: andV2(contextEquals("primaryFriction", "operations"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "transfers_cleanly", label: "Se transfiere completa" },
       { value: "sometimes_lost", label: "A veces se pierde o duplica" },
@@ -94,7 +94,7 @@ export const LOTE_E_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Qué es lo que más limita tu capacidad para atender más trabajo o clientes ahora mismo?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("primaryFriction", "operations"),
+    appliesWhen: andV2(contextEquals("primaryFriction", "operations"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "one_person", label: "Depender de una sola persona (incluido yo)" },
       { value: "manual_tasks", label: "Tareas manuales que toman mucho tiempo" },
@@ -114,7 +114,7 @@ export const LOTE_E_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     helper: "No se trata de si usas algo manual (eso es normal), sino de si te está costando de verdad.",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("primaryFriction", "operations"),
+    appliesWhen: andV2(contextEquals("primaryFriction", "operations"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "significant", label: "Sí, de forma importante" },
       { value: "somewhat", label: "Un poco" },
@@ -131,7 +131,7 @@ export const LOTE_E_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Si tú (o la persona clave del negocio) no pudieras trabajar por dos semanas, ¿el negocio seguiría funcionando con normalidad?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("primaryFriction", "operations"),
+    appliesWhen: andV2(contextEquals("primaryFriction", "operations"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "yes_would_continue", label: "Sí, seguiría funcionando" },
       { value: "partially", label: "Parcialmente, con dificultad" },
@@ -150,7 +150,10 @@ export const LOTE_E_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Cuando alguien queda pendiente de una respuesta o de un siguiente paso, ¿cómo se asegura tu negocio de retomarlo?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("primaryFriction", "follow_up"),
+    appliesWhen: andV2(contextEquals("primaryFriction", "follow_up"), notEqV2("q2_has_customers", "no")),
+    // DIAG-V3-08E.3: pregunta genérica de retención; fuera de la fricción declarada solo entra como evidencia
+    // material (p. ej. meta `stop_losing`), con clientes reales. El planner decide cuándo hay necesidad.
+    materialAppliesWhen: eqV2("q2_has_customers", "yes"),
     options: [
       { value: "defined_process", label: "Hay un proceso definido, no depende de acordarse" },
       { value: "manual_consistent", label: "Uso recordatorios o una lista, y funciona de forma consistente" },
@@ -159,6 +162,7 @@ export const LOTE_E_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo había pensado así", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["seguimiento"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Cómo se retoma un pendiente o un siguiente paso para que no se pierda.", distinction: "La diferencia está entre un método que no depende de acordarse y la memoria de alguien." },
   },
   {
     id: "q2_followup_ownership",
@@ -168,7 +172,7 @@ export const LOTE_E_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Cuando hay más de una persona involucrada, ¿está claro quién debe responder y cuándo se considera resuelto?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("primaryFriction", "follow_up"),
+    appliesWhen: andV2(contextEquals("primaryFriction", "follow_up"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "yes_clear", label: "Sí, está claro" },
       { value: "unclear", label: "No, no siempre está claro" },
@@ -193,7 +197,10 @@ export const LOTE_E_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Con qué frecuencia repasas de forma activa tus pendientes, para asegurarte de que ninguno se quedó sin resolver?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("primaryFriction", "follow_up"),
+    appliesWhen: andV2(contextEquals("primaryFriction", "follow_up"), notEqV2("q2_has_customers", "no")),
+    // DIAG-V3-08E.3: pregunta genérica de retención; fuera de la fricción declarada solo entra como evidencia
+    // material (p. ej. meta `stop_losing`), con clientes reales. El planner decide cuándo hay necesidad.
+    materialAppliesWhen: eqV2("q2_has_customers", "yes"),
     options: [
       { value: "regularly", label: "Con cierta regularidad, como parte de mi rutina" },
       { value: "only_when_remember", label: "Solo cuando me acuerdo" },
@@ -201,6 +208,7 @@ export const LOTE_E_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo había pensado así", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["seguimiento"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si los pendientes se repasan de forma activa para que ninguno quede sin resolver.", distinction: "Repasar cuando algo se recuerda no es lo mismo que una revisión habitual." },
   },
 
   // ── MEASUREMENT ──────────────────────────────────────────────────────────────
@@ -256,5 +264,6 @@ export const LOTE_E_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo había pensado así", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["seguimiento"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si los resultados se revisan contra un periodo anterior para decidir.", distinction: "Mirar números de vez en cuando no es lo mismo que compararlos con un periodo anterior." },
   },
 ] as const;

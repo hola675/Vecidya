@@ -1,6 +1,36 @@
 # Changelog
 
-## 2026-09-30 — DIAG-V3-08E Semantic Diagnostic Facts foundation (solo local, sin deploy, sin commit)
+## 2026-10-01 — DIAG-V3-08E.3 Goal Taxonomy Alignment & Final Engine Freeze (solo local, sin deploy, sin commit)
+
+- `q2_goal` expone las 8 metas del motor: `be_found`, `opportunities`, `explain`, `trust`, `stop_losing`, `organize`, `automate`, `measure` + `unsure`; copy basado en QBV1 e intención por opción en `helpIntent`. Banco 85 y 22 módulos sin cambios.
+- La necesidad material de una meta apunta a su primera dimensión relevante aplicable; seguimiento genérico y conversión genérica describen dónde aplican (negocio con clientes) para que `stop_losing` tenga camino de evidencia.
+- `organize` y `automate` resultan indistinguibles en el motor actual (misma relevancia); se conservan sin fusionar.
+- Golden: idea, independent_professional y operations_heavy resuelven su meta real (`explain`, `trust`, `organize`); b2b deja de usar una monetización inexistente. Rutas y scores golden sin cambios; operations_heavy reordena Relación antes que Confianza.
+- Simulación: 3.240 rutas (etapa × entrega + nonprofit × 9 respuestas de meta × fricción × 2 políticas): 0 huecos materiales solo por presupuesto, 0 `unobservable_in_context`; mín 15, mediana 18, p75 19, p90 21, p95 21, máx 24; ≥ 21 en 12,5 %, 23–24 en 1,0 %; pre-lanzamiento mediana 16, máx 18.
+- Sin UI, persistencia, schema, PDF, analytics ni cambio de versión.
+
+## 2026-10-01 — DIAG-V3-08E.2 Route Completeness & Final Engine Stabilization (solo local, sin deploy, sin commit)
+
+- Presupuesto: ruta base 18 (sin cambios), extensión material 19–20, reserva de completitud 21–24; hard cap 20 → 24. Solo evidencia material pasa de la base.
+- Ciclo de vida: 41 preguntas operativas excluidas en pre-lanzamiento declarado (`notEqV2("q2_has_customers", "no")`); los alcances materiales exigen clientes confirmados.
+- Necesidad material: prerrequisitos solo si bloquean una prioridad principal/secundaria débil o la dimensión de meta/fricción; `capacity_gate` al final; respuestas sin capacidad (`not_applicable`/`constraint`) no cuentan como observación. Rutas sin nada que seleccionar terminan.
+- Simulación (1.440 rutas): 0 huecos solo por presupuesto (antes 181/1.296); mediana 18, p90 21, máx 24; ≥ 21 en 15,3 %. Pre-lanzamiento: mediana 16, máx 18.
+- Golden: 4 personas usan 21–22 preguntas; resultados numéricos 48 → 51; `insufficient_evidence` 3 → 0; `verify_first` primario sigue en 1 (idea).
+- `helpIntent` en las 26 preguntas que el planner puede enrutar como evidencia material. Banco 85 y 22 módulos sin cambios.
+- Hallazgo: `q2_goal` solo exponía 3 de las 8 metas del motor (resuelto en DIAG-V3-08E.3).
+- Sin UI, persistencia, schema, PDF, analytics ni cambio de versión.
+
+## 2026-09-30 — DIAG-V3-08E.1 Final Evidence Completion (solo local, sin deploy, sin commit)
+
+- DIAG-V3-08E cerrada en el commit local `d927f39` (sin push ni deploy).
+- Auditoría parametrizada de 1.296 rutas alcanzables: Clarity y Digital Foundation eran huecos reales del banco; Trust y Readiness, huecos de enrutamiento.
+- Banco 83 → 85: `q2_presence_offer_clarity` y `q2_presence_digital_base` (módulo `presence`, material-only). `materialAppliesWhen` de confianza, readiness y descubrimiento local describe aplicabilidad; el planner decide cuándo.
+- Planner: las respuestas material-only no consumen el cap base; `material_not_needed` no bloquea la finalización. Secuencia 08D: un prerrequisito solo pasa delante con evidencia al menos tan cierta como la del dependiente.
+- Golden: `unobservable_in_context` 12 → 0; resultados numéricos 38 → 48 (44,8 % nulos aplicables); `verify_first` primario sigue en 1 (idea). Simulación: mediana 19, p90 20, máx 20; ninguna ruta > 20.
+- Conflicto de presupuesto (181/1.296 rutas, 3/12 golden, prerrequisito sin verificar por el cap 20): resuelto en DIAG-V3-08E.2.
+- Sin UI, persistencia, schema, PDF, analytics ni cambio de versión.
+
+## 2026-09-30 — DIAG-V3-08E Semantic Diagnostic Facts foundation (solo local, sin deploy; commit `d927f39`)
 
 - DIAG-V3-08D.1 cerrada en el commit local `a96ce99` (sin push ni deploy) con una política de prioridad: una fricción declarada con evidencia no se desplaza por un prerrequisito de relevancia heredada salvo bloqueo explícito. El motor diagnóstico queda congelado.
 - Añadida la capa pura `qbv2-semantic-facts.ts`: 9 tipos de hecho con procedencia, contexto separado, certeza de lectura por banda + confianza + contradicciones, contradicciones explícitas (incluida fricción declarada no observada), cinco clases de gap y orden por bandas guiado por las prioridades 08D.

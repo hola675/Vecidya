@@ -1,5 +1,5 @@
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
-import { andV2, archetypeIncludes, archetypeIncludesAny, contextEquals, eqV2, inV2, orV2 } from "./qbv2-rules";
+import { andV2, archetypeIncludes, archetypeIncludesAny, eqV2, inV2, notEqV2 } from "./qbv2-rules";
 
 /**
  * DIAG-V3-08B.3 — Lote B: `local`/`local_service`/`appointments`/`professional` (contenido especializado).
@@ -41,10 +41,11 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     // Extendida a retail/hospitality en DIAG-V3-08B.3 Lote C (§9 del checkpoint de Lote C): descubrimiento
     // local es el MISMO concepto para cualquier negocio con presencia física, sin importar si tiene
     // inventario de reventa (retail) o consumo en el lugar (hospitality) — no se duplica por archetype.
-    appliesWhen: archetypeIncludesAny(["local", "retail", "hospitality"]),
-    // DIAG-V3-08D.1: un servicio a domicilio o con citas también es descubierto dentro de una zona. Ahí solo
-    // entra como evidencia material cuando descubrimiento es la meta o fricción declarada; no altera su ruta base.
-    materialAppliesWhen: andV2(archetypeIncludesAny(["local_service", "appointments"]), orV2(contextEquals("primaryGoal", "be_found"), contextEquals("primaryFriction", "visibility"))),
+    appliesWhen: andV2(archetypeIncludesAny(["local", "retail", "hospitality"]), notEqV2("q2_has_customers", "no")),
+    // DIAG-V3-08D.1/08E.1: un servicio a domicilio o con citas también es descubierto dentro de una zona. Ahí
+    // solo entra como evidencia material (el planner decide cuándo hay necesidad); no altera su ruta base.
+    // DIAG-V3-08E.2: presupone clientes reales confirmados (la cola material corre con el contexto resuelto).
+    materialAppliesWhen: andV2(archetypeIncludesAny(["local_service", "appointments"]), eqV2("q2_has_customers", "yes")),
     options: [
       { value: "maps_search", label: "Buscándome en Google o Maps" },
       { value: "referral", label: "Alguien se lo recomendó" },
@@ -73,6 +74,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo he revisado", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["presencia", "contacto"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si los datos básicos para encontrarte y contactarte están correctos en línea.", distinction: "Basta con que un dato esté desactualizado en un sitio visible para que no sea consistente." },
   },
   {
     id: "q2_local_repeat_customers",
@@ -105,10 +107,11 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     priority: "normal",
     // Extendida a retail/hospitality en Lote C (§21 del checkpoint de Lote C): mismo concepto, misma
     // pregunta — reputación no cambia de significado entre "local", "retail" y "hospitality".
-    appliesWhen: archetypeIncludesAny(["local", "appointments", "professional", "retail", "hospitality"]),
-    // DIAG-V3-08D.1: fuera de estos archetypes (creator, b2b, ecommerce, local_service) solo entra como
-    // evidencia material cuando confianza es la meta o fricción declarada: no tenían ninguna observación.
-    materialAppliesWhen: orV2(contextEquals("primaryGoal", "trust"), contextEquals("primaryFriction", "trust")),
+    appliesWhen: andV2(archetypeIncludesAny(["local", "appointments", "professional", "retail", "hospitality"]), notEqV2("q2_has_customers", "no")),
+    // DIAG-V3-08D.1/08E.1: fuera de estos archetypes (creator, b2b, ecommerce, local_service) solo entra como
+    // evidencia material (confianza declarada o prerrequisito de una restricción): no tenían otra observación.
+    // DIAG-V3-08E.2: solo con clientes reales confirmados; en pre-lanzamiento Confianza no es aplicable.
+    materialAppliesWhen: eqV2("q2_has_customers", "yes"),
     variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Qué tan seguido te llegan reseñas o recomendaciones nuevas de pacientes?" }],
     options: [
       { value: "steady", label: "Me llegan con cierta regularidad" },
@@ -146,7 +149,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Cuando entra una consulta nueva pidiendo tu servicio, ¿qué suele pasar?",
     purpose: ["diagnostic", "friction"],
     priority: "high",
-    appliesWhen: archetypeIncludes("local_service"),
+    appliesWhen: andV2(archetypeIncludes("local_service"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "fast", label: "Respondo rápido, casi siempre el mismo día" },
       { value: "delayed", label: "Respondo, pero puede tardar más de un día" },
@@ -163,7 +166,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Sueles dar una cotización o estimado antes de hacer el trabajo?",
     purpose: ["diagnostic", "routing"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("local_service"),
+    appliesWhen: andV2(archetypeIncludes("local_service"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "yes", label: "Sí, casi siempre" },
       { value: "no", label: "No, cobro directamente o es tarifa fija" },
@@ -209,6 +212,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo he seguido de cerca", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["alcance", "confianza"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si los clientes atendidos vuelven a llamar o recomiendan el servicio.", distinction: "Piensa en lo que pasa con la mayoría de los clientes, no en los más fieles." },
   },
 
   // ── APPOINTMENTS ─────────────────────────────────────────────────────────────
@@ -220,7 +224,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Cómo se agenda la mayoría de tus citas hoy?",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("appointments"),
+    appliesWhen: andV2(archetypeIncludes("appointments"), notEqV2("q2_has_customers", "no")),
     variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Cómo se agenda la mayoría de las citas de tus pacientes hoy?" }],
     options: [
       { value: "self_book_online", label: "La persona agenda sola en línea" },
@@ -231,6 +235,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No estoy seguro", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["contacto"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Cómo se agenda hoy la mayoría de las citas.", distinction: "Elige la vía por la que entra la mayoría, aunque existan otras." },
   },
   {
     id: "q2_appointments_booking_friction",
@@ -240,7 +245,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Qué tan seguido cuesta trabajo encontrar un horario que funcione, yendo y viniendo con la persona antes de confirmar?",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("appointments"),
+    appliesWhen: andV2(archetypeIncludes("appointments"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "rarely", label: "Casi nunca" },
       { value: "sometimes", label: "A veces" },
@@ -256,7 +261,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Envías confirmaciones o recordatorios antes de la cita?",
     purpose: ["diagnostic", "friction"],
     priority: "high",
-    appliesWhen: archetypeIncludes("appointments"),
+    appliesWhen: andV2(archetypeIncludes("appointments"), notEqV2("q2_has_customers", "no")),
     variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Envías confirmaciones o recordatorios a tus pacientes antes de la cita?" }],
     options: [
       { value: "automatic", label: "Sí, de forma automática" },
@@ -273,7 +278,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "De las personas que preguntan por una cita, ¿qué proporción termina realmente agendando?",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("appointments"),
+    appliesWhen: andV2(archetypeIncludes("appointments"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "most", label: "La mayoría" },
       { value: "about_half", label: "Como la mitad" },
@@ -291,7 +296,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     helper: "Evidencia para retención/postventa (DIAG-V3-08B0-FRICTION-RETENTION-001), sin decidir todavía si necesita su propia categoría.",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("appointments"),
+    appliesWhen: andV2(archetypeIncludes("appointments"), notEqV2("q2_has_customers", "no")),
     variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "Cuando el tratamiento normalmente requiere que el paciente regrese, ¿sueles ayudarlo a agendar la siguiente cita antes de que se vaya?" }],
     options: [
       { value: "yes_proactive", label: "Sí, lo propongo antes de que se vaya" },
@@ -312,10 +317,11 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Qué tan visible es tu experiencia o credenciales para alguien que te está evaluando por primera vez (casos, testimonios, credenciales, contenido que explique lo que haces)?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("professional"),
-    // DIAG-V3-08D.1: casos, testimonios y contenido son prueba visible para cualquier archetype; fuera de
-    // professional solo entra como evidencia material cuando confianza es la meta o fricción declarada.
-    materialAppliesWhen: orV2(contextEquals("primaryGoal", "trust"), contextEquals("primaryFriction", "trust")),
+    appliesWhen: andV2(archetypeIncludes("professional"), notEqV2("q2_has_customers", "no")),
+    // DIAG-V3-08D.1/08E.1: casos, testimonios y contenido son prueba visible para cualquier archetype; fuera de
+    // professional solo entra como evidencia material (confianza declarada o prerrequisito de una restricción).
+    // DIAG-V3-08E.2: solo con clientes reales confirmados; en pre-lanzamiento Confianza no es aplicable.
+    materialAppliesWhen: eqV2("q2_has_customers", "yes"),
     options: [
       { value: "clearly_visible", label: "Está claro y es fácil de encontrar" },
       { value: "partial", label: "Existe, pero está disperso o incompleto" },
@@ -333,7 +339,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Cuando alguien muestra interés en trabajar contigo, ¿qué pasa antes de convertirse en cliente?",
     purpose: ["diagnostic", "classification"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("professional"),
+    appliesWhen: andV2(archetypeIncludes("professional"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "defined_consult", label: "Tengo un paso definido, como una consulta o llamada inicial" },
       { value: "ad_hoc", label: "Varía según el caso, sin un paso fijo" },
@@ -341,6 +347,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo había pensado de esa forma", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["claridad"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Qué pasa entre el primer interés y que alguien se vuelva cliente.", distinction: "Describe lo que ocurre en la mayoría de los casos, no el proceso ideal." },
   },
   {
     id: "q2_professional_referral_dependency",
@@ -351,7 +358,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     helper: "Ni mucho ni poco referido es automáticamente bueno o malo: esto es solo un hecho sobre cómo llegan tus clientes hoy.",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("professional"),
+    appliesWhen: andV2(archetypeIncludes("professional"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "mostly_referrals", label: "Casi todos llegan por referidos" },
       { value: "mixed", label: "Una mezcla real de referidos y otras formas" },
@@ -359,6 +366,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo he seguido de cerca", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["alcance"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Qué tanto dependen los clientes nuevos de recomendaciones personales.", distinction: "Compara los referidos con todas las demás formas en que te encuentran, no solo con una." },
   },
   {
     id: "q2_professional_followup_after_consult",
@@ -368,7 +376,7 @@ export const LOTE_B_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Después de una consulta o primera llamada, si la persona no responde enseguida, ¿le das seguimiento?",
     purpose: ["diagnostic", "friction"],
     priority: "high",
-    appliesWhen: archetypeIncludes("professional"),
+    appliesWhen: andV2(archetypeIncludes("professional"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "always", label: "Siempre" },
       { value: "sometimes", label: "A veces" },

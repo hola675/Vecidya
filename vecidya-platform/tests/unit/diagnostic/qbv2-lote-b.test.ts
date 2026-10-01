@@ -265,7 +265,9 @@ test("mutación B: professional basado en proyecto/consulta nunca recibe la preg
 test("mutación C: local_service nunca recibe preguntas de foot traffic (son de local, mecanismo de entrega distinto)", () => {
   const result = resolveEligibleQuestionsV2({ q2_delivery: "travels" }, QUESTION_BANK_V2);
   assert.ok(!result.eligibleQuestionIds.includes("q2_local_foot_traffic"));
-  assert.ok(!result.eligibleQuestionIds.includes("q2_local_discovery"));
+  // 08E.1: local discovery may still enter as material evidence (tail), never through the native gate.
+  const discovery = QUESTION_BANK_V2.find((question) => question.id === "q2_local_discovery")!;
+  assert.equal(evaluateRuleV2(discovery.appliesWhen!, result.activeAnswers, result.context), false);
 });
 
 // ── mutación D: rebooking nunca es obligatorio cuando el servicio no lo requiere ──

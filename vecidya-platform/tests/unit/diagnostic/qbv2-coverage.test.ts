@@ -23,12 +23,12 @@ test("08B.6R contracts define five maturity states and exactly eight digital dim
 
 test("08B.6R maps every productive QBV2 question to semantically meaningful evidence", () => {
   const report = analyzeCoverage();
-  assert.equal(report.productiveQuestionCount, 83);
-  assert.equal(report.mappedQuestionCount, 83);
+  assert.equal(report.productiveQuestionCount, 85);
+  assert.equal(report.mappedQuestionCount, 85);
   assert.deepEqual(report.unmappedQuestionIds, []);
   assert.deepEqual(report.mappingIssues, []);
   assert.ok(report.dimensionCoverage.every((coverage) => coverage.questionCount > 0));
-  assert.ok(Object.keys(EVIDENCE_MAPPING).length >= 83);
+  assert.ok(Object.keys(EVIDENCE_MAPPING).length >= 85);
 });
 
 test("08B.6R has exactly twelve deterministic golden personas", () => {
@@ -37,8 +37,8 @@ test("08B.6R has exactly twelve deterministic golden personas", () => {
   const first = analyzeCoverage();
   const second = analyzeCoverage();
   assert.deepEqual(first.personas, second.personas);
-  // 08D.1: base route keeps the 18 cap; slots 19-20 only hold material evidence.
-  assert.ok(first.personas.every((persona) => persona.routeLength >= 15 && persona.routeLength <= 20));
+  // 08D.1/08E.2: base route keeps the 18 cap; slots 19-24 only hold material evidence.
+  assert.ok(first.personas.every((persona) => persona.routeLength >= 15 && persona.routeLength <= 24));
   assert.ok(first.personas.every((persona) => persona.duplicateQuestionIds.length === 0));
   assert.ok(first.personas.every((persona) => persona.routeReady));
   assert.ok(first.personas.every((persona) => persona.missingExpectedModules.length === 0));
@@ -54,10 +54,10 @@ test("08B.6R generated coverage combinations remain declarative and bounded by p
   assert.ok(report.matrixRouteFailures.every((failure) => failure.routeLength <= 18));
 });
 
-test("08D.1 productive bank has 83 questions and exactly two fixture-only confirmations", () => {
-  assert.equal(QUESTION_BANK_V2.filter((question) => !question.purpose.includes("confirmation")).length, 83);
+test("08E.1 productive bank has 85 questions and exactly two fixture-only confirmations", () => {
+  assert.equal(QUESTION_BANK_V2.filter((question) => !question.purpose.includes("confirmation")).length, 85);
   assert.equal(GOLDEN_QUESTIONS_V2.filter((question) => question.purpose.includes("confirmation")).length, 2);
-  assert.equal(QUESTION_BANK_V2.length, 83);
+  assert.equal(QUESTION_BANK_V2.length, 85);
 });
 
 test("08C mapping audit assigns every question-dimension pair an explicit effective role", () => {
@@ -68,8 +68,8 @@ test("08C mapping audit assigns every question-dimension pair an explicit effect
   })));
   assert.ok(pairs.length > 0);
   assert.ok(pairs.every((pair) => ["direct", "supporting", "contextual"].includes(pair.role)));
-  assert.equal(pairs.length, 76);
-  assert.equal(pairs.filter((pair) => pair.role === "direct").length, 50);
+  assert.equal(pairs.length, 78);
+  assert.equal(pairs.filter((pair) => pair.role === "direct").length, 52);
   assert.equal(pairs.filter((pair) => pair.role === "supporting").length, 26);
   assert.equal(pairs.filter((pair) => pair.role === "contextual").length, 0);
   assert.equal(QUESTION_BANK_V2.filter((question) => EVIDENCE_MAPPING[question.id]?.dimensions.length === 0).length, 22);
@@ -99,10 +99,11 @@ test("08C mapping audit records unresolved context axes and single-dimension dir
   const secondaryDeliveryQuestions = QUESTION_BANK_V2.filter((question) => question.options.some((option) => option.produces?.some((production) => production.kind === "deliveryMode" && production.slot === "secondary")));
   const directDimensionsByQuestion = QUESTION_BANK_V2.map((question) => EVIDENCE_MAPPING[question.id]!.dimensions.filter((dimension) => (EVIDENCE_DIRECTNESS[question.id]?.[dimension] ?? EVIDENCE_MAPPING[question.id]!.semanticRole) === "direct").length);
   const directQuestions = (dimension: (typeof DIGITAL_DIMENSIONS)[number]["id"]) => QUESTION_BANK_V2.filter((question) => EVIDENCE_MAPPING[question.id]!.dimensions.includes(dimension) && (EVIDENCE_DIRECTNESS[question.id]?.[dimension] ?? EVIDENCE_MAPPING[question.id]!.semanticRole) === "direct").map((question) => question.id).sort();
-  assert.deepEqual(unrepresentableGoals, ["automate", "explain", "organize", "stop_losing", "trust"]);
+  // 08E.3: q2_goal exposes all eight engine goals; none is unrepresentable any more.
+  assert.deepEqual(unrepresentableGoals, []);
   assert.deepEqual(secondaryDeliveryQuestions, [], "hybrid contexts need a second delivery signal the current bank cannot collect");
   assert.ok(directDimensionsByQuestion.every((count) => count <= 1), "no current productive question directly saves evidence budget across dimensions");
-  assert.deepEqual(directQuestions("digital_foundation"), ["q2_ecommerce_product_discovery", "q2_local_presence_consistency"]);
+  assert.deepEqual(directQuestions("digital_foundation"), ["q2_ecommerce_product_discovery", "q2_local_presence_consistency", "q2_presence_digital_base"]);
   assert.deepEqual(directQuestions("trust_reputation"), ["q2_professional_authority_signals", "q2_reputation_flow"]);
 });
 

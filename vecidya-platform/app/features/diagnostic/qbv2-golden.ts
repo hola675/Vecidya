@@ -1,5 +1,5 @@
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
-import { andV2, archetypeIncludes, archetypeIncludesAny, contextEquals, eqV2 } from "./qbv2-rules";
+import { andV2, archetypeIncludes, archetypeIncludesAny, contextEquals, eqV2, notEqV2 } from "./qbv2-rules";
 
 /**
  * Banco semilla ("golden questions", §40-41 de DIAG-V3-08B.2): 15 preguntas, NO el banco de 100-150 de
@@ -136,13 +136,35 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Qué te gustaría lograr primero?",
     purpose: ["anchor", "goal"],
     priority: "critical",
+    // DIAG-V3-08E.3: las 8 metas que razona el motor (`PRIMARY_GOALS`/`GOAL_RELEVANCE`) son declarables; antes
+    // solo 3, y las otras 5 se trataban en silencio como meta no declarada. La meta es contexto, nunca capacidad.
     options: [
       { value: "be_found", label: "Que más personas me encuentren", produces: [{ kind: "goal", value: "be_found", provenance: "explicit_declaration" }] },
-      { value: "opportunities", label: "Recibir más oportunidades", produces: [{ kind: "goal", value: "opportunities", provenance: "explicit_declaration" }] },
+      { value: "opportunities", label: "Recibir más consultas u oportunidades", produces: [{ kind: "goal", value: "opportunities", provenance: "explicit_declaration" }] },
+      { value: "explain", label: "Que se entienda mejor qué hago y para quién", produces: [{ kind: "goal", value: "explain", provenance: "explicit_declaration" }] },
+      { value: "trust", label: "Generar más confianza", produces: [{ kind: "goal", value: "trust", provenance: "explicit_declaration" }] },
+      { value: "stop_losing", label: "Dejar de perder consultas, clientes o seguimientos", produces: [{ kind: "goal", value: "stop_losing", provenance: "explicit_declaration" }] },
+      { value: "organize", label: "Ordenar contactos, tareas y procesos", produces: [{ kind: "goal", value: "organize", provenance: "explicit_declaration" }] },
+      { value: "automate", label: "Reducir trabajo manual o repetitivo", produces: [{ kind: "goal", value: "automate", provenance: "explicit_declaration" }] },
       { value: "measure", label: "Medir y entender qué funciona", produces: [{ kind: "goal", value: "measure", provenance: "explicit_declaration" }] },
       { value: "unsure", label: "Todavía no lo sé", kind: "unknown", produces: [{ kind: "goalUnknown", value: true, provenance: "explicit_declaration" }] },
     ],
     scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: {
+      understand: "Lo principal que la persona más quiere mejorar ahora mismo; orienta qué revisar primero y no suma puntos.",
+      distinction: "Si varias aplican, elige la que más quieres mejorar ahora, no todo lo que te gustaría tener.",
+      options: {
+        be_found: "Que más personas adecuadas puedan encontrar el negocio.",
+        opportunities: "Generar más consultas, reservas, ventas, donaciones u oportunidades.",
+        explain: "Que la gente entienda con facilidad qué se ofrece, para quién y por qué importa.",
+        trust: "Ganar confianza, credibilidad, autoridad o reputación ante quien evalúa.",
+        stop_losing: "Perder menos oportunidades o clientes antes de concretar o por falta de seguimiento.",
+        organize: "Dar orden y consistencia a cómo se gestionan contactos, tareas y la actividad digital.",
+        automate: "Reducir el trabajo manual y repetitivo con herramientas adecuadas, si de verdad conviene.",
+        measure: "Entender qué funciona y decidir mejor a partir de resultados.",
+        unsure: "Aún no hay una prioridad clara; el diagnóstico no inventa una.",
+      },
+    },
   },
   {
     id: "q2_friction",
@@ -171,7 +193,7 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     purpose: ["diagnostic", "friction"],
     priority: "normal",
     // Applicability de CONTEXTO (§21, §67 "specialized appointment"): depende del archetype YA resuelto, no de una respuesta directa.
-    appliesWhen: archetypeIncludes("appointments"),
+    appliesWhen: andV2(archetypeIncludes("appointments"), notEqV2("q2_has_customers", "no")),
     variants: [{ target: { nicheGroup: "health_wellness" }, prompt: "¿Qué tan seguido los pacientes no se presentan a su cita?" }],
     options: [
       { value: "rarely", label: "Casi nunca" },
@@ -208,13 +230,14 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Tienes un proceso definido para dar seguimiento a oportunidades de venta?",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("b2b"),
+    appliesWhen: andV2(archetypeIncludes("b2b"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "yes", label: "Sí, definido y consistente" },
       { value: "no", label: "No, se hace de forma improvisada", produces: [{ kind: "friction", value: "follow_up", provenance: "derived_fact" }] },
       { value: "unknown", label: "No estoy seguro", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: [], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si existe un proceso definido para dar seguimiento a cada oportunidad de venta.", distinction: "Un proceso definido se repite igual cada vez; dar seguimiento cuando se puede no lo es." },
   },
   {
     id: "q2_local_foot_traffic",
@@ -227,7 +250,7 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     // Extendida a retail en DIAG-V3-08B.3 Lote C: una tienda física también depende de tráfico peatonal
     // sin planear, el mismo concepto que "local". No extendida a hospitality: q2_hospitality_flow_type
     // ya distingue walk-in de reserva/pedido con más precisión, así que sería redundante ahí.
-    appliesWhen: archetypeIncludesAny(["local", "retail"]),
+    appliesWhen: andV2(archetypeIncludesAny(["local", "retail"]), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "high", label: "Mucho" },
       { value: "low", label: "Poco" },
@@ -236,6 +259,7 @@ export const GOLDEN_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     ],
     // Idem: diagnóstica pura, sin candidateDimensions prematura.
     scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: false, allowsNotApplicable: true },
+    helpIntent: { understand: "Cuánto del negocio llega por pasar cerca, sin haberte buscado antes.", distinction: "Piensa en clientes que entran sin plan previo, no en los que ya te conocían." },
   },
   {
     id: "q2_confirm_primary_friction",

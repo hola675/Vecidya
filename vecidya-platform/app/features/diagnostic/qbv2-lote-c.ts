@@ -1,5 +1,5 @@
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
-import { andV2, archetypeIncludes, eqV2, inV2 } from "./qbv2-rules";
+import { andV2, archetypeIncludes, eqV2, inV2, notEqV2 } from "./qbv2-rules";
 
 /**
  * DIAG-V3-08B.3 — Lote C: `retail`/`ecommerce`/`hospitality` (comercio y hospitalidad).
@@ -34,7 +34,7 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Alguien que quiera comprarte puede saber fácilmente qué vendes y si lo tienes disponible, antes de ir a tu tienda o preguntar?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("retail"),
+    appliesWhen: andV2(archetypeIncludes("retail"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "yes_clear", label: "Sí, es fácil saberlo desde fuera" },
       { value: "partially", label: "Solo una parte (algunos productos, no disponibilidad)" },
@@ -51,7 +51,7 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Después de que alguien te compra, ¿te queda alguna forma de volver a contactarlo (teléfono, correo, redes, programa de lealtad)?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("retail"),
+    appliesWhen: andV2(archetypeIncludes("retail"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "systematic", label: "Sí, de forma sistemática" },
       { value: "sometimes", label: "A veces, según el cliente" },
@@ -68,7 +68,7 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Sueles comunicar promociones u ofertas de forma que tus clientes se enteren, no solo la gente que ya está en la tienda?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("retail"),
+    appliesWhen: andV2(archetypeIncludes("retail"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "yes_regular", label: "Sí, con cierta regularidad" },
       { value: "rarely", label: "Rara vez" },
@@ -76,6 +76,7 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo he pensado así", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["alcance"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si las ofertas llegan a clientes que no están en la tienda en ese momento.", distinction: "Un cartel dentro de la tienda no cuenta: se trata de avisar a quien no está ahí." },
   },
 
   // ── ECOMMERCE ────────────────────────────────────────────────────────────────
@@ -95,6 +96,7 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo he probado desde la perspectiva de un cliente nuevo", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["claridad"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si quien entra a la tienda en línea encuentra lo que busca sin ayuda.", distinction: "Piensa en un visitante nuevo, no en cómo navegas tú tu propia tienda." },
   },
   {
     id: "q2_ecommerce_checkout_friction",
@@ -123,7 +125,7 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Tu tienda puede identificar cuando alguien dejó productos en el carrito sin terminar de comprar?",
     purpose: ["diagnostic", "routing"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("ecommerce"),
+    appliesWhen: andV2(archetypeIncludes("ecommerce"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "yes", label: "Sí" },
       { value: "no", label: "No" },
@@ -166,6 +168,7 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo he medido", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["seguimiento"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: true },
+    helpIntent: { understand: "Con qué frecuencia un mismo cliente vuelve a comprar.", distinction: "Cuenta compras repetidas de la misma persona, no ventas totales." },
   },
   {
     id: "q2_ecommerce_acquisition_dependency",
@@ -197,7 +200,7 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     helper: "Esto solo ajusta las siguientes preguntas a cómo funciona realmente tu negocio.",
     purpose: ["diagnostic", "routing"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("hospitality"),
+    appliesWhen: andV2(archetypeIncludes("hospitality"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "reservation", label: "Con reserva previa" },
       { value: "walk_in", label: "Sin reserva, llegan directo" },
@@ -234,7 +237,7 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "En tus horas o días de más demanda, ¿qué tan seguido tienes que rechazar clientes o hacerlos esperar mucho por falta de capacidad?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("hospitality"),
+    appliesWhen: andV2(archetypeIncludes("hospitality"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "rarely", label: "Casi nunca" },
       { value: "sometimes", label: "A veces" },
@@ -251,7 +254,7 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Ofreces para llevar o entrega a domicilio?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("hospitality"),
+    appliesWhen: andV2(archetypeIncludes("hospitality"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "both", label: "Sí, ambas cosas" },
       { value: "takeaway_only", label: "Solo para llevar" },
@@ -260,5 +263,6 @@ export const LOTE_C_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "not_applicable", label: "No aplica: el hospedaje no ofrece alimentos ni entrega", kind: "not_applicable" },
     ],
     scoringReadiness: { candidateDimensions: ["alcance"], signalDirection: "neutral", allowsUnknown: false, allowsNotApplicable: true },
+    helpIntent: { understand: "Qué formas de consumir fuera del local ofrece hoy el negocio.", distinction: "Responde por lo que ofreces de forma habitual, no por algo ocasional o en pruebas." },
   },
 ] as const;

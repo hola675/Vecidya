@@ -76,11 +76,14 @@ export const ANSWER_SEMANTICS: Readonly<Record<string, AnswerSemantics>> = {
   // Digital foundation
   q2_local_presence_consistency: { values: { consistent: "strong", partial: "partial", no: "missing" } },
   q2_ecommerce_product_discovery: { values: { yes_easy: "strong", somewhat_confusing: "partial", hard_to_navigate: "weak" } },
+  // An own base outranks rented profiles: a platform-only presence exists but rests on a channel the business does not control.
+  q2_presence_digital_base: { values: { own_updated: "strong", outdated: "partial", third_party_only: "dependency", nothing: "missing" } },
   // Trust & reputation
   q2_reputation_flow: { values: { steady: "established", rare: "weak" } },
   q2_professional_authority_signals: { values: { clearly_visible: "strong", partial: "partial", not_really: "missing" } },
   // Clarity & conversion
   q2_retail_product_visibility: { values: { yes_clear: "strong", partially: "partial", no: "missing" } },
+  q2_presence_offer_clarity: { values: { all_clear: "strong", offer_only: "partial", not_clear: "missing" } },
   q2_b2b_qualification: { values: { yes_clear: "strong", somewhat: "partial", no: "missing" } },
   q2_professional_intake_flow: { values: { defined_consult: "strong", ad_hoc: "partial", direct_no_step: "established" }, byDimension: { clarity_positioning: { defined_consult: "established", ad_hoc: "partial", direct_no_step: "constraint" } } },
   q2_nonprofit_donation_clarity: { values: { yes_easy: "strong", somewhat_confusing: "partial", no: "missing" } },

@@ -225,11 +225,13 @@ export function deriveConstraintsAndPriorities(scoring: ContextualScoringResult)
 
   // Stable topological pass: an evidenced blocking prerequisite precedes the dependent it blocks.
   // An unverified prerequisite (evidence gap) keeps its trace but never jumps ahead of evidenced constraints.
+  // DIAG-V3-08E.1: "materially blocking" also needs evidence at least as certain as the dependent's — a
+  // single low-confidence reading never displaces an actionable constraint (e.g. a declared friction).
   const sequenced: DiagnosticConstraint[] = [];
   const remaining = [...sorted];
   while (remaining.length > 0) {
     // The sequencing graph is acyclic (tested); Math.max only guards against a future cyclic edit.
-    const index = Math.max(0, remaining.findIndex((candidate) => !remaining.some((other) => other !== candidate && other.severity !== "unknown" && other.dependency.blocks.includes(candidate.dimension))));
+    const index = Math.max(0, remaining.findIndex((candidate) => !remaining.some((other) => other !== candidate && other.severity !== "unknown" && other.dependency.blocks.includes(candidate.dimension) && CERTAINTY_ORDER[other.certainty] <= CERTAINTY_ORDER[candidate.certainty])));
     const [next] = remaining.splice(index, 1);
     sequenced.push(index > 0 ? { ...next!, reasonCodes: [...next!.reasonCodes, "sequenced_before_dependent"] } : next!);
   }

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  ANSWER_SEMANTICS, DEFAULT_ROUTE_BUDGET_V1, EVIDENCE_DIRECTNESS, EVIDENCE_MAPPING, GOLDEN_PERSONAS, MATERIAL_EVIDENCE_TARGET, QUESTION_BANK_V2, ROUTE_HARD_CAP,
+  ANSWER_SEMANTICS, DEFAULT_ROUTE_BUDGET_V1, EVIDENCE_DIRECTNESS, EVIDENCE_MAPPING, GOLDEN_PERSONAS, MATERIAL_EVIDENCE_TARGET, QUESTION_BANK_V2, ROUTE_BANDS, ROUTE_HARD_CAP,
   buildQuestionPlan, resolveEligibleQuestionsV2, runGoldenPersonaPipeline, validateAnswerSemantics, validateQuestionBankV2,
 } from "../../../app/features/diagnostic/index.ts";
 import { evaluateRuleV2 } from "../../../app/features/diagnostic/qbv2-rules.ts";
@@ -16,16 +16,17 @@ const nativelyEligible = (id: string, answers: Record<string, unknown>) => {
   return item.appliesWhen ? evaluateRuleV2(item.appliesWhen, resolved.activeAnswers, resolved.context) : !item.materialAppliesWhen;
 };
 
-test("08D.1 budget contract: hard cap 20, base cap 18, two reserved material-evidence slots", () => {
-  assert.equal(ROUTE_HARD_CAP, 20);
-  assert.equal(DEFAULT_ROUTE_BUDGET_V1.hardMax, 20);
-  assert.equal(DEFAULT_ROUTE_BUDGET_V1.materialEvidenceReserve, 2);
-  assert.equal(DEFAULT_ROUTE_BUDGET_V1.targetMax, 16, "the normal selection target is unchanged; 20 is not a target");
-  assert.deepEqual(MATERIAL_EVIDENCE_TARGET, { friction: 2, goal: 1, prerequisite: 1 });
+test("08D.1/08E.2 budget contract: base cap 18, material extension 20, hard cap 24", () => {
+  assert.equal(ROUTE_HARD_CAP, 24);
+  assert.deepEqual(ROUTE_BANDS, { base: 18, materialExtension: 20, hardCap: 24 });
+  assert.equal(DEFAULT_ROUTE_BUDGET_V1.hardMax, 24);
+  assert.equal(DEFAULT_ROUTE_BUDGET_V1.materialEvidenceReserve, 6, "every slot past the base route is material evidence");
+  assert.equal(DEFAULT_ROUTE_BUDGET_V1.targetMax, 16, "the normal selection target is unchanged; 24 is not a target");
+  assert.deepEqual(MATERIAL_EVIDENCE_TARGET, { friction: 2, goal: 1, prerequisite: 1, capacity_gate: 1 });
 });
 
 test("new questions are justified evidence: valid, direct, semantically declared and documented for help", () => {
-  assert.equal(QUESTION_BANK_V2.length, 83);
+  assert.equal(QUESTION_BANK_V2.length, 85);
   assert.deepEqual(validateQuestionBankV2(QUESTION_BANK_V2), []);
   assert.deepEqual(validateAnswerSemantics(), []);
   const expected: Record<string, string> = { q2_conversion_interest_to_action: "conversion_access", q2_operations_information_base: "digital_readiness", q2_operations_automation_adoption: "digital_readiness" };
@@ -55,7 +56,10 @@ test("gates: transactional ecommerce questions need customers; material-only sco
   for (const item of cases) {
     assert.equal(resolveEligibleQuestionsV2(item.trust, QUESTION_BANK_V2).eligibleQuestionIds.includes(item.id), true, `${item.id} eligible when its dimension is declared`);
     assert.equal(nativelyEligible(item.id, item.trust), false, `${item.id} is material-only there`);
-    assert.equal(resolveEligibleQuestionsV2(item.other, QUESTION_BANK_V2).eligibleQuestionIds.includes(item.id), false, `${item.id} not eligible otherwise`);
+    // 08E.1: trust and local-discovery scopes describe where the question applies; the planner's material
+    // need (declared or prerequisite) decides when. Outside a need they stay material-only, never base.
+    // 08E.3: the conversion scope also describes applicability only (e.g. goal stop_losing while starting).
+    assert.equal(nativelyEligible(item.id, item.other), false, `${item.id} never native otherwise`);
   }
   assert.equal(resolveEligibleQuestionsV2({ q2_has_customers: "yes", q2_regularity: "regular", q2_delivery: "scheduled", q2_friction: "conversion" }, QUESTION_BANK_V2).eligibleQuestionIds.includes("q2_conversion_interest_to_action"), false, "appointments already observe lead-to-booking");
 });
@@ -73,7 +77,7 @@ test("material needs follow declared goal/friction and close once observed", () 
   assert.deepEqual(buildQuestionPlan({ answers: {}, bank: QUESTION_BANK_V2 }).materialEvidence, [], "no declaration, no need");
 });
 
-test("golden routes: no material routing hole, material-only questions only in the tail, never past 20", () => {
+test("golden routes: no material routing hole, material-only questions only in the tail, never past the hard cap", () => {
   for (const persona of GOLDEN_PERSONAS) {
     const answers: Record<string, unknown> = { ...persona.answers, ...persona.preexistingAnswers };
     for (let batch = 0; batch < ROUTE_HARD_CAP; batch += 1) {

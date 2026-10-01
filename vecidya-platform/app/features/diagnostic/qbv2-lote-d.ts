@@ -1,5 +1,5 @@
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
-import { andV2, archetypeIncludes, contextEquals, inV2 } from "./qbv2-rules";
+import { andV2, archetypeIncludes, contextEquals, inV2, notEqV2 } from "./qbv2-rules";
 
 /**
  * DIAG-V3-08B.3 — Lote D: `b2b`/`creator`/`nonprofit` (comprador organizacional, audiencia propia, misión).
@@ -32,7 +32,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿De dónde suelen llegar tus oportunidades de negocio con más frecuencia?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("b2b"),
+    appliesWhen: andV2(archetypeIncludes("b2b"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "referrals", label: "Referidos de clientes o contactos" },
       { value: "outbound", label: "Yo los busco activamente" },
@@ -42,6 +42,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo he identificado con claridad", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["alcance"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Por qué vía llegan con más frecuencia las oportunidades de negocio.", distinction: "Elige la vía que más oportunidades trae, no la que trae las más grandes." },
   },
   {
     id: "q2_b2b_qualification",
@@ -51,7 +52,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Cuando alguien muestra interés, ¿tienes una forma de distinguir si es una oportunidad real o solo curiosidad?",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("b2b"),
+    appliesWhen: andV2(archetypeIncludes("b2b"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "yes_clear", label: "Sí, tengo una forma clara de distinguirlo" },
       { value: "somewhat", label: "Más o menos, depende del caso" },
@@ -69,7 +70,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     helper: "Esto es distinto de tener un proceso definido: se trata de si sabes dónde está cada oportunidad en este momento.",
     purpose: ["diagnostic", "friction"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("b2b"),
+    appliesWhen: andV2(archetypeIncludes("b2b"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "yes_clear", label: "Sí, tengo claridad total" },
       { value: "somewhat", label: "Más o menos, con algo de esfuerzo" },
@@ -86,7 +87,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Qué tan seguido una venta requiere varios contactos o conversaciones antes de cerrarse?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("b2b"),
+    appliesWhen: andV2(archetypeIncludes("b2b"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "rarely", label: "Casi nunca, se decide rápido" },
       { value: "sometimes", label: "A veces" },
@@ -94,6 +95,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo he seguido de cerca", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["seguimiento"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Cuántos contactos suele requerir cerrar una venta.", distinction: "Piensa en las ventas habituales, no en la más larga ni en la más rápida." },
   },
   {
     id: "q2_b2b_decision_makers",
@@ -103,7 +105,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Normalmente decide una sola persona, o participan varias personas en la decisión de compra?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("b2b"),
+    appliesWhen: andV2(archetypeIncludes("b2b"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "single", label: "Una sola persona decide" },
       { value: "multiple", label: "Participan varias personas" },
@@ -130,6 +132,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo he revisado", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["alcance"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Cuánto depende el alcance de la audiencia de un solo canal.", distinction: "Mira dónde está realmente la audiencia activa, no en cuántos canales tienes cuenta." },
   },
   {
     id: "q2_creator_audience_ownership",
@@ -139,7 +142,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "Más allá de la plataforma donde te siguen, ¿tienes una forma propia de contactar a tu audiencia (correo, lista, mensaje directo) sin depender de que el algoritmo te muestre?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("creator"),
+    appliesWhen: andV2(archetypeIncludes("creator"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "systematic", label: "Sí, de forma sistemática" },
       { value: "partial", label: "Algo, pero no de forma consistente" },
@@ -173,7 +176,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿De qué forma principal monetizas tu audiencia?",
     purpose: ["diagnostic", "classification"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("creator"),
+    appliesWhen: andV2(archetypeIncludes("creator"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "sponsorship", label: "Patrocinios o colaboraciones pagadas" },
       { value: "services", label: "Vendo mis servicios o consultoría" },
@@ -192,7 +195,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "De las personas que siguen tu contenido, ¿qué tan seguido das el paso de ofrecerles comprar o contratar algo tuyo?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: archetypeIncludes("creator"),
+    appliesWhen: andV2(archetypeIncludes("creator"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "regularly", label: "Con cierta regularidad" },
       { value: "occasionally", label: "De vez en cuando" },
@@ -212,7 +215,9 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     helper: "Esto solo ajusta las siguientes preguntas a cómo funciona realmente tu organización.",
     purpose: ["diagnostic", "routing"],
     priority: "normal",
-    appliesWhen: contextEquals("businessModel", "nonprofit"),
+    // DIAG-V3-08E.2: donativos y membresías presuponen apoyos reales; en pre-lanzamiento ni esta pregunta ni
+    // sus dependientes (donation_clarity, membership_lifecycle) observan una capacidad que ya pueda existir.
+    appliesWhen: andV2(contextEquals("businessModel", "nonprofit"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "donations", label: "Donaciones" },
       { value: "membership_dues", label: "Cuotas de membresía" },
@@ -239,6 +244,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo he revisado desde fuera", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["claridad", "contacto"], signalDirection: "negative", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si apoyar económicamente es fácil para alguien que ya quiere hacerlo.", distinction: "Ponte en el lugar de alguien de fuera que quiere donar hoy, sin preguntarte cómo." },
   },
   {
     id: "q2_nonprofit_membership_lifecycle",
@@ -257,6 +263,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
       { value: "unknown", label: "No lo había revisado así", kind: "unknown" },
     ],
     scoringReadiness: { candidateDimensions: ["claridad"], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
+    helpIntent: { understand: "Si unirse y renovar la membresía sigue un camino claro y repetible.", distinction: "Piensa en lo que vive un miembro nuevo o uno que renueva, no en lo que el equipo sabe hacer de memoria." },
   },
   {
     id: "q2_nonprofit_participation",
@@ -266,7 +273,7 @@ export const LOTE_D_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
     prompt: "¿Qué tan seguido las personas de tu comunidad participan activamente (eventos, voluntariado, responder a tus llamados)?",
     purpose: ["diagnostic"],
     priority: "normal",
-    appliesWhen: contextEquals("businessModel", "nonprofit"),
+    appliesWhen: andV2(contextEquals("businessModel", "nonprofit"), notEqV2("q2_has_customers", "no")),
     options: [
       { value: "regularly", label: "Con cierta regularidad" },
       { value: "occasionally", label: "De vez en cuando" },

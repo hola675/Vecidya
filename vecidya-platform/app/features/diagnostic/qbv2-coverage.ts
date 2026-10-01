@@ -122,6 +122,9 @@ export const EVIDENCE_MAPPING: Readonly<Record<string, QuestionEvidenceMapping>>
   // DIAG-V3-08D.1 targeted evidence: each answer directly observes the mapped capability.
   q2_conversion_interest_to_action: { questionId: "q2_conversion_interest_to_action", dimensions: ["conversion_access"], evidenceTypes: ["established", "partial", "missing", "uncertainty"], subcriteria: ["interest-to-action outcome"], semanticRole: "direct" },
   q2_operations_information_base: { questionId: "q2_operations_information_base", dimensions: ["digital_readiness"], evidenceTypes: ["established", "partial", "missing", "uncertainty"], subcriteria: ["digital information base"], semanticRole: "direct" },
+  // DIAG-V3-08E.1 final evidence completion.
+  q2_presence_offer_clarity: { questionId: "q2_presence_offer_clarity", dimensions: ["clarity_positioning"], evidenceTypes: ["established", "partial", "missing", "uncertainty"], subcriteria: ["offer, audience and reason to choose understood by outsiders"], semanticRole: "direct" },
+  q2_presence_digital_base: { questionId: "q2_presence_digital_base", dimensions: ["digital_foundation"], evidenceTypes: ["established", "partial", "missing", "dependency", "uncertainty"], subcriteria: ["own, up-to-date digital base"], semanticRole: "direct" },
   q2_operations_automation_adoption: { questionId: "q2_operations_automation_adoption", dimensions: ["digital_readiness"], evidenceTypes: ["established", "partial", "missing", "uncertainty"], subcriteria: ["automation of repetitive work"], semanticRole: "direct" },
 };
 

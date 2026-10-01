@@ -132,7 +132,7 @@ test("golden personas run planner → deterministic answers → evidence → sco
     const initialAnswers = { ...persona.answers, ...persona.preexistingAnswers };
     const selected = new Set(execution.selectedQuestionIds);
     assert.equal(execution.selectedQuestionIds.length, selected.size, `${persona.id} must not select a route question twice`);
-    assert.ok(execution.routeLengths.length > 0 && execution.routeLengths.every((length) => length <= 20), `${persona.id} must stay under the hard cap`);
+    assert.ok(execution.routeLengths.length > 0 && execution.routeLengths.every((length) => length <= 24), `${persona.id} must stay under the hard cap (24, DIAG-V3-08E.2)`);
     assert.deepEqual(execution.unansweredSelectedQuestionIds, [], `${persona.id} must answer all route-selected questions`);
     assert.ok(Object.keys(persona.answerProfile).every((questionId) => selected.has(questionId) && execution.answers[questionId] === persona.answerProfile[questionId]), `${persona.id} answers only route-selected questions`);
     assert.deepEqual(Object.keys(execution.answers).filter((questionId) => !initialAnswers[questionId] && !selected.has(questionId)), [], `${persona.id} must not invent answers`);

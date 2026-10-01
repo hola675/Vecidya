@@ -60,6 +60,9 @@ export const MODULE_IDS = [
   // `operations`/`follow_up`/`measurement`. Existe porque ningún archetype salvo appointments tenía una
   // observación directa de si el interés termina en clientes (ver `qbv2-lote-g.ts`).
   "conversion",
+  // DIAG-V3-08E.1: comprensión de la oferta y base digital propia, transversal a archetypes; solo evidencia
+  // material (ver `qbv2-lote-g.ts`).
+  "presence",
 ] as const;
 export type ModuleId = (typeof MODULE_IDS)[number];
 
@@ -103,6 +106,7 @@ export const MODULE_REGISTRY: readonly ModuleDefinition[] = [
   { id: "measurement", purpose: "Quiere entender qué funciona y qué no.", relevantWhen: { goals: ["measure"] }, targetQuestionRange: { min: 2, max: 3 } },
   { id: "confirmation", purpose: "Solo ante ambigüedad/contradicción real (§53-54); nunca elegible por defecto.", relevantWhen: {}, targetQuestionRange: { min: 0, max: 2 } },
   { id: "reputation", purpose: "Reseñas/reputación, compartida entre archetypes que la necesitan (no universal).", relevantWhen: { archetypes: ["local", "appointments", "professional", "retail", "hospitality"] }, targetQuestionRange: { min: 1, max: 3 } },
+  { id: "presence", purpose: "Comprensión de la oferta y base digital propia cuando el archetype no tiene una observación directa.", relevantWhen: {}, targetQuestionRange: { min: 0, max: 2 } },
   { id: "conversion", purpose: "Interés que no termina en clientes, compras o participación.", relevantWhen: { frictions: ["conversion"], goals: ["opportunities"] }, targetQuestionRange: { min: 1, max: 1 } },
 ];
 
@@ -166,7 +170,11 @@ type QuestionDefinitionV2Base = {
   readonly helper?: string;
   readonly purpose: readonly [QuestionPurpose, ...QuestionPurpose[]];
   readonly priority: QuestionPriority;
-  /** Ausente = siempre elegible en cuanto su módulo es relevante (equivalente a "core"). */
+  /**
+   * Ausente = siempre elegible en cuanto su módulo es relevante (equivalente a "core").
+   * DIAG-V3-08E.2 (ciclo de vida): una pregunta que presupone clientes, consultas, transacciones u operación
+   * real incluye `notEqV2("q2_has_customers", "no")` — no aplica en pre-lanzamiento declarado.
+   */
   readonly appliesWhen?: RuleV2;
   /**
    * DIAG-V3-08D.1: contextos donde la pregunta es elegible SOLO para cubrir una necesidad material de
@@ -189,6 +197,8 @@ export type QuestionHelpIntent = {
   readonly understand: string;
   /** Qué distinción debería considerar la persona al responder. */
   readonly distinction: string;
+  /** DIAG-V3-08E.3: intención de cada opción (por `value`) cuando la elección distingue intenciones, p. ej. `q2_goal`. */
+  readonly options?: Readonly<Record<string, string>>;
 };
 
 export type SingleQuestionDefinitionV2 = QuestionDefinitionV2Base & { readonly type: "single"; readonly options: readonly OptionV2[] };

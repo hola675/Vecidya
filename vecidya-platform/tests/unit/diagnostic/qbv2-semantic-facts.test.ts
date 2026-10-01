@@ -58,8 +58,10 @@ test("08E contradictions keep both sides, including declared friction vs observe
 test("08E evidence gaps distinguish legitimate, unobservable, insufficient, unconfirmed and not applicable", () => {
   const cases = [
     { result: golden("idea_early_stage").result, id: "evidence_gap:discovery", kind: "legitimate_uncertainty" },
-    { result: golden("idea_early_stage").result, id: "evidence_gap:measurement_optimization", kind: "not_applicable" },
-    { result: golden("local_service_business").result, id: "evidence_gap:clarity_positioning", kind: "unobservable_in_context" },
+    // 08E.2: pre-launch routes no longer ask measurement questions; evidence for an N/A dimension still classifies.
+    { result: facts(obs("measurement_optimization", ["strong"]), { growthStage: resolved("idea") } as never).result, id: "evidence_gap:measurement_optimization", kind: "not_applicable" },
+    // 08E.1 removed every production-reachable unobservable case; a context with no observable question still classifies correctly.
+    { result: facts([], { growthStage: resolved("operating"), primaryFriction: resolved("visibility") } as never).result, id: "evidence_gap:discovery", kind: "unobservable_in_context" },
     { result: facts(obs("conversion_access", ["strong"]), { growthStage: resolved("operating"), primaryFriction: resolved("conversion") } as never).result, id: "evidence_gap:conversion_access", kind: "declared_friction_unconfirmed" },
   ];
   for (const item of cases) assert.equal(fact(item.result, item.id)?.gap?.kind, item.kind, item.id);
