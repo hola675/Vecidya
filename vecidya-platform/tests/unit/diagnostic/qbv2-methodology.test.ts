@@ -232,9 +232,11 @@ test("11 result «Cómo se evaluó» gives four short explanations and links to 
   assert.match(RESULT_METHOD_NOTES.join(" "), /porcentaje.*confianza.*recorrido.*prioridades/s, "score, confidence, adaptive route and priority logic");
 });
 
-test("11 the methodology route is registered only by the development server", () => {
+test("11 the methodology route is public (DIAG-V3-13 cutover); the standalone dev preview stays development-only", () => {
   const routes = readFileSync("app/routes.ts", "utf8");
+  const publicBlock = routes.slice(0, routes.indexOf("...(isDevelopmentServer"));
   const devBlock = routes.slice(routes.indexOf("...(isDevelopmentServer"));
-  assert.ok(devBlock.includes(`route("${METHODOLOGY_PATH.slice(1)}", "routes/dev-diagnostic-methodology.tsx")`));
+  assert.ok(publicBlock.includes(`route("${METHODOLOGY_PATH.slice(1)}", "routes/diagnostico-metodologia.tsx")`), "public methodology route, unconditional");
+  assert.ok(devBlock.includes(`route("__dev/diagnostico/metodologia", "routes/dev-diagnostic-methodology.tsx")`), "standalone dev preview stays dev-only");
   assert.match(readFileSync("app/routes/dev-diagnostic-methodology.tsx", "utf8"), /if \(!import\.meta\.env\.DEV\) throw new Response\("Not Found", \{ status: 404 \}\)/);
 });

@@ -5,6 +5,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { DiagnosticResult, STATUS_ASSETS } from "../../../app/components/diagnostic-result/index.ts";
+import { COMMERCIAL_ROLE_DISPLAY } from "../../../app/components/diagnostic-result/presentation.ts";
 import {
   bandFor, buildDiagnosticNarrative, buildDiagnosticRecommendations, classifyOverallState, displayScoreFor, matchCommercialOfferings, buildDiagnosticOutcome, buildQuestionPlan, COMMERCIAL_CATALOG, computeDigitalPresenceIndex, computeOverallConfidence, deriveConstraintsAndPriorities,
   deriveSemanticFacts, DIGITAL_DIMENSION_IDS, GOLDEN_PERSONAS, matchSolution, OVERALL_INDEX_MODEL, OVERALL_STATE_ASSET_SLOTS, QUESTION_BANK_V2, ROUTE_HARD_CAP, runGoldenPersonaPipeline,
@@ -223,27 +224,101 @@ test("10 solution matching per golden and explicit exclusion rules", () => {
   assert.ok(matchSolution(discovery, independent).exclusions.some((item) => item.rule === "advertising_requires_active_acquisition"));
   const ready: DiagnosticRecommendation = { ...discovery, prerequisites: discovery.prerequisites.map((item) => ({ ...item, satisfied: true })) };
   assert.deepEqual(matchSolution(ready, { ...independent, goal: "be_found", score: () => 90 }).alternatives.map((item) => item.id), ["advertising"]);
-  // Verificar primero: ninguna intervención.
+  // Verificar primero conserva una opción preliminar para no dejar al usuario sin salida comercial.
   const verify: DiagnosticRecommendation = { ...discovery, mode: "verify", framing: "verify_first" };
-  assert.equal(matchSolution(verify, independent).solution, null);
+  assert.equal(matchSolution(verify, independent).solution?.id, "organic_discovery");
   for (const solution of Object.values(SOLUTION_CATALOG)) assert.ok(!/\bcliente|\bnegocio|\bventa/i.test(`${solution.label} ${solution.description}`), `${solution.id}: neutral copy`);
+});
+
+test("10 verify-first keeps a conditional service suggestion and marks it as preliminary", () => {
+  const result = GOLDEN.independent_professional!;
+  const recommendation = { ...result.outcome.recommendations.items[0]!, mode: "verify", framing: "verify_first" as const };
+  const context = solutionContextOf(result.scoring, result.priorities, result.narrative);
+  const solution = matchSolution(recommendation, context);
+  const help = matchCommercialOfferings(
+    { ...result.outcome.recommendations, items: [recommendation] },
+    [solution], context, result.narrative,
+  );
+  assert.equal(solution.solution?.id, "organic_discovery");
+  assert.equal(help.items[0]!.noOffering, null);
+  assert.deepEqual(help.items[0]!.offerings.map((item) => item.offering.id), ["seo"]);
+  assert.equal(help.items[0]!.offerings[0]!.timing, "now");
+  assert.match(help.items[0]!.offerings[0]!.condition!, /confirmar/i);
+});
+
+test("10 verify-first: la licencia sigue siendo la recomendación; servicio y addon quedan como opciones preliminares", () => {
+  // Ruta de contacto (b2b): servicio opcional + licencia recomendada en la misma recomendación.
+  const contact = GOLDEN.b2b_business!;
+  const contactContext = solutionContextOf(contact.scoring, contact.priorities, contact.narrative);
+  const base = contact.outcome.recommendations.items[0]!;
+  assert.equal(matchSolution(base, contactContext).solution?.id, "contact_path");
+  const helpFor = (mode: "verify" | "improve") => {
+    const recommendation: DiagnosticRecommendation = { ...base, mode, framing: mode === "verify" ? "verify_first" : "probable" };
+    return matchCommercialOfferings({ ...contact.outcome.recommendations, items: [recommendation] }, [matchSolution(recommendation, contactContext)], contactContext, contact.narrative).items[0]!.offerings;
+  };
+  const confirmed = helpFor("improve");
+  assert.deepEqual(confirmed.map((match) => `${match.offering.id}/${match.role}`), ["landing-pages/optional_service", "barrio/recommended_license"]);
+  for (const match of confirmed) assert.doesNotMatch(match.condition ?? "", /preliminar/i, `${match.offering.id}: a confirmed recommendation states no preliminary`);
+  const verify = helpFor("verify");
+  assert.deepEqual(verify.map((match) => `${match.offering.id}/${match.role}`), ["landing-pages/optional_service", "barrio/recommended_license"], "roles do not change with the framing");
+  const [landing, barrio] = verify;
+  assert.match(landing!.condition!, /^Opción preliminar:.*confirmar/i, "a service option is explicit about being preliminary");
+  assert.match(barrio!.condition!, /^Todavía conviene confirmar/i, "the license keeps its recommendation role and only tempers certainty");
+  assert.doesNotMatch(barrio!.condition!, /opción preliminar/i, "the license is never demoted to a preliminary option");
+
+  // Agenda en línea (perfil clínico con recordatorios no automáticos): licencia + addon.
+  const booking = GOLDEN.professional_appointments!;
+  const bookingContext = solutionContextOf(booking.scoring, booking.priorities, booking.narrative);
+  assert.equal(bookingContext.profile, "clinical");
+  const bookingRecommendation: DiagnosticRecommendation = { ...base, id: base.id, type: "conversion", mode: "verify", framing: "verify_first" };
+  assert.equal(matchSolution(bookingRecommendation, bookingContext).solution?.id, "online_booking");
+  const bookingOfferings = matchCommercialOfferings({ ...booking.outcome.recommendations, items: [bookingRecommendation] }, [matchSolution(bookingRecommendation, bookingContext)], bookingContext, booking.narrative).items[0]!.offerings;
+  assert.deepEqual(bookingOfferings.map((match) => `${match.offering.id}/${match.role}`), ["barrio/recommended_license", "sms/optional_addon"]);
+  assert.match(bookingOfferings[0]!.condition!, /^Todavía conviene confirmar/i);
+  assert.match(bookingOfferings[1]!.condition!, /^Opción preliminar:.*recordatorios de cita/i, "the addon stays a preliminary option");
+});
+
+test("10 local service visibility route keeps the relevant SEO option in the outcome", () => {
+  const result = pipeline({
+    q2_delivery: "travels", q2_entity: "business", q2_friction: "visibility", q2_goal: "be_found",
+    q2_has_customers: "yes", q2_monetization: "time_or_project", q2_customer_buyer: "b2c", q2_customer_reach: "local",
+    q2_sector: "health_wellness", q2_service_quote_practice: "yes", q2_service_response_speed: "fast",
+    q2_regularity: "irregular", q2_process_systemization: "documented_process", q2_service_repeat_referral: "both",
+    q2_local_discovery: "maps_search",
+  });
+  const offerings = result.outcome.help.items.flatMap((item) => item.offerings);
+  assert.ok(offerings.some((item) => item.offering.id === "seo"), "the route's discovery priority keeps a related service");
+  assert.ok(offerings.filter((item) => item.offering.id === "seo").every((item) => /opción preliminar/i.test(item.condition ?? "")));
+});
+
+test("10 la licencia es la recomendación; servicios y addons son opciones según el análisis", () => {
+  const licenses = Object.values(GOLDEN).flatMap(({ outcome }) => outcome.help.items.flatMap((item) => item.offerings));
+  const shown = licenses.filter((match) => match.offering.kind === "license");
+  assert.ok(shown.length > 0, "at least one result recommends a license");
+  for (const match of shown) {
+    assert.equal(match.role, "recommended_license", `${match.offering.name}: the license is the recommendation`);
+    assert.doesNotMatch(COMMERCIAL_ROLE_DISPLAY[match.role], /opcional/i, "a license is never labelled as optional");
+  }
+  for (const match of licenses.filter((item) => item.offering.kind === "service")) assert.equal(match.role, "optional_service", `${match.offering.name}: services are options`);
+  for (const match of licenses.filter((item) => item.offering.kind === "addon")) assert.equal(match.role, "optional_addon", `${match.offering.name}: addons are options`);
+  assert.ok(Object.values(SOLUTION_OFFERINGS).flat().every((rule) => rule?.role !== "optional_license"), "no rule keeps the old optional-license role");
 });
 
 test("10 commercial matching: canonical offerings only, separate roles, one license, nothing before launch and nothing unsupported", () => {
   const offers = Object.fromEntries(Object.entries(GOLDEN).map(([id, result]) => [id, result.outcome.help.items.map((item) => item.offerings.map((match) => `${match.offering.name}/${match.role}`).join("+") || `none:${item.noOffering}`)]));
   assert.deepEqual(offers, {
-    idea_early_stage: ["Estrategia/recommended_service"],
-    local_service_business: ["Organización del negocio/recommended_service+Cuadra/optional_license", "Páginas web/recommended_service", "Contenido/recommended_service"],
+    idea_early_stage: ["Estrategia/optional_service"],
+    local_service_business: ["Organización del negocio/optional_service+Cuadra/recommended_license", "Páginas web/optional_service", "Contenido/optional_service"],
     appointment_business: [],
-    independent_professional: ["SEO/recommended_service"],
-    professional_appointments: ["Organización del negocio/recommended_service+Cuadra/optional_license", "CRM/recommended_service", "Contenido/recommended_service"],
-    physical_retail: ["Organización del negocio/recommended_service+Cuadra/optional_license", "SEO/recommended_service"],
-    ecommerce: ["Contenido/recommended_service", "Ecommerce/recommended_service", "none:not_in_catalog"],
-    retail_ecommerce_hybrid: ["Organización del negocio/recommended_service+Cuadra/optional_license", "none:not_in_catalog", "Contenido/recommended_service"],
-    b2b_business: ["Landing pages/recommended_service+Barrio/optional_license", "Páginas web/recommended_service", "none:not_in_catalog"],
+    independent_professional: ["SEO/optional_service"],
+    professional_appointments: ["Organización del negocio/optional_service+Cuadra/recommended_license", "CRM/optional_service", "Contenido/optional_service"],
+    physical_retail: ["Organización del negocio/optional_service+Cuadra/recommended_license", "SEO/optional_service"],
+    ecommerce: ["Contenido/optional_service", "Ecommerce/optional_service", "none:not_in_catalog"],
+    retail_ecommerce_hybrid: ["Organización del negocio/optional_service+Cuadra/recommended_license", "none:not_in_catalog", "Contenido/optional_service"],
+    b2b_business: ["Landing pages/optional_service+Barrio/recommended_license", "Páginas web/optional_service", "none:not_in_catalog"],
     creator_personal_brand: ["none:not_in_catalog"],
-    nonprofit_community: ["none:not_in_catalog", "Landing pages/recommended_service+Barrio/optional_license"],
-    operations_heavy: ["Organización del negocio/recommended_service+Cuadra/optional_license", "CRM/recommended_service", "none:not_in_catalog"],
+    nonprofit_community: ["none:not_in_catalog", "Landing pages/optional_service+Barrio/recommended_license"],
+    operations_heavy: ["Organización del negocio/optional_service+Cuadra/recommended_license", "CRM/optional_service", "none:not_in_catalog"],
   });
   for (const [id, { outcome }] of Object.entries(GOLDEN)) {
     const licenses = new Set(outcome.help.items.flatMap((item) => item.offerings).filter((match) => match.offering.kind === "license").map((match) => match.offering.id));
@@ -347,7 +422,9 @@ test("10 generated routes: no pathological overall states, recommendations or co
     const licenses = new Set<string>();
     for (const item of outcome.help.items) {
       const recommendation = outcome.recommendations.items.find((entry) => entry.id === item.recommendationId)!;
-      if (recommendation.mode === "verify") assert.equal(item.offerings.length, 0, `${label}: offer on a verify-first recommendation`);
+      if (recommendation.mode === "verify") {
+        for (const match of item.offerings) assert.match(match.condition ?? "", /opción preliminar/i, `${label}: verify-first offer is not marked preliminary`);
+      }
       if (item.solution.solution?.id === "operational_automation" || item.solution.solution?.id === "follow_up_automation") assert.equal(solutionContextOf(result.scoring, priorities, narrative).processMaturity, "defined", `${label}: automation without a defined process`);
       if (item.solution.alternatives.some((alternative) => alternative.id === "advertising")) assert.ok((result.scoring.dimensions.find((dimension) => dimension.id === "conversion_access")!.score ?? 0) >= 75, `${label}: ads with weak conversion`);
       for (const match of item.offerings) {

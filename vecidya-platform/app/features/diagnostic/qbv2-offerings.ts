@@ -66,11 +66,12 @@ export const COMMERCIAL_CATALOG = {
 export type CommercialOfferingId = keyof typeof COMMERCIAL_CATALOG;
 
 /**
- * `recommended_service`: el trabajo que ejecuta la solución. `optional_license` / `optional_addon`: capacidad
- * continua que puede sostenerla, nunca obligatoria. `required_license`: dependencia de un addon (se suma a una
- * licencia). Las licencias del catálogo no exigen un servicio ni al revés.
+ * `recommended_license`: la licencia que el diagnóstico recomienda según la capacidad detectada —es la
+ * recomendación, nunca una posibilidad a medias—. `optional_service` / `optional_addon`: opciones que se
+ * ofrecen cuando el análisis las respalda, nunca obligatorias. `required_license`: dependencia de un addon
+ * (se suma a una licencia). Las licencias del catálogo no exigen un servicio ni al revés.
  */
-export type CommercialRole = "recommended_service" | "optional_license" | "optional_addon" | "required_license";
+export type CommercialRole = "recommended_license" | "optional_service" | "optional_addon" | "required_license";
 
 type OfferingRule = { readonly offering: CommercialOfferingId; readonly role: Exclude<CommercialRole, "required_license">; readonly condition?: string; readonly when?: (context: SolutionContext) => boolean };
 
@@ -78,41 +79,41 @@ const GROWTH = (context: SolutionContext) => context.stage === "growing" || cont
 
 /** Qué parte del catálogo puede ejecutar cada solución. Sin entrada = Vecidya no tiene hoy una oferta específica. */
 export const SOLUTION_OFFERINGS: Readonly<Partial<Record<SolutionId, readonly OfferingRule[]>>> = {
-  offer_message: [{ offering: "contenido", role: "recommended_service" }],
-  launch_channel_plan: [{ offering: "estrategia", role: "recommended_service" }],
-  website: [{ offering: "paginas-web", role: "recommended_service" }],
-  local_listing: [{ offering: "seo", role: "recommended_service" }],
-  organic_discovery: [{ offering: "seo", role: "recommended_service" }],
-  social_content: [{ offering: "contenido", role: "recommended_service" }],
-  advertising: [{ offering: "google-ads", role: "recommended_service" }, { offering: "meta-ads", role: "recommended_service" }],
+  offer_message: [{ offering: "contenido", role: "optional_service" }],
+  launch_channel_plan: [{ offering: "estrategia", role: "optional_service" }],
+  website: [{ offering: "paginas-web", role: "optional_service" }],
+  local_listing: [{ offering: "seo", role: "optional_service" }],
+  organic_discovery: [{ offering: "seo", role: "optional_service" }],
+  social_content: [{ offering: "contenido", role: "optional_service" }],
+  advertising: [{ offering: "google-ads", role: "optional_service" }, { offering: "meta-ads", role: "optional_service" }],
   contact_path: [
-    { offering: "landing-pages", role: "recommended_service" },
-    { offering: "barrio", role: "optional_license", condition: "Si quieres que los formularios y la landing queden conectados al seguimiento." },
+    { offering: "landing-pages", role: "optional_service" },
+    { offering: "barrio", role: "recommended_license", condition: "Conecta formularios y landing con el seguimiento de contactos." },
   ],
   online_booking: [
-    { offering: "barrio", role: "optional_license", condition: "Incluye agenda; útil si hoy las citas se coordinan por mensajes." },
+    { offering: "barrio", role: "recommended_license", condition: "Incluye la agenda para las citas que hoy coordinas." },
     // Solo cuando la respuesta sobre recordatorios muestra que hoy no son automáticos.
     { offering: "sms", role: "optional_addon", condition: "Para enviar recordatorios de cita por mensaje de texto.", when: (context) => context.stateOf("q2_appointments_confirmation_reminders") === "established" || context.stateOf("q2_appointments_confirmation_reminders") === "missing" },
   ],
-  checkout_experience: [{ offering: "ecommerce", role: "recommended_service" }],
+  checkout_experience: [{ offering: "ecommerce", role: "optional_service" }],
   crm_follow_up: [
-    { offering: "crm", role: "recommended_service" },
-    { offering: "barrio", role: "optional_license", condition: "Si todavía no tienes un sistema donde registrar contactos y su seguimiento." },
+    { offering: "crm", role: "optional_service" },
+    { offering: "barrio", role: "recommended_license", condition: "Da un lugar único para registrar contactos y su seguimiento." },
   ],
   follow_up_automation: [
-    { offering: "workflows", role: "recommended_service" },
-    { offering: "barrio", role: "optional_license", condition: "Incluye automatizaciones estándar de seguimiento." },
+    { offering: "workflows", role: "optional_service" },
+    { offering: "barrio", role: "recommended_license", condition: "Incluye automatizaciones estándar de seguimiento." },
   ],
   work_organization: [
-    { offering: "organizacion-del-negocio", role: "recommended_service" },
-    { offering: "cuadra", role: "optional_license", condition: "Si quieres un lugar común para información, contactos y tareas." },
+    { offering: "organizacion-del-negocio", role: "optional_service" },
+    { offering: "cuadra", role: "recommended_license", condition: "Ordena la información, los contactos y las tareas en un mismo lugar." },
   ],
   operational_automation: [
-    { offering: "workflows", role: "recommended_service" },
-    { offering: "ciudad", role: "optional_license", condition: "Para procesos avanzados con volumen creciente.", when: GROWTH },
-    { offering: "barrio", role: "optional_license", condition: "Incluye automatizaciones estándar.", when: (context) => !GROWTH(context) },
+    { offering: "workflows", role: "optional_service" },
+    { offering: "ciudad", role: "recommended_license", condition: "Para procesos avanzados con volumen creciente.", when: GROWTH },
+    { offering: "barrio", role: "recommended_license", condition: "Incluye automatizaciones estándar.", when: (context) => !GROWTH(context) },
   ],
-  integrations: [{ offering: "integraciones", role: "recommended_service" }],
+  integrations: [{ offering: "integraciones", role: "optional_service" }],
 };
 
 /** «¿Por qué te recomendamos esto?»: la cadena completa, del dato al producto. */
@@ -140,7 +141,7 @@ export type CommercialMatch = {
   readonly proof: CommercialProofChain;
 };
 
-export type NoOfferingReason = "verify_first" | "no_solution" | "not_in_catalog" | "prelaunch_no_license";
+export type NoOfferingReason = "no_solution" | "not_in_catalog" | "prelaunch_no_license";
 
 export type HelpItem = {
   readonly recommendationId: string;
@@ -161,7 +162,8 @@ export function matchCommercialOfferings(recommendations: DiagnosticRecommendati
   let license: CommercialOfferingId | null = null;
   const items = recommendations.items.map((recommendation): HelpItem => {
     const solution = matches.find((item) => item.recommendationId === recommendation.id)!;
-    if (recommendation.mode === "verify" || !solution.solution) return { recommendationId: recommendation.id, solution, offerings: [], noOffering: recommendation.mode === "verify" ? "verify_first" : "no_solution" };
+    if (!solution.solution) return { recommendationId: recommendation.id, solution, offerings: [], noOffering: "no_solution" };
+    const preliminary = recommendation.mode === "verify";
     const rules = (SOLUTION_OFFERINGS[solution.solution.id] ?? []).filter((rule) => !rule.when || rule.when(context));
     if (rules.length === 0) return { recommendationId: recommendation.id, solution, offerings: [], noOffering: "not_in_catalog" };
     const after = recommendation.prerequisites.filter((item) => !item.satisfied && item.recommendationId).map((item) => item.recommendationId!);
@@ -182,7 +184,13 @@ export function matchCommercialOfferings(recommendations: DiagnosticRecommendati
       // Una sola licencia por resultado: la de la recomendación de mayor prioridad. Nunca se sube de nivel para vender más.
       if (offering.kind === "license" && license !== null && license !== rule.offering) { suppressed.push({ offeringId: rule.offering, recommendationId: recommendation.id, rule: "single_license" }); continue; }
       if (offering.kind === "license") license = rule.offering;
-      offerings.push({ offering, role: rule.role, condition: rule.condition ?? null, recommendationId: recommendation.id, sharedWith: firstShown.get(rule.offering) ?? null, timing: after.length > 0 ? "after_prerequisite" : "now", after, proof });
+      const condition = [
+        // La licencia es la recomendación: sin evidencia suficiente se matiza la certeza, no su condición. Las
+        // opciones (servicio, addon) sí se acompañan como preliminares porque no son la recomendación.
+        preliminary ? (rule.role === "recommended_license" ? "Todavía conviene confirmar esta necesidad con información concreta." : "Opción preliminar: primero conviene confirmar esta necesidad con información concreta.") : null,
+        rule.condition ?? null,
+      ].filter((item): item is string => item !== null).join(" ") || null;
+      offerings.push({ offering, role: rule.role, condition, recommendationId: recommendation.id, sharedWith: firstShown.get(rule.offering) ?? null, timing: after.length > 0 ? "after_prerequisite" : "now", after, proof });
       if (!firstShown.has(rule.offering)) firstShown.set(rule.offering, recommendation.id);
     }
     return { recommendationId: recommendation.id, solution, offerings, noOffering: offerings.length > 0 ? null : context.lifecycle === "prelaunch" ? "prelaunch_no_license" : "not_in_catalog" };

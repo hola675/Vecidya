@@ -8,7 +8,7 @@ import type { DiagnosticRecommendation, RecommendationType } from "./qbv2-recomm
  * DIAG-V3-10 — catálogo de soluciones. Una solución es un TIPO de intervención que puede mejorar una capacidad
  * («registro de contactos y rutina de seguimiento»), no un producto: la disponibilidad comercial vive aparte en
  * `qbv2-offerings.ts`. El emparejamiento es determinista, parte siempre de una recomendación y aplica reglas de
- * exclusión explícitas para no proponer lo que la evidencia no respalda.
+ * exclusión explícitas; cuando la evidencia es limitada, la opción se conserva como preliminar y condicionada.
  */
 
 export const SOLUTION_IDS = [
@@ -101,11 +101,12 @@ export function matchSolution(recommendation: DiagnosticRecommendation, context:
   const exclude = (solutionId: SolutionId, rule: ExclusionRule) => { exclusions.push({ solutionId, rule }); };
   const live = context.lifecycle === "live";
 
-  // Con poca evidencia (o sin ella) primero se confirma: no se propone una intervención.
-  // Antes del lanzamiento la falta de evidencia es legítima (modo `prepare`), no un motivo para esperar.
+  // Con poca evidencia (o sin ella) primero se confirma. Aun así, el usuario necesita
+  // ver una opción preliminar coherente para saber qué podría evaluar después; la
+  // capa comercial la marcará como condicionada y nunca como recomendación confirmada.
   if (recommendation.mode === "verify") {
-    for (const id of SOLUTION_IDS.filter((solutionId) => SOLUTION_CATALOG[solutionId].types.includes(recommendation.type))) exclude(id, "verify_before_intervention");
-    return result(null);
+    const preliminary = matchSolution({ ...recommendation, mode: "improve" }, context);
+    return { ...preliminary, exclusions: [...preliminary.exclusions, ...SOLUTION_IDS.filter((solutionId) => solutionId !== preliminary.solution?.id && SOLUTION_CATALOG[solutionId].types.includes(recommendation.type)).map((solutionId) => ({ solutionId, rule: "verify_before_intervention" as const }))] };
   }
 
   switch (recommendation.type) {

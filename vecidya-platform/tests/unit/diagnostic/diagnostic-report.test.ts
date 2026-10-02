@@ -127,7 +127,7 @@ test("12 commercial honesty: no offering, no CTA; verify-first and pre-launch ru
   assert.ok(creator.report.vecidyaHelp.items.every((item) => item.noOffering !== null), "says why there is no offering");
   assert.ok(!textOf(render("creator_personal_brand")).includes("hola@vecidya.com"));
   const idea = golden("idea_early_stage");
-  assert.ok(idea.report.vecidyaHelp.items.flatMap((item) => item.offerings).every((offering) => offering.role === "recommended_service"), "pre-launch: no license or add-on");
+  assert.ok(idea.report.vecidyaHelp.items.flatMap((item) => item.offerings).every((offering) => offering.role === "optional_service"), "pre-launch: no license or add-on");
   for (const { report } of goldens) assert.ok(report.vecidyaHelp.items.flatMap((item) => item.offerings).filter((offering) => offering.role.includes("license")).map((offering) => offering.name).filter((name, index, all) => all.indexOf(name) === index).length <= 1, "one license at most");
   const withOffers = golden("professional_appointments");
   assert.ok(withOffers.report.vecidyaHelp.hasOfferings && textOf(render("professional_appointments")).includes("hola@vecidya.com"), "restrained CTA only with matched offerings");
@@ -176,12 +176,17 @@ test("12 packing: blocks keep order, never split, headings travel with their con
   assert.deepEqual(sheets, [...sheets].sort((a, b) => a - b), "order preserved");
 });
 
-test("12 private report route and download action stay in development", () => {
+test("12 the report route is public (DIAG-V3-13 cutover); the golden-fixture preview stays development-only", () => {
   const routes = readFileSync("app/routes.ts", "utf8");
+  const publicBlock = routes.slice(0, routes.indexOf("...(isDevelopmentServer"));
   const devBlock = routes.slice(routes.indexOf("...(isDevelopmentServer"));
-  assert.ok(devBlock.includes(`route("${REPORT_PATH.slice(1)}/:personaId?", "routes/dev-diagnostic-report.tsx")`));
+  assert.ok(publicBlock.includes(`route("${REPORT_PATH.slice(1)}", "routes/diagnostico-informe.tsx")`), "public report route, unconditional");
+  assert.ok(devBlock.includes(`route("__dev/diagnostico/informe/:personaId?", "routes/dev-diagnostic-report.tsx")`), "golden-fixture preview stays dev-only");
   assert.match(readFileSync("app/routes/dev-diagnostic-report.tsx", "utf8"), /if \(!import\.meta\.env\.DEV\) throw new Response\("Not Found", \{ status: 404 \}\)/);
+  const publicSource = readFileSync("app/routes/diagnostico-informe.tsx", "utf8");
+  assert.ok(!/GOLDEN_PERSONAS|runGoldenPersonaPipeline|params\.personaId|searchParams\.get\("debug"\)|searchParams\.get\("stress"\)/.test(publicSource), "no fixtures, golden profiles or debug params read in the public route");
+  assert.match(publicSource, /noindex, nofollow/, "per-visitor report page is not indexed");
   const flow = readFileSync("app/components/diagnostic-flow/diagnostic-flow.tsx", "utf8");
   assert.match(flow, /Descargar informe PDF/);
-  assert.ok(!/fetch\(|sendBeacon|mailto:.*body/.test(readFileSync("app/routes/dev-diagnostic-report.tsx", "utf8")), "no upload, email or lead capture");
+  assert.ok(!/fetch\(|sendBeacon|mailto:.*body/.test(publicSource), "no upload, email or lead capture");
 });

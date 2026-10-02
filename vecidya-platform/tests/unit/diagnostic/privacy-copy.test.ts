@@ -4,35 +4,48 @@ import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 
 /**
- * GATE A de privacidad (DIAG-V3-06 §63): DIAG-V3-06 no puede cerrarse si la copy local sigue
- * prometiendo que el diagnóstico no guarda respuestas. Esta prueba fija esa reconciliación como
- * regresión: si alguien reintroduce la promesa absoluta, esta prueba debe fallar.
+ * DIAG-V3-13 §12/§13/§66: la copy de privacidad debe reflejar la arquitectura real del diagnóstico
+ * público — motor V3, cliente-only: respuestas solo en este navegador, sin backend, sin recovery code,
+ * sin analítica. Las promesas de la era QBV1 (identificador de sesión en servidor, "Guardar para
+ * después" con recovery code, retención de analítica de 180 días) quedaron retiradas junto con el
+ * backend que las sostenía (DIAG-V3-06/07/08, nunca desplegado — ver `STATUS.md`
+ * `DIAG-V3-RECOVERY-SECRET-001`); afirmarlas ahora sería falso. Esta prueba fija la reconciliación
+ * como regresión: si alguien reintroduce una promesa retirada (absoluta o del backend ya retirado),
+ * o deja de afirmar la realidad actual, esta prueba debe fallar.
  */
 
 function read(relativePath: string): string {
   return readFileSync(fileURLToPath(new URL(`../../../${relativePath}`, import.meta.url)), "utf8");
 }
 
-const RETIRED_ABSOLUTE_CLAIMS = [
+/** Promesas que ya no son ciertas: ni la promesa absoluta original, ni el backend retirado que la reemplazó. */
+const RETIRED_CLAIMS = [
   /no guardamos tus respuestas/i,
   /no guarda respuestas ni resultados/i,
   /vecidya no guarda informacion del diagnostico/i,
   /al cerrar la p[aá]gina,\s*las respuestas desaparecen/i,
+  /identificador aleatorio/i,
+  /guardarse de forma estructurada/i,
+  /guardar para despu[eé]s/i,
+  /c[oó]digo de recuperaci[oó]n|recovery code/i,
+  /no es un cifrado/i,
+  /m[eé]tricas de uso del propio diagn[oó]stico/i,
+  /180 d[ií]as/i,
 ];
 
-test("privacy.tsx ya no promete de forma absoluta que el diagnóstico no guarda respuestas", () => {
+test("privacy.tsx no promete ni describe ninguna función retirada del diagnóstico (ni la promesa absoluta original, ni el backend QBV1 que la reemplazó)", () => {
   const source = read("app/routes/privacy.tsx");
-  for (const pattern of RETIRED_ABSOLUTE_CLAIMS) assert.doesNotMatch(source, pattern);
+  for (const pattern of RETIRED_CLAIMS) assert.doesNotMatch(source, pattern, pattern.source);
 });
 
-test("diagnostic.tsx (copy pública) ya no promete de forma absoluta que no se guardan respuestas", () => {
+test("diagnostic.tsx (ruta pública) no promete de forma absoluta que no se guardan respuestas ni describe el backend retirado", () => {
   const source = read("app/routes/diagnostic.tsx");
-  for (const pattern of RETIRED_ABSOLUTE_CLAIMS) assert.doesNotMatch(source, pattern);
+  for (const pattern of RETIRED_CLAIMS) assert.doesNotMatch(source, pattern, pattern.source);
 });
 
-test("el mailto de contacto ya no afirma que Vecidya no guarda información del diagnóstico", () => {
+test("el mailto de contacto del diagnóstico no afirma nada sobre guardar o no guardar información", () => {
   const source = read("app/features/diagnostic/index.ts");
-  for (const pattern of RETIRED_ABSOLUTE_CLAIMS) assert.doesNotMatch(source, pattern);
+  for (const pattern of RETIRED_CLAIMS) assert.doesNotMatch(source, pattern, pattern.source);
 });
 
 test("privacy.tsx sigue siendo explícito en que no se exige registro, nombre, correo ni teléfono", () => {
@@ -40,37 +53,17 @@ test("privacy.tsx sigue siendo explícito en que no se exige registro, nombre, c
   assert.match(source, /no exige registro, nombre, correo ni tel[eé]fono/i);
 });
 
-test("privacy.tsx explica el identificador aleatorio y la persistencia estructurada del diagnóstico completo", () => {
+test("privacy.tsx describe con exactitud la arquitectura real: solo este navegador, sin servidor, expiración y PDF local", () => {
   const source = read("app/routes/privacy.tsx");
-  assert.match(source, /identificador aleatorio/i);
-  assert.match(source, /guardarse de forma estructurada/i);
+  assert.match(source, /[uú]nicamente en este navegador/i, "local-only storage, stated plainly");
+  assert.match(source, /no en nuestros servidores/i, "explicit no-backend claim, matches actual network behavior");
+  assert.match(source, /14 d[ií]as/i, "matches DIAGNOSTIC_SESSION_V3_TTL_MS");
+  assert.match(source, /empiezas de nuevo/i, "no cross-device recovery: honest about the real limitation");
+  assert.match(source, /no recogemos m[eé]tricas de uso del diagn[oó]stico/i, "no analytics collected today");
+  assert.match(source, /se genera en tu propio navegador/i, "PDF is client-side, never uploaded");
 });
 
-/**
- * DIAG-V3-07 §31/§32: distinguir el autoguardado temporal (same-browser) de "Guardar para después"
- * (acción explícita con recovery code) y no presentar el código como cifrado de las respuestas.
- */
-test("privacy.tsx distingue \"Guardar para después\" del autoguardado temporal y aclara que el código no es un cifrado", () => {
-  const source = read("app/routes/privacy.tsx");
-  assert.match(source, /Guardar para después/);
-  assert.match(source, /no es un cifrado/i);
-});
-
-/**
- * DIAG-V3-08 (Task 15): la copy debe cubrir la telemetría de interacción anónima (qué preguntas
- * generan dudas, dónde se abandona, contadores de guardado/reanudación) sin afirmar que no se
- * almacena y sin inventar un mecanismo formal de consentimiento (LEGAL-PRIV-001 sigue abierto).
- */
-test("privacy.tsx cubre la telemetría anónima de uso del diagnóstico: identificador de sesión, sin contenido de respuestas y plazo objetivo de retención de 180 días", () => {
-  const source = read("app/routes/privacy.tsx");
-  assert.match(source, /m[eé]tricas de uso del propio diagn[oó]stico/i);
-  assert.match(source, /ligada al mismo identificador de sesi[oó]n/i);
-  assert.match(source, /no incluyen el contenido de tus respuestas/i);
-  // 180 días es el plazo objetivo (política), no un borrado automático ya en ejecución: no existe
-  // scheduler que invoque `purgeExpiredAnalyticsEvents` todavía (Open Debt), así que la copy no
-  // puede afirmar que los registros "se conservan hasta" ese plazo como si se hiciera cumplir.
-  assert.match(source, /plazo objetivo de conservaci[oó]n es de 180 d[ií]as/i);
-  assert.match(source, /eliminaci[oó]n autom[aá]tica[^.]*todav[ií]a no est[aá] activa/i);
-  assert.doesNotMatch(source, /se conservan hasta 180 d[ií]as/i);
-  for (const pattern of RETIRED_ABSOLUTE_CLAIMS) assert.doesNotMatch(source, pattern);
+test("la copy pública del diagnóstico menciona el guardado local sin abrumar la pantalla de inicio", () => {
+  const flowCopy = read("app/components/diagnostic-flow/flow-copy.ts");
+  assert.match(flowCopy, /se guardan solo en este navegador/i);
 });

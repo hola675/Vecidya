@@ -1,4 +1,3 @@
-import type { StorageLike } from "./browser-store";
 import { QUESTION_BANK_V2 } from "./qbv2-bank";
 import { scoreContextualDimensions } from "./qbv2-contextual-scoring";
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
@@ -337,6 +336,13 @@ export function parseSessionV3(raw: string | null, now: number, options?: Option
   if (reconciled.status === "completed" && removed.length === 0) return reconciled;
   return advance({ ...reconciled, reviewIndex: removed.length > 0 ? null : reconciled.reviewIndex }, bank);
 }
+
+/** Forma mínima de `localStorage`, para poder probar con un almacenamiento en memoria. */
+export type StorageLike = {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+  removeItem(key: string): void;
+};
 
 /** Acceso al almacenamiento del navegador; ningún componente llama a `localStorage` directamente. */
 export class DiagnosticSessionStoreV3 {

@@ -129,57 +129,6 @@ export {
   type RecommendationTrace,
 } from "./recommendations";
 export { buildResultFacts, explainResult, type DimensionResult, type ResultFacts, type ResultTrace } from "./facts";
-export {
-  buildCanonicalCompletionPayload,
-  computeCompletionHash,
-  hasSnapshotShape,
-  MAX_ANSWERS_PER_PAYLOAD,
-  MAX_REQUEST_BODY_BYTES,
-  validateAnswersPayload,
-  type AnswersValidationResult,
-  type DiagnosticSessionSnapshot,
-} from "./persistence";
-export { DiagnosticBrowserStore, type DiagnosticBrowserRecord, type StorageLike } from "./browser-store";
-export {
-  estimatedSnapshotWrites,
-  shouldFlushSnapshot,
-  SNAPSHOT_ANSWER_INTERVAL,
-  SNAPSHOT_MIN_INTERVAL_MS,
-  type SnapshotDecisionInput,
-} from "./snapshot-policy";
-export {
-  createServerSession,
-  recoverSession,
-  saveSessionForLater,
-  sendAnalyticsEvents,
-  sendCompletion,
-  sendSnapshot,
-  type CreateSessionResult,
-  type RecoverSessionResult,
-  type SaveSessionResult,
-  type SnapshotPayload,
-} from "./sync";
-export { canOfferSaveForLater } from "./save-eligibility";
-export {
-  ANALYTICS_ABANDONMENT_THRESHOLD_MS,
-  ANALYTICS_EVENT_RETENTION_DAYS,
-  ANALYTICS_EVENT_TYPES,
-  ANALYTICS_SCHEMA_VERSION,
-  ANALYTICS_SECTION_IDS,
-  ANSWER_KINDS,
-  isAnalyticallyAbandoned,
-  isAnalyticsEventType,
-  isAnalyticsSectionId,
-  isAnswerKind,
-  MAX_ANALYTICS_EVENTS_PER_BATCH,
-  MAX_ANALYTICS_EVENTS_PER_SESSION,
-  MAX_ANALYTICS_STRING_LENGTH,
-  type AbandonmentCandidate,
-  type AnalyticsEventType,
-  type AnalyticsSchemaVersion,
-  type AnswerKind,
-} from "./analytics";
-export { ANALYTICS_QUEUE_FLUSH_INTERVAL_MS, ANALYTICS_QUEUE_FLUSH_SIZE, ANALYTICS_QUEUE_MAX_PENDING, AnalyticsEventQueue, type AnalyticsQueueEvent, type AnalyticsQueueEventInput } from "./analytics-queue";
 export { computeRouteSignature } from "./route-signature";
 export {
   DIGITAL_DIMENSIONS,
@@ -210,7 +159,7 @@ export { bandFor, buildDigitalPresenceStatus, classifyOverallState, computeDigit
 export { buildDiagnosticRecommendations, DIMENSION_RECOMMENDATION_TYPE, RECOMMENDATION_FRAMING, RECOMMENDATION_MODES, RECOMMENDATION_TYPES, RECOMMENDATION_VERSION, type DiagnosticRecommendation, type DiagnosticRecommendations, type RecommendationEvidence, type RecommendationFraming, type RecommendationInput, type RecommendationMode, type RecommendationPrerequisite, type RecommendationType, type RecommendationUrgency } from "./qbv2-recommendations";
 export { EXCLUSION_RULES, matchSolution, SOLUTION_CATALOG, SOLUTION_IDS, solutionContextOf, type ExclusionRule, type SolutionCatalogItem, type SolutionContext, type SolutionId, type SolutionMatch } from "./qbv2-solutions";
 export { buildDiagnosticOutcome, COMMERCIAL_CATALOG, matchCommercialOfferings, OFFERING_KINDS, offeringDependencies, SOLUTION_OFFERINGS, type CommercialMatch, type CommercialOffering, type CommercialOfferingId, type CommercialProofChain, type CommercialRole, type DiagnosticOutcome, type DiagnosticOutcomeInput, type HelpItem, type HowVecidyaCanHelp, type NoOfferingReason, type OfferingKind } from "./qbv2-offerings";
-export { canGoBackV3, completeSessionV3, createSessionV3, currentQuestionIdV3, DIAGNOSTIC_SESSION_V3_SCHEMA, DIAGNOSTIC_SESSION_V3_STORAGE_KEY, DIAGNOSTIC_SESSION_V3_TTL_MS, DiagnosticSessionStoreV3, goBackV3, parseSessionV3, presentQuestionV3, progressV3, PROGRESS_STAGES_V3, runDiagnosticPipelineV3, serializeSessionV3, SESSION_STATUSES_V3, sessionProfileV3, submitAnswerV3, toggleMultiValueV3, validateAnswerV3, type AnswerValidationErrorV3, type AnswerValidationV3, type AnswerValueV3, type CompletionV3, type DiagnosticResultV3, type DiagnosticSessionV3, type PresentedQuestionV3, type ProgressStageV3, type ProgressV3, type QueuedQuestionV3, type RouteTraceEntryV3, type SessionStatusV3, type SubmitResultV3 } from "./qbv2-session";
+export { canGoBackV3, completeSessionV3, createSessionV3, currentQuestionIdV3, DIAGNOSTIC_SESSION_V3_SCHEMA, DIAGNOSTIC_SESSION_V3_STORAGE_KEY, DIAGNOSTIC_SESSION_V3_TTL_MS, DiagnosticSessionStoreV3, goBackV3, parseSessionV3, presentQuestionV3, progressV3, PROGRESS_STAGES_V3, runDiagnosticPipelineV3, serializeSessionV3, SESSION_STATUSES_V3, sessionProfileV3, submitAnswerV3, toggleMultiValueV3, validateAnswerV3, type AnswerValidationErrorV3, type AnswerValidationV3, type AnswerValueV3, type CompletionV3, type DiagnosticResultV3, type DiagnosticSessionV3, type PresentedQuestionV3, type ProgressStageV3, type ProgressV3, type QueuedQuestionV3, type RouteTraceEntryV3, type SessionStatusV3, type StorageLike, type SubmitResultV3 } from "./qbv2-session";
 
 /**
  * Ejecuta el diagnóstico completo sobre un conjunto de respuestas.

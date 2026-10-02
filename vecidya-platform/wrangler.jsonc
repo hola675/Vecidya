@@ -22,12 +22,7 @@
       "BETTER_AUTH_SECRET",
       "GMAIL_OAUTH_CLIENT_ID",
       "GMAIL_OAUTH_CLIENT_SECRET",
-      "GMAIL_OAUTH_REFRESH_TOKEN",
-      // DIAG-V3-07: clave HMAC server-side para el recovery code de "Guardar para después" (spec
-      // §13). Solo el NOMBRE vive en Git; el valor real nunca se lee, imprime ni versiona. Local:
-      // secreto de desarrollo en `.dev.vars` (gitignored). Remoto: BLOQUEADO — no se crea todavía
-      // (ver Open Debt `DIAG-V3-RECOVERY-SECRET-001`), es un prerrequisito de deploy, no de esta fase.
-      "DIAGNOSTIC_RECOVERY_HMAC_KEY"
+      "GMAIL_OAUTH_REFRESH_TOKEN"
     ]
   },
   "vars": {
@@ -46,32 +41,6 @@
       "migrations_dir": "db/migrations"
     }
   ],
-  // DIAG-V3-06: snapshot temporal del Diagnóstico (spec §61). El "id" de abajo es un PLACEHOLDER
-  // LOCAL, nunca un namespace remoto: no se ejecutó `wrangler kv namespace create` (eso crearía un
-  // recurso en la cuenta de Cloudflare, prohibido sin autorización en esta fase). Verificado que
-  // `wrangler kv key put/get --local` funciona sin red ni namespace real. `remote: false` deja
-  // explícito que este binding nunca debe resolverse contra Cloudflare mientras no exista un
-  // namespace real; sustituir este id por uno real (`wrangler kv namespace create`) es un
-  // prerrequisito de cualquier deploy futuro, no de esta fase.
-  "kv_namespaces": [
-    {
-      "binding": "DIAGNOSTIC_SNAPSHOTS",
-      "id": "local-only-placeholder-diagnostic-snapshots",
-      "remote": false
-    }
-  ],
-  // DIAG-V3-07 §23/§24: defensa coarse-grained contra brute force en `POST /api/diagnostic/recover`.
-  // A diferencia de KV, este binding no crea ningún recurso remoto — Cloudflare lo aplica en el edge
-  // sin un paso de aprovisionamiento separado, y `namespace_id` es solo un identificador de
-  // configuración (no un recurso de cuenta), por lo que no viola "sin infraestructura remota" en esta
-  // fase. Límite de arranque documentado en `docs/ARCHITECTURE.md`; puede revisarse antes de producción.
-  "ratelimits": [
-    {
-      "name": "DIAGNOSTIC_RECOVERY_RATE_LIMITER",
-      "namespace_id": "1701",
-      "simple": { "limit": 10, "period": 60 }
-    }
-  ],
   "env": {
     "staging": {
       "name": "vecidya-platform-staging",
@@ -85,7 +54,7 @@
         "EMAIL_REPLY_TO": "hola@vecidya.com"
       },
       "secrets": {
-        "required": ["BETTER_AUTH_SECRET", "DIAGNOSTIC_RECOVERY_HMAC_KEY"]
+        "required": ["BETTER_AUTH_SECRET"]
       },
       "d1_databases": [
         {
@@ -93,20 +62,6 @@
           "database_name": "vecidya-staging",
           "database_id": "d4af6ebc-97c5-42f6-ad3a-51551021e591",
           "migrations_dir": "db/migrations"
-        }
-      ],
-      "kv_namespaces": [
-        {
-          "binding": "DIAGNOSTIC_SNAPSHOTS",
-          "id": "local-only-placeholder-diagnostic-snapshots-staging",
-          "remote": false
-        }
-      ],
-      "ratelimits": [
-        {
-          "name": "DIAGNOSTIC_RECOVERY_RATE_LIMITER",
-          "namespace_id": "1701",
-          "simple": { "limit": 10, "period": 60 }
         }
       ]
     }

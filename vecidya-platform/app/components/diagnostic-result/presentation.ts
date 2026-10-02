@@ -191,14 +191,13 @@ export function actionSteps(narrative: DiagnosticNarrative, outcome: DiagnosticO
 }
 
 export const COMMERCIAL_ROLE_DISPLAY: Readonly<Record<CommercialRole, string>> = {
-  recommended_service: "Servicio",
-  optional_license: "Licencia opcional",
+  recommended_license: "Licencia recomendada",
+  optional_service: "Servicio",
   optional_addon: "Addon opcional",
   required_license: "Licencia requerida",
 };
 
 export const NO_OFFERING_DISPLAY: Readonly<Record<NoOfferingReason, string>> = {
-  verify_first: "Primero conviene confirmar este punto; por ahora no corresponde proponer un producto.",
   no_solution: "Con la evidencia actual no corresponde proponer una intervención concreta.",
   not_in_catalog: "Vecidya no tiene hoy una oferta específica para esto. Puedes avanzar con la solución descrita por tu cuenta o con quien prefieras.",
   prelaunch_no_license: "Antes del lanzamiento no se propone una licencia: primero conviene definir y validar la propuesta.",

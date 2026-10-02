@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-02 — DIAG-V3-13 Public Diagnostic Cutover (solo local, sin deploy)
+
+- `/diagnostico` reemplaza QBV1 por `DiagnosticFlow` V3 cliente-only; metodología e informe pasan a `/diagnostico/metodologia` y `/diagnostico/informe` (`noindex` para el informe).
+- Se retira el backend experimental de persistencia, recuperación y analítica del diagnóstico, junto con sus rutas, módulos, bindings KV/ratelimit y secreto específico. Las migraciones `0011`–`0013` nunca se aplicaron a D1 remota.
+- Privacidad vigente: respuestas solo en `localStorage` durante 14 días; sin telemetría, servidor ni recuperación entre dispositivos. El informe se genera en el navegador.
+- Versión local `0.6.0`. Unitarias 775/775, typecheck, build, E2E V3 10/10, informe 26/26 y smoke público C1 PASS. Publicación/deploy y DIAG-V3-14 quedan fuera de este cierre y requieren autorización explícita.
+
+
 ## 2026-10-01 — DIAG-V3-12 Professional Diagnostic PDF Report (solo local, sin deploy; cerrada y congelada en su commit local de cierre)
 
 - Informe PDF del diagnóstico V3 con un límite de **tres páginas**: view model `DiagnosticReportV1` (informe 1.0, metodología 1.0) construido del `DiagnosticNarrative` y el `DiagnosticOutcome` congelados con las mismas traducciones de presentación que la web; no recalcula nada.

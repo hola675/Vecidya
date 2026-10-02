@@ -1,2 +1,2 @@
-/** Dónde vive el informe mientras V3 es privado; el corte público lo moverá junto con el resultado. */
-export const REPORT_PATH = "/__dev/diagnostico/informe";
+/** DIAG-V3-13: dónde vive el informe PDF, público desde el corte. */
+export const REPORT_PATH = "/diagnostico/informe";

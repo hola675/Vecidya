@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "agent-shadcn-mcp"
+      ]
+    },
+    "lucide-icons": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "lucide-icons-mcp",
+        "--stdio"
+      ]
+    },
+    "playwright": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "playwright-mcp"
+      ]
+    },
+    "chrome-devtools": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "chrome-devtools-mcp"
+      ]
+    }
+  }
+}

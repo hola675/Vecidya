@@ -4868,7 +4868,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .rp-rec__facts dt { color: var(--muted); font-weight: 700; }
 .rp-help { display: grid; gap: 0.15em; }
 .rp-offer__role { display: inline-block; border: 1px solid var(--line); border-radius: 99px; padding: 0 0.45em; color: var(--muted); font-size: 0.82em; font-weight: 700; }
-.rp-offer--recommended-service .rp-offer__role { border-color: var(--ink); color: var(--ink); }
+.rp-offer--recommended-license .rp-offer__role { border-color: var(--ink); color: var(--ink); }
 .rp-cta { border-top: 1px dashed var(--line); padding-top: 0.35em; }
 /* Método: «Cómo se evaluó» y los límites a la izquierda, las fuentes a la derecha; el DOM conserva el orden 12 → 13 → 14. */
 .rp-method { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); grid-template-areas: "evaluated sources" "limits sources"; gap: 0.5em 1.2em; align-items: start; }
