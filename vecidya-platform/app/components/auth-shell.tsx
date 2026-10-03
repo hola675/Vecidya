@@ -20,7 +20,7 @@ export function AuthShell({ eyebrow, title, description, children, privacyNote }
         <div className="auth-layout">
           <section aria-label="Tu espacio Vecidya" className="auth-welcome">
             <Link aria-label="Vecidya, inicio" className="auth-brand auth-brand--lockup" to="/">
-              <img alt="Vecidya — Presencia digital para negocios locales" decoding="async" height={512} src={publicAssets.brand.lockup} width={512} />
+              <img alt="Vecidya — Presencia digital para negocios locales" decoding="async" height={384} src={publicAssets.brand.lockup} width={512} />
             </Link>
             <div className="auth-welcome__copy">
               <p className="eyebrow">VECIDYA</p>

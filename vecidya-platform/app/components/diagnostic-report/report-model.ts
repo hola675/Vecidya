@@ -35,6 +35,7 @@ export type ReportLabelled = { readonly label: string; readonly text: string };
 
 export type ReportDimension = {
   readonly key: string;
+  readonly icon: string;
   readonly label: string;
   readonly status: DimensionPresentationStatus;
   readonly statusLabel: string;
@@ -157,7 +158,7 @@ export function buildDiagnosticReport({ narrative, outcome, generatedAt, busines
     // Las mismas notas que la web (`dimensionOverview`): una sola explicación de etapa o de lectura preliminar.
     dimensionNotes: [overview.lifecycleNote, overview.preliminaryNote].filter((note): note is string => note !== null),
     dimensions: overview.items.map((item) => ({
-      key: item.dimension.dimension, label: item.dimension.label, status: item.dimension.status, statusLabel: item.statusLabel, score: item.dimension.score, percent: item.percent,
+      key: item.dimension.dimension, icon: item.icon, label: item.dimension.label, status: item.dimension.status, statusLabel: item.statusLabel, score: item.dimension.score, percent: item.percent,
       confidence: item.confidence, preliminary: item.preliminary, interpretation: item.dimension.interpretation.text, evidenceLead: item.evidenceLead,
       evidenceTopics: item.dimension.evidence.map((entry) => entry.topic),
     })),

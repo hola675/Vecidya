@@ -2,6 +2,7 @@ import type {
   CommercialMatch, CommercialRole, ContextualConfidenceLevel, DiagnosticNarrative, DiagnosticOutcome, DiagnosticRecommendation, DigitalPresenceStatus, DimensionInterpretation,
   DimensionPresentationStatus, HelpItem, NarrativeBlock, NarrativePriority, NoOfferingReason, RecommendationFraming, ResultCertainty, TerminologyProfileId,
 } from "../../features/diagnostic";
+import { publicAssets } from "../../assets/public-assets";
 
 /**
  * DIAG-V3-09 — mapeo de presentación del resultado. Solo traduce valores del `DiagnosticNarrative` a etiquetas
@@ -58,6 +59,7 @@ const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1
 
 export type DimensionDisplay = {
   readonly dimension: DimensionInterpretation;
+  readonly icon: string;
   readonly statusLabel: string;
   /** Solo cuando hay lectura numérica; `null` nunca se muestra como `0%`. */
   readonly percent: string | null;
@@ -69,10 +71,22 @@ export type DimensionDisplay = {
   readonly evidenceLead: string;
 };
 
+const DIMENSION_ICON: Readonly<Record<DimensionInterpretation["dimension"], string>> = {
+  clarity_positioning: publicAssets.illustrations.dimensionClarity,
+  digital_foundation: publicAssets.illustrations.dimensionFoundation,
+  discovery: publicAssets.illustrations.dimensionDiscovery,
+  trust_reputation: publicAssets.illustrations.dimensionTrust,
+  conversion_access: publicAssets.illustrations.dimensionConversion,
+  relationship_recurrence: publicAssets.illustrations.dimensionRelationship,
+  measurement_optimization: publicAssets.illustrations.dimensionMeasurement,
+  digital_readiness: publicAssets.illustrations.dimensionOperations,
+};
+
 export function dimensionDisplay(dimension: DimensionInterpretation): DimensionDisplay {
   const scored = SCORED_STATUSES.has(dimension.status) && dimension.score !== null;
   return {
     dimension,
+    icon: DIMENSION_ICON[dimension.dimension],
     statusLabel: capitalize(dimension.statusLabel),
     percent: scored ? `${dimension.score}%` : null,
     confidence: scored ? CONFIDENCE_DISPLAY[dimension.confidence] : null,

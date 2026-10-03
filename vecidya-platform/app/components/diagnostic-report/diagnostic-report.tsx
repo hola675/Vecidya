@@ -36,6 +36,7 @@ function Dimension({ dimension }: { dimension: ReportDimension }) {
   return (
     <div className={`rp-dim rp-dim--${modifier(dimension.status)}`}>
       <div className="rp-dim__head">
+        <img alt="" className="rp-dim__icon" height={40} src={dimension.icon} width={40} />
         <h3 className="rp-h3">{dimension.label}</h3>
         {dimension.percent && dimension.score !== null ? (
           <span className="rp-meter">

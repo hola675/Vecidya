@@ -4145,7 +4145,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .auth-welcome { position:relative; display:flex; flex-direction:column; overflow:hidden; padding:clamp(1.75rem,5vw,3.5rem); color:#fff; background:radial-gradient(circle at 8% 96%,rgb(255 107 11 / 35%),transparent 20rem),linear-gradient(145deg,#123d78,#10294d); }
 .auth-welcome::after { position:absolute; right:-9rem; bottom:-14rem; width:32rem; height:32rem; border:1px solid rgb(255 255 255 / 12%); border-radius:50%; box-shadow:0 0 0 3rem rgb(255 255 255 / 3%),0 0 0 6rem rgb(255 255 255 / 2%); content:""; pointer-events:none; }
 .auth-welcome .auth-brand { position:relative; z-index:1; display:inline-flex; align-items:center; gap:.55rem; width:max-content; margin-bottom:var(--space-5); color:#fff; font-size:1.2rem; font-weight:800; letter-spacing:-.05em; text-decoration:none; }
-.auth-welcome .auth-brand--lockup img { width:10rem; height:10rem; object-fit:contain; filter:drop-shadow(0 .6rem 1.3rem rgb(0 0 0 / 30%)); }
+.auth-welcome .auth-brand--lockup img { width:12rem; height:9rem; border-radius:.85rem; background:#fff; object-fit:contain; filter:drop-shadow(0 .6rem 1.3rem rgb(0 0 0 / 30%)); }
 .auth-welcome__copy { position:relative; z-index:1; max-width:34rem; margin-top:clamp(2.5rem,8vh,5.5rem); }
 .auth-welcome__copy .eyebrow { color:#ffbf91; }
 .auth-welcome__copy h2 { max-width:13ch; margin:.75rem 0 1rem; font-size:clamp(2.25rem,4.2vw,3.7rem); letter-spacing:-.065em; line-height:.98; text-wrap:balance; }
@@ -4460,12 +4460,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 /* Nivel 3: las ocho áreas como un registro de lectura, siempre en el mismo orden. */
 .dr-dim-list { margin: 0; padding: 0; border-top: 1px solid var(--line); list-style: none; }
-.dr-dim { display: grid; gap: 0.6rem; min-width: 0; border-bottom: 1px solid var(--line); padding: 1.1rem 0; }
-.dr-dim__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.35rem 0.75rem; min-width: 0; }
+.dr-dim { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: 0.6rem 1rem; min-width: 0; border-bottom: 1px solid var(--line); padding: 1.1rem 0; }
+.dr-dim__head { grid-column: 2; grid-row: 1; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.35rem 0.75rem; min-width: 0; }
 .dr-dim__label { margin: 0; min-width: 0; font-size: 1.0625rem; font-weight: 700; line-height: 1.3; overflow-wrap: break-word; }
-.dr-dim__measure { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.1rem; }
+.dr-dim__icon { grid-column: 1; grid-row: 1 / span 3; display: block; width: 4rem; height: 4rem; object-fit: contain; }
+.dr-dim__measure { grid-column: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.1rem; }
 .dr-dim__no-score { color: var(--muted); font-size: var(--text-meta); }
-.dr-dim__body { min-width: 0; }
+.dr-dim__body { grid-column: 2; min-width: 0; }
 .dr-dim__body > p { margin: 0; max-width: 62ch; line-height: 1.55; overflow-wrap: break-word; }
 .dr-dim--unscored .dr-dim__body > p { color: var(--muted); }
 .dr-status { display: inline-flex; align-items: center; gap: 0.4rem; font-size: var(--text-meta); font-weight: 700; }
@@ -4846,7 +4847,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .rp-columns > div { display: grid; gap: 0.3em; align-content: start; min-width: 0; }
 .rp-dims { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1.2em; }
 .rp-dim { display: grid; gap: 0.2em; align-content: start; border-top: 1px solid var(--line); padding-top: 0.35em; }
-.rp-dim__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6em; }
+.rp-dim__head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0.3em 0.6em; }
+.rp-dim__icon { flex: 0 0 2.5em; width: 2.5em; height: 2.5em; object-fit: contain; }
+.rp-dim__head .rp-h3 { grid-column: 1; grid-row: 1; }
+.rp-dim__head .rp-dim__icon { grid-column: 2; grid-row: 1 / span 2; }
+.rp-dim__head .rp-meter { grid-column: 1; grid-row: 2; }
 .rp-dim__status { display: flex; flex-wrap: wrap; align-items: center; gap: 0.2em 0.9em; }
 .rp .dr-status, .rp .dr-confidence { font-size: 0.86em; }
 .rp .dr-status__glyph { width: 1.15em; height: 1.15em; }

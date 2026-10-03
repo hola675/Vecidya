@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-03 — Iconos circulares para las ocho áreas del diagnóstico (solo local, sin deploy)
+
+- Se integran ocho WebP circulares reutilizados por el resultado V3 y el PDF mediante el mismo mapeo; la carpeta contiene únicamente esos ocho assets finales, sin recortes temporales ni duplicados.
+- Typecheck, build y `git diff --check` verificados localmente. Sin cambio de versión ni despliegue.
+
 ## 2026-10-02 — DIAG-V3-13 Public Diagnostic Cutover (solo local, sin deploy)
 
 - `/diagnostico` reemplaza QBV1 por `DiagnosticFlow` V3 cliente-only; metodología e informe pasan a `/diagnostico/metodologia` y `/diagnostico/informe` (`noindex` para el informe).

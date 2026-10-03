@@ -13,6 +13,7 @@ export function DimensionCard({ display }: { display: DimensionDisplay }) {
   return (
     <li className={`dr-dim dr-dim--${modifier(dimension.status)}${display.percent === null ? " dr-dim--unscored" : ""}`}>
       <div className="dr-dim__head">
+        <img alt="" className="dr-dim__icon" height="64" src={display.icon} width="64" />
         <h3 className="dr-dim__label">{dimension.label}</h3>
         <StatusIndicator label={display.statusLabel} status={dimension.status} />
       </div>
