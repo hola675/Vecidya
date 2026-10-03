@@ -1,8 +1,10 @@
 # Changelog
 
-## 2026-10-03 — Iconos circulares para las ocho áreas del diagnóstico (solo local, sin deploy)
+## 2026-10-03 — Assets del diagnóstico y actualización visual de Vecidya (solo local, sin deploy)
 
 - Se integran ocho WebP circulares reutilizados por el resultado V3 y el PDF mediante el mismo mapeo; la carpeta contiene únicamente esos ocho assets finales, sin recortes temporales ni duplicados.
+- Se reemplazan las tres ilustraciones de madurez del resultado y del PDF con recortes optimizados de `Assets Generados/Disnostico Assest.png`; los títulos y explicaciones siguen siendo texto dinámico del resultado.
+- Se actualizan el símbolo 3D, la marca completa y el wordmark con `Icono.png`, `Marca.png` y `nombre.png`. El lockup de Auth usa una placa blanca para mantener legible la marca sobre el panel oscuro; el favicon conserva PNG. Los originales generados se mantienen.
 - Typecheck, build y `git diff --check` verificados localmente. Sin cambio de versión ni despliegue.
 
 ## 2026-10-02 — DIAG-V3-13 Public Diagnostic Cutover (solo local, sin deploy)
