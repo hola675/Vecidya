@@ -42,6 +42,9 @@ export const publicAssets = {
     whatsapp: `${selectedAssetBase}/icons/ui/ui-icon-whatsapp.svg`,
   },
   illustrations: {
+    diagnosticStatusLow: `${selectedAssetBase}/illustrations/diagnostic-status-low.webp`,
+    diagnosticStatusDeveloping: `${selectedAssetBase}/illustrations/diagnostic-status-developing.webp`,
+    diagnosticStatusSolid: `${selectedAssetBase}/illustrations/diagnostic-status-solid.webp`,
     adminEmptySearch: `${selectedAssetBase}/illustrations/illus-admin-empty-search.webp`,
     servicesEmptyConnection: `${selectedAssetBase}/illustrations/illus-services-empty-connection.webp`,
     businessOnboardingForm: `${selectedAssetBase}/illustrations/illus-business-onboarding-form.webp`,

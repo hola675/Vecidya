@@ -83,9 +83,9 @@ function reportBlocks(report: DiagnosticReportV1): readonly Block[] {
         <div className="rp-presence__main">
           {presence.state !== "insufficient" ? <StatusAsset state={presence.state} /> : null}
           <div>
-            <h2 className="rp-presence__kicker">Tu presencia digital</h2>
+            <h2 className="rp-presence__kicker">Etapa de madurez de presencia digital</h2>
             {presence.percent ? <p className="rp-presence__value">{presence.percent}</p> : null}
-            <p className="rp-presence__label">{presence.label}</p>
+            {presence.state === "insufficient" ? <p className="rp-presence__label">{presence.label}</p> : null}
           </div>
         </div>
         <div className="rp-presence__side">

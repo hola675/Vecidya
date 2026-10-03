@@ -3,6 +3,7 @@
 ## 2026-10-02 — DIAG-V3-13 Public Diagnostic Cutover (solo local, sin deploy)
 
 - `/diagnostico` reemplaza QBV1 por `DiagnosticFlow` V3 cliente-only; metodología e informe pasan a `/diagnostico/metodologia` y `/diagnostico/informe` (`noindex` para el informe).
+- Se separa la lámina «Etapas de madurez de presencia digital» con Motonexo Assets en tres WebP: por fortalecer, en desarrollo y sólida. Cada imagen conserva su rótulo de estado; se excluye el párrafo fijo inferior para que resultado y PDF muestren la explicación personalizada por las respuestas. La misma clasificación V3 selecciona el arte en ambos.
 - Se retira el backend experimental de persistencia, recuperación y analítica del diagnóstico, junto con sus rutas, módulos, bindings KV/ratelimit y secreto específico. Las migraciones `0011`–`0013` nunca se aplicaron a D1 remota.
 - Privacidad vigente: respuestas solo en `localStorage` durante 14 días; sin telemetría, servidor ni recuperación entre dispositivos. El informe se genera en el navegador.
 - Versión local `0.6.0`. Unitarias 775/775, typecheck, build, E2E V3 10/10, informe 26/26 y smoke público C1 PASS. Publicación/deploy y DIAG-V3-14 quedan fuera de este cierre y requieren autorización explícita.

@@ -1,4 +1,5 @@
-import type { DigitalPresenceStatus, OverallState } from "../../features/diagnostic";
+import { useState } from "react";
+import { OVERALL_STATUS_LABELS, type DigitalPresenceStatus, type OverallState } from "../../features/diagnostic";
 
 import { HelpDisclosure } from "./disclosures";
 import { ConfidenceIndicator, modifier } from "./indicators";
@@ -6,8 +7,7 @@ import { presenceDisplay, RESULT_HELP } from "./presentation";
 import { STATUS_ASSETS } from "./status-assets";
 
 /**
- * Marcador del icono de estado mientras no exista el arte final: tres bloques apilados (base incompleta, base que
- * crece, base completa y verificada). Decorativo: el estado siempre se lee también por texto.
+ * Marcador de reserva si una ilustración falla al cargar. Decorativo: el estado siempre se lee también por texto.
  */
 function StatusAssetPlaceholder({ state }: { state: OverallState }) {
   const filled = { low: 1, developing: 2, solid: 3 }[state];
@@ -28,9 +28,10 @@ function StatusAssetPlaceholder({ state }: { state: OverallState }) {
 
 export function StatusAsset({ state }: { state: OverallState }) {
   const asset = STATUS_ASSETS[state];
+  const [failed, setFailed] = useState(false);
   return (
     <span className="dr-presence__asset" data-asset-slot={asset.slot}>
-      {asset.src ? <img alt="" height="56" src={asset.src} width="56" /> : <StatusAssetPlaceholder state={state} />}
+      {asset.src && !failed ? <img alt={OVERALL_STATUS_LABELS[state]} height="768" src={asset.src} width="768" onError={() => setFailed(true)} /> : <StatusAssetPlaceholder state={state} />}
     </span>
   );
 }
@@ -47,11 +48,11 @@ export function DigitalPresenceStatusCard({ status }: { status: DigitalPresenceS
       <div className="dr-presence__main">
         {state ? <StatusAsset state={state} /> : null}
         <div className="dr-presence__reading">
-          <h2 className="dr-presence__kicker" id="dr-presence-title">Tu presencia digital</h2>
+          <h2 className="dr-presence__kicker" id="dr-presence-title">Etapa de madurez de presencia digital</h2>
           {display.percent ? (
             <>
               <p className="dr-presence__value">{display.percent}</p>
-              <p className="dr-presence__label">{status.label}</p>
+              {!state ? <p className="dr-presence__label">{status.label}</p> : null}
             </>
           ) : <p className="dr-presence__value dr-presence__value--none">{status.label}</p>}
         </div>
