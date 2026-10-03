@@ -14,20 +14,19 @@ import { TERMINOLOGY } from "./qbv2-terminology";
  * aplicables tienen lectura) y confianza (cuánta evidencia la respalda) se entregan por separado.
  */
 
-export const OVERALL_INDEX_VERSION = 1 as const;
+export const OVERALL_INDEX_VERSION = 2 as const;
 
 /**
- * Constantes calibradas en DIAG-V3-10 contra las 12 personas golden y 4.860 rutas generadas (3.240 de producción
- * × 3 políticas de respuesta). Las bandas se apoyan en la escala del scoring (parcial = 50, establecido = 75):
- * respuestas uniformemente parciales caen siempre en «en desarrollo» y uniformemente establecidas en «sólida».
+ * Constantes de presentación del contrato global V2. El índice y sus contribuciones permanecen sin cambios; solo la
+ * clasificación pública usa los límites inclusivos MAL 0–40, REGULAR 41–70 y BIEN 71–100.
  */
 export const OVERALL_INDEX_MODEL = {
   /** Con una o dos lecturas el «índice» solo repetiría esas áreas y cambiaría de banda con una respuesta. */
   minScoredDimensions: 3,
   /** Nunca se resume con menos de un tercio de las áreas aplicables observadas. */
   minCoverage: 1 / 3,
-  /** Sobre la media exacta (`rawScore`): low = [0, 40), developing = [40, 70), solid = [70, 100]. */
-  bands: { developingFrom: 40, solidFrom: 70 },
+  /** Sobre la media exacta (`rawScore`): low = [0, 41), developing = [41, 71), solid = [71, 100]. */
+  bands: { developingFrom: 41, solidFrom: 71 },
   confidence: { mediumCoverage: 0.5, highCoverage: 0.75, share: 0.5 },
 } as const;
 
@@ -47,6 +46,19 @@ export const OVERALL_STATUS_LABELS: Readonly<Record<OverallStatusKind, string>> 
   developing: "Presencia en desarrollo",
   solid: "Presencia sólida",
   insufficient: "Lectura general pendiente",
+};
+
+export const OVERALL_STATUS_CODES: Readonly<Record<OverallStatusKind, "MAL" | "REGULAR" | "BIEN" | null>> = {
+  low: "MAL",
+  developing: "REGULAR",
+  solid: "BIEN",
+  insufficient: null,
+};
+
+export type GlobalDigitalStatus = {
+  readonly status: OverallState;
+  readonly publicLabel: "MAL" | "REGULAR" | "BIEN";
+  readonly descriptor: string;
 };
 
 export type DigitalPresenceIndex = {
@@ -79,10 +91,10 @@ export type OverallExplanation = {
 };
 
 /**
- * Por qué una banda sólida se presenta como «en desarrollo»: un freno material (un promedio alto no oculta un cuello
- * de botella) o una confianza general limitada (lo observado es poco para afirmar solidez). El índice no cambia.
+ * Caveats de una lectura: un freno material o una confianza general limitada explican qué conviene confirmar, pero
+ * nunca cambian la banda global derivada del porcentaje.
  */
-export type OverallCap =
+export type OverallCaveat =
   | { readonly reason: "material_constraint"; readonly dimension: DigitalDimensionId; readonly constraintId: string }
   | { readonly reason: "limited_confidence" };
 
@@ -91,11 +103,13 @@ export type DigitalPresenceStatus = {
   readonly index: DigitalPresenceIndex;
   readonly confidence: OverallConfidence;
   readonly state: OverallStatusKind;
-  /** Banda numérica de `rawScore`; difiere de `state` cuando hay un tope (`cap`). */
+  /** Banda numérica de `rawScore`; coincide con `state` cuando existe un índice. */
   readonly bandState: OverallState | null;
-  readonly cap: OverallCap | null;
+  readonly caveat: OverallCaveat | null;
   /** Lectura preliminar: hay índice, pero la confianza general es limitada. */
   readonly provisional: boolean;
+  /** Código público de la banda; `null` cuando no existe un índice global. */
+  readonly publicLabel: "MAL" | "REGULAR" | "BIEN" | null;
   readonly label: string;
   readonly assetSlot: string | null;
   readonly explanation: OverallExplanation;
@@ -143,15 +157,21 @@ export function computeOverallConfidence(scoring: ContextualScoringResult, index
   return { level, basis: { coverage: index.coverage, scored: levels.length, atLeastMedium, high } };
 }
 
-/** Banda numérica sobre la media exacta: 39,99 es «low» aunque se muestre como 40 %. */
+/** Banda numérica sobre la media exacta: 40 es «low» y 70 es «developing». */
 export function bandFor(rawScore: number): OverallState {
   return rawScore >= OVERALL_INDEX_MODEL.bands.solidFrom ? "solid" : rawScore >= OVERALL_INDEX_MODEL.bands.developingFrom ? "developing" : "low";
 }
 
+/** Única resolución del estado global y sus etiquetas públicas. */
+export function resolveGlobalDigitalStatus(overallScore: number): GlobalDigitalStatus {
+  const status = bandFor(overallScore);
+  return { status, publicLabel: OVERALL_STATUS_CODES[status]!, descriptor: OVERALL_STATUS_LABELS[status] };
+}
+
 /**
  * Entero que se muestra: redondeo normal, salvo que el redondeo cruce a la banda siguiente; entonces se trunca
- * (39,5 → 39 y 69,5 → 69), para que el número visible nunca contradiga el estado. Solo presentación: `rawScore`
- * y la clasificación no cambian. El redondeo nunca cruza hacia abajo (40,0–40,49 → 40).
+ * (40,5 → 40 y 70,5 → 70), para que el número visible nunca contradiga el estado. Solo presentación: `rawScore`
+ * y la clasificación no cambian. El redondeo nunca cruza hacia abajo (41,0–41,49 → 41).
  */
 export function displayScoreFor(rawScore: number): number {
   const rounded = Math.round(rawScore);
@@ -159,20 +179,20 @@ export function displayScoreFor(rawScore: number): number {
 }
 
 /**
- * Estado presentado: la banda de `rawScore` con dos topes que solo afectan a «sólida» y nunca bajan el número.
- * Primero el freno material; si no lo hay, la confianza general limitada.
+ * Estado presentado: la banda de `rawScore`; los caveats explican el contexto sin cambiarla.
  */
 export function classifyOverallState(input: {
   readonly rawScore: number | null;
   readonly confidence: ContextualConfidenceLevel;
   readonly material: { readonly dimension: DigitalDimensionId; readonly constraintId: string } | null;
-}): { readonly state: OverallStatusKind; readonly bandState: OverallState | null; readonly cap: OverallCap | null } {
-  if (input.rawScore === null) return { state: "insufficient", bandState: null, cap: null };
-  const bandState = bandFor(input.rawScore);
-  if (bandState !== "solid") return { state: bandState, bandState, cap: null };
-  if (input.material) return { state: "developing", bandState, cap: { reason: "material_constraint", ...input.material } };
-  if (input.confidence === "low") return { state: "developing", bandState, cap: { reason: "limited_confidence" } };
-  return { state: "solid", bandState, cap: null };
+}): { readonly state: OverallStatusKind; readonly bandState: OverallState | null; readonly caveat: OverallCaveat | null } {
+  if (input.rawScore === null) return { state: "insufficient", bandState: null, caveat: null };
+  const canonical = resolveGlobalDigitalStatus(input.rawScore);
+  const bandState = canonical.status;
+  if (bandState !== "solid") return { state: bandState, bandState, caveat: null };
+  if (input.material) return { state: bandState, bandState, caveat: { reason: "material_constraint", ...input.material } };
+  if (input.confidence === "low") return { state: bandState, bandState, caveat: { reason: "limited_confidence" } };
+  return { state: bandState, bandState, caveat: null };
 }
 
 const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
@@ -182,7 +202,8 @@ export function buildDigitalPresenceStatus(input: OverallStatusInput): DigitalPr
   const index = computeDigitalPresenceIndex(scoring, { prelaunch: narrative.lifecycle === "prelaunch" });
   const confidence = computeOverallConfidence(scoring, index);
   const material = priorities.constraints.find((item) => item.severity === "material");
-  const { state, bandState, cap } = classifyOverallState({ rawScore: index.rawScore, confidence: confidence.level, material: material ? { dimension: material.dimension, constraintId: material.id } : null });
+  const { state, bandState, caveat } = classifyOverallState({ rawScore: index.rawScore, confidence: confidence.level, material: material ? { dimension: material.dimension, constraintId: material.id } : null });
+  const canonical = index.rawScore === null ? null : resolveGlobalDigitalStatus(index.rawScore);
   const provisional = state !== "insufficient" && confidence.level === "low";
 
   const terms = TERMINOLOGY[narrative.profile].terms;
@@ -205,12 +226,12 @@ export function buildDigitalPresenceStatus(input: OverallStatusInput): DigitalPr
         ? `Hay señales útiles en las áreas evaluadas, pero todavía no hay suficiente cobertura para resumir toda tu presencia digital en un solo porcentaje.`
         : "Todavía no hay lecturas suficientes para resumir tu presencia digital en un solo porcentaje.");
     sentences.push(primary ? `Lo primero es ${primary.focus}.` : "Las áreas con lectura se explican más abajo.");
-  } else if (cap?.reason === "material_constraint") {
-    sentences.push(`El promedio de tus áreas es alto, pero ${topic(cap.dimension)} muestra un freno importante; por eso la presencia se considera en desarrollo y no sólida.`);
+  } else if (caveat?.reason === "material_constraint") {
+    sentences.push(`El promedio de tus áreas es alto, pero ${topic(caveat.dimension)} muestra un freno importante que conviene atender.`);
     if (strengthClause) sentences.push(`${capitalize(strengthClause)}.`);
-  } else if (cap?.reason === "limited_confidence") {
-    // El tope ya dice que la evidencia es limitada: no se repite el aviso de lectura preliminar.
-    sentences.push("Las áreas evaluadas se ven sólidas, pero la evidencia todavía es limitada; por eso tu presencia se presenta como en desarrollo hasta confirmarla.");
+  } else if (caveat?.reason === "limited_confidence") {
+    // El caveat ya dice que la evidencia es limitada: no se repite el aviso de lectura preliminar.
+    sentences.push("Las áreas evaluadas se ven sólidas, pero la evidencia todavía es limitada; tómalo como una lectura preliminar hasta confirmarla.");
     if (next) sentences.push(next);
   } else if (state === "solid") {
     sentences.push(`${capitalize(terms.business)} tiene una base digital sólida en lo evaluado${strengthClause ? `: ${strengthClause}` : ""}.`);
@@ -224,16 +245,17 @@ export function buildDigitalPresenceStatus(input: OverallStatusInput): DigitalPr
     sentences.push(`La base digital todavía tiene huecos importantes${constraintDimension && constraintCertainty !== "unknown" ? `: lo que más ${limits} hoy es ${topic(constraintDimension)}` : ""}.`);
     if (strengthClause) sentences.push(`${capitalize(strengthClause)}.`);
   }
-  if (provisional && cap?.reason !== "limited_confidence") sentences.push("Tómalo como una lectura preliminar: varias áreas se basan en poca evidencia.");
+  if (provisional && caveat?.reason !== "limited_confidence") sentences.push("Tómalo como una lectura preliminar: varias áreas se basan en poca evidencia.");
 
   const sourceFactIds = [strength?.id, primary ? `priority:${primary.rank}` : undefined].filter((id): id is string => Boolean(id) && semanticFacts.facts.some((fact) => fact.id === id));
   const certainty: ResultCertainty = state === "insufficient" ? "unknown" : confidence.level === "low" ? "probable" : "confirmed";
   return {
-    version: OVERALL_INDEX_VERSION, index, confidence, state, bandState, cap, provisional,
-    label: OVERALL_STATUS_LABELS[state], assetSlot: state === "insufficient" ? null : OVERALL_STATE_ASSET_SLOTS[state],
+    version: OVERALL_INDEX_VERSION, index, confidence, state, bandState, caveat, provisional,
+    publicLabel: canonical?.publicLabel ?? null,
+    label: canonical?.descriptor ?? OVERALL_STATUS_LABELS[state], assetSlot: state === "insufficient" ? null : OVERALL_STATE_ASSET_SLOTS[state],
     explanation: {
       text: sentences.join(" "), certainty, sourceFactIds,
-      sourceDimensions: [...new Set([...(strength?.dimension ? [strength.dimension] : []), ...(constraintDimension ? [constraintDimension] : []), ...(cap?.reason === "material_constraint" ? [cap.dimension] : [])])],
+      sourceDimensions: [...new Set([...(strength?.dimension ? [strength.dimension] : []), ...(constraintDimension ? [constraintDimension] : []), ...(caveat?.reason === "material_constraint" ? [caveat.dimension] : [])])],
       ...(primary ? { priorityRank: 1 as const } : {}),
     },
   };

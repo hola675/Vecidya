@@ -165,6 +165,7 @@ export type PresenceDisplay = {
   readonly status: DigitalPresenceStatus;
   /** `null` cuando no hay índice: nunca se muestra como 0%. */
   readonly percent: string | null;
+  readonly publicLabel: DigitalPresenceStatus["publicLabel"];
   readonly confidence: (typeof CONFIDENCE_DISPLAY)[ContextualConfidenceLevel];
   readonly coverage: string;
 };
@@ -173,6 +174,7 @@ export function presenceDisplay(status: DigitalPresenceStatus): PresenceDisplay 
   return {
     status,
     percent: status.index.displayScore === null ? null : `${status.index.displayScore}%`,
+    publicLabel: status.publicLabel,
     confidence: CONFIDENCE_DISPLAY[status.confidence.level],
     coverage: `${status.index.assessed} de ${status.index.applicable} áreas aplicables con lectura`,
   };
@@ -281,8 +283,8 @@ export const RESULT_HELP = {
     question: "¿Cómo se calcula este porcentaje?",
     paragraphs: [
       "Es el promedio, con el mismo peso, de las áreas que aplican a tu situación y tienen lectura. Las áreas sin lectura o que no aplican no cuentan como cero; con menos de tres áreas con lectura no se calcula.",
-      "El estado se decide con el promedio exacto, antes de redondear: por debajo de 40 es una presencia por fortalecer, desde 40 y por debajo de 70 una presencia en desarrollo, y desde 70 una presencia sólida.",
-      "Una presencia solo se llama sólida si ningún área muestra un freno importante y si hay evidencia suficiente; si no, se presenta como en desarrollo, aunque el promedio sea alto.",
+      "El estado se decide con el promedio exacto, antes de redondear: hasta 40 es una presencia por fortalecer, desde 41 y hasta 70 una presencia en desarrollo, y desde 71 una presencia sólida.",
+      "Los frenos materiales y la confianza se explican por separado: no cambian la banda global ni el código MAL, REGULAR o BIEN.",
       "La confianza del resultado va aparte: indica cuánta evidencia respalda las lecturas, no qué tan bien estás. Este porcentaje tampoco decide las prioridades.",
     ],
   },

@@ -4390,6 +4390,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .dr-presence__kicker { margin: 0; color: var(--muted); font-size: var(--text-label); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
 .dr-presence__value { margin: 0; color: var(--ink); font-size: clamp(2.4rem, 7vw, 3.25rem); font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.04em; line-height: 1; }
 .dr-presence__value--none { font-size: clamp(1.3rem, 3.5vw, 1.6rem); letter-spacing: -0.02em; }
+.dr-presence__code { margin: 0; color: var(--dr-state); font-size: var(--text-label); font-weight: 800; letter-spacing: 0.08em; }
 .dr-presence__label { margin: 0; color: var(--dr-state); font-size: 1.125rem; font-weight: 800; line-height: 1.3; overflow-wrap: break-word; }
 .dr-presence--insufficient .dr-presence__label { color: var(--ink); }
 .dr-presence__text { margin: 0; max-width: 62ch; line-height: 1.6; overflow-wrap: break-word; }
@@ -4831,6 +4832,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .rp-presence .dr-presence__placeholder { width: 100%; height: 100%; }
 .rp-presence__kicker { margin: 0; font-size: 0.86em; font-weight: 800; letter-spacing: 0.02em; text-transform: uppercase; }
 .rp-presence__value { font-size: 2.6em; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; line-height: 1; }
+.rp-presence__code { margin: 0; color: var(--dr-state); font-size: 0.9em; font-weight: 800; letter-spacing: 0.08em; }
 .rp-presence__label { color: var(--dr-state); font-size: 1.15em; font-weight: 800; line-height: 1.2; }
 .rp-presence__side { display: grid; gap: 0.45em; align-content: center; }
 .rp-presence__meta { display: flex; flex-wrap: wrap; gap: 0.3em 1.2em; color: var(--muted); font-size: 0.88em; }

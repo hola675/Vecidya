@@ -8,7 +8,7 @@ import { DiagnosticResult, STATUS_ASSETS } from "../../../app/components/diagnos
 import { COMMERCIAL_ROLE_DISPLAY } from "../../../app/components/diagnostic-result/presentation.ts";
 import {
   bandFor, buildDiagnosticNarrative, buildDiagnosticRecommendations, classifyOverallState, displayScoreFor, matchCommercialOfferings, buildDiagnosticOutcome, buildQuestionPlan, COMMERCIAL_CATALOG, computeDigitalPresenceIndex, computeOverallConfidence, deriveConstraintsAndPriorities,
-  deriveSemanticFacts, DIGITAL_DIMENSION_IDS, GOLDEN_PERSONAS, matchSolution, OVERALL_INDEX_MODEL, OVERALL_STATE_ASSET_SLOTS, QUESTION_BANK_V2, ROUTE_HARD_CAP, runGoldenPersonaPipeline,
+  deriveSemanticFacts, DIGITAL_DIMENSION_IDS, GOLDEN_PERSONAS, matchSolution, OVERALL_INDEX_MODEL, OVERALL_STATE_ASSET_SLOTS, QUESTION_BANK_V2, resolveGlobalDigitalStatus, ROUTE_HARD_CAP, runGoldenPersonaPipeline,
   scoreContextualDimensions, SOLUTION_CATALOG, SOLUTION_OFFERINGS, solutionContextOf, TERMINOLOGY, type ContextualScoringResult, type DiagnosticRecommendation,
 } from "../../../app/features/diagnostic/index.ts";
 
@@ -58,8 +58,8 @@ test("10 index: equal-weight mean of applicable scored dimensions, rounded; N/A 
   assert.deepEqual(index.excluded.map((item) => `${item.dimension}:${item.reason}`), ["discovery:no_reading", "trust_reputation:not_applicable", "relationship_recurrence:no_reading", "measurement_optimization:not_applicable"]);
   const asZero = (80 + 60 + 40 + 20) / 6;
   assert.notEqual(index.rawScore, asZero, "null would have lowered the index");
-  // Golden: la media exacta 39,5 clasifica («por fortalecer») y se muestra 39, nunca un 40 de la banda siguiente.
-  assert.deepEqual([GOLDEN.professional_appointments!.outcome.overall.index.rawScore, GOLDEN.professional_appointments!.outcome.overall.index.displayScore, GOLDEN.professional_appointments!.outcome.overall.state], [39.5, 39, "low"]);
+  // Golden: la media exacta 39,5 clasifica («por fortalecer») y puede mostrarse como 40 dentro de la misma banda.
+  assert.deepEqual([GOLDEN.professional_appointments!.outcome.overall.index.rawScore, GOLDEN.professional_appointments!.outcome.overall.index.displayScore, GOLDEN.professional_appointments!.outcome.overall.state], [39.5, 40, "low"]);
 });
 
 test("10 minimum evidence contract: fewer than 3 readings, under a third of coverage or pre-launch → no index", () => {
@@ -88,21 +88,49 @@ test("10 overall confidence is separate from the index and never multiplies it",
   for (const result of Object.values(GOLDEN)) assert.equal(result.outcome.overall.provisional, result.outcome.overall.state !== "insufficient" && result.outcome.overall.confidence.level === "low");
 });
 
-test("10 status bands use the unrounded index: low [0, 40), developing [40, 70), solid [70, 100]", () => {
-  const boundaries = [39.49, 39.5, 39.99, 40, 69.49, 69.5, 69.99, 70];
-  assert.deepEqual(boundaries.map(bandFor), ["low", "low", "low", "developing", "developing", "developing", "developing", "solid"]);
-  assert.deepEqual(boundaries.map(displayScoreFor), [39, 39, 39, 40, 69, 69, 69, 70], "the displayed integer stays inside the raw band");
-  for (const raw of [...boundaries, 0, 0.5, 12.5, 40.49, 54.17, 68.4, 69.4, 70.5, 86.43, 99.5, 100]) {
+test("10 global bands are inclusive: 0–40 low, 41–70 developing, 71–100 solid", () => {
+  const boundaries = [39.49, 39.5, 39.99, 40, 40.99, 41, 69.49, 69.5, 69.99, 70, 70.99, 71];
+  assert.deepEqual(boundaries.map(bandFor), ["low", "low", "low", "low", "low", "developing", "developing", "developing", "developing", "developing", "developing", "solid"]);
+  assert.deepEqual(boundaries.map(displayScoreFor), [39, 40, 40, 40, 40, 41, 69, 70, 70, 70, 70, 71], "the displayed integer stays inside the raw band");
+  for (const raw of [...boundaries, 0, 0.5, 1, 12.5, 39.99, 40.49, 54.17, 68.4, 69.4, 70.5, 86.43, 99.5, 100]) {
     const display = displayScoreFor(raw);
     assert.equal(bandFor(display), bandFor(raw), `${raw} → ${display}: display and state never contradict`);
     assert.ok(Math.abs(display - raw) < 1, `${raw} → ${display}`);
   }
-  assert.deepEqual([54.17, 68.4, 40.49, 70.5, 99.5].map(displayScoreFor), [54, 68, 40, 71, 100], "ordinary values keep normal rounding");
-  assert.deepEqual([0, 100].map(bandFor), ["low", "solid"]);
+  assert.deepEqual([54.17, 68.4, 40.49, 70.5, 99.5].map(displayScoreFor), [54, 68, 40, 70, 100], "ordinary values keep normal rounding");
+  assert.deepEqual([0, 1, 39, 40, 41, 69, 70, 71, 99, 100].map(bandFor), ["low", "low", "low", "low", "developing", "developing", "developing", "solid", "solid", "solid"]);
+  assert.deepEqual([14, 32, 59, 69, 92, 81].map(resolveGlobalDigitalStatus), [
+    { status: "low", publicLabel: "MAL", descriptor: "Presencia por fortalecer" },
+    { status: "low", publicLabel: "MAL", descriptor: "Presencia por fortalecer" },
+    { status: "developing", publicLabel: "REGULAR", descriptor: "Presencia en desarrollo" },
+    { status: "developing", publicLabel: "REGULAR", descriptor: "Presencia en desarrollo" },
+    { status: "solid", publicLabel: "BIEN", descriptor: "Presencia sólida" },
+    { status: "solid", publicLabel: "BIEN", descriptor: "Presencia sólida" },
+  ]);
   for (const raw of boundaries) assert.equal(classifyOverallState({ rawScore: raw, confidence: "high", material: null }).bandState, bandFor(raw));
 });
 
-test("10 controlled low-coverage cases: solid needs evidence, narrow strong readings never read as broad solidity", () => {
+test("10 global status never changes when confidence changes", () => {
+  for (const rawScore of [20, 59, 92]) {
+    const states = ["low", "medium", "high"].map((confidence) => classifyOverallState({ rawScore, confidence: confidence as "low" | "medium" | "high", material: null }));
+    assert.deepEqual(states.map((item) => item.state), states.map((item) => item.bandState));
+    assert.equal(new Set(states.map((item) => item.state)).size, 1, `${rawScore}: confidence must not change the band`);
+  }
+});
+
+test("10 the canonical global resolver drives built status labels", () => {
+  for (const { outcome } of Object.values(GOLDEN)) {
+    const rawScore = outcome.overall.index.rawScore;
+    if (rawScore === null) {
+      assert.equal(outcome.overall.publicLabel, null);
+      continue;
+    }
+    const canonical = resolveGlobalDigitalStatus(rawScore);
+    assert.deepEqual({ status: outcome.overall.state, publicLabel: outcome.overall.publicLabel, descriptor: outcome.overall.label }, canonical);
+  }
+});
+
+test("10 controlled low-coverage cases: confidence remains separate from the solid band", () => {
   const status = (scoring: ContextualScoringResult) => {
     const index = computeDigitalPresenceIndex(scoring);
     const confidence = computeOverallConfidence(scoring, index).level;
@@ -111,21 +139,21 @@ test("10 controlled low-coverage cases: solid needs evidence, narrow strong read
   const pending = [null, "low"] as const;
   // A: 3 de 8 áreas, todas muy fuertes.
   const a = status(synthetic([[100, "high"], [100, "high"], [100, "high"], pending, pending, pending, pending, pending]));
-  assert.deepEqual([a.raw, a.display, a.coverage, a.confidence, a.bandState, a.state, a.cap?.reason], [100, 100, 0.38, "low", "solid", "developing", "limited_confidence"]);
+  assert.deepEqual([a.raw, a.display, a.coverage, a.confidence, a.bandState, a.state, a.caveat?.reason], [100, 100, 0.38, "low", "solid", "solid", "limited_confidence"]);
   // B: 4 de 8, todas muy fuertes con evidencia por área limitada; y con evidencia alta por área (cobertura 0,5 → confianza media).
   const b = status(synthetic([[100, "low"], [100, "low"], [100, "low"], [100, "low"], pending, pending, pending, pending]));
-  assert.deepEqual([b.raw, b.coverage, b.confidence, b.state], [100, 0.5, "low", "developing"]);
+  assert.deepEqual([b.raw, b.coverage, b.confidence, b.state], [100, 0.5, "low", "solid"]);
   const bHigh = status(synthetic([[100, "high"], [100, "high"], [100, "high"], [100, "high"], pending, pending, pending, pending]));
   assert.deepEqual([bHigh.coverage, bHigh.confidence, bHigh.state], [0.5, "medium", "solid"]);
   // C: 3 áreas débiles: por fortalecer, sin tope (los topes solo afectan a «sólida»).
   const c = status(synthetic([[25, "low"], [25, "low"], [25, "low"], pending, pending, pending, pending, pending]));
-  assert.deepEqual([c.raw, c.confidence, c.bandState, c.state, c.cap], [25, "low", "low", "low", null]);
+  assert.deepEqual([c.raw, c.confidence, c.bandState, c.state, c.caveat], [25, "low", "low", "low", null]);
   // D: índice alto, cobertura baja, confianza limitada.
   const d = status(synthetic([[90, "medium"], [85, "low"], [95, "low"], pending, pending, pending, ["na", "low"], pending]));
-  assert.deepEqual([d.raw, d.coverage, d.confidence, d.bandState, d.state], [90, 0.43, "low", "solid", "developing"]);
+  assert.deepEqual([d.raw, d.coverage, d.confidence, d.bandState, d.state], [90, 0.43, "low", "solid", "solid"]);
   // E: índice alto, cobertura suficiente, confianza media o alta.
   const e = status(synthetic([[90, "high"], [85, "high"], [95, "medium"], [80, "high"], [88, "high"], [92, "medium"], ["na", "low"], [75, "high"]]));
-  assert.deepEqual([Math.round(e.raw! * 100) / 100, e.display, e.coverage, e.confidence, e.bandState, e.state, e.cap], [86.43, 86, 1, "high", "solid", "solid", null]);
+  assert.deepEqual([Math.round(e.raw! * 100) / 100, e.display, e.coverage, e.confidence, e.bandState, e.state, e.caveat], [86.43, 86, 1, "high", "solid", "solid", null]);
   // El tope nunca baja el número.
   for (const item of [a, b, d]) assert.ok(item.raw! >= 70 && item.display! >= 70);
 });
@@ -145,14 +173,14 @@ test("10 every state reachable, with icon slot, name and explanation", () => {
   for (const asset of Object.values(STATUS_ASSETS)) assert.ok(asset.avoid.some((item) => /caras/.test(item)) && asset.avoid.some((item) => /personas/.test(item)), asset.slot);
 });
 
-test("10 a high average never hides a material bottleneck: solid is capped to developing", () => {
+test("10 a high average keeps the solid band while exposing a material caveat", () => {
   for (const id of ["independent_professional", "creator_personal_brand"]) {
     const { outcome, priorities } = GOLDEN[id]!;
     assert.equal(outcome.overall.bandState, "solid");
-    assert.equal(outcome.overall.state, "developing");
-    const cap = outcome.overall.cap;
-    assert.ok(cap?.reason === "material_constraint" && priorities.constraints.some((item) => item.severity === "material" && item.dimension === cap.dimension));
-    assert.match(outcome.overall.explanation.text, /muestra un freno importante; por eso la presencia se considera en desarrollo y no sólida/);
+    assert.equal(outcome.overall.state, "solid");
+    const caveat = outcome.overall.caveat;
+    assert.ok(caveat?.reason === "material_constraint" && priorities.constraints.some((item) => item.severity === "material" && item.dimension === caveat.dimension));
+    assert.doesNotMatch(outcome.overall.explanation.text, /presencia se considera en desarrollo y no sólida/);
   }
 });
 
@@ -390,7 +418,7 @@ test("10 UI: hierarchy, presence card, no emoji, no sales copy, commercial after
     assert.ok(!/\p{Extended_Pictographic}/u.test(text), `${id}: no emoji`);
     assert.ok(!/compra ahora|cómpralo|oferta limitada|no te lo pierdas|garantiza|\bUSD\b|\$\s?\d/i.test(text), `${id}: no sales copy or prices`);
     assert.ok(text.includes(outcome.overall.label) && text.includes(outcome.overall.explanation.text), `${id}: state name and explanation`);
-    if (outcome.overall.index.displayScore !== null) assert.match(text, new RegExp(`${outcome.overall.index.displayScore}% ${outcome.overall.label}`));
+    if (outcome.overall.index.displayScore !== null) assert.match(text, new RegExp(`${outcome.overall.index.displayScore}% ${outcome.overall.publicLabel} ${outcome.overall.label}`));
     else assert.ok(!/Confianza del resultado/.test(text), `${id}: no confidence for a percentage that does not exist`);
     const offerings = outcome.help.items.filter((item) => item.offerings.length > 0).length;
     assert.equal((html.match(/<details class="dr-proof">/g) ?? []).length, offerings, `${id}: one «¿Por qué te recomendamos esto?» per item with offerings`);
@@ -414,9 +442,9 @@ test("10 generated routes: no pathological overall states, recommendations or co
     const { outcome, priorities, narrative } = result;
     const label = `${policy}/${JSON.stringify(stageSeed)}/${delivery}/${goal}`;
     states.add(outcome.overall.state);
-    if (outcome.overall.state === "solid") assert.ok(!priorities.constraints.some((item) => item.severity === "material"), `${label}: solid with a material constraint`);
+    if (outcome.overall.state === "solid") assert.equal(outcome.overall.bandState, "solid", `${label}: solid follows the global band`);
     if (narrative.lifecycle === "prelaunch") assert.equal(outcome.overall.index.rawScore, null, `${label}: no pre-launch index`);
-    assert.ok(!(outcome.overall.state === "solid" && outcome.overall.confidence.level === "low"), `${label}: solid with limited confidence`);
+    if (outcome.overall.index.rawScore !== null && bandFor(outcome.overall.index.rawScore) === "solid") assert.equal(outcome.overall.state, "solid", `${label}: limited confidence does not downgrade solid`);
     if (outcome.overall.bandState !== null) assert.equal(outcome.overall.bandState, bandFor(outcome.overall.index.rawScore!), `${label}: band from the raw index`);
     if (outcome.overall.index.rawScore !== null) assert.equal(bandFor(outcome.overall.index.displayScore!), bandFor(outcome.overall.index.rawScore), `${label}: displayed percentage in another band`);
     const licenses = new Set<string>();

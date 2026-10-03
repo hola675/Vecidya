@@ -39,7 +39,7 @@ test("11 methodology version exists, is separate from the app version and pins t
   const app = JSON.parse(readFileSync("package.json", "utf8")) as { version: string };
   assert.notEqual(METHODOLOGY_VERSION, app.version, "methodology version is not the application version");
   // Si el motor cambia uno de estos valores, la metodología debe revisarse y subir de versión (METHODOLOGY_CHANGE_RULES).
-  assert.deepEqual({ ...METHODOLOGY_ENGINE_CONTRACT }, { overallIndexVersion: 1, bands: { developingFrom: 40, solidFrom: 70 }, minScoredDimensions: 3, minCoverage: 1 / 3, routeHardCap: 24, maxPriorities: 3 });
+  assert.deepEqual({ ...METHODOLOGY_ENGINE_CONTRACT }, { overallIndexVersion: 2, bands: { developingFrom: 41, solidFrom: 71 }, minScoredDimensions: 3, minCoverage: 1 / 3, routeHardCap: 24, maxPriorities: 3 });
   assert.equal(METHODOLOGY_ENGINE_CONTRACT.overallIndexVersion, OVERALL_INDEX_VERSION);
   assert.equal(METHODOLOGY_ENGINE_CONTRACT.bands, OVERALL_INDEX_MODEL.bands);
   assert.equal(METHODOLOGY_ENGINE_CONTRACT.routeHardCap, ROUTE_HARD_CAP);
@@ -117,7 +117,7 @@ test("11 attribution: every accepted source keeps the verified passage; unverifi
 test("11 Eurostat Digital Intensity Index is not the Vecidya presence index", () => {
   const distinction = METHODOLOGY_SECTIONS.find((section) => section.id === "overall_index")!.detail.find((item) => item.id === "overall.not_eurostat")!;
   assert.equal(distinction.type, "limitation");
-  for (const part of ["Eurostat", "0 a 100", "40", "70", "ocho áreas", "prioridad"]) assert.ok(distinction.text.includes(part), part);
+  for (const part of ["Eurostat", "0 a 100", "41", "71", "ocho áreas", "prioridad"]) assert.ok(distinction.text.includes(part), part);
   const eurostat = METHODOLOGY_SOURCES.find((source) => source.id === "eurostat-dii")!;
   assert.deepEqual(eurostat.supports.map((item) => item.dimension), ["digital_readiness"], "only the broad adoption principle of one area");
   const citing = [...claims].filter((item) => item.sourceIds?.includes("eurostat-dii")).map((item) => item.id);
@@ -152,11 +152,13 @@ test("11 methodology copy: plain Spanish, no overclaiming, no internal constants
 
 test("11 numbers and rules in the copy match the frozen engine behaviour", () => {
   const text = (id: string) => METHODOLOGY_SECTIONS.flatMap((section) => section.detail).find((item) => item.id === id)!.text;
-  assert.match(text("overall.bands"), /por debajo de 40.*desde 40 y por debajo de 70.*desde 70/);
+  assert.match(text("overall.bands"), /hasta 40.*desde 41 y hasta 70.*desde 71/);
   assert.equal(bandFor(39.99), "low");
-  assert.equal(bandFor(40), "developing");
-  assert.equal(bandFor(70), "solid");
-  assert.equal(displayScoreFor(39.5), 39, "the visible number never crosses into another state");
+  assert.equal(bandFor(40), "low");
+  assert.equal(bandFor(41), "developing");
+  assert.equal(bandFor(70), "developing");
+  assert.equal(bandFor(71), "solid");
+  assert.equal(displayScoreFor(39.5), 40, "the visible number stays inside the same state");
   assert.match(text("overall.minimum"), /al menos 3 áreas.*un tercio/);
   assert.match(text("route.length"), new RegExp(`supera ${ROUTE_HARD_CAP} preguntas`));
   // Áreas sin lectura nunca cuentan como cero; con dos lecturas no hay índice.

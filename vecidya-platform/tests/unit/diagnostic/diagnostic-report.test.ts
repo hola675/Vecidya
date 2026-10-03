@@ -54,6 +54,7 @@ test("12 golden parity: the report carries exactly the canonical result (12/12)"
   for (const { id, result: { narrative, outcome }, report } of goldens) {
     const overall = outcome.overall;
     assert.equal(report.overallPresence.state, overall.state, `${id}: state`);
+    assert.equal(report.overallPresence.publicLabel, overall.publicLabel, `${id}: public label`);
     assert.equal(report.overallPresence.label, overall.label, `${id}: label`);
     assert.equal(report.overallPresence.percent, overall.index.displayScore === null ? null : `${overall.index.displayScore}%`, `${id}: percent`);
     assert.equal(report.overallPresence.explanation, overall.explanation.text, `${id}: explanation`);
@@ -88,23 +89,24 @@ test("12 special golden cases keep their frozen readings", () => {
   };
   expect("idea_early_stage", null, "Lectura general pendiente");
   expect("appointment_business", null, "Lectura general pendiente");
-  expect("professional_appointments", "39%", "Presencia por fortalecer");
-  expect("physical_retail", "82%", "Presencia en desarrollo");
-  assert.equal(golden("physical_retail").result.outcome.overall.cap?.reason, "limited_confidence");
+  expect("professional_appointments", "40%", "Presencia por fortalecer");
+  expect("physical_retail", "82%", "Presencia sólida");
+  assert.equal(golden("physical_retail").result.outcome.overall.caveat?.reason, "limited_confidence");
   expect("b2b_business", "74%", "Presencia sólida");
-  expect("creator_personal_brand", "76%", "Presencia en desarrollo");
-  assert.equal(golden("creator_personal_brand").result.outcome.overall.cap?.reason, "material_constraint");
+  expect("creator_personal_brand", "76%", "Presencia sólida");
+  assert.equal(golden("creator_personal_brand").result.outcome.overall.caveat?.reason, "material_constraint");
   // Sin índice: nunca «0%»; el informe sigue completo.
   for (const id of ["idea_early_stage", "appointment_business"]) {
     const text = textOf(render(id));
     assert.ok(!/\b0\s?%/.test(text), `${id}: no 0%`);
+    assert.ok(!text.includes("Confianza general:"), `${id}: no general confidence without an overall index`);
     assert.ok(text.includes("Lectura general pendiente") && text.includes("Las ocho áreas del diagnóstico"), id);
   }
 });
 
 test("12 methodology integration: version, four notes, limitations, the 8 accepted sources only, no audit data, Eurostat distinction", () => {
   const { report } = golden("b2b_business");
-  assert.equal(report.methodologySummary.version, "1.0");
+  assert.equal(report.methodologySummary.version, METHODOLOGY_VERSION);
   assert.equal(report.methodologySummary.notes.length, 4);
   assert.deepEqual(report.limitations, METHODOLOGY_SECTIONS.find((section) => section.id === "limitations")!.detail.map((item) => item.text));
   assert.deepEqual(report.sources.map((source) => source.url), METHODOLOGY_SOURCES.map((source) => source.url));
@@ -156,8 +158,8 @@ test("12 rendered report: one h1, canonical section order, real text, no interna
     const html = render(id);
     const text = textOf(html);
     assert.equal((html.match(/<h1[ >]/g) ?? []).length, 1, `${id}: one h1`);
-    assert.ok(text.includes("Diagnóstico de Presencia Digital") && text.includes("Metodología 1.0") || text.includes("Metodología 1.0"), id);
-    const order = ["Tu presencia digital", "Lo que encontró el diagnóstico", "Lo que más importa ahora", "Plan de acción recomendado", "Las ocho áreas del diagnóstico", "Recomendaciones", "Cómo puede ayudarte Vecidya", "Cómo se evaluó", "Metodología y fuentes", "Lo que el diagnóstico no puede afirmar"];
+    assert.ok(text.includes("Diagnóstico de Presencia Digital") && text.includes(`Metodología ${METHODOLOGY_VERSION}`) || text.includes(`Metodología ${METHODOLOGY_VERSION}`), id);
+    const order = ["Estado actual de tu presencia digital", "Lo que encontró el diagnóstico", "Lo que más importa ahora", "Plan de acción recomendado", "Las ocho áreas del diagnóstico", "Recomendaciones", "Cómo puede ayudarte Vecidya", "Cómo se evaluó", "Metodología y fuentes", "Lo que el diagnóstico no puede afirmar"];
     const positions = order.map((heading) => text.indexOf(heading));
     assert.ok(positions.every((position, index) => position >= 0 && (index === 0 || position > positions[index - 1]!)), `${id}: section order ${JSON.stringify(positions)}`);
     assert.ok(!/\bq2_|\bnull\b|undefined|\[object Object\]|\bNaN\b|priority:\d|constraint:|recommendation:\d|evidence_gap|_constraint\b/.test(text), `${id}: internal or empty values`);

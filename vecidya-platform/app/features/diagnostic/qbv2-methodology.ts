@@ -12,7 +12,7 @@ import { ROUTE_HARD_CAP } from "./qbv2-planner";
  */
 
 /** Versión de la metodología, independiente de la versión de la aplicación (`package.json`). */
-export const METHODOLOGY_VERSION = "1.0" as const;
+export const METHODOLOGY_VERSION = "2.0" as const;
 
 /** Valores del motor que la metodología describe. Si el motor cambia, cambia la metodología y su versión. */
 export const METHODOLOGY_ENGINE_CONTRACT = {
@@ -298,11 +298,11 @@ export const METHODOLOGY_SECTIONS: readonly MethodologySection[] = [
       claim("overall.excluded", "internal_rule", "Las áreas que no aplican o que no se pudieron evaluar quedan fuera del cálculo; nunca cuentan como cero.", { verifiedIn: "qbv2-overall.ts#computeDigitalPresenceIndex" }),
       claim("overall.minimum", "internal_rule", `Solo se calcula con al menos ${minScoredDimensions} áreas con lectura, y si estas son al menos ${coverageWords} de las que aplican. Si no, se muestra ${quoted(OVERALL_STATUS_LABELS.insufficient)}.`, { verifiedIn: "qbv2-overall.ts#OVERALL_INDEX_MODEL" }),
       claim("overall.prelaunch", "internal_rule", "Antes del lanzamiento no se calcula: la mayoría de las áreas todavía no se pueden observar y un porcentaje daría una precisión que no existe.", { verifiedIn: "qbv2-overall.ts#computeDigitalPresenceIndex" }),
-      claim("overall.bands", "internal_rule", `El estado se decide con el promedio exacto, antes de redondear: por debajo de ${bands.developingFrom}, ${quoted(OVERALL_STATUS_LABELS.low)}; desde ${bands.developingFrom} y por debajo de ${bands.solidFrom}, ${quoted(OVERALL_STATUS_LABELS.developing)}; desde ${bands.solidFrom}, ${quoted(OVERALL_STATUS_LABELS.solid)}.`, { verifiedIn: "qbv2-overall.ts#bandFor" }),
+      claim("overall.bands", "internal_rule", `El estado se decide con el promedio exacto, antes de redondear: hasta ${bands.developingFrom - 1}, ${quoted(OVERALL_STATUS_LABELS.low)}; desde ${bands.developingFrom} y hasta ${bands.solidFrom - 1}, ${quoted(OVERALL_STATUS_LABELS.developing)}; desde ${bands.solidFrom}, ${quoted(OVERALL_STATUS_LABELS.solid)}.`, { verifiedIn: "qbv2-overall.ts#bandFor" }),
       claim("overall.display", "internal_rule", "El número visible se redondea, salvo cuando el redondeo lo llevaría a otro estado: entonces se muestra el entero inferior, para que el número y el estado nunca se contradigan.", { verifiedIn: "qbv2-overall.ts#displayScoreFor" }),
-      claim("overall.material_cap", "internal_rule", `Si el promedio es alto pero un área muestra un freno importante, el estado se presenta como ${quoted(OVERALL_STATUS_LABELS.developing)}.`, { verifiedIn: "qbv2-overall.ts#classifyOverallState" }),
-      claim("overall.confidence_cap", "internal_rule", `Si el promedio es alto pero la confianza general es limitada, también se presenta como ${quoted(OVERALL_STATUS_LABELS.developing)} hasta confirmarlo.`, { verifiedIn: "qbv2-overall.ts#classifyOverallState" }),
-      claim("overall.number_kept", "internal_rule", "En ambos casos el porcentaje no cambia: el resultado explica por qué el estado es más prudente que el número.", { verifiedIn: "qbv2-overall.ts#classifyOverallState" }),
+      claim("overall.material_caveat", "internal_rule", "Si el promedio es alto pero un área muestra un freno importante, la prioridad se explica aparte sin cambiar la banda global.", { verifiedIn: "qbv2-overall.ts#classifyOverallState" }),
+      claim("overall.confidence_caveat", "internal_rule", "Si el promedio es alto pero la confianza general es limitada, la confianza se muestra por separado como lectura preliminar sin cambiar la banda global.", { verifiedIn: "qbv2-overall.ts#classifyOverallState" }),
+      claim("overall.number_kept", "internal_rule", "Los caveats no cambian el porcentaje ni el código MAL, REGULAR o BIEN: explican qué conviene confirmar o atender.", { verifiedIn: "qbv2-overall.ts#classifyOverallState" }),
       claim("overall.not_standard", "product_interpretation", "Es un resumen propio de Vecidya para orientar; no es una medida estandarizada ni comparable con la de otras herramientas."),
       claim("overall.not_eurostat", "limitation", `No es el Índice de Intensidad Digital de Eurostat. Esa fuente respalda el principio general de medir la adopción digital de una empresa por prácticas concretas, pero no valida la escala de 0 a 100, los límites de ${bands.developingFrom} y ${bands.solidFrom}, las ocho áreas ni las reglas de prioridad de Vecidya.`),
     ],

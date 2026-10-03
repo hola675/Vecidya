@@ -68,6 +68,7 @@ export type DiagnosticReportV1 = {
   readonly identity: { readonly title: string; readonly businessName: string | null; readonly profileLabel: string; readonly lifecycleLabel: string };
   readonly overallPresence: {
     readonly state: OverallStatusKind;
+    readonly publicLabel: "MAL" | "REGULAR" | "BIEN" | null;
     readonly label: string;
     readonly percent: string | null;
     readonly explanation: string;
@@ -130,6 +131,7 @@ export function buildDiagnosticReport({ narrative, outcome, generatedAt, busines
     identity: { title: REPORT_TITLE, businessName: businessName?.trim() || null, profileLabel: PROFILE_DISPLAY[narrative.profile], lifecycleLabel: LIFECYCLE_DISPLAY[narrative.lifecycle] },
     overallPresence: {
       state: outcome.overall.state, label: outcome.overall.label, percent: presence.percent, explanation: outcome.overall.explanation.text,
+      publicLabel: presence.publicLabel,
       confidence: presence.confidence, coverage: presence.coverage,
     },
     executiveSummary: { headline: headline?.text ?? null, lead: lead.map((block) => block.text), currentState: narrative.currentState.text },
