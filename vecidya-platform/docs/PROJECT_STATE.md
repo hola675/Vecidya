@@ -16,6 +16,8 @@ UX-003.8 (auditoría con sesión real, sin código) y UX-003.9 (App + Admin Expe
 
 Vecidya Platform es una aplicación SSR de React Router sobre Cloudflare Workers, Better Auth, Drizzle ORM y D1. Cubre identidad, organizaciones, membresías, permisos, perfil comercial (uno por organización), servicios Vecidya, directorio público (Vecindario), Diagnóstico anónimo, administración interna con gobierno de perfiles y una web pública institucional. Vecidya **no es un CRM**: GHL es el system of record comercial y hoy no existe ninguna integración con GHL.
 
+La superficie pública comercial mantiene un catálogo visual local en `public/assets/catalog/`, registrado por `app/assets/public-assets.ts`. Las páginas de Diagnóstico, Licencias, Addons y Servicios consumen los assets seleccionados; las etiquetas de acciones y las fronteras licencia/addon/servicio viven en `app/content/public-copy.ts` para evitar divergencias de copy. Esta integración no cambia el motor DIAG-V3 ni está publicada.
+
 Publicado en `vecidya.com` (verificado HTTP el 2026-09-22 y autenticación histórica manual): la web pública completa y **un** perfil real (`/vecindario/vecidya`), ahora sobre `vecidya-prod`; migraciones `0000`–`0009` están presentes. EMAIL-001 añadió evidencia manual autorizada del flujo `forgot-password → Gmail real → enlace de producción → reset-password → contraseña modificada` para `hola@vecidya.com`; la autenticación posterior con la nueva contraseña no fue declarada sin evidencia separada.
 
 ## Stack real

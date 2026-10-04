@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { publicAssets } from "../assets/public-assets";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { CTASection } from "../components/public-v2";
+import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
 import type { Route } from "./+types/about";
 
@@ -25,7 +26,7 @@ export default function About() {
             <p>Vecidya nace para ayudar a que los negocios locales tengan una presencia más clara, organizada y conectada.</p>
             <div className="public-actions">
               <a className="button button--primary" href="#por-que">Conoce cómo ayudamos</a>
-              <Link className="button button--secondary" to="/diagnostico">Hacer diagnóstico</Link>
+              <Link className="button button--secondary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
             </div>
           </div>
           <figure className="about-experience-hero__photo">
@@ -101,7 +102,7 @@ export default function About() {
         </section>
 
         <CTASection
-          actions={[{ label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" }, { label: "Hablar con Vecidya", to: "/contacto", variant: "secondary" }]}
+          actions={[{ label: PUBLIC_ACTION_LABELS.diagnostic, to: "/diagnostico", variant: "primary" }, { label: "Hablar con Vecidya", to: "/contacto", variant: "secondary" }]}
           eyebrow="SIGUIENTE PASO"
           title="¿Quieres ubicar lo que tu negocio necesita ahora?"
         >

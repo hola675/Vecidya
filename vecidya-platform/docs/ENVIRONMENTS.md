@@ -1,5 +1,12 @@
 # Entornos
 
+## DIAG-V3-REL-002 — release 0.6.1
+
+- Estado previo al deploy: cambios visuales y de copy validados localmente; versión `package.json` `0.6.1`.
+- Alcance: catálogo visual público, sustitución de assets en Diagnóstico/Licencias/Addons/Servicios, copy comercial compartido y eliminación del texto HTML duplicado del estado diagnóstico.
+- Migraciones: ninguna. D1 remota: sin cambios. Secrets: sin cambios. Staging: sin cambios.
+- La publicación solo se declarará después de verificar el commit desplegado y una comprobación HTTP anónima fechada de `/`, `/diagnostico`, `/licencias`, `/addons` y `/servicios`.
+
 ## DIAG-V3-REL-001 — release 0.6.0
 
 - Estado previo al deploy: release candidate local autorizado; publicación pública pendiente de verificación HTTP anónima.

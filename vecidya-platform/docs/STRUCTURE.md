@@ -1,6 +1,6 @@
 # Estructura del código
 
-Última reconciliación: 2026-09-25 (LICENSE-STRATEGY-001: foundation de licenciamiento multi-negocio, solo local; AUTHZ-BA-001: guardas de organización, miembros e invitaciones; DIAG-002; REL-003). Rutas verificadas contra `app/routes.ts`; las rutas públicas comerciales y sus pruebas de release están reconciliadas. Columna *Pub.*: comprobación local de la nueva experiencia y evidencia HTTP histórica para el resto (`sí` = responde como se espera; para rutas privadas, `sí` = existe y redirige a `/login`; `no` = no está en el Worker público). Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
+Última reconciliación: 2026-10-04 (catálogo visual público y copy comercial compartido, solo local, sin deploy; baseline anterior: LICENSE-STRATEGY-001, AUTHZ-BA-001, DIAG-002 y REL-003). Rutas verificadas contra `app/routes.ts`; las rutas públicas comerciales y sus pruebas de release están reconciliadas. Columna *Pub.*: comprobación local de la nueva experiencia y evidencia HTTP histórica para el resto (`sí` = responde como se espera; para rutas privadas, `sí` = existe y redirige a `/login`; `no` = no está en el Worker público). Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
 
 ## Mapa del repositorio
 
@@ -13,6 +13,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     │   ├── routes/             41 archivos (uno por ruta)
     │   ├── components/         public-layout, public-v2, admin-shell, ui, diagnostic-result/ (resultado V3, DIAG-V3-09/10), diagnostic-flow/ (cuestionario V3, DIAG-V3-10B), diagnostic-methodology/ (metodología V3, DIAG-V3-11), diagnostic-report/ (informe PDF V3, DIAG-V3-12)
     │   ├── assets/public-assets.ts   manifiesto de assets públicos
+    │   ├── content/public-copy.ts    acciones y fronteras comerciales compartidas
     │   ├── lib/auth-client.ts  cliente Better Auth
     │   ├── root.tsx, entry.server.tsx, app.css (Tailwind 4 + estilos propios)
     │   ├── features/diagnostic/ motor puro del Diagnóstico (16 módulos + `contracts.typecheck.ts`; DIAG-002, DIAG-V3-01 a 05); las otras 9 carpetas de features/* solo tienen .gitkeep
@@ -34,7 +35,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     │   └── business-profile-rules.ts, business-hours-rules.ts
     ├── workers/app.ts          entry point del Worker (+ redirect www → apex)
     ├── worker/                 durable-objects/, queues/, workflows/ vacíos
-    ├── public/                 assets/selected/** (14 WebP activos + 3 PNG conservados) y brand/vecidya-app-icon.png
+    ├── public/                 assets/selected/** + assets/catalog/** (PNG comerciales y estados diagnósticos) y brand/vecidya-app-icon.png
     ├── tests/e2e/              33 `.mjs` + 4 `.ps1` (ver TESTING.md); tests/unit/ (7 suites del Diagnóstico + 2 archivos de personas + 1 suite de slug de Business Profile + 2 hooks de resolución TS); integration/ vacío
     ├── docs/                   14 documentos canónicos con los READMEs
     ├── wrangler.jsonc, drizzle.config.ts, react-router.config.ts, vite.config.ts,

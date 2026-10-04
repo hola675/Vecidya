@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-04 — Vecidya 0.6.1 — catálogo visual, copy público y resultado diagnóstico
+
+- Se incorporan 17 PNG seleccionados desde `C:\Users\Admin\Pictures\Assets` bajo `public/assets/catalog/`: estados del diagnóstico, planes, addons y servicios. Se conservan alpha, dimensiones y los archivos fuente organizados; los assets no usados quedan reservados fuera del bundle público.
+- `/diagnostico` usa las tres imágenes nuevas de estado; `/licencias`, `/addons` y `/servicios` reemplazan iconos genéricos solo donde existe correspondencia funcional clara. Home mantiene sus SVG compactos para no mostrar texto ilegible en tamaños pequeños.
+- Se centralizan etiquetas de acciones, frontera licencia/addon/servicio y CTA de diagnóstico en `app/content/public-copy.ts`; `/unete`, `/contacto`, `/vecindario`, `/aprende`, `/sobre-nosotros` y perfiles públicos dejan de repetir literales equivalentes.
+- En los tres estados con índice del resultado diagnóstico, la imagen conserva su rótulo visual y el HTML muestra únicamente `Estado Actual:`, porcentaje y código público (`MAL`, `REGULAR` o `BIEN`); el estado descriptivo HTML se mantiene solo para lecturas sin índice.
+- Se mantiene intacto el motor DIAG-V3: los assets son visuales, no participan en scoring, confianza, recomendaciones ni reglas de diagnóstico. Deploy, migraciones y HTTP anónimo quedan registrados en `docs/ENVIRONMENTS.md` tras la publicación.
+
 ## 2026-10-04 — DIAG-V3 0.6.0 release candidate (publicación pendiente)
 
 - Se consolida el núcleo DIAG-V3 cliente-only: planner v2, schema de sesión 2, question bank v1, scoring v1, overall index v2, metodología 3.0 y hard cap 24.

@@ -48,12 +48,11 @@ export function DigitalPresenceStatusCard({ status }: { status: DigitalPresenceS
       <div className="dr-presence__main">
         {state ? <StatusAsset state={state} /> : null}
         <div className="dr-presence__reading">
-          <h2 className="dr-presence__kicker" id="dr-presence-title">Estado actual de tu presencia digital</h2>
+          <h2 className="dr-presence__kicker" id="dr-presence-title">Estado Actual:</h2>
           {display.percent ? (
             <>
               <p className="dr-presence__value">{display.percent}</p>
               <p className="dr-presence__code">{display.publicLabel}</p>
-              <p className="dr-presence__label">{status.label}</p>
             </>
           ) : <p className="dr-presence__value dr-presence__value--none">{status.label}</p>}
         </div>

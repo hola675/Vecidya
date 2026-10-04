@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { publicAssets } from "../assets/public-assets";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { learnArticles, learnCategories } from "../content/learn";
+import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
 import type { Route } from "./+types/knowledge";
 
@@ -24,7 +25,7 @@ export default function Knowledge() {
             <h1 id="learn-title">Aprende a organizar, mejorar y entender la presencia digital de tu negocio.</h1>
             <p>Guías escritas por Yoan Ortiz para entender problemas digitales reales y elegir el siguiente paso sin tecnicismos innecesarios ni promesas vacías.</p>
             <div className="public-actions">
-              <Link className="button button--primary" to="/diagnostico">Hacer diagnóstico</Link>
+              <Link className="button button--primary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
               <Link className="button button--secondary" to="/contacto">Hacer una pregunta</Link>
             </div>
           </div>
@@ -87,8 +88,8 @@ export default function Knowledge() {
           <h2 id="learn-final-title">¿No sabes qué necesitas todavía?</h2>
           <p>El diagnóstico te ayuda a convertir una duda general en prioridades iniciales. Si ya tienes una pregunta concreta, también puedes escribirnos.</p>
           <div className="public-actions">
-            <Link className="button button--primary" to="/diagnostico">Hacer diagnóstico</Link>
-            <Link className="button button--secondary" to="/contacto">Contactar</Link>
+            <Link className="button button--primary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
+            <Link className="button button--secondary" to="/contacto">{PUBLIC_ACTION_LABELS.contact}</Link>
           </div>
         </section>
       </main>

@@ -5,6 +5,7 @@ import { getPublishedBusinessProfileFilterOptions, listPublishedBusinessProfiles
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { BusinessCardV2, CTASection, EmptyState, SearchFilters } from "../components/public-v2";
+import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
 import type { Route } from "./+types/directory";
 
@@ -86,7 +87,7 @@ export default function DirectoryPage() {
               <EmptyState
                 actions={[
                   { label: "Limpiar filtros", to: "/vecindario", variant: "secondary" },
-                  { label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" },
+                  { label: PUBLIC_ACTION_LABELS.diagnostic, to: "/diagnostico", variant: "primary" },
                 ]}
                 title="No encontramos coincidencias"
               >
@@ -94,7 +95,7 @@ export default function DirectoryPage() {
               </EmptyState>
             ) : (
               <EmptyState
-                actions={[{ label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" }]}
+                actions={[{ label: PUBLIC_ACTION_LABELS.diagnostic, to: "/diagnostico", variant: "primary" }]}
                 eyebrow="VECINDARIO EN CRECIMIENTO"
                 title="El Vecindario está empezando a crecer"
               >
@@ -113,7 +114,7 @@ export default function DirectoryPage() {
           eyebrow="PARA NEGOCIOS"
           title="¿Tu negocio también debería aparecer aquí?"
           actions={[
-            { label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" },
+            { label: PUBLIC_ACTION_LABELS.diagnostic, to: "/diagnostico", variant: "primary" },
             { label: "Hablar con Vecidya", to: "/contacto", variant: "secondary" },
           ]}
         >

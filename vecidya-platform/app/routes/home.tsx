@@ -6,6 +6,7 @@ import { cloudflareContext } from "../../server/cloudflare-context";
 import { publicAssets } from "../assets/public-assets";
 import { BusinessCardV2, CTASection, DiagnosticChoice, JsonLd, ServiceCard, VisualSection } from "../components/public-v2";
 import { PublicLayout, publicMeta, whatsAppChannelUrl } from "../components/public-layout";
+import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
 import type { Route } from "./+types/home";
 
@@ -53,7 +54,7 @@ export default function Home() {
           <p>Explora negocios reales, entiende dónde estás y descubre qué puedes ordenar primero.</p>
           <div className="public-actions">
             <Link className="button button--primary" to="/vecindario">Explorar el Vecindario</Link>
-            <Link className="button button--secondary" to="/diagnostico">Hacer mi diagnóstico</Link>
+            <Link className="button button--secondary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
           </div>
         </div>
         <div className="home-hero-visual">
@@ -136,7 +137,7 @@ export default function Home() {
         eyebrow="SIGUIENTE PASO"
         title="Empieza por entender dónde estás."
         actions={[
-          { label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" },
+          { label: PUBLIC_ACTION_LABELS.diagnostic, to: "/diagnostico", variant: "primary" },
           { label: "Explorar el Vecindario", to: "/vecindario", variant: "light" },
         ]}
         tone="dark"

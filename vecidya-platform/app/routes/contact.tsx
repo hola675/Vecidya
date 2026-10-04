@@ -1,6 +1,7 @@
 import { commercialWhatsAppUrl, PublicLayout, publicMeta, whatsAppChannelUrl } from "../components/public-layout";
 import { publicAssets } from "../assets/public-assets";
 import { CTASection } from "../components/public-v2";
+import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
 import type { Route } from "./+types/contact";
 
@@ -92,7 +93,7 @@ export default function Contact() {
             <h2 id="contact-boundaries-title">Empieza por ubicar tu punto de partida.</h2>
           </div>
           <div className="public-actions">
-            <a className="button button--secondary" href="/diagnostico">Hacer diagnóstico</a>
+            <a className="button button--secondary" href="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</a>
             <a className="text-link" href="/privacidad">Ver privacidad <span aria-hidden="true">→</span></a>
           </div>
         </section>

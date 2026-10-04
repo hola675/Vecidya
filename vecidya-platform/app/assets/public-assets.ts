@@ -1,4 +1,5 @@
 const selectedAssetBase = "/assets/selected";
+const catalogAssetBase = "/assets/catalog";
 
 export const publicAssets = {
   backgrounds: {
@@ -68,6 +69,34 @@ export const publicAssets = {
     crm: "/assets/learn/diagram-crm.svg",
     ai: "/assets/learn/diagram-ai.svg",
     automation: "/assets/learn/diagram-automation.svg",
+  },
+  catalog: {
+    diagnostic: {
+      low: `${catalogAssetBase}/diagnostic/presencia-por-fortalecer-mal.png`,
+      developing: `${catalogAssetBase}/diagnostic/presencia-en-desarrollo-regular.png`,
+      solid: `${catalogAssetBase}/diagnostic/presencia-solida-bien.png`,
+    },
+    plans: {
+      cuadra: `${catalogAssetBase}/plans/plan-cuadra.png`,
+      barrio: `${catalogAssetBase}/plans/plan-barrio.png`,
+      ciudad: `${catalogAssetBase}/plans/plan-ciudad.png`,
+    },
+    addons: {
+      whatsapp: `${catalogAssetBase}/features/communication/whatsapp-01.png`,
+      sms: `${catalogAssetBase}/features/communication/sms-01.png`,
+      telefonia: `${catalogAssetBase}/features/communication/llamadas-01.png`,
+      automatizaciones: `${catalogAssetBase}/features/operations/automatizaciones-01.png`,
+      aiConversacional: `${catalogAssetBase}/features/communication/ia-chatbot.png`,
+      aiVoice: `${catalogAssetBase}/features/communication/ia-agente-de-voz-01.png`,
+      integraciones: `${catalogAssetBase}/features/operations/api-e-integraciones.png`,
+    },
+    services: {
+      organizacion: `${catalogAssetBase}/features/operations/crm-avanzado.png`,
+      presenciaDigital: `${catalogAssetBase}/features/operations/sitio-web-01.png`,
+      automatizacion: `${catalogAssetBase}/features/operations/automatizaciones-01.png`,
+      inteligenciaArtificial: `${catalogAssetBase}/features/marketing/ia-contenido-01.png`,
+      visibilidad: `${catalogAssetBase}/features/marketing/redes-sociales-01.png`,
+    },
   },
   social: {
     openGraph: `${selectedAssetBase}/og/og-vecidya-public.svg`,

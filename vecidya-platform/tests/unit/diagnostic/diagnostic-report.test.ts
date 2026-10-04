@@ -159,7 +159,7 @@ test("12 rendered report: one h1, canonical section order, real text, no interna
     const text = textOf(html);
     assert.equal((html.match(/<h1[ >]/g) ?? []).length, 1, `${id}: one h1`);
     assert.ok(text.includes("Diagnóstico de Presencia Digital") && text.includes(`Metodología ${METHODOLOGY_VERSION}`) || text.includes(`Metodología ${METHODOLOGY_VERSION}`), id);
-    const order = ["Estado actual de tu presencia digital", "Lo que encontró el diagnóstico", "Lo que más importa ahora", "Plan de acción recomendado", "Las ocho áreas del diagnóstico", "Recomendaciones", "Cómo puede ayudarte Vecidya", "Cómo se evaluó", "Metodología y fuentes", "Lo que el diagnóstico no puede afirmar"];
+    const order = ["Estado Actual:", "Lo que encontró el diagnóstico", "Lo que más importa ahora", "Plan de acción recomendado", "Las ocho áreas del diagnóstico", "Recomendaciones", "Cómo puede ayudarte Vecidya", "Cómo se evaluó", "Metodología y fuentes", "Lo que el diagnóstico no puede afirmar"];
     const positions = order.map((heading) => text.indexOf(heading));
     assert.ok(positions.every((position, index) => position >= 0 && (index === 0 || position > positions[index - 1]!)), `${id}: section order ${JSON.stringify(positions)}`);
     assert.ok(!/\bq2_|\bnull\b|undefined|\[object Object\]|\bNaN\b|priority:\d|constraint:|recommendation:\d|evidence_gap|_constraint\b/.test(text), `${id}: internal or empty values`);

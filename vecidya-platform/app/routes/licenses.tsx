@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { publicAssets } from "../assets/public-assets";
 import { CTASection } from "../components/public-v2";
 import { PublicLayout, publicMeta } from "../components/public-layout";
+import { DIAGNOSTIC_CTA_COPY, PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
 import type { Route } from "./+types/licenses";
 
@@ -27,7 +28,7 @@ const licenses: License[] = [
     objective: "Ordenar el negocio.",
     idealFor: "Para un negocio que necesita una base organizada para empezar.",
     marker: "C",
-    icon: publicAssets.icons.serviceStructure,
+    icon: publicAssets.catalog.plans.cuadra,
     includes: ["Perfil público", "Información organizada", "Contactos, notas y tareas", "Oportunidades y pipeline", "Calendario y capacidades base"],
     level: "Base",
     priceUsd: 39,
@@ -38,7 +39,7 @@ const licenses: License[] = [
     objective: "Captar oportunidades y hacer seguimiento.",
     idealFor: "Para un negocio que necesita convertir consultas en procesos.",
     marker: "B",
-    icon: publicAssets.icons.serviceDigitalPresence,
+    icon: publicAssets.catalog.plans.barrio,
     includes: ["Todo Cuadra", "Formularios y landing estándar", "Agenda", "Automatizaciones estándar", "Seguimiento, posventa y reportes básicos"],
     level: "Crecimiento",
     priceUsd: 59,
@@ -49,7 +50,7 @@ const licenses: License[] = [
     objective: "Automatizar y escalar.",
     idealFor: "Para un negocio con volumen y procesos repetitivos.",
     marker: "C",
-    icon: publicAssets.icons.serviceVisibility,
+    icon: publicAssets.catalog.plans.ciudad,
     includes: ["Todo Barrio", "Automatización avanzada", "Segmentación y reactivación", "Procesos avanzados", "Control operativo"],
     level: "Escala",
     priceUsd: 89,
@@ -83,7 +84,7 @@ export default function Licenses() {
             <p>Un negocio no necesita todas las herramientas desde el primer día. Necesita una base adecuada para su momento actual y un camino claro para evolucionar.</p>
             <div className="public-actions">
               <Link className="button button--primary" to="/diagnostico">Encontrar mi punto de partida</Link>
-              <Link className="button button--secondary" to="/servicios">Ver servicios</Link>
+              <Link className="button button--secondary" to="/servicios">{PUBLIC_ACTION_LABELS.services}</Link>
             </div>
           </div>
           <aside aria-label="Evolución de las licencias" className="licenses-hero__path">
@@ -121,7 +122,9 @@ export default function Licenses() {
               <article className={`license-card license-card--${license.id}`} id={license.id} key={license.id}>
                 <div className="license-card__top">
                   <span aria-hidden="true" className="license-card__marker">{license.marker}{index + 1}</span>
-                  <img alt="" aria-hidden="true" height={56} src={license.icon} width={56} />
+                  <div className="license-card__image-frame">
+                    <img alt="" aria-hidden="true" className="catalog-card__image catalog-card__image--plan" height={180} src={license.icon} width={144} />
+                  </div>
                 </div>
                 <p className="eyebrow">{license.level}</p>
                 <h3>{license.name}</h3>
@@ -198,12 +201,12 @@ export default function Licenses() {
         </section>
 
         <CTASection
-          actions={[{ label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" }, { label: "Contactar", to: "/contacto", variant: "secondary" }]}
+          actions={[{ label: PUBLIC_ACTION_LABELS.diagnostic, to: "/diagnostico", variant: "primary" }, { label: PUBLIC_ACTION_LABELS.contact, to: "/contacto", variant: "secondary" }]}
           eyebrow="NO TIENES QUE DECIDIR SOLO"
           title="Encuentra el punto de partida que tiene sentido para ti."
           tone="dark"
         >
-          <p>El diagnóstico te ayuda a entender tu momento antes de elegir una licencia, un servicio o una capacidad adicional.</p>
+          <p>{DIAGNOSTIC_CTA_COPY}</p>
         </CTASection>
       </main>
     </PublicLayout>

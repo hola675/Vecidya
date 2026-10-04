@@ -1,6 +1,7 @@
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { publicAssets } from "../assets/public-assets";
 import { CTASection } from "../components/public-v2";
+import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
 import type { Route } from "./+types/join";
 
@@ -18,7 +19,7 @@ export default function Join() {
             <h1 id="join-title">Empieza por el siguiente paso que sí tienes claro.</h1>
             <p>No necesitas tener todo resuelto. Elige la entrada que mejor describe dónde estás hoy.</p>
             <div className="public-actions">
-              <a className="button button--primary" href="/diagnostico">Hacer diagnóstico</a>
+              <a className="button button--primary" href="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</a>
               <a className="button button--secondary" href="/contacto">Hablar con Vecidya</a>
             </div>
           </div>
@@ -39,7 +40,7 @@ export default function Join() {
               <p className="eyebrow">NO ESTOY SEGURO</p>
               <h3>Empieza con diagnóstico</h3>
               <p>Responde unas preguntas y recibe una orientación inicial sobre tu punto de partida.</p>
-              <a className="text-link" href="/diagnostico">Hacer diagnóstico <span aria-hidden="true">→</span></a>
+              <a className="text-link" href="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic} <span aria-hidden="true">→</span></a>
             </article>
             <article className="join-decision-card join-decision-card--contact">
               <span className="join-decision-card__number" aria-hidden="true">02</span>
@@ -78,7 +79,7 @@ export default function Join() {
         </section>
 
         <CTASection
-          actions={[{ label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" }, { label: "Hablar con Vecidya", to: "/contacto", variant: "secondary" }]}
+          actions={[{ label: PUBLIC_ACTION_LABELS.diagnostic, to: "/diagnostico", variant: "primary" }, { label: "Hablar con Vecidya", to: "/contacto", variant: "secondary" }]}
           eyebrow="PRIMER PASO"
           title="No necesitas llegar con todo resuelto."
         >

@@ -1,7 +1,8 @@
 import { Link } from "react-router";
 
 import { publicAssets } from "../assets/public-assets";
-import { CTASection } from "../components/public-v2";
+import { CommercialBoundary, CTASection } from "../components/public-v2";
+import { DIAGNOSTIC_CTA_COPY, PUBLIC_ACTION_LABELS } from "../content/public-copy";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 
 import type { Route } from "./+types/services";
@@ -19,7 +20,7 @@ type ServiceArea = {
 const services: ServiceArea[] = [
   {
     id: "estructuracion",
-    icon: publicAssets.icons.serviceStructure,
+    icon: publicAssets.catalog.services.organizacion,
     eyebrow: "ORGANIZAR",
     title: "Organización del negocio",
     problem: "La información, las prioridades y los procesos están dispersos.",
@@ -37,7 +38,7 @@ const services: ServiceArea[] = [
   },
   {
     id: "presencia-digital",
-    icon: publicAssets.icons.serviceDigitalPresence,
+    icon: publicAssets.catalog.services.presenciaDigital,
     eyebrow: "EXPLICAR",
     title: "Presencia digital",
     problem: "Lo publicado no explica bien qué haces, para quién es ni cuál es el siguiente paso.",
@@ -46,7 +47,7 @@ const services: ServiceArea[] = [
   },
   {
     id: "automatizacion",
-    icon: publicAssets.icons.diagnosticBusiness,
+    icon: publicAssets.catalog.services.automatizacion,
     eyebrow: "SIMPLIFICAR",
     title: "Automatización",
     problem: "Las tareas repetitivas consumen tiempo y dependen de recordatorios manuales.",
@@ -55,7 +56,7 @@ const services: ServiceArea[] = [
   },
   {
     id: "inteligencia-artificial",
-    icon: publicAssets.icons.diagnosticProfessional,
+    icon: publicAssets.catalog.services.inteligenciaArtificial,
     eyebrow: "ASISTIR",
     title: "Inteligencia artificial",
     problem: "Quieres atender, clasificar o acompañar conversaciones con más capacidad.",
@@ -64,7 +65,7 @@ const services: ServiceArea[] = [
   },
   {
     id: "visibilidad",
-    icon: publicAssets.icons.serviceVisibility,
+    icon: publicAssets.catalog.services.visibilidad,
     eyebrow: "CONECTAR",
     title: "Marketing y crecimiento",
     problem: "Tu negocio necesita más visibilidad, pero no quieres sumar acciones sin dirección.",
@@ -91,8 +92,8 @@ export default function Services() {
             <h1 id="services-title">Construimos soluciones digitales adaptadas a tu negocio.</h1>
             <p>Una licencia te da una base. Un servicio nos permite crear, configurar o mejorar algo específico para tu momento y tus objetivos.</p>
             <div className="public-actions">
-              <Link className="button button--primary" to="/diagnostico">Hacer mi diagnóstico</Link>
-              <Link className="button button--secondary" to="/contacto">Hablar con Vecidya</Link>
+              <Link className="button button--primary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
+              <Link className="button button--secondary" to="/contacto">{PUBLIC_ACTION_LABELS.contact}</Link>
             </div>
           </div>
           <aside className="services-experience-hero__note" aria-label="Cómo se relacionan las soluciones">
@@ -129,7 +130,7 @@ export default function Services() {
             {services.map((service) => (
               <article className="services-core-card" id={service.id} key={service.id}>
                 <div className="services-core-card__top">
-                  <img alt="" aria-hidden="true" height={56} src={service.icon} width={56} />
+                  <img alt="" aria-hidden="true" className="catalog-card__image catalog-card__image--feature" height={112} src={service.icon} width={128} />
                   <p className="eyebrow">{service.eyebrow}</p>
                 </div>
                 <h3>{service.title}</h3>
@@ -151,18 +152,7 @@ export default function Services() {
           </div>
         </section>
 
-        <section className="services-model" aria-labelledby="services-model-title">
-          <div className="services-section-heading">
-            <p className="eyebrow">CADA COSA TIENE SU LUGAR</p>
-            <h2 id="services-model-title">¿Licencia, addon o servicio?</h2>
-          </div>
-          <div className="services-model__grid">
-            <div><span>BASE CONTINUA</span><strong>Necesitas una plataforma para tu operación.</strong><p>→ Licencia</p><Link className="text-link" to="/licencias">Ver licencias <span aria-hidden="true">→</span></Link></div>
-            <div><span>CAPACIDAD ADICIONAL</span><strong>Necesitas ampliar una capacidad específica.</strong><p>→ Addon</p><Link className="text-link" to="/addons">Ver addons <span aria-hidden="true">→</span></Link></div>
-            <div><span>TRABAJO PERSONALIZADO</span><strong>Necesitas que construyamos algo para tu contexto.</strong><p>→ Servicio</p><span className="services-model__current">Estás aquí</span></div>
-          </div>
-          <p className="services-model__note">Los consumos variables de canales, proveedores o publicidad se informan aparte. No se esconden dentro de una licencia, addon o servicio.</p>
-        </section>
+        <CommercialBoundary current="service" />
 
         <section className="services-process" aria-labelledby="services-process-title">
           <div className="services-section-heading">
@@ -177,11 +167,11 @@ export default function Services() {
         </section>
 
         <CTASection
-          actions={[{ label: "Hacer diagnóstico", to: "/diagnostico", variant: "primary" }, { label: "Contactar", to: "/contacto", variant: "secondary" }]}
+          actions={[{ label: PUBLIC_ACTION_LABELS.diagnostic, to: "/diagnostico", variant: "primary" }, { label: PUBLIC_ACTION_LABELS.contact, to: "/contacto", variant: "secondary" }]}
           eyebrow="SIGUIENTE PASO"
           title="¿No sabes por dónde empezar?"
         >
-          <p>El diagnóstico te ayuda a ubicar si necesitas una licencia, un addon o un servicio personalizado.</p>
+          <p>{DIAGNOSTIC_CTA_COPY}</p>
         </CTASection>
       </main>
     </PublicLayout>

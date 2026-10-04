@@ -6,6 +6,7 @@ import { listBusinessHoursForOrganization } from "../../db/queries/business-hour
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { CTASection, JsonLd, PublicBusinessContact, PublicBusinessDetails, PublicBusinessHeader, PublicBusinessHours } from "../components/public-v2";
+import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
 import type { Route } from "./+types/public-business-profile";
 
@@ -96,7 +97,7 @@ export default function PublicBusinessProfilePage() {
         <CTASection
           actions={[
             { label: "Volver al Vecindario", to: "/vecindario", variant: "primary" },
-            { label: "Hacer diagnóstico", to: "/diagnostico", variant: "secondary" },
+            { label: PUBLIC_ACTION_LABELS.diagnostic, to: "/diagnostico", variant: "secondary" },
           ]}
           eyebrow="VECIDYA"
           title="Cada perfil conecta con una decisión real."

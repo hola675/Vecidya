@@ -417,8 +417,9 @@ test("10 UI: hierarchy, presence card, no emoji, no sales copy, commercial after
     const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
     assert.ok(!/\p{Extended_Pictographic}/u.test(text), `${id}: no emoji`);
     assert.ok(!/compra ahora|cómpralo|oferta limitada|no te lo pierdas|garantiza|\bUSD\b|\$\s?\d/i.test(text), `${id}: no sales copy or prices`);
-    assert.ok(text.includes(outcome.overall.label) && text.includes(outcome.overall.explanation.text), `${id}: state name and explanation`);
-    if (outcome.overall.index.displayScore !== null) assert.match(text, new RegExp(`${outcome.overall.index.displayScore}% ${outcome.overall.publicLabel} ${outcome.overall.label}`));
+    const visibleState = outcome.overall.index.displayScore === null ? outcome.overall.label : outcome.overall.publicLabel;
+    assert.ok(text.includes(visibleState) && text.includes(outcome.overall.explanation.text), `${id}: state code and explanation`);
+    if (outcome.overall.index.displayScore !== null) assert.match(text, new RegExp(`${outcome.overall.index.displayScore}% ${outcome.overall.publicLabel}`));
     else assert.ok(!/Confianza del resultado/.test(text), `${id}: no confidence for a percentage that does not exist`);
     const offerings = outcome.help.items.filter((item) => item.offerings.length > 0).length;
     assert.equal((html.match(/<details class="dr-proof">/g) ?? []).length, offerings, `${id}: one «¿Por qué te recomendamos esto?» per item with offerings`);

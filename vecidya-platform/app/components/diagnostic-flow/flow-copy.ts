@@ -16,6 +16,7 @@ export const START_COPY = {
   kicker: "Diagnóstico Vecidya",
   title: "Entiende dónde está hoy tu presencia digital y qué conviene atender primero",
   lead: "Responde unas preguntas sobre tu situación. Al final verás cómo está tu presencia digital, qué funciona, qué te frena, por dónde empezar y qué tipo de ayuda podría servirte.",
+  metaDescription: "Entiende dónde estás, qué funciona, qué te frena y qué conviene hacer primero. Diagnóstico anónimo, adaptado a tu negocio y sin necesidad de crear una cuenta.",
   points: [
     "Las preguntas se adaptan a tu negocio, proyecto u organización: no todas las personas reciben las mismas.",
     "Suelen ser entre 10 y 20 preguntas; depende de tu situación.",

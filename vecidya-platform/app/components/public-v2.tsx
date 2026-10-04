@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import { publicAssets } from "../assets/public-assets";
+import { COMMERCIAL_BOUNDARY_COPY, COMMERCIAL_EXTERNAL_COSTS, PUBLIC_ACTION_LABELS, type CommercialBoundaryKind } from "../content/public-copy";
 import { buildDiagnosticPath, type ProfileId } from "../features/diagnostic";
 import { compactBusinessHoursGroups, type BusinessHoursEntry } from "../../db/business-hours-rules";
 import { serviceModeLabels } from "../../db/business-profile-rules";
@@ -80,6 +81,37 @@ export function CTASection({
       <div className="public-actions">
         {actions.map((action) => <CTAButton action={action} key={`${action.label}-${action.to ?? action.href}`} />)}
       </div>
+    </section>
+  );
+}
+
+export function CommercialBoundary({ current }: { current: CommercialBoundaryKind }) {
+  const items: Array<{ kind: CommercialBoundaryKind; to: string; action: string }> = [
+    { kind: "license", to: "/licencias", action: PUBLIC_ACTION_LABELS.licenses },
+    { kind: "addon", to: "/addons", action: PUBLIC_ACTION_LABELS.addons },
+    { kind: "service", to: "/servicios", action: PUBLIC_ACTION_LABELS.services },
+  ];
+
+  return (
+    <section aria-labelledby="commercial-boundary-title" className="public-v2-commercial-boundary">
+      <div className="public-v2-commercial-boundary__heading">
+        <p className="eyebrow">CADA COSA TIENE SU LUGAR</p>
+        <h2 id="commercial-boundary-title">Cada necesidad tiene su lugar.</h2>
+      </div>
+      <div className="public-v2-commercial-boundary__grid">
+        {items.map(({ kind, to, action }) => {
+          const copy = COMMERCIAL_BOUNDARY_COPY[kind];
+          return (
+            <div key={kind}>
+              <span>{copy.eyebrow}</span>
+              <strong>{copy.title}</strong>
+              <p>→ {copy.label}</p>
+              {current === kind ? <span className="public-v2-commercial-boundary__current">Estás aquí</span> : <Link className="text-link" to={to}>{action} <span aria-hidden="true">→</span></Link>}
+            </div>
+          );
+        })}
+      </div>
+      <p className="public-v2-commercial-boundary__note">{COMMERCIAL_EXTERNAL_COSTS}</p>
     </section>
   );
 }

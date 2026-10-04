@@ -1,4 +1,4 @@
-import { DiagnosticFlow } from "../components/diagnostic-flow";
+import { DiagnosticFlow, START_COPY } from "../components/diagnostic-flow";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { DIAGNOSTIC_PATH } from "../features/diagnostic/deep-link";
 
@@ -18,7 +18,7 @@ import type { Route } from "./+types/diagnostic";
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
     "Diagnóstico Vecidya",
-    "Entiende dónde estás, qué funciona, qué te frena y qué conviene hacer primero. Diagnóstico anónimo, adaptado a tu negocio y sin necesidad de crear una cuenta.",
+    START_COPY.metaDescription,
     DIAGNOSTIC_PATH,
   );
 }

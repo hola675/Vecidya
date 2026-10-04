@@ -68,9 +68,9 @@ test("09/10 score display: a reading shows its percentage paired with state and 
     const hero = textOf(between(html, /<header class="dr-hero/, "</header>").replace(/<details class="dr-help">[\s\S]*?<\/details>/g, ""));
     assert.deepEqual(hero.match(/\d+%/g) ?? [], overall === null ? [] : [`${overall}%`], `${id}: the hero only shows the overall presence`);
     if (overall !== null) {
-      assert.ok(hero.includes("Estado actual de tu presencia digital"), `${id}: canonical global heading`);
+      assert.ok(hero.includes("Estado Actual:"), `${id}: canonical global heading`);
       assert.ok(hero.includes(overallStatus.publicLabel!), `${id}: public global code`);
-      assert.ok(hero.includes(overallStatus.label), `${id}: descriptive global label`);
+      assert.ok(!hero.includes(`dr-presence__label">${overallStatus.label}`), `${id}: image owns the descriptive global label`);
     }
     assert.ok(!/%/.test(textOf(between(html, /<section aria-labelledby="dr-focus-title"/, "</section>"))), `${id}: priorities never show a percentage`);
   }
