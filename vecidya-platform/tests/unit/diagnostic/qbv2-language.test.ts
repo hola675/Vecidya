@@ -50,7 +50,7 @@ const ASKED: readonly AskedRender[] = (() => {
     for (const id of Object.keys(answers)) asked.push({ route, rendered: render(id, answers), prelaunch: stage === "idea" });
     for (let batch = 0; batch <= ROUTE_HARD_CAP; batch += 1) {
       const plan = buildQuestionPlan({ answers, bank: QUESTION_BANK_V2 });
-      const fresh = plan.selectedQuestionIds.filter((id) => answers[id] === undefined);
+       const fresh = plan.selectedQuestionIds.filter((id) => answers[id] === undefined && plan.trace.find((entry) => entry.questionId === id)?.selectedIn !== "deepening");
       if (fresh.length === 0) break;
       const askedContext = context(answers);
       for (const id of fresh) asked.push({ route, rendered: renderQuestionV2(byId.get(id)!, { context: askedContext, answers }), prelaunch: stage === "idea" });

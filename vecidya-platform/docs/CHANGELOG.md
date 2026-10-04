@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-04 — DIAG-V3 0.6.0 release candidate (publicación pendiente)
+
+- Se consolida el núcleo DIAG-V3 cliente-only: planner v2, schema de sesión 2, question bank v1, scoring v1, overall index v2, metodología 3.0 y hard cap 24.
+- FIX-03A/B/C/D y FIX-04A quedan validados con seis calibraciones reales de navegador: evidencia adaptativa, deepening, applicability/N-A, bandas MAL/REGULAR/BIEN, confianza separada y precedencia terminal canónica.
+- La precedencia terminal distingue `evidence_sufficient`, `no_useful_questions` y `absolute_hard_cap_reached` sin alterar rutas, scores, confianza, cap, recomendaciones ni licencias.
+- La calibración confirma deuda no bloqueante en extremos 0/100 y un edge case de hard cap en Mercado Verde; el rediseño comercial/recommendation y GHL siguen fuera de este release.
+- Validación local: `test:unit` 797/797, typecheck, build y `git diff --check` PASS. No se ejecutaron migraciones.
+- La publicación pública queda pendiente de deploy y verificación HTTP anónima autorizada por DIAG-V3-REL-001.
+
 ## 2026-10-03 — Assets del diagnóstico y actualización visual de Vecidya (solo local, sin deploy)
 
 - Se integran ocho WebP circulares reutilizados por el resultado V3 y el PDF mediante el mismo mapeo; la carpeta contiene únicamente esos ocho assets finales, sin recortes temporales ni duplicados.

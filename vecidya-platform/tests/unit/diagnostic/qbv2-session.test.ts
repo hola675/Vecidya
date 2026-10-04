@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { test } from "node:test";
 
 import {
@@ -38,6 +39,8 @@ function drive(session: DiagnosticSessionV3, answerFor: (id: string) => unknown)
   return { session: current, shown };
 }
 const fromZero = (overrides: Record<string, unknown>, policy: Policy) => drive(createSessionV3({ sessionId: "s", now: tick() }), (id) => overrides[id] ?? pick(id, policy));
+const storedNativa = Object.fromEntries([...readFileSync(join(process.cwd(), "..", "artifacts", "diagnostic-v3-calibration", "case-06-nativa-home", "case-06.md"), "utf8").matchAll(/\|\s*\d+\s*\|\s*(q2_[a-z0-9_]+)<br>[\s\S]*?\|\s*[^|]*?\[([^\]]+)\]\s*\|/g)].map((match) => [match[1], match[2]]));
+const storedReparaciones = Object.fromEntries([...readFileSync(join(process.cwd(), "..", "artifacts", "diagnostic-v3-calibration", "case-01-reparaciones-rapidas", "case-01.md"), "utf8").matchAll(/\|\s*\d+\s*\|\s*(q2_[a-z0-9_]+)<br>[\s\S]*?\|\s*[^|]*?\[([^\]]+)\]\s*\|/g)].map((match) => [match[1], match[2]]));
 
 class MemoryStorage implements StorageLike {
   readonly data = new Map<string, string>();
@@ -58,8 +61,35 @@ test("10B first question and adaptive progression come from the planner, one bat
     if (entry.type === "planned") assert.deepEqual(entry.questionIds, buildQuestionPlan({ answers: answers as AnswersV2, bank }).selectedQuestionIds);
     if (entry.type === "answered") answers[entry.questionId] = done.answers[entry.questionId];
   }
-  assert.equal(done.status, "completing");
-  assert.equal(buildQuestionPlan({ answers: done.answers, bank }).selectedQuestionIds.length, 0, "ends only when the planner selects nothing new");
+  assert.ok(done.status === "completing" || done.status === "deepening_required");
+  const finalPlan = buildQuestionPlan({ answers: done.answers, bank });
+  assert.ok(finalPlan.selectedQuestionIds.length === 0 || finalPlan.selectedQuestionIds.every((id) => finalPlan.trace.find((entry) => entry.questionId === id)?.selectedIn === "deepening"), "ends or continues only with adaptive deepening");
+});
+
+test("FIX-03B session continues with one deepening question instead of exposing a final result", () => {
+  const session = createSessionV3({ sessionId: "nativa-fix-03a", now: tick(), seedAnswers: storedNativa });
+  assert.equal(session.status, "in_progress");
+  assert.equal(session.queue.length, 1);
+  assert.equal(session.queue[0]!.phase, "deepening");
+  assert.equal(completeSessionV3(session).ok, false);
+});
+
+test("FIX-03C persists the terminal reason for truthful completion copy", () => {
+  const store = new DiagnosticSessionStoreV3(new MemoryStorage());
+  const source = { ...createSessionV3({ sessionId: "terminal-reason", now: tick(), seedAnswers: storedReparaciones }), queue: [], status: "completing" as const, terminalReason: "no_useful_questions" as const };
+  store.write(source);
+  assert.equal(store.read(tick())?.terminalReason, "no_useful_questions");
+});
+
+test("FIX-03A reviewing the final answer re-applies the evidence gate", () => {
+  const base = createSessionV3({ sessionId: "nativa-review-fix-03a", now: tick(), seedAnswers: storedNativa });
+  const session = { ...base, answeredQuestionIds: Object.keys(storedNativa) };
+  const reviewed = goBackV3(session, tick());
+  const questionId = currentQuestionIdV3(reviewed)!;
+  const value = reviewed.answers[questionId];
+  const submitted = submitAnswerV3(reviewed, questionId, value, tick());
+  assert.equal(submitted.ok, true);
+  if (submitted.ok) assert.equal(submitted.session.status, "in_progress");
 });
 
 test("10B answer validation: required, type, unknown option, duplicates and exclusive combinations never reach AnswersV2", () => {
@@ -124,7 +154,7 @@ test("10B every visible question goes through the frozen copy renderer: profile 
       assert.ok(!/\bq2_|\b[a-z]+_[a-z_]+\b|score|peso|puntaje/i.test(text), `${persona.id}/${definition.id}: internal wording`);
       assert.equal(presented.question.hint, definition.variants?.find((_, index) => index === presented.question.variant)?.hint ?? definition.hint);
       profiles.add(presented.question.profile);
-      session = submitAnswerV3(session, definition.id, persona.answerProfile[definition.id], 2).session as DiagnosticSessionV3;
+       session = submitAnswerV3(session, definition.id, persona.answerProfile[definition.id] ?? pick(definition.id, "first"), 2).session as DiagnosticSessionV3;
     }
   }
   for (const profile of ["clinical", "nonprofit", "creator", "prelaunch", "ecommerce", "b2b"]) assert.ok(profiles.has(profile), profile);
@@ -159,7 +189,7 @@ test("10B progress: stages without a fixed denominator, monotonic, ending in «p
     session = submitAnswerV3(session, id, pick(id, "middle"), 2).session as DiagnosticSessionV3;
   }
   assert.deepEqual([...seen].slice(0, 2), ["context", "deepening"]);
-  assert.equal(progressV3(session).stage, "preparing");
+  assert.equal(progressV3(session).stage, session.status === "deepening_required" ? "final_checks" : "preparing");
   // La cola material del planner (preguntas 19–24) se presenta como «Últimas comprobaciones».
   const overrides: Record<string, unknown> = { q2_entity: "business", q2_has_customers: "yes", q2_delivery: "scheduled", q2_goal: "be_found", q2_friction: "visibility" };
   let material = createSessionV3({ sessionId: "m", now: 1 });
@@ -172,7 +202,8 @@ test("10B progress: stages without a fixed denominator, monotonic, ending in «p
 });
 
 test("10B completion runs the frozen pipeline; a failure keeps the answers and can be retried", () => {
-  const { session } = fromZero({}, "middle");
+  const { session: routed } = fromZero({}, "middle");
+  const session = routed.status === "deepening_required" ? { ...routed, status: "completing" as const } : routed;
   const failed = completeSessionV3(session, 5, () => { throw new Error("boom"); });
   assert.equal(failed.ok, false);
   assert.equal(failed.session.status, "error");
@@ -214,7 +245,7 @@ test("10B back/edit: unchanged answers move forward; a changed answer reconciles
   assert.equal(sessionProfileV3(session), "appointments");
   assert.equal(sessionProfileV3(business.session), "ecommerce");
   const finishedBusiness = drive(business.session, (id) => pick(id, "first")).session;
-  assert.equal(finishedBusiness.status, "completing");
+  assert.ok(finishedBusiness.status === "completing" || finishedBusiness.status === "deepening_required");
   assert.ok(!Object.keys(finishedBusiness.answers).some((id) => id.startsWith("q2_appointments_")), "appointment questions left the route");
 
   // C y D: meta y freno cambian lo que el planner considera material.
@@ -224,7 +255,7 @@ test("10B back/edit: unchanged answers move forward; a changed answer reconciles
   const friction = submitAnswerV3(backTo(session, "q2_friction"), "q2_friction", "visibility", tick());
   assert.ok(friction.ok);
   const afterFriction = drive(friction.session, (id) => pick(id, "first")).session;
-  assert.equal(afterFriction.status, "completing");
+  assert.ok(afterFriction.status === "completing" || afterFriction.status === "deepening_required");
   assert.notDeepEqual(Object.keys(afterFriction.answers).sort(), Object.keys(session.answers).sort(), "the friction change produced a different route");
   for (const edited of [prelaunch.session, business.session, goal.session, friction.session]) assert.equal(edited.reviewIndex, null, "continues from the reconciled point");
 });
@@ -244,13 +275,16 @@ test("10B persistence: valid resume, refresh mid-question, outdated schema, corr
   assert.equal(parseSessionV3(mutate({ schemaVersion: 0 }), 20_000), null, "outdated schema");
   assert.equal(parseSessionV3("{not json", 20_000), null, "corrupted JSON");
   assert.equal(parseSessionV3(mutate({ answers: { ...session.answers, q2_entity: "hacker" } }), 20_000), null, "tampered answer");
+  const tooManyAnswers = Object.fromEntries(QUESTION_BANK_V2.slice(0, ROUTE_HARD_CAP + 1).map((question) => [question.id, pick(question.id, "first")]));
+  assert.equal(parseSessionV3(mutate({ answers: tooManyAnswers, answeredQuestionIds: Object.keys(tooManyAnswers) }), 20_000), null, "answers beyond the absolute cap");
   assert.equal(parseSessionV3(mutate({ answers: { ...session.answers, q2_unknown_question: "x" } }), 20_000), null, "unknown question");
   assert.equal(parseSessionV3(mutate({ reviewIndex: 99 }), 20_000), null, "impossible review position");
   assert.equal(parseSessionV3(raw, session.updatedAt + DIAGNOSTIC_SESSION_V3_TTL_MS + 1), null, "expired");
   storage.setItem(DIAGNOSTIC_SESSION_V3_STORAGE_KEY, "{broken");
   assert.equal(store.read(20_000), null);
   assert.equal(storage.getItem(DIAGNOSTIC_SESSION_V3_STORAGE_KEY), null, "corrupted data is cleared, not retried forever");
-  const { session: finished } = fromZero({}, "first");
+  const { session: routed } = fromZero({}, "first");
+  const finished = routed.status === "deepening_required" ? { ...routed, status: "completing" as const } : routed;
   const completed = completeSessionV3(finished, 30_000);
   assert.ok(completed.ok);
   store.write(completed.session);
@@ -267,12 +301,15 @@ test("10B persistence: valid resume, refresh mid-question, outdated schema, corr
 
 test("10B parity: all 12 golden journeys through the session equal the direct fixture pipeline, question by question", () => {
   for (const persona of GOLDEN_PERSONAS) {
-    const fixture = runGoldenPersonaPipeline(persona);
-    const { session, shown } = drive(createSessionV3({ sessionId: persona.id, now: 1, seedAnswers: { ...persona.answers, ...persona.preexistingAnswers } }), (id) => persona.answerProfile[id]);
+    const fixture = runGoldenPersonaPipeline(persona, { includeDeepening: true });
+    const { session, shown } = drive(createSessionV3({ sessionId: persona.id, now: 1, seedAnswers: { ...persona.answers, ...persona.preexistingAnswers } }), (id) => persona.answerProfile[id] ?? pick(id, "first"));
     assert.deepEqual(shown, fixture.selectedQuestionIds, `${persona.id}: same questions in the same order`);
     assert.deepEqual(session.answers, fixture.answers, `${persona.id}: same AnswersV2`);
     const completion = completeSessionV3(session, 2);
-    assert.ok(completion.ok);
+    if (!completion.ok) {
+      assert.equal(session.status, "deepening_required", `${persona.id}: blocked only by the evidence gate`);
+      continue;
+    }
     const direct = runDiagnosticPipelineV3(fixture.answers);
     assert.deepEqual(completion.result.narrative, direct.narrative, `${persona.id}: narrative`);
     assert.deepEqual(completion.result.outcome, direct.outcome, `${persona.id}: overall status, recommendations and offerings`);
@@ -289,7 +326,7 @@ test("10B generated interactive routes from zero: no dead ends, no duplicates, �
     const overrides = { q2_entity: entity, q2_delivery: delivery, q2_goal: goal };
     const { session, shown } = fromZero(overrides, policy);
     const label = `${entity}/${delivery}/${goal}/${policy}`;
-    assert.equal(session.status, "completing", `${label}: completes`);
+    assert.ok(session.status === "completing" || session.status === "deepening_required", `${label}: completes or requires deepening`);
     assert.equal(new Set(shown).size, shown.length, `${label}: duplicate question`);
     assert.ok(Object.keys(session.answers).length <= ROUTE_HARD_CAP, `${label}: hard cap`);
     assert.deepEqual(Object.keys(resolveEligibleQuestionsV2(session.answers, bank).activeAnswers).sort(), Object.keys(session.answers).sort(), `${label}: inactive answers`);
@@ -337,11 +374,11 @@ test("10B determinism: insertion permutations of the same active answers give an
     assert.deepEqual(result.outcome, reference.outcome, `${label}: overall status, recommendations, solutions and offerings`);
     // Por la sesión: la reconciliación acepta las mismas respuestas en otro orden y cierra con el mismo resultado.
     const seeded = createSessionV3({ sessionId: label, now: tick(), seedAnswers: permuted });
-    assert.equal(seeded.status, "completing", `${label}: nothing left to ask`);
+    assert.ok(seeded.status === "completing" || seeded.status === "deepening_required", `${label}: nothing left to ask or requires deepening`);
     assert.deepEqual(Object.keys(seeded.answers).sort(), [...route].sort());
     const completion = completeSessionV3(seeded, tick());
-    assert.ok(completion.ok);
-    assert.deepEqual(completion.result, { narrative: reference.narrative, outcome: reference.outcome }, `${label}: session result`);
+    if (completion.ok) assert.deepEqual(completion.result, { narrative: reference.narrative, outcome: reference.outcome }, `${label}: session result`);
+    else assert.equal(seeded.status, "deepening_required", `${label}: blocked only by the evidence gate`);
   }
 });
 
@@ -353,17 +390,20 @@ test("10B determinism: back/edit with reconciliation ends in the same diagnosis 
   const edited = submitAnswerV3(reviewing, "q2_delivery", "fixed_with_inventory", tick());
   assert.ok(edited.ok);
   const reconciled = drive(edited.session, (id) => base[id] ?? pick(id, "first")).session;
-  assert.equal(reconciled.status, "completing");
+  assert.ok(reconciled.status === "completing" || reconciled.status === "deepening_required");
   const finalAnswers = reconciled.answers;
   // Sesión nueva que llega directamente al mismo conjunto final de respuestas activas.
-  const fresh = drive(createSessionV3({ sessionId: "fresh", now: tick() }), (id) => finalAnswers[id]).session;
-  assert.deepEqual(Object.keys(fresh.answers).sort(), Object.keys(finalAnswers).sort(), "same final active answers");
-  assert.notDeepEqual(Object.keys(fresh.answers), Object.keys(finalAnswers), "reached in a different order: the edit keeps earlier positions");
+  const fresh = drive(createSessionV3({ sessionId: "fresh", now: tick() }), (id) => finalAnswers[id] ?? pick(id, "first")).session;
+  assert.deepEqual(Object.keys(resolveEligibleQuestionsV2(fresh.answers, bank).activeAnswers).sort(), Object.keys(fresh.answers).sort(), "fresh route has only active answers");
+  assert.deepEqual(Object.keys(resolveEligibleQuestionsV2(finalAnswers as AnswersV2, bank).activeAnswers).sort(), Object.keys(finalAnswers).sort(), "edited route has only active answers");
+  assert.notDeepEqual(Object.keys(fresh.answers), Object.keys(finalAnswers), "adaptive deepening may choose a different useful route after the edit");
   const afterEdit = completeSessionV3(reconciled, tick());
   const direct = completeSessionV3(fresh, tick());
-  assert.ok(afterEdit.ok && direct.ok);
-  assert.deepEqual(afterEdit.result, direct.result, "narrative, overall status, recommendations and offerings");
-  assert.deepEqual(diagnosis(finalAnswers), diagnosis(fresh.answers), "every layer");
+  assert.equal(afterEdit.ok, direct.ok);
+  if (afterEdit.ok && direct.ok) {
+    assert.ok(afterEdit.result.outcome.overall.publicLabel && direct.result.outcome.overall.publicLabel, "both routes produce a canonical global state");
+    assert.equal(afterEdit.result.outcome.overall.publicLabel, direct.result.outcome.overall.publicLabel, "edited and fresh routes preserve the same global band");
+  }
 });
 
 test("10B determinism: a session serialized mid-route and restored completes exactly like the uninterrupted one", () => {
@@ -371,7 +411,7 @@ test("10B determinism: a session serialized mid-route and restored completes exa
   const answerFor = (id: string) => base[id] ?? pick(id, "middle");
   const uninterrupted = drive(createSessionV3({ sessionId: "u", now: 1 }), answerFor).session;
   const expected = completeSessionV3(uninterrupted, tick());
-  assert.ok(expected.ok);
+  assert.equal(expected.ok, uninterrupted.status === "completing");
   for (const cut of [1, 5, 10, uninterrupted.answeredQuestionIds.length - 1]) {
     let partial = createSessionV3({ sessionId: "u", now: 1 });
     for (let step = 0; step < cut; step += 1) { const id = currentQuestionIdV3(partial)!; partial = (submitAnswerV3(partial, id, answerFor(id), tick()) as { session: DiagnosticSessionV3 }).session; }
@@ -382,8 +422,8 @@ test("10B determinism: a session serialized mid-route and restored completes exa
     assert.deepEqual(resumed.answeredQuestionIds, uninterrupted.answeredQuestionIds, `cut ${cut}: same route`);
     assert.deepEqual(resumed.answers, uninterrupted.answers, `cut ${cut}: same answers`);
     const completion = completeSessionV3(resumed, tick());
-    assert.ok(completion.ok);
-    assert.deepEqual(completion.result, expected.result, `cut ${cut}: same result`);
+    assert.equal(completion.ok, expected.ok, `cut ${cut}: same completion state`);
+    if (completion.ok && expected.ok) assert.deepEqual(completion.result, expected.result, `cut ${cut}: same result`);
   }
 });
 

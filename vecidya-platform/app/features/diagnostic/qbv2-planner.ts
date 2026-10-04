@@ -8,9 +8,10 @@ import { SIGNAL_PRODUCTION_CONTEXT_FIELD } from "./qbv2-signals";
 import { deriveContextualEvidence, scoreContextualDimensions } from "./qbv2-contextual-scoring";
 import { EVIDENCE_DIRECTNESS, EVIDENCE_MAPPING, type DigitalDimensionId } from "./qbv2-coverage";
 import { FRICTION_RELEVANCE, GOAL_RELEVANCE, deriveConstraintsAndPriorities } from "./qbv2-priorities";
+import { bandFor, computeDigitalPresenceIndex, type OverallState } from "./qbv2-overall";
 
 /** DIAG-V3-08B.4: planner version is deliberately independent from QBV1/QBV2 activation. */
-export const ADAPTIVE_PLANNER_VERSION = 1 as const;
+export const ADAPTIVE_PLANNER_VERSION = 2 as const;
 export type AdaptivePlannerVersion = typeof ADAPTIVE_PLANNER_VERSION;
 
 export type RouteBudgetV1 = {
@@ -62,7 +63,7 @@ function normalizeRouteBudget(budget: RouteBudgetV1, activeAnswerCount: number):
   };
 }
 
-export type PlannerSkipReason = "module_budget" | "redundant_evidence" | "lower_priority" | "hard_cap" | "context_already_resolved" | "component_covered" | "refinement_not_needed" | "material_not_needed";
+export type PlannerSkipReason = "module_budget" | "redundant_evidence" | "lower_priority" | "hard_cap" | "primary_route_complete" | "context_already_resolved" | "component_covered" | "refinement_not_needed" | "material_not_needed";
 export type QuestionSelectionReason = "required_context" | "unlock_routing" | "goal_or_friction" | "specialized_evidence" | "cross_cutting_evidence" | "refinement" | "confirmation";
 
 // ── Material evidence need (DIAG-V3-08D.1) ──────────────────────────────────
@@ -83,6 +84,10 @@ const MATERIAL_SOURCE_RANK: Readonly<Record<MaterialEvidenceSource, number>> = {
 function directDimensions(questionId: string): readonly DigitalDimensionId[] {
   const mapping = EVIDENCE_MAPPING[questionId];
   return mapping ? mapping.dimensions.filter((dimension) => (EVIDENCE_DIRECTNESS[questionId]?.[dimension] ?? mapping.semanticRole) === "direct") : [];
+}
+
+function mappedDimensions(questionId: string): readonly DigitalDimensionId[] {
+  return EVIDENCE_MAPPING[questionId]?.dimensions ?? [];
 }
 
 function materialEvidenceNeeds(result: ResolveEligibleQuestionsResult, bank: QuestionBankV2): readonly MaterialEvidenceNeed[] {
@@ -139,7 +144,7 @@ export type QuestionRankMetadata = {
 export type PlannerTraceEntry = QuestionRankMetadata & {
   readonly selected: boolean;
   /** DIAG-V3-08E.2: selection phase — the adaptive base route, or the material tail (extension + reserve). */
-  readonly selectedIn?: "base" | "material";
+  readonly selectedIn?: "base" | "material" | "deepening";
   readonly skipReason?: PlannerSkipReason;
   readonly budgetState: { readonly routeLength: number; readonly moduleCount: number; readonly hardMax: number };
 };
@@ -162,6 +167,7 @@ export type QuestionPlan = {
   readonly budget: RouteBudgetV1;
   readonly moduleCounts: Readonly<Partial<Record<ModuleId, number>>>;
   readonly completion: CompletionStatus;
+  readonly evidenceSufficiency: EvidenceSufficiency;
   readonly trace: readonly PlannerTraceEntry[];
   readonly routingIterations: number;
   readonly contradictions: readonly DetectedContradiction[];
@@ -172,7 +178,53 @@ export type QuestionPlan = {
 
 export type CompletionStatus = {
   readonly ready: boolean;
-  readonly reason: readonly ("minimum_context_resolved" | "required_questions_answered" | "evidence_sufficient" | "route_budget_reached" | "no_more_eligible_questions" | "no_actionable_questions" | "confirmation_required" | "confirmation_answered" | "confirmation_ambiguous" | "confirmation_invalidated")[];
+  readonly hardCapReached: boolean;
+  readonly terminalReason: "evidence_sufficient" | "no_useful_questions" | "absolute_hard_cap_reached" | "deepening_required" | null;
+  readonly reason: readonly ("minimum_context_resolved" | "required_questions_answered" | "primary_route_complete" | "evidence_sufficient" | "no_useful_questions" | "absolute_hard_cap_reached" | "deepening_required" | "confirmation_required" | "confirmation_answered" | "confirmation_ambiguous" | "confirmation_invalidated")[];
+};
+
+export type TerminalReasonInput = {
+  readonly routeTerminal: boolean;
+  readonly confirmationRequired: boolean;
+  readonly evidenceSufficient: boolean;
+  readonly usefulQuestionsRemaining: boolean;
+  readonly hardCapReached: boolean;
+};
+
+/** FIX-04A: resolves the single explanatory cause without collapsing independent completion facts. */
+export function resolveTerminalReason(input: TerminalReasonInput): CompletionStatus["terminalReason"] {
+  if (!input.routeTerminal || input.confirmationRequired) return null;
+  if (input.evidenceSufficient) return "evidence_sufficient";
+  if (input.hardCapReached && input.usefulQuestionsRemaining) return "absolute_hard_cap_reached";
+  if (!input.usefulQuestionsRemaining) return "no_useful_questions";
+  return "deepening_required";
+}
+
+export type BandInstability = {
+  readonly minimumScore: number;
+  readonly maximumScore: number;
+  readonly minimumBand: OverallState;
+  readonly maximumBand: OverallState;
+};
+
+export type EvidenceSufficiency = {
+  readonly sufficient: boolean;
+  readonly unresolvedDimensions: readonly DigitalDimensionId[];
+  readonly lowEvidenceDimensions: readonly DigitalDimensionId[];
+  readonly lowEvidenceBlockers: readonly DigitalDimensionId[];
+  readonly unresolvedContradictions: readonly DigitalDimensionId[];
+  readonly extremeScoresNeedingConfirmation: readonly DigitalDimensionId[];
+  readonly bandInstability: BandInstability | null;
+  readonly usefulQuestionIds: readonly string[];
+  readonly usefulQuestionsRemaining: boolean;
+  readonly currentScore: number | null;
+  readonly reasons: readonly ("applicable_dimension_unresolved" | "low_evidence" | "contradiction" | "extreme_score" | "band_instability" | "useful_questions_remaining")[];
+};
+
+export type EvidenceSufficiencyInput = {
+  readonly result: ResolveEligibleQuestionsResult;
+  readonly bank: QuestionBankV2;
+  readonly rawAnswers: AnswersV2;
 };
 
 const PRIORITY_RANK: Record<QuestionPriority, number> = { critical: 4, high: 3, normal: 2, refinement: 1 };
@@ -261,52 +313,90 @@ function compareRank(a: QuestionRankMetadata, b: QuestionRankMetadata): number {
   return a.questionId.localeCompare(b.questionId);
 }
 
-function completionStatus(result: ResolveEligibleQuestionsResult, trace: readonly PlannerTraceEntry[], budget: RouteBudgetV1, bank: QuestionBankV2, rawAnswers: AnswersV2, triggeredConfirmationIds: readonly string[], contradictions: readonly DetectedContradiction[], capReached: boolean): CompletionStatus {
+/**
+ * FIX-03A: determines whether the observed evidence is sufficient to close the diagnostic.
+ * It deliberately reports uncertainty instead of selecting follow-up questions; FIX-03B owns that policy.
+ */
+export function evaluateDiagnosticEvidenceSufficiency(input: EvidenceSufficiencyInput): EvidenceSufficiency {
+  const evidence = deriveContextualEvidence(input.result.activeAnswers, input.bank);
+  const scoring = scoreContextualDimensions({ answers: input.result.activeAnswers, context: input.result.context, evidence, bank: input.bank });
+  const index = computeDigitalPresenceIndex(scoring, { prelaunch: input.result.context.growthStage.status === "resolved" && input.result.context.growthStage.value === "idea" });
+  const applicable = scoring.dimensions.filter((dimension) => dimension.applicability === "applicable");
+  const unresolvedDimensions = scoring.dimensions.filter((dimension) => dimension.applicability !== "not_applicable" && dimension.score === null).map((dimension) => dimension.id);
+  const eligibleIds = input.result.eligibleQuestionIds.filter((questionId) => input.rawAnswers[questionId] === undefined);
+  const directCandidates = new Set(eligibleIds.flatMap((questionId) => directDimensions(questionId)));
+  const lowEvidenceDimensions = applicable.filter((dimension) => dimension.confidence.level === "low" && dimension.confidence.direct <= 1).map((dimension) => dimension.id);
+  const scored = applicable.filter((dimension) => typeof dimension.score === "number");
+  const sum = scored.reduce((total, dimension) => total + dimension.score!, 0);
+  const denominator = applicable.length;
+  const minimumScore = denominator > 0 ? sum / denominator : 0;
+  const maximumScore = denominator > 0 ? (sum + (denominator - scored.length) * 100) / denominator : 0;
+  const bandInstability = denominator > 0 && scored.length < denominator && bandFor(minimumScore) !== bandFor(maximumScore) ? { minimumScore, maximumScore, minimumBand: bandFor(minimumScore), maximumBand: bandFor(maximumScore) } : null;
+  const nearBandBoundary = index.rawScore !== null && [41, 71].some((boundary) => Math.abs(index.rawScore! - boundary) < 5);
+  const lowEvidenceBlockers = nearBandBoundary ? lowEvidenceDimensions : [];
+  const extremeDimensions = applicable.filter((dimension) => (dimension.score === 0 || dimension.score === 100) && dimension.confidence.direct <= 1 && dimension.confidence.uncertain > 0).map((dimension) => dimension.id);
+  const contradictionDimensions = applicable.filter((dimension) => dimension.confidence.contradictory).map((dimension) => dimension.id);
+  const targetDimensions = new Set([...unresolvedDimensions, ...contradictionDimensions, ...extremeDimensions, ...lowEvidenceBlockers]);
+  const usefulQuestionIds = eligibleIds.filter((questionId) => {
+    const direct = new Set(directDimensions(questionId));
+    const mapped = new Set(mappedDimensions(questionId));
+    return [...targetDimensions].some((dimension) => direct.has(dimension) || !directCandidates.has(dimension) && mapped.has(dimension));
+  });
+  const extremeScoresNeedingConfirmation = extremeDimensions.filter((dimension) => usefulQuestionIds.some((questionId) => directDimensions(questionId).includes(dimension)));
+  const unresolvedContradictions = contradictionDimensions.filter((dimension) => usefulQuestionIds.some((questionId) => directDimensions(questionId).includes(dimension)));
+  const reasons: EvidenceSufficiency["reasons"] = [
+    ...(unresolvedDimensions.length > 0 ? ["applicable_dimension_unresolved" as const] : []),
+    ...(lowEvidenceDimensions.length > 0 ? ["low_evidence" as const] : []),
+    ...(unresolvedContradictions.length > 0 ? ["contradiction" as const] : []),
+    ...(extremeScoresNeedingConfirmation.length > 0 ? ["extreme_score" as const] : []),
+    ...(bandInstability ? ["band_instability" as const] : []),
+    ...(usefulQuestionIds.length > 0 ? ["useful_questions_remaining" as const] : []),
+  ];
+  const materiallyUnresolved = unresolvedDimensions.some((dimension) => usefulQuestionIds.some((questionId) => directDimensions(questionId).includes(dimension)));
+  const sufficient = unresolvedDimensions.length === 0 && !materiallyUnresolved && unresolvedContradictions.length === 0 && extremeScoresNeedingConfirmation.length === 0 && lowEvidenceBlockers.length === 0 && !bandInstability;
+  return { sufficient, unresolvedDimensions, lowEvidenceDimensions, lowEvidenceBlockers, unresolvedContradictions, extremeScoresNeedingConfirmation, bandInstability, usefulQuestionIds, usefulQuestionsRemaining: usefulQuestionIds.length > 0, currentScore: index.rawScore, reasons };
+}
+
+function completionStatus(result: ResolveEligibleQuestionsResult, trace: readonly PlannerTraceEntry[], budget: RouteBudgetV1, bank: QuestionBankV2, rawAnswers: AnswersV2, triggeredConfirmationIds: readonly string[], contradictions: readonly DetectedContradiction[], primaryRouteComplete: boolean, absoluteHardCapReached: boolean): CompletionStatus & { readonly evidenceSufficiency: EvidenceSufficiency } {
   const status = fieldStatus(result.context);
   const minimumContextResolved = CORE_FIELDS.every((field) => status[field] === "resolved");
   const requiredQuestionsAnswered = trace.every((entry) => !entry.required || result.activeAnswers[entry.questionId] !== undefined);
-  const evidenceQuestions = Object.entries(result.activeAnswers).filter(([id, answer]) => {
-    const question = bank.find((candidate) => candidate.id === id);
-    if (!question || !result.eligibleQuestionIds.includes(id) || (question.scoringReadiness?.candidateDimensions.length ?? 0) === 0) return false;
-    const values = Array.isArray(answer) ? answer : [answer];
-    return !values.some((value) => question.options.find((option) => option.value === value)?.kind === "unknown" || question.options.find((option) => option.value === value)?.kind === "not_applicable");
-  });
-  const diagnosticCount = evidenceQuestions.length;
-  const coveredDimensions = new Set<DimensionId>();
-  for (const [id] of evidenceQuestions) for (const dimension of bank.find((question) => question.id === id)?.scoringReadiness?.candidateDimensions ?? []) coveredDimensions.add(dimension);
-  const relevantDimensions = new Set<DimensionId>();
-  for (const id of result.eligibleQuestionIds) for (const dimension of bank.find((question) => question.id === id)?.scoringReadiness?.candidateDimensions ?? []) relevantDimensions.add(dimension);
-  const evidenceSufficient = diagnosticCount >= 8 && coveredDimensions.size >= Math.min(3, relevantDimensions.size) || status.growthStage === "resolved" && status.primaryGoal === "resolved" && diagnosticCount >= 5 && coveredDimensions.size >= Math.min(2, relevantDimensions.size);
-  // A question eligible only as material evidence, with no open need for it, is not a pending question.
-  const unneeded = new Set(trace.filter((entry) => entry.skipReason === "material_not_needed").map((entry) => entry.questionId));
-  const noMoreEligibleQuestions = result.eligibleQuestionIds.filter((id) => !unneeded.has(id)).length === 0;
+  const evidenceSufficiency = evaluateDiagnosticEvidenceSufficiency({ result, bank, rawAnswers });
   const confirmationQuestionIds = new Set(bank.filter((question) => question.contradictionRole?.type === "confirms").map((question) => question.id));
   const pendingConfirmations = triggeredConfirmationIds.filter((id) => result.activeAnswers[id] === undefined);
   const confirmationAnswered = contradictions.some((item) => item.status === "confirmed");
   const confirmationAmbiguous = contradictions.some((item) => item.status === "remains_ambiguous");
   const invalidatedConfirmation = [...confirmationQuestionIds].some((id) => rawAnswers[id] !== undefined && result.activeAnswers[id] === undefined && !triggeredConfirmationIds.includes(id));
-  const routeBudgetReached = Object.keys(result.activeAnswers).length + trace.filter((entry) => entry.selected).length >= budget.targetMax;
-  // The base route reached its cap (material extras excluded) or the whole route reached the hard cap.
-  const hardCapReached = capReached;
-  const confirmationRequired = pendingConfirmations.length > 0 && !hardCapReached;
-  const noActionableQuestions = minimumContextResolved && requiredQuestionsAnswered && !confirmationRequired && trace.length > 0 && trace.every((entry) => entry.selected || ["module_budget", "component_covered", "context_already_resolved", "redundant_evidence", "hard_cap", "material_not_needed"].includes(entry.skipReason ?? ""));
-  // DIAG-V3-08E.2: nothing left to select (e.g. a goal declared "unsure" never resolves) ends the route
-  // instead of leaving it open with no next question.
-  const exhausted = requiredQuestionsAnswered && trace.every((entry) => !entry.selected);
-  const ready = !confirmationRequired && (noMoreEligibleQuestions || noActionableQuestions || hardCapReached || exhausted || minimumContextResolved && requiredQuestionsAnswered && evidenceSufficient);
+  const confirmationRequired = pendingConfirmations.length > 0 && !absoluteHardCapReached;
+  const noUsefulQuestions = !evidenceSufficiency.usefulQuestionsRemaining;
+  const routeTerminal = primaryRouteComplete || !trace.some((entry) => entry.selected);
+  const ready = !confirmationRequired && (absoluteHardCapReached || routeTerminal && (evidenceSufficiency.sufficient || noUsefulQuestions));
+  const terminalReason = resolveTerminalReason({ routeTerminal, confirmationRequired, evidenceSufficient: evidenceSufficiency.sufficient, usefulQuestionsRemaining: evidenceSufficiency.usefulQuestionsRemaining, hardCapReached: absoluteHardCapReached });
   const reason: CompletionStatus["reason"] = [
     ...(minimumContextResolved ? ["minimum_context_resolved" as const] : []),
     ...(requiredQuestionsAnswered ? ["required_questions_answered" as const] : []),
-    ...(evidenceSufficient ? ["evidence_sufficient" as const] : []),
-    ...(routeBudgetReached ? ["route_budget_reached" as const] : []),
-    ...(noMoreEligibleQuestions ? ["no_more_eligible_questions" as const] : []),
-    ...(noActionableQuestions ? ["no_actionable_questions" as const] : []),
+    ...(primaryRouteComplete ? ["primary_route_complete" as const] : []),
+    ...(routeTerminal && evidenceSufficiency.sufficient ? ["evidence_sufficient" as const] : []),
+    ...(routeTerminal && noUsefulQuestions ? ["no_useful_questions" as const] : []),
+    ...(absoluteHardCapReached ? ["absolute_hard_cap_reached" as const] : []),
+    ...(routeTerminal && !evidenceSufficiency.sufficient && evidenceSufficiency.usefulQuestionsRemaining && !absoluteHardCapReached ? ["deepening_required" as const] : []),
     ...(confirmationRequired ? ["confirmation_required" as const] : []),
     ...(confirmationAnswered && !confirmationRequired ? ["confirmation_answered" as const] : []),
     ...(confirmationAmbiguous && !confirmationRequired ? ["confirmation_ambiguous" as const] : []),
     ...(invalidatedConfirmation && !confirmationRequired ? ["confirmation_invalidated" as const] : []),
   ];
-  return { ready, reason };
+  return { ready, hardCapReached: absoluteHardCapReached, terminalReason, reason, evidenceSufficiency };
+}
+
+function deepeningPriority(questionId: string, evidence: EvidenceSufficiency): number {
+  const direct = new Set(directDimensions(questionId));
+  const mapped = new Set(mappedDimensions(questionId));
+  if (evidence.unresolvedDimensions.some((dimension) => direct.has(dimension))) return 6;
+  if (evidence.unresolvedContradictions.some((dimension) => direct.has(dimension))) return 5;
+  if (evidence.bandInstability && evidence.unresolvedDimensions.some((dimension) => direct.has(dimension) || mapped.has(dimension))) return 4;
+  if (evidence.extremeScoresNeedingConfirmation.some((dimension) => direct.has(dimension))) return 3;
+  if (evidence.lowEvidenceDimensions.some((dimension) => direct.has(dimension))) return 2;
+  return 1;
 }
 
 /** Pure deterministic planner. It never registers or serves QBV2 and stores no next-question state. */
@@ -405,7 +495,7 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
     tailSelected.add(entry.questionId);
   }
   const selectedSet = new Set(selected);
-  const trace = ranked.map((entry): PlannerTraceEntry => {
+  let trace = ranked.map((entry): PlannerTraceEntry => {
     if (selectedSet.has(entry.questionId)) {
       const state = selectionBudgetState.get(entry.questionId)!;
       return { ...entry, selected: true, selectedIn: tailSelected.has(entry.questionId) ? "material" : "base", budgetState: { ...state, hardMax: budget.hardMax } };
@@ -415,12 +505,31 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
     const component = componentFor(entry.module);
     const componentCovered = component !== undefined && (componentCounts[component] ?? 0) >= 2;
     // Eligible only as material evidence and no open need for it: not a pending base candidate.
-    const capped = servesMaterial(entry) ? alreadyAskedCount + selected.length >= budget.hardMax : baseAskedCount + baseSelectedCount >= baseMax || alreadyAskedCount + selected.length >= budget.hardMax;
-    const skipReason: PlannerSkipReason = !nativelyEligible(entry) && !servesMaterial(entry) ? "material_not_needed" : capped ? "hard_cap" : (moduleCounts[entry.module] ?? 0) >= moduleLimit(entry.module, budget) ? "module_budget" : resolvedFields ? "context_already_resolved" : componentCovered ? "component_covered" : entry.reason === "refinement" ? "refinement_not_needed" : entry.dimensions.every((dimension) => seenDimensions.has(dimension)) ? "redundant_evidence" : "lower_priority";
+    const absoluteCapReached = alreadyAskedCount + selected.length >= budget.hardMax;
+    const primaryRouteComplete = baseAskedCount + baseSelectedCount >= baseMax;
+    const skipReason: PlannerSkipReason = !nativelyEligible(entry) && !servesMaterial(entry) ? "material_not_needed" : absoluteCapReached ? "hard_cap" : primaryRouteComplete ? "primary_route_complete" : (moduleCounts[entry.module] ?? 0) >= moduleLimit(entry.module, budget) ? "module_budget" : resolvedFields ? "context_already_resolved" : componentCovered ? "component_covered" : entry.reason === "refinement" ? "refinement_not_needed" : entry.dimensions.every((dimension) => seenDimensions.has(dimension)) ? "redundant_evidence" : "lower_priority";
     return { ...entry, selected: false, skipReason, budgetState: { routeLength: alreadyAskedCount + selected.length, moduleCount: moduleCounts[entry.module] ?? 0, hardMax: budget.hardMax } };
   });
-  const capReached = baseAskedCount + baseSelectedCount >= baseMax || alreadyAskedCount + selected.length >= budget.hardMax;
-  const completion = completionStatus(result, trace, budget, bank, answers, triggeredConfirmationIds, contradictions, capReached);
+  const primaryRouteComplete = baseAskedCount + baseSelectedCount >= baseMax;
+  const absoluteHardCapReached = alreadyAskedCount + selected.length >= budget.hardMax;
+  const completion = completionStatus(result, trace, budget, bank, answers, triggeredConfirmationIds, contradictions, primaryRouteComplete, absoluteHardCapReached);
+  if (completion.reason.includes("deepening_required")) {
+    const candidate = ranked
+      .filter((entry) => completion.evidenceSufficiency.usefulQuestionIds.includes(entry.questionId) && !selected.includes(entry.questionId))
+      .sort((a, b) => deepeningPriority(b.questionId, completion.evidenceSufficiency) - deepeningPriority(a.questionId, completion.evidenceSufficiency) || compareRank(a, b))[0];
+    if (candidate && alreadyAskedCount + selected.length < budget.hardMax) {
+      selected.push(candidate.questionId);
+      moduleCounts[candidate.module] = (moduleCounts[candidate.module] ?? 0) + 1;
+      selectionBudgetState.set(candidate.questionId, { routeLength: alreadyAskedCount + selected.length, moduleCount: moduleCounts[candidate.module]! });
+      trace = trace.map((entry) => entry.questionId === candidate.questionId ? {
+        ...entry,
+        selected: true,
+        selectedIn: "deepening" as const,
+        skipReason: undefined,
+        budgetState: { routeLength: alreadyAskedCount + selected.length, moduleCount: moduleCounts[candidate.module]!, hardMax: budget.hardMax },
+      } : entry);
+    }
+  }
   return {
     plannerVersion: ADAPTIVE_PLANNER_VERSION,
     context: result.context,
@@ -432,6 +541,7 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
     budget,
     moduleCounts,
     completion,
+    evidenceSufficiency: completion.evidenceSufficiency,
     trace,
     routingIterations: result.iterations,
     contradictions,

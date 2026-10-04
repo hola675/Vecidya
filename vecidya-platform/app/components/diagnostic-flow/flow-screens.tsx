@@ -41,11 +41,13 @@ export function ResumeScreen({ answered, completed, onContinue, onRestart }: { a
   );
 }
 
-export function ReadyScreen({ onShowResult, onReview }: { onShowResult: () => void; onReview: () => void }) {
+export function ReadyScreen({ onShowResult, onReview, terminalReason }: { onShowResult: () => void; onReview: () => void; terminalReason?: "evidence_sufficient" | "no_useful_questions" | "absolute_hard_cap_reached" | "deepening_required" | null }) {
+  const limited = terminalReason === "no_useful_questions";
+  const capped = terminalReason === "absolute_hard_cap_reached";
   return (
     <section aria-labelledby="df-ready-title" className="df-screen df-ready">
-      <FocusHeading id="df-ready-title">Listo. Ya tenemos suficiente información para preparar tu diagnóstico.</FocusHeading>
-      <p className="df-screen__lead">Verás cómo está tu presencia digital, qué funciona, qué te frena, por dónde empezar y qué tipo de ayuda podría servirte.</p>
+      <FocusHeading id="df-ready-title">{limited ? "Ya reunimos una lectura útil de tu situación." : capped ? "Hemos llegado al límite de preguntas de esta sesión." : "Listo. Ya tenemos suficiente información para preparar tu diagnóstico."}</FocusHeading>
+      <p className="df-screen__lead">{limited ? "Algunas áreas no tenían una pregunta útil adicional; tu resultado explicará ese alcance." : capped ? "Prepararemos el resultado con la evidencia reunida y señalaremos cualquier límite de cobertura." : "Verás cómo está tu presencia digital, qué funciona, qué te frena, por dónde empezar y qué tipo de ayuda podría servirte."}</p>
       <div className="df-screen__actions">
         <button className="button button--primary" onClick={onShowResult} type="button">Ver mi resultado</button>
         <button className="button button--secondary" onClick={onReview} type="button">Revisar mi última respuesta</button>

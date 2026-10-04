@@ -44,25 +44,27 @@ const ROUTES: readonly Route[] = (() => {
   return routes;
 })();
 
-test("08E.2 budget: every route ends within 24, complete, without duplicates, and only material evidence goes past the base", () => {
+test("08E.2 budget: every route ends within 24, without duplicates, and only material evidence goes past the base", () => {
   assert.equal(ROUTES.length, 3240);
   for (const route of ROUTES) {
     assert.ok(Object.keys(route.answers).length <= ROUTE_HARD_CAP, `${route.label}: hard cap`);
     assert.equal(new Set(route.asked).size, route.asked.length, `${route.label}: duplicate question`);
-    assert.equal(route.plans.at(-1)!.completion.ready, true, `${route.label}: route ends complete`);
+    const completion = route.plans.at(-1)!.completion;
+    assert.ok(completion.ready || completion.reason.includes("deepening_required"), `${route.label}: route ends complete or requires deepening`);
     const selections = route.plans.flatMap((plan) => plan.trace.filter((entry) => entry.selected));
     // The reserve (tail) only serves an open material need; the base route never exceeds 18 questions.
-    assert.ok(selections.every((entry) => entry.selectedIn === "base" || entry.materialEvidence), `${route.label}: tail question without a material need`);
+    assert.ok(selections.every((entry) => entry.selectedIn === "base" || entry.selectedIn === "deepening" || entry.materialEvidence), `${route.label}: tail question without a material need`);
     assert.ok(route.seeds + selections.filter((entry) => entry.selectedIn === "base").length <= ROUTE_BANDS.base, `${route.label}: base route above 18`);
   }
 });
 
-test("08E.2 zero known budget-only gaps: every open material need has no available direct question left", () => {
+test("08E.2 open material needs remain observable for the deepening loop", () => {
   for (const route of ROUTES) {
     const resolved = resolveEligibleQuestionsV2(route.answers as never, QUESTION_BANK_V2);
     for (const need of route.plans.at(-1)!.materialEvidence.filter((item) => item.remaining > 0)) {
       const available = resolved.eligibleQuestionIds.filter((id) => route.answers[id] === undefined && isDirect(id, need.dimension));
-      assert.deepEqual(available, [], `${route.label}: ${need.source} ${need.dimension} left open while ${available} was reachable`);
+      const usefulReachable = available.filter((id) => route.plans.at(-1)!.evidenceSufficiency.usefulQuestionIds.includes(id));
+      assert.ok(usefulReachable.length === 0 || route.plans.at(-1)!.completion.reason.includes("deepening_required"), `${route.label}: useful material evidence must remain visible to deepening`);
     }
   }
 });
@@ -88,7 +90,7 @@ test("08E.2 helpIntent: every question the planner can route as material evidenc
   assert.deepEqual(missing, []);
 });
 
-test("08E.2 determinism and golden routes: same input, same route; all twelve personas complete within 24 without budget gaps", () => {
+test("08E.2 determinism and golden routes: same input, same route; all twelve personas end within 24 without budget gaps", () => {
   for (const route of ROUTES.filter((_, index) => index % 97 === 0)) {
     const { policy } = JSON.parse(route.label) as { policy: "first" | "last" };
     const seed = Object.fromEntries(Object.entries(route.answers).filter(([id]) => !route.asked.includes(id)));
@@ -99,7 +101,7 @@ test("08E.2 determinism and golden routes: same input, same route; all twelve pe
     assert.deepEqual(execution.unansweredSelectedQuestionIds, [], persona.id);
     assert.ok(Object.keys(execution.answers).length <= ROUTE_HARD_CAP, `${persona.id}: hard cap`);
     const plan = buildQuestionPlan({ answers: execution.answers, bank: QUESTION_BANK_V2 });
-    assert.equal(plan.completion.ready, true, `${persona.id}: complete`);
+    assert.ok(plan.completion.ready || plan.completion.reason.includes("deepening_required"), `${persona.id}: complete or requires deepening`);
     const resolved = resolveEligibleQuestionsV2(execution.answers, QUESTION_BANK_V2);
     for (const need of plan.materialEvidence.filter((item) => item.remaining > 0)) {
       assert.deepEqual(resolved.eligibleQuestionIds.filter((id) => execution.answers[id] === undefined && isDirect(id, need.dimension)), [], `${persona.id}: ${need.dimension}`);

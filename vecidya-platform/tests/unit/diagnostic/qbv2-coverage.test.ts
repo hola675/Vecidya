@@ -40,7 +40,7 @@ test("08B.6R has exactly twelve deterministic golden personas", () => {
   // 08D.1/08E.2: base route keeps the 18 cap; slots 19-24 only hold material evidence.
   assert.ok(first.personas.every((persona) => persona.routeLength >= 15 && persona.routeLength <= 24));
   assert.ok(first.personas.every((persona) => persona.duplicateQuestionIds.length === 0));
-  assert.ok(first.personas.every((persona) => persona.routeReady));
+  assert.ok(first.personas.every((persona) => persona.routeReady || persona.requiresDeepening));
   assert.ok(first.personas.every((persona) => persona.missingExpectedModules.length === 0));
   assert.ok(first.personas.every((persona) => persona.excludedModulesSelected.length === 0));
 });

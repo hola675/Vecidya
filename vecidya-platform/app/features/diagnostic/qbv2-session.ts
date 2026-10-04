@@ -5,7 +5,7 @@ import { renderQuestionV2, type RenderedQuestionV2 } from "./qbv2-copy";
 import { resolveEligibleQuestionsV2, type QuestionBankV2 } from "./qbv2-engine";
 import { buildDiagnosticNarrative, type DiagnosticNarrative } from "./qbv2-narrative";
 import { buildDiagnosticOutcome, type DiagnosticOutcome } from "./qbv2-offerings";
-import { buildQuestionPlan, ROUTE_HARD_CAP, type QuestionSelectionReason } from "./qbv2-planner";
+import { buildQuestionPlan, ROUTE_HARD_CAP, type CompletionStatus, type QuestionPlan, type QuestionSelectionReason } from "./qbv2-planner";
 import { deriveConstraintsAndPriorities } from "./qbv2-priorities";
 import type { AnswersV2 } from "./qbv2-rules";
 import { deriveSemanticFacts } from "./qbv2-semantic-facts";
@@ -20,29 +20,30 @@ import { resolveTerminologyProfile } from "./qbv2-terminology";
  * comprometido hasta responderse («`completion.ready` describe el plan INCLUIDAS sus selecciones pendientes»).
  * La UI muestra ese lote de una pregunta a la vez y, tras CADA respuesta, vuelve a evaluar la elegibilidad: una
  * pregunta pendiente que deja de aplicar se descarta. Cuando el lote se vacía, se vuelve a planificar; si el
- * planner ya no selecciona nada, la ruta terminó. Re-planificar el lote completo tras cada respuesta cambiaría
+ * planner ya no selecciona nada, la sesión termina o queda en `deepening_required` según el gate de evidencia.
+ * Re-planificar el lote completo tras cada respuesta cambiaría
  * la ruta en el 44 % de las rutas calibradas; esta estrategia reproduce el pipeline congelado (golden y 4.860
  * rutas generadas con resultado idéntico).
  */
 
-export const DIAGNOSTIC_SESSION_V3_SCHEMA = 1 as const;
+export const DIAGNOSTIC_SESSION_V3_SCHEMA = 2 as const;
 /** Una sesión sin actividad durante este tiempo no se ofrece para continuar. */
 export const DIAGNOSTIC_SESSION_V3_TTL_MS = 14 * 24 * 60 * 60 * 1000;
-export const DIAGNOSTIC_SESSION_V3_STORAGE_KEY = "vecidya.diagnostic.v3.session.1";
+export const DIAGNOSTIC_SESSION_V3_STORAGE_KEY = "vecidya.diagnostic.v3.session.2";
 
-export const SESSION_STATUSES_V3 = ["not_started", "in_progress", "completing", "completed", "error"] as const;
+export const SESSION_STATUSES_V3 = ["not_started", "in_progress", "deepening_required", "completing", "completed", "error"] as const;
 export type SessionStatusV3 = (typeof SESSION_STATUSES_V3)[number];
 
 export type QueuedQuestionV3 = {
   readonly questionId: string;
-  /** Fase del planner: ruta base o cola de evidencia material (preguntas 19–24). */
-  readonly phase: "base" | "material";
+  /** Fase del planner: ruta base, profundización adaptativa o cola material. */
+  readonly phase: "base" | "deepening" | "material";
   readonly reason: QuestionSelectionReason;
 };
 
 /** Traza interna de la ruta (pruebas y modo de desarrollo). Nunca se muestra a usuarios. */
 export type RouteTraceEntryV3 =
-  | { readonly type: "planned"; readonly questionIds: readonly string[]; readonly routeLength: number }
+  | { readonly type: "planned"; readonly questionIds: readonly string[]; readonly routeLength: number; readonly phases?: Readonly<Record<string, QueuedQuestionV3["phase"]>> }
   | { readonly type: "answered"; readonly questionId: string; readonly phase: QueuedQuestionV3["phase"]; readonly reason: QuestionSelectionReason }
   | { readonly type: "edited"; readonly questionId: string }
   | { readonly type: "dropped"; readonly questionIds: readonly string[] }
@@ -64,6 +65,7 @@ export type DiagnosticSessionV3 = {
   readonly reviewIndex: number | null;
   readonly routeTrace: readonly RouteTraceEntryV3[];
   readonly status: SessionStatusV3;
+  readonly terminalReason?: CompletionStatus["terminalReason"];
 };
 
 type Options = { readonly bank?: QuestionBankV2 };
@@ -125,6 +127,7 @@ function reconcile(answers: AnswersV2, bank: QuestionBankV2): { readonly answers
 function advance(session: DiagnosticSessionV3, bank: QuestionBankV2): DiagnosticSessionV3 {
   const trace = [...session.routeTrace];
   let queue = session.queue;
+  let plan: QuestionPlan | undefined;
   if (queue.length > 0) {
     const eligible = new Set(resolveEligibleQuestionsV2(session.answers, bank).eligibleQuestionIds);
     const dropped = queue.filter((item) => !eligible.has(item.questionId)).map((item) => item.questionId);
@@ -132,13 +135,14 @@ function advance(session: DiagnosticSessionV3, bank: QuestionBankV2): Diagnostic
     queue = queue.filter((item) => eligible.has(item.questionId));
   }
   if (queue.length === 0) {
-    const plan = buildQuestionPlan({ answers: session.answers, bank });
+    plan = buildQuestionPlan({ answers: session.answers, bank });
     const byId = new Map(plan.trace.map((entry) => [entry.questionId, entry]));
     queue = plan.selectedQuestionIds.map((questionId) => ({ questionId, phase: byId.get(questionId)?.selectedIn ?? "base", reason: byId.get(questionId)!.reason }));
-    if (queue.length > 0) trace.push({ type: "planned", questionIds: plan.selectedQuestionIds, routeLength: plan.routeLength });
+    const activePlan = plan;
+    if (activePlan && queue.length > 0) trace.push({ type: "planned", questionIds: activePlan.selectedQuestionIds, routeLength: activePlan.routeLength, phases: Object.fromEntries(activePlan.selectedQuestionIds.map((questionId) => [questionId, activePlan.trace.find((entry) => entry.questionId === questionId)?.selectedIn ?? "base"])) as Readonly<Record<string, QueuedQuestionV3["phase"]>> });
   }
-  const status: SessionStatusV3 = queue.length === 0 ? "completing" : "in_progress";
-  return { ...session, queue, routeTrace: trace, status };
+  const status: SessionStatusV3 = queue.length > 0 ? "in_progress" : plan && !plan.completion.ready ? "deepening_required" : "completing";
+  return { ...session, queue, routeTrace: trace, status, terminalReason: queue.length === 0 ? plan?.completion.terminalReason ?? session.terminalReason ?? null : null };
 }
 
 export function createSessionV3(input: { readonly sessionId: string; readonly now: number; readonly seedAnswers?: AnswersV2 }, options?: Options): DiagnosticSessionV3 {
@@ -146,7 +150,7 @@ export function createSessionV3(input: { readonly sessionId: string; readonly no
   const answers = reconcile(input.seedAnswers ?? {}, bank).answers;
   return advance({
     schemaVersion: DIAGNOSTIC_SESSION_V3_SCHEMA, sessionId: input.sessionId, startedAt: input.now, updatedAt: input.now,
-    answers, answeredQuestionIds: [], queue: [], reviewIndex: null, routeTrace: [], status: "in_progress",
+    answers, answeredQuestionIds: [], queue: [], reviewIndex: null, routeTrace: [], status: "in_progress", terminalReason: null,
   }, bank);
 }
 
@@ -176,7 +180,8 @@ export function submitAnswerV3(session: DiagnosticSessionV3, questionId: string,
   if (session.reviewIndex !== null) {
     if (sameValue(session.answers[questionId], value)) {
       const next = session.reviewIndex + 1;
-      return { ok: true, session: touch(session, now, { reviewIndex: next < session.answeredQuestionIds.length ? next : null }) };
+      if (next < session.answeredQuestionIds.length) return { ok: true, session: touch(session, now, { reviewIndex: next }) };
+      return { ok: true, session: advance(touch(session, now, { queue: [], reviewIndex: null, status: "in_progress" }), bank) };
     }
     const changed = { ...session.answers, [questionId]: value };
     const { answers, removed } = reconcile(changed, bank);
@@ -201,7 +206,7 @@ export function submitAnswerV3(session: DiagnosticSessionV3, questionId: string,
 export function goBackV3(session: DiagnosticSessionV3, now: number): DiagnosticSessionV3 {
   if (session.answeredQuestionIds.length === 0) return session;
   const reviewIndex = session.reviewIndex === null ? session.answeredQuestionIds.length - 1 : Math.max(0, session.reviewIndex - 1);
-  return touch(session, now, { reviewIndex, status: session.status === "completing" ? "in_progress" : session.status });
+  return touch(session, now, { reviewIndex, status: session.status === "completing" || session.status === "deepening_required" ? "in_progress" : session.status });
 }
 
 export const canGoBackV3 = (session: DiagnosticSessionV3) => session.answeredQuestionIds.length > 0 && session.reviewIndex !== 0;
@@ -283,7 +288,7 @@ export type CompletionV3 = { readonly ok: true; readonly session: DiagnosticSess
 
 /** Ejecuta el pipeline; si falla, conserva las respuestas y deja la sesión en `error` para reintentar. */
 export function completeSessionV3(session: DiagnosticSessionV3, now: number, pipeline: (answers: AnswersV2) => DiagnosticResultV3 = runDiagnosticPipelineV3): CompletionV3 {
-  if (session.queue.length > 0 || session.reviewIndex !== null) return { ok: false, session };
+  if (session.queue.length > 0 || session.reviewIndex !== null || session.status === "deepening_required") return { ok: false, session };
   try {
     const result = pipeline(session.answers);
     const done = session.status === "completed" ? session.routeTrace : [...session.routeTrace, { type: "completed" as const, answered: Object.keys(session.answers).length }];
@@ -317,23 +322,29 @@ export function parseSessionV3(raw: string | null, now: number, options?: Option
   let parsed: unknown;
   try { parsed = JSON.parse(raw); } catch { return null; }
   if (!isRecord(parsed) || parsed.schemaVersion !== DIAGNOSTIC_SESSION_V3_SCHEMA) return null;
-  const { sessionId, startedAt, updatedAt, answers, answeredQuestionIds, queue, reviewIndex, routeTrace, status } = parsed;
+  const { sessionId, startedAt, updatedAt, answers, answeredQuestionIds, queue, reviewIndex, routeTrace, status, terminalReason } = parsed;
   if (typeof sessionId !== "string" || typeof startedAt !== "number" || typeof updatedAt !== "number" || !isRecord(answers) || !Array.isArray(answeredQuestionIds) || !Array.isArray(queue) || !Array.isArray(routeTrace)) return null;
   if (!(reviewIndex === null || (typeof reviewIndex === "number" && Number.isInteger(reviewIndex) && reviewIndex >= 0 && reviewIndex < answeredQuestionIds.length))) return null;
   if (typeof status !== "string" || !(SESSION_STATUSES_V3 as readonly string[]).includes(status) || status === "not_started") return null;
+  const normalizedTerminalReason = (terminalReason === undefined ? null : terminalReason) as CompletionStatus["terminalReason"];
+  if (!(normalizedTerminalReason === null || normalizedTerminalReason === "evidence_sufficient" || normalizedTerminalReason === "no_useful_questions" || normalizedTerminalReason === "absolute_hard_cap_reached" || normalizedTerminalReason === "deepening_required")) return null;
   if (now - updatedAt > DIAGNOSTIC_SESSION_V3_TTL_MS || updatedAt > now + 60_000) return null;
   const bank = bankOf(options);
-  if (Object.keys(answers).length > ROUTE_HARD_CAP + 8) return null;
+  if (Object.keys(answers).length > ROUTE_HARD_CAP) return null;
   for (const [questionId, value] of Object.entries(answers)) {
     const question = questionOf(bank, questionId);
     if (!question || !validateAnswerV3(question, value).ok) return null;
   }
   if (!answeredQuestionIds.every((id) => typeof id === "string" && answers[id] !== undefined)) return null;
-  if (!queue.every((item) => isRecord(item) && typeof item.questionId === "string" && questionOf(bank, item.questionId) !== undefined && answers[item.questionId] === undefined && (item.phase === "base" || item.phase === "material") && typeof item.reason === "string")) return null;
-  const restored = { ...(parsed as unknown as DiagnosticSessionV3), status: status === "error" ? "completing" as const : status as SessionStatusV3 };
+  if (!queue.every((item) => isRecord(item) && typeof item.questionId === "string" && questionOf(bank, item.questionId) !== undefined && answers[item.questionId] === undefined && (item.phase === "base" || item.phase === "deepening" || item.phase === "material") && typeof item.reason === "string")) return null;
+  const restored = { ...(parsed as unknown as DiagnosticSessionV3), terminalReason: normalizedTerminalReason, status: status === "error" ? "completing" as const : status as SessionStatusV3 };
   const { answers: active, removed } = reconcile(restored.answers, bank);
   const reconciled = { ...restored, answers: active, answeredQuestionIds: restored.answeredQuestionIds.filter((id) => !removed.includes(id)) };
-  if (reconciled.status === "completed" && removed.length === 0) return reconciled;
+  if (reconciled.status === "completed" && removed.length === 0) {
+    const plan = buildQuestionPlan({ answers: reconciled.answers, bank });
+    if (plan.completion.ready) return reconciled;
+    return advance({ ...reconciled, status: "in_progress", queue: [], reviewIndex: null }, bank);
+  }
   return advance({ ...reconciled, reviewIndex: removed.length > 0 ? null : reconciled.reviewIndex }, bank);
 }
 

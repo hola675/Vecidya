@@ -85,7 +85,7 @@ test("golden routes: no material routing hole, material-only questions only in t
       const fresh = plan.selectedQuestionIds.filter((id) => answers[id] === undefined);
       // Within one plan, a question eligible only via materialAppliesWhen follows every natively eligible selection.
       const firstMaterialOnly = fresh.findIndex((id) => !nativelyEligible(id, answers));
-      if (firstMaterialOnly >= 0) assert.ok(fresh.slice(firstMaterialOnly).every((id) => !nativelyEligible(id, answers) || plan.trace.find((entry) => entry.questionId === id)?.materialEvidence), `${persona.id}: material-only question displaced base evidence`);
+       if (firstMaterialOnly >= 0) assert.ok(fresh.slice(firstMaterialOnly).every((id) => plan.trace.find((entry) => entry.questionId === id)?.selectedIn === "deepening" || nativelyEligible(id, answers) || plan.trace.find((entry) => entry.questionId === id)?.materialEvidence), `${persona.id}: material-only question displaced base evidence`);
       assert.ok(plan.routeLength <= ROUTE_HARD_CAP, `${persona.id}: hard cap`);
       if (fresh.length === 0) break;
       for (const id of fresh) answers[id] = persona.answerProfile[id];

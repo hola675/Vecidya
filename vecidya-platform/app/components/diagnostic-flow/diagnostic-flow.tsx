@@ -135,9 +135,18 @@ export function DiagnosticFlow({ renderDebug }: DiagnosticFlowProps) {
   } else if (session && session.status === "completing" && session.reviewIndex === null) {
     content = (
       <>
-        <ReadyScreen onReview={back} onShowResult={() => finish(session)} />
+        <ReadyScreen onReview={back} onShowResult={() => finish(session)} terminalReason={session.terminalReason} />
         <p className="df-restart"><button className="df-link-button" onClick={requestReset} type="button">Empezar de nuevo</button></p>
       </>
+    );
+  } else if (session && session.status === "deepening_required") {
+    content = (
+      <FlowErrorScreen
+        message="Aún necesitamos confirmar algunas áreas aplicables antes de mostrar un resultado defendible."
+        onRestart={requestReset}
+        onRetry={requestReset}
+        title="Necesitamos profundizar un poco más"
+      />
     );
   } else if (session && presented) {
     content = (

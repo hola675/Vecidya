@@ -12,7 +12,7 @@ import { ROUTE_HARD_CAP } from "./qbv2-planner";
  */
 
 /** Versión de la metodología, independiente de la versión de la aplicación (`package.json`). */
-export const METHODOLOGY_VERSION = "2.0" as const;
+export const METHODOLOGY_VERSION = "3.0" as const;
 
 /** Valores del motor que la metodología describe. Si el motor cambia, cambia la metodología y su versión. */
 export const METHODOLOGY_ENGINE_CONTRACT = {
@@ -325,6 +325,10 @@ export const METHODOLOGY_SECTIONS: readonly MethodologySection[] = [
     detail: [
       claim("route.context_first", "internal_rule", "Primero se entiende tu situación: qué haces, cómo llega lo que ofreces a quien lo recibe, en qué etapa estás, qué quieres lograr y qué te frena.", { verifiedIn: "qbv2-planner.ts#buildQuestionPlan" }),
       claim("route.deepens", "internal_rule", "Después se profundiza en las áreas más relevantes para ese contexto. Si una respuesta cambia el contexto, las preguntas que dejan de aplicar se descartan y no cuentan.", { verifiedIn: "qbv2-session.ts#submitAnswerV3" }),
+      claim("route.evidence_gate", "internal_rule", "Completar la ruta principal no basta para mostrar un resultado: si queda evidencia aplicable y útil por reunir, la sesión queda pendiente de profundización.", { verifiedIn: "qbv2-planner.ts#evaluateDiagnosticEvidenceSufficiency" }),
+      claim("route.deepening_selection", "internal_rule", "La profundización selecciona una sola pregunta útil por iteración, vuelve a evaluar el contexto y se detiene cuando la evidencia es suficiente, no quedan preguntas útiles o se alcanza el límite absoluto.", { verifiedIn: "qbv2-planner.ts#deepeningPriority" }),
+      claim("route.applicability_states", "internal_rule", "Aplicable, no aplicable, contexto insuficiente y aún no evaluada son estados distintos; una ausencia de pregunta no prueba que un área no aplique.", { verifiedIn: "qbv2-contextual-scoring.ts#applicability" }),
+      claim("route.terminal_reason", "internal_rule", "Cada cierre expone una razón terminal única: evidencia suficiente, sin preguntas útiles o límite absoluto; una ruta que aún necesita evidencia no es un resultado final.", { verifiedIn: "qbv2-planner.ts#completionStatus" }),
       claim("route.expands", "internal_rule", "El recorrido se alarga solo cuando hace falta más información para interpretar un área importante, como la relacionada con tu objetivo o tu principal freno.", { verifiedIn: "qbv2-planner.ts#materialEvidenceNeeds" }),
       claim("route.length", "internal_rule", `Por eso la cantidad de preguntas varía. El recorrido nunca supera ${routeHardCap} preguntas.`, { verifiedIn: "qbv2-planner.ts#ROUTE_HARD_CAP" }),
       claim("route.prelaunch", "internal_rule", "Antes del lanzamiento no se pregunta por resultados que todavía no pueden existir.", { verifiedIn: "context-resolver.ts (ciclo de vida)" }),
@@ -406,7 +410,7 @@ export const METHODOLOGY_SECTIONS: readonly MethodologySection[] = [
   },
   {
     id: "versioning", title: "Cambios en la metodología",
-    simple: `Esta es la versión ${METHODOLOGY_VERSION} de la metodología. Un cambio en la forma de calcular abre una versión mayor (de 1.0 a 2.0); un cambio en lo que mide un área, en las recomendaciones o en las fuentes, una versión menor (de 1.0 a 1.1).`,
+    simple: `Esta es la versión ${METHODOLOGY_VERSION} de la metodología. Un cambio en la forma de calcular o en el contrato de finalización abre una versión mayor; un cambio en lo que mide un área, en las recomendaciones o en las fuentes, una versión menor.`,
     detail: [],
   },
 ];
@@ -425,6 +429,7 @@ export type MethodologyChangeRule = { readonly change: string; readonly incremen
 export const METHODOLOGY_CHANGE_RULES: readonly MethodologyChangeRule[] = [
   { change: "Fórmula del porcentaje de un área o lectura de las respuestas", increment: "major" },
   { change: "Fórmula del porcentaje general, mínimos de evidencia o límites de los estados", increment: "major" },
+  { change: "Contrato de finalización y gate de suficiencia de evidencia", increment: "major" },
   { change: "Modelo de confianza o reglas de orden de las prioridades", increment: "major" },
   { change: "Áreas evaluadas (añadir, quitar o fusionar)", increment: "major" },
   { change: "Definición de lo que evalúa un área o de qué preguntas la observan", increment: "minor" },

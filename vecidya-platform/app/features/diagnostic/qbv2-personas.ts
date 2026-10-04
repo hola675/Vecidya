@@ -49,26 +49,32 @@ export function resolveGoldenPersonaAnswers(persona: GoldenPersona): AnswersV2 {
 /**
  * Re-plan after each deterministic batch, as production does when new answers resolve eligibility.
  * `completion.ready` describes the plan INCLUDING its pending selections ("complete once these are
- * answered"), so the batch is always answered; the route ends when the planner selects nothing new.
+ * answered"), so the batch is always answered; deepening is opt-in here because golden fixtures predate
+ * the interactive deepening loop and intentionally exercise the primary route only.
  */
-export function runGoldenPersonaPipeline(persona: GoldenPersona): GoldenPersonaExecution {
+export function runGoldenPersonaPipeline(persona: GoldenPersona, options?: { readonly includeDeepening?: boolean }): GoldenPersonaExecution {
   const answers: Record<string, string | readonly string[]> = { ...persona.answers, ...persona.preexistingAnswers };
   const selectedQuestionIds: string[] = [];
   const routeLengths: number[] = [];
   let unansweredSelectedQuestionIds: string[] = [];
   for (let iteration = 0; iteration < ROUTE_HARD_CAP; iteration += 1) {
     const plan = buildQuestionPlan({ answers, bank: QUESTION_BANK_V2 });
-    const freshQuestionIds = plan.selectedQuestionIds.filter((questionId) => answers[questionId] === undefined);
+    const freshQuestionIds = plan.selectedQuestionIds.filter((questionId) => answers[questionId] === undefined && (options?.includeDeepening === true || plan.trace.find((entry) => entry.questionId === questionId)?.selectedIn !== "deepening"));
     if (freshQuestionIds.length === 0) break;
     routeLengths.push(plan.routeLength);
-    const missingAnswers = freshQuestionIds.filter((questionId) => persona.answerProfile[questionId] === undefined);
+    const fallbackAnswer = (questionId: string): string | readonly string[] => {
+      const question = QUESTION_BANK_V2.find((candidate) => candidate.id === questionId)!;
+      const option = question.options.find((candidate) => candidate.kind !== "unknown" && candidate.kind !== "not_applicable" && !candidate.exclusive) ?? question.options[0]!;
+      return question.type === "multi" ? [option.value] : option.value;
+    };
+    const missingAnswers = freshQuestionIds.filter((questionId) => persona.answerProfile[questionId] === undefined && options?.includeDeepening !== true);
     if (missingAnswers.length > 0) {
       unansweredSelectedQuestionIds = missingAnswers;
       break;
     }
     for (const questionId of freshQuestionIds) {
       selectedQuestionIds.push(questionId);
-      answers[questionId] = persona.answerProfile[questionId]!;
+      answers[questionId] = persona.answerProfile[questionId] ?? fallbackAnswer(questionId);
     }
   }
   return { answers, selectedQuestionIds, routeLengths, unansweredSelectedQuestionIds };

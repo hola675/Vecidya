@@ -31,6 +31,7 @@ export type PersonaCoverageReport = {
   readonly coveredDimensions: readonly DigitalDimensionId[];
   readonly contradictionCount: number;
   readonly routeReady: boolean;
+  readonly requiresDeepening: boolean;
 };
 
 export type DimensionCoverageReport = {
@@ -110,6 +111,7 @@ function reportPersona(persona: GoldenPersona): PersonaCoverageReport {
     coveredDimensions: selectedDimensions(evidenceQuestionIds),
     contradictionCount: plan.contradictions.length,
     routeReady: plan.completion.ready || plan.nextQuestionId !== undefined || plan.eligibleQuestionIds.length === 0,
+    requiresDeepening: plan.completion.reason.includes("deepening_required"),
   };
 }
 

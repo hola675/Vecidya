@@ -230,6 +230,7 @@ export type ContextualScoringContext = {
 };
 
 export type DimensionApplicability = "applicable" | "not_applicable" | "insufficient_context";
+export type DimensionApplicabilityReason = "idea_stage_no_operation" | "observed_evidence" | "context_unresolved" | "measurement_not_goal_or_scale" | "relationship_not_established" | "operational_signal_overrides_starting_n_a" | "default_applicable";
 export type ContextualConfidenceLevel = "high" | "medium" | "low";
 export type ScoreBasis = "direct" | "direct_and_supporting" | "supporting_only" | "none";
 export type ConfidencePenalty = "direct_contradiction" | "uncertain_answers";
@@ -268,6 +269,7 @@ export type ContextualDimensionResult = {
   readonly id: DigitalDimensionId;
   readonly label: string;
   readonly applicability: DimensionApplicability;
+  readonly applicabilityReason?: DimensionApplicabilityReason;
   readonly score: number | null;
   readonly confidence: DimensionConfidence;
   readonly evidence: readonly ContextualEvidence[];
@@ -283,16 +285,21 @@ const NEGATIVE_AT = CAPABILITY_CONTRIBUTION.weak!;
 function resolvedValue(context: Partial<ResolvedDomainContext>, field: "primaryGoal" | "growthStage"): string | undefined { const value = context[field]; return value?.status === "resolved" ? value.value : undefined; }
 
 /** Context decides applicability only; it never adds capability points. */
-function applicability(dimension: DigitalDimensionId, context: Partial<ResolvedDomainContext>, evidence: readonly ContextualEvidence[]): DimensionApplicability {
+function applicability(dimension: DigitalDimensionId, context: Partial<ResolvedDomainContext>, evidence: readonly ContextualEvidence[]): { readonly value: DimensionApplicability; readonly reason: DimensionApplicabilityReason } {
   const stage = resolvedValue(context, "growthStage"); const goal = resolvedValue(context, "primaryGoal");
   // Structural: an idea has no operation to build reputation on, retain or measure, whatever a module asked.
   // The evidence stays in the result for explainability but never becomes a percentage.
-  if (stage === "idea" && ["trust_reputation", "relationship_recurrence", "measurement_optimization"].includes(dimension)) return "not_applicable";
-  if (evidence.some((item) => item.state !== "not_applicable")) return "applicable";
-  if (!stage && !goal) return "insufficient_context";
-  if (dimension === "measurement_optimization" && goal !== "measure" && stage !== "growing" && stage !== "scaling") return "not_applicable";
-  if (dimension === "relationship_recurrence" && ["idea", "starting"].includes(stage ?? "")) return "not_applicable";
-  return "applicable";
+  if (stage === "idea" && ["trust_reputation", "relationship_recurrence", "measurement_optimization"].includes(dimension)) return { value: "not_applicable", reason: "idea_stage_no_operation" };
+  if (evidence.some((item) => item.state !== "not_applicable")) return { value: "applicable", reason: "observed_evidence" };
+  if (!stage && !goal) return { value: "insufficient_context", reason: "context_unresolved" };
+  if (dimension === "measurement_optimization" && goal !== "measure" && stage !== "growing" && stage !== "scaling") return { value: "not_applicable", reason: "measurement_not_goal_or_scale" };
+  if (dimension === "relationship_recurrence" && stage === "starting") {
+    const establishedMechanism = context.archetype?.status === "resolved" && context.archetype.value !== "hybrid";
+    if (establishedMechanism) return { value: "insufficient_context", reason: "operational_signal_overrides_starting_n_a" };
+    return { value: "not_applicable", reason: "relationship_not_established" };
+  }
+  if (dimension === "relationship_recurrence" && stage === "idea") return { value: "not_applicable", reason: "relationship_not_established" };
+  return { value: "applicable", reason: "default_applicable" };
 }
 
 function directContradictions(direct: readonly ContextualEvidence[]): readonly DimensionContradiction[] {
@@ -333,7 +340,7 @@ function scoreDimension(dimension: DigitalDimensionId, context: Partial<Resolved
   const capability = observations.filter((item) => item.directness !== "contextual" && item.contribution !== null);
   const direct = capability.filter((item) => item.directness === "direct");
   const supporting = capability.filter((item) => item.directness === "supporting");
-  const applicable = applicability(dimension, context, observations);
+  const applicabilityDecision = applicability(dimension, context, observations);
   const contradictions = directContradictions(direct);
   const ids = (states: readonly CapabilityState[]) => observations.filter((item) => states.includes(item.state)).map((item) => item.questionId);
   const basis: ScoreBasis = direct.length > 0 ? (supporting.length > 0 ? "direct_and_supporting" : "direct") : supporting.length > 0 ? "supporting_only" : "none";
@@ -341,8 +348,9 @@ function scoreDimension(dimension: DigitalDimensionId, context: Partial<Resolved
   return {
     id: dimension,
     label: DIGITAL_DIMENSIONS.find((item) => item.id === dimension)!.label,
-    applicability: applicable,
-    score: applicable === "applicable" ? weightedScore(direct, supporting) : null,
+    applicability: applicabilityDecision.value,
+    applicabilityReason: applicabilityDecision.reason,
+    score: applicabilityDecision.value === "applicable" ? weightedScore(direct, supporting) : null,
     confidence: confidenceFor(direct, supporting, observations, contradictions),
     evidence: observations,
     explainability: {

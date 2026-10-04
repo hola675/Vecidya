@@ -1,5 +1,12 @@
 # Entornos
 
+## DIAG-V3-REL-001 — release 0.6.0
+
+- Estado previo al deploy: release candidate local autorizado; publicación pública pendiente de verificación HTTP anónima.
+- Núcleo: planner v2, schema 2, question bank v1, scoring v1, overall index v2, metodología 3.0, hard cap 24.
+- Alcance: solo diagnóstico V3 y documentación mínima de release. Sin migraciones, sin cambios D1, sin GHL y sin arquitectura comercial nueva.
+- La publicación solo se declarará después de verificar el commit desplegado en `https://vecidya.com/diagnostico` y las rutas públicas requeridas.
+
 Última reconciliación: 2026-09-26 (deploy de `v0.5.7` — G6, Version ID `f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`; `0010` aplicada en `vecidya-prod` en G7 a las 18:13Z, sin redeploy). Anterior: 2026-09-26 (deploy de `v0.5.6` — DIAG-003, puntaje global y exportación a PDF del Diagnóstico — en producción; antes, `v0.5.5` — precio público de licencias en USD —; staging sigue en `v0.4.1`).
 
 Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/código, **`RAN`** comando ejecutado en local, **`HTTP`** petición anónima de solo lectura a los dominios publicados, fecha indicada por release, **`REMOTE`** consulta o escritura D1 remota autorizada, **`DOC`** afirmación histórica no reverificada.

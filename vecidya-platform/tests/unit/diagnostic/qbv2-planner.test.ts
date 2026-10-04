@@ -10,6 +10,7 @@ import {
   isDiagnosticReadyToComplete,
   planNextQuestion,
   plannerRouteSignatureParts,
+  resolveTerminalReason,
   type QuestionDefinitionV2,
 } from "../../../app/features/diagnostic/index.ts";
 
@@ -64,9 +65,34 @@ test("planner contract: deterministic version, explicit budget and no QBV2 activ
   assert.ok(first.routeLength <= 18);
 });
 
+test("FIX-04A terminal reason precedence keeps evidence sufficiency above incidental no-useful/cap facts", () => {
+  const cases = [
+    { label: "Reparaciones", evidenceSufficient: false, usefulQuestionsRemaining: false, hardCapReached: false, expected: "no_useful_questions" },
+    { label: "María Peña", evidenceSufficient: true, usefulQuestionsRemaining: false, hardCapReached: false, expected: "evidence_sufficient" },
+    { label: "VitalCare", evidenceSufficient: false, usefulQuestionsRemaining: false, hardCapReached: true, expected: "no_useful_questions" },
+    { label: "Mercado Verde", evidenceSufficient: false, usefulQuestionsRemaining: true, hardCapReached: true, expected: "absolute_hard_cap_reached" },
+    { label: "AxisPro", evidenceSufficient: true, usefulQuestionsRemaining: false, hardCapReached: true, expected: "evidence_sufficient" },
+    { label: "Nativa Home", evidenceSufficient: true, usefulQuestionsRemaining: false, hardCapReached: false, expected: "evidence_sufficient" },
+  ] as const;
+
+  for (const item of cases) {
+    assert.equal(resolveTerminalReason({ ...item, routeTerminal: true, confirmationRequired: false }), item.expected, item.label);
+  }
+});
+
+test("FIX-04A terminal reason precedence covers sufficient, capped and continuing combinations", () => {
+  assert.equal(resolveTerminalReason({ routeTerminal: true, confirmationRequired: false, evidenceSufficient: true, usefulQuestionsRemaining: false, hardCapReached: false }), "evidence_sufficient");
+  assert.equal(resolveTerminalReason({ routeTerminal: true, confirmationRequired: false, evidenceSufficient: true, usefulQuestionsRemaining: false, hardCapReached: true }), "evidence_sufficient");
+  assert.equal(resolveTerminalReason({ routeTerminal: true, confirmationRequired: false, evidenceSufficient: false, usefulQuestionsRemaining: false, hardCapReached: false }), "no_useful_questions");
+  assert.equal(resolveTerminalReason({ routeTerminal: true, confirmationRequired: false, evidenceSufficient: false, usefulQuestionsRemaining: false, hardCapReached: true }), "no_useful_questions");
+  assert.equal(resolveTerminalReason({ routeTerminal: true, confirmationRequired: false, evidenceSufficient: false, usefulQuestionsRemaining: true, hardCapReached: true }), "absolute_hard_cap_reached");
+  assert.equal(resolveTerminalReason({ routeTerminal: true, confirmationRequired: false, evidenceSufficient: false, usefulQuestionsRemaining: true, hardCapReached: false }), "deepening_required");
+  assert.equal(resolveTerminalReason({ routeTerminal: true, confirmationRequired: false, evidenceSufficient: true, usefulQuestionsRemaining: true, hardCapReached: false }), "evidence_sufficient");
+});
+
 test("future QBV2 route identity includes independent contradiction rules version", () => {
   const plan = planNextQuestion({ answers: {}, bank: QUESTION_BANK_V2 });
-  assert.deepEqual(plannerRouteSignatureParts(plan).slice(0, 4), ["questionBankVersion=2", "routingVersion=1", "plannerVersion=1", "contradictionRulesVersion=1"]);
+  assert.deepEqual(plannerRouteSignatureParts(plan).slice(0, 4), ["questionBankVersion=2", "routingVersion=1", "plannerVersion=2", "contradictionRulesVersion=1"]);
 });
 
 test("17 route fixtures are bounded and idea/project receives startup evidence without mature leakage", () => {
@@ -203,7 +229,7 @@ test("mutations A-L: hard cap, no static route, stable ordering, and inactive QB
   assert.ok(plan.selectedQuestionIds.length < plan.eligibleQuestionIds.length); // B
   assert.ok(plan.trace.some((entry) => entry.module === "appointments") && plan.trace.some((entry) => entry.module === "operations")); // C/I
   assert.ok(!("activeAnswers" in plan)); // planner does not persist or expose stale answers
-  assert.equal(plan.plannerVersion, 1); // L / versioned planner, while CURRENT_QUESTION_BANK_VERSION remains 1
+  assert.equal(plan.plannerVersion, 2); // L / versioned planner, while CURRENT_QUESTION_BANK_VERSION remains 1
   assert.ok(!plan.selectedQuestionIds.some((id) => id === "q2_confirm_hybrid_friction")); // confirmation fixture stays inactive
   const reversed = buildQuestionPlan({ answers: { q2_delivery: "scheduled", q2_has_customers: "yes", q2_regularity: "regular", q2_goal: "measure", q2_friction: "operations" }, bank: [...QUESTION_BANK_V2].reverse() });
   assert.deepEqual(plan.selectedQuestionIds, reversed.selectedQuestionIds); // K: stable ID tie-break path
