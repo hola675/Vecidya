@@ -70,4 +70,4 @@ for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]])
   await runViewport(width, height);
 }
 
-console.log("PASS: Licencias verificó hero, niveles, precios públicos en USD, disponibilidad, comparador desktop/móvil, evolución, addons, FAQ, CTAs, metadata, keyboard focus y responsive 1366/768/390/360.");
+console.log("PASS: Licencias verificó hero, tres productos, precios públicos en USD, comparador desktop/móvil, complementos, CTAs, metadata, keyboard focus y responsive 1366/768/390/360.");

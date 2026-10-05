@@ -15,7 +15,7 @@ assertLocalBaseUrl();
 const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
 const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
 const route = new URL("/__dev/diagnostico/v3", baseUrl).toString();
-const KEY = "vecidya.diagnostic.v3.session.1";
+const KEY = "vecidya.diagnostic.v3.session.2";
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const preferred = { q2_entity: "business", q2_has_customers: "yes", q2_regularity: "regular", q2_delivery: "scheduled", q2_sector: "health_wellness", q2_goal: "opportunities", q2_friction: "follow_up" };
 let passed = 0;

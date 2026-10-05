@@ -4,6 +4,7 @@ import { test } from "node:test";
 import {
   adaptCommercialEvidence,
   commercialClarification,
+  COMMERCIAL_V1_LICENSES,
   resolveCommercialRecommendation,
   resolveCommercialRecommendationAfterClarification,
   type CommercialDigitalResult,
@@ -180,6 +181,11 @@ test("complements remain conservative, independent, priced and usage-labelled", 
   assert.ok(result.later.complements.some((item) => item.id === "campaigns_diffusion"));
   assert.ok(result.cost.externalUsage.some((item) => item.category === "email_sends"));
   assert.ok(result.now.complements.every((item) => item.priceMonthlyUsd > 0));
+});
+
+test("the active V1 contract exposes exactly the three canonical licenses", () => {
+  assert.deepEqual(Object.keys(COMMERCIAL_V1_LICENSES), ["cuadra", "barrio", "ciudad"]);
+  assert.ok(!JSON.stringify(COMMERCIAL_V1_LICENSES).includes("none"));
 });
 
 test("approved reputation values resolve to the V1 complement without inventing question options", () => {

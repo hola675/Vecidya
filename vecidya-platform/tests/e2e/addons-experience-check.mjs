@@ -56,4 +56,4 @@ for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]])
   await runViewport(width, height);
 }
 
-console.log("PASS: Addons verificó hero, definición, categorías, cards, separación licencia/addon/servicio, CTAs, metadata, sitemap, keyboard focus y responsive 1366/768/390/360.");
+console.log("PASS: Addons verificó hero, siete complementos V1, precios, costes de uso, separación licencia/addon/servicio, CTAs, metadata, sitemap, keyboard focus y responsive 1366/768/390/360.");

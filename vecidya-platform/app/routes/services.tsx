@@ -112,26 +112,9 @@ export default function Services() {
           </aside>
         </section>
 
-        <section className="services-needs" aria-labelledby="services-needs-title">
-          <div className="services-section-heading">
-            <p className="eyebrow">ÁREAS DE SERVICIO</p>
-            <h2 id="services-needs-title">Siete familias para resolver mejor.</h2>
-          </div>
-          <nav className="services-needs-grid" aria-label="Áreas de servicio">
-            {services.map((service) => (
-              <a className="services-need" href={`#${service.id}`} key={service.id}>
-                <span>{service.eyebrow}</span>
-                <strong>{service.title}</strong>
-                <span aria-hidden="true">↓</span>
-              </a>
-            ))}
-          </nav>
-          <p className="services-needs-note">Si todavía no sabes qué necesitas, empieza por el diagnóstico.</p>
-        </section>
-
         <section className="services-core" aria-labelledby="services-core-title">
           <div className="services-section-heading">
-            <p className="eyebrow">LO QUE PODEMOS CONSTRUIR</p>
+            <p className="eyebrow">SIETE FAMILIAS</p>
             <h2 id="services-core-title">Del problema concreto a un siguiente paso claro.</h2>
           </div>
           <div className="services-core-grid">

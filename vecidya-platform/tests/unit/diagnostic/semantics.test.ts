@@ -385,9 +385,9 @@ test("DIAG-002C: Barrio y Ciudad siguen saliendo cuando la necesidad es real, y 
   }
 });
 
-test("DIAG-002C: vocabulario público de addons único (IA conversacional, Automatizaciones)", async () => {
+test("DIAG-002C: vocabulario público de complementos V1 único", async () => {
   const { addonCatalog } = await import("../../../app/features/diagnostic/index.ts");
-  assert.deepEqual(Object.values(addonCatalog).map((addon) => addon.name).sort(), ["Automatizaciones", "IA conversacional", "WhatsApp"]);
+  assert.deepEqual(Object.values(addonCatalog).map((addon) => addon.name).sort(), ["Campañas & Difusión", "Conexiones & Integraciones", "IA Conversacional", "IA de Voz", "Reputación & Reseñas", "Telefonía & SMS", "WhatsApp Business"]);
   for (const answers of Object.values({ ...personas, ...adversarial })) {
     const json = JSON.stringify(run(answers));
     assert.ok(!/AI Chat|AI Conversacional|Automatización inteligente/.test(json), "nombre obsoleto en un resultado");

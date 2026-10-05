@@ -4,7 +4,7 @@ import { createDatabase } from "../../db/client.server";
 import { listPublishedBusinessProfiles } from "../../db/queries/business-profile.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { publicAssets } from "../assets/public-assets";
-import { BusinessCardV2, CTASection, DiagnosticChoice, JsonLd, ServiceCard, VisualSection } from "../components/public-v2";
+import { BusinessCardV2, CTASection, DiagnosticChoice, JsonLd, ServiceCard } from "../components/public-v2";
 import { PublicLayout, publicMeta, whatsAppChannelUrl } from "../components/public-layout";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
@@ -120,18 +120,6 @@ export default function Home() {
           </ServiceCard>
         </div>
       </section>
-
-      <VisualSection
-        eyebrow="CÓMO AYUDA VECIDYA"
-        title="De información dispersa a un siguiente paso claro."
-        visual={<img alt="Perfil digital de un comercio local conectado con señales de presencia pública" height={1254} loading="lazy" src={publicAssets.illustrations.storefrontDigitalProfile} width={1254} />}
-      >
-        <div className="home-transformation" aria-label="Transformación de presencia digital">
-          <div><span>Antes</span><strong>Información dispersa</strong></div>
-          <div className="home-transformation__arrow" aria-hidden="true">→</div>
-          <div><span>Después</span><strong>Presencia clara y contacto real</strong></div>
-        </div>
-      </VisualSection>
 
       <CTASection
         eyebrow="SIGUIENTE PASO"
