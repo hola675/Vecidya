@@ -1,0 +1,102 @@
+import type { QuestionDefinitionV2 } from "./qbv2-contract";
+import { contextIn, eqV2 } from "./qbv2-rules";
+
+/**
+ * R2A candidate only: reviewed questions 01–05, deliberately not registered and not exported by
+ * the public diagnostic. QUESTION_BANK_V2 remains the frozen compatibility baseline until R2's switch.
+ */
+export const REVIEWED_FOUNDATION_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
+  {
+    id: "q2_entity",
+    version: 1,
+    module: "core",
+    type: "single",
+    routingRole: "core",
+    prompt: "¿Qué quieres evaluar hoy?",
+    hint: "Si trabajas por tu cuenta, elige la primera opción aunque uses un nombre comercial.",
+    purpose: ["anchor", "classification"],
+    priority: "critical",
+    options: [
+      { value: "individual", label: "Mi trabajo como independiente o profesional", produces: [{ kind: "entity", value: "individual", provenance: "explicit_declaration" }] },
+      { value: "business", label: "Un negocio que ya está funcionando", produces: [{ kind: "entity", value: "business", provenance: "explicit_declaration" }] },
+      { value: "organization", label: "Una organización o comunidad sin fines de lucro", produces: [{ kind: "entity", value: "organization", provenance: "explicit_declaration" }] },
+      { value: "project", label: "Un proyecto o idea que todavía estoy preparando", produces: [{ kind: "entity", value: "project", provenance: "explicit_declaration" }] },
+    ],
+  },
+  {
+    id: "q2_other_staff",
+    version: 1,
+    module: "classification",
+    type: "single",
+    routingRole: "core",
+    prompt: "¿Trabajas por tu cuenta o hay alguien más que trabaja contigo de forma habitual?",
+    hint: "Piensa en personas que trabajan contigo de manera regular, no en una ayuda puntual o un proveedor ocasional.",
+    purpose: ["classification"],
+    priority: "high",
+    appliesWhen: eqV2("q2_entity", "individual"),
+    options: [
+      { value: "no", label: "Trabajo por mi cuenta", produces: [{ kind: "hasOtherPaidStaff", value: false, provenance: "explicit_declaration" }] },
+      { value: "yes", label: "Hay al menos otra persona que trabaja conmigo de forma habitual", produces: [{ kind: "hasOtherPaidStaff", value: true, provenance: "explicit_declaration" }] },
+    ],
+  },
+  {
+    id: "q2_monetization",
+    version: 1,
+    module: "classification",
+    type: "single",
+    routingRole: "core",
+    prompt: "¿De dónde viene principalmente el dinero de tu actividad?",
+    hint: "Si tienes varias fuentes, elige la principal hoy. Si todavía no vendes, piensa en la que esperas que sea la principal.",
+    purpose: ["classification"],
+    priority: "critical",
+    appliesWhen: contextIn("activity", ["active", "prelaunch"]),
+    variants: [{ target: { activity: "prelaunch" }, prompt: "¿De dónde vendrá principalmente el dinero de tu actividad?" }],
+    options: [
+      { value: "services", label: "Cobro por servicios o trabajo profesional", produces: [{ kind: "monetizationMechanism", slot: "primary", value: "time_or_project_work", provenance: "explicit_declaration" }] },
+      { value: "goods", label: "Vendo productos", produces: [{ kind: "monetizationMechanism", slot: "primary", value: "goods_for_resale", provenance: "explicit_declaration" }] },
+      { value: "commission", label: "Recibo comisiones por ventas, referidos o intermediación", produces: [{ kind: "monetizationMechanism", slot: "primary", value: "commission_or_referral", provenance: "explicit_declaration" }] },
+      { value: "audience", label: "Genero ingresos con contenido, audiencia, publicidad o patrocinios", produces: [{ kind: "monetizationMechanism", slot: "primary", value: "own_audience_monetization", provenance: "explicit_declaration" }] },
+      { value: "recurring", label: "Cobro membresías, suscripciones o cuotas recurrentes", produces: [{ kind: "monetizationMechanism", slot: "primary", value: "recurring_access", provenance: "explicit_declaration" }] },
+      { value: "mission", label: "Recibimos donaciones, fondos o aportes", produces: [{ kind: "monetizationMechanism", slot: "primary", value: "mission_funded", provenance: "explicit_declaration" }] },
+      { value: "other", label: "Otra forma de generar ingresos", produces: [{ kind: "monetizationClassification", value: "other", provenance: "explicit_declaration" }] },
+      { value: "unsure", label: "Todavía no lo tengo claro", kind: "unknown", produces: [{ kind: "monetizationClassification", value: "unsure", provenance: "explicit_declaration" }] },
+    ],
+  },
+  {
+    id: "q2_delivery",
+    version: 1,
+    module: "classification",
+    type: "multi",
+    routingRole: "core",
+    prompt: "¿De qué formas atiendes a tus clientes o entregas lo que ofreces?",
+    hint: "Puedes elegir más de una.",
+    purpose: ["classification"],
+    priority: "critical",
+    options: [
+      { value: "physical_location", label: "Mis clientes vienen a un local, oficina o espacio físico", produces: [{ kind: "deliveryMode", slot: "component", value: "physical_location", provenance: "explicit_declaration" }] },
+      { value: "appointments", label: "Mis clientes reservan citas o sesiones", produces: [{ kind: "deliveryMode", slot: "component", value: "appointments", provenance: "explicit_declaration" }] },
+      { value: "travels", label: "Voy hasta donde está el cliente", produces: [{ kind: "deliveryMode", slot: "component", value: "travels", provenance: "explicit_declaration" }] },
+      { value: "online_checkout", label: "El cliente puede comprar y pagar directamente por internet", produces: [{ kind: "deliveryMode", slot: "component", value: "online_checkout", provenance: "explicit_declaration" }] },
+      { value: "retail", label: "Vendo productos en una tienda física", produces: [{ kind: "deliveryMode", slot: "component", value: "retail", provenance: "explicit_declaration" }] },
+      { value: "onsite", label: "Mis clientes consumen o usan el servicio en el lugar, como en un restaurante, café u hospedaje", produces: [{ kind: "deliveryMode", slot: "component", value: "onsite", provenance: "explicit_declaration" }] },
+      { value: "other", label: "De otra forma", exclusive: true, produces: [{ kind: "deliveryClassification", value: "other", provenance: "explicit_declaration" }] },
+      { value: "unsure", label: "No estoy seguro", kind: "unknown", exclusive: true, produces: [{ kind: "deliveryClassification", value: "unsure", provenance: "explicit_declaration" }] },
+    ],
+  },
+  {
+    id: "q2_has_customers",
+    version: 1,
+    module: "maturity",
+    type: "single",
+    routingRole: "core",
+    prompt: "¿Ya hay personas que compran, usan o apoyan lo que ofreces?",
+    hint: "Cuenta actividad real: compra, servicio, cita, pedido, donación o participación. El interés o los seguidores por sí solos no cuentan.",
+    purpose: ["anchor", "maturity"],
+    priority: "critical",
+    variants: [{ target: { terminology: ["nonprofit"] }, prompt: "¿Tu organización ya atiende a personas o recibe apoyo de forma real?" }],
+    options: [
+      { value: "yes", label: "Sí, ya hay actividad real", produces: [{ kind: "hasRealCustomers", value: true, provenance: "explicit_declaration" }] },
+      { value: "no", label: "No, todavía lo estoy preparando o validando", produces: [{ kind: "hasRealCustomers", value: false, provenance: "explicit_declaration" }] },
+    ],
+  },
+];

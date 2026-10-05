@@ -154,6 +154,7 @@ export type CopyVariantTarget =
   | { readonly nicheGroup?: NicheGroup }
   | { readonly entityType?: EntityType }
   | { readonly businessModel?: BusinessModel }
+  | { readonly activity?: "active" | "prelaunch" }
   | { readonly terminology?: readonly TerminologyProfileId[] };
 export type CopyVariantV2 = { readonly target: CopyVariantTarget; readonly prompt?: string; readonly hint?: string; readonly optionLabels?: Readonly<Record<string, string>> };
 

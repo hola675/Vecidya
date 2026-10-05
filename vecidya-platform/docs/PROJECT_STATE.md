@@ -1,5 +1,9 @@
 # VECIDYA — Estado del proyecto
 
+DIAG-V3-QBANK-R2A-FIX (2026-10-05, local): `HINT_MAX_LENGTH` continúa en 140; hints revisados ajustados. q2_monetization requiere `activity` resuelta por una regla declarativa y q2_has_customers desbloquea su copy. Tests fijan la regla existente individual+personal→business de q2_other_staff, sin inferencias adicionales. Candidata 9/9; focalizadas 244/244; full unit 842/843 con la misma falla/digest de caracterización; typecheck/build PASS. Sin scoring, cambio público, commit o push.
+
+DIAG-V3-QBANK-R2A (2026-10-05, local): se preparó `REVIEWED_FOUNDATION_QUESTIONS_V2` con q2_entity, q2_other_staff, q2_monetization, q2_delivery y q2_has_customers. Solo la suite candidata importa ese módulo; no se registra ni se sirve por `/diagnostico`. El banco legacy conserva 85 preguntas y sus salidas. Los hints cumplen el máximo global existente de 140 caracteres. Suites focalizadas 242/242; full unit 840/841, misma falla/digest de caracterización; typecheck/build PASS. Sin scoring, cambio público, commit o push.
+
 DIAG-V3-QBANK-R1 (2026-10-05, local): arquitectura lista para la migración R2: contrato de routingRole con compatibilidad, hecho `activity` separado de `growthStage`, N componentes de archetype y validador de gates `notEq(no)`. Revisión humana de preguntas cerrada 85/85. El banco productivo y los resultados visibles no cambian. Typecheck y suites focalizadas pasan; la suite completa mantiene una falla baseline de caracterización. Sin deploy.
 
 DIAG-V3-QBANK-R1.1 (2026-10-05, local): `deepening` excluido de la ruta base y admitido solo en completion por evidencia; `core`/`adaptive` preservan prioridad de desbloqueo; se rechazan estáticamente dependencias hacia preguntas deepening. `activity` tiene traza alineada con el contexto. Focalizadas 131/131; full unitario 824/825 con la misma divergencia de caracterización registrada en el commit base. El banco sigue sin migrar; no se publica ni cambia scoring.

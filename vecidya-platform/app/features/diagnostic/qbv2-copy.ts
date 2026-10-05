@@ -26,7 +26,7 @@ export type RenderedQuestionV2 = {
 
 export type CopyContext = { readonly context: Partial<ResolvedDomainContext>; readonly answers?: AnswersV2 };
 
-function resolvedValue(context: Partial<ResolvedDomainContext>, field: "entity" | "businessModel" | "nicheGroup"): string | undefined {
+function resolvedValue(context: Partial<ResolvedDomainContext>, field: "entity" | "businessModel" | "nicheGroup" | "activity"): string | undefined {
   const value = context[field] as { status?: string; value?: unknown } | undefined;
   return value?.status === "resolved" && typeof value.value === "string" ? value.value : undefined;
 }
@@ -37,6 +37,7 @@ function matches(target: CopyVariantTarget, context: Partial<ResolvedDomainConte
   if ("nicheGroup" in target && target.nicheGroup) return resolvedValue(context, "nicheGroup") === target.nicheGroup;
   if ("entityType" in target && target.entityType) return resolvedValue(context, "entity") === target.entityType;
   if ("businessModel" in target && target.businessModel) return resolvedValue(context, "businessModel") === target.businessModel;
+  if ("activity" in target && target.activity) return resolvedValue(context, "activity") === target.activity;
   return false;
 }
 

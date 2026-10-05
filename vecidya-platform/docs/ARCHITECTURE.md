@@ -442,6 +442,17 @@ GHL es el system of record de contactos, leads, oportunidades, pipelines, conver
 - `licensed_practice` conserva su producción y mapeo actual a `professional_services` hasta que R2 migre la pregunta. Ninguna señal futura convierte tamaño de equipo o licencia comercial en evidencia profesional.
 - Los modos de entrega legacy, gates productivos, roles y salidas de las 85 preguntas actuales permanecen iguales al baseline. No se añaden preguntas ni opciones productivas y no se modifican `EVIDENCE_MAPPING`, `ANSWER_SEMANTICS`, contribuciones, pesos, fórmulas, recomendaciones o resultados.
 
+### DIAG-V3-QBANK-R2A — candidata revisada de fundación
+
+- `qbv2-reviewed-foundation.ts` contiene solo q2_entity, q2_other_staff, q2_monetization, q2_delivery y q2_has_customers. Comparte `QuestionDefinitionV2`, señales, resolver, copy renderer y planner; no registra la candidata, no se añade al barrel público y solo la importa su suite de pruebas.
+- `QUESTION_BANK_V2` permanece como baseline congelado de 85 preguntas. La prueba de aislamiento fija opciones, tipo y mapeos legacy de monetización/entrega, roles vigentes y resultados de contexto representativos.
+- La candidata declara `routingRole: core` y no añade `scoringReadiness`. q2_monetization excluye `licensed`; sus opciones mapean servicios→`time_or_project_work`, goods→`goods_for_resale`, comisión→`commission_or_referral`, audiencia→`own_audience_monetization`, recurring→`recurring_access`, misión→`mission_funded`; `other`/`unsure` solo emiten `monetizationClassification`.
+- q2_delivery declara modos canónicos como `deliveryMode` de slot `component`: local, citas, servicio móvil, ecommerce solo con compra/pago online, retail y hospitality. `other` y `unsure` son opciones `exclusive`; la validación multi existente impide combinarlas con modos reales y la resolución conserva todos los componentes distintos.
+- q2_monetization declara `appliesWhen: contextIn("activity", ["active", "prelaunch"])`. Desde una sesión vacía queda inelegible hasta que q2_has_customers resuelva actividad; la pregunta de clientes reales es seleccionada como requerida por el planner existente y entonces determina de forma estable el copy presente/futuro. El gate es una regla declarativa de contexto, sin caso especial en el planner.
+- `q2_other_staff` solo aplica cuando la entidad declarada es `individual`. Se conserva la regla de dominio vigente: `individual + hasOtherPaidStaff=true → business`; `no` conserva `individual`; una declaración `business` permanece `business`. Esta señal no determina archetype, monetización, etapa, evidencia digital ni licencia comercial.
+- `CopyVariantTarget.activity` permite que el renderer use la variante de monetización cuando `activity=prelaunch`, derivada de `hasRealCustomers`. Se conserva el límite general `HINT_MAX_LENGTH=140`; los dos hints aprobados se ajustan para caber.
+- La candidata no modifica scoring, pesos, resultados ni UI pública. La migración del resto del banco y su activación quedan fuera de R2A.
+
 - Gobierno y auditoría en tablas separadas del perfil (`0009`).
 - Horarios anclados a `organization_id`; «sin fila» = día sin definir (`0008`).
 - `service_area` como texto libre (sin geocodificación, radios ni polígonos); `city`/`country` = ubicación de referencia.

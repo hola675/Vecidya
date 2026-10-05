@@ -514,6 +514,22 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 - `pnpm run test:unit`: **833/834 PASS**; la única falla es `tests/unit/diagnostic/characterization.test.ts:102`, persona `localBusinessLeaks`, con digest actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f` vs esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`. Es idéntica al baseline previo a R1.2.
 - La comprobación previa de los 17 fallos R1.2 los clasificó como prematura activación de reglas futuras (13) o regresión colateral de rutas (4): cambio de `licensed` afectó lecturas de negocio; gates B2B/creator/profesional cambiaron elegibilidad; esas rutas alteraron respuestas y salidas de fixtures. R1.2-FIX restauró productores/gates legacy sin editar fixtures. Las 17 pruebas vuelven a pasar.
 
+### DIAG-V3-QBANK-R2A — RAN 2026-10-05
+
+- Suite nueva `qbv2-reviewed-foundation.test.ts`: **7/7 PASS**. Cubre mappings revisados de q3, todas las composiciones 1/2/3+ de q4, orden/deduplicación, exclusividad, matriz de contexto y aislamiento de `QUESTION_BANK_V2`.
+- Las nueve suites de diagnóstico usadas en el baseline R1.2-FIX, más la suite candidata: **242/242 PASS**. Las suites QBV2 frozen mantienen sus expectativas.
+- `pnpm run test:unit`: **840/841 PASS**. Única falla: `tests/unit/diagnostic/characterization.test.ts:102`, `localBusinessLeaks`; digest actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`, igual al preflight.
+- `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Build mantiene el aviso local existente sobre secretos Gmail opcionales ausentes.
+
+### DIAG-V3-QBANK-R2A-FIX — RAN 2026-10-05
+
+- `HINT_MAX_LENGTH` permanece en 140; los hints de q2_monetization y q2_has_customers cumplen el guard.
+- Con respuestas vacías, q2_monetization no es elegible; q2_has_customers aparece como pregunta core requerida. `activity=active|prelaunch` la desbloquea y fija el copy presente/futuro. `other`/`unsure` no causan que la pregunta respondida se vuelva a pedir aunque businessModel continúe unresolved.
+- La matriz de q2_other_staff confirma individual + no→individual; individual + yes→business; business con cualquiera de las respuestas→business. La señal no produce archetype, monetización, growthStage ni evidencia digital.
+- Suite candidata: **9/9 PASS**. Las nueve suites frozen/legacy del baseline: **235/235 PASS**. Total focalizado con candidata: **244/244 PASS**.
+- `pnpm run test:unit`: **842/843 PASS**; única falla `characterization.test.ts:102` (`localBusinessLeaks`), digest actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`, igual al preflight.
+- `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS.
+
 Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.md). En resumen: las fases de Business Profile, Servicios (cliente), Cuenta, Admin 8A/8C, multi-org y `PRODUCT-EVOLUTION-001` B/C1/C2/D1 tienen prueba ejecutable; 4B/4C/5A/7B.1/7B.2/8B/8D/8E dependen de scripts stale; Diagnóstico, `PUBLIC-WEB-CONTENT-001`, `PUBLIC-GROWTH-001` A/B/C2, PX-B, E1 y 1C/1D/1E descansan en QA no versionado, cobertura indirecta o un script roto.
 
 ## Brechas propuestas (solo listado; ver deuda `TEST-*` en STATUS)
