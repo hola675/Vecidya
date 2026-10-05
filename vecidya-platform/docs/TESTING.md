@@ -506,6 +506,14 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 - Suites focalizadas `context-resolver.test.ts`, `qbv2-architecture.test.ts`, `qbv2-planner.test.ts` y `qbv2-evidence-completion.test.ts`: **131/131 PASS**. Incluyen exclusión de deepening de la base, selección por necesidad material, prioridad `unlock_routing`, rechazo de prerequisitos deepening, compatibilidad legacy y trazas de actividad.
 - `pnpm run test:unit`: **824/825 PASS**. Única falla, igual a la documentada antes de R1.1 en el commit base `8d965539`: `characterization.test.ts:102`; digest actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, digest esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`.
 
+### DIAG-V3-QBANK-R1.2-FIX — RAN 2026-10-05
+
+- Preflight base `0d1072e`: focalizadas 131/131; unitarias 824/825, con la diferencia conocida `characterization.test.ts:102` (actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`).
+- En la iteración inicial R1.2 aparecieron 17 regresiones nuevas porque los nuevos gates tocaron el banco. La matriz de causa raíz está en el registro de trabajo; esta corrección restaura gates, roles y `licensed` sin modificar expectativas.
+- Tras restaurar compatibilidad, nueve suites focalizadas con resolver, arquitectura/planner, Golden/Lotes B/D y pruebas frozen/calibración: **235/235 PASS**. `pnpm run typecheck`: PASS. `pnpm run build`: PASS (aviso local de secretos Gmail opcionales ausentes). `git diff --check`: PASS.
+- `pnpm run test:unit`: **833/834 PASS**; la única falla es `tests/unit/diagnostic/characterization.test.ts:102`, persona `localBusinessLeaks`, con digest actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f` vs esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`. Es idéntica al baseline previo a R1.2.
+- La comprobación previa de los 17 fallos R1.2 los clasificó como prematura activación de reglas futuras (13) o regresión colateral de rutas (4): cambio de `licensed` afectó lecturas de negocio; gates B2B/creator/profesional cambiaron elegibilidad; esas rutas alteraron respuestas y salidas de fixtures. R1.2-FIX restauró productores/gates legacy sin editar fixtures. Las 17 pruebas vuelven a pasar.
+
 Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.md). En resumen: las fases de Business Profile, Servicios (cliente), Cuenta, Admin 8A/8C, multi-org y `PRODUCT-EVOLUTION-001` B/C1/C2/D1 tienen prueba ejecutable; 4B/4C/5A/7B.1/7B.2/8B/8D/8E dependen de scripts stale; Diagnóstico, `PUBLIC-WEB-CONTENT-001`, `PUBLIC-GROWTH-001` A/B/C2, PX-B, E1 y 1C/1D/1E descansan en QA no versionado, cobertura indirecta o un script roto.
 
 ## Brechas propuestas (solo listado; ver deuda `TEST-*` en STATUS)

@@ -53,6 +53,10 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
+## DIAG-V3 — siguiente límite propuesto (R2; no iniciado)
+
+Migrar el banco productivo conforme a las 85 decisiones humanas: retirar 18 preguntas aprobadas, reescribir las preguntas sobrevivientes y sus roles/gates/clasificaciones canónicas, convertir `q2_delivery` en multi-select y añadir la pregunta directa de Discovery aprobada. Revisar explícitamente los gates `notEq(..., "no")`, preservar trazabilidad de `other`/`unsure` y validar las 85 rutas golden. Mantener congelados `EVIDENCE_MAPPING`, `ANSWER_SEMANTICS`, contribuciones, pesos, umbrales y resultados públicos salvo autorización de una fase aparte. No activar ni publicar el banco en R2 sin revisión explícita del resultado y del alcance.
+
 ## VIS-001 — siguiente trabajo visual y gates
 
 **VIS-001A (auditoría documental, 2026-09-23) y VIS-001B (Foundations Implementation, autorizada y ejecutada 2026-09-24) están cerrados en local.** VIS-001A no cambió producto. VIS-001B sí modificó código: corrigió los tres defectos concretos que la auditoría dejó identificados y consolidó foundation CSS existente, sin nuevas librerías, sin rediseño y sin tocar rutas, modelo comercial, backend ni GHL. Detalle de cierre más abajo. No confundir con VIS-001C (Motion Pilot), que sigue sin autorizar.

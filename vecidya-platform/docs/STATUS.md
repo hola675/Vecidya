@@ -1,5 +1,7 @@
 # Estado de implementación
 
+DIAG-V3-QBANK-R1.2-FIX (2026-10-05, local): frontera de compatibilidad restaurada. El banco actual conserva modos, `licensed`, gates y rutas legacy; helpers R2 quedan fuera de `QUESTION_BANK_V2`. Ningún snapshot se actualizó. Suites focalizadas 235/235; unitarias 833/834 con solo la divergencia de caracterización preexistente; typecheck, build y `git diff --check` PASS. Sin commit/push.
+
 DIAG-V3-QBANK-R1 (2026-10-05, local): preparación arquitectónica implementada; cuestionario QBV2 sin migrar y no activado. Evidencia y límites en `ARCHITECTURE.md`, `TESTING.md` y workbook de revisión (85/85 cerradas). Deuda para R2: migrar roles y gates `notEq(no)` de manera deliberada, implementar las decisiones humanas del banco y resolver la falla baseline de caracterización antes de usar la suite completa como comparación limpia. Sin cambios de scoring/resultados, migración o deploy.
 
 DIAG-V3-QBANK-R1.1 (2026-10-05, local): se completó la semántica de roles sin asignarlos al banco: deepening solo por necesidad de evidencia, prerequisitos core/adaptive priorizados y configuración deepening-prerequisite validada; traza de actividad explícita. Focalizadas 131/131; full unitario 824/825 con la misma divergencia de caracterización del baseline `8d965539`. Pendiente R2, sin cambios de scoring, UI, banco productivo ni deploy.

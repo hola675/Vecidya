@@ -3,6 +3,9 @@ import { test } from "node:test";
 
 import {
   evaluateRuleV2,
+  futureB2BApplicability,
+  futureCreatorApplicability,
+  futureProfessionalApplicability,
   GOLDEN_QUESTIONS_V2,
   LOTE_A_QUESTIONS_V2,
   LOTE_B_QUESTIONS_V2,
@@ -45,11 +48,52 @@ test("mutación J / sector-first: ninguna pregunta de Lote D gatea en NicheId/Ni
   assert.ok(!serialized.includes('"op":"contextResolvedEquals","field":"nicheGroup"'));
 });
 
-test("mutación A: ninguna pregunta de creator requiere un sector/nicho específico (health_wellness, creative_media, etc.) para activarse — solo archetype", () => {
+test("creator relevance uses audience monetization or a legacy archetype, never sector/social presence alone", () => {
   for (const question of LOTE_D_QUESTIONS_V2.filter((q) => q.module === "creator")) {
-    assert.ok(!question.appliesWhen || JSON.stringify(question.appliesWhen).includes("archetypeIncludes") || true);
     const serialized = question.appliesWhen ? JSON.stringify(question.appliesWhen) : "";
     assert.ok(!serialized.includes("nicheGroup") && !serialized.includes("niche"));
+  }
+  const sectorOnly = resolveDiagnosticContext({ declaredNicheGroup: { value: "creator", provenance: "explicit_declaration" } }).context;
+  assert.equal(sectorOnly.archetype.status, "unresolved");
+  assert.equal(sectorOnly.audienceMonetization.status, "unresolved");
+  const creatorQuestion = LOTE_D_QUESTIONS_V2.find((question) => question.id === "q2_creator_channel_concentration")!;
+  assert.equal(evaluateRuleV2(creatorQuestion.appliesWhen!, { q2_has_customers: "yes" }, sectorOnly), false);
+});
+
+test("R2 B2B helper accepts buyer type while the current bank remains archetype-gated", () => {
+  for (const buyer of ["b2b", "mixed"] as const) {
+    const result = resolveEligibleQuestionsV2({ q2_customer_buyer: buyer, q2_has_customers: "yes" }, QUESTION_BANK_V2);
+    assert.ok(!result.eligibleQuestionIds.includes("q2_b2b_lead_source"), `${buyer}: current bank waits for R2`);
+    assert.deepEqual(result.context.customerModel.buyer, { status: "resolved", value: buyer, source: "signal" });
+    assert.equal(result.context.archetype.status, "unresolved", "buyer type affects applicability, not business quality or delivery classification");
+    assert.equal(evaluateRuleV2(futureB2BApplicability(), { q2_has_customers: "yes" }, result.context), true);
+  }
+  const b2c = resolveEligibleQuestionsV2({ q2_customer_buyer: "b2c", q2_has_customers: "yes" }, QUESTION_BANK_V2);
+  assert.equal(evaluateRuleV2(futureB2BApplicability(), { q2_has_customers: "yes" }, b2c.context), false);
+});
+
+test("R2 creator helper uses audience revenue while current creator routes remain legacy-gated", () => {
+  const audience = resolveEligibleQuestionsV2({ q2_monetization: "audience", q2_has_customers: "yes" }, QUESTION_BANK_V2);
+  assert.deepEqual(audience.context.audienceMonetization, { status: "resolved", value: "own_audience_monetization", source: "signal" });
+  assert.ok(!audience.eligibleQuestionIds.includes("q2_creator_channel_concentration"));
+  assert.equal(evaluateRuleV2(futureCreatorApplicability(), { q2_has_customers: "yes" }, audience.context), true);
+  assert.equal(audience.context.archetype.status, "unresolved", "audience revenue establishes creator relevance, not a delivery archetype");
+  const sector = resolveEligibleQuestionsV2({ q2_sector: "creative_media", q2_has_customers: "yes" }, QUESTION_BANK_V2);
+  assert.ok(!sector.eligibleQuestionIds.includes("q2_creator_channel_concentration"));
+  assert.equal(evaluateRuleV2(futureCreatorApplicability(), { q2_has_customers: "yes" }, sector.context), false);
+});
+
+test("R2 professional helper is cross-cutting while current professional questions remain archetype-gated", () => {
+  const individual = resolveEligibleQuestionsV2({ q2_entity: "individual", q2_has_customers: "yes" }, QUESTION_BANK_V2);
+  const sector = resolveEligibleQuestionsV2({ q2_entity: "business", q2_sector: "legal", q2_has_customers: "yes" }, QUESTION_BANK_V2);
+  for (const result of [individual, sector]) {
+    assert.equal(result.context.archetype.status, "unresolved");
+    for (const id of ["q2_professional_authority_signals", "q2_professional_intake_flow", "q2_professional_referral_dependency"]) {
+      const question = LOTE_B_QUESTIONS_V2.find((candidate) => candidate.id === id)!;
+      assert.equal(evaluateRuleV2(question.appliesWhen!, {}, result.context), false, `${id} base gate remains legacy until R2`);
+      assert.equal(question.routingRole, undefined);
+    }
+    assert.equal(evaluateRuleV2(futureProfessionalApplicability(), { q2_has_customers: "yes" }, result.context), true);
   }
 });
 

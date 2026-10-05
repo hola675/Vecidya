@@ -433,6 +433,8 @@ export type DiagnosticContextV3 = {
   profile: Resolution<ProfileId>;
   entity: Resolution<EntityType>;
   businessModel: Resolution<BusinessModel>;
+  /** Audience-revenue evidence is separate from delivery/archetype classification and may be unresolved. */
+  audienceMonetization: Resolution<"own_audience_monetization">;
   archetype: Resolution<OperationalArchetype>;
   /**
    * Componentes reales de `archetype` (DIAG-V3-08B.3 Lote B, C1 — bloqueante arquitectónico corregido):

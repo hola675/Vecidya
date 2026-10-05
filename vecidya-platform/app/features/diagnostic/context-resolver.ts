@@ -55,6 +55,7 @@ export type UnresolvedFieldTrace = {
   readonly reason: UnresolvedReason;
   readonly candidates: readonly string[];
   readonly missingSignals?: readonly string[];
+  readonly supportingSignals?: readonly string[];
 };
 
 export type FieldTrace = ResolvedFieldTrace | UnresolvedFieldTrace;
@@ -62,6 +63,7 @@ export type FieldTrace = ResolvedFieldTrace | UnresolvedFieldTrace;
 export type ContextResolutionTrace = {
   readonly entity: FieldTrace;
   readonly businessModel: FieldTrace;
+  readonly audienceMonetization: FieldTrace;
   readonly archetype: FieldTrace;
   readonly niche: FieldTrace;
   readonly nicheGroup: FieldTrace;
@@ -86,8 +88,8 @@ function resolvedTrace(field: string, value: string, supportingSignals: readonly
   return { status: "resolved", field, value, supportingSignals, resolutionReason, ...(rejectedCandidates ? { rejectedCandidates } : {}) };
 }
 
-function unresolvedTrace(field: string, reason: UnresolvedReason, candidates: readonly string[], missingSignals?: readonly string[]): UnresolvedFieldTrace {
-  return { status: "unresolved", field, reason, candidates, ...(missingSignals ? { missingSignals } : {}) };
+function unresolvedTrace(field: string, reason: UnresolvedReason, candidates: readonly string[], missingSignals?: readonly string[], supportingSignals?: readonly string[]): UnresolvedFieldTrace {
+  return { status: "unresolved", field, reason, candidates, ...(missingSignals ? { missingSignals } : {}), ...(supportingSignals ? { supportingSignals } : {}) };
 }
 
 /**
@@ -120,7 +122,15 @@ function resolveEntityType(signals: DiagnosticSignalsV3): { resolution: Resoluti
 
 function resolveBusinessModel(signals: DiagnosticSignalsV3): { resolution: Resolution<BusinessModel>; trace: FieldTrace } {
   const primary = signals.monetizationMechanism;
-  if (!isMaterial(primary)) return { resolution: unresolved("not_asked"), trace: unresolvedTrace("businessModel", "not_asked", [], ["monetizationMechanism"]) };
+  if (!isMaterial(primary)) {
+    const disposition = signals.monetizationClassification;
+    if (isMaterial(disposition)) {
+      const reason: UnresolvedReason = disposition.value === "unsure" ? "declared_unknown" : "insufficient_evidence";
+      return { resolution: unresolved(reason), trace: unresolvedTrace("businessModel", reason, [], ["monetizationMechanism"], [`monetizationClassification=${disposition.value}`]) };
+    }
+    if (isMaterial(signals.legacyLicensedClassification)) return { resolution: unresolved("insufficient_evidence"), trace: unresolvedTrace("businessModel", "insufficient_evidence", [], ["actualRevenueMechanism"], ["legacyLicensedClassification=true is not an income mechanism"]) };
+    return { resolution: unresolved("not_asked"), trace: unresolvedTrace("businessModel", "not_asked", [], ["monetizationMechanism"]) };
+  }
   const primaryValue = MONETIZATION_TO_BUSINESS_MODEL[primary.value];
   const secondary = signals.secondaryMonetizationMechanism;
   if (areIndependent(primary, secondary)) {
@@ -144,6 +154,11 @@ function resolveOperationalArchetype(signals: DiagnosticSignalsV3, nicheHints: r
   }
   const primary = signals.deliveryMode;
   if (!isMaterial(primary)) {
+    const disposition = signals.deliveryClassification;
+    if (isMaterial(disposition)) {
+      const reason: UnresolvedReason = disposition.value === "unsure" ? "declared_unknown" : "insufficient_evidence";
+      return { resolution: unresolved(reason, nicheHints ?? []), trace: unresolvedTrace("archetype", reason, nicheHints ?? [], ["realDeliveryMode"], [`deliveryClassification=${disposition.value}`]), components: [] };
+    }
     // Un hint de nicho NUNCA resuelve por sí solo (§6, mutación A) — a lo sumo aporta candidatos a un `unresolved`.
     if (nicheHints && nicheHints.length > 0) return { resolution: unresolved("insufficient_evidence", nicheHints), trace: unresolvedTrace("archetype", "insufficient_evidence", nicheHints, ["deliveryMode"]), components: [] };
     return { resolution: unresolved("not_asked"), trace: unresolvedTrace("archetype", "not_asked", [], ["deliveryMode"]), components: [] };
@@ -162,6 +177,16 @@ function resolveOperationalArchetype(signals: DiagnosticSignalsV3, nicheHints: r
     };
   }
   return { resolution: resolved(primaryValue, "signal"), trace: resolvedTrace("archetype", primaryValue, ["deliveryMode"], "mecanismo de entrega declarado/observado"), components: [primaryValue] };
+}
+
+function resolveAudienceMonetization(signals: DiagnosticSignalsV3): { resolution: Resolution<"own_audience_monetization">; trace: FieldTrace } {
+  const sources = [signals.monetizationMechanism, signals.secondaryMonetizationMechanism].filter(isMaterial);
+  const audienceSignal = sources.find((signal) => signal.value === "own_audience_monetization");
+  if (audienceSignal) {
+    const signalName = audienceSignal === signals.monetizationMechanism ? "monetizationMechanism" : "secondaryMonetizationMechanism";
+    return { resolution: resolved("own_audience_monetization", "signal"), trace: resolvedTrace("audienceMonetization", "own_audience_monetization", [signalName], "ingresos declarados/observados procedentes de audiencia propia") };
+  }
+  return { resolution: unresolved("not_asked"), trace: unresolvedTrace("audienceMonetization", "not_asked", [], ["ownAudienceMonetization"]) };
 }
 
 // ── Niche / NicheGroup ───────────────────────────────────────────────────────
@@ -334,6 +359,7 @@ function resolvePrimaryFriction(signals: DiagnosticSignalsV3): { resolution: Res
 export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHints?: readonly OperationalArchetype[]): ContextResolutionResult {
   const entity = resolveEntityType(signals);
   const businessModel = resolveBusinessModel(signals);
+  const audienceMonetization = resolveAudienceMonetization(signals);
   const archetype = resolveOperationalArchetype(signals, nicheHints);
   const niche = resolveNiche(signals);
   const nicheGroup = resolveNicheGroup(niche.resolution, signals);
@@ -353,6 +379,7 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
       version: CURRENT_DIAGNOSTIC_VERSION,
       entity: entity.resolution,
       businessModel: businessModel.resolution,
+      audienceMonetization: audienceMonetization.resolution,
       archetype: archetype.resolution,
       archetypeComponents: archetype.components,
       activity,
@@ -366,6 +393,7 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
     trace: {
       entity: entity.trace,
       businessModel: businessModel.trace,
+      audienceMonetization: audienceMonetization.trace,
       archetype: archetype.trace,
       niche: niche.trace,
       nicheGroup: nicheGroup.trace,

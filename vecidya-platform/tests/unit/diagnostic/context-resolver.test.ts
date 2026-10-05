@@ -3,6 +3,8 @@ import { test } from "node:test";
 
 import {
   deriveSignalsFromLegacyContext,
+  CANONICAL_DELIVERY_MODES,
+  DELIVERY_MODE_TO_ARCHETYPE,
   lookupNicheArchetypeHints,
   OPERATIONAL_ARCHETYPES,
   resolveDiagnosticContext,
@@ -139,6 +141,49 @@ test("caso 7: creador de audiencia — businessModel creator_audience, archetype
   const result = resolve({ monetizationMechanism: { value: "own_audience_monetization", provenance: "observed_fact" }, deliveryMode: { value: "own_audience_content", provenance: "observed_fact" } });
   assert.deepEqual(result.context.businessModel, { status: "resolved", value: "creator_audience", source: "signal" });
   assert.deepEqual(result.context.archetype, { status: "resolved", value: "creator", source: "signal" });
+});
+
+test("routing contract: canonical delivery modes map only observed mechanisms; online service is not ecommerce", () => {
+  assert.deepEqual(CANONICAL_DELIVERY_MODES, ["physical_location", "appointments", "travels", "online_checkout", "retail", "onsite"]);
+  assert.deepEqual(Object.fromEntries(CANONICAL_DELIVERY_MODES.map((mode) => [mode, DELIVERY_MODE_TO_ARCHETYPE[mode]])), {
+    physical_location: "local", appointments: "appointments", travels: "local_service", online_checkout: "ecommerce", retail: "retail", onsite: "hospitality",
+  });
+  const remoteConsulting = resolve({ deliveryMode: { value: "appointments", provenance: "explicit_declaration" } });
+  assert.deepEqual(remoteConsulting.context.archetype, { status: "resolved", value: "appointments", source: "signal" });
+  const checkout = resolve({ deliveryMode: { value: "online_checkout", provenance: "explicit_declaration" } });
+  assert.deepEqual(checkout.context.archetype, { status: "resolved", value: "ecommerce", source: "signal" });
+});
+
+test("routing contract: 3+ canonical delivery modes compose in stable order without duplicate components", () => {
+  const modes = ["physical_location", "appointments", "travels", "online_checkout", "retail"] as const;
+  const makeSignals = (values: readonly (typeof modes)[number][]): DiagnosticSignalsV3 => ({ deliveryModes: values.map((value) => ({ value, provenance: "explicit_declaration" })) });
+  const first = resolve(makeSignals(modes)).context;
+  const reversed = resolve(makeSignals([...modes].reverse())).context;
+  const expected = ["appointments", "ecommerce", "local", "local_service", "retail"];
+  assert.deepEqual(first.archetype, { status: "resolved", value: "hybrid", source: "signal" });
+  assert.deepEqual(first.archetypeComponents, expected);
+  assert.deepEqual(reversed.archetypeComponents, expected);
+  assert.equal(new Set(first.archetypeComponents).size, first.archetypeComponents.length);
+});
+
+test("classification other/unsure stays unresolved and records its declaration in the trace", () => {
+  for (const disposition of ["other", "unsure"] as const) {
+    const result = resolve({
+      monetizationClassification: { value: disposition, provenance: "explicit_declaration" },
+      deliveryClassification: { value: disposition, provenance: "explicit_declaration" },
+    });
+    const reason = disposition === "other" ? "insufficient_evidence" : "declared_unknown";
+    assert.deepEqual(result.context.businessModel, { status: "unresolved", reason, candidates: [] });
+    assert.deepEqual(result.context.archetype, { status: "unresolved", reason, candidates: [] });
+    assert.deepEqual(result.trace.businessModel.supportingSignals, [`monetizationClassification=${disposition}`]);
+    assert.deepEqual(result.trace.archetype.supportingSignals, [`deliveryClassification=${disposition}`]);
+    assert.equal(result.context.archetypeComponents.length, 0);
+  }
+});
+
+test("legacy licensed option keeps its pre-R2 professional-service classification", () => {
+  const result = resolve({ monetizationMechanism: { value: "licensed_practice", provenance: "explicit_declaration" } });
+  assert.deepEqual(result.context.businessModel, { status: "resolved", value: "professional_services", source: "signal" });
 });
 
 test("caso 8: creador que también vende productos con evidencia independiente → businessModel hybrid", () => {

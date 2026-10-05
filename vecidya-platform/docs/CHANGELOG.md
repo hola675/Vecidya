@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-10-05 — DIAG-V3-QBANK-R1.2-FIX (frontera de compatibilidad, local)
+
+- Se clasificaron los 17 fallos nuevos: todos eran efectos de activar gates R2 o la reinterpretación de `licensed` sobre fixtures congeladas. No se cambiaron expectativas.
+- Se restauró el mapeo legacy `licensed` → `professional_services` y los gates por archetype actuales en Golden/Lotes B y D; no se asignan roles nuevos al banco.
+- Los helpers B2B, creator y professional quedaron aislados para fixtures sintéticas. La arquitectura canónica y `other`/`unsure` se mantienen preparadas sin cambiar el comportamiento actual.
+- Suites focalizadas 235/235; unitarias 833/834 con solo la divergencia de caracterización ya presente en el preflight; typecheck, build y `git diff --check` PASS. Sin commit/push.
+
+## 2026-10-05 — DIAG-V3-QBANK-R1.2 (contrato de clasificación y routing, local)
+
+- Se define el vocabulario canónico de entrega y se conserva compatibilidad con los valores legacy; solo `online_checkout` significa ecommerce.
+- La aplicabilidad B2B usa `customerBuyer`; creator usa monetización real de audiencia; evidencia profesional queda adaptativa y no se deduce de tamaño de equipo ni de licencia.
+- `other`/`unsure` permanecen sin clasificación inventada, con trace explícito y ruta de evidencia genérica/completitud. No se añade pregunta contextual.
+- Suites focalizadas 206/206, typecheck y build PASS. Unitarias 816/834: una falla histórica de caracterización y 17 incompatibilidades de rutas/salidas en fixtures QBV2 congelados; no se activa QBV2 ni se cambia el resultado público. Ver `TESTING.md`.
+
 ## 2026-10-05 — DIAG-V3-QBANK-R1.1 (semántica de routing, local)
 
 - El planner excluye `routingRole: deepening` de la fase base, pero permite su selección por cola material o por evidencia insuficiente. `core`/`adaptive` mantienen precedencia de `unlock_routing`; preguntas sin rol conservan el orden histórico.

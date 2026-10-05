@@ -89,6 +89,7 @@ export function deriveContextV3(context: Context): DiagnosticContextV3 {
     profile: context.profile ? resolved(context.profile, "answer") : unresolved("not_asked"),
     entity: profile?.entity ?? unresolved("not_asked"),
     businessModel: unresolved("not_asked"),
+    audienceMonetization: unresolved("not_asked"),
     archetype,
     // QBV1 nunca resuelve `archetype` a "hybrid" (ver `LEGACY_PROFILE_MAPPING`: esos casos quedan
     // `unresolved`), así que derivarlo de la resolución aislada es seguro aquí.

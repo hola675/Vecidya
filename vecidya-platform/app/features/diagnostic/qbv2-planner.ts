@@ -4,7 +4,7 @@ import { type ModuleId, type QuestionDefinitionV2, type QuestionPriority, type Q
 import { resolveEligibleQuestionsV2, type QuestionBankV2, type ResolveEligibleQuestionsResult } from "./qbv2-engine";
 import { CONTRADICTION_RULES_VERSION, DEFAULT_CONTRADICTION_RULES_V1, detectContradictionsV2, getTriggeredConfirmations, type ContradictionRuleV1, type DetectedContradiction } from "./qbv2-contradictions";
 import { CONTEXT_FIELD_REFS, evaluateRuleV2, type AnswersV2, type ContextFieldRef, type RuleV2 } from "./qbv2-rules";
-import { SIGNAL_PRODUCTION_CONTEXT_FIELD } from "./qbv2-signals";
+import { signalProductionContextFields } from "./qbv2-signals";
 import { deriveContextualEvidence, scoreContextualDimensions } from "./qbv2-contextual-scoring";
 import { EVIDENCE_DIRECTNESS, EVIDENCE_MAPPING, type DigitalDimensionId } from "./qbv2-coverage";
 import { FRICTION_RELEVANCE, GOAL_RELEVANCE, deriveConstraintsAndPriorities } from "./qbv2-priorities";
@@ -246,7 +246,7 @@ function isAnswered(question: QuestionDefinitionV2, answers: AnswersV2): boolean
 }
 
 function producedContextFields(question: QuestionDefinitionV2): readonly ContextFieldRef[] {
-  return [...new Set(question.options.flatMap((option) => option.produces ?? []).flatMap((production) => [SIGNAL_PRODUCTION_CONTEXT_FIELD[production.kind], ...(production.kind === "hasRealCustomers" ? ["activity"] : [])]).filter((field): field is ContextFieldRef => CONTEXT_FIELD_REFS.includes(field as ContextFieldRef)))];
+  return [...new Set(question.options.flatMap((option) => option.produces ?? []).flatMap((production) => [...signalProductionContextFields(production), ...(production.kind === "hasRealCustomers" ? ["activity"] : [])]).filter((field): field is ContextFieldRef => CONTEXT_FIELD_REFS.includes(field as ContextFieldRef)))];
 }
 
 function collectAnswerRefs(rule: RuleV2 | undefined, output: Set<string>): void {
@@ -365,7 +365,11 @@ export function evaluateDiagnosticEvidenceSufficiency(input: EvidenceSufficiency
 
 function completionStatus(result: ResolveEligibleQuestionsResult, trace: readonly PlannerTraceEntry[], budget: RouteBudgetV1, bank: QuestionBankV2, rawAnswers: AnswersV2, triggeredConfirmationIds: readonly string[], contradictions: readonly DetectedContradiction[], primaryRouteComplete: boolean, absoluteHardCapReached: boolean): CompletionStatus & { readonly evidenceSufficiency: EvidenceSufficiency } {
   const status = fieldStatus(result.context);
-  const minimumContextResolved = CORE_FIELDS.every((field) => status[field] === "resolved");
+  const classificationSettled = (field: "businessModel" | "archetype") => {
+    const resolution = result.context[field];
+    return resolution.status === "resolved" || resolution.reason === "declared_unknown" || resolution.reason === "insufficient_evidence";
+  };
+  const minimumContextResolved = CORE_FIELDS.every((field) => status[field] === "resolved" || (field === "businessModel" || field === "archetype") && classificationSettled(field));
   const requiredQuestionsAnswered = trace.every((entry) => !entry.required || result.activeAnswers[entry.questionId] !== undefined);
   const evidenceSufficiency = evaluateDiagnosticEvidenceSufficiency({ result, bank, rawAnswers });
   const confirmationQuestionIds = new Set(bank.filter((question) => question.contradictionRole?.type === "confirms").map((question) => question.id));

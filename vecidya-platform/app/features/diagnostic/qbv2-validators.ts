@@ -3,7 +3,7 @@ import { findDependencyCycles } from "./questions";
 import { MODULE_IDS, type QuestionDefinitionV2 } from "./qbv2-contract";
 import type { QuestionBankV2 } from "./qbv2-engine";
 import { collectAnswerDependencies, collectAnswerRefValueChecks, collectContextDependencies, type RuleV2 } from "./qbv2-rules";
-import { scalarSlotForProduction, SIGNAL_PRODUCTION_CONTEXT_FIELD } from "./qbv2-signals";
+import { scalarSlotForProduction, signalProductionContextFields } from "./qbv2-signals";
 
 /**
  * Validadores estáticos de DIAG-V3-08B.2 (§37, §43-49). Deterministas, sin dependencias de red/D1;
@@ -203,7 +203,7 @@ function validateNoSelfReferentialContextGating(bank: QuestionBankV2): Validatio
     const readFields = new Set<string>(gateRules(question).flatMap(collectContextDependencies));
     if (readFields.size === 0) continue;
     const writtenFields = new Set<string>();
-    for (const option of question.options) for (const production of option.produces ?? []) writtenFields.add(SIGNAL_PRODUCTION_CONTEXT_FIELD[production.kind]);
+    for (const option of question.options) for (const production of option.produces ?? []) signalProductionContextFields(production).forEach((field) => writtenFields.add(field));
     for (const field of readFields) {
       if (writtenFields.has(field)) issues.push({ code: "SELF_REFERENTIAL_CONTEXT_GATE", questionId: question.id, message: `${question.id} depende de contexto.${field} pero también lo escribe — riesgo de oscilación (§43-49)` });
     }

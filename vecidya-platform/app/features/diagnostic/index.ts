@@ -17,7 +17,8 @@ export {
   type UnresolvedFieldTrace,
 } from "./context-resolver";
 export { deriveSignalsFromLegacyContext } from "./legacy-signal-adapter";
-export { foldSignalProductions, scalarSlotForProduction, SIGNAL_PRODUCTION_CONTEXT_FIELD, SIGNAL_PRODUCTION_KINDS, type SignalOrigin, type SignalProduction } from "./qbv2-signals";
+export { foldSignalProductions, scalarSlotForProduction, signalProductionContextFields, SIGNAL_PRODUCTION_CONTEXT_FIELD, SIGNAL_PRODUCTION_KINDS, type SignalOrigin, type SignalProduction } from "./qbv2-signals";
+export { futureB2BApplicability, futureCreatorApplicability, futureProfessionalApplicability } from "./qbv2-future-routing";
 export {
   andV2,
   answeredV2,

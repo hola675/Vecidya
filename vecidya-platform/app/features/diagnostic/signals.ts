@@ -56,12 +56,6 @@ export function areIndependent<T>(a: Signal<T> | undefined, b: Signal<T> | undef
 /**
  * Nivel de señal para `BusinessModel`: de dónde sale el ingreso, en términos observables/declarables.
  *
- * `licensed_practice` (hallazgo de revisión de dominio independiente): NO es un mecanismo de pago
- * distinto de `time_or_project_work` — un abogado y un consultor pueden cobrar exactamente igual (por
- * hora/por caso). Lo que distingue `BusinessModel: professional_services` de `services` es una
- * credencial/licencia legal exigida para ejercer (definición de 08B.0), no CÓMO se cobra. Esta señal
- * pregunta específicamente por esa licencia, no por el mecanismo de pago.
- *
  * `commission_or_referral` (hallazgo de la misma revisión, BLOQUEANTE resuelto): agentes inmobiliarios,
  * corredores de seguros, afiliados y marketplaces que cobran un porcentaje de una transacción entre
  * terceros no tenían dónde clasificarse — forzarlos a `time_or_project_work` sobreclama "cobro por
@@ -69,8 +63,13 @@ export function areIndependent<T>(a: Signal<T> | undefined, b: Signal<T> | undef
  * todavía un `BusinessModel` dedicado a comisión; revisar en DIAG-V3-08B.3 si la señal demuestra ser
  * común y merece un valor propio).
  */
+/** Licensed practice remains in the active legacy bank until R2 migrates q2_monetization. */
 export const MONETIZATION_MECHANISMS = ["time_or_project_work", "goods_for_resale", "licensed_practice", "commission_or_referral", "own_audience_monetization", "recurring_access", "mission_funded"] as const;
 export type MonetizationMechanism = (typeof MONETIZATION_MECHANISMS)[number];
+
+/** Explicit answer state for classification questions; this is not an income or delivery mechanism. */
+export const CLASSIFICATION_DISPOSITIONS = ["other", "unsure"] as const;
+export type ClassificationDisposition = (typeof CLASSIFICATION_DISPOSITIONS)[number];
 
 export const MONETIZATION_TO_BUSINESS_MODEL: Readonly<Record<MonetizationMechanism, Exclude<BusinessModel, "hybrid">>> = {
   time_or_project_work: "services",
@@ -99,25 +98,32 @@ export const MONETIZATION_TO_BUSINESS_MODEL: Readonly<Record<MonetizationMechani
  * de un solo profesional. Ya no son ambiguos entre sí: responden "¿cuántos proveedores hay?", un hecho
  * verificable.
  */
+/** Canonical real attention/delivery modes for the reviewed bank. */
+export const CANONICAL_DELIVERY_MODES = ["physical_location", "appointments", "travels", "online_checkout", "retail", "onsite"] as const;
+export type CanonicalDeliveryMode = (typeof CANONICAL_DELIVERY_MODES)[number];
+
+/** Deprecated QBV2 values retained only so the pre-R2 bank and legacy adapter remain readable. */
+export const LEGACY_DELIVERY_MODES = ["fixed_location_no_inventory", "scheduled_time_blocks", "travels_to_customer", "specialized_individual_practice", "fixed_location_with_inventory", "onsite_consumption", "b2b_sales_pipeline", "own_audience_content"] as const;
+export type LegacyDeliveryMode = (typeof LEGACY_DELIVERY_MODES)[number];
+
 export const DELIVERY_MODES = [
-  "fixed_location_no_inventory",
-  "scheduled_time_blocks",
-  "travels_to_customer",
-  "specialized_individual_practice",
-  "online_checkout",
-  "fixed_location_with_inventory",
-  "onsite_consumption",
-  "b2b_sales_pipeline",
-  "own_audience_content",
+  ...CANONICAL_DELIVERY_MODES,
+  ...LEGACY_DELIVERY_MODES,
 ] as const;
 export type DeliveryMode = (typeof DELIVERY_MODES)[number];
 
 export const DELIVERY_MODE_TO_ARCHETYPE: Readonly<Record<DeliveryMode, Exclude<OperationalArchetype, "hybrid">>> = {
+  physical_location: "local",
+  appointments: "appointments",
+  travels: "local_service",
+  retail: "retail",
+  onsite: "hospitality",
+  // Online checkout means that customers can buy and pay online; generic remote services have no mapping.
+  online_checkout: "ecommerce",
   fixed_location_no_inventory: "local",
   scheduled_time_blocks: "appointments",
   travels_to_customer: "local_service",
   specialized_individual_practice: "professional",
-  online_checkout: "ecommerce",
   fixed_location_with_inventory: "retail",
   onsite_consumption: "hospitality",
   b2b_sales_pipeline: "b2b",
@@ -161,10 +167,16 @@ export type DiagnosticSignalsV3 = {
   hasOtherPaidStaff?: Signal<boolean>;
 
   monetizationMechanism?: Signal<MonetizationMechanism>;
+  /** Compatibility-only credential declaration from the old q2_monetization option; never an income mechanism. */
+  legacyLicensedClassification?: Signal<boolean>;
+  /** Explicit other/unsure response, kept separate from any revenue mechanism. */
+  monetizationClassification?: Signal<ClassificationDisposition>;
   /** Solo se usa para detectar `hybrid`; debe ser independiente de `monetizationMechanism` (§15, `areIndependent`). */
   secondaryMonetizationMechanism?: Signal<MonetizationMechanism>;
 
   deliveryMode?: Signal<DeliveryMode>;
+  /** Explicit other/unsure response does not invent a delivery mode or archetype. */
+  deliveryClassification?: Signal<ClassificationDisposition>;
   /** Modos reales acumulados cuando una respuesta permite seleccionar varias opciones. */
   deliveryModes?: readonly Signal<DeliveryMode>[];
   /** Solo se usa para detectar `hybrid`; debe ser independiente de `deliveryMode` (§17, `areIndependent`). */

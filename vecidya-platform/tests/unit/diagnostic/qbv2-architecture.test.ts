@@ -15,6 +15,7 @@ import {
   validateQuestionBankV2,
 } from "../../../app/features/diagnostic/index.ts";
 import { archetypeIncludes, evaluateRuleV2 } from "../../../app/features/diagnostic/qbv2-rules.ts";
+import { futureProfessionalApplicability } from "../../../app/features/diagnostic/qbv2-future-routing.ts";
 import { eqV2 } from "../../../app/features/diagnostic/qbv2-rules.ts";
 
 // ── §66: tests de arquitectura ───────────────────────────────────────────────
@@ -41,7 +42,9 @@ test("el validador informa los gates notEq(no) actuales y el planner puede leer 
   const unsafe = issues.filter((issue) => issue.code === "UNSAFE_NOT_EQ_PREREQUISITE");
   assert.ok(unsafe.length > 0);
   assert.ok(unsafe.every((issue) => issue.questionId && issue.message.includes("sin respuesta")));
-  assert.ok(QUESTION_BANK_V2.every((question) => question.routingRole === undefined), "R1 no asigna roles a todas las preguntas");
+  assert.ok(QUESTION_BANK_V2.every((question) => question.routingRole === undefined), "el banco actual conserva su contrato legacy hasta R2");
+  const individualContext = resolveDiagnosticContext({ entityDeclared: { value: "individual", provenance: "explicit_declaration" } }).context;
+  assert.equal(evaluateRuleV2(futureProfessionalApplicability(), {}, individualContext), true, "el helper R2 permite evidencia transversal sin activar el banco actual");
   const anchor = QUESTION_BANK_V2.find((question) => question.id === "q2_entity")!;
   const adaptive = buildQuestionPlan({ answers: {}, bank: [{ ...anchor, routingRole: "adaptive" }] });
   const core = buildQuestionPlan({ answers: {}, bank: [{ ...anchor, routingRole: "core" }] });

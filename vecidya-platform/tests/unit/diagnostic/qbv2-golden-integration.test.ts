@@ -154,7 +154,7 @@ test("una respuesta answer-gated que ya no cumple su condición se desactiva (fr
   assert.deepEqual(result.context.entity, { status: "resolved", value: "business", source: "signal" });
 });
 
-test("businessModel puede resolverse sin que archetype se resuelva (campos independientes, §2)", () => {
+test("businessModel puede resolverse sin archetype y licensed conserva el contrato legacy hasta R2", () => {
   const result = resolve({ q2_entity: "individual", q2_monetization: "licensed" });
   assert.deepEqual(result.context.businessModel, { status: "resolved", value: "professional_services", source: "signal" });
   assert.equal(result.context.archetype.status, "unresolved");

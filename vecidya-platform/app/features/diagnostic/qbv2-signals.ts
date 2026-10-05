@@ -10,6 +10,7 @@ import type {
 import {
   SIGNAL_PROVENANCE_STRENGTH,
   type DeliveryMode,
+  type ClassificationDisposition,
   type DemandTrend,
   type DiagnosticSignalsV3,
   type MonetizationMechanism,
@@ -32,7 +33,10 @@ export type SignalProduction =
   | { readonly kind: "entity"; readonly value: EntityType; readonly provenance: SignalProvenance }
   | { readonly kind: "hasOtherPaidStaff"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "monetizationMechanism"; readonly slot: "primary" | "secondary"; readonly value: MonetizationMechanism; readonly provenance: SignalProvenance }
+  | { readonly kind: "legacyLicensedClassification"; readonly value: boolean; readonly provenance: SignalProvenance }
+  | { readonly kind: "monetizationClassification"; readonly value: ClassificationDisposition; readonly provenance: SignalProvenance }
   | { readonly kind: "deliveryMode"; readonly slot: "primary" | "secondary" | "component"; readonly value: DeliveryMode; readonly provenance: SignalProvenance }
+  | { readonly kind: "deliveryClassification"; readonly value: ClassificationDisposition; readonly provenance: SignalProvenance }
   | { readonly kind: "niche"; readonly value: NicheId; readonly provenance: SignalProvenance }
   | { readonly kind: "nicheGroupOther"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "nicheGroup"; readonly value: NicheGroup; readonly provenance: SignalProvenance }
@@ -52,7 +56,10 @@ export const SIGNAL_PRODUCTION_KINDS = [
   "entity",
   "hasOtherPaidStaff",
   "monetizationMechanism",
+  "legacyLicensedClassification",
+  "monetizationClassification",
   "deliveryMode",
+  "deliveryClassification",
   "niche",
   "nicheGroupOther",
   "nicheGroup",
@@ -78,7 +85,10 @@ export const SIGNAL_PRODUCTION_CONTEXT_FIELD: Readonly<Record<(typeof SIGNAL_PRO
   entity: "entity",
   hasOtherPaidStaff: "entity",
   monetizationMechanism: "businessModel",
+  legacyLicensedClassification: "businessModel",
+  monetizationClassification: "businessModel",
   deliveryMode: "archetype",
+  deliveryClassification: "archetype",
   niche: "niche",
   nicheGroupOther: "nicheGroup",
   nicheGroup: "nicheGroup",
@@ -94,6 +104,12 @@ export const SIGNAL_PRODUCTION_CONTEXT_FIELD: Readonly<Record<(typeof SIGNAL_PRO
   goalUnknown: "primaryGoal",
   friction: "primaryFriction",
 };
+
+/** All domain facts affected by a signal production, including derived routing facts. */
+export function signalProductionContextFields(production: SignalProduction): readonly string[] {
+  const primary = SIGNAL_PRODUCTION_CONTEXT_FIELD[production.kind];
+  return production.kind === "monetizationMechanism" ? [primary, "audienceMonetization"] : [primary];
+}
 
 /** Origen de una señal derivada de una respuesta V2 (§12): pregunta + opción que la produjo, para trace/analytics/dedup. */
 export type SignalOrigin = { readonly questionId: string; readonly optionId: string };
@@ -119,6 +135,9 @@ type ScalarSignalKey = Exclude<keyof DiagnosticSignalsV3, "frictionSignals" | "s
 const PRODUCTION_TO_FIELD: Partial<Record<SignalProduction["kind"], ScalarSignalKey>> = {
   entity: "entityDeclared",
   hasOtherPaidStaff: "hasOtherPaidStaff",
+  legacyLicensedClassification: "legacyLicensedClassification",
+  monetizationClassification: "monetizationClassification",
+  deliveryClassification: "deliveryClassification",
   niche: "declaredNicheId",
   nicheGroupOther: "declaredNicheGroupOther",
   nicheGroup: "declaredNicheGroup",

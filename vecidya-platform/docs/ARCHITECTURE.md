@@ -434,6 +434,14 @@ GHL es el system of record de contactos, leads, oportunidades, pipelines, conver
 - Para preguntas `core`/`adaptive`, una dependencia real de otra rama conserva `unlock_routing` antes del motivo del rol. Las referencias a un prerequisito marcado `deepening` son inválidas y `validateQuestionBankV2` las reporta como `DEEPENING_ROUTING_PREREQUISITE`.
 - `ContextResolutionTrace.activity` refleja `hasRealCustomers`: `active`/`prelaunch` con la señal de soporte, o `not_asked` con `hasRealCustomers` como señal ausente. No deriva de `growthStage`.
 
+### DIAG-V3-QBANK-R1.2-FIX — contrato futuro con compatibilidad legacy
+
+- El resolver admite modos canónicos futuros `physical_location`, `appointments`, `travels`, `online_checkout`, `retail`, `onsite`; `other`/`unsure` quedan como disposiciones explícitas. Solo `online_checkout` expresa compra/pago online. Estos valores se prueban con señales sintéticas; no se añadieron a las opciones del banco actual.
+- El contexto mantiene `audienceMonetization` separado del archetype y traza la señal real que lo resuelve. Disposiciones sintéticas `other`/`unsure` preservan su motivo sin fabricar business model/archetype y permiten completar una ruta sintética.
+- `qbv2-future-routing.ts` contiene helpers declarativos para relevancia futura B2B (`customerBuyer`), creator (monetización real de audiencia) y evidencia profesional (`entity`/`nicheGroup`). No los usa `QUESTION_BANK_V2`; los gates actuales siguen dependiendo de los archetypes legacy.
+- `licensed_practice` conserva su producción y mapeo actual a `professional_services` hasta que R2 migre la pregunta. Ninguna señal futura convierte tamaño de equipo o licencia comercial en evidencia profesional.
+- Los modos de entrega legacy, gates productivos, roles y salidas de las 85 preguntas actuales permanecen iguales al baseline. No se añaden preguntas ni opciones productivas y no se modifican `EVIDENCE_MAPPING`, `ANSWER_SEMANTICS`, contribuciones, pesos, fórmulas, recomendaciones o resultados.
+
 - Gobierno y auditoría en tablas separadas del perfil (`0009`).
 - Horarios anclados a `organization_id`; «sin fila» = día sin definir (`0008`).
 - `service_area` como texto libre (sin geocodificación, radios ni polígonos); `city`/`country` = ubicación de referencia.

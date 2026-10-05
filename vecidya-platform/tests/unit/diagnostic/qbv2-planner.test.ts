@@ -10,6 +10,7 @@ import {
   isDiagnosticReadyToComplete,
   planNextQuestion,
   plannerRouteSignatureParts,
+  resolveEligibleQuestionsV2,
   resolveTerminalReason,
   type QuestionDefinitionV2,
 } from "../../../app/features/diagnostic/index.ts";
@@ -95,6 +96,66 @@ test("core/adaptive routing prerequisites keep unlock priority; unannotated lega
   const legacy = buildQuestionPlan({ answers: {}, bank: [entity, gated] }).trace.find((entry) => entry.questionId === entity.id)!;
   assert.equal(legacy.required, true);
   assert.equal(legacy.reason, "required_context");
+});
+
+test("other/unsure classification stays unresolved, keeps generic evidence reachable and permits completion", () => {
+  const monetization = QUESTION_BANK_V2.find((question) => question.id === "q2_monetization")!;
+  const delivery = QUESTION_BANK_V2.find((question) => question.id === "q2_delivery")!;
+  const withDisposition = (question: QuestionDefinitionV2, kind: "monetizationClassification" | "deliveryClassification"): QuestionDefinitionV2 => ({
+    ...question,
+    scoringReadiness: { ...question.scoringReadiness!, allowsUnknown: true },
+    options: [
+      ...question.options,
+      { value: "other", label: "Other", produces: [{ kind, value: "other", provenance: "explicit_declaration" }] },
+      { value: "unsure", label: "Unsure", kind: "unknown", produces: [{ kind, value: "unsure", provenance: "explicit_declaration" }] },
+    ],
+  });
+  const generic: QuestionDefinitionV2 = {
+    id: "fixture_generic_evidence",
+    version: 1,
+    module: "core",
+    type: "single",
+    prompt: "Generic evidence",
+    purpose: ["diagnostic"],
+    priority: "normal",
+    options: [{ value: "answered", label: "Answered" }],
+    scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: false, allowsNotApplicable: false },
+  };
+  const bank = [withDisposition(monetization, "monetizationClassification"), withDisposition(delivery, "deliveryClassification"), generic];
+
+  for (const monetizationAnswer of ["other", "unsure"] as const) for (const deliveryAnswer of ["other", "unsure"] as const) {
+    const answers: Record<string, string> = {};
+    let genericEvidenceAsked = false;
+    for (let turn = 0; turn < 8; turn += 1) {
+      const plan = buildQuestionPlan({ answers, bank });
+      if (plan.completion.ready) break;
+      const next = plan.nextQuestionId;
+      assert.ok(next, "the planner must make progress while useful generic evidence remains");
+      assert.equal(answers[next], undefined, "answered classification anchors must not loop");
+      if (next === "q2_monetization") answers[next] = monetizationAnswer;
+      else if (next === "q2_delivery") answers[next] = deliveryAnswer;
+      else if (next === generic.id) { answers[next] = "answered"; genericEvidenceAsked = true; }
+      else assert.fail(`unexpected fixture question ${next}`);
+      const resolved = resolveEligibleQuestionsV2(answers, bank);
+      assert.equal(resolved.context.businessModel.status, "unresolved");
+      assert.equal(resolved.context.archetype.status, "unresolved");
+      if (answers.q2_monetization !== undefined) assert.deepEqual(resolved.trace.businessModel.supportingSignals, [`monetizationClassification=${monetizationAnswer}`]);
+      if (answers.q2_delivery !== undefined) assert.deepEqual(resolved.trace.archetype.supportingSignals, [`deliveryClassification=${deliveryAnswer}`]);
+    }
+    const final = buildQuestionPlan({ answers, bank });
+    assert.equal(genericEvidenceAsked, true, "generic evidence remains accessible without specialized classification");
+    assert.equal(final.completion.ready, true, `classification disposition must not prevent completion (${monetizationAnswer}/${deliveryAnswer})`);
+    assert.equal(final.completion.hardCapReached, false, "completion is not deferred to the hard cap");
+  }
+});
+
+test("adaptive professional evidence is eligible without becoming required by its role", () => {
+  const source = QUESTION_BANK_V2.find((question) => question.id === "q2_entity")!;
+  const futureQuestion = { ...source, routingRole: "adaptive" as const };
+  const plan = buildQuestionPlan({ answers: {}, bank: [futureQuestion] });
+  const entry = plan.trace.find((question) => question.questionId === futureQuestion.id)!;
+  assert.equal(entry.required, false);
+  assert.ok(plan.eligibleQuestionIds.includes(entry.questionId));
 });
 
 test("FIX-04A terminal reason precedence keeps evidence sufficiency above incidental no-useful/cap facts", () => {
