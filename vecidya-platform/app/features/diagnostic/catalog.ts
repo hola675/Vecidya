@@ -7,26 +7,31 @@
  */
 
 export const licenseCatalog = {
-  cuadra: { name: "Cuadra", objective: "Ordenar el negocio." },
-  barrio: { name: "Barrio", objective: "Captar oportunidades y hacer seguimiento." },
-  ciudad: { name: "Ciudad", objective: "Automatizar y escalar." },
+  cuadra: { name: "Cuadra", objective: "Organiza." },
+  barrio: { name: "Barrio", objective: "Capta y da seguimiento." },
+  ciudad: { name: "Ciudad", objective: "Automatiza y controla." },
 } as const;
 
 export const serviceCatalog = {
-  estructuracion: { title: "Organización del negocio" },
-  formalizacion: { title: "Formalización de base" },
-  "presencia-digital": { title: "Presencia digital" },
-  automatizacion: { title: "Automatización" },
-  "inteligencia-artificial": { title: "Inteligencia artificial" },
-  visibilidad: { title: "Marketing y crecimiento" },
+  estructuracion: { title: "Presencia & Marca" },
+  formalizacion: { title: "Web & Conversión" },
+  "presencia-digital": { title: "Visibilidad & Marketing" },
+  automatizacion: { title: "Automatización & Integraciones" },
+  "inteligencia-artificial": { title: "IA Aplicada" },
+  visibilidad: { title: "Sistema Comercial" },
+  "desarrollo-empresarial": { title: "Desarrollo Empresarial" },
 } as const;
 
 export type ServiceId = keyof typeof serviceCatalog;
 
 export const addonCatalog = {
-  whatsapp: { name: "WhatsApp" },
-  automatizaciones: { name: "Automatizaciones" },
-  "ai-conversacional": { name: "IA conversacional" },
+  whatsapp: { name: "WhatsApp Business" },
+  automatizaciones: { name: "Reputación & Reseñas" },
+  "ai-conversacional": { name: "IA Conversacional" },
+  sms: { name: "Telefonía & SMS" },
+  campaigns: { name: "Campañas & Difusión" },
+  voice: { name: "IA de Voz" },
+  integrations: { name: "Conexiones & Integraciones" },
 } as const;
 
 export type AddonId = keyof typeof addonCatalog;

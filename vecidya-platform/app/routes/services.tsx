@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 
 import { publicAssets } from "../assets/public-assets";
-import { CommercialBoundary, CTASection } from "../components/public-v2";
+import { CTASection } from "../components/public-v2";
 import { DIAGNOSTIC_CTA_COPY, PUBLIC_ACTION_LABELS } from "../content/public-copy";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 
@@ -21,56 +21,65 @@ const services: ServiceArea[] = [
   {
     id: "estructuracion",
     icon: publicAssets.catalog.services.organizacion,
-    eyebrow: "ORGANIZAR",
-    title: "Organización del negocio",
+    eyebrow: "ORDENAR",
+    title: "Presencia & Marca",
     problem: "La información, las prioridades y los procesos están dispersos.",
     result: "Una base ordenada para tomar decisiones y saber qué construir primero.",
-    support: ["diagnóstico y mapa de prioridades", "estructura de información", "ruta de trabajo por etapas"],
+    support: ["Identidad", "Mensajes", "Guía de presencia"],
   },
   {
     id: "formalizacion",
     icon: publicAssets.icons.serviceFormalization,
-    eyebrow: "PREPARAR",
-    title: "Formalización de base",
+    eyebrow: "CONVERTIR",
+    title: "Web & Conversión",
     problem: "Ya hay actividad, pero falta una estructura clara para operar y presentarse.",
     result: "Una base más responsable para sostener el trabajo y explicar cómo funciona.",
-    support: ["revisión de base operativa", "criterios de organización", "estructura inicial de procesos"],
+    support: ["Web", "Landing", "Ecommerce"],
   },
   {
     id: "presencia-digital",
     icon: publicAssets.catalog.services.presenciaDigital,
-    eyebrow: "EXPLICAR",
-    title: "Presencia digital",
+    eyebrow: "ENCONTRAR",
+    title: "Visibilidad & Marketing",
     problem: "Lo publicado no explica bien qué haces, para quién es ni cuál es el siguiente paso.",
     result: "Una presencia clara donde quienes te buscan puedan encontrarte y entenderte.",
-    support: ["páginas web y landing pages", "estructura de contenidos", "conexión entre canales y contacto"],
+    support: ["SEO local", "Contenido", "Campañas"],
   },
   {
     id: "automatizacion",
     icon: publicAssets.catalog.services.automatizacion,
-    eyebrow: "SIMPLIFICAR",
-    title: "Automatización",
+    eyebrow: "CAPTAR",
+    title: "Sistema Comercial",
     problem: "Las tareas repetitivas consumen tiempo y dependen de recordatorios manuales.",
     result: "Procesos más ordenados para sostener formularios, seguimiento e integraciones.",
-    support: ["CRM y seguimiento", "workflows y formularios", "integraciones y seguimiento"],
+    support: ["Captación", "Pipeline", "Seguimiento"],
   },
   {
     id: "inteligencia-artificial",
     icon: publicAssets.catalog.services.inteligenciaArtificial,
-    eyebrow: "ASISTIR",
-    title: "Inteligencia artificial",
+    eyebrow: "CONECTAR",
+    title: "Automatización & Integraciones",
     problem: "Quieres atender, clasificar o acompañar conversaciones con más capacidad.",
     result: "Asistentes conversacionales o de voz definidos para un caso concreto.",
-    support: ["agentes conversacionales", "asistentes de voz", "automatización inteligente"],
+    support: ["Workflows", "Integraciones", "Procesos"],
   },
   {
     id: "visibilidad",
     icon: publicAssets.catalog.services.visibilidad,
-    eyebrow: "CONECTAR",
-    title: "Marketing y crecimiento",
+    eyebrow: "ASISTIR",
+    title: "IA Aplicada",
     problem: "Tu negocio necesita más visibilidad, pero no quieres sumar acciones sin dirección.",
     result: "Mejores criterios para conectar contenido, campañas y descubrimiento.",
-    support: ["Google Ads y Meta Ads", "SEO y GEO/AEO", "contenido y medición"],
+    support: ["IA conversacional", "IA de voz", "Asistentes"],
+  },
+  {
+    id: "desarrollo-empresarial",
+    icon: publicAssets.catalog.services.organizacion,
+    eyebrow: "DESARROLLAR",
+    title: "Desarrollo Empresarial",
+    problem: "La operación necesita una mirada más amplia para avanzar con criterio.",
+    result: "Decisiones y capacidades alineadas con el siguiente momento.",
+    support: ["Diagnóstico", "Planificación", "Acompañamiento"],
   },
 ];
 
@@ -89,8 +98,8 @@ export default function Services() {
         <section className="services-experience-hero" aria-labelledby="services-title">
           <div>
             <p className="eyebrow">SERVICIOS PROFESIONALES</p>
-            <h1 id="services-title">Construimos soluciones digitales adaptadas a tu negocio.</h1>
-            <p>Una licencia te da una base. Un servicio nos permite crear, configurar o mejorar algo específico para tu momento y tus objetivos.</p>
+            <h1 id="services-title">Trabajo especializado para tu siguiente paso.</h1>
+            <p>Elegimos el alcance después de entender tu necesidad.</p>
             <div className="public-actions">
               <Link className="button button--primary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
               <Link className="button button--secondary" to="/contacto">{PUBLIC_ACTION_LABELS.contact}</Link>
@@ -106,8 +115,7 @@ export default function Services() {
         <section className="services-needs" aria-labelledby="services-needs-title">
           <div className="services-section-heading">
             <p className="eyebrow">ÁREAS DE SERVICIO</p>
-            <h2 id="services-needs-title">¿Qué necesitas resolver?</h2>
-            <p className="services-intro">Cada servicio parte de un problema concreto y termina en un resultado que puedes entender.</p>
+            <h2 id="services-needs-title">Siete familias para resolver mejor.</h2>
           </div>
           <nav className="services-needs-grid" aria-label="Áreas de servicio">
             {services.map((service) => (
@@ -134,36 +142,12 @@ export default function Services() {
                   <p className="eyebrow">{service.eyebrow}</p>
                 </div>
                 <h3>{service.title}</h3>
-                <div className="services-core-card__problem">
-                  <span>EL PROBLEMA</span>
-                  <p>{service.problem}</p>
-                </div>
-                <div className="services-core-card__result">
-                  <span>EL RESULTADO</span>
-                  <p>{service.result}</p>
-                </div>
-                <div className="services-core-card__support">
-                  <span>PODEMOS AYUDAR CON</span>
-                  <ul>{service.support.map((item) => <li key={item}>{item}</li>)}</ul>
-                </div>
-                <Link className="text-link services-core-card__cta" to="/contacto">Conversar sobre este servicio <span aria-hidden="true">→</span></Link>
+                <p className="services-core-card__result">{service.result}</p>
+                <p className="services-core-card__support"><span>Ejemplos</span> {service.support.join(" · ")}</p>
+                <Link className="text-link services-core-card__cta" to="/contacto">Solicitar propuesta <span aria-hidden="true">→</span></Link>
               </article>
             ))}
           </div>
-        </section>
-
-        <CommercialBoundary current="service" />
-
-        <section className="services-process" aria-labelledby="services-process-title">
-          <div className="services-section-heading">
-            <p className="eyebrow">CÓMO TRABAJAMOS</p>
-            <h2 id="services-process-title">La solución empieza por entender.</h2>
-          </div>
-          <ol className="services-process-list">
-            <li><strong>Entendemos tu punto de partida</strong><span>Qué existe, qué falta y qué está disperso.</span></li>
-            <li><strong>Definimos qué necesitas realmente</strong><span>Priorizamos antes de sumar canales o herramientas.</span></li>
-            <li><strong>Construimos el siguiente paso</strong><span>Con entregables claros y adecuados para tu momento.</span></li>
-          </ol>
         </section>
 
         <CTASection

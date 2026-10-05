@@ -96,7 +96,7 @@ test("a single clarification can resolve Barrio versus Ciudad without reopening 
     q2_followup_general_process: "defined_process",
   } as const;
   const clarification = commercialClarification();
-  assert.equal(clarification.options.length, 4);
+  assert.equal(clarification.options.length, 3);
 
   const single = resolveCommercialRecommendation({ answers, digitalResult: digital(20, "MAL"), clarificationAnswer: "single_process" });
   const multiple = resolveCommercialRecommendationAfterClarification({ answers, digitalResult: digital(95, "BIEN"), clarificationAnswer: "multiple_coordinated_processes" });
@@ -108,7 +108,7 @@ test("a single clarification can resolve Barrio versus Ciudad without reopening 
   assert.ok(!multiple.operationalNeed.evidenceRefs.some((ref) => ref.questionId === clarification.id));
 });
 
-test("external CRM coverage and independent service needs can resolve to none, never forced Cuadra", () => {
+test("external CRM coverage preserves Cuadra as the minimum license", () => {
   const result = resolveCommercialRecommendation({
     answers: {
       q2_entity: "individual",
@@ -121,9 +121,27 @@ test("external CRM coverage and independent service needs can resolve to none, n
     digitalResult: digital(20, "MAL"),
   });
 
-  assert.equal(result.licenseFit.recommendedLicense, "none");
+  assert.equal(result.licenseFit.recommendedLicense, "cuadra");
   assert.equal(result.cost.activationUsd, 0);
   assert.equal(result.licenseFit.confidence, "high");
+});
+
+test("an independent service need still receives Cuadra plus the service path", () => {
+  const result = resolveCommercialRecommendation({
+    answers: { q2_entity: "project", q2_has_customers: "no", q2_presence_digital_base: "nothing" },
+    digitalResult: digital(20, "MAL"),
+  });
+
+  assert.equal(result.licenseFit.recommendedLicense, "cuadra");
+  assert.equal(result.now.license, "cuadra");
+  assert.ok(result.now.services.some((item) => item.id === "web_conversion"));
+});
+
+test("missing commercial signals still resolve to Cuadra rather than an empty license", () => {
+  const result = resolveCommercialRecommendation({ answers: {}, digitalResult: digital(60, "REGULAR") });
+
+  assert.equal(result.licenseFit.recommendedLicense, "cuadra");
+  assert.equal(result.now.license, "cuadra");
 });
 
 test("Cuadra is only selected for a demonstrated recurring Vecidya organization need", () => {
@@ -202,7 +220,7 @@ test("services require a demonstrated implementation gap and never map contact_p
 test("activation, usage and upgrade/downgrade use the same pure resolver", () => {
   const upgrade = resolveCommercialRecommendation({
     answers: { q2_entity: "business", q2_has_customers: "yes", q2_b2b_pipeline: "yes", q2_followup_general_process: "defined_process" },
-    digitalResult: digital(50, "REGULAR"), currentLicense: "none", clarificationAnswer: "single_process",
+    digitalResult: digital(50, "REGULAR"), currentLicense: "cuadra", clarificationAnswer: "single_process",
   });
   const downgrade = resolveCommercialRecommendation({
     answers: { q2_entity: "business", q2_has_customers: "yes", q2_b2b_pipeline: "yes", q2_followup_general_process: "defined_process" },
@@ -244,7 +262,7 @@ test("six certified commercial replays preserve the REC-01A invariants", () => {
   assert.equal(outputs.vitalcare!.licenseFit.recommendedLicense, "barrio");
   assert.equal(outputs.mercado!.licenseFit.recommendedLicense, "barrio");
   assert.equal(outputs.axispro!.licenseFit.recommendedLicense, "barrio");
-  assert.equal(outputs.nativa!.licenseFit.recommendedLicense, "none");
+  assert.equal(outputs.nativa!.licenseFit.recommendedLicense, "cuadra");
   assert.equal(outputs.nativa!.digitalResult.score, 93, "Nativa keeps 93% as display data only");
   assert.ok(![...outputs.axispro!.now.services, ...outputs.axispro!.later.services].some((item) => /landing/i.test(item.name)));
   for (const output of Object.values(outputs)) assert.ok(output!.now.complements.length <= 2);

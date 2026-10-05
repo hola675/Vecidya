@@ -5,6 +5,7 @@ import { renderQuestionV2, type RenderedQuestionV2 } from "./qbv2-copy";
 import { resolveEligibleQuestionsV2, type QuestionBankV2 } from "./qbv2-engine";
 import { buildDiagnosticNarrative, type DiagnosticNarrative } from "./qbv2-narrative";
 import { buildDiagnosticOutcome, type DiagnosticOutcome } from "./qbv2-offerings";
+import type { CommercialClarificationAnswer } from "./commercial-recommendation";
 import { buildQuestionPlan, ROUTE_HARD_CAP, type CompletionStatus, type QuestionPlan, type QuestionSelectionReason } from "./qbv2-planner";
 import { deriveConstraintsAndPriorities } from "./qbv2-priorities";
 import type { AnswersV2 } from "./qbv2-rules";
@@ -66,6 +67,8 @@ export type DiagnosticSessionV3 = {
   readonly routeTrace: readonly RouteTraceEntryV3[];
   readonly status: SessionStatusV3;
   readonly terminalReason?: CompletionStatus["terminalReason"];
+  /** Respuesta efímera para aclarar solo el encaje comercial; nunca altera respuestas ni lecturas digitales. */
+  readonly commercialClarificationAnswer?: CommercialClarificationAnswer;
 };
 
 type Options = { readonly bank?: QuestionBankV2 };
@@ -322,11 +325,12 @@ export function parseSessionV3(raw: string | null, now: number, options?: Option
   let parsed: unknown;
   try { parsed = JSON.parse(raw); } catch { return null; }
   if (!isRecord(parsed) || parsed.schemaVersion !== DIAGNOSTIC_SESSION_V3_SCHEMA) return null;
-  const { sessionId, startedAt, updatedAt, answers, answeredQuestionIds, queue, reviewIndex, routeTrace, status, terminalReason } = parsed;
+  const { sessionId, startedAt, updatedAt, answers, answeredQuestionIds, queue, reviewIndex, routeTrace, status, terminalReason, commercialClarificationAnswer } = parsed;
   if (typeof sessionId !== "string" || typeof startedAt !== "number" || typeof updatedAt !== "number" || !isRecord(answers) || !Array.isArray(answeredQuestionIds) || !Array.isArray(queue) || !Array.isArray(routeTrace)) return null;
   if (!(reviewIndex === null || (typeof reviewIndex === "number" && Number.isInteger(reviewIndex) && reviewIndex >= 0 && reviewIndex < answeredQuestionIds.length))) return null;
   if (typeof status !== "string" || !(SESSION_STATUSES_V3 as readonly string[]).includes(status) || status === "not_started") return null;
   const normalizedTerminalReason = (terminalReason === undefined ? null : terminalReason) as CompletionStatus["terminalReason"];
+  if (!(commercialClarificationAnswer === undefined || commercialClarificationAnswer === "single_process" || commercialClarificationAnswer === "multiple_coordinated_processes" || commercialClarificationAnswer === "not_applicable" || commercialClarificationAnswer === "not_sure")) return null;
   if (!(normalizedTerminalReason === null || normalizedTerminalReason === "evidence_sufficient" || normalizedTerminalReason === "no_useful_questions" || normalizedTerminalReason === "absolute_hard_cap_reached" || normalizedTerminalReason === "deepening_required")) return null;
   if (now - updatedAt > DIAGNOSTIC_SESSION_V3_TTL_MS || updatedAt > now + 60_000) return null;
   const bank = bankOf(options);

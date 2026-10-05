@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-05 — COMMERCIAL-UX-001 (solo local, sin deploy)
+
+- El resolver comercial V1 ya no devuelve `none`: Cuadra es la licencia mínima cuando no hay evidencia suficiente para Barrio o Ciudad, incluso con CRM externo o una necesidad de servicio independiente. Nativa Home queda en Cuadra; el porcentaje Digital Health permanece separado.
+- Home, Licencias, Complementos y Servicios se compactan alrededor de cards, capacidades, precios y acciones; Complementos publica los siete productos V1 y sus costes de uso aparte; Servicios publica las siete familias comerciales.
+- El resultado diagnóstico prioriza licencia, hasta dos necesidades actuales, opciones posteriores y coste; añade una aclaración comercial de una pregunta sin modificar respuestas, scoring ni dimensiones. El informe PDF reutiliza el mismo `CommercialRecommendationV1`.
+- Validación local pendiente de cierre en este cambio: unitarias focalizadas, typecheck, build, E2E y revisión visual responsive. No se ejecutaron migraciones ni deploy.
+
 ## 2026-10-04 — Vecidya 0.6.1 — catálogo visual, copy público y resultado diagnóstico
 
 - Se incorporan 17 PNG seleccionados desde `C:\Users\Admin\Pictures\Assets` bajo `public/assets/catalog/`: estados del diagnóstico, planes, addons y servicios. Se conservan alpha, dimensiones y los archivos fuente organizados; los assets no usados quedan reservados fuera del bundle público.

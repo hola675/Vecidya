@@ -304,7 +304,7 @@ export const CONSTRAINT_COPY = {
 } as const;
 export const EMPTY_ACTION_PATH_NOTE = "Con lo evaluado no aparece una mejora prioritaria. Lo más útil es mantener lo que ya funciona y volver a revisar cuando cambie tu situación.";
 export const VECIDYA_HELP_NOTE = {
-  none: "Con lo evaluado no hay nada que convenga contratar por ahora.",
+  base: "Cuadra es la base mínima de entrada al ecosistema Vecidya.",
   some: "Es opcional: solo aparece lo que se relaciona con tus prioridades, en el mismo orden del plan.",
 } as const;
 

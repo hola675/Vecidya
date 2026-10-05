@@ -3,7 +3,7 @@ import { useSearchParams, type MetaFunction } from "react-router";
 
 import { buildDiagnosticReport, CANONICAL_REPORT_PAPER, DiagnosticReport, REPORT_PAPERS, reportFileName, type ReportFit, type ReportPaper } from "../components/diagnostic-report";
 import { PublicLayout } from "../components/public-layout";
-import { DiagnosticSessionStoreV3, runDiagnosticPipelineV3, type DiagnosticResultV3 } from "../features/diagnostic";
+import { DiagnosticSessionStoreV3, resolveCommercialRecommendationAfterClarification, runDiagnosticPipelineV3, type DiagnosticResultV3 } from "../features/diagnostic";
 
 /**
  * DIAG-V3-13 — informe PDF del diagnóstico, público desde el corte (antes solo en la ruta privada
@@ -31,7 +31,21 @@ export default function DiagnosticoInforme() {
     try {
       const session = new DiagnosticSessionStoreV3(window.localStorage).read(Date.now());
       if (!session || (session.status !== "completed" && session.status !== "completing") || session.queue.length > 0) { setSource({ kind: "missing" }); return; }
-      setSource({ kind: "ready", result: runDiagnosticPipelineV3(session.answers) });
+       const base = runDiagnosticPipelineV3(session.answers);
+       const result = session.commercialClarificationAnswer
+         ? {
+           ...base,
+           outcome: {
+             ...base.outcome,
+             commercialRecommendation: resolveCommercialRecommendationAfterClarification({
+               answers: session.answers,
+               digitalResult: base.outcome.commercialRecommendation.digitalResult,
+               clarificationAnswer: session.commercialClarificationAnswer,
+             }),
+           },
+         }
+         : base;
+       setSource({ kind: "ready", result });
     } catch (error) {
       console.error("[informe] no se pudo preparar el resultado", error);
       setSource({ kind: "error" });

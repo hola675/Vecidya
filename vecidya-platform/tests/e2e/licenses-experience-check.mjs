@@ -36,17 +36,16 @@ async function runViewport(width, height) {
   assert(await page.locator('meta[property="og:image"]').count() === 1, `${label} Licencias no tiene Open Graph image.`);
   const sitemap = await fetch(new URL("/sitemap.xml", baseUrl));
   assert((await sitemap.text()).includes("/licencias"), `${label} sitemap no incluye Licencias.`);
-  assert(await page.getByRole("heading", { name: "Una base digital que crece contigo." }).isVisible(), `${label} no mostró el hero.`);
+  assert(await page.getByRole("heading", { name: "Elige tu sistema base." }).isVisible(), `${label} no mostró el hero.`);
   for (const name of ["Cuadra", "Barrio", "Ciudad"]) {
     assert(await page.getByRole("heading", { name, exact: true }).isVisible(), `${label} no mostró la licencia ${name}.`);
   }
   assert(await page.getByRole("link", { name: "Encontrar mi punto de partida" }).getAttribute("href") === "/diagnostico", `${label} CTA de Diagnóstico incorrecto.`);
   assert(await page.getByRole("link", { name: "Ver servicios" }).getAttribute("href") === "/servicios", `${label} CTA de Servicios incorrecto.`);
-  assert(await page.getByRole("heading", { name: "La evolución empieza con una señal real." }).isVisible(), `${label} no mostró evolución.`);
+  assert(await page.getByRole("heading", { name: "Tres productos. Una decisión clara." }).isVisible(), `${label} no mostró los productos.`);
   assert(await page.getByRole("heading", { name: "Amplía tu sistema cuando lo necesites." }).isVisible(), `${label} no mostró addons.`);
-  assert(await page.getByRole("heading", { name: "Decidir también puede ser sencillo." }).isVisible(), `${label} no mostró FAQ.`);
-  assert(await page.getByText("Precio mensual de referencia en USD.").isVisible(), `${label} no aclaró que el precio es de referencia.`);
-  assert(await page.getByRole("link", { name: "Consultar disponibilidad" }).count() === 3, `${label} no ofrece consultar disponibilidad para cada nivel.`);
+  assert(await page.getByText("Precios públicos en USD.").isVisible(), `${label} no aclaró precios.`);
+  assert(await page.getByRole("link", { name: /Empezar con/ }).count() === 3, `${label} no ofrece CTA para cada nivel.`);
   const html = await page.content();
   for (const price of ["USD 39/mes", "USD 59/mes", "USD 89/mes"]) {
     assert(html.includes(price), `${label} no mostró el precio público ${price}.`);

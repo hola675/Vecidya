@@ -201,6 +201,35 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .directory-filters { grid-template-columns:1fr; }.directory-filters .button { width:100%; }
 }
 
+/* COMMERCIAL-UX-001 — cards compactas y resultado comercial accionable */
+.license-card__activation { margin: 0; color: var(--muted); font-size: var(--text-meta); }
+.addon-card__value { margin: 0; color: var(--muted); line-height: 1.45; }
+.addon-card__price { margin: 0; color: var(--ink); font-weight: 850; }
+.addon-card__dependency { margin: 0; color: var(--muted); font-size: var(--text-meta); }
+.services-core-card__result { margin: 0; color: var(--muted); line-height: 1.45; }
+.services-core-card__support { margin: 0; color: var(--ink); line-height: 1.45; }
+.services-core-card__support span { display: block; margin-bottom: .25rem; color: var(--orange); font-size: var(--text-label); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.dr-commercial-clarification { display: grid; gap: .7rem; margin: 1.25rem 0; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; background: #fffaf6; }
+.dr-commercial-clarification legend { padding: 0 .25rem; font-weight: 800; }
+.dr-commercial-clarification label { display: flex; gap: .5rem; align-items: center; color: var(--ink); }
+.dr-commercial-license { display: grid; gap: .6rem; border: 1px solid rgb(21 95 197 / 28%); border-radius: var(--radius-md); padding: clamp(1.25rem, 3vw, 2rem); background: linear-gradient(145deg, #f4f8ff, #fff); }
+.dr-commercial-license__objective { margin: 0; color: var(--blue); font-size: 1.2rem; font-weight: 850; }
+.dr-commercial-comparison { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin-top: .5rem; }
+.dr-commercial-comparison div { display: grid; gap: .35rem; border-top: 2px solid var(--blue); padding-top: .55rem; }
+.dr-commercial-comparison span { color: var(--muted); font-size: var(--text-meta); line-height: 1.4; }
+.dr-section__subtitle { margin: 1.4rem 0 .6rem; font-size: 1.15rem; }
+.dr-section__subtitle--muted { color: var(--muted); }
+.dr-later-list { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin: 0; padding-left: 1.2rem; color: var(--muted); }
+.dr-commercial-cost { margin-top: 1.5rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+.dr-commercial-cost dl { display: grid; gap: .5rem; margin: 0; }
+.dr-commercial-cost dl div { display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--line); padding-bottom: .4rem; }
+.dr-commercial-cost dt { color: var(--muted); }
+.dr-commercial-cost dd { margin: 0; color: var(--ink); font-weight: 800; }
+.dr-commercial-cost p { margin: .8rem 0 0; color: var(--muted); font-size: var(--text-meta); }
+@media (max-width: 760px) {
+  .dr-commercial-comparison { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 430px) { .app-main { padding: 1.25rem 1rem 2rem; }.organization-switcher label { display: none; }.workspace-card, .empty-state { gap: 0.9rem; }.workspace-card__icon { width: 2.5rem; height: 2.5rem; }.page-heading h1 { font-size: 2rem; } }
 @media (max-width: 900px) { .member-row { display: flex; flex-direction: column; align-items: flex-start; gap: .5rem; } .member-controls { width: 100%; flex-wrap: wrap; } .member-controls select { min-width: 7rem; } .member-controls select, .member-controls .button { max-width: 100%; } }
 

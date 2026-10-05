@@ -216,28 +216,16 @@ function reportBlocks(report: DiagnosticReportV1): readonly Block[] {
     });
   }
 
-  blocks.push(h2("vecidya", "Cómo puede ayudarte Vecidya"));
+  blocks.push(h2("vecidya", "Tu configuración Vecidya"));
   const commercial = report.commercialRecommendation;
-  const commercialItems = [...commercial.now.complements, ...commercial.now.services, ...commercial.later.complements, ...commercial.later.services];
-  blocks.push({ key: "vecidya-note", node: <p className="rp-muted">{commercialItems.length > 0 || commercial.now.license ? "Esta propuesta separa la licencia, las necesidades actuales y las oportunidades posteriores. La selección se basa en la necesidad operacional demostrada, no en el porcentaje digital." : "Con lo evaluado no hay una licencia o capacidad recurrente que convenga contratar por ahora."}</p> });
-  if (commercial.now.license) {
-    blocks.push({
-      key: "commercial-license",
-      node: <div className="rp-help"><p className="rp-label">NECESARIO AHORA</p><ul><li className="rp-offer"><span className="rp-label">Vecidya {commercial.now.license}</span> · ${commercial.cost.monthlyLicenseUsd}/mes · puesta en marcha ${commercial.cost.activationUsd} una vez · {commercial.licenseFit.rationale} {commercial.licenseFit.evidence.map((evidence) => evidence.derivedFact).join(" ")}</li></ul></div>,
-    });
-  }
-  for (const item of commercialItems) {
-    blocks.push({
-      key: `commercial:${item.priority}:${item.id}`,
-      node: (
-        <div className="rp-help">
-          <p className="rp-label">{item.priority === "NOW" ? "NECESARIO AHORA" : "PUEDE AYUDARTE DESPUÉS"}</p>
-          <ul><li className="rp-offer"><span className="rp-label">{item.name}</span>{item.priceLabel === null ? null : ` · ${item.priceLabel}`} · {item.rationale} {item.evidence.map((evidence) => evidence.derivedFact).join(" ")}</li></ul>
-        </div>
-      ),
-    });
-  }
-  if (commercialItems.length > 0 || commercial.now.license) blocks.push({ key: "cta", node: <p className="rp-cta">¿Quieres revisar estas opciones? Vecidya puede acompañarte mediante una propuesta con alcance definido: <a href="mailto:hola@vecidya.com">hola@vecidya.com</a></p> });
+  const nowItems = [...commercial.now.complements, ...commercial.now.services].slice(0, 2);
+  const laterItems = [...commercial.later.complements, ...commercial.later.services].slice(0, 2);
+  blocks.push({ key: "vecidya-note", node: <p className="rp-muted">La selección se basa en la necesidad operacional demostrada, no en el porcentaje digital.</p> });
+  blocks.push({ key: "commercial-license", node: <div className="rp-help"><p className="rp-label">TU MEJOR ENCAJE</p><p className="rp-offer"><span className="rp-label">Vecidya {commercial.now.license}</span> · ${commercial.cost.monthlyLicenseUsd}/mes · puesta en marcha ${commercial.cost.activationUsd} una vez.</p><p>{commercial.licenseFit.rationale}</p><p className="rp-muted">{commercial.licenseFit.whyNotHigher}</p></div> });
+  if (nowItems.length > 0) blocks.push({ key: "commercial-now", node: <div className="rp-help"><p className="rp-label">TE RECOMENDAMOS AHORA</p><ul>{nowItems.map((item) => <li className="rp-offer" key={item.id}><span className="rp-label">{item.name}</span>{item.priceLabel === null ? " · Propuesta personalizada" : ` · ${item.priceLabel}`}</li>)}</ul></div> });
+  if (laterItems.length > 0) blocks.push({ key: "commercial-later", node: <div className="rp-help"><p className="rp-label">PUEDE TENER SENTIDO DESPUÉS</p><p className="rp-muted">{laterItems.map((item) => item.name).join(" · ")}</p></div> });
+  blocks.push({ key: "commercial-cost", node: <div className="rp-help"><p className="rp-label">COSTE</p><p className="rp-offer">Vecidya mensual · ${commercial.cost.monthlyLicenseUsd + nowItems.reduce((sum, item) => sum + (item.priceMonthlyUsd ?? 0), 0)}/mes · puesta en marcha ${commercial.cost.activationUsd} una vez.</p>{commercial.cost.externalUsage.length > 0 ? <p className="rp-muted">Los proveedores pueden sumar costes de uso según mensajes, llamadas, IA o APIs.</p> : null}</div> });
+  blocks.push({ key: "cta", node: <p className="rp-cta">Siguiente paso: revisa tu configuración con Vecidya en <a href="mailto:hola@vecidya.com">hola@vecidya.com</a>.</p> });
 
   blocks.push({
     key: "method",

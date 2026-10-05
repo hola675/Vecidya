@@ -2,7 +2,7 @@ import { Component, useCallback, useEffect, useMemo, useState, type ErrorInfo, t
 
 import {
   canGoBackV3, completeSessionV3, createSessionV3, currentQuestionIdV3, DiagnosticSessionStoreV3, goBackV3, presentQuestionV3, progressV3,
-  QUESTION_BANK_V2, submitAnswerV3, toggleMultiValueV3, type AnswerValueV3, type DiagnosticResultV3, type DiagnosticSessionV3,
+  QUESTION_BANK_V2, resolveCommercialRecommendationAfterClarification, submitAnswerV3, toggleMultiValueV3, type AnswerValueV3, type CommercialClarificationAnswer, type DiagnosticResultV3, type DiagnosticSessionV3,
 } from "../../features/diagnostic";
 import { DiagnosticResult } from "../diagnostic-result";
 import { REPORT_PATH } from "../diagnostic-report/report-path";
@@ -43,6 +43,21 @@ export type DiagnosticFlowProps = {
   /** Solo la vista de desarrollo: panel de depuración con la sesión actual. */
   readonly renderDebug?: (session: DiagnosticSessionV3 | null) => ReactNode;
 };
+
+function resultWithCommercialClarification(result: DiagnosticResultV3, answers: DiagnosticSessionV3["answers"], clarificationAnswer?: CommercialClarificationAnswer): DiagnosticResultV3 {
+  if (!clarificationAnswer) return result;
+  return {
+    ...result,
+    outcome: {
+      ...result.outcome,
+      commercialRecommendation: resolveCommercialRecommendationAfterClarification({
+        answers,
+        digitalResult: result.outcome.commercialRecommendation.digitalResult,
+        clarificationAnswer,
+      }),
+    },
+  };
+}
 
 /**
  * DIAG-V3-10B — experiencia del diagnóstico adaptativo. Consume la sesión V3 (`qbv2-session.ts`), que a su vez
@@ -124,7 +139,11 @@ export function DiagnosticFlow({ renderDebug }: DiagnosticFlowProps) {
   else if (view.kind === "result") {
     content = (
       <>
-        <DiagnosticResult narrative={view.result.narrative} outcome={view.result.outcome} />
+       <DiagnosticResult
+         narrative={view.result.narrative}
+         onCommercialClarification={(answer) => setSession((current) => current ? { ...current, commercialClarificationAnswer: answer } : current)}
+         outcome={resultWithCommercialClarification(view.result, session?.answers ?? {}, session?.commercialClarificationAnswer).outcome}
+       />
         <div className="df-result-actions">
           {/* DIAG-V3-12: el informe se arma en su propia página, con el mismo resultado, y abre el diálogo para guardar PDF. */}
           <a className="button" href={`${REPORT_PATH}?print=1`} rel="noopener" target="_blank">Descargar informe PDF<span className="dr-sr-only"> (se abre en una pestaña nueva)</span></a>

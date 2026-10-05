@@ -176,7 +176,7 @@ export function buildDiagnosticReport({ narrative, outcome, generatedAt, busines
       };
     }),
     vecidyaHelp: {
-      note: help.length === 0 ? VECIDYA_HELP_NOTE.none : VECIDYA_HELP_NOTE.some,
+      note: help.length === 0 ? VECIDYA_HELP_NOTE.base : VECIDYA_HELP_NOTE.some,
       hasOfferings: help.some((entry) => entry.offerings.length > 0),
       items: help.map((entry) => ({
         step: entry.step, title: entry.recommendation.title, noOffering: entry.noOffering,

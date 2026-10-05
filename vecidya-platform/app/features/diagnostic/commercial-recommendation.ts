@@ -3,7 +3,6 @@ import type { AnswersV2 } from "./qbv2-rules";
 
 export const COMMERCIAL_RECOMMENDATION_VERSION = 1 as const;
 export const COMMERCIAL_V1_LICENSES = {
-  none: { name: "Sin licencia necesaria por ahora", monthlyUsd: 0, activationUsd: 0 },
   cuadra: { name: "Cuadra", monthlyUsd: 39, activationUsd: 0 },
   barrio: { name: "Barrio", monthlyUsd: 59, activationUsd: 10 },
   ciudad: { name: "Ciudad", monthlyUsd: 89, activationUsd: 15 },
@@ -18,9 +17,9 @@ export const COMMERCIAL_V1_COMPLEMENTS = {
   connections_integrations: { name: "Conexiones & Integraciones", monthlyUsd: 12, billing: "monthly_per_connection", usageCategories: ["api_executions"] },
 } as const;
 export const COMMERCIAL_V1_SERVICE_FAMILIES = ["Presencia & Marca", "Web & Conversión", "Visibilidad & Marketing", "Sistema Comercial", "Automatización & Integraciones", "IA Aplicada", "Desarrollo Empresarial"] as const;
-export type CommercialLicense = "none" | "cuadra" | "barrio" | "ciudad";
+export type CommercialLicense = "cuadra" | "barrio" | "ciudad";
 export type LicenseFitConfidence = "high" | "medium" | "to_confirm";
-export type LicenseChange = "same" | "upgrade" | "downgrade" | "none";
+export type LicenseChange = "same" | "upgrade" | "downgrade" | "initial";
 export type CommercialClarificationAnswer = "single_process" | "multiple_coordinated_processes" | "not_applicable" | "not_sure";
 export type CommercialDigitalResult = { readonly score: number | null; readonly band: "MAL" | "REGULAR" | "BIEN" | null; readonly confidence: string };
 
@@ -28,7 +27,7 @@ export type CommercialClarification = {
   readonly id: "commercial_process_scope";
   readonly trigger: "license_fit_process_scope_unresolved";
   readonly question: string;
-  readonly options: readonly ["single_process", "multiple_coordinated_processes", "not_applicable", "not_sure"];
+  readonly options: readonly ["single_process", "multiple_coordinated_processes", "not_sure"];
   readonly resolvesSignals: readonly string[];
 };
 
@@ -36,8 +35,8 @@ export function commercialClarification(): CommercialClarification {
   return {
     id: "commercial_process_scope",
     trigger: "license_fit_process_scope_unresolved",
-    question: "Además de captar y dar seguimiento a oportunidades, ¿tu operación necesita coordinar otros procesos, como onboarding, renovación, reactivación o trabajo entre equipos?",
-    options: ["single_process", "multiple_coordinated_processes", "not_applicable", "not_sure"],
+    question: "¿Cómo funciona actualmente tu operación?",
+    options: ["single_process", "multiple_coordinated_processes", "not_sure"],
     resolvesSignals: ["operational_process_scope", "routing_between_roles", "lifecycle_coordination"],
   };
 }
@@ -77,7 +76,7 @@ export type CommercialRecommendationV1 = {
   readonly digitalResult: CommercialDigitalResult;
   readonly operationalNeed: CommercialOperationalEvidence;
   readonly licenseFit: LicenseFit;
-  readonly now: { readonly license: CommercialLicense | null; readonly complements: readonly CommercialItem[]; readonly services: readonly CommercialItem[] };
+  readonly now: { readonly license: CommercialLicense; readonly complements: readonly CommercialItem[]; readonly services: readonly CommercialItem[] };
   readonly later: { readonly complements: readonly CommercialItem[]; readonly services: readonly CommercialItem[] };
   readonly cost: {
     readonly monthlyLicenseUsd: number;
@@ -104,7 +103,7 @@ export function resolveCommercialRecommendationAfterClarification(input: Omit<Co
 
 const LICENSE_MONTHLY: Readonly<Record<CommercialLicense, number>> = Object.fromEntries(Object.entries(COMMERCIAL_V1_LICENSES).map(([id, item]) => [id, item.monthlyUsd])) as Record<CommercialLicense, number>;
 const ACTIVATION: Readonly<Record<CommercialLicense, number>> = Object.fromEntries(Object.entries(COMMERCIAL_V1_LICENSES).map(([id, item]) => [id, item.activationUsd])) as Record<CommercialLicense, number>;
-const LICENSE_RANK: Readonly<Record<CommercialLicense, number>> = { none: 0, cuadra: 1, barrio: 2, ciudad: 3 };
+const LICENSE_RANK: Readonly<Record<CommercialLicense, number>> = { cuadra: 1, barrio: 2, ciudad: 3 };
 
 const ref = (questionId: string, answerOption: string, derivedFact: string, evidenceType: EvidenceRef["evidenceType"] = "DIRECT", relevance: EvidenceRef["relevance"] = "high"): EvidenceRef => ({ questionId, answerOption, derivedFact, evidenceType, relevance });
 const answer = (answers: AnswersV2, id: string): string | undefined => {
@@ -113,7 +112,7 @@ const answer = (answers: AnswersV2, id: string): string | undefined => {
 };
 
 function licenseChange(current: CommercialLicense | undefined, next: CommercialLicense): LicenseChange {
-  if (current === undefined) return "none";
+  if (current === undefined) return "initial";
   if (current === next) return "same";
   return LICENSE_RANK[next] > LICENSE_RANK[current] ? "upgrade" : "downgrade";
 }
@@ -141,10 +140,10 @@ function resolveLicenseFit(evidence: CommercialOperationalEvidence, currentLicen
   let whyNotHigher: string;
 
   if (externalSolved || independentOnly) {
-    recommendedLicense = "none";
+    recommendedLicense = "cuadra";
     confidence = "high";
-    rationale = externalSolved ? "El sistema existente ya cubre la operación recurrente demostrada." : "La evidencia demuestra una necesidad profesional independiente, no un sistema operativo recurrente.";
-    whyNotLower = "No se fuerza una licencia: no hay una necesidad recurrente de Vecidya que Cuadra deba cubrir.";
+    rationale = externalSolved ? "Tu sistema actual resuelve la operación; Cuadra mantiene organizada tu relación y presencia con Vecidya." : "La necesidad profesional es independiente del CRM, pero Cuadra aporta una base organizada para tu relación y presencia con Vecidya.";
+    whyNotLower = "Cuadra es la licencia mínima de entrada al ecosistema Vecidya.";
     whyNotHigher = "No se demuestra una necesidad CRM nueva ni una operación multiproceso que justifique Barrio o Ciudad.";
   } else if (city) {
     recommendedLicense = "ciudad";
@@ -165,10 +164,10 @@ function resolveLicenseFit(evidence: CommercialOperationalEvidence, currentLicen
     whyNotLower = "La relación recurrente con Vecidya y la organización de presencia requieren una base operativa mínima.";
     whyNotHigher = "No se demuestra un proceso comercial repetible que requiera Barrio ni coordinación multiproceso para Ciudad.";
   } else {
-    recommendedLicense = "none";
+    recommendedLicense = "cuadra";
     confidence = unresolved.length > 0 ? "to_confirm" : "high";
-    rationale = "La evidencia actual no justifica una licencia recurrente de Vecidya.";
-    whyNotLower = "Cuadra tampoco se fuerza cuando no existe una necesidad recurrente de organización con Vecidya.";
+    rationale = "La evidencia actual no exige todavía un CRM comercial; Cuadra es la base mínima para organizar presencia, información y prioridades.";
+    whyNotLower = "Cuadra es la licencia mínima de entrada al ecosistema Vecidya.";
     whyNotHigher = "No se demuestra CRM comercial ni coordinación multiproceso.";
   }
 
@@ -232,7 +231,7 @@ export function resolveCommercialRecommendation(input: CommercialRecommendationI
   const nowComplements = nowSelected.filter((item) => item.kind === "complement");
   const nowServices = nowSelected.filter((item) => item.kind === "service");
   const externalUsage = [...new Set([...complements.now, ...complements.later, ...services.now, ...services.later].flatMap((item) => item.usageCategories))].map((category) => ({ category, applies: true as const }));
-  const now = { license: licenseFit.recommendedLicense === "none" ? null : licenseFit.recommendedLicense, complements: nowComplements, services: nowServices };
+  const now = { license: licenseFit.recommendedLicense, complements: nowComplements, services: nowServices };
   const later = { complements: complements.later, services: services.later };
 
   return {

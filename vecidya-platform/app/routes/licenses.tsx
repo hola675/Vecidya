@@ -17,6 +17,7 @@ type License = {
   includes: string[];
   level: string;
   priceUsd: number;
+  activationUsd: number;
 };
 
 // Precios de referencia de docs/business/VECIDYA_PRODUCT_CATALOG.md, confirmados por el usuario
@@ -25,35 +26,38 @@ const licenses: License[] = [
   {
     id: "cuadra",
     name: "Cuadra",
-    objective: "Ordenar el negocio.",
-    idealFor: "Para un negocio que necesita una base organizada para empezar.",
+    objective: "Organiza.",
+    idealFor: "Para organizar presencia, información y prioridades.",
     marker: "C",
     icon: publicAssets.catalog.plans.cuadra,
-    includes: ["Perfil público", "Información organizada", "Contactos, notas y tareas", "Oportunidades y pipeline", "Calendario y capacidades base"],
+    includes: ["Presencia organizada", "Información y prioridades", "Base Vecidya", "Acompañamiento inicial"],
     level: "Base",
     priceUsd: 39,
+    activationUsd: 0,
   },
   {
     id: "barrio",
     name: "Barrio",
-    objective: "Captar oportunidades y hacer seguimiento.",
-    idealFor: "Para un negocio que necesita convertir consultas en procesos.",
+    objective: "Capta y da seguimiento.",
+    idealFor: "Para consultas, oportunidades y seguimiento recurrente.",
     marker: "B",
     icon: publicAssets.catalog.plans.barrio,
-    includes: ["Todo Cuadra", "Formularios y landing estándar", "Agenda", "Automatizaciones estándar", "Seguimiento, posventa y reportes básicos"],
+    includes: ["CRM comercial", "Pipeline", "Calendario", "Captación", "Seguimiento"],
     level: "Crecimiento",
     priceUsd: 59,
+    activationUsd: 10,
   },
   {
     id: "ciudad",
     name: "Ciudad",
-    objective: "Automatizar y escalar.",
-    idealFor: "Para un negocio con volumen y procesos repetitivos.",
+    objective: "Automatiza y controla.",
+    idealFor: "Para varios procesos, equipos y routing coordinado.",
     marker: "C",
     icon: publicAssets.catalog.plans.ciudad,
-    includes: ["Todo Barrio", "Automatización avanzada", "Segmentación y reactivación", "Procesos avanzados", "Control operativo"],
+    includes: ["Todo Barrio", "Routing", "Handoffs", "Automatización multiproceso", "Control operativo"],
     level: "Escala",
     priceUsd: 89,
+    activationUsd: 15,
   },
 ];
 
@@ -80,8 +84,8 @@ export default function Licenses() {
         <section aria-labelledby="licenses-title" className="licenses-hero">
           <div className="licenses-hero__copy">
             <p className="eyebrow">LICENCIAS VECIDYA</p>
-            <h1 id="licenses-title">Una base digital que crece contigo.</h1>
-            <p>Un negocio no necesita todas las herramientas desde el primer día. Necesita una base adecuada para su momento actual y un camino claro para evolucionar.</p>
+            <h1 id="licenses-title">Elige tu sistema base.</h1>
+            <p>Cuadra, Barrio o Ciudad. Tres formas de organizar, captar o controlar tu operación.</p>
             <div className="public-actions">
               <Link className="button button--primary" to="/diagnostico">Encontrar mi punto de partida</Link>
               <Link className="button button--secondary" to="/servicios">{PUBLIC_ACTION_LABELS.services}</Link>
@@ -96,26 +100,11 @@ export default function Licenses() {
           </aside>
         </section>
 
-        <section aria-labelledby="licenses-definition-title" className="licenses-definition public-v2-section">
-          <div>
-            <p className="eyebrow">UN SISTEMA CONTINUO</p>
-            <h2 id="licenses-definition-title">¿Qué es una licencia Vecidya?</h2>
-          </div>
-          <div className="licenses-definition__grid">
-            <p>Una licencia reúne capacidades digitales continuas para ayudarte a organizar, gestionar y evolucionar tu negocio.</p>
-            <dl>
-              <div><dt>Incluye</dt><dd>Capacidades del sistema, herramientas disponibles y un nivel de evolución.</dd></div>
-              <div><dt>Se separa de</dt><dd>Servicios personalizados, consumos externos y trabajos especiales.</dd></div>
-            </dl>
-          </div>
-        </section>
-
         <section aria-labelledby="licenses-levels-title" className="licenses-levels">
           <div className="licenses-section-heading">
             <p className="eyebrow">TRES MOMENTOS</p>
-            <h2 id="licenses-levels-title">Elige la base que corresponde a tu momento.</h2>
-            <p>No tienes que empezar con todo. Cada licencia responde a una necesidad distinta.</p>
-            <p className="licenses-price-note">Precio mensual de referencia en USD. Aún no hay contratación en línea: escríbenos para activar tu licencia.</p>
+            <h2 id="licenses-levels-title">Tres productos. Una decisión clara.</h2>
+            <p className="licenses-price-note">Precios públicos en USD. La activación se coordina por contacto.</p>
           </div>
           <div className="licenses-grid">
             {licenses.map((license, index) => (
@@ -131,11 +120,12 @@ export default function Licenses() {
                 <p className="license-card__price">{`USD ${license.priceUsd}/mes`}</p>
                 <p className="license-card__objective">{license.objective}</p>
                 <p className="license-card__ideal">{license.idealFor}</p>
-                <Link className="license-card__availability" to="/contacto">Consultar disponibilidad <span aria-hidden="true">→</span></Link>
                 <div className="license-card__includes">
-                  <strong>Incluye</strong>
+                  <strong>Capacidades</strong>
                   <ul>{license.includes.map((item) => <li key={item}><span aria-hidden="true">✓</span>{item}</li>)}</ul>
                 </div>
+                <p className="license-card__activation">Puesta en marcha ${license.activationUsd} una vez</p>
+                <Link className="license-card__availability" to="/contacto">Empezar con {license.name} <span aria-hidden="true">→</span></Link>
               </article>
             ))}
           </div>
@@ -163,40 +153,15 @@ export default function Licenses() {
           </div>
         </section>
 
-        <section aria-labelledby="licenses-evolution-title" className="licenses-evolution">
-          <div className="licenses-section-heading">
-            <p className="eyebrow">CUANDO CAMBIA LA NECESIDAD</p>
-            <h2 id="licenses-evolution-title">La evolución empieza con una señal real.</h2>
-            <p>No subes para comprar más. Evolucionas cuando la base actual ya no resuelve lo que necesitas.</p>
-          </div>
-          <div className="licenses-evolution__steps">
-            <div><span>CUADRA</span><strong>Necesito organizarme.</strong><small>Una base clara para saber qué existe y qué falta.</small></div>
-            <div aria-hidden="true" className="licenses-evolution__arrow">↓</div>
-            <div><span>BARRIO</span><strong>Necesito captar y seguir oportunidades.</strong><small>Un flujo para convertir consultas en seguimiento.</small></div>
-            <div aria-hidden="true" className="licenses-evolution__arrow">↓</div>
-            <div><span>CIUDAD</span><strong>Necesito automatizar y controlar.</strong><small>Procesos repetibles y una lectura operativa más clara.</small></div>
-          </div>
-        </section>
-
         <section aria-labelledby="licenses-addons-title" className="licenses-addons public-v2-section">
           <div>
             <p className="eyebrow">CAPACIDAD ADICIONAL</p>
             <h2 id="licenses-addons-title">Amplía tu sistema cuando lo necesites.</h2>
           </div>
           <div className="licenses-addons__content">
-            <p>Los addons agregan capacidades específicas a una licencia existente. No sustituyen la licencia ni esconden consumos variables de proveedores externos.</p>
+            <p>Los complementos añaden capacidades cuando realmente las necesitas.</p>
             <ul><li>WhatsApp</li><li>Inteligencia Artificial</li><li>Telefonía</li><li>Automatizaciones</li><li>Integraciones</li></ul>
             <Link className="text-link" to="/addons">Conoce los addons <span aria-hidden="true">→</span></Link>
-          </div>
-        </section>
-
-        <section aria-labelledby="licenses-faq-title" className="licenses-faq public-v2-section">
-          <div className="licenses-section-heading"><p className="eyebrow">PREGUNTAS FRECUENTES</p><h2 id="licenses-faq-title">Decidir también puede ser sencillo.</h2></div>
-          <div className="licenses-faq__list">
-            <details open><summary>¿Tengo que empezar con la licencia más completa?</summary><p>No. La recomendación depende de la etapa y las necesidades actuales del negocio.</p></details>
-            <details><summary>¿Puedo cambiar de licencia?</summary><p>Sí, cuando cambien las necesidades del negocio y la licencia actual ya no sea suficiente.</p></details>
-            <details><summary>¿Los servicios están incluidos?</summary><p>No. Los servicios personalizados tienen un alcance y un resultado separados.</p></details>
-            <details><summary>¿Los addons están incluidos?</summary><p>No siempre. Dependen de la capacidad específica que necesites añadir a tu sistema.</p></details>
           </div>
         </section>
 

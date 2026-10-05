@@ -50,8 +50,8 @@ export default function Home() {
         <section aria-labelledby="home-hero-title" className="public-home-hero">
         <div className="public-home-hero__copy">
           <p className="eyebrow">VECINDARIO DIGITAL</p>
-          <h1 id="home-hero-title">Haz que tu presencia sea fácil de encontrar.</h1>
-          <p>Explora negocios reales, entiende dónde estás y descubre qué puedes ordenar primero.</p>
+          <h1 id="home-hero-title">Haz clara tu presencia.</h1>
+          <p>Entiende dónde estás y decide qué ordenar primero.</p>
           <div className="public-actions">
             <Link className="button button--primary" to="/vecindario">Explorar el Vecindario</Link>
             <Link className="button button--secondary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
@@ -68,7 +68,7 @@ export default function Home() {
         <div className="home-section-heading">
           <div>
             <p className="eyebrow">VECINDARIO REAL</p>
-            <h2 id="home-neighborhood-title">Conoce quién ya está construyendo una presencia más clara.</h2>
+            <h2 id="home-neighborhood-title">Descubre el Vecindario.</h2>
           </div>
           <Link className="text-link" to="/vecindario">Explorar todo el Vecindario <span aria-hidden="true">→</span></Link>
         </div>
@@ -88,7 +88,7 @@ export default function Home() {
         <div className="home-section-heading">
           <div>
             <p className="eyebrow">PUNTO DE PARTIDA</p>
-            <h2 id="home-diagnostic-title">¿Qué estás construyendo?</h2>
+            <h2 id="home-diagnostic-title">Empieza por tu diagnóstico.</h2>
           </div>
           <p className="home-section-heading__note">El diagnóstico adapta sus preguntas a tu situación.</p>
         </div>
@@ -101,7 +101,7 @@ export default function Home() {
         <div className="home-section-heading">
           <div>
             <p className="eyebrow">SERVICIOS</p>
-            <h2 id="home-services-title">Ordena lo que tu presencia necesita.</h2>
+          <h2 id="home-services-title">Servicios para avanzar.</h2>
           </div>
           <Link className="text-link" to="/servicios">Ver todos los servicios <span aria-hidden="true">→</span></Link>
         </div>

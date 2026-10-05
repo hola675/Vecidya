@@ -36,19 +36,15 @@ async function runViewport(width, height) {
   assert(await page.locator('meta[property="og:image"]').count() === 1, `${label} Addons no tiene Open Graph image.`);
   const sitemap = await fetch(new URL("/sitemap.xml", baseUrl));
   assert((await sitemap.text()).includes("/addons"), `${label} sitemap no incluye Addons.`);
-  assert(await page.getByRole("heading", { name: "Amplía tu sistema cuando tu negocio lo necesite." }).isVisible(), `${label} no mostró el hero.`);
-  assert(await page.getByRole("heading", { name: "¿Qué es un addon?" }).isVisible(), `${label} no mostró la definición.`);
-  for (const name of ["Comunicación", "Automatización", "Inteligencia Artificial", "Integraciones"]) {
-    assert(await page.locator(".addons-category").getByRole("heading", { name, exact: true }).isVisible(), `${label} no mostró la categoría ${name}.`);
-  }
-  for (const name of ["WhatsApp", "SMS", "Telefonía", "Automatizaciones", "IA conversacional", "AI Voice", "Integraciones"]) {
+  assert(await page.getByRole("heading", { name: "Añade capacidades cuando las necesites." }).isVisible(), `${label} no mostró el hero.`);
+  for (const name of ["WhatsApp Business", "Telefonía & SMS", "Reputación & Reseñas", "Campañas & Difusión", "IA Conversacional", "IA de Voz", "Conexiones & Integraciones"]) {
     assert(await page.locator(".addon-card").getByRole("heading", { name, exact: true }).isVisible(), `${label} no mostró el addon ${name}.`);
   }
   assert(await page.locator(".addons-hero").getByRole("link", { name: "Encontrar qué necesito" }).getAttribute("href") === "/diagnostico", `${label} CTA de Diagnóstico incorrecto.`);
   assert(await page.locator(".addons-hero").getByRole("link", { name: "Ver licencias" }).getAttribute("href") === "/licencias", `${label} CTA de Licencias incorrecto.`);
   assert(await page.getByRole("heading", { name: "Cada necesidad tiene su lugar." }).isVisible(), `${label} no mostró la separación comercial.`);
   assert(await page.getByRole("link", { name: /Ver servicios/i }).getAttribute("href") === "/servicios", `${label} CTA de Servicios incorrecto.`);
-  assert(!(await page.content()).match(/precio de addon|USD \d+|checkout|compra inmediata|promoción/i), `${label} contiene precio o lenguaje comercial no autorizado.`);
+  assert((await page.content()).match(/\$9\/mes|\$12\/mes|\$15\/mes|\$20\/mes/i), `${label} no mostró precios V1.`);
 
   await page.getByRole("link", { name: "Encontrar qué necesito" }).focus();
   assert(await page.getByRole("link", { name: "Encontrar qué necesito" }).evaluate((element) => document.activeElement === element), `${label} CTA no recibe foco.`);

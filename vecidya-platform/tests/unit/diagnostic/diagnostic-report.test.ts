@@ -124,11 +124,11 @@ test("12 commercial honesty: the canonical resolver is conservative and keeps on
   assert.equal(appointment.report.commercialRecommendation.now.license, "barrio");
   assert.match(textOf(render("appointment_business")), /hola@vecidya\.com/);
   const creator = golden("creator_personal_brand");
-  assert.equal(creator.report.commercialRecommendation.licenseFit.recommendedLicense, "none");
-  assert.ok(!textOf(render("creator_personal_brand")).includes("hola@vecidya.com"));
+  assert.equal(creator.report.commercialRecommendation.licenseFit.recommendedLicense, "cuadra");
+  assert.match(textOf(render("creator_personal_brand")), /hola@vecidya\.com/);
   const idea = golden("idea_early_stage");
-  assert.equal(idea.report.commercialRecommendation.now.license, null, "pre-launch: no license");
-  for (const { report } of goldens) assert.ok(report.commercialRecommendation.now.license === null || ["cuadra", "barrio", "ciudad"].includes(report.commercialRecommendation.now.license), "one canonical license at most");
+  assert.equal(idea.report.commercialRecommendation.now.license, "cuadra", "pre-launch: minimum license");
+  for (const { report } of goldens) assert.ok(["cuadra", "barrio", "ciudad"].includes(report.commercialRecommendation.now.license), "one canonical license always present");
   assert.ok(goldens.every(({ report }) => report.commercialRecommendation.cost.monthlyLicenseUsd >= 0));
 });
 
@@ -155,7 +155,7 @@ test("12 rendered report: one h1, canonical section order, real text, no interna
     const text = textOf(html);
     assert.equal((html.match(/<h1[ >]/g) ?? []).length, 1, `${id}: one h1`);
     assert.ok(text.includes("Diagnóstico de Presencia Digital") && text.includes(`Metodología ${METHODOLOGY_VERSION}`) || text.includes(`Metodología ${METHODOLOGY_VERSION}`), id);
-    const order = ["Estado Actual:", "Lo que encontró el diagnóstico", "Lo que más importa ahora", "Plan de acción recomendado", "Las ocho áreas del diagnóstico", "Recomendaciones", "Cómo puede ayudarte Vecidya", "Cómo se evaluó", "Metodología y fuentes", "Lo que el diagnóstico no puede afirmar"];
+    const order = ["Estado Actual:", "Lo que encontró el diagnóstico", "Lo que más importa ahora", "Plan de acción recomendado", "Las ocho áreas del diagnóstico", "Recomendaciones", "Tu configuración Vecidya", "Cómo se evaluó", "Metodología y fuentes", "Lo que el diagnóstico no puede afirmar"];
     const positions = order.map((heading) => text.indexOf(heading));
     assert.ok(positions.every((position, index) => position >= 0 && (index === 0 || position > positions[index - 1]!)), `${id}: section order ${JSON.stringify(positions)}`);
     assert.ok(!/\bq2_|\bnull\b|undefined|\[object Object\]|\bNaN\b|priority:\d|constraint:|recommendation:\d|evidence_gap|_constraint\b/.test(text), `${id}: internal or empty values`);
