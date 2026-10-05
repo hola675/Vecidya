@@ -33,6 +33,28 @@ test("R2A candidate is an isolated, valid five-question foundation slice", () =>
   assert.ok(individualPlan.selectedQuestionIds.includes("q2_other_staff"), "the existing planner evaluates the candidate's declared prerequisite gate");
 });
 
+test("reviewed semantic changes increment only the candidate question versions", () => {
+  assert.deepEqual(Object.fromEntries(candidate.map(({ id, version }) => [id, version])), {
+    q2_entity: 1,
+    q2_other_staff: 1,
+    q2_monetization: 2,
+    q2_delivery: 2,
+    q2_has_customers: 1,
+  });
+
+  const legacyMonetization = QUESTION_BANK_V2.find(({ id }) => id === "q2_monetization")!;
+  const reviewedMonetization = question("q2_monetization");
+  const optionContract = (definition: QuestionDefinitionV2) => JSON.stringify(definition.options.map(({ value, kind, produces }) => ({ value, kind, produces })));
+  assert.notEqual(optionContract(reviewedMonetization), optionContract(legacyMonetization));
+  assert.ok(reviewedMonetization.version > legacyMonetization.version);
+
+  const legacyDelivery = QUESTION_BANK_V2.find(({ id }) => id === "q2_delivery")!;
+  const reviewedDelivery = question("q2_delivery");
+  const deliveryContract = (definition: QuestionDefinitionV2) => JSON.stringify({ type: definition.type, options: optionContract(definition) });
+  assert.notEqual(deliveryContract(reviewedDelivery), deliveryContract(legacyDelivery));
+  assert.ok(reviewedDelivery.version > legacyDelivery.version);
+});
+
 test("reviewed classification maps mechanisms into existing domain signals only", () => {
   const expected: Record<string, string> = {
     services: "services", goods: "products", commission: "services", audience: "creator_audience",

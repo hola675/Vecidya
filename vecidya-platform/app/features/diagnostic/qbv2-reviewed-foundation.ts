@@ -41,7 +41,7 @@ export const REVIEWED_FOUNDATION_QUESTIONS_V2: readonly QuestionDefinitionV2[] =
   },
   {
     id: "q2_monetization",
-    version: 1,
+    version: 2,
     module: "classification",
     type: "single",
     routingRole: "core",
@@ -64,7 +64,7 @@ export const REVIEWED_FOUNDATION_QUESTIONS_V2: readonly QuestionDefinitionV2[] =
   },
   {
     id: "q2_delivery",
-    version: 1,
+    version: 2,
     module: "classification",
     type: "multi",
     routingRole: "core",

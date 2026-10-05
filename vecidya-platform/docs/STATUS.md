@@ -1,8 +1,8 @@
 # Estado de implementación
 
-DIAG-V3-QBANK-R2A-FIX (2026-10-05, local): q2_monetization queda gateada declarativamente por `activity` resuelta; q2_has_customers actúa como requisito real de esa clasificación y selecciona el copy presente/futuro. `HINT_MAX_LENGTH=140`; se fijó con regresión la compatibilidad de entidad de q2_other_staff. Candidata 9/9, focalizadas 244/244, full unit 842/843 con la divergencia de caracterización conocida; typecheck, build y `git diff --check` PASS. Sin commit/push.
+DIAG-V3-QBANK-R2A-FIX (2026-10-05): q2_monetization queda gateada declarativamente por `activity` resuelta; q2_has_customers actúa como requisito real de esa clasificación y selecciona el copy presente/futuro. `HINT_MAX_LENGTH=140`; se fijó con regresión la compatibilidad de entidad de q2_other_staff. R2A y R2A-FIX están versionados en main; sin activación pública ni deploy.
 
-DIAG-V3-QBANK-R2A (2026-10-05, local): candidata aislada con preguntas revisadas 01–05; `QUESTION_BANK_V2` continúa con 85 preguntas y sin cambios. Pruebas candidatas 7/7; suites focalizadas 242/242; unitarias 840/841 con la única divergencia de caracterización ya existente; typecheck, build y `git diff --check` PASS. Sin activación pública, commit ni push.
+DIAG-V3-QBANK-R2A (2026-10-05): candidata aislada con preguntas revisadas 01–05; `QUESTION_BANK_V2` continúa con 85 preguntas y sin cambios. R2A y R2A-FIX están versionados en main; sin activación pública ni deploy.
 
 DIAG-V3-QBANK-R1.2-FIX (2026-10-05, local): frontera de compatibilidad restaurada. El banco actual conserva modos, `licensed`, gates y rutas legacy; helpers R2 quedan fuera de `QUESTION_BANK_V2`. Ningún snapshot se actualizó. Suites focalizadas 235/235; unitarias 833/834 con solo la divergencia de caracterización preexistente; typecheck, build y `git diff --check` PASS. Sin commit/push.
 

@@ -1,12 +1,12 @@
 # Changelog
 
-## 2026-10-05 — DIAG-V3-QBANK-R2A (candidata revisada de fundación, local)
+## 2026-10-05 — DIAG-V3-QBANK-R2A (candidata revisada de fundación)
 
 - Se preparó una candidata no registrada con las preguntas revisadas 01–05 y señales del dominio existente; únicamente las pruebas candidatas la importan.
 - La bank legacy sigue con 85 preguntas, las opciones/mapeos anteriores y sus resultados de contexto. No hay cambio de scoring ni de ruta pública.
 - `q2_monetization` requiere `activity` resuelta mediante el DSL existente; q2_has_customers desbloquea el copy presente/futuro sin depender del ranking incidental del planner.
 - Se conserva el límite global de hints en 140 caracteres con copy aprobado ajustado. Se fija con pruebas la frontera de entidad producida por `q2_other_staff`.
-- Candidata 9/9; suites focalizadas 244/244; unitarias 842/843 con la misma divergencia de caracterización del preflight; typecheck, build y `git diff --check` PASS. Sin commit/push.
+- Candidata 9/9; suites focalizadas 244/244; unitarias 842/843 con la misma divergencia de caracterización del preflight; typecheck, build y `git diff --check` PASS. R2A y R2A-FIX están versionados en main; sin activación pública ni deploy.
 
 ## 2026-10-05 — DIAG-V3-QBANK-R1.2-FIX (frontera de compatibilidad, local)
 
