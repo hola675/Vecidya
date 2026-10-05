@@ -43,6 +43,18 @@ function validateRoutingRoles(bank: QuestionBankV2): ValidationIssue[] {
     : []);
 }
 
+/** A deepening-only answer cannot gate a question on the base route. */
+function validateDeepeningPrerequisites(bank: QuestionBankV2): ValidationIssue[] {
+  const deepeningIds = new Set(bank.filter((question) => question.routingRole === "deepening").map((question) => question.id));
+  const issues: ValidationIssue[] = [];
+  for (const question of bank) {
+    for (const dependency of gateRules(question).flatMap(collectAnswerDependencies)) {
+      if (deepeningIds.has(dependency)) issues.push({ code: "DEEPENING_ROUTING_PREREQUISITE", questionId: question.id, message: `${question.id} depende de la respuesta deepening-only ${dependency}, que no puede pertenecer a la ruta base` });
+    }
+  }
+  return issues;
+}
+
 function validateUnsafeNotEqPrerequisites(bank: QuestionBankV2): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   const visit = (owner: string, rule: RuleV2): void => {
@@ -203,6 +215,7 @@ const VALIDATORS: readonly ((bank: QuestionBankV2) => ValidationIssue[])[] = [
   validateUniqueIds,
   validateModules,
   validateRoutingRoles,
+  validateDeepeningPrerequisites,
   validateUnsafeNotEqPrerequisites,
   validateExclusiveOptions,
   validateUnknownCardinality,

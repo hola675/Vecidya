@@ -2,6 +2,8 @@
 
 DIAG-V3-QBANK-R1 (2026-10-05, local): arquitectura lista para la migración R2: contrato de routingRole con compatibilidad, hecho `activity` separado de `growthStage`, N componentes de archetype y validador de gates `notEq(no)`. Revisión humana de preguntas cerrada 85/85. El banco productivo y los resultados visibles no cambian. Typecheck y suites focalizadas pasan; la suite completa mantiene una falla baseline de caracterización. Sin deploy.
 
+DIAG-V3-QBANK-R1.1 (2026-10-05, local): `deepening` excluido de la ruta base y admitido solo en completion por evidencia; `core`/`adaptive` preservan prioridad de desbloqueo; se rechazan estáticamente dependencias hacia preguntas deepening. `activity` tiene traza alineada con el contexto. Focalizadas 131/131; full unitario 824/825 con la misma divergencia de caracterización registrada en el commit base. El banco sigue sin migrar; no se publica ni cambia scoring.
+
 ## DIAG-V3-REL-001 — checkpoint de publicación 0.6.0
 
 El núcleo DIAG-V3 está listo para el checkpoint de release autorizado: planner v2, schema 2, question bank v1, scoring v1, overall index v2, metodología 3.0 y hard cap 24. La calibración real de seis casos confirmó cobertura adaptativa y estabilidad suficiente para V1; quedan como deuda no bloqueante los extremos dimensionales 0/100 y la observabilidad de razones terminales. El rediseño COMMERCIAL/GHL no forma parte del release. Este bloque no declara publicación hasta completar deploy y HTTP anónimo sobre `vecidya.com`.

@@ -13,6 +13,7 @@ import {
   resolveTerminalReason,
   type QuestionDefinitionV2,
 } from "../../../app/features/diagnostic/index.ts";
+import { eqV2 } from "../../../app/features/diagnostic/qbv2-rules.ts";
 
 const contexts: Record<string, Record<string, string>> = {
   idea_project: { q2_entity: "project", q2_has_customers: "no" },
@@ -63,6 +64,37 @@ test("planner contract: deterministic version, explicit budget and no QBV2 activ
   assert.deepEqual(first.budget, DEFAULT_ROUTE_BUDGET_V1);
   assert.equal(first.nextQuestionId, second.nextQuestionId);
   assert.ok(first.routeLength <= 18);
+});
+
+test("routingRole deepening stays out of base routing but may enter the material evidence tail", () => {
+  const entity = QUESTION_BANK_V2.find((question) => question.id === "q2_entity")!;
+  const baseOnly = buildQuestionPlan({ answers: {}, bank: [{ ...entity, routingRole: "deepening" }] });
+  const baseEntry = baseOnly.trace.find((entry) => entry.questionId === entity.id)!;
+  assert.equal(baseEntry.selected, false);
+  assert.notEqual(baseEntry.selectedIn, "base");
+
+  const answers = { q2_entity: "business", q2_has_customers: "yes", q2_regularity: "regular", q2_delivery: "online_checkout", q2_goal: "be_found", q2_friction: "visibility" };
+  const bank = QUESTION_BANK_V2.map((question) => question.id === "q2_ecommerce_acquisition_dependency" ? { ...question, routingRole: "deepening" as const } : question);
+  const material = buildQuestionPlan({ answers, bank });
+  const materialEntry = material.trace.find((entry) => entry.questionId === "q2_ecommerce_acquisition_dependency")!;
+  assert.equal(materialEntry.materialEvidence, true);
+  assert.equal(materialEntry.selected, true);
+  assert.equal(materialEntry.selectedIn, "material");
+});
+
+test("core/adaptive routing prerequisites keep unlock priority; unannotated legacy questions keep their old classification", () => {
+  const entity = QUESTION_BANK_V2.find((question) => question.id === "q2_entity")!;
+  const customers = QUESTION_BANK_V2.find((question) => question.id === "q2_has_customers")!;
+  const gated = { ...customers, appliesWhen: eqV2("q2_entity", "business") };
+  for (const routingRole of ["core", "adaptive"] as const) {
+    const plan = buildQuestionPlan({ answers: {}, bank: [{ ...entity, routingRole }, gated] });
+    const prerequisite = plan.trace.find((entry) => entry.questionId === entity.id)!;
+    assert.equal(prerequisite.reason, "unlock_routing");
+    assert.equal(prerequisite.required, routingRole === "core");
+  }
+  const legacy = buildQuestionPlan({ answers: {}, bank: [entity, gated] }).trace.find((entry) => entry.questionId === entity.id)!;
+  assert.equal(legacy.required, true);
+  assert.equal(legacy.reason, "required_context");
 });
 
 test("FIX-04A terminal reason precedence keeps evidence sufficiency above incidental no-useful/cap facts", () => {

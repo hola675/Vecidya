@@ -427,6 +427,13 @@ GHL es el system of record de contactos, leads, oportunidades, pipelines, conver
 - `validateQuestionBankV2` reporta `UNSAFE_NOT_EQ_PREREQUISITE` para gates `notEq(question, "no")`, porque una referencia sin contestar puede satisfacer la regla. La pasada actual encuentra 41 preguntas productivas. Se preserva temporalmente la evaluación histórica; R2 debe migrar cada gate con intención explícita.
 - R1 no activa QBV2, no cambia opciones/copy productivo, contribuciones, pesos, fórmulas, umbrales, recomendaciones ni resultados visibles.
 
+### DIAG-V3-QBANK-R1.1 — semántica de routingRole
+
+- `core`: entra en la ruta base cuando es elegible y cuenta como requerido. `adaptive`: puede entrar en la base si es útil, pero el rol no lo vuelve requerido. Las preguntas sin rol conservan el clasificador previo.
+- `deepening`: queda fuera de la selección base incluso con dimensión no vista o presupuesto disponible; solo puede entrar en la cola de evidencia material o en la selección final motivada por evidencia insuficiente. Conserva el hard cap y las mismas rutas de evidencia.
+- Para preguntas `core`/`adaptive`, una dependencia real de otra rama conserva `unlock_routing` antes del motivo del rol. Las referencias a un prerequisito marcado `deepening` son inválidas y `validateQuestionBankV2` las reporta como `DEEPENING_ROUTING_PREREQUISITE`.
+- `ContextResolutionTrace.activity` refleja `hasRealCustomers`: `active`/`prelaunch` con la señal de soporte, o `not_asked` con `hasRealCustomers` como señal ausente. No deriva de `growthStage`.
+
 - Gobierno y auditoría en tablas separadas del perfil (`0009`).
 - Horarios anclados a `organization_id`; «sin fila» = día sin definir (`0008`).
 - `service_area` como texto libre (sin geocodificación, radios ni polígonos); `city`/`country` = ubicación de referencia.

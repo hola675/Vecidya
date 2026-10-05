@@ -501,6 +501,11 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 - `pnpm run test:unit`: **821/822 PASS**. Única falla: `tests/unit/diagnostic/characterization.test.ts:102`, «el motor produce exactamente los resultados fijados antes de los contratos V3». Reproducida idénticamente en preflight antes de modificar archivos; no se atribuye a R1. La última salida histórica previa de 341/341 (2026-09-28) no describe el estado actual.
 - La guarda estática reporta actualmente 41 `notEq(..., "no")` en `appliesWhen`/`materialAppliesWhen`; los QuestionId están en la salida de `validateQuestionBankV2(QUESTION_BANK_V2)` y deben migrarse individualmente en R2.
 
+### DIAG-V3-QBANK-R1.1 — RAN 2026-10-05
+
+- Suites focalizadas `context-resolver.test.ts`, `qbv2-architecture.test.ts`, `qbv2-planner.test.ts` y `qbv2-evidence-completion.test.ts`: **131/131 PASS**. Incluyen exclusión de deepening de la base, selección por necesidad material, prioridad `unlock_routing`, rechazo de prerequisitos deepening, compatibilidad legacy y trazas de actividad.
+- `pnpm run test:unit`: **824/825 PASS**. Única falla, igual a la documentada antes de R1.1 en el commit base `8d965539`: `characterization.test.ts:102`; digest actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, digest esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`.
+
 Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.md). En resumen: las fases de Business Profile, Servicios (cliente), Cuenta, Admin 8A/8C, multi-org y `PRODUCT-EVOLUTION-001` B/C1/C2/D1 tienen prueba ejecutable; 4B/4C/5A/7B.1/7B.2/8B/8D/8E dependen de scripts stale; Diagnóstico, `PUBLIC-WEB-CONTENT-001`, `PUBLIC-GROWTH-001` A/B/C2, PX-B, E1 y 1C/1D/1E descansan en QA no versionado, cobertura indirecta o un script roto.
 
 ## Brechas propuestas (solo listado; ver deuda `TEST-*` en STATUS)

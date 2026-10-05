@@ -68,6 +68,7 @@ export type ContextResolutionTrace = {
   readonly customerReach: FieldTrace;
   readonly customerBuyer: FieldTrace;
   readonly growthStage: FieldTrace;
+  readonly activity: FieldTrace;
   readonly primaryGoal: FieldTrace;
   readonly primaryFriction: FieldTrace;
 };
@@ -341,6 +342,9 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
   const growthStage = resolveGrowthStage(signals);
   const hasCustomers = signals.hasRealCustomers;
   const activity: Resolution<"prelaunch" | "active"> = isMaterial(hasCustomers) ? resolved(hasCustomers.value ? "active" : "prelaunch", "signal") : unresolved("not_asked");
+  const activityTrace: FieldTrace = isMaterial(hasCustomers)
+    ? resolvedTrace("activity", hasCustomers.value ? "active" : "prelaunch", ["hasRealCustomers"], hasCustomers.value ? "clientes reales existentes: operación activa" : "sin clientes reales: pre-lanzamiento")
+    : unresolvedTrace("activity", "not_asked", [], ["hasRealCustomers"]);
   const primaryGoal = resolvePrimaryGoal(signals);
   const primaryFriction = resolvePrimaryFriction(signals);
 
@@ -368,6 +372,7 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
       customerReach: customerReach.trace,
       customerBuyer: customerBuyer.trace,
       growthStage: growthStage.trace,
+      activity: activityTrace,
       primaryGoal: primaryGoal.trace,
       primaryFriction: primaryFriction.trace,
     },

@@ -269,9 +269,10 @@ function isRequired(question: QuestionDefinitionV2, contextStatus: Readonly<Reco
 
 function selectionReason(question: QuestionDefinitionV2, status: Readonly<Record<ContextFieldRef, "resolved" | "unresolved">>, routingPrerequisites: ReadonlySet<string>): QuestionSelectionReason {
   if (question.purpose.includes("confirmation")) return "confirmation";
+  if (question.routingRole === "deepening") return "refinement";
+  if ((question.routingRole === "core" || question.routingRole === "adaptive") && routingPrerequisites.has(question.id)) return "unlock_routing";
   if (question.routingRole === "core") return "required_context";
   if (question.routingRole === "adaptive") return "specialized_evidence";
-  if (question.routingRole === "deepening") return "refinement";
   if (isRequired(question, status)) return "required_context";
   if (routingPrerequisites.has(question.id)) return "unlock_routing";
   if (question.purpose.includes("goal") || question.purpose.includes("friction")) return "goal_or_friction";
@@ -452,6 +453,7 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
   const hasUnselectedConfirmation = () => triggeredConfirmationIds.some((id) => !selected.includes(id));
   /** Base phase: the pre-08D.1 rules, capped at `baseMax` (18). */
   const canSelect = (entry: QuestionRankMetadata): boolean => {
+    if (questions.get(entry.questionId)?.routingRole === "deepening") return false;
     if (baseAskedCount + baseSelectedCount >= baseMax || alreadyAskedCount + selected.length >= budget.hardMax || !nativelyEligible(entry)) return false;
     if (confirmationAvailable && entry.reason !== "confirmation" && !entry.required && baseAskedCount + baseSelectedCount >= baseMax - Math.min(budget.confirmationReserve, triggeredConfirmationIds.length)) return false;
     if ((moduleCounts[entry.module] ?? 0) >= moduleLimit(entry.module, budget)) return false;

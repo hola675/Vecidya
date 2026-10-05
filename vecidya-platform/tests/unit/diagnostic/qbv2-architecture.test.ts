@@ -15,6 +15,7 @@ import {
   validateQuestionBankV2,
 } from "../../../app/features/diagnostic/index.ts";
 import { archetypeIncludes, evaluateRuleV2 } from "../../../app/features/diagnostic/qbv2-rules.ts";
+import { eqV2 } from "../../../app/features/diagnostic/qbv2-rules.ts";
 
 // ── §66: tests de arquitectura ───────────────────────────────────────────────
 
@@ -46,6 +47,17 @@ test("el validador informa los gates notEq(no) actuales y el planner puede leer 
   const core = buildQuestionPlan({ answers: {}, bank: [{ ...anchor, routingRole: "core" }] });
   assert.equal(adaptive.trace.find((entry) => entry.questionId === anchor.id)?.required, false);
   assert.equal(core.trace.find((entry) => entry.questionId === anchor.id)?.required, true);
+});
+
+test("el validador rechaza una pregunta deepening usada como prerequisito de routing", () => {
+  const entity = QUESTION_BANK_V2.find((question) => question.id === "q2_entity")!;
+  const customers = QUESTION_BANK_V2.find((question) => question.id === "q2_has_customers")!;
+  const invalidBank = [
+    { ...entity, routingRole: "deepening" as const },
+    { ...customers, appliesWhen: eqV2("q2_entity", "business") },
+  ];
+  const issues = validateQuestionBankV2(invalidBank);
+  assert.ok(issues.some((issue) => issue.code === "DEEPENING_ROUTING_PREREQUISITE" && issue.questionId === customers.id), JSON.stringify(issues));
 });
 
 test("un negocio activo no fuerza q2_demand_trend para completar el hecho básico de actividad", () => {

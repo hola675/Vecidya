@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-05 — DIAG-V3-QBANK-R1.1 (semántica de routing, local)
+
+- El planner excluye `routingRole: deepening` de la fase base, pero permite su selección por cola material o por evidencia insuficiente. `core`/`adaptive` mantienen precedencia de `unlock_routing`; preguntas sin rol conservan el orden histórico.
+- `validateQuestionBankV2` rechaza gates que dependan de respuestas deepening-only; la traza de actividad informa señal, estado o ausencia de `hasRealCustomers`.
+- No se migran preguntas ni se cambia scoring, resultado, UI, PDF, recomendación o publicación.
+- Suites focalizadas 131/131; unitarias completas 824/825 con la misma divergencia de caracterización registrada en el commit base. Typecheck, build y `git diff --check` PASS; el build advierte que faltan secretos opcionales de Gmail en el entorno local.
+
 ## 2026-10-05 — DIAG-V3-QBANK-R1 (preparación arquitectónica, local)
 
 - Se cierra el artefacto humano de revisión de preguntas en 85/85 decisiones y se registran las dos decisiones ecommerce pendientes.

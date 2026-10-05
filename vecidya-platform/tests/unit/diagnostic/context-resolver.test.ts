@@ -114,9 +114,13 @@ test("archetypeComponents: tres o más modos conservan todos los componentes ún
 test("activity se resuelve desde clientes reales aunque GrowthStage siga sin precisión suficiente", () => {
   const active = resolve({ hasRealCustomers: { value: true, provenance: "observed_fact" }, operatingRegularity: { value: "regular", provenance: "observed_fact" } });
   assert.deepEqual(active.context.activity, { status: "resolved", value: "active", source: "signal" });
+  assert.deepEqual(active.trace.activity, { status: "resolved", field: "activity", value: "active", supportingSignals: ["hasRealCustomers"], resolutionReason: "clientes reales existentes: operación activa" });
   assert.equal(active.context.growthStage.status, "unresolved");
   const prelaunch = resolve({ hasRealCustomers: { value: false, provenance: "observed_fact" } });
   assert.deepEqual(prelaunch.context.activity, { status: "resolved", value: "prelaunch", source: "signal" });
+  assert.deepEqual(prelaunch.trace.activity, { status: "resolved", field: "activity", value: "prelaunch", supportingSignals: ["hasRealCustomers"], resolutionReason: "sin clientes reales: pre-lanzamiento" });
+  const unknown = resolve({});
+  assert.deepEqual(unknown.trace.activity, { status: "unresolved", field: "activity", reason: "not_asked", candidates: [], missingSignals: ["hasRealCustomers"] });
 });
 
 test("mutación (C1 de Lote B): local + appointments con evidencia independiente real también resuelve hybrid con ambos componentes — no depende de qué dos archetypes sean", () => {
