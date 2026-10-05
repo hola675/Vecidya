@@ -494,6 +494,13 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 
 ## Afirmaciones de la documentación vs pruebas
 
+### DIAG-V3-QBANK-R1 — RAN 2026-10-05
+
+- Suites focalizadas `context-resolver.test.ts`, `qbv2-architecture.test.ts`, `qbv2-planner.test.ts` y `qbv2-evidence-completion.test.ts`: **128/128 PASS**. Cubren actividad sin `GrowthStage` preciso ni requisito de `q2_demand_trend`, composición de 3+ modos y orden/deduplicación, pertenencia `archetypeIncludes`, compatibilidad single/two mode, roles de planner y reportes de gates peligrosos.
+- `pnpm run typecheck`: PASS. `pnpm run build`: PASS (warning existente de secretos Gmail ausentes en entorno local). `git diff --check`: PASS.
+- `pnpm run test:unit`: **821/822 PASS**. Única falla: `tests/unit/diagnostic/characterization.test.ts:102`, «el motor produce exactamente los resultados fijados antes de los contratos V3». Reproducida idénticamente en preflight antes de modificar archivos; no se atribuye a R1. La última salida histórica previa de 341/341 (2026-09-28) no describe el estado actual.
+- La guarda estática reporta actualmente 41 `notEq(..., "no")` en `appliesWhen`/`materialAppliesWhen`; los QuestionId están en la salida de `validateQuestionBankV2(QUESTION_BANK_V2)` y deben migrarse individualmente en R2.
+
 Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.md). En resumen: las fases de Business Profile, Servicios (cliente), Cuenta, Admin 8A/8C, multi-org y `PRODUCT-EVOLUTION-001` B/C1/C2/D1 tienen prueba ejecutable; 4B/4C/5A/7B.1/7B.2/8B/8D/8E dependen de scripts stale; Diagnóstico, `PUBLIC-WEB-CONTENT-001`, `PUBLIC-GROWTH-001` A/B/C2, PX-B, E1 y 1C/1D/1E descansan en QA no versionado, cobertura indirecta o un script roto.
 
 ## Brechas propuestas (solo listado; ver deuda `TEST-*` en STATUS)

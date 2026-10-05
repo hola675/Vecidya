@@ -99,6 +99,26 @@ test("archetypeComponents: sin duplicados y en orden canónico (alfabético), in
   assert.deepEqual(a.context.archetypeComponents, ["ecommerce", "retail"]);
 });
 
+test("archetypeComponents: tres o más modos conservan todos los componentes únicos en orden determinista", () => {
+  const result = resolve({ deliveryModes: [
+    { value: "online_checkout", provenance: "observed_fact" },
+    { value: "fixed_location_with_inventory", provenance: "observed_fact" },
+    { value: "scheduled_time_blocks", provenance: "observed_fact" },
+    { value: "fixed_location_no_inventory", provenance: "observed_fact" },
+  ] });
+  assert.deepEqual(result.context.archetype, { status: "resolved", value: "hybrid", source: "signal" });
+  assert.deepEqual(result.context.archetypeComponents, ["appointments", "ecommerce", "local", "retail"]);
+  assert.equal(new Set(result.context.archetypeComponents).size, result.context.archetypeComponents.length);
+});
+
+test("activity se resuelve desde clientes reales aunque GrowthStage siga sin precisión suficiente", () => {
+  const active = resolve({ hasRealCustomers: { value: true, provenance: "observed_fact" }, operatingRegularity: { value: "regular", provenance: "observed_fact" } });
+  assert.deepEqual(active.context.activity, { status: "resolved", value: "active", source: "signal" });
+  assert.equal(active.context.growthStage.status, "unresolved");
+  const prelaunch = resolve({ hasRealCustomers: { value: false, provenance: "observed_fact" } });
+  assert.deepEqual(prelaunch.context.activity, { status: "resolved", value: "prelaunch", source: "signal" });
+});
+
 test("mutación (C1 de Lote B): local + appointments con evidencia independiente real también resuelve hybrid con ambos componentes — no depende de qué dos archetypes sean", () => {
   const result = resolve({ deliveryMode: { value: "fixed_location_no_inventory", provenance: "observed_fact" }, secondaryDeliveryMode: { value: "scheduled_time_blocks", provenance: "observed_fact" } });
   assert.deepEqual(result.context.archetype, { status: "resolved", value: "hybrid", source: "signal" });

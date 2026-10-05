@@ -229,7 +229,7 @@ export type EvidenceSufficiencyInput = {
 
 const PRIORITY_RANK: Record<QuestionPriority, number> = { critical: 4, high: 3, normal: 2, refinement: 1 };
 const PURPOSE_RANK: Record<QuestionPurpose, number> = { anchor: 4, classification: 4, maturity: 3, goal: 4, friction: 4, routing: 3, diagnostic: 2, confirmation: 5 };
-const CORE_FIELDS: readonly ContextFieldRef[] = ["entity", "businessModel", "archetype", "growthStage", "primaryGoal", "primaryFriction", "customerReach", "customerBuyer"];
+const CORE_FIELDS: readonly ContextFieldRef[] = ["entity", "businessModel", "archetype", "activity", "primaryGoal", "primaryFriction", "customerReach", "customerBuyer"];
 const CROSS_CUTTING = new Set<ModuleId>(["operations", "follow_up", "measurement", "conversion"]);
 const FOUNDATION = new Set<ModuleId>(["core", "classification", "maturity", "goal_friction"]);
 
@@ -246,7 +246,7 @@ function isAnswered(question: QuestionDefinitionV2, answers: AnswersV2): boolean
 }
 
 function producedContextFields(question: QuestionDefinitionV2): readonly ContextFieldRef[] {
-  return [...new Set(question.options.flatMap((option) => option.produces ?? []).map((production) => SIGNAL_PRODUCTION_CONTEXT_FIELD[production.kind]).filter((field): field is ContextFieldRef => CONTEXT_FIELD_REFS.includes(field as ContextFieldRef)))];
+  return [...new Set(question.options.flatMap((option) => option.produces ?? []).flatMap((production) => [SIGNAL_PRODUCTION_CONTEXT_FIELD[production.kind], ...(production.kind === "hasRealCustomers" ? ["activity"] : [])]).filter((field): field is ContextFieldRef => CONTEXT_FIELD_REFS.includes(field as ContextFieldRef)))];
 }
 
 function collectAnswerRefs(rule: RuleV2 | undefined, output: Set<string>): void {
@@ -257,16 +257,21 @@ function collectAnswerRefs(rule: RuleV2 | undefined, output: Set<string>): void 
 }
 
 function isRequired(question: QuestionDefinitionV2, contextStatus: Readonly<Record<ContextFieldRef, "resolved" | "unresolved">>): boolean {
+  if (question.routingRole === "core") return true;
+  if (question.routingRole === "adaptive" || question.routingRole === "deepening") return false;
   const producedFields = producedContextFields(question);
   if (question.purpose.some((purpose) => purpose === "anchor" || purpose === "classification")) return producedFields.some((field) => CORE_FIELDS.includes(field) && contextStatus[field] === "unresolved") || question.module === "nonprofit" && contextStatus.businessModel === "resolved";
   if (question.purpose.includes("goal")) return question.module === "goal_friction" && contextStatus.primaryGoal === "unresolved";
   if (question.purpose.includes("friction")) return question.module === "goal_friction" && contextStatus.primaryFriction === "unresolved";
-  if (question.module === "maturity" && contextStatus.growthStage === "unresolved") return true;
+  if (question.module === "maturity" && contextStatus.activity === "unresolved") return true;
   return false;
 }
 
 function selectionReason(question: QuestionDefinitionV2, status: Readonly<Record<ContextFieldRef, "resolved" | "unresolved">>, routingPrerequisites: ReadonlySet<string>): QuestionSelectionReason {
   if (question.purpose.includes("confirmation")) return "confirmation";
+  if (question.routingRole === "core") return "required_context";
+  if (question.routingRole === "adaptive") return "specialized_evidence";
+  if (question.routingRole === "deepening") return "refinement";
   if (isRequired(question, status)) return "required_context";
   if (routingPrerequisites.has(question.id)) return "unlock_routing";
   if (question.purpose.includes("goal") || question.purpose.includes("friction")) return "goal_or_friction";

@@ -10,15 +10,49 @@ import {
   QUESTION_BANK_V2,
   QUESTION_PRIORITIES,
   QUESTION_PURPOSES,
+  buildQuestionPlan,
   resolveDiagnosticContext,
   validateQuestionBankV2,
 } from "../../../app/features/diagnostic/index.ts";
+import { archetypeIncludes, evaluateRuleV2 } from "../../../app/features/diagnostic/qbv2-rules.ts";
 
 // ── §66: tests de arquitectura ───────────────────────────────────────────────
 
-test("QBV2 arquitectura: el banco golden pasa TODOS los validadores estáticos sin issues", () => {
+test("QBV2 arquitectura: el banco golden pasa todos los validadores excepto las alertas transitorias notEq prerequisito", () => {
   const issues = validateQuestionBankV2(GOLDEN_QUESTIONS_V2);
-  assert.deepEqual(issues, [], `el banco golden no debería tener issues: ${JSON.stringify(issues)}`);
+  assert.deepEqual(issues.filter((issue) => issue.code !== "UNSAFE_NOT_EQ_PREREQUISITE"), [], JSON.stringify(issues));
+  assert.ok(issues.some((issue) => issue.code === "UNSAFE_NOT_EQ_PREREQUISITE"));
+});
+
+test("archetypeIncludes reconoce componentes en rutas híbridas de tres o más modos", () => {
+  const context = resolveDiagnosticContext({ deliveryModes: [
+    { value: "online_checkout", provenance: "observed_fact" },
+    { value: "fixed_location_with_inventory", provenance: "observed_fact" },
+    { value: "scheduled_time_blocks", provenance: "observed_fact" },
+  ] }).context;
+  assert.equal(evaluateRuleV2(archetypeIncludes("appointments"), {}, context), true);
+  assert.equal(evaluateRuleV2(archetypeIncludes("ecommerce"), {}, context), true);
+  assert.equal(evaluateRuleV2(archetypeIncludes("retail"), {}, context), true);
+});
+
+test("el validador informa los gates notEq(no) actuales y el planner puede leer un rol declarado", () => {
+  const issues = validateQuestionBankV2(QUESTION_BANK_V2);
+  const unsafe = issues.filter((issue) => issue.code === "UNSAFE_NOT_EQ_PREREQUISITE");
+  assert.ok(unsafe.length > 0);
+  assert.ok(unsafe.every((issue) => issue.questionId && issue.message.includes("sin respuesta")));
+  assert.ok(QUESTION_BANK_V2.every((question) => question.routingRole === undefined), "R1 no asigna roles a todas las preguntas");
+  const anchor = QUESTION_BANK_V2.find((question) => question.id === "q2_entity")!;
+  const adaptive = buildQuestionPlan({ answers: {}, bank: [{ ...anchor, routingRole: "adaptive" }] });
+  const core = buildQuestionPlan({ answers: {}, bank: [{ ...anchor, routingRole: "core" }] });
+  assert.equal(adaptive.trace.find((entry) => entry.questionId === anchor.id)?.required, false);
+  assert.equal(core.trace.find((entry) => entry.questionId === anchor.id)?.required, true);
+});
+
+test("un negocio activo no fuerza q2_demand_trend para completar el hecho básico de actividad", () => {
+  const plan = buildQuestionPlan({ answers: { q2_has_customers: "yes", q2_regularity: "regular" }, bank: QUESTION_BANK_V2 });
+  assert.deepEqual(plan.context.activity, { status: "resolved", value: "active", source: "signal" });
+  assert.equal(plan.context.growthStage.status, "unresolved");
+  assert.equal(plan.trace.find((entry) => entry.questionId === "q2_demand_trend")?.required, false);
 });
 
 test("QBV2 arquitectura: 14 preguntas golden, no las 100-120 de 08B.3", () => {

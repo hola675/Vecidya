@@ -166,6 +166,7 @@ export type CopyVariantV2 = { readonly target: CopyVariantTarget; readonly promp
  * añadidas); el resto sigue en la 1. QBV1 conserva su propio tipo (solo versión 1).
  */
 export type QuestionVersionV2 = 1 | 2;
+export type QuestionRoutingRole = "core" | "adaptive" | "deepening";
 
 export type OptionKindV2 = "value" | "none" | "unknown" | "not_applicable";
 
@@ -192,6 +193,8 @@ type QuestionDefinitionV2Base = {
   readonly hint?: string;
   readonly purpose: readonly [QuestionPurpose, ...QuestionPurpose[]];
   readonly priority: QuestionPriority;
+  /** Rol de ruta declarativo; ausente conserva la inferencia histórica hasta la migración R2. */
+  readonly routingRole?: QuestionRoutingRole;
   /**
    * Ausente = siempre elegible en cuanto su módulo es relevante (equivalente a "core").
    * DIAG-V3-08E.2 (ciclo de vida): una pregunta que presupone clientes, consultas, transacciones u operación

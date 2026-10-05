@@ -1,5 +1,7 @@
 # Estado de implementación
 
+DIAG-V3-QBANK-R1 (2026-10-05, local): preparación arquitectónica implementada; cuestionario QBV2 sin migrar y no activado. Evidencia y límites en `ARCHITECTURE.md`, `TESTING.md` y workbook de revisión (85/85 cerradas). Deuda para R2: migrar roles y gates `notEq(no)` de manera deliberada, implementar las decisiones humanas del banco y resolver la falla baseline de caracterización antes de usar la suite completa como comparación limpia. Sin cambios de scoring/resultados, migración o deploy.
+
 ## DIAG-V3-REL-001 — checkpoint de publicación 0.6.0
 
 El núcleo DIAG-V3 queda listo para publicar bajo autorización explícita: planner v2, schema 2, question bank v1, scoring v1, overall index v2, metodología 3.0 y hard cap 24. La calibración real de seis casos cerró con PASS WITH FINDINGS; FIX-03A/B/C/D y FIX-04A no cambian el modelo comercial, GHL, licencias, addons ni servicios. La publicación queda pendiente de deploy y verificación HTTP anónima; hasta entonces este bloque no declara estado público.

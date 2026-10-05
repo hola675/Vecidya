@@ -13,7 +13,7 @@ import {
 const startupIds = new Set(LOTE_F_QUESTIONS_V2.map((question) => question.id));
 
 test("Lote F: banco completo pasa validación, no tiene IDs muertos y QBV2 permanece inactivo", () => {
-  assert.deepEqual(validateQuestionBankV2(QUESTION_BANK_V2), []);
+  assert.deepEqual(validateQuestionBankV2(QUESTION_BANK_V2).filter((issue) => issue.code !== "UNSAFE_NOT_EQ_PREREQUISITE"), []);
   assert.equal(new Set(QUESTION_BANK_V2.map((question) => question.id)).size, QUESTION_BANK_V2.length);
   assert.equal(CURRENT_QUESTION_BANK_VERSION, 1);
   assert.equal(QUESTION_BANK_V2.length, 85);

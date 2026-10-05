@@ -135,6 +135,12 @@ function resolveBusinessModel(signals: DiagnosticSignalsV3): { resolution: Resol
 // ── OperationalArchetype ─────────────────────────────────────────────────────
 
 function resolveOperationalArchetype(signals: DiagnosticSignalsV3, nicheHints: readonly OperationalArchetype[] | undefined): { resolution: Resolution<OperationalArchetype>; trace: FieldTrace; components: readonly OperationalArchetype[] } {
+  const selectedModes = (signals.deliveryModes ?? []).filter(isMaterial);
+  if (selectedModes.length > 0) {
+    const realComponents = [...new Set(selectedModes.map((mode) => DELIVERY_MODE_TO_ARCHETYPE[mode.value]))].sort();
+    if (realComponents.length > 1) return { resolution: resolved("hybrid", "signal"), trace: resolvedTrace("archetype", "hybrid", ["deliveryModes"], `varios mecanismos de entrega reales: ${realComponents.join(" + ")}`), components: realComponents };
+    return { resolution: resolved(realComponents[0]!, "signal"), trace: resolvedTrace("archetype", realComponents[0]!, ["deliveryModes"], "mecanismo de entrega declarado/observado"), components: realComponents };
+  }
   const primary = signals.deliveryMode;
   if (!isMaterial(primary)) {
     // Un hint de nicho NUNCA resuelve por sí solo (§6, mutación A) — a lo sumo aporta candidatos a un `unresolved`.
@@ -333,6 +339,8 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
   const customerReach = resolveCustomerAxis<CustomerReach>("customerReach", signals.customerReach);
   const customerBuyer = resolveCustomerAxis<CustomerBuyer>("customerBuyer", signals.buyerType);
   const growthStage = resolveGrowthStage(signals);
+  const hasCustomers = signals.hasRealCustomers;
+  const activity: Resolution<"prelaunch" | "active"> = isMaterial(hasCustomers) ? resolved(hasCustomers.value ? "active" : "prelaunch", "signal") : unresolved("not_asked");
   const primaryGoal = resolvePrimaryGoal(signals);
   const primaryFriction = resolvePrimaryFriction(signals);
 
@@ -343,6 +351,7 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
       businessModel: businessModel.resolution,
       archetype: archetype.resolution,
       archetypeComponents: archetype.components,
+      activity,
       niche: niche.resolution,
       nicheGroup: nicheGroup.resolution,
       growthStage: growthStage.resolution,

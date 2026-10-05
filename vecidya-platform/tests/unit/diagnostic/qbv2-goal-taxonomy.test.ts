@@ -22,7 +22,7 @@ test("08E.3 q2_goal exposes exactly the eight engine goals plus unsure, each wit
     assert.deepEqual(option.kind === "unknown" ? [production?.kind, production?.value] : [production?.kind, production?.value], option.kind === "unknown" ? ["goalUnknown", true] : ["goal", option.value], option.value);
     assert.ok(goalQuestion.helpIntent?.options?.[option.value], `${option.value} keeps its intent`);
   }
-  assert.deepEqual(validateQuestionBankV2(QUESTION_BANK_V2), []);
+  assert.deepEqual(validateQuestionBankV2(QUESTION_BANK_V2).filter((issue) => issue.code !== "UNSAFE_NOT_EQ_PREREQUISITE"), []);
   assert.equal(QUESTION_BANK_V2.filter((question) => !question.purpose.includes("confirmation")).length, 85, "expanding a goal adds no productive question");
 });
 

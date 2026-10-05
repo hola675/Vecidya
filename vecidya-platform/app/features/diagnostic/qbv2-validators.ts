@@ -36,6 +36,24 @@ function validateModules(bank: QuestionBankV2): ValidationIssue[] {
   return bank.filter((question) => !(MODULE_IDS as readonly string[]).includes(question.module)).map((question) => ({ code: "INVALID_MODULE", questionId: question.id, message: `módulo inexistente: ${question.module}` }));
 }
 
+function validateRoutingRoles(bank: QuestionBankV2): ValidationIssue[] {
+  const valid = new Set(["core", "adaptive", "deepening"]);
+  return bank.flatMap((question) => question.routingRole !== undefined && !valid.has(question.routingRole)
+    ? [{ code: "INVALID_ROUTING_ROLE", questionId: question.id, message: `rol de ruta inválido: ${String(question.routingRole)}` }]
+    : []);
+}
+
+function validateUnsafeNotEqPrerequisites(bank: QuestionBankV2): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const visit = (owner: string, rule: RuleV2): void => {
+    if (rule.op === "notEq" && rule.value === "no") issues.push({ code: "UNSAFE_NOT_EQ_PREREQUISITE", questionId: owner, message: `${owner} usa notEq(${rule.ref.question}, "no"); sin respuesta la regla puede pasar` });
+    else if (rule.op === "and" || rule.op === "or") rule.rules.forEach((child) => visit(owner, child));
+    else if (rule.op === "not") visit(owner, rule.rule);
+  };
+  for (const question of bank) for (const rule of gateRules(question)) visit(question.id, rule);
+  return issues;
+}
+
 /** §19: `exclusive` solo tiene sentido en preguntas `multi` — en `single` ya es implícitamente exclusiva. */
 function validateExclusiveOptions(bank: QuestionBankV2): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
@@ -184,6 +202,8 @@ function validateNoSelfReferentialContextGating(bank: QuestionBankV2): Validatio
 const VALIDATORS: readonly ((bank: QuestionBankV2) => ValidationIssue[])[] = [
   validateUniqueIds,
   validateModules,
+  validateRoutingRoles,
+  validateUnsafeNotEqPrerequisites,
   validateExclusiveOptions,
   validateUnknownCardinality,
   validateNoOrphanQuestions,

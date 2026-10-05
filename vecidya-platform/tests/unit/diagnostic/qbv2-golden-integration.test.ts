@@ -55,7 +55,7 @@ const HOP_CHAIN_BANK: readonly QuestionDefinitionV2[] = [
 
 test("cadena de contexto de 2 saltos: converge al estado correcto (Q1 -> businessModel -> Q2 -> archetype -> Q3)", () => {
   const issues = validateQuestionBankV2(HOP_CHAIN_BANK);
-  assert.deepEqual(issues, [], "el banco de la cadena no debería violar ningún validador estático (sin auto-referencia)");
+  assert.deepEqual(issues.filter((issue) => issue.code !== "UNSAFE_NOT_EQ_PREREQUISITE"), [], "el banco de la cadena solo puede conservar alertas conocidas de notEq prerequisito");
 
   const result = resolveEligibleQuestionsV2({ q_hop1: "a", q_hop2: "a", q_hop3: "a" }, HOP_CHAIN_BANK);
   assert.deepEqual(result.context.businessModel, { status: "resolved", value: "services", source: "signal" });

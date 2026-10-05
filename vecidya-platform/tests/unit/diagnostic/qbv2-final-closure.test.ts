@@ -59,7 +59,7 @@ test("08B.3 C1 + 08D.1 + 08E.1: production bank has 85 questions (80 + 3 targete
   assert.equal(GOLDEN_QUESTIONS_V2.find((question) => question.id === "q2_confirm_primary_friction") !== undefined, true);
   assert.equal(productionQuestions.some((question) => question.id === "q2_confirm_hybrid_friction"), false);
   assert.equal(productionQuestions.some((question) => question.id === "q2_confirm_primary_friction"), false);
-  assert.deepEqual(validateQuestionBankV2(productionQuestions), []);
+  assert.deepEqual(validateQuestionBankV2(productionQuestions).filter((issue) => issue.code !== "UNSAFE_NOT_EQ_PREREQUISITE"), []);
 });
 
 test("08B.3 C1: module registry coverage is explicit and owned counts are recorded", () => {

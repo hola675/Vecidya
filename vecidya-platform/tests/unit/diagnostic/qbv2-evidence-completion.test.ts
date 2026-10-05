@@ -39,7 +39,7 @@ function replayWithBudget(initial: Record<string, string>, hardMax = ROUTE_HARD_
 
 test("08E.1 bank completion: two direct, material-only questions close Clarity and Foundation gaps", () => {
   assert.equal(QUESTION_BANK_V2.length, 85);
-  assert.deepEqual(validateQuestionBankV2(QUESTION_BANK_V2), []);
+  assert.deepEqual(validateQuestionBankV2(QUESTION_BANK_V2).filter((issue) => issue.code !== "UNSAFE_NOT_EQ_PREREQUISITE"), []);
   assert.deepEqual(validateAnswerSemantics(), []);
   for (const [id, dimension] of [["q2_presence_offer_clarity", "clarity_positioning"], ["q2_presence_digital_base", "digital_foundation"]] as const) {
     const question = byId.get(id)!;

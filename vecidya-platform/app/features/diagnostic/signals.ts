@@ -165,6 +165,8 @@ export type DiagnosticSignalsV3 = {
   secondaryMonetizationMechanism?: Signal<MonetizationMechanism>;
 
   deliveryMode?: Signal<DeliveryMode>;
+  /** Modos reales acumulados cuando una respuesta permite seleccionar varias opciones. */
+  deliveryModes?: readonly Signal<DeliveryMode>[];
   /** Solo se usa para detectar `hybrid`; debe ser independiente de `deliveryMode` (§17, `areIndependent`). */
   secondaryDeliveryMode?: Signal<DeliveryMode>;
 

@@ -93,6 +93,7 @@ export function deriveContextV3(context: Context): DiagnosticContextV3 {
     // QBV1 nunca resuelve `archetype` a "hybrid" (ver `LEGACY_PROFILE_MAPPING`: esos casos quedan
     // `unresolved`), así que derivarlo de la resolución aislada es seguro aquí.
     archetypeComponents: deriveSingleArchetypeComponents(archetype),
+    activity: unresolved("not_asked"),
     niche: unresolved("not_asked"),
     nicheGroup: unresolved("not_asked"),
     growthStage: mapLegacyStage(context.stage),

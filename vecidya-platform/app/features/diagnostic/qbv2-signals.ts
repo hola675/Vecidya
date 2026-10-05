@@ -32,7 +32,7 @@ export type SignalProduction =
   | { readonly kind: "entity"; readonly value: EntityType; readonly provenance: SignalProvenance }
   | { readonly kind: "hasOtherPaidStaff"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "monetizationMechanism"; readonly slot: "primary" | "secondary"; readonly value: MonetizationMechanism; readonly provenance: SignalProvenance }
-  | { readonly kind: "deliveryMode"; readonly slot: "primary" | "secondary"; readonly value: DeliveryMode; readonly provenance: SignalProvenance }
+  | { readonly kind: "deliveryMode"; readonly slot: "primary" | "secondary" | "component"; readonly value: DeliveryMode; readonly provenance: SignalProvenance }
   | { readonly kind: "niche"; readonly value: NicheId; readonly provenance: SignalProvenance }
   | { readonly kind: "nicheGroupOther"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "nicheGroup"; readonly value: NicheGroup; readonly provenance: SignalProvenance }
@@ -110,7 +110,7 @@ export type SignalOrigin = { readonly questionId: string; readonly optionId: str
 export function scalarSlotForProduction(production: SignalProduction): string | undefined {
   if (production.kind === "friction") return "friction";
   if (production.kind === "monetizationMechanism") return production.slot === "primary" ? "monetizationMechanism" : "secondaryMonetizationMechanism";
-  if (production.kind === "deliveryMode") return production.slot === "primary" ? "deliveryMode" : "secondaryDeliveryMode";
+  if (production.kind === "deliveryMode") return production.slot === "component" ? "deliveryModes" : production.slot === "primary" ? "deliveryMode" : "secondaryDeliveryMode";
   return PRODUCTION_TO_FIELD[production.kind];
 }
 
@@ -144,6 +144,7 @@ export function foldSignalProductions(entries: readonly { origin: SignalOrigin; 
   const signals: Record<string, Signal<unknown>> = {};
   const winners: Record<string, string> = {}; // field -> questionId del que ganó, para desempate estable
   const frictionSignals: Signal<PrimaryFriction>[] = [];
+  const deliveryModes: Signal<DeliveryMode>[] = [];
 
   const consider = (field: string, questionId: string, candidate: Signal<unknown>) => {
     const current = signals[field];
@@ -167,11 +168,16 @@ export function foldSignalProductions(entries: readonly { origin: SignalOrigin; 
       continue;
     }
     const candidate: Signal<unknown> = { value: production.value, provenance: production.provenance };
+    if (production.kind === "deliveryMode" && production.slot === "component") {
+      deliveryModes.push(candidate as Signal<DeliveryMode>);
+      continue;
+    }
     const slot = scalarSlotForProduction(production);
     if (slot) consider(slot, origin.questionId, candidate);
   }
 
   const result = { ...signals } as DiagnosticSignalsV3;
   if (frictionSignals.length > 0) (result as { frictionSignals?: readonly Signal<PrimaryFriction>[] }).frictionSignals = frictionSignals;
+  if (deliveryModes.length > 0) (result as { deliveryModes?: readonly Signal<DeliveryMode>[] }).deliveryModes = deliveryModes;
   return result;
 }

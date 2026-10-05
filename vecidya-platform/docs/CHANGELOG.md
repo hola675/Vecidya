@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-05 — DIAG-V3-QBANK-R1 (preparación arquitectónica, local)
+
+- Se cierra el artefacto humano de revisión de preguntas en 85/85 decisiones y se registran las dos decisiones ecommerce pendientes.
+- El contrato QBV2 incorpora rol de routing explícito con fallback histórico; el dominio separa actividad básica de `growthStage`; las entregas admiten N componentes de archetype deterministas; el validador señala gates `notEq(..., "no")` inseguros sin cambiar su semántica actual.
+- No se reescribe ni activa el banco, no cambia scoring/resultados visibles y no se ejecutan migraciones ni deploy.
+- Suites focalizadas 128/128, typecheck, build y `git diff --check` PASS. Unitarias completas: 821/822; única falla `characterization.test.ts:102`, reproducida en preflight antes de R1.
+- La validación estática enumera 41 gates `notEq(..., "no")` existentes que R2 debe revisar y reemplazar deliberadamente.
+
 ## 2026-10-05 — COMMERCIAL-UX-001 (solo local, sin deploy)
 
 - El resolver comercial V1 ya no devuelve `none`: Cuadra es la licencia mínima cuando no hay evidencia suficiente para Barrio o Ciudad, incluso con CRM externo o una necesidad de servicio independiente. Nativa Home queda en Cuadra; el porcentaje Digital Health permanece separado.

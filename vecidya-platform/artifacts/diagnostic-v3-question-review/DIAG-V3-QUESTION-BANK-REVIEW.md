@@ -1,6 +1,6 @@
 # DIAG-V3-QBANK-01 — Workbook de revisión humana del banco productivo
 
-> Artefacto de trabajo temporal. Se genera desde el registro ejecutable `QUESTION_BANK_V2` y sus mappings/contratos asociados. No es documento canónico de producto y no contiene decisiones humanas finales. Las observaciones de auditoría se tratan como candidatos; el código ejecutable prevalece.
+> Artefacto de revisión humana cerrada. Se genera desde el registro ejecutable `QUESTION_BANK_V2` y sus mappings/contratos asociados. Las decisiones aquí registradas guían la migración R2; todavía no describen cambios implementados en el banco productivo.
 
 ## Pre-flight ejecutable
 
@@ -84,8 +84,8 @@ Se preservaron sin editar: `app/app.css`, `app/components/diagnostic-flow/diagno
 | 37 | [`q2_retail_product_visibility`](#37-q2_retail_product_visibility) | ¿Alguien que quiera comprarte puede saber qué vendes y si está di… | SINGLE_SELECT | direct evidence, supporting, routing | Clarity & Positioning | KEEP + REWRITE + ROUTING_FIX + DEFER_TO_ADAPTIVE + REMOVE_AVAILABILITY_CONSTRUCT | CERRADA |
 | 38 | [`q2_retail_customer_capture`](#38-q2_retail_customer_capture) | Después de que alguien te compra, ¿te queda alguna forma de volve… | SINGLE_SELECT | direct evidence, routing | Relationship & Recurrence | KEEP + REWRITE + ADD_NOT_APPLICABLE + ROUTING_FIX + DEFER_TO_ADAPTIVE | CERRADA |
 | 39 | [`q2_retail_promotions`](#39-q2_retail_promotions) | Si las ofertas llegan a clientes que no están en la tienda en ese… | SINGLE_SELECT | direct evidence, routing | Discovery | REMOVE | CERRADA → ELIMINAR |
-| 40 | [`q2_ecommerce_product_discovery`](#40-q2_ecommerce_product_discovery) | Si quien entra a la tienda en línea encuentra lo que busca sin ay… | SINGLE_SELECT | direct evidence, supporting, routing | Digital Foundation | REWRITE | PENDIENTE |
-| 41 | [`q2_ecommerce_checkout_friction`](#41-q2_ecommerce_checkout_friction) | Si quien decide comprar logra terminar el pago. | SINGLE_SELECT | direct evidence, routing | Conversion & Access | KEEP | PENDIENTE |
+| 40 | [`q2_ecommerce_product_discovery`](#40-q2_ecommerce_product_discovery) | Si quien entra a la tienda en línea encuentra lo que busca sin ay… | SINGLE_SELECT | direct evidence, supporting, routing | Digital Foundation | REWRITE | CERRADA |
+| 41 | [`q2_ecommerce_checkout_friction`](#41-q2_ecommerce_checkout_friction) | Si quien decide comprar logra terminar el pago. | SINGLE_SELECT | direct evidence, routing | Conversion & Access | KEEP | CERRADA |
 | 42 | [`q2_ecommerce_cart_visibility`](#42-q2_ecommerce_cart_visibility) | ¿Tu tienda en línea te permite saber cuándo alguien deja producto… | SINGLE_SELECT | direct evidence, routing | Measurement & Optimization | REMOVE | CERRADA → ELIMINAR |
 | 43 | [`q2_ecommerce_cart_followup`](#43-q2_ecommerce_cart_followup) | De esas personas que dejan productos sin comprar, ¿les das seguim… | SINGLE_SELECT | direct evidence, routing | Relationship & Recurrence | REMOVE | CERRADA → ELIMINAR |
 | 44 | [`q2_ecommerce_repeat_purchase`](#44-q2_ecommerce_repeat_purchase) | Con qué frecuencia un mismo cliente vuelve a comprar. | SINGLE_SELECT | direct evidence, routing | Relationship & Recurrence | KEEP + REWRITE + DEFER_TO_ADAPTIVE | CERRADA |
@@ -6217,6 +6217,8 @@ Notas Yoan/ChatGPT:
 
 ## 40 — `q2_ecommerce_product_discovery`
 
+Decisión humana aprobada: KEEP + REWRITE + ADD_NOT_APPLICABLE + DEFER_TO_ADAPTIVE + REDUCE_DIMENSION_SPREAD. DIRECT Digital Foundation; SUPPORTING Conversion & Access. Retirar el mapping a Clarity & Positioning.
+
 ### 1. Pregunta actual
 
 Cuando alguien llega a tu tienda en línea, ¿puede encontrar fácilmente lo que busca (categorías claras, buscador, navegación simple)?
@@ -6340,21 +6342,23 @@ No se propone cambio todavía.
 ### 15. Decisión humana
 
 Estado:
-`PENDIENTE`
+`CERRADA`
 
 Decisión final:
-`—`
+`KEEP + REWRITE + ADD_NOT_APPLICABLE + DEFER_TO_ADAPTIVE + REDUCE_DIMENSION_SPREAD`
 
 Pregunta final:
-`—`
+`Discovery de productos en tienda en línea; evidencia directa de Digital Foundation y supporting de Conversion & Access.`
 
 Respuestas finales:
-`—`
+`Incluir una opción no aplica; definición revisada en R2.`
 
 Notas Yoan/ChatGPT:
-`—`
+`Eliminar mapping a Clarity & Positioning. No reescribir el banco en R1.`
 
 ## 41 — `q2_ecommerce_checkout_friction`
+
+Decisión humana aprobada: KEEP + REWRITE + DEFER_TO_ADAPTIVE + REINTERPRET_SIGNAL. DIRECT Conversion & Access. Un checkout abandonado con frecuencia es un `checkout_completion_gap` observado; no prueba una causa genérica de conversión.
 
 ### 1. Pregunta actual
 
@@ -6473,19 +6477,19 @@ No se propone cambio todavía.
 ### 15. Decisión humana
 
 Estado:
-`PENDIENTE`
+`CERRADA`
 
 Decisión final:
-`—`
+`KEEP + REWRITE + DEFER_TO_ADAPTIVE + REINTERPRET_SIGNAL`
 
 Pregunta final:
-`—`
+`Checkout Completion Gap — evidencia directa de Conversion & Access.`
 
 Respuestas finales:
-`—`
+`Interpretar el abandono frecuente como checkout_completion_gap observado, no como causa genérica de conversión.`
 
 Notas Yoan/ChatGPT:
-`—`
+`No reescribir el banco en R1.`
 
 ## 42 — `q2_ecommerce_cart_visibility`
 
@@ -13153,5 +13157,5 @@ Notas Yoan/ChatGPT:
 
 ## Completeness statement
 
-El documento contiene exactamente un registro por pregunta productiva y excluye las dos preguntas `confirmation` fixture-only. Todas las decisiones humanas permanecen `PENDIENTE`.
+El documento contiene exactamente un registro por pregunta productiva y excluye las dos preguntas `confirmation` fixture-only. Las 85/85 decisiones humanas están cerradas. Las decisiones de ecommerce #40 y #41 arriba registradas se implementan en R2; este artifact no implica que el banco ejecutable ya haya cambiado.
 

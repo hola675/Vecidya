@@ -448,6 +448,8 @@ export type DiagnosticContextV3 = {
    * en orden canónico (alfabético).
    */
   archetypeComponents: readonly OperationalArchetype[];
+  /** Actividad básica derivada de clientes reales, independiente de la precisión de GrowthStage. */
+  activity: Resolution<"prelaunch" | "active">;
   niche: Resolution<NicheId>;
   /**
    * Añadido en DIAG-V3-08B.1: familia cerrada del nicho (`NicheGroup`), separada de `niche` (el

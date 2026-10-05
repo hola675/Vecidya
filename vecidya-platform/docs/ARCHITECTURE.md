@@ -419,6 +419,14 @@ GHL es el system of record de contactos, leads, oportunidades, pipelines, conver
 
 ## Decisiones de diseño vigentes
 
+### DIAG-V3-QBANK-R1 — preparación para migración de banco
+
+- `QuestionDefinitionV2.routingRole` acepta `core | adaptive | deepening`. Es metadata de routing que el planner lee directamente; no depende de scoring ni de lógica comercial. Si se omite, la clasificación existente por propósito/contexto conserva exactamente su compatibilidad hasta que R2 asigne roles.
+- `DiagnosticContextV3.activity` es `prelaunch | active`, derivado solo de la señal de existencia de clientes reales. Permanece independiente de `growthStage`, que puede estar sin resolver por falta de tendencia/capacidad. El planner usa `activity` para la base esencial; el unresolved de `growthStage` no vuelve requerida `q2_demand_trend` para conocer operación activa.
+- Las señales de entrega pueden acumular componentes reales en `deliveryModes`. El resolver deduplica y ordena alfabéticamente todos los archetypes derivados; un componente produce el archetype único, dos o más producen `hybrid`. Niche hints continúan sin producir componentes.
+- `validateQuestionBankV2` reporta `UNSAFE_NOT_EQ_PREREQUISITE` para gates `notEq(question, "no")`, porque una referencia sin contestar puede satisfacer la regla. La pasada actual encuentra 41 preguntas productivas. Se preserva temporalmente la evaluación histórica; R2 debe migrar cada gate con intención explícita.
+- R1 no activa QBV2, no cambia opciones/copy productivo, contribuciones, pesos, fórmulas, umbrales, recomendaciones ni resultados visibles.
+
 - Gobierno y auditoría en tablas separadas del perfil (`0009`).
 - Horarios anclados a `organization_id`; «sin fila» = día sin definir (`0008`).
 - `service_area` como texto libre (sin geocodificación, radios ni polígonos); `city`/`country` = ubicación de referencia.
