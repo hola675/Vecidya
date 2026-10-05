@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 2,
+  "plannerVersion": 2,
+  "questionBankPersistedVersion": 1,
+  "routeHardCap": 24,
+  "counts": {"base": 18, "material": 3, "deepening": 3, "total": 24},
+  "snapshots": {
+    "after21": {"rawScore":69.28571428571429,"displayScore":69,"band":"developing","possibleRange":[60.625,73.125],"bandInstability":true,"unresolvedDimensions":["digital_readiness"],"usefulQuestionIds":["q2_ecommerce_traffic_sources","q2_reputation_flow","q2_ecommerce_cart_followup","q2_followup_general_process","q2_followup_status_visibility","q2_operations_information_base","q2_operations_automation_adoption","q2_presence_digital_base"]},
+    "after22": {"rawScore":66.875,"displayScore":67,"band":"developing","possibleRange":null,"bandInstability":false,"unresolvedDimensions":[],"usefulQuestionIds":["q2_ecommerce_traffic_sources","q2_reputation_flow","q2_ecommerce_cart_followup","q2_followup_general_process","q2_followup_status_visibility","q2_operations_information_base","q2_presence_digital_base"]},
+    "after23": {"rawScore":66.875,"displayScore":67,"band":"developing","possibleRange":null,"bandInstability":false,"usefulQuestionIds":["q2_ecommerce_traffic_sources","q2_reputation_flow","q2_operations_information_base","q2_presence_digital_base"]},
+    "final": {"rawScore":66.875,"displayScore":67,"band":"developing","possibleRange":null,"bandInstability":false,"usefulQuestionIds":["q2_ecommerce_traffic_sources","q2_reputation_flow","q2_presence_digital_base"]}
+  },
+  "finalCompletion": {
+    "ready": true,
+    "terminalReason": "absolute_hard_cap_reached",
+    "hardCapReached": true,
+    "reasons": ["minimum_context_resolved","required_questions_answered","primary_route_complete","absolute_hard_cap_reached"],
+    "usefulQuestionsRemaining": true
+  },
+  "remainingUsefulCandidates": ["q2_ecommerce_traffic_sources","q2_reputation_flow","q2_presence_digital_base"],
+  "overall": {"assessed":8,"applicable":8,"coverage":1,"confidence":"medium","publicLabel":"REGULAR","descriptor":"Presencia en desarrollo"}
+}

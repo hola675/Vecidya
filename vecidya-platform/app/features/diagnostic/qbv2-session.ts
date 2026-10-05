@@ -281,7 +281,7 @@ export function runDiagnosticPipelineV3(answers: AnswersV2): DiagnosticResultV3 
   const priorities = deriveConstraintsAndPriorities(scoring);
   const semanticFacts = deriveSemanticFacts({ answers, scoring, priorities });
   const narrative = buildDiagnosticNarrative({ answers, scoring, priorities, semanticFacts });
-  return { narrative, outcome: buildDiagnosticOutcome({ scoring, priorities, semanticFacts, narrative }) };
+  return { narrative, outcome: buildDiagnosticOutcome({ answers, scoring, priorities, semanticFacts, narrative }) };
 }
 
 export type CompletionV3 = { readonly ok: true; readonly session: DiagnosticSessionV3; readonly result: DiagnosticResultV3 } | { readonly ok: false; readonly session: DiagnosticSessionV3 };

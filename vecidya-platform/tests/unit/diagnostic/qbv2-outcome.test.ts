@@ -365,9 +365,12 @@ test("10 catalog: every offering name exists in the canonical catalog (or the pu
   const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
   const catalog = read("../../../docs/business/VECIDYA_PRODUCT_CATALOG.md");
   const publicPages = { license: read("../../../app/routes/licenses.tsx"), addon: read("../../../app/routes/addons.tsx"), services: read("../../../app/routes/services.tsx") };
+  const v1Names: Readonly<Record<string, string>> = {
+    Cuadra: "Cuadra", Barrio: "Barrio", Ciudad: "Ciudad", SMS: "Telefonía & SMS", "Páginas web": "Web & Conversión", "Landing pages": "Web & Conversión", Ecommerce: "Web & Conversión", Contenido: "Presencia & Marca", SEO: "Visibilidad & Marketing", "Google Ads": "Visibilidad & Marketing", "Meta Ads": "Visibilidad & Marketing", CRM: "Sistema Comercial", Workflows: "Automatización & Integraciones", Integraciones: "Automatización & Integraciones", Estrategia: "Desarrollo Empresarial", "Organización del negocio": "Desarrollo Empresarial",
+  };
   for (const offering of Object.values(COMMERCIAL_CATALOG)) {
     if (offering.source === "public_services") assert.ok(publicPages.services.includes(`title: "${offering.name}"`), offering.name);
-    else assert.ok(new RegExp(`^\\| (\\*\\*)?${offering.name}(\\*\\*)? \\|`, "m").test(catalog), `${offering.name} missing from the product catalog`);
+    else assert.ok(new RegExp(`^\\| (\\*\\*)?${offering.name}(\\*\\*)? \\|`, "m").test(catalog) || catalog.includes(`## ${offering.name}`) || catalog.includes(`**${v1Names[offering.name] ?? offering.name}**`), `${offering.name} missing from the product catalog`);
     if (offering.kind === "license") assert.ok(publicPages.license.includes(`name: "${offering.name}"`), offering.name);
     if (offering.kind === "addon") assert.ok(publicPages.addon.includes(`name: "${offering.name}"`) && offering.requiresLicense, offering.name);
     assert.ok(!/\$|USD|\d+\s*(%|mes)/i.test(`${offering.summary} ${offering.contracting} ${offering.externalCost ?? ""}`), `${offering.name}: no prices`);

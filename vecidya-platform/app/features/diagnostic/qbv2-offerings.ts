@@ -6,6 +6,8 @@ import type { ConstraintPriorityResult } from "./qbv2-priorities";
 import { buildDiagnosticRecommendations, type DiagnosticRecommendation, type DiagnosticRecommendations } from "./qbv2-recommendations";
 import type { SemanticDiagnosticFacts } from "./qbv2-semantic-facts";
 import { matchSolution, solutionContextOf, type SolutionContext, type SolutionId, type SolutionMatch } from "./qbv2-solutions";
+import { resolveCommercialRecommendation, type CommercialRecommendationV1 } from "./commercial-recommendation";
+import type { AnswersV2 } from "./qbv2-rules";
 
 /**
  * DIAG-V3-10 — catálogo comercial y emparejamiento. Lo que Vecidya ofrece se mantiene aparte de la verdad
@@ -209,9 +211,12 @@ export type DiagnosticOutcome = {
   readonly overall: DigitalPresenceStatus;
   readonly recommendations: DiagnosticRecommendations;
   readonly help: HowVecidyaCanHelp;
+  /** Canonical Commercial Product System V1 output. `help` remains a compatibility projection for existing render models. */
+  readonly commercialRecommendation: CommercialRecommendationV1;
 };
 
 export type DiagnosticOutcomeInput = {
+  readonly answers?: AnswersV2;
   readonly scoring: ContextualScoringResult;
   readonly priorities: ConstraintPriorityResult;
   readonly semanticFacts: SemanticDiagnosticFacts;
@@ -224,5 +229,13 @@ export function buildDiagnosticOutcome(input: DiagnosticOutcomeInput): Diagnosti
   const recommendations = buildDiagnosticRecommendations(input);
   const context = solutionContextOf(input.scoring, input.priorities, input.narrative);
   const matches = recommendations.items.map((item) => matchSolution(item, context));
-  return { overall, recommendations, help: matchCommercialOfferings(recommendations, matches, context, input.narrative) };
+  const answers = input.answers ?? {};
+  const commercialRecommendation = resolveCommercialRecommendation({
+    answers,
+    digitalResult: { score: overall.index.displayScore, band: overall.publicLabel, confidence: overall.confidence.level },
+  });
+  // The legacy help projection is retained only for callers that do not yet pass answers (fixtures/compatibility).
+  // Every real V3 run passes answers and uses the canonical CommercialRecommendationV1 object instead.
+  const help = input.answers ? { items: [], suppressed: [] } : matchCommercialOfferings(recommendations, matches, context, input.narrative);
+  return { overall, recommendations, help, commercialRecommendation };
 }

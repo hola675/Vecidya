@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 2,
+  "sessionId": "f01b22c0-919f-46f2-afd8-9cc2799ba163",
+  "startedAt": 1791129833524,
+  "updatedAt": 1791130247810,
+  "answers": {
+    "q2_delivery": "b2b_pipeline",
+    "q2_entity": "business",
+    "q2_friction": "conversion",
+    "q2_goal": "measure",
+    "q2_has_customers": "yes",
+    "q2_monetization": "time_or_project",
+    "q2_customer_buyer": "b2b",
+    "q2_customer_reach": "regional",
+    "q2_sector": "professional_services",
+    "q2_b2b_qualification": "yes_clear",
+    "q2_b2b_status_visibility": "yes_clear",
+    "q2_measurement_decision_review": "regularly",
+    "q2_measurement_outcome_tracking": "yes_approx",
+    "q2_measurement_source_confidence": "yes_confident",
+    "q2_regularity": "regular",
+    "q2_process_systemization": "documented_process",
+    "q2_conversion_interest_to_action": "about_half",
+    "q2_capacity_signal": [
+      "stable"
+    ],
+    "q2_demand_trend": "increasing",
+    "q2_professional_authority_signals": "clearly_visible",
+    "q2_presence_digital_base": "own_updated",
+    "q2_b2b_lead_source": "inbound",
+    "q2_b2b_sales_cycle": "sometimes",
+    "q2_followup_general_process": "defined_process"
+  },
+  "answeredQuestionIds": [
+    "q2_delivery",
+    "q2_entity",
+    "q2_friction",
+    "q2_goal",
+    "q2_has_customers",
+    "q2_monetization",
+    "q2_customer_buyer",
+    "q2_customer_reach",
+    "q2_sector",
+    "q2_b2b_qualification",
+    "q2_b2b_status_visibility",
+    "q2_measurement_decision_review",
+    "q2_measurement_outcome_tracking",
+    "q2_measurement_source_confidence",
+    "q2_regularity",
+    "q2_process_systemization",
+    "q2_conversion_interest_to_action",
+    "q2_capacity_signal",
+    "q2_demand_trend",
+    "q2_professional_authority_signals",
+    "q2_presence_digital_base",
+    "q2_b2b_lead_source",
+    "q2_b2b_sales_cycle",
+    "q2_followup_general_process"
+  ],
+  "queue": [],
+  "reviewIndex": null,
+  "routeTrace": [
+    {
+      "type": "planned",
+      "questionIds": [
+        "q2_delivery",
+        "q2_entity",
+        "q2_friction",
+        "q2_goal",
+        "q2_has_customers",
+        "q2_monetization",
+        "q2_customer_buyer",
+        "q2_customer_reach",
+        "q2_sector"
+      ],
+      "routeLength": 9,
+      "phases": {
+        "q2_delivery": "base",
+        "q2_entity": "base",
+        "q2_friction": "base",
+        "q2_goal": "base",
+        "q2_has_customers": "base",
+        "q2_monetization": "base",
+        "q2_customer_buyer": "base",
+        "q2_customer_reach": "base",
+        "q2_sector": "base"
+      }
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_delivery",
+      "phase": "base",
+      "reason": "required_context"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_entity",
+      "phase": "base",
+      "reason": "required_context"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_friction",
+      "phase": "base",
+      "reason": "required_context"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_goal",
+      "phase": "base",
+      "reason": "required_context"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_has_customers",
+      "phase": "base",
+      "reason": "required_context"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_monetization",
+      "phase": "base",
+      "reason": "required_context"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_customer_buyer",
+      "phase": "base",
+      "reason": "required_context"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_customer_reach",
+      "phase": "base",
+      "reason": "required_context"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_sector",
+      "phase": "base",
+      "reason": "unlock_routing"
+    },
+    {
+      "type": "planned",
+      "questionIds": [
+        "q2_b2b_qualification",
+        "q2_b2b_status_visibility",
+        "q2_measurement_decision_review",
+        "q2_measurement_outcome_tracking",
+        "q2_measurement_source_confidence",
+        "q2_regularity",
+        "q2_process_systemization",
+        "q2_conversion_interest_to_action"
+      ],
+      "routeLength": 17,
+      "phases": {
+        "q2_b2b_qualification": "base",
+        "q2_b2b_status_visibility": "base",
+        "q2_measurement_decision_review": "base",
+        "q2_measurement_outcome_tracking": "base",
+        "q2_measurement_source_confidence": "base",
+        "q2_regularity": "base",
+        "q2_process_systemization": "base",
+        "q2_conversion_interest_to_action": "material"
+      }
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_b2b_qualification",
+      "phase": "base",
+      "reason": "goal_or_friction"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_b2b_status_visibility",
+      "phase": "base",
+      "reason": "goal_or_friction"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_measurement_decision_review",
+      "phase": "base",
+      "reason": "cross_cutting_evidence"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_measurement_outcome_tracking",
+      "phase": "base",
+      "reason": "cross_cutting_evidence"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_measurement_source_confidence",
+      "phase": "base",
+      "reason": "cross_cutting_evidence"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_regularity",
+      "phase": "base",
+      "reason": "unlock_routing"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_process_systemization",
+      "phase": "base",
+      "reason": "unlock_routing"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_conversion_interest_to_action",
+      "phase": "material",
+      "reason": "cross_cutting_evidence"
+    },
+    {
+      "type": "planned",
+      "questionIds": [
+        "q2_capacity_signal",
+        "q2_demand_trend",
+        "q2_professional_authority_signals",
+        "q2_presence_digital_base",
+        "q2_b2b_lead_source"
+      ],
+      "routeLength": 22,
+      "phases": {
+        "q2_capacity_signal": "base",
+        "q2_demand_trend": "base",
+        "q2_professional_authority_signals": "material",
+        "q2_presence_digital_base": "material",
+        "q2_b2b_lead_source": "deepening"
+      }
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_capacity_signal",
+      "phase": "base",
+      "reason": "required_context"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_demand_trend",
+      "phase": "base",
+      "reason": "required_context"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_professional_authority_signals",
+      "phase": "material",
+      "reason": "specialized_evidence"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_presence_digital_base",
+      "phase": "material",
+      "reason": "specialized_evidence"
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_b2b_lead_source",
+      "phase": "deepening",
+      "reason": "specialized_evidence"
+    },
+    {
+      "type": "planned",
+      "questionIds": [
+        "q2_b2b_sales_cycle"
+      ],
+      "routeLength": 23,
+      "phases": {
+        "q2_b2b_sales_cycle": "deepening"
+      }
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_b2b_sales_cycle",
+      "phase": "deepening",
+      "reason": "specialized_evidence"
+    },
+    {
+      "type": "planned",
+      "questionIds": [
+        "q2_followup_general_process"
+      ],
+      "routeLength": 24,
+      "phases": {
+        "q2_followup_general_process": "deepening"
+      }
+    },
+    {
+      "type": "answered",
+      "questionId": "q2_followup_general_process",
+      "phase": "deepening",
+      "reason": "cross_cutting_evidence"
+    },
+    {
+      "type": "completed",
+      "answered": 24
+    }
+  ],
+  "status": "completed",
+  "terminalReason": "no_useful_questions"
+}

@@ -217,29 +217,27 @@ function reportBlocks(report: DiagnosticReportV1): readonly Block[] {
   }
 
   blocks.push(h2("vecidya", "Cómo puede ayudarte Vecidya"));
-  blocks.push({ key: "vecidya-note", node: <p className="rp-muted">{report.vecidyaHelp.note}</p> });
-  for (const item of report.vecidyaHelp.items) {
+  const commercial = report.commercialRecommendation;
+  const commercialItems = [...commercial.now.complements, ...commercial.now.services, ...commercial.later.complements, ...commercial.later.services];
+  blocks.push({ key: "vecidya-note", node: <p className="rp-muted">{commercialItems.length > 0 || commercial.now.license ? "Esta propuesta separa la licencia, las necesidades actuales y las oportunidades posteriores. La selección se basa en la necesidad operacional demostrada, no en el porcentaje digital." : "Con lo evaluado no hay una licencia o capacidad recurrente que convenga contratar por ahora."}</p> });
+  if (commercial.now.license) {
     blocks.push({
-      key: `help:${item.step}`,
+      key: "commercial-license",
+      node: <div className="rp-help"><p className="rp-label">NECESARIO AHORA</p><ul><li className="rp-offer"><span className="rp-label">Vecidya {commercial.now.license}</span> · ${commercial.cost.monthlyLicenseUsd}/mes · puesta en marcha ${commercial.cost.activationUsd} una vez · {commercial.licenseFit.rationale} {commercial.licenseFit.evidence.map((evidence) => evidence.derivedFact).join(" ")}</li></ul></div>,
+    });
+  }
+  for (const item of commercialItems) {
+    blocks.push({
+      key: `commercial:${item.priority}:${item.id}`,
       node: (
         <div className="rp-help">
-          <p className="rp-label">Para el paso {item.step}: {item.title}</p>
-          {item.noOffering ? <p className="rp-muted">{item.noOffering}</p> : null}
-          {item.offerings.length > 0 ? (
-            <ul>
-              {item.offerings.map((offering) => (
-                <li className={`rp-offer rp-offer--${modifier(offering.role)}`} key={offering.name}>
-                  <span className="rp-label">{offering.name}</span> <span className="rp-offer__role">{offering.roleLabel}</span>
-                  {offering.sharedWithStep ? <span className="rp-muted"> · La misma opción del paso {offering.sharedWithStep}.</span> : <span> · {[offering.summary, ...offering.notes].join(" ")}</span>}
-                </li>
-              ))}
-            </ul>
-          ) : null}
+          <p className="rp-label">{item.priority === "NOW" ? "NECESARIO AHORA" : "PUEDE AYUDARTE DESPUÉS"}</p>
+          <ul><li className="rp-offer"><span className="rp-label">{item.name}</span>{item.priceLabel === null ? null : ` · ${item.priceLabel}`} · {item.rationale} {item.evidence.map((evidence) => evidence.derivedFact).join(" ")}</li></ul>
         </div>
       ),
     });
   }
-  if (report.vecidyaHelp.hasOfferings) blocks.push({ key: "cta", node: <p className="rp-cta">¿Quieres ayuda con estas prioridades? Vecidya puede acompañarte en las opciones indicadas: <a href="mailto:hola@vecidya.com">hola@vecidya.com</a></p> });
+  if (commercialItems.length > 0 || commercial.now.license) blocks.push({ key: "cta", node: <p className="rp-cta">¿Quieres revisar estas opciones? Vecidya puede acompañarte mediante una propuesta con alcance definido: <a href="mailto:hola@vecidya.com">hola@vecidya.com</a></p> });
 
   blocks.push({
     key: "method",

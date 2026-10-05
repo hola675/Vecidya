@@ -118,22 +118,18 @@ test("12 methodology integration: version, four notes, limitations, the 8 accept
   for (const source of METHODOLOGY_SOURCES) assert.ok(!text.includes(source.excerpt) && !text.includes(source.verifiedOn), `${source.id}: audit data stays out`);
 });
 
-test("12 commercial honesty: no offering, no CTA; verify-first and pre-launch rules come from the frozen outcome", () => {
-  const none = golden("appointment_business");
-  assert.equal(none.report.recommendations.length, 0);
-  assert.equal(none.report.vecidyaHelp.hasOfferings, false);
-  assert.match(none.report.vecidyaHelp.note, /no hay nada que convenga contratar/);
-  assert.ok(!textOf(render("appointment_business")).includes("hola@vecidya.com"), "no generic sales CTA");
+test("12 commercial honesty: the canonical resolver is conservative and keeps one license with explicit costs", () => {
+  const appointment = golden("appointment_business");
+  assert.equal(appointment.report.commercialRecommendation.licenseFit.recommendedLicense, "barrio");
+  assert.equal(appointment.report.commercialRecommendation.now.license, "barrio");
+  assert.match(textOf(render("appointment_business")), /hola@vecidya\.com/);
   const creator = golden("creator_personal_brand");
-  assert.equal(creator.report.vecidyaHelp.hasOfferings, false);
-  assert.ok(creator.report.vecidyaHelp.items.every((item) => item.noOffering !== null), "says why there is no offering");
+  assert.equal(creator.report.commercialRecommendation.licenseFit.recommendedLicense, "none");
   assert.ok(!textOf(render("creator_personal_brand")).includes("hola@vecidya.com"));
   const idea = golden("idea_early_stage");
-  assert.ok(idea.report.vecidyaHelp.items.flatMap((item) => item.offerings).every((offering) => offering.role === "optional_service"), "pre-launch: no license or add-on");
-  for (const { report } of goldens) assert.ok(report.vecidyaHelp.items.flatMap((item) => item.offerings).filter((offering) => offering.role.includes("license")).map((offering) => offering.name).filter((name, index, all) => all.indexOf(name) === index).length <= 1, "one license at most");
-  const withOffers = golden("professional_appointments");
-  assert.ok(withOffers.report.vecidyaHelp.hasOfferings && textOf(render("professional_appointments")).includes("hola@vecidya.com"), "restrained CTA only with matched offerings");
-  assert.ok(!/\$|USD|precio|descuento|oferta por tiempo/i.test(JSON.stringify(goldens.map((item) => item.report.vecidyaHelp))), "no prices or urgency");
+  assert.equal(idea.report.commercialRecommendation.now.license, null, "pre-launch: no license");
+  for (const { report } of goldens) assert.ok(report.commercialRecommendation.now.license === null || ["cuadra", "barrio", "ciudad"].includes(report.commercialRecommendation.now.license), "one canonical license at most");
+  assert.ok(goldens.every(({ report }) => report.commercialRecommendation.cost.monthlyLicenseUsd >= 0));
 });
 
 test("12 the report layer computes no diagnostic semantics", () => {

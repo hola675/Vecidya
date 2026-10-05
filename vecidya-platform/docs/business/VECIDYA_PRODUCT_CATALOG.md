@@ -1,318 +1,521 @@
-# Catálogo de productos Vecidya
+# VECIDYA — COMMERCIAL PRODUCT SYSTEM V1
 
-> **UX-002.1 — Product Catalog Foundation**
-> Estado: **propuesta comercial documentada / no implementada**
-> Versión de referencia: `0.3.0`
-> Última actualización: 2026-09-25 (precios de licencias publicados en USD)
+## 1. Principio del producto
 
-Este documento define la matriz comercial base de Vecidya antes de construir páginas públicas, precios publicados, checkout o componentes de catálogo.
+Vecidya combina plataforma, tecnología y servicios profesionales para ayudar a un negocio a organizarse, captar oportunidades, dar seguimiento, automatizar procesos y fortalecer su operación digital.
 
-La matriz separa cuatro conceptos que no deben mezclarse:
+La arquitectura comercial no se basa en el tamaño de la empresa.
 
-| Tipo | Definición |
-| --- | --- |
-| **Licencia** | Sistema continuo con una capacidad y un nivel de evolución definidos. |
-| **Addon** | Capacidad adicional que se suma a una licencia. |
-| **Servicio** | Trabajo personalizado de Vecidya con alcance y resultado acordados. |
-| **Consumo** | Coste variable de un proveedor o canal externo, asociado al uso. |
+Se basa en su necesidad operacional.
 
-## Límites de esta matriz
+La puntuación del Diagnóstico mide el estado del negocio y sus brechas. No selecciona automáticamente una licencia.
 
-- Este catálogo es una **fuente comercial de diseño**, no una descripción de funcionalidades activas en la plataforma actual.
-- Los precios de **licencias** están publicados en USD/mes en `/licencias` desde 2026-09-25 (decisión del usuario); no hay checkout ni facturación automática todavía, así que la activación sigue siendo por contacto directo. Los precios de **addons** y **servicios** siguen sin definir y no están publicados.
-- No crea rutas, componentes, tablas, migraciones, APIs, CRM propio ni integraciones externas.
-- Vecidya no duplica el CRM de HighLevel. Contactos, oportunidades, pipelines, conversaciones, automatizaciones y seguimiento pertenecen al system of record externo definido para cada operación.
-- La activación de cualquier producto futuro exige alcance, autorización, datos reales, revisión legal y validación técnica separados.
+La regla de selección es:
 
-## Licencias Vecidya
+**recomendar la opción más sencilla que cubra completamente la necesidad actual.**
 
-| Licencia | Precio público | Objetivo | Cliente ideal | Evolución |
-| --- | ---: | --- | --- | --- |
-| **Cuadra** | `USD 39/mes` | Ordenar el negocio | Negocio que necesita una base organizada para empezar | Punto de partida: organizarse. |
-| **Barrio** | `USD 59/mes` | Captar oportunidades y hacer seguimiento | Negocio que ya necesita convertir consultas en procesos de seguimiento | Evolución desde Cuadra cuando aparece una necesidad real de captación y seguimiento. |
-| **Ciudad** | `USD 89/mes` | Automatizar y escalar | Negocio con volumen, procesos repetibles y necesidad de control operativo | Evolución desde Barrio cuando aparece una necesidad real de automatización y escala. |
+---
 
-> **Moneda y publicación:** USD/mes, confirmado y autorizado por el usuario el 2026-09-25. Publicado en `/licencias` (`app/routes/licenses.tsx`); sin contratación en línea, sin checkout y sin cobro automático. Activación por contacto directo.
+# 2. Arquitectura comercial
 
-### Cuadra
+| Concepto | Función |
+|---|---|
+| **Licencia** | Nivel operativo recurrente de Vecidya |
+| **Ampliación** | Más cantidad de una capacidad ya incluida |
+| **Complemento** | Nueva capacidad recurrente |
+| **Servicio profesional** | Trabajo humano con alcance y resultado definido |
+| **Coste de uso** | Consumo variable de un proveedor/canal |
+| **Puesta en marcha** | Configuración estándar inicial |
+| **Soporte** | Mantener funcionando lo contratado |
+| **Ajuste** | Modificación pequeña de una configuración existente |
 
-**Objetivo:** ordenar el negocio.
+Una categoría no sustituye a otra.
 
-Base de capacidades prevista:
+**Más cantidad → ampliación.  
+Nueva capacidad → complemento.  
+Nueva complejidad estructural → revisar licencia.  
+Trabajo personalizado → servicio.  
+Uso variable → coste de uso.**
 
-- cuenta Vecidya;
-- perfil público;
-- información del negocio;
-- CRM básico, cuando el sistema externo esté habilitado;
-- contactos;
-- notas;
-- tareas;
-- oportunidades;
-- pipeline;
-- calendario;
-- Social Planner;
-- usuarios según política comercial y operativa.
+---
 
-Estas capacidades describen el paquete comercial futuro. No significan que Vecidya las implemente hoy dentro de su propia base de datos.
+# 3. Licencias Vecidya
 
-### Barrio
+| | **Cuadra** | **Barrio** | **Ciudad** |
+|---|---:|---:|---:|
+| Precio | **$39/mes** | **$59/mes** | **$89/mes** |
+| Función | **Organiza** | **Capta y da seguimiento** | **Automatiza y controla** |
+| Puesta en marcha | **$0** | **$10 una vez** | **$15 una vez** |
+| CRM GHL | No | Sí | Sí |
+| Proceso comercial | No requerido | Principal/estándar | Multiproceso |
+| Captación | Vecidya/presencia | Estándar | Avanzada |
+| Pipeline | — | Estándar Vecidya | Procesos relacionados |
+| Calendario CRM | — | Estándar | Avanzado/equipos |
+| Seguimiento | — | Estándar | Avanzado |
+| Automatización | — | Estándar | Multiproceso/avanzada |
+| Routing/equipos | — | Básico cuando aplica | Avanzado |
+| Control | Vecidya | Comercial | Operacional |
 
-**Objetivo:** captar oportunidades y hacer seguimiento.
+## Cuadra
 
-Incluye todo Cuadra más:
+Para negocios que necesitan organizar su presencia, información, servicios, diagnóstico, prioridades y relación con Vecidya sin requerir todavía un CRM comercial operativo.
 
-- formularios;
-- landing;
-- agenda;
-- automatizaciones estándar;
-- seguimiento;
-- posventa;
-- reportes básicos.
+Cuadra es un producto independiente.
 
-### Ciudad
+No es “Barrio recortado”.
 
-**Objetivo:** automatizar y escalar.
+## Barrio
 
-Incluye todo Barrio más:
+Para negocios que necesitan convertir consultas en oportunidades mediante un proceso comercial repetible.
 
-- más pipelines;
-- más automatizaciones;
-- segmentación;
-- reactivación;
-- procesos avanzados;
-- reportes operativos.
+Incluye un sistema CRM estándar preparado por Vecidya: contactos, oportunidades, pipeline, calendario cuando aplica, formulario de captación, conversaciones, seguimiento y automatizaciones estándar.
 
-## Evolución del cliente
+## Ciudad
 
-La evolución se activa por necesidad real, no por presión comercial:
+Para negocios que necesitan coordinar varios procesos, equipos, asignaciones y automatizaciones manteniendo control operacional.
 
-```text
-CUADRA
-Necesito organizarme.
-        ↓
-BARRIO
-Necesito captar y seguir oportunidades.
-        ↓
-CIUDAD
-Necesito automatizar y controlar.
-```
+Incluye todo Barrio más una biblioteca modular Vecidya.
 
-Reglas:
+Ejemplos de módulos:
 
-1. No se sube a un cliente de licencia para aumentar la venta.
-2. Se propone una evolución solo cuando aparece una necesidad que la licencia actual no resuelve con claridad.
-3. La recomendación debe explicar el problema, la capacidad adicional y el resultado esperado.
-4. Un addon o servicio puntual no obliga por sí mismo a cambiar de licencia.
-5. La licencia, los addons, los servicios y los consumos deben aparecer separados en cualquier propuesta futura.
+**Ventas · Onboarding · Reactivación · Renovación · Asignación · Seguimiento.**
 
-## Addons Vecidya
+El cliente utiliza solamente los módulos estándar que necesita.
 
-Un addon agrega capacidad a una licencia existente. El addon no absorbe los costes variables de los canales o proveedores que utiliza.
+No se vende por cantidad de workflows o pipelines.
 
-| Addon | Problema que resuelve | Licencia mínima | Coste |
-| --- | --- | --- | --- |
-| WhatsApp | Centralizar conversaciones de WhatsApp en el flujo de trabajo | Por definir | Precio de addon por definir + consumo externo separado |
-| SMS | Enviar avisos y seguimientos por mensajes de texto | Por definir | Precio de addon por definir + consumo externo separado |
-| Telefonía | Gestionar llamadas y números desde el sistema operativo | Por definir | Precio de addon por definir + números/minutos separados |
-| IA conversacional | Responder o clasificar conversaciones con asistencia de IA | Por definir | Precio de addon por definir + consumo de IA separado |
-| AI Voice | Atender o asistir llamadas mediante voz de IA | Por definir | Precio de addon por definir + minutos de IA separados |
-| Automatizaciones | Resolver reglas y tareas avanzadas que exceden la automatización estándar | Por definir | Precio de addon por definir |
-| Campañas y seguimiento | Extender la ejecución y medición de campañas | Por definir | Precio de addon por definir + medios o mensajes separados |
-| Medición de marketing | Ordenar atribución y señales de rendimiento | Por definir | Precio de addon por definir |
-| Integraciones externas | Conectar un sistema tercero con el flujo acordado | Por definir | Precio de addon por definir + coste del proveedor/API separado |
+---
 
-### Categorías iniciales
+# 4. Frontera Vecidya ↔ CRM
 
-- **Comunicación:** WhatsApp, SMS y telefonía.
-- **IA:** IA conversacional, AI Voice y Automatizaciones.
-- **Marketing:** campañas, seguimiento y medición.
-- **Integraciones:** conexiones externas, APIs y sistemas terceros.
+Vecidya es la plataforma y relación comercial.
 
-> **Vocabulario público canónico (DIAG-002C):** «WhatsApp», «SMS», «Telefonía», «Automatizaciones», «IA conversacional», «AI Voice» e «Integraciones» son los únicos nombres públicos vigentes de los addons, iguales en `/addons`, en el Diagnóstico y en esta matriz; los identificadores internos (`ai-conversacional`, `automatizaciones`) no cambian y `catalog.test.ts` verifica la coincidencia. Los nombres anteriores solo sobreviven en entradas históricas del CHANGELOG.
+El CRM externo es el sistema operacional.
 
-## Servicios Vecidya
+**Vecidya administra:**
 
-Un servicio es trabajo personalizado. Se contrata por alcance, resultado y condiciones acordadas; no es una capacidad automática incluida en una licencia.
+organización, miembros, negocio, perfil, Vecindario, servicios ofrecidos, Diagnóstico, prioridades, licencia, complementos, servicios profesionales, soporte, recomendaciones y relación contractual.
 
-| Servicio | Resultado | Tipo | Precio |
-| --- | --- | --- | --- |
-| Páginas web | Sitio web publicado con alcance definido | Desarrollo | Por propuesta |
-| Landing pages | Página enfocada en una campaña, oferta o captación | Desarrollo | Por propuesta |
-| Ecommerce | Experiencia de comercio electrónico con alcance definido | Desarrollo | Por propuesta |
-| Identidad de marca | Base visual y verbal coherente para la marca | Marca | Por propuesta |
-| Diseño | Piezas y sistema visual para una necesidad concreta | Marca | Por propuesta |
-| Contenido | Material editorial o comercial con brief y alcance | Marca | Por propuesta |
-| CRM | Configuración y ordenamiento del CRM externo | Automatización | Por propuesta |
-| Workflows | Diseño y configuración de flujos automatizados | Automatización | Por propuesta |
-| Integraciones | Conexión y validación de sistemas terceros | Automatización | Por propuesta |
-| Agentes de IA | Diseño y configuración de agentes para un caso definido | IA | Por propuesta |
-| Voz | Diseño de una experiencia de voz asistida | IA | Por propuesta |
-| Asistentes | Asistente para una tarea o canal específico | IA | Por propuesta |
-| Google Ads | Configuración y gestión de campañas de Google | Marketing | Por propuesta + inversión publicitaria separada |
-| Meta Ads | Configuración y gestión de campañas de Meta | Marketing | Por propuesta + inversión publicitaria separada |
-| SEO | Trabajo de posicionamiento orgánico con alcance definido | Marketing | Por propuesta |
-| GEO/AEO | Preparación de presencia para búsqueda generativa y respuestas | Marketing | Por propuesta |
-| Diagnóstico profesional | Análisis profundo con plan y propuesta | Consultoría | Por propuesta |
-| Estrategia | Definición de prioridades, canales y próximos pasos | Consultoría | Por propuesta |
-| Capacitación | Transferencia de conocimiento sobre herramientas y procesos | Consultoría | Por propuesta |
+**GHL administra:**
 
-### Categorías iniciales
+contactos, leads, oportunidades, pipelines, conversaciones, citas, workflows, automatizaciones y seguimiento comercial diario.
 
-- **Desarrollo:** páginas web, landing y ecommerce.
-- **Marca:** identidad, diseño y contenido.
-- **Automatización:** CRM, workflows e integraciones.
-- **IA:** agentes, voz y asistentes.
-- **Marketing:** Google Ads, Meta Ads, SEO y GEO/AEO.
-- **Consultoría:** diagnóstico, estrategia y capacitación.
+Regla:
 
-## Consumos externos
+**Si la acción modifica la operación CRM del cliente, se realiza en el CRM.**
 
-Los consumos son costes variables de proveedores, canales o infraestructura externa. Nunca deben esconderse dentro de una licencia.
+Vecidya podrá mostrar posteriormente un resumen ejecutivo read-only.
+
+No existirá un CRM paralelo dentro de Vecidya.
+
+---
+
+# 5. Ampliaciones
+
+Las ampliaciones forman parte de la arquitectura pero **V1 no lanza packs públicos artificiales**.
+
+No se limitarán comercialmente por simple conveniencia:
+
+contactos, oportunidades, usuarios, pipelines o workflows.
+
+No habrá reglas como:
+
+“5 workflows en Barrio / 15 en Ciudad”.
+
+Una futura ampliación solo tendrá sentido cuando aumente realmente una capacidad existente sin cambiar la arquitectura operacional.
+
+Ejemplos potenciales:
+
+**flujo adicional de reserva estándar** o **flujo adicional de captación estándar**.
+
+Si cambia la complejidad del negocio, se revisa la licencia.
+
+---
+
+# 6. Complementos V1
+
+Públicamente se llaman **Complementos**.
+
+Internamente pueden mantenerse como `ADDON`.
+
+| Complemento | Fee Vecidya | Costes adicionales |
+|---|---:|---|
+| **WhatsApp Business** | **$9/mes** | proveedor + mensajes |
+| **Telefonía & SMS** | **$9/mes** | número, llamadas, SMS/MMS, A2P |
+| **Reputación & Reseñas** | **$12/mes** | mensajería/IA cuando aplique |
+| **Campañas & Difusión** | **$15/mes** | email/SMS/WhatsApp |
+| **IA Conversacional** | **$15/mes** | IA/plan/uso |
+| **IA de Voz** | **$20/mes** | IA + minutos + telefonía |
+| **Conexiones & Integraciones** | **$12/mes/conexión** | APIs/ejecuciones cuando aplique |
+
+La licencia mínima normal para complementos dependientes del CRM es **Barrio**.
+
+Cuadra no obtiene un CRM mediante complementos.
+
+Si necesita CRM, la frontera funcional es Barrio.
+
+La puesta en marcha estándar del complemento está incluida en su fee.
+
+Una implementación especial continúa siendo un servicio profesional.
+
+Automatizaciones no existe como complemento genérico:
+
+**estándar → Barrio  
+multiproceso → Ciudad  
+personalizada → Servicio  
+ejecución premium → Coste de uso**
+
+---
+
+# 7. Servicios profesionales
+
+Vecidya tendrá siete familias públicas:
+
+| Familia | Resultado |
+|---|---|
+| **Presencia & Marca** | presentar profesionalmente el negocio |
+| **Web & Conversión** | construir experiencias digitales que conviertan |
+| **Visibilidad & Marketing** | aumentar descubrimiento y adquisición |
+| **Sistema Comercial** | diseñar procesos de captación, atención y venta |
+| **Automatización & Integraciones** | reducir trabajo manual y conectar sistemas |
+| **IA Aplicada** | aplicar IA a atención y procesos |
+| **Desarrollo Empresarial** | estructurar y fortalecer el negocio |
+
+Los servicios pueden adoptar modalidad:
+
+**Proyecto · Gestionado recurrente · Sesión/acompañamiento.**
+
+No todos requieren licencia.
+
+Una web, branding, SEO, Google Ads, Meta Ads, Diagnóstico Profesional o desarrollo empresarial pueden contratarse independientemente.
+
+Un servicio dependiente del CRM sí requiere la licencia/capacidad correspondiente.
+
+El **Diagnóstico Profesional** es un servicio separado del Diagnóstico gratuito.
+
+---
+
+# 8. Costes de uso
+
+Los costes variables permanecen separados.
 
 Ejemplos:
 
-- WhatsApp;
-- SMS;
-- llamadas;
-- números telefónicos;
-- email;
-- uso de IA;
-- publicidad.
+WhatsApp, llamadas, SMS, números, email, IA, APIs, ejecuciones premium y publicidad.
 
-Reglas:
+Regla:
 
-1. El cliente debe poder distinguir el precio de Vecidya del coste del proveedor externo.
-2. El consumo se informa según unidad aplicable: mensaje, minuto, número, email, token, ejecución o inversión publicitaria.
-3. Un addon puede habilitar un canal, pero no convierte su consumo variable en ilimitado.
-4. Los proveedores, unidades, tarifas y condiciones deben verificarse antes de incorporarse a una propuesta o página pública.
-5. No se publica una tarifa externa no confirmada como si fuera un precio Vecidya.
+**Precio Vecidya ≠ coste del proveedor.**
 
-## Diagnóstico Vecidya
+Vecidya no promete consumos ilimitados ocultos en una licencia.
 
-### Diagnóstico inicial
+Durante la etapa en la que sea necesario, los consumos podrán gestionarse mediante saldo/prepago o conciliación manual.
 
-**Precio:** gratis.
+La publicidad debe utilizar preferentemente la cuenta y método de pago del propio cliente.
 
-**Objetivo:** entender la situación actual.
+---
 
-**Salida:**
+# 9. Puesta en marcha
 
-- estado;
-- oportunidades;
-- recomendación inicial.
+Públicamente:
 
-El diagnóstico inicial actual es anónimo, efímero y solo cliente. No crea una cuenta, no persiste respuestas y no constituye una propuesta comercial automática.
+**Puesta en marcha**
 
-Desde DIAG-002 (`0.4.0`, local) el diagnóstico inicial entrega estado, cómo se llegó a él, confianza, dimensiones, fortalezas, brechas, hasta tres prioridades explicadas, siguientes pasos y encaje Vecidya. El encaje de licencia se deriva de la capacidad necesaria (ordenar → captar y seguir → automatizar y controlar), nunca del tamaño del equipo ni de un umbral global de puntuación, y puede concluir «ninguna todavía»; Ciudad solo se propone con captura y seguimiento ya definidos. Servicios, addons y artículos recomendados son referencias reales de `/servicios`, `/addons` y Aprende, verificadas por prueba.
+Internamente:
 
-Desde DIAG-V3-10 (solo local, sin integración pública) el resultado V3 empareja recomendaciones con un subconjunto de este catálogo (licencias, el addon SMS y servicios) sin precios ni niveles inventados; las reglas están en `ARCHITECTURE.md` y una prueba verifica que cada nombre exista en esta matriz.
+`ACTIVATION`.
 
-### Diagnóstico profesional
+### Cuadra
+**$0**
 
-**Tipo:** servicio de consultoría.
+### Barrio
+**$10 una vez**
 
-**Objetivo:** realizar un análisis profundo.
+Incluye configuración estándar del sistema, aplicación del estándar Vecidya, pipeline, calendario cuando aplica, formulario, automatizaciones, permisos, validación y mini onboarding.
 
-**Salida:**
+### Ciudad
+**$15 una vez**
 
-- análisis;
-- plan;
-- propuesta.
+Incluye Barrio más selección/configuración de los módulos Ciudad estándar necesarios y mini onboarding.
 
-El diagnóstico profesional requiere alcance, condiciones y tratamiento de información definidos antes de implementarse o venderse.
+No incluye migración compleja, consultoría ilimitada, integración personalizada, rediseño completo del proceso ni desarrollo a medida.
 
-## Contenido educativo
+---
 
-La sección educativa se denomina **Aprende**. Su función es ayudar a entender problemas y tomar mejores decisiones; no sustituye una propuesta ni presenta contenido ficticio.
+# 10. Soporte
 
-**Autor principal editorial previsto:** Yoan Ortiz.
+El soporte base está incluido en todas las licencias.
 
-Categorías iniciales:
+| | Cuadra | Barrio | Ciudad |
+|---|---:|---:|---:|
+| Primera respuesta objetivo | ≤ 2 días laborables | ≤ 1 día laborable | ≤ 8 horas laborables |
+| Ajustes manuales incluidos | — | 1/mes | 2/mes |
+| Acumulables | No | No | No |
 
-- Tecnología simple.
-- CRM y organización.
-- Automatización.
-- Inteligencia Artificial.
-- Presencia digital.
+Primera respuesta no significa tiempo garantizado de resolución.
 
-Cada artículo futuro debe incluir:
+Incidencias, errores y correcciones de Vecidya **no consumen ajustes**.
 
-1. título;
-2. imagen con derechos y origen confirmados;
-3. problema;
-4. explicación sencilla;
-5. ejemplo;
-6. conclusión;
-7. siguiente paso.
+Un ajuste modifica algo existente sin crear una arquitectura nueva.
 
-Existen cuatro artículos iniciales atribuidos a Yoan Ortiz (UX-002.6, publicados en `0.3.0`; ver `app/content/learn.ts`), que el diagnóstico enlaza desde sus prioridades. La autoría y las categorías siguen siendo una definición editorial de trabajo.
+Crear procesos, workflows complejos, integraciones, campañas, páginas o agentes personalizados es servicio profesional.
 
-## Mapa comercial
+---
 
-### Usuario nuevo
+# 11. Motor de recomendación
 
-```text
-Usuario nuevo
-    ↓
-Aprende
-    ↓
-Diagnóstico
-    ↓
-Licencia / Servicio
-    ↓
-Addon
-```
+Existen dos evaluaciones diferentes:
 
-### Usuario con necesidad clara
+**Digital Health**  
+¿Cómo está el negocio?
 
-```text
-Necesidad clara
-    ↓
-Servicio
-    ↓
-Licencia
-    ↓
-Addons
-```
+**Operational / License Fit**  
+¿Qué necesita para operar?
 
-Los consumos externos se muestran junto al elemento que los habilita, pero siempre en una línea separada.
+Nunca:
 
-## Infraestructura HighLevel
+**62% → Barrio.**
 
-HighLevel será la infraestructura externa considerada para la operación comercial futura, sujeto a contratación, credenciales, alcance y validación independientes. El detalle operativo de OPS-001 está en [OPS-001-GHL-PILOT-FOUNDATION.md](../OPS-001-GHL-PILOT-FOUNDATION.md).
+La lógica principal es:
 
-Capacidades previstas en esa frontera:
+**Sin CRM recurrente → Cuadra.  
+Proceso comercial repetible → Barrio.  
+Operación multiproceso/coordinada → Ciudad.**
 
-- CRM;
-- contactos;
-- oportunidades;
-- pipelines;
-- formularios;
-- calendarios;
-- landings;
-- automatizaciones;
-- conversaciones.
+También puede concluir:
 
-**Referencias oficiales consultadas el 2026-09-23:** Starter `USD 97/mes`, 3 subcuentas; Unlimited `USD 297/mes`, subcuentas ilimitadas y API básica; Agency Pro `USD 497/mes`, SaaS Mode, alta automática y API avanzada. Estas son referencias públicas, no el plan contratado por Vecidya.
+**Sin licencia necesaria por ahora**
 
-AI y comunicaciones permanecen fuera de la licencia base: AI Employee Growth `USD 50/location/mes`, Unlimited `USD 97/location/mes`, WhatsApp `USD 10/location/mes`, más consumos variables de mensajes, email, telefonía, carrier fees, minutos, tokens y modelos según corresponda.
+cuando el cliente solo requiere un servicio independiente.
 
-El plan contratado, ciclo de facturación, límites, Labs y capacidades habilitadas de la cuenta Vecidya están **NOT VERIFIED**. Deben confirmarse dentro de Agency View antes de contratar, publicarlo o trasladarlo a una propuesta.
+El motor puede recomendar upgrade o downgrade.
 
-HighLevel no está integrado actualmente con Vecidya. La plataforma actual solo documenta la frontera: no realiza llamadas a HighLevel, no guarda un CRM paralelo y no debe presentar estas capacidades como implementadas.
+Nunca recomienda una licencia superior por:
 
-## Criterio de aprobación de UX-002.1
+cantidad de complementos, gasto mensual o presión comercial.
 
-La fase queda documentada cuando se puede responder sin ambigüedad:
+El resultado prioritario muestra como máximo:
 
-- qué es una licencia;
-- qué es un addon;
-- qué es un servicio;
-- qué es un consumo externo;
-- cómo evoluciona un cliente y por qué;
-- qué entrega el diagnóstico inicial frente al profesional;
-- qué función cumple Aprende;
-- cómo se relacionan usuario, diagnóstico, licencia, servicio y addon;
-- qué queda dentro de HighLevel y qué no existe todavía en Vecidya.
+**1 licencia + 2 necesidades complementarias ahora.**
 
-La aprobación de esta matriz **no autoriza todavía** crear `/licencias`, precios públicos, comparadores, checkout, migraciones, integración GHL ni CRM propio.
+El resto se presenta como oportunidades posteriores.
+
+Toda recomendación debe explicar su evidencia.
+
+---
+
+# 12. Lenguaje público
+
+Familia oficial:
+
+**Vecidya Cuadra — Organiza**  
+**Vecidya Barrio — Capta y da seguimiento**  
+**Vecidya Ciudad — Automatiza y controla**
+
+Públicamente:
+
+`ADD-ON` → **Complemento**  
+`ACTIVATION` → **Puesta en marcha**  
+`CONSUMPTION` → **Coste de uso**
+
+La comunicación debe ser clara, profesional, cercana y orientada al negocio.
+
+Evitar clichés SaaS y jerga técnica del proveedor.
+
+---
+
+# 13. Arquitectura web
+
+La arquitectura V1 conserva:
+
+`/diagnostico`  
+`/licencias`  
+`/addons`  
+`/servicios`  
+`/vecindario`  
+`/aprende`  
+`/unete`  
+`/contacto`
+
+No se crean `/precios` ni `/soluciones` en V1.
+
+`/addons` puede conservarse como URL aunque la interfaz diga **Complementos**.
+
+El Diagnóstico es el punto principal para quien no sabe qué necesita.
+
+Licencias muestra públicamente:
+
+**$39 / $59 / $89**  
+y puesta en marcha **$0 / $10 / $15**.
+
+Los servicios utilizan **Solicitar propuesta**.
+
+Los costes variables se muestran en contexto.
+
+---
+
+# 14. Aplicación cliente
+
+La app Vecidya es el centro de relación del cliente con Vecidya.
+
+No es el CRM.
+
+La arquitectura conceptual es:
+
+**Inicio  
+Mi negocio  
+Equipo  
+Mi Vecidya  
+Soporte  
+Cuenta**
+
+`Mi Vecidya` reúne:
+
+licencia, puesta en marcha, capacidades, acceso al CRM, complementos, servicios contratados, costes de uso y recomendaciones.
+
+Para Barrio/Ciudad:
+
+**Abrir CRM**
+
+lleva al sistema CRM externo.
+
+La app puede soportar organizaciones sin licencia pero con servicios profesionales.
+
+Los cambios de licencia comienzan mediante:
+
+**Revisar mi licencia**
+
+y no mediante upgrade automático.
+
+---
+
+# 15. Multi-organización
+
+La unidad comercial es:
+
+**1 organización = 1 negocio = 1 licencia.**
+
+Una persona puede participar en varias organizaciones.
+
+Cada organización conserva independientemente:
+
+licencia, complementos, servicios, costes, soporte y CRM asociado.
+
+La persona que paga puede ser distinta del owner o miembro del negocio.
+
+---
+
+# 16. Administración interna
+
+Internal Admin debe separar:
+
+**Catálogo** — qué podemos vender.  
+**Contrato** — qué compró el cliente.  
+**Derechos** — qué puede utilizar.  
+**Configuración** — qué está efectivamente configurado.  
+**Consumo** — qué utilizó.
+
+El modelo interno además distingue:
+
+**Recomendación → Propuesta → Aceptación → Contrato.**
+
+Producto y precio se versionan separadamente.
+
+Cambiar el precio público no modifica automáticamente contratos existentes.
+
+Los servicios profesionales se administran como engagements/proyectos.
+
+Los consumos utilizan ledger/movimientos.
+
+Las excepciones comerciales requieren:
+
+**motivo + actor + vigencia + auditoría.**
+
+Productos, precios y contratos históricos se retiran/desactivan; no se eliminan destructivamente.
+
+La biblioteca Ciudad y el Snapshot Barrio se versionan separadamente de las licencias.
+
+---
+
+# 17. Ciclos de vida
+
+## Licencia / Complemento
+
+**Propuesto → Aceptado → Pendiente de puesta en marcha → Configurando → Activo**
+
+Desde Activo:
+
+**Pausado · Cambio pendiente · Finalizado**
+
+## Servicio profesional
+
+**Propuesto → Confirmado → Preparación → En progreso → Esperando cliente → Completado**
+
+Con estados adicionales cuando corresponda:
+
+**Activo · Pausado · Cancelado**
+
+---
+
+# 18. Propiedad intelectual operacional
+
+La diferenciación de Vecidya no reside solamente en utilizar GHL.
+
+Reside en construir y mantener:
+
+**Barrio Standard  
+biblioteca modular Ciudad  
+snapshots/configuraciones versionadas  
+procesos  
+reglas de recomendación  
+activación  
+servicios  
+experiencia cliente  
+sistema de soporte**
+
+La tecnología externa es infraestructura.
+
+El producto comercial es Vecidya.
+
+---
+
+# 19. Lo que NO pertenece al Commercial Product System V1
+
+No forma parte todavía del contrato V1:
+
+checkout automático, Stripe, facturación automática, SaaS Mode, aprovisionamiento automático de GHL, recomendaciones automáticas en producción, sincronización CRM read-only, ampliaciones públicas, planes anuales, descuentos públicos de portafolio, Social Planner como producto, Commerce/Pagos como complemento o nuevas capacidades no aprobadas.
+
+Tampoco define todavía términos legales de:
+
+impuestos, devoluciones, chargebacks, prorrateos, incumplimiento de pago o cancelación.
+
+Esas políticas deberán resolverse antes de activar checkout/facturación automática.
+
+---
+
+# 20. Regla final
+
+Toda oferta Vecidya debe poder descomponerse claramente así:
+
+**LICENCIA**  
+paga el sistema.
+
+**COMPLEMENTO**  
+añade una capacidad recurrente.
+
+**PUESTA EN MARCHA**  
+deja el estándar funcionando.
+
+**SOPORTE**  
+mantiene funcionando lo contratado.
+
+**AJUSTE**  
+modifica ligeramente algo existente.
+
+**SERVICIO PROFESIONAL**  
+crea o transforma algo.
+
+**COSTE DE USO**  
+paga utilización de terceros.
+
+Si una propuesta no puede explicarse utilizando esta estructura, debe revisarse antes de venderse.

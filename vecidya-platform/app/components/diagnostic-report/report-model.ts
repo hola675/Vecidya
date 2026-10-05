@@ -1,4 +1,4 @@
-import { offeringDependencies, type CommercialRole, type DiagnosticNarrative, type DiagnosticOutcome, type DimensionPresentationStatus, type OverallStatusKind } from "../../features/diagnostic";
+import { offeringDependencies, type CommercialRecommendationV1, type CommercialRole, type DiagnosticNarrative, type DiagnosticOutcome, type DimensionPresentationStatus, type OverallStatusKind } from "../../features/diagnostic";
 // Import directo, fuera del barrel: la metodología no entra en el chunk compartido que cargan las rutas públicas.
 import { METHODOLOGY_SECTIONS, METHODOLOGY_SOURCES, METHODOLOGY_VERSION, RESULT_METHOD_NOTES } from "../../features/diagnostic/qbv2-methodology";
 import {
@@ -94,6 +94,8 @@ export type DiagnosticReportV1 = {
     readonly solution: { readonly label: string; readonly description: string } | null;
   }[];
   readonly vecidyaHelp: { readonly note: string; readonly items: readonly { readonly step: number; readonly title: string; readonly offerings: readonly ReportOffering[]; readonly noOffering: string | null }[]; readonly hasOfferings: boolean };
+  /** Canonical Commercial Product System V1 object; the legacy vecidyaHelp projection remains for compatibility only. */
+  readonly commercialRecommendation: CommercialRecommendationV1;
   readonly methodologySummary: { readonly version: string; readonly notes: readonly string[]; readonly sourcesNote: string; readonly formulaDistinction: string };
   readonly sources: readonly { readonly number: number; readonly title: string; readonly organization: string; readonly year: string | null; readonly url: string }[];
   readonly limitations: readonly string[];
@@ -192,6 +194,7 @@ export function buildDiagnosticReport({ narrative, outcome, generatedAt, busines
         })),
       })),
     },
+    commercialRecommendation: outcome.commercialRecommendation,
     methodologySummary: {
       version: METHODOLOGY_VERSION,
       notes: RESULT_METHOD_NOTES,

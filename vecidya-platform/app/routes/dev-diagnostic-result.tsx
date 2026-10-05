@@ -74,7 +74,7 @@ export function loader({ params, request }: LoaderFunctionArgs) {
   const priorities = deriveConstraintsAndPriorities(scoring);
   const semanticFacts = deriveSemanticFacts({ answers, scoring, priorities });
   const narrative = buildDiagnosticNarrative({ answers, scoring, priorities, semanticFacts });
-  const outcome = buildDiagnosticOutcome({ scoring, priorities, semanticFacts, narrative });
+  const outcome = buildDiagnosticOutcome({ answers, scoring, priorities, semanticFacts, narrative });
   const url = new URL(request.url);
   const stress = url.searchParams.get("stress") === "1";
   return {
