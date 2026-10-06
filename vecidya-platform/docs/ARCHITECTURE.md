@@ -463,6 +463,13 @@ GHL es el system of record de contactos, leads, oportunidades, pipelines, conver
 - R2B no cambia `CURRENT_QUESTION_BANK_VERSION`, scoring, aplicabilidad dimensional, mapeos de evidencia, resultados visibles ni preguntas legacy.
 - **Deuda R4:** retirar la aplicabilidad dimensional basada en goal y basarla en contexto/evidencia real del negocio. `goal=measure` puede afectar prioridad/routing, nunca elegibilidad dimensional; el FIX conserva la semántica existente y no cambia todavía esa aplicabilidad.
 
+### DIAG-V3-QBANK-R2C — candidata revisada de clasificación (preguntas 14–16)
+
+- `qbv2-reviewed-classification.ts` aporta q2_sector, q2_customer_reach y q2_customer_buyer al agregado aislado R2A/R2B. El orden queda 01–09 y 14–16; 10–13 y 17–18 siguen fuera. No se registra el agregado y `QUESTION_BANK_V2` conserva sus 85 preguntas.
+- `community_social` se añade a `NicheGroup` y al registro de taxonomía. `nonprofit_community` y el productor productivo de sector permanecen compatibles sin cambios; sector no infiere entidad, archetype ni modelo de negocio.
+- q2_customer_reach requiere `activity` resuelta mediante `contextIn`. Sus variantes se ordenan para que prelaunch prevalezca y luego aplique la variante de organización. Alcance, comprador y sector producen solo contexto y cero evidencia diagnóstica.
+- q2_sector, q2_customer_reach y q2_customer_buyer son versión semántica 2. `CURRENT_QUESTION_BANK_VERSION` queda en 1; no cambia scoring, recomendaciones ni comportamiento público.
+
 - Gobierno y auditoría en tablas separadas del perfil (`0009`).
 - Horarios anclados a `organization_id`; «sin fila» = día sin definir (`0008`).
 - `service_area` como texto libre (sin geocodificación, radios ni polígonos); `city`/`country` = ubicación de referencia.

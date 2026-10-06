@@ -14,15 +14,16 @@ import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-va
 import { REVIEWED_CONTEXT_QUESTIONS_V2 } from "../../../app/features/diagnostic/qbv2-reviewed-context";
 import { REVIEWED_FOUNDATION_QUESTIONS_V2 } from "../../../app/features/diagnostic/qbv2-reviewed-foundation";
 
-const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction"] as const;
+const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_sector", "q2_customer_reach", "q2_customer_buyer"] as const;
 const question = (id: string, bank: readonly QuestionDefinitionV2[] = candidate) => bank.find((item) => item.id === id)!;
 const answer = (answers: AnswersV2) => resolveEligibleQuestionsV2(answers, candidate);
 
 test("reviewed candidate composes exactly questions 01–09 and remains unregistered", () => {
   assert.deepEqual(REVIEWED_FOUNDATION_QUESTIONS_V2.map(({ id }) => id), ids.slice(0, 5));
-  assert.deepEqual(REVIEWED_CONTEXT_QUESTIONS_V2.map(({ id }) => id), ids.slice(5));
+  assert.deepEqual(REVIEWED_CONTEXT_QUESTIONS_V2.map(({ id }) => id), ids.slice(5, 9));
+  assert.deepEqual(candidate.slice(9).map(({ id }) => id), ids.slice(9));
   assert.deepEqual(candidate.map(({ id }) => id), ids);
-  assert.equal(new Set(candidate.map(({ id }) => id)).size, 9);
+  assert.equal(new Set(candidate.map(({ id }) => id)).size, 12);
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   assert.deepEqual(validateQuestionCopyV2(candidate), []);
   assert.equal(question("q2_demand_trend").hint!.length, 139);
@@ -37,9 +38,10 @@ test("reviewed semantic versions are pinned and 06–09 advance their legacy def
   assert.deepEqual(Object.fromEntries(candidate.map(({ id, version }) => [id, version])), {
     q2_entity: 1, q2_other_staff: 1, q2_monetization: 2, q2_delivery: 2, q2_has_customers: 1,
     q2_regularity: 2, q2_demand_trend: 2, q2_goal: 2, q2_friction: 2,
+    q2_sector: 2, q2_customer_reach: 2, q2_customer_buyer: 2,
   });
-  const signature = (item: QuestionDefinitionV2) => JSON.stringify({ type: item.type, options: item.options.map(({ value, kind, exclusive, produces }) => ({ value, kind, exclusive, produces })) });
-  for (const id of ids.slice(5)) {
+  const signature = (item: QuestionDefinitionV2) => JSON.stringify({ prompt: item.prompt, hint: item.hint, type: item.type, options: item.options.map(({ value, label, kind, exclusive, produces }) => ({ value, label, kind, exclusive, produces })) });
+  for (const id of [...ids.slice(5, 9), ...ids.slice(9)]) {
     const reviewed = question(id);
     const legacy = question(id, QUESTION_BANK_V2);
     assert.notEqual(signature(reviewed), signature(legacy), `${id} changed materially`);

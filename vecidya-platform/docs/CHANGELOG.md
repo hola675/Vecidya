@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-05 — DIAG-V3-QBANK-R2C — candidata revisada de clasificación (preguntas 14–16)
+
+- Se añaden sector, alcance geográfico y tipo de comprador como slice aislado al candidato 01–09; el agregado queda en 12 preguntas (01–09, 14–16), sin registrar ni migrar `QUESTION_BANK_V2`.
+- `community_social` se incorpora aditivamente. El valor legacy `nonprofit_community`, sus opciones y productores productivos permanecen sin cambios.
+- q2_customer_reach solo aparece con `activity` resuelta; el copy prioriza prelaunch y después organización. Las tres preguntas resuelven contexto y no aportan evidencia al diagnóstico.
+- Las tres preguntas candidatas usan versión semántica 2. Sin cambio de versión del banco, scoring, recomendaciones, UI, PDF ni publicación. Validación: ver `TESTING.md`.
+
 ## 2026-10-05 — DIAG-V3-QBANK-R2B — candidata de contexto revisado (preguntas 06–09)
 
 - Se amplía la candidata aislada de cinco a nueve preguntas con regularidad, tendencia, prioridad personal y fricción percibida. El aggregate no se registra; el banco legacy productivo y sus 85 preguntas siguen vigentes.

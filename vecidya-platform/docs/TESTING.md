@@ -1,5 +1,13 @@
 # Pruebas
 
+## DIAG-V3-QBANK-R2C — clasificación revisada
+
+- `qbv2-reviewed-classification.test.ts` fija el slice q14–q16, versiones 2, opciones, producciones, gate de actividad, orden de variantes, mapeos de contexto y cero evidencia contextual. También prueba que `community_social` se añade y que la banca legacy conserva `nonprofit_community`.
+- `qbv2-reviewed-candidate.test.ts` verifica que el agregado tenga exactamente 01–09 y 14–16; q10–q13 y q17–q18 quedan ausentes y `QUESTION_BANK_V2` conserva 85 preguntas. Rutas B2B especializadas no entran al candidato aunque el helper de relevancia resulte true para b2b/mixed.
+- Resultado R2C: clasificación **7/7 PASS**; candidata completa (fundación + contexto + clasificación) **26/26 PASS**; frozen/legacy **235/235 PASS**; combinado focalizado **261/261 PASS**.
+- Directorio diagnóstico: **804/805 PASS**. `pnpm run test:unit`: **859/860 PASS**. En ambos queda solo `characterization.test.ts:102`, `localBusinessLeaks`, con actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f` y esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`, idéntica a la divergencia establecida en el preflight R2C.
+- `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Build conserva el aviso local conocido de secretos Gmail requeridos ausentes.
+
 **Evidencia DIAG-V3-08B.6R (RAN 2026-09-30, solo local, sin deploy):** se añadieron contratos compactos en `qbv2-coverage.test.ts` para los cinco estados de `MATURITY_MODEL`, las ocho `DIGITAL_DIMENSIONS`, el mapping 80/80 de preguntas productivas, exactamente 12 golden personas y la matriz generada de 2.400 combinaciones `stage × archetype × goal × friction`. La suite verifica determinismo, rutas ≤18, módulos esperados/irrelevantes, ausencia de duplicados, referencias válidas y clasificación de `confirmed coverage`/`confirmed gap`/`possible improvement`. No se calculan porcentajes, pesos ni confidence; DIAG-V3-08C permanece sin iniciar.
 
 **Evidencia DIAG-V3-08B.7 (RAN 2026-09-30, solo local, sin deploy):** se resolvieron los dos gaps sin cambiar el banco ni el planner. `q2_local_discovery`, `q2_ecommerce_traffic_sources` y `q2_b2b_lead_source` se declararon como origen de demanda y medición; la auditoría 08C.R posterior conserva Measurement solo como supporting para esos orígenes, no como evidencia directa de tracking/optimization. `q2_ecommerce_product_discovery` aporta catálogo/navegación a `digital_foundation`. El análisis cuenta respuestas activas además de preguntas nuevas seleccionadas. Las 12 personas permanecen deterministas, sin duplicados, con rutas de 15–16 y sin gaps confirmados.

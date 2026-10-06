@@ -1,5 +1,7 @@
 # Estado de implementación
 
+DIAG-V3-QBANK-R2C: candidata de clasificación aislada con q2_sector, q2_customer_reach y q2_customer_buyer; el agregado contiene 01–09 y 14–16. `community_social` es aditivo y `nonprofit_community` sigue válido para la banca productiva congelada. Las señales no generan evidencia diagnóstica y el helper futuro B2B no activa módulos especializados. `QUESTION_BANK_V2` permanece en 85 y en runtime; la candidata no está registrada ni publicada. Ver `TESTING.md`.
+
 DIAG-V3-QBANK-R2B-FIX: candidata aislada 01–09; `QUESTION_BANK_V2` conserva 85 preguntas y sigue como runtime. Las metas concretas de q2_goal resuelven `primaryGoal` como contexto/routing declarado, sin evidencia digital directa; no existe dominio duplicado `userPriority`. `other` queda `insufficient_evidence`, `unsure` `declared_unknown`. Deuda R4: retirar aplicabilidad dimensional basada en goal y usar contexto/evidencia del negocio; `measure` podrá afectar prioridad/routing solamente. Ver `TESTING.md`.
 
 DIAG-V3-QBANK-R2A-FIX (2026-10-05): q2_monetization queda gateada declarativamente por `activity` resuelta; q2_has_customers actúa como requisito real de esa clasificación y selecciona el copy presente/futuro. `HINT_MAX_LENGTH=140`; se fijó con regresión la compatibilidad de entidad de q2_other_staff. R2A y R2A-FIX están versionados en main; sin activación pública ni deploy.

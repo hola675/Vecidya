@@ -102,6 +102,7 @@ export const NICHE_GROUP_REGISTRY: readonly TaxonomyEntry<NicheGroup>[] = toEntr
   b2b_services: { label: "Servicios B2B", definition: "Agencias, software o servicios vendidos principalmente a otras empresas." },
   technology_software: { label: "Tecnología y software", definition: "Productos o servicios de software propio." },
   nonprofit_community: { label: "Sin fines de lucro y comunidad", definition: "Organizaciones con misión social, comunitaria o benéfica." },
+  community_social: { label: "Servicios comunitarios, sociales o culturales", definition: "Servicios y actividades comunitarias, sociales o culturales, con independencia de la forma de organización." },
   other: { label: "Otro", definition: "No encaja claramente en ningún grupo anterior; nunca se asigna automáticamente (ver mutación E), solo cuando el nicho declarado no coincide con ningún grupo conocido." },
 });
 

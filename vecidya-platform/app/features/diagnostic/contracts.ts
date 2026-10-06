@@ -298,6 +298,7 @@ export const NICHE_GROUPS = [
   "b2b_services",
   "technology_software",
   "nonprofit_community",
+  "community_social",
   "other",
 ] as const;
 export type NicheGroup = (typeof NICHE_GROUPS)[number];
