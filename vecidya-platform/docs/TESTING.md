@@ -1,5 +1,12 @@
 # Pruebas
 
+## DIAG-V3-R3B — evidencia de presencia pública
+
+- `qbv2-public-foundation-evidence.test.ts`: **9 regresiones** de ambos contratos v2 y todas sus opciones, Foundation/direct sin secundarias, neutralidad unknown/N/A, identidad y atomicidad sin fallback, ausencia de sesgo de canal, legacy, gates/overlaps y selección congelada, registro/runtime aislados. El ledger acumulado R3A se valida contra el registro canónico sin alterar sus cuatro pilotos; corte R2 y expectativas legacy intactos.
+- **RAN 2026-10-06:** R3B **9/9**, R3A **17/17**, R2-FINAL **9/9**, candidata R2 **83/83**, frozen/legacy **235/235**, combinado R3B+R3A+candidata+frozen **344/344**, caracterización **1/1**, directorio diagnóstico **888/888**, full unit **943/943**: PASS, cero fallos. Incremento de nueve pruebas respecto a 879/934. Typecheck, build y `git diff --check`: PASS. Solo avisos conocidos de Gmail local y PLUGIN_TIMINGS.
+- Vista R3 **38/6 migrated/32 pending**; mapas en `qbv2-reviewed-evidence.ts`. Copy/opciones/versiones/señales/gates/roles iguales al corte R2. Sin activación de REMOVE/DEFER ni registro público. Caracterización `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, fixture/test sin cambios; digest de las 377 opciones legacy protegido por la suite R3A.
+- Base transversal y local/catálogo no son simultáneamente elegibles en contextos de operación válidos; se incluyen prelaunch e híbrido de tres entregas. Offer_clarity requiere la base transversal, excluida en ecommerce activo. Prueba adicional de composición suministra respuestas para demostrar que catálogo no emite Clarity/Conversion/Discovery y offer_clarity sigue pending; no simula una nueva ruta ni calibra porcentaje global. Discovery conserva su observación externa independiente.
+
 ## DIAG-V3-R3A — contrato y piloto de evidencia
 
 - `qbv2-evidence-migration.test.ts`: **17 regresiones** de ledger/composición, dominios/identidad, pending y undefined seguros, migración completa, no herencia por ID, rechazo atómico de contratos incompletos/ajenos, unknown/N/A neutrales, not_seeking context-only, direct/supporting, separación de contexto y fuente determinista, congelación de todas las opciones legacy y no activación.

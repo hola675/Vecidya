@@ -31,9 +31,28 @@ export const REVIEWED_PILOT_EVIDENCE_V3 = [
   },
 ] as const satisfies readonly QuestionEvidenceV3[];
 
+/** R3B: base pública mantenida y navegación del catálogo; sin evidencia secundaria inferida. */
+export const REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3 = [
+  {
+    questionId: "q2_presence_digital_base", questionVersion: 2,
+    dimensions: [{ dimension: "digital_foundation", directness: "direct", answers: {
+      reliable_presence: "established", partial_presence: "partial", no_reliable_presence: "missing",
+      not_applicable: "not_applicable", unknown: "uncertainty",
+    } satisfies Record<"reliable_presence" | "partial_presence" | "no_reliable_presence" | "not_applicable" | "unknown", MigratedAnswerStateV3> }],
+  },
+  {
+    questionId: "q2_ecommerce_product_discovery", questionVersion: 2,
+    dimensions: [{ dimension: "digital_foundation", directness: "direct", answers: {
+      easy: "established", confusing: "partial", difficult: "weak", not_applicable: "not_applicable", unknown: "uncertainty",
+    } satisfies Record<"easy" | "confusing" | "difficult" | "not_applicable" | "unknown", MigratedAnswerStateV3> }],
+  },
+] as const satisfies readonly QuestionEvidenceV3[];
+
+export const REVIEWED_EVIDENCE_V3 = [...REVIEWED_PILOT_EVIDENCE_V3, ...REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3] as const;
+
 /** Misma candidata R2, vista de evidencia aislada: solo cambia metadata de migración, nunca registro. */
 export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefinitionV2[] = REVIEWED_CANDIDATE_QUESTIONS_V2.map((question) => {
-  const mapping = REVIEWED_PILOT_EVIDENCE_V3.find((entry) => entry.questionId === question.id && entry.questionVersion === question.version);
+  const mapping = REVIEWED_EVIDENCE_V3.find((entry) => entry.questionId === question.id && entry.questionVersion === question.version);
   return mapping
     ? { ...question, evidenceMigration: "migrated", evidenceV3: mapping }
     : { ...question, evidenceMigration: "pending" };

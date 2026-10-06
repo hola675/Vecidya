@@ -9,7 +9,7 @@ import { DIGITAL_DIMENSION_IDS } from "../../../app/features/diagnostic/qbv2-cov
 import { getQuestionBank, resolveEligibleQuestionsV2 } from "../../../app/features/diagnostic/qbv2-engine";
 import { evidenceMigrationIdentity, validateEvidenceMigrationsV3, validateQuestionEvidenceV3, type QuestionEvidenceV3 } from "../../../app/features/diagnostic/qbv2-evidence-v3";
 import { REVIEWED_CANDIDATE_QUESTIONS_V2 as frozen } from "../../../app/features/diagnostic/qbv2-reviewed-candidate";
-import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as candidate, REVIEWED_EVIDENCE_MIGRATION_LEDGER_V3 as ledger, REVIEWED_EVIDENCE_MIGRATION_SUMMARY_V3 as summary, REVIEWED_PILOT_EVIDENCE_V3 as pilot } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
+import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as candidate, REVIEWED_EVIDENCE_MIGRATION_LEDGER_V3 as ledger, REVIEWED_EVIDENCE_MIGRATION_SUMMARY_V3 as summary, REVIEWED_PILOT_EVIDENCE_V3 as pilot, REVIEWED_EVIDENCE_V3 as registry } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-validators";
 
@@ -23,11 +23,12 @@ const stripEvidence = ({ evidenceMigration: _state, evidenceV3: _mapping, ...def
 const operatingContext = resolveEligibleQuestionsV2({ q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat" }, candidate).context;
 const score = (evidence: readonly ContextualEvidence[], dimension: string) => scoreContextualDimensions({ answers: {}, context: operatingContext, evidence, bank: candidate }).dimensions.find((d) => d.id === dimension)!;
 
-test("R3A ledger derives 38 definitions, four migrated pilots and 34 pending without changing R2 constructs", () => {
-  assert.deepEqual(summary, { total: 38, pending: 34, migrated: 4 });
+test("R3A ledger derives the complete registry without changing R2 constructs or its four original pilots", () => {
+  assert.deepEqual(summary, { total: 38, pending: 38 - registry.length, migrated: registry.length });
+  assert.equal(pilot.length, 4);
   assert.equal(ledger.length, 38);
   assert.deepEqual(candidate.map(stripEvidence), frozen.map(stripEvidence));
-  assert.deepEqual(ledger.filter((entry) => entry.state === "migrated").map((entry) => entry.questionId).sort(), pilot.map((entry) => entry.questionId).sort());
+  assert.deepEqual(ledger.filter((entry) => entry.state === "migrated").map((entry) => entry.questionId).sort(), registry.map((entry) => entry.questionId).sort());
   assert.deepEqual(validateEvidenceMigrationsV3(candidate), []);
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   assert.equal(frozen.filter((q) => q.evidenceMigration === "migrated").length, 0);

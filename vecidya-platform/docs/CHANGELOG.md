@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3B — evidencia de presencia pública
+
+Dos migraciones completas v2 en el registro R3 existente: base pública mantenida y facilidad de navegación del catálogo, ambas Foundation/direct, sin secundarias heredadas. Ledger derivado 38/6/32; pilotos R3A intactos. Nueve regresiones específicas de semántica, unknown/N/A, identidad, atomicidad, neutralidad de canal, overlaps/gates y runtime congelado. Prueba del ledger R3A adaptada al registro acumulado, sin alterar sus cuatro pilotos. Sin cambios de R2/scorer/planner/pesos/confianza/legacy, rebaseline, activación o deploy. Resultados en TESTING.md; R3C no iniciado.
+
 ## 2026-10-06 — DIAG-V3-R3A — contrato de migración de evidencia
 
 Contrato atómico por ID/version y opciones, estados pending/migrated explícitos y rama V3 en el scorer existente sin fallback por ID. Estados/contribuciones e IDs de dimensiones compartidos sin cambios numéricos o de nombres; validación sin registro de bancos. Piloto aislado de Discovery/q20/q22 direct y q65 supporting; ledger derivado 38/4 migrated/34 pending. Unknown/N/A neutros y not_seeking context-only. Diecisiete regresiones; corte R2, banco productivo, mapas/semánticas legacy, planner, calibración, aplicabilidad, UX y caracterización conservados. Sin activación, D1 ni deploy. Validación en TESTING.md; R3B no iniciado.

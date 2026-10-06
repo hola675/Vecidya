@@ -1,5 +1,19 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R3B — evidencia de presencia pública
+
+**CODE/TEST, 2026-10-06:** `qbv2-reviewed-evidence.ts` conserva el piloto R3A y añade el lote R3B al mismo registro canónico `REVIEWED_EVIDENCE_V3`. La vista aislada de 38 definiciones deriva **6 migrated / 32 pending**; el corte R2 original sigue sin cambios. Contrato, scorer, agregación, confianza, planner y runtime no se modifican.
+
+`q2_presence_digital_base@v2` observa un lugar público con información correcta que se mantiene actualizada, independientemente de web/ficha/perfil/plataforma o propiedad. Migra Digital Foundation/direct: reliable_presence=established, partial_presence=partial, no_reliable_presence=missing, unknown=uncertainty, N/A=not_applicable. Missing expresa ausencia declarada de la **capacidad mantenida**, no ausencia de web ni castigo a un canal externo. No se infiere excelencia, reputación o llegada de personas.
+
+`q2_ecommerce_product_discovery@v2` observa facilidad de encontrar un producto dentro del catálogo sin guía. Migra Digital Foundation/direct: easy=established, confusing=partial, difficult=weak, unknown=uncertainty, N/A=not_applicable. Dificultad no demuestra ausencia absoluta. No se infiere stack, compra completada ni causa de conversión. Unknown/N/A siguen null y no entran al numerador/denominador.
+
+**Secundarias:** ninguna migrada. Clarity & Positioning y Discovery se rechazan para ambas: los constructos no observan claridad de oferta ni adquisición externa. Conversion & Access de catálogo queda **R3-LATER REVIEW**: navegación puede apoyar acceso, pero no observa la siguiente acción ni su ejecución; no se hereda su mapa legacy. La posibilidad genérica de contactar desde la base tampoco observa facilidad real de completar una acción, por lo que se rechaza esa secundaria. Mapas exhaustivos en código; no se duplican entre documentos.
+
+**Solapamiento:** `physicalCoverage` del gate transversal excluye negocios activos local/retail/hospitality/ecommerce, incluidos componentes híbridos. Por eso base transversal no coincide con información local ni catálogo en un mismo contexto válido; prelaunch tampoco habilita las dos preguntas especializadas. Catálogo requiere ecommerce activo; offer_clarity necesita respuesta previa de base transversal y claridad declarada, por lo que ese prerrequisito no se genera naturalmente en la ruta ecommerce. Las regresiones comparan gates y selección entre vistas R2/R3. Aun con respuestas suministradas juntas para auditar composición, catálogo solo emite Foundation; offer_clarity permanece pending. Discovery mide llegada externa, un constructo distinto, sin emisión Discovery desde catálogo/base. No se cambia routing para resolver scoring.
+
+Runtime legacy **85/v1**, candidata inactiva, 11 DEFER excluidas, R4/calibración sin cambios. Resultados en TESTING.md. Siguiente lote propuesto **R3C, no iniciado:** Clarity & Positioning de oferta visible (`q2_presence_offer_clarity` y `q2_retail_product_visibility`), revisando secundarias y neutralidad sin activar la candidata.
+
 ## DIAG-V3-R3A — contrato de evidencia y migración
 
 **CODE/TEST, 2026-10-06:** `qbv2-evidence-v3.ts` establece migración atómica por definición/version y el scorer existente consume sus lecturas. No hay segundo scorer, recalibración, R4 ni activación. Los ocho IDs canónicos se comparten desde `qbv2-dimensions.ts` y se reexportan por coverage; estados/contribuciones 08C se comparten desde `qbv2-capability.ts` y se reexportan por scoring, sin cambiar valores. Esa separación permite validar sin importar ni registrar un banco.
