@@ -21,9 +21,9 @@ const creator = { q2_has_customers: "yes", q2_monetization: "audience", q2_goal:
 
 test("R2I matrix keeps two distinct capabilities and protects closed removals and deferred applicability", () => {
   assert.deepEqual(reviewed.map(({ id }) => id), keep);
-  assert.deepEqual(candidate.slice(31).map(({ id }) => id), keep);
-  assert.equal(candidate.length, 33);
-  assert.equal(new Set(candidate.map(({ id }) => id)).size, 33);
+  assert.deepEqual(candidate.slice(31, 33).map(({ id }) => id), keep);
+  assert.equal(candidate.length, 38);
+  assert.equal(new Set(candidate.map(({ id }) => id)).size, 38);
   for (const id of [...remove, ...defer, "q2_professional_referral_dependency", "q2_ecommerce_acquisition_dependency"]) {
     assert.ok(QUESTION_BANK_V2.some((q) => q.id === id));
     assert.ok(!candidate.some((q) => q.id === id), id);

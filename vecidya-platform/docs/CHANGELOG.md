@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-QBANK-R2J
+
+Completa revisión candidata con cinco capacidades v2 (q65/q69/q82/q84/q85), sin inferencia de éxito, dolor, herramienta o validación de mercado. Registro explícito de las 85 decisiones (37 KEEP, 37 REMOVE, 11 DEFER) y ocho regresiones de completitud, gates, prelaunch, unknown/N/A, neutralidad, evidencia y rutas. Las pruebas de composición existente pasan a candidata 38; R2I conserva decisiones/rutas. Sin activación, nuevo scoring, rebaseline, cambios comerciales, D1 o deploy. Validación de este corte en TESTING.md.
+
 ## 2026-10-06 — DIAG-V3-QBANK-R2I — revisión B2B y audiencia
 
 - Inventario previo q50–q63; solo q52 (acceso al estado de oportunidades) y q56 (contacto directo de audiencia) KEEP v2, adaptativas y con evidencia pendiente. Candidata total 33.

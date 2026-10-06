@@ -1,5 +1,14 @@
 # Pruebas
 
+## DIAG-V3-QBANK-R2J — revisión completa candidata
+
+- Ocho pruebas R2J: partición exacta y sin duplicados de los 85 IDs ejecutables (37 KEEP/37 REMOVE/11 DEFER), membership y retiros cerrados q66/q76/q78, versiones/contratos/copy, gates operativos/prelaunch/equipo, fallbacks y prioridad especializada, todas las opciones sin señales/evidencia, neutralidad de herramientas, selección material/prerequisite y probes deterministas. Candidata=38 (37 legacy + Discovery nueva); fuera de alcance=0 y sin clasificar=0.
+- q69 requiere la declaración explícita q_friction=follow_up de pérdida por falta de continuidad, no meta/archetype solamente; excluye cobertura de q12/q26/q32/q38/q52/q56. Se protege selección por vía material, unknown/N/A, actividad y prioridad especializada.
+- Probes: local 9 pendientes/14 total; citas 10/15; B2B 10/15; creator 9/14; ecommerce 10/15; nonprofit 8/13; prelaunch 6/9 (solo q85 nueva). Las seis rutas activas no añaden R2J automáticamente. Organizar trabajo individual con otra persona: 9/15, selecciona q82 material; claridad con q85 reliable_presence declarado: 10/15, selecciona q84 material. q85 entra ante necesidad de presencia/claridad y conserva unlock_routing; q65 es elegible con equipo declarado pero no se añade por defecto (directness supporting legacy, pendiente R3). Todas bajo cap 24.
+- **RAN 2026-10-06, composición final:** R2J **8/8 PASS**, R2I **6/6**, R2H **6/6**, R2G **6/6**, R2F **7/7**; ejecución conjunta con caracterización **34/34 PASS**. Candidata **74/74 PASS**, frozen/legacy **235/235 PASS**, combinado **309/309 PASS**. Directorio diagnóstico **853/853 PASS**; `pnpm run test:unit` **908/908 PASS**. Incremento legítimo: ocho tests R2J respecto a 845/900.
+- Caracterización **PASS**: `localBusinessLeaks` conserva `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`; fixture/test intactos, sin rebaseline. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS**. Solo avisos preexistentes de secretos Gmail locales ausentes y `PLUGIN_TIMINGS` Rolldown; dependencias/configuración no cambiaron.
+- Banco productivo 85/v1, EVIDENCE_MAPPING, ANSWER_SEMANTICS, planner, scorer, comportamiento R2I y código público/comercial intactos. Sin activación, D1, despliegue ni R3. Inventario de wording/gates/evidencia/overlap y REMOVE/DEFER consolidado en ARCHITECTURE.md y registro ejecutable `qbv2-reviewed-decisions.ts`.
+
 ## DIAG-V3-QBANK-R2I — B2B, audiencia y nonprofit
 
 - Seis regresiones R2I fijan composición/decisiones, gates por actividad/comprador/modelo/necesidad, separación de q12/q38, unknown/N/A sin inferencias y cero evidencia candidata, evidencia legacy conservada y planners representativos.

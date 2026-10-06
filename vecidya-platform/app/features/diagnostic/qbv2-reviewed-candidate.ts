@@ -9,8 +9,9 @@ import { REVIEWED_LOCAL_TRUST_QUESTIONS_V2 } from "./qbv2-reviewed-local-trust";
 import { REVIEWED_LOCAL_APPOINTMENTS_PROFESSIONAL_QUESTIONS_V2 } from "./qbv2-reviewed-local-appointments-professional";
 import { REVIEWED_COMMERCE_QUESTIONS_V2 } from "./qbv2-reviewed-commerce";
 import { REVIEWED_BUSINESS_AUDIENCE_QUESTIONS_V2 } from "./qbv2-reviewed-business-audience";
+import { REVIEWED_TRANSVERSAL_QUESTIONS_V2 } from "./qbv2-reviewed-transversal";
 
-/** Unregistered R2A–R2E migration candidate; production still uses QUESTION_BANK_V2. */
+/** Unregistered R2A–R2J migration candidate; production still uses QUESTION_BANK_V2. */
 export const REVIEWED_CANDIDATE_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
   ...REVIEWED_FOUNDATION_QUESTIONS_V2,
   ...REVIEWED_CONTEXT_QUESTIONS_V2,
@@ -22,4 +23,5 @@ export const REVIEWED_CANDIDATE_QUESTIONS_V2: readonly QuestionDefinitionV2[] = 
   ...REVIEWED_LOCAL_APPOINTMENTS_PROFESSIONAL_QUESTIONS_V2,
   ...REVIEWED_COMMERCE_QUESTIONS_V2,
   ...REVIEWED_BUSINESS_AUDIENCE_QUESTIONS_V2,
+  ...REVIEWED_TRANSVERSAL_QUESTIONS_V2,
 ];
