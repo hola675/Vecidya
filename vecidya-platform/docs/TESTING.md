@@ -1,5 +1,12 @@
 # Pruebas
 
+## DIAG-V3-QBANK-R2G — candidata local, citas y profesional
+
+- La suite R2G fija composición/versiones, estados KEEP/REMOVE/DEFER, routing de actividad/archetype/sector, gates materiales para preguntas de profundización, unknown sin inferencias, planners representativos bajo el hard cap y aislamiento de evidencia candidata.
+- Las ocho definiciones revisadas son v2 con `evidenceMigration: "pending"`; `deriveContextualEvidence` queda vacío para ellas en la candidata. La batería comprueba que las definiciones/mapas/semánticas legacy todavía producen evidencia histórica y `QUESTION_BANK_V2` conserva 85 preguntas.
+- Coordinación difícil depende de conversión mixta/baja; recordatorios requieren asistencia ocasional/frecuente declarada; autoridad profesional depende de prueba social débil/parcial. Las rutas de profesionales usan sector revisado y actividad activa, sin presumir citas.
+- **RAN 2026-10-06:** R2G **6/6 PASS**; R2F **7/7 PASS**; candidata revisada completa **54/54 PASS**; congelado/legacy **235/235 PASS**; combinado **289/289 PASS**; directorio diagnóstico **833/833 PASS**; `pnpm run test:unit` **888/888 PASS**. `localBusinessLeaks` pasa contra el baseline CHAR-001 vigente. Typecheck, build y `git diff --check`: PASS; build conserva el aviso local conocido de secretos Gmail ausentes.
+
 ## CHAR-001 — reconciliación de la caracterización de recomendaciones
 
 El fixture se generó originalmente en `0887707`, antes de que el commit `d96a3dd` alineara `serviceCatalog.estructuracion.title` con el título público vigente «Presencia & Marca» y `addonCatalog.whatsapp.name` con «WhatsApp Business». `services.tsx` y `addons.tsx` definen esos nombres y `catalog.test.ts` verifica la coincidencia; por eso el digest histórico quedó obsoleto. La comparación completa de `localBusinessLeaks` no encontró otros cambios en el resultado. La regeneración existente actualiza los digests afectados por esos mismos nombres; no cambia selección, scoring ni lógica de recomendaciones.

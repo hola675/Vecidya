@@ -1,5 +1,7 @@
 # Estado de implementación
 
+DIAG-V3-QBANK-R2G: candidata aislada de 28 preguntas (01–12, 14–18, Discovery, 20, 22 y ocho preguntas revisadas de servicios locales, citas y profesionales). q23/q25/q27/q28/q35/q36 y q13/q19 quedan fuera; q21 continúa DEFER. Las nuevas definiciones usan versión 2 y `evidenceMigration: pending`; no crean señales ni evidencia. El planner las mantiene adaptativas y bajo el hard cap 24. `QUESTION_BANK_V2` sigue en 85 y es el runtime. Candidata no registrada ni desplegada. Validación: ver `TESTING.md`.
+
 DIAG-V3-QBANK-R2F: candidata revisada aislada de 20 preguntas (01–12, 14–18, Discovery, 20 y 22); q13/q19 REMOVE del candidato y q21 DEFER. Añade Discovery universal para actividad activa, q20 para actividad activa con componente local/retail/hospitality y q22 universal activo de prueba social visible. Nuevo contexto `discoveryReachReliability`; evidencia de las tres preguntas pendiente para R3. Scoring, banca productiva de 85 preguntas y runtime legacy sin cambios. No registrada ni desplegada. Ver `TESTING.md`.
 
 DIAG-V3-QBANK-R2E: candidata aislada de 17 preguntas (01–12 y 14–18); q13 diferida hasta que R2F determine walk-in con clientes reales y ubicación física. q10/q12 resuelven hechos contextuales propios; q11 incluye `messaging`. El scorer no aplica mapas heredados a esas definiciones pendientes del candidato cuando cambia su versión; la banca productiva y sus 85 preguntas siguen sin cambios. No registrado ni desplegado. Ver `TESTING.md`.

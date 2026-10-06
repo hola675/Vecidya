@@ -54,7 +54,7 @@ test("q10 route, canonical attendance context, trace and no generic friction inf
   const entry = plan.trace.find(({ questionId }) => questionId === "q2_appointments_noshow");
   assert.equal(entry?.required, false);
   assert.equal(entry?.reason, "specialized_evidence");
-  assert.deepEqual(plan.selectedQuestionIds, ["q2_monetization", "q2_customer_buyer", "q2_customer_reach", "q2_sector", "q2_goal", "q2_regularity", "q2_appointments_noshow", "q2_discovery_reliable_reach", "q2_process_systemization"]);
+  assert.deepEqual(plan.selectedQuestionIds, ["q2_monetization", "q2_customer_buyer", "q2_customer_reach", "q2_sector", "q2_goal", "q2_regularity", "q2_appointments_lead_to_booking", "q2_appointments_noshow", "q2_discovery_reliable_reach", "q2_process_systemization"]);
   const refs = CONTEXT_FIELD_REFS.filter((field) => field === "appointmentAttendance");
   assert.deepEqual(refs, ["appointmentAttendance"]);
   for (const value of ["rarely", "sometimes", "often"] as const) {

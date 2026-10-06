@@ -22,14 +22,19 @@ const question = (id: string, bank: readonly QuestionDefinitionV2[] = candidate)
 const resolve = (answers: AnswersV2) => resolveEligibleQuestionsV2(answers, candidate);
 const activeBusiness = { q2_entity: "business", q2_has_customers: "yes" } as const;
 
-test("R2F candidate has 20 questions, keeps deferred IDs out, and adds one declarative discovery module", () => {
-  assert.deepEqual(candidate.map(({ id }) => id), [
+test("R2F candidate foundation remains stable, keeps deferred IDs out, and adds declarative discovery", () => {
+  assert.deepEqual(candidate.slice(0, 20).map(({ id }) => id), [
     "q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers",
     "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_appointments_noshow",
     "q2_ecommerce_traffic_sources", "q2_b2b_pipeline", "q2_sector", "q2_customer_reach", "q2_customer_buyer",
     "q2_process_systemization", "q2_capacity_signal", "q2_discovery_reliable_reach", "q2_local_presence_consistency", "q2_reputation_flow",
   ]);
-  assert.equal(candidate.length, 20);
+  assert.deepEqual(candidate.slice(20).map(({ id }) => id), [
+    "q2_service_response_speed", "q2_service_quote_followup", "q2_appointments_booking_friction",
+    "q2_appointments_confirmation_reminders", "q2_appointments_lead_to_booking", "q2_appointments_rebooking",
+    "q2_professional_authority_signals", "q2_professional_intake_flow",
+  ]);
+  assert.equal(candidate.length, 28);
   for (const id of ["q2_local_foot_traffic", "q2_local_discovery", "q2_local_repeat_customers"]) {
     assert.ok(QUESTION_BANK_V2.some((item) => item.id === id), `${id} remains in frozen legacy bank`);
     assert.ok(!candidate.some((item) => item.id === id), `${id} is not in reviewed candidate`);
@@ -229,12 +234,12 @@ test("pending version guard preserves historical q20/q22 evidence only for legac
 
 test("R2F adaptive questions remain optional; no route selects all three merely because they are eligible", () => {
   const answers = { ...activeBusiness, q2_delivery: ["physical_location"] } as const;
-  const plan = buildQuestionPlan({ answers, bank: candidate });
+  const plan = buildQuestionPlan({ answers, bank: candidate.slice(0, 20) });
   for (const id of ["q2_discovery_reliable_reach", "q2_local_presence_consistency", "q2_reputation_flow"]) {
     assert.equal(question(id).routingRole, "adaptive");
     assert.equal(plan.trace.find((entry) => entry.questionId === id)?.required, false, id);
   }
   assert.ok(plan.selectedQuestionIds.filter((id) => ["q2_discovery_reliable_reach", "q2_local_presence_consistency", "q2_reputation_flow"].includes(id)).length < 3);
-  const trustNeed = buildQuestionPlan({ answers: { ...answers, q2_goal: "trust" }, bank: candidate });
+  const trustNeed = buildQuestionPlan({ answers: { ...answers, q2_goal: "trust" }, bank: candidate.slice(0, 20) });
   assert.ok(trustNeed.selectedQuestionIds.includes("q2_reputation_flow"), "visible proof is selected for an explicit Trust need");
 });

@@ -497,6 +497,13 @@ GHL es el system of record de contactos, leads, oportunidades, pipelines, conver
 - q13 y q19 quedan **REMOVE** de la candidata revisada por preguntar atribución/localización sin observar capacidad digital; q21 queda **DEFER** hasta poder demostrar que la recurrencia es esperable para ese negocio. Las tres definiciones siguen presentes en la banca legacy congelada.
 - Las tres preguntas nuevas declaran `evidenceMigration: "pending"`; Discovery no tiene ID legacy y q20/q22 difieren de sus versiones legacy, así que ninguna hereda scoring en la candidata. No cambian `EVIDENCE_MAPPING`, `ANSWER_SEMANTICS`, scoring ni resultados legacy. La migración explícita de evidencia queda para R3.
 
+### DIAG-V3-QBANK-R2G — Servicios locales, citas y profesionales
+
+- Ocho preguntas KEEP se anexan a la candidata: respuesta oportuna y seguimiento de cotizaciones; fricción real de coordinación, conversión observada, recordatorios condicionados a inasistencias declaradas y continuidad de citas; prueba visible de experiencia propia y claridad del siguiente paso profesional. Son v2, adaptativas y con `evidenceMigration: "pending"`.
+- Se reutilizan `activity`, los archetypes y `appointmentAttendance`. No se crean señales/contextos, ni se asigna fricción por respuesta débil. El sector profesional revisado más actividad activa delimita q33/q34 porque la clasificación candidata actual no pregunta si una práctica individual opera por consulta/proyecto; no se infieren citas.
+- q29 solo es material tras una conversión mixta/baja; q30 solo tras asistencia declarada ocasional/frecuente; q32 solo ante una meta/fricción de seguimiento; q33 solo ante una meta/fricción de confianza declarada. La prueba propia de experiencia permanece separada de la reputación externa q22 y no la convierte en prerrequisito. Las rutas representativas quedan debajo del hard cap 24.
+- q13/q19 y q35 se excluyen por atribución local o dependencia de referencias no defendibles; q21 se mantiene diferida por falta de aplicabilidad general de recurrencia. q23/q25/q27/q28/q36 se retiran por falta de capacidad digital defendible, duplicación o inferencia insegura. No cambian scorer, mapas/semánticas globales, banca legacy ni registro público.
+
 - Gobierno y auditoría en tablas separadas del perfil (`0009`).
 - Horarios anclados a `organization_id`; «sin fila» = día sin definir (`0008`).
 - `service_area` como texto libre (sin geocodificación, radios ni polígonos); `city`/`country` = ubicación de referencia.

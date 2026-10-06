@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-QBANK-R2G — candidata local, citas y profesional revisada
+
+- La candidata aislada pasa a 28 preguntas y agrega ocho KEEP v2 para servicio local, citas y profesionales; todas declaran `evidenceMigration: "pending"`.
+- Coordinación difícil, recordatorios, continuidad de citas y prueba visible de experiencia se abren solo ante evidencia material. Outcome de cita, fricción de coordinación y seguimiento profesional se mantienen como hechos distintos; las respuestas no producen fricción ni scoring.
+- q13/q19/q35 permanecen fuera, q21 sigue DEFER y se retiran los demás constructos redundantes/circunstanciales identificados en la revisión. No se agregan señales/contextos ni se modifica QUESTION_BANK_V2 (85), scoring, mapas globales o runtime. No registrado ni desplegado.
+- Validación final: R2G 6/6, candidata 54/54, frozen/legacy 235/235, diagnóstico 833/833 y unit 888/888; typecheck, build y `git diff --check` pasan. Ver `TESTING.md`.
+
 ## 2026-10-06 — DIAG-V3-QBANK-R2F — Discovery universal y confianza revisadas
 
 - Se agrega a la candidata aislada q2_discovery_reliable_reach v1, q2_local_presence_consistency v2 y q2_reputation_flow v3; total 20. `QUESTION_BANK_V2` continúa en 85 y sin cambios.
