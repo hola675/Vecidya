@@ -1,5 +1,19 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R3D — respuesta inicial y coordinación de horario
+
+**CODE/TEST, 2026-10-06:** el registro canónico de `qbv2-reviewed-evidence.ts` migra `q2_service_response_speed@v2` y `q2_appointments_booking_friction@v2`, ambas **Conversion & Access/direct**. La vista aislada deriva **38/10 migrated/28 pending**; contratos, mapas anteriores, definiciones R2, runtime y planner intactos.
+
+Respuesta inicial observa recepción de respuesta a tiempo, sin reloj universal. Strong se interpreta established (capacidad habitual declarada, no excelencia ni venta conseguida); partial refleja demoras ocasionales y weak contactos a veces sin responder. Coordinación observa dificultades/demoras reales para acordar horario: rarely/sometimes/often usan established/partial/weak. El intercambio normal no cuenta como problema; frecuencia de dificultad no establece ausencia absoluta. Se reutilizan contribuciones existentes; unknown=uncertainty/null. Ninguna incluye N/A, no se añade ni se acepta un value inventado como evidencia. Tablas exhaustivas versionadas en código.
+
+**Secundarias para ambas: REJECTED.** Relationship & Recurrence: contacto/reserva inicial no observa continuidad posterior. Digital Readiness: no observa recuperación/traspaso interno. Digital Foundation: no observa base pública mantenida. Clarity & Positioning: no observa comprensión de oferta. Tampoco se infieren Discovery o Trust. No se deducen causa, CRM, automatización, personal, capacidad, demanda, venta perdida ni stack desde estas respuestas.
+
+**q29/q31:** la definición ejecutable de coordinación conserva `routingRole=adaptive` y solo `materialAppliesWhen`, con citas activas y q31 mixed/few; no es un cambio a deepening. Gate material no equivale a evidencia: q31 sigue pending y sus resultados no se incorporan al payload. La misma respuesta de coordinación produce la misma evidencia para mixed y few, incluso coordinación sencilla con pocas reservas. q31 describe resultado observado interés→cita, no causa de coordinación; su eventual migración necesita **R3-LATER REVIEW** para evitar duplicación de la misma observación o atribución causal. No se migra q31 en R3D.
+
+**Seguimiento:** respuesta inicial es primer acceso. `q2_service_quote_followup` observa continuación después de una cotización; `q2_followup_general_process`, retomar un pendiente existente. Ambas siguen pending y no modifican la evidencia de respuesta inicial. Las pruebas separan gate, respuesta actual y contexto; comparan selección R2/R3, incluido prelaunch, y ausencia de causas nuevas en contextos aplicables.
+
+Candidata de 38 inactiva; legacy 85/v1, caracterización, pesos/supporting/confianza y R4/calibración sin cambios. Validación en TESTING.md. Siguiente lote propuesto **R3E, no iniciado:** continuidad después de una interacción (`q2_service_quote_followup` y `q2_followup_general_process`), revisando su encaje en Relationship & Recurrence y cualquier límite con Access sin asumir recompra ni resultado comercial.
+
 ## DIAG-V3-R3C — comprensión de oferta visible
 
 **CODE/TEST, 2026-10-06:** `qbv2-reviewed-evidence.ts` añade al registro canónico dos definiciones v2 migradas, `q2_presence_offer_clarity` y `q2_retail_product_visibility`, ambas **Clarity & Positioning/direct**. Ledger acumulado **38/8 migrated/30 pending**. Se conservan todos los mapas R3A/R3B y las definiciones/gates R2; solo cambia evidencia explícita en la vista R3 aislada.

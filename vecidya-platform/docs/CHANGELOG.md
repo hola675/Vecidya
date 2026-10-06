@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3D — evidencia de acceso inicial
+
+Dos migraciones atómicas v2, respuesta inicial y coordinación de horario, solo Conversion & Access/direct. Ledger derivado 38/10/28; diez pruebas nuevas de opciones/identidad/neutralidad, gates sin herencia de resultado q31, separación de seguimiento, ausencia de causas y sesgo de stack/SLA, legacy y runtime. Ledger R3C adaptado al registro acumulado, mapas y semánticas anteriores intactos. Sin cambios de R2, contrato/scorer/planner, pesos/confianza/calibración, caracterización, activación o deploy. Resultados en TESTING.md; R3E no iniciado.
+
 ## 2026-10-06 — DIAG-V3-R3C — evidencia de oferta visible
 
 Migración atómica de oferta transversal y visibilidad de productos retail v2, solo Clarity & Positioning/direct, sin inferencias de conversión, adquisición, reputación, inventario o ventas. Ledger derivado 38/8/30, nueve regresiones específicas; suite R3B adaptada al registro acumulado y a Clarity ahora migrada, preservando sus mapas Foundation y aislamiento pendiente con otro ID. Unknown/N/A neutros, unclear=weak. Sin cambios de R2, contrato, scorer/planner, contribuciones/pesos/confianza, legacy o caracterización; sin activación/deploy. Validación en TESTING.md; R3D no iniciado.

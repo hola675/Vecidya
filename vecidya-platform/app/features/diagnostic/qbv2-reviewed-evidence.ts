@@ -64,7 +64,23 @@ export const REVIEWED_VISIBLE_OFFER_EVIDENCE_V3 = [
   },
 ] as const satisfies readonly QuestionEvidenceV3[];
 
-export const REVIEWED_EVIDENCE_V3 = [...REVIEWED_PILOT_EVIDENCE_V3, ...REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3, ...REVIEWED_VISIBLE_OFFER_EVIDENCE_V3] as const;
+/** R3D: acceso a respuesta inicial y coordinación observada; sin SLA, resultado o causa inferidos. */
+export const REVIEWED_INITIAL_ACCESS_EVIDENCE_V3 = [
+  {
+    questionId: "q2_service_response_speed", questionVersion: 2,
+    dimensions: [{ dimension: "conversion_access", directness: "direct", answers: {
+      strong: "established", partial: "partial", weak: "weak", unknown: "uncertainty",
+    } satisfies Record<"strong" | "partial" | "weak" | "unknown", MigratedAnswerStateV3> }],
+  },
+  {
+    questionId: "q2_appointments_booking_friction", questionVersion: 2,
+    dimensions: [{ dimension: "conversion_access", directness: "direct", answers: {
+      rarely: "established", sometimes: "partial", often: "weak", unknown: "uncertainty",
+    } satisfies Record<"rarely" | "sometimes" | "often" | "unknown", MigratedAnswerStateV3> }],
+  },
+] as const satisfies readonly QuestionEvidenceV3[];
+
+export const REVIEWED_EVIDENCE_V3 = [...REVIEWED_PILOT_EVIDENCE_V3, ...REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3, ...REVIEWED_VISIBLE_OFFER_EVIDENCE_V3, ...REVIEWED_INITIAL_ACCESS_EVIDENCE_V3] as const;
 
 /** Misma candidata R2, vista de evidencia aislada: solo cambia metadata de migración, nunca registro. */
 export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefinitionV2[] = REVIEWED_CANDIDATE_QUESTIONS_V2.map((question) => {

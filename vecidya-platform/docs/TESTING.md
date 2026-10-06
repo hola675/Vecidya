@@ -1,5 +1,12 @@
 # Pruebas
 
+## DIAG-V3-R3D — acceso inicial y coordinación de horario
+
+- `qbv2-initial-access-evidence.test.ts`: **10 regresiones** de ledger 38/10/28 y atomicidad, todas las opciones Conversion/direct sin SLA, coordinación observada sin inferir herramientas/ausencia, unknown neutral y N/A ausente, identidad v2 sin fallback, gate q31 sin heredar resultado, seguimiento pending independiente, ausencia de causas/contextos nuevos en casos aplicables, legacy y runtime congelados. Ledger R3C adaptado al registro acumulado; mapas anteriores intactos.
+- **RAN 2026-10-06:** R3D **10/10**, R3C **9/9**, R3B **9/9**, R3A **17/17**, R2-FINAL **9/9**, candidata R2 **83/83**, frozen/legacy **235/235**, combinado **363/363**, caracterización **1/1**, diagnóstico **907/907**, full unit **962/962**: PASS, cero fallos. Incremento de diez pruebas frente a 897/952. Typecheck, build y `git diff --check`: PASS; solo avisos conocidos de Gmail local y PLUGIN_TIMINGS.
+- q29 conserva rol adaptive y entrada material tras q31 mixed/few; fuera de esos casos no se habilita. Comparación de selección entre vistas R2/R3 y entrada fuera de base cuando es seleccionada. q31 few con coordinación rarely emite solo la observación q29 established; q31, cotizaciones y seguimiento genérico siguen pending con cero evidencia, sin duplicación. No se afirma una causa ni venta perdida.
+- Contrato, contribuciones/supporting/confianza, IDs/versiones/copy/opciones/producciones/gates R2 y runtime 85/v1 no cambian. Las 377 opciones legacy siguen protegidas por R3A. Caracterización mantiene `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`; fixture/test intactos. Candidata de 38 inactiva, REMOVE/DEFER ausentes, sin R4/calibración/deploy.
+
 ## DIAG-V3-R3C — comprensión de oferta visible
 
 - `qbv2-visible-offer-evidence.test.ts`: **9 regresiones** de composición 38/8/30, todas las opciones v2 Clarity/direct, unknown/N/A neutros y unclear distinto de missing, identidad/atomicidad sin fallback, legacy/pending, base vs comprensión, híbrido retail/ecommerce con fuentes separadas, neutralidad de inventario/ventas/herramientas y runtime/gates congelados.
