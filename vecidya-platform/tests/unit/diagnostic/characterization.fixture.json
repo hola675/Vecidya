@@ -287,7 +287,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09"
+      "resultDigest": "9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f"
     },
     "persona:growingBusinessManual": {
       "applicable": [
@@ -400,7 +400,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "5bdc52e52f1c42ce5fe8417005f3674fd6162c8ba9ffb2219cab900d83ef1873"
+      "resultDigest": "0138ef06de690b516a3790e590d3a644a2490c7734adf7e6783cb5f34da78b20"
     },
     "persona:ideaStage": {
       "applicable": [
@@ -510,7 +510,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "e2801e2bed0c555a23ade41a7dcb418cb1c4edb8fc9a122ba1d1658284f35376"
+      "resultDigest": "b2c91d97dea7771b3c48129f4205b3d4f569063800b7964128c1d31765369e0a"
     },
     "persona:creatorAudience": {
       "applicable": [
@@ -655,7 +655,7 @@
         ]
       },
       "goalNote": true,
-      "resultDigest": "9b13ff886d18e7ca5388cb20a251684bf8256c8dccc4cc89669f04a35ad88bbd"
+      "resultDigest": "1933f7b70a3b294cb665edf28852dfb0791ff74dbb542594f23fa27cd48efe30"
     },
     "persona:multiSourceTeam": {
       "applicable": [
@@ -818,7 +818,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "f86aae062833b6f6166dddae3480df6a25bb275134349214028aaf05b665d41c"
+      "resultDigest": "7b051f75110e591ebc99cb6059c780495f5eeea59eaab2f7b2434c08f01c5b9c"
     },
     "persona:organizationCommunity": {
       "applicable": [
@@ -955,7 +955,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "7148535c1c42e7c0ff60b1023e6de48bf17a901b9baf318612055e91ba288069"
+      "resultDigest": "14d059b42d861cbd53ad568aa433471692531ba12e0b508580be76ce66aa1a8e"
     },
     "adversarial:strongPresenceNoFollowUp": {
       "applicable": [
@@ -1077,7 +1077,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "b6208087be16d6b29667fb5b1906790f1e17350f552f139b98e6c9dace3ee596"
+      "resultDigest": "370f472dcc1a01549c599df34fbf394cd35fe3c7b426717c1515263f5fe4b77c"
     },
     "adversarial:weakPresenceStrongProcess": {
       "applicable": [
@@ -1200,7 +1200,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "2ff0a051c56034debe569e3fba1ae6cb16c8d64ddfa0d870f44bc31b76ef3844"
+      "resultDigest": "031aae499cd8f067fbb7e2e88f208d4e7f29656f4f7088095731e51a9042500a"
     },
     "adversarial:bigTeamDisorganized": {
       "applicable": [
@@ -1361,7 +1361,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "53072db6e7777ad40f268d644648d32d755679d7aaa7776a1c5f75416ffb2042"
+      "resultDigest": "aae0a88a5ee0414a6b8b7a9435c8392ade084b37e755c15f2ade05e1e8daf141"
     },
     "adversarial:soloProSophisticated": {
       "applicable": [
@@ -1473,7 +1473,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "4259f44c39d85bca1861107271f2418c93200689748ddb29e503138062baf925"
+      "resultDigest": "48d302156f8fc49234803a2839d6a02a26a0a75a3fc25aaea4a546d2e6677fc6"
     },
     "adversarial:ideaWithFollowing": {
       "applicable": [
@@ -1577,7 +1577,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "c99ec085e01bbfa0aee0f335c8af761fd35395236bc490be5f6c71f7890c3fa6"
+      "resultDigest": "b7be8d08c7834b1ba82bc5c9d63ebf549296762780d952e6063cf2e3c3e560e0"
     },
     "adversarial:creatorNoOffer": {
       "applicable": [
@@ -1722,7 +1722,7 @@
         ]
       },
       "goalNote": true,
-      "resultDigest": "9b13ff886d18e7ca5388cb20a251684bf8256c8dccc4cc89669f04a35ad88bbd"
+      "resultDigest": "1933f7b70a3b294cb665edf28852dfb0791ff74dbb542594f23fa27cd48efe30"
     },
     "adversarial:localNoReviewsGoodProcess": {
       "applicable": [
@@ -1846,7 +1846,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "6a117c1b9991290533c2dc40b8376c9d62fee3b7c7770646f26a510ca86b9e72"
+      "resultDigest": "6a99ec61b6b13ef67646840fed3cf4228c55d5696efdb928cf6998e9612a82c6"
     },
     "adversarial:mostlyUnknown": {
       "applicable": [
@@ -2004,7 +2004,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "643035a6798e5980be033b77249ceede6d9b3bfde96d203b8b992668776cb6b4"
+      "resultDigest": "9ac630ba2ec3b399f6d2c3c0a210a94d5dfcc34b0cba053f212dea66cde305d9"
     },
     "adversarial:manyNotApplicable": {
       "applicable": [
@@ -2258,7 +2258,7 @@
         ]
       },
       "goalNote": true,
-      "resultDigest": "2a335cde310631dc499b49504532558d975463439dc6e24e73ad5db3175699be"
+      "resultDigest": "7c9bdfe1499512935ddc3cc7cd3736ee93f964f242b18bf71c16c16aa143ca06"
     },
     "adversarial:strongExceptFollowUp": {
       "applicable": [
@@ -2368,7 +2368,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "24b02e3ebe9ae831e273e486348ef938a78e951f5ed5040856ee769464972b5d"
+      "resultDigest": "569a607ec55a64ef0b9f230dffe2f448ed18b9ffedc6b624bf8618de5a136f50"
     },
     "adversarial:weakExceptResponse": {
       "applicable": [
@@ -2517,7 +2517,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "25b2bc6cbd8b10411b29058fd14db69c055ef9efcfa865485f96dc4c3ece7777"
+      "resultDigest": "2cf8e18c64e2b1bb446830d6b536c731247881a239fe79946a53fe514d9b73b7"
     },
     "sweep:business/idea": {
       "applicable": [
@@ -2627,7 +2627,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "339a6b451a139e62233ca3e7b9545bbf5c82b18a8494fb03bee9b4f910c952a7"
+      "resultDigest": "c5a2e5eb6d384ea5a9f449e77d10df447cc79a3819e6509390c501f92033527c"
     },
     "sweep:business/launching": {
       "applicable": [
@@ -2740,7 +2740,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "4fa574cf91c6e1e102e8892a1add439109320e987d4b75a264554d08d8926462"
+      "resultDigest": "ba438e0a24396030b8b85a9005072e44a61387dcaec2e2d40670062bff3d95b1"
     },
     "sweep:business/occasional": {
       "applicable": [
@@ -2871,7 +2871,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "802264807d5ae1e6d81297a990ff77e13454111617e02be1ca790500f3f11f59"
+      "resultDigest": "5aa0af413331966006e2d63c56a72369716d249e0130554032f6189a5f0bc302"
     },
     "sweep:business/regular": {
       "applicable": [
@@ -3002,7 +3002,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "2742949997dd21fee05a2c63fa10170c84cd3a478316d5a601c9ebbcb96499ae"
+      "resultDigest": "31b9c0806dc7a52e2882eb6f35717c67f1ac65feeefc9e7a74590ca2cb339ac1"
     },
     "sweep:business/growing": {
       "applicable": [
@@ -3157,7 +3157,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "4781849cb429201adacbc08246827db673c7dbe082fbfb99315df9d46fc9cf2c"
+      "resultDigest": "ebc18eab8f87b1cce7fea23ce2543b3700263c03f7b4742272bd360dbc7106cf"
     },
     "sweep:professional/idea": {
       "applicable": [
@@ -3269,7 +3269,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "2d4fec54e685ad92cb6fd80dfe5b3e033ce0ba1172fab127fae1bb4219f66d1e"
+      "resultDigest": "2d6269bede725c6e7fdab0ef2af3a417fc34069fac3c889cbd3e0e1990191fef"
     },
     "sweep:professional/launching": {
       "applicable": [
@@ -3374,7 +3374,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "3e4dffcdeeb108fc3e319916814b66409f3bab609cad3191873175ffed5b9d40"
+      "resultDigest": "11ef8ceb91246ca2edd5c3a1e52f22f5312287859330be8d9fde5614380b021d"
     },
     "sweep:professional/occasional": {
       "applicable": [
@@ -3529,7 +3529,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "b370d6311e0b3247e8559746e751a13b28c521de13c99c8a9bab6de7daea6317"
+      "resultDigest": "b86f8e49f940e44f4862f6338ee2e7c4d80b6015d2910a02fa2cc45d1cc12716"
     },
     "sweep:professional/regular": {
       "applicable": [
@@ -3687,7 +3687,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "1107e8c5a3d9f1fcea82b090c3e3deed0ce9b8e78a8d6aca7de00f0acdf408e1"
+      "resultDigest": "26c8ca4aecd54c864233088879518815c9a5508f888a3cc29fdd07bd860b6acb"
     },
     "sweep:professional/growing": {
       "applicable": [
@@ -3845,7 +3845,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "2eca414ff256dd2b38388dadda5fb2aec4e2f25d7011966ee0bc077e7152ab85"
+      "resultDigest": "1ff11d41d6ae5c4d50337e4335cb34f54dd0aac2f3b3256eb202d6394b33d5d4"
     },
     "sweep:creator/idea": {
       "applicable": [
@@ -3958,7 +3958,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "8db67f1a47875928fadde94290b312199bcf87a7d0f1d5ff04ed659448203cc4"
+      "resultDigest": "954937b05c4ee25032078370f1bfad41c056a48c4648b5bc5de9ec2888e66e35"
     },
     "sweep:creator/launching": {
       "applicable": [
@@ -4078,7 +4078,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "db22f3a866314536940d5106345591bd457142fe67a9f49922ebcb08857f1719"
+      "resultDigest": "dbac9ade85f4cfb8b7967df3fa0ba730ddfa0f46fd0aa1ea083082bf91a86298"
     },
     "sweep:creator/occasional": {
       "applicable": [
@@ -4234,7 +4234,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "af4be8cfbc4f70fc90262cbb166b87179bdf7557d596df22c07d644fab52ad21"
+      "resultDigest": "d868f71fc5093fd2e8226246d3d16aabe705a0188bd9ce0bec47cb3ce7df9334"
     },
     "sweep:creator/regular": {
       "applicable": [
@@ -4348,7 +4348,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "7be0cace8e5892ba71d3193142db2b882ebd5877238a0d29f6541fe2fbe86207"
+      "resultDigest": "66a6e9068a8e3626c75c21af2607300c153b07f4108584497a62d7372586b1d7"
     },
     "sweep:creator/growing": {
       "applicable": [
@@ -4468,7 +4468,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "38855c887c0451a2298653a64f02f6d32ad1f592fdabe70f74939bd4fc359c3c"
+      "resultDigest": "2ed16998662af5836b6335923770c2466fe188047ca6ab358d7f0e34e17f6447"
     },
     "sweep:project/idea": {
       "applicable": [
@@ -4580,7 +4580,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "ef128cbe25a0c8710f877e5a5f33dce13575738ff71cbf3fb51e93021ec4cc64"
+      "resultDigest": "ed10ff391ff0cb8fc0150157517231f0824b5c5a77a53a44683a19f6954d356e"
     },
     "sweep:project/launching": {
       "applicable": [
@@ -4700,7 +4700,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "40c55790c2c727b2550eae46bddea0f8dbf3e3e71e59ce7899afdea570330a93"
+      "resultDigest": "df3dacac70757b4f85699ea0c6c4e67a55cb182a84b47cbc2aedd3cd9138e247"
     },
     "sweep:project/occasional": {
       "applicable": [
@@ -4814,7 +4814,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "577b255fc90aae70e47ce511d52b6585b0f518117d8c26b1dda2db9b2e19de8d"
+      "resultDigest": "b13b5fa91c018a650e7f2543bc242ad8e58c028d82799b5bc20fdf3d5f1caa65"
     },
     "sweep:project/regular": {
       "applicable": [
@@ -4928,7 +4928,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "8cd82f17525b65c34063d0f34e63a1e0d67349a7c1354357c6cd29819a3af272"
+      "resultDigest": "7cb780e87f3b07c30c9528bc88a9ee73ea497dc2624563d400adccd61adb5eea"
     },
     "sweep:project/growing": {
       "applicable": [
@@ -5076,7 +5076,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "e57cc309c1b7b6e25d588402ee79a2f6973fc04e37e2fefe82a9827075f01f12"
+      "resultDigest": "21c71e4b861a60ee0afd0a659c536e60e69b4e2b8820def1be07713e307d567c"
     },
     "sweep:organization/idea": {
       "applicable": [
@@ -5179,7 +5179,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "d476654454cc223eddecc96f8f6eae52c5c6aba50bee2fe5f3267f5517cdc294"
+      "resultDigest": "afd2a919f36482a3d314875ddc7558edeaa2f7ca84feba4c77342cbb9ca467ae"
     },
     "sweep:organization/launching": {
       "applicable": [
@@ -5277,7 +5277,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "ce2aacaf1cd4f50e26f28e1aff9057da4fe5212ab965773fe700f6bfa5e85bd2"
+      "resultDigest": "73a7b14a6bcd63859d0e37b1e987f561585c207813dcf8ac7d464524bb7b1b7d"
     },
     "sweep:organization/occasional": {
       "applicable": [
@@ -5421,7 +5421,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "acb563828d5f130efdfedd852a23ff2ff391493fc350ce6c61b4c1651b76133f"
+      "resultDigest": "a95fe961c5890316d63a6c6de4b549bb852ca87e6f8f821f82c7df244e904b80"
     },
     "sweep:organization/regular": {
       "applicable": [
@@ -5579,7 +5579,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "b2ca3a4f9b43a9b957d5c6fe3d26c13ce47fe8084697c7102cf4faa1890c78b7"
+      "resultDigest": "d7e77b98cd567b71ebdcb327d0908f78f8ca7a6260454caf3f8a0c28473b6db2"
     },
     "sweep:organization/growing": {
       "applicable": [
@@ -5720,7 +5720,7 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "1b3621c3590be0bc0bddc0ac1cd93cca14a40ceaf208ac06be9e752d3f5ed878"
+      "resultDigest": "e36439b3984cea98f48cce2047857cb69b6dc27b3019fed4f58b14cd09e05f5c"
     },
     "entry:empty": {
       "applicable": [
@@ -5812,11 +5812,11 @@
         ]
       },
       "goalNote": false,
-      "resultDigest": "43cddb3faf7f6fcca1e829f3b24e6a4f0c557816b0333c8ee11ab0010730a01a"
+      "resultDigest": "0bd9981dbc8844fe283ab321ac7e041f336572964de43a9e269c0370bbae49f1"
     }
   },
   "sweep": {
     "count": 1125,
-    "digest": "6338c336b0aee27cb4db224871f6ef05e06f0e8bab1d5aaa9564023276ec175a"
+    "digest": "7fbdd4ab7e979da86e7fee15886511f2058f8021cd5ebefacd4000bb21ee64f9"
   }
 }

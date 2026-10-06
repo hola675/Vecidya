@@ -1,5 +1,9 @@
 # Pruebas
 
+## CHAR-001 — reconciliación de la caracterización de recomendaciones
+
+El fixture se generó originalmente en `0887707`, antes de que el commit `d96a3dd` alineara `serviceCatalog.estructuracion.title` con el título público vigente «Presencia & Marca» y `addonCatalog.whatsapp.name` con «WhatsApp Business». `services.tsx` y `addons.tsx` definen esos nombres y `catalog.test.ts` verifica la coincidencia; por eso el digest histórico quedó obsoleto. La comparación completa de `localBusinessLeaks` no encontró otros cambios en el resultado. La regeneración existente actualiza los digests afectados por esos mismos nombres; no cambia selección, scoring ni lógica de recomendaciones.
+
 ## DIAG-V3-QBANK-R2F — Discovery universal y confianza local revisadas
 
 - `qbv2-reviewed-universal-discovery.test.ts` fija el candidato de 20 preguntas, los retiros/deferencias, módulo Discovery, routing, versiones, señal/contexto/traza/DSL, estados known/unknown, cero evidencia candidata y compatibilidad de q20/q22 legacy.
