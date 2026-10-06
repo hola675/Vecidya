@@ -87,7 +87,7 @@ test("q11 multi-select accepts messaging and keeps unknown exclusive without inv
   assert.equal(result.context.archetype.status, "resolved");
   assert.deepEqual(result.context.growthStage, { status: "resolved", value: "starting", source: "signal" });
   assert.deepEqual(deriveContextualEvidence({ q2_ecommerce_traffic_sources: ["social", "messaging"] }, candidate), []);
-  assert.deepEqual(buildQuestionPlan({ answers: ecommerce, bank: candidate }).selectedQuestionIds, ["q2_monetization", "q2_customer_buyer", "q2_customer_reach", "q2_sector", "q2_goal", "q2_regularity", "q2_ecommerce_traffic_sources", "q2_discovery_reliable_reach", "q2_process_systemization"]);
+  assert.deepEqual(buildQuestionPlan({ answers: ecommerce, bank: candidate }).selectedQuestionIds, ["q2_monetization", "q2_customer_buyer", "q2_customer_reach", "q2_sector", "q2_goal", "q2_regularity", "q2_ecommerce_product_discovery", "q2_ecommerce_traffic_sources", "q2_discovery_reliable_reach", "q2_process_systemization"]);
 });
 
 test("q12 applies to B2B/mixed context, resolves its own fact, and does not infer follow-up friction", () => {

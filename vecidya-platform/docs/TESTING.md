@@ -1,5 +1,12 @@
 # Pruebas
 
+## DIAG-V3-QBANK-R2H — retail, ecommerce y hospitality
+
+- `qbv2-reviewed-r2h.test.ts` verifica seis regresiones: matriz KEEP/REMOVE/DEFER y versiones, gates por actividad/entrega con separación e híbridos, vía material retail, no inferencia para todas las opciones (incluyendo unknown/N/A), evidencia legacy conservada y rutas bajo cap 24.
+- Rutas de prueba con clientes activos, entrega y meta ya respondidos: retail + `explain` selecciona q37 (7 pendientes, 10 incluyendo las 3 respuestas); retail + `stop_losing` selecciona q38 (7/10); ecommerce + `opportunities` selecciona q40 (10/13); hospitality + `opportunities` no añade R2H (8/11). Retail + `be_found` no añade R2H (8/11). Las preguntas retail se seleccionan en vía material, ninguna por requisito intrínseco.
+- q41/q44 se difieren y las ocho REMOVE permanecen fuera de candidata. q13/q19/q35 REMOVE y q21 DEFER siguen cerradas. No se modifican fixtures legacy ni caracterización.
+- **RAN 2026-10-06:** R2H **6/6 PASS**; R2G **6/6 PASS**; R2F **7/7 PASS**; candidata **60/60 PASS** y frozen/legacy **235/235 PASS** dentro del combinado **295/295 PASS**. Directorio diagnóstico **839/839 PASS**; `pnpm run test:unit` **894/894 PASS**. Caracterización **PASS**, digest `localBusinessLeaks` **9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f**, sin rebaseline. Typecheck, build y `git diff --check`: PASS. Build conserva secretos Gmail locales ausentes y emitió `PLUGIN_TIMINGS`; se verificó que procede del diagnóstico de rendimiento del Rolldown instalado, sin cambios en dependencias ni configuración.
+
 ## DIAG-V3-QBANK-R2G — candidata local, citas y profesional
 
 - La suite R2G fija composición/versiones, estados KEEP/REMOVE/DEFER, routing de actividad/archetype/sector, gates materiales para preguntas de profundización, unknown sin inferencias, planners representativos bajo el hard cap y aislamiento de evidencia candidata.

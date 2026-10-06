@@ -69,9 +69,9 @@ test("R2D signal productions resolve only to registered canonical context fields
 test("R2D adds only q17–q18 to the exact isolated candidate and pins versions", () => {
   assert.deepEqual(operational.map(({ id }) => id), ["q2_process_systemization", "q2_capacity_signal"]);
   assert.deepEqual(candidate.slice(0, ids.length).map(({ id }) => id), ids);
-  assert.deepEqual(candidate.slice(ids.length).map(({ id }) => id), ["q2_discovery_reliable_reach", "q2_local_presence_consistency", "q2_reputation_flow", "q2_service_response_speed", "q2_service_quote_followup", "q2_appointments_booking_friction", "q2_appointments_confirmation_reminders", "q2_appointments_lead_to_booking", "q2_appointments_rebooking", "q2_professional_authority_signals", "q2_professional_intake_flow"]);
-  assert.equal(candidate.length, 28);
-  assert.ok(!candidate.some(({ id }) => ["q2_local_discovery", "q2_ecommerce_product_discovery", "q2_ecommerce_checkout_friction"].includes(id)));
+  assert.deepEqual(candidate.slice(ids.length).map(({ id }) => id), ["q2_discovery_reliable_reach", "q2_local_presence_consistency", "q2_reputation_flow", "q2_service_response_speed", "q2_service_quote_followup", "q2_appointments_booking_friction", "q2_appointments_confirmation_reminders", "q2_appointments_lead_to_booking", "q2_appointments_rebooking", "q2_professional_authority_signals", "q2_professional_intake_flow", "q2_retail_product_visibility", "q2_retail_customer_capture", "q2_ecommerce_product_discovery"]);
+  assert.equal(candidate.length, 31);
+  assert.ok(!candidate.some(({ id }) => ["q2_local_discovery", "q2_ecommerce_checkout_friction"].includes(id)));
   assert.deepEqual(Object.fromEntries(candidate.map(({ id, version }) => [id, version])), {
     q2_entity: 1, q2_other_staff: 1, q2_monetization: 2, q2_delivery: 2, q2_has_customers: 1,
     q2_regularity: 2, q2_demand_trend: 2, q2_goal: 2, q2_friction: 2,
@@ -83,6 +83,7 @@ test("R2D adds only q17–q18 to the exact isolated candidate and pins versions"
     q2_appointments_booking_friction: 2, q2_appointments_confirmation_reminders: 2,
     q2_appointments_lead_to_booking: 2, q2_appointments_rebooking: 2,
     q2_professional_authority_signals: 2, q2_professional_intake_flow: 2,
+    q2_retail_product_visibility: 2, q2_retail_customer_capture: 2, q2_ecommerce_product_discovery: 2,
   });
   assert.equal(CURRENT_QUESTION_BANK_VERSION, 1);
   assert.equal(QUESTION_BANK_V2.length, 85);

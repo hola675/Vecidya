@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-QBANK-R2H — revisión retail, ecommerce y hospitality
+
+- Inventario previo de q37–q49 y contraste con las 28 definiciones revisadas; se implementan solo q37/q38/q40 v2, para un total candidato de 31. Evidencia pendiente R3 y cero contribuciones candidatas.
+- q37 separa comprensión de oferta de inventario y entra por meta de claridad; q38 evalúa contacto directo utilizable, con permiso y N/A, ante necesidad de continuidad. q40 evalúa navegación sin asumir catálogo aplicable; incluye N/A/unknown.
+- REMOVE q39/q42/q43/q45/q46/q47/q48/q49; DEFER q41 (abandono observado sin consumidor posterior) y q44 (aplicabilidad de recompra). Las instrucciones R2H mantienen q45/q47 eliminadas aunque el artefacto histórico proponía KEEP. Matriz y justificación en `ARCHITECTURE.md`.
+- Candidata aislada, sin nuevas señales/campos de contexto ni cambios de planner/scorer. Banco productivo de 85, versión runtime 1, mapas globales y caracterización intactos. Sin activación pública, migración ni deploy. Validación: `TESTING.md`.
+
 ## 2026-10-06 — DIAG-V3-QBANK-R2G — candidata local, citas y profesional revisada
 
 - La candidata aislada pasa a 28 preguntas y agrega ocho KEEP v2 para servicio local, citas y profesionales; todas declaran `evidenceMigration: "pending"`.

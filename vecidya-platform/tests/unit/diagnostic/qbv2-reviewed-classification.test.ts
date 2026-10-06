@@ -25,8 +25,8 @@ const rendered = (id: string, answers: AnswersV2) => {
 test("R2C classification slice and full candidate order remain isolated, with semantic versions pinned", () => {
   assert.deepEqual(classification.map(({ id }) => id), ids.slice(12, 15));
   assert.deepEqual(candidate.slice(0, ids.length).map(({ id }) => id), ids);
-  assert.deepEqual(candidate.slice(ids.length).map(({ id }) => id), ["q2_discovery_reliable_reach", "q2_local_presence_consistency", "q2_reputation_flow", "q2_service_response_speed", "q2_service_quote_followup", "q2_appointments_booking_friction", "q2_appointments_confirmation_reminders", "q2_appointments_lead_to_booking", "q2_appointments_rebooking", "q2_professional_authority_signals", "q2_professional_intake_flow"]);
-  assert.equal(new Set(candidate.map(({ id }) => id)).size, 28);
+  assert.deepEqual(candidate.slice(ids.length).map(({ id }) => id), ["q2_discovery_reliable_reach", "q2_local_presence_consistency", "q2_reputation_flow", "q2_service_response_speed", "q2_service_quote_followup", "q2_appointments_booking_friction", "q2_appointments_confirmation_reminders", "q2_appointments_lead_to_booking", "q2_appointments_rebooking", "q2_professional_authority_signals", "q2_professional_intake_flow", "q2_retail_product_visibility", "q2_retail_customer_capture", "q2_ecommerce_product_discovery"]);
+  assert.equal(new Set(candidate.map(({ id }) => id)).size, 31);
   assert.ok(!candidate.some(({ id }) => /^q2_(?:10|11|12|13|17|18)\b/.test(id)));
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   assert.equal(CURRENT_QUESTION_BANK_VERSION, 1);
