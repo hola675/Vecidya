@@ -1,5 +1,17 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R3C — comprensión de oferta visible
+
+**CODE/TEST, 2026-10-06:** `qbv2-reviewed-evidence.ts` añade al registro canónico dos definiciones v2 migradas, `q2_presence_offer_clarity` y `q2_retail_product_visibility`, ambas **Clarity & Positioning/direct**. Ledger acumulado **38/8 migrated/30 pending**. Se conservan todos los mapas R3A/R3B y las definiciones/gates R2; solo cambia evidencia explícita en la vista R3 aislada.
+
+La primera observa comprensión de la oferta antes de hablar con el negocio; la segunda, comprensión de qué tipo de productos vende retail, sin exigir inventario completo ni stock en tiempo real. Las tres respuestas concretas usan established/partial/weak y las contribuciones existentes. Unclear describe necesidad de explicación o dificultad, no ausencia de oferta: no se infiere missing. Unknown es uncertainty/null; la N/A de oferta transversal es not_applicable/null, sin penalización. Retail no incluye N/A y no se añade ninguna. Tablas completas por opción/version en código.
+
+**Secundarias revisadas para ambas: REJECTED.** Digital Foundation: comprensión no observa existencia/mantenimiento de una base. Discovery: no observa llegada externa. Trust & Reputation: no observa prueba social ni reputación. Conversion & Access: no observa reserva, contacto, checkout o siguiente acción. Ninguna secundaria migrated o deferred para estos constructos; la deuda anterior de Conversion del catálogo sigue independiente. No se puntúan branding, presupuesto, propiedad, volumen de contenido, cantidad de productos, stock ni ventas.
+
+**Separación/overlaps:** base pública correcta/mantenida y oferta entendible son observaciones distintas que pueden coexistir (por ejemplo, base parcialmente actualizada y oferta clara). La oferta transversal depende de base y meta explain; retail activo la excluye, evitando duplicación de las dos preguntas de comprensión. Un híbrido retail+ecommerce activo con explain habilita visibilidad retail y catálogo: la primera observa qué se vende (Clarity), el segundo encontrar un producto (Foundation). Información local conserva Foundation para datos públicos y Discovery conserva llegada externa; las preguntas R3C no emiten esas dimensiones. Gates y selección se comparan contra la candidata R2 sin cambios del planner ni de aplicabilidad.
+
+Contrato atómico, identidad versionada, contribuciones/pesos/supporting/confianza y runtime legacy 85/v1 permanecen intactos. Candidata inactiva, REMOVE/DEFER ausentes; R4/calibración/deploy no iniciados. Validación en TESTING.md. Siguiente lote propuesto **R3D, no iniciado:** Conversion & Access de atención inicial (`q2_service_response_speed` y `q2_appointments_booking_friction`), revisando respuesta oportuna y coordinación de horario sin inferir resultados de ventas.
+
 ## DIAG-V3-R3B — evidencia de presencia pública
 
 **CODE/TEST, 2026-10-06:** `qbv2-reviewed-evidence.ts` conserva el piloto R3A y añade el lote R3B al mismo registro canónico `REVIEWED_EVIDENCE_V3`. La vista aislada de 38 definiciones deriva **6 migrated / 32 pending**; el corte R2 original sigue sin cambios. Contrato, scorer, agregación, confianza, planner y runtime no se modifican.

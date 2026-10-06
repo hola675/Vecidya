@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3C — evidencia de oferta visible
+
+Migración atómica de oferta transversal y visibilidad de productos retail v2, solo Clarity & Positioning/direct, sin inferencias de conversión, adquisición, reputación, inventario o ventas. Ledger derivado 38/8/30, nueve regresiones específicas; suite R3B adaptada al registro acumulado y a Clarity ahora migrada, preservando sus mapas Foundation y aislamiento pendiente con otro ID. Unknown/N/A neutros, unclear=weak. Sin cambios de R2, contrato, scorer/planner, contribuciones/pesos/confianza, legacy o caracterización; sin activación/deploy. Validación en TESTING.md; R3D no iniciado.
+
 ## 2026-10-06 — DIAG-V3-R3B — evidencia de presencia pública
 
 Dos migraciones completas v2 en el registro R3 existente: base pública mantenida y facilidad de navegación del catálogo, ambas Foundation/direct, sin secundarias heredadas. Ledger derivado 38/6/32; pilotos R3A intactos. Nueve regresiones específicas de semántica, unknown/N/A, identidad, atomicidad, neutralidad de canal, overlaps/gates y runtime congelado. Prueba del ledger R3A adaptada al registro acumulado, sin alterar sus cuatro pilotos. Sin cambios de R2/scorer/planner/pesos/confianza/legacy, rebaseline, activación o deploy. Resultados en TESTING.md; R3C no iniciado.

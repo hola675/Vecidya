@@ -48,7 +48,23 @@ export const REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3 = [
   },
 ] as const satisfies readonly QuestionEvidenceV3[];
 
-export const REVIEWED_EVIDENCE_V3 = [...REVIEWED_PILOT_EVIDENCE_V3, ...REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3] as const;
+/** R3C: comprensión visible de oferta; no infiere compra, inventario, confianza ni adquisición. */
+export const REVIEWED_VISIBLE_OFFER_EVIDENCE_V3 = [
+  {
+    questionId: "q2_presence_offer_clarity", questionVersion: 2,
+    dimensions: [{ dimension: "clarity_positioning", directness: "direct", answers: {
+      clear: "established", partial: "partial", unclear: "weak", not_applicable: "not_applicable", unknown: "uncertainty",
+    } satisfies Record<"clear" | "partial" | "unclear" | "not_applicable" | "unknown", MigratedAnswerStateV3> }],
+  },
+  {
+    questionId: "q2_retail_product_visibility", questionVersion: 2,
+    dimensions: [{ dimension: "clarity_positioning", directness: "direct", answers: {
+      clear: "established", partial: "partial", unclear: "weak", unknown: "uncertainty",
+    } satisfies Record<"clear" | "partial" | "unclear" | "unknown", MigratedAnswerStateV3> }],
+  },
+] as const satisfies readonly QuestionEvidenceV3[];
+
+export const REVIEWED_EVIDENCE_V3 = [...REVIEWED_PILOT_EVIDENCE_V3, ...REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3, ...REVIEWED_VISIBLE_OFFER_EVIDENCE_V3] as const;
 
 /** Misma candidata R2, vista de evidencia aislada: solo cambia metadata de migración, nunca registro. */
 export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefinitionV2[] = REVIEWED_CANDIDATE_QUESTIONS_V2.map((question) => {

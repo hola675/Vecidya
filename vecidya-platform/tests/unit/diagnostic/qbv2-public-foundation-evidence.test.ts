@@ -9,7 +9,7 @@ import { validateQuestionEvidenceV3 } from "../../../app/features/diagnostic/qbv
 import { buildQuestionPlan } from "../../../app/features/diagnostic/qbv2-planner";
 import { REVIEWED_CANDIDATE_QUESTIONS_V2 as frozen } from "../../../app/features/diagnostic/qbv2-reviewed-candidate";
 import { REVIEWED_LEGACY_DECISIONS as decisions } from "../../../app/features/diagnostic/qbv2-reviewed-decisions";
-import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as candidate, REVIEWED_EVIDENCE_MIGRATION_SUMMARY_V3 as summary, REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3 as batch } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
+import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as candidate, REVIEWED_EVIDENCE_MIGRATION_SUMMARY_V3 as summary, REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3 as batch, REVIEWED_EVIDENCE_V3 as registry } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-validators";
 
@@ -22,8 +22,8 @@ const seed: AnswersV2 = { q2_entity: "business", q2_has_customers: "yes", q2_reg
 const derive = (answers: AnswersV2) => deriveContextualEvidence(answers, candidate);
 const question = (id: string) => candidate.find((q) => q.id === id)!;
 
-test("R3B migrates exactly two definitions atomically with a 38/6/32 ledger", () => {
-  assert.deepEqual(summary, { total: 38, migrated: 6, pending: 32 });
+test("R3B retains exactly two atomic definitions in the accumulated migration ledger", () => {
+  assert.deepEqual(summary, { total: 38, migrated: registry.length, pending: 38 - registry.length });
   assert.deepEqual(batch.map((m) => m.questionId), [base, catalog]);
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   for (const id of [base, catalog]) {
@@ -90,9 +90,9 @@ test("R3B identity applies only to candidate v2 and invalid migration never fall
     const { unknown: _unknown, ...incomplete } = reading.answers;
     assert.deepEqual(deriveContextualEvidence({ [id]: value }, [{ ...q, evidenceV3: { ...q.evidenceV3!, dimensions: [{ ...reading, answers: incomplete }] } }]), []);
   }
-  const pending = question(clarity);
+  const pending = question("q2_retail_customer_capture");
   assert.equal(pending.evidenceMigration, "pending");
-  for (const option of pending.options) assert.deepEqual(derive({ [clarity]: option.value }), []);
+  for (const option of pending.options) assert.deepEqual(derive({ [pending.id]: option.value }), []);
 });
 
 test("R3B reviewed evidence leaves every legacy equivalent exactly unchanged", () => {
@@ -131,7 +131,7 @@ test("R3B catalog, offer clarity and external reach retain distinct observations
   assert.ok(resolveEligibleQuestionsV2({ ...seed, q2_delivery: ["travels"], [base]: "reliable_presence" }, candidate).eligibleQuestionIds.includes(clarity));
   const evidence = derive({ [catalog]: "easy", [clarity]: "clear", [discovery]: "irregular" });
   assert.deepEqual(evidence.filter((e) => e.questionId === catalog).map((e) => e.dimension), ["digital_foundation"]);
-  assert.equal(evidence.filter((e) => e.questionId === clarity).length, 0);
+  assert.deepEqual(evidence.filter((e) => e.questionId === clarity).map((e) => e.dimension), ["clarity_positioning"]);
   assert.deepEqual(evidence.filter((e) => e.questionId === discovery).map((e) => e.dimension), ["discovery"]);
   assert.equal(new Set(evidence.map((e) => e.observationId)).size, evidence.length);
 });

@@ -1,5 +1,12 @@
 # Pruebas
 
+## DIAG-V3-R3C — comprensión de oferta visible
+
+- `qbv2-visible-offer-evidence.test.ts`: **9 regresiones** de composición 38/8/30, todas las opciones v2 Clarity/direct, unknown/N/A neutros y unclear distinto de missing, identidad/atomicidad sin fallback, legacy/pending, base vs comprensión, híbrido retail/ecommerce con fuentes separadas, neutralidad de inventario/ventas/herramientas y runtime/gates congelados.
+- **RAN 2026-10-06:** R3C **9/9**, R3B **9/9**, R3A **17/17**, R2-FINAL **9/9**, candidata R2 **83/83**, frozen/legacy **235/235**, combinado **353/353**, caracterización **1/1**, diagnóstico **897/897**, full unit **952/952**: PASS, cero fallos. Incremento de nueve pruebas frente a 888/943. Typecheck, build y `git diff --check`: PASS; solo avisos conocidos de Gmail local y PLUGIN_TIMINGS.
+- Suite R3B adaptada al ledger acumulado y a offer_clarity ahora migrada: mantiene sus dos mapas Foundation y verifica aislamiento pending con retail_customer_capture. Las expectativas del banco R2, sus 83 pruebas y las 377 opciones legacy protegidas por R3A permanecen intactas. Caracterización conserva `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, sin rebaseline.
+- Retail activo excluye oferta transversal; híbrido retail+ecommerce con explain permite visibilidad retail (Clarity), navegación de catálogo (Foundation) e información local (Foundation). No hay emisión secundaria desde las preguntas R3C. Una base parcialmente mantenida puede coexistir con una oferta clara: observaciones distintas, sin umbral global/calibración nueva. Contextos activos/prelaunch comparan selección con la vista R2. Candidata inactiva, 11 DEFER fuera y R4 intacta.
+
 ## DIAG-V3-R3B — evidencia de presencia pública
 
 - `qbv2-public-foundation-evidence.test.ts`: **9 regresiones** de ambos contratos v2 y todas sus opciones, Foundation/direct sin secundarias, neutralidad unknown/N/A, identidad y atomicidad sin fallback, ausencia de sesgo de canal, legacy, gates/overlaps y selección congelada, registro/runtime aislados. El ledger acumulado R3A se valida contra el registro canónico sin alterar sus cuatro pilotos; corte R2 y expectativas legacy intactos.

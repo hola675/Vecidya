@@ -53,9 +53,9 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — siguiente límite propuesto (R3C; no iniciado)
+## DIAG-V3 — siguiente límite propuesto (R3D; no iniciado)
 
-Lote único propuesto: Clarity & Positioning de oferta visible, `q2_presence_offer_clarity` y `q2_retail_product_visibility`. Usar el contrato atómico y vista R3; revisar secundarias y unknown/N/A sin confundir comprensión con compra efectiva. R3B ya migra presencia pública Foundation; Conversion & Access del catálogo sigue R3-LATER REVIEW. No incorporar REMOVE/DEFER automáticamente ni completar toda la banca por cuota. Falta después migración restante e integración de directness revisada en planificación. Los DEFER metodológicos requieren consumidores defendibles. Contrato/prerrequisitos en ARCHITECTURE.md R3A/R3B. Cada lote exige autorización propia; sin activación pública, cambio de runtime/versiones ni deploy por inferencia.
+Lote único propuesto: Conversion & Access de atención inicial, `q2_service_response_speed` y `q2_appointments_booking_friction`. Revisar respuesta oportuna y coordinación de horario, unknown/N/A y secundarias sin inferir ventas, resultados o causas desde una dificultad declarada. R3C ya migra comprensión visible de oferta; Conversion del catálogo sigue R3-LATER REVIEW independiente. No incorporar REMOVE/DEFER ni completar toda la banca por cuota. Falta migración restante e integración de directness revisada en planificación. Contrato/prerrequisitos en ARCHITECTURE.md. Cada lote exige autorización propia; sin activación pública, cambio de runtime/versiones ni deploy por inferencia.
 
 R4 permanece separada y no iniciada: aplicabilidad dimensional por actividad/etapa/modelo/evidencia (sin goal dimensional), recurrencia/recompra, Measurement y mecanismos de donación/membresía explícitos. Los DEFER de aplicabilidad no se reintroducen antes de resolver esos prerrequisitos. El banco productivo de 85/version 1 continúa congelado hasta una activación expresamente autorizada.
 
