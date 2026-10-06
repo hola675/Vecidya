@@ -95,7 +95,7 @@ test("R3C legacy equivalents retain historical evidence and an unrelated candida
       assert.ok(historical.every((e) => e.questionVersion === undefined));
     }
   }
-  const pending = question("q2_retail_customer_capture");
+  const pending = question("q2_creator_audience_ownership");
   assert.equal(pending.evidenceMigration, "pending");
   for (const option of pending.options) assert.deepEqual(derive({ [pending.id]: option.value }), []);
 });

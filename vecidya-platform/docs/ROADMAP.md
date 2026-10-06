@@ -53,9 +53,11 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — siguiente límite propuesto (R3J; no iniciado)
+## DIAG-V3 — siguiente límite propuesto (R3K; no iniciado)
 
-Lote único propuesto: **Relationship & Recurrence — contactabilidad especializada**, `q2_retail_customer_capture` y `q2_creator_audience_ownership`. Auditar la capacidad observada de volver a contactar a clientes/audiencia interesada, separándola de ejecutar seguimiento, recompra/recurrencia, propiedad de plataformas o herramientas. Revisar directness y solapamientos antes de migrar, sin suponer CRM, automatización, ventas, consentimiento fuera del wording ni activar DEFER; conservar gates R2. Constructo de contacto futuro con baja dependencia de la aplicabilidad R4 de recompra. Pipeline B2B conserva R3-LATER REVIEW y rebooking requiere revisión del ciclo de servicio; no forman parte del lote. Contrato/prerrequisitos en ARCHITECTURE.md. Cada lote exige autorización propia; sin activación pública, cambio de runtime/versiones ni deploy por inferencia.
+Lote único propuesto: **Relationship & Recurrence — recordatorio previo a una cita ya agendada**, `q2_appointments_confirmation_reminders`. Auditar el recordatorio observado como comunicación previa, separado de asistencia/no-show, coordinar horario y rebooking/recurrencia. Evaluar directness y unknown/N/A sin presuponer automatización, herramienta, eficacia ni necesidad universal; conservar gates y no resolver R4. Es una observación concreta con baja dependencia de inferencias de resultado. Cada lote exige autorización propia; sin implementación, activación pública ni deploy por inferencia.
+
+Creator permanece pending tras la auditoría R3J: retail y audiencia pueden ser las mismas personas en rutas válidas. Antes de migrarlo junto con retail debe resolverse explícitamente esa duplicación; no bastan IDs distintos ni denominaciones de canal. Pipeline B2B conserva R3-LATER REVIEW y rebooking requiere revisión del ciclo de servicio. No forman parte del lote propuesto.
 
 R4 permanece separada y no iniciada: aplicabilidad dimensional por actividad/etapa/modelo/evidencia (sin goal dimensional), recurrencia/recompra, Measurement y mecanismos de donación/membresía explícitos. Los DEFER de aplicabilidad no se reintroducen antes de resolver esos prerrequisitos. El banco productivo de 85/version 1 continúa congelado hasta una activación expresamente autorizada.
 

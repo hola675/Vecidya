@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3J: contactabilidad especializada
+
+- Audita retail/creator v2 y migra únicamente retail a Relationship/direct mediante el overlay R3 existente. Creator sigue pending para evitar contar como independientes contactos de una misma población en rutas válidas retail/creator; no hay cambio de gates ni scorer. Ledger 38/18/20.
+- Todas las opciones retail tienen mapa explícito/versionado; unknown/N/A neutros, ausencia explícita missing y cobertura limitada partial. Contactabilidad distinta de seguimiento ejecutado y recurrencia; sin sesgo de herramienta, volumen, ownership, ni evidencias secundarias.
+- Doce regresiones nuevas; adapta solo vecinos pending y ledger acumulativo en suites previas. Freeze R2 38 y runtime 85/v1, legacy/caracterización intactos, sin activación/R4/calibración/deploy. Validación ejecutada registrada en TESTING.md. R3K no iniciado.
+
 ## 2026-10-06 — DIAG-V3-R3I — consistencia de procesos
 
 Una migración atómica de q2_process_systemization@v2 a Digital Readiness/direct; overlap DISTINCT con recuperación, handoffs, estado B2B y capacidad. Ledger 38/17/21; doce regresiones de opciones/identidad, divergencia directa en ambos sentidos, neutralidad de herramientas/documentación/unknown, apoyos/cap intactos, contexto sin amplificación, capacidad pending y freeze/legacy. R3H adapta solo ledger acumulativo. Solo metadata de evidencia en la vista candidata: contexto/gates R2, scorer/planner/pesos/confianza/calibración, runtime y caracterización intactos. El planner existente consume una nueva observación candidata, sin cambio de algoritmo o ruta legacy. Sin activación ni deploy. Validación en TESTING.md; R3J no iniciado.

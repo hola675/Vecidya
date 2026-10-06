@@ -24,8 +24,8 @@ const seed: AnswersV2 = { q2_entity: "individual", q2_other_staff: "yes", q2_has
 const context = resolveEligibleQuestionsV2(seed, candidate).context;
 const score = (evidence: readonly ContextualEvidence[]) => scoreContextualDimensions({ answers: {}, context, evidence, bank: candidate }).dimensions.find(d => d.id === "digital_readiness")!;
 
-test("R3I atomically migrates only process consistency v2 with all options and ledger 38/17/21", () => {
-  assert.deepEqual(summary, { total: 38, migrated: 17, pending: 21 });
+test("R3I atomically migrates only process consistency v2 with all options within the cumulative ledger", () => {
+  assert.deepEqual(summary, { total: 38, migrated: registry.length, pending: 38 - registry.length });
   assert.deepEqual(batch.map(m => m.questionId), [process]);
   assert.equal(question(process).version, 2);
   assert.equal(question(process).evidenceMigration, "migrated");

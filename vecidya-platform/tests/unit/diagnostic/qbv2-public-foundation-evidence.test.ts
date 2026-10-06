@@ -90,7 +90,7 @@ test("R3B identity applies only to candidate v2 and invalid migration never fall
     const { unknown: _unknown, ...incomplete } = reading.answers;
     assert.deepEqual(deriveContextualEvidence({ [id]: value }, [{ ...q, evidenceV3: { ...q.evidenceV3!, dimensions: [{ ...reading, answers: incomplete }] } }]), []);
   }
-  const pending = question("q2_retail_customer_capture");
+  const pending = question("q2_creator_audience_ownership");
   assert.equal(pending.evidenceMigration, "pending");
   for (const option of pending.options) assert.deepEqual(derive({ [pending.id]: option.value }), []);
 });
