@@ -7,6 +7,7 @@
 - Suite operativa: **7/7 PASS**; candidata completa con fundación y clasificación: **26/26 PASS**; candidata más q17–q18: **33/33 PASS**; frozen/legacy: **235/235 PASS**; combinado focalizado: **268/268 PASS**.
 - Directorio diagnóstico: **811/812 PASS**. `pnpm run test:unit`: **866/867 PASS**. La única falla es `characterization.test.ts:102`, `localBusinessLeaks`, con actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f` y esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`, sin rebaseline respecto del preflight.
 - `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Build conserva el aviso local conocido de secretos Gmail requeridos ausentes.
+- **R2D-CONTEXT-REF-FIX — RAN 2026-10-06:** `CONTEXT_FIELD_REFS` registra una vez `processConsistency` y `capacitySituation`; el DSL resuelve igualdad y estado no resuelto, y las cinco producciones revisadas apuntan a campos registrados. Las rutas seleccionadas para q17/q18 permanecen fijadas y ambas siguen `adaptive`/no requeridas. Suite operativa **9/9 PASS**, candidata completa **35/35 PASS**, frozen/legacy **235/235 PASS**, combinado focalizado **270/270 PASS**. Directorio diagnóstico **813/814 PASS** y unitarias **868/869 PASS**; única falla: la divergencia de caracterización ya conocida con los mismos digests indicados arriba. Typecheck, build y `git diff --check`: PASS.
 
 ## DIAG-V3-QBANK-R2C — clasificación revisada
 

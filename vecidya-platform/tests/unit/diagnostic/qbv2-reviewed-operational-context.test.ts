@@ -9,13 +9,62 @@ import type { QuestionDefinitionV2 } from "../../../app/features/diagnostic/qbv2
 import { REVIEWED_CANDIDATE_QUESTIONS_V2 as candidate } from "../../../app/features/diagnostic/qbv2-reviewed-candidate";
 import { REVIEWED_OPERATIONAL_CONTEXT_QUESTIONS_V2 as operational } from "../../../app/features/diagnostic/qbv2-reviewed-operational-context";
 import { buildQuestionPlan } from "../../../app/features/diagnostic/qbv2-planner";
+import { CONTEXT_FIELD_REFS, contextEquals, contextUnresolved, evaluateRuleV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
+import { signalProductionContextFields, type SignalProduction } from "../../../app/features/diagnostic/qbv2-signals";
 import { validateAnswerV3 } from "../../../app/features/diagnostic/qbv2-session";
 import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-validators";
 
 const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_sector", "q2_customer_reach", "q2_customer_buyer", "q2_process_systemization", "q2_capacity_signal"] as const;
 const question = (id: string, bank: readonly QuestionDefinitionV2[] = candidate) => bank.find((item) => item.id === id)!;
 const resolve = (answers: AnswersV2) => resolveEligibleQuestionsV2(answers, candidate);
+
+test("R2D context fields are registered once and readable through the context DSL", () => {
+  assert.deepEqual(
+    CONTEXT_FIELD_REFS.filter((field) => field === "processConsistency" || field === "capacitySituation"),
+    ["processConsistency", "capacitySituation"],
+  );
+
+  const processCases: readonly [AnswersV2, readonly [string, string][], boolean][] = [
+    [{ q2_has_customers: "yes", q2_process_systemization: "defined" }, [["processConsistency", "defined"]], true],
+    [{ q2_has_customers: "yes", q2_process_systemization: "partial" }, [["processConsistency", "defined"]], false],
+    [{ q2_has_customers: "yes", q2_process_systemization: "partial" }, [["processConsistency", "partial"]], true],
+  ];
+  for (const [answers, checks, expected] of processCases) {
+    const context = resolve(answers).context;
+    for (const [field, value] of checks) assert.equal(evaluateRuleV2(contextEquals(field as "processConsistency", value), answers, context), expected);
+  }
+  const processUnknown: AnswersV2 = { q2_has_customers: "yes", q2_process_systemization: "unknown" };
+  assert.equal(evaluateRuleV2(contextUnresolved("processConsistency"), processUnknown, resolve(processUnknown).context), true);
+
+  const capacityCases: readonly [readonly string[], string][] = [
+    [["capacity_pressure"], "pressure"],
+    [["capacity_expanded"], "expanded"],
+    [["capacity_pressure", "capacity_expanded"], "pressure_and_expanded"],
+    [["stable"], "stable"],
+  ];
+  for (const [selected, expected] of capacityCases) {
+    const answers: AnswersV2 = { q2_has_customers: "yes", q2_regularity: "regular", q2_capacity_signal: selected };
+    assert.equal(evaluateRuleV2(contextEquals("capacitySituation", expected), answers, resolve(answers).context), true);
+  }
+  const capacityUnknown: AnswersV2 = { q2_has_customers: "yes", q2_regularity: "regular", q2_capacity_signal: ["unknown"] };
+  assert.equal(evaluateRuleV2(contextUnresolved("capacitySituation"), capacityUnknown, resolve(capacityUnknown).context), true);
+});
+
+test("R2D signal productions resolve only to registered canonical context fields", () => {
+  const productions: readonly [SignalProduction, string][] = [
+    [{ kind: "processConsistency", value: "defined", provenance: "explicit_declaration" }, "processConsistency"],
+    [{ kind: "processConsistencyUnknown", value: true, provenance: "explicit_declaration" }, "processConsistency"],
+    [{ kind: "reviewedCapacityPressure", value: true, provenance: "explicit_declaration" }, "capacitySituation"],
+    [{ kind: "reviewedCapacityExpansion", value: true, provenance: "explicit_declaration" }, "capacitySituation"],
+    [{ kind: "reviewedCapacityUnknown", value: true, provenance: "explicit_declaration" }, "capacitySituation"],
+  ];
+  for (const [production, expectedField] of productions) {
+    const fields = signalProductionContextFields(production);
+    assert.deepEqual(fields, [expectedField]);
+    for (const field of fields) assert.ok((CONTEXT_FIELD_REFS as readonly string[]).includes(field));
+  }
+});
 
 test("R2D adds only q17–q18 to the exact isolated candidate and pins versions", () => {
   assert.deepEqual(operational.map(({ id }) => id), ["q2_process_systemization", "q2_capacity_signal"]);
@@ -57,6 +106,10 @@ test("q17 keeps reviewed process states separate from legacy systemization and i
   assert.ok(trace, "eligible adaptive question is visible to planner trace");
   assert.equal(trace.required, false, "adaptive role alone never makes q17 required");
   assert.equal(q17.scoringReadiness, undefined);
+  assert.deepEqual(plan.trace.filter((entry) => entry.selected).map((entry) => entry.questionId), [
+    "q2_delivery", "q2_monetization", "q2_customer_buyer", "q2_customer_reach", "q2_sector", "q2_entity", "q2_goal",
+    "q2_capacity_signal", "q2_process_systemization",
+  ]);
 });
 
 test("q17 resolves defined, partial, informal, explicit unknown, not asked, and does not re-ask unknown", () => {
@@ -97,6 +150,10 @@ test("q18 is adaptive multi-select with exclusive stable/unknown and independent
   assert.ok(trace, "eligible adaptive question is visible to planner trace");
   assert.equal(trace.required, false, "adaptive role alone never makes q18 required");
   assert.equal(q18.scoringReadiness, undefined);
+  assert.deepEqual(plan.trace.filter((entry) => entry.selected).map((entry) => entry.questionId), [
+    "q2_delivery", "q2_monetization", "q2_customer_buyer", "q2_customer_reach", "q2_sector", "q2_entity", "q2_goal",
+    "q2_capacity_signal", "q2_process_systemization",
+  ]);
 
   assert.equal(validateAnswerV3(q18, ["stable", "capacity_pressure"]).ok, false);
   assert.equal(validateAnswerV3(q18, ["unknown", "capacity_expanded"]).ok, false);
