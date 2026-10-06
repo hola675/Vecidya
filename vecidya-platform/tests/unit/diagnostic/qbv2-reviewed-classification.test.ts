@@ -79,7 +79,7 @@ test("reach is gated on resolved activity and copy variants have deliberate prio
   assert.equal(resolve(activeNonprofit).context.businessModel.value, "nonprofit");
   assert.equal(rendered("q2_customer_reach", activeNonprofit).prompt, "¿Dónde están principalmente las personas a las que atiende tu organización?");
   assert.equal(rendered("q2_customer_reach", prelaunchOrg).prompt, "¿Dónde están principalmente las personas a las que quieres llegar?", "prelaunch wording takes precedence for an organization");
-  assert.ok((question("q2_customer_reach").hint?.length ?? 999) <= 147);
+  assert.ok((question("q2_customer_reach").hint?.length ?? 999) <= 140);
 });
 
 test("each reach answer resolves only customerReach and contributes no diagnostic evidence", () => {

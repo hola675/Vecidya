@@ -3,7 +3,7 @@ import test from "node:test";
 import { resolveDiagnosticContext } from "../../../app/features/diagnostic/context-resolver";
 import { CURRENT_QUESTION_BANK_VERSION } from "../../../app/features/diagnostic/contracts";
 import { QUESTION_BANK_V2 } from "../../../app/features/diagnostic/qbv2-bank";
-import { validateQuestionCopyV2 } from "../../../app/features/diagnostic/qbv2-copy";
+import { HINT_MAX_LENGTH, validateQuestionCopyV2 } from "../../../app/features/diagnostic/qbv2-copy";
 import { deriveContextualEvidence } from "../../../app/features/diagnostic/qbv2-contextual-scoring";
 import { resolveEligibleQuestionsV2 } from "../../../app/features/diagnostic/qbv2-engine";
 import { EVIDENCE_MAPPING } from "../../../app/features/diagnostic/qbv2-coverage";
@@ -57,8 +57,11 @@ test("universal Discovery is eligible only for active businesses and independent
   assert.equal(discovery.routingRole, "adaptive");
   assert.equal(discovery.priority, "normal");
   assert.equal(discovery.prompt, "En los últimos meses, ¿qué tan confiable ha sido la forma que tienes de llegar a personas nuevas interesadas en lo que ofreces?");
-  assert.equal(discovery.hint, "Piensa en si logras llegar a personas nuevas con cierta constancia, sin importar si llegan por Google, redes, recomendaciones, anuncios u otra vía.");
-  assert.equal(discovery.hint?.length, 147);
+  assert.equal(HINT_MAX_LENGTH, 140);
+  assert.equal(discovery.hint, "Piensa si llegas a personas nuevas con cierta constancia, sin importar si vienen por Google, redes, recomendaciones, anuncios u otra vía.");
+  assert.equal(discovery.hint?.length, 137);
+  assert.ok(discovery.hint!.length <= HINT_MAX_LENGTH);
+  assert.deepEqual(validateQuestionCopyV2(candidate), []);
   assert.deepEqual(discovery.appliesWhen, contextEquals("activity", "active"));
   assert.deepEqual(discovery.options.map(({ value }) => value), ["reliable", "irregular", "weak", "not_seeking", "unknown"]);
 

@@ -144,7 +144,7 @@ test("q18 is adaptive multi-select with exclusive stable/unknown and independent
   assert.deepEqual(q18.appliesWhen, { op: "eq", ref: { question: "q2_regularity" }, value: "regular" });
   assert.deepEqual(q18.options.map(({ value }) => value), ["capacity_pressure", "capacity_expanded", "stable", "unknown"]);
   assert.deepEqual(q18.options.filter(({ exclusive }) => exclusive).map(({ value }) => value), ["stable", "unknown"]);
-  assert.ok((q18.hint?.length ?? Infinity) <= 147);
+  assert.ok((q18.hint?.length ?? Infinity) <= 140);
   assert.ok(!resolve({ q2_has_customers: "yes", q2_regularity: "occasional" }).eligibleQuestionIds.includes("q2_capacity_signal"));
   const regular = { q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat" } as const;
   assert.ok(resolve(regular).eligibleQuestionIds.includes("q2_capacity_signal"));

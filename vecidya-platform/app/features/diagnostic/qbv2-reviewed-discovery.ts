@@ -11,7 +11,7 @@ export const REVIEWED_DISCOVERY_QUESTIONS_V2: readonly QuestionDefinitionV2[] = 
     type: "single",
     routingRole: "adaptive",
     prompt: "En los últimos meses, ¿qué tan confiable ha sido la forma que tienes de llegar a personas nuevas interesadas en lo que ofreces?",
-    hint: "Piensa en si logras llegar a personas nuevas con cierta constancia, sin importar si llegan por Google, redes, recomendaciones, anuncios u otra vía.",
+    hint: "Piensa si llegas a personas nuevas con cierta constancia, sin importar si vienen por Google, redes, recomendaciones, anuncios u otra vía.",
     purpose: ["diagnostic"],
     priority: "normal",
     appliesWhen: contextEquals("activity", "active"),
