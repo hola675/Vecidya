@@ -1,5 +1,17 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R3M — continuidad hacia una próxima cita
+
+`q2_appointments_rebooking@v2` es `SINGLE_CONSTRUCT`: observa la capacidad actual de acordar la siguiente cita cuando la persona necesita volver; no mide si la persona efectivamente volvió. Por eso puede migrarse sin decidir en R4 qué negocios deberían tener ciclos repetidos: el wording condiciona la respuesta a que exista una próxima cita necesaria y el `not_applicable` ya revisado expresa servicios que normalmente no requieren retorno. No se alteran wording, opciones, aplicabilidad ni routing.
+
+Solo **Relationship & Recurrence/direct**: `proactive=established/0.75`, `partial=partial/0.50`, `reactive=weak/0.25`, `not_applicable=null`, `unknown=uncertainty/null`. La respuesta observa directamente qué pasa con la siguiente cita; no exige asistencia futura. La respuesta reactiva sigue siendo capacidad débil de continuar el ciclo, no ausencia de clientes ni una tasa baja de retorno.
+
+`q2_appointments_confirmation_reminders` **DISTINCT**: protege una cita ya agendada antes de que ocurra; rebooking organiza el ciclo posterior. `q2_appointments_booking_friction` **DISTINCT**: coordinar la cita actual puede ser fácil y el siguiente ciclo débil (o viceversa). `q2_followup_general_process` **DISTINCT**, y el gate existente lo excluye de appointments; retoma pendientes sin contestar, no inicia el ciclo siguiente. `q2_service_quote_followup` **DISTINCT**: retoma una cotización sin respuesta. `q2_retail_customer_capture` **DISTINCT**: conserva una vía de contacto, sin afirmar que se acuerde una nueva cita. `q2_local_repeat_customers` y `q2_ecommerce_repeat_purchase` siguen **DEFER**: observan outcomes de recurrencia, no capacidad. Rebooking y repetición son constructos distintos; no hay alias ni proxy.
+
+La divergencia directa con recordatorios es válida en ambas direcciones: recordatorio consistente/rebooking reactivo y recordatorio raro/rebooking proactivo. Booking friction también puede divergir en ambos sentidos en la ruta de citas. `appointmentAttendance`, clasificación de citas, follow-up, goal, contexto de cliente repetido, herramienta, canal y automatización por sí solos no emiten rebooking evidence. Secundarias Conversion & Access, Digital Readiness, Measurement & Optimization, Trust & Reputation y Digital Foundation: **REJECTED**; no se observan fricción actual, fiabilidad interna, tasas, confianza o fundamentos digitales.
+
+Ledger R3: **38 total / 21 migrated / 17 pending**. Solo cambia metadata en el overlay candidato; candidato 38 inactivo, runtime legacy 85/v1, scoring y caracterización congelados. R4 y calibración no iniciados. R3N propuesto: cerrar la auditoría de solapamiento de `q2_creator_audience_ownership`, aún pending.
+
 ## DIAG-V3-R3L — continuidad de oportunidades B2B
 
 `q2_b2b_pipeline@v2` es `SINGLE_CONSTRUCT`: continuidad del seguimiento de una oportunidad desde que aparece hasta conocer qué ocurrió. Se migra solo a **Relationship & Recurrence/direct**; «defined» = established/0.75, «partial» = partial/0.50, «informal» = weak/0.25 y «unknown» = uncertainty/null. No ofrece N/A. La diferencia de formalidad de la herramienta no cambia el estado; el mapa no infiere CRM, etapas, automatización, cierre, ingresos, calidad del lead ni duración del ciclo.
@@ -8,7 +20,7 @@ La auditoría de overlap: `q2_b2b_status_visibility` **PARTIAL** (estado recuper
 
 Pipeline y status coexisten con buyer B2B/mixed, clientes reales y meta organize; en fixture híbrido B2B + servicio también coexiste pipeline con quote-followup bajo meta opportunities. Las respuestas admiten independencia en ambos sentidos (pipeline fuerte/visibilidad débil y viceversa; pipeline definido/cotización raramente seguida y viceversa). La continuación genérica no puede duplicar el especialista. Las secundarias Readiness, Conversion, Measurement, Discovery y Trust son **REJECTED**: contexto, organización o efectos plausibles no justifican observaciones. No se infiere resultado comercial ni éxito positivo; conocer un desenlace cerrado-perdido sigue siendo continuidad. Sin dimensiones secundarias.
 
-Ledger R3: **38 total / 20 migrated / 18 pending**. Solo cambia metadata de evidencia de la candidata: definiciones, gates y planner R2 congelados; runtime legacy 85/v1, scoring histórico y caracterización intactos. R4 y calibración no iniciados. R3M propuesto: auditar `q2_appointments_rebooking` como continuidad posterior a una cita, frente a recordatorios y seguimiento de cotizaciones.
+Ledger R3L: **38 total / 20 migrated / 18 pending** en ese corte. Solo cambió metadata de evidencia de la candidata: definiciones, gates y planner R2 congelados; runtime legacy 85/v1, scoring histórico y caracterización intactos. R4 y calibración no iniciados.
 
 ## DIAG-V3-R3K — recordatorios de citas
 

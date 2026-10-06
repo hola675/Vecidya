@@ -15,7 +15,7 @@ import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-va
 const quote = "q2_service_quote_followup";
 const general = "q2_followup_general_process";
 const response = "q2_service_response_speed";
-const neighbors = ["q2_appointments_rebooking", "q2_creator_audience_ownership", "q2_capacity_signal"];
+const neighbors = ["q2_creator_audience_ownership", "q2_capacity_signal"];
 const question = (id: string) => candidate.find((q) => q.id === id)!;
 const derive = (answers: AnswersV2) => deriveContextualEvidence(answers, candidate);
 const seed: AnswersV2 = { q2_entity: "business", q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat", q2_customer_buyer: "b2c", q2_goal: "other", q2_friction: "follow_up" };

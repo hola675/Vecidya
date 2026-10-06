@@ -222,10 +222,8 @@ test("R3J contactability creates no recurrence facts and does not reactivate def
     assert.ok(!candidate.some(q => q.id === id));
     assert.deepEqual(derive({ [id]: "high" }), []);
   }
-  assert.equal(question("q2_appointments_rebooking").evidenceMigration, "pending");
-  for (const o of question("q2_appointments_rebooking").options) assert.deepEqual(derive({ q2_appointments_rebooking: o.value }), []);
-  const together = derive({ ...seed, q2_delivery: ["appointments"], [reminders]: "consistent", q2_appointments_rebooking: "proactive" });
-  assert.deepEqual(together.map(e => e.questionId), [reminders]);
+  assert.equal(question("q2_appointments_rebooking").evidenceMigration, "migrated");
+  assert.deepEqual(question("q2_appointments_rebooking").evidenceV3?.dimensions.map(({ dimension }) => dimension), ["relationship_recurrence"]);
 });
 
 test("R3J active retail/creator context and declared needs alone emit no evidence", () => {

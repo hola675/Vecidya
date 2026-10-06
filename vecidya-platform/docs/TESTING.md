@@ -1,5 +1,11 @@
 # Pruebas
 
+## DIAG-V3-R3M — continuidad hacia una próxima cita
+
+- `qbv2-appointment-rebooking-evidence.test.ts` protege la migración v2 de las cinco respuestas, contribuciones e identidad; N/A/unknown neutrales; capacidad frente a retorno/attendance; divergencia en ambos sentidos con reminders y booking; separación de generic/quote follow-up; repeat DEFER aislado; neutralidad de herramientas/automatización; mapa/version fail-closed; freeze y runtime legacy. La suite acumulativa R3E deja de tratar rebooking como pending y R3L refleja el nuevo ledger.
+- **RAN 2026-10-06:** R3M **9/9**, R3L **7/7**, R3K+R3J **16/16**, R3I **12/12**, R3H **11/11**, R3G **9/9**, R3F **12/12**, R3E **11/11**, R3D **10/10**, R3C **9/9**, R3B **9/9**, R3A **17/17**; R2-FINAL closure **5/5**, certification **9/9**, candidate **83/83**, frozen/legacy selected suite **234/234**, combined focused **449/449**, characterization **1/1**, diagnostic directory **994/994**, full unit **1049/1049**: PASS, cero fallos. Typecheck, build y `git diff --check`: PASS. El conjunto frozen/legacy ejecutado aquí sumó 234 pruebas frente a 235 consignadas en el corte R3L; la suite completa de diagnóstico y unitarias pasó íntegra.
+- Ledger final: **38/21/17**; `q2_creator_audience_ownership` permanece pending por solapamiento de poblaciones posible. Candidate inactiva, runtime legacy 85/v1, scoring y caracterización congelados. Digest de caracterización sin cambio: `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`.
+
 ## DIAG-V3-R3L — continuidad de oportunidades B2B
 
 - `qbv2-b2b-opportunity-continuity-evidence.test.ts` protege el mapa completo `defined→established (0.75)`, `partial→partial (0.50)`, `informal→weak (0.25)`, `unknown→uncertainty (null)` con identidad `q2_b2b_pipeline@v2`. Prueba divergencia bidireccional con status visibility y con proceso general, gates activos para b2b/mixed con clientes, coexistencia pipeline/quote en ruta híbrida, exclusión del fallback genérico, qualification DEFER, ausencia de dimensión secundaria/inferencia tool/comercial y separación del legado.

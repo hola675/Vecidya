@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3M: continuidad hacia una próxima cita
+
+- Migra `q2_appointments_rebooking@v2` a Relationship & Recurrence/direct como capacidad de acordar la siguiente cita cuando hace falta otro ciclo; no mide retorno, retención ni asistencia. Mapas: proactive established, partial partial, reactive weak, N/A null, unknown uncertainty/null.
+- R4 no es requisito para definir estas respuestas: la pregunta condiciona el ciclo y conserva N/A. Diverge de reminder, booking friction y repeat outcomes; gates y definición candidata no cambian. Ledger 38/21/17; candidata inactiva, runtime 85/v1, scoring legacy y caracterización intactos. R3N propuesto: auditar creator audience overlap.
+
 ## 2026-10-06 — DIAG-V3-R3L: continuidad de oportunidades B2B
 
 - Migra `q2_b2b_pipeline@v2` a Relationship & Recurrence/direct como observación de continuidad hasta conocer el desenlace; unknown permanece neutral. Separa ejecución de recuperación de estado (B2B status visibility), de una cotización puntual y de la repetibilidad general de tareas; el fallback genérico excluye B2B/mixed.

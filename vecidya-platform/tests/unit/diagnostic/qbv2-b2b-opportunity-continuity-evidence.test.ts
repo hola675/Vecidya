@@ -31,7 +31,7 @@ const b2b: AnswersV2 = {
 };
 
 test("R3L atomically migrates only B2B opportunity continuity into the cumulative ledger", () => {
-  assert.deepEqual(summary, { total: 38, migrated: 20, pending: 18 });
+  assert.deepEqual(summary, { total: 38, migrated: 21, pending: 17 });
   assert.deepEqual(batch.map(({ questionId }) => questionId), [pipeline]);
   assert.ok(registry.some(({ questionId, questionVersion }) => questionId === pipeline && questionVersion === 2));
   assert.equal(byId(pipeline).version, 2);
