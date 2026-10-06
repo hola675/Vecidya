@@ -1,9 +1,14 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3L: continuidad de oportunidades B2B
+
+- Migra `q2_b2b_pipeline@v2` a Relationship & Recurrence/direct como observación de continuidad hasta conocer el desenlace; unknown permanece neutral. Separa ejecución de recuperación de estado (B2B status visibility), de una cotización puntual y de la repetibilidad general de tareas; el fallback genérico excluye B2B/mixed.
+- Ledger 38/20/18, una sola entrada nueva. Cualificación B2B continúa DEFER; ninguna evidencia secundaria o inferencia comercial/de herramientas. Candidata y runtime legacy congelados (38 inactiva, 85/v1), caracterización intacta. Validaciones en TESTING.md; R3M no iniciado.
+
 ## 2026-10-06 — DIAG-V3-R3K: recordatorios de citas
 
 - Migra `q2_appointments_confirmation_reminders@v2` a Relationship & Recurrence/direct. Continuidad de una cita ya agendada; attendance, booking friction, initial response, rebooking, automatización y canal son constructos separados. Unknown/N/A neutrales; sin evidencia secundaria ni inferencia de resultado.
-- Creator de R3J sigue pending. Ledger 38/19/19. Catorce regresiones acumuladas R3J/R3K; runtime, R2 y legacy intactos. R3L no iniciado.
+- Creator de R3J sigue pending. Ledger al cierre de R3K: 38/19/19. Catorce regresiones acumuladas R3J/R3K; runtime, R2 y legacy intactos.
 
 ## 2026-10-06 — DIAG-V3-R3J: contactabilidad especializada
 

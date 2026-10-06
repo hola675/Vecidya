@@ -24,7 +24,7 @@ const derive = (answers: AnswersV2) => deriveContextualEvidence(answers, candida
 const seed: AnswersV2 = { q2_entity: "business", q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat", q2_customer_buyer: "b2c", q2_goal: "other", q2_friction: "follow_up", q2_monetization: "goods", q2_delivery: ["retail"] };
 const relationship = (answers: AnswersV2) => scoreContextualDimensions({ answers: {}, context: resolveEligibleQuestionsV2(seed, candidate).context, evidence: derive(answers), bank: candidate }).dimensions.find(d => d.id === "relationship_recurrence")!;
 
-test("R3K migrates reminder atomically, preserves R3J creator pending and ledger 38/19/19", () => {
+test("R3K migrates reminder atomically, preserves R3J creator pending and joins the cumulative ledger", () => {
   assert.deepEqual(summary, { total: 38, migrated: registry.length, pending: 38 - registry.length });
   assert.deepEqual(batch.map(m => m.questionId), [retail]);
   assert.deepEqual(reminderBatch.map(m => m.questionId), [reminders]);

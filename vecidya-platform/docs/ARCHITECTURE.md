@@ -1,5 +1,15 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R3L — continuidad de oportunidades B2B
+
+`q2_b2b_pipeline@v2` es `SINGLE_CONSTRUCT`: continuidad del seguimiento de una oportunidad desde que aparece hasta conocer qué ocurrió. Se migra solo a **Relationship & Recurrence/direct**; «defined» = established/0.75, «partial» = partial/0.50, «informal» = weak/0.25 y «unknown» = uncertainty/null. No ofrece N/A. La diferencia de formalidad de la herramienta no cambia el estado; el mapa no infiere CRM, etapas, automatización, cierre, ingresos, calidad del lead ni duración del ciclo.
+
+La auditoría de overlap: `q2_b2b_status_visibility` **PARTIAL** (estado recuperable ≠ acción de seguimiento); `q2_service_quote_followup` **PARTIAL** por compartir continuidad relacional pero limitarse a una cotización sin respuesta; `q2_followup_general_process` **DISTINCT** y excluido por gate para compradores B2B/mixed; `q2_process_systemization` **PARTIAL** por consistencia general de tareas, con divergencia comprobada y dimensión Readiness separada; `q2_operations_information_base` **DISTINCT** (recuperar información actualizada); `q2_b2b_qualification` **DISTINCT/DEFER**, ausente y sin inferencia de calidad.
+
+Pipeline y status coexisten con buyer B2B/mixed, clientes reales y meta organize; en fixture híbrido B2B + servicio también coexiste pipeline con quote-followup bajo meta opportunities. Las respuestas admiten independencia en ambos sentidos (pipeline fuerte/visibilidad débil y viceversa; pipeline definido/cotización raramente seguida y viceversa). La continuación genérica no puede duplicar el especialista. Las secundarias Readiness, Conversion, Measurement, Discovery y Trust son **REJECTED**: contexto, organización o efectos plausibles no justifican observaciones. No se infiere resultado comercial ni éxito positivo; conocer un desenlace cerrado-perdido sigue siendo continuidad. Sin dimensiones secundarias.
+
+Ledger R3: **38 total / 20 migrated / 18 pending**. Solo cambia metadata de evidencia de la candidata: definiciones, gates y planner R2 congelados; runtime legacy 85/v1, scoring histórico y caracterización intactos. R4 y calibración no iniciados. R3M propuesto: auditar `q2_appointments_rebooking` como continuidad posterior a una cita, frente a recordatorios y seguimiento de cotizaciones.
+
 ## DIAG-V3-R3K — recordatorios de citas
 
 **CODE/TEST, 2026-10-06:** `q2_appointments_confirmation_reminders@v2` migra a **Relationship & Recurrence/direct**. Evalúa confirmación/recordatorio apropiado para una cita ya agendada; conservar ese compromiso es continuidad relacional observable por sí misma, distinta de guardar una vía de contacto o retomar una cotización. consistent=established, sometimes=partial, rarely=weak, unknown=uncertainty/null y not_applicable=null. No se puntúa canal, frecuencia, automatización ni asistencia. Mapa completo e identidad v2 en `qbv2-reviewed-evidence.ts`.

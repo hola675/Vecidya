@@ -53,9 +53,9 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — siguiente límite propuesto (R3L; no iniciado)
+## DIAG-V3 — siguiente límite propuesto (R3M; no iniciado)
 
-Lote único propuesto: **B2B — proceso de seguimiento de oportunidades**, `q2_b2b_pipeline`. Auditar el proceso declarado hasta conocer el resultado de una oportunidad, distinguiéndolo de recuperar el estado de una oportunidad (Readiness/supporting ya migrado), del seguimiento de una cotización y de continuidad de citas. Resolver si observa ejecución relacional, proceso interno o un constructo mixto antes de asignar dimensión/directness. No migrar pipeline B2B ni rebooking por inferencia; conservar gates. No depende de decidir quién debe tener recurrencia bajo R4.
+R3L migró `q2_b2b_pipeline@v2` a Relationship & Recurrence/direct como continuidad explícita de oportunidades, diferenciada de estado actual, seguimiento de cotizaciones y consistencia general. Siguiente lote único propuesto: **rebooking de citas**, `q2_appointments_rebooking`; auditar su continuidad posterior a una cita frente a los recordatorios ya migrados y cotizaciones, sin decidir elegibilidad bajo R4 ni inferir repetición/retención comercial. No implementar antes de autorización.
 R4 permanece separada y no iniciada: aplicabilidad dimensional por actividad/etapa/modelo/evidencia (sin goal dimensional), recurrencia/recompra, Measurement y mecanismos de donación/membresía explícitos. Los DEFER de aplicabilidad no se reintroducen antes de resolver esos prerrequisitos. El banco productivo de 85/version 1 continúa congelado hasta una activación expresamente autorizada.
 
 ## VIS-001 — siguiente trabajo visual y gates

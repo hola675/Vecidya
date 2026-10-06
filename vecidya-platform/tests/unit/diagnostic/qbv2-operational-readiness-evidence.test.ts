@@ -151,12 +151,20 @@ test("R3F q65 and B2B supporting evidence alone cannot establish a dimension per
   }
 });
 
-test("R3F pipeline stays pending and cannot inherit or duplicate state-recovery evidence", () => {
-  assert.equal(question(pipeline).evidenceMigration, "pending");
-  for (const option of question(pipeline).options) {
-    assert.deepEqual(derive({ [pipeline]: option.value }), []);
-    assert.deepEqual(derive({ [status]: "clear", [pipeline]: option.value }), derive({ [status]: "clear" }));
+test("R3F status stays supporting Readiness while R3L pipeline is direct Relationship evidence", () => {
+  assert.equal(question(pipeline).evidenceMigration, "migrated");
+  const pipelineEvidence = derive({ [pipeline]: "defined" });
+  assert.deepEqual(pipelineEvidence.map(({ questionId, dimension, directness, state }) => [questionId, dimension, directness, state]), [
+    [pipeline, "relationship_recurrence", "direct", "established"],
+  ]);
+  for (const [pipelineAnswer, statusAnswer] of [["defined", "lose_track"], ["informal", "clear"]] as const) {
+    const evidence = derive({ [pipeline]: pipelineAnswer, [status]: statusAnswer });
+    assert.deepEqual(evidence.map(({ questionId, dimension, directness, state }) => [questionId, dimension, directness, state]), [
+      [pipeline, "relationship_recurrence", "direct", pipelineAnswer === "defined" ? "established" : "weak"],
+      [status, "digital_readiness", "supporting", statusAnswer === "clear" ? "established" : "weak"],
+    ]);
   }
+  assert.equal(score(derive({ [status]: "clear" })).score, null);
 });
 
 test("R3F current-state recovery and actual quote continuation remain separate capabilities", () => {

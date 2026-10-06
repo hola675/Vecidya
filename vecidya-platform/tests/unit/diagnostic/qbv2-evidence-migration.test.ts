@@ -202,7 +202,7 @@ test("R3A supporting refines a direct observation under the unchanged cap; unkno
 });
 
 test("R3A context, goals and frictions stay separate from capability evidence", () => {
-  const answers: AnswersV2 = { q2_entity: "individual", q2_other_staff: "yes", q2_monetization: "services", q2_delivery: ["appointments"], q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat", q2_goal: "be_found", q2_friction: "follow_up", q2_appointments_noshow: "often", q2_b2b_pipeline: "informal" };
+  const answers: AnswersV2 = { q2_entity: "individual", q2_other_staff: "yes", q2_monetization: "services", q2_delivery: ["appointments"], q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat", q2_goal: "be_found", q2_friction: "follow_up", q2_appointments_noshow: "often" };
   assert.deepEqual(derive(answers), []);
 });
 
