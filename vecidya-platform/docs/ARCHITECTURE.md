@@ -1,5 +1,15 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R3E — continuidad de una interacción pendiente
+
+**CODE/TEST, 2026-10-06:** `qbv2-reviewed-evidence.ts` migra `q2_service_quote_followup@v2` y `q2_followup_general_process@v2` exclusivamente a **Relationship & Recurrence/direct**. Ledger derivado **38/12 migrated/26 pending**. Cotizaciones observa volver a contactar tras una cotización sin respuesta; el fallback observa retomar a tiempo un pendiente real. Ambas respuestas consistent=established; sometimes/partial=partial; rarely/sometimes_lost=weak. Inconsistencia no prueba ausencia absoluta: no se usa missing. Unknown=uncertainty/null y not_applicable=not_applicable/null; no utilizar cotizaciones o no tener pendientes es legítimo. Contribuciones existentes intactas.
+
+**Secundarias para ambas: REJECTED.** Conversion & Access corresponde a acceso inicial/coordinación, no a continuación posterior; Digital Readiness requiere observación interna independiente; Measurement & Optimization requiere medición explícita; Trust & Reputation requiere reputación/percepción observada. Estas preguntas no prueban esas capacidades. Tampoco prueban cierre, ingresos, calidad de lead, CRM, automatización, personal, causa, recompra, retención, lealtad o recomendación comercial. La continuidad es Relationship; aplicabilidad general de recurrencia y los DEFER de recompra siguen en R4.
+
+**Solapamiento sin cambio de gates:** cotizaciones es adaptive/material en servicio local activo; el fallback es deepening/material para actividad activa con fricción follow_up y excluye componentes local_service, appointments y retail, compradores b2b/mixed y modelo creator_audience, incluso híbridos. Pipeline B2B observa un proceso de seguimiento; status_visibility observa recuperar el estado de una oportunidad, capacidad distinta. Contactabilidad retail/creator permite volver a contactar, pero no demuestra ejecución fiable. Esas cinco preguntas siguen pending/cero evidencia. `q2_b2b_pipeline` conserva **R3-LATER REVIEW**; rebooking espera revisión del ciclo de servicio. Un negocio híbrido puede tener varios especialistas de constructos distintos; no se migra ninguno en este lote. La alternativa histórica por arquetipo B2B no es un nuevo componente de delivery candidata.
+
+Solo cambia metadata V3 en la vista aislada: 38 IDs/versiones/copy/opciones/señales/roles/gates R2 intactos, REMOVE/DEFER ausentes, runtime 85/version 1 e inactivo para candidata. Mapas previos, scorer/planner, pesos/confianza/calibración y caracterización intactos. Regresiones y validación en TESTING.md; siguiente propuesta única en ROADMAP.md, sin implementar R3F.
+
 ## DIAG-V3-R3D — respuesta inicial y coordinación de horario
 
 **CODE/TEST, 2026-10-06:** el registro canónico de `qbv2-reviewed-evidence.ts` migra `q2_service_response_speed@v2` y `q2_appointments_booking_friction@v2`, ambas **Conversion & Access/direct**. La vista aislada deriva **38/10 migrated/28 pending**; contratos, mapas anteriores, definiciones R2, runtime y planner intactos.

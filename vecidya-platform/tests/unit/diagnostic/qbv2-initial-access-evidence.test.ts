@@ -9,7 +9,7 @@ import { validateQuestionEvidenceV3 } from "../../../app/features/diagnostic/qbv
 import { buildQuestionPlan } from "../../../app/features/diagnostic/qbv2-planner";
 import { REVIEWED_CANDIDATE_QUESTIONS_V2 as frozen } from "../../../app/features/diagnostic/qbv2-reviewed-candidate";
 import { REVIEWED_LEGACY_DECISIONS as decisions } from "../../../app/features/diagnostic/qbv2-reviewed-decisions";
-import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as candidate, REVIEWED_EVIDENCE_MIGRATION_SUMMARY_V3 as summary, REVIEWED_INITIAL_ACCESS_EVIDENCE_V3 as batch } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
+import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as candidate, REVIEWED_EVIDENCE_MIGRATION_SUMMARY_V3 as summary, REVIEWED_INITIAL_ACCESS_EVIDENCE_V3 as batch, REVIEWED_EVIDENCE_V3 as registry } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-validators";
 
@@ -22,8 +22,8 @@ const seed: AnswersV2 = { q2_entity: "business", q2_has_customers: "yes", q2_reg
 const question = (id: string) => candidate.find((q) => q.id === id)!;
 const derive = (answers: AnswersV2) => deriveContextualEvidence(answers, candidate);
 
-test("R3D atomically migrates only initial response and coordination with a 38/10/28 ledger", () => {
-  assert.deepEqual(summary, { total: 38, migrated: 10, pending: 28 });
+test("R3D atomically migrates only initial response and coordination within the cumulative ledger", () => {
+  assert.deepEqual(summary, { total: 38, migrated: registry.length, pending: 38 - registry.length });
   assert.deepEqual(batch.map((m) => m.questionId), [response, booking]);
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   for (const id of [response, booking]) {
@@ -121,10 +121,12 @@ test("R3D q31 gates coordination without supplying its state or duplicating its 
 
 test("R3D first response remains independent from quote and generic follow-up", () => {
   for (const id of [quote, followup]) {
-    assert.equal(question(id).evidenceMigration, "pending");
     for (const option of question(id).options) {
-      assert.deepEqual(derive({ [id]: option.value }), []);
-      assert.deepEqual(derive({ [id]: option.value, [response]: "strong" }), derive({ [response]: "strong" }));
+      const standalone = derive({ [id]: option.value });
+      const combined = derive({ [id]: option.value, [response]: "strong" });
+      assert.deepEqual(combined.filter((e) => e.questionId === response), derive({ [response]: "strong" }));
+      assert.deepEqual(combined.filter((e) => e.questionId === id), standalone);
+      assert.ok(standalone.every((e) => e.dimension === "relationship_recurrence"));
     }
   }
 });

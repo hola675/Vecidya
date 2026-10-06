@@ -80,7 +80,23 @@ export const REVIEWED_INITIAL_ACCESS_EVIDENCE_V3 = [
   },
 ] as const satisfies readonly QuestionEvidenceV3[];
 
-export const REVIEWED_EVIDENCE_V3 = [...REVIEWED_PILOT_EVIDENCE_V3, ...REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3, ...REVIEWED_VISIBLE_OFFER_EVIDENCE_V3, ...REVIEWED_INITIAL_ACCESS_EVIDENCE_V3] as const;
+/** R3E: continuidad de una interacción pendiente; no infiere recurrencia, venta, herramienta ni causa. */
+export const REVIEWED_FOLLOWUP_CONTINUITY_EVIDENCE_V3 = [
+  {
+    questionId: "q2_service_quote_followup", questionVersion: 2,
+    dimensions: [{ dimension: "relationship_recurrence", directness: "direct", answers: {
+      consistent: "established", sometimes: "partial", rarely: "weak", not_applicable: "not_applicable", unknown: "uncertainty",
+    } satisfies Record<"consistent" | "sometimes" | "rarely" | "not_applicable" | "unknown", MigratedAnswerStateV3> }],
+  },
+  {
+    questionId: "q2_followup_general_process", questionVersion: 2,
+    dimensions: [{ dimension: "relationship_recurrence", directness: "direct", answers: {
+      consistent: "established", partial: "partial", sometimes_lost: "weak", not_applicable: "not_applicable", unknown: "uncertainty",
+    } satisfies Record<"consistent" | "partial" | "sometimes_lost" | "not_applicable" | "unknown", MigratedAnswerStateV3> }],
+  },
+] as const satisfies readonly QuestionEvidenceV3[];
+
+export const REVIEWED_EVIDENCE_V3 = [...REVIEWED_PILOT_EVIDENCE_V3, ...REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3, ...REVIEWED_VISIBLE_OFFER_EVIDENCE_V3, ...REVIEWED_INITIAL_ACCESS_EVIDENCE_V3, ...REVIEWED_FOLLOWUP_CONTINUITY_EVIDENCE_V3] as const;
 
 /** Misma candidata R2, vista de evidencia aislada: solo cambia metadata de migración, nunca registro. */
 export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefinitionV2[] = REVIEWED_CANDIDATE_QUESTIONS_V2.map((question) => {

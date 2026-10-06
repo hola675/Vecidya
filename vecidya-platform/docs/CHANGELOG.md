@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3E — evidencia de continuidad posterior
+
+Migración atómica de cotizaciones y continuación genérica v2, solo Relationship & Recurrence/direct. Ledger derivado 38/12/26; once regresiones de opciones completas, unknown/N/A neutros, identidad/atomicidad, gates especializados/fallback, aislamiento pending, separación de Access, neutralidad de herramientas/venta/recurrencia, legacy y freeze. Suite R3D adapta ledger acumulado e independencia de seguimiento ahora migrado; mapas anteriores intactos. Sin cambios de banca R2, contrato/scorer/planner, calibración, runtime, caracterización, activación o deploy. Resultados en TESTING.md; R3F no iniciado.
+
 ## 2026-10-06 — DIAG-V3-R3D — evidencia de acceso inicial
 
 Dos migraciones atómicas v2, respuesta inicial y coordinación de horario, solo Conversion & Access/direct. Ledger derivado 38/10/28; diez pruebas nuevas de opciones/identidad/neutralidad, gates sin herencia de resultado q31, separación de seguimiento, ausencia de causas y sesgo de stack/SLA, legacy y runtime. Ledger R3C adaptado al registro acumulado, mapas y semánticas anteriores intactos. Sin cambios de R2, contrato/scorer/planner, pesos/confianza/calibración, caracterización, activación o deploy. Resultados en TESTING.md; R3E no iniciado.

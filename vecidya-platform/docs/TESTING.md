@@ -1,5 +1,12 @@
 # Pruebas
 
+## DIAG-V3-R3E — continuidad posterior a una interacción
+
+- `qbv2-followup-continuity-evidence.test.ts`: **11 regresiones** de ledger 38/12/26 y migración atómica, todas las opciones Relationship/direct, unknown/N/A neutros, identidad v2 y mapas incompletos sin fallback, exclusiones del genérico frente a seis especialistas e híbridos/mixed, cinco vecinos pending aislados, independencia del acceso inicial, ausencia de inferencias de herramienta/causa/venta/recurrencia, contexto intacto, legacy y freeze. Suite R3D adapta ledger acumulado e independencia de seguimiento ahora migrado, conservando las diez pruebas y sus mapas Access.
+- **RAN 2026-10-06:** R3E **11/11**, R3D **10/10**, R3C **9/9**, R3B **9/9**, R3A **17/17**, R2-FINAL **9/9**, candidata R2 **83/83**, frozen/legacy **235/235**, combinado **374/374**, caracterización **1/1**, diagnóstico **918/918**, full unit **973/973**: PASS, cero fallos. Incremento de once pruebas frente a 907/962. Typecheck, build y `git diff --check`: PASS; solo avisos conocidos de Gmail local y PLUGIN_TIMINGS.
+- Roles/gates conservados: cotizaciones adaptive/material, genérico deepening/material; seed `q2_goal=other` mantiene la fricción declarada activa. Genérico excluye servicio local, citas, retail, compradores B2B/mixed y creator; no puntúa contactabilidad o estado recuperable como continuación ejecutada. Pipeline B2B sigue R3-LATER REVIEW y rebooking requiere revisión del ciclo de servicio. No se migran vecinos ni recurrencia DEFER/R4.
+- R2 conserva 38 definiciones sin cambios, runtime 85/v1 e inactivo para candidata. Las 377 opciones legacy conservan el digest protegido por R3A `32aaca45420059bcc71fa74a4cbfeefedcb512b2b6d613dfe8e2887f3589c4aa`. Caracterización conserva `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`; fixture/test sin cambios. No cambia contrato, scorer/planner, contribuciones, support/confianza/calibración, recomendaciones, UI/PDF, D1 o deploy. R3F no iniciado.
+
 ## DIAG-V3-R3D — acceso inicial y coordinación de horario
 
 - `qbv2-initial-access-evidence.test.ts`: **10 regresiones** de ledger 38/10/28 y atomicidad, todas las opciones Conversion/direct sin SLA, coordinación observada sin inferir herramientas/ausencia, unknown neutral y N/A ausente, identidad v2 sin fallback, gate q31 sin heredar resultado, seguimiento pending independiente, ausencia de causas/contextos nuevos en casos aplicables, legacy y runtime congelados. Ledger R3C adaptado al registro acumulado; mapas anteriores intactos.

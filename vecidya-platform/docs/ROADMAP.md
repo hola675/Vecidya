@@ -53,9 +53,9 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — siguiente límite propuesto (R3E; no iniciado)
+## DIAG-V3 — siguiente límite propuesto (R3F; no iniciado)
 
-Lote único propuesto: Relationship & Recurrence — continuidad después de una interacción, `q2_service_quote_followup` y `q2_followup_general_process`. Auditar encaje dimensional/directness y límite con Access, unknown/N/A, sin equiparar seguimiento a recompra ni inferir venta o herramienta. R3D ya migra acceso inicial; resultado q31 conserva R3-LATER REVIEW de duplicación/causa, independiente de este lote. No incorporar REMOVE/DEFER ni completar toda la banca por cuota. Falta migración restante e integración de directness revisada en planificación. Contrato/prerrequisitos en ARCHITECTURE.md. Cada lote exige autorización propia; sin activación pública, cambio de runtime/versiones ni deploy por inferencia.
+Lote único propuesto: **Digital Readiness — recuperación de información interna**, `q2_operations_information_base` y `q2_b2b_status_visibility`. Ambas observan recuperar información necesaria y siguen pending; auditar dimensiones/directness, unknown/N/A, límite con continuidad ejecutada y sesgo de herramienta, sin inferir CRM ni éxito comercial. Es un lote sin dependencia de recurrencia R4. Pipeline B2B conserva R3-LATER REVIEW y rebooking requiere revisar su ciclo de servicio; no forman parte del lote propuesto. Falta migración restante e integración de directness revisada en planificación. Contrato/prerrequisitos en ARCHITECTURE.md. Cada lote exige autorización propia; sin activación pública, cambio de runtime/versiones ni deploy por inferencia.
 
 R4 permanece separada y no iniciada: aplicabilidad dimensional por actividad/etapa/modelo/evidencia (sin goal dimensional), recurrencia/recompra, Measurement y mecanismos de donación/membresía explícitos. Los DEFER de aplicabilidad no se reintroducen antes de resolver esos prerrequisitos. El banco productivo de 85/version 1 continúa congelado hasta una activación expresamente autorizada.
 
