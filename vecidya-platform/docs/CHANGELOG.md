@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3A — contrato de migración de evidencia
+
+Contrato atómico por ID/version y opciones, estados pending/migrated explícitos y rama V3 en el scorer existente sin fallback por ID. Estados/contribuciones e IDs de dimensiones compartidos sin cambios numéricos o de nombres; validación sin registro de bancos. Piloto aislado de Discovery/q20/q22 direct y q65 supporting; ledger derivado 38/4 migrated/34 pending. Unknown/N/A neutros y not_seeking context-only. Diecisiete regresiones; corte R2, banco productivo, mapas/semánticas legacy, planner, calibración, aplicabilidad, UX y caracterización conservados. Sin activación, D1 ni deploy. Validación en TESTING.md; R3B no iniciado.
+
 ## 2026-10-06 — DIAG-V3-QBANK-R2-FINAL — certificación y freeze
 
 Nueve regresiones de certificación global: partición independiente del orden 37 KEEP/37 REMOVE/11 DEFER, candidata pura de 38, runtime congelado, evidencia cero, unknown/N/A, contexto/DSL, diez rutas bajo cap y elegibilidad de todas las definiciones. q65 alcanzable por profundización, directness pendiente R3. Solo pruebas y documentación canónica; ninguna definición, scoring, fixture, comportamiento productivo ni despliegue cambia. R2A–R2J completas; entradas R3/R4 separadas y siguiente fase R3 no iniciada. Validación ejecutada en TESTING.md.

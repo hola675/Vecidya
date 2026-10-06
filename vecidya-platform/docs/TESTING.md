@@ -1,5 +1,14 @@
 # Pruebas
 
+## DIAG-V3-R3A — contrato y piloto de evidencia
+
+- `qbv2-evidence-migration.test.ts`: **17 regresiones** de ledger/composición, dominios/identidad, pending y undefined seguros, migración completa, no herencia por ID, rechazo atómico de contratos incompletos/ajenos, unknown/N/A neutrales, not_seeking context-only, direct/supporting, separación de contexto y fuente determinista, congelación de todas las opciones legacy y no activación.
+- El corte R2 y sus nueve pruebas de certificación siguen ejecutándose sin cambios. La vista R3 tiene los mismos 38 IDs/copy/opciones/señales/gates/roles; solo se superpone metadata: **4 migrated / 34 pending**. Tablas explícitas por opción en `qbv2-reviewed-evidence.ts`, sin fixtures nuevos o rebaseline.
+- **RAN 2026-10-06:** R3A **17/17**, R2-FINAL **9/9**, R2J **8/8**, R2I/H/G **6/6 cada una**, R2F **7/7**, candidata R2 **83/83**, frozen/legacy **235/235**, combinado R3A+candidata+frozen **335/335**, caracterización **1/1**, directorio diagnóstico **879/879**, full unit **934/934**: PASS. El incremento respecto a 862/917 es exclusivamente las 17 pruebas R3A. Typecheck, build y git diff --check: PASS. Build conserva los avisos conocidos de Gmail no configurado y PLUGIN_TIMINGS de Rolldown.
+- Comparación ejecutable contra el scorer en `1bbe80c327ff6762cb32d91ae11bf24b2c4fdc9a`: las **377 opciones de las 85 preguntas legacy** derivan exactamente la misma evidencia; ambos digests `32aaca45420059bcc71fa74a4cbfeefedcb512b2b6d613dfe8e2887f3589c4aa`. La regresión conserva ese digest. `localBusinessLeaks` mantiene `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`; fixture/test de caracterización intactos.
+- Supporting q65 solo devuelve score null/confianza low. Con una observación directa controlada puede refinar bajo el cap 08C vigente; unknown/N/A no cambian el porcentaje. Se fijan contribuciones, `SCORING_MODEL` y `CONFIDENCE_MODEL` existentes, sin nueva calibración ni cuota. Discovery not_seeking no crea evidencia de constraint, debilidad ni fricción.
+- Estado de las once DEFER no cambia: disponer de un contrato técnico no resuelve metodología/consumidor/aplicabilidad. No se activan candidatas, no se modifica R4 ni se ejecuta deploy/D1.
+
 ## DIAG-V3-QBANK-R2-FINAL — certificación y freeze
 
 - `qbv2-reviewed-certification.test.ts`: nueve regresiones globales de partición independiente del orden, pureza/versiones, registro runtime, todas las opciones sin evidencia, unknown/N/A sin hechos inventados, campos/DSL/traza, rutas deterministas que terminan, q65 alcanzable por completion y testigos para las 38 definiciones. Complementa los gates/híbridos/selectividad de R2F–R2J, sin modificar sus expectativas.

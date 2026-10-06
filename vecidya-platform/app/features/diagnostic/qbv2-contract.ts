@@ -3,6 +3,7 @@ import type { DimensionId } from "./types";
 import type { SignalProduction } from "./qbv2-signals";
 import type { RuleV2 } from "./qbv2-rules";
 import type { TerminologyProfileId } from "./qbv2-terminology";
+import type { QuestionEvidenceV3 } from "./qbv2-evidence-v3";
 
 /**
  * Contrato de pregunta de DIAG-V3-08B.2 (Question Bank Architecture). Define la FÁBRICA — no las
@@ -213,8 +214,10 @@ type QuestionDefinitionV2Base = {
   readonly materialAppliesWhen?: RuleV2;
   readonly variants?: readonly CopyVariantV2[];
   readonly scoringReadiness?: ScoringReadiness;
-  /** Explicit candidate evidence-migration state; marked definitions do not inherit ID-only legacy evidence. */
+  /** undefined = contrato histórico válido; pending = sin evidencia; migrated = solo evidenceV3 validada. */
   readonly evidenceMigration?: "pending" | "migrated";
+  /** Contrato atómico por ID/version; nunca usa ANSWER_SEMANTICS/EVIDENCE_MAPPING legacy como fallback. */
+  readonly evidenceV3?: QuestionEvidenceV3;
   readonly contradictionRole?: ContradictionRole;
   readonly helpIntent?: QuestionHelpIntent;
 };

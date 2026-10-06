@@ -53,9 +53,9 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — siguiente límite propuesto (R3; no iniciado)
+## DIAG-V3 — siguiente límite propuesto (R3B; no iniciado)
 
-Partir de la candidata R2 congelada de 38 (37 KEEP + Discovery nueva), sin incorporar REMOVE/DEFER automáticamente. Definir y auditar evidencia revisada, `EVIDENCE_MAPPING`, `ANSWER_SEMANTICS`, direct/supporting, q65 y transición explícita pending/migrated. La guarda vigente no habilita scoring al cambiar solo la etiqueta. Los DEFER metodológicos necesitan consumidores defendibles, no certeza autodeclarada ni resultados como causas. Entradas precisas en ARCHITECTURE.md, sección R2-FINAL. R3 requiere autorización propia; no activación pública, cambio de runtime/versiones ni deploy por inferencia.
+Lote único propuesto: Digital Foundation de la presencia pública, `q2_presence_digital_base` y `q2_ecommerce_product_discovery`. Usar el contrato atómico y vista R3 establecidos en R3A; revisar expresamente sus apoyos secundarios, unknown/N/A y neutralidad de propiedad/herramienta. No incorporar REMOVE/DEFER automáticamente ni completar toda la banca por cuota. Falta después migración restante e integración de directness revisada en planificación. Los DEFER metodológicos requieren consumidores defendibles, no certeza autodeclarada ni resultados como causas. Contrato/prerrequisitos en ARCHITECTURE.md R3A. Cada lote exige autorización propia; sin activación pública, cambio de runtime/versiones ni deploy por inferencia.
 
 R4 permanece separada y no iniciada: aplicabilidad dimensional por actividad/etapa/modelo/evidencia (sin goal dimensional), recurrencia/recompra, Measurement y mecanismos de donación/membresía explícitos. Los DEFER de aplicabilidad no se reintroducen antes de resolver esos prerrequisitos. El banco productivo de 85/version 1 continúa congelado hasta una activación expresamente autorizada.
 

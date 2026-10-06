@@ -4,6 +4,7 @@ import { MODULE_IDS, type QuestionDefinitionV2 } from "./qbv2-contract";
 import type { QuestionBankV2 } from "./qbv2-engine";
 import { collectAnswerDependencies, collectAnswerRefValueChecks, collectContextDependencies, type RuleV2 } from "./qbv2-rules";
 import { scalarSlotForProduction, signalProductionContextFields } from "./qbv2-signals";
+import { validateEvidenceMigrationsV3 } from "./qbv2-evidence-v3";
 
 /**
  * Validadores estáticos de DIAG-V3-08B.2 (§37, §43-49). Deterministas, sin dependencias de red/D1;
@@ -212,6 +213,7 @@ function validateNoSelfReferentialContextGating(bank: QuestionBankV2): Validatio
 }
 
 const VALIDATORS: readonly ((bank: QuestionBankV2) => ValidationIssue[])[] = [
+  (bank) => validateEvidenceMigrationsV3(bank).map((message) => ({ code: "INVALID_V3_EVIDENCE_MIGRATION", message })),
   validateUniqueIds,
   validateModules,
   validateRoutingRoles,

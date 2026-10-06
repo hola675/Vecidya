@@ -5,7 +5,11 @@ import { QUESTION_BANK_V2 } from "./qbv2-bank";
 import type { EvidenceKind, DigitalDimensionId, EvidenceDirectness } from "./qbv2-coverage";
 import { DIGITAL_DIMENSIONS, EVIDENCE_DIRECTNESS, EVIDENCE_MAPPING } from "./qbv2-coverage";
 import type { AnswersV2 } from "./qbv2-rules";
-import type { QuestionDefinitionV2 } from "./qbv2-contract";
+import type { QuestionDefinitionV2, QuestionVersionV2 } from "./qbv2-contract";
+import { CAPABILITY_CONTRIBUTION, STATE_KIND, type CapabilityState } from "./qbv2-capability";
+import { evidenceMigrationIdentity, hasHistoricalAnswerContract, migratedAnswerStatesV3 } from "./qbv2-evidence-v3";
+export { CAPABILITY_STATES, CAPABILITY_CONTRIBUTION } from "./qbv2-capability";
+export type { CapabilityState } from "./qbv2-capability";
 
 /**
  * DIAG-V3-08C scoring model. The adaptive planner is the canonical input: scoring works with whatever
@@ -15,24 +19,7 @@ import type { QuestionDefinitionV2 } from "./qbv2-contract";
 
 // ── Semantic states and their contribution ──────────────────────────────────
 
-export const CAPABILITY_STATES = ["strong", "established", "partial", "weak", "missing", "dependency", "constraint", "uncertainty", "not_applicable"] as const;
-export type CapabilityState = (typeof CAPABILITY_STATES)[number];
-
-/**
- * Single source of numeric contribution. `null` states never enter numerator or denominator:
- * constraints describe the context of a capability, uncertainty and N/A carry no capability reading.
- * `dependency` means the capability exists but rests on a single channel/person; it reads as weak.
- */
-export const CAPABILITY_CONTRIBUTION: Readonly<Record<CapabilityState, number | null>> = {
-  strong: 1, established: 0.75, partial: 0.5, weak: 0.25, dependency: 0.25, missing: 0,
-  constraint: null, uncertainty: null, not_applicable: null,
-};
-
-/** Coarse 08B evidence taxonomy kept for explainability and mapping compatibility. */
-const STATE_KIND: Readonly<Record<CapabilityState, EvidenceKind>> = {
-  strong: "established", established: "established", partial: "partial", weak: "partial", missing: "missing",
-  dependency: "dependency", constraint: "constraint", uncertainty: "uncertainty", not_applicable: "not_applicable",
-};
+// Estados/contribuciones 08C compartidos en qbv2-capability; valores históricos intactos.
 
 /**
  * Aggregation: weighted mean of contributions. Supporting observations weigh half a direct one and,
@@ -165,6 +152,9 @@ export function validateAnswerSemantics(bank: QuestionBankV2 = QUESTION_BANK_V2)
 
 export type ContextualEvidence = {
   readonly questionId: string;
+  /** Presente en evidencia V3 explícita; la estructura de evidencia legacy permanece intacta. */
+  readonly questionVersion?: QuestionVersionV2;
+  readonly migrationIdentity?: string;
   readonly dimension: DigitalDimensionId;
   /** One question/dimension pair is one observation, even when the answer is multi-select. */
   readonly observationId: string;
@@ -174,6 +164,12 @@ export type ContextualEvidence = {
   /** From `CAPABILITY_CONTRIBUTION`; `null` never participates in the score. */
   readonly contribution: number | null;
   readonly answer: readonly string[];
+};
+
+/** La fuente/version es obligatoria en la rama V3; el tipo base conserva fixtures legacy. */
+export type MigratedContextualEvidenceV3 = ContextualEvidence & {
+  readonly questionVersion: QuestionVersionV2;
+  readonly migrationIdentity: string;
 };
 
 function selectedValues(answer: string | readonly string[] | undefined): readonly string[] { return answer === undefined ? [] : Array.isArray(answer) ? [...new Set(answer as readonly string[])] : [answer as string]; }
@@ -209,13 +205,23 @@ export function deriveContextualEvidence(answers: AnswersV2, bank: QuestionBankV
   const entries: ContextualEvidence[] = [];
   for (const question of bank) {
     const questionId = question.id; const answer = answers[questionId]; const mapping = EVIDENCE_MAPPING[questionId];
-    if (answer === undefined || !mapping || CONTEXT_ONLY_QUESTION_IDS.has(questionId)) continue;
-    const legacyDefinition = QUESTION_BANK_V2.find((legacy) => legacy.id === questionId);
-    const reviewedCandidateEvidencePending = question.evidenceMigration !== undefined
-      && legacyDefinition !== undefined
-      && question.version !== legacyDefinition.version;
-    if (reviewedCandidateEvidencePending) continue;
+    if (answer === undefined || question.evidenceMigration === "pending") continue;
     const values = selectedValues(answer); if (values.length === 0) continue;
+    if (question.evidenceMigration === "migrated") {
+      const migrationIdentity = evidenceMigrationIdentity(question.id, question.version);
+      for (const reading of migratedAnswerStatesV3(question, values)) {
+        const evidence: MigratedContextualEvidenceV3 = {
+          questionId, questionVersion: question.version, migrationIdentity,
+          observationId: migrationIdentity, ...reading, kind: STATE_KIND[reading.state],
+          contribution: CAPABILITY_CONTRIBUTION[reading.state], answer: values,
+        };
+        entries.push(evidence);
+      }
+      continue;
+    }
+    if (question.evidenceMigration !== undefined || question.evidenceV3 !== undefined || !mapping || CONTEXT_ONLY_QUESTION_IDS.has(questionId)) continue;
+    const legacyDefinition = QUESTION_BANK_V2.find((legacy) => legacy.id === questionId);
+    if (!hasHistoricalAnswerContract(question, legacyDefinition)) continue;
     for (const dimension of mapping.dimensions) {
       const directness = EVIDENCE_DIRECTNESS[questionId]?.[dimension] ?? mapping.semanticRole;
       const state = stateForAnswer(question, dimension, values);

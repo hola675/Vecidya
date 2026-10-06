@@ -2,18 +2,9 @@ import type { BusinessModel, EntityType, GrowthStage, OperationalArchetype, Prim
 import { QUESTION_BANK_V2 } from "./qbv2-bank";
 import type { ModuleId } from "./qbv2-contract";
 import type { AnswersV2 } from "./qbv2-rules";
-
-export const DIGITAL_DIMENSION_IDS = [
-  "clarity_positioning",
-  "digital_foundation",
-  "discovery",
-  "trust_reputation",
-  "conversion_access",
-  "relationship_recurrence",
-  "measurement_optimization",
-  "digital_readiness",
-] as const;
-export type DigitalDimensionId = (typeof DIGITAL_DIMENSION_IDS)[number];
+import { DIGITAL_DIMENSION_IDS, type DigitalDimensionId } from "./qbv2-dimensions";
+export { DIGITAL_DIMENSION_IDS } from "./qbv2-dimensions";
+export type { DigitalDimensionId } from "./qbv2-dimensions";
 
 export const EVIDENCE_KINDS = ["established", "missing", "partial", "dependency", "constraint", "uncertainty", "not_applicable"] as const;
 export type EvidenceKind = (typeof EVIDENCE_KINDS)[number];

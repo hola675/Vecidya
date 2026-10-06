@@ -1,5 +1,52 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R3A — contrato de evidencia y migración
+
+**CODE/TEST, 2026-10-06:** `qbv2-evidence-v3.ts` establece migración atómica por definición/version y el scorer existente consume sus lecturas. No hay segundo scorer, recalibración, R4 ni activación. Los ocho IDs canónicos se comparten desde `qbv2-dimensions.ts` y se reexportan por coverage; estados/contribuciones 08C se comparten desde `qbv2-capability.ts` y se reexportan por scoring, sin cambiar valores. Esa separación permite validar sin importar ni registrar un banco.
+
+**Antes:** respuesta → `ANSWER_SEMANTICS` por ID → `EVIDENCE_MAPPING`/directness legacy → `ContextualEvidence` → agregación 08C. La guarda R2 bloqueaba cualquier marca de migración con versión distinta, incluso migrated; quitarla sin un contrato permitiría heredar evidencia por ID.
+
+**Ahora:** definición concreta → estado de migración → identidad/contrato de opciones → semántica explícita V3 → evidencia con fuente/version → la misma agregación/confianza/aplicabilidad 08C. `deriveContextualEvidence()` nunca importa la candidata ni el piloto: recibe la definición en `bank`.
+
+`ANSWER_SEMANTICS` conserva la interpretación histórica por respuesta/dimensión; no decide licencia, solución o herramienta. Su validador histórico no es el validador de tablas V3: estas se protegen con `validateEvidenceMigrationsV3`, integrado en el validador del banco. Las tablas nuevas no se mezclan con el mapa global por ID.
+
+| Estado | Comportamiento ejecutable |
+| --- | --- |
+| undefined | Solo lectura histórica cuando coincide ID, versión, tipo y contrato de opciones (values/kinds/exclusividad) con legacy, sin payload V3. Una definición revisada sin marca no hereda scoring. |
+| pending | Cero evidencia, incluso si tiene un mapa o conserva versión legacy. |
+| migrated | Solo `evidenceV3` explícita, validada contra ID/version, dimensiones/directness y **todas** las opciones. Contrato ausente, incompleto o inválido produce cero evidencia; nunca fallback legacy. |
+
+`QuestionEvidenceV3` usa `DigitalDimensionId`, `EvidenceDirectness`, `CapabilityState | context_only`, `questionId`, `questionVersion`, y tablas exhaustivas por opción/dimensión. Las tablas piloto tienen uniones literales con `satisfies`; el validador coteja además las opciones ejecutables porque el contrato histórico de preguntas las tipa como string. Detecta identidades/dimensiones duplicadas, valores huérfanos, versiones ajenas y unknown/N/A no neutrales; se integra en `validateQuestionBankV2`. Multi exige una política explícita `weakest_observed`, preserva una observación por pregunta/dimensión y no infiere diversidad de canales. No hay piloto multi en R3A.
+
+La fuente de evidencia V3 conserva `questionId`, `questionVersion`, `answer`, `migrationIdentity` y `observationId = ID@vVERSION`, además de dimension/directness/state/kind/contribution. Los objetos de evidencia legacy conservan su estructura histórica. No existen campos comerciales en este contrato.
+
+### Dos vistas de la misma candidata, sin activación
+
+`REVIEWED_CANDIDATE_QUESTIONS_V2` conserva exactamente el corte R2 certificado, incluida su evidencia pendiente. `REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3` es su vista R3 aislada: mismos 38 IDs/versiones/copy/opciones/producciones/gates/roles; solo superpone metadata de evidencia. Esto permite ejecutar las regresiones R2 sin reescribirlas ni convertir las rutas congeladas en expectativas de scoring piloto. Ninguna vista se registra en runtime.
+
+El ledger y resumen ejecutables de `qbv2-reviewed-evidence.ts` derivan **38 total / 4 migrated / 34 pending** de las definiciones concretas. Pending no obliga a puntuar clasificaciones, metas, fricciones o hechos de contexto: su eventual tratamiento puede seguir siendo context-only. El corte R2 original sigue con cero migrated.
+
+### Piloto y justificación semántica
+
+El mapa completo por opción vive únicamente en `REVIEWED_PILOT_EVIDENCE_V3`, protegido por `qbv2-evidence-migration.test.ts`.
+
+| Piloto | Dimensión / rol | Qué observa y por qué se migra |
+| --- | --- | --- |
+| Discovery v1 | discovery / direct | Llegada declarada constante, irregular o insuficientemente constante. Pregunta nueva sin mapa legacy; not_seeking conserva solo contexto, pendiente de aplicabilidad R4. |
+| q20 información local v2 | digital_foundation / direct | Información pública correcta/actualizada, parcial o difícil/incompleta. Reutiliza ID, pero **no** hereda Discovery supporting ni el estado missing/strong legacy por coincidencia de value. |
+| q22 prueba social v3 | trust_reputation / direct | Prueba visible y renovada, escasa/desactualizada o casi ausente. No mide solicitudes de reviews ni presupone una herramienta. |
+| q65 traspasos v2 | digital_readiness / supporting | Información que permite continuar entre personas; incluye unknown/N/A. Apoya continuidad operativa, pero por sí sola no establece capacidad para sostener la presencia digital. La clasificación responde al constructo revisado, no solo a la directness histórica. |
+
+Los positivos piloto se leen `established` (funcionamiento habitual declarado, no excelencia general demostrada), los intermedios `partial` y las dificultades `weak`. «Difícil/incompleta» o «casi no» no prueban ausencia absoluta, por lo que no se inventa missing. Se reutilizan contribuciones existentes 0.75/0.5/0.25, no se introduce una curva ni nuevos pesos. Unknown = uncertainty/null; N/A = not_applicable/null; no respuesta = ninguna evidencia; not_seeking = context_only/sin entrada.
+
+**Direct/supporting ejecutables:** `weightedScore()` requiere al menos una observación direct para devolver porcentaje. Supporting solo devuelve score null y confianza low; con direct puede refinar bajo el límite 08C vigente (peso de apoyo 0.5, suma de apoyo ≤ mitad del peso direct). Supporting no puede dominar ni establecer una dimensión solo. No se aprobaron pesos nuevos: `SCORING_MODEL` y `CONFIDENCE_MODEL` permanecen intactos. Unknown/N/A no entran al numerador/denominador; uncertainty conserva únicamente el tratamiento de confianza ya existente, sin calibración nueva.
+
+### Límites y siguiente bloque
+
+q65 se migra como supporting de Digital Readiness; no entra automáticamente a material-direct. R3A no altera el planner ni usa su mapa V3 para cambiar colas; la integración de directness revisada en la planificación sigue pendiente. Ningún DEFER recuperó un prerrequisito completo: el contrato técnico no resuelve consumidor/metodología de Measurement, checkout, cualificación o acceso, ni aplicabilidad de recurrencia/nonprofit. Measurement debe observar capacidad de comprender/usar señales pertinentes, nunca resultados comerciales o mera presencia de analytics.
+
+R4 conserva aplicabilidad por actividad/etapa/modelo, recurrencia, Measurement y not_seeking. Siguiente lote propuesto **R3B, no iniciado:** Digital Foundation de la presencia pública (`q2_presence_digital_base` y `q2_ecommerce_product_discovery`), con revisión explícita de apoyos secundarios y de unknown/N/A, sin sesgo de propiedad/herramienta ni activación.
+
 ## DIAG-V3-QBANK-R2-FINAL — contrato certificado y congelado
 
 **CODE/TEST/GIT, 2026-10-06:** R2A–R2J completas; 85 legacy = 37 KEEP + 37 REMOVE + 11 DEFER, sin clasificar=0 y duplicados entre clases=0. Candidata aislada de 38 = 37 KEEP + Discovery nueva, sin REMOVE/DEFER ni IDs duplicados. Registro canónico y razones en la sección R2J siguiente y las matrices R2F/H/I; no se reabre ninguna decisión. `qbv2-reviewed-certification.test.ts` protege partición independiente del orden, composición, versiones, aislamiento, contexto, gates y rutas. Resultados ejecutados en [TESTING.md](TESTING.md).
