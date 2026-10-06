@@ -1,5 +1,32 @@
 # Pruebas
 
+## DIAG-V3-QBANK-R2-FINAL — certificación y freeze
+
+- `qbv2-reviewed-certification.test.ts`: nueve regresiones globales de partición independiente del orden, pureza/versiones, registro runtime, todas las opciones sin evidencia, unknown/N/A sin hechos inventados, campos/DSL/traza, rutas deterministas que terminan, q65 alcanzable por completion y testigos para las 38 definiciones. Complementa los gates/híbridos/selectividad de R2F–R2J, sin modificar sus expectativas.
+- **RAN 2026-10-06:** R2-FINAL **9/9**, R2J **8/8**, R2I/H/G **6/6 cada una**, R2F **7/7**, candidata **83/83**, frozen/legacy **235/235**, combinado **318/318**, caracterización **1/1**, directorio diagnóstico **862/862**, full unit **917/917**: PASS, cero fallos. El incremento frente a 74/309/853/908 es exclusivamente las nueve pruebas nuevas. Typecheck, build y `git diff --check`: **PASS**. Solo permanecen los avisos conocidos de secretos Gmail locales ausentes y tiempos de plugins Rolldown.
+- Caracterización conserva `localBusinessLeaks = 9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`; fixture/test sin modificaciones ni regeneración. Comparación histórica de definiciones productivas y mapas desde el padre de R2A: sin delta, salvo guarda candidata localizada en el scorer.
+
+### Diez recorridos completos reproducibles
+
+Semilla y algoritmo exactos en la suite de certificación: entidad business, clientes yes, regularidad regular, tendencia flat; cada fila añade entrega/meta/modelo indicado. Se responde solo la siguiente selección con la primera opción concreta, excluyendo other/unknown/N/A. Por eso B2B/creator/nonprofit eligen después una entrega física declarada; no se infiere desde modelo o sector. Longitud = respuestas activas al terminar, no cantidad de preguntas pendientes en un plan intermedio. En prelaunch se invalidan regularidad/tendencia. Todas las iteraciones permanecen ≤24 y ningún recorrido alcanza el cap.
+
+Para evitar repetir los IDs comunes, **C** significa exactamente `q2_monetization`, `q2_customer_buyer`, `q2_customer_reach`, `q2_sector`; **M** significa `q2_discovery_reliable_reach`, `q2_capacity_signal`, `q2_process_systemization`; **R** significa `q2_reputation_flow`. Son conjuntos de IDs seleccionados, no nuevas clasificaciones del motor. Las respuestas semilla se agregan a la longitud, pero no a esta lista de selecciones posteriores.
+
+| Ruta / variación semilla | Longitud final | IDs seleccionados después de semilla | Vía material o deepening (IDs) | Cap alcanzado |
+| --- | --- | --- | --- | --- |
+| local: physical_location, be_found | 15 | C + `q2_local_presence_consistency` + M + R | R: deepening | No |
+| local_service: travels, opportunities | 16 | C + `q2_service_response_speed`, `q2_service_quote_followup` + M + R | `q2_service_quote_followup`: material; R: deepening | No |
+| appointments: appointments, opportunities | 16 | C + `q2_appointments_lead_to_booking`, `q2_appointments_noshow` + M + R | R: deepening | No |
+| retail: retail, explain | 16 | C + `q2_retail_product_visibility` + M + `q2_local_presence_consistency` + R | `q2_retail_product_visibility`: material; `q2_local_presence_consistency`, R: deepening | No |
+| ecommerce: online_checkout, opportunities | 16 | C + `q2_ecommerce_product_discovery`, `q2_ecommerce_traffic_sources` + M + R | R: deepening | No |
+| hospitality: onsite, be_found | 15 | C + M + `q2_local_presence_consistency` + R | `q2_local_presence_consistency`, R: deepening | No |
+| B2B: buyer b2b, organize | 18 | `q2_delivery`, `q2_monetization`, `q2_customer_reach`, `q2_sector`, `q2_local_presence_consistency`, `q2_b2b_pipeline`, `q2_b2b_status_visibility` + M + `q2_operations_information_base` + R | `q2_operations_information_base`: material; R: deepening | No |
+| creator: monetization audience, stop_losing | 16 | `q2_delivery`, `q2_customer_buyer`, `q2_customer_reach`, `q2_sector`, `q2_local_presence_consistency`, `q2_creator_audience_ownership` + M + R | R: deepening | No |
+| nonprofit: monetization mission, entity organization, opportunities | 15 | `q2_delivery`, `q2_customer_buyer`, `q2_customer_reach`, `q2_sector`, `q2_local_presence_consistency` + M + R | R: deepening | No |
+| prelaunch: customers no, entity project, explain | 10 | `q2_delivery` + C + `q2_presence_digital_base`, `q2_presence_offer_clarity` | `q2_presence_offer_clarity`: material | No |
+
+Máximo observado **18**, cap **24**, rutas excedidas **0**. Terminan por `no_useful_questions`, con `ready=true` y evidencia candidata cero; esto no certifica confianza/suficiencia de scoring R3. El límite no es una cuota que se deba llenar. Las pruebas frozen de evidence completion también conservan la parada por evidencia suficiente. Ruta adicional individual+staff yes+organize: q82 entra por material y q65 luego por deepening, ambos bajo cap; la directness supporting de q65 sigue pendiente R3.
+
 ## DIAG-V3-QBANK-R2J — revisión completa candidata
 
 - Ocho pruebas R2J: partición exacta y sin duplicados de los 85 IDs ejecutables (37 KEEP/37 REMOVE/11 DEFER), membership y retiros cerrados q66/q76/q78, versiones/contratos/copy, gates operativos/prelaunch/equipo, fallbacks y prioridad especializada, todas las opciones sin señales/evidencia, neutralidad de herramientas, selección material/prerequisite y probes deterministas. Candidata=38 (37 legacy + Discovery nueva); fuera de alcance=0 y sin clasificar=0.

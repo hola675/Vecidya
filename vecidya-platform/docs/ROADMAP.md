@@ -53,9 +53,11 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — siguiente límite propuesto (R2; no iniciado)
+## DIAG-V3 — siguiente límite propuesto (R3; no iniciado)
 
-Migrar el banco productivo conforme a las 85 decisiones humanas: retirar 18 preguntas aprobadas, reescribir las preguntas sobrevivientes y sus roles/gates/clasificaciones canónicas, convertir `q2_delivery` en multi-select y añadir la pregunta directa de Discovery aprobada. Revisar explícitamente los gates `notEq(..., "no")`, preservar trazabilidad de `other`/`unsure` y validar las 85 rutas golden. Mantener congelados `EVIDENCE_MAPPING`, `ANSWER_SEMANTICS`, contribuciones, pesos, umbrales y resultados públicos salvo autorización de una fase aparte. No activar ni publicar el banco en R2 sin revisión explícita del resultado y del alcance.
+Partir de la candidata R2 congelada de 38 (37 KEEP + Discovery nueva), sin incorporar REMOVE/DEFER automáticamente. Definir y auditar evidencia revisada, `EVIDENCE_MAPPING`, `ANSWER_SEMANTICS`, direct/supporting, q65 y transición explícita pending/migrated. La guarda vigente no habilita scoring al cambiar solo la etiqueta. Los DEFER metodológicos necesitan consumidores defendibles, no certeza autodeclarada ni resultados como causas. Entradas precisas en ARCHITECTURE.md, sección R2-FINAL. R3 requiere autorización propia; no activación pública, cambio de runtime/versiones ni deploy por inferencia.
+
+R4 permanece separada y no iniciada: aplicabilidad dimensional por actividad/etapa/modelo/evidencia (sin goal dimensional), recurrencia/recompra, Measurement y mecanismos de donación/membresía explícitos. Los DEFER de aplicabilidad no se reintroducen antes de resolver esos prerrequisitos. El banco productivo de 85/version 1 continúa congelado hasta una activación expresamente autorizada.
 
 ## VIS-001 — siguiente trabajo visual y gates
 

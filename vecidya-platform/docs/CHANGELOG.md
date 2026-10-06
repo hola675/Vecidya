@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-QBANK-R2-FINAL — certificación y freeze
+
+Nueve regresiones de certificación global: partición independiente del orden 37 KEEP/37 REMOVE/11 DEFER, candidata pura de 38, runtime congelado, evidencia cero, unknown/N/A, contexto/DSL, diez rutas bajo cap y elegibilidad de todas las definiciones. q65 alcanzable por profundización, directness pendiente R3. Solo pruebas y documentación canónica; ninguna definición, scoring, fixture, comportamiento productivo ni despliegue cambia. R2A–R2J completas; entradas R3/R4 separadas y siguiente fase R3 no iniciada. Validación ejecutada en TESTING.md.
+
 ## 2026-10-06 — DIAG-V3-QBANK-R2J
 
 Completa revisión candidata con cinco capacidades v2 (q65/q69/q82/q84/q85), sin inferencia de éxito, dolor, herramienta o validación de mercado. Registro explícito de las 85 decisiones (37 KEEP, 37 REMOVE, 11 DEFER) y ocho regresiones de completitud, gates, prelaunch, unknown/N/A, neutralidad, evidencia y rutas. Las pruebas de composición existente pasan a candidata 38; R2I conserva decisiones/rutas. Sin activación, nuevo scoring, rebaseline, cambios comerciales, D1 o deploy. Validación de este corte en TESTING.md.

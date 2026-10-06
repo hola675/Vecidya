@@ -1,5 +1,45 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-QBANK-R2-FINAL — contrato certificado y congelado
+
+**CODE/TEST/GIT, 2026-10-06:** R2A–R2J completas; 85 legacy = 37 KEEP + 37 REMOVE + 11 DEFER, sin clasificar=0 y duplicados entre clases=0. Candidata aislada de 38 = 37 KEEP + Discovery nueva, sin REMOVE/DEFER ni IDs duplicados. Registro canónico y razones en la sección R2J siguiente y las matrices R2F/H/I; no se reabre ninguna decisión. `qbv2-reviewed-certification.test.ts` protege partición independiente del orden, composición, versiones, aislamiento, contexto, gates y rutas. Resultados ejecutados en [TESTING.md](TESTING.md).
+
+`QUESTION_BANK_V2` conserva 85 definiciones y `CURRENT_QUESTION_BANK_VERSION=1`. La ranura interna QBV2 (`getQuestionBank(2)`) conserva el banco legacy, no registra la candidata. Comparación Git desde `2f4febede5323a2d50d603b265817f294a9c0bad` (antes de R2A): definiciones productivas y `qbv2-coverage.ts` intactos; el único cambio de `qbv2-contextual-scoring.ts` es la guarda explícita candidata-versión-distinta. `EVIDENCE_MAPPING` y `ANSWER_SEMANTICS` no cambiaron. Todas las opciones candidatas derivan cero evidencia; estados `migrated`=0. Sin activación pública ni deploy.
+
+### Contexto y consumidores reales
+
+Todos los campos registrados tienen consumidor genérico en `fieldStatus()` / `producedContextFields()` / `canSelect()`: estado resuelto, resolución pendiente y utilidad adaptativa. No confundir ese consumidor con un gate especializado ni con evidencia de score.
+
+| Hecho R2 creado o reutilizado | Consumidor adicional / límite |
+| --- | --- |
+| `entity`, `businessModel`, `audienceMonetization` | Clasificación y relevancia de módulos; businessModel gatea audiencia q56 y exclusión q69. audienceMonetization tiene consumidor genérico, no gate especializado. |
+| `archetype`, `archetypeComponents`, `niche`, `nicheGroup` | Componentes reales gobiernan especialistas/exclusiones y equilibrio del planner; nicheGroup delimita q33/q34. niche permanece como refinamiento legacy; un hint de nicho no crea componente material. |
+| `activity` | Gates de historia operativa y copy prelaunch; deriva exclusivamente de hasRealCustomers, independiente de growthStage. |
+| `growthStage`, `operatingRegularity` | Refinamiento de etapa, relevancia y aplicabilidad heredadas; regularidad controla además las dependencias de respuesta de tendencia/capacidad. La precisión de etapa no bloquea activity. |
+| `processConsistency`, `capacitySituation` | Consumidor genérico del planner/DSL y traza; solo proceso definido puede apoyar scaling tras crecimiento independiente. Capacidad revisada no crea crecimiento. Sin gate especializado adicional en R2. |
+| `appointmentAttendance` | Gate explícito q30 para recordatorios cuando asistencia es sometimes/often; no implica fricción genérica. |
+| `b2bFollowupProcess`, `discoveryReachReliability` | Consumidor genérico de resolución/selección adaptativa y traza. No gatean q52 ni prueban calidad de canales; evidencia pendiente R3. |
+| `customerReach`, `customerBuyer` | Clasificación, contexto y relevancia; comprador b2b/mixed gatea q12/q52 y excluye q69. |
+| `primaryGoal`, `primaryFriction` | Prioridad/necesidad declarada para gates selectivos. No existe userPriority duplicado; las respuestas diagnósticas nuevas no fabrican fricción. |
+
+Auditoría del conjunto: sin duplicados de constructo bloqueantes; pasos definidos, traspaso de contexto, recuperación de información y estado B2B son observaciones distintas. Los gates validan sin ciclos/dependencias inválidas; las 38 definiciones tienen testigo de elegibilidad. Unknown/N/A no producen actividad, crecimiento, fricción, modelo ni componente concretos; tampoco aportan evidencia/recomendaciones nuevas. Prelaunch solo admite clasificación y presencia/claridad observable en la ruta probada, sin historia operativa.
+
+### Entradas R3 — evidencia, no implementadas
+
+- Definir la transición `evidenceMigration: pending → migrated`: la guarda actual suprime cualquier marca explícita con versión distinta, incluso migrated; no basta cambiar la etiqueta para habilitar evidencia.
+- Migrar deliberadamente `EVIDENCE_MAPPING`, `ANSWER_SEMANTICS`, direct/supporting y tratamiento de unknown/N/A/observaciones/contexto; Discovery nueva carece de mapa heredado. R2 conserva cero scoring candidato.
+- **q65:** supporting legacy no entra automáticamente en la cola material-direct. Sí se selecciona por evidence completion después de agotar candidatos directos aplicables (la regresión observa q82 antes de q65). No es pregunta muerta ni bloqueo R2. R3 debe decidir directness y contribución de la nueva observación de traspaso, sin sesgo de herramienta.
+- DEFER metodológicos: cualificación B2B, abandono de checkout como observación sin atribución causal, conocimiento de origen, resultado útil, comparabilidad histórica y acceso genérico con suficiencia especializada. Requieren consumidores/evidencia defendibles antes de reintroducirse.
+
+### Entradas R4 — aplicabilidad, no implementadas
+
+- Aplicabilidad dimensional por actividad/etapa/modelo y evidencia real, retirando dependencia de primaryGoal; goal sigue siendo prioridad de routing.
+- Recurrencia/recompra/rebooking cuando esperables, Measurement cuando actividad y comparación son pertinentes, y acceso a una acción concreta sin presumir compra/donación.
+- Fuente de apoyo nonprofit solo con consumidor; donaciones y membresías/renovación necesitan hechos explícitos. No inferir esos mecanismos por nonprofit.
+- `not_seeking` de Discovery es contexto declarado, no capacidad débil/fuerte; R4 debe delimitar su aplicabilidad. Los once DEFER conservan las razones de las matrices; varios necesitan tanto R3 como R4.
+
+R3 es la siguiente fase y no está iniciada. Ningún pending/DEFER se activa en este freeze.
+
 ## DIAG-V3-QBANK-R2J — cierre de revisión del banco candidato
 
 **CODE/TEST:** inventario derivado de los 85 IDs ejecutables menos las 63 decisiones R2A–R2I, no de una cuota ni rango supuesto. Los 22 restantes coinciden con q64–q85. q66/q76/q78 coinciden con las definiciones cerradas y se mantienen REMOVE. La regla maestra R2J sustituye las propuestas anteriores del workbook cuando medían dolor, herramienta, mercado o resultados. No hay OTHER fuera de alcance ni preguntas sin clasificación.
