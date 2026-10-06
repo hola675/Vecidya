@@ -1,4 +1,4 @@
-import type { BusinessModel, CustomerBuyer, CustomerReach, EntityType, NicheGroup, NicheId, OperatingRegularityV3, OperationalArchetype, PrimaryFriction, PrimaryGoal } from "./contracts";
+import type { BusinessModel, CapacitySituationV3, CustomerBuyer, CustomerReach, EntityType, NicheGroup, NicheId, OperatingRegularityV3, OperationalArchetype, PrimaryFriction, PrimaryGoal, ProcessConsistencyV3 } from "./contracts";
 
 /**
  * Señales de dominio de DIAG-V3-08B.1 (Context Resolver).
@@ -205,6 +205,10 @@ export type DiagnosticSignalsV3 = {
   demandTrend?: Signal<DemandTrend>;
   /** Explicit trend uncertainty; unlike legacy flat_or_unknown it is not evidence of flat demand. */
   demandTrendUnknown?: Signal<boolean>;
+  /** Reviewed process fact; deliberately richer than legacy `systemization: boolean`. */
+  processConsistency?: Signal<ProcessConsistencyV3>;
+  /** Explicit uncertainty for the reviewed process-consistency question. */
+  processConsistencyUnknown?: Signal<boolean>;
   /**
    * Evidencia de `growing` alternativa a `demandTrend`. DEBE ser un AUMENTO observado de la lista de
    * espera/backlog en ≥2 períodos, igual de exigente que `demandTrend` — no una foto fija de "hay
@@ -223,6 +227,10 @@ export type DiagnosticSignalsV3 = {
   capacityExpansion?: Signal<boolean>;
   /** Soporte de proceso/equipo YA EXISTENTE más allá del esfuerzo del fundador — distingue `growing` de `scaling`, no es evidencia de crecimiento en sí mismo. */
   systemization?: Signal<boolean>;
+  /** Reviewed capacity observations; these describe the situation and never constitute growth evidence. */
+  reviewedCapacityPressure?: Signal<boolean>;
+  reviewedCapacityExpansion?: Signal<boolean>;
+  reviewedCapacityUnknown?: Signal<boolean>;
 
   declaredGoal?: Signal<PrimaryGoal>;
   /** Equivalente a la legacy `unsure`: ausencia declarada, no ausencia de dato (§24, `mapLegacyGoal`). */

@@ -1,5 +1,7 @@
 # Estado de implementación
 
+DIAG-V3-QBANK-R2D: la candidata aislada suma q17–q18 y queda en 14 preguntas; q10–q13 continúan pendientes. Consistencia de proceso y situación de capacidad tienen hechos contextuales explícitos, separados de las señales legacy de madurez; solo un proceso definido puede apoyar scaling después de crecimiento independiente, y capacidad revisada no crea GrowthStage. Sin score digital ni inferencias comerciales. El banco legacy de 85 preguntas sigue como runtime; candidata no registrada ni desplegada. Ver `TESTING.md`.
+
 DIAG-V3-QBANK-R2C: candidata de clasificación aislada con q2_sector, q2_customer_reach y q2_customer_buyer; el agregado contiene 01–09 y 14–16. `community_social` es aditivo y `nonprofit_community` sigue válido para la banca productiva congelada. Las señales no generan evidencia diagnóstica y el helper futuro B2B no activa módulos especializados. `QUESTION_BANK_V2` permanece en 85 y en runtime; la candidata no está registrada ni publicada. Ver `TESTING.md`.
 
 DIAG-V3-QBANK-R2B-FIX: candidata aislada 01–09; `QUESTION_BANK_V2` conserva 85 preguntas y sigue como runtime. Las metas concretas de q2_goal resuelven `primaryGoal` como contexto/routing declarado, sin evidencia digital directa; no existe dominio duplicado `userPriority`. `other` queda `insufficient_evidence`, `unsure` `declared_unknown`. Deuda R4: retirar aplicabilidad dimensional basada en goal y usar contexto/evidencia del negocio; `measure` podrá afectar prioridad/routing solamente. Ver `TESTING.md`.

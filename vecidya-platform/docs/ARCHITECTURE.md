@@ -470,6 +470,13 @@ GHL es el system of record de contactos, leads, oportunidades, pipelines, conver
 - q2_customer_reach requiere `activity` resuelta mediante `contextIn`. Sus variantes se ordenan para que prelaunch prevalezca y luego aplique la variante de organización. Alcance, comprador y sector producen solo contexto y cero evidencia diagnóstica.
 - q2_sector, q2_customer_reach y q2_customer_buyer son versión semántica 2. `CURRENT_QUESTION_BANK_VERSION` queda en 1; no cambia scoring, recomendaciones ni comportamiento público.
 
+### DIAG-V3-QBANK-R2D — candidata revisada de consistencia y capacidad (preguntas 17–18)
+
+- `qbv2-reviewed-operational-context.ts` agrega q2_process_systemization y q2_capacity_signal al candidato aislado, que queda en 14 preguntas: 01–09, 14–18. q10–q13 siguen ausentes; `QUESTION_BANK_V2` continúa como runtime de 85 preguntas.
+- El hecho `processConsistency` (`defined`/`partial`/`informal`) y su incertidumbre explícita son aditivos respecto de `systemization: boolean`. Solo `defined` puede apoyar `scaling`, y requiere evidencia independiente de crecimiento. La señal legacy `systemization=true` conserva su regla existente.
+- `capacitySituation` (`stable`/`pressure`/`expanded`/`pressure_and_expanded`) proviene de señales revisadas distintas de `capacityPressure`/`capacityExpansion`. Por sí sola no resuelve `GrowthStage`; las señales legacy conservan su semántica.
+- Ambas preguntas son `adaptive`, del módulo `maturity`, versión 2 y no tienen `scoringReadiness`. No producen evidencia digital ni infieren CRM, automatización o licencia. El candidato no se registra ni publica.
+
 - Gobierno y auditoría en tablas separadas del perfil (`0009`).
 - Horarios anclados a `organization_id`; «sin fila» = día sin definir (`0008`).
 - `service_area` como texto libre (sin geocodificación, radios ni polígonos); `city`/`country` = ubicación de referencia.

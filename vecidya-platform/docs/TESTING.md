@@ -1,5 +1,13 @@
 # Pruebas
 
+## DIAG-V3-QBANK-R2D — contexto operativo revisado
+
+- `qbv2-reviewed-operational-context.test.ts` fija las definiciones q17–q18, aplicabilidad y selección adaptive, estados de proceso/capacidad, exclusividad multi, interacción con `GrowthStage`, cero evidencia digital y contratos/contexto legacy.
+- `qbv2-reviewed-candidate.test.ts` fija el agregado de 14 preguntas (01–09, 14–18), versiones y aislamiento del banco productivo de 85 preguntas.
+- Suite operativa: **7/7 PASS**; candidata completa con fundación y clasificación: **26/26 PASS**; candidata más q17–q18: **33/33 PASS**; frozen/legacy: **235/235 PASS**; combinado focalizado: **268/268 PASS**.
+- Directorio diagnóstico: **811/812 PASS**. `pnpm run test:unit`: **866/867 PASS**. La única falla es `characterization.test.ts:102`, `localBusinessLeaks`, con actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f` y esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`, sin rebaseline respecto del preflight.
+- `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Build conserva el aviso local conocido de secretos Gmail requeridos ausentes.
+
 ## DIAG-V3-QBANK-R2C — clasificación revisada
 
 - `qbv2-reviewed-classification.test.ts` fija el slice q14–q16, versiones 2, opciones, producciones, gate de actividad, orden de variantes, mapeos de contexto y cero evidencia contextual. También prueba que `community_social` se añade y que la banca legacy conserva `nonprofit_community`.

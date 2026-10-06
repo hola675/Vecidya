@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-QBANK-R2D — candidata revisada de consistencia y capacidad (preguntas 17–18)
+
+- Se agregan q2_process_systemization y q2_capacity_signal a la candidata aislada: ahora 14 preguntas en orden 01–09, 14–18; q10–q13 continúan pendientes.
+- `processConsistency` conserva defined/partial/informal y unknown sin colapsar el booleano legacy `systemization`. Solo puede apoyar scaling junto con evidencia de crecimiento independiente.
+- `capacitySituation` conserva stable/pressure/expanded/pressure_and_expanded con señales separadas de la evidencia legacy de crecimiento. Las respuestas revisadas no crean crecimiento por sí solas.
+- Las dos preguntas son adaptativas, contexto de madurez, versión 2 y sin score digital. El banco productivo de 85 preguntas sigue vigente; sin registro ni deploy. Validación RAN: ver `TESTING.md`.
+
 ## 2026-10-05 — DIAG-V3-QBANK-R2C — candidata revisada de clasificación (preguntas 14–16)
 
 - Se añaden sector, alcance geográfico y tipo de comprador como slice aislado al candidato 01–09; el agregado queda en 12 preguntas (01–09, 14–16), sin registrar ni migrar `QUESTION_BANK_V2`.

@@ -14,7 +14,7 @@ import { evaluateRuleV2, type AnswersV2 } from "../../../app/features/diagnostic
 import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-validators";
 import { NICHE_GROUP_REGISTRY } from "../../../app/features/diagnostic/taxonomy";
 
-const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_sector", "q2_customer_reach", "q2_customer_buyer"];
+const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_sector", "q2_customer_reach", "q2_customer_buyer", "q2_process_systemization", "q2_capacity_signal"];
 const question = (id: string, bank: readonly QuestionDefinitionV2[] = candidate) => bank.find((item) => item.id === id)!;
 const resolve = (answers: AnswersV2) => resolveEligibleQuestionsV2(answers, candidate);
 const rendered = (id: string, answers: AnswersV2) => {
@@ -22,10 +22,10 @@ const rendered = (id: string, answers: AnswersV2) => {
   return renderQuestionV2(question(id), { context: state.context, answers });
 };
 
-test("R2C candidate includes only reviewed 01–09 and 14–16, remains isolated, and pins semantic versions", () => {
-  assert.deepEqual(classification.map(({ id }) => id), ids.slice(9));
+test("R2C classification slice and full candidate order remain isolated, with semantic versions pinned", () => {
+  assert.deepEqual(classification.map(({ id }) => id), ids.slice(9, 12));
   assert.deepEqual(candidate.map(({ id }) => id), ids);
-  assert.equal(new Set(candidate.map(({ id }) => id)).size, 12);
+  assert.equal(new Set(candidate.map(({ id }) => id)).size, 14);
   assert.ok(!candidate.some(({ id }) => /^q2_(?:10|11|12|13|17|18)\b/.test(id)));
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   assert.equal(CURRENT_QUESTION_BANK_VERSION, 1);

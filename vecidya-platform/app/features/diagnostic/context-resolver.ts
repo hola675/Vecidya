@@ -4,6 +4,7 @@ import {
   resolved,
   unresolved,
   type BusinessModel,
+  type CapacitySituationV3,
   type CustomerBuyer,
   type CustomerReach,
   type DiagnosticContextV3,
@@ -15,6 +16,7 @@ import {
   type OperatingRegularityV3,
   type PrimaryFriction,
   type PrimaryGoal,
+  type ProcessConsistencyV3,
   type Resolution,
   type UnresolvedReason,
 } from "./contracts";
@@ -72,6 +74,8 @@ export type ContextResolutionTrace = {
   readonly customerBuyer: FieldTrace;
   readonly growthStage: FieldTrace;
   readonly operatingRegularity: FieldTrace;
+  readonly processConsistency: FieldTrace;
+  readonly capacitySituation: FieldTrace;
   readonly activity: FieldTrace;
   readonly primaryGoal: FieldTrace;
   readonly primaryFriction: FieldTrace;
@@ -255,6 +259,39 @@ function resolveOperatingRegularity(signals: DiagnosticSignalsV3): { resolution:
   return { resolution: resolved(signal.value, "signal"), trace: resolvedTrace("operatingRegularity", signal.value, ["operatingRegularity"], "frecuencia de actividad declarada") };
 }
 
+function resolveProcessConsistency(signals: DiagnosticSignalsV3): { resolution: Resolution<ProcessConsistencyV3>; trace: FieldTrace } {
+  if (signals.processConsistencyUnknown?.value === true) {
+    return { resolution: unresolved("declared_unknown"), trace: unresolvedTrace("processConsistency", "declared_unknown", [], [], ["processConsistencyUnknown"]) };
+  }
+  const signal = signals.processConsistency;
+  if (!isMaterial(signal)) return { resolution: unresolved("not_asked"), trace: unresolvedTrace("processConsistency", "not_asked", [], ["processConsistency"]) };
+  return { resolution: resolved(signal.value, "signal"), trace: resolvedTrace("processConsistency", signal.value, ["processConsistency"], "consistencia declarada de las tareas repetidas") };
+}
+
+function resolveCapacitySituation(signals: DiagnosticSignalsV3): { resolution: Resolution<CapacitySituationV3>; trace: FieldTrace } {
+  if (signals.reviewedCapacityUnknown?.value === true) {
+    return { resolution: unresolved("declared_unknown"), trace: unresolvedTrace("capacitySituation", "declared_unknown", [], [], ["reviewedCapacityUnknown"]) };
+  }
+  const pressure = signals.reviewedCapacityPressure;
+  const expansion = signals.reviewedCapacityExpansion;
+  if (!pressure && !expansion) {
+    return { resolution: unresolved("not_asked"), trace: unresolvedTrace("capacitySituation", "not_asked", [], ["reviewedCapacityPressure", "reviewedCapacityExpansion"]) };
+  }
+  if (pressure?.value === true && expansion?.value === true) {
+    return { resolution: resolved("pressure_and_expanded", "signal"), trace: resolvedTrace("capacitySituation", "pressure_and_expanded", ["reviewedCapacityPressure=true", "reviewedCapacityExpansion=true"], "presión y ampliación de capacidad declaradas") };
+  }
+  if (pressure?.value === true) {
+    return { resolution: resolved("pressure", "signal"), trace: resolvedTrace("capacitySituation", "pressure", ["reviewedCapacityPressure=true"], "presión de capacidad declarada") };
+  }
+  if (expansion?.value === true) {
+    return { resolution: resolved("expanded", "signal"), trace: resolvedTrace("capacitySituation", "expanded", ["reviewedCapacityExpansion=true"], "ampliación de capacidad declarada") };
+  }
+  if (pressure?.value === false && expansion?.value === false) {
+    return { resolution: resolved("stable", "signal"), trace: resolvedTrace("capacitySituation", "stable", ["reviewedCapacityPressure=false", "reviewedCapacityExpansion=false"], "capacidad declarada suficiente") };
+  }
+  return { resolution: unresolved("insufficient_evidence", ["stable", "pressure", "expanded", "pressure_and_expanded"]), trace: unresolvedTrace("capacitySituation", "insufficient_evidence", ["stable", "pressure", "expanded", "pressure_and_expanded"], ["reviewedCapacityPressure", "reviewedCapacityExpansion"]) };
+}
+
 // ── GrowthStage (resuelve DIAG-V3-08B0-GROWTH-STAGE-SIGNAL-001) ─────────────
 
 function resolveGrowthStage(signals: DiagnosticSignalsV3): { resolution: Resolution<GrowthStage>; trace: FieldTrace } {
@@ -309,13 +346,17 @@ function resolveGrowthStage(signals: DiagnosticSignalsV3): { resolution: Resolut
     expansion?.value === true ? "capacityExpansion=true" : undefined,
   ].filter((s): s is string => s !== undefined);
 
-  if (signals.systemization?.value !== true) {
+  const processConsistency = signals.processConsistency;
+  const repeatableProcessSupport = signals.systemization?.value === true || (isMaterial(processConsistency) && processConsistency.value === "defined");
+  if (!repeatableProcessSupport) {
     return { resolution: resolved("growing", "signal"), trace: resolvedTrace("growthStage", "growing", supporting, "aumento observable de demanda/volumen/capacidad, sin soporte de proceso/equipo todavía") };
   }
 
+  const processSupport = signals.systemization?.value === true ? "systemization=true" : "processConsistency=defined";
+
   return {
     resolution: resolved("scaling", "signal"),
-    trace: resolvedTrace("growthStage", "scaling", [...supporting, "systemization=true"], "el crecimiento se sostiene con procesos/equipo repetibles, no solo con el esfuerzo del fundador"),
+    trace: resolvedTrace("growthStage", "scaling", [...supporting, processSupport], "el crecimiento se sostiene con procesos/equipo repetibles, no solo con el esfuerzo del fundador"),
   };
 }
 
@@ -386,6 +427,8 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
   const customerBuyer = resolveCustomerAxis<CustomerBuyer>("customerBuyer", signals.buyerType);
   const growthStage = resolveGrowthStage(signals);
   const operatingRegularity = resolveOperatingRegularity(signals);
+  const processConsistency = resolveProcessConsistency(signals);
+  const capacitySituation = resolveCapacitySituation(signals);
   const hasCustomers = signals.hasRealCustomers;
   const activity: Resolution<"prelaunch" | "active"> = isMaterial(hasCustomers) ? resolved(hasCustomers.value ? "active" : "prelaunch", "signal") : unresolved("not_asked");
   const activityTrace: FieldTrace = isMaterial(hasCustomers)
@@ -407,6 +450,8 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
       nicheGroup: nicheGroup.resolution,
       growthStage: growthStage.resolution,
       operatingRegularity: operatingRegularity.resolution,
+      processConsistency: processConsistency.resolution,
+      capacitySituation: capacitySituation.resolution,
       customerModel: { reach: customerReach.resolution, buyer: customerBuyer.resolution },
       primaryGoal: primaryGoal.resolution,
       primaryFriction: primaryFriction.resolution,
@@ -422,6 +467,8 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
       customerBuyer: customerBuyer.trace,
       growthStage: growthStage.trace,
       operatingRegularity: operatingRegularity.trace,
+      processConsistency: processConsistency.trace,
+      capacitySituation: capacitySituation.trace,
       activity: activityTrace,
       primaryGoal: primaryGoal.trace,
       primaryFriction: primaryFriction.trace,

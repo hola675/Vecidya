@@ -4,6 +4,7 @@ import type {
   EntityType,
   NicheGroup,
   NicheId,
+  ProcessConsistencyV3,
   PrimaryFriction,
   PrimaryGoal,
 } from "./contracts";
@@ -47,8 +48,13 @@ export type SignalProduction =
   | { readonly kind: "operatingRegularityUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "demandTrend"; readonly value: DemandTrend; readonly provenance: SignalProvenance }
   | { readonly kind: "demandTrendUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
+  | { readonly kind: "processConsistency"; readonly value: ProcessConsistencyV3; readonly provenance: SignalProvenance }
+  | { readonly kind: "processConsistencyUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "capacityPressure"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "capacityExpansion"; readonly value: boolean; readonly provenance: SignalProvenance }
+  | { readonly kind: "reviewedCapacityPressure"; readonly value: boolean; readonly provenance: SignalProvenance }
+  | { readonly kind: "reviewedCapacityExpansion"; readonly value: boolean; readonly provenance: SignalProvenance }
+  | { readonly kind: "reviewedCapacityUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "systemization"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "goal"; readonly value: PrimaryGoal; readonly provenance: SignalProvenance }
   | { readonly kind: "goalUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
@@ -74,8 +80,13 @@ export const SIGNAL_PRODUCTION_KINDS = [
   "operatingRegularityUnknown",
   "demandTrend",
   "demandTrendUnknown",
+  "processConsistency",
+  "processConsistencyUnknown",
   "capacityPressure",
   "capacityExpansion",
+  "reviewedCapacityPressure",
+  "reviewedCapacityExpansion",
+  "reviewedCapacityUnknown",
   "systemization",
   "goal",
   "goalUnknown",
@@ -107,8 +118,13 @@ export const SIGNAL_PRODUCTION_CONTEXT_FIELD: Readonly<Record<(typeof SIGNAL_PRO
   operatingRegularityUnknown: "growthStage",
   demandTrend: "growthStage",
   demandTrendUnknown: "growthStage",
+  processConsistency: "processConsistency",
+  processConsistencyUnknown: "processConsistency",
   capacityPressure: "growthStage",
   capacityExpansion: "growthStage",
+  reviewedCapacityPressure: "capacitySituation",
+  reviewedCapacityExpansion: "capacitySituation",
+  reviewedCapacityUnknown: "capacitySituation",
   systemization: "growthStage",
   goal: "primaryGoal",
   goalUnknown: "primaryGoal",
@@ -162,8 +178,13 @@ const PRODUCTION_TO_FIELD: Partial<Record<SignalProduction["kind"], ScalarSignal
   operatingRegularityUnknown: "operatingRegularityUnknown",
   demandTrend: "demandTrend",
   demandTrendUnknown: "demandTrendUnknown",
+  processConsistency: "processConsistency",
+  processConsistencyUnknown: "processConsistencyUnknown",
   capacityPressure: "capacityPressure",
   capacityExpansion: "capacityExpansion",
+  reviewedCapacityPressure: "reviewedCapacityPressure",
+  reviewedCapacityExpansion: "reviewedCapacityExpansion",
+  reviewedCapacityUnknown: "reviewedCapacityUnknown",
   systemization: "systemization",
   goal: "declaredGoal",
   goalUnknown: "declaredGoalUnknown",

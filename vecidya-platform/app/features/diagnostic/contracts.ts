@@ -347,6 +347,14 @@ export type GrowthStage = (typeof GROWTH_STAGES)[number];
 /** Regularity values retained across the legacy bank and the reviewed candidate. */
 export const OPERATING_REGULARITIES_V3 = ["none", "irregular", "occasional", "irregular_active", "regular"] as const;
 export type OperatingRegularityV3 = (typeof OPERATING_REGULARITIES_V3)[number];
+
+/** Reviewed process consistency is richer than the legacy `systemization: boolean`. */
+export const PROCESS_CONSISTENCIES_V3 = ["defined", "partial", "informal"] as const;
+export type ProcessConsistencyV3 = (typeof PROCESS_CONSISTENCIES_V3)[number];
+
+/** Current operating capacity situation; intentionally distinct from legacy growth evidence. */
+export const CAPACITY_SITUATIONS_V3 = ["stable", "pressure", "expanded", "pressure_and_expanded"] as const;
+export type CapacitySituationV3 = (typeof CAPACITY_SITUATIONS_V3)[number];
 export type LegacyStageId = StageId;
 
 /**
@@ -469,6 +477,10 @@ export type DiagnosticContextV3 = {
   growthStage: Resolution<GrowthStage>;
   /** Observed activity cadence; explicit unknown remains distinct from a missing answer. */
   operatingRegularity: Resolution<OperatingRegularityV3>;
+  /** Reviewed process consistency, separate from the legacy boolean `systemization` signal. */
+  processConsistency: Resolution<ProcessConsistencyV3>;
+  /** Reviewed capacity situation, separate from legacy growth evidence signals. */
+  capacitySituation: Resolution<CapacitySituationV3>;
   customerModel: CustomerModel;
   primaryGoal: Resolution<PrimaryGoal>;
   primaryFriction: Resolution<PrimaryFriction>;
