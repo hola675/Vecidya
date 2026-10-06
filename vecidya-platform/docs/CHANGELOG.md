@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3N: overlap de audiencia creator
+
+- Se auditó `q2_creator_audience_ownership@v2`; sigue `pending` porque puede coexistir con retail capture y describir a los mismos compradores/contactos. Retail conserva la única evidencia directa Relationship en esa ruta. No cambian wording, gates, registry, scorer ni scoring legacy.
+- Creator+ecommerce también es una ruta válida; creator puede coexistir con ecommerce product discovery sin activar retail capture. Tamaño de audiencia, prestigio de plataforma, monetización, Discovery, follow-up y recurrencia no se infieren.
+- Se añadieron cinco regresiones de rutas híbridas, solapamiento del mismo contacto, evidencia pending, preservación de retail y freeze. Ledger 38/21/17. R3 recomienda cierre/certificación final antes de otro lote, sin iniciar R4.
+- La suite legacy histórica 235 y el conteo seleccionado 234 no tienen manifiestos ejecutables registrados; la lista de diez suites fijada y ejecutada en R3N reporta 240/240. Suite diagnóstica y unitaria completas sin fallos. No se atribuye el delta histórico a un test específico sin evidencia.
+
 ## 2026-10-06 — DIAG-V3-R3M: continuidad hacia una próxima cita
 
 - Migra `q2_appointments_rebooking@v2` a Relationship & Recurrence/direct como capacidad de acordar la siguiente cita cuando hace falta otro ciclo; no mide retorno, retención ni asistencia. Mapas: proactive established, partial partial, reactive weak, N/A null, unknown uncertainty/null.

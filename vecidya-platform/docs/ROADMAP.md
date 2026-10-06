@@ -53,9 +53,9 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — siguiente límite propuesto (R3N; no iniciado)
+## DIAG-V3 — siguiente límite propuesto (R3-FINAL; no iniciado)
 
-R3M migró `q2_appointments_rebooking@v2` a Relationship & Recurrence/direct como capacidad de acordar la próxima cita, distinta de recordatorios, dificultad de booking actual y outcomes de recurrencia. Siguiente lote único propuesto: **auditoría del solapamiento creator**, `q2_creator_audience_ownership`, aún pending porque gates válidos pueden hacer coincidir audiencia y compradores retail. Resolver si hay una observación independiente antes de migrar; no cambiar gates ni inferir poblaciones disjuntas. No implementar antes de autorización.
+R3N auditó `q2_creator_audience_ownership@v2` y resolvió conservarla pending: en rutas creator+retail pueden coexistir con `q2_retail_customer_capture` y describir los mismos contactos; creator+ecommerce no habilita retail capture. El ledger permanece 38/21/17, sin cambio de R2/runtime. La suite legacy seleccionada de R3M indicó 234 frente al histórico 235, pero no hay manifiesto versionado que identifique el comando original; R3N fijó una invocación explícita de diez suites (240/240 PASS) y pasó toda la suite diagnóstica/unitaria. No se atribuye el delta a un test específico. Próximo bloque recomendado: **R3-FINAL**, certificar ledger, contratos, lista explícita de suites y freezes; no proponer automáticamente R3O ni otra migración de una pregunta. Cada bloque requiere autorización explícita.
 R4 permanece separada y no iniciada: aplicabilidad dimensional por actividad/etapa/modelo/evidencia (sin goal dimensional), recurrencia/recompra, Measurement y mecanismos de donación/membresía explícitos. Los DEFER de aplicabilidad no se reintroducen antes de resolver esos prerrequisitos. El banco productivo de 85/version 1 continúa congelado hasta una activación expresamente autorizada.
 
 ## VIS-001 — siguiente trabajo visual y gates
