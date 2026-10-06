@@ -10,6 +10,7 @@ import {
   type CustomerBuyer,
   type CustomerReach,
   type DiagnosticContextV3,
+  type DiscoveryReachReliabilityV3,
   type EntityType,
   type GrowthStage,
   type NicheGroup,
@@ -80,6 +81,7 @@ export type ContextResolutionTrace = {
   readonly capacitySituation: FieldTrace;
   readonly appointmentAttendance: FieldTrace;
   readonly b2bFollowupProcess: FieldTrace;
+  readonly discoveryReachReliability: FieldTrace;
   readonly activity: FieldTrace;
   readonly primaryGoal: FieldTrace;
   readonly primaryFriction: FieldTrace;
@@ -310,6 +312,13 @@ function resolveB2BFollowupProcess(signals: DiagnosticSignalsV3): { resolution: 
   return { resolution: resolved(signal.value, "signal"), trace: resolvedTrace("b2bFollowupProcess", signal.value, ["b2bFollowupProcess"], "proceso declarado para dar seguimiento a oportunidades B2B") };
 }
 
+function resolveDiscoveryReachReliability(signals: DiagnosticSignalsV3): { resolution: Resolution<DiscoveryReachReliabilityV3>; trace: FieldTrace } {
+  if (signals.discoveryReachReliabilityUnknown?.value === true) return { resolution: unresolved("declared_unknown"), trace: unresolvedTrace("discoveryReachReliability", "declared_unknown", [], [], ["discoveryReachReliabilityUnknown"]) };
+  const signal = signals.discoveryReachReliability;
+  if (!isMaterial(signal)) return { resolution: unresolved("not_asked"), trace: unresolvedTrace("discoveryReachReliability", "not_asked", [], ["discoveryReachReliability"]) };
+  return { resolution: resolved(signal.value, "signal"), trace: resolvedTrace("discoveryReachReliability", signal.value, ["discoveryReachReliability"], "confiabilidad declarada para llegar a personas nuevas") };
+}
+
 // ── GrowthStage (resuelve DIAG-V3-08B0-GROWTH-STAGE-SIGNAL-001) ─────────────
 
 function resolveGrowthStage(signals: DiagnosticSignalsV3): { resolution: Resolution<GrowthStage>; trace: FieldTrace } {
@@ -449,6 +458,7 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
   const capacitySituation = resolveCapacitySituation(signals);
   const appointmentAttendance = resolveAppointmentAttendance(signals);
   const b2bFollowupProcess = resolveB2BFollowupProcess(signals);
+  const discoveryReachReliability = resolveDiscoveryReachReliability(signals);
   const hasCustomers = signals.hasRealCustomers;
   const activity: Resolution<"prelaunch" | "active"> = isMaterial(hasCustomers) ? resolved(hasCustomers.value ? "active" : "prelaunch", "signal") : unresolved("not_asked");
   const activityTrace: FieldTrace = isMaterial(hasCustomers)
@@ -474,6 +484,7 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
       capacitySituation: capacitySituation.resolution,
       appointmentAttendance: appointmentAttendance.resolution,
       b2bFollowupProcess: b2bFollowupProcess.resolution,
+      discoveryReachReliability: discoveryReachReliability.resolution,
       customerModel: { reach: customerReach.resolution, buyer: customerBuyer.resolution },
       primaryGoal: primaryGoal.resolution,
       primaryFriction: primaryFriction.resolution,
@@ -493,6 +504,7 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
       capacitySituation: capacitySituation.trace,
       appointmentAttendance: appointmentAttendance.trace,
       b2bFollowupProcess: b2bFollowupProcess.trace,
+      discoveryReachReliability: discoveryReachReliability.trace,
       activity: activityTrace,
       primaryGoal: primaryGoal.trace,
       primaryFriction: primaryFriction.trace,

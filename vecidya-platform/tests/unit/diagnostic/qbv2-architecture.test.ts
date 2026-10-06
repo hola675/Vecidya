@@ -80,12 +80,16 @@ test("QBV2 arquitectura: MODULE_REGISTRY cubre exactamente MODULE_IDS, sin dupli
   assert.deepEqual([...ids].sort(), [...MODULE_IDS].sort());
 });
 
-test("QBV2 arquitectura: 22 módulos (19 de 08B.2 + \"reputation\" de 08B.3 Lote B C2 + \"conversion\" de DIAG-V3-08D.1 + \"presence\" de DIAG-V3-08E.1) — no hardcodear 19 en ningún sitio que describa el estado actual", () => {
-  assert.equal(MODULE_IDS.length, 22);
+test("QBV2 arquitectura: 23 módulos incluyen discovery cross-cutting sin cambiar rutas legacy", () => {
+  assert.equal(MODULE_IDS.length, 23);
   const reputation = MODULE_REGISTRY.find((module) => module.id === "reputation")!;
   assert.ok(reputation, "el módulo reputation debe existir en MODULE_REGISTRY");
   assert.deepEqual([...reputation.relevantWhen.archetypes ?? []].sort(), ["appointments", "hospitality", "local", "professional", "retail"]);
   assert.ok(reputation.targetQuestionRange.min >= 1 && reputation.targetQuestionRange.max <= 3, "target de reputation no debería inflarse artificialmente");
+  const discovery = MODULE_REGISTRY.find((module) => module.id === "discovery")!;
+  assert.equal(discovery.purpose, "Medir si existe una forma confiable de llegar a personas nuevas.");
+  assert.deepEqual(discovery.relevantWhen, {});
+  assert.deepEqual(discovery.targetQuestionRange, { min: 0, max: 1 });
 });
 
 test("QBV2 arquitectura: floor de módulos, target editorial y techo razonable son conceptos distintos y coherentes (§71, DIAG-V3-08B.2-C1)", () => {

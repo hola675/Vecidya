@@ -363,6 +363,10 @@ export type AppointmentAttendanceV3 = (typeof APPOINTMENT_ATTENDANCE_V3)[number]
 /** Reviewed B2B follow-up process, independent of tool/CRM usage and friction scoring. */
 export const B2B_FOLLOWUP_PROCESSES_V3 = ["defined", "partial", "informal"] as const;
 export type B2BFollowupProcessV3 = (typeof B2B_FOLLOWUP_PROCESSES_V3)[number];
+
+/** Declared reliability of reaching new interested people, without inferring channel quality. */
+export const DISCOVERY_REACH_RELIABILITIES_V3 = ["reliable", "irregular", "weak", "not_seeking"] as const;
+export type DiscoveryReachReliabilityV3 = (typeof DISCOVERY_REACH_RELIABILITIES_V3)[number];
 export type LegacyStageId = StageId;
 
 /**
@@ -493,6 +497,8 @@ export type DiagnosticContextV3 = {
   appointmentAttendance: Resolution<AppointmentAttendanceV3>;
   /** Reviewed B2B follow-up process from q12, not CRM adoption. */
   b2bFollowupProcess: Resolution<B2BFollowupProcessV3>;
+  /** Declared reliability of reaching new interested people; unknown remains an unresolved reason. */
+  discoveryReachReliability: Resolution<DiscoveryReachReliabilityV3>;
   customerModel: CustomerModel;
   primaryGoal: Resolution<PrimaryGoal>;
   primaryFriction: Resolution<PrimaryFriction>;

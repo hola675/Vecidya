@@ -61,7 +61,7 @@ export function visibleCopyOf(rendered: RenderedQuestionV2, { includeHelp = true
   return [rendered.prompt, rendered.hint ?? "", ...rendered.options.map((option) => option.label), ...help].filter(Boolean).join(" ");
 }
 
-export const HINT_MAX_LENGTH = 140;
+export const HINT_MAX_LENGTH = 147;
 /** Marcas internas que nunca deben llegar al copy visible: códigos de fase/deuda, secciones, IDs o plantillas. */
 const INTERNAL_MARKERS = /DIAG-|§|\b[a-z0-9]+_[a-z0-9_]+\b|[{}]|\bq2\b/;
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-QBANK-R2F — Discovery universal y confianza revisadas
+
+- Se agrega a la candidata aislada q2_discovery_reliable_reach v1, q2_local_presence_consistency v2 y q2_reputation_flow v3; total 20. `QUESTION_BANK_V2` continúa en 85 y sin cambios.
+- `discoveryReachReliability` completa el circuito de contexto/traza/DSL. El nuevo módulo `discovery` tiene máximo de ruta 1; el planner mantiene las preguntas adaptativas opcionales y selecciona q22 ante necesidad real de confianza.
+- q13 y q19 salen de la candidata; q21 se difiere hasta tener aplicabilidad defendible de recurrencia. No se implementa ninguna de las tres.
+- Las definiciones nuevas quedan con evidencia pendiente R3. No cambian mapas/semánticas globales ni la evidencia del banco legacy. Estado local, candidata no registrada ni publicada. Resultados: ver `TESTING.md`.
+
 ## 2026-10-06 — DIAG-V3-QBANK-R2E — candidata especializada revisada (preguntas 10–12)
 
 - La candidata aislada pasa a 17 preguntas en orden 01–12 y 14–18; añade q10 `q2_appointments_noshow` v2, q11 `q2_ecommerce_traffic_sources` v3 (incluye `messaging`) y q12 `q2_b2b_pipeline` v2. q13 no se migra y el banco productivo conserva 85 preguntas.

@@ -3,6 +3,7 @@ import type {
   B2BFollowupProcessV3,
   CustomerBuyer,
   CustomerReach,
+  DiscoveryReachReliabilityV3,
   EntityType,
   NicheGroup,
   NicheId,
@@ -61,6 +62,8 @@ export type SignalProduction =
   | { readonly kind: "appointmentAttendanceUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "b2bFollowupProcess"; readonly value: B2BFollowupProcessV3; readonly provenance: SignalProvenance }
   | { readonly kind: "b2bFollowupProcessUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
+  | { readonly kind: "discoveryReachReliability"; readonly value: DiscoveryReachReliabilityV3; readonly provenance: SignalProvenance }
+  | { readonly kind: "discoveryReachReliabilityUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "systemization"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "goal"; readonly value: PrimaryGoal; readonly provenance: SignalProvenance }
   | { readonly kind: "goalUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
@@ -97,6 +100,8 @@ export const SIGNAL_PRODUCTION_KINDS = [
   "appointmentAttendanceUnknown",
   "b2bFollowupProcess",
   "b2bFollowupProcessUnknown",
+  "discoveryReachReliability",
+  "discoveryReachReliabilityUnknown",
   "systemization",
   "goal",
   "goalUnknown",
@@ -139,6 +144,8 @@ export const SIGNAL_PRODUCTION_CONTEXT_FIELD: Readonly<Record<(typeof SIGNAL_PRO
   appointmentAttendanceUnknown: "appointmentAttendance",
   b2bFollowupProcess: "b2bFollowupProcess",
   b2bFollowupProcessUnknown: "b2bFollowupProcess",
+  discoveryReachReliability: "discoveryReachReliability",
+  discoveryReachReliabilityUnknown: "discoveryReachReliability",
   systemization: "growthStage",
   goal: "primaryGoal",
   goalUnknown: "primaryGoal",
@@ -203,6 +210,8 @@ const PRODUCTION_TO_FIELD: Partial<Record<SignalProduction["kind"], ScalarSignal
   appointmentAttendanceUnknown: "appointmentAttendanceUnknown",
   b2bFollowupProcess: "b2bFollowupProcess",
   b2bFollowupProcessUnknown: "b2bFollowupProcessUnknown",
+  discoveryReachReliability: "discoveryReachReliability",
+  discoveryReachReliabilityUnknown: "discoveryReachReliabilityUnknown",
   systemization: "systemization",
   goal: "declaredGoal",
   goalUnknown: "declaredGoalUnknown",

@@ -64,7 +64,7 @@ test("08B.3 C1 + 08D.1 + 08E.1: production bank has 85 questions (80 + 3 targete
 
 test("08B.3 C1: module registry coverage is explicit and owned counts are recorded", () => {
   const owned = Object.fromEntries(MODULE_REGISTRY.map((module) => [module.id, productionQuestions.filter((question) => question.module === module.id).length]));
-  assert.deepEqual(owned, { core: 2, classification: 5, maturity: 5, goal_friction: 2, local: 4, appointments: 6, local_service: 5, professional: 4, retail: 3, ecommerce: 7, hospitality: 4, b2b: 6, creator: 5, nonprofit: 4, startup: 6, operations: 7, follow_up: 3, measurement: 3, confirmation: 0, reputation: 1, conversion: 1, presence: 2 });
+  assert.deepEqual(owned, { core: 2, classification: 5, maturity: 5, goal_friction: 2, local: 4, appointments: 6, local_service: 5, professional: 4, retail: 3, ecommerce: 7, hospitality: 4, b2b: 6, creator: 5, nonprofit: 4, startup: 6, operations: 7, follow_up: 3, measurement: 3, confirmation: 0, reputation: 1, conversion: 1, presence: 2, discovery: 0 });
   assert.ok(owned.startup! >= 4 && owned.startup! <= 6);
 });
 

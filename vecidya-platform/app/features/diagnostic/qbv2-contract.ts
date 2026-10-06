@@ -64,6 +64,8 @@ export const MODULE_IDS = [
   // DIAG-V3-08E.1: comprensión de la oferta y base digital propia, transversal a archetypes; solo evidencia
   // material (ver `qbv2-lote-g.ts`).
   "presence",
+  // R2F: universal evidence about reliable reach, applicable only to active businesses.
+  "discovery",
 ] as const;
 export type ModuleId = (typeof MODULE_IDS)[number];
 
@@ -109,6 +111,7 @@ export const MODULE_REGISTRY: readonly ModuleDefinition[] = [
   { id: "reputation", purpose: "Reseñas/reputación, compartida entre archetypes que la necesitan (no universal).", relevantWhen: { archetypes: ["local", "appointments", "professional", "retail", "hospitality"] }, targetQuestionRange: { min: 1, max: 3 } },
   { id: "presence", purpose: "Comprensión de la oferta y base digital propia cuando el archetype no tiene una observación directa.", relevantWhen: {}, targetQuestionRange: { min: 0, max: 2 } },
   { id: "conversion", purpose: "Interés que no termina en clientes, compras o participación.", relevantWhen: { frictions: ["conversion"], goals: ["opportunities"] }, targetQuestionRange: { min: 1, max: 1 } },
+  { id: "discovery", purpose: "Medir si existe una forma confiable de llegar a personas nuevas.", relevantWhen: {}, targetQuestionRange: { min: 0, max: 1 } },
 ];
 
 // ── Purpose / Priority (§5-6) ────────────────────────────────────────────────

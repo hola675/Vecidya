@@ -1,5 +1,14 @@
 # Pruebas
 
+## DIAG-V3-QBANK-R2F — Discovery universal y confianza local revisadas
+
+- `qbv2-reviewed-universal-discovery.test.ts` fija el candidato de 20 preguntas, los retiros/deferencias, módulo Discovery, routing, versiones, señal/contexto/traza/DSL, estados known/unknown, cero evidencia candidata y compatibilidad de q20/q22 legacy.
+- El nuevo módulo `discovery` se registra una vez, tiene `relevantWhen: {}`, target 0–1 y `moduleMax=1`; ninguna pregunta de `QUESTION_BANK_V2` lo usa. El hard cap permanece en 24.
+- `q2_discovery_reliable_reach` v1 aplica solo con `activity=active`, produce contexto `discoveryReachReliability` (reliable/irregular/weak/not_seeking) y unknown declarado. No tiene legacy ID ni produce evidencia.
+- q20 v2 aplica con actividad activa más componente local/retail/hospitality; q22 v3 aplica a todo negocio activo. Ambas son adaptativas; q22 no se selecciona salvo que routing/confianza la haga útil. El hint aprobado de Discovery tiene 147 caracteres; el validador de copy permite hasta ese límite.
+- q20/q22 conservan sus mapas/semánticas globales y definiciones legacy de `QUESTION_BANK_V2`; la guarda ya existente evita que la candidata con versión distinta herede evidencia. q13/q19 siguen en legacy pero quedan fuera del candidato; q21 sigue en legacy y queda fuera del candidato por deferencia. R2F no registra la candidata ni activa scoring.
+  - **RAN 2026-10-06:** suite R2F **7/7 PASS**; candidata completa **48/48 PASS**; frozen/legacy **235/235 PASS**; combinado focalizado **283/283 PASS**. Directorio diagnóstico **826/827 PASS** y `pnpm run test:unit` **881/882 PASS**. La única falla sigue siendo `characterization.test.ts:102` (`localBusinessLeaks`): actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`, igual a la divergencia conocida de baseline. Typecheck, build y `git diff --check`: PASS. El build conserva el aviso local de secretos Gmail requeridos ausentes.
+
 ## DIAG-V3-QBANK-R2E — preguntas especializadas revisadas (10–12)
 
 - `qbv2-reviewed-specialized-entry.test.ts` verifica los contratos q10–q12, gates, rutas deterministas, opciones multi, unknown exclusivo, contexto/traza/DSL, estados desconocidos, cero evidencia candidata, mapas y resultados legacy, versiones y aislamiento.

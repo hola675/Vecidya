@@ -14,7 +14,7 @@ import type { OperationalArchetype } from "./contracts";
 export type AnswerRefV2 = { readonly question: string };
 
 /** Campos que produce el Context Resolver de 08B.1, sin `answers`/`profile` (QBV1). */
-export const CONTEXT_FIELD_REFS = ["entity", "businessModel", "audienceMonetization", "archetype", "niche", "nicheGroup", "growthStage", "operatingRegularity", "processConsistency", "capacitySituation", "appointmentAttendance", "b2bFollowupProcess", "activity", "customerReach", "customerBuyer", "primaryGoal", "primaryFriction"] as const;
+export const CONTEXT_FIELD_REFS = ["entity", "businessModel", "audienceMonetization", "archetype", "niche", "nicheGroup", "growthStage", "operatingRegularity", "processConsistency", "capacitySituation", "appointmentAttendance", "b2bFollowupProcess", "discoveryReachReliability", "activity", "customerReach", "customerBuyer", "primaryGoal", "primaryFriction"] as const;
 export type ContextFieldRef = (typeof CONTEXT_FIELD_REFS)[number];
 
 function readContextField(context: ResolvedDomainContext, field: ContextFieldRef): { status: "resolved"; value: string } | { status: "unresolved" } {

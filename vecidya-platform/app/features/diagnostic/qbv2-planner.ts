@@ -46,7 +46,7 @@ export const DEFAULT_ROUTE_BUDGET_V1: RouteBudgetV1 = {
     core: 3, classification: 6, maturity: 6, goal_friction: 3,
     startup: 6, operations: 3, follow_up: 3, measurement: 3, confirmation: 2,
     local: 3, local_service: 3, appointments: 5, professional: 5, retail: 3,
-    ecommerce: 5, hospitality: 4, b2b: 5, creator: 4, nonprofit: 4, reputation: 1, conversion: 1,
+    ecommerce: 5, hospitality: 4, b2b: 5, creator: 4, nonprofit: 4, reputation: 1, conversion: 1, discovery: 1,
   },
 };
 
@@ -282,11 +282,11 @@ function selectionReason(question: QuestionDefinitionV2, status: Readonly<Record
   return "specialized_evidence";
 }
 
-function crossCuttingRelevant(module: ModuleId, context: ResolveEligibleQuestionsResult["context"]): boolean {
+function crossCuttingRelevant(module: ModuleId, context: ResolveEligibleQuestionsResult["context"], question?: QuestionDefinitionV2): boolean {
   const goal = context.primaryGoal.status === "resolved" ? context.primaryGoal.value : undefined;
   const friction = context.primaryFriction.status === "resolved" ? context.primaryFriction.value : undefined;
   // `conversion` is deliberately absent: its question only enters as tail material evidence, never displacing.
-  return module === "measurement" && goal === "measure" || module === "follow_up" && friction === "follow_up" || module === "operations" && friction === "operations";
+  return module === "measurement" && goal === "measure" || module === "follow_up" && friction === "follow_up" || module === "operations" && friction === "operations" || question?.routingRole === "adaptive" && module === "reputation" && (goal === "trust" || friction === "trust");
 }
 
 function moduleLimit(module: ModuleId, budget: RouteBudgetV1): number {
@@ -302,7 +302,7 @@ function rankQuestion(question: QuestionDefinitionV2, status: Readonly<Record<Co
   const reason = selectionReason(question, status, routingPrerequisites);
   const dimensions = question.scoringReadiness?.candidateDimensions ?? [];
   const priority = PRIORITY_RANK[question.priority];
-  const relevantCrossCutting = crossCuttingRelevant(question.module, context);
+  const relevantCrossCutting = crossCuttingRelevant(question.module, context, question);
   const contextRank = reason === "required_context" ? 3 : reason === "unlock_routing" ? 2 : reason === "goal_or_friction" ? 1 : relevantCrossCutting ? 2 : 0;
   const goalOrFrictionRelevance = relevantCrossCutting ? 2 : 0;
   // Material relevance is metadata only: the base order is the pre-08D.1 order, so it never displaces evidence.
@@ -462,8 +462,12 @@ export function buildQuestionPlan({ answers, bank, budget = DEFAULT_ROUTE_BUDGET
     if (confirmationAvailable && entry.reason !== "confirmation" && !entry.required && baseAskedCount + baseSelectedCount >= baseMax - Math.min(budget.confirmationReserve, triggeredConfirmationIds.length)) return false;
     if ((moduleCounts[entry.module] ?? 0) >= moduleLimit(entry.module, budget)) return false;
     const component = componentFor(entry.module);
-    const contextRelevant = entry.module === "startup" && startupMinimum > 0 || entry.module === "nonprofit" && result.context.businessModel.status === "resolved" && result.context.businessModel.value === "nonprofit" || component !== undefined && result.context.archetypeComponents.includes(component as (typeof result.context.archetypeComponents)[number]) || crossCuttingRelevant(entry.module, result.context);
+    const contextRelevant = entry.module === "startup" && startupMinimum > 0 || entry.module === "nonprofit" && result.context.businessModel.status === "resolved" && result.context.businessModel.value === "nonprofit" || component !== undefined && result.context.archetypeComponents.includes(component as (typeof result.context.archetypeComponents)[number]) || crossCuttingRelevant(entry.module, result.context, questions.get(entry.questionId));
     const businessModelRelevant = entry.module === "nonprofit" && result.context.businessModel.status === "resolved" && result.context.businessModel.value === "nonprofit";
+    const question = questions.get(entry.questionId)!;
+    const resolvesOpenContext = producedContextFields(question).some((field) => status[field] === "unresolved");
+    const adaptiveUseful = entry.reason === "unlock_routing" || contextRelevant || entry.materialEvidence || resolvesOpenContext;
+    if (question.routingRole === "adaptive" && !entry.required && !adaptiveUseful) return false;
     if (materialComponents.length > 0) {
       const deficient = materialComponents.filter((candidate) => (componentCounts[candidate] ?? 0) < 2 && ranked.some((item) => !selected.includes(item.questionId) && componentFor(item.module) === candidate));
       if (deficient.length > 0 && !businessModelRelevant && (!component || !(deficient as readonly string[]).includes(component)) && (!FOUNDATION.has(entry.module) || !entry.required)) return false;

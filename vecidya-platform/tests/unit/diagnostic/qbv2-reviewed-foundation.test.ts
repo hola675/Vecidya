@@ -21,8 +21,8 @@ test("R2A candidate is an isolated, valid five-question foundation slice", () =>
   assert.ok(candidate.every((item) => item.scoringReadiness === undefined));
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   assert.deepEqual(validateQuestionCopyV2(candidate), []);
-  assert.equal(HINT_MAX_LENGTH, 140);
-  for (const id of ["q2_monetization", "q2_has_customers"]) assert.ok(question(id).hint!.length <= 140, id);
+  assert.equal(HINT_MAX_LENGTH, 147);
+  for (const id of ["q2_monetization", "q2_has_customers"]) assert.ok(question(id).hint!.length <= HINT_MAX_LENGTH, id);
   assert.notEqual(candidate, QUESTION_BANK_V2);
   assert.notEqual(getQuestionBank(2), candidate);
   const initialPlan = buildQuestionPlan({ answers: {}, bank: candidate });

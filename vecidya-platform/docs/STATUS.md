@@ -1,5 +1,7 @@
 # Estado de implementación
 
+DIAG-V3-QBANK-R2F: candidata revisada aislada de 20 preguntas (01–12, 14–18, Discovery, 20 y 22); q13/q19 REMOVE del candidato y q21 DEFER. Añade Discovery universal para actividad activa, q20 para actividad activa con componente local/retail/hospitality y q22 universal activo de prueba social visible. Nuevo contexto `discoveryReachReliability`; evidencia de las tres preguntas pendiente para R3. Scoring, banca productiva de 85 preguntas y runtime legacy sin cambios. No registrada ni desplegada. Ver `TESTING.md`.
+
 DIAG-V3-QBANK-R2E: candidata aislada de 17 preguntas (01–12 y 14–18); q13 diferida hasta que R2F determine walk-in con clientes reales y ubicación física. q10/q12 resuelven hechos contextuales propios; q11 incluye `messaging`. El scorer no aplica mapas heredados a esas definiciones pendientes del candidato cuando cambia su versión; la banca productiva y sus 85 preguntas siguen sin cambios. No registrado ni desplegado. Ver `TESTING.md`.
 
 DIAG-V3-QBANK-R2D: la candidata aislada suma q17–q18 y queda en 14 preguntas; q10–q13 continúan pendientes. Consistencia de proceso y situación de capacidad tienen hechos contextuales explícitos, separados de las señales legacy de madurez; solo un proceso definido puede apoyar scaling después de crecimiento independiente, y capacidad revisada no crea GrowthStage. Sin score digital ni inferencias comerciales. El banco legacy de 85 preguntas sigue como runtime; candidata no registrada ni desplegada. Ver `TESTING.md`.

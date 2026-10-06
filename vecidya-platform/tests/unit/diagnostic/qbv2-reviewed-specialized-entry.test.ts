@@ -54,7 +54,7 @@ test("q10 route, canonical attendance context, trace and no generic friction inf
   const entry = plan.trace.find(({ questionId }) => questionId === "q2_appointments_noshow");
   assert.equal(entry?.required, false);
   assert.equal(entry?.reason, "specialized_evidence");
-  assert.deepEqual(plan.selectedQuestionIds, ["q2_monetization", "q2_customer_buyer", "q2_customer_reach", "q2_sector", "q2_goal", "q2_regularity", "q2_appointments_noshow", "q2_process_systemization"]);
+  assert.deepEqual(plan.selectedQuestionIds, ["q2_monetization", "q2_customer_buyer", "q2_customer_reach", "q2_sector", "q2_goal", "q2_regularity", "q2_appointments_noshow", "q2_discovery_reliable_reach", "q2_process_systemization"]);
   const refs = CONTEXT_FIELD_REFS.filter((field) => field === "appointmentAttendance");
   assert.deepEqual(refs, ["appointmentAttendance"]);
   for (const value of ["rarely", "sometimes", "often"] as const) {
@@ -87,7 +87,7 @@ test("q11 multi-select accepts messaging and keeps unknown exclusive without inv
   assert.equal(result.context.archetype.status, "resolved");
   assert.deepEqual(result.context.growthStage, { status: "resolved", value: "starting", source: "signal" });
   assert.deepEqual(deriveContextualEvidence({ q2_ecommerce_traffic_sources: ["social", "messaging"] }, candidate), []);
-  assert.deepEqual(buildQuestionPlan({ answers: ecommerce, bank: candidate }).selectedQuestionIds, ["q2_monetization", "q2_customer_buyer", "q2_customer_reach", "q2_sector", "q2_goal", "q2_regularity", "q2_ecommerce_traffic_sources", "q2_process_systemization"]);
+  assert.deepEqual(buildQuestionPlan({ answers: ecommerce, bank: candidate }).selectedQuestionIds, ["q2_monetization", "q2_customer_buyer", "q2_customer_reach", "q2_sector", "q2_goal", "q2_regularity", "q2_ecommerce_traffic_sources", "q2_discovery_reliable_reach", "q2_process_systemization"]);
 });
 
 test("q12 applies to B2B/mixed context, resolves its own fact, and does not infer follow-up friction", () => {
@@ -111,7 +111,7 @@ test("q12 applies to B2B/mixed context, resolves its own fact, and does not infe
   assert.equal(resolve(b2b).context.b2bFollowupProcess.reason, "not_asked");
   const answeredPlan = buildQuestionPlan({ answers: { ...b2b, q2_b2b_pipeline: "unknown" }, bank: candidate });
   assert.ok(!answeredPlan.trace.some(({ questionId, selected }) => questionId === "q2_b2b_pipeline" && selected));
-  assert.deepEqual(buildQuestionPlan({ answers: b2b, bank: candidate }).selectedQuestionIds, ["q2_delivery", "q2_monetization", "q2_customer_reach", "q2_sector", "q2_goal", "q2_regularity", "q2_b2b_pipeline", "q2_process_systemization"]);
+  assert.deepEqual(buildQuestionPlan({ answers: b2b, bank: candidate }).selectedQuestionIds, ["q2_delivery", "q2_monetization", "q2_customer_reach", "q2_sector", "q2_goal", "q2_regularity", "q2_b2b_pipeline", "q2_discovery_reliable_reach", "q2_process_systemization"]);
 });
 
 test("pending reviewed evidence is suppressed only when the candidate version differs from legacy", () => {

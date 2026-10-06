@@ -14,19 +14,23 @@ import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-va
 import { REVIEWED_CONTEXT_QUESTIONS_V2 } from "../../../app/features/diagnostic/qbv2-reviewed-context";
 import { REVIEWED_FOUNDATION_QUESTIONS_V2 } from "../../../app/features/diagnostic/qbv2-reviewed-foundation";
 import { REVIEWED_SPECIALIZED_ENTRY_QUESTIONS_V2 } from "../../../app/features/diagnostic/qbv2-reviewed-specialized-entry";
+import { REVIEWED_DISCOVERY_QUESTIONS_V2 } from "../../../app/features/diagnostic/qbv2-reviewed-discovery";
+import { REVIEWED_LOCAL_TRUST_QUESTIONS_V2 } from "../../../app/features/diagnostic/qbv2-reviewed-local-trust";
 
-const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_appointments_noshow", "q2_ecommerce_traffic_sources", "q2_b2b_pipeline", "q2_sector", "q2_customer_reach", "q2_customer_buyer", "q2_process_systemization", "q2_capacity_signal"] as const;
+const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_appointments_noshow", "q2_ecommerce_traffic_sources", "q2_b2b_pipeline", "q2_sector", "q2_customer_reach", "q2_customer_buyer", "q2_process_systemization", "q2_capacity_signal", "q2_discovery_reliable_reach", "q2_local_presence_consistency", "q2_reputation_flow"] as const;
 const question = (id: string, bank: readonly QuestionDefinitionV2[] = candidate) => bank.find((item) => item.id === id)!;
 const answer = (answers: AnswersV2) => resolveEligibleQuestionsV2(answers, candidate);
 
-test("reviewed candidate composes exactly questions 01–12 and 14–18 and remains unregistered", () => {
+test("reviewed candidate composes exactly 01–12, 14–18, Discovery, 20 and 22 and remains unregistered", () => {
   assert.deepEqual(REVIEWED_FOUNDATION_QUESTIONS_V2.map(({ id }) => id), ids.slice(0, 5));
   assert.deepEqual(REVIEWED_CONTEXT_QUESTIONS_V2.map(({ id }) => id), ids.slice(5, 9));
   assert.deepEqual(REVIEWED_SPECIALIZED_ENTRY_QUESTIONS_V2.map(({ id }) => id), ids.slice(9, 12));
-  assert.deepEqual(candidate.slice(9).map(({ id }) => id), ids.slice(9));
+  assert.deepEqual(candidate.slice(9, 12).map(({ id }) => id), ids.slice(9, 12));
+  assert.deepEqual(REVIEWED_DISCOVERY_QUESTIONS_V2.map(({ id }) => id), [ids[17]]);
+  assert.deepEqual(REVIEWED_LOCAL_TRUST_QUESTIONS_V2.map(({ id }) => id), ids.slice(18));
   assert.deepEqual(candidate.map(({ id }) => id), ids);
-  assert.equal(new Set(candidate.map(({ id }) => id)).size, 17);
-  assert.ok(!candidate.some(({ id }) => id === "q2_local_foot_traffic"));
+  assert.equal(new Set(candidate.map(({ id }) => id)).size, 20);
+  assert.ok(!candidate.some(({ id }) => ["q2_local_foot_traffic", "q2_local_discovery", "q2_local_repeat_customers"].includes(id)));
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   assert.deepEqual(validateQuestionCopyV2(candidate), []);
   assert.equal(question("q2_demand_trend").hint!.length, 139);
@@ -44,14 +48,17 @@ test("reviewed semantic versions are pinned and migrated definitions advance the
     q2_appointments_noshow: 2, q2_ecommerce_traffic_sources: 3, q2_b2b_pipeline: 2,
     q2_sector: 2, q2_customer_reach: 2, q2_customer_buyer: 2,
     q2_process_systemization: 2, q2_capacity_signal: 2,
+    q2_discovery_reliable_reach: 1, q2_local_presence_consistency: 2, q2_reputation_flow: 3,
   });
   const signature = (item: QuestionDefinitionV2) => JSON.stringify({ prompt: item.prompt, hint: item.hint, type: item.type, options: item.options.map(({ value, label, kind, exclusive, produces }) => ({ value, label, kind, exclusive, produces })) });
-  for (const id of [...ids.slice(5, 9), ...ids.slice(9)]) {
+  for (const id of [...ids.slice(5, 9), ...ids.slice(9, 17), ...ids.slice(18)]) {
     const reviewed = question(id);
-    const legacy = question(id, QUESTION_BANK_V2);
+    const legacy = QUESTION_BANK_V2.find((item) => item.id === id);
+    assert.ok(legacy, `${id} should have a legacy definition`);
     assert.notEqual(signature(reviewed), signature(legacy), `${id} changed materially`);
     assert.ok(reviewed.version > legacy.version, `${id} version must advance over legacy`);
   }
+  assert.equal(QUESTION_BANK_V2.some(({ id }) => id === ids[17]), false, "Discovery is new and has no legacy definition");
 });
 
 test("q2_regularity is conditional core context and preserves all four reviewed distinctions", () => {

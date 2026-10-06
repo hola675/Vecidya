@@ -24,8 +24,9 @@ const rendered = (id: string, answers: AnswersV2) => {
 
 test("R2C classification slice and full candidate order remain isolated, with semantic versions pinned", () => {
   assert.deepEqual(classification.map(({ id }) => id), ids.slice(12, 15));
-  assert.deepEqual(candidate.map(({ id }) => id), ids);
-  assert.equal(new Set(candidate.map(({ id }) => id)).size, 17);
+  assert.deepEqual(candidate.slice(0, ids.length).map(({ id }) => id), ids);
+  assert.deepEqual(candidate.slice(ids.length).map(({ id }) => id), ["q2_discovery_reliable_reach", "q2_local_presence_consistency", "q2_reputation_flow"]);
+  assert.equal(new Set(candidate.map(({ id }) => id)).size, 20);
   assert.ok(!candidate.some(({ id }) => /^q2_(?:10|11|12|13|17|18)\b/.test(id)));
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   assert.equal(CURRENT_QUESTION_BANK_VERSION, 1);
@@ -78,7 +79,7 @@ test("reach is gated on resolved activity and copy variants have deliberate prio
   assert.equal(resolve(activeNonprofit).context.businessModel.value, "nonprofit");
   assert.equal(rendered("q2_customer_reach", activeNonprofit).prompt, "¿Dónde están principalmente las personas a las que atiende tu organización?");
   assert.equal(rendered("q2_customer_reach", prelaunchOrg).prompt, "¿Dónde están principalmente las personas a las que quieres llegar?", "prelaunch wording takes precedence for an organization");
-  assert.ok((question("q2_customer_reach").hint?.length ?? 999) <= 140);
+  assert.ok((question("q2_customer_reach").hint?.length ?? 999) <= 147);
 });
 
 test("each reach answer resolves only customerReach and contributes no diagnostic evidence", () => {

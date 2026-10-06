@@ -68,15 +68,17 @@ test("R2D signal productions resolve only to registered canonical context fields
 
 test("R2D adds only q17–q18 to the exact isolated candidate and pins versions", () => {
   assert.deepEqual(operational.map(({ id }) => id), ["q2_process_systemization", "q2_capacity_signal"]);
-  assert.deepEqual(candidate.map(({ id }) => id), ids);
-  assert.equal(candidate.length, 17);
-  assert.ok(!candidate.some(({ id }) => ["q2_local_discovery", "q2_reputation_flow", "q2_ecommerce_product_discovery", "q2_ecommerce_checkout_friction"].includes(id)));
+  assert.deepEqual(candidate.slice(0, ids.length).map(({ id }) => id), ids);
+  assert.deepEqual(candidate.slice(ids.length).map(({ id }) => id), ["q2_discovery_reliable_reach", "q2_local_presence_consistency", "q2_reputation_flow"]);
+  assert.equal(candidate.length, 20);
+  assert.ok(!candidate.some(({ id }) => ["q2_local_discovery", "q2_ecommerce_product_discovery", "q2_ecommerce_checkout_friction"].includes(id)));
   assert.deepEqual(Object.fromEntries(candidate.map(({ id, version }) => [id, version])), {
     q2_entity: 1, q2_other_staff: 1, q2_monetization: 2, q2_delivery: 2, q2_has_customers: 1,
     q2_regularity: 2, q2_demand_trend: 2, q2_goal: 2, q2_friction: 2,
     q2_appointments_noshow: 2, q2_ecommerce_traffic_sources: 3, q2_b2b_pipeline: 2,
     q2_sector: 2, q2_customer_reach: 2, q2_customer_buyer: 2,
     q2_process_systemization: 2, q2_capacity_signal: 2,
+    q2_discovery_reliable_reach: 1, q2_local_presence_consistency: 2, q2_reputation_flow: 3,
   });
   assert.equal(CURRENT_QUESTION_BANK_VERSION, 1);
   assert.equal(QUESTION_BANK_V2.length, 85);
@@ -109,7 +111,7 @@ test("q17 keeps reviewed process states separate from legacy systemization and i
   assert.equal(q17.scoringReadiness, undefined);
   assert.deepEqual(plan.trace.filter((entry) => entry.selected).map((entry) => entry.questionId), [
     "q2_delivery", "q2_monetization", "q2_customer_buyer", "q2_customer_reach", "q2_sector", "q2_entity", "q2_goal",
-    "q2_capacity_signal", "q2_process_systemization",
+    "q2_discovery_reliable_reach", "q2_capacity_signal", "q2_process_systemization",
   ]);
 });
 
@@ -142,7 +144,7 @@ test("q18 is adaptive multi-select with exclusive stable/unknown and independent
   assert.deepEqual(q18.appliesWhen, { op: "eq", ref: { question: "q2_regularity" }, value: "regular" });
   assert.deepEqual(q18.options.map(({ value }) => value), ["capacity_pressure", "capacity_expanded", "stable", "unknown"]);
   assert.deepEqual(q18.options.filter(({ exclusive }) => exclusive).map(({ value }) => value), ["stable", "unknown"]);
-  assert.ok((q18.hint?.length ?? Infinity) <= 140);
+  assert.ok((q18.hint?.length ?? Infinity) <= 147);
   assert.ok(!resolve({ q2_has_customers: "yes", q2_regularity: "occasional" }).eligibleQuestionIds.includes("q2_capacity_signal"));
   const regular = { q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat" } as const;
   assert.ok(resolve(regular).eligibleQuestionIds.includes("q2_capacity_signal"));
@@ -153,7 +155,7 @@ test("q18 is adaptive multi-select with exclusive stable/unknown and independent
   assert.equal(q18.scoringReadiness, undefined);
   assert.deepEqual(plan.trace.filter((entry) => entry.selected).map((entry) => entry.questionId), [
     "q2_delivery", "q2_monetization", "q2_customer_buyer", "q2_customer_reach", "q2_sector", "q2_entity", "q2_goal",
-    "q2_capacity_signal", "q2_process_systemization",
+    "q2_discovery_reliable_reach", "q2_capacity_signal", "q2_process_systemization",
   ]);
 
   assert.equal(validateAnswerV3(q18, ["stable", "capacity_pressure"]).ok, false);

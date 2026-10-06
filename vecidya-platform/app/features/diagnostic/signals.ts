@@ -1,4 +1,4 @@
-import type { AppointmentAttendanceV3, B2BFollowupProcessV3, BusinessModel, CapacitySituationV3, CustomerBuyer, CustomerReach, EntityType, NicheGroup, NicheId, OperatingRegularityV3, OperationalArchetype, PrimaryFriction, PrimaryGoal, ProcessConsistencyV3 } from "./contracts";
+import type { AppointmentAttendanceV3, B2BFollowupProcessV3, BusinessModel, CapacitySituationV3, CustomerBuyer, CustomerReach, DiscoveryReachReliabilityV3, EntityType, NicheGroup, NicheId, OperatingRegularityV3, OperationalArchetype, PrimaryFriction, PrimaryGoal, ProcessConsistencyV3 } from "./contracts";
 
 /**
  * Señales de dominio de DIAG-V3-08B.1 (Context Resolver).
@@ -238,6 +238,9 @@ export type DiagnosticSignalsV3 = {
   /** Reviewed B2B follow-up process, independent of CRM usage or generic friction. */
   b2bFollowupProcess?: Signal<B2BFollowupProcessV3>;
   b2bFollowupProcessUnknown?: Signal<boolean>;
+  /** Reviewed universal reach reliability, independent of channel-specific quality. */
+  discoveryReachReliability?: Signal<DiscoveryReachReliabilityV3>;
+  discoveryReachReliabilityUnknown?: Signal<boolean>;
 
   declaredGoal?: Signal<PrimaryGoal>;
   /** Equivalente a la legacy `unsure`: ausencia declarada, no ausencia de dato (§24, `mapLegacyGoal`). */
