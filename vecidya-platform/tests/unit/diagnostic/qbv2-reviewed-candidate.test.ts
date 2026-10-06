@@ -18,7 +18,7 @@ import { REVIEWED_DISCOVERY_QUESTIONS_V2 } from "../../../app/features/diagnosti
 import { REVIEWED_LOCAL_TRUST_QUESTIONS_V2 } from "../../../app/features/diagnostic/qbv2-reviewed-local-trust";
 import { REVIEWED_LOCAL_APPOINTMENTS_PROFESSIONAL_QUESTIONS_V2 } from "../../../app/features/diagnostic/qbv2-reviewed-local-appointments-professional";
 
-const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_appointments_noshow", "q2_ecommerce_traffic_sources", "q2_b2b_pipeline", "q2_sector", "q2_customer_reach", "q2_customer_buyer", "q2_process_systemization", "q2_capacity_signal", "q2_discovery_reliable_reach", "q2_local_presence_consistency", "q2_reputation_flow", "q2_service_response_speed", "q2_service_quote_followup", "q2_appointments_booking_friction", "q2_appointments_confirmation_reminders", "q2_appointments_lead_to_booking", "q2_appointments_rebooking", "q2_professional_authority_signals", "q2_professional_intake_flow", "q2_retail_product_visibility", "q2_retail_customer_capture", "q2_ecommerce_product_discovery"] as const;
+const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_appointments_noshow", "q2_ecommerce_traffic_sources", "q2_b2b_pipeline", "q2_sector", "q2_customer_reach", "q2_customer_buyer", "q2_process_systemization", "q2_capacity_signal", "q2_discovery_reliable_reach", "q2_local_presence_consistency", "q2_reputation_flow", "q2_service_response_speed", "q2_service_quote_followup", "q2_appointments_booking_friction", "q2_appointments_confirmation_reminders", "q2_appointments_lead_to_booking", "q2_appointments_rebooking", "q2_professional_authority_signals", "q2_professional_intake_flow", "q2_retail_product_visibility", "q2_retail_customer_capture", "q2_ecommerce_product_discovery", "q2_b2b_status_visibility", "q2_creator_audience_ownership"] as const;
 const question = (id: string, bank: readonly QuestionDefinitionV2[] = candidate) => bank.find((item) => item.id === id)!;
 const answer = (answers: AnswersV2) => resolveEligibleQuestionsV2(answers, candidate);
 
@@ -31,7 +31,7 @@ test("reviewed candidate composes 01–12, 14–18, Discovery, 20, 22 and R2G se
   assert.deepEqual(REVIEWED_LOCAL_TRUST_QUESTIONS_V2.map(({ id }) => id), ids.slice(18, 20));
   assert.deepEqual(REVIEWED_LOCAL_APPOINTMENTS_PROFESSIONAL_QUESTIONS_V2.map(({ id }) => id), ids.slice(20, 28));
   assert.deepEqual(candidate.map(({ id }) => id), ids);
-  assert.equal(new Set(candidate.map(({ id }) => id)).size, 31);
+  assert.equal(new Set(candidate.map(({ id }) => id)).size, 33);
   assert.ok(!candidate.some(({ id }) => ["q2_local_foot_traffic", "q2_local_discovery", "q2_local_repeat_customers", "q2_local_service_area_clarity", "q2_service_quote_practice", "q2_service_repeat_referral", "q2_appointments_booking_method", "q2_professional_referral_dependency", "q2_professional_followup_after_consult"].includes(id)));
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   assert.deepEqual(validateQuestionCopyV2(candidate), []);
@@ -56,6 +56,7 @@ test("reviewed semantic versions are pinned and migrated definitions advance the
     q2_appointments_lead_to_booking: 2, q2_appointments_rebooking: 2,
     q2_professional_authority_signals: 2, q2_professional_intake_flow: 2,
     q2_retail_product_visibility: 2, q2_retail_customer_capture: 2, q2_ecommerce_product_discovery: 2,
+    q2_b2b_status_visibility: 2, q2_creator_audience_ownership: 2,
   });
   const signature = (item: QuestionDefinitionV2) => JSON.stringify({ prompt: item.prompt, hint: item.hint, type: item.type, options: item.options.map(({ value, label, kind, exclusive, produces }) => ({ value, label, kind, exclusive, produces })) });
   for (const id of [...ids.slice(5, 9), ...ids.slice(9, 17), ...ids.slice(18)]) {

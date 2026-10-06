@@ -1,5 +1,12 @@
 # Pruebas
 
+## DIAG-V3-QBANK-R2I — B2B, audiencia y nonprofit
+
+- Seis regresiones R2I fijan composición/decisiones, gates por actividad/comprador/modelo/necesidad, separación de q12/q38, unknown/N/A sin inferencias y cero evidencia candidata, evidencia legacy conservada y planners representativos.
+- Probes con cinco respuestas (clientes=yes, regularidad=regular, tendencia=flat y comprador/modelo + meta): B2B organizar selecciona q52 (10 pendientes/15 incluyendo respuestas); creator continuidad selecciona q56 (9/14); nonprofit oportunidades no añade R2I (8/13). Ninguna es requerida, todas las rutas quedan bajo cap 24. Meta be_found no activa preguntas R2I.
+- q50/q53/q55 y las demás REMOVE permanecen fuera; q51/q60/q61/q62 se difieren. R2H conserva sus seis regresiones y sus rutas. Fixtures/scorer/mapas/banco legacy intactos.
+- **RAN 2026-10-06 (redacción final):** R2I **6/6 PASS**; R2H **6/6 PASS**; R2G **6/6 PASS**; R2F **7/7 PASS**; candidata **66/66 PASS**, frozen/legacy **235/235 PASS** y combinado **301/301 PASS**. Directorio diagnóstico **845/845 PASS**; `pnpm run test:unit` **900/900 PASS**. Caracterización **PASS**, digest `localBusinessLeaks` `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, sin rebaseline. Typecheck, build y `git diff --check`: PASS. Solo avisos conocidos de secretos Gmail locales ausentes y tiempos de plugins Rolldown. Se protege también el copy neutral de q52 para organizaciones nonprofit con comprador empresarial declarado.
+
 ## DIAG-V3-QBANK-R2H — retail, ecommerce y hospitality
 
 - `qbv2-reviewed-r2h.test.ts` verifica seis regresiones: matriz KEEP/REMOVE/DEFER y versiones, gates por actividad/entrega con separación e híbridos, vía material retail, no inferencia para todas las opciones (incluyendo unknown/N/A), evidencia legacy conservada y rutas bajo cap 24.

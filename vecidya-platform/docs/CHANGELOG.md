@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-QBANK-R2I — revisión B2B y audiencia
+
+- Inventario previo q50–q63; solo q52 (acceso al estado de oportunidades) y q56 (contacto directo de audiencia) KEEP v2, adaptativas y con evidencia pendiente. Candidata total 33.
+- q50/q53/q54/q55/q57/q58/q59/q63 REMOVE; q51/q60/q61/q62 DEFER por metodología o aplicabilidad/consumidor. Se preservan decisiones cerradas q35/q45.
+- Unknown/N/A no producen inferencias; no hay cambios de contexto, DSL, planner, scoring, mapas globales ni caracterización. Banco productivo 85 y versión 1 conservados; sin activación, migración o deploy. Resultados en TESTING.md.
+
 ## 2026-10-06 — DIAG-V3-QBANK-R2H — revisión retail, ecommerce y hospitality
 
 - Inventario previo de q37–q49 y contraste con las 28 definiciones revisadas; se implementan solo q37/q38/q40 v2, para un total candidato de 31. Evidencia pendiente R3 y cero contribuciones candidatas.

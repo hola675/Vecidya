@@ -19,9 +19,9 @@ const route = (answers: AnswersV2) => buildQuestionPlan({ answers, bank: candida
 
 test("R2H decision matrix adds exactly three KEEP constructs and excludes REMOVE/DEFER", () => {
   assert.deepEqual(reviewed.map(({ id }) => id), keep);
-  assert.deepEqual(candidate.slice(28).map(({ id }) => id), keep);
-  assert.equal(candidate.length, 31);
-  assert.equal(new Set(candidate.map(({ id }) => id)).size, 31);
+  assert.deepEqual(candidate.slice(28, 31).map(({ id }) => id), keep);
+  assert.equal(candidate.length, 33);
+  assert.equal(new Set(candidate.map(({ id }) => id)).size, 33);
   for (const id of [...remove, ...defer, "q2_local_foot_traffic", "q2_local_discovery", "q2_local_repeat_customers", "q2_professional_referral_dependency"]) {
     assert.ok(QUESTION_BANK_V2.some((q) => q.id === id));
     assert.ok(!candidate.some((q) => q.id === id), id);

@@ -34,8 +34,9 @@ test("R2F candidate foundation remains stable, keeps deferred IDs out, and adds 
     "q2_appointments_confirmation_reminders", "q2_appointments_lead_to_booking", "q2_appointments_rebooking",
     "q2_professional_authority_signals", "q2_professional_intake_flow",
     "q2_retail_product_visibility", "q2_retail_customer_capture", "q2_ecommerce_product_discovery",
+    "q2_b2b_status_visibility", "q2_creator_audience_ownership",
   ]);
-  assert.equal(candidate.length, 31);
+  assert.equal(candidate.length, 33);
   for (const id of ["q2_local_foot_traffic", "q2_local_discovery", "q2_local_repeat_customers"]) {
     assert.ok(QUESTION_BANK_V2.some((item) => item.id === id), `${id} remains in frozen legacy bank`);
     assert.ok(!candidate.some((item) => item.id === id), `${id} is not in reviewed candidate`);
