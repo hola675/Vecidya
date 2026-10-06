@@ -53,9 +53,9 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — siguiente límite propuesto (R3F; no iniciado)
+## DIAG-V3 — siguiente límite propuesto (R3G; no iniciado)
 
-Lote único propuesto: **Digital Readiness — recuperación de información interna**, `q2_operations_information_base` y `q2_b2b_status_visibility`. Ambas observan recuperar información necesaria y siguen pending; auditar dimensiones/directness, unknown/N/A, límite con continuidad ejecutada y sesgo de herramienta, sin inferir CRM ni éxito comercial. Es un lote sin dependencia de recurrencia R4. Pipeline B2B conserva R3-LATER REVIEW y rebooking requiere revisar su ciclo de servicio; no forman parte del lote propuesto. Falta migración restante e integración de directness revisada en planificación. Contrato/prerrequisitos en ARCHITECTURE.md. Cada lote exige autorización propia; sin activación pública, cambio de runtime/versiones ni deploy por inferencia.
+Lote único propuesto: **Trust & Reputation — evidencia visible de experiencia profesional**, `q2_professional_authority_signals`. Auditar encaje/directness de información visible sobre experiencia o trabajo, unknown y límite con reputación general ya migrada, sin exigir credenciales, inferir prestigio o resultado comercial. Constructo observado con baja dependencia de R4; no modificar aplicabilidad profesional ni gates de confianza. Pipeline B2B conserva R3-LATER REVIEW y rebooking requiere revisar su ciclo de servicio; no forman parte de este lote. Falta migración restante e integración de directness revisada en planificación. Contrato/prerrequisitos en ARCHITECTURE.md. Cada lote exige autorización propia; sin activación pública, cambio de runtime/versiones ni deploy por inferencia.
 
 R4 permanece separada y no iniciada: aplicabilidad dimensional por actividad/etapa/modelo/evidencia (sin goal dimensional), recurrencia/recompra, Measurement y mecanismos de donación/membresía explícitos. Los DEFER de aplicabilidad no se reintroducen antes de resolver esos prerrequisitos. El banco productivo de 85/version 1 continúa congelado hasta una activación expresamente autorizada.
 

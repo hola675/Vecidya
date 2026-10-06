@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3F — recuperación de información operativa
+
+Dos migraciones atómicas v2 en el registro canónico: información general Readiness/direct y estado B2B Readiness/supporting, con overlap PARTIAL explícito. Ledger derivado 38/14/24; doce regresiones de opciones/identidad, neutralidad de herramientas/unknown/N/A, convivencia y composición bajo cap con q65, supporting solo, pipeline pending, límite con seguimiento y legacy/freeze. Suite R3E adapta ledger acumulado y vecinos pendientes tras migrar estado B2B; mapas anteriores intactos. Sin cambios de R2, contrato/scorer/planner, q65, pesos/confianza/calibración, caracterización, runtime o deploy. Resultados en TESTING.md; R3G no iniciado.
+
 ## 2026-10-06 — DIAG-V3-R3E — evidencia de continuidad posterior
 
 Migración atómica de cotizaciones y continuación genérica v2, solo Relationship & Recurrence/direct. Ledger derivado 38/12/26; once regresiones de opciones completas, unknown/N/A neutros, identidad/atomicidad, gates especializados/fallback, aislamiento pending, separación de Access, neutralidad de herramientas/venta/recurrencia, legacy y freeze. Suite R3D adapta ledger acumulado e independencia de seguimiento ahora migrado; mapas anteriores intactos. Sin cambios de banca R2, contrato/scorer/planner, calibración, runtime, caracterización, activación o deploy. Resultados en TESTING.md; R3F no iniciado.

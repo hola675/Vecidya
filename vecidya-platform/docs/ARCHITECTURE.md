@@ -1,5 +1,19 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R3F — recuperación de información operativa
+
+**CODE/TEST, 2026-10-06:** el registro canónico migra `q2_operations_information_base@v2` como **Digital Readiness/direct** y `q2_b2b_status_visibility@v2` como **Digital Readiness/supporting**. Ledger derivado **38/14 migrated/24 pending**. La primera observa encontrar información correcta/actualizada para continuar trabajo, capacidad operativa general; la segunda observa recuperar en qué quedó una oportunidad, un ámbito comercial específico que no establece por sí solo preparación operativa general. Se determina directness desde estos constructos, sin copiar legacy.
+
+Opciones generales easy_reliable/somewhat_scattered/difficult_unreliable y B2B clear/partial/lose_track usan established/partial/weak. Reconstruir información o consultar varios lugares demuestra capacidad con esfuerzo, no ausencia absoluta: no se usa missing. Unknown=uncertainty/null y N/A=not_applicable/null. Papel, memoria, notas, hoja, CRM, software, centralización, actualización manual/automática o cantidad de herramientas no determinan el estado; solo recuperación observada. Contribuciones existentes intactas.
+
+**Overlap PARTIAL:** ambas pueden ser elegibles con actividad activa, comprador b2b/mixed y necesidad de organización; la general es deepening/material y la especializada adaptive. La general abarca información necesaria para continuar trabajos; B2B observa el estado específico de oportunidades. Ese estado puede formar parte de la información general y una misma práctica puede sustentar ambas respuestas: no se afirma independencia factual completa ni se crean dos bases directas. B2B aporta corroboración supporting del ámbito específico, bajo el cap existente, y no establece un porcentaje sola. Se conservan gates/selecciones; no se introduce deduplicación nueva.
+
+**q65 intacta:** supporting de información que llega al pasar trabajo entre personas, distinta de recuperar información propia o el estado de una oportunidad. Complementa la base directa; q65 y B2B comparten peso supporting 0.5 y cap total de la mitad del peso directo. Dos apoyos no amplían ese cap; supporting solo mantiene score null. No se modifican agregación, confianza, pesos ni calibración.
+
+**Secundarias para ambas: REJECTED.** Measurement requiere interpretación de desempeño, Relationship ejecución real de continuidad, Conversion acceso/avance observado y Foundation información pública mantenida. Recuperar estado interno no establece esas capacidades, venta, calidad de lead, duración de ciclo o madurez CRM. `q2_b2b_pipeline` sigue pending/cero evidencia y **R3-LATER REVIEW** de proceso/continuidad, sin heredar el estado R3F. Un caso B2B/local permite estado recuperable y seguimiento de cotización débil: fuentes y dimensiones separadas.
+
+Solo metadata de evidencia en la vista R3; candidata 38 con R2 intacto, runtime legacy 85/v1 y candidata inactiva, caracterización sin cambios. Sin R4, activación, cambios de resultados/recomendaciones/UI/PDF/D1 ni deploy. Validación en TESTING.md; R3G solo propuesta en ROADMAP.md.
+
 ## DIAG-V3-R3E — continuidad de una interacción pendiente
 
 **CODE/TEST, 2026-10-06:** `qbv2-reviewed-evidence.ts` migra `q2_service_quote_followup@v2` y `q2_followup_general_process@v2` exclusivamente a **Relationship & Recurrence/direct**. Ledger derivado **38/12 migrated/26 pending**. Cotizaciones observa volver a contactar tras una cotización sin respuesta; el fallback observa retomar a tiempo un pendiente real. Ambas respuestas consistent=established; sometimes/partial=partial; rarely/sometimes_lost=weak. Inconsistencia no prueba ausencia absoluta: no se usa missing. Unknown=uncertainty/null y not_applicable=not_applicable/null; no utilizar cotizaciones o no tener pendientes es legítimo. Contribuciones existentes intactas.

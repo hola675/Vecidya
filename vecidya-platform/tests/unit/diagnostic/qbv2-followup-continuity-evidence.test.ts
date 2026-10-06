@@ -8,20 +8,20 @@ import { validateQuestionEvidenceV3 } from "../../../app/features/diagnostic/qbv
 import { buildQuestionPlan } from "../../../app/features/diagnostic/qbv2-planner";
 import { REVIEWED_CANDIDATE_QUESTIONS_V2 as frozen } from "../../../app/features/diagnostic/qbv2-reviewed-candidate";
 import { REVIEWED_LEGACY_DECISIONS as decisions } from "../../../app/features/diagnostic/qbv2-reviewed-decisions";
-import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as candidate, REVIEWED_EVIDENCE_MIGRATION_SUMMARY_V3 as summary, REVIEWED_FOLLOWUP_CONTINUITY_EVIDENCE_V3 as batch } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
+import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as candidate, REVIEWED_EVIDENCE_MIGRATION_SUMMARY_V3 as summary, REVIEWED_FOLLOWUP_CONTINUITY_EVIDENCE_V3 as batch, REVIEWED_EVIDENCE_V3 as registry } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-validators";
 
 const quote = "q2_service_quote_followup";
 const general = "q2_followup_general_process";
 const response = "q2_service_response_speed";
-const neighbors = ["q2_b2b_pipeline", "q2_b2b_status_visibility", "q2_appointments_rebooking", "q2_creator_audience_ownership", "q2_retail_customer_capture"];
+const neighbors = ["q2_b2b_pipeline", "q2_appointments_rebooking", "q2_creator_audience_ownership", "q2_retail_customer_capture"];
 const question = (id: string) => candidate.find((q) => q.id === id)!;
 const derive = (answers: AnswersV2) => deriveContextualEvidence(answers, candidate);
 const seed: AnswersV2 = { q2_entity: "business", q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat", q2_customer_buyer: "b2c", q2_goal: "other", q2_friction: "follow_up" };
 
-test("R3E atomically migrates exactly two continuity constructs with a 38/12/26 ledger", () => {
-  assert.deepEqual(summary, { total: 38, migrated: 12, pending: 26 });
+test("R3E atomically migrates exactly two continuity constructs within the cumulative ledger", () => {
+  assert.deepEqual(summary, { total: 38, migrated: registry.length, pending: 38 - registry.length });
   assert.deepEqual(batch.map((m) => m.questionId), [quote, general]);
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   for (const id of [quote, general]) {

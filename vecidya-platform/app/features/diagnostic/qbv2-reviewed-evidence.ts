@@ -96,7 +96,23 @@ export const REVIEWED_FOLLOWUP_CONTINUITY_EVIDENCE_V3 = [
   },
 ] as const satisfies readonly QuestionEvidenceV3[];
 
-export const REVIEWED_EVIDENCE_V3 = [...REVIEWED_PILOT_EVIDENCE_V3, ...REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3, ...REVIEWED_VISIBLE_OFFER_EVIDENCE_V3, ...REVIEWED_INITIAL_ACCESS_EVIDENCE_V3, ...REVIEWED_FOLLOWUP_CONTINUITY_EVIDENCE_V3] as const;
+/** R3F: recuperación operativa directa; estado B2B apoya el constructo general sin duplicar su base directa. */
+export const REVIEWED_OPERATIONAL_READINESS_EVIDENCE_V3 = [
+  {
+    questionId: "q2_operations_information_base", questionVersion: 2,
+    dimensions: [{ dimension: "digital_readiness", directness: "direct", answers: {
+      easy_reliable: "established", somewhat_scattered: "partial", difficult_unreliable: "weak", not_applicable: "not_applicable", unknown: "uncertainty",
+    } satisfies Record<"easy_reliable" | "somewhat_scattered" | "difficult_unreliable" | "not_applicable" | "unknown", MigratedAnswerStateV3> }],
+  },
+  {
+    questionId: "q2_b2b_status_visibility", questionVersion: 2,
+    dimensions: [{ dimension: "digital_readiness", directness: "supporting", answers: {
+      clear: "established", partial: "partial", lose_track: "weak", not_applicable: "not_applicable", unknown: "uncertainty",
+    } satisfies Record<"clear" | "partial" | "lose_track" | "not_applicable" | "unknown", MigratedAnswerStateV3> }],
+  },
+] as const satisfies readonly QuestionEvidenceV3[];
+
+export const REVIEWED_EVIDENCE_V3 = [...REVIEWED_PILOT_EVIDENCE_V3, ...REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3, ...REVIEWED_VISIBLE_OFFER_EVIDENCE_V3, ...REVIEWED_INITIAL_ACCESS_EVIDENCE_V3, ...REVIEWED_FOLLOWUP_CONTINUITY_EVIDENCE_V3, ...REVIEWED_OPERATIONAL_READINESS_EVIDENCE_V3] as const;
 
 /** Misma candidata R2, vista de evidencia aislada: solo cambia metadata de migración, nunca registro. */
 export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefinitionV2[] = REVIEWED_CANDIDATE_QUESTIONS_V2.map((question) => {
