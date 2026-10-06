@@ -14,7 +14,7 @@ import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-va
 
 const authority = "q2_professional_authority_signals";
 const reputation = "q2_reputation_flow";
-const pending = "q2_appointments_confirmation_reminders";
+const pending = "q2_creator_audience_ownership";
 const question = (id: string) => candidate.find((q) => q.id === id)!;
 const derive = (answers: AnswersV2) => deriveContextualEvidence(answers, candidate);
 const seed: AnswersV2 = { q2_entity: "individual", q2_other_staff: "no", q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat", q2_sector: "professional_services", q2_goal: "trust" };
@@ -102,7 +102,7 @@ test("R3G no credential, popularity, profession prestige or downstream capabilit
   assert.equal(derive({ [authority]: "not_really" })[0]!.state, "weak");
 });
 
-test("R3G appointment confirmation stays pending and emits no inherited or migrated evidence", () => {
+test("R3G creator contactability stays pending and emits no inherited or migrated evidence", () => {
   assert.equal(question(pending).evidenceMigration, "pending");
   for (const option of question(pending).options) {
     assert.deepEqual(derive({ [pending]: option.value }), []);

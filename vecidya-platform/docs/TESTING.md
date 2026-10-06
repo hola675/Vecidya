@@ -1,5 +1,11 @@
 # Pruebas
 
+## DIAG-V3-R3K — recordatorios de citas
+
+- La suite `qbv2-specialized-contactability-evidence.test.ts` contiene **16 regresiones R3J/R3K**. R3K cubre cada opción reminder, estado/contribución/identidad v2, unknown/N/A neutrales, attendance sin evidencia y sin override, reminders weak aún con attendance good, booking/reminder divergentes en dimensiones distintas, rebooking pending/cero evidencia V3, mapas incompletos o versiones incorrectas fail closed, y runtime/legacy/freeze. Registry R3 incluye una nueva pregunta.
+- **RAN 2026-10-06:** R3K focused **5/5**, suite conjunta R3J/R3K **16/16**; R3I **12/12**, R3H **11/11**, R3G **9/9**, R3F **12/12**, R3E **11/11**, R3D **10/10**, R3C **9/9**, R3B **9/9**, R3A **17/17**, R2-FINAL **9/9**, candidata R2 **83/83**, frozen/legacy **235/235**, combinado **434/434**, characterization **1/1**, diagnostic **978/978**, full unit **1033/1033**: PASS, cero fallos. Typecheck, build y diff-check PASS. Avisos conocidos Gmail local y PLUGIN_TIMINGS solamente.
+- Ledger **38/19/19**; migradas incluyen retail capture y appointment reminders, creator permanece pending. R2 38 definiciones inactivas, runtime 85/v1 y scoring histórico sin cambio. Caracterización conserva digest `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, fixture/test intactos. Sin R3L/R4/calibración/deploy.
+
 ## DIAG-V3-R3J — contactabilidad especializada
 
 - `qbv2-specialized-contactability-evidence.test.ts`: **12 regresiones**. Retail v2 migrado atómicamente, todas las opciones Relationship/direct con contribución e identidad, unknown/N/A neutros y ausencia explícita missing, mismatch/incompletitud sin fallback. Creator v2 permanece pending para todas las opciones: fixture válido retail+online_checkout/monetization=audience prueba ambos gates elegibles y cero segunda evidencia de contacto. No se presume disyunción entre compradores y audiencia.

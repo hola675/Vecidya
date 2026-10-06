@@ -53,12 +53,9 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — siguiente límite propuesto (R3K; no iniciado)
+## DIAG-V3 — siguiente límite propuesto (R3L; no iniciado)
 
-Lote único propuesto: **Relationship & Recurrence — recordatorio previo a una cita ya agendada**, `q2_appointments_confirmation_reminders`. Auditar el recordatorio observado como comunicación previa, separado de asistencia/no-show, coordinar horario y rebooking/recurrencia. Evaluar directness y unknown/N/A sin presuponer automatización, herramienta, eficacia ni necesidad universal; conservar gates y no resolver R4. Es una observación concreta con baja dependencia de inferencias de resultado. Cada lote exige autorización propia; sin implementación, activación pública ni deploy por inferencia.
-
-Creator permanece pending tras la auditoría R3J: retail y audiencia pueden ser las mismas personas en rutas válidas. Antes de migrarlo junto con retail debe resolverse explícitamente esa duplicación; no bastan IDs distintos ni denominaciones de canal. Pipeline B2B conserva R3-LATER REVIEW y rebooking requiere revisión del ciclo de servicio. No forman parte del lote propuesto.
-
+Lote único propuesto: **B2B — proceso de seguimiento de oportunidades**, `q2_b2b_pipeline`. Auditar el proceso declarado hasta conocer el resultado de una oportunidad, distinguiéndolo de recuperar el estado de una oportunidad (Readiness/supporting ya migrado), del seguimiento de una cotización y de continuidad de citas. Resolver si observa ejecución relacional, proceso interno o un constructo mixto antes de asignar dimensión/directness. No migrar pipeline B2B ni rebooking por inferencia; conservar gates. No depende de decidir quién debe tener recurrencia bajo R4.
 R4 permanece separada y no iniciada: aplicabilidad dimensional por actividad/etapa/modelo/evidencia (sin goal dimensional), recurrencia/recompra, Measurement y mecanismos de donación/membresía explícitos. Los DEFER de aplicabilidad no se reintroducen antes de resolver esos prerrequisitos. El banco productivo de 85/version 1 continúa congelado hasta una activación expresamente autorizada.
 
 ## VIS-001 — siguiente trabajo visual y gates

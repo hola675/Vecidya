@@ -1,5 +1,13 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R3K — recordatorios de citas
+
+**CODE/TEST, 2026-10-06:** `q2_appointments_confirmation_reminders@v2` migra a **Relationship & Recurrence/direct**. Evalúa confirmación/recordatorio apropiado para una cita ya agendada; conservar ese compromiso es continuidad relacional observable por sí misma, distinta de guardar una vía de contacto o retomar una cotización. consistent=established, sometimes=partial, rarely=weak, unknown=uncertainty/null y not_applicable=null. No se puntúa canal, frecuencia, automatización ni asistencia. Mapa completo e identidad v2 en `qbv2-reviewed-evidence.ts`.
+
+La asistencia `appointmentAttendance` solo sirve como contexto/gate: no crea ni altera evidencia. Booking friction sigue Conversion & Access/direct; pruebas divergentes conservan dimensiones e identidades separadas. Rebooking permanece pending y R3-LATER REVIEW; no se infiere recuperación post-no-show, ventas, medición, Trust o Readiness. Conversion & Access, Digital Readiness, Measurement & Optimization, Trust & Reputation y Digital Foundation: REJECTED como evidencia secundaria. Creator contactability de R3J sigue pending por solapamiento.
+
+Dieciséis pruebas R3K/R3J protegen mapeo, causalidad, independencia de booking y follow-up, rebooking pending, neutralidad, atomicidad y freeze. Ledger 38/19 migrated/19 pending. R2 38 inactiva, runtime 85/v1 y scoring legacy sin cambios. Sin R3L/R4/calibración/activación/D1/deploy; detalles R3K y resultados en TESTING.md.
+
 ## DIAG-V3-R3J — contactabilidad especializada
 
 **CODE/TEST, 2026-10-06:** auditadas las dos definiciones v2. Solo `q2_retail_customer_capture@v2` migra a **Relationship & Recurrence/direct** en el registro R3 existente; ledger **38/18 migrated/20 pending**. Observa conservar una vía directa utilizable, con permiso según el hint vigente, después de una compra. Contactabilidad es una capacidad observable independiente de ejecutar seguimiento: una ruta retail+servicio local permite contacto consistente/seguimiento rarely y contacto partial/seguimiento consistent con fuentes separadas. No establece todo el desempeño de la dimensión, recurrencia, retención, lealtad ni ventas. Mapa completo en `qbv2-reviewed-evidence.ts`: ausencia explícita de vía directa es missing, cobertura parcial es partial, unknown y N/A son neutros. No se inventa un nivel weak ni una evaluación legal.
@@ -8,7 +16,7 @@
 
 **Separaciones:** generic followup permanece excluido de retail/creator y sus híbridos; el test de independencia usa quote_followup realmente aplicable, sin fabricar coexistencia con el genérico. Contacto posible != seguimiento ejecutado != compra/visita repetida. Los dos repeat DEFER y los once DEFER completos permanecen ausentes; aplicabilidad de recurrencia sigue R4. **Secundarias REJECTED para ambos constructos:** Discovery, Conversion & Access, Digital Foundation, Digital Readiness y Trust & Reputation, por ausencia de observación propia. Herramientas, tamaño de lista/seguidores, canales y alcance público no cambian el estado; no hay producciones de contexto en las opciones.
 
-Doce regresiones R3J protegen el mapa, identidad/versiones e incompletitud sin fallback, unknown/N/A, solapamiento con creator pending, divergencia con seguimiento, neutralidad y freezes. R3B/R3C sustituyen únicamente el vecino pending de prueba; R3E conserva la prueba de vecinos pending reemplazando retail por capacity; R3I actualiza solo ledger acumulativo. Mapas previos intactos. R2 conserva 38 definiciones y runtime legacy 85/v1 sin activación ni cambio de scorer/planner/pesos/cap/confianza. El planner existente puede consumir la nueva observación candidata; la integración de directness V3 continúa como deuda. Sin R3K/R4/calibración/recomendaciones/UI/PDF/D1/deploy. Validación en TESTING.md.
+Dieciséis regresiones R3J/R3K protegen el mapa, identidad/versiones e incompletitud sin fallback, unknown/N/A, solapamiento con creator pending, divergencia con seguimiento, neutralidad y freezes. R3B/R3C sustituyen únicamente el vecino pending de prueba; R3E conserva la prueba de vecinos pending reemplazando retail por capacity; R3I actualiza solo ledger acumulativo. Mapas previos intactos. R2 conserva 38 definiciones y runtime legacy 85/v1 sin activación ni cambio de scorer/planner/pesos/cap/confianza. El planner existente puede consumir la nueva observación candidata; la integración de directness V3 continúa como deuda. Sin R3K/R4/calibración/recomendaciones/UI/PDF/D1/deploy. Validación en TESTING.md.
 
 ## DIAG-V3-R3I — consistencia de procesos
 

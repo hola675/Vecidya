@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3K: recordatorios de citas
+
+- Migra `q2_appointments_confirmation_reminders@v2` a Relationship & Recurrence/direct. Continuidad de una cita ya agendada; attendance, booking friction, initial response, rebooking, automatización y canal son constructos separados. Unknown/N/A neutrales; sin evidencia secundaria ni inferencia de resultado.
+- Creator de R3J sigue pending. Ledger 38/19/19. Catorce regresiones acumuladas R3J/R3K; runtime, R2 y legacy intactos. R3L no iniciado.
+
 ## 2026-10-06 — DIAG-V3-R3J: contactabilidad especializada
 
 - Audita retail/creator v2 y migra únicamente retail a Relationship/direct mediante el overlay R3 existente. Creator sigue pending para evitar contar como independientes contactos de una misma población en rutas válidas retail/creator; no hay cambio de gates ni scorer. Ledger 38/18/20.
