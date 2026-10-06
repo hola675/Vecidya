@@ -1,5 +1,15 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R3H — comprensión del siguiente paso profesional
+
+**CODE/TEST, 2026-10-06:** `q2_professional_intake_flow@v2` observa «Cuando una persona interesada quiere avanzar contigo, ¿qué tan claro está el siguiente paso?». Las cuatro opciones evalúan comprensión/dudas, no ejecución. **SINGLE_CONSTRUCT; Clarity & Positioning/direct únicamente**. Mapa completo en `qbv2-reviewed-evidence.ts`; ledger **38/16 migrated/22 pending**. Ambigüedad no acredita ausencia: unclear=weak; unknown=uncertainty/null. No existe N/A y no se añade. Contribuciones/agregación certificadas intactas.
+
+**Clarity != Access:** entender qué hacer no acredita poder hacerlo sin fricción. Regresión con ruta profesional por citas y gate lead_to_booking=few: intake clear y booking often producen Clarity establecida y Access débil, con identidades independientes. Oferta y siguiente paso también pueden divergir en una ruta profesional con goal=explain y base pública válida. **Overlap DISTINCT** con offer_clarity (qué ofreces), retail_product_visibility (comprensión de productos), service_response_speed (respuesta inicial) y appointments_booking_friction (coordinar horario). Cada observación conserva su propio questionId@version; no se duplican dimensiones a partir del mismo hecho. Autoridad/reputación continúan Trust, sin fuga a Clarity.
+
+**Secundarias REJECTED:** Conversion requiere ejecución/acceso observado; Trust credibilidad/prueba social; Foundation base pública mantenida; Readiness capacidad operativa interna; Relationship continuidad posterior; Discovery alcance nuevo. Formularios, consulta, calendario, CRM, contacto manual, complejidad del proceso, ventas/clientes/demanda no determinan la contribución. Solo la respuesta emite evidencia; sector/actividad/meta/fricción siguen routing. El rol adaptive y appliesWhen profesional activo permanecen sin cambios; no se exige intake formal ni se redefine aplicabilidad R4.
+
+Las once regresiones R3H protegen cobertura atómica/identidad, neutralidad, coexistencia, vecinos pending, no fallback y freeze/legacy. R3G adapta solo ledger acumulativo y vecino pending a confirmación de citas, manteniendo sus nueve pruebas y mapa Trust. Candidata R2 de 38 intacta e inactiva, REMOVE/DEFER ausentes, runtime 85/v1, scorer/planner, confidence/calibración y caracterización sin cambios. Validación en TESTING.md. Sin R3I, R4, D1 ni deploy.
+
 ## DIAG-V3-R3G — evidencia visible de experiencia profesional
 
 **CODE/TEST, 2026-10-06:** `q2_professional_authority_signals@v2` migra únicamente a **Trust & Reputation/direct** en el registro canónico; ledger **38/15 migrated/23 pending**. El prompt observa si una persona nueva encuentra fácilmente información sobre experiencia/trabajo; opciones clearly_visible=established, partial=partial, not_really=weak y unknown=uncertainty/null. Dificultad para encontrarla no prueba ausencia absoluta: no se usa missing. No incluye N/A ni se añade. Contribuciones existentes intactas.

@@ -53,9 +53,9 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — siguiente límite propuesto (R3H; no iniciado)
+## DIAG-V3 — siguiente límite propuesto (R3I; no iniciado)
 
-Lote único propuesto: **Conversion & Access — claridad del siguiente paso profesional**, `q2_professional_intake_flow`. Auditar qué observa exactamente claridad del siguiente paso, su directness, unknown y separación de oferta comprensible/autoridad visible, sin inferir tasa de conversión ni herramientas. Constructo revisado con baja dependencia de R4; mantener gates profesionales existentes. Pipeline B2B conserva R3-LATER REVIEW y rebooking requiere revisión del ciclo de servicio; no forman parte del lote. Falta migración restante e integración de directness revisada en planificación. Contrato/prerrequisitos en ARCHITECTURE.md. Cada lote exige autorización propia; sin activación pública, cambio de runtime/versiones ni deploy por inferencia.
+Lote único propuesto: **Digital Readiness — consistencia de procesos**, `q2_process_systemization`. Auditar si las tareas repetidas con una forma consistente observan una capacidad operativa independiente de recuperar información (q2_operations_information_base) y traspasarla (q2_operations_handoffs). La pregunta conserva su uso de contexto/maturity; no implica scoring por ese uso ni exige formalidad, herramientas, automatización, personal o crecimiento. Resolver directness y overlap antes de migrar, con baja dependencia de R4 y sin cambiar gates/producciones R2. Pipeline B2B conserva R3-LATER REVIEW y rebooking requiere revisión del ciclo de servicio; no forman parte del lote. Contrato/prerrequisitos en ARCHITECTURE.md. Cada lote exige autorización propia; sin activación pública, cambio de runtime/versiones ni deploy por inferencia.
 
 R4 permanece separada y no iniciada: aplicabilidad dimensional por actividad/etapa/modelo/evidencia (sin goal dimensional), recurrencia/recompra, Measurement y mecanismos de donación/membresía explícitos. Los DEFER de aplicabilidad no se reintroducen antes de resolver esos prerrequisitos. El banco productivo de 85/version 1 continúa congelado hasta una activación expresamente autorizada.
 

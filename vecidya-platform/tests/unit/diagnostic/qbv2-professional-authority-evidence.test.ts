@@ -8,19 +8,19 @@ import { validateQuestionEvidenceV3 } from "../../../app/features/diagnostic/qbv
 import { buildQuestionPlan } from "../../../app/features/diagnostic/qbv2-planner";
 import { REVIEWED_CANDIDATE_QUESTIONS_V2 as frozen } from "../../../app/features/diagnostic/qbv2-reviewed-candidate";
 import { REVIEWED_LEGACY_DECISIONS as decisions } from "../../../app/features/diagnostic/qbv2-reviewed-decisions";
-import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as candidate, REVIEWED_EVIDENCE_MIGRATION_SUMMARY_V3 as summary, REVIEWED_PROFESSIONAL_AUTHORITY_EVIDENCE_V3 as batch } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
+import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as candidate, REVIEWED_EVIDENCE_MIGRATION_SUMMARY_V3 as summary, REVIEWED_PROFESSIONAL_AUTHORITY_EVIDENCE_V3 as batch, REVIEWED_EVIDENCE_V3 as registry } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-validators";
 
 const authority = "q2_professional_authority_signals";
 const reputation = "q2_reputation_flow";
-const intake = "q2_professional_intake_flow";
+const pending = "q2_appointments_confirmation_reminders";
 const question = (id: string) => candidate.find((q) => q.id === id)!;
 const derive = (answers: AnswersV2) => deriveContextualEvidence(answers, candidate);
 const seed: AnswersV2 = { q2_entity: "individual", q2_other_staff: "no", q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat", q2_sector: "professional_services", q2_goal: "trust" };
 
-test("R3G atomically migrates only authority v2 with all options and a 38/15/23 ledger", () => {
-  assert.deepEqual(summary, { total: 38, migrated: 15, pending: 23 });
+test("R3G atomically migrates only authority v2 with all options within the cumulative ledger", () => {
+  assert.deepEqual(summary, { total: 38, migrated: registry.length, pending: 38 - registry.length });
   assert.deepEqual(batch.map((m) => m.questionId), [authority]);
   assert.equal(question(authority).version, 2);
   assert.equal(question(authority).evidenceMigration, "migrated");
@@ -102,11 +102,11 @@ test("R3G no credential, popularity, profession prestige or downstream capabilit
   assert.equal(derive({ [authority]: "not_really" })[0]!.state, "weak");
 });
 
-test("R3G professional intake stays pending and emits no inherited or migrated evidence", () => {
-  assert.equal(question(intake).evidenceMigration, "pending");
-  for (const option of question(intake).options) {
-    assert.deepEqual(derive({ [intake]: option.value }), []);
-    assert.deepEqual(derive({ [authority]: "clearly_visible", [intake]: option.value }), derive({ [authority]: "clearly_visible" }));
+test("R3G appointment confirmation stays pending and emits no inherited or migrated evidence", () => {
+  assert.equal(question(pending).evidenceMigration, "pending");
+  for (const option of question(pending).options) {
+    assert.deepEqual(derive({ [pending]: option.value }), []);
+    assert.deepEqual(derive({ [authority]: "clearly_visible", [pending]: option.value }), derive({ [authority]: "clearly_visible" }));
   }
 });
 

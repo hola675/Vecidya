@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3H — comprensión del siguiente paso profesional
+
+Una migración atómica v2 de intake a Clarity & Positioning/direct, sin Access secundario: comprensión y ejecución son constructos distintos. Ledger 38/16/22; once regresiones de opciones/identidad, divergencia con oferta/booking, independencia de Trust, unknown neutral, routing sin evidencia y no sesgo de herramientas/formalidad/resultados. R3G adapta ledger acumulado y vecino pending; mapas anteriores intactos. Sin cambios de definiciones/gates R2, scorer/planner, pesos/confianza/calibración, runtime, caracterización o deploy. Resultados en TESTING.md; R3I no iniciado.
+
 ## 2026-10-06 — DIAG-V3-R3G — evidencia de autoridad profesional visible
 
 Una migración atómica v2, solo Trust & Reputation/direct, con overlap DISTINCT frente a opiniones externas de reputación v3. Ledger 38/15/23; nueve regresiones de todas las opciones/identidad, coexistencia divergente, unknown neutral, routing trust sin evidencia, ausencia de sesgo de credenciales/prestigio/popularidad, intake pending y freeze/legacy. Ledger R3F adaptado al registro acumulado; mapas anteriores intactos. Sin cambio de definiciones/gates R2, contrato/scorer/planner, reputación, pesos/confianza/calibración, runtime, caracterización o deploy. Resultados en TESTING.md; R3H no iniciado.
