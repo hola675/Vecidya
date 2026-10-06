@@ -132,7 +132,17 @@ export const REVIEWED_PROFESSIONAL_INTAKE_EVIDENCE_V3 = [
   },
 ] as const satisfies readonly QuestionEvidenceV3[];
 
-export const REVIEWED_EVIDENCE_V3 = [...REVIEWED_PILOT_EVIDENCE_V3, ...REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3, ...REVIEWED_VISIBLE_OFFER_EVIDENCE_V3, ...REVIEWED_INITIAL_ACCESS_EVIDENCE_V3, ...REVIEWED_FOLLOWUP_CONTINUITY_EVIDENCE_V3, ...REVIEWED_OPERATIONAL_READINESS_EVIDENCE_V3, ...REVIEWED_PROFESSIONAL_AUTHORITY_EVIDENCE_V3, ...REVIEWED_PROFESSIONAL_INTAKE_EVIDENCE_V3] as const;
+/** R3I: repetibilidad declarada de tareas; no presupone herramientas ni documentación. */
+export const REVIEWED_PROCESS_CONSISTENCY_EVIDENCE_V3 = [
+  {
+    questionId: "q2_process_systemization", questionVersion: 2,
+    dimensions: [{ dimension: "digital_readiness", directness: "direct", answers: {
+      defined: "established", partial: "partial", informal: "weak", unknown: "uncertainty",
+    } satisfies Record<"defined" | "partial" | "informal" | "unknown", MigratedAnswerStateV3> }],
+  },
+] as const satisfies readonly QuestionEvidenceV3[];
+
+export const REVIEWED_EVIDENCE_V3 = [...REVIEWED_PILOT_EVIDENCE_V3, ...REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3, ...REVIEWED_VISIBLE_OFFER_EVIDENCE_V3, ...REVIEWED_INITIAL_ACCESS_EVIDENCE_V3, ...REVIEWED_FOLLOWUP_CONTINUITY_EVIDENCE_V3, ...REVIEWED_OPERATIONAL_READINESS_EVIDENCE_V3, ...REVIEWED_PROFESSIONAL_AUTHORITY_EVIDENCE_V3, ...REVIEWED_PROFESSIONAL_INTAKE_EVIDENCE_V3, ...REVIEWED_PROCESS_CONSISTENCY_EVIDENCE_V3] as const;
 
 /** Misma candidata R2, vista de evidencia aislada: solo cambia metadata de migración, nunca registro. */
 export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefinitionV2[] = REVIEWED_CANDIDATE_QUESTIONS_V2.map((question) => {

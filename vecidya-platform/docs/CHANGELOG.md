@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3I — consistencia de procesos
+
+Una migración atómica de q2_process_systemization@v2 a Digital Readiness/direct; overlap DISTINCT con recuperación, handoffs, estado B2B y capacidad. Ledger 38/17/21; doce regresiones de opciones/identidad, divergencia directa en ambos sentidos, neutralidad de herramientas/documentación/unknown, apoyos/cap intactos, contexto sin amplificación, capacidad pending y freeze/legacy. R3H adapta solo ledger acumulativo. Solo metadata de evidencia en la vista candidata: contexto/gates R2, scorer/planner/pesos/confianza/calibración, runtime y caracterización intactos. El planner existente consume una nueva observación candidata, sin cambio de algoritmo o ruta legacy. Sin activación ni deploy. Validación en TESTING.md; R3J no iniciado.
+
 ## 2026-10-06 — DIAG-V3-R3H — comprensión del siguiente paso profesional
 
 Una migración atómica v2 de intake a Clarity & Positioning/direct, sin Access secundario: comprensión y ejecución son constructos distintos. Ledger 38/16/22; once regresiones de opciones/identidad, divergencia con oferta/booking, independencia de Trust, unknown neutral, routing sin evidencia y no sesgo de herramientas/formalidad/resultados. R3G adapta ledger acumulado y vecino pending; mapas anteriores intactos. Sin cambios de definiciones/gates R2, scorer/planner, pesos/confianza/calibración, runtime, caracterización o deploy. Resultados en TESTING.md; R3I no iniciado.

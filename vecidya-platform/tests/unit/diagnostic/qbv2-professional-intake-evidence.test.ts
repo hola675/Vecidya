@@ -21,8 +21,8 @@ const question = (id: string) => candidate.find((q) => q.id === id)!;
 const derive = (answers: AnswersV2) => deriveContextualEvidence(answers, candidate);
 const seed: AnswersV2 = { q2_entity: "individual", q2_other_staff: "no", q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat", q2_sector: "professional_services", q2_goal: "explain" };
 
-test("R3H atomically migrates only intake v2 with every option and ledger 38/16/22", () => {
-  assert.deepEqual(summary, { total: 38, migrated: 16, pending: 22 });
+test("R3H atomically migrates only intake v2 with every option within the cumulative ledger", () => {
+  assert.deepEqual(summary, { total: 38, migrated: registry.length, pending: 38 - registry.length });
   assert.deepEqual(batch.map(m => m.questionId), [intake]);
   assert.equal(question(intake).version, 2);
   assert.equal(question(intake).evidenceMigration, "migrated");
