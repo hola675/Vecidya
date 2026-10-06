@@ -1,5 +1,36 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R3-FINAL — certificación y freeze de evidencia
+
+**CODE/TEST/RAN, 2026-10-06:** R3 queda certificado con **38 preguntas candidatas: 21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 2 `LATER_REVIEW`, 0 sin clasificar y 0 disposiciones duplicadas**. La clasificación final es metadato de auditoría protegido por `qbv2-r3-final-certification.test.ts`; no redefine `evidenceMigration`. Para las 15 context-only y las dos later-review el estado técnico continúa `pending`, pero su revisión ya no está sin resolver: contexto-only es una decisión cerrada de no producir evidencia en R3; later-review conserva una decisión semántica explícitamente aplazada.
+
+**Cobertura ejecutable por dimensión:**
+
+| Dimensión | Directas | Supporting | Contexto y later-review |
+| --- | --- | --- | --- |
+| Digital Foundation | `q2_local_presence_consistency`, `q2_presence_digital_base`, `q2_ecommerce_product_discovery` (3) | 0 | Sin productor dimensional context-only. Clasificación y contexto solo enrutan/refinan; aplicabilidad R4. |
+| Clarity & Positioning | `q2_presence_offer_clarity`, `q2_retail_product_visibility`, `q2_professional_intake_flow` (3) | 0 | Sin productor dimensional context-only; oferta, producto y siguiente paso son constructos distintos. |
+| Discovery | `q2_discovery_reliable_reach` (1) | 0 | `q2_ecommerce_traffic_sources` y `q2_customer_reach` siguen como contexto; canal/geografía no se puntúan. |
+| Trust & Reputation | `q2_reputation_flow`, `q2_professional_authority_signals` (2) | 0 | Contexto sector/goal/friction solo puede guiar ruta; no sustituye prueba visible. |
+| Conversion & Access | `q2_service_response_speed`, `q2_appointments_booking_friction` (2) | 0 | `q2_appointments_lead_to_booking` es `LATER_REVIEW`: el desenlace admite causas alternativas y no prueba fricción. |
+| Relationship & Recurrence | `q2_service_quote_followup`, `q2_followup_general_process`, `q2_retail_customer_capture`, `q2_appointments_confirmation_reminders`, `q2_b2b_pipeline`, `q2_appointments_rebooking` (6) | 0 | `q2_appointments_noshow` no mide recordatorios; `q2_creator_audience_ownership` es `LATER_REVIEW` por posible solapamiento de contacto con retail. |
+| Measurement & Optimization | 0 | 0 | Sin evidencia R3; goal/tendencia/capacidad son contexto, no medición de capacidad. La cobertura cero es aceptada para R3. |
+| Digital Readiness | `q2_operations_information_base`, `q2_process_systemization` (2) | `q2_operations_handoffs`, `q2_b2b_status_visibility` (2) | Capacidad, staff, regularidad y proceso son contexto salvo las dos observaciones explícitas; supporting no establece porcentaje por sí sola. |
+
+**Evidence ledger (21 migradas / 17 sin migración):** las 21 sources listadas arriba son `EVIDENCE_MIGRATED`. Las 17 sin V3 evidence son `q2_entity`, `q2_other_staff`, `q2_monetization`, `q2_delivery`, `q2_has_customers`, `q2_regularity`, `q2_demand_trend`, `q2_goal`, `q2_friction`, `q2_appointments_noshow`, `q2_ecommerce_traffic_sources`, `q2_sector`, `q2_customer_reach`, `q2_customer_buyer`, `q2_capacity_signal`, `q2_appointments_lead_to_booking`, `q2_creator_audience_ownership`.
+
+**Disposición final:** `CONTEXT_ONLY` (15): `q2_entity`, `q2_other_staff`, `q2_monetization`, `q2_delivery`, `q2_has_customers`, `q2_regularity`, `q2_demand_trend`, `q2_goal`, `q2_friction`, `q2_appointments_noshow`, `q2_ecommerce_traffic_sources`, `q2_sector`, `q2_customer_reach`, `q2_customer_buyer`, `q2_capacity_signal`. `LATER_REVIEW` (2): `q2_appointments_lead_to_booking` (desenlace ambiguo: lead quality, demand, capacity, price, fit, availability, intent y booking friction pueden explicarlo) y `q2_creator_audience_ownership` (overlap no separable del mismo contacto con retail; `platform_only` tampoco prueba ausencia de otra vía directa). En las 17, `evidenceMigration=pending` es el estado técnico, no la disposición de revisión.
+
+Hay **19 fuentes directas y 2 supporting**. Cada definición migrada emite como máximo una observación para una dimensión; `q2_discovery_reliable_reach.not_seeking` conserva cero observaciones por `context_only`. No hay expansión multi-dimensión. SUPPORTING requiere una base directa para establecer porcentaje; peso **0.5**, cap existente **0.5 de peso directo**, sin cambios.
+
+**Contrato congelado:** DIRECT puede establecer porcentaje; SUPPORTING no puede hacerlo sin base directa. Unknown produce `uncertainty` con contribución nula; N/A produce `not_applicable` con contribución nula; `missing` solo aparece para ausencia explícita en `q2_presence_digital_base` y `q2_retail_customer_capture`. Contexto no es evidencia. Herramienta no es capacidad, automatización no es madurez, canal no es calidad de Discovery y resultado débil no identifica causa. Goals/frictions declarados no puntúan. Volumen, ventas, revenue, seguidores, cierre, repetición y asistencia no crean evidencia automática.
+
+**Contexto posible para revisión R4 (no es un mapeo de aplicabilidad activo por dimensión):** Foundation — entity, monetization, delivery, customers, sector y customer reach; Clarity — sector, delivery, goal, friction, buyer y customers; Discovery — demand trend, traffic sources, reach, goal y customers; Trust — sector, buyer, goal, friction y customers; Conversion — goal, friction, delivery, capacity, buyer y customers; Relationship — no-show, goal, friction, capacity, demand trend, buyer, regularity y customers; Measurement — goal, demand trend, regularity, capacity y activity; Readiness — other staff, regularity, goal, friction, capacity y demand trend. Ningún campo de esta lista emite evidence sin un mapping explícito; las reglas dimensionales de aplicabilidad son trabajo R4.
+
+**Overlaps preservados:** Relationship separa seguimiento de cotización, retoma genérica, contacto post-compra, recordatorio pre-cita, continuidad de oportunidad B2B y acuerdo del ciclo futuro. Readiness separa recuperación de información, consistencia de ejecución, handoff y visibilidad de estado B2B; los dos últimos apoyan solamente. Trust mantiene prueba social externa separada de experiencia profesional visible. Clarity distingue oferta, productos y siguiente paso. Conversion distingue respuesta inicial de coordinación de cita. Solo Discovery fiable produce Discovery; preguntas de canales/contexto no añaden fuente. Foundation conserva presencia pública separada de navegación del catálogo ecommerce.
+
+**Freeze:** candidata 38, IDs/versiones/copy/opciones/signals/routing sin cambios; REMOVE/DEFER ausentes; banco candidato inactivo. `QUESTION_BANK_V2` conserva 85 definiciones y `CURRENT_QUESTION_BANK_VERSION=1`; scorer/planner/calibración/legacy y digest de caracterización `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f` permanecen congelados. R3 está certificado; R4 — Dimension Applicability queda como siguiente fase, todavía no iniciada.
+
 ## DIAG-V3-R3N — solapamiento de contactabilidad creator
 
 **CODE/TEST, 2026-10-06:** `q2_creator_audience_ownership@v2` conserva su semántica de contactabilidad directa de personas existentes de la audiencia; la redacción no limita esas personas a no-clientes ni significa independencia de plataformas, tamaño, alcance, engagement o ownership. Constructo limpio de contactabilidad, pero la observación de evidencia queda **PENDING** por overlap no separable con retail en rutas híbridas.

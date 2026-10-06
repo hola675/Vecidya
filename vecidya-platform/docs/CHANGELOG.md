@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3-FINAL: certificación de evidencia
+
+- Se certifica la disposición final de las 38 preguntas candidatas: 21 mappings V3 versionados, 15 context-only y dos later-review; cero sin clasificar. La decisión de revisión queda separada de `evidenceMigration` técnico.
+- Se documenta la cobertura por dimensión, incluida Measurement & Optimization con cero fuentes directas y supporting, aceptado para R3. Sin nuevas migraciones de evidencia ni función de scoring.
+- Se congela la frontera contexto ≠ evidencia, las reglas globales de neutralidad y el runtime legacy 85/version 1 con candidata inactiva. R4 — Dimension Applicability queda como siguiente fase, sin iniciar.
+- Se añade una suite de certificación de ledger, identity/version, cero evidencia contextual, neutralidad unknown/N/A y cobertura dimensional.
+
 ## 2026-10-06 — DIAG-V3-R3N: overlap de audiencia creator
 
 - Se auditó `q2_creator_audience_ownership@v2`; sigue `pending` porque puede coexistir con retail capture y describir a los mismos compradores/contactos. Retail conserva la única evidencia directa Relationship en esa ruta. No cambian wording, gates, registry, scorer ni scoring legacy.

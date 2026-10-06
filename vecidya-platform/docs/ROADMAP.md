@@ -53,10 +53,11 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — siguiente límite propuesto (R3-FINAL; no iniciado)
+## DIAG-V3 — R3 certificado; R4 siguiente
 
-R3N auditó `q2_creator_audience_ownership@v2` y resolvió conservarla pending: en rutas creator+retail pueden coexistir con `q2_retail_customer_capture` y describir los mismos contactos; creator+ecommerce no habilita retail capture. El ledger permanece 38/21/17, sin cambio de R2/runtime. La suite legacy seleccionada de R3M indicó 234 frente al histórico 235, pero no hay manifiesto versionado que identifique el comando original; R3N fijó una invocación explícita de diez suites (240/240 PASS) y pasó toda la suite diagnóstica/unitaria. No se atribuye el delta a un test específico. Próximo bloque recomendado: **R3-FINAL**, certificar ledger, contratos, lista explícita de suites y freezes; no proponer automáticamente R3O ni otra migración de una pregunta. Cada bloque requiere autorización explícita.
-R4 permanece separada y no iniciada: aplicabilidad dimensional por actividad/etapa/modelo/evidencia (sin goal dimensional), recurrencia/recompra, Measurement y mecanismos de donación/membresía explícitos. Los DEFER de aplicabilidad no se reintroducen antes de resolver esos prerrequisitos. El banco productivo de 85/version 1 continúa congelado hasta una activación expresamente autorizada.
+R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 2 `LATER_REVIEW`, 0 sin clasificar), freezes de neutralidad y separación contexto/evidencia, y el comando frozen/legacy reproducible de diez suites (240/240). La historia de conteos 234/235 permanece no atribuible a un manifiesto preservado; 240 es el baseline forward del comando documentado, no una equivalencia retrospectiva. La candidata permanece inactiva y el runtime productivo 85/version 1 congelado.
+
+**R4 — Dimension Applicability: NEXT, NO INICIADA.** El siguiente bloque puede definir aplicabilidad por actividad/etapa/modelo/evidencia, incluida recurrencia/recompra, Measurement y mecanismos explícitos de donación/membresía, bajo autorización de fase. R3-FINAL no modifica esas reglas, no reintroduce DEFER y no implementa applicability. El banco productivo sigue congelado hasta una activación expresamente autorizada.
 
 ## VIS-001 — siguiente trabajo visual y gates
 

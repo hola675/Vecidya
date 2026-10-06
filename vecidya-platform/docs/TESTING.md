@@ -1,5 +1,19 @@
 # Pruebas
 
+## DIAG-V3-R3-FINAL — certificación final de semántica
+
+- `qbv2-r3-final-certification.test.ts` fija el ledger exacto 21/15/2 sobre los 38 IDs de la candidata, comprueba cero IDs no clasificados/duplicados, mapping y versión V3 exactos para cada migrada, una dimensión por fuente, cero evidencia para todas las opciones context-only/later-review, contexto sin score, unknown/N/A neutros y ausencia explícita solo donde se observa.
+- Cobertura migrada: Digital Foundation 3 direct/0 supporting; Clarity & Positioning 3/0; Discovery 1/0; Trust & Reputation 2/0; Conversion & Access 2/0; Relationship & Recurrence 6/0; Measurement & Optimization 0/0; Digital Readiness 2 direct/2 supporting. Las 15 context-only no son descartadas: informan clasificación/routing/planner; no emiten puntos. Las dos later-review son booking outcome (ambigüedad causal) y creator contactability (overlap same-contact con retail).
+- **Comando canónico frozen/legacy (ejecutar desde `vecidya-platform`; exactamente estos diez archivos):**
+
+  ```powershell
+  pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/context-resolver.test.ts ./tests/unit/diagnostic/qbv2-architecture.test.ts ./tests/unit/diagnostic/qbv2-planner.test.ts ./tests/unit/diagnostic/qbv2-evidence-completion.test.ts ./tests/unit/diagnostic/qbv2-evidence-enrichment.test.ts ./tests/unit/diagnostic/qbv2-golden-integration.test.ts ./tests/unit/diagnostic/qbv2-lote-b.test.ts ./tests/unit/diagnostic/qbv2-lote-d.test.ts ./tests/unit/diagnostic/qbv2-contextual-scoring.test.ts ./tests/unit/diagnostic/qbv2-route-stabilization.test.ts
+  ```
+
+- Conteos históricos 235 (R3L) y 234 (R3M): no atribuibles reproduciblemente a manifiestos conservados; no se afirma que fueran exactamente la lista de diez archivos. Baseline forward de ese comando: **240/240 PASS**.
+- **RAN 2026-10-06:** R3-FINAL **7/7**; R3N **5/5**; R3M **9/9**; R3L **7/7**; R3K **5/5**; R3J **11/11**; R3I **12/12**; R3H **11/11**; R3G **9/9**; R3F **12/12**; R3E **11/11**; R3D **10/10**; R3C **9/9**; R3B **9/9**; R3A **17/17**; R2-FINAL closure **5/5**; R2-FINAL certification **9/9**; candidata **83/83**; frozen/legacy **240/240**; combined focused **472/472**; characterization **1/1** (digest `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`); directorio diagnóstico **1006/1006**; full unit **1061/1061**. Todo PASS, cero fallos. Typecheck, build y diff-check PASS. Build mostró solo avisos conocidos: credenciales Gmail locales ausentes y `PLUGIN_TIMINGS`.
+- El candidato continúa inactivo; no hubo migraciones nuevas, cambios de definición, scoring, planner o calibración. R4 — Dimension Applicability queda como siguiente fase no iniciada.
+
 ## DIAG-V3-R3N — overlap de audience contactability
 
 - `qbv2-creator-audience-overlap.test.ts` añade cinco regresiones: ruta creator-only, retail-only, híbrido creator+retail, creator+ecommerce, y contacto post-compra compartido. Comprueba que las preguntas coexisten donde los gates permiten, pero solo retail genera evidencia directa cuando un contacto satisface ambas; creator pending da cero evidencia en todas sus opciones, mientras legacy y el mapa retail mantienen su salida histórica/migrada. Congela 38 preguntas, definiciones R2, `QUESTION_BANK_V2` 85/v1 y runtime.
