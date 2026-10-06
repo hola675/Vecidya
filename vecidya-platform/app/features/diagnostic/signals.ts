@@ -1,4 +1,4 @@
-import type { BusinessModel, CustomerBuyer, CustomerReach, EntityType, NicheGroup, NicheId, OperationalArchetype, PrimaryFriction, PrimaryGoal } from "./contracts";
+import type { BusinessModel, CustomerBuyer, CustomerReach, EntityType, NicheGroup, NicheId, OperatingRegularityV3, OperationalArchetype, PrimaryFriction, PrimaryGoal } from "./contracts";
 
 /**
  * Señales de dominio de DIAG-V3-08B.1 (Context Resolver).
@@ -133,8 +133,8 @@ export const DELIVERY_MODE_TO_ARCHETYPE: Readonly<Record<DeliveryMode, Exclude<O
 // ── Señales de GrowthStage (resuelve DIAG-V3-08B0-GROWTH-STAGE-SIGNAL-001) ──
 
 /** Regularidad observada de la operación (no autopercepción: "estable" se prueba con esto, no se declara). */
-export const OPERATING_REGULARITIES = ["none", "irregular", "regular"] as const;
-export type OperatingRegularity = (typeof OPERATING_REGULARITIES)[number];
+export const OPERATING_REGULARITIES: readonly OperatingRegularityV3[] = ["none", "irregular", "occasional", "irregular_active", "regular"];
+export type OperatingRegularity = OperatingRegularityV3;
 
 /**
  * Tendencia de demanda/volumen observada en ≥2 períodos consecutivos — nunca la sola intención de
@@ -149,7 +149,7 @@ export type OperatingRegularity = (typeof OPERATING_REGULARITIES)[number];
  * la CAPA DE SEÑALES ya no fuerza a perder el hecho: `resolveGrowthStage` lo distingue en el trace
  * aunque el valor resuelto de `GrowthStage` sea `operating` en ambos casos.
  */
-export const DEMAND_TRENDS = ["flat_or_unknown", "increasing_observed", "decreasing_observed"] as const;
+export const DEMAND_TRENDS = ["flat_or_unknown", "flat_observed", "increasing_observed", "decreasing_observed"] as const;
 export type DemandTrend = (typeof DEMAND_TRENDS)[number];
 
 // ── Conjunto de señales ──────────────────────────────────────────────────────
@@ -200,7 +200,11 @@ export type DiagnosticSignalsV3 = {
   /** Existencia de clientes/transacciones reales (no intención). `false` explícito ⇒ `GrowthStage: idea`. */
   hasRealCustomers?: Signal<boolean>;
   operatingRegularity?: Signal<OperatingRegularity>;
+  /** Explicit answer that cadence is unknown; unlike absent operatingRegularity this blocks a false starting inference. */
+  operatingRegularityUnknown?: Signal<boolean>;
   demandTrend?: Signal<DemandTrend>;
+  /** Explicit trend uncertainty; unlike legacy flat_or_unknown it is not evidence of flat demand. */
+  demandTrendUnknown?: Signal<boolean>;
   /**
    * Evidencia de `growing` alternativa a `demandTrend`. DEBE ser un AUMENTO observado de la lista de
    * espera/backlog en ≥2 períodos, igual de exigente que `demandTrend` — no una foto fija de "hay
@@ -223,7 +227,11 @@ export type DiagnosticSignalsV3 = {
   declaredGoal?: Signal<PrimaryGoal>;
   /** Equivalente a la legacy `unsure`: ausencia declarada, no ausencia de dato (§24, `mapLegacyGoal`). */
   declaredGoalUnknown?: Signal<boolean>;
+  /** The user answered "other" but did not classify it as a known goal. */
+  declaredGoalOther?: Signal<boolean>;
 
   /** Puede haber más de una señal de fricción; el resolver decide si hay una PRIMARY defendible (§26). */
   frictionSignals?: readonly Signal<PrimaryFriction>[];
+  /** Explicitly uncertain primary friction, distinct from no friction answer. */
+  frictionUnknown?: Signal<boolean>;
 };

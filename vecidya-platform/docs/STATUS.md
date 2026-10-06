@@ -1,5 +1,7 @@
 # Estado de implementación
 
+DIAG-V3-QBANK-R2B-FIX: candidata aislada 01–09; `QUESTION_BANK_V2` conserva 85 preguntas y sigue como runtime. Las metas concretas de q2_goal resuelven `primaryGoal` como contexto/routing declarado, sin evidencia digital directa; no existe dominio duplicado `userPriority`. `other` queda `insufficient_evidence`, `unsure` `declared_unknown`. Deuda R4: retirar aplicabilidad dimensional basada en goal y usar contexto/evidencia del negocio; `measure` podrá afectar prioridad/routing solamente. Ver `TESTING.md`.
+
 DIAG-V3-QBANK-R2A-FIX (2026-10-05): q2_monetization queda gateada declarativamente por `activity` resuelta; q2_has_customers actúa como requisito real de esa clasificación y selecciona el copy presente/futuro. `HINT_MAX_LENGTH=140`; se fijó con regresión la compatibilidad de entidad de q2_other_staff. R2A y R2A-FIX están versionados en main; sin activación pública ni deploy.
 
 DIAG-V3-QBANK-R2A (2026-10-05): candidata aislada con preguntas revisadas 01–05; `QUESTION_BANK_V2` continúa con 85 preguntas y sin cambios. R2A y R2A-FIX están versionados en main; sin activación pública ni deploy.

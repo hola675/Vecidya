@@ -1,5 +1,7 @@
 # VECIDYA — Estado del proyecto
 
+DIAG-V3-QBANK-R2B-FIX: la candidata 01–09 mantiene q2_regularity, q2_demand_trend, q2_goal y q2_friction aisladas en contexto. q2_goal resuelve el `primaryGoal` existente como prioridad declarada/routing, sin producir evidencia digital directa. `other` conserva `insufficient_evidence`, `unsure` `declared_unknown` y no respondido `not_asked`. No hay dominio `userPriority`. `QUESTION_BANK_V2` permanece en 85 preguntas y sigue como runtime. Deuda R4: retirar aplicabilidad dimensional basada en goal y derivarla del contexto/evidencia real del negocio; `measure` solo puede influir en prioridad/routing.
+
 DIAG-V3-QBANK-R2A-FIX (2026-10-05): `HINT_MAX_LENGTH` continúa en 140; hints revisados ajustados. q2_monetization requiere `activity` resuelta por una regla declarativa y q2_has_customers desbloquea su copy. Tests fijan la regla existente individual+personal→business de q2_other_staff, sin inferencias adicionales. R2A y R2A-FIX están versionados en main; sin activación pública ni deploy.
 
 DIAG-V3-QBANK-R2A (2026-10-05): se preparó `REVIEWED_FOUNDATION_QUESTIONS_V2` con q2_entity, q2_other_staff, q2_monetization, q2_delivery y q2_has_customers. Solo la suite candidata importa ese módulo; no se registra ni se sirve por `/diagnostico`. El banco legacy conserva 85 preguntas y sus salidas. Los hints cumplen el máximo global existente de 140 caracteres. R2A y R2A-FIX están versionados en main; sin activación pública ni deploy.

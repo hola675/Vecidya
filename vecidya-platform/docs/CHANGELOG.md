@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-10-05 — DIAG-V3-QBANK-R2B — candidata de contexto revisado (preguntas 06–09)
+
+- Se amplía la candidata aislada de cinco a nueve preguntas con regularidad, tendencia, prioridad personal y fricción percibida. El aggregate no se registra; el banco legacy productivo y sus 85 preguntas siguen vigentes.
+- Se agregan `occasional`, `irregular_active`, `flat_observed` y desconocidos explícitos. Las ocho metas concretas resuelven el `primaryGoal` existente como prioridad declarada y contexto de routing, nunca como evidencia digital directa; `other`, `unsure` y no respondido mantienen estados distintos. Fricción declarada sigue siendo contexto de routing, no evidencia.
+- No cambia la versión del banco actual, scoring, aplicabilidad dimensional ni resultado público. Validación RAN: ver `TESTING.md`.
+
+## 2026-10-05 — DIAG-V3-QBANK-R2B-FIX — unificación de prioridad y objetivo
+
+- Se elimina el dominio duplicado `userPriority`; q2_goal usa el `primaryGoal` existente para contexto/routing. La elección `other` queda visible en la traza sin inventar una meta conocida.
+- Se reemplaza la afirmación de equivalencia dimensional measure/be_found por regresiones de cero evidencia contextual y se registra para R4 la retirada de aplicabilidad dimensional basada en goal. `QUESTION_BANK_V2` y scoring no cambian.
+- R2B no rebaselinea la caracterización legacy. La divergencia preexistente continúa registrada; cualquier reconciliación del snapshot requiere una tarea auditada independiente.
+
 ## 2026-10-05 — DIAG-V3-QBANK-R2A (candidata revisada de fundación)
 
 - Se preparó una candidata no registrada con las preguntas revisadas 01–05 y señales del dominio existente; únicamente las pruebas candidatas la importan.

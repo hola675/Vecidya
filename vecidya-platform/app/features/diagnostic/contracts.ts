@@ -342,6 +342,10 @@ export const isNicheGroup = (value: unknown): value is NicheGroup => isOneOf(NIC
  */
 export const GROWTH_STAGES = ["idea", "starting", "operating", "growing", "scaling"] as const;
 export type GrowthStage = (typeof GROWTH_STAGES)[number];
+
+/** Regularity values retained across the legacy bank and the reviewed candidate. */
+export const OPERATING_REGULARITIES_V3 = ["none", "irregular", "occasional", "irregular_active", "regular"] as const;
+export type OperatingRegularityV3 = (typeof OPERATING_REGULARITIES_V3)[number];
 export type LegacyStageId = StageId;
 
 /**
@@ -462,6 +466,8 @@ export type DiagnosticContextV3 = {
    */
   nicheGroup: Resolution<NicheGroup>;
   growthStage: Resolution<GrowthStage>;
+  /** Observed activity cadence; explicit unknown remains distinct from a missing answer. */
+  operatingRegularity: Resolution<OperatingRegularityV3>;
   customerModel: CustomerModel;
   primaryGoal: Resolution<PrimaryGoal>;
   primaryFriction: Resolution<PrimaryFriction>;

@@ -12,6 +12,7 @@ import {
   type NicheGroup,
   type NicheId,
   type OperationalArchetype,
+  type OperatingRegularityV3,
   type PrimaryFriction,
   type PrimaryGoal,
   type Resolution,
@@ -70,6 +71,7 @@ export type ContextResolutionTrace = {
   readonly customerReach: FieldTrace;
   readonly customerBuyer: FieldTrace;
   readonly growthStage: FieldTrace;
+  readonly operatingRegularity: FieldTrace;
   readonly activity: FieldTrace;
   readonly primaryGoal: FieldTrace;
   readonly primaryFriction: FieldTrace;
@@ -246,6 +248,13 @@ function resolveCustomerAxis<T extends string>(field: string, signal: Signal<T> 
   return { resolution: resolved(signal.value, "signal"), trace: resolvedTrace(field, signal.value, [field], "declarado/observado") };
 }
 
+function resolveOperatingRegularity(signals: DiagnosticSignalsV3): { resolution: Resolution<OperatingRegularityV3>; trace: FieldTrace } {
+  if (signals.operatingRegularityUnknown?.value === true) return { resolution: unresolved("declared_unknown"), trace: unresolvedTrace("operatingRegularity", "declared_unknown", [], [], ["operatingRegularityUnknown"]) };
+  const signal = signals.operatingRegularity;
+  if (!isMaterial(signal)) return { resolution: unresolved("not_asked"), trace: unresolvedTrace("operatingRegularity", "not_asked", [], ["operatingRegularity"]) };
+  return { resolution: resolved(signal.value, "signal"), trace: resolvedTrace("operatingRegularity", signal.value, ["operatingRegularity"], "frecuencia de actividad declarada") };
+}
+
 // ── GrowthStage (resuelve DIAG-V3-08B0-GROWTH-STAGE-SIGNAL-001) ─────────────
 
 function resolveGrowthStage(signals: DiagnosticSignalsV3): { resolution: Resolution<GrowthStage>; trace: FieldTrace } {
@@ -257,6 +266,9 @@ function resolveGrowthStage(signals: DiagnosticSignalsV3): { resolution: Resolut
   }
 
   const regularity = signals.operatingRegularity;
+  if ((!isMaterial(regularity) || regularity.value !== "regular") && signals.operatingRegularityUnknown?.value === true) {
+    return { resolution: unresolved("declared_unknown", ["starting", "operating", "growing", "scaling"]), trace: unresolvedTrace("growthStage", "declared_unknown", ["starting", "operating", "growing", "scaling"], ["operatingRegularity"], ["operatingRegularityUnknown"]) };
+  }
   if (!isMaterial(regularity) || regularity.value !== "regular") {
     return {
       resolution: resolved("starting", "signal"),
@@ -267,6 +279,9 @@ function resolveGrowthStage(signals: DiagnosticSignalsV3): { resolution: Resolut
   const trend = signals.demandTrend;
   const pressure = signals.capacityPressure;
   const expansion = signals.capacityExpansion;
+  if (signals.demandTrendUnknown?.value === true && pressure?.value !== true && expansion?.value !== true) {
+    return { resolution: unresolved("declared_unknown", ["operating", "growing"]), trace: unresolvedTrace("growthStage", "declared_unknown", ["operating", "growing"], ["demandTrend", "capacityPressure", "capacityExpansion"], ["demandTrendUnknown"]) };
+  }
   if (!trend && !pressure && !expansion) {
     // BLOQUEADOR resuelto (§21-23): sin señal de tendencia/presión/expansión no se puede distinguir
     // operating de growing — nunca se elige uno arbitrariamente.
@@ -280,7 +295,7 @@ function resolveGrowthStage(signals: DiagnosticSignalsV3): { resolution: Resolut
   // el trace aunque `GrowthStage` (contracts.ts) todavía no tenga un valor "en declive" propio.
   const growingEvidence = trend?.value === "increasing_observed" || pressure?.value === true || expansion?.value === true;
   if (!growingEvidence) {
-    const demandLabel = trend?.value === "decreasing_observed" ? "demandTrend=decreasing_observed (sin valor propio en GrowthStage todavía; ver DIAG-V3-08B0-GROWTH-STAGE-SIGNAL-001)" : "demandTrend=flat_or_unknown/ausente";
+    const demandLabel = trend?.value === "decreasing_observed" ? "demandTrend=decreasing_observed (sin valor propio en GrowthStage todavía; ver DIAG-V3-08B0-GROWTH-STAGE-SIGNAL-001)" : trend?.value === "flat_observed" ? "demandTrend=flat_observed" : "demandTrend=flat_or_unknown/ausente";
     return {
       resolution: resolved("operating", "signal"),
       trace: resolvedTrace("growthStage", "operating", ["operatingRegularity=regular", demandLabel, "capacityPressure/capacityExpansion=false/ausente"], "actividad estable y repetible, sin evidencia observable de aumento de demanda/volumen/capacidad"),
@@ -308,6 +323,7 @@ function resolveGrowthStage(signals: DiagnosticSignalsV3): { resolution: Resolut
 
 function resolvePrimaryGoal(signals: DiagnosticSignalsV3): { resolution: Resolution<PrimaryGoal>; trace: FieldTrace } {
   if (signals.declaredGoalUnknown?.value === true) return { resolution: unresolved("declared_unknown"), trace: unresolvedTrace("primaryGoal", "declared_unknown", [], []) };
+  if (signals.declaredGoalOther?.value === true) return { resolution: unresolved("insufficient_evidence"), trace: unresolvedTrace("primaryGoal", "insufficient_evidence", [], ["knownPrimaryGoal"], ["declaredGoalOther (la persona eligió otra prioridad)"]) };
   const declared = signals.declaredGoal;
   if (!isMaterial(declared)) return { resolution: unresolved("not_asked"), trace: unresolvedTrace("primaryGoal", "not_asked", [], ["declaredGoal"]) };
   return { resolution: resolved(declared.value, "signal"), trace: resolvedTrace("primaryGoal", declared.value, ["declaredGoal"], "objetivo declarado") };
@@ -327,7 +343,10 @@ function resolvePrimaryGoal(signals: DiagnosticSignalsV3): { resolution: Resolut
  */
 function resolvePrimaryFriction(signals: DiagnosticSignalsV3): { resolution: Resolution<PrimaryFriction>; trace: FieldTrace } {
   const list = signals.frictionSignals ?? [];
-  if (list.length === 0) return { resolution: unresolved("not_asked"), trace: unresolvedTrace("primaryFriction", "not_asked", [], ["frictionSignals"]) };
+  if (list.length === 0) {
+    if (signals.frictionUnknown?.value === true) return { resolution: unresolved("declared_unknown"), trace: unresolvedTrace("primaryFriction", "declared_unknown", [], [], ["frictionUnknown"]) };
+    return { resolution: unresolved("not_asked"), trace: unresolvedTrace("primaryFriction", "not_asked", [], ["frictionSignals"]) };
+  }
 
   // §32: el orden de entrada de señales equivalentes no debe cambiar la resolución — `distinctValues`/
   // `strongestValues` se ordenan alfabéticamente (un orden canónico, no el de inserción) para que
@@ -366,6 +385,7 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
   const customerReach = resolveCustomerAxis<CustomerReach>("customerReach", signals.customerReach);
   const customerBuyer = resolveCustomerAxis<CustomerBuyer>("customerBuyer", signals.buyerType);
   const growthStage = resolveGrowthStage(signals);
+  const operatingRegularity = resolveOperatingRegularity(signals);
   const hasCustomers = signals.hasRealCustomers;
   const activity: Resolution<"prelaunch" | "active"> = isMaterial(hasCustomers) ? resolved(hasCustomers.value ? "active" : "prelaunch", "signal") : unresolved("not_asked");
   const activityTrace: FieldTrace = isMaterial(hasCustomers)
@@ -386,6 +406,7 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
       niche: niche.resolution,
       nicheGroup: nicheGroup.resolution,
       growthStage: growthStage.resolution,
+      operatingRegularity: operatingRegularity.resolution,
       customerModel: { reach: customerReach.resolution, buyer: customerBuyer.resolution },
       primaryGoal: primaryGoal.resolution,
       primaryFriction: primaryFriction.resolution,
@@ -400,6 +421,7 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
       customerReach: customerReach.trace,
       customerBuyer: customerBuyer.trace,
       growthStage: growthStage.trace,
+      operatingRegularity: operatingRegularity.trace,
       activity: activityTrace,
       primaryGoal: primaryGoal.trace,
       primaryFriction: primaryFriction.trace,

@@ -44,13 +44,17 @@ export type SignalProduction =
   | { readonly kind: "customerBuyer"; readonly value: CustomerBuyer; readonly provenance: SignalProvenance }
   | { readonly kind: "hasRealCustomers"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "operatingRegularity"; readonly value: OperatingRegularity; readonly provenance: SignalProvenance }
+  | { readonly kind: "operatingRegularityUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "demandTrend"; readonly value: DemandTrend; readonly provenance: SignalProvenance }
+  | { readonly kind: "demandTrendUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "capacityPressure"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "capacityExpansion"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "systemization"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "goal"; readonly value: PrimaryGoal; readonly provenance: SignalProvenance }
   | { readonly kind: "goalUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
-  | { readonly kind: "friction"; readonly value: PrimaryFriction; readonly provenance: SignalProvenance };
+  | { readonly kind: "goalOther"; readonly value: boolean; readonly provenance: SignalProvenance }
+  | { readonly kind: "friction"; readonly value: PrimaryFriction; readonly provenance: SignalProvenance }
+  | { readonly kind: "frictionUnknown"; readonly value: boolean; readonly provenance: SignalProvenance };
 
 export const SIGNAL_PRODUCTION_KINDS = [
   "entity",
@@ -67,13 +71,17 @@ export const SIGNAL_PRODUCTION_KINDS = [
   "customerBuyer",
   "hasRealCustomers",
   "operatingRegularity",
+  "operatingRegularityUnknown",
   "demandTrend",
+  "demandTrendUnknown",
   "capacityPressure",
   "capacityExpansion",
   "systemization",
   "goal",
   "goalUnknown",
+  "goalOther",
   "friction",
+  "frictionUnknown",
 ] as const;
 
 /**
@@ -96,19 +104,25 @@ export const SIGNAL_PRODUCTION_CONTEXT_FIELD: Readonly<Record<(typeof SIGNAL_PRO
   customerBuyer: "customerBuyer",
   hasRealCustomers: "growthStage",
   operatingRegularity: "growthStage",
+  operatingRegularityUnknown: "growthStage",
   demandTrend: "growthStage",
+  demandTrendUnknown: "growthStage",
   capacityPressure: "growthStage",
   capacityExpansion: "growthStage",
   systemization: "growthStage",
   goal: "primaryGoal",
   goalUnknown: "primaryGoal",
+  goalOther: "primaryGoal",
+  frictionUnknown: "primaryFriction",
   friction: "primaryFriction",
 };
 
 /** All domain facts affected by a signal production, including derived routing facts. */
 export function signalProductionContextFields(production: SignalProduction): readonly string[] {
   const primary = SIGNAL_PRODUCTION_CONTEXT_FIELD[production.kind];
-  return production.kind === "monetizationMechanism" ? [primary, "audienceMonetization"] : [primary];
+  if (production.kind === "monetizationMechanism") return [primary, "audienceMonetization"];
+  if (production.kind === "operatingRegularity" || production.kind === "operatingRegularityUnknown") return [primary, "operatingRegularity"];
+  return [primary];
 }
 
 /** Origen de una señal derivada de una respuesta V2 (§12): pregunta + opción que la produjo, para trace/analytics/dedup. */
@@ -145,12 +159,16 @@ const PRODUCTION_TO_FIELD: Partial<Record<SignalProduction["kind"], ScalarSignal
   customerBuyer: "buyerType",
   hasRealCustomers: "hasRealCustomers",
   operatingRegularity: "operatingRegularity",
+  operatingRegularityUnknown: "operatingRegularityUnknown",
   demandTrend: "demandTrend",
+  demandTrendUnknown: "demandTrendUnknown",
   capacityPressure: "capacityPressure",
   capacityExpansion: "capacityExpansion",
   systemization: "systemization",
   goal: "declaredGoal",
   goalUnknown: "declaredGoalUnknown",
+  goalOther: "declaredGoalOther",
+  frictionUnknown: "frictionUnknown",
 };
 
 /**

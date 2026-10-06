@@ -453,6 +453,16 @@ GHL es el system of record de contactos, leads, oportunidades, pipelines, conver
 - `CopyVariantTarget.activity` permite que el renderer use la variante de monetización cuando `activity=prelaunch`, derivada de `hasRealCustomers`. Se conserva el límite general `HINT_MAX_LENGTH=140`; los dos hints aprobados se ajustan para caber.
 - La candidata no modifica scoring, pesos, resultados ni UI pública. La migración del resto del banco y su activación quedan fuera de R2A.
 
+### DIAG-V3-QBANK-R2B — candidata revisada de contexto (preguntas 06–09)
+
+- `qbv2-reviewed-context.ts` contiene q2_regularity, q2_demand_trend, q2_goal y q2_friction; `qbv2-reviewed-candidate.ts` agrega estas preguntas a la fundación R2A para formar la candidata 01–09. El agregado no se registra ni llega al barrel/ruta pública; `QUESTION_BANK_V2` sigue siendo el banco de runtime con 85 preguntas.
+- Regularidad canónica conserva `occasional` y `irregular_active` separados, mantiene `irregular`/`none` por compatibilidad y representa «no lo tengo claro» con `operatingRegularityUnknown`. La precisión `GrowthStage` puede seguir siendo `starting`, pero la traza/contexto retienen la regularidad declarada; una incertidumbre explícita no se interpreta como actividad ocasional.
+- La candidata separa `flat_observed` de la señal legacy `flat_or_unknown`; una respuesta de tendencia desconocida usa `demandTrendUnknown`, no produce tendencia plana y deja la etapa sin resolver salvo evidencia independiente positiva de capacidad. El valor legacy conserva su resolución anterior.
+- `primaryGoal` conserva su concepto existente y resuelve las ocho prioridades concretas declaradas por q2_goal. Es contexto/routing declarado por la persona, nunca evidencia de capacidad: q2_goal no tiene `scoringReadiness` y sus respuestas no producen evidencia contextual digital. `other` queda `insufficient_evidence` con la elección visible en la traza; `unsure` queda `declared_unknown`; no preguntado sigue `not_asked`. Fricción concreta continúa siendo percepción declarada para routing; `unsure` queda `declared_unknown`. Ni goal ni friction producen evidencia digital directa.
+- q2_regularity es `core` solo con clientes reales (`yes`); q2_demand_trend es `adaptive` y aplica solo con regularidad `regular`; q2_goal es `core`; q2_friction es `adaptive` y aplica solo si q2_goal es `other` o `unsure`. La elegibilidad adaptive no la convierte en requerida.
+- R2B no cambia `CURRENT_QUESTION_BANK_VERSION`, scoring, aplicabilidad dimensional, mapeos de evidencia, resultados visibles ni preguntas legacy.
+- **Deuda R4:** retirar la aplicabilidad dimensional basada en goal y basarla en contexto/evidencia real del negocio. `goal=measure` puede afectar prioridad/routing, nunca elegibilidad dimensional; el FIX conserva la semántica existente y no cambia todavía esa aplicabilidad.
+
 - Gobierno y auditoría en tablas separadas del perfil (`0009`).
 - Horarios anclados a `organization_id`; «sin fila» = día sin definir (`0008`).
 - `service_area` como texto libre (sin geocodificación, radios ni polígonos); `city`/`country` = ubicación de referencia.

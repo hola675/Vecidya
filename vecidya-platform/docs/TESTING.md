@@ -530,6 +530,23 @@ Los dos `.ps1` de navegador dependen de `npx --yes agent-browser` (sin fijar ver
 - `pnpm run test:unit`: **842/843 PASS**; única falla `characterization.test.ts:102` (`localBusinessLeaks`), digest actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`, igual al preflight.
 - `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS.
 
+### DIAG-V3-QBANK-R2B — RAN 2026-10-05
+
+- `qbv2-reviewed-candidate.test.ts` (contexto revisado): **9/9 PASS** antes de R2B-FIX. La regresión actual verifica las ocho metas concretas en `primaryGoal`, ausencia de `scoringReadiness` y evidencia contextual nula; `other`, `unsure` y no respondido conservan razones distintas, y q2_friction sigue siendo contexto de routing. No se fija equivalencia de aplicabilidad entre metas: esa política se retira en R4 para depender del contexto/evidencia real del negocio.
+- R2B-FIX elimina `userPriority`; `primaryGoal` es prioridad declarada/contexto de routing, no evidencia de capacidad. `QUESTION_BANK_V2` no se modifica y los resultados/scoring siguen fuera del alcance.
+- Las nueve suites frozen/legacy: **235/235 PASS**. Combinadas con los dos archivos candidatos: **254/254 PASS**.
+- `pnpm run test:unit`: **852/853 PASS**. Única falla `tests/unit/diagnostic/characterization.test.ts:102` (`localBusinessLeaks`): actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`; idéntica a la preflight.
+- `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. El build reporta la ausencia local ya conocida de secretos Gmail opcionales.
+- El agregado sigue sin registrar; las definiciones, opciones, mapeos, gates y resultados representativos legacy permanecen fijados por regresión.
+
+### DIAG-V3-QBANK-R2B-FIX — RAN 2026-10-05
+
+- `qbv2-reviewed-candidate.test.ts`: **9/9 PASS**; fundación R2A + candidata R2B: **19/19 PASS**. Se prueba la resolución de todas las metas concretas en `primaryGoal`, routing por contexto, `other`/`unsure` y no repetición de q2_goal, cero evidencia contextual, ausencia de `scoringReadiness` y ausencia de señales de capacidad en las opciones.
+- Suites frozen/legacy: **235/235 PASS**; combinadas con las candidatas: **254/254 PASS**. El conjunto incluye Context Resolver, arquitectura/planner, evidencia/deepening, Golden, lotes B/D, cierre y estabilización de ruta.
+- Todas las suites unitarias del directorio diagnóstico: **797/798 PASS**; única falla: `characterization.test.ts:102`. `pnpm run test:unit`: **852/853 PASS** con esa misma falla conocida.
+- `characterization.fixture.json` permanece idéntico a HEAD y R2B no rebaselinea caracterización legacy. La divergencia `localBusinessLeaks` es la establecida antes de R2B: actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`. Cualquier reconciliación del snapshot, si se desea, debe hacerse en una tarea auditada separada.
+- `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Build mantiene el aviso local conocido de secretos Gmail opcionales ausentes.
+
 Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.md). En resumen: las fases de Business Profile, Servicios (cliente), Cuenta, Admin 8A/8C, multi-org y `PRODUCT-EVOLUTION-001` B/C1/C2/D1 tienen prueba ejecutable; 4B/4C/5A/7B.1/7B.2/8B/8D/8E dependen de scripts stale; Diagnóstico, `PUBLIC-WEB-CONTENT-001`, `PUBLIC-GROWTH-001` A/B/C2, PX-B, E1 y 1C/1D/1E descansan en QA no versionado, cobertura indirecta o un script roto.
 
 ## Brechas propuestas (solo listado; ver deuda `TEST-*` en STATUS)

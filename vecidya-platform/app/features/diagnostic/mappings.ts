@@ -98,6 +98,7 @@ export function deriveContextV3(context: Context): DiagnosticContextV3 {
     niche: unresolved("not_asked"),
     nicheGroup: unresolved("not_asked"),
     growthStage: mapLegacyStage(context.stage),
+    operatingRegularity: unresolved("not_asked"),
     customerModel: { reach: unresolved("not_asked"), buyer: unresolved("not_asked") },
     primaryGoal: mapLegacyGoal(context.goal),
     primaryFriction: unresolved("not_asked"),
