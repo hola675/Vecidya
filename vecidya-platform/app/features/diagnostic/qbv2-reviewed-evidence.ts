@@ -112,7 +112,17 @@ export const REVIEWED_OPERATIONAL_READINESS_EVIDENCE_V3 = [
   },
 ] as const satisfies readonly QuestionEvidenceV3[];
 
-export const REVIEWED_EVIDENCE_V3 = [...REVIEWED_PILOT_EVIDENCE_V3, ...REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3, ...REVIEWED_VISIBLE_OFFER_EVIDENCE_V3, ...REVIEWED_INITIAL_ACCESS_EVIDENCE_V3, ...REVIEWED_FOLLOWUP_CONTINUITY_EVIDENCE_V3, ...REVIEWED_OPERATIONAL_READINESS_EVIDENCE_V3] as const;
+/** R3G: experiencia/trabajo visible, distinta de opiniones externas; sin jerarquía de credenciales. */
+export const REVIEWED_PROFESSIONAL_AUTHORITY_EVIDENCE_V3 = [
+  {
+    questionId: "q2_professional_authority_signals", questionVersion: 2,
+    dimensions: [{ dimension: "trust_reputation", directness: "direct", answers: {
+      clearly_visible: "established", partial: "partial", not_really: "weak", unknown: "uncertainty",
+    } satisfies Record<"clearly_visible" | "partial" | "not_really" | "unknown", MigratedAnswerStateV3> }],
+  },
+] as const satisfies readonly QuestionEvidenceV3[];
+
+export const REVIEWED_EVIDENCE_V3 = [...REVIEWED_PILOT_EVIDENCE_V3, ...REVIEWED_PUBLIC_FOUNDATION_EVIDENCE_V3, ...REVIEWED_VISIBLE_OFFER_EVIDENCE_V3, ...REVIEWED_INITIAL_ACCESS_EVIDENCE_V3, ...REVIEWED_FOLLOWUP_CONTINUITY_EVIDENCE_V3, ...REVIEWED_OPERATIONAL_READINESS_EVIDENCE_V3, ...REVIEWED_PROFESSIONAL_AUTHORITY_EVIDENCE_V3] as const;
 
 /** Misma candidata R2, vista de evidencia aislada: solo cambia metadata de migración, nunca registro. */
 export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefinitionV2[] = REVIEWED_CANDIDATE_QUESTIONS_V2.map((question) => {

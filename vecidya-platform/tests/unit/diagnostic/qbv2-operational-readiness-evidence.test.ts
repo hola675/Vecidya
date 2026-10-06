@@ -8,7 +8,7 @@ import { validateQuestionEvidenceV3 } from "../../../app/features/diagnostic/qbv
 import { buildQuestionPlan } from "../../../app/features/diagnostic/qbv2-planner";
 import { REVIEWED_CANDIDATE_QUESTIONS_V2 as frozen } from "../../../app/features/diagnostic/qbv2-reviewed-candidate";
 import { REVIEWED_LEGACY_DECISIONS as decisions } from "../../../app/features/diagnostic/qbv2-reviewed-decisions";
-import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as candidate, REVIEWED_EVIDENCE_MIGRATION_SUMMARY_V3 as summary, REVIEWED_OPERATIONAL_READINESS_EVIDENCE_V3 as batch } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
+import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as candidate, REVIEWED_EVIDENCE_MIGRATION_SUMMARY_V3 as summary, REVIEWED_OPERATIONAL_READINESS_EVIDENCE_V3 as batch, REVIEWED_EVIDENCE_V3 as registry } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-validators";
 
@@ -23,8 +23,8 @@ const derive = (answers: AnswersV2) => deriveContextualEvidence(answers, candida
 const context = resolveEligibleQuestionsV2(seed, candidate).context;
 const score = (evidence: readonly ContextualEvidence[]) => scoreContextualDimensions({ answers: {}, context, evidence, bank: candidate }).dimensions.find((d) => d.id === "digital_readiness")!;
 
-test("R3F complete atomic mappings resolve the two v2 definitions and a 38/14/24 ledger", () => {
-  assert.deepEqual(summary, { total: 38, migrated: 14, pending: 24 });
+test("R3F complete atomic mappings resolve the two v2 definitions within the cumulative ledger", () => {
+  assert.deepEqual(summary, { total: 38, migrated: registry.length, pending: 38 - registry.length });
   assert.deepEqual(batch.map((m) => m.questionId), [information, status]);
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   for (const id of [information, status]) {

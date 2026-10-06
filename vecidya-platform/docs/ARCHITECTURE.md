@@ -1,5 +1,15 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R3G — evidencia visible de experiencia profesional
+
+**CODE/TEST, 2026-10-06:** `q2_professional_authority_signals@v2` migra únicamente a **Trust & Reputation/direct** en el registro canónico; ledger **38/15 migrated/23 pending**. El prompt observa si una persona nueva encuentra fácilmente información sobre experiencia/trabajo; opciones clearly_visible=established, partial=partial, not_really=weak y unknown=uncertainty/null. Dificultad para encontrarla no prueba ausencia absoluta: no se usa missing. No incluye N/A ni se añade. Contribuciones existentes intactas.
+
+**Overlap DISTINCT con `q2_reputation_flow@v3`, intacta:** autoridad observa evidencia propia visible (trabajos, casos, experiencia o credenciales relevantes); reputación observa reseñas/testimonios/opiniones externas. Pueden coexistir en una ruta profesional activa con necesidad de confianza y diferir en ambos sentidos. Cada respuesta mantiene su ID/version/observationId y payload independiente: no se duplica automáticamente la misma observación ni se aliasan fuentes. Dos observaciones directas usan la agregación certificada; no cambia ponderación ni se modifica la detección numérica existente de contradicciones/confianza ante valores divergentes.
+
+No se establece jerarquía universal de certificaciones, regulación o prestigio profesional. Credenciales no son obligatorias para established, ni popularidad, seguidores, tráfico, clientela, ventas, herramientas o automatización son evidencia. **Secundarias REJECTED:** Clarity requiere comprensión de oferta; Foundation base pública mantenida; Discovery llegada a personas nuevas; Conversion acceso/siguiente paso; Readiness capacidad interna. Visibilidad de experiencia no observa esas capacidades.
+
+Gates R2 conservados: sector profesional revisado más actividad activa y meta/fricción trust, rol adaptive y entrada material. Meta/fricción/sector sin respuesta no emiten Trust; no se redefine aplicabilidad R4. `q2_professional_intake_flow` queda pending/cero evidencia. Candidata 38 con definiciones intactas, REMOVE/DEFER ausentes, runtime 85/v1 e inactiva para candidata, caracterización congelada. Sin calibración, cambios de resultados/recomendaciones/UI/PDF/D1 o deploy. Pruebas en TESTING.md; R3H solo propuesta.
+
 ## DIAG-V3-R3F — recuperación de información operativa
 
 **CODE/TEST, 2026-10-06:** el registro canónico migra `q2_operations_information_base@v2` como **Digital Readiness/direct** y `q2_b2b_status_visibility@v2` como **Digital Readiness/supporting**. Ledger derivado **38/14 migrated/24 pending**. La primera observa encontrar información correcta/actualizada para continuar trabajo, capacidad operativa general; la segunda observa recuperar en qué quedó una oportunidad, un ámbito comercial específico que no establece por sí solo preparación operativa general. Se determina directness desde estos constructos, sin copiar legacy.

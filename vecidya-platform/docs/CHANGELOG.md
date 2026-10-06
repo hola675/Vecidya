@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R3G — evidencia de autoridad profesional visible
+
+Una migración atómica v2, solo Trust & Reputation/direct, con overlap DISTINCT frente a opiniones externas de reputación v3. Ledger 38/15/23; nueve regresiones de todas las opciones/identidad, coexistencia divergente, unknown neutral, routing trust sin evidencia, ausencia de sesgo de credenciales/prestigio/popularidad, intake pending y freeze/legacy. Ledger R3F adaptado al registro acumulado; mapas anteriores intactos. Sin cambio de definiciones/gates R2, contrato/scorer/planner, reputación, pesos/confianza/calibración, runtime, caracterización o deploy. Resultados en TESTING.md; R3H no iniciado.
+
 ## 2026-10-06 — DIAG-V3-R3F — recuperación de información operativa
 
 Dos migraciones atómicas v2 en el registro canónico: información general Readiness/direct y estado B2B Readiness/supporting, con overlap PARTIAL explícito. Ledger derivado 38/14/24; doce regresiones de opciones/identidad, neutralidad de herramientas/unknown/N/A, convivencia y composición bajo cap con q65, supporting solo, pipeline pending, límite con seguimiento y legacy/freeze. Suite R3E adapta ledger acumulado y vecinos pendientes tras migrar estado B2B; mapas anteriores intactos. Sin cambios de R2, contrato/scorer/planner, q65, pesos/confianza/calibración, caracterización, runtime o deploy. Resultados en TESTING.md; R3G no iniciado.
