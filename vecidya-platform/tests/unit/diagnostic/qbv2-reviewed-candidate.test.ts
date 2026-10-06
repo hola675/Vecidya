@@ -13,17 +13,20 @@ import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-validators";
 import { REVIEWED_CONTEXT_QUESTIONS_V2 } from "../../../app/features/diagnostic/qbv2-reviewed-context";
 import { REVIEWED_FOUNDATION_QUESTIONS_V2 } from "../../../app/features/diagnostic/qbv2-reviewed-foundation";
+import { REVIEWED_SPECIALIZED_ENTRY_QUESTIONS_V2 } from "../../../app/features/diagnostic/qbv2-reviewed-specialized-entry";
 
-const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_sector", "q2_customer_reach", "q2_customer_buyer", "q2_process_systemization", "q2_capacity_signal"] as const;
+const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_appointments_noshow", "q2_ecommerce_traffic_sources", "q2_b2b_pipeline", "q2_sector", "q2_customer_reach", "q2_customer_buyer", "q2_process_systemization", "q2_capacity_signal"] as const;
 const question = (id: string, bank: readonly QuestionDefinitionV2[] = candidate) => bank.find((item) => item.id === id)!;
 const answer = (answers: AnswersV2) => resolveEligibleQuestionsV2(answers, candidate);
 
-test("reviewed candidate composes exactly questions 01–09, 14–16 and 17–18 and remains unregistered", () => {
+test("reviewed candidate composes exactly questions 01–12 and 14–18 and remains unregistered", () => {
   assert.deepEqual(REVIEWED_FOUNDATION_QUESTIONS_V2.map(({ id }) => id), ids.slice(0, 5));
   assert.deepEqual(REVIEWED_CONTEXT_QUESTIONS_V2.map(({ id }) => id), ids.slice(5, 9));
+  assert.deepEqual(REVIEWED_SPECIALIZED_ENTRY_QUESTIONS_V2.map(({ id }) => id), ids.slice(9, 12));
   assert.deepEqual(candidate.slice(9).map(({ id }) => id), ids.slice(9));
   assert.deepEqual(candidate.map(({ id }) => id), ids);
-  assert.equal(new Set(candidate.map(({ id }) => id)).size, 14);
+  assert.equal(new Set(candidate.map(({ id }) => id)).size, 17);
+  assert.ok(!candidate.some(({ id }) => id === "q2_local_foot_traffic"));
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   assert.deepEqual(validateQuestionCopyV2(candidate), []);
   assert.equal(question("q2_demand_trend").hint!.length, 139);
@@ -38,6 +41,7 @@ test("reviewed semantic versions are pinned and migrated definitions advance the
   assert.deepEqual(Object.fromEntries(candidate.map(({ id, version }) => [id, version])), {
     q2_entity: 1, q2_other_staff: 1, q2_monetization: 2, q2_delivery: 2, q2_has_customers: 1,
     q2_regularity: 2, q2_demand_trend: 2, q2_goal: 2, q2_friction: 2,
+    q2_appointments_noshow: 2, q2_ecommerce_traffic_sources: 3, q2_b2b_pipeline: 2,
     q2_sector: 2, q2_customer_reach: 2, q2_customer_buyer: 2,
     q2_process_systemization: 2, q2_capacity_signal: 2,
   });

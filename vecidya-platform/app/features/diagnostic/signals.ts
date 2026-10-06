@@ -1,4 +1,4 @@
-import type { BusinessModel, CapacitySituationV3, CustomerBuyer, CustomerReach, EntityType, NicheGroup, NicheId, OperatingRegularityV3, OperationalArchetype, PrimaryFriction, PrimaryGoal, ProcessConsistencyV3 } from "./contracts";
+import type { AppointmentAttendanceV3, B2BFollowupProcessV3, BusinessModel, CapacitySituationV3, CustomerBuyer, CustomerReach, EntityType, NicheGroup, NicheId, OperatingRegularityV3, OperationalArchetype, PrimaryFriction, PrimaryGoal, ProcessConsistencyV3 } from "./contracts";
 
 /**
  * Señales de dominio de DIAG-V3-08B.1 (Context Resolver).
@@ -231,6 +231,13 @@ export type DiagnosticSignalsV3 = {
   reviewedCapacityPressure?: Signal<boolean>;
   reviewedCapacityExpansion?: Signal<boolean>;
   reviewedCapacityUnknown?: Signal<boolean>;
+
+  /** Reviewed appointment attendance condition; not evidence of a generic operations problem. */
+  appointmentAttendance?: Signal<AppointmentAttendanceV3>;
+  appointmentAttendanceUnknown?: Signal<boolean>;
+  /** Reviewed B2B follow-up process, independent of CRM usage or generic friction. */
+  b2bFollowupProcess?: Signal<B2BFollowupProcessV3>;
+  b2bFollowupProcessUnknown?: Signal<boolean>;
 
   declaredGoal?: Signal<PrimaryGoal>;
   /** Equivalente a la legacy `unsure`: ausencia declarada, no ausencia de dato (§24, `mapLegacyGoal`). */

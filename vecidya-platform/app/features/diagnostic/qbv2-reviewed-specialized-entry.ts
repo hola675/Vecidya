@@ -1,0 +1,71 @@
+import type { QuestionDefinitionV2 } from "./qbv2-contract";
+import { futureB2BApplicability } from "./qbv2-future-routing";
+import { andV2, archetypeIncludes, eqV2 } from "./qbv2-rules";
+
+/** R2E only: reviewed specialized questions 10–12, still isolated from QUESTION_BANK_V2. */
+export const REVIEWED_SPECIALIZED_ENTRY_QUESTIONS_V2: readonly QuestionDefinitionV2[] = [
+  {
+    id: "q2_appointments_noshow",
+    version: 2,
+    evidenceMigration: "pending",
+    module: "appointments",
+    type: "single",
+    routingRole: "adaptive",
+    prompt: "¿Qué tan seguido tus clientes faltan a una cita?",
+    hint: "Piensa en los últimos meses en general, no en una semana aislada.",
+    purpose: ["diagnostic"],
+    priority: "normal",
+    appliesWhen: andV2(archetypeIncludes("appointments"), eqV2("q2_has_customers", "yes")),
+    variants: [{ target: { terminology: ["clinical"] }, prompt: "¿Qué tan seguido tus pacientes faltan a una cita?" }],
+    options: [
+      { value: "rarely", label: "Casi nunca", produces: [{ kind: "appointmentAttendance", value: "rarely", provenance: "explicit_declaration" }] },
+      { value: "sometimes", label: "Pasa algunas veces", produces: [{ kind: "appointmentAttendance", value: "sometimes", provenance: "explicit_declaration" }] },
+      { value: "often", label: "Pasa con frecuencia", produces: [{ kind: "appointmentAttendance", value: "often", provenance: "explicit_declaration" }] },
+      { value: "unknown", label: "No lo sé o no lo he revisado", kind: "unknown", produces: [{ kind: "appointmentAttendanceUnknown", value: true, provenance: "explicit_declaration" }] },
+    ],
+  },
+  {
+    id: "q2_ecommerce_traffic_sources",
+    version: 3,
+    evidenceMigration: "pending",
+    module: "ecommerce",
+    type: "multi",
+    routingRole: "adaptive",
+    prompt: "¿Por cuáles canales suelen llegar personas a tu tienda online?",
+    hint: "Marca todos los canales que te traen personas de forma habitual. No cuentes algo que pasó solo una vez.",
+    purpose: ["diagnostic"],
+    priority: "normal",
+    appliesWhen: andV2(archetypeIncludes("ecommerce"), eqV2("q2_has_customers", "yes")),
+    options: [
+      { value: "social", label: "Redes sociales, como Instagram, Facebook o TikTok" },
+      { value: "search", label: "Google u otros buscadores" },
+      { value: "ads", label: "Anuncios pagados" },
+      { value: "referral", label: "Recomendaciones de otras personas o negocios" },
+      { value: "marketplace", label: "Marketplaces o plataformas de venta" },
+      { value: "messaging", label: "WhatsApp u otros mensajes" },
+      { value: "email", label: "Correos o boletines" },
+      { value: "direct", label: "Personas que ya conocen mi tienda y entran directamente" },
+      { value: "other", label: "Otro canal" },
+      { value: "unknown", label: "No sé de dónde llegan", kind: "unknown", exclusive: true },
+    ],
+  },
+  {
+    id: "q2_b2b_pipeline",
+    version: 2,
+    evidenceMigration: "pending",
+    module: "b2b",
+    type: "single",
+    routingRole: "adaptive",
+    prompt: "Cuando aparece una oportunidad de venta, ¿tienes una forma clara de darle seguimiento hasta saber qué pasó?",
+    hint: "No importa si usas una hoja, una agenda o un CRM. Lo importante es si el seguimiento se hace de una forma clara y repetible.",
+    purpose: ["diagnostic"],
+    priority: "normal",
+    appliesWhen: andV2(futureB2BApplicability(), eqV2("q2_has_customers", "yes")),
+    options: [
+      { value: "defined", label: "Sí, seguimos un proceso claro y sabemos qué paso sigue", produces: [{ kind: "b2bFollowupProcess", value: "defined", provenance: "explicit_declaration" }] },
+      { value: "partial", label: "Tenemos una forma de hacerlo, pero no siempre se sigue igual", produces: [{ kind: "b2bFollowupProcess", value: "partial", provenance: "explicit_declaration" }] },
+      { value: "informal", label: "Cada oportunidad se maneja de forma distinta o de memoria", produces: [{ kind: "b2bFollowupProcess", value: "informal", provenance: "explicit_declaration" }] },
+      { value: "unknown", label: "No estoy seguro", kind: "unknown", produces: [{ kind: "b2bFollowupProcessUnknown", value: true, provenance: "explicit_declaration" }] },
+    ],
+  },
+];

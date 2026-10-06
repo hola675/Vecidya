@@ -5,6 +5,8 @@ import {
   unresolved,
   type BusinessModel,
   type CapacitySituationV3,
+  type AppointmentAttendanceV3,
+  type B2BFollowupProcessV3,
   type CustomerBuyer,
   type CustomerReach,
   type DiagnosticContextV3,
@@ -76,6 +78,8 @@ export type ContextResolutionTrace = {
   readonly operatingRegularity: FieldTrace;
   readonly processConsistency: FieldTrace;
   readonly capacitySituation: FieldTrace;
+  readonly appointmentAttendance: FieldTrace;
+  readonly b2bFollowupProcess: FieldTrace;
   readonly activity: FieldTrace;
   readonly primaryGoal: FieldTrace;
   readonly primaryFriction: FieldTrace;
@@ -292,6 +296,20 @@ function resolveCapacitySituation(signals: DiagnosticSignalsV3): { resolution: R
   return { resolution: unresolved("insufficient_evidence", ["stable", "pressure", "expanded", "pressure_and_expanded"]), trace: unresolvedTrace("capacitySituation", "insufficient_evidence", ["stable", "pressure", "expanded", "pressure_and_expanded"], ["reviewedCapacityPressure", "reviewedCapacityExpansion"]) };
 }
 
+function resolveAppointmentAttendance(signals: DiagnosticSignalsV3): { resolution: Resolution<AppointmentAttendanceV3>; trace: FieldTrace } {
+  if (signals.appointmentAttendanceUnknown?.value === true) return { resolution: unresolved("declared_unknown"), trace: unresolvedTrace("appointmentAttendance", "declared_unknown", [], [], ["appointmentAttendanceUnknown"]) };
+  const signal = signals.appointmentAttendance;
+  if (!isMaterial(signal)) return { resolution: unresolved("not_asked"), trace: unresolvedTrace("appointmentAttendance", "not_asked", [], ["appointmentAttendance"]) };
+  return { resolution: resolved(signal.value, "signal"), trace: resolvedTrace("appointmentAttendance", signal.value, ["appointmentAttendance"], "frecuencia declarada de inasistencia a citas") };
+}
+
+function resolveB2BFollowupProcess(signals: DiagnosticSignalsV3): { resolution: Resolution<B2BFollowupProcessV3>; trace: FieldTrace } {
+  if (signals.b2bFollowupProcessUnknown?.value === true) return { resolution: unresolved("declared_unknown"), trace: unresolvedTrace("b2bFollowupProcess", "declared_unknown", [], [], ["b2bFollowupProcessUnknown"]) };
+  const signal = signals.b2bFollowupProcess;
+  if (!isMaterial(signal)) return { resolution: unresolved("not_asked"), trace: unresolvedTrace("b2bFollowupProcess", "not_asked", [], ["b2bFollowupProcess"]) };
+  return { resolution: resolved(signal.value, "signal"), trace: resolvedTrace("b2bFollowupProcess", signal.value, ["b2bFollowupProcess"], "proceso declarado para dar seguimiento a oportunidades B2B") };
+}
+
 // ── GrowthStage (resuelve DIAG-V3-08B0-GROWTH-STAGE-SIGNAL-001) ─────────────
 
 function resolveGrowthStage(signals: DiagnosticSignalsV3): { resolution: Resolution<GrowthStage>; trace: FieldTrace } {
@@ -429,6 +447,8 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
   const operatingRegularity = resolveOperatingRegularity(signals);
   const processConsistency = resolveProcessConsistency(signals);
   const capacitySituation = resolveCapacitySituation(signals);
+  const appointmentAttendance = resolveAppointmentAttendance(signals);
+  const b2bFollowupProcess = resolveB2BFollowupProcess(signals);
   const hasCustomers = signals.hasRealCustomers;
   const activity: Resolution<"prelaunch" | "active"> = isMaterial(hasCustomers) ? resolved(hasCustomers.value ? "active" : "prelaunch", "signal") : unresolved("not_asked");
   const activityTrace: FieldTrace = isMaterial(hasCustomers)
@@ -452,6 +472,8 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
       operatingRegularity: operatingRegularity.resolution,
       processConsistency: processConsistency.resolution,
       capacitySituation: capacitySituation.resolution,
+      appointmentAttendance: appointmentAttendance.resolution,
+      b2bFollowupProcess: b2bFollowupProcess.resolution,
       customerModel: { reach: customerReach.resolution, buyer: customerBuyer.resolution },
       primaryGoal: primaryGoal.resolution,
       primaryFriction: primaryFriction.resolution,
@@ -469,6 +491,8 @@ export function resolveDiagnosticContext(signals: DiagnosticSignalsV3, nicheHint
       operatingRegularity: operatingRegularity.trace,
       processConsistency: processConsistency.trace,
       capacitySituation: capacitySituation.trace,
+      appointmentAttendance: appointmentAttendance.trace,
+      b2bFollowupProcess: b2bFollowupProcess.trace,
       activity: activityTrace,
       primaryGoal: primaryGoal.trace,
       primaryFriction: primaryFriction.trace,

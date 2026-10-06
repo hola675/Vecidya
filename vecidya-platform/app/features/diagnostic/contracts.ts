@@ -355,6 +355,14 @@ export type ProcessConsistencyV3 = (typeof PROCESS_CONSISTENCIES_V3)[number];
 /** Current operating capacity situation; intentionally distinct from legacy growth evidence. */
 export const CAPACITY_SITUATIONS_V3 = ["stable", "pressure", "expanded", "pressure_and_expanded"] as const;
 export type CapacitySituationV3 = (typeof CAPACITY_SITUATIONS_V3)[number];
+
+/** Reviewed appointment attendance condition; not a generic operational-friction diagnosis. */
+export const APPOINTMENT_ATTENDANCE_V3 = ["rarely", "sometimes", "often"] as const;
+export type AppointmentAttendanceV3 = (typeof APPOINTMENT_ATTENDANCE_V3)[number];
+
+/** Reviewed B2B follow-up process, independent of tool/CRM usage and friction scoring. */
+export const B2B_FOLLOWUP_PROCESSES_V3 = ["defined", "partial", "informal"] as const;
+export type B2BFollowupProcessV3 = (typeof B2B_FOLLOWUP_PROCESSES_V3)[number];
 export type LegacyStageId = StageId;
 
 /**
@@ -481,6 +489,10 @@ export type DiagnosticContextV3 = {
   processConsistency: Resolution<ProcessConsistencyV3>;
   /** Reviewed capacity situation, separate from legacy growth evidence signals. */
   capacitySituation: Resolution<CapacitySituationV3>;
+  /** Reviewed appointment attendance condition from q10. */
+  appointmentAttendance: Resolution<AppointmentAttendanceV3>;
+  /** Reviewed B2B follow-up process from q12, not CRM adoption. */
+  b2bFollowupProcess: Resolution<B2BFollowupProcessV3>;
   customerModel: CustomerModel;
   primaryGoal: Resolution<PrimaryGoal>;
   primaryFriction: Resolution<PrimaryFriction>;

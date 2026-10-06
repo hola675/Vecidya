@@ -1,5 +1,15 @@
 # Pruebas
 
+## DIAG-V3-QBANK-R2E — preguntas especializadas revisadas (10–12)
+
+- `qbv2-reviewed-specialized-entry.test.ts` verifica los contratos q10–q12, gates, rutas deterministas, opciones multi, unknown exclusivo, contexto/traza/DSL, estados desconocidos, cero evidencia candidata, mapas y resultados legacy, versiones y aislamiento.
+- El agregado candidato contiene exactamente 17 preguntas (01–12 y 14–18); q13 queda fuera. `QUESTION_BANK_V2` conserva 85 preguntas.
+- `evidenceMigration: "pending"` más versión distinta a la definición legacy suprime únicamente el mapa heredado de la definición candidata; el scorer no importa ni registra el candidato. El banco productivo conserva las salidas de `EVIDENCE_MAPPING` y `ANSWER_SEMANTICS`.
+- Suite especializada: **6/6 PASS**; candidato completo (fundación + contexto + q10–q12 + clasificación + q17–q18): **41/41 PASS**.
+- Las suites QBV2 frozen/legacy: **235/235 PASS**; combinadas con la candidata: **276/276 PASS**.
+- Directorio diagnóstico: **819/820 PASS**. `pnpm run test:unit`: **874/875 PASS**. Única falla conocida: `tests/unit/diagnostic/characterization.test.ts:102`, `localBusinessLeaks`; actual `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`, esperado `2933cb7d10a0c898a33527fac4dd4bfbe0a2bc5b00a7b13e52bf9bac9affff09`. No se modificó ni rebaselineó el fixture.
+- `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Build conserva el aviso local conocido por secretos Gmail ausentes.
+
 ## DIAG-V3-QBANK-R2D — contexto operativo revisado
 
 - `qbv2-reviewed-operational-context.test.ts` fija las definiciones q17–q18, aplicabilidad y selección adaptive, estados de proceso/capacidad, exclusividad multi, interacción con `GrowthStage`, cero evidencia digital y contratos/contexto legacy.

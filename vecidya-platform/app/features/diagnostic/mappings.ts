@@ -101,6 +101,8 @@ export function deriveContextV3(context: Context): DiagnosticContextV3 {
     operatingRegularity: unresolved("not_asked"),
     processConsistency: unresolved("not_asked"),
     capacitySituation: unresolved("not_asked"),
+    appointmentAttendance: unresolved("not_asked"),
+    b2bFollowupProcess: unresolved("not_asked"),
     customerModel: { reach: unresolved("not_asked"), buyer: unresolved("not_asked") },
     primaryGoal: mapLegacyGoal(context.goal),
     primaryFriction: unresolved("not_asked"),

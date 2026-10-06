@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-QBANK-R2E — candidata especializada revisada (preguntas 10–12)
+
+- La candidata aislada pasa a 17 preguntas en orden 01–12 y 14–18; añade q10 `q2_appointments_noshow` v2, q11 `q2_ecommerce_traffic_sources` v3 (incluye `messaging`) y q12 `q2_b2b_pipeline` v2. q13 no se migra y el banco productivo conserva 85 preguntas.
+- q10 y q12 agregan `appointmentAttendance` y `b2bFollowupProcess`, con estados desconocidos explícitos y acceso por el DSL/planner. No generan fricción genérica ni evidencia digital; q11 tampoco asigna evidencia en R2E.
+- La guarda de evidencia pendiente se limita a definiciones marcadas del candidato con versión distinta a su definición legacy; el scorer no registra ni importa el candidato. `EVIDENCE_MAPPING`, `ANSWER_SEMANTICS` y el resultado legacy permanecen iguales.
+- q13 queda diferida hasta R2F, que deberá resolver aplicabilidad de llegada espontánea usando operación real, ubicación física y walk-in; arquetipo local/retail no basta. Validación: ver `TESTING.md`.
+
 ## 2026-10-06 — DIAG-V3-QBANK-R2D — candidata revisada de consistencia y capacidad (preguntas 17–18)
 
 - Se agregan q2_process_systemization y q2_capacity_signal a la candidata aislada: ahora 14 preguntas en orden 01–09, 14–18; q10–q13 continúan pendientes.

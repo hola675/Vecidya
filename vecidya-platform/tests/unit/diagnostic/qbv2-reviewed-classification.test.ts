@@ -14,7 +14,7 @@ import { evaluateRuleV2, type AnswersV2 } from "../../../app/features/diagnostic
 import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-validators";
 import { NICHE_GROUP_REGISTRY } from "../../../app/features/diagnostic/taxonomy";
 
-const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_sector", "q2_customer_reach", "q2_customer_buyer", "q2_process_systemization", "q2_capacity_signal"];
+const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_appointments_noshow", "q2_ecommerce_traffic_sources", "q2_b2b_pipeline", "q2_sector", "q2_customer_reach", "q2_customer_buyer", "q2_process_systemization", "q2_capacity_signal"];
 const question = (id: string, bank: readonly QuestionDefinitionV2[] = candidate) => bank.find((item) => item.id === id)!;
 const resolve = (answers: AnswersV2) => resolveEligibleQuestionsV2(answers, candidate);
 const rendered = (id: string, answers: AnswersV2) => {
@@ -23,9 +23,9 @@ const rendered = (id: string, answers: AnswersV2) => {
 };
 
 test("R2C classification slice and full candidate order remain isolated, with semantic versions pinned", () => {
-  assert.deepEqual(classification.map(({ id }) => id), ids.slice(9, 12));
+  assert.deepEqual(classification.map(({ id }) => id), ids.slice(12, 15));
   assert.deepEqual(candidate.map(({ id }) => id), ids);
-  assert.equal(new Set(candidate.map(({ id }) => id)).size, 14);
+  assert.equal(new Set(candidate.map(({ id }) => id)).size, 17);
   assert.ok(!candidate.some(({ id }) => /^q2_(?:10|11|12|13|17|18)\b/.test(id)));
   assert.deepEqual(validateQuestionBankV2(candidate), []);
   assert.equal(CURRENT_QUESTION_BANK_VERSION, 1);
@@ -92,7 +92,7 @@ test("each reach answer resolves only customerReach and contributes no diagnosti
   }
 });
 
-test("buyer answers resolve only CustomerBuyer; future B2B relevance does not activate a B2B question", () => {
+test("buyer answers resolve only CustomerBuyer; reviewed B2B question follows future applicability", () => {
   const base = { q2_entity: "business", q2_has_customers: "yes" } as const;
   for (const value of ["b2c", "b2b", "mixed"] as const) {
     const answers = { ...base, q2_customer_buyer: value };
@@ -103,8 +103,8 @@ test("buyer answers resolve only CustomerBuyer; future B2B relevance does not ac
     assert.equal(state.context.archetype.status, "unresolved");
     assert.equal(state.context.businessModel.status, "unresolved");
     assert.equal(state.context.growthStage.value, "starting");
-    assert.ok(!candidate.some(({ module }) => module === "b2b"));
-    assert.ok(!state.eligibleQuestionIds.some((id) => question(id).module === "b2b"));
+    assert.ok(candidate.some(({ module }) => module === "b2b"));
+    assert.equal(state.eligibleQuestionIds.some((id) => question(id).module === "b2b"), value !== "b2c");
   }
 });
 

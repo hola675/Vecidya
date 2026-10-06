@@ -478,6 +478,16 @@ GHL es el system of record de contactos, leads, oportunidades, pipelines, conver
 - `processConsistency` y `capacitySituation` están disponibles en `CONTEXT_FIELD_REFS` para las reglas declarativas de routing; el resolver de campos sigue siendo genérico y el planner no requiere lógica especial para q17/q18.
 - Ambas preguntas son `adaptive`, del módulo `maturity`, versión 2 y no tienen `scoringReadiness`. No producen evidencia digital ni infieren CRM, automatización o licencia. El candidato no se registra ni publica.
 
+### DIAG-V3-QBANK-R2E — candidata especializada revisada (preguntas 10–12)
+
+- `qbv2-reviewed-specialized-entry.ts` agrega q2_appointments_noshow v2, q2_ecommerce_traffic_sources v3 y q2_b2b_pipeline v2 al candidato, ahora en orden 01–12 y 14–18 (17 preguntas). q13 permanece fuera; `QUESTION_BANK_V2` conserva 85 preguntas y sigue siendo runtime.
+- q10 requiere `archetypeIncludes("appointments")` y `q2_has_customers == yes`; registra `appointmentAttendance` (`rarely`/`sometimes`/`often`) o incertidumbre explícita. La inasistencia frecuente no produce fricción `operations`.
+- q11 requiere ecommerce y clientes reales; suma `messaging`, conserva la exclusividad de `unknown` y no produce señales contextuales ni evidencia digital en esta fase.
+- q12 requiere la aplicabilidad futura B2B (archetype, comprador B2B o comprador mixto) y clientes reales; registra `b2bFollowupProcess` (`defined`/`partial`/`informal`) o incertidumbre. No mide uso de CRM ni convierte informalidad en fricción `follow_up`.
+- `appointmentAttendance` y `b2bFollowupProcess` completan el circuito señal → contexto/traza → `CONTEXT_FIELD_REFS` → DSL/planner. Las tres preguntas son `adaptive`; ninguna pasa a ser requerida por el rol.
+- `evidenceMigration: "pending"` declara en cada definición candidata que sus semánticas de evidencia esperan R3. El scorer omite el mapa heredado solo cuando esa marca explícita está presente y la versión difiere de la definición legacy con el mismo ID. Mapas, semánticas y resultados del banco legacy no cambian; el scorer no importa ni registra la candidata y la guarda no depende de un número de versión.
+- **q13 diferida a R2F:** el arquetipo `local`/`retail` no demuestra que una ubicación acepte llegadas espontáneas. Antes de preguntar foot traffic, el routing local debe reunir clientes reales, ubicación física y aplicabilidad de llegada espontánea. No se infiere walk-in de local/retail ni se restaura N/A visible.
+
 - Gobierno y auditoría en tablas separadas del perfil (`0009`).
 - Horarios anclados a `organization_id`; «sin fila» = día sin definir (`0008`).
 - `service_area` como texto libre (sin geocodificación, radios ni polígonos); `city`/`country` = ubicación de referencia.

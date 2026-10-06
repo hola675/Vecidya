@@ -210,6 +210,11 @@ export function deriveContextualEvidence(answers: AnswersV2, bank: QuestionBankV
   for (const question of bank) {
     const questionId = question.id; const answer = answers[questionId]; const mapping = EVIDENCE_MAPPING[questionId];
     if (answer === undefined || !mapping || CONTEXT_ONLY_QUESTION_IDS.has(questionId)) continue;
+    const legacyDefinition = QUESTION_BANK_V2.find((legacy) => legacy.id === questionId);
+    const reviewedCandidateEvidencePending = question.evidenceMigration !== undefined
+      && legacyDefinition !== undefined
+      && question.version !== legacyDefinition.version;
+    if (reviewedCandidateEvidencePending) continue;
     const values = selectedValues(answer); if (values.length === 0) continue;
     for (const dimension of mapping.dimensions) {
       const directness = EVIDENCE_DIRECTNESS[questionId]?.[dimension] ?? mapping.semanticRole;

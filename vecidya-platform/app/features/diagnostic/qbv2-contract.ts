@@ -163,10 +163,10 @@ export type CopyVariantV2 = { readonly target: CopyVariantTarget; readonly promp
 /**
  * Versión semántica de una pregunta QBV2, con la misma regla que `QuestionVersion` de QBV1: sube cuando cambia
  * qué se pregunta, qué significa una opción, qué opciones existen o cómo puntúa una respuesta; no sube por
- * redacción. DIAG-V3-08F.1: `q2_reputation_flow` y `q2_ecommerce_traffic_sources` están en la versión 2 (opciones
- * añadidas); el resto sigue en la 1. QBV1 conserva su propio tipo (solo versión 1).
+ * redacción. `q2_reputation_flow` conserva su versión 2 en el banco legacy; la definición candidata revisada de
+ * `q2_ecommerce_traffic_sources` avanza a versión 3 al añadir `messaging`. QBV1 conserva su propio tipo.
  */
-export type QuestionVersionV2 = 1 | 2;
+export type QuestionVersionV2 = 1 | 2 | 3;
 export type QuestionRoutingRole = "core" | "adaptive" | "deepening";
 
 export type OptionKindV2 = "value" | "none" | "unknown" | "not_applicable";
@@ -210,6 +210,8 @@ type QuestionDefinitionV2Base = {
   readonly materialAppliesWhen?: RuleV2;
   readonly variants?: readonly CopyVariantV2[];
   readonly scoringReadiness?: ScoringReadiness;
+  /** Explicit candidate evidence-migration state; marked definitions do not inherit ID-only legacy evidence. */
+  readonly evidenceMigration?: "pending" | "migrated";
   readonly contradictionRole?: ContradictionRole;
   readonly helpIntent?: QuestionHelpIntent;
 };

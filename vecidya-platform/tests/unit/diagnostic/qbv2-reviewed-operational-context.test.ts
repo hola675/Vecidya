@@ -15,7 +15,7 @@ import { signalProductionContextFields, type SignalProduction } from "../../../a
 import { validateAnswerV3 } from "../../../app/features/diagnostic/qbv2-session";
 import { validateQuestionBankV2 } from "../../../app/features/diagnostic/qbv2-validators";
 
-const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_sector", "q2_customer_reach", "q2_customer_buyer", "q2_process_systemization", "q2_capacity_signal"] as const;
+const ids = ["q2_entity", "q2_other_staff", "q2_monetization", "q2_delivery", "q2_has_customers", "q2_regularity", "q2_demand_trend", "q2_goal", "q2_friction", "q2_appointments_noshow", "q2_ecommerce_traffic_sources", "q2_b2b_pipeline", "q2_sector", "q2_customer_reach", "q2_customer_buyer", "q2_process_systemization", "q2_capacity_signal"] as const;
 const question = (id: string, bank: readonly QuestionDefinitionV2[] = candidate) => bank.find((item) => item.id === id)!;
 const resolve = (answers: AnswersV2) => resolveEligibleQuestionsV2(answers, candidate);
 
@@ -69,11 +69,12 @@ test("R2D signal productions resolve only to registered canonical context fields
 test("R2D adds only q17–q18 to the exact isolated candidate and pins versions", () => {
   assert.deepEqual(operational.map(({ id }) => id), ["q2_process_systemization", "q2_capacity_signal"]);
   assert.deepEqual(candidate.map(({ id }) => id), ids);
-  assert.equal(candidate.length, 14);
+  assert.equal(candidate.length, 17);
   assert.ok(!candidate.some(({ id }) => ["q2_local_discovery", "q2_reputation_flow", "q2_ecommerce_product_discovery", "q2_ecommerce_checkout_friction"].includes(id)));
   assert.deepEqual(Object.fromEntries(candidate.map(({ id, version }) => [id, version])), {
     q2_entity: 1, q2_other_staff: 1, q2_monetization: 2, q2_delivery: 2, q2_has_customers: 1,
     q2_regularity: 2, q2_demand_trend: 2, q2_goal: 2, q2_friction: 2,
+    q2_appointments_noshow: 2, q2_ecommerce_traffic_sources: 3, q2_b2b_pipeline: 2,
     q2_sector: 2, q2_customer_reach: 2, q2_customer_buyer: 2,
     q2_process_systemization: 2, q2_capacity_signal: 2,
   });

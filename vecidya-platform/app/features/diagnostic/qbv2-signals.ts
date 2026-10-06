@@ -1,4 +1,6 @@
 import type {
+  AppointmentAttendanceV3,
+  B2BFollowupProcessV3,
   CustomerBuyer,
   CustomerReach,
   EntityType,
@@ -55,6 +57,10 @@ export type SignalProduction =
   | { readonly kind: "reviewedCapacityPressure"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "reviewedCapacityExpansion"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "reviewedCapacityUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
+  | { readonly kind: "appointmentAttendance"; readonly value: AppointmentAttendanceV3; readonly provenance: SignalProvenance }
+  | { readonly kind: "appointmentAttendanceUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
+  | { readonly kind: "b2bFollowupProcess"; readonly value: B2BFollowupProcessV3; readonly provenance: SignalProvenance }
+  | { readonly kind: "b2bFollowupProcessUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "systemization"; readonly value: boolean; readonly provenance: SignalProvenance }
   | { readonly kind: "goal"; readonly value: PrimaryGoal; readonly provenance: SignalProvenance }
   | { readonly kind: "goalUnknown"; readonly value: boolean; readonly provenance: SignalProvenance }
@@ -87,6 +93,10 @@ export const SIGNAL_PRODUCTION_KINDS = [
   "reviewedCapacityPressure",
   "reviewedCapacityExpansion",
   "reviewedCapacityUnknown",
+  "appointmentAttendance",
+  "appointmentAttendanceUnknown",
+  "b2bFollowupProcess",
+  "b2bFollowupProcessUnknown",
   "systemization",
   "goal",
   "goalUnknown",
@@ -125,6 +135,10 @@ export const SIGNAL_PRODUCTION_CONTEXT_FIELD: Readonly<Record<(typeof SIGNAL_PRO
   reviewedCapacityPressure: "capacitySituation",
   reviewedCapacityExpansion: "capacitySituation",
   reviewedCapacityUnknown: "capacitySituation",
+  appointmentAttendance: "appointmentAttendance",
+  appointmentAttendanceUnknown: "appointmentAttendance",
+  b2bFollowupProcess: "b2bFollowupProcess",
+  b2bFollowupProcessUnknown: "b2bFollowupProcess",
   systemization: "growthStage",
   goal: "primaryGoal",
   goalUnknown: "primaryGoal",
@@ -185,6 +199,10 @@ const PRODUCTION_TO_FIELD: Partial<Record<SignalProduction["kind"], ScalarSignal
   reviewedCapacityPressure: "reviewedCapacityPressure",
   reviewedCapacityExpansion: "reviewedCapacityExpansion",
   reviewedCapacityUnknown: "reviewedCapacityUnknown",
+  appointmentAttendance: "appointmentAttendance",
+  appointmentAttendanceUnknown: "appointmentAttendanceUnknown",
+  b2bFollowupProcess: "b2bFollowupProcess",
+  b2bFollowupProcessUnknown: "b2bFollowupProcessUnknown",
   systemization: "systemization",
   goal: "declaredGoal",
   goalUnknown: "declaredGoalUnknown",
