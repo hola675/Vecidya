@@ -53,7 +53,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — R3/R4/R5 certificados; R6 siguiente
+## DIAG-V3 — R3/R4/R5 certificados; R6-A implementado; R6-B siguiente
 
 R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 2 `LATER_REVIEW`, 0 sin clasificar), freezes de neutralidad y separación contexto/evidencia, y el comando frozen/legacy reproducible de diez suites (240/240). La historia de conteos 234/235 permanece no atribuible a un manifiesto preservado; 240 es el baseline forward del comando documentado, no una equivalencia retrospectiva. La candidata permanece inactiva y el runtime productivo 85/version 1 congelado.
 
@@ -69,7 +69,9 @@ R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 
 
 **R5-FINAL — Adaptive Planner Certification & Freeze: COMPLETE / CERTIFIED.** `qbv2-r5-final-certification.test.ts` certifica, contra código ejecutable (no solo documentación): identidad `reviewed-evidence-v3+r3+r4+candidate-planner-v2` y presupuestos de ruta (base 18/extensión 20/hard cap 24) congelados; ledger R3 38/21/15/2/0 y ledger R4 8 dimensiones/3 estados/8 razones; 21/21 preguntas migradas, 19/19 fuentes directas y 2/2 supporting reachable; la frontera de evidencia prospectiva de Relationship resuelta sin cambiar R3/R4; el unlock causal de `q2_appointments_lead_to_booking` hacia `q2_appointments_booking_friction`; Measurement como gap no observable certificado (aplicable/null/0 fuentes); `budget_blocked` honesto y distinto de `no_useful_questions`/`hard_cap`; determinismo (orden de banco, orden de respuestas, save/resume, invalidación por cambio de respuesta); cero reglas de contradicción legacy alcanzables; y aislamiento del barrel compartido. R3, R4, el planner legacy, el runtime productivo (85/v1/2.0/1/1/1/1) y la calibración permanecen sin cambios; la candidata sigue inactiva. R5 — Adaptive Planner queda **COMPLETE / CERTIFIED** en su totalidad (R5-A + R5-B + R5-FINAL).
 
-**NEXT: R6 — Consumers.** No iniciado.
+**R6-A — Candidate Consumer Contract & Semantic Interpretation Core: IMPLEMENTADA (candidata experimental).** `buildCandidateInterpretationCoreV3({ answers })` (`qbv2-candidate-interpretation.ts`) conecta el scoring candidato certificado a `deriveConstraintsAndPriorities`/`deriveSemanticFacts` a través del contrato compartido `DiagnosticScoringView` (`qbv2-diagnostic-view.ts`), sin cast, y de un `SemanticEvidenceCatalog` candidate-only derivado solo de `evidenceV3` — nunca de `EVIDENCE_MAPPING`/`EVIDENCE_DIRECTNESS`. `qbv2-candidate-consumers.test.ts` (12/12) certifica: N/A e `insufficient_context` nunca leen como fortaleza/debilidad; Measurement 0-source como `evidence_gap`/`unobservable_in_context`, nunca debilidad; la frontera de evidencia prospectiva de Relationship produce el hecho real solo tras la respuesta; unknown solo incertidumbre; supporting-only sin lectura propia; context-only/later-review sin provenance de capacidad; goal/friction solo reordenan; determinismo e invalidación por cambio de respuesta; aislamiento del barrel. Las 15 pruebas legacy de priorities/semantic-facts quedan sin cambio de comportamiento. No se conecta overall/narrativa/recomendaciones/soluciones/offerings/comercial — quedan para R6-B y bloques posteriores. Candidata inactiva/no exportada.
+
+**NEXT: R6-B — Candidate Narrative & Overall Interpretation.** No iniciado.
 
 ## VIS-001 — siguiente trabajo visual y gates
 

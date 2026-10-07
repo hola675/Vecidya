@@ -1,12 +1,14 @@
 import type { GrowthStage, PrimaryFriction, PrimaryGoal } from "./contracts";
 import { DIGITAL_DIMENSION_IDS, type DigitalDimensionId } from "./qbv2-coverage";
-import { CAPABILITY_CONTRIBUTION, type ContextualConfidenceLevel, type ContextualDimensionResult, type ContextualScoringResult } from "./qbv2-contextual-scoring";
+import { CAPABILITY_CONTRIBUTION, type ContextualConfidenceLevel } from "./qbv2-contextual-scoring";
+import type { DiagnosticDimensionView, DiagnosticScoringView } from "./qbv2-diagnostic-view";
 
 /**
  * DIAG-V3-08D Constraints & Priorities. Scoring answers "how strong does this capability appear?";
  * this engine answers "what is materially limiting the business and what goes first?". It reads a
- * `ContextualScoringResult` and never recomputes or mutates it. Goal/friction/stage act here — on
- * relevance and sequencing — never on capability percentages.
+ * `DiagnosticScoringView` (satisfied by both the legacy and candidate scorers, no cast) and never
+ * recomputes or mutates it. Goal/friction/stage act here — on relevance and sequencing — never on
+ * capability percentages.
  */
 
 // ── Dependency model ────────────────────────────────────────────────────────
@@ -144,7 +146,7 @@ function level(list: readonly DigitalDimensionId[] | undefined, dimension: Digit
 }
 const edges = (relation: DependencyRelation) => DIMENSION_DEPENDENCIES.filter((edge) => edge.relation === relation);
 
-export function deriveConstraintsAndPriorities(scoring: ContextualScoringResult): ConstraintPriorityResult {
+export function deriveConstraintsAndPriorities(scoring: DiagnosticScoringView): ConstraintPriorityResult {
   const goal = resolved<PrimaryGoal>(scoring.context.primaryGoal);
   const friction = resolved<PrimaryFriction>(scoring.context.primaryFriction);
   const stage = resolved<GrowthStage>(scoring.context.growthStage);
@@ -170,7 +172,7 @@ export function deriveConstraintsAndPriorities(scoring: ContextualScoringResult)
     .filter((edge) => edge.from === id && SEQUENCING.has(edge.relation) && applicable(edge.to) && relevance(edge.to).tier < 2)
     .filter((edge) => edge.relation === "sustains" || constrained(edge.to) || byId.get(edge.to)!.score === null);
 
-  const build = (item: ContextualDimensionResult, kind: ConstraintKind, severity: ConstraintSeverity, evidence: readonly string[], baseCodes: readonly PriorityReasonCode[]): DiagnosticConstraint => {
+  const build = (item: DiagnosticDimensionView, kind: ConstraintKind, severity: ConstraintSeverity, evidence: readonly string[], baseCodes: readonly PriorityReasonCode[]): DiagnosticConstraint => {
     const own = relevance(item.id);
     const blocks = blocked(item.id);
     const upstream = edges("feeds").filter((edge) => edge.to === item.id && severity !== "unknown" && severity !== "latent" && sound(edge.from)).map((edge) => edge.from);

@@ -1,13 +1,14 @@
 import type { ResolvedDomainContext } from "./context-resolver";
 import { QUESTION_BANK_V2 } from "./qbv2-bank";
-import { CAPABILITY_CONTRIBUTION, type CapabilityState, type ContextualConfidenceLevel, type ContextualDimensionResult, type ContextualEvidence, type ContextualScoringResult } from "./qbv2-contextual-scoring";
-import { DIGITAL_DIMENSION_IDS, EVIDENCE_DIRECTNESS, EVIDENCE_MAPPING, type DigitalDimensionId } from "./qbv2-coverage";
+import { CAPABILITY_CONTRIBUTION, type CapabilityState, type ContextualConfidenceLevel, type ContextualEvidence } from "./qbv2-contextual-scoring";
+import { DIGITAL_DIMENSION_IDS, EVIDENCE_DIRECTNESS, EVIDENCE_MAPPING, type DigitalDimensionId, type EvidenceDirectness } from "./qbv2-coverage";
 import { resolveEligibleQuestionsV2, type QuestionBankV2 } from "./qbv2-engine";
 import {
   DIMENSION_DEPENDENCIES, FRICTION_RELEVANCE, GOAL_RELEVANCE, SEVERITY_BANDS,
   type ConstraintKind, type ConstraintPriorityResult, type ConstraintSeverity, type DiagnosticConstraint, type PriorityCertainty, type PriorityReasonCode, type RelevanceLevel,
 } from "./qbv2-priorities";
 import type { AnswersV2 } from "./qbv2-rules";
+import type { DiagnosticDimensionView, DiagnosticScoringView } from "./qbv2-diagnostic-view";
 
 /**
  * DIAG-V3-08E — Semantic Diagnostic Facts. A pure translation of the frozen engine outputs (context,
@@ -15,6 +16,25 @@ import type { AnswersV2 } from "./qbv2-rules";
  * future narrative/UI. It never recomputes scores or priorities and never writes prose: every fact keeps
  * its provenance (question IDs, constraint ID, priority rank) and its order follows the 08D priorities.
  */
+
+/**
+ * DIAG-V3-R6-A: the only seam through which `deriveSemanticFacts` learns which questions are direct/
+ * supporting evidence for a dimension, and what to call a signal's facet. The legacy path's default
+ * provider reads `EVIDENCE_MAPPING`/`EVIDENCE_DIRECTNESS`; the candidate path supplies its own provider
+ * derived exclusively from `evidenceV3`, so candidate facts never consult legacy evidence maps.
+ */
+export type SemanticEvidenceCatalog = {
+  readonly directness: (questionId: string, dimension: DigitalDimensionId) => EvidenceDirectness | undefined;
+  readonly directQuestionIds: (dimension: DigitalDimensionId) => readonly string[];
+  readonly facet: (questionId: string, dimension: DigitalDimensionId) => string;
+};
+
+/** Default provider: unchanged legacy behavior, reading the frozen legacy evidence maps. */
+export const LEGACY_SEMANTIC_EVIDENCE_CATALOG: SemanticEvidenceCatalog = {
+  directness: (questionId, dimension) => EVIDENCE_DIRECTNESS[questionId]?.[dimension] ?? EVIDENCE_MAPPING[questionId]?.semanticRole,
+  directQuestionIds: (dimension) => QUESTION_BANK_V2.filter((question) => EVIDENCE_MAPPING[question.id]?.dimensions.includes(dimension) && (EVIDENCE_DIRECTNESS[question.id]?.[dimension] ?? EVIDENCE_MAPPING[question.id]!.semanticRole) === "direct").map((question) => question.id),
+  facet: (questionId) => EVIDENCE_MAPPING[questionId]?.subcriteria[0] ?? questionId,
+};
 
 // ── Taxonomy ────────────────────────────────────────────────────────────────
 
@@ -97,9 +117,11 @@ export type SemanticDiagnosticFacts = { readonly context: readonly ContextFact[]
 
 export type SemanticFactsInput = {
   readonly answers: AnswersV2;
-  readonly scoring: ContextualScoringResult;
+  readonly scoring: DiagnosticScoringView;
   readonly priorities: ConstraintPriorityResult;
   readonly bank?: QuestionBankV2;
+  /** Evidence-semantics authority. Defaults to the legacy provider; the candidate path supplies its own. */
+  readonly evidenceCatalog?: SemanticEvidenceCatalog;
 };
 
 // ── Derivation ──────────────────────────────────────────────────────────────
@@ -129,8 +151,8 @@ function contextFacts(context: Partial<ResolvedDomainContext>): readonly Context
   return facts;
 }
 
-function signalsOf(item: ContextualDimensionResult): { readonly positive: readonly FactSignal[]; readonly negative: readonly FactSignal[] } {
-  const signal = (evidence: ContextualEvidence): FactSignal => ({ questionId: evidence.questionId, state: evidence.state, directness: evidence.directness, facet: EVIDENCE_MAPPING[evidence.questionId]?.subcriteria[0] ?? evidence.questionId });
+function signalsOf(item: DiagnosticDimensionView, catalog: SemanticEvidenceCatalog): { readonly positive: readonly FactSignal[]; readonly negative: readonly FactSignal[] } {
+  const signal = (evidence: ContextualEvidence): FactSignal => ({ questionId: evidence.questionId, state: evidence.state, directness: evidence.directness, facet: catalog.facet(evidence.questionId, item.id) });
   const capability = item.evidence.filter((evidence) => evidence.directness !== "contextual" && evidence.contribution !== null);
   return {
     positive: capability.filter((evidence) => evidence.contribution! >= POSITIVE_FLOOR).map(signal),
@@ -139,7 +161,7 @@ function signalsOf(item: ContextualDimensionResult): { readonly positive: readon
 }
 
 /** Strength vs weakness is never the score alone: the band comes from the 08D scale, certainty from confidence and contradictions. */
-function reading(item: ContextualDimensionResult): { readonly type: "strength" | "partial" | "weakness"; readonly certainty: FactCertainty } {
+function reading(item: DiagnosticDimensionView): { readonly type: "strength" | "partial" | "weakness"; readonly certainty: FactCertainty } {
   const solid = item.confidence.level !== "low" && !item.confidence.contradictory;
   if (item.score! >= SEVERITY_BANDS.moderateBelow) return { type: "strength", certainty: solid ? "confirmed" : "signal" };
   return { type: item.score! < SEVERITY_BANDS.materialBelow ? "weakness" : "partial", certainty: solid ? "confirmed" : "likely" };
@@ -147,6 +169,7 @@ function reading(item: ContextualDimensionResult): { readonly type: "strength" |
 
 export function deriveSemanticFacts(input: SemanticFactsInput): SemanticDiagnosticFacts {
   const bank = input.bank ?? QUESTION_BANK_V2;
+  const catalog = input.evidenceCatalog ?? LEGACY_SEMANTIC_EVIDENCE_CATALOG;
   const { scoring, priorities } = input;
   const goal = resolvedValue(scoring.context, "primaryGoal") as keyof typeof GOAL_RELEVANCE | undefined;
   const friction = resolvedValue(scoring.context, "primaryFriction") as keyof typeof FRICTION_RELEVANCE | undefined;
@@ -161,9 +184,8 @@ export function deriveSemanticFacts(input: SemanticFactsInput): SemanticDiagnost
   const priorityDimensions = new Set(priorities.priorities.map((priority) => priority.dimension));
 
   const resolution = resolveEligibleQuestionsV2(input.answers, bank);
-  const directQuestions = (id: DigitalDimensionId) => bank.filter((question) => EVIDENCE_MAPPING[question.id]?.dimensions.includes(id) && (EVIDENCE_DIRECTNESS[question.id]?.[id] ?? EVIDENCE_MAPPING[question.id]!.semanticRole) === "direct").map((question) => question.id);
   /** Observable when some direct question for the dimension was eligible or answered in this context. */
-  const observable = (id: DigitalDimensionId) => directQuestions(id).some((questionId) => resolution.eligibleQuestionIds.includes(questionId) || resolution.activeAnswers[questionId] !== undefined);
+  const observable = (id: DigitalDimensionId) => catalog.directQuestionIds(id).some((questionId) => resolution.eligibleQuestionIds.includes(questionId) || resolution.activeAnswers[questionId] !== undefined);
 
   const drafts: Draft[] = [];
   const readingIds = new Map<DigitalDimensionId, string>();
@@ -180,7 +202,7 @@ export function deriveSemanticFacts(input: SemanticFactsInput): SemanticDiagnost
       const evidenced = constraint && (constraint.severity === "material" || constraint.severity === "moderate") ? constraint : undefined;
       drafts.push({
         id, type, semanticCode: DIMENSION_READING_CODES[item.id][type], dimension: item.id, certainty, severity: evidenced?.severity, score: item.score, confidence: item.confidence.level, relevance,
-        provenance: { questionIds, constraintId: evidenced?.id }, signals: signalsOf(item),
+        provenance: { questionIds, constraintId: evidenced?.id }, signals: signalsOf(item, catalog),
         sortKey: type === "strength" ? [relevanceRank(item.id), certainty === "confirmed" ? 0 : 1, -item.score!, dimensionRank(item.id)] : [constraintRank(item.id), dimensionRank(item.id)],
       });
       if (item.explainability.contradictions.length > 0) drafts.push({
@@ -205,7 +227,7 @@ export function deriveSemanticFacts(input: SemanticFactsInput): SemanticDiagnost
   const uncertain = new Map<string, DigitalDimensionId[]>();
   for (const item of scoring.dimensions.filter((dimension) => dimension.applicability === "applicable")) for (const evidence of item.evidence) if (evidence.state === "uncertainty" && evidence.directness !== "contextual") uncertain.set(evidence.questionId, [...(uncertain.get(evidence.questionId) ?? []), item.id]);
   for (const [questionId, dimensions] of uncertain) {
-    const anchor = dimensions.find((id) => (EVIDENCE_DIRECTNESS[questionId]?.[id] ?? EVIDENCE_MAPPING[questionId]?.semanticRole) === "direct") ?? dimensions[0]!;
+    const anchor = dimensions.find((id) => catalog.directness(questionId, id) === "direct") ?? dimensions[0]!;
     drafts.push({ id: `uncertainty:${questionId}`, type: "uncertainty", semanticCode: "respondent_uncertain", dimension: anchor, relevance: relevanceOf(anchor), provenance: { questionIds: [questionId] }, sortKey: [relevanceRank(anchor), constraintRank(anchor), dimensionRank(anchor)] });
   }
 
