@@ -1,5 +1,6 @@
-import type { CapabilityState, ContextualScoringResult } from "./qbv2-contextual-scoring";
+import type { CapabilityState } from "./qbv2-contextual-scoring";
 import type { DigitalDimensionId } from "./qbv2-coverage";
+import type { DiagnosticScoringView } from "./qbv2-diagnostic-view";
 import type { DiagnosticNarrative } from "./qbv2-narrative";
 import type { ConstraintPriorityResult } from "./qbv2-priorities";
 import type { DiagnosticRecommendation, RecommendationType } from "./qbv2-recommendations";
@@ -80,7 +81,7 @@ const PROCESS_SIGNALS = ["q2_followup_general_process", "q2_operations_informati
 const PROCESS_GAPS = ["q2_followup_general_process", "q2_operations_information_base"] as const;
 const SOUND = 75;
 
-export function solutionContextOf(scoring: ContextualScoringResult, priorities: ConstraintPriorityResult, narrative: DiagnosticNarrative): SolutionContext {
+export function solutionContextOf(scoring: DiagnosticScoringView, priorities: ConstraintPriorityResult, narrative: DiagnosticNarrative): SolutionContext {
   const states = new Map<string, CapabilityState>();
   for (const dimension of scoring.dimensions) for (const evidence of dimension.evidence) if (evidence.directness !== "contextual" && !states.has(evidence.questionId)) states.set(evidence.questionId, evidence.state);
   const stateOf = (questionId: string) => states.get(questionId);
