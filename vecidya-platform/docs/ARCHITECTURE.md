@@ -1,10 +1,18 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R4-FINAL — certificación y freeze de aplicabilidad
+
+**CODE/TEST:** R4-A y R4-B quedan certificados como una ruta candidata separada: respuestas raw → resolver sobre `REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3` → `activeAnswers`/contexto → evidencia V3 validada → `evaluateDimensionApplicabilityV3` → core compartido de scoring. La candidata expone `scoreCandidateContextualDimensionsV3({ answers })`; no requiere que callers suministren contexto ni evidencia. El scorer legacy conserva su propia política y sigue sin adoptar R4.
+
+La evidencia R4 acepta solo preguntas candidatas migradas, versión e identidad correctas, answer activa y lectura/dimensión R3 válida. Las seis clases de mismatch fallan cerrado; la seam `validateActiveCandidateEvidenceV3` solo está exportada desde su módulo para certificación y no se reexporta por el barrel. Las 17 preguntas pending mantienen cero evidencia V3. Contexto, applicability y evidencia permanecen separados; el contrato conserva tres estados y ocho razones cerradas.
+
+**Freeze:** candidata 38 (21 migrated, 15 context-only, 2 later-review); runtime legacy `QUESTION_BANK_V2=85`, banco version 1, diagnóstico 2.0, routing/scoring/result schema 1; candidata inactiva. Planner, pesos/capacidad de evidencia, confidence, calibración, consumidores públicos, resultados, recommendations, oferta comercial, UI/PDF y persisted versions sin cambios. No hay consumer de producción/sesión/UI para el scorer candidato. La API candidata no se reexporta por el barrel compartido: ese reexport hacía que la candidata entrara en bundles públicos; al retirarlo, el scorer, el banco candidato y el ID de la pregunta nueva ya no aparecen en los bundles del build final. R3 y R4 quedan completos/certificados; R5 — Adaptive Planner es el siguiente bloque.
+
 ## DIAG-V3-R4-B — integración de aplicabilidad en scorer candidato
 
 `scoreCandidateContextualDimensionsV3({ answers })` es una entrada experimental exclusiva para `REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3`. Primero converge las respuestas y el contexto con `resolveEligibleQuestionsV2`; solo después deriva evidencia desde `activeAnswers`. Cada observación enviada a R4 se comprueba contra la definición concreta candidata, versión/identidad y mapping R3. Un mismatch interno falla cerrado. Las preguntas pending, incluidas `q2_appointments_lead_to_booking` y `q2_creator_audience_ownership`, no producen evidencia.
 
-La candidata aplica `evaluateDimensionApplicabilityV3` en las ocho dimensiones y presenta razón/contexto R4 por separado de la evidencia R3. Comparte el núcleo único de score, confianza y explicabilidad con `scoreContextualDimensions()`, que conserva su política de aplicabilidad legacy. Measurement puede ser aplicable con score nulo, base `none` y gap `no_evidence`; el contexto R4 no suma evidencia ni confianza. La API no es consumida por la sesión pública ni activa la candidata. No cambian banco runtime 85/v1, preguntas/mappings R3, planner, pesos, calibración, resultados, recomendaciones ni comerciales.
+La candidata aplica `evaluateDimensionApplicabilityV3` en las ocho dimensiones y presenta razón/contexto R4 por separado de la evidencia R3. Comparte el núcleo único de score, confianza y explicabilidad con `scoreContextualDimensions()`, que conserva su política de aplicabilidad legacy. Measurement puede ser aplicable con score nulo, base `none` y gap `no_evidence`; el contexto R4 no suma evidencia ni confianza. La entrada no es consumida por la sesión pública ni activa la candidata. No cambian banco runtime 85/v1, preguntas/mappings R3, planner, pesos, calibración, resultados, recomendaciones ni comerciales.
 
 ## DIAG-V3-R4-A — contrato de aplicabilidad dimensional
 
@@ -27,7 +35,7 @@ La candidata aplica `evaluateDimensionApplicabilityV3` en las ocho dimensiones y
 
 Razones estables: `universal_dimension` (dimensión transversal); `active_operation` (operación real); `prelaunch_no_operation` (sin actividad que sostenga la dimensión); `audience_or_demand_context` (audiencia/demanda estructural); `concrete_action_context` (acción concreta); `ongoing_interaction_context` (continuidad/interacción); `observed_dimension_evidence` (observación V3 corroborativa); `context_unresolved` (falta un hecho estructural requerido). Metas y fricciones declaradas no participan en esta matriz.
 
-**Freeze R4-A:** el evaluador se mantiene como política pura. R4-B lo consume únicamente desde el scorer candidato descrito arriba; el scorer legacy continúa con su política anterior.
+**Freeze R4-A/R4-B:** el evaluador se mantiene como política pura. R4-B lo consume únicamente desde el scorer candidato descrito arriba; el scorer legacy continúa con su política anterior. R4-FINAL certifica el contrato y su integración.
 
 ## DIAG-V3-R3-FINAL — certificación y freeze de evidencia
 

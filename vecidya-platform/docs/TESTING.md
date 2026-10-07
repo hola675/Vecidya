@@ -1,5 +1,12 @@
 # Pruebas
 
+## DIAG-V3-R4-FINAL — certificación y freeze
+
+- `qbv2-r4-final-certification.test.ts` congela los tres estados y el conjunto cerrado de ocho razones, compara para cada dimensión la salida candidata end-to-end con `evaluateDimensionApplicabilityV3`, verifica los seis rechazos fail-closed, la matriz prelaunch, Measurement applicable/null-score, respuesta raw inactiva, las 17 preguntas pending sin evidencia, contexto híbrido, goal/friction y pesos compartidos, banco legacy y versiones persistidas.
+- `validateActiveCandidateEvidenceV3` es una seam interna exportada solo desde su módulo para probar mismatch de ID, versión, identidad, respuesta inactiva, migración pending y lectura/dimensión R3; no forma parte del barrel. El scorer candidato tampoco se reexporta por el barrel compartido: el build previo mostró que hacerlo incluía definiciones candidatas en bundles públicos. Tras retirar ese reexport, el build final no contiene scorer, banco candidato ni el ID de Discovery nuevo. No hay consumer de producción/sesión/UI; las pruebas usan el módulo candidato directamente.
+- R4-FINAL valida junto con R4-A/B el legado 85/v1, candidata inactiva, freeze de score/confianza y aislamiento; no modifica preguntas ni reglas de aplicabilidad.
+- **RAN 2026-10-07:** R4-FINAL **10/10**, R4-B **11/11**, R4-A **15/15**, R4 combinado **36/36**; R3-FINAL **7/7**, R3N–R3A **137/137**, R2-FINAL **14/14**, candidate **83/83**, frozen/legacy **240/240**, combinado focalizado deduplicado **509/509**, caracterización **1/1**, directorio diagnóstico **1042/1042**, `pnpm run test:unit` **1097/1097**. Typecheck, build y `git diff --check`: PASS; cero fallos. Build: sin contenido scorer/banco candidato en client/server; avisos conocidos de credenciales Gmail locales ausentes y `PLUGIN_TIMINGS`.
+
 ## DIAG-V3-R4-B — integración candidata de aplicabilidad
 
 - `qbv2-candidate-scoring.test.ts` cubre la separación legacy/candidata, filtrado de respuesta raw inactiva antes de evidence, matriz prelaunch end-to-end, profesional e híbrido resueltos por el banco, invariancia ante goal/friction, cero evidencia en las dos preguntas later-review, Measurement applicable sin score, neutralidad N/A/unknown, math de varias observaciones directas y direct+supporting, y confidence sin fuerza añadida por R4.

@@ -36,7 +36,8 @@ function sameAnswer(left: string | readonly string[] | undefined, right: readonl
  * candidate definition, migration version/identity, active answer, and R3 answer reading.
  * Any impossible internal mismatch fails closed instead of weakening the applicability boundary.
  */
-function validateActiveCandidateEvidence(
+/** @internal Certification seam: validates the scorer's evidence boundary; intentionally not barrel-exported. */
+export function validateActiveCandidateEvidenceV3(
   evidence: readonly ContextualEvidence[],
   activeAnswers: AnswersV2,
   bank: readonly QuestionDefinitionV2[],
@@ -84,7 +85,7 @@ export function scoreCandidateContextualDimensionsV3(
   const bank = REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3;
   const resolution = resolveEligibleQuestionsV2(input.answers, bank);
   const derived = deriveContextualEvidence(resolution.activeAnswers, bank);
-  const evidence = validateActiveCandidateEvidence(derived, resolution.activeAnswers, bank);
+  const evidence = validateActiveCandidateEvidenceV3(derived, resolution.activeAnswers, bank);
 
   const dimensions = DIGITAL_DIMENSIONS.map((definition) => {
     const dimension: DigitalDimensionId = definition.id;

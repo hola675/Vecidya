@@ -53,15 +53,17 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — R3 certificado; R4-B implementado; R4-FINAL siguiente
+## DIAG-V3 — R3/R4 certificados; R5 siguiente
 
 R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 2 `LATER_REVIEW`, 0 sin clasificar), freezes de neutralidad y separación contexto/evidencia, y el comando frozen/legacy reproducible de diez suites (240/240). La historia de conteos 234/235 permanece no atribuible a un manifiesto preservado; 240 es el baseline forward del comando documentado, no una equivalencia retrospectiva. La candidata permanece inactiva y el runtime productivo 85/version 1 congelado.
 
-**R4-A — Dimension Applicability Contract & Decision Matrix: implementado localmente y validado.** Evaluador puro para ocho dimensiones; no integra al scorer, no activa candidata ni cambia banco, preguntas, planner, scoring, evidencia o calibración. Reglas y límites en `ARCHITECTURE.md`, resultados reproducibles en `TESTING.md`.
+**R4-A — Dimension Applicability Contract & Decision Matrix: COMPLETE / CERTIFIED.** Contrato puro para ocho dimensiones, tres estados y razones cerradas; precedencia de evidencia validada, reglas universales, contexto estructural y resolución insuficiente.
 
-**R4-B — Candidate Applicability Integration: implementado localmente; pendiente de certificación.** La ruta `scoreCandidateContextualDimensionsV3` resuelve y deriva evidencia solo de respuestas candidatas activas, comprueba las migraciones V3 y aplica R4 sin alterar `scoreContextualDimensions()` ni activar el banco. Candidata inactiva y runtime 85/v1. Arquitectura y verificación en `ARCHITECTURE.md` y `TESTING.md`.
+**R4-B — Candidate Applicability Integration: COMPLETE / CERTIFIED.** `scoreCandidateContextualDimensionsV3({ answers })` resuelve solo el banco candidato, filtra respuestas inactivas y valida identidad/version/mapping R3 antes de R4. El scorer legacy conserva su política de aplicabilidad; solo comparte el núcleo matemático. Candidata inactiva; runtime legacy 85/v1, planner, scoring/calibración y superficie pública congelados.
 
-**Siguiente bloque: R4-FINAL — Applicability Integration Certification & Freeze.** Certificará el contrato integrado; no forma parte de R4-B.
+**R4-FINAL — Applicability Integration Certification & Freeze: COMPLETE / CERTIFIED.** La suite final verifica equivalencia integrada con R4-A, fail-closed, las ocho dimensiones, la matriz prelaunch, Measurement aplicable sin score, componentes híbridos, goal/friction, cero evidencia pending, runtime y legacy. Detalles/resultados reproducibles en `ARCHITECTURE.md` y `TESTING.md`.
+
+**NEXT: R5 — Adaptive Planner Certification & Candidate Planning Integration.** No iniciada. R5 es dueña de la integración planificadora candidata; no implica activar el runtime público.
 
 ## VIS-001 — siguiente trabajo visual y gates
 

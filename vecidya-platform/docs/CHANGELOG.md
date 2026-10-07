@@ -1,8 +1,15 @@
 # Changelog
 
+## 2026-10-07 — DIAG-V3-R4-FINAL: certificación de aplicabilidad
+
+- R4-A y R4-B quedan certificados y congelados: ocho dimensiones, tres estados, ocho razones cerradas, precedencia R4 y frontera de evidencia activa/migrada validada. Se añaden regresiones integradas para matriz prelaunch, Measurement sin score, hybrid, goal/friction, pending, runtime y los seis casos fail-closed.
+- Se retira el reexport del scorer candidato desde el barrel compartido: el build mostró que hacía llegar la candidata al chunk público. El API queda en su módulo experimental; tras el ajuste, scorer, banco candidato y pregunta nueva no aparecen en los bundles. Sin cambios de resultado runtime.
+- R3 certificado; runtime legacy 85/v1 y versiones persistidas congeladas, candidata inactiva, política legacy/planner/calibración y consumidores públicos sin cambios. R5 — Adaptive Planner queda como siguiente fase, no iniciada.
+- Validación R4-FINAL 10/10, R4-B 11/11, R4-A 15/15, R3-FINAL 7/7, R3N–R3A 137/137, R2-FINAL 14/14, candidate 83/83, frozen/legacy 240/240, combinado 509/509, caracterización 1/1, directorio diagnóstico 1042/1042, unitarias 1097/1097; typecheck, build y diff-check PASS.
+
 ## 2026-10-06 — DIAG-V3-R4-B: aplicabilidad en scorer de candidata
 
-- Se añade `scoreCandidateContextualDimensionsV3({ answers })`, que ejecuta resolución de elegibilidad/contexto sobre el banco R3 candidato, deriva evidencia desde las respuestas activas y valida identidad/version/mapping antes de aplicar R4-A.
+- Se añade en el módulo candidato `scoreCandidateContextualDimensionsV3({ answers })`, que ejecuta resolución de elegibilidad/contexto sobre el banco R3 candidato, deriva evidencia desde las respuestas activas y valida identidad/version/mapping antes de aplicar R4-A. Su reexport desde el barrel compartido fue retirado en R4-FINAL para mantener la candidata fuera de los bundles públicos.
 - La salida separa razón y contexto de aplicabilidad R4 de la evidencia explicativa R3. Measurement puede ser aplicable con score nulo, base `none` y gap `no_evidence`.
 - El cálculo de score, confianza y explicabilidad se comparte con `scoreContextualDimensions()`; la política legacy permanece en su función y conserva su resultado. Candidata aún no registrada/activa; runtime 85/v1, planner, calibración, resultado público y semántica R3 sin cambios. R4-FINAL queda como siguiente fase.
 - **Validación:** R4-B 11/11, R4-A 15/15 (combinado 26/26), R3-FINAL 7/7, R3N–R3A 137/137, R2-FINAL 14/14, candidata 83/83, frozen/legacy 240/240, combinado 498/498, caracterización 1/1, diagnóstico 1032/1032, unitarias 1087/1087; typecheck, build y diff-check PASS.
