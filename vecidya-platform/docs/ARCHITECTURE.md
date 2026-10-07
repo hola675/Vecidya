@@ -1,5 +1,11 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R4-B — integración de aplicabilidad en scorer candidato
+
+`scoreCandidateContextualDimensionsV3({ answers })` es una entrada experimental exclusiva para `REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3`. Primero converge las respuestas y el contexto con `resolveEligibleQuestionsV2`; solo después deriva evidencia desde `activeAnswers`. Cada observación enviada a R4 se comprueba contra la definición concreta candidata, versión/identidad y mapping R3. Un mismatch interno falla cerrado. Las preguntas pending, incluidas `q2_appointments_lead_to_booking` y `q2_creator_audience_ownership`, no producen evidencia.
+
+La candidata aplica `evaluateDimensionApplicabilityV3` en las ocho dimensiones y presenta razón/contexto R4 por separado de la evidencia R3. Comparte el núcleo único de score, confianza y explicabilidad con `scoreContextualDimensions()`, que conserva su política de aplicabilidad legacy. Measurement puede ser aplicable con score nulo, base `none` y gap `no_evidence`; el contexto R4 no suma evidencia ni confianza. La API no es consumida por la sesión pública ni activa la candidata. No cambian banco runtime 85/v1, preguntas/mappings R3, planner, pesos, calibración, resultados, recomendaciones ni comerciales.
+
 ## DIAG-V3-R4-A — contrato de aplicabilidad dimensional
 
 **CODE/TEST, 2026-10-06:** `qbv2-applicability.ts` define un evaluador puro e independiente del scorer para las ocho dimensiones V3. Devuelve `applicable`, `not_applicable` o `insufficient_context`, un código de razón cerrado y hechos de soporte ordenados. No devuelve score, recomendación ni datos comerciales y no se integra en `scoreContextualDimensions()`; esa integración queda para R4-B.
@@ -21,7 +27,7 @@
 
 Razones estables: `universal_dimension` (dimensión transversal); `active_operation` (operación real); `prelaunch_no_operation` (sin actividad que sostenga la dimensión); `audience_or_demand_context` (audiencia/demanda estructural); `concrete_action_context` (acción concreta); `ongoing_interaction_context` (continuidad/interacción); `observed_dimension_evidence` (observación V3 corroborativa); `context_unresolved` (falta un hecho estructural requerido). Metas y fricciones declaradas no participan en esta matriz.
 
-**Freeze R4-A:** solo se agrega el evaluador aislado, pruebas y documentación. Candidata R3: 38 (21 migradas, 15 context-only, 2 later-review), inactiva; `QUESTION_BANK_V2=85`, runtime v1, evidencia R3, planner, scoring, pesos, calibración y caracterización permanecen intactos. Siguiente bloque: R4-B, integración de aplicabilidad en la candidata.
+**Freeze R4-A:** el evaluador se mantiene como política pura. R4-B lo consume únicamente desde el scorer candidato descrito arriba; el scorer legacy continúa con su política anterior.
 
 ## DIAG-V3-R3-FINAL — certificación y freeze de evidencia
 

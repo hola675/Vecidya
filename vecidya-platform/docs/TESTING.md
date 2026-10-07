@@ -1,11 +1,19 @@
 # Pruebas
 
+## DIAG-V3-R4-B — integración candidata de aplicabilidad
+
+- `qbv2-candidate-scoring.test.ts` cubre la separación legacy/candidata, filtrado de respuesta raw inactiva antes de evidence, matriz prelaunch end-to-end, profesional e híbrido resueltos por el banco, invariancia ante goal/friction, cero evidencia en las dos preguntas later-review, Measurement applicable sin score, neutralidad N/A/unknown, math de varias observaciones directas y direct+supporting, y confidence sin fuerza añadida por R4.
+- API exportada: `scoreCandidateContextualDimensionsV3({ answers })`. El orquestador resuelve `activeAnswers`/context con `REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3`, deriva evidence después del resolver y valida definición, versión, identidad y lectura R3 antes de llamar al evaluador. Los datos de aplicabilidad se exponen como `applicabilityReason` y `applicabilityContext`, separados de explainability R3.
+- El core compartido `scoreDimensionWithApplicability` mantiene una única fórmula de score/confidence/explainability. `scoreContextualDimensions()` sigue invocando su política legacy y su salida no absorbe razones R4. La candidata no se consume desde sesiones públicas.
+- La candidata R3 continúa 38/21/15/2; el runtime conserva `QUESTION_BANK_V2=85`, versión 1 y caracterización `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`.
+- **RAN 2026-10-06:** R4-B **11/11**, R4-A **15/15** (combinado **26/26**), R3-FINAL **7/7**, R3N–R3A **137/137**, R2-FINAL **14/14**, candidata **83/83**, frozen/legacy **240/240**, combinado focalizado deduplicado **498/498**, caracterización **1/1**, directorio diagnóstico **1032/1032**, `pnpm run test:unit` **1087/1087**. Typecheck, build y `git diff --check`: PASS; cero fallos.
+
 ## DIAG-V3-R4-A — contrato de aplicabilidad dimensional
 
 - `qbv2-applicability.test.ts` valida el evaluador puro de ocho dimensiones, matriz prelaunch/idea/starting/operating/growing/scaling, negocios profesionales, citas, retail/ecommerce, B2B, creator, nonprofit y membership; híbridos conservan componentes. Prueba activity activa aunque GrowthStage quede unresolved, goals/friction invariantes, medición aplicable con cero evidencia R3, evidencia V3 de distinta intensidad, N/A no propagada y determinismo. La salida no contiene score/basis y los cambios de contexto producen cero evidencia candidata.
 - Evidencia solo corrobora aplicabilidad por existencia, ignorando intensidad/contribución; no se integra al scorer. No cambia el baseline de caracterización (`9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`).
 - **RAN 2026-10-06:** R4-A **15/15**, R3-FINAL **7/7**, R3N–R3A **137/137**, R2-FINAL (closure + certification) **14/14**, candidata completa **83/83**, frozen/legacy canónica **240/240**, caracterización **1/1**, combinado focalizado **488/488**, directorio diagnóstico **1021/1021**, `pnpm run test:unit` **1076/1076**. Todo PASS, cero fallos. El combinado elimina nueve pruebas repetidas porque `qbv2-reviewed-certification.test.ts` está en R2-FINAL y candidata; el resultado corresponde a todas las suites solicitadas sin duplicarlas. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS.
-- La candidata permanece inactiva; `QUESTION_BANK_V2=85`, runtime v1, scoring, planner, calibración y evidencia legacy intactos. Siguiente fase propuesta: R4-B, integración exclusiva en candidata.
+- Estas cifras son el baseline ejecutado al cerrar R4-A. R4-B añade su suite candidata; ver la sección superior para resultados de la integración.
 
 ## DIAG-V3-R3-FINAL — certificación final de semántica
 

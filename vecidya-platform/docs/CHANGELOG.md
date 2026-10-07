@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R4-B: aplicabilidad en scorer de candidata
+
+- Se añade `scoreCandidateContextualDimensionsV3({ answers })`, que ejecuta resolución de elegibilidad/contexto sobre el banco R3 candidato, deriva evidencia desde las respuestas activas y valida identidad/version/mapping antes de aplicar R4-A.
+- La salida separa razón y contexto de aplicabilidad R4 de la evidencia explicativa R3. Measurement puede ser aplicable con score nulo, base `none` y gap `no_evidence`.
+- El cálculo de score, confianza y explicabilidad se comparte con `scoreContextualDimensions()`; la política legacy permanece en su función y conserva su resultado. Candidata aún no registrada/activa; runtime 85/v1, planner, calibración, resultado público y semántica R3 sin cambios. R4-FINAL queda como siguiente fase.
+- **Validación:** R4-B 11/11, R4-A 15/15 (combinado 26/26), R3-FINAL 7/7, R3N–R3A 137/137, R2-FINAL 14/14, candidata 83/83, frozen/legacy 240/240, combinado 498/498, caracterización 1/1, diagnóstico 1032/1032, unitarias 1087/1087; typecheck, build y diff-check PASS.
+
 ## 2026-10-06 — DIAG-V3-R4-A: contrato de aplicabilidad dimensional
 
 - Se crea el evaluador puro `qbv2-applicability.ts` para las ocho dimensiones V3, con tres estados, razones cerradas y hechos de soporte deterministas. Goal/friction no alteran aplicabilidad; `activity` evita exigir una etapa precisa; híbridos usan sus componentes reales. Evidencia V3 corrobora por presencia, nunca por contribución.

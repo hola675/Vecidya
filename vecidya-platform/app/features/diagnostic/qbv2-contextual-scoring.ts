@@ -344,14 +344,22 @@ function confidenceFor(direct: readonly ContextualEvidence[], supporting: readon
   };
 }
 
-function scoreDimension(dimension: DigitalDimensionId, context: Partial<ResolvedDomainContext>, evidence: readonly ContextualEvidence[]): ContextualDimensionResult {
+function observationsFor(dimension: DigitalDimensionId, evidence: readonly ContextualEvidence[]): readonly ContextualEvidence[] {
   const unique = new Map<string, ContextualEvidence>();
   for (const item of evidence) if (item.dimension === dimension && !unique.has(item.observationId)) unique.set(item.observationId, item);
-  const observations = [...unique.values()];
+  return [...unique.values()];
+}
+
+/** Shared score/confidence/explainability core. Applicability policy is supplied by the caller. */
+export function scoreDimensionWithApplicability(
+  dimension: DigitalDimensionId,
+  evidence: readonly ContextualEvidence[],
+  applicabilityValue: DimensionApplicability,
+): Omit<ContextualDimensionResult, "applicabilityReason"> {
+  const observations = observationsFor(dimension, evidence);
   const capability = observations.filter((item) => item.directness !== "contextual" && item.contribution !== null);
   const direct = capability.filter((item) => item.directness === "direct");
   const supporting = capability.filter((item) => item.directness === "supporting");
-  const applicabilityDecision = applicability(dimension, context, observations);
   const contradictions = directContradictions(direct);
   const ids = (states: readonly CapabilityState[]) => observations.filter((item) => states.includes(item.state)).map((item) => item.questionId);
   const basis: ScoreBasis = direct.length > 0 ? (supporting.length > 0 ? "direct_and_supporting" : "direct") : supporting.length > 0 ? "supporting_only" : "none";
@@ -359,9 +367,8 @@ function scoreDimension(dimension: DigitalDimensionId, context: Partial<Resolved
   return {
     id: dimension,
     label: DIGITAL_DIMENSIONS.find((item) => item.id === dimension)!.label,
-    applicability: applicabilityDecision.value,
-    applicabilityReason: applicabilityDecision.reason,
-    score: applicabilityDecision.value === "applicable" ? weightedScore(direct, supporting) : null,
+    applicability: applicabilityValue,
+    score: applicabilityValue === "applicable" ? weightedScore(direct, supporting) : null,
     confidence: confidenceFor(direct, supporting, observations, contradictions),
     evidence: observations,
     explainability: {
@@ -371,6 +378,14 @@ function scoreDimension(dimension: DigitalDimensionId, context: Partial<Resolved
       dependencies: ids(["dependency"]), constraints: ids(["constraint"]), uncertainty: ids(["uncertainty"]),
       contradictions, gaps,
     },
+  };
+}
+
+function scoreDimension(dimension: DigitalDimensionId, context: Partial<ResolvedDomainContext>, evidence: readonly ContextualEvidence[]): ContextualDimensionResult {
+  const applicabilityDecision = applicability(dimension, context, observationsFor(dimension, evidence));
+  return {
+    ...scoreDimensionWithApplicability(dimension, evidence, applicabilityDecision.value),
+    applicabilityReason: applicabilityDecision.reason,
   };
 }
 

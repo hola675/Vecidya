@@ -53,13 +53,15 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — R3 certificado; R4-A cerrado; R4-B siguiente
+## DIAG-V3 — R3 certificado; R4-B implementado; R4-FINAL siguiente
 
 R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 2 `LATER_REVIEW`, 0 sin clasificar), freezes de neutralidad y separación contexto/evidencia, y el comando frozen/legacy reproducible de diez suites (240/240). La historia de conteos 234/235 permanece no atribuible a un manifiesto preservado; 240 es el baseline forward del comando documentado, no una equivalencia retrospectiva. La candidata permanece inactiva y el runtime productivo 85/version 1 congelado.
 
 **R4-A — Dimension Applicability Contract & Decision Matrix: implementado localmente y validado.** Evaluador puro para ocho dimensiones; no integra al scorer, no activa candidata ni cambia banco, preguntas, planner, scoring, evidencia o calibración. Reglas y límites en `ARCHITECTURE.md`, resultados reproducibles en `TESTING.md`.
 
-**R4-B — Candidate Applicability Integration: siguiente fase, no iniciada.** Integrará el contrato solo en la candidata y decidirá aplicabilidad por dimensión sin activar el banco productivo. Requiere autorización independiente. El runtime productivo sigue congelado.
+**R4-B — Candidate Applicability Integration: implementado localmente; pendiente de certificación.** La ruta `scoreCandidateContextualDimensionsV3` resuelve y deriva evidencia solo de respuestas candidatas activas, comprueba las migraciones V3 y aplica R4 sin alterar `scoreContextualDimensions()` ni activar el banco. Candidata inactiva y runtime 85/v1. Arquitectura y verificación en `ARCHITECTURE.md` y `TESTING.md`.
+
+**Siguiente bloque: R4-FINAL — Applicability Integration Certification & Freeze.** Certificará el contrato integrado; no forma parte de R4-B.
 
 ## VIS-001 — siguiente trabajo visual y gates
 
