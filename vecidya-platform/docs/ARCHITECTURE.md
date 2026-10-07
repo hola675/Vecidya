@@ -1,5 +1,33 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R6-FINAL — certificación y freeze de la cadena de consumidores candidatos
+
+R6-FINAL certifica la cadena completa de consumidores candidatos como una sola unidad, de punta a punta, en lugar de confiar únicamente en la suma de certificaciones por capa (R6-A/B/C/D/D.1). Un solo punto de entrada expone toda la cadena:
+
+```text
+RAW ANSWERS → candidate resolver → ACTIVE ANSWERS → R3 evidence → R4 applicability
+  → candidate scoring → R5 adaptive planner → R6-A priorities + semantic facts
+  → R6-B narrative + overall → R6-C recommendations + evidence-grounded solutions
+  → R6-D commercial/license/offering boundary
+```
+
+`buildCandidateCommercialBoundaryV3({ answers, currentLicense?, clarificationAnswer? })` ya devuelve cada capa (`activeAnswers`, `context`, `scoring`, `priorities`, `semanticFacts`, `narrative`, `overall`, `recommendations`, `solutions`, `commercial`); R6-FINAL no agrega una nueva API, certifica que esa cadena ya construida es internamente coherente.
+
+**`qbv2-r6-final-certification.test.ts`** (10 pruebas, sin duplicar las suites exhaustivas por capa) certifica, sobre 16 fixtures representativas y 6 regresiones de cadena completa dedicadas:
+
+- **Autoridad de recomendación**: `recommendations.items.map(rank) === narrative.priorities.map(rank)` en cada fixture — ninguna recomendación nace de un score bajo aislado, disponibilidad de catálogo o meta/perfil.
+- **Integridad de solución**: exactamente un `SolutionMatch` por recomendación, mismo orden; toda recomendación `verify` resuelve a `solution: null`.
+- **Integridad comercial**: ningún `CommercialItem` (NOW o LATER) existe en ninguna fixture sin que al menos una solución no nula exista en toda la cadena de esa ejecución — la licencia se calcula aparte (eje independiente), nunca inventa un ítem de catálogo.
+- **Independencia de Digital Health**: sustituir `overall.index.displayScore`/`publicLabel` por valores arbitrarios (`MAL`/`BIEN`) sobre el mismo resultado produce `commercial` idéntico, en cada fixture.
+- **Sin licencia de primera clase**: `recommendedLicense` es siempre `null` o una de las tres licencias canónicas — nunca un error, nunca un valor inventado.
+- **Procedencia sin obsolescencia**: toda pregunta citada por narrativa/recomendación/solución existe en `activeAnswers` (nunca una respuesta cruda o invalidada por routing).
+
+Regresiones de cadena completa dedicadas: **Measurement** (aplicable/null/`unobservable_in_context` → sin oferta → sin licencia); **Discovery** (débil → ningún canal comercial inventado); **frontera prospectiva de Relationship** (sin lectura antes de la respuesta sustantiva; después, una lectura real sólida que a lo sumo produce un ítem `verify` de baja confianza — nunca una afirmación de debilidad contra una capacidad que acaba de resultar sana); **website-only sin licencia y Cuadra entity-independent** (`business`/`organization` con la misma evidencia `work_organization` → mismo resultado, sin venta doble de Desarrollo Empresarial); **Barrio/Ciudad con el diagnóstico completo byte-idéntico** antes y después de la aclaración comercial (`scoring`/`priorities`/`semanticFacts`/`narrative`/`overall`/`recommendations`/`solutions` sin cambio, solo `commercial` cambia); **prelaunch** (sin porcentaje general, solo recomendaciones `prepare`, sin licencia forzada); **determinismo** (orden de respuestas, save/resume, misma aclaración repetida); **invalidación completa** por respuesta obsoleta a través de narrativa/recomendación/solución/comercial; y **aislamiento de barrel** para las siete APIs candidatas.
+
+**Resultado:** 10/10 PASS. Caracterización explícita (`characterization.test.ts`): PASS, digest `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f` sin cambios. Esta fase no modificó ningún archivo existente — únicamente añadió la suite de certificación; legacy diagnóstico (240/240 frozen/legacy) y legacy comercial (32/32) permanecen sin cambio de comportamiento.
+
+**R6 — Consumers queda COMPLETE / CERTIFIED en su totalidad** (R6-A + R6-B + R6-C + R6-D + R6-D.1 + R6-FINAL). R3 (38/21/15/2/0), R4 (8/3/8), R5 (`reviewed-evidence-v3+r3+r4+candidate-planner-v2`, presupuestos 18/20/24), runtime (85/v1/2.0/1/1/1/1) y calibración permanecen sin cambios; la candidata sigue inactiva/no exportada/aislada del bundle público. **R6 certifica semántica e integridad de cadena del consumidor candidato — no calibración numérica final**, que sigue siendo responsabilidad de R8. Próximo bloque: R7 — Canonical Cases / QA (no iniciado); R8 — Calibration permanece pendiente.
+
 ## DIAG-V3-R6-D — frontera comercial y offerings candidato
 
 R6-D certifica la última frontera de consumidores R6: diagnóstico → recomendación → solución (ya certificados) → encaje comercial → oferta Vecidya. La dependencia es **estrictamente unidireccional**: ningún dato comercial (licencia, complemento, precio) retroalimenta score, aplicabilidad, prioridad, hecho semántico, narrativa, overall, recomendación o solución.

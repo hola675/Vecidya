@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-07 — DIAG-V3-R6-FINAL: certificación y freeze de la cadena de consumidores candidatos
+
+- `qbv2-r6-final-certification.test.ts` (10/10 PASS) certifica, a través del único punto de entrada `buildCandidateCommercialBoundaryV3`, que la cadena completa de consumidores candidatos (R6-A + R6-B + R6-C + R6-D + R6-D.1) es coherente de extremo a extremo: orden de recomendación = orden de prioridad certificado; un `SolutionMatch` por recomendación; `verify` siempre `solution: null`; cero ítems comerciales sin al menos una solución no nula; licencia independiente de Digital Health; "sin licencia" como resultado válido de primera clase; toda procedencia trazable a respuestas activas reales. Cubre 16 fixtures representativas y 6 regresiones de cadena completa dedicadas (Measurement, Discovery, frontera prospectiva de Relationship, website/Cuadra entity-independent, Barrio/Ciudad con diagnóstico byte-idéntico ante la aclaración, prelaunch, determinismo, invalidación por respuesta obsoleta, aislamiento de barrel).
+- Caracterización explícita: PASS, digest sin cambios. No se modificó ningún archivo existente — solo se añadió la suite de certificación. Legacy diagnóstico y legacy comercial sin cambio de comportamiento.
+- Sin cambios a R3, R4, R5, R6-A/B/C/D/D.1, runtime, calibración, catálogo/precios. Validación completa: diagnóstico 1148/1148, unitarias 1203/1203, typecheck/build/bundle-scan/`git diff --check` PASS. **R6 — Consumers queda COMPLETE / CERTIFIED en su totalidad.** R6 certifica semántica e integridad de cadena; la calibración numérica final sigue siendo de R8. Próximo bloque: R7 — Canonical Cases / QA; R8 — Calibration permanece pendiente.
+
 ## 2026-10-07 — DIAG-V3-R6-D.1: corrección de la frontera de necesidad recurrente de Cuadra
 
 - Corrección encontrada durante la propia certificación final de R6-D, antes de R6-FINAL. La regla de Cuadra certificada en R6-D (`q2_entity === "organization"` + operación en vivo) resultó inválida: `q2_entity` es `CONTEXT_ONLY` en R3 y por sí solo nunca demuestra una necesidad de plataforma recurrente — exactamente la misma clase de defecto ("etiqueta de entidad → Cuadra") que el diseño anterior a ese ("brecha web → Cuadra", usando el hueco de `q2_presence_digital_base` que ya selecciona la solución `website`) ya había corregido.
