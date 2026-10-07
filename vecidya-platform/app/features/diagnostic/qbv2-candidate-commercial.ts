@@ -61,7 +61,7 @@ const LICENSE_RANK: Readonly<Record<CommercialLicense, number>> = { cuadra: 1, b
 const BARRIO_SOLUTION_IDS: ReadonlySet<SolutionId> = new Set(["crm_follow_up", "follow_up_automation", "online_booking", "operational_automation"]);
 
 function licenseChange(current: CommercialLicense | undefined, next: CommercialLicense | null): CandidateLicenseFitV3["change"] {
-  if (next === null) return current === undefined ? "exit_or_none" : "downgrade";
+  if (next === null) return "exit_or_none";
   if (current === undefined) return "initial";
   if (current === next) return "same";
   return LICENSE_RANK[next] > LICENSE_RANK[current] ? "upgrade" : "downgrade";
@@ -107,20 +107,23 @@ export function resolveCandidateLicenseFitV3(
     };
   }
 
-  // Organizational-only need: distinct from any capability-gap evidence (a website/presence gap alone must
-  // never trigger Cuadra — R6-D §21, §61 — since that would just be "has a web gap" wearing a license label).
-  // The one candidate-visible signal that is genuinely about an ongoing organizational relationship rather
-  // than a diagnosed weakness is entity type "organization": a live nonprofit/association has a standing
-  // membership/presence/relationship to keep organized with Vecidya even with no CRM-level process yet.
-  const entity = result.scoring.activeAnswers.q2_entity;
-  const organizationalNeed = result.narrative.lifecycle === "live" && entity === "organization";
-  if (organizationalNeed) {
+  // Organizational-only need: context (q2_entity, lifecycle) can never be the trigger by itself — R6-D.1
+  // corrects an earlier design that used "entity === organization" + live, which was really "entity label"
+  // wearing a license, with no actual recurring-need evidence behind it (caught before R6-FINAL). The valid
+  // trigger is R6-C's own `work_organization` solution, which is only ever selected from genuine weak
+  // direct Digital Readiness evidence (q2_process_systemization or q2_operations_information_base) — never
+  // from entity/context alone (verified: answering neither leaves `work_organization` unselected for any
+  // entity type). Entity may still appear as context, never as the sole or deciding evidence.
+  const workOrganization = result.solutions.find((match) => match.solution?.id === "work_organization");
+  if (workOrganization) {
+    const recommendation = result.recommendations.items.find((item) => item.id === workOrganization.recommendationId)!;
+    const sourceEvidence: EvidenceRef[] = recommendation.sourceQuestionIds.map((questionId) => ({ questionId, answerOption: String(result.activeAnswers[questionId] ?? ""), derivedFact: "recurring information/task organization need", evidenceType: "DIRECT", relevance: "high" }));
     return {
       recommendedLicense: "cuadra", confidence: "medium",
-      rationale: "La evidencia muestra una organización en operación con una relación continua que organizar (presencia, información, prioridades y relación con Vecidya), sin requerir todavía un CRM comercial.",
+      rationale: "La evidencia certificada (R6-C) demuestra una necesidad recurrente de organizar información y tareas, sin requerir todavía un CRM comercial.",
       whyNotLower: "Cuadra es la licencia mínima de entrada al ecosistema Vecidya.",
       whyNotHigher: "No se demuestra un proceso comercial repetible que requiera Barrio ni coordinación multiproceso para Ciudad.",
-      evidence: [...evidence, { questionId: "q2_entity", answerOption: "organization", derivedFact: "recurring organization/relationship need", evidenceType: "CONTEXTUAL", relevance: "medium" }],
+      evidence: [...evidence, ...sourceEvidence, { questionId: "q2_entity", answerOption: String(result.activeAnswers.q2_entity ?? ""), derivedFact: "entity context", evidenceType: "CONTEXTUAL", relevance: "low" }],
       change: licenseChange(currentLicense, "cuadra"), unresolvedSignals: [],
     };
   }

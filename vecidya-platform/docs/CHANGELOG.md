@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-07 — DIAG-V3-R6-D.1: corrección de la frontera de necesidad recurrente de Cuadra
+
+- Corrección encontrada durante la propia certificación final de R6-D, antes de R6-FINAL. La regla de Cuadra certificada en R6-D (`q2_entity === "organization"` + operación en vivo) resultó inválida: `q2_entity` es `CONTEXT_ONLY` en R3 y por sí solo nunca demuestra una necesidad de plataforma recurrente — exactamente la misma clase de defecto ("etiqueta de entidad → Cuadra") que el diseño anterior a ese ("brecha web → Cuadra", usando el hueco de `q2_presence_digital_base` que ya selecciona la solución `website`) ya había corregido.
+- Regla final, evidence-specific y entity-independent: Cuadra solo se recomienda cuando R6-C ya seleccionó la solución `work_organization`, que únicamente ocurre con evidencia directa real y débil (`q2_process_systemization` u `q2_operations_information_base`). Verificado idéntico para `q2_entity: "business"` y `"organization"` sobre la misma evidencia; verificado que retirar esa evidencia retira Cuadra y transiciona a `exit_or_none`, sin caer a una licencia piso; verificado que no hay venta doble (Cuadra + Desarrollo Empresarial) para la misma necesidad de `work_organization`.
+- `qbv2-candidate-commercial.test.ts` pasa de 16 a 19 pruebas: se sustituyó la premisa de la prueba de Cuadra (no solo su nombre) y se añadieron las regresiones de independencia de entidad, invalidación por retiro de evidencia y transición `exit_or_none`. Caracterización explícita: PASS, digest sin cambios.
+- Sin cambios a Barrio, Ciudad, el estado sin licencia, Digital Health, R3/R4/R5/R6-A/B/C, runtime, calibración, catálogo/precios, ni a ningún archivo comercial legacy (31 pruebas legacy sin cambio). Validación completa: diagnóstico 1138/1138, unitarias 1193/1193, typecheck/build/bundle-scan/`git diff --check` PASS. R6 no se marca completo; R6-FINAL sigue siendo el próximo bloque.
+
 ## 2026-10-07 — DIAG-V3-R6-D: frontera comercial y offerings candidato
 
 - `buildCandidateCommercialBoundaryV3({ answers, currentLicense?, clarificationAnswer? })` (`qbv2-candidate-commercial.ts`) cierra la cadena de consumidores R6 sobre el Commercial Product System V1 canónico (`commercial-recommendation.ts`), nunca sobre la proyección antigua `qbv2-offerings.ts`, y nunca llamando `resolveCommercialRecommendation`/`adaptCommercialEvidence`/`matchCommercialOfferings`/`buildDiagnosticOutcome` (permanecen congelados). Identidad experimental: `commercial-product-system-v1+diag-v3-candidate-v1`.

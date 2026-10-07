@@ -21,13 +21,37 @@ test("R6-D: missing/sparse commercial evidence resolves to no license, never a d
   assert.equal(result.commercial.licenseFit.confidence, "to_confirm");
 });
 
-test("R6-D: Cuadra requires a demonstrated recurring organization need, never a web gap alone", () => {
-  const cuadra = buildCandidateCommercialBoundaryV3({ answers: { ...BASE, q2_entity: "organization", q2_monetization: "mission", q2_delivery: ["other"], q2_goal: "explain" } });
-  assert.equal(cuadra.commercial.licenseFit.recommendedLicense, "cuadra");
-  assert.ok(cuadra.commercial.licenseFit.rationale.toLowerCase().includes("organiza") || cuadra.commercial.licenseFit.rationale.toLowerCase().includes("relación"), "Cuadra's rationale must be framed around the organizational/relationship need, not CRM absence");
-  // The exact same web-gap evidence that selects the website service must NOT by itself select Cuadra.
-  const webGapOnly = buildCandidateCommercialBoundaryV3({ answers: { ...BASE, q2_delivery: ["other"], q2_goal: "explain", q2_presence_digital_base: "no_reliable_presence" } });
-  assert.equal(webGapOnly.commercial.licenseFit.recommendedLicense, null);
+test("R6-D.1: entity alone (organization, live, no recurring need) never selects Cuadra", () => {
+  const result = buildCandidateCommercialBoundaryV3({ answers: { ...BASE, q2_entity: "organization", q2_monetization: "mission", q2_delivery: ["other"], q2_goal: "explain" } });
+  assert.equal(result.commercial.licenseFit.recommendedLicense, null);
+  assert.ok(!result.commercial.licenseFit.evidence.some((ref) => ref.questionId === "q2_entity" && ref.relevance !== "low"), "entity must never be the deciding Cuadra signal");
+});
+
+test("R6-D.1: Cuadra requires evidence-backed recurring work_organization need, for business and organization alike", () => {
+  const woEvidence: AnswersV2 = { ...BASE, q2_goal: "organize", q2_friction: "operations", q2_process_systemization: "informal" };
+  const asOrganization = buildCandidateCommercialBoundaryV3({ answers: { ...woEvidence, q2_entity: "organization", q2_monetization: "mission" } });
+  const asBusiness = buildCandidateCommercialBoundaryV3({ answers: { ...woEvidence, q2_entity: "business" } });
+  for (const result of [asOrganization, asBusiness]) {
+    assert.equal(result.commercial.licenseFit.recommendedLicense, "cuadra");
+    assert.ok(result.commercial.licenseFit.evidence.some((ref) => ref.questionId === "q2_process_systemization"), "Cuadra's proof chain must trace to the real direct evidence behind work_organization, not entity alone");
+    // No double-selling: the same work_organization need must not also surface as a NOW Desarrollo Empresarial service.
+    assert.ok(!result.commercial.now.services.some((s) => s.name === "Desarrollo Empresarial"));
+  }
+});
+
+test("R6-D.1: website gap alone still produces no license (regression preserved after the Cuadra correction)", () => {
+  const result = buildCandidateCommercialBoundaryV3({ answers: { ...BASE, q2_delivery: ["other"], q2_goal: "explain", q2_presence_digital_base: "no_reliable_presence" } });
+  assert.equal(result.commercial.licenseFit.recommendedLicense, null);
+  assert.ok(result.commercial.now.services.some((s) => s.name === "Web & Conversión"));
+});
+
+test("R6-D.1: removing the recurring work_organization evidence removes Cuadra, with no floor-license fallback", () => {
+  const seed: AnswersV2 = { ...BASE, q2_goal: "organize", q2_friction: "operations", q2_process_systemization: "informal" };
+  const before = buildCandidateCommercialBoundaryV3({ answers: seed, currentLicense: "cuadra" });
+  assert.equal(before.commercial.licenseFit.recommendedLicense, "cuadra");
+  const after = buildCandidateCommercialBoundaryV3({ answers: { ...seed, q2_process_systemization: undefined, q2_goal: "explain", q2_friction: "trust" } as AnswersV2, currentLicense: "cuadra" });
+  assert.equal(after.commercial.licenseFit.recommendedLicense, null);
+  assert.equal(after.commercial.licenseFit.change, "exit_or_none");
 });
 
 test("R6-D: Barrio fits one recurring commercial process (follow-up or booking), never Ciudad from that alone", () => {
