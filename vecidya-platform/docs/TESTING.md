@@ -1,5 +1,11 @@
 # Pruebas
 
+## DIAG-V3-R5-A — integración inicial del planner candidato
+
+- `qbv2-candidate-planner.test.ts` prueba selección solo desde el banco R3, utilidad directa/supporting V3, Measurement aplicable/null/0 fuentes sin chase legacy, contexto-only sin score, routing de `q2_appointments_lead_to_booking`, `q2_creator_audience_ownership` sin utilidad autónoma, reglas de contradicción legacy no compatibles, orden de banco/respuestas, serialización, invalidación stale, hard cap, híbrido y once contextos explícitos. Un sweep mecánico separado responde la primera opción concreta únicamente para medir progreso finito.
+- Ejecutar: `pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/qbv2-candidate-planner.test.ts`.
+- Sweep mecánico R5-A (no es calibración de calidad): 12 semillas, longitudes min/mediana/max 10/14/16, cap hits 0, terminaciones `no_useful_questions` 12, `deepening_required` 0. El caso goal=measure termina con Measurement aplicable/null y sin fuente; los presupuestos no se ajustan. Certificación de calidad adicional corresponde a R5-B.
+
 ## DIAG-V3-R4-FINAL — certificación y freeze
 
 - `qbv2-r4-final-certification.test.ts` congela los tres estados y el conjunto cerrado de ocho razones, compara para cada dimensión la salida candidata end-to-end con `evaluateDimensionApplicabilityV3`, verifica los seis rechazos fail-closed, la matriz prelaunch, Measurement applicable/null-score, respuesta raw inactiva, las 17 preguntas pending sin evidencia, contexto híbrido, goal/friction y pesos compartidos, banco legacy y versiones persistidas.

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-07 — DIAG-V3-R5-A: contrato inicial del planner candidato
+
+- Se añade `buildCandidateQuestionPlanV3({ answers, budget? })` como ruta aislada, sin barrel export ni consumer público. Recalcula respuestas activas con el banco candidato; R3 `evidenceV3` migrada define fuentes directas/supporting y R4 sigue siendo autoridad de aplicabilidad.
+- Context-only resuelve contexto sin sumar evidencia; pending/later-review no cierran gaps. Measurement activa (aplicable, score null, 0 fuentes) no persigue ítems legacy y permite terminal `no_useful_questions`. La ruta candidata no usa bandas ni límites de scoring legacy.
+- R5-A agrega pruebas iniciales de determinismo, respuestas obsoletas, hard cap y semillas de contexto. No cambia preguntas, migraciones R3, R4, planner/runtime legacy, scoring, versiones, sesiones públicas ni resultados. R5-B queda como siguiente bloque de certificación de calidad/rutas.
+
 ## 2026-10-07 — DIAG-V3-R4-FINAL: certificación de aplicabilidad
 
 - R4-A y R4-B quedan certificados y congelados: ocho dimensiones, tres estados, ocho razones cerradas, precedencia R4 y frontera de evidencia activa/migrada validada. Se añaden regresiones integradas para matriz prelaunch, Measurement sin score, hybrid, goal/friction, pending, runtime y los seis casos fail-closed.

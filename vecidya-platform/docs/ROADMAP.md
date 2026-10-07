@@ -63,7 +63,9 @@ R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 
 
 **R4-FINAL — Applicability Integration Certification & Freeze: COMPLETE / CERTIFIED.** La suite final verifica equivalencia integrada con R4-A, fail-closed, las ocho dimensiones, la matriz prelaunch, Measurement aplicable sin score, componentes híbridos, goal/friction, cero evidencia pending, runtime y legacy. Detalles/resultados reproducibles en `ARCHITECTURE.md` y `TESTING.md`.
 
-**NEXT: R5 — Adaptive Planner Certification & Candidate Planning Integration.** No iniciada. R5 es dueña de la integración planificadora candidata; no implica activar el runtime público.
+**R5-A — Candidate Adaptive Planner Contract & Evidence Utility Integration: IMPLEMENTADA (candidata experimental).** Entry point privado `buildCandidateQuestionPlanV3`, R3 evidenceV3 y R4 applicability integrados; Measurement sin fuente no bloquea y el planner legacy no cambia. La suite cubre candidate-only, determinismo, stale-answer invalidation, contexto híbrido y 11 contextos explícitos; el sweep mecánico de 12 rutas observó longitudes 10/14/16, cero hard caps y doce `no_useful_questions`. No marcar R5 completa ni activar runtime.
+
+**NEXT: R5-B — Candidate Route Quality & Adaptive Planner Certification.** Debe completar la certificación de rutas, auditoría cuantitativa de longitudes/terminaciones, equidad híbrida y validación integral antes de cualquier decisión de activación.
 
 ## VIS-001 — siguiente trabajo visual y gates
 

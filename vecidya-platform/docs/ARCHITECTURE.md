@@ -1,5 +1,11 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R5-A — planner adaptativo candidato
+
+`buildCandidateQuestionPlanV3({ answers, budget? })` vive en `qbv2-candidate-planner.ts` y no se reexporta desde el barrel compartido. Su pipeline resuelve respuestas activas exclusivamente contra `REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3`, ejecuta el scorer candidato que valida identidad/mapping R3 y aplica las decisiones R4. La utilidad directa/supporting se obtiene exclusivamente de `evidenceV3.dimensions` migradas; context-only puede resolver campos/gates sin puntuar, pending/later-review no aportan utilidad de evidencia. R4 `insufficient_context` se conserva como necesidad contextual y solo pregunta por campos estructurales relacionados; si no existe fuente elegible, termina sin bucle.
+
+Measurement activa sigue aplicable con score nulo, 0 fuentes directas y 0 supporting; no existen preguntas candidatas útiles para cerrarla, así que no se persiguen ítems de medición legacy. La finalización candidata no usa bandas, límites 41/71 ni extremos numéricos. Meta/fricción pueden ordenar preguntas útiles, sin alterar R4 ni crear evidencia. El planner productivo y sus consumidores siguen en la ruta legacy sin cambios; candidata no activa, banco/versiones runtime congelados.
+
 ## DIAG-V3-R4-FINAL — certificación y freeze de aplicabilidad
 
 **CODE/TEST:** R4-A y R4-B quedan certificados como una ruta candidata separada: respuestas raw → resolver sobre `REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3` → `activeAnswers`/contexto → evidencia V3 validada → `evaluateDimensionApplicabilityV3` → core compartido de scoring. La candidata expone `scoreCandidateContextualDimensionsV3({ answers })`; no requiere que callers suministren contexto ni evidencia. El scorer legacy conserva su propia política y sigue sin adoptar R4.
