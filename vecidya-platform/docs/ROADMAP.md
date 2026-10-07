@@ -65,7 +65,9 @@ R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 
 
 **R5-A — Candidate Adaptive Planner Contract & Evidence Utility Integration: IMPLEMENTADA (candidata experimental).** Entry point privado `buildCandidateQuestionPlanV3`, R3 evidenceV3 y R4 applicability integrados; Measurement sin fuente no bloquea y el planner legacy no cambia. La suite cubre candidate-only, determinismo, stale-answer invalidation, contexto híbrido y 11 contextos explícitos; el sweep mecánico de 12 rutas observó longitudes 10/14/16, cero hard caps y doce `no_useful_questions`. No marcar R5 completa ni activar runtime.
 
-**NEXT: R5-B — Candidate Route Quality & Adaptive Planner Certification.** Debe completar la certificación de rutas, auditoría cuantitativa de longitudes/terminaciones, equidad híbrida y validación integral antes de cualquier decisión de activación.
+**R5-B — Candidate Route Quality & Adaptive Planner Certification: COMPLETA (candidata experimental).** El runner interactivo (12 perfiles, una pregunta por turno) y las correcciones candidate-only (role `core`, unlock causal por simulación, `budget_blocked`/`module_budget`/`base_budget`, evidencia de aplicabilidad prospectiva) certifican 21/21 preguntas migradas y 19/19 direct sources reachable, con 2/2 supporting sources correctamente subordinadas. `q2_followup_general_process` quedaba elegible pero sin utilidad; se resolvió reconociendo que una respuesta sustantiva ya resuelve Relationship vía el contrato R4 existente (`observed_dimension_evidence`) — no se cambió R3 ni R4, solo se añadió una simulación candidate-only que lo comprueba por adelantado. Identidad `reviewed-evidence-v3+r3+r4+candidate-planner-v2`. Candidata sigue inactiva/no exportada; no se activa runtime.
+
+**NEXT: R5-FINAL — Adaptive Planner Certification & Freeze.**
 
 ## VIS-001 — siguiente trabajo visual y gates
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-07 — DIAG-V3-R5-B: calidad de rutas candidata
+
+- El planner candidato v2 impide que `core` fuerce utilidad fuera de applicability, exige un unlock causal hacia una pregunta hija útil y deja trazas `budget_blocked`/`module_budget`/`base_budget` cuando la utilidad no se puede seleccionar. También evita tomar evidencia directa fuera de aplicabilidad R4 como puerta lateral para otra pregunta. Banco productivo, scorer, R3/R4, comercial y runtime no se cambiaron.
+- Runner de 12 perfiles interactivos explícitos: 4–12 preguntas añadidas (mediana 9), 7–18 respuestas activas (mediana 15), 0 hard-cap hits y 0 direct sources accionables al terminal.
+- Se descubrió y resolvió una frontera de utilidad candidate-only: `q2_followup_general_process` quedaba elegible pero sin utilidad porque el planner solo consideraba útil una fuente directa cuando su dimensión ya era `applicable`, sin comprobar si una respuesta sustantiva la resolvería a través del contrato R4 ya existente (`observed_dimension_evidence`). Se añadió `canProspectivelyResolveApplicability` (simulación candidate-only, solo fuentes direct migrated, `not_applicable`/`unknown` neutrales) y la razón `prospective_evidence`. R3/R4 no cambiaron. 19/19 fuentes directas y 21/21 preguntas migradas quedan reachable.
+
 ## 2026-10-07 — DIAG-V3-R5-A: contrato inicial del planner candidato
 
 - Se añade `buildCandidateQuestionPlanV3({ answers, budget? })` como ruta aislada, sin barrel export ni consumer público. Recalcula respuestas activas con el banco candidato; R3 `evidenceV3` migrada define fuentes directas/supporting y R4 sigue siendo autoridad de aplicabilidad.

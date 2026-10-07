@@ -11,7 +11,7 @@ import type { DigitalDimensionId } from "./qbv2-dimensions";
 import { FRICTION_RELEVANCE, GOAL_RELEVANCE } from "./qbv2-priorities";
 import { DEFAULT_ROUTE_BUDGET_V1, ROUTE_BANDS, ROUTE_HARD_CAP, type RouteBudgetV1, type QuestionSelectionReason } from "./qbv2-planner";
 
-export const CANDIDATE_PLANNER_IDENTITY_V3 = "reviewed-evidence-v3+r3+r4+candidate-planner-v1" as const;
+export const CANDIDATE_PLANNER_IDENTITY_V3 = "reviewed-evidence-v3+r3+r4+candidate-planner-v2" as const;
 export const CANDIDATE_ROUTE_HARD_CAP_V3 = ROUTE_HARD_CAP;
 export type CandidateEvidenceSufficiencyV3 = {
   readonly applicableDimensions: readonly DigitalDimensionId[];
@@ -25,9 +25,9 @@ export type CandidateEvidenceSufficiencyV3 = {
   readonly usefulQuestionIds: readonly string[];
   readonly usefulQuestionsRemaining: boolean;
   readonly sufficient: boolean;
-  readonly terminalReason: "no_useful_questions" | "useful_questions_remaining";
+  readonly terminalReason: "no_useful_questions" | "useful_questions_remaining" | "budget_blocked";
 };
-export type CandidatePlannerTraceV3 = { readonly questionId: string; readonly reason: QuestionSelectionReason; readonly selected: boolean; readonly evidenceDimensions: readonly DigitalDimensionId[]; readonly supportingDimensions: readonly DigitalDimensionId[]; readonly skipReason?: "ineligible" | "pending_evidence" | "not_useful" | "hard_cap" };
+export type CandidatePlannerTraceV3 = { readonly questionId: string; readonly reason: QuestionSelectionReason; readonly selected: boolean; readonly evidenceDimensions: readonly DigitalDimensionId[]; readonly supportingDimensions: readonly DigitalDimensionId[]; readonly skipReason?: "ineligible" | "pending_evidence" | "not_useful" | "hard_cap" | "module_budget" | "base_budget" };
 export type CandidateQuestionPlanV3 = {
   readonly plannerIdentity: typeof CANDIDATE_PLANNER_IDENTITY_V3;
   readonly activeAnswers: AnswersV2;
@@ -63,19 +63,33 @@ function refs(rule: RuleV2 | undefined, out = new Set<string>()): Set<string> {
   if ("rule" in rule) refs(rule.rule, out);
   return out;
 }
-function rankReason(question: QuestionDefinitionV2, unresolved: ReadonlySet<ContextFieldRef>, prereqs: ReadonlySet<string>): QuestionSelectionReason {
+function rankReason(question: QuestionDefinitionV2, unresolved: ReadonlySet<ContextFieldRef>, unlocks: ReadonlySet<string>, usefulDirect: boolean, usefulSupporting: boolean, usefulProspective: boolean): QuestionSelectionReason {
   if (question.purpose.includes("confirmation")) return "confirmation";
   if (question.routingRole === "deepening") return "refinement";
-  if (prereqs.has(question.id)) return "unlock_routing";
+  if (unlocks.has(question.id)) return "unlock_routing";
   if (question.routingRole === "core") return "required_context";
   if (producedFields(question).some((field) => unresolved.has(field))) return "required_context";
   if (question.purpose.includes("goal") || question.purpose.includes("friction")) return "goal_or_friction";
-  if (question.priority === "refinement") return "refinement";
+  if (usefulDirect && semanticSources(question).direct.length > 1) return "cross_cutting_evidence";
+  if (usefulDirect) return "specialized_evidence";
+  if (usefulProspective) return "prospective_evidence";
+  if (usefulSupporting || question.priority === "refinement") return "refinement";
   return "specialized_evidence";
 }
 function semanticSources(question: QuestionDefinitionV2): { direct: DigitalDimensionId[]; supporting: DigitalDimensionId[] } {
   if (question.evidenceMigration !== "migrated" || !question.evidenceV3) return { direct: [], supporting: [] };
   return { direct: question.evidenceV3.dimensions.filter((d) => d.directness === "direct").map((d) => d.dimension), supporting: question.evidenceV3.dimensions.filter((d) => d.directness === "supporting").map((d) => d.dimension) };
+}
+/** A migrated direct source can resolve an `insufficient_context` dimension through the existing R4
+ * `observed_dimension_evidence` contract. This proves that prospectively by simulation (never syntactically)
+ * and only on substantive answers: `not_applicable` must stay neutral, and `unknown` must never justify asking. */
+function canProspectivelyResolveApplicability(question: QuestionDefinitionV2, dimension: DigitalDimensionId, activeAnswers: AnswersV2, bank: readonly QuestionDefinitionV2[]): boolean {
+  return question.options.some((option) => {
+    if (option.kind !== undefined && option.kind !== "value") return false;
+    const hypothetical = { ...activeAnswers, [question.id]: question.type === "multi" ? [option.value] : option.value };
+    const resolvedAnswers = resolveEligibleQuestionsV2(hypothetical, bank).activeAnswers;
+    return scoreCandidateContextualDimensionsV3({ answers: resolvedAnswers }).dimensions.find((d) => d.id === dimension)?.applicability === "applicable";
+  });
 }
 
 /** Candidate-only planner. Every invocation reconstructs the plan from raw answers. */
@@ -89,11 +103,10 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
   const dimensions = scoring.dimensions;
   const open = new Set(dimensions.filter((d) => d.applicability === "applicable" && d.score === null).map((d) => d.id));
   const applicable = new Set(dimensions.filter((d) => d.applicability === "applicable").map((d) => d.id));
+  const insufficientContext = new Set(dimensions.filter((d) => d.applicability === "insufficient_context").map((d) => d.id));
   const observedDirect = new Set(scoring.dimensions.flatMap((d) => d.confidence.direct > 0 ? [d.id] : []));
   const unresolvedFields = new Set(CONTEXT_FIELD_REFS.filter((field) => !resolved(resolution.context, field)));
   const questionById = new Map(bank.map((q) => [q.id, q]));
-  const prereqs = new Set<string>();
-  for (const q of bank) { refs(q.appliesWhen, prereqs); refs(q.materialAppliesWhen, prereqs); }
   const structurallyValidRules = new Set(validateContradictionRulesV1(DEFAULT_CONTRADICTION_RULES_V1, bank).filter((issue) => issue.code !== "INVALID_RULE_ID").map((issue) => issue.ruleId));
   const validRules = DEFAULT_CONTRADICTION_RULES_V1.filter((rule) => !structurallyValidRules.has(rule.id) && (() => {
     const dependencies = [...refs(rule.when), ...rule.evidence.map((e) => e.questionId), ...(rule.confirmationQuestionId ? [rule.confirmationQuestionId] : [])];
@@ -105,6 +118,31 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
   const evidenceUseful: string[] = [];
   const trace: CandidatePlannerTraceV3[] = [];
   const eligible = new Set(resolution.eligibleQuestionIds);
+  const prospectiveUtilityById = new Map<string, boolean>();
+  const unlocks = new Set<string>();
+  // A prerequisite is useful only when one of its real answers activates an otherwise unavailable,
+  // useful candidate child. A syntactic reference alone is not a routing benefit.
+  for (const question of bank) {
+    if (activeAnswers[question.id] !== undefined || !eligible.has(question.id)) continue;
+    const parentSources = semanticSources(question);
+    const parentFields = producedFields(question);
+    // Do not collect an out-of-scope direct observation merely to unlock a different question.
+    // Context producers and pending routing prerequisites remain eligible for genuine branch work.
+    if (parentSources.direct.length > 0 && !parentSources.direct.some((dimension) => applicable.has(dimension)) && parentFields.length === 0) continue;
+    for (const option of question.options) {
+      const hypothetical = { ...activeAnswers, [question.id]: question.type === "multi" ? [option.value] : option.value };
+      const after = new Set(resolveEligibleQuestionsV2(hypothetical, bank).eligibleQuestionIds);
+      for (const child of bank) {
+        if (activeAnswers[child.id] !== undefined || eligible.has(child.id) || !after.has(child.id)) continue;
+        const childSources = semanticSources(child);
+        const childFields = producedFields(child);
+        const unlocksUsefulChild = child.evidenceMigration === "migrated"
+          ? childSources.direct.some((dimension) => open.has(dimension)) || childSources.supporting.some((dimension) => observedDirect.has(dimension))
+          : child.routingRole !== "deepening" && childFields.some((field) => unresolvedFields.has(field));
+        if (unlocksUsefulChild) unlocks.add(question.id);
+      }
+    }
+  }
   for (const q of bank) {
     if (activeAnswers[q.id] !== undefined) continue;
     const sources = semanticSources(q);
@@ -113,21 +151,27 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
     for (const dimension of dimensions.filter((d) => d.applicability === "insufficient_context")) {
       for (const field of R4_CONTEXT_FIELDS[dimension.id] ?? []) if (unresolvedFields.has(field)) neededContext.add(field);
     }
-    const unlocksCandidateBranch = bank.some((child) => activeAnswers[child.id] === undefined && (refs(child.appliesWhen).has(q.id) || refs(child.materialAppliesWhen).has(q.id)));
-    const contextUtility = q.routingRole !== "deepening" && eligible.has(q.id) && (q.routingRole === "core" || fields.some((f) => neededContext.has(f)) || unlocksCandidateBranch || triggered.has(q.id));
+    const unlocksCandidateBranch = unlocks.has(q.id);
+    const contextUtility = q.routingRole !== "deepening" && eligible.has(q.id) && (fields.some((f) => neededContext.has(f)) || unlocksCandidateBranch || triggered.has(q.id));
     const directUtility = eligible.has(q.id) && sources.direct.some((d) => open.has(d));
     // Supporting observations may refine an already scored direct dimension, never close a null score.
     const supportingUtility = eligible.has(q.id) && sources.supporting.some((d) => observedDirect.has(d) && dimensions.find((item) => item.id === d)?.score !== null);
+    // A direct migrated source may prospectively resolve its own dimension out of insufficient_context
+    // through the existing R4 observed_dimension_evidence contract; proven by simulation, not syntax.
+    const prospectiveUtility = !directUtility && eligible.has(q.id) && sources.direct.some((d) => insufficientContext.has(d) && canProspectivelyResolveApplicability(q, d, activeAnswers, bank));
+    prospectiveUtilityById.set(q.id, prospectiveUtility);
     if (contextUtility) contextUseful.push(q.id);
-    if (directUtility || supportingUtility) evidenceUseful.push(q.id);
-    const useful = contextUtility || directUtility || supportingUtility || triggered.has(q.id);
-    const reason = rankReason(q, unresolvedFields, prereqs);
+    if (directUtility || supportingUtility || prospectiveUtility) evidenceUseful.push(q.id);
+    const useful = contextUtility || directUtility || supportingUtility || prospectiveUtility || triggered.has(q.id);
+    const reason = rankReason(q, unresolvedFields, unlocks, directUtility, supportingUtility, prospectiveUtility);
     trace.push({ questionId: q.id, reason, selected: useful, evidenceDimensions: sources.direct, supportingDimensions: sources.supporting, ...(!eligible.has(q.id) ? { skipReason: "ineligible" as const } : !useful && q.evidenceMigration === "pending" ? { skipReason: "pending_evidence" as const } : !useful ? { skipReason: "not_useful" as const } : {}) });
   }
   const usefulIds = [...new Set([...contextUseful, ...evidenceUseful, ...triggered])].sort((a, b) => {
     const qa = questionById.get(a)!; const qb = questionById.get(b)!;
-    const ra = rankReason(qa, unresolvedFields, prereqs); const rb = rankReason(qb, unresolvedFields, prereqs);
-    const rr: Record<QuestionSelectionReason, number> = { confirmation: 6, required_context: 5, unlock_routing: 4, goal_or_friction: 3, cross_cutting_evidence: 2, specialized_evidence: 1, refinement: 0 };
+    const qaSources = semanticSources(qa); const qbSources = semanticSources(qb);
+    const ra = rankReason(qa, unresolvedFields, unlocks, qaSources.direct.some((d) => open.has(d)), qaSources.supporting.some((d) => observedDirect.has(d)), prospectiveUtilityById.get(a) ?? false);
+    const rb = rankReason(qb, unresolvedFields, unlocks, qbSources.direct.some((d) => open.has(d)), qbSources.supporting.some((d) => observedDirect.has(d)), prospectiveUtilityById.get(b) ?? false);
+    const rr: Record<QuestionSelectionReason, number> = { confirmation: 7, required_context: 6, unlock_routing: 5, goal_or_friction: 4, cross_cutting_evidence: 3, specialized_evidence: 2, prospective_evidence: 1, refinement: 0 };
     const goal = resolution.context.primaryGoal.status === "resolved" ? resolution.context.primaryGoal.value : undefined;
     const friction = resolution.context.primaryFriction.status === "resolved" ? resolution.context.primaryFriction.value : undefined;
     const priorities = [...(goal ? GOAL_RELEVANCE[goal] : []), ...(friction ? FRICTION_RELEVANCE[friction] : [])];
@@ -164,25 +208,36 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
     if (selected.includes(id)) continue;
     const question = questionById.get(id)!;
     const source = semanticSources(question);
-    const evidenceTail = source.direct.some((dimension) => open.has(dimension)) || source.supporting.some((dimension) => observedDirect.has(dimension));
+    const evidenceTail = source.direct.some((dimension) => open.has(dimension)) || source.supporting.some((dimension) => observedDirect.has(dimension)) || prospectiveUtilityById.get(id);
     if (evidenceTail) add(id);
   }
   const unresolvedApplicableDimensions = [...open].sort();
   const lowDirectEvidenceDimensions = dimensions.filter((d) => d.applicability === "applicable" && d.confidence.direct <= 1).map((d) => d.id);
   const insufficientContextDimensions = dimensions.filter((d) => d.applicability === "insufficient_context").map((d) => d.id);
   const sufficient = unresolvedApplicableDimensions.length === 0 && insufficientContextDimensions.length === 0 && contradictions.every((c) => c.status !== "pending" || !c.confirmationQuestionId || !eligible.has(c.confirmationQuestionId));
+  const hardCapReached = Object.keys(activeAnswers).length >= normalizedBudget.hardMax;
+  const usefulUnselected = usefulIds.filter((id) => !selected.includes(id));
+  const budgetBlocked = !hardCapReached && selected.length === 0 && usefulUnselected.length > 0;
+  const terminalReason = selected.length > 0 || (hardCapReached && usefulIds.length > 0) ? "useful_questions_remaining" as const : budgetBlocked ? "budget_blocked" as const : "no_useful_questions" as const;
   const sufficiency: CandidateEvidenceSufficiencyV3 = {
     applicableDimensions: [...applicable].sort(), notApplicableDimensions: dimensions.filter((d) => d.applicability === "not_applicable").map((d) => d.id), insufficientContextDimensions, unresolvedApplicableDimensions, lowDirectEvidenceDimensions,
-    contradictions, usefulContextQuestionIds: [...new Set(contextUseful)].sort(), usefulEvidenceQuestionIds: [...new Set(evidenceUseful)].sort(), usefulQuestionIds: usefulIds, usefulQuestionsRemaining: selected.length > 0, sufficient,
-    terminalReason: selected.length ? "useful_questions_remaining" : "no_useful_questions",
+    contradictions, usefulContextQuestionIds: [...new Set(contextUseful)].sort(), usefulEvidenceQuestionIds: [...new Set(evidenceUseful)].sort(), usefulQuestionIds: usefulIds, usefulQuestionsRemaining: usefulIds.length > 0, sufficient,
+    terminalReason,
   };
-  const hardCapReached = Object.keys(activeAnswers).length >= normalizedBudget.hardMax;
+  const traceById = new Map(trace.map((entry) => [entry.questionId, entry]));
+  for (const id of usefulUnselected) {
+    const question = questionById.get(id)!;
+    const entry = traceById.get(id)!;
+    const skipReason = hardCapReached ? "hard_cap" as const : !moduleHasRoom(id) ? "module_budget" as const : selected.length >= baseSlots && !semanticSources(question).direct.some((dimension) => open.has(dimension)) && !semanticSources(question).supporting.some((dimension) => observedDirect.has(dimension)) && !prospectiveUtilityById.get(id) ? "base_budget" as const : entry.skipReason;
+    if (skipReason) traceById.set(id, { ...entry, skipReason });
+  }
+  const selectedTrace = trace.map((entry) => traceById.get(entry.questionId)!);
   return {
     plannerIdentity: CANDIDATE_PLANNER_IDENTITY_V3, activeAnswers, context: resolution.context,
     contextResolution: Object.fromEntries(CONTEXT_FIELD_REFS.map((f) => [f, resolved(resolution.context, f) ? "resolved" : "unresolved"])) as Record<ContextFieldRef, "resolved" | "unresolved">,
     eligibleQuestionIds: resolution.eligibleQuestionIds, selectedQuestionIds: selected, nextQuestionId: selected[0], routeLength: Object.keys(activeAnswers).length + selected.length,
-    budget: normalizedBudget, completion: { ready: hardCapReached || selected.length === 0, hardCapReached, terminalReason: sufficiency.terminalReason }, evidenceSufficiency: sufficiency,
-    trace: trace.map((entry) => ({ ...entry, selected: selected.includes(entry.questionId), ...(eligible.has(entry.questionId) && !selected.includes(entry.questionId) ? { skipReason: hardCapReached ? "hard_cap" as const : entry.skipReason ?? "not_useful" as const } : {}) })), routingIterations: resolution.iterations,
+    budget: normalizedBudget, completion: { ready: hardCapReached || (selected.length === 0 && !budgetBlocked), hardCapReached, terminalReason: sufficiency.terminalReason }, evidenceSufficiency: sufficiency,
+    trace: selectedTrace.map((entry) => ({ ...entry, selected: selected.includes(entry.questionId), ...(eligible.has(entry.questionId) && !selected.includes(entry.questionId) && !entry.skipReason ? { skipReason: hardCapReached ? "hard_cap" as const : "not_useful" as const } : {}) })), routingIterations: resolution.iterations,
   };
 }
 

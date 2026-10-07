@@ -64,7 +64,7 @@ function normalizeRouteBudget(budget: RouteBudgetV1, activeAnswerCount: number):
 }
 
 export type PlannerSkipReason = "module_budget" | "redundant_evidence" | "lower_priority" | "hard_cap" | "primary_route_complete" | "context_already_resolved" | "component_covered" | "refinement_not_needed" | "material_not_needed";
-export type QuestionSelectionReason = "required_context" | "unlock_routing" | "goal_or_friction" | "specialized_evidence" | "cross_cutting_evidence" | "refinement" | "confirmation";
+export type QuestionSelectionReason = "required_context" | "unlock_routing" | "goal_or_friction" | "specialized_evidence" | "cross_cutting_evidence" | "prospective_evidence" | "refinement" | "confirmation";
 
 // ── Material evidence need (DIAG-V3-08D.1) ──────────────────────────────────
 

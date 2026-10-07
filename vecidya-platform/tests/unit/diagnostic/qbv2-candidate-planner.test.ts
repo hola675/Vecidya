@@ -11,7 +11,7 @@ const active: AnswersV2 = { q2_entity: "business", q2_has_customers: "yes", q2_r
 
 test("R5-A candidate planner uses candidate bank, R3 utility, and R4 applicability", () => {
   const plan = buildCandidateQuestionPlanV3({ answers: active });
-  assert.equal(plan.plannerIdentity, "reviewed-evidence-v3+r3+r4+candidate-planner-v1");
+  assert.equal(plan.plannerIdentity, "reviewed-evidence-v3+r3+r4+candidate-planner-v2");
   assert.ok(plan.eligibleQuestionIds.every((id) => REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.some((q) => q.id === id)));
   assert.ok(plan.selectedQuestionIds.every((id) => plan.eligibleQuestionIds.includes(id)));
   assert.equal(new Set(plan.selectedQuestionIds).size, plan.selectedQuestionIds.length);
