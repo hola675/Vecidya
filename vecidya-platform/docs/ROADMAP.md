@@ -53,11 +53,13 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — R3 certificado; R4 siguiente
+## DIAG-V3 — R3 certificado; R4-A cerrado; R4-B siguiente
 
 R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 2 `LATER_REVIEW`, 0 sin clasificar), freezes de neutralidad y separación contexto/evidencia, y el comando frozen/legacy reproducible de diez suites (240/240). La historia de conteos 234/235 permanece no atribuible a un manifiesto preservado; 240 es el baseline forward del comando documentado, no una equivalencia retrospectiva. La candidata permanece inactiva y el runtime productivo 85/version 1 congelado.
 
-**R4 — Dimension Applicability: NEXT, NO INICIADA.** El siguiente bloque puede definir aplicabilidad por actividad/etapa/modelo/evidencia, incluida recurrencia/recompra, Measurement y mecanismos explícitos de donación/membresía, bajo autorización de fase. R3-FINAL no modifica esas reglas, no reintroduce DEFER y no implementa applicability. El banco productivo sigue congelado hasta una activación expresamente autorizada.
+**R4-A — Dimension Applicability Contract & Decision Matrix: implementado localmente y validado.** Evaluador puro para ocho dimensiones; no integra al scorer, no activa candidata ni cambia banco, preguntas, planner, scoring, evidencia o calibración. Reglas y límites en `ARCHITECTURE.md`, resultados reproducibles en `TESTING.md`.
+
+**R4-B — Candidate Applicability Integration: siguiente fase, no iniciada.** Integrará el contrato solo en la candidata y decidirá aplicabilidad por dimensión sin activar el banco productivo. Requiere autorización independiente. El runtime productivo sigue congelado.
 
 ## VIS-001 — siguiente trabajo visual y gates
 

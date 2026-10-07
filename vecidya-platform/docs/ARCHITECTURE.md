@@ -1,5 +1,28 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R4-A — contrato de aplicabilidad dimensional
+
+**CODE/TEST, 2026-10-06:** `qbv2-applicability.ts` define un evaluador puro e independiente del scorer para las ocho dimensiones V3. Devuelve `applicable`, `not_applicable` o `insufficient_context`, un código de razón cerrado y hechos de soporte ordenados. No devuelve score, recomendación ni datos comerciales y no se integra en `scoreContextualDimensions()`; esa integración queda para R4-B.
+
+**Precedencia:** (1) evidencia V3 activa y validada de la dimensión, si no es `not_applicable`, corrobora que la dimensión es observable; su estado/contribución no altera el resultado. (2) Clarity & Positioning y Digital Readiness son universales bajo las definiciones actuales. (3) el resto usa hechos estructurales de actividad, modelo, cliente y arquetipos. (4) si faltan los hechos requeridos, se devuelve `insufficient_context`; una ausencia desconocida no se convierte en N/A. Una respuesta N/A individual tampoco elimina la aplicabilidad dimensional.
+
+| Dimensión | Aplicable | No aplicable | Contexto insuficiente |
+| --- | --- | --- | --- |
+| Clarity & Positioning | Universal para negocio, individuo, organización y proyecto. | Ningún caso estructural en el contrato actual. | No requiere contexto; evidencia V3 solo explica su materialidad. |
+| Digital Foundation | Actividad activa, por `activity=active` o etapa operativa/growing/scaling cuando activity falta. | Prelaunch/idea sin evidencia V3 de la dimensión. | Activity y etapa ausentes/no resueltas sin evidencia. |
+| Discovery | Actividad activa, arquetipo con audiencia/demanda, modelo creator/membership/nonprofit, comprador resuelto, o evidencia V3. | Un canal o alcance geográfico no activa por sí solo la dimensión ni prueba N/A; tampoco lo hace una intención declarada. | Sin audiencia/demanda estructural resuelta ni evidencia. |
+| Trust & Reputation | Actividad activa, que acredita interacción con clientes reales, o evidencia V3. | Prelaunch/idea sin evidencia V3. | No se puede determinar actividad ni hay evidencia. |
+| Conversion & Access | Arquetipo de acción (local, citas, servicio, ecommerce, retail, hospitality, B2B) o modelo de servicios/productos/profesional/creator-audience/membership/nonprofit, o evidencia V3. Incluye contacto, cita, compra, donación y acción de membresía. | La ausencia de modelo/arquetipo no demuestra que no exista una acción; el arquetipo creator sin modelo de acción no basta. | No se resuelve una acción concreta ni hay evidencia. |
+| Relationship & Recurrence | Citas, servicios profesionales, retail, B2B o creator; modelo membership/nonprofit/creator; comprador B2B/mixed; o evidencia V3. Incluye seguimiento, contacto posterior y continuidad multietapa, sin exigir recompra. | Prelaunch/idea sin evidencia V3. | Actividad activa sin un contexto de continuidad demostrado; ecommerce solo no prueba recurrencia. |
+| Measurement & Optimization | Actividad activa, aunque no exista evidencia R3 de medición; o evidencia V3. | Prelaunch/idea sin evidencia V3. | No se puede determinar actividad ni hay evidencia. |
+| Digital Readiness | Universal, incluso para proyecto prelaunch: evalúa capacidad de sostener la presencia digital que la entidad necesita. | Ningún caso estructural en el contrato actual. | No requiere contexto; evidencia V3 es corroborativa. |
+
+`activity` manda sobre la precisión de `growthStage`. Si falta activity, `idea` representa prelaunch y `operating`, `growing` o `scaling` acreditan actividad; `starting` por sí solo no decide operación. Las etapas no son una escala ordinal. Un `hybrid` se interpreta mediante todos sus `archetypeComponents`, preservados y ordenados; `hybrid` sin componentes no inventa mecanismos.
+
+Razones estables: `universal_dimension` (dimensión transversal); `active_operation` (operación real); `prelaunch_no_operation` (sin actividad que sostenga la dimensión); `audience_or_demand_context` (audiencia/demanda estructural); `concrete_action_context` (acción concreta); `ongoing_interaction_context` (continuidad/interacción); `observed_dimension_evidence` (observación V3 corroborativa); `context_unresolved` (falta un hecho estructural requerido). Metas y fricciones declaradas no participan en esta matriz.
+
+**Freeze R4-A:** solo se agrega el evaluador aislado, pruebas y documentación. Candidata R3: 38 (21 migradas, 15 context-only, 2 later-review), inactiva; `QUESTION_BANK_V2=85`, runtime v1, evidencia R3, planner, scoring, pesos, calibración y caracterización permanecen intactos. Siguiente bloque: R4-B, integración de aplicabilidad en la candidata.
+
 ## DIAG-V3-R3-FINAL — certificación y freeze de evidencia
 
 **CODE/TEST/RAN, 2026-10-06:** R3 queda certificado con **38 preguntas candidatas: 21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 2 `LATER_REVIEW`, 0 sin clasificar y 0 disposiciones duplicadas**. La clasificación final es metadato de auditoría protegido por `qbv2-r3-final-certification.test.ts`; no redefine `evidenceMigration`. Para las 15 context-only y las dos later-review el estado técnico continúa `pending`, pero su revisión ya no está sin resolver: contexto-only es una decisión cerrada de no producir evidencia en R3; later-review conserva una decisión semántica explícitamente aplazada.

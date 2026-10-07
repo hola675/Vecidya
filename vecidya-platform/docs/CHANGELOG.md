@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-06 — DIAG-V3-R4-A: contrato de aplicabilidad dimensional
+
+- Se crea el evaluador puro `qbv2-applicability.ts` para las ocho dimensiones V3, con tres estados, razones cerradas y hechos de soporte deterministas. Goal/friction no alteran aplicabilidad; `activity` evita exigir una etapa precisa; híbridos usan sus componentes reales. Evidencia V3 corrobora por presencia, nunca por contribución.
+- Se añade matriz ejecutable R4-A y documentación canónica. El evaluador no se conecta al scorer; no cambian preguntas, evidence registry, planner, pesos, scoring, calibración, candidata activa ni runtime legacy 85/v1. R4-B queda como siguiente fase no iniciada.
+- Validación R4-A y suites de regresión registradas en `TESTING.md`.
+
 ## 2026-10-06 — DIAG-V3-R3-FINAL: certificación de evidencia
 
 - Se certifica la disposición final de las 38 preguntas candidatas: 21 mappings V3 versionados, 15 context-only y dos later-review; cero sin clasificar. La decisión de revisión queda separada de `evidenceMigration` técnico.

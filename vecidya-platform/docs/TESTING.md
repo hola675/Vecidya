@@ -1,5 +1,12 @@
 # Pruebas
 
+## DIAG-V3-R4-A — contrato de aplicabilidad dimensional
+
+- `qbv2-applicability.test.ts` valida el evaluador puro de ocho dimensiones, matriz prelaunch/idea/starting/operating/growing/scaling, negocios profesionales, citas, retail/ecommerce, B2B, creator, nonprofit y membership; híbridos conservan componentes. Prueba activity activa aunque GrowthStage quede unresolved, goals/friction invariantes, medición aplicable con cero evidencia R3, evidencia V3 de distinta intensidad, N/A no propagada y determinismo. La salida no contiene score/basis y los cambios de contexto producen cero evidencia candidata.
+- Evidencia solo corrobora aplicabilidad por existencia, ignorando intensidad/contribución; no se integra al scorer. No cambia el baseline de caracterización (`9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`).
+- **RAN 2026-10-06:** R4-A **15/15**, R3-FINAL **7/7**, R3N–R3A **137/137**, R2-FINAL (closure + certification) **14/14**, candidata completa **83/83**, frozen/legacy canónica **240/240**, caracterización **1/1**, combinado focalizado **488/488**, directorio diagnóstico **1021/1021**, `pnpm run test:unit` **1076/1076**. Todo PASS, cero fallos. El combinado elimina nueve pruebas repetidas porque `qbv2-reviewed-certification.test.ts` está en R2-FINAL y candidata; el resultado corresponde a todas las suites solicitadas sin duplicarlas. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS.
+- La candidata permanece inactiva; `QUESTION_BANK_V2=85`, runtime v1, scoring, planner, calibración y evidencia legacy intactos. Siguiente fase propuesta: R4-B, integración exclusiva en candidata.
+
 ## DIAG-V3-R3-FINAL — certificación final de semántica
 
 - `qbv2-r3-final-certification.test.ts` fija el ledger exacto 21/15/2 sobre los 38 IDs de la candidata, comprueba cero IDs no clasificados/duplicados, mapping y versión V3 exactos para cada migrada, una dimensión por fuente, cero evidencia para todas las opciones context-only/later-review, contexto sin score, unknown/N/A neutros y ausencia explícita solo donde se observa.
