@@ -1,5 +1,6 @@
-import type { ContextualConfidenceLevel, ContextualScoringResult } from "./qbv2-contextual-scoring";
+import type { ContextualConfidenceLevel } from "./qbv2-contextual-scoring";
 import { DIGITAL_DIMENSION_IDS, type DigitalDimensionId } from "./qbv2-coverage";
+import type { DiagnosticScoringView } from "./qbv2-diagnostic-view";
 import type { ResultCertainty } from "./qbv2-language";
 import type { DiagnosticNarrative } from "./qbv2-narrative";
 import { DIMENSION_NARRATIVE } from "./qbv2-narrative-phrases";
@@ -116,10 +117,18 @@ export type DigitalPresenceStatus = {
 };
 
 export type OverallStatusInput = {
-  readonly scoring: ContextualScoringResult;
+  readonly scoring: DiagnosticScoringView;
   readonly priorities: ConstraintPriorityResult;
   readonly semanticFacts: SemanticDiagnosticFacts;
   readonly narrative: DiagnosticNarrative;
+  /**
+   * DIAG-V3-R6-B seam: how index/confidence are computed. Defaults to the legacy functions below, so every
+   * existing legacy caller is unaffected. The candidate path supplies its own index computation to exclude
+   * bank-unobservable dimensions (zero candidate evidence source, e.g. Measurement) from the coverage
+   * denominator, instead of counting them as if the respondent simply hadn't answered yet.
+   */
+  readonly computeIndex?: (scoring: DiagnosticScoringView, options: { readonly prelaunch?: boolean }) => DigitalPresenceIndex;
+  readonly computeConfidence?: (scoring: DiagnosticScoringView, index: DigitalPresenceIndex) => OverallConfidence;
 };
 
 const round2 = (value: number) => Math.round(value * 100) / 100;
@@ -128,7 +137,7 @@ const round2 = (value: number) => Math.round(value * 100) / 100;
  * Antes del lanzamiento no hay índice: lo que se lee es preparación (claridad, base, primer canal), no una presencia
  * en operación, y las capacidades operativas son incertidumbre legítima. Un porcentaje ahí sería precisión falsa.
  */
-export function computeDigitalPresenceIndex(scoring: ContextualScoringResult, options: { readonly prelaunch?: boolean } = {}): DigitalPresenceIndex {
+export function computeDigitalPresenceIndex(scoring: DiagnosticScoringView, options: { readonly prelaunch?: boolean } = {}): DigitalPresenceIndex {
   const byId = new Map(scoring.dimensions.map((item) => [item.id, item]));
   const applicableDimensions = DIGITAL_DIMENSION_IDS.filter((id) => byId.get(id)?.applicability === "applicable");
   const scoredDimensions = applicableDimensions.filter((id) => typeof byId.get(id)!.score === "number");
@@ -145,7 +154,7 @@ export function computeDigitalPresenceIndex(scoring: ContextualScoringResult, op
 }
 
 /** Confianza general a partir de la confianza por área y la cobertura; nunca se mezcla con el porcentaje. */
-export function computeOverallConfidence(scoring: ContextualScoringResult, index: DigitalPresenceIndex): OverallConfidence {
+export function computeOverallConfidence(scoring: DiagnosticScoringView, index: DigitalPresenceIndex): OverallConfidence {
   const levels = index.scoredDimensions.map((id) => scoring.dimensions.find((item) => item.id === id)!.confidence.level);
   const atLeastMedium = levels.filter((level) => level !== "low").length;
   const high = levels.filter((level) => level === "high").length;
@@ -199,8 +208,10 @@ const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1
 
 export function buildDigitalPresenceStatus(input: OverallStatusInput): DigitalPresenceStatus {
   const { scoring, priorities, semanticFacts, narrative } = input;
-  const index = computeDigitalPresenceIndex(scoring, { prelaunch: narrative.lifecycle === "prelaunch" });
-  const confidence = computeOverallConfidence(scoring, index);
+  const computeIndex = input.computeIndex ?? computeDigitalPresenceIndex;
+  const computeConfidence = input.computeConfidence ?? computeOverallConfidence;
+  const index = computeIndex(scoring, { prelaunch: narrative.lifecycle === "prelaunch" });
+  const confidence = computeConfidence(scoring, index);
   const material = priorities.constraints.find((item) => item.severity === "material");
   const { state, bandState, caveat } = classifyOverallState({ rawScore: index.rawScore, confidence: confidence.level, material: material ? { dimension: material.dimension, constraintId: material.id } : null });
   const canonical = index.rawScore === null ? null : resolveGlobalDigitalStatus(index.rawScore);

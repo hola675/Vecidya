@@ -1,7 +1,8 @@
 import { QUESTION_BANK_V2 } from "./qbv2-bank";
 import { renderQuestionV2 } from "./qbv2-copy";
-import type { ContextualConfidenceLevel, ContextualScoringResult } from "./qbv2-contextual-scoring";
+import type { ContextualConfidenceLevel } from "./qbv2-contextual-scoring";
 import { DIGITAL_DIMENSION_IDS, type DigitalDimensionId } from "./qbv2-coverage";
+import type { DiagnosticScoringView } from "./qbv2-diagnostic-view";
 import { resolveEligibleQuestionsV2, type QuestionBankV2 } from "./qbv2-engine";
 import { DIMENSION_RESULT_CONCEPT, LIFECYCLE_ORDER, resultCertainty, resultSubject, type ResultCertainty } from "./qbv2-language";
 import { DEPENDENCY_STATEMENTS, DIMENSION_NARRATIVE, DIMENSION_STATEMENTS, PRIORITY_FOCUS, QUESTION_TOPICS, RELEVANCE_REASONS, type ReadingPolarity } from "./qbv2-narrative-phrases";
@@ -92,10 +93,16 @@ export type DiagnosticNarrative = {
 
 export type NarrativeInput = {
   readonly answers: AnswersV2;
-  readonly scoring: ContextualScoringResult;
+  readonly scoring: DiagnosticScoringView;
   readonly priorities: ConstraintPriorityResult;
   readonly semanticFacts: SemanticDiagnosticFacts;
   readonly bank?: QuestionBankV2;
+  /**
+   * DIAG-V3-R6-B: additive overlay merged on top of the shared `QUESTION_TOPICS`, for question IDs that
+   * exist only in a non-public bank (e.g. the candidate bank). Kept out of `qbv2-narrative-phrases.ts` so
+   * candidate-only topic strings never ship in the public bundle; legacy callers never pass this.
+   */
+  readonly questionTopics?: Readonly<Record<string, string>>;
 };
 
 // ── Utilidades de composición ───────────────────────────────────────────────
@@ -107,13 +114,6 @@ const withoutPeriod = (text: string) => text.replace(/\.$/, "");
 const contract = (text: string) => text.replace(/\bde el\b/g, "del").replace(/\ba el\b/g, "al");
 const joinList = (items: readonly string[]) => (items.length <= 1 ? items.join("") : `${items.slice(0, -1).join(", ")} y ${items.at(-1)}`);
 const unique = <T>(items: readonly T[]) => [...new Set(items)];
-const topicsOf = (questionIds: readonly string[]) => unique(questionIds).filter((id) => QUESTION_TOPICS[id]).map((id) => ({ questionId: id, topic: QUESTION_TOPICS[id]! }));
-function topicList(questionIds: readonly string[]): string {
-  const topics = topicsOf(questionIds).map((item) => item.topic);
-  if (topics.length <= 3) return joinList(topics);
-  const rest = topics.length - 3;
-  return `${topics.slice(0, 3).join(", ")} y ${rest === 1 ? "otra respuesta" : `otras ${rest} respuestas`}`;
-}
 const READINGS: ReadonlySet<SemanticFact["type"]> = new Set(["strength", "partial", "weakness"]);
 
 type BlockDraft = Omit<NarrativeBlock, "sourceQuestionIds" | "sourceContext" | "sourceFactIds"> & { readonly sourceFactIds?: readonly string[]; readonly sourceQuestionIds?: readonly string[]; readonly sourceContext?: readonly string[] };
@@ -123,6 +123,14 @@ const block = (draft: BlockDraft): NarrativeBlock => ({ ...draft, text: contract
 
 export function buildDiagnosticNarrative(input: NarrativeInput): DiagnosticNarrative {
   const bank = input.bank ?? QUESTION_BANK_V2;
+  const topics: Readonly<Record<string, string>> = input.questionTopics ? { ...QUESTION_TOPICS, ...input.questionTopics } : QUESTION_TOPICS;
+  const topicsOf = (questionIds: readonly string[]) => unique(questionIds).filter((id) => topics[id]).map((id) => ({ questionId: id, topic: topics[id]! }));
+  function topicList(questionIds: readonly string[]): string {
+    const resolved = topicsOf(questionIds).map((item) => item.topic);
+    if (resolved.length <= 3) return joinList(resolved);
+    const rest = resolved.length - 3;
+    return `${resolved.slice(0, 3).join(", ")} y ${rest === 1 ? "otra respuesta" : `otras ${rest} respuestas`}`;
+  }
   const context = resolveEligibleQuestionsV2(input.answers, bank).context;
   const profile = resolveTerminologyProfile(context, input.answers);
   const terms = TERMINOLOGY[profile].terms;
@@ -269,7 +277,7 @@ export function buildDiagnosticNarrative(input: NarrativeInput): DiagnosticNarra
       return text ? [block({ id: fact.id, kind: "evidence_gap", text, certainty: "unknown", sourceFactIds: [fact.id], sourceQuestionIds: fact.provenance.questionIds, sourceContext: fact.gap?.kind === "legitimate_uncertainty" ? ["growthStage"] : [], dimension: fact.dimension })] : [];
     }),
     ...facts.filter((fact) => fact.type === "uncertainty").map((fact) => block({
-      id: fact.id, kind: "uncertainty", text: `No estabas seguro sobre ${QUESTION_TOPICS[fact.provenance.questionIds[0]!] ?? topic(fact.dimension!)}, así que esa respuesta no cuenta ni a favor ni en contra.`,
+      id: fact.id, kind: "uncertainty", text: `No estabas seguro sobre ${topics[fact.provenance.questionIds[0]!] ?? topic(fact.dimension!)}, así que esa respuesta no cuenta ni a favor ni en contra.`,
       certainty: "unknown", sourceFactIds: [fact.id], sourceQuestionIds: fact.provenance.questionIds, dimension: fact.dimension,
     })),
   ];
