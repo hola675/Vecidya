@@ -1,7 +1,7 @@
 import { buildCandidateNarrativeAndOverallV3, type CandidateNarrativeAndOverallV3 } from "./qbv2-candidate-narrative";
-import { matchCandidateSolutionV3 } from "./qbv2-candidate-solutions";
+import { candidateSolutionContextOfV3, matchCandidateSolutionV3 } from "./qbv2-candidate-solutions";
 import { buildDiagnosticRecommendations, type DiagnosticRecommendations } from "./qbv2-recommendations";
-import { solutionContextOf, type SolutionMatch } from "./qbv2-solutions";
+import type { SolutionMatch } from "./qbv2-solutions";
 import type { AnswersV2 } from "./qbv2-rules";
 
 export type CandidateRecommendationsAndSolutionsInputV3 = { readonly answers: AnswersV2 };
@@ -23,7 +23,8 @@ export type CandidateRecommendationsAndSolutionsV3 = CandidateNarrativeAndOveral
 export function buildCandidateRecommendationsAndSolutionsV3(input: CandidateRecommendationsAndSolutionsInputV3): CandidateRecommendationsAndSolutionsV3 {
   const base = buildCandidateNarrativeAndOverallV3(input);
   const recommendations = buildDiagnosticRecommendations({ scoring: base.scoring, priorities: base.priorities, semanticFacts: base.semanticFacts, narrative: base.narrative });
-  const solutionContext = solutionContextOf(base.scoring, base.priorities, base.narrative);
+  // R6-C.1: candidate process authority (q2_process_systemization), never the legacy PROCESS_SIGNALS heuristic.
+  const solutionContext = candidateSolutionContextOfV3(base.scoring, base.priorities, base.narrative);
   const solutions = recommendations.items.map((recommendation) => matchCandidateSolutionV3(recommendation, solutionContext));
   return { ...base, recommendations, solutions };
 }

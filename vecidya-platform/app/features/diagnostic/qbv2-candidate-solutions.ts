@@ -1,7 +1,29 @@
+import { CANDIDATE_SEMANTIC_EVIDENCE_CATALOG_V3 } from "./qbv2-candidate-interpretation";
+import type { DiagnosticNarrative } from "./qbv2-narrative";
+import type { ConstraintPriorityResult } from "./qbv2-priorities";
 import type { DiagnosticRecommendation } from "./qbv2-recommendations";
+import type { DiagnosticScoringView } from "./qbv2-diagnostic-view";
 import {
-  SOLUTION_CATALOG, SOLUTION_IDS, type ExclusionRule, type SolutionContext, type SolutionId, type SolutionMatch,
+  SOLUTION_CATALOG, SOLUTION_IDS, solutionContextOf, type ExclusionRule, type SolutionContext, type SolutionId, type SolutionMatch,
 } from "./qbv2-solutions";
+
+/**
+ * DIAG-V3-R6-C.1 — candidate process authority. The shared `solutionContextOf` derives `processMaturity`
+ * from legacy `PROCESS_SIGNALS`/`PROCESS_GAPS`, which accept healthy readings of OTHER constructs
+ * (professional intake clarity, information retrieval, appointment reminders) as proof of a defined general
+ * process and never read `q2_process_systemization` — the candidate's migrated DIRECT Digital Readiness
+ * source that measures systemization itself. That legacy context stays frozen for legacy callers; the
+ * candidate keeps its structural fields (lifecycle/profile/goal/friction/stage/score/stateOf) and replaces
+ * only process authority: defined ⇔ `q2_process_systemization` is established. Partial, weak, missing,
+ * unknown or unanswered all mean "not defined" (one defined sub-process ≠ globally defined process).
+ */
+export const CANDIDATE_PROCESS_AUTHORITY_V3 = "q2_process_systemization" as const;
+const DEFINED_PROCESS = new Set(["established", "strong"]);
+
+export function candidateSolutionContextOfV3(scoring: DiagnosticScoringView, priorities: ConstraintPriorityResult, narrative: DiagnosticNarrative): SolutionContext {
+  const shared = solutionContextOf(scoring, priorities, narrative);
+  return { ...shared, processMaturity: DEFINED_PROCESS.has(shared.stateOf(CANDIDATE_PROCESS_AUTHORITY_V3) ?? "") ? "defined" : "undefined" };
+}
 
 /**
  * DIAG-V3-R6-C — candidate-only solution matcher. A solution may never be more specific than the evidence
@@ -30,6 +52,12 @@ export function matchCandidateSolutionV3(recommendation: DiagnosticRecommendatio
   if (recommendation.mode === "verify") return result(null, [], exclusionsForType("verify_before_intervention"));
 
   const live = context.lifecycle === "live";
+  // DIAG-V3-R6-C.1 direct-basis rule: supporting evidence may refine a score, never select an intervention.
+  // A live concrete solution needs at least one migrated DIRECT source of the recommendation's own dimension
+  // whose own state is below established; an established direct source pulled down only by supporting
+  // refinement is not evidence of the need. Prelaunch `prepare` solutions are a separate category.
+  const directBasis = CANDIDATE_SEMANTIC_EVIDENCE_CATALOG_V3.directQuestionIds(recommendation.dimension).filter((id) => below(context.stateOf(id)));
+  if (live && directBasis.length === 0) return result(null, [], exclusionsForType("verify_before_intervention"));
   switch (recommendation.type) {
     // All three candidate direct Clarity sources (intake flow, retail product visibility, offer clarity)
     // are themselves about offer/message/next-step clarity, so one evidence-grounded solution fits all.
@@ -71,13 +99,17 @@ export function matchCandidateSolutionV3(recommendation: DiagnosticRecommendatio
     case "follow_up": {
       if (!live) return result(null);
       // A weak general process, quote follow-up, or B2B pipeline each describe the same underlying gap —
-      // the process itself — so the usual automation-readiness gate applies. Reminders being weak only
-      // ever justifies automation (never CRM) when a process already exists elsewhere to automate.
+      // the follow-up process itself is weak — so it can never be automated (R6-C.1): structured CRM
+      // follow-up is the evidence-grounded fit. Reminders being weak only justifies automation (never CRM)
+      // when the candidate process authority (`q2_process_systemization` established) shows a defined
+      // process to automate; healthy intake/information/reminder readings are never a substitute.
       // Rebooking and retail customer-capture weaknesses describe narrower constructs with no evidence-backed
       // catalog match and stay null rather than being collapsed into CRM/automation by default.
       const processWeak = [context.stateOf("q2_followup_general_process"), context.stateOf("q2_service_quote_followup"), context.stateOf("q2_b2b_pipeline")].some(below);
-      if (processWeak) return context.processMaturity === "defined" ? result("follow_up_automation") : result("crm_follow_up");
-      if (below(context.stateOf("q2_appointments_confirmation_reminders")) && context.processMaturity === "defined") return result("follow_up_automation");
+      if (processWeak) return result("crm_follow_up", [], [{ solutionId: "follow_up_automation", rule: "automation_requires_defined_process" }]);
+      if (below(context.stateOf("q2_appointments_confirmation_reminders"))) {
+        return context.processMaturity === "defined" ? result("follow_up_automation") : result(null, [], [{ solutionId: "follow_up_automation", rule: "automation_requires_defined_process" }]);
+      }
       return result(null);
     }
 
@@ -88,7 +120,11 @@ export function matchCandidateSolutionV3(recommendation: DiagnosticRecommendatio
       return live ? result(null, [], [{ solutionId: "measurement_tracking", rule: "analytics_requires_activity" }]) : result("measurement_plan");
 
     case "readiness":
-      if (context.processMaturity === "defined" && live) return result("operational_automation", context.stateOf("q2_operations_information_base") === "partial" ? ["integrations"] : []);
-      return result("work_organization");
+      // R6-C.1: the only live Readiness needs the candidate bank can evidence are an undefined/partial
+      // process (`q2_process_systemization`) or scattered information (`q2_operations_information_base`) —
+      // both are organization needs, never proof that automation is the supported intervention (a catalog
+      // entry is not evidence). `operational_automation` is therefore unreachable for the candidate-38 bank.
+      // The direct-basis gate above already guarantees at least one of those two sources is below established.
+      return result("work_organization", [], [{ solutionId: "operational_automation", rule: "automation_requires_defined_process" }]);
   }
 }
