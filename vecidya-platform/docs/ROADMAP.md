@@ -53,7 +53,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — R3/R4 certificados; R5 siguiente
+## DIAG-V3 — R3/R4/R5 certificados; R6 siguiente
 
 R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 2 `LATER_REVIEW`, 0 sin clasificar), freezes de neutralidad y separación contexto/evidencia, y el comando frozen/legacy reproducible de diez suites (240/240). La historia de conteos 234/235 permanece no atribuible a un manifiesto preservado; 240 es el baseline forward del comando documentado, no una equivalencia retrospectiva. La candidata permanece inactiva y el runtime productivo 85/version 1 congelado.
 
@@ -67,7 +67,9 @@ R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 
 
 **R5-B — Candidate Route Quality & Adaptive Planner Certification: COMPLETA (candidata experimental).** El runner interactivo (12 perfiles, una pregunta por turno) y las correcciones candidate-only (role `core`, unlock causal por simulación, `budget_blocked`/`module_budget`/`base_budget`, evidencia de aplicabilidad prospectiva) certifican 21/21 preguntas migradas y 19/19 direct sources reachable, con 2/2 supporting sources correctamente subordinadas. `q2_followup_general_process` quedaba elegible pero sin utilidad; se resolvió reconociendo que una respuesta sustantiva ya resuelve Relationship vía el contrato R4 existente (`observed_dimension_evidence`) — no se cambió R3 ni R4, solo se añadió una simulación candidate-only que lo comprueba por adelantado. Identidad `reviewed-evidence-v3+r3+r4+candidate-planner-v2`. Candidata sigue inactiva/no exportada; no se activa runtime.
 
-**NEXT: R5-FINAL — Adaptive Planner Certification & Freeze.**
+**R5-FINAL — Adaptive Planner Certification & Freeze: COMPLETE / CERTIFIED.** `qbv2-r5-final-certification.test.ts` certifica, contra código ejecutable (no solo documentación): identidad `reviewed-evidence-v3+r3+r4+candidate-planner-v2` y presupuestos de ruta (base 18/extensión 20/hard cap 24) congelados; ledger R3 38/21/15/2/0 y ledger R4 8 dimensiones/3 estados/8 razones; 21/21 preguntas migradas, 19/19 fuentes directas y 2/2 supporting reachable; la frontera de evidencia prospectiva de Relationship resuelta sin cambiar R3/R4; el unlock causal de `q2_appointments_lead_to_booking` hacia `q2_appointments_booking_friction`; Measurement como gap no observable certificado (aplicable/null/0 fuentes); `budget_blocked` honesto y distinto de `no_useful_questions`/`hard_cap`; determinismo (orden de banco, orden de respuestas, save/resume, invalidación por cambio de respuesta); cero reglas de contradicción legacy alcanzables; y aislamiento del barrel compartido. R3, R4, el planner legacy, el runtime productivo (85/v1/2.0/1/1/1/1) y la calibración permanecen sin cambios; la candidata sigue inactiva. R5 — Adaptive Planner queda **COMPLETE / CERTIFIED** en su totalidad (R5-A + R5-B + R5-FINAL).
+
+**NEXT: R6 — Consumers.** No iniciado.
 
 ## VIS-001 — siguiente trabajo visual y gates
 

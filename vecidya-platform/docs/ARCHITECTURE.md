@@ -1,5 +1,9 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R5-FINAL — certificación y freeze del planner adaptativo candidato
+
+R5 queda **COMPLETE / CERTIFIED** (R5-A + R5-B + R5-FINAL). `qbv2-r5-final-certification.test.ts` certifica contra código ejecutable, no contra documentación: identidad `reviewed-evidence-v3+r3+r4+candidate-planner-v2` y presupuestos de ruta (base 18, extensión 20, hard cap 24) congelados; ledger R3 38 candidata/21 migrated/15 context-only/2 later-review/0 sin clasificar; ledger R4 8 dimensiones/3 estados de aplicabilidad/8 códigos de razón; las 21 preguntas migradas, las 19 fuentes directas y las 2 supporting son reachable en al menos un contexto certificado; la frontera de evidencia prospectiva de Relationship y el unlock causal de citas (ver abajo); Measurement como gap no observable; `budget_blocked` honesto; determinismo; cero reglas de contradicción legacy alcanzables contra la candidata; y que `buildCandidateQuestionPlanV3`/`scoreCandidateContextualDimensionsV3`/el banco candidato no se reexportan por el barrel compartido (`app/features/diagnostic/index.ts`). R3, R4, el planner legacy (`buildQuestionPlan`/`planNextQuestion`/`isDiagnosticReadyToComplete`), el runtime productivo y la calibración no cambiaron; la candidata sigue inactiva. Próximo bloque: R6 — Consumers (no iniciado).
+
 ## DIAG-V3-R5-B — calidad de rutas candidata
 
 El planner candidato pasó de identidad `reviewed-evidence-v3+r3+r4+candidate-planner-v1` a `...candidate-planner-v2`: `core` ya no convierte por sí solo una pregunta elegible en útil; una fuente directa fuera de aplicabilidad R4 no puede entrar como supuesto desbloqueo; y un prerequisite solo cuenta si una respuesta concreta vuelve elegible una pregunta hija útil. Si utilidad real queda sin seleccionar por límite de módulo/base, se reporta `budget_blocked` y `ready=false`, con skip `module_budget` o `base_budget`. El hard cap sigue en 24; versiones y planner productivo no cambian.

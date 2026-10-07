@@ -1,5 +1,11 @@
 # Pruebas
 
+## DIAG-V3-R5-FINAL — certificación y freeze del planner adaptativo
+
+- `qbv2-r5-final-certification.test.ts` es una suite focalizada (10 pruebas) que no duplica R5-A/R5-B: certifica identidad/presupuestos de ruta, ledger R3 38/21/15/2/0, ledger R4 8/3/8, reachability 21/21 migradas + 19/19 directas + 2/2 supporting en contextos explícitos, la frontera de evidencia prospectiva de Relationship (antes `insufficient_context`, después `applicable`/`observed_dimension_evidence`, sin cambio R3/R4), el unlock causal de `q2_appointments_lead_to_booking` (prueba antes/después de elegibilidad de `q2_appointments_booking_friction` con `mixed`/`few`, y que el padre sigue con cero evidencia V3), Measurement como gap no observable, `budget_blocked` honesto (útil pero no seleccionable por `module_budget`, nunca `not_useful`), determinismo (orden de banco invertido vía el seam de prueba, orden de claves de respuesta, save/resume, invalidación por cambio de respuesta), cero reglas de contradicción legacy alcanzables contra la candidata, y que `buildCandidateQuestionPlanV3`/`scoreCandidateContextualDimensionsV3`/el banco candidato no se reexportan por `app/features/diagnostic/index.ts`.
+- Resultado: 10/10 PASS. R5 queda **COMPLETE / CERTIFIED** en su totalidad (R5-A + R5-B + R5-FINAL). Validación completa tras la certificación: diagnóstico **1079/1079**, unitarias completas **1134/1134**, typecheck y build PASS, bundle scan sin símbolos candidato en `build/client`/`build/server`, `git diff --check` PASS.
+- Ejecutar: `pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/qbv2-r5-final-certification.test.ts`.
+
 ## DIAG-V3-R5-B — calidad de rutas candidata
 
 - `qbv2-candidate-route-quality.test.ts` recorre 12 rutas de una pregunta por turno con respuestas explícitas por perfil; mide IDs/respuestas, respuestas iniciales vs añadidas, dimensiones nulas/gaps no observables, terminación y módulos. Hay regresiones para gate causal de citas, pending creator, Measurement 0-source, límite de módulo/base, híbridos, goal/friction, supporting, respuesta obsoleta, orden/resume, y evidencia de aplicabilidad prospectiva (positiva y negativa: una fuente supporting-only nunca califica).

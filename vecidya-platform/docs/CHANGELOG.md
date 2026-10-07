@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-07 — DIAG-V3-R5-FINAL: certificación y freeze del planner adaptativo candidato
+
+- R5 — Adaptive Planner queda **COMPLETE / CERTIFIED** (R5-A + R5-B + R5-FINAL). Suite focalizada `qbv2-r5-final-certification.test.ts` (10/10 PASS) certifica, contra código ejecutable: identidad `reviewed-evidence-v3+r3+r4+candidate-planner-v2`; presupuestos de ruta base 18/extensión 20/hard cap 24; ledger R3 38/21/15/2/0; ledger R4 8 dimensiones/3 estados/8 razones; 21/21 preguntas migradas, 19/19 fuentes directas y 2/2 supporting reachable; la frontera de evidencia prospectiva de Relationship y el unlock causal de `q2_appointments_lead_to_booking`; Measurement como gap no observable; `budget_blocked` honesto; determinismo; cero reglas de contradicción legacy alcanzables; y aislamiento del barrel compartido.
+- Sin cambios de comportamiento: no se tocaron R3, R4, el planner legacy, el runtime productivo ni la calibración. La candidata sigue inactiva. Validación completa: diagnóstico 1079/1079, unitarias 1134/1134, typecheck/build/bundle-scan/`git diff --check` PASS.
+- Próximo bloque: R6 — Consumers (no iniciado).
+
 ## 2026-10-07 — DIAG-V3-R5-B: calidad de rutas candidata
 
 - El planner candidato v2 impide que `core` fuerce utilidad fuera de applicability, exige un unlock causal hacia una pregunta hija útil y deja trazas `budget_blocked`/`module_budget`/`base_budget` cuando la utilidad no se puede seleccionar. También evita tomar evidencia directa fuera de aplicabilidad R4 como puerta lateral para otra pregunta. Banco productivo, scorer, R3/R4, comercial y runtime no se cambiaron.
