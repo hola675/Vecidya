@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-08 — DIAG-V3-R6-D.3 / R7-B.1: alcance de la aclaración Ciudad
+
+- Cierra `DIAG-V3-R7B-CIUDAD-SCOPE-001` (RESUELTA): la aclaración de alcance de procesos refina una necesidad comercial recurrente ya demostrada (Barrio ↔ Ciudad) y nunca la crea.
+- `resolveCandidateLicenseFitV3` (candidato) evalúa primero la necesidad recurrente; `multiple_coordinated_processes` ya no produce Ciudad en C16, C19, website-only, prelaunch, Measurement, Discovery ni unknown-heavy, ni sube Cuadra-only a Ciudad. Fuera de una necesidad recurrente la salida comercial es idéntica con cualquier aclaración; dentro, la tabla de verdad R6-D.2 se conserva. Con licencia actual Ciudad y sin necesidad recurrente, el cambio es `downgrade` o `exit_or_none`.
+- Pruebas: `qbv2-r6d3-ciudad-scope.test.ts` (7, escrita en rojo antes de la corrección); el gate R7-B y la prueba correctiva que fijaban el comportamiento antiguo exigen ahora el contrato decidido. Campaña R7-B re-ejecutada completa en verde; R7-B sigue certificada con la nota R7-B.1.
+- Sin cambios en R3/R4/R5/R6-A/B/C, legacy, calibración ni runtime; candidata inactiva. Validación: diagnóstico 1261/1261, unitarias 1316/1316, typecheck y build PASS, bundle scan 0, caracterización sin cambios.
+
 ## 2026-10-08 — DIAG-V3-R7-B: re-certificación formal (COMPLETE / CERTIFIED)
 
 - R7-B pasa de BLOQUEADA (primera ejecución) → CORREGIDA (R6-C.1/R6-D.2) → RE-CERTIFICADA. Las mismas reproducciones, sin modificar ni relajar, pasan por corrección de producción: adversarial 35/35, metamórfica 22/22 (M1–M20, 0 violaciones), fuzz 5/5 (semilla `20261007`, 0 violaciones estructurales, 0 hard cap, 2 `budget_blocked` honestos), correctiva 15/15.

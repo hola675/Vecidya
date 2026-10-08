@@ -105,7 +105,8 @@ function licenseChange(current: CommercialLicense | undefined, next: CommercialL
 /**
  * Candidate license fit: evidence-grounded only. The candidate bank cannot by itself distinguish one
  * principal process from multiple coordinated ones (R6-D §24), so Ciudad is only ever reached through the
- * explicit post-diagnostic clarification, never guessed from automation/stage/score/complement count.
+ * explicit post-diagnostic clarification, never guessed from automation/stage/score/complement count — and
+ * only on top of an evidence-backed recurring commercial need (R6-D.3).
  */
 export function resolveCandidateLicenseFitV3(
   result: CandidateRecommendationsAndSolutionsV3,
@@ -117,18 +118,21 @@ export function resolveCandidateLicenseFitV3(
   const recurring = result.solutions.filter((match) => match.solution && BARRIO_SOLUTION_IDS.has(match.solution.id) && hasDirectNeedBasis(result, match.recommendationId));
   for (const match of recurring) addEvidence(match.solution!.id, match.recommendationId);
 
-  if (clarificationAnswer === "multiple_coordinated_processes") {
-    return {
-      recommendedLicense: "ciudad", confidence: "high",
-      rationale: "La aclaración post-diagnóstico confirma varios procesos operativos coordinados.",
-      whyNotLower: "Un solo proceso comercial estándar no cubre la coordinación confirmada.",
-      whyNotHigher: "Ciudad es el nivel superior de esta familia.",
-      evidence: [...evidence, { questionId: "commercial_process_scope", answerOption: clarificationAnswer, derivedFact: "multiple coordinated operational processes", evidenceType: "DERIVED", relevance: "high" }],
-      change: licenseChange(currentLicense, "ciudad"), unresolvedSignals: [],
-    };
-  }
-
+  // R6-D.3 (closes DIAG-V3-R7B-CIUDAD-SCOPE-001): the process-scope clarification only discriminates Barrio
+  // from Ciudad for an already evidence-backed recurring commercial need — it never creates that need.
+  // Without one, every clarification state is out of scope: the license follows the independent
+  // Cuadra/no-license evidence below, with no process-scope evidence and no confidence change.
   if (recurring.length > 0) {
+    if (clarificationAnswer === "multiple_coordinated_processes") {
+      return {
+        recommendedLicense: "ciudad", confidence: "high",
+        rationale: "La aclaración post-diagnóstico confirma varios procesos operativos coordinados.",
+        whyNotLower: "Un solo proceso comercial estándar no cubre la coordinación confirmada.",
+        whyNotHigher: "Ciudad es el nivel superior de esta familia.",
+        evidence: [...evidence, { questionId: "commercial_process_scope", answerOption: clarificationAnswer, derivedFact: "multiple coordinated operational processes", evidenceType: "DERIVED", relevance: "high" }],
+        change: licenseChange(currentLicense, "ciudad"), unresolvedSignals: [],
+      };
+    }
     // R6-D.2 clarification truth table: only an explicit affirmative `single_process` confirms one
     // principal process. `undefined` keeps the unclarified medium fit; `not_sure` (explicit uncertainty) and
     // `not_applicable` (not offered by the candidate clarification; fail closed) stay unresolved at

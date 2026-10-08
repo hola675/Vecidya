@@ -307,10 +307,12 @@ test("F3: clarification truth table on the same Barrio-capable diagnostics (A20,
   report.clarificationTable = table.slice(0, 5);
 });
 
-test("Out-of-scope Ciudad ambiguity is preserved unchanged (DIAG-V3-R7B-CIUDAD-SCOPE-001, no silent decision)", () => {
-  // Characterizes current behavior only; the open question (is the clarification admissible outside a
-  // Barrio-capable diagnostic?) stays documented debt for an explicit later disposition.
-  for (const id of ["C16", "C19"]) assert.equal(runChain(fin(id), "multiple_coordinated_processes").commercial.licenseFit.recommendedLicense, "ciudad");
+test("Out-of-scope Ciudad clarification (DIAG-V3-R7B-CIUDAD-SCOPE-001) — left undecided here, closed by R6-D.3", () => {
+  // This checkpoint only characterized the open question (C16/C19 + multiprocess → Ciudad) without deciding
+  // it. R6-D.3 decided it explicitly: the clarification refines an evidence-backed recurring need and never
+  // creates one, so these non-Barrio-capable diagnostics keep their independent result (full matrix in
+  // qbv2-r6d3-ciudad-scope.test.ts).
+  for (const id of ["C16", "C19"]) assert.equal(runChain(fin(id), "multiple_coordinated_processes").commercial.licenseFit.recommendedLicense, runChain(fin(id)).commercial.licenseFit.recommendedLicense);
 });
 
 test("Corrective report (OBSERVATIONAL — reproducible record for the checkpoint)", () => {

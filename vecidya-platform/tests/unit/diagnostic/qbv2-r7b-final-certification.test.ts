@@ -106,13 +106,15 @@ test("R7-B-FINAL: F3 stays corrected — the clarification truth table on the Ba
   }
 });
 
-test("R7-B-FINAL: open DIAG-V3-R7B-CIUDAD-SCOPE-001 is deterministic and commercial-only (preserved, not decided here)", () => {
+test("R7-B-FINAL: DIAG-V3-R7B-CIUDAD-SCOPE-001 closed (R7-B.1) — a multiprocess clarification cannot manufacture Ciudad without a recurring need", () => {
+  // R7-B found C16/C19 + multiprocess → Ciudad with no recurring commercial need; R6-D.3 closed it.
   for (const id of ["C16", "C19"]) {
     const unclarified = runChain(fin(id));
-    const ciudad = runChain(fin(id), "multiple_coordinated_processes");
-    assert.deepEqual(runChain(fin(id), "multiple_coordinated_processes"), ciudad, `${id}: deterministic`);
-    assert.equal(ciudad.commercial.licenseFit.recommendedLicense, "ciudad", `${id}: current behavior`);
-    for (const key of PRE_COMMERCIAL_KEYS) assert.deepEqual(ciudad[key], unclarified[key], `${id}: ${key} must not move with the clarification`);
+    const clarified = runChain(fin(id), "multiple_coordinated_processes");
+    assert.deepEqual(runChain(fin(id), "multiple_coordinated_processes"), clarified, `${id}: deterministic`);
+    for (const key of PRE_COMMERCIAL_KEYS) assert.deepEqual(clarified[key], unclarified[key], `${id}: ${key} must not move with the clarification`);
+    assert.equal(unclarified.commercial.licenseFit.recommendedLicense, null, `${id}: no recurring commercial need`);
+    assert.deepEqual(clarified.commercial, unclarified.commercial, `${id}: the clarification is out of scope — no Ciudad, no scope evidence, no item`);
   }
 });
 

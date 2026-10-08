@@ -53,7 +53,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — R3/R4/R5/R6 certificados (R6-C.1/R6-D.2 correctivo); R7-A implementada (cerrada por R7-A.1); R7-B certificada (re-certificación tras R6-C.1/R6-D.2); R7-FINAL y R8 pendientes
+## DIAG-V3 — R3/R4/R5/R6 certificados (correctivos R6-C.1/R6-D.2 y R6-D.3); R7-A implementada (cerrada por R7-A.1); R7-B certificada (re-certificación + R7-B.1); R7-FINAL y R8 pendientes
 
 R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 2 `LATER_REVIEW`, 0 sin clasificar), freezes de neutralidad y separación contexto/evidencia, y el comando frozen/legacy reproducible de diez suites (240/240). La historia de conteos 234/235 permanece no atribuible a un manifiesto preservado; 240 es el baseline forward del comando documentado, no una equivalencia retrospectiva. La candidata permanece inactiva y el runtime productivo 85/version 1 congelado.
 
@@ -87,9 +87,11 @@ R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 
 
 **R6-C.1 / R6-D.2 — Process Authority, Supporting-Signal & Commercial Clarification Corrections: IMPLEMENTADA (2026-10-07).** Autoridad de proceso candidata `q2_process_systemization`, regla de base directa para soluciones y licencias, roles honestos de prueba comercial y tabla de verdad de la aclaración. Sin cambios en R3/R4/R5/R6-A/R6-B, legacy, calibración ni runtime. Las suites R7-B pasan completas.
 
-**R7-B — Adversarial & Metamorphic QA, re-certificación formal: COMPLETE / CERTIFIED (2026-10-08).** BLOQUEADA → CORREGIDA → RE-CERTIFICADA. Las mismas reproducciones (A08b, A20, N06, N08, C05, C09, mutación C12, C24) pasan sin relajar ninguna aserción: adversarial 35/35, metamórfica 22/22, fuzz 5/5, correctiva 15/15. `qbv2-r7b-final-certification.test.ts` (8/8) certifica los gates de alto nivel sin duplicar la campaña. Sin cambios de producción ni de calibración; candidata inactiva. `DIAG-V3-R7B-CIUDAD-SCOPE-001` no bloquea R7-B y queda abierta. R7 no está completo.
+**R7-B — Adversarial & Metamorphic QA, re-certificación formal: COMPLETE / CERTIFIED (2026-10-08).** BLOQUEADA → CORREGIDA → RE-CERTIFICADA. Las mismas reproducciones (A08b, A20, N06, N08, C05, C09, mutación C12, C24) pasan sin relajar ninguna aserción: adversarial 35/35, metamórfica 22/22, fuzz 5/5, correctiva 15/15. `qbv2-r7b-final-certification.test.ts` (8/8) certifica los gates de alto nivel sin duplicar la campaña. Sin cambios de producción ni de calibración; candidata inactiva. `DIAG-V3-R7B-CIUDAD-SCOPE-001` no bloqueaba R7-B y quedó abierta (cerrada después por R6-D.3 / R7-B.1). R7 no está completo.
 
-**NEXT: R7-FINAL — Canonical & Adversarial QA Certification.** No iniciado. Gate de entrada: decisión explícita sobre `DIAG-V3-R7B-CIUDAD-SCOPE-001` (admitir o no la aclaración multiproceso fuera de un diagnóstico Barrio-capable). R8 — Calibration permanece pendiente.
+**R6-D.3 / R7-B.1 — Ciudad Clarification Scope Boundary: IMPLEMENTADA (2026-10-08).** Cierra `DIAG-V3-R7B-CIUDAD-SCOPE-001` con una decisión explícita: la aclaración de alcance de procesos refina una necesidad comercial recurrente ya demostrada (Barrio ↔ Ciudad) y nunca la crea. Solo cambió el orden del resolver candidato de licencia (`qbv2-candidate-commercial.ts`); fuera de una necesidad recurrente la salida comercial es idéntica con cualquier aclaración. Tabla de verdad R6-D.2 intacta dentro de la necesidad recurrente. Campaña R7-B re-ejecutada completa en verde (gate actualizado 8/8, 35/35, 22/22, 5/5): R7-B sigue COMPLETE / CERTIFIED con la nota R7-B.1. Sin cambios en R3/R4/R5/R6-A/B/C, legacy, calibración ni runtime.
+
+**NEXT: R7-FINAL — Canonical & Adversarial QA Certification.** No iniciado. No queda deuda de contrato abierta previa a R7-FINAL. R8 — Calibration permanece pendiente.
 
 ## VIS-001 — siguiente trabajo visual y gates
 
