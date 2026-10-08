@@ -53,7 +53,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — R3/R4/R5/R6 certificados (R6-C.1/R6-D.2 correctivo); R7-A implementada (cerrada por R7-A.1); R7-B lista para re-certificación; R8 pendiente
+## DIAG-V3 — R3/R4/R5/R6 certificados (R6-C.1/R6-D.2 correctivo); R7-A implementada (cerrada por R7-A.1); R7-B certificada (re-certificación tras R6-C.1/R6-D.2); R7-FINAL y R8 pendientes
 
 R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 2 `LATER_REVIEW`, 0 sin clasificar), freezes de neutralidad y separación contexto/evidencia, y el comando frozen/legacy reproducible de diez suites (240/240). La historia de conteos 234/235 permanece no atribuible a un manifiesto preservado; 240 es el baseline forward del comando documentado, no una equivalencia retrospectiva. La candidata permanece inactiva y el runtime productivo 85/version 1 congelado.
 
@@ -83,11 +83,13 @@ R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 
 
 **R7-A.1 — Context-Only & Unused-Answer QA Closure: IMPLEMENTADA.** Cierre de bookkeeping sobre R7-A (no invalida su PASS; no es un bloque semántico nuevo). Manifiesto ejecutable (`qbv2-candidate-context-manifest.ts`) con disposición explícita para las 15 preguntas CONTEXT_ONLY + 2 LATER_REVIEW del ledger R3-FINAL — `EXERCISED_AS_CONTEXT`/`ROUTING_ONLY`/`NOT_REACHED_BY_CANONICAL_SET`, derivado ejecutando las 25 rutas canónicas reales (nunca prosa manual). `q2_demand_trend`/`q2_capacity_signal` auditados explícitamente: elegibles en cada caso autorado, nunca seleccionados por el planner certificado dado el enrutamiento de este conjunto (`skipReason: pending_evidence`), deliberadamente no forzados. Las 63 instancias de `unusedAuthoredAnswers` quedan 100% clasificadas (tras remover 4 `FIXTURE_ERROR` confirmadas por `plan.trace`/`eligibleQuestionIds` en C10/C17): las 63 restantes son `INTENTIONALLY_UNREACHED` (competencia legítima entre dos fuentes directas del mismo módulo digital_readiness/digital_foundation/trust_reputation/relationship_recurrence, o context field sin desbloqueo descendente en ese caso). Gate de completitud nuevo (`qbv2-candidate-context-manifest.test.ts`, 6/6) falla ante cualquier id/disposición faltante o pregunta desconocida en los manifiestos. R7-A re-certificada sin regresión (25 casos, 21/21/19/19/2/2, 0 hard-cap, 0 `budget_blocked`). Caracterización explícita: PASS, digest sin cambios. Ningún archivo de producción se modificó. R3/R4/R5/R6 y calibración sin cambios. R7 no se marca completo.
 
-**R7-B — Adversarial & Metamorphic QA: BLOQUEADA (2026-10-07).** La campaña (36 casos explícitos, M1–M20, fuzz determinista de 540 rutas + 450 entradas) confirma casi todos los contratos bajo ataque pero falsa tres contratos congelados: F1 y F2 (dueño R6-C, con consecuencia comercial R6-D) y F3 (dueño R6-D). No se parcheó producción. Detalle y reproducción en `ARCHITECTURE.md`/`TESTING.md`; deuda en `STATUS.md`.
+**R7-B — Adversarial & Metamorphic QA, primera ejecución: BLOQUEADA (2026-10-07).** La campaña (36 casos explícitos, M1–M20, fuzz determinista de 540 rutas + 450 entradas) confirma casi todos los contratos bajo ataque pero falsa tres contratos congelados: F1 y F2 (dueño R6-C, con consecuencia comercial R6-D) y F3 (dueño R6-D). No se parcheó producción. Detalle y reproducción en `ARCHITECTURE.md`/`TESTING.md`; deuda en `STATUS.md`.
 
 **R6-C.1 / R6-D.2 — Process Authority, Supporting-Signal & Commercial Clarification Corrections: IMPLEMENTADA (2026-10-07).** Autoridad de proceso candidata `q2_process_systemization`, regla de base directa para soluciones y licencias, roles honestos de prueba comercial y tabla de verdad de la aclaración. Sin cambios en R3/R4/R5/R6-A/R6-B, legacy, calibración ni runtime. Las suites R7-B pasan completas.
 
-**NEXT: R7-B — Adversarial & Metamorphic QA (re-certificación).** No iniciado. Solo después, R7-FINAL. R8 — Calibration permanece pendiente; `DIAG-V3-R7B-CIUDAD-SCOPE-001` sigue pendiente de decisión explícita.
+**R7-B — Adversarial & Metamorphic QA, re-certificación formal: COMPLETE / CERTIFIED (2026-10-08).** BLOQUEADA → CORREGIDA → RE-CERTIFICADA. Las mismas reproducciones (A08b, A20, N06, N08, C05, C09, mutación C12, C24) pasan sin relajar ninguna aserción: adversarial 35/35, metamórfica 22/22, fuzz 5/5, correctiva 15/15. `qbv2-r7b-final-certification.test.ts` (8/8) certifica los gates de alto nivel sin duplicar la campaña. Sin cambios de producción ni de calibración; candidata inactiva. `DIAG-V3-R7B-CIUDAD-SCOPE-001` no bloquea R7-B y queda abierta. R7 no está completo.
+
+**NEXT: R7-FINAL — Canonical & Adversarial QA Certification.** No iniciado. Gate de entrada: decisión explícita sobre `DIAG-V3-R7B-CIUDAD-SCOPE-001` (admitir o no la aclaración multiproceso fuera de un diagnóstico Barrio-capable). R8 — Calibration permanece pendiente.
 
 ## VIS-001 — siguiente trabajo visual y gates
 

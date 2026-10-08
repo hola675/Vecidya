@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-08 — DIAG-V3-R7-B: re-certificación formal (COMPLETE / CERTIFIED)
+
+- R7-B pasa de BLOQUEADA (primera ejecución) → CORREGIDA (R6-C.1/R6-D.2) → RE-CERTIFICADA. Las mismas reproducciones, sin modificar ni relajar, pasan por corrección de producción: adversarial 35/35, metamórfica 22/22 (M1–M20, 0 violaciones), fuzz 5/5 (semilla `20261007`, 0 violaciones estructurales, 0 hard cap, 2 `budget_blocked` honestos), correctiva 15/15.
+- Nuevo gate `qbv2-r7b-final-certification.test.ts` (8): inventario de la campaña, F1/F2/F3 sobre sus reproducciones exactas, determinismo de la deuda Ciudad, freezes R7-A/R3/R4/R5, identidades, runtime y aislamiento de la candidata. Sobre el corpus fuzz completo (990 ejecuciones): 0 automatizaciones falsas, 0 `operational_automation`, 0 intervenciones o licencias solo-supporting, 0 roles comerciales mal etiquetados.
+- `DIAG-V3-R7B-CIUDAD-SCOPE-001` sigue abierta, no bloqueante para R7-B; debe decidirse antes de R7-FINAL. Observaciones R8 preservadas sin ajuste.
+- Sin cambios de producción, calibración, runtime ni legacy; candidata inactiva. Validación: diagnóstico 1254/1254, unitarias 1309/1309, typecheck y build PASS, bundle scan 0, caracterización sin cambios. R7 no está completo (falta R7-FINAL).
+
 ## 2026-10-07 — DIAG-V3-R6-C.1 / R6-D.2: autoridad de proceso, señal supporting y aclaración comercial
 
 - F1 (R6-C.1): `candidateSolutionContextOfV3` usa `q2_process_systemization` como única autoridad de proceso candidata; intake profesional, base de información y recordatorios sanos ya no definen madurez. Seguimiento débil → `crm_follow_up` (nunca automatización); recordatorios débiles → `follow_up_automation` solo con proceso `established`; `operational_automation` inalcanzable para el banco candidato-38. `solutionContextOf`/`matchSolution` legacy sin cambios.
