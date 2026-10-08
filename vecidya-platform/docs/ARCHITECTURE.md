@@ -1,5 +1,19 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R7-FINAL — certificación y freeze de QA canónica y adversarial
+
+R7-FINAL cierra R7 sin diseñar semántica, sin calibrar y sin activar la candidata. **R7 — Canonical & Adversarial QA: COMPLETE / CERTIFIED.**
+
+**Arquitectura final de R7 (todo QA, nada de producción):**
+
+- **R7-A** — 25 casos canónicos candidate-native (`qbv2-candidate-canonical-cases.ts`, identidad de prueba `diag-v3-canonical-cases-v1`) ejecutados por el runner interactivo de una pregunta por turno (`qbv2-candidate-case-runner.ts`), sin fallback y sin un segundo objeto de respuestas finales: todo consumidor usa `route.finalAnswers`. Separa ASSERTED TRUTH de OBSERVED CALIBRATION.
+- **R7-A.1** — manifiesto ejecutable de las 15 CONTEXT_ONLY, 2 LATER_REVIEW y 63 respuestas autoradas no usadas (`qbv2-candidate-context-manifest.ts`).
+- **R7-B** — campaña adversarial (36 casos), metamórfica (M1–M20 + matriz de contexto) y fuzz determinista (semilla `20261007`). Historia preservada: la primera ejecución quedó BLOQUEADA por F1 (autoridad de proceso), F2 (autoridad de intervención de supporting) y F3 (incertidumbre de la aclaración); R6-C.1/R6-D.2 corrigió la producción; la re-certificación pasó sin relajar ninguna reproducción.
+- **R7-B.1** — cierre de `DIAG-V3-R7B-CIUDAD-SCOPE-001` vía R6-D.3: la aclaración refina una necesidad comercial recurrente ya demostrada y nunca la crea.
+- **R7-FINAL** — `qbv2-r7-final-certification.test.ts`, un gate compacto: cada suite componente sigue siendo dueña de sus aserciones; el gate certifica que estén presentes e íntegras (inventarios de títulos, M1–M20 una vez cada uno, constantes fuzz leídas del fuente), la espina comercial canónica, los freezes y el aislamiento. Incluye un **gate de deuda abierta** que lee las filas `DIAG-V3-R7*` de `STATUS.md` y falla si alguna de prioridad A/B no está RESUELTA (las filas nunca pueden borrarse: se exigen al menos las cuatro de R7-B). La deuda ajena a R7 no bloquea.
+
+**Frontera de calibración y traspaso a R8.** El gate solo certifica que existan los identificadores que R8 poseerá (`CAPABILITY_CONTRIBUTION`, `SCORING_MODEL`, `CONFIDENCE_MODEL`, `SEVERITY_BANDS`, `SOUND`, `OVERALL_INDEX_MODEL` con sus bandas), nunca sus valores. `qbv2-r8-handoff.ts` (test-only) produce un registro determinista de los 25 casos canónicos × 8 dimensiones — score, confianza, fuentes directas/supporting, posición de prioridad, índice general bruto, cobertura, confianza general, banda y licencia — más las cinco observaciones R8, con la etiqueta `OBSERVATIONAL — FOR R8, NOT FROZEN`. Ninguna prueba compara esos valores: R8 puede cambiarlos sin romper ningún gate R7.
+
 ## DIAG-V3-R6-D.3 / R7-B.1 — alcance de la aclaración Ciudad
 
 Checkpoint correctivo pre-activación que cierra `DIAG-V3-R7B-CIUDAD-SCOPE-001` (detectada por R7-B, dejada abierta por R6-C.1/R6-D.2 y por la re-certificación R7-B). Reabre solo el ajuste de licencia candidato (`resolveCandidateLicenseFitV3`); scoring, prioridades, hechos, narrativa, overall, recomendaciones, soluciones, el sistema comercial legacy, la calibración y el runtime no cambian.

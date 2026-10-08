@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-08 — DIAG-V3-R7-FINAL: certificación y freeze de QA canónica y adversarial
+
+- R7 — Canonical & Adversarial QA: **COMPLETE / CERTIFIED** (R7-A, R7-A.1, R7-B, R7-B.1, R7-FINAL). Historia preservada: R7-B BLOQUEADA en su primera ejecución (F1/F2/F3) → corregida por R6-C.1/R6-D.2 → re-certificada; alcance Ciudad cerrado por R6-D.3 / R7-B.1.
+- Nuevo gate `qbv2-r7-final-certification.test.ts` (8): componentes R7 presentes e íntegros, inventario/cobertura/manifiestos e integridad de ruta canónicos (7/14/17 preguntas, 0 hard cap, 0 `budget_blocked`), espina comercial canónica, gate de deuda R7 abierta sobre `STATUS.md` (0 abiertas), freezes R3/R4/R5, identidades, runtime, identificadores de calibración de R8 sin fijar valores y aislamiento de la candidata.
+- Nuevo traspaso test-only `qbv2-r8-handoff.ts`: 25 casos × 8 dimensiones y las cinco observaciones R8, `OBSERVATIONAL — FOR R8, NOT FROZEN`; ninguna prueba compara sus valores.
+- Sin cambios de producción, calibración, runtime ni legacy; candidata inactiva. Validación: diagnóstico 1269/1269, unitarias 1324/1324, typecheck y build PASS, bundle scan 0, caracterización sin cambios. Siguiente: R8 — Calibration.
+
 ## 2026-10-08 — DIAG-V3-R6-D.3 / R7-B.1: alcance de la aclaración Ciudad
 
 - Cierra `DIAG-V3-R7B-CIUDAD-SCOPE-001` (RESUELTA): la aclaración de alcance de procesos refina una necesidad comercial recurrente ya demostrada (Barrio ↔ Ciudad) y nunca la crea.
