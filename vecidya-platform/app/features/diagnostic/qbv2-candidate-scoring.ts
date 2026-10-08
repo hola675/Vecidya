@@ -9,6 +9,7 @@ import { evidenceMigrationIdentity, migratedAnswerStatesV3, validateQuestionEvid
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./qbv2-reviewed-evidence";
 import type { AnswersV2 } from "./qbv2-rules";
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
+import { CANDIDATE_CALIBRATION_V3, candidateDimensionCalibrationV3, type CandidateCalibrationV3 } from "./qbv2-candidate-calibration";
 
 export type CandidateContextualDimensionResultV3 = Omit<ReturnType<typeof scoreDimensionWithApplicability>, "applicability"> & {
   readonly applicability: DimensionApplicabilityDecisionV3["applicability"];
@@ -23,7 +24,11 @@ export type CandidateContextualScoringResultV3 = {
   readonly dimensions: readonly CandidateContextualDimensionResultV3[];
 };
 
-export type CandidateContextualScoringInputV3 = { readonly answers: AnswersV2 };
+export type CandidateContextualScoringInputV3 = {
+  readonly answers: AnswersV2;
+  /** DIAG-V3-R8-A: candidate numeric calibration; defaults to the isolated baseline `CANDIDATE_CALIBRATION_V3`. */
+  readonly calibration?: CandidateCalibrationV3;
+};
 
 function sameAnswer(left: string | readonly string[] | undefined, right: readonly string[]): boolean {
   if (left === undefined) return false;
@@ -77,15 +82,20 @@ function toApplicabilityEvidence(evidence: readonly ContextualEvidence[]): reado
 
 /**
  * Candidate-only scoring path: converge routing on the reviewed V3 evidence bank first, then
- * derive and validate migrated observations from active answers before applying R4-A.
+ * derive and validate migrated observations from active answers before applying R4-A. R8-A: candidate
+ * calibration becomes authoritative here — the R3 semantic state is validated first, then the candidate's own
+ * contribution table replaces the shared one, and the candidate scoring/confidence models drive the core.
  */
 export function scoreCandidateContextualDimensionsV3(
   input: CandidateContextualScoringInputV3,
 ): CandidateContextualScoringResultV3 {
+  const calibration = input.calibration ?? CANDIDATE_CALIBRATION_V3;
   const bank = REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3;
   const resolution = resolveEligibleQuestionsV2(input.answers, bank);
   const derived = deriveContextualEvidence(resolution.activeAnswers, bank);
-  const evidence = validateActiveCandidateEvidenceV3(derived, resolution.activeAnswers, bank);
+  const evidence = validateActiveCandidateEvidenceV3(derived, resolution.activeAnswers, bank)
+    .map((item) => ({ ...item, contribution: calibration.capabilityContribution[item.state] }));
+  const dimensionCalibration = candidateDimensionCalibrationV3(calibration);
 
   const dimensions = DIGITAL_DIMENSIONS.map((definition) => {
     const dimension: DigitalDimensionId = definition.id;
@@ -96,7 +106,7 @@ export function scoreCandidateContextualDimensionsV3(
       evidence: toApplicabilityEvidence(dimensionEvidence),
     });
     return {
-      ...scoreDimensionWithApplicability(dimension, evidence, applicability.applicability),
+      ...scoreDimensionWithApplicability(dimension, evidence, applicability.applicability, dimensionCalibration),
       applicabilityReason: applicability.reason,
       applicabilityContext: applicability.supportingContext,
     };

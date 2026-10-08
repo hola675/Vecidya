@@ -4,6 +4,7 @@ import { deriveSemanticFacts, type SemanticDiagnosticFacts, type SemanticEvidenc
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./qbv2-reviewed-evidence";
 import type { DigitalDimensionId } from "./qbv2-dimensions";
 import type { AnswersV2 } from "./qbv2-rules";
+import { CANDIDATE_CALIBRATION_V3, type CandidateCalibrationV3 } from "./qbv2-candidate-calibration";
 
 /**
  * DIAG-V3-R6-A: the only seam through which candidate semantic facts learn evidence authority. Derived
@@ -25,7 +26,7 @@ export const CANDIDATE_SEMANTIC_EVIDENCE_CATALOG_V3: SemanticEvidenceCatalog = {
   facet: (questionId) => questionId,
 };
 
-export type CandidateInterpretationCoreInputV3 = { readonly answers: AnswersV2 };
+export type CandidateInterpretationCoreInputV3 = { readonly answers: AnswersV2; readonly calibration?: CandidateCalibrationV3 };
 
 export type CandidateInterpretationCoreV3 = {
   readonly activeAnswers: AnswersV2;
@@ -43,8 +44,11 @@ export type CandidateInterpretationCoreV3 = {
  * the public runtime.
  */
 export function buildCandidateInterpretationCoreV3(input: CandidateInterpretationCoreInputV3): CandidateInterpretationCoreV3 {
-  const scoring = scoreCandidateContextualDimensionsV3({ answers: input.answers });
-  const priorities = deriveConstraintsAndPriorities(scoring);
+  // R8-A: one candidate calibration drives scoring, priority severity and the fact readings, so the three can
+  // never disagree about where "material"/"moderate"/"strength" begin.
+  const calibration = input.calibration ?? CANDIDATE_CALIBRATION_V3;
+  const scoring = scoreCandidateContextualDimensionsV3({ answers: input.answers, calibration });
+  const priorities = deriveConstraintsAndPriorities(scoring, calibration.severity);
   // Semantic facts must read the resolved active answers, never the caller's raw/stale ones: an earlier
   // answer that routing invalidated must not resurrect stale evidence, constraints, or provenance.
   const semanticFacts = deriveSemanticFacts({
@@ -53,6 +57,7 @@ export function buildCandidateInterpretationCoreV3(input: CandidateInterpretatio
     priorities,
     bank: REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3,
     evidenceCatalog: CANDIDATE_SEMANTIC_EVIDENCE_CATALOG_V3,
+    severity: calibration.severity,
   });
   return { activeAnswers: scoring.activeAnswers, context: scoring.context, scoring, priorities, semanticFacts };
 }

@@ -4,7 +4,7 @@ import type { DiagnosticScoringView } from "./qbv2-diagnostic-view";
 import { DIMENSION_RESULT_CONCEPT, type ResultCertainty } from "./qbv2-language";
 import type { DiagnosticNarrative, NarrativePriority } from "./qbv2-narrative";
 import { DIMENSION_NARRATIVE } from "./qbv2-narrative-phrases";
-import { DIMENSION_DEPENDENCIES, SEVERITY_BANDS, type ConstraintKind, type ConstraintPriorityResult, type ConstraintSeverity, type PriorityCertainty, type PriorityReasonCode } from "./qbv2-priorities";
+import { DIMENSION_DEPENDENCIES, SEVERITY_BANDS, type ConstraintKind, type ConstraintPriorityResult, type ConstraintSeverity, type PriorityCertainty, type PriorityReasonCode, type SeverityBands } from "./qbv2-priorities";
 import type { SemanticDiagnosticFacts } from "./qbv2-semantic-facts";
 import { TERMINOLOGY, type TerminologyProfileId } from "./qbv2-terminology";
 
@@ -89,9 +89,11 @@ export type RecommendationInput = {
   readonly priorities: ConstraintPriorityResult;
   readonly semanticFacts: SemanticDiagnosticFacts;
   readonly narrative: DiagnosticNarrative;
+  /** DIAG-V3-R8-A: the bands that decide a "sound" prerequisite. Defaults to the legacy `SEVERITY_BANDS`. */
+  readonly severity?: SeverityBands;
 };
 
-type Copy = { readonly offer: string; readonly conversion: string; readonly business: string };
+type Copy ={ readonly offer: string; readonly conversion: string; readonly business: string };
 
 /** Qué capacidad mejorar, en el lenguaje del perfil (sin términos de la lista a evitar). */
 const WHAT_TO_IMPROVE: Readonly<Record<RecommendationType, (copy: Copy) => string>> = {
@@ -135,6 +137,7 @@ const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1
 
 export function buildDiagnosticRecommendations(input: RecommendationInput): DiagnosticRecommendations {
   const { scoring, priorities, narrative } = input;
+  const severity = input.severity ?? SEVERITY_BANDS;
   const copy = copyFor(narrative.profile);
   const byId = new Map(scoring.dimensions.map((item) => [item.id, item]));
   const factIds = new Set(input.semanticFacts.facts.map((fact) => fact.id));
@@ -161,7 +164,7 @@ export function buildDiagnosticRecommendations(input: RecommendationInput): Diag
       .map((edge): RecommendationPrerequisite => {
         const score = byId.get(edge.from)!.score;
         const addressing = narrative.priorities.find((item) => item.dimension === edge.from && item.rank < priority.rank);
-        return { dimension: edge.from, relation: edge.relation as "enables" | "sustains", satisfied: score !== null && score >= SEVERITY_BANDS.moderateBelow, recommendationId: addressing ? recommendationIdFor(addressing.rank) : null };
+        return { dimension: edge.from, relation: edge.relation as "enables" | "sustains", satisfied: score !== null && score >= severity.moderateBelow, recommendationId: addressing ? recommendationIdFor(addressing.rank) : null };
       });
 
     return {

@@ -1,10 +1,11 @@
 import type { ResolvedDomainContext } from "./context-resolver";
 import { QUESTION_BANK_V2 } from "./qbv2-bank";
-import { CAPABILITY_CONTRIBUTION, type CapabilityState, type ContextualConfidenceLevel, type ContextualEvidence } from "./qbv2-contextual-scoring";
+import { NEGATIVE_CAPABILITY_STATES, POSITIVE_CAPABILITY_STATES } from "./qbv2-capability";
+import type { CapabilityState, ContextualConfidenceLevel, ContextualEvidence } from "./qbv2-contextual-scoring";
 import { DIGITAL_DIMENSION_IDS, EVIDENCE_DIRECTNESS, EVIDENCE_MAPPING, type DigitalDimensionId, type EvidenceDirectness } from "./qbv2-coverage";
 import { resolveEligibleQuestionsV2, type QuestionBankV2 } from "./qbv2-engine";
 import {
-  DIMENSION_DEPENDENCIES, FRICTION_RELEVANCE, GOAL_RELEVANCE, SEVERITY_BANDS,
+  DIMENSION_DEPENDENCIES, FRICTION_RELEVANCE, GOAL_RELEVANCE, SEVERITY_BANDS, type SeverityBands,
   type ConstraintKind, type ConstraintPriorityResult, type ConstraintSeverity, type DiagnosticConstraint, type PriorityCertainty, type PriorityReasonCode, type RelevanceLevel,
 } from "./qbv2-priorities";
 import type { AnswersV2 } from "./qbv2-rules";
@@ -122,14 +123,13 @@ export type SemanticFactsInput = {
   readonly bank?: QuestionBankV2;
   /** Evidence-semantics authority. Defaults to the legacy provider; the candidate path supplies its own. */
   readonly evidenceCatalog?: SemanticEvidenceCatalog;
+  /** DIAG-V3-R8-A: the same severity bands the priorities used. Defaults to the legacy `SEVERITY_BANDS`. */
+  readonly severity?: SeverityBands;
 };
 
 // ── Derivation ──────────────────────────────────────────────────────────────
 
 type Draft = Omit<SemanticFact, "importance" | "order"> & { readonly sortKey: readonly number[] };
-
-const POSITIVE_FLOOR = CAPABILITY_CONTRIBUTION.established!;
-const NEGATIVE_CEILING = CAPABILITY_CONTRIBUTION.partial!;
 
 function resolvedValue(context: Partial<ResolvedDomainContext>, field: keyof ResolvedDomainContext): string | undefined {
   const value = context[field] as { status?: string; value?: unknown } | undefined;
@@ -154,22 +154,24 @@ function contextFacts(context: Partial<ResolvedDomainContext>): readonly Context
 function signalsOf(item: DiagnosticDimensionView, catalog: SemanticEvidenceCatalog): { readonly positive: readonly FactSignal[]; readonly negative: readonly FactSignal[] } {
   const signal = (evidence: ContextualEvidence): FactSignal => ({ questionId: evidence.questionId, state: evidence.state, directness: evidence.directness, facet: catalog.facet(evidence.questionId, item.id) });
   const capability = item.evidence.filter((evidence) => evidence.directness !== "contextual" && evidence.contribution !== null);
+  // R8-A: signal polarity follows the semantic R3 state, never a calibrated contribution.
   return {
-    positive: capability.filter((evidence) => evidence.contribution! >= POSITIVE_FLOOR).map(signal),
-    negative: capability.filter((evidence) => evidence.contribution! < NEGATIVE_CEILING).map(signal),
+    positive: capability.filter((evidence) => POSITIVE_CAPABILITY_STATES.has(evidence.state)).map(signal),
+    negative: capability.filter((evidence) => NEGATIVE_CAPABILITY_STATES.has(evidence.state)).map(signal),
   };
 }
 
 /** Strength vs weakness is never the score alone: the band comes from the 08D scale, certainty from confidence and contradictions. */
-function reading(item: DiagnosticDimensionView): { readonly type: "strength" | "partial" | "weakness"; readonly certainty: FactCertainty } {
+function reading(item: DiagnosticDimensionView, severity: SeverityBands): { readonly type: "strength" | "partial" | "weakness"; readonly certainty: FactCertainty } {
   const solid = item.confidence.level !== "low" && !item.confidence.contradictory;
-  if (item.score! >= SEVERITY_BANDS.moderateBelow) return { type: "strength", certainty: solid ? "confirmed" : "signal" };
-  return { type: item.score! < SEVERITY_BANDS.materialBelow ? "weakness" : "partial", certainty: solid ? "confirmed" : "likely" };
+  if (item.score! >= severity.moderateBelow) return { type: "strength", certainty: solid ? "confirmed" : "signal" };
+  return { type: item.score! < severity.materialBelow ? "weakness" : "partial", certainty: solid ? "confirmed" : "likely" };
 }
 
 export function deriveSemanticFacts(input: SemanticFactsInput): SemanticDiagnosticFacts {
   const bank = input.bank ?? QUESTION_BANK_V2;
   const catalog = input.evidenceCatalog ?? LEGACY_SEMANTIC_EVIDENCE_CATALOG;
+  const severity = input.severity ?? SEVERITY_BANDS;
   const { scoring, priorities } = input;
   const goal = resolvedValue(scoring.context, "primaryGoal") as keyof typeof GOAL_RELEVANCE | undefined;
   const friction = resolvedValue(scoring.context, "primaryFriction") as keyof typeof FRICTION_RELEVANCE | undefined;
@@ -196,7 +198,7 @@ export function deriveSemanticFacts(input: SemanticFactsInput): SemanticDiagnost
     const relevance = relevanceOf(item.id);
     const questionIds = [...item.explainability.direct, ...item.explainability.supporting];
     if (item.applicability === "applicable" && item.score !== null) {
-      const { type, certainty } = reading(item);
+      const { type, certainty } = reading(item, severity);
       const id = `${type}:${item.id}`;
       readingIds.set(item.id, id);
       const evidenced = constraint && (constraint.severity === "material" || constraint.severity === "moderate") ? constraint : undefined;
@@ -234,7 +236,7 @@ export function deriveSemanticFacts(input: SemanticFactsInput): SemanticDiagnost
   // Declared pain vs observed capability: the friction's own dimension reads as a confirmed strength.
   const frictionDimension = friction ? FRICTION_RELEVANCE[friction][0] : undefined;
   const frictionReading = frictionDimension ? scoring.dimensions.find((item) => item.id === frictionDimension) : undefined;
-  if (frictionReading && frictionReading.applicability === "applicable" && frictionReading.score !== null && reading(frictionReading).type === "strength" && reading(frictionReading).certainty === "confirmed") drafts.push({
+  if (frictionReading && frictionReading.applicability === "applicable" && frictionReading.score !== null && reading(frictionReading, severity).type === "strength" && reading(frictionReading, severity).certainty === "confirmed") drafts.push({
     id: `contradiction:declared_friction:${frictionReading.id}`, type: "contradiction", semanticCode: "declared_friction_not_observed", dimension: frictionReading.id, score: frictionReading.score, confidence: frictionReading.confidence.level,
     relevance: relevanceOf(frictionReading.id), provenance: { questionIds: frictionReading.explainability.direct },
     sortKey: [constraintRank(frictionReading.id), dimensionRank(frictionReading.id)],

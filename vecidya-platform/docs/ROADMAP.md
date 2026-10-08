@@ -53,7 +53,7 @@ Sobre la hipótesis inicial (baseline → datos del piloto → Real Proof → Ho
 
 ## UX-002 — evolución comercial
 
-## DIAG-V3 — R3/R4/R5/R6/R7 COMPLETE / CERTIFIED (correctivos R6-C.1/R6-D.2 y R6-D.3); R8 — Calibration NEXT
+## DIAG-V3 — R3/R4/R5/R6/R7 COMPLETE / CERTIFIED (correctivos R6-C.1/R6-D.2 y R6-D.3); R8 — Calibration en curso (R8-A implementada; R8-B next)
 
 R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 2 `LATER_REVIEW`, 0 sin clasificar), freezes de neutralidad y separación contexto/evidencia, y el comando frozen/legacy reproducible de diez suites (240/240). La historia de conteos 234/235 permanece no atribuible a un manifiesto preservado; 240 es el baseline forward del comando documentado, no una equivalencia retrospectiva. La candidata permanece inactiva y el runtime productivo 85/version 1 congelado.
 
@@ -95,7 +95,13 @@ R3-FINAL certifica 38 disposiciones (21 `EVIDENCE_MIGRATED`, 15 `CONTEXT_ONLY`, 
 
 Transición de fases DIAG-V3: **R3 — Evidence Semantics: COMPLETE / CERTIFIED. R4 — Applicability: COMPLETE / CERTIFIED. R5 — Adaptive Planner: COMPLETE / CERTIFIED. R6 — Consumers: COMPLETE / CERTIFIED (incluye R6-C.1/R6-D.2 y R6-D.3). R7 — Canonical & Adversarial QA: COMPLETE / CERTIFIED (R7-A, R7-A.1, R7-B, R7-B.1, R7-FINAL).** La candidata sigue inactiva; runtime, legacy y calibración sin cambios.
 
-**NEXT: R8 — Calibration.** No iniciado. Parte del traspaso `qbv2-r8-handoff.ts` y de las cinco observaciones R8 (`R7B_R8_MANIFEST`); es dueña de `CAPABILITY_CONTRIBUTION`, `SCORING_MODEL`, `CONFIDENCE_MODEL`, `SEVERITY_BANDS`, `SOUND`, `OVERALL_INDEX_MODEL` y las bandas 41/71. Activar la candidata sigue fuera de alcance hasta una fase autorizada explícitamente.
+### R8 — Calibration (en curso; no completa)
+
+Plan: **R8-A** Candidate Calibration Isolation & Baseline → **R8-B** Capability Contribution & Dimension Confidence Calibration → **R8-C** Overall Index, Confidence, Bands & Priority Severity Calibration (solo cuando la calibración dimensional de R8-B sea estable; nunca se ajustan bandas para tapar una mala calibración dimensional) → **R8-FINAL** Calibration Certification & Freeze. R8 parte del traspaso `qbv2-r8-handoff.ts` y de las cinco observaciones R8 (`R7B_R8_MANIFEST`). Activar la candidata sigue fuera de alcance hasta una fase autorizada explícitamente.
+
+**R8-A — Candidate Calibration Isolation & Baseline: IMPLEMENTADA (2026-10-08).** Corrige el alcance asumido de R8: R8 no es dueña de las constantes compartidas (`CAPABILITY_CONTRIBUTION`, `SCORING_MODEL`, `CONFIDENCE_MODEL`, `SEVERITY_BANDS`, `OVERALL_INDEX_MODEL`), que siguen congeladas para el runtime legacy, sino de `CANDIDATE_CALIBRATION_V3` (`qbv2-candidate-calibration.ts`, identidad `diag-v3-candidate-calibration-v1`), consumida por toda la cadena candidata mediante seams con default legacy. `SOUND = 75` es LEGACY_ONLY y R8 no lo modifica. Baseline igual valor a valor (0 diferencias sobre 261 entradas; digest de 522 salidas idéntico antes/después), legacy sin cambios (caracterización y suites legacy intactas), routing R5 invariante a la calibración, contradicciones y polaridad de señales desacopladas de los números. Manifiesto de propiedad ejecutable (22 parámetros, efecto candidato probado por perturbación), evaluador determinista y preguntas/objetivos de R8 documentados en `ARCHITECTURE.md`. Ningún valor numérico cambió.
+
+**NEXT: R8-B — Capability Contribution & Dimension Confidence Calibration.** No iniciado. Puede cambiar solo valores candidatos de `capabilityContribution`, `scoring` y `dimensionConfidence` en `CANDIDATE_CALIBRATION_V3` (nunca los compartidos), con expectativas relativas antes que objetivos absolutos, todos los gates R7 en verde y la paridad R8-A convertida en registro de migración.
 
 ## VIS-001 — siguiente trabajo visual y gates
 

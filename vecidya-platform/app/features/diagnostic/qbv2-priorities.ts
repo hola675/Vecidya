@@ -82,6 +82,8 @@ export const DIMENSION_CONSTRAINT: Readonly<Record<DigitalDimensionId, Constrain
 
 /** Bands reuse the scoring scale: below `partial` is material, below `established` is moderate. */
 export const SEVERITY_BANDS = { materialBelow: 100 * CAPABILITY_CONTRIBUTION.partial!, moderateBelow: 100 * CAPABILITY_CONTRIBUTION.established! } as const;
+/** DIAG-V3-R8-A seam: severity thresholds a consumer applies. Legacy callers default to `SEVERITY_BANDS`. */
+export type SeverityBands = { readonly materialBelow: number; readonly moderateBelow: number };
 
 export type ConstraintSeverity = "material" | "moderate" | "latent" | "unknown";
 export type PriorityCertainty = "actionable" | "likely" | "verify_first";
@@ -146,14 +148,14 @@ function level(list: readonly DigitalDimensionId[] | undefined, dimension: Digit
 }
 const edges = (relation: DependencyRelation) => DIMENSION_DEPENDENCIES.filter((edge) => edge.relation === relation);
 
-export function deriveConstraintsAndPriorities(scoring: DiagnosticScoringView): ConstraintPriorityResult {
+export function deriveConstraintsAndPriorities(scoring: DiagnosticScoringView, severityBands: SeverityBands = SEVERITY_BANDS): ConstraintPriorityResult {
   const goal = resolved<PrimaryGoal>(scoring.context.primaryGoal);
   const friction = resolved<PrimaryFriction>(scoring.context.primaryFriction);
   const stage = resolved<GrowthStage>(scoring.context.growthStage);
   const byId = new Map(scoring.dimensions.map((dimension) => [dimension.id, dimension]));
   const applicable = (id: DigitalDimensionId) => byId.get(id)?.applicability === "applicable";
-  const constrained = (id: DigitalDimensionId) => { const item = byId.get(id); return applicable(id) && item!.score !== null && item!.score < SEVERITY_BANDS.moderateBelow; };
-  const sound = (id: DigitalDimensionId) => { const item = byId.get(id); return applicable(id) && item!.score !== null && item!.score >= SEVERITY_BANDS.moderateBelow; };
+  const constrained = (id: DigitalDimensionId) => { const item = byId.get(id); return applicable(id) && item!.score !== null && item!.score < severityBands.moderateBelow; };
+  const sound = (id: DigitalDimensionId) => { const item = byId.get(id); return applicable(id) && item!.score !== null && item!.score >= severityBands.moderateBelow; };
 
   const relevance = (id: DigitalDimensionId) => {
     const goalLevel = goal ? level(GOAL_RELEVANCE[goal], id) : "none";
@@ -202,7 +204,7 @@ export function deriveConstraintsAndPriorities(scoring: DiagnosticScoringView): 
     if (item.applicability !== "applicable") continue;
     const explain = item.explainability;
     if (item.score !== null) {
-      const severity: ConstraintSeverity | null = item.score < SEVERITY_BANDS.materialBelow ? "material" : item.score < SEVERITY_BANDS.moderateBelow ? "moderate" : null;
+      const severity: ConstraintSeverity | null = item.score < severityBands.materialBelow ? "material" : item.score < severityBands.moderateBelow ? "moderate" : null;
       if (severity) detected.push(build(item, DIMENSION_CONSTRAINT[item.id], severity, [...explain.missing, ...explain.weaknesses, ...explain.dependencies], [severity === "material" ? "below_partial_capability" : "below_established_capability", ...(explain.dependencies.length > 0 ? ["single_point_dependency" as const] : [])]));
       else if (explain.dependencies.length > 0) detected.push(build(item, "dependency_risk", "latent", explain.dependencies, ["single_point_dependency"]));
       // A thin positive reading must not silence the pain the business declared: verify it, keep the real score.

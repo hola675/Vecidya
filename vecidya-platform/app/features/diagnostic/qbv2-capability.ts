@@ -10,6 +10,16 @@ export const CAPABILITY_CONTRIBUTION: Readonly<Record<CapabilityState, number | 
   constraint: null, uncertainty: null, not_applicable: null,
 };
 
+/**
+ * DIAG-V3-R8-A: semantic capability classes, independent of numeric calibration. Contradiction detection and
+ * fact signals read these state sets, never a calibrated contribution, so a future (candidate-only)
+ * recalibration can move numbers without moving what counts as a positive or a negative reading. Under the
+ * shared table above they are exactly the former thresholds: positive ⇔ contribution ≥ established,
+ * negative ⇔ contribution ≤ weak (equivalently < partial); neutral states carry no contribution.
+ */
+export const POSITIVE_CAPABILITY_STATES: ReadonlySet<CapabilityState> = new Set(["strong", "established"]);
+export const NEGATIVE_CAPABILITY_STATES: ReadonlySet<CapabilityState> = new Set(["weak", "dependency", "missing"]);
+
 export const STATE_KIND: Readonly<Record<CapabilityState, EvidenceKind>> = {
   strong: "established", established: "established", partial: "partial", weak: "partial", missing: "missing",
   dependency: "dependency", constraint: "constraint", uncertainty: "uncertainty", not_applicable: "not_applicable",

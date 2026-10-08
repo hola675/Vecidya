@@ -4,6 +4,7 @@ import { buildDiagnosticNarrative, type DiagnosticNarrative } from "./qbv2-narra
 import { buildDigitalPresenceStatus, computeOverallConfidence, type DigitalPresenceStatus } from "./qbv2-overall";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./qbv2-reviewed-evidence";
 import type { AnswersV2 } from "./qbv2-rules";
+import { CANDIDATE_CALIBRATION_V3, type CandidateCalibrationV3 } from "./qbv2-candidate-calibration";
 
 /**
  * DIAG-V3-R6-B: candidate-only question topics, kept out of the shared (publicly bundled)
@@ -18,7 +19,7 @@ const CANDIDATE_QUESTION_TOPICS_V3: Readonly<Record<string, string>> = {
   q2_process_systemization: "la forma de manejar las tareas que se repiten",
 };
 
-export type CandidateNarrativeAndOverallInputV3 = { readonly answers: AnswersV2 };
+export type CandidateNarrativeAndOverallInputV3 = { readonly answers: AnswersV2; readonly calibration?: CandidateCalibrationV3 };
 
 export type CandidateNarrativeAndOverallV3 = CandidateInterpretationCoreV3 & {
   readonly narrative: DiagnosticNarrative;
@@ -34,7 +35,8 @@ export type CandidateNarrativeAndOverallV3 = CandidateInterpretationCoreV3 & {
  * shared barrel; not activated by the public runtime.
  */
 export function buildCandidateNarrativeAndOverallV3(input: CandidateNarrativeAndOverallInputV3): CandidateNarrativeAndOverallV3 {
-  const core = buildCandidateInterpretationCoreV3(input);
+  const calibration = input.calibration ?? CANDIDATE_CALIBRATION_V3;
+  const core = buildCandidateInterpretationCoreV3({ answers: input.answers, calibration });
   const narrative = buildDiagnosticNarrative({
     answers: core.activeAnswers,
     scoring: core.scoring,
@@ -48,8 +50,10 @@ export function buildCandidateNarrativeAndOverallV3(input: CandidateNarrativeAnd
     priorities: core.priorities,
     semanticFacts: core.semanticFacts,
     narrative,
-    computeIndex: computeCandidateDigitalPresenceIndexV3,
-    computeConfidence: computeOverallConfidence,
+    // R8-A: index minimums/display, overall confidence and public bands all come from the candidate calibration.
+    computeIndex: (scoring, options) => computeCandidateDigitalPresenceIndexV3(scoring, options, calibration.overall),
+    computeConfidence: (scoring, index) => computeOverallConfidence(scoring, index, calibration.overall),
+    bands: calibration.overall.bands,
   });
   return { ...core, narrative, overall };
 }

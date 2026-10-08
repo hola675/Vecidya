@@ -31,6 +31,18 @@ export const OVERALL_INDEX_MODEL = {
   confidence: { mediumCoverage: 0.5, highCoverage: 0.75, share: 0.5 },
 } as const;
 
+/**
+ * DIAG-V3-R8-A seam: the overall numeric model a caller applies. Every function below defaults to
+ * `OVERALL_INDEX_MODEL`, so legacy callers are unchanged; the candidate path passes its isolated calibration.
+ */
+export type OverallBands = { readonly developingFrom: number; readonly solidFrom: number };
+export type OverallIndexModel = {
+  readonly minScoredDimensions: number;
+  readonly minCoverage: number;
+  readonly bands: OverallBands;
+  readonly confidence: { readonly mediumCoverage: number; readonly highCoverage: number; readonly share: number };
+};
+
 export const OVERALL_STATES = ["low", "developing", "solid"] as const;
 export type OverallState = (typeof OVERALL_STATES)[number];
 export type OverallStatusKind = OverallState | "insufficient";
@@ -129,6 +141,8 @@ export type OverallStatusInput = {
    */
   readonly computeIndex?: (scoring: DiagnosticScoringView, options: { readonly prelaunch?: boolean }) => DigitalPresenceIndex;
   readonly computeConfidence?: (scoring: DiagnosticScoringView, index: DigitalPresenceIndex) => OverallConfidence;
+  /** DIAG-V3-R8-A seam: public band thresholds for the state/label. Defaults to `OVERALL_INDEX_MODEL.bands`. */
+  readonly bands?: OverallBands;
 };
 
 const round2 = (value: number) => Math.round(value * 100) / 100;
@@ -137,29 +151,30 @@ const round2 = (value: number) => Math.round(value * 100) / 100;
  * Antes del lanzamiento no hay índice: lo que se lee es preparación (claridad, base, primer canal), no una presencia
  * en operación, y las capacidades operativas son incertidumbre legítima. Un porcentaje ahí sería precisión falsa.
  */
-export function computeDigitalPresenceIndex(scoring: DiagnosticScoringView, options: { readonly prelaunch?: boolean } = {}): DigitalPresenceIndex {
+export function computeDigitalPresenceIndex(scoring: DiagnosticScoringView, options: { readonly prelaunch?: boolean; readonly model?: OverallIndexModel } = {}): DigitalPresenceIndex {
+  const model = options.model ?? OVERALL_INDEX_MODEL;
   const byId = new Map(scoring.dimensions.map((item) => [item.id, item]));
   const applicableDimensions = DIGITAL_DIMENSION_IDS.filter((id) => byId.get(id)?.applicability === "applicable");
   const scoredDimensions = applicableDimensions.filter((id) => typeof byId.get(id)!.score === "number");
   const excluded = DIGITAL_DIMENSION_IDS.filter((id) => !scoredDimensions.includes(id))
     .map((dimension) => ({ dimension, reason: applicableDimensions.includes(dimension) ? "no_reading" as const : "not_applicable" as const }));
   const coverage = applicableDimensions.length === 0 ? 0 : round2(scoredDimensions.length / applicableDimensions.length);
-  const sufficient = !options.prelaunch && scoredDimensions.length >= OVERALL_INDEX_MODEL.minScoredDimensions && scoredDimensions.length / Math.max(1, applicableDimensions.length) >= OVERALL_INDEX_MODEL.minCoverage;
+  const sufficient = !options.prelaunch && scoredDimensions.length >= model.minScoredDimensions && scoredDimensions.length / Math.max(1, applicableDimensions.length) >= model.minCoverage;
   // Pesos iguales: meta, fricción y prioridad ordenan el trabajo, no miden la capacidad actual.
   const rawScore = sufficient ? scoredDimensions.reduce((total, id) => total + byId.get(id)!.score!, 0) / scoredDimensions.length : null;
   return {
-    rawScore, displayScore: rawScore === null ? null : displayScoreFor(rawScore), scoredDimensions, applicableDimensions, excluded,
+    rawScore, displayScore: rawScore === null ? null : displayScoreForBands(rawScore, model.bands), scoredDimensions, applicableDimensions, excluded,
     assessed: scoredDimensions.length, applicable: applicableDimensions.length, coverage, sufficient,
   };
 }
 
 /** Confianza general a partir de la confianza por área y la cobertura; nunca se mezcla con el porcentaje. */
-export function computeOverallConfidence(scoring: DiagnosticScoringView, index: DigitalPresenceIndex): OverallConfidence {
+export function computeOverallConfidence(scoring: DiagnosticScoringView, index: DigitalPresenceIndex, overallModel: OverallIndexModel = OVERALL_INDEX_MODEL): OverallConfidence {
   const levels = index.scoredDimensions.map((id) => scoring.dimensions.find((item) => item.id === id)!.confidence.level);
   const atLeastMedium = levels.filter((level) => level !== "low").length;
   const high = levels.filter((level) => level === "high").length;
   const share = (count: number) => (levels.length === 0 ? 0 : count / levels.length);
-  const model = OVERALL_INDEX_MODEL.confidence;
+  const model = overallModel.confidence;
   const level: ContextualConfidenceLevel = !index.sufficient ? "low"
     : index.coverage >= model.highCoverage && share(high) >= model.share ? "high"
       : index.coverage >= model.mediumCoverage && share(atLeastMedium) >= model.share ? "medium" : "low";
@@ -168,12 +183,25 @@ export function computeOverallConfidence(scoring: DiagnosticScoringView, index: 
 
 /** Banda numérica sobre la media exacta: 40 es «low» y 70 es «developing». */
 export function bandFor(rawScore: number): OverallState {
-  return rawScore >= OVERALL_INDEX_MODEL.bands.solidFrom ? "solid" : rawScore >= OVERALL_INDEX_MODEL.bands.developingFrom ? "developing" : "low";
+  return bandForBands(rawScore, OVERALL_INDEX_MODEL.bands);
+}
+
+/**
+ * DIAG-V3-R8-A: the same classification against explicit thresholds. `bandFor`, `displayScoreFor` and
+ * `resolveGlobalDigitalStatus` keep their single-argument public contract (callers pass them as callbacks);
+ * only these `…ForBands` variants accept a calibration.
+ */
+export function bandForBands(rawScore: number, bands: OverallBands): OverallState {
+  return rawScore >= bands.solidFrom ? "solid" : rawScore >= bands.developingFrom ? "developing" : "low";
 }
 
 /** Única resolución del estado global y sus etiquetas públicas. */
 export function resolveGlobalDigitalStatus(overallScore: number): GlobalDigitalStatus {
-  const status = bandFor(overallScore);
+  return resolveGlobalDigitalStatusForBands(overallScore, OVERALL_INDEX_MODEL.bands);
+}
+
+export function resolveGlobalDigitalStatusForBands(overallScore: number, bands: OverallBands): GlobalDigitalStatus {
+  const status = bandForBands(overallScore, bands);
   return { status, publicLabel: OVERALL_STATUS_CODES[status]!, descriptor: OVERALL_STATUS_LABELS[status] };
 }
 
@@ -183,8 +211,12 @@ export function resolveGlobalDigitalStatus(overallScore: number): GlobalDigitalS
  * y la clasificación no cambian. El redondeo nunca cruza hacia abajo (41,0–41,49 → 41).
  */
 export function displayScoreFor(rawScore: number): number {
+  return displayScoreForBands(rawScore, OVERALL_INDEX_MODEL.bands);
+}
+
+export function displayScoreForBands(rawScore: number, bands: OverallBands): number {
   const rounded = Math.round(rawScore);
-  return bandFor(rounded) === bandFor(rawScore) ? rounded : Math.floor(rawScore);
+  return bandForBands(rounded, bands) === bandForBands(rawScore, bands) ? rounded : Math.floor(rawScore);
 }
 
 /**
@@ -194,9 +226,10 @@ export function classifyOverallState(input: {
   readonly rawScore: number | null;
   readonly confidence: ContextualConfidenceLevel;
   readonly material: { readonly dimension: DigitalDimensionId; readonly constraintId: string } | null;
+  readonly bands?: OverallBands;
 }): { readonly state: OverallStatusKind; readonly bandState: OverallState | null; readonly caveat: OverallCaveat | null } {
   if (input.rawScore === null) return { state: "insufficient", bandState: null, caveat: null };
-  const canonical = resolveGlobalDigitalStatus(input.rawScore);
+  const canonical = resolveGlobalDigitalStatusForBands(input.rawScore, input.bands ?? OVERALL_INDEX_MODEL.bands);
   const bandState = canonical.status;
   if (bandState !== "solid") return { state: bandState, bandState, caveat: null };
   if (input.material) return { state: bandState, bandState, caveat: { reason: "material_constraint", ...input.material } };
@@ -213,8 +246,8 @@ export function buildDigitalPresenceStatus(input: OverallStatusInput): DigitalPr
   const index = computeIndex(scoring, { prelaunch: narrative.lifecycle === "prelaunch" });
   const confidence = computeConfidence(scoring, index);
   const material = priorities.constraints.find((item) => item.severity === "material");
-  const { state, bandState, caveat } = classifyOverallState({ rawScore: index.rawScore, confidence: confidence.level, material: material ? { dimension: material.dimension, constraintId: material.id } : null });
-  const canonical = index.rawScore === null ? null : resolveGlobalDigitalStatus(index.rawScore);
+  const { state, bandState, caveat } = classifyOverallState({ rawScore: index.rawScore, confidence: confidence.level, material: material ? { dimension: material.dimension, constraintId: material.id } : null, bands: input.bands });
+  const canonical = index.rawScore === null ? null : resolveGlobalDigitalStatusForBands(index.rawScore, input.bands ?? OVERALL_INDEX_MODEL.bands);
   const provisional = state !== "insufficient" && confidence.level === "low";
 
   const terms = TERMINOLOGY[narrative.profile].terms;

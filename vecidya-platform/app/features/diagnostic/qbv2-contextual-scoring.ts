@@ -6,7 +6,7 @@ import type { EvidenceKind, DigitalDimensionId, EvidenceDirectness } from "./qbv
 import { DIGITAL_DIMENSIONS, EVIDENCE_DIRECTNESS, EVIDENCE_MAPPING } from "./qbv2-coverage";
 import type { AnswersV2 } from "./qbv2-rules";
 import type { QuestionDefinitionV2, QuestionVersionV2 } from "./qbv2-contract";
-import { CAPABILITY_CONTRIBUTION, STATE_KIND, type CapabilityState } from "./qbv2-capability";
+import { CAPABILITY_CONTRIBUTION, NEGATIVE_CAPABILITY_STATES, POSITIVE_CAPABILITY_STATES, STATE_KIND, type CapabilityState } from "./qbv2-capability";
 import { evidenceMigrationIdentity, hasHistoricalAnswerContract, migratedAnswerStatesV3 } from "./qbv2-evidence-v3";
 export { CAPABILITY_STATES, CAPABILITY_CONTRIBUTION } from "./qbv2-capability";
 export type { CapabilityState } from "./qbv2-capability";
@@ -33,6 +33,15 @@ export const SCORING_MODEL = { directWeight: 1, supportingWeight: 0.5, supportin
  * contradiction, uncertain answers) lowers one level. No score → confidence stays low.
  */
 export const CONFIDENCE_MODEL = { supportingWeight: 0.5, mediumAt: 1.5, highAt: 3 } as const;
+
+/**
+ * DIAG-V3-R8-A seam: the numeric models the shared dimension core applies. Legacy callers pass nothing and get
+ * exactly `SCORING_MODEL`/`CONFIDENCE_MODEL`; the candidate scorer passes its own isolated calibration.
+ */
+export type DimensionScoringModel = { readonly directWeight: number; readonly supportingWeight: number; readonly supportingCapRatio: number };
+export type DimensionConfidenceModel = { readonly supportingWeight: number; readonly mediumAt: number; readonly highAt: number };
+export type DimensionCalibration = { readonly scoring: DimensionScoringModel; readonly confidence: DimensionConfidenceModel };
+export const LEGACY_DIMENSION_CALIBRATION: DimensionCalibration = { scoring: SCORING_MODEL, confidence: CONFIDENCE_MODEL };
 
 // ── Declarative answer semantics (one entry per dimension-mapped question) ──
 
@@ -290,8 +299,6 @@ export type ContextualDimensionResult = {
 export type ContextualScoringResult = { readonly dimensions: readonly ContextualDimensionResult[]; readonly context: Partial<ResolvedDomainContext> };
 
 const LEVELS: readonly ContextualConfidenceLevel[] = ["low", "medium", "high"];
-const POSITIVE_AT = CAPABILITY_CONTRIBUTION.established!;
-const NEGATIVE_AT = CAPABILITY_CONTRIBUTION.weak!;
 
 function resolvedValue(context: Partial<ResolvedDomainContext>, field: "primaryGoal" | "growthStage"): string | undefined { const value = context[field]; return value?.status === "resolved" ? value.value : undefined; }
 
@@ -313,28 +320,29 @@ function applicability(dimension: DigitalDimensionId, context: Partial<ResolvedD
   return { value: "applicable", reason: "default_applicable" };
 }
 
+/** A direct contradiction is semantic (R8-A): a positive and a negative R3 state, never a calibrated number. */
 function directContradictions(direct: readonly ContextualEvidence[]): readonly DimensionContradiction[] {
-  const positives = direct.filter((item) => item.contribution! >= POSITIVE_AT);
-  const negatives = direct.filter((item) => item.contribution! <= NEGATIVE_AT);
+  const positives = direct.filter((item) => POSITIVE_CAPABILITY_STATES.has(item.state));
+  const negatives = direct.filter((item) => NEGATIVE_CAPABILITY_STATES.has(item.state));
   return positives.flatMap((positive) => negatives.map((negative) => ({ positive: positive.questionId, negative: negative.questionId })));
 }
 
-function weightedScore(direct: readonly ContextualEvidence[], supporting: readonly ContextualEvidence[]): number | null {
+function weightedScore(direct: readonly ContextualEvidence[], supporting: readonly ContextualEvidence[], model: DimensionScoringModel): number | null {
   if (direct.length === 0) return null;
-  const directWeight = direct.length * SCORING_MODEL.directWeight;
-  const supportingWeight = Math.min(supporting.length * SCORING_MODEL.supportingWeight, directWeight * SCORING_MODEL.supportingCapRatio);
+  const directWeight = direct.length * model.directWeight;
+  const supportingWeight = Math.min(supporting.length * model.supportingWeight, directWeight * model.supportingCapRatio);
   const perSupporting = supporting.length > 0 ? supportingWeight / supporting.length : 0;
-  const numerator = direct.reduce((sum, item) => sum + item.contribution! * SCORING_MODEL.directWeight, 0) + supporting.reduce((sum, item) => sum + item.contribution! * perSupporting, 0);
+  const numerator = direct.reduce((sum, item) => sum + item.contribution! * model.directWeight, 0) + supporting.reduce((sum, item) => sum + item.contribution! * perSupporting, 0);
   return Math.round((100 * numerator) / (directWeight + supportingWeight));
 }
 
-function confidenceFor(direct: readonly ContextualEvidence[], supporting: readonly ContextualEvidence[], observations: readonly ContextualEvidence[], contradictions: readonly DimensionContradiction[]): DimensionConfidence {
+function confidenceFor(direct: readonly ContextualEvidence[], supporting: readonly ContextualEvidence[], observations: readonly ContextualEvidence[], contradictions: readonly DimensionContradiction[], model: DimensionConfidenceModel): DimensionConfidence {
   const uncertain = observations.filter((item) => item.state === "uncertainty" && item.directness !== "contextual").length;
-  const strength = direct.length + CONFIDENCE_MODEL.supportingWeight * Math.min(supporting.length, direct.length);
+  const strength = direct.length + model.supportingWeight * Math.min(supporting.length, direct.length);
   const penalties: ConfidencePenalty[] = [];
   if (contradictions.length > 0) penalties.push("direct_contradiction");
   if (uncertain > 0) penalties.push("uncertain_answers");
-  const base = direct.length === 0 ? 0 : strength >= CONFIDENCE_MODEL.highAt ? 2 : strength >= CONFIDENCE_MODEL.mediumAt ? 1 : 0;
+  const base = direct.length === 0 ? 0 : strength >= model.highAt ? 2 : strength >= model.mediumAt ? 1 : 0;
   return {
     level: LEVELS[Math.max(0, base - penalties.length)]!,
     direct: direct.length, supporting: supporting.length,
@@ -350,11 +358,16 @@ function observationsFor(dimension: DigitalDimensionId, evidence: readonly Conte
   return [...unique.values()];
 }
 
-/** Shared score/confidence/explainability core. Applicability policy is supplied by the caller. */
+/**
+ * Shared score/confidence/explainability core. Applicability policy is supplied by the caller; so is the numeric
+ * calibration (R8-A), defaulting to the legacy models. Evidence contributions are taken as given: the candidate
+ * scorer supplies evidence already carrying its own calibrated contributions.
+ */
 export function scoreDimensionWithApplicability(
   dimension: DigitalDimensionId,
   evidence: readonly ContextualEvidence[],
   applicabilityValue: DimensionApplicability,
+  calibration: DimensionCalibration = LEGACY_DIMENSION_CALIBRATION,
 ): Omit<ContextualDimensionResult, "applicabilityReason"> {
   const observations = observationsFor(dimension, evidence);
   const capability = observations.filter((item) => item.directness !== "contextual" && item.contribution !== null);
@@ -368,8 +381,8 @@ export function scoreDimensionWithApplicability(
     id: dimension,
     label: DIGITAL_DIMENSIONS.find((item) => item.id === dimension)!.label,
     applicability: applicabilityValue,
-    score: applicabilityValue === "applicable" ? weightedScore(direct, supporting) : null,
-    confidence: confidenceFor(direct, supporting, observations, contradictions),
+    score: applicabilityValue === "applicable" ? weightedScore(direct, supporting, calibration.scoring) : null,
+    confidence: confidenceFor(direct, supporting, observations, contradictions, calibration.confidence),
     evidence: observations,
     explainability: {
       basis,

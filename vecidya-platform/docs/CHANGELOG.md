@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-08 — DIAG-V3-R8-A: aislamiento de la calibración candidata y baseline
+
+- Refactor sin cambio numérico: nuevo `qbv2-candidate-calibration.ts` (`CANDIDATE_CALIBRATION_V3`, identidad `diag-v3-candidate-calibration-v1`, inmutable y privada) con valores iguales a las constantes compartidas, que siguen congeladas para legacy.
+- Seams con default legacy en el núcleo dimensional, prioridades, hechos semánticos, prerrequisitos de recomendaciones e índice/confianza/bandas generales (variantes `…ForBands`; `bandFor`/`displayScoreFor`/`resolveGlobalDigitalStatus` conservan su contrato de un argumento). La cadena candidata consume su propia calibración de punta a punta.
+- Contradicción directa y polaridad de señales se leen por estado R3 (equivalencia exacta con los umbrales anteriores); el wrapper overall candidato alinea score y suficiencia. `SOUND` clasificado LEGACY_ONLY.
+- Pruebas: `qbv2-r8a-calibration-isolation.test.ts` (12) y kit `qbv2-r8-calibration-qa.ts` (paridad, manifiesto de propiedad, invariantes, evaluador). Paridad 0 diferencias; legacy y caracterización sin cambios; R3–R7 en verde. Validación: diagnóstico 1281/1281, unitarias 1324→1336, typecheck y build PASS, bundle scan 0. R8 no completa; siguiente R8-B.
+
 ## 2026-10-08 — DIAG-V3-R7-FINAL: certificación y freeze de QA canónica y adversarial
 
 - R7 — Canonical & Adversarial QA: **COMPLETE / CERTIFIED** (R7-A, R7-A.1, R7-B, R7-B.1, R7-FINAL). Historia preservada: R7-B BLOQUEADA en su primera ejecución (F1/F2/F3) → corregida por R6-C.1/R6-D.2 → re-certificada; alcance Ciudad cerrado por R6-D.3 / R7-B.1.

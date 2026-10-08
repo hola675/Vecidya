@@ -8,6 +8,7 @@ import type { AnswersV2 } from "./qbv2-rules";
 import type { SolutionId } from "./qbv2-solutions";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./qbv2-reviewed-evidence";
 import { CANDIDATE_SEMANTIC_EVIDENCE_CATALOG_V3 } from "./qbv2-candidate-interpretation";
+import type { CandidateCalibrationV3 } from "./qbv2-candidate-calibration";
 
 /**
  * DIAG-V3-R6-D — candidate-only commercial boundary. The dependency is strictly one-way:
@@ -40,6 +41,8 @@ export type CandidateCommercialBoundaryInputV3 = {
   readonly answers: AnswersV2;
   readonly currentLicense?: CommercialLicense;
   readonly clarificationAnswer?: CommercialClarificationAnswer;
+  /** DIAG-V3-R8-A: candidate numeric calibration (QA seam); commercial eligibility itself never reads it. */
+  readonly calibration?: CandidateCalibrationV3;
 };
 
 export type CandidateCommercialBoundaryV3 = CandidateRecommendationsAndSolutionsV3 & {
@@ -237,7 +240,7 @@ export function matchCandidateCommercialOfferingsV3(result: CandidateRecommendat
  * not activated by the public runtime.
  */
 export function buildCandidateCommercialBoundaryV3(input: CandidateCommercialBoundaryInputV3): CandidateCommercialBoundaryV3 {
-  const result = buildCandidateRecommendationsAndSolutionsV3({ answers: input.answers });
+  const result = buildCandidateRecommendationsAndSolutionsV3({ answers: input.answers, calibration: input.calibration });
   const licenseFit = resolveCandidateLicenseFitV3(result, input.currentLicense, input.clarificationAnswer);
   const { now, later } = matchCandidateCommercialOfferingsV3(result, licenseFit);
   const nowComplements = now.filter((item) => item.kind === "complement");
