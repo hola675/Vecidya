@@ -2,8 +2,7 @@ import { ADVERSARIAL_CASES_V3, NEAR_MISS_PAIRS_V3 } from "./qbv2-candidate-adver
 import { CANONICAL_CASES_V3 } from "./qbv2-candidate-canonical-cases";
 import { runCanonicalRouteV3 } from "./qbv2-candidate-case-runner";
 import {
-  CANDIDATE_CALIBRATION_IDENTITY_V3, CANDIDATE_CALIBRATION_V3, CANDIDATE_CALIBRATION_VERSION_V3, candidateDimensionCalibrationV3,
-  type CandidateCalibrationV3, type CandidateCapabilityContributionV3,
+  CANDIDATE_CALIBRATION_V3, candidateDimensionCalibrationV3, type CandidateCalibrationV3, type CandidateCapabilityContributionV3,
 } from "../../../app/features/diagnostic/qbv2-candidate-calibration";
 import { buildCandidateCommercialBoundaryV3, type CandidateCommercialBoundaryV3 } from "../../../app/features/diagnostic/qbv2-candidate-commercial";
 import { CAPABILITY_CONTRIBUTION } from "../../../app/features/diagnostic/qbv2-capability";
@@ -14,20 +13,20 @@ import { SEVERITY_BANDS } from "../../../app/features/diagnostic/qbv2-priorities
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 
 /**
- * DIAG-V3-R8 calibration QA kit (test-only). R8-A builds it without tuning anything: the shared-reference path
- * for baseline parity, the executable parameter-ownership manifest, structural calibration invariants, a
- * deterministic evaluator over the R7 corpus, and the (empty) target-annotation structure R8-B will populate.
- * Every number this kit reports is OBSERVATIONAL — FOR R8, NOT FROZEN.
+ * DIAG-V3-R8 calibration QA kit (test-only). R8-A built it without tuning anything: the shared-reference path
+ * for baseline parity, the executable parameter-ownership manifest, structural calibration invariants and a
+ * deterministic evaluator over the R7 corpus. R8-B adds the contract-derived calibration expectations. Every
+ * number this kit reports is OBSERVATIONAL — FOR R8, NOT FROZEN.
  */
 
 /**
  * The pre-isolation reference: the candidate chain driven by the shared (legacy) constants, exactly as it was
- * before R8-A. While the candidate baseline equals it, parity must be total; once R8-B moves candidate values,
- * comparing against it becomes a migration/history record, not an equality requirement.
+ * before R8-A. The historical v1 baseline must keep equalling it; since R8-B the current calibration may differ,
+ * so comparing the current one against it is a migration record, not an equality requirement.
  */
 export function sharedReferenceCalibrationV3(): CandidateCalibrationV3 {
   return {
-    identity: CANDIDATE_CALIBRATION_IDENTITY_V3, version: CANDIDATE_CALIBRATION_VERSION_V3,
+    identity: "diag-v3-candidate-calibration-v1", version: 1,
     capabilityContribution: CAPABILITY_CONTRIBUTION as CandidateCapabilityContributionV3,
     scoring: SCORING_MODEL, dimensionConfidence: CONFIDENCE_MODEL, severity: SEVERITY_BANDS, overall: OVERALL_INDEX_MODEL,
   };
@@ -68,16 +67,16 @@ export const CALIBRATION_OWNERSHIP_V3: readonly OwnershipRowV3[] = [
   { parameter: "SCORING_MODEL.supportingWeight", legacyValue: SCORING_MODEL.supportingWeight, candidateValue: (c) => c.scoring.supportingWeight, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-B", perturb: withScoring({ supportingWeight: 0.25 }), note: "Only Readiness has candidate supporting sources." },
   { parameter: "SCORING_MODEL.supportingCapRatio", legacyValue: SCORING_MODEL.supportingCapRatio, candidateValue: (c) => c.scoring.supportingCapRatio, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-B", perturb: withScoring({ supportingCapRatio: 0.25 }), note: "Binds only when supporting weight exceeds the cap." },
   { parameter: "CONFIDENCE_MODEL.supportingWeight", legacyValue: CONFIDENCE_MODEL.supportingWeight, candidateValue: (c) => c.dimensionConfidence.supportingWeight, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-B", perturb: withConfidence({ supportingWeight: 0.25 }), note: "" },
-  { parameter: "CONFIDENCE_MODEL.mediumAt", legacyValue: CONFIDENCE_MODEL.mediumAt, candidateValue: (c) => c.dimensionConfidence.mediumAt, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-B", perturb: withConfidence({ mediumAt: 1 }), note: "Root of R8-O2 with one direct source per dimension." },
-  { parameter: "CONFIDENCE_MODEL.highAt", legacyValue: CONFIDENCE_MODEL.highAt, candidateValue: (c) => c.dimensionConfidence.highAt, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-B", base: withConfidence({ mediumAt: 1 }), perturb: withConfidence({ highAt: 1.5 }), note: "Inert at baseline: no candidate dimension reaches strength 3." },
+  { parameter: "CONFIDENCE_MODEL.mediumAt", legacyValue: CONFIDENCE_MODEL.mediumAt, candidateValue: (c) => c.dimensionConfidence.mediumAt, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-B", perturb: withConfidence({ mediumAt: 1.25 }), note: "Root of R8-O2 with one direct source per dimension; R8-B v2 sets 1 (v1: 1.5)." },
+  { parameter: "CONFIDENCE_MODEL.highAt", legacyValue: CONFIDENCE_MODEL.highAt, candidateValue: (c) => c.dimensionConfidence.highAt, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-B", perturb: withConfidence({ highAt: 1.5 }), note: "R8-B v2 sets 2 (v1: 3, which no candidate dimension reached)." },
   { parameter: "SEVERITY_BANDS.materialBelow", legacyValue: SEVERITY_BANDS.materialBelow, candidateValue: (c) => c.severity.materialBelow, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-C", perturb: withSeverity({ materialBelow: 70 }), note: "Priorities, fact readings and prerequisites share it." },
   { parameter: "SEVERITY_BANDS.moderateBelow", legacyValue: SEVERITY_BANDS.moderateBelow, candidateValue: (c) => c.severity.moderateBelow, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-C", perturb: withSeverity({ moderateBelow: 60 }), note: "" },
   { parameter: "OVERALL_INDEX_MODEL.minScoredDimensions", legacyValue: OVERALL_INDEX_MODEL.minScoredDimensions, candidateValue: (c) => c.overall.minScoredDimensions, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-C", perturb: withOverall({ minScoredDimensions: 9 }), note: "" },
   { parameter: "OVERALL_INDEX_MODEL.minCoverage", legacyValue: OVERALL_INDEX_MODEL.minCoverage, candidateValue: (c) => c.overall.minCoverage, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-C", perturb: withOverall({ minCoverage: 0.95 }), note: "Over observable applicable dimensions (R6-B)." },
   { parameter: "OVERALL_INDEX_MODEL.bands.developingFrom", legacyValue: OVERALL_INDEX_MODEL.bands.developingFrom, candidateValue: (c) => c.overall.bands.developingFrom, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-C", perturb: withBands({ developingFrom: 63 }), note: "" },
   { parameter: "OVERALL_INDEX_MODEL.bands.solidFrom", legacyValue: OVERALL_INDEX_MODEL.bands.solidFrom, candidateValue: (c) => c.overall.bands.solidFrom, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-C", perturb: withBands({ solidFrom: 74 }), note: "" },
-  { parameter: "OVERALL_INDEX_MODEL.confidence.mediumCoverage", legacyValue: OVERALL_INDEX_MODEL.confidence.mediumCoverage, candidateValue: (c) => c.overall.confidence.mediumCoverage, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-C", base: withOverallConfidence({ share: 0, highCoverage: 1 }), perturb: withOverallConfidence({ mediumCoverage: 0.9 }), note: "Inert at baseline: no canonical case reaches the share condition (R8-O2)." },
-  { parameter: "OVERALL_INDEX_MODEL.confidence.highCoverage", legacyValue: OVERALL_INDEX_MODEL.confidence.highCoverage, candidateValue: (c) => c.overall.confidence.highCoverage, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-C", base: withOverallConfidence({ share: 0 }), perturb: withOverallConfidence({ highCoverage: 1.01 }), note: "Inert at baseline for the same reason." },
+  { parameter: "OVERALL_INDEX_MODEL.confidence.mediumCoverage", legacyValue: OVERALL_INDEX_MODEL.confidence.mediumCoverage, candidateValue: (c) => c.overall.confidence.mediumCoverage, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-C", base: withOverallConfidence({ share: 0, highCoverage: 1 }), perturb: withOverallConfidence({ mediumCoverage: 0.9 }), note: "Inert under v1 (no case reached the share condition, R8-O2); reachable from v2 on." },
+  { parameter: "OVERALL_INDEX_MODEL.confidence.highCoverage", legacyValue: OVERALL_INDEX_MODEL.confidence.highCoverage, candidateValue: (c) => c.overall.confidence.highCoverage, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-C", base: withOverallConfidence({ share: 0 }), perturb: withOverallConfidence({ highCoverage: 1.01 }), note: "Inert under v1 for the same reason." },
   { parameter: "OVERALL_INDEX_MODEL.confidence.share", legacyValue: OVERALL_INDEX_MODEL.confidence.share, candidateValue: (c) => c.overall.confidence.share, candidateEffect: "YES", legacyEffect: "YES", owner: "R8-C", perturb: withOverallConfidence({ share: 0 }), note: "" },
   { parameter: "SOUND (qbv2-solutions.ts)", legacyValue: 75, candidateValue: () => null, candidateEffect: "NO", legacyEffect: "YES", owner: "none", note: "LEGACY_ONLY: read only inside legacy `matchSolution` (Discovery advertising gate); the candidate never calls it." },
 ];
@@ -189,13 +188,70 @@ export function evaluateCandidateCalibrationV3(calibration: CandidateCalibration
   };
 }
 
-// ── Target annotations (structure only; R8-B populates, relative constraints first) ─────────────────────
+// ── Calibration expectations (R8-B: relative and qualitative only, never an absolute numeric target) ────
 
 export type CalibrationRefV3 = { readonly caseId: string; readonly dimension: DigitalDimensionId };
-export type CalibrationExpectationV3 =
-  | { readonly kind: "relative"; readonly higher: CalibrationRefV3; readonly relation: ">" | ">="; readonly lower: CalibrationRefV3; readonly rationale: string }
-  | { readonly kind: "range"; readonly ref: CalibrationRefV3; readonly min: number; readonly max: number; readonly rationale: string }
-  | { readonly kind: "confidence_at_least"; readonly ref: CalibrationRefV3; readonly level: "medium" | "high"; readonly rationale: string };
+type ConfidenceLevelV3 = "low" | "medium" | "high";
+/**
+ * Every expectation is derived from a certified contract statement, never from the numbers the engine produces,
+ * and none is a human-validated business label (R7 cases are semantic truth, not empirical ground truth).
+ */
+export type CalibrationReviewStatusV3 = "CONTRACT_DERIVED_NOT_HUMAN_VALIDATED";
+type ExpectationBase = { readonly id: string; readonly rationale: string; readonly source: string; readonly review: CalibrationReviewStatusV3 };
+export type CalibrationExpectationV3 = ExpectationBase & (
+  | { readonly kind: "score"; readonly left: CalibrationRefV3; readonly relation: ">" | ">=" | "="; readonly right: CalibrationRefV3 }
+  | { readonly kind: "score_null"; readonly ref: CalibrationRefV3 }
+  | { readonly kind: "confidence"; readonly left: CalibrationRefV3; readonly relation: ">" | ">=" | "=" | "<=" | "<"; readonly right: CalibrationRefV3 }
+  | { readonly kind: "confidence_level"; readonly ref: CalibrationRefV3; readonly relation: "=" | ">=" | "<="; readonly level: ConfidenceLevelV3 }
+);
 
-/** Intentionally empty in R8-A: no numeric target is claimed without curated human labels (§36-37). */
-export const CALIBRATION_EXPECTATIONS_V3: readonly CalibrationExpectationV3[] = [];
+const R3_LADDER = "R3 certified ladder: established (declared habitual functioning) > partial (a veces) > weak (rara vez/difícil) ≥ missing (no existe)";
+const R8B_CONTRACT = "R8-B confidence contract (§11/§31)";
+const REVIEW = "CONTRACT_DERIVED_NOT_HUMAN_VALIDATED" as const;
+const ref = (caseId: string, dimension: DigitalDimensionId): CalibrationRefV3 => ({ caseId, dimension });
+
+export const CALIBRATION_EXPECTATIONS_V3: readonly CalibrationExpectationV3[] = [
+  { id: "S1", kind: "score", left: ref("C02", "clarity_positioning"), relation: ">", right: ref("C13", "clarity_positioning"), rationale: "Single direct established reads above single direct partial.", source: R3_LADDER, review: REVIEW },
+  { id: "S2", kind: "score", left: ref("C13", "clarity_positioning"), relation: ">", right: ref("C03", "clarity_positioning"), rationale: "Single direct partial reads above single direct weak.", source: R3_LADDER, review: REVIEW },
+  { id: "S3", kind: "score", left: ref("A06", "conversion_access"), relation: ">", right: ref("C14", "conversion_access"), rationale: "Established above partial in a second dimension.", source: R3_LADDER, review: REVIEW },
+  { id: "S4", kind: "score", left: ref("C14", "conversion_access"), relation: ">", right: ref("C04", "conversion_access"), rationale: "Partial above weak in a second dimension.", source: R3_LADDER, review: REVIEW },
+  { id: "S5", kind: "score", left: ref("C08", "digital_foundation"), relation: ">", right: ref("C19", "digital_foundation"), rationale: "Partial above an explicit absence.", source: R3_LADDER, review: REVIEW },
+  { id: "S6", kind: "score", left: ref("C05", "relationship_recurrence"), relation: ">=", right: ref("C07", "relationship_recurrence"), rationale: "Weak never below an explicit absence.", source: R3_LADDER, review: REVIEW },
+  { id: "S7", kind: "score", left: ref("A07d", "digital_readiness"), relation: ">=", right: ref("C02", "digital_readiness"), rationale: "Two consistent direct established sources never read below one.", source: R3_LADDER, review: REVIEW },
+  { id: "S8", kind: "score", left: ref("C09", "digital_readiness"), relation: ">=", right: ref("C23", "digital_readiness"), rationale: "Direct established + weak supporting is never outranked by direct partial + established supporting: supporting refines, it cannot outvote direct.", source: "SCORING_MODEL contract (supporting cannot outvote direct) + R8-B §13", review: REVIEW },
+  { id: "S9", kind: "score", left: ref("C09", "digital_readiness"), relation: ">", right: ref("A04", "digital_readiness"), rationale: "An established direct base with supporting tension stays recognizable above a weak direct reading.", source: "R8-B §18", review: REVIEW },
+  { id: "S10", kind: "score", left: ref("C25", "digital_readiness"), relation: "=", right: ref("C05", "digital_readiness"), rationale: "An unknown answer never moves the demonstrated capability (weak + unknown reads as weak).", source: "R3 neutrality of uncertainty + R8-B §18", review: REVIEW },
+  { id: "N1", kind: "score_null", ref: ref("A17", "digital_readiness"), rationale: "Supporting-only evidence never establishes a score.", source: "R3/R7 supporting contract", review: REVIEW },
+  { id: "K1", kind: "confidence", left: ref("A07d", "digital_readiness"), relation: ">", right: ref("N05", "digital_readiness"), rationale: "Two direct sources are not equivalent to one direct source plus supporting.", source: R8B_CONTRACT, review: REVIEW },
+  { id: "K2", kind: "confidence", left: ref("A07b", "trust_reputation"), relation: ">=", right: ref("C02", "trust_reputation"), rationale: "More independent, consistent direct evidence never reduces confidence.", source: R8B_CONTRACT, review: REVIEW },
+  { id: "K3", kind: "confidence", left: ref("N01", "trust_reputation"), relation: "<=", right: ref("C02", "trust_reputation"), rationale: "A direct contradiction never increases confidence over a single direct reading.", source: R8B_CONTRACT, review: REVIEW },
+  { id: "K4", kind: "confidence", left: ref("N01", "trust_reputation"), relation: "<", right: ref("A07b", "trust_reputation"), rationale: "A direct contradiction is penalized against the consistent pair.", source: R8B_CONTRACT, review: REVIEW },
+  { id: "K5", kind: "confidence_level", ref: ref("C16", "digital_readiness"), relation: "=", level: "low", rationale: "No direct evidence → low.", source: R8B_CONTRACT, review: REVIEW },
+  { id: "K6", kind: "confidence_level", ref: ref("A17", "digital_readiness"), relation: "=", level: "low", rationale: "Supporting-only evidence → low.", source: R8B_CONTRACT, review: REVIEW },
+  { id: "K7", kind: "confidence", left: ref("C25", "digital_readiness"), relation: "<=", right: ref("C05", "digital_readiness"), rationale: "An unknown answer never increases confidence.", source: R8B_CONTRACT, review: REVIEW },
+  { id: "K8", kind: "confidence_level", ref: ref("N05", "digital_readiness"), relation: "<=", level: "medium", rationale: "One direct source never reaches high through supporting alone.", source: R8B_CONTRACT, review: REVIEW },
+  { id: "K9", kind: "confidence_level", ref: ref("C02", "discovery"), relation: ">=", level: "medium", rationale: "A clean single direct reading — the unit the certified R5 planner treats as resolving a dimension — is not labelled low. This is the anchor of v2, not an independent validation.", source: "R5 certified sufficiency (candidate planner closes a dimension at its first direct observation)", review: REVIEW },
+];
+
+const LEVEL_ORDER: Readonly<Record<ConfidenceLevelV3, number>> = { low: 0, medium: 1, high: 2 };
+const holds = (a: number, relation: ">" | ">=" | "=" | "<=" | "<", b: number) => relation === ">" ? a > b : relation === ">=" ? a >= b : relation === "=" ? a === b : relation === "<=" ? a <= b : a < b;
+
+/** Evaluates the expectations against one calibration over the R7 corpus; returns the ids that fail. */
+export function calibrationExpectationViolationsV3(calibration: CandidateCalibrationV3, expectations: readonly CalibrationExpectationV3[] = CALIBRATION_EXPECTATIONS_V3): readonly string[] {
+  const answersById = new Map(r7CorpusV3().map((c) => [c.id, c.answers]));
+  const cache = new Map<string, CandidateCommercialBoundaryV3>();
+  const dimension = (r: CalibrationRefV3) => {
+    const answers = answersById.get(r.caseId);
+    if (!answers) throw new Error(`unknown calibration case ${r.caseId}`);
+    const result = cache.get(r.caseId) ?? buildCandidateCommercialBoundaryV3({ answers, calibration });
+    cache.set(r.caseId, result);
+    return result.scoring.dimensions.find((d) => d.id === r.dimension)!;
+  };
+  return expectations.filter((e) => {
+    if (e.kind === "score_null") return dimension(e.ref).score !== null;
+    if (e.kind === "confidence_level") return !holds(LEVEL_ORDER[dimension(e.ref).confidence.level], e.relation, LEVEL_ORDER[e.level]);
+    if (e.kind === "confidence") return !holds(LEVEL_ORDER[dimension(e.left).confidence.level], e.relation, LEVEL_ORDER[dimension(e.right).confidence.level]);
+    const left = dimension(e.left).score, right = dimension(e.right).score;
+    return left === null || right === null || !holds(left, e.relation, right);
+  }).map((e) => e.id);
+}

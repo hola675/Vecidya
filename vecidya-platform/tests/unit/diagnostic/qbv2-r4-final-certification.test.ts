@@ -23,6 +23,7 @@ import {
   scoreCandidateContextualDimensionsV3,
   validateActiveCandidateEvidenceV3,
 } from "../../../app/features/diagnostic/qbv2-candidate-scoring";
+import { CANDIDATE_CALIBRATION_BASELINE_V1 } from "../../../app/features/diagnostic/qbv2-candidate-calibration";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
 import { resolveEligibleQuestionsV2 } from "../../../app/features/diagnostic/qbv2-engine";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
@@ -179,19 +180,27 @@ test("hybrid context, goal/friction independence, and shared score weights remai
 });
 
 test("candidate and legacy results use the same score, confidence, and explainability core", () => {
-  const candidate = scoreCandidateContextualDimensionsV3({ answers: activeAnswers });
-  const evidence = deriveContextualEvidence(candidate.activeAnswers, REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3);
+  // R8-B: the core is shared; the numbers are not. Under the historical v1 calibration (= the shared model)
+  // the results are identical; under the current candidate calibration only the confidence level may move.
+  const candidateV1 = scoreCandidateContextualDimensionsV3({ answers: activeAnswers, calibration: CANDIDATE_CALIBRATION_BASELINE_V1 });
+  const current = scoreCandidateContextualDimensionsV3({ answers: activeAnswers });
+  const evidence = deriveContextualEvidence(candidateV1.activeAnswers, REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3);
   const legacy = scoreContextualDimensions({
-    answers: candidate.activeAnswers,
-    context: candidate.context,
+    answers: candidateV1.activeAnswers,
+    context: candidateV1.context,
     evidence,
     bank: REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3,
   });
-  const candidateDimension = candidate.dimensions.find((item) => item.id === "clarity_positioning")!;
+  const candidateDimension = candidateV1.dimensions.find((item) => item.id === "clarity_positioning")!;
   const legacyDimension = legacy.dimensions.find((item) => item.id === "clarity_positioning")!;
   assert.equal(candidateDimension.score, legacyDimension.score);
   assert.deepEqual(candidateDimension.confidence, legacyDimension.confidence);
   assert.deepEqual(candidateDimension.explainability, legacyDimension.explainability);
+  const currentDimension = current.dimensions.find((item) => item.id === "clarity_positioning")!;
+  const { level: _current, ...currentCore } = currentDimension.confidence;
+  const { level: _legacy, ...legacyCore } = legacyDimension.confidence;
+  assert.deepEqual(currentCore, legacyCore);
+  assert.deepEqual(currentDimension.explainability, legacyDimension.explainability);
 });
 
 test("candidate remains isolated from persisted runtime versions and the active 85-question bank", async () => {

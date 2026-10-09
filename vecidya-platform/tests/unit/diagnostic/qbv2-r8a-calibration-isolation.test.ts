@@ -7,7 +7,7 @@ import {
 } from "./qbv2-r8-calibration-qa";
 import { R8_HANDOFF_LABEL_V3, buildR8HandoffV3 } from "./qbv2-r8-handoff";
 import {
-  CANDIDATE_CALIBRATION_IDENTITY_V3, CANDIDATE_CALIBRATION_V3, CANDIDATE_CALIBRATION_VERSION_V3, type CandidateCalibrationV3,
+  CANDIDATE_CALIBRATION_BASELINE_V1, CANDIDATE_CALIBRATION_IDENTITY_V3, CANDIDATE_CALIBRATION_V3, CANDIDATE_CALIBRATION_VERSION_V3, type CandidateCalibrationV3,
 } from "../../../app/features/diagnostic/qbv2-candidate-calibration";
 import { buildCandidateCommercialBoundaryV3, type CandidateCommercialBoundaryV3 } from "../../../app/features/diagnostic/qbv2-candidate-commercial";
 import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qbv2-candidate-scoring";
@@ -36,29 +36,31 @@ const baselineOf = (id: string, answers: AnswersV2) => (baseline ??= new Map()).
 const report: Record<string, unknown> = {};
 
 test("R8-A: candidate calibration identity, version and an explicit, immutable, internally consistent model", () => {
-  assert.equal(CANDIDATE_CALIBRATION_IDENTITY_V3, "diag-v3-candidate-calibration-v1");
-  assert.equal(CANDIDATE_CALIBRATION_VERSION_V3, 1);
-  assert.deepEqual([CANDIDATE_CALIBRATION_V3.identity, CANDIDATE_CALIBRATION_V3.version], [CANDIDATE_CALIBRATION_IDENTITY_V3, 1]);
-  assert.deepEqual(Object.keys(CANDIDATE_CALIBRATION_V3), ["identity", "version", "capabilityContribution", "scoring", "dimensionConfidence", "severity", "overall"]);
+  // The R8-A baseline stays reproducible as v1; since R8-B the current calibration is a newer version.
+  assert.deepEqual([CANDIDATE_CALIBRATION_BASELINE_V1.identity, CANDIDATE_CALIBRATION_BASELINE_V1.version], ["diag-v3-candidate-calibration-v1", 1]);
+  assert.deepEqual([CANDIDATE_CALIBRATION_V3.identity, CANDIDATE_CALIBRATION_V3.version], [CANDIDATE_CALIBRATION_IDENTITY_V3, CANDIDATE_CALIBRATION_VERSION_V3]);
   const frozen = (value: unknown): boolean => value === null || typeof value !== "object" || (Object.isFrozen(value) && Object.values(value).every(frozen));
-  assert.ok(frozen(CANDIDATE_CALIBRATION_V3), "deeply immutable");
-  assert.throws(() => { (CANDIDATE_CALIBRATION_V3.scoring as { directWeight: number }).directWeight = 2; }, TypeError);
-  assert.deepEqual(candidateCalibrationInvariantViolationsV3(CANDIDATE_CALIBRATION_V3), []);
+  for (const calibration of [CANDIDATE_CALIBRATION_BASELINE_V1, CANDIDATE_CALIBRATION_V3]) {
+    assert.deepEqual(Object.keys(calibration), ["identity", "version", "capabilityContribution", "scoring", "dimensionConfidence", "severity", "overall"]);
+    assert.ok(frozen(calibration), `${calibration.identity}: deeply immutable`);
+    assert.throws(() => { (calibration.scoring as { directWeight: number }).directWeight = 2; }, TypeError);
+    assert.deepEqual(candidateCalibrationInvariantViolationsV3(calibration), []);
+  }
   // Not a runtime diagnostic version: the public runtime stays exactly where it was.
   assert.equal(QUESTION_BANK_V2.length, 85);
   assert.deepEqual([CURRENT_DIAGNOSTIC_VERSION, CURRENT_QUESTION_BANK_VERSION, CURRENT_ROUTING_VERSION, CURRENT_SCORING_VERSION, CURRENT_RESULT_SCHEMA_VERSION, ADAPTIVE_PLANNER_VERSION], ["2.0", 1, 1, 1, 1, 2]);
 });
 
-test("R8-A: the candidate baseline equals the shared model value-for-value; the shared (legacy) values are untouched", () => {
+test("R8-A: the candidate baseline (v1) equals the shared model value-for-value; the shared (legacy) values are untouched", () => {
   const strip = ({ identity: _i, version: _v, ...rest }: CandidateCalibrationV3) => JSON.parse(JSON.stringify(rest));
-  assert.deepEqual(strip(CANDIDATE_CALIBRATION_V3), strip(sharedReferenceCalibrationV3()));
+  assert.deepEqual(strip(CANDIDATE_CALIBRATION_BASELINE_V1), strip(sharedReferenceCalibrationV3()));
   assert.deepEqual(CAPABILITY_CONTRIBUTION, { strong: 1, established: 0.75, partial: 0.5, weak: 0.25, dependency: 0.25, missing: 0, constraint: null, uncertainty: null, not_applicable: null });
   assert.deepEqual([SCORING_MODEL, CONFIDENCE_MODEL, SEVERITY_BANDS], [{ directWeight: 1, supportingWeight: 0.5, supportingCapRatio: 0.5 }, { supportingWeight: 0.5, mediumAt: 1.5, highAt: 3 }, { materialBelow: 50, moderateBelow: 75 }]);
   assert.deepEqual(OVERALL_INDEX_MODEL, { minScoredDimensions: 3, minCoverage: 1 / 3, bands: { developingFrom: 41, solidFrom: 71 }, confidence: { mediumCoverage: 0.5, highCoverage: 0.75, share: 0.5 } });
   assert.match(read("../../../app/features/diagnostic/qbv2-solutions.ts"), /^const SOUND = 75;$/m);
   // Legacy defaults are the shared objects themselves, not copies.
   assert.ok(LEGACY_DIMENSION_CALIBRATION.scoring === SCORING_MODEL && LEGACY_DIMENSION_CALIBRATION.confidence === CONFIDENCE_MODEL);
-  for (const row of CALIBRATION_OWNERSHIP_V3.filter((r) => r.candidateEffect !== "NO")) assert.equal(row.candidateValue(CANDIDATE_CALIBRATION_V3), row.legacyValue, row.parameter);
+  for (const row of CALIBRATION_OWNERSHIP_V3.filter((r) => r.candidateEffect !== "NO")) assert.equal(row.candidateValue(CANDIDATE_CALIBRATION_BASELINE_V1), row.legacyValue, row.parameter);
 });
 
 function seededCorpus(size: number, seed: number): { id: string; answers: AnswersV2 }[] {
@@ -75,12 +77,14 @@ function seededCorpus(size: number, seed: number): { id: string; answers: Answer
   });
 }
 
-test("R8-A: baseline parity — the isolated candidate path equals the shared-reference (pre-isolation) path over 25 canonical + 36 adversarial + 200 seeded inputs", () => {
+test("R8-A (historical): baseline parity — the v1 candidate baseline equals the shared-reference (pre-isolation) path over 25 canonical + 36 adversarial + 200 seeded inputs", () => {
+  // Since R8-B the *current* calibration may differ from the shared reference by design; the historical v1
+  // baseline must keep reproducing it exactly, so R8-A's parity stays verifiable.
   const shared = sharedReferenceCalibrationV3();
   const differences: string[] = [];
   const sets = { canonical: corpus().slice(0, 25), adversarial: corpus().slice(25), fuzz: seededCorpus(200, 0x8a1) };
   for (const [name, cases] of Object.entries(sets)) for (const { id, answers } of cases) {
-    if (JSON.stringify(run(answers)) !== JSON.stringify(run(answers, shared))) differences.push(`${name}/${id}`);
+    if (JSON.stringify(run(answers, CANDIDATE_CALIBRATION_BASELINE_V1)) !== JSON.stringify(run(answers, shared))) differences.push(`${name}/${id}`);
   }
   report.parity = { canonical: sets.canonical.length, adversarial: sets.adversarial.length, fuzz: sets.fuzz.length, differences: differences.length };
   assert.deepEqual([sets.canonical.length, sets.adversarial.length], [25, 36]);
@@ -111,7 +115,7 @@ test("R8-A: ownership manifest is complete and each candidate-effective paramete
     if (row.candidateEffect === "YES") assert.ok(changed > 0, `${row.parameter}: claimed candidate-effective but no corpus output depends on it`);
     else assert.equal(changed, 0, `${row.parameter}: claimed unreachable but a corpus output depends on it`);
   }
-  report.ownership = CALIBRATION_OWNERSHIP_V3.map((r) => ({ parameter: r.parameter, legacyValue: r.legacyValue, candidateBaseline: r.candidateValue(CANDIDATE_CALIBRATION_V3), candidateEffect: r.candidateEffect, legacyEffect: r.legacyEffect, owner: r.owner, casesChanged: paths[r.parameter]!.casesChanged, note: r.note }));
+  report.ownership = CALIBRATION_OWNERSHIP_V3.map((r) => ({ parameter: r.parameter, legacyValue: r.legacyValue, candidateBaselineV1: r.candidateValue(CANDIDATE_CALIBRATION_BASELINE_V1), candidateCurrent: r.candidateValue(CANDIDATE_CALIBRATION_V3), candidateEffect: r.candidateEffect, legacyEffect: r.legacyEffect, owner: r.owner, casesChanged: paths[r.parameter]!.casesChanged, note: r.note }));
 });
 
 const HEAVY: CandidateCalibrationV3 = {
@@ -249,7 +253,10 @@ test("R8-A baseline and ownership report (OBSERVATIONAL — FOR R8, NOT FROZEN)"
   const evaluation = evaluateCandidateCalibrationV3();
   assert.deepStrictEqual(evaluateCandidateCalibrationV3(), evaluation, "deterministic evaluator");
   assert.equal(evaluation.corpus, 61);
-  assert.equal(CALIBRATION_EXPECTATIONS_V3.length, 0, "no numeric target is claimed in R8-A");
+  // R8-A claimed no target; since R8-B the expectations are relative/qualitative and contract-derived only —
+  // no kind carries an absolute number, and none is presented as a human-validated label.
+  assert.ok(CALIBRATION_EXPECTATIONS_V3.length > 0);
+  assert.ok(CALIBRATION_EXPECTATIONS_V3.every((e) => ["score", "score_null", "confidence", "confidence_level"].includes(e.kind) && e.review === "CONTRACT_DERIVED_NOT_HUMAN_VALIDATED"));
   console.log(`R8A_CALIBRATION_BASELINE ${JSON.stringify(evaluation)}`);
   console.log(`R8A_CALIBRATION_OWNERSHIP ${JSON.stringify(report)}`);
 });

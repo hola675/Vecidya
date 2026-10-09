@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { CANONICAL_CASE_IDENTITY_V3, runCanonicalRouteV3, type CanonicalCaseV3 } from "./qbv2-candidate-case-runner";
 import { CANONICAL_CASES_V3 } from "./qbv2-candidate-canonical-cases";
+import { producedContextFields } from "./qbv2-candidate-qa-harness";
 import { buildCandidateCommercialBoundaryV3 } from "../../../app/features/diagnostic/qbv2-candidate-commercial";
 import { narrativeBlocks } from "../../../app/features/diagnostic/qbv2-narrative";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as BANK } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
@@ -102,7 +103,14 @@ test("R7-A: stable semantic truths hold across every canonical case (never calib
 
     // Context-only / later-review (pending) questions must never become capability provenance.
     const provenanceIds = new Set<string>();
-    for (const block of narrativeBlocks(result.narrative)) for (const id of block.sourceQuestionIds) provenanceIds.add(id);
+    for (const block of narrativeBlocks(result.narrative)) for (const id of block.sourceQuestionIds) {
+      // R7-B certified triage (applied here in R8-B, when a calibration made the branch reachable for C20): a block
+      // quoting a declaration cites the declaring context question and tags its field in `sourceContext` —
+      // declaration provenance, not capability evidence. Any other pending citation still fails.
+      const question = BANK.find((q) => q.id === id);
+      if (question && PENDING_IDS.has(id) && [...producedContextFields(question)].some((field) => block.sourceContext.includes(field))) continue;
+      provenanceIds.add(id);
+    }
     for (const rec of result.recommendations.items) for (const id of rec.sourceQuestionIds) provenanceIds.add(id);
     const pendingLeaks = [...provenanceIds].filter((id) => PENDING_IDS.has(id));
     assert.deepEqual(pendingLeaks, [], `${label}: pending questions leaked into capability provenance: ${pendingLeaks.join(", ")}`);

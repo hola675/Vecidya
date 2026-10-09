@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-08 — DIAG-V3-R8-B: calibración de contribuciones y confianza dimensional
+
+- Nueva calibración candidata `diag-v3-candidate-calibration-v2` (`CANDIDATE_CALIBRATION_R8B_V2`, vigente); `CANDIDATE_CALIBRATION_BASELINE_V1` queda como baseline histórico inmutable. Único cambio numérico: confianza dimensional `mediumAt` 1,5 → 1 y `highAt` 3 → 2. Contribuciones, pesos supporting, severidad y modelo general sin cambios.
+- Experimento reproducible de 11 hipótesis con selección ejecutable (§32/§33); expectativas de calibración derivadas de contrato (20); contrato de confianza sobre el núcleo real; matriz supporting §15; holdout determinista de 300 entradas.
+- Disposiciones: R8-O1 techo semántico (R3), R8-O2 umbrales 1/2, R8-O3 sin cambio (empate C09/C23 documentado), R8-O4 `CALIBRATION_MODEL_DECISION_REQUIRED`, R8-O5 a R8-C.
+- Pruebas: `qbv2-r8b-dimension-calibration.test.ts` (9), `qbv2-r8b-calibration-certification.test.ts` (5) y `qbv2-r8b-calibration-experiments.ts`; ajustes solo en pruebas de gates acoplados a la calibración (R4-FINAL, R7-A, R8-A), conservando sus aserciones históricas v1. Validación: R8-B 9/9 y 5/5, R8-A 12/12, R7-FINAL 8/8, gate R7-B 8/8, adversarial 35/35, metamórfica 22/22, fuzz 5/5, R7-A.1 6/6, R7-A 15/15, R6-FINAL 10/10, R6-C.1/R6-D.2 15/15, R6-D.3 7/7, R6-D 19/19, R6-C 15/15, R6-B 13/13, R6-A 12/12, R5-FINAL 10/10, R4-FINAL 10/10, R3-FINAL 7/7, R2-FINAL 14/14, candidata 83/83, frozen/legacy 240/240, legacy de scoring/prioridades/hechos/narrativa/overall 62/62, soluciones/outcome 34/34, comercial 31/31, caracterización 1/1; diagnóstico 1295/1295, unitarias 1350/1350, typecheck y build PASS, bundle scan 0 (34 símbolos), grafo de fuentes 0, `git diff --check` PASS.
+
 ## 2026-10-08 — DIAG-V3-R8-A: aislamiento de la calibración candidata y baseline
 
 - Refactor sin cambio numérico: nuevo `qbv2-candidate-calibration.ts` (`CANDIDATE_CALIBRATION_V3`, identidad `diag-v3-candidate-calibration-v1`, inmutable y privada) con valores iguales a las constantes compartidas, que siguen congeladas para legacy.
