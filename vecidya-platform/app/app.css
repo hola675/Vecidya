@@ -4758,6 +4758,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .dr-method__version { color: var(--muted); font-size: var(--text-meta); }
 @media print { .dr-method__more a { display: none; } }
 
+/* DIAG-V3-ACT-02 — contextual candidate metadata, isolated from the public result surface. */
+.dr-candidate-overall__meta, .dr-candidate-dimension-context, .dr-candidate-identities dl { display: grid; gap: 0.65rem 1rem; margin: 0; }
+.dr-candidate-overall__meta div, .dr-candidate-dimension-context div, .dr-candidate-identities dl div { min-width: 0; }
+.dr-candidate-overall__meta dt, .dr-candidate-dimension-context dt, .dr-candidate-identities dt { color: var(--muted); font-size: var(--text-meta); font-weight: 700; }
+.dr-candidate-overall__meta dd, .dr-candidate-dimension-context dd, .dr-candidate-identities dd { margin: 0.2rem 0 0; line-height: 1.5; overflow-wrap: anywhere; }
+.dr-candidate-dimension-context { grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); border-top: 1px solid var(--line); padding-top: 0.75rem; }
+.dr-candidate-identities summary { min-height: 2.75rem; display: flex; align-items: center; color: var(--blue); font-weight: 700; cursor: pointer; }
+.dr-candidate-identities dl { padding-bottom: 0.75rem; }
+.dr-candidate-condition, .dr-candidate-solution, .dr-candidate-license { border-radius: var(--radius-sm); padding: 0.85rem 1rem; background: var(--surface-soft); line-height: 1.5; }
+.dr-candidate-condition ul, .dr-candidate-license p { margin-bottom: 0; }
+.dr-candidate-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+.dr-candidate-actions .button { min-height: 2.75rem; }
+.dm-candidate .dr-note { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.75rem 1rem; background: var(--surface-soft); }
+@media (min-width: 40rem) { .dr-candidate-overall__meta { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
 /* DIAG-V3-11 — metodología del diagnóstico: mismo sistema visual que el resultado; documento de lectura. */
 .dm-page { width: min(100% - 2rem, 60rem); margin: 0 auto; padding: clamp(1.25rem, 4vw, 3rem) 0 3rem; }
 .dm { display: grid; gap: clamp(2rem, 5vw, 3rem); color: var(--ink); }
@@ -4914,6 +4929,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .rp-dim__head .rp-dim__icon { grid-column: 2; grid-row: 1 / span 2; }
 .rp-dim__head .rp-meter { grid-column: 1; grid-row: 2; }
 .rp-dim__status { display: flex; flex-wrap: wrap; align-items: center; gap: 0.2em 0.9em; }
+.rp-context { display: grid; gap: 0.25em 0.7em; margin: 0.15em 0 0; color: var(--muted); font-size: 0.78em; line-height: 1.35; }
+.rp-context div { display: flex; flex-wrap: wrap; gap: 0.15em 0.35em; }
+.rp-context dt { font-weight: 700; }
+.rp-context dd { margin: 0; overflow-wrap: anywhere; }
 .rp .dr-status, .rp .dr-confidence { font-size: 0.86em; }
 .rp .dr-status__glyph { width: 1.15em; height: 1.15em; }
 .rp .dr-confidence__bars span.is-on { -webkit-print-color-adjust: exact; print-color-adjust: exact; }

@@ -157,10 +157,15 @@ test("R7-B-FINAL: the candidate stays inactive and isolated — no barrel export
   // Bundle-level absence (build/client, build/server) is verified on the real build output during validation.
   const appRoot = new URL("../../../app/", import.meta.url);
   const offenders: string[] = [];
-  const localCandidateEntry = "components/diagnostic-flow/candidate-diagnostic-flow.tsx";
+  const localCandidateEntries = new Set([
+    "components/diagnostic-flow/candidate-diagnostic-flow.tsx",
+    "components/diagnostic-flow/candidate-result.tsx",
+    "components/diagnostic-flow/candidate-presentation.ts",
+    "routes/dev-diagnostic-candidate-report.tsx",
+  ]);
   for (const file of (readdirSync(appRoot, { recursive: true }) as string[]).map((f) => f.replaceAll("\\", "/")).filter((f) => /\.tsx?$/.test(f))) {
     const source = readFileSync(new URL(file, appRoot), "utf8");
-    if (!/(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file) && file !== localCandidateEntry && source.includes("qbv2-candidate-")) offenders.push(`${file}: references a candidate module`);
+    if (!/(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file) && !localCandidateEntries.has(file) && source.includes("qbv2-candidate-")) offenders.push(`${file}: references a candidate module`);
     if (/(from|import)\s*\(?\s*["'][^"']*\/tests\//.test(source)) offenders.push(`${file}: imports test code`);
   }
   assert.deepEqual(offenders, []);

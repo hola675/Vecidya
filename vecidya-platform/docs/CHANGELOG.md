@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-09 — DIAG-V3-ACT-02 Candidate Result, Methodology & PDF Integration
+
+- Integrada la presentación candidate desde `CandidatePipelineResultV3` y su sesión: resultado, metodología 3.0 e informe anónimo para impresión del navegador. El adaptador conserva identidad/fechas, O4/O6 explicativos, resultados sin banda para casos no evaluables, licencia nula y solución nula; no recalcula scoring ni persiste resultados.
+- Se añadieron las pantallas privadas de desarrollo para metodología e informe y el renderer compartido tolera el modelo candidate sin modificar el contrato legacy. El E2E ejercita selección múltiple real, edición/reconstrucción, recarga, prelaunch e información insuficiente; informe A4/Carta de tres páginas, 8/8 candidate, 10/10 flujo legacy y 26/26 renderer legacy.
+- Validación local: unitarias **1408/1408**, typecheck/build/diff-check PASS y bundle scan sin módulos candidate en el artefacto productivo. ACT-02 queda **PASS local**, no activa la candidata ni publica cambios; `CANDIDATE_ACTIVATION_MANIFEST_V3` sigue `NOT_READY`. Próximo bloque propuesto: exclusivamente ACT-03.
+
 ## 2026-10-09 — DIAG-V3-ACT-01 Candidate Interactive Flow & Session Integration
 
 - Integrada `qbv2-candidate-session.ts` con identidad exacta del facade/banco, schema candidate `1`, key `vecidya.diagnostic.v3.candidate.session.1`, TTL 14 días, control de revisión de escrituras y ninguna persistencia de resultados. R5 preserva el lote seleccionado, invalida respuestas no elegibles y vuelve a planificar tras edición.

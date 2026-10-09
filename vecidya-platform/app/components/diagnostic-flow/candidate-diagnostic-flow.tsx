@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { FlowErrorScreen, PreparingScreen, ResetConfirm, ResumeScreen, StartScreen } from "./flow-screens";
 import { QuestionStep } from "./question-step";
+import { CandidateDiagnosticResult } from "./candidate-result";
 import {
   CANDIDATE_SESSION_STORAGE_KEY_V3,
   CandidateSessionStoreV3,
@@ -82,7 +83,6 @@ export function CandidateDiagnosticFlow() {
       setSession(completed.session); setCandidateResult(completed.result); setView("result");
     }, 0);
   };
-
   const questionId = session ? currentCandidateQuestionIdV3(session) : null;
   const plan = session ? buildCandidateQuestionPlanV3({ answers: session.answers }) : null;
   const definition = questionId ? definitions.get(questionId) : undefined;
@@ -94,7 +94,8 @@ export function CandidateDiagnosticFlow() {
     foundational: !!definition && !definition.purpose.includes("diagnostic") && definition.purpose.some((purpose) => ["anchor", "classification", "maturity", "goal", "friction"].includes(purpose)),
   } : null;
   const draftKey = session ? `${questionId}:${session.reviewIndex ?? "live"}:${session.answeredQuestionIds.length}` : "";
-  const value = draft.key === draftKey ? draft.value : presented?.savedValue;
+  // Reviewing a completed answer always starts from the persisted value, even if a stale draft key matches.
+  const value = session && session.reviewIndex !== null ? presented?.savedValue : draft.key === draftKey ? draft.value : presented?.savedValue;
   const progress: ProgressV3 = (() => {
     const context = !!presented?.foundational;
     const stageIndex = view === "preparing" || view === "result" ? 3 : context ? 0 : 1;
@@ -121,7 +122,7 @@ export function CandidateDiagnosticFlow() {
   else if (view === "preparing") content = <PreparingScreen />;
   else if (view === "conflict") content = <section aria-labelledby="candidate-conflict-title" className="df-screen" role="alert"><h1 className="df-screen__title" id="candidate-conflict-title">Esta sesión se está editando en otra pestaña</h1><p className="df-screen__lead">Para conservar las respuestas más recientes, esta pestaña quedó en pausa. Recarga la página para continuar con la versión guardada.</p><button className="button button--primary" onClick={() => window.location.reload()} type="button">Recargar sesión</button></section>;
   else if (view === "error") content = <FlowErrorScreen message="No pudimos reconstruir el resultado candidato. Tus respuestas siguen guardadas." onRetry={() => session && finish(session)} onRestart={requestReset} title="No pudimos preparar el resultado de prueba" />;
-  else if (view === "result" && candidateResult && session) content = <section aria-labelledby="candidate-result-title" className="df-screen df-ready"><p className="df-screen__kicker">Candidata de prueba · {candidateResult.engineIdentity.engine}</p><h1 className="df-screen__title" id="candidate-result-title">La fachada candidata produjo un resultado válido</h1><p className="df-screen__lead">Estado de sesión: completada. Respuestas activas: {Object.keys(candidateResult.plan.activeAnswers).length}. Dimensiones aplicables: {candidateResult.plan.evidenceSufficiency.applicableDimensions.length}.</p><p>Motivo terminal: <code>{session.terminalReason}</code></p><p>Identidad: <code>{candidateResult.engineIdentity.engine}</code></p><button className="button button--secondary" onClick={requestReset} type="button">Empezar otra prueba</button></section>;
+  else if (view === "result" && candidateResult && session) content = <CandidateDiagnosticResult result={candidateResult} onEdit={() => { setSession(goBackCandidateV3(session, ownerId, Date.now())); setCandidateResult(null); setView("flow"); }} />;
   else if (session?.status === "completing") content = <section aria-labelledby="candidate-ready-title" className="df-screen df-ready"><p className="df-screen__kicker">Candidata de prueba</p><h1 className="df-screen__title" id="candidate-ready-title">Terminó la ruta adaptativa</h1><p className="df-screen__lead">La ruta se cierra con el motivo definido por el planner. El resultado se reconstruirá desde las respuestas al continuar.</p><p>Motivo terminal: <code>{session.terminalReason}</code></p><div className="df-screen__actions"><button className="button button--primary" onClick={() => finish(session)} type="button">Reconstruir resultado candidato</button><button className="button button--secondary" onClick={back} type="button">Revisar última respuesta</button></div></section>;
   else if (session && presented) content = <><QuestionStep canGoBack={session.answeredQuestionIds.length > 0 && session.reviewIndex !== 0} error={error} onBack={back} onSelect={select} onSubmit={submit} presented={presented} progress={progress} reviewing={session.reviewIndex !== null} value={value} /><p className="df-restart"><button className="df-link-button" onClick={requestReset} type="button">Empezar de nuevo</button></p></>;
   else content = <FlowErrorScreen message="El planner no produjo una pregunta utilizable. La sesión se conserva para reanudar o reiniciar." onRetry={() => session && setSession({ ...session })} onRestart={requestReset} title="No encontramos la siguiente pregunta" />;

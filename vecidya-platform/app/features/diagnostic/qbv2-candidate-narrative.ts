@@ -1,5 +1,5 @@
 import { buildCandidateInterpretationCoreV3, type CandidateInterpretationCoreV3 } from "./qbv2-candidate-interpretation";
-import { computeCandidateDigitalPresenceIndexV3 } from "./qbv2-candidate-overall";
+import { computeCandidateDigitalPresenceIndexV3, type CandidateDigitalPresenceIndexV3 } from "./qbv2-candidate-overall";
 import { buildDiagnosticNarrative, type DiagnosticNarrative } from "./qbv2-narrative";
 import { buildDigitalPresenceStatus, computeOverallConfidence, type DigitalPresenceStatus } from "./qbv2-overall";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./qbv2-reviewed-evidence";
@@ -23,8 +23,16 @@ export type CandidateNarrativeAndOverallInputV3 = { readonly answers: AnswersV2;
 
 export type CandidateNarrativeAndOverallV3 = CandidateInterpretationCoreV3 & {
   readonly narrative: DiagnosticNarrative;
-  readonly overall: DigitalPresenceStatus;
+  readonly overall: Omit<DigitalPresenceStatus, "index"> & { readonly index: CandidateDigitalPresenceIndexV3 };
 };
+
+function hasCandidateObservability(index: DigitalPresenceStatus["index"]): index is CandidateDigitalPresenceIndexV3 {
+  return Reflect.get(index, "observabilityModel") === "diag-v3-candidate-context-observability-v1"
+    && Array.isArray(Reflect.get(index, "dimensionObservability"))
+    && Number.isInteger(Reflect.get(index, "coverageDenominator"))
+    && Array.isArray(Reflect.get(index, "observableApplicableDimensions"))
+    && Array.isArray(Reflect.get(index, "unobservableApplicableDimensions"));
+}
 
 /**
  * Candidate-only R6-B orchestration: `buildCandidateInterpretationCoreV3` (R6-A) → narrative → overall.
@@ -55,5 +63,6 @@ export function buildCandidateNarrativeAndOverallV3(input: CandidateNarrativeAnd
     computeConfidence: (scoring, index) => computeOverallConfidence(scoring, index, calibration.overall),
     bands: calibration.overall.bands,
   });
-  return { ...core, narrative, overall };
+  if (!hasCandidateObservability(overall.index)) throw new Error("El índice del motor candidato perdió el contrato O6 certificado.");
+  return { ...core, narrative, overall: { ...overall, index: overall.index } };
 }

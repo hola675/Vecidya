@@ -1,8 +1,10 @@
 import { CANDIDATE_COMMERCIAL_IDENTITY_V3, buildCandidateCommercialBoundaryV3, type CandidateCommercialBoundaryV3 } from "./qbv2-candidate-commercial";
 import { CANDIDATE_CALIBRATION_IDENTITY_V3, CANDIDATE_CALIBRATION_VERSION_V3 } from "./qbv2-candidate-calibration";
 import { CANDIDATE_OBSERVABILITY_MODEL_IDENTITY_V3 } from "./qbv2-candidate-overall";
+import type { CandidateDigitalPresenceIndexV3 } from "./qbv2-candidate-overall";
 import { CANDIDATE_PLANNER_IDENTITY_V3, buildCandidateQuestionPlanV3, type CandidateQuestionPlanV3 } from "./qbv2-candidate-planner";
 import type { CommercialClarificationAnswer, CommercialLicense } from "./commercial-recommendation";
+import type { DigitalPresenceStatus } from "./qbv2-overall";
 import type { AnswersV2 } from "./qbv2-rules";
 
 /**
@@ -36,7 +38,9 @@ export type CandidatePipelineOptionsV3 = {
   readonly clarificationAnswer?: CommercialClarificationAnswer;
 };
 
-export type CandidatePipelineResultV3 = CandidateCommercialBoundaryV3 & {
+export type CandidatePipelineResultV3 = Omit<CandidateCommercialBoundaryV3, "overall"> & {
+  /** Candidate observability augments, but does not alter, the shared base index contract. */
+  readonly overall: Omit<DigitalPresenceStatus, "index"> & { readonly index: CandidateDigitalPresenceIndexV3 };
   readonly engineIdentity: typeof CANDIDATE_RESULT_IDENTITY_V3;
   readonly plan: CandidateQuestionPlanV3;
 };

@@ -3,7 +3,7 @@ import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "reac
 import { publicAssets } from "../../assets/public-assets";
 import { ConfidenceIndicator, StatusAsset, StatusIndicator } from "../diagnostic-result";
 import { modifier } from "../diagnostic-result/indicators";
-import { REPORT_MAX_PAGE_COUNT, REPORT_PAGE_COUNT, REPORT_PAPERS, type DiagnosticReportV1, type ReportDimension, type ReportPaper } from "./report-model";
+import { REPORT_MAX_PAGE_COUNT, REPORT_PAGE_COUNT, REPORT_PAPERS, type DiagnosticReportDocumentV1, type ReportDimension, type ReportPaper } from "./report-model";
 
 /**
  * DIAG-V3-12 — informe paginado en hojas fijas del tamaño del papel. El contenido es una secuencia ordenada de
@@ -52,12 +52,13 @@ function Dimension({ dimension }: { dimension: ReportDimension }) {
       </p>
       <p>{dimension.interpretation}</p>
       {dimension.evidenceTopics.length > 0 ? <p className="rp-evidence"><span className="rp-label">{dimension.evidenceLead}</span> {dimension.evidenceTopics.join("; ")}.</p> : null}
+      {dimension.context ? <dl className="rp-context"><div><dt>Aplicabilidad R4</dt><dd>{dimension.context.applicability}</dd></div><div><dt>Observabilidad O6</dt><dd>{dimension.context.observability}</dd></div><div><dt>Evidencia directa</dt><dd>{dimension.context.directEvidence}</dd></div></dl> : null}
     </div>
   );
 }
 
 /** El informe como secuencia de bloques, en el orden canónico de lectura (que es también el orden del PDF etiquetado). */
-function reportBlocks(report: DiagnosticReportV1): readonly Block[] {
+function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
   const presence = report.overallPresence;
   const blocks: Block[] = [];
   blocks.push({
@@ -70,7 +71,7 @@ function reportBlocks(report: DiagnosticReportV1): readonly Block[] {
         <dl className="rp-cover__meta">
           <div><dt>Tipo</dt><dd>{report.identity.profileLabel}</dd></div>
           <div><dt>Etapa</dt><dd>{report.identity.lifecycleLabel}</dd></div>
-          <div><dt>Fecha del informe</dt><dd>{report.generatedLabel}</dd></div>
+          <div><dt>{"dateLabel" in report.identity ? report.identity.dateLabel : "Fecha del informe"}</dt><dd>{report.generatedLabel}</dd></div>
           <div><dt>Metodología</dt><dd>{report.methodologyVersion}</dd></div>
           <div><dt>Informe</dt><dd>{report.reportVersion}</dd></div>
         </dl>
@@ -209,6 +210,7 @@ function reportBlocks(report: DiagnosticReportV1): readonly Block[] {
             <div><dt>Qué mejorar</dt><dd>{item.whatToImprove}</dd></div>
             <div><dt>Por qué importa</dt><dd>{item.whyItMatters}</dd></div>
             <div><dt>Resultado esperado</dt><dd>{item.expectedOutcome}</dd></div>
+            {item.conditions?.length ? <div><dt>Condiciones necesarias</dt><dd><List items={item.conditions} /></dd></div> : null}
             {item.solution ? <div><dt>Tipo de solución</dt><dd>{item.solution.label}: {item.solution.description}</dd></div> : null}
           </dl>
         </div>
@@ -216,16 +218,27 @@ function reportBlocks(report: DiagnosticReportV1): readonly Block[] {
     });
   }
 
-  blocks.push(h2("vecidya", "Tu configuración Vecidya"));
-  const commercial = report.commercialRecommendation;
-  const nowItems = [...commercial.now.complements, ...commercial.now.services].slice(0, 2);
-  const laterItems = [...commercial.later.complements, ...commercial.later.services].slice(0, 2);
-  blocks.push({ key: "vecidya-note", node: <p className="rp-muted">La selección se basa en la necesidad operacional demostrada, no en el porcentaje digital.</p> });
-  blocks.push({ key: "commercial-license", node: <div className="rp-help"><p className="rp-label">TU MEJOR ENCAJE</p><p className="rp-offer"><span className="rp-label">Vecidya {commercial.now.license}</span> · ${commercial.cost.monthlyLicenseUsd}/mes · puesta en marcha ${commercial.cost.activationUsd} una vez.</p><p>{commercial.licenseFit.rationale}</p><p className="rp-muted">{commercial.licenseFit.whyNotHigher}</p></div> });
-  if (nowItems.length > 0) blocks.push({ key: "commercial-now", node: <div className="rp-help"><p className="rp-label">TE RECOMENDAMOS AHORA</p><ul>{nowItems.map((item) => <li className="rp-offer" key={item.id}><span className="rp-label">{item.name}</span>{item.priceLabel === null ? " · Propuesta personalizada" : ` · ${item.priceLabel}`}</li>)}</ul></div> });
-  if (laterItems.length > 0) blocks.push({ key: "commercial-later", node: <div className="rp-help"><p className="rp-label">PUEDE TENER SENTIDO DESPUÉS</p><p className="rp-muted">{laterItems.map((item) => item.name).join(" · ")}</p></div> });
-  blocks.push({ key: "commercial-cost", node: <div className="rp-help"><p className="rp-label">COSTE</p><p className="rp-offer">Vecidya mensual · ${commercial.cost.monthlyLicenseUsd + nowItems.reduce((sum, item) => sum + (item.priceMonthlyUsd ?? 0), 0)}/mes · puesta en marcha ${commercial.cost.activationUsd} una vez.</p>{commercial.cost.externalUsage.length > 0 ? <p className="rp-muted">Los proveedores pueden sumar costes de uso según mensajes, llamadas, IA o APIs.</p> : null}</div> });
-  blocks.push({ key: "cta", node: <p className="rp-cta">Siguiente paso: revisa tu configuración con Vecidya en <a href="mailto:hola@vecidya.com">hola@vecidya.com</a>.</p> });
+  if ("candidateCommercial" in report) {
+    const commercial = report.candidateCommercial;
+    blocks.push(h2("vecidya", "Lectura comercial del motor candidato"));
+    blocks.push({ key: "candidate-commercial-note", node: <p className="rp-muted">La recomendación comercial se calcula después de la medición y no cambia las capacidades ni sus prioridades.</p> });
+    blocks.push({ key: "candidate-commercial-license", node: <div className="rp-help"><p className="rp-label">{commercial.licenseName ? `LICENCIA RECOMENDADA: ${commercial.licenseName}` : "NINGUNA LICENCIA RECOMENDADA POR AHORA"}</p><p><strong>Certeza de encaje:</strong> {commercial.certainty}</p><p>{commercial.rationale}</p>{commercial.licenseName ? <><p>{commercial.whyNotLower}</p><p>{commercial.whyNotHigher}</p></> : null}{commercial.unresolvedSignals.length ? <p><strong>Pendiente:</strong> {commercial.unresolvedSignals.join("; ")}</p> : null}{commercial.monthlyLicenseUsd !== null ? <p>{`Licencia · $${commercial.monthlyLicenseUsd}/mes`}{commercial.activationUsd !== null ? ` · puesta en marcha $${commercial.activationUsd} una vez` : ""}</p> : null}</div> });
+    for (const [key, title, items] of [["candidate-now", "Compatibles ahora", commercial.now], ["candidate-later", "Compatibles después", commercial.later]] as const) {
+      blocks.push({ key, keepWithNext: items.length > 0, node: <><h3 className="rp-h3">{title}</h3>{items.length ? <ul>{items.map((item) => <li className="rp-offer" key={`${item.kind}:${item.name}`}><strong>{item.name}</strong> · {item.kind}{item.priceLabel ? ` · ${item.priceLabel}` : ""}<p>{item.rationale}</p></li>)}</ul> : <p className="rp-muted">No hay ofertas justificadas para este momento.</p>}</> });
+    }
+    if (commercial.externalUsageCategories.length) blocks.push({ key: "candidate-external-costs", node: <p className="rp-muted">Algunas ofertas pueden tener costes externos de uso según los canales que indiquen sus condiciones.</p> });
+  } else {
+    blocks.push(h2("vecidya", "Tu configuración Vecidya"));
+    const commercial = report.commercialRecommendation;
+    const nowItems = [...commercial.now.complements, ...commercial.now.services].slice(0, 2);
+    const laterItems = [...commercial.later.complements, ...commercial.later.services].slice(0, 2);
+    blocks.push({ key: "vecidya-note", node: <p className="rp-muted">La selección se basa en la necesidad operacional demostrada, no en el porcentaje digital.</p> });
+    blocks.push({ key: "commercial-license", node: <div className="rp-help"><p className="rp-label">TU MEJOR ENCAJE</p><p className="rp-offer"><span className="rp-label">Vecidya {commercial.now.license}</span> · ${commercial.cost.monthlyLicenseUsd}/mes · puesta en marcha ${commercial.cost.activationUsd} una vez.</p><p>{commercial.licenseFit.rationale}</p><p className="rp-muted">{commercial.licenseFit.whyNotHigher}</p></div> });
+    if (nowItems.length > 0) blocks.push({ key: "commercial-now", node: <div className="rp-help"><p className="rp-label">TE RECOMENDAMOS AHORA</p><ul>{nowItems.map((item) => <li className="rp-offer" key={item.id}><span className="rp-label">{item.name}</span>{item.priceLabel === null ? " · Propuesta personalizada" : ` · ${item.priceLabel}`}</li>)}</ul></div> });
+    if (laterItems.length > 0) blocks.push({ key: "commercial-later", node: <div className="rp-help"><p className="rp-label">PUEDE TENER SENTIDO DESPUÉS</p><p className="rp-muted">{laterItems.map((item) => item.name).join(" · ")}</p></div> });
+    blocks.push({ key: "commercial-cost", node: <div className="rp-help"><p className="rp-label">COSTE</p><p className="rp-offer">Vecidya mensual · ${commercial.cost.monthlyLicenseUsd + nowItems.reduce((sum, item) => sum + (item.priceMonthlyUsd ?? 0), 0)}/mes · puesta en marcha ${commercial.cost.activationUsd} una vez.</p>{commercial.cost.externalUsage.length > 0 ? <p className="rp-muted">Los proveedores pueden sumar costes de uso según mensajes, llamadas, IA o APIs.</p> : null}</div> });
+    blocks.push({ key: "cta", node: <p className="rp-cta">Siguiente paso: revisa tu configuración con Vecidya en <a href="mailto:hola@vecidya.com">hola@vecidya.com</a>.</p> });
+  }
 
   blocks.push({
     key: "method",
@@ -246,6 +259,7 @@ function reportBlocks(report: DiagnosticReportV1): readonly Block[] {
           <h2 className="rp-h2">Lo que el diagnóstico no puede afirmar</h2>
           <List items={report.limitations} />
         </div>
+        {"candidateEngineIdentity" in report ? <p className="rp-muted">Identidad del motor: <code>{report.candidateEngineIdentity.engine}</code> · Banco: {report.candidateEngineIdentity.questionBank} · Planner: {report.candidateEngineIdentity.planner} · Evidencia: {report.candidateEngineIdentity.evidence} · Aplicabilidad: {report.candidateEngineIdentity.applicability} · Calibración: {report.candidateEngineIdentity.calibration} · O4: {report.candidateEngineIdentity.siblingAggregation} · O6: {report.candidateEngineIdentity.observability} · Informe: {report.candidateEngineIdentity.report}</p> : null}
       </div>
     ),
   });
@@ -291,7 +305,7 @@ const MIN_LAST_SHEET_FILL = 0.2;
 
 const INITIAL_LAYOUT: Layout = { level: 0, maxSheets: REPORT_PAGE_COUNT, phase: "measure", sheetOf: [] };
 
-export function DiagnosticReport({ report, paper, debug = false, onFit }: { report: DiagnosticReportV1; paper: ReportPaper; debug?: boolean; onFit?: (fit: ReportFit) => void }) {
+export function DiagnosticReport({ report, paper, debug = false, onFit }: { report: DiagnosticReportDocumentV1; paper: ReportPaper; debug?: boolean; onFit?: (fit: ReportFit) => void }) {
   const root = useRef<HTMLDivElement>(null);
   const size = REPORT_PAPERS[paper];
   const blocks = useMemo(() => reportBlocks(report), [report]);
@@ -361,7 +375,7 @@ export function DiagnosticReport({ report, paper, debug = false, onFit }: { repo
   );
 
   return (
-    <div className={`rp${debug ? " rp--debug" : ""}`} data-paper={paper} data-ready="false" lang="es" ref={root} style={{ "--rp-w": `${size.widthMm}mm`, "--rp-h": `${size.heightMm}mm` } as React.CSSProperties}>
+    <div className={`rp${debug ? " rp--debug" : ""}`} data-paper={paper} data-ready={layout.phase === "packed" ? "true" : "false"} data-density={REPORT_DENSITY_LEVELS[layout.level]} data-pages={layout.phase === "packed" ? sheetCount : ""} lang="es" ref={root} style={{ "--rp-w": `${size.widthMm}mm`, "--rp-h": `${size.heightMm}mm` } as React.CSSProperties}>
       <style>{`@page { size: ${size.cssSize}; margin: 0; }`}</style>
       {layout.phase === "measure" ? (
         // Hoja de medida: mismo ancho y tipografía que una hoja real; no se imprime ni se lee.

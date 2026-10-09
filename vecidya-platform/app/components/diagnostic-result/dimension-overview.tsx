@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { DiagnosticNarrative } from "../../features/diagnostic";
 
 import { EvidenceDisclosure, HelpDisclosure } from "./disclosures";
@@ -8,7 +9,7 @@ import { dimensionOverview, RESULT_HELP, type DimensionDisplay } from "./present
  * Una dimensión: etiqueta, estado, porcentaje (si existe) con su confianza, interpretación y evidencia. Sin
  * altura fija: el texto largo (terminología clínica o nonprofit, listas de evidencia) siempre fluye.
  */
-export function DimensionCard({ display }: { display: DimensionDisplay }) {
+export function DimensionCard({ display, children }: { display: DimensionDisplay; children?: ReactNode }) {
   const { dimension } = display;
   return (
     <li className={`dr-dim dr-dim--${modifier(dimension.status)}${display.percent === null ? " dr-dim--unscored" : ""}`}>
@@ -30,6 +31,7 @@ export function DimensionCard({ display }: { display: DimensionDisplay }) {
       <div className="dr-dim__body">
         <p>{dimension.interpretation.text}</p>
         <EvidenceDisclosure display={display} />
+        {children}
       </div>
     </li>
   );

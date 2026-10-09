@@ -76,5 +76,7 @@ export default [
     route("__dev/diagnostico/candidate", "routes/dev-diagnostic-candidate.tsx"),
     route("__dev/diagnostico/metodologia", "routes/dev-diagnostic-methodology.tsx"),
     route("__dev/diagnostico/informe/:personaId?", "routes/dev-diagnostic-report.tsx"),
+    route("__dev/diagnostico/candidate/metodologia", "routes/dev-diagnostic-candidate-methodology.tsx"),
+    route("__dev/diagnostico/candidate/informe", "routes/dev-diagnostic-candidate-report.tsx"),
   ] : []),
 ] satisfies RouteConfig;

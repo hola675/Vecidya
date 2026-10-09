@@ -47,6 +47,11 @@ export type ReportDimension = {
   readonly interpretation: string;
   readonly evidenceLead: string;
   readonly evidenceTopics: readonly string[];
+  readonly context?: {
+    readonly applicability: string;
+    readonly observability: string;
+    readonly directEvidence: string;
+  };
 };
 
 export type ReportOffering = {
@@ -91,6 +96,7 @@ export type DiagnosticReportV1 = {
   readonly recommendations: readonly {
     readonly step: number; readonly title: string; readonly area: string | null; readonly tag: string;
     readonly whatToImprove: string; readonly whyItMatters: string; readonly expectedOutcome: string;
+    readonly conditions?: readonly string[];
     readonly solution: { readonly label: string; readonly description: string } | null;
   }[];
   readonly vecidyaHelp: { readonly note: string; readonly items: readonly { readonly step: number; readonly title: string; readonly offerings: readonly ReportOffering[]; readonly noOffering: string | null }[]; readonly hasOfferings: boolean };
@@ -101,6 +107,30 @@ export type DiagnosticReportV1 = {
   readonly limitations: readonly string[];
   readonly disclaimer: string;
 };
+
+/** Contenido que comparten el informe legacy y la adaptación candidate-only. */
+export type DiagnosticReportContentV1 = Omit<DiagnosticReportV1, "commercialRecommendation" | "vecidyaHelp">;
+
+export type CandidateDiagnosticReportV1 = Omit<DiagnosticReportContentV1, "dimensions" | "identity"> & {
+  readonly identity: DiagnosticReportContentV1["identity"] & { readonly dateLabel: "Fecha del diagnóstico" };
+  readonly dimensions: readonly (ReportDimension & { readonly context: NonNullable<ReportDimension["context"]> })[];
+  readonly candidateEngineIdentity: Readonly<Record<string, string | number>>;
+  readonly candidateCommercial: {
+    readonly licenseName: string | null;
+    readonly certainty: string;
+    readonly rationale: string;
+    readonly whyNotLower: string;
+    readonly whyNotHigher: string;
+    readonly unresolvedSignals: readonly string[];
+    readonly now: readonly { readonly name: string; readonly kind: string; readonly rationale: string; readonly priceLabel: string | null }[];
+    readonly later: readonly { readonly name: string; readonly kind: string; readonly rationale: string; readonly priceLabel: string | null }[];
+    readonly monthlyLicenseUsd: number | null;
+    readonly activationUsd: number | null;
+    readonly externalUsageCategories: readonly string[];
+  };
+};
+
+export type DiagnosticReportDocumentV1 = DiagnosticReportV1 | CandidateDiagnosticReportV1;
 
 const MONTHS = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 const isoDate = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
