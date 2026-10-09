@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-09 — DIAG-V3 Candidate Activation / Cutover Readiness
+
+- **NOT_READY; sin activación.** Se añadió la fachada candidate-only `qbv2-candidate-pipeline.ts`, identidad versionada del resultado y manifiesto reutilizable con módulos esperados, precondiciones, rutas y rollback al baseline `3a281ed`.
+- La suite `qbv2-candidate-readiness.test.ts` compara el facade candidato y runtime actual sobre corpus determinista; confirma que `/diagnostico`, sesión, informe y metodología siguen usando el contrato legacy. Identifica bloqueos de integración de sesión, modelo del resultado/PDF y denominador metodológico O6.
+- Se preservan calibraciones/históricos, aislamiento del bundle público, persistencia client-only y privacidad. Sin cambios de UI/ruta pública, migraciones, bump de versión, deploy, publicación ni push.
+
 ## 2026-10-09 — DIAG-V3-R8-O6: context observability
 
 - Cierre local `ADOPT_CONTEXT_OBSERVABLE`: coverage incluye dimensiones aplicables por R4 con oportunidad DIRECT útil de R3/R5. Reutiliza el plan y skip reasons de R5; no replica gates/planner ni ajusta umbrales o scoring. Unknown/N/A no puntuable y oportunidades útiles no seleccionadas por budget/hard cap permanecen como gaps; dimensiones sin oportunidad contextual son instrument gaps.

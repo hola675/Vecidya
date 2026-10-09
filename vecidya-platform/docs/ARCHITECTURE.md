@@ -1,5 +1,15 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3 Candidate Activation / Cutover Readiness (2026-10-09) — NOT_READY
+
+La candidata completa está compuesta por `qbv2-candidate-pipeline.ts` y los builders planner, scoring, interpretation, overall, narrative, recommendations, solutions y commercial esperados por su manifiesto. Devuelve identidad congelada `diag-v3-candidate-context-observability-v1` incluyendo banco/schema, planner, R3/R4, calibración v2, O4 `KEEP_CURRENT_MEAN`, O6, overall, recommendations, comercial, metodología 3.0 e informe 1.0. Las calibraciones v1/v2, reconstrucción histórica bank-observable y caracterización legacy no se alteran.
+
+**Delta real para activar.** El runtime público actual es `DiagnosticFlow` → `DiagnosticSessionV3` → `runDiagnosticPipelineV3` y usa el bank/planner legacy. El nuevo facade no está conectado a `/diagnostico`, barrel público ni resultado. El cutover futuro debe reemplazar la orquestación del flujo y la sesión/banco, adaptar `diagnostic-result` y `report-model`, hacer que metodología y PDF expliquen O6, y añadir gate de identidad y persistencia separada. El informe actual acepta `DiagnosticNarrative` + `DiagnosticOutcome` legacy; metodología 3.0 usa cobertura sobre áreas aplicables del banco. Ambos contratos son incompatibles con la interpretación candidate-ready hasta adaptarse.
+
+**Identidad y rollback.** `CANDIDATE_RESULT_IDENTITY_V3` evita recomputar un resultado con otro motor; el manifiesto ejecutable fija módulos, rutas, precondiciones y baseline rollback `3a281ed37c525e032990072c71ce5cc8e019cd23`. El corte deberá usar una nueva localStorage key de candidato, no migrar ni borrar la key legacy; las sesiones legacy quedan intactas y se reanudan al revertir. Revertir las importaciones/selector público y restaurar el modelo de informe/metodología del baseline; resultados candidate con identidad distinta no se reinterpretan.
+
+**Privacidad/bundle.** El facade no requiere servidor, APIs, datos identificatorios ni persistencia remota; mantener el contrato client-only es viable. Sigue fuera de la ruta y del barrel para que el bundle público actual no lo cargue. Como no existe un entrypoint candidate ejecutable desde el runtime de UI, este corte no obtiene un tamaño de chunk candidate reproducible; medirlo y revisar lazy loading antes de activar. Resultado: **NOT_READY** por integración de sesión, resultado/PDF y contradicción metodológica; sin cambio público ni deploy.
+
 ## DIAG-V3-R8-O6 — observabilidad del contexto y denominador de cobertura (2026-10-09)
 
 **Decisión: `ADOPT_CONTEXT_OBSERVABLE`; H3 `R5_OPPORTUNITY` operacionaliza H1.** `applicable` conserva el dictamen R4; `observable` requiere fuente DIRECT R3 y una oportunidad útil del plan real R5 en ese contexto (o una fuente DIRECT ya leída); `observed` exige score puntuable y confianza DIRECT positiva. La cobertura candidata divide dimensiones DIRECT observadas entre las R4-aplicables con oportunidad DIRECT útil según `evidenceUsefulQuestionIds` de R5. Identidad separada: `diag-v3-candidate-context-observability-v1`; no se modifica calibration v1/v2.
