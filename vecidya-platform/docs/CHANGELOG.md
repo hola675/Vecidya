@@ -1,9 +1,16 @@
 # Changelog
 
+## 2026-10-09 — DIAG-V3-R8-O6: context observability
+
+- Cierre local `ADOPT_CONTEXT_OBSERVABLE`: coverage incluye dimensiones aplicables por R4 con oportunidad DIRECT útil de R3/R5. Reutiliza el plan y skip reasons de R5; no replica gates/planner ni ajusta umbrales o scoring. Unknown/N/A no puntuable y oportunidades útiles no seleccionadas por budget/hard cap permanecen como gaps; dimensiones sin oportunidad contextual son instrument gaps.
+- Nueva identidad `diag-v3-candidate-context-observability-v1`; calibration v1/v2, R3/R4/R5, O4, legacy y runtime público sin cambios. El testigo R8-FINAL sigue como snapshot histórico H0; candidata inactiva y no publicada.
+- R7 (61): coverage difiere en 58, denominador en 61 y confidence/provisional en 1; ningún cambio de índice, score, banda ni consumidor downstream. Holdout separado (750): coverage difiere en 550, denominador en 743 y confidence/provisional en 60; cero cambios de índice disponible (210), banda o salidas downstream. Testigo `0x8c01`: 3/7 (0,43) low/provisional → 3/3 (1,00) medium/no provisional; raw/display/banda iguales.
+- Próximo checkpoint propuesto: Candidate Activation / Cutover Readiness. Sin activación, persistencia, migraciones, deploy, publicación ni push.
+
 ## 2026-10-09 — DIAG-V3-R8-O4: sibling aggregation
 
 - Cierre candidate-only de `DIAG-V3-R8-O4-SIBLING-AGGREGATION-001` como `KEEP_CURRENT_MEAN`. Se compararon promedio, peor faceta, mejor faceta y estructurada mediante inventario ejecutable, estados sintéticos, corpus R7 y holdout separado. Los casos A14, N01 y N02 conservan la heterogeneidad, contradicciones y necesidades visibles; las reglas mínima/máxima ocultan una faceta complementaria y modifican resultados downstream sin soporte de contrato.
-- No se modificó código de producción, algoritmo compartido, calibración v1/v2, legacy ni runtime. O6 permanece abierta sin cambiar su fila de Open Debt; candidata inactiva. Sin migración, deploy, publicación o push.
+- No se modificó código de producción, algoritmo compartido, calibración v1/v2, legacy ni runtime. Al cierre de O4, O6 seguía abierta; se resolvió después en su checkpoint. Candidata inactiva. Sin migración, deploy, publicación o push.
 - Validación local tras el cierre: O4 8/8; directorio diagnóstico 1329/1329; unitarias 1384/1384; typecheck/build PASS; bundle scan 26 símbolos candidate-only en 75 JS (0 coincidencias); `git diff --check` PASS. Detalles en `TESTING.md`.
 
 ## 2026-10-09 — DIAG-V3-R8-FINAL: certificación y freeze de calibración
@@ -33,7 +40,7 @@
   - holdout `0x8c0c`/`0x8c0d`.
 - Disposiciones:
   - R8-O3 se conserva sin ancla.
-  - R8-O4 y la nueva R8-O6 (observabilidad por contexto en la cobertura) quedan `CALIBRATION_MODEL_DECISION_REQUIRED` en Open Debt. No bloquean R8-FINAL y requieren checkpoint antes de activar.
+  - En la instantánea histórica del corte R8-C, R8-O4 y R8-O6 (observabilidad por contexto en la cobertura) figuraban como `CALIBRATION_MODEL_DECISION_REQUIRED`; ambas disposiciones se resolvieron después en checkpoints propios.
 - Pruebas: `qbv2-r8c-overall-calibration.test.ts` (14), `qbv2-r8c-calibration-certification.test.ts` (6) y `qbv2-r8c-overall-calibration-experiments.ts`. El estado de revisión de expectativas se amplía a cuatro valores. Producción sin cambios.
 - Validación: diagnóstico 1315/1315, unitarias 1370/1370, typecheck y build PASS, bundle scan 0 (44 símbolos), grafo de fuentes 0, `git diff --check` PASS. Suites nombradas en `TESTING.md`.
 

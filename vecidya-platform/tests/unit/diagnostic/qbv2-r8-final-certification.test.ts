@@ -21,7 +21,8 @@ import { CANDIDATE_PROCESS_AUTHORITY_V3 } from "../../../app/features/diagnostic
 import { QUESTION_BANK_V2 } from "../../../app/features/diagnostic/qbv2-bank";
 import { CAPABILITY_CONTRIBUTION } from "../../../app/features/diagnostic/qbv2-capability";
 import { CONFIDENCE_MODEL, SCORING_MODEL } from "../../../app/features/diagnostic/qbv2-contextual-scoring";
-import { OVERALL_INDEX_MODEL, bandFor, displayScoreFor, resolveGlobalDigitalStatus } from "../../../app/features/diagnostic/qbv2-overall";
+import { OVERALL_INDEX_MODEL, bandFor, buildDigitalPresenceStatus, computeDigitalPresenceIndex, computeOverallConfidence, displayScoreFor, resolveGlobalDigitalStatus } from "../../../app/features/diagnostic/qbv2-overall";
+import { CANDIDATE_UNOBSERVABLE_DIMENSIONS_V3 } from "../../../app/features/diagnostic/qbv2-candidate-overall";
 import { SEVERITY_BANDS } from "../../../app/features/diagnostic/qbv2-priorities";
 import {
   CURRENT_DIAGNOSTIC_VERSION,
@@ -132,22 +133,29 @@ test("R8-FINAL: planner selections are calibration-independent along representat
   }
 });
 
-test("R8-FINAL: the bank-observable coverage model and O6 witness remain frozen pending its own checkpoint", () => {
+test("R8-FINAL: historic bank-observable witness remains reproducible after O6 adopts its successor model", () => {
   const witness = r8cContextLimitWitnessV3();
   const result = buildCandidateCommercialBoundaryV3({ answers: witness.answers, calibration: CANDIDATE_CALIBRATION_V3 });
-  const index = result.overall.index;
-  const observableApplicable = index.applicableDimensions.length - index.unobservableApplicableDimensions.length;
-  assert.deepEqual([index.scoredDimensions.length, observableApplicable, index.coverage], [3, 7, 0.43]);
-  assert.deepEqual([result.overall.confidence.level, result.overall.provisional], ["low", true]);
+  const frozenBankIndex = computeDigitalPresenceIndex(result.scoring, { model: CANDIDATE_CALIBRATION_V3.overall });
+  const bankObservable = frozenBankIndex.applicableDimensions.filter((id) => !CANDIDATE_UNOBSERVABLE_DIMENSIONS_V3.has(id)).length;
+  const historicIndex = { ...frozenBankIndex, coverage: Math.round((frozenBankIndex.scoredDimensions.length / bankObservable) * 100) / 100 };
+  const historicConfidence = computeOverallConfidence(result.scoring, historicIndex, CANDIDATE_CALIBRATION_V3.overall);
+  const historicStatus = buildDigitalPresenceStatus({
+    scoring: result.scoring, priorities: result.priorities, semanticFacts: result.semanticFacts, narrative: result.narrative,
+    computeIndex: () => historicIndex, computeConfidence: () => historicConfidence, bands: CANDIDATE_CALIBRATION_V3.overall.bands,
+  });
+  assert.deepEqual([witness.id, frozenBankIndex.scoredDimensions.length, bankObservable, historicIndex.coverage], ["route#24", 3, 7, 0.43]);
+  assert.deepEqual([historicConfidence.level, historicStatus.provisional], ["low", true]);
 
   const decisions = new Map(R8C_OPEN_DECISIONS_V3.map((decision) => [decision.code, decision]));
   assert.deepEqual([decisions.get("R8-O3")?.status, decisions.get("R8-O3")?.requiresOwnCheckpointBeforeActivation], ["RETAINED_NO_ANCHOR", false]);
   for (const code of ["R8-O4", "R8-O6"]) {
     const decision = decisions.get(code);
+    // This array is the immutable R8-C checkpoint snapshot, not current Open Debt.
     assert.deepEqual([decision?.status, decision?.blocksR8Final, decision?.requiresOwnCheckpointBeforeActivation], ["CALIBRATION_MODEL_DECISION_REQUIRED", false, true], code);
   }
   assert.match(read("../../../docs/STATUS.md"), /DIAG-V3-R8-O4-SIBLING-AGGREGATION-001[^\n]*RESUELTA[^\n]*KEEP_CURRENT_MEAN/i);
-  assert.match(read("../../../docs/STATUS.md"), /DIAG-V3-R8-O6-CONTEXT-OBSERVABILITY-001[\s\S]*?CALIBRATION_MODEL_DECISION_REQUIRED[\s\S]*?no bloquea R8-FINAL[\s\S]*?bloquea la activación/i);
+  assert.match(read("../../../docs/STATUS.md"), /DIAG-V3-R8-O6-CONTEXT-OBSERVABILITY-001[^\n]*RESUELTA[^\n]*ADOPT_CONTEXT_OBSERVABLE/i);
 });
 
 test("R8-FINAL: candidate pipeline identity and upstream certification suites remain present", () => {

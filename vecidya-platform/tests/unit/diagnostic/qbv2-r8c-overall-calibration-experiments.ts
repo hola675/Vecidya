@@ -2,7 +2,7 @@ import { QUESTION_BY_ID, answerValue, mulberry32, optionState, pick, runPolicyRo
 import { candidateCalibrationInvariantViolationsV3, r7CorpusV3, type CalibrationReviewStatusV3 } from "./qbv2-r8-calibration-qa";
 import { holdoutCorpusV3, supportingMatrixV3 } from "./qbv2-r8b-calibration-experiments";
 import { CANDIDATE_CALIBRATION_R8B_V2, candidateDimensionCalibrationV3, type CandidateCalibrationV3 } from "../../../app/features/diagnostic/qbv2-candidate-calibration";
-import { buildCandidateCommercialBoundaryV3, type CandidateCommercialBoundaryV3 } from "../../../app/features/diagnostic/qbv2-candidate-commercial";
+import { buildCandidateCommercialBoundaryV3, type CandidateCommercialBoundaryV3, type CommercialClarificationAnswer } from "../../../app/features/diagnostic/qbv2-candidate-commercial";
 import { CANDIDATE_SEMANTIC_EVIDENCE_CATALOG_V3 } from "../../../app/features/diagnostic/qbv2-candidate-interpretation";
 import { CANDIDATE_UNOBSERVABLE_DIMENSIONS_V3, type CandidateDigitalPresenceIndexV3 } from "../../../app/features/diagnostic/qbv2-candidate-overall";
 import { buildCandidateQuestionPlanV3 } from "../../../app/features/diagnostic/qbv2-candidate-planner";
@@ -12,7 +12,7 @@ import type { EvidenceDirectness } from "../../../app/features/diagnostic/qbv2-c
 import type { DiagnosticScoringView } from "../../../app/features/diagnostic/qbv2-diagnostic-view";
 import { DIGITAL_DIMENSION_IDS, type DigitalDimensionId } from "../../../app/features/diagnostic/qbv2-dimensions";
 import {
-  OVERALL_STATUS_CODES, bandForBands, computeOverallConfidence, displayScoreForBands, type DigitalPresenceIndex, type OverallBands,
+  OVERALL_STATUS_CODES, bandForBands, buildDigitalPresenceStatus, computeDigitalPresenceIndex, computeOverallConfidence, displayScoreForBands, type DigitalPresenceIndex, type OverallBands,
 } from "../../../app/features/diagnostic/qbv2-overall";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 
@@ -92,7 +92,31 @@ export function r8cHypothesisCalibrationV3(hypothesis: R8cHypothesisV3, base: Ca
 // ── Shared helpers ───────────────────────────────────────────────────────────────────────────────────
 
 const round2 = (value: number) => Math.round(value * 100) / 100;
-const run = (answers: AnswersV2, calibration: CandidateCalibrationV3) => buildCandidateCommercialBoundaryV3({ answers, calibration });
+/** R8-C is a historical calibration certification against H0; O6's successor model is certified separately. */
+export const runR8cHistoricalBankModelV3 = (answers: AnswersV2, calibration: CandidateCalibrationV3, clarificationAnswer?: CommercialClarificationAnswer) => {
+  const result = buildCandidateCommercialBoundaryV3({ answers, calibration, clarificationAnswer });
+  const prelaunch = result.narrative.lifecycle === "prelaunch";
+  const base = computeDigitalPresenceIndex(result.scoring, { prelaunch, model: calibration.overall });
+  const unobservableApplicableDimensions = base.applicableDimensions.filter((id) => CANDIDATE_UNOBSERVABLE_DIMENSIONS_V3.has(id));
+  const observableApplicableDimensions = base.applicableDimensions.filter((id) => !CANDIDATE_UNOBSERVABLE_DIMENSIONS_V3.has(id));
+  const coverageDenominator = observableApplicableDimensions.length;
+  const coverage = coverageDenominator === 0 ? 0 : round2(base.scoredDimensions.length / coverageDenominator);
+  const sufficient = !prelaunch && base.scoredDimensions.length >= calibration.overall.minScoredDimensions && coverageDenominator > 0 && base.scoredDimensions.length / coverageDenominator >= calibration.overall.minCoverage;
+  const rawScore = sufficient ? base.scoredDimensions.reduce((sum, id) => sum + result.scoring.dimensions.find((d) => d.id === id)!.score!, 0) / base.scoredDimensions.length : null;
+  const index = {
+    ...base, coverage, sufficient, rawScore,
+    displayScore: rawScore === null ? null : displayScoreForBands(rawScore, calibration.overall.bands),
+    unobservableApplicableDimensions, observableApplicableDimensions, coverageDenominator,
+    observabilityModel: result.overall.index.observabilityModel,
+    dimensionObservability: result.overall.index.dimensionObservability,
+  } as CandidateDigitalPresenceIndexV3;
+  const overall = buildDigitalPresenceStatus({
+    scoring: result.scoring, priorities: result.priorities, semanticFacts: result.semanticFacts, narrative: result.narrative,
+    computeIndex: () => index, computeConfidence: (scoring, value) => computeOverallConfidence(scoring, value, calibration.overall), bands: calibration.overall.bands,
+  });
+  return { ...result, overall };
+};
+const run = runR8cHistoricalBankModelV3;
 export const candidateIndexOf = (r: CandidateCommercialBoundaryV3) => r.overall.index as CandidateDigitalPresenceIndexV3;
 export const observableApplicableOf = (r: CandidateCommercialBoundaryV3) => candidateIndexOf(r).applicableDimensions.length - candidateIndexOf(r).unobservableApplicableDimensions.length;
 const LEVEL = { low: 0, medium: 1, high: 2 } as const;

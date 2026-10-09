@@ -150,7 +150,7 @@ function recomputeDownstream(base: CandidateCommercialBoundaryV3, dimensions = b
     priorities,
     semanticFacts,
     narrative,
-    computeIndex: (value, options) => computeCandidateDigitalPresenceIndexV3(value, options, CALIBRATION.overall),
+    computeIndex: (value, options) => computeCandidateDigitalPresenceIndexV3(value, options, CALIBRATION.overall, base.activeAnswers),
     computeConfidence: (value, index) => computeOverallConfidence(value, index, CALIBRATION.overall),
     bands: CALIBRATION.overall.bands,
   });
@@ -471,7 +471,7 @@ test("R8-O4: a routed-out answer is ignored; v1/v2 and the legacy shared scorer 
   assert.equal(CANDIDATE_CALIBRATION_R8B_V2.capabilityContribution.established, 0.75);
 });
 
-test("R8-O4: KEEP_CURRENT_MEAN is selected; O6 stays open and the candidate stays inactive", () => {
+test("R8-O4: KEEP_CURRENT_MEAN stays closed after O6; the candidate stays inactive", () => {
   const selectionOrder = ["invariants", "R3", "unknown/N/A", "supporting", "commercial safety", "no arbitrary weights", "robustness/explanation", "simplicity", "retain baseline if no alternative wins"];
   const hypotheses: Record<Hypothesis, { disposition: string; why: string }> = {
     H0_MEAN: { disposition: "selected", why: "equal, normalized direct observations compose the dimension without assigning one facet authority over the others" },
@@ -490,7 +490,7 @@ test("R8-O4: KEEP_CURRENT_MEAN is selected; O6 stays open and the candidate stay
   const architecture = readFileSync(new URL("../../../docs/ARCHITECTURE.md", import.meta.url), "utf8");
   assert.match(status, /DIAG-V3-R8-O4-SIBLING-AGGREGATION-001[\s\S]*?CERRADA[\s\S]*?KEEP_CURRENT_MEAN/i);
   assert.match(status.match(/\| `DIAG-V3-R8-O4-SIBLING-AGGREGATION-001`[^\n]*/)?.[0] ?? "", /RESUELTA.*KEEP_CURRENT_MEAN/i);
-  assert.match(status, /DIAG-V3-R8-O6-CONTEXT-OBSERVABILITY-001[^\n]*CALIBRATION_MODEL_DECISION_REQUIRED/);
+  assert.match(status, /DIAG-V3-R8-O6-CONTEXT-OBSERVABILITY-001[^\n]*RESUELTA[^\n]*ADOPT_CONTEXT_OBSERVABLE/);
   assert.match(architecture, /R8-O4[\s\S]*KEEP_CURRENT_MEAN/);
   assert.equal(R8C_OPEN_DECISIONS_V3.find((item) => item.code === "R8-O6")?.blocksR8Final, false);
 });

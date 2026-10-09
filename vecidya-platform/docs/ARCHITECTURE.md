@@ -1,5 +1,15 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R8-O6 — observabilidad del contexto y denominador de cobertura (2026-10-09)
+
+**Decisión: `ADOPT_CONTEXT_OBSERVABLE`; H3 `R5_OPPORTUNITY` operacionaliza H1.** `applicable` conserva el dictamen R4; `observable` requiere fuente DIRECT R3 y una oportunidad útil del plan real R5 en ese contexto (o una fuente DIRECT ya leída); `observed` exige score puntuable y confianza DIRECT positiva. La cobertura candidata divide dimensiones DIRECT observadas entre las R4-aplicables con oportunidad DIRECT útil según `evidenceUsefulQuestionIds` de R5. Identidad separada: `diag-v3-candidate-context-observability-v1`; no se modifica calibration v1/v2.
+
+**Matriz por dimensión.** La matriz ejecutable incluye aplicabilidad, ids de fuentes DIRECT del banco, ids útiles/reachables, ids contestados, lectura observada y razones cerradas: `not_applicable`, `context_unresolved`, `no_direct_source_in_bank`, `no_direct_source_in_context`, `direct_source_reachable`, `observed_direct`, `respondent_unknown`, `respondent_not_applicable`, `respondent_non_scoring_answer`, `budget_blocked`, `hard_cap_blocked`. Una pregunta útil que no cabe por budget/hard cap permanece en denominador; unknown/N/A no puntuable sigue siendo gap si R4 conserva la aplicabilidad. SUPPORTING no crea observación DIRECT. Instrument gaps sin fuente DIRECT útil contextual quedan fuera; Measurement ejemplifica la regla general.
+
+**Hipótesis y evidencia.** H0 conserva el denominador bancario histórico; H1 es semántica contextual; H2 cuenta fuentes de la ruta concreta y puede perder preguntas no seleccionadas; H3 reutiliza oportunidad/skip reasons de R5, sin duplicar gates ni planner. En R7 (61), H0→H1 modifica cobertura en 58 casos, denominador en 61 y confidence/provisional en 1; los demás campos no cambian. En holdout independiente (750), coverage cambia en 550, denominador en 743, confidence/provisional en 60 e índice disponible, bandas y consumidores downstream en cero. H2 difiere de H1 en 90 coberturas y 97 denominadores del holdout; H1 y H3 coinciden.
+
+**Confianza y testigo.** La ruta #24 con semilla `0x8c01` queda 3/7, 0,43, low/provisional bajo H0 y 3/3, 1,00, medium/no provisional bajo H3; raw/display y banda permanecen iguales. El mínimo de tres lecturas impide índices con denominadores 1/2 y evita confianza inflada; tres lecturas limpias sin corroboración siguen como máximo en medium. El umbral 1/3 permanece congelado: con máximo siete dimensiones y mínimo tres, 3/7 > 1/3. No cambian scoring, severidad, supporting, O4 ni salidas comerciales.
+
 ## DIAG-V3-R8-O4 — checkpoint de agregación de facetas hermanas (2026-10-09)
 
 **Decisión: `KEEP_CURRENT_MEAN`; O4 cerrada.** Se conserva el promedio aritmético de contribuciones directas disponibles, con pesos iguales y normalización por el número de observaciones directas. No se cambia `qbv2-contextual-scoring.ts`, la calibración v1/v2 ni la ruta compartida con legacy. El tratamiento existente queda explícito: `unknown` y N/A no aportan como cero; si no queda observación puntuable, el score es nulo. La aplicabilidad del área continúa siendo un gate previo. Confidence sigue contando directas, supporting, unknown y contradicción por separado.
@@ -14,7 +24,7 @@ La matriz downstream reconstruida por las funciones reales muestra para H1 cambi
 
 Casos: A14 `digital_foundation` queda 50 con una contribución débil y otra estable (overall raw 70, una prioridad y una contradicción); H1 baja la dimensión a 25/raw 65; H2 la sube a 75/raw 75, elimina la prioridad, cambia de banda y borra los hechos de brecha. N01 y N02 conservan Trust 50/raw 68,75 y sus necesidades/ofertas LATER bajo H0; H2 produce raw 75, elimina prioridad, recomendación y oferta. En A14, cambiar la respuesta débil a unknown o retirarla deja Foundation 75, pero confidence cae a `low` con unknown y queda `medium` si no fue respondida: la estimación usa solo lo conocido y confidence informa cuánto falta. No es evidencia de que unknown sea una mejora de capacidad.
 
-**O6 permanece abierta.** Este checkpoint no cambia su denominador, testigo, alcance ni condición previa a activación; su fila en `STATUS.md` conserva el estado abierto. La candidata sigue inactiva.
+**O6 cerrada después.** La instantánea de O4 se redactó antes del cierre de O6; la disposición vigente es `ADOPT_CONTEXT_OBSERVABLE` según la sección superior. O4 queda cerrada y la candidata sigue inactiva.
 
 ## DIAG-V3-R8-FINAL — certificación y freeze de calibración
 
@@ -97,11 +107,11 @@ Corpus R7: `medium` 55, `low` 6 (5 sin índice más A17b) y `high` 0. R5 hace un
 
 **Holdout (calibración seleccionada).** Sobre 300 entradas y 150 rutas limpias hay 0 violaciones estructurales, de contrato del índice o de coherencia de severidad, e IX1–IX3 se cumplen. De esas rutas, 39 tienen índice, y ninguna queda `low` por contexto en esta muestra.
 
-**R8-O3 / R8-O4 / R8-O6 (`R8C_OPEN_DECISIONS_V3`).**
+**Instantánea histórica de R8-C (`R8C_OPEN_DECISIONS_V3`, previa al cierre de O6).**
 
 - **R8-O3 (magnitud supporting):** se conserva 0,5 por falta de ancla. Mueve la severidad y, junto a un límite, la banda (C24 73 → 70,75 con supporting débil; N06), pero nunca selecciona intervención. No bloquea R8-FINAL; una magnitud nueva exige evidencia externa.
 - **R8-O4 (agregación de facetas hermanas):** `KEEP_CURRENT_MEAN` (checkpoint 2026-10-09; detalle en la sección de O4 al inicio). La media se conserva tras comparar mínimo, máximo y modelo estructurado; O4 queda cerrada y no altera calibración/runtime.
-- **R8-O6 (nueva) — observabilidad por contexto en la cobertura:** `CALIBRATION_MODEL_DECISION_REQUIRED`. El denominador certificado es por banco, así que un área sin pregunta directa alcanzable en un contexto cuenta como no leída. Consecuencias:
+- **R8-O6 (nueva) — observabilidad por contexto en la cobertura:** en esa instantánea se registró `CALIBRATION_MODEL_DECISION_REQUIRED`. El denominador certificado entonces era por banco, así que un área sin pregunta directa alcanzable en un contexto contaba como no leída. Consecuencias de ese corte:
   - Las rutas completas leen entre 0,5 y 0,86 de sus áreas observables.
   - Una ruta limpia 3/7 queda `low` y provisional. Testigo: ruta #24 de la campaña exploratoria `0x8c01`, sin "no sé" ni no aplica y con 4 áreas inalcanzables.
   - Una lectura 5/7 totalmente corroborada queda `medium`.
@@ -114,7 +124,7 @@ Corpus R7: `medium` 55, `low` 6 (5 sin índice más A17b) y `high` 0. R5 hace un
 - v1 y v2 reproducibles.
 - R8-A, R8-B y R8-C certificadas por sus suites.
 - Legacy, runtime y caracterización intactos; candidata inactiva y privada.
-- R8-O4 resuelta como `KEEP_CURRENT_MEAN`; R8-O6 continúa en Open Debt como decisión de modelo previa a la activación. Ninguna bloquea la certificación de la calibración bajo el modelo actual.
+- En ese corte O4 estaba resuelta como `KEEP_CURRENT_MEAN`; O6 aún era Open Debt. La disposición vigente de O6 es `ADOPT_CONTEXT_OBSERVABLE` (sección superior); la instantánea no representa Open Debt actual.
 - R8-O3 conservada sin ancla.
 
 ## DIAG-V3-R8-B — calibración de contribuciones y confianza dimensional

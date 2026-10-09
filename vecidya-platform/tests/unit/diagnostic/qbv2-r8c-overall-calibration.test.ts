@@ -8,7 +8,7 @@ import {
   CANDIDATE_MAX_OBSERVABLE_V3, R8C_EXPECTATIONS_V3, R8C_HYPOTHESES_V3, bandPatternMatrixV3, bandTransitionsV3, candidateIndexOf, coverageRoundingViolationsV3,
   displayRoundingViolationsV3, familyBreakdownV3, isCleanCompleteV3, observableApplicableOf, overallConfidenceContractV3, overallContractViolationsV3,
   r8cContextLimitWitnessV3, r8cExpectationViolationsV3, r8cHoldoutV3, r8cHypothesisCalibrationV3, r8cMetamorphicViolationsV3, r8cMutationsV3, r8cSelectionCorpusV3, routeProfileV3,
-  runR8cExperimentV3, selectR8cCalibrationV3, severityCoherenceViolationsV3, supportingSafetyViolationsV3, syntheticDimensionScoresV3,
+  runR8cExperimentV3, runR8cHistoricalBankModelV3, selectR8cCalibrationV3, severityCoherenceViolationsV3, supportingSafetyViolationsV3, syntheticDimensionScoresV3,
   type R8cExperimentResultV3,
 } from "./qbv2-r8c-overall-calibration-experiments";
 import { CANDIDATE_CALIBRATION_R8B_V2, CANDIDATE_CALIBRATION_V3, type CandidateCalibrationV3 } from "../../../app/features/diagnostic/qbv2-candidate-calibration";
@@ -30,7 +30,7 @@ import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
  */
 
 const v2 = CANDIDATE_CALIBRATION_R8B_V2;
-const run = (answers: AnswersV2, calibration: CandidateCalibrationV3 = v2) => buildCandidateCommercialBoundaryV3({ answers, calibration });
+const run = (answers: AnswersV2, calibration: CandidateCalibrationV3 = v2) => runR8cHistoricalBankModelV3(answers, calibration);
 const report: Record<string, unknown> = {};
 let experiments: R8cExperimentResultV3[] | undefined;
 const allExperiments = () => (experiments ??= R8C_HYPOTHESES_V3.map((h) => runR8cExperimentV3(h)));
@@ -229,7 +229,7 @@ test("R8-C metamorphic relations: monotone readings, no zero fill, comparable co
   for (const { id, answers } of r7CorpusV3()) {
     const base = run(answers);
     for (const clarificationAnswer of ["single_process", "multiple_coordinated_processes", "not_applicable", "not_sure"] as const) {
-      assert.equal(pre(buildCandidateCommercialBoundaryV3({ answers, calibration: v2, clarificationAnswer })), pre(base), `${id}: clarification ${clarificationAnswer}`);
+      assert.equal(pre(runR8cHistoricalBankModelV3(answers, v2, clarificationAnswer)), pre(base), `${id}: clarification ${clarificationAnswer}`);
     }
     const reversed = Object.fromEntries(Object.entries(answers).reverse()) as AnswersV2;
     const full = (r: CandidateCommercialBoundaryV3) => JSON.stringify([pre(r), r.recommendations, r.solutions, r.commercial]);

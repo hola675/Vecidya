@@ -13,13 +13,14 @@ const ACTIVE_PROFESSIONAL: AnswersV2 = {
   q2_professional_authority_signals: "clearly_visible", q2_presence_offer_clarity: "all_clear",
 };
 
-test("R6-B: Measurement is the only bank-unobservable dimension, and it is excluded from the coverage denominator", () => {
+test("R6-B/O6: Measurement is the only bank-wide gap; unavailable context opportunities also leave the denominator", () => {
   assert.deepEqual([...CANDIDATE_UNOBSERVABLE_DIMENSIONS_V3], ["measurement_optimization"]);
   const result = buildCandidateNarrativeAndOverallV3({ answers: ACTIVE_PROFESSIONAL });
   assert.ok(result.scoring.dimensions.find((d) => d.id === "measurement_optimization")!.applicability === "applicable");
   assert.equal(result.scoring.dimensions.find((d) => d.id === "measurement_optimization")!.score, null);
-  assert.deepEqual(result.overall.index.unobservableApplicableDimensions, ["measurement_optimization"]);
-  const observableApplicable = result.overall.index.applicable - result.overall.index.unobservableApplicableDimensions.length;
+  assert.deepEqual([...result.overall.index.unobservableApplicableDimensions].sort(), ["digital_foundation", "measurement_optimization"]);
+  assert.equal(result.overall.index.dimensionObservability.find((d) => d.dimension === "digital_foundation")!.reason, "no_direct_source_in_context");
+  const observableApplicable = result.overall.index.coverageDenominator;
   assert.equal(result.overall.index.coverage, Math.round((result.overall.index.assessed / observableApplicable) * 100) / 100);
 });
 

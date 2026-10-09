@@ -51,7 +51,7 @@ export function buildCandidateNarrativeAndOverallV3(input: CandidateNarrativeAnd
     semanticFacts: core.semanticFacts,
     narrative,
     // R8-A: index minimums/display, overall confidence and public bands all come from the candidate calibration.
-    computeIndex: (scoring, options) => computeCandidateDigitalPresenceIndexV3(scoring, options, calibration.overall),
+    computeIndex: (scoring, options) => computeCandidateDigitalPresenceIndexV3(scoring, options, calibration.overall, core.activeAnswers),
     computeConfidence: (scoring, index) => computeOverallConfidence(scoring, index, calibration.overall),
     bands: calibration.overall.bands,
   });
