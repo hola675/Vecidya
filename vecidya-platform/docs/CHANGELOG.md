@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-09 — DIAG-V3-ACT-03.1 PDF Accessibility, Session Hardening & Final Readiness
+
+- Se versionó la sesión candidata a schema/key 2, con validación operacional al restaurar, migración segura desde schema 1 y serialización con Web Locks cuando está disponible. El fallback es optimista y fail-closed ante conflictos; no se documenta como transacción atómica. TTL de 14 días lógico; la purga física solo sucede en una lectura posterior a la expiración.
+- Se separaron `startedAt`, `updatedAt`, `completedAt` y `generatedAt`. Reabrir/reconstruir no cambia la finalización; editar limpia `completedAt`; una nueva finalización lo crea de nuevo. Las sesiones completadas antiguas migran a `completing` para no inventar una fecha.
+- Se generaron 14 PDFs de siete casos A4/Carta y se añadió E2E en dos pestañas; el check automatizado verifica DOM/AX y paginación, pero no sustituye PAC/Acrobat ni NVDA. Se corrigió la salida de contornos magenta causada por el modo debug heredado.
+- ACT-03.1 queda **BLOCKED** porque no hubo PAC, Acrobat Accessibility Checker ni lector de pantalla disponibles. Readiness sigue `READY_WITH_EXPLICIT_BLOCKERS`; no se declara PDF/UA, no se activa ni publica la candidata, no cambia la privacidad pública y ACT-04 no se inicia.
+
 ## 2026-10-09 — DIAG-V3-ACT-03 Full Candidate E2E Certification & Activation Readiness
 
 - Certificación local 15/15 en navegador real: servicios, profesional, retail, ecommerce, B2B, creator, nonprofit, prelaunch, híbrido, evidencia insuficiente, vacíos O6, N/A, facetas O4, fricción no confirmada y supporting comercial. 210 transiciones; rutas de 7–17 preguntas, percentiles nearest-rank 14/14/15; 15 `no_useful_questions`, 0 `budget_blocked`, 0 `hard_cap`; 13 sin licencia, 2 Barrio.

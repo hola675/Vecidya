@@ -3,7 +3,7 @@ import { Link, isRouteErrorResponse, useRouteError, useLoaderData, type LoaderFu
 
 import { buildCandidateDiagnosticReportV1 } from "../components/diagnostic-flow/candidate-presentation";
 import { DiagnosticReport, REPORT_PAPERS, reportFileName, type ReportFit, type CandidateDiagnosticReportV1 } from "../components/diagnostic-report";
-import { CandidateSessionStoreV3, completeCandidateSessionV3, type CandidateSessionV3 } from "../features/diagnostic/qbv2-candidate-session";
+import { CandidateSessionStoreV3, rebuildCompletedCandidateResultV3, type CandidateSessionV3 } from "../features/diagnostic/qbv2-candidate-session";
 
 export const meta: MetaFunction = () => [{ title: "Informe candidato (prueba local)" }, { name: "robots", content: "noindex, nofollow" }];
 
@@ -27,9 +27,9 @@ export default function DevDiagnosticCandidateReport() {
         setSource({ kind: "unavailable" });
         return;
       }
-      const completed = completeCandidateSessionV3(session, session.writerId, session.updatedAt);
-      if (!completed) { setSource({ kind: "unavailable" }); return; }
-      setSource({ kind: "ready", session, report: buildCandidateDiagnosticReportV1(completed.result, new Date(session.startedAt)) });
+      const result = rebuildCompletedCandidateResultV3(session);
+      if (!result || session.completedAt === null) { setSource({ kind: "unavailable" }); return; }
+      setSource({ kind: "ready", session, report: buildCandidateDiagnosticReportV1(result, new Date(session.completedAt), new Date()) });
     } catch (error) {
       console.error("[informe candidato] no se pudo reconstruir desde la sesión", error);
       setSource({ kind: "error" });
@@ -61,7 +61,7 @@ export default function DevDiagnosticCandidateReport() {
           <span className="rp-toolbar__meta">{fit.pages} páginas · tipografía mínima disponible 8,5 pt{fit.overflow ? " · el contenido no cabe sin recortar" : ""}</span>
         </> : null}
       </div>
-      {report ? <DiagnosticReport debug onFit={onFit} paper={paper} report={report} /> : null}
+      {report ? <DiagnosticReport onFit={onFit} paper={paper} report={report} /> : null}
     </main>
   );
 }

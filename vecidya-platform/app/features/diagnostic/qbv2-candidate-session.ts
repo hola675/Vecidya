@@ -4,8 +4,10 @@ import { buildCandidateQuestionPlanV3 } from "./qbv2-candidate-planner";
 import type { QuestionDefinitionV2 } from "./qbv2-contract";
 import type { AnswersV2 } from "./qbv2-rules";
 
-export const CANDIDATE_SESSION_SCHEMA_V3 = 1 as const;
-export const CANDIDATE_SESSION_STORAGE_KEY_V3 = "vecidya.diagnostic.v3.candidate.session.1";
+export const CANDIDATE_SESSION_SCHEMA_V3 = 2 as const;
+export const CANDIDATE_SESSION_STORAGE_KEY_V3 = "vecidya.diagnostic.v3.candidate.session.2";
+const PREVIOUS_CANDIDATE_SESSION_SCHEMA_V3 = 1;
+const PREVIOUS_CANDIDATE_SESSION_STORAGE_KEY_V3 = "vecidya.diagnostic.v3.candidate.session.1";
 export const CANDIDATE_SESSION_TTL_MS_V3 = 14 * 24 * 60 * 60 * 1000;
 export const CANDIDATE_QUESTION_BANK_ID_V3 = "reviewed-evidence-v3" as const;
 
@@ -17,6 +19,7 @@ export type CandidateSessionV3 = {
   readonly sessionId: string;
   readonly startedAt: number;
   readonly updatedAt: number;
+  readonly completedAt: number | null;
   readonly revision: number;
   readonly writerId: string;
   readonly answers: AnswersV2;
@@ -87,7 +90,7 @@ export function createCandidateSessionV3({ sessionId, writerId, now }: Candidate
     schemaVersion: CANDIDATE_SESSION_SCHEMA_V3,
     engineIdentity: CANDIDATE_RESULT_IDENTITY_V3,
     questionBankIdentity: CANDIDATE_QUESTION_BANK_ID_V3,
-    sessionId, startedAt: now, updatedAt: now, revision: 0, writerId,
+    sessionId, startedAt: now, updatedAt: now, completedAt: null, revision: 0, writerId,
     answers: {}, answeredQuestionIds: [], queue: [], reviewIndex: null, status: "in_progress", terminalReason: null,
   };
   return replan(initial);
@@ -134,40 +137,79 @@ export function submitCandidateAnswerV3(session: CandidateSessionV3, questionId:
 export function goBackCandidateV3(session: CandidateSessionV3, writerId: string, now: number): CandidateSessionV3 {
   if (session.answeredQuestionIds.length === 0) return session;
   const reviewIndex = session.reviewIndex === null ? session.answeredQuestionIds.length - 1 : Math.max(0, session.reviewIndex - 1);
-  return touch(session, writerId, now, { reviewIndex, status: "in_progress" });
+  return touch(session, writerId, now, { reviewIndex, status: "in_progress", terminalReason: null, completedAt: null });
 }
 
 export function completeCandidateSessionV3(session: CandidateSessionV3, writerId: string, now: number) {
-  if (session.status === "in_progress" || session.reviewIndex !== null) return null;
+  if (session.status !== "completing" || session.reviewIndex !== null || session.queue.length !== 0 || !session.terminalReason) return null;
   const result = runCandidateDiagnosticPipelineV3(session.answers);
   if (result.engineIdentity !== CANDIDATE_RESULT_IDENTITY_V3) return null;
-  return { session: touch(session, writerId, now, { status: "completed" }), result };
+  return { session: touch(session, writerId, now, { status: "completed", completedAt: now }), result };
 }
 
-export function parseCandidateSessionV3(raw: string | null, now: number): CandidateSessionV3 | null {
+export function rebuildCompletedCandidateResultV3(session: CandidateSessionV3) {
+  if (session.status !== "completed" || session.completedAt === null || session.reviewIndex !== null || session.queue.length !== 0 || !session.terminalReason) return null;
+  const result = runCandidateDiagnosticPipelineV3(session.answers);
+  return result.engineIdentity === CANDIDATE_RESULT_IDENTITY_V3 ? result : null;
+}
+
+function parseSession(raw: string | null, now: number, schemaVersion: number): Record<string, unknown> | null {
   if (!raw) return null;
   let parsed: unknown;
   try { parsed = JSON.parse(raw); } catch { return null; }
-  if (!isRecord(parsed) || parsed.schemaVersion !== CANDIDATE_SESSION_SCHEMA_V3 || parsed.questionBankIdentity !== CANDIDATE_QUESTION_BANK_ID_V3 || !isCandidateResultIdentityV3(parsed.engineIdentity)) return null;
+  if (!isRecord(parsed) || parsed.schemaVersion !== schemaVersion || parsed.questionBankIdentity !== CANDIDATE_QUESTION_BANK_ID_V3 || !isCandidateResultIdentityV3(parsed.engineIdentity)) return null;
   const { sessionId, startedAt, updatedAt, revision, writerId, answers, answeredQuestionIds, queue, reviewIndex, status, terminalReason } = parsed;
-  if (typeof sessionId !== "string" || !sessionId || typeof writerId !== "string" || !writerId || !Number.isFinite(startedAt) || !Number.isFinite(updatedAt) || !Number.isInteger(revision) || (revision as number) < 0 || !isRecord(answers) || !Array.isArray(answeredQuestionIds) || !Array.isArray(queue)) return null;
-  if (now - (updatedAt as number) > CANDIDATE_SESSION_TTL_MS_V3 || (updatedAt as number) > now + 60_000) return null;
+  if (typeof sessionId !== "string" || !sessionId.trim() || typeof writerId !== "string" || !writerId.trim() || !Number.isFinite(startedAt) || (startedAt as number) < 0 || !Number.isFinite(updatedAt) || (updatedAt as number) < (startedAt as number) || !Number.isInteger(revision) || (revision as number) < 0 || !isRecord(answers) || !Array.isArray(answeredQuestionIds) || !Array.isArray(queue)) return null;
+  if ((startedAt as number) > now + 60_000 || now - (updatedAt as number) > CANDIDATE_SESSION_TTL_MS_V3 || (updatedAt as number) > now + 60_000) return null;
   if (!(reviewIndex === null || (Number.isInteger(reviewIndex) && (reviewIndex as number) >= 0 && (reviewIndex as number) < answeredQuestionIds.length))) return null;
   if (!(status === "in_progress" || status === "completing" || status === "completed")) return null;
   if (!(terminalReason === null || terminalReason === "no_useful_questions" || terminalReason === "budget_blocked" || terminalReason === "hard_cap")) return null;
+  if (schemaVersion === CANDIDATE_SESSION_SCHEMA_V3 && !(parsed.completedAt === null || (Number.isFinite(parsed.completedAt) && (parsed.completedAt as number) >= (startedAt as number) && (parsed.completedAt as number) <= (updatedAt as number)))) return null;
+  if (schemaVersion === CANDIDATE_SESSION_SCHEMA_V3 && (status === "completed") !== (parsed.completedAt !== null)) return null;
+  if (schemaVersion === CANDIDATE_SESSION_SCHEMA_V3 && status !== "completed" && parsed.completedAt !== null) return null;
   for (const [id, value] of Object.entries(answers)) {
     const question = questionFor(id);
     if (!question || !validateCandidateAnswerV3(question, value)) return null;
   }
-  if (!answeredQuestionIds.every((id) => typeof id === "string" && answers[id] !== undefined)) return null;
-  if (!queue.every((id) => typeof id === "string" && questionFor(id) && answers[id] === undefined)) return null;
-  const restored = parsed as unknown as CandidateSessionV3;
-  const active = buildCandidateQuestionPlanV3({ answers: restored.answers }).activeAnswers;
+  if (!answeredQuestionIds.every((id) => typeof id === "string" && answers[id] !== undefined) || new Set(answeredQuestionIds).size !== answeredQuestionIds.length) return null;
+  if (answeredQuestionIds.length !== Object.keys(answers).length || !Object.keys(answers).every((id) => answeredQuestionIds.includes(id))) return null;
+  if (!queue.every((id) => typeof id === "string" && questionFor(id) && answers[id] === undefined) || new Set(queue).size !== queue.length) return null;
+  const active = buildCandidateQuestionPlanV3({ answers: answers as AnswersV2 }).activeAnswers;
   // Corrupt or obsolete applicability state fails closed; do not silently reinterpret persisted answers.
-  if (Object.keys(active).length !== Object.keys(restored.answers).length || Object.entries(restored.answers).some(([id, value]) => JSON.stringify(active[id]) !== JSON.stringify(value))) return null;
-  const eligible = new Set(buildCandidateQuestionPlanV3({ answers: restored.answers }).eligibleQuestionIds);
-  if (!restored.queue.every((id) => eligible.has(id))) return null;
-  return restored;
+  if (Object.keys(active).length !== Object.keys(answers).length || Object.entries(answers).some(([id, value]) => JSON.stringify(active[id]) !== JSON.stringify(value))) return null;
+  const plan = buildCandidateQuestionPlanV3({ answers: active });
+  const eligible = new Set(plan.eligibleQuestionIds);
+  if (!queue.every((id) => eligible.has(id))) return null;
+  if (schemaVersion === CANDIDATE_SESSION_SCHEMA_V3 && status === "in_progress" && (terminalReason !== null || (queue.length === 0 && reviewIndex === null))) return null;
+  if (status !== "in_progress") {
+    if (queue.length !== 0 || reviewIndex !== null || terminalReason === null) return null;
+    const expectedReason = plan.completion.hardCapReached ? "hard_cap" : plan.evidenceSufficiency.terminalReason === "budget_blocked" ? "budget_blocked" : "no_useful_questions";
+    if (terminalReason !== expectedReason) return null;
+  }
+  if (schemaVersion === CANDIDATE_SESSION_SCHEMA_V3) {
+    const allowedFields = ["schemaVersion", "engineIdentity", "questionBankIdentity", "sessionId", "startedAt", "updatedAt", "completedAt", "revision", "writerId", "answers", "answeredQuestionIds", "queue", "reviewIndex", "status", "terminalReason"];
+    if (Object.keys(parsed).length !== allowedFields.length || Object.keys(parsed).some((key) => !allowedFields.includes(key))) return null;
+  }
+  return parsed;
+}
+
+export function parseCandidateSessionV3(raw: string | null, now: number): CandidateSessionV3 | null {
+  const parsed = parseSession(raw, now, CANDIDATE_SESSION_SCHEMA_V3);
+  return parsed as unknown as CandidateSessionV3 | null;
+}
+
+function migratePreviousCandidateSession(raw: string | null, now: number): CandidateSessionV3 | null {
+  const parsed = parseSession(raw, now, PREVIOUS_CANDIDATE_SESSION_SCHEMA_V3);
+  if (!parsed) return null;
+  const status = parsed.status === "completed" ? "completing" : parsed.status;
+  const session = {
+    ...parsed,
+    schemaVersion: CANDIDATE_SESSION_SCHEMA_V3,
+    completedAt: null,
+    status,
+    terminalReason: parsed.reviewIndex !== null || (status === "in_progress" && Array.isArray(parsed.queue) && parsed.queue.length > 0) ? null : parsed.terminalReason,
+  } as unknown as CandidateSessionV3;
+  return parseCandidateSessionV3(JSON.stringify(session), now);
 }
 
 export type CandidateStorageLikeV3 = { getItem(key: string): string | null; setItem(key: string, value: string): void; removeItem(key: string): void };
@@ -183,21 +225,59 @@ export class CandidateSessionStoreV3 {
     if (!target) return null;
     const raw = target.getItem(CANDIDATE_SESSION_STORAGE_KEY_V3);
     const parsed = parseCandidateSessionV3(raw, now);
-    if (raw && !parsed) target.removeItem(CANDIDATE_SESSION_STORAGE_KEY_V3);
-    return parsed;
+    if (raw) {
+      if (!parsed) target.removeItem(CANDIDATE_SESSION_STORAGE_KEY_V3);
+      return parsed;
+    }
+    const previousRaw = target.getItem(PREVIOUS_CANDIDATE_SESSION_STORAGE_KEY_V3);
+    if (!previousRaw) return null;
+    const migrated = migratePreviousCandidateSession(previousRaw, now);
+    if (!migrated) { target.removeItem(PREVIOUS_CANDIDATE_SESSION_STORAGE_KEY_V3); return null; }
+    const serialized = JSON.stringify(migrated);
+    try {
+      target.setItem(CANDIDATE_SESSION_STORAGE_KEY_V3, serialized);
+      if (target.getItem(CANDIDATE_SESSION_STORAGE_KEY_V3) !== serialized) return null;
+      target.removeItem(PREVIOUS_CANDIDATE_SESSION_STORAGE_KEY_V3);
+      return migrated;
+    } catch { return null; }
   }
-  write(session: CandidateSessionV3): "written" | "conflict" | "unavailable" {
+  async write(session: CandidateSessionV3): Promise<"written" | "conflict" | "unavailable"> {
     const target = this.target;
     if (!target) return "unavailable";
-    const current = parseCandidateSessionV3(target.getItem(CANDIDATE_SESSION_STORAGE_KEY_V3), Date.now());
-    if (current && current.sessionId !== session.sessionId) return "conflict";
-    if (current) {
-      const expectedPriorRevision = session.revision - 1;
-      const exactRepeat = current.revision === session.revision && current.writerId === session.writerId;
-      if (!exactRepeat && current.revision !== expectedPriorRevision) return "conflict";
+    const serialized = JSON.stringify(session);
+    const commit = (): "written" | "conflict" | "unavailable" => {
+      let raw: string | null;
+      try { raw = target.getItem(CANDIDATE_SESSION_STORAGE_KEY_V3); } catch { return "unavailable"; }
+      const current = parseCandidateSessionV3(raw, Date.now());
+      if (!current && raw !== null) return "conflict";
+      if (!current && (session.revision !== 0 || session.status !== "in_progress" || Object.keys(session.answers).length > 0 || session.completedAt !== null)) return "conflict";
+      if (current && current.sessionId !== session.sessionId) return "conflict";
+      if (current) {
+        const expectedPriorRevision = session.revision - 1;
+        const exactRepeat = current.revision === session.revision && current.writerId === session.writerId && raw === serialized;
+        if (!exactRepeat && current.revision !== expectedPriorRevision) return "conflict";
+      }
+      try {
+        target.setItem(CANDIDATE_SESSION_STORAGE_KEY_V3, serialized);
+        return target.getItem(CANDIDATE_SESSION_STORAGE_KEY_V3) === serialized ? "written" : "conflict";
+      } catch { return "unavailable"; }
+    };
+    if (typeof navigator !== "undefined" && navigator.locks) {
+      try { return await navigator.locks.request(CANDIDATE_SESSION_STORAGE_KEY_V3, { mode: "exclusive" }, commit); }
+      catch { return "unavailable"; }
     }
-    target.setItem(CANDIDATE_SESSION_STORAGE_KEY_V3, JSON.stringify(session));
-    return "written";
+    // Without Web Locks this is optimistic, not atomic; revision checks and storage events make conflicts visible.
+    return commit();
   }
-  clear(): void { this.target?.removeItem(CANDIDATE_SESSION_STORAGE_KEY_V3); }
+  async clear(): Promise<void> {
+    const target = this.target;
+    if (!target) return;
+    const remove = () => target.removeItem(CANDIDATE_SESSION_STORAGE_KEY_V3);
+    if (typeof navigator !== "undefined" && navigator.locks) {
+      try { await navigator.locks.request(CANDIDATE_SESSION_STORAGE_KEY_V3, { mode: "exclusive" }, remove); }
+      catch { remove(); }
+      return;
+    }
+    remove();
+  }
 }

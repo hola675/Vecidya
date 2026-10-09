@@ -6,7 +6,7 @@ assertLocalBaseUrl();
 const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
 const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
 const route = new URL("/__dev/diagnostico/candidate", baseUrl).toString();
-const candidateKey = "vecidya.diagnostic.v3.candidate.session.1";
+const candidateKey = "vecidya.diagnostic.v3.candidate.session.2";
 const legacyKey = "vecidya.diagnostic.v3.session.2";
 const legacyFixture = "legacy-session-must-remain-byte-for-byte";
 const preferred = { q2_entity: "business", q2_monetization: "goods", q2_delivery: ["retail", "online_checkout"], q2_sector: "retail", q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat", q2_capacity_signal: "stable", q2_goal: "explain", q2_customer_reach: "national", q2_customer_buyer: "b2c", q2_process_systemization: "defined", q2_local_presence_consistency: "partial", q2_ecommerce_product_discovery: "confusing", q2_retail_product_visibility: "partial", q2_ecommerce_traffic_sources: ["search"], q2_discovery_reliable_reach: "reliable", q2_reputation_flow: "strong" };
@@ -113,6 +113,8 @@ try {
   await page.getByRole("button", { name: "Reconstruir resultado candidato" }).click();
   await page.getByRole("heading", { name: "Resultado de tu diagnóstico de prueba" }).waitFor();
   const firstResult = await page.locator("#candidate-result-title").textContent();
+  const completedAt = (await saved(page)).completedAt;
+  assert(Number.isFinite(completedAt) && completedAt >= (await saved(page)).startedAt, "completion stores its own timestamp");
   const firstScore = await page.locator(".dr-presence__value").first().textContent();
   const firstPriority = await page.locator(".dr-priority__statement").first().textContent().catch(() => null);
   assert(await page.getByText(/Confianza/i).count() > 0 && await page.getByRole("heading", { name: "Acciones recomendadas por el diagnóstico" }).count() === 1, "candidate result exposes confidence and prioritized recommendations");
@@ -134,7 +136,8 @@ try {
   const reportText = await report.innerText();
   assert(pageCount >= 1 && pageCount <= 4, `print layout uses ${pageCount} pages (maximum 4)`);
   assert(density >= 8.5, `print layout keeps at least 8.5 pt text (${density} pt)`);
-  assert(reportText.includes("Fecha del diagnóstico") && reportText.includes("Lectura comercial del motor candidato"), "candidate report has diagnostic date and candidate commercial section");
+  assert(reportText.includes("Fecha de finalización del diagnóstico") && reportText.includes("Fecha de generación del informe") && reportText.includes("Lectura comercial del motor candidato"), "candidate report separates completion and report generation dates");
+  assert(reportText.includes(await page.evaluate((at) => new Intl.DateTimeFormat("es", { dateStyle: "long", timeZone: "UTC" }).format(new Date(at)), completedAt)), "report date matches the stored completion timestamp");
   assert(!reportText.includes("hola@vecidya.com") && !reportText.includes("Correo electrónico"), "anonymous candidate report has no legacy lead CTA or contact identity");
   assert(reportText.includes(firstScore.trim()) && (!firstPriority || reportText.includes(firstPriority.trim())), "print report matches the result score and priority");
   assert(await page.getByRole("button", { name: "Imprimir o guardar PDF" }).isEnabled(), "print action is available only after a page-fit layout");
@@ -156,6 +159,7 @@ try {
   await page.getByRole("button", { name: "Ver mi resultado" }).click();
   await page.getByRole("heading", { name: "Resultado de tu diagnóstico de prueba" }).waitFor();
   await page.reload({ waitUntil: "networkidle" });
+  assert((await saved(page)).completedAt === completedAt, "reload and result reconstruction preserve the original completion timestamp");
   await page.getByRole("button", { name: "Ver mi resultado" }).click();
   await page.getByRole("heading", { name: "Resultado de tu diagnóstico de prueba" }).waitFor();
   assert((await page.locator("#candidate-result-title").textContent()) === firstResult, "result reconstruction is deterministic after completed-session resume");

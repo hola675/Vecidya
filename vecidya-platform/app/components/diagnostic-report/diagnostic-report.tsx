@@ -71,7 +71,8 @@ function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
         <dl className="rp-cover__meta">
           <div><dt>Tipo</dt><dd>{report.identity.profileLabel}</dd></div>
           <div><dt>Etapa</dt><dd>{report.identity.lifecycleLabel}</dd></div>
-          <div><dt>{"dateLabel" in report.identity ? report.identity.dateLabel : "Fecha del informe"}</dt><dd>{report.generatedLabel}</dd></div>
+          <div><dt>{"dateLabel" in report.identity ? report.identity.dateLabel : "Fecha del informe"}</dt><dd>{"completedLabel" in report ? report.completedLabel : report.generatedLabel}</dd></div>
+          {"completedLabel" in report ? <div><dt>Fecha de generación del informe</dt><dd>{report.generatedLabel}</dd></div> : null}
           <div><dt>Metodología</dt><dd>{report.methodologyVersion}</dd></div>
           <div><dt>Informe</dt><dd>{report.reportVersion}</dd></div>
         </dl>

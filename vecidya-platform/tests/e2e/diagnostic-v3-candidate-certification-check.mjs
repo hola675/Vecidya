@@ -221,7 +221,7 @@ async function completeScenario(browser, item, legacyRaw, viewport, paperSet) {
   }
   assert.equal(await page.locator("#candidate-ready-title").count(), 1, `${scenario.id} terminates by planner policy`);
   const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? "null"), CANDIDATE_SESSION_STORAGE_KEY_V3);
-  assert.deepEqual(Object.keys(saved).sort(), ["answeredQuestionIds", "answers", "engineIdentity", "questionBankIdentity", "queue", "reviewIndex", "revision", "schemaVersion", "sessionId", "startedAt", "status", "terminalReason", "updatedAt", "writerId"].sort(), `${scenario.id} session stores only the versioned operational contract and no personal identity fields`);
+  assert.deepEqual(Object.keys(saved).sort(), ["answeredQuestionIds", "answers", "completedAt", "engineIdentity", "questionBankIdentity", "queue", "reviewIndex", "revision", "schemaVersion", "sessionId", "startedAt", "status", "terminalReason", "updatedAt", "writerId"].sort(), `${scenario.id} session stores only the versioned operational contract and no personal identity fields`);
   assert(asked.every((id) => scenario.answerScript[id] !== undefined || audits.unknownFallbacks.some((entry) => entry.id === id)), `${scenario.id} browser route uses authored answers or the explicit unknown response policy`);
   const pipelineStarted = performance.now();
   const expected = runCandidateDiagnosticPipelineV3(saved.answers);

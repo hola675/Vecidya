@@ -112,7 +112,10 @@ export type DiagnosticReportV1 = {
 export type DiagnosticReportContentV1 = Omit<DiagnosticReportV1, "commercialRecommendation" | "vecidyaHelp">;
 
 export type CandidateDiagnosticReportV1 = Omit<DiagnosticReportContentV1, "dimensions" | "identity"> & {
-  readonly identity: DiagnosticReportContentV1["identity"] & { readonly dateLabel: "Fecha del diagnóstico" };
+  /** Momento real en que terminó el cuestionario; distinto de cuándo se generó este informe. */
+  readonly completedAt: string;
+  readonly completedLabel: string;
+  readonly identity: DiagnosticReportContentV1["identity"] & { readonly dateLabel: "Fecha de finalización del diagnóstico" };
   readonly dimensions: readonly (ReportDimension & { readonly context: NonNullable<ReportDimension["context"]> })[];
   readonly candidateEngineIdentity: Readonly<Record<string, string | number>>;
   readonly candidateCommercial: {

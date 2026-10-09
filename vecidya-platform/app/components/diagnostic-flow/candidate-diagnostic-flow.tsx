@@ -10,6 +10,7 @@ import {
   createCandidateSessionV3,
   currentCandidateQuestionIdV3,
   goBackCandidateV3,
+  rebuildCompletedCandidateResultV3,
   submitCandidateAnswerV3,
   toggleCandidateMultiAnswerV3,
   type CandidateSessionV3,
@@ -34,6 +35,7 @@ export function CandidateDiagnosticFlow() {
   const [view, setView] = useState<View>("start");
   const [draft, setDraft] = useState<{ key: string; value: string | readonly string[] | undefined }>({ key: "", value: undefined });
   const [error, setError] = useState<string | null>(null);
+  const [writeUnavailable, setWriteUnavailable] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [candidateResult, setCandidateResult] = useState<CandidatePipelineResultV3 | null>(null);
 
@@ -43,12 +45,17 @@ export function CandidateDiagnosticFlow() {
   }, [store]);
   useEffect(() => {
     if (!session || view === "resume" || view === "conflict") return;
-    const outcome = store.write(session);
-    if (outcome === "conflict") setView("conflict");
+    let active = true;
+    void store.write(session).then((outcome) => {
+      if (active && outcome === "conflict") setView("conflict");
+      if (active && outcome === "unavailable") { setWriteUnavailable(true); setView("error"); }
+    });
+    return () => { active = false; };
   }, [session, store, view]);
   useEffect(() => {
     const onStorage = (event: StorageEvent) => {
-      if (event.key !== CANDIDATE_SESSION_STORAGE_KEY_V3 || !session || !event.newValue) return;
+      if (event.key !== CANDIDATE_SESSION_STORAGE_KEY_V3 || !session) return;
+      if (event.newValue === null) { setView("conflict"); return; }
       try {
         const remote = JSON.parse(event.newValue) as Partial<CandidateSessionV3>;
         if (remote.sessionId === session.sessionId && remote.writerId !== ownerId && Number(remote.revision) >= session.revision) setView("conflict");
@@ -59,7 +66,7 @@ export function CandidateDiagnosticFlow() {
   }, [ownerId, session]);
 
   const reset = useCallback(() => {
-    store.clear(); setSession(null); setStoredSession(null); setCandidateResult(null); setView("start"); setError(null); setConfirmReset(false);
+    void store.clear(); setSession(null); setStoredSession(null); setCandidateResult(null); setView("start"); setError(null); setConfirmReset(false);
   }, [store]);
   const requestReset = () => {
     const progress = session ?? storedSession;
@@ -73,7 +80,11 @@ export function CandidateDiagnosticFlow() {
     // Resume claims this tab with a new revision; any other tab holding the old revision fails closed.
     const claimed = { ...stored, writerId: ownerId, revision: stored.revision + 1, updatedAt: Date.now() };
     setSession(claimed); setStoredSession(null); setView(claimed.status === "completed" ? "preparing" : "flow");
-    if (claimed.status === "completed") finish(claimed);
+    if (claimed.status === "completed") {
+      const result = rebuildCompletedCandidateResultV3(claimed);
+      if (!result) { setView("error"); return; }
+      setCandidateResult(result); setView("result");
+    }
   };
   const finish = (current: CandidateSessionV3) => {
     setView("preparing");
@@ -120,7 +131,13 @@ export function CandidateDiagnosticFlow() {
   else if (view === "resume" && storedSession) content = <ResumeScreen answered={storedSession.answeredQuestionIds.length} completed={storedSession.status === "completed"} onContinue={() => resume(storedSession)} onRestart={requestReset} />;
   else if (view === "preparing") content = <PreparingScreen />;
   else if (view === "conflict") content = <section aria-labelledby="candidate-conflict-title" className="df-screen" role="alert"><h1 className="df-screen__title" id="candidate-conflict-title">Esta sesión se está editando en otra pestaña</h1><p className="df-screen__lead">Para conservar las respuestas más recientes, esta pestaña quedó en pausa. Recarga la página para continuar con la versión guardada.</p><button className="button button--primary" onClick={() => window.location.reload()} type="button">Recargar sesión</button></section>;
-  else if (view === "error") content = <FlowErrorScreen message="No pudimos reconstruir el resultado candidato. Tus respuestas siguen guardadas." onRetry={() => session && finish(session)} onRestart={requestReset} title="No pudimos preparar el resultado de prueba" />;
+  else if (view === "error") content = <FlowErrorScreen message={writeUnavailable ? "No pudimos confirmar el guardado local. La sesión podría no estar guardada en este navegador. Recarga para comprobar la revisión conservada o reinicia el diagnóstico." : "No pudimos reconstruir el resultado candidato. Tus respuestas siguen guardadas."} onRetry={() => {
+    if (writeUnavailable) { window.location.reload(); return; }
+    if (!session) return;
+    const result = rebuildCompletedCandidateResultV3(session);
+    if (result) { setCandidateResult(result); setView("result"); }
+    else finish(session);
+  }} onRestart={requestReset} title="No pudimos preparar el resultado de prueba" />;
   else if (view === "result" && candidateResult && session) content = <CandidateDiagnosticResult result={candidateResult} onEdit={() => { setDraft({ key: "", value: undefined }); setSession(goBackCandidateV3(session, ownerId, Date.now())); setCandidateResult(null); setView("flow"); }} />;
   else if (session?.status === "completing") content = <section aria-labelledby="candidate-ready-title" className="df-screen df-ready"><p className="df-screen__kicker">Candidata de prueba</p><h1 className="df-screen__title" id="candidate-ready-title">Terminó la ruta adaptativa</h1><p className="df-screen__lead">La ruta se cierra con el motivo definido por el planner. El resultado se reconstruirá desde las respuestas al continuar.</p><p>Motivo terminal: <code>{session.terminalReason}</code></p><div className="df-screen__actions"><button className="button button--primary" onClick={() => finish(session)} type="button">Reconstruir resultado candidato</button><button className="button button--secondary" onClick={back} type="button">Revisar última respuesta</button></div></section>;
   else if (session && presented) content = <><QuestionStep canGoBack={session.answeredQuestionIds.length > 0 && session.reviewIndex !== 0} error={error} onBack={back} onSelect={select} onSubmit={submit} presented={presented} progress={progress} reviewing={session.reviewIndex !== null} value={value} /><p className="df-restart"><button className="df-link-button" onClick={requestReset} type="button">Empezar de nuevo</button></p></>;

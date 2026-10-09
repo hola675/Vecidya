@@ -17,14 +17,16 @@ const candidateResult = (id: string) => {
 test("ACT-02: candidate presentation and report retain the engine identity, versions and anonymous diagnostic date", () => {
   const result = candidateResult("C09");
   const view = buildCandidateResultPresentationV3(result);
-  const report = buildCandidateDiagnosticReportV1(result, new Date("2026-10-09T12:00:00.000Z"));
+  const report = buildCandidateDiagnosticReportV1(result, new Date("2026-10-08T11:00:00.000Z"), new Date("2026-10-09T12:00:00.000Z"));
   assert.equal(view.engineIdentity, CANDIDATE_RESULT_IDENTITY_V3);
   assert.equal(report.candidateEngineIdentity, CANDIDATE_RESULT_IDENTITY_V3);
   assert.equal(report.methodologyVersion, "3.0");
   assert.equal(report.reportVersion, "1.0");
-  assert.equal(report.identity.dateLabel, "Fecha del diagnóstico");
+  assert.equal(report.identity.dateLabel, "Fecha de finalización del diagnóstico");
+  assert.equal(report.completedAt, "2026-10-08");
   assert.equal(report.identity.businessName, null);
   assert.equal(report.generatedAt, "2026-10-09");
+  assert.notEqual(report.completedAt, report.generatedAt, "completion and report generation are separate dates");
   assert.deepEqual(report.dimensions.map((dimension) => dimension.context), view.dimensions.map((dimension) => dimension.context));
   assert.deepEqual(report.priorities.map((item) => item.statement), view.priorities.map((item) => item.statement));
   assert.deepEqual(report.recommendations.map((item) => item.title), view.recommendations.map((item) => item.title));
