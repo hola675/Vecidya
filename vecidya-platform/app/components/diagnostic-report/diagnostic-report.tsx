@@ -375,7 +375,7 @@ export function DiagnosticReport({ report, paper, debug = false, onFit }: { repo
   );
 
   return (
-    <div className={`rp${debug ? " rp--debug" : ""}`} data-paper={paper} data-ready={layout.phase === "packed" ? "true" : "false"} data-density={REPORT_DENSITY_LEVELS[layout.level]} data-pages={layout.phase === "packed" ? sheetCount : ""} lang="es" ref={root} style={{ "--rp-w": `${size.widthMm}mm`, "--rp-h": `${size.heightMm}mm` } as React.CSSProperties}>
+    <div className={`rp${debug ? " rp--debug" : ""}${"candidateCommercial" in report ? " rp--candidate" : ""}`} data-paper={paper} data-ready={layout.phase === "packed" ? "true" : "false"} data-density={REPORT_DENSITY_LEVELS[layout.level]} data-pages={layout.phase === "packed" ? sheetCount : ""} lang="es" ref={root} style={{ "--rp-w": `${size.widthMm}mm`, "--rp-h": `${size.heightMm}mm` } as React.CSSProperties}>
       <style>{`@page { size: ${size.cssSize}; margin: 0; }`}</style>
       {layout.phase === "measure" ? (
         // Hoja de medida: mismo ancho y tipografía que una hoja real; no se imprime ni se lee.

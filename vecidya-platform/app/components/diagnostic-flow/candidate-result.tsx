@@ -63,7 +63,7 @@ function CandidateCommercialSection({ result }: { result: CandidatePipelineResul
     <ul>{items.map((item) => <li key={`${item.kind}:${item.name}`}><strong>{item.name}</strong> · {item.kind}{item.priceLabel ? ` · ${item.priceLabel}` : ""}<p>{item.rationale}</p></li>)}</ul>
   ) : <p>No hay ofertas compatibles justificadas para este momento.</p>;
   return (
-    <section aria-labelledby="candidate-commercial-title" className="dr-section dr-vecidya">
+    <section aria-labelledby="candidate-commercial-title" className="dr-section dr-vecidya dr-candidate-commercial">
       <h2 className="dr-section__title" id="candidate-commercial-title">Relación comercial, separada del resultado</h2>
       <p className="dr-note">La licencia y las ofertas no cambian la evaluación de capacidad ni las prioridades.</p>
       <div className="dr-candidate-license">

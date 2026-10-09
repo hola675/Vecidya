@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-09 — DIAG-V3-ACT-03 Full Candidate E2E Certification & Activation Readiness
+
+- Certificación local 15/15 en navegador real: servicios, profesional, retail, ecommerce, B2B, creator, nonprofit, prelaunch, híbrido, evidencia insuficiente, vacíos O6, N/A, facetas O4, fricción no confirmada y supporting comercial. 210 transiciones; rutas de 7–17 preguntas, percentiles nearest-rank 14/14/15; 15 `no_useful_questions`, 0 `budget_blocked`, 0 `hard_cap`; 13 sin licencia, 2 Barrio.
+- B4: editar el tipo de entrega del caso híbrido invalida dos respuestas ecommerce incompatibles; el pipeline recibe respuestas activas idénticas al planificador, el resultado vuelve a construirse y se reanuda después de recargar. El reinicio candidato confirmado elimina solo su clave y preserva bytes legacy. Se corrigió el control del borrador durante edición de opciones múltiples.
+- Resultado, metodología O4/O6 e informe se cotejan contra las salidas de motor/presentación/reporte. Candidate A4: seis reportes de muestreo, 3 páginas, 8,5–9,5 pt; Carta: C16 3 páginas y 9,5 pt. Marcadores PDF revisados, sin declarar PDF/UA; queda auditoría independiente del orden de lectura y lector de pantalla como bloqueo explícito.
+- Comparación certificada 117 casos: 1056 diferencias explicadas `EXPECTED_BY_CERTIFIED_MODEL`, `UNEXPLAINED=0`; cobertura integrada junto con flujo legacy 10/10 y PDFs legacy 26/26. Sesión client-only, origen único, sin métodos HTTP de escritura ni campos de identidad adicionales.
+- Rendimiento browser: navegación p50 99 ms/p95 140 ms en 210 transiciones; recomputación de pipeline 4,3–175,0 ms en Node local; reconstrucción más render 216–348 ms. Vite dev observado 9.416.538 bytes / 2.473.687 gzip (134 módulos). Cierre candidato aislado production-equivalent: 508.850 bytes / 115.968 gzip, React/React DOM/React Router externos compartidos.
+- ACT-03: **PASS local**; readiness **READY_WITH_EXPLICIT_BLOCKERS** por auditoría PDF/UA independiente. Manifest corregido con módulos, entrypoint, rutas, sesión, bundle, precondiciones, verificaciones y rollback. La candidata sigue inactiva y no pública; sin deploy ni push.
+
 ## 2026-10-09 — DIAG-V3-ACT-02 Candidate Result, Methodology & PDF Integration
 
 - Integrada la presentación candidate desde `CandidatePipelineResultV3` y su sesión: resultado, metodología 3.0 e informe anónimo para impresión del navegador. El adaptador conserva identidad/fechas, O4/O6 explicativos, resultados sin banda para casos no evaluables, licencia nula y solución nula; no recalcula scoring ni persiste resultados.

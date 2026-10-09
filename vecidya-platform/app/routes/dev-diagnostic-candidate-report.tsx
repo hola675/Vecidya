@@ -47,7 +47,7 @@ export default function DevDiagnosticCandidateReport() {
   const alternatePaperUrl = useMemo(() => `/__dev/diagnostico/candidate/informe?paper=${alternatePaper}`, [alternatePaper]);
 
   return (
-    <main className="rp-page">
+    <main className="rp-page rp-page--candidate">
       <div className="rp-toolbar" role="region" aria-label="Acciones del informe candidato">
         <Link to="/__dev/diagnostico/candidate">Volver a la sesión candidata</Link>
         <Link to="/__dev/diagnostico/candidate/metodologia">Metodología candidata</Link>
@@ -57,7 +57,7 @@ export default function DevDiagnosticCandidateReport() {
         {report && fit ? <>
           <button className="button button--primary" disabled={fit.overflow} onClick={() => window.print()} type="button">Imprimir o guardar PDF</button>
           <span className="rp-toolbar__meta">{fileName} · {REPORT_PAPERS[paper].label}</span>
-          <a href={alternatePaperUrl}>Ver en {REPORT_PAPERS[alternatePaper].label}</a>
+          <Link to={alternatePaperUrl}>Ver en {REPORT_PAPERS[alternatePaper].label}</Link>
           <span className="rp-toolbar__meta">{fit.pages} páginas · tipografía mínima disponible 8,5 pt{fit.overflow ? " · el contenido no cabe sin recortar" : ""}</span>
         </> : null}
       </div>

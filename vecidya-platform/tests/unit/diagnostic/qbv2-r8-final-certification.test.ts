@@ -236,6 +236,7 @@ test("R8-FINAL: legacy runtime stays on its frozen contract and candidate module
   for (const route of ["../../../app/routes/dev-diagnostic-candidate-methodology.tsx", "../../../app/routes/dev-diagnostic-candidate-report.tsx"]) {
     assert.match(read(route), /if \(!import\.meta\.env\.DEV\) throw new Response\("Not Found", \{ status: 404 \}\)/);
   }
-  const candidateFlowConsumers = files.filter((file) => readFileSync(new URL(file, appRoot), "utf8").includes("candidate-diagnostic-flow"));
+  // The activation manifest names the candidate entrypoint as metadata; count executable imports only.
+  const candidateFlowConsumers = files.filter((file) => /\bfrom\s*["'][^"']*candidate-diagnostic-flow(?:\.tsx?)?["']/.test(readFileSync(new URL(file, appRoot), "utf8")));
   assert.deepEqual(candidateFlowConsumers, ["routes/dev-diagnostic-candidate.tsx"]);
 });

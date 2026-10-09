@@ -120,17 +120,23 @@ test("DIAG-V3 activation readiness: certified representative, adversarial and de
   console.log("DIAG-V3 readiness comparison", JSON.stringify({ cases: corpus.length, differences: changed, classification, routeDistribution, commercial, holdoutCommercial }));
 });
 
-test("DIAG-V3 activation readiness: activation manifest detects incomplete cutover and defines rollback", () => {
-  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.readiness, "NOT_READY");
+test("DIAG-V3 activation readiness: ACT-03 disposition and explicit PDF accessibility blocker are current", () => {
+  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.readiness, "READY_WITH_EXPLICIT_BLOCKERS");
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateActive, false);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.publicRuntimeChanged, false);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateIdentity, CANDIDATE_RESULT_IDENTITY_V3);
-  assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers.length >= 1);
-  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.rollback.ref, "3a281ed37c525e032990072c71ce5cc8e019cd23");
+  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers.length, 1);
+  assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers[0], /PDF\/UA.*not fully certified/i);
+  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.rollback.ref, "a8b1d08");
   assert.deepEqual(CANDIDATE_ACTIVATION_MANIFEST_V3.publicRouteTargets, ["/diagnostico", "/diagnostico/metodologia", "/diagnostico/informe"]);
   assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.expectedRuntimeModules.includes("app/features/diagnostic/qbv2-candidate-pipeline.ts"));
   assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.expectedRuntimeModules.includes("app/features/diagnostic/qbv2-candidate-session.ts"));
-  assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers.every((blocker) => !blocker.includes("no candidate session")));
+  assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.expectedRuntimeModules.includes("app/components/diagnostic-flow/candidate-result.tsx"));
+  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateEntrypoint, "app/routes.ts -> /__dev/diagnostico/candidate; development-only while ACT-04 is pending");
+  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateSession.storageKey, "vecidya.diagnostic.v3.candidate.session.1");
+  assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.activationPreconditions.some((condition) => condition.includes("ACT-04")));
+  assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.postActivationChecks.length >= 4);
+  assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.bundleExpectation, /508850 bytes \(115968 gzip\)/);
 });
 
 test("DIAG-V3 activation readiness: public route, result, methodology and report remain legacy/inactive", () => {
@@ -144,6 +150,7 @@ test("DIAG-V3 activation readiness: public route, result, methodology and report
   assert.doesNotMatch(route + flow + methodologyRoute + reportRoute + reportModel + publicBarrel, /qbv2-candidate-pipeline/);
   assert.match(flow, /completeSessionV3/);
   assert.match(reportModel, /export function buildDiagnosticReport/);
-  assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers.some((blocker) => blocker.includes("public result and report")));
-  assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers.some((blocker) => blocker.includes("public methodology")));
+  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateActive, false);
+  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.publicRuntimeChanged, false);
+  assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers[0].includes("reading order"));
 });
