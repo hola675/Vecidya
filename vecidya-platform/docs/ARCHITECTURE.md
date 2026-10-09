@@ -1,5 +1,98 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R8-C — calibración del índice general, confianza, bandas y severidad
+
+R8-C estudia los únicos parámetros que le pertenecen (suficiencia del índice, bandas públicas, confianza general y severidad de prioridades) con la calibración dimensional de R8-B congelada. **Resultado: se conservan todos los valores; la calibración vigente sigue siendo `diag-v3-candidate-calibration-v2`.** No se crea una v3 sin cambios (§40); `CANDIDATE_CALIBRATION_BASELINE_V1` y `CANDIDATE_CALIBRATION_R8B_V2` siguen inmutables y reproducibles. Producción sin cambios: solo pruebas y documentación.
+
+**Arquitectura numérica real.** Capacidad (`rawScore`: media de pesos iguales de las áreas aplicables con lectura), cobertura (lecturas / áreas aplicables observables; Measurement, sin fuentes DIRECT en el banco, sale del denominador desde R6-B) y confianza general (cobertura + proporción de áreas que alcanzan el nivel) siguen separadas; nada multiplica capacidad por confianza ni rellena con cero. La misma severidad (50/75) gobierna prioridades, lecturas de hechos y prerrequisitos de recomendaciones; las bandas solo leen `rawScore`.
+
+**Método.** 16 hipótesis por familias (`qbv2-r8c-overall-calibration-experiments.ts`): BASELINE_V2; SUFFICIENCY_ONLY (INDEX-H1 cobertura 0,40; H2 0,50; H3 4 lecturas + 0,50); BANDS_ONLY (40/68, 40/65, 45/70 y la contraparte estricta 50/75); OVERALL_CONFIDENCE_ONLY (alta 0,80; media 0,60 + alta 0,80; proporción 0,60; y la dirección opuesta, media 0,40); SEVERITY_ONLY (45/70, 50/70, 50/72); COMBINED_CONSERVATIVE (la variante más suave de cada familia). Cada una declara parámetros, motivación, ancla (o por qué no la tiene) y efecto esperado, y se evalúa por la cadena real (`buildCandidateCommercialBoundaryV3({ answers, calibration })`) sobre el corpus R7 (25 + 36) y sobre dominios sintéticos exhaustivos para las reglas puras (fracciones k/n con n ≤ 7, todas las composiciones de niveles por área, combinaciones de evidencia). Orden de decisión ejecutable: se descarta lo que rompe un invariante, mueve un parámetro de R8-B, rompe un contrato por resultado (índice, denominador, banda, redondeo, provisional, caveats), el redondeo de cobertura o del número visible, el contrato de confianza general, la semántica de bandas, la coherencia de severidad, la seguridad supporting/estructural o una expectativa, y lo que mueve un parámetro sin ancla certificada; entre los supervivientes gana el que mueve menos. **Solo sobrevive BASELINE_V2.** Ninguna alternativa tiene ancla. Además:
+
+- INDEX-H3 deja sin índice rutas limpias completas (A07d, A08, A16, N07, N08: IX3).
+- OVERALL-CONF-H2 vuelve provisionales 20 lecturas normales del corpus (18 rutas limpias completas: OC6).
+- INDEX-H2, INDEX-H3 y OVERALL-CONF-H4 anulan la cobertura como criterio del nivel medio (§22).
+- INDEX-H1, OVERALL-CONF-H1/H3 y SEVERITY-H1/H2/H3 no tienen efecto en el corpus: adoptarlas solo crearía una versión artificial.
+
+El holdout determinista, nunca usado para elegir, son 300 entradas (`0x8c0c`) y 150 rutas interactivas sin "no sé" (`0x8c0d`). **Limitación explícita:** el corpus R7 nace del mismo contrato semántico. R8-C certifica consistencia, monotonía, seguridad estructural, orden relativo, honestidad de cobertura y explicabilidad, pero no la exactitud empírica de los umbrales. La propia metodología pública declara 41/71 como regla interna no validada externamente.
+
+**Suficiencia del índice: 3 lecturas y 1/3 se conservan.** Con a lo sumo 7 áreas observables, 3 lecturas ya cubren 3/7 ≈ 0,43, así que 1/3 (y 0,40) nunca es vinculante: el mínimo efectivo es el antirrepetición de DIAG-V3-10 (una o dos lecturas solo repetirían esas áreas). Corpus R7: 0–2 lecturas nunca producen índice; 3 lecturas 7/7 con índice; 4 lecturas 26/26; 5 o más 23/23. Prelaunch nunca tiene porcentaje, banda ni etiqueta; `sufficient` ⇔ `rawScore !== null`; `rawScore`, `displayScore` y `publicLabel` son nulos a la vez.
+
+**Observabilidad y denominador.** Measurement aplicable (57 casos) nunca se lee ni entra en el denominador; con lecturas, la cobertura candidata siempre supera a la legacy (no se restaura el denominador legacy). Hallazgo: de las 150 áreas observables sin lectura del corpus R7, 138 no tienen ninguna pregunta DIRECT en la ruta de su contexto (límite del instrumento) y solo 12 son respuestas "no sé" o no aplica del encuestado (ver R8-O6).
+
+**Bandas: 41/71 se conservan.** Definición precisa: BIEN = las áreas evaluadas funcionan de forma habitual (`established`, la lectura más alta que el instrumento demuestra) dentro del alcance observable; BIEN ≠ excelencia. Con el techo de 75, BIEN exige todas las áreas `established`, salvo la dilución de una sola área parcial entre siete.
+
+- **Expectativas fijas:** todas `established` → BIEN; todas parciales → REGULAR; todas débiles o ausentes → MAL. Se cumplen con 3–7 áreas bajo todas las hipótesis, así que no discriminan entre ellas.
+- **Consistencia por tamaño imposible:** "una parcial" BIEN para todo n exige `solidFrom` ≤ 66,67, y "una débil" REGULAR para todo n exige `solidFrom` > 67,86. Ningún umbral sobre la media cumple ambas; es una propiedad de la media de pesos iguales (§14).
+- **Bajar las bandas hacia el techo** (40/68, 40/65, 45/70) solo convierte en BIEN los casos que quedan justo debajo de 71 (C23, N03, N04, N06, A14); con 65, también lecturas con un freno material. Es la reinterpretación de `established` como excelencia que R3/R8-B rechazaron, ahora por la vía de las bandas.
+- 41/71 es además el contrato público que publica la metodología.
+- Observado: ningún BIEN del corpus lleva un freno material.
+
+**Sensibilidad de bandas (R8-O5).** El análisis aplica 963 mutaciones de una sola respuesta sobre el corpus R7: cada respuesta de capacidad de un área aplicable pasa a cada otro estado R3, incluidos "no sé" y no aplica. Producen 265 cruces de banda en 50 casos (BIEN → REGULAR 143, REGULAR → BIEN 85, REGULAR ↔ MAL 6, índice perdido o ganado 31). Todos se explican:
+
+| Causa del cruce | Cruces |
+| --- | --- |
+| Cambio de una lectura directa | 174 |
+| Faceta hermana retirada por "no sé" o no aplica (el área pierde una fuente y su confianza no sube) | 10 |
+| Refinamiento supporting | 5 |
+| Cambio de cobertura | 45 |
+| Disponibilidad del índice | 31 |
+| Sin explicar | 0 |
+
+De ellos, 49 tienen evidencia fina (confianza general `low` antes o después). Los cruces junto al umbral son legítimos: C23 (70,75), N03 y N04 (70,83) y A14 (70) cruzan cuando un área pasa de parcial o débil a habitual. Las bandas alternativas no reducen la sensibilidad: 309, 304 y 313 cruces, y 277 con 50/75.
+
+**Redondeo.** `rawScore` decide la banda y `displayScore` solo la presenta. En una rejilla de 0,01 sobre [0, 100], más ±0,001/0,49/0,5/0,51/1 alrededor de cada límite, el entero visible nunca sale de la banda de `rawScore` (40,5 → 40; 70,5 → 70; 41,49 → 41; 74,99 → 75). La cobertura publicada a dos decimales nunca contradice una decisión tomada sobre la fracción exacta, para ningún k/n con n ≤ 7 bajo los umbrales vigentes. Los helpers públicos de un argumento (`bandFor`, `displayScoreFor`, `resolveGlobalDigitalStatus`) siguen intactos.
+
+**Confianza general: 0,5/0,75/0,5 se conservan.** El contrato se verifica sobre todas las composiciones alcanzables (n ≤ 7 y cualquier mezcla de niveles por área):
+
+- Sin índice → `low`; sin áreas con respaldo → `low`.
+- Nunca `high` sin un área corroborada.
+- Mejorar un área, o añadir una al nivel superior, nunca baja la confianza.
+- La cobertura sigue siendo parte del nivel medio, y `medium` y `high` son alcanzables.
+
+Lectura de los niveles:
+
+- `low`: sin índice, menos de la mitad de las áreas observables leídas o mayoría de lecturas débiles.
+- `medium`: la mayoría de las áreas tiene una lectura directa limpia, sobre al menos la mitad de lo observable.
+- `high`: al menos tres cuartos leídos y la mitad de las áreas corroborada por dos fuentes directas consistentes.
+
+Corpus R7: `medium` 55, `low` 6 (5 sin índice más A17b) y `high` 0. R5 hace una pregunta directa por área, así que la corroboración es rara, y ningún umbral puede crear la corroboración que la ruta no recoge.
+
+**Provisional y caveats.** Provisional ⇔ hay índice con confianza general `low`. Los caveats solo matizan BIEN y nunca cambian banda, número ni etiqueta: un freno material da BIEN con caveat; la confianza limitada da un BIEN preliminar (A17b: 3/7 áreas, BIEN, `low`, provisional, `limited_confidence`). REGULAR y MAL nunca llevan caveat.
+
+**Severidad: 50/75 se conservan.** Escalera R3 por la cadena real: directa `established` → sin freno; `partial` → moderado; `weak` → material. Prioridades, lecturas de hechos (`weakness`/`partial`/`strength` y su severidad) y prerrequisitos de recomendaciones coinciden en todos los resultados del corpus y del holdout. Las alternativas solo difieren en puntuaciones sintéticas (45–47 y 70–72) que ninguna lectura del corpus alcanza.
+
+**Seguridad supporting (C24 y equivalentes).** C24 conserva Readiness 67 → moderado → `improve`, sin solución ni licencia; N06 igual. La matriz supporting (§15) no selecciona intervención sobre una directa sana, ni con directa desconocida o ausente, bajo v2 y bajo cada hipótesis.
+
+**Metamórficas R8-C.** Resultado: 0 violaciones.
+
+- Una lectura más alta con cobertura fija nunca baja el índice, y una más baja nunca lo sube.
+- "No sé" o no aplica nunca rellena con cero ni deja un área sin lectura dentro del índice.
+- Perder un área comparable nunca sube la confianza.
+- La aclaración comercial (cuatro respuestas) no cambia índice, confianza, prioridades ni hechos.
+- El orden de las claves no cambia nada.
+
+**Holdout (calibración seleccionada).** Sobre 300 entradas y 150 rutas limpias hay 0 violaciones estructurales, de contrato del índice o de coherencia de severidad, e IX1–IX3 se cumplen. De esas rutas, 39 tienen índice, y ninguna queda `low` por contexto en esta muestra.
+
+**R8-O3 / R8-O4 / R8-O6 (`R8C_OPEN_DECISIONS_V3`).**
+
+- **R8-O3 (magnitud supporting):** se conserva 0,5 por falta de ancla. Mueve la severidad y, junto a un límite, la banda (C24 73 → 70,75 con supporting débil; N06), pero nunca selecciona intervención. No bloquea R8-FINAL; una magnitud nueva exige evidencia externa.
+- **R8-O4 (agregación de facetas hermanas):** `CALIBRATION_MODEL_DECISION_REQUIRED`. La media se mantiene (A14: Foundation 50 moderado y overall 70 REGULAR; N01/N02: 68,75). No bloquea R8-FINAL; requiere un checkpoint arquitectónico propio antes de activar la candidata.
+- **R8-O6 (nueva) — observabilidad por contexto en la cobertura:** `CALIBRATION_MODEL_DECISION_REQUIRED`. El denominador certificado es por banco, así que un área sin pregunta directa alcanzable en un contexto cuenta como no leída. Consecuencias:
+  - Las rutas completas leen entre 0,5 y 0,86 de sus áreas observables.
+  - Una ruta limpia 3/7 queda `low` y provisional. Testigo: ruta #24 de la campaña exploratoria `0x8c01`, sin "no sé" ni no aplica y con 4 áreas inalcanzables.
+  - Una lectura 5/7 totalmente corroborada queda `medium`.
+  - En rutas limpias es raro (2, 1 y 0 de 400 en tres campañas), pero ningún umbral lo corrige: 0,40 anula la cobertura (OVERALL-CONF-H4) y 0,50 o 0,60 empeoran la otra cara (INDEX-H2, OVERALL-CONF-H2).
+  - Un denominador por contexto tendría que seguir mostrando los vacíos del propio encuestado. No bloquea R8-FINAL; requiere un checkpoint propio antes de activar.
+
+**Condiciones de entrada a R8-FINAL.**
+
+- Calibración vigente v2, sin v3.
+- v1 y v2 reproducibles.
+- R8-A, R8-B y R8-C certificadas por sus suites.
+- Legacy, runtime y caracterización intactos; candidata inactiva y privada.
+- R8-O4 y R8-O6 registradas en Open Debt como decisiones de modelo previas a la activación. No bloquean la certificación de la calibración bajo el modelo actual.
+- R8-O3 conservada sin ancla.
+
 ## DIAG-V3-R8-B — calibración de contribuciones y confianza dimensional
 
 R8-B decide números candidate-only de contribución, agregación y confianza dimensional sin tocar semántica, routing, aplicabilidad ni reglas de intervención o comercialización. Severidad, índice general, bandas públicas y confianza global quedan para R8-C. **Resultado: `diag-v3-candidate-calibration-v2` (versión 2), que solo mueve los umbrales de confianza dimensional (`mediumAt` 1,5 → 1; `highAt` 3 → 2).** `CANDIDATE_CALIBRATION_BASELINE_V1` (`…-v1`) queda como baseline histórico inmutable y reproducible; `CANDIDATE_CALIBRATION_V3` apunta a v2.

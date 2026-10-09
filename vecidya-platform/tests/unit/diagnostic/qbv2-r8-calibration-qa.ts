@@ -193,10 +193,13 @@ export function evaluateCandidateCalibrationV3(calibration: CandidateCalibration
 export type CalibrationRefV3 = { readonly caseId: string; readonly dimension: DigitalDimensionId };
 type ConfidenceLevelV3 = "low" | "medium" | "high";
 /**
- * Every expectation is derived from a certified contract statement, never from the numbers the engine produces,
- * and none is a human-validated business label (R7 cases are semantic truth, not empirical ground truth).
+ * Review status of a calibration expectation (R8-C §38). Every enforced expectation is derived from a certified
+ * contract statement, never from the numbers the engine produces, and none is a human-validated business label
+ * (R7 cases are semantic truth, not empirical ground truth). `HUMAN_REVIEWED` and `EXTERNAL_EVIDENCE` are reserved
+ * and have no entry yet — no independent evaluation exists. `OBSERVATIONAL` records a measured property that is
+ * reported, never enforced and never a target.
  */
-export type CalibrationReviewStatusV3 = "CONTRACT_DERIVED_NOT_HUMAN_VALIDATED";
+export type CalibrationReviewStatusV3 = "CONTRACT_DERIVED_NOT_HUMAN_VALIDATED" | "HUMAN_REVIEWED" | "EXTERNAL_EVIDENCE" | "OBSERVATIONAL";
 type ExpectationBase = { readonly id: string; readonly rationale: string; readonly source: string; readonly review: CalibrationReviewStatusV3 };
 export type CalibrationExpectationV3 = ExpectationBase & (
   | { readonly kind: "score"; readonly left: CalibrationRefV3; readonly relation: ">" | ">=" | "="; readonly right: CalibrationRefV3 }

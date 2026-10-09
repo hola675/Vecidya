@@ -1,5 +1,51 @@
 # Pruebas
 
+## DIAG-V3-R8-C — calibración del índice general, confianza, bandas y severidad
+
+- **Artefactos nuevos (test-only):**
+  - `qbv2-r8c-overall-calibration-experiments.ts`: 16 hipótesis con parámetros, motivación, ancla y efecto esperado; contratos por resultado; dominios sintéticos exhaustivos (fracciones k/n, composiciones de niveles, combinaciones de evidencia); matriz de patrones de bandas; mutaciones de una respuesta con clasificación de cruces; metamórficas; holdout `0x8c0c`/`0x8c0d`; testigo R8-O6; familias de negocio; `R8C_OPEN_DECISIONS_V3`; procedimiento de selección.
+  - `qbv2-r8c-overall-calibration.test.ts` (14) y `qbv2-r8c-calibration-certification.test.ts` (6).
+  - `qbv2-r8-calibration-qa.ts` amplía el estado de revisión de expectativas a `CONTRACT_DERIVED_NOT_HUMAN_VALIDATED` / `HUMAN_REVIEWED` / `EXTERNAL_EVIDENCE` / `OBSERVATIONAL`. Las dos intermedias están reservadas y no tienen entradas: no existe evaluación independiente.
+- **Experimento y selección (corpus R7: 25 + 36; sintético exhaustivo):** solo sobrevive BASELINE_V2, porque ninguna alternativa tiene ancla certificada. Además:
+  - INDEX-H3 cae por IX3 (A07d, A08, A16, N07 y N08 sin índice) y por el contrato de confianza.
+  - INDEX-H2 y OVERALL-CONF-H4 caen por el contrato de confianza: anulan la cobertura en el nivel medio.
+  - OVERALL-CONF-H2 cae por OC6 (18 rutas limpias completas provisionales).
+  - INDEX-H1, OVERALL-CONF-H1/H3 y SEVERITY-H1/H2/H3 no tienen efecto en el corpus.
+  - Efectos observados de las bandas alternativas (no adoptadas), con BIEN 16 en el baseline: 40/68 → BIEN 25; 40/65 → BIEN 34 (6 con freno material); 45/70 → BIEN 21; 50/75 → BIEN 15 (C24 pasa a REGULAR).
+  - La calibración vigente sigue siendo `diag-v3-candidate-calibration-v2`.
+- **Contratos certificados bajo v2:**
+  - `sufficient` ⇔ `rawScore`; nulos conjuntos de `rawScore`, `displayScore` y `publicLabel`; prelaunch sin porcentaje.
+  - Denominador observable: Measurement fuera en 57 casos; nunca se restaura el legacy.
+  - Índice como media de pesos iguales.
+  - Redondeo (rejilla 0,01 + bordes; tabla 40/40,49/40,5/40,99/41/41,49/41,5/70,49/70,5/70,99/71/71,5/74,99/75) y fracciones k/n ≤ 7 coherentes; helpers de un argumento intactos.
+  - Patrones R3 de bandas con 3–7 áreas; consistencia por tamaño de un escalón imposible (66,67 ≤ 67,86).
+  - Contrato de confianza general sobre todas las composiciones. Matriz: 3/7 medium → `low`, 4/7 → `medium`, 3/6 → `medium`, 6/7 todas high → `high`, 5/7 todas high → `medium` (R8-O6).
+  - Provisional ⇔ índice con confianza `low`; caveats solo sobre BIEN, sin mover banda, número ni etiqueta (A17b: BIEN preliminar).
+  - Severidad única en prioridades, hechos y prerrequisitos (escalera 75/50/25 → ninguno/moderado/material). C24 `improve` sin solución ni licencia; matriz supporting sin selección bajo v2 y bajo las 16 hipótesis.
+- **Sensibilidad (963 mutaciones de una respuesta, corpus R7):** 265 cruces de banda en 50 casos, 49 con evidencia fina:
+
+  | Causa del cruce | Cruces |
+  | --- | --- |
+  | Lectura directa | 174 |
+  | Faceta hermana retirada | 10 |
+  | Supporting | 5 |
+  | Cobertura | 45 |
+  | Disponibilidad del índice | 31 |
+  | Sin explicar | 0 |
+  | Retiro opaco | 0 |
+
+  Bandas alternativas: 309 (40/68), 304 (40/65), 313 (45/70) y 277 (50/75).
+- **Metamórficas R8-C:** 0 violaciones.
+  - Una lectura más alta con cobertura fija nunca baja el índice.
+  - "No sé" o no aplica nunca rellena con cero.
+  - Perder un área comparable nunca sube la confianza.
+  - Cuatro respuestas de aclaración comercial no cambian el pre-comercial.
+  - El orden de las claves no cambia nada.
+- **Holdout (nunca usado para elegir):** 300 entradas (`0x8c0c`) + 150 rutas sin "no sé" (`0x8c0d`). Resultado: 0 violaciones estructurales, de contrato o de severidad; IX1–IX3 se cumplen; 39 rutas limpias con índice, 0 `low` por contexto. Testigo R8-O6: ruta #24 de `0x8c01`, 3/7 limpia, `low` y provisional. Desglose por familia (prelaunch, citas, servicio, retail, ecommerce, B2B, organización, operaciones, híbrido, unknown-heavy, N/A-heavy) en el informe.
+- **QA acoplado (§41):** 10 aserciones registradas y clasificadas en `qbv2-r8c-calibration-certification.test.ts`. CALIBRATION_CONTINGENT: el `improve` de C24/N06 en R7-FINAL, R7-B y la correctiva, y la igualdad R8-C = v1 de R8-B-CERT. FROZEN_SEMANTIC: F2, Ciudad y M14. HISTORICAL_BASELINE: paridad v1 de R8-A, núcleo v1 de R4-FINAL y selección de R8-B. Ninguna necesitó ajuste porque ningún número cambió.
+- **RAN 2026-10-09:** R8-C **14/14** y **6/6**; R8-B **9/9** y **5/5**; R8-A **12/12**; R7-FINAL **8/8**; gate R7-B **8/8**, adversarial **35/35**, metamórfica **22/22**, fuzz **5/5**; R7-A **15/15**, R7-A.1 **6/6**; R6-FINAL **10/10**, R6-C.1/R6-D.2 **15/15**, R6-D.3 **7/7**, R6-D/D.1 **19/19**, R6-C **15/15**, R6-B **13/13**, R6-A **12/12**; R5-FINAL **10/10**; R4-FINAL **10/10**; R3-FINAL **7/7**; R2-FINAL **14/14**; candidata **83/83**; frozen/legacy **240/240**; legacy de scoring/prioridades/hechos/narrativa/overall **62/62**; soluciones/outcome **34/34**; comercial **31/31**; caracterización **1/1** (digest `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`). Directorio diagnóstico **1315/1315**, unitarias completas **1370/1370**; typecheck y build PASS; bundle scan de 44 símbolos candidato/QA/calibración: 0; grafo de fuentes (182 archivos): 0 importadores no candidatos; `git diff --check` PASS.
+- Ejecutar: `pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/qbv2-r8c-overall-calibration.test.ts ./tests/unit/diagnostic/qbv2-r8c-calibration-certification.test.ts` (informe en `R8C_CALIBRATION_REPORT`). Grupos: R2-FINAL = `qbv2-final-closure` + `qbv2-reviewed-certification`; candidata = `qbv2-reviewed-*`; legacy de scoring/prioridades/hechos/narrativa/overall = `qbv2-contextual-scoring` + `qbv2-priorities` + `qbv2-semantic-facts` + `qbv2-narrative` + `qbv2-outcome`; soluciones/outcome = `diagnostic-report` + `qbv2-outcome`; comercial = `commercial-recommendation` + `result-ui`.
+
 ## DIAG-V3-R8-B — calibración de contribuciones y confianza dimensional
 
 - **Artefactos nuevos (test-only):** `qbv2-r8b-calibration-experiments.ts` (11 hipótesis con parámetros exactos y anclas por parámetro, contrato de confianza sobre evidencia sintética por el núcleo real, matriz supporting §15 por la cadena real, holdout `0x8b0b`, comparación aguas abajo y procedimiento de selección §32), `qbv2-r8b-dimension-calibration.test.ts` (9) y `qbv2-r8b-calibration-certification.test.ts` (5). `qbv2-r8-calibration-qa.ts` incorpora 20 expectativas relativas/cualitativas derivadas de contrato (`CONTRACT_DERIVED_NOT_HUMAN_VALIDATED`).

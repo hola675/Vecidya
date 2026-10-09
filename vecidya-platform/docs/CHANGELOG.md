@@ -1,5 +1,30 @@
 # Changelog
 
+## 2026-10-09 — DIAG-V3-R8-C: calibración del índice general, confianza, bandas y severidad (sin cambios numéricos)
+
+- Se conservan todos los valores de R8-C. La calibración vigente sigue siendo `diag-v3-candidate-calibration-v2` (sin v3 artificial):
+  - suficiencia: 3 lecturas y 1/3;
+  - bandas: 41/71;
+  - confianza general: 0,5/0,75/0,5;
+  - severidad: 50/75.
+- Experimento reproducible de 16 hipótesis (suficiencia, bandas, confianza general, severidad y combinada) por la cadena real, sobre el corpus R7 y dominios sintéticos exhaustivos. La selección es ejecutable y solo sobrevive BASELINE_V2: ninguna alternativa tiene ancla certificada; INDEX-H3 y OVERALL-CONF-H2 rompen expectativas, e INDEX-H2/H3 y OVERALL-CONF-H4 el contrato de confianza.
+- Certificados:
+  - denominador observable y `sufficient` ⇔ `rawScore`;
+  - redondeo de cobertura y de número visible;
+  - patrones de bandas;
+  - contrato de confianza sobre todas las composiciones;
+  - provisional y caveats;
+  - severidad única en prioridades, hechos y prerrequisitos;
+  - supporting sin autoridad de intervención;
+  - sensibilidad de bandas: 265 cruces, todos explicados;
+  - metamórficas R8-C;
+  - holdout `0x8c0c`/`0x8c0d`.
+- Disposiciones:
+  - R8-O3 se conserva sin ancla.
+  - R8-O4 y la nueva R8-O6 (observabilidad por contexto en la cobertura) quedan `CALIBRATION_MODEL_DECISION_REQUIRED` en Open Debt. No bloquean R8-FINAL y requieren checkpoint antes de activar.
+- Pruebas: `qbv2-r8c-overall-calibration.test.ts` (14), `qbv2-r8c-calibration-certification.test.ts` (6) y `qbv2-r8c-overall-calibration-experiments.ts`. El estado de revisión de expectativas se amplía a cuatro valores. Producción sin cambios.
+- Validación: diagnóstico 1315/1315, unitarias 1370/1370, typecheck y build PASS, bundle scan 0 (44 símbolos), grafo de fuentes 0, `git diff --check` PASS. Suites nombradas en `TESTING.md`.
+
 ## 2026-10-08 — DIAG-V3-R8-B: calibración de contribuciones y confianza dimensional
 
 - Nueva calibración candidata `diag-v3-candidate-calibration-v2` (`CANDIDATE_CALIBRATION_R8B_V2`, vigente); `CANDIDATE_CALIBRATION_BASELINE_V1` queda como baseline histórico inmutable. Único cambio numérico: confianza dimensional `mediumAt` 1,5 → 1 y `highAt` 3 → 2. Contribuciones, pesos supporting, severidad y modelo general sin cambios.
