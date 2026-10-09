@@ -1,5 +1,13 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R8-FINAL — certificación y freeze de calibración
+
+R8-FINAL cierra la certificación de R8 sin recalibrar ni activar la candidata. La calibración vigente permanece `diag-v3-candidate-calibration-v2` (versión 2); `CANDIDATE_CALIBRATION_BASELINE_V1` y `CANDIDATE_CALIBRATION_R8B_V2` son identidades distintas, inmutables y reproducibles. No se crea una v3 artificial. La versión 1 conserva el baseline histórico y la versión 2 conserva `mediumAt=1` / `highAt=2`; las contribuciones (`strong=1`, `established=0.75`, `partial=0.5`, `weak=0.25`, `dependency=0.25`, `missing=0`), pesos (direct=1, supporting=0.5, cap=0.5), agregación, modelo general, bandas 41/71, confianza general 0.5/0.75/0.5 y severidad 50/75 quedan congelados según sus identidades versionadas. El test certifica los valores exactos y el freeze profundo.
+
+La certificación cruza la cadena R3→R8 sobre 61 casos R7 y verifica score, aplicabilidad, conteos de evidencia, índice general, banda y soluciones concretas; también fija la selección del planner, la matriz de confianza sintética de R8-B y el testigo O6 (3/7, cobertura 0.43, provisional/low). El modelo de media aritmética de facetas hermanas se mantiene sin cambio mientras O4 sigue abierto; O3 conserva su peso supporting de 0.5 por falta de ancla nueva. Cualquier cambio futuro a O3 requiere evidencia empírica o externa nueva y una fase explícita. O4 y O6 no bloquean la certificación, pero cada decisión requiere su checkpoint antes de activar la candidata.
+
+Identidades de entrada preservadas: evidencia revisada + R3 + R4 + planner v2 para R5; sistema comercial de producto + candidato v1 para R6; proceso `q2_process_systemization` para R7. La calibración es solo de pruebas: los módulos `qbv2-candidate-*` no se exportan por el barrel público, el runtime público continúa con 85 preguntas legacy, diagnóstico 2.0, versiones de banco/routing/scoring/result 1 y planner 2, y `SOUND=75` permanece LEGACY_ONLY. No hay cambios funcionales, persistencia, migraciones, activación ni publicación.
+
 ## DIAG-V3-R8-C — calibración del índice general, confianza, bandas y severidad
 
 R8-C estudia los únicos parámetros que le pertenecen (suficiencia del índice, bandas públicas, confianza general y severidad de prioridades) con la calibración dimensional de R8-B congelada. **Resultado: se conservan todos los valores; la calibración vigente sigue siendo `diag-v3-candidate-calibration-v2`.** No se crea una v3 sin cambios (§40); `CANDIDATE_CALIBRATION_BASELINE_V1` y `CANDIDATE_CALIBRATION_R8B_V2` siguen inmutables y reproducibles. Producción sin cambios: solo pruebas y documentación.

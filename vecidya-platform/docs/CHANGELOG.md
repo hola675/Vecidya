@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-09 — DIAG-V3-R8-FINAL: certificación y freeze de calibración
+
+- Cierre local de R8 como **COMPLETE / CERTIFIED**: `qbv2-r8-final-certification.test.ts` (6/6) certifica las calibraciones candidatas v1/v2, la cadena R3→R8, planner, modelo de confianza, O6, identidades, runtime y aislamiento. No se modifica calibración funcional ni se crea v3 artificial.
+- Reconciliados `STATUS.md`, `PROJECT_STATE.md`, `ARCHITECTURE.md`, `ROADMAP.md` y `TESTING.md`. La candidata permanece inactiva; O3 continúa sin ancla, O4/O6 requieren checkpoint propio antes de activar. No hubo migración, deploy ni publicación.
+- Validación local: diagnóstico 1321/1321, unitarias 1376/1376, caracterización legacy 1/1 (digest `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`), typecheck/build, escaneo final de 26 símbolos runtime en 75 archivos JS (0 coincidencias) y `git diff --check` PASS.
+
 ## 2026-10-09 — DIAG-V3-R8-C: calibración del índice general, confianza, bandas y severidad (sin cambios numéricos)
 
 - Se conservan todos los valores de R8-C. La calibración vigente sigue siendo `diag-v3-candidate-calibration-v2` (sin v3 artificial):
