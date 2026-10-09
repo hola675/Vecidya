@@ -76,6 +76,7 @@ export const CANDIDATE_ACTIVATION_MANIFEST_V3 = Object.freeze({
   ],
   expectedRuntimeModules: [
     "app/features/diagnostic/qbv2-candidate-pipeline.ts",
+    "app/features/diagnostic/qbv2-candidate-session.ts",
     "app/features/diagnostic/qbv2-candidate-planner.ts",
     "app/features/diagnostic/qbv2-candidate-scoring.ts",
     "app/features/diagnostic/qbv2-candidate-calibration.ts",
@@ -96,7 +97,8 @@ export const CANDIDATE_ACTIVATION_MANIFEST_V3 = Object.freeze({
     "app/features/diagnostic/commercial-recommendation.ts",
   ],
   activationPreconditions: [
-    "candidate session schema and storage key are versioned independently",
+    "ACT-01 candidate session is versioned independently and verified in the local-only browser harness",
+    "ACT-01 dev route and candidate modules remain absent from the production bundle",
     "public result and report adapters consume CandidatePipelineResultV3",
     "public methodology describes O6 context-observable coverage",
     "diagnostic and report route tests pass with candidate runtime selected",
@@ -104,7 +106,6 @@ export const CANDIDATE_ACTIVATION_MANIFEST_V3 = Object.freeze({
   ],
   blockers: [
     "public DiagnosticFlow still uses the legacy V2 question bank, planner and runDiagnosticPipelineV3",
-    "no candidate session/flow adapter or candidate-specific localStorage identity exists",
     "public result and report models accept legacy DiagnosticResultV3, not CandidatePipelineResultV3",
     "public methodology and report have not been certified against candidate coverage semantics",
   ],

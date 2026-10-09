@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-09 — DIAG-V3-ACT-01 Candidate Interactive Flow & Session Integration
+
+- Integrada `qbv2-candidate-session.ts` con identidad exacta del facade/banco, schema candidate `1`, key `vecidya.diagnostic.v3.candidate.session.1`, TTL 14 días, control de revisión de escrituras y ninguna persistencia de resultados. R5 preserva el lote seleccionado, invalida respuestas no elegibles y vuelve a planificar tras edición.
+- La experiencia local reutiliza `QuestionStep` y `flow-screens` en `/__dev/diagnostico/candidate`, registrada y accesible solo en desarrollo. Playwright valida recorrido, reanudación, edición, determinismo, aislamiento legacy y doble pestaña. El bundle público no incluye el harness/módulos candidate; `/diagnostico`, metodología e informe no cambian.
+- Validación local: unitarias **1403/1403**, readiness **4/4**, R8-FINAL **6/6**, E2E candidato **6/6**, E2E legacy **10/10** y **26/26**, typecheck/build/diff-check PASS; escaneo de cinco símbolos en 75 archivos JS con **0 coincidencias**.
+- ACT-01 queda **PASS local**; el manifest sigue `NOT_READY`, sin ruta candidata pública, deploy ni push. El siguiente bloque propuesto es exclusivamente `DIAG-V3-ACT-02 — Candidate Result, Methodology & PDF Integration`.
+
 ## 2026-10-09 — DIAG-V3 Candidate Activation / Cutover Readiness
 
 - **NOT_READY; sin activación.** Se añadió la fachada candidate-only `qbv2-candidate-pipeline.ts`, identidad versionada del resultado y manifiesto reutilizable con módulos esperados, precondiciones, rutas y rollback al baseline `3a281ed`.

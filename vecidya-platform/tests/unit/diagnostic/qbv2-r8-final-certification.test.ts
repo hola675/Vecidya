@@ -218,6 +218,15 @@ test("R8-FINAL: legacy runtime stays on its frozen contract and candidate module
 
   const appRoot = new URL("../../../app/", import.meta.url);
   const files = (readdirSync(appRoot, { recursive: true }) as string[]).map((file) => file.replaceAll("\\", "/")).filter((file) => /\.tsx?$/.test(file));
-  const leaks = files.filter((file) => !/(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file) && readFileSync(new URL(file, appRoot), "utf8").includes("qbv2-candidate-"));
-  assert.deepEqual(leaks, [], "only private candidate modules may refer to candidate modules; build artifacts are scanned separately");
+  const localCandidateEntries = new Set([
+    "components/diagnostic-flow/candidate-diagnostic-flow.tsx",
+    "routes/dev-diagnostic-candidate.tsx",
+  ]);
+  const leaks = files.filter((file) => !/(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file) && !localCandidateEntries.has(file) && readFileSync(new URL(file, appRoot), "utf8").includes("qbv2-candidate-"));
+  assert.deepEqual(leaks, [], "candidate computational modules remain private; only the explicit development harness may import them");
+  assert.match(read("../../../app/routes.ts"), /route\("__dev\/diagnostico\/candidate", "routes\/dev-diagnostic-candidate\.tsx"\)/);
+  assert.match(read("../../../app/routes.ts"), /\.\.\.\(isDevelopmentServer \? \[/);
+  assert.match(read("../../../app/routes/dev-diagnostic-candidate.tsx"), /if \(!import\.meta\.env\.DEV\) throw new Response\("Not Found", \{ status: 404 \}\)/);
+  const candidateFlowConsumers = files.filter((file) => readFileSync(new URL(file, appRoot), "utf8").includes("candidate-diagnostic-flow"));
+  assert.deepEqual(candidateFlowConsumers, ["routes/dev-diagnostic-candidate.tsx"]);
 });

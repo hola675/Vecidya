@@ -129,6 +129,8 @@ test("DIAG-V3 activation readiness: activation manifest detects incomplete cutov
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.rollback.ref, "3a281ed37c525e032990072c71ce5cc8e019cd23");
   assert.deepEqual(CANDIDATE_ACTIVATION_MANIFEST_V3.publicRouteTargets, ["/diagnostico", "/diagnostico/metodologia", "/diagnostico/informe"]);
   assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.expectedRuntimeModules.includes("app/features/diagnostic/qbv2-candidate-pipeline.ts"));
+  assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.expectedRuntimeModules.includes("app/features/diagnostic/qbv2-candidate-session.ts"));
+  assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers.every((blocker) => !blocker.includes("no candidate session")));
 });
 
 test("DIAG-V3 activation readiness: public route, result, methodology and report remain legacy/inactive", () => {

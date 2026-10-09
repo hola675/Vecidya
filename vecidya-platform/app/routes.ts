@@ -73,6 +73,7 @@ export default [
   ...(isDevelopmentServer ? [
     route("__dev/diagnostico/resultado/:personaId?", "routes/dev-diagnostic-result.tsx"),
     route("__dev/diagnostico/v3", "routes/dev-diagnostic-v3.tsx"),
+    route("__dev/diagnostico/candidate", "routes/dev-diagnostic-candidate.tsx"),
     route("__dev/diagnostico/metodologia", "routes/dev-diagnostic-methodology.tsx"),
     route("__dev/diagnostico/informe/:personaId?", "routes/dev-diagnostic-report.tsx"),
   ] : []),
