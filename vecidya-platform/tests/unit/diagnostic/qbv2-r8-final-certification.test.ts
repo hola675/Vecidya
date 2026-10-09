@@ -113,7 +113,7 @@ test("R8-FINAL: R3→R8 integrated outputs stay reproducible and v1→v2 changes
   const siblingResult = buildCandidateCommercialBoundaryV3({ answers: sibling.answers, calibration: CANDIDATE_CALIBRATION_V3 });
   const foundation = siblingResult.scoring.dimensions.find((d) => d.id === "digital_foundation")!;
   const siblingContributions = foundation.evidence.filter((e) => e.directness === "direct").map((e) => e.contribution).sort((a, b) => Number(a) - Number(b));
-  assert.deepEqual(siblingContributions, [0.25, 0.75], "O4 keeps the certified arithmetic mean while its model decision remains open");
+  assert.deepEqual(siblingContributions, [0.25, 0.75], "O4 checkpoint retains the certified arithmetic mean");
   assert.equal(foundation.score, 50);
 });
 
@@ -146,7 +146,7 @@ test("R8-FINAL: the bank-observable coverage model and O6 witness remain frozen 
     const decision = decisions.get(code);
     assert.deepEqual([decision?.status, decision?.blocksR8Final, decision?.requiresOwnCheckpointBeforeActivation], ["CALIBRATION_MODEL_DECISION_REQUIRED", false, true], code);
   }
-  assert.match(read("../../../docs/STATUS.md"), /DIAG-V3-R8-O4-SIBLING-AGGREGATION-001[\s\S]*?CALIBRATION_MODEL_DECISION_REQUIRED[\s\S]*?no bloquea R8-FINAL[\s\S]*?bloquea la activación/i);
+  assert.match(read("../../../docs/STATUS.md"), /DIAG-V3-R8-O4-SIBLING-AGGREGATION-001[^\n]*RESUELTA[^\n]*KEEP_CURRENT_MEAN/i);
   assert.match(read("../../../docs/STATUS.md"), /DIAG-V3-R8-O6-CONTEXT-OBSERVABILITY-001[\s\S]*?CALIBRATION_MODEL_DECISION_REQUIRED[\s\S]*?no bloquea R8-FINAL[\s\S]*?bloquea la activación/i);
 });
 

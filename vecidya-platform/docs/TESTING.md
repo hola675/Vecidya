@@ -1,10 +1,17 @@
 # Pruebas
 
+## DIAG-V3-R8-O4 — sibling aggregation (`KEEP_CURRENT_MEAN`)
+
+- `qbv2-r8o4-sibling-aggregation.test.ts` contiene 8 pruebas candidate-only: inventario de 19 DIRECT/2 SUPPORTING entre 21 migradas, 24 pares/22 ternas, selección ordenada H0–H3, estados sintéticos exhaustivos (1.176 escenarios por pares y 7.546 por ternas), corpus R7 y holdout R8 (61 + 750), matriz downstream real para mínimo/máximo, A14/N01/N02, aislamiento por routing y freeze de calibración/legacy/O6. H3 conserva procedencia y queda igual a H0: no existe contrato de prioridades/pesos para distinguir facetas críticas.
+- La decisión conserva la media de contribuciones directas puntuables con normalización y neutralidad unknown/N/A. A14 mantiene Foundation 50 (raw overall 70), una prioridad y contradicción; N01/N02 mantienen Trust 50 (raw 68,75). Con H2, los 7 casos R7 con hermanos cambian hechos/prioridades y soluciones; se pierden ofertas en 2 y cambia licencia en 3. En el holdout, 6/750 cambian soluciones/licencia, 3 ofertas. H1 reduce score/hechos/prioridades/recomendaciones en 7/61 y 6/750. Ninguna regla extrema tiene contrato que autorice borrar el efecto de una faceta complementaria.
+- Comando dirigido: `pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/qbv2-r8o4-sibling-aggregation.test.ts`.
+- **RAN 2026-10-09 tras O4:** esta suite **8/8**; directorio diagnóstico **1329/1329**; `pnpm run test:unit` **1384/1384**; caracterización congelada **1/1 PASS** (digest conocido `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`); typecheck y build PASS; scan candidate-only **26 símbolos/75 archivos JS, 0 coincidencias**; `git diff --check` PASS. El build emitió el aviso habitual de secretos locales Gmail ausentes; no se leyeron ni imprimieron archivos de secretos. No se evalúa exactitud empírica; consistencia interna solamente. No ejecutar E2E remoto.
+
 ## DIAG-V3-R8-FINAL — certificación y freeze
 
 - `qbv2-r8-final-certification.test.ts` (6 pruebas) fija las identidades, versiones y parámetros exactos de calibración v1/v2 y su inmutabilidad; compara la cadena real R3→R8 sobre 61 casos R7 (scores, aplicabilidad, evidencia, índice, banda y soluciones concretas); verifica la selección del planner con v1/v2; reusa la matriz sintética de confianza de R8-B y el testigo O6 3/7; comprueba Open Debt O3/O4/O6, identidades de pipeline, recuentos de los gates anteriores, runtime, barrel público y referencias desde `app/`.
 - Gate individual: `pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/qbv2-r8-final-certification.test.ts`.
-- Cierre validado: diagnóstico 1321/1321; unitarias 1376/1376; caracterización legacy 1/1 con digest `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`; typecheck, build, escaneo final de 26 símbolos runtime en 75 archivos JS (0 coincidencias) y `git diff --check` PASS. La calibración candidata no se activa ni se publica. O4/O6 siguen en Open Debt y requieren checkpoints propios antes de activación.
+- Cierre validado en el corte R8-FINAL: diagnóstico 1321/1321; unitarias 1376/1376; caracterización legacy 1/1 con digest `9a220f8c386d952b50e51f583fac2af7897077bbafc5b7ed89dbef36b7a4e55f`; typecheck, build, escaneo final de 26 símbolos runtime en 75 archivos JS (0 coincidencias) y `git diff --check` PASS. La calibración candidata no se activa ni se publica. O4 se cerró después en su propio checkpoint; O6 sigue abierta y requiere checkpoint antes de activar.
 
 ## DIAG-V3-R8-C — calibración del índice general, confianza, bandas y severidad
 

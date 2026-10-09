@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-09 — DIAG-V3-R8-O4: sibling aggregation
+
+- Cierre candidate-only de `DIAG-V3-R8-O4-SIBLING-AGGREGATION-001` como `KEEP_CURRENT_MEAN`. Se compararon promedio, peor faceta, mejor faceta y estructurada mediante inventario ejecutable, estados sintéticos, corpus R7 y holdout separado. Los casos A14, N01 y N02 conservan la heterogeneidad, contradicciones y necesidades visibles; las reglas mínima/máxima ocultan una faceta complementaria y modifican resultados downstream sin soporte de contrato.
+- No se modificó código de producción, algoritmo compartido, calibración v1/v2, legacy ni runtime. O6 permanece abierta sin cambiar su fila de Open Debt; candidata inactiva. Sin migración, deploy, publicación o push.
+- Validación local tras el cierre: O4 8/8; directorio diagnóstico 1329/1329; unitarias 1384/1384; typecheck/build PASS; bundle scan 26 símbolos candidate-only en 75 JS (0 coincidencias); `git diff --check` PASS. Detalles en `TESTING.md`.
+
 ## 2026-10-09 — DIAG-V3-R8-FINAL: certificación y freeze de calibración
 
 - Cierre local de R8 como **COMPLETE / CERTIFIED**: `qbv2-r8-final-certification.test.ts` (6/6) certifica las calibraciones candidatas v1/v2, la cadena R3→R8, planner, modelo de confianza, O6, identidades, runtime y aislamiento. No se modifica calibración funcional ni se crea v3 artificial.

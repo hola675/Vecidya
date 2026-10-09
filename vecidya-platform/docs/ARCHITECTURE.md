@@ -1,10 +1,26 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-R8-O4 — checkpoint de agregación de facetas hermanas (2026-10-09)
+
+**Decisión: `KEEP_CURRENT_MEAN`; O4 cerrada.** Se conserva el promedio aritmético de contribuciones directas disponibles, con pesos iguales y normalización por el número de observaciones directas. No se cambia `qbv2-contextual-scoring.ts`, la calibración v1/v2 ni la ruta compartida con legacy. El tratamiento existente queda explícito: `unknown` y N/A no aportan como cero; si no queda observación puntuable, el score es nulo. La aplicabilidad del área continúa siendo un gate previo. Confidence sigue contando directas, supporting, unknown y contradicción por separado.
+
+**Inventario ejecutable.** El banco contiene 21 preguntas migradas, pero no 21 fuentes directas: hay 19 DIRECT y dos SUPPORTING (`q2_b2b_status_visibility`, `q2_operations_handoffs`). Las 19 directas se distribuyen en Clarity 3, Conversion 2, Foundation 3, Readiness 2, Discovery 1, Relationship 6 y Trust 2: 24 pares hermanos potenciales y 22 ternas potenciales. Las preguntas son observaciones de capacidades distintas dentro de una misma dimensión; la prueba conserva cada `questionId`, versión, módulo y enunciado para evitar tratarlas como la misma faceta.
+
+**Orden de decisión ejecutado.** Primero se preservan contratos e invariantes R3/R4 (capacidad, unknown/N/A neutral, aplicabilidad y routing), luego la autoridad DIRECT frente a SUPPORTING, los gates comerciales y la independencia de legacy; después se comparan robustez y explicabilidad y se elige la fórmula más simple que sobreviva. H1 es mínimo DIRECT, H2 máximo DIRECT y H3 agrega por prioridad/estructura sin alterar procedencia. H3 coincide con H0 porque no hay metadata contractual que marque una faceta como crítica ni una regla de equivalencia/compensación; inventar ponderaciones sería una nueva política sin ancla. Resultado: H0 (media) gana sin modificar el algoritmo.
+
+**Evidencia y límites.** `qbv2-r8o4-sibling-aggregation.test.ts` enumera 1.176 combinaciones de estados en pares y 7.546 en ternas; verifica monotonicidad, unknown/N/A, ausencia de score sin evidencia aplicable, routing y separación de confidence. En el corpus R7 de selección (61 casos), aparecen 9 dimensiones con múltiples directas, en 4 pares y ninguna terna. El holdout separado reúne 300 entradas R8-B, 300 answer bags R8-C y 150 rutas limpias: 11 dimensiones con hermanas directas, en 4 pares distintos y ninguna terna; 2 de esas instancias también reciben refinamiento SUPPORTING, que se conserva separado. Son observaciones de consistencia interna, no etiquetas humanas ni prueba de exactitud empírica.
+
+La matriz downstream reconstruida por las funciones reales muestra para H1 cambios de score, hechos, prioridades/severidad, raw score y recomendaciones en 7/61 casos de selección; en el holdout cambia score/hechos/prioridades/recomendaciones en 6/750, severidad en 2 y ofertas/solución en casos aislados. H2 cambia scores, hechos y prioridades en 7/61, mueve banda y soluciones en los 7, cambia ofertas en 2 y licencia en 3. En el holdout cambia scores/hechos/prioridades/recomendaciones/soluciones/licencia en 6/750, ofertas en 3. Esos cambios se derivan de retirar evidencia discordante del score que consume la cadena; los gates R6 todavía exigen soluciones y base directa, así que el aggregate no crea por sí solo una oferta/licencia. Aun así H2 borra necesidades reflejadas por las facetas débiles y altera elegibilidad comercial downstream, un efecto no respaldado por semántica contractual.
+
+Casos: A14 `digital_foundation` queda 50 con una contribución débil y otra estable (overall raw 70, una prioridad y una contradicción); H1 baja la dimensión a 25/raw 65; H2 la sube a 75/raw 75, elimina la prioridad, cambia de banda y borra los hechos de brecha. N01 y N02 conservan Trust 50/raw 68,75 y sus necesidades/ofertas LATER bajo H0; H2 produce raw 75, elimina prioridad, recomendación y oferta. En A14, cambiar la respuesta débil a unknown o retirarla deja Foundation 75, pero confidence cae a `low` con unknown y queda `medium` si no fue respondida: la estimación usa solo lo conocido y confidence informa cuánto falta. No es evidencia de que unknown sea una mejora de capacidad.
+
+**O6 permanece abierta.** Este checkpoint no cambia su denominador, testigo, alcance ni condición previa a activación; su fila en `STATUS.md` conserva el estado abierto. La candidata sigue inactiva.
+
 ## DIAG-V3-R8-FINAL — certificación y freeze de calibración
 
 R8-FINAL cierra la certificación de R8 sin recalibrar ni activar la candidata. La calibración vigente permanece `diag-v3-candidate-calibration-v2` (versión 2); `CANDIDATE_CALIBRATION_BASELINE_V1` y `CANDIDATE_CALIBRATION_R8B_V2` son identidades distintas, inmutables y reproducibles. No se crea una v3 artificial. La versión 1 conserva el baseline histórico y la versión 2 conserva `mediumAt=1` / `highAt=2`; las contribuciones (`strong=1`, `established=0.75`, `partial=0.5`, `weak=0.25`, `dependency=0.25`, `missing=0`), pesos (direct=1, supporting=0.5, cap=0.5), agregación, modelo general, bandas 41/71, confianza general 0.5/0.75/0.5 y severidad 50/75 quedan congelados según sus identidades versionadas. El test certifica los valores exactos y el freeze profundo.
 
-La certificación cruza la cadena R3→R8 sobre 61 casos R7 y verifica score, aplicabilidad, conteos de evidencia, índice general, banda y soluciones concretas; también fija la selección del planner, la matriz de confianza sintética de R8-B y el testigo O6 (3/7, cobertura 0.43, provisional/low). El modelo de media aritmética de facetas hermanas se mantiene sin cambio mientras O4 sigue abierto; O3 conserva su peso supporting de 0.5 por falta de ancla nueva. Cualquier cambio futuro a O3 requiere evidencia empírica o externa nueva y una fase explícita. O4 y O6 no bloquean la certificación, pero cada decisión requiere su checkpoint antes de activar la candidata.
+La certificación cruza la cadena R3→R8 sobre 61 casos R7 y verifica score, aplicabilidad, conteos de evidencia, índice general, banda y soluciones concretas; también fija la selección del planner, la matriz de confianza sintética de R8-B y el testigo O6 (3/7, cobertura 0.43, provisional/low). O4 queda cerrada por el checkpoint `KEEP_CURRENT_MEAN`; O3 conserva su peso supporting de 0.5 por falta de ancla nueva. Cualquier cambio futuro a O3 requiere evidencia empírica o externa nueva y una fase explícita. O4 y O6 no bloquean la certificación; solo O6 requiere su checkpoint antes de activar la candidata.
 
 Identidades de entrada preservadas: evidencia revisada + R3 + R4 + planner v2 para R5; sistema comercial de producto + candidato v1 para R6; proceso `q2_process_systemization` para R7. La calibración es solo de pruebas: los módulos `qbv2-candidate-*` no se exportan por el barrel público, el runtime público continúa con 85 preguntas legacy, diagnóstico 2.0, versiones de banco/routing/scoring/result 1 y planner 2, y `SOUND=75` permanece LEGACY_ONLY. No hay cambios funcionales, persistencia, migraciones, activación ni publicación.
 
@@ -84,7 +100,7 @@ Corpus R7: `medium` 55, `low` 6 (5 sin índice más A17b) y `high` 0. R5 hace un
 **R8-O3 / R8-O4 / R8-O6 (`R8C_OPEN_DECISIONS_V3`).**
 
 - **R8-O3 (magnitud supporting):** se conserva 0,5 por falta de ancla. Mueve la severidad y, junto a un límite, la banda (C24 73 → 70,75 con supporting débil; N06), pero nunca selecciona intervención. No bloquea R8-FINAL; una magnitud nueva exige evidencia externa.
-- **R8-O4 (agregación de facetas hermanas):** `CALIBRATION_MODEL_DECISION_REQUIRED`. La media se mantiene (A14: Foundation 50 moderado y overall 70 REGULAR; N01/N02: 68,75). No bloquea R8-FINAL; requiere un checkpoint arquitectónico propio antes de activar la candidata.
+- **R8-O4 (agregación de facetas hermanas):** `KEEP_CURRENT_MEAN` (checkpoint 2026-10-09; detalle en la sección de O4 al inicio). La media se conserva tras comparar mínimo, máximo y modelo estructurado; O4 queda cerrada y no altera calibración/runtime.
 - **R8-O6 (nueva) — observabilidad por contexto en la cobertura:** `CALIBRATION_MODEL_DECISION_REQUIRED`. El denominador certificado es por banco, así que un área sin pregunta directa alcanzable en un contexto cuenta como no leída. Consecuencias:
   - Las rutas completas leen entre 0,5 y 0,86 de sus áreas observables.
   - Una ruta limpia 3/7 queda `low` y provisional. Testigo: ruta #24 de la campaña exploratoria `0x8c01`, sin "no sé" ni no aplica y con 4 áreas inalcanzables.
@@ -98,7 +114,7 @@ Corpus R7: `medium` 55, `low` 6 (5 sin índice más A17b) y `high` 0. R5 hace un
 - v1 y v2 reproducibles.
 - R8-A, R8-B y R8-C certificadas por sus suites.
 - Legacy, runtime y caracterización intactos; candidata inactiva y privada.
-- R8-O4 y R8-O6 registradas en Open Debt como decisiones de modelo previas a la activación. No bloquean la certificación de la calibración bajo el modelo actual.
+- R8-O4 resuelta como `KEEP_CURRENT_MEAN`; R8-O6 continúa en Open Debt como decisión de modelo previa a la activación. Ninguna bloquea la certificación de la calibración bajo el modelo actual.
 - R8-O3 conservada sin ancla.
 
 ## DIAG-V3-R8-B — calibración de contribuciones y confianza dimensional
@@ -113,7 +129,7 @@ R8-B decide números candidate-only de contribución, agregación y confianza di
 
 **R8-O3 — arrastre de supporting: se conserva el medio peso certificado.** No hay ancla independiente para 0,35 ni 0,25. Hallazgo documentado: con medio peso, "directa established + supporting weak" (C09, 58) **empata** con "directa partial + supporting established" (C23, 58); supporting puede neutralizar exactamente un escalón directo sin invertirlo, que es el límite de "supporting no supera a la directa". Cualquier peso < 0,5 haría estrictamente dominante el escalón directo, pero elegir el valor es una decisión sin ancla y queda abierta.
 
-**R8-O4 — cancelación entre hermanas: `CALIBRATION_MODEL_DECISION_REQUIRED`.** Se conserva la media aritmética; elegir entre media, sesgo al peor facet o modelo ponderado cambia el algoritmo de agregación y exige un checkpoint propio. La heterogeneidad sigue visible: hecho `contradiction` (`mixed_signals`), señales positivas y negativas, y penalización de confianza.
+**R8-O4 — cancelación entre hermanas: RESUELTA como `KEEP_CURRENT_MEAN` (checkpoint 2026-10-09).** El estado abierto del snapshot R8-C queda como historia del checkpoint que lo resolvió; la prueba ejecutable y la decisión final están en la sección de O4 al inicio. La heterogeneidad sigue visible: hecho `contradiction` (`mixed_signals`), señales positivas y negativas, y confianza separada.
 
 **R8-O5 — sensibilidad de bandas:** sin cambios (41/71); pasa a R8-C.
 
