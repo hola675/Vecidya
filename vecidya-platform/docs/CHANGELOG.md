@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-09 — DIAG-V3-ACT-03.2 Independent PDF Accessibility & Final Session Gate
+
+- Cada transición candidata espera la confirmación de `CandidateSessionStoreV3.write()` antes de mostrar el estado siguiente; mientras espera, la UI señala guardado pendiente. `readResult()` devuelve un estado recuperable ante almacenamiento restringido o lleno, y `clear()` confirma el borrado.
+- El informe candidato abierto escucha `storage`; si la key se modifica o elimina en otra pestaña, descarta su ajuste de página, oculta el documento y desactiva la impresión hasta recargar el snapshot.
+- Unidad focal 10/10; suite completa 1411/1411; E2E de sesión 8/8; `typecheck`, build y `git diff --check` PASS locales. Los tres hallazgos A/B/C se verificaron y corrigieron; no son bloqueos pendientes.
+- Los 14 PDFs y `pdf-viewer.png` quedan disponibles en `tmp/pdfs/act03-1/`, excluidos de Git con una regla específica. No hubo PAC/Acrobat + NVDA: la auditoría PDF continúa BLOCKED, no se declara PDF/UA, readiness queda `READY_WITH_EXPLICIT_BLOCKERS` y ACT-04 sigue sin iniciar.
+
 ## 2026-10-09 — DIAG-V3-ACT-03.1 PDF Accessibility, Session Hardening & Final Readiness
 
 - Se versionó la sesión candidata a schema/key 2, con validación operacional al restaurar, migración segura desde schema 1 y serialización con Web Locks cuando está disponible. El fallback es optimista y fail-closed ante conflictos; no se documenta como transacción atómica. TTL de 14 días lógico; la purga física solo sucede en una lectura posterior a la expiración.

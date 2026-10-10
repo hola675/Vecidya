@@ -44,6 +44,13 @@ class MemoryStorage implements CandidateStorageLikeV3 {
   setItem(key: string, value: string) { this.values.set(key, value); }
   removeItem(key: string) { this.values.delete(key); }
 }
+class ThrowingStorage extends MemoryStorage {
+  private readonly operation: "get" | "set" | "remove";
+  constructor(operation: "get" | "set" | "remove") { super(); this.operation = operation; }
+  override getItem(key: string) { if (this.operation === "get") throw new DOMException("Storage denied", "SecurityError"); return super.getItem(key); }
+  override setItem(key: string, value: string) { if (this.operation === "set") throw new DOMException("Quota exceeded", "QuotaExceededError"); super.setItem(key, value); }
+  override removeItem(key: string) { if (this.operation === "remove") throw new DOMException("Storage denied", "SecurityError"); super.removeItem(key); }
+}
 
 test("ACT-01: new candidate session is anonymous, versioned, and separate from legacy storage", () => {
   const session = make();
@@ -227,4 +234,18 @@ test("ACT-03.1: schema 1 sessions migrate to schema 2 without touching legacy st
   const recovered = new CandidateSessionStoreV3(storage).read(next());
   assert.equal(recovered?.status, "completing", "old completed sessions require an explicit finalization because their true completion timestamp was not stored");
   assert.equal(recovered?.completedAt, null);
+});
+
+test("ACT-03.2: restricted, full, and inaccessible storage return recoverable outcomes", async () => {
+  assert.deepEqual(new CandidateSessionStoreV3(new ThrowingStorage("get")).readResult(next()), { kind: "unavailable" });
+  assert.equal(await new CandidateSessionStoreV3(new ThrowingStorage("set")).write(make()), "unavailable", "quota failures do not escape the store");
+  const deniedRemove = new ThrowingStorage("remove");
+  deniedRemove.values.set(CANDIDATE_SESSION_STORAGE_KEY_V3, "{invalid");
+  assert.deepEqual(new CandidateSessionStoreV3(deniedRemove).readResult(next()), { kind: "unavailable" }, "corrupt data is not reported as cleared when removal fails");
+  assert.equal(await new CandidateSessionStoreV3(new ThrowingStorage("remove")).clear(), false, "reset confirms whether storage was actually cleared");
+
+  const migration = new ThrowingStorage("set");
+  const old = answer(make());
+  migration.values.set("vecidya.diagnostic.v3.candidate.session.1", JSON.stringify({ ...old, schemaVersion: 1 }));
+  assert.deepEqual(new CandidateSessionStoreV3(migration).readResult(next()), { kind: "unavailable" }, "a failed schema migration is surfaced rather than silently treated as an empty session");
 });

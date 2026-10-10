@@ -10,6 +10,7 @@ const edge = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(edge) ? edge : undefined);
 const browser = await chromium.launch(executablePath ? { executablePath } : {});
 const route = new URL("/__dev/diagnostico/candidate", baseUrl).toString();
+const reportRoute = new URL("/__dev/diagnostico/candidate/informe", baseUrl).toString();
 const key = "vecidya.diagnostic.v3.candidate.session.2";
 const preferred = { q2_entity: "business", q2_monetization: "goods", q2_delivery: ["retail", "online_checkout"], q2_sector: "retail", q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat", q2_capacity_signal: "stable", q2_goal: "explain", q2_customer_reach: "national", q2_customer_buyer: "b2c", q2_process_systemization: "defined", q2_local_presence_consistency: "partial", q2_ecommerce_product_discovery: "confusing", q2_retail_product_visibility: "partial", q2_ecommerce_traffic_sources: ["search"], q2_discovery_reliable_reach: "reliable", q2_reputation_flow: "strong" };
 let passed = 0;
@@ -190,7 +191,48 @@ try {
     pass("respuestas rápidas conservan revisiones crecientes y una cola/answer set coherentes");
     await context.close();
   }
+
+  // A deliberately delayed Web Lock keeps the UI in an explicit pending-save state and blocks accidental reload.
+  {
+    const context = await newContext();
+    const page = await context.newPage();
+    await page.addInitScript(() => {
+      const original = navigator.locks.request.bind(navigator.locks);
+      Object.defineProperty(navigator, "locks", { configurable: true, value: { request: async (...args) => {
+        if (!window.__releaseCandidateWrite) await new Promise((resolve) => { window.__releaseCandidateWrite = resolve; });
+        return original(...args);
+      } } });
+    });
+    await page.goto(route, { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
+    await page.getByRole("heading", { name: "Guardando tu progreso…" }).waitFor();
+    assert.equal(await page.locator(".df-option__input").count(), 0, "the next question is hidden before persistence is confirmed");
+    assert.equal(await saved(page), null, "the session is not reported as stored while the lock is delayed");
+    await page.evaluate(() => window.__releaseCandidateWrite?.());
+    await page.locator(".df-option__input").first().waitFor();
+    assert.equal((await saved(page)).revision, 0);
+    pass("escritura retrasada mantiene estado pendiente y no muestra preguntas ni progreso sin confirmar");
+    await context.close();
+  }
+
+  // An already-open report is invalidated as soon as another tab changes the completed snapshot.
+  {
+    const context = await newContext();
+    const report = await context.newPage();
+    await start(report);
+    await finish(report);
+    await report.goto(reportRoute, { waitUntil: "networkidle" });
+    await report.getByRole("button", { name: "Imprimir o guardar PDF" }).waitFor();
+    const editor = await context.newPage();
+    await editor.goto(route, { waitUntil: "networkidle" });
+    await editor.getByRole("button", { name: "Ver mi resultado" }).click();
+    await editor.getByRole("button", { name: "Editar respuestas" }).click();
+    await report.getByRole("alert").getByText(/sesión cambió en otra pestaña/).waitFor();
+    assert.equal(await report.getByRole("button", { name: "Imprimir o guardar PDF" }).count(), 0, "a stale snapshot cannot be printed");
+    pass("el informe ya abierto invalida impresión cuando otra pestaña modifica la sesión completada");
+    await context.close();
+  }
 } finally { await browser.close(); }
 
-console.log(`diagnostic-v3-candidate-session-hardening-check: ${passed}/6 PASS`);
-if (passed !== 6) process.exit(1);
+console.log(`diagnostic-v3-candidate-session-hardening-check: ${passed}/8 PASS`);
+if (passed !== 8) process.exit(1);

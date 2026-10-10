@@ -3,7 +3,7 @@ import { Link, isRouteErrorResponse, useRouteError, useLoaderData, type LoaderFu
 
 import { buildCandidateDiagnosticReportV1 } from "../components/diagnostic-flow/candidate-presentation";
 import { DiagnosticReport, REPORT_PAPERS, reportFileName, type ReportFit, type CandidateDiagnosticReportV1 } from "../components/diagnostic-report";
-import { CandidateSessionStoreV3, rebuildCompletedCandidateResultV3, type CandidateSessionV3 } from "../features/diagnostic/qbv2-candidate-session";
+import { CANDIDATE_SESSION_STORAGE_KEY_V3, CandidateSessionStoreV3, rebuildCompletedCandidateResultV3, type CandidateSessionV3 } from "../features/diagnostic/qbv2-candidate-session";
 
 export const meta: MetaFunction = () => [{ title: "Informe candidato (prueba local)" }, { name: "robots", content: "noindex, nofollow" }];
 
@@ -13,7 +13,7 @@ export function loader({ request }: LoaderFunctionArgs) {
   return { paper: url.searchParams.get("paper") === "letter" ? "letter" as const : "a4" as const };
 }
 
-type ReportState = { readonly kind: "loading" } | { readonly kind: "unavailable" } | { readonly kind: "error" } | { readonly kind: "ready"; readonly session: CandidateSessionV3; readonly report: CandidateDiagnosticReportV1 };
+type ReportState = { readonly kind: "loading" } | { readonly kind: "unavailable" } | { readonly kind: "stale" } | { readonly kind: "error" } | { readonly kind: "ready"; readonly session: CandidateSessionV3; readonly report: CandidateDiagnosticReportV1; readonly snapshot: string };
 
 export default function DevDiagnosticCandidateReport() {
   const { paper } = useLoaderData<typeof loader>();
@@ -29,12 +29,24 @@ export default function DevDiagnosticCandidateReport() {
       }
       const result = rebuildCompletedCandidateResultV3(session);
       if (!result || session.completedAt === null) { setSource({ kind: "unavailable" }); return; }
-      setSource({ kind: "ready", session, report: buildCandidateDiagnosticReportV1(result, new Date(session.completedAt), new Date()) });
+      const snapshot = window.localStorage.getItem(CANDIDATE_SESSION_STORAGE_KEY_V3);
+      if (!snapshot) { setSource({ kind: "unavailable" }); return; }
+      setSource({ kind: "ready", session, report: buildCandidateDiagnosticReportV1(result, new Date(session.completedAt), new Date()), snapshot });
     } catch (error) {
       console.error("[informe candidato] no se pudo reconstruir desde la sesión", error);
       setSource({ kind: "error" });
     }
   }, [attempt]);
+
+  useEffect(() => {
+    if (source.kind !== "ready") return;
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== null && event.key !== CANDIDATE_SESSION_STORAGE_KEY_V3) return;
+      if (event.newValue !== source.snapshot) { setFit(null); setSource({ kind: "stale" }); }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [source]);
 
   const report = source.kind === "ready" ? source.report : null;
   const fileName = report ? reportFileName(report.identity.businessName, report.generatedAt) : null;
@@ -52,6 +64,7 @@ export default function DevDiagnosticCandidateReport() {
         <Link to="/__dev/diagnostico/candidate">Volver a la sesión candidata</Link>
         <Link to="/__dev/diagnostico/candidate/metodologia">Metodología candidata</Link>
         {source.kind === "unavailable" ? <p role="alert">No hay una sesión candidata completada y válida en este navegador. Una sesión incompleta o editada no genera un informe final.</p> : null}
+        {source.kind === "stale" ? <p role="alert">La sesión cambió en otra pestaña. Esta instantánea ya no se puede imprimir. <button className="button button--secondary" onClick={() => { setFit(null); setSource({ kind: "loading" }); setAttempt((value) => value + 1); }} type="button">Volver a cargar el informe</button></p> : null}
         {source.kind === "error" ? <p role="alert">No pudimos reconstruir el informe desde las respuestas guardadas. <button className="button button--secondary" onClick={() => { setFit(null); setSource({ kind: "loading" }); setAttempt((value) => value + 1); }} type="button">Reintentar</button></p> : null}
         {source.kind === "loading" || (report && !fit) ? <p aria-live="polite">Preparando el informe desde la sesión candidata…</p> : null}
         {report && fit ? <>

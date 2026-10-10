@@ -220,26 +220,37 @@ export class CandidateSessionStoreV3 {
     if (this.storage) return this.storage;
     try { return typeof window === "undefined" ? null : window.localStorage; } catch { return null; }
   }
-  read(now: number): CandidateSessionV3 | null {
+  readResult(now: number): { readonly kind: "available"; readonly session: CandidateSessionV3 | null } | { readonly kind: "unavailable" } {
     const target = this.target;
-    if (!target) return null;
-    const raw = target.getItem(CANDIDATE_SESSION_STORAGE_KEY_V3);
+    if (!target) return { kind: "unavailable" };
+    let raw: string | null;
+    try { raw = target.getItem(CANDIDATE_SESSION_STORAGE_KEY_V3); } catch { return { kind: "unavailable" }; }
     const parsed = parseCandidateSessionV3(raw, now);
     if (raw) {
-      if (!parsed) target.removeItem(CANDIDATE_SESSION_STORAGE_KEY_V3);
-      return parsed;
+      if (!parsed) {
+        try { target.removeItem(CANDIDATE_SESSION_STORAGE_KEY_V3); } catch { return { kind: "unavailable" }; }
+      }
+      return { kind: "available", session: parsed };
     }
-    const previousRaw = target.getItem(PREVIOUS_CANDIDATE_SESSION_STORAGE_KEY_V3);
-    if (!previousRaw) return null;
+    let previousRaw: string | null;
+    try { previousRaw = target.getItem(PREVIOUS_CANDIDATE_SESSION_STORAGE_KEY_V3); } catch { return { kind: "unavailable" }; }
+    if (!previousRaw) return { kind: "available", session: null };
     const migrated = migratePreviousCandidateSession(previousRaw, now);
-    if (!migrated) { target.removeItem(PREVIOUS_CANDIDATE_SESSION_STORAGE_KEY_V3); return null; }
+    if (!migrated) {
+      try { target.removeItem(PREVIOUS_CANDIDATE_SESSION_STORAGE_KEY_V3); } catch { return { kind: "unavailable" }; }
+      return { kind: "available", session: null };
+    }
     const serialized = JSON.stringify(migrated);
     try {
       target.setItem(CANDIDATE_SESSION_STORAGE_KEY_V3, serialized);
-      if (target.getItem(CANDIDATE_SESSION_STORAGE_KEY_V3) !== serialized) return null;
+      if (target.getItem(CANDIDATE_SESSION_STORAGE_KEY_V3) !== serialized) return { kind: "unavailable" };
       target.removeItem(PREVIOUS_CANDIDATE_SESSION_STORAGE_KEY_V3);
-      return migrated;
-    } catch { return null; }
+      return { kind: "available", session: migrated };
+    } catch { return { kind: "unavailable" }; }
+  }
+  read(now: number): CandidateSessionV3 | null {
+    const result = this.readResult(now);
+    return result.kind === "available" ? result.session : null;
   }
   async write(session: CandidateSessionV3): Promise<"written" | "conflict" | "unavailable"> {
     const target = this.target;
@@ -269,15 +280,17 @@ export class CandidateSessionStoreV3 {
     // Without Web Locks this is optimistic, not atomic; revision checks and storage events make conflicts visible.
     return commit();
   }
-  async clear(): Promise<void> {
+  async clear(): Promise<boolean> {
     const target = this.target;
-    if (!target) return;
-    const remove = () => target.removeItem(CANDIDATE_SESSION_STORAGE_KEY_V3);
+    if (!target) return false;
+    const remove = () => {
+      try { target.removeItem(CANDIDATE_SESSION_STORAGE_KEY_V3); return target.getItem(CANDIDATE_SESSION_STORAGE_KEY_V3) === null; }
+      catch { return false; }
+    };
     if (typeof navigator !== "undefined" && navigator.locks) {
-      try { await navigator.locks.request(CANDIDATE_SESSION_STORAGE_KEY_V3, { mode: "exclusive" }, remove); }
-      catch { remove(); }
-      return;
+      try { return await navigator.locks.request(CANDIDATE_SESSION_STORAGE_KEY_V3, { mode: "exclusive" }, remove); }
+      catch { return false; }
     }
-    remove();
+    return remove();
   }
 }
