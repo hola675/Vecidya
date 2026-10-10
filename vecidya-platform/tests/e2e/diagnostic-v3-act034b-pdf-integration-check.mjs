@@ -72,9 +72,33 @@ try {
       const resourcesBefore = await page.evaluate(() => performance.getEntriesByType("resource").map((entry) => entry.name));
       assert.ok(!resourcesBefore.some((name) => /pdfkit|fontkit|arimo.*\.woff/i.test(name)), `${id}/${paper} does not preload PDFKit or Arimo before export`);
 
+      const exercisePaperRace = id === "C01" && paper === "a4";
+      let releaseFont;
+      const fontGate = new Promise((resolvePromise) => { releaseFont = resolvePromise; });
+      if (exercisePaperRace) {
+        await page.route(/arimo-latin-400-normal\.woff/, async (route) => {
+          await fontGate;
+          await route.continue();
+        });
+      }
       const startedAt = performance.now();
       const downloadPromise = page.waitForEvent("download");
+      const fontRequest = exercisePaperRace ? page.waitForRequest(/arimo-latin-400-normal\.woff/, { timeout: 10_000 }) : null;
       await page.getByRole("button", { name: "Descargar informe PDF" }).click();
+      if (exercisePaperRace) {
+        await page.getByText("Generando el informe en este navegador. No se envían tus respuestas.").waitFor();
+        await fontRequest;
+        const paperSelector = page.getByRole("combobox", { name: "Tamaño de página" });
+        assert.ok(await paperSelector.isDisabled(), "the paper selector is locked while PDFKit generation is in progress");
+        assert.equal(await page.getByRole("link", { name: "Ver en Carta" }).count(), 0, "paper navigation is removed from the toolbar while PDFKit is generating");
+        let paperChangeBlocked = false;
+        try { await paperSelector.selectOption("letter", { timeout: 500 }); } catch { paperChangeBlocked = true; }
+        assert.ok(paperChangeBlocked, "a user-level paper change attempt is blocked during PDFKit generation");
+        assert.equal(await paperSelector.inputValue(), "a4", "the confirmed A4 selection stays immutable during generation");
+        assert.equal(await reportElement.getAttribute("data-paper"), "a4", "the rendered report remains on the confirmed A4 selection during generation");
+        assert.ok(await page.getByText("Cambiar tamaño estará disponible al terminar la generación").count() === 1, "the temporary lock is explained in the toolbar");
+        releaseFont();
+      }
       const download = await downloadPromise;
       const destination = resolve(output, `candidate-${id}-${paper}.pdf`);
       await download.saveAs(destination);

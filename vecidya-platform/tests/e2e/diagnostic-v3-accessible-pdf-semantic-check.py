@@ -73,6 +73,13 @@ def occurrence_count(text: str, phrase: str) -> int:
 
 def inspect_pdf(path: Path, report: dict, manifest: dict) -> dict:
     document = fitz.open(path)
+    expected_paper = "letter" if path.stem.endswith("-letter") else "a4"
+    expected_size = (612.0, 792.0) if expected_paper == "letter" else (595.28, 841.89)
+    page_sizes = [(round(page.rect.width, 2), round(page.rect.height, 2)) for page in document]
+    page_size_matches = all(
+        abs(width - expected_size[0]) <= 1.5 and abs(height - expected_size[1]) <= 1.5
+        for width, height in page_sizes
+    )
     extracted = page_text(document)
     text = normalized(extracted)
     mandatory = manifest["mandatoryText"]
@@ -154,7 +161,10 @@ def inspect_pdf(path: Path, report: dict, manifest: dict) -> dict:
     return {
         "file": path.name,
         "scenario": manifest["scenario"],
+        "selectedPaper": expected_paper,
         "pages": len(document),
+        "pageSizesPt": page_sizes,
+        "pageSizeMatchesSelection": page_size_matches,
         "bytes": path.stat().st_size,
         "mandatoryTextCount": len(mandatory),
         "mandatoryTextComplete": not missing,
@@ -195,6 +205,7 @@ def main() -> int:
     technical_failures = [
         item for item in results
         if item["pages"] > 4
+        or not item["pageSizeMatchesSelection"]
         or item["minimumFontPt"] is None
         or item["minimumFontPt"] < 8.5
         or item["outsidePageSpans"]
@@ -214,7 +225,7 @@ def main() -> int:
         "UNJUSTIFIED_DUPLICATES": duplicates,
         "technicalFailures": [item["file"] for item in technical_failures],
         "results": [
-            {key: item[key] for key in ("file", "pages", "bytes", "mandatoryTextCount", "mandatoryTextComplete", "mandatoryLinksComplete", "classifiedDifferences", "unexplainedDifferences", "unjustifiedDuplicates", "headingOrderFailures", "minimumFontPt", "outsidePageSpans", "xmpPresent", "pdfuaPart1", "taggedStructure", "spanLanguage", "markedContent", "sourceLinks", "structuredLinkAnnotations", "embeddedFontCount", "embeddedFontsValid")}
+            {key: item[key] for key in ("file", "selectedPaper", "pages", "pageSizesPt", "pageSizeMatchesSelection", "bytes", "mandatoryTextCount", "mandatoryTextComplete", "mandatoryLinksComplete", "classifiedDifferences", "unexplainedDifferences", "unjustifiedDuplicates", "headingOrderFailures", "minimumFontPt", "outsidePageSpans", "xmpPresent", "pdfuaPart1", "taggedStructure", "spanLanguage", "markedContent", "sourceLinks", "structuredLinkAnnotations", "embeddedFontCount", "embeddedFontsValid")}
             for item in results
         ],
     }

@@ -105,6 +105,7 @@ export default function DevDiagnosticCandidateReport() {
 
   const report = source.kind === "ready" ? source.report : null;
   const fileName = report ? reportFileName(report.identity.businessName, report.generatedAt) : null;
+  const generationLocked = pdfState.kind === "generating";
   const onFit = useCallback((result: ReportFit) => setFit(result), []);
   useEffect(() => {
     if (fileName) document.title = fileName.replace(/\.pdf$/, "");
@@ -118,6 +119,8 @@ export default function DevDiagnosticCandidateReport() {
   const downloadPdf = async () => {
     if (source.kind !== "ready" || !report || !fit || fit.overflow || generationInProgress.current) return;
     const captured = source;
+    const capturedPaper = paper;
+    const capturedFileName = fileName ?? "informe-diagnostico.pdf";
     const before = checkSnapshot(captured.snapshot, captured.session);
     if (before !== "valid") {
       setPdfState({ kind: before === "expired" ? "expired" : "stale" });
@@ -139,7 +142,7 @@ export default function DevDiagnosticCandidateReport() {
       performance.mark("vecidya-candidate-pdf-import-end");
       performance.measure("vecidya-candidate-pdf-dynamic-import", "vecidya-candidate-pdf-import-start", "vecidya-candidate-pdf-import-end");
       if (controller.signal.aborted) return;
-      const generated = await createCandidateAccessiblePdf(report, paper, controller.signal);
+      const generated = await createCandidateAccessiblePdf(report, capturedPaper, controller.signal);
       if (controller.signal.aborted) return;
 
       const after = checkSnapshot(captured.snapshot, captured.session);
@@ -158,7 +161,7 @@ export default function DevDiagnosticCandidateReport() {
       objectUrl.current = href;
       const anchor = document.createElement("a");
       anchor.href = href;
-      anchor.download = fileName ?? "informe-diagnostico.pdf";
+      anchor.download = capturedFileName;
       anchor.style.display = "none";
       document.body.appendChild(anchor);
       anchor.click();
@@ -193,12 +196,14 @@ export default function DevDiagnosticCandidateReport() {
         {source.kind === "loading" || (report && !fit) ? <p aria-live="polite">Preparando el informe desde la sesión candidata…</p> : null}
         {report && fit ? <>
           <label className="rp-paper-control">Tamaño de página
-            <select aria-label="Tamaño de página" onChange={(event) => { setPaper(event.currentTarget.value as typeof paper); setFit(null); setPdfState({ kind: "idle" }); }} value={paper}>
+            <select aria-label="Tamaño de página" disabled={generationLocked} onChange={(event) => { setPaper(event.currentTarget.value as typeof paper); setFit(null); setPdfState({ kind: "idle" }); }} value={paper}>
               <option value="a4">A4</option>
               <option value="letter">Carta (US Letter)</option>
             </select>
           </label>
-          <Link to={paper === "a4" ? "?paper=letter" : "/__dev/diagnostico/candidate/informe"}>Ver en {paper === "a4" ? "Carta" : "A4"}</Link>
+          {generationLocked
+            ? <span aria-disabled="true" className="rp-toolbar__meta">Cambiar tamaño estará disponible al terminar la generación</span>
+            : <Link to={paper === "a4" ? "?paper=letter" : "/__dev/diagnostico/candidate/informe"}>Ver en {paper === "a4" ? "Carta" : "A4"}</Link>}
           <button className="button button--primary" disabled={fit.overflow || pdfState.kind === "generating"} onClick={downloadPdf} type="button">{pdfState.kind === "generating" ? "Generando informe PDF…" : "Descargar informe PDF"}</button>
           <button className="button button--secondary" disabled={fit.overflow || pdfState.kind === "generating"} onClick={() => window.print()} type="button">Imprimir o guardar PDF</button>
           <span className="rp-toolbar__meta">{fileName} · {REPORT_PAPERS[paper].label}</span>

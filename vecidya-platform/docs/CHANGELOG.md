@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-10 — DIAG-V3-ACT-03.4B.1 cierre de verificación (GATE_B_PARTIAL)
+
+- La reproducción congelada en checkout aislado no terminó: Node v24.21.0 y pnpm 11.21.0; el lockfile resuelve, pero el registry oficial rechazó la conexión de descargas, incluida Arimo 5.3.0. SHA-256 lockfile `28D435FAF0A854357C74CA174308B29B8D64030CF59458C8512DF236D36EF319`; patch `0C3608FD84F6A55E9B3408446111BF4320F28C77F1AD39F128B3728E5ED74358`, coincide con lock. Estado `INSTALL_REPRO_BLOCKED`; no hubo modificación manual de `node_modules` ni PDF desde instalación limpia.
+- veraPDF **0/14**: no se obtuvo binario oficial y el entorno carece de Java/Docker. La evidencia PyMuPDF 14/14 no se etiqueta como pase veraPDF ni como certificación humana.
+- Se bloquea selector/enlace A4/Carta durante generación y se captura inmutable la selección. E2E con la descarga pausada intenta cambiar el formato y confirma que C01/A4 se genera y se descarga en A4. PyMuPDF verifica las 14 salidas y su geometría elegida; semántica sin pérdida, diferencia inexplicada o duplicado; CIDSet 4/4.
+- Regresiones: sesiones PASS; unitarias 1412/1412; ACT-01 8/8; ACT-02 6/6; ACT-03.2 8/8; ACT-03 15/15; flujo legacy 10/10; PDF legacy 26/26; typecheck/build y bundle isolation PASS. Worker compilado local: tres rutas públicas 200 y candidata 404.
+- Membresías: `ECONNRESET` en el primer GET después de inserción D1 con Worker activo; el Worker permanece vivo y sin error D1/SQLite observado. La misma matriz pasa 7B.1 con fixture insertado mientras Worker está detenido. Causa de transporte no confirmada; sin cambios ni reintentos en lógica de membresías. Runner general actual se detiene antes, en slug lifecycle con 401 reproducible aislado.
+- Gate B permanece `PARTIAL`; candidata inactiva; ACT-03.5 no se propone, ACT-04 no inicia. Sin deploy ni push. Evidencia canónica en `TESTING.md`, `ARCHITECTURE.md`, `STATUS.md`, `PROJECT_STATE.md` y `ROADMAP.md`.
+
 ## 2026-10-10 — DIAG-V3-ACT-03.4B integración PDF accesible candidata
 
 - Integrada una acción de descarga local en la ruta de informe candidate-only: selector A4/Carta, importación dinámica en navegador, fuentes same-origin, Blob/URL temporal y fallback HTML/print. `CandidateDiagnosticReportV1` sigue como única fuente del contenido; la ruta pública no cambia.
