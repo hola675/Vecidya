@@ -64,7 +64,7 @@ async function checkSpecialScenario(scenario) {
 }
 const browser = await chromium.launch(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {});
 try {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, acceptDownloads: true });
   await context.addInitScript(({ legacyKey, legacyFixture }) => localStorage.setItem(legacyKey, legacyFixture), { legacyKey, legacyFixture });
   const page = await context.newPage();
   const errors = [];
@@ -150,6 +150,11 @@ try {
   assert(/\/StructTreeRoot\s+\d+ 0 R/.test(candidatePdfSource) && /\/Marked\s+true/.test(candidatePdfSource), "browser PDF carries a tagged structure tree");
   assert(/\/Lang\s*\(es\)/.test(candidatePdfSource), "browser PDF declares Spanish document language");
   await page.emulateMedia({ media: "screen" });
+  const candidateDownload = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Descargar informe PDF" }).click();
+  const downloadedCandidatePdf = await candidateDownload;
+  assert(downloadedCandidatePdf.suggestedFilename().endsWith(".pdf"), "completed candidate questionnaire reaches the PDFKit download from its own report route");
+  await page.getByText(/Descarga iniciada; no podemos confirmar que se guardó el archivo/).waitFor();
   await page.getByRole("link", { name: /Ver en Carta/ }).click();
   await page.waitForFunction(() => document.querySelector('.rp[data-paper="letter"][data-ready="true"]') !== null);
   const letterPages = Number(await page.locator(".rp").getAttribute("data-pages"));

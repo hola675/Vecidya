@@ -31,6 +31,33 @@ doc.addStructure(root);
 doc.registerFont("Arimo", fontPath).font("Arimo").fontSize(18);
 doc.text("Reproducción mínima CIDSet", { structParent: root, structType: "H1" });
 doc.fontSize(12).text("Prueba breve en español con fuente Arimo incrustada.", { structParent: root });
+if (standard !== "ordinary") {
+  const list = doc.struct("L");
+  root.add(list);
+  const item = doc.struct("LI");
+  list.add(item);
+  const label = doc.struct("Lbl");
+  item.add(label);
+  doc.text("•", { structParent: label });
+  label.end();
+  const body = doc.struct("LBody");
+  item.add(body);
+  const paragraph = doc.struct("P");
+  body.add(paragraph);
+  doc.text("Elemento de lista con vocales acentuadas: información pública.", { structParent: paragraph });
+  paragraph.end();
+  body.end();
+  item.end();
+  list.end();
+  const link = doc.struct("Link");
+  root.add(link);
+  doc.text("Fuente oficial", { structParent: link, underline: true });
+  doc.link(72, doc.y - 16, 100, 18, "https://example.org/fuente", {
+    structParent: link,
+    Contents: new String("Abrir fuente oficial"),
+  });
+  link.end();
+}
 doc.end();
 await finished(stream);
 console.log(JSON.stringify({ standard, weight, output: destination }));

@@ -15,8 +15,8 @@ from pathlib import Path
 import pymupdf as fitz
 
 
-ROOT = Path("tmp/pdfs/act03-4a")
-MODEL_ROOT = Path("tmp/act03-4a")
+ROOT = Path("tmp/pdfs/act03-4b")
+MODEL_ROOT = Path("tmp/act03-4b")
 
 
 def normalized(value: object) -> str:
@@ -182,7 +182,7 @@ def inspect_pdf(path: Path, report: dict, manifest: dict) -> dict:
 
 def main() -> int:
     results = []
-    for scenario in ("C01", "C14", "C16", "C24"):
+    for scenario in ("C01", "C06", "C09", "C13", "C14", "C16", "C24"):
         report = json.loads((MODEL_ROOT / f"{scenario}.json").read_text(encoding="utf-8"))
         manifest = json.loads((MODEL_ROOT / f"{scenario}.semantic-manifest.json").read_text(encoding="utf-8"))
         for paper in ("a4", "letter"):
@@ -194,7 +194,7 @@ def main() -> int:
     duplicates = sum(len(item["unjustifiedDuplicates"]) for item in results)
     technical_failures = [
         item for item in results
-        if item["pages"] > 3
+        if item["pages"] > 4
         or item["minimumFontPt"] is None
         or item["minimumFontPt"] < 8.5
         or item["outsidePageSpans"]
@@ -219,7 +219,7 @@ def main() -> int:
         ],
     }
     print(json.dumps(summary, ensure_ascii=False, indent=2))
-    return 1 if len(results) != 8 or mandatory_loss or unexplained or duplicates or technical_failures else 0
+    return 1 if len(results) != 14 or mandatory_loss or unexplained or duplicates or technical_failures else 0
 
 
 if __name__ == "__main__":

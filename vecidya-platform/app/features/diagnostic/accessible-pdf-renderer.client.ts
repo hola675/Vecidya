@@ -1,6 +1,6 @@
 import PDFDocument, { registerStdFonts } from "pdfkit";
 import Helvetica from "pdfkit/standard-fonts/Helvetica";
-import type { CandidateDiagnosticReportV1 } from "../../app/components/diagnostic-report/report-model";
+import type { CandidateDiagnosticReportV1 } from "../../components/diagnostic-report/report-model";
 
 export type PdfRenderInput = {
   report: CandidateDiagnosticReportV1;
@@ -138,7 +138,6 @@ export async function renderAccessiblePdf(input: PdfRenderInput): Promise<Uint8A
       p(report.overallPresence.explanation);
       pair("Confianza", report.overallPresence.confidence.label);
       p(report.overallPresence.coverage);
-      if (report.overallPresence.warning) p(report.overallPresence.warning);
     });
 
     section("Resumen ejecutivo", () => {

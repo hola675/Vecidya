@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-10 — DIAG-V3-ACT-03.4B integración PDF accesible candidata
+
+- Integrada una acción de descarga local en la ruta de informe candidate-only: selector A4/Carta, importación dinámica en navegador, fuentes same-origin, Blob/URL temporal y fallback HTML/print. `CandidateDiagnosticReportV1` sigue como única fuente del contenido; la ruta pública no cambia.
+- Validación temporal de sesión/snapshot/revisión/TTL antes y después de generación. Cambios en otra pestaña, borrado o expiración descartan bytes; errores y recuperación se exponen con estado accesible.
+- Playwright produjo 14 PDF desde la UI real; PyMuPDF confirmó sin pérdidas/diferencias/duplicados, XMP/tags/idioma/fuentes/enlaces, 2–3 páginas y mínimo físico 8,5 pt. No se ejecutó veraPDF, PAC/Acrobat, NVDA o revisión humana en este entorno. CIDSet 4/4, typecheck/build, unitarias 1412/1412, ACT-01 8/8, ACT-03 15/15, hardening 8/8, legacy flow 10/10 y PDF legacy 26/26 PASS; Wrangler local da 200/200/200 en rutas públicas y 404 en ruta candidata. El runner E2E local general se interrumpió por `ECONNRESET` repetido en membresías.
+- Gate B **PARTIAL**: también queda pendiente instalación congelada limpia reproducible (fallo de registry; tarball Arimo no estaba en caché offline). Candidata inactiva, sin motor/puntuaciones/reglas comerciales modificadas, sin migración, persistencia remota, deploy o push. No iniciar ACT-04 hasta resolver bloqueos; ver `TESTING.md`.
+
 ## 2026-10-10 — DIAG-V3-ACT-03.4A CIDSet root cause
 
 - La reproducción aislada de PDFKit 0.20.2 localiza la causa en la condición `subset === 1`: PDF/UA y PDF/A-1 comparten ese valor, aunque el CIDSet solo se requiere para PDF/A-1. El CIDSet de Arimo identificado por veraPDF contenía 30 bits para un subconjunto de 33 glifos y fallaba ISO 14289-1:2014 §7.21.4.2.

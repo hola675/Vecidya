@@ -4860,6 +4860,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .rp-toolbar a { color: var(--blue); font-weight: 700; }
 .rp-toolbar__meta { color: var(--muted); font-size: var(--text-meta); }
 .rp-page--candidate .rp-toolbar__meta { color: #4d5c70; }
+.rp-paper-control { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; color: var(--ink); font-weight: 700; }
+.rp-paper-control select { min-height: 2.75rem; border: 1px solid #9eafc5; border-radius: 0.65rem; padding: 0.55rem 2rem 0.55rem 0.75rem; color: var(--ink); background: #fff; }
+.rp-export-status { width: min(100% - 2rem, 52rem); margin: -0.75rem auto 1rem; color: var(--ink); font-size: var(--text-meta); line-height: 1.5; }
+.rp-export-status:empty { display: none; }
+.rp-export-status[role="alert"] { color: #8a2b00; }
 .rp { --rp-fs: 9.5pt; display: grid; justify-content: center; gap: 1.25rem; font-family: var(--font-sans); }
 .rp-doc { display: contents; }
 .rp-sheet { position: relative; display: flex; flex-direction: column; box-sizing: border-box; width: var(--rp-w); height: var(--rp-h); overflow: hidden; padding: 11mm 12mm 9mm; background: #fff; box-shadow: 0 0.5rem 2rem rgb(20 43 74 / 12%); font-size: var(--rp-fs); line-height: 1.32; break-after: page; }
