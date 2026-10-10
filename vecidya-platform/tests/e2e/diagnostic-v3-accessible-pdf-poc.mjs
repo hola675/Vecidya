@@ -12,8 +12,8 @@ import { CANONICAL_CASES_V3 } from "../unit/diagnostic/qbv2-candidate-canonical-
 import { runCanonicalRouteV3 } from "../unit/diagnostic/qbv2-candidate-case-runner.ts";
 import { buildCandidatePdfSemanticManifest } from "./accessible-pdf-semantic-manifest.ts";
 
-const outputDirectory = resolve("tmp/pdfs/act03-3");
-const evidenceDirectory = resolve("tmp/act03-3");
+const outputDirectory = resolve("tmp/pdfs/act03-4a");
+const evidenceDirectory = resolve("tmp/act03-4a");
 mkdirSync(outputDirectory, { recursive: true });
 mkdirSync(evidenceDirectory, { recursive: true });
 const fontDirectory = resolve("node_modules/@fontsource/arimo/files");

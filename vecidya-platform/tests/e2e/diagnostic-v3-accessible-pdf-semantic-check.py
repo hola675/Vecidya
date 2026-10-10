@@ -15,8 +15,8 @@ from pathlib import Path
 import pymupdf as fitz
 
 
-ROOT = Path("tmp/pdfs/act03-3")
-MODEL_ROOT = Path("tmp/act03-3")
+ROOT = Path("tmp/pdfs/act03-4a")
+MODEL_ROOT = Path("tmp/act03-4a")
 
 
 def normalized(value: object) -> str:

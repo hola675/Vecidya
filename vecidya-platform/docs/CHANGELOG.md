@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-10 — DIAG-V3-ACT-03.4A CIDSet root cause
+
+- La reproducción aislada de PDFKit 0.20.2 localiza la causa en la condición `subset === 1`: PDF/UA y PDF/A-1 comparten ese valor, aunque el CIDSet solo se requiere para PDF/A-1. El CIDSet de Arimo identificado por veraPDF contenía 30 bits para un subconjunto de 33 glifos y fallaba ISO 14289-1:2014 §7.21.4.2.
+- Se propone un patch local versionado con pnpm que genera CIDSet únicamente si `subset_conformance` está presente. veraPDF pasa PDF/UA 2/2 y PDF/A-1 1/1; la salida ordinaria conserva extracción de texto y fuente embebida sin CIDSet. Las ocho muestras A4/Carta pasan veraPDF UA-1 8/8.
+- Los ocho PDFs conservan texto, enlaces, cajas de página, píxeles y tamaño byte por byte frente a ACT-03.3; máximo tres páginas y tipografía mínima de 8,5 pt. No se recalculan ni cambian resultados, reglas comerciales o contenido certificado.
+- Regresión local: unitarias 1412/1412, caracterización 1/1, ACT-01 8/8, ACT-02 6/6, hardening de sesión 8/8, ACT-03 15/15, renderer legacy 26/26, typecheck y build PASS; escaneo de bundles sin PDFKit, renderer ni fuentes Arimo.
+- Disposición: `ROOT_CAUSE_RESOLVED`; `MAINTAINED_PATCH_PROPOSED`; Gate B permanece `NOT_STARTED` hasta aprobación de adopción. PAC/Acrobat, NVDA y evaluación humana siguen pendientes; ACT-04 bloqueado. Sin push, deploy o publicación externa.
+
 ## 2026-10-10 — DIAG-V3-ACT-03.4 Gate A bloqueado
 
 - Se creó un manifiesto semántico tipado para el modelo candidato y una auditoría PDF por campo. Las ocho salidas A4/Carta quedan sin pérdida de contenido obligatorio, diferencias inexplicadas ni duplicados injustificados. Se añadió al PDF la fecha de generación que ya estaba en el modelo y el HTML.

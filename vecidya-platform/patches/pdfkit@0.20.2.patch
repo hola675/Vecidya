@@ -1,0 +1,39 @@
+diff --git a/js/pdfkit.browser.mjs b/js/pdfkit.browser.mjs
+index 7401f93dec8c8279631fe9e525cf945c6bfbd97b..718a3211a5aec41a45b62bfab83847f0a59058c9 100644
+--- a/js/pdfkit.browser.mjs
++++ b/js/pdfkit.browser.mjs
+@@ -3643,7 +3643,7 @@ class EmbeddedFont extends PDFFont {
+     } else {
+       descriptor.data.FontFile2 = fontFile;
+     }
+-    if (this.document.subset && this.document.subset === 1) {
++    if (this.document.subset === 1 && this.document.subset_conformance != null) {
+       const maxCID = this.widths.length - 1;
+       const cidSetBuffer = new Uint8Array(Math.ceil((maxCID + 1) / 8));
+       for (let cid = 0; cid <= maxCID; cid++) {
+diff --git a/js/pdfkit.js b/js/pdfkit.js
+index 1a862078b3ad5a87b3ed5a4e1d9ca014ff0197d6..8a62dbc1512e21c83128c0e57f5076d8a0c43262 100644
+--- a/js/pdfkit.js
++++ b/js/pdfkit.js
+@@ -3534,7 +3534,7 @@ class EmbeddedFont extends PDFFont {
+     } else {
+       descriptor.data.FontFile2 = fontFile;
+     }
+-    if (this.document.subset && this.document.subset === 1) {
++    if (this.document.subset === 1 && this.document.subset_conformance != null) {
+       const maxCID = this.widths.length - 1;
+       const cidSetBuffer = new Uint8Array(Math.ceil((maxCID + 1) / 8));
+       for (let cid = 0; cid <= maxCID; cid++) {
+diff --git a/js/pdfkit.node.mjs b/js/pdfkit.node.mjs
+index af7b80be2a449cefd2230bc7ab304df71b59b6c1..b856caa000c40a3d6d97c2f6056352804c4af0b0 100644
+--- a/js/pdfkit.node.mjs
++++ b/js/pdfkit.node.mjs
+@@ -3529,7 +3529,7 @@ class EmbeddedFont extends PDFFont {
+     } else {
+       descriptor.data.FontFile2 = fontFile;
+     }
+-    if (this.document.subset && this.document.subset === 1) {
++    if (this.document.subset === 1 && this.document.subset_conformance != null) {
+       const maxCID = this.widths.length - 1;
+       const cidSetBuffer = new Uint8Array(Math.ceil((maxCID + 1) / 8));
+       for (let cid = 0; cid <= maxCID; cid++) {

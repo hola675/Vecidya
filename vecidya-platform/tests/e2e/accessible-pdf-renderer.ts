@@ -38,22 +38,29 @@ export async function renderAccessiblePdf(input: PdfRenderInput): Promise<Uint8A
     doc.on("error", reject);
   });
 
+  let currentStructureElement: ReturnType<typeof doc.struct> | null = null;
+  const attachStructureElement = (element: ReturnType<typeof doc.struct>) => {
+    if (currentStructureElement) currentStructureElement.add(element);
+    else doc.addStructure(element);
+  };
   const group = (tag: string, write: () => void) => {
     const element = doc.struct(tag);
-    if (doc._currentStructureElement) doc._currentStructureElement.add(element);
-    else doc.addStructure(element);
-    const previous = doc._currentStructureElement;
-    doc._currentStructureElement = element;
+    attachStructureElement(element);
+    const previous = currentStructureElement;
+    currentStructureElement = element;
     try { write(); }
-    finally { doc._currentStructureElement = previous; element.end(); }
+    finally { currentStructureElement = previous; element.end(); }
     return element;
   };
   const structure = (tag: string, write: () => void) => {
-    const element = doc.struct(tag, write);
-    if (doc._currentStructureElement) {
-      doc._currentStructureElement.add(element);
-      if (!element._attached) element.setAttached();
-    } else doc.addStructure(element);
+    let element!: ReturnType<typeof doc.struct>;
+    element = doc.struct(tag, () => {
+      const previous = currentStructureElement;
+      currentStructureElement = element;
+      try { write(); }
+      finally { currentStructureElement = previous; }
+    });
+    attachStructureElement(element);
     return element;
   };
   const text = (value: string, options: Record<string, unknown> = {}) => doc.text(value, {
@@ -110,7 +117,7 @@ export async function renderAccessiblePdf(input: PdfRenderInput): Promise<Uint8A
     const height = doc.heightOfString(name, { width });
     text(name, { underline: true, paragraphGap: 2 });
     doc.link(x, y, width, height, url, {
-      structParent: doc._currentStructureElement,
+      structParent: currentStructureElement,
       Contents: new String(`Abrir fuente: ${name}`),
     });
     doc.fillColor("#202B33");
@@ -255,18 +262,6 @@ export async function renderAccessiblePdf(input: PdfRenderInput): Promise<Uint8A
     });
   });
 
-  // PDFKit 0.20.2 reuses the numeric PDF/UA identifier as a condition for writing a CIDSet.
-  // veraPDF detects that generated CIDSet as incomplete. Preserve PDF/UA metadata and font
-  // subsetting while skipping only this optional entry; pinning and regression-checking are required.
-  for (const font of Object.values(doc._fontFamilies) as Array<{ finalize: () => void }>) {
-    const finalize = font.finalize;
-    font.finalize = function () {
-      const subset = doc.subset;
-      doc.subset = false;
-      try { return finalize.call(this); }
-      finally { doc.subset = subset; }
-    };
-  }
   doc.end();
   return done;
 }

@@ -9,6 +9,9 @@ overrides:
   morgan: '>=1.12.0'
   qs: '>=6.16.0'
 
+patchedDependencies:
+  pdfkit@0.20.2: 0c3608fd84f6a55e9b3408446111bf4320f28c77f1ad39f128b3728e5ed74358
+
 importers:
 
   .:
@@ -67,7 +70,7 @@ importers:
         version: 0.28.2
       pdfkit:
         specifier: 0.20.2
-        version: 0.20.2
+        version: 0.20.2(patch_hash=0c3608fd84f6a55e9b3408446111bf4320f28c77f1ad39f128b3728e5ed74358)
       playwright:
         specifier: 1.63.0
         version: 1.63.0
@@ -3977,7 +3980,7 @@ snapshots:
 
   pathe@2.0.3: {}
 
-  pdfkit@0.20.2:
+  pdfkit@0.20.2(patch_hash=0c3608fd84f6a55e9b3408446111bf4320f28c77f1ad39f128b3728e5ed74358):
     dependencies:
       '@noble/ciphers': 1.3.0
       '@noble/hashes': 1.8.0
