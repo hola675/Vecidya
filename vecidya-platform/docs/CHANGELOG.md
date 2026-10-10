@@ -2,6 +2,9 @@
 
 ## 2026-10-09 — DIAG-V3-ACT-03.2 Independent PDF Accessibility & Final Session Gate
 
+- Se corrigió la presentación del informe candidato: las señales comerciales usan etiquetas humanas; cobertura indica que se limita a las áreas evaluables; C16 expresa evidencia insuficiente y C24 reconoce BIEN; el copy de verificación es gramatical. R4/O6 e identidades completas pasan a rótulos amigables y un anexo técnico.
+- El piso de 8,5 pt ahora rige todos los textos impresos, incluidos pies, metadatos, contexto y modo de flujo. La licencia y las ofertas actuales se mantienen como un bloque editorial al paginar.
+- La candidata, los scores, prioridades y el catálogo comercial no cambiaron. Las 14 muestras ACT-03.1 se conservan y la recertificación se produce aparte; XMP y la revisión PAC/Acrobat + NVDA permanecen como gates abiertos. No se declara PDF/UA ni se inicia ACT-04.
 - Cada transición candidata espera la confirmación de `CandidateSessionStoreV3.write()` antes de mostrar el estado siguiente; mientras espera, la UI señala guardado pendiente. `readResult()` devuelve un estado recuperable ante almacenamiento restringido o lleno, y `clear()` confirma el borrado.
 - El informe candidato abierto escucha `storage`; si la key se modifica o elimina en otra pestaña, descarta su ajuste de página, oculta el documento y desactiva la impresión hasta recargar el snapshot.
 - Unidad focal 10/10; suite completa 1411/1411; E2E de sesión 8/8; `typecheck`, build y `git diff --check` PASS locales. Los tres hallazgos A/B/C se verificaron y corrigieron; no son bloqueos pendientes.

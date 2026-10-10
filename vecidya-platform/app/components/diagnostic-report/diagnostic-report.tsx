@@ -31,6 +31,21 @@ function List({ items }: { items: readonly ReactNode[] }) {
 
 const Labelled = ({ label, text }: { label: string; text: string }) => <><span className="rp-label">{label}.</span> {text}</>;
 const h2 = (key: string, text: string): Block => ({ key: `h2:${key}`, keepWithNext: true, node: <h2 className="rp-h2">{text}</h2> });
+const candidateIdentityLabel = (key: string) => {
+  const labels: Readonly<Record<string, string>> = {
+    engine: "Motor",
+    questionBank: "Banco de preguntas",
+    planner: "Planificador",
+    evidence: "Modelo de evidencia",
+    applicability: "Aplicabilidad R4",
+    calibration: "Calibración",
+    siblingAggregation: "Agregación de áreas O4",
+    observability: "Observabilidad O6",
+    methodology: "Metodología",
+    report: "Informe",
+  };
+  return labels[key] ?? key;
+};
 
 function Dimension({ dimension }: { dimension: ReportDimension }) {
   return (
@@ -52,7 +67,6 @@ function Dimension({ dimension }: { dimension: ReportDimension }) {
       </p>
       <p>{dimension.interpretation}</p>
       {dimension.evidenceTopics.length > 0 ? <p className="rp-evidence"><span className="rp-label">{dimension.evidenceLead}</span> {dimension.evidenceTopics.join("; ")}.</p> : null}
-      {dimension.context ? <dl className="rp-context"><div><dt>Aplicabilidad R4</dt><dd>{dimension.context.applicability}</dd></div><div><dt>Observabilidad O6</dt><dd>{dimension.context.observability}</dd></div><div><dt>Evidencia directa</dt><dd>{dimension.context.directEvidence}</dd></div></dl> : null}
     </div>
   );
 }
@@ -221,12 +235,10 @@ function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
 
   if ("candidateCommercial" in report) {
     const commercial = report.candidateCommercial;
-    blocks.push(h2("vecidya", "Lectura comercial del motor candidato"));
-    blocks.push({ key: "candidate-commercial-note", node: <p className="rp-muted">La recomendación comercial se calcula después de la medición y no cambia las capacidades ni sus prioridades.</p> });
-    blocks.push({ key: "candidate-commercial-license", node: <div className="rp-help"><p className="rp-label">{commercial.licenseName ? `LICENCIA RECOMENDADA: ${commercial.licenseName}` : "NINGUNA LICENCIA RECOMENDADA POR AHORA"}</p><p><strong>Certeza de encaje:</strong> {commercial.certainty}</p><p>{commercial.rationale}</p>{commercial.licenseName ? <><p>{commercial.whyNotLower}</p><p>{commercial.whyNotHigher}</p></> : null}{commercial.unresolvedSignals.length ? <p><strong>Pendiente:</strong> {commercial.unresolvedSignals.join("; ")}</p> : null}{commercial.monthlyLicenseUsd !== null ? <p>{`Licencia · $${commercial.monthlyLicenseUsd}/mes`}{commercial.activationUsd !== null ? ` · puesta en marcha $${commercial.activationUsd} una vez` : ""}</p> : null}</div> });
-    for (const [key, title, items] of [["candidate-now", "Compatibles ahora", commercial.now], ["candidate-later", "Compatibles después", commercial.later]] as const) {
-      blocks.push({ key, keepWithNext: items.length > 0, node: <><h3 className="rp-h3">{title}</h3>{items.length ? <ul>{items.map((item) => <li className="rp-offer" key={`${item.kind}:${item.name}`}><strong>{item.name}</strong> · {item.kind}{item.priceLabel ? ` · ${item.priceLabel}` : ""}<p>{item.rationale}</p></li>)}</ul> : <p className="rp-muted">No hay ofertas justificadas para este momento.</p>}</> });
-    }
+    blocks.push(h2("vecidya", "Recomendación para Vecidya"));
+    blocks.push({ key: "candidate-commercial-note", keepWithNext: true, node: <p className="rp-muted">La recomendación comercial se calcula después de la evaluación y no cambia las capacidades ni sus prioridades.</p> });
+    blocks.push({ key: "candidate-license-now", node: <div className="rp-help"><p className="rp-label">{commercial.licenseName ? `LICENCIA RECOMENDADA: ${commercial.licenseName}` : "NINGUNA LICENCIA RECOMENDADA POR AHORA"}</p><p><strong>Certeza de encaje:</strong> {commercial.certainty}</p><p>{commercial.rationale}</p>{commercial.licenseName ? <><p>{commercial.whyNotLower}</p><p>{commercial.whyNotHigher}</p></> : null}{commercial.unresolvedSignals.length ? <p><strong>Pendiente:</strong> {commercial.unresolvedSignals.join("; ")}</p> : null}{commercial.monthlyLicenseUsd !== null ? <p>{`Licencia · $${commercial.monthlyLicenseUsd}/mes`}{commercial.activationUsd !== null ? ` · puesta en marcha $${commercial.activationUsd} una vez` : ""}</p> : null}<h3 className="rp-h3">Compatibles ahora</h3>{commercial.now.length ? <ul>{commercial.now.map((item) => <li className="rp-offer" key={`${item.kind}:${item.name}`}><strong>{item.name}</strong> · {item.kind}{item.priceLabel ? ` · ${item.priceLabel}` : ""}<p>{item.rationale}</p></li>)}</ul> : <p className="rp-muted">No hay ofertas justificadas para este momento.</p>}</div> });
+    blocks.push({ key: "candidate-later", keepWithNext: commercial.later.length > 0, node: <><h3 className="rp-h3">Compatibles después</h3>{commercial.later.length ? <ul>{commercial.later.map((item) => <li className="rp-offer" key={`${item.kind}:${item.name}`}><strong>{item.name}</strong> · {item.kind}{item.priceLabel ? ` · ${item.priceLabel}` : ""}<p>{item.rationale}</p></li>)}</ul> : <p className="rp-muted">No hay ofertas justificadas para este momento.</p>}</> });
     if (commercial.externalUsageCategories.length) blocks.push({ key: "candidate-external-costs", node: <p className="rp-muted">Algunas ofertas pueden tener costes externos de uso según los canales que indiquen sus condiciones.</p> });
   } else {
     blocks.push(h2("vecidya", "Tu configuración Vecidya"));
@@ -260,16 +272,20 @@ function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
           <h2 className="rp-h2">Lo que el diagnóstico no puede afirmar</h2>
           <List items={report.limitations} />
         </div>
-        {"candidateEngineIdentity" in report ? <p className="rp-muted">Identidad del motor: <code>{report.candidateEngineIdentity.engine}</code> · Banco: {report.candidateEngineIdentity.questionBank} · Planner: {report.candidateEngineIdentity.planner} · Evidencia: {report.candidateEngineIdentity.evidence} · Aplicabilidad: {report.candidateEngineIdentity.applicability} · Calibración: {report.candidateEngineIdentity.calibration} · O4: {report.candidateEngineIdentity.siblingAggregation} · O6: {report.candidateEngineIdentity.observability} · Informe: {report.candidateEngineIdentity.report}</p> : null}
       </div>
     ),
   });
+  if ("candidateEngineIdentity" in report) {
+    blocks.push({
+      key: "candidate-technical-appendix",
+      node: <section className="rp-technical"><h2 className="rp-h2">Anexo técnico: trazabilidad de la versión</h2><dl>{Object.entries(report.candidateEngineIdentity).map(([key, value]) => <div key={key}><dt>{candidateIdentityLabel(key)}</dt><dd><code>{String(value)}</code></dd></div>)}</dl></section>,
+    });
+  }
   blocks.push({
     key: "info",
     node: (
       <div className="rp-info">
         <p>{report.disclaimer}</p>
-        <p>Informe generado el {report.generatedLabel} · Informe {report.reportVersion} · Metodología {report.methodologySummary.version}</p>
       </div>
     ),
   });

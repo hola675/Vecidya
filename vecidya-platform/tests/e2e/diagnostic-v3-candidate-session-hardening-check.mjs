@@ -16,12 +16,25 @@ const preferred = { q2_entity: "business", q2_monetization: "goods", q2_delivery
 let passed = 0;
 const pass = (label) => { passed += 1; console.log(`PASS ${label}`); };
 const saved = (page) => page.evaluate((storageKey) => JSON.parse(localStorage.getItem(storageKey) ?? "null"), key);
+async function gotoReady(page, url = route) {
+  await page.goto(url, { waitUntil: "domcontentloaded" });
+  if (url === reportRoute) {
+    await page.waitForFunction(() => document.querySelector('.rp[data-ready="true"]') !== null);
+    return;
+  }
+  await page.waitForFunction(() => {
+    const root = document.getElementById("contenido");
+    return root && Object.keys(root).some((property) => property.startsWith("__reactFiber$"));
+  });
+}
 async function start(page) {
-  await page.goto(route, { waitUntil: "networkidle" });
+  await gotoReady(page);
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
+  await page.locator(".df-option__input").first().waitFor();
 }
 async function answerCurrent(page, answerBag = preferred) {
   const input = page.locator(".df-option__input").first();
+  await input.waitFor();
   const id = await input.getAttribute("name");
   const type = await input.getAttribute("type");
   const wanted = answerBag[id];
@@ -55,8 +68,8 @@ try {
     const context = await newContext();
     const first = await context.newPage();
     const second = await context.newPage();
-    await first.goto(route, { waitUntil: "networkidle" });
-    await second.goto(route, { waitUntil: "networkidle" });
+    await gotoReady(first);
+    await gotoReady(second);
     const module = await import("../../app/features/diagnostic/qbv2-candidate-session.ts");
     const now = Date.now();
     const initial = module.createCandidateSessionV3({ sessionId: `act031-race-${now}`, writerId: "tab-seed", now });
@@ -96,7 +109,7 @@ try {
     await answerCurrent(first);
     const before = await saved(first);
     const second = await context.newPage();
-    await second.goto(route, { waitUntil: "networkidle" });
+    await gotoReady(second);
     await second.getByRole("button", { name: "Continuar diagnóstico" }).click();
     await first.getByRole("heading", { name: "Esta sesión se está editando en otra pestaña" }).waitFor();
     assert.equal((await saved(second)).revision, before.revision + 1);
@@ -114,7 +127,7 @@ try {
     await answerCurrent(first);
     const before = await saved(first);
     const second = await context.newPage();
-    await second.goto(route, { waitUntil: "networkidle" });
+    await gotoReady(second);
     await second.getByRole("button", { name: "Continuar diagnóstico" }).click();
     await first.getByRole("heading", { name: "Esta sesión se está editando en otra pestaña" }).waitFor();
     await first.getByRole("button", { name: "Recargar sesión" }).click();
@@ -136,7 +149,7 @@ try {
     await finish(first);
     const completedAt = (await saved(first)).completedAt;
     const second = await context.newPage();
-    await second.goto(route, { waitUntil: "networkidle" });
+    await gotoReady(second);
     await second.getByRole("button", { name: "Ver mi resultado" }).click();
     await second.getByRole("heading", { name: "Resultado de tu diagnóstico de prueba" }).waitFor();
     assert.equal((await saved(second)).completedAt, completedAt, "result reconstruction preserves completion time");
@@ -156,7 +169,7 @@ try {
     await start(first);
     await answerCurrent(first);
     const second = await context.newPage();
-    await second.goto(route, { waitUntil: "networkidle" });
+    await gotoReady(second);
     await second.getByRole("button", { name: "Empezar de nuevo" }).click();
     await second.getByRole("button", { name: "Sí, empezar de nuevo" }).click();
     await first.getByRole("heading", { name: "Esta sesión se está editando en otra pestaña" }).waitFor();
@@ -203,7 +216,7 @@ try {
         return original(...args);
       } } });
     });
-    await page.goto(route, { waitUntil: "networkidle" });
+    await gotoReady(page);
     await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
     await page.getByRole("heading", { name: "Guardando tu progreso…" }).waitFor();
     assert.equal(await page.locator(".df-option__input").count(), 0, "the next question is hidden before persistence is confirmed");
@@ -221,10 +234,10 @@ try {
     const report = await context.newPage();
     await start(report);
     await finish(report);
-    await report.goto(reportRoute, { waitUntil: "networkidle" });
+    await gotoReady(report, reportRoute);
     await report.getByRole("button", { name: "Imprimir o guardar PDF" }).waitFor();
     const editor = await context.newPage();
-    await editor.goto(route, { waitUntil: "networkidle" });
+    await gotoReady(editor);
     await editor.getByRole("button", { name: "Ver mi resultado" }).click();
     await editor.getByRole("button", { name: "Editar respuestas" }).click();
     await report.getByRole("alert").getByText(/sesión cambió en otra pestaña/).waitFor();

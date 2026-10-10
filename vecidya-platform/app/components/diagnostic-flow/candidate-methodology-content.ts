@@ -13,7 +13,7 @@ export const CANDIDATE_METHODOLOGY_SECTIONS_V3 = [
   {
     id: "adaptive",
     title: "Cómo funciona el cuestionario adaptativo",
-    summary: "El motor candidato selecciona preguntas con el plan R5 según el contexto y la evidencia útil. Puede cerrar cuando no quedan preguntas útiles, cuando el presupuesto las bloquea o al llegar al límite de ruta.",
+    summary: "El cuestionario adaptativo selecciona preguntas según el contexto y la información que puede aportar cada respuesta. Puede terminar cuando no quedan preguntas útiles o cuando alcanza sus límites.",
     points: [
       "No todos los recorridos contienen las mismas preguntas ni evalúan cada área con igual profundidad.",
       "Una pregunta pertinente que no se hizo por presupuesto o límite de ruta permanece como límite de evidencia; no se interpreta como una respuesta negativa.",
@@ -39,12 +39,12 @@ export const CANDIDATE_METHODOLOGY_SECTIONS_V3 = [
   },
   {
     id: "coverage",
-    title: "Cómo se calcula la cobertura contextual",
-    summary: "O6 distingue tres estados: una dimensión puede ser aplicable según R4, observable cuando el contexto y el plan R5 ofrecen una oportunidad de evidencia directa, y observada cuando esa evidencia directa aparece en las respuestas.",
+    title: "Qué áreas se pudieron evaluar",
+    summary: "El informe distingue entre las áreas que corresponden a tu contexto, las que podían evaluarse en el recorrido y las que cuentan con respuestas útiles.",
     points: [
-      "El denominador de cobertura incluye solo dimensiones aplicables con oportunidad directa útil en ese contexto. Una cobertura completa de ese denominador no significa que se haya auditado todo el negocio.",
-      "Un vacío del banco o una dimensión no observable en el contexto se distingue de una respuesta unknown, una respuesta N/A no puntuable, una pregunta bloqueada por presupuesto y una pregunta que no se alcanzó por hard cap.",
-      "N/A no cuenta como capacidad ni como fallo. Unknown indica que la persona no puede confirmarlo; no se transforma en una puntuación negativa.",
+      "La cobertura incluye solo las áreas que corresponden al contexto y podían evaluarse en ese recorrido. Una cobertura completa de esas áreas no significa que se haya revisado todo el negocio.",
+      "El informe distingue entre falta de preguntas pertinentes, contexto insuficiente, respuestas desconocidas o no aplicables, y áreas que quedaron sin preguntar por los límites del recorrido.",
+      "Una respuesta desconocida o no aplicable no cuenta como capacidad ni como dificultad.",
     ],
   },
   {
@@ -52,7 +52,7 @@ export const CANDIDATE_METHODOLOGY_SECTIONS_V3 = [
     title: "Cómo se detectan las prioridades",
     summary: "Las prioridades y su orden proceden de las restricciones, objetivos, dependencias y evidencia que calcula el motor candidato. Un porcentaje bajo, por sí solo, no elige qué atender primero.",
     points: [
-      "La agregación O4 de facetas DIRECT hermanas conserva la media normalizada certificada. La presentación muestra esa lectura y sus contradicciones respaldadas sin aplicar una segunda agregación ni sustituirla por la faceta más débil.",
+      "Cuando varias preguntas observan un mismo aspecto, la lectura conserva las diferencias respaldadas entre sus respuestas.",
       "Una prioridad pendiente de confirmación se presenta como tal antes de recomendar una intervención.",
     ],
   },
@@ -77,15 +77,15 @@ export const CANDIDATE_METHODOLOGY_SECTIONS_V3 = [
 ] as const;
 
 export const CANDIDATE_METHODOLOGY_REPORT_NOTES_V3 = [
-  "Resultado calculado por la fachada candidata certificada sobre las respuestas activas de la sesión.",
-  "O4 conserva la media aritmética normalizada de las facetas DIRECT hermanas; la presentación no vuelve a agregarlas.",
-  "O6 calcula cobertura sobre dimensiones aplicables con oportunidad directa útil en el contexto y el plan adaptativo.",
-  "La confianza, las incertidumbres y los límites de evidencia se conservan; no se convierten en puntuaciones negativas.",
+  "Resultado calculado a partir de las respuestas activas de esta sesión.",
+  "Cuando varias preguntas observan un mismo aspecto, el resultado conserva las diferencias entre sus respuestas.",
+  "La cobertura se limita a las áreas evaluables en este contexto; no equivale a una revisión completa del negocio.",
+  "Las dudas y los límites de información se explican sin tratarlos como respuestas negativas.",
 ] as const;
 
 export const CANDIDATE_METHODOLOGY_LIMITATIONS_V3 = [
   "Se basa en respuestas declaradas y no inspecciona por su cuenta activos o resultados del negocio.",
   "La certificación determinista confirma consistencia del motor, no validación estadística ni capacidad predictiva con resultados empresariales reales.",
   "Una cobertura completa de las dimensiones observables no equivale a una evaluación exhaustiva del negocio.",
-  "Una pregunta no realizada por presupuesto o hard cap deja un límite de evidencia; unknown y N/A tampoco son puntuaciones negativas.",
+  "Una pregunta no realizada por límite de preguntas deja un punto sin confirmar; las respuestas desconocidas o no aplicables tampoco son puntuaciones negativas.",
 ] as const;

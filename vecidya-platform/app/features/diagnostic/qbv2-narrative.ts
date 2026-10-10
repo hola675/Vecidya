@@ -202,7 +202,7 @@ export function buildDiagnosticNarrative(input: NarrativeInput): DiagnosticNarra
     const focus = PRIORITY_FOCUS[fact.semanticCode]!({ conversion: terms.conversion, concept: concept(item.dimension), offer });
     const lead = fact.priority!.rank === 1
       ? certainty === "unknown" ? `Antes de actuar, conviene ${focus}.` : certainty === "probable" ? `Probablemente convenga empezar por ${focus}.` : `Conviene empezar por ${focus}.`
-      : `${fact.priority!.rank === 2 ? "Después" : "Como apoyo"}, ${certainty === "probable" ? "probablemente convenga" : certainty === "unknown" ? "conviene verificar antes" : "conviene"} ${focus}.`;
+      : `${fact.priority!.rank === 2 ? "Después" : "Como apoyo"}, ${certainty === "probable" ? "probablemente convenga" : "conviene"} ${focus}.`;
     const reasons = unique([structuralClause(item, certainty), relevanceClause(item)].filter((text): text is string => Boolean(text)));
     const sources = { sourceFactIds: [fact.id, ...dependencyFactIds(item.dimension)], sourceQuestionIds: fact.provenance.questionIds, dimension: item.dimension, priorityRank: fact.priority!.rank };
     return {
@@ -339,7 +339,10 @@ export function buildDiagnosticNarrative(input: NarrativeInput): DiagnosticNarra
   if (lifecycle === "prelaunch") {
     summary.push(block({ id: "summary:state", kind: "summary", text: `${business} está en preparación: este resultado revisa claridad, validación y preparación, no resultados de operación.`, certainty: "confirmed", sourceContext: ["growthStage"], sourceFactIds: readingFacts.map((fact) => fact.id) }));
   } else if (!primary) {
-    summary.push(block({ id: "summary:state", kind: "summary", text: "En lo que se evaluó no aparece un freno que limite claramente el avance.", certainty: strengthFacts.some((fact) => fact.certainty === "confirmed") ? "confirmed" : "probable", sourceFactIds: strengthFacts.map((fact) => fact.id) }));
+    const text = readingFacts.length === 0
+      ? "No hay información suficiente para confirmar fortalezas o dificultades."
+      : "En lo que se evaluó no aparece un freno que limite claramente el avance.";
+    summary.push(block({ id: "summary:state", kind: "summary", text, certainty: readingFacts.length === 0 ? "unknown" : strengthFacts.some((fact) => fact.certainty === "confirmed") ? "confirmed" : "probable", sourceFactIds: strengthFacts.map((fact) => fact.id) }));
   } else {
     const text = primaryCertainty === "unknown" ? "Antes de sacar conclusiones hace falta confirmar un punto clave."
       : primaryConstraintData!.severity === "material" ? (primaryCertainty === "confirmed" ? "El diagnóstico encuentra un punto que limita claramente el avance." : "Hay señales de un punto que limita el avance.")

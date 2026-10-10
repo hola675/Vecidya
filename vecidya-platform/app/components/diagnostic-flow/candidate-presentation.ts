@@ -1,5 +1,4 @@
 import {
-  CANDIDATE_METHODOLOGY_IDENTITY_V3,
   CANDIDATE_METHODOLOGY_LIMITATIONS_V3,
   CANDIDATE_METHODOLOGY_REPORT_NOTES_V3,
 } from "./candidate-methodology-content";
@@ -61,17 +60,17 @@ export type CandidateResultPresentationV3 = {
 };
 
 const DIMENSION_OBSERVABILITY_LABEL: Readonly<Record<CandidatePipelineResultV3["overall"]["index"]["dimensionObservability"][number]["reason"], string>> = {
-  not_applicable: "No aplica según el contexto",
-  context_unresolved: "Contexto insuficiente para determinar si aplica",
-  no_direct_source_in_bank: "Vacío del instrumento: no hay pregunta directa en el banco candidato",
-  no_direct_source_in_context: "No observable en este contexto: no hay una oportunidad directa pertinente",
-  direct_source_reachable: "Observable: hay una oportunidad directa en el plan adaptativo",
-  observed_direct: "Observable y observada: hay evidencia directa en las respuestas",
-  respondent_unknown: "La respuesta indica que no se sabe; no puntúa como debilidad",
-  respondent_not_applicable: "La persona respondió N/A; no puntúa como capacidad ni como fallo",
-  respondent_non_scoring_answer: "La respuesta no aporta una lectura puntuable",
-  budget_blocked: "La pregunta directa quedó fuera por presupuesto; persiste un límite de evidencia",
-  hard_cap_blocked: "La pregunta directa quedó fuera por límite de ruta; persiste un límite de evidencia",
+  not_applicable: "Por el contexto, esta área no corresponde.",
+  context_unresolved: "Falta contexto para saber si esta área corresponde.",
+  no_direct_source_in_bank: "El cuestionario todavía no incluye una pregunta pertinente para esta área.",
+  no_direct_source_in_context: "En este contexto no se encontró una pregunta pertinente para esta área.",
+  direct_source_reachable: "Esta área podía evaluarse en el recorrido.",
+  observed_direct: "Esta área se evaluó con las respuestas disponibles.",
+  respondent_unknown: "Se indicó que no se sabe; no se toma como una dificultad.",
+  respondent_not_applicable: "Se indicó que no aplica; no se toma como una dificultad.",
+  respondent_non_scoring_answer: "La respuesta no permite obtener una lectura.",
+  budget_blocked: "No se preguntó sobre esta área por límite de preguntas; queda sin confirmar.",
+  hard_cap_blocked: "No se preguntó sobre esta área por límite del recorrido; queda sin confirmar.",
 };
 
 const LICENSE_LABEL: Readonly<Record<NonNullable<CandidatePipelineResultV3["commercial"]["licenseFit"]["recommendedLicense"]>, string>> = {
@@ -82,6 +81,11 @@ const LICENSE_CERTAINTY: Readonly<Record<CandidatePipelineResultV3["commercial"]
 };
 const RECOMMENDATION_MODE: Readonly<Record<CandidatePipelineResultV3["recommendations"]["items"][number]["mode"], string>> = {
   improve: "Mejorar", verify: "Confirmar primero", prepare: "Preparar antes del lanzamiento", reduce_dependency: "Reducir una dependencia",
+};
+
+const COMMERCIAL_SIGNAL_DISPLAY: Readonly<Record<string, string>> = {
+  operational_commercial_evidence: "Necesidad comercial todavía no confirmada",
+  single_process_or_multiple_coordinated_processes: "Alcance de los procesos comerciales todavía por confirmar",
 };
 
 function recommendationConditions(result: CandidatePipelineResultV3, recommendationId: string): string[] {
@@ -101,8 +105,8 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
   const index = result.overall.index;
   const observability = new Map(index.dimensionObservability.map((item) => [item.dimension, item]));
   const coverage = index.coverageDenominator > 0
-    ? `${index.scoredDimensions.length} de ${index.coverageDenominator} dimensiones observables con oportunidad directa tienen lectura (${Math.round(index.coverage * 100)} %).`
-    : "No se calcula cobertura contextual: no hay dimensiones aplicables con oportunidad directa útil en esta ruta.";
+    ? `En esta evaluación hay lectura para ${index.scoredDimensions.length} de ${index.coverageDenominator} dimensiones observables con oportunidad de evaluación (${Math.round(index.coverage * 100)} %); este porcentaje no representa todas las áreas del negocio.`
+    : "En esta evaluación no se pudo calcular la cobertura porque ninguna dimensión aplicable tuvo una oportunidad de evaluación.";
   const warning = result.overall.provisional
     ? "El índice es provisional por confianza limitada; la banda se conserva y conviene confirmar la evidencia indicada."
     : result.overall.caveat?.reason === "limited_confidence"
@@ -112,7 +116,7 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
         : null;
   const dimensions = result.narrative.dimensions.map((dimension) => {
     const observation = observability.get(dimension.dimension);
-    if (!observation) throw new Error(`Falta el estado O6 de ${dimension.dimension}.`);
+    if (!observation) throw new Error(`Falta la información de evaluación para ${dimension.dimension}.`);
     const display = dimensionDisplay(dimension);
     return {
       key: dimension.dimension,
@@ -130,7 +134,7 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
       context: {
         applicability: observation.applicability === "applicable" ? "Aplicable" : observation.applicability === "not_applicable" ? "No aplicable" : "Contexto insuficiente",
         observability: DIMENSION_OBSERVABILITY_LABEL[observation.reason],
-        directEvidence: observation.observedDirect ? "Evidencia directa observada" : "Sin evidencia directa observada",
+        directEvidence: observation.observedDirect ? "Hay respuestas útiles para esta área." : "No hay respuestas útiles para esta área.",
       },
       includedInCoverage: index.observableApplicableDimensions.includes(dimension.dimension),
     };
@@ -151,6 +155,14 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
       solution: solution.solution ? { label: solution.solution.label, description: solution.solution.description } : null,
     };
   });
+  const executiveSummary = result.narrative.executiveSummary.map((item) => item.text);
+  if (index.scoredDimensions.length === 0) {
+    executiveSummary[0] = "No hay información suficiente para confirmar fortalezas o dificultades.";
+  } else if (result.overall.publicLabel === "BIEN") {
+    const focus = result.narrative.priorities[0]?.dimension;
+    const focusLabel = focus ? dimensionLabelOf(result.narrative, focus) : null;
+    executiveSummary[0] = `El estado general es BIEN en las áreas observables evaluadas${focusLabel ? `; el foco concreto de mejora es ${focusLabel.toLocaleLowerCase("es")}` : ""}.`;
+  }
   const commercial = result.commercial;
   return {
     engineIdentity: result.engineIdentity,
@@ -167,7 +179,7 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
       coverage,
       warning,
     },
-    executiveSummary: result.narrative.executiveSummary.map((item) => item.text),
+    executiveSummary,
     currentState: result.narrative.currentState.text,
     strengths: strengthItems(result.narrative).map((item) => ({ label: item.label, text: item.block.text })),
     areasToStrengthen: areaItems(result.narrative).map((item) => ({ label: item.label, text: item.block.text })),
@@ -186,7 +198,7 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
       rationale: commercial.licenseFit.rationale,
       whyNotLower: commercial.licenseFit.whyNotLower,
       whyNotHigher: commercial.licenseFit.whyNotHigher,
-      unresolvedSignals: commercial.licenseFit.unresolvedSignals,
+      unresolvedSignals: commercial.licenseFit.unresolvedSignals.map((signal) => COMMERCIAL_SIGNAL_DISPLAY[signal] ?? "Hay un dato comercial pendiente de confirmar"),
       now: [...commercial.now.complements, ...commercial.now.services].map((item) => ({ name: item.name, kind: item.kind === "complement" ? "Complemento" : "Servicio", rationale: item.rationale, priceLabel: item.priceLabel })),
       later: [...commercial.later.complements, ...commercial.later.services].map((item) => ({ name: item.name, kind: item.kind === "complement" ? "Complemento" : "Servicio", rationale: item.rationale, priceLabel: item.priceLabel })),
     },
@@ -233,7 +245,9 @@ export function buildCandidateDiagnosticReportV1(result: CandidatePipelineResult
     },
     primaryConstraint: constraint && primaryDimension
       ? { kicker: constraint.certainty === "unknown" ? "Conviene confirmar primero" : "Atención prioritaria", title: primaryDimension.label, text: constraint.text, certaintyLabel: CERTAINTY_DISPLAY[constraint.certainty], confidenceLabel: CONFIDENCE_DISPLAY[primaryDimension.confidence].label }
-      : { kicker: "Lectura del resultado", title: "No hay una restricción principal confirmada", text: narrative.nextFocus.text, certaintyLabel: null, confidenceLabel: null },
+      : view.dimensions.filter((item) => item.score !== null).length === 0
+        ? { kicker: "Lectura pendiente", title: "Información insuficiente", text: "No hay información suficiente para confirmar fortalezas o dificultades.", certaintyLabel: null, confidenceLabel: null }
+        : { kicker: "Lectura del resultado", title: "No hay una restricción principal confirmada", text: narrative.nextFocus.text, certaintyLabel: null, confidenceLabel: null },
     priorities: view.priorities.map((item) => ({ rank: item.rank, slotLabel: item.slot === "primary" ? "Prioridad principal" : item.slot === "secondary" ? "Prioridad secundaria" : "Prioridad de apoyo", area: item.area, statement: item.statement, why: item.why, certaintyLabel: item.certainty })),
     nextFocus: narrative.priorities.length <= 1 && constraint ? narrative.nextFocus.text : null,
     actionPath: {
@@ -256,7 +270,7 @@ export function buildCandidateDiagnosticReportV1(result: CandidatePipelineResult
       version: METHODOLOGY_VERSION,
       notes: methodText,
       sourcesNote: "Las fuentes citadas informan por qué importan las áreas digitales; no validan estadísticamente la fórmula ni predicen resultados empresariales.",
-      formulaDistinction: `El resultado conserva la identidad ${CANDIDATE_METHODOLOGY_IDENTITY_V3}.`,
+      formulaDistinction: "Esta metodología candidata está pendiente de auditoría independiente.",
     },
     sources: METHODOLOGY_SOURCES.map((source, index) => ({ number: index + 1, title: source.title, organization: source.organization, year: source.publishedAt?.slice(0, 4) ?? null, url: source.url })),
     limitations: CANDIDATE_METHODOLOGY_LIMITATIONS_V3,
