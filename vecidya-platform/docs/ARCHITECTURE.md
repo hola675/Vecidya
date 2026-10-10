@@ -1,5 +1,13 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-ACT-03.4 — Gate A bloqueado (2026-10-10)
+
+**Disposición: `GATE_A_BLOCKED`; Gate B no iniciado.** El manifiesto semántico consume el `CandidateDiagnosticReportV1` V1 sin recalcular el diagnóstico. Sus únicos cambios de presentación añaden la fecha de generación del informe, muestran `Lectura preliminar` cuando el modelo lo marca y aclaran O4 en metodología. El renderer, resultados de motor, sesiones y rutas públicas continúan sin integración.
+
+El shim no puede retirarse con la API pública de PDFKit 0.20.2. La documentación configura PDF/UA mediante `subset: 'PDF/UA'`; internamente esto asigna `subset=1`, que también activa la generación de CIDSet en fuentes CID. PDFKit no ofrece una opción pública para conservar el XMP PDF/UA y omitir esa entrada. La reproducción local confirma que el PDF sin shim falla dos checks del requisito CIDSet en ISO 14289-1:2014 §7.21.4.2, mientras las ocho muestras con shim pasan veraPDF 1.30.3 UA-1. El issue del repositorio oficial [foliojs/pdfkit#1804](https://github.com/foliojs/pdfkit/issues/1804) seguía abierto en este corte. Evitar el shim exigiría mantener una variante/fork de PDFKit o elegir otra biblioteca; ninguna alternativa se integra sin evaluación y certificación propias. El renderer no queda aprobado ni se conecta a la experiencia candidata.
+
+La clasificación exhaustiva y el estado ejecutado de Gate A están en [TESTING.md](TESTING.md). PAC/Acrobat, NVDA y evaluación humana del orden de lectura continúan pendientes; veraPDF no demuestra por sí solo el funcionamiento con lector de pantalla.
+
 ## DIAG-V3-ACT-03.3 — Exportación PDF accesible (2026-10-10)
 
 **Disposición: `PARTIALLY_FEASIBLE_WITH_BLOCKERS`.** Un PoC aislado en `tests/e2e/accessible-pdf-renderer.ts` demuestra que PDFKit puede producir desde Edge documentos A4/Carta con XMP, `pdfuaid:part=1`, idioma `es`, árbol etiquetado, estructura de encabezados/listas/enlaces y Arimo incrustada. Consume el `CandidateDiagnosticReportV1` ya construido por el pipeline; no recibe respuestas crudas ni recalcula scores. No hay ruta de producto, backend, petición de red ni sustitución de `window.print()`.

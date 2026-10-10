@@ -10,6 +10,7 @@ import { runCandidateDiagnosticPipelineV3 } from "../../app/features/diagnostic/
 import { buildCandidateQuestionPlanV3 } from "../../app/features/diagnostic/qbv2-candidate-planner.ts";
 import { CANONICAL_CASES_V3 } from "../unit/diagnostic/qbv2-candidate-canonical-cases.ts";
 import { runCanonicalRouteV3 } from "../unit/diagnostic/qbv2-candidate-case-runner.ts";
+import { buildCandidatePdfSemanticManifest } from "./accessible-pdf-semantic-manifest.ts";
 
 const outputDirectory = resolve("tmp/pdfs/act03-3");
 const evidenceDirectory = resolve("tmp/act03-3");
@@ -78,6 +79,7 @@ try {
     const report = buildCandidateDiagnosticReportV1(pipelineResult, completedAt, new Date("2026-10-09T12:00:00.000Z"));
     assert.equal(report.reportVersion, "1.0", `${id} continues to use the certified report model v1`);
     writeFileSync(resolve(evidenceDirectory, `${id}.json`), JSON.stringify(report, null, 2));
+    writeFileSync(resolve(evidenceDirectory, `${id}.semantic-manifest.json`), JSON.stringify(buildCandidatePdfSemanticManifest(report, id), null, 2));
     for (const paper of ["a4", "letter"]) {
       const startedAt = performance.now();
       const result = await page.evaluate(async ({ report, paper, regular, bold }) => {

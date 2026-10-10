@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { chromium } from "playwright";
 import { assertLocalBaseUrl, baseUrl } from "./test-safety.mjs";
+import { assertCandidateMethodologyContracts } from "./candidate-methodology-contracts.mjs";
 
 assertLocalBaseUrl();
 const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
@@ -121,8 +122,7 @@ try {
   assert((await saved(page)).status === "completed" && !("result" in await saved(page)), "completion stores answers/status but no derived result");
   await page.getByRole("link", { name: "Leer metodología candidata" }).click();
   await page.getByRole("heading", { name: "Cómo funciona el diagnóstico candidato de Vecidya" }).waitFor();
-  assert(await page.getByText(/denominador de cobertura incluye solo dimensiones aplicables/i).count() === 1, "candidate methodology explains contextual O6 coverage");
-  assert(await page.getByText(/media normalizada certificada/i).count() === 1, "candidate methodology explains the O4 aggregation contract");
+  await assertCandidateMethodologyContracts(page, "candidate methodology");
   await page.getByRole("link", { name: "Regresar a la prueba candidata" }).click();
   await page.getByRole("button", { name: "Ver mi resultado" }).click();
   await page.getByRole("heading", { name: "Resultado de tu diagnóstico de prueba" }).waitFor();
@@ -136,7 +136,7 @@ try {
   const reportText = await report.innerText();
   assert(pageCount >= 1 && pageCount <= 4, `print layout uses ${pageCount} pages (maximum 4)`);
   assert(density >= 8.5, `print layout keeps at least 8.5 pt text (${density} pt)`);
-  assert(reportText.includes("Fecha de finalización del diagnóstico") && reportText.includes("Fecha de generación del informe") && reportText.includes("Lectura comercial del motor candidato"), "candidate report separates completion and report generation dates");
+  assert(reportText.includes("Fecha de finalización del diagnóstico") && reportText.includes("Fecha de generación del informe") && reportText.includes("Recomendación para Vecidya"), "candidate report separates completion and generation dates and presents the current commercial section");
   assert(reportText.includes(await page.evaluate((at) => new Intl.DateTimeFormat("es", { dateStyle: "long", timeZone: "UTC" }).format(new Date(at)), completedAt)), "report date matches the stored completion timestamp");
   assert(!reportText.includes("hola@vecidya.com") && !reportText.includes("Correo electrónico"), "anonymous candidate report has no legacy lead CTA or contact identity");
   assert(reportText.includes(firstScore.trim()) && (!firstPriority || reportText.includes(firstPriority.trim())), "print report matches the result score and priority");

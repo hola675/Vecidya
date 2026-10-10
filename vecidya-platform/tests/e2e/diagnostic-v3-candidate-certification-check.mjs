@@ -8,6 +8,7 @@ import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "../../app/features/dia
 import { CANDIDATE_SESSION_STORAGE_KEY_V3, parseCandidateSessionV3 } from "../../app/features/diagnostic/qbv2-candidate-session.ts";
 import { buildCandidateResultPresentationV3, buildCandidateDiagnosticReportV1 } from "../../app/components/diagnostic-flow/candidate-presentation.ts";
 import { assertLocalBaseUrl, baseUrl } from "./test-safety.mjs";
+import { assertCandidateMethodologyContracts } from "./candidate-methodology-contracts.mjs";
 
 assertLocalBaseUrl();
 const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
@@ -263,9 +264,7 @@ async function completeScenario(browser, item, legacyRaw, viewport, paperSet) {
   await page.getByRole("heading", { name: "Cómo funciona el diagnóstico candidato de Vecidya" }).waitFor();
   const methodologyText = await page.locator("main").innerText();
   assert(methodologyText.includes(expected.engineIdentity.methodology.slice("diagnostic-methodology-".length)), `${scenario.id} methodology version matches the pipeline identity`);
-  assert(/KEEP_CURRENT_MEAN|media normalizada certificada/i.test(methodologyText), `${scenario.id} methodology explains O4`);
-  assert(/denominador de cobertura incluye solo dimensiones aplicables/i.test(methodologyText), `${scenario.id} methodology explains the O6 denominator`);
-  assert(/vacío del instrumento|no se sabe|budget|límite de ruta/i.test(methodologyText), `${scenario.id} methodology addresses O6 uncertainty and gaps`);
+  await assertCandidateMethodologyContracts(page, `${scenario.id} methodology`);
   await page.getByRole("link", { name: "Regresar a la prueba candidata" }).click();
   await page.getByRole("button", { name: "Ver mi resultado" }).click();
   await page.getByRole("heading", { name: "Resultado de tu diagnóstico de prueba" }).waitFor();
@@ -378,9 +377,10 @@ async function completeScenario(browser, item, legacyRaw, viewport, paperSet) {
     await page.getByRole("link", { name: "Volver a la sesión candidata" }).click();
     await page.getByRole("button", { name: "Empezar de nuevo" }).click();
     await page.getByRole("button", { name: "Sí, empezar de nuevo" }).click();
+    await page.getByRole("button", { name: "Empezar diagnóstico" }).waitFor();
     assert.equal(await page.evaluate((key) => localStorage.getItem(key), CANDIDATE_SESSION_STORAGE_KEY_V3), null, "confirmed candidate reset clears only candidate progress");
     assert.equal(await page.evaluate((key) => localStorage.getItem(key), legacyKey), legacyRaw, "confirmed candidate reset preserves the legacy session byte-for-byte");
-    assert.equal(await page.getByRole("button", { name: "Empezar diagnóstico" }).count(), 1, "confirmed reset returns to a fresh candidate start");
+    assert.equal(await page.getByRole("button", { name: "Empezar diagnóstico" }).count(), 1, "confirmed reset returns to a fresh candidate start after storage is cleared");
   }
 
   assert.deepEqual(pageErrors, [], `${scenario.id} browser has no uncaught errors`);

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-10 — DIAG-V3-ACT-03.4 Gate A bloqueado
+
+- Se creó un manifiesto semántico tipado para el modelo candidato y una auditoría PDF por campo. Las ocho salidas A4/Carta quedan sin pérdida de contenido obligatorio, diferencias inexplicadas ni duplicados injustificados. Se añadió al PDF la fecha de generación que ya estaba en el modelo y el HTML.
+- La verificación sin shim reproduce dos fallos CIDSet de veraPDF UA-1 en PDFKit 0.20.2; con el shim privado, 8/8 pasan. Como no hay opción pública documentada para separar PDF/UA de esa condición, Gate A queda bloqueado y Gate B no inicia.
+- Las expectativas de metodología O4/O6 se cambiaron a verificaciones semánticas; el texto candidato ahora explica la media normalizada de respuestas directas. Se sincronizó el test de reset con su borrado asíncrono. ACT-01 8/8, presentación ACT-02 6/6, hardening de sesión 8/8 y E2E ACT-03 15/15 pasan.
+- Regresión completa local: unitarias 1412/1412, typecheck y build PASS.
+- No se integra exportador, no cambia el motor y no se alteran rutas públicas, persistencia ni candidatas activas. No hubo push ni deploy.
+
 ## 2026-10-10 — DIAG-V3-ACT-03.3 Accessible PDF Export PoC
 
 - Se añadió un renderer PDFKit aislado para desarrollo que consume el informe V1 ya construido y genera prototipos etiquetados desde Edge en A4/Carta; no cambia `window.print()`, rutas, sesiones, respuestas, reglas ni activación.

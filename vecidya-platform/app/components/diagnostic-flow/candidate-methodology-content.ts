@@ -25,6 +25,7 @@ export const CANDIDATE_METHODOLOGY_SECTIONS_V3 = [
     summary: "Cuando hay evidencia suficiente, el porcentaje general resume las dimensiones con lectura mediante el modelo certificado. MAL, REGULAR y BIEN nombran bandas de ese índice; no miden el valor del negocio ni garantizan resultados.",
     points: [
       "El porcentaje, la confianza, las prioridades y la cobertura son lecturas distintas. La confianza no multiplica ni modifica la puntuación.",
+      "Cuando varias respuestas directas observan una misma área, la puntuación resume sus aportes mediante una media normalizada y conserva las diferencias respaldadas entre respuestas.",
       "Antes del lanzamiento, o cuando no se alcanza el mínimo de evidencia, el índice y la banda no existen: la interfaz los deja sin porcentaje y explica por qué.",
     ],
   },

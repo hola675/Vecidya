@@ -123,6 +123,7 @@ export async function renderAccessiblePdf(input: PdfRenderInput): Promise<Uint8A
     pair("Perfil", report.identity.profileLabel);
     pair("Etapa", report.identity.lifecycleLabel);
     pair(report.identity.dateLabel, report.completedLabel);
+    pair("Fecha de generación del informe", report.generatedLabel);
 
     section("Resultado general", () => {
       pair("Resultado", report.overallPresence.publicLabel ?? report.overallPresence.label);
@@ -183,6 +184,7 @@ export async function renderAccessiblePdf(input: PdfRenderInput): Promise<Uint8A
         heading(dimension.label, 3);
         const reading = [dimension.statusLabel, dimension.percent, dimension.confidence?.label ? `confianza ${dimension.confidence.label}` : null].filter(Boolean).join(" · ");
         pair("Lectura", reading);
+        if (dimension.preliminary) p("Lectura preliminar.");
         p(dimension.interpretation);
         const evidence = dimension.evidenceTopics.length ? dimension.evidenceTopics.join("; ") : dimension.evidenceLead;
         if (evidence) pair("Evidencia", evidence);
