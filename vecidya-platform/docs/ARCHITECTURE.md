@@ -1,5 +1,20 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-ACT-03.3 — Exportación PDF accesible (2026-10-10)
+
+**Disposición: `PARTIALLY_FEASIBLE_WITH_BLOCKERS`.** Un PoC aislado en `tests/e2e/accessible-pdf-renderer.ts` demuestra que PDFKit puede producir desde Edge documentos A4/Carta con XMP, `pdfuaid:part=1`, idioma `es`, árbol etiquetado, estructura de encabezados/listas/enlaces y Arimo incrustada. Consume el `CandidateDiagnosticReportV1` ya construido por el pipeline; no recibe respuestas crudas ni recalcula scores. No hay ruta de producto, backend, petición de red ni sustitución de `window.print()`.
+
+| Alternativa | Capacidad documentada | Verificación de este checkpoint | Decisión |
+| --- | --- | --- | --- |
+| Chromium `window.print()` | HTML/DOM accesible y generación del navegador; la aplicación no controla el PDF resultante | Las 14 muestras ACT-03.2 tenían tags/idioma, pero no diccionario XMP. | Conservar mientras la candidata siga inactiva; no resuelve metadatos controlables. |
+| PDFKit 0.20.2 en navegador | [Documenta marcado y estructura PDF/UA](https://pdfkit.org/docs/accessibility.html) y configuración de idioma/título; la documentación señala que anotaciones no se integran automáticamente al árbol lógico. | En PoC Edge creó XMP, tags, enlaces con relación manual y fuentes. veraPDF UA-1 pasó 8/8, condicionado al shim de fuente. | Continuar solo a ACT-03.4 para retirar el shim y certificar lectura/estructura independientemente. |
+
+El PoC queda en herramientas de desarrollo, con PDFKit 0.20.2 y esbuild 0.28.2 (MIT), y Arimo 5.3.0 (OFL-1.1) como dependencias dev. El bundle medido es 546.620 bytes (219.802 gzip); no se añade su renderer ni sus fuentes al bundle de producción. Un ajuste de compatibilidad envuelve `font.finalize()` privado de PDFKit para resolver un CIDSet incompleto observado por veraPDF al combinar subsetting y metadata PDF/UA. Aunque la salida de esta revisión pasa el validador, esa intervención interna eleva el riesgo de mantenimiento y debe eliminarse o justificarse en una integración mantenida.
+
+La ejecución local con Edge generó ocho archivos (C01, C14, C16 y C24 en A4/Carta), sin solicitudes de red, con fuentes incrustadas y XMP/estructura presentes. veraPDF 1.30.3 reportó PDF/UA-1 conforme para 8/8. PyMuPDF confirma texto mínimo 8,5 pt, fuentes incrustadas y cero spans fuera de página. El diseño condensado limita cada PDF a tres páginas: C01 y C14 ocupan tres; C16 y C24 A4, dos; C24 Carta, tres. Se agruparon datos repetidos, se acortaron las fuentes a un enlace descriptivo y se resumió la referencia técnica. Es evidencia automática de reglas, no certificación completa: PAC/Acrobat y NVDA no están disponibles y el orden de lectura necesita revisión humana. Los PDF se guardan bajo directorios `tmp/act03-3/`, `tmp/pdfs/act03-3/` y `tmp/pdf-renders/act03-3/`, ignorados por Git; las muestras ACT-03.1/03.2 no se modifican.
+
+El renderer conserva títulos, hechos, puntuaciones, prioridades, recomendaciones, licencia, ofertas y fuentes del modelo V1, y omite metadata interna no destinada al cliente. C16 mantiene ausencia de score y el mensaje de evidencia insuficiente. ACT-03.3 no cambia contenido certificado, sesiones, rutas o activación. El gate PDF y ACT-04 permanecen bloqueados hasta revisión independiente y decisión sobre la dependencia de API privada.
+
 ## DIAG-V3 Candidate Activation / Cutover Readiness (2026-10-09) — ACT-03.2 sesión PASS local; gate PDF BLOCKED
 
 La candidata integra `qbv2-candidate-pipeline.ts`, sesión independiente, cuestionario `CandidateDiagnosticFlow`, presentación, metodología 3.0 y `CandidateDiagnosticReportV1`. La interfaz reconstruye el resultado desde respuestas activas, exige `CANDIDATE_RESULT_IDENTITY_V3` y no vuelve a agregar dimensiones ni modifica puntuación/O4/O6. El renderer candidato reutiliza `DiagnosticReport`; el control A4/Carta se conserva dentro del router para no perder estado al cambiar formato.

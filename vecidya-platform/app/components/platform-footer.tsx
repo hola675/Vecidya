@@ -1,6 +1,6 @@
-import packageJson from "../../package.json";
+import { version as platformVersion } from "../../package.json";
 
-export const platformVersion = packageJson.version;
+export { platformVersion };
 
 export function PlatformFooter({ area = "public" }: { area?: "public" | "app" | "admin" }) {
   const label = area === "admin" ? "Admin" : area === "app" ? "App" : "pública";

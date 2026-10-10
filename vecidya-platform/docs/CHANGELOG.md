@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-10 — DIAG-V3-ACT-03.3 Accessible PDF Export PoC
+
+- Se añadió un renderer PDFKit aislado para desarrollo que consume el informe V1 ya construido y genera prototipos etiquetados desde Edge en A4/Carta; no cambia `window.print()`, rutas, sesiones, respuestas, reglas ni activación.
+- El PoC produce XMP, identificación PDF/UA, etiquetas semánticas, enlaces descriptivos, idioma español y fuentes Arimo embebidas. veraPDF UA-1: 8/8 conforme. Se condensó el contenido; las ocho muestras A4/Carta quedan en un máximo de tres páginas (C01/C14: 3; C16/C24 A4: 2; C24 Carta: 3), con tipografía mínima de 8,5 pt y sin desbordamiento.
+- Se mantiene `PARTIALLY_FEASIBLE_WITH_BLOCKERS`: el PoC depende de un shim para un método privado de PDFKit; PAC/Acrobat y NVDA no se ejecutaron. ACT-04 no inicia y la candidata continúa inactiva.
+
 ## 2026-10-09 — DIAG-V3-ACT-03.2 Independent PDF Accessibility & Final Session Gate
 
 - Se corrigió la presentación del informe candidato: las señales comerciales usan etiquetas humanas; cobertura indica que se limita a las áreas evaluables; C16 expresa evidencia insuficiente y C24 reconoce BIEN; el copy de verificación es gramatical. R4/O6 e identidades completas pasan a rótulos amigables y un anexo técnico.
