@@ -35,7 +35,7 @@ test("R2E candidate has the reviewed q10–q12 slice, versions and no unsafe gat
   assert.equal(byId("q2_ecommerce_traffic_sources").hint, "Marca todos los canales que te traen personas de forma habitual. No cuentes algo que pasó solo una vez.");
   assert.deepEqual(byId("q2_ecommerce_traffic_sources").options.map(({ value }) => value), ["social", "search", "ads", "referral", "marketplace", "messaging", "email", "direct", "other", "unknown"]);
   assert.equal(byId("q2_b2b_pipeline").prompt, "Cuando aparece una oportunidad de venta, ¿tienes una forma clara de darle seguimiento hasta saber qué pasó?");
-  assert.equal(byId("q2_b2b_pipeline").hint, "No importa si usas una hoja, una agenda o un CRM. Lo importante es si el seguimiento se hace de una forma clara y repetible.");
+  assert.equal(byId("q2_b2b_pipeline").hint, "No importa si usas una hoja, una agenda o una herramienta. Lo importante es si el seguimiento se hace de una forma clara y repetible.");
   assert.deepEqual(byId("q2_b2b_pipeline").options.map(({ value }) => value), ["defined", "partial", "informal", "unknown"]);
   const legacyQ11 = byId("q2_ecommerce_traffic_sources", QUESTION_BANK_V2);
   assert.equal(byId("q2_ecommerce_traffic_sources").version, 3);

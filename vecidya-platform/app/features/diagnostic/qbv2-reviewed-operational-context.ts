@@ -33,9 +33,9 @@ export const REVIEWED_OPERATIONAL_CONTEXT_QUESTIONS_V2: readonly QuestionDefinit
     priority: "normal",
     appliesWhen: eqV2("q2_regularity", "regular"),
     options: [
-      { value: "capacity_pressure", label: "A veces tenemos más trabajo del que podemos atender bien", produces: [{ kind: "reviewedCapacityPressure", value: true, provenance: "explicit_declaration" }] },
-      { value: "capacity_expanded", label: "Hemos aumentado horarios, personal, espacio o recursos para poder atender más", produces: [{ kind: "reviewedCapacityExpansion", value: true, provenance: "explicit_declaration" }] },
-      { value: "stable", label: "La capacidad que tenemos ha sido suficiente", exclusive: true, produces: [{ kind: "reviewedCapacityPressure", value: false, provenance: "explicit_declaration" }, { kind: "reviewedCapacityExpansion", value: false, provenance: "explicit_declaration" }] },
+      { value: "capacity_pressure", label: "A veces hay más trabajo del que se puede atender bien", produces: [{ kind: "reviewedCapacityPressure", value: true, provenance: "explicit_declaration" }] },
+      { value: "capacity_expanded", label: "Han aumentado los horarios, el personal, el espacio o los recursos para poder atender más", produces: [{ kind: "reviewedCapacityExpansion", value: true, provenance: "explicit_declaration" }] },
+      { value: "stable", label: "La capacidad disponible ha sido suficiente", exclusive: true, produces: [{ kind: "reviewedCapacityPressure", value: false, provenance: "explicit_declaration" }, { kind: "reviewedCapacityExpansion", value: false, provenance: "explicit_declaration" }] },
       { value: "unknown", label: "No estoy seguro", kind: "unknown", exclusive: true, produces: [{ kind: "reviewedCapacityUnknown", value: true, provenance: "explicit_declaration" }] },
     ],
   },

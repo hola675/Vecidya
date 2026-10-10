@@ -57,7 +57,7 @@ export const REVIEWED_SPECIALIZED_ENTRY_QUESTIONS_V2: readonly QuestionDefinitio
     type: "single",
     routingRole: "adaptive",
     prompt: "Cuando aparece una oportunidad de venta, ¿tienes una forma clara de darle seguimiento hasta saber qué pasó?",
-    hint: "No importa si usas una hoja, una agenda o un CRM. Lo importante es si el seguimiento se hace de una forma clara y repetible.",
+    hint: "No importa si usas una hoja, una agenda o una herramienta. Lo importante es si el seguimiento se hace de una forma clara y repetible.",
     purpose: ["diagnostic"],
     priority: "normal",
     appliesWhen: andV2(futureB2BApplicability(), eqV2("q2_has_customers", "yes")),

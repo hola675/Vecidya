@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-10 — DIAG-V3-QA-02 refinamiento semántico local
+
+- Refinamiento solo textual del banco candidato: copy neutral en `q2_capacity_signal`, término cotidiano para CRM en `q2_b2b_pipeline` y pistas breves para intentos de cita y rebooking. Sin cambios de valores, señales, aplicabilidad, migraciones, evidencia ni versiones.
+- Añadidas nueve rutas dirigidas sintéticas para modalidades y perfiles insuficientemente representados. Las 25 rutas canónicas R7-A producen outputs semánticos idénticos al baseline (SHA-256 igual); recorrido de navegador candidato local 8/8 PASS.
+- Se documentan decisiones pendientes en `q2_entity`, `q2_delivery`, `q2_customer_reach` y `q2_customer_buyer`, incluida la separación de beneficiario/financiador. QA-02 queda `PARTIAL` / `SEMANTIC_DECISION_REQUIRED`; validación humana no ejecutada, candidata inactiva y Gate B `GATE_B_PARTIAL`.
+
 ## 2026-10-10 — DIAG-V3-ACT-03.4B.1 cierre de verificación (GATE_B_PARTIAL)
 
 - Actualización local de verificación: descarga oficial veraPDF Greenfield 1.30.2 y firma GPG comprobadas; Temurin JRE 21.0.12.1+1 validado por SHA-256. Sobre las 14 copias inmutables, perfil PDF/UA-1: **14/14 conformes, 0 checks fallidos, 0 parseos/excepciones**. XML y resumen individual en `tmp/pdfs/act03-4b-pac-nvda-2026-10-10/verapdf-1.30.2-ua1/`; hashes de entrada idénticos antes/después y entre fuente/copia.

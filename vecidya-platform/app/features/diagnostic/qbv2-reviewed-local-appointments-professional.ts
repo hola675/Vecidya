@@ -99,6 +99,7 @@ export const REVIEWED_LOCAL_APPOINTMENTS_PROFESSIONAL_QUESTIONS_V2: readonly Que
     type: "single",
     routingRole: "adaptive",
     prompt: "Cuando alguien pregunta o intenta agendar una cita, ¿qué suele pasar?",
+    hint: "Piensa en consultas reales de personas que intentaron agendar, no solo en las que terminaron en cita.",
     purpose: ["diagnostic"],
     priority: "high",
     appliesWhen: activeAppointments,
@@ -117,6 +118,7 @@ export const REVIEWED_LOCAL_APPOINTMENTS_PROFESSIONAL_QUESTIONS_V2: readonly Que
     type: "single",
     routingRole: "adaptive",
     prompt: "Cuando una persona necesita volver, ¿qué suele pasar con la siguiente cita?",
+    hint: "Piensa en servicios que normalmente requieren que la persona vuelva.",
     purpose: ["diagnostic"],
     priority: "normal",
     materialAppliesWhen: andV2(activeAppointments, orV2(

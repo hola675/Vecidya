@@ -74,9 +74,18 @@ try {
   assert((await page.getByRole("heading", { level: 1 }).count()) === 1, "one accessible start heading renders");
   assert(await page.evaluate((key) => localStorage.getItem(key), candidateKey) === null, "new candidate starts with a separate storage slot");
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
+  await page.locator(".df-option__input").first().waitFor();
   assert(await page.locator(".df-option__input").count() > 1, "the certified candidate planner selects the first question");
+  assert(await page.locator(".df-question").count() === 1 && await page.locator(".df-question__title").count() === 1, "one question is presented per screen");
   await page.getByRole("button", { name: "Continuar" }).click();
   assert(await page.locator(".df-question__error[role=alert]").count() === 1, "required-answer validation is accessible");
+  await page.locator(".df-option__input").first().focus();
+  await page.keyboard.press("Space");
+  assert(await page.locator(".df-option__input").first().isChecked(), "native question options can be selected from the keyboard");
+  if (await page.locator(".df-option__input").first().getAttribute("type") === "checkbox") {
+    await page.keyboard.press("Space");
+    assert(!(await page.locator(".df-option__input").first().isChecked()), "keyboard can clear a multi-select choice before answering");
+  }
   pass("inicio SSR-safe, storage aislado y validación del formulario");
 
   let sawMulti = false;
@@ -95,6 +104,13 @@ try {
   await page.reload({ waitUntil: "networkidle" });
   await page.getByRole("button", { name: "Continuar diagnóstico" }).click();
   assert(await currentId(page) === beforeReload, "reload resumes the same adaptive question");
+  await page.getByRole("button", { name: "Volver" }).click();
+  assert(await currentId(page) === first.id && await page.locator(".df-question__review").count() === 1, "back navigation opens a marked review of the previous answer");
+  const savedFirstValue = (await saved(page)).answers[first.id];
+  const displayedFirstValues = await page.locator(`.df-option__input[name="${first.id}"]:checked`).evaluateAll((elements) => elements.map((element) => element.value));
+  assert(JSON.stringify(displayedFirstValues) === JSON.stringify(Array.isArray(savedFirstValue) ? savedFirstValue : [savedFirstValue]), "review shows the saved answer");
+  await page.getByRole("button", { name: "Continuar" }).click();
+  assert(await currentId(page) === beforeReload, "continuing review returns to the next adaptive question");
   pass("recarga y reanudación de sesión");
 
   for (let guard = 0; guard < 40 && !(await page.locator("#candidate-ready-title").count()); guard += 1) {
