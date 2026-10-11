@@ -4410,9 +4410,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   }
 }
 
-/* DIAG-V3-09: experiencia de resultado (`app/components/diagnostic-result`). Prefijo dr-: no toca las clases del
-   resultado QBV1 publicado en /diagnostico. Un informe, no un tablero: una columna de lectura, porcentajes finos
-   y siempre acompañados de estado y confianza; las lecturas preliminares se marcan con barra rayada. */
+/* DIAG-V3-09/13: experiencia del resultado V3, compartida por /diagnostico y el preview golden local.
+   Prefijo dr- para aislar estilos del resultado. Un informe, no un tablero: una columna de lectura, porcentajes
+   finos acompañados de estado y confianza; las lecturas preliminares se marcan con barra rayada. */
 .dr-page { width: min(100% - 2rem, 60rem); margin: 0 auto; padding: clamp(1.25rem, 4vw, 3rem) 0 3rem; }
 .dr-result { display: grid; gap: clamp(2.25rem, 5vw, 3.25rem); color: var(--ink); }
 .dr-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -5179,7 +5179,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 @media (max-width: 47.999rem) {
   .dr-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "visual" "context" "presence"; }
-  .dr-hero__visual { width: min(42vw, 10rem); justify-self: center; }
+  .dr-hero__visual { display: none; }
   .dr-presence { width: 100%; }
   .dr-quick-grid { grid-template-columns: minmax(0, 1fr); }
   .dr-snapshot__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -5204,12 +5204,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .dr-dim:nth-child(6) { animation-delay: 150ms; }
   .dr-dim:nth-child(7) { animation-delay: 180ms; }
   .dr-dim:nth-child(8) { animation-delay: 210ms; }
-  .dr-dim__toggle,
   .dr-dim__chevron,
-  .dr-method > summary::after { transition: color 160ms ease, border-color 160ms ease, transform 160ms ease; }
-  @media (hover: hover) {
-    .dr-dim { transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease; }
-    .dr-dim:hover { transform: translateY(-2px); box-shadow: 0 0.5rem 1rem rgb(17 37 63 / 7%); }
+  .dr-method > summary::after { transition: transform 160ms ease; }
+  @media (hover: hover) and (pointer: fine) {
+    .dr-dim { transition: transform 160ms ease; }
+    .dr-dim:hover { transform: translateY(-2px); }
   }
 }
 @media (prefers-reduced-motion: reduce) {

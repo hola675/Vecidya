@@ -72,11 +72,13 @@ try {
       columns: getComputedStyle(document.querySelector(".dr-dim-list")).gridTemplateColumns.split(" ").length,
       cardCopy: Number.parseFloat(getComputedStyle(document.querySelector(".dr-quick-card__copy")).fontSize),
       target: document.querySelector(".dr-dim__toggle").getBoundingClientRect().height,
+      heroVisual: getComputedStyle(document.querySelector(".dr-hero__visual")).display,
     }));
     assert(result.scroll <= result.client + 1, "sin desplazamiento horizontal a " + width + " px");
     assert.equal(result.columns, width >= 1088 ? 4 : width >= 768 ? 2 : 1, "grid adaptativo a " + width + " px");
     assert(result.cardCopy >= 16, "texto principal de al menos 16 px a " + width + " px");
     assert(result.target >= 44, "objetivo táctil de al menos 44 px a " + width + " px");
+    assert.equal(result.heroVisual === "none", width < 768, "la ilustración decorativa no desplaza la prioridad en móvil a " + width + " px");
     widths.push({ width, ...result });
   }
 

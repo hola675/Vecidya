@@ -1,8 +1,8 @@
 # Roadmap
 
-## Resultado vigente — DIAG-V3-RESULT-UX-01 (2026-10-11)
+## Resultado vigente — DIAG-V3-RESULT-UX-02 (2026-10-11)
 
-**`RESULT_UX_PARTIAL` local.** La jerarquía visual del resultado está implementada y las pruebas unitarias, de flujo, responsive, teclado, movimiento reducido, typecheck/build pasan; el preview golden no se registra en producción y los componentes compartidos permanecen en el bundle público de `/diagnostico`. Queda pendiente la evidencia solicitada de capturas antes/después y la revisión visual humana; el navegador integrado no estuvo disponible. No se declara `RESULT_UX_READY` hasta cerrar ese checkpoint. `GATE_B_PARTIAL` permanece; no push, deploy ni ACT-04.
+**`RESULT_UX_TECHNICALLY_ACCEPTED / VISUAL_PENDING` local.** El usuario aprobó los ajustes técnicos. Las capturas comparativas de `/diagnostico` y la preview FUNNEL candidate-only fueron adjuntadas para la inspección visual final; la ruta candidata sigue ausente del bundle productivo y el resultado compartido aparece en el bundle de `/diagnostico`. No se declara `RESULT_UX_READY` hasta cerrar esa inspección. FUNNEL-01B queda sin implementar mientras se completa el checkpoint visual; `GATE_B_PARTIAL` permanece; no push, deploy ni ACT-04.
 
 ### Historial — DIAG-V3-FUNNEL-01A (2026-10-11)
 

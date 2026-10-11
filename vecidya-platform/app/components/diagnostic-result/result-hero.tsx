@@ -44,19 +44,6 @@ export function DiagnosticQuickRead({ narrative, outcome }: { narrative: Diagnos
     <section aria-labelledby="dr-focus-title" className="dr-section dr-quick-read">
       <h2 className="dr-section__title" id="dr-focus-title">Lo más importante ahora</h2>
       <div className="dr-quick-grid">
-        <article className="dr-quick-card dr-quick-card--finding">
-          <img alt="" className="dr-quick-card__icon" height="44" src={publicAssets.icons.search} width="44" />
-          <p className="dr-quick-card__kicker">Qué encontramos</p>
-          <p className="dr-quick-card__copy dr-summary__headline">{headline?.text ?? narrative.currentState.text}</p>
-          {!headlineMatchesCurrentState ? <p className="dr-quick-card__support">{narrative.currentState.text}</p> : null}
-          {additionalSummary.length > 0 ? (
-            <details className="dr-quick-disclosure">
-              <summary>Ver el resumen completo</summary>
-              <div>{additionalSummary.map((block) => <p key={block.id}>{block.text}</p>)}</div>
-            </details>
-          ) : null}
-        </article>
-
         <article className="dr-quick-card dr-quick-card--focus">
           <img alt="" className="dr-quick-card__icon" height="44" src={focusIcon} width="44" />
           <p className="dr-quick-card__kicker">{focus?.certainty === "unknown" ? CONSTRAINT_COPY.verifyKicker : "Lo que más importa"}</p>
@@ -80,6 +67,19 @@ export function DiagnosticQuickRead({ narrative, outcome }: { narrative: Diagnos
               <p className="dr-quick-card__copy">{firstStep.recommendation.whatToImprove}</p>
             </>
           ) : <p className="dr-quick-card__copy">{EMPTY_ACTION_PATH_NOTE}</p>}
+        </article>
+
+        <article className="dr-quick-card dr-quick-card--finding">
+          <img alt="" className="dr-quick-card__icon" height="44" src={publicAssets.icons.search} width="44" />
+          <p className="dr-quick-card__kicker">Qué encontramos</p>
+          <p className="dr-quick-card__copy dr-summary__headline">{headline?.text ?? narrative.currentState.text}</p>
+          {!headlineMatchesCurrentState ? <p className="dr-quick-card__support">{narrative.currentState.text}</p> : null}
+          {additionalSummary.length > 0 ? (
+            <details className="dr-quick-disclosure">
+              <summary>Ver el resumen completo</summary>
+              <div>{additionalSummary.map((block) => <p key={block.id}>{block.text}</p>)}</div>
+            </details>
+          ) : null}
         </article>
       </div>
     </section>

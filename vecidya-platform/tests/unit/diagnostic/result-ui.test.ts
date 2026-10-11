@@ -49,10 +49,12 @@ test("09 all 12 golden results render the full hierarchy with the eight dimensio
   }
 });
 
-test("RESULT-UX-01 each golden result starts with three concise cards and hides methodology metadata", () => {
+test("RESULT-UX-02 each golden result prioritizes focus and first action", () => {
   for (const [id, html] of Object.entries(HTML)) {
     const quick = between(html, /<section aria-labelledby="dr-focus-title"/, "</section>");
     assert.equal((quick.match(/class="dr-quick-card /g) ?? []).length, 3, id);
+    const quickOrder = [...quick.matchAll(/class="dr-quick-card dr-quick-card--(focus|action|finding)"/g)].map((match) => match[1]);
+    assert.deepEqual(quickOrder, ["focus", "action", "finding"], id + ": prioritize the main focus and first step before supporting summary");
     assert.match(quick, /Qué encontramos/);
     assert.match(quick, /Lo que más importa|Lo primero por confirmar/);
     assert.match(quick, /Qué hacer primero/);

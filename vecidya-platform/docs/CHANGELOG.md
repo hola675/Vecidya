@@ -1,11 +1,11 @@
 # Changelog
 
-## 2026-10-11 — DIAG-V3-RESULT-UX-01 `RESULT_UX_PARTIAL`
+## 2026-10-11 — DIAG-V3-RESULT-UX-02 `RESULT_UX_TECHNICALLY_ACCEPTED / VISUAL_PENDING`
 
 - Reorganizado el resultado local: cabecera de estado, lectura ejecutiva en tres tarjetas, ocho dimensiones inicialmente plegadas con conteos descriptivos, plan cronológico, fortalezas/oportunidades compactas, incertidumbre con cuatro puntos visibles como máximo y ayuda comercial/metodología bajo demanda.
-- Conservados narrativa, estados, porcentajes, confianza, orden de recomendaciones y separación de scoring/comercial. Se reutilizan ilustraciones e iconos existentes; movimiento limitado y respeta `prefers-reduced-motion`.
-- Verificación local: suite unitaria **1528/1528**, resultado UI **20/20**, flujo **10/10**, E2E de resultado **PASS** en 1440/768/415 con teclado y movimiento reducido, typecheck/build **PASS**; el preview golden sigue fuera del bundle, y el resultado compartido está incluido por la ruta existente `/diagnostico`.
-- `RESULT_UX_PARTIAL`: faltan capturas antes/después y revisión visual humana debido a la indisponibilidad del navegador integrado. Sin publicación ni nueva ruta; se actualiza localmente la presentación de `/diagnostico`. No cambia motor, sesión, backend, D1/GHL ni generador PDF; `GATE_B_PARTIAL` sigue intacto.
+- En la revisión comparativa se adelantaron las tarjetas de foco y acción para que la prioridad aparezca en la primera pantalla móvil; se ocultó únicamente la ilustración decorativa en ese ancho. Se conservaron narrativa, estados, porcentajes, confianza, orden de recomendaciones y separación de scoring/comercial; hover/transiciones quedan limitados a movimiento breve en `transform` y respetan teclado y `prefers-reduced-motion`.
+- Verificación local: suite unitaria **1528/1528**, resultado UI **20/20**, flujo **10/10**, E2E de resultado **PASS** en 1440/768/415 con teclado y movimiento reducido, typecheck/build/diff-check **PASS**. Se revisaron capturas antes/después del flujo real `/diagnostico`; la preview FUNNEL candidate-only también se inspeccionó, y el plan de tres pasos se contrastó con el perfil golden porque el recorrido real no produjo recomendaciones. La ruta candidata sigue fuera del bundle; el resultado compartido se incluye por `/diagnostico`.
+- Validación técnica aceptada por el usuario; las tres capturas prioritarias se adjuntaron para revisión visual final. La inspección humana aún está pendiente, por lo que el resultado no se declara cerrado. Sin publicación ni nueva ruta; no cambia motor, sesión, backend, D1/GHL ni generador PDF; `GATE_B_PARTIAL` sigue intacto.
 
 ## 2026-10-11 — DIAG-V3-FUNNEL-01A `FUNNEL_DESIGN_READY`
 
