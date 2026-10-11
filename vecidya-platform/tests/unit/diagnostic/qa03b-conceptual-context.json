@@ -1,0 +1,1101 @@
+{
+  "source": "QA-03A/QA-03A.1 design-simulation; escenarios sintéticos, nunca migración de sesiones",
+  "counts": {
+    "canonical": 25,
+    "qa02Directed": 9,
+    "qa03aBoundary": 17,
+    "qa031Boundary": 10,
+    "boundary": 27,
+    "total": 61
+  },
+  "cases": [
+    {
+      "id": "C01",
+      "facts": "Prelaunch project: idea-stage, no customers yet, defining the offer before launch.",
+      "answers": {
+        "q2_entity": "project",
+        "q2_monetization": "services",
+        "q2_operational_status": "unknown",
+        "q2_has_customers": "no",
+        "q2_delivery": [
+          "other"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C02",
+      "facts": "Independent professional, healthy core: regular clients, defined intake, visible authority.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_sector": "legal",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "appointments"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C03",
+      "facts": "Professional with weak/ad-hoc intake flow — Clarity weakness from the intake question specifically.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_sector": "professional_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "appointments"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C04",
+      "facts": "Appointments business with real booking friction — causal unlock from lead-to-booking into booking friction.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "professional_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "appointments"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C05",
+      "facts": "Appointments route with weak confirmation reminders, process not yet defined elsewhere.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "professional_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "appointments"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C06",
+      "facts": "Local service operation with slow/lost response behavior — Conversion evidence without inventing a contact-path fix.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_sector": "home_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "travels"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C07",
+      "facts": "Physical retail with a customer-capture gap — Relationship evidence without an automatic CRM/automation sale.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "retail",
+        "q2_monetization": "goods",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "retail"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C08",
+      "facts": "Ecommerce with confusing product discovery — Foundation semantics, no unrelated channel invented.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "retail",
+        "q2_monetization": "goods",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "online_checkout"
+        ],
+        "q2_customer_reach": "national"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C09",
+      "facts": "B2B business with a weak pipeline and lost opportunity-status visibility — direct + supporting distinction, Barrio-eligible.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "technology_software",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other"
+        ],
+        "q2_customer_reach": "national"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C10",
+      "facts": "Creator with an engaged audience but an unclear offer — creator context must never substitute for Discovery evidence.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_sector": "creative_media",
+        "q2_monetization": "audience",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "online_checkout"
+        ],
+        "q2_customer_reach": "global"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C11",
+      "facts": "Active nonprofit/organization with no recurring platform need — entity label must never select Cuadra by itself.",
+      "answers": {
+        "q2_entity": "organization",
+        "q2_sector": "community_social",
+        "q2_monetization": "mission",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C12",
+      "facts": "Operations-heavy business with a genuinely undefined systemization process — evidence-backed Cuadra via work_organization.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "professional_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C13",
+      "facts": "Hybrid retail + ecommerce: both components legitimately active, neither should starve the other.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "retail",
+        "q2_monetization": "goods",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "retail",
+          "online_checkout"
+        ],
+        "q2_customer_reach": "national"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C14",
+      "facts": "Hybrid professional + appointments: both components active, no branch contamination.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_sector": "legal",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "appointments"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C15",
+      "facts": "Active business with goal = measure, zero candidate Measurement sources — must remain a certified unobservable gap.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "professional_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "appointments"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C16",
+      "facts": "Sparse / mostly-unknown business — uncertainty must never read as weakness or force a sale.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "other",
+        "q2_monetization": "unsure",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other"
+        ],
+        "q2_customer_reach": "mixed"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C17",
+      "facts": "N/A-heavy legitimate case: a solo professional with structurally not-applicable appointment/retail facets.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_sector": "professional_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "online_checkout"
+        ],
+        "q2_customer_reach": "national"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C18",
+      "facts": "Active business with unreliable discovery reach — Discovery weakness, channel cause must remain unknown.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "home_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "online_checkout"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C19",
+      "facts": "Active business with a genuine owned-base gap — website solution, Web & Conversión, no forced license.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "professional_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C20",
+      "facts": "Declared friction (follow-up) not confirmed by the evidence — a healthy capability must never become a weakness.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "retail",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "online_checkout"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C21",
+      "facts": "Appointment rebooking weakness, isolated from reminders — Relationship evidence from rebooking specifically.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "home_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "appointments"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C22",
+      "facts": "Retail customer-capture gap, isolated from presence consistency — Relationship evidence from capture specifically.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "retail",
+        "q2_monetization": "goods",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "retail"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C23",
+      "facts": "Operations: a scattered information base with a second staff member and clean handoffs — direct Readiness evidence plus a refining supporting signal.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_sector": "professional_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C24",
+      "facts": "B2B pipeline defined with status visibility supporting evidence — direct plus refining supporting signal together.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "technology_software",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other"
+        ],
+        "q2_customer_reach": "national"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "C25",
+      "facts": "Operations information base genuinely scattered, with systemization itself unresolved — information base as the sole direct Readiness closer.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "professional_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA02-SALON",
+      "facts": "Peluquería con atención en el establecimiento y citas.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "beauty_personal_care",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "physical_location",
+          "appointments"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA02-RESTAURANT",
+      "facts": "Restaurante/cafetería con consumo en el local; las respuestas describen la operación observada.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "food_hospitality",
+        "q2_monetization": "goods",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "onsite"
+        ],
+        "q2_customer_reach": "national"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA02-CLINIC",
+      "facts": "Clínica activa con pacientes y citas presenciales.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "health_wellness",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "physical_location",
+          "appointments"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA02-PROFESSIONAL",
+      "facts": "Profesional independiente activo con clientela y agenda.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_sector": "professional_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "appointments"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA02-PRELAUNCH",
+      "facts": "Proyecto sin lanzamiento ni clientes reales.",
+      "answers": {
+        "q2_entity": "project",
+        "q2_sector": "professional_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "unknown",
+        "q2_has_customers": "no",
+        "q2_delivery": [
+          "other"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA02-HYBRID",
+      "facts": "Comercio activo con venta presencial y tienda online.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "retail",
+        "q2_monetization": "goods",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "retail",
+          "online_checkout"
+        ],
+        "q2_customer_reach": "national"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA02-HOME-SERVICE",
+      "facts": "Servicio a domicilio: se desplaza al cliente y no recibe público en un local.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_sector": "home_services",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "travels"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA02-DIGITAL-SERVICE",
+      "facts": "Servicio digital remoto sin pago directo en línea; se declara como modalidad no listada.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "technology_software",
+        "q2_monetization": "services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other",
+          "remote_service"
+        ],
+        "q2_customer_reach": "national"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA02-NONPROFIT-FUNDER",
+      "facts": "Organización que atiende beneficiarios y recibe fondos de instituciones; la respuesta declara quién financia/compraría el servicio.",
+      "answers": {
+        "q2_entity": "organization",
+        "q2_sector": "community_social",
+        "q2_monetization": "mission",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other"
+        ],
+        "q2_customer_reach": "local"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-A01",
+      "facts": "Profesional independiente presta servicios con regularidad y tiene clientes; no tiene entidad legal separada.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "appointments"
+        ]
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-A02",
+      "facts": "Profesional independiente prepara la apertura; todavía no presta servicios ni tiene clientes.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_operational_status": "preparing",
+        "q2_has_customers": "no",
+        "q2_delivery": [
+          "other"
+        ]
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-A03",
+      "facts": "Empresa ya constituida legalmente, sin operaciones iniciadas ni clientes.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_operational_status": "preparing",
+        "q2_has_customers": "no",
+        "q2_delivery": [
+          "other"
+        ]
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-A04",
+      "facts": "Negocio abierto que ya presta servicios, pero todavía no tiene compradores habituales.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "no",
+        "q2_delivery": [
+          "physical_location"
+        ]
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-A05",
+      "facts": "Proyecto personal obtiene ingresos puntuales por contenido, todavía sin clientes que compren servicios.",
+      "answers": {
+        "q2_entity": "project",
+        "q2_monetization": "audience",
+        "q2_operational_status": "unknown",
+        "q2_has_customers": "no",
+        "q2_delivery": [
+          "online_checkout"
+        ]
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-A06",
+      "facts": "Organización sin fines de lucro en preparación, aún no atiende beneficiarios ni ha recibido apoyo; todavía no sabe quién la financiará.",
+      "answers": {
+        "q2_entity": "organization",
+        "q2_monetization": "mission",
+        "q2_operational_status": "unknown",
+        "q2_has_customers": "no",
+        "q2_customer_reach": "unknown",
+        "q2_customer_buyer": "unknown"
+      },
+      "pending": [],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-B01",
+      "facts": "Consultor presta el mismo servicio en su oficina y a distancia por videollamada; no cobra por checkout web.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "physical_location",
+          "appointments",
+          "other"
+        ]
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-B02",
+      "facts": "Clínica con consultas presenciales y virtuales; pacientes y citas reales.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "health_wellness",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "physical_location",
+          "appointments",
+          "other",
+          "remote_service"
+        ]
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-B03",
+      "facts": "Restaurante con consumo en el local y pedidos digitales pagados en checkout.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "food_hospitality",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "onsite",
+          "online_checkout"
+        ]
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-B04",
+      "facts": "Agencia presta servicios a distancia, pero contrata y cobra por factura/acuerdo, sin tienda ni checkout.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "professional_services",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other"
+        ]
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-B05",
+      "facts": "Software SaaS se presta en línea y se paga por suscripción; el checkout puede ocurrir o no.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "technology_software",
+        "q2_monetization": "recurring",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other"
+        ]
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-C01",
+      "facts": "Negocio activo que todavía no conoce dónde se concentra su clientela.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_customer_reach": "unknown"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-C02",
+      "facts": "Servicio en línea con clientela real, pero sin registro de ubicación geográfica.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other"
+        ],
+        "q2_customer_reach": "unknown"
+      },
+      "pending": [
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-D01",
+      "facts": "Clínica presta atención al paciente; una aseguradora o institución cubre el coste mediante contrato de compra.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "appointments"
+        ]
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-D02",
+      "facts": "Organización atiende familias y recibe donación/subvención institucional sin compra ni contrato de servicio.",
+      "answers": {
+        "q2_entity": "organization",
+        "q2_monetization": "mission",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes",
+        "q2_delivery": [
+          "other"
+        ]
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-D03",
+      "facts": "Centro educativo ofrece formación al estudiante; padres pagan directamente y no reciben el servicio educativo.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "education_coaching",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes"
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "BND-D04",
+      "facts": "Empresa compra directamente un servicio de bienestar para sus empleados, que son quienes lo utilizan.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "health_wellness",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes"
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA031-01",
+      "facts": "Empresa constituida, todavía cerrada y sin clientes.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_operational_status": "preparing",
+        "q2_has_customers": "no"
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA031-02",
+      "facts": "Empresa abierta hace una semana, disponible para atender, todavía sin clientes.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "no"
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA031-03",
+      "facts": "Profesional independiente ya ofrece servicios, todavía sin clientes.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "no"
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA031-04",
+      "facts": "Tienda online publicada y lista para comprar, todavía sin pedidos.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "no",
+        "q2_delivery": [
+          "online_checkout"
+        ]
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA031-05",
+      "facts": "Restaurante listo para abrir, pero todavía cerrado y sin ventas.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "food_hospitality",
+        "q2_operational_status": "preparing",
+        "q2_has_customers": "no"
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA031-06",
+      "facts": "Restaurante abierto, disponible para recibir pedidos, todavía sin ventas.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_sector": "food_hospitality",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "no"
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA031-07",
+      "facts": "Organización ya ofrece actividades, todavía sin beneficiarios.",
+      "answers": {
+        "q2_entity": "organization",
+        "q2_monetization": "mission",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "no"
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA031-08",
+      "facts": "Proyecto sin empresa constituida que ya tiene clientes reales.",
+      "answers": {
+        "q2_entity": "project",
+        "q2_operational_status": "operating",
+        "q2_has_customers": "yes"
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA031-09",
+      "facts": "Negocio tuvo clientes reales y está temporalmente pausado.",
+      "answers": {
+        "q2_entity": "business",
+        "q2_operational_status": "paused",
+        "q2_has_customers": "yes"
+      },
+      "pending": [
+        "alcance sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    },
+    {
+      "id": "QA031-10",
+      "facts": "La persona no sabe si debe considerar que su actividad ya está operativa.",
+      "answers": {
+        "q2_entity": "individual",
+        "q2_operational_status": "unknown",
+        "q2_customer_reach": "unknown"
+      },
+      "pending": [
+        "experiencia histórica sin respuesta",
+        "comprador requiere confirmación explícita; no copiar interpretación anterior"
+      ],
+      "scope": "fragmento de contexto/elegibilidad; no recorrido completo ni nuevo resultado comercial esperado"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+import type { QuestionDefinitionV2 } from "../qbv2-contract";
+import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as historicalBank } from "../qbv2-reviewed-evidence";
+import { andV2, answeredV2, eqV2, inV2, orV2 } from "../qbv2-rules";
+
+const operating = eqV2("q2_operational_status", "operating");
+const history = eqV2("q2_has_customers", "yes");
+const confirmedBuyer = inV2("q2_customer_buyer", ["b2c", "b2b", "mixed"]);
+export const BUYER_RECIPIENT_RULE = andV2(confirmedBuyer, orV2(
+  inV2("q2_customer_buyer", ["b2b", "mixed"]), eqV2("q2_entity", "organization"),
+  eqV2("q2_monetization", "mission"), inV2("q2_sector", ["health_wellness", "education_coaching"]),
+));
+
+const replacement: Readonly<Record<string, Partial<QuestionDefinitionV2>>> = {
+  q2_entity: {
+    version: 2, prompt: "¿Qué tipo de actividad quieres evaluar?",
+    hint: "Elige la forma de tu actividad. Puede estar preparándose o ya operar; un proyecto puede generar ingresos.",
+    options: [
+      { value: "individual", label: "Trabajo por cuenta propia, como profesional o persona independiente, incluso con un nombre comercial." },
+      { value: "business", label: "Un negocio o empresa con actividad comercial." },
+      { value: "organization", label: "Una organización o iniciativa comunitaria sin fines de lucro." },
+      { value: "project", label: "Un proyecto personal o colectivo que todavía no tiene forma de negocio u organización." },
+    ],
+  },
+  q2_has_customers: {
+    version: 2, prompt: "¿Tu actividad ya ha tenido clientes, compradores, usuarios o beneficiarios reales?",
+    hint: "Cuenta experiencias reales, aunque tu actividad esté en pausa. El interés o los seguidores por sí solos no cuentan.", variants: [],
+    options: [
+      { value: "yes", label: "Sí, ya hubo personas reales que compraron, contrataron, usaron o recibieron lo que ofrezco." },
+      { value: "no", label: "No, todavía no ha habido personas reales en esas situaciones." },
+    ],
+  },
+  q2_delivery: {
+    version: 3, prompt: "¿De qué formas prestas el servicio o vendes lo que ofreces?",
+    hint: "Elige todas las formas habituales. La cita, el lugar de atención y la compra por internet describen cosas distintas.",
+    options: [
+      { value: "physical_location", label: "Atiendes en un local, oficina o instalación propia." },
+      { value: "appointments", label: "Atiendes con citas o sesiones reservadas." },
+      { value: "travels", label: "Te desplazas al domicilio o lugar del cliente." },
+      { value: "remote_service", label: "Prestas el servicio a distancia, por videollamada, teléfono, internet o mensajes." },
+      { value: "retail", label: "Vendes productos en una tienda física." },
+      { value: "onsite", label: "Las personas consumen o usan lo que ofreces en tu establecimiento, como en un restaurante, café u hospedaje." },
+      { value: "online_checkout", label: "Las personas pueden elegir y pagar una compra directamente por internet." },
+      { value: "other", label: "Otra forma que no aparece arriba." },
+      { value: "unsure", label: "Todavía no lo tengo claro.", kind: "unknown", exclusive: true },
+    ],
+  },
+  q2_customer_reach: {
+    version: 3, appliesWhen: undefined,
+    options: [...historicalBank.find(q => q.id === "q2_customer_reach")!.options,
+      { value: "unknown", label: "Todavía no lo tengo claro.", kind: "unknown" }],
+  },
+  q2_customer_buyer: {
+    version: 3, prompt: "¿Quién compra o contrata directamente lo que ofreces?",
+    hint: "Piensa en quien decide la compra o firma el contrato, no necesariamente en quien usa el servicio.", variants: [],
+    options: [
+      { value: "b2c", label: "Personas individuales que compran o contratan directamente." },
+      { value: "b2b", label: "Empresas, organizaciones o instituciones que compran o contratan directamente." },
+      { value: "mixed", label: "Personas y organizaciones compran o contratan directamente de forma habitual." },
+      { value: "no_direct_purchase", label: "No hay una compra directa; la actividad se sostiene con donaciones, subvenciones o aportes." },
+      { value: "unknown", label: "Todavía no lo tengo claro.", kind: "unknown" },
+    ],
+  },
+  q2_monetization: { appliesWhen: undefined },
+};
+
+// La elegibilidad cambia por contrato de banco, sin cambiar el significado/version/mapping de fuentes R3.
+const historicalInteractionQuestions = new Set([
+  "q2_regularity", "q2_demand_trend", "q2_capacity_signal", "q2_appointments_noshow",
+  "q2_ecommerce_traffic_sources", "q2_reputation_flow", "q2_retail_customer_capture",
+  "q2_appointments_lead_to_booking", "q2_appointments_booking_friction",
+  "q2_appointments_confirmation_reminders", "q2_appointments_rebooking",
+]);
+const currentProcessQuestions = new Set([
+  "q2_process_systemization", "q2_service_response_speed", "q2_service_quote_followup",
+  "q2_operations_handoffs", "q2_operations_information_base", "q2_followup_general_process",
+  "q2_b2b_pipeline", "q2_b2b_status_visibility", "q2_creator_audience_ownership",
+]);
+
+function evolve(question: QuestionDefinitionV2): QuestionDefinitionV2 {
+  let next = { ...question, ...replacement[question.id] } as QuestionDefinitionV2;
+  const guard = historicalInteractionQuestions.has(next.id) ? andV2(operating, history)
+    : currentProcessQuestions.has(next.id) ? operating : undefined;
+  const buyerGuard = next.module === "b2b" ? inV2("q2_customer_buyer", ["b2b", "mixed"]) : undefined;
+  if (guard || buyerGuard) {
+    const gate = guard && buyerGuard ? andV2(guard, buyerGuard) : guard ?? buyerGuard!;
+    // OR entre native/material se conserva; ambos reciben el prerrequisito.
+    if (next.appliesWhen) next = { ...next, appliesWhen: andV2(gate, next.appliesWhen) };
+    if (next.materialAppliesWhen) next = { ...next, materialAppliesWhen: andV2(gate, next.materialAppliesWhen) };
+    if (!next.appliesWhen && !next.materialAppliesWhen) next = { ...next, appliesWhen: gate };
+  }
+  return next;
+}
+
+export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefinitionV2[] = [
+  ...historicalBank.map(evolve),
+  {
+    id: "q2_operational_status", version: 1, module: "core", type: "single", routingRole: "core",
+    prompt: "¿Cuál describe mejor el estado actual de tu actividad?",
+    hint: "El estado de hoy es independiente de haber tenido clientes o participantes antes.",
+    purpose: ["anchor", "classification"], priority: "critical", appliesWhen: answeredV2("q2_has_customers"),
+    options: [
+      { value: "preparing", label: "Todavía no está disponible; la estoy preparando o validando." },
+      { value: "operating", label: "Ya está disponible para atender personas, prestar servicios, vender productos u ofrecer actividades a participantes." },
+      { value: "paused", label: "Está temporalmente en pausa." },
+      { value: "unknown", label: "No lo tengo claro todavía.", kind: "unknown" },
+    ],
+  },
+  {
+    id: "q2_buyer_recipient_relation", version: 1, module: "nonprofit", type: "single", routingRole: "core",
+    prompt: "¿Quien compra o contrata es también quien recibe el servicio o producto?",
+    hint: "Por ejemplo, alguien puede contratar un servicio para otra persona.",
+    purpose: ["classification"], priority: "high", appliesWhen: BUYER_RECIPIENT_RULE,
+    options: [
+      { value: "same_party", label: "Sí, quien compra también lo recibe o utiliza." },
+      { value: "third_party", label: "No, lo compra o contrata para otras personas." },
+      { value: "unknown", label: "Todavía no lo tengo claro.", kind: "unknown" },
+    ],
+  },
+];

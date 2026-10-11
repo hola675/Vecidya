@@ -219,6 +219,13 @@ test("R8-FINAL: legacy runtime stays on its frozen contract and candidate module
   const appRoot = new URL("../../../app/", import.meta.url);
   const files = (readdirSync(appRoot, { recursive: true }) as string[]).map((file) => file.replaceAll("\\", "/")).filter((file) => /\.tsx?$/.test(file));
   const localCandidateEntries = new Set([
+    // QA-03B: entradas locales explícitas; las rutas siguen excluidas del build.
+    "components/diagnostic-flow/qa03b-diagnostic-flow.tsx",
+    "components/diagnostic-flow/qa03b-result.tsx",
+    "components/diagnostic-flow/qa03b-presentation.ts",
+    "routes/dev-diagnostic-qa03b.tsx",
+    "routes/dev-diagnostic-qa03b-methodology.tsx",
+    "routes/dev-diagnostic-qa03b-report.tsx",
     "components/diagnostic-flow/candidate-diagnostic-flow.tsx",
     "components/diagnostic-flow/candidate-result.tsx",
     "components/diagnostic-flow/candidate-presentation.ts",

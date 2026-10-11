@@ -1,5 +1,19 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-QA-03B — contrato candidato certificado (2026-10-11)
+
+**`CONTRACT_CERTIFIED` en entorno local; `GATE_B_PARTIAL` se conserva y la candidata sigue inactiva en producción.** QA-03A/QA-03A.1 y el ajuste aprobado `D2_ELIGIBILITY_APPROVED` están incorporados en una ruta aislada de desarrollo. No cambian rutas públicas, historial de sesiones, migraciones, versión publicada, R3/R8, O4/O6 ni el generador PDF. La identidad nueva usa banco `reviewed-evidence-v4`, respuestas `qbv2-answers-v3`, contexto/pipeline `diag-v3-candidate-operation-history-v1`, R4 `r4-applicability-operation-history-v1` y sesión schema/key 3. La sesión nueva no lee, migra ni elimina valores schema 2.
+
+### Elegibilidad D2 y separación de roles
+
+D2 requiere ambas condiciones en orden: primero comprador directo confirmado (`b2c`, `b2b` o `mixed`); después, evidencia contextual aprobada de posible diferencia comprador/destinatario (relación directa B2B/mixed, organización nonprofit explícita o sector salud/educación). Nonprofit o sector por sí solos no habilitan D2. `no_direct_purchase` y `unknown` omiten D2; `unknown` permanece sin resolver y no obtiene comprador por defecto. Donaciones, subvenciones y financiación institucional permanecen en el contexto de financiación y nunca prueban compra directa ni relación B2B. La salida conserva por separado destinatario, comprador y financiador.
+
+### Cambios aislados y límites de evidencia
+
+El banco versionado conserva 21 definiciones migradas con equivalencia y 17 pendientes sin reinterpretación, y agrega dos preguntas de contexto candidate-only para estado operativo y relación comprador/destinatario. Estado actual e historial de clientes son hechos distintos. R4 distingue operación presente de actividad pausada/histórica por dimensión; confianza y medición no reciben score sin evidencia directa R3, ni se fabrican clientes o conversiones para justificar puntuación. El planner omite preguntas inelegibles y mantiene unknown/N/A sin puntuar. Resultado, metodología e informe se sirven únicamente por `/__dev/diagnostico/qa03b*` durante desarrollo. El informe reutiliza el exportador existente sin modificar su generador.
+
+Certificación local: contrato, D2, seis perfiles de elegibilidad, condiciones contextuales positivas/negativas, financiación independiente, 61 fragmentos conceptuales preservados y 16 recorridos sintéticos completos; sesión aislada/reanudación/concurrencia; typecheck/build, aislamiento de bundle y E2E local documentados en `TESTING.md`. Los cortes previos de QA-03B que indicaban aprobación pendiente se conservan como historia en CHANGELOG, no como estado vigente.
+
 ## DIAG-V3-QA-03A — propuesta semántica del cuestionario (2026-10-10)
 
 **Estado: `DESIGN_PARTIAL`; propuesta no implementada.** El baseline `1a0b2948d88d3014046c1b16e8187cc031c24cfa` permanece vigente. QA-03A analiza exclusivamente `REVIEWED_CANDIDATE_QUESTIONS_V2`; no registra ni activa ese banco. R3–R8, O4/O6, runtime legacy, rutas públicas, sesión legacy, PDF y reglas comerciales no se modifican.
@@ -71,17 +85,107 @@ Actualmente `futureB2BApplicability` habilita seguimiento por `customerBuyer=b2b
 - Certificación requerida: suites del banco/copy, QA-01/02, nueva matriz por escenarios, prueba de neutralidad unknown, R5 rutas y budget, invariantes R3/R4 y R6, diferencias downstream R7/R8, firma de salida, comercial B2B, migración/reanudación/edición/cross-tab schema 2→3, aislamiento de identidad, candidata-only bundle y regresión de rutas públicas. No declarar equivalencia numérica hasta comparar resultados reales después de implementar.
 - Validación de comprensión humana: protocolo ciego y breve con profesionales, proyecto prelaunch, empresa constituida sin operaciones, empresa operativa sin clientes, consulta remota e híbrida, restaurante/tienda, nonprofit con donante institucional, clínica con pagador distinto, B2B y alcance desconocido. Registrar paráfrasis, primera respuesta, opción ausente, duda/cambio tras releer y si la persona tuvo que escoger algo falso. Estado en este corte: `HUMAN_VALIDATION_NOT_RUN`.
 
-**Conclusión técnica QA-03A: `DESIGN_PARTIAL`.** B2, C y D están especificadas para aprobación; la dirección A2 está propuesta, pero no se puede cerrar hasta definir la interacción de actividad operativa, clientes reales, `GrowthStage`/`idea`, applicability R4 e índice/planner prelaunch. El simulador conceptual incluye 25 rutas canónicas, 9 escenarios QA-02 y 17 fronteras, con salidas propuestas `NOT_DETERMINABLE` salvo el baseline realmente observado; no es ejecución del contrato futuro. Se requiere aprobar el diseño A completo antes de iniciar QA-03B.
+**Conclusión técnica QA-03A (corte original 2026-10-10):** B2, C y D quedaron especificadas para aprobación; A2 quedó bloqueada por la interacción entre operación, clientes reales, `GrowthStage`, R4 e índice/planner. QA-03A.1 resuelve esa decisión de política como `POLICY_READY_FOR_APPROVAL`; no modifica los contratos congelados ni autoriza QA-03B.
+
+## DIAG-V3-QA-03A.1 — política de operación sin clientes (2026-10-11)
+
+**Resultado: `POLICY_READY_FOR_APPROVAL`; propuesta documental candidate-only, no implementada; `HUMAN_VALIDATION_NOT_RUN`.** La entidad legal/comercial, el estado operativo actual y la experiencia histórica con personas reales son hechos distintos. Tener registro, web, herramientas o anuncios no prueba que se haya empezado a operar. No tener clientes tampoco prueba que la actividad siga en preparación.
+
+### Política y copy propuestos
+
+Mantener `q2_entity` como tipo de actividad, independiente de etapa o registro. Versionar `q2_has_customers` para que describa experiencia histórica y no se use como proxy de operación actual:
+
+- **`q2_has_customers` — «¿Tu actividad ya ha tenido clientes, compradores, usuarios o beneficiarios reales?»** `yes`: «Sí, ya hubo personas reales que compraron, contrataron, usaron o recibieron lo que ofrezco.» `no`: «No, todavía no ha habido personas reales en esas situaciones.»
+- **Nueva `q2_operational_status` — «¿Cuál describe mejor el estado actual de tu actividad?»** Preguntar únicamente cuando el estado de hoy no esté demostrado por otra respuesta explícita o evidencia directa. `preparing`: «Todavía no está disponible; la estoy preparando o validando.» `operating`: «Ya está disponible para atender personas, prestar servicios, vender productos u ofrecer actividades a participantes.» `paused`: «Está temporalmente en pausa.» `unknown`: «No lo tengo claro todavía.»
+
+La pregunta de estado no se activa solo por `q2_has_customers=no`: tampoco un `yes` histórico prueba que hoy siga abierta, como muestra un negocio pausado. Si `q2_has_customers` es `yes` y el estado actual no está corroborado, se puede preguntar el estado. `unknown` permanece como desconocido. La disponibilidad de un checkout prueba que se puede comprar en línea, no que ya haya habido una compra. La evidencia directa conserva precedencia y puede evitar una pregunta redundante.
+
+| Hecho observado | Estado operativo propuesto | Experiencia real | Tipo de entidad |
+| --- | --- | --- | --- |
+| Preparando y aún no disponible | `preparing` | `hasEverHadRealPeople=false` si se confirmó | Independiente |
+| Disponible, sin experiencia real previa | `operating` | `hasEverHadRealPeople=false` | Independiente |
+| Disponible y con experiencia real | `operating` | `hasEverHadRealPeople=true` | Independiente |
+| Temporalmente en pausa | `paused` | `true` o `false`, según respuesta | Independiente |
+| Estado actual no determinado | `unknown` | Mantener lo que sí se conozca, sin inferir estado | Independiente |
+
+No presentar la combinación `operating + sin experiencia` como nivel de madurez. El nuevo estado describe disponibilidad operativa; no afirma ventas, conversión, calidad, recurrencia ni éxito.
+
+### Alternativas de arquitectura
+
+| Alternativa | Precisión | Preguntas y rutas | Compatibilidad/coste | Decisión |
+| --- | --- | --- | --- | --- |
+| **P1 — conservar** `hasRealCustomers=false → prelaunch/idea` | Baja: vuelve a confundir no haber atendido a nadie con no operar. | No añade preguntas ni cambia salidas, pero conserva la clasificación incorrecta y puede excluir R4. | Menor coste inmediato; semántica y resultados engañosos persisten. | Rechazada como política futura; se conserva solo como baseline histórico hasta migrar/versionar. |
+| **P2 — separar estado operativo y experiencia real** | Alta: representa preparación, actividad disponible, pausa, desconocido e historial de atención por separado. | Una pregunta condicional; nuevas señales pueden cambiar elegibilidad, rutas, cobertura y qué evidencia se recopila. | Mayor coste de nueva identidad y migración controlada; permite transicionar sin reinterpretar sesiones viejas. | **Recomendada**, junto con el estado desconocido de P3 como salida válida. |
+| **P3 — estado siempre indeterminado sin prueba de actividad** | Conservadora, pero pierde precisión incluso cuando la persona confirma que ofrece el servicio. | Puede añadir aclaraciones posteriores o dejar R4 sin contexto. | Menor riesgo de falsa actividad; mayor riesgo de omitir diagnóstico útil y aumentar abandono. | No se usa como política principal; `unknown` de P2 cubre la incertidumbre genuina. |
+
+### GrowthStage y consumidores
+
+| Situación propuesta | `GrowthStage` propuesto | Evidencia/regla |
+| --- | --- | --- |
+| `preparing` confirmado | `idea` | Solo preparación real; no se deduce de la respuesta histórica de clientes. |
+| `operating`, sin clientes reales históricos | `unresolved(insufficient_evidence, [starting, operating])` | No asignar `starting` solo por abrir o estar disponible. La señal no prueba que sean las primeras operaciones ni que los procesos sean inmaduros. |
+| `operating`, con experiencia real | Mantener criterio vigente: `starting` únicamente con experiencia real y operación no regular/repetible; con operación regular, usar las señales existentes de demanda, capacidad y expansión | La experiencia real histórica sola no determina una etapa ni la actividad actual. |
+| `paused` o `unknown` | No inferir etapa; conservar unresolved hasta una política R4/etapa versionada | La etapa de crecimiento no es una medida de estado abierto/cerrado. |
+
+El contrato actual solo permite `activity=prelaunch|active` y el resolver deriva `activity` de clientes; no representa pausa. En la futura versión candidata, `operationalStatus` debe ser independiente; `activity` no se reinterpretará silenciosamente. `hasEverHadRealPeople=true` conserva el dato histórico, pero solo `operationalStatus=operating` acredita disponibilidad actual. Con `paused`, no activar seguimiento, demanda, ventas o recurrencia actuales por el historial; mantenerlo para preguntas que midan explícitamente experiencia pasada. Para el índice, solo `preparing` debe activar el tratamiento prelaunch; `operating` no puede marcarse prelaunch por falta de clientes. Una pausa solo podrá producir índice si la política R4 versionada aporta dimensiones aplicables y evidencia suficiente. `GrowthStage=idea` también controla hoy el mínimo del módulo startup para entidades project: QA-03B debe cambiar esa condición a evidencia de preparación real, sin retirar esa cobertura a proyectos activos por tener `idea` inferida. Se fija para el diseño candidato el significado operativo vigente de `starting`: experiencia real y operación aún no regular/repetible. La taxonomía actual admite además “primeras operaciones”; QA-03B debe alinear la taxonomía candidate-only con el criterio del resolver, sin tocar runtime congelado. Ningún estado asigna `starting` por el solo hecho de no tener clientes o haber abierto.
+
+### R4 — propuesta por dimensión
+
+Esta matriz orienta una futura versión candidate-only. No cambia las reglas R4 actuales ni el scoring. Evidencia observada válida conserva precedencia para establecer aplicabilidad; un vacío de datos no es una puntuación cero.
+
+| Dimensión | Antes de abrir | Abierto sin experiencia real | ¿Requiere interacción real? / evidencia directa | N/A frente a contexto insuficiente |
+| --- | --- | --- | --- | --- |
+| **Digital Foundation** | Se puede revisar dominio, canal y contacto previstos si la actividad está definida. | Aplicable: disponibilidad del sitio/contacto, funcionamiento técnico, seguridad y acceso. | No requiere clientes. Evidencia: URL, flujo de contacto/compra probado, disponibilidad y permisos. | N/A solo si todavía no existe actividad/canal que evaluar; `insufficient_context` si ni actividad ni canal pueden establecerse. |
+| **Discovery** | Aplicable cuando ya se conoce a quién se desea llegar y existe una vía prevista. | Aplicable: visibilidad, indexación, ficha/localización y canales de descubrimiento pueden evaluarse sin ventas. | No requiere una venta. Evidencia: página/ficha publicada, búsquedas/canales y alcance declarado; impresiones requieren medición real. | N/A si el modelo no busca alcance/demanda digital; insuficiente si audiencia, modelo y actividad no se conocen. |
+| **Clarity & Positioning** | Aplicable a una actividad definida en preparación. | Aplicable aunque aún no haya compradores. | No requiere interacción. Evidencia: oferta, público previsto, propuesta y mensajes publicados. | N/A rara; insuficiente si aún no se puede describir qué se ofrece. |
+| **Conversion & Access** | Se evalúa preparación del siguiente paso que el modelo necesita (contactar, reservar, donar o comprar). | Aplicable cuando la oferta está disponible o hay una acción accesible. | No requiere conversión concluida. Evidencia: enlace, formulario, reserva o checkout comprobable. | N/A si el modelo realmente carece de acción digital pertinente; insuficiente si no se sabe qué acción ofrece. Checkout no prueba pedidos. |
+| **Trust & Reputation** | Puede revisar identidad, transparencia, credenciales y políticas; no exigir reseñas. | Aplicable por señales de confianza que sí existan, incluso sin historial de atención. | Testimonios/reseñas sí requieren personas reales; identidad, contacto, privacidad, licencias o políticas no. | N/A para el subindicador reputacional sin experiencia previa; no usar ausencia de reseñas como deficiencia. Insuficiente si no se conocen señales ni evidencia directa para el área. |
+| **Relationship & Recurrence** | Retención/recompra es N/A antes de servir a alguien; no imputar fallo. | La recurrencia es N/A si nunca se atendió a nadie. Herramientas de respuesta/follow-up solo se evalúan si hay una interacción real observada o una capacidad explícita que puede probarse. | Retención y repetición exigen historial; canal/proceso puede comprobarse con evidencia operativa directa. | N/A para recurrencia aún imposible; insuficiente si el estado del contacto o la evidencia de interacción no está claro. Un negocio pausado puede tener historial, que no debe borrarse. |
+| **Digital Readiness** | Aplicable: capacidad, claridad de roles y disposición pueden revisarse antes de abrir. | Aplicable sin clientes. | No requiere interacción con clientes. Evidencia: canales/herramientas/roles/proceso declarados o inspeccionables. | N/A rara; insuficiente si no se conoce siquiera la capacidad o forma de trabajo. |
+| **Measurement & Optimization** | Métricas de resultado sin operación son N/A; instrumentación y objetivos pueden revisarse si hay una prueba segura. | Puede comprobarse configuración de eventos, fuentes y objetivos; sin tráfico/ventas, resultados no tienen muestra. | Métricas de desempeño sí requieren actividad/muestra; configuración no requiere clientes. | N/A para resultados sin denominador/volumen; no convertir cero actividad en mala calidad. Insuficiente si se desconoce si hay instrumentación o datos. |
+
+La futura matriz debe permitir `applicable` a nivel de capacidad evaluable sin convertir subindicadores imposibles (reseñas, repetición, conversión, volumen) en evidencia negativa. Si el esquema R4 no puede expresar esa diferencia sin alterar puntuación/cobertura, QA-03B debe primero proponer una identidad de aplicabilidad nueva; no ajustar R3–R8, O4/O6 ni reglas comerciales dentro de ese trabajo sin autorización separada.
+
+### R4 durante una pausa temporal
+
+Una experiencia histórica no acredita que la actividad siga abierta ni que hoy haya consultas, demanda o seguimiento. En `paused`, aplicar R4 únicamente a capacidades/evidencias observables y mantener separado lo histórico de lo actual:
+
+| Dimensión | Tratamiento candidato mientras está pausada |
+| --- | --- |
+| Digital Foundation | Evaluar activos que aún existen y se pueden inspeccionar (sitio, dominio, formulario, seguridad). No inferir disponibilidad actual si no se puede comprobar. |
+| Discovery | Revisar canales/listados que siguen publicados. No deducir alcance, impresiones o demanda actuales de actividad pasada. |
+| Clarity & Positioning | Evaluar el mensaje/oferta que todavía pueda observarse; si la actividad/oferta no se puede establecer, dejar contexto insuficiente. |
+| Conversion & Access | Probar acceso actual solo si la oferta está abierta. Si está suspendida, la conversión actual no aplica; no llamar fallo a una acción deshabilitada deliberadamente. |
+| Trust & Reputation | Conservar evidencia directa existente, incluidos testimonios verificables, sin presentarla como operación actual ni exigir reseñas nuevas. |
+| Relationship & Recurrence | La historia puede justificar preguntas formuladas explícitamente sobre procesos pasados; nunca inferir seguimiento, recurrencia o relación vigente solo por haber tenido clientes. |
+| Digital Readiness | Aplicable a capacidades/equipo actualizables aunque la actividad esté pausada; si no hay evidencia, el estado de la capacidad queda sin resolver. |
+| Measurement & Optimization | Métricas históricas solo con periodo y fuente explícitos. Sin muestra actual, resultados actuales quedan N/A o sin evidencia, nunca con cero imputado. |
+
+El `unknown` del estado operativo se trata como contexto insuficiente para reglas que requieran disponibilidad presente, salvo que otra evidencia directa resuelva esa capacidad. La regla R4 se decide dimensión por dimensión; `operating` tampoco activa automáticamente las ocho dimensiones.
+
+### Planner, scoring, resultado y compatibilidad
+
+- **Planner:** operación/experiencia son contexto de selección, no respuestas de evidencia. La pregunta de estado aparece cuando el estado de hoy no está demostrado, tanto si el historial es `yes` como `no`; así se identifica `paused + hasEverHadRealPeople=true`. Una respuesta condicional reduce repetición; la ruta seguirá limitada por el hard cap vigente. Probar budget, preguntas de startup y elegibilidad para `preparing`, `operating`, `paused` y `unknown`. En `paused`, no seleccionar seguimiento actual únicamente por la señal histórica de clientes. No asumir que estar abierto activa todas las preguntas especializadas.
+- **Scoring y resultado:** las nuevas señales no puntúan por sí mismas. Una ruta distinta puede recoger otras respuestas DIRECT y, por ello, cambiar score, cobertura, confianza, índice, prioridades o narrativa. No se puede afirmar igualdad de resultados por inspección documental; QA-03B debe comparar la salida real y etiquetar cambios explicables. La ausencia de clientes, reseñas o recurrencia no reduce score por sí sola.
+- **Comercial/licencias:** estado operativo e historial de clientes no crean necesidad, comprador B2B, solvencia, oferta ni licencia. Mantener las reglas comerciales; verificar no-regresión de clasificación de comprador y de ausencia de oferta sin evidencia.
+- **Identidad/migración:** crear nueva versión de pregunta para `q2_has_customers`, pregunta y señal de estado operativo, answer schema, banco, planner/R4/result identity y key/session schema candidate-only. No se puede migrar automáticamente la respuesta antigua `no` a `preparing` ni `operating`, ni `yes` a estado abierto hoy: exigir reconfirmación del dato ambiguo. Revisar sesiones activas y completas, reanudación, pestañas con revision/writer antiguos y reportes generados: resultado viejo conserva identidad antigua y nunca se vuelve a etiquetar. Legacy no se lee ni migra.
+- **Decisiones del diseño QA-03A:** A queda resuelta como P2+unknown, pendiente de aprobación humana; B2/C-unknown/D2 permanecen propuestas para aprobar junto con A. No se inicia QA-03B hasta aprobación explícita del paquete y su compatibilidad. Las rutas públicas, motor legacy, PDF y persistencia no se tocan.
+
+### Simulación y validación
+
+El simulador conceptual conserva sus **51 casos** (25 R7-A + 9 QA-02 + 17 fronteras) y añade los diez escenarios `QA031-01`–`QA031-10`: constituida/cerrada; abierta reciente; profesional abierto sin clientes; tienda lista sin pedidos; restaurante cerrado/preparado; restaurante abierto sin ventas; organización activa sin beneficiarios; proyecto con clientes; negocio temporalmente pausado; estado operativo desconocido. Total: **61**. El baseline de los 51 primeros sigue identificado como fixture ejecutado; los diez nuevos son análisis estático/conceptual y el motor propuesto no se ejecutó. Cada registro conserva hechos/respuestas, contexto actual derivado estáticamente y nivel de evidencia, estado propuesto, rutas/preguntas y dimensiones potencialmente afectadas, aplicabilidad/R4 pendiente por ejecución, riesgos y salida futura no determinable. `humanValidation=NOT_RUN` para todos.
+
+Estado de diseño: `POLICY_READY_FOR_APPROVAL`, no política aprobada. La revisión humana y la aprobación del responsable siguen pendientes.
 
 ## DIAG-V3-ACT-03.4B.1 — verificación de cierre (2026-10-10)
 
 **Disposición: `GATE_B_PARTIAL`; candidata pública inactiva.** La integración conserva el papel seleccionado durante la generación: bloquea el selector A4/Carta y retira el enlace alternativo mientras el PDF se genera; la operación captura papel y nombre al inicio. El E2E intenta cambiar a Carta mientras C01/A4 espera la fuente, comprueba el bloqueo y descarga el archivo A4 confirmado. PyMuPDF vuelve a comprobar 14/14 PDF en contenido, enlaces, XMP, tags, idioma, fuentes incrustadas y geometría; cero pérdidas semánticas, diferencias inexplicadas o duplicados, con mínimo 8,5 pt. CIDSet 4/4 y las regresiones locales del exportador pasan.
 
-La instalación aislada con Node `v24.21.0` y pnpm `11.21.0` no concluyó: `pnpm install --frozen-lockfile` resolvió el lockfile, pero el registry oficial no permitió descargar paquetes, incluido Arimo 5.3.0. Estado `INSTALL_REPRO_BLOCKED`; no se pudo comprobar aplicación del patch ni generar PDF desde una instalación limpia. veraPDF no se ejecutó (0/14): no había Java ni Docker y no se obtuvo un binario oficial. La release estable oficial visible era 1.30.2; no se verificó disponibilidad local de 1.30.3. Los informes semánticos locales no sustituyen veraPDF ni la aceptación independiente PAC/Acrobat/NVDA/humana.
+La instalación aislada con Node `v24.21.0` y pnpm `11.21.0` no concluyó: `pnpm install --frozen-lockfile` resolvió el lockfile, pero el registry oficial no permitió descargar paquetes, incluido Arimo 5.3.0. Estado `INSTALL_REPRO_BLOCKED`; no se pudo comprobar aplicación del patch ni generar PDF desde una instalación limpia. **La validación local de veraPDF sí se completó después:** Greenfield 1.30.2 con Temurin JRE 21.0.12.1+1 y verificación de la firma oficial; 14/14 PDF/UA-1 conformes, cero checks fallidos y cero errores de parseo/excepciones, con informes locales en `tmp/pdfs/act03-4b-pac-nvda-2026-10-10/verapdf-1.30.2-ua1/`. Esa validación no sustituye la aceptación independiente PAC/Acrobat/NVDA/humana ni certifica por sí sola accesibilidad humana.
 
 La membresía responde cuando el fixture se prepara con el Worker detenido y luego se inicia; la reproducción estándar pierde la primera solicitud a `GET /api/organizations/{id}/members` con `ECONNRESET` cuando inserta D1 con el Worker activo. El Worker permanece vivo, las sondas antes/después devuelven 200 y no hay error de aplicación o SQLite observado. Esa evidencia no basta para asignar una causa TCP/D1 definitiva; no se modificó la lógica de membresías ni se ocultó con reintentos. El runner general actual falla antes, en `business-profile-slug-lifecycle-check.mjs` (401), reproducido también de forma aislada. Los detalles y conteos constan en [TESTING.md](TESTING.md).
 
-El smoke del Worker local compilado confirma 200 para las tres rutas públicas y 404 para la ruta candidate-only; build/client y build/server no contienen PDFKit/fontkit/Arimo/exportador. Gate B permanece parcial por instalación congelada y veraPDF pendientes. La suite general actual falla antes de membresías (slug lifecycle 401) y el reset de membresías no tiene causa raíz demostrada, por lo que no se declara readiness global ni se justifica su separación. PAC/Acrobat, NVDA y revisión humana son la aceptación independiente posterior; ACT-03.5 solo se podrá proponer después de Gate B PASS. ACT-04 no está autorizado.
+El smoke del Worker local compilado confirma 200 para las tres rutas públicas y 404 para la ruta candidate-only; build/client y build/server no contienen PDFKit/fontkit/Arimo/exportador. Gate B permanece parcial por instalación congelada no reproducible y aceptación PAC/Acrobat/NVDA/humana pendiente. La suite general actual falla antes de membresías (slug lifecycle 401) y el reset de membresías no tiene causa raíz demostrada, por lo que no se declara readiness global ni se justifica su separación. ACT-03.5 solo se podrá proponer después de Gate B PASS. ACT-04 no está autorizado.
 
 ## DIAG-V3-ACT-03.4B — Integración local de exportación PDF candidata (2026-10-10)
 

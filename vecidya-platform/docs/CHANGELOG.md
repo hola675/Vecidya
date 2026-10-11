@@ -1,5 +1,34 @@
 # Changelog
 
+## 2026-10-11 — DIAG-V3-QA-03B.0 contrato candidato certificado localmente
+
+- Aplicada la decisión `D2_ELIGIBILITY_APPROVED`: comprador directo confirmado (`b2c`/`b2b`/`mixed`) antes de evaluar contexto comprador/destinatario; omitir con `no_direct_purchase`/`unknown`. Financiación institucional no prueba compra B2B; `unknown` permanece sin resolver.
+- Contrato versionado candidate-only: banco `reviewed-evidence-v4`, respuestas v3, identidad operation-history y sesión schema/key 3, sin reinterpretar ni migrar sesiones históricas. R4 distingue estado operativo e historia con límites de evidencia directa; las rutas candidatas solo se registran en desarrollo.
+- Certificación local: unitarias **1519/1519**, typecheck/build, scan de artefactos productivos; seis recorridos browser locales, reload/resume, exclusión cross-tab y descarga de informes PASS. Evidencia y límites en `TESTING.md`.
+- No cambian R3/R8, O4/O6, contratos públicos ni generador PDF. `GATE_B_PARTIAL` se conserva; PAC/Acrobat, NVDA, revisión humana e instalación limpia siguen pendientes. Sin D1 remoto, push, deploy, publicación, activación ni ACT-04.
+
+## Corte histórico — DIAG-V3-QA-03B.0 preflight previo a la aprobación D2 (2026-10-11)
+
+
+- Recibida aprobación QA-03A/QA-03A.1 y autorización QA-03B local. Verificados main/HEAD 6b1504e y seis documentos previos; preservados sin commit. No se reabre aprobación del paquete.
+- Antes de código se presentó DIAG-V3-QA-03B-D2-GATE-001: explicitar compra directa confirmada antes de la aclaración comprador/destinatario, omitiéndola con no_direct_purchase/unknown aunque haya nonprofit/sector. Es ajuste pendiente, no implementación ni incompatibilidad que obligue a cambiar R3/R8.
+- Baseline dirigido 24/24 PASS: QA-02 3, R4-FINAL 10, sesión existente 10, caracterización 1. Probe aislado doce casos/seis diferencias de condición, 21 fuentes migradas/17 pendientes, 61 registros conceptuales; motor nuevo NOT_RUN. Evidencia en tmp/diag-v3-qa-03b/preflight.json; las propuestas previas se conservan.
+- Reconciliados ARCHITECTURE, TESTING, STATUS, PROJECT_STATE, ROADMAP y CHANGELOG. B.0 sin certificar; B.1–B.5 pendientes. Identidades, código, sesiones, rutas públicas y generador PDF intactos; sin D1, push, deploy, activación ni ACT-04. GATE_B_PARTIAL y PAC/NVDA/humana NOT_RUN se mantienen.
+
+## 2026-10-11 — precisión de la política QA-03A.1 tras revisión
+
+- Se fija para el diseño candidate-only que `starting` mantiene el significado operativo vigente del resolver: clientes/personas reales y regularidad ausente o irregular; el estado “abierto” o “sin clientes” por sí solo deja GrowthStage sin resolver. La taxonomía candidate-only debe alinearse con este criterio.
+- `q2_has_customers` representa historia. Si el estado de hoy no está probado, la pregunta condicional se presenta con experiencia histórica `yes` o `no`, para identificar `paused` sin mapear historia a operación, seguimiento o demanda actuales.
+- Se amplió la especificación R4 de pausa para las ocho dimensiones, con evidencia directa, separación de métricas históricas y estado actual, y N/A/contexto insuficiente sin puntuar volúmenes inexistentes. No se repitió la simulación de 61 casos ni se cambió código o motor.
+- `POLICY_READY_FOR_APPROVAL` sigue pendiente de aprobación final del contrato; QA-03B no inicia.
+
+## 2026-10-11 — DIAG-V3-QA-03A.1 política propuesta y pausa de implementación PDF
+
+- Se definió para aprobación P2: tipo de entidad, estado operativo actual (`preparing`/`operating`/`paused`/`unknown`) e historial de experiencia real son hechos distintos. `idea` queda reservado a preparación confirmada; la falta de clientes no se convierte en `starting` ni en `idea`. Se actualizaron `ARCHITECTURE.md`, `TESTING.md`, `STATUS.md`, `PROJECT_STATE.md` y `ROADMAP.md` con copy, matriz R4, impacto de planner/índice/resultados, compatibilidad y migración. Validación humana y aprobación permanecen `NOT_RUN`/pendientes; QA-03B no inicia.
+- El simulador local ignorado se amplió conservando sus 51 casos e incorporando QA031-01…10 (61 total). Generación local PASS; el runtime propuesto no se ejecutó y las 10 nuevas salidas quedan `NOT_DETERMINABLE`; no se modificó código de producto.
+- Por instrucción del usuario, se pausa cualquier mejora futura a la implementación del generador PDF y se reserva a revisión/backlog futuro del usuario. No existía una tarea independiente de implementación abierta (`DIAG-V3-PDF-01`/`DIAG-V3-12` ya están cerradas/congeladas). No se cancelan `INSTALL_REPRO_BLOCKED`, Gate B `GATE_B_PARTIAL` ni la aceptación PAC/NVDA/humana `NOT_RUN`; ACT-03.5 y ACT-04 siguen sin iniciar.
+- Sin push, deploy, commit, activación candidata ni cambios de rutas públicas.
+
 ## 2026-10-10 — publicación de DIAG-V3-REL-002 `0.6.1`
 
 - Deploy de producción desde `main`, commit `7d0b1bd`, Worker `vecidya-platform`, Version ID `8bf2c1c4-d6cb-47ca-ae74-01de28392d67`; sin migraciones ni cambios de D1, secrets o staging.

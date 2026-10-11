@@ -1,0 +1,40 @@
+import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
+
+/** Datos sintéticos declarados: cada pregunta posible tiene una respuesta escrita; ningún fallback. */
+export const AUTHORED_UNKNOWN_CAPABILITIES: AnswersV2 = {
+  q2_entity: "business", q2_other_staff: "no", q2_monetization: "services",
+  q2_delivery: ["remote_service"], q2_has_customers: "no", q2_operational_status: "operating",
+  q2_regularity: "unknown", q2_demand_trend: "unknown", q2_goal: "explain", q2_friction: "unsure",
+  q2_sector: "professional_services", q2_customer_reach: "unknown", q2_customer_buyer: "unknown",
+  q2_buyer_recipient_relation: "unknown", q2_capacity_signal: ["unknown"],
+  q2_appointments_noshow: "unknown", q2_ecommerce_traffic_sources: ["unknown"],
+  q2_b2b_pipeline: "unknown", q2_process_systemization: "unknown", q2_discovery_reliable_reach: "unknown",
+  q2_local_presence_consistency: "unknown", q2_reputation_flow: "unknown",
+  q2_service_response_speed: "unknown", q2_service_quote_followup: "unknown",
+  q2_appointments_booking_friction: "unknown", q2_appointments_confirmation_reminders: "unknown",
+  q2_appointments_lead_to_booking: "unknown", q2_appointments_rebooking: "unknown",
+  q2_professional_authority_signals: "unknown", q2_professional_intake_flow: "unknown",
+  q2_retail_product_visibility: "unknown", q2_retail_customer_capture: "unknown",
+  q2_ecommerce_product_discovery: "unknown", q2_b2b_status_visibility: "unknown",
+  q2_creator_audience_ownership: "unknown", q2_operations_handoffs: "unknown",
+  q2_followup_general_process: "unknown", q2_operations_information_base: "unknown",
+  q2_presence_digital_base: "unknown", q2_presence_offer_clarity: "unknown",
+};
+export const AUTHORED_JOURNEYS = [
+  { id: "operating-project", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_entity: "project", q2_customer_buyer: "b2c" } },
+  { id: "open-no-clients", answers: AUTHORED_UNKNOWN_CAPABILITIES },
+  { id: "individual-paid-staff", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_entity: "individual", q2_other_staff: "yes", q2_has_customers: "yes", q2_regularity: "irregular_active" } },
+  { id: "legal-no-clients", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_entity: "business", q2_presence_digital_base: "reliable_presence" } },
+  { id: "nonprofit-open-no-beneficiaries", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_entity: "organization", q2_monetization: "mission", q2_customer_buyer: "no_direct_purchase", q2_sector: "community_social" } },
+  { id: "paused-history", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_operational_status: "paused", q2_has_customers: "yes" } },
+  { id: "paused-no-history", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_operational_status: "paused" } },
+  { id: "preparing", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_operational_status: "preparing", q2_entity: "project" } },
+  { id: "unknown-state", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_operational_status: "unknown", q2_has_customers: "yes" } },
+  { id: "remote-physical-appointments", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_delivery: ["physical_location", "appointments", "remote_service", "other"], q2_has_customers: "yes", q2_regularity: "irregular_active", q2_customer_buyer: "b2c" } },
+  { id: "institutional-funding", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_entity: "organization", q2_monetization: "mission", q2_has_customers: "yes", q2_customer_buyer: "no_direct_purchase", q2_sector: "education_coaching" } },
+  { id: "education-third-party", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_customer_buyer: "b2c", q2_sector: "education_coaching", q2_buyer_recipient_relation: "third_party", q2_delivery: ["appointments", "remote_service"] } },
+  { id: "clinic-third-party", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_customer_buyer: "mixed", q2_sector: "health_wellness", q2_buyer_recipient_relation: "third_party", q2_has_customers: "yes", q2_delivery: ["physical_location", "appointments"] } },
+  { id: "membership-direct", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_monetization: "recurring", q2_customer_buyer: "b2c", q2_has_customers: "yes" } },
+  { id: "direct-b2b", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_customer_buyer: "b2b", q2_buyer_recipient_relation: "same_party", q2_has_customers: "yes", q2_b2b_pipeline: "defined" } },
+  { id: "hybrid-retail-checkout", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_delivery: ["retail", "online_checkout"], q2_monetization: "goods", q2_customer_buyer: "b2c", q2_sector: "retail", q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "flat", q2_capacity_signal: ["stable"], q2_presence_digital_base: "reliable_presence", q2_presence_offer_clarity: "clear", q2_ecommerce_product_discovery: "easy", q2_discovery_reliable_reach: "reliable" } },
+] satisfies readonly { id: string; answers: AnswersV2 }[];

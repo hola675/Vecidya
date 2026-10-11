@@ -1,5 +1,25 @@
 # Pruebas
 
+## DIAG-V3-QA-03B — certificación candidata local (2026-10-11)
+
+**Resultado: `CONTRACT_CERTIFIED`; elegibilidad D2: `D2_ELIGIBILITY_APPROVED`.** La certificación se limita al contrato candidato y al runtime local. No activa la candidata, no modifica el contrato público ni las sesiones históricas, y no cierra `GATE_B_PARTIAL`.
+
+### Pruebas de contrato y regresión
+
+La elegibilidad exige comprador directo `b2c`/`b2b`/`mixed` y luego condición contextual de posible diferencia de roles. Se probaron los cinco valores (`b2c`, `b2b`, `mixed`, `no_direct_purchase`, `unknown`), ramas contextuales positivas y negativas, sectores y entidades canónicos, nonprofits, financiación por donación/subvención, y que el financiador no sobrescribe al comprador. `unknown` continúa sin resolver. Se verificaron las 21 fuentes migradas y equivalencia, 17 pendientes sin migración inventada, 61 fragmentos conceptuales y 16 recorridos completos explícitos. La matriz operativa cubre seis combinaciones de estado/historial; además se prueban sesiones nuevas, expiración, revisión, reload/resume, reinicio sin tocar keys antiguas y exclusión cross-tab.
+
+```powershell
+node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test --test-concurrency=4 "tests/unit/**/*.test.ts"
+```
+
+**RAN: 1519/1519 PASS, 0 fallos, 0 omitidas.** Incluye la regresión previa y las 100 pruebas QA-03B. `pnpm run typecheck` y `pnpm run build`: **PASS**. Escaneo de `build/client` y `build/server`: sin `reviewed-evidence-v4`, identidad operation-history ni ruta `/__dev/diagnostico/qa03b`; el bundle de producción no contiene el contrato candidato.
+
+### Runtime local y límites
+
+E2E con el runtime Cloudflare local: **6/6 recorridos** (tres escritorio y tres móvil), con resultado, metodología, persistencia/reanudación y descarga no vacía de informe en cada uno; **reload/resume PASS** sin mutar el snapshot al cargar; **cross-tab Web Locks PASS**. Los casos incluyen financiación institucional sin pregunta D2, comprador B2C en educación con tercero destinatario, cita remota más atención presencial y retail con checkout híbrido. Sin errores de página ni desbordamiento horizontal en los seis perfiles. Evidencia temporal en `tmp/diag-v3-qa-03b/browser/results.json`, capturas y PDF de prueba bajo `tmp/diag-v3-qa-03b/browser/` (artefactos locales ignorados). La prueba se ejecutó sobre el informe existente; no se editó ni reemplazó el generador PDF. `git diff --check`: PASS.
+
+**No ejecutado como parte de esta certificación:** PAC/Acrobat, NVDA y aceptación humana; instalación reproducible en checkout limpio. Estos bloqueos previos mantienen `GATE_B_PARTIAL`; no se declara PDF/UA/readiness global, publicación ni activación. No se ejecutaron remote E2E, D1 remoto, push, deploy ni ACT-04.
+
 ## DIAG-V3-QA-03A — diseño semántico y compatibilidad (2026-10-10)
 
 **Resultado: `DESIGN_PARTIAL`; diseño no implementado; `HUMAN_VALIDATION_NOT_RUN`.** Baseline verificado: `main`, HEAD `1a0b2948d88d3014046c1b16e8187cc031c24cfa`, sin cambios rastreados antes del trabajo (`vecidya-platform/tmp/` ya era local y no versionado). Se inspeccionaron las preguntas actuales, señales, context resolver, elegibilidad/planner, evidencia, resultados/comercial y sesión candidate-only. El índice MCP codebase cerró el transporte; se continuó con lectura directa de las fuentes nombradas y el fallback Serena, sin hacer afirmaciones de cobertura exhaustiva del grafo.
@@ -8,7 +28,7 @@
 
 | Decisión | Propuesta para revisión | Efecto que debe probar QA-03B | Estado |
 |---|---|---|---|
-| A `q2_entity` | A2: conservar cuatro categorías como tipo de actividad; añadir `q2_activity_stage` (`preparing`/`operating`/`unknown`); mantener `q2_has_customers` como hecho real independiente. Copys completos y valores propuestos en `ARCHITECTURE.md`. | El resolver usa hoy `hasRealCustomers` para `activity` y para `GrowthStage`; `false` produce `idea`. `growthStage` afecta R4, narrativa, índice/prelaunch y presupuesto de ruta. “Operando sin clientes” puede cambiar resultados/rutas: requiere política aprobada antes del código. | **PARCIAL — decisión de compatibilidad pendiente** |
+| A `q2_entity` / operación | QA-03A.1 recomienda P2: tipo de actividad independiente; `q2_has_customers` como experiencia real histórica; nueva pregunta candidate-only condicional de estado (`preparing`/`operating`/`paused`/`unknown`). Copy completo y efectos en `ARCHITECTURE.md`. | El resolver actual mapea `no` a `activity=prelaunch` y `GrowthStage=idea`; R4, índice y planner lo consumen. El estado de operación no puede migrarse desde un sí/no antiguo. | **`POLICY_READY_FOR_APPROVAL`; aprobación humana pendiente** |
 | B `q2_delivery` | B2: en un multiselect separar prestación/lugar (`physical_location`, `travels`, nuevo `remote_service`), agenda (`appointments`) y compra (`retail`, `online_checkout`); mantener consumo `onsite`; `other` complementaria; `unsure` exclusiva. | No mapear remoto a ecommerce ni crear `hybrid` por dos canales del mismo servicio. Analizar y probar el efecto sobre arquetipo y módulos de los 11 escenarios indicados en `ARCHITECTURE.md`. | **Propuesta lista para aprobación** |
 | C `q2_customer_reach` | Añadir `unknown`: «Todavía no lo tengo claro», como declaración desconocida explícita; no resolver a local/mixto ni puntuar. Mantener prelaunch como alcance deseado y preservar significado de `mixed`. | `customerReach` puede permanecer unresolved; confirmar que planner no repite pregunta ni termina en `budget_blocked`. | **Propuesta lista para aprobación** |
 | D `q2_customer_buyer` | D2: preguntar quién compra/contrata directamente; valores `b2c`, `b2b`, `mixed`, `no_direct_purchase`, `unknown`; aclaración condicional cuando comprador institucional y beneficiario pueden diferir. | Donación/subvención sin compra no produce B2B. Compra institucional directa sí puede producirlo. Requiere revisar `futureB2BApplicability`, `q2_b2b_pipeline` y salida comercial, sin editar reglas en QA-03A. | **Propuesta lista para aprobación** |
@@ -17,7 +37,7 @@ Alternativas contrastadas: A1 (copy solamente) no separa operación comenzada si
 
 ### Simulación de diseño — solo lectura y separada del runtime
 
-El artefacto [design-simulation.json](../tmp/diag-v3-qa-03a/design-simulation.json) reúne **25 casos R7-A + 9 recorridos QA-02 + 17 escenarios de frontera = 51 filas**. Para cada caso registra hechos, respuestas actuales disponibles, limitaciones demostradas, respuestas propuestas o `NOT_ANSWERED`/reconfirmación, contexto esperado, preguntas/riesgos de rutas, dimensiones potencialmente afectadas, riesgo de scoring y comercial, baseline real cuando existía y resultado futuro `NOT_DETERMINABLE_WITHOUT_IMPLEMENTATION`. Los 34 primeros reutilizan fixtures sintéticos existentes; el baseline observado se resume desde `tmp/diag-v3-qa-02/before.json` y `directed-route-matrix.json`. Los 17 adicionales son perfiles conceptuales, no rutas ejecutadas. No se inventaron scores, recomendaciones, licencias ni cambios de planner del contrato propuesto. El JSON declara `PROPOSED_ENGINE_NOT_EXECUTED` y `HUMAN_VALIDATION_NOT_RUN`.
+El artefacto [design-simulation.json](../tmp/diag-v3-qa-03a/design-simulation.json) conserva **25 casos R7-A + 9 recorridos QA-02 + 17 fronteras = 51** y añade **10 casos QA-03A.1 = 61**. Cada fila conserva hechos/respuestas, limitaciones, contexto actual y aplicabilidad R4 derivados de reglas estáticas cuando es posible, propuesta, rutas/dimensiones, riesgos y estado de resultado. Los primeros 34 retienen fixtures sintéticos ejecutados; las 27 fronteras son análisis conceptuales, sin ruta del candidato. En QA-03A.1 los resultados del contrato futuro y la ejecución de baseline por caso quedan sin determinar; no se inventan scores, recomendaciones ni licencias. Toda validación humana permanece `NOT_RUN`.
 
 Reproducir el artefacto localmente desde `vecidya-platform/`:
 
@@ -25,7 +45,7 @@ Reproducir el artefacto localmente desde `vecidya-platform/`:
 pnpm exec node --experimental-strip-types tmp/diag-v3-qa-03a/build-design-simulation.mjs
 ```
 
-Resultado al generarlo en este corte: conteos **25/9/17/51**. El script solo importa fixtures sintéticos de QA, lee salidas QA-02 y escribe dentro de `tmp`; no se importa desde `app/` ni modifica el banco o el motor.
+Resultado al generarlo en este corte: conteos **25/9/17/10/61** (R7-A / QA-02 / fronteras QA-03A / fronteras QA-03A.1 / total). El script solo importa fixtures sintéticos de QA, lee salidas QA-02 y escribe dentro de `tmp`; no se importa desde `app/` ni modifica el banco o el motor.
 
 ### Sesiones y criterios de compatibilidad
 
@@ -33,11 +53,40 @@ La sesión candidate-only vigente es schema 2, key `vecidya.diagnostic.v3.candid
 
 ### Verificaciones ejecutadas y límites
 
-- `pnpm exec node --experimental-strip-types tmp/diag-v3-qa-03a/build-design-simulation.mjs`: **PASS de generación**, 51 registros (25+9+17); esto no ejecuta un motor propuesto.
-- Lectura estática de las fuentes listadas y de outputs baseline QA-02: completa dentro del alcance dirigido; codebase-memory MCP `list_projects` falló por `Transport closed`, se usó inspección directa/Serena.
+- `node tmp/diag-v3-qa-03a/build-design-simulation.mjs`: **PASS de generación**, 61 registros (25+9+17+10), 10 IDs QA-03A.1 presentes; el motor propuesto no se ejecutó.
+- Lectura directa dirigida de las ramas de `resolveGrowthStage`, `resolveDiagnosticContext`, aplicabilidad R4, índice y mínimo startup del planner. Codebase-memory MCP `list_projects`/coverage volvió a fallar por `Transport closed`; esta revisión no reclama cobertura exhaustiva del grafo.
 - QA-01/QA-02, suites de banco, rutas, unitarias, typecheck, build y bundle isolation: `NOT_RUN` en QA-03A porque el diff de producto es cero y solo se preparó diseño/documentación. No se reclaman PASS nuevo; los resultados QA-01/02 se mantienen con sus fechas anteriores.
 - Pruebas humanas: `NOT_RUN`.
-- No se cambiaron R3–R8, O4/O6, scoring, calibration, planner, sesión, reglas comerciales, banco candidato, rutas públicas ni PDF.
+- No se cambiaron R3–R8, O4/O6, scoring, calibration, planner, sesión, reglas comerciales, banco candidato, rutas públicas ni PDF. La política QA-03A.1 permanece documental y no autoriza implementación.
+
+## DIAG-V3-QA-03A.1 — matriz de política para los diez escenarios (2026-10-11)
+
+Baseline local: `6b1504eb845a964ad952fca63bf73ce1e871c17d`, árbol limpio antes de este checkpoint; no se modificó producto. Las diez filas siguientes son escenarios nuevos para análisis estático: current context/applicability refleja únicamente las ramas de código inspeccionadas; ningún recorrido nuevo del motor se ejecutó. En el estado actual, una respuesta `q2_has_customers=no` produce `prelaunch/idea`; con `yes`, `activity=active` y GrowthStage puede ser `starting` si falta regularidad o depender de señales adicionales. La aplicabilidad exacta también depende de evidencia directa, arquetipo, modelo y comprador, de modo que el JSON expresa esas dependencias sin simular resultados.
+
+| ID | Hechos / respuesta actual relevante | Contexto actual por regla | Propuesta de contexto | R4 propuesto y rutas afectadas | Resultado/riesgo |
+| --- | --- | --- | --- | --- | --- |
+| QA031-01 | Empresa registrada, cerrada; clientes=no | prelaunch / idea. R4: claridad/readiness universal; Foundation/Trust/Measurement N/A salvo evidencia directa; Discovery/Conversion condicionadas a modelo/arquetipo. | `preparing`; sin experiencia histórica | Antes de apertura se evalúan fundamentos previstos, posicionamiento y preparación; no medir resultados comerciales. Startup solo por preparación explícita si es proyecto. | NOT_DETERMINABLE. Registro no prueba operación. |
+| QA031-02 | Abierta una semana, disponible; clientes=no | prelaunch / idea pese a estar abierta; mismas exclusiones de R4 del estado prelaunch. | `operating`; sin experiencia; GrowthStage unresolved hasta conocer señales de etapa | Foundation, discovery y acceso a conversión evaluables si hay URL/acción comprobable; Trust por identidad/políticas, no reseñas; recurrencia N/A. | NOT_DETERMINABLE. El falso prelaunch puede omitir preguntas. |
+| QA031-03 | Profesional ofrece servicios, sin clientes | prelaunch / idea en el contrato actual | `operating`; sin experiencia; GrowthStage unresolved | Discovery, claridad, acceso y preparación digital según evidencia; no inferir venta ni puntuación por no haber clientes. | NOT_DETERMINABLE. “Individual” no implica madurez. |
+| QA031-04 | Checkout publicado y listo, sin pedidos | prelaunch / idea | `operating`; sin experiencia; GrowthStage unresolved | Validar acceso/checkout y fundamento digital; pedidos/conversión y métricas de resultado N/A hasta tener observaciones. | NOT_DETERMINABLE. Checkout no prueba compra. |
+| QA031-05 | Restaurante preparado, cerrado | prelaunch / idea | `preparing`; sin experiencia | Posicionamiento/readiness aplicables; preparación de ficha/canales puede evaluarse; operación, reseñas y ventas aún no. | NOT_DETERMINABLE. No convertir intención en actividad abierta. |
+| QA031-06 | Restaurante abierto para pedidos, sin ventas | prelaunch / idea | `operating`; sin experiencia; GrowthStage unresolved | Acceso/discovery/fundamentos disponibles; venta, ticket y recurrencia no se inventan. | NOT_DETERMINABLE. El sector por sí solo no prueba interacción. |
+| QA031-07 | Organización ofrece actividades, sin beneficiarios | prelaunch / idea | `operating`; sin experiencia; GrowthStage unresolved | Acceso a participación, claridad y confianza institucional evaluables; beneficiarios/repetición no supuestos. | NOT_DETERMINABLE. No B2B ni financiación a partir de entidad. |
+| QA031-08 | Proyecto tiene clientes reales, no empresa constituida | active; GrowthStage depende de regularidad/señales | `operating`; experiencia sí; tipo `project` se conserva | Discovery/otras R4 por evidencia; cliente real no transforma `project` en `business`. El módulo startup no debe activarse por `idea` inferida. | NOT_DETERMINABLE. Proyecto e historial real coexisten. |
+| QA031-09 | Negocio tuvo clientes y está pausado | El contrato actual interpreta el `yes` como `activity=active`; puede resolver `starting` si falta regularidad, aunque no modela la pausa. | `paused`; conservar historial sí, sin derivar actividad actual | Pedir el estado si no existe evidencia actual aun cuando historial=yes. Mantener solo la evidencia histórica que cada dimensión mida expresamente; no activar seguimiento, demanda o recurrencia actuales desde el historial. Requiere identidad R4 vNext para `paused`. | NOT_DETERMINABLE. El sí/no actual pierde temporalidad y puede abrir rutas de actividad actual. |
+| QA031-10 | Persona desconoce si opera | sin respuesta verdadera actual, activity/stage unresolved; no existe estado operativo explícito | `unknown`; conservar solo hechos independientes conocidos | Universal: claridad/readiness. Resto solo con evidencia directa; si no, insuficiente_contexto, no N/A ni active. | NOT_DETERMINABLE. La pregunta condicional debe permitir no adivinar. |
+
+Para las diez filas, `proposedResult=NOT_DETERMINABLE_WITHOUT_IMPLEMENTATION`, `humanValidation=NOT_RUN`. El artefacto local incorpora por escenario contexto, aplicabilidad R4 estática/propuesta para ocho dimensiones, rutas/preguntas potencialmente afectadas, riesgos de puntuación y comercial, y disponibilidad o indeterminación del baseline. La matriz de R4 en `ARCHITECTURE.md` define criterios comunes de N/A e insuficiencia. La propuesta conserva la precedencia de evidencia directa.
+
+La taxonomía documenta `starting` como primeras operaciones **o** primeros clientes con procesos inmaduros; el resolver actual solo lo infiere con clientes reales y regularidad ausente/irregular. La decisión de diseño conserva ese criterio vigente para la candidata y alinea su taxonomía versionada; la respuesta “abierta” por sí sola no alcanza para inferir “primeras operaciones” o procesos inmaduros. GrowthStage queda unresolved para actividad disponible sin historial hasta contar con señales de etapa.
+
+La pregunta `q2_operational_status` no depende exclusivamente de una respuesta negativa a experiencia histórica: se ofrece si el estado de hoy no está probado, tanto con historial `yes` como con `no`. Esto permite representar el caso QA031-09 (`paused` + experiencia histórica) sin clasificarlo como activo. Los consumos de historial se filtran por temporalidad: no abren por sí solos módulos de seguimiento, demanda, conversión o recurrencia actuales.
+
+La aplicación R4 en pausa se concreta en `ARCHITECTURE.md` para las ocho dimensiones. Mantiene evidencia directa y capacidades inspeccionables, exige fechas/fuentes para métricas históricas, y deja sin aplicar o sin resolver únicamente las capacidades actuales imposibles de demostrar. No atribuye a actividad abierta todas las dimensiones ni convierte falta de muestra en cero.
+
+### Estado de implementación del PDF — instrucción del usuario (2026-10-11)
+
+No continuar cambios de implementación del generador PDF; las mejoras futuras se trasladan a revisión/manual backlog del usuario y quedan pausadas hasta nueva instrucción. No había una tarea abierta independiente de implementación: `DIAG-V3-PDF-01` y `DIAG-V3-12` ya figuran cerradas/congeladas. Esto no cancela ni cambia la deuda de instalación reproducible `INSTALL_REPRO_BLOCKED`, la aceptación manual PAC/NVDA/revisión humana `NOT_RUN`, ni el gate de verificación `GATE_B_PARTIAL`; ACT-03.5 sigue condicionado a aprobar Gate B y ACT-04 no se inicia.
 
 ## DIAG-V3-QA-02 — Resolución semántica y refinamiento de copy
 
