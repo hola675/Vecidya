@@ -165,6 +165,7 @@ test("R7-B-FINAL: the candidate stays inactive and isolated — no barrel export
     "routes/dev-diagnostic-qa03b.tsx",
     "routes/dev-diagnostic-qa03b-methodology.tsx",
     "routes/dev-diagnostic-qa03b-report.tsx",
+    "routes/dev-diagnostic-qa03b-funnel.tsx",
     "components/diagnostic-flow/candidate-diagnostic-flow.tsx",
     "components/diagnostic-flow/candidate-result.tsx",
     "components/diagnostic-flow/candidate-presentation.ts",

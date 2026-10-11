@@ -1,3 +1,4 @@
+import { publicAssets } from "../../assets/public-assets";
 import type { DiagnosticNarrative } from "../../features/diagnostic";
 
 import { modifier } from "./indicators";
@@ -16,31 +17,39 @@ function ReadingList({ items }: { items: readonly { readonly block: { readonly i
   );
 }
 
-/** Lo que funciona: confirmadas y señales con etiqueta distinta, nunca equivalentes. Sin fortalezas reales, no se muestra. */
+function ReadingColumn({ id, title, items, empty }: { id: string; title: string; items: readonly { readonly block: { readonly id: string; readonly text: string }; readonly label: string; readonly kind?: string }[]; empty: string }) {
+  return (
+    <section aria-labelledby={id} className="dr-readings__column">
+      <h3 className="dr-subsection__title" id={id}>{title}</h3>
+      {items.length > 0 ? <ReadingList items={items} /> : <p className="dr-reading-empty">{empty}</p>}
+    </section>
+  );
+}
+
+/** Mantiene separadas las fortalezas confirmadas/señales de las áreas parciales o por reforzar. */
 export function StrengthsSection({ narrative }: { narrative: DiagnosticNarrative }) {
-  const items = strengthItems(narrative);
-  if (items.length === 0) return null;
   return (
-    <section aria-labelledby="dr-strengths-title" className="dr-readings__column">
-      <h3 className="dr-subsection__title" id="dr-strengths-title">Lo que funciona</h3>
-      <ReadingList items={items} />
-    </section>
+    <ReadingColumn
+      empty="No se identificó un elemento para esta lista en el resultado actual."
+      id="dr-strengths-title"
+      items={strengthItems(narrative)}
+      title="Lo que ya tienes a favor"
+    />
   );
 }
 
-/** Áreas para fortalecer: parcial y debilidad probable/confirmada, sin convertir dudas en fallas. */
 export function AreasSection({ narrative }: { narrative: DiagnosticNarrative }) {
-  const items = areaItems(narrative);
-  if (items.length === 0) return null;
   return (
-    <section aria-labelledby="dr-areas-title" className="dr-readings__column">
-      <h3 className="dr-subsection__title" id="dr-areas-title">Áreas para fortalecer</h3>
-      <ReadingList items={items} />
-    </section>
+    <ReadingColumn
+      empty="No se identificó un elemento para esta lista en el resultado actual."
+      id="dr-areas-title"
+      items={areaItems(narrative)}
+      title="Lo que conviene mejorar"
+    />
   );
 }
 
-/** Contradicciones, presentadas como algo que vale la pena mirar junto y no como un error. */
+/** Señales que vale la pena mirar juntas, conservando ambos lados y el texto original. */
 export function MixedSignalsSection({ narrative }: { narrative: DiagnosticNarrative }) {
   if (narrative.contradictions.length === 0) return null;
   return (
@@ -53,47 +62,59 @@ export function MixedSignalsSection({ narrative }: { narrative: DiagnosticNarrat
   );
 }
 
-/** Nivel 5 — cómo llegamos a este resultado: lecturas que lo sostienen. */
+/** Dos columnas breves; el texto original permanece íntegro y las listas vacías se explican sin datos de relleno. */
 export function EvidenceSection({ narrative }: { narrative: DiagnosticNarrative }) {
-  const hasReadings = strengthItems(narrative).length > 0 || areaItems(narrative).length > 0;
-  if (!hasReadings && narrative.contradictions.length === 0) return null;
   return (
     <section aria-labelledby="dr-evidence-title" className="dr-section dr-evidence-section">
-      <h2 className="dr-section__title" id="dr-evidence-title">Cómo llegamos a este resultado</h2>
-      {hasReadings ? (
-        <div className="dr-readings">
-          <StrengthsSection narrative={narrative} />
-          <AreasSection narrative={narrative} />
-        </div>
-      ) : null}
+      <h2 className="dr-section__title" id="dr-evidence-title">Lo que ya funciona y lo que conviene reforzar</h2>
+      <div className="dr-readings">
+        <StrengthsSection narrative={narrative} />
+        <AreasSection narrative={narrative} />
+      </div>
       <MixedSignalsSection narrative={narrative} />
     </section>
   );
 }
 
-/**
- * Riesgos y lo que todavía no se puede confirmar. Cada riesgo es un bloque de la narrativa con procedencia (nunca
- * una frase genérica) y nunca incluye «no aplica», que no es una duda.
- */
+type UncertaintyPoint = { readonly id: string; readonly label: string; readonly text: string };
+
+/** Una sola tarjeta con hasta cuatro puntos; el resto sigue disponible bajo demanda y conserva su agrupación. */
 export function UncertaintySection({ narrative }: { narrative: DiagnosticNarrative }) {
   const risks: readonly AreaDisplay[] = riskItems(narrative);
   const groups = uncertaintyGroups(narrative);
-  if (groups.length === 0 && risks.length === 0) return null;
+  const points: UncertaintyPoint[] = [
+    ...risks.map((risk) => ({ id: risk.block.id, label: risk.label, text: risk.block.text })),
+    ...groups.flatMap((group) => group.items.map((block) => ({ id: block.id, label: group.title, text: block.text }))),
+  ];
+  if (points.length === 0) return null;
+  const visible = points.slice(0, 4);
+  const remaining = points.slice(4);
+  const renderPoints = (items: readonly UncertaintyPoint[]) => (
+    <ul className="dr-uncertain__list" role="list">
+      {items.map((point) => (
+        <li className="dr-uncertain__point" key={point.id}>
+          <span>{point.label}</span>
+          <p>{point.text}</p>
+        </li>
+      ))}
+    </ul>
+  );
   return (
     <section aria-labelledby="dr-uncertain-title" className="dr-section dr-uncertain">
-      <h2 className="dr-section__title" id="dr-uncertain-title">{risks.length > 0 ? "Riesgos y lo que falta confirmar" : "Lo que todavía no podemos confirmar"}</h2>
-      {risks.length > 0 ? (
-        <div className="dr-uncertain__group">
-          <h3>Riesgos observados</h3>
-          <ReadingList items={risks} />
+      <div className="dr-uncertain__heading">
+        <img alt="" height="44" src={publicAssets.icons.search} width="44" />
+        <div>
+          <h2 className="dr-section__title" id="dr-uncertain-title">{risks.length > 0 ? "Riesgos y lo que falta confirmar" : "Lo que todavía falta confirmar"}</h2>
+          <p>La lectura separa estos puntos de las áreas que sí pudieron evaluarse.</p>
         </div>
+      </div>
+      {renderPoints(visible)}
+      {remaining.length > 0 ? (
+        <details className="dr-uncertain__more">
+          <summary>Ver todo ({remaining.length} más)</summary>
+          {renderPoints(remaining)}
+        </details>
       ) : null}
-      {groups.map((group) => (
-        <div className="dr-uncertain__group" key={group.title}>
-          {groups.length > 1 || risks.length > 0 ? <h3>{group.title}</h3> : null}
-          <ul>{group.items.map((block) => <li key={block.id}>{block.text}</li>)}</ul>
-        </div>
-      ))}
     </section>
   );
 }

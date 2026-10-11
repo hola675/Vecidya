@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-10-11 — DIAG-V3-RESULT-UX-01 `RESULT_UX_PARTIAL`
+
+- Reorganizado el resultado local: cabecera de estado, lectura ejecutiva en tres tarjetas, ocho dimensiones inicialmente plegadas con conteos descriptivos, plan cronológico, fortalezas/oportunidades compactas, incertidumbre con cuatro puntos visibles como máximo y ayuda comercial/metodología bajo demanda.
+- Conservados narrativa, estados, porcentajes, confianza, orden de recomendaciones y separación de scoring/comercial. Se reutilizan ilustraciones e iconos existentes; movimiento limitado y respeta `prefers-reduced-motion`.
+- Verificación local: suite unitaria **1528/1528**, resultado UI **20/20**, flujo **10/10**, E2E de resultado **PASS** en 1440/768/415 con teclado y movimiento reducido, typecheck/build **PASS**; el preview golden sigue fuera del bundle, y el resultado compartido está incluido por la ruta existente `/diagnostico`.
+- `RESULT_UX_PARTIAL`: faltan capturas antes/después y revisión visual humana debido a la indisponibilidad del navegador integrado. Sin publicación ni nueva ruta; se actualiza localmente la presentación de `/diagnostico`. No cambia motor, sesión, backend, D1/GHL ni generador PDF; `GATE_B_PARTIAL` sigue intacto.
+
+## 2026-10-11 — DIAG-V3-FUNNEL-01A `FUNNEL_DESIGN_READY`
+
+- Definida y documentada la estrategia F3: resumen anónimo allowlistado, informe completo calculado/entregado por Worker tras una solicitud identificada y verificación de correo antes de otorgar acceso. Identidad, snapshot, grant, permisos B/C y analítica quedan separados; los plazos D1 son propuestas sujetas a revisión legal/privacidad.
+- Añadidos tipos candidate-only para los estados del flujo, `AnonymousDiagnosticSummaryV1`, contratos documentales independientes, validación local de campos y taxonomía declarativa. La proyección reutiliza `buildCandidateResultPresentationV3`; no recalcula scoring.
+- Añadido el prototipo local `/__dev/diagnostico/qa03b/embudo` con datos sintéticos. No registra contactos, no envía formularios/correos, no emite analítica, no conserva el formulario ni finge acceso/descarga.
+- Reconciliados arquitectura, base de datos, estado, estado técnico, roadmap, inventario y pruebas. QA-03B queda como baseline; `GATE_B_PARTIAL` persiste, no bloquea FUNNEL-01A. PDF sigue pausado. FUNNEL-01B–01E requieren autorización separada.
+- Verificación final: `test:unit` **1524/1524**, pruebas nuevas **5/5**, E2E local, typecheck, build, aislamiento candidate-only en artefactos productivos y `git diff --check` **PASS**.
+- Sin rutas públicas, Worker/backend, schema/migraciones, datos D1, publicación, integración GHL, generador PDF, push o deploy.
+
 ## 2026-10-11 — DIAG-V3-QA-03B.0 contrato candidato certificado localmente
 
 - Aplicada la decisión `D2_ELIGIBILITY_APPROVED`: comprador directo confirmado (`b2c`/`b2b`/`mixed`) antes de evaluar contexto comprador/destinatario; omitir con `no_direct_purchase`/`unknown`. Financiación institucional no prueba compra B2B; `unknown` permanece sin resolver.

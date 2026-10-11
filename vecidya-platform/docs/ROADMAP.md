@@ -1,10 +1,27 @@
 # Roadmap
 
-## Estado del bloque QA-03B (2026-10-11)
+## Resultado vigente — DIAG-V3-RESULT-UX-01 (2026-10-11)
 
-QA-03B quedó certificado localmente como `CONTRACT_CERTIFIED`; decisión final `D2_ELIGIBILITY_APPROVED`, aplicada y verificada. No queda checkpoint QA-03B autorizado sin ejecutar en este corte. La candidata permanece aislada e inactiva, y `GATE_B_PARTIAL` sigue abierto por gates previos de instalación limpia y revisión de accesibilidad PDF (PAC/Acrobat, NVDA y revisión humana). Ningún estado de esta certificación autoriza activar, publicar, hacer push/deploy, abrir una migración remota ni iniciar ACT-04. Las mejoras del generador PDF siguen reservadas para revisión futura del usuario; esta certificación solo probó la descarga con el generador existente.
+**`RESULT_UX_PARTIAL` local.** La jerarquía visual del resultado está implementada y las pruebas unitarias, de flujo, responsive, teclado, movimiento reducido, typecheck/build pasan; el preview golden no se registra en producción y los componentes compartidos permanecen en el bundle público de `/diagnostico`. Queda pendiente la evidencia solicitada de capturas antes/después y la revisión visual humana; el navegador integrado no estuvo disponible. No se declara `RESULT_UX_READY` hasta cerrar ese checkpoint. `GATE_B_PARTIAL` permanece; no push, deploy ni ACT-04.
 
-Detalle contractual en `ARCHITECTURE.md`, pruebas y bloqueos vigentes en `TESTING.md` y `STATUS.md`.
+### Historial — DIAG-V3-FUNNEL-01A (2026-10-11)
+
+**`FUNNEL_DESIGN_READY` local.** La recomendación F3 híbrida, contratos, propuesta de datos, analítica, handoff futuro a GHL y prototipo no público están reconciliados en `ARCHITECTURE.md`, `DATABASE.md`, `TESTING.md` y `STATUS.md`. El prototipo no envía ni persiste información; el formulario muestra un error honesto en lugar de éxito. No hay ruta pública nueva, endpoint, migración, cambio al diagnóstico público o al generador PDF, correo ni integración externa.
+
+El diagnóstico candidate-only sigue inactivo; `GATE_B_PARTIAL` se conserva como estado histórico independiente y **no bloquea esta fase**. El trabajo del generador PDF continúa pausado por decisión del usuario. No se inicia FUNNEL-01B, 01C, 01D ni 01E automáticamente; cada checkpoint requiere autorización separada. No push, deploy, D1 remoto ni ACT-04.
+
+| Siguiente checkpoint propuesto | Alcance | Gate antes de iniciar |
+| --- | --- | --- |
+| FUNNEL-01B | Experiencia real de resumen gratuito, servida sin exponer el reporte completo en JS cliente | Autorización del usuario y revisión de copy/UX |
+| FUNNEL-01C | Identificación, verificación y acceso seguro a informe desde Worker | Aprobación de privacidad/legal, retención, correo y endpoints |
+| FUNNEL-01D | Persistencia, analítica mínima y handoff autorizado a GHL | Contratos de datos y permiso de integración; D1 remoto exige autorización explícita |
+| FUNNEL-01E | Documentos resumen/detallado y aceptación final | Levantar la pausa del PDF y autorizar pruebas documentales |
+
+### Historial: cierre DIAG-V3-QA-03B (2026-10-11)
+
+QA-03B quedó certificado localmente como `CONTRACT_CERTIFIED`; decisión final `D2_ELIGIBILITY_APPROVED`, aplicada y verificada. La candidata permanece aislada e inactiva. Ningún estado de esa certificación autoriza activar, publicar, hacer push/deploy, abrir una migración remota ni iniciar ACT-04. Las mejoras del generador PDF siguen reservadas para revisión futura del usuario; la descarga de informe solo se probó con el generador existente.
+
+Detalle contractual en `ARCHITECTURE.md`, pruebas y límites en `TESTING.md` y `STATUS.md`.
 
 Corte histórico anterior a la autorización QA-03B: 2026-10-11 (reconciliación de revisión QA-03A.1). Diseño candidate-only `POLICY_READY_FOR_APPROVAL`, no implementado: P2 separa tipo, estado actual e historial; `starting` conserva el criterio del resolver; el estado se pregunta cuando no esté probado aun si hubo clientes; `paused` no implica operación actual. R4 distingue evidencia vigente e histórica por dimensión. En ese corte faltaba la aprobación final del contrato; no se repitieron las 61 simulaciones ni se inició QA-03B. Candidata inactiva, Gate B `GATE_B_PARTIAL`, ACT-04 no autorizado.
 

@@ -1,7 +1,7 @@
 import { commercialClarification, COMMERCIAL_V1_LICENSES, type CommercialClarificationAnswer, type DiagnosticNarrative, type DiagnosticOutcome } from "../../features/diagnostic";
 
 import { modifier } from "./indicators";
-import { actionSteps, EMPTY_ACTION_PATH_NOTE } from "./presentation";
+import { actionSteps, dimensionDisplay, EMPTY_ACTION_PATH_NOTE } from "./presentation";
 
 /**
  * Plan de acción: un paso corto por recomendación, en el orden de las prioridades. Resume lo que ya se justificó
@@ -16,18 +16,31 @@ export function ActionPath({ narrative, outcome, onCommercialClarification }: { 
         <p className="dr-note">{EMPTY_ACTION_PATH_NOTE}</p>
       ) : (
         <ol className="dr-step-list" role="list">
-          {steps.map((step) => (
-            <li className={`dr-step dr-step--${modifier(step.recommendation.framing)}`} key={step.recommendation.id}>
-              <p className="dr-step__title">{step.recommendation.title}</p>
-              <p className="dr-step__what">{step.recommendation.whatToImprove}</p>
-              <p className="dr-step__outcome"><span>Resultado esperado:</span> {step.recommendation.expectedOutcome}</p>
-              <div className="dr-meta">
-                <span className={`dr-step__tag dr-step__tag--${modifier(step.recommendation.mode === "prepare" ? "prepare" : step.recommendation.framing)}`}>{step.tag}</span>
-                {step.area ? <span className="dr-area-tag">{step.area}</span> : null}
-                {step.after.length > 0 ? <span className="dr-step__after">Después del paso {step.after.join(" y ")}</span> : null}
-              </div>
-            </li>
-          ))}
+          {steps.map((step, index) => {
+            const dimension = narrative.dimensions.find((item) => item.dimension === step.recommendation.dimension);
+            const icon = dimension ? dimensionDisplay(dimension).icon : null;
+            return (
+              <li className={`dr-step dr-step--${modifier(step.recommendation.framing)}`} data-step-order={index + 1} key={step.recommendation.id}>
+                <span aria-hidden="true" className="dr-step__number">{index + 1}</span>
+                <div className="dr-step__heading">
+                  {icon ? <img alt="" className="dr-step__icon" height="48" src={icon} width="48" /> : null}
+                  <div>
+                    <p className="dr-step__title">{step.recommendation.title}</p>
+                    {step.area ? <p className="dr-step__area">{step.area}</p> : null}
+                  </div>
+                </div>
+                <p className="dr-step__what">{step.recommendation.whatToImprove}</p>
+                <details className="dr-step__why">
+                  <summary>Por qué importa</summary>
+                  <div>
+                    <p className="dr-step__outcome">{step.recommendation.expectedOutcome}</p>
+                    <span className={`dr-step__tag dr-step__tag--${modifier(step.recommendation.mode === "prepare" ? "prepare" : step.recommendation.framing)}`}>{step.tag}</span>
+                    {step.after.length > 0 ? <p className="dr-step__after">Este paso sigue al {step.after.map((number) => `paso ${number}`).join(" y ")}.</p> : null}
+                  </div>
+                </details>
+              </li>
+            );
+          })}
         </ol>
       )}
     </section>
@@ -46,8 +59,8 @@ export function VecidyaHelpSection({ narrative, outcome, onCommercialClarificati
   const laterItems = [...commercial.later.complements, ...commercial.later.services].slice(0, 2);
   return (
     <section aria-labelledby="dr-vecidya-title" className="dr-section dr-vecidya">
-      <h2 className="dr-section__title" id="dr-vecidya-title">Tu licencia Vecidya</h2>
-      <p className="dr-note">La selección se basa en tu necesidad operacional, no en tu porcentaje digital.</p>
+      <h2 className="dr-section__title" id="dr-vecidya-title">¿Quieres ayuda con estos puntos?</h2>
+      <p className="dr-note">Estas opciones son compatibles con lo que encontramos y no cambian tu resultado. No todas las personas necesitan contratar una oferta; puedes avanzar por tu cuenta o con quien prefieras.</p>
       {commercial.licenseFit.confidence === "to_confirm" && onCommercialClarification ? (
         <fieldset className="dr-commercial-clarification">
           <legend>{clarification.question}</legend>
@@ -67,11 +80,14 @@ export function VecidyaHelpSection({ narrative, outcome, onCommercialClarificati
         <p className="dr-commercial-license__objective">{commercial.now.license === "cuadra" ? "Organiza" : commercial.now.license === "barrio" ? "Capta y da seguimiento" : "Automatiza y controla"}</p>
         <p className="dr-offer__text">${commercial.cost.monthlyLicenseUsd}/mes · Puesta en marcha ${commercial.cost.activationUsd} una vez</p>
         <p className="dr-offer__condition">{commercial.licenseFit.rationale}</p>
-        <div className="dr-commercial-comparison" aria-label={`Comparación de Cuadra, Barrio y Ciudad frente a ${COMMERCIAL_V1_LICENSES[commercial.now.license].name}`}>
-          <div><strong>Cuadra</strong><span>{commercial.now.license === "cuadra" ? "Cubre tu necesidad actual." : commercial.licenseFit.whyNotLower}</span></div>
-          <div><strong>Barrio</strong><span>{commercial.now.license === "barrio" ? "Cubre tu necesidad actual." : commercial.now.license === "cuadra" ? "Todavía no necesitas seguimiento comercial recurrente." : "Se quedaría corto para tu operación."}</span></div>
-          <div><strong>Ciudad</strong><span>{commercial.now.license === "ciudad" ? "Cubre tu necesidad actual." : "Todavía no necesitas coordinar varios procesos."}</span></div>
-        </div>
+        <details className="dr-commercial-comparison-details">
+          <summary>Comparar licencias</summary>
+          <div className="dr-commercial-comparison" aria-label={`Comparación de Cuadra, Barrio y Ciudad frente a ${COMMERCIAL_V1_LICENSES[commercial.now.license].name}`}>
+            <div><strong>Cuadra</strong><span>{commercial.now.license === "cuadra" ? "Cubre tu necesidad actual." : commercial.licenseFit.whyNotLower}</span></div>
+            <div><strong>Barrio</strong><span>{commercial.now.license === "barrio" ? "Cubre tu necesidad actual." : commercial.now.license === "cuadra" ? "Todavía no necesitas seguimiento comercial recurrente." : "Se quedaría corto para tu operación."}</span></div>
+            <div><strong>Ciudad</strong><span>{commercial.now.license === "ciudad" ? "Cubre tu necesidad actual." : "Todavía no necesitas coordinar varios procesos."}</span></div>
+          </div>
+        </details>
         <details className="dr-proof"><summary>Por qué {COMMERCIAL_V1_LICENSES[commercial.now.license].name}</summary><p>{commercial.licenseFit.rationale} {commercial.licenseFit.whyNotHigher}</p></details>
       </div>
       {nowItems.length > 0 ? <>
@@ -84,11 +100,14 @@ export function VecidyaHelpSection({ narrative, outcome, onCommercialClarificati
         <h3 className="dr-section__subtitle dr-section__subtitle--muted">Puede tener sentido después</h3>
         <ul className="dr-later-list" role="list">{laterItems.map((item) => <li key={item.id}>{item.name}</li>)}</ul>
       </> : null}
-      <div className="dr-commercial-cost">
-        <h3 className="dr-section__subtitle">Tu configuración</h3>
-        <dl><div><dt>{COMMERCIAL_V1_LICENSES[commercial.now.license].name}</dt><dd>${commercial.cost.monthlyLicenseUsd}/mes</dd></div>{nowItems.map((item) => item.priceMonthlyUsd !== null ? <div key={item.id}><dt>{item.name}</dt><dd>${item.priceMonthlyUsd}/mes</dd></div> : null)}<div><dt>Vecidya mensual</dt><dd>${commercial.cost.monthlyLicenseUsd + nowItems.reduce((sum, item) => sum + (item.priceMonthlyUsd ?? 0), 0)}/mes</dd></div><div><dt>Puesta en marcha</dt><dd>${commercial.cost.activationUsd} una vez</dd></div></dl>
-        {commercial.cost.externalUsage.length > 0 ? <p>Los canales y proveedores pueden sumar costes de uso según mensajes, llamadas, IA o APIs.</p> : null}
-      </div>
+      <details className="dr-commercial-cost">
+        <summary>Ver desglose de costos</summary>
+        <div>
+          <h3 className="dr-section__subtitle">Tu configuración</h3>
+          <dl><div><dt>{COMMERCIAL_V1_LICENSES[commercial.now.license].name}</dt><dd>${commercial.cost.monthlyLicenseUsd}/mes</dd></div>{nowItems.map((item) => item.priceMonthlyUsd !== null ? <div key={item.id}><dt>{item.name}</dt><dd>${item.priceMonthlyUsd}/mes</dd></div> : null)}<div><dt>Vecidya mensual</dt><dd>${commercial.cost.monthlyLicenseUsd + nowItems.reduce((sum, item) => sum + (item.priceMonthlyUsd ?? 0), 0)}/mes</dd></div><div><dt>Puesta en marcha</dt><dd>${commercial.cost.activationUsd} una vez</dd></div></dl>
+          {commercial.cost.externalUsage.length > 0 ? <p>Los canales y proveedores pueden sumar costes de uso según mensajes, llamadas, IA o APIs.</p> : null}
+        </div>
+      </details>
     </section>
   );
 }

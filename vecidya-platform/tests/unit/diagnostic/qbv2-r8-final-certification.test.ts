@@ -226,6 +226,7 @@ test("R8-FINAL: legacy runtime stays on its frozen contract and candidate module
     "routes/dev-diagnostic-qa03b.tsx",
     "routes/dev-diagnostic-qa03b-methodology.tsx",
     "routes/dev-diagnostic-qa03b-report.tsx",
+    "routes/dev-diagnostic-qa03b-funnel.tsx",
     "components/diagnostic-flow/candidate-diagnostic-flow.tsx",
     "components/diagnostic-flow/candidate-result.tsx",
     "components/diagnostic-flow/candidate-presentation.ts",
@@ -238,7 +239,9 @@ test("R8-FINAL: legacy runtime stays on its frozen contract and candidate module
   assert.match(read("../../../app/routes.ts"), /route\("__dev\/diagnostico\/candidate", "routes\/dev-diagnostic-candidate\.tsx"\)/);
   assert.match(read("../../../app/routes.ts"), /route\("__dev\/diagnostico\/candidate\/metodologia", "routes\/dev-diagnostic-candidate-methodology\.tsx"\)/);
   assert.match(read("../../../app/routes.ts"), /route\("__dev\/diagnostico\/candidate\/informe", "routes\/dev-diagnostic-candidate-report\.tsx"\)/);
+  assert.match(read("../../../app/routes.ts"), /route\("__dev\/diagnostico\/qa03b\/embudo", "routes\/dev-diagnostic-qa03b-funnel\.tsx"\)/);
   assert.match(read("../../../app/routes.ts"), /\.\.\.\(isDevelopmentServer \? \[/);
+  assert.match(read("../../../app/routes/dev-diagnostic-qa03b-funnel.tsx"), /if \(!import\.meta\.env\.DEV\) throw new Response\("Not Found", \{ status: 404 \}\)/);
   assert.match(read("../../../app/routes/dev-diagnostic-candidate.tsx"), /if \(!import\.meta\.env\.DEV\) throw new Response\("Not Found", \{ status: 404 \}\)/);
   for (const route of ["../../../app/routes/dev-diagnostic-candidate-methodology.tsx", "../../../app/routes/dev-diagnostic-candidate-report.tsx"]) {
     assert.match(read(route), /if \(!import\.meta\.env\.DEV\) throw new Response\("Not Found", \{ status: 404 \}\)/);

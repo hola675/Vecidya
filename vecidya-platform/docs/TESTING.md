@@ -1,5 +1,68 @@
 # Pruebas
 
+## DIAG-V3-RESULT-UX-01 — jerarquía visual del resultado (2026-10-11)
+
+**Resultado: `RESULT_UX_PARTIAL`, local.** `pnpm run test:unit`: **1528/1528 PASS**; `tests/unit/diagnostic/result-ui.test.ts`: **20/20 PASS**, incluidos los 12 resultados golden, estados sin score, tarjetas, orden, ofertas plegadas y método. El chequeo del flujo completo `diagnostic-v3-flow-check.mjs`: **10/10 PASS**. `diagnostic-v3-result-ux-check.mjs`: **PASS** con tres perfiles golden; rejilla de dimensiones 4/2/1 a 1440/768/415 px; texto 17.28 px, controles de 44 px, sin overflow, imágenes rotas ni errores; teclado y `prefers-reduced-motion` pasan. `pnpm run typecheck` y `pnpm run build` PASS; el path del preview golden no está en JS productivo, mientras que `DiagnosticResult` se incluye de forma esperada en el bundle de `/diagnostico`; `git diff --check`: **PASS**.
+
+Las capturas antes/después requeridas y la revisión visual humana no se ejecutaron: el navegador integrado informó que no había una sesión disponible. Los E2E usan la automatización local del proyecto y solo certifican las aserciones declaradas; no equivalen a revisión visual ni a aprobación humana. El resultado se mantiene `RESULT_UX_PARTIAL` hasta esa evidencia. El chequeo visual anterior tuvo un timeout transitorio al esperar la activación por teclado; el rerun aislado pasó y se confirmó directamente que Espacio abre/cierra.
+
+El cambio es de presentación únicamente. No altera scoring, narrativa, contrato, orden del motor ni URL/ruta de `/diagnostico`; actualiza la experiencia de resultado ya existente. Sesión, banco, R3/R4/R8, O4/O6, D1/GHL y PDF quedan intactos; no cambia `GATE_B_PARTIAL`, no hay push/deploy/ACT-04.
+
+Comandos de verificación relevantes:
+
+```powershell
+pnpm run test:unit
+pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/result-ui.test.ts
+$env:BASE_URL='http://127.0.0.1:5173'; node tests/e2e/diagnostic-v3-result-ux-check.mjs
+$env:BASE_URL='http://127.0.0.1:5173'; node tests/e2e/diagnostic-v3-flow-check.mjs
+pnpm run typecheck
+pnpm run build
+git diff --check
+```
+
+## DIAG-V3-FUNNEL-01A — diseño y prototipo local (2026-10-11)
+
+**Resultado: `FUNNEL_DESIGN_READY`.** La estrategia recomendada es F3 híbrida. Los contratos puros y la ruta `/__dev/diagnostico/qa03b/embudo` no cambian puntuación, rutas públicas, sesiones previas, persistencia, backend, email, GHL ni PDF. Dos fixtures sintéticos recorren la proyección real del pipeline; la muestra con score ausente conserva `null`. La descarga del resumen se muestra deshabilitada. El formulario local valida entradas, mantiene B/C opt-ins independientes y, al pulsar solicitar, borra los campos y declara que no hubo envío/registro. No es un E2E de registro ni simula confirmación backend.
+
+**Verificación final RAN:** `pnpm run test:unit` **1524/1524 PASS** (incluye `qa03b-funnel.test.ts` **5/5**); recorrido browser local **PASS**; `pnpm run typecheck`, `pnpm run build` y `git diff --check` **PASS**. El escaneo de los artefactos productivos no encontró la ruta, módulo ni estilos del prototipo.
+
+Pruebas de FUNNEL-01A:
+
+```powershell
+pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-funnel.test.ts
+$env:BASE_URL='http://127.0.0.1:5173'; node tests/e2e/diagnostic-v3-funnel-prototype-check.mjs
+```
+
+La prueba browser usa el Worker local de Cloudflare con `BASE_URL=http://127.0.0.1:5173`; cubre escritorio/móvil, resumen sin porcentaje, navegación y cancelación, preferencias B/C separadas, campos de persona independiente/teléfono omitido, correo inválido, error honesto sin request de red, sin storage nuevo y ausencia de overflow. Resultado: estados `ANONYMOUS_SUMMARY`, `DETAILS_REQUESTED`, `IDENTIFICATION_REQUIRED` y `ERROR_RECOVERABLE`; 0 escrituras de red, 0 escrituras de almacenamiento y 0 errores de página. Capturas locales ignoradas en `tmp/diag-v3-funnel-01a/browser/`. El build productivo se revisa además para comprobar que la ruta y el paquete candidate-only no quedan disponibles.
+
+### Matriz de escenarios de producto
+
+| # | Escenario | FUNNEL-01A: evidencia disponible | Backend/experiencia real pendiente |
+| --- | --- | --- | --- |
+| 1 | Visitante completa el diagnóstico anónimo | **NOT RUN**: prototipo recibe fixture ya evaluado; el `/diagnostico` actual no usa este embudo | Recorrido real hasta summary Worker |
+| 2 | Visitante se queda con el resumen | **PASS UI**: summary disponible localmente | Integración con cuestionario público; sesión anónima en Worker |
+| 3 | Descarga solo el resumen | **NO IMPLEMENTADO**: botón deshabilitado; no hay documento ni renderer nuevo | `AnonymousSummaryReportV1`, emisión/descarga y accesibilidad |
+| 4 | Solicita detalles | **PASS prototipo**: pantalla de intención y paso a formulario | Crear solicitud confirmada en Worker/D1 |
+| 5 | Identificación válida y cancelada | **PASS local**: helper valida datos, UI regresa al resumen; no registra | Crear/cancelar y recibir confirmación backend real |
+| 6 | Teléfono omitido | **PASS unit/browser**; queda `null` | Aceptación server-side y persistencia mínima |
+| 7 | Sin consentimiento comercial | **PASS unit/browser**; B desmarcada por defecto | Mantener preferencia ausente/no autorizada en D1/GHL |
+| 8 | Con consentimiento comercial | **PASS unit/browser**; B se puede marcar sin C, no persiste | Registro de texto/versión/fecha y retirada |
+| 9 | Correo inválido | **PASS unit/browser**; impide avanzar y muestra error asociado | Revalidar, normalizar y limitar en Worker |
+| 10 | Error al registrar solicitud | **NO SIMULADO**: error de servicio desconectado avisa “no se registró”; no equivale a falla real de D1 | Fallo transaccional con respuesta recuperable/idempotencia |
+| 11 | Doble envío | **NOT RUN**: el formulario no se conecta ni crea filas | Idempotencia, retry y una sola solicitud/grant |
+| 12 | Dos pestañas | **NOT RUN**: el prototipo no mantiene sesión compartida | Estado de solicitud, doble envío y conflictos de revisión |
+| 13 | Sesión caducada | **NOT RUN**: fixture estático, sin sesión server-side | Expiración y retorno al diagnóstico sin pérdida no autorizada |
+| 14 | Cambia respuestas tras completar | **NOT RUN**: summary no enlaza cuestionario | Invalidar snapshot/resumen y recalcular mismo contrato |
+| 15 | Resultado sin score | **PASS unit/browser**: no presenta porcentaje/banda inventados | Mismo caso a través de endpoint Worker |
+| 16 | Resultado provisional | **PASS unit**: el mapper propaga la advertencia provisional de una copia sintética; no cambia calibración | Verificar con resultado provisional real server-side |
+| 17 | Negocio o persona independiente | **PASS unit/browser**: negocio opcional; correo/responsable requeridos; teléfono opcional | Límite y normalización de servidor |
+| 18 | Informe completo no filtrado en resumen anónimo | **PASS unit de contrato**: DTO exacto excluye dimensiones/comercial/riesgos; descarga inactiva | Scan del bundle público y control real F3 en Worker |
+| 19 | Acceso al informe de otra sesión | **NOT RUN**: aún no existen endpoint, grant ni reporte persistido | Pruebas cross-user (404/403) y antifuga |
+| 20 | Recuperación de sesión | **NOT RUN**: no hay identidad persistida ni correo | Enlace de verificación y recuperación dentro de retención |
+| 21 | Eliminación de datos | **NOT RUN**: no existe fila que borrar en FUNNEL-01A | Purga en cascada, exportación y comprobación de borrado |
+
+Solo los estados y validaciones locales de las tablas se certifican en esta fase; los escenarios etiquetados backend siguen pendientes y no se cuentan como simulaciones E2E. El uso de run ID en analítica requiere revisión de privacidad: seudónimo no significa anónimo. Ninguna métrica de conversión prueba validez de score. La ruta del prototipo carga el pipeline completo localmente y no es control de acceso; F3 debe aislarlo antes de publicar.
+
 ## DIAG-V3-QA-03B — certificación candidata local (2026-10-11)
 
 **Resultado: `CONTRACT_CERTIFIED`; elegibilidad D2: `D2_ELIGIBILITY_APPROVED`.** La certificación se limita al contrato candidato y al runtime local. No activa la candidata, no modifica el contrato público ni las sesiones históricas, y no cierra `GATE_B_PARTIAL`.

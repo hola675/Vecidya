@@ -4,7 +4,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import {
-  areaItems, CONFIDENCE_DISPLAY, DiagnosticResult, dimensionDisplay, dimensionOverview, PRIORITY_SLOT_DISPLAY, riskItems, strengthItems, uncertaintyGroups,
+  actionSteps, areaItems, CONFIDENCE_DISPLAY, DiagnosticResult, dimensionDisplay, dimensionOverview, PRIORITY_SLOT_DISPLAY, riskItems, strengthItems, uncertaintyGroups,
 } from "../../../app/components/diagnostic-result/index.ts";
 import {
   DIGITAL_DIMENSION_IDS, DIMENSION_PRESENTATION_STATUSES, GOLDEN_PERSONAS, NARRATIVE_BLOCK_KINDS, TERMINOLOGY, buildDiagnosticNarrative, buildDiagnosticOutcome, deriveConstraintsAndPriorities, deriveSemanticFacts,
@@ -49,6 +49,57 @@ test("09 all 12 golden results render the full hierarchy with the eight dimensio
   }
 });
 
+test("RESULT-UX-01 each golden result starts with three concise cards and hides methodology metadata", () => {
+  for (const [id, html] of Object.entries(HTML)) {
+    const quick = between(html, /<section aria-labelledby="dr-focus-title"/, "</section>");
+    assert.equal((quick.match(/class="dr-quick-card /g) ?? []).length, 3, id);
+    assert.match(quick, /Qué encontramos/);
+    assert.match(quick, /Lo que más importa|Lo primero por confirmar/);
+    assert.match(quick, /Qué hacer primero/);
+    assert.ok(!/R4|O6/.test(textOf(between(html, /<header class="dr-hero/, "</header>"))), id + ": audit metadata stays out of the hero");
+    assert.match(html, /<details aria-labelledby="dr-method-title" class="dr-section dr-method">/);
+    assert.ok(!/<details[^>]*class="dr-section dr-method"[^>]* open/.test(html), id + ": methodology starts collapsed");
+  }
+});
+
+test("RESULT-UX-01 all eight dimension cards start collapsed with keyboard buttons and no zero scores", () => {
+  for (const [id, html] of Object.entries(HTML)) {
+    const toggles = [...html.matchAll(/<button aria-controls="dr-dim-detail-[^"]+" aria-expanded="(true|false)"/g)];
+    assert.equal(toggles.length, 8, id + ": one disclosure control per canonical dimension");
+    assert.ok(toggles.every((match) => match[1] === "false"), id + ": every detail starts closed");
+    assert.equal((html.match(/class="dr-dim__detail" hidden=""/g) ?? []).length, 8, id + ": details are not forced open on mobile");
+    assert.ok(!/%0\b/.test(textOf(html)), id + ": no zero score rendered");
+    assert.match(html, /class="dr-snapshot"/);
+  }
+});
+
+test("RESULT-UX-01 snapshot counts only summarize existing readings and narrative lists", () => {
+  for (const [id, narrative] of Object.entries(GOLDEN)) {
+    const html = HTML[id]!;
+    const snapshot = textOf(between(html, /<div aria-label="Resumen de las áreas"/, "</div>"));
+    const expected = [
+      narrative.dimensions.filter((item) => dimensionDisplay(item).percent !== null).length,
+      strengthItems(narrative).length,
+      areaItems(narrative).length,
+      narrative.dimensions.filter((item) => dimensionDisplay(item).percent === null).length,
+    ];
+    assert.deepEqual([...snapshot.matchAll(/\b(\d+)\b/g)].map((match) => Number(match[1])), expected, id);
+  }
+});
+
+test("RESULT-UX-01 action plan retains recommendation order and commercial help follows diagnosis", () => {
+  for (const [id, html] of Object.entries(HTML)) {
+    const steps = actionSteps(GOLDEN[id]!, OUTCOMES[id]!);
+    assert.deepEqual(all(html, /data-step-order="(\d+)"/g).map(Number), steps.map((_, index) => index + 1), id + ": timeline order");
+    assert.deepEqual(all(html, /<p class="dr-step__title">(.*?)<\/p>/g), steps.map((step) => step.recommendation.title), id + ": no recommendation re-sorting");
+    const diagnosisEnd = html.indexOf('id="dr-uncertain-title"');
+    const commercialStart = html.indexOf('id="dr-vecidya-title"');
+    const methodStart = html.indexOf('id="dr-method-title"');
+    assert.ok(diagnosisEnd < commercialStart && commercialStart < methodStart, id + ": commercial support follows diagnostic reading");
+    assert.match(textOf(html), /no cambian tu resultado/i);
+  }
+});
+
 test("09/10 score display: a reading shows its percentage paired with state and confidence; the only other percentage is the overall presence", () => {
   for (const [id, html] of Object.entries(HTML)) {
     const narrative = GOLDEN[id]!;
@@ -87,7 +138,7 @@ test("09 null states: no score is never 0%, never shows confidence and is explai
       const text = textOf(rows[index]!);
       assert.ok(dimensionDisplay(dimension).percent === null && !/%|null/.test(text), `${id}: ${dimension.dimension} → ${text}`);
       assert.ok(!/Confianza (alta|media|limitada)|dr-confidence/.test(rows[index]!), `${id}: no confidence without an estimate`);
-      assert.match(text, /Sin porcentaje/);
+      assert.ok(text.includes(dimensionDisplay(dimension).statusLabel), id + ": uses the semantic state instead of a generic percentage placeholder");
       assert.ok(text.includes(labels[dimension.status as keyof typeof labels]), `${id}: ${dimension.status}`);
       assert.ok(text.includes(dimension.interpretation.text), `${id}: narrative explanation kept`);
     });
@@ -110,15 +161,15 @@ test("09 confidence: three user-facing levels, preliminary readings are hatched 
   assert.match(textOf(HTML.appointment_business!), /Un porcentaje alto con confianza limitada quiere decir que lo que se vio es positivo, pero no hubo suficiente evidencia/);
 });
 
-test("09 primary constraint: strong hierarchy, dimension, certainty and confidence; unknown is framed as something to confirm", () => {
+test("09 primary constraint: strong hierarchy and unknown is framed as something to confirm", () => {
   const html = HTML.professional_appointments!;
-  const constraint = between(html, /<div class="dr-constraint /, "</div></div>");
-  assert.match(constraint, /<h3 class="dr-constraint__title">Base de trabajo<\/h3>/);
+  const constraint = between(html, /<section aria-labelledby="dr-focus-title"/, "</section>");
+  assert.match(constraint, /<h3 class="dr-quick-card__title">Base de trabajo<\/h3>/);
   assert.ok(textOf(constraint).includes(GOLDEN.professional_appointments!.primaryConstraint!.text));
-  assert.match(textOf(constraint), /Lo que más limita hoy.*Confirmado.*Confianza media/);
-  const idea = textOf(between(HTML.idea_early_stage!, /<div class="dr-constraint /, "</div>"));
-  assert.match(idea, /^Lo primero por confirmar Cómo te encuentran/);
-  for (const html of Object.values(HTML)) assert.equal((html.match(/class="dr-constraint /g) ?? []).length, 1);
+  assert.match(textOf(constraint), /Lo que más importa/);
+  assert.ok(!/Confianza media/.test(textOf(constraint)), "confidence remains beside its dimension estimate");
+  const idea = textOf(between(HTML.idea_early_stage!, /<section aria-labelledby="dr-focus-title"/, "</section>"));
+  assert.match(idea, /Lo primero por confirmar Cómo te encuentran/);
 });
 
 test("09 no-constraint result: a valid, calm result with no invented constraint or priorities", () => {
@@ -154,8 +205,10 @@ test("09 strengths and areas: confirmed vs signal, partial vs probable vs confir
       if (item.block.kind === "weakness") assert.equal(item.label, item.block.certainty === "confirmed" ? "Necesita refuerzo" : "Posible debilidad");
     }
     const html = HTML[id]!;
-    assert.equal(/Lo que funciona/.test(html), narrative.strengths.length > 0, `${id}: strengths section only when strengths exist`);
-    assert.equal(/Áreas para fortalecer/.test(html), narrative.weaknesses.length > 0, `${id}: areas section only when needed`);
+    assert.ok(/Lo que ya tienes a favor/.test(html), id + ": strengths column remains in the reading section");
+    assert.ok(/Lo que conviene mejorar/.test(html), id + ": opportunity column remains in the reading section");
+    if (strengthItems(narrative).length === 0) assert.match(html, /No se identificó un elemento para esta lista/);
+    if (areaItems(narrative).length === 0) assert.match(html, /No se identificó un elemento para esta lista/);
     assert.ok(!/Debilidades/.test(html));
   }
   assert.match(textOf(HTML.appointment_business!), /Fortaleza confirmada El seguimiento a tus pacientes es constante\. Señal positiva Hay señales de que/);

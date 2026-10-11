@@ -415,7 +415,7 @@ test("10 the overall status is descriptive: recommendations and commercial match
 test("10 UI: hierarchy, presence card, no emoji, no sales copy, commercial after the diagnosis, every offering explains why", () => {
   for (const [id, { narrative, outcome }] of Object.entries(GOLDEN)) {
     const html = renderToStaticMarkup(createElement(DiagnosticResult, { narrative, outcome }));
-    const order = ["dr-presence-title", "dr-summary-title", "dr-focus-title", "dr-vecidya-title", "dr-plan-title", "dr-dimensions-title", "dr-method-title"].map((marker) => html.indexOf(`id="${marker}"`));
+    const order = ["dr-title", "dr-presence-title", "dr-focus-title", "dr-dimensions-title", "dr-plan-title", "dr-evidence-title", "dr-vecidya-title", "dr-method-title"].map((marker) => html.indexOf(`id="${marker}"`));
     assert.ok(order.every((index, position) => index >= 0 && (position === 0 || index > order[position - 1]!)), `${id}: hierarchy ${order}`);
     const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
     assert.ok(!/\p{Extended_Pictographic}/u.test(text), `${id}: no emoji`);

@@ -1,12 +1,32 @@
 # Base de datos
 
-Última reconciliación: 2026-09-28 (DIAG-V3-08: Analítica del Diagnóstico — `diagnostic_event` y 4 columnas nuevas en `diagnostic_session`, migración `0013`, solo local). Anterior: 2026-09-27 (DIAG-V3-07: Save & Resume del Diagnóstico — `diagnostic_saved_snapshot`, migración `0012`, solo local). Anterior, mismo día (DIAG-V3-06: persistencia del Diagnóstico — `diagnostic_session`/`diagnostic_answer`/`diagnostic_result`, migración `0011`, solo local). Anterior: 2026-09-26 (G7: `0010` aplicada en `vecidya-prod`; local y remoto en `0000`–`0010`). Anterior: 2026-09-25 (LICENSE-STRATEGY-001: foundation de licenciamiento multi-negocio, solo local). Evidencia: schema (`db/schema/`), las 14 migraciones SQL, `db/migrations/meta/`, consultas, D1 local (`d1_migrations` = 14 filas, `0000`–`0013`). `0011`–`0013` **no** aplicadas a D1 remota (remoto sigue en `0000`–`0010`, ver `ENVIRONMENTS.md`).
+Última reconciliación: **2026-10-11 (DIAG-V3-FUNNEL-01A; solo diseño candidate-only, sin schema/migración/consulta nueva ni cambio de D1).** Anterior: 2026-09-28 (DIAG-V3-08: `diagnostic_event` y cuatro columnas en `diagnostic_session`, migración `0013`, local). Persistencia, Save & Resume y analítica de DIAG-V3-06/07/08 se retiraron del runtime público en DIAG-V3-13 y nunca se desplegaron; sus archivos de schema, consultas y migraciones locales quedan como evidencia histórica, no como base activa del embudo. `0011`–`0013` no se aplicaron a D1 remota; el remoto continúa en `0000`–`0010` según el último registro de `ENVIRONMENTS.md`.
 
 ## Responsabilidades
 
 - `db/schema/` (TypeScript/Drizzle) es la fuente de verdad; `drizzle-kit generate` produce SQL en `db/migrations/`; Wrangler lo aplica a D1.
 - `db/client.server.ts` es el único punto de creación del cliente Drizzle; `db/queries/` contiene las consultas reutilizables.
 - Las tablas de auth/tenancy/gobierno están en `db/schema/auth.ts` (16 tablas); `platform_meta` está en `db/schema/platform-meta.ts` (1); licenciamiento multi-negocio está en `db/schema/licensing.ts` (6, LICENSE-STRATEGY-001); persistencia del Diagnóstico está en `db/schema/diagnostic.ts` (5: 3 de DIAG-V3-06, `diagnostic_saved_snapshot` de DIAG-V3-07 y `diagnostic_event` de DIAG-V3-08). Total: **28 tablas**.
+
+## DIAG-V3-FUNNEL-01A — propuesta de datos (no implementada)
+
+El diagnóstico público actual corre en el navegador; su sesión anónima de respuestas vive solo en `localStorage` durante 14 días. El diseño F3 recomendado procesa las respuestas de forma stateless en el Worker para devolver exclusivamente `AnonymousDiagnosticSummaryV1`; no crea fila de sesión anónima ni guarda respuestas/resultados detallados anónimos. Los esquemas/migraciones de DIAG-V3-06/07/08 no se reutilizan por defecto: describen una foundation retirada del flujo público, aunque permanezca en el árbol y en la D1 local histórica. FUNNEL-01A no altera esos artefactos.
+
+| Entidad candidata | Contenido mínimo | Relación y control | Ciclo de vida propuesto |
+| --- | --- | --- | --- |
+| `identified_diagnostic_request` | UUID, `diagnosticIdentity`, versiones de cuestionario/metodología/reporte, nombre responsable, email normalizado, negocio/proyecto opcional, teléfono opcional, estado y finalidad A | Sin `organization_id`; relación con snapshot por UUID; email no forma parte del ID público | Propuesta: 30 días desde emisión; pendiente de decisión legal/producto |
+| `diagnostic_report_snapshot` | JSON de `PersonalizedDetailedReportV1`, score y salida exacta, identidad del motor, fecha de cálculo, expiración | FK a solicitud; lectura solo con grant verificado; sin respuestas crudas por defecto | Propuesta: mismo vencimiento que la solicitud, 30 días; borrado en cascada |
+| `diagnostic_report_access_grant` | UUID, solicitud, digest del token de un uso, emisión/expiración/consumo | Digest solamente; TTL propuesto 24 h; rate limit en emitir, reenviar y consumir | Expirado/consumido no concede acceso; purga junto con solicitud o sweep dedicado |
+| `commercial_contact_intent` | Solicitud, opción B, versión exacta del texto/aviso, timestamp, fuente, estado revocada/activa | Fila separada, solo se crea si B se marca; idempotencia y retirada; no es oportunidad/cliente | Mientras la preferencia siga válida, con retención final a aprobar |
+| `diagnostic_analytics_event` | Tipo, instante de servidor, versión y valores coarse-grained allowlisted; opcional run ID seudónimo | Silo sin FK a solicitud/contacto/snapshot; jamás respuestas, PII, IP o UA | Propuesta: crudos seudónimos ≤30 días; después agregado no identificable |
+
+`researchParticipation` (C) requiere un consentimiento separado, versión de aviso, alcance de reutilización y fecha de retirada. No se debe reusar la preferencia comercial B para investigación, ni considerar A como consentimiento para ninguna de las dos.
+
+No almacenar `AnonymousDiagnostic` como entidad persistente sin necesidad aprobada. Al pedir detalle el Worker vuelve a recibir las respuestas y la identidad de contrato, recalcula y escribe solicitud + snapshot de manera transaccional/idempotente; las respuestas se descartan tras calcular. La identificación y los reportes son recursos personales de acceso público solicitado, no recursos de organización; cualquier consola staff requiere sesión, rol/permiso, recurso y auditoría de propósito. No aceptar ID de solicitud como autorización: el acceso depende de grant verificado de vida corta. No escribir tokens, email, teléfono, respuestas o documento en logs.
+
+Idempotencia propuesta: clave aleatoria por intento, guardada como HMAC/digest y limitada por TTL; mismo reintento devuelve el mismo estado y no crea doble solicitud o grant. Edición de respuestas invalida la revisión completada y exige nuevo cálculo bajo identidad declarada. Rate limiting de borde por endpoint reduce spam sin persistir IP en D1; cualquier observación de IP en logs debe estar desactivada o minimizada según revisión legal. Un run ID aleatorio para analítica sigue siendo dato seudónimo: no vincularlo a solicitudes o emails. Para borrado, purgar solicitud, snapshot, grants e intención relacionada en cascada y aplicar una purga verificable para eventos vencidos; la exportación debe incluir la solicitud, permisos y reporte disponible.
+
+Los plazos anteriores son propuestas técnicas, no una política vigente ni una declaración de cumplimiento. Antes de schema/migración/endpoint deben aprobarse la base legal de A, B y C, los avisos, plazos finales, respuesta a solicitudes de acceso/borrado y acceso de soporte.
 
 ## Modelo vigente
 

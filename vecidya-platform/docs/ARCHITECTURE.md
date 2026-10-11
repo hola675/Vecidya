@@ -1,5 +1,84 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-FUNNEL-01A — diseño de resumen anónimo e informe identificado (2026-10-11)
+
+**Recomendación: F3 híbrida; `FUNNEL_DESIGN_READY`.** Este corte añade contratos puros y un prototipo local en `/__dev/diagnostico/qa03b/embudo`; no cambia rutas públicas, runtime Worker, D1, exportación PDF, correo ni integración GHL. El diagnóstico público actual sigue siendo cliente-only y guarda respuestas en el navegador durante 14 días. La candidata QA-03B conserva `CONTRACT_CERTIFIED` local y sigue inactiva.
+
+### Recorrido y límite de acceso
+
+```mermaid
+flowchart LR
+  A[Cuestionario anónimo en navegador] -->|respuestas por HTTPS, sin persistir en servidor| W[Worker autoritativo: identidad de motor fijada]
+  W -->|solo AnonymousDiagnosticSummaryV1| S[Resumen gratuito y anónimo]
+  S -->|solicita detalles| I[Formulario mínimo de identificación]
+  I -->|identidad + misma versión + respuestas| W
+  W -->|recalcula con la misma identidad y snapshot identificado| D[(D1: solicitud + informe versionado)]
+  D -->|enlace de un uso, 24 h; solo digest almacenado| V[Verificación de correo]
+  V -->|grant comprobado| R[Informe completo personalizado]
+  I -. opt-in B independiente .-> C[CommercialContactIntent]
+  I -. opt-in C independiente .-> Q[Investigación identificable autorizada]
+  W -. eventos mínimos sin respuestas .-> M[(Analítica separada, TTL corto)]
+  C -. fase posterior, si está permitido .-> G[GHL: contactos y oportunidades]
+```
+
+El navegador recibe un DTO de resumen allowlistado; no recibe las ocho dimensiones, evidencias completas, plan, todas las recomendaciones ni resultado comercial. El Worker debe ejecutar el motor candidate-only con `diagnosticIdentity` explícita, comprobar la versión del banco/respuestas y descartar las respuestas de la solicitud anónima después de responder. Cuando la persona pide el informe, la solicitud identificada se calcula otra vez con la misma identidad y ese resultado exacto se guarda como snapshot. Así el score no se modifica al identificarse ni se confía en un resultado enviado por el cliente.
+
+| Alternativa | Acceso real al contenido completo | Ventajas | Límite |
+| --- | --- | --- | --- |
+| F1 — ocultar partes de la UI | Ninguno si el resultado completo está en el bundle/memoria del navegador | Menor trabajo y compatibilidad con la pantalla actual | Editorial; no protege datos ni módulos descargados |
+| F2 — controlar el informe desde el backend | El Worker entrega detalles después de validar la solicitud | Frontera técnica clara y poca ambigüedad sobre quién autoriza | Puede duplicar el cálculo anónimo o forzar identificación antes de ver una lectura |
+| **F3 — híbrida (recomendada)** | Solo el resumen sale del cálculo anónimo; detalles se calculan/entregan en Worker tras autorización | Mantiene valor anónimo, permite privacidad por defecto y protege el informe completo | Exige separar el runtime candidate-only, fijar identidad/versiones y probar paridad semántica |
+
+El F3 final necesita Worker/Cloudflare y una capa aislada de cálculo server-side. El prototipo actual importa el pipeline en una ruta local de desarrollo, por lo que **no prueba ni implementa una barrera de acceso**. En FUNNEL-01B/01C no se debe publicar el candidato completo en JS del cliente; el resultado y reporte detallados deben permanecer en el Worker antes de habilitar cualquier control de acceso.
+
+### Contratos de pantalla y documentos
+
+El flujo contempla `DIAGNOSTIC_IN_PROGRESS`, `DIAGNOSTIC_COMPLETED`, `ANONYMOUS_SUMMARY`, `DETAILS_REQUESTED`, `IDENTIFICATION_REQUIRED`, `IDENTIFICATION_SUBMITTING`, `IDENTIFICATION_VERIFICATION_PENDING`, `DETAILED_REPORT_AVAILABLE`, `PERSONALIZED_REPORT_READY` y `ERROR_RECOVERABLE`. El prototipo recorre solo resumen, solicitud de detalle, identificación y error recuperable; no muestra éxito ni reportes no autorizados.
+
+`AnonymousDiagnosticSummaryV1` consume `buildCandidateResultPresentationV3` sin recalcular: estado general, score nullable, confianza, cobertura contextual, una interpretación ejecutiva, primera prioridad respaldada, primera recomendación existente, límites y versiones. No presenta porcentaje si es `null`; omite dimensiones, inventario de evidencias, plan exhaustivo, otras recomendaciones y bloque comercial. Si el motor no produjo prioridad/recomendación, el campo queda `null`. La decisión de selección es determinista.
+
+`AnonymousSummaryReportV1` es un contrato de documento aparte y nunca contiene datos identificativos ni acceso al informe completo. Su descarga está deshabilitada en el prototipo. `PersonalizedDetailedReportV1` referencia el informe candidato versionado, personalización y la misma identidad de resultado. La personalización cambia título/contexto del documento, nunca respuestas, puntuación, interpretación, prioridades ni reglas comerciales. No se modificó ni se probó un nuevo renderizador PDF; la implementación PDF permanece pausada.
+
+### Identificación, finalidad y verificación
+
+El formulario propone nombre del negocio/proyecto opcional, nombre responsable y correo requeridos, teléfono opcional, sin cuenta, contraseña ni dirección. A — preparar, entregar y recuperar el informe pedido — se explica como finalidad necesaria de esa solicitud; no se presenta como permiso publicitario. B — contacto comercial — y C — estudio/validación con eventual reutilización identificable — son preferencias distintas, opcionales y desmarcadas inicialmente. La versión final necesita aviso de privacidad, base legal, retenciones y mecanismo para corregir/retirar preferencias aprobados antes de almacenar o contactar; FUNNEL-01A no determina ni declara cumplimiento legal.
+
+Se recomienda **verificar correo antes de conceder el acceso al reporte**, mediante token aleatorio de alta entropía, single-use, TTL propuesto de 24 h; persistir solo su digest, limitar emisión/reenvío/consumo y no escribir el secreto en logs. Tras verificar, una cookie de sesión segura puede recuperar el reporte durante su retención propuesta. Esto demuestra acceso al buzón y reduce solicitudes falsas o divulgación a direcciones mal escritas, aunque añade un paso y puede verse afectado por escáneres automáticos de enlaces. Acceso inmediato reduce fricción, pero ofrece el informe a cualquiera que haya escrito ese correo y dificulta recuperación segura. No se envía ningún correo en esta fase.
+
+`ReportPersonalization` es una capa de presentación voluntaria; `IdentifiedDiagnosticRequest` registra la petición; `DiagnosticReportAccess` autoriza la lectura; `CommercialContactIntent` registra solo la preferencia B; `DiagnosticAnalyticsEvent` queda en silo separado. Ninguno forma parte del scoring. La persona que solicita no es por ello contacto comercial, oportunidad, cliente de pago ni organización tenant.
+
+### Persistencia futura, límites y privacidad
+
+La experiencia pública que está activa hoy conserva sus respuestas en `localStorage` durante 14 días, sin cuenta ni recuperación entre dispositivos. El F3 propuesto procesa en Worker sin persistir respuestas anónimas ni resultado completo anónimo. Solo al pedir el informe identificado se propone guardar datos mínimos de solicitud y un snapshot del informe resultante/versionado; no almacenar respuestas originales salvo que una necesidad aprobada obligue a ello. El modelo D1 candidato se detalla en `DATABASE.md` y **no está implementado**.
+
+No usar IP, user-agent, fingerprinting, campos ocultos ni valores de respuesta para reconstruir identidad comercial. Limitar cuerpos, validar versión/formato en Worker, aplicar rate limit de borde y clave idempotente por solicitud, proteger el consumo del token, responder 404/403 sin enumerar IDs, evitar PII/answers en logs y auditar accesos administrativos. Acceso administrativo al diagnóstico identificado deberá requerir autorización explícita, usuario/rol, recurso y propósito; los reportes personales no son recursos de organización por defecto. Un ID de sesión seudónimo se trata como dato personal mientras permita enlace o singularización.
+
+Los plazos de diseño son **propuestas para decisión**, no política vigente: snapshot y datos identificativos por 30 días desde la emisión, grant por 24 h, eventos pseudónimos crudos por hasta 30 días y luego solo agregados no identificables; preferencias comerciales se retienen mientras estén vigentes o hasta retirada, sujeto a la política que apruebe el responsable. Solicitar borrado elimina petición, snapshot, grant e intención relacionada; logs técnicos no deben conservar su contenido. Antes de implementar se requiere confirmar base legal y plazos con revisión legal/privacidad y especificar exportación/borrado verificables.
+
+### Eventos y GHL
+
+La taxonomía declarada de 11 eventos y las métricas se especifican aquí y en `TESTING.md`; FUNNEL-01A no crea emisor, binding, tabla, beacon ni dashboard. Si se usa `funnelRunId` para deduplicar y unir pasos, ese identificador es **seudónimo, no anónimo**: TTL corto, sin vínculo a petición/email/informe, sin IP/UA ni valores reales de respuestas, y sin uso antes de determinar base legal/consentimiento. En ausencia de tal base, usar contadores agregados no enlazables. Conversión mide comportamiento del producto, nunca validez científica de las puntuaciones.
+
+| Evento | Objetivo y mínimo | Identificable | Condición y retención propuesta | Riesgo y agregado |
+| --- | --- | --- | --- | --- |
+| `diagnostic_started` | Inicio + versión; run ID efímero solo si se autoriza deduplicación | No directo; run ID seudónimo | Definir base; evento crudo ≤30 días | Secuencia de actividad; luego conteo por versión |
+| `question_answered` | `question_id` y clase `answered/unknown/not_applicable`; nunca valor | Sin dato directo; patrón de preguntas es seudónimo | Definir base; ≤30 días | Patrón puede revelar contexto; agrega por pregunta/clase con celdas pequeñas suprimidas |
+| `diagnostic_completed` | Versión y cantidad de respuestas; no score ni respuesta | Seudónimo solo con run ID | Definir base; ≤30 días | Métrica de finalización; conteo por versión |
+| `summary_viewed` | Tipo de estado (`with_score/insufficient`) y versión, sin porcentaje exacto | Seudónimo solo con run ID | Definir base; ≤30 días | No inferir calidad/negocio; agrega conteo de resúmenes |
+| `summary_download_requested` | Versión de documento y resultado técnico de generación | Seudónimo; no contenido/documento | Definir base; ≤30 días | Descarga puede revelar interés; agrega éxito/error sin archivos |
+| `detailed_report_requested` | Evento de intención, sin email ni contenido diagnóstico | El vínculo a run ID es seudónimo | Propósito de servicio y base revisados; ≤30 días | Intención no equivale a lead; agrega solicitudes |
+| `identification_submitted` | Resultado del intento (`valid/invalid`), sin campos | Identificable si se enlaza con request ID; evitarlo en analítica | Contador agregado; el request operativo queda en su dominio y plazo aprobado | No correlacionar identidad con historial anónimo |
+| `report_access_granted` | Conteo de grants consumidos, sin token/request ID en analítica | Identificable si incluye grant/request ID | Registro de seguridad mínimo según plazo aprobado; TTL operacional | Reintentos y enlaces expuestos; conteo separado |
+| `detailed_report_viewed` | Conteo de primera vista/revisita; sin reporte ni identidad | Identificable si queda por request; preferir agregado | Base/retención por confirmar antes de medir por persona | Acceso no es conversión comercial; conteo por cohorte |
+| `personalized_report_downloaded` | Versión, resultado de descarga y formato | Identificable si queda vinculado al solicitante | Operación del documento según solicitud; métricas agregadas | Documento revela situación; jamás adjuntarlo al evento |
+| `commercial_contact_requested` | Preferencia B, texto/versión del aviso, instante y fuente | **Sí, explícitamente** en `CommercialContactIntent` | Solo al marcar B; corregir/retirar, retener mientras autorización/política lo permita | Separar de analítica y excluir a quien no autorizó |
+
+Los plazos son máximos propuestos para eventos sin identidad directa; la retención y base legal no quedan aprobadas por esta tabla. El registro necesario de A y las autorizaciones B/C se conservan con el expediente mínimo correspondiente, nunca copiando email, teléfono o texto de respuestas al stream de analítica.
+
+GHL continúa siendo sistema de registro futuro para contactos, conversaciones y oportunidades; `integration_connection` actual no implementa esta integración. Solo un consentimiento B vigente permitiría producir un evento de handoff a la integración de una fase autorizada. El destinatario puede deduplicarse en GHL como contacto con procedencia y fecha de permiso, sin copiar pipelines/historial a D1 ni crear oportunidad automáticamente. Opt-in C no equivale a B. Sin opt-in B, no se inicia seguimiento comercial. No se ha enviado dato a GHL.
+
+La compatibilidad con QA-03B se conserva mediante su `diagnosticIdentity` completa y las versiones de metodología/reporte. No se leen ni se reescriben sesiones históricas; una sesión editada tras completar invalida su resultado derivado y exige recálculo antes de emitir reporte. En una versión posterior, errores de registro, expiración, doble envío, concurrencia entre pestañas, acceso cruzado, recuperación, borrado y paridad de score son gates de backend; el prototipo local no los simula como aprobados.
+
 ## DIAG-V3-QA-03B — contrato candidato certificado (2026-10-11)
 
 **`CONTRACT_CERTIFIED` en entorno local; `GATE_B_PARTIAL` se conserva y la candidata sigue inactiva en producción.** QA-03A/QA-03A.1 y el ajuste aprobado `D2_ELIGIBILITY_APPROVED` están incorporados en una ruta aislada de desarrollo. No cambian rutas públicas, historial de sesiones, migraciones, versión publicada, R3/R8, O4/O6 ni el generador PDF. La identidad nueva usa banco `reviewed-evidence-v4`, respuestas `qbv2-answers-v3`, contexto/pipeline `diag-v3-candidate-operation-history-v1`, R4 `r4-applicability-operation-history-v1` y sesión schema/key 3. La sesión nueva no lee, migra ni elimina valores schema 2.
@@ -1327,10 +1406,19 @@ La web pública consume contenido institucional estático y perfiles publicados 
 - **Fortalezas y áreas:** «Fortaleza confirmada» frente a «Señal positiva» (borde punteado), y «Funciona en parte», «Posible debilidad»/«Necesita refuerzo» y «(Posible) dependencia» según tipo y certeza del bloque.
 - **Pre-lanzamiento:** cabecera distinta (fondo suave, borde punteado), etiqueta «Antes del lanzamiento», una sola nota que aclara que las áreas operativas aparecen sin porcentaje porque todavía no se pueden observar, y las incertidumbres separadas en «Lo que falta confirmar» y «Para verificar después del lanzamiento».
 - **Accesibilidad:** un `h1`, encabezados sin saltos, secciones con `aria-labelledby`, `<details>/<summary>` nativos (teclado, objetivo de 44 px, foco visible del sistema), iconos y barras con `aria-hidden`, listas con `role="list"`, estado nunca solo por color y contraste AA.
-- **Vista previa local:** `/__dev/diagnostico/resultado/:personaId?` (12 personas golden; `?debug=1` muestra la procedencia por bloque y `?stress=1` alarga textos y listas para revisar desbordes). Se registra solo cuando `NODE_ENV=development` (`react-router dev`); el build y el typegen evalúan `routes.ts` en modo producción y la excluyen, y el loader responde 404 fuera de `import.meta.env.DEV`. El build publicado no contiene su código.
-- **Integración:** ninguna ruta pública renderiza el resultado V3 todavía; `/diagnostico` sigue con QBV1 y su `overallScore`. El cuestionario adaptativo QBV2 que llevará a este resultado es DIAG-V3-10B. Las clases `dr-*` sí entran en la hoja de estilos compartida.
+- **Vista previa local:** `/__dev/diagnostico/resultado/:personaId?` (12 personas golden; `?debug=1` muestra la procedencia por bloque y `?stress=1` alarga textos y listas para revisar desbordes). Se registra solo cuando `NODE_ENV=development` (`react-router dev`); el build y el typegen evalúan `routes.ts` en modo producción y la excluyen, y el loader responde 404 fuera de `import.meta.env.DEV`. El path del harness no se registra en producción. Los componentes compartidos sí forman parte del bundle porque también los usa el flujo público existente `/diagnostico`.
+- **Integración:** la ruta pública `/diagnostico` usa QBV2 y `DiagnosticFlow` renderiza `DiagnosticResult` al completar el flujo. Este checkpoint reorganiza esa presentación en local; no cambia URL, motor ni la sesión. La preview golden `/__dev/diagnostico/resultado/:personaId?` sigue en desarrollo. Las clases `dr-*` sí entran en la hoja de estilos compartida.
 - **Mapa al PDF (DIAG-V3-12):** `ResultHero` → portada y resumen ejecutivo; `FocusSection` → página de prioridades; `DimensionOverview` → páginas por dimensión; `UncertaintySection` + `MethodNote` → evidencia y método. El PDF partirá del mismo `DiagnosticNarrative`, no de la UI.
 - **Límites (09):** sin recomendaciones tácticas ni plan de acción, sin metodología ni fuentes externas (solo la reserva «Cómo se evaluó») y sin PDF. DIAG-V3-10 añadió el estado general, las recomendaciones y la ayuda comercial (sección siguiente).
+
+### DIAG-V3-RESULT-UX-01 — jerarquía del resultado (2026-10-11)
+
+- **Resultado:** `RESULT_UX_PARTIAL`, implementación local del componente de resultado compartido. Es un ajuste de presentación que consume los mismos `DiagnosticNarrative` y `DiagnosticOutcome`; no cambia copy almacenado, estados, score, confianza, prioridades ni decisiones comerciales.
+- **Orden de lectura:** `ResultHero` (estado, porcentaje/confianza cuando existen e ilustración existente) → `DiagnosticQuickRead` (tres tarjetas) → `DimensionOverview` → `ActionPath` → `EvidenceSection` → `UncertaintySection` → `VecidyaHelpSection` → `MethodNote`.
+- **Dimensiones y evidencia:** las ocho dimensiones conservan orden canónico y empiezan cerradas; los botones nativos exponen detalle por teclado y sincronizan `aria-expanded`. El snapshot solo cuenta lecturas, fortalezas, oportunidades y dimensiones sin lectura a partir de datos existentes; `null` no se vuelve cero. La rejilla es 4/2/1. Fortalezas y áreas mantienen sus listas originales con estados vacíos explícitos.
+- **Plan y ayuda:** las acciones conservan el orden de dominio; el resultado esperado se pliega bajo «Por qué importa». La incertidumbre muestra hasta cuatro puntos y deja el resto en «Ver todo». Ayuda comercial y comparación/costes quedan después del diagnóstico y plegados; método plegado por defecto. No hay nuevo puntaje ni obligación de compra.
+- **Accesibilidad y movimiento:** disclosures/botones nativos, foco visible, controles de 44 px y `prefers-reduced-motion`; se reutilizan los iconos WebP semánticos e ilustraciones existentes. CSS permanece bajo `dr-*` en la hoja compartida.
+- **Verificación/límite:** suite unitaria 1528/1528, resultado 20/20, flujo completo 10/10 y E2E responsive 1440/768/415 PASS; typecheck/build PASS; el path del harness no figura en los bundles de rutas. Capturas antes/después y aprobación visual humana pendientes; no se declara listo. El harness golden sigue siendo solo de desarrollo; el componente compartido se consume también desde `/diagnostico`, sin cambio de URL, backend ni sesión.
 
 ## Diagnóstico: estado general, recomendaciones y ofertas (DIAG-V3-10, cerrada y congelada; pública desde DIAG-V3-13)
 

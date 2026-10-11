@@ -7,5 +7,5 @@ export { CertaintyTag, ConfidenceIndicator, ScoreMeter, StatusIndicator } from "
 export { DigitalPresenceStatusCard, StatusAsset } from "./presence-status";
 export * from "./presentation";
 export { AreasSection, EvidenceSection, MixedSignalsSection, StrengthsSection, UncertaintySection } from "./reading-sections";
-export { ExecutiveSummary, ResultHero } from "./result-hero";
+export { DiagnosticQuickRead, ExecutiveSummary, ResultHero } from "./result-hero";
 export { STATUS_ASSETS, type StatusAssetBrief } from "./status-assets";
