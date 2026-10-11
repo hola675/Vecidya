@@ -2,10 +2,12 @@
 
 ## DIAG-V3-REL-002 — release 0.6.1
 
-- Estado previo al deploy: cambios visuales y de copy validados localmente; versión `package.json` `0.6.1`.
+- Versión `package.json`: `0.6.1`. `pnpm run typecheck` y `pnpm run build`: **PASS** antes de publicar.
 - Alcance: catálogo visual público, sustitución de assets en Diagnóstico/Licencias/Addons/Servicios, copy comercial compartido y eliminación del texto HTML duplicado del estado diagnóstico.
-- Migraciones: ninguna. D1 remota: sin cambios. Secrets: sin cambios. Staging: sin cambios.
-- La publicación solo se declarará después de verificar el commit desplegado y una comprobación HTTP anónima fechada de `/`, `/diagnostico`, `/licencias`, `/addons` y `/servicios`.
+- Deploy de producción ejecutado con `pnpm exec wrangler deploy` desde `main`, commit `7d0b1bd` (2026-10-10, hora de La Habana). Worker `vecidya-platform`, Version ID `8bf2c1c4-d6cb-47ca-ae74-01de28392d67`; se cargaron 39 assets y quedaron activos los triggers `vecidya.com/*` y `www.vecidya.com/*`.
+- Migraciones: ninguna. D1 `vecidya-prod`: sin cambios. Secrets: sin cambios. Staging: sin cambios. `origin/main` apunta a `7d0b1bd`; su reflog local registra actualización por push a las 23:35 -04. Este agente no ejecutó `git push`.
+- **HTTP anónimo**, 2026-10-10 23:40 (La Habana) / 2026-10-11 03:40 UTC: `/`, `/diagnostico`, `/licencias`, `/addons` y `/servicios` → `200`; `www.vecidya.com/` → `301` a `https://vecidya.com/`; `/app` → `302` a `/login`. Las cinco páginas públicas contienen `© 2026 Vecidya` y la versión `0.6.1`.
+- Resultado: `0.6.1` publicada, comprobada por HTTP. Este despliegue no cierra Gate B: la candidata sigue inactiva y `GATE_B_PARTIAL` permanece.
 
 ## DIAG-V3-REL-001 — release 0.6.0
 
@@ -20,7 +22,9 @@ Niveles de evidencia usados en este documento: **`CONFIG`** `wrangler.jsonc`/có
 
 ## Veredicto sobre producción
 
-`vecidya.com` sirve **`v0.5.7`** desde el Worker `vecidya-platform` con `vecidya-prod`, Version ID **`f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`** (2026-09-26T17:51Z). El pie muestra «Versión pública 0.5.7». `LEARN-META-001` está resuelto en producción. La D1 remota tiene `0000`–`0010` aplicadas desde G7 (2026-09-26T18:13Z); código `0.5.7` y esquema reconciliados. El párrafo siguiente describe el corte anterior (`0.5.6`).
+`vecidya.com` sirve **`v0.6.1`** desde el Worker `vecidya-platform` con `vecidya-prod`, Version ID **`8bf2c1c4-d6cb-47ca-ae74-01de28392d67`** (2026-10-11T03:40Z). La comprobación HTTP anónima fechada está registrada arriba. La D1 remota conserva `0000`–`0010`; este deploy no aplicó migraciones. El párrafo siguiente describe el corte anterior (`0.5.7`).
+
+`vecidya.com` sirvió **`v0.5.7`** desde el Worker `vecidya-platform` con `vecidya-prod`, Version ID **`f7fc35a6-cb4f-48f0-ba73-5d2eea3c34f0`** (2026-09-26T17:51Z). `LEARN-META-001` quedó resuelto en producción. La D1 remota tiene `0000`–`0010` aplicadas desde G7 (2026-09-26T18:13Z). El párrafo siguiente describe el corte anterior (`0.5.6`).
 
 `vecidya.com` sirve ahora desde `vecidya-prod` mediante el Worker `vecidya-platform`, desplegado como Version ID `582a5c38-d1d4-4f3c-8ba5-e9424717fcb3` (`v0.5.6`, tercer corte — reordena el resultado del Diagnóstico y lo hace más compacto; ver «Deploy (3.º...)» abajo). El smoke HTTP anónimo (rutas públicas, versión, puntaje global y exportación a PDF del Diagnóstico, `www`, rutas privadas protegidas) pasó el 2026-09-26.
 

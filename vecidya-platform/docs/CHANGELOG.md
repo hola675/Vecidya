@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-10 — publicación de DIAG-V3-REL-002 `0.6.1`
+
+- Deploy de producción desde `main`, commit `7d0b1bd`, Worker `vecidya-platform`, Version ID `8bf2c1c4-d6cb-47ca-ae74-01de28392d67`; sin migraciones ni cambios de D1, secrets o staging.
+- `typecheck` y `build` pasaron. HTTP anónimo: `/`, `/diagnostico`, `/licencias`, `/addons` y `/servicios` → 200; `www` → 301; `/app` → 302 `/login` (2026-10-10 23:40 La Habana / 2026-10-11 03:40 UTC).
+- La publicación no activa la candidata diagnóstica ni cambia `GATE_B_PARTIAL`. `origin/main` apunta a `7d0b1bd` (reflog local: actualización por push a las 23:35 -04; este agente no ejecutó `git push`). No había otra rama de trabajo que unir.
+
 ## 2026-10-10 — DIAG-V3-QA-03A diseño de contrato y compatibilidad
 
 - Preparadas propuestas sin implementar para separar tipo/estado operativo, formas de prestación y canal de compra, desconocimiento de alcance y comprador directo frente a beneficiario/financiador.
