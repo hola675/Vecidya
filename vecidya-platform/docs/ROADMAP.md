@@ -1,6 +1,6 @@
 # Roadmap
 
-Última actualización: 2026-10-10 (DIAG-V3-QA-02). Refinamiento local y solo textual del banco candidato completado con regresión semántica idéntica en 25/25 rutas; nueve perfiles sintéticos añadidos y recorridos sin hard cap/bloqueo de presupuesto. Resolución final de q2_entity, q2_delivery, q2_customer_reach y q2_customer_buyer requiere decisión humana; validación con participantes `NOT_RUN`. La candidata sigue inactiva, Gate B `GATE_B_PARTIAL` y ACT-04 no autorizado. No comenzar otra fase antes de esa decisión.
+Última actualización: 2026-10-10 (DIAG-V3-QA-03A). Diseño candidate-only `DESIGN_PARTIAL`, no implementado; B/C/D tienen propuesta para aprobación. La dirección A2 está pendiente de una política que resuelva `hasRealCustomers=false → activity=prelaunch/GrowthStage=idea` frente a negocio que ya opera sin clientes; R4, índice y planner consumen ese estado. No iniciar QA-03B hasta aprobar el diseño completo y su impacto. Participantes `HUMAN_VALIDATION_NOT_RUN`; candidata inactiva, Gate B `GATE_B_PARTIAL`, ACT-04 no autorizado.
 
 Última reconciliación: 2026-10-10 (ACT-03.4B.1; `GATE_B_PARTIAL`; ver `TESTING.md`/`ARCHITECTURE.md`). La integración PDFKit sigue confinada al entorno candidato local. Las 14 salidas pasan PyMuPDF semántico/geométrico, veraPDF Greenfield 1.30.2 PDF/UA-1 (14/14, 0 checks fallidos), CIDSet 4/4 y la carrera A4/Carta; regresiones previas, typecheck, build y aislamiento de bundle pasan. Copias de muestra y originales son SHA-256 idénticos. `INSTALL_REPRO_BLOCKED`: checkout limpio no obtuvo Arimo ni otros paquetes desde el registry oficial con `--frozen-lockfile`; patch/PDF desde dependencias limpias no verificado. Membresías: ECONNRESET tras preparar D1 con Worker activo; fixture preparado con Worker parado pasa, sin raíz de transporte/SQLite demostrada. Slug lifecycle: 401 local explicado por cookie Secure omitida al usar `BrowserContext.request` sobre HTTP; sesión y alta de organización dan 200 al transmitirla explícitamente. PAC 2026.1, NVDA y revisión humana siguen `NOT_RUN`; pasos y matriz individual están en `TESTING.md`. Próxima acción autorizada: completar instalación congelada reproducible y después las regresiones requeridas. No iniciar ACT-03.5 hasta Gate B PASS; ACT-04 no está autorizado. Candidata inactiva, sin deploy/push.
 
@@ -19,6 +19,7 @@ Este documento contiene **solo trabajo futuro**. Nada aquí está implementado n
 | G5 | — | PROD-001C completó la verificación autenticada |
 | G6 | — | Cerrada 2026-09-26: `0.5.7` LIVE y `LEARN-META-001` resuelta |
 | G7 | — | Cerrada 2026-09-26: `0010` aplicada en `vecidya-prod` (18:13Z) y verificada; `LICENSE-MIGRATION-001` resuelta |
+| QA-03A | Aprobar las propuestas B/C/D y decidir, para A2, si la actividad operativa sin clientes debe cambiar la resolución `activity`/`GrowthStage=idea` y sus consumidores de R4, índice y planner. | Requisito previo de QA-03B: la política afecta rutas/resultado; sin ella no declarar compatibilidad ni implementar las preguntas. |
 
 ## DIAG-V3 Candidate Activation — ACT-03.2 sesión PASS local; auditoría PDF BLOCKED; readiness READY_WITH_EXPLICIT_BLOCKERS
 

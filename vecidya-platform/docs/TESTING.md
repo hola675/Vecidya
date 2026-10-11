@@ -1,5 +1,44 @@
 # Pruebas
 
+## DIAG-V3-QA-03A — diseño semántico y compatibilidad (2026-10-10)
+
+**Resultado: `DESIGN_PARTIAL`; diseño no implementado; `HUMAN_VALIDATION_NOT_RUN`.** Baseline verificado: `main`, HEAD `1a0b2948d88d3014046c1b16e8187cc031c24cfa`, sin cambios rastreados antes del trabajo (`vecidya-platform/tmp/` ya era local y no versionado). Se inspeccionaron las preguntas actuales, señales, context resolver, elegibilidad/planner, evidencia, resultados/comercial y sesión candidate-only. El índice MCP codebase cerró el transporte; se continuó con lectura directa de las fuentes nombradas y el fallback Serena, sin hacer afirmaciones de cobertura exhaustiva del grafo.
+
+### Propuesta por decisión
+
+| Decisión | Propuesta para revisión | Efecto que debe probar QA-03B | Estado |
+|---|---|---|---|
+| A `q2_entity` | A2: conservar cuatro categorías como tipo de actividad; añadir `q2_activity_stage` (`preparing`/`operating`/`unknown`); mantener `q2_has_customers` como hecho real independiente. Copys completos y valores propuestos en `ARCHITECTURE.md`. | El resolver usa hoy `hasRealCustomers` para `activity` y para `GrowthStage`; `false` produce `idea`. `growthStage` afecta R4, narrativa, índice/prelaunch y presupuesto de ruta. “Operando sin clientes” puede cambiar resultados/rutas: requiere política aprobada antes del código. | **PARCIAL — decisión de compatibilidad pendiente** |
+| B `q2_delivery` | B2: en un multiselect separar prestación/lugar (`physical_location`, `travels`, nuevo `remote_service`), agenda (`appointments`) y compra (`retail`, `online_checkout`); mantener consumo `onsite`; `other` complementaria; `unsure` exclusiva. | No mapear remoto a ecommerce ni crear `hybrid` por dos canales del mismo servicio. Analizar y probar el efecto sobre arquetipo y módulos de los 11 escenarios indicados en `ARCHITECTURE.md`. | **Propuesta lista para aprobación** |
+| C `q2_customer_reach` | Añadir `unknown`: «Todavía no lo tengo claro», como declaración desconocida explícita; no resolver a local/mixto ni puntuar. Mantener prelaunch como alcance deseado y preservar significado de `mixed`. | `customerReach` puede permanecer unresolved; confirmar que planner no repite pregunta ni termina en `budget_blocked`. | **Propuesta lista para aprobación** |
+| D `q2_customer_buyer` | D2: preguntar quién compra/contrata directamente; valores `b2c`, `b2b`, `mixed`, `no_direct_purchase`, `unknown`; aclaración condicional cuando comprador institucional y beneficiario pueden diferir. | Donación/subvención sin compra no produce B2B. Compra institucional directa sí puede producirlo. Requiere revisar `futureB2BApplicability`, `q2_b2b_pipeline` y salida comercial, sin editar reglas en QA-03A. | **Propuesta lista para aprobación** |
+
+Alternativas contrastadas: A1 (copy solamente) no separa operación comenzada sin clientes; B1 añade remoto pero deja la mezcla de arquetipos; B3 cambia copy/exclusividad sin representar prestación remota; D1 no aclara destinatario/compra; D3 separa todos los roles estructuralmente y añade más preguntas/campos de los que consumidores actuales justifican. La matriz de decisión y el copy final propuesto están en [ARCHITECTURE.md](ARCHITECTURE.md#diag-v3-qa-03a--propuesta-semántica-del-cuestionario-2026-10-10).
+
+### Simulación de diseño — solo lectura y separada del runtime
+
+El artefacto [design-simulation.json](../tmp/diag-v3-qa-03a/design-simulation.json) reúne **25 casos R7-A + 9 recorridos QA-02 + 17 escenarios de frontera = 51 filas**. Para cada caso registra hechos, respuestas actuales disponibles, limitaciones demostradas, respuestas propuestas o `NOT_ANSWERED`/reconfirmación, contexto esperado, preguntas/riesgos de rutas, dimensiones potencialmente afectadas, riesgo de scoring y comercial, baseline real cuando existía y resultado futuro `NOT_DETERMINABLE_WITHOUT_IMPLEMENTATION`. Los 34 primeros reutilizan fixtures sintéticos existentes; el baseline observado se resume desde `tmp/diag-v3-qa-02/before.json` y `directed-route-matrix.json`. Los 17 adicionales son perfiles conceptuales, no rutas ejecutadas. No se inventaron scores, recomendaciones, licencias ni cambios de planner del contrato propuesto. El JSON declara `PROPOSED_ENGINE_NOT_EXECUTED` y `HUMAN_VALIDATION_NOT_RUN`.
+
+Reproducir el artefacto localmente desde `vecidya-platform/`:
+
+```powershell
+pnpm exec node --experimental-strip-types tmp/diag-v3-qa-03a/build-design-simulation.mjs
+```
+
+Resultado al generarlo en este corte: conteos **25/9/17/51**. El script solo importa fixtures sintéticos de QA, lee salidas QA-02 y escribe dentro de `tmp`; no se importa desde `app/` ni modifica el banco o el motor.
+
+### Sesiones y criterios de compatibilidad
+
+La sesión candidate-only vigente es schema 2, key `vecidya.diagnostic.v3.candidate.session.2`, banco `reviewed-evidence-v3`; la identidad de resultado fija cuestionario, answer schema, planner, R3/R4, calibración, recomendaciones y comercial. La estrategia propuesta requiere identity/banco/result nuevos y sesión schema/key 3. Migración 2→3 solo desde copia parseada y validada; conservar hechos con equivalencia exacta; reconfirmar entidad y comprador; tratar `delivery=other` como ambiguo; preservar alcance conocido y existencia de clientes; replanificar y eliminar respuestas no elegibles; rechazar resultado viejo bajo identidad nueva; mantener conflicto cross-tab por revision/writer. Fail-closed; jamás convertir `project→business`, `other→remote` ni donante→comprador. La key, reanudación y datos legacy públicos quedan fuera de la migración.
+
+### Verificaciones ejecutadas y límites
+
+- `pnpm exec node --experimental-strip-types tmp/diag-v3-qa-03a/build-design-simulation.mjs`: **PASS de generación**, 51 registros (25+9+17); esto no ejecuta un motor propuesto.
+- Lectura estática de las fuentes listadas y de outputs baseline QA-02: completa dentro del alcance dirigido; codebase-memory MCP `list_projects` falló por `Transport closed`, se usó inspección directa/Serena.
+- QA-01/QA-02, suites de banco, rutas, unitarias, typecheck, build y bundle isolation: `NOT_RUN` en QA-03A porque el diff de producto es cero y solo se preparó diseño/documentación. No se reclaman PASS nuevo; los resultados QA-01/02 se mantienen con sus fechas anteriores.
+- Pruebas humanas: `NOT_RUN`.
+- No se cambiaron R3–R8, O4/O6, scoring, calibration, planner, sesión, reglas comerciales, banco candidato, rutas públicas ni PDF.
+
 ## DIAG-V3-QA-02 — Resolución semántica y refinamiento de copy
 
 Corte local `2026-10-10`, HEAD de partida `93a46debf0395bd1b27350801e2da844ca5ccfa7`. Auditoría solo sobre `REVIEWED_CANDIDATE_QUESTIONS_V2`, sin registrar la candidata ni cambiar el banco público/legacy. Resultado **`PARTIAL`; disposición `SEMANTIC_DECISION_REQUIRED`**. La revisión con participantes sigue **`HUMAN_VALIDATION_NOT_RUN`**.

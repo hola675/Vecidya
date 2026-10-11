@@ -1,5 +1,78 @@
 # Arquitectura de Vecidya
 
+## DIAG-V3-QA-03A — propuesta semántica del cuestionario (2026-10-10)
+
+**Estado: `DESIGN_PARTIAL`; propuesta no implementada.** El baseline `1a0b2948d88d3014046c1b16e8187cc031c24cfa` permanece vigente. QA-03A analiza exclusivamente `REVIEWED_CANDIDATE_QUESTIONS_V2`; no registra ni activa ese banco. R3–R8, O4/O6, runtime legacy, rutas públicas, sesión legacy, PDF y reglas comerciales no se modifican.
+
+### A — tipo de actividad y estado operativo
+
+**Recomendación conceptual: A2**, conservar cuatro categorías de actividad y preguntar el estado operativo por separado. A1 (retocar solo el copy actual) cuesta menos y puede representar los ocho perfiles habituales combinando `q2_entity` con `q2_has_customers`, pero no representa fielmente una operación que ya comenzó y aún no tiene clientes; además el texto actual de `business`/`project` induce etapa. No se debe tratar el registro legal como prueba de operación ni el ingreso puntual como conversión automática de proyecto a empresa.
+
+Copy propuesto para revisión, todavía no contrato:
+
+- **`q2_entity` — «¿Qué tipo de actividad quieres evaluar?»** Pista: «Elige la forma de la actividad, aunque esté preparándose o ya opere. Un proyecto puede generar ingresos. Esta respuesta no indica si ya tienes clientes ni si la actividad está registrada legalmente.»
+- `individual`: «Trabajo por cuenta propia, como profesional o persona independiente, incluso con un nombre comercial.»
+- `business`: «Un negocio o empresa con actividad comercial.»
+- `organization`: «Una organización o iniciativa comunitaria sin fines de lucro.»
+- `project`: «Un proyecto personal o colectivo que todavía no tiene forma de negocio u organización.»
+- **Nueva `q2_activity_stage` — «¿La actividad ya está en marcha o todavía la estás preparando?»** `preparing`: «Todavía la estoy diseñando, preparando o validando; aún no presto el servicio, atiendo ni vendo.» `operating`: «Ya empecé a prestar, vender, atender o recibir participación o apoyo, aunque todavía no tenga clientes habituales.» `unknown`: «Todavía no lo tengo claro.»
+- Mantener `q2_has_customers` como hecho independiente: «¿Ya hay personas que compran, usan o apoyan lo que ofreces?» `yes`: «Sí, ya hay actividad real.» `no`: «No, todavía no hay personas que lo compren, usen o apoyen.» La respuesta `no` no vuelve a significar automáticamente “preparación”.
+
+Los cuatro valores actuales (`individual`, `business`, `organization`, `project`) podrían conservar sus cadenas, pero su semántica cambiaría y exige versionar pregunta, banco y resultado. `q2_other_staff` debe seguir representando personal adicional, no decidir si una empresa existe; hoy `resolveEntityType` cambia `individual` a `business` cuando detecta otra persona remunerada, por lo que QA-03B debe separar esa inferencia de la declaración del tipo. No se pregunta por registro legal: ningún consumidor de diagnóstico justifica inferirlo o añadir una pregunta jurídica.
+
+**Incompatibilidad pendiente que impide cerrar el diseño A.** `resolveDiagnosticContext` deriva actualmente `activity` directamente de `hasRealCustomers` (sí→`active`, no→`prelaunch`). `resolveGrowthStage` además convierte explícitamente `hasRealCustomers=false` en `idea`. `growthStage` participa en aplicabilidad R4, prioridad, cálculo del índice (marca prelaunch), mínimo de ruta del planner y hechos narrativos. Por tanto, introducir “operando sin clientes” obliga a decidir si esa respuesta cambia solo `activity`, o también la interpretación de `GrowthStage` y sus consumidores. Hacerlo cambiaría rutas/resultados en el candidato y no puede declararse equivalente sin pruebas. QA-03A no modifica esos contratos: se requiere autorización explícita de la política de transición antes de implementar A2; si la instrucción de conservar resultados se interpreta como cero cambios para ese perfil, A2 no puede satisfacerla con el resolver actual.
+
+### B — lugar, prestación, agenda y compra
+
+**Recomendación: B2**, representar ejes independientes dentro de una selección múltiple sin forzar cada modo a ser un arquetipo. La fuente actual convierte todos los `deliveryModes` a arquetipos y declara `hybrid` al detectar más de un componente; mapear una prestación remota a `ecommerce`, `professional` o un segundo arquetipo por conveniencia falsearía la clasificación. La propuesta añade `remote_service` como hecho de prestación y no como arquetipo autónomo. El consumidor de `resolveOperationalArchetype` debe basarse en los componentes que sí identifican el tipo de operación; combinar atención presencial y remota del mismo servicio no crea `hybrid` por sí sola. Tienda física + checkout en línea sí puede seguir siendo retail/ecommerce híbrido.
+
+Copy propuesto para un único multiselect, sujeto a validación:
+
+- Pregunta: «¿De qué formas prestas el servicio o vendes lo que ofreces?» Pista: «Elige todas las formas habituales. La cita, el lugar de atención y la compra por internet describen cosas distintas.»
+- `physical_location`: «Atiendes en un local, oficina o instalación propia.»
+- `appointments`: «Atiendes con citas o sesiones reservadas.»
+- `travels`: «Te desplazas al domicilio o lugar del cliente.»
+- **`remote_service` (nuevo):** «Prestas el servicio a distancia, por videollamada, teléfono, internet o mensajes.»
+- `retail`: «Vendes productos en una tienda física.»
+- `onsite`: «Las personas consumen o usan lo que ofreces en tu establecimiento, como en un restaurante, café u hospedaje.»
+- `online_checkout`: «Las personas pueden elegir y pagar una compra directamente por internet.»
+- `other`: «Otra forma que no aparece arriba.» No exclusiva; puede acompañar una forma conocida.
+- `unsure`: «Todavía no lo tengo claro.» Exclusiva y neutral.
+
+La representación de señal separa `serviceSetting` (establecimiento, visita, remoto), `appointmentMode` (con cita) y `purchaseChannel` (tienda/checkout); conserva `onsite` como uso/consumo en instalaciones cuando aplique. Se mantiene un solo control UI. B1 (añadir remoto como `deliveryMode` con tratamiento contextual) es menos invasiva, pero deja que el resolver convierta combinaciones de canales de prestación en `hybrid`. B3 (copy/exclusividad solamente) no permite describir servicio remoto. B2 cambia IDs/producciones y elegibilidad de módulos; requiere analizar `physical_location`, `appointments`, `travels`, `retail`, `onsite` y `online_checkout` con peluquería, clínica, consultor, psicólogo, restaurante, pedidos online, tienda híbrida, mantenimiento, agencia remota y SaaS. No se simula resultado futuro.
+
+### C — alcance desconocido
+
+Copy propuesto: pregunta actual y sus variantes se conservan (incluida la intención futura de prelaunch); añadir `unknown` con etiqueta **«Todavía no lo tengo claro.»** Significado canónico: no existe información suficiente sobre el alcance real o previsto. No significa `local`, `mixed`, no tener clientes ni debilidad comercial. La opción produce una disposición `customerReachUnknown=true`, no una señal `customerReach` con valor geográfico. El resolver expone `customerReach` como `unresolved / declared_unknown`; no inventa valor. En prelaunch se refiere al alcance deseado aún no definido; en actividad existente, al alcance observado aún no conocido. No cambia la semántica de `mixed` ni las cinco respuestas geográficas.
+
+`customerReach` es campo de contexto requerido por el planner, no evidencia de score. Aun así, el planner y sus consumidores deben probar que una respuesta desconocida ya contestada no repite la pregunta ni bloquea la ruta (`budget_blocked`). Se incrementa versión de pregunta/banco; no cambia una respuesta geográfica válida previa.
+
+### D — comprador directo, beneficiario y financiador
+
+**Recomendación: D2**, una pregunta principal sobre quien compra/contrata directamente y una aclaración breve cuando el comprador organizacional puede ser distinto de quien usa el servicio. No se divide en cuatro preguntas ni se infiere un comprador a partir del sector o de la entidad.
+
+- **`q2_customer_buyer` — «¿Quién compra o contrata directamente lo que ofreces?»** Pista: «Piensa en quien decide la compra o firma el contrato, no necesariamente en quien usa el servicio.»
+- `b2c`: «Personas individuales que compran o contratan directamente.»
+- `b2b`: «Empresas, organizaciones o instituciones que compran o contratan directamente.»
+- `mixed`: «Personas y organizaciones compran o contratan directamente de forma habitual.»
+- `no_direct_purchase` (nuevo): «No hay una compra directa; la actividad se sostiene con donaciones, subvenciones o aportes.»
+- `unknown` (nuevo): «Todavía no lo tengo claro.»
+- **Aclaración condicional** cuando comprador y usuario pueden diferir (comprador `b2b`/`mixed`, organización sin fines de lucro, o servicio de salud/educación): «¿Quien compra o contrata es también quien recibe el servicio o producto?» `same_party`: «Sí, quien compra también lo recibe o utiliza.» `third_party`: «No, lo compra o contrata para otras personas.» `unknown`: «Todavía no lo tengo claro.» La rama debe justificarse por contexto declarado y probarse para no aumentar el cuestionario en los casos sencillos.
+
+Solo `b2b`/`mixed` con compra o contrato directo resuelven el contexto de comprador B2B. `no_direct_purchase` deja comprador no aplicable, y `unknown` deja el campo explícitamente desconocido; ninguno produce `customerBuyer=b2b`. Una subvención o donación institucional no activa por sí sola `q2_b2b_pipeline`, un diagnóstico de venta, ni oferta/licencia. Un contrato institucional directo para pacientes/empleados sí puede ser B2B porque existe un comprador/contrato real. La aclaración registra si el destinatario es distinto, sin añadir su clasificación como nueva señal comercial. El origen del financiamiento no se pregunta aparte si `q2_monetization=mission` ya describe el mecanismo y no hay consumidor que necesite conocer la identidad del financiador.
+
+Actualmente `futureB2BApplicability` habilita seguimiento por `customerBuyer=b2b|mixed` **o** arquetipo B2B. QA-03B debe exigir evidencia de comprador/contrato directo como condición y verificar que una señal/arquetipo indirecto no reactive seguimiento tras `no_direct_purchase`. Esa modificación de routing es material y debe quedar en pruebas de compatibilidad; QA-03A no toca rutas ni reglas comerciales.
+
+### Compatibilidad propuesta y pruebas para QA-03B
+
+- Nuevas identidades candidate-only (p. ej. banco `reviewed-evidence-v4`, respuesta `qbv2-answers-v3` y una nueva identidad de resultado). Versionar `q2_entity`, `q2_delivery`, `q2_customer_reach` y `q2_customer_buyer`; asignar identidad/versiones propias a las dos aclaraciones/nuevas preguntas. Nunca reusar la identidad de resultado actual para un contrato distinto.
+- Sesión candidate-only nueva schema/key 3. Leer schema 2 solo mediante una migración explícita con comprobación de identidad. Reconfirmar `q2_entity` y todas las respuestas antiguas de `q2_customer_buyer`, porque el usuario pudo responder por etapa o destinatario, no por entidad compradora. Reconfirmar `q2_delivery=other`; migrar modos restantes solo tras probar equivalencia exacta uno a uno. Conservar alcance conocido y `q2_has_customers` sin cambiar su hecho; conservar otras respuestas solo si sus valores y elegibilidad siguen idénticos. Recalcular cola y retirar respuestas que pierdan elegibilidad.
+- Nunca convertir automáticamente `project→business`, `other→remote`, `b2c/b2b` antiguo a comprador directo, o financiador a cliente. Si no puede probarse una equivalencia, volver a preguntar o reiniciar de forma explicada. No presentar un resultado completado bajo identidad anterior como resultado de la nueva. La migración debe escribir y validar la nueva sesión antes de retirar la copia vieja; una pestaña abierta con identity/revision antiguos debe quedar en conflicto y requerir recarga. La sesión legacy no se consulta, migra ni borra.
+- Certificación requerida: suites del banco/copy, QA-01/02, nueva matriz por escenarios, prueba de neutralidad unknown, R5 rutas y budget, invariantes R3/R4 y R6, diferencias downstream R7/R8, firma de salida, comercial B2B, migración/reanudación/edición/cross-tab schema 2→3, aislamiento de identidad, candidata-only bundle y regresión de rutas públicas. No declarar equivalencia numérica hasta comparar resultados reales después de implementar.
+- Validación de comprensión humana: protocolo ciego y breve con profesionales, proyecto prelaunch, empresa constituida sin operaciones, empresa operativa sin clientes, consulta remota e híbrida, restaurante/tienda, nonprofit con donante institucional, clínica con pagador distinto, B2B y alcance desconocido. Registrar paráfrasis, primera respuesta, opción ausente, duda/cambio tras releer y si la persona tuvo que escoger algo falso. Estado en este corte: `HUMAN_VALIDATION_NOT_RUN`.
+
+**Conclusión técnica QA-03A: `DESIGN_PARTIAL`.** B2, C y D están especificadas para aprobación; la dirección A2 está propuesta, pero no se puede cerrar hasta definir la interacción de actividad operativa, clientes reales, `GrowthStage`/`idea`, applicability R4 e índice/planner prelaunch. El simulador conceptual incluye 25 rutas canónicas, 9 escenarios QA-02 y 17 fronteras, con salidas propuestas `NOT_DETERMINABLE` salvo el baseline realmente observado; no es ejecución del contrato futuro. Se requiere aprobar el diseño A completo antes de iniciar QA-03B.
+
 ## DIAG-V3-ACT-03.4B.1 — verificación de cierre (2026-10-10)
 
 **Disposición: `GATE_B_PARTIAL`; candidata pública inactiva.** La integración conserva el papel seleccionado durante la generación: bloquea el selector A4/Carta y retira el enlace alternativo mientras el PDF se genera; la operación captura papel y nombre al inicio. El E2E intenta cambiar a Carta mientras C01/A4 espera la fuente, comprueba el bloqueo y descarga el archivo A4 confirmado. PyMuPDF vuelve a comprobar 14/14 PDF en contenido, enlaces, XMP, tags, idioma, fuentes incrustadas y geometría; cero pérdidas semánticas, diferencias inexplicadas o duplicados, con mínimo 8,5 pt. CIDSet 4/4 y las regresiones locales del exportador pasan.

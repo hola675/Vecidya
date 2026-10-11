@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-10 — DIAG-V3-QA-03A diseño de contrato y compatibilidad
+
+- Preparadas propuestas sin implementar para separar tipo/estado operativo, formas de prestación y canal de compra, desconocimiento de alcance y comprador directo frente a beneficiario/financiador.
+- La propuesta detecta que `q2_has_customers=false` actualmente fija `activity=prelaunch` y `GrowthStage=idea`, que impacta R4, el índice y el planner. Se documenta como deuda de decisión antes de implementar A2; no se afirma equivalencia de resultados.
+- Simulador conceptual local reúne 25 rutas canónicas, 9 recorridos QA-02 y 17 fronteras (51 escenarios). Solo baseline anterior tiene outputs observados; el contrato propuesto, outputs nuevos y pruebas humanas quedan `NOT_RUN`.
+- QA-03A `DESIGN_PARTIAL`; no hay cambios de código/banco/sesión/runtime, ni modificación de R3–R8/O4/O6, scoring, comercial, rutas públicas o PDF. QA-03B se propone únicamente tras aprobación del diseño completo.
+
 ## 2026-10-10 — DIAG-V3-QA-02 refinamiento semántico local
 
 - Refinamiento solo textual del banco candidato: copy neutral en `q2_capacity_signal`, término cotidiano para CRM en `q2_b2b_pipeline` y pistas breves para intentos de cita y rebooking. Sin cambios de valores, señales, aplicabilidad, migraciones, evidencia ni versiones.
