@@ -2,6 +2,12 @@
 
 ## Resultado vigente — DIAG-V3-RESULT-UX-02 (2026-10-11)
 
+## VECIDYA-LEGACY-00 — `LEGACY_INVENTORY_READY` (2026-10-12)
+
+Auditoría documental desde `50026d0`; no se eliminó ni modificó código. Se construyó inventario de motores, resultados, rutas/APIs, sesiones, datos, CSS/assets, tests, docs, configuración y dependencias con consumidores y riesgos. El V3 público sigue necesario para FUNNEL-01B; contrato QA-03B y candidata ACT raíz no se consideran equivalentes. QA-03B, RESULT-UX-02 y FUNNEL-01B no se reabren; ACT-04 no se ejecuta.
+
+No hay limpieza autorizada. El futuro orden depende de autorización específica de cutover, resolución de `GATE_B_PARTIAL`, decisión de identidad destino, adaptadores versionados y gates pre/post. No migrar keys legacy ni borrar migraciones aplicadas. Clasificación y rollback en `ARCHITECTURE.md`, `STRUCTURE.md`, `DATABASE.md` y `TESTING.md`.
+
 **DIAG-V3-RESULT-UX-02 — `VISUAL_ACCEPTED` (2026-10-12).** Aceptación limitada a las tres capturas de escritorio, móvil y FUNNEL móvil que revisó el usuario; las dimensiones expandidas y el informe completo quedan fuera de esa inspección. Compactación móvil, énfasis de lectura preliminar, sustitución gradual de emojis y acabado comercial de FUNNEL permanecen como pulido futuro.
 
 **DIAG-V3-FUNNEL-01B — `PARTIAL`; implementación y validación local PASS (2026-10-12), sin publicar.** El resumen real se calcula efímeramente en Worker y se proyecta a una allowlist; la interfaz pública no carga el componente de informe detallado. Se usa el motor V3 activo mientras QA-03B sigue inactiva detrás del gate ACT-04. Sesiones históricas completadas no se recalculan sin sidecar versionado. No hay identificación, captación, D1, GHL, cambio PDF, publicación, push ni deploy. `GATE_B_PARTIAL` continúa.

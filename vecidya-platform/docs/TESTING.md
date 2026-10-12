@@ -1,5 +1,24 @@
 # Pruebas
 
+## VECIDYA-LEGACY-00 — inventario y gates de compatibilidad
+
+**Resultado `LEGACY_INVENTORY_READY`; baseline `50026d00c59269554500a4f2552fe7385e35ec7f`.** Auditoría de fuentes versionadas; no se ejecutaron tests ni se reabrieron QA-03B, RESULT-UX-02 o FUNNEL-01B. Los cambios y archivos locales sin commit quedaron fuera del inventario.
+
+| Conjunto en HEAD | Conteo | Clase | Consumidor/cobertura y riesgo |
+| --- | ---: | --- | --- |
+| `tests/unit/diagnostic/**` | 135 archivos, incluidos helpers/fixtures | `KEEP` / `ARCHIVE` | DIAG-002, V3, caracterización, sesión, QA-03B, ACT R3–R8, informe, privacy, FUNNEL. No asumir todos los archivos son tests ejecutables. |
+| `tests/e2e/*diagnostic*` | 16 archivos | `KEEP` | Flujo público, FUNNEL-01B, preview, sesión/ACT/QA, PDF, resultado y bundle. |
+| `diagnostic-report.test.ts` | 1 | `KEEP` | Afirma no registro de ruta informe y lee `diagnostico-informe.tsx`; hace que el source sin route no sea `REMOVE_NOW_SAFE`. |
+| `qbv2-candidate-readiness.test.ts` | 1 | `KEEP` | Readiness, imports/aislamiento y ruta source legacy; protege precondiciones de activación. |
+| `characterization.test.ts` + fixture | 2 | `KEEP` | Freeze semántico legacy; no rebaselinear al retirar. |
+| E2E/patch ACT-03.4B PDF | varias | `ARCHIVE` hasta decisión PDF | Gate B parcial; automation PDF no equivale a PAC/NVDA/revisión humana. |
+
+Grafo: `routes.ts` → `diagnostic.tsx` → `AnonymousDiagnosticFlow`/session key 2 → POST `/api/diagnostic/anonymous-summary` → replay `QUESTION_BANK_V2`/planner/session → `AnonymousDiagnosticSummaryV1`. QA-03B entra sólo por `dev-diagnostic-qa03b*` a `features/diagnostic/qa03b/**`; ACT root entra por `dev-diagnostic-candidate*` a `qbv2-candidate-*` raíz. Ambos comparten `DiagnosticReport` y metodología. Consultas/schema legacy no mostraron imports desde app versionada; journal/migraciones siguen vigentes localmente.
+
+Antes de un cutover autorizado: `pnpm run test:unit`, `characterization`, suites session/anonymous-summary/diagnostic-report/readiness, QA-03B R3–R8 y ACT-01–03; E2E `diagnostic`, `funnel-01b`, candidate ACT/QA, metodología/reporte; typecheck/build; bundle, imports, routes y storage-key scans. Después de cada lote: repetir gates afectados y validar Worker local, resumen allowlist/no-store, no informe anónimo, rutas dev ausentes en build, sesión key 2 sin mutación, identidad exacta, reload/resume/edit/cross-tab y caracterización. D1 exige decisión específica, schema/journal consistente y migración compensatoria si aplica; jamás borrar/rewrite migraciones. Sin remote tests/D1 sin autorización.
+
+No se ejecutó validación de código en este checkpoint: la auditoría clasifica evidencia ya versionada y debe dejar intacto el estado local.
+
 ## DIAG-V3-RESULT-UX-02 — aceptación visual del resultado (2026-10-12)
 
 **Resultado: `VISUAL_ACCEPTED`.** El usuario inspeccionó y aprobó solo tres capturas: resultado de escritorio, resultado móvil y FUNNEL móvil. La aceptación cubre composición, jerarquía, legibilidad y organización de esas vistas; no certifica las ocho dimensiones expandidas ni el informe completo. Observaciones para pulido: compactar el encabezado móvil, reforzar visualmente el carácter preliminar con evidencia limitada, sustituir emojis progresivamente y terminar el aspecto comercial de FUNNEL. La evidencia técnica previa permanece: unitarias 1528/1528, UI 20/20, recorrido 10/10, responsive/teclado/movimiento reducido, typecheck/build y aislamiento de preview PASS. No se repitieron por esta decisión visual.

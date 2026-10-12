@@ -1,5 +1,78 @@
 # Arquitectura de Vecidya
 
+## VECIDYA-LEGACY-00 — inventario y consolidación (2026-10-12)
+
+**Resultado: `LEGACY_INVENTORY_READY`; auditoría, no limpieza.** Baseline real `50026d00c59269554500a4f2552fe7385e35ec7f` (`50026d0`, `main` = `origin/main`). El árbol local también tenía cambios y archivos nuevos sin commit; se preservan y no forman parte del inventario. Sin cambios funcionales, D1, migraciones, configuración o secretos; QA-03B, RESULT-UX-02 y FUNNEL-01B no se reabren. ACT-04 no se ejecuta.
+
+### Grafo observado
+
+```mermaid
+flowchart TD
+  HOME[Home / buildDiagnosticPath] --> ROUTE[/diagnostico/]
+  ROUTE --> UI[AnonymousDiagnosticFlow]
+  UI --> SESSION[qbv2-session / storage schema-key 2]
+  UI --> API[POST /api/diagnostic/anonymous-summary]
+  API --> REPLAY[QUESTION_BANK_V2 + planner + qbv2-session]
+  REPLAY --> DTO[AnonymousDiagnosticSummaryV1]
+  METH[/diagnostico/metodologia] --> MDATA[qbv2-methodology]
+  DEV[Previews V3, ACT y QA-03B] --> BASE[Diagnostic result adapters]
+  BASE --> REPORT[DiagnosticReport / report-model]
+  ACT[/__dev/diagnostico/candidate*] --> ACTPIPE[qbv2-candidate-* raíz]
+  QA[/__dev/diagnostico/qa03b*] --> QAPIPE[qa03b bank + candidate pipeline]
+  ACTPIPE --> REPORT
+  QAPIPE --> REPORT
+  REPORT --> MDATA
+  OLD[diagnostico-informe.tsx, sin route()] -. assertion de no exposición .-> TEST[diagnostic-report + readiness tests]
+  HIST[schema/queries + migraciones 0011-0013] -. sin imports desde app localizados .-> LOCAL[D1 local]
+```
+
+El V3 público vigente es el runtime adaptativo `QUESTION_BANK_V2` (85), `qbv2-planner.ts` y `qbv2-session.ts`, replayado por FUNNEL-01B con DTO allowlisted. No es el candidato QA-03B. QA-03B tiene identidad/banco `reviewed-evidence-v4`, sesión schema/key 3 y rutas dev-only. También existe una candidata anterior ACT-01–03 en archivos `qbv2-candidate-*` raíz, con sesión e identidad distintas. No se presume que ACT raíz y QA-03B sean contratos intercambiables: la identidad destino de ACT-04 debe decidirse expresamente.
+
+### Inventario y clasificación
+
+| Ruta / grupo versionado | Clase | Imports, rutas y pruebas | Riesgo o justificación |
+| --- | --- | --- | --- |
+| `app/routes/diagnostic.tsx`, `app/components/diagnostic-flow/anonymous-*`, `app/features/diagnostic/anonymous-summary*`, `app/routes/api-diagnostic-anonymous-summary.ts`, registro de `/diagnostico` y `/api/diagnostic/anonymous-summary` | `KEEP` | Ruta pública → sesión V3 schema/key 2 → replay efímero Worker. `anonymous-summary.test.ts`, `diagnostic-report.test.ts`, `diagnostic-v3-funnel-01b-check.mjs` | FUNNEL-01B depende del motor activo; local, no publicado. |
+| Runtime V3 `app/features/diagnostic/qbv2-{bank,planner,session,engine,rules,copy,evidence-v3,contextual-scoring,applicability,reviewed-*,lote-*,narrative,overall,recommendations,solutions,offerings,methodology}.ts` y `app/components/diagnostic-flow/{diagnostic-flow,question-step,flow-screens,flow-copy}.tsx` | `KEEP` | Público, previews y suites legacy/session/outcome/characterization | Consumido por FUNNEL y compartido por candidatos; no quitar por prefijo `qbv2`. |
+| `app/features/diagnostic/qa03b/**` (21 archivos), `app/components/diagnostic-flow/qa03b-*`, `app/routes/dev-diagnostic-qa03b*.tsx`, `qa03b-funnel.css` | `KEEP` mientras QA-03B/ACT siga en consideración | Rutas dev-only; suites `qa03b-*`, E2E QA03B/candidate y reportes | Certificación no es activación. No eliminar contrato candidato certificado. |
+| 11 módulos `app/features/diagnostic/qbv2-candidate-{calibration,commercial,interpretation,narrative,overall,pipeline,planner,recommendations,scoring,session,solutions}.ts`; `candidate-*` UI y rutas `dev-diagnostic-candidate*` | `INVESTIGATE` → `REMOVE_AFTER_CUTOVER` sujeto al destino ACT-04 | Manifiesto `CANDIDATE_ACTIVATION_MANIFEST_V3`; pruebas ACT-01–03 y R3–R8 | Candidata ACT raíz distinta de QA-03B. Dependencias base compartidas; retirar rompe evidencia/manifiesto. |
+| `app/components/diagnostic-result/**`, `diagnostic-methodology/**`, `diagnostic-report/**`, `candidate-presentation.ts`, `qa03b-presentation.ts` | `KEEP` durante transición; luego `REMOVE_AFTER_CUTOVER` por adaptador | Preview pública/dev, ACT, QA-03B y `report-model` compartido | El informe legacy y el modelo candidate coexisten; no retirar el renderer compartido junto a una sola ruta. |
+| `app/routes/diagnostico-informe.tsx` | `KEEP` como barrera en este corte; luego `REMOVE_AFTER_CUTOVER` | La ruta no está registrada, pero `diagnostic-report.test.ts` y `qbv2-candidate-readiness.test.ts` leen su source | Hay consumidores de test. Sustituir primero por aserción de ruta/bundle; mantener 404 anónimo. |
+| `app/routes/dev-diagnostic-v3.tsx`, `dev-diagnostic-result.tsx`, `dev-diagnostic-methodology.tsx`, `dev-diagnostic-report.tsx` | `ARCHIVE` / `REMOVE_AFTER_CUTOVER` | `routes.ts` dev-only; E2E/golden/reportes | Harness histórico útil para comparación y rollback. |
+| Base no candidate de `app/features/diagnostic/`: `answers.ts`, `catalog.ts`, `commercial-*`, `context-resolver.ts`, `contracts*.ts`, `deep-link.ts`, `evidence.ts`, `facts.ts`, `flow.ts`, `mappings.ts`, `profiles.ts`, `questions.ts`, `recommendations.ts`, `result.ts`, `routing.ts`, `scoring.ts`, `signals.ts`, `taxonomy.ts`, `types.ts` | `REMOVE_AFTER_CUTOVER` para lógica QBV1; `KEEP` para puentes aún importados | `public-v2.tsx` aún usa `buildDiagnosticPath`/`ProfileId`; barrel y suites legacy consumen contratos | Retirar en grupos definidos por imports; preservar pruebas de caracterización y navegación. |
+| `accessible-pdf-{export,renderer}.client.ts`, `pdfkit.d.ts`, `patches/pdfkit@0.20.2.patch`, deps `pdfkit`/`@fontsource/arimo` | `REMOVE_AFTER_CUTOVER` / `INVESTIGATE` | Import dinámico desde reportes candidate; pruebas ACT-03.4B | Gate PDF/B pendiente; generador pausado por decisión del usuario. No retirar ni instalar ahora. |
+| Bloque de CSS QBV1 `.diagnostic-page`, `.diagnostic-hero`, `.diagnostic-result-*`, `.diagnostic-recover*`, `.diagnostic-save-for-later*` en `app/app.css` | `REMOVE_NOW_SAFE` candidato (solo selectores de ese bloque) | `git grep` HEAD no encontró consumidores externos; el runtime actual usa `df-*`/`dr-*` | No tocar en LEGACY-00. Mantener `.home-diagnostic-*`, `.df-*`, `.dr-*`, `.rp-*` y CSS QA. |
+| `public/assets/catalog/diagnostic/*.png`, manifiesto `app/assets/public-assets.ts`, assets `public/assets/selected/**/diagnostic*` | `KEEP` los selected; `INVESTIGATE` PNG catálogo | `status-assets.ts`, `qbv2-overall.ts`, `public-assets.test.ts`, `qbv2-outcome.test.ts` | Hay referencias/test al catálogo; no borrar assets originales ni entradas del manifiesto por nombre. |
+| `db/schema/diagnostic.ts`, `db/queries/diagnostic-*.server.ts`, `server/diagnostic/**`, APIs antiguas sin ruta | `REMOVE_AFTER_CUTOVER` / `INVESTIGATE` | No se localizaron imports de queries/server desde `app/`; `routes.ts` no registra esas APIs | D1 local todavía contiene las tablas; confirmar scripts/tests/worker config y disposición de datos. |
+| Migraciones y snapshots `0011`–`0013`, `db/migrations/meta/_journal.json` | `ARCHIVE` | Drizzle journal; DB local 0013 / remoto 0010 según docs | Inmutables; no borrar migraciones aplicadas. Eliminar tablas requiere migración compensatoria aprobada. |
+| `tests/unit/diagnostic/**` (135 archivos, incluidos helpers/fixtures), 16 E2E `*diagnostic*` | `KEEP` / `ARCHIVE` por suite | Motor, caracterización, session, QA, ACT, privacy, reporte y funnel | No retirar tests de compatibilidad/isolation/404; equivalencia ejecutable primero. |
+| `artifacts/diagnostic-v3-calibration/**`, `vecidya-platform/artifacts/diagnostic-v3-question-review/**`, evidencia en documentos canónicos | `ARCHIVE` | Casos de calibración/revisión y cierres | Mantener evidencia histórica en su dueño; no crear otro documento de fase. |
+| `app/routes.ts`, `wrangler.jsonc`, `worker-configuration.d.ts`, `vite.config.ts`, `react-router.config.ts`, `drizzle.config.ts` | `KEEP` | Registro de rutas, runtime/build, tipos generados y schema Drizzle | No se localizaron bindings legacy diagnósticos vigentes en configuración del baseline; revalidar antes de quitar cualquier entry. |
+| `package.json`, `pnpm-lock.yaml`, `patches/pdfkit@0.20.2.patch`, `app/features/diagnostic/pdfkit.d.ts` | `KEEP` hoy; `REMOVE_AFTER_CUTOVER` sólo deps PDF sin consumidores restantes | `pdfkit` y `@fontsource/arimo` son referenciados por exportador candidate-only | Cambiar lockfile sólo junto a retirada autorizada del exportador; primero resolver Gate B/decisión PDF. |
+| `docs/ARCHITECTURE.md`, `STRUCTURE.md`, `DATABASE.md`, `TESTING.md`, `STATUS.md`, `ROADMAP.md`, `PROJECT_STATE.md`, `CHANGELOG.md` y demás docs canónicos | `KEEP` / evidencia `ARCHIVE` | Son dueños de estado, arquitectura, modelo, pruebas y decisiones | No eliminar historia ni exceder el límite de documentos canónicos. |
+
+Los grupos anteriores cubren las 116 fuentes de `app/features/diagnostic` del HEAD: 30 base no-QBV2, 65 `qbv2-*` raíz y 21 `qa03b/**`. El inventario de rutas diagnósticas contiene 15 fuentes en `app/routes`; el registro efectivo incluye runtime público, API de FUNNEL-01B, metodología, rutas dev conditional y el source del informe sin route. El resto de cualquier grupo no suficientemente demostrado queda `INVESTIGATE`, nunca huérfano por presunción.
+
+### Estimación de retirada potencial
+
+Conteos y bytes fuente medidos con `git ls-tree -r -l 50026d0` (bytes de blobs, no tamaño bundle): la superficie completa `app/features/diagnostic` son 116 archivos/1.359.978 bytes. Los 11 módulos `qbv2-candidate-*` raíz son aproximadamente 110.865 bytes; los 14 `qbv2-candidate-*` bajo QA-03B son 165.956 bytes; todo `app/features/diagnostic/qa03b/**` son 21 archivos/203.991 bytes. Los 25 archivos candidatos por prefijo suman 276.821 bytes brutos, sin incluir UI/rutas/pruebas/config.
+
+Potencial condicional por decisión de identidad: si se conserva ACT raíz, la rama QA-03B (21 archivos/203.991 bytes) sería el grupo candidato a retirar tras ACT-04; si se conserva QA-03B, los 11 módulos candidate raíz (110.865 bytes) más su UI/rutas propias serían candidatos. No sumar ambas ramas como ahorro: se selecciona una y ambas comparten runtime base, reporte, metodología y pruebas de compatibilidad. El máximo observable de duplicación por prefijo (276.821 bytes) no es el ahorro neto ni autoriza borrado. `pdfkit` y `@fontsource/arimo` (2 dependencias directas) + patch/declaración sólo podrían retirarse si ningún flujo PDF queda; cinco tablas de D1 legacy son locales y no se computan como código retirado. No se atribuye una cifra al CSS no referenciado sin aislar/recontar exactamente el bloque. El candidato probado `REMOVE_NOW_SAFE` se limita a selectores CSS y no se ejecuta en esta auditoría.
+
+### Arquitectura objetivo y orden futuro
+
+Un runtime público, una identidad de resultado versionada, un adaptador de resultado/metodología/informe y una estrategia explícita de almacenamiento; conservar implementaciones previas sólo como caracterización/evidencia cuando proceda. Mientras no se autorice ACT-04, mantener V3 público por FUNNEL-01B y las dos candidatas aisladas. No migrar ni reinterpretar la key pública schema 2.
+
+1. Autorizar explícitamente el cutover y decidir si ACT raíz o QA-03B es identidad destino.
+2. Resolver `GATE_B_PARTIAL` y decisión PDF; mantener pausa del generador hasta nueva instrucción.
+3. Definir/adaptar contrato único de motor, resultado, metodología e informe; key nueva, sin migrar sesiones históricas.
+4. Ejecutar cutover atómico sólo bajo ACT-04 autorizado; conservar rutas antiguas necesarias para rollback.
+5. Validar Worker local, bundle, rutas, storage, E2E y suites de caracterización.
+6. Retirar en lotes `REMOVE_AFTER_CUTOVER`; limpiar schema local sólo tras decisión de datos y migración compensatoria. Migraciones históricas no se reescriben.
+7. Retirar dependencias, CSS/assets sólo tras cero refs comprobadas en imports/build/tests.
+
+Pre/post gates, rollback y razones completas se amplían en [TESTING.md](TESTING.md#vecidya-legacy-00--inventario-y-gates-de-compatibilidad). Rollback: regresar adaptadores/rutas a la base inmediatamente anterior al cutover autorizado; mantener todas las keys y filas, no reinterpretar resultados entre identities, no usar `git revert` destructivo sobre datos y no desplegar sin autorización.
+
 ## DIAG-V3-FUNNEL-01B — resumen anónimo real (2026-10-12, local)
 
 FUNNEL-01B conecta el cuestionario público existente con una proyección anónima calculada en Worker. Mientras ACT-04 no está autorizado, la entrada y el cálculo usan el motor público V3 vigente (`createSessionV3`/`submitAnswerV3`/`completeSessionV3`); QA-03B candidate-only sigue fuera de rutas públicas y del bundle. La adaptación pendiente de cutover no se simula ni se importa.

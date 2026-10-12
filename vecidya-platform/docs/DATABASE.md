@@ -2,6 +2,18 @@
 
 Última reconciliación: **2026-10-11 (DIAG-V3-FUNNEL-01A; solo diseño candidate-only, sin schema/migración/consulta nueva ni cambio de D1).** Anterior: 2026-09-28 (DIAG-V3-08: `diagnostic_event` y cuatro columnas en `diagnostic_session`, migración `0013`, local). Persistencia, Save & Resume y analítica de DIAG-V3-06/07/08 se retiraron del runtime público en DIAG-V3-13 y nunca se desplegaron; sus archivos de schema, consultas y migraciones locales quedan como evidencia histórica, no como base activa del embudo. `0011`–`0013` no se aplicaron a D1 remota; el remoto continúa en `0000`–`0010` según el último registro de `ENVIRONMENTS.md`.
 
+## LEGACY-00 — disposición D1 diagnóstica
+
+Baseline `50026d0`, sin operaciones remotas. Según evidencia documental vigente, D1 remota sigue en `0010` y D1 local tiene `0011`–`0013`. `db/schema/diagnostic.ts` sigue exportado desde `db/schema/index.ts`; no se encontraron imports desde `app/` para las queries/server legacy.
+
+| Ruta | Clase | Consumidores/pruebas | Riesgo |
+| --- | --- | --- | --- |
+| `db/schema/diagnostic.ts`, export de `db/schema/index.ts` | `REMOVE_AFTER_CUTOVER` | Schema Drizzle usado por `drizzle.config.ts` | 5 tablas legacy locales; retirar exige decidir DB local y validar schema/codegen. |
+| `db/queries/diagnostic-sessions.server.ts`, `diagnostic-save-resume.server.ts`, `diagnostic-analytics*.server.ts`, `server/diagnostic/**` | `REMOVE_AFTER_CUTOVER` / `INVESTIGATE` | Sin import desde app versionada localizado | Revisar tests/scripts/config/bindings antes; ausencia de import no prueba ausencia de operación manual. |
+| SQL y snapshots `0011`–`0013`, `meta/_journal.json` | `ARCHIVE` | Cadena Drizzle y estado local 0013 | Inmutables: no borrar migraciones aplicadas. Limpieza de tablas requiere migración nueva compensatoria aprobada. |
+
+LEGACY-00 no consultó ni modificó D1 y no afirma que `0011`–`0013` estén en remoto.
+
 ## Responsabilidades
 
 - `db/schema/` (TypeScript/Drizzle) es la fuente de verdad; `drizzle-kit generate` produce SQL en `db/migrations/`; Wrangler lo aplica a D1.

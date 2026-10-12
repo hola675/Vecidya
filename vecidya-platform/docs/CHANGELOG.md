@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-12 — VECIDYA-LEGACY-00 `LEGACY_INVENTORY_READY`
+
+- Auditado HEAD `50026d00c59269554500a4f2552fe7385e35ec7f`; cambios/archivos locales sin commit preservados y excluidos del baseline.
+- Clasificados módulos/rutas/API, sesiones, informes, esquema/migraciones, CSS/assets, tests, documentación y deps; documentados grafo, duplicaciones, gates, orden y rollback en documentos canónicos existentes.
+- El V3 público vigente sostiene FUNNEL-01B; QA-03B y candidata ACT raíz son identidades separadas. Schema/migraciones 0011–0013 no tienen consumidores de app encontrados, pero permanecen en journal y D1 local; migraciones no se borran.
+- Sin cambios funcionales, borrados, tests ejecutados, D1, deploy, push o ACT-04. No se reabren QA-03B, RESULT-UX-02 ni FUNNEL-01B.
+
 ## 2026-10-12 — DIAG-V3-FUNNEL-01B y cierre visual RESULT-UX-02
 
 - Cerrada la revisión `RESULT_UX_TECHNICALLY_ACCEPTED / VISUAL_PENDING` como `VISUAL_ACCEPTED`, acotada a las tres capturas de escritorio, móvil y FUNNEL móvil revisadas por el usuario. Pulido menor queda como backlog; no se afirma revisión de todo el informe.

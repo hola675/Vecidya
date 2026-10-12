@@ -2,6 +2,25 @@
 
 Última reconciliación: 2026-10-12 (RESULT-UX-02 `VISUAL_ACCEPTED`, solo las tres capturas revisadas; FUNNEL-01B local, con cálculo efímero Worker y sin deploy). Rutas del código verificadas contra `app/routes.ts`; la tabla describe el árbol local, no afirma que los cambios sin deploy estén en producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas para rutas desplegadas. Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
 
+## LEGACY-00 — inventario de rutas (baseline `50026d0`)
+
+Resultado `LEGACY_INVENTORY_READY`; auditoría sin eliminación. La clasificación por grupos, consumers, riesgos y estados está en [ARCHITECTURE.md](ARCHITECTURE.md#vecidya-legacy-00--inventario-y-consolidación-2026-10-12). Se excluyó el trabajo local sin commit del baseline y se preservó. QA-03B, RESULT-UX-02 y FUNNEL-01B no se reabren; ACT-04 no se ejecuta.
+
+| Ruta/source | Clase | Imports y pruebas | Riesgo |
+| --- | --- | --- | --- |
+| `/diagnostico` | `KEEP` | `diagnostic.tsx` → `AnonymousDiagnosticFlow` → session V3/key 2; E2E `diagnostic`, `funnel-01b` | Necesario para FUNNEL-01B; aún sin deploy. |
+| `/api/diagnostic/anonymous-summary` | `KEEP` | Replay Worker con bank/planner/session V3; E2E `funnel-01b` | DTO allowlisted; no es backend QA-03B. |
+| `/diagnostico/metodologia` | `KEEP` | metodologia → `qbv2-methodology`; E2E methodology | Versión y contenido aún ligados al V3 público. |
+| `/diagnostico/informe` source `diagnostico-informe.tsx`, sin `route()` | `KEEP` barrera | Leído por `diagnostic-report.test.ts` y readiness | Source no registrado, pero test protege la no exposición. |
+| `/__dev/diagnostico/v3`, `/resultado/*`, `/metodologia`, `/informe/*` | `ARCHIVE` / `REMOVE_AFTER_CUTOVER` | Previews/golden y E2E V3 | Sólo dev; mantener para comparación hasta sustitución. |
+| `/__dev/diagnostico/candidate*` | `KEEP` / `INVESTIGATE` | ACT root, manifiesto + ACT-01–03 | Identidad separada QA-03B; destino ACT-04 pendiente. |
+| `/__dev/diagnostico/qa03b*` | `KEEP` | QA-03B bank/session/pipeline + suites QA | Candidata certificada; rutas dev-only. |
+| APIs persistence/recovery/analytics sin route registration | `REMOVE_AFTER_CUTOVER` / `INVESTIGATE` | No importadores app localizados; evidencia DIAG-V3-13 | Revisar Worker config, tests y scripts antes de retirar. |
+
+HEAD contiene 15 archivos fuente de ruta relacionados con diagnóstico; el registro público vigente conserva `/diagnostico`, metodología y anonymous-summary API. Rutas `__dev` dependen de `NODE_ENV=development` y guardas loader; contar archivo no equivale a ruta registrada.
+
+Medición desde blobs Git: `app/features/diagnostic` contiene 116 fuentes y 1.359.978 bytes; `qa03b/**` son 21/203.991 bytes; las dos familias `qbv2-candidate-*` suman 25/276.821 bytes brutos. Esas cantidades se traslapan con dependencias compartidas y no equivalen a reducción de bundle/instalación. La estimación condicional por identidad está en [ARCHITECTURE.md](ARCHITECTURE.md#estimación-de-retirada-potencial).
+
 ## Mapa del repositorio
 
 ```text
@@ -9,14 +28,14 @@ D:\Proyectos\Vecidya            (raíz Git)
 ├── AGENTS.md, README.md
 └── vecidya-platform/           (único producto activo)
     ├── app/                    interfaz React Router
-    │   ├── routes.ts           tabla de 41 rutas
-    │   ├── routes/             41 archivos (uno por ruta)
-    │   ├── components/         public-layout, public-v2, admin-shell, ui, diagnostic-result/ (resultado V3, DIAG-V3-09/10), diagnostic-flow/ (cuestionario V3, DIAG-V3-10B), diagnostic-methodology/ (metodología V3, DIAG-V3-11), diagnostic-report/ (informe PDF V3, DIAG-V3-12)
+    │   ├── routes.ts           registro público/app/API + rutas dev condicionales
+    │   ├── routes/             archivos registrados y fuentes no registradas
+    │   ├── components/         public-layout, public-v2, admin-shell, ui, diagnostic-result/, diagnostic-flow/ (V3 público + ACT + QA-03B), diagnostic-methodology/, diagnostic-report/ (adaptador compartido)
     │   ├── assets/public-assets.ts   manifiesto de assets públicos
     │   ├── content/public-copy.ts    acciones y fronteras comerciales compartidas
     │   ├── lib/auth-client.ts  cliente Better Auth
     │   ├── root.tsx, entry.server.tsx, app.css (Tailwind 4 + estilos propios)
-    │   ├── features/diagnostic/ motor puro del Diagnóstico (16 módulos + `contracts.typecheck.ts`; DIAG-002, DIAG-V3-01 a 05); las otras 9 carpetas de features/* solo tienen .gitkeep
+    │   ├── features/diagnostic/ superficie mixta DIAG-002/QBV1, V3 público, ACT y QA-03B; ver clasificaciones LEGACY-00
     │   └── layouts/            solo .gitkeep
     ├── server/                 lógica exclusiva del servidor
     │   ├── auth.server.ts, auth-plugins.server.ts   Better Auth + plugin Organization
