@@ -18,9 +18,13 @@ const CONFIDENCE_LABELS = {
 export function AnonymousSummaryScreen({
   summary,
   onRestart,
+  onRequestReport,
+  reportRequestEnabled,
 }: {
   readonly summary: AnonymousDiagnosticSummaryV1;
   readonly onRestart: () => void;
+  readonly onRequestReport: () => void;
+  readonly reportRequestEnabled: boolean;
 }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const [detailsRequested, setDetailsRequested] = useState(false);
@@ -71,13 +75,11 @@ export function AnonymousSummaryScreen({
       </details>
 
       <div className="df-anon-summary__actions">
-        <button className="button button--primary" onClick={() => setDetailsRequested(true)} type="button">
-          Ver diagnóstico completo
-        </button>
+        <button className="button button--primary" onClick={() => { setDetailsRequested(true); onRequestReport(); }} type="button">Ver diagnóstico completo</button>
         <p aria-live="polite" className="df-anon-summary__request-note" role={detailsRequested ? "status" : undefined}>
-          {detailsRequested
-            ? "El flujo para solicitar el informe completo se habilitará más adelante. No te pediremos datos ahora."
-            : ""}
+          {reportRequestEnabled ? "Solicita el informe detallado con una dirección de correo verificada." : detailsRequested
+            ? "Este resumen pertenece a una versión anterior. Puedes conservarlo o iniciar un diagnóstico nuevo para solicitar un informe."
+            : "La solicitud del informe no está habilitada en este entorno."}
         </p>
         <div>
           <button aria-describedby="df-anon-download-note" className="button button--secondary" disabled type="button">Descargar resumen</button>

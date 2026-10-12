@@ -1,5 +1,11 @@
 # Estado de implementación
 
+## DIAG-V3-FUNNEL-01C — identificación y acceso al informe (2026-10-12)
+
+**`IDENTIFICATION_PARTIAL` — implementación y gates técnicos locales PASS; no publicado.** El resumen V3 habilita en local una solicitud de informe con finalidad de servicio requerida y opt-ins comerciales/investigación separados; replay exacto del motor público vigente, snapshot versionado en D1, verificación por enlace de un solo uso y acceso con cookie HttpOnly opaca. El correo es simulado en memoria. E2E local valida replay, aislamiento antes de verificar, token incorrecto/reutilizado, idempotencia/conflicto, borrado en cascada y desbordamiento móvil; regresión 01B `6/6`, 01C `1/1`, suite unitaria `1535/1535`, typecheck, build y `git diff --check` PASS. D1 local `0014`–`0015`; no se aplicaron migraciones remotas. Falta validar expiración temporal y concurrencia adversarial; aviso/base legal, retención/purga automática, proveedor real y gestión de derechos/opt-ins requieren revisión y aprobación antes de cualquier uso real.
+
+Las vistas y APIs de identificación solo se registran en desarrollo; el informe PDF/generador no cambió. Sesiones históricas sin identidad de motor no pueden solicitar informe. `GATE_B_PARTIAL`, QA-03B inactiva, ACT-04 pausado; sin commit, push, deploy ni correo externo.
+
 ## VECIDYA-LEGACY-00 — inventario listo (2026-10-12)
 
 **`LEGACY_INVENTORY_READY` — auditoría documental, no limpieza.** Baseline Git `50026d00c59269554500a4f2552fe7385e35ec7f` (`main` = `origin/main`); cambios locales sin commit excluidos y preservados. Inventario, grafo, clasificación, duplicaciones, orden y rollback están consolidados en `ARCHITECTURE.md`, `STRUCTURE.md`, `DATABASE.md`, `TESTING.md` y `ROADMAP.md`. Sin cambios de código, configuración, secretos, D1 o migraciones; QA-03B, RESULT-UX-02 y FUNNEL-01B no se reabren. ACT-04, push y deploy no ejecutados.

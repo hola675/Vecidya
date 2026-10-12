@@ -4190,6 +4190,41 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   }
 }
 
+/* FUNNEL-01C: identificación y acceso al informe detallado, coherentes con el resumen. */
+.df-identification { display: grid; gap: 1rem; max-width: 48rem; margin: 0 auto; padding: clamp(1rem, 4vw, 2rem); border: 1px solid var(--line); border-radius: var(--radius-lg); background: #fff; }
+.df-identification h1 { margin: 0; color: var(--ink); font-size: clamp(1.65rem, 4vw, 2.35rem); line-height: 1.1; }
+.df-identification > p { margin: 0; color: var(--muted); line-height: 1.6; }
+.df-identification__local-note { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.65rem 0.8rem; background: var(--surface-soft); color: var(--ink) !important; font-size: 0.9rem; }
+.df-identification__form { display: grid; gap: 1.25rem; }
+.df-identification__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.df-identification__fields label { display: grid; gap: 0.4rem; color: var(--ink); font-weight: 650; }
+.df-identification__fields input { width: 100%; min-height: 2.9rem; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.65rem 0.75rem; background: #fff; color: var(--ink); font: inherit; }
+.df-identification__fields input:focus-visible, .df-identification__check input:focus-visible { outline: 3px solid color-mix(in srgb, var(--blue) 35%, transparent); outline-offset: 2px; }
+.df-identification__optional { color: var(--muted); font-size: 0.82rem; font-weight: 450; }
+.df-identification__permissions { display: grid; gap: 0.85rem; margin: 0; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; }
+.df-identification__permissions legend { padding: 0 0.35rem; color: var(--ink); font-weight: 700; }
+.df-identification__check { display: grid; grid-template-columns: 1.25rem minmax(0, 1fr); align-items: start; gap: 0.65rem; color: var(--ink); line-height: 1.5; }
+.df-identification__check input { width: 1.15rem; height: 1.15rem; margin: 0.18rem 0 0; accent-color: var(--blue); }
+.df-identification__check a { color: var(--blue); text-underline-offset: 0.15em; }
+.df-identification__permission-note, .df-identification__retention, .df-identification__required-note { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.55; }
+.df-identification__retention { border-radius: var(--radius-sm); padding: 0.75rem; background: var(--surface-soft); }
+.df-identification__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.df-identification__actions .button, .df-identification > .button { min-height: 2.9rem; }
+.df-identification__error { margin: 0; color: #a12a27 !important; }
+.df-identified-report { display: grid; gap: 1rem; }
+.df-identified-report__nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; max-width: 75rem; width: 100%; margin: 0 auto; }
+@media (max-width: 42rem) {
+  .df-identification__fields { grid-template-columns: minmax(0, 1fr); }
+  .df-identification__actions { display: grid; }
+  .df-identification__actions .button { width: 100%; }
+  .df-identified-report__nav { align-items: flex-start; flex-direction: column; }
+}
+@media screen and (max-width: 48rem) {
+  .df-identified-report .rp-sheet:not(.rp-sheet--measure) { width: calc(100vw - 2rem); height: auto; min-height: 0; overflow: visible; padding: 1rem; font-size: 0.9rem; }
+  .df-identified-report .rp-sheet:not(.rp-sheet--measure) .rp-sheet__body { flex: 0 0 auto; min-height: auto; overflow: visible; }
+  .df-identified-report .rp-doc--flow { width: calc(100vw - 2rem); padding: 1rem; font-size: 0.9rem; }
+}
+
 /* UX-003 — sistema visual autenticado: acceso, espacio cliente y operaciones */
 .auth-shell {
   --auth-ink: var(--ink);

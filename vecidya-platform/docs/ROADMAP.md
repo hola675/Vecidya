@@ -1,5 +1,9 @@
 # Roadmap
 
+## FUNNEL-01C — estado del checkpoint autorizado (2026-10-12)
+
+`IDENTIFICATION_PARTIAL`; 01B `6/6`, 01C `1/1`, unitarias `1535/1535`, typecheck, build y `git diff --check` PASS. Solicitud explícita, snapshot derivado tras replay del motor público V3, verificación email simulada y acceso revocable; opt-ins B/C separados. Rutas de captura e informe dev-only. D1 local `0014`–`0015`; sin D1 remota, proveedor real ni publicación. Falta validar expiración temporal y concurrencia adversarial; antes de uso real faltan revisión legal del aviso/base, retención aprobada y purga automática, proveedor de correo y gestión de derechos/preferencias. Mantener `GATE_B_PARTIAL`, QA-03B inactiva y ACT-04 detenido.
+
 ## Resultado vigente — DIAG-V3-RESULT-UX-02 (2026-10-11)
 
 ## VECIDYA-LEGACY-00 — `LEGACY_INVENTORY_READY` (2026-10-12)

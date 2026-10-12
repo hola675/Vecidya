@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-12 — DIAG-V3-FUNNEL-01C (local)
+
+- Conectado el CTA del resumen V3 a solicitud local; finalidad de servicio requerida, opt-in comercial e investigación independientes y desmarcados por defecto.
+- Migraciones locales para solicitud identificada, snapshot, challenge de correo, acceso con digest y opt-ins separados. Identidad exacta y replay V3 antes de almacenar; idempotencia compara la huella del contenido.
+- Enlace simulado en memoria, verificación de un solo uso, cookie HttpOnly/SameSite Strict limitada al informe, límite de intentos/reenvío, no-store y borrado en cascada. Sin proveedor externo ni GHL.
+- Rutas dev-only; sesiones previas sin identidad no se reinterpretan. D1 remota, PDF y QA-03B intactos. Sin commit/push/deploy; privacidad, retención/purga y correo real bloquean producción.
+
 ## 2026-10-12 — VECIDYA-LEGACY-00 `LEGACY_INVENTORY_READY`
 
 - Auditado HEAD `50026d00c59269554500a4f2552fe7385e35ec7f`; cambios/archivos locales sin commit preservados y excluidos del baseline.

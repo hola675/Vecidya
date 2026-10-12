@@ -7,6 +7,18 @@
     "directory": "./build/client"
   },
   "workers_dev": true,
+  "ratelimits": [
+    {
+      "name": "DIAGNOSTIC_PUBLIC_RATE_LIMITER",
+      "namespace_id": "612349101",
+      "simple": { "limit": 12, "period": 60 }
+    },
+    {
+      "name": "DIAGNOSTIC_IDENTIFICATION_RATE_LIMITER",
+      "namespace_id": "612349102",
+      "simple": { "limit": 6, "period": 60 }
+    }
+  ],
   "routes": [
     {
       "pattern": "vecidya.com/*",

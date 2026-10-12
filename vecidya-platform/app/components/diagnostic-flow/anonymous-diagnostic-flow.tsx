@@ -14,7 +14,9 @@ import {
   type AnswerValueV3,
   type DiagnosticSessionV3,
 } from "../../features/diagnostic";
-import { isAnonymousDiagnosticSummaryV1, type AnonymousDiagnosticSummaryV1 } from "../../features/diagnostic/anonymous-summary";
+import { isAnonymousDiagnosticResponseV1, isAnonymousDiagnosticSummaryV1, type AnonymousDiagnosticSummaryV1 } from "../../features/diagnostic/anonymous-summary";
+import type { PublicDiagnosticEngineIdentityV1 } from "../../features/diagnostic/public-diagnostic-engine-identity";
+import { IdentifiedDiagnosticRequestForm, DiagnosticVerificationPending } from "./identified-diagnostic-request-form";
 
 import { ANONYMOUS_START_COPY, ERROR_COPY, REQUIRED_MULTI } from "./flow-copy";
 import { AnonymousSummaryScreen } from "./anonymous-summary-screen";
@@ -26,11 +28,13 @@ type View =
   | { readonly kind: "resume"; readonly stored: DiagnosticSessionV3 }
   | { readonly kind: "flow" }
   | { readonly kind: "preparing" }
-  | { readonly kind: "result"; readonly summary: AnonymousDiagnosticSummaryV1 }
+  | { readonly kind: "result"; readonly summary: AnonymousDiagnosticSummaryV1; readonly engineIdentity: PublicDiagnosticEngineIdentityV1 | null }
+  | { readonly kind: "identify" }
+  | { readonly kind: "verification-pending"; readonly requestId: string }
   | { readonly kind: "legacy" }
   | { readonly kind: "error" };
 
-type StoredSummaryV1 = { readonly version: 1; readonly status: "pending" } | { readonly version: 1; readonly status: "ready"; readonly summary: AnonymousDiagnosticSummaryV1 };
+type StoredSummaryV1 = { readonly version: 1; readonly status: "pending" } | { readonly version: 1; readonly status: "ready"; readonly summary: AnonymousDiagnosticSummaryV1; readonly engineIdentity?: PublicDiagnosticEngineIdentityV1 };
 const summaryKey = (sessionId: string) => "vecidya.diagnostic.v3.anonymous-summary.1." + encodeURIComponent(sessionId);
 
 function readStoredSummary(sessionId: string): StoredSummaryV1 | null {
@@ -42,7 +46,7 @@ function readStoredSummary(sessionId: string): StoredSummaryV1 | null {
     const value = stored as Record<string, unknown>;
     if (value.version !== 1) return null;
     if (value.status === "pending") return { version: 1, status: "pending" };
-    if (value.status === "ready" && isAnonymousDiagnosticSummaryV1(value.summary)) return { version: 1, status: "ready", summary: value.summary };
+    if (value.status === "ready" && isAnonymousDiagnosticSummaryV1(value.summary)) return { version: 1, status: "ready", summary: value.summary, ...(typeof value.engineIdentity === "object" && value.engineIdentity !== null ? { engineIdentity: value.engineIdentity as PublicDiagnosticEngineIdentityV1 } : {}) };
     return null;
   } catch {
     return null;
@@ -70,6 +74,9 @@ export function AnonymousDiagnosticFlow() {
   const [draft, setDraft] = useState<{ readonly key: string; readonly value: AnswerValueV3 | undefined }>({ key: "", value: undefined });
   const [error, setError] = useState<string | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [resultIdentity, setResultIdentity] = useState<PublicDiagnosticEngineIdentityV1 | null>(null);
+  const [activeSummary, setActiveSummary] = useState<AnonymousDiagnosticSummaryV1 | null>(null);
+  const [pendingRequestId, setPendingRequestId] = useState<string | null>(null);
 
   useEffect(() => {
     const stored = store.read(Date.now());
@@ -81,6 +88,9 @@ export function AnonymousDiagnosticFlow() {
     clearStoredSummary(session?.sessionId);
     store.clear();
     setSession(null);
+    setResultIdentity(null);
+    setActiveSummary(null);
+    setPendingRequestId(null);
     setView({ kind: "start" });
     setError(null);
     setConfirmReset(false);
@@ -107,11 +117,13 @@ export function AnonymousDiagnosticFlow() {
       });
       if (!response.ok) throw new Error("Summary request failed");
       const payload: unknown = await response.json();
-      if (typeof payload !== "object" || payload === null || Array.isArray(payload) || !isAnonymousDiagnosticSummaryV1((payload as Record<string, unknown>).summary)) throw new Error("Invalid summary response");
-      const summary = (payload as { summary: AnonymousDiagnosticSummaryV1 }).summary;
-      writeStoredSummary(current.sessionId, { version: 1, status: "ready", summary });
+      if (!isAnonymousDiagnosticResponseV1(payload)) throw new Error("Invalid summary response");
+      const { summary, engineIdentity } = payload;
+      writeStoredSummary(current.sessionId, { version: 1, status: "ready", summary, engineIdentity });
       setSession({ ...current, status: "completed" });
-      setView({ kind: "result", summary });
+      setResultIdentity(engineIdentity);
+      setActiveSummary(summary);
+      setView({ kind: "result", summary, engineIdentity });
     } catch {
       setSession(current);
       setView({ kind: "error" });
@@ -120,6 +132,8 @@ export function AnonymousDiagnosticFlow() {
 
   const start = () => {
     setSession(createSessionV3({ sessionId: newSessionId(), now: Date.now() }));
+    setResultIdentity(null);
+    setActiveSummary(null);
     setView({ kind: "flow" });
     setError(null);
   };
@@ -127,7 +141,7 @@ export function AnonymousDiagnosticFlow() {
     setSession(stored);
     if (stored.status === "completing" || stored.status === "completed" || stored.status === "error") {
       const priorSummary = readStoredSummary(stored.sessionId);
-      if (priorSummary?.status === "ready") setView({ kind: "result", summary: priorSummary.summary });
+      if (priorSummary?.status === "ready") { const engineIdentity = priorSummary.engineIdentity ?? null; setResultIdentity(engineIdentity); setActiveSummary(priorSummary.summary); setView({ kind: "result", summary: priorSummary.summary, engineIdentity }); }
       else if (priorSummary?.status === "pending") void finish(stored);
       else setView({ kind: "legacy" });
     } else setView({ kind: "flow" });
@@ -175,7 +189,9 @@ export function AnonymousDiagnosticFlow() {
     onRetry={() => session && void finish(session)}
     title="No pudimos preparar tu resumen"
   />;
-  else if (view.kind === "result") content = <AnonymousSummaryScreen onRestart={requestReset} summary={view.summary} />;
+  else if (view.kind === "result") content = <AnonymousSummaryScreen onRestart={requestReset} onRequestReport={() => { if (import.meta.env.DEV && view.engineIdentity && session) setView({ kind: "identify" }); }} reportRequestEnabled={Boolean(import.meta.env.DEV && view.engineIdentity && session)} summary={view.summary} />;
+  else if (view.kind === "identify" && session && resultIdentity && activeSummary) content = <IdentifiedDiagnosticRequestForm engineIdentity={resultIdentity} onCancel={() => setView({ kind: "result", summary: activeSummary, engineIdentity: resultIdentity })} onSubmitted={(requestId) => { setPendingRequestId(requestId); setView({ kind: "verification-pending", requestId }); }} session={session} />;
+  else if (view.kind === "verification-pending" && pendingRequestId === view.requestId && activeSummary) content = <DiagnosticVerificationPending onBack={() => setView({ kind: "result", summary: activeSummary, engineIdentity: resultIdentity })} requestId={view.requestId} />;
   else if (session && session.status === "completing" && session.reviewIndex === null) {
     content = <>
       <ReadyScreen anonymousSummary onReview={back} onShowResult={() => void finish(session)} terminalReason={session.terminalReason} />

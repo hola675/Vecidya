@@ -71,6 +71,12 @@ export default [
   // adaptativo V3, su metodología y su informe PDF. Solo con `react-router dev`: build y typegen cargan este archivo con
   // NODE_ENV=production, así que nunca entran en el bundle publicado.
   ...(isDevelopmentServer ? [
+    route("api/diagnostic/report-requests", "routes/api-diagnostic-report-requests.ts"),
+    route("api/diagnostic/report-requests/:requestId/resend", "routes/api-diagnostic-report-request-resend.ts"),
+    route("api/diagnostic/email/verify", "routes/api-diagnostic-email-verify.ts"),
+    route("diagnostico/verificar", "routes/dev-diagnostic-verify-email.tsx"),
+    route("diagnostico/informe/:requestId", "routes/dev-diagnostic-identified-report.tsx"),
+    route("__dev/diagnostico/buzon/:requestId", "routes/dev-diagnostic-mailbox.ts"),
     route("__dev/diagnostico/resultado/:personaId?", "routes/dev-diagnostic-result.tsx"),
     route("__dev/diagnostico/v3", "routes/dev-diagnostic-v3.tsx"),
     route("__dev/diagnostico/candidate", "routes/dev-diagnostic-candidate.tsx"),

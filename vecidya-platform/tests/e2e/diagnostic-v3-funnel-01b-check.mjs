@@ -93,7 +93,9 @@ try {
   assert.equal(apiResponses.length, 1);
   assert.equal(apiResponses[0].status, 200);
   assert.match(apiResponses[0].cacheControl, /no-store/i);
-  assert.deepEqual(Object.keys(apiResponses[0].body), ["summary"]);
+  assert.deepEqual(Object.keys(apiResponses[0].body), ["summary", "engineIdentity"]);
+  assert.equal(apiResponses[0].body.engineIdentity.engine, "diag-v3-public");
+  assert.equal(apiResponses[0].body.engineIdentity.sessionSchemaVersion, 2);
   assert.deepEqual(Object.keys(apiResponses[0].body.summary), summaryKeys, "response DTO cerrado");
   assert.ok(apiResponses[0].body.summary.score === null || Number.isFinite(apiResponses[0].body.summary.score), "porcentaje ausente o calculado, sin default");
   pass(`Worker local recalcula ${answered.length} respuestas y entrega solo el resumen versionado, no-store`);
@@ -103,9 +105,16 @@ try {
   assert.equal(await page.getByRole("button", { name: "Descargar resumen" }).isDisabled(), true);
   assert.equal(await page.getByText("Estados de contrato: 10").count(), 0, "sin selector de muestra ni referencia técnica");
   await page.getByRole("button", { name: "Ver diagnóstico completo" }).click();
-  await page.getByText(/se habilitará más adelante/i).waitFor();
-  assert.equal(apiRequests.length, 1, "el botón informativo no solicita identificación ni envía datos");
-  pass("UI anónima oculta el informe completo y mantiene inactivos la descarga y el flujo futuro");
+  await page.getByRole("heading", { name: "Solicita tu diagnóstico completo" }).waitFor();
+  assert.equal(await page.getByText(/correo es simulado y no sale de este proceso/i).count(), 1);
+  assert.equal(await page.getByRole("checkbox").count(), 3, "servicio requerido y dos finalidades separadas");
+  assert.equal(await page.getByRole("checkbox").nth(0).isChecked(), false);
+  assert.equal(await page.getByRole("checkbox").nth(1).isChecked(), false);
+  assert.equal(await page.getByRole("checkbox").nth(2).isChecked(), false);
+  assert.equal(apiRequests.length, 1, "abrir identificación no envía datos");
+  await page.getByRole("button", { name: "Volver al resumen" }).click();
+  await page.locator(".df-anon-summary").waitFor();
+  pass("UI anónima mantiene el resumen y el formulario separado con finalidades no preseleccionadas");
 
   for (const width of [1440, 768, 415]) {
     await page.setViewportSize({ width, height: width === 415 ? 900 : 1000 });

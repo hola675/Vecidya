@@ -12,7 +12,9 @@ import { ROUTE_HARD_CAP } from "./qbv2-planner";
  */
 
 /** Versión de la metodología, independiente de la versión de la aplicación (`package.json`). */
-export const METHODOLOGY_VERSION = "3.0" as const;
+import { METHODOLOGY_VERSION } from "./diagnostic-contract-versions";
+
+export { METHODOLOGY_VERSION } from "./diagnostic-contract-versions";
 
 /** Valores del motor que la metodología describe. Si el motor cambia, cambia la metodología y su versión. */
 export const METHODOLOGY_ENGINE_CONTRACT = {

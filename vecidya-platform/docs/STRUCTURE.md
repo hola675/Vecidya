@@ -1,6 +1,6 @@
 # Estructura del código
 
-Última reconciliación: 2026-10-12 (RESULT-UX-02 `VISUAL_ACCEPTED`, solo las tres capturas revisadas; FUNNEL-01B local, con cálculo efímero Worker y sin deploy). Rutas del código verificadas contra `app/routes.ts`; la tabla describe el árbol local, no afirma que los cambios sin deploy estén en producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas para rutas desplegadas. Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
+Última reconciliación: 2026-10-12 (FUNNEL-01C local, D1 local y rutas dev-only; sin deploy). Rutas del código verificadas contra `app/routes.ts`; la tabla describe el árbol local, no afirma que los cambios sin deploy estén en producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas para rutas desplegadas. Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
 
 ## LEGACY-00 — inventario de rutas (baseline `50026d0`)
 
@@ -80,8 +80,10 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/contacto` | `contact.tsx` | estático (`mailto`, WhatsApp directo `wa.me` y canal oficial de WhatsApp; sin grupo comunitario desde 2026-09-25) | — | funcional | `px-a`, `join-contact` | sí |
 | `/vecindario` | `directory.tsx` | D1 lista+filtros | — | funcional | `px-a`, `pg-c1`, `d1` | sí |
 | `/vecindario/:slug` | `public-business-profile.tsx` | D1 perfil+horarios | — | funcional (404 si no publicado/suspendido); UI de `0007`–`0009` desplegada | `px-a`, `c1`, `c2`, `d1`, `pg-c1` | sí (perfil `vecidya`) |
-| `/diagnostico` | `diagnostic.tsx` + `AnonymousDiagnosticFlow` | respuestas en localStorage; Worker calcula transitoriamente resumen V3 allowlisted | — | funcional local; no publicado FUNNEL-01B | `diagnostic`, `funnel-01b` | publicación previa sin FUNNEL-01B; requiere deploy para actualizar |
+| `/diagnostico` | `diagnostic.tsx` + `AnonymousDiagnosticFlow` | respuestas en localStorage; Worker calcula resumen V3; solicitud identificada dev-only y snapshot D1 local | — | FUNNEL-01B/01C local; no publicado | `diagnostic`, `funnel-01b`, `funnel-01c` | publicación previa sin FUNNEL-01B; requiere deploy para actualizar |
 | `/diagnostico/metodologia` | `diagnostico-metodologia.tsx` | metodología evergreen | — | funcional | methodology | sí (histórico) |
+| `/diagnostico/verificar` | `dev-diagnostic-verify-email.tsx` | fragmento efímero + confirmación explícita | No | solo desarrollo; email simulado | `funnel-01c` | no |
+| `/diagnostico/informe/:requestId` | `dev-diagnostic-identified-report.tsx` | cookie opaca + grant/snapshot D1 local; DELETE con autorización de acceso | No | solo desarrollo; sin exportación PDF | `funnel-01c` | no |
 | `/sobre-nosotros` | `about.tsx` | estático + WebP humanos | — | funcional | `about` | sí |
 | `/aprende` | `knowledge.tsx` | estático | — | funcional local / release ready; 5 categorías y 4 artículos | `learn`, `commercial-review` | sí local; deploy pendiente |
 | `/aprende/:slug` | `learn-article.tsx` | estático | — | funcional local / release ready; artículo, índice, CTA y metadata | `learn`, `commercial-review` | sí local; deploy pendiente |
@@ -122,12 +124,15 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/app/internal/integrations` | `internal-integrations.tsx` | conexiones | — | `admin-int` (stale) | sí |
 | `/app/internal/audit` | `internal-audit.tsx` | `platform_audit_log` (últimas 200) | — | `d1` | **no** (404 público) |
 
-### API (11)
+### API (14)
 
 | Ruta | Archivo | Métodos | Guarda | Estado | E2E | Pub. |
 | --- | --- | --- | --- | --- | --- | --- |
 | `/api/auth/*` | `api-auth.ts` | todos | Better Auth (público por diseño). Del plugin Organization solo responden por HTTP `create`, `list`, `set-active` y `accept-invitation`; los otros 18 dan 404 (hook `before` en `auth.server.ts`, AUTHZ-BA-001) | funcional | `authz`, `unit-authz`; registro/sesión indirectos | sí (allowlist solo local hasta el próximo deploy) |
 | `/api/diagnostic/anonymous-summary` | `api-diagnostic-anonymous-summary.ts` | POST | solo origen same-origin; valida forma, tamaño y replay de ruta V3 | funcional local; no escribe D1/KV ni registra respuestas; devuelve solo resumen V1 `no-store` | `funnel-01b` | no (sin deploy) |
+| `/api/diagnostic/report-requests` | `api-diagnostic-report-requests.ts` | POST | dev-only, same-origin, tamaño, rate limit, identity y replay V3 | D1 local; solicitud/snapshot/challenge/opt-ins; respuesta sin informe; fake email en memoria | `funnel-01c` | no |
+| `/api/diagnostic/report-requests/:requestId/resend` | `api-diagnostic-report-request-resend.ts` | POST | dev-only, same-origin, pendiente y rate limit | reemplaza challenge; correo simulado | `funnel-01c` | no |
+| `/api/diagnostic/email/verify` | `api-diagnostic-email-verify.ts` | POST | dev-only, same-origin, token digest, expiración, intentos y canje atómico | concede cookie opaca una vez; no-store | `funnel-01c` | no |
 | `/api/organizations/:id` | `api-organization.ts` | GET | `requireMembership` | funcional | `authz` | sí |
 | `…/authorization` | `api-organization-authorization.ts` | GET, POST | `organization:read`; POST comprueba el permiso pedido | funcional; JSON inválido → 500 | `authz` (matriz 3 roles × 10 permisos) | sí |
 | `…/members` | `api-organization-members.ts` | GET; acciones | `member:read`/`member:role:update`/`member:remove` + `requireOrganizationMemberTarget` + Better Auth | funcional | `authz`, `members` (`TEST-D1-RESET-001`) | sí |

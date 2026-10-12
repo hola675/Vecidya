@@ -1,3 +1,5 @@
+import type { PublicDiagnosticEngineIdentityV1 } from "./public-diagnostic-engine-identity";
+
 export type AnonymousDiagnosticState = "low" | "developing" | "solid" | "insufficient";
 export type AnonymousDiagnosticConfidence = "high" | "medium" | "low";
 
@@ -13,6 +15,12 @@ export type AnonymousDiagnosticSummaryV1 = {
   readonly firstAction: { readonly title: string; readonly description: string } | null;
   readonly coverageNote: string;
   readonly confidenceNote: string;
+};
+
+/** Transport envelope: engine metadata is separate from the allowlisted summary DTO. */
+export type AnonymousDiagnosticResponseV1 = {
+  readonly summary: AnonymousDiagnosticSummaryV1;
+  readonly engineIdentity: PublicDiagnosticEngineIdentityV1;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -34,4 +42,15 @@ export function isAnonymousDiagnosticSummaryV1(value: unknown): value is Anonymo
     typeof value.coverageNote !== "string" || typeof value.confidenceNote !== "string") return false;
   const validTextPair = (entry: unknown) => entry === null || (isRecord(entry) && hasExactKeys(entry, ["title", "description"]) && typeof entry.title === "string" && typeof entry.description === "string");
   return validTextPair(value.focus) && validTextPair(value.firstAction);
+}
+
+export function isAnonymousDiagnosticResponseV1(value: unknown): value is AnonymousDiagnosticResponseV1 {
+  if (!isRecord(value) || !hasExactKeys(value, ["summary", "engineIdentity"]) || !isAnonymousDiagnosticSummaryV1(value.summary) || !isRecord(value.engineIdentity)) return false;
+  const identity = value.engineIdentity;
+  return Object.keys(identity).length === 11 && identity.version === 1 && identity.engine === "diag-v3-public"
+    && Number.isInteger(identity.engineRevision) && identity.questionBank === "QUESTION_BANK_V2"
+    && Number.isInteger(identity.questionBankVersion) && Number.isInteger(identity.routingVersion)
+    && Number.isInteger(identity.scoringVersion) && Number.isInteger(identity.resultSchemaVersion)
+    && Number.isInteger(identity.sessionSchemaVersion) && typeof identity.methodologyVersion === "string"
+    && typeof identity.reportVersion === "string";
 }

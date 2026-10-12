@@ -1,5 +1,9 @@
 # Entornos
 
+## DIAG-V3-FUNNEL-01C — pruebas locales (2026-10-12)
+
+`wrangler.jsonc` declara rate-limit bindings de resumen e identificación; probados localmente. D1 local `DB` recibió `0014_diagnostic-identification` y `0015_diagnostic-request-fingerprint`; no se ejecutó `--remote`. El correo de identificación usa un buzón efímero en memoria y no invoca Gmail aunque los vars generales nombren ese proveedor. Las nuevas páginas/APIs son dev-only. No hay deploy ni comprobación HTTP pública para este código; `0.6.1` publicada históricamente no cambia.
+
 ## DIAG-V3-REL-002 — release 0.6.1
 
 - Versión `package.json`: `0.6.1`. `pnpm run typecheck` y `pnpm run build`: **PASS** antes de publicar.

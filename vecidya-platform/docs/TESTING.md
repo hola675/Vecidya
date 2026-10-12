@@ -1,5 +1,21 @@
 # Pruebas
 
+## DIAG-V3-FUNNEL-01C — solicitud identificada local (2026-10-12)
+
+**E2E Worker local: `1/1 PASS`.** `diagnostic-v3-funnel-01c-check.mjs` termina el cuestionario actual contra el Worker, abre formulario sin enviar hasta submit, verifica finalidad de servicio y opt-ins separados, inspecciona que la solicitud no devuelva el informe, lee el buzón simulado, prueba que el GET/otro contexto no verifiquen ni accedan, rechaza token incorrecto, confirma el correcto, carga el informe V3 con las ocho áreas, rechaza su segundo uso, verifica idempotencia exacta y conflicto de clave/payload, y borra solicitud con acceso autorizado; el informe pasa a 404. Capturas técnicas desktop/mobile en `tmp/diag-v3-funnel-01c/browser/`; no son aceptación visual humana.
+
+Estado `IDENTIFICATION_PARTIAL`. Suite focalizada de contratos `identified-report-contracts.test.ts`: `4/4 PASS` para finalidad/opt-ins, campos/correo, claves cerradas, cuerpo Content-Length y streaming limitado, token/digest y cookie. Suite global `1535/1535 PASS`; E2E 01B `6/6`, 01C `1/1`; typecheck, build, scan de rutas/componentes del informe y `git diff --check` PASS. Las capturas desktop/mobile son evidencia automatizada de layout y overflow, no aceptación visual humana. D1 `0014`/`0015` se aplicaron solo en local. Quedan sin probar en este checkpoint la expiración temporal por espera controlada, concurrencia adversarial, scanner automático de correo, PAC/Acrobat/NVDA, revisión legal, proveedor real, D1 remota y purga programada.
+
+```powershell
+pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/identified-report-contracts.test.ts
+$env:BASE_URL='http://127.0.0.1:5173'; node tests/e2e/diagnostic-v3-funnel-01c-check.mjs
+pnpm wrangler d1 migrations apply DB --local
+pnpm run test:unit
+pnpm run typecheck
+pnpm run build
+git diff --check
+```
+
 ## VECIDYA-LEGACY-00 — inventario y gates de compatibilidad
 
 **Resultado `LEGACY_INVENTORY_READY`; baseline `50026d00c59269554500a4f2552fe7385e35ec7f`.** Auditoría de fuentes versionadas; no se ejecutaron tests ni se reabrieron QA-03B, RESULT-UX-02 o FUNNEL-01B. Los cambios y archivos locales sin commit quedaron fuera del inventario.

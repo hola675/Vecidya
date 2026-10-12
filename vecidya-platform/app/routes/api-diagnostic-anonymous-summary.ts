@@ -1,14 +1,8 @@
-import { QUESTION_BANK_V2 } from "../features/diagnostic/qbv2-bank";
-import { ROUTE_HARD_CAP } from "../features/diagnostic/qbv2-planner";
-import {
-  completeSessionV3,
-  createSessionV3,
-  currentQuestionIdV3,
-  submitAnswerV3,
-  type AnswerValueV3,
-} from "../features/diagnostic/qbv2-session";
+import { readRequestBodyLimited, RequestBodyTooLargeError } from "../features/diagnostic/bounded-request-body.server";
+import { allowRateLimitedRequest } from "../features/diagnostic/diagnostic-rate-limit.server";
 import { toAnonymousDiagnosticSummaryV1 } from "../features/diagnostic/anonymous-summary.server";
-import type { AnswersV2 } from "../features/diagnostic/qbv2-rules";
+import { PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1, replayPublicDiagnosticV3 } from "../features/diagnostic/public-diagnostic-replay.server";
+import { cloudflareContext } from "../../server/cloudflare-context";
 
 import type { Route } from "./+types/api-diagnostic-anonymous-summary";
 
@@ -33,20 +27,25 @@ function hasExactKeys(value: Record<string, unknown>, keys: readonly string[]) {
   return Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ context, request }: Route.ActionArgs) {
   if (request.method !== "POST") return failure(405, "Método no permitido.");
   if (request.headers.get("origin") !== new URL(request.url).origin) return failure(403, "Origen no permitido.");
   if (!/^application\/json(?:\s*;|$)/i.test(request.headers.get("content-type") ?? "")) {
     return failure(415, "Formato no permitido.");
   }
+  const { env } = context.get(cloudflareContext);
+  if (!env.DIAGNOSTIC_PUBLIC_RATE_LIMITER) return failure(503, "El servicio no está disponible temporalmente.");
+  if (!await allowRateLimitedRequest(env.DIAGNOSTIC_PUBLIC_RATE_LIMITER, request, "anonymous-summary")) {
+    return failure(429, "Espera un momento antes de volver a intentarlo.");
+  }
 
   let raw: string;
   try {
-    raw = await request.text();
-  } catch {
+    raw = await readRequestBodyLimited(request, 32 * 1024);
+  } catch (error) {
+    if (error instanceof RequestBodyTooLargeError) return failure(413, "La solicitud es demasiado grande.");
     return failure(400, "No pudimos leer las respuestas.");
   }
-  if (new TextEncoder().encode(raw).byteLength > 32 * 1024) return failure(413, "La solicitud es demasiado grande.");
 
   let input: unknown;
   try {
@@ -57,42 +56,16 @@ export async function action({ request }: Route.ActionArgs) {
   if (!isRecord(input) || !hasExactKeys(input, ["answers"]) || !Array.isArray(input.answers)) {
     return failure(400, "Las respuestas no tienen un formato válido.");
   }
-  if (input.answers.length === 0 || input.answers.length > ROUTE_HARD_CAP) {
-    return failure(400, "La cantidad de respuestas no es válida.");
+  const replay = replayPublicDiagnosticV3(input.answers);
+  if (!replay.ok) {
+    if (replay.reason === "incomplete" || replay.reason === "completion") return failure(422, "No pudimos preparar una lectura fiable con estas respuestas.");
+    if (replay.reason === "order") return failure(400, "La ruta de respuestas no corresponde al diagnóstico.");
+    if (replay.reason === "duplicate") return failure(400, "Hay respuestas repetidas.");
+    return failure(400, "Las respuestas no cumplen el contrato vigente.");
   }
-
-  const answerEntries: { readonly questionId: string; readonly value: unknown }[] = [];
-  const seen = new Set<string>();
-  for (const entry of input.answers) {
-    if (!isRecord(entry) || !hasExactKeys(entry, ["questionId", "value"]) || typeof entry.questionId !== "string") {
-      return failure(400, "Las respuestas no tienen un formato válido.");
-    }
-    if (seen.has(entry.questionId)) return failure(400, "Hay respuestas repetidas.");
-    if (!QUESTION_BANK_V2.some((question) => question.id === entry.questionId)) {
-      return failure(400, "Una pregunta ya no está disponible.");
-    }
-    seen.add(entry.questionId);
-    answerEntries.push({ questionId: entry.questionId, value: entry.value });
-  }
-
-  const now = Date.now();
-  let session = createSessionV3({ sessionId: "anonymous-summary", now });
-  for (const entry of answerEntries) {
-    const currentQuestionId = currentQuestionIdV3(session);
-    if (currentQuestionId !== entry.questionId) return failure(400, "La ruta de respuestas no corresponde al diagnóstico.");
-    const submitted = submitAnswerV3(session, currentQuestionId, entry.value as AnswerValueV3, now);
-    if (!submitted.ok) return failure(400, "Una respuesta no cumple el contrato vigente.");
-    session = submitted.session;
-  }
-  if (session.status !== "completing" || session.reviewIndex !== null || session.queue.length !== 0) {
-    return failure(422, "Aún no hay información suficiente para cerrar este diagnóstico.");
-  }
-
-  const completion = completeSessionV3(session, now);
-  if (!completion.ok) return failure(422, "No pudimos preparar una lectura fiable con estas respuestas.");
 
   return Response.json(
-    { summary: toAnonymousDiagnosticSummaryV1(completion.result) },
+    { summary: toAnonymousDiagnosticSummaryV1(replay.result), engineIdentity: PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1 },
     { headers },
   );
 }

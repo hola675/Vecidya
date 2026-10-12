@@ -1,6 +1,17 @@
 # Base de datos
 
-Última reconciliación: **2026-10-11 (DIAG-V3-FUNNEL-01A; solo diseño candidate-only, sin schema/migración/consulta nueva ni cambio de D1).** Anterior: 2026-09-28 (DIAG-V3-08: `diagnostic_event` y cuatro columnas en `diagnostic_session`, migración `0013`, local). Persistencia, Save & Resume y analítica de DIAG-V3-06/07/08 se retiraron del runtime público en DIAG-V3-13 y nunca se desplegaron; sus archivos de schema, consultas y migraciones locales quedan como evidencia histórica, no como base activa del embudo. `0011`–`0013` no se aplicaron a D1 remota; el remoto continúa en `0000`–`0010` según el último registro de `ENVIRONMENTS.md`.
+Última reconciliación: **2026-10-12 (DIAG-V3-FUNNEL-01C; schema nuevo y migraciones 0014–0015 aplicadas solo en D1 local).** `0011`–`0013` son historial local retirado del runtime público y permanecen en journal. `vecidya-prod` no recibió estas migraciones y, conforme al último corte remoto documentado, sigue en `0010`.
+
+## FUNNEL-01C — datos de informe identificado (local)
+
+`db/schema/diagnostic-identification.ts` agrega seis tablas (33 tablas en el schema Drizzle actual): solicitud identificada, snapshot serializado/hash/versionado, challenges de correo con digest/expiración/intentos, concesiones de acceso con digest y dos registros independientes de opt-in. Las FK de snapshot, challenge, acceso y consentimientos usan `ON DELETE CASCADE`; borrar la solicitud limpia el conjunto. La huella de idempotencia permite detectar una misma clave con payload distinto. Email/teléfono/nombre e informe quedan en D1 local para el flujo de desarrollo; IP no se persiste. La cookie de acceso solo se guarda como digest.
+
+| Migración | Propósito | D1 local | Remoto |
+| --- | --- | --- | --- |
+| `0014_diagnostic-identification.sql` | Solicitud, snapshot, challenge, grant, opt-ins A/B/C | Aplicada `RAN` 2026-10-12 | No aplicada |
+| `0015_diagnostic-request-fingerprint.sql` | Huella ligada a idempotency key y contenido | Aplicada `RAN` 2026-10-12 | No aplicada |
+
+La expiración invalida consultas de informe, pero `purgeExpiredIdentifiedReports` aún no tiene scheduler/llamador automático. 30 días de solicitud/snapshot/acceso y 24 horas del challenge son valores de prueba provisionales, no política aprobada. No migrar/reinterpretar sesiones anteriores ni conectar analítica/GHL.
 
 ## LEGACY-00 — disposición D1 diagnóstica
 
@@ -178,8 +189,10 @@ grandfathering de precio. Ver [TESTING.md](TESTING.md).
 | 0011 | `0011_diagnostic-persistence-foundation.sql` | Persistencia del Diagnóstico (DIAG-V3-06) | `diagnostic_session`, `diagnostic_answer`, `diagnostic_result` |
 | 0012 | `0012_diagnostic-save-resume.sql` | Save & Resume del Diagnóstico (DIAG-V3-07) | `diagnostic_saved_snapshot` |
 | 0013 | `0013_diagnostic-analytics-foundation.sql` | Analítica del Diagnóstico (DIAG-V3-08) | `diagnostic_event`; 4 columnas nuevas en `diagnostic_session` (`save_count`, `resume_count`, `last_saved_at`, `last_resumed_at`) |
+| 0014 | `0014_diagnostic-identification.sql` | Solicitud identificada/informe (FUNNEL-01C) | 6 tablas con cascade y opt-ins separados |
+| 0015 | `0015_diagnostic-request-fingerprint.sql` | Idempotencia ligada al contenido (FUNNEL-01C) | `identified_diagnostic_request.request_fingerprint_hash` |
 
-Estado de aplicación: **local `0000`–`0013`** (`0013` verificado `RAN` el 2026-09-28, aditiva, no toca `0011`/`0012`); **remoto (`vecidya-prod`) `0000`–`0010`** (`REMOTE` 2026-09-26: `0010` aplicada en G7 a las 18:13:55Z, registrada como `d1_migrations.id = 11`; `0011`–`0013` **no** aplicadas a remoto, ninguna de las tres fases autorizó `--remote`). Esquema y semillas de `0010` verificados contra el SQL: 6 tablas, 6 índices, 6 claves foráneas, 3 precios y 4 tramos, 0 duplicados y `foreign_key_check` sin violaciones. Bookmark Time Travel previo: `000000c2-00000000-000050f2-004d78b46378f119dd422e95a4ce30e4`. `vecidya-staging` no se tocó.
+Estado de aplicación: **local `0000`–`0015`** (0014/0015 aplicadas `RAN` el 2026-10-12); **remoto (`vecidya-prod`) `0000`–`0010`** (0010 aplicada en G7; `0011`–`0015` no aplicadas; no se ejecutó `--remote`). Esquema y semillas de `0010` verificados contra el SQL; `vecidya-staging` no se tocó.
 
 ## Persistencia del Diagnóstico (DIAG-V3-06)
 

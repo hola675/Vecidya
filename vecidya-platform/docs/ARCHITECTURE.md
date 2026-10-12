@@ -73,6 +73,16 @@ Un runtime público, una identidad de resultado versionada, un adaptador de resu
 
 Pre/post gates, rollback y razones completas se amplían en [TESTING.md](TESTING.md#vecidya-legacy-00--inventario-y-gates-de-compatibilidad). Rollback: regresar adaptadores/rutas a la base inmediatamente anterior al cutover autorizado; mantener todas las keys y filas, no reinterpretar resultados entre identities, no usar `git revert` destructivo sobre datos y no desplegar sin autorización.
 
+## DIAG-V3-FUNNEL-01C — solicitud identificada local (2026-10-12)
+
+**Contrato local, no preparado para publicación.** El navegador conserva la sesión V3 y envía sus respuestas solo después de una intención explícita de solicitar el informe. El Worker exige identidad exacta (`engine`, banco, versiones de rutas/scoring/result/schema/metodología/informe), reejecuta la ruta adaptativa actual, construye el informe detallado y guarda snapshot versionado en D1. Respuestas no se persisten. Huella de idempotencia ligada al contenido validado evita devolver la solicitud anterior si una misma clave se reusa con datos cambiados.
+
+Finalidad A (preparar y dar acceso al informe) tiene su aviso/checkbox; finalidades comerciales B e investigación C usan registros/tablas y versiones independientes, apagadas por defecto. La identidad se verifica por enlace con token aleatorio en fragmento, digest en D1, confirmación solo por POST y un canje transaccional; un cookie HttpOnly/SameSite Strict da acceso a un snapshot hasta su expiración. El ID de solicitud por sí solo no autoriza leer ni eliminar. Origen, cuerpo incremental acotado, rate limits, límite de cinco intentos, expiración, no-store y borrado cascade protegen el flujo. El reenvío reemplaza challenges pendientes.
+
+Las rutas de formulario backend, verify, informe y buzón son dev-only y el handler de correo local falla fuera de `import.meta.env.DEV`; no existe envío Gmail ni producción de campaña. Las retenciones de 30 días/24 horas son valores provisionales locales: el sweep de solicitudes expiradas no tiene scheduler ni ejecución automática. Antes de cualquier activación faltan texto/base legal, retención y purga aprobadas, tratamiento/derechos (incluido retiro de B/C), proveedor y seguridad operacional de correo. No hay CRM/GHL ni analytics. El generador PDF no se modifica; el informe usa solo el componente de pantalla existente y no añade descarga.
+
+Sesiones previas sin `engineIdentity` no se reinterpretan ni son elegibles para report request; iniciar una sesión actual es requisito. Sin remote D1, correo real, deploy, commit o push. `GATE_B_PARTIAL`, QA-03B y ACT-04 quedan intactos.
+
 ## DIAG-V3-FUNNEL-01B — resumen anónimo real (2026-10-12, local)
 
 FUNNEL-01B conecta el cuestionario público existente con una proyección anónima calculada en Worker. Mientras ACT-04 no está autorizado, la entrada y el cálculo usan el motor público V3 vigente (`createSessionV3`/`submitAnswerV3`/`completeSessionV3`); QA-03B candidate-only sigue fuera de rutas públicas y del bundle. La adaptación pendiente de cutover no se simula ni se importa.

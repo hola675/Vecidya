@@ -155,7 +155,8 @@ test("DIAG-V3 activation readiness: public summary stays on active V3 while QA-0
   assert.match(route, /<AnonymousDiagnosticFlow\s*\/>/);
   assert.doesNotMatch(route + anonymousFlow + flow + methodologyRoute + reportRoute + reportModel + publicBarrel, /qbv2-candidate-pipeline/);
   assert.match(anonymousFlow, /fetch\("\/api\/diagnostic\/anonymous-summary"/);
-  assert.match(anonymousEndpoint, /completeSessionV3/);
+  assert.match(anonymousEndpoint, /replayPublicDiagnosticV3/);
+  assert.match(anonymousEndpoint, /PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1/);
   assert.match(flow, /completeSessionV3/);
   assert.match(reportModel, /export function buildDiagnosticReport/);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateActive, false);
