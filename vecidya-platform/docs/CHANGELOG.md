@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-12 — DIAG-V3-FUNNEL-01B y cierre visual RESULT-UX-02
+
+- Cerrada la revisión `RESULT_UX_TECHNICALLY_ACCEPTED / VISUAL_PENDING` como `VISUAL_ACCEPTED`, acotada a las tres capturas de escritorio, móvil y FUNNEL móvil revisadas por el usuario. Pulido menor queda como backlog; no se afirma revisión de todo el informe.
+- `/diagnostico` procesa las respuestas ordenadas en el Worker con el motor V3 público vigente y devuelve `AnonymousDiagnosticSummaryV1` versionado y allowlisted. Sin persistencia server-side, D1, identidad, captación, correo, GHL o analytics. QA-03B queda inactiva; no se abre ACT-04 y `GATE_B_PARTIAL` se conserva.
+- La UI pública separa el resumen del informe, deshabilita la descarga pendiente y no ofrece una captura de identidad ficticia. El resumen local versionado reanuda sin recalcular; sesiones completadas históricas sin marcador se conservan y no se reinterpretan. La ruta local `/diagnostico/informe` se retira; el renderizador y generador PDF quedan intactos.
+- Validación local: suite unitaria completa PASS; pruebas focalizadas 14/14 (DTO y reporte), privacidad 6/6 y readiness candidato 4/4; E2E Worker **6/6 PASS** (23 respuestas, DTO no-store, origen externo 403, ruta fuera de orden 400, GET 405, sesiones nuevas e históricas, 1440/768/415 y PDF 404); typecheck, build y `git diff --check` PASS. Los bundles JS/Worker no contienen componentes/identificadores de informe ni módulos candidate-only; los datos comerciales del resultado del motor se descartan al formar el DTO. Capturas Playwright solo como evidencia técnica, no aceptación visual humana. Sin commit, push, deploy ni publicación.
+
 ## 2026-10-11 — DIAG-V3-RESULT-UX-02 `RESULT_UX_TECHNICALLY_ACCEPTED / VISUAL_PENDING`
 
 - Reorganizado el resultado local: cabecera de estado, lectura ejecutiva en tres tarjetas, ocho dimensiones inicialmente plegadas con conteos descriptivos, plan cronológico, fortalezas/oportunidades compactas, incertidumbre con cuatro puntos visibles como máximo y ayuda comercial/metodología bajo demanda.

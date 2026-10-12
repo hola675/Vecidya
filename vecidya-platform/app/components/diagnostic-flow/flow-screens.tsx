@@ -2,6 +2,15 @@ import { useEffect, useRef, type ReactNode } from "react";
 
 import { START_COPY } from "./flow-copy";
 
+type StartCopy = {
+  readonly kicker: string;
+  readonly title: string;
+  readonly lead: string;
+  readonly metaDescription: string;
+  readonly points: readonly string[];
+  readonly cta: string;
+};
+
 /** Encabezado de pantalla que recibe el foco al aparecer, para que el lector de pantalla anuncie el cambio. */
 function FocusHeading({ children, id }: { children: ReactNode; id: string }) {
   const ref = useRef<HTMLHeadingElement>(null);
@@ -9,15 +18,15 @@ function FocusHeading({ children, id }: { children: ReactNode; id: string }) {
   return <h1 className="df-screen__title" id={id} ref={ref} tabIndex={-1}>{children}</h1>;
 }
 
-export function StartScreen({ onStart }: { onStart: () => void }) {
+export function StartScreen({ onStart, copy = START_COPY }: { onStart: () => void; copy?: StartCopy }) {
   return (
     <section aria-labelledby="df-start-title" className="df-screen df-start">
-      <p className="df-screen__kicker">{START_COPY.kicker}</p>
-      <h1 className="df-screen__title df-start__title" id="df-start-title">{START_COPY.title}</h1>
-      <p className="df-screen__lead">{START_COPY.lead}</p>
-      <ul className="df-start__points">{START_COPY.points.map((point) => <li key={point}>{point}</li>)}</ul>
+      <p className="df-screen__kicker">{copy.kicker}</p>
+      <h1 className="df-screen__title df-start__title" id="df-start-title">{copy.title}</h1>
+      <p className="df-screen__lead">{copy.lead}</p>
+      <ul className="df-start__points">{copy.points.map((point) => <li key={point}>{point}</li>)}</ul>
       <div className="df-screen__actions">
-        <button className="button button--primary df-start__cta" onClick={onStart} type="button">{START_COPY.cta}</button>
+        <button className="button button--primary df-start__cta" onClick={onStart} type="button">{copy.cta}</button>
       </div>
       <p className="df-screen__aside">Puedes leer <a href="/privacidad">cómo tratamos la información</a>.</p>
     </section>
@@ -41,13 +50,13 @@ export function ResumeScreen({ answered, completed, onContinue, onRestart }: { a
   );
 }
 
-export function ReadyScreen({ onShowResult, onReview, terminalReason }: { onShowResult: () => void; onReview: () => void; terminalReason?: "evidence_sufficient" | "no_useful_questions" | "absolute_hard_cap_reached" | "deepening_required" | null }) {
+export function ReadyScreen({ onShowResult, onReview, terminalReason, anonymousSummary = false }: { onShowResult: () => void; onReview: () => void; terminalReason?: "evidence_sufficient" | "no_useful_questions" | "absolute_hard_cap_reached" | "deepening_required" | null; anonymousSummary?: boolean }) {
   const limited = terminalReason === "no_useful_questions";
   const capped = terminalReason === "absolute_hard_cap_reached";
   return (
     <section aria-labelledby="df-ready-title" className="df-screen df-ready">
       <FocusHeading id="df-ready-title">{limited ? "Ya reunimos una lectura útil de tu situación." : capped ? "Hemos llegado al límite de preguntas de esta sesión." : "Listo. Ya tenemos suficiente información para preparar tu diagnóstico."}</FocusHeading>
-      <p className="df-screen__lead">{limited ? "Algunas áreas no tenían una pregunta útil adicional; tu resultado explicará ese alcance." : capped ? "Prepararemos el resultado con la evidencia reunida y señalaremos cualquier límite de cobertura." : "Verás cómo está tu presencia digital, qué funciona, qué te frena, por dónde empezar y qué tipo de ayuda podría servirte."}</p>
+      <p className="df-screen__lead">{anonymousSummary ? "Recibirás una lectura breve, el alcance de la evidencia y un primer paso. No necesitas identificarte." : limited ? "Algunas áreas no tenían una pregunta útil adicional; tu resultado explicará ese alcance." : capped ? "Prepararemos el resultado con la evidencia reunida y señalaremos cualquier límite de cobertura." : "Verás cómo está tu presencia digital, qué funciona, qué te frena, por dónde empezar y qué tipo de ayuda podría servirte."}</p>
       <div className="df-screen__actions">
         <button className="button button--primary" onClick={onShowResult} type="button">Ver mi resultado</button>
         <button className="button button--secondary" onClick={onReview} type="button">Revisar mi última respuesta</button>

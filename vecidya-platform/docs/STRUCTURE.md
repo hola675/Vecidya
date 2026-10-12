@@ -1,6 +1,6 @@
 # Estructura del código
 
-Última reconciliación: 2026-10-11 (DIAG-V3-RESULT-UX-01 `RESULT_UX_PARTIAL` local; resultado de `/diagnostico` reordenado localmente, sin cambio de URL; ruta del harness golden ausente del bundle). Rutas verificadas contra `app/routes.ts`; las rutas públicas comerciales y sus pruebas de release están reconciliadas. Columna *Pub.*: comprobación local de la nueva experiencia y evidencia HTTP histórica para el resto (`sí` = responde como se espera; para rutas privadas, `sí` = existe y redirige a `/login`; `no` = no está en el Worker público). Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
+Última reconciliación: 2026-10-12 (RESULT-UX-02 `VISUAL_ACCEPTED`, solo las tres capturas revisadas; FUNNEL-01B local, con cálculo efímero Worker y sin deploy). Rutas del código verificadas contra `app/routes.ts`; la tabla describe el árbol local, no afirma que los cambios sin deploy estén en producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas para rutas desplegadas. Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
 
 ## Mapa del repositorio
 
@@ -49,7 +49,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 
 ## Inventario de rutas
 
-### PUBLIC (15)
+### PUBLIC (18)
 
 | Ruta | Archivo | Datos | Auth | Estado | E2E | Pub. |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -61,7 +61,8 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/contacto` | `contact.tsx` | estático (`mailto`, WhatsApp directo `wa.me` y canal oficial de WhatsApp; sin grupo comunitario desde 2026-09-25) | — | funcional | `px-a`, `join-contact` | sí |
 | `/vecindario` | `directory.tsx` | D1 lista+filtros | — | funcional | `px-a`, `pg-c1`, `d1` | sí |
 | `/vecindario/:slug` | `public-business-profile.tsx` | D1 perfil+horarios | — | funcional (404 si no publicado/suspendido); UI de `0007`–`0009` desplegada | `px-a`, `c1`, `c2`, `d1`, `pg-c1` | sí (perfil `vecidya`) |
-| `/diagnostico` | `diagnostic.tsx` + `features/diagnostic/` | cliente; `?perfil=`, `?objetivo=` (lista cerrada) | — | funcional y publicada (DIAG-003, `0.5.6`); motor con 99 unitarias | `diagnostic`, `unit-diag`, `px-a` (200/overflow) | sí (`0.5.7`, HTTP 2026-09-26T17:51Z) |
+| `/diagnostico` | `diagnostic.tsx` + `AnonymousDiagnosticFlow` | respuestas en localStorage; Worker calcula transitoriamente resumen V3 allowlisted | — | funcional local; no publicado FUNNEL-01B | `diagnostic`, `funnel-01b` | publicación previa sin FUNNEL-01B; requiere deploy para actualizar |
+| `/diagnostico/metodologia` | `diagnostico-metodologia.tsx` | metodología evergreen | — | funcional | methodology | sí (histórico) |
 | `/sobre-nosotros` | `about.tsx` | estático + WebP humanos | — | funcional | `about` | sí |
 | `/aprende` | `knowledge.tsx` | estático | — | funcional local / release ready; 5 categorías y 4 artículos | `learn`, `commercial-review` | sí local; deploy pendiente |
 | `/aprende/:slug` | `learn-article.tsx` | estático | — | funcional local / release ready; artículo, índice, CTA y metadata | `learn`, `commercial-review` | sí local; deploy pendiente |
@@ -102,11 +103,12 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/app/internal/integrations` | `internal-integrations.tsx` | conexiones | — | `admin-int` (stale) | sí |
 | `/app/internal/audit` | `internal-audit.tsx` | `platform_audit_log` (últimas 200) | — | `d1` | **no** (404 público) |
 
-### API (9)
+### API (11)
 
 | Ruta | Archivo | Métodos | Guarda | Estado | E2E | Pub. |
 | --- | --- | --- | --- | --- | --- | --- |
 | `/api/auth/*` | `api-auth.ts` | todos | Better Auth (público por diseño). Del plugin Organization solo responden por HTTP `create`, `list`, `set-active` y `accept-invitation`; los otros 18 dan 404 (hook `before` en `auth.server.ts`, AUTHZ-BA-001) | funcional | `authz`, `unit-authz`; registro/sesión indirectos | sí (allowlist solo local hasta el próximo deploy) |
+| `/api/diagnostic/anonymous-summary` | `api-diagnostic-anonymous-summary.ts` | POST | solo origen same-origin; valida forma, tamaño y replay de ruta V3 | funcional local; no escribe D1/KV ni registra respuestas; devuelve solo resumen V1 `no-store` | `funnel-01b` | no (sin deploy) |
 | `/api/organizations/:id` | `api-organization.ts` | GET | `requireMembership` | funcional | `authz` | sí |
 | `…/authorization` | `api-organization-authorization.ts` | GET, POST | `organization:read`; POST comprueba el permiso pedido | funcional; JSON inválido → 500 | `authz` (matriz 3 roles × 10 permisos) | sí |
 | `…/members` | `api-organization-members.ts` | GET; acciones | `member:read`/`member:role:update`/`member:remove` + `requireOrganizationMemberTarget` + Better Auth | funcional | `authz`, `members` (`TEST-D1-RESET-001`) | sí |
@@ -129,6 +131,8 @@ Solo desarrollo (no se cuentan en la tabla de rutas ni entran en el build): `/__
 
 FUNNEL-01A añade solo desarrollo `/__dev/diagnostico/qa03b/embudo` (`routes/dev-diagnostic-qa03b-funnel.tsx`): estados, resumen allowlistado y validación local de identificación. La ruta se incorpora a la lista condicional de `routes.ts` solo con `NODE_ENV=development`; no añade endpoint ni aparece en las rutas públicas o en el build productivo.
 
+FUNNEL-01B separa el flujo público `AnonymousDiagnosticFlow` de `DiagnosticFlow` y su informe detallado. `POST /api/diagnostic/anonymous-summary` vuelve a validar y calcular el cuestionario con el motor V3 público; persiste solo el sidecar versionado del resumen en el navegador. `/diagnostico/informe` no aparece en el registro local de rutas; `routes/diagnostico-informe.tsx`, componentes y generador PDF permanecen en el repositorio sin cambio y la vista golden sigue disponible solo en desarrollo. La ruta pública eliminada en este checkout puede continuar en la versión desplegada hasta un deploy autorizado.
+
 ## Módulos clave
 
 - **Diagnóstico** (`app/features/diagnostic/`, puro, sin React): `types` (dominio), `profiles` (5 perfiles y listas cerradas), `questions` (26 preguntas con propósito, dimensiones, pesos y `applies`), `answers` (selección, exclusivas, cambio de perfil y `deriveActiveAnswers`), `flow` (secciones y progreso), `routing` (DSL declarativo de reglas, DIAG-V3-03), `scoring` (7 dimensiones normalizadas y confianza), `evidence` (`DiagnosticEvidence` real, DIAG-V3-04), `result` (estado, hallazgos, prioridades con dependencias, fortalezas; trazas `explainStateClassification`/`explainContradictions`/`explainPrioritization`, DIAG-V3-05), `recommendations` (licencia por capacidad, servicios, addons, Aprende; trazas `explain*` con procedencia, DIAG-V3-05), `facts` (`ResultFacts`/`explainResult`: hechos intermedios estructurados y único mecanismo de explicación del resultado completo, DIAG-V3-05), `catalog` (referencias reales), `deep-link` (`perfil`/`objetivo`), `contracts` (versiones, IDs cerrados, `Resolution<T>` y conceptos V3; DIAG-V3-01), `mappings` (traducción explícita legacy → V3), `save-eligibility` (`canOfferSaveForLater`, condición determinista de "Guardar para después", DIAG-V3-07) e `index` (`runDiagnostic` como envoltorio de `explainResult`, `buildContactMailto`). Persistencia server-side: `server/diagnostic/session-security.server.ts` (`writeToken`), `server/diagnostic/recovery-code.server.ts` (recovery code de Save & Resume, DIAG-V3-07), `db/queries/diagnostic-sessions.server.ts` y `db/queries/diagnostic-save-resume.server.ts`. `questions.ts` es la fuente canónica del registro (`QUESTION_DEFINITIONS`) y de su aplicabilidad (`APPLICABILITY`, DIAG-V3-02); `contracts.typecheck.ts` solo contiene afirmaciones de compilación y no entra en el bundle. `routes/diagnostic.tsx` solo renderiza; `components/public-v2.tsx` genera las puertas de Home con `buildDiagnosticPath`.
@@ -136,7 +140,7 @@ FUNNEL-01A añade solo desarrollo `/__dev/diagnostico/qa03b/embudo` (`routes/dev
 - **Consultas**: `db/queries/` (perfil, horarios, servicios, integraciones, organizaciones, gobierno y vistas de plataforma). Toda consulta tenant filtra por `organization_id`.
 - **UI compartida**: `components/public-v2.tsx` (tarjeta, perfil, JSON-LD, secciones visuales), `components/public-layout.tsx` (shell público, metadatos, navegación), `components/admin-shell.tsx`, `components/ui.tsx`.
 - **Resultado del Diagnóstico V3** (`components/diagnostic-result/`, DIAG-V3-09/10): `diagnostic-result` (composición, lectura rápida y método plegado), `result-hero` (hero y tres tarjetas), `presence-status` (estado general), `action-path` (línea temporal), `status-assets.ts` (iconos WebP semánticos), `focus-section` (prioridades reusadas en el detalle), `reading-sections` (fortalezas, áreas, señales cruzadas e incertidumbre hasta cuatro puntos visibles), `dimension-overview` (rejilla 4/2/1, conteos descriptivos y tarjetas plegables accesibles), `indicators` (estado, porcentaje, confianza, certeza), `disclosures` (ayuda y evidencia), `presentation.ts` (mapeo de presentación sin JSX) y `result-debug-panel` (solo la vista previa local). Consume el `DiagnosticNarrative` y el `DiagnosticOutcome`; `/diagnostico` lo renderiza desde `DiagnosticFlow` y `dev-diagnostic-result.tsx` conserva la vista previa golden local. Capa de decisión en `features/diagnostic/`: `qbv2-overall` (índice y estado general), `qbv2-recommendations`, `qbv2-solutions` y `qbv2-offerings` (catálogo comercial y `buildDiagnosticOutcome`).
-- **Cuestionario del Diagnóstico V3** (`components/diagnostic-flow/`, DIAG-V3-10B): `diagnostic-flow` (contenedor: vistas, persistencia y límite de errores), `question-step` (pregunta, opciones, ayuda y progreso), `flow-screens` (inicio, reanudación, listo, preparando, error y confirmación de reinicio), `flow-copy.ts` (copy de la experiencia, sin JSX) y `flow-debug-panel` (solo la ruta privada). Sesión pura en `features/diagnostic/qbv2-session.ts`.
+- **Cuestionario y resumen anónimo V3** (`components/diagnostic-flow/`, DIAG-V3-10B/FUNNEL-01B): `anonymous-diagnostic-flow` (sesión pública, persistencia del cuestionario y sidecar de resumen V1), `anonymous-summary-screen` (allowlist visible), `diagnostic-flow` (flujo de vista detallada/dev), `question-step`, `flow-screens` y `flow-copy.ts`. `api-diagnostic-anonymous-summary.ts` reejecuta la sesión V3 y emite solo la proyección del resumen. Sesión de dominio en `features/diagnostic/qbv2-session.ts`.
 - **Metodología del Diagnóstico V3** (`components/diagnostic-methodology/`, DIAG-V3-11): `methodology-article` (`MethodologyArticle`: «Lo esencial», índice, secciones, ocho áreas, cadena de recomendación, fuentes numeradas y tabla de versiones) y `METHODOLOGY_PATH`. Los datos viven en `features/diagnostic/qbv2-methodology.ts`, que se importa directamente (no está en el barrel del dominio).
 - **Fachada candidata de diagnóstico (inactiva)**: `features/diagnostic/qbv2-candidate-pipeline.ts` compone planner, resultado candidate y la identidad/manifiesto; permanece fuera de `features/diagnostic/index.ts` y de imports públicos. No reemplaza `qbv2-session.ts` ni es consumida por la ruta pública. El resultado candidate no coincide con `DiagnosticResultV3`.
 - **Embudo candidato FUNNEL-01A (no activado)**: `features/diagnostic/qa03b/qbv2-candidate-funnel.ts` proyecta el resultado QA-03B a una allowlist de resumen y valida el formulario sin enviar datos; `qbv2-candidate-funnel-preview.ts` compone dos muestras sintéticas. La UI solo vive en la ruta privada local y no importa desde páginas públicas.

@@ -2,17 +2,19 @@
 
 ## Resultado vigente — DIAG-V3-RESULT-UX-02 (2026-10-11)
 
-**`RESULT_UX_TECHNICALLY_ACCEPTED / VISUAL_PENDING` local.** El usuario aprobó los ajustes técnicos. Las capturas comparativas de `/diagnostico` y la preview FUNNEL candidate-only fueron adjuntadas para la inspección visual final; la ruta candidata sigue ausente del bundle productivo y el resultado compartido aparece en el bundle de `/diagnostico`. No se declara `RESULT_UX_READY` hasta cerrar esa inspección. FUNNEL-01B queda sin implementar mientras se completa el checkpoint visual; `GATE_B_PARTIAL` permanece; no push, deploy ni ACT-04.
+**DIAG-V3-RESULT-UX-02 — `VISUAL_ACCEPTED` (2026-10-12).** Aceptación limitada a las tres capturas de escritorio, móvil y FUNNEL móvil que revisó el usuario; las dimensiones expandidas y el informe completo quedan fuera de esa inspección. Compactación móvil, énfasis de lectura preliminar, sustitución gradual de emojis y acabado comercial de FUNNEL permanecen como pulido futuro.
+
+**DIAG-V3-FUNNEL-01B — `PARTIAL`; implementación y validación local PASS (2026-10-12), sin publicar.** El resumen real se calcula efímeramente en Worker y se proyecta a una allowlist; la interfaz pública no carga el componente de informe detallado. Se usa el motor V3 activo mientras QA-03B sigue inactiva detrás del gate ACT-04. Sesiones históricas completadas no se recalculan sin sidecar versionado. No hay identificación, captación, D1, GHL, cambio PDF, publicación, push ni deploy. `GATE_B_PARTIAL` continúa.
 
 ### Historial — DIAG-V3-FUNNEL-01A (2026-10-11)
 
-**`FUNNEL_DESIGN_READY` local.** La recomendación F3 híbrida, contratos, propuesta de datos, analítica, handoff futuro a GHL y prototipo no público están reconciliados en `ARCHITECTURE.md`, `DATABASE.md`, `TESTING.md` y `STATUS.md`. El prototipo no envía ni persiste información; el formulario muestra un error honesto en lugar de éxito. No hay ruta pública nueva, endpoint, migración, cambio al diagnóstico público o al generador PDF, correo ni integración externa.
+**`FUNNEL_DESIGN_READY` local.** La recomendación F3 híbrida, contratos, propuesta de datos, analítica, handoff futuro a GHL y prototipo no público están reconciliados en `ARCHITECTURE.md`, `DATABASE.md`, `TESTING.md` y `STATUS.md`. El prototipo no envía ni persiste información; el formulario muestra un error honesto en lugar de éxito. FUNNEL-01B agrega de forma separada el resumen efímero real; no habilita identificación ni modifica base de datos, correo, GHL o el generador PDF.
 
 El diagnóstico candidate-only sigue inactivo; `GATE_B_PARTIAL` se conserva como estado histórico independiente y **no bloquea esta fase**. El trabajo del generador PDF continúa pausado por decisión del usuario. No se inicia FUNNEL-01B, 01C, 01D ni 01E automáticamente; cada checkpoint requiere autorización separada. No push, deploy, D1 remoto ni ACT-04.
 
 | Siguiente checkpoint propuesto | Alcance | Gate antes de iniciar |
 | --- | --- | --- |
-| FUNNEL-01B | Experiencia real de resumen gratuito, servida sin exponer el reporte completo en JS cliente | Autorización del usuario y revisión de copy/UX |
+| FUNNEL-01B | **Implementación y validación local PASS** | Autorizado por el usuario; no publicado |
 | FUNNEL-01C | Identificación, verificación y acceso seguro a informe desde Worker | Aprobación de privacidad/legal, retención, correo y endpoints |
 | FUNNEL-01D | Persistencia, analítica mínima y handoff autorizado a GHL | Contratos de datos y permiso de integración; D1 remoto exige autorización explícita |
 | FUNNEL-01E | Documentos resumen/detallado y aceptación final | Levantar la pausa del PDF y autorizar pruebas documentales |

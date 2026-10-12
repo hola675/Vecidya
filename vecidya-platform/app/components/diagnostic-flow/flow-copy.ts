@@ -26,6 +26,19 @@ export const START_COPY = {
   cta: "Empezar diagnóstico",
 } as const;
 
+export const ANONYMOUS_START_COPY = {
+  ...START_COPY,
+  title: "Conoce tu presencia digital y el primer paso que conviene dar",
+  lead: "Responde unas preguntas sobre tu situación. Al final recibirás un resumen anónimo con una lectura preliminar, sus límites y una acción para empezar.",
+  metaDescription: "Completa un diagnóstico anónimo y recibe una lectura preliminar de tu presencia digital y un primer paso. No necesitas crear una cuenta.",
+  points: [
+    "Las preguntas se adaptan a tu negocio, proyecto u organización.",
+    "La duración depende de tu situación; puedes responder «no lo sé» cuando corresponda.",
+    "Tus respuestas se guardan en este navegador para que puedas continuar si recargas.",
+    "Para preparar el resumen, las respuestas se procesan temporalmente en el servidor y no se guardan allí.",
+  ],
+} as const;
+
 export const ERROR_COPY: Readonly<Record<AnswerValidationErrorV3 | "not_current_question", string>> = {
   required: "Elige una opción para continuar.",
   invalid_type: "No pudimos leer esa respuesta. Elige una opción de nuevo.",

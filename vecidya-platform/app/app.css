@@ -4651,7 +4651,45 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
    antes de elegir (ninguna parece «mejor») y progreso por etapas, sin denominador fijo. */
 .df-page { width: min(100% - 2rem, 44rem); margin: 0 auto; padding: clamp(1.5rem, 5vw, 3.5rem) 0 4rem; }
 .df-page:has(.df-flow--result) { width: min(100% - 2rem, 60rem); }
+.df-page:has(.df-anon-summary) { width: min(100% - 2rem, 60rem); }
 .df-flow { display: grid; gap: 1.25rem; min-width: 0; color: var(--ink); }
+
+/* FUNNEL-01B: resumen breve con confianza explícita y una sola recomendación utilizable. */
+.df-anon-summary { display: grid; gap: clamp(1.25rem, 3vw, 2rem); max-width: 54rem; margin: 0 auto; color: var(--ink); }
+.df-anon-summary__hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "heading mark" "score mark" "confidence confidence" "confidence-note confidence-note" "headline headline" "current current"; align-items: center; gap: 0.75rem 1.5rem; border: 1px solid var(--line); border-radius: var(--radius-md); padding: clamp(1.25rem, 4vw, 2.25rem); background: var(--surface); box-shadow: 0 0.6rem 2rem rgb(7 29 58 / 5%); }
+.df-anon-summary__heading { grid-area: heading; }
+.df-anon-summary__title { max-width: 18ch; margin: 0; font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.12; text-wrap: balance; }
+.df-anon-summary__title:focus { outline: none; }
+.df-anon-summary__state { margin: 0.65rem 0 0; color: var(--blue-dark); font-size: 1.1rem; font-weight: 750; }
+.df-anon-summary__mark { grid-area: mark; width: 3.5rem; height: 3.5rem; object-fit: contain; }
+.df-anon-summary__score { grid-area: score; font-size: clamp(3.25rem, 10vw, 5.75rem); font-weight: 800; line-height: 0.98; letter-spacing: -0.045em; font-variant-numeric: tabular-nums; }
+.df-anon-summary__confidence { grid-area: confidence; justify-self: start; margin: 0.4rem 0 0; border-radius: 999px; padding: 0.45rem 0.8rem; color: var(--blue-dark); background: #e7efff; font-size: 0.95rem; font-weight: 750; }
+.df-anon-summary__confidence.is-preliminary { color: #6c3500; background: var(--surface-warm); }
+.df-anon-summary__confidence-note { grid-area: confidence-note; max-width: 68ch; margin: 0; line-height: 1.55; }
+.df-anon-summary__headline { grid-area: headline; max-width: 68ch; margin: 0.35rem 0 0; font-size: 1.15rem; font-weight: 700; line-height: 1.45; }
+.df-anon-summary__current { grid-area: current; max-width: 68ch; margin: -0.35rem 0 0; color: var(--muted); line-height: 1.55; }
+.df-anon-summary__reading { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.25rem, 3vw, 2rem); }
+.df-anon-summary__reading section { min-width: 0; border-top: 2px solid var(--blue); padding-top: 1rem; }
+.df-anon-summary__reading h2 { margin: 0 0 0.55rem; font-size: clamp(1.2rem, 2vw, 1.45rem); line-height: 1.25; text-wrap: balance; }
+.df-anon-summary__reading p:last-child { margin: 0; line-height: 1.6; }
+.df-anon-summary__label { margin: 0 0 0.35rem; color: var(--blue-dark); font-size: 0.88rem; font-weight: 750; }
+.df-anon-summary__coverage { border-top: 1px solid var(--line); padding-top: 0.9rem; }
+.df-anon-summary__coverage summary { width: fit-content; color: var(--blue-dark); font-weight: 700; cursor: pointer; text-underline-offset: 0.2em; }
+.df-anon-summary__coverage p { max-width: 68ch; margin: 0.75rem 0 0; line-height: 1.5; }
+.df-anon-summary__actions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.75rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
+.df-anon-summary__actions > div { display: grid; gap: 0.35rem; }
+.df-anon-summary__request-note, .df-anon-summary__download-note { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.45; }
+.df-anon-summary__request-note:empty { display: none; }
+.df-anon-summary__download-note { max-width: 28rem; }
+@media (max-width: 40rem) {
+  .df-anon-summary__hero { grid-template-columns: minmax(0, 1fr) auto; gap: 0.65rem 0.85rem; padding: 1.15rem; }
+  .df-anon-summary__title { max-width: 15ch; font-size: clamp(1.65rem, 8vw, 2rem); }
+  .df-anon-summary__mark { width: 2.75rem; height: 2.75rem; }
+  .df-anon-summary__score { font-size: clamp(3rem, 18vw, 4.3rem); }
+  .df-anon-summary__reading { grid-template-columns: 1fr; gap: 1.25rem; }
+  .df-anon-summary__actions { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .df-anon-summary__actions > button, .df-anon-summary__actions > div, .df-anon-summary__actions > div > button { width: 100%; }
+}
 
 /* Pantallas de inicio, reanudación, cierre y error. */
 .df-screen { display: grid; gap: 1rem; min-width: 0; }

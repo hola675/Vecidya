@@ -11,11 +11,10 @@ export default [
   route("unete", "routes/join.tsx"),
   route("contacto", "routes/contact.tsx"),
   route("vecindario", "routes/directory.tsx"),
-  // DIAG-V3-13: diagnóstico público, motor adaptativo V3 (ver docs/ARCHITECTURE.md). Metodología e informe
-  // públicos desde el mismo corte, antes solo en rutas de desarrollo (DIAG-V3-11/12).
+  // DIAG-V3-13 / FUNNEL-01B: cuestionario público y resumen anónimo calculado en Worker.
+  // El informe detallado queda fuera del acceso anónimo hasta que exista el flujo de identificación.
   route("diagnostico", "routes/diagnostic.tsx"),
   route("diagnostico/metodologia", "routes/diagnostico-metodologia.tsx"),
-  route("diagnostico/informe", "routes/diagnostico-informe.tsx"),
   route("sobre-nosotros", "routes/about.tsx"),
   route("aprende", "routes/knowledge.tsx"),
   route("aprende/:slug", "routes/learn-article.tsx"),
@@ -25,6 +24,7 @@ export default [
   route("robots.txt", "routes/robots.ts"),
   route("sitemap.xml", "routes/sitemap.ts"),
   route("api/auth/*", "routes/api-auth.ts"),
+  route("api/diagnostic/anonymous-summary", "routes/api-diagnostic-anonymous-summary.ts"),
   route("api/organizations/:organizationId", "routes/api-organization.ts"),
   route(
     "api/organizations/:organizationId/authorization",

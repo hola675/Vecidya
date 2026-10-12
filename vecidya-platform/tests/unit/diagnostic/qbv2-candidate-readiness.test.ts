@@ -143,15 +143,19 @@ test("DIAG-V3 activation readiness: ACT-03 disposition and explicit PDF accessib
   assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.bundleExpectation, /513253 bytes \(117103 gzip\)/);
 });
 
-test("DIAG-V3 activation readiness: public route, result, methodology and report remain legacy/inactive", () => {
+test("DIAG-V3 activation readiness: public summary stays on active V3 while QA-03B candidate remains inactive", () => {
   const route = source("../../../app/routes/diagnostic.tsx");
+  const anonymousFlow = source("../../../app/components/diagnostic-flow/anonymous-diagnostic-flow.tsx");
+  const anonymousEndpoint = source("../../../app/routes/api-diagnostic-anonymous-summary.ts");
   const flow = source("../../../app/components/diagnostic-flow/diagnostic-flow.tsx");
   const methodologyRoute = source("../../../app/routes/diagnostico-metodologia.tsx");
   const reportRoute = source("../../../app/routes/diagnostico-informe.tsx");
   const reportModel = source("../../../app/components/diagnostic-report/report-model.ts");
   const publicBarrel = source("../../../app/features/diagnostic/index.ts");
-  assert.match(route, /<DiagnosticFlow\s*\/>/);
-  assert.doesNotMatch(route + flow + methodologyRoute + reportRoute + reportModel + publicBarrel, /qbv2-candidate-pipeline/);
+  assert.match(route, /<AnonymousDiagnosticFlow\s*\/>/);
+  assert.doesNotMatch(route + anonymousFlow + flow + methodologyRoute + reportRoute + reportModel + publicBarrel, /qbv2-candidate-pipeline/);
+  assert.match(anonymousFlow, /fetch\("\/api\/diagnostic\/anonymous-summary"/);
+  assert.match(anonymousEndpoint, /completeSessionV3/);
   assert.match(flow, /completeSessionV3/);
   assert.match(reportModel, /export function buildDiagnosticReport/);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateActive, false);

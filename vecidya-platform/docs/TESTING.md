@@ -1,12 +1,12 @@
 # Pruebas
 
-## DIAG-V3-RESULT-UX-02 — aceptación visual del resultado (2026-10-11)
+## DIAG-V3-RESULT-UX-02 — aceptación visual del resultado (2026-10-12)
 
-**Resultado: `RESULT_UX_TECHNICALLY_ACCEPTED / VISUAL_PENDING`, local.** `pnpm run test:unit`: **1528/1528 PASS**; `tests/unit/diagnostic/result-ui.test.ts`: **20/20 PASS**, incluidos los 12 resultados golden, estados sin score, tarjetas, orden, ofertas plegadas y método. El chequeo del flujo completo `diagnostic-v3-flow-check.mjs`: **10/10 PASS**. `diagnostic-v3-result-ux-check.mjs`: **PASS** con tres perfiles golden; rejilla de dimensiones 4/2/1 a 1440/768/415 px; texto 16 px, controles de 44 px, sin overflow, imágenes rotas ni errores; teclado y `prefers-reduced-motion` pasan. `pnpm run typecheck` y `pnpm run build` PASS; el path de la preview candidata no está en JS productivo, mientras `DiagnosticResult` se incluye de forma esperada en el bundle de `/diagnostico`; `git diff --check`: **PASS**. El usuario aceptó la validación técnica, sin repetir pruebas; la inspección visual final queda pendiente. Las capturas seleccionadas se adjuntaron en la conversación. Como la sesión real no produjo una recomendación, el plan de tres pasos se revisó con el perfil golden existente.
+**Resultado: `VISUAL_ACCEPTED`.** El usuario inspeccionó y aprobó solo tres capturas: resultado de escritorio, resultado móvil y FUNNEL móvil. La aceptación cubre composición, jerarquía, legibilidad y organización de esas vistas; no certifica las ocho dimensiones expandidas ni el informe completo. Observaciones para pulido: compactar el encabezado móvil, reforzar visualmente el carácter preliminar con evidencia limitada, sustituir emojis progresivamente y terminar el aspecto comercial de FUNNEL. La evidencia técnica previa permanece: unitarias 1528/1528, UI 20/20, recorrido 10/10, responsive/teclado/movimiento reducido, typecheck/build y aislamiento de preview PASS. No se repitieron por esta decisión visual.
 
-La revisión visual comparativa del agente encontró que la prioridad principal quedaba fuera de la primera pantalla móvil; el ajuste reordenó las tarjetas existentes y ocultó solo la ilustración decorativa en anchos pequeños. También se limitó el hover a dispositivos con puntero fino y se dejaron las transiciones en `transform`, conservando `prefers-reduced-motion`. Las capturas ya están adjuntas, pero la automatización y la inspección del agente no equivalen a aceptación visual humana: el resultado permanece `VISUAL_PENDING` hasta que el usuario revise la evidencia. El chequeo E2E incluye la visibilidad responsive de la ilustración y una aserción unitaria cubre el orden de lectura foco/acción/hallazgo.
+La revisión visual comparativa encontró que la prioridad principal quedaba fuera de la primera pantalla móvil; el ajuste reordenó las tarjetas y retiró la ilustración decorativa en ancho pequeño. El usuario revisó y aceptó después tres capturas concretas (escritorio, móvil y FUNNEL móvil). Ese visto bueno no cubre dimensiones expandidas ni el informe completo. Se limitaron hover/transiciones y se conserva `prefers-reduced-motion`; el chequeo E2E previo incluye visibilidad responsive y foco/orden.
 
-El cambio es de presentación únicamente. No altera scoring, narrativa, contrato, orden del motor ni URL/ruta de `/diagnostico`; actualiza la experiencia de resultado ya existente. Sesión, banco, R3/R4/R8, O4/O6, D1/GHL y PDF quedan intactos; no cambia `GATE_B_PARTIAL`, no hay push/deploy/ACT-04.
+La aceptación visual no representa aceptación de toda la presentación expandida. Las observaciones se conservan para una fase de pulido y no bloquean FUNNEL-01B.
 
 Comandos de verificación relevantes:
 
@@ -19,6 +19,23 @@ pnpm run typecheck
 pnpm run build
 git diff --check
 ```
+
+## DIAG-V3-FUNNEL-01B — resumen anónimo real (2026-10-12)
+
+**Resultado: `IMPLEMENTED_LOCAL`; publicación no ejecutada.** El navegador mantiene el cuestionario y las respuestas en el store V3 schema/key 2. Al cerrar la ruta adaptativa envía `{ answers: [{ questionId, value }] }` a `POST /api/diagnostic/anonymous-summary`; el Worker valida el mismo origen, límite de cuerpo, forma exacta y secuencia adaptativa vigente, reproduce el motor V3 público y devuelve solo `AnonymousDiagnosticSummaryV1` con `Cache-Control: no-store`. No persiste ni registra respuestas/resultados; no hay D1, identidad, captura, GHL, email o analytics.
+
+Pruebas focalizadas: `anonymous-summary.test.ts` prueba las 12 personas golden, DTO exacto, score nulo, rechazo de campos expandidos y un caso real de score 82 con confianza baja que debe conservar el porcentaje y advertir que es preliminar. `diagnostic-report.test.ts` protege que el detalle no tenga ruta anónima y que la preview siga dev-only. `diagnostic-v3-funnel-01b-check.mjs` completa el cuestionario contra el Worker local; verifica shape/order del request, DTO/no-store, rechazo de origen externo (403) y ruta fuera de orden (400), GET explícito (405), ausencia del informe (404), descarga inactiva, CTA futuro sin request, 1440/768/415, reanudación local V1, no reinterpretación de sesiones completadas previas y POST vacío.
+
+```powershell
+pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/anonymous-summary.test.ts tests/unit/diagnostic/diagnostic-report.test.ts
+$env:BASE_URL='http://127.0.0.1:5173'; node tests/e2e/diagnostic-v3-funnel-01b-check.mjs
+pnpm run test:unit
+pnpm run typecheck
+pnpm run build
+git diff --check
+```
+
+Las capturas generadas automáticamente están en `tmp/diag-v3-funnel-01b/browser/`; son evidencia técnica de viewport, no aceptación visual humana. La ausencia local de la ruta `/diagnostico/informe` no significa que haya desaparecido de producción: no se hizo deploy.
 
 ## DIAG-V3-FUNNEL-01A — diseño y prototipo local (2026-10-11)
 

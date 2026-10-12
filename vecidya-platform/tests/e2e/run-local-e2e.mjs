@@ -23,6 +23,7 @@ const scripts = [
   "licenses-experience-check.mjs",
   "addons-experience-check.mjs",
   "diagnostic-v3-flow-check.mjs",
+  "diagnostic-v3-funnel-01b-check.mjs",
   "diagnostic-v3-result-ux-check.mjs",
   "diagnostic-v3-candidate-flow-check.mjs",
   "diagnostic-v3-funnel-prototype-check.mjs",

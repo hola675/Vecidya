@@ -174,11 +174,12 @@ test("12 packing: blocks keep order, never split, headings travel with their con
   assert.deepEqual(sheets, [...sheets].sort((a, b) => a - b), "order preserved");
 });
 
-test("12 the report route is public (DIAG-V3-13 cutover); the golden-fixture preview stays development-only", () => {
+test("12 detailed report has no anonymous public route; the golden-fixture preview stays development-only", () => {
   const routes = readFileSync("app/routes.ts", "utf8");
   const publicBlock = routes.slice(0, routes.indexOf("...(isDevelopmentServer"));
   const devBlock = routes.slice(routes.indexOf("...(isDevelopmentServer"));
-  assert.ok(publicBlock.includes(`route("${REPORT_PATH.slice(1)}", "routes/diagnostico-informe.tsx")`), "public report route, unconditional");
+  assert.ok(!publicBlock.includes(`route("${REPORT_PATH.slice(1)}", "routes/diagnostico-informe.tsx")`), "detailed report is not available anonymously");
+  assert.ok(publicBlock.includes('route("api/diagnostic/anonymous-summary", "routes/api-diagnostic-anonymous-summary.ts")'), "anonymous summary is calculated by the Worker");
   assert.ok(devBlock.includes(`route("__dev/diagnostico/informe/:personaId?", "routes/dev-diagnostic-report.tsx")`), "golden-fixture preview stays dev-only");
   assert.match(readFileSync("app/routes/dev-diagnostic-report.tsx", "utf8"), /if \(!import\.meta\.env\.DEV\) throw new Response\("Not Found", \{ status: 404 \}\)/);
   const publicSource = readFileSync("app/routes/diagnostico-informe.tsx", "utf8");
@@ -186,5 +187,10 @@ test("12 the report route is public (DIAG-V3-13 cutover); the golden-fixture pre
   assert.match(publicSource, /noindex, nofollow/, "per-visitor report page is not indexed");
   const flow = readFileSync("app/components/diagnostic-flow/diagnostic-flow.tsx", "utf8");
   assert.match(flow, /Descargar informe PDF/);
+  const publicFlow = readFileSync("app/components/diagnostic-flow/anonymous-diagnostic-flow.tsx", "utf8");
+  assert.match(publicFlow, /AnonymousSummaryScreen/);
+  assert.ok(!/DiagnosticResult|DiagnosticReport|REPORT_PATH|commercialRecommendation|df-dim/.test(publicFlow), "public flow does not render the detailed result or PDF");
+  const endpoint = readFileSync("app/routes/api-diagnostic-anonymous-summary.ts", "utf8");
+  assert.ok(!/db\/client|drizzle|GOLDEN_PERSONAS|runGoldenPersonaPipeline|console\.(log|info|warn|error)/.test(endpoint), "summary endpoint does not persist or log answers or use fixtures");
   assert.ok(!/fetch\(|sendBeacon|mailto:.*body/.test(publicSource), "no upload, email or lead capture");
 });
