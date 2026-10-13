@@ -3,7 +3,7 @@ import { isRouteErrorResponse, useLoaderData, useRouteError } from "react-router
 import { deleteIdentifiedReport, getAuthorizedReport } from "../../db/queries/diagnostic-identification.server";
 import { REPORT_VERSION, type DiagnosticReportV1 } from "../components/diagnostic-report/report-model";
 import { DiagnosticReport } from "../components/diagnostic-report/diagnostic-report";
-import { readCookie, digestOpaqueToken } from "../features/diagnostic/report-access-crypto.server";
+import { readCookie, digestOpaqueToken, constantTimeEqual } from "../features/diagnostic/report-access-crypto.server";
 import { isCurrentPublicDiagnosticEngineIdentityV1 } from "../features/diagnostic/public-diagnostic-replay.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "react-router";
@@ -24,7 +24,8 @@ export async function loader({ context, params, request }: LoaderFunctionArgs) {
   if (!token) throw notFound();
   const { env } = context.get(cloudflareContext);
   const row = await getAuthorizedReport(env.DB, await digestOpaqueToken(token), params.requestId, new Date());
-  if (!row || row.snapshot.reportVersion !== REPORT_VERSION) throw notFound();
+  if (!row || row.snapshot.reportVersion !== REPORT_VERSION || row.request.reportVersion !== row.snapshot.reportVersion || row.request.methodologyVersion !== row.snapshot.methodologyVersion || row.request.engineIdentity !== row.snapshot.engineIdentity) throw notFound();
+  if (!constantTimeEqual(await digestOpaqueToken(row.snapshot.reportJson), row.snapshot.reportSha256)) throw notFound();
   let storedIdentity: unknown;
   let report: unknown;
   try {

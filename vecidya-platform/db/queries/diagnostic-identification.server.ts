@@ -55,16 +55,25 @@ export async function findRequestWithPendingChallenge(binding: D1Database, reque
 }
 
 export async function replacePendingChallenge(binding: D1Database, requestId: string, challenge: typeof verifiedEmailChallenge.$inferInsert): Promise<boolean> {
-  const database = createDatabase(binding);
-  const [request] = await database.select({ id: identifiedDiagnosticRequest.id, status: identifiedDiagnosticRequest.status, expiresAt: identifiedDiagnosticRequest.expiresAt })
-    .from(identifiedDiagnosticRequest).where(eq(identifiedDiagnosticRequest.id, requestId)).limit(1);
-  if (!request || request.status !== "verification_pending" || request.expiresAt.getTime() <= challenge.issuedAt.getTime()) return false;
-  await database.batch([
-    database.update(verifiedEmailChallenge).set({ status: "superseded" })
-      .where(and(eq(verifiedEmailChallenge.requestId, requestId), eq(verifiedEmailChallenge.status, "pending"))),
-    database.insert(verifiedEmailChallenge).values(challenge),
+  const issuedAt = challenge.issuedAt.getTime();
+  const expiresAt = challenge.expiresAt.getTime();
+  if (expiresAt <= issuedAt || challenge.requestId !== requestId || challenge.status !== "pending" || challenge.attempts !== 0 || challenge.consumedAt !== null) return false;
+  const results = await binding.batch([
+    binding.prepare(`UPDATE verified_email_challenge
+      SET status = 'superseded'
+      WHERE request_id = ? AND status = 'pending'
+        AND EXISTS (
+          SELECT 1 FROM identified_diagnostic_request r
+          WHERE r.id = ? AND r.status = 'verification_pending' AND r.expires_at > ?
+        )`).bind(requestId, requestId, issuedAt),
+    binding.prepare(`INSERT INTO verified_email_challenge
+      (id, request_id, token_digest, status, attempts, issued_at, expires_at, consumed_at, created_at)
+      SELECT ?, r.id, ?, 'pending', 0, ?, ?, NULL, ?
+      FROM identified_diagnostic_request r
+      WHERE r.id = ? AND r.status = 'verification_pending' AND r.expires_at > ? AND ? > ?`)
+      .bind(challenge.id, challenge.tokenDigest, issuedAt, expiresAt, challenge.createdAt.getTime(), requestId, issuedAt, expiresAt, issuedAt),
   ]);
-  return true;
+  return results[1]?.meta?.changes === 1;
 }
 
 export async function incrementChallengeAttempt(binding: D1Database, challengeId: string, now: Date): Promise<void> {
@@ -121,8 +130,49 @@ export async function deleteIdentifiedReport(binding: D1Database, requestId: str
   await database.delete(identifiedDiagnosticRequest).where(eq(identifiedDiagnosticRequest.id, requestId));
 }
 
-export async function purgeExpiredIdentifiedReports(binding: D1Database, now: Date): Promise<number> {
-  const database = createDatabase(binding);
-  const result = await database.delete(identifiedDiagnosticRequest).where(lte(identifiedDiagnosticRequest.expiresAt, now)).returning({ id: identifiedDiagnosticRequest.id });
-  return result.length;
+export type PurgedIdentifiedReportRows = {
+  readonly expiredAccess: number;
+  readonly expiredSnapshots: number;
+  readonly expiredChallenges: number;
+  readonly orphanedCommercialIntents: number;
+  readonly orphanedResearchIntents: number;
+  readonly expiredRequests: number;
+};
+
+/** Manual lifecycle operation; callers must choose an approved retention policy before scheduling it. */
+export async function purgeExpiredIdentifiedReports(binding: D1Database, now: Date): Promise<PurgedIdentifiedReportRows> {
+  const timestamp = now.getTime();
+  const results = await binding.batch([
+    binding.prepare(`DELETE FROM diagnostic_report_access
+      WHERE revoked_at IS NOT NULL OR expires_at <= ?
+        OR NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = diagnostic_report_access.request_id)
+        OR NOT EXISTS (SELECT 1 FROM verified_email_challenge c WHERE c.id = diagnostic_report_access.challenge_id)`)
+      .bind(timestamp),
+    binding.prepare(`DELETE FROM diagnostic_report_snapshot
+      WHERE expires_at <= ?
+        OR NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = diagnostic_report_snapshot.request_id)`)
+      .bind(timestamp),
+    binding.prepare(`DELETE FROM verified_email_challenge
+      WHERE (expires_at <= ?
+        OR NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = verified_email_challenge.request_id))
+        AND NOT EXISTS (
+          SELECT 1 FROM diagnostic_report_access a
+          WHERE a.challenge_id = verified_email_challenge.id AND a.revoked_at IS NULL AND a.expires_at > ?
+        )`)
+      .bind(timestamp, timestamp),
+    binding.prepare(`DELETE FROM commercial_contact_intent
+      WHERE NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = commercial_contact_intent.request_id)`),
+    binding.prepare(`DELETE FROM diagnostic_research_intent
+      WHERE NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = diagnostic_research_intent.request_id)`),
+    binding.prepare("DELETE FROM identified_diagnostic_request WHERE expires_at <= ?").bind(timestamp),
+  ]);
+  const changes = results.map((result) => result.meta?.changes ?? 0);
+  return {
+    expiredAccess: changes[0] ?? 0,
+    expiredSnapshots: changes[1] ?? 0,
+    expiredChallenges: changes[2] ?? 0,
+    orphanedCommercialIntents: changes[3] ?? 0,
+    orphanedResearchIntents: changes[4] ?? 0,
+    expiredRequests: changes[5] ?? 0,
+  };
 }

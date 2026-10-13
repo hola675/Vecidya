@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-12 — DIAG-V3-FUNNEL-01C.1 `IDENTIFICATION_HARDENING_PARTIAL`
+
+- El reemplazo de challenge vuelve a comprobar estado y expiración de solicitud dentro de las sentencias del batch; el informe compara identidad/versiones y hash del snapshot antes de servir datos.
+- La purga D1 local separa la expiración de grants/snapshots/challenges de la eliminación de solicitud y preferencias; conserva B/C vinculadas a solicitudes vigentes y no programa ejecución automática.
+- E2E local cubre challenge bloqueado/reemplazado, verificación/idempotencia concurrentes, grant único, cookie entre solicitudes, snapshot manipulado, purga parcial, rollback inducido e idempotencia. Rutas de purga y fixture solo dev; fixture acepta únicamente la identidad sintética del E2E. Igualdad exacta de expiración, expiración aislada, doble pestaña, pérdida de respuesta y carrera borrar/leer quedan NOT_RUN.
+- Sin migración/schema, datos históricos, scoring, QA-03B, GHL, PDF, push o deploy. 24h/30d siguen provisionales; sin aprobación legal/privacidad.
+
 ## 2026-10-12 — APP-MINI-00 contrato de aplicación cliente/minisitio
 
 - Reconciliada la frontera comercial con `VECIDYA_PRODUCT_CATALOG.md`: Cuadra no usa ni aprovisiona GHL; CRM y operación comercial GHL comienzan en Barrio, Ciudad amplía Barrio.

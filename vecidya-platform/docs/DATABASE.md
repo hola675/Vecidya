@@ -1,6 +1,6 @@
 # Base de datos
 
-Última reconciliación: **2026-10-12 (DIAG-V3-FUNNEL-01C; schema nuevo y migraciones 0014–0015 aplicadas solo en D1 local).** `0011`–`0013` son historial local retirado del runtime público y permanecen en journal. `vecidya-prod` no recibió estas migraciones y, conforme al último corte remoto documentado, sigue en `0010`.
+Última reconciliación: **2026-10-12 (DIAG-V3-FUNNEL-01C.1; no añade schema ni migraciones; 0014–0015 continúan solo en D1 local).** `0011`–`0013` son historial local retirado del runtime público y permanecen en journal. `vecidya-prod` no recibió estas migraciones y, conforme al último corte remoto documentado, sigue en `0010`.
 
 ## FUNNEL-01C — datos de informe identificado (local)
 
@@ -11,7 +11,7 @@
 | `0014_diagnostic-identification.sql` | Solicitud, snapshot, challenge, grant, opt-ins A/B/C | Aplicada `RAN` 2026-10-12 | No aplicada |
 | `0015_diagnostic-request-fingerprint.sql` | Huella ligada a idempotency key y contenido | Aplicada `RAN` 2026-10-12 | No aplicada |
 
-La expiración invalida consultas de informe, pero `purgeExpiredIdentifiedReports` aún no tiene scheduler/llamador automático. 30 días de solicitud/snapshot/acceso y 24 horas del challenge son valores de prueba provisionales, no política aprobada. No migrar/reinterpretar sesiones anteriores ni conectar analítica/GHL.
+La expiración invalida consultas de informe y `purgeExpiredIdentifiedReports()` ejecuta un batch idempotente accesible solo por una ruta dev manual; no hay scheduler/llamador automático. Limpia grants revocados/vencidos, snapshots/challenges vencidos y huérfanos, preferencias huérfanas, y solicitudes expiradas con cascade. B/C bajo una solicitud viva se conservan; no hay decisión aprobada de cuánto retenerlos. E2E local forzó un fallo en el borrado final y confirmó rollback completo, luego reejecutó con éxito. 30 días de solicitud/snapshot/acceso y 24 horas del challenge son valores de prueba provisionales, no política aprobada. No migrar/reinterpretar sesiones anteriores ni conectar analítica/GHL.
 
 ## LEGACY-00 — disposición D1 diagnóstica
 

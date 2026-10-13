@@ -13,9 +13,9 @@
 
 Todos los bloques deben conservar perfiles publicados, gobernanza, autorización tenant-scoped y separar servicios que ofrece el negocio de servicios Vecidya contratados. No tocar diagnóstico dentro de esta línea. No publicar, desplegar ni modificar D1 remota sin autorización explícita.
 
-## FUNNEL-01C — estado del checkpoint autorizado (2026-10-12)
+## FUNNEL-01C.1 — estado del checkpoint autorizado (2026-10-12)
 
-`IDENTIFICATION_PARTIAL`; 01B `6/6`, 01C `1/1`, unitarias `1535/1535`, typecheck, build y `git diff --check` PASS. Solicitud explícita, snapshot derivado tras replay del motor público V3, verificación email simulada y acceso revocable; opt-ins B/C separados. Rutas de captura e informe dev-only. D1 local `0014`–`0015`; sin D1 remota, proveedor real ni publicación. Falta validar expiración temporal y concurrencia adversarial; antes de uso real faltan revisión legal del aviso/base, retención aprobada y purga automática, proveedor de correo y gestión de derechos/preferencias. Mantener `GATE_B_PARTIAL`, QA-03B inactiva y ACT-04 detenido.
+`IDENTIFICATION_HARDENING_PARTIAL`; el subconjunto E2E 01C, purga/rollback D1 local y regresión 01B `6/6` PASS; unitarias `1535/1535`, typecheck/build/diff-check PASS. Sin cambios a D1 remota, correo real, GHL, PDF o motor. Faltan reloj determinista al milisegundo, expiración aislada de challenge/grant, scanner real, doble pestaña, pérdida de respuesta y carrera borrar/leer; además revisión legal/privacidad, aprobación de 24h/30d y retención B/C, gestión de derechos y operación de email antes del uso real. No programar cron ni iniciar FUNNEL-01D automáticamente; mantener `GATE_B_PARTIAL`, QA-03B inactiva y ACT-04 detenido.
 
 ## Resultado vigente — DIAG-V3-RESULT-UX-02 (2026-10-11)
 

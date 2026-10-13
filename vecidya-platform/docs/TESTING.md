@@ -1,10 +1,18 @@
 # Pruebas
 
-## DIAG-V3-FUNNEL-01C — solicitud identificada local (2026-10-12)
+## DIAG-V3-FUNNEL-01C.1 — seguridad, expiración y ciclo de vida local (2026-10-12)
 
-**E2E Worker local: `1/1 PASS`.** `diagnostic-v3-funnel-01c-check.mjs` termina el cuestionario actual contra el Worker, abre formulario sin enviar hasta submit, verifica finalidad de servicio y opt-ins separados, inspecciona que la solicitud no devuelva el informe, lee el buzón simulado, prueba que el GET/otro contexto no verifiquen ni accedan, rechaza token incorrecto, confirma el correcto, carga el informe V3 con las ocho áreas, rechaza su segundo uso, verifica idempotencia exacta y conflicto de clave/payload, y borra solicitud con acceso autorizado; el informe pasa a 404. Capturas técnicas desktop/mobile en `tmp/diag-v3-funnel-01c/browser/`; no son aceptación visual humana.
+**Resultado `IDENTIFICATION_HARDENING_PARTIAL`.** E2E Worker local `PASS` para el subconjunto ejecutado: recorrido anónimo→solicitud→buzón simulado→challenge bloqueado→reenvío→token sustituido rechazado→verificación concurrente (exactamente un 200 y un grant)→cookie HttpOnly/SameSite Strict/Path limitado→informe de ocho dimensiones. El token y una copia de cookie/grant de la primera solicitud no autentican ni abren una segunda. Dos submit con la misma clave idempotente concurrentes reutilizan una solicitud; misma clave con payload distinto da 409. El informe protegido incluye `no-store`; un snapshot alterado conserva el digest anterior y responde sin documento. Se fuerzan expiraciones locales de acceso/snapshot/challenge; la purga conserva solicitud y B/C mientras la solicitud vive, elimina grants/snapshot/challenges vencidos y luego borra solicitud vencida y cascada. Trigger failpoint acotado a fixture provoca error después de los borrados previos; el batch revierte todo, se retira failpoint, la reejecución termina y ejecuciones repetidas/base sin fixture devuelven ceros. El acceso al informe purgado falla cerrado.
 
-Estado `IDENTIFICATION_PARTIAL`. Suite focalizada de contratos `identified-report-contracts.test.ts`: `4/4 PASS` para finalidad/opt-ins, campos/correo, claves cerradas, cuerpo Content-Length y streaming limitado, token/digest y cookie. Suite global `1535/1535 PASS`; E2E 01B `6/6`, 01C `1/1`; typecheck, build, scan de rutas/componentes del informe y `git diff --check` PASS. Las capturas desktop/mobile son evidencia automatizada de layout y overflow, no aceptación visual humana. D1 `0014`/`0015` se aplicaron solo en local. Quedan sin probar en este checkpoint la expiración temporal por espera controlada, concurrencia adversarial, scanner automático de correo, PAC/Acrobat/NVDA, revisión legal, proveedor real, D1 remota y purga programada.
+La ruta dev `__dev/diagnostico/lifecycle/fixture/:requestId` solo opera sobre filas sintéticas con correo fijo `qa-funnel@example.invalid`; expone un conjunto cerrado de acciones, conteos agregados y sin SQL arbitrario. La ruta manual `__dev/diagnostico/lifecycle/purge-expired` requiere POST, mismo origen y frase de confirmación; ninguna tarea está programada. Se probaron expiración relativa y limpieza, pero no hay reloj inyectable que demuestre igualdad exacta de milisegundo en todas las consultas, expiración aislada challenge/grant, scanner real de correo, doble pestaña, caída de red y reintento, carrera borrar/leer concurrente, PAC/Acrobat/NVDA o revisión legal. Esos límites permanecen `NOT_RUN`/pendientes; 24h/30d son plazos técnicos provisionales, no una política.
+
+RAN en este corte: E2E Worker `PASS`; `pnpm run test:unit` **1535/1535 PASS**; E2E FUNNEL-01B `6/6 PASS`; typecheck/build/diff-check `PASS`.
+
+## DIAG-V3-FUNNEL-01C — solicitud identificada local (2026-10-12; baseline)
+
+**E2E Worker local original: `1/1 PASS`** con el alcance registrado en el baseline anterior a 01C.1. La cobertura ampliada vigente está en la sección 01C.1 precedente.
+
+Estado histórico inicial `IDENTIFICATION_PARTIAL`; D1 `0014`/`0015` se aplicaron solo en local. Retención/base/avisos, gestión completa de derechos, correo real, D1 remota y publicación siguen fuera del gate local.
 
 ```powershell
 pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/identified-report-contracts.test.ts
