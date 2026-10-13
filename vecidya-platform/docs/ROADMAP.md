@@ -1,5 +1,18 @@
 # Roadmap
 
+## APP-CLIENTE / MINIWEB-CUADRA-01 — siguiente línea de producto (2026-10-12)
+
+**APP-MINI-00 — contrato documental reconciliado; sin código.** Cuadra USD 39/mes no incluye ni requiere GHL; Barrio USD 59/mes inicia CRM GHL y Ciudad USD 89/mes amplía el alcance. Vecidya conserva autoridad de cuenta, organización, licencia, perfil/minisitio y Vecindario; GHL conserva CRM y operación comercial desde Barrio. El perfil público actual funciona con datos básicos, pero los bloques enriquecidos del minisitio no están implementados.
+
+| Siguiente checkpoint | Alcance | Gate |
+| --- | --- | --- |
+| **APP-MINI-01** | Modernizar la experiencia cliente y perfil público usando datos existentes; corregir labels confusos de comparación de `/licencias`; sin D1 nueva | Autorización explícita antes de mutar UI/código |
+| **APP-MINI-02** | Servicios públicos del negocio, FAQ, orden/tema; galería/portada solo después de aprobar modelo de medios, R2 y subida segura | Aprobación del contrato de datos, permisos y almacenamiento antes de schema/migración |
+| **APP-MINI-03** | Presentar licencias, capacidades y estados reales en Mi Vecidya | Autorización separada; no checkout ni cobro automático |
+| **GHL-BARRIO-01** | Evaluar conexión/entrada operativa GHL solo para Barrio/Ciudad | Cuenta, permisos/scopes, tenant mapping y autorización reales; fase independiente |
+
+Todos los bloques deben conservar perfiles publicados, gobernanza, autorización tenant-scoped y separar servicios que ofrece el negocio de servicios Vecidya contratados. No tocar diagnóstico dentro de esta línea. No publicar, desplegar ni modificar D1 remota sin autorización explícita.
+
 ## FUNNEL-01C — estado del checkpoint autorizado (2026-10-12)
 
 `IDENTIFICATION_PARTIAL`; 01B `6/6`, 01C `1/1`, unitarias `1535/1535`, typecheck, build y `git diff --check` PASS. Solicitud explícita, snapshot derivado tras replay del motor público V3, verificación email simulada y acceso revocable; opt-ins B/C separados. Rutas de captura e informe dev-only. D1 local `0014`–`0015`; sin D1 remota, proveedor real ni publicación. Falta validar expiración temporal y concurrencia adversarial; antes de uso real faltan revisión legal del aviso/base, retención aprobada y purga automática, proveedor de correo y gestión de derechos/preferencias. Mantener `GATE_B_PARTIAL`, QA-03B inactiva y ACT-04 detenido.

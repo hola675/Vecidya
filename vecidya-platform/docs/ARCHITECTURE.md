@@ -1,5 +1,64 @@
 # Arquitectura de Vecidya
 
+## APP-MINI-00 — contrato de aplicación cliente y minisitio (2026-10-12)
+
+**Estado: contrato documental reconciliado; sin cambios funcionales.** La
+autoridad comercial es `docs/business/VECIDYA_PRODUCT_CATALOG.md`: Cuadra
+(USD 39/mes; puesta en marcha USD 0) es independiente y no incluye CRM/GHL.
+Barrio (USD 59/mes) inicia CRM y capacidades comerciales GHL; Ciudad (USD
+89/mes) amplía Barrio para operación multiproceso. OPS-001 queda subordinado a
+esta frontera y no autoriza una subcuenta GHL para Cuadra.
+
+### System of record
+
+| Dominio | Autoridad | Frontera |
+| --- | --- | --- |
+| Cuenta, sesión, organización, membresías, roles y permisos | Vecidya | No duplicar en GHL |
+| Licencia, derechos, relación contractual/soporte y servicios contratados a Vecidya | Vecidya | No inferir derechos solo desde configuración |
+| Perfil, minisitio, servicios públicos del negocio, directorio, SEO y publicación | Vecidya | Una entidad y URL canónica `/vecindario/:slug`; no crear otro editor equivalente en GHL |
+| Contactos, oportunidades, conversaciones, pipelines, calendarios CRM, formularios comerciales y automatizaciones | GHL desde Barrio | No construir ni persistir un CRM espejo en Vecidya |
+
+En Cuadra, teléfono, correo, WhatsApp, redes, web o ubicación pueden ser CTA
+externos directos; por sí mismos no almacenan leads ni crean operación CRM.
+Social Planner como producto, booking CRM, workflows, seguimiento automatizado
+y formularios comerciales no forman parte de Cuadra. Para Barrio/Ciudad, «Abrir
+CRM» solo se mostrará cuando exista una conexión/URL confirmada; no se simula
+SSO.
+
+### Estado observado y contrato de minisitio
+
+El código existente confirma identidad/sesión, organizaciones y miembros,
+`/app`, `/app/business-profile`, perfil público `/vecindario/:slug`, horarios,
+cobertura, canales y publicación/gobernanza. La capacidad licenciada de minisitio
+enriquecido **no está implementada**. La base disponible incluye
+`business_profile`, `business_hours` y `business_profile_governance`; no
+incluye todavía ofertas públicas, FAQ, galería/portada ni configuración visual.
+`organization_service` es el catálogo/asignación de servicios Vecidya al
+cliente, nunca la oferta que vende ese negocio.
+
+El contrato objetivo reutiliza la URL/perfil existente como una sola página
+responsive modular: hero; presentación; ofertas del negocio; galería; horarios
+y cobertura; contacto/redes; FAQ; identidad Vecidya. Cada bloque opcional se
+oculta sin contenido real. No es un constructor libre: sin HTML/JS arbitrario,
+dominios personalizados, múltiples páginas, ecommerce o formularios CRM en
+Cuadra. Lectura pública solo de perfiles publicados y no suspendidos, con datos
+allowlisted; preview de borrador bajo sesión/permisos. Escritura y publicación
+requieren el contexto de organización activa revalidado y los permisos existentes
+`business-profile:update` / `business-profile:publish` (owner/admin); member es
+lectura. Mantener slug estable y gobernanza vigente; una licencia no anula una
+suspensión ni despublica retroactivamente perfiles publicados.
+
+### Secuencia autorizada
+
+APP-MINI-00 reconcilia contrato y documentos. APP-MINI-01 requiere autorización
+propia antes de cualquier cambio de UI/código; APP-MINI-02 requiere decidir
+schema, aislamiento y almacenamiento (incluida aprobación de R2 antes de
+galería); APP-MINI-03 debe exponer estado/derechos reales sin pagos automáticos.
+GHL-BARRIO-01 es independiente y no empieza sin cuenta, permisos/scopes reales y
+autorización. El copy comparativo actual de `/licencias` todavía rotula
+«Seguimiento: Básico» y «Automatización: Inicial» en Cuadra; es una ambigüedad
+detectada para corregir dentro de APP-MINI-01, no una capacidad ejecutable.
+
 ## VECIDYA-LEGACY-00 — inventario y consolidación (2026-10-12)
 
 **Resultado: `LEGACY_INVENTORY_READY`; auditoría, no limpieza.** Baseline real `50026d00c59269554500a4f2552fe7385e35ec7f` (`50026d0`, `main` = `origin/main`). El árbol local también tenía cambios y archivos nuevos sin commit; se preservan y no forman parte del inventario. Sin cambios funcionales, D1, migraciones, configuración o secretos; QA-03B, RESULT-UX-02 y FUNNEL-01B no se reabren. ACT-04 no se ejecuta.
@@ -73,13 +132,21 @@ Un runtime público, una identidad de resultado versionada, un adaptador de resu
 
 Pre/post gates, rollback y razones completas se amplían en [TESTING.md](TESTING.md#vecidya-legacy-00--inventario-y-gates-de-compatibilidad). Rollback: regresar adaptadores/rutas a la base inmediatamente anterior al cutover autorizado; mantener todas las keys y filas, no reinterpretar resultados entre identities, no usar `git revert` destructivo sobre datos y no desplegar sin autorización.
 
-## DIAG-V3-FUNNEL-01C — solicitud identificada local (2026-10-12)
+## DIAG-V3-FUNNEL-01C.1 — endurecimiento local del ciclo de vida (2026-10-12)
+
+El replace de challenge es un batch con precondición de solicitud pendiente/no expirada repetida en el `UPDATE` y el `INSERT ... SELECT`; la carrera con verificación no puede dejar un challenge pendiente en una solicitud ya verificada. La lectura del informe exige grant/request/snapshot vigentes y relacionados y compara versiones, metodología e identidad motor, además del SHA-256 del JSON almacenado; corrupción o discrepancia devuelve 404. La verificación consume el challenge y emite el grant en batch; el E2E Worker probó simultaneidad y observó exactamente una respuesta exitosa y una concesión.
+
+`purgeExpiredIdentifiedReports` es invocable manualmente solo por la ruta dev de mantenimiento local. En un batch elimina access expirado/revocado/huérfano, snapshots expirados/huérfanos, challenges expirados/huérfanos sin grant vigente y preferencias huérfanas; finalmente borra solicitudes expiradas con cascade. B/C ligadas a una solicitud viva se conservan aunque caduquen grants/snapshot/challenges: expiración de acceso y eliminación física son pasos separados, y no se fija retención legal de preferencias. No existe scheduler. E2E local induce aborto en el DELETE final y observa rollback del batch completo; retira el trigger de fixture antes de repetir.
+
+El helper dev de fixture opera solo sobre la dirección sintética fija del E2E, con operaciones enumeradas y sin consulta SQL arbitraria. Tanto helper como purga desaparecen del route config de producción (`NODE_ENV=production`); no son controles utilizables como API de producto. `IDENTIFICATION_HARDENED_LOCAL` no equivale a aprobación de privacidad/retención ni habilita uso real. 24 horas y 30 días siguen provisionales; permanecen pendientes aviso/base, retención final, derechos/revocación operativa, proveedor email, protección contra scanner real, observabilidad operacional y publicación. Sin schema nuevo ni reinterpretación histórica.
+
+## DIAG-V3-FUNNEL-01C — solicitud identificada local (2026-10-12; contrato base)
 
 **Contrato local, no preparado para publicación.** El navegador conserva la sesión V3 y envía sus respuestas solo después de una intención explícita de solicitar el informe. El Worker exige identidad exacta (`engine`, banco, versiones de rutas/scoring/result/schema/metodología/informe), reejecuta la ruta adaptativa actual, construye el informe detallado y guarda snapshot versionado en D1. Respuestas no se persisten. Huella de idempotencia ligada al contenido validado evita devolver la solicitud anterior si una misma clave se reusa con datos cambiados.
 
 Finalidad A (preparar y dar acceso al informe) tiene su aviso/checkbox; finalidades comerciales B e investigación C usan registros/tablas y versiones independientes, apagadas por defecto. La identidad se verifica por enlace con token aleatorio en fragmento, digest en D1, confirmación solo por POST y un canje transaccional; un cookie HttpOnly/SameSite Strict da acceso a un snapshot hasta su expiración. El ID de solicitud por sí solo no autoriza leer ni eliminar. Origen, cuerpo incremental acotado, rate limits, límite de cinco intentos, expiración, no-store y borrado cascade protegen el flujo. El reenvío reemplaza challenges pendientes.
 
-Las rutas de formulario backend, verify, informe y buzón son dev-only y el handler de correo local falla fuera de `import.meta.env.DEV`; no existe envío Gmail ni producción de campaña. Las retenciones de 30 días/24 horas son valores provisionales locales: el sweep de solicitudes expiradas no tiene scheduler ni ejecución automática. Antes de cualquier activación faltan texto/base legal, retención y purga aprobadas, tratamiento/derechos (incluido retiro de B/C), proveedor y seguridad operacional de correo. No hay CRM/GHL ni analytics. El generador PDF no se modifica; el informe usa solo el componente de pantalla existente y no añade descarga.
+Las rutas de formulario backend, verify, informe, buzón y mantenimiento/fixture son dev-only y el handler de correo local falla fuera de `import.meta.env.DEV`; no existe envío Gmail ni producción de campaña. Las retenciones de 30 días/24 horas son parámetros locales provisionales. Antes de cualquier activación faltan texto/base legal, retención aprobada, tratamiento/derechos (incluido retiro de B/C), proveedor y seguridad operacional de correo. No hay CRM/GHL ni analytics. El generador PDF no se modifica; el informe usa solo el componente de pantalla existente y no añade descarga.
 
 Sesiones previas sin `engineIdentity` no se reinterpretan ni son elegibles para report request; iniciar una sesión actual es requisito. Sin remote D1, correo real, deploy, commit o push. `GATE_B_PARTIAL`, QA-03B y ACT-04 quedan intactos.
 

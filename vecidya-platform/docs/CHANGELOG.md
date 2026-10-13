@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-12 — APP-MINI-00 contrato de aplicación cliente/minisitio
+
+- Reconciliada la frontera comercial con `VECIDYA_PRODUCT_CATALOG.md`: Cuadra no usa ni aprovisiona GHL; CRM y operación comercial GHL comienzan en Barrio, Ciudad amplía Barrio.
+- OPS-001 actualizado para excluir Cuadra del mapeo y del piloto, manteniendo la integración sin implementar y las capacidades/cuenta real sin verificar.
+- Definidos en `ARCHITECTURE.md` los dominios de autoridad, contrato de minisitio sobre la URL existente, permisos/gobernanza y gates de APP-MINI-01/02/03 y GHL-BARRIO-01. Estado y secuencia reconciliados en `STATUS.md`, `PROJECT_STATE.md` y `ROADMAP.md`.
+- Hallazgo para APP-MINI-01: comparador `/licencias` aún dice «Seguimiento: Básico» y «Automatización: Inicial» para Cuadra; no se cambió UI en APP-MINI-00.
+- Solo documentación; sin cambios funcionales, rutas, diagnóstico, schema/migraciones, pago, D1 remota, commit, push o deploy.
+
 ## 2026-10-12 — DIAG-V3-FUNNEL-01C (local)
 
 - Conectado el CTA del resumen V3 a solicitud local; finalidad de servicio requerida, opt-in comercial e investigación independientes y desmarcados por defecto.

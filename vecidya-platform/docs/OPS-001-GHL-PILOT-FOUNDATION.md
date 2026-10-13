@@ -1,7 +1,7 @@
 # OPS-001 — GHL Pilot Foundation
 
 **Estado:** PASS DOCUMENTAL / validación de cuenta pendiente
-**Fecha:** 2026-09-23
+**Fecha:** 2026-09-23 (alcance comercial reconciliado 2026-10-12)
 **Versión Vecidya:** `0.3.0` (sin impacto de versión)
 **Siguiente bloque:** OPS-002 — GHL Pilot Implementation
 
@@ -11,6 +11,14 @@ OPS-001 define la operación futura de HighLevel como infraestructura externa,
 sin implementar integración. No se añadieron tablas, migraciones, OAuth, API
 calls, webhooks, secretos, CRM propio, checkout, billing automático, páginas,
 precios públicos, cambios de producción ni WhatsApp/IA activos.
+
+**Frontera comercial vigente (reconciliación 2026-10-12):** Cuadra no incluye,
+no requiere ni aprovisiona GHL. CRM, contactos/oportunidades, pipeline,
+calendario CRM, formularios comerciales y automatizaciones comienzan en Barrio;
+Ciudad incluye Barrio con alcance multiproceso/avanzado. El perfil público,
+minisitio y Vecindario pertenecen a Vecidya para los tres planes. Este documento
+es la fundación documental de una fase futura, no evidencia de integración ni
+de capacidad habilitada en una cuenta real.
 
 La documentación oficial consultada el 2026-09-23 fue:
 
@@ -122,9 +130,9 @@ USD 10/location/mes es externa y no está validada en una cuenta Vecidya.
 
 | Producto Vecidya | Capacidad GHL | Configuración propuesta | Tipo de coste | Estado |
 | --- | --- | --- | --- | --- |
-| Cuadra | CRM, contactos, notas, tareas, oportunidades, 1 pipeline, 1 calendar | Base mínima y permisos documentados | A + D; C si usa canales | Planned / no implementado |
-| Barrio | Cuadra + forms, 1 landing, 1 calendar, workflows estándar y seguimiento | Snapshot/configuración repetible | A + D; C según canal | Planned / no implementado |
-| Ciudad | Barrio + hasta 3 pipelines, 5 forms, 3 calendars, 2 landings, automatizaciones y control | Configuración avanzada estándar | A + D; C según volumen | Planned / no implementado |
+| Cuadra | Sin GHL. Presencia y perfil público/minisitio en Vecidya | No aplica | No aplica | No requiere GHL; minisitio enriquecido pendiente de fases APP-MINI |
+| Barrio | CRM GHL: contactos, oportunidades, pipeline y capacidades comerciales estándar contratadas | Configuración repetible tras verificar cuenta, permisos y alcance | A + D; C según canal | Planned / no implementado |
+| Ciudad | Barrio + coordinación multiproceso, equipos y automatización avanzada | Configuración avanzada estándar tras verificar cuenta, permisos y alcance | A + D; C según volumen | Planned / no implementado |
 | WhatsApp | WhatsApp Integration | WABA, plantillas y reglas del canal | B + C + D | Optional / no implementado |
 | AI Voice | Voice AI | Agente, conocimiento, límites y teléfono | B + C + D | Optional / no implementado |
 | AI Chat | Conversation AI | Prompt, knowledge base, límites y revisión humana | B + C + D | Optional / no implementado |
@@ -136,17 +144,12 @@ la configuración real, no límites técnicos atribuidos a GHL sin prueba.
 
 ### Cuadra
 
-| Elemento | Estado | Observación |
-| --- | --- | --- |
-| Perfil público Vecidya | EXTERNAL | Vive en Vecidya; no se duplica en GHL |
-| CRM/contactos/notas/tareas/oportunidades | SUPPORTED WITH CONFIG | Capability core publicada; validar plan y permisos |
-| 1 pipeline | SUPPORTED WITH CONFIG | Debe definirse template y etapas |
-| Calendario | SUPPORTED WITH CONFIG | Debe definirse disponibilidad y zona horaria |
-| Social Planner | SUPPORTED WITH CONFIG | Validar canales y permisos de publicación |
-| Usuarios/soporte | NEEDS DECISION | Cuotas, roles y soporte Vecidya no equivalen a usuarios GHL |
-
-Cuadra es entregable solo como configuración operativa documentada; no cambia
-la licencia comercial ni se publica como integración activa en este bloque.
+Cuadra queda fuera de la integración y del aprovisionamiento GHL. Su presencia
+pública es propiedad de Vecidya: perfil y minisitio en `/vecindario/:slug`, con
+CTA externos directos que no crean contactos ni oportunidades en Vecidya. No
+se ofrece CRM, pipeline, calendario CRM, formulario comercial, Social Planner
+ni automatización como parte de Cuadra. La cuenta GHL real no altera esta
+frontera comercial.
 
 ### Barrio
 
@@ -172,7 +175,7 @@ Barrio no significa tres proyectos personalizados: las definiciones de
 | Reactivación y procesos recurrentes | SUPPORTED WITH CONFIG | Requiere definición de triggers, frecuencia y consentimiento |
 | Reporting operativo y control de equipo | SUPPORTED WITH CONFIG | Confirmar dashboards y acceso disponibles |
 
-Ciudad requiere un piloto previo de Cuadra/Barrio y no se activa por defecto.
+Ciudad requiere un piloto previo de Barrio y no se activa por defecto.
 
 ## 6. Definición operativa de «standard»
 
@@ -239,11 +242,12 @@ consistencia, privacidad, retención, eliminación y aislamiento tenant.
 
 ## 9. Piloto mínimo
 
-Objetivo: demostrar que una organización Vecidya puede recibir una entrega
-operativa mínima en HighLevel, sin activar todo el catálogo.
+Objetivo: demostrar que una organización Vecidya con Barrio o Ciudad puede
+recibir una entrega operativa mínima en HighLevel, sin activar todo el
+catálogo. Cuadra queda expresamente fuera del piloto.
 
 1. Una subaccount/location real.
-2. Un cliente/piloto autorizado.
+2. Un cliente/piloto autorizado con Barrio o Ciudad.
 3. Un pipeline estándar.
 4. Un calendar estándar.
 5. Un form estándar.
@@ -287,7 +291,7 @@ OPS-001 deja únicamente este contrato conceptual:
 OPS-002 — GHL Pilot Implementation puede comenzar únicamente después de:
 
 1. confirmar la cuenta real y su acceso;
-2. cerrar el alcance estándar de Cuadra/Barrio;
+2. cerrar el alcance estándar de Barrio/Ciudad (Cuadra está fuera de GHL);
 3. elegir un cliente autorizado;
 4. aprobar tratamiento de datos y canales;
 5. documentar el plan de rollback y costes;
