@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { getLearnArticle, learnArticles } from "../content/learn";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 
+import type { LearnBlock } from "../content/learn";
 import type { Route } from "./+types/learn-article";
 
 export function loader({ params }: Route.LoaderArgs) {
@@ -15,10 +16,58 @@ export function meta({ loaderData }: Route.MetaArgs) {
   if (!loaderData?.article) return publicMeta("Artículo no encontrado", "El artículo que buscas no está disponible.", "/aprende", "noindex, nofollow");
   const { article } = loaderData;
   return [
-    ...publicMeta(article.title, article.intro, `/aprende/${article.slug}`),
+    ...publicMeta(article.title, article.intro, `/aprende/${article.slug}`).filter((tag) => !("property" in tag && tag.property === "og:type")),
+    { property: "og:type", content: "article" },
     { property: "article:author", content: "Yoan Ortiz" },
     { property: "article:section", content: article.category },
   ];
+}
+
+function renderLearnBlock(block: LearnBlock, key: string) {
+  switch (block.type) {
+    case "paragraph":
+      return <p key={key}>{block.text}</p>;
+    case "list":
+      return <ul key={key}>{block.items.map((item) => <li key={item}>{item}</li>)}</ul>;
+    case "steps":
+      return <div className="learn-block learn-block--steps" key={key}><ol aria-label={block.label}>{block.items.map((item) => <li key={item.title}><strong>{item.title}</strong><p>{item.detail}</p></li>)}</ol></div>;
+    case "definitions":
+      return <div className="learn-block learn-block--definitions" key={key}><dl>{block.items.map((item) => <div key={item.term}><dt>{item.term}</dt><dd>{item.definition}</dd></div>)}</dl></div>;
+    case "example":
+      return <section className="learn-block learn-block--example" key={key} aria-label={block.hypothetical ? "Ejemplo hipotético" : "Ejemplo práctico"}>
+        {block.hypothetical && <p className="learn-block__eyebrow">Ejemplo hipotético</p>}
+        <h3>{block.title}</h3>
+        <p><strong>Situación:</strong> {block.context}</p>
+        <p><strong>Problema:</strong> {block.problem}</p>
+        <p><strong>Enfoque proporcional:</strong> {block.approach}</p>
+        <h4>Cómo aplicarlo</h4>
+        <ol>{block.actions.map((action) => <li key={action}>{action}</li>)}</ol>
+        <p><strong>Qué muestra:</strong> {block.lesson}</p>
+      </section>;
+    case "callout":
+      return <aside className={`learn-block learn-block--callout learn-block--${block.tone}`} key={key}>
+        <p className="learn-block__eyebrow">{block.tone === "tip" ? "Consejo" : "Precaución"}</p>
+        <h3>{block.title}</h3>
+        <p>{block.text}</p>
+      </aside>;
+    case "faq":
+      return <div className="learn-block learn-block--faq" key={key}>{block.items.map((item) => <details key={item.question}>
+        <summary>{item.question}</summary>
+        <p>{item.answer}</p>
+      </details>)}</div>;
+    case "sources":
+      return <ul className="learn-block learn-block--sources" key={key}>{block.items.map((item) => <li key={item.url}>
+        <a href={item.url} target="_blank" rel="noopener noreferrer">{item.label}</a>
+        <p>{item.scope}</p>
+      </li>)}</ul>;
+    case "summary":
+      return <aside className="learn-block learn-block--summary" key={key}>
+        <h3>Acciones recomendadas</h3>
+        <ul>{block.items.map((item) => <li key={item}>{item}</li>)}</ul>
+      </aside>;
+    default:
+      return null;
+  }
 }
 
 export default function LearnArticle({ loaderData }: Route.ComponentProps) {
@@ -48,6 +97,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
                   <h2>{section.heading}</h2>
                   {section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                   {section.bullets && <ul>{section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>}
+                  {section.blocks?.map((block, blockIndex) => renderLearnBlock(block, `${section.heading}-${blockIndex}`))}
                 </section>
               ))}
               <aside className="learn-article-cta">
