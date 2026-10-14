@@ -31,3 +31,8 @@ export function readDiagnosticDevInbox(requestId: string): LocalVerificationEmai
   if (!import.meta.env.DEV) return null;
   return inbox().get(requestId) ?? null;
 }
+
+export function discardDiagnosticDevInboxMessage(requestId: string): void {
+  if (!import.meta.env.DEV) return;
+  inbox().delete(requestId);
+}

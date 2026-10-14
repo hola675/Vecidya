@@ -1,6 +1,6 @@
 # Base de datos
 
-Última reconciliación: **2026-10-12 (DIAG-V3-FUNNEL-01C.1; no añade schema ni migraciones; 0014–0015 continúan solo en D1 local).** `0011`–`0013` son historial local retirado del runtime público y permanecen en journal. `vecidya-prod` no recibió estas migraciones y, conforme al último corte remoto documentado, sigue en `0010`.
+Última reconciliación: **2026-10-14 (DIAG-V3-FUNNEL-01C.2; sin schema ni migración nuevos).** `0014`–`0015` siguen solo en D1 local. `0011`–`0013` son historial local retirado del runtime público y permanecen en journal. `vecidya-prod` no recibió estas migraciones y, conforme al último corte remoto documentado, sigue en `0010`.
 
 ## FUNNEL-01C — datos de informe identificado (local)
 
@@ -12,6 +12,25 @@
 | `0015_diagnostic-request-fingerprint.sql` | Huella ligada a idempotency key y contenido | Aplicada `RAN` 2026-10-12 | No aplicada |
 
 La expiración invalida consultas de informe y `purgeExpiredIdentifiedReports()` ejecuta un batch idempotente accesible solo por una ruta dev manual; no hay scheduler/llamador automático. Limpia grants revocados/vencidos, snapshots/challenges vencidos y huérfanos, preferencias huérfanas, y solicitudes expiradas con cascade. B/C bajo una solicitud viva se conservan; no hay decisión aprobada de cuánto retenerlos. E2E local forzó un fallo en el borrado final y confirmó rollback completo, luego reejecutó con éxito. 30 días de solicitud/snapshot/acceso y 24 horas del challenge son valores de prueba provisionales, no política aprobada. No migrar/reinterpretar sesiones anteriores ni conectar analítica/GHL.
+
+## DIAG-V3-FUNNEL-01C.2 — matriz temporal, recuperación y derechos (2026-10-13)
+
+La corrida final de la matriz usó un Worker Vite y una D1 efímera aislada en `%LOCALAPPDATA%\Temp\kilo\vecidya-funnel-01c2-final2-d1`; se aplicaron migraciones solo allí. El E2E limpió sus solicitudes QA por ID y el buzón por requestId. Una lectura posterior encontró dos solicitudes/snapshots/challenges de correo distinto al alias de prueba, sin grants; se conservaron sin modificación por no tener procedencia conocida. Un temp previo con dos fixtures QA se limpió solo tras comprobar que no había otras filas. La D1 local compartida no se usó para purga ni limpieza en este checkpoint. No se añadió schema ni se accedió a D1 remota.
+
+| Entidad vigente | Finalidad | Expiración/acceso actual | Retención física / decisión |
+| --- | --- | --- | --- |
+| `identified_diagnostic_request` + hashes de idempotencia/huella | A: calcular y entregar el informe solicitado; identidad de contacto necesaria para verificación | La solicitud vencida no autoriza; 30 días parametrizados | Purga en cascada de la solicitud expirada; 30 días son provisionales, falta aprobación |
+| `diagnostic_report_snapshot` | A: conservar resultado exacto del motor ya calculado, incluidas puntuación/confianza y evidencias | Solo se lee con grant y si solicitud, snapshot y grant están vigentes; 30 días | Se elimina con solicitud; no recalcular al identificar/verificar/reintentar |
+| `verified_email_challenge` | A: confirmar control del email | Digest, TTL provisional 24 h, intentos/estado; cada challenge solo se consume una vez | Purga conforme al ciclo de la solicitud; no almacenar token en claro |
+| `diagnostic_report_access` | A: autorizar lectura del snapshot | Digest en cookie HttpOnly; estado revocado/vencido/solicitud vencida bloquea; TTL hasta 30 días | Cascade al borrar solicitud; expiración de acceso no equivale a borrar la solicitud |
+| `commercial_contact_intent` (B, opt-in separado) | Contacto comercial opcional | `revoked_at` preparado en schema; no existe endpoint operativo de revocación | Actualmente relacionado por FK/cascade; plazo y eventual evidencia separada pendientes de responsable/privacidad |
+| `diagnostic_research_intent` (C, opt-in separado) | Investigación/mejora voluntaria | `revoked_at` preparado en schema; no existe endpoint operativo de retirada | Actualmente relacionado por FK/cascade; plazo y eventual evidencia separada pendientes de responsable/privacidad |
+
+**Contrato de derechos propuesto, no implementado ni aprobado:** consultar B/C y retirar cada finalidad mediante `POST` same-origin con cookie de grant vigente, `HttpOnly`/`SameSite=Strict`, comparación del `requestId` contra el grant y actualización atómica, monotónica de `revoked_at`; nunca aceptar solo el UUID ni cambiar/recalcular el snapshot. La retirada no reautoriza una finalidad, no borra automáticamente A y no sincroniza con GHL (integración inexistente). Solicitar borrado requiere la misma prueba de autorización; el batch revoca acceso y elimina solicitud/snapshot/challenges/grants y preferencias, salvo que una política aprobada exija separar evidencia de consentimiento. No ejecutar ese borrado como política pública hasta aprobar tratamiento y plazos.
+
+**Recuperación propuesta para aprobación:** si el POST de verificación consuma el challenge y persiste un grant pero se pierde la respuesta, el navegador no recibe la cookie; repetir el token devuelve `404` y el endpoint actual de reenvío no acepta una solicitud ya `verified`. El E2E confirmó un solo grant y ningún acceso sin cookie. Se propone un endpoint de recuperación con respuesta genérica `202`, límites por IP/request, que solo envíe a la dirección ya almacenada un challenge nuevo de propósito explícito para una solicitud y snapshot todavía vigentes. Ese challenge no autoriza por ID: requiere el token de email y POST explícito, se consume una vez y, en una transacción, revoca grants anteriores e inserta uno solo nuevo sin recalcular el resultado. Requeriría aprobar contrato y posiblemente migración para distinguir el propósito del challenge; no se implementó. La alternativa actual de volver al resumen y crear otra solicitud no recupera el mismo snapshot y puede duplicar datos.
+
+No hay plazo final de retención aprobado para A/B/C, evidencia de consentimiento, analytics ni revisión de derechos. 24 h/30 d son parámetros técnicos de prueba, no política legal ni operativa.
 
 ## LEGACY-00 — disposición D1 diagnóstica
 

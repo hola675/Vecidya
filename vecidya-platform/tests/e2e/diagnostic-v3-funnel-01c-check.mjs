@@ -7,8 +7,9 @@ assertLocalBaseUrl();
 const edgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(edgePath) ? edgePath : undefined);
 const browser = await chromium.launch(executablePath ? { executablePath } : {});
-const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
-const screenshotDir = "tmp/diag-v3-funnel-01c/browser";
+const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+const page = await context.newPage();
+const screenshotDir = "tmp/diag-v3-funnel-01c2/browser";
 mkdirSync(screenshotDir, { recursive: true });
 const base = new URL(baseUrl);
 const fixtureRequestIds = [];
@@ -60,19 +61,85 @@ try {
   await page.getByRole("checkbox").nth(1).check();
   assert.equal(await page.getByRole("checkbox").nth(2).isChecked(), false, "investigación permanece opt-in independiente");
   const submitted = [];
+  const observedNetworkUrls = [];
+  page.on("request", (request) => observedNetworkUrls.push(request.url()));
   page.on("request", (request) => { if (new URL(request.url()).pathname === "/api/diagnostic/report-requests" && request.method() === "POST") submitted.push({ body: request.postDataJSON(), key: request.headers()["idempotency-key"] }); });
+  let loseFirstSubmitResponse = true;
+  await page.route("**/api/diagnostic/report-requests", async (route) => {
+    const upstream = await route.fetch();
+    if (loseFirstSubmitResponse) {
+      loseFirstSubmitResponse = false;
+      assert.equal(upstream.status(), 202, "el primer submit queda persistido antes de simular pérdida de respuesta");
+      await route.abort("failed");
+      return;
+    }
+    await route.fulfill({ response: upstream });
+  });
+  await page.getByRole("button", { name: "Solicitar acceso al informe" }).click();
+  await page.getByRole("alert").filter({ hasText: "No pudimos enviar la solicitud" }).waitFor();
+  assert.equal(submitted.length, 1, "el Worker recibió el submit cuya respuesta se perdió en el navegador");
   const responsePromise = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/diagnostic/report-requests" && response.request().method() === "POST");
   await page.getByRole("button", { name: "Solicitar acceso al informe" }).click();
   const response = await responsePromise;
+  await page.unroute("**/api/diagnostic/report-requests");
   const created = await response.json();
   fixtureRequestIds.push(created.requestId);
   assert.equal(response.status(), 202, "solicitud aceptada en D1 local");
   assert.equal(created.status, "verification_pending");
   assert.equal(Object.hasOwn(created, "report"), false, "POST no revela el informe");
-  assert.equal(submitted.length, 1);
+  assert.equal(submitted.length, 2);
+  assert.equal(submitted[0].key, submitted[1].key, "el retry conserva la clave idempotente tras perder la primera respuesta");
+  assert.deepEqual(submitted[0].body, submitted[1].body, "el retry conserva exactamente el payload original");
   assert.equal(submitted[0].body.fullName, "QA Funnel Sintético");
   assert.deepEqual(submitted[0].body.answers.map((entry) => entry.questionId), storedSession.answeredQuestionIds, "se envían las respuestas reales de la sesión local activa");
   await page.getByRole("heading", { name: "Revisa la verificación de tu correo" }).waitFor();
+
+  const expiryMatrix = await lifecycleFixture(created.requestId, "expiry_matrix");
+  assert.deepEqual(expiryMatrix.challengePending, [true, false, false], "challenge: before expiry is valid; exact and after are expired");
+  assert.deepEqual(expiryMatrix.requestPending, [true, false, false], "request: before expiry is valid; exact and after are expired");
+  assert.deepEqual(expiryMatrix.challengeConsume, [true, false, false], "one-use challenge consume is allowed only before expiry");
+  assert.equal(expiryMatrix.grantsAfterConsume, 1, "the fixed-clock successful consume emits one grant");
+  assert.deepEqual(expiryMatrix.authorizedRequest, [true, false, false], "expired request denies report access at exact boundary");
+  assert.deepEqual(expiryMatrix.authorizedSnapshot, [true, false, false], "expired snapshot denies report access at exact boundary");
+  assert.deepEqual(expiryMatrix.authorizedGrant, [true, false, false], "expired grant denies report access at exact boundary");
+  assert.equal(expiryMatrix.revokedAccess, false, "revoked grant cannot authorize even before its expiration");
+  assert.deepEqual(expiryMatrix.cascadeCounts, { requests: 0, snapshots: 0, challenges: 0, access: 0 }, "deleting the synthetic request cascades all associated rows");
+
+  const lostResponseFixture = await lifecycleFixture(created.requestId, "seed_lost_response_fixture");
+  const lostResponseRequestId = lostResponseFixture.requestId;
+  fixtureRequestIds.push(lostResponseRequestId);
+  const lostResponseMailbox = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).json();
+  const lostResponseLink = lostResponseMailbox.text.match(/https?:\/\/[^\s]+/u)?.[0];
+  const lostResponseToken = new URLSearchParams(new URL(lostResponseLink).hash.slice(1)).get("token");
+  assert.ok(lostResponseToken);
+  await page.goto(lostResponseLink, { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "Confirmar y abrir el informe" }).waitFor();
+  let lostVerifyUpstreamStatus = 0;
+  await page.route("**/api/diagnostic/email/verify", async (route) => {
+    if (route.request().postDataJSON().requestId !== lostResponseRequestId) return route.continue();
+    const upstream = await fetch(route.request().url(), {
+      method: "POST",
+      headers: { Origin: base.origin, "Content-Type": "application/json", "cf-connecting-ip": "198.51.100.11" },
+      body: route.request().postData(),
+    });
+    lostVerifyUpstreamStatus = upstream.status;
+    return route.abort("failed");
+  });
+  await page.getByRole("button", { name: "Confirmar y abrir el informe" }).click();
+  await page.getByRole("alert").filter({ hasText: "No pudimos completar la verificación" }).waitFor();
+  await page.unroute("**/api/diagnostic/email/verify");
+  assert.equal(lostVerifyUpstreamStatus, 200, "el Worker consumió el challenge y emitió el grant antes de perderse la respuesta");
+  assert.equal((await page.context().cookies(new URL(`/diagnostico/informe/${lostResponseRequestId}`, base).toString())).length, 0, "la cookie no llega al navegador cuando se pierde la respuesta");
+  const replayedConsumedToken = await page.evaluate(async ({ requestId, token, ip }) => {
+    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
+    return response.status;
+  }, { requestId: lostResponseRequestId, token: lostResponseToken, ip: "198.51.100.12" });
+  assert.equal(replayedConsumedToken, 404, "reintentar un token consumido no emite otro grant");
+  const lostState = await lifecycleFixture(lostResponseRequestId, "inspect");
+  assert.equal(lostState.counts.access, 1, "la respuesta perdida no duplica el grant ya persistido");
+  assert.equal(lostState.counts.consumedChallenges, 1, "el challenge consumido queda registrado una sola vez");
+  assert.equal((await page.request.get(new URL(`/diagnostico/informe/${lostResponseRequestId}`, base).toString())).status(), 404, "sin la cookie no hay acceso aunque exista un grant persistido");
+  assert.equal((await page.request.post(new URL(`/api/diagnostic/report-requests/${lostResponseRequestId}/resend`, base).toString(), { headers: { Origin: base.origin } })).status(), 404, "el reenvío actual no recupera una solicitud ya verificada sin cookie");
 
   const mailbox = await page.request.get(new URL(`/__dev/diagnostico/buzon/${created.requestId}`, base).toString());
   assert.equal(mailbox.status(), 200, "el mensaje solo está en el buzón local simulado");
@@ -81,43 +148,70 @@ try {
   const link = email.text.match(/https?:\/\/[^\s]+/u)?.[0];
   assert.ok(link, "el buzón contiene un enlace de verificación");
   const linkParameters = new URLSearchParams(new URL(link).hash.slice(1));
+  assert.equal(linkParameters.get("requestId"), created.requestId, "el buzón devuelve el enlace asociado a la solicitud solicitada");
   const emailToken = linkParameters.get("token");
   assert.ok(emailToken);
+  const scannerGets = await Promise.all([page.request.get(link), page.request.get(link)]);
+  assert.ok(scannerGets.every((get) => get.status() === 200), "prefetch y aperturas GET del enlace se sirven sin confirmar");
+  let fixtureState = await lifecycleFixture(created.requestId, "inspect");
+  assert.equal(fixtureState.counts.pendingChallenges, 1, "GET/prefetch conserva el challenge pendiente");
+  assert.equal(fixtureState.counts.consumedChallenges, 0, "GET/prefetch no consume challenge");
+  assert.equal(fixtureState.counts.access, 0, "GET/prefetch no crea grant");
   const unauthorizedContext = await browser.newContext();
   const unauthorized = await unauthorizedContext.request.get(new URL(`/diagnostico/informe/${created.requestId}`, base).toString());
   assert.equal(unauthorized.status(), 404, "el ID público de solicitud no abre el informe en otro contexto");
   await unauthorizedContext.close();
+  await page.goto(new URL("/diagnostico", base).toString(), { waitUntil: "domcontentloaded" });
   await page.goto(link, { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: "Confirmar y abrir el informe" }).waitFor();
   assert.equal(new URL(page.url()).hash, "", "token retirado del fragmento al cargar y no enviado en GET");
+  await page.goto(link, { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "Confirmar y abrir el informe" }).waitFor();
+  assert.ok(observedNetworkUrls.every((url) => !url.includes(emailToken)), "el token del fragmento no aparece en URLs enviadas por el navegador");
+  fixtureState = await lifecycleFixture(created.requestId, "inspect");
+  assert.equal(fixtureState.counts.pendingChallenges, 1, "visitas repetidas sin confirmar no consumen el challenge");
+  assert.equal(fixtureState.counts.access, 0, "la apertura automática no concede acceso");
   await lifecycleFixture(created.requestId, "lock_challenge");
-  const lockedResponse = await page.evaluate(async ({ requestId, token }) => {
-    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId, token }) });
+  const lockedResponse = await page.evaluate(async ({ requestId, token, ip }) => {
+    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
     return response.status;
-  }, { requestId: created.requestId, token: emailToken });
+  }, { requestId: created.requestId, token: emailToken, ip: "198.51.100.13" });
   assert.equal(lockedResponse, 404, "challenge bloqueado no se consume aunque el token original sea correcto");
-  const resendResponse = await page.request.post(new URL(`/api/diagnostic/report-requests/${created.requestId}/resend`, base).toString(), { headers: { Origin: base.origin } });
-  assert.equal(resendResponse.status(), 202, "el reenvío sustituye un challenge bloqueado");
+  const resendResponses = await Promise.all([0, 1].map(() => page.request.post(new URL(`/api/diagnostic/report-requests/${created.requestId}/resend`, base).toString(), { headers: { Origin: base.origin, "cf-connecting-ip": "198.51.100.20" } })));
+  const resendStatuses = resendResponses.map((response) => response.status());
+  assert.ok(resendStatuses.every((status) => status === 202 || status === 429), "reenvíos concurrentes se aceptan o limitan, sin error interno");
+  assert.ok(resendStatuses.includes(202), "al menos un reenvío concurrente sustituye el challenge bloqueado");
+  fixtureState = await lifecycleFixture(created.requestId, "inspect");
+  assert.equal(fixtureState.counts.pendingChallenges, 1, "dos reenvíos concurrentes dejan como máximo un challenge activo");
   const resentMailbox = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${created.requestId}`, base).toString())).json();
   const resentLink = resentMailbox.text.match(/https?:\/\/[^\s]+/u)?.[0];
   const resentToken = new URLSearchParams(new URL(resentLink).hash.slice(1)).get("token");
   assert.ok(resentToken && resentToken !== emailToken, "el reenvío crea un token nuevo");
   await page.goto(resentLink, { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: "Confirmar y abrir el informe" }).waitFor();
-  const replacedTokenResponse = await page.evaluate(async ({ requestId, token }) => {
-    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId, token }) });
+  const replacedTokenResponse = await page.evaluate(async ({ requestId, token, ip }) => {
+    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
     return response.status;
-  }, { requestId: created.requestId, token: emailToken });
+  }, { requestId: created.requestId, token: emailToken, ip: "198.51.100.14" });
   assert.equal(replacedTokenResponse, 400, "el token sustituido no verifica la solicitud");
-  const concurrentVerify = await page.evaluate(async ({ requestId, token }) => Promise.all([0, 1].map(async () => {
-    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId, token }) });
+  const verificationTabs = [page, await page.context().newPage()];
+  await verificationTabs[1].goto(resentLink, { waitUntil: "domcontentloaded" });
+  await verificationTabs[1].getByRole("button", { name: "Confirmar y abrir el informe" }).waitFor();
+  const verifyInTab = (tab) => tab.evaluate(async ({ requestId, token, ip }) => {
+    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
     return { status: response.status, body: await response.json() };
-  })), { requestId: created.requestId, token: resentToken });
+  }, { requestId: created.requestId, token: resentToken, ip: "198.51.100.15" });
+  const concurrentVerify = await Promise.all(verificationTabs.map(verifyInTab));
+  await verificationTabs[1].close();
   assert.equal(concurrentVerify.filter((entry) => entry.status === 200).length, 1, "dos verificaciones simultáneas solo consumen el challenge una vez");
-  assert.ok(concurrentVerify.every((entry) => entry.status === 200 || (entry.status >= 400 && entry.status < 500)), "la carrera perdedora falla cerrada sin respuesta exitosa");
+  assert.ok(concurrentVerify.every((entry) => entry.status === 200 || (entry.status >= 400 && entry.status < 500)), "dos pestañas concurrentes fallan cerradas salvo el único canje");
   const verified = concurrentVerify.find((entry) => entry.status === 200).body;
-  let fixtureState = await lifecycleFixture(created.requestId, "inspect");
+  fixtureState = await lifecycleFixture(created.requestId, "inspect");
   assert.equal(fixtureState.counts.access, 1, "una carrera no emite más de un grant");
+  assert.equal(fixtureState.counts.activeAccess, 1, "un solo grant queda activo tras dos pestañas");
+  assert.equal(fixtureState.counts.pendingChallenges, 0, "no quedan challenges incompatibles activos tras verificar");
+  assert.equal(fixtureState.counts.consumedChallenges, 1, "el challenge consumido queda registrado exactamente una vez");
+  assert.equal(fixtureState.counts.verifiedRequests, 1, "la solicitud pasa a verified una sola vez");
   const cookies = await page.context().cookies(new URL(verified.reportPath, base).toString());
   assert.equal(cookies.length, 1);
   assert.equal(cookies[0].httpOnly, true);
@@ -133,16 +227,67 @@ try {
   assert.equal(Object.hasOwn(secondRequestResponse.payload, "report"), false);
   const secondRequestId = secondRequestResponse.payload.requestId;
   fixtureRequestIds.push(secondRequestId);
-  const crossRequestToken = await page.evaluate(async ({ requestId, token }) => {
-    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestId, token }) });
+  const crossRequestToken = await page.evaluate(async ({ requestId, token, ip }) => {
+    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
     return response.status;
-  }, { requestId: secondRequestId, token: resentToken });
+  }, { requestId: secondRequestId, token: resentToken, ip: "198.51.100.16" });
   assert.ok(crossRequestToken >= 400 && crossRequestToken < 500, "un token válido para otra solicitud no autentica esta");
   const copiedCookieContext = await browser.newContext();
   await copiedCookieContext.addCookies(cookies);
   const crossRequestReport = await copiedCookieContext.request.get(new URL(`/diagnostico/informe/${secondRequestId}`, base).toString());
   assert.equal(crossRequestReport.status(), 404, "cookie/grant de una solicitud no abre el informe de otra");
   await copiedCookieContext.close();
+
+  const secondMailbox = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${secondRequestId}`, base).toString())).json();
+  const secondLink = secondMailbox.text.match(/https?:\/\/[^\s]+/u)?.[0];
+  const secondToken = new URLSearchParams(new URL(secondLink).hash.slice(1)).get("token");
+  assert.ok(secondToken);
+  const secondReportPath = `/diagnostico/informe/${secondRequestId}`;
+  const [secondResendResponse, initialSecondVerification] = await Promise.all([
+    page.request.post(new URL(`/api/diagnostic/report-requests/${secondRequestId}/resend`, base).toString(), { headers: { Origin: base.origin, "cf-connecting-ip": "198.51.100.21" } }),
+    page.evaluate(async ({ requestId, token, ip }) => {
+      const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
+      return response.status;
+    }, { requestId: secondRequestId, token: secondToken, ip: "198.51.100.22" }),
+  ]);
+  assert.ok([202, 404, 429].includes(secondResendResponse.status()), "reenvío concurrente no deja la ruta en error interno");
+  let secondVerification = initialSecondVerification;
+  if (initialSecondVerification !== 200) {
+    assert.ok([202, 429].includes(secondResendResponse.status()), "si el canje pierde la carrera, el challenge continúa o se sustituye sin emitir grant");
+    const latestMailbox = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${secondRequestId}`, base).toString())).json();
+    const latestLink = latestMailbox.text.match(/https?:\/\/[^\s]+/u)?.[0];
+    const latestToken = new URLSearchParams(new URL(latestLink).hash.slice(1)).get("token");
+    assert.ok(latestToken);
+    secondVerification = await page.evaluate(async ({ requestId, token, ip }) => {
+      const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
+      return response.status;
+    }, { requestId: secondRequestId, token: latestToken, ip: "198.51.100.23" });
+  }
+  assert.equal(secondVerification, 200, "la segunda solicitud obtiene un grant propio");
+  const secondFixtureState = await lifecycleFixture(secondRequestId, "inspect");
+  assert.equal(secondFixtureState.counts.pendingChallenges, 0, "verificación/reenvío concurrente no deja challenges activos incompatibles");
+  assert.equal(secondFixtureState.counts.consumedChallenges, 1, "el canje concurrente termina con un challenge consumido");
+  assert.equal(secondFixtureState.counts.activeAccess, 1, "el canje/reenvío concurrente crea exactamente un grant activo");
+  const secondReportUrl = new URL(secondReportPath, base).toString();
+  const [readDuringRevocation] = await Promise.all([
+    page.request.get(secondReportUrl),
+    lifecycleFixture(secondRequestId, "revoke_access"),
+  ]);
+  assert.ok([200, 404].includes(readDuringRevocation.status()), "lectura concurrente con revocación puede precederla o fallar cerrado");
+  assert.equal((await lifecycleFixture(secondRequestId, "inspect")).counts.activeAccess, 0, "la revocación invalida el grant existente");
+  assert.equal((await page.request.get(secondReportUrl)).status(), 404, "lecturas posteriores a revocar no sirven el informe");
+  await lifecycleFixture(secondRequestId, "restore_access");
+  assert.equal((await page.request.get(secondReportUrl)).status(), 200, "el fixture restaura únicamente el grant sintético para la prueba de borrado");
+  const [racingRead, racingDelete] = await Promise.all([
+    page.request.get(secondReportUrl),
+    page.request.delete(secondReportUrl, { headers: { Origin: base.origin } }),
+  ]);
+  assert.ok([200, 404].includes(racingRead.status()), "la lectura concurrente solo puede preceder al borrado o fallar cerrado");
+  assert.equal(racingDelete.status(), 204, "el borrado concurrente autorizado elimina la solicitud completa");
+  assert.equal((await page.request.get(new URL(secondReportPath, base).toString())).status(), 404, "ninguna lectura posterior recupera el informe borrado");
+  assert.equal((await lifecycleFixture(secondRequestId, "cleanup")).existed, false, "el DELETE del producto borró realmente la solicitud, no solo revocó el grant");
+  await page.context().addCookies(cookies);
+
   const reportResponse = await page.goto(new URL(verified.reportPath, base).toString(), { waitUntil: "domcontentloaded" });
   assert.match(reportResponse.headers()["cache-control"] ?? "", /no-store/u, "el informe protegido no se cachea públicamente");
   await page.waitForTimeout(1200);
@@ -205,10 +350,16 @@ try {
 
   await page.goto(new URL(verified.reportPath, base).toString(), { waitUntil: "domcontentloaded" });
   assert.equal(await page.locator(".rp-doc").count(), 0, "solicitud purgada deja el informe inaccesible");
+  const lostFixtureCleanup = await lifecycleFixture(lostResponseRequestId, "cleanup");
+  assert.equal(lostFixtureCleanup.existed, true, "cleanup borra exactamente la solicitud sintética verificada con respuesta perdida");
+  assert.equal((await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).status(), 404, "cleanup retira el mensaje sintético con el token del buzón local");
+  const alreadyPurged = await lifecycleFixture(created.requestId, "cleanup");
+  assert.equal(alreadyPurged.existed, false, "cleanup acotado es idempotente y limpia también el buzón de la fixture purgada");
   console.log("diagnostic-v3-funnel-01c-check: PASS — recorrido 01C, verificación concurrente, grant único, cookie, idempotencia concurrente, integridad snapshot y purga D1 atómica/idempotente");
 } finally {
-  for (const requestId of fixtureRequestIds.reverse()) {
-    try { await lifecycleFixture(requestId, "cleanup"); } catch {}
+  try {
+    for (const requestId of fixtureRequestIds.reverse()) await lifecycleFixture(requestId, "cleanup");
+  } finally {
+    await browser.close();
   }
-  await browser.close();
 }

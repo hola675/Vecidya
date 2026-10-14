@@ -65,12 +65,17 @@ try {
     }
   });
 
-  await page.goto(route, { waitUntil: "networkidle" });
+  await page.goto(route, { waitUntil: "load" });
   await page.evaluate(({ sessionKey, summaryPrefix }) => {
     localStorage.removeItem(sessionKey);
     for (const key of Object.keys(localStorage)) if (key.startsWith(summaryPrefix)) localStorage.removeItem(key);
   }, { sessionKey, summaryPrefix });
-  await page.reload({ waitUntil: "networkidle" });
+  await page.reload({ waitUntil: "load" });
+  await page.waitForFunction(() => {
+    const button = [...document.querySelectorAll("button")].find((element) => element.textContent?.trim() === "Empezar diagnóstico");
+    const propsKey = button && Object.keys(button).find((key) => key.startsWith("__reactProps$"));
+    return Boolean(propsKey && typeof button?.[propsKey]?.onClick === "function");
+  });
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   await page.waitForSelector(".df-option__input");
 
