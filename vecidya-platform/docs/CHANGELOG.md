@@ -1,11 +1,18 @@
 # Changelog
 
-## 2026-10-12 — DIAG-V3-FUNNEL-01C.1 `IDENTIFICATION_HARDENING_PARTIAL`
+## 2026-10-14 — APP-MINI-01 (local, pendiente de aceptación visual)
 
-- El reemplazo de challenge vuelve a comprobar estado y expiración de solicitud dentro de las sentencias del batch; el informe compara identidad/versiones y hash del snapshot antes de servir datos.
-- La purga D1 local separa la expiración de grants/snapshots/challenges de la eliminación de solicitud y preferencias; conserva B/C vinculadas a solicitudes vigentes y no programa ejecución automática.
-- E2E local cubre challenge bloqueado/reemplazado, verificación/idempotencia concurrentes, grant único, cookie entre solicitudes, snapshot manipulado, purga parcial, rollback inducido e idempotencia. Rutas de purga y fixture solo dev; fixture acepta únicamente la identidad sintética del E2E. Igualdad exacta de expiración, expiración aislada, doble pestaña, pérdida de respuesta y carrera borrar/leer quedan NOT_RUN.
-- Sin migración/schema, datos históricos, scoring, QA-03B, GHL, PDF, push o deploy. 24h/30d siguen provisionales; sin aprobación legal/privacidad.
+- Dashboard `/app` destaca progreso real del perfil, estado y siguiente acción; la navegación existente identifica el editor como «Mi negocio».
+- Editor `/app/business-profile` organiza campos por identidad, presentación, ubicación/contacto y modalidad/cobertura; incorpora preview inline privado y en vivo de campos y horarios sin guardar/publicar ni permitir abrir enlaces.
+- `/vecindario/:slug` presenta hero con contacto principal del negocio, descripción opcional, detalles de atención, horarios existentes y navegación al directorio. Enlaces de teléfono/web/email/redes se limitan a destinos seguros; se preservan publicación, slug canónico, SEO y gobernanza.
+- `/licencias` especifica que Cuadra no incluye seguimiento ni automatizaciones CRM. Sin nuevas rutas, D1, migraciones, campos, GHL, pagos, deploy, commit o push. E2E de perfil/slug/licencias, typecheck y build PASS; queda pendiente aceptación visual.
+
+## 2026-10-14 — DIAG-V3-FUNNEL-01C.2 `IDENTIFICATION_HARDENING_PARTIAL`
+
+- El fixture dev de diagnóstico permite probar con reloj fijo los límites `expiresAt - 1 / expiresAt / expiresAt + 1` en D1 y se limpia por ID sintético, incluso si la purga o un DELETE previo ya retiró la fila.
+- E2E Worker local cubre dos reenvíos, verify/re-send, dos pestañas consumiendo un token, GET/prefetch no consumibles, grants/cookies cruzados, revocación/lectura, borrado/lectura y rollback de purga. Un canje confirmado con respuesta abortada deja un grant, no cookie; reusar el token devuelve 404 sin duplicar grant.
+- No se implementa recuperación de la solicitud ya verificada sin cookie: se registra contrato propuesto de nuevo challenge de recuperación por email, pendiente de aprobación. B/C cuentan con campos de revocación pero no con API operativa; retención, aviso/base y evidencia de consentimiento siguen pendientes.
+- Sin schema/migración nueva, scoring, QA-03B, GHL, correo real, PDF, cron, push o deploy. 24h/30d siguen provisionales; sin aprobación legal/privacidad.
 
 ## 2026-10-12 — APP-MINI-00 contrato de aplicación cliente/minisitio
 

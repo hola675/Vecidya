@@ -1,6 +1,6 @@
 # Estructura del código
 
-Última reconciliación: 2026-10-12 (FUNNEL-01C local, D1 local y rutas dev-only; sin deploy). Rutas del código verificadas contra `app/routes.ts`; la tabla describe el árbol local, no afirma que los cambios sin deploy estén en producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas para rutas desplegadas. Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
+Última reconciliación: 2026-10-14 (APP-MINI-01 local; sin nuevas rutas, schema, migraciones ni deploy). Rutas del código verificadas contra `app/routes.ts`; la tabla describe el árbol local, no afirma que los cambios sin deploy estén en producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas para rutas desplegadas. Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
 
 ## LEGACY-00 — inventario de rutas (baseline `50026d0`)
 
@@ -30,7 +30,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     ├── app/                    interfaz React Router
     │   ├── routes.ts           registro público/app/API + rutas dev condicionales
     │   ├── routes/             archivos registrados y fuentes no registradas
-    │   ├── components/         public-layout, public-v2, admin-shell, ui, diagnostic-result/, diagnostic-flow/ (V3 público + ACT + QA-03B), diagnostic-methodology/, diagnostic-report/ (adaptador compartido)
+    │   ├── components/         public-layout, public-v2, public-business-profile-view, admin-shell, ui, diagnostic-result/, diagnostic-flow/ (V3 público + ACT + QA-03B), diagnostic-methodology/, diagnostic-report/ (adaptador compartido)
     │   ├── assets/public-assets.ts   manifiesto de assets públicos
     │   ├── content/public-copy.ts    acciones y fronteras comerciales compartidas
     │   ├── lib/auth-client.ts  cliente Better Auth
@@ -73,13 +73,13 @@ D:\Proyectos\Vecidya            (raíz Git)
 | Ruta | Archivo | Datos | Auth | Estado | E2E | Pub. |
 | --- | --- | --- | --- | --- | --- | --- |
 | `/` | `home.tsx` | estático | — | funcional | `px-a` (200/meta/overflow) | sí |
-| `/licencias` | `licenses.tsx` | estático | — | funcional local / release ready | `licenses` | sí local; deploy pendiente |
+| `/licencias` | `licenses.tsx` | estático | — | Cuadra declara sin CRM, seguimiento ni automatizaciones | `licenses` | cambios APP-MINI-01 locales; deploy pendiente |
 | `/addons` | `addons.tsx` | estático | — | funcional local / release ready | `addons` | sí local; deploy pendiente |
 | `/servicios` | `services.tsx` | estático | — | funcional | `px-a` (200/overflow) | sí |
 | `/unete` | `join.tsx` | estático | — | funcional | `join-contact` | sí |
 | `/contacto` | `contact.tsx` | estático (`mailto`, WhatsApp directo `wa.me` y canal oficial de WhatsApp; sin grupo comunitario desde 2026-09-25) | — | funcional | `px-a`, `join-contact` | sí |
 | `/vecindario` | `directory.tsx` | D1 lista+filtros | — | funcional | `px-a`, `pg-c1`, `d1` | sí |
-| `/vecindario/:slug` | `public-business-profile.tsx` | D1 perfil+horarios | — | funcional (404 si no publicado/suspendido); UI de `0007`–`0009` desplegada | `px-a`, `c1`, `c2`, `d1`, `pg-c1` | sí (perfil `vecidya`) |
+| `/vecindario/:slug` | `public-business-profile.tsx` + `public-business-profile-view.tsx` | D1 perfil+horarios | — | minisitio base local; conserva 404 si no publicado/suspendido | `bpx`, `slug-life` | base `0007`–`0009` desplegada; APP-MINI-01 local |
 | `/diagnostico` | `diagnostic.tsx` + `AnonymousDiagnosticFlow` | respuestas en localStorage; Worker calcula resumen V3; solicitud identificada dev-only y snapshot D1 local | — | FUNNEL-01B/01C local; no publicado | `diagnostic`, `funnel-01b`, `funnel-01c` | publicación previa sin FUNNEL-01B; requiere deploy para actualizar |
 | `/diagnostico/metodologia` | `diagnostico-metodologia.tsx` | metodología evergreen | — | funcional | methodology | sí (histórico) |
 | `/diagnostico/verificar` | `dev-diagnostic-verify-email.tsx` | fragmento efímero + confirmación explícita | No | solo desarrollo; email simulado | `funnel-01c` | no |
@@ -104,11 +104,11 @@ D:\Proyectos\Vecidya            (raíz Git)
 
 | Ruta | Archivo | Guarda | Organización | Datos | Estado | E2E | Pub. |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `/app` | `app.tsx` | `requireSession` + `getActiveOrganization` | activa (revalidada; stale o ajena → 403) | org, perfil, servicios, miembros | funcional | `pe-b`, `px-b` (roto), `authz` | sí |
+| `/app` | `app.tsx` | `requireSession` + `getActiveOrganization` | activa (revalidada; stale o ajena → 403) | org, perfil, servicios, miembros | progreso, publicación y siguiente acción reales; sin métricas CRM | `bpx`, `pe-b`, `px-b` (roto), `authz` | APP-MINI-01 local |
 | `/app/account` | `account.tsx` | `requireSession` + `getActiveOrganization` | activa (stale o ajena → 403) | usuario | funcional (solo nombre) | `acct`, `authz` | sí |
 | `/app/organization` | `organization.tsx` | activa + `member:read`; acciones con permiso propio + recurso de la organización (`requireOrganizationMemberTarget`, `requireOrganizationInvitationTarget`); cancelar solo si la invitación sigue pendiente | activa | miembros, invitaciones pendientes vigentes e historial | funcional; UI pulida (INVITE-UI-001, `0.5.4` local) | `team-ui`, `authz`, `invite-flow`, `members` (`TEST-D1-RESET-001`) | sí |
 | `/app/invitations/:invitationId` | `invitation.tsx` | pública; detalles solo para el destinatario (`db/invitation-rules.ts`); aceptar lo hace Better Auth con el correo verificado de la sesión | la de la invitación | invitación + organización (D1), Better Auth | funcional: estados controlados 200/403/404/410 (INVITE-001) | `invite-flow`, `invitations`, `authz` | sí |
-| `/app/business-profile` | `business-profile.tsx` | `requireOrganization` + `business-profile:read/update/publish` | activa | perfil, horarios | funcional; secciones `0007`/`0008` desplegadas | `bpx`, `c1`, `c2`, `pe-b`, `authz` | sí |
+| `/app/business-profile` | `business-profile.tsx` | `requireOrganization` + `business-profile:read/update/publish` | activa | perfil, horarios | editor agrupado y preview privado inline; sin ruta ni cambio de permisos | `bpx`, `slug-life`, `pe-b`, `authz` | base `0007`/`0008` desplegada; APP-MINI-01 local |
 | `/app/services` | `services-app.tsx` | `requireSession` + `getActiveOrganization` | activa | `organization_service` | funcional (solo lectura) | `services-exp`, `pe-b`, `authz` | sí |
 
 ### INTERNAL ADMIN (8) — todas con `requirePlatformAdmin`

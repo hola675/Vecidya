@@ -145,9 +145,12 @@ export default function AppPage() {
 
           <section aria-label="Estado de tu negocio" className="app-state-grid">
             <Card className="app-state-tile">
-              <p className="eyebrow">PERFIL PÚBLICO</p>
+              <p className="eyebrow">MI NEGOCIO</p>
               <strong>{businessProfile ? (businessProfile.status === "published" ? "Publicado" : "Borrador") : "Sin crear"}</strong>
-              <p>{businessProfile ? `${businessProfileCompletion.completed} de ${businessProfileCompletion.total} áreas preparadas.` : "Crea tu perfil para empezar."}</p>
+              <div aria-label={`${businessProfileCompletion.percentage}% del perfil completado`} className="completion-track app-state-tile__progress" role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={businessProfileCompletion.percentage}>
+                <span style={{ width: `${businessProfileCompletion.percentage}%` }} />
+              </div>
+              <p>{businessProfile ? `${businessProfileCompletion.percentage}% · ${businessProfileCompletion.completed} de ${businessProfileCompletion.total} campos mínimos completos.` : "Crea tu perfil para empezar."}</p>
             </Card>
             <Card className="app-state-tile">
               <p className="eyebrow">SERVICIOS VECIDYA</p>
@@ -164,7 +167,7 @@ export default function AppPage() {
           <section aria-label="Acciones rápidas" className="app-quick-actions">
             <p className="eyebrow">ACCIONES RÁPIDAS</p>
             <div className="app-quick-actions__grid">
-              <Link className="app-quick-action" to="/app/business-profile"><Icon name="building" />Editar perfil</Link>
+              <Link className="app-quick-action" to="/app/business-profile"><Icon name="building" />Editar mi negocio</Link>
               {businessProfile?.status === "published" ? (
                 <Link className="app-quick-action" to={`/vecindario/${businessProfile.slug}`}><Icon name="eye" />Ver página pública</Link>
               ) : null}

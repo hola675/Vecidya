@@ -5304,6 +5304,80 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .dr-method__body { display: grid !important; }
   .dr-step-list::before { display: none; }
 }
+
+/* APP-MINI-01: perfil comercial, vista privada y estados reales. */
+.app-state-tile__progress { width: 100%; margin: 0.3rem 0 0.15rem; }
+.business-profile-page { max-width: 68rem; }
+.business-profile-heading-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 0.75rem; }
+.business-profile-form fieldset:not(:last-of-type) { border-bottom: 1px solid var(--line); padding-bottom: 1.5rem; }
+.business-profile-form .form-grid input,
+.business-profile-form .form-grid select { min-height: 2.75rem; }
+.business-profile-form .form-grid textarea { min-height: 6rem; }
+.business-profile-form input:focus-visible,
+.business-profile-form textarea:focus-visible,
+.business-profile-form select:focus-visible { outline: 3px solid rgb(21 95 197 / 48%); outline-offset: 2px; }
+.business-profile-preview { display: grid; gap: 1rem; margin: 0 0 1rem; }
+.business-profile-preview[hidden] { display: none; }
+.business-profile-preview__notice { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.35rem 0.75rem; border: 1px solid rgb(21 95 197 / 20%); border-radius: var(--radius-sm); padding: 0.85rem 1rem; color: #163f70; background: #f1f7ff; }
+.business-profile-preview__notice span { color: var(--muted); line-height: 1.5; }
+.business-profile-preview__site { display: grid; gap: 1.25rem; border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(1rem, 3vw, 2rem); background: var(--canvas); }
+.business-profile-preview__site .public-business-profile__header { padding: clamp(1.25rem, 3vw, 2.5rem); }
+.business-profile-preview__site .public-business-profile__header h1 { margin-top: 0; }
+.business-profile-preview__site .public-business-profile__grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); }
+.business-profile-preview__site .public-business-profile__grid--single { grid-template-columns: 1fr; }
+.business-profile-preview__site .public-business-profile__details,
+.business-profile-preview__site .public-business-profile__hours { grid-column: auto; }
+.business-profile-preview__site .button[aria-disabled="true"] { cursor: default; }
+.public-business-profile__identity { min-height: 12rem; }
+.public-business-profile__identity img { width: min(9rem, 45vw); height: min(9rem, 45vw); object-fit: contain; background: #fff; }
+.public-business-profile__monogram { display: grid; width: min(9rem, 45vw); aspect-ratio: 1; place-items: center; border: 1px solid rgb(21 95 197 / 14%); border-radius: 1.6rem; color: var(--blue); font-size: clamp(3rem, 7vw, 5rem); font-weight: 800; background: linear-gradient(145deg, #fff, #edf5ff); }
+.public-business-profile__intro { min-width: 0; }
+.public-business-profile__header h1 { margin: 0; overflow-wrap: anywhere; font-size: clamp(2.2rem, 5vw, 4.25rem); line-height: 1.02; text-wrap: balance; }
+.public-business-profile__metadata { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.public-business-profile__metadata li { max-width: 100%; border: 1px solid rgb(21 95 197 / 14%); border-radius: 999px; padding: 0.4rem 0.75rem; color: #244d7d; font-size: 0.9rem; font-weight: 700; overflow-wrap: anywhere; background: rgb(255 255 255 / 88%); }
+.public-business-profile__hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.3rem; }
+.public-business-profile__hero-actions .button,
+.public-business-profile__contact .button { min-height: 2.75rem; }
+.public-business-profile__grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); }
+.public-business-profile__grid--single { grid-template-columns: 1fr; }
+.public-business-profile__description { min-height: 0; align-self: start; }
+.public-business-profile__side { display: grid; min-width: 0; gap: 1rem; }
+.public-business-profile__details,
+.public-business-profile__hours { grid-column: auto; }
+.public-business-profile__description h2,
+.public-business-profile__contact h2,
+.public-business-profile__details h2,
+.public-business-profile__hours h2 { margin-top: 0; }
+.public-business-profile__contact h3 { margin: 0; font-size: 1rem; }
+.public-business-neighborhood { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem 2rem; border-top: 1px solid var(--line); padding: 1.5rem 0 0; }
+.public-business-neighborhood h2 { margin: 0; font-size: clamp(1.2rem, 2.4vw, 1.6rem); }
+.public-business-neighborhood p { margin: 0.35rem 0 0; color: var(--muted); line-height: 1.55; }
+
+@media (max-width: 820px) {
+  .business-profile-heading-actions { justify-content: flex-start; }
+  .public-business-profile__grid,
+  .public-business-profile__grid--single,
+  .business-profile-preview__site .public-business-profile__grid,
+  .business-profile-preview__site .public-business-profile__grid--single { grid-template-columns: 1fr; }
+  .business-profile-preview__site .public-business-profile__header { grid-template-columns: 1fr; }
+  .public-business-profile__identity { min-height: 8rem; }
+}
+
+@media (max-width: 520px) {
+  .business-profile-page { width: 100%; padding: 1.25rem 1rem 2rem; }
+  .business-profile-heading-actions { align-items: stretch; }
+  .business-profile-heading-actions .button { flex: 1 1 100%; }
+  .business-profile-preview__site { padding: 0.75rem; }
+  .business-profile-preview__site .public-business-profile__header { padding: 1.1rem; }
+  .business-profile-preview__site .public-business-profile__grid { gap: 0.75rem; }
+  .public-business-profile__header { grid-template-columns: 1fr; gap: 1rem; padding: 1.25rem; }
+  .public-business-profile__identity { min-height: 7rem; }
+  .public-business-profile__hero-actions { display: grid; }
+  .public-business-profile__hero-actions .button,
+  .public-business-neighborhood .button { width: 100%; }
+  .public-business-neighborhood { align-items: stretch; }
+}
+
 /* VEC-APRENDE-02: bloques editoriales del piloto, aislados de otras páginas. */
 .learn-article-body .learn-block { min-width: 0; margin-top: 1.15rem; }
 .learn-article-body .learn-block h3 { margin: 0 0 0.55rem; font-size: 1.2rem; line-height: 1.3; }

@@ -49,8 +49,8 @@ try {
 
   const page = await context.newPage();
   const nameInput = page.getByLabel("Nombre visible", { exact: true });
-  const slugInput = page.getByLabel("Slug", { exact: true });
-  const heading = () => page.locator("main h1").textContent();
+  const slugInput = page.getByLabel("Enlace público", { exact: true });
+  const heading = () => page.locator("main h1:visible").textContent();
   const feedback = async () => (await page.locator(feedbackSelector).allTextContents()).join(" | ");
   let profilePosts = 0;
   page.on("request", (request) => {
@@ -96,7 +96,7 @@ try {
   }
 
   async function fillPublicationFields() {
-    await page.getByLabel("Descripción corta", { exact: true }).fill("Perfil de prueba del ciclo de vida del slug.");
+    await page.getByLabel("Descripción breve", { exact: true }).fill("Perfil de prueba del ciclo de vida del slug.");
     await page.getByLabel("Categoría", { exact: true }).fill("Pruebas");
   }
 

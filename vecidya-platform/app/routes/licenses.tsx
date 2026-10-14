@@ -65,8 +65,8 @@ const comparisonRows = [
   { label: "Objetivo", values: ["Ordenar", "Captar", "Automatizar"] },
   { label: "Etapa", values: ["Inicio", "Crecimiento", "Escala"] },
   { label: "Organización", values: ["Base", "Base", "Base"] },
-  { label: "Seguimiento", values: ["Básico", "Completo", "Operativo"] },
-  { label: "Automatización", values: ["Inicial", "Estándar", "Avanzada"] },
+  { label: "Seguimiento CRM", values: ["No incluido", "Estándar", "Avanzado"] },
+  { label: "Automatizaciones CRM", values: ["No incluidas", "Estándar", "Avanzadas"] },
 ] as const;
 
 export function meta(_: Route.MetaArgs) {

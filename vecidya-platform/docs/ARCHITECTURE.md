@@ -48,16 +48,75 @@ requieren el contexto de organización activa revalidado y los permisos existent
 lectura. Mantener slug estable y gobernanza vigente; una licencia no anula una
 suspensión ni despublica retroactivamente perfiles publicados.
 
-### Secuencia autorizada
+### Secuencia y estado de checkpoints
 
-APP-MINI-00 reconcilia contrato y documentos. APP-MINI-01 requiere autorización
-propia antes de cualquier cambio de UI/código; APP-MINI-02 requiere decidir
-schema, aislamiento y almacenamiento (incluida aprobación de R2 antes de
-galería); APP-MINI-03 debe exponer estado/derechos reales sin pagos automáticos.
-GHL-BARRIO-01 es independiente y no empieza sin cuenta, permisos/scopes reales y
-autorización. El copy comparativo actual de `/licencias` todavía rotula
-«Seguimiento: Básico» y «Automatización: Inicial» en Cuadra; es una ambigüedad
-detectada para corregir dentro de APP-MINI-01, no una capacidad ejecutable.
+APP-MINI-00 reconcilió el contrato comercial/documental. APP-MINI-01 quedó
+implementado y validado localmente tras autorización explícita: dashboard con
+estado real, editor por secciones, preview privada inline y perfil público base
+con CTA directas seguras. No necesitó una ruta, esquema o migración nueva; el
+registro de rutas, permisos, slug canónico, SEO y publicación se preservaron.
+El cierre técnico local quedó confirmado el 2026-10-14: E2E de experiencia,
+ciclo de slug y licencias; typecheck/build/diff-check; página pública HTTP 200
+con runtime activo y seis capturas responsive renovadas en
+`.playwright-mcp/app-mini-01-{dashboard,editor,public}-{desktop,mobile}.png`.
+No está desplegada.
+
+### APP-MINI-02A — contrato del núcleo modular (2026-10-14)
+
+**Diseño aprobado; implementación pendiente.** Un registro versionado en código
+es la autoridad de plantillas y módulos; D1 contiene exclusivamente selección y
+configuración estructural validada, nunca JSX/HTML/CSS/JavaScript ejecutable,
+medios ni blobs. Las familias registradas son `services`, `catalog`,
+`gastronomy` y `professional`, pero solo una plantilla compatible con la página
+actual será seleccionable hasta que las otras tengan renderers implementados.
+El registro modular incluye los tipos futuros; disponibilidad define cuáles se
+pueden configurar y renderizar en cada checkpoint.
+
+La persistencia prevista conserva una fila `miniweb_site` por organización y
+filas `miniweb_module` únicamente para configuración que deba persistirse; no
+hay migración masiva. La configuración editable de filas/módulos es draft. La
+publicación guarda un snapshot acotado y versionado de **configuración** en el
+sitio, y el renderer público consume ese snapshot; inicializar configuración
+para un MiniWeb ya publicado debe partir de su default virtual para mantener la
+salida existente hasta que el cliente publique explícitamente. El snapshot no
+duplica `business_profile`, `business_hours` ni `business_profile_governance`:
+los renderers permiten únicamente esos datos vigentes a través de DTOs
+allowlisted. Sin fila se resuelve un default virtual compatible, con orden
+determinista; perfiles borrador/suspendidos permanecen excluidos por las guardas
+públicas existentes.
+
+La primera plantilla conserva la URL canónica `/vecindario/:slug`; su compositor
+renderiza módulos registrados por orden y omite aquellos desactivados o sin
+contenido útil. En 02A solo se activan los módulos derivables de datos actuales
+(`hero`, `about`, `contact`, `hours` y `location/context` cuando haya evidencia
+suficiente). `services` espera a `business_offering` en 02B; galería, productos,
+artículos y FAQ no aparecen como opciones activas. `organization_service` sigue
+reservado a servicios Vecidya contratados. Para 02E se deben poder proyectar
+categoría, especialidades/tags, ubicación/área/modalidad, ofertas públicas y
+módulos activos; categoría, oferta comercial del negocio y servicio Vecidya son
+conceptos distintos.
+
+Los cambios de orden/activación/configuración guardados quedan en draft y no
+afectan el snapshot público hasta una acción explícita de publicar. Las
+escrituras revalidan sesión, organización activa, membresía, permiso y tenant;
+`template_key`, `module_type`, disponibilidad, variantes y settings se validan
+contra los registries y schemas server-side. Member conserva lectura solamente;
+owner/admin usan los permisos de perfil vigentes. No se introduce CRM, editor
+libre ni dependencia de GHL.
+
+**Límite de publicación que 02B debe resolver:** el snapshot de 02A separa la
+configuración de módulos, no versiona el contenido de `business_profile` ni los
+futuros contenidos estructurados. El comportamiento de edición/publicación de
+esos datos sigue siendo el existente; antes de añadir contenido en 02B se debe
+decidir si el MiniWeb necesita un snapshot público completo que permita editar
+sin exposición parcial. No presentar el snapshot estructural de 02A como una
+solución completa de publicación de contenido ni crear un historial de revisiones
+sin necesidad demostrada.
+
+APP-MINI-03 debe exponer estados/derechos reales sin pagos automáticos.
+GHL-BARRIO-01 es independiente y no empieza sin cuenta, permisos/scopes reales
+y autorización. El copy de `/licencias` aclara que Cuadra no incluye seguimiento
+ni automatizaciones CRM.
 
 ## VECIDYA-LEGACY-00 — inventario y consolidación (2026-10-12)
 
@@ -138,7 +197,7 @@ El replace de challenge es un batch con precondición de solicitud pendiente/no 
 
 `purgeExpiredIdentifiedReports` es invocable manualmente solo por la ruta dev de mantenimiento local. En un batch elimina access expirado/revocado/huérfano, snapshots expirados/huérfanos, challenges expirados/huérfanos sin grant vigente y preferencias huérfanas; finalmente borra solicitudes expiradas con cascade. B/C ligadas a una solicitud viva se conservan aunque caduquen grants/snapshot/challenges: expiración de acceso y eliminación física son pasos separados, y no se fija retención legal de preferencias. No existe scheduler. E2E local induce aborto en el DELETE final y observa rollback del batch completo; retira el trigger de fixture antes de repetir.
 
-El helper dev de fixture opera solo sobre la dirección sintética fija del E2E, con operaciones enumeradas y sin consulta SQL arbitraria. Tanto helper como purga desaparecen del route config de producción (`NODE_ENV=production`); no son controles utilizables como API de producto. Estado `IDENTIFICATION_HARDENING_PARTIAL`: las rutas cubiertas pasan localmente, pero faltan igualdad exacta en el instante de expiración, expiraciones aisladas, doble pestaña, reintento tras respuesta perdida y carrera borrar/leer. No equivale a aprobación de privacidad/retención ni habilita uso real. 24 horas y 30 días siguen provisionales; permanecen pendientes aviso/base, retención final, derechos/revocación operativa, proveedor email, protección contra scanner real, observabilidad operacional y publicación. Sin schema nuevo ni reinterpretación histórica.
+El helper dev de fixture opera solo sobre la dirección sintética fija del E2E, con operaciones enumeradas y sin consulta SQL arbitraria. Tanto helper como purga desaparecen del route config de producción (`NODE_ENV=production`); no son controles utilizables como API de producto. En `DIAG-V3-FUNNEL-01C.2`, un reloj inyectado y D1 temporal verificaron antes/exacto/después para request, challenge, grant y snapshot; `now >= expires_at` falla cerrado. El E2E local comprueba un solo challenge pendiente tras dos reenvíos, verify/re-send concurrente, dos pestañas verificando, revocación/lectura, DELETE/lectura, GET/prefetch sin consumo y cleanup solo por UUIDs sintéticos. Un POST de verificación confirmado por el Worker pero con respuesta descartada deja un grant y no una cookie; repetir el token devuelve 404 y no crea otro grant. La recuperación de ese caso no existe aún; el reenvío actual rechaza la solicitud verificada. Propuesta de recuperación por nuevo challenge one-time enviado al email existente queda pendiente de aprobación, no implementada. Estado `IDENTIFICATION_HARDENING_PARTIAL`: pruebas externas de scanner, política/revocación operativa de B/C y aprobación de plazos siguen pendientes. 24 h/30 d no son política; no habilita uso real. Sin schema nuevo, proveedor, scheduler, GHL ni reinterpretación histórica.
 
 ## DIAG-V3-FUNNEL-01C — solicitud identificada local (2026-10-12; contrato base)
 

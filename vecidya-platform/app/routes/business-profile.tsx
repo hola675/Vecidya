@@ -1,8 +1,8 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
-import { dayOfWeekLabels } from "../../db/business-hours-rules";
+import { dayOfWeekLabels, type BusinessHoursEntry } from "../../db/business-hours-rules";
 import { businessProfileSlugMaxLength, serviceModeLabels, slugifyBusinessName } from "../../db/business-profile-rules";
 import {
   getBusinessProfileForOrganization,
@@ -26,6 +26,7 @@ import {
 } from "../../server/business-profile-validation.server";
 import { Alert, Badge, Button, Card } from "../components/ui";
 import { ClientAreaShell } from "../components/client-area-shell";
+import { PublicBusinessProfilePreview, type PublicBusinessProfile } from "../components/public-business-profile-view";
 
 import type { Route } from "./+types/business-profile";
 
@@ -122,6 +123,49 @@ function value(value: string | null | undefined) {
   return value ?? "";
 }
 
+function previewText(formData: FormData | undefined, key: string, savedValue: string | null | undefined) {
+  if (!formData) return savedValue ?? null;
+  const field = formData.get(key);
+  return typeof field === "string" && field.trim() ? field.trim() : null;
+}
+
+function getProfilePreview(
+  profile: Awaited<ReturnType<typeof getBusinessProfileForOrganization>>,
+  governance: Awaited<ReturnType<typeof getBusinessProfileGovernance>> | null,
+  formData?: FormData,
+): PublicBusinessProfile {
+  return {
+    slug: previewText(formData, "slug", profile?.slug) ?? "",
+    displayName: previewText(formData, "displayName", profile?.displayName) ?? "",
+    shortDescription: previewText(formData, "shortDescription", profile?.shortDescription),
+    category: previewText(formData, "category", profile?.category),
+    city: previewText(formData, "city", profile?.city),
+    country: previewText(formData, "country", profile?.country),
+    logoUrl: previewText(formData, "logoUrl", profile?.logoUrl),
+    description: previewText(formData, "description", profile?.description),
+    phone: previewText(formData, "phone", profile?.phone),
+    publicEmail: previewText(formData, "publicEmail", profile?.publicEmail),
+    websiteUrl: previewText(formData, "websiteUrl", profile?.websiteUrl),
+    whatsapp: previewText(formData, "whatsapp", profile?.whatsapp),
+    instagramUrl: previewText(formData, "instagramUrl", profile?.instagramUrl),
+    facebookUrl: previewText(formData, "facebookUrl", profile?.facebookUrl),
+    linkedinUrl: previewText(formData, "linkedinUrl", profile?.linkedinUrl),
+    serviceMode: previewText(formData, "serviceMode", profile?.serviceMode),
+    serviceArea: previewText(formData, "serviceArea", profile?.serviceArea),
+    verificationStatus: governance?.verificationStatus ?? "unverified",
+  };
+}
+
+function getHoursPreview(formData: FormData): BusinessHoursEntry[] {
+  return daysOfWeek.flatMap((day) => {
+    const isClosed = formData.get(`hours_${day}_closed`) === "on";
+    const opensAt = previewText(formData, `hours_${day}_opens`, null);
+    const closesAt = previewText(formData, `hours_${day}_closes`, null);
+    if (!isClosed && (!opensAt || !closesAt)) return [];
+    return [{ dayOfWeek: day, isClosed, opensAt: isClosed ? null : opensAt, closesAt: isClosed ? null : closesAt }];
+  });
+}
+
 export default function BusinessProfilePage() {
   const { completion: loaderCompletion, governance, hours: loaderHours, membership, profile: loaderProfile, workspaceUser, organizations, isPlatformAdmin, activeOrganization } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
@@ -135,23 +179,49 @@ export default function BusinessProfilePage() {
   const canEdit = membership.role === "owner" || membership.role === "admin";
   const isSaving = navigation.state === "submitting";
   const slugInputRef = useRef<HTMLInputElement>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewProfile, setPreviewProfile] = useState(() => getProfilePreview(profile, governance));
+  const [previewHours, setPreviewHours] = useState<BusinessHoursEntry[]>(hours);
   // El slug solo se sugiere mientras el perfil no se ha guardado nunca (`profile` viene del loader o de la
   // action): una vez persistido es la URL pública, y renombrar el negocio no debe moverla.
   const suggestsSlug = !profile;
   const slugTouchedRef = useRef(false);
+
+  useEffect(() => {
+    setPreviewProfile(getProfilePreview(profile, governance));
+    setPreviewHours(hours);
+  }, [governance, hours, profile]);
+
+  function updateProfilePreview(event: React.FormEvent<HTMLFormElement>) {
+    setPreviewProfile(getProfilePreview(profile, governance, new FormData(event.currentTarget)));
+  }
+
+  function updateHoursPreview(event: React.FormEvent<HTMLFormElement>) {
+    setPreviewHours(getHoursPreview(new FormData(event.currentTarget)));
+  }
 
   return (
     <ClientAreaShell active="business" workspaceUser={workspaceUser} organizations={organizations} activeOrganization={activeOrganization} isPlatformAdmin={isPlatformAdmin}>
     <main className="business-profile-page" id="client-page-content">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">MI NEGOCIO</p>
-          <h1>{profile ? "Edita tu perfil de negocio" : "Crea tu perfil de negocio"}</h1>
-          <p>Este perfil pertenece a {membership.name} y su estado se guarda por organización.</p>
-        </div>
+        <h1>{profile ? "Tu negocio" : "Crea tu perfil de negocio"}</h1>
+        <p>Administra la identidad y la presencia pública de {membership.name}.</p>
+      </div>
+      <div className="business-profile-heading-actions">
         <Badge tone={profile?.status === "published" ? "success" : "neutral"}>
           {profile?.status === "published" ? "Publicado" : "Borrador"}
         </Badge>
+        <Button
+          aria-controls="business-profile-preview"
+          aria-expanded={previewOpen}
+          onClick={() => setPreviewOpen((open) => !open)}
+          tone="secondary"
+          type="button"
+        >
+          {previewOpen ? "Ocultar vista previa" : "Vista previa del minisitio"}
+        </Button>
+      </div>
       </div>
 
       {governance?.platformStatus === "suspended" ? (
@@ -166,7 +236,6 @@ export default function BusinessProfilePage() {
       <Card aria-labelledby="profile-status-title" className="business-profile-status">
         <div className="business-profile-status__heading">
           <div>
-            <p className="eyebrow">ESTADO DEL PERFIL</p>
             <h2 id="profile-status-title">{completion.percentage}% completo</h2>
           </div>
           <Badge tone={profile?.status === "published" ? "success" : "neutral"}>
@@ -195,28 +264,43 @@ export default function BusinessProfilePage() {
         ) : null}
       </Card>
 
+      <PublicBusinessProfilePreview hidden={!previewOpen} hours={previewHours} profile={previewProfile} />
+
       <Card className="business-profile-card">
         {canEdit ? (
-          <Form className="business-profile-form" method="post">
+          <Form className="business-profile-form" method="post" onChange={updateProfilePreview}>
             <fieldset disabled={isSaving}>
-              <legend>Información del negocio</legend>
+              <legend>Identidad del negocio</legend>
               <div className="form-grid">
                 <label>Nombre visible<input defaultValue={value(profile?.displayName)} name="displayName" onChange={(event) => { if (suggestsSlug && !slugTouchedRef.current && slugInputRef.current) slugInputRef.current.value = slugifyBusinessName(event.currentTarget.value); }} required maxLength={120} /></label>
-                <label>Slug<input defaultValue={value(profile?.slug)} name="slug" onChange={(event) => { slugTouchedRef.current = event.currentTarget.value.trim() !== ""; }} ref={slugInputRef} required maxLength={businessProfileSlugMaxLength} pattern="[a-z0-9]+(-[a-z0-9]+)*" spellCheck={false} /></label>
-                <label className="form-grid__full">Descripción corta<textarea defaultValue={value(profile?.shortDescription)} name="shortDescription" maxLength={280} rows={3} /></label>
-                <label className="form-grid__full">Descripción<input defaultValue={value(profile?.description)} name="description" maxLength={5000} /></label>
                 <label>Categoría<input defaultValue={value(profile?.category)} name="category" maxLength={100} /></label>
+                <label className="form-grid__full">Enlace público<input defaultValue={value(profile?.slug)} name="slug" onChange={(event) => { slugTouchedRef.current = event.currentTarget.value.trim() !== ""; }} ref={slugInputRef} required maxLength={businessProfileSlugMaxLength} pattern="[a-z0-9]+(-[a-z0-9]+)*" spellCheck={false} /></label>
+                <p className="form-grid__full form-help">Este enlace identifica tu negocio en Vecindario y permanece estable después del primer guardado.</p>
+              </div>
+            </fieldset>
+
+            <fieldset disabled={isSaving}>
+              <legend>Presentación</legend>
+              <div className="form-grid">
+                <label className="form-grid__full">Descripción breve<textarea defaultValue={value(profile?.shortDescription)} name="shortDescription" maxLength={280} rows={3} /></label>
+                <label className="form-grid__full">Acerca del negocio<textarea defaultValue={value(profile?.description)} name="description" maxLength={5000} rows={6} /></label>
+              </div>
+            </fieldset>
+
+            <fieldset disabled={isSaving}>
+              <legend>Ubicación y contacto</legend>
+              <div className="form-grid">
                 <label>Ciudad<input defaultValue={value(profile?.city)} name="city" maxLength={120} /></label>
                 <label>País<input defaultValue={value(profile?.country)} name="country" maxLength={120} /></label>
-                <label>Teléfono<input defaultValue={value(profile?.phone)} name="phone" maxLength={50} /></label>
-                <label>Email público<input defaultValue={value(profile?.publicEmail)} name="publicEmail" type="email" maxLength={254} /></label>
-                <label>Web<input defaultValue={value(profile?.websiteUrl)} name="websiteUrl" type="url" maxLength={2048} /></label>
+                <label>Teléfono público<input autoComplete="tel" defaultValue={value(profile?.phone)} name="phone" type="tel" maxLength={50} /></label>
+                <label>Email de contacto<input autoComplete="email" defaultValue={value(profile?.publicEmail)} name="publicEmail" type="email" maxLength={254} /></label>
+                <label>Sitio web<input autoComplete="url" defaultValue={value(profile?.websiteUrl)} name="websiteUrl" type="url" maxLength={2048} /></label>
                 <label>URL del logo<input defaultValue={value(profile?.logoUrl)} name="logoUrl" type="url" maxLength={2048} /></label>
               </div>
             </fieldset>
 
             <fieldset disabled={isSaving} className="business-profile-form__contact">
-              <legend>Contacto y presencia digital</legend>
+              <legend>Redes y WhatsApp</legend>
               <div className="form-grid">
                 <label>WhatsApp<input defaultValue={value(profile?.whatsapp)} name="whatsapp" placeholder="+573244321864" maxLength={20} /></label>
                 <label>Instagram<input defaultValue={value(profile?.instagramUrl)} name="instagramUrl" placeholder="https://instagram.com/tu-negocio" type="url" maxLength={2048} /></label>
@@ -269,7 +353,7 @@ export default function BusinessProfilePage() {
           {hoursActionData?.error ? <Alert>{hoursActionData.error}</Alert> : null}
           {hoursActionData?.success ? <p className="success-message" role="status">{hoursActionData.success}</p> : null}
 
-          <Form className="business-hours-form" method="post">
+          <Form className="business-hours-form" method="post" onChange={updateHoursPreview}>
             <div className="business-hours-grid">
               {daysOfWeek.map((day) => {
                 const entry = hoursByDay.get(day);

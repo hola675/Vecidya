@@ -45,6 +45,10 @@ async function runViewport(width, height) {
   assert(await page.getByRole("heading", { name: "Tres productos. Una decisión clara." }).isVisible(), `${label} no mostró los productos.`);
   assert(await page.getByRole("heading", { name: "Amplía tu sistema cuando lo necesites." }).isVisible(), `${label} no mostró addons.`);
   assert(await page.getByText("Precios públicos en USD.").isVisible(), `${label} no aclaró precios.`);
+  const comparisonRows = await page.locator(".licenses-compare-table tbody tr").allTextContents();
+  assert(comparisonRows.some((row) => row.includes("Seguimiento CRM") && row.includes("No incluido") && row.includes("Estándar") && row.includes("Avanzado")), `${label} no deja claro que Cuadra no incluye seguimiento CRM.`);
+  assert(comparisonRows.some((row) => row.includes("Automatizaciones CRM") && row.includes("No incluidas") && row.includes("Estándar") && row.includes("Avanzadas")), `${label} no deja claro que Cuadra no incluye automatizaciones CRM.`);
+  assert(!comparisonRows.some((row) => /Seguimiento.*Básico|Automatización.*Inicial/i.test(row)), `${label} conserva copy CRM ambiguo en Cuadra.`);
   assert(await page.getByRole("link", { name: /Empezar con/ }).count() === 3, `${label} no ofrece CTA para cada nivel.`);
   const html = await page.content();
   for (const price of ["USD 39/mes", "USD 59/mes", "USD 89/mes"]) {

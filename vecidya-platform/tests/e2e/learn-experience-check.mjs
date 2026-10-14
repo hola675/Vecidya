@@ -65,10 +65,27 @@ async function runViewport(width, height) {
   assert(await page.getByRole("link", { name: "NIST Privacy Framework" }).isVisible(), `${label} la referencia de privacidad no es accesible como enlace.`);
   assert(await page.locator(".learn-block--steps ol").count() > 0, `${label} la guía CRM no renderizó pasos numerados.`);
   assert(await page.locator(".learn-block--definitions dl").count() > 0, `${label} la guía CRM no renderizó definiciones semánticas.`);
+  assert(await page.getByText("Consulta/interesado", { exact: true }).isVisible(), `${label} no muestra la categoría de cliente acordada.`);
+  const crmDataFaq = page.getByText("¿Cómo se guardan mis datos en el CRM de Vecidya?", { exact: true });
+  assert(await crmDataFaq.isVisible(), `${label} la guía CRM no explica el manejo de datos de la subcuenta.`);
+  await crmDataFaq.click();
+  assert(await page.getByText(/tienes 30 días para copiar o exportar/i).isVisible(), `${label} no muestra el periodo de exportación tras finalizar la licencia.`);
   await assertNoOverflow(page, `${label} artículo`);
 
+  const aiSlug = "que-puede-hacer-una-inteligencia-artificial-por-un-negocio";
+  await page.goto(new URL(`/aprende/${aiSlug}`, baseUrl).toString(), { waitUntil: "networkidle" });
+  assert((await page.locator("h1").textContent())?.trim() === "¿Qué puede hacer una inteligencia artificial por un negocio?", `${label} el artículo de IA cambió su H1 o no cargó.`);
+  assert(await page.getByRole("heading", { name: "Qué es la inteligencia artificial en un negocio" }).isVisible(), `${label} el artículo de IA no explica la definición.`);
+  assert(await page.getByRole("heading", { name: "Cuándo no conviene implementar IA" }).isVisible(), `${label} el artículo de IA no presenta límites de adopción.`);
+  assert(await page.getByRole("heading", { name: "Un taller de bicicletas y sus consultas de servicio" }).isVisible(), `${label} el artículo de IA no presenta el ejemplo hipotético.`);
+  assert(await page.getByRole("link", { name: "NIST AI 600-1: Generative Artificial Intelligence Profile" }).isVisible(), `${label} falta la fuente primaria de riesgos de IA generativa.`);
+  assert(await page.locator(".learn-block--example").count() > 0, `${label} el ejemplo de IA no se renderizó como bloque.`);
+  assert(await page.locator(".learn-block--steps ol").count() >= 2, `${label} no se renderizaron procedimientos para la guía de IA.`);
+  assert(await page.locator(".learn-block--sources a").count() >= 2, `${label} faltan fuentes accesibles en la guía de IA.`);
+  assert(await page.getByRole("link", { name: "Revisar mi punto de partida digital" }).isVisible(), `${label} falta el CTA contextual de IA.`);
+  await assertNoOverflow(page, `${label} artículo IA`);
+
   for (const [slug, heading] of [
-    ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio", "¿Qué puede hacer una inteligencia artificial por un negocio?"],
     ["antes-de-hacer-publicidad-organiza-tu-presencia-digital", "Antes de hacer publicidad, organiza tu presencia digital"],
     ["automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio", "Automatizaciones: ahorrar tiempo sin complicar tu negocio"],
   ]) {

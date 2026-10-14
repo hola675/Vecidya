@@ -1,12 +1,12 @@
-import { useLoaderData } from "react-router";
+import { Link, useLoaderData } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
 import { getPublishedBusinessProfileBySlug } from "../../db/queries/business-profile.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { PublicLayout, publicMeta } from "../components/public-layout";
-import { CTASection, JsonLd, PublicBusinessContact, PublicBusinessDetails, PublicBusinessHeader, PublicBusinessHours } from "../components/public-v2";
-import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
+import { JsonLd } from "../components/public-v2";
+import { PublicBusinessContact, PublicBusinessDetails, PublicBusinessHeader, PublicBusinessHours } from "../components/public-business-profile-view";
 
 import type { Route } from "./+types/public-business-profile";
 
@@ -80,30 +80,28 @@ export default function PublicBusinessProfilePage() {
         <JsonLd data={localBusinessSchema} />
         <PublicBusinessHeader profile={profile} />
 
-        <div className="public-business-profile__grid">
+        <div className={`public-business-profile__grid${profile.description ? "" : " public-business-profile__grid--single"}`}>
           {profile.description ? (
             <section className="public-v2-card public-business-profile__description">
-              <p className="eyebrow">PRESENCIA PUBLICADA</p>
               <h2>Qué hace este negocio</h2>
               <p>{profile.description}</p>
             </section>
           ) : null}
 
-          <PublicBusinessContact profile={profile} />
-          <PublicBusinessDetails profile={profile} />
-          <PublicBusinessHours hours={hours} />
+          <div className="public-business-profile__side">
+            <PublicBusinessContact profile={profile} />
+            <PublicBusinessDetails profile={profile} />
+            <PublicBusinessHours hours={hours} />
+          </div>
         </div>
 
-        <CTASection
-          actions={[
-            { label: "Volver al Vecindario", to: "/vecindario", variant: "primary" },
-            { label: PUBLIC_ACTION_LABELS.diagnostic, to: "/diagnostico", variant: "secondary" },
-          ]}
-          eyebrow="VECIDYA"
-          title="Cada perfil conecta con una decisión real."
-        >
-          <p>Este perfil muestra la información pública que el negocio ya declaró: identidad, contexto, canales disponibles y horarios cuando existen.</p>
-        </CTASection>
+        <section aria-labelledby="business-neighborhood-title" className="public-business-neighborhood">
+          <div>
+            <h2 id="business-neighborhood-title">Explora más negocios del Vecindario</h2>
+            <p>Conoce otros perfiles locales y encuentra opciones para lo que necesitas.</p>
+          </div>
+          <Link className="button button--secondary" to="/vecindario">Volver al Vecindario</Link>
+        </section>
       </main>
     </PublicLayout>
   );

@@ -1,12 +1,29 @@
 # Pruebas
 
-## DIAG-V3-FUNNEL-01C.1 — seguridad, expiración y ciclo de vida local (2026-10-12)
+## APP-MINI-01 — experiencia cliente y minisitio base (2026-10-14)
 
-**Resultado `IDENTIFICATION_HARDENING_PARTIAL`.** E2E Worker local `PASS` para el subconjunto ejecutado: recorrido anónimo→solicitud→buzón simulado→challenge bloqueado→reenvío→token sustituido rechazado→verificación concurrente (exactamente un 200 y un grant)→cookie HttpOnly/SameSite Strict/Path limitado→informe de ocho dimensiones. El token y una copia de cookie/grant de la primera solicitud no autentican ni abren una segunda. Dos submit con la misma clave idempotente concurrentes reutilizan una solicitud; misma clave con payload distinto da 409. El informe protegido incluye `no-store`; un snapshot alterado conserva el digest anterior y responde sin documento. Se fuerzan expiraciones locales de acceso/snapshot/challenge; la purga conserva solicitud y B/C mientras la solicitud vive, elimina grants/snapshot/challenges vencidos y luego borra solicitud vencida y cascada. Trigger failpoint acotado a fixture provoca error después de los borrados previos; el batch revierte todo, se retira failpoint, la reejecución termina y ejecuciones repetidas/base sin fixture devuelven ceros. El acceso al informe purgado falla cerrado.
+**Runner:** Worker local (`pnpm run dev`); no usa `--remote`, pagos o fixtures publicados. Si el Chromium de Playwright no está instalado y Chrome está disponible, define `PLAYWRIGHT_CHROMIUM_EXECUTABLE` a la ruta local de Chrome.
 
-La ruta dev `__dev/diagnostico/lifecycle/fixture/:requestId` solo opera sobre filas sintéticas con correo fijo `qa-funnel@example.invalid`; expone un conjunto cerrado de acciones, conteos agregados y sin SQL arbitrario. La ruta manual `__dev/diagnostico/lifecycle/purge-expired` requiere POST, mismo origen y frase de confirmación; ninguna tarea está programada. Se probaron expiración relativa y limpieza, pero no hay reloj inyectable que demuestre igualdad exacta de milisegundo en todas las consultas, expiración aislada challenge/grant, scanner real de correo, doble pestaña, caída de red y reintento, carrera borrar/leer concurrente, PAC/Acrobat/NVDA o revisión legal. Esos límites permanecen `NOT_RUN`/pendientes; 24h/30d son plazos técnicos provisionales, no una política.
+```powershell
+$env:BASE_URL='http://localhost:5173'
+pnpm exec node tests/e2e/business-profile-experience-check.mjs
+pnpm exec node tests/e2e/business-profile-slug-lifecycle-check.mjs
+pnpm exec node tests/e2e/licenses-experience-check.mjs
+pnpm run test:unit
+pnpm run typecheck
+pnpm run build
+git diff --check
+```
 
-RAN en este corte: E2E Worker `PASS`; `pnpm run test:unit` **1535/1535 PASS**; E2E FUNNEL-01B `6/6 PASS`; typecheck/build/diff-check `PASS`.
+**Evidencia local de este checkpoint:** los tres E2E, `test:unit` (1536/1536), typecheck y build pasaron. `business-profile-experience-check.mjs` comprueba publicación incompleta/rechazada y completa, canales directos, cobertura/modalidad, CTA del hero, preview privada en vivo para texto/horarios, ausencia de enlaces activos en preview, progreso del dashboard, ausencia de acceso anónimo y aislamiento A/B; también verifica overflow a 1366/768/390/360. `business-profile-slug-lifecycle-check.mjs` cubre generación, override, estabilidad tras guardar/publicar/renombrar, colisión y longitud. `licenses-experience-check.mjs` cubre comparación CRM sin Cuadra y responsive. QA visual capturó minisitio, editor y dashboard en escritorio/móvil; capturas locales en `.playwright-mcp/`. Sin cambios de migración ni rutas.
+
+## DIAG-V3-FUNNEL-01C.2 — cierre adversarial y privacidad local (2026-10-14)
+
+**Resultado `IDENTIFICATION_HARDENING_PARTIAL`.** E2E Worker/D1 efímera `PASS`: reloj fijo en D1 probó `-1 ms / igualdad / +1 ms` para expiración de challenge, request, snapshot y grant. Antes del límite permite solo cuando los recursos asociados siguen vigentes; en igualdad y después niega. El consume exacto crea un grant una vez; igualdad/después no consume. Dos reenvíos concurrentes dejan un solo challenge pendiente; verify/re-send y dos pestañas verificando producen un único challenge consumido/grant activo; inspección de registros reales confirma estado final. GET, prefetch, doble apertura y no-confirmar conservan el challenge sin grant. Cookie/token de otra solicitud y contexto sin cookie no abren informe. Lectura durante revocación y DELETE puede preceder el cambio o fallar cerrado; después de revocar/borrar, toda lectura es 404 y el DELETE sí elimina físicamente la solicitud. También: submit con respuesta descartada e idempotency key repetida; pérdida simulada del POST de verificación tras confirmar `200` en Worker deja un grant persistido pero ninguna cookie; reusar token da 404, no crea otro grant y reenvío actual responde 404. El informe usa `no-store`; snapshot alterado falla cerrado. Purga conserva solicitud y B/C mientras vive, elimina hijos vencidos, abortada por failpoint revierte el batch entero y se reejecuta idempotentemente.
+
+Las rutas de fixture/purga son dev-only, mismo origen y correo sintético fijo; no ejecutan SQL arbitrario, scheduler ni email real. La corrida final usó `C:\Users\Admin\AppData\Local\Temp\kilo\vecidya-funnel-01c2-final2-d1`, creada vacía; el cleanup del E2E retiró sus fixtures QA. Una lectura posterior encontró dos solicitudes/snapshots/challenges cuyo correo no coincide con el alias sintético QA y ningún grant; no se borraron ni se atribuyeron a esta prueba. El fixture usa direcciones TEST-NET sintéticas distintas por escenario para aislar la prueba de concurrencia de los límites por IP; no cambia límites ni middleware de producto. La D1 compartida no se usó para purga. Sigue `NOT_RUN`: scanners externos reales, reenvío/recuperación con proveedor real, revisión legal, gestión operativa de revocación B/C y prueba con usuarios/dispositivos externos. Se reprodujo la respuesta perdida al canjear; el servicio no ofrece recuperación de la misma solicitud sin cookie. Contrato propuesto de nuevo challenge de recuperación se registra en `DATABASE.md` y requiere aprobación antes de implementación material. 24h/30d son plazos técnicos provisionales.
+
+RAN en este corte: E2E Worker 01C.2 `PASS` (estados D1 y rollback comprobados); E2E FUNNEL-01B `6/6 PASS`; `pnpm run test:unit` **1536/1536 PASS**; `pnpm run typecheck` `PASS`; `pnpm run build` `PASS`; `git diff --check` PASS después de reconciliar los documentos.
 
 ## DIAG-V3-FUNNEL-01C — solicitud identificada local (2026-10-12; baseline)
 

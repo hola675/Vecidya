@@ -4,18 +4,18 @@
 
 **APP-MINI-00 — contrato documental reconciliado; sin código.** Cuadra USD 39/mes no incluye ni requiere GHL; Barrio USD 59/mes inicia CRM GHL y Ciudad USD 89/mes amplía el alcance. Vecidya conserva autoridad de cuenta, organización, licencia, perfil/minisitio y Vecindario; GHL conserva CRM y operación comercial desde Barrio. El perfil público actual funciona con datos básicos, pero los bloques enriquecidos del minisitio no están implementados.
 
-| Siguiente checkpoint | Alcance | Gate |
+| Checkpoint | Alcance | Gate |
 | --- | --- | --- |
-| **APP-MINI-01** | Modernizar la experiencia cliente y perfil público usando datos existentes; corregir labels confusos de comparación de `/licencias`; sin D1 nueva | Autorización explícita antes de mutar UI/código |
+| **APP-MINI-01** | Modernizar dashboard/editor y perfil público con datos existentes; corregir copy CRM de Cuadra en `/licencias`; sin D1 nueva | Implementado y validado localmente; pendiente aceptación visual del usuario. No iniciar APP-MINI-02 automáticamente |
 | **APP-MINI-02** | Servicios públicos del negocio, FAQ, orden/tema; galería/portada solo después de aprobar modelo de medios, R2 y subida segura | Aprobación del contrato de datos, permisos y almacenamiento antes de schema/migración |
 | **APP-MINI-03** | Presentar licencias, capacidades y estados reales en Mi Vecidya | Autorización separada; no checkout ni cobro automático |
 | **GHL-BARRIO-01** | Evaluar conexión/entrada operativa GHL solo para Barrio/Ciudad | Cuenta, permisos/scopes, tenant mapping y autorización reales; fase independiente |
 
 Todos los bloques deben conservar perfiles publicados, gobernanza, autorización tenant-scoped y separar servicios que ofrece el negocio de servicios Vecidya contratados. No tocar diagnóstico dentro de esta línea. No publicar, desplegar ni modificar D1 remota sin autorización explícita.
 
-## FUNNEL-01C.1 — estado del checkpoint autorizado (2026-10-12)
+## FUNNEL-01C.2 — estado del checkpoint autorizado (2026-10-14)
 
-`IDENTIFICATION_HARDENING_PARTIAL`; el subconjunto E2E 01C, purga/rollback D1 local y regresión 01B `6/6` PASS; unitarias `1535/1535`, typecheck/build/diff-check PASS. Sin cambios a D1 remota, correo real, GHL, PDF o motor. Faltan reloj determinista al milisegundo, expiración aislada de challenge/grant, scanner real, doble pestaña, pérdida de respuesta y carrera borrar/leer; además revisión legal/privacidad, aprobación de 24h/30d y retención B/C, gestión de derechos y operación de email antes del uso real. No programar cron ni iniciar FUNNEL-01D automáticamente; mantener `GATE_B_PARTIAL`, QA-03B inactiva y ACT-04 detenido.
+`IDENTIFICATION_HARDENING_PARTIAL`; D1/Worker temporal verificó límites exactos e independientes de request/challenge/grant/snapshot, dos reenvíos, verify/re-send, doble pestaña, scanner GET/prefetch, revocación/lectura, borrado/lectura y canje con respuesta perdida: un grant quedó persistido pero no cookie; token consumido no duplica grant y no hay recuperación de esa misma solicitud. Unitarias `1536/1536`, E2E 01B `6/6`, typecheck/build/diff-check PASS; el cleanup retiró las fixtures QA. Una lectura posterior reveló dos solicitudes/snapshots/challenges no correspondientes al alias de prueba en la D1 efímera; se preservaron y quedó su procedencia sin determinar. Se propone recuperación mediante un challenge one-time nuevo enviado solo al email registrado, con respuesta genérica, rate-limit, grant anterior revocado atómicamente y sin recalcular snapshot; requiere aprobación antes de modificar el flujo. Revocación operativa B/C, retención y avisos/base siguen pendientes. No D1 remota, correo real, GHL, PDF, motor, cron, FUNNEL-01D, QA-03B ni ACT-04.
 
 ## Resultado vigente — DIAG-V3-RESULT-UX-02 (2026-10-11)
 
