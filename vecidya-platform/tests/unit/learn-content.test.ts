@@ -63,14 +63,21 @@ test("AI article teaches bounded use and reflects optional commercial add-ons", 
   const commercialFaq = blocks.find((block) => block.type === "faq" && block.items.some(({ question }) => question.includes("opciones de inteligencia artificial ofrece Vecidya")));
   assert.ok(commercialFaq && commercialFaq.type === "faq");
   const commercialAnswer = commercialFaq.items.find(({ question }) => question.includes("opciones de inteligencia artificial ofrece Vecidya"))?.answer ?? "";
-  assert.ok(commercialAnswer.trim().split(/\s+/).length <= 70, "The AI commercial FAQ answer should stay concise.");
+  assert.ok(commercialAnswer.trim().split(/\s+/).length <= 35, "The AI offer FAQ should stay concise.");
   assert.match(commercialAnswer, /IA Conversacional/);
   assert.match(commercialAnswer, /IA de Voz/);
   assert.match(commercialAnswer, /Barrio o Ciudad/);
   assert.match(commercialAnswer, /no se activan por defecto/i);
-  assert.match(commercialAnswer, /tokens/);
-  assert.match(commercialAnswer, /minutos.*telefonía/i);
-  assert.match(commercialAnswer, /depende.*configuración/i);
+
+  const usageFaq = blocks.find((block) => block.type === "faq" && block.items.some(({ question }) => question.includes("Cómo se cobra el consumo de IA")));
+  assert.ok(usageFaq && usageFaq.type === "faq");
+  const usageAnswer = usageFaq.items.find(({ question }) => question.includes("Cómo se cobra el consumo de IA"))?.answer ?? "";
+  assert.ok(usageAnswer.trim().split(/\s+/).length <= 35, "The AI consumption FAQ should stay concise.");
+  assert.match(usageAnswer, /tokens/);
+  assert.match(usageAnswer, /minutos.*telefonía/i);
+  assert.match(usageAnswer, /separado|aparte/i);
+  assert.match(usageAnswer, /alcance|uso/i);
+  assert.match(usageAnswer, /supervisión/i);
   const content = article.sections.map((section) => [section.heading, ...section.paragraphs].join(" ")).join(" ");
   assert.doesNotMatch(content, /asistente de Vecidya ya activo|IA propia ya disponible/i);
   assert.doesNotMatch(content, /\b\d+\s*%/);

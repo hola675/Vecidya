@@ -88,7 +88,10 @@ async function runViewport(width, height) {
   assert(await aiOfferFaq.isVisible(), `${label} el FAQ no describe las opciones comerciales de IA.`);
   await aiOfferFaq.click();
   assert(await page.getByText(/complementos opcionales para Barrio o Ciudad/i).isVisible(), `${label} no distingue complementos de IA de las licencias base.`);
-  assert(await page.getByText(/tokens; minutos\/telefonía para voz/i).isVisible(), `${label} no explica la separación entre complemento y consumo.`);
+  const aiUsageFaq = page.getByText("¿Cómo se cobra el consumo de IA?", { exact: true });
+  assert(await aiUsageFaq.isVisible(), `${label} falta una explicación breve del consumo de IA.`);
+  await aiUsageFaq.click();
+  assert(await page.getByText(/tokens.*minutos\/telefonía/i).isVisible(), `${label} no explica el consumo separado del complemento.`);
   await assertNoOverflow(page, `${label} artículo IA`);
 
   for (const [slug, heading] of [

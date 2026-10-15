@@ -335,7 +335,8 @@ export const learnArticles: LearnArticle[] = [
           { question: "¿Un asistente de voz es más capaz que un chatbot?", answer: "No. Voz y texto son canales distintos; sus capacidades dependen del modelo, los datos y los permisos." },
           { question: "¿Puedo copiar conversaciones de clientes para entrenar un asistente?", answer: "No por defecto. Revisa autorización, privacidad y condiciones del proveedor; empieza con respuestas aprobadas y preguntas anonimizadas o sintéticas." },
           { question: "¿La IA puede aprobar por sí sola un precio o una decisión delicada?", answer: "No. Una persona debe verificar y asumir decisiones sobre dinero, seguridad, derechos o compromisos con clientes." },
-          { question: "¿Qué opciones de inteligencia artificial ofrece Vecidya?", answer: "IA Conversacional e IA de Voz son complementos opcionales para Barrio o Ciudad; no se activan por defecto. Apoyan respuestas, clasificación inicial o atención por voz. El cargo mensual del complemento se cobra aparte del consumo del proveedor (tokens; minutos/telefonía para voz). Se acuerdan alcance, límites y supervisión antes; la disponibilidad depende de la configuración." },
+          { question: "¿Qué opciones de inteligencia artificial ofrece Vecidya?", answer: "IA Conversacional e IA de Voz son complementos opcionales para Barrio o Ciudad; no se activan por defecto. Apoyan respuestas, clasificación inicial o atención por voz." },
+          { question: "¿Cómo se cobra el consumo de IA?", answer: "El cargo mensual se cobra aparte del consumo del proveedor (tokens; minutos/telefonía para voz). Se acuerdan alcance, límites y supervisión; la disponibilidad depende de la configuración." },
         ] }],
       },
       {
