@@ -225,7 +225,7 @@ export const learnArticles: LearnArticle[] = [
       },
       {
         heading: "Qué tareas puede apoyar",
-        paragraphs: ["La IA puede ayudar con partes acotadas del trabajo. Estos ejemplos son posibilidades generales, no funciones que Vecidya ofrezca ni resultados garantizados."],
+        paragraphs: ["La IA puede ayudar con partes acotadas del trabajo. Estos ejemplos son posibilidades generales, no resultados garantizados; cualquier complemento requiere definir su alcance, configuración y supervisión."],
         blocks: [{ type: "list", items: [
           "Atención: proponer un borrador basado en preguntas frecuentes aprobadas, resumir una consulta o sugerir a qué persona transferirla.",
           "Administración: resumir notas no sensibles, preparar una lista de tareas o ayudar a ordenar información para que alguien la compruebe.",
@@ -245,7 +245,7 @@ export const learnArticles: LearnArticle[] = [
       },
       {
         heading: "Un taller de bicicletas y sus consultas de servicio",
-        paragraphs: ["El siguiente escenario es hipotético. No describe un cliente real, no atribuye resultados y no representa una herramienta de IA disponible en Vecidya."],
+        paragraphs: ["El siguiente escenario es hipotético. No describe un cliente real, una configuración ya activa ni resultados obtenidos por Vecidya."],
         blocks: [{ type: "example", title: "Responder dudas frecuentes sin inventar un diagnóstico", hypothetical: true,
           context: "Un pequeño taller recibe mensajes sobre horarios, ubicación, tipos de servicio y cómo solicitar una cita mientras el equipo está reparando bicicletas.",
           problem: "Responder preguntas repetidas interrumpe el trabajo, pero un asistente que invente un precio, confirme una cita no disponible o diagnostique una falla podría confundir a la persona.",
@@ -330,12 +330,12 @@ export const learnArticles: LearnArticle[] = [
         heading: "Preguntas frecuentes",
         paragraphs: [],
         blocks: [{ type: "faq", items: [
-          { question: "¿La inteligencia artificial siempre mejora un proceso?", answer: "No. Puede añadir errores, tareas de revisión, costo o exposición de datos. Compara un uso acotado con la forma actual de trabajar y conserva la opción de no implementarlo." },
-          { question: "¿Un asistente conoce por sí solo los horarios o servicios del negocio?", answer: "No necesariamente. Solo puede responder con fiabilidad si recibe una fuente adecuada y vigente o si la herramienta tiene acceso autorizado a ella. La persona responsable debe actualizar y revisar esa información." },
-          { question: "¿Un asistente de voz es más capaz que un chatbot?", answer: "No por ser de voz. El canal cambia —audio frente a texto—, pero sus capacidades y límites dependen del sistema, los datos y las acciones permitidas." },
-          { question: "¿Puedo copiar conversaciones de clientes para entrenar un asistente?", answer: "No lo hagas por defecto. Evalúa necesidad, autorización, minimización y condiciones del proveedor; suele ser más prudente empezar con respuestas de negocio aprobadas y preguntas de prueba anonimizadas o sintéticas." },
-          { question: "¿La IA puede aprobar por sí sola un precio o una decisión delicada?", answer: "No es recomendable. Una persona responsable debe comprobar la información y asumir las decisiones que afectan dinero, seguridad, derechos o compromisos con clientes." },
-          { question: "¿Vecidya ofrece un asistente de IA en Aprende?", answer: "No. Este artículo es educativo; no anuncia ni activa un asistente, chatbot, agente de voz o automatización de IA de Vecidya." },
+          { question: "¿La inteligencia artificial siempre mejora un proceso?", answer: "No. Puede añadir errores, revisión, costos y riesgos. Compárala con una regla o plantilla y conserva la opción de no adoptarla." },
+          { question: "¿Un asistente conoce por sí solo los horarios o servicios del negocio?", answer: "No automáticamente. Necesita una fuente autorizada y vigente; una persona debe actualizarla y revisar las respuestas." },
+          { question: "¿Un asistente de voz es más capaz que un chatbot?", answer: "No. Voz y texto son canales distintos; sus capacidades dependen del modelo, los datos y los permisos." },
+          { question: "¿Puedo copiar conversaciones de clientes para entrenar un asistente?", answer: "No por defecto. Revisa autorización, privacidad y condiciones del proveedor; empieza con respuestas aprobadas y preguntas anonimizadas o sintéticas." },
+          { question: "¿La IA puede aprobar por sí sola un precio o una decisión delicada?", answer: "No. Una persona debe verificar y asumir decisiones sobre dinero, seguridad, derechos o compromisos con clientes." },
+          { question: "¿Qué opciones de inteligencia artificial ofrece Vecidya?", answer: "IA Conversacional e IA de Voz son complementos opcionales para Barrio o Ciudad; no se activan por defecto. Apoyan respuestas, clasificación inicial o atención por voz. El cargo mensual del complemento se cobra aparte del consumo del proveedor (tokens; minutos/telefonía para voz). Se acuerdan alcance, límites y supervisión antes; la disponibilidad depende de la configuración." },
         ] }],
       },
       {

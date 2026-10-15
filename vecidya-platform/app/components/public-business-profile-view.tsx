@@ -1,25 +1,7 @@
 import { compactBusinessHoursGroups, type BusinessHoursEntry } from "../../db/business-hours-rules";
+import type { MiniWebPublicProfile } from "../features/miniweb/public-model";
 
-export type PublicBusinessProfile = {
-  slug: string;
-  displayName: string;
-  shortDescription: string | null;
-  category: string | null;
-  city: string | null;
-  country: string | null;
-  logoUrl: string | null;
-  description: string | null;
-  phone: string | null;
-  publicEmail: string | null;
-  websiteUrl: string | null;
-  whatsapp: string | null;
-  instagramUrl: string | null;
-  facebookUrl: string | null;
-  linkedinUrl: string | null;
-  serviceMode: string | null;
-  serviceArea: string | null;
-  verificationStatus?: string;
-};
+export type PublicBusinessProfile = MiniWebPublicProfile;
 
 type ContactAction = {
   key: "whatsapp" | "phone" | "email" | "website";
@@ -98,10 +80,18 @@ function ContactActionLink({
   );
 }
 
-export function PublicBusinessHeader({ profile, preview = false }: { profile: PublicBusinessProfile; preview?: boolean }) {
+export function PublicBusinessHeader({
+  profile,
+  preview = false,
+  showContactActions = true,
+}: {
+  profile: PublicBusinessProfile;
+  preview?: boolean;
+  showContactActions?: boolean;
+}) {
   const location = [profile.city, profile.country].filter(Boolean).join(", ");
   const actions = getContactActions(profile);
-  const primaryAction = actions[0];
+  const primaryAction = showContactActions ? actions[0] : undefined;
   const imageUrl = safeWebUrl(profile.logoUrl);
   const initial = profile.displayName.trim().slice(0, 1).toLocaleUpperCase();
 
@@ -126,7 +116,7 @@ export function PublicBusinessHeader({ profile, preview = false }: { profile: Pu
           </ul>
         ) : null}
         {profile.shortDescription ? <p className="public-business-profile__summary">{profile.shortDescription}</p> : null}
-        {primaryAction ? (
+        {showContactActions && primaryAction ? (
           <div aria-label="Contacto principal" className="public-business-profile__hero-actions">
             <ContactActionLink
               action={primaryAction}

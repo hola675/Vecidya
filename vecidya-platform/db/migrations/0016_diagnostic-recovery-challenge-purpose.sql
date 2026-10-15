@@ -1,0 +1,1 @@
+ALTER TABLE `verified_email_challenge` ADD `purpose` text DEFAULT 'verification' NOT NULL;

@@ -42,7 +42,7 @@ test("CRM article exposes practical typed editorial blocks without changing the 
   assert.equal(learnCategories.length, 5);
 });
 
-test("AI article teaches bounded, human-reviewed use without implying a Vecidya AI feature", () => {
+test("AI article teaches bounded use and reflects optional commercial add-ons", () => {
   const article = getLearnArticle(aiSlug);
   assert.ok(article);
   assert.equal(article.slug, aiSlug);
@@ -60,7 +60,18 @@ test("AI article teaches bounded, human-reviewed use without implying a Vecidya 
   assert.match(example.actions.join(" "), /persona|humana/i);
   assert.match(example.approach, /fuente|informaci[oó]n|hoja/i);
 
+  const commercialFaq = blocks.find((block) => block.type === "faq" && block.items.some(({ question }) => question.includes("opciones de inteligencia artificial ofrece Vecidya")));
+  assert.ok(commercialFaq && commercialFaq.type === "faq");
+  const commercialAnswer = commercialFaq.items.find(({ question }) => question.includes("opciones de inteligencia artificial ofrece Vecidya"))?.answer ?? "";
+  assert.ok(commercialAnswer.trim().split(/\s+/).length <= 70, "The AI commercial FAQ answer should stay concise.");
+  assert.match(commercialAnswer, /IA Conversacional/);
+  assert.match(commercialAnswer, /IA de Voz/);
+  assert.match(commercialAnswer, /Barrio o Ciudad/);
+  assert.match(commercialAnswer, /no se activan por defecto/i);
+  assert.match(commercialAnswer, /tokens/);
+  assert.match(commercialAnswer, /minutos.*telefonía/i);
+  assert.match(commercialAnswer, /depende.*configuración/i);
   const content = article.sections.map((section) => [section.heading, ...section.paragraphs].join(" ")).join(" ");
-  assert.doesNotMatch(content, /Vecidya ofrece|asistente de Vecidya|IA propia de Vecidya/i);
+  assert.doesNotMatch(content, /asistente de Vecidya ya activo|IA propia ya disponible/i);
   assert.doesNotMatch(content, /\b\d+\s*%/);
 });

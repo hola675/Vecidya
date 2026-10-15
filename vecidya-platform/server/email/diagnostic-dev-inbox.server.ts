@@ -1,4 +1,4 @@
-type LocalVerificationEmail = { readonly requestId: string; readonly recipient: string; readonly subject: string; readonly text: string; readonly createdAt: number };
+type LocalVerificationEmail = { readonly requestId: string; readonly purpose: "verification" | "access_recovery"; readonly recipient: string; readonly subject: string; readonly text: string; readonly createdAt: number };
 type LocalMailboxGlobal = typeof globalThis & { __vecidyaDiagnosticDevInbox?: Map<string, LocalVerificationEmail> };
 
 function inbox(): Map<string, LocalVerificationEmail> {
@@ -13,17 +13,25 @@ export function deliverDiagnosticVerificationEmail(input: {
   readonly recipient: string;
   readonly token: string;
   readonly origin: string;
+  readonly purpose?: "verification" | "access_recovery";
   readonly now?: number;
 }): void {
   if (!import.meta.env.DEV) throw new Error("LOCAL_EMAIL_TRANSPORT_ONLY");
+  const purpose = input.purpose ?? "verification";
   const link = new URL("/diagnostico/verificar", input.origin);
   link.hash = new URLSearchParams({ requestId: input.requestId, token: input.token }).toString();
+  const createdAt = input.now ?? Date.now();
+  const previous = inbox().get(input.requestId);
+  if (previous && previous.createdAt > createdAt) return;
   inbox().set(input.requestId, {
     requestId: input.requestId,
+    purpose,
     recipient: input.recipient,
-    subject: "Confirma el correo para acceder a tu diagnóstico",
-    text: `Abre este enlace local para verificar el acceso al informe. El enlace vence en 24 horas.\n\n${link.toString()}`,
-    createdAt: input.now ?? Date.now(),
+    subject: purpose === "access_recovery" ? "Recupera el acceso a tu diagnóstico" : "Confirma el correo para acceder a tu diagnóstico",
+    text: purpose === "access_recovery"
+      ? `Solicitaste un nuevo enlace local para acceder al informe. El enlace vence según la vigencia del informe.\n\n${link.toString()}`
+      : `Abre este enlace local para verificar el acceso al informe. El enlace vence en 24 horas.\n\n${link.toString()}`,
+    createdAt,
   });
 }
 

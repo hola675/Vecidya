@@ -103,6 +103,9 @@ try {
   assert.deepEqual(expiryMatrix.authorizedSnapshot, [true, false, false], "expired snapshot denies report access at exact boundary");
   assert.deepEqual(expiryMatrix.authorizedGrant, [true, false, false], "expired grant denies report access at exact boundary");
   assert.equal(expiryMatrix.revokedAccess, false, "revoked grant cannot authorize even before its expiration");
+  assert.deepEqual(expiryMatrix.recoveryRequestBoundary, [true, false, false], "recovery challenge cannot issue at or after request expiry");
+  assert.deepEqual(expiryMatrix.recoverySnapshotBoundary, [true, false, false], "recovery challenge cannot issue at or after snapshot expiry");
+  assert.equal(expiryMatrix.pendingRecoveryAfterBoundaries, 1, "recovery boundary probes leave only the earlier eligible synthetic challenge");
   assert.deepEqual(expiryMatrix.cascadeCounts, { requests: 0, snapshots: 0, challenges: 0, access: 0 }, "deleting the synthetic request cascades all associated rows");
 
   const lostResponseFixture = await lifecycleFixture(created.requestId, "seed_lost_response_fixture");
@@ -138,6 +141,7 @@ try {
   const lostState = await lifecycleFixture(lostResponseRequestId, "inspect");
   assert.equal(lostState.counts.access, 1, "la respuesta perdida no duplica el grant ya persistido");
   assert.equal(lostState.counts.consumedChallenges, 1, "el challenge consumido queda registrado una sola vez");
+  assert.ok(lostState.snapshot?.reportSha256, "la fixture expone solo metadata/hash del snapshot para comprobar integridad semántica");
   assert.equal((await page.request.get(new URL(`/diagnostico/informe/${lostResponseRequestId}`, base).toString())).status(), 404, "sin la cookie no hay acceso aunque exista un grant persistido");
   const recoveryUrl = new URL(`/api/diagnostic/report-requests/${lostResponseRequestId}/resend`, base).toString();
   const recoveryButton = page.getByRole("button", { name: "Enviar un nuevo enlace de acceso" });
@@ -152,6 +156,7 @@ try {
   assert.equal((await uiRecoveryResponse.json()).accepted, true, "la respuesta de recuperación es genérica y no contiene el informe ni el ID");
   assert.equal((await page.request.get(new URL(`/diagnostico/informe/${lostResponseRequestId}`, base).toString())).status(), 404, "solicitar recuperación por UUID no autoriza el acceso");
   const recoveryMailbox = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).json();
+  assert.equal(recoveryMailbox.purpose, "access_recovery", "el buzón distingue el propósito de recuperación del challenge inicial");
   const recoveryLink = recoveryMailbox.text.match(/https?:\/\/[^\s]+/u)?.[0];
   const recoveryToken = new URLSearchParams(new URL(recoveryLink).hash.slice(1)).get("token");
   assert.ok(recoveryToken);
@@ -159,7 +164,14 @@ try {
   assert.equal(recoveryScan.status(), 200, "GET del enlace de recuperación no consume el token");
   const recoveryPending = await lifecycleFixture(lostResponseRequestId, "inspect");
   assert.equal(recoveryPending.counts.pendingRecoveryChallenges, 1, "los POST concurrentes dejan un único challenge de recuperación pendiente");
+  assert.equal(recoveryPending.counts.pendingRecoveryAttempts, 0, "el challenge de recovery comienza sin intentos fallidos");
   assert.equal(recoveryPending.counts.activeAccess, 1, "el grant anterior permanece hasta completar el nuevo challenge");
+  const staleTokenDuringRecovery = await page.evaluate(async ({ requestId, token }) => {
+    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": "198.51.100.32" }, body: JSON.stringify({ requestId, token }) });
+    return response.status;
+  }, { requestId: lostResponseRequestId, token: lostResponseToken });
+  assert.equal(staleTokenDuringRecovery, 400, "un token de verification consumido no autentica ni bloquea el challenge nuevo de recovery");
+  assert.equal((await lifecycleFixture(lostResponseRequestId, "inspect")).counts.pendingRecoveryAttempts, 0, "un token viejo no incrementa intentos del challenge de recovery vigente");
   const recoveryTabs = [page, await context.newPage()];
   await page.goto(new URL("/diagnostico", base).toString(), { waitUntil: "domcontentloaded" });
   await page.goto(recoveryLink, { waitUntil: "domcontentloaded" });
@@ -180,10 +192,35 @@ try {
   assert.equal(recoveredState.counts.activeAccess, 1, "solo el grant nuevo permanece activo");
   assert.equal(recoveredState.counts.revokedAccess, 1, "el grant anterior se revoca en el mismo canje");
   assert.equal(recoveredState.counts.consumedChallenges, 2, "se conserva evidencia de ambos canjes únicos");
+  assert.equal(recoveredState.counts.consumedRecoveryChallenges, 1, "el challenge de recovery se consume exactamente una vez");
   assert.equal(recoveredState.counts.pendingChallenges, 0, "la recuperación no deja challenges activos incompatibles");
   assert.deepEqual(recoveredState.snapshot, lostState.snapshot, "la recuperación preserva hash/identidad/versiones del resultado original");
-  assert.equal((await page.request.get(new URL(recovered.reportPath, base).toString())).status(), 200, "la cookie nueva recupera acceso a la misma solicitud");
+  assert.ok(recoveredState.counts.latestAccessExpiresAt <= recoveredState.counts.requestExpiresAt, "la recuperación no extiende la retención de la solicitud");
+  assert.ok(recoveredState.counts.latestAccessExpiresAt <= recoveredState.counts.snapshotExpiresAt, "la recuperación no extiende la retención del snapshot");
+  const recoveredReportResponse = await page.request.get(new URL(recovered.reportPath, base).toString());
+  assert.equal(recoveredReportResponse.status(), 200, "la cookie nueva recupera acceso a la misma solicitud");
+  assert.match(recoveredReportResponse.headers()["cache-control"] ?? "", /no-store/u, "el informe recuperado sigue sin cachearse");
   assert.equal((await page.context().cookies(new URL(recovered.reportPath, base).toString())).length, 1, "el navegador recibe solo la cookie del grant nuevo");
+  const noCookieAfterRecovery = await browser.newContext();
+  assert.equal((await noCookieAfterRecovery.request.get(new URL(recovered.reportPath, base).toString())).status(), 404, "ni siquiera después de solicitar recovery el UUID concede acceso a otro navegador");
+  await noCookieAfterRecovery.close();
+  const staleReplayAfterRecovery = await page.evaluate(async ({ requestId, token }) => {
+    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": "198.51.100.33" }, body: JSON.stringify({ requestId, token }) });
+    return response.status;
+  }, { requestId: lostResponseRequestId, token: lostResponseToken });
+  assert.equal(staleReplayAfterRecovery, 404, "reutilizar el token inicial tras recovery no crea un grant adicional");
+  await lifecycleFixture(lostResponseRequestId, "expire_snapshot_only");
+  const expiredSnapshotRecovery = await page.request.post(recoveryUrl, { headers: { Origin: base.origin, "cf-connecting-ip": "198.51.100.34" } });
+  assert.equal(expiredSnapshotRecovery.status(), 202, "la solicitud con snapshot vencido conserva una respuesta genérica");
+  assert.equal((await expiredSnapshotRecovery.json()).accepted, true);
+  const noSnapshotRecoveryEmail = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).json();
+  assert.equal(noSnapshotRecoveryEmail.createdAt, recoveryMailbox.createdAt, "snapshot vencido no genera otro mensaje");
+  await lifecycleFixture(lostResponseRequestId, "restore_snapshot_expiry");
+  await lifecycleFixture(lostResponseRequestId, "expire_request_only");
+  const expiredRequestRecovery = await page.request.post(recoveryUrl, { headers: { Origin: base.origin, "cf-connecting-ip": "198.51.100.35" } });
+  assert.equal(expiredRequestRecovery.status(), 202, "la solicitud vencida conserva una respuesta genérica");
+  const noRequestRecoveryEmail = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).json();
+  assert.equal(noRequestRecoveryEmail.createdAt, recoveryMailbox.createdAt, "solicitud vencida no genera otro mensaje");
 
   const mailbox = await page.request.get(new URL(`/__dev/diagnostico/buzon/${created.requestId}`, base).toString());
   assert.equal(mailbox.status(), 200, "el mensaje solo está en el buzón local simulado");
@@ -294,8 +331,9 @@ try {
       return response.status;
     }, { requestId: secondRequestId, token: secondToken, ip: "198.51.100.22" }),
   ]);
-  assert.ok([202, 404, 429].includes(secondResendResponse.status()), "reenvío concurrente no deja la ruta en error interno");
+  assert.ok([202, 429].includes(secondResendResponse.status()), "reenvío concurrente se acepta genéricamente o se limita");
   let secondVerification = initialSecondVerification;
+  let secondRecovered = false;
   if (initialSecondVerification !== 200) {
     assert.ok([202, 429].includes(secondResendResponse.status()), "si el canje pierde la carrera, el challenge continúa o se sustituye sin emitir grant");
     const latestMailbox = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${secondRequestId}`, base).toString())).json();
@@ -306,12 +344,24 @@ try {
       const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
       return response.status;
     }, { requestId: secondRequestId, token: latestToken, ip: "198.51.100.23" });
+  } else if (secondResendResponse.status() === 202) {
+    const recoveryMailbox = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${secondRequestId}`, base).toString())).json();
+    assert.equal(recoveryMailbox.purpose, "access_recovery", "un reenvío que pierde la carrera con verify recupera acceso con nuevo propósito");
+    const recoveryLink = recoveryMailbox.text.match(/https?:\/\/[^\s]+/u)?.[0];
+    const recoveryToken = new URLSearchParams(new URL(recoveryLink).hash.slice(1)).get("token");
+    assert.ok(recoveryToken);
+    secondVerification = await page.evaluate(async ({ requestId, token, ip }) => {
+      const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
+      return response.status;
+    }, { requestId: secondRequestId, token: recoveryToken, ip: "198.51.100.24" });
+    secondRecovered = secondVerification === 200;
   }
   assert.equal(secondVerification, 200, "la segunda solicitud obtiene un grant propio");
   const secondFixtureState = await lifecycleFixture(secondRequestId, "inspect");
   assert.equal(secondFixtureState.counts.pendingChallenges, 0, "verificación/reenvío concurrente no deja challenges activos incompatibles");
-  assert.equal(secondFixtureState.counts.consumedChallenges, 1, "el canje concurrente termina con un challenge consumido");
+  assert.equal(secondFixtureState.counts.access, secondRecovered ? 2 : 1, "el reenvío concurrente solo añade un grant si requirió recovery");
   assert.equal(secondFixtureState.counts.activeAccess, 1, "el canje/reenvío concurrente crea exactamente un grant activo");
+  assert.equal(secondFixtureState.counts.revokedAccess, secondRecovered ? 1 : 0, "si el verify ganó primero, el recovery revoca el grant previo");
   const secondReportUrl = new URL(secondReportPath, base).toString();
   const [readDuringRevocation] = await Promise.all([
     page.request.get(secondReportUrl),

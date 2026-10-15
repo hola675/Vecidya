@@ -113,6 +113,20 @@
       "when": 1791838755903,
       "tag": "0015_diagnostic-request-fingerprint",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "6",
+      "when": 1792020580471,
+      "tag": "0016_diagnostic-recovery-challenge-purpose",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1792023260448,
+      "tag": "0017_miniweb-core",
+      "breakpoints": true
     }
   ]
 }

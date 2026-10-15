@@ -86,6 +86,7 @@ export async function action({ context, request }: ActionFunctionArgs) {
   const challenge = {
     id: crypto.randomUUID(),
     requestId,
+    purpose: "verification" as const,
     tokenDigest,
     status: "pending" as const,
     attempts: 0,

@@ -5,8 +5,9 @@ type VerificationState =
   | { readonly kind: "ready"; readonly requestId: string; readonly token: string }
   | { readonly kind: "invalid" }
   | { readonly kind: "submitting" }
-  | { readonly kind: "error"; readonly message: string }
+  | { readonly kind: "error"; readonly requestId: string; readonly message: string }
   | { readonly kind: "verified"; readonly reportPath: string };
+type RecoveryState = "idle" | "sending" | "sent" | "failed";
 
 export const meta = () => [{ title: "Verificar acceso al diagnóstico" }, { name: "robots", content: "noindex, nofollow, noarchive" }];
 
@@ -14,6 +15,7 @@ export default function VerifyDiagnosticEmail() {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const initialized = useRef(false);
   const [state, setState] = useState<VerificationState>({ kind: "loading" });
+  const [recovery, setRecovery] = useState<RecoveryState>("idle");
 
   useEffect(() => {
     if (initialized.current) return;
@@ -41,12 +43,23 @@ export default function VerifyDiagnosticEmail() {
       });
       const payload: unknown = await response.json();
       if (!response.ok || typeof payload !== "object" || payload === null || Array.isArray(payload) || typeof (payload as Record<string, unknown>).reportPath !== "string") {
-        setState({ kind: "error", message: "El enlace venció o ya se utilizó. Vuelve al diagnóstico para solicitar otro." });
+        setState({ kind: "error", requestId: state.requestId, message: "El enlace no pudo completarse. Si la solicitud sigue vigente, puedes pedir un nuevo acceso." });
         return;
       }
       setState({ kind: "verified", reportPath: (payload as { reportPath: string }).reportPath });
     } catch {
-      setState({ kind: "error", message: "No pudimos completar la verificación. Revisa tu conexión y vuelve a intentarlo desde el enlace." });
+      setState({ kind: "error", requestId: state.requestId, message: "No pudimos completar la verificación. Revisa tu conexión o solicita un nuevo acceso si la solicitud sigue vigente." });
+    }
+  };
+
+  const requestRecovery = async () => {
+    if (state.kind !== "error" || recovery === "sending") return;
+    setRecovery("sending");
+    try {
+      const response = await fetch(`/api/diagnostic/report-requests/${state.requestId}/resend`, { method: "POST", headers: { Accept: "application/json" } });
+      setRecovery(response.status === 202 ? "sent" : "failed");
+    } catch {
+      setRecovery("failed");
     }
   };
 
@@ -63,7 +76,14 @@ export default function VerifyDiagnosticEmail() {
           </button>
         </> : null}
         {state.kind === "invalid" ? <p role="alert">Este enlace no está completo o ya no está disponible. Regresa al diagnóstico y solicita otro.</p> : null}
-        {state.kind === "error" ? <p role="alert">{state.message}</p> : null}
+        {state.kind === "error" ? <>
+          <p role="alert">{state.message}</p>
+          <button className="button button--primary" disabled={recovery === "sending"} onClick={() => void requestRecovery()} type="button">
+            {recovery === "sending" ? "Enviando…" : "Enviar un nuevo enlace de acceso"}
+          </button>
+          {recovery === "sent" ? <p role="status">Si la solicitud y el informe siguen vigentes, enviaremos un nuevo enlace al correo asociado.</p> : null}
+          {recovery === "failed" ? <p role="status">No pudimos enviar el enlace ahora. Espera un momento antes de volver a intentarlo.</p> : null}
+        </> : null}
         {state.kind === "verified" ? <div className="df-identification__success" role="status">
           <p>Correo verificado. Ya puedes abrir el informe completo.</p>
           <a className="button button--primary" href={state.reportPath}>Abrir informe</a>

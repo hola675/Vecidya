@@ -24,9 +24,12 @@ export type ReportPersonalization = {
 };
 
 /** Server-side record shape; only `tokenDigest` is persisted. */
+export type VerifiedEmailChallengePurpose = "verification" | "access_recovery";
+
 export type VerifiedEmailChallenge = {
   readonly challengeId: string;
   readonly requestId: string;
+  readonly purpose: VerifiedEmailChallengePurpose;
   readonly tokenDigest: string;
   readonly issuedAt: number;
   readonly expiresAt: number;

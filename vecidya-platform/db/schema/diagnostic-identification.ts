@@ -37,6 +37,7 @@ export const diagnosticReportSnapshot = sqliteTable("diagnostic_report_snapshot"
 export const verifiedEmailChallenge = sqliteTable("verified_email_challenge", {
   id: text("id").primaryKey(),
   requestId: text("request_id").notNull().references(() => identifiedDiagnosticRequest.id, { onDelete: "cascade" }),
+  purpose: text("purpose", { enum: ["verification", "access_recovery"] }).notNull().default("verification"),
   tokenDigest: text("token_digest").notNull(),
   status: text("status", { enum: ["pending", "consumed", "expired", "superseded", "locked"] }).notNull(),
   attempts: integer("attempts").notNull().default(0),

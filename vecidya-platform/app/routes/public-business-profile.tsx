@@ -3,10 +3,13 @@ import { Link, useLoaderData } from "react-router";
 import { createDatabase } from "../../db/client.server";
 import { getPublishedBusinessProfileBySlug } from "../../db/queries/business-profile.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
+import { getMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { JsonLd } from "../components/public-v2";
-import { PublicBusinessContact, PublicBusinessDetails, PublicBusinessHeader, PublicBusinessHours } from "../components/public-business-profile-view";
+import { MiniWebRenderer } from "../components/miniweb/miniweb-renderer";
+import { getRenderableMiniWebModules } from "../features/miniweb/render";
+import { restrictMiniWebPublicModel, toMiniWebPublicProfile } from "../features/miniweb/public-model";
 
 import type { Route } from "./+types/public-business-profile";
 
@@ -30,9 +33,15 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
     throw new Response("Perfil no encontrado", { status: 404 });
   }
 
-  const hours = await listBusinessHoursForOrganization(database, profile.organizationId);
+  const rawHours = await listBusinessHoursForOrganization(database, profile.organizationId);
+  const hours = rawHours.map(({ dayOfWeek, isClosed, opensAt, closesAt }) => ({ dayOfWeek, isClosed, opensAt, closesAt }));
+  const miniweb = await getMiniWebConfigurationForOrganization(database, profile.organizationId, profile, hours);
+  const publicProfile = toMiniWebPublicProfile(profile, profile.verificationStatus);
+  if (!publicProfile) throw new Response("Perfil no encontrado", { status: 404 });
+  const renderableModules = getRenderableMiniWebModules(miniweb.publishedConfiguration, publicProfile, hours);
+  const publicModel = restrictMiniWebPublicModel(publicProfile, hours, renderableModules.map((module) => module.type));
 
-  return { origin, profile, hours };
+  return { origin, ...publicModel, configuration: miniweb.publishedConfiguration };
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
@@ -41,7 +50,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export default function PublicBusinessProfilePage() {
-  const { origin, profile, hours } = useLoaderData<typeof loader>();
+  const { origin, profile, hours, configuration } = useLoaderData<typeof loader>();
   const sameAs = [profile.websiteUrl, profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].filter(
     (url): url is string => Boolean(url),
   );
@@ -78,22 +87,7 @@ export default function PublicBusinessProfilePage() {
     <PublicLayout>
       <main className="public-page public-business-profile">
         <JsonLd data={localBusinessSchema} />
-        <PublicBusinessHeader profile={profile} />
-
-        <div className={`public-business-profile__grid${profile.description ? "" : " public-business-profile__grid--single"}`}>
-          {profile.description ? (
-            <section className="public-v2-card public-business-profile__description">
-              <h2>Qué hace este negocio</h2>
-              <p>{profile.description}</p>
-            </section>
-          ) : null}
-
-          <div className="public-business-profile__side">
-            <PublicBusinessContact profile={profile} />
-            <PublicBusinessDetails profile={profile} />
-            <PublicBusinessHours hours={hours} />
-          </div>
-        </div>
+        <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} />
 
         <section aria-labelledby="business-neighborhood-title" className="public-business-neighborhood">
           <div>

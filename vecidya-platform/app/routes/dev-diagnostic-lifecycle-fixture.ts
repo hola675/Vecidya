@@ -1,6 +1,6 @@
 import { isRequestId } from "../features/diagnostic/identified-report-contracts";
 import { cloudflareContext } from "../../server/cloudflare-context";
-import { consumeChallengeAndGrantAccess, deleteIdentifiedReport, findRequestWithPendingChallenge, getAuthorizedReport } from "../../db/queries/diagnostic-identification.server";
+import { consumeChallengeAndGrantAccess, deleteIdentifiedReport, findRequestWithPendingChallenge, getAuthorizedReport, replacePendingChallenge } from "../../db/queries/diagnostic-identification.server";
 import { VERIFIED_EMAIL_CHALLENGE_TTL_HOURS } from "../features/diagnostic/identified-report-constants";
 import { createOpaqueToken, digestOpaqueToken } from "../features/diagnostic/report-access-crypto.server";
 import { deliverDiagnosticVerificationEmail, discardDiagnosticDevInboxMessage } from "../../server/email/diagnostic-dev-inbox.server";
@@ -9,7 +9,7 @@ import type { ActionFunctionArgs } from "react-router";
 
 const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
 const failure = (status: number, error: string) => Response.json({ error }, { status, headers });
-const allowedOperations = ["inspect", "lock_challenge", "tamper_snapshot", "expire_children", "expire_request", "expiry_matrix", "seed_lost_response_fixture", "revoke_access", "restore_access", "install_purge_failpoint", "remove_purge_failpoint", "cleanup"] as const;
+const allowedOperations = ["inspect", "lock_challenge", "tamper_snapshot", "expire_children", "expire_request", "expire_request_only", "expire_snapshot_only", "restore_snapshot_expiry", "expiry_matrix", "seed_lost_response_fixture", "revoke_access", "restore_access", "install_purge_failpoint", "remove_purge_failpoint", "cleanup"] as const;
 type Operation = typeof allowedOperations[number];
 
 async function runExpiryMatrix(db: D1Database, sourceRequestId: string) {
@@ -22,7 +22,7 @@ async function runExpiryMatrix(db: D1Database, sourceRequestId: string) {
   const challengeExpiresAt = base + 20_000;
   const requestExpiresAt = base + 40_000;
   const snapshotExpiresAt = base + 60_000;
-  const accessExpiresAt = base + 80_000;
+  const accessExpiresAt = base + 30_000;
 
   try {
     const requestInsert = await db.prepare(`INSERT INTO identified_diagnostic_request (
@@ -42,8 +42,8 @@ async function runExpiryMatrix(db: D1Database, sourceRequestId: string) {
     if ((snapshotInsert.meta?.changes ?? 0) !== 1) throw new Error("No se pudo crear el snapshot sintético de expiración.");
 
     const challengeInsert = await db.prepare(`INSERT INTO verified_email_challenge (
-      id, request_id, token_digest, status, attempts, issued_at, expires_at, consumed_at, created_at
-    ) VALUES (?, ?, ?, 'pending', 0, ?, ?, NULL, ?)`)
+      id, request_id, token_digest, purpose, status, attempts, issued_at, expires_at, consumed_at, created_at
+    ) VALUES (?, ?, ?, 'verification', 'pending', 0, ?, ?, NULL, ?)`)
       .bind(challengeId, requestId, challengeDigest, base - 1_000, challengeExpiresAt, base - 1_000).run();
     if ((challengeInsert.meta?.changes ?? 0) !== 1) throw new Error("No se pudo crear el challenge sintético de expiración.");
 
@@ -62,10 +62,10 @@ async function runExpiryMatrix(db: D1Database, sourceRequestId: string) {
     await db.prepare("UPDATE verified_email_challenge SET expires_at = ? WHERE id = ?").bind(challengeExpiresAt, challengeId).run();
     const access = {
       id: accessId, requestId, challengeId, tokenDigest: accessDigest,
-      issuedAt: at(-20_001), expiresAt: at(80_000), revokedAt: null,
+      issuedAt: at(-20_001), expiresAt: new Date(accessExpiresAt), revokedAt: null,
     };
     const consume = (offset: number) => consumeChallengeAndGrantAccess(db, {
-      requestId, challengeId, tokenDigest: challengeDigest,
+      requestId, challengeId, tokenDigest: challengeDigest, purpose: "verification",
       access: { ...access, issuedAt: at(offset) }, now: at(offset),
     });
     const consumeAtExpiry = await consume(20_000);
@@ -88,6 +88,32 @@ async function runExpiryMatrix(db: D1Database, sourceRequestId: string) {
     await db.prepare("UPDATE diagnostic_report_access SET expires_at = ?, revoked_at = ? WHERE request_id = ?").bind(base + 50_000, base, requestId).run();
     const revokedAccess = Boolean(await getAuthorizedReport(db, accessDigest, requestId, at(1)));
 
+    const recoveryChallenge = (issuedAt: number, expiresAt: number) => ({
+      id: crypto.randomUUID(), requestId,
+      purpose: "access_recovery" as const,
+      tokenDigest: `${crypto.randomUUID().replaceAll("-", "")}${crypto.randomUUID().replaceAll("-", "")}`,
+      status: "pending" as const, attempts: 0,
+      issuedAt: new Date(issuedAt), expiresAt: new Date(expiresAt), consumedAt: null, createdAt: new Date(issuedAt),
+    });
+    const requestBoundary = base + 20_000;
+    await db.batch([
+      db.prepare("UPDATE identified_diagnostic_request SET expires_at = ? WHERE id = ?").bind(requestBoundary, requestId),
+      db.prepare("UPDATE diagnostic_report_snapshot SET expires_at = ? WHERE request_id = ?").bind(base + 30_000, requestId),
+    ]);
+    const recoveryRequestBefore = await replacePendingChallenge(db, requestId, recoveryChallenge(requestBoundary - 1, requestBoundary));
+    const recoveryRequestAt = await replacePendingChallenge(db, requestId, recoveryChallenge(requestBoundary, requestBoundary + 1));
+    const recoveryRequestAfter = await replacePendingChallenge(db, requestId, recoveryChallenge(requestBoundary + 1, requestBoundary + 2));
+
+    const snapshotBoundary = base + 30_000;
+    await db.batch([
+      db.prepare("UPDATE identified_diagnostic_request SET expires_at = ? WHERE id = ?").bind(base + 40_000, requestId),
+      db.prepare("UPDATE diagnostic_report_snapshot SET expires_at = ? WHERE request_id = ?").bind(snapshotBoundary, requestId),
+    ]);
+    const recoverySnapshotBefore = await replacePendingChallenge(db, requestId, recoveryChallenge(snapshotBoundary - 1, snapshotBoundary));
+    const recoverySnapshotAt = await replacePendingChallenge(db, requestId, recoveryChallenge(snapshotBoundary, snapshotBoundary + 1));
+    const recoverySnapshotAfter = await replacePendingChallenge(db, requestId, recoveryChallenge(snapshotBoundary + 1, snapshotBoundary + 2));
+    const pendingRecoveryCount = await db.prepare("SELECT COUNT(*) AS count FROM verified_email_challenge WHERE request_id = ? AND purpose = 'access_recovery' AND status = 'pending'").bind(requestId).first<{ count: number }>();
+
     await deleteIdentifiedReport(db, requestId);
     const cascadeCounts = await db.prepare(`SELECT
       (SELECT COUNT(*) FROM identified_diagnostic_request WHERE id = ?) AS requests,
@@ -105,6 +131,9 @@ async function runExpiryMatrix(db: D1Database, sourceRequestId: string) {
       authorizedSnapshot,
       authorizedGrant,
       revokedAccess,
+      recoveryRequestBoundary: [recoveryRequestBefore, recoveryRequestAt, recoveryRequestAfter],
+      recoverySnapshotBoundary: [recoverySnapshotBefore, recoverySnapshotAt, recoverySnapshotAfter],
+      pendingRecoveryAfterBoundaries: pendingRecoveryCount?.count ?? 0,
       cascadeCounts,
     };
   } finally {
@@ -133,8 +162,8 @@ async function seedLostResponseFixture(db: D1Database, sourceRequestId: string, 
         FROM diagnostic_report_snapshot WHERE request_id = ?`)
         .bind(requestId, now.getTime(), sourceRequestId),
       db.prepare(`INSERT INTO verified_email_challenge (
-        id, request_id, token_digest, status, attempts, issued_at, expires_at, consumed_at, created_at
-      ) VALUES (?, ?, ?, 'pending', 0, ?, ?, NULL, ?)`)
+        id, request_id, token_digest, purpose, status, attempts, issued_at, expires_at, consumed_at, created_at
+      ) VALUES (?, ?, ?, 'verification', 'pending', 0, ?, ?, NULL, ?)`)
         .bind(challengeId, requestId, await digestOpaqueToken(token), now.getTime(), expiresAt.getTime(), now.getTime()),
     ]);
     const inserted = await db.prepare("SELECT COUNT(*) AS count FROM identified_diagnostic_request WHERE id = ? AND email = 'qa-funnel@example.invalid'").bind(requestId).first<{ count: number }>();
@@ -185,14 +214,24 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
       (SELECT COUNT(*) FROM diagnostic_report_snapshot WHERE request_id = ?) AS snapshots,
       (SELECT COUNT(*) FROM verified_email_challenge WHERE request_id = ?) AS challenges,
       (SELECT COUNT(*) FROM verified_email_challenge WHERE request_id = ? AND status = 'pending') AS pendingChallenges,
+      (SELECT COUNT(*) FROM verified_email_challenge WHERE request_id = ? AND purpose = 'access_recovery' AND status = 'pending') AS pendingRecoveryChallenges,
+      (SELECT COALESCE(MAX(attempts), 0) FROM verified_email_challenge WHERE request_id = ? AND purpose = 'access_recovery' AND status = 'pending') AS pendingRecoveryAttempts,
       (SELECT COUNT(*) FROM verified_email_challenge WHERE request_id = ? AND status = 'consumed') AS consumedChallenges,
+      (SELECT COUNT(*) FROM verified_email_challenge WHERE request_id = ? AND purpose = 'access_recovery' AND status = 'consumed') AS consumedRecoveryChallenges,
       (SELECT COUNT(*) FROM verified_email_challenge WHERE request_id = ? AND status = 'superseded') AS supersededChallenges,
       (SELECT COUNT(*) FROM diagnostic_report_access WHERE request_id = ?) AS access,
       (SELECT COUNT(*) FROM diagnostic_report_access WHERE request_id = ? AND revoked_at IS NULL AND expires_at > CAST(strftime('%s','now') AS INTEGER) * 1000) AS activeAccess,
+      (SELECT COUNT(*) FROM diagnostic_report_access WHERE request_id = ? AND revoked_at IS NOT NULL) AS revokedAccess,
+      (SELECT MAX(expires_at) FROM diagnostic_report_access WHERE request_id = ?) AS latestAccessExpiresAt,
+      (SELECT expires_at FROM identified_diagnostic_request WHERE id = ?) AS requestExpiresAt,
+      (SELECT expires_at FROM diagnostic_report_snapshot WHERE request_id = ?) AS snapshotExpiresAt,
       (SELECT COUNT(*) FROM identified_diagnostic_request WHERE id = ? AND status = 'verified') AS verifiedRequests,
       (SELECT COUNT(*) FROM commercial_contact_intent WHERE request_id = ?) AS commercialIntents,
-      (SELECT COUNT(*) FROM diagnostic_research_intent WHERE request_id = ?) AS researchIntents`).bind(requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId).first<Record<string, number>>();
-    return Response.json({ counts: row }, { headers });
+      (SELECT COUNT(*) FROM diagnostic_research_intent WHERE request_id = ?) AS researchIntents`).bind(requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId).first<Record<string, number>>();
+    const snapshot = await db.prepare(`SELECT engine_identity AS engineIdentity, report_version AS reportVersion,
+      methodology_version AS methodologyVersion, report_sha256 AS reportSha256
+      FROM diagnostic_report_snapshot WHERE request_id = ?`).bind(requestId).first<Record<string, string>>();
+    return Response.json({ counts: row, snapshot }, { headers });
   }
   if (op === "expiry_matrix") return Response.json(await runExpiryMatrix(db, requestId), { headers });
   if (op === "tamper_snapshot") await db.prepare("UPDATE diagnostic_report_snapshot SET report_json = report_json || ' ' WHERE request_id = ?").bind(requestId).run();
@@ -205,6 +244,11 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
     db.prepare("UPDATE identified_diagnostic_request SET expires_at = 0 WHERE id = ?").bind(requestId),
     db.prepare("UPDATE diagnostic_report_snapshot SET expires_at = 0 WHERE request_id = ?").bind(requestId),
   ]);
+  if (op === "expire_request_only") await db.prepare("UPDATE identified_diagnostic_request SET expires_at = 0 WHERE id = ?").bind(requestId).run();
+  if (op === "expire_snapshot_only") await db.prepare("UPDATE diagnostic_report_snapshot SET expires_at = 0 WHERE request_id = ?").bind(requestId).run();
+  if (op === "restore_snapshot_expiry") await db.prepare(`UPDATE diagnostic_report_snapshot SET expires_at = (
+    SELECT expires_at FROM identified_diagnostic_request WHERE id = ?
+  ) WHERE request_id = ?`).bind(requestId, requestId).run();
   if (op === "revoke_access") await db.prepare("UPDATE diagnostic_report_access SET revoked_at = ? WHERE request_id = ? AND revoked_at IS NULL").bind(Date.now(), requestId).run();
   if (op === "restore_access") await db.prepare("UPDATE diagnostic_report_access SET revoked_at = NULL WHERE request_id = ?").bind(requestId).run();
   if (op === "install_purge_failpoint") await db.prepare(`CREATE TRIGGER IF NOT EXISTS ${triggerName} BEFORE DELETE ON identified_diagnostic_request WHEN OLD.id = '${requestId}' BEGIN SELECT RAISE(ABORT, 'qa local purge failpoint'); END`).run();

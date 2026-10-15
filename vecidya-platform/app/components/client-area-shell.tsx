@@ -14,6 +14,7 @@ const groups: NavGroup[] = [
   {
     label: "MI NEGOCIO",
     links: [
+      { id: "miniweb", label: "Mi MiniWeb", to: "/app/miniweb", icon: "spark" },
       { id: "business", label: "Mi negocio", to: "/app/business-profile", icon: "building" },
       { id: "services", label: "Servicios", to: "/app/services", icon: "spark" },
     ],

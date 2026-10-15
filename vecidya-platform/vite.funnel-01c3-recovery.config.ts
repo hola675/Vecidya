@@ -5,7 +5,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [
-    cloudflare({ viteEnvironment: { name: "ssr" }, persistState: { path: "C:/Users/Admin/AppData/Local/Temp/kilo/vecidya-c1c3-recovery-red-d1" } }),
+    cloudflare({ viteEnvironment: { name: "ssr" }, persistState: { path: "C:/Users/Admin/AppData/Local/Temp/kilo/vecidya-c1c3-recovery-green-d1" } }),
     tailwindcss(),
     reactRouter(),
   ],

@@ -1,4 +1,4 @@
-import { consumeChallengeAndGrantAccess, findRequestWithPendingChallenge, incrementChallengeAttempt } from "../../db/queries/diagnostic-identification.server";
+import { consumeChallengeAndGrantAccess, findChallengeByTokenDigest, findRequestWithPendingChallenge, incrementChallengeAttempt } from "../../db/queries/diagnostic-identification.server";
 import { readRequestBodyLimited, RequestBodyTooLargeError } from "../features/diagnostic/bounded-request-body.server";
 import { allowRateLimitedRequest } from "../features/diagnostic/diagnostic-rate-limit.server";
 import { isRequestId } from "../features/diagnostic/identified-report-contracts";
@@ -40,13 +40,15 @@ export async function action({ context, request }: ActionFunctionArgs) {
   if (!pending || pending.challenge.attempts >= 5) return failure(404, "El enlace no está disponible. Solicita uno nuevo.");
   const suppliedDigest = await digestOpaqueToken(value.token);
   if (!constantTimeEqual(suppliedDigest, pending.challenge.tokenDigest)) {
-    await incrementChallengeAttempt(env.DB, pending.challenge.id, now);
+    const staleChallenge = await findChallengeByTokenDigest(env.DB, value.requestId, suppliedDigest);
+    if (!staleChallenge) await incrementChallengeAttempt(env.DB, pending.challenge.id, now);
     return failure(400, "El enlace no pudo verificarse. Solicita uno nuevo.");
   }
 
   const accessToken = createOpaqueToken();
   const accessExpiresAt = new Date(Math.min(
     pending.request.expiresAt.getTime(),
+    pending.snapshot.expiresAt.getTime(),
     now.getTime() + VERIFIED_REPORT_ACCESS_TTL_DAYS * 24 * 60 * 60 * 1000,
   ));
   const accessId = crypto.randomUUID();
@@ -54,6 +56,7 @@ export async function action({ context, request }: ActionFunctionArgs) {
     requestId: pending.request.id,
     challengeId: pending.challenge.id,
     tokenDigest: suppliedDigest,
+    purpose: pending.challenge.purpose,
     access: {
       id: accessId,
       requestId: pending.request.id,
