@@ -26,6 +26,18 @@ Schema `miniweb_site`/`miniweb_module` y migración `0017_miniweb-core.sql` aña
 
 Unitarias `1557/1557 PASS`; E2E FUNNEL-01B `6/6 PASS`; E2E FUNNEL-01C.3 `PASS`; typecheck/build/diff-check `PASS`. La D1 temporal final acabó con cero filas; D1 compartida no se limpió y conserva 1 request preexistente con 1 challenge vencido. Una D1 temporal de una ejecución anterior mantiene 2 filas con correo no QA de procedencia desconocida; se preservó. Migración `0016` solo aplicada a D1 temporal, nunca a D1 compartida/remota. Correo real/scanners externos, revocación operativa B/C, retención/evidencia de consentimiento y aprobación legal siguen pendientes; no cambian la certificación técnica local. Sin deploy, push, GHL, PDF, FUNNEL-01D, QA-03B ni ACT-04.
 
+## DIAG-V3-FUNNEL-01C.3 — recuperación después de respuesta perdida (2026-10-16)
+
+**`IDENTIFICATION_TECHNICALLY_CERTIFIED_LOCAL` — solo evidencia técnica del Worker/D1 local; no es permiso operativo ni readiness de producción.** Recovery `access_recovery` usa challenge con propósito explícito, action POST en UI, respuesta genérica/rate-limit y email ya asociado a la solicitud. El canje comprueba solicitud/snapshot/grant al límite exacto, revoca grants anteriores y deja exactamente uno activo sin recalcular hash/versiones del resultado. Dos pestañas concurrentes, reenvíos, token viejo, GET/prefetch, cookie ausente, snapshot/request vencido y cleanup de fixture: `PASS`. Unitarias `1557/1557`, E2E 01B `6/6`, E2E C1.3, typecheck, build, route isolation y diff-check: `PASS`. D1 de la corrida final: cero solicitudes/snapshots/challenges/grants.
+
+Recovery y mailbox siguen siendo dev-only/simulados; no correo real, scanners reales ni endpoint publicado. Persisten bloqueos separados para política/retención y evidencia de consentimiento, aviso/base aplicable, API operativa de consulta/revocación B/C y derechos; 24 h/30 d siguen propuestos. No migración remota, deploy, push, GHL, PDF, FUNNEL-01D, QA-03B o ACT-04. No se purgó la D1 local compartida ni el scratch temporal anterior con dos registros no-qa sin procedencia conocida.
+
+## DIAG-V3-FUNNEL-01C.3 — recuperación local y certificación técnica (2026-10-16)
+
+**`IDENTIFICATION_TECHNICALLY_CERTIFIED_LOCAL` — certificación del comportamiento técnico reproducible; no autorización de datos reales ni readiness de producción.** E2E prueba el challenge `access_recovery` al perderse la respuesta de verificación: sin cookie y con grant previo activo, UI ofrece enlace nuevo; dos reenvíos dejan un challenge activo; dos pestañas lo consumen con exactamente un grant activo y revocan el anterior. El token inicial no puede reusar ni bloquear el challenge nuevo, el requestId solo no da acceso, y hash/motor/versiones del snapshot se preservan. Request/snapshot vencidos reciben respuesta genérica sin otro email. Expiración exacta, purga/rollback, B/A isolation y no-store también `PASS`.
+
+Unitarias `1557/1557 PASS`; E2E FUNNEL-01B `6/6 PASS`; E2E FUNNEL-01C.3 `PASS`; typecheck/build/route-isolation/diff-check `PASS`. `0016` aplicada solo a D1 efímera de prueba, que terminó sin filas; la D1 compartida y remota no se migraron ni limpiaron. El flujo solo usa mailbox simulado dev-only. Permanecen operativos/legales pendientes: correo real y scanner real, plazo/base/aviso, retención separada de evidencia consentida, consulta/revocación B/C y borrado sujeto a política aprobada. No push, deploy, GHL, PDF, FUNNEL-01D, QA-03B ni ACT-04.
+
 ## DIAG-V3-FUNNEL-01C — identificación y acceso al informe (2026-10-12)
 
 El estado de 01C fue endurecido por 01C.1 (sección precedente); la descripción original de implementación permanece como historial de alcance.

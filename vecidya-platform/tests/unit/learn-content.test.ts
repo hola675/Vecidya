@@ -9,7 +9,7 @@ const aiSlug = "que-puede-hacer-una-inteligencia-artificial-por-un-negocio";
 const automationSlug = "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio";
 const presenceSlug = "antes-de-hacer-publicidad-organiza-tu-presencia-digital";
 
-test("CRM article exposes practical typed editorial blocks without changing the legacy articles", () => {
+test("CRM article exposes practical typed editorial blocks and respects commercial boundaries", () => {
   const crmArticle = getLearnArticle(crmSlug);
   assert.ok(crmArticle);
   assert.equal(crmArticle.slug, crmSlug);

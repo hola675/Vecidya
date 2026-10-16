@@ -7,6 +7,13 @@
 - Convenciones dinámicas por checkpoint para MiniWeb, Diagnóstico y Aprende; reconciliación de migraciones concurrentes `0016`/`0017` antes de nuevas migraciones MiniWeb.
 - Política documental únicamente: sin cambios de ejecución, schema, datos remotos ni deploy.
 
+## 2026-10-16 — VEC-APRENDE-04/05 (local, PR #2)
+
+- Se completa Automatización con condiciones explícitas, revisión humana y un flujo comprobable; se amplía Presencia Digital con preparación de canales, ejemplo hipotético, checklist, FAQ y un diagrama propio. CRM e IA conservan sus versiones editoriales.
+- Las cuatro guías siguen usando los bloques editoriales existentes, slugs/canonicals/autoría estables, índice accesible, enlaces y CTA contextual; sin CMS, datos comerciales ficticios ni garantías de resultados.
+- Tras integrar `origin/main` (`e91577a`, incluido Automatización `870d9e1`), suite unitaria `1558/1558 PASS`, typecheck/build y E2E local de Aprende en 1366/768/390/360 PASS. Inspección Playwright desktop/móvil sin desbordamiento; queda la observación conocida `LEARN-SVG-MOBILE-LABELS-001`.
+- Solo cambios locales de contenido, pruebas y documentación; sin rutas nuevas, migraciones, D1 remota, deploy ni publicación.
+
 ## 2026-10-15 — APP-MINI-02A (local, no desplegado)
 
 - Registro versionado de familias `services`, `catalog`, `gastronomy` y `professional`, con solo la plantilla compatible y módulos `hero`, `about`, `contact`, `hours`, `location` disponibles.
@@ -27,6 +34,12 @@
 - E2E Worker local cubre dos reenvíos, verify/re-send, dos pestañas consumiendo un token, GET/prefetch no consumibles, grants/cookies cruzados, revocación/lectura, borrado/lectura y rollback de purga. Un canje confirmado con respuesta abortada deja un grant, no cookie; reusar el token devuelve 404 sin duplicar grant.
 - No se implementa recuperación de la solicitud ya verificada sin cookie: se registra contrato propuesto de nuevo challenge de recuperación por email, pendiente de aprobación. B/C cuentan con campos de revocación pero no con API operativa; retención, aviso/base y evidencia de consentimiento siguen pendientes.
 - Sin schema/migración nueva, scoring, QA-03B, GHL, correo real, PDF, cron, push o deploy. 24h/30d siguen provisionales; sin aprobación legal/privacidad.
+
+## 2026-10-16 — DIAG-V3-FUNNEL-01C.3 `IDENTIFICATION_TECHNICALLY_CERTIFIED_LOCAL`
+
+- Recuperación local con propósito `access_recovery`: UI explícita, respuesta genérica 202, una sola concesión activa y revocación atómica del grant previo; score/snapshot/versiones no se recalculan.
+- E2E confirma replay del token consumido, doble pestaña, reenvíos concurrentes, expiración exacta, gates por request/snapshot vencidos, ausencia de acceso por UUID y purga final en D1 temporal vacía.
+- `0016` solo aplicado en D1 temporal, buzón simulado, sin email real, remote migration, deploy ni publicación. Retención legal y derechos B/C siguen pendientes.
 
 ## 2026-10-12 — APP-MINI-00 contrato de aplicación cliente/minisitio
 

@@ -21,6 +21,10 @@ Todos los bloques conservan una organización/negocio/MiniWeb, URL pública `/ve
 
 `IDENTIFICATION_HARDENING_PARTIAL`; D1/Worker temporal verificó límites exactos e independientes de request/challenge/grant/snapshot, dos reenvíos, verify/re-send, doble pestaña, scanner GET/prefetch, revocación/lectura, borrado/lectura y canje con respuesta perdida: un grant quedó persistido pero no cookie; token consumido no duplica grant y no hay recuperación de esa misma solicitud. Unitarias `1536/1536`, E2E 01B `6/6`, typecheck/build/diff-check PASS; el cleanup retiró las fixtures QA. Una lectura posterior reveló dos solicitudes/snapshots/challenges no correspondientes al alias de prueba en la D1 efímera; se preservaron y quedó su procedencia sin determinar. Se propone recuperación mediante un challenge one-time nuevo enviado solo al email registrado, con respuesta genérica, rate-limit, grant anterior revocado atómicamente y sin recalcular snapshot; requiere aprobación antes de modificar el flujo. Revocación operativa B/C, retención y avisos/base siguen pendientes. No D1 remota, correo real, GHL, PDF, motor, cron, FUNNEL-01D, QA-03B ni ACT-04.
 
+## FUNNEL-01C.3 — estado del checkpoint autorizado (2026-10-16)
+
+`IDENTIFICATION_TECHNICALLY_CERTIFIED_LOCAL`: E2E en Worker/D1 temporal vacía confirma recovery one-time después del challenge consumido con respuesta perdida, un grant activo tras revocar el anterior, mismo hash/versiones de snapshot y reglas de expiración estrictas. Unitarias `1557/1557`, E2E 01B `6/6`, E2E 01C.3, typecheck/build y aislamiento de rutas de producción PASS. El código del recovery es dev-only/simulado, sin email real ni despliegue. Políticas de retención, aviso/base, evidencia B/C y operación de derechos siguen pendientes; no iniciar FUNNEL-01D ni publicar.
+
 ## Resultado vigente — DIAG-V3-RESULT-UX-02 (2026-10-11)
 
 ## VECIDYA-LEGACY-00 — `LEGACY_INVENTORY_READY` (2026-10-12)

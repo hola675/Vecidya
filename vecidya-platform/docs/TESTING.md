@@ -51,6 +51,14 @@ Las rutas de fixture/purga son dev-only, mismo origen y correo sintético fijo; 
 
 RAN en este corte: E2E Worker 01C.2 `PASS` (estados D1 y rollback comprobados); E2E FUNNEL-01B `6/6 PASS`; `pnpm run test:unit` **1536/1536 PASS**; `pnpm run typecheck` `PASS`; `pnpm run build` `PASS`; `git diff --check` PASS después de reconciliar los documentos.
 
+## DIAG-V3-FUNNEL-01C.3 — recuperación local y certificación técnica (2026-10-16)
+
+Recovery de solicitud `verified` con snapshot vigente se prueba después de confirmar en el Worker el consumo del challenge original y abortar su respuesta HTTP: no queda cookie, el token inicial no reautoriza ni incrementa intentos del challenge nuevo, y el UUID solo recibe el `202` genérico. El UI ofrece reemitir; dos POST simultáneos dejan una recovery pendiente, GET/prefetch no la consume y dos pestañas consiguen exactamente un `200`/grant. El grant anterior queda revocado y el nuevo es el único activo; digest, identidad y versiones del snapshot permanecen idénticos. Request/snapshot expirados no envían otro mensaje. Repetición del token recuperado, cookie ausente, borrado posterior y purga siguen fail-closed. La E2E inspecciona conteos reales D1, no solo HTTP.
+
+La corrida final `tests/e2e/diagnostic-v3-funnel-01c-check.mjs` usó D1 efímera local `vecidya-c1c3-recovery-final3-d1` y acabó con 0 filas; E2E 01B `6/6 PASS`, unitarias `1557/1557 PASS`, typecheck/build/diff-check `PASS`. Build scan no encuentra handlers/rutas dev de identificación/recovery en el registry de producción. Migrations del recovery corrieron solo en storage temporal; no correo real, no D1 remota, no cron, push ni deploy.
+
+`NOT_RUN`: scanner de correo real, provider real, revisión legal/aviso/base, API operativa de preferencias/derechos y retención diferenciada de evidencia B/C. Por tanto el estado es **`IDENTIFICATION_TECHNICALLY_CERTIFIED_LOCAL`**, no readiness de producción; B/C/derechos y las decisiones legales permanecen bloqueados por separado.
+
 ## DIAG-V3-FUNNEL-01C — solicitud identificada local (2026-10-12; baseline)
 
 **E2E Worker local original: `1/1 PASS`** con el alcance registrado en el baseline anterior a 01C.1. La cobertura ampliada vigente está en la sección 01C.1 precedente.
