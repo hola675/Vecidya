@@ -1,4 +1,5 @@
-import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
+import { check, index, integer, primaryKey, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const identifiedDiagnosticRequest = sqliteTable("identified_diagnostic_request", {
   id: text("id").primaryKey(),
@@ -59,11 +60,36 @@ export const diagnosticReportAccess = sqliteTable("diagnostic_report_access", {
   issuedAt: integer("issued_at", { mode: "timestamp_ms" }).notNull(),
   expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
   revokedAt: integer("revoked_at", { mode: "timestamp_ms" }),
+  firstOpenedAt: integer("first_opened_at", { mode: "timestamp_ms" }),
 }, (table) => [
   uniqueIndex("diagnostic_report_access_challenge_uq").on(table.challengeId),
   uniqueIndex("diagnostic_report_access_token_digest_uq").on(table.tokenDigest),
   index("diagnostic_report_access_request_idx").on(table.requestId),
   index("diagnostic_report_access_expires_idx").on(table.expiresAt),
+]);
+
+export const diagnosticFunnelAggregate = sqliteTable("diagnostic_funnel_aggregate", {
+  eventDay: text("event_day").notNull(),
+  diagnosticVersion: text("diagnostic_version").notNull(),
+  contractVersion: integer("contract_version").notNull(),
+  eventType: text("event_type", {
+    enum: [
+      "diagnostic_started",
+      "diagnostic_completed",
+      "detailed_report_cta_clicked",
+      "identified_request_created",
+      "email_verified",
+      "detailed_report_first_opened",
+    ],
+  }).notNull(),
+  eventCount: integer("event_count").notNull(),
+}, (table) => [
+  primaryKey({ columns: [table.eventDay, table.diagnosticVersion, table.contractVersion, table.eventType] }),
+  check("diagnostic_funnel_aggregate_day_check", sql`length(${table.eventDay}) = 10`),
+  check("diagnostic_funnel_aggregate_diagnostic_version_check", sql`${table.diagnosticVersion} = 'diag-v3-public-v1'`),
+  check("diagnostic_funnel_aggregate_contract_version_check", sql`${table.contractVersion} = 1`),
+  check("diagnostic_funnel_aggregate_event_type_check", sql`${table.eventType} IN ('diagnostic_started', 'diagnostic_completed', 'detailed_report_cta_clicked', 'identified_request_created', 'email_verified', 'detailed_report_first_opened')`),
+  check("diagnostic_funnel_aggregate_count_check", sql`${table.eventCount} > 0`),
 ]);
 
 export const commercialContactIntent = sqliteTable("commercial_contact_intent", {

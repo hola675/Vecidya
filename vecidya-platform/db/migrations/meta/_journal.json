@@ -127,6 +127,13 @@
       "when": 1792023260448,
       "tag": "0017_miniweb-core",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "6",
+      "when": 1792172792334,
+      "tag": "0018_diagnostic-funnel-aggregates",
+      "breakpoints": true
     }
   ]
 }

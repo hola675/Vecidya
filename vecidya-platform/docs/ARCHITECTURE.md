@@ -280,25 +280,30 @@ No usar IP, user-agent, fingerprinting, campos ocultos ni valores de respuesta p
 
 Los plazos de diseño son **propuestas para decisión**, no política vigente: snapshot y datos identificativos por 30 días desde la emisión, grant por 24 h, eventos pseudónimos crudos por hasta 30 días y luego solo agregados no identificables; preferencias comerciales se retienen mientras estén vigentes o hasta retirada, sujeto a la política que apruebe el responsable. Solicitar borrado elimina petición, snapshot, grant e intención relacionada; logs técnicos no deben conservar su contenido. Antes de implementar se requiere confirmar base legal y plazos con revisión legal/privacidad y especificar exportación/borrado verificables.
 
-### Eventos y GHL
+### FUNNEL-01D.1 — analítica agregada local
 
-La taxonomía declarada de 11 eventos y las métricas se especifican aquí y en `TESTING.md`; FUNNEL-01A no crea emisor, binding, tabla, beacon ni dashboard. Si se usa `funnelRunId` para deduplicar y unir pasos, ese identificador es **seudónimo, no anónimo**: TTL corto, sin vínculo a petición/email/informe, sin IP/UA ni valores reales de respuestas, y sin uso antes de determinar base legal/consentimiento. En ausencia de tal base, usar contadores agregados no enlazables. Conversión mide comportamiento del producto, nunca validez científica de las puntuaciones.
+`DIAG-V3-08` y su tabla `diagnostic_event` quedan como artefactos históricos: su flujo por pregunta/sesión y sus métricas no se reutilizan en este checkpoint. El nuevo contrato `funnel-analytics-contract.ts`, versión `1`, solo permite seis eventos y agrega en D1 por día UTC, `diag-v3-public-v1`, versión de contrato y tipo. No hay filas de eventos crudos, identificadores de visitante ni FK hacia solicitudes personales.
 
-| Evento | Objetivo y mínimo | Identificable | Condición y retención propuesta | Riesgo y agregado |
-| --- | --- | --- | --- | --- |
-| `diagnostic_started` | Inicio + versión; run ID efímero solo si se autoriza deduplicación | No directo; run ID seudónimo | Definir base; evento crudo ≤30 días | Secuencia de actividad; luego conteo por versión |
-| `question_answered` | `question_id` y clase `answered/unknown/not_applicable`; nunca valor | Sin dato directo; patrón de preguntas es seudónimo | Definir base; ≤30 días | Patrón puede revelar contexto; agrega por pregunta/clase con celdas pequeñas suprimidas |
-| `diagnostic_completed` | Versión y cantidad de respuestas; no score ni respuesta | Seudónimo solo con run ID | Definir base; ≤30 días | Métrica de finalización; conteo por versión |
-| `summary_viewed` | Tipo de estado (`with_score/insufficient`) y versión, sin porcentaje exacto | Seudónimo solo con run ID | Definir base; ≤30 días | No inferir calidad/negocio; agrega conteo de resúmenes |
-| `summary_download_requested` | Versión de documento y resultado técnico de generación | Seudónimo; no contenido/documento | Definir base; ≤30 días | Descarga puede revelar interés; agrega éxito/error sin archivos |
-| `detailed_report_requested` | Evento de intención, sin email ni contenido diagnóstico | El vínculo a run ID es seudónimo | Propósito de servicio y base revisados; ≤30 días | Intención no equivale a lead; agrega solicitudes |
-| `identification_submitted` | Resultado del intento (`valid/invalid`), sin campos | Identificable si se enlaza con request ID; evitarlo en analítica | Contador agregado; el request operativo queda en su dominio y plazo aprobado | No correlacionar identidad con historial anónimo |
-| `report_access_granted` | Conteo de grants consumidos, sin token/request ID en analítica | Identificable si incluye grant/request ID | Registro de seguridad mínimo según plazo aprobado; TTL operacional | Reintentos y enlaces expuestos; conteo separado |
-| `detailed_report_viewed` | Conteo de primera vista/revisita; sin reporte ni identidad | Identificable si queda por request; preferir agregado | Base/retención por confirmar antes de medir por persona | Acceso no es conversión comercial; conteo por cohorte |
-| `personalized_report_downloaded` | Versión, resultado de descarga y formato | Identificable si queda vinculado al solicitante | Operación del documento según solicitud; métricas agregadas | Documento revela situación; jamás adjuntarlo al evento |
-| `commercial_contact_requested` | Preferencia B, texto/versión del aviso, instante y fuente | **Sí, explícitamente** en `CommercialContactIntent` | Solo al marcar B; corregir/retirar, retener mientras autorización/política lo permita | Separar de analítica y excluir a quien no autorizó |
+| Evento | Unidad y confirmación |
+| --- | --- |
+| `diagnostic_started` | Una activación del botón de inicio en navegador; estimado, no personas únicas. |
+| `diagnostic_completed` | Una reproducción del resumen que finaliza correctamente en Worker; confirmado por el servidor. Reintentos que recalculan cuentan otra vez. |
+| `detailed_report_cta_clicked` | Una activación del CTA desde el resumen; estimado, no solicitud ni visitante único. |
+| `identified_request_created` | Nueva solicitud creada con éxito en el batch D1 de request/snapshot/challenge; confirmado después de persistir. Reintentos idempotentes no cuentan. |
+| `email_verified` | Primera transición de challenge `verification` aceptada y grant creado; confirmado. Recovery, reenvío y replay no cuentan. |
+| `detailed_report_first_opened` | Primer load autorizado tras validar integridad del informe; el marcador operacional del grant y el contador se actualizan juntos. Recargas/revisitas no cuentan. |
 
-Los plazos son máximos propuestos para eventos sin identidad directa; la retención y base legal no quedan aprobadas por esta tabla. El registro necesario de A y las autorizaciones B/C se conservan con el expediente mínimo correspondiente, nunca copiando email, teléfono o texto de respuestas al stream de analítica.
+El payload de navegador acepta exclusivamente uno de los dos eventos estimados y no acepta fecha, versión ni otros campos. El Worker fija día/versión, valida origen y host loopback, aplica límite de frecuencia y solo registra en desarrollo. Los demás eventos se derivan de operaciones confirmadas del Worker. Los incrementos usan `UPSERT event_count = event_count + 1`; no hay contador por visitante. Los fallos analíticos son best-effort y no revierten resumen, solicitud, verificación o acceso.
+
+El esquema `diagnostic_funnel_aggregate` contiene solo `event_day`, `diagnostic_version`, `contract_version`, `event_type` y `event_count`, con clave compuesta y restricciones cerradas; no contiene email, nombre, teléfono, respuestas, scores, dimensiones, request/session/grant ID, IP, user-agent ni fingerprint. El indicador operacional `first_opened_at` pertenece al grant, no a la tabla analítica y no se copia al agregado. La lectura dev-only devuelve fecha, versión, tipo y cantidad; omite celdas con menos de cinco eventos. No hay dashboard; la ruta solo se añade a RouteConfig cuando `NODE_ENV=development` (build-isolation pendiente de validación).
+
+Las fechas diarias agregan eventos del mismo día y versión, no describen cohortes enlazadas. Inicios y CTA son estimaciones manipulables/repetibles; los demás son eventos confirmados, no personas. Dividir contadores del mismo período no es una tasa exacta ni prueba causal/comercial. B continúa separado: no es conversión ni autorización para enlazar el agregado.
+
+**Retención propuesta, no aprobada:** conservar agregados locales hasta 30 días y después eliminarlos mediante purga local explícita; no hay scheduler ni plazo legal/operativo aprobado. La lectura omite celdas menores de cinco para reducir singularización. No habilitar analítica pública persistente antes de revisión/aprobación de privacidad; la prueba local no concede esa aprobación.
+
+### GHL
+
+GHL continúa siendo sistema de registro futuro para contactos, conversaciones y oportunidades; `integration_connection` actual no implementa esta integración. Solo un consentimiento B vigente permitiría producir un evento de handoff a la integración de una fase autorizada. El destinatario puede deduplicarse en GHL como contacto con procedencia y fecha de permiso, sin copiar pipelines/historial a D1 ni crear oportunidad automáticamente. Opt-in C no equivale a B. Sin opt-in B, no se inicia seguimiento comercial. No se ha enviado dato a GHL.
 
 GHL continúa siendo sistema de registro futuro para contactos, conversaciones y oportunidades; `integration_connection` actual no implementa esta integración. Solo un consentimiento B vigente permitiría producir un evento de handoff a la integración de una fase autorizada. El destinatario puede deduplicarse en GHL como contacto con procedencia y fecha de permiso, sin copiar pipelines/historial a D1 ni crear oportunidad automáticamente. Opt-in C no equivale a B. Sin opt-in B, no se inicia seguimiento comercial. No se ha enviado dato a GHL.
 

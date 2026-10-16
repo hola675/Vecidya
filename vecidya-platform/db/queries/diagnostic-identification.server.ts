@@ -1,6 +1,7 @@
 import { and, desc, eq, gt, isNull, lte, lt, sql } from "drizzle-orm";
 
 import { createDatabase } from "../client.server";
+import { FUNNEL_ANALYTICS_CONTRACT_VERSION, FUNNEL_ANALYTICS_DIAGNOSTIC_VERSION, utcAnalyticsDay } from "../../app/features/diagnostic/funnel-analytics-contract";
 import {
   commercialContactIntent,
   diagnosticReportAccess,
@@ -192,6 +193,23 @@ export async function getAuthorizedReport(binding: D1Database, tokenDigest: stri
       gt(diagnosticReportSnapshot.expiresAt, now),
     )).limit(1);
   return row ?? null;
+}
+
+export async function recordDetailedReportFirstOpen(binding: D1Database, accessId: string, requestId: string, now: Date): Promise<void> {
+  const timestamp = now.getTime();
+  await binding.batch([
+    binding.prepare(`UPDATE diagnostic_report_access SET first_opened_at = ?
+      WHERE id = ? AND first_opened_at IS NULL AND revoked_at IS NULL AND expires_at > ?
+        AND EXISTS (SELECT 1 FROM identified_diagnostic_request r
+          INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
+          WHERE r.id = ? AND r.status = 'verified' AND r.expires_at > ? AND s.expires_at > ?)`)
+      .bind(timestamp, accessId, timestamp, requestId, timestamp, timestamp),
+    binding.prepare(`INSERT INTO diagnostic_funnel_aggregate (event_day, diagnostic_version, contract_version, event_type, event_count)
+      SELECT ?, ?, ?, 'detailed_report_first_opened', 1 WHERE changes() = 1
+      ON CONFLICT(event_day, diagnostic_version, contract_version, event_type)
+      DO UPDATE SET event_count = event_count + 1`)
+      .bind(utcAnalyticsDay(now), FUNNEL_ANALYTICS_DIAGNOSTIC_VERSION, FUNNEL_ANALYTICS_CONTRACT_VERSION),
+  ]);
 }
 
 export async function deleteIdentifiedReport(binding: D1Database, requestId: string): Promise<void> {

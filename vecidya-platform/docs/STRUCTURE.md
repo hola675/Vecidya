@@ -1,6 +1,6 @@
 # Estructura del código
 
-Última reconciliación: 2026-10-15 (APP-MINI-02A local; ruta privada `/app/miniweb`, API tenant-scoped y schema/migración `0017`, sin deploy). Rutas verificadas contra `app/routes.ts`; la tabla describe el código local, no producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas. Abreviaturas: [TESTING.md](TESTING.md).
+Última reconciliación: 2026-10-16 (FUNNEL-01D.1 local; migración `0018`, lectura/emisión dev-only). Rutas verificadas contra `app/routes.ts`; la tabla describe código local, no producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas. Abreviaturas: [TESTING.md](TESTING.md).
 
 ## LEGACY-00 — inventario de rutas (baseline `50026d0`)
 
@@ -10,6 +10,7 @@ Resultado `LEGACY_INVENTORY_READY`; auditoría sin eliminación. La clasificaci�
 | --- | --- | --- | --- |
 | `/diagnostico` | `KEEP` | `diagnostic.tsx` → `AnonymousDiagnosticFlow` → session V3/key 2; E2E `diagnostic`, `funnel-01b` | Necesario para FUNNEL-01B; aún sin deploy. |
 | `/api/diagnostic/anonymous-summary` | `KEEP` | Replay Worker con bank/planner/session V3; E2E `funnel-01b` | DTO allowlisted; no es backend QA-03B. |
+| `/api/diagnostic/funnel-analytics` | `DEV ONLY` | `api-diagnostic-funnel-analytics.ts`; agregado `diagnostic_funnel_aggregate` | Solo se registra cuando `NODE_ENV=development`; GET suprime `<5`, POST admite dos eventos con rate limit y host loopback. Bundle isolation pendiente de validación. |
 | `/diagnostico/metodologia` | `KEEP` | metodologia → `qbv2-methodology`; E2E methodology | Versión y contenido aún ligados al V3 público. |
 | `/diagnostico/informe` source `diagnostico-informe.tsx`, sin `route()` | `KEEP` barrera | Leído por `diagnostic-report.test.ts` y readiness | Source no registrado, pero test protege la no exposición. |
 | `/__dev/diagnostico/v3`, `/resultado/*`, `/metodologia`, `/informe/*` | `ARCHIVE` / `REMOVE_AFTER_CUTOVER` | Previews/golden y E2E V3 | Sólo dev; mantener para comparación hasta sustitución. |

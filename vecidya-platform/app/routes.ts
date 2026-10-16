@@ -69,10 +69,11 @@ export default [
   route("app/services", "routes/services-app.tsx"),
   route("vecindario/:slug", "routes/public-business-profile.tsx"),
   route("__health/db", "routes/health-db.ts"),
-  // DIAG-V3-09/10B/11/12: vista previa local del resultado (12 personas golden), integración privada del diagnóstico
+  // FUNNEL-01D.1/DIAG-V3-09/10B/11/12: métricas agregadas locales, vista previa del resultado (12 personas golden), integración privada del diagnóstico
   // adaptativo V3, su metodología y su informe PDF. Solo con `react-router dev`: build y typegen cargan este archivo con
   // NODE_ENV=production, así que nunca entran en el bundle publicado.
   ...(isDevelopmentServer ? [
+    route("api/diagnostic/funnel-analytics", "routes/api-diagnostic-funnel-analytics.ts"),
     route("api/diagnostic/report-requests", "routes/api-diagnostic-report-requests.ts"),
     route("api/diagnostic/report-requests/:requestId/resend", "routes/api-diagnostic-report-request-resend.ts"),
     route("api/diagnostic/email/verify", "routes/api-diagnostic-email-verify.ts"),

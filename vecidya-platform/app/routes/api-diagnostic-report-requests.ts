@@ -14,6 +14,7 @@ import { buildPublicDiagnosticReport, isCurrentPublicDiagnosticEngineIdentityV1,
 import { toAnonymousDiagnosticSummaryV1 } from "../features/diagnostic/anonymous-summary.server";
 import { deliverDiagnosticVerificationEmail } from "../../server/email/diagnostic-dev-inbox.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
+import { incrementFunnelAnalytics } from "../../db/queries/diagnostic-funnel-analytics.server";
 
 import type { ActionFunctionArgs } from "react-router";
 
@@ -126,6 +127,9 @@ export async function action({ context, request }: ActionFunctionArgs) {
       : failure(409, "La clave de este intento ya se usó con datos distintos. Vuelve al formulario e inténtalo de nuevo.");
     return failure(503, "No pudimos guardar la solicitud. Tus respuestas anónimas siguen disponibles en este navegador.");
   }
+
+  try { await incrementFunnelAnalytics(env.DB, "identified_request_created", now); }
+  catch { /* La conversión ya fue persistida; la analítica no puede revertirla. */ }
 
   deliverDiagnosticVerificationEmail({ requestId, challengeId: challenge.id, recipient: input.email, token, origin: new URL(request.url).origin, now: now.getTime() });
   const summary = toAnonymousDiagnosticSummaryV1(replay.result);

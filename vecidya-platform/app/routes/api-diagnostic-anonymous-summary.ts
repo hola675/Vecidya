@@ -64,6 +64,11 @@ export async function action({ context, request }: Route.ActionArgs) {
     return failure(400, "Las respuestas no cumplen el contrato vigente.");
   }
 
+  if (import.meta.env.DEV) {
+    try { const { incrementFunnelAnalytics } = await import("../../db/queries/diagnostic-funnel-analytics.server"); await incrementFunnelAnalytics(env.DB, "diagnostic_completed"); }
+    catch { /* A missing local analytics write must not block the summary. */ }
+  }
+
   return Response.json(
     { summary: toAnonymousDiagnosticSummaryV1(replay.result), engineIdentity: PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1 },
     { headers },

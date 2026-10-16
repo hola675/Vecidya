@@ -1,5 +1,19 @@
 # Pruebas
 
+## DIAG-V3-FUNNEL-01D.1 — agregado local (2026-10-16)
+
+El contrato unitario `tests/unit/diagnostic/funnel-analytics.test.ts` cubre allowlist y fecha UTC. La migración `0000`–`0018` se ejecutó con Wrangler `--local --persist-to C:\Users\Admin\AppData\Local\Temp\kilo\vecidya-funnel-01d1-d1`; consultas `sqlite_master` y `PRAGMA table_info` confirmaron la tabla agregada (cinco campos, ninguno de identidad), PK compuesta, `first_opened_at` y cero filas al cierre. D1 rechazó `question_answered` con CHECK. Una prueba de SQL `changes()` en tabla efímera confirmó una sola inserción en dos intentos de primera apertura. No se usó D1 compartida/remota. Unitarias dirigidas **2/2 PASS**, migración D1 **PASS**. La suite completa dio **1.480 PASS / 5 errores de carga de test** (`vite` no disponible en el worktree); instalación offline quedó bloqueada porque falta el tarball de `@fontsource/arimo@5.3.0`. El intento de diez procesos Wrangler concurrentes tuvo siete escrituras confirmadas y tres `SQLITE_BUSY`/errores del runtime local, por lo que no certifica concurrencia del Worker.
+
+`pnpm run typecheck` y `pnpm run build` se invocaron pero no alcanzaron sus scripts: pnpm intentó instalar 267 dependencias y el registry falló repetidamente (`error 23`) para Wrangler, Miniflare, Playwright Core, `workerd`, esbuild, TypeScript y otros binarios Windows; cada intento expiró a los 180 s. `pnpm install --offline --frozen-lockfile` confirma además que falta el tarball `@fontsource/arimo@5.3.0`. Regresiones 01B/01C.3, E2E Worker con D1 aislada, concurrencia en un único runtime y bundle isolation siguen **sin verificar**. Mantener `FUNNEL_ANALYTICS_PARTIAL`; no atribuir PASS global.
+
+Para aplicar a un almacén temporal nuevo (no compartido):
+
+```powershell
+pnpm wrangler d1 migrations apply DB --local --persist-to C:\Users\Admin\AppData\Local\Temp\kilo\vecidya-funnel-01d1-d1
+```
+
+La consulta dev-only oculta celdas `<5`. `diagnostic_started` y `detailed_report_cta_clicked` son señales estimadas de navegador; el resto son eventos confirmados de operaciones del Worker. Los contadores de día no forman cohortes, las llamadas repetidas del navegador son posibles, y la tasa derivada no es exacta.
+
 ## APP-MINI-01C + APP-MINI-02A — baseline y core modular (2026-10-15)
 
 **Runner:** Worker local (`pnpm run dev`) + D1 local; sin `--remote`, pagos ni fixtures publicados. Si Chromium no está instalado y Chrome está disponible, define `PLAYWRIGHT_CHROMIUM_EXECUTABLE` a la ruta local de Chrome. Las capturas E2E usan datos sintéticos de prueba, no contenido de producción.

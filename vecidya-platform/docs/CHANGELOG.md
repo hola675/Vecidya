@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-16 — DIAG-V3-FUNNEL-01D.1 (implementación local en curso)
+
+- Añadido contrato versionado de seis contadores diarios por día UTC/versión, tabla agregada sin IDs personales, lectura dev-only con supresión `<5` y captura best-effort local; los marcadores de primera apertura evitan sumar recargas.
+- Migración Drizzle `0018` generada después de `0016` Diagnóstico y `0017` MiniWeb, probada en una D1 temporal aislada. DIAG-V3-08 no se reutiliza.
+- El trabajo está aislado en `feat/diagnostic-funnel-01d1`, reconciliado por fast-forward desde `2959555` a `a7949dd` y luego a `e91577a` (Aprende, commits preservados). Todavía faltan regresiones, typecheck/build y revisión del bundle; sin PASS, PR, merge, D1 compartida/remota ni deploy.
+
 ## 2026-10-16 — Política Git multiagente y Worktrees (documental)
 
 - Actualizadas `AGENTS.md` y `docs/GOVERNANCE.md`: cada checkpoint usa una rama y worktree independientes creados desde `origin/main`, sin tocar cambios staged/unstaged de otros agentes.

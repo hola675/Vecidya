@@ -1,5 +1,15 @@
 # Roadmap
 
+## FUNNEL-01D — secuencia aprobada (2026-10-16)
+
+| Checkpoint | Alcance | Estado/gate |
+| --- | --- | --- |
+| **FUNNEL-01D.1** | Seis contadores agregados del embudo; sin respuestas/identidad ni dashboard | En implementación local en worktree aislado. Requiere validar Worker/D1 local, privacy, pruebas, typecheck/build y aislamiento del bundle; sin activación productiva |
+| **FUNNEL-01D.2** | Preferencias y privacidad | Siguiente fase secuencial; no iniciar hasta cierre/aprobación independiente de 01D.1 |
+| **FUNNEL-01D.3** | Preparación comercial | Después de 01D.2; solo transferencia para contactos autorizados, sin sync/oportunidades automáticas; autorización separada |
+
+El almacén analítico no se conecta a GHL ni vincula agregado con identidad. La certificación local de 01D.1 no aprueba email real, retención ni activación pública.
+
 ## APP-CLIENTE / MINIWEB-CUADRA-01 — siguiente línea de producto (2026-10-15)
 
 Cuadra USD 39/mes no incluye ni requiere GHL; Barrio USD 59/mes inicia CRM GHL y Ciudad USD 89/mes amplía el alcance. Vecidya conserva autoridad de cuenta, organización, licencia, perfil/MiniWeb y Vecindario; GHL conserva CRM y operación comercial desde Barrio.

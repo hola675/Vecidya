@@ -5,6 +5,7 @@ import { isRequestId } from "../features/diagnostic/identified-report-contracts"
 import { VERIFIED_REPORT_ACCESS_TTL_DAYS } from "../features/diagnostic/identified-report-constants";
 import { createOpaqueToken, digestOpaqueToken, constantTimeEqual, reportAccessCookie } from "../features/diagnostic/report-access-crypto.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
+import { incrementFunnelAnalytics } from "../../db/queries/diagnostic-funnel-analytics.server";
 
 import type { ActionFunctionArgs } from "react-router";
 
@@ -69,6 +70,10 @@ export async function action({ context, request }: ActionFunctionArgs) {
     now,
   });
   if (!granted) return failure(409, "Este enlace ya se utilizó. Solicita uno nuevo.");
+  if (pending.challenge.purpose === "verification") {
+    try { await incrementFunnelAnalytics(env.DB, "email_verified", now); }
+    catch { /* El acceso ya está concedido; un fallo analítico no lo revierte. */ }
+  }
   const response = Response.json({ requestId: pending.request.id, reportPath: `/diagnostico/informe/${pending.request.id}` }, { headers });
   response.headers.append("Set-Cookie", reportAccessCookie(accessToken, request, (accessExpiresAt.getTime() - now.getTime()) / 1000));
   return response;

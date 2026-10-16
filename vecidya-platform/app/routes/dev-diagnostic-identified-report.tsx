@@ -1,6 +1,6 @@
 import { isRouteErrorResponse, useLoaderData, useRouteError } from "react-router";
 
-import { deleteIdentifiedReport, getAuthorizedReport } from "../../db/queries/diagnostic-identification.server";
+import { deleteIdentifiedReport, getAuthorizedReport, recordDetailedReportFirstOpen } from "../../db/queries/diagnostic-identification.server";
 import { REPORT_VERSION, type DiagnosticReportV1 } from "../components/diagnostic-report/report-model";
 import { DiagnosticReport } from "../components/diagnostic-report/diagnostic-report";
 import { readCookie, digestOpaqueToken, constantTimeEqual } from "../features/diagnostic/report-access-crypto.server";
@@ -35,6 +35,8 @@ export async function loader({ context, params, request }: LoaderFunctionArgs) {
     throw notFound();
   }
   if (!isCurrentPublicDiagnosticEngineIdentityV1(storedIdentity) || !isRecord(report) || report.reportVersion !== row.snapshot.reportVersion || !isRecord(report.overallPresence) || !Array.isArray(report.dimensions) || !Array.isArray(report.recommendations)) throw notFound();
+  try { await recordDetailedReportFirstOpen(env.DB, row.access.id, params.requestId, new Date()); }
+  catch { /* Analytics must not prevent opening an already authorized report. */ }
   return { requestId: params.requestId, report: report as unknown as DiagnosticReportV1 };
 }
 

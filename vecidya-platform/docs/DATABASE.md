@@ -1,6 +1,6 @@
 # Base de datos
 
-Última reconciliación: **2026-10-15 (APP-MINI-02A).** Se añadieron `miniweb_site`/`miniweb_module` y la migración `0017`. El ledger D1 local tiene `0000`–`0015`; `0016` (otro checkpoint) y `0017` están pendientes. El SQL 0017 se ejecutó temporalmente en D1 local para E2E y se retiró al terminar; no se ejecutó el ledger compartido ni se tocó D1 remota. `0011`–`0013` son historial local retirado del runtime público y permanecen en journal. `vecidya-prod` no recibió estas migraciones y, conforme al último corte remoto documentado, sigue en `0010`.
+Última reconciliación: **2026-10-16 (FUNNEL-01D.1, local).** Se añadieron `diagnostic_funnel_aggregate`, `first_opened_at` operacional y migración `0018`, posterior a `0016` Diagnóstico y `0017` MiniWeb. La cadena `0000`–`0018` se aplicó en D1 temporal aislada `C:\Users\Admin\AppData\Local\Temp\kilo\vecidya-funnel-01d1-d1`; la D1 compartida y remota no se migraron ni limpiaron. `0011`–`0013` siguen siendo historia DIAG-V3-08, no el almacén nuevo.
 
 ## APP-MINI-02A — configuración modular
 
@@ -13,13 +13,14 @@ Ambas relaciones usan cascade al borrar la organización/sitio; índice por siti
 
 ## FUNNEL-01C — datos de informe identificado (local)
 
-`db/schema/diagnostic-identification.ts` agrega seis tablas (33 tablas en el schema Drizzle actual): solicitud identificada, snapshot serializado/hash/versionado, challenges de correo con digest/expiración/intentos, concesiones de acceso con digest y dos registros independientes de opt-in. Las FK de snapshot, challenge, acceso y consentimientos usan `ON DELETE CASCADE`; borrar la solicitud limpia el conjunto. La huella de idempotencia permite detectar una misma clave con payload distinto. Email/teléfono/nombre e informe quedan en D1 local para el flujo de desarrollo; IP no se persiste. La cookie de acceso solo se guarda como digest.
+`db/schema/diagnostic-identification.ts` añade las tablas de solicitud identificada, snapshot serializado/hash/versionado, challenges de correo con digest/expiración/intentos, concesiones de acceso con digest, dos registros independientes de opt-in y el agregado FUNNEL-01D.1 (36 tablas según el schema Drizzle actual). Las FK de snapshot, challenge, acceso y consentimientos usan `ON DELETE CASCADE`; borrar la solicitud limpia el conjunto. La huella de idempotencia permite detectar una misma clave con payload distinto. Email/teléfono/nombre e informe quedan en D1 local para el flujo de desarrollo; IP no se persiste. La cookie de acceso solo se guarda como digest. El agregado no contiene FK ni columnas de identidad.
 
 | Migración | Propósito | D1 local | Remoto |
 | --- | --- | --- | --- |
 | `0014_diagnostic-identification.sql` | Solicitud, snapshot, challenge, grant, opt-ins A/B/C | Aplicada `RAN` 2026-10-12 | No aplicada |
 | `0015_diagnostic-request-fingerprint.sql` | Huella ligada a idempotency key y contenido | Aplicada `RAN` 2026-10-12 | No aplicada |
 | `0016_diagnostic-recovery-challenge-purpose.sql` | Distingue challenge `verification` de `access_recovery` con default de compatibilidad `verification` | Aplicada solo en D1 temporal aislada de C1.3; shared local ledger pendiente | No aplicada |
+| `0018_diagnostic-funnel-aggregates.sql` | Agregado FUNNEL-01D.1 y primera apertura operacional del grant | Aplicada a D1 temporal aislada en este corte | No aplicada; no consultada |
 
 La expiración invalida consultas de informe y `purgeExpiredIdentifiedReports()` ejecuta un batch idempotente accesible solo por una ruta dev manual; no hay scheduler/llamador automático. Limpia grants revocados/vencidos, snapshots/challenges vencidos y huérfanos, preferencias huérfanas, y solicitudes expiradas con cascade. B/C bajo una solicitud viva se conservan; no hay decisión aprobada de cuánto retenerlos. E2E local forzó un fallo en el borrado final y confirmó rollback completo, luego reejecutó con éxito. 30 días de solicitud/snapshot/acceso y 24 horas del challenge son valores de prueba provisionales, no política aprobada. No migrar/reinterpretar sesiones anteriores ni conectar analítica/GHL.
 
@@ -212,7 +213,7 @@ grandfathering de precio. Ver [TESTING.md](TESTING.md).
 
 ## Migraciones
 
-`_journal.json` tiene 10 entradas coherentes con los 10 archivos SQL, y los snapshots `0000`–`0009` forman una cadena `prevId` sin roturas. **No hay deriva** entre schema, SQL y snapshots (comparación columna a columna).
+`_journal.json` tiene 19 entradas (`0000`–`0018`), en secuencia, incluidos los checkpoints concurrentes `0016` Diagnóstico y `0017` MiniWeb. Drizzle generó `0018` y su snapshot con `prevId` de `0017`.
 
 | # | Archivo | Propósito | Cambios |
 | --- | --- | --- | --- |
@@ -232,9 +233,11 @@ grandfathering de precio. Ver [TESTING.md](TESTING.md).
 | 0013 | `0013_diagnostic-analytics-foundation.sql` | Analítica del Diagnóstico (DIAG-V3-08) | `diagnostic_event`; 4 columnas nuevas en `diagnostic_session` (`save_count`, `resume_count`, `last_saved_at`, `last_resumed_at`) |
 | 0014 | `0014_diagnostic-identification.sql` | Solicitud identificada/informe (FUNNEL-01C) | 6 tablas con cascade y opt-ins separados |
 | 0015 | `0015_diagnostic-request-fingerprint.sql` | Idempotencia ligada al contenido (FUNNEL-01C) | `identified_diagnostic_request.request_fingerprint_hash` |
+| 0016 | `0016_diagnostic-recovery-challenge-purpose.sql` | FUNNEL-01C.3 | `verified_email_challenge.purpose` |
 | 0017 | `0017_miniweb-core.sql` | APP-MINI-02A | `miniweb_site`, `miniweb_module` |
+| 0018 | `0018_diagnostic-funnel-aggregates.sql` | FUNNEL-01D.1 | `diagnostic_funnel_aggregate`; `diagnostic_report_access.first_opened_at` |
 
-Estado de aplicación: ledger **local `0000`–`0015`** (0014/0015 `RAN` el 2026-10-12); `0016` y `0017` permanecen pendientes en el ledger. El SQL `0017` se ejecutó directamente en la D1 local solo para correr E2E y sus tablas se retiraron al cerrar la validación; no se marcó como migración aplicada. **Remoto (`vecidya-prod`) `0000`–`0010`** (0010 aplicada en G7; `0011`–`0017` no aplicadas; no se ejecutó `--remote`). Esquema y semillas de `0010` verificados contra el SQL; `vecidya-staging` no se tocó.
+Estado de aplicación: cadena `0000`–`0018` ejecutada en la D1 temporal aislada indicada arriba; el ledger local compartido no se alteró y puede mantener pendientes `0016`/`0017`. El estado remoto no se consultó ni modificó en FUNNEL-01D.1; no se usó `--remote`.
 
 ## Persistencia del Diagnóstico (DIAG-V3-06)
 
@@ -257,7 +260,9 @@ Anónima por defecto: ninguna de las tres tablas nuevas tiene columna de usuario
 - **Retención**: `SAVED_SNAPSHOT_RETENTION_DAYS = 30` (`app/features/diagnostic/contracts.ts`), mayor que el autosave temporal de KV (7 días) porque es una decisión explícita de la persona. Expiración perezosa (comprobada en `recoverDiagnosticSession`, sin sweep todavía — ver Open Debt en `STATUS.md`).
 - **Rate limiting**: `DIAGNOSTIC_RECOVERY_RATE_LIMITER` (binding nativo de Workers, `wrangler.jsonc`, 10 intentos/60s por IP) protege `POST /api/diagnostic/recover` contra fuerza bruta; es una defensa coarse-grained, no un contador transaccional perfecto, y no distingue IPs detrás de un NAT/proxy compartido. No se guarda IP en D1: el binding la usa internamente en el edge de Cloudflare. Verificado en vivo con una ráfaga real que sí produce `429`.
 
-## Analítica del Diagnóstico (DIAG-V3-08)
+## Analítica histórica DIAG-V3-08 (no reutilizada en FUNNEL-01D.1)
+
+El esquema/contrato `diagnostic_event` que se documenta a continuación corresponde únicamente al subsistema histórico DIAG-V3-08. FUNNEL-01D.1 no lee ni escribe esa tabla, no reutiliza sus rutas/eventos ni sus identificadores de sesión/recorrido. El agregado nuevo y sus seis eventos quedan documentados en “Analítica agregada FUNNEL-01D.1” más abajo.
 
 - **`diagnostic_event`**: un evento de analítica anónimo por fila, `id` autoincrement solo para preservar orden de inserción (nunca expuesto a cliente ni usado como identidad pública). `event_uuid` (generado en el navegador) es la clave real de idempotencia — un reintento del cliente con el mismo UUID nunca produce una segunda fila (índice único). `analytics_schema_version` permite versionar la forma del evento igual que las cinco versiones ya persistidas en `diagnostic_session`. `event_type` es uno de los 6 tipos declarados (`QUESTION_SHOWN`, `ANSWER_SUBMITTED`, `ANSWER_CHANGED`, `QUESTION_INVALIDATED`, `SECTION_ENTERED`, `SAVE_OFFERED`) más `SAME_BROWSER_RESUMED`; `answer_kind` distingue únicamente una categoría — exactamente uno de `answered`, `unknown`, `not_applicable` (`ANSWER_KINDS`, `app/features/diagnostic/analytics.ts`) o `NULL` —, nunca el `OptionId`/valor de respuesta real elegido por la persona. `route_signature` (`computeRouteSignature`, `app/features/diagnostic/route-signature.ts`) es el SHA-256 hexadecimal de `questionBankVersion` + `routingVersion` + la lista ORDENADA de IDs de las preguntas aplicables en ese momento (sin reordenar: el mismo conjunto en otro orden es otra ruta). No codifica perfil, objetivo ni momento ni ninguna respuesta: esas respuestas solo influyen en QUÉ preguntas son aplicables, y la firma se define sobre esa lista de IDs y las dos versiones. Sirve para segmentar métricas por ruta sin reconstruir estado; no es un mecanismo de seguridad. `received_at` es hora de recepción del servidor (spec §62), nunca la hora que reporte el cliente. `retention_until` es la fecha objetivo de purga (política de 180 días, `ANALYTICS_EVENT_RETENTION_DAYS`); **deliberadamente no hay ningún scheduler que la aplique todavía** — `purgeExpiredAnalyticsEvents` (`db/queries/diagnostic-analytics.server.ts`) existe como código, pero no tiene ningún llamador en producción ni en desarrollo, y ninguna prueba comitida la ejecuta: `diagnostic-analytics-check.mjs` solo ejecuta contra la D1 local una réplica SQL de su predicado (`retention_until < now`), no la función (ver `DIAG-V3-08-PURGE-SCHEDULER-001` y `DIAG-V3-08-METRICS-EXEC-001` en `STATUS.md`).
 - **Deliberadamente NO almacenado en `diagnostic_event`**: `write_token` (ni en claro ni con hash — el endpoint lo usa solo para autorizar la escritura, nunca lo persiste); ningún valor de respuesta real (`OptionId`/texto libre); IP; user-agent; ningún identificador de persona.
@@ -271,6 +276,34 @@ Detalles de diseño vigentes:
 - `0008`: la ausencia de fila en `business_hours` significa «día sin definir», distinto de `is_closed = true`; `business_hours` se ancla a `organization_id`, no a `business_profile_id`. El reemplazo de los 7 días es delete+insert **no atómico**.
 - `0009`: gobierno y auditoría se separan de `business_profile` para que ninguna escritura tenant los toque; cada acción escribe gobierno + auditoría en un único `database.batch([...])`. Las consultas públicas hacen `LEFT JOIN` con gobierno y excluyen `platform_status = 'suspended'` (sin fila = activo).
 - `0010`: sin `CHECK` en ningún enum, igual que el resto del schema. `promotion.code` es `UNIQUE` pero nulo permitido (SQLite no compara `NULL` como duplicado, así que varias promociones sin código conviven). El redondeo de basis points (`Math.round`) vive únicamente en `db/pricing/calculator.ts`, nunca en SQL.
+
+## Analítica agregada FUNNEL-01D.1 (local, contrato 1)
+
+FUNNEL-01D.1 no lee ni escribe `diagnostic_event` ni reutiliza taxonomía/rutas DIAG-V3-08. `diagnostic_funnel_aggregate` es agregado sin FK ni eventos crudos: clave `(event_day, diagnostic_version, contract_version, event_type)`, `event_count` positivo. SQL y Drizzle restringen versión a `diag-v3-public-v1`, contrato a `1` y evento a las seis claves cerradas. `0018` agrega también `diagnostic_report_access.first_opened_at`, estado operacional que permite que lecturas concurrentes cuenten una sola apertura; no se copia al agregado.
+
+| Métrica/evento | Unidad | Origen | Exactitud |
+| --- | --- | --- | --- |
+| `diagnostic_started` | Activaciones de «Empezar diagnóstico» | Navegador → POST dev-only | Estimada; repeticiones/manipulación posibles |
+| `diagnostic_completed` | Reproducciones correctas que generan resumen | Worker tras replay exitoso | Confirmada; retry recalculado cuenta otro evento |
+| `detailed_report_cta_clicked` | Activaciones del CTA de informe completo | Navegador → POST dev-only | Estimada; no equivale a solicitud |
+| `identified_request_created` | Solicitudes nuevas aceptadas y persistidas | Worker después del batch D1 | Confirmada; retry idempotente no incrementa |
+| `email_verified` | Primera transición de verificación aceptada | Worker tras canje/grant correcto | Confirmada; reenvío/recovery/replay no incrementan |
+| `detailed_report_first_opened` | Primer load autorizado, después de comprobar integridad | Worker/grant | Confirmada; marcador + contador atómicos, visitas posteriores no cuentan |
+
+Inicios/finalizaciones son eventos, no personas únicas; CTAs no tienen deduplicación persistente. Contadores diarios/versionados no comparten cohorte: sus cocientes son orientativos, no tasa exacta. El POST de navegador admite solo los dos eventos estimados, limita frecuencia por rate limiter, rechaza claves extra y fija fecha/versión en servidor. Lectura y escritura exigen `import.meta.env.DEV` y host loopback. Incrementos usan `INSERT … ON CONFLICT … event_count + 1`, atómicos ante concurrencia. Operaciones server-side cuentan solo tras transición confirmada. Fallo de analítica se captura best-effort y no invalida resumen, solicitud ni acceso; puede causar subconteo.
+
+No se almacenan respuestas/preguntas, scores/dimensiones/evidencias/prioridades, contacto, IDs de request/session/grant, IP, user-agent o fingerprints. El `diagnostic_version` es constante coarse-grained, no hash ni identificador de visitante. B es una finalidad separada y no representa conversión.
+
+Solo desarrollo local expone lectura/escritura. La lectura omite celdas con menos de cinco eventos y devuelve fecha, versión, tipo y cantidad; no hay dashboard ni superficie pública productiva. Consulta equivalente:
+
+```sql
+SELECT event_day AS date, diagnostic_version AS version, event_type AS event, event_count AS count
+FROM diagnostic_funnel_aggregate
+WHERE event_count >= 5
+ORDER BY event_day, diagnostic_version, event_type;
+```
+
+**Retención propuesta, no aprobada:** mantener agregados 30 días y retirarlos solo por purga local explícita; no hay scheduler ni plazo aprobado. Se suprimen celdas pequeñas (<5). Esta fase no habilita recopilación pública ni constituye aprobación de privacidad.
 
 ## Seeds y datos iniciales
 
