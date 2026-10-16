@@ -25,7 +25,7 @@ Toda afirmación de estado que importe indica su nivel: `CODE` (fuente inspeccio
 ## Ciclo obligatorio de cambio
 
 ```text
-Leer → definir alcance → crear rama/worktree → implementar → validar → reconciliar documentación → revisar diff → commit → push → PR → merge verificado → reportar
+Leer → definir alcance → crear rama/worktree → implementar → validar → reconciliar documentación → revisar diff → commit → push → PR → [merge si autorizado y checks PASS] → reportar (PR pendiente o merge verificado)
 ```
 
 Antes de implementar se leen `PROJECT_STATE.md`, `STATUS.md` y la documentación especializada afectada. Si aparece una contradicción, riesgo, deuda, bug o dependencia nueva, se documenta sin ampliar silenciosamente el alcance; si bloquea la fase, se informa como bloqueo.
@@ -42,7 +42,7 @@ Antes de implementar se leen `PROJECT_STATE.md`, `STATUS.md` y la documentación
 
 | Alcance | Rama |
 | --- | --- |
-| MiniWeb | `feat/app-mini-02b` (o el checkpoint MiniWeb vigente) |
+| MiniWeb | `feat/app-mini-<checkpoint>` (por ejemplo, `feat/app-mini-02b`) |
 | Diagnóstico | `feat/diagnostic-<checkpoint>` |
 | Aprende | `feat/aprende-<checkpoint>` |
 | Corrección | `fix/<identificador>` |
@@ -53,7 +53,7 @@ Antes de implementar se leen `PROJECT_STATE.md`, `STATUS.md` y la documentación
 1. Ejecutar pruebas afectadas, typecheck, build y `git diff --check`; actualizar la documentación canónica afectada.
 2. La autorización del checkpoint cubre commit/push de sus cambios propios. Revisar el diff completo, stagear solo archivos propios, crear un commit descriptivo y subir con `git push -u origin <rama>`.
 3. Crear un Pull Request hacia `main`; revisar diff, resultados de pruebas y checks del PR.
-4. Integrar mediante el PR solo si los checks requeridos pasan, no hay conflictos y la integración está autorizada. Si hay un conflicto o check fallido, no forzar la integración: resolver con evidencia o reportar el bloqueo.
+4. El merge es condicional y exige autorización explícita para integrar, checks requeridos en PASS y ausencia de conflictos. Si no está autorizado, reportar el PR abierto sin bloquear el informe final. Si hay conflicto o check fallido, no forzar: resolver con evidencia o reportar el bloqueo.
 5. Después del merge, verificar que el SHA integrado aparece en `origin/main`. Limpiar solo la rama/worktree propios cuando no queden cambios pendientes.
 6. Nunca usar `git push --force` sobre `main`. Un merge no autoriza deploy ni cambios de schema D1 remotos.
 
