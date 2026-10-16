@@ -101,7 +101,48 @@ async function runViewport(width, height) {
     await page.goto(new URL(`/aprende/${slug}`, baseUrl).toString(), { waitUntil: "domcontentloaded" });
     assert((await page.locator("h1").textContent())?.trim() === heading, `${label} el artículo existente ${slug} dejó de cargar su H1 esperado.`);
     assert(await page.getByText("En esta guía", { exact: true }).isVisible(), `${label} el artículo existente ${slug} perdió su índice.`);
+    const tocLinks = page.locator(".learn-article-toc a");
+    for (const href of await tocLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href")))) {
+      assert(href?.startsWith("#section-") && await page.locator(href).count() === 1, `${label} índice apunta a una sección inexistente en ${slug}: ${href}`);
+    }
   }
+
+  const automationSlug = "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio";
+  await page.goto(new URL(`/aprende/${automationSlug}`, baseUrl).toString(), { waitUntil: "domcontentloaded" });
+  assert((await page.locator("h1").textContent())?.trim() === "Automatizaciones: ahorrar tiempo sin complicar tu negocio", `${label} cambió la URL o el título de Automatización.`);
+  for (const heading of [
+    "Qué significa automatizar una tarea",
+    "La secuencia: evento → condición → acción",
+    "Cómo reconocer una tarea repetitiva",
+    "Qué conviene automatizar y qué conviene dejar manual",
+    "Documenta el proceso antes de configurar nada",
+    "Ejemplo principal: reposición de bolsas de café",
+    "Errores, duplicados y reintentos",
+    "Cuándo necesita intervenir una persona",
+    "Protege la información y las preferencias de contacto",
+    "Prueba antes de usarla en el trabajo real",
+    "Mide si aporta valor y conserva una forma de detenerla",
+    "Un ejemplo comercial breve: recordatorio acordado",
+    "Preguntas frecuentes",
+    "Fuentes y orientación adicional",
+    "Qué puedes hacer ahora",
+  ]) assert(await page.getByRole("heading", { name: heading, exact: true }).isVisible(), `${label} falta la sección «${heading}».`);
+  assert(await page.locator(".learn-block--example").count() >= 2, `${label} faltan ejemplos operativos y comerciales.`);
+  assert(await page.locator(".learn-block--steps ol").count() >= 3, `${label} faltan pasos para documentar y probar.`);
+  assert(await page.locator(".learn-block--faq details").count() >= 6, `${label} faltan preguntas frecuentes.`);
+  assert(await page.getByRole("link", { name: "NIST Privacy Framework" }).isVisible(), `${label} no renderizó las fuentes como enlaces.`);
+  const automationImage = page.locator(".learn-article-image");
+  assert((await automationImage.getAttribute("alt"))?.includes("condición"), `${label} el diagrama no tiene una descripción alternativa suficiente.`);
+  assert(await automationImage.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó diagram-automation.svg.`);
+  const automationTocLinks = page.locator(".learn-article-toc a");
+  for (const href of await automationTocLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href")))) {
+    assert(href?.startsWith("#section-") && await page.locator(href).count() === 1, `${label} índice de Automatización apunta a una sección inexistente: ${href}`);
+  }
+  const automationFaq = page.getByText("¿Qué ofrece Vecidya para automatizar?", { exact: true });
+  assert(await automationFaq.isVisible(), `${label} falta FAQ que separa el catálogo de una configuración activa.`);
+  await automationFaq.click();
+  assert(await page.getByText(/figurar en el catálogo no significa estar activado/i).isVisible(), `${label} la FAQ confunde catálogo y activación.`);
+  await assertNoOverflow(page, `${label} artículo Automatización`);
 
   await browser.close();
 }

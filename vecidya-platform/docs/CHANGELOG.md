@@ -21,6 +21,12 @@
 - No se implementa recuperación de la solicitud ya verificada sin cookie: se registra contrato propuesto de nuevo challenge de recuperación por email, pendiente de aprobación. B/C cuentan con campos de revocación pero no con API operativa; retención, aviso/base y evidencia de consentimiento siguen pendientes.
 - Sin schema/migración nueva, scoring, QA-03B, GHL, correo real, PDF, cron, push o deploy. 24h/30d siguen provisionales; sin aprobación legal/privacidad.
 
+## 2026-10-16 — DIAG-V3-FUNNEL-01C.3 `IDENTIFICATION_TECHNICALLY_CERTIFIED_LOCAL`
+
+- Recuperación local con propósito `access_recovery`: UI explícita, respuesta genérica 202, una sola concesión activa y revocación atómica del grant previo; score/snapshot/versiones no se recalculan.
+- E2E confirma replay del token consumido, doble pestaña, reenvíos concurrentes, expiración exacta, gates por request/snapshot vencidos, ausencia de acceso por UUID y purga final en D1 temporal vacía.
+- `0016` solo aplicado en D1 temporal, buzón simulado, sin email real, remote migration, deploy ni publicación. Retención legal y derechos B/C siguen pendientes.
+
 ## 2026-10-12 — APP-MINI-00 contrato de aplicación cliente/minisitio
 
 - Reconciliada la frontera comercial con `VECIDYA_PRODUCT_CATALOG.md`: Cuadra no usa ni aprovisiona GHL; CRM y operación comercial GHL comienzan en Barrio, Ciudad amplía Barrio.

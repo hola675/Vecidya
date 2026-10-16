@@ -6,6 +6,7 @@ import type { LearnBlock } from "../../app/content/learn.ts";
 
 const crmSlug = "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo";
 const aiSlug = "que-puede-hacer-una-inteligencia-artificial-por-un-negocio";
+const automationSlug = "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio";
 
 test("CRM article exposes practical typed editorial blocks without changing the legacy articles", () => {
   const crmArticle = getLearnArticle(crmSlug);
@@ -36,9 +37,8 @@ test("CRM article exposes practical typed editorial blocks without changing the 
   assert.match(privacyAnswer, /copia paralela/i);
   assert.doesNotMatch(privacyAnswer, /HighLevel|GHL/i);
 
-  const unchangedArticles = learnArticles.filter((article) => ![crmSlug, aiSlug].includes(article.slug));
-  assert.equal(unchangedArticles.length, 2);
-  assert.ok(unchangedArticles.every((article) => article.sections.every((section) => !section.blocks)), "Presence and automation must retain their current legacy content structure.");
+  const presenceArticle = learnArticles.find((article) => article.slug === "antes-de-hacer-publicidad-organiza-tu-presencia-digital");
+  assert.ok(presenceArticle?.sections.every((section) => !section.blocks), "The presence guide should remain unchanged.");
   assert.equal(learnCategories.length, 5);
 });
 
@@ -81,4 +81,37 @@ test("AI article teaches bounded use and reflects optional commercial add-ons", 
   const content = article.sections.map((section) => [section.heading, ...section.paragraphs].join(" ")).join(" ");
   assert.doesNotMatch(content, /asistente de Vecidya ya activo|IA propia ya disponible/i);
   assert.doesNotMatch(content, /\b\d+\s*%/);
+});
+
+test("automation article teaches a complete, testable process without claiming guaranteed savings", () => {
+  const article = getLearnArticle(automationSlug);
+  assert.ok(article);
+  assert.equal(article.category, "Automatización");
+  assert.equal(article.title, "Automatizaciones: ahorrar tiempo sin complicar tu negocio");
+  assert.equal(article.cta.to, "/servicios");
+
+  const blocks = article.sections.flatMap((section) => section.blocks ?? []);
+  const blockTypes = new Set(blocks.map((block) => block.type));
+  for (const type of ["definitions", "example", "steps", "callout", "faq", "sources", "summary"] as const) {
+    assert.ok(blockTypes.has(type), `Automation article is missing the ${type} block.`);
+  }
+
+  const example = blocks.find((block) => block.type === "example");
+  assert.ok(example?.type === "example" && example.hypothetical);
+  for (const detail of ["evento", "condici", "responsable", "excepci", "comprob", "fall"]) {
+    assert.match(JSON.stringify(example), new RegExp(detail, "i"));
+  }
+  assert.ok(blocks.filter((block) => block.type === "example").length >= 2, "Expected operational and commercial examples.");
+
+  const allText = article.sections.map((section) => `${section.heading} ${section.paragraphs.join(" ")} ${JSON.stringify(section.blocks ?? [])}`).join(" ");
+  for (const topic of [/manual/i, /inteligencia artificial/i, /disparador/i, /duplicad/i, /reintento/i, /intervenci[oó]n humana/i, /preferencias/i, /revertir/i]) {
+    assert.match(allText, topic);
+  }
+  assert.doesNotMatch(allText, /ahorro garantizado|ahorrar[aá]s\s+\d+%/i);
+
+  const sourceBlock = blocks.find((block) => block.type === "sources");
+  assert.ok(sourceBlock?.type === "sources" && sourceBlock.items.length >= 2);
+  const slugs = new Set(learnArticles.map(({ slug }) => slug));
+  assert.equal(slugs.size, 4, "The four existing Aprende articles should remain available.");
+  assert.ok(slugs.has(crmSlug) && slugs.has(aiSlug) && slugs.has(automationSlug));
 });
