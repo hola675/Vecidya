@@ -1,5 +1,23 @@
 # Pruebas
 
+## VEC-APRENDE-04/05 — cuatro guías originales
+
+Aprende usa contenido estático en `app/content/learn.ts`; las pruebas no requieren D1 ni acceden a servicios remotos. La cobertura de contenido está en `tests/unit/learn-content.test.ts` y el recorrido de navegador en `tests/e2e/learn-experience-check.mjs`. Este último comprueba CRM, IA, Automatización y Presencia Digital, incluyendo artículo/canonical/autoría, índice y anclas, bloques editoriales, FAQ/fuentes, recursos gráficos y desbordamiento en escritorio y móvil.
+
+```powershell
+pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/learn-content.test.ts
+$env:BASE_URL='http://localhost:5173'
+# Si Playwright no tiene navegador instalado, define PLAYWRIGHT_CHROMIUM_EXECUTABLE con la ruta local de Chrome/Edge.
+pnpm exec node tests/e2e/learn-experience-check.mjs
+pnpm run test:unit
+pnpm run typecheck
+pnpm run build
+```
+
+El E2E usa el Worker local (`pnpm run dev`), Chrome local y cuatro tamaños (1366/768/390/360); no publica datos de prueba ni ejecuta pruebas remotas. La aceptación visual humana y una evaluación completa WCAG 2.2 AA son verificaciones independientes, no inferidas de estas pruebas.
+
+**RAN 2026-10-16 en el worktree de integración (base `a7949dd`):** contenido de Aprende `4/4 PASS`; suite unitaria completa `1558/1558 PASS`; typecheck, build, E2E Aprende en 1366/768/390/360 y `git diff --check` `PASS`. El primer typecheck coincidió con el bootstrap automático de PNPM y no encontró el enlace de `@babel/types`; tras terminar la instalación local, el mismo comando pasó. El build informa secretos locales ausentes; no bloquean el build ni son necesarios para las rutas educativas. Sin aceptación visual humana, certificación WCAG ni HTTP de producción.
+
 ## APP-MINI-01C + APP-MINI-02A — baseline y core modular (2026-10-15)
 
 **Runner:** Worker local (`pnpm run dev`) + D1 local; sin `--remote`, pagos ni fixtures publicados. Si Chromium no está instalado y Chrome está disponible, define `PLAYWRIGHT_CHROMIUM_EXECUTABLE` a la ruta local de Chrome. Las capturas E2E usan datos sintéticos de prueba, no contenido de producción.

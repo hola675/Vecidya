@@ -229,8 +229,9 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 ### Aprende (`knowledge.tsx`, `learn-article.tsx`)
 
 - UX-001B.9 establece `/aprende` como ruta canónica y mantiene `/que-debes-saber` como alias. La página diferencia aprendizaje de Servicios y Diagnóstico: explica cómo entender y mejorar la presencia digital.
-- UX-002.6 convierte `/aprende` en un centro de conocimiento estático: cinco categorías iniciales y cuatro artículos reales escritos/atribuidos a Yoan Ortiz, con tarjetas, excerpt, imagen y enlaces a `/aprende/:slug`.
-- Cada artículo incluye problema, explicación sencilla, ejemplos, siguiente paso, índice accesible, CTA contextual a Diagnóstico o Servicios, metadata canonical/Open Graph y aparece en sitemap. Los diagramas propios viven en `public/assets/learn/` como SVG optimizados.
+- UX-002.6 mantiene `/aprende` como centro de conocimiento estático: cinco categorías y cuatro artículos originales atribuidos a Yoan Ortiz —CRM, IA, Automatización y Presencia Digital— con tarjetas, excerpt, imagen y enlaces a `/aprende/:slug`.
+- VEC-APRENDE-04/05 completa localmente la modernización de Automatización y Presencia Digital sin cambiar sus slugs, canonicals, categoría ni autoría. Las guías reutilizan el modelo editorial compartido (definiciones, ejemplos, pasos, precauciones, checklist/resumen, FAQ y fuentes cuando corresponde); los ejemplos hipotéticos no reportan resultados comerciales reales. Sus diagramas SVG viven en `public/assets/learn/` y tienen texto alternativo.
+- Los artículos conservan índice por secciones, CTAs contextuales, metadata canonical/Open Graph y presencia en sitemap. La publicación sigue pendiente; el contenido no promete resultados, no usa CMS y no añade persistencia editorial.
 - El contenido se mantiene deliberadamente sin CMS, autores dinámicos, fechas editoriales inventadas, comentarios, newsletter, buscador avanzado o cursos.
 
 ### Legal & Trust (`privacy.tsx`, `public-layout.tsx`)

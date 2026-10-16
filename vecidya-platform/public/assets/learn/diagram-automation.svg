@@ -1,1 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" role="img" aria-labelledby="title desc"><title id="title">Una automatización simple</title><desc id="desc">Un evento activa una regla que ejecuta una acción automática.</desc><rect width="900" height="360" rx="28" fill="#f4f8ff"/><g font-family="Arial,sans-serif" text-anchor="middle"><g fill="#fff" stroke="#155fc5" stroke-width="3"><rect x="80" y="108" width="200" height="126" rx="18"/><rect x="350" y="108" width="200" height="126" rx="18"/><rect x="620" y="108" width="200" height="126" rx="18"/></g><g fill="#155fc5" font-size="24" font-weight="700"><text x="180" y="157">Evento</text><text x="180" y="187">ocurre</text><text x="450" y="157">Regla</text><text x="450" y="187">decide</text><text x="720" y="157">Acción</text><text x="720" y="187">automática</text></g><g fill="none" stroke="#ff6b0b" stroke-width="5" stroke-linecap="round"><path d="M288 171h52"/><path d="M558 171h52"/></g><g fill="#ff6b0b"><path d="m330 159 18 12-18 12z"/><path d="m600 159 18 12-18 12z"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="title desc">
+  <title id="title">Flujo de una automatización con condición y revisión</title>
+  <desc id="desc">Un evento activa la comprobación de condiciones. Si se cumplen, se ejecuta una acción; si faltan datos o ocurre un error, una persona revisa el caso. Si no se cumplen, el flujo termina sin ejecutar la acción.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 10 5 0 10z" fill="#155fc5" />
+    </marker>
+    <marker id="arrow-warm" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 10 5 0 10z" fill="#c45116" />
+    </marker>
+  </defs>
+  <rect width="960" height="500" rx="28" fill="#f4f8ff" />
+  <g font-family="Arial,sans-serif" fill="#18324f" text-anchor="middle">
+    <g fill="#fff" stroke="#155fc5" stroke-width="3">
+      <rect x="55" y="184" width="190" height="100" rx="18" />
+      <path d="m385 150 105 84-105 84-105-84z" />
+      <rect x="645" y="90" width="245" height="100" rx="18" />
+      <rect x="645" y="310" width="245" height="100" rx="18" stroke="#c45116" />
+    </g>
+    <g font-size="22" font-weight="700">
+      <text x="150" y="228">Evento</text>
+      <text x="150" y="258" font-size="17" font-weight="400">se registra</text>
+      <text x="385" y="228">¿Se cumplen</text>
+      <text x="385" y="254">las condiciones?</text>
+      <text x="767" y="132">Acción definida</text>
+      <text x="767" y="160" font-size="17" font-weight="400">crear una tarea interna</text>
+      <text x="767" y="352">Revisión humana</text>
+      <text x="767" y="380" font-size="17" font-weight="400">dato dudoso o fallo</text>
+    </g>
+    <g fill="none" stroke="#155fc5" stroke-width="4" marker-end="url(#arrow)">
+      <path d="M248 234h30" />
+      <path d="M490 200 630 146" />
+      <path d="M490 268 630 348" marker-end="url(#arrow-warm)" />
+    </g>
+    <g fill="none" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)">
+      <path d="M385 319v112h505" />
+    </g>
+    <g fill="#155fc5" font-size="16" font-weight="700">
+      <text x="555" y="157">Sí</text>
+    </g>
+    <g fill="#c45116" font-size="16" font-weight="700">
+      <text x="767" y="295">No se puede comprobar</text>
+    </g>
+    <g fill="#475569" font-size="16" font-weight="700">
+      <text x="610" y="455">No: termina sin ejecutar la acción</text>
+    </g>
+  </g>
+</svg>
