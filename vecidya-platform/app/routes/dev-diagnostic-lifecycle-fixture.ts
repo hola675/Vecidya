@@ -3,7 +3,7 @@ import { cloudflareContext } from "../../server/cloudflare-context";
 import { consumeChallengeAndGrantAccess, deleteIdentifiedReport, findRequestWithPendingChallenge, getAuthorizedReport, replacePendingChallenge } from "../../db/queries/diagnostic-identification.server";
 import { VERIFIED_EMAIL_CHALLENGE_TTL_HOURS } from "../features/diagnostic/identified-report-constants";
 import { createOpaqueToken, digestOpaqueToken } from "../features/diagnostic/report-access-crypto.server";
-import { deliverDiagnosticVerificationEmail, discardDiagnosticDevInboxMessage } from "../../server/email/diagnostic-dev-inbox.server";
+import { deliverDiagnosticVerificationEmail, discardDiagnosticDevInboxMessage, readDiagnosticDevInbox } from "../../server/email/diagnostic-dev-inbox.server";
 
 import type { ActionFunctionArgs } from "react-router";
 
@@ -170,7 +170,7 @@ async function seedLostResponseFixture(db: D1Database, sourceRequestId: string, 
     if (inserted?.count !== 1) throw new Error("No se pudo crear la solicitud sintética de recuperación.");
     const recipient = await db.prepare("SELECT email FROM identified_diagnostic_request WHERE id = ?").bind(requestId).first<{ email: string }>();
     if (!recipient) throw new Error("No se pudo leer el destinatario sintético.");
-    deliverDiagnosticVerificationEmail({ requestId, recipient: recipient.email, token, origin, now: now.getTime() });
+    deliverDiagnosticVerificationEmail({ requestId, challengeId, recipient: recipient.email, token, origin, now: now.getTime() });
     return { requestId };
   } catch {
     await deleteIdentifiedReport(db, requestId);
@@ -231,7 +231,8 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
     const snapshot = await db.prepare(`SELECT engine_identity AS engineIdentity, report_version AS reportVersion,
       methodology_version AS methodologyVersion, report_sha256 AS reportSha256
       FROM diagnostic_report_snapshot WHERE request_id = ?`).bind(requestId).first<Record<string, string>>();
-    return Response.json({ counts: row, snapshot }, { headers });
+    const message = readDiagnosticDevInbox(requestId);
+    return Response.json({ counts: row, snapshot, localMessage: message ? { createdAt: message.createdAt, purpose: message.purpose } : null }, { headers });
   }
   if (op === "expiry_matrix") return Response.json(await runExpiryMatrix(db, requestId), { headers });
   if (op === "tamper_snapshot") await db.prepare("UPDATE diagnostic_report_snapshot SET report_json = report_json || ' ' WHERE request_id = ?").bind(requestId).run();

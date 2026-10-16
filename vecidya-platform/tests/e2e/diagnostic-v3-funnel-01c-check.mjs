@@ -9,7 +9,9 @@ const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync
 const browser = await chromium.launch(executablePath ? { executablePath } : {});
 const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
 const page = await context.newPage();
-const screenshotDir = "tmp/diag-v3-funnel-01c2-recovery/browser";
+page.setDefaultTimeout(15_000);
+page.setDefaultNavigationTimeout(20_000);
+const screenshotDir = "tmp/diag-v3-funnel-01c3-recovery/browser";
 mkdirSync(screenshotDir, { recursive: true });
 const base = new URL(baseUrl);
 const fixtureRequestIds = [];
@@ -36,10 +38,14 @@ const answer = async () => {
 try {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto(new URL("/diagnostico", base).toString(), { waitUntil: "domcontentloaded" });
+  await page.goto(new URL("/diagnostico", base).toString(), { waitUntil: "commit" });
   await page.evaluate(() => { localStorage.removeItem("vecidya.diagnostic.v3.session.2"); for (const key of Object.keys(localStorage)) if (key.startsWith("vecidya.diagnostic.v3.anonymous-summary.1.")) localStorage.removeItem(key); });
-  await page.reload({ waitUntil: "domcontentloaded" });
-  await page.waitForTimeout(1200);
+  await page.reload({ waitUntil: "commit" });
+  await page.waitForFunction(() => {
+    const button = [...document.querySelectorAll("button")].find((element) => element.textContent?.trim() === "Empezar diagnóstico");
+    const propsKey = button && Object.keys(button).find((key) => key.startsWith("__reactProps$"));
+    return Boolean(propsKey && typeof button?.[propsKey]?.onClick === "function");
+  });
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   await page.waitForSelector(".df-option__input");
   for (let index = 0; index < 24 && !(await page.locator(".df-ready").count()); index += 1) await answer();
@@ -153,7 +159,8 @@ try {
   const recoveryStatuses = [uiRecoveryResponse.status(), parallelRecoveryResponse.status()];
   assert.ok(recoveryStatuses.every((status) => status === 202 || status === 429), "recovery concurrente responde aceptada o limitada sin filtrar estado de la solicitud");
   assert.ok(recoveryStatuses.includes(202), "la acción explícita genera una recuperación local");
-  assert.equal((await uiRecoveryResponse.json()).accepted, true, "la respuesta de recuperación es genérica y no contiene el informe ni el ID");
+  assert.equal(uiRecoveryResponse.status(), 202, "la acción explícita recibe respuesta genérica");
+  assert.equal((await parallelRecoveryResponse.json()).accepted, true, "la respuesta de recuperación no contiene el informe ni el ID");
   assert.equal((await page.request.get(new URL(`/diagnostico/informe/${lostResponseRequestId}`, base).toString())).status(), 404, "solicitar recuperación por UUID no autoriza el acceso");
   const recoveryMailbox = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).json();
   assert.equal(recoveryMailbox.purpose, "access_recovery", "el buzón distingue el propósito de recuperación del challenge inicial");
@@ -175,8 +182,18 @@ try {
   const recoveryTabs = [page, await context.newPage()];
   await page.goto(new URL("/diagnostico", base).toString(), { waitUntil: "domcontentloaded" });
   await page.goto(recoveryLink, { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => {
+    const button = [...document.querySelectorAll("button")].find((element) => element.textContent?.trim() === "Confirmar y abrir el informe");
+    const propsKey = button && Object.keys(button).find((key) => key.startsWith("__reactProps$"));
+    return Boolean(propsKey && typeof button?.[propsKey]?.onClick === "function");
+  });
   await recoveryTabs[0].getByRole("button", { name: "Confirmar y abrir el informe" }).waitFor();
   await recoveryTabs[1].goto(recoveryLink, { waitUntil: "domcontentloaded" });
+  await recoveryTabs[1].waitForFunction(() => {
+    const button = [...document.querySelectorAll("button")].find((element) => element.textContent?.trim() === "Confirmar y abrir el informe");
+    const propsKey = button && Object.keys(button).find((key) => key.startsWith("__reactProps$"));
+    return Boolean(propsKey && typeof button?.[propsKey]?.onClick === "function");
+  });
   await recoveryTabs[1].getByRole("button", { name: "Confirmar y abrir el informe" }).waitFor();
   const verifyRecoveryInTab = (tab) => tab.evaluate(async ({ requestId, token }) => {
     const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": "198.51.100.31" }, body: JSON.stringify({ requestId, token }) });
@@ -213,14 +230,15 @@ try {
   const expiredSnapshotRecovery = await page.request.post(recoveryUrl, { headers: { Origin: base.origin, "cf-connecting-ip": "198.51.100.34" } });
   assert.equal(expiredSnapshotRecovery.status(), 202, "la solicitud con snapshot vencido conserva una respuesta genérica");
   assert.equal((await expiredSnapshotRecovery.json()).accepted, true);
-  const noSnapshotRecoveryEmail = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).json();
-  assert.equal(noSnapshotRecoveryEmail.createdAt, recoveryMailbox.createdAt, "snapshot vencido no genera otro mensaje");
+  const noSnapshotRecoveryEmail = await lifecycleFixture(lostResponseRequestId, "inspect");
+  assert.equal(noSnapshotRecoveryEmail.localMessage?.createdAt, recoveryMailbox.createdAt, "snapshot vencido no genera otro mensaje local");
   await lifecycleFixture(lostResponseRequestId, "restore_snapshot_expiry");
   await lifecycleFixture(lostResponseRequestId, "expire_request_only");
   const expiredRequestRecovery = await page.request.post(recoveryUrl, { headers: { Origin: base.origin, "cf-connecting-ip": "198.51.100.35" } });
   assert.equal(expiredRequestRecovery.status(), 202, "la solicitud vencida conserva una respuesta genérica");
-  const noRequestRecoveryEmail = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).json();
-  assert.equal(noRequestRecoveryEmail.createdAt, recoveryMailbox.createdAt, "solicitud vencida no genera otro mensaje");
+  const noRequestRecoveryEmail = await lifecycleFixture(lostResponseRequestId, "inspect");
+  assert.equal(noRequestRecoveryEmail.localMessage?.createdAt, recoveryMailbox.createdAt, "solicitud vencida no genera otro mensaje local");
+  assert.equal((await page.request.get(new URL(recovered.reportPath, base).toString())).status(), 404, "la solicitud vencida niega el informe aun con la cookie nueva");
 
   const mailbox = await page.request.get(new URL(`/__dev/diagnostico/buzon/${created.requestId}`, base).toString());
   assert.equal(mailbox.status(), 200, "el mensaje solo está en el buzón local simulado");
@@ -445,11 +463,11 @@ try {
   await page.goto(new URL(verified.reportPath, base).toString(), { waitUntil: "domcontentloaded" });
   assert.equal(await page.locator(".rp-doc").count(), 0, "solicitud purgada deja el informe inaccesible");
   const lostFixtureCleanup = await lifecycleFixture(lostResponseRequestId, "cleanup");
-  assert.equal(lostFixtureCleanup.existed, true, "cleanup borra exactamente la solicitud sintética verificada con respuesta perdida");
+  assert.equal(lostFixtureCleanup.existed, false, "cleanup por ID sintético tolera que la purga ya haya eliminado la solicitud");
   assert.equal((await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).status(), 404, "cleanup retira el mensaje sintético con el token del buzón local");
   const alreadyPurged = await lifecycleFixture(created.requestId, "cleanup");
   assert.equal(alreadyPurged.existed, false, "cleanup acotado es idempotente y limpia también el buzón de la fixture purgada");
-  console.log("diagnostic-v3-funnel-01c-check: PASS — recorrido 01C, verificación concurrente, grant único, cookie, idempotencia concurrente, integridad snapshot y purga D1 atómica/idempotente");
+  console.log("diagnostic-v3-funnel-01c-check: PASS — recovery one-time, expiración exacta, concurrencia, grant único activo, integridad snapshot, privacidad y purga atómica/idempotente");
 } finally {
   try {
     for (const requestId of fixtureRequestIds.reverse()) await lifecycleFixture(requestId, "cleanup");

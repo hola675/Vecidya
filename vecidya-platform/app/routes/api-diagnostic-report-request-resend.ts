@@ -43,6 +43,6 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
     )), consumedAt: null, createdAt: now,
   };
   if (!await replacePendingChallenge(env.DB, reportRequest.id, challenge)) return genericAccepted();
-  deliverDiagnosticVerificationEmail({ requestId: reportRequest.id, recipient: reportRequest.email, token, purpose, origin: new URL(request.url).origin, now: now.getTime() });
+  deliverDiagnosticVerificationEmail({ requestId: reportRequest.id, challengeId: challenge.id, recipient: reportRequest.email, token, purpose, origin: new URL(request.url).origin, now: now.getTime() });
   return genericAccepted();
 }

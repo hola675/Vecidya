@@ -127,7 +127,7 @@ export async function action({ context, request }: ActionFunctionArgs) {
     return failure(503, "No pudimos guardar la solicitud. Tus respuestas anónimas siguen disponibles en este navegador.");
   }
 
-  deliverDiagnosticVerificationEmail({ requestId, recipient: input.email, token, origin: new URL(request.url).origin, now: now.getTime() });
+  deliverDiagnosticVerificationEmail({ requestId, challengeId: challenge.id, recipient: input.email, token, origin: new URL(request.url).origin, now: now.getTime() });
   const summary = toAnonymousDiagnosticSummaryV1(replay.result);
   return Response.json({ requestId, status: "verification_pending", expiresAt: expiresAt.toISOString(), summaryVersion: summary.version }, { status: 202, headers });
 }
