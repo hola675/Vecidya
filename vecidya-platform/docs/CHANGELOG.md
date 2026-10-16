@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-16 — Política Git multiagente y Worktrees (documental)
+
+- Actualizadas `AGENTS.md` y `docs/GOVERNANCE.md`: cada checkpoint usa una rama y worktree independientes creados desde `origin/main`, sin tocar cambios staged/unstaged de otros agentes.
+- El flujo incorpora commit, push y Pull Request con revisión. El merge es condicional a autorización explícita, checks requeridos PASS y ausencia de conflictos; un PR puede reportarse como pendiente de integración.
+- Convenciones dinámicas por checkpoint para MiniWeb, Diagnóstico y Aprende; reconciliación de migraciones concurrentes `0016`/`0017` antes de nuevas migraciones MiniWeb.
+- Política documental únicamente: sin cambios de ejecución, schema, datos remotos ni deploy.
+
 ## 2026-10-15 — APP-MINI-02A (local, no desplegado)
 
 - Registro versionado de familias `services`, `catalog`, `gastronomy` y `professional`, con solo la plantilla compatible y módulos `hero`, `about`, `contact`, `hours`, `location` disponibles.

@@ -15,7 +15,11 @@
 
 ## Scope
 
-- Work directly on `main` unless the user requests another branch. Do not push unless asked.
+- Do not work directly on `main`; start each checkpoint from freshly fetched `origin/main` in a dedicated branch and Git worktree.
+- Before branching, run `git status`, `git branch -vv`, then `git fetch origin`; preserve other agents' staged/unstaged changes and never switch a dirty shared checkout.
+- Use `feat/app-mini-<checkpoint>`, `feat/diagnostic-<checkpoint>`, `feat/aprende-<checkpoint>`, `fix/<id>`, or `docs/<id>`; use a new branch for every checkpoint and one owner per worktree.
+- After validation, stage only owned files, commit, `git push -u origin <branch>`, and open a PR to `main`; this authorization covers only the user's authorized checkpoint. Merge via PR only when separately authorized, required checks pass, and there are no conflicts. Otherwise report the open PR without treating merge as mandatory. After merge, verify the integrated SHA and clean only an owned clean worktree.
+- Never force-push `main` or deploy as part of a merge. See `vecidya-platform/docs/GOVERNANCE.md` for migration and concurrency rules.
 - Develop the product only in `vecidya-platform/`.
 - `legacy/` is git-ignored and absent from this clone; if present locally it is read-only reference material.
 - `archive/` and `resources/` were removed from the tree in commit `ec79b22`; recover from Git history only if the user asks.

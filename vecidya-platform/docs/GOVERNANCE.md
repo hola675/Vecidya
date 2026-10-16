@@ -1,6 +1,6 @@
 # Gobierno documental
 
-Última reconciliación: 2026-09-20 (Baseline 2026-09-20).
+Última reconciliación: 2026-10-16 (política permanente de ramas/worktrees y PR).
 
 ## Propósito
 
@@ -25,10 +25,44 @@ Toda afirmación de estado que importe indica su nivel: `CODE` (fuente inspeccio
 ## Ciclo obligatorio de cambio
 
 ```text
-Leer → definir alcance → implementar → validar → reconciliar documentación → revisar diff → reportar → commit
+Leer → definir alcance → crear rama/worktree → implementar → validar → reconciliar documentación → revisar diff → commit → push → PR → [merge si autorizado y checks PASS] → reportar (PR pendiente o merge verificado)
 ```
 
 Antes de implementar se leen `PROJECT_STATE.md`, `STATUS.md` y la documentación especializada afectada. Si aparece una contradicción, riesgo, deuda, bug o dependencia nueva, se documenta sin ampliar silenciosamente el alcance; si bloquea la fase, se informa como bloqueo.
+
+## Política de Git y trabajo multiagente
+
+### Preparación
+
+1. En el checkout compartido, ejecutar en este orden: `git status`, `git branch -vv`, `git fetch origin`.
+2. Identificar todos los cambios staged/unstaged ajenos; no modificarlos, descartarlos, incluirlos ni trasladarlos.
+3. Usar `origin/main` recién actualizado como base del checkpoint. Crear una rama nueva y un Git Worktree aislado; no desarrollar directamente en `main`.
+4. Si el checkout compartido está dirty, no usar `git switch` allí. Un worktree puede crearse desde `origin/main` sin mover ni limpiar ese checkout.
+5. Cada agente es dueño exclusivo de su rama/worktree. Stage únicamente archivos propios del checkpoint.
+
+| Alcance | Rama |
+| --- | --- |
+| MiniWeb | `feat/app-mini-<checkpoint>` (por ejemplo, `feat/app-mini-02b`) |
+| Diagnóstico | `feat/diagnostic-<checkpoint>` |
+| Aprende | `feat/aprende-<checkpoint>` |
+| Corrección | `fix/<identificador>` |
+| Documentación | `docs/<identificador>` |
+
+### Cierre e integración
+
+1. Ejecutar pruebas afectadas, typecheck, build y `git diff --check`; actualizar la documentación canónica afectada.
+2. La autorización del checkpoint cubre commit/push de sus cambios propios. Revisar el diff completo, stagear solo archivos propios, crear un commit descriptivo y subir con `git push -u origin <rama>`.
+3. Crear un Pull Request hacia `main`; revisar diff, resultados de pruebas y checks del PR.
+4. El merge es condicional y exige autorización explícita para integrar, checks requeridos en PASS y ausencia de conflictos. Si no está autorizado, reportar el PR abierto sin bloquear el informe final. Si hay conflicto o check fallido, no forzar: resolver con evidencia o reportar el bloqueo.
+5. Después del merge, verificar que el SHA integrado aparece en `origin/main`. Limpiar solo la rama/worktree propios cuando no queden cambios pendientes.
+6. Nunca usar `git push --force` sobre `main`. Un merge no autoriza deploy ni cambios de schema D1 remotos.
+
+### Concurrencia y migraciones D1
+
+- Si `main` avanza durante el trabajo, inspeccionar primero el nuevo estado y reconciliar de forma controlada; no realizar merges/rebases que puedan perder trabajo ajeno.
+- No modificar, renombrar, borrar ni reaplicar migraciones de otro checkpoint sin verificar su estado y autorización.
+- La secuencia compartida requiere reconciliación: `0016` pertenece a Diagnóstico y `0017` a MiniWeb. Antes de crear otra migración MiniWeb, confirmar en una D1 de prueba limpia que la cadena completa puede aplicarse y comprobar qué migraciones están registradas en la base objetivo.
+- Si una migración ajena bloquea el checkpoint, detener solo el trabajo dependiente y comunicar el bloqueo; no usar `--remote` sin autorización explícita.
 
 ## Documentos canónicos
 
