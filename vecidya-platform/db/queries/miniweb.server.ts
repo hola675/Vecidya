@@ -5,6 +5,7 @@ import { miniWebModule, miniWebSite } from "../schema";
 import type { BusinessHoursEntry } from "./business-hours.server";
 import { getBusinessProfileForOrganization } from "./business-profile.server";
 import {
+  buildSafeMiniWebConfiguration,
   buildVirtualMiniWebConfiguration,
   parseMiniWebConfigurationJson,
   serializeMiniWebConfiguration,
@@ -85,7 +86,9 @@ export async function getMiniWebConfigurationForOrganization(
     site,
     hasPersistedConfiguration: true,
     draftConfiguration,
-    publishedConfiguration: parseMiniWebConfigurationJson(site.publishedConfigurationJson) ?? virtual,
+    publishedConfiguration: site.publishedConfigurationJson === null
+      ? virtual
+      : parseMiniWebConfigurationJson(site.publishedConfigurationJson) ?? buildSafeMiniWebConfiguration(),
   };
 }
 

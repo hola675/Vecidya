@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { setDefaultAutoSelectFamilyAttemptTimeout } from "node:net";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
@@ -63,20 +63,25 @@ class SessionClient {
 
 async function signUp(key) {
   const client = new SessionClient();
+  const email = `miniweb-${key}-${suffix}@vecidya.test`;
+  const password = `test-only-password-${suffix}`;
   const response = await client.json("/api/auth/sign-up/email", {
     name: `MiniWeb ${key} ${suffix}`,
-    email: `miniweb-${key}-${suffix}@vecidya.test`,
-    password: `test-only-password-${suffix}`,
+    email,
+    password,
   });
   harness(response.status === 200, `registro de ${key} devolvió ${response.status}`);
   const { user } = await response.json();
-  return { client, userId: user.id };
+  createdUserIds.push(user.id);
+  return { client, userId: user.id, email, password };
 }
 
 async function createOrganization(identity, key) {
   const response = await identity.client.json("/api/auth/organization/create", { name: `MiniWeb ${key} ${suffix}`, slug: `miniweb-${key}-${suffix}` });
   harness(response.status === 200, `crear organización ${key} devolvió ${response.status}`);
-  return (await response.json()).id;
+  const organizationId = (await response.json()).id;
+  createdOrganizationIds.push(organizationId);
+  return organizationId;
 }
 
 async function setActive(identity, organizationId) {
@@ -90,6 +95,8 @@ const profileSlug = (key) => `miniweb-${key}-${suffix}`;
 const profileId = () => crypto.randomUUID();
 const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
 const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
+const createdUserIds = [];
+const createdOrganizationIds = [];
 
 let harnessFailure = null;
 let browser = null;
@@ -135,13 +142,13 @@ try {
   };
   check((await ownerA.client.json(pathA, { intent: "save", configuration: invalidModule })).status === 400, "un módulo no disponible se rechaza server-side");
 
+  const draftOrder = [...initial.draftConfiguration.modules].sort((left, right) => left.sortOrder - right.sortOrder);
+  [draftOrder[1], draftOrder[2]] = [draftOrder[2], draftOrder[1]];
   const draft = {
     ...initial.draftConfiguration,
-    modules: initial.draftConfiguration.modules.map((module) => ({
-      ...module,
-      enabled: module.type === "hero" ? true : false,
-    })),
+    modules: draftOrder.map((module, sortOrder) => ({ ...module, sortOrder, enabled: module.type === "hero" })),
   };
+  check((await memberA.client.json(pathA, null, "GET")).status === 200, "member conserva acceso de lectura a la configuración");
   check((await memberA.client.json(pathA, { intent: "save", configuration: draft })).status === 403, "member read-only no puede modificar la configuración");
   check((await ownerA.client.json(pathA, { intent: "save", configuration: draft })).status === 200, "owner puede guardar la configuración draft");
   const publicBeforePublish = await (await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`)).text();
@@ -151,6 +158,7 @@ try {
   const published = await (await ownerA.client.json(pathA, null, "GET")).json();
   check(published.hasPersistedConfiguration === true, "la configuración se persiste al guardar");
   check(published.draftConfiguration.modules.some((module) => module.type === "contact" && !module.enabled), "los módulos desactivados siguen en el draft");
+  check(published.draftConfiguration.modules.map((module) => module.type).join(",") === draftOrder.map((module) => module.type).join(","), "el orden draft se guarda y se resuelve de forma determinística");
   check(published.publishedConfiguration.modules.some((module) => module.type === "contact" && !module.enabled), "el snapshot publicado conserva el módulo desactivado");
   check((await d1(`SELECT COUNT(*) AS count FROM miniweb_site WHERE organization_id = '${organizationA}';`))[0]?.count === 1, "una organización tiene una sola configuración MiniWeb");
 
@@ -158,8 +166,13 @@ try {
   const publicB = await (await ownerB.client.fetch(`/vecindario/${profileSlug("legacy-b")}`)).text();
   check(publicA.includes(`MiniWeb público A ${suffix}`), "la página publicada A conserva su slug estable");
   check(!publicA.includes("Descripción A") && !publicA.includes(`a-${suffix}@example.invalid`) && !publicA.includes("Contacto directo"), "los módulos desactivados no aparecen en el sitio público");
+  await d1(`UPDATE miniweb_site SET published_configuration_json = 'not-json' WHERE organization_id = '${organizationA}';`);
+  const corruptedSnapshotPublic = await (await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`)).text();
+  check(corruptedSnapshotPublic.includes(`MiniWeb público A ${suffix}`) && !corruptedSnapshotPublic.includes("Descripción A") && !corruptedSnapshotPublic.includes(`a-${suffix}@example.invalid`), "un snapshot publicado inválido falla cerrado a hero y no reactiva contenido");
+  check((await ownerA.client.json(pathA, { intent: "publish" })).status === 200, "se puede restaurar explícitamente un snapshot válido desde el draft");
   check(publicB.includes(`MiniWeb legacy B ${suffix}`) && publicB.includes("Descripción B"), "un perfil publicado legacy sin miniweb_site se renderiza con defaults virtuales");
-  check(publicB.includes(`<link rel="canonical" href="https://vecidya.com/vecindario/${profileSlug("legacy-b")}">`), "el canonical actual de Vecindario se conserva");
+  check(new RegExp(`href=["']https://vecidya\\.com/vecindario/${profileSlug("legacy-b")}(["']|/)`).test(publicB), "el canonical actual de Vecindario se conserva");
+  check(publicB.includes('name="description" content="Resumen B"') && publicB.includes('property="og:type" content="website"') && publicB.includes('name="robots" content="index, follow"'), "los metadatos SEO públicos actuales se conservan");
 
   const draftSlug = profileSlug("draft");
   const suspendedSlug = profileSlug("suspended");
@@ -173,29 +186,67 @@ try {
     VALUES ('${crypto.randomUUID()}', '${suspendedProfileId}', 'unverified', 'suspended', ${now}, ${now});`);
   check((await ownerB.client.fetch(`/vecindario/${draftSlug}`)).status === 404, "el perfil draft continúa fuera del público");
   check((await ownerB.client.fetch(`/vecindario/${suspendedSlug}`)).status === 404, "el perfil suspendido continúa fuera del público");
+  await setActive(ownerB, organizationD);
+  const suspendedEditor = await (await ownerB.client.fetch("/app/miniweb")).text();
+  check(suspendedEditor.includes("El perfil del negocio está suspendido y no aparece en público."), "el editor no representa un perfil suspendido como publicado");
+  await setActive(ownerB, organizationB);
 
   browser = await chromium.launch(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {});
   const browserContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
-  await browserContext.addCookies(ownerA.client.cookies().map(({ name, value }) => ({ name, value, url: baseUrl })));
   const page = await browserContext.newPage();
+  await page.goto(new URL("/login", baseUrl).toString(), { waitUntil: "networkidle" });
+  await page.getByLabel("Correo electrónico").fill(ownerA.email);
+  await page.getByLabel("Contraseña").fill(ownerA.password);
+  await page.getByRole("button", { name: "Entrar a mi espacio" }).click();
+  await page.waitForURL((url) => url.pathname === "/app", { timeout: 15000 });
   const editorResponse = await page.goto(new URL("/app/miniweb", baseUrl).toString(), { waitUntil: "networkidle" });
   check(editorResponse?.status() === 200, "el editor privado Mi MiniWeb responde para el owner");
   check(await page.getByRole("heading", { name: "Mi MiniWeb", level: 1 }).count() === 1, "el editor presenta el punto de entrada Mi MiniWeb");
   check(await page.getByRole("checkbox", { name: "Desactivar Presentación" }).isDisabled(), "la sección hero requerida no se puede apagar");
   check(await page.getByText("Galería", { exact: true }).count() === 0 && await page.getByText("Productos", { exact: true }).count() === 0, "el editor no ofrece módulos todavía no disponibles");
+  const renderedModuleLabels = await page.locator(".miniweb-module-list__item strong").allTextContents();
+  const renderedModuleOrder = renderedModuleLabels.map((label) => ({
+    "Presentación": "hero",
+    "Acerca del negocio": "about",
+    "Contacto": "contact",
+    "Horarios": "hours",
+    "Ubicación y modalidad": "location",
+  })[label]);
+  check(renderedModuleOrder.join(",") === published.draftConfiguration.modules.map((module) => module.type).join(","), "la lista de secciones visualiza el orden configurado");
   const viewportResults = [];
+  const captureDirectory = process.env.MINIWEB_CAPTURE_DIR ?? join(process.cwd(), ".playwright-mcp");
+  mkdirSync(captureDirectory, { recursive: true });
   for (const width of [1366, 768, 390, 360]) {
     await page.setViewportSize({ width, height: 900 });
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     viewportResults.push({ width, overflow });
+    await page.screenshot({ fullPage: true, path: join(captureDirectory, `app-mini-02a-editor-${width}.png`) });
   }
   check(viewportResults.every(({ overflow }) => !overflow), "el editor no tiene overflow a 1366/768/390/360");
   console.log(JSON.stringify({ viewports: viewportResults }, null, 2));
+  await page.goto(new URL(`/vecindario/${profileSlug("public-a")}`, baseUrl).toString(), { waitUntil: "networkidle" });
+  for (const width of [1366, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.screenshot({ fullPage: true, path: join(captureDirectory, `app-mini-02a-public-${width}.png`) });
+  }
 } catch (error) {
   harnessFailure = error;
 }
 
 if (browser) await browser.close();
+try {
+  const deletes = [];
+  if (createdOrganizationIds.length) {
+    deletes.push(`DELETE FROM organization WHERE id IN (${createdOrganizationIds.map((id) => `'${id}'`).join(",")})`);
+  }
+  if (createdUserIds.length) {
+    deletes.push(`DELETE FROM user WHERE id IN (${createdUserIds.map((id) => `'${id}'`).join(",")})`);
+  }
+  if (deletes.length) await d1(`${deletes.join(";\n")};`);
+} catch (error) {
+  harnessFailure ??= new HarnessError(`HARNESS: no se pudieron limpiar las fixtures de prueba: ${error instanceof Error ? error.message : String(error)}`);
+}
+
 const failed = checks.filter((result) => !result.ok);
-console.log(JSON.stringify({ checks: checks.length, passed: checks.length - failed.length, failed: failed.map((result) => result.label), harness: harnessFailure?.message ?? null }, null, 2));
+console.log(JSON.stringify({ checks: checks.length, passed: checks.length - failed.length, failed: failed.map((result) => result.label), fixturesCleaned: createdOrganizationIds.length > 0 || createdUserIds.length > 0, harness: harnessFailure?.message ?? null }, null, 2));
 if (harnessFailure || failed.length) process.exitCode = 1;

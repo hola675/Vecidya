@@ -1,6 +1,6 @@
 # Estructura del código
 
-Última reconciliación: 2026-10-14 (APP-MINI-01 local; sin nuevas rutas, schema, migraciones ni deploy). Rutas del código verificadas contra `app/routes.ts`; la tabla describe el árbol local, no afirma que los cambios sin deploy estén en producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas para rutas desplegadas. Abreviaturas de pruebas: ver [TESTING.md](TESTING.md).
+Última reconciliación: 2026-10-15 (APP-MINI-02A local; ruta privada `/app/miniweb`, API tenant-scoped y schema/migración `0017`, sin deploy). Rutas verificadas contra `app/routes.ts`; la tabla describe el código local, no producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas. Abreviaturas: [TESTING.md](TESTING.md).
 
 ## LEGACY-00 — inventario de rutas (baseline `50026d0`)
 
@@ -79,7 +79,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/unete` | `join.tsx` | estático | — | funcional | `join-contact` | sí |
 | `/contacto` | `contact.tsx` | estático (`mailto`, WhatsApp directo `wa.me` y canal oficial de WhatsApp; sin grupo comunitario desde 2026-09-25) | — | funcional | `px-a`, `join-contact` | sí |
 | `/vecindario` | `directory.tsx` | D1 lista+filtros | — | funcional | `px-a`, `pg-c1`, `d1` | sí |
-| `/vecindario/:slug` | `public-business-profile.tsx` + `public-business-profile-view.tsx` | D1 perfil+horarios | — | minisitio base local; conserva 404 si no publicado/suspendido | `bpx`, `slug-life` | base `0007`–`0009` desplegada; APP-MINI-01 local |
+| `/vecindario/:slug` | `public-business-profile.tsx` + `components/miniweb/miniweb-renderer.tsx` | perfil/horarios allowlisted + snapshot modular | — | template compatible, módulos ordenados; conserva 404 si no publicado/suspendido | `bpx`, `slug-life`, `miniweb-core` | APP-MINI-02A local; migración `0017` pendiente del ledger |
 | `/diagnostico` | `diagnostic.tsx` + `AnonymousDiagnosticFlow` | respuestas en localStorage; Worker calcula resumen V3; solicitud identificada dev-only y snapshot D1 local | — | FUNNEL-01B/01C local; no publicado | `diagnostic`, `funnel-01b`, `funnel-01c` | publicación previa sin FUNNEL-01B; requiere deploy para actualizar |
 | `/diagnostico/metodologia` | `diagnostico-metodologia.tsx` | metodología evergreen | — | funcional | methodology | sí (histórico) |
 | `/diagnostico/verificar` | `dev-diagnostic-verify-email.tsx` | fragmento efímero + confirmación explícita | No | solo desarrollo; email simulado | `funnel-01c` | no |
@@ -100,7 +100,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/login` | `login.tsx` | ninguna (no redirige si ya hay sesión) | funcional | UI en `c2`; API remota | sí |
 | `/register` | `register.tsx` | ninguna | funcional; sin enlaces desde la web pública | UI solo en `.ps1` obsoletos; registro por API en 17 scripts | sí |
 
-### CLIENT APP (6)
+### CLIENT APP (7)
 
 | Ruta | Archivo | Guarda | Organización | Datos | Estado | E2E | Pub. |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -109,6 +109,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/app/organization` | `organization.tsx` | activa + `member:read`; acciones con permiso propio + recurso de la organización (`requireOrganizationMemberTarget`, `requireOrganizationInvitationTarget`); cancelar solo si la invitación sigue pendiente | activa | miembros, invitaciones pendientes vigentes e historial | funcional; UI pulida (INVITE-UI-001, `0.5.4` local) | `team-ui`, `authz`, `invite-flow`, `members` (`TEST-D1-RESET-001`) | sí |
 | `/app/invitations/:invitationId` | `invitation.tsx` | pública; detalles solo para el destinatario (`db/invitation-rules.ts`); aceptar lo hace Better Auth con el correo verificado de la sesión | la de la invitación | invitación + organización (D1), Better Auth | funcional: estados controlados 200/403/404/410 (INVITE-001) | `invite-flow`, `invitations`, `authz` | sí |
 | `/app/business-profile` | `business-profile.tsx` | `requireOrganization` + `business-profile:read/update/publish` | activa | perfil, horarios | editor agrupado y preview privado inline; sin ruta ni cambio de permisos | `bpx`, `slug-life`, `pe-b`, `authz` | base `0007`/`0008` desplegada; APP-MINI-01 local |
+| `/app/miniweb` | `miniweb-editor.tsx` | organización activa + `business-profile:read` | activa y revalidada | registry, draft/snapshot, DTO de preview | plantilla actual, cinco módulos disponibles, activar/ordenar, preview privada/publicar config | `miniweb-core` | local; migración `0017` pendiente del ledger |
 | `/app/services` | `services-app.tsx` | `requireSession` + `getActiveOrganization` | activa | `organization_service` | funcional (solo lectura) | `services-exp`, `pe-b`, `authz` | sí |
 
 ### INTERNAL ADMIN (8) — todas con `requirePlatformAdmin`
@@ -124,7 +125,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/app/internal/integrations` | `internal-integrations.tsx` | conexiones | — | `admin-int` (stale) | sí |
 | `/app/internal/audit` | `internal-audit.tsx` | `platform_audit_log` (últimas 200) | — | `d1` | **no** (404 público) |
 
-### API (14)
+### API (15)
 
 | Ruta | Archivo | Métodos | Guarda | Estado | E2E | Pub. |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -138,6 +139,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `…/members` | `api-organization-members.ts` | GET; acciones | `member:read`/`member:role:update`/`member:remove` + `requireOrganizationMemberTarget` + Better Auth | funcional | `authz`, `members` (`TEST-D1-RESET-001`) | sí |
 | `…/invitations` | `api-organization-invitations.ts` | GET; acciones | `member:invite`; cancelar + `requireOrganizationInvitationTarget` | 503 si no hay correo configurado | `authz`, `invitations` | sí |
 | `…/business-profile` | `api-business-profile.ts` | GET, POST | `business-profile:read/update` | funcional; omite reglas de publicación y horarios | `bpx`, `c1`, `c2`, `px-b`, `authz` | sí |
+| `…/miniweb-config` | `api-miniweb-config.ts` | GET, POST | compara organización activa con `:organizationId`; `business-profile:read/update/publish`; valida registry | tenant-scoped; GET virtual no persiste, save/publish separan draft y snapshot | `miniweb-core` | local; sin deploy |
 | `…/integrations` | `api-organization-integrations.ts` | GET | solo membresía (cualquier rol, incluye `metadata`) | funcional | `authz` (403 sin membresía), `psa` | sí |
 | `/api/platform/organizations/:id/services` | `api-platform-services.ts` | GET, POST | `requirePlatformAdmin` | funcional; org inexistente → 500 FK | `psa`, `authz` (403 para owner/admin/member de la organización) | sí |
 | `/api/platform/organizations/:id/integrations` | `api-platform-integrations.ts` | GET, POST | `requirePlatformAdmin` | funcional; duplicado → 500 | `psa` (stale) | sí |
@@ -161,6 +163,7 @@ FUNNEL-01B separa el flujo público `AnonymousDiagnosticFlow` de `DiagnosticFlow
 
 - **Diagnóstico** (`app/features/diagnostic/`, puro, sin React): `types` (dominio), `profiles` (5 perfiles y listas cerradas), `questions` (26 preguntas con propósito, dimensiones, pesos y `applies`), `answers` (selección, exclusivas, cambio de perfil y `deriveActiveAnswers`), `flow` (secciones y progreso), `routing` (DSL declarativo de reglas, DIAG-V3-03), `scoring` (7 dimensiones normalizadas y confianza), `evidence` (`DiagnosticEvidence` real, DIAG-V3-04), `result` (estado, hallazgos, prioridades con dependencias, fortalezas; trazas `explainStateClassification`/`explainContradictions`/`explainPrioritization`, DIAG-V3-05), `recommendations` (licencia por capacidad, servicios, addons, Aprende; trazas `explain*` con procedencia, DIAG-V3-05), `facts` (`ResultFacts`/`explainResult`: hechos intermedios estructurados y único mecanismo de explicación del resultado completo, DIAG-V3-05), `catalog` (referencias reales), `deep-link` (`perfil`/`objetivo`), `contracts` (versiones, IDs cerrados, `Resolution<T>` y conceptos V3; DIAG-V3-01), `mappings` (traducción explícita legacy → V3), `save-eligibility` (`canOfferSaveForLater`, condición determinista de "Guardar para después", DIAG-V3-07) e `index` (`runDiagnostic` como envoltorio de `explainResult`, `buildContactMailto`). Persistencia server-side: `server/diagnostic/session-security.server.ts` (`writeToken`), `server/diagnostic/recovery-code.server.ts` (recovery code de Save & Resume, DIAG-V3-07), `db/queries/diagnostic-sessions.server.ts` y `db/queries/diagnostic-save-resume.server.ts`. `questions.ts` es la fuente canónica del registro (`QUESTION_DEFINITIONS`) y de su aplicabilidad (`APPLICABILITY`, DIAG-V3-02); `contracts.typecheck.ts` solo contiene afirmaciones de compilación y no entra en el bundle. `routes/diagnostic.tsx` solo renderiza; `components/public-v2.tsx` genera las puertas de Home con `buildDiagnosticPath`.
 - **Autorización**: `server/auth/session.server.ts` (`requireSession`, `getActiveOrganization`, `requireOrganization`, `requireMembership`), `server/auth/authorization.server.ts` (matriz de roles, `requireOrganizationPermission` y las guardas de recurso `requireOrganizationMemberTarget`/`requireOrganizationInvitationTarget`), `server/auth/organization-http-surface.ts` (allowlist HTTP del plugin Organization), `server/platform-authorization.server.ts` (`requirePlatformAdmin`). `requireRole` y `requirePermission` existen sin uso. Frontera completa en [ARCHITECTURE.md](ARCHITECTURE.md).
+- **MiniWeb modular**: `features/miniweb/registry.ts` (registries y validación versionada), `features/miniweb/render.ts` (resolución virtual/contenido útil), `features/miniweb/public-model.ts` (DTO allowlisted y publicación), `db/schema/miniweb.ts` + `db/queries/miniweb.server.ts`, `components/miniweb/` (compositor, template actual y renderers concretos). No almacena contenido ni artefactos del editor libre.
 - **Consultas**: `db/queries/` (perfil, horarios, servicios, integraciones, organizaciones, gobierno y vistas de plataforma). Toda consulta tenant filtra por `organization_id`.
 - **UI compartida**: `components/public-v2.tsx` (tarjeta, perfil, JSON-LD, secciones visuales), `components/public-layout.tsx` (shell público, metadatos, navegación), `components/admin-shell.tsx`, `components/ui.tsx`.
 - **Resultado del Diagnóstico V3** (`components/diagnostic-result/`, DIAG-V3-09/10): `diagnostic-result` (composición, lectura rápida y método plegado), `result-hero` (hero y tres tarjetas), `presence-status` (estado general), `action-path` (línea temporal), `status-assets.ts` (iconos WebP semánticos), `focus-section` (prioridades reusadas en el detalle), `reading-sections` (fortalezas, áreas, señales cruzadas e incertidumbre hasta cuatro puntos visibles), `dimension-overview` (rejilla 4/2/1, conteos descriptivos y tarjetas plegables accesibles), `indicators` (estado, porcentaje, confianza, certeza), `disclosures` (ayuda y evidencia), `presentation.ts` (mapeo de presentación sin JSX) y `result-debug-panel` (solo la vista previa local). Consume el `DiagnosticNarrative` y el `DiagnosticOutcome`; `/diagnostico` lo renderiza desde `DiagnosticFlow` y `dev-diagnostic-result.tsx` conserva la vista previa golden local. Capa de decisión en `features/diagnostic/`: `qbv2-overall` (índice y estado general), `qbv2-recommendations`, `qbv2-solutions` y `qbv2-offerings` (catálogo comercial y `buildDiagnosticOutcome`).

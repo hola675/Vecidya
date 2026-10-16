@@ -27,14 +27,13 @@ SSO.
 
 ### Estado observado y contrato de minisitio
 
-El código existente confirma identidad/sesión, organizaciones y miembros,
-`/app`, `/app/business-profile`, perfil público `/vecindario/:slug`, horarios,
-cobertura, canales y publicación/gobernanza. La capacidad licenciada de minisitio
-enriquecido **no está implementada**. La base disponible incluye
-`business_profile`, `business_hours` y `business_profile_governance`; no
-incluye todavía ofertas públicas, FAQ, galería/portada ni configuración visual.
-`organization_service` es el catálogo/asignación de servicios Vecidya al
-cliente, nunca la oferta que vende ese negocio.
+APP-MINI-01 confirmó identidad/sesión, organizaciones y miembros, `/app`,
+`/app/business-profile`, perfil público `/vecindario/:slug`, horarios,
+cobertura, canales y publicación/gobernanza. APP-MINI-02A añadió configuración
+modular versionada y compositor compatible; aún no entrega ofertas públicas,
+FAQ, galería/portada ni las cuatro plantillas finales. `organization_service`
+es el catálogo/asignación de servicios Vecidya al cliente, nunca la oferta que
+vende ese negocio.
 
 El contrato objetivo reutiliza la URL/perfil existente como una sola página
 responsive modular: hero; presentación; ofertas del negocio; galería; horarios
@@ -55,62 +54,67 @@ implementado y validado localmente tras autorización explícita: dashboard con
 estado real, editor por secciones, preview privada inline y perfil público base
 con CTA directas seguras. No necesitó una ruta, esquema o migración nueva; el
 registro de rutas, permisos, slug canónico, SEO y publicación se preservaron.
-El cierre técnico local quedó confirmado el 2026-10-14: E2E de experiencia,
+El cierre técnico local quedó confirmado el 2026-10-15: E2E de experiencia,
 ciclo de slug y licencias; typecheck/build/diff-check; página pública HTTP 200
 con runtime activo y seis capturas responsive renovadas en
 `.playwright-mcp/app-mini-01-{dashboard,editor,public}-{desktop,mobile}.png`.
 No está desplegada.
 
-### APP-MINI-02A — contrato del núcleo modular (2026-10-14)
+### APP-MINI-02A — núcleo modular (2026-10-15)
 
-**Diseño aprobado; implementación pendiente.** Un registro versionado en código
-es la autoridad de plantillas y módulos; D1 contiene exclusivamente selección y
-configuración estructural validada, nunca JSX/HTML/CSS/JavaScript ejecutable,
-medios ni blobs. Las familias registradas son `services`, `catalog`,
-`gastronomy` y `professional`, pero solo una plantilla compatible con la página
-actual será seleccionable hasta que las otras tengan renderers implementados.
-El registro modular incluye los tipos futuros; disponibilidad define cuáles se
-pueden configurar y renderizar en cada checkpoint.
+**Implementado y probado localmente; no desplegado.** `app/features/miniweb/registry.ts`
+declara contratos versionados para las familias `services`, `catalog`,
+`gastronomy` y `professional`, y para los trece tipos previstos. Solo
+`vecidya-default` y `hero`, `about`, `contact`, `hours`, `location` tienen
+availability `available`; la UI no ofrece servicios, galería, productos,
+artículos, FAQ, equipo, certificaciones ni testimonios como funciones falsas.
+No se persiste JSX/HTML/CSS/JavaScript ni medios.
 
-La persistencia prevista conserva una fila `miniweb_site` por organización y
-filas `miniweb_module` únicamente para configuración que deba persistirse; no
-hay migración masiva. La configuración editable de filas/módulos es draft. La
-publicación guarda un snapshot acotado y versionado de **configuración** en el
-sitio, y el renderer público consume ese snapshot; inicializar configuración
-para un MiniWeb ya publicado debe partir de su default virtual para mantener la
-salida existente hasta que el cliente publique explícitamente. El snapshot no
-duplica `business_profile`, `business_hours` ni `business_profile_governance`:
-los renderers permiten únicamente esos datos vigentes a través de DTOs
-allowlisted. Sin fila se resuelve un default virtual compatible, con orden
-determinista; perfiles borrador/suspendidos permanecen excluidos por las guardas
-públicas existentes.
+`miniweb_site` es único por organización y conserva plantilla/layout draft junto
+con `published_configuration_json`; `miniweb_module` conserva exclusivamente
+filas draft (estado, orden, variante y settings nulos/no admitidos en 02A). No
+hay migración masiva ni se crea fila al leer: se crea al guardar o publicar
+configuración. La lectura de un perfil legacy sin fila resuelve la configuración
+virtual compatible, derivada de `business_profile` y `business_hours`, con orden
+determinista. Para un perfil ya publicado, el primer guardado inicializa el
+snapshot público desde ese default, por lo que editar el draft no cambia el
+sitio visible. Publicar es una operación separada y explícita.
 
-La primera plantilla conserva la URL canónica `/vecindario/:slug`; su compositor
-renderiza módulos registrados por orden y omite aquellos desactivados o sin
-contenido útil. En 02A solo se activan los módulos derivables de datos actuales
-(`hero`, `about`, `contact`, `hours` y `location/context` cuando haya evidencia
-suficiente). `services` espera a `business_offering` en 02B; galería, productos,
-artículos y FAQ no aparecen como opciones activas. `organization_service` sigue
-reservado a servicios Vecidya contratados. Para 02E se deben poder proyectar
-categoría, especialidades/tags, ubicación/área/modalidad, ofertas públicas y
-módulos activos; categoría, oferta comercial del negocio y servicio Vecidya son
-conceptos distintos.
+El compositor público conserva `/vecindario/:slug`, usa un DTO allowlisted y
+solo transmite datos de módulos activos; omite módulos sin contenido útil y
+mantiene los guards de publicado/no suspendido, slug y canonical/SEO. Los
+renderers no copian datos de `business_profile`, `business_hours` ni
+`business_profile_governance`. El módulo `location` usa contexto existente;
+`organization_service` sigue reservado a servicios Vecidya contratados.
+Un snapshot publicado corrupto o de versión inválida falla cerrado a `hero`;
+solo el estado explícito sin snapshot usa el default virtual legacy.
+Categoría, oferta comercial (`business_offering`, requerida para 02B) y servicio
+Vecidya son conceptos distintos. Para 02E se deben poder proyectar categoría,
+especialidades/tags, ubicación/área/modalidad, ofertas públicas y módulos
+activos, sin implementar aún el buscador.
 
-Los cambios de orden/activación/configuración guardados quedan en draft y no
-afectan el snapshot público hasta una acción explícita de publicar. Las
-escrituras revalidan sesión, organización activa, membresía, permiso y tenant;
-`template_key`, `module_type`, disponibilidad, variantes y settings se validan
-contra los registries y schemas server-side. Member conserva lectura solamente;
-owner/admin usan los permisos de perfil vigentes. No se introduce CRM, editor
-libre ni dependencia de GHL.
+`/app/miniweb` es una base separada del formulario de información: template
+actual, secciones disponibles, activación/orden, preview privada del draft y
+publicación de configuración. Las escrituras revalidan sesión, organización
+activa, membership, permiso y tenant; registry valida template, módulo,
+disponibilidad, orden, variante y settings. Owner/admin escriben/publican según
+permisos actuales; member solo lee. No se introduce CRM, editor libre, HTML/CSS
+del cliente ni dependencia de GHL.
+
+La migración `0017_miniweb-core.sql` contiene las dos tablas. El ledger local
+también tiene `0016` de otro checkpoint en espera; 0017 se validó ejecutando su
+SQL en D1 local para E2E, sin ejecutar la cadena compartida ni tocar D1 remota.
+Las tablas temporales se retiraron tras las pruebas; el ledger local aún reporta
+0016/0017 pendientes, por lo que `migrations apply` debe reconciliar la cadena
+antes de otro uso de D1 local.
 
 **Límite de publicación que 02B debe resolver:** el snapshot de 02A separa la
 configuración de módulos, no versiona el contenido de `business_profile` ni los
 futuros contenidos estructurados. El comportamiento de edición/publicación de
-esos datos sigue siendo el existente; antes de añadir contenido en 02B se debe
+esos datos sigue siendo el existente; antes de añadir ofertas/FAQ en 02B se debe
 decidir si el MiniWeb necesita un snapshot público completo que permita editar
 sin exposición parcial. No presentar el snapshot estructural de 02A como una
-solución completa de publicación de contenido ni crear un historial de revisiones
+solución completa de publicación de contenido ni crear historial de revisiones
 sin necesidad demostrada.
 
 APP-MINI-03 debe exponer estados/derechos reales sin pagos automáticos.

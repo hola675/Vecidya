@@ -14,8 +14,8 @@ import { MiniWebRenderer } from "../components/miniweb/miniweb-renderer";
 import type { PublicBusinessProfile } from "../components/public-business-profile-view";
 import { Button, Card } from "../components/ui";
 import { ClientAreaShell } from "../components/client-area-shell";
-import { MINIWEB_MODULE_REGISTRY, MINIWEB_TEMPLATE_REGISTRY, SUPPORTED_MINIWEB_MODULE_TYPES, type MiniWebConfiguration, type MiniWebModuleType } from "../features/miniweb/registry";
-import { toMiniWebPublicProfile } from "../features/miniweb/public-model";
+import { MINIWEB_MODULE_REGISTRY, MINIWEB_TEMPLATE_REGISTRY, type MiniWebConfiguration, type MiniWebModuleType } from "../features/miniweb/registry";
+import { getMiniWebPublicationState, toMiniWebPublicProfile } from "../features/miniweb/public-model";
 
 import type { Route } from "./+types/miniweb-editor";
 
@@ -42,6 +42,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const state = await getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
 
   return {
+    ...shell,
     activeOrganization: { id: organization.id, name: organization.name },
     canEdit: membership.role === "owner" || membership.role === "admin",
     canPublish: membership.role === "owner" || membership.role === "admin",
@@ -50,9 +51,8 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     publishedConfiguration: state.publishedConfiguration,
     profile: toMiniWebPublicProfile(profile, governance?.verificationStatus ?? "unverified"),
     hours: hours.map(({ dayOfWeek, isClosed, opensAt, closesAt }) => ({ dayOfWeek, isClosed, opensAt, closesAt })),
-    profileStatus: profile?.status ?? "draft",
+    profileStatus: getMiniWebPublicationState(profile?.status, governance?.platformStatus),
     template: MINIWEB_TEMPLATE_REGISTRY[state.draftConfiguration.templateKey],
-    ...shell,
   };
 }
 
@@ -165,13 +165,11 @@ export default function MiniWebEditorPage() {
               </div>
               <p className="miniweb-editor__note">Cada sección utiliza datos existentes. Si no tiene contenido útil, no se muestra al público.</p>
               <ol className="miniweb-module-list">
-                {SUPPORTED_MINIWEB_MODULE_TYPES.map((type) => {
+                {orderedModules.map((module, position) => {
+                  const type = module.type;
                   const definition = MINIWEB_MODULE_REGISTRY[type];
-                  const module = configuration.modules.find((item) => item.type === type);
-                  if (!module) return null;
-                  const position = orderedModules.findIndex((item) => item.type === type);
                   return (
-                    <li className="miniweb-module-list__item" key={type}>
+                    <li className="miniweb-module-list__item" data-module-type={type} key={type}>
                       <div className="miniweb-module-list__copy">
                         <div className="miniweb-module-list__title">
                           <strong>{definition.label}</strong>
@@ -220,7 +218,7 @@ export default function MiniWebEditorPage() {
               </div>
             ) : <div className="miniweb-editor__empty-preview">Completa primero la información de tu negocio para generar una vista previa.</div> : null}
             <p className="miniweb-editor__publication-state">
-              {data.profileStatus === "published" ? "El perfil del negocio está publicado." : "El perfil del negocio todavía es un borrador."} {data.hasPersistedConfiguration ? "La configuración tiene cambios guardados." : "La configuración usa los valores iniciales."} {isPublished ? "El snapshot público coincide con la configuración guardada." : "Hay cambios guardados que todavía no se han publicado."}
+              {data.profileStatus === "suspended" ? "El perfil del negocio está suspendido y no aparece en público." : data.profileStatus === "published" ? "El perfil del negocio está publicado." : "El perfil del negocio todavía es un borrador."} {data.hasPersistedConfiguration ? "La configuración tiene cambios guardados." : "La configuración usa los valores iniciales."} {isPublished ? "La configuración efectiva coincide con el borrador." : "Hay cambios guardados que todavía no se han publicado."}
             </p>
           </Card>
         </div>

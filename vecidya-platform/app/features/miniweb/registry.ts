@@ -334,6 +334,24 @@ export function buildVirtualMiniWebConfiguration(profile: MiniWebProfileSource, 
   });
 }
 
+export function buildSafeMiniWebConfiguration(): MiniWebConfiguration {
+  const template = MINIWEB_TEMPLATE_REGISTRY[DEFAULT_MINIWEB_TEMPLATE_KEY];
+  const hero = MINIWEB_MODULE_REGISTRY.hero;
+  return validateMiniWebDraft({
+    templateKey: template.key,
+    templateVersion: template.version,
+    layoutVariant: template.layoutVariants[0],
+    modules: [{
+      type: "hero",
+      moduleVersion: hero.version,
+      enabled: true,
+      sortOrder: 0,
+      layoutVariant: hero.layoutVariants[0],
+      settings: null,
+    }],
+  });
+}
+
 export function sortMiniWebModules<T extends { type: string; sortOrder: number }>(modules: readonly T[]): T[] {
   return [...modules].sort((left, right) => left.sortOrder - right.sortOrder || left.type.localeCompare(right.type));
 }

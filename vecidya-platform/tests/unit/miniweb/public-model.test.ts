@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { restrictMiniWebPublicModel, toMiniWebPublicProfile } from "../../../app/features/miniweb/public-model.ts";
+import { getMiniWebPublicationState, restrictMiniWebPublicModel, toMiniWebPublicProfile } from "../../../app/features/miniweb/public-model.ts";
 
 test("el modelo MiniWeb público expone solo campos allowlisted de negocio", () => {
   const databaseRow = {
@@ -74,4 +74,10 @@ test("el payload público excluye contenido de módulos desactivados", () => {
   assert.equal(publicModel.profile.city, null);
   assert.equal(publicModel.profile.serviceArea, null);
   assert.deepEqual(publicModel.hours, []);
+});
+
+test("el estado editorial no llama publicado a un perfil suspendido", () => {
+  assert.equal(getMiniWebPublicationState("published", "suspended"), "suspended");
+  assert.equal(getMiniWebPublicationState("published", "active"), "published");
+  assert.equal(getMiniWebPublicationState("draft", "active"), "draft");
 });

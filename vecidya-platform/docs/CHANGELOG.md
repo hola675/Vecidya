@@ -1,11 +1,18 @@
 # Changelog
 
-## 2026-10-14 — APP-MINI-01 (local, pendiente de aceptación visual)
+## 2026-10-15 — APP-MINI-02A (local, no desplegado)
+
+- Registro versionado de familias `services`, `catalog`, `gastronomy` y `professional`, con solo la plantilla compatible y módulos `hero`, `about`, `contact`, `hours`, `location` disponibles.
+- Añadidos `miniweb_site`/`miniweb_module` y migración `0017`; default virtual legacy sin backfill; draft y snapshot publicado de configuración separados.
+- `/app/miniweb` ofrece los módulos operativos, activación, orden, preview privada y publicación explícita; `/vecindario/:slug` compone DTOs allowlisted, omite módulos apagados/sin contenido y falla cerrado si el snapshot público es inválido.
+- E2E MiniWeb `33/33`, perfil, slug y licencias; unitarias `1557/1557`, typecheck y build PASS. Schema local usado para E2E y revertido; ledger local mantiene 0016/0017 pendientes. Sin D1 remota ni deploy.
+
+## 2026-10-15 — APP-MINI-01C (local, cierre técnico)
 
 - Dashboard `/app` destaca progreso real del perfil, estado y siguiente acción; la navegación existente identifica el editor como «Mi negocio».
 - Editor `/app/business-profile` organiza campos por identidad, presentación, ubicación/contacto y modalidad/cobertura; incorpora preview inline privado y en vivo de campos y horarios sin guardar/publicar ni permitir abrir enlaces.
 - `/vecindario/:slug` presenta hero con contacto principal del negocio, descripción opcional, detalles de atención, horarios existentes y navegación al directorio. Enlaces de teléfono/web/email/redes se limitan a destinos seguros; se preservan publicación, slug canónico, SEO y gobernanza.
-- `/licencias` especifica que Cuadra no incluye seguimiento ni automatizaciones CRM. Sin nuevas rutas, D1, migraciones, campos, GHL, pagos, deploy, commit o push. E2E de perfil/slug/licencias, typecheck y build PASS; queda pendiente aceptación visual.
+- `/licencias` especifica que Cuadra no incluye seguimiento ni automatizaciones CRM. Capturas desktop/mobile de dashboard/editor/público repetidas; página pública HTTP 200 con runtime activo. E2E perfil/slug/licencias, typecheck/build/diff-check PASS. Sin deploy.
 
 ## 2026-10-14 — DIAG-V3-FUNNEL-01C.2 `IDENTIFICATION_HARDENING_PARTIAL`
 

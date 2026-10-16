@@ -1,11 +1,13 @@
 # Pruebas
 
-## APP-MINI-01 — experiencia cliente y minisitio base (2026-10-14)
+## APP-MINI-01C + APP-MINI-02A — baseline y core modular (2026-10-15)
 
-**Runner:** Worker local (`pnpm run dev`); no usa `--remote`, pagos o fixtures publicados. Si el Chromium de Playwright no está instalado y Chrome está disponible, define `PLAYWRIGHT_CHROMIUM_EXECUTABLE` a la ruta local de Chrome.
+**Runner:** Worker local (`pnpm run dev`) + D1 local; sin `--remote`, pagos ni fixtures publicados. Si Chromium no está instalado y Chrome está disponible, define `PLAYWRIGHT_CHROMIUM_EXECUTABLE` a la ruta local de Chrome. Las capturas E2E usan datos sintéticos de prueba, no contenido de producción.
 
 ```powershell
 $env:BASE_URL='http://localhost:5173'
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE='C:\Program Files\Google\Chrome\Application\chrome.exe'
+pnpm exec node tests/e2e/miniweb-core-check.mjs
 pnpm exec node tests/e2e/business-profile-experience-check.mjs
 pnpm exec node tests/e2e/business-profile-slug-lifecycle-check.mjs
 pnpm exec node tests/e2e/licenses-experience-check.mjs
@@ -15,7 +17,13 @@ pnpm run build
 git diff --check
 ```
 
-**Evidencia local de este checkpoint:** los tres E2E, `test:unit` (1536/1536), typecheck y build pasaron. `business-profile-experience-check.mjs` comprueba publicación incompleta/rechazada y completa, canales directos, cobertura/modalidad, CTA del hero, preview privada en vivo para texto/horarios, ausencia de enlaces activos en preview, progreso del dashboard, ausencia de acceso anónimo y aislamiento A/B; también verifica overflow a 1366/768/390/360. `business-profile-slug-lifecycle-check.mjs` cubre generación, override, estabilidad tras guardar/publicar/renombrar, colisión y longitud. `licenses-experience-check.mjs` cubre comparación CRM sin Cuadra y responsive. QA visual capturó minisitio, editor y dashboard en escritorio/móvil; capturas locales en `.playwright-mcp/`. Sin cambios de migración ni rutas.
+**Resultados observados:** MiniWeb E2E `33/33 PASS` (tenant A/B, owner/admin/member, entradas inválidas, draft vs snapshot publicado, orden, módulos disabled/sin contenido, legacy, draft/suspendido, snapshot inválido fail-closed, slug/SEO y UI responsive). Perfil, ciclo de slug y licencias: PASS. Unitarias `1557/1557`, typecheck, build y diff-check: PASS. Overflow editor y perfil: 1366/768/390/360. El E2E MiniWeb elimina sus usuarios/organizaciones/perfiles sintéticos al finalizar. Capturas APP-MINI-01 en `.playwright-mcp/app-mini-01-{dashboard,editor,public}-{desktop,mobile}.png`; 02A en `.playwright-mcp/app-mini-02a-editor-{1366,768,390,360}.png` y `app-mini-02a-public-{1366,390}.png`.
+
+El ledger local muestra 0016 y 0017 pendientes. Para E2E se ejecutó temporalmente solo el SQL generado `0017_miniweb-core.sql`, sin correr la migración previa de otro checkpoint; al cerrar, las dos tablas se retiraron y el D1 local quedó restaurado. Ninguna prueba remota ni deploy.
+
+`organization-authorization-check.mjs` se intentó una vez con timeout de 600 s y no emitió resultado; el E2E MiniWeb específico sí pasó sus matrices de tenant y roles. No repetir la suite general sin diagnosticar el timeout.
+
+Después del último E2E MiniWeb aprobado se añadió limpieza de identidades/organizaciones creadas por el propio script. La prueba no se repitió tras ese ajuste de teardown por el ledger D1 compartido; se verificaron sintaxis y diff-check, y las fixtures anteriores se limpiaron explícitamente en D1 local.
 
 ## DIAG-V3-FUNNEL-01C.2 — cierre adversarial y privacidad local (2026-10-14)
 

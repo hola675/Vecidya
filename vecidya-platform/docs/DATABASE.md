@@ -1,6 +1,15 @@
 # Base de datos
 
-Última reconciliación: **2026-10-14 (DIAG-V3-FUNNEL-01C.2; sin schema ni migración nuevos).** `0014`–`0015` siguen solo en D1 local. `0011`–`0013` son historial local retirado del runtime público y permanecen en journal. `vecidya-prod` no recibió estas migraciones y, conforme al último corte remoto documentado, sigue en `0010`.
+Última reconciliación: **2026-10-15 (APP-MINI-02A).** Se añadieron `miniweb_site`/`miniweb_module` y la migración `0017`. El ledger D1 local tiene `0000`–`0015`; `0016` (otro checkpoint) y `0017` están pendientes. El SQL 0017 se ejecutó temporalmente en D1 local para E2E y se retiró al terminar; no se ejecutó el ledger compartido ni se tocó D1 remota. `0011`–`0013` son historial local retirado del runtime público y permanecen en journal. `vecidya-prod` no recibió estas migraciones y, conforme al último corte remoto documentado, sigue en `0010`.
+
+## APP-MINI-02A — configuración modular
+
+`db/schema/miniweb.ts` añade dos tablas, sin migración masiva:
+
+- `miniweb_site`: una fila por `organization_id` (índice único), `template_key`/versión y `layout_variant` draft, snapshot de configuración publicada versionado y timestamps. La fila se crea al guardar/publicar configuración, nunca por una lectura virtual.
+- `miniweb_module`: filas draft por sitio/tipo (índice único `(miniweb_site_id, module_type)`), versión, `enabled`, `sort_order`, variante y `settings_json`. En 02A `settings_json` se valida como `null`; no se acepta contenido ejecutable ni JSON arbitrario.
+
+Ambas relaciones usan cascade al borrar la organización/sitio; índice por sitio y orden. El snapshot publicado contiene solo configuración estructural, no duplica perfil, horarios ni gobernanza. Los módulos y las plantillas se validan contra registries versionados en código; la ausencia de snapshot/fila resuelve el default virtual compatible con perfiles legacy, pero un snapshot no nulo inválido falla cerrado a `hero`. La migración generada es `0017_miniweb-core.sql`; el ledger local sigue pendiente por la migración anterior `0016` ajena a este checkpoint. Ninguna D1 remota se modificó.
 
 ## FUNNEL-01C — datos de informe identificado (local)
 
@@ -107,6 +116,8 @@ en «Licenciamiento multi-negocio» más abajo.
 | `business_profile` | perfil comercial (borrador/publicado) | organization (cascade) | **único `organization_id`**; **único `slug` (global)** | `organization_id`, 1:1 | `0003`; `0007` (whatsapp, redes); `0008` (`service_mode`, `service_area`) |
 | `business_hours` | horario por día (1–7 ISO), `is_closed` | organization (cascade) | único `(organization_id, day_of_week)` | `organization_id` | `0008` |
 | `business_profile_governance` | verificación y estado de plataforma; solo escribe `platform_admin` | business_profile (cascade); `verified_by`/`suspended_by` → user (**sin acción**) | único `business_profile_id` | indirecta vía perfil; propiedad de plataforma | `0009` |
+| `miniweb_site` | configuración draft de plantilla/layout y snapshot publicado de configuración estructural | organization (cascade) | único `organization_id` | `organization_id`, 1:1 | `0017` (ledger pendiente) |
+| `miniweb_module` | módulos draft activables/ordenables; settings limitados y validados | miniweb_site (cascade) | único `(miniweb_site_id, module_type)`; índice por sitio/orden/tipo | vía `miniweb_site.organization_id` | `0017` (ledger pendiente) |
 | `platform_audit_log` | registro de acciones de gobierno (actor, acción, entidad, valor previo/nuevo) | actor → user (**sin acción**), organization (**sin acción**) | índices `(entity_type, entity_id)`, `organization_id`, `created_at` | `organization_id` (desnormalizado) | `0009` |
 | `service_catalog` | catálogo de servicios Vecidya (`code`, `name`, `status`) | — | único `code` | global | `0004` (con 3 filas sembradas) |
 | `organization_service` | asignación de servicio a organización (`pending/active/suspended/ended`) | organization (cascade), service (**sin acción**) | único `(organization_id, service_id)` | `organization_id` | `0004` |
@@ -210,8 +221,9 @@ grandfathering de precio. Ver [TESTING.md](TESTING.md).
 | 0013 | `0013_diagnostic-analytics-foundation.sql` | Analítica del Diagnóstico (DIAG-V3-08) | `diagnostic_event`; 4 columnas nuevas en `diagnostic_session` (`save_count`, `resume_count`, `last_saved_at`, `last_resumed_at`) |
 | 0014 | `0014_diagnostic-identification.sql` | Solicitud identificada/informe (FUNNEL-01C) | 6 tablas con cascade y opt-ins separados |
 | 0015 | `0015_diagnostic-request-fingerprint.sql` | Idempotencia ligada al contenido (FUNNEL-01C) | `identified_diagnostic_request.request_fingerprint_hash` |
+| 0017 | `0017_miniweb-core.sql` | APP-MINI-02A | `miniweb_site`, `miniweb_module` |
 
-Estado de aplicación: **local `0000`–`0015`** (0014/0015 aplicadas `RAN` el 2026-10-12); **remoto (`vecidya-prod`) `0000`–`0010`** (0010 aplicada en G7; `0011`–`0015` no aplicadas; no se ejecutó `--remote`). Esquema y semillas de `0010` verificados contra el SQL; `vecidya-staging` no se tocó.
+Estado de aplicación: ledger **local `0000`–`0015`** (0014/0015 `RAN` el 2026-10-12); `0016` y `0017` permanecen pendientes en el ledger. El SQL `0017` se ejecutó directamente en la D1 local solo para correr E2E y sus tablas se retiraron al cerrar la validación; no se marcó como migración aplicada. **Remoto (`vecidya-prod`) `0000`–`0010`** (0010 aplicada en G7; `0011`–`0017` no aplicadas; no se ejecutó `--remote`). Esquema y semillas de `0010` verificados contra el SQL; `vecidya-staging` no se tocó.
 
 ## Persistencia del Diagnóstico (DIAG-V3-06)
 

@@ -6,6 +6,7 @@ import {
   MINIWEB_MODULE_REGISTRY,
   MINIWEB_TEMPLATE_REGISTRY,
   buildVirtualMiniWebConfiguration,
+  buildSafeMiniWebConfiguration,
   parseMiniWebConfigurationJson,
   serializeMiniWebConfiguration,
   sortMiniWebModules,
@@ -143,4 +144,12 @@ test("el snapshot publicado solo serializa contratos válidos y falla cerrado si
   });
   assert.equal(parseMiniWebConfigurationJson('{"templateKey":"arbitrary","modules":[]}'), null);
   assert.equal(parseMiniWebConfigurationJson("not-json"), null);
+});
+
+test("el fallback de un snapshot publicado inválido conserva solo hero requerido", () => {
+  const fallback = buildSafeMiniWebConfiguration();
+
+  assert.equal(fallback.templateKey, DEFAULT_MINIWEB_TEMPLATE_KEY);
+  assert.deepEqual(fallback.modules.map((module) => module.type), ["hero"]);
+  assert.equal(fallback.modules[0]?.enabled, true);
 });

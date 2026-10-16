@@ -7,6 +7,13 @@ export type MiniWebPublicHours = {
   closesAt: string | null;
 };
 
+export type MiniWebPublicationState = "draft" | "published" | "suspended";
+
+export function getMiniWebPublicationState(profileStatus: string | null | undefined, platformStatus: string | null | undefined): MiniWebPublicationState {
+  if (profileStatus === "published" && platformStatus === "suspended") return "suspended";
+  return profileStatus === "published" ? "published" : "draft";
+}
+
 export type MiniWebPublicProfile = MiniWebProfileSource & {
   slug: string;
   logoUrl: string | null;

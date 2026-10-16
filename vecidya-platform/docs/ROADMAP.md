@@ -1,17 +1,21 @@
 # Roadmap
 
-## APP-CLIENTE / MINIWEB-CUADRA-01 — siguiente línea de producto (2026-10-12)
+## APP-CLIENTE / MINIWEB-CUADRA-01 — siguiente línea de producto (2026-10-15)
 
-**APP-MINI-00 — contrato documental reconciliado; sin código.** Cuadra USD 39/mes no incluye ni requiere GHL; Barrio USD 59/mes inicia CRM GHL y Ciudad USD 89/mes amplía el alcance. Vecidya conserva autoridad de cuenta, organización, licencia, perfil/minisitio y Vecindario; GHL conserva CRM y operación comercial desde Barrio. El perfil público actual funciona con datos básicos, pero los bloques enriquecidos del minisitio no están implementados.
+Cuadra USD 39/mes no incluye ni requiere GHL; Barrio USD 59/mes inicia CRM GHL y Ciudad USD 89/mes amplía el alcance. Vecidya conserva autoridad de cuenta, organización, licencia, perfil/MiniWeb y Vecindario; GHL conserva CRM y operación comercial desde Barrio.
 
-| Checkpoint | Alcance | Gate |
+| Checkpoint | Alcance | Estado/gate |
 | --- | --- | --- |
-| **APP-MINI-01** | Modernizar dashboard/editor y perfil público con datos existentes; corregir copy CRM de Cuadra en `/licencias`; sin D1 nueva | Implementado y validado localmente; pendiente aceptación visual del usuario. No iniciar APP-MINI-02 automáticamente |
-| **APP-MINI-02** | Servicios públicos del negocio, FAQ, orden/tema; galería/portada solo después de aprobar modelo de medios, R2 y subida segura | Aprobación del contrato de datos, permisos y almacenamiento antes de schema/migración |
-| **APP-MINI-03** | Presentar licencias, capacidades y estados reales en Mi Vecidya | Autorización separada; no checkout ni cobro automático |
-| **GHL-BARRIO-01** | Evaluar conexión/entrada operativa GHL solo para Barrio/Ciudad | Cuenta, permisos/scopes, tenant mapping y autorización reales; fase independiente |
+| **APP-MINI-01C** | Cerrar baseline: E2E, HTTP público y capturas dashboard/editor/página en desktop/mobile | Cerrado técnicamente en local; no desplegado |
+| **APP-MINI-02A** | Core modular: registries versionados, config draft/published, default virtual legacy, compositor y controles básicos | Código y E2E local implementados. Migration ledger local 0016/0017 sigue pendiente; no D1 remota ni deploy. No crear filas legacy en masa |
+| **APP-MINI-02B** | Crear `business_offering` público independiente; servicios/productos del negocio y FAQ | Siguiente checkpoint; decidir snapshot/publicación de contenido completo antes de ampliar contenido editable |
+| **APP-MINI-02C** | R2, referencias/metadatos, portada/galería e imagen/video limitado | Requiere modelo de medios, permisos y subida segura; blobs fuera de D1 |
+| **APP-MINI-02D** | Editor MiniWeb completo: Diseño / Secciones / Contenido / Preview / Publicar | Después de 02B/02C; no convertir `business-profile.tsx` en formulario monolítico |
+| **APP-MINI-02E** | Vecindario como índice/buscador y fichas basadas en MiniWeb | Categoría, especialidad/tags, ubicación, modalidad, ofertas y módulos; sin duplicar fuente comercial |
+| **APP-MINI-03** | Presentar licencias, derechos y estados reales | Autorización separada; no checkout ni cobro automático |
+| **GHL-BARRIO-01** | Evaluar conexión/entrada GHL solo para Barrio/Ciudad | Cuenta, permisos/scopes, tenant mapping y autorización reales; fase independiente |
 
-Todos los bloques deben conservar perfiles publicados, gobernanza, autorización tenant-scoped y separar servicios que ofrece el negocio de servicios Vecidya contratados. No tocar diagnóstico dentro de esta línea. No publicar, desplegar ni modificar D1 remota sin autorización explícita.
+Todos los bloques conservan una organización/negocio/MiniWeb, URL pública `/vecindario/:slug`, gobernanza, aislamiento tenant-scoped y frontera entre oferta del negocio y servicio Vecidya contratado. No crear CRM en Vecidya ni editor Wix/HTML/CSS libre. No tocar Diagnóstico o Aprende en esta línea. No publicar, desplegar ni modificar D1 remota sin autorización explícita. APP-MINI-02B no se inicia automáticamente.
 
 ## FUNNEL-01C.2 — estado del checkpoint autorizado (2026-10-14)
 
