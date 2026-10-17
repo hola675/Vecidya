@@ -38,6 +38,10 @@ async function runViewport(width, height) {
   assert(await page.getByRole("heading", { name: "Empieza por la pregunta que tienes hoy." }).isVisible(), `${label} no mostró temas.`);
   assert(await page.getByRole("heading", { name: "Empieza por una pregunta concreta." }).isVisible(), `${label} no mostró las guías.`);
   assert(await page.getByRole("heading", { name: /¿Qué es un CRM y por qué un negocio pequeño puede necesitarlo\?/i }).isVisible(), `${label} no mostró el artículo CRM.`);
+  const domainGuideLink = page.getByRole("link", { name: /Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos/i });
+  assert(await domainGuideLink.isVisible(), `${label} no muestra la guía de dominio en el catálogo.`);
+  assert((await domainGuideLink.getAttribute("href")) === "/aprende/dominio-hosting-sitio-web-como-funcionan", `${label} el artículo de dominio no enlaza su ruta estable.`);
+  assert(await page.getByRole("heading", { name: "Tecnología explicada", exact: true }).isVisible(), `${label} la categoría Tecnología explicada sigue vacía.`);
   assert(await page.getByRole("link", { name: "Hacer diagnóstico" }).first().getAttribute("href") === "/diagnostico", `${label} CTA de Diagnóstico incorrecto.`);
   assert(await page.getByRole("link", { name: "Hacer una pregunta" }).getAttribute("href") === "/contacto", `${label} CTA de Contacto incorrecto.`);
   const articleLink = page.getByRole("link", { name: /Leer guía/i }).first();
@@ -163,6 +167,45 @@ async function runViewport(width, height) {
   assert(await page.getByText(/figurar en el catálogo no significa estar activado/i).isVisible(), `${label} la FAQ confunde catálogo y activación.`);
   await assertNoOverflow(page, `${label} artículo Automatización`);
 
+  const domainSlug = "dominio-hosting-sitio-web-como-funcionan";
+  await page.goto(new URL(`/aprende/${domainSlug}`, baseUrl).toString(), { waitUntil: "domcontentloaded" });
+  const domainTitle = "Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos";
+  assert((await page.locator("h1").textContent())?.trim() === domainTitle, `${label} no cargó el artículo de dominio esperado.`);
+  assert((await page.title()).startsWith(domainTitle), `${label} el título de documento del artículo de dominio es incorrecto.`);
+  assert(await page.locator('link[rel="canonical"]').getAttribute("href") === `https://vecidya.com/aprende/${domainSlug}`, `${label} canonical del artículo de dominio incorrecta.`);
+  assert(await page.locator('meta[name="description"]').getAttribute("content") === "Un dominio es el nombre que una persona escribe; el hosting mantiene disponible el sitio, y el DNS ayuda a encontrar el servidor. Son piezas distintas aunque un proveedor las ofrezca juntas.", `${label} description individual del artículo de dominio incorrecta.`);
+  assert((await page.locator('meta[property="og:title"]').getAttribute("content"))?.startsWith(domainTitle), `${label} Open Graph no refleja el artículo de dominio.`);
+  assert(await page.locator('meta[property="og:type"]').getAttribute("content") === "article", `${label} tipo Open Graph del artículo de dominio incorrecto.`);
+  assert(await page.locator('meta[name="robots"]').getAttribute("content") === "index, follow", `${label} robots individual del artículo de dominio incorrecto.`);
+  assert(await page.locator('meta[property="article:section"]').getAttribute("content") === "Tecnología explicada", `${label} metadata no refleja la categoría del artículo de dominio.`);
+  assert(await page.getByRole("heading", { name: "Del nombre que escribes a la página que ves", exact: true }).isVisible(), `${label} falta la explicación del recorrido DNS.`);
+  assert(await page.getByRole("heading", { name: "HTTPS y el certificado TLS", exact: true }).isVisible(), `${label} falta la explicación de HTTPS y TLS.`);
+  assert(await page.locator(".learn-block--definitions dl").count() > 0, `${label} faltan definiciones semánticas del dominio y hosting.`);
+  assert(await page.locator(".learn-block--steps ol").count() > 0, `${label} falta el recorrido práctico del ejemplo.`);
+  assert(await page.locator(".learn-block--faq details").count() >= 6, `${label} faltan preguntas frecuentes sobre dominio y alojamiento.`);
+  const domainImage = page.locator(".learn-article-image");
+  assert((await domainImage.getAttribute("alt"))?.match(/persona.*navegador.*DNS.*servidor.*página/i), `${label} el diagrama no describe el recorrido accesiblemente.`);
+  assert(await domainImage.evaluate((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0), `${label} no cargó el SVG de dominio y DNS.`);
+  const diagramResponse = await page.request.get(new URL("/assets/learn/diagram-domain-dns-hosting.svg", baseUrl).toString());
+  assert(diagramResponse.ok(), `${label} el recurso SVG no responde.`);
+  const diagramSvg = await diagramResponse.text();
+  assert(diagramSvg.includes('viewBox="0 0 960 384"'), `${label} el diagrama perdió su lienzo panorámico legible.`);
+  const svgFontSizes = Array.from(diagramSvg.matchAll(/font-size="(\d+)"/g), (match) => Number(match[1]));
+  assert(svgFontSizes.length > 0 && Math.min(...svgFontSizes) >= 36, `${label} el diagrama volvió a usar etiquetas demasiado pequeñas.`);
+  for (const sourceName of ["ICANN", "RFC 1034", "RFC 1035", "Transport Layer Security"]) {
+    assert(await page.getByRole("link", { name: new RegExp(sourceName, "i") }).count() > 0, `${label} falta el enlace de fuente ${sourceName}.`);
+  }
+  assert(await page.locator(".learn-block--sources a").count() === 8, `${label} el artículo no expone todas sus fuentes primarias.`);
+  const relatedPresence = page.getByRole("link", { name: /Antes de hacer publicidad, organiza tu presencia digital/i });
+  assert(await relatedPresence.isVisible(), `${label} falta la lectura interna relacionada sobre presencia digital.`);
+  const sitemap = await page.request.get(new URL("/sitemap.xml", baseUrl).toString());
+  assert(sitemap.ok() && (await sitemap.text()).includes(`/aprende/${domainSlug}`), `${label} el sitemap no incluye el nuevo artículo.`);
+  const domainTocLinks = page.locator(".learn-article-toc a");
+  for (const href of await domainTocLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href")))) {
+    assert(href?.startsWith("#section-") && await page.locator(href).count() === 1, `${label} índice apunta a una sección inexistente en el artículo de dominio: ${href}`);
+  }
+  await assertNoOverflow(page, `${label} artículo de dominio y hosting`);
+
   const presenceSlug = "antes-de-hacer-publicidad-organiza-tu-presencia-digital";
   await page.goto(new URL(`/aprende/${presenceSlug}`, baseUrl).toString(), { waitUntil: "domcontentloaded" });
   assert((await page.locator("h1").textContent())?.trim() === "Antes de hacer publicidad, organiza tu presencia digital", `${label} cambió el título de Presencia Digital.`);
@@ -225,4 +268,4 @@ for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]])
   await runViewport(width, height);
 }
 
-console.log("PASS: Aprende verificó categorías, artículos, autoría, CTAs, metadata, keyboard focus y responsive 1366/768/390/360.");
+console.log("PASS: Aprende verificó cinco guías, categorías, autoría, CTAs, metadata, sitemap, keyboard focus y responsive 1366/768/390/360.");

@@ -72,7 +72,12 @@ function renderLearnBlock(block: LearnBlock, key: string) {
 
 export default function LearnArticle({ loaderData }: Route.ComponentProps) {
   const { article } = loaderData;
-  const related = learnArticles.filter((candidate) => candidate.slug !== article.slug).slice(0, 2);
+  const related = article.relatedSlugs
+    ? article.relatedSlugs.flatMap((slug) => {
+      const candidate = getLearnArticle(slug);
+      return candidate && candidate.slug !== article.slug ? [candidate] : [];
+    }).slice(0, 2)
+    : learnArticles.filter((candidate) => candidate.slug !== article.slug).slice(0, 2);
 
   return (
     <PublicLayout>

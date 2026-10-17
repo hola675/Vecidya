@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-17 — VEC-APRENDE-06A Tecnología explicada (local, no publicado)
+
+- Se llena la categoría «Tecnología explicada» con una guía sobre dominio, registración, hosting, sitio, DNS, HTTPS/TLS, correo, cambios de proveedor, control administrativo, renovaciones y costos variables; incluye ejemplo hipotético, checklist, FAQ, resumen y fuentes primarias ICANN/MDN/IETF consultadas el 2026-10-17.
+- Añadido un SVG propio con navegador, consulta DNS condicional/caché, retorno de la dirección, solicitud HTTPS y página; el alt text y la explicación contigua describen el flujo. La inspección 360 px y desktop no muestra etiquetas diminutas ni recorte.
+- `LearnArticle.relatedSlugs` opcional permite lecturas curadas para la guía nueva; el renderizador conserva su fallback para artículos existentes. `/aprende`, metadatos individuales y sitemap ya derivan de `learnArticles`; sin rutas nuevas, CMS, dependencias ni persistencia editorial.
+- Validación local tras integrar `origin/main` `e910c69` (incluye PR #2): `test:unit` 1566/1566, E2E de las cinco guías en 1366/768/390/360, typecheck, build y `git diff --check` PASS. D1 local aislada migrada solo para E2E; sin D1 remota, merge a `main` ni deploy.
+
 ## 2026-10-16 — Política Git multiagente y Worktrees (documental)
 
 - Actualizadas `AGENTS.md` y `docs/GOVERNANCE.md`: cada checkpoint usa una rama y worktree independientes creados desde `origin/main`, sin tocar cambios staged/unstaged de otros agentes.

@@ -1,22 +1,23 @@
 # Pruebas
 
-## VEC-APRENDE-04/05 — cuatro guías originales
+## VEC-APRENDE-06A — Tecnología explicada (2026-10-17)
 
-Aprende usa contenido estático en `app/content/learn.ts`; las pruebas no requieren D1 ni acceden a servicios remotos. La cobertura de contenido está en `tests/unit/learn-content.test.ts` y el recorrido de navegador en `tests/e2e/learn-experience-check.mjs`. Este último comprueba CRM, IA, Automatización y Presencia Digital, incluyendo artículo/canonical/autoría, índice y anclas, bloques editoriales, FAQ/fuentes, recursos gráficos y desbordamiento en escritorio y móvil.
+**Runner:** Worker local (`pnpm run dev`) + D1 local con migraciones aplicadas en el worktree aislado para servir el sitemap. Sin `--remote`; no se modifica D1 remota. Con Chrome local:
 
 ```powershell
-pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/learn-content.test.ts
 $env:BASE_URL='http://localhost:5173'
-# Si Playwright no tiene navegador instalado, define PLAYWRIGHT_CHROMIUM_EXECUTABLE con la ruta local de Chrome/Edge.
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE='C:\Program Files\Google\Chrome\Application\chrome.exe'
 pnpm exec node tests/e2e/learn-experience-check.mjs
 pnpm run test:unit
 pnpm run typecheck
 pnpm run build
+git diff --check
 ```
 
-El E2E usa el Worker local (`pnpm run dev`), Chrome local y cuatro tamaños (1366/768/390/360); no publica datos de prueba ni ejecuta pruebas remotas. La aceptación visual humana y una evaluación completa WCAG 2.2 AA son verificaciones independientes, no inferidas de estas pruebas.
+**Resultados integrados — RAN 2026-10-17 contra `origin/main` `e910c69` (incluye PR #2):** suite unitaria completa `1566/1566 PASS`; `learn-content.test.ts` PASS; typecheck/build PASS; E2E local PASS para las cinco guías a 1366/768/390/360, con índice, CTA, fuentes, imagen SVG, metadata individual, lecturas relacionadas y sitemap. Inspección Playwright del diagrama en 1366 y 360 px: etiquetas legibles, retorno DNS y solicitud HTTPS completos, sin recorte ni overflow. El build advierte que faltan secretos locales de correo/autenticación, pero termina correctamente. La D1 de este worktree aislado recibió migraciones locales; sin datos remotos ni deploy.
+El E2E usa Worker local (`pnpm run dev`) y Chrome local; no publica datos de prueba ni ejecuta pruebas remotas. La observación `LEARN-SVG-MOBILE-LABELS-001` continúa abierta para diagramas preexistentes y la aceptación visual humana/WCAG 2.2 AA es independiente; estos PASS no las sustituyen.
 
-**RAN 2026-10-16 en el worktree de integración (base `a7949dd`):** contenido de Aprende `4/4 PASS`; suite unitaria completa `1558/1558 PASS`; typecheck, build, E2E Aprende en 1366/768/390/360 y `git diff --check` `PASS`. El primer typecheck coincidió con el bootstrap automático de PNPM y no encontró el enlace de `@babel/types`; tras terminar la instalación local, el mismo comando pasó. El build informa secretos locales ausentes; no bloquean el build ni son necesarios para las rutas educativas. Sin aceptación visual humana, certificación WCAG ni HTTP de producción.
+**VEC-APRENDE-04/05 — RAN 2026-10-16 en el worktree de integración (base `a7949dd`):** contenido `4/4 PASS`; suite unitaria completa `1558/1558 PASS`; typecheck, build, E2E Aprende en 1366/768/390/360 y `git diff --check` PASS. El primer typecheck coincidió con el bootstrap automático de PNPM y no encontró `@babel/types`; tras terminar la instalación local, el mismo comando pasó. Sin aceptación visual humana, certificación WCAG ni HTTP de producción.
 
 ## APP-MINI-01C + APP-MINI-02A — baseline y core modular (2026-10-15)
 
@@ -1340,7 +1341,7 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `slug-life` | `business-profile-slug-lifecycle-check.mjs` | SLUG-005B |
 | `join-contact` | `join-contact-experience-check.mjs` | UX-001B.7 |
 | `about` | `about-experience-check.mjs` | UX-001B.8 |
-| `learn` | `learn-experience-check.mjs` | UX-001B.9 |
+| `learn` | `learn-experience-check.mjs` | UX-001B.9 / VEC-APRENDE-06A |
 | `commercial-review` | `commercial-experience-review-check.mjs` | UX-002.7 |
 | `legal-trust` | `legal-trust-experience-check.mjs` | UX-001B.10 |
 | `licenses` | `licenses-experience-check.mjs` | UX-002.2 |
