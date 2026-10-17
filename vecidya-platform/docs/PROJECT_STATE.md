@@ -233,8 +233,9 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 ### Aprende (`knowledge.tsx`, `learn-article.tsx`)
 
 - UX-001B.9 establece `/aprende` como ruta canónica y mantiene `/que-debes-saber` como alias. La página diferencia aprendizaje de Servicios y Diagnóstico: explica cómo entender y mejorar la presencia digital.
-- UX-002.6 mantiene `/aprende` como centro de conocimiento estático con cinco categorías y ocho artículos enlazados desde el índice tras VEC-APRENDE-06B. Los cuatro originales son CRM, IA, Automatización y Presencia Digital; 06A añadió dominio/hosting y 06B añadió HTTPS/TLS, analítica web e integraciones. Las guías usan el catálogo y la plantilla estáticos existentes; no implican publicación remota.
+- UX-002.6 mantiene `/aprende` como centro de conocimiento estático con cinco categorías y once artículos enlazados desde el índice tras VEC-APRENDE-06C. Los cuatro originales son CRM, IA, Automatización y Presencia Digital; 06A añadió dominio/hosting, 06B añadió HTTPS/TLS, analítica e integraciones, y 06C añade Perfil de Empresa, seguimiento de consultas y borradores con IA. Las guías usan el catálogo y la plantilla existentes; no implican publicación remota.
 - VEC-APRENDE-06A llena «Tecnología explicada» con una guía de dominio/hosting, ejemplo hipotético y ocho fuentes primarias. Usa los bloques editoriales existentes, un SVG con descripción accesible y lectura relacionada a la guía de Presencia Digital.
+- VEC-APRENDE-06C reutiliza imágenes existentes y la plantilla de Aprende para guías prácticas en «Negocios digitales», «CRM y clientes» e «Inteligencia Artificial». No añade componentes, categorías, rutas ni integraciones comerciales.
 - Los artículos mantienen índice accesible, CTA contextual, metadata canonical/Open Graph y presencia en sitemap. La publicación sigue pendiente; el contenido no promete resultados, no usa CMS y no añade persistencia editorial. El byline sigue el renderer actual (Yoan Ortiz), sin modelo de autor nuevo.
 - El contenido se mantiene deliberadamente sin CMS, autores dinámicos, fechas editoriales inventadas, comentarios, newsletter, buscador avanzado o cursos.
 

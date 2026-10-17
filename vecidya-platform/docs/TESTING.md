@@ -1,5 +1,21 @@
 # Pruebas
 
+## VEC-APRENDE-06C — tres guías nuevas (2026-10-17)
+
+**Resultados en worktree aislado desde `origin/main` actualizado:** `learn-content.test.ts` 11/11 y suite unitaria `1572/1572 PASS`; typecheck y build PASS; E2E de catálogo y once guías en 1366/768/390/360 PASS. Se comprobaron slugs, enlaces de catálogo, canonical, títulos/descripciones, categorías de metadatos, índice, fuentes, bloques e imágenes. Inspección visual de las tres guías en escritorio y móvil sin desbordamiento horizontal.
+
+El Worker E2E utilizó Chrome local y una D1 aislada de este worktree, con migraciones locales aplicadas solo para que sitemap respondiera. Sin `--remote`, cambios de schema ni datos de negocio. Build advierte que no están configurados los secretos locales de autenticación/correo; termina correctamente. Estas pruebas no son aprobación WCAG, revisión editorial humana ni publicación.
+
+```powershell
+$env:BASE_URL='http://localhost:5173'
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE='C:\Program Files\Google\Chrome\Application\chrome.exe'
+pnpm exec node tests/e2e/learn-experience-check.mjs
+pnpm run test:unit
+pnpm run typecheck
+pnpm run build
+git diff --check
+```
+
 ## VEC-APRENDE-06B — tres guías de Tecnología explicada (2026-10-17)
 
 **Resultados observados en worktree aislado desde `origin/main` actualizado:** catálogo `learn-content.test.ts` `9/9 PASS`; suite unitaria completa `1570/1570 PASS`; typecheck y build PASS; E2E local PASS en 1366/768/390/360, con rutas, títulos/canonical, categoría de metadatos, índice, definiciones, ejemplos, pasos, fuentes, SVG y sitemap. Inspección visual en navegador de escritorio y captura móvil de 390 px: título, diagrama, índice y texto legibles, sin desbordamiento horizontal. Build final completado con advertencias de secretos de correo/autenticación no configurados localmente; estas funciones no forman parte del alcance.
