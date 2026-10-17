@@ -2,7 +2,7 @@
 
 ## DIAG-V3-FUNNEL-01D.1-R — cierre local parcial (2026-10-16)
 
-**`FUNNEL_ANALYTICS_PARTIAL` / `BLOCKED_DEPENDENCIES`.** Rama `feat/diagnostic-funnel-01d1`, base `origin/main=e91577a`; commits `6563bb9`, `ad8f219` y `63caedd` están pushed en origin. Checkout compartido intacto.
+**`FUNNEL_ANALYTICS_PARTIAL` / `BLOCKED_DEPENDENCIES`.** Rama `feat/diagnostic-funnel-01d1`, checkpoint creado sobre `e91577a`; commits `6563bb9`, `ad8f219` y `63caedd` están pushed. En la última comprobación, `origin/main` avanzó a `e910c69` (Aprende/CRM), por lo que esta rama está detrás y toca `app/routes.ts` y documentación que también cambiaron upstream. No integré ni rebaseé esos commits sin autorización explícita; deben reconciliarse antes de cualquier integración. Checkout compartido intacto.
 
 Semántica corregida: el first-open se deduplica por `identified_diagnostic_request`, con backfill del mínimo timestamp de grants anteriores en `0019`; solicitud creada y primera verificación suman dentro del batch de dominio, con fallback a solo dominio si falla el agregado. Esto conserva el flujo principal a costa de posible subconteo ante fallos analíticos. No se reutiliza DIAG-V3-08 ni se añaden eventos/identificadores al agregado.
 
