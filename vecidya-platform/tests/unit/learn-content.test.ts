@@ -12,6 +12,9 @@ const presenceSlug = "antes-de-hacer-publicidad-organiza-tu-presencia-digital";
 const httpsSlug = "https-certificados-tls-que-protegen-y-que-no";
 const analyticsSlug = "analitica-web-que-medir-en-tu-negocio";
 const integrationsSlug = "conectar-herramientas-digitales-sin-complicar-tu-negocio";
+const googleProfileSlug = "perfil-empresa-google-completar-y-mantener-actualizado";
+const inquiriesSlug = "organizar-consultas-mensajes-llamadas-formularios";
+const aiDraftsSlug = "preparar-respuestas-publicaciones-ia-sin-perder-control";
 
 test("CRM article exposes practical typed editorial blocks and respects commercial boundaries", () => {
   const crmArticle = getLearnArticle(crmSlug);
@@ -114,7 +117,7 @@ test("automation article teaches a complete, testable process without claiming g
   const sourceBlock = blocks.find((block) => block.type === "sources");
   assert.ok(sourceBlock?.type === "sources" && sourceBlock.items.length >= 2);
   const slugs = new Set(learnArticles.map(({ slug }) => slug));
-  assert.equal(slugs.size, 8, "Existing guides and all articles in the 06B batch should remain available.");
+  assert.equal(slugs.size, 11, "Existing guides and all 06B/06C articles should remain available.");
   assert.ok(slugs.has(crmSlug) && slugs.has(aiSlug) && slugs.has(automationSlug));
 });
 
@@ -163,8 +166,87 @@ test("technology article explains domains, DNS, hosting, HTTPS and practical own
   assert.equal(new Set(headings).size, headings.length, "Article section headings must be unique.");
   assert.equal(new Set(learnArticles.map(({ slug }) => slug)).size, learnArticles.length, "Article slugs must be unique.");
   assert.ok(learnArticles.some(({ category }) => category === "Tecnología explicada"));
-  assert.equal(learnArticles.length, 8, "The library should expose all eight articles.");
+  assert.equal(learnArticles.length, 11, "The library should expose all eleven articles.");
   assert.equal(learnCategories.length, 5, "The technology category must remain part of the existing catalog.");
+});
+
+const batch06c = [
+  {
+    slug: googleProfileSlug,
+    title: "Tu Perfil de Empresa en Google: qué completar y mantener actualizado",
+    category: "Negocios digitales",
+    relatedSlug: presenceSlug,
+    topics: [/Google/i, /elegible|elegibilidad/i, /nombre/i, /categor[ií]a/i, /horarios/i, /servicios/i, /foto|imagen/i, /rese[nñ]as/i, /web/i, /posici[oó]n|resultados/i],
+  },
+  {
+    slug: inquiriesSlug,
+    title: "Cómo organizar mensajes, llamadas y formularios sin perder consultas",
+    category: "CRM y clientes",
+    relatedSlug: crmSlug,
+    topics: [/mensajes/i, /llamadas/i, /formulario/i, /responsable/i, /siguiente paso/i, /duplicad/i, /hoja de c[aá]lculo/i, /CRM/i, /consentimiento/i, /comercial/i],
+  },
+  {
+    slug: aiDraftsSlug,
+    title: "Cómo utilizar IA para preparar respuestas y publicaciones sin perder el control",
+    category: "Inteligencia Artificial",
+    relatedSlug: aiSlug,
+    topics: [/borrador/i, /instrucci[oó]n/i, /datos sensibles|informaci[oó]n sensible/i, /tono/i, /exactitud/i, /publicar/i, /no invent/i, /revis/i],
+  },
+] as const;
+
+test("06C adds three practical guides to existing categories and preserves shared article metadata", () => {
+  for (const expected of batch06c) {
+    const article = getLearnArticle(expected.slug);
+    assert.ok(article, `Missing article ${expected.slug}.`);
+    assert.equal(article.title, expected.title);
+    assert.equal(article.category, expected.category);
+    assert.deepEqual(article.relatedSlugs, [expected.relatedSlug]);
+    assert.equal(article.sections.length, 7, `${expected.slug} should use seven concise sections.`);
+    assert.equal(new Set(article.sections.map(({ heading }) => heading)).size, article.sections.length);
+    assert.ok(article.imageAlt.trim().length > 0);
+
+    const blocks = article.sections.flatMap(({ blocks = [] }) => blocks);
+    for (const type of ["example", "steps", "sources", "summary"] as const) {
+      assert.ok(blocks.some((block) => block.type === type), `${expected.slug} is missing the ${type} block.`);
+    }
+    const example = blocks.find((block) => block.type === "example");
+    assert.ok(example?.type === "example" && example.hypothetical, `${expected.slug} needs an explicitly hypothetical example.`);
+
+    const text = `${article.intro} ${article.sections.map(({ heading, paragraphs, blocks }) => `${heading} ${paragraphs.join(" ")} ${JSON.stringify(blocks ?? [])}`).join(" ")}`;
+    for (const topic of expected.topics) assert.match(text, topic, `${expected.slug} is missing ${topic}.`);
+    const sources = blocks.find((block) => block.type === "sources");
+    assert.ok(sources?.type === "sources" && sources.items.length > 0);
+    for (const { url } of sources.items) assert.match(url, /^https:\/\//);
+  }
+
+  const articleSlugs = learnArticles.map(({ slug }) => slug);
+  assert.equal(new Set(articleSlugs).size, 11, "Article slugs must remain unique.");
+  for (const { slug } of batch06c) assert.equal(getLearnArticle(slug)?.category, learnArticles.find(({ slug: related }) => related === slug)?.category);
+  for (const category of ["Negocios digitales", "CRM y clientes", "Inteligencia Artificial"]) {
+    assert.equal(learnCategories.filter(({ name }) => name === category).length, 1, `The ${category} category must be reused.`);
+  }
+});
+
+test("06C separates follow-up from marketing permission and gives two safe reusable AI prompts", () => {
+  const inquiries = getLearnArticle(inquiriesSlug);
+  assert.ok(inquiries);
+  const inquiriesText = JSON.stringify(inquiries);
+  assert.match(inquiriesText, /responder.{0,100}(?:no|separad).{0,100}consentimiento|consentimiento.{0,100}(?:distint|separad|no es lo mismo)/i);
+  assert.match(inquiriesText, /hoja de c[aá]lculo.{0,150}CRM|CRM.{0,150}hoja de c[aá]lculo/i);
+  assert.doesNotMatch(inquiriesText, /crear oportunidades autom[aá]ticas|integraci[oó]n real con GHL/i);
+
+  const ai = getLearnArticle(aiDraftsSlug);
+  assert.ok(ai);
+  const promptItems = ai.sections.flatMap(({ blocks = [] }) => blocks)
+    .filter((block) => block.type === "list")
+    .flatMap((block) => block.type === "list" ? block.items : [])
+    .filter((item) => /^Instrucci[oó]n adaptable [12]:/i.test(item));
+  assert.equal(promptItems.length, 2, "The AI guide should provide exactly two adaptable prompt examples.");
+  for (const prompt of promptItems) {
+    assert.match(prompt, /no invent|si falta|confirma/i);
+    assert.match(prompt, /revis/i);
+  }
+  assert.match(JSON.stringify(ai), /datos sensibles/i);
 });
 
 test("presence guide covers channel readiness and paid ads without guarantees", () => {
@@ -268,10 +350,10 @@ test("integrations guide defines APIs, webhooks and CSV while preventing data lo
   assert.ok(sources.items.length > 0);
 });
 
-test("06B exposes three uniquely routed guides without changing the technology category", () => {
+test("06B technology guides remain available alongside new unique 06C slugs", () => {
   const newSlugs = [httpsSlug, analyticsSlug, integrationsSlug];
   assert.equal(new Set(learnArticles.map(({ slug }) => slug)).size, learnArticles.length);
-  assert.equal(learnArticles.length, 8);
+  assert.equal(learnArticles.length, 11);
   for (const slug of newSlugs) {
     assert.equal(getLearnArticle(slug)?.category, "Tecnología explicada");
   }

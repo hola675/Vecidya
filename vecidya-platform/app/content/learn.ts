@@ -1397,6 +1397,259 @@ export const learnArticles: LearnArticle[] = [
       },
     ],
   },
+  {
+    slug: "perfil-empresa-google-completar-y-mantener-actualizado",
+    category: "Negocios digitales",
+    title: "Tu Perfil de Empresa en Google: qué completar y mantener actualizado",
+    intro: "Un perfil puede ayudar a las personas a consultar información de un negocio en Google Search y Maps. Su utilidad empieza por datos correctos y actuales; tenerlo no garantiza posiciones, visitas ni ventas.",
+    excerpt: "Revisa la elegibilidad, los datos, fotos, reseñas y actualizaciones de tu perfil sin prometer resultados de búsqueda.",
+    image: "/assets/learn/diagram-presence-digital.svg",
+    imageAlt: "El Perfil de Empresa forma parte de una presencia coherente junto con el sitio web y otros canales digitales.",
+    relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
+    cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no gestiona ni verifica Perfiles de Empresa de Google." },
+    sections: [
+      {
+        heading: "Qué es y quién puede utilizar un perfil",
+        paragraphs: [
+          "El Perfil de Empresa es una ficha para negocios elegibles en Google Search y Maps. Puede mostrar nombre, ubicación o zona, horarios, contacto y novedades.",
+          "En general, es para negocios que reciben clientes en un local o se desplazan para atenderlos, no para empresas exclusivamente en línea. Comprueba las normas vigentes antes de crearla.",
+        ],
+        blocks: [{ type: "definitions", items: [
+          { term: "Negocio con atención presencial", definition: "Actividad que recibe clientes en un local o se desplaza a su ubicación; un negocio de área de servicio puede ocultar su dirección." },
+        ] }],
+      },
+      {
+        heading: "Completa lo básico con información real",
+        paragraphs: ["Usa solo los campos que correspondan y comprueba cómo verá la ficha una persona."],
+        blocks: [{ type: "list", items: [
+          "Nombre: el que usas en el local y otros espacios. No agregues palabras promocionales o una ciudad que no forme parte del nombre.",
+          "Categoría: elige la opción disponible más específica para la actividad principal y pocas categorías secundarias pertinentes.",
+          "Ubicación: indica dónde recibes clientes. Si trabajas desde casa y visitas a clientes, revisa cómo ocultar la dirección y mostrar la zona atendida.",
+          "Contacto: publica un teléfono del negocio y un sitio web que representen esa ubicación o servicio; prueba ambos.",
+          "Horarios: indica las horas reales e incluye cambios por festivos o temporada.",
+          "Servicios: añade solo los que ofreces y puedes mantener actualizados.",
+        ] }],
+      },
+      {
+        heading: "Fotos, reseñas y publicaciones requieren cuidado",
+        paragraphs: ["Sube fotos actuales, nítidas y fieles al local, productos o servicio; usa solo imágenes propias o autorizadas. Google también puede mostrar fotos de clientes y no garantiza que la portada elegida sea la que aparezca.",
+          "Pide reseñas auténticas sin ofrecer premios por ellas. Responde con cortesía y sin revelar datos privados. Usa las publicaciones disponibles para informar novedades reales y retira las que vencieron."],
+        blocks: [{ type: "callout", tone: "caution", title: "Una ficha completa no promete una posición", text: "La información ayuda a las personas a saber qué haces. No asegura aparecer primero, recibir más llamadas ni conseguir ventas; la presentación en Search y Maps depende de la plataforma y otros factores." }],
+      },
+      {
+        heading: "Ejemplo hipotético: una peluquería actualiza su ficha",
+        paragraphs: ["Ejemplo educativo; no describe un negocio real ni un cambio aplicado por Vecidya."],
+        blocks: [{ type: "example", title: "Una peluquería atiende con cita y recibe consultas en el local", hypothetical: true,
+          context: "La peluquería recibe clientes, ofrece corte y coloración y cambia el horario algunos sábados.",
+          problem: "La ficha todavía muestra un teléfono y fotos antiguos.",
+          approach: "La encargada comprueba su elegibilidad y compara los datos con lo que el negocio ya publica.",
+          actions: [
+            "Corrige la categoría, el teléfono, el horario y los servicios; añade fotos autorizadas.",
+            "Al cambiar el horario especial, actualízalo y revisa la ficha como visitante.",
+          ],
+          lesson: "La ficha comunica información que el negocio puede verificar; mantenerla ordenada no permite prometer una posición en Google ni un aumento de clientela.",
+        }],
+      },
+      {
+        heading: "Errores frecuentes y una rutina de mantenimiento",
+        paragraphs: ["Un dato impreciso puede hacer perder una llamada o provocar un desplazamiento innecesario. Una revisión breve después de cada cambio importante ayuda a corregirlo."],
+        blocks: [{ type: "steps", label: "Revisa mensualmente y después de cambios", items: [
+          { title: "Comprueba elegibilidad", detail: "Consulta las normas antes de crear una ficha o añadir otra ubicación." },
+          { title: "Compara canales", detail: "Contrasta nombre, zona, contacto y horarios con el sitio." },
+          { title: "Revisa accesos y duplicados", detail: "Retira accesos innecesarios; busca una ficha existente antes de crear otra." },
+          { title: "Actualiza contenido", detail: "Corrige fotos y avisos vencidos; responde reseñas con respeto." },
+          { title: "Prueba los enlaces", detail: "Comprueba la ruta y el contacto desde un teléfono." },
+        ] }, { type: "summary", items: [
+          "Confirma elegibilidad y publica datos reales.",
+          "Actualiza horarios, servicios, fotos y avisos; responde reseñas sin revelar datos.",
+          "Comprueba que la información coincida con la web.",
+          "No prometas posiciones ni resultados.",
+        ] }],
+      },
+      {
+        heading: "Mantén los datos coherentes con tu web",
+        paragraphs: ["Mantén iguales en la web y el perfil el nombre, la zona, los horarios, el teléfono y los servicios vigentes. Actualiza ambos cuando algo cambie."],
+        blocks: [{ type: "callout", tone: "tip", title: "Comprueba el recorrido completo", text: "Abre el perfil como visitante, sigue el enlace a tu web y confirma que los datos coincidan y el contacto funcione." }],
+      },
+      {
+        heading: "Fuentes oficiales",
+        paragraphs: ["Las funciones y reglas pueden cambiar y variar por categoría o país. Confirma siempre el contenido de ayuda vigente para tu caso."],
+        blocks: [{ type: "sources", items: [
+          { label: "Guidelines for representing your business on Google — Google Business Profile Help", url: "https://support.google.com/business/answer/3038177?hl=en", scope: "Requisitos de elegibilidad, representación del negocio, nombre, categorías, dirección, áreas de servicio y horarios." },
+          { label: "Edit your Business Profile on Google — Google Business Profile Help", url: "https://support.google.com/business/answer/3039617?hl=en", scope: "Ayuda para actualizar la información de una ficha; opciones disponibles dependen del negocio y la interfaz vigente." },
+          { label: "Manage your Business Profile photos & videos — Google Business Profile Help", url: "https://support.google.com/business/answer/6103862?hl=en", scope: "Requisitos, tipos, estado de publicación y administración de fotos y videos." },
+          { label: "Tips to get more reviews — Google Business Profile Help", url: "https://support.google.com/business/answer/3474122?hl=en", scope: "Prácticas de reseñas auténticas, respuestas profesionales y prohibición de incentivos por reseñas." },
+          { label: "Create & manage posts on your Business Profile — Google Business Profile Help", url: "https://support.google.com/business/answer/7342169?hl=en", scope: "Publicaciones disponibles, su revisión y recomendaciones para mantenerlas completas y pertinentes." },
+        ] }],
+      },
+    ],
+  },
+  {
+    slug: "organizar-consultas-mensajes-llamadas-formularios",
+    category: "CRM y clientes",
+    title: "Cómo organizar mensajes, llamadas y formularios sin perder consultas",
+    intro: "Un registro sencillo ayuda a recordar quién responde las consultas de mensajes, llamadas y formularios y cuál es el siguiente paso.",
+    excerpt: "Organiza consultas de mensajes, llamadas y formularios con contexto, responsables y próximos pasos; distingue la atención de una promoción comercial.",
+    image: "/assets/learn/diagram-crm.svg",
+    imageAlt: "Una consulta se registra, recibe un responsable y un próximo paso hasta resolverse o cerrarse.",
+    relatedSlugs: ["que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"],
+    cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos; no es un CRM ni recibe o conserva consultas de clientes." },
+    sections: [
+      {
+        heading: "Usa un registro común sin importar el canal",
+        paragraphs: [
+          "Elige un lugar autorizado donde el equipo compruebe qué pidió la persona y si ya tiene respuesta. No hace falta copiar toda la conversación: basta el contexto útil y su referencia original.",
+        ],
+        blocks: [{ type: "definitions", items: [
+          { term: "Consulta", definition: "Pregunta o solicitud concreta que necesita una respuesta." },
+          { term: "Próximo paso", definition: "Acción pendiente con responsable y fecha de revisión." },
+        ] }],
+      },
+      {
+        heading: "Registra solo lo necesario para responder",
+        paragraphs: ["Recoge solo los datos que ayudan a atender la solicitud."],
+        blocks: [{ type: "list", items: [
+          "Nombre o referencia suficiente para reconocer la consulta.",
+          "Canal que usó y forma de respuesta elegida.",
+          "Motivo resumido con hechos; evita detalles sensibles innecesarios.",
+          "Fecha, estado y último acuerdo relevante.",
+          "Próxima acción, responsable y fecha para retomarla.",
+        ] }],
+      },
+      {
+        heading: "Asigna a una persona y un siguiente paso claro",
+        paragraphs: ["Acuerda pocos estados claros, por ejemplo «nueva», «esperando», «pendiente interno» y «resuelta»."],
+        blocks: [{ type: "steps", label: "Rutina sencilla de seguimiento", items: [
+          { title: "Al recibirla", detail: "Regístrala y asigna quién responde." },
+          { title: "Al cerrar el día", detail: "Revisa pendientes y pon responsable y fecha." },
+          { title: "Al retomarla", detail: "Lee el contexto y responde por el canal acordado." },
+          { title: "Al resolverla", detail: "Actualiza el estado y conserva solo lo necesario." },
+        ] }],
+      },
+      {
+        heading: "Ejemplo hipotético: un taller de reparación recibe consultas",
+        paragraphs: ["Ejemplo hipotético; no describe un negocio real."],
+        blocks: [{ type: "example", title: "Una reparación solicitada por teléfono y formulario", hypothetical: true,
+          context: "Un taller recibe llamadas y formularios de cotización mientras repara vehículos.",
+          problem: "Dos personas responden a la misma consulta y otra queda pendiente de confirmar una pieza.",
+          approach: "El equipo registra el canal, asigna responsable y conserva el mensaje original como referencia.",
+          actions: [
+            "Anotar el trabajo y el canal elegido para responder.",
+            "Asignar quién confirma la pieza y cuándo revisar el pendiente.",
+            "Buscar una consulta abierta antes de crear otro registro.",
+          ],
+          lesson: "Una lista clara coordina respuestas, pero una cotización no autoriza promociones posteriores.",
+        }],
+      },
+      {
+        heading: "Evita duplicados y elige una herramienta proporcional",
+        paragraphs: ["Busca por referencia antes de crear; no fusiones personas solo por un nombre compartido. Una hoja de cálculo protegida puede bastar si el equipo actualiza los pendientes. Un CRM puede ayudar cuando varias personas necesitan historial común o se pierden asignaciones. Compara permisos, exportación, conservación, soporte y coste antes de migrar."],
+        blocks: [{ type: "callout", tone: "tip", title: "Acordar un registro principal evita dos versiones", text: "Define cuál lista es la referencia y cómo se corrigen duplicados. No registres la misma consulta en hojas, correos y sistemas distintos sin indicar cuál está vigente." }],
+      },
+      {
+        heading: "Responder una consulta no equivale a consentimiento comercial",
+        paragraphs: ["Responder una consulta por el canal elegido no equivale a consentimiento para enviar después ofertas o boletines. Mantén separado cualquier permiso comercial, registra solo lo expresado claramente y sigue las reglas de tu jurisdicción; esta guía no es asesoría legal."],
+        blocks: [{ type: "callout", tone: "caution", title: "Una consulta no autoriza promociones", text: "El teléfono compartido para recibir una respuesta no demuestra permiso para una campaña comercial." }],
+      },
+      {
+        heading: "Qué puedes poner en marcha hoy",
+        paragraphs: [],
+        blocks: [{ type: "sources", items: [
+          { label: "NIST Privacy Framework", url: "https://www.nist.gov/privacy-framework", scope: "Marco voluntario para identificar y gestionar riesgos de privacidad; no es una ley universal." },
+          { label: "Electronic and telephone marketing — ICO", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/", scope: "Orientación del Reino Unido que distingue comunicaciones de servicio de marketing directo y describe las reglas PECR; los requisitos varían según jurisdicción." },
+        ] }, { type: "summary", items: [
+          "Reúne consultas en un registro autorizado y limita los datos.",
+          "Asigna responsable, estado y próxima acción a cada pendiente.",
+          "Busca duplicados y empieza con una hoja si resuelve la necesidad.",
+          "Separa la respuesta solicitada del permiso para promociones futuras.",
+        ] }],
+      },
+    ],
+  },
+  {
+    slug: "preparar-respuestas-publicaciones-ia-sin-perder-control",
+    category: "Inteligencia Artificial",
+    title: "Cómo utilizar IA para preparar respuestas y publicaciones sin perder el control",
+    intro: "La IA puede proponer un borrador, pero no conoce tus datos vigentes por defecto. Delimita la tarea, comparte contexto autorizado y revisa antes de usar el texto.",
+    excerpt: "Aprende a dar instrucciones claras a una IA, proteger información sensible y revisar dos tipos de borrador antes de responder o publicar.",
+    image: "/assets/learn/diagram-ai.svg",
+    imageAlt: "La IA prepara un borrador que una persona revisa antes de responder o publicar.",
+    relatedSlugs: ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio"],
+    cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos; no genera ni aprueba respuestas o publicaciones con IA." },
+    sections: [
+      {
+        heading: "Pide un borrador con una instrucción clara",
+        paragraphs: [
+          "Indica la tarea, el público, el tono, la extensión, los datos confirmados y qué hacer si falta información.",
+          "La IA genera texto, pero puede inventar datos o enlaces. El resultado es un borrador, no una fuente comprobada ni un mensaje listo para enviar.",
+        ],
+        blocks: [{ type: "definitions", items: [
+          { term: "Borrador de IA", definition: "Texto preliminar que una persona debe revisar antes de usar." },
+          { term: "Instrucción o prompt", definition: "Pedido que define tarea, contexto, formato y límites." },
+        ] }],
+      },
+      {
+        heading: "Ejemplo hipotético: responder y preparar un aviso",
+        paragraphs: ["Ejemplo hipotético; la herramienta no confirma ni publica datos por el negocio."],
+        blocks: [{ type: "example", title: "Una panadería prepara respuestas y publicaciones de temporada", hypothetical: true,
+          context: "La dueña de una panadería quiere responder sobre el horario del sábado y anunciar un producto de temporada.",
+          problem: "Un borrador podría usar el horario anterior o inventar disponibilidad y descuentos.",
+          approach: "Comparte datos públicos confirmados y pide un texto que no invente ni publique nada.",
+          actions: [
+            "Pide una respuesta breve usando solo el horario confirmado.",
+            "Pide un aviso del producto disponible y marca lo que falte confirmar.",
+            "Verifica horario y menú; corrige y aprueba antes de publicar.",
+          ],
+          lesson: "La IA redacta; la dueña confirma los datos y aprueba el texto.",
+        }],
+      },
+      {
+        heading: "Dos instrucciones que puedes adaptar",
+        paragraphs: ["Rellena corchetes con datos autorizados; no pegues una conversación privada."],
+        blocks: [{ type: "list", items: [
+          "Instrucción adaptable 1: «Redacta una respuesta de hasta 60 palabras sobre [horario público], con tono [cercano/profesional]. Usa solo ese dato; no inventes precios ni disponibilidad. Si falta algo, dime qué confirmar. Devuelve un borrador para revisar; no lo envíes».",
+          "Instrucción adaptable 2: «Propón dos publicaciones breves para [producto confirmado] en [fecha]. Incluye [siguiente paso]. No inventes descuentos ni promesas. Marca lo pendiente con [CONFIRMAR] y entrega borradores para revisión humana».",
+        ] }],
+      },
+      {
+        heading: "Da contexto sin compartir datos sensibles",
+        paragraphs: ["Usa datos públicos aprobados, como horario o servicios; reemplaza nombres por roles y elimina teléfonos, correos, historial y detalles que identifiquen a clientes.",
+          "Revisa las condiciones y controles del proveedor. No pegues contraseñas, datos de salud, financieros o mensajes privados sin autorización y evaluación previa; quitar el nombre no siempre anonimiza."],
+      },
+      {
+        heading: "Revisa exactitud, tono y destino antes de publicar",
+        paragraphs: ["Contrasta nombres, fechas, precios, disponibilidad y enlaces con fuentes vigentes. Comprueba tono, privacidad y que no prometa resultados o promociones no aprobadas."],
+        blocks: [{ type: "steps", label: "Revisión humana de cada borrador", items: [
+          { title: "Verifica datos y enlaces", detail: "Contrasta con una fuente actual; elimina lo que no puedas confirmar." },
+          { title: "Revisa público y tono", detail: "Confirma que el canal y el lenguaje encajan con la respuesta o publicación." },
+          { title: "Aprueba como persona responsable", detail: "Corrige y decide si enviar; si falta información, confirma antes de publicar." },
+        ] }],
+      },
+      {
+        heading: "Errores frecuentes y límites de la IA",
+        paragraphs: ["Un texto fluido aún puede equivocarse. La IA no conoce cambios recientes ni lo que puedes cumplir: confirma cada afirmación."],
+        blocks: [{ type: "list", items: [
+          "Pedir algo «atractivo» sin objetivo ni límites.",
+          "Copiar hechos, citas, enlaces o condiciones sin verificarlos.",
+          "Compartir detalles de clientes que no hacen falta.",
+          "Enviar o publicar automáticamente sin aprobación humana.",
+        ] }, { type: "summary", items: [
+          "Define tarea, público, tono y datos aprobados.",
+          "Pide que marque lo pendiente y no invente datos.",
+          "Una persona verifica y aprueba antes de publicar.",
+        ] }],
+      },
+      {
+        heading: "Fuentes oficiales y orientación",
+        paragraphs: ["Los controles dependen del proveedor; revisa los del servicio que utilices."],
+        blocks: [{ type: "sources", items: [
+          { label: "NIST AI 600-1: Generative Artificial Intelligence Profile", url: "https://doi.org/10.6028/NIST.AI.600-1", scope: "Marco del NIST de Estados Unidos que identifica riesgos de IA generativa, como información inexacta, privacidad y supervisión; no es una ley universal." },
+          { label: "Prompt engineering — OpenAI API Guide", url: "https://platform.openai.com/docs/guides/prompt-engineering", scope: "Ejemplo de documentación de un proveedor sobre cómo estructurar instrucciones; funciones y recomendaciones pueden variar entre modelos y servicios." },
+          { label: "Data Controls FAQ — OpenAI Help Center", url: "https://help.openai.com/en/articles/7730893-data-controls-faq", scope: "Describe controles de datos en productos de OpenAI; revisa los controles y términos del proveedor específico que utilizas." },
+        ] }],
+      },
+    ],
+  },
 ];
 
 export function getLearnArticle(slug: string) {

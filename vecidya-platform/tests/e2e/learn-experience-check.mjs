@@ -41,14 +41,18 @@ async function runViewport(width, height) {
   const domainGuideLink = page.getByRole("link", { name: /Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos/i });
   assert(await domainGuideLink.isVisible(), `${label} no muestra la guía de dominio en el catálogo.`);
   assert((await domainGuideLink.getAttribute("href")) === "/aprende/dominio-hosting-sitio-web-como-funcionan", `${label} el artículo de dominio no enlaza su ruta estable.`);
-  for (const [slug, title] of [
-    ["https-certificados-tls-que-protegen-y-que-no", "HTTPS y certificados TLS: qué protegen y qué no"],
-    ["analitica-web-que-medir-en-tu-negocio", "Analítica web básica: qué debes medir en tu negocio"],
-    ["conectar-herramientas-digitales-sin-complicar-tu-negocio", "Cómo conectar herramientas digitales sin complicar tu negocio"],
+  for (const [slug, title, category] of [
+    ["https-certificados-tls-que-protegen-y-que-no", "HTTPS y certificados TLS: qué protegen y qué no", "Tecnología explicada"],
+    ["analitica-web-que-medir-en-tu-negocio", "Analítica web básica: qué debes medir en tu negocio", "Tecnología explicada"],
+    ["conectar-herramientas-digitales-sin-complicar-tu-negocio", "Cómo conectar herramientas digitales sin complicar tu negocio", "Tecnología explicada"],
+    ["perfil-empresa-google-completar-y-mantener-actualizado", "Tu Perfil de Empresa en Google: qué completar y mantener actualizado", "Negocios digitales"],
+    ["organizar-consultas-mensajes-llamadas-formularios", "Cómo organizar mensajes, llamadas y formularios sin perder consultas", "CRM y clientes"],
+    ["preparar-respuestas-publicaciones-ia-sin-perder-control", "Cómo utilizar IA para preparar respuestas y publicaciones sin perder el control", "Inteligencia Artificial"],
   ]) {
     const link = page.getByRole("link", { name: title, exact: true });
     assert(await link.isVisible(), `${label} no muestra «${title}» en el catálogo.`);
     assert((await link.getAttribute("href")) === `/aprende/${slug}`, `${label} el artículo no enlaza su slug estable: ${slug}.`);
+    assert(await page.getByRole("heading", { name: category, exact: true }).isVisible(), `${label} no muestra la categoría ${category}.`);
   }
   assert(await page.getByRole("heading", { name: "Tecnología explicada", exact: true }).isVisible(), `${label} la categoría Tecnología explicada sigue vacía.`);
   assert(await page.getByRole("link", { name: "Hacer diagnóstico" }).first().getAttribute("href") === "/diagnostico", `${label} CTA de Diagnóstico incorrecto.`);
@@ -277,6 +281,7 @@ async function runViewport(width, height) {
       heading: "Qué demuestra —y qué no— el certificado",
       source: "Transport Layer Security (TLS) — MDN Web Docs",
       image: "/assets/learn/diagram-domain-dns-hosting.svg",
+      category: "Tecnología explicada",
     },
     {
       slug: "analitica-web-que-medir-en-tu-negocio",
@@ -284,6 +289,7 @@ async function runViewport(width, height) {
       heading: "Visitas, interacciones y conversiones no son lo mismo",
       source: "About events — Google Analytics Help",
       image: "/assets/learn/diagram-analytics.svg",
+      category: "Tecnología explicada",
     },
     {
       slug: "conectar-herramientas-digitales-sin-complicar-tu-negocio",
@@ -291,6 +297,32 @@ async function runViewport(width, height) {
       heading: "API, webhook y CSV: tres formas diferentes de intercambiar datos",
       source: "RFC 4180: Common Format and MIME Type for CSV Files",
       image: "/assets/learn/diagram-integrations.svg",
+      category: "Tecnología explicada",
+      category: "Tecnología explicada",
+    },
+    {
+      slug: "perfil-empresa-google-completar-y-mantener-actualizado",
+      title: "Tu Perfil de Empresa en Google: qué completar y mantener actualizado",
+      heading: "Qué es y quién puede utilizar un perfil",
+      source: "Guidelines for representing your business on Google — Google Business Profile Help",
+      image: "/assets/learn/diagram-presence-digital.svg",
+      category: "Negocios digitales",
+    },
+    {
+      slug: "organizar-consultas-mensajes-llamadas-formularios",
+      title: "Cómo organizar mensajes, llamadas y formularios sin perder consultas",
+      heading: "Usa un registro común sin importar el canal",
+      source: "NIST Privacy Framework",
+      image: "/assets/learn/diagram-crm.svg",
+      category: "CRM y clientes",
+    },
+    {
+      slug: "preparar-respuestas-publicaciones-ia-sin-perder-control",
+      title: "Cómo utilizar IA para preparar respuestas y publicaciones sin perder el control",
+      heading: "Dos instrucciones que puedes adaptar",
+      source: "Prompt engineering — OpenAI API Guide",
+      image: "/assets/learn/diagram-ai.svg",
+      category: "Inteligencia Artificial",
     },
   ];
   for (const guide of guides) {
@@ -298,10 +330,12 @@ async function runViewport(width, height) {
     assert((await page.locator("h1").textContent())?.trim() === guide.title, `${label} H1 incorrecto para ${guide.slug}.`);
     assert((await page.title()).startsWith(guide.title), `${label} title incorrecto para ${guide.slug}.`);
     assert(await page.locator('link[rel="canonical"]').getAttribute("href") === `https://vecidya.com/aprende/${guide.slug}`, `${label} canonical incorrecto para ${guide.slug}.`);
-    assert(await page.locator('meta[property="article:section"]').getAttribute("content") === "Tecnología explicada", `${label} categoría de metadatos incorrecta para ${guide.slug}.`);
+    assert(await page.locator('meta[property="article:section"]').getAttribute("content") === guide.category, `${label} categoría de metadatos incorrecta para ${guide.slug}.`);
+    assert(await page.locator('meta[name="description"]').count() === 1, `${label} falta descripción para ${guide.slug}.`);
     assert(await page.getByRole("heading", { name: guide.heading, exact: true }).isVisible(), `${label} falta contenido de ${guide.slug}.`);
     assert(await page.getByRole("link", { name: guide.source, exact: true }).isVisible(), `${label} falta la fuente oficial de ${guide.slug}.`);
     const image = page.locator(".learn-article-image");
+    assert((await image.getAttribute("src"))?.endsWith(guide.image), `${label} imagen incorrecta para ${guide.slug}.`);
     assert((await image.getAttribute("alt"))?.trim().length > 0, `${label} falta texto alternativo en ${guide.slug}.`);
     assert(await image.evaluate((element) => element.complete && element.naturalWidth > 0), `${label} no cargó la ilustración de ${guide.slug}.`);
     const tocLinks = page.locator(".learn-article-toc a");
@@ -327,4 +361,4 @@ for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]])
   await runViewport(width, height);
 }
 
-console.log("PASS: Aprende verificó ocho guías, categorías, autoría, CTAs, metadata, sitemap, keyboard focus y responsive 1366/768/390/360.");
+console.log("PASS: Aprende verificó once guías, categorías, autoría, CTAs, metadata, sitemap, keyboard focus y responsive 1366/768/390/360.");
