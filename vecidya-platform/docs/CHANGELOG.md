@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-17 — VEC-APRENDE-06B Tecnología explicada (local, no publicado)
+
+- El catálogo estático suma tres guías: «HTTPS y certificados TLS: qué protegen y qué no», «Analítica web básica: qué debes medir en tu negocio» y «Cómo conectar herramientas digitales sin complicar tu negocio». Cada artículo ofrece definiciones, ejemplo hipotético de negocio local, acciones aplicables, fuentes oficiales y resumen; dos diagramas originales muestran métricas y un intercambio de datos controlado.
+- Se reutilizan `LearnArticle`, bloques editoriales, rutas `/aprende/:slug`, metadatos y sitemap actuales; no se modificaron guías anteriores ni se añadieron componentes, CMS, persistencia o dependencias. `learn-content.test.ts` 9/9 y suite unitaria 1570/1570 PASS; typecheck, build y E2E local en 1366/768/390/360 PASS. Inspección visual de escritorio y móvil (390 px) sin desbordamiento horizontal. Build con advertencias conocidas de secretos locales de autenticación/correo ausentes.
+- El Worker E2E usó Chrome local y una D1 aislada del worktree con migraciones locales solo para que el sitemap consultara el esquema; sin `--remote` ni datos de negocio. No es certificación WCAG ni inspección de producción.
+- Sin publicación, D1 remota, deploy, merge a `main` ni creación de PR.
+
 ## 2026-10-17 — VEC-APRENDE-06A Tecnología explicada (local, no publicado)
 
 - Se llena la categoría «Tecnología explicada» con una guía sobre dominio, registración, hosting, sitio, DNS, HTTPS/TLS, correo, cambios de proveedor, control administrativo, renovaciones y costos variables; incluye ejemplo hipotético, checklist, FAQ, resumen y fuentes primarias ICANN/MDN/IETF consultadas el 2026-10-17.

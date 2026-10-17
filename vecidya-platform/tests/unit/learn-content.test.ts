@@ -9,6 +9,9 @@ const aiSlug = "que-puede-hacer-una-inteligencia-artificial-por-un-negocio";
 const automationSlug = "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio";
 const domainSlug = "dominio-hosting-sitio-web-como-funcionan";
 const presenceSlug = "antes-de-hacer-publicidad-organiza-tu-presencia-digital";
+const httpsSlug = "https-certificados-tls-que-protegen-y-que-no";
+const analyticsSlug = "analitica-web-que-medir-en-tu-negocio";
+const integrationsSlug = "conectar-herramientas-digitales-sin-complicar-tu-negocio";
 
 test("CRM article exposes practical typed editorial blocks and respects commercial boundaries", () => {
   const crmArticle = getLearnArticle(crmSlug);
@@ -111,7 +114,7 @@ test("automation article teaches a complete, testable process without claiming g
   const sourceBlock = blocks.find((block) => block.type === "sources");
   assert.ok(sourceBlock?.type === "sources" && sourceBlock.items.length >= 2);
   const slugs = new Set(learnArticles.map(({ slug }) => slug));
-  assert.equal(slugs.size, 5, "The four existing articles and the new guide should remain available.");
+  assert.equal(slugs.size, 8, "Existing guides and all articles in the 06B batch should remain available.");
   assert.ok(slugs.has(crmSlug) && slugs.has(aiSlug) && slugs.has(automationSlug));
 });
 
@@ -160,7 +163,7 @@ test("technology article explains domains, DNS, hosting, HTTPS and practical own
   assert.equal(new Set(headings).size, headings.length, "Article section headings must be unique.");
   assert.equal(new Set(learnArticles.map(({ slug }) => slug)).size, learnArticles.length, "Article slugs must be unique.");
   assert.ok(learnArticles.some(({ category }) => category === "Tecnología explicada"));
-  assert.equal(learnArticles.length, 5, "The library should expose the fifth article.");
+  assert.equal(learnArticles.length, 8, "The library should expose all eight articles.");
   assert.equal(learnCategories.length, 5, "The technology category must remain part of the existing catalog.");
 });
 
@@ -209,4 +212,68 @@ test("presence guide covers channel readiness and paid ads without guarantees", 
   for (const source of ["Google Search Central", "Google Business Profile", "Google Ads", "Meta", "W3C", "Analytics"]) {
     assert.ok(sources.items.some(({ label }) => label.includes(source)), `Missing official ${source} source.`);
   }
+});
+
+test("HTTPS guide explains TLS limits, warning signs and practical website checks", () => {
+  const article = getLearnArticle(httpsSlug);
+  assert.ok(article);
+  assert.equal(article.title, "HTTPS y certificados TLS: qué protegen y qué no");
+  assert.equal(article.category, "Tecnología explicada");
+  const blocks = article.sections.flatMap(({ blocks = [] }) => blocks);
+  for (const type of ["definitions", "example", "steps", "callout", "sources", "summary"] as const) {
+    assert.ok(blocks.some((block) => block.type === type), `HTTPS article is missing ${type}.`);
+  }
+  const text = JSON.stringify(article);
+  for (const topic of [/HTTP/, /HTTPS/, /TLS/, /certificado/i, /confiable/i, /advertencia|error/i, /renovaci[oó]n/i, /negocio/i]) {
+    assert.match(text, topic);
+  }
+  const sources = blocks.find((block) => block.type === "sources");
+  assert.ok(sources?.type === "sources");
+  assert.ok(sources.items.some(({ url }) => url.includes("developer.mozilla.org")));
+});
+
+test("web analytics guide distinguishes visits, interactions and conversions with privacy cautions", () => {
+  const article = getLearnArticle(analyticsSlug);
+  assert.ok(article);
+  assert.equal(article.title, "Analítica web básica: qué debes medir en tu negocio");
+  assert.equal(article.category, "Tecnología explicada");
+  const blocks = article.sections.flatMap(({ blocks = [] }) => blocks);
+  for (const type of ["definitions", "example", "steps", "callout", "sources", "summary"] as const) {
+    assert.ok(blocks.some((block) => block.type === type), `Analytics article is missing ${type}.`);
+  }
+  const text = JSON.stringify(article);
+  for (const topic of [/visitas/i, /interacciones/i, /conversiones/i, /muestra/i, /privacidad/i, /consentimiento/i, /negocio/i]) {
+    assert.match(text, topic);
+  }
+  const sources = blocks.find((block) => block.type === "sources");
+  assert.ok(sources?.type === "sources");
+  assert.ok(sources.items.some(({ url }) => url.includes("support.google.com/analytics")));
+});
+
+test("integrations guide defines APIs, webhooks and CSV while preventing data loss and duplicates", () => {
+  const article = getLearnArticle(integrationsSlug);
+  assert.ok(article);
+  assert.equal(article.title, "Cómo conectar herramientas digitales sin complicar tu negocio");
+  assert.equal(article.category, "Tecnología explicada");
+  const blocks = article.sections.flatMap(({ blocks = [] }) => blocks);
+  for (const type of ["definitions", "example", "steps", "callout", "sources", "summary"] as const) {
+    assert.ok(blocks.some((block) => block.type === type), `Integrations article is missing ${type}.`);
+  }
+  const text = JSON.stringify(article);
+  for (const topic of [/integraci[oó]n/i, /API/i, /webhook/i, /CSV/i, /duplicad/i, /respaldo|copia/i, /prueba/i]) {
+    assert.match(text, topic);
+  }
+  const sources = blocks.find((block) => block.type === "sources");
+  assert.ok(sources?.type === "sources");
+  assert.ok(sources.items.length > 0);
+});
+
+test("06B exposes three uniquely routed guides without changing the technology category", () => {
+  const newSlugs = [httpsSlug, analyticsSlug, integrationsSlug];
+  assert.equal(new Set(learnArticles.map(({ slug }) => slug)).size, learnArticles.length);
+  assert.equal(learnArticles.length, 8);
+  for (const slug of newSlugs) {
+    assert.equal(getLearnArticle(slug)?.category, "Tecnología explicada");
+  }
+  assert.equal(learnCategories.filter(({ name }) => name === "Tecnología explicada").length, 1);
 });
