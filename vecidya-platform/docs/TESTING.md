@@ -33,6 +33,10 @@ git diff --check
 **Resultados integrados — RAN 2026-10-17 contra `origin/main` `e910c69` (incluye PR #2):** suite unitaria completa `1566/1566 PASS`; `learn-content.test.ts` PASS; typecheck/build PASS; E2E local PASS para las cinco guías a 1366/768/390/360, con índice, CTA, fuentes, imagen SVG, metadata individual, lecturas relacionadas y sitemap. Inspección Playwright del diagrama en 1366 y 360 px: etiquetas legibles, retorno DNS y solicitud HTTPS completos, sin recorte ni overflow. El build advierte que faltan secretos locales de correo/autenticación, pero termina correctamente. La D1 de este worktree aislado recibió migraciones locales; sin datos remotos ni deploy.
 El E2E usa Worker local (`pnpm run dev`) y Chrome local; no publica datos de prueba ni ejecuta pruebas remotas. La observación `LEARN-SVG-MOBILE-LABELS-001` continúa abierta para diagramas preexistentes y la aceptación visual humana/WCAG 2.2 AA es independiente; estos PASS no las sustituyen.
 
+## PLATFORM-ADMIN-GLOBAL — especificación documental (2026-10-17)
+
+Este checkpoint prepara la especificación para aprobación; no modifica comportamiento, rutas, permisos, schema o migraciones. No se ejecutaron suites funcionales, typecheck ni build por tratarse de reconciliación documental. Verificaciones de documentación ejecutadas al cierre: `git diff --check`, revisión completa del diff y comprobación de paths modificados para confirmar que no incluyen código funcional, schema ni migraciones. Los gates propuestos para una implementación futura incluyen actor/acción/target/audit, denegación de IDs cross-tenant, onboarding de owner con correo verificado, expiración/revocación/reenvío y doble aceptación concurrente, roles y último owner, progreso propio frente a ajeno, recuperación de fallos parciales, tenant isolation y ausencia de rutas/cambios en Aprende. No se reportan como pruebas ejecutadas.
+
 **VEC-APRENDE-04/05 — RAN 2026-10-16 en el worktree de integración (base `a7949dd`):** contenido `4/4 PASS`; suite unitaria completa `1558/1558 PASS`; typecheck, build, E2E Aprende en 1366/768/390/360 y `git diff --check` PASS. El primer typecheck coincidió con el bootstrap automático de PNPM y no encontró `@babel/types`; tras terminar la instalación local, el mismo comando pasó. Sin aceptación visual humana, certificación WCAG ni HTTP de producción.
 
 ## APP-MINI-01C + APP-MINI-02A — baseline y core modular (2026-10-15)
@@ -54,11 +58,11 @@ git diff --check
 
 **Resultados observados:** MiniWeb E2E `33/33 PASS` (tenant A/B, owner/admin/member, entradas inválidas, draft vs snapshot publicado, orden, módulos disabled/sin contenido, legacy, draft/suspendido, snapshot inválido fail-closed, slug/SEO y UI responsive). Perfil, ciclo de slug y licencias: PASS. Unitarias `1557/1557`, typecheck, build y diff-check: PASS. Overflow editor y perfil: 1366/768/390/360. El E2E MiniWeb elimina sus usuarios/organizaciones/perfiles sintéticos al finalizar. Capturas APP-MINI-01 en `.playwright-mcp/app-mini-01-{dashboard,editor,public}-{desktop,mobile}.png`; 02A en `.playwright-mcp/app-mini-02a-editor-{1366,768,390,360}.png` y `app-mini-02a-public-{1366,390}.png`.
 
-El ledger local muestra 0016 y 0017 pendientes. Para E2E se ejecutó temporalmente solo el SQL generado `0017_miniweb-core.sql`, sin correr la migración previa de otro checkpoint; al cerrar, las dos tablas se retiraron y el D1 local quedó restaurado. Ninguna prueba remota ni deploy.
+La cadena de migraciones `0000`–`0017` se aplicó en una D1 aislada limpia para este E2E; `0016` y `0017` quedaron confirmadas en el ledger de ese entorno. MiniWeb E2E `33/33 PASS` y sus fixtures se limpiaron. La D1 local compartida no se modificó y su ledger sigue pendiente de reconciliación; D1 remota sin cambios. Ninguna prueba remota ni deploy.
 
 `organization-authorization-check.mjs` se intentó una vez con timeout de 600 s y no emitió resultado; el E2E MiniWeb específico sí pasó sus matrices de tenant y roles. No repetir la suite general sin diagnosticar el timeout.
 
-Después del último E2E MiniWeb aprobado se añadió limpieza de identidades/organizaciones creadas por el propio script. La prueba no se repitió tras ese ajuste de teardown por el ledger D1 compartido; se verificaron sintaxis y diff-check, y las fixtures anteriores se limpiaron explícitamente en D1 local.
+Después del último E2E MiniWeb aprobado se añadió limpieza de identidades/organizaciones creadas por el propio script. La prueba no se repitió tras ese ajuste de teardown; se verificaron sintaxis y diff-check, y las fixtures anteriores se limpiaron en el D1 de pruebas aislado.
 
 ## DIAG-V3-FUNNEL-01C.2 — cierre adversarial y privacidad local (2026-10-14)
 

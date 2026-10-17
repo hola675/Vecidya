@@ -12,7 +12,11 @@
 
 **Implementado y validado localmente; no desplegado.** Registries versionados en código para las cuatro familias de plantilla y trece tipos de módulo; solo `vecidya-default` y `hero`, `about`, `contact`, `hours`, `location` están disponibles. `/app/miniweb` separa estructura/preview de `business-profile.tsx`; la API revalida organización activa, membership y permiso. Configuración draft y snapshot publicado separados; leer configuración legacy resuelve default virtual sin insertar filas; publicar o guardar sí persiste. Renderer público consume DTO allowlisted, respeta orden, omite módulos desactivados/sin contenido y mantiene los guards, slug y SEO actuales.
 
-Schema `miniweb_site`/`miniweb_module` y migración `0017_miniweb-core.sql` añadidos. El journal local mantiene pendientes `0016` (otro checkpoint) y `0017`; no se ejecutó `migrations apply` para no intervenir en el checkpoint activo del otro agente. El SQL 0017 se ejecutó directamente en D1 local para probar el flujo E2E y se retiraron las dos tablas temporales al cerrar la prueba; ledger sin cambios. Sin D1 remota ni deploy. La publicación de datos de `business_profile` sigue siendo el comportamiento existente; snapshot completo de contenido queda como decisión obligatoria antes de APP-MINI-02B. E2E MiniWeb `33/33`, suites de perfil/slug/licencias y unitarias `1557/1557` pasaron; `organization-authorization-check.mjs` excedió el timeout de 600 s sin emitir resultado. Typecheck/build/diff-check: PASS.
+Schema `miniweb_site`/`miniweb_module` y migración `0017_miniweb-core.sql` añadidos. La cadena `0000`–`0017` se aplicó correctamente en D1 aislada limpia; MiniWeb E2E `33/33 PASS` en ese entorno con fixtures limpiadas. D1 local compartida: sin modificaciones, ledger pendiente de reconciliación. D1 remota: sin modificaciones. Sin deploy. El snapshot completo de contenido para APP-MINI-02B quedó diseñado en `ARCHITECTURE.md`.
+
+## PLATFORM-ADMIN-GLOBAL — spec escrita para revisión (2026-10-17)
+
+Propuesta documental para revisión y aprobación explícita; no es diseño aprobado ni implementación. El actor `platform_admin` conserva identidad de plataforma, sin impersonación ni membresía comercial; `/app/internal` y sus endpoints quedan previstos, sin nuevas rutas. Arquitectura, matriz de roles, ciclo organización/invitación, capacitación, endpoints, entidades candidatas, riesgos y decisiones pendientes constan en `ARCHITECTURE.md`; persistencia candidata en `DATABASE.md`. Sin código/schema/migraciones. APP-MINI-02B espera hasta que este checkpoint quede aprobado e integrado.
 
 ## DIAG-V3-FUNNEL-01C.2 — cierre adversarial y privacidad (2026-10-14)
 
@@ -353,6 +357,12 @@ Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organizac
 ## Open Debt
 
 Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipótesis` = deducida de lectura de código o de la librería, no ejecutada.
+
+### PLATFORM-ADMIN-GLOBAL — aprobación previa a implementación
+
+| ID | Descripción | Evidencia | Prio | Estado |
+| --- | --- | --- | --- | --- |
+| `PLATFORM-ADMIN-GLOBAL-SPEC-001` | Falta aprobación explícita del contrato de control plane: matriz de permisos `platform_admin`/owner/admin/member, ciclo de organización y owner único, aceptación segura/atómica de invitaciones con Better Auth, permisos/correcciones de capacitación, retención y tratamiento de auditoría. No iniciar implementación ni migraciones hasta resolver estas decisiones | Propuesta detallada y riesgos en `ARCHITECTURE.md`; capacidades Better Auth contrastadas con fuente y config actuales; persistencia propuesta en `DATABASE.md` | A | **ABIERTA — revisión y aprobación humana pendiente** |
 
 ### Riesgo de continuidad y publicación
 

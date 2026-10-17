@@ -10,7 +10,7 @@
 - Keep agent instructions in English; write product documentation, implementation work, and final reports in Spanish unless the user requests otherwise.
 - Do not introduce fictitious commercial data, create a CRM that duplicates GHL, or import Legacy architecture.
 - Do not assume authorization to associate a business with a third-party brand (for example SURA) because a name appears in text.
-- Require session, membership, and permission checks for every organization-scoped resource.
+- Client organization-scoped resources require session, membership, and permission. Internal `platform_admin` control-plane actions require an active platform membership, explicit target organization, action permission, and audit; never impersonate an owner or bypass client guards.
 - The Markdown ceiling is 20 canonical documents (currently 16; list in `GOVERNANCE.md`). Do not create phase, audit, ADR, or report files; consolidate into the existing document that owns the topic.
 
 ## Scope

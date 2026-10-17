@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-17 — PLATFORM-ADMIN-GLOBAL especificación para aprobación
+
+- Reconciliada la especificación documental del control plane: actor `platform_admin` permanece independiente de owners, sin impersonación, membresías inventadas ni bypass de APIs de clientes.
+- Añadidos estados/transiciones de organización, invitación tokenizada de un uso, matriz explícita de permisos para seis tipos de actor, capacitación basada en slugs de Aprende, navegación y contratos propuestos de endpoints/auditoría/persistencia, y riesgos/decisiones pendientes.
+- Better Auth fijado en `1.7.5`; se verificó configuración/uso del repo y se consultó documentación oficial de sus APIs. La transacción interna de aceptación y su extensión al ciclo/auditoría quedan por comprobar contra el paquete instalado antes de diseñar implementación.
+- Corregido el estado de D1: cadena `0000`–`0017` aplicada en D1 aislada limpia; MiniWeb E2E `33/33 PASS` allí; D1 local compartida sin cambios y ledger pendiente de reconciliación; D1 remota sin cambios. APP-MINI-02B tiene diseño de publicación aprobado, implementación no iniciada, sin tablas ni contenido público, y espera la aprobación/integración de este checkpoint.
+- Solo documentación/instrucciones canónicas; sin código, rutas, schema, migraciones, pruebas funcionales, D1 remota, deploy ni publicación. Revisión y aprobación explícita del usuario pendientes.
+
 ## 2026-10-17 — VEC-APRENDE-06B Tecnología explicada (local, no publicado)
 
 - El catálogo estático suma tres guías: «HTTPS y certificados TLS: qué protegen y qué no», «Analítica web básica: qué debes medir en tu negocio» y «Cómo conectar herramientas digitales sin complicar tu negocio». Cada artículo ofrece definiciones, ejemplo hipotético de negocio local, acciones aplicables, fuentes oficiales y resumen; dos diagramas originales muestran métricas y un intercambio de datos controlado.
@@ -33,7 +41,7 @@
 - Registro versionado de familias `services`, `catalog`, `gastronomy` y `professional`, con solo la plantilla compatible y módulos `hero`, `about`, `contact`, `hours`, `location` disponibles.
 - Añadidos `miniweb_site`/`miniweb_module` y migración `0017`; default virtual legacy sin backfill; draft y snapshot publicado de configuración separados.
 - `/app/miniweb` ofrece los módulos operativos, activación, orden, preview privada y publicación explícita; `/vecindario/:slug` compone DTOs allowlisted, omite módulos apagados/sin contenido y falla cerrado si el snapshot público es inválido.
-- E2E MiniWeb `33/33`, perfil, slug y licencias; unitarias `1557/1557`, typecheck y build PASS. Schema local usado para E2E y revertido; ledger local mantiene 0016/0017 pendientes. Sin D1 remota ni deploy.
+- E2E MiniWeb `33/33`, perfil, slug y licencias; unitarias `1557/1557`, typecheck y build PASS. La cadena `0000`–`0017` se aplicó a D1 aislada limpia y dio MiniWeb `33/33`; D1 local compartida sin cambios y ledger pendiente de reconciliación; D1 remota sin cambios. Sin deploy.
 
 ## 2026-10-15 — APP-MINI-01C (local, cierre técnico)
 
