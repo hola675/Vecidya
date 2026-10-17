@@ -120,7 +120,8 @@ Un baseline (como el de 2026-09-20) se ejecuta en modo solo lectura: leer reposi
 - Legacy se usa para contenido, assets y referencia; nunca como arquitectura base de la plataforma nueva.
 - Vecidya no implementa CRM paralelo a GHL. No crear `contacts`, `leads`, `opportunities`, `pipelines`, `crm_messages` ni `workflow_executions` sin una decisión arquitectónica posterior.
 - Una integración futura puede guardar solamente metadata de conexión justificada y tenant-scoped.
-- Todo recurso de organización debe verificar, en orden: sesión, membresía, rol o permiso y operación.
+- Todo recurso de cliente/tenant verifica sesión, membership, rol/permiso y pertenencia del recurso a la organización objetivo.
+- Excepción explícita para operaciones de la plataforma: solo rutas internas verifican sesión, `platform_member` activo, organización objetivo existente, permiso de plataforma por acción, pertenencia del recurso al target y auditoría; el actor se conserva como `platform_admin` y nunca se convierte en owner ni se relajan los guards de APIs de cliente.
 - No asumir autorización de asociación con marcas de terceros por la existencia de un nombre comercial.
 - Toda deuda abierta figura en `STATUS.md → Open Debt` con ID, impacto, evidencia, prioridad y estado.
 
