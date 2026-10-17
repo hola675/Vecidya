@@ -41,6 +41,15 @@ async function runViewport(width, height) {
   const domainGuideLink = page.getByRole("link", { name: /Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos/i });
   assert(await domainGuideLink.isVisible(), `${label} no muestra la guía de dominio en el catálogo.`);
   assert((await domainGuideLink.getAttribute("href")) === "/aprende/dominio-hosting-sitio-web-como-funcionan", `${label} el artículo de dominio no enlaza su ruta estable.`);
+  for (const [slug, title] of [
+    ["https-certificados-tls-que-protegen-y-que-no", "HTTPS y certificados TLS: qué protegen y qué no"],
+    ["analitica-web-que-medir-en-tu-negocio", "Analítica web básica: qué debes medir en tu negocio"],
+    ["conectar-herramientas-digitales-sin-complicar-tu-negocio", "Cómo conectar herramientas digitales sin complicar tu negocio"],
+  ]) {
+    const link = page.getByRole("link", { name: title, exact: true });
+    assert(await link.isVisible(), `${label} no muestra «${title}» en el catálogo.`);
+    assert((await link.getAttribute("href")) === `/aprende/${slug}`, `${label} el artículo no enlaza su slug estable: ${slug}.`);
+  }
   assert(await page.getByRole("heading", { name: "Tecnología explicada", exact: true }).isVisible(), `${label} la categoría Tecnología explicada sigue vacía.`);
   assert(await page.getByRole("link", { name: "Hacer diagnóstico" }).first().getAttribute("href") === "/diagnostico", `${label} CTA de Diagnóstico incorrecto.`);
   assert(await page.getByRole("link", { name: "Hacer una pregunta" }).getAttribute("href") === "/contacto", `${label} CTA de Contacto incorrecto.`);
@@ -261,6 +270,56 @@ async function runViewport(width, height) {
   assert(await page.getByText(/No se puede asegurar/i).isVisible(), `${label} la FAQ presenta ventas como resultado garantizado.`);
   await assertNoOverflow(page, `${label} artículo Presencia Digital`);
 
+  const guides = [
+    {
+      slug: "https-certificados-tls-que-protegen-y-que-no",
+      title: "HTTPS y certificados TLS: qué protegen y qué no",
+      heading: "Qué demuestra —y qué no— el certificado",
+      source: "Transport Layer Security (TLS) — MDN Web Docs",
+      image: "/assets/learn/diagram-domain-dns-hosting.svg",
+    },
+    {
+      slug: "analitica-web-que-medir-en-tu-negocio",
+      title: "Analítica web básica: qué debes medir en tu negocio",
+      heading: "Visitas, interacciones y conversiones no son lo mismo",
+      source: "About events — Google Analytics Help",
+      image: "/assets/learn/diagram-analytics.svg",
+    },
+    {
+      slug: "conectar-herramientas-digitales-sin-complicar-tu-negocio",
+      title: "Cómo conectar herramientas digitales sin complicar tu negocio",
+      heading: "API, webhook y CSV: tres formas diferentes de intercambiar datos",
+      source: "RFC 4180: Common Format and MIME Type for CSV Files",
+      image: "/assets/learn/diagram-integrations.svg",
+    },
+  ];
+  for (const guide of guides) {
+    await page.goto(new URL(`/aprende/${guide.slug}`, baseUrl).toString(), { waitUntil: "domcontentloaded" });
+    assert((await page.locator("h1").textContent())?.trim() === guide.title, `${label} H1 incorrecto para ${guide.slug}.`);
+    assert((await page.title()).startsWith(guide.title), `${label} title incorrecto para ${guide.slug}.`);
+    assert(await page.locator('link[rel="canonical"]').getAttribute("href") === `https://vecidya.com/aprende/${guide.slug}`, `${label} canonical incorrecto para ${guide.slug}.`);
+    assert(await page.locator('meta[property="article:section"]').getAttribute("content") === "Tecnología explicada", `${label} categoría de metadatos incorrecta para ${guide.slug}.`);
+    assert(await page.getByRole("heading", { name: guide.heading, exact: true }).isVisible(), `${label} falta contenido de ${guide.slug}.`);
+    assert(await page.getByRole("link", { name: guide.source, exact: true }).isVisible(), `${label} falta la fuente oficial de ${guide.slug}.`);
+    const image = page.locator(".learn-article-image");
+    assert((await image.getAttribute("alt"))?.trim().length > 0, `${label} falta texto alternativo en ${guide.slug}.`);
+    assert(await image.evaluate((element) => element.complete && element.naturalWidth > 0), `${label} no cargó la ilustración de ${guide.slug}.`);
+    const tocLinks = page.locator(".learn-article-toc a");
+    assert(await tocLinks.count() > 0, `${label} el índice está vacío en ${guide.slug}.`);
+    for (const href of await tocLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href")))) {
+      assert(href?.startsWith("#section-") && await page.locator(href).count() === 1, `${label} índice apunta a una sección inexistente en ${guide.slug}: ${href}`);
+    }
+    assert(await page.locator(".learn-block--definitions dl").count() > 0, `${label} faltan definiciones semánticas en ${guide.slug}.`);
+    assert(await page.locator(".learn-block--steps ol").count() > 0, `${label} faltan pasos numerados en ${guide.slug}.`);
+    assert(await page.locator(".learn-block--example").count() > 0, `${label} falta el ejemplo hipotético de ${guide.slug}.`);
+    await assertNoOverflow(page, `${label} artículo ${guide.slug}`);
+  }
+
+  const learnSitemap = await page.request.get(new URL("/sitemap.xml", baseUrl).toString());
+  assert(learnSitemap.ok(), `${label} no cargó sitemap.xml.`);
+  const learnSitemapXml = await learnSitemap.text();
+  for (const { slug } of guides) assert(learnSitemapXml.includes(`/aprende/${slug}`), `${label} el sitemap no incluye ${slug}.`);
+
   await browser.close();
 }
 
@@ -268,4 +327,4 @@ for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]])
   await runViewport(width, height);
 }
 
-console.log("PASS: Aprende verificó cinco guías, categorías, autoría, CTAs, metadata, sitemap, keyboard focus y responsive 1366/768/390/360.");
+console.log("PASS: Aprende verificó ocho guías, categorías, autoría, CTAs, metadata, sitemap, keyboard focus y responsive 1366/768/390/360.");
