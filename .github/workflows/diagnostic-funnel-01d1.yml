@@ -1,0 +1,245 @@
+name: DIAG-V3 FUNNEL-01D.1
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: diagnostic-funnel-01d1-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  diagnostic-funnel-01d1:
+    name: FUNNEL-01D.1 certification (Ubuntu)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CI: "true"
+      WRANGLER_SEND_METRICS: "false"
+    defaults:
+      run:
+        shell: bash
+        working-directory: vecidya-platform
+
+    steps:
+      - name: Checkout PR merge ref without persisted credentials
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js 24.21.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24.21.0
+          package-manager-cache: false
+
+      - name: Set up pnpm 11.21.0
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: 11.21.0
+          run_install: false
+
+      - name: Verify toolchain and prepare evidence directory
+        id: toolchain
+        run: |
+          mkdir -p "$RUNNER_TEMP/diagnostic-funnel-01d1"
+          {
+            node --version
+            pnpm --version
+          } 2>&1 | tee "$RUNNER_TEMP/diagnostic-funnel-01d1/toolchain.log"
+          test "$(node --version)" = "v24.21.0"
+          test "$(pnpm --version)" = "11.21.0"
+
+      - name: Install locked dependencies
+        id: install
+        run: pnpm install --frozen-lockfile 2>&1 | tee "$RUNNER_TEMP/diagnostic-funnel-01d1/install.log"
+
+      - name: Install Playwright Chromium and Linux dependencies
+        id: playwright
+        continue-on-error: true
+        run: pnpm exec playwright install --with-deps chromium 2>&1 | tee "$RUNNER_TEMP/diagnostic-funnel-01d1/playwright-install.log"
+
+      - name: Run complete unit suite
+        id: unit
+        continue-on-error: true
+        run: pnpm run test:unit 2>&1 | tee "$RUNNER_TEMP/diagnostic-funnel-01d1/unit.log"
+
+      - name: Typecheck
+        id: typecheck
+        continue-on-error: true
+        run: pnpm run typecheck 2>&1 | tee "$RUNNER_TEMP/diagnostic-funnel-01d1/typecheck.log"
+
+      - name: Production build
+        id: build
+        continue-on-error: true
+        run: pnpm run build 2>&1 | tee "$RUNNER_TEMP/diagnostic-funnel-01d1/build.log"
+
+      - name: Apply and verify migrations on temporary local D1
+        id: migrations
+        continue-on-error: true
+        run: |
+          for migration_number in {0..19}; do
+            migration_prefix=$(printf '%04d' "$migration_number")
+            migration_count=$(find db/migrations -maxdepth 1 -type f -name "${migration_prefix}_*.sql" | wc -l)
+            if [ "$migration_count" -ne 1 ]; then
+              echo "Expected one migration beginning with ${migration_prefix}; found ${migration_count}."
+              exit 1
+            fi
+          done
+          pnpm exec wrangler d1 migrations apply DB --local 2>&1 | tee "$RUNNER_TEMP/diagnostic-funnel-01d1/d1-migrations-apply.log"
+          pnpm exec wrangler d1 migrations list DB --local 2>&1 | tee "$RUNNER_TEMP/diagnostic-funnel-01d1/d1-migrations-list.log"
+          pnpm exec wrangler d1 execute DB --local --command "SELECT name FROM d1_migrations ORDER BY id;" 2>&1 | tee "$RUNNER_TEMP/diagnostic-funnel-01d1/d1-migration-ledger.log"
+          if ! grep -Fq '0019_' "$RUNNER_TEMP/diagnostic-funnel-01d1/d1-migration-ledger.log"; then
+            echo "The local D1 migration ledger did not confirm migration 0019."
+            exit 1
+          fi
+
+      - name: Run 01B, 01C.3 and 01D.1 against one local Worker
+        id: funnel_e2e
+        if: ${{ always() && steps.playwright.outcome == 'success' && steps.migrations.outcome == 'success' }}
+        continue-on-error: true
+        run: |
+          pnpm run dev -- --host 127.0.0.1 > "$RUNNER_TEMP/diagnostic-funnel-01d1/worker-dev.log" 2>&1 &
+          worker_pid=$!
+          trap 'kill "$worker_pid" 2>/dev/null || true; wait "$worker_pid" 2>/dev/null || true' EXIT
+
+          ready=false
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:5173/diagnostico > /dev/null; then
+              ready=true
+              break
+            fi
+            sleep 2
+          done
+          if [ "$ready" != true ]; then
+            cat "$RUNNER_TEMP/diagnostic-funnel-01d1/worker-dev.log"
+            exit 1
+          fi
+
+          e2e_status=0
+          run_suite() {
+            suite_name="$1"
+            expected_marker="$2"
+            shift 2
+            suite_log="$RUNNER_TEMP/diagnostic-funnel-01d1/${suite_name}.log"
+            echo "Running ${suite_name}"
+            if BASE_URL=http://127.0.0.1:5173 "$@" > "$suite_log" 2>&1; then
+              cat "$suite_log"
+              if grep -Fq "$expected_marker" "$suite_log"; then
+                echo "CI_RESULT ${suite_name} PASS"
+              else
+                echo "CI_RESULT ${suite_name} FAIL: expected assertion-completion marker missing"
+                e2e_status=1
+              fi
+            else
+              suite_exit=$?
+              cat "$suite_log"
+              echo "CI_RESULT ${suite_name} FAIL (exit ${suite_exit})"
+              e2e_status=1
+            fi
+          }
+
+          run_suite e2e-01b 'diagnostic-v3-funnel-01b-check: 6/6 PASS' pnpm exec node tests/e2e/diagnostic-v3-funnel-01b-check.mjs
+          run_suite e2e-01c3 'diagnostic-v3-funnel-01c-check: PASS' pnpm exec node tests/e2e/diagnostic-v3-funnel-01c-check.mjs
+          run_suite e2e-01d1 'diagnostic-v3-funnel-01c-check: PASS' pnpm exec node tests/e2e/diagnostic-v3-funnel-01d1-check.mjs
+
+          kill "$worker_pid" 2>/dev/null || true
+          wait "$worker_pid" 2>/dev/null || true
+          worker_pid=""
+          dev_worker_stopped=false
+          for attempt in {1..30}; do
+            if ! curl --fail --silent http://127.0.0.1:5173/diagnostico > /dev/null; then
+              dev_worker_stopped=true
+              break
+            fi
+            sleep 1
+          done
+          if [ "$dev_worker_stopped" != true ]; then
+            echo "Development Worker is still serving; refusing to start another Worker against the same local D1."
+            e2e_status=1
+          else
+            echo "dev_worker_stopped=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          clean_sql="SELECT CASE WHEN (SELECT COUNT(*) FROM identified_diagnostic_request) + (SELECT COUNT(*) FROM diagnostic_report_snapshot) + (SELECT COUNT(*) FROM verified_email_challenge) + (SELECT COUNT(*) FROM diagnostic_report_access) + (SELECT COUNT(*) FROM commercial_contact_intent) + (SELECT COUNT(*) FROM diagnostic_research_intent) + (SELECT COUNT(*) FROM diagnostic_funnel_aggregate) = 0 THEN 'DIAGNOSTIC_D1_EMPTY' ELSE 'DIAGNOSTIC_D1_NOT_EMPTY' END AS status;"
+          if pnpm exec wrangler d1 execute DB --local --command "$clean_sql" > "$RUNNER_TEMP/diagnostic-funnel-01d1/d1-post-e2e.log" 2>&1; then
+            cat "$RUNNER_TEMP/diagnostic-funnel-01d1/d1-post-e2e.log"
+            if grep -Fq 'DIAGNOSTIC_D1_EMPTY' "$RUNNER_TEMP/diagnostic-funnel-01d1/d1-post-e2e.log"; then
+              echo "CI_RESULT d1-post-e2e PASS"
+            else
+              echo "CI_RESULT d1-post-e2e FAIL: diagnostic test data remains"
+              e2e_status=1
+            fi
+          else
+            cat "$RUNNER_TEMP/diagnostic-funnel-01d1/d1-post-e2e.log"
+            echo "CI_RESULT d1-post-e2e FAIL: could not query temporary local D1"
+            e2e_status=1
+          fi
+
+          exit "$e2e_status"
+
+      - name: Verify production diagnostic isolation with Vite preview Worker
+        id: production_isolation
+        if: ${{ always() && steps.build.outcome == 'success' && steps.migrations.outcome == 'success' && steps.funnel_e2e.outputs.dev_worker_stopped == 'true' }}
+        continue-on-error: true
+        env:
+          BASE_URL: http://127.0.0.1:8787
+        run: |
+          pnpm exec vite preview --host 127.0.0.1 --port 8787 > "$RUNNER_TEMP/diagnostic-funnel-01d1/worker-production.log" 2>&1 &
+          worker_pid=$!
+          trap 'kill "$worker_pid" 2>/dev/null || true; wait "$worker_pid" 2>/dev/null || true' EXIT
+
+          ready=false
+          for attempt in {1..60}; do
+            if curl --fail --silent "$BASE_URL/diagnostico" > /dev/null; then
+              ready=true
+              break
+            fi
+            sleep 2
+          done
+          if [ "$ready" != true ]; then
+            cat "$RUNNER_TEMP/diagnostic-funnel-01d1/worker-production.log"
+            exit 1
+          fi
+          pnpm exec node tests/e2e/diagnostic-production-isolation-check.mjs 2>&1 | tee "$RUNNER_TEMP/diagnostic-funnel-01d1/production-isolation.log"
+
+      - name: Report certification gate outcomes
+        if: always()
+        env:
+          INSTALL: ${{ steps.install.outcome }}
+          PLAYWRIGHT: ${{ steps.playwright.outcome }}
+          UNIT: ${{ steps.unit.outcome }}
+          TYPECHECK: ${{ steps.typecheck.outcome }}
+          BUILD: ${{ steps.build.outcome }}
+          MIGRATIONS: ${{ steps.migrations.outcome }}
+          FUNNEL_E2E: ${{ steps.funnel_e2e.outcome }}
+          PRODUCTION_ISOLATION: ${{ steps.production_isolation.outcome }}
+        run: |
+          {
+            echo "install=$INSTALL"
+            echo "playwright=$PLAYWRIGHT"
+            echo "unit=$UNIT"
+            echo "typecheck=$TYPECHECK"
+            echo "build=$BUILD"
+            echo "migrations=$MIGRATIONS"
+            echo "funnel_e2e=$FUNNEL_E2E"
+            echo "production_isolation=$PRODUCTION_ISOLATION"
+          } | tee "$RUNNER_TEMP/diagnostic-funnel-01d1/gate-outcomes.log"
+          for outcome in "$INSTALL" "$PLAYWRIGHT" "$UNIT" "$TYPECHECK" "$BUILD" "$MIGRATIONS" "$FUNNEL_E2E" "$PRODUCTION_ISOLATION"; do
+            if [ "$outcome" != success ]; then
+              exit 1
+            fi
+          done
+
+      - name: Upload logs and gate results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: diagnostic-funnel-01d1-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/diagnostic-funnel-01d1/
+          if-no-files-found: warn
+          retention-days: 30

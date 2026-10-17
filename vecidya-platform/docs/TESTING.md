@@ -14,6 +14,14 @@ Por el gate ENV-01, quedan `NOT_RUN` en este corte: E2E `diagnostic-v3-funnel-01
 
 El contrato existente escribe eventos identificados dentro del batch D1 de la transición de dominio. Si falla el batch con analytics se reintenta solo el batch operacional para no impedir a la persona completar la acción; la métrica puede quedar subcontada permanentemente y no se presenta como total exacto. La primera apertura persiste un marcador por solicitud aunque falle el agregado, evitando contar recovery/revisitas como otra primera apertura. La consulta dev suprime celdas `<5`; inicios/CTA son estimaciones repetibles y las tasas diarias no son cohortes exactas. Los seis agregados no incluyen PII, respuestas ni IDs según contrato/código; este corte no ejecutó el aislamiento en bundle productivo.
 
+### CI aislado para PR #6 — ejecución pendiente
+
+Workflow `.github/workflows/diagnostic-funnel-01d1.yml`: evento `pull_request` hacia `main`, runner `ubuntu-latest`, Node `24.21.0`, pnpm `11.21.0`, `pnpm install --frozen-lockfile` sin caché. El job no declara secretos, credenciales de Cloudflare ni permisos superiores a `contents: read`; aplica D1 solo con `--local` y no contiene deploy ni migraciones remotas.
+
+La certificación ejecuta `test:unit`, `typecheck`, `build`, verifica el ledger local hasta `0019`, y corre 01B/01C.3/01D.1 secuencialmente contra un único `pnpm run dev`/Worker. Las E2E requieren su marcador final de aserciones; el Worker dev debe detenerse antes de consultar la D1 o iniciar el preview. Al terminar se comprueba que solicitudes, snapshots, challenges, grants, consentimientos y agregados de la D1 temporal estén vacíos. `vite preview` ejecuta el build con el Cloudflare Vite plugin/Worker local para comprobar que rutas/módulos/fixtures dev-only no aparecen en los bundles y que rutas de identificación/informe no se entregan anónimamente.
+
+Los logs de toolchain, instalación, cada suite y resultado final se guardan en `$RUNNER_TEMP` y se suben como artifact durante 30 días incluso ante fallos. Validación local de sintaxis: YAML parseado con PyYAML y `node --check` del harness PASS. **La ejecución GitHub Actions aún está pendiente; no se atribuye PASS a ningún gate nuevo.**
+
 ## VEC-APRENDE-06A — Tecnología explicada (2026-10-17)
 
 **Runner:** Worker local (`pnpm run dev`) + D1 local con migraciones aplicadas en el worktree aislado para servir el sitemap. Sin `--remote`; no se modifica D1 remota. Con Chrome local:
