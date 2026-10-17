@@ -7,6 +7,13 @@
 - Convenciones dinámicas por checkpoint para MiniWeb, Diagnóstico y Aprende; reconciliación de migraciones concurrentes `0016`/`0017` antes de nuevas migraciones MiniWeb.
 - Política documental únicamente: sin cambios de ejecución, schema, datos remotos ni deploy.
 
+## 2026-10-16 — VEC-APRENDE-04/05 (local, PR #2)
+
+- Se completa Automatización con condiciones explícitas, revisión humana y un flujo comprobable; se amplía Presencia Digital con preparación de canales, ejemplo hipotético, checklist, FAQ y un diagrama propio. CRM e IA conservan sus versiones editoriales.
+- Las cuatro guías siguen usando los bloques editoriales existentes, slugs/canonicals/autoría estables, índice accesible, enlaces y CTA contextual; sin CMS, datos comerciales ficticios ni garantías de resultados.
+- Tras integrar `origin/main` (`e91577a`, incluido Automatización `870d9e1`), suite unitaria `1558/1558 PASS`, typecheck/build y E2E local de Aprende en 1366/768/390/360 PASS. Inspección Playwright desktop/móvil sin desbordamiento; queda la observación conocida `LEARN-SVG-MOBILE-LABELS-001`.
+- Solo cambios locales de contenido, pruebas y documentación; sin rutas nuevas, migraciones, D1 remota, deploy ni publicación.
+
 ## 2026-10-15 — APP-MINI-02A (local, no desplegado)
 
 - Registro versionado de familias `services`, `catalog`, `gastronomy` y `professional`, con solo la plantilla compatible y módulos `hero`, `about`, `contact`, `hours`, `location` disponibles.

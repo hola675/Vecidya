@@ -30,7 +30,7 @@
     <g fill="none" stroke="#155fc5" stroke-width="4" marker-end="url(#arrow)">
       <path d="M248 234h30" />
       <path d="M490 200 630 146" />
-      <path d="M490 268 630 348" />
+      <path d="M490 268 630 348" marker-end="url(#arrow-warm)" />
     </g>
     <g fill="none" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)">
       <path d="M385 319v112h505" />
@@ -39,7 +39,7 @@
       <text x="555" y="157">Sí</text>
     </g>
     <g fill="#c45116" font-size="16" font-weight="700">
-      <text x="554" y="320">No se puede comprobar</text>
+      <text x="767" y="295">No se puede comprobar</text>
     </g>
     <g fill="#475569" font-size="16" font-weight="700">
       <text x="610" y="455">No: termina sin ejecutar la acción</text>
