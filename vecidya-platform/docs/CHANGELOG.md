@@ -1,10 +1,10 @@
 # Changelog
 
-## 2026-10-16 — DIAG-V3-FUNNEL-01D.1-R (implementación local parcial)
+## 2026-10-16 — DIAG-V3-FUNNEL-01D.1-R (bloqueado por dependencias)
 
 - Conservado el contrato de seis eventos. `identified_request_created` y `email_verified` comparten batch transaccional con el dominio y hacen fallback al batch operacional si falla analytics. El first-open ahora se deduplica en la solicitud, no por grant, también tras recovery; `0019` hace backfill del timestamp mínimo existente.
 - La cadena `0000`–`0019` y el backfill se probaron en D1 temporales locales; quedan vacías. Unitarias focales 8/8 y comprobaciones SQL PASS. Worker E2E, suite completa, typecheck/build y aislamiento de bundle siguen `NOT_RUN` por `BLOCKED_DEPENDENCIES` (no se pudieron restaurar paquetes tras un único intento prefer-offline). DIAG-V3-08 no se reutiliza.
-- El trabajo sigue en `feat/diagnostic-funnel-01d1` sobre `origin/main=e91577a`; commits `6563bb9`/`ad8f219`/`63caedd` están pushed. PR no creada porque `gh` no está instalado (enlace de apertura en `STATUS.md`). Sin merge, D1 compartida/remota ni deploy.
+- El trabajo sigue en `feat/diagnostic-funnel-01d1`, checkpoint sobre `e91577a`; commits `6563bb9`/`ad8f219`/`63caedd`/`07767a6`/`e09777c` están pushed. `origin/main` avanzó a `e910c69`, con solapamiento en código/rutas y documentos; no se reconcilió sin autorización de integración. PR no creada porque `gh` no está instalado (enlace en `STATUS.md`). Sin merge, D1 compartida/remota ni deploy.
 - Tras esos pushes `origin/main` avanzó a `e910c69`; hay solapamiento de archivo en `app/routes.ts` y documentos. No se hizo merge ni rebase; reconciliar el estado multiagente antes de integrar.
 
 ## 2026-10-16 — Política Git multiagente y Worktrees (documental)
