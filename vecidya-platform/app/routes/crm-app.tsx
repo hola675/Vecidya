@@ -4,7 +4,7 @@ import { createDatabase } from "../../db/client.server";
 import { listIntegrationConnections } from "../../db/queries/integration-connections.server";
 import { listOrganizationServices } from "../../db/queries/organization-services.server";
 import { ClientAreaShell } from "../components/client-area-shell";
-import { Badge, Card, Icon } from "../components/ui";
+import { Badge, Card } from "../components/ui";
 import { publicAssets } from "../assets/public-assets";
 import { getActiveOrganization, requireSession } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
