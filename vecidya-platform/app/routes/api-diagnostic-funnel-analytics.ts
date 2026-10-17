@@ -1,5 +1,5 @@
 import { listFunnelAnalytics, recordBrowserFunnelAnalytics } from "../../db/queries/diagnostic-funnel-analytics.server";
-import { isBrowserFunnelAnalyticsEvent } from "../features/diagnostic/funnel-analytics-contract";
+import { isBrowserFunnelAnalyticsEvent, isLoopbackDevelopmentHost } from "../features/diagnostic/funnel-analytics-contract";
 import { allowRateLimitedRequest } from "../features/diagnostic/diagnostic-rate-limit.server";
 import { readRequestBodyLimited, RequestBodyTooLargeError } from "../features/diagnostic/bounded-request-body.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
@@ -8,7 +8,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 
 const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
 const failure = (status: number, error: string) => Response.json({ error }, { status, headers });
-const isLoopbackRequest = (request: Request) => ["localhost", "127.0.0.1", "[::1]"].includes(new URL(request.url).hostname.toLowerCase());
+const isLoopbackRequest = (request: Request) => isLoopbackDevelopmentHost(new URL(request.url).hostname);
 
 export function loader({ context, request }: LoaderFunctionArgs) {
   if (!import.meta.env.DEV || !isLoopbackRequest(request)) return failure(404, "No disponible.");

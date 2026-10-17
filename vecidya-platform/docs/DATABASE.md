@@ -1,6 +1,6 @@
 # Base de datos
 
-Última reconciliación: **2026-10-16 (FUNNEL-01D.1, local).** Se añadieron `diagnostic_funnel_aggregate`, `first_opened_at` operacional y migración `0018`, posterior a `0016` Diagnóstico y `0017` MiniWeb. La cadena `0000`–`0018` se aplicó en D1 temporal aislada `C:\Users\Admin\AppData\Local\Temp\kilo\vecidya-funnel-01d1-d1`; la D1 compartida y remota no se migraron ni limpiaron. `0011`–`0013` siguen siendo historia DIAG-V3-08, no el almacén nuevo.
+Última reconciliación: **2026-10-16 (FUNNEL-01D.1-R, local).** `0018` agrega `diagnostic_funnel_aggregate`; `0019` mueve la marca de primera apertura de grant a solicitud y conserva la fecha mínima histórica. La cadena `0000`–`0019` se aplicó a D1 temporal aislada `C:\Users\Admin\AppData\Local\Temp\kilo\vecidya-funnel-01d1-r2-d1`, que terminó con cero solicitudes, grants y agregados. La D1 compartida/remota no se migró. `0011`–`0013` siguen siendo historia DIAG-V3-08, no el almacén nuevo.
 
 ## APP-MINI-02A — configuración modular
 
@@ -13,14 +13,15 @@ Ambas relaciones usan cascade al borrar la organización/sitio; índice por siti
 
 ## FUNNEL-01C — datos de informe identificado (local)
 
-`db/schema/diagnostic-identification.ts` añade las tablas de solicitud identificada, snapshot serializado/hash/versionado, challenges de correo con digest/expiración/intentos, concesiones de acceso con digest, dos registros independientes de opt-in y el agregado FUNNEL-01D.1 (36 tablas según el schema Drizzle actual). Las FK de snapshot, challenge, acceso y consentimientos usan `ON DELETE CASCADE`; borrar la solicitud limpia el conjunto. La huella de idempotencia permite detectar una misma clave con payload distinto. Email/teléfono/nombre e informe quedan en D1 local para el flujo de desarrollo; IP no se persiste. La cookie de acceso solo se guarda como digest. El agregado no contiene FK ni columnas de identidad.
+`db/schema/diagnostic-identification.ts` define solicitud identificada, snapshot serializado/hash/versionado, challenges de correo con digest/expiración/intentos, grants con digest, dos registros independientes de opt-in y el agregado FUNNEL-01D.1 (36 tablas en el schema Drizzle). `identified_diagnostic_request.first_report_opened_at` deduplica por solicitud, incluso tras recovery; al borrar la solicitud la marca desaparece con su dominio, mientras el agregado permanece sin FK. Las FK de snapshot, challenge, acceso y consentimientos usan `ON DELETE CASCADE`. Email/teléfono/nombre e informe solo existen en sus tablas operacionales de desarrollo; no se copian al agregado. IP no se persiste y cookie se guarda solo como digest.
 
 | Migración | Propósito | D1 local | Remoto |
 | --- | --- | --- | --- |
 | `0014_diagnostic-identification.sql` | Solicitud, snapshot, challenge, grant, opt-ins A/B/C | Aplicada `RAN` 2026-10-12 | No aplicada |
 | `0015_diagnostic-request-fingerprint.sql` | Huella ligada a idempotency key y contenido | Aplicada `RAN` 2026-10-12 | No aplicada |
 | `0016_diagnostic-recovery-challenge-purpose.sql` | Distingue challenge `verification` de `access_recovery` con default de compatibilidad `verification` | Aplicada solo en D1 temporal aislada de C1.3; shared local ledger pendiente | No aplicada |
-| `0018_diagnostic-funnel-aggregates.sql` | Agregado FUNNEL-01D.1 y primera apertura operacional del grant | Aplicada a D1 temporal aislada en este corte | No aplicada; no consultada |
+| `0018_diagnostic-funnel-aggregates.sql` | Agregado FUNNEL-01D.1 y marca inicial provisional en grant | Aplicada a D1 temporal de checkpoint | No aplicada |
+| `0019_diagnostic-funnel-request-first-open.sql` | Marca first-open por solicitud; backfill con `MIN(first_opened_at)` y retiro del campo por grant | Aplicada a D1 temporal aislada 01D.1-R | No aplicada |
 
 La expiración invalida consultas de informe y `purgeExpiredIdentifiedReports()` ejecuta un batch idempotente accesible solo por una ruta dev manual; no hay scheduler/llamador automático. Limpia grants revocados/vencidos, snapshots/challenges vencidos y huérfanos, preferencias huérfanas, y solicitudes expiradas con cascade. B/C bajo una solicitud viva se conservan; no hay decisión aprobada de cuánto retenerlos. E2E local forzó un fallo en el borrado final y confirmó rollback completo, luego reejecutó con éxito. 30 días de solicitud/snapshot/acceso y 24 horas del challenge son valores de prueba provisionales, no política aprobada. No migrar/reinterpretar sesiones anteriores ni conectar analítica/GHL.
 
@@ -213,7 +214,7 @@ grandfathering de precio. Ver [TESTING.md](TESTING.md).
 
 ## Migraciones
 
-`_journal.json` tiene 19 entradas (`0000`–`0018`), en secuencia, incluidos los checkpoints concurrentes `0016` Diagnóstico y `0017` MiniWeb. Drizzle generó `0018` y su snapshot con `prevId` de `0017`.
+`_journal.json` tiene 20 entradas (`0000`–`0019`), en secuencia, incluidos los checkpoints concurrentes `0016` Diagnóstico y `0017` MiniWeb. Drizzle generó `0019` y su snapshot con `prevId` de `0018`; el SQL incluye backfill explícito antes de `DROP COLUMN`.
 
 | # | Archivo | Propósito | Cambios |
 | --- | --- | --- | --- |
@@ -235,9 +236,10 @@ grandfathering de precio. Ver [TESTING.md](TESTING.md).
 | 0015 | `0015_diagnostic-request-fingerprint.sql` | Idempotencia ligada al contenido (FUNNEL-01C) | `identified_diagnostic_request.request_fingerprint_hash` |
 | 0016 | `0016_diagnostic-recovery-challenge-purpose.sql` | FUNNEL-01C.3 | `verified_email_challenge.purpose` |
 | 0017 | `0017_miniweb-core.sql` | APP-MINI-02A | `miniweb_site`, `miniweb_module` |
-| 0018 | `0018_diagnostic-funnel-aggregates.sql` | FUNNEL-01D.1 | `diagnostic_funnel_aggregate`; `diagnostic_report_access.first_opened_at` |
+| 0018 | `0018_diagnostic-funnel-aggregates.sql` | FUNNEL-01D.1 | `diagnostic_funnel_aggregate`; columna de grant inicial supersedida en 0019 |
+| 0019 | `0019_diagnostic-funnel-request-first-open.sql` | FUNNEL-01D.1-R | `identified_diagnostic_request.first_report_opened_at`; elimina `diagnostic_report_access.first_opened_at` |
 
-Estado de aplicación: cadena `0000`–`0018` ejecutada en la D1 temporal aislada indicada arriba; el ledger local compartido no se alteró y puede mantener pendientes `0016`/`0017`. El estado remoto no se consultó ni modificó en FUNNEL-01D.1; no se usó `--remote`.
+Estado de aplicación: cadena `0000`–`0019` ejecutada en D1 temporal nueva. El ledger local compartido no se alteró y puede mantener pendientes `0016`/`0017`. El estado remoto no se consultó ni modificó; no se usó `--remote`.
 
 ## Persistencia del Diagnóstico (DIAG-V3-06)
 
@@ -279,7 +281,7 @@ Detalles de diseño vigentes:
 
 ## Analítica agregada FUNNEL-01D.1 (local, contrato 1)
 
-FUNNEL-01D.1 no lee ni escribe `diagnostic_event` ni reutiliza taxonomía/rutas DIAG-V3-08. `diagnostic_funnel_aggregate` es agregado sin FK ni eventos crudos: clave `(event_day, diagnostic_version, contract_version, event_type)`, `event_count` positivo. SQL y Drizzle restringen versión a `diag-v3-public-v1`, contrato a `1` y evento a las seis claves cerradas. `0018` agrega también `diagnostic_report_access.first_opened_at`, estado operacional que permite que lecturas concurrentes cuenten una sola apertura; no se copia al agregado.
+FUNNEL-01D.1 no lee ni escribe `diagnostic_event` ni reutiliza taxonomía/rutas DIAG-V3-08. `diagnostic_funnel_aggregate` es agregado sin FK ni eventos crudos: clave `(event_day, diagnostic_version, contract_version, event_type)`, `event_count` positivo. SQL y Drizzle restringen versión a `diag-v3-public-v1`, contrato a `1` y evento a las seis claves cerradas. `0019` conserva por solicitud el `MIN(first_opened_at)` existente entre grants; tras ese backfill, elimina el marcador por grant.
 
 | Métrica/evento | Unidad | Origen | Exactitud |
 | --- | --- | --- | --- |

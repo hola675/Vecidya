@@ -134,6 +134,13 @@
       "when": 1792172792334,
       "tag": "0018_diagnostic-funnel-aggregates",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "6",
+      "when": 1792181482227,
+      "tag": "0019_diagnostic-funnel-request-first-open",
+      "breakpoints": true
     }
   ]
 }

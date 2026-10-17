@@ -1,6 +1,6 @@
 # Estructura del código
 
-Última reconciliación: 2026-10-16 (FUNNEL-01D.1 local; migración `0018`, lectura/emisión dev-only). Rutas verificadas contra `app/routes.ts`; la tabla describe código local, no producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas. Abreviaturas: [TESTING.md](TESTING.md).
+Última reconciliación: 2026-10-16 (FUNNEL-01D.1-R local; `0018`/`0019`, lectura/emisión/fixtures loopback dev-only). Rutas verificadas contra `app/routes.ts`; la tabla describe código local, no producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas. Abreviaturas: [TESTING.md](TESTING.md).
 
 ## LEGACY-00 — inventario de rutas (baseline `50026d0`)
 
@@ -18,7 +18,7 @@ Resultado `LEGACY_INVENTORY_READY`; auditoría sin eliminación. La clasificaci�
 | `/__dev/diagnostico/qa03b*` | `KEEP` | QA-03B bank/session/pipeline + suites QA | Candidata certificada; rutas dev-only. |
 | APIs persistence/recovery/analytics sin route registration | `REMOVE_AFTER_CUTOVER` / `INVESTIGATE` | No importadores app localizados; evidencia DIAG-V3-13 | Revisar Worker config, tests y scripts antes de retirar. |
 
-HEAD contiene 15 archivos fuente de ruta relacionados con diagnóstico; el registro público vigente conserva `/diagnostico`, metodología y anonymous-summary API. Rutas `__dev` dependen de `NODE_ENV=development` y guardas loader; contar archivo no equivale a ruta registrada.
+HEAD contiene 16 archivos fuente de ruta relacionados con diagnóstico; el registro público vigente conserva `/diagnostico`, metodología y anonymous-summary API. Rutas `__dev` dependen de `NODE_ENV=development` y guardas loader; contar archivo no equivale a ruta registrada.
 
 Medición desde blobs Git: `app/features/diagnostic` contiene 116 fuentes y 1.359.978 bytes; `qa03b/**` son 21/203.991 bytes; las dos familias `qbv2-candidate-*` suman 25/276.821 bytes brutos. Esas cantidades se traslapan con dependencias compartidas y no equivalen a reducción de bundle/instalación. La estimación condicional por identidad está en [ARCHITECTURE.md](ARCHITECTURE.md#estimación-de-retirada-potencial).
 

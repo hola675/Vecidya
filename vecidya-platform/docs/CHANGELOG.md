@@ -1,10 +1,10 @@
 # Changelog
 
-## 2026-10-16 — DIAG-V3-FUNNEL-01D.1 (implementación local en curso)
+## 2026-10-16 — DIAG-V3-FUNNEL-01D.1-R (implementación local parcial)
 
-- Añadido contrato versionado de seis contadores diarios por día UTC/versión, tabla agregada sin IDs personales, lectura dev-only con supresión `<5` y captura best-effort local; los marcadores de primera apertura evitan sumar recargas.
-- Migración Drizzle `0018` generada después de `0016` Diagnóstico y `0017` MiniWeb, probada en una D1 temporal aislada. DIAG-V3-08 no se reutiliza.
-- El trabajo está aislado en `feat/diagnostic-funnel-01d1`, reconciliado por fast-forward desde `2959555` a `a7949dd` y luego a `e91577a` (Aprende, commits preservados). Código en commit `6563bb9`, pushed a origin. Validación parcial; PR no creada porque `gh` no está instalado (enlace para crearla en `STATUS.md`). Sin merge, D1 compartida/remota ni deploy.
+- Conservado el contrato de seis eventos. `identified_request_created` y `email_verified` comparten batch transaccional con el dominio y hacen fallback al batch operacional si falla analytics. El first-open ahora se deduplica en la solicitud, no por grant, también tras recovery; `0019` hace backfill del timestamp mínimo existente.
+- La cadena `0000`–`0019` y el backfill se probaron en D1 temporales locales; quedan vacías. Unitarias focales 8/8 y comprobaciones SQL PASS. Worker E2E, suite completa, typecheck/build y aislamiento de bundle siguen `NOT_RUN` por `BLOCKED_DEPENDENCIES` (no se pudieron restaurar paquetes tras un único intento prefer-offline). DIAG-V3-08 no se reutiliza.
+- El trabajo sigue en `feat/diagnostic-funnel-01d1` sobre `origin/main=e91577a`; commits anteriores `6563bb9`/`ad8f219` permanecen en origin. Los fixes 01D.1-R están pendientes de commit. PR no creada porque `gh` no está instalado (enlace de apertura en `STATUS.md`). Sin merge, D1 compartida/remota ni deploy.
 
 ## 2026-10-16 — Política Git multiagente y Worktrees (documental)
 

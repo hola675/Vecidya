@@ -20,6 +20,10 @@ export function isBrowserFunnelAnalyticsEvent(value: unknown): value is BrowserF
   return value === "diagnostic_started" || value === "detailed_report_cta_clicked";
 }
 
+export function isLoopbackDevelopmentHost(hostname: string): boolean {
+  return ["localhost", "127.0.0.1", "[::1]"].includes(hostname.toLowerCase());
+}
+
 export function utcAnalyticsDay(date: Date): string {
   return date.toISOString().slice(0, 10);
 }

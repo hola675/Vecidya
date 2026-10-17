@@ -4,7 +4,7 @@
 
 | Checkpoint | Alcance | Estado/gate |
 | --- | --- | --- |
-| **FUNNEL-01D.1** | Seis contadores agregados del embudo; sin respuestas/identidad ni dashboard | En implementación local en worktree aislado. Requiere validar Worker/D1 local, privacy, pruebas, typecheck/build y aislamiento del bundle; sin activación productiva |
+| **FUNNEL-01D.1** | Seis contadores agregados del embudo; sin respuestas/identidad ni dashboard | Parcial/local; `BLOCKED_DEPENDENCIES` impide Worker E2E, typecheck/build y bundle check. No activar producción ni avanzar a 01D.2 hasta cierre/aprobación independiente |
 | **FUNNEL-01D.2** | Preferencias y privacidad | Siguiente fase secuencial; no iniciar hasta cierre/aprobación independiente de 01D.1 |
 | **FUNNEL-01D.3** | Preparación comercial | Después de 01D.2; solo transferencia para contactos autorizados, sin sync/oportunidades automáticas; autorización separada |
 

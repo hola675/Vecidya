@@ -18,6 +18,7 @@ export const identifiedDiagnosticRequest = sqliteTable("identified_diagnostic_re
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
   expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+  firstReportOpenedAt: integer("first_report_opened_at", { mode: "timestamp_ms" }),
 }, (table) => [
   uniqueIndex("identified_diagnostic_request_idempotency_uq").on(table.idempotencyKeyHash),
   index("identified_diagnostic_request_email_idx").on(table.email),
@@ -60,7 +61,6 @@ export const diagnosticReportAccess = sqliteTable("diagnostic_report_access", {
   issuedAt: integer("issued_at", { mode: "timestamp_ms" }).notNull(),
   expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
   revokedAt: integer("revoked_at", { mode: "timestamp_ms" }),
-  firstOpenedAt: integer("first_opened_at", { mode: "timestamp_ms" }),
 }, (table) => [
   uniqueIndex("diagnostic_report_access_challenge_uq").on(table.challengeId),
   uniqueIndex("diagnostic_report_access_token_digest_uq").on(table.tokenDigest),

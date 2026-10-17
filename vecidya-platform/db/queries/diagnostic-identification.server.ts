@@ -1,11 +1,13 @@
 import { and, desc, eq, gt, isNull, lte, lt, sql } from "drizzle-orm";
 
 import { createDatabase } from "../client.server";
+import { withBestEffortFunnelAnalytics } from "./diagnostic-funnel-transaction.server";
 import { FUNNEL_ANALYTICS_CONTRACT_VERSION, FUNNEL_ANALYTICS_DIAGNOSTIC_VERSION, utcAnalyticsDay } from "../../app/features/diagnostic/funnel-analytics-contract";
 import {
   commercialContactIntent,
   diagnosticReportAccess,
   diagnosticReportSnapshot,
+  diagnosticFunnelAggregate,
   diagnosticResearchIntent,
   identifiedDiagnosticRequest,
   verifiedEmailChallenge,
@@ -30,7 +32,22 @@ export async function createReportRequestBundle(binding: D1Database, bundle: Rep
     ...(bundle.commercialIntent ? [database.insert(commercialContactIntent).values(bundle.commercialIntent)] : []),
     ...(bundle.researchIntent ? [database.insert(diagnosticResearchIntent).values(bundle.researchIntent)] : []),
   ];
-  await database.batch(statements as [typeof statements[number], ...typeof statements[number][]]);
+  const aggregateIncrement = database.insert(diagnosticFunnelAggregate).values({
+    eventDay: utcAnalyticsDay(bundle.request.createdAt),
+    diagnosticVersion: FUNNEL_ANALYTICS_DIAGNOSTIC_VERSION,
+    contractVersion: FUNNEL_ANALYTICS_CONTRACT_VERSION,
+    eventType: "identified_request_created",
+    eventCount: 1,
+  }).onConflictDoUpdate({
+    target: [diagnosticFunnelAggregate.eventDay, diagnosticFunnelAggregate.diagnosticVersion, diagnosticFunnelAggregate.contractVersion, diagnosticFunnelAggregate.eventType],
+    set: { eventCount: sql`${diagnosticFunnelAggregate.eventCount} + 1` },
+  });
+
+  const statementsWithAnalytics = [...statements, aggregateIncrement];
+  await withBestEffortFunnelAnalytics(
+    async () => { await database.batch(statementsWithAnalytics as [typeof statementsWithAnalytics[number], ...typeof statementsWithAnalytics[number][]]); },
+    async () => { await database.batch(statements as [typeof statements[number], ...typeof statements[number][]]); },
+  );
 }
 
 export async function findReportRequestById(binding: D1Database, requestId: string) {
@@ -119,57 +136,71 @@ export async function consumeChallengeAndGrantAccess(binding: D1Database, input:
   readonly purpose: ChallengePurpose;
   readonly access: typeof diagnosticReportAccess.$inferInsert;
   readonly now: Date;
+  readonly recordFunnelAnalytics?: boolean;
 }): Promise<boolean> {
   const timestamp = input.now.getTime();
   const expectedRequestStatus = input.purpose === "verification" ? "verification_pending" : "verified";
   const accessExpiresAt = input.access.expiresAt.getTime();
   if (input.access.requestId !== input.requestId || input.access.challengeId !== input.challengeId || input.access.issuedAt.getTime() !== timestamp || accessExpiresAt <= timestamp) return false;
 
-  const challengeConsume = binding.prepare(`UPDATE verified_email_challenge
-    SET status = 'consumed', consumed_at = ?
-    WHERE id = ? AND request_id = ? AND token_digest = ? AND purpose = ? AND status = 'pending' AND expires_at > ? AND attempts < 5
-      AND EXISTS (
-        SELECT 1 FROM identified_diagnostic_request r
-        INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
-        WHERE r.id = ? AND r.status = ? AND r.expires_at > ? AND s.expires_at > ?
-          AND r.expires_at >= ? AND s.expires_at >= ?
-      )`)
-    .bind(timestamp, input.challengeId, input.requestId, input.tokenDigest, input.purpose, timestamp, input.requestId, expectedRequestStatus, timestamp, timestamp, accessExpiresAt, accessExpiresAt);
-  const requestTransition = input.purpose === "verification"
-    ? binding.prepare(`UPDATE identified_diagnostic_request SET status = 'verified', updated_at = ?
-        WHERE id = ? AND status = 'verification_pending' AND expires_at > ?
-          AND EXISTS (SELECT 1 FROM verified_email_challenge c WHERE c.id = ? AND c.request_id = ? AND c.purpose = 'verification' AND c.status = 'consumed' AND c.consumed_at = ?)
-          AND EXISTS (SELECT 1 FROM diagnostic_report_snapshot s WHERE s.request_id = identified_diagnostic_request.id AND s.expires_at > ?)`)
-      .bind(timestamp, input.requestId, timestamp, input.challengeId, input.requestId, timestamp, timestamp)
-    : binding.prepare(`UPDATE identified_diagnostic_request SET updated_at = ?
-        WHERE id = ? AND status = 'verified' AND expires_at > ?
-          AND EXISTS (SELECT 1 FROM verified_email_challenge c WHERE c.id = ? AND c.request_id = ? AND c.purpose = 'access_recovery' AND c.status = 'consumed' AND c.consumed_at = ?)
-          AND EXISTS (SELECT 1 FROM diagnostic_report_snapshot s WHERE s.request_id = identified_diagnostic_request.id AND s.expires_at > ?)`)
-      .bind(timestamp, input.requestId, timestamp, input.challengeId, input.requestId, timestamp, timestamp);
-  const revokePreviousAccess = input.purpose === "access_recovery"
-    ? [binding.prepare(`UPDATE diagnostic_report_access SET revoked_at = ?
-        WHERE request_id = ? AND challenge_id <> ? AND revoked_at IS NULL
-          AND EXISTS (
-            SELECT 1 FROM verified_email_challenge c
-            INNER JOIN identified_diagnostic_request r ON r.id = c.request_id
-            INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
-            WHERE c.id = ? AND c.request_id = ? AND c.purpose = 'access_recovery' AND c.status = 'consumed' AND c.consumed_at = ?
-              AND r.status = 'verified' AND r.expires_at > ? AND s.expires_at > ?
-          )`)
-      .bind(timestamp, input.requestId, input.challengeId, input.challengeId, input.requestId, timestamp, timestamp, timestamp)]
-    : [];
-  const accessWrite = binding.prepare(`INSERT INTO diagnostic_report_access
-    (id, request_id, challenge_id, token_digest, issued_at, expires_at, revoked_at)
-    SELECT ?, ?, c.id, ?, ?, ?, NULL
-    FROM verified_email_challenge c
-    INNER JOIN identified_diagnostic_request r ON r.id = c.request_id
-    INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
-    WHERE c.id = ? AND c.request_id = ? AND c.purpose = ? AND c.status = 'consumed' AND c.consumed_at = ?
-      AND r.status = 'verified' AND r.expires_at > ? AND s.expires_at > ?
-      AND r.expires_at >= ? AND s.expires_at >= ?
-    ON CONFLICT(challenge_id) DO NOTHING`)
-    .bind(input.access.id, input.access.requestId, input.access.tokenDigest, timestamp, accessExpiresAt, input.challengeId, input.requestId, input.purpose, timestamp, timestamp, timestamp, accessExpiresAt, accessExpiresAt);
-  const results = await binding.batch([challengeConsume, requestTransition, ...revokePreviousAccess, accessWrite]);
+  const buildStatements = (includeAnalytics: boolean): [D1PreparedStatement, ...D1PreparedStatement[]] => {
+    const challengeConsume = binding.prepare(`UPDATE verified_email_challenge
+      SET status = 'consumed', consumed_at = ?
+      WHERE id = ? AND request_id = ? AND token_digest = ? AND purpose = ? AND status = 'pending' AND expires_at > ? AND attempts < 5
+        AND EXISTS (
+          SELECT 1 FROM identified_diagnostic_request r
+          INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
+          WHERE r.id = ? AND r.status = ? AND r.expires_at > ? AND s.expires_at > ?
+            AND r.expires_at >= ? AND s.expires_at >= ?
+        )`)
+      .bind(timestamp, input.challengeId, input.requestId, input.tokenDigest, input.purpose, timestamp, input.requestId, expectedRequestStatus, timestamp, timestamp, accessExpiresAt, accessExpiresAt);
+    const requestTransition = input.purpose === "verification"
+      ? binding.prepare(`UPDATE identified_diagnostic_request SET status = 'verified', updated_at = ?
+          WHERE id = ? AND status = 'verification_pending' AND expires_at > ?
+            AND EXISTS (SELECT 1 FROM verified_email_challenge c WHERE c.id = ? AND c.request_id = ? AND c.purpose = 'verification' AND c.status = 'consumed' AND c.consumed_at = ?)
+            AND EXISTS (SELECT 1 FROM diagnostic_report_snapshot s WHERE s.request_id = identified_diagnostic_request.id AND s.expires_at > ?)`)
+        .bind(timestamp, input.requestId, timestamp, input.challengeId, input.requestId, timestamp, timestamp)
+      : binding.prepare(`UPDATE identified_diagnostic_request SET updated_at = ?
+          WHERE id = ? AND status = 'verified' AND expires_at > ?
+            AND EXISTS (SELECT 1 FROM verified_email_challenge c WHERE c.id = ? AND c.request_id = ? AND c.purpose = 'access_recovery' AND c.status = 'consumed' AND c.consumed_at = ?)
+            AND EXISTS (SELECT 1 FROM diagnostic_report_snapshot s WHERE s.request_id = identified_diagnostic_request.id AND s.expires_at > ?)`)
+        .bind(timestamp, input.requestId, timestamp, input.challengeId, input.requestId, timestamp, timestamp);
+    const emailVerifiedIncrement = input.purpose === "verification" && includeAnalytics && input.recordFunnelAnalytics !== false
+      ? [binding.prepare(`INSERT INTO diagnostic_funnel_aggregate (event_day, diagnostic_version, contract_version, event_type, event_count)
+          SELECT ?, ?, ?, 'email_verified', 1 WHERE changes() = 1
+          ON CONFLICT(event_day, diagnostic_version, contract_version, event_type)
+          DO UPDATE SET event_count = event_count + 1`)
+        .bind(utcAnalyticsDay(input.now), FUNNEL_ANALYTICS_DIAGNOSTIC_VERSION, FUNNEL_ANALYTICS_CONTRACT_VERSION)]
+      : [];
+    const revokePreviousAccess = input.purpose === "access_recovery"
+      ? [binding.prepare(`UPDATE diagnostic_report_access SET revoked_at = ?
+          WHERE request_id = ? AND challenge_id <> ? AND revoked_at IS NULL
+            AND EXISTS (
+              SELECT 1 FROM verified_email_challenge c
+              INNER JOIN identified_diagnostic_request r ON r.id = c.request_id
+              INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
+              WHERE c.id = ? AND c.request_id = ? AND c.purpose = 'access_recovery' AND c.status = 'consumed' AND c.consumed_at = ?
+                AND r.status = 'verified' AND r.expires_at > ? AND s.expires_at > ?
+            )`)
+        .bind(timestamp, input.requestId, input.challengeId, input.challengeId, input.requestId, timestamp, timestamp, timestamp)]
+      : [];
+    const accessWrite = binding.prepare(`INSERT INTO diagnostic_report_access
+      (id, request_id, challenge_id, token_digest, issued_at, expires_at, revoked_at)
+      SELECT ?, ?, c.id, ?, ?, ?, NULL
+      FROM verified_email_challenge c
+      INNER JOIN identified_diagnostic_request r ON r.id = c.request_id
+      INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
+      WHERE c.id = ? AND c.request_id = ? AND c.purpose = ? AND c.status = 'consumed' AND c.consumed_at = ?
+        AND r.status = 'verified' AND r.expires_at > ? AND s.expires_at > ?
+        AND r.expires_at >= ? AND s.expires_at >= ?
+      ON CONFLICT(challenge_id) DO NOTHING`)
+      .bind(input.access.id, input.access.requestId, input.access.tokenDigest, timestamp, accessExpiresAt, input.challengeId, input.requestId, input.purpose, timestamp, timestamp, timestamp, accessExpiresAt, accessExpiresAt);
+    return [challengeConsume, requestTransition, ...emailVerifiedIncrement, ...revokePreviousAccess, accessWrite];
+  };
+
+  const results = input.purpose === "verification"
+    ? await withBestEffortFunnelAnalytics(() => binding.batch(buildStatements(true)), () => binding.batch(buildStatements(false)))
+    : await binding.batch(buildStatements(false));
   const accessResult = results[results.length - 1] as { readonly meta?: { readonly changes?: number } } | undefined;
   return accessResult?.meta?.changes === 1;
 }
@@ -197,19 +228,25 @@ export async function getAuthorizedReport(binding: D1Database, tokenDigest: stri
 
 export async function recordDetailedReportFirstOpen(binding: D1Database, accessId: string, requestId: string, now: Date): Promise<void> {
   const timestamp = now.getTime();
-  await binding.batch([
-    binding.prepare(`UPDATE diagnostic_report_access SET first_opened_at = ?
-      WHERE id = ? AND first_opened_at IS NULL AND revoked_at IS NULL AND expires_at > ?
-        AND EXISTS (SELECT 1 FROM identified_diagnostic_request r
-          INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
-          WHERE r.id = ? AND r.status = 'verified' AND r.expires_at > ? AND s.expires_at > ?)`)
-      .bind(timestamp, accessId, timestamp, requestId, timestamp, timestamp),
-    binding.prepare(`INSERT INTO diagnostic_funnel_aggregate (event_day, diagnostic_version, contract_version, event_type, event_count)
-      SELECT ?, ?, ?, 'detailed_report_first_opened', 1 WHERE changes() = 1
-      ON CONFLICT(event_day, diagnostic_version, contract_version, event_type)
-      DO UPDATE SET event_count = event_count + 1`)
-      .bind(utcAnalyticsDay(now), FUNNEL_ANALYTICS_DIAGNOSTIC_VERSION, FUNNEL_ANALYTICS_CONTRACT_VERSION),
-  ]);
+  const markRequestFirstOpen = () => binding.prepare(`UPDATE identified_diagnostic_request SET first_report_opened_at = ?
+    WHERE id = ? AND status = 'verified' AND first_report_opened_at IS NULL AND expires_at > ?
+      AND EXISTS (SELECT 1 FROM diagnostic_report_snapshot s WHERE s.request_id = identified_diagnostic_request.id AND s.expires_at > ?)
+      AND EXISTS (SELECT 1 FROM diagnostic_report_access a
+        WHERE a.id = ? AND a.request_id = identified_diagnostic_request.id AND a.revoked_at IS NULL AND a.expires_at > ?)`)
+    .bind(timestamp, requestId, timestamp, timestamp, accessId, timestamp);
+  try {
+    await binding.batch([
+      markRequestFirstOpen(),
+      binding.prepare(`INSERT INTO diagnostic_funnel_aggregate (event_day, diagnostic_version, contract_version, event_type, event_count)
+        SELECT ?, ?, ?, 'detailed_report_first_opened', 1 WHERE changes() = 1
+        ON CONFLICT(event_day, diagnostic_version, contract_version, event_type)
+        DO UPDATE SET event_count = event_count + 1`)
+        .bind(utcAnalyticsDay(now), FUNNEL_ANALYTICS_DIAGNOSTIC_VERSION, FUNNEL_ANALYTICS_CONTRACT_VERSION),
+    ]);
+  } catch {
+    try { await markRequestFirstOpen().run(); }
+    catch { /* Neither an analytics outage nor a marker-write failure denies an already authorized report. */ }
+  }
 }
 
 export async function deleteIdentifiedReport(binding: D1Database, requestId: string): Promise<void> {
