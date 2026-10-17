@@ -26,6 +26,7 @@ export type LearnArticle = {
   excerpt: string;
   image: string;
   imageAlt: string;
+  relatedSlugs?: string[];
   cta: { label: string; to: string; copy: string };
   sections: { heading: string; paragraphs: string[]; bullets?: string[]; blocks?: LearnBlock[] }[];
 };
@@ -580,6 +581,235 @@ export const learnArticles: LearnArticle[] = [
           "Prueba casos normales, datos inválidos, duplicados y fallos con registros ficticios o anonimizados.",
           "Define quién revisa, qué indicador comparar y cómo pausar, corregir o revertir los efectos cuando sea seguro.",
           "Si el proceso contacta clientes, comprueba preferencias y requisitos del canal antes de enviar mensajes.",
+        ] }],
+      },
+    ],
+  },
+  {
+    slug: "dominio-hosting-sitio-web-como-funcionan",
+    category: "Tecnología explicada",
+    title: "Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos",
+    intro: "Un dominio es el nombre que una persona escribe; el hosting mantiene disponible el sitio, y el DNS ayuda a encontrar el servidor. Son piezas distintas aunque un proveedor las ofrezca juntas.",
+    excerpt: "Entiende qué registrar, dónde se aloja una web, cómo se conecta con DNS y qué debes conservar para no perder el control.",
+    image: "/assets/learn/diagram-domain-dns-hosting.svg",
+    imageAlt: "Recorrido de una persona al escribir una dirección: el navegador puede consultar DNS si no tiene una respuesta vigente en caché, conecta con el servidor web y recibe la página solicitada.",
+    relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
+    cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico puede ayudarte a priorizar necesidades digitales; no registra dominios ni administra DNS o alojamiento." },
+    sections: [
+      {
+        heading: "Dominio, hosting y sitio web: tres piezas distintas",
+        paragraphs: [
+          "Un dominio es un nombre fácil de recordar que se usa dentro de una dirección web, como el nombre que aparece después de https://. El hosting —o alojamiento web— es un servicio que mantiene un servidor disponible para entregar los archivos o la aplicación del sitio. El sitio web es el contenido y el software que las personas ven y utilizan.",
+          "Una analogía útil: el dominio se parece a una dirección, el DNS a una guía que ayuda a ubicar un destino y el hosting a un local donde funciona el negocio. La comparación tiene límites: Internet no consulta una libreta central única, una dirección no es una propiedad física y los servicios pueden cambiarse o contratarse por separado.",
+        ],
+        blocks: [{ type: "definitions", items: [
+          { term: "Nombre de dominio", definition: "Un nombre legible, compuesto por etiquetas y una extensión —por ejemplo, un nombre terminado en .com— que permite identificar una ubicación dentro del sistema de nombres de Internet. No contiene por sí mismo la página web." },
+          { term: "Registro de dominio", definition: "El servicio y el acuerdo por los que un registrador tramita y mantiene el derecho de uso de un nombre durante un periodo renovable, sujeto a sus condiciones y a las reglas de la extensión. No es una compra perpetua del nombre." },
+          { term: "Titular o registrante", definition: "La persona u organización que figura como responsable contractual de la registración. Según ICANN, el registrante gestiona la configuración del dominio a través de su registrador." },
+          { term: "Hosting o alojamiento", definition: "Un servicio que ejecuta o almacena los componentes de un sitio en uno o más servidores y los entrega cuando reciben solicitudes. La capacidad, las copias de seguridad y el soporte dependen del plan y del proveedor." },
+          { term: "Servidor web", definition: "El software y la infraestructura que reciben solicitudes HTTP/HTTPS para un sitio y envían respuestas, como una página o un archivo. El servidor puede ser administrado por el proveedor de hosting." },
+          { term: "Sitio web", definition: "El conjunto de páginas, archivos y funciones que el servidor entrega para una dirección. Un sitio puede existir en una dirección temporal del proveedor antes de conectar un dominio propio." },
+          { term: "DNS", definition: "El Sistema de Nombres de Dominio responde consultas sobre nombres, por ejemplo qué dirección de red corresponde a un host. DNS encuentra información de ubicación; no guarda ni entrega por sí mismo el contenido de la página." },
+          { term: "Registrador", definition: "La empresa con la que se registra y administra un dominio. El operador de registro mantiene los datos de una extensión; un revendedor puede ofrecer la registración junto con otros servicios." },
+        ] }],
+      },
+      {
+        heading: "Del nombre que escribes a la página que ves",
+        paragraphs: [
+          "La imagen muestra el recorrido simplificado de una visita. Si escribes una dirección como https://negocio.example/horarios, el navegador separa el nombre del host de la ruta solicitada. Antes de preguntar por DNS, puede revisar respuestas guardadas por el propio navegador, el sistema operativo o el resolver de la red.",
+          "Si no encuentra una respuesta vigente, el navegador usa un resolver DNS. Ese resolver puede responder desde su propia caché o consultar otros servidores DNS hasta obtener la información autoritativa. Con una dirección de red, el navegador establece una conexión con el servidor; si la dirección usa HTTPS, negocia TLS y solicita la página. El servidor responde con el contenido y el navegador lo presenta.",
+          "La flecha punteada de retorno en el diagrama representa la dirección que DNS devuelve al navegador. Después, el navegador hace una solicitud distinta al servidor web; DNS no transporta el contenido de la página.",
+          "No se hace necesariamente una consulta DNS nueva en cada visita ni por cada imagen o archivo: las respuestas pueden conservarse mientras su tiempo de vida (TTL) siga vigente, y el navegador puede reutilizar una conexión. DNS ayuda a localizar el servidor; la solicitud al servidor es la que pide la página.",
+        ],
+        blocks: [{ type: "callout", tone: "tip", title: "DNS localiza; el servidor entrega", text: "Si una persona entra a una página y luego abre otra sección del mismo sitio, el navegador normalmente puede seguir usando la resolución guardada o la conexión existente. Una consulta nueva puede ser necesaria cuando no hay una respuesta vigente, pero no es un paso obligatorio para cada solicitud web." }],
+      },
+      {
+        heading: "Qué significa registrar un dominio",
+        paragraphs: [
+          "Para registrar un nombre, normalmente se elige una extensión, se comprueba disponibilidad y se solicita la registración a un registrador o a un revendedor. Para muchas extensiones genéricas existen acuerdos y políticas de ICANN; las extensiones de país pueden tener reglas propias. Comprueba siempre las condiciones de la extensión y del registrador concreto.",
+          "El registrador atiende la relación de servicio con el titular. El operador de registro mantiene los datos de los nombres de una extensión y publica la delegación DNS. Un revendedor puede vender el dominio como parte de un paquete. La página de ICANN explica estos papeles para el proceso que describe; no convierte a ICANN en la empresa que vende o administra tu dominio.",
+          "El registro y el hosting son servicios distintos. Pagar un dominio te permite mantener ese nombre registrado durante el periodo acordado; no garantiza que ya exista un sitio, que tengas correo profesional ni que el proveedor aloje tus archivos. Algunas empresas los incluyen en un paquete, pero conviene revisar qué parte es opcional y cómo se renueva.",
+        ],
+        blocks: [{ type: "callout", tone: "caution", title: "Un dominio no se compra para siempre", text: "La registración tiene una vigencia y debe renovarse según el contrato y las reglas de la extensión. Si se vence, el nombre puede dejar de funcionar y, después de los periodos aplicables, quedar disponible para que otra persona lo registre." }],
+      },
+      {
+        heading: "DNS: cómo se conecta el nombre con el alojamiento",
+        paragraphs: [
+          "La zona DNS de un dominio contiene registros que indican qué resolver o servidor debe responder por cada tipo de consulta. El dominio puede registrarse con una empresa, delegar DNS en otra y alojar el sitio en una tercera. Cambiar una de estas relaciones no mueve automáticamente las otras.",
+          "Cuando un proveedor dice «conecta tu dominio», puede pedir que cambies los servidores de nombres (NS) para que su servicio DNS responda por el dominio, o que conserves los NS actuales y agregues registros específicos. Sigue los valores que indique el proveedor que aloja el sitio; los nombres y pantallas exactos dependen de cada servicio.",
+        ],
+        blocks: [{ type: "definitions", items: [
+          { term: "A y AAAA", definition: "Registros que asocian un nombre de host con una dirección IPv4 (A) o IPv6 (AAAA), según la configuración indicada por el alojamiento." },
+          { term: "CNAME", definition: "Un alias que hace que un nombre consulte otro nombre, en lugar de guardar directamente una dirección IP. Sus usos permitidos dependen de las reglas de DNS y del proveedor." },
+          { term: "NS", definition: "Indica qué servidores de nombres son autoritativos para una zona DNS. Cambiar los NS delega la administración de los registros a otro servicio DNS; no traslada los archivos del sitio." },
+          { term: "MX", definition: "Indica a qué servidores se debe dirigir el correo entrante para un dominio. Es distinto de los registros que hacen que una página web se cargue." },
+          { term: "TXT", definition: "Permite publicar texto asociado a un nombre. Puede usarse para verificar un servicio o publicar políticas de correo; conserva los valores que tus servicios activos necesitan." },
+        ] }],
+      },
+      {
+        heading: "Hosting: dónde funciona la web",
+        paragraphs: [
+          "El alojamiento web proporciona infraestructura y, según el servicio, herramientas para publicar el sitio. Puede encargarse de parte del mantenimiento del servidor o dejar más tareas a quien lo administra. No hay un paquete universal: revisa qué incluye el plan y qué debes mantener tú.",
+          "Un mismo sitio puede cambiar de alojamiento sin cambiar de dominio. Para que las visitas lleguen al nuevo servidor, normalmente se prepara y prueba el sitio, se configura el nuevo servicio y luego se actualizan los registros DNS correspondientes. El plazo para que la nueva respuesta se vea en todas las redes depende de los TTL, cachés y configuración; no es una garantía de un número fijo de minutos.",
+        ],
+        blocks: [{ type: "list", items: [
+          "Pregunta quién actualiza el software del servidor y qué soporte está incluido.",
+          "Comprueba si hay copias de seguridad, cuánto tiempo se conservan y cómo puedes restaurarlas.",
+          "Aclara cómo exportar los archivos y datos del sitio si cambias de proveedor.",
+          "Verifica si el plan incluye un certificado TLS y si cubre todos los nombres que usarás.",
+        ] }],
+      },
+      {
+        heading: "HTTPS y el certificado TLS",
+        paragraphs: [
+          "HTTPS es HTTP transportado sobre TLS. TLS protege la comunicación entre el navegador y el servidor: cifra los datos durante el tránsito y permite comprobar que el servidor presenta un certificado válido para el nombre solicitado. El proveedor de alojamiento puede automatizar parte de la emisión y renovación del certificado, o puede pedir configuración adicional.",
+          "Ver HTTPS en la dirección no prueba que la empresa sea legítima, que el contenido sea correcto, que el sitio esté libre de software malicioso ni que una compra sea conveniente. Protege la conexión con el dominio comprobado; no sustituye revisar quién opera el sitio, cómo usa tus datos y qué ofrece.",
+        ],
+        blocks: [{ type: "callout", tone: "tip", title: "Comprueba la dirección completa", text: "Después de publicar, verifica que la variante con https:// carga sin una advertencia del navegador, que los nombres que necesitas —con o sin www— apuntan al sitio esperado y que la versión segura se usa también en los enlaces y recursos de la página." }],
+      },
+      {
+        heading: "Correo profesional y hosting web no son lo mismo",
+        paragraphs: [
+          "El hosting web entrega páginas y funciones de un sitio. El correo profesional proporciona buzones y servicios para enviar o recibir mensajes con tu dominio. Se pueden contratar con la misma empresa o con proveedores distintos; pagar uno no implica necesariamente tener el otro.",
+          "El correo usa su propia configuración DNS. Los registros MX dirigen el correo entrante; otros registros, como TXT, pueden ayudar a publicar políticas de autenticación o verificar el servicio. Si cambias los servidores DNS o la zona, conserva los registros que el proveedor de correo necesita. Si solo cambias el registro de la web, el correo puede seguir funcionando siempre que sus registros continúen correctos.",
+        ],
+        blocks: [{ type: "callout", tone: "caution", title: "No borres los registros del correo al conectar la web", text: "Antes de sustituir una zona DNS o cambiar los NS, guarda una copia de los registros actuales y confirma cuáles corresponden al correo. Una página puede cargar correctamente mientras el correo deja de recibir mensajes." }],
+      },
+      {
+        heading: "Ejemplo práctico: una profesional publica su primera página",
+        paragraphs: ["Este caso es hipotético y educativo. No representa un negocio real, una configuración activa de Vecidya ni una recomendación de compra a un proveedor."],
+        blocks: [{ type: "example", title: "Una profesional de reparación de bicicletas organiza su presencia web", hypothetical: true,
+          context: "Una profesional independiente quiere publicar una página sencilla con los servicios que ofrece, su zona de atención y una forma clara de contacto.",
+          problem: "No sabe si debe pagar un dominio, un hosting y un correo por separado, quién debe controlar las cuentas ni qué conservar si más adelante cambia de proveedor.",
+          approach: "Primero define el objetivo de la página y compara un servicio gestionado que publique el sitio con una dirección propia del proveedor frente a contratar un dominio y alojamiento por separado. Revisa el alcance y las condiciones antes de elegir; no presupone precios ni un resultado comercial.",
+          actions: [
+            "Elige un nombre corto y fácil de comunicar; comprueba su disponibilidad con un registrador y verifica que el nombre y la extensión sean adecuados para el negocio.",
+            "Registra el dominio a nombre de la persona o entidad que debe conservar su control. Usa una dirección de correo que el negocio controle para los avisos y recuperación de la cuenta.",
+            "Decide dónde se alojará el sitio. Pregunta qué incluye el servicio: publicación, soporte, copias, certificado TLS, exportación y renovación. El registro del dominio no crea el sitio ni contrata automáticamente el alojamiento.",
+            "Sigue la guía técnica del proveedor para conectar el dominio: delega DNS o actualiza los registros indicados. Antes, guarda los valores actuales y conserva MX/TXT si ya existe correo con ese dominio.",
+            "Verifica HTTPS en el nombre elegido, prueba la página en un teléfono y en una computadora, revisa enlaces, formulario y datos de contacto, y comprueba que la dirección cargue el contenido esperado.",
+            "Guarda en un lugar seguro quién es el registrante, el registrador, el proveedor DNS, el alojamiento y el correo; conserva accesos individuales, recuperación, instrucciones, comprobantes y fechas de renovación. No compartas una contraseña común con quien te ayuda.",
+            "Si la página deja de funcionar, revisa primero la fecha del dominio, el estado del hosting, los NS y registros DNS, la vigencia TLS y si hubo un cambio reciente. Anota el mensaje de error y contacta al proveedor correspondiente sin borrar la zona ni cancelar otro servicio a ciegas.",
+          ],
+          lesson: "La presencia web funciona con servicios que se coordinan, pero no son inseparables. Saber quién mantiene cada pieza, cómo se renueva y cómo salir del servicio evita que una sola cuenta perdida deje al negocio sin página, dominio o correo.",
+        }],
+      },
+      {
+        heading: "Qué ocurre si cambias de proveedor",
+        paragraphs: [
+          "«Cambiar de proveedor» puede significar cambiar solo el alojamiento, trasladar la administración DNS, cambiar el correo o transferir el registro a otro registrador. Son operaciones distintas. Una transferencia de registrador cambia quién administra el contrato del dominio; no copia el sitio ni migra el buzón de correo.",
+          "Para mover la web, prepara los archivos y datos en el nuevo alojamiento, configura TLS y prueba el sitio antes de actualizar DNS. Conserva los registros de correo y verificación. Mantén el alojamiento anterior mientras compruebas que el nuevo funciona y que los resolvers dejan de usar las respuestas anteriores; cancela el servicio antiguo solo cuando sepas qué depende de él.",
+          "Cambiar los NS significa que otra zona DNS pasa a ser autoritativa. Antes de hacerlo, replica los registros necesarios del sitio, correo y otros servicios. Cambiar solo el A/AAAA o CNAME de la web puede ser suficiente en algunos casos, pero usa los valores y pasos oficiales del proveedor nuevo.",
+        ],
+        blocks: [{ type: "list", items: [
+          "Dominio a otro registrador: revisa elegibilidad, bloqueos, código de transferencia, renovación y efectos contractuales con ambos registradores.",
+          "Sitio a otro hosting: migra y prueba el contenido; el nombre de dominio no se transfiere automáticamente.",
+          "DNS a otro proveedor: copia registros web, correo y verificación antes de cambiar la delegación.",
+          "Correo a otro servicio: migra buzones y actualiza los registros de correo sin interrumpir la web.",
+        ] }],
+      },
+      {
+        heading: "Quién debe tener el control administrativo del dominio",
+        paragraphs: [
+          "Para un negocio, suele ser más claro que la persona o entidad responsable figure como registrante y controle la cuenta de registración. Un profesional puede ayudar a configurar DNS o el sitio, pero conviene que la empresa mantenga acceso verificable y pueda cambiar de proveedor sin depender de una única persona externa.",
+          "Usa un correo administrativo que siga bajo control del negocio, activa medidas de seguridad disponibles —por ejemplo, autenticación multifactor—, mantén actualizados los datos de recuperación y limita permisos a cada colaborador. Guarda por separado el nombre del registrador y del proveedor DNS: pueden ser distintos.",
+        ],
+        blocks: [{ type: "callout", tone: "caution", title: "No entregues el control para recibir ayuda técnica", text: "Pide una cuenta individual o un acceso delegado si el servicio lo permite. No compartas contraseñas de correo ni de recuperación; acuerda quién puede cambiar el DNS, renovar, transferir o cancelar el dominio y cómo recuperar el acceso cuando termina la colaboración." }],
+      },
+      {
+        heading: "Qué revisar antes de contratar o renovar",
+        paragraphs: ["Compara el servicio que necesitas y el coste de conservarlo, no solo el precio promocional de la primera factura. Los términos y tarifas dependen del proveedor, la extensión, el periodo, el país y los servicios adicionales."],
+        blocks: [{ type: "steps", label: "Lista de revisión para contratar o renovar", items: [
+          { title: "Identifica cada servicio", detail: "Separa registro del dominio, DNS, hosting de la web, correo, certificado TLS, copias y soporte. Pregunta cuáles están incluidos y cuáles son opcionales." },
+          { title: "Lee el precio de renovación", detail: "Revisa tarifa del siguiente periodo, moneda, impuestos, fechas, renovación automática y cargos por restaurar un dominio vencido. Las tarifas pueden diferir de una promoción inicial." },
+          { title: "Confirma quién será el registrante", detail: "Comprueba qué persona o entidad aparece en el contrato, qué correo recibe los avisos y quién puede recuperar la cuenta." },
+          { title: "Comprueba el control y la salida", detail: "Pregunta cómo editar DNS, exportar archivos y datos, transferir el dominio, cancelar el servicio y descargar tus comprobantes." },
+          { title: "Valora continuidad y soporte", detail: "Averigua cómo se solicitan copias, recuperación y soporte, qué límites aplica el plan y qué ocurre si vence una tarjeta o cambia el responsable." },
+          { title: "Anota fechas y responsables", detail: "Guarda la próxima renovación, el método de aviso, el contacto de soporte y la persona que puede responder si el sitio o correo deja de funcionar." },
+        ] }],
+      },
+      {
+        heading: "Qué costos pueden aparecer",
+        paragraphs: ["No existe un costo único aplicable a todos los dominios o sitios. La oferta puede separar cada servicio o agrupar varios; confirma importes y condiciones directamente con quien emite el contrato."],
+        blocks: [{ type: "list", items: [
+          "Registro y renovación del dominio: varían por extensión, registrador, periodo y condiciones. La tarifa de renovación puede ser distinta de la promoción inicial.",
+          "Alojamiento web: depende del tipo de servicio, capacidad, tráfico, soporte y funciones incluidas.",
+          "Correo profesional: puede cobrarse por buzón, capacidad o plan, y es independiente del alojamiento web aunque se venda en paquete.",
+          "Certificado TLS: algunos servicios lo incluyen o automatizan; otros ofrecen opciones adicionales o configuración distinta. Comprueba qué nombres y renovaciones cubre.",
+          "Servicios opcionales: copias adicionales, privacidad de datos de registración donde esté disponible, seguridad, migración o soporte especializado pueden tener condiciones propias.",
+        ] }],
+      },
+      {
+        heading: "Errores frecuentes que conviene evitar",
+        paragraphs: [],
+        blocks: [{ type: "list", items: [
+          "Creer que registrar el dominio ya incluye una página web, hosting y correo.",
+          "Poner el dominio a nombre o bajo el correo personal de un tercero sin conservar acceso del negocio.",
+          "Cambiar los servidores DNS sin copiar los registros que usa el correo u otros servicios activos.",
+          "Cancelar el hosting anterior antes de probar el nuevo sitio y comprobar sus datos.",
+          "Mirar solo el precio inicial y no anotar la fecha ni las condiciones de renovación.",
+          "Suponer que ver HTTPS demuestra que el negocio es confiable o que el contenido es seguro.",
+          "Confundir un registro DNS con los archivos del sitio: DNS indica dónde consultar, no migra el contenido.",
+          "Esperar a que la página falle para descubrir quién tiene las credenciales o quién recibe los avisos del registrador.",
+        ] }],
+      },
+      {
+        heading: "Qué necesita realmente un negocio pequeño para empezar",
+        paragraphs: [
+          "Empieza por definir qué información quieres publicar y quién la mantendrá actualizada. Para una página sencilla necesitas una forma de publicarla —en un hosting propio o en una plataforma que lo gestione— y una dirección que pueda abrir tu público. Un dominio propio es una opción de identidad y control que se registra aparte, salvo que un paquete lo incluya con condiciones claras.",
+          "Una plataforma de presencia digital o un minisitio puede reducir la configuración técnica si se ocupa de publicar y mantener partes de la página. Eso no significa automáticamente que incluya un dominio personalizado, correo profesional, control completo de DNS o exportación: confirma esas capacidades y cómo llevarías tus datos si cambias de servicio.",
+          "El correo profesional es opcional para publicar una web, aunque el negocio puede necesitarlo para comunicarse. Si lo contratas, verifica por separado quién administra los buzones y quién conserva los registros MX/TXT. No contrates una pieza solo porque aparece en un paquete si todavía no resuelve una necesidad real.",
+        ],
+        blocks: [{ type: "summary", items: [
+          "Aclara si necesitas una página, un dominio propio, correo profesional o una combinación; son servicios distintos.",
+          "Comprueba qué proveedor administra el dominio, la zona DNS, el hosting y el correo antes de cambiar nada.",
+          "Asegúrate de que el registrante y el correo de recuperación estén bajo control del negocio.",
+          "Activa y prueba HTTPS, conserva los registros de correo y apunta las fechas y costes de renovación.",
+          "Guarda accesos individuales, comprobantes, soporte y copias; no canceles un servicio hasta verificar qué depende de él.",
+        ] }],
+      },
+      {
+        heading: "Ya tienes un dominio pero no sabes quién lo administra",
+        paragraphs: [
+          "Empieza por buscar el nombre exacto en comprobantes, mensajes de renovación, gestor de contraseñas y documentos del negocio. Pregunta a quien configuró el sitio cuál es el registrador y quién es el registrante; pide que te indiquen la cuenta y los servicios, no que te envíen contraseñas por un canal inseguro.",
+          "Si no sabes qué registrador mantiene un dominio genérico, consulta ICANN Lookup. El resultado ayuda a identificar al registrador, pero no necesariamente al proveedor de hosting, al administrador DNS ni a la persona con acceso a la cuenta. Contacta al registrador por sus canales oficiales y sigue su proceso de verificación y recuperación.",
+          "Cuando recuperes acceso, verifica los datos del registrante, el correo de recuperación, la fecha de renovación, el estado de transferencia y los servidores NS. Guarda una copia de la zona DNS antes de modificarla. No registres un nombre duplicado ni cambies los NS a ciegas mientras el sitio o el correo dependan de la configuración actual.",
+        ],
+        blocks: [{ type: "steps", label: "Pasos para recuperar el control con cuidado", items: [
+          { title: "Busca el registrador", detail: "Consulta ICANN Lookup cuando aplique y compara el resultado con facturas o avisos anteriores." },
+          { title: "Identifica al registrante", detail: "Revisa el contrato o solicita al registrador el procedimiento para verificar qué persona u organización tiene los derechos de registro." },
+          { title: "Recupera una cuenta segura", detail: "Usa los canales oficiales del registrador, confirma correo y teléfono de recuperación y activa controles de seguridad disponibles." },
+          { title: "Documenta antes de cambiar", detail: "Anota renovación, NS y registros existentes; identifica qué sitio, correo y servicios dependen de esa zona." },
+          { title: "Actualiza responsabilidades", detail: "Deja el acceso bajo control del negocio y proporciona permisos individuales a quienes apoyen el mantenimiento." },
+        ] }],
+      },
+      {
+        heading: "Preguntas frecuentes",
+        paragraphs: [],
+        blocks: [{ type: "faq", items: [
+          { question: "Si registro un dominio, ¿ya tengo un sitio web?", answer: "No. El registro reserva el uso del nombre durante el periodo contratado. También necesitas un sitio y un servicio que lo publique, o una plataforma que los incluya claramente." },
+          { question: "¿El hosting incluye siempre correo profesional?", answer: "No. La web y el correo son servicios distintos. Revisa si el plan incluye buzones y quién administra los registros MX y las cuentas." },
+          { question: "¿Necesito una consulta DNS nueva en cada visita?", answer: "No necesariamente. El navegador, el sistema y los resolvers pueden usar respuestas en caché mientras sigan vigentes; una conexión existente también puede reutilizarse." },
+          { question: "¿HTTPS significa que el sitio o el negocio son confiables?", answer: "No. HTTPS protege la conexión con el dominio y permite autenticarlo mediante TLS. No demuestra que la empresa sea legítima ni que la información o las ofertas sean verdaderas." },
+          { question: "¿Puedo cambiar el hosting sin transferir mi dominio?", answer: "Sí. El registro del dominio y el alojamiento son servicios separados. Para que el nombre llegue al nuevo sitio quizá debas actualizar DNS, pero una transferencia de registrador no migra la web." },
+          { question: "¿Cambiar los servidores DNS puede afectar el correo?", answer: "Sí, si la nueva zona no conserva los registros MX y otros valores que usa tu proveedor de correo. Guarda la configuración actual y verifica los registros antes de delegar DNS." },
+          { question: "¿Qué hago si no sé quién administra mi dominio?", answer: "Busca facturas y avisos de renovación; usa ICANN Lookup para identificar al registrador cuando aplique y solicita recuperación por sus canales oficiales. El resultado no identifica necesariamente a quien aloja la web." },
+          { question: "¿Debo contratar dominio, hosting y correo con una sola empresa?", answer: "No hay una respuesta universal. Un paquete puede simplificar facturas o configuración; servicios separados pueden dar más flexibilidad. Compara el coste de renovación, el control, el soporte y la salida." },
+          { question: "¿Cuánto cuesta registrar y mantener un dominio?", answer: "Depende de la extensión, el registrador, el periodo, la región y los servicios adicionales. Revisa la tarifa de renovación, impuestos y cargos de recuperación directamente en las condiciones vigentes." },
+        ] }],
+      },
+      {
+        heading: "Fuentes y orientación adicional",
+        paragraphs: ["Estas referencias oficiales respaldan los conceptos generales. ICANN describe políticas y procesos que dependen de la extensión y del contrato; los RFC del IETF son estándares técnicos, y MDN explica el uso web de TLS."],
+        blocks: [{ type: "sources", items: [
+          { label: "Information for Domain Name Registrants — ICANN", url: "https://www.icann.org/registrants", scope: "Define al registrante, explica que gestiona el dominio a través del registrador e incluye ICANN Lookup. Consultado el 17 de octubre de 2026; las políticas aplicables dependen de la extensión." },
+          { label: "ICANN Lookup — herramienta de búsqueda de datos de registro", url: "https://lookup.icann.org/en", scope: "Permite consultar información de registro de dominios genéricos y ayuda a identificar al registrador; no identifica necesariamente el hosting ni a quien accede a la cuenta. Consultado el 17 de octubre de 2026." },
+          { label: "The Domain Name Registration Process — ICANN", url: "https://www.icann.org/resources/pages/domain-name-registration-process-2023-11-02-en", scope: "Describe registrantes, registradores, operadores de registro y revendedores, y señala que tarifas, transferencias y renovaciones dependen de los acuerdos. Consultado el 17 de octubre de 2026." },
+          { label: "Domain Name Renewals and Expiration FAQs — ICANN", url: "https://www.icann.org/resources/pages/domain-name-renewal-expiration-faqs-2018-12-07-en", scope: "Recomienda comprobar vencimiento, condiciones de renovación, contactos y tarifas; describe periodos que pueden aplicar a dominios vencidos. Consultado el 17 de octubre de 2026." },
+          { label: "RFC 1034: Domain Names — Concepts and Facilities", url: "https://datatracker.ietf.org/doc/html/rfc1034", scope: "Estándar del IETF que describe resolvers, servidores de nombres, datos autoritativos y caché/TTL en DNS. Consultado el 17 de octubre de 2026." },
+          { label: "RFC 1035: Domain Names — Implementation and Specification", url: "https://datatracker.ietf.org/doc/html/rfc1035", scope: "Especifica registros como A, NS, CNAME y MX. No es una guía de configuración para un proveedor concreto. Consultado el 17 de octubre de 2026." },
+          { label: "RFC 3596: DNS Extensions to Support IP Version 6", url: "https://datatracker.ietf.org/doc/html/rfc3596", scope: "Define la extensión de DNS para consultas y registros de direcciones IPv6 (AAAA). Consultado el 17 de octubre de 2026." },
+          { label: "Transport Layer Security (TLS) — MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Transport_Layer_Security", scope: "Explica cómo TLS protege conexiones HTTP y cómo el certificado participa en la autenticación del servidor. Consultado el 17 de octubre de 2026." },
         ] }],
       },
     ],

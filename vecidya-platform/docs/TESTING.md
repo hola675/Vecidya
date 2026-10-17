@@ -1,5 +1,21 @@
 # Pruebas
 
+## VEC-APRENDE-06A — Tecnología explicada (2026-10-17)
+
+**Runner:** Worker local (`pnpm run dev`) + D1 local con migraciones aplicadas en el worktree aislado para servir el sitemap. Sin `--remote`; no se modifica D1 remota. Con Chrome local:
+
+```powershell
+$env:BASE_URL='http://localhost:5173'
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE='C:\Program Files\Google\Chrome\Application\chrome.exe'
+pnpm exec node tests/e2e/learn-experience-check.mjs
+pnpm run test:unit
+pnpm run typecheck
+pnpm run build
+git diff --check
+```
+
+**Resultados observados:** suite unitaria `1558/1558 PASS`; `learn-content.test.ts` PASS; typecheck/build PASS (el runtime local advirtió que faltan secretos de correo/autenticación, sin impedir las validaciones); E2E local PASS en 1366/768/390/360 con cinco guías, índices, CTA, fuentes, imagen SVG, metadatos individuales, lectura relacionada y URL de sitemap. Inspección visual del diagrama en escritorio y 360 px: etiquetas principales grandes, retorno DNS y solicitud HTTPS completos; sin recorte ni overflow. La D1 de este worktree aislado recibió migraciones locales para que el sitemap respondiera; sin cambios remotos ni deploy.
+
 ## APP-MINI-01C + APP-MINI-02A — baseline y core modular (2026-10-15)
 
 **Runner:** Worker local (`pnpm run dev`) + D1 local; sin `--remote`, pagos ni fixtures publicados. Si Chromium no está instalado y Chrome está disponible, define `PLAYWRIGHT_CHROMIUM_EXECUTABLE` a la ruta local de Chrome. Las capturas E2E usan datos sintéticos de prueba, no contenido de producción.
@@ -1322,7 +1338,7 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `slug-life` | `business-profile-slug-lifecycle-check.mjs` | SLUG-005B |
 | `join-contact` | `join-contact-experience-check.mjs` | UX-001B.7 |
 | `about` | `about-experience-check.mjs` | UX-001B.8 |
-| `learn` | `learn-experience-check.mjs` | UX-001B.9 |
+| `learn` | `learn-experience-check.mjs` | UX-001B.9 / VEC-APRENDE-06A |
 | `commercial-review` | `commercial-experience-review-check.mjs` | UX-002.7 |
 | `legal-trust` | `legal-trust-experience-check.mjs` | UX-001B.10 |
 | `licenses` | `licenses-experience-check.mjs` | UX-002.2 |

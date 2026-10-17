@@ -206,7 +206,7 @@ Todas las rutas públicas responden 200 (`HTTP` 2026-09-20). `/aprende` es la ru
 | `/unete` | Estático | Funcional | Dos entradas: Diagnóstico o Contacto; preparación breve y tres pasos; sin registro |
 | `/contacto` | Estático | Funcional | Email `hola@vecidya.com`, WhatsApp directo (`wa.me`), canal oficial de WhatsApp (difusión), guidance contextual, privacidad y Diagnóstico; sin formulario ni canales ficticios. El grupo comunitario se retiró el 2026-09-25 y lo sustituye el canal |
 | `/sobre-nosotros` | Estático | Funcional | Propósito, historia, equipo real, forma de trabajar y punto de vista; fotos WebP optimizadas |
-| `/aprende` | Estático | Funcional local / release ready | Centro de conocimiento, 5 categorías, 4 artículos, tarjetas, CTA y metadata |
+| `/aprende` | Estático | Funcional local / release ready | Centro de conocimiento, 5 categorías pobladas, 5 artículos, tarjetas, CTA y metadata individual |
 | `/aprende/:slug` | Estático | Funcional y publicada (`0.5.7`; `LEARN-META-001` resuelta: título, `robots` y canonical correctos) | Artículo con autor Yoan Ortiz, imagen educativa, índice, CTA relacionado y metadata canonical/OG |
 | `/que-debes-saber` | Redirect 301 | Funcional | Compatibilidad legado hacia la experiencia canónica `/aprende`; no compite como página indexable |
 | `/privacidad` | Estático | Funcional | Datos actuales, uso/control, límites, derechos y email de contacto; sin entidad legal inventada |
@@ -231,8 +231,8 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 ### Aprende (`knowledge.tsx`, `learn-article.tsx`)
 
 - UX-001B.9 establece `/aprende` como ruta canónica y mantiene `/que-debes-saber` como alias. La página diferencia aprendizaje de Servicios y Diagnóstico: explica cómo entender y mejorar la presencia digital.
-- UX-002.6 convierte `/aprende` en un centro de conocimiento estático: cinco categorías iniciales y cuatro artículos reales escritos/atribuidos a Yoan Ortiz, con tarjetas, excerpt, imagen y enlaces a `/aprende/:slug`.
-- Cada artículo incluye problema, explicación sencilla, ejemplos, siguiente paso, índice accesible, CTA contextual a Diagnóstico o Servicios, metadata canonical/Open Graph y aparece en sitemap. Los diagramas propios viven en `public/assets/learn/` como SVG optimizados.
+- UX-002.6 convierte `/aprende` en un centro de conocimiento estático: cinco categorías y cinco artículos enlazados desde el índice. VEC-APRENDE-06A llena «Tecnología explicada» con una guía de dominio/hosting, ejemplo hipotético y ocho fuentes oficiales; los cuatro artículos preexistentes conservan su contenido.
+- Cada artículo incluye explicación, ejemplos, siguiente paso, índice accesible, CTA contextual, metadata canonical/Open Graph y sitemap. Los diagramas viven en `public/assets/learn/` como SVG; la guía técnica incluye un flujo DNS de etiquetas legibles en móvil y una lectura interna curada. El campo opcional `relatedSlugs` permite esa selección explícita; artículos anteriores conservan la selección anterior.
 - El contenido se mantiene deliberadamente sin CMS, autores dinámicos, fechas editoriales inventadas, comentarios, newsletter, buscador avanzado o cursos.
 
 ### Legal & Trust (`privacy.tsx`, `public-layout.tsx`)
@@ -520,7 +520,7 @@ Home ──► Vecindario ──► Perfil ──(CTA fijo)──► Vecindario 
 Home ──► Servicios ──► Diagnóstico | Contacto
 Home ──► Diagnóstico (puertas con ?perfil=) ──► Resultado ──► Aprende (artículo) | Servicios (#anchor) | Licencias | Addons | mailto prellenado | Contacto | Rehacer
 Home ──► Contacto (solo enlace contextual del CTA final)
-Home ──► Aprende (4 artículos) ──► Diagnóstico (artículo CRM con ?objetivo=organize) | Servicios | Contacto
+Home ──► Aprende (5 artículos) ──► Diagnóstico (artículo CRM con ?objetivo=organize; guía técnica) | Servicios | Contacto
 Vecindario (lista) ──► Diagnóstico | Contacto (estado vacío)
 App: sesión ──► /app ──► organización activa (selector) ──► Perfil (/app/business-profile) ──► página pública
                                                      └─────► Servicios (/app/services)
