@@ -1,5 +1,21 @@
 # Pruebas
 
+## VEC-APRENDE-06B — tres guías de Tecnología explicada (2026-10-17)
+
+**Resultados observados en worktree aislado desde `origin/main` actualizado:** catálogo `learn-content.test.ts` `9/9 PASS`; suite unitaria completa `1570/1570 PASS`; typecheck y build PASS; E2E local PASS en 1366/768/390/360, con rutas, títulos/canonical, categoría de metadatos, índice, definiciones, ejemplos, pasos, fuentes, SVG y sitemap. Inspección visual en navegador de escritorio y captura móvil de 390 px: título, diagrama, índice y texto legibles, sin desbordamiento horizontal. Build final completado con advertencias de secretos de correo/autenticación no configurados localmente; estas funciones no forman parte del alcance.
+
+El Worker de prueba utilizó Chrome local y D1 completamente aislada dentro de este worktree; se aplicó allí el ledger para que la consulta de perfiles del sitemap pudiera responder. Sin `--remote`, datos remotos, fixtures de negocio ni deploy. Estos PASS no equivalen a revisión WCAG, aprobación editorial humana ni publicación.
+
+```powershell
+$env:BASE_URL='http://localhost:5173'
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE='C:\Program Files\Google\Chrome\Application\chrome.exe'
+pnpm exec node tests/e2e/learn-experience-check.mjs
+pnpm run test:unit
+pnpm run typecheck
+pnpm run build
+git diff --check
+```
+
 ## VEC-APRENDE-06A — Tecnología explicada (2026-10-17)
 
 **Runner:** Worker local (`pnpm run dev`) + D1 local con migraciones aplicadas en el worktree aislado para servir el sitemap. Sin `--remote`; no se modifica D1 remota. Con Chrome local:

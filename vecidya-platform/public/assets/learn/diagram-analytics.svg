@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" role="img" aria-labelledby="title desc">
+  <title id="title">De visitas a resultados que importan</title>
+  <desc id="desc">Un flujo muestra visitas, interacciones y conversiones como medidas distintas que se reducen a medida que una persona realiza acciones concretas.</desc>
+  <rect width="960" height="360" rx="28" fill="#f3f7f5"/>
+  <path d="M160 100h640l-58 62H218z" fill="#d9e9e2" stroke="#477465" stroke-width="4"/>
+  <path d="M218 172h524l-62 62H280z" fill="#c8e1d8" stroke="#477465" stroke-width="4"/>
+  <path d="M280 244h400l-70 62H350z" fill="#b5d8cc" stroke="#477465" stroke-width="4"/>
+  <text x="480" y="142" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#18372f">Visitas</text>
+  <text x="480" y="214" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#18372f">Interacciones</text>
+  <text x="480" y="286" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#18372f">Conversiones</text>
+  <text x="480" y="54" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" fill="#365b50">Cada nivel responde una pregunta diferente</text>
+</svg>
