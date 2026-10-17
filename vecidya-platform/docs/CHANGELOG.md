@@ -1,11 +1,19 @@
 # Changelog
 
-## 2026-10-16 — DIAG-V3-FUNNEL-01D.1-R (bloqueado por dependencias)
+## 2026-10-17 — DIAG-V3-FUNNEL-01D.1-R (integración preparada, entorno bloqueado)
 
-- Conservado el contrato de seis eventos. `identified_request_created` y `email_verified` comparten batch transaccional con el dominio y hacen fallback al batch operacional si falla analytics. El first-open ahora se deduplica en la solicitud, no por grant, también tras recovery; `0019` hace backfill del timestamp mínimo existente.
-- La cadena `0000`–`0019` y el backfill se probaron en D1 temporales locales; quedan vacías. Unitarias focales 8/8 y comprobaciones SQL PASS. Worker E2E, suite completa, typecheck/build y aislamiento de bundle siguen `NOT_RUN` por `BLOCKED_DEPENDENCIES` (no se pudieron restaurar paquetes tras un único intento prefer-offline). DIAG-V3-08 no se reutiliza.
-- El trabajo sigue en `feat/diagnostic-funnel-01d1`, checkpoint sobre `e91577a`; commits `6563bb9`/`ad8f219`/`63caedd`/`07767a6`/`e09777c` están pushed. `origin/main` avanzó a `e910c69`, con solapamiento en código/rutas y documentos; no se reconcilió sin autorización de integración. PR no creada porque `gh` no está instalado (enlace en `STATUS.md`). Sin merge, D1 compartida/remota ni deploy.
-- Tras esos pushes `origin/main` avanzó a `e910c69`; hay solapamiento de archivo en `app/routes.ts` y documentos. No se hizo merge ni rebase; reconciliar el estado multiagente antes de integrar.
+- Conservado el contrato de seis eventos. `identified_request_created` y `email_verified` comparten batch transaccional con el dominio y hacen fallback al batch operacional si falla analytics. El first-open se deduplica por solicitud, también tras recovery; `0019` hace backfill del timestamp mínimo existente.
+- La cadena `0000`–`0019` y el backfill se probaron previamente en D1 temporales locales; unitarias focales 8/8 y comprobaciones SQL PASS. En esta continuación, `pnpm install --frozen-lockfile --prefer-offline` expiró tras 600 s con errores de transferencia curl 23. Un store aislado llegó a 173/267 paquetes antes de expirar otros 600 s; la transferencia del tarball Windows de workerd volvió a fallar. No se pudo ejecutar Worker E2E, suite completa, typecheck/build ni aislamiento de bundle.
+- DNS de `registry.npmjs.org` resolvió; HTTPS HEAD de metadata de `@emnapi/runtime@1.11.3` y `@fontsource/arimo@5.3.0` respondió 200; Node descargó tarballs de 68.501 y 4.829.680 bytes. La descarga del tarball workerd excedió 180 s. Variables y configuración proxy de pnpm no están definidas y no se encontró proceso/servicio Proxifier activo. El fallo probado afecta las descargas de dependencias completas, no demuestra que la instalación o el lockfile estén corruptos.
+- `package.json` y `pnpm-lock.yaml` permanecen intactos. El store compartido reportó cinco paquetes modificados antes de instalar y solo `@emnapi/runtime@1.11.3` después; no se hizo limpieza ni se alteró configuración/versiones. No se completó ENV-01.
+- Rama `feat/diagnostic-funnel-01d1`: se comparó con `origin/main` actualizado (`90215da`) y se integraron sus cambios en el worktree propio sin crear commit. `app/routes.ts`, migraciones/journal y schema no presentaron conflicto de merge; se preservaron los cambios de Aprende/CRM. PR queda pendiente hasta terminar validaciones y comprobar disponibilidad autenticada de creación de PR. Sin D1 compartida/remota ni deploy.
+
+## 2026-10-17 — VEC-APRENDE-06A Tecnología explicada (local, no publicado)
+
+- Se llena la categoría «Tecnología explicada» con una guía sobre dominio, registración, hosting, sitio, DNS, HTTPS/TLS, correo, cambios de proveedor, control administrativo, renovaciones y costos variables; incluye ejemplo hipotético, checklist, FAQ, resumen y fuentes primarias ICANN/MDN/IETF consultadas el 2026-10-17.
+- Añadido un SVG propio con navegador, consulta DNS condicional/caché, retorno de la dirección, solicitud HTTPS y página; el alt text y la explicación contigua describen el flujo. La inspección 360 px y desktop no muestra etiquetas diminutas ni recorte.
+- `LearnArticle.relatedSlugs` opcional permite lecturas curadas para la guía nueva; el renderizador conserva su fallback para artículos existentes. `/aprende`, metadatos individuales y sitemap ya derivan de `learnArticles`; sin rutas nuevas, CMS, dependencias ni persistencia editorial.
+- Validación local tras integrar `origin/main` `e910c69` (incluye PR #2): `test:unit` 1566/1566, E2E de las cinco guías en 1366/768/390/360, typecheck, build y `git diff --check` PASS. D1 local aislada migrada solo para E2E; sin D1 remota, merge a `main` ni deploy.
 
 ## 2026-10-16 — Política Git multiagente y Worktrees (documental)
 
@@ -13,6 +21,13 @@
 - El flujo incorpora commit, push y Pull Request con revisión. El merge es condicional a autorización explícita, checks requeridos PASS y ausencia de conflictos; un PR puede reportarse como pendiente de integración.
 - Convenciones dinámicas por checkpoint para MiniWeb, Diagnóstico y Aprende; reconciliación de migraciones concurrentes `0016`/`0017` antes de nuevas migraciones MiniWeb.
 - Política documental únicamente: sin cambios de ejecución, schema, datos remotos ni deploy.
+
+## 2026-10-16 — VEC-APRENDE-04/05 (local, PR #2)
+
+- Se completa Automatización con condiciones explícitas, revisión humana y un flujo comprobable; se amplía Presencia Digital con preparación de canales, ejemplo hipotético, checklist, FAQ y un diagrama propio. CRM e IA conservan sus versiones editoriales.
+- Las cuatro guías siguen usando los bloques editoriales existentes, slugs/canonicals/autoría estables, índice accesible, enlaces y CTA contextual; sin CMS, datos comerciales ficticios ni garantías de resultados.
+- Tras integrar `origin/main` (`e91577a`, incluido Automatización `870d9e1`), suite unitaria `1558/1558 PASS`, typecheck/build y E2E local de Aprende en 1366/768/390/360 PASS. Inspección Playwright desktop/móvil sin desbordamiento; queda la observación conocida `LEARN-SVG-MOBILE-LABELS-001`.
+- Solo cambios locales de contenido, pruebas y documentación; sin rutas nuevas, migraciones, D1 remota, deploy ni publicación.
 
 ## 2026-10-15 — APP-MINI-02A (local, no desplegado)
 

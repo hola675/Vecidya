@@ -7,8 +7,10 @@ import type { LearnBlock } from "../../app/content/learn.ts";
 const crmSlug = "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo";
 const aiSlug = "que-puede-hacer-una-inteligencia-artificial-por-un-negocio";
 const automationSlug = "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio";
+const domainSlug = "dominio-hosting-sitio-web-como-funcionan";
+const presenceSlug = "antes-de-hacer-publicidad-organiza-tu-presencia-digital";
 
-test("CRM article exposes practical typed editorial blocks without changing the legacy articles", () => {
+test("CRM article exposes practical typed editorial blocks and respects commercial boundaries", () => {
   const crmArticle = getLearnArticle(crmSlug);
   assert.ok(crmArticle);
   assert.equal(crmArticle.slug, crmSlug);
@@ -37,9 +39,6 @@ test("CRM article exposes practical typed editorial blocks without changing the 
   assert.match(privacyAnswer, /copia paralela/i);
   assert.doesNotMatch(privacyAnswer, /HighLevel|GHL/i);
 
-  const presenceArticle = learnArticles.find((article) => article.slug === "antes-de-hacer-publicidad-organiza-tu-presencia-digital");
-  assert.ok(presenceArticle?.sections.every((section) => !section.blocks), "The presence guide should remain unchanged.");
-  assert.equal(learnCategories.length, 5);
 });
 
 test("AI article teaches bounded use and reflects optional commercial add-ons", () => {
@@ -112,6 +111,102 @@ test("automation article teaches a complete, testable process without claiming g
   const sourceBlock = blocks.find((block) => block.type === "sources");
   assert.ok(sourceBlock?.type === "sources" && sourceBlock.items.length >= 2);
   const slugs = new Set(learnArticles.map(({ slug }) => slug));
-  assert.equal(slugs.size, 4, "The four existing Aprende articles should remain available.");
+  assert.equal(slugs.size, 5, "The four existing articles and the new guide should remain available.");
   assert.ok(slugs.has(crmSlug) && slugs.has(aiSlug) && slugs.has(automationSlug));
+});
+
+test("technology article explains domains, DNS, hosting, HTTPS and practical ownership without vendor claims", () => {
+  const article = getLearnArticle(domainSlug);
+  assert.ok(article);
+  assert.equal(article.slug, domainSlug);
+  assert.equal(article.category, "Tecnología explicada");
+  assert.equal(article.title, "Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos");
+  assert.equal(article.image, "/assets/learn/diagram-domain-dns-hosting.svg");
+  assert.deepEqual(article.relatedSlugs, ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"]);
+  assert.match(article.imageAlt, /persona.*navegador.*DNS.*servidor.*página/i);
+
+  const blocks = article.sections.flatMap((section) => section.blocks ?? []);
+  const blockTypes = new Set(blocks.map((block) => block.type));
+  for (const type of ["definitions", "example", "steps", "callout", "faq", "sources", "summary"] as const) {
+    assert.ok(blockTypes.has(type), `Technology article is missing the ${type} block.`);
+  }
+
+  const content = article.sections.map((section) => `${section.heading} ${section.paragraphs.join(" ")} ${JSON.stringify(section.blocks ?? [])}`).join(" ");
+  for (const topic of [/dominio/i, /registro/i, /hosting|alojamiento/i, /DNS/i, /navegador/i, /servidor web/i, /HTTPS/i, /TLS/i, /correo profesional/i, /renovaci[oó]n/i, /costos/i, /registrador/i, /control administrativo/i]) {
+    assert.match(content, topic);
+  }
+  assert.match(content, /cach[eé].{0,100}(?:no|cada solicitud|no necesariamente)|(?:no|cada solicitud).{0,100}cach[eé]/i);
+  assert.match(content, /ICANN Lookup|lookup\.icann\.org/i);
+  assert.doesNotMatch(content, /precio de Vecidya|dominio personalizado de Vecidya|hosting de Vecidya/i);
+  assert.doesNotMatch(content, /\$\s*\d+|\b\d+\s*(?:USD|EUR|COP)\b/i);
+
+  const example = blocks.find((block) => block.type === "example");
+  assert.ok(example?.type === "example" && example.hypothetical);
+  for (const detail of ["dominio", "registro", "hosting", "DNS", "HTTPS", "renovación"]) {
+    assert.match(JSON.stringify(example), new RegExp(detail, "i"));
+  }
+
+  const faq = blocks.find((block) => block.type === "faq");
+  assert.ok(faq?.type === "faq" && faq.items.length >= 6);
+  assert.ok(faq.items.some(({ question }) => /quién (?:administra|controla)|no sé quién/i.test(question)));
+
+  const sources = blocks.find((block) => block.type === "sources");
+  assert.ok(sources?.type === "sources");
+  for (const source of ["icann.org", "developer.mozilla.org", "datatracker.ietf.org"]) {
+    assert.ok(sources.items.some(({ url }) => url.includes(source)), `Missing primary source ${source}.`);
+  }
+
+  const headings = article.sections.map(({ heading }) => heading);
+  assert.equal(new Set(headings).size, headings.length, "Article section headings must be unique.");
+  assert.equal(new Set(learnArticles.map(({ slug }) => slug)).size, learnArticles.length, "Article slugs must be unique.");
+  assert.ok(learnArticles.some(({ category }) => category === "Tecnología explicada"));
+  assert.equal(learnArticles.length, 5, "The library should expose the fifth article.");
+  assert.equal(learnCategories.length, 5, "The technology category must remain part of the existing catalog.");
+});
+
+test("presence guide covers channel readiness and paid ads without guarantees", () => {
+  const article = getLearnArticle(presenceSlug);
+  assert.ok(article);
+  assert.equal(article.category, "Negocios digitales");
+  assert.equal(article.title, "Antes de hacer publicidad, organiza tu presencia digital");
+  assert.equal(article.image, "/assets/learn/diagram-presence-digital.svg");
+  assert.equal(article.cta.to, "/diagnostico");
+
+  const blocks = article.sections.flatMap((section) => section.blocks ?? []);
+  const blockTypes = new Set(blocks.map((block) => block.type));
+  for (const type of ["definitions", "example", "steps", "callout", "list", "faq", "sources", "summary"] as const) {
+    assert.ok(blockTypes.has(type), `Presence guide is missing the ${type} block.`);
+  }
+
+  const text = article.sections.map((section) => `${section.heading} ${section.paragraphs.join(" ")} ${JSON.stringify(section.blocks ?? [])}`).join(" ");
+  for (const topic of [
+    /presencia digital/i, /visibilidad/i, /reputaci[oó]n/i, /publicidad/i,
+    /a qui[eé]n atiendes/i, /zona de servicio/i, /sitio web/i, /perfil de empresa/i,
+    /red social/i, /horarios/i, /m[oó]vil/i, /accesibilidad/i, /privacidad/i,
+    /Google Ads/i, /Meta Ads/i, /p[aá]gina de destino/i, /indicadores/i,
+    /no necesita anuncios|sin anuncios/i, /testimonios? .*inventad|rese[nñ]as?.*inventad/i,
+  ]) assert.match(text, topic);
+  assert.match(text, /no garantiza|no se puede asegurar/i);
+  assert.match(text, /ning[uú]n canal garantiza/i);
+  assert.match(text, /No necesariamente/i);
+
+  const example = blocks.find((block) => block.type === "example");
+  assert.ok(example?.type === "example" && example.hypothetical);
+  assert.match(JSON.stringify(example), /incomplet|contradicci[oó]n|contradict/i);
+  assert.match(JSON.stringify(example), /qui[eé]n|responsable/i);
+  assert.match(JSON.stringify(example), /presupuesto|campaña/i);
+
+  const checklistSection = article.sections.find((section) => section.heading === "Checklist para revisar tu presencia digital");
+  const checklist = checklistSection?.blocks?.find((block) => block.type === "list");
+  assert.ok(checklist?.type === "list");
+  const checklistText = checklist.items.join(" ");
+  for (const topic of [/nombre/i, /p[uú]blico/i, /ubicaci[oó]n|zona/i, /horarios/i, /contacto/i, /servicios/i, /coherencia/i, /m[oó]vil/i, /accesibilidad/i, /privacidad/i, /responsable/i, /medici[oó]n/i]) {
+    assert.match(checklistText, topic);
+  }
+
+  const sources = blocks.find((block) => block.type === "sources");
+  assert.ok(sources?.type === "sources");
+  for (const source of ["Google Search Central", "Google Business Profile", "Google Ads", "Meta", "W3C", "Analytics"]) {
+    assert.ok(sources.items.some(({ label }) => label.includes(source)), `Missing official ${source} source.`);
+  }
 });

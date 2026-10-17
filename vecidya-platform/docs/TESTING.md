@@ -1,18 +1,54 @@
 # Pruebas
 
-## DIAG-V3-FUNNEL-01D.1-R — estado de validación (2026-10-16)
+## DIAG-V3-FUNNEL-01D.1-R — evidencia ejecutada (2026-10-17)
 
-**Unitarias focales: 8/8 PASS** con `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/funnel-analytics.test.ts tests/unit/diagnostic/funnel-analytics-transaction.test.ts`. Cubren seis claves, UTC/versión, host loopback, marcador por request, backfill 0019 y fallback dominio-si-analítica-falla. `node --check` de ambos E2E: **PASS**; no se ejecutó ningún recorrido Worker.
+**Unitarias focales: 8/8 PASS, reejecutadas tras reconciliar `origin/main=90215da`** con `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/funnel-analytics.test.ts tests/unit/diagnostic/funnel-analytics-transaction.test.ts`. Cubren seis claves, UTC/versión, host loopback, marcador por request, backfill 0019 y fallback dominio-si-analítica-falla. El E2E Worker no se ejecutó.
 
-**D1 temporal SQL/migración:** Wrangler aplicó `0000`–`0019` a `C:\Users\Admin\AppData\Local\Temp\kilo\vecidya-funnel-01d1-r2-d1`; ledger final `0019`, tabla agregada de cinco columnas sin identificadores y cero solicitudes/grants/agregados tras limpieza. El SQL request-scoped probó aperturas repetidas y cambio de grant por recovery con un único contador; borrar el request mantuvo el agregado sin FK. Un D1 mínimo aislado probó backfill `MIN(first_opened_at)=100` y que 0019 quite la columna por grant; sus fixtures quedaron a cero. El SQL de supresión ocultó count 4 y mostró count 5; clave `question_answered` rechazó CHECK. Es evidencia SQL/migración, no concurrencia Worker.
+**D1 temporal SQL/migración:** Wrangler aplicó `0000`–`0019` a `C:\Users\Admin\AppData\Local\Temp\kilo\vecidya-funnel-01d1-r2-d1`; ledger final `0019`, tabla agregada de cinco columnas sin identificadores y cero solicitudes/grants/agregados tras limpieza. El SQL request-scoped probó aperturas repetidas y cambio de grant por recovery con un único contador; borrar el request mantuvo el agregado sin FK. Un D1 mínimo aislado probó backfill `MIN(first_opened_at)=100` y que 0019 quite la columna por grant; sus fixtures quedaron a cero. El SQL de supresión ocultó count 4 y mostró count 5; clave `question_answered` rechazó CHECK. Esto es evidencia SQL/migración, no concurrencia Worker.
 
-## `BLOCKED_DEPENDENCIES`
+## ENV-01 — `ENVIRONMENT_BLOCKED` (2026-10-17)
 
-Node `v24.21.0` (`>=22.12.0`) y pnpm `11.21.0`. Registry configurado `https://registry.npmjs.org`; variables proxy y proxy pnpm unset. Store: `C:\Users\Admin\AppData\Local\pnpm\store\v11`; `pnpm store status` reportó modificado `@emnapi/runtime@1.11.3`. Se realizó **un único** `pnpm install --frozen-lockfile --prefer-offline`; expiró a 240 s durante errores de red/`ECONNRESET`, sin toolchain linkeada en el worktree. `package.json` y `pnpm-lock.yaml` permanecen intactos; no se repitió instalación ni se copiaron `node_modules`.
+Node `v24.21.0` y pnpm `11.21.0`; registry `https://registry.npmjs.org`. DNS resolvió y metadata HTTPS de `@emnapi/runtime@1.11.3` / `@fontsource/arimo@5.3.0` respondió 200. Node obtuvo tarballs HTTPS de 68.501 bytes (`@emnapi/runtime`) y 4.829.680 bytes (`@esbuild/win32-x64`); la descarga de `@cloudflare/workerd-windows-64@1.20260918.1` excedió 180 s. La instalación solicitada con store usual expiró tras 600 s, repetidos errores de descarga curl 23 para workerd y binarios Windows. Un reintento reproducible con store aislado (`--network-concurrency=1`) avanzó hasta 173/267 paquetes y expiró también tras 600 s, con workerd fallido. No se pudo discriminar si la lentitud/interrupción del tarball grande es del trayecto de red/VPN o de la transferencia del registry; no es evidencia de bloqueo total ni fallo TLS. Variables de proxy y proxy pnpm unset; no había servicio/proceso Proxifier activo. `pnpm store status` identificó antes cinco entradas modificadas y después una (`@emnapi/runtime@1.11.3`); no se ejecutó prune ni se limpió el store compartido. `package.json` y `pnpm-lock.yaml` sin cambios. Vite, Wrangler, TypeScript, workerd y esbuild no quedaron disponibles en `node_modules/.bin`; ENV-01 falla.
 
-Por `BLOCKED_DEPENDENCIES`, `NOT_RUN`: E2E `diagnostic-v3-funnel-01d1-check.mjs`, regresiones 01B/01C.3, concurrencia paralela en un Worker, failpoints D1 dentro del runtime, suite unitaria completa, typecheck/build y bundle isolation. Los E2E que contienen estas aserciones existen, pero no se atribuye PASS a su cobertura. Estado final: `FUNNEL_ANALYTICS_BLOCKED`.
+Por el gate ENV-01, quedan `NOT_RUN` en este corte: E2E `diagnostic-v3-funnel-01d1-check.mjs`, regresiones Worker 01B/01C.3, concurrencia en un Worker, fallos D1 en runtime, suite completa, typecheck/build y aislamiento del bundle. No se atribuye PASS a la cobertura de esos E2E. Estado: `FUNNEL_ANALYTICS_BLOCKED`.
 
-Los eventos identificados se escriben en el mismo batch D1 que la transición de dominio. Si el batch con analytics falla, se reintenta solo el batch operacional para no bloquear la persona; la métrica queda subcontada permanentemente y por eso no se promete exactitud ante fallos de analytics. La primera apertura persiste el marcador por solicitud incluso si falla el agregado, evitando contar una recuperación/revisita como otra primera apertura. La consulta pública local suprime `<5`; inicios/CTA son estimaciones repetibles y las tasas diarias no son cohortes exactas.
+El contrato existente escribe eventos identificados dentro del batch D1 de la transición de dominio. Si falla el batch con analytics se reintenta solo el batch operacional para no impedir a la persona completar la acción; la métrica puede quedar subcontada permanentemente y no se presenta como total exacto. La primera apertura persiste un marcador por solicitud aunque falle el agregado, evitando contar recovery/revisitas como otra primera apertura. La consulta dev suprime celdas `<5`; inicios/CTA son estimaciones repetibles y las tasas diarias no son cohortes exactas. Los seis agregados no incluyen PII, respuestas ni IDs según contrato/código; este corte no ejecutó el aislamiento en bundle productivo.
+
+## VEC-APRENDE-06A — Tecnología explicada (2026-10-17)
+
+**Runner:** Worker local (`pnpm run dev`) + D1 local con migraciones aplicadas en el worktree aislado para servir el sitemap. Sin `--remote`; no se modifica D1 remota. Con Chrome local:
+
+```powershell
+$env:BASE_URL='http://localhost:5173'
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE='C:\Program Files\Google\Chrome\Application\chrome.exe'
+pnpm exec node tests/e2e/learn-experience-check.mjs
+pnpm run test:unit
+pnpm run typecheck
+pnpm run build
+git diff --check
+```
+
+**Resultados integrados — RAN 2026-10-17 contra `origin/main` `e910c69` (incluye PR #2):** suite unitaria completa `1566/1566 PASS`; `learn-content.test.ts` PASS; typecheck/build PASS; E2E local PASS para las cinco guías en 1366/768/390/360, con índice, CTA, fuentes, SVG, metadata individual, lecturas relacionadas y sitemap. Inspección Playwright del diagrama en 1366 y 360 px: etiquetas legibles, retorno DNS y solicitud HTTPS completos, sin recorte ni overflow. El build advierte que faltan secretos locales de correo/autenticación, pero termina correctamente. D1 del worktree aislado recibió migraciones locales; no se usaron datos remotos ni deploy. La observación `LEARN-SVG-MOBILE-LABELS-001` continúa abierta; esto no certifica aceptación visual humana ni WCAG 2.2 AA.
+
+**VEC-APRENDE-04/05 — RAN 2026-10-16 en el worktree de integración (base `a7949dd`):** contenido `4/4 PASS`; suite unitaria completa `1558/1558 PASS`; typecheck, build, E2E Aprende en 1366/768/390/360 y `git diff --check` PASS. El primer typecheck coincidió con el bootstrap automático de PNPM y no encontró `@babel/types`; tras terminar la instalación local, el mismo comando pasó. Sin aceptación visual humana, certificación WCAG ni HTTP de producción.
+## VEC-APRENDE-06A — Tecnología explicada (2026-10-17)
+
+**Runner:** Worker local (`pnpm run dev`) + D1 local con migraciones aplicadas en el worktree aislado para servir el sitemap. Sin `--remote`; no se modifica D1 remota. Con Chrome local:
+
+```powershell
+$env:BASE_URL='http://localhost:5173'
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE='C:\Program Files\Google\Chrome\Application\chrome.exe'
+pnpm exec node tests/e2e/learn-experience-check.mjs
+pnpm run test:unit
+pnpm run typecheck
+pnpm run build
+git diff --check
+```
+
+**Resultados integrados — RAN 2026-10-17 contra `origin/main` `e910c69` (incluye PR #2):** suite unitaria completa `1566/1566 PASS`; `learn-content.test.ts` PASS; typecheck/build PASS; E2E local PASS para las cinco guías a 1366/768/390/360, con índice, CTA, fuentes, imagen SVG, metadata individual, lecturas relacionadas y sitemap. Inspección Playwright del diagrama en 1366 y 360 px: etiquetas legibles, retorno DNS y solicitud HTTPS completos, sin recorte ni overflow. El build advierte que faltan secretos locales de correo/autenticación, pero termina correctamente. La D1 de este worktree aislado recibió migraciones locales; sin datos remotos ni deploy.
+El E2E usa Worker local (`pnpm run dev`) y Chrome local; no publica datos de prueba ni ejecuta pruebas remotas. La observación `LEARN-SVG-MOBILE-LABELS-001` continúa abierta para diagramas preexistentes y la aceptación visual humana/WCAG 2.2 AA es independiente; estos PASS no las sustituyen.
+
+**VEC-APRENDE-04/05 — RAN 2026-10-16 en el worktree de integración (base `a7949dd`):** contenido `4/4 PASS`; suite unitaria completa `1558/1558 PASS`; typecheck, build, E2E Aprende en 1366/768/390/360 y `git diff --check` PASS. El primer typecheck coincidió con el bootstrap automático de PNPM y no encontró `@babel/types`; tras terminar la instalación local, el mismo comando pasó. Sin aceptación visual humana, certificación WCAG ni HTTP de producción.
 
 ## APP-MINI-01C + APP-MINI-02A — baseline y core modular (2026-10-15)
 
@@ -1336,7 +1372,7 @@ Los scripts locales fallan antes de registrar usuarios si `BASE_URL` no es HTTP 
 | `slug-life` | `business-profile-slug-lifecycle-check.mjs` | SLUG-005B |
 | `join-contact` | `join-contact-experience-check.mjs` | UX-001B.7 |
 | `about` | `about-experience-check.mjs` | UX-001B.8 |
-| `learn` | `learn-experience-check.mjs` | UX-001B.9 |
+| `learn` | `learn-experience-check.mjs` | UX-001B.9 / VEC-APRENDE-06A |
 | `commercial-review` | `commercial-experience-review-check.mjs` | UX-002.7 |
 | `legal-trust` | `legal-trust-experience-check.mjs` | UX-001B.10 |
 | `licenses` | `licenses-experience-check.mjs` | UX-002.2 |
