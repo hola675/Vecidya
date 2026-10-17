@@ -2,7 +2,7 @@
 
 ## DIAG-V3-FUNNEL-01D.1-R — cierre local bloqueado (2026-10-17)
 
-**`FUNNEL_ANALYTICS_BLOCKED` / `ENVIRONMENT_BLOCKED`.** La rama `feat/diagnostic-funnel-01d1` estaba limpia en su worktree dedicado. Se reconciliaron semánticamente los cambios de `origin/main` (`90215da`) sin alterar el checkout compartido: merge-tree anticipó conflictos solo en `CHANGELOG.md` y `TESTING.md`, que se resolvieron conservando ambos historiales; rutas, schema y journal se auto-integraron sin conflicto. La suite y gates posteriores aún no se ejecutan sobre el merge. Rama actualmente sin commit de integración; PR no creada.
+**`FUNNEL_ANALYTICS_BLOCKED` / `ENVIRONMENT_BLOCKED`.** La rama `feat/diagnostic-funnel-01d1` estaba limpia en su worktree dedicado. Se reconciliaron semánticamente los cambios de `origin/main` (`90215da`) sin alterar el checkout compartido: los conflictos documentales en `CHANGELOG.md` y `TESTING.md` conservaron ambos historiales; rutas, schema y journal se auto-integraron. El merge `d49a170` está pushed; rama incluye main y queda 0 behind / 7 ahead. La suite/gates posteriores aún no se ejecutan sobre el merge. PR Draft no creada: `gh` no está instalado y el navegador integrado rechazó este worktree; enlace de comparación: [Crear PR Draft](https://github.com/hola675/Vecidya/compare/main...feat/diagnostic-funnel-01d1?expand=1).
 
 Semántica corregida: el first-open se deduplica por `identified_diagnostic_request`, con backfill del mínimo timestamp de grants anteriores en `0019`; solicitud creada y primera verificación suman dentro del batch de dominio, con fallback a solo dominio si falla el agregado. Esto conserva el flujo principal a costa de posible subconteo ante fallos analíticos. No se reutiliza DIAG-V3-08 ni se añaden eventos/identificadores al agregado.
 
@@ -10,7 +10,7 @@ Unitarias focales **8/8 PASS**, reejecutadas tras reconciliar main. La cadena Dr
 
 **Bloqueo ENV-01:** `pnpm install --frozen-lockfile --prefer-offline` expiró a 600 s con errores de transferencia curl 23. Un intento con store aislado expiró también a 600 s en 173/267 paquetes; Workerd Windows falló repetidamente y su transferencia Node directa excedió 180 s. DNS y metadata HTTPS respondieron; paquetes pequeños/medianos se transfirieron íntegramente. Proxy de entorno/config pnpm unset; Proxifier no estaba activo. El store compartido reportó cinco entradas modificadas inicialmente y luego solo `@emnapi/runtime@1.11.3`; no se limpió. Lockfile/package manifest intactos. Por ello suite completa, E2E 01B/01C.3/01D.1, typecheck/build, concurrencia Worker y bundle isolation siguen `NOT_RUN`.
 
-La preparación del PR sigue pendiente de un commit de merge y de comprobar el canal autenticado disponible. Sin merge final, D1 compartida/remota, deploy ni inicio de 01D.2/01D.3.
+Sin merge final, D1 compartida/remota, deploy ni inicio de 01D.2/01D.3.
 
 ## APP-MINI-00 — contrato documental (2026-10-12)
 
