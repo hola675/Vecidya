@@ -66,6 +66,7 @@ export default [
   route("app/invitations/:invitationId", "routes/invitation.tsx"),
   route("app/business-profile", "routes/business-profile.tsx"),
   route("app/miniweb", "routes/miniweb-editor.tsx"),
+  route("app/crm", "routes/crm-app.tsx"),
   route("app/services", "routes/services-app.tsx"),
   route("vecindario/:slug", "routes/public-business-profile.tsx"),
   route("__health/db", "routes/health-db.ts"),
