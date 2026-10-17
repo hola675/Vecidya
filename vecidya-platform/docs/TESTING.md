@@ -14,7 +14,10 @@ pnpm run build
 git diff --check
 ```
 
-**Resultados observados:** suite unitaria `1558/1558 PASS`; `learn-content.test.ts` PASS; typecheck/build PASS (el runtime local advirtió que faltan secretos de correo/autenticación, sin impedir las validaciones); E2E local PASS en 1366/768/390/360 con cinco guías, índices, CTA, fuentes, imagen SVG, metadatos individuales, lectura relacionada y URL de sitemap. Inspección visual del diagrama en escritorio y 360 px: etiquetas principales grandes, retorno DNS y solicitud HTTPS completos; sin recorte ni overflow. La D1 de este worktree aislado recibió migraciones locales para que el sitemap respondiera; sin cambios remotos ni deploy.
+**Resultados integrados — RAN 2026-10-17 contra `origin/main` `e910c69` (incluye PR #2):** suite unitaria completa `1566/1566 PASS`; `learn-content.test.ts` PASS; typecheck/build PASS; E2E local PASS para las cinco guías a 1366/768/390/360, con índice, CTA, fuentes, imagen SVG, metadata individual, lecturas relacionadas y sitemap. Inspección Playwright del diagrama en 1366 y 360 px: etiquetas legibles, retorno DNS y solicitud HTTPS completos, sin recorte ni overflow. El build advierte que faltan secretos locales de correo/autenticación, pero termina correctamente. La D1 de este worktree aislado recibió migraciones locales; sin datos remotos ni deploy.
+El E2E usa Worker local (`pnpm run dev`) y Chrome local; no publica datos de prueba ni ejecuta pruebas remotas. La observación `LEARN-SVG-MOBILE-LABELS-001` continúa abierta para diagramas preexistentes y la aceptación visual humana/WCAG 2.2 AA es independiente; estos PASS no las sustituyen.
+
+**VEC-APRENDE-04/05 — RAN 2026-10-16 en el worktree de integración (base `a7949dd`):** contenido `4/4 PASS`; suite unitaria completa `1558/1558 PASS`; typecheck, build, E2E Aprende en 1366/768/390/360 y `git diff --check` PASS. El primer typecheck coincidió con el bootstrap automático de PNPM y no encontró `@babel/types`; tras terminar la instalación local, el mismo comando pasó. Sin aceptación visual humana, certificación WCAG ni HTTP de producción.
 
 ## APP-MINI-01C + APP-MINI-02A — baseline y core modular (2026-10-15)
 

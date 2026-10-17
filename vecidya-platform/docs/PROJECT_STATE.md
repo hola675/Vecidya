@@ -231,8 +231,9 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 ### Aprende (`knowledge.tsx`, `learn-article.tsx`)
 
 - UX-001B.9 establece `/aprende` como ruta canónica y mantiene `/que-debes-saber` como alias. La página diferencia aprendizaje de Servicios y Diagnóstico: explica cómo entender y mejorar la presencia digital.
-- UX-002.6 convierte `/aprende` en un centro de conocimiento estático: cinco categorías y cinco artículos enlazados desde el índice. VEC-APRENDE-06A llena «Tecnología explicada» con una guía de dominio/hosting, ejemplo hipotético y ocho fuentes oficiales; los cuatro artículos preexistentes conservan su contenido.
-- Cada artículo incluye explicación, ejemplos, siguiente paso, índice accesible, CTA contextual, metadata canonical/Open Graph y sitemap. Los diagramas viven en `public/assets/learn/` como SVG; la guía técnica incluye un flujo DNS de etiquetas legibles en móvil y una lectura interna curada. El campo opcional `relatedSlugs` permite esa selección explícita; artículos anteriores conservan la selección anterior.
+- UX-002.6 mantiene `/aprende` como centro de conocimiento estático con cinco categorías y cinco artículos enlazados desde el índice. Los cuatro originales son CRM, IA, Automatización y Presencia Digital; VEC-APRENDE-04/05 modernizó los dos últimos sin cambiar sus slugs, canonical, categoría ni autoría.
+- VEC-APRENDE-06A llena «Tecnología explicada» con una guía de dominio/hosting, ejemplo hipotético y ocho fuentes primarias. Usa los bloques editoriales existentes, un SVG con descripción accesible y lectura relacionada a la guía de Presencia Digital.
+- Los artículos mantienen índice accesible, CTA contextual, metadata canonical/Open Graph y presencia en sitemap. La publicación sigue pendiente; el contenido no promete resultados, no usa CMS y no añade persistencia editorial. El byline sigue el renderer actual (Yoan Ortiz), sin modelo de autor nuevo.
 - El contenido se mantiene deliberadamente sin CMS, autores dinámicos, fechas editoriales inventadas, comentarios, newsletter, buscador avanzado o cursos.
 
 ### Legal & Trust (`privacy.tsx`, `public-layout.tsx`)

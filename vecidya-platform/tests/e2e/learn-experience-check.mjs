@@ -62,11 +62,19 @@ async function runViewport(width, height) {
   assert(await page.locator('meta[property="og:type"]').getAttribute("content") === "article", `${label} el Open Graph del artículo no identifica el tipo article.`);
   assert(await page.getByText("Por Yoan Ortiz").isVisible(), `${label} artículo no muestra autoría.`);
   assert(await page.getByText("En esta guía", { exact: true }).isVisible(), `${label} artículo no muestra índice.`);
+  const crmTocLinks = page.locator(".learn-article-toc a");
+  assert(await crmTocLinks.count() > 0, `${label} el índice de CRM está vacío.`);
+  for (const href of await crmTocLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href")))) {
+    assert(href?.startsWith("#section-") && await page.locator(href).count() === 1, `${label} índice de CRM apunta a una sección inexistente: ${href}`);
+  }
   assert(await page.getByRole("link", { name: /Revisar mi punto de partida digital|Explorar si IA tiene sentido|Hablar sobre un proceso/i }).count() > 0, `${label} artículo no muestra CTA contextual.`);
   assert(await page.getByText("Ejemplo hipotético", { exact: true }).isVisible(), `${label} la guía CRM no identifica explícitamente su ejemplo hipotético.`);
   assert(await page.getByRole("heading", { name: "De consulta a próximo paso: un ejemplo hipotético" }).isVisible(), `${label} la guía CRM no presenta su ejemplo práctico.`);
   assert(await page.getByRole("heading", { name: "Una rutina sencilla de seguimiento" }).isVisible(), `${label} la guía CRM no presenta una rutina aplicable.`);
   assert(await page.getByRole("heading", { name: "Fuentes y orientación adicional" }).isVisible(), `${label} la guía CRM no presenta sus referencias.`);
+  const crmImage = page.locator(".learn-article-image");
+  assert((await crmImage.getAttribute("alt"))?.trim().length > 0, `${label} la ilustración de CRM no tiene texto alternativo.`);
+  assert(await crmImage.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó el diagrama de CRM.`);
   assert(await page.getByRole("link", { name: "NIST Privacy Framework" }).isVisible(), `${label} la referencia de privacidad no es accesible como enlace.`);
   assert(await page.locator(".learn-block--steps ol").count() > 0, `${label} la guía CRM no renderizó pasos numerados.`);
   assert(await page.locator(".learn-block--definitions dl").count() > 0, `${label} la guía CRM no renderizó definiciones semánticas.`);
@@ -80,6 +88,15 @@ async function runViewport(width, height) {
   const aiSlug = "que-puede-hacer-una-inteligencia-artificial-por-un-negocio";
   await page.goto(new URL(`/aprende/${aiSlug}`, baseUrl).toString(), { waitUntil: "domcontentloaded" });
   assert((await page.locator("h1").textContent())?.trim() === "¿Qué puede hacer una inteligencia artificial por un negocio?", `${label} el artículo de IA cambió su H1 o no cargó.`);
+  assert(await page.locator('link[rel="canonical"]').getAttribute("href") === `https://vecidya.com/aprende/${aiSlug}`, `${label} cambió el canonical de IA.`);
+  const aiImage = page.locator(".learn-article-image");
+  assert((await aiImage.getAttribute("alt"))?.trim().length > 0, `${label} la ilustración de IA no tiene texto alternativo.`);
+  assert(await aiImage.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó el diagrama de IA.`);
+  const aiTocLinks = page.locator(".learn-article-toc a");
+  assert(await aiTocLinks.count() > 0, `${label} el índice de IA está vacío.`);
+  for (const href of await aiTocLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href")))) {
+    assert(href?.startsWith("#section-") && await page.locator(href).count() === 1, `${label} índice de IA apunta a una sección inexistente: ${href}`);
+  }
   assert(await page.getByRole("heading", { name: "Qué es la inteligencia artificial en un negocio" }).isVisible(), `${label} el artículo de IA no explica la definición.`);
   assert(await page.getByRole("heading", { name: "Cuándo no conviene implementar IA" }).isVisible(), `${label} el artículo de IA no presenta límites de adopción.`);
   assert(await page.getByRole("heading", { name: "Un taller de bicicletas y sus consultas de servicio" }).isVisible(), `${label} el artículo de IA no presenta el ejemplo hipotético.`);
@@ -114,6 +131,7 @@ async function runViewport(width, height) {
   const automationSlug = "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio";
   await page.goto(new URL(`/aprende/${automationSlug}`, baseUrl).toString(), { waitUntil: "domcontentloaded" });
   assert((await page.locator("h1").textContent())?.trim() === "Automatizaciones: ahorrar tiempo sin complicar tu negocio", `${label} cambió la URL o el título de Automatización.`);
+  assert(await page.locator('link[rel="canonical"]').getAttribute("href") === `https://vecidya.com/aprende/${automationSlug}`, `${label} cambió el canonical de Automatización.`);
   for (const heading of [
     "Qué significa automatizar una tarea",
     "La secuencia: evento → condición → acción",
@@ -135,6 +153,7 @@ async function runViewport(width, height) {
   assert(await page.locator(".learn-block--steps ol").count() >= 3, `${label} faltan pasos para documentar y probar.`);
   assert(await page.locator(".learn-block--faq details").count() >= 6, `${label} faltan preguntas frecuentes.`);
   assert(await page.getByRole("link", { name: "NIST Privacy Framework" }).isVisible(), `${label} no renderizó las fuentes como enlaces.`);
+  assert(await page.getByRole("link", { name: "Consultar servicios" }).getAttribute("href") === "/servicios", `${label} el CTA de Automatización no dirige a Servicios.`);
   const automationImage = page.locator(".learn-article-image");
   assert((await automationImage.getAttribute("alt"))?.includes("condición"), `${label} el diagrama no tiene una descripción alternativa suficiente.`);
   assert(await automationImage.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó diagram-automation.svg.`);
@@ -186,6 +205,61 @@ async function runViewport(width, height) {
     assert(href?.startsWith("#section-") && await page.locator(href).count() === 1, `${label} índice apunta a una sección inexistente en el artículo de dominio: ${href}`);
   }
   await assertNoOverflow(page, `${label} artículo de dominio y hosting`);
+
+  const presenceSlug = "antes-de-hacer-publicidad-organiza-tu-presencia-digital";
+  await page.goto(new URL(`/aprende/${presenceSlug}`, baseUrl).toString(), { waitUntil: "domcontentloaded" });
+  assert((await page.locator("h1").textContent())?.trim() === "Antes de hacer publicidad, organiza tu presencia digital", `${label} cambió el título de Presencia Digital.`);
+  assert(await page.locator('link[rel="canonical"]').getAttribute("href") === `https://vecidya.com/aprende/${presenceSlug}`, `${label} cambió el canonical de Presencia Digital.`);
+  assert(await page.getByText("Por Yoan Ortiz").isVisible(), `${label} cambió la autoría de Presencia Digital.`);
+  for (const heading of [
+    "Qué significa tener presencia digital",
+    "Antes de elegir canales: define tu negocio con claridad",
+    "Organiza la información comercial básica",
+    "Qué canales convienen según el negocio",
+    "Sitio web, perfil de empresa y redes sociales",
+    "Mantén los mismos datos en todos los canales",
+    "Facilita que te encuentren y se comuniquen",
+    "Confianza sin reseñas o testimonios inventados",
+    "Accesibilidad, privacidad y seguridad básicas",
+    "Ejemplo hipotético: un taller local que considera anunciarse",
+    "Presencia orgánica y publicidad pagada",
+    "Qué revisar antes de Google Ads o Meta Ads",
+    "Prepara una página de destino y una acción clara",
+    "Indicadores básicos que sí ayudan a aprender",
+    "Problemas que la publicidad no resuelve",
+    "Cuándo puede tener sentido probar anuncios",
+    "Si todavía no necesitas anuncios",
+    "Cómo se relaciona esta guía con Vecidya",
+    "Checklist para revisar tu presencia digital",
+    "Preguntas frecuentes",
+    "Fuentes oficiales y alcance",
+    "Qué hacer ahora",
+  ]) assert(await page.getByRole("heading", { name: heading, exact: true }).isVisible(), `${label} falta la sección «${heading}».`);
+  const presenceImage = page.locator(".learn-article-image");
+  assert((await presenceImage.getAttribute("alt"))?.includes("sitio web"), `${label} la ilustración de Presencia no describe sus canales.`);
+  assert(await presenceImage.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó diagram-presence-digital.svg.`);
+  assert(await page.locator(".learn-block--example").count() === 1, `${label} el ejemplo de Presencia no se renderizó como un caso hipotético.`);
+  assert(await page.locator(".learn-block--steps ol").count() >= 3, `${label} faltan pasos prácticos para organizar y evaluar.`);
+  assert(await page.locator(".learn-block--faq details").count() >= 10, `${label} faltan respuestas frecuentes de Presencia y Vecidya.`);
+  assert(await page.locator(".learn-block--sources a").count() >= 7, `${label} faltan fuentes oficiales enlazadas.`);
+  const tocViewport = await page.locator(".learn-article-toc").evaluate((toc) => ({ height: toc.getBoundingClientRect().height, maxHeight: getComputedStyle(toc).maxHeight, overflowY: getComputedStyle(toc).overflowY }));
+  if (page.viewportSize().width > 820) {
+    assert(tocViewport.overflowY === "auto" && tocViewport.height < page.viewportSize().height, `${label} el índice extenso de Presencia debe poder desplazarse dentro del viewport.`);
+  } else {
+    assert(tocViewport.maxHeight === "none" && tocViewport.overflowY === "visible", `${label} el índice móvil no debe crear un contenedor anidado desplazable.`);
+  }
+  assert(await page.getByRole("link", { name: "Conocer el Diagnóstico" }).getAttribute("href") === "/diagnostico", `${label} el CTA contextual de Presencia no enlaza al Diagnóstico.`);
+  const checklistHeading = page.getByRole("heading", { name: "Checklist para revisar tu presencia digital" });
+  assert(await checklistHeading.isVisible(), `${label} falta el checklist práctico.`);
+  const checklistText = await checklistHeading.locator("..") .textContent();
+  for (const topic of [/nombre e identidad/i, /oferta y p[uú]blico/i, /zona de servicio/i, /horarios/i, /contacto/i, /coherencia/i, /experiencia m[oó]vil/i, /accesibilidad b[aá]sica/i, /privacidad y seguridad/i, /responsable/i, /medici[oó]n proporcional/i]) {
+    assert(topic.test(checklistText ?? ""), `${label} el checklist no cubre ${topic}.`);
+  }
+  const presenceFaq = page.getByText("¿La publicidad aumenta las ventas?", { exact: true });
+  assert(await presenceFaq.isVisible(), `${label} falta FAQ que matiza los resultados publicitarios.`);
+  await presenceFaq.click();
+  assert(await page.getByText(/No se puede asegurar/i).isVisible(), `${label} la FAQ presenta ventas como resultado garantizado.`);
+  await assertNoOverflow(page, `${label} artículo Presencia Digital`);
 
   await browser.close();
 }
