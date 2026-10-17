@@ -2,7 +2,7 @@
 
 ## DIAG-V3-FUNNEL-01D.1-R — cierre local parcial (2026-10-16)
 
-**`FUNNEL_ANALYTICS_PARTIAL` / `BLOCKED_DEPENDENCIES`.** Rama `feat/diagnostic-funnel-01d1`, base `origin/main=e91577a`; los commits previos `6563bb9`/`ad8f219` están en origin y las correcciones 01D.1-R siguen locales sin commit. Checkout compartido intacto.
+**`FUNNEL_ANALYTICS_PARTIAL` / `BLOCKED_DEPENDENCIES`.** Rama `feat/diagnostic-funnel-01d1`, base `origin/main=e91577a`; commits `6563bb9`, `ad8f219` y `63caedd` están pushed en origin. Checkout compartido intacto.
 
 Semántica corregida: el first-open se deduplica por `identified_diagnostic_request`, con backfill del mínimo timestamp de grants anteriores en `0019`; solicitud creada y primera verificación suman dentro del batch de dominio, con fallback a solo dominio si falla el agregado. Esto conserva el flujo principal a costa de posible subconteo ante fallos analíticos. No se reutiliza DIAG-V3-08 ni se añaden eventos/identificadores al agregado.
 
@@ -10,7 +10,7 @@ Validado localmente: unitarias focales **8/8**, sintaxis E2E y cadena Drizzle `0
 
 **`BLOCKED_DEPENDENCIES`:** Node `v24.21.0`, pnpm `11.21.0`, registry npmjs, proxy unset; store marcó `@emnapi/runtime@1.11.3` modificado. Único `pnpm install --frozen-lockfile --prefer-offline` expiró a 240 s por errores de red. No se tocaron `package.json`/lockfile ni se repitió. Por ello suite completa, E2E 01B/01C.3/01D.1, typecheck/build, concurrencia Worker y bundle isolation siguen `NOT_RUN`.
 
-PR no creada porque `gh` no está instalado; rama previa está pushed y disponible en [Crear PR](https://github.com/hola675/Vecidya/pull/new/feat/diagnostic-funnel-01d1). Sin merge, D1 compartida/remota, deploy ni inicio de 01D.2/01D.3.
+PR no creada porque `gh` no está instalado; rama pushed disponible en [Crear PR](https://github.com/hola675/Vecidya/pull/new/feat/diagnostic-funnel-01d1). Sin merge, D1 compartida/remota, deploy ni inicio de 01D.2/01D.3.
 
 ## APP-MINI-00 — contrato documental (2026-10-12)
 
