@@ -1,7 +1,7 @@
 import { and, asc, eq, getTableColumns, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 
 import type { Database } from "../client.server";
-import { businessProfile, businessProfileGovernance } from "../schema";
+import { businessProfile, businessProfileGovernance, member, billingAccount, organizationLicense } from "../schema";
 import { getBusinessProfilePublicationIssues } from "../business-profile-rules";
 
 const notSuspended = or(
@@ -9,7 +9,7 @@ const notSuspended = or(
   eq(businessProfileGovernance.platformStatus, "active"),
 );
 
-export type BusinessProfileInput = {
+// Un perfil solo es visible mientras alguno de sus propietarios tenga una licencia activa\n// en su propia cuenta de facturación. No se hereda de membresías ajenas.\nconst hasActiveOwnerLicense = sql`EXISTS (\n  SELECT 1 FROM ${member}\n  INNER JOIN ${billingAccount} ON ${billingAccount.ownerUserId} = ${member.userId}\n  INNER JOIN ${organizationLicense} ON ${organizationLicense.billingAccountId} = ${billingAccount.id}\n  WHERE ${member.organizationId} = ${businessProfile.organizationId}\n    AND ${member.role} = ${"owner"}\n    AND ${organizationLicense.status} = ${"active"}\n)`;\n\nexport type BusinessProfileInput = {
   displayName: string;
   slug: string;
   shortDescription: string | null;
@@ -49,7 +49,7 @@ export async function getPublishedBusinessProfileBySlug(database: Database, slug
     .where(and(
       eq(businessProfile.slug, slug),
       eq(businessProfile.status, "published"),
-      notSuspended,
+      notSuspended,\n      hasActiveOwnerLicense,
     ))
     .limit(1);
 
