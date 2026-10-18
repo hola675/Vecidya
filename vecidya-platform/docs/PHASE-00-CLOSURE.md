@@ -5,9 +5,9 @@ Fecha: 2026-10-18. **Estado: NO CERTIFICADA**. Los PASS históricos no sustituye
 | Gate | Criterio | Evidencia requerida | Estado |
 | --- | --- | --- | --- |
 | G00-01 | Reconciliar `main` y ramas activas sin conflictos ni pérdida de cambios | Diff y SHA final | COMPLETADO — `393415d51acc3dda37cd43940bec741325ae866b`; comparación `behind=0`, PR #11 mergeable |
-| G00-02 | Instalación `pnpm install --frozen-lockfile` | Log CI | SIN EVIDENCIA |
-| G00-03 | Unitarias completas PASS | Log CI | SIN EVIDENCIA |
-| G00-04 | Typecheck y build PASS | Logs CI | SIN EVIDENCIA |
+| G00-02 | Instalación `pnpm install --frozen-lockfile` | Log CI | Vecidya CI PASS en `c10d0f5`, run `39135100604`; revisar log del paso para acreditación granular |
+| G00-03 | Unitarias completas PASS | Log CI | Vecidya CI PASS en `c10d0f5`, run `39135100604`; otras suites transversales aún pendientes |
+| G00-04 | Typecheck y build PASS | Logs CI | Vecidya CI PASS en `c10d0f5`, run `39135100604`; validar pasos del job |
 | G00-05 | Migraciones 0000–0019 en D1 local aislada | Ledger y logs | SIN EVIDENCIA |
 | G00-06 | E2E 01C.3 y 01B, concurrencia, recovery y cleanup | Logs Worker/E2E | SIN EVIDENCIA |
 | G00-07 | Agregados históricos conservados sin identidad | Sentinel SQL y unitarias | SIN EVIDENCIA |
@@ -36,3 +36,10 @@ No iniciar APP-MINI-02B, activar el motor candidato, correo real, GHL o limpiar 
 - Comparación posterior `main...integration/phase-00-main-reconcile`: `ahead=143`, `behind=0` y GitHub `mergeable=true`.
 - CI iniciada para este SHA: Vecidya CI (`39134952449`), DIAG-V3 FUNNEL-01D.1 (`39134952345`) y Vecidya Licensing and Vecindario CI (`39134952412`). En el momento del registro siguen en progreso: **no hay PASS certificados**.
 - G00-01 acredita reconciliación de historial y revisión previa de 17 archivos afectados; no implica certificación de G00-02 a G00-10.
+
+## Evidencia CI adicional (commit `c10d0f52414ecd55da1b0518d8f15a3d51928c7f`)
+
+- `Vecidya CI`: ejecución https://github.com/hola675/Vecidya/actions/runs/39135100604 — conclusión **success** (job «Unit tests, types and build»). La conclusión del job no reemplaza la inspección de logs para cada gate.
+- `DIAG-V3 FUNNEL-01D.1`: https://github.com/hola675/Vecidya/actions/runs/39135100661 — en ejecución en la última consulta; no declarar PASS todavía.
+- `Vecidya Licensing and Vecindario CI`: https://github.com/hola675/Vecidya/actions/runs/39135100626 — en ejecución en la última consulta; no declarar PASS todavía.
+- **Nota operativa:** cualquier nuevo commit cancela o sustituye ejecuciones en progreso según la configuración de concurrencia. Certificar siempre sobre el SHA final y evitar cambios innecesarios mientras se ejecutan las suites.
