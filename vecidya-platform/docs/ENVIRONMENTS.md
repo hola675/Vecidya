@@ -1,3 +1,7 @@
+## Codespaces y CI — propuesta VEC-CLOUD-CI-001 (2026-10-17)
+
+PR #10 incorpora `.devcontainer/devcontainer.json` (Node 24, pnpm 11.21.0, instalación congelada y Playwright Chromium) y `.github/workflows/vecidya-ci.yml` (CI alojada por GitHub para PR/main). Codespaces es **entorno de desarrollo**, no staging ni producción: la apertura y ejecución todavía no están verificadas. No configurar secretos de producción en Codespaces, no ejecutar `wrangler deploy`, `--remote` ni aplicar migraciones D1 remotas. Los E2E con D1 requieren un entorno local efímero separado y no forman parte de este primer CI. No hay despliegue ni cambio de bindings.
+
 # Entornos
 
 ## DIAG-V3-FUNNEL-01C — pruebas locales (2026-10-12)
