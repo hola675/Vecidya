@@ -1,3 +1,7 @@
+## VEC-CLOUD-CI-001 — Codespaces y CI (2026-10-17)
+
+Configuración propuesta en PR #10 (`fix/codespaces-ci-bootstrap`): GitHub Actions ejecuta instalación pnpm congelada, `test:unit`, `typecheck` y `build` en runner alojado por GitHub, sin secretos, D1 remota ni deploy. Codespaces define Node 24, pnpm 11.21.0, Chromium y puerto 5173. **Estado: CONFIG propuesta; pruebas CI todavía sin PASS confirmado y Codespace no abierto/verificado.** E2E con Worker/D1 aislada queda para checkpoint posterior; no se declara cobertura E2E en CI. Para aprobar merge: CI verde, diff revisado, documentación reconciliada y aprobación explícita; si CI falla, no fusionar.
+
 # Pruebas
 
 ## VEC-APRENDE-06C — tres guías nuevas (2026-10-17)
