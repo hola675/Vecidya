@@ -9,7 +9,18 @@ const notSuspended = or(
   eq(businessProfileGovernance.platformStatus, "active"),
 );
 
-// Un perfil solo es visible mientras alguno de sus propietarios tenga una licencia activa\n// en su propia cuenta de facturación. No se hereda de membresías ajenas.\nconst hasActiveOwnerLicense = sql`EXISTS (\n  SELECT 1 FROM ${member}\n  INNER JOIN ${billingAccount} ON ${billingAccount.ownerUserId} = ${member.userId}\n  INNER JOIN ${organizationLicense} ON ${organizationLicense.billingAccountId} = ${billingAccount.id}\n  WHERE ${member.organizationId} = ${businessProfile.organizationId}\n    AND ${member.role} = ${"owner"}\n    AND ${organizationLicense.status} = ${"active"}\n)`;\n\nexport async function hasActiveLicenseForOrganizationOwner(database: Database, organizationId: string) {
+// Un perfil solo es visible mientras alguno de sus propietarios tenga una licencia activa
+// en su propia cuenta de facturación. No se hereda de membresías ajenas.
+const hasActiveOwnerLicense = sql`EXISTS (
+  SELECT 1 FROM ${member}
+  INNER JOIN ${billingAccount} ON ${billingAccount.ownerUserId} = ${member.userId}
+  INNER JOIN ${organizationLicense} ON ${organizationLicense.billingAccountId} = ${billingAccount.id}
+  WHERE ${member.organizationId} = ${businessProfile.organizationId}
+    AND ${member.role} = ${"owner"}
+    AND ${organizationLicense.status} = ${"active"}
+)`;
+
+export async function hasActiveLicenseForOrganizationOwner(database: Database, organizationId: string) {
   const [row] = await database.select({ id: member.id }).from(member)
     .innerJoin(billingAccount, eq(billingAccount.ownerUserId, member.userId))
     .innerJoin(organizationLicense, eq(organizationLicense.billingAccountId, billingAccount.id))
@@ -58,7 +69,8 @@ export async function getPublishedBusinessProfileBySlug(database: Database, slug
     .where(and(
       eq(businessProfile.slug, slug),
       eq(businessProfile.status, "published"),
-      notSuspended,\n      hasActiveOwnerLicense,
+      notSuspended,
+      hasActiveOwnerLicense,
     ))
     .limit(1);
 
