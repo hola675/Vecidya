@@ -282,13 +282,13 @@ try {
   assert.equal(expiredSnapshotRecovery.status(), 202, "la solicitud con snapshot vencido conserva una respuesta genérica");
   assert.equal((await expiredSnapshotRecovery.json()).accepted, true);
   const noSnapshotRecoveryEmail = await lifecycleFixture(lostResponseRequestId, "inspect");
-  assert.equal(noSnapshotRecoveryEmail.localMessage?.createdAt, recoveryMailbox.createdAt, "snapshot vencido no genera otro mensaje local");
+  assert.equal(noSnapshotRecoveryEmail.localMessage?.createdAt, repeatRecoveryMailbox.createdAt, "snapshot vencido no genera otro mensaje local");
   await lifecycleFixture(lostResponseRequestId, "restore_snapshot_expiry");
   await lifecycleFixture(lostResponseRequestId, "expire_request_only");
   const expiredRequestRecovery = await page.request.post(recoveryUrl, { headers: { Origin: base.origin, "cf-connecting-ip": "198.51.100.35" } });
   assert.equal(expiredRequestRecovery.status(), 202, "la solicitud vencida conserva una respuesta genérica");
   const noRequestRecoveryEmail = await lifecycleFixture(lostResponseRequestId, "inspect");
-  assert.equal(noRequestRecoveryEmail.localMessage?.createdAt, recoveryMailbox.createdAt, "solicitud vencida no genera otro mensaje local");
+  assert.equal(noRequestRecoveryEmail.localMessage?.createdAt, repeatRecoveryMailbox.createdAt, "solicitud vencida no genera otro mensaje local");
   assert.equal((await page.request.get(new URL(recovered.reportPath, base).toString())).status(), 404, "la solicitud vencida niega el informe aun con la cookie nueva");
 
   const mailbox = await page.request.get(new URL(`/__dev/diagnostico/buzon/${created.requestId}`, base).toString());
