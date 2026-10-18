@@ -481,3 +481,7 @@ Implementada en rama la ruta protegida `/app/internal/diagnostic-analytics`: mé
 ### UI/UX transversal — premium polish (2026-10-17)
 
 Se añadió `app/styles/vecidya-polish.css` e importación en `app/root.tsx` para compartir tokens de movimiento, transiciones, foco accesible, hover contextual, tablas y ajustes responsive entre web pública, espacio cliente y App Internal (`7c9f1e0`, `87044e4`). Se añadió enlace de salto al contenido de App Internal (`b73cc1f`). Efectos condicionados a `hover` y `prefers-reduced-motion`; no se incorporaron librerías ni fuentes externas. **Esto es la primera capa transversal, no una revisión terminada de cada página.** Pendientes: auditoría visual por ruta, contraste, responsive 320–1440 px, teclado, Lighthouse, compilación y pruebas reales. No certificado ni desplegado.
+
+### UI/UX transversal — pulido de Mi Vecidya (2026-10-17)
+
+Aplicado en la capa compartida `app/styles/vecidya-polish.css` un refinamiento específico del dashboard cliente (`app-primary-action`, accesos rápidos y progreso), editor de perfil (foco por tarjeta, legibilidad de ayudas) y MiniWeb (separación controles/vista previa, feedback de módulos, responsive). Commit `05ea2f1`. Animación solo en hover compatible y respetando movimiento reducido. No se alteraron modelos de datos, rutas, precios ni funcionalidades comerciales; GHL continúa aplazado. Pendiente revisión visual real, compilación, accesibilidad y contraste; no declarar certificación ni despliegue.
