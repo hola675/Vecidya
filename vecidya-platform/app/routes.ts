@@ -1,7 +1,7 @@
 import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 // Este archivo se evalúa en Node; la configuración de tipos de la app no incluye los tipos de Node.
-const isDevelopmentServer = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.NODE_ENV === "development";
+const isDevelopmentServer = import.meta.env.DEV;
 
 export default [
   index("routes/home.tsx"),
