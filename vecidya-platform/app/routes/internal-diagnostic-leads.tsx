@@ -88,7 +88,7 @@ export default function InternalDiagnosticLeads() {
     params.set("page", String(number));
     return `?${params.toString()}`;
   };
-  return <AdminShell active="home" workspaceUser={workspaceUser}>
+  return <AdminShell active="leads" workspaceUser={workspaceUser}>
     <main className="admin-content">
       <div className="page-heading"><div>
         <p className="eyebrow">DIAGNÓSTICO · VECIDYA</p>
