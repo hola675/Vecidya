@@ -34,7 +34,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const database = createDatabase(env.DB);
   const billing = await database.query.billingAccount.findFirst({ where: eq(billingAccount.ownerUserId, workspaceUser.id) });
   const activeLicense = billing ? await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, billing.id), eq(organizationLicense.status, "active")) }) : null;
-  const canCreateOrganizations = Boolean(activeLicense);
+  const canCreateOrganizations = Boolean(activeLicense) || !organizations.some((item) => item.role === "owner");
   const [businessProfile, services, memberCount] = activeOrganization
     ? await Promise.all([
       getBusinessProfileForOrganization(database, activeOrganization.id),
