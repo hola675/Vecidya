@@ -2,7 +2,7 @@ import { isRouteErrorResponse, useLoaderData, useRouteError } from "react-router
 import { useState } from "react";
 import { readRequestBodyLimited, RequestBodyTooLargeError } from "../features/diagnostic/bounded-request-body.server";
 
-import { deleteIdentifiedReport, getAuthorizedReport, recordDetailedReportFirstOpen, revokeDiagnosticOptionalIntents } from "../../db/queries/diagnostic-identification.server";
+import { deleteAuthorizedIdentifiedReport, getAuthorizedReport, recordDetailedReportFirstOpen, revokeDiagnosticOptionalIntents } from "../../db/queries/diagnostic-identification.server";
 import { REPORT_VERSION, type DiagnosticReportV1 } from "../components/diagnostic-report/report-model";
 import { DiagnosticReport } from "../components/diagnostic-report/diagnostic-report";
 import { readCookie, digestOpaqueToken, constantTimeEqual } from "../features/diagnostic/report-access-crypto.server";
@@ -74,7 +74,8 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
     if (!result.authorized) return notFound();
     return Response.json({ ok: true, commercialRevoked: result.commercialRevoked, researchRevoked: result.researchRevoked }, { headers: responseHeaders });
   }
-  await deleteIdentifiedReport(env.DB, requestId);
+  const deleted = await deleteAuthorizedIdentifiedReport(env.DB, { requestId, accessTokenDigest: await digestOpaqueToken(token), now: new Date() });
+  if (!deleted) return notFound();
   return new Response(null, { status: 204, headers: { ...responseHeaders, "Set-Cookie": `diagnostic_report_access=; Path=/diagnostico/informe; HttpOnly; SameSite=Strict; Max-Age=0${new URL(request.url).protocol === "https:" ? "; Secure" : ""}` } });
 }
 
