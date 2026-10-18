@@ -1,6 +1,7 @@
 // Hook de resolución: `./modulo` → `./modulo.ts`, `./modulo/index.ts` o `./modulo.tsx`.
 // Solo actúa sobre especificadores relativos sin extensión que fallen al resolverse.
-// Los sufijos de dominio (.server, .client, etc.) no son extensiones ejecutables.\nconst hasExtension = (specifier) => /\.(?:[cm]?js|[cm]?ts|jsx|tsx|json|node)$/i.test(specifier.split("/").pop() ?? "");
+// Los sufijos de dominio (.server, .client, etc.) no son extensiones ejecutables.
+const hasExtension = (specifier) => /\.(?:[cm]?js|[cm]?ts|jsx|tsx|json|node)$/i.test(specifier.split("/").pop() ?? "");
 
 export async function resolve(specifier, context, nextResolve) {
   const relative = specifier.startsWith("./") || specifier.startsWith("../");
