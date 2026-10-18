@@ -83,3 +83,70 @@
     transition-duration: .01ms !important;
   }
 }
+
+/* Client dashboard: tactile navigation without decorative motion overload. */
+.app-primary-action {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.app-primary-action::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg,var(--blue),#72a7f5,var(--orange));
+  pointer-events: none;
+}
+.app-state-grid, .app-quick-actions__grid { gap: clamp(.75rem,1.6vw,1.25rem); }
+.app-state-tile, .app-quick-action {
+  min-width: 0;
+  transition: border-color var(--vx-duration) ease, box-shadow var(--vx-duration) var(--vx-ease), transform var(--vx-duration) var(--vx-ease);
+}
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  .app-quick-action:hover { transform: translateY(-3px); box-shadow: var(--vx-shadow-hover); }
+}
+.app-quick-action:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+.completion-track { overflow: hidden; }
+.completion-track > * { transition: width 450ms var(--vx-ease); }
+
+/* Profile editor: legible grouping, progressive emphasis, clear form focus. */
+.business-profile-page .business-profile-card {
+  min-width: 0;
+  border-color: var(--line);
+  transition: border-color var(--vx-duration) ease, box-shadow var(--vx-duration) ease;
+}
+.business-profile-page .business-profile-card:focus-within {
+  border-color: #9cbce8;
+  box-shadow: 0 0 0 3px rgb(21 95 197 / 7%);
+}
+.business-profile-page :is(input,textarea,select):focus-visible {
+  outline: 3px solid rgb(21 95 197 / 40%);
+  outline-offset: 2px;
+}
+.business-profile-page .form-help { line-height: 1.55; }
+
+/* MiniWeb: distinguish editor controls from live preview. */
+.miniweb-editor__layout { align-items: start; gap: clamp(1rem,2.2vw,2rem); }
+.miniweb-editor__controls, .miniweb-editor__preview-card { min-width: 0; }
+.miniweb-editor__preview-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+.miniweb-editor__preview { max-width: 100%; overflow-x: auto; }
+.miniweb-module-list__item {
+  transition: background-color var(--vx-duration-fast) ease, border-color var(--vx-duration-fast) ease;
+}
+.miniweb-module-list__item:focus-within { background: var(--surface-soft); }
+.miniweb-module-toggle:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+.miniweb-editor__publication-state { line-height: 1.55; }
+
+@media (max-width: 760px) {
+  .miniweb-editor__layout { grid-template-columns: minmax(0,1fr); }
+  .app-quick-actions__grid, .app-state-grid { grid-template-columns: repeat(auto-fit,minmax(min(100%,13rem),1fr)); }
+  .business-profile-page .form-grid { grid-template-columns: minmax(0,1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .completion-track > * { transition: none; }
+}
