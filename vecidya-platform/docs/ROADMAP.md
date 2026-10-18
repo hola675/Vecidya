@@ -456,3 +456,10 @@ PROD-001 y EMAIL-001 están cerrados en sus alcances; `app.vecidya.com`/`admin.v
 6. **Aplicación de clientes:** perfiles públicos y MiniWeb de 39 USD como producto Vecidya; CRM/automatizaciones de GHL fuera del núcleo Vecidya. Respetar secuencia AUTH-ABUSE → MEDIA R2 → publicación autónoma y las autorizaciones independientes de producción.
 
 **Puertas de salida:** PR integrable, tests PASS documentados, protección de PII y aislamiento tenant verificados, consentimiento legal/retención resueltos, revisión visual y aprobación de despliegue. Ninguna puerta se presume superada por commits de implementación.
+
+### 01D.2 — corte de implementación 2026-10-17 (sin certificación)
+
+- Revocación comercial y de investigación selectiva con grant vigente, interfaz DEV, feedback accesible y lectura acotada del body: **implementado en rama**.
+- Borrado DEV con confirmación y DELETE protegido por autorización en la propia sentencia SQL, preservando agregados anónimos: **implementado en rama** (`9a01674`, `616a761`).
+- **No cerrar 01D.2 funcional/públicamente todavía:** falta definir y desarrollar registro de solicitud de supresión, retención y evidencia mínima autorizada; pruebas reales aplazadas por decisión del usuario. No declarar PASS, certificación ni deploy.
+- Próximo desarrollo sin pruebas: contrato de solicitud de supresión verificable y trazable, sin guardar PII innecesaria ni sincronizar GHL; después 01D.3 handoff comercial explícito.
