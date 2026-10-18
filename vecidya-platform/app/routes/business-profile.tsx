@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
+import { and, eq } from "drizzle-orm";
+import { billingAccount, organizationLicense } from "../../db/schema";
 import { dayOfWeekLabels, type BusinessHoursEntry } from "../../db/business-hours-rules";
 import { businessProfileSlugMaxLength, serviceModeLabels, slugifyBusinessName } from "../../db/business-profile-rules";
 import {
@@ -15,7 +17,7 @@ import {
 } from "../../db/queries/business-hours.server";
 import { getBusinessProfileGovernance } from "../../db/queries/platform-governance.server";
 import { requireOrganizationPermission } from "../../server/auth/authorization.server";
-import { requireOrganization } from "../../server/auth/session.server";
+import { requireOrganization, requireSession } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import {
