@@ -161,7 +161,7 @@ jobs:
           run_suite e2e-01c3 'diagnostic-v3-funnel-01c-check: PASS' pnpm exec node tests/e2e/diagnostic-v3-funnel-01c-check.mjs
           run_suite e2e-01b 'diagnostic-v3-funnel-01b-check: 6/6 PASS' pnpm exec node tests/e2e/diagnostic-v3-funnel-01b-check.mjs
           # Regresión MiniWeb 02A: el harness usa D1 local y limpia las fixtures creadas.
-          run_suite e2e-miniweb '"checks"' pnpm exec node tests/e2e/miniweb-core-check.mjs
+          run_suite e2e-miniweb 'MINIWEB_02A_E2E_PASS' pnpm exec node tests/e2e/miniweb-core-check.mjs
           # 01D.1 currently re-imports 01C.3; running it again would repeat the same journey
           # against the same D1. The dedicated 01D.1 assertions are in the 01C.3 suite.
 
