@@ -48,6 +48,7 @@ export default [
   route("api/platform/organizations/:organizationId/integrations", "routes/api-platform-integrations.ts"),
   route("api/platform/organizations/:organizationId/license", "routes/api-platform-licensing.ts"),
   route("app/internal/services", "routes/internal-services.tsx"),
+  route("app/internal/diagnostic-leads", "routes/internal-diagnostic-leads.tsx"),
   route("app/internal", "routes/internal.tsx"),
   route("app/internal/organizations", "routes/internal-organizations.tsx"),
   route("app/internal/organizations/:organizationId", "routes/internal-organization-detail.tsx"),
