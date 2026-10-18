@@ -6,7 +6,7 @@ Fecha: 2026-10-18. Comparación GitHub `integration/phase-00-main-reconcile...ma
 
 Se contrastaron los SHA de los 17 archivos que GitHub lista como modificados al comparar desde integración hacia main:
 
-- **Idénticos en ambas ramas (8):** `.devcontainer/devcontainer.json`, `AGENTS.md`, `app/content/learn.ts`, `docs/ENVIRONMENTS.md`, `docs/GOVERNANCE.md`, ambos SVG de Aprende, `tests/e2e/learn-experience-check.mjs` y `tests/unit/learn-content.test.ts`. Nota: esta lista tiene **9** archivos idénticos.
+- **Idénticos en ambas ramas (9):** `.devcontainer/devcontainer.json`, `AGENTS.md`, `app/content/learn.ts`, `docs/ENVIRONMENTS.md`, `docs/GOVERNANCE.md`, ambos SVG de Aprende, `tests/e2e/learn-experience-check.mjs` y `tests/unit/learn-content.test.ts`.
 - **Distintos (8):** `.github/workflows/vecidya-ci.yml`, `docs/ARCHITECTURE.md`, `docs/CHANGELOG.md`, `docs/DATABASE.md`, `docs/PROJECT_STATE.md`, `docs/ROADMAP.md`, `docs/STATUS.md`, `docs/TESTING.md`.
 
 ## Decisión de resolución propuesta
