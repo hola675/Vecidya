@@ -1,4 +1,5 @@
-import { Link, useLoaderData } from "react-router";
+import { Form, Link, useLoaderData, useNavigate } from "react-router";
+import { useState } from "react";
 
 import { createDatabase } from "../../db/client.server";
 import { getBusinessProfileCompletion } from "../../db/business-profile-rules";
@@ -8,7 +9,8 @@ import { countOrganizationMembers } from "../../db/queries/organization.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getActiveOrganization } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
-import { Badge, Card, Icon } from "../components/ui";
+import { Alert, Badge, Button, Card, Icon } from "../components/ui";
+import { authClient } from "../lib/auth-client";
 import { ClientAreaShell } from "../components/client-area-shell";
 import { publicAssets } from "../assets/public-assets";
 
@@ -70,6 +72,29 @@ function getPrimaryAction(businessProfile: LoaderData["businessProfile"], comple
 
 export default function AppPage() {
   const { activeOrganization, businessProfile, businessProfileCompletion, organizations, workspaceUser, isPlatformAdmin, services, memberCount } = useLoaderData<typeof loader>();
+  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleCreateOrganization(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+    setError(null);
+    const formData = new FormData(event.currentTarget);
+    const result = await authClient.organization.create({
+      name: String(formData.get("name")).trim(),
+      slug: String(formData.get("slug")).trim(),
+    });
+    if (result.error) {
+      setError(result.error.message ?? "No se pudo crear la organización.");
+      setSubmitting(false);
+      return;
+    }
+    setSubmitting(false);
+    navigate("/app", { replace: true });
+  }
+
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Buenos días" : hour < 19 ? "Buenas tardes" : "Buenas noches";
   const firstName = workspaceUser.name.split(" ")[0];
@@ -89,13 +114,15 @@ export default function AppPage() {
 
       {activeOrganization ? <h2 className="sr-only">Organización activa: {activeOrganization.name}</h2> : null}
 
+      {error ? <Alert>{error}</Alert> : null}
+
       {!activeOrganization ? (
         <Card className="empty-state">
           <img alt="" height="512" src={publicAssets.brand.symbol3d} width="512" />
           <div>
             <p className="eyebrow">ACCESO CONTROLADO</p>
-            <h2>Aún no tienes un espacio asignado</h2>
-            <p>El equipo de Vecidya crea y habilita las organizaciones desde administración. Si recibiste una invitación, ábrela desde tu correo para unirte a tu espacio.</p>
+            <h2>Comienza con tu primera organización</h2>
+            <p>Puedes crear un espacio gratuito para tu negocio y preparar su perfil público en Vecindario. Los servicios premium requieren una licencia por organización.</p>
           </div>
         </Card>
       ) : (
@@ -150,6 +177,18 @@ export default function AppPage() {
         </>
       )}
 
+      <Card className="setup-card" id="organization-setup">
+        <div>
+          <p className="eyebrow">NUEVA ORGANIZACIÓN</p>
+          <h2>{organizations.length ? "Añadir otro negocio" : "Crear mi organización"}</h2>
+          <p>Tu perfil básico y su publicación en Vecindario están incluidos gratuitamente. CRM y otras funciones premium se contratan por separado para cada organización.</p>
+        </div>
+        <Form className="organization-form" method="post" onSubmit={handleCreateOrganization}>
+          <label>Nombre del negocio<input autoComplete="organization" name="name" required maxLength={100} placeholder="Ej. Barrio Centro" /></label>
+          <label>Identificador público<input autoComplete="off" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="barrio-centro" spellCheck={false} /></label>
+          <Button disabled={submitting} type="submit">{submitting ? "Creando…" : "Crear organización gratuita"}</Button>
+        </Form>
+      </Card>
     </main>
     </ClientAreaShell>
   );
