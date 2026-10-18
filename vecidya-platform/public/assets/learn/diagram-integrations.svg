@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" role="img" aria-labelledby="title desc">
+  <title id="title">Conexión controlada entre dos herramientas</title>
+  <desc id="desc">Dos aplicaciones envían solo los campos acordados por una conexión; una persona comprueba el resultado y resuelve errores o duplicados.</desc>
+  <rect width="960" height="360" rx="28" fill="#f3f7f5"/>
+  <rect x="72" y="104" width="230" height="142" rx="22" fill="#fff" stroke="#477465" stroke-width="5"/>
+  <rect x="658" y="104" width="230" height="142" rx="22" fill="#fff" stroke="#477465" stroke-width="5"/>
+  <rect x="378" y="112" width="204" height="126" rx="22" fill="#d9e9e2" stroke="#477465" stroke-width="4"/>
+  <path d="M310 174h58m-14-15 15 15-15 15m214-15h72m-15-15 15 15-15 15" fill="none" stroke="#345f52" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="187" y="164" text-anchor="middle" font-family="Arial,sans-serif" font-size="29" font-weight="700" fill="#18372f">Herramienta A</text>
+  <text x="187" y="204" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" fill="#365b50">origen acordado</text>
+  <text x="480" y="164" text-anchor="middle" font-family="Arial,sans-serif" font-size="27" font-weight="700" fill="#18372f">API · aviso · CSV</text>
+  <text x="480" y="201" text-anchor="middle" font-family="Arial,sans-serif" font-size="21" fill="#365b50">campos y permisos</text>
+  <text x="773" y="164" text-anchor="middle" font-family="Arial,sans-serif" font-size="29" font-weight="700" fill="#18372f">Herramienta B</text>
+  <text x="773" y="204" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" fill="#365b50">destino revisado</text>
+  <text x="480" y="303" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" fill="#365b50">Una persona verifica errores y duplicados</text>
+</svg>
