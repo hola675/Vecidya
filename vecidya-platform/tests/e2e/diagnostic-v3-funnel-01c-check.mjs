@@ -264,7 +264,7 @@ try {
   assert.equal(repeatRecoveryMailbox.purpose, "access_recovery");
   const repeatRecoveryLink = repeatRecoveryMailbox.text.match(/https?:\/\/[^\s]+/u)?.[0];
   const repeatRecoveryToken = new URLSearchParams(new URL(repeatRecoveryLink).hash.slice(1)).get("token");
-  const repeatRecoveryVerification = await page.evaluate(async ({ requestId, token, ip }) => {
+  // El limiter real aplica 6 verificaciones por ventana de 60 s también por requestId.\n  // Esperar una ventana completa conserva la protección y evita que esta prueba\n  // de recuperación repetida dependa de los intentos anteriores del mismo fixture.\n  await page.waitForTimeout(65_000);\n  const repeatRecoveryVerification = await page.evaluate(async ({ requestId, token, ip }) => {
     const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
     return response.status;
   }, { requestId: lostResponseRequestId, token: repeatRecoveryToken, ip: "198.51.100.37" });
