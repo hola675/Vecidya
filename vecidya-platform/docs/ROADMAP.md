@@ -473,3 +473,7 @@ Siguiente desarrollo: filtros y búsqueda seguros del lado servidor, estados y a
 ### 01D.3 — filtros internos (implementación sin pruebas)
 
 En `/app/internal/diagnostic-leads` se incorporó búsqueda por nombre/correo/negocio, filtro por verificados/pendientes/contacto comercial autorizado y paginación que conserva los criterios (`8b2bb35`). La búsqueda se ejecuta en D1 mediante parámetros vinculados y límite de 80 caracteres, no mediante filtrado de PII enviada masivamente al navegador. El módulo permanece read-only y exclusivo de `platform_admin`; sin exportación, envío, sincronización ni GHL. **Pendiente**: QA, verificación de índices y rendimiento, retención y auditoría de accesos a PII. No marcar la fase como certificada.
+
+### 01D.3 — analítica interna y gráficos (2026-10-17)
+
+Implementada en rama la ruta protegida `/app/internal/diagnostic-analytics`: métricas agregadas existentes de D1, seis contadores de eventos, tres ratios orientativos, cuatro gráficos de tendencia diaria SVG, tabla diaria y periodos 7/30/90 días. Se incorporaron accesos desde dashboard y navegación de AdminShell, junto con entrada independiente para `/app/internal/diagnostic-leads`. La analítica no expone PII ni reportes individuales; el listado de interesados mantiene acceso solo a platform admin. **Los ratios son cocientes de eventos del intervalo, no tasas de conversión por cohortes**. No hay integración con GHL. Pruebas y certificación aplazadas; sin despliegue.
