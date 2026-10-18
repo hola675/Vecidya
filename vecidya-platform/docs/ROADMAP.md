@@ -509,3 +509,7 @@ Se detectó que el registro por invitación no bastaba: `/organization/create` s
 ### Corrección de política comercial: organizaciones gratuitas (2026-10-17)
 
 La política definitiva distingue **registro de usuarios** (solo invitación) de **creación de organizaciones** (permitida a usuarios autenticados con permisos). Cada organización puede tener perfil básico gratuito y publicarse en Vecindario; CRM, Barrio/Ciudad y demás productos premium requieren licencias independientes por organización. Se reabrió `/organization/create` (`4784f94`) y se recuperó el formulario en Mi Vecidya (`510648b`). Las notas anteriores que proponían reservar todas las organizaciones a App Internal quedan **superadas**. Pendiente: verificar el control de permisos en backend, la asignación automática del plan gratuito, la no herencia de licencias premium, y la compilación y pruebas end-to-end. Sin despliegue.
+
+### Rectificación comercial — Cuadra (2026-10-17)
+
+**Corrección posterior y prevalente:** la licencia **Cuadra es de pago**. La creación de organizaciones por usuarios autenticados autorizados no implica licencia gratuita ni publicación automática en Vecindario. Las capacidades publicables se rigen por la licencia de cada organización; CRM y otros servicios también requieren su habilitación correspondiente. Se corrigió el texto del dashboard (`21f2822`). La sección anterior que afirmaba «perfil básico gratuito y publicación gratuita» es incorrecta y queda anulada. Pendiente verificar los gates reales de publicación y licencias en backend.
