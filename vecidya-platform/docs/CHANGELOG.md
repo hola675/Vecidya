@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-10-17 — PLATFORM-ADMIN-GLOBAL especificación para aprobación
+
+- Reconciliada la especificación documental del control plane: actor `platform_admin` permanece independiente de owners, sin impersonación, membresías inventadas ni bypass de APIs de clientes.
+- Añadidos estados/transiciones de organización, invitación tokenizada de un uso, matriz explícita de permisos para seis tipos de actor, capacitación basada en slugs de Aprende, navegación y contratos propuestos de endpoints/auditoría/persistencia, y riesgos/decisiones pendientes.
+- Better Auth fijado en `1.7.5`; se verificó configuración/uso del repo y se consultó documentación oficial de sus APIs. La transacción interna de aceptación y su extensión al ciclo/auditoría quedan por comprobar contra el paquete instalado antes de diseñar implementación.
+- Corregido el estado de D1: cadena `0000`–`0017` aplicada en D1 aislada limpia; MiniWeb E2E `33/33 PASS` allí; D1 local compartida sin cambios y ledger pendiente de reconciliación; D1 remota sin cambios. APP-MINI-02B tiene diseño de publicación aprobado, implementación no iniciada, sin tablas ni contenido público, y espera la aprobación/integración de este checkpoint.
+- Solo documentación/instrucciones canónicas; sin código, rutas, schema, migraciones, pruebas funcionales, D1 remota, deploy ni publicación. Revisión y aprobación explícita del usuario pendientes.
+
+## 2026-10-17 — VEC-APRENDE-06C (local, no publicado)
+
+- El catálogo estático añade tres guías prácticas: Perfil de Empresa en Google, organización de consultas y preparación de respuestas/publicaciones con IA, en sus categorías existentes. Reutiliza la plantilla, imágenes y bloques actuales; no añade componentes, assets, categorías, rutas, dependencias, CMS, persistencia ni cambios de base de datos.
+- Los artículos separan seguimiento de consultas y consentimiento comercial, no prometen posiciones/resultados, incluyen dos instrucciones adaptables para IA y enlazan documentación oficial.
+- Validación: `learn-content.test.ts` 11/11 y suite unitaria 1572/1572 PASS; typecheck, build y E2E local de las once guías en 1366/768/390/360 PASS. Revisión visual de las tres guías en escritorio y móvil sin desbordamiento horizontal. Build con advertencias de secretos locales de correo/autenticación ausentes.
+- E2E ejecutado con Chrome y D1 local aislada del worktree con migraciones locales; sin `--remote`, datos de negocio ni deploy. La rama no está publicada en el sitio.
+
+## 2026-10-17 — VEC-APRENDE-06B Tecnología explicada (local, no publicado)
+
+- El catálogo estático suma tres guías: «HTTPS y certificados TLS: qué protegen y qué no», «Analítica web básica: qué debes medir en tu negocio» y «Cómo conectar herramientas digitales sin complicar tu negocio». Cada artículo ofrece definiciones, ejemplo hipotético de negocio local, acciones aplicables, fuentes oficiales y resumen; dos diagramas originales muestran métricas y un intercambio de datos controlado.
+- Se reutilizan `LearnArticle`, bloques editoriales, rutas `/aprende/:slug`, metadatos y sitemap actuales; no se modificaron guías anteriores ni se añadieron componentes, CMS, persistencia o dependencias. `learn-content.test.ts` 9/9 y suite unitaria 1570/1570 PASS; typecheck, build y E2E local en 1366/768/390/360 PASS. Inspección visual de escritorio y móvil (390 px) sin desbordamiento horizontal. Build con advertencias conocidas de secretos locales de autenticación/correo ausentes.
+- El Worker E2E usó Chrome local y una D1 aislada del worktree con migraciones locales solo para que el sitemap consultara el esquema; sin `--remote` ni datos de negocio. No es certificación WCAG ni inspección de producción.
+- Sin publicación, D1 remota, deploy, merge a `main` ni creación de PR.
 ## 2026-10-17 — DIAG-V3-FUNNEL-01D.1-R (integración preparada, entorno bloqueado)
 
 - Conservado el contrato de seis eventos. `identified_request_created` y `email_verified` comparten batch transaccional con el dominio y hacen fallback al batch operacional si falla analytics. El first-open se deduplica por solicitud, también tras recovery; `0019` hace backfill del timestamp mínimo existente.
