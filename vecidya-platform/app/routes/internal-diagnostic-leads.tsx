@@ -25,6 +25,10 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const access = await requirePlatformAdmin(env, request);
   const url = new URL(request.url);
   const requestedPage = Number(url.searchParams.get("page") ?? "1");
+  const query = (url.searchParams.get("q") ?? "").trim().slice(0, 80);
+  const requestedStatus = url.searchParams.get("status") ?? "all";
+  const status = ["all", "verified", "pending", "commercial"].includes(requestedStatus) ? requestedStatus : "all";
+  const searchPattern = `%${query.replace(/[\\%_]/g, (character) => `\\${character}`)}%`;
   const page = Number.isSafeInteger(requestedPage) && requestedPage > 0
     ? Math.min(requestedPage, 10000) : 1;
   const limit = 25;
@@ -37,8 +41,12 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     LEFT JOIN commercial_contact_intent c ON c.request_id = r.id
     LEFT JOIN diagnostic_research_intent s ON s.request_id = r.id
     WHERE r.expires_at > ?
+      AND (? = '' OR r.full_name LIKE ? ESCAPE '\\' OR r.email LIKE ? ESCAPE '\\' OR r.business_name LIKE ? ESCAPE '\\')
+      AND (? = 'all' OR (? = 'verified' AND r.status = 'verified')
+        OR (? = 'pending' AND r.status = 'verification_pending')
+        OR (? = 'commercial' AND r.status = 'verified' AND c.id IS NOT NULL AND c.revoked_at IS NULL))
     ORDER BY r.created_at DESC, r.id DESC
-    LIMIT ? OFFSET ?`).bind(Date.now(), limit + 1, (page - 1) * limit).all<{
+    LIMIT ? OFFSET ?`).bind(Date.now(), query, searchPattern, searchPattern, searchPattern, status, status, status, status, limit + 1, (page - 1) * limit).all<{
       id: string; fullName: string; businessName: string | null; email: string;
       createdAt: number; verified: number; commercialOptIn: number; researchOptIn: number;
     }>();
@@ -48,7 +56,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     email: row.email, createdAt: row.createdAt, verified: row.verified === 1,
     commercialOptIn: row.commercialOptIn === 1, researchOptIn: row.researchOptIn === 1,
   }));
-  return { workspaceUser: access.workspaceUser, leads, page, hasNext: records.length > limit };
+  return { workspaceUser: access.workspaceUser, leads, page, hasNext: records.length > limit, query, status };
 }
 
 export function headers() {
@@ -56,7 +64,14 @@ export function headers() {
 }
 
 export default function InternalDiagnosticLeads() {
-  const { workspaceUser, leads, page, hasNext } = useLoaderData<typeof loader>();
+  const { workspaceUser, leads, page, hasNext, query, status } = useLoaderData<typeof loader>();
+  const pageUrl = (number: number) => {
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (status !== "all") params.set("status", status);
+    params.set("page", String(number));
+    return `?${params.toString()}`;
+  };
   return <AdminShell active="home" workspaceUser={workspaceUser}>
     <main className="admin-content">
       <div className="page-heading"><div>
@@ -66,6 +81,15 @@ export default function InternalDiagnosticLeads() {
       </div></div>
       <section className="card">
         <p>Solo administración de plataforma. Los permisos son independientes: un diagnóstico no implica autorización para contactar.</p>
+        <form method="get" className="admin-toolbar" role="search">
+          <label className="admin-search">Buscar <input type="search" name="q" defaultValue={query} maxLength={80} placeholder="Nombre, correo o negocio" /></label>
+          <label className="admin-filter">Estado <select name="status" defaultValue={status}>
+            <option value="all">Todos</option><option value="verified">Verificados</option>
+            <option value="pending">Pendientes</option><option value="commercial">Contacto autorizado</option>
+          </select></label>
+          <button type="submit" className="button button--secondary">Filtrar</button>
+          <Link className="text-link" to="/app/internal/diagnostic-leads">Limpiar</Link>
+        </form>
         {leads.length ? <div className="admin-table-wrap"><table className="admin-table">
           <thead><tr><th>Solicitante</th><th>Negocio</th><th>Fecha</th><th>Correo verificado</th><th>Contacto comercial</th><th>Investigación</th></tr></thead>
           <tbody>{leads.map((lead) => <tr key={lead.id}>
@@ -78,9 +102,9 @@ export default function InternalDiagnosticLeads() {
           </tr>)}</tbody>
         </table></div> : <p>No hay solicitudes vigentes en esta página.</p>}
         <nav aria-label="Paginación de interesados">
-          {page > 1 && <Link className="text-link" to={`?page=${page - 1}`}>← Anterior</Link>}
+          {page > 1 && <Link className="text-link" to={pageUrl(page - 1)}>← Anterior</Link>}
           <span> Página {page} </span>
-          {hasNext && <Link className="text-link" to={`?page=${page + 1}`}>Siguiente →</Link>}
+          {hasNext && <Link className="text-link" to={pageUrl(page + 1)}>Siguiente →</Link>}
         </nav>
       </section>
     </main>
