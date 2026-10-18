@@ -268,7 +268,7 @@ try {
     const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
     return response.status;
   }, { requestId: lostResponseRequestId, token: repeatRecoveryToken, ip: "198.51.100.37" });
-  assert.equal(repeatRecoveryVerification, 200, "recovery reemite acceso sin volver a contar email_verified");
+  assert.equal(repeatRecoveryVerification, 200, `recovery reemite acceso sin volver a contar email_verified (HTTP ${repeatRecoveryVerification})`);
   assert.equal((await page.request.get(new URL(recovered.reportPath, base).toString())).status(), 200, "el grant recuperado vuelve a abrir el informe");
   const afterRepeatRecovery = await funnelAggregate(lostResponseRequestId);
   assert.equal(funnelCount(afterRepeatRecovery, "detailed_report_first_opened"), 1, "recovery y revisitas no duplican la primera apertura de la solicitud");
