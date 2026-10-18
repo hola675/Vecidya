@@ -497,3 +497,7 @@ Refinadas las clases reales de `home.tsx`, `services.tsx`, `diagnostic.tsx` y `d
 ### UI/UX transversal — Únete, Contacto y Aprende (2026-10-17)
 
 Se añadieron reglas específicas de pulido para `join.tsx`, `contact.tsx` y `learn-article.tsx` en la capa global: jerarquía y hover de decisiones, lectura de correo y acciones en móvil, tipografía editorial, navegación por anclas, tarjetas relacionadas y distribución responsive. Commit `e70d465`. No se modificaron datos, lógica de contacto ni contenido editorial. Queda pendiente inspección visual real, compatibilidad CSS, compilación y pruebas; no certificado ni desplegado.
+
+### Política de altas — solo invitación (2026-10-17)
+
+Decisión de producto: no existe registro libre para clientes. La organización y su licencia se gestionan desde App Internal; una persona sin cuenta puede registrarse únicamente mediante invitación pendiente, vigente y dirigida a su correo. Cambios: middleware Better Auth valida `X-Vecidya-Invitation` en `/sign-up/email` (`40e9d94`); `/register` solo permite el formulario con `redirectTo` de invitación y transmite identificador (`ba48220`); `/login` elimina CTA de alta pública (`b40cf59`). Se mantiene aceptación/verificación existente. **Pendiente validar**: compilación/types, comportamiento real del middleware Better Auth y validación del vínculo entre invitación y organización/licencia. Sin pruebas ni despliegue.
