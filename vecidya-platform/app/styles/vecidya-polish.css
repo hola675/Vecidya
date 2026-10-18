@@ -1,0 +1,85 @@
+/* Vecidya premium interaction layer — progressive enhancement, all surfaces. */
+:root {
+  --vx-ease: cubic-bezier(.22,1,.36,1);
+  --vx-duration-fast: 160ms;
+  --vx-duration: 260ms;
+  --vx-shadow-hover: 0 1.15rem 2.8rem rgb(20 43 74 / 12%);
+}
+@keyframes vx-enter {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes vx-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :is(.public-page,.app-main,.app-content,.admin-main,.admin-content,.foundation-shell) > :is(.page-heading,.hero,.section-heading):first-child {
+    animation: vx-enter 440ms var(--vx-ease) both;
+  }
+}
+:is(.card,.admin-overview-card,.admin-stat-card) {
+  transition: box-shadow var(--vx-duration) var(--vx-ease), border-color var(--vx-duration) var(--vx-ease);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  :is(a.card,a.admin-overview-card,.admin-overview-card:has(> a.text-link)):hover {
+    box-shadow: var(--vx-shadow-hover);
+    border-color: #b8cbe7;
+  }
+}
+:is(.button,.text-link,.app-navigation a,.admin-navigation a) {
+  transition: background-color var(--vx-duration-fast) ease,
+    color var(--vx-duration-fast) ease,
+    border-color var(--vx-duration-fast) ease,
+    box-shadow var(--vx-duration-fast) ease,
+    transform var(--vx-duration-fast) var(--vx-ease);
+}
+:is(.app-navigation a,.admin-navigation a)[aria-current="page"] {
+  font-weight: 750;
+}
+:is(.app-navigation a,.admin-navigation a):focus-visible,
+:is(.button,.text-link):focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+}
+:is(.admin-table,.app-table) tbody tr {
+  transition: background-color var(--vx-duration-fast) ease;
+}
+:is(.admin-table,.app-table) tbody tr:hover {
+  background-color: var(--surface-soft);
+}
+:is(.admin-stat-card,.admin-overview-card,.card) :is(h2,h3) {
+  text-wrap: balance;
+}
+:is(.admin-content,.app-content,.public-page) :is(p,li) {
+  overflow-wrap: break-word;
+}
+:is(.admin-content,.app-content,.public-page) :is(input,select,textarea) {
+  max-width: 100%;
+}
+:where(.admin-content,.app-content) :is(.admin-table-wrap,.table-wrap) {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+:where(.admin-content,.app-content) :is(.admin-table-wrap,.table-wrap):focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 2px;
+}
+@media (max-width: 480px) {
+  :is(.admin-content,.app-content,.public-page) .page-heading h1 {
+    overflow-wrap: anywhere;
+    font-size: clamp(1.55rem, 7vw, 2.2rem);
+  }
+  :is(.admin-content,.app-content) .admin-stat-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
