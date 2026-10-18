@@ -354,3 +354,30 @@ export async function revokeDiagnosticOptionalIntents(
     researchRevoked: input.revokeResearch && (updates[input.revokeCommercial ? 1 : 0]?.meta?.changes ?? 0) > 0,
   };
 }
+
+/**
+ * FUNNEL-01D.2: borrado solicitado desde un informe verificado.
+ * La autorización se revalida en el mismo DELETE (evita la ventana
+ * entre la lectura del grant y el borrado). Los registros relacionados
+ * se eliminan por FK ON DELETE CASCADE; los agregados anónimos no
+ * están vinculados a la solicitud y se conservan.
+ * No es un registro de solicitud de supresión ni un flujo público.
+ */
+export async function deleteAuthorizedIdentifiedReport(
+  binding: D1Database,
+  input: { requestId: string; accessTokenDigest: string; now: Date },
+): Promise<boolean> {
+  const now = input.now.getTime();
+  if (!input.requestId || !input.accessTokenDigest || !Number.isFinite(now)) return false;
+  const result = await binding.prepare(`DELETE FROM identified_diagnostic_request
+    WHERE id = ? AND status = 'verified' AND expires_at > ?
+      AND EXISTS (
+        SELECT 1 FROM diagnostic_report_access a
+        JOIN diagnostic_report_snapshot s ON s.request_id = identified_diagnostic_request.id
+        WHERE a.request_id = identified_diagnostic_request.id
+          AND a.token_digest = ? AND a.revoked_at IS NULL
+          AND a.expires_at > ? AND s.expires_at > ?
+      )`)
+    .bind(input.requestId, now, input.accessTokenDigest, now, now).run();
+  return (result.meta?.changes ?? 0) === 1;
+}
