@@ -101,6 +101,7 @@ export default function InternalHome() {
           <h2 id="admin-diagnostic-leads-title">Interesados del diagnóstico</h2>
           <p>Consulta solicitudes identificadas y permisos de contacto desde la base de datos de Vecidya. Sin integración con GHL.</p>
           <Link className="text-link" to="/app/internal/diagnostic-leads">Abrir interesados →</Link>
+          <p><Link className="text-link" to="/app/internal/diagnostic-analytics">Ver analítica y gráficos del diagnóstico →</Link></p>
         </section>
 
         <div className="admin-overview-grid">
