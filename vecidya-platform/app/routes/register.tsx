@@ -14,11 +14,14 @@ export default function Register() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTo = safeAppRedirect(searchParams.get("redirectTo"));
+  const invitationPath = redirectTo && isInvitationPath(redirectTo) ? redirectTo : null;
+  const invitationId = invitationPath ? invitationPath.split("/")[3]?.split("?")[0] : null;
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!invitationId) return;
     setError(null);
     setSubmitting(true);
 
@@ -28,6 +31,7 @@ export default function Register() {
       email,
       name: String(formData.get("name")),
       password: String(formData.get("password")),
+      fetchOptions: { headers: { "X-Vecidya-Invitation": invitationId } },
     });
 
     if (result.error) {
@@ -48,11 +52,13 @@ export default function Register() {
     navigate(redirectTo ?? "/app");
   }
 
+  if (!invitationId) return <AuthShell description="El alta de usuarios se realiza únicamente mediante invitación." eyebrow="ACCESO CONTROLADO" privacyNote="Los espacios de clientes son gestionados desde Vecidya." title="Registro por invitación"><p>Para crear tu cuenta necesitas un enlace de invitación enviado por Vecidya.</p><p><Link className="button button--primary" to="/login">Iniciar sesión</Link></p></AuthShell>;
+
   return (
     <AuthShell
-      description="Empieza con tu espacio Vecidya."
+      description="Completa tu alta para aceptar la invitación recibida."
       eyebrow="PRIMER PASO"
-      privacyNote="Crea tu cuenta para organizar el perfil de tu negocio o proyecto."
+      privacyNote="Solo puedes registrarte con el correo de la invitación."
       title="Crear cuenta"
     >
       <Form className="auth-form" method="post" onSubmit={handleSubmit}>
