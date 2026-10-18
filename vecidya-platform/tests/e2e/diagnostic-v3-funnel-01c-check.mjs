@@ -263,8 +263,11 @@ try {
   assert.equal(repeatRecoveryResponse.status(), 202, "la misma solicitud admite una recuperación posterior después de abrir el informe");
   const repeatRecoveryMailbox = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).json();
   assert.equal(repeatRecoveryMailbox.purpose, "access_recovery");
+  assert.notEqual(repeatRecoveryMailbox.challengeId, recoveryMailbox.challengeId, "cada recuperación aceptada debe emitir un challenge nuevo, no reutilizar el anterior");
   const repeatRecoveryLink = repeatRecoveryMailbox.text.match(/https?:\/\/[^\s]+/u)?.[0];
+  assert.ok(repeatRecoveryLink, "la recuperación repetida debe entregar un enlace nuevo");
   const repeatRecoveryToken = new URLSearchParams(new URL(repeatRecoveryLink).hash.slice(1)).get("token");
+  assert.ok(repeatRecoveryToken, "el nuevo enlace debe incluir token");
   const repeatRecoveryVerification = await page.evaluate(async ({ requestId, token, ip }) => {
     const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
     return { status: response.status, body: (await response.text()).slice(0, 600) };
