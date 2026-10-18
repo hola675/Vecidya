@@ -59,8 +59,10 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     listBusinessHoursForOrganization(database, organization.id),
   ]);
   const governance = profile ? await getBusinessProfileGovernance(database, profile.id) : null;
+  const billing = await database.query.billingAccount.findFirst({ where: eq(billingAccount.ownerUserId, shell.workspaceUser.id) });
+  const license = billing ? await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, billing.id), eq(organizationLicense.status, "active")) }) : null;
 
-  return { completion: getBusinessProfileCompletion(profile), governance, membership, profile, hours, ...shell, activeOrganization: organization };
+  return { completion: getBusinessProfileCompletion(profile), governance, membership, profile, hours, canPublish: Boolean(license), ...shell, activeOrganization: organization };
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
@@ -173,7 +175,7 @@ function getHoursPreview(formData: FormData): BusinessHoursEntry[] {
 }
 
 export default function BusinessProfilePage() {
-  const { completion: loaderCompletion, governance, hours: loaderHours, membership, profile: loaderProfile, workspaceUser, organizations, isPlatformAdmin, activeOrganization } = useLoaderData<typeof loader>();
+  const { completion: loaderCompletion, governance, hours: loaderHours, membership, profile: loaderProfile, workspaceUser, organizations, isPlatformAdmin, activeOrganization, canPublish } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const profileActionData = actionData?.kind === "profile" ? actionData : undefined;
@@ -336,12 +338,13 @@ export default function BusinessProfilePage() {
                 <Button name="intent" type="submit" value="save">
                   {isSaving ? "Guardando…" : "Guardar"}
                 </Button>
-                {profile?.status !== "published" ? (
+                {profile?.status !== "published" && canPublish ? (
                   <Button name="intent" tone="secondary" type="submit" value="publish">
                     Publicar perfil
                   </Button>
                 ) : null}
               </div>
+              {!canPublish && profile?.status !== "published" ? <p className="form-help">Para publicar en Vecindario necesitas una licencia Vecidya activa. Puedes guardar el perfil como borrador.</p> : null}
               {profile?.status === "published" ? <p className="form-help">Para mantener la página pública, los campos necesarios no pueden quedar incompletos.</p> : null}
             </fieldset>
           </Form>
