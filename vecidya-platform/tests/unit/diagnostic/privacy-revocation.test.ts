@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFileSync } from "node:fs";
 import { revokeDiagnosticOptionalIntents } from "../../../db/queries/diagnostic-identification.server";
 
 type Statement = { sql: string; args: unknown[] };
@@ -62,4 +63,25 @@ test("01D.2: ninguna preferencia seleccionada no consulta ni escribe", async () 
   const result = await revokeDiagnosticOptionalIntents(db, { ...input, revokeCommercial: false, revokeResearch: false });
   assert.equal(result.authorized, false);
   assert.equal(executed.length, 0);
+});
+
+test("01D.2: el núcleo de revocación no borra informes ni analítica", () => {
+  const source = readFileSync(new URL("../../../db/queries/diagnostic-identification.server.ts", import.meta.url), "utf8");
+  const start = source.indexOf("export async function revokeDiagnosticOptionalIntents(");
+  assert.ok(start >= 0);
+  const revocation = source.slice(start);
+  assert.doesNotMatch(revocation, /DELETE\\s+FROM/i);
+  assert.doesNotMatch(revocation, /UPDATE\\s+diagnostic_funnel_aggregate/i);
+  assert.doesNotMatch(revocation, /UPDATE\\s+diagnostic_report_access/i);
+});
+test("01D.2: la selección dual actualiza las dos preferencias y revalida el grant", async () => {
+  const { db, executed } = fakeD1(true);
+  const result = await revokeDiagnosticOptionalIntents(db, { ...input, revokeCommercial: true, revokeResearch: true });
+  assert.deepEqual(result, { authorized: true, commercialRevoked: true, researchRevoked: true });
+  assert.equal(executed.length, 2);
+  for (const statement of executed) {
+    assert.match(statement.sql, /a\\.revoked_at IS NULL/);
+    assert.match(statement.sql, /a\\.expires_at > \\?/);
+    assert.equal(statement.args.length, 7);
+  }
 });
