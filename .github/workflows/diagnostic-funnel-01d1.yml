@@ -104,9 +104,15 @@ jobs:
             exit 1
           fi
 
+      - name: Seed unrelated historical aggregate in isolated CI D1
+        id: analytics_sentinel
+        continue-on-error: true
+        run: |
+          pnpm exec wrangler d1 execute DB --local --command "INSERT INTO diagnostic_funnel_aggregate (event_day, diagnostic_version, contract_version, event_type, event_count) VALUES ('2000-01-01', 'diag-v3-public-v1', 1, 'diagnostic_started', 7919);" 2>&1 | tee "$RUNNER_TEMP/diagnostic-funnel-01d1/analytics-sentinel-seed.log"
+
       - name: Run 01B, 01C.3 and 01D.1 against one local Worker
         id: funnel_e2e
-        if: ${{ always() && steps.playwright.outcome == 'success' && steps.migrations.outcome == 'success' }}
+        if: ${{ always() && steps.playwright.outcome == 'success' && steps.migrations.outcome == 'success' && steps.analytics_sentinel.outcome == 'success' }}
         continue-on-error: true
         run: |
           pnpm exec vite --host 127.0.0.1 --port 5173 --strictPort > "$RUNNER_TEMP/diagnostic-funnel-01d1/worker-dev.log" 2>&1 &
@@ -189,6 +195,18 @@ jobs:
             e2e_status=1
           fi
 
+          sentinel_sql="SELECT CASE WHEN COUNT(*) = 1 AND MAX(event_count) = 7919 THEN 'HISTORICAL_ANALYTICS_PRESERVED' ELSE 'HISTORICAL_ANALYTICS_LOST' END AS status FROM diagnostic_funnel_aggregate WHERE event_day = '2000-01-01' AND diagnostic_version = 'diag-v3-public-v1' AND contract_version = 1 AND event_type = 'diagnostic_started';"
+          if pnpm exec wrangler d1 execute DB --local --command "$sentinel_sql" > "$RUNNER_TEMP/diagnostic-funnel-01d1/analytics-sentinel-verify.log" 2>&1; then
+            cat "$RUNNER_TEMP/diagnostic-funnel-01d1/analytics-sentinel-verify.log"
+            if ! grep -Fq 'HISTORICAL_ANALYTICS_PRESERVED' "$RUNNER_TEMP/diagnostic-funnel-01d1/analytics-sentinel-verify.log"; then
+              echo "CI_RESULT historical-analytics FAIL: unrelated aggregate modified or deleted"
+              e2e_status=1
+            fi
+          else
+            cat "$RUNNER_TEMP/diagnostic-funnel-01d1/analytics-sentinel-verify.log"
+            e2e_status=1
+          fi
+
           exit "$e2e_status"
 
       - name: Verify production diagnostic isolation with Vite preview Worker
@@ -225,6 +243,7 @@ jobs:
           TYPECHECK: ${{ steps.typecheck.outcome }}
           BUILD: ${{ steps.build.outcome }}
           MIGRATIONS: ${{ steps.migrations.outcome }}
+          ANALYTICS_SENTINEL: ${{ steps.analytics_sentinel.outcome }}
           FUNNEL_E2E: ${{ steps.funnel_e2e.outcome }}
           PRODUCTION_ISOLATION: ${{ steps.production_isolation.outcome }}
         run: |
@@ -235,10 +254,11 @@ jobs:
             echo "typecheck=$TYPECHECK"
             echo "build=$BUILD"
             echo "migrations=$MIGRATIONS"
+            echo "analytics_sentinel=$ANALYTICS_SENTINEL"
             echo "funnel_e2e=$FUNNEL_E2E"
             echo "production_isolation=$PRODUCTION_ISOLATION"
           } | tee "$RUNNER_TEMP/diagnostic-funnel-01d1/gate-outcomes.log"
-          for outcome in "$INSTALL" "$PLAYWRIGHT" "$UNIT" "$TYPECHECK" "$BUILD" "$MIGRATIONS" "$FUNNEL_E2E" "$PRODUCTION_ISOLATION"; do
+          for outcome in "$INSTALL" "$PLAYWRIGHT" "$UNIT" "$TYPECHECK" "$BUILD" "$MIGRATIONS" "$ANALYTICS_SENTINEL" "$FUNNEL_E2E" "$PRODUCTION_ISOLATION"; do
             if [ "$outcome" != success ]; then
               exit 1
             fi
