@@ -117,6 +117,12 @@ try {
   createdOrganizationIds.push(fixtureOrganizationId);
   const ownerA = await signUp("owner-a");
   const organizationA = await createOrganization(ownerA, "org-a");
+  // Los perfiles públicos requieren una licencia activa del propietario (no basta el estado published).
+  const billingAId = crypto.randomUUID();
+  const priceAId = crypto.randomUUID();
+  const licenseAId = crypto.randomUUID();
+  const licenseAAt = Date.now();
+  await d1(`INSERT INTO billing_account (id, owner_user_id, kind, created_at, updated_at) VALUES ('${billingAId}', '${ownerA.userId}', 'individual', ${licenseAAt}, ${licenseAAt}); INSERT INTO license_price (id, plan_code, currency, amount_cents, billing_interval, effective_from, status, created_at, updated_at) VALUES ('${priceAId}', 'cuadra', 'USD', 3900, 'monthly', ${licenseAAt}, 'active', ${licenseAAt}, ${licenseAAt}); INSERT INTO organization_license (id, organization_id, billing_account_id, plan_code, price_id, status, started_at, activated_at, created_at, updated_at) VALUES ('${licenseAId}', '${organizationA}', '${billingAId}', 'cuadra', '${priceAId}', 'active', ${licenseAAt}, ${licenseAAt}, ${licenseAAt}, ${licenseAAt});`);
   await setActive(ownerA, organizationA);
   const ownerB = await signUp("owner-b");
   const organizationB = await createOrganization(ownerB, "org-b");
@@ -267,7 +273,7 @@ try {
     deletes.push(`DELETE FROM user WHERE id IN (${createdUserIds.map((id) => `'${id}'`).join(",")})`);
   }
   // Retirar primero las licencias y la cuenta de facturación de prueba para respetar las FK.
-  await d1(`DELETE FROM organization_license WHERE billing_account_id IN (SELECT id FROM billing_account WHERE owner_user_id IN (SELECT id FROM user WHERE email = 'miniweb-owner-b-${suffix}@vecidya.test')); DELETE FROM billing_account WHERE owner_user_id IN (SELECT id FROM user WHERE email = 'miniweb-owner-b-${suffix}@vecidya.test'); DELETE FROM license_price WHERE id = '${fixturePriceId}';`);
+  await d1(`DELETE FROM organization_license WHERE billing_account_id IN (SELECT id FROM billing_account WHERE owner_user_id IN (SELECT id FROM user WHERE email IN ('miniweb-owner-a-${suffix}@vecidya.test', 'miniweb-owner-b-${suffix}@vecidya.test'))); DELETE FROM billing_account WHERE owner_user_id IN (SELECT id FROM user WHERE email IN ('miniweb-owner-a-${suffix}@vecidya.test', 'miniweb-owner-b-${suffix}@vecidya.test')); DELETE FROM license_price WHERE id IN ('${priceAId}', '${fixturePriceId}');`);
   if (deletes.length) await d1(`${deletes.join(";\n")};`);
 } catch (error) {
   harnessFailure ??= new HarnessError(`HARNESS: no se pudieron limpiar las fixtures de prueba: ${error instanceof Error ? error.message : String(error)}`);
