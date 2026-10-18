@@ -22,3 +22,17 @@ Consolidar preguntas, motor, interpretación, recomendaciones e informes en una 
 
 ## Restricción
 No borrar a ciegas `legacy-signal-adapter.ts`, `qa03b/` ni `qbv2-*.ts`: existen dependencias comprobadas. La limpieza vive en esta rama separada para no reiniciar CI del PR #11 de Fase 00.
+
+## Hallazgo de arquitectura: distinguir versión del contrato y motor activo
+
+- `public-diagnostic-engine-identity.ts` define la identidad persistida `diag-v3-public` y declara explícitamente `questionBank: "QUESTION_BANK_V2"`. No debe confundirse con el registro experimental `getQuestionBank(2)` de `qbv2-engine.ts`.
+- `qbv2-engine.ts` documenta que su loader experimental no es llamado por el camino público y que `CURRENT_QUESTION_BANK_VERSION` permanece en 1 para ese contrato. **No interpretar esto como prueba de que todo QBV2 sea inactivo**: hay consumidores del banco V2 en el motor público y en QA03B.
+- `qa03b/bank.ts` deriva su banco de `REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3` desde `qbv2-reviewed-evidence.ts`; retirar ese archivo sin sustitución rompería el candidato.
+- **Decisión de limpieza:** conservar temporalmente compatibilidad de sesiones/reportes históricos y retirar únicamente exports o módulos demostrablemente sin consumidores. No modificar identidad persistida ni puntuaciones silenciosamente.
+
+## Lotes de implementación
+
+- Lote A: mapa de imports y entrypoints, distinción de motor público/candidato y pruebas de equivalencia.
+- Lote B: migración de consumidores del contrato anterior al contrato público único, con adaptación versionada para sesiones históricas.
+- Lote C: eliminación de adaptadores, rutas y componentes sin referencias; verificación de cero imports residuales.
+- Lote D: certificación de respuestas, puntuaciones, recomendaciones, informes PDF, funnel anónimo/identificado y CI transversal.
