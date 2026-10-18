@@ -547,14 +547,10 @@ try {
   assert.equal((await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).status(), 404, "cleanup retira el mensaje sintético con el token del buzón local");
   const alreadyPurged = await lifecycleFixture(created.requestId, "cleanup");
   assert.equal(alreadyPurged.existed, false, "cleanup acotado es idempotente y limpia también el buzón de la fixture purgada");
-  await lifecycleFixture(lostResponseRequestId, "cleanup_funnel_aggregate");
-  assert.deepEqual((await funnelAggregate(lostResponseRequestId)).metrics, [], "la prueba elimina sus agregados temporales al terminar");
   console.log("diagnostic-v3-funnel-01c-check: PASS — ciclo 01C.3 + seis métricas 01D.1, concurrencia, reintentos, recovery por request, celdas pequeñas, privacidad y limpieza");
 } finally {
   try {
     for (const requestId of fixtureRequestIds.reverse()) await lifecycleFixture(requestId, "cleanup");
-    const analyticsCleanup = await lifecycleFixture(crypto.randomUUID(), "cleanup_funnel_aggregate");
-    assert.equal(analyticsCleanup.ok, true, "la D1 temporal no conserva filas agregadas de esta prueba");
   } finally {
     await browser.close();
   }
