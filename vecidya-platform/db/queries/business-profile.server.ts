@@ -9,7 +9,16 @@ const notSuspended = or(
   eq(businessProfileGovernance.platformStatus, "active"),
 );
 
-// Un perfil solo es visible mientras alguno de sus propietarios tenga una licencia activa\n// en su propia cuenta de facturación. No se hereda de membresías ajenas.\nconst hasActiveOwnerLicense = sql`EXISTS (\n  SELECT 1 FROM ${member}\n  INNER JOIN ${billingAccount} ON ${billingAccount.ownerUserId} = ${member.userId}\n  INNER JOIN ${organizationLicense} ON ${organizationLicense.billingAccountId} = ${billingAccount.id}\n  WHERE ${member.organizationId} = ${businessProfile.organizationId}\n    AND ${member.role} = ${"owner"}\n    AND ${organizationLicense.status} = ${"active"}\n)`;\n\nexport type BusinessProfileInput = {
+// Un perfil solo es visible mientras alguno de sus propietarios tenga una licencia activa\n// en su propia cuenta de facturación. No se hereda de membresías ajenas.\nconst hasActiveOwnerLicense = sql`EXISTS (\n  SELECT 1 FROM ${member}\n  INNER JOIN ${billingAccount} ON ${billingAccount.ownerUserId} = ${member.userId}\n  INNER JOIN ${organizationLicense} ON ${organizationLicense.billingAccountId} = ${billingAccount.id}\n  WHERE ${member.organizationId} = ${businessProfile.organizationId}\n    AND ${member.role} = ${"owner"}\n    AND ${organizationLicense.status} = ${"active"}\n)`;\n\nexport async function hasActiveLicenseForOrganizationOwner(database: Database, organizationId: string) {
+  const [row] = await database.select({ id: member.id }).from(member)
+    .innerJoin(billingAccount, eq(billingAccount.ownerUserId, member.userId))
+    .innerJoin(organizationLicense, eq(organizationLicense.billingAccountId, billingAccount.id))
+    .where(and(eq(member.organizationId, organizationId), eq(member.role, "owner"), eq(organizationLicense.status, "active")))
+    .limit(1);
+  return Boolean(row);
+}
+
+export type BusinessProfileInput = {
   displayName: string;
   slug: string;
   shortDescription: string | null;
