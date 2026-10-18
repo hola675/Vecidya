@@ -1,5 +1,12 @@
 # Base de datos
 
+## PLATFORM-ADMIN-GLOBAL — persistencia candidata (propuesta, no aprobada)
+
+No se generaron schema ni migraciones en este checkpoint. La fuente implementada de hoy sigue siendo el inventario de entidades de arriba. La especificación propone reutilizar `user`, `session`, `platform_member`, `organization`, `member`, `invitation`, `platform_audit_log`, perfiles/MiniWeb y el catálogo editorial en código. Se identifican como candidatas estrictamente tres tablas nuevas: `platform_organization_lifecycle` (ciclo pending/owner/active/suspended/closed y propietario previsto), `organization_training_assignment` (slug de contenido Aprende y ámbito de asignación) y `organization_training_progress` (un estado por assignment/member). Una invitación puede requerir ampliar `invitation` con digest de token y datos de aceptación/revocación; eso queda condicionado a verificar Better Auth instalado y aprobar su frontera de transacción. No se propone una tabla nueva de catálogo ni un editor editorial. Restricciones, claves únicas, tenant isolation, índices, transiciones y riesgos están en [ARCHITECTURE.md](ARCHITECTURE.md#persistencia-candidata-y-aislamiento).
+
+La asignación general e individual se modelan ambas; la aceptación owner debe validar correo verificado y registrar membresía, transición de ciclo y auditoría sin duplicados. Aún se debe decidir si el progreso propio también se audita en `platform_audit_log` o requiere historial separado. Hasta resolver las garantías de atomicidad de Better Auth, unicidad del owner y transacciones D1, este modelo no autoriza migración.
+
+
 Última reconciliación: **2026-10-16 (FUNNEL-01D.1-R, local).** `0018` agrega `diagnostic_funnel_aggregate`; `0019` mueve la marca de primera apertura de grant a solicitud y conserva la fecha mínima histórica. La cadena `0000`–`0019` se aplicó a D1 temporal aislada `C:\Users\Admin\AppData\Local\Temp\kilo\vecidya-funnel-01d1-r2-d1`, que terminó con cero solicitudes, grants y agregados. La D1 compartida/remota no se migró. `0011`–`0013` siguen siendo historia DIAG-V3-08, no el almacén nuevo.
 
 ## APP-MINI-02A — configuración modular
