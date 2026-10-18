@@ -137,7 +137,7 @@ export function DiagnosticVerificationPending({ requestId, onBack }: { readonly 
       <p className="df-identification__local-note" role="note">Entorno local de prueba. No se envió un correo real.</p>
       <h1 id="df-pending-title">Revisa la verificación de tu correo</h1>
       <p>La solicitud quedó registrada en D1 local. El informe no se abre hasta confirmar el enlace de un solo uso.</p>
-      <a className="button button--primary" href={`/__dev/diagnostico/buzon/${encodeURIComponent(requestId)}`}>Abrir buzón simulado</a>
+      {import.meta.env.DEV && <a className="button button--primary" href={`/__dev/diagnostico/buzon/${encodeURIComponent(requestId)}`}>Abrir buzón simulado</a>}
       <p className="df-identification__permission-note">El enlace vence en 24 horas y abrirlo no lo consume; debes pulsar “Confirmar” en la página de verificación.</p>
       <button className="button button--secondary" disabled={resending} onClick={() => void resend()} type="button">{resending ? "Preparando enlace…" : "Generar otro enlace"}</button>
       {message ? <p aria-live="polite" role="status">{message}</p> : null}
