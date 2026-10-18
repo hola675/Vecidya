@@ -74,7 +74,7 @@ async function signUp(key) {
     email,
     password,
   });
-  harness(response.status === 200, `registro de ${key} devolvió ${response.status}`);
+  harness(response.status === 200, `registro de ${key} devolvió ${response.status}: ${(await response.clone().text()).slice(0, 500)}`);
   const { user } = await response.json();
   createdUserIds.push(user.id);
   return { client, userId: user.id, email, password };
