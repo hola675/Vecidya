@@ -409,6 +409,31 @@ GHL continúa siendo sistema de registro futuro para contactos, conversaciones y
 
 La compatibilidad con QA-03B se conserva mediante su `diagnosticIdentity` completa y las versiones de metodología/reporte. No se leen ni se reescriben sesiones históricas; una sesión editada tras completar invalida su resultado derivado y exige recálculo antes de emitir reporte. En una versión posterior, errores de registro, expiración, doble envío, concurrencia entre pestañas, acceso cruzado, recuperación, borrado y paridad de score son gates de backend; el prototipo local no los simula como aprobados.
 
+### Eventos y GHL
+
+La taxonomía declarada de 11 eventos y las métricas se especifican aquí y en `TESTING.md`; FUNNEL-01A no crea emisor, binding, tabla, beacon ni dashboard. Si se usa `funnelRunId` para deduplicar y unir pasos, ese identificador es **seudónimo, no anónimo**: TTL corto, sin vínculo a petición/email/informe, sin IP/UA ni valores reales de respuestas, y sin uso antes de determinar base legal/consentimiento. En ausencia de tal base, usar contadores agregados no enlazables. Conversión mide comportamiento del producto, nunca validez científica de las puntuaciones.
+
+| Evento | Objetivo y mínimo | Identificable | Condición y retención propuesta | Riesgo y agregado |
+| --- | --- | --- | --- | --- |
+| `diagnostic_started` | Inicio + versión; run ID efímero solo si se autoriza deduplicación | No directo; run ID seudónimo | Definir base; evento crudo ≤30 días | Secuencia de actividad; luego conteo por versión |
+| `question_answered` | `question_id` y clase `answered/unknown/not_applicable`; nunca valor | Sin dato directo; patrón de preguntas es seudónimo | Definir base; ≤30 días | Patrón puede revelar contexto; agrega por pregunta/clase con celdas pequeñas suprimidas |
+| `diagnostic_completed` | Versión y cantidad de respuestas; no score ni respuesta | Seudónimo solo con run ID | Definir base; ≤30 días | Métrica de finalización; conteo por versión |
+| `summary_viewed` | Tipo de estado (`with_score/insufficient`) y versión, sin porcentaje exacto | Seudónimo solo con run ID | Definir base; ≤30 días | No inferir calidad/negocio; agrega conteo de resúmenes |
+| `summary_download_requested` | Versión de documento y resultado técnico de generación | Seudónimo; no contenido/documento | Definir base; ≤30 días | Descarga puede revelar interés; agrega éxito/error sin archivos |
+| `detailed_report_requested` | Evento de intención, sin email ni contenido diagnóstico | El vínculo a run ID es seudónimo | Propósito de servicio y base revisados; ≤30 días | Intención no equivale a lead; agrega solicitudes |
+| `identification_submitted` | Resultado del intento (`valid/invalid`), sin campos | Identificable si se enlaza con request ID; evitarlo en analítica | Contador agregado; el request operativo queda en su dominio y plazo aprobado | No correlacionar identidad con historial anónimo |
+| `report_access_granted` | Conteo de grants consumidos, sin token/request ID en analítica | Identificable si incluye grant/request ID | Registro de seguridad mínimo según plazo aprobado; TTL operacional | Reintentos y enlaces expuestos; conteo separado |
+| `detailed_report_viewed` | Conteo de primera vista/revisita; sin reporte ni identidad | Identificable si queda por request; preferir agregado | Base/retención por confirmar antes de medir por persona | Acceso no es conversión comercial; conteo por cohorte |
+| `personalized_report_downloaded` | Versión, resultado de descarga y formato | Identificable si queda vinculado al solicitante | Operación del documento según solicitud; métricas agregadas | Documento revela situación; jamás adjuntarlo al evento |
+| `commercial_contact_requested` | Preferencia B, texto/versión del aviso, instante y fuente | **Sí, explícitamente** en `CommercialContactIntent` | Solo al marcar B; corregir/retirar, retener mientras autorización/política lo permita | Separar de analítica y excluir a quien no autorizó |
+
+Los plazos son máximos propuestos para eventos sin identidad directa; la retención y base legal no quedan aprobadas por esta tabla. El registro necesario de A y las autorizaciones B/C se conservan con el expediente mínimo correspondiente, nunca copiando email, teléfono o texto de respuestas al stream de analítica.
+
+GHL continúa siendo sistema de registro futuro para contactos, conversaciones y oportunidades; `integration_connection` actual no implementa esta integración. Solo un consentimiento B vigente permitiría producir un evento de handoff a la integración de una fase autorizada. El destinatario puede deduplicarse en GHL como contacto con procedencia y fecha de permiso, sin copiar pipelines/historial a D1 ni crear oportunidad automáticamente. Opt-in C no equivale a B. Sin opt-in B, no se inicia seguimiento comercial. No se ha enviado dato a GHL.
+
+La compatibilidad con QA-03B se conserva mediante su `diagnosticIdentity` completa y las versiones de metodología/reporte. No se leen ni se reescriben sesiones históricas; una sesión editada tras completar invalida su resultado derivado y exige recálculo antes de emitir reporte. En una versión posterior, errores de registro, expiración, doble envío, concurrencia entre pestañas, acceso cruzado, recuperación, borrado y paridad de score son gates de backend; el prototipo local no los simula como aprobados.
+
+
 ## DIAG-V3-QA-03B — contrato candidato certificado (2026-10-11)
 
 **`CONTRACT_CERTIFIED` en entorno local; `GATE_B_PARTIAL` se conserva y la candidata sigue inactiva en producción.** QA-03A/QA-03A.1 y el ajuste aprobado `D2_ELIGIBILITY_APPROVED` están incorporados en una ruta aislada de desarrollo. No cambian rutas públicas, historial de sesiones, migraciones, versión publicada, R3/R8, O4/O6 ni el generador PDF. La identidad nueva usa banco `reviewed-evidence-v4`, respuestas `qbv2-answers-v3`, contexto/pipeline `diag-v3-candidate-operation-history-v1`, R4 `r4-applicability-operation-history-v1` y sesión schema/key 3. La sesión nueva no lee, migra ni elimina valores schema 2.
