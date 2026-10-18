@@ -28,6 +28,25 @@
 
 # Roadmap
 
+## PLATFORM-ADMIN-GLOBAL + APP-CLIENTE / MINIWEB-CUADRA-01 (2026-10-17)
+
+Cuadra USD 39/mes no incluye ni requiere GHL; Barrio USD 59/mes inicia CRM GHL y Ciudad USD 89/mes amplía el alcance. Vecidya conserva autoridad de cuenta, organización, licencia, perfil/MiniWeb y Vecindario; GHL conserva CRM y operación comercial desde Barrio.
+
+| Checkpoint | Alcance | Estado/gate |
+| --- | --- | --- |
+| **APP-MINI-01C** | Cerrar baseline: E2E, HTTP público y capturas dashboard/editor/página en desktop/mobile | Cerrado técnicamente en local; no desplegado |
+| **APP-MINI-02A** | Core modular: registries versionados, config draft/published, default virtual legacy, compositor y controles básicos | Código local implementado; cadena `0000`–`0017` aplicada en D1 aislada limpia y MiniWeb E2E `33/33 PASS` allí. D1 local compartida sin cambios, ledger pendiente; D1 remota sin cambios; no deploy |
+| **PLATFORM-ADMIN-GLOBAL** | Control plane interno auditado: operaciones cross-org, creación/invitación de usuarios, roles existentes, settings/MiniWeb y asignaciones de capacitación | Especificación propuesta para aprobación humana explícita; implementación pendiente. Precedencia sobre 02B; no impersonación ni bypass de APIs cliente |
+| **APP-MINI-02B** | Crear `business_offering` público independiente; servicios/productos del negocio y FAQ | Diseño de publicación aprobado y documentado; implementación no iniciada, sin crear aún tablas ni contenido público. Bloqueado por precedencia de PLATFORM-ADMIN-GLOBAL |
+| **APP-MINI-02C** | R2, referencias/metadatos, portada/galería e imagen/video limitado | Requiere modelo de medios, permisos y subida segura; blobs fuera de D1 |
+| **APP-MINI-02D** | Editor MiniWeb completo: Diseño / Secciones / Contenido / Preview / Publicar | Después de 02B/02C; no convertir `business-profile.tsx` en formulario monolítico |
+| **APP-MINI-02E** | Vecindario como índice/buscador y fichas basadas en MiniWeb | Categoría, especialidad/tags, ubicación, modalidad, ofertas y módulos; sin duplicar fuente comercial |
+| **APP-MINI-03** | Presentar licencias, derechos y estados reales | Autorización separada; no checkout ni cobro automático |
+| **GHL-BARRIO-01** | Evaluar conexión/entrada GHL solo para Barrio/Ciudad | Cuenta, permisos/scopes, tenant mapping y autorización reales; fase independiente |
+
+Todos los bloques conservan una organización/negocio/MiniWeb, URL pública `/vecindario/:slug`, gobernanza, aislamiento tenant-scoped y frontera entre oferta del negocio y servicio Vecidya contratado. No crear CRM en Vecidya ni editor Wix/HTML/CSS libre. El control plane no edita contenido de Aprende ni cambia Diagnóstico; usa el catálogo de Aprende solo para asignar y seguir avance. No publicar, desplegar ni modificar D1 remota sin autorización explícita. APP-MINI-02B no inicia hasta la aprobación explícita e integración de PLATFORM-ADMIN-GLOBAL y una nueva autorización de implementación.
+
+
 ## FUNNEL-01D — secuencia aprobada (2026-10-16)
 
 | Checkpoint | Alcance | Estado/gate |
