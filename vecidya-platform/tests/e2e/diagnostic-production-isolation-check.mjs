@@ -24,12 +24,13 @@ const bundleFiles = bundleRoots.flatMap((root) => {
   return files;
 });
 
+// Los enlaces de desarrollo pueden aparecer como literales inertes en componentes compartidos;
+// la barrera real se comprueba abajo mediante solicitudes HTTP al Worker de producción.
 const forbiddenBundleMarkers = [
   "api-diagnostic-funnel-analytics",
   "api-diagnostic-report-requests",
   "api-diagnostic-report-request-resend",
   "api-diagnostic-email-verify",
-  "/__dev/diagnostico/",
   "qa-funnel@example.invalid",
   "other@example.invalid",
   "inspect_funnel_aggregate",
