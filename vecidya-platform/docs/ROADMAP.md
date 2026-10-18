@@ -493,3 +493,7 @@ Se amplió `app/styles/vecidya-polish.css` con estilos globales de controles (fo
 ### UI/UX transversal — web pública y diagnóstico (2026-10-17)
 
 Refinadas las clases reales de `home.tsx`, `services.tsx`, `diagnostic.tsx` y `diagnostico-informe.tsx` mediante la capa global de estilos: CTA flexibles, tarjetas con hover condicionado, tratamiento visual del pin 3D, enfoque accesible, y barra de acciones del informe adaptable a móvil. Commit `7c4b73a`. No se cambió contenido, lógica de evaluación, resultados, datos ni embudo. Sigue pendiente la revisión visual y de interacción real en cada viewport, y la comprobación de compatibilidad de selectores con las hojas existentes. Sin pruebas/certificación/despliegue.
+
+### UI/UX transversal — Únete, Contacto y Aprende (2026-10-17)
+
+Se añadieron reglas específicas de pulido para `join.tsx`, `contact.tsx` y `learn-article.tsx` en la capa global: jerarquía y hover de decisiones, lectura de correo y acciones en móvil, tipografía editorial, navegación por anclas, tarjetas relacionadas y distribución responsive. Commit `e70d465`. No se modificaron datos, lógica de contacto ni contenido editorial. Queda pendiente inspección visual real, compatibilidad CSS, compilación y pruebas; no certificado ni desplegado.
