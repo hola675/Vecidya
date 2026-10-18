@@ -282,7 +282,7 @@ try {
   assert.equal(expiredSnapshotRecovery.status(), 202, "la solicitud con snapshot vencido conserva una respuesta genérica");
   assert.equal((await expiredSnapshotRecovery.json()).accepted, true);
   const noSnapshotRecoveryEmail = await lifecycleFixture(lostResponseRequestId, "inspect");
-  assert.equal(noSnapshotRecoveryEmail.localMessage?.createdAt, recoveryMailbox.createdAt, "snapshot vencido no genera otro mensaje local");
+  assert.equal(noSnapshotRecoveryEmail.localMessage?.createdAt, repeatRecoveryMailbox.createdAt, "snapshot vencido no genera otro mensaje local");
   await lifecycleFixture(lostResponseRequestId, "restore_snapshot_expiry");
   await lifecycleFixture(lostResponseRequestId, "expire_request_only");
   const expiredRequestRecovery = await page.request.post(recoveryUrl, { headers: { Origin: base.origin, "cf-connecting-ip": "198.51.100.35" } });
