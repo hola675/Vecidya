@@ -127,8 +127,9 @@ try {
   assert.equal(startedAggregate.version, "diag-v3-public-v1");
   assert.match(startedAggregate.date, /^\d{4}-\d{2}-\d{2}$/u);
   const publicMetrics = await (await page.request.get(funnelEndpoint)).json();
-  assert.deepEqual(publicMetrics.metrics.map((metric) => metric.event), ["diagnostic_started"], "la lectura visible suprime recuentos menores de cinco");
-  assert.equal(publicMetrics.metrics[0].count, 6);
+  const todayMetrics = publicMetrics.metrics.filter((metric) => metric.date === startedAggregate.date && metric.version === startedAggregate.version);
+  assert.deepEqual(todayMetrics.map((metric) => metric.event), ["diagnostic_started"], "la lectura visible suprime recuentos menores de cinco para el día actual, sin mezclar el sentinel histórico");
+  assert.equal(todayMetrics[0].count, 6);
 
   const expiryMatrix = await lifecycleFixture(created.requestId, "expiry_matrix");
   assert.deepEqual(expiryMatrix.challengePending, [true, false, false], "challenge: before expiry is valid; exact and after are expired");
