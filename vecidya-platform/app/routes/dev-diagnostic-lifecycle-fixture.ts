@@ -10,7 +10,7 @@ import type { ActionFunctionArgs } from "react-router";
 
 const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
 const failure = (status: number, error: string) => Response.json({ error }, { status, headers });
-const allowedOperations = ["inspect", "inspect_funnel_aggregate", "lock_challenge", "tamper_snapshot", "expire_children", "expire_request", "expire_request_only", "expire_snapshot_only", "restore_snapshot_expiry", "expiry_matrix", "seed_lost_response_fixture", "revoke_access", "restore_access", "install_purge_failpoint", "remove_purge_failpoint", "install_funnel_analytics_failpoint", "remove_funnel_analytics_failpoint", "cleanup_funnel_aggregate", "cleanup"] as const;
+const allowedOperations = ["inspect", "inspect_funnel_aggregate", "lock_challenge", "tamper_snapshot", "expire_children", "expire_request", "expire_request_only", "expire_snapshot_only", "restore_snapshot_expiry", "expiry_matrix", "seed_lost_response_fixture", "revoke_access", "restore_access", "install_purge_failpoint", "remove_purge_failpoint", "install_funnel_analytics_failpoint", "remove_funnel_analytics_failpoint", "cleanup"] as const;
 type Operation = typeof allowedOperations[number];
 
 async function runExpiryMatrix(db: D1Database, sourceRequestId: string) {
@@ -216,10 +216,6 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
       db.prepare("PRAGMA table_info(diagnostic_funnel_aggregate)").all<{ name: string }>(),
     ]);
     return Response.json({ metrics: rows.results, columns: columns.results?.map((column) => column.name) ?? [] }, { headers });
-  }
-  if (op === "cleanup_funnel_aggregate") {
-    await db.prepare("DELETE FROM diagnostic_funnel_aggregate").run();
-    return Response.json({ ok: true }, { headers });
   }
   if (!requestRow) return failure(404, "Fixture local no disponible.");
   if (op === "install_funnel_analytics_failpoint") {
