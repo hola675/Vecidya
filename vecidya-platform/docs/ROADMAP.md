@@ -477,3 +477,7 @@ En `/app/internal/diagnostic-leads` se incorporó búsqueda por nombre/correo/ne
 ### 01D.3 — analítica interna y gráficos (2026-10-17)
 
 Implementada en rama la ruta protegida `/app/internal/diagnostic-analytics`: métricas agregadas existentes de D1, seis contadores de eventos, tres ratios orientativos, cuatro gráficos de tendencia diaria SVG, tabla diaria y periodos 7/30/90 días. Se incorporaron accesos desde dashboard y navegación de AdminShell, junto con entrada independiente para `/app/internal/diagnostic-leads`. La analítica no expone PII ni reportes individuales; el listado de interesados mantiene acceso solo a platform admin. **Los ratios son cocientes de eventos del intervalo, no tasas de conversión por cohortes**. No hay integración con GHL. Pruebas y certificación aplazadas; sin despliegue.
+
+### UI/UX transversal — premium polish (2026-10-17)
+
+Se añadió `app/styles/vecidya-polish.css` e importación en `app/root.tsx` para compartir tokens de movimiento, transiciones, foco accesible, hover contextual, tablas y ajustes responsive entre web pública, espacio cliente y App Internal (`7c9f1e0`, `87044e4`). Se añadió enlace de salto al contenido de App Internal (`b73cc1f`). Efectos condicionados a `hover` y `prefers-reduced-motion`; no se incorporaron librerías ni fuentes externas. **Esto es la primera capa transversal, no una revisión terminada de cada página.** Pendientes: auditoría visual por ruta, contraste, responsive 320–1440 px, teclado, Lighthouse, compilación y pruebas reales. No certificado ni desplegado.
