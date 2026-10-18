@@ -2,7 +2,7 @@ import { Form, Link, useLoaderData, useNavigate } from "react-router";
 import { useState } from "react";
 
 import { createDatabase } from "../../db/client.server";
-import { and, eq } from "drizzle-orm";
+import { and, eq, gt, isNull, or } from "drizzle-orm";
 import { billingAccount, organizationLicense } from "../../db/schema";
 import { getBusinessProfileCompletion } from "../../db/business-profile-rules";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
@@ -33,7 +33,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   ]);
   const database = createDatabase(env.DB);
   const billing = await database.query.billingAccount.findFirst({ where: eq(billingAccount.ownerUserId, workspaceUser.id) });
-  const activeLicense = billing ? await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, billing.id), eq(organizationLicense.status, "active")) }) : null;
+  const activeLicense = billing ? await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, billing.id), eq(organizationLicense.status, "active"), or(isNull(organizationLicense.endsAt), gt(organizationLicense.endsAt, new Date()))) }) : null;
   const canCreateOrganizations = Boolean(activeLicense) || !organizations.some((item) => item.role === "owner");
   const [businessProfile, services, memberCount] = activeOrganization
     ? await Promise.all([
