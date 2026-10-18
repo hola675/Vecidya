@@ -32,6 +32,22 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const page = Number.isSafeInteger(requestedPage) && requestedPage > 0
     ? Math.min(requestedPage, 10000) : 1;
   const limit = 25;
+  const summary = await env.DB.prepare(`SELECT
+      COUNT(*) AS total,
+      SUM(CASE WHEN r.status = 'verified' THEN 1 ELSE 0 END) AS verified,
+      SUM(CASE WHEN r.status = 'verification_pending' THEN 1 ELSE 0 END) AS pending,
+      SUM(CASE WHEN r.status = 'verified' AND c.id IS NOT NULL AND c.revoked_at IS NULL THEN 1 ELSE 0 END) AS commercialAuthorized
+    FROM identified_diagnostic_request r
+    LEFT JOIN commercial_contact_intent c ON c.request_id = r.id
+    WHERE r.expires_at > ?`).bind(Date.now()).first<{
+      total: number; verified: number | null; pending: number | null; commercialAuthorized: number | null;
+    }>();
+  const counts = {
+    total: summary?.total ?? 0,
+    verified: summary?.verified ?? 0,
+    pending: summary?.pending ?? 0,
+    commercialAuthorized: summary?.commercialAuthorized ?? 0,
+  };
   const rows = await env.DB.prepare(`SELECT r.id, r.full_name AS fullName,
       r.business_name AS businessName, r.email, r.created_at AS createdAt,
       CASE WHEN r.status = 'verified' THEN 1 ELSE 0 END AS verified,
@@ -56,7 +72,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     email: row.email, createdAt: row.createdAt, verified: row.verified === 1,
     commercialOptIn: row.commercialOptIn === 1, researchOptIn: row.researchOptIn === 1,
   }));
-  return { workspaceUser: access.workspaceUser, leads, page, hasNext: records.length > limit, query, status };
+  return { workspaceUser: access.workspaceUser, leads, page, hasNext: records.length > limit, query, status, counts };
 }
 
 export function headers() {
@@ -64,7 +80,7 @@ export function headers() {
 }
 
 export default function InternalDiagnosticLeads() {
-  const { workspaceUser, leads, page, hasNext, query, status } = useLoaderData<typeof loader>();
+  const { workspaceUser, leads, page, hasNext, query, status, counts } = useLoaderData<typeof loader>();
   const pageUrl = (number: number) => {
     const params = new URLSearchParams();
     if (query) params.set("q", query);
@@ -79,6 +95,12 @@ export default function InternalDiagnosticLeads() {
         <h1>Interesados del diagnóstico</h1>
         <p>Consulta interna de solicitudes vigentes. Sin sincronización con GHL ni acciones comerciales automáticas.</p>
       </div></div>
+      <div className="admin-stat-grid" aria-label="Resumen de solicitudes vigentes">
+        <section className="card admin-stat-card"><div><strong>{counts.total}</strong><p>Solicitudes vigentes</p></div></section>
+        <section className="card admin-stat-card"><div><strong>{counts.verified}</strong><p>Correos verificados</p></div></section>
+        <section className="card admin-stat-card"><div><strong>{counts.pending}</strong><p>Verificación pendiente</p></div></section>
+        <section className="card admin-stat-card"><div><strong>{counts.commercialAuthorized}</strong><p>Contacto autorizado</p></div></section>
+      </div>
       <section className="card">
         <p>Solo administración de plataforma. Los permisos son independientes: un diagnóstico no implica autorización para contactar.</p>
         <form method="get" className="admin-toolbar" role="search">
