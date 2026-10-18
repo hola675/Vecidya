@@ -2,7 +2,7 @@ name: Vecidya CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, integration/phase-00-main-reconcile]
     paths:
       - "vecidya-platform/**"
       - ".devcontainer/**"
