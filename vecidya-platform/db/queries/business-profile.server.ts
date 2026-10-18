@@ -103,6 +103,7 @@ export async function listPublishedBusinessProfiles(database: Database, filters:
     .where(and(
       eq(businessProfile.status, "published"),
       notSuspended,
+      hasActiveOwnerLicense,
       search ? sql`${businessProfile.displayName} LIKE ${`%${search}%`} ESCAPE '\\'` : undefined,
       filters.category ? eq(businessProfile.category, filters.category) : undefined,
       filters.city ? eq(businessProfile.city, filters.city) : undefined,
@@ -112,8 +113,8 @@ export async function listPublishedBusinessProfiles(database: Database, filters:
 
 export async function getPublishedBusinessProfileFilterOptions(database: Database) {
   const [categories, cities] = await Promise.all([
-    database.selectDistinct({ value: businessProfile.category }).from(businessProfile).leftJoin(businessProfileGovernance, eq(businessProfileGovernance.businessProfileId, businessProfile.id)).where(and(eq(businessProfile.status, "published"), notSuspended, isNotNull(businessProfile.category), ne(businessProfile.category, ""))).orderBy(asc(businessProfile.category)),
-    database.selectDistinct({ value: businessProfile.city }).from(businessProfile).leftJoin(businessProfileGovernance, eq(businessProfileGovernance.businessProfileId, businessProfile.id)).where(and(eq(businessProfile.status, "published"), notSuspended, isNotNull(businessProfile.city), ne(businessProfile.city, ""))).orderBy(asc(businessProfile.city)),
+    database.selectDistinct({ value: businessProfile.category }).from(businessProfile).leftJoin(businessProfileGovernance, eq(businessProfileGovernance.businessProfileId, businessProfile.id)).where(and(eq(businessProfile.status, "published"), notSuspended, hasActiveOwnerLicense, isNotNull(businessProfile.category), ne(businessProfile.category, ""))).orderBy(asc(businessProfile.category)),
+    database.selectDistinct({ value: businessProfile.city }).from(businessProfile).leftJoin(businessProfileGovernance, eq(businessProfileGovernance.businessProfileId, businessProfile.id)).where(and(eq(businessProfile.status, "published"), notSuspended, hasActiveOwnerLicense, isNotNull(businessProfile.city), ne(businessProfile.city, ""))).orderBy(asc(businessProfile.city)),
   ]);
   return { categories: categories.map(({ value }) => value).filter((value): value is string => value !== null), cities: cities.map(({ value }) => value).filter((value): value is string => value !== null) };
 }
