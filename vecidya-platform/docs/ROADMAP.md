@@ -489,3 +489,7 @@ Aplicado en la capa compartida `app/styles/vecidya-polish.css` un refinamiento e
 ### UI/UX transversal — componentes compartidos (2026-10-17)
 
 Se amplió `app/styles/vecidya-polish.css` con estilos globales de controles (foco, error `aria-invalid`, deshabilitado, interacción táctil, tarjetas, estados vacíos y tipografía en móvil) en web pública, cliente y administración. Commit `bbc7b76`. Los estilos son mejoras progresivas; no implican que todos los formularios existentes utilicen aún `aria-invalid`, ni sustituyen una revisión individual de pantallas. Mantener diseño de marca y `prefers-reduced-motion`. Sin dependencias externas, sin GHL, sin despliegue y sin certificación.
+
+### UI/UX transversal — web pública y diagnóstico (2026-10-17)
+
+Refinadas las clases reales de `home.tsx`, `services.tsx`, `diagnostic.tsx` y `diagnostico-informe.tsx` mediante la capa global de estilos: CTA flexibles, tarjetas con hover condicionado, tratamiento visual del pin 3D, enfoque accesible, y barra de acciones del informe adaptable a móvil. Commit `7c4b73a`. No se cambió contenido, lógica de evaluación, resultados, datos ni embudo. Sigue pendiente la revisión visual y de interacción real en cada viewport, y la comprobación de compatibilidad de selectores con las hojas existentes. Sin pruebas/certificación/despliegue.
