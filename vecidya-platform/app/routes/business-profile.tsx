@@ -87,6 +87,10 @@ export async function action({ context, request }: Route.ActionArgs) {
     }
 
     if (intent === "publish") {
+      const { user } = await requireSession(env, request);
+      const billing = await database.query.billingAccount.findFirst({ where: eq(billingAccount.ownerUserId, user.id) });
+      const activeLicense = billing ? await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, billing.id), eq(organizationLicense.status, "active")) }) : null;
+      if (!activeLicense) return { kind: "profile" as const, error: "Necesitas una licencia Vecidya activa para publicar en Vecindario." };
       await requireOrganizationPermission(env, request, organization.id, "business-profile:publish");
 
       if (publicationIssues.length) {
