@@ -150,26 +150,6 @@ export default function AppPage() {
         </>
       )}
 
-      <Card className="setup-card" id="organization-setup">
-        <div>
-          <p className="eyebrow">ORGANIZACIONES</p>
-          <h2>{organizations.length ? "Crea otro espacio" : "Crea tu espacio Vecidya"}</h2>
-          <p>Usa un nombre claro y un slug único en minúsculas.</p>
-        </div>
-        <Form className="organization-form" method="post" onSubmit={handleCreateOrganization}>
-          <label>
-            Nombre
-            <input autoComplete="organization" name="name" placeholder="Ej. Barrio Centro…" required />
-          </label>
-          <label>
-            Slug
-            <input autoComplete="off" name="slug" pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="barrio-centro…" required spellCheck={false} />
-          </label>
-          <Button disabled={submitting} type="submit">
-            {submitting ? "Creando…" : "Crear organización"}
-          </Button>
-        </Form>
-      </Card>
     </main>
     </ClientAreaShell>
   );
