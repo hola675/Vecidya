@@ -443,3 +443,16 @@ PROD-001 y EMAIL-001 están cerrados en sus alcances; `app.vecidya.com`/`admin.v
 - Migración directa de la arquitectura Astro Legacy.
 - Datos comerciales ficticios.
 - Marketing político persuasivo, segmentación electoral o manipulación de audiencias.
+
+## Actualización operativa — 2026-10-17: integración Diagnóstico V3 y plataforma
+
+**Objetivo inmediato:** cerrar DIAG-V3-FUNNEL-01D.1/01D.2 con pruebas reproducibles y reconciliar PR #6 con main antes de despliegue. La rama `feat/diagnostic-funnel-01d1` estaba 24 commits por delante y 8 por detrás de `main` al inicio de este corte; revisar de nuevo antes de integrar.
+
+1. **Integración primero:** resolver conflictos de PR #6 preservando el estado de plataforma, roles, licencias y perfiles; no sobrescribir cambios recientes de main. Ejecutar `pnpm install --frozen-lockfile`, `test:unit`, `typecheck`, `build`, migraciones D1 **locales** y E2E 01B/01C/01D.1. No desplegar ni tocar D1 remota sin autorización.
+2. **01D.1 analítica:** conservar `diagnostic_funnel_aggregate` anónimo al limpiar solicitudes; verificar conteos, privacidad, aislamiento y ausencia de duplicados. El alias E2E 01D.1 actualmente reimporta 01C.3: reemplazarlo por suite dedicada antes de declararlo certificado.
+3. **01D.2 privacidad:** interfaz DEV con selección independiente de revocación comercial/investigación y PATCH autenticado; añadir E2E de revocación selectiva, doble, repetida, caducidad y error. Diseñar eliminación verificable con registro mínimo de trazabilidad y retención aprobada; la eliminación directa DEV existente **no equivale** al flujo público definitivo.
+4. **01D.3 captación:** registro de interés voluntario en Vecidya, trazabilidad de consentimientos y handoff comercial explícito, **sin sincronización automática con GHL**.
+5. **01E informe:** anónimo resumido sin forzar datos; identificado detallado tras verificación, con impresión/descarga limitada a su nivel y recomendaciones accionables.
+6. **Aplicación de clientes:** perfiles públicos y MiniWeb de 39 USD como producto Vecidya; CRM/automatizaciones de GHL fuera del núcleo Vecidya. Respetar secuencia AUTH-ABUSE → MEDIA R2 → publicación autónoma y las autorizaciones independientes de producción.
+
+**Puertas de salida:** PR integrable, tests PASS documentados, protección de PII y aislamiento tenant verificados, consentimiento legal/retención resueltos, revisión visual y aprobación de despliegue. Ninguna puerta se presume superada por commits de implementación.
