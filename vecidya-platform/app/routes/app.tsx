@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Form, Link, useLoaderData, useNavigate } from "react-router";
+import { Link, useLoaderData } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
 import { getBusinessProfileCompletion } from "../../db/business-profile-rules";
@@ -9,9 +8,8 @@ import { countOrganizationMembers } from "../../db/queries/organization.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getActiveOrganization } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
-import { Alert, Badge, Button, Card, Icon } from "../components/ui";
+import { Badge, Card, Icon } from "../components/ui";
 import { ClientAreaShell } from "../components/client-area-shell";
-import { authClient } from "../lib/auth-client";
 import { publicAssets } from "../assets/public-assets";
 
 import type { Route } from "./+types/app";
@@ -72,31 +70,6 @@ function getPrimaryAction(businessProfile: LoaderData["businessProfile"], comple
 
 export default function AppPage() {
   const { activeOrganization, businessProfile, businessProfileCompletion, organizations, workspaceUser, isPlatformAdmin, services, memberCount } = useLoaderData<typeof loader>();
-  const navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-
-  async function handleCreateOrganization(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmitting(true);
-    setError(null);
-
-    const formData = new FormData(event.currentTarget);
-    const result = await authClient.organization.create({
-      name: String(formData.get("name")),
-      slug: String(formData.get("slug")),
-    });
-
-    if (result.error) {
-      setError(result.error.message ?? "No se pudo crear la organización.");
-      setSubmitting(false);
-      return;
-    }
-
-    setSubmitting(false);
-    navigate("/app", { replace: true });
-  }
-
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Buenos días" : hour < 19 ? "Buenas tardes" : "Buenas noches";
   const firstName = workspaceUser.name.split(" ")[0];
@@ -116,15 +89,13 @@ export default function AppPage() {
 
       {activeOrganization ? <h2 className="sr-only">Organización activa: {activeOrganization.name}</h2> : null}
 
-      {error ? <Alert>{error}</Alert> : null}
-
       {!activeOrganization ? (
         <Card className="empty-state">
           <img alt="" height="512" src={publicAssets.brand.symbol3d} width="512" />
           <div>
-            <p className="eyebrow">PRIMER PASO</p>
-            <h2>Crea tu primera organización</h2>
-            <p>Será el espacio seguro desde el que gestionarás tu presencia digital.</p>
+            <p className="eyebrow">ACCESO CONTROLADO</p>
+            <h2>Aún no tienes un espacio asignado</h2>
+            <p>El equipo de Vecidya crea y habilita las organizaciones desde administración. Si recibiste una invitación, ábrela desde tu correo para unirte a tu espacio.</p>
           </div>
         </Card>
       ) : (
