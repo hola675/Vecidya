@@ -51,7 +51,7 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
   const authorized = await getAuthorizedReport(env.DB, await digestOpaqueToken(token), requestId, new Date());
   if (!authorized) return notFound();
   if (request.method === "PATCH") {
-    if (!/^application\\/json(?:\\s*;|$)/i.test(request.headers.get("content-type") ?? "")) {
+    if (!/^application\/json(?:\s*;|$)/i.test(request.headers.get("content-type") ?? "")) {
       return Response.json({ error: "Formato no permitido." }, { status: 415, headers: responseHeaders });
     }
     let raw: string;
