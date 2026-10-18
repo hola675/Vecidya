@@ -24,13 +24,12 @@ const bundleFiles = bundleRoots.flatMap((root) => {
   return files;
 });
 
-// Los enlaces de desarrollo pueden aparecer como literales inertes en componentes compartidos;
-// la barrera real se comprueba abajo mediante solicitudes HTTP al Worker de producción.
 const forbiddenBundleMarkers = [
   "api-diagnostic-funnel-analytics",
   "api-diagnostic-report-requests",
   "api-diagnostic-report-request-resend",
   "api-diagnostic-email-verify",
+  "/__dev/diagnostico/",
   "qa-funnel@example.invalid",
   "other@example.invalid",
   "inspect_funnel_aggregate",
@@ -44,9 +43,9 @@ for (const file of bundleFiles) {
     assert.ok(!filePath.includes(marker) && !contents.includes(marker), `el bundle de producción no contiene ${marker} (${filePath})`);
   }
 }
-// Los nombres de módulos en un manifiesto SSR no equivalen a rutas registradas.
-// La verificación HTTP inferior comprueba la exposición real de cada endpoint dev-only.
-console.log(`PASS production bundles: ${bundleFiles.length} archivos inspeccionados; sin marcadores sensibles de fixtures`);
+// Los nombres de módulos en el manifiesto SSR no demuestran que una ruta esté registrada.
+// La prueba HTTP inferior verifica el aislamiento real de las rutas dev-only.
+console.log(`PASS production bundles: ${bundleFiles.length} archivos inspeccionados; sin módulos, rutas ni fixtures dev-only`);
 
 const publicDiagnostic = await fetch(new URL("/diagnostico", baseUrl));
 assert.equal(publicDiagnostic.status, 200, "el diagnóstico público permanece disponible en el Worker local de producción");
