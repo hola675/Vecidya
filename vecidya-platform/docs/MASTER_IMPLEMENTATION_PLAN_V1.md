@@ -57,3 +57,13 @@ F. Terminar MiniWeb/Vecindario y finalmente GHL, certificación V1.
 R1: CI nuevo creado pero sin ejecución confirmada. R2: verificaciones actuales de licencias son principalmente estáticas. R3: potencial discrepancia entre licencia de cartera y licencia CRM por organización. R4: banco candidato no equivale automáticamente al motor público. R5: protección de privacidad y retención incompleta. R6: coexistencia legacy con consumidores desconocidos. R7: dependencia de GHL y permisos por tenant aún sin certificar.
 
 **Fuente de detalle histórico:** docs/ROADMAP.md y docs/DIAGNOSTIC_CONSOLIDATION.md. Esta hoja es el orden ejecutivo; no sustituye gates anteriores.
+
+
+## Fase 00 — Evidencia de línea base y conciliación (2026-10-18)
+
+- **CI general PASS**: GitHub Actions run [39097001002](https://github.com/hola675/Vecidya/actions/runs/39097001002), commit `9f90d8bc`: instalación, contratos de licencias, typecheck, suite unitaria y build de producción correctos.
+- **Certificación D1/E2E en ejecución al registrar este corte**: [39097394295](https://github.com/hola675/Vecidya/actions/runs/39097394295), commit `1424e003`. No atribuir PASS a migraciones, E2E ni aislamiento hasta leer su conclusión y logs.
+- **Divergencia PR #6**: rama `feat/diagnostic-funnel-01d1` 104 commits por delante y 8 por detrás de `main` en esta revisión; GitHub informa `mergeable_state=dirty`. No resolver a ciegas ni fusionar sin validación.
+- **Superficies cambiadas en main que requieren conciliación**: `app/content/learn.ts`, `tests/unit/learn-content.test.ts`, `tests/e2e/learn-experience-check.mjs`, recursos SVG de Aprende, `.github/workflows/vecidya-ci.yml`, `.devcontainer/devcontainer.json`, `AGENTS.md` y documentación de arquitectura, datos, entornos, pruebas y estado.
+- **Política de conciliación**: usar worktree o rama temporal basada en el HEAD vigente; obtener diff de cada conflicto; preservar contenido y pruebas de Aprende en main junto a cambios del diagnóstico en feature; ejecutar unitarias, typecheck, build y E2E pertinentes; solo entonces actualizar rama del PR. Mantener rollback por SHA original. No usar estrategias globales `ours`/`theirs`.
+- **Puerta de salida aún abierta**: resultados completos de D1/E2E y aislamiento, prueba de preservación de agregados ajenos, conflictos resueltos y evidencias de rollback. Este registro no declara la fase cerrada.
