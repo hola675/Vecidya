@@ -569,3 +569,11 @@ Consideraciones de producto detectadas: sin guarda de marcas/nombres; categoría
 - «Producción pública» se leía como producción real: es staging.
 - Piloto E1 «verificado con datos reales»: no reproducible desde el repositorio.
 - Guía «máximo 15 documentos»: sustituida por máximo 20 (hoy 13).
+
+## Corte de integración — 2026-10-17
+
+Rama de diagnóstico `feat/diagnostic-funnel-01d1`, PR #6 draft con conflictos respecto de `main` (observado durante este corte). Diagnóstico anónimo 01B, verificación/informe identificado 01C y analítica 01D.1 existen en implementación DEV; **no hay certificación integral ni despliegue de este embudo**. 01D.2 incluye `revokeDiagnosticOptionalIntents` y controles de revocación selectiva en `dev-diagnostic-identified-report.tsx`, protegidos por grant vigente y solo en DEV. La ruta DEV todavía contiene eliminación directa; no se debe presentar como solicitud pública trazable de borrado.
+
+Últimos commits de implementación relevantes: `8c08dba` (regex tests), `317427a` (preservar agregados en QA), `edcd33d` (no repetir E2E), `2e6a01d` (PATCH revocación), `20bec6a` (selección independiente), `29683cf` (lectura acotada). Tests y build **no ejecutados en este corte**. No se aplicaron migraciones D1 remotas, merge ni deploy.
+
+**Bloqueo actual:** reconciliar los cambios de plataforma en main y certificar el flujo en entorno local antes de declarar cerrada 01D.1/01D.2. Mantener Vecidya y GHL como productos con responsabilidades separadas; MiniWeb/perfiles públicos y controles de cuenta permanecen en su propia secuencia de roadmap.
