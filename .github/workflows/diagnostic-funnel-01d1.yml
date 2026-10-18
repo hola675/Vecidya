@@ -114,6 +114,8 @@ jobs:
 
       - name: Run 01B, 01C.3 and 01D.1 against one local Worker
         id: funnel_e2e
+        env:
+          BETTER_AUTH_SECRET: "vecidya-local-ci-fixture-secret-not-for-production-2026"
         if: ${{ always() && steps.playwright.outcome == 'success' && steps.migrations.outcome == 'success' && steps.analytics_sentinel.outcome == 'success' }}
         continue-on-error: true
         run: |
