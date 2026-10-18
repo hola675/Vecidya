@@ -28,7 +28,7 @@ jobs:
       WRANGLER_SEND_METRICS: "false"
     defaults:
       run:
-        shell: bash
+        shell: bash --noprofile --norc -e -o pipefail {0}
         working-directory: vecidya-platform
 
     steps:
