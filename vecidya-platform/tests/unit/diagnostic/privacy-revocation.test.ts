@@ -69,7 +69,8 @@ test("01D.2: el núcleo de revocación no borra informes ni analítica", () => {
   const source = readFileSync(new URL("../../../db/queries/diagnostic-identification.server.ts", import.meta.url), "utf8");
   const start = source.indexOf("export async function revokeDiagnosticOptionalIntents(");
   assert.ok(start >= 0);
-  const revocation = source.slice(start);
+  const end = source.indexOf("\nexport async function ", start + 1);
+  const revocation = source.slice(start, end < 0 ? undefined : end);
   assert.doesNotMatch(revocation, /DELETE\s+FROM/i);
   assert.doesNotMatch(revocation, /UPDATE\s+diagnostic_funnel_aggregate/i);
   assert.doesNotMatch(revocation, /UPDATE\s+diagnostic_report_access/i);
