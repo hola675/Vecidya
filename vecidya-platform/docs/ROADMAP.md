@@ -1,3 +1,21 @@
+## CONSOLIDACIÓN-DIAG-2026-10-18 — roadmap de unificación (propuesto, sin cutover)
+
+**Objetivo:** terminar el diagnóstico público con un único contrato de preguntas, respuestas, rutas, scoring, resumen anónimo e informe identificado, sin conservar dos motores públicos ni borrar evidencia histórica. La ruta pública actual `/diagnostico` utiliza `AnonymousDiagnosticFlow` y el motor V3; el banco QA-03B y la candidata ACT siguen separados y no deben declararse equivalentes sin pruebas de paridad.
+
+| Fase | Trabajo | Gate de salida |
+| --- | --- | --- |
+| D0 Inventario | Clasificar imports/consumidores de `questions.ts`, `answers.ts`, `qbv2-*`, `qa03b/*`, rutas dev y migraciones; inventariar versiones persistidas y claves de localStorage | Matriz de consumidores y rollback aprobados |
+| D1 Contrato único | Definir identidad/versiones de banco de preguntas, opción, respuesta, aplicabilidad, planificador, scoring y reporte; distinguir anónimo e identificado | Pruebas de compatibilidad de contratos y fixtures |
+| D2 Preguntas y respuestas | Revisar redacción, opciones, exclusividad, saltos, dependencias, contradicciones y cobertura por tipo de negocio; conservar procedencia de cada respuesta | Golden personas, rutas adversariales y tests de consistencia PASS |
+| D3 Motor y resultados | Conectar el banco revisado al flujo público tras comparar rutas y resultados con V3; evitar mezclar resultados de metodologías distintas | Paridad documentada o migración versionada aprobada; E2E y pruebas de regresión |
+| D4 Embudo | Resumen anónimo descargable sin datos, solicitud voluntaria de detalle, verificación email y reporte personalizado; separar consentimiento comercial | Worker/D1 temporal, seguridad y privacidad certificadas |
+| D5 Cutover controlado | Activar una sola ruta pública; retirar imports muertos, componentes y assets legacy demostrablemente no utilizados; preservar migraciones y adaptadores históricos necesarios | Typecheck, build, tests, E2E, visual desktop/mobile, rollback |
+| D6 Operación | Analítica agregada sin identidad; derechos de datos; integración comercial opt-in independiente de GHL | Aprobaciones legales/comerciales y CI verde antes de deploy |
+
+**Reglas:** no borrar `db/migrations`, no eliminar claves históricas ni adaptar sesiones completadas sin versionado; no activar correo real, sincronización GHL o D1 remota sin autorización. El roadmap histórico anterior se conserva como evidencia, incluso donde indique gates bloqueados.
+
+**Estado a fecha 2026-10-18:** D0 en análisis, D1-D6 pendientes de certificación. Las pruebas de código existentes y los commits de licencias no certifican el nuevo motor de preguntas. No realizar limpieza destructiva hasta resolver `GATE_B_PARTIAL` y el gate de FUNNEL-01D.1.
+
 ## FUNNEL-01D.2 — implementación incremental y derechos (2026-10-17)
 
 **Avance técnico 01D.2-B (2026-10-17):** se añadió `revokeDiagnosticOptionalIntents` en `db/queries/diagnostic-identification.server.ts` con autorización mediante grant vigente, actualizaciones idempotentes de consentimiento comercial e investigación y revalidación en cada UPDATE. **Sin pruebas ejecutadas, sin API/UI pública y sin aprobación de 01D.1.** No se ha implementado la solicitud de eliminación ni el registro de derechos; se mantienen como pendientes. Este avance de código aislado no autoriza activar la fase ni saltar sus gates.
