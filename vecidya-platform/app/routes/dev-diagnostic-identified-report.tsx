@@ -1,5 +1,6 @@
 import { isRouteErrorResponse, useLoaderData, useRouteError } from "react-router";
 import { useState } from "react";
+import { readRequestBodyLimited, RequestBodyTooLargeError } from "../features/diagnostic/bounded-request-body.server";
 
 import { deleteIdentifiedReport, getAuthorizedReport, recordDetailedReportFirstOpen, revokeDiagnosticOptionalIntents } from "../../db/queries/diagnostic-identification.server";
 import { REPORT_VERSION, type DiagnosticReportV1 } from "../components/diagnostic-report/report-model";
@@ -53,8 +54,11 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
     if (!/^application\\/json(?:\\s*;|$)/i.test(request.headers.get("content-type") ?? "")) {
       return Response.json({ error: "Formato no permitido." }, { status: 415, headers: responseHeaders });
     }
-    const raw = await request.text();
-    if (raw.length > 512) return Response.json({ error: "Solicitud demasiado grande." }, { status: 413, headers: responseHeaders });
+    let raw: string;
+    try { raw = await readRequestBodyLimited(request, 512); }
+    catch (error) {
+      return Response.json({ error: error instanceof RequestBodyTooLargeError ? "Solicitud demasiado grande." : "No se pudo leer la solicitud." }, { status: error instanceof RequestBodyTooLargeError ? 413 : 400, headers: responseHeaders });
+    }
     let payload: unknown;
     try { payload = JSON.parse(raw); }
     catch { return Response.json({ error: "Solicitud inválida." }, { status: 400, headers: responseHeaders }); }
