@@ -96,6 +96,13 @@ export default function InternalHome() {
           ) : <p className="admin-attention__empty">No hay elementos que requieran revisión.</p>}
         </section>
 
+        <section className="card admin-attention" aria-labelledby="admin-diagnostic-leads-title">
+          <p className="eyebrow">CAPTACIÓN VECIDYA</p>
+          <h2 id="admin-diagnostic-leads-title">Interesados del diagnóstico</h2>
+          <p>Consulta solicitudes identificadas y permisos de contacto desde la base de datos de Vecidya. Sin integración con GHL.</p>
+          <Link className="text-link" to="/app/internal/diagnostic-leads">Abrir interesados →</Link>
+        </section>
+
         <div className="admin-overview-grid">
           <section className="card admin-overview-card">
             <span className="admin-overview-card__icon" aria-hidden="true"><Icon name="spark" /></span>
