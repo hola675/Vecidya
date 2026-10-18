@@ -1,5 +1,53 @@
 # Pruebas
 
+## VEC-CLOUD-CI-001 — Codespaces y CI (2026-10-17)
+
+Configuración propuesta en PR #10 (`fix/codespaces-ci-bootstrap`): GitHub Actions ejecuta instalación pnpm congelada, `test:unit`, `typecheck` y `build` en runner alojado por GitHub, sin secretos, D1 remota ni deploy. Codespaces define Node 24, pnpm 11.21.0, Chromium y puerto 5173. **Estado: CONFIG propuesta; pruebas CI todavía sin PASS confirmado y Codespace no abierto/verificado.** E2E con Worker/D1 aislada queda para checkpoint posterior; no se declara cobertura E2E en CI. Para aprobar merge: CI verde, diff revisado, documentación reconciliada y aprobación explícita; si CI falla, no fusionar.
+
+# Pruebas
+
+
+## VEC-APRENDE-06C — tres guías nuevas (2026-10-17)
+
+**Resultados en worktree aislado desde `origin/main` actualizado:** `learn-content.test.ts` 11/11 y suite unitaria `1572/1572 PASS`; typecheck y build PASS; E2E de catálogo y once guías en 1366/768/390/360 PASS. Se comprobaron slugs, enlaces de catálogo, canonical, títulos/descripciones, categorías de metadatos, índice, fuentes, bloques e imágenes. Inspección visual de las tres guías en escritorio y móvil sin desbordamiento horizontal.
+
+El Worker E2E utilizó Chrome local y una D1 aislada de este worktree, con migraciones locales aplicadas solo para que sitemap respondiera. Sin `--remote`, cambios de schema ni datos de negocio. Build advierte que no están configurados los secretos locales de autenticación/correo; termina correctamente. Estas pruebas no son aprobación WCAG, revisión editorial humana ni publicación.
+
+```powershell
+$env:BASE_URL='http://localhost:5173'
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE='C:\Program Files\Google\Chrome\Application\chrome.exe'
+pnpm exec node tests/e2e/learn-experience-check.mjs
+pnpm run test:unit
+pnpm run typecheck
+pnpm run build
+git diff --check
+```
+
+
+## VEC-APRENDE-06B — tres guías de Tecnología explicada (2026-10-17)
+
+**Resultados observados en worktree aislado desde `origin/main` actualizado:** catálogo `learn-content.test.ts` `9/9 PASS`; suite unitaria completa `1570/1570 PASS`; typecheck y build PASS; E2E local PASS en 1366/768/390/360, con rutas, títulos/canonical, categoría de metadatos, índice, definiciones, ejemplos, pasos, fuentes, SVG y sitemap. Inspección visual en navegador de escritorio y captura móvil de 390 px: título, diagrama, índice y texto legibles, sin desbordamiento horizontal. Build final completado con advertencias de secretos de correo/autenticación no configurados localmente; estas funciones no forman parte del alcance.
+
+El Worker de prueba utilizó Chrome local y D1 completamente aislada dentro de este worktree; se aplicó allí el ledger para que la consulta de perfiles del sitemap pudiera responder. Sin `--remote`, datos remotos, fixtures de negocio ni deploy. Estos PASS no equivalen a revisión WCAG, aprobación editorial humana ni publicación.
+
+```powershell
+$env:BASE_URL='http://localhost:5173'
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE='C:\Program Files\Google\Chrome\Application\chrome.exe'
+pnpm exec node tests/e2e/learn-experience-check.mjs
+pnpm run test:unit
+pnpm run typecheck
+pnpm run build
+git diff --check
+```
+
+
+## PLATFORM-ADMIN-GLOBAL — especificación documental (2026-10-17)
+
+Este checkpoint prepara la especificación para aprobación; no modifica comportamiento, rutas, permisos, schema o migraciones. No se ejecutaron suites funcionales, typecheck ni build por tratarse de reconciliación documental. Verificaciones de documentación ejecutadas al cierre: `git diff --check`, revisión completa del diff y comprobación de paths modificados para confirmar que no incluyen código funcional, schema ni migraciones. Los gates propuestos para una implementación futura incluyen actor/acción/target/audit, denegación de IDs cross-tenant, onboarding de owner con correo verificado, expiración/revocación/reenvío y doble aceptación concurrente, roles y último owner, progreso propio frente a ajeno, recuperación de fallos parciales, tenant isolation y ausencia de rutas/cambios en Aprende. No se reportan como pruebas ejecutadas.
+
+**VEC-APRENDE-04/05 — RAN 2026-10-16 en el worktree de integración (base `a7949dd`):** contenido `4/4 PASS`; suite unitaria completa `1558/1558 PASS`; typecheck, build, E2E Aprende en 1366/768/390/360 y `git diff --check` PASS. El primer typecheck coincidió con el bootstrap automático de PNPM y no encontró `@babel/types`; tras terminar la instalación local, el mismo comando pasó. Sin aceptación visual humana, certificación WCAG ni HTTP de producción.
+
+
 ## DIAG-V3-FUNNEL-01D.1-R — evidencia ejecutada (2026-10-17)
 
 **Unitarias focales: 8/8 PASS, reejecutadas tras reconciliar `origin/main=90215da`** con `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/funnel-analytics.test.ts tests/unit/diagnostic/funnel-analytics-transaction.test.ts`. Cubren seis claves, UTC/versión, host loopback, marcador por request, backfill 0019 y fallback dominio-si-analítica-falla. El E2E Worker no se ejecutó.
