@@ -253,4 +253,8 @@ try {
 
 const failed = checks.filter((result) => !result.ok);
 console.log(JSON.stringify({ checks: checks.length, passed: checks.length - failed.length, failed: failed.map((result) => result.label), fixturesCleaned: createdOrganizationIds.length > 0 || createdUserIds.length > 0, harness: harnessFailure?.message ?? null }, null, 2));
-if (harnessFailure || failed.length) process.exitCode = 1;
+if (harnessFailure || failed.length) {
+  process.exitCode = 1;
+} else {
+  console.log(`MINIWEB_02A_E2E_PASS checks=${checks.length}`);
+}
