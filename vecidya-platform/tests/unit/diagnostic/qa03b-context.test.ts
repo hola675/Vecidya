@@ -60,3 +60,13 @@ test("QA-03B: alcance/comprador unknown y financiación siguen neutrales", () =>
   assert.equal(nonprofit.context.funding, "donations_grants_contributions"); assert.equal(nonprofit.context.buyerDisposition, "no_direct_purchase");
   assert.equal(nonprofit.context.customerModel.buyer.status, "unresolved"); assert.ok(!nonprofit.eligibleQuestionIds.includes("q2_b2b_pipeline"));
 });
+
+test("QA-03B: rechaza IDs duplicados antes de evaluar el banco", () => {
+  const duplicated = [BANK[0]!, BANK[0]!];
+  assert.throws(() => resolve({}, duplicated), /identificadores de preguntas duplicados/);
+});
+
+test("QA-03B: descarta respuestas de preguntas inexistentes", () => {
+  const result = resolve({ __unknown_question__: "yes" }, BANK);
+  assert.equal(Object.hasOwn(result.activeAnswers, "__unknown_question__"), false);
+});
