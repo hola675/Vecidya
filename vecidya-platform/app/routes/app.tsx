@@ -2,6 +2,8 @@ import { Form, Link, useLoaderData, useNavigate } from "react-router";
 import { useState } from "react";
 
 import { createDatabase } from "../../db/client.server";
+import { and, eq } from "drizzle-orm";
+import { billingAccount, organizationLicense } from "../../db/schema";
 import { getBusinessProfileCompletion } from "../../db/business-profile-rules";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
 import { listOrganizationServices } from "../../db/queries/organization-services.server";
@@ -30,6 +32,9 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     getActiveOrganization(env, request),
   ]);
   const database = createDatabase(env.DB);
+  const billing = await database.query.billingAccount.findFirst({ where: eq(billingAccount.ownerUserId, workspaceUser.id) });
+  const activeLicense = billing ? await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, billing.id), eq(organizationLicense.status, "active")) }) : null;
+  const canCreateOrganizations = Boolean(activeLicense);
   const [businessProfile, services, memberCount] = activeOrganization
     ? await Promise.all([
       getBusinessProfileForOrganization(database, activeOrganization.id),
@@ -46,6 +51,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     businessProfileCompletion: getBusinessProfileCompletion(businessProfile),
     services,
     memberCount,
+    canCreateOrganizations,
   };
 }
 
@@ -71,7 +77,7 @@ function getPrimaryAction(businessProfile: LoaderData["businessProfile"], comple
 }
 
 export default function AppPage() {
-  const { activeOrganization, businessProfile, businessProfileCompletion, organizations, workspaceUser, isPlatformAdmin, services, memberCount } = useLoaderData<typeof loader>();
+  const { activeOrganization, businessProfile, businessProfileCompletion, organizations, workspaceUser, isPlatformAdmin, services, memberCount, canCreateOrganizations } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -183,11 +189,11 @@ export default function AppPage() {
           <h2>{organizations.length ? "Añadir otro negocio" : "Crear mi organización"}</h2>
           <p>Una licencia Vecidya activa permite administrar varios negocios y su presencia en Vecindario. Barrio y Ciudad habilitan el CRM solo en la organización que tenga contratada esa licencia.</p>
         </div>
-        <Form className="organization-form" method="post" onSubmit={handleCreateOrganization}>
+        {canCreateOrganizations ? <Form className="organization-form" method="post" onSubmit={handleCreateOrganization}>
           <label>Nombre del negocio<input autoComplete="organization" name="name" required maxLength={100} placeholder="Ej. Barrio Centro" /></label>
           <label>Identificador público<input autoComplete="off" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="barrio-centro" spellCheck={false} /></label>
           <Button disabled={submitting} type="submit">{submitting ? "Creando…" : "Crear organización"}</Button>
-        </Form>
+        </Form> : <p>Para añadir organizaciones necesitas al menos una licencia Vecidya activa. <Link to="/licencias">Consultar licencias</Link>.</p>}
       </Card>
     </main>
     </ClientAreaShell>
