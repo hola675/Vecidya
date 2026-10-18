@@ -463,3 +463,9 @@ PROD-001 y EMAIL-001 están cerrados en sus alcances; `app.vecidya.com`/`admin.v
 - Borrado DEV con confirmación y DELETE protegido por autorización en la propia sentencia SQL, preservando agregados anónimos: **implementado en rama** (`9a01674`, `616a761`).
 - **No cerrar 01D.2 funcional/públicamente todavía:** falta definir y desarrollar registro de solicitud de supresión, retención y evidencia mínima autorizada; pruebas reales aplazadas por decisión del usuario. No declarar PASS, certificación ni deploy.
 - Próximo desarrollo sin pruebas: contrato de solicitud de supresión verificable y trazable, sin guardar PII innecesaria ni sincronizar GHL; después 01D.3 handoff comercial explícito.
+
+### Decisión de producto — 01D.3, 2026-10-17
+
+**GHL queda aplazado sin fecha**: no crear sincronizadores, webhooks, contactos GHL ni dependencias de CRM. La captación identificada vive exclusivamente en D1 de Vecidya. El acceso administrativo se realiza mediante `/app/internal/diagnostic-leads`, protegido con `requirePlatformAdmin`, paginado y de solo lectura; lista datos mínimos de solicitudes vigentes y los estados separados de consentimiento comercial/investigación. No expone informes, códigos de verificación ni digests de tokens. Entrada desde el dashboard `/app/internal`. Implementación en rama: `07d6f93`, `33e6b64`, `a15f171`. **01D.3: base administrativa implementada, no certificada ni desplegada.**
+
+Siguiente desarrollo: filtros y búsqueda seguros del lado servidor, estados y auditoría interna de acciones futuras; antes de permitir contacto, definir tratamiento de retención, política legal y permisos de operador. Las pruebas reales siguen aplazadas por decisión del usuario.
