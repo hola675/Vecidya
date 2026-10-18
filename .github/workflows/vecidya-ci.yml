@@ -2,13 +2,13 @@ name: Vecidya CI
 
 on:
   pull_request:
-    branches: [main, integration/phase-00-main-reconcile]
+    branches: [main]
     paths:
       - "vecidya-platform/**"
       - ".devcontainer/**"
       - ".github/workflows/vecidya-ci.yml"
   push:
-    branches: [main]
+    branches: [main, integration/phase-00-main-reconcile]
     paths:
       - "vecidya-platform/**"
       - ".devcontainer/**"
