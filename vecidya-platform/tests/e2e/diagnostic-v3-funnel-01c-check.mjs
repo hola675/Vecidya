@@ -263,7 +263,7 @@ try {
   assert.equal(repeatRecoveryResponse.status(), 202, "la misma solicitud admite una recuperación posterior después de abrir el informe");
   const repeatRecoveryMailbox = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).json();
   assert.equal(repeatRecoveryMailbox.purpose, "access_recovery");
-  assert.notEqual(repeatRecoveryMailbox.challengeId, recoveryMailbox.challengeId, "cada recuperación aceptada debe emitir un challenge nuevo, no reutilizar el anterior");
+  assert.notEqual(repeatRecoveryMailbox.text, recoveryMailbox.text, "cada recuperación aceptada debe emitir un enlace nuevo, no reutilizar el token anterior");
   const repeatRecoveryLink = repeatRecoveryMailbox.text.match(/https?:\/\/[^\s]+/u)?.[0];
   assert.ok(repeatRecoveryLink, "la recuperación repetida debe entregar un enlace nuevo");
   const repeatRecoveryToken = new URLSearchParams(new URL(repeatRecoveryLink).hash.slice(1)).get("token");
