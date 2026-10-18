@@ -1,8 +1,11 @@
+import diagnosticAdminStyles from "../styles/diagnostic-admin.css?url";
 import { useLoaderData, Link } from "react-router";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { requirePlatformAdmin } from "../../server/platform-authorization.server";
 import { AdminShell } from "../components/admin-shell";
 import type { Route } from "./+types/internal-diagnostic-leads";
+
+export function links() { return [{ rel: "stylesheet", href: diagnosticAdminStyles }]; }
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Interesados del diagnóstico | Vecidya Admin" }];
@@ -89,7 +92,7 @@ export default function InternalDiagnosticLeads() {
     return `?${params.toString()}`;
   };
   return <AdminShell active="leads" workspaceUser={workspaceUser}>
-    <main className="admin-content">
+    <main className="admin-content diagnostic-admin-page">
       <div className="page-heading"><div>
         <p className="eyebrow">DIAGNÓSTICO · VECIDYA</p>
         <h1>Interesados del diagnóstico</h1>
@@ -103,7 +106,7 @@ export default function InternalDiagnosticLeads() {
       </div>
       <section className="card">
         <p>Solo administración de plataforma. Los permisos son independientes: un diagnóstico no implica autorización para contactar.</p>
-        <form method="get" className="admin-toolbar" role="search">
+        <form method="get" className="admin-toolbar diagnostic-admin-toolbar" role="search">
           <label className="admin-search">Buscar <input type="search" name="q" defaultValue={query} maxLength={80} placeholder="Nombre, correo o negocio" /></label>
           <label className="admin-filter">Estado <select name="status" defaultValue={status}>
             <option value="all">Todos</option><option value="verified">Verificados</option>
@@ -112,7 +115,7 @@ export default function InternalDiagnosticLeads() {
           <button type="submit" className="button button--secondary">Filtrar</button>
           <Link className="text-link" to="/app/internal/diagnostic-leads">Limpiar</Link>
         </form>
-        {leads.length ? <div className="admin-table-wrap"><table className="admin-table">
+        {leads.length ? <div className="admin-table-wrap diagnostic-admin-table-scroll"><table className="admin-table">
           <thead><tr><th>Solicitante</th><th>Negocio</th><th>Fecha</th><th>Correo verificado</th><th>Contacto comercial</th><th>Investigación</th></tr></thead>
           <tbody>{leads.map((lead) => <tr key={lead.id}>
             <td><strong>{lead.fullName}</strong><span className="admin-table__meta">{lead.email}</span></td>
