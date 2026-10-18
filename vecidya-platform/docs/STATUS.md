@@ -1,5 +1,10 @@
 # Estado de implementación
 
+## PLATFORM-ADMIN-GLOBAL — spec escrita para revisión (2026-10-17)
+
+Propuesta documental para revisión y aprobación explícita; no es diseño aprobado ni implementación. El actor `platform_admin` conserva identidad de plataforma, sin impersonación ni membresía comercial; `/app/internal` y sus endpoints quedan previstos, sin nuevas rutas. Arquitectura, matriz de roles, ciclo organización/invitación, capacitación, endpoints, entidades candidatas, riesgos y decisiones pendientes constan en `ARCHITECTURE.md`; persistencia candidata en `DATABASE.md`. Sin código/schema/migraciones. APP-MINI-02B espera hasta que este checkpoint quede aprobado e integrado.
+
+
 ## DIAG-V3-FUNNEL-01D.1-R — cierre local bloqueado (2026-10-17)
 
 **`FUNNEL_ANALYTICS_BLOCKED` / `CI_PENDING`.** El merge `d49a170` reconcilió la rama `feat/diagnostic-funnel-01d1` con `origin/main=90215da` en el worktree dedicado, sin alterar el checkout compartido. La rama incluye main (0 behind / 8 ahead en `0cc681f`). Se añadió workflow de certificación Linux y harness de aislamiento productivo; GitHub Actions aún no lo ha ejecutado.
