@@ -1,7 +1,7 @@
 import { organization } from "better-auth/plugins";
 import { and, eq } from "drizzle-orm";
 import { createDatabase } from "../db/client.server";
-import { session } from "../db/schema";
+import { session, billingAccount, organizationLicense } from "../db/schema";
 import { sendOrganizationInvitation, type InvitationEmailConfig } from "./email/invitation.server";
 
 /** Política del plugin Organization: la comparten el runtime y el CLI de esquema (`better-auth.config.ts`). */
@@ -20,6 +20,12 @@ export const organizationPolicy = {
 export function createOrganizationPlugin(emailConfig: InvitationEmailConfig, database: ReturnType<typeof createDatabase>) {
   return organization({
     ...organizationPolicy,
+    allowUserToCreateOrganization: async (user) => {
+      const account = await database.query.billingAccount.findFirst({ where: eq(billingAccount.ownerUserId, user.id) });
+      if (!account) return false;
+      const active = await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, account.id), eq(organizationLicense.status, "active")) });
+      return Boolean(active);
+    },
     sendInvitationEmail: (data) => sendOrganizationInvitation(data, emailConfig),
     organizationHooks: {
       afterRemoveMember: async ({ member }) => {
