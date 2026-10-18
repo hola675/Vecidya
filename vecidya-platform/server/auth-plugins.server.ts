@@ -1,5 +1,5 @@
 import { organization } from "better-auth/plugins";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull, or, gt } from "drizzle-orm";
 import { createDatabase } from "../db/client.server";
 import { session, billingAccount, organizationLicense, member } from "../db/schema";
 import { sendOrganizationInvitation, type InvitationEmailConfig } from "./email/invitation.server";
@@ -25,7 +25,7 @@ export function createOrganizationPlugin(emailConfig: InvitationEmailConfig, dat
       if (!owned) return true; // Alta inicial: la primera organización aún no tiene licencia.
       const account = await database.query.billingAccount.findFirst({ where: eq(billingAccount.ownerUserId, user.id) });
       if (!account) return false;
-      const active = await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, account.id), eq(organizationLicense.status, "active")) });
+      const active = await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, account.id), eq(organizationLicense.status, "active"), or(isNull(organizationLicense.endsAt), gt(organizationLicense.endsAt, new Date()))) });
       return Boolean(active);
     },
     sendInvitationEmail: (data) => sendOrganizationInvitation(data, emailConfig),
