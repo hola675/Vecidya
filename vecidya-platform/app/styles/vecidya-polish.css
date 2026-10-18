@@ -277,3 +277,64 @@
   .rp-toolbar .button { min-height: 44px; }
   .df-page :is(input,select,textarea) { max-width: 100%; font-size: 1rem; }
 }
+
+/* Contact + join: strong decision hierarchy, friendly readable sections. */
+:is(.contact-experience-page,.join-experience-page) :is(.contact-experience-hero,.join-experience-hero) {
+  isolation: isolate;
+}
+:is(.contact-experience-page,.join-experience-page) .public-actions {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .75rem;
+}
+.contact-channel, .contact-guidance, .join-decision-card {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.contact-channel__email { word-break: break-word; }
+.join-decision-card {
+  transition: border-color var(--vx-duration) ease, box-shadow var(--vx-duration) var(--vx-ease), transform var(--vx-duration) var(--vx-ease);
+}
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  .join-decision-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--vx-shadow-hover);
+  }
+}
+:is(.join-decision-card,.contact-channel) :is(a,button):focus-visible {
+  outline: 3px solid var(--orange); outline-offset: 3px;
+}
+
+/* Learn: editorial rhythm and anchored navigation. */
+.learn-article-page .learn-article-layout { align-items: start; gap: clamp(1rem,2.5vw,2.5rem); }
+.learn-article-page :is(.learn-article-body,.learn-article-toc) { min-width: 0; }
+.learn-article-page .learn-article-body {
+  line-height: 1.75;
+  overflow-wrap: break-word;
+}
+.learn-article-page .learn-article-body :is(h2,h3) {
+  scroll-margin-top: 6rem;
+  text-wrap: balance;
+}
+.learn-article-page .learn-article-body :is(p,li) { max-width: 74ch; }
+.learn-article-page .learn-article-body :is(a,button):focus-visible,
+.learn-article-page .learn-article-toc a:focus-visible {
+  outline: 3px solid var(--orange); outline-offset: 3px;
+}
+.learn-article-page .learn-article-image {
+  max-width: 100%;
+  height: auto;
+}
+.learn-related-card {
+  min-width: 0;
+  transition: border-color var(--vx-duration) ease, box-shadow var(--vx-duration) ease;
+}
+@media (hover:hover) {
+  .learn-related-card:hover { border-color: #b8cbe7; }
+}
+@media (max-width: 760px) {
+  .learn-article-page .learn-article-layout { grid-template-columns: minmax(0,1fr); }
+  .learn-article-page .learn-article-toc { position: static; max-height: none; }
+  .join-decision-grid, .contact-guidance-grid { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 480px) {
+  :is(.contact-experience-page,.join-experience-page) .public-actions > .button { flex: 1 1 12rem; }
+}
