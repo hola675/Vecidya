@@ -75,7 +75,7 @@ export default function InternalDiagnosticAnalytics() {
   const { workspaceUser, totals, series, days } = useLoaderData<typeof loader>();
   const ratio = (numerator: number, denominator: number) =>
     denominator > 0 ? `${(numerator / denominator * 100).toFixed(1)}%` : "Sin base";
-  return <AdminShell active="home" workspaceUser={workspaceUser}>
+  return <AdminShell active="diagnostic" workspaceUser={workspaceUser}>
     <main className="admin-content">
       <div className="page-heading"><div>
         <p className="eyebrow">DIAGNÓSTICO · ANALÍTICA</p>
