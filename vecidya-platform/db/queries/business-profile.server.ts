@@ -18,13 +18,14 @@ const hasActiveOwnerLicense = sql`EXISTS (
   WHERE ${member.organizationId} = ${businessProfile.organizationId}
     AND ${member.role} = ${"owner"}
     AND ${organizationLicense.status} = ${"active"}
+    AND (${organizationLicense.endsAt} IS NULL OR ${organizationLicense.endsAt} > ${Date.now()})
 )`;
 
 export async function hasActiveLicenseForOrganizationOwner(database: Database, organizationId: string) {
   const [row] = await database.select({ id: member.id }).from(member)
     .innerJoin(billingAccount, eq(billingAccount.ownerUserId, member.userId))
     .innerJoin(organizationLicense, eq(organizationLicense.billingAccountId, billingAccount.id))
-    .where(and(eq(member.organizationId, organizationId), eq(member.role, "owner"), eq(organizationLicense.status, "active")))
+    .where(and(eq(member.organizationId, organizationId), eq(member.role, "owner"), eq(organizationLicense.status, "active"), or(isNull(organizationLicense.endsAt), sql`${organizationLicense.endsAt} > ${Date.now()}`)))
     .limit(1);
   return Boolean(row);
 }
