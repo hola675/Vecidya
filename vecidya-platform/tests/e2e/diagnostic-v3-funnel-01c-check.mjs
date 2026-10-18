@@ -267,9 +267,9 @@ try {
   const repeatRecoveryToken = new URLSearchParams(new URL(repeatRecoveryLink).hash.slice(1)).get("token");
   const repeatRecoveryVerification = await page.evaluate(async ({ requestId, token, ip }) => {
     const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
-    return response.status;
+    return { status: response.status, body: (await response.text()).slice(0, 600) };
   }, { requestId: lostResponseRequestId, token: repeatRecoveryToken, ip: "198.51.100.37" });
-  assert.equal(repeatRecoveryVerification, 200, "recovery reemite acceso sin volver a contar email_verified");
+  assert.equal(repeatRecoveryVerification.status, 200, `recovery reemite acceso sin volver a contar email_verified: ${JSON.stringify(repeatRecoveryVerification)}`);
   assert.equal((await page.request.get(new URL(recovered.reportPath, base).toString())).status(), 200, "el grant recuperado vuelve a abrir el informe");
   const afterRepeatRecovery = await funnelAggregate(lostResponseRequestId);
   assert.equal(funnelCount(afterRepeatRecovery, "detailed_report_first_opened"), 1, "recovery y revisitas no duplican la primera apertura de la solicitud");
