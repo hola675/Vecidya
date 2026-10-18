@@ -2,12 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
-import { and, eq } from "drizzle-orm";
-import { billingAccount, organizationLicense } from "../../db/schema";
 import { dayOfWeekLabels, type BusinessHoursEntry } from "../../db/business-hours-rules";
 import { businessProfileSlugMaxLength, serviceModeLabels, slugifyBusinessName } from "../../db/business-profile-rules";
 import {
   getBusinessProfileForOrganization,
+  hasActiveLicenseForOrganizationOwner,
   publishBusinessProfileForOrganization,
   saveBusinessProfileForOrganization,
 } from "../../db/queries/business-profile.server";
@@ -17,7 +16,7 @@ import {
 } from "../../db/queries/business-hours.server";
 import { getBusinessProfileGovernance } from "../../db/queries/platform-governance.server";
 import { requireOrganizationPermission } from "../../server/auth/authorization.server";
-import { requireOrganization, requireSession } from "../../server/auth/session.server";
+import { requireOrganization } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import {
@@ -59,10 +58,9 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     listBusinessHoursForOrganization(database, organization.id),
   ]);
   const governance = profile ? await getBusinessProfileGovernance(database, profile.id) : null;
-  const billing = await database.query.billingAccount.findFirst({ where: eq(billingAccount.ownerUserId, shell.workspaceUser.id) });
-  const license = billing ? await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, billing.id), eq(organizationLicense.status, "active")) }) : null;
+  const canPublish = await hasActiveLicenseForOrganizationOwner(database, organization.id);
 
-  return { completion: getBusinessProfileCompletion(profile), governance, membership, profile, hours, canPublish: Boolean(license), ...shell, activeOrganization: organization };
+  return { completion: getBusinessProfileCompletion(profile), governance, membership, profile, hours, canPublish, ...shell, activeOrganization: organization };
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
@@ -89,9 +87,7 @@ export async function action({ context, request }: Route.ActionArgs) {
     }
 
     if (intent === "publish") {
-      const { user } = await requireSession(env, request);
-      const billing = await database.query.billingAccount.findFirst({ where: eq(billingAccount.ownerUserId, user.id) });
-      const activeLicense = billing ? await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, billing.id), eq(organizationLicense.status, "active")) }) : null;
+      const activeLicense = await hasActiveLicenseForOrganizationOwner(database, organization.id);
       if (!activeLicense) return { kind: "profile" as const, error: "Necesitas una licencia Vecidya activa para publicar en Vecindario." };
       await requireOrganizationPermission(env, request, organization.id, "business-profile:publish");
 
