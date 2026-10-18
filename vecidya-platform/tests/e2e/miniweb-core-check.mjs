@@ -20,7 +20,11 @@ function executeD1(sql) {
   const directory = mkdtempSync(join(tmpdir(), "vecidya-miniweb-"));
   const file = join(directory, "step.sql");
   writeFileSync(file, sql, "utf8");
-  const result = spawnSync(process.env.ComSpec ?? "cmd.exe", ["/d", "/c", `pnpm.cmd wrangler d1 execute DB --local --json --file ${file}`], { cwd: process.cwd(), encoding: "utf8" });
+  const command = process.platform === "win32" ? (process.env.ComSpec ?? "cmd.exe") : "pnpm";
+  const args = process.platform === "win32"
+    ? ["/d", "/s", "/c", `pnpm.cmd wrangler d1 execute DB --local --json --file "${file}"`]
+    : ["exec", "wrangler", "d1", "execute", "DB", "--local", "--json", "--file", file];
+  const result = spawnSync(command, args, { cwd: process.cwd(), encoding: "utf8" });
   rmSync(directory, { recursive: true, force: true });
   harness(result.status === 0, `D1 local falló: ${result.stderr}`);
   return JSON.parse(result.stdout).flatMap((statement) => statement.results ?? []);
