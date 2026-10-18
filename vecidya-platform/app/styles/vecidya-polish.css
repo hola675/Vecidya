@@ -196,3 +196,84 @@
     font-size: max(1rem, 16px);
   }
 }
+
+/* Public experience: brand-consistent depth and restrained entrance. */
+.public-home-hero, .services-experience-hero {
+  isolation: isolate;
+  position: relative;
+}
+.public-home-hero__copy, .services-experience-hero {
+  min-width: 0;
+}
+.public-home-hero :is(h1,p), .services-experience-hero :is(h1,p) {
+  overflow-wrap: break-word;
+}
+.public-home-hero .public-actions, .services-experience-hero .public-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  align-items: center;
+}
+.home-hero-visual__pin {
+  filter: drop-shadow(0 1rem 1.75rem rgb(20 43 74 / 13%));
+  transform-origin: 50% 60%;
+}
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  .public-home-hero:hover .home-hero-visual__pin {
+    transform: translateY(-5px) rotate(-1deg);
+    transition: transform 550ms var(--vx-ease);
+  }
+}
+:is(.home-business-grid,.home-diagnostic-grid,.home-services-grid,.services-core-grid) > * {
+  min-width: 0;
+}
+:is(.home-business-grid,.home-diagnostic-grid,.home-services-grid,.services-core-grid) :is(a,button):focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+}
+.services-core-card {
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow var(--vx-duration) var(--vx-ease), border-color var(--vx-duration) ease, transform var(--vx-duration) var(--vx-ease);
+}
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  .services-core-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--vx-shadow-hover);
+  }
+}
+.home-section-heading, .services-section-heading {
+  max-width: 75ch;
+}
+.home-section-heading :is(h2,p), .services-section-heading :is(h2,p) {
+  text-wrap: pretty;
+}
+@media (max-width: 640px) {
+  .public-home-hero .public-actions > .button,
+  .services-experience-hero .public-actions > .button {
+    flex: 1 1 12rem;
+  }
+  .home-hero-visual { max-width: 100%; }
+}
+
+/* Diagnostic: stable interactive reading and accessible report controls. */
+.df-page, .rp-page { min-width: 0; }
+.df-page :is(button,a,summary):focus-visible,
+.rp-page :is(button,a,summary):focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+}
+.df-page :is(.card,.df-card), .rp-page :is(.card,.rp-card) {
+  min-width: 0;
+}
+.rp-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem;
+}
+.rp-toolbar__meta { line-height: 1.5; }
+@media (max-width: 480px) {
+  .rp-toolbar .button { min-height: 44px; }
+  .df-page :is(input,select,textarea) { max-width: 100%; font-size: 1rem; }
+}
