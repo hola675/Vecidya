@@ -485,3 +485,7 @@ Se añadió `app/styles/vecidya-polish.css` e importación en `app/root.tsx` par
 ### UI/UX transversal — pulido de Mi Vecidya (2026-10-17)
 
 Aplicado en la capa compartida `app/styles/vecidya-polish.css` un refinamiento específico del dashboard cliente (`app-primary-action`, accesos rápidos y progreso), editor de perfil (foco por tarjeta, legibilidad de ayudas) y MiniWeb (separación controles/vista previa, feedback de módulos, responsive). Commit `05ea2f1`. Animación solo en hover compatible y respetando movimiento reducido. No se alteraron modelos de datos, rutas, precios ni funcionalidades comerciales; GHL continúa aplazado. Pendiente revisión visual real, compilación, accesibilidad y contraste; no declarar certificación ni despliegue.
+
+### UI/UX transversal — componentes compartidos (2026-10-17)
+
+Se amplió `app/styles/vecidya-polish.css` con estilos globales de controles (foco, error `aria-invalid`, deshabilitado, interacción táctil, tarjetas, estados vacíos y tipografía en móvil) en web pública, cliente y administración. Commit `bbc7b76`. Los estilos son mejoras progresivas; no implican que todos los formularios existentes utilicen aún `aria-invalid`, ni sustituyen una revisión individual de pantallas. Mantener diseño de marca y `prefers-reduced-motion`. Sin dependencias externas, sin GHL, sin despliegue y sin certificación.
