@@ -110,8 +110,10 @@ async function revokeOptionalIntents(requestId: string, revokeCommercial: boolea
 }
 
 async function deleteRequest(requestId: string) {
+  if (!window.confirm("¿Eliminar definitivamente esta solicitud, sus datos identificativos y el informe asociado? Esta acción no se puede deshacer.")) return;
   const response = await fetch(`/diagnostico/informe/${encodeURIComponent(requestId)}`, { method: "DELETE" });
   if (response.ok) window.location.assign("/diagnostico");
+  else window.alert("No se pudo eliminar la solicitud. Vuelve a intentarlo.");
 }
 
 export function ErrorBoundary() {
