@@ -300,3 +300,52 @@ export async function purgeExpiredIdentifiedReports(binding: D1Database, now: Da
     expiredRequests: changes[5] ?? 0,
   };
 }
+
+/**
+ * FUNNEL-01D.2: revocación idempotente de preferencias opt-in.
+ * Solo se permite con un grant vigente, no revocado, vinculado a la solicitud.
+ * No borra el informe ni altera los agregados anónimos.
+ * Uso server-only; no expone una ruta pública por sí mismo.
+ */
+export async function revokeDiagnosticOptionalIntents(
+  binding: D1Database,
+  input: { requestId: string; accessTokenDigest: string; now: Date },
+): Promise<{ authorized: boolean; commercialRevoked: boolean; researchRevoked: boolean }> {
+  const now = input.now.getTime();
+  if (!input.requestId || !input.accessTokenDigest || !Number.isFinite(now)) {
+    return { authorized: false, commercialRevoked: false, researchRevoked: false };
+  }
+  const authorized = await binding.prepare(`SELECT 1 AS authorized
+    FROM diagnostic_report_access a
+    JOIN identified_diagnostic_request r ON r.id = a.request_id
+    JOIN diagnostic_report_snapshot s ON s.request_id = r.id
+    WHERE a.request_id = ? AND a.token_digest = ? AND a.revoked_at IS NULL
+      AND a.expires_at > ? AND r.expires_at > ? AND s.expires_at > ?
+      AND r.status = 'verified' LIMIT 1`)
+    .bind(input.requestId, input.accessTokenDigest, now, now, now)
+    .first<{ authorized: number }>();
+  if (!authorized) return { authorized: false, commercialRevoked: false, researchRevoked: false };
+
+  // Revalida el grant dentro de cada UPDATE para impedir escrituras si fue revocado
+  // entre la lectura inicial y el batch. D1 ejecuta el batch transaccionalmente.
+  const guard = `EXISTS (
+    SELECT 1 FROM diagnostic_report_access a
+    JOIN identified_diagnostic_request r ON r.id = a.request_id
+    JOIN diagnostic_report_snapshot s ON s.request_id = r.id
+    WHERE a.request_id = ? AND a.token_digest = ? AND a.revoked_at IS NULL
+      AND a.expires_at > ? AND r.expires_at > ? AND s.expires_at > ?
+      AND r.status = 'verified')`;
+  const updates = await binding.batch([
+    binding.prepare(`UPDATE commercial_contact_intent SET revoked_at = ?
+      WHERE request_id = ? AND revoked_at IS NULL AND ${guard}`)
+      .bind(now, input.requestId, input.requestId, input.accessTokenDigest, now, now, now),
+    binding.prepare(`UPDATE diagnostic_research_intent SET revoked_at = ?
+      WHERE request_id = ? AND revoked_at IS NULL AND ${guard}`)
+      .bind(now, input.requestId, input.requestId, input.accessTokenDigest, now, now, now),
+  ]);
+  return {
+    authorized: true,
+    commercialRevoked: (updates[0]?.meta?.changes ?? 0) > 0,
+    researchRevoked: (updates[1]?.meta?.changes ?? 0) > 0,
+  };
+}
