@@ -57,8 +57,8 @@ class SessionClient {
     }
     return response;
   }
-  json(path, body, method = "POST") {
-    return this.fetch(path, { method, headers: { "content-type": "application/json" }, body: method === "GET" ? undefined : JSON.stringify(body) });
+  json(path, body, method = "POST", extraHeaders = {}) {
+    return this.fetch(path, { method, headers: { "content-type": "application/json", ...extraHeaders }, body: method === "GET" ? undefined : JSON.stringify(body) });
   }
   cookies() {
     return [...this.#cookies.entries()].map(([name, value]) => ({ name, value }));
@@ -69,11 +69,14 @@ async function signUp(key) {
   const client = new SessionClient();
   const email = `miniweb-${key}-${suffix}@vecidya.test`;
   const password = `test-only-password-${suffix}`;
+  const invitationId = crypto.randomUUID();
+  const now = Date.now();
+  await d1(`INSERT INTO invitation (id, organization_id, email, role, status, expires_at, created_at, inviter_id) VALUES ('${invitationId}', '${fixtureOrganizationId}', '${email}', 'member', 'pending', ${now + 86400000}, ${now}, '${fixtureInviterId}');`);
   const response = await client.json("/api/auth/sign-up/email", {
     name: `MiniWeb ${key} ${suffix}`,
     email,
     password,
-  });
+  }, "POST", { "X-Vecidya-Invitation": invitationId });
   harness(response.status === 200, `registro de ${key} devolvió ${response.status}: ${(await response.clone().text()).slice(0, 500)}`);
   const { user } = await response.json();
   createdUserIds.push(user.id);
@@ -101,10 +104,16 @@ const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\ms
 const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
 const createdUserIds = [];
 const createdOrganizationIds = [];
+const fixtureInviterId = crypto.randomUUID();
+const fixtureOrganizationId = crypto.randomUUID();
 
 let harnessFailure = null;
 let browser = null;
 try {
+  const fixtureNow = Date.now();
+  await d1(`INSERT INTO user (id, name, email, email_verified, created_at, updated_at) VALUES ('${fixtureInviterId}', 'MiniWeb CI inviter', 'miniweb-inviter-${suffix}@vecidya.test', 1, ${fixtureNow}, ${fixtureNow}); INSERT INTO organization (id, name, slug, created_at) VALUES ('${fixtureOrganizationId}', 'MiniWeb CI fixture', 'miniweb-fixture-${suffix}', ${fixtureNow});`);
+  createdUserIds.push(fixtureInviterId);
+  createdOrganizationIds.push(fixtureOrganizationId);
   const ownerA = await signUp("owner-a");
   const organizationA = await createOrganization(ownerA, "org-a");
   await setActive(ownerA, organizationA);
