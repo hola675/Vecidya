@@ -119,6 +119,12 @@ try {
   await setActive(ownerA, organizationA);
   const ownerB = await signUp("owner-b");
   const organizationB = await createOrganization(ownerB, "org-b");
+  // La segunda organización exige una licencia activa: fixture local del propietario B.
+  const billingId = crypto.randomUUID();
+  const priceId = crypto.randomUUID();
+  const licenseId = crypto.randomUUID();
+  const licensedAt = Date.now();
+  await d1(`INSERT INTO billing_account (id, owner_user_id, kind, created_at, updated_at) VALUES ('${billingId}', '${ownerB.userId}', 'individual', ${licensedAt}, ${licensedAt}); INSERT INTO license_price (id, plan_code, currency, amount_cents, billing_interval, effective_from, status, created_at, updated_at) VALUES ('${priceId}', 'cuadra', 'USD', 3900, 'monthly', ${licensedAt}, 'active', ${licensedAt}, ${licensedAt}); INSERT INTO organization_license (id, organization_id, billing_account_id, plan_code, price_id, status, started_at, activated_at, created_at, updated_at) VALUES ('${licenseId}', '${organizationB}', '${billingId}', 'cuadra', '${priceId}', 'active', ${licensedAt}, ${licensedAt}, ${licensedAt}, ${licensedAt});`);
   const organizationC = await createOrganization(ownerB, "org-c");
   const organizationD = await createOrganization(ownerB, "org-d");
   await setActive(ownerB, organizationB);
@@ -256,6 +262,7 @@ try {
     deletes.push(`DELETE FROM user WHERE id IN (${createdUserIds.map((id) => `'${id}'`).join(",")})`);
   }
   if (deletes.length) await d1(`${deletes.join(";\n")};`);
+  await d1(`DELETE FROM billing_account WHERE owner_user_id IN (SELECT id FROM user WHERE email LIKE 'miniweb-owner-b-${suffix}@vecidya.test');`);
 } catch (error) {
   harnessFailure ??= new HarnessError(`HARNESS: no se pudieron limpiar las fixtures de prueba: ${error instanceof Error ? error.message : String(error)}`);
 }
