@@ -67,3 +67,13 @@ test("0019 conserva el marcador ya registrado antes de retirar la columna del gr
   assert.match(migration, /MIN\(`first_opened_at`\)/);
   assert.match(migration, /`first_opened_at` IS NOT NULL/);
 });
+
+
+test("la fixture de limpieza no elimina agregados anónimos de otras sesiones", () => {
+  const fixture = readFileSync(new URL("../../../app/routes/dev-diagnostic-lifecycle-fixture.ts", import.meta.url), "utf8");
+  const cleanup = fixture.match(/if \(op === "cleanup"\) \{([\s\S]*?)\n  \}/)?.[1];
+  assert.ok(cleanup, "la fixture debe declarar una operación de limpieza explícita");
+  assert.doesNotMatch(cleanup, /DELETE\s+FROM\s+diagnostic_funnel_aggregate/i, "cleanup no puede borrar agregados globales");
+  assert.match(cleanup, /DELETE\s+FROM\s+identified_diagnostic_request\s+WHERE\s+id\s*=\s*\?/i, "cleanup debe limitar el borrado al requestId");
+  assert.doesNotMatch(fixture, /DELETE\s+FROM\s+diagnostic_funnel_aggregate/i, "ninguna operación de fixture puede eliminar la analítica histórica");
+});
