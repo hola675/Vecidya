@@ -5,7 +5,7 @@ on:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
   push:
-    branches: [feat/diagnostic-funnel-01d1]
+    branches: [feat/diagnostic-funnel-01d1, integration/phase-00-main-reconcile]
     paths:
       - "vecidya-platform/**"
       - ".github/workflows/diagnostic-funnel-01d1.yml"
@@ -28,7 +28,7 @@ jobs:
       WRANGLER_SEND_METRICS: "false"
     defaults:
       run:
-        shell: bash
+        shell: bash --noprofile --norc -e -o pipefail {0}
         working-directory: vecidya-platform
 
     steps:
@@ -149,8 +149,9 @@ jobs:
             fi
           }
 
-          run_suite e2e-01b 'diagnostic-v3-funnel-01b-check: 6/6 PASS' pnpm exec node tests/e2e/diagnostic-v3-funnel-01b-check.mjs
+          # 01C.3 verifica que los agregados del día empiezan vacíos; debe ir antes de 01B.
           run_suite e2e-01c3 'diagnostic-v3-funnel-01c-check: PASS' pnpm exec node tests/e2e/diagnostic-v3-funnel-01c-check.mjs
+          run_suite e2e-01b 'diagnostic-v3-funnel-01b-check: 6/6 PASS' pnpm exec node tests/e2e/diagnostic-v3-funnel-01b-check.mjs
           # 01D.1 currently re-imports 01C.3; running it again would repeat the same journey
           # against the same D1. The dedicated 01D.1 assertions are in the 01C.3 suite.
 
