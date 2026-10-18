@@ -58,7 +58,7 @@ Uso variable → coste de uso.**
 
 ## Cuadra
 
-Para negocios que necesitan organizar su presencia, información, servicios, diagnóstico, prioridades y relación con Vecidya sin requerir todavía un CRM comercial operativo.
+Para negocios que necesitan organizar su presencia, información, servicios, diagnóstico, prioridades y relación con Vecidya sin requerir todavía un CRM comercial operativo. Una licencia Cuadra activa también habilita a su titular autorizado a gestionar varias organizaciones con perfil y presencia en Vecindario, sin una licencia Cuadra adicional por cada organización.
 
 Cuadra es un producto independiente.
 
@@ -379,7 +379,7 @@ Para Barrio/Ciudad:
 
 lleva al sistema CRM externo.
 
-La app puede soportar organizaciones sin licencia pero con servicios profesionales.
+La app puede soportar organizaciones sin licencia CRM propia: si el usuario dispone de al menos una licencia Vecidya activa, sus organizaciones adicionales pueden gestionar perfiles, solicitar servicios y aparecer en Vecindario. Esto no concede CRM, automatizaciones ni capacidades de Barrio/Ciudad a otras organizaciones.
 
 Los cambios de licencia comienzan mediante:
 
@@ -393,13 +393,13 @@ y no mediante upgrade automático.
 
 La unidad comercial es:
 
-**1 organización = 1 negocio = 1 licencia.**
+**1 organización = 1 negocio. El acceso multi-organización se habilita cuando el usuario tiene al menos una licencia Vecidya activa; Barrio y Ciudad requieren una licencia independiente por cada organización que utilice su CRM.**
 
 Una persona puede participar en varias organizaciones.
 
-Cada organización conserva independientemente:
+El usuario con al menos una licencia activa puede crear y gestionar varias organizaciones, completar sus perfiles, solicitar servicios y publicarlas en Vecindario sin contratar Cuadra para cada una.
 
-licencia, complementos, servicios, costes, soporte y CRM asociado.
+Cada organización conserva independientemente sus datos, servicios contratados, costes y permisos. Las capacidades CRM de Barrio y Ciudad se licencian por organización; no se heredan por pertenecer al mismo usuario. Una organización puede existir sin licencia CRM propia.
 
 La persona que paga puede ser distinta del owner o miembro del negocio.
 
