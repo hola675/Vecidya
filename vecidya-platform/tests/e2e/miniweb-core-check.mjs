@@ -171,7 +171,9 @@ try {
   check((await memberA.client.json(pathA, null, "GET")).status === 200, "member conserva acceso de lectura a la configuración");
   check((await memberA.client.json(pathA, { intent: "save", configuration: draft })).status === 403, "member read-only no puede modificar la configuración");
   check((await ownerA.client.json(pathA, { intent: "save", configuration: draft })).status === 200, "owner puede guardar la configuración draft");
-  const publicBeforePublish = await (await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`)).text();
+  const publicBeforePublishResponse = await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`);
+  const publicBeforePublish = await publicBeforePublishResponse.text();
+  console.log(JSON.stringify({ miniwebPublicBeforePublish: { status: publicBeforePublishResponse.status, url: publicBeforePublishResponse.url, titlePresent: publicBeforePublish.includes(`MiniWeb público A ${suffix}`), descriptionPresent: publicBeforePublish.includes("Descripción A"), emailPresent: publicBeforePublish.includes(`a-${suffix}@example.invalid`), bodyExcerpt: publicBeforePublish.slice(0, 350) } }));
   check(publicBeforePublish.includes("Descripción A") && publicBeforePublish.includes(`a-${suffix}@example.invalid`), "guardar un draft no altera un MiniWeb ya publicado");
   check((await adminA.client.json(pathA, { intent: "publish" })).status === 200, "admin puede publicar explícitamente la configuración");
 
@@ -182,7 +184,9 @@ try {
   check(published.publishedConfiguration.modules.some((module) => module.type === "contact" && !module.enabled), "el snapshot publicado conserva el módulo desactivado");
   check((await d1(`SELECT COUNT(*) AS count FROM miniweb_site WHERE organization_id = '${organizationA}';`))[0]?.count === 1, "una organización tiene una sola configuración MiniWeb");
 
-  const publicA = await (await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`)).text();
+  const publicAResponse = await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`);
+  const publicA = await publicAResponse.text();
+  console.log(JSON.stringify({ miniwebPublicAfterPublish: { status: publicAResponse.status, url: publicAResponse.url, titlePresent: publicA.includes(`MiniWeb público A ${suffix}`), bodyExcerpt: publicA.slice(0, 350) } }));
   const publicB = await (await ownerB.client.fetch(`/vecindario/${profileSlug("legacy-b")}`)).text();
   check(publicA.includes(`MiniWeb público A ${suffix}`), "la página publicada A conserva su slug estable");
   check(!publicA.includes("Descripción A") && !publicA.includes(`a-${suffix}@example.invalid`) && !publicA.includes("Contacto directo"), "los módulos desactivados no aparecen en el sitio público");
