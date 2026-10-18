@@ -1,3 +1,4 @@
+import diagnosticAdminStyles from "../styles/diagnostic-admin.css?url";
 import { Link, useLoaderData } from "react-router";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { requirePlatformAdmin } from "../../server/platform-authorization.server";
@@ -14,6 +15,8 @@ const EVENTS = [
   ["detailed_report_first_opened", "Primeras aperturas"],
 ] as const;
 type EventName = typeof EVENTS[number][0];
+
+export function links() { return [{ rel: "stylesheet", href: diagnosticAdminStyles }]; }
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Analítica del diagnóstico | Administración Vecidya" }];
@@ -62,7 +65,7 @@ function Trend({ series, keyName, label }: {
   const max = Math.max(1, ...values);
   const points = values.map((value, index) =>
     `${(index / Math.max(1, values.length - 1)) * 100},${36 - (value / max) * 32}`).join(" ");
-  return <div>
+  return <div className="diagnostic-admin-chart">
     <h3>{label}</h3>
     <svg viewBox="0 0 100 40" role="img" aria-label={`Tendencia diaria de ${label.toLowerCase()}`} style={{ width: "100%", height: 110 }} preserveAspectRatio="none">
       <polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
@@ -76,13 +79,13 @@ export default function InternalDiagnosticAnalytics() {
   const ratio = (numerator: number, denominator: number) =>
     denominator > 0 ? `${(numerator / denominator * 100).toFixed(1)}%` : "Sin base";
   return <AdminShell active="diagnostic" workspaceUser={workspaceUser}>
-    <main className="admin-content">
+    <main className="admin-content diagnostic-admin-page">
       <div className="page-heading"><div>
         <p className="eyebrow">DIAGNÓSTICO · ANALÍTICA</p>
         <h1>Resultados del embudo</h1>
         <p>Eventos agregados por día. No contiene respuestas personales ni informes individuales.</p>
       </div></div>
-      <nav aria-label="Periodo de análisis" className="admin-toolbar">
+      <nav aria-label="Periodo de análisis" className="diagnostic-admin-toolbar">
         {[7, 30, 90].map((period) => <Link key={period} className="button button--secondary"
           aria-current={days === period ? "page" : undefined} to={`?days=${period}`}>Últimos {period} días</Link>)}
         <Link className="text-link" to="/app/internal/diagnostic-leads">Ver interesados →</Link>
@@ -101,7 +104,7 @@ export default function InternalDiagnosticAnalytics() {
       </section>
       <section className="card" aria-labelledby="diagnostic-trends-heading">
         <h2 id="diagnostic-trends-heading">Evolución diaria</h2>
-        <div className="admin-overview-grid">
+        <div className="diagnostic-admin-chart-grid">
           <Trend series={series} keyName="started" label="Diagnósticos iniciados" />
           <Trend series={series} keyName="completed" label="Diagnósticos finalizados" />
           <Trend series={series} keyName="identified" label="Solicitudes identificadas" />
