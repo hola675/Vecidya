@@ -86,10 +86,12 @@ export default function IdentifiedDiagnosticReport() {
   const [revokeResearch, setRevokeResearch] = useState(false);
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [feedbackError, setFeedbackError] = useState(false);
   async function submitRevocation() {
     if (busy || (!revokeCommercial && !revokeResearch)) return;
     setBusy(true);
     setFeedback("");
+    setFeedbackError(false);
     try {
       const completed = await revokeOptionalIntents(data.requestId, revokeCommercial, revokeResearch);
       if (completed) {
@@ -98,6 +100,7 @@ export default function IdentifiedDiagnosticReport() {
         setFeedback("Solicitud procesada. Los permisos seleccionados se han revocado cuando estaban vigentes.");
       }
     } catch {
+      setFeedbackError(true);
       setFeedback("No se pudieron actualizar tus preferencias. Vuelve a intentarlo.");
     } finally { setBusy(false); }
   }
@@ -110,7 +113,7 @@ export default function IdentifiedDiagnosticReport() {
         <button className="df-link-button" disabled={busy || (!revokeCommercial && !revokeResearch)} onClick={() => void submitRevocation()} type="button">Guardar revocaciones</button>
         <button className="df-link-button" disabled={busy} onClick={() => void deleteRequest(data.requestId)} type="button">Eliminar esta solicitud</button>
       </nav>
-      {feedback && <p role="status" aria-live="polite">{feedback}</p>}
+      {feedback && <p role={feedbackError ? "alert" : "status"} aria-live={feedbackError ? "assertive" : "polite"}>{feedback}</p>}
       <DiagnosticReport paper="a4" report={data.report} />
     </main>
   );
