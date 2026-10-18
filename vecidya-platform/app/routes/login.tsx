@@ -73,7 +73,7 @@ export default function Login() {
           {submitting ? "Entrando…" : "Entrar a mi espacio"}
         </Button>
       </Form>
-      <p className="auth-switch">¿No tienes cuenta? <Link to={redirectTo ? `/register?redirectTo=${encodeURIComponent(redirectTo)}` : "/register"}>Regístrate</Link></p>
+      <p className="auth-switch">¿Recibiste una invitación? Abre el enlace enviado a tu correo para completar el acceso.</p>
     </AuthShell>
   );
 }
