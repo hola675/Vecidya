@@ -577,3 +577,7 @@ Rama de diagnóstico `feat/diagnostic-funnel-01d1`, PR #6 draft con conflictos r
 Últimos commits de implementación relevantes: `8c08dba` (regex tests), `317427a` (preservar agregados en QA), `edcd33d` (no repetir E2E), `2e6a01d` (PATCH revocación), `20bec6a` (selección independiente), `29683cf` (lectura acotada). Tests y build **no ejecutados en este corte**. No se aplicaron migraciones D1 remotas, merge ni deploy.
 
 **Bloqueo actual:** reconciliar los cambios de plataforma en main y certificar el flujo en entorno local antes de declarar cerrada 01D.1/01D.2. Mantener Vecidya y GHL como productos con responsabilidades separadas; MiniWeb/perfiles públicos y controles de cuenta permanecen en su propia secuencia de roadmap.
+
+## 01D.3 — actualización de gestión interna (2026-10-17)
+
+Se incorporó un resumen administrativo de cuatro métricas sobre solicitudes vigentes en D1: total, correos verificados, verificaciones pendientes y solicitudes verificadas con permiso comercial vigente (`c9b5db2`). La consulta excluye solicitudes expiradas y no considera autorizado a quien no haya verificado el correo o haya revocado el consentimiento. El listado mantiene búsqueda y filtros server-side, paginación y acceso exclusivo a `platform_admin`. No se ha integrado GHL. Las cifras son calculadas en lectura, sin nuevas tablas ni migraciones. Pruebas, revisión de rendimiento y certificación siguen pendientes por decisión de aplazarlas.
