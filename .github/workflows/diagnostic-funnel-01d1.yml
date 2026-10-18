@@ -165,13 +165,13 @@ jobs:
             echo "dev_worker_stopped=true" >> "$GITHUB_OUTPUT"
           fi
 
-          clean_sql="SELECT CASE WHEN (SELECT COUNT(*) FROM identified_diagnostic_request) + (SELECT COUNT(*) FROM diagnostic_report_snapshot) + (SELECT COUNT(*) FROM verified_email_challenge) + (SELECT COUNT(*) FROM diagnostic_report_access) + (SELECT COUNT(*) FROM commercial_contact_intent) + (SELECT COUNT(*) FROM diagnostic_research_intent) + (SELECT COUNT(*) FROM diagnostic_funnel_aggregate) = 0 THEN 'DIAGNOSTIC_D1_EMPTY' ELSE 'DIAGNOSTIC_D1_NOT_EMPTY' END AS status;"
+          clean_sql="SELECT CASE WHEN (SELECT COUNT(*) FROM identified_diagnostic_request) + (SELECT COUNT(*) FROM diagnostic_report_snapshot) + (SELECT COUNT(*) FROM verified_email_challenge) + (SELECT COUNT(*) FROM diagnostic_report_access) + (SELECT COUNT(*) FROM commercial_contact_intent) + (SELECT COUNT(*) FROM diagnostic_research_intent) = 0 THEN 'DIAGNOSTIC_D1_PERSONAL_DATA_EMPTY' ELSE 'DIAGNOSTIC_D1_PERSONAL_DATA_REMAINS' END AS status;"
           if pnpm exec wrangler d1 execute DB --local --command "$clean_sql" > "$RUNNER_TEMP/diagnostic-funnel-01d1/d1-post-e2e.log" 2>&1; then
             cat "$RUNNER_TEMP/diagnostic-funnel-01d1/d1-post-e2e.log"
-            if grep -Fq 'DIAGNOSTIC_D1_EMPTY' "$RUNNER_TEMP/diagnostic-funnel-01d1/d1-post-e2e.log"; then
-              echo "CI_RESULT d1-post-e2e PASS"
+            if grep -Fq 'DIAGNOSTIC_D1_PERSONAL_DATA_EMPTY' "$RUNNER_TEMP/diagnostic-funnel-01d1/d1-post-e2e.log"; then
+              echo "CI_RESULT d1-post-e2e PASS: personal data cleared; anonymous aggregates retained"
             else
-              echo "CI_RESULT d1-post-e2e FAIL: diagnostic test data remains"
+              echo "CI_RESULT d1-post-e2e FAIL: personal diagnostic test data remains"
               e2e_status=1
             fi
           else
