@@ -104,6 +104,8 @@ jobs:
             exit 1
           fi
 
+      # El sentinel se registra en un día histórico distinto: la inspección de 01C.3
+      # filtra por fecha UTC actual y mantiene su precondición de agregado diario vacío.
       - name: Seed unrelated historical analytics in local D1
         id: analytics_sentinel
         continue-on-error: true
