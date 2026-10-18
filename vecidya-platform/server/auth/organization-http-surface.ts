@@ -4,7 +4,6 @@
 // `authorization.server.ts`. Se deniega por defecto: un endpoint que aparezca al actualizar
 // Better Auth queda cerrado hasta que se decida abrirlo.
 export const browserOrganizationEndpoints: ReadonlySet<string> = new Set([
-  "/organization/create", // app.tsx: crear una organización propia; el owner es siempre la sesión
   "/organization/list", // login.tsx: solo organizaciones con membresía del usuario
   "/organization/set-active", // login.tsx y selector: Better Auth exige membresía
   "/organization/accept-invitation", // ligada al correo verificado del destinatario
