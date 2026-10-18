@@ -9,6 +9,8 @@ import { publicAssets } from "../assets/public-assets";
 
 const navigation: { label: string; to: string; active: string; icon: IconName }[] = [
   { label: "Resumen", to: "/app/internal", active: "home", icon: "home" },
+  { label: "Diagnóstico", to: "/app/internal/diagnostic-analytics", active: "diagnostic", icon: "spark" },
+  { label: "Interesados", to: "/app/internal/diagnostic-leads", active: "leads", icon: "user" },
   { label: "Servicios", to: "/app/internal/services", active: "services", icon: "spark" },
   { label: "Organizaciones", to: "/app/internal/organizations", active: "organizations", icon: "organizations" },
   { label: "Negocios", to: "/app/internal/businesses", active: "businesses", icon: "building" },
@@ -17,7 +19,7 @@ const navigation: { label: string; to: string; active: string; icon: IconName }[
 ];
 
 type AdminShellProps = {
-  active: "home" | "services" | "organizations" | "businesses" | "integrations" | "audit";
+  active: "home" | "diagnostic" | "leads" | "services" | "organizations" | "businesses" | "integrations" | "audit";
   children: ReactNode;
   workspaceUser?: { name: string; email: string };
 };
