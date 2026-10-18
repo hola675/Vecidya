@@ -1,4 +1,5 @@
 import { isRouteErrorResponse, useLoaderData, useRouteError } from "react-router";
+import { useState } from "react";
 
 import { deleteIdentifiedReport, getAuthorizedReport, recordDetailedReportFirstOpen, revokeDiagnosticOptionalIntents } from "../../db/queries/diagnostic-identification.server";
 import { REPORT_VERSION, type DiagnosticReportV1 } from "../components/diagnostic-report/report-model";
@@ -49,9 +50,22 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
   const authorized = await getAuthorizedReport(env.DB, await digestOpaqueToken(token), requestId, new Date());
   if (!authorized) return notFound();
   if (request.method === "PATCH") {
+    if (!/^application\\/json(?:\\s*;|$)/i.test(request.headers.get("content-type") ?? "")) {
+      return Response.json({ error: "Formato no permitido." }, { status: 415, headers: responseHeaders });
+    }
+    const raw = await request.text();
+    if (raw.length > 512) return Response.json({ error: "Solicitud demasiado grande." }, { status: 413, headers: responseHeaders });
+    let payload: unknown;
+    try { payload = JSON.parse(raw); }
+    catch { return Response.json({ error: "Solicitud inválida." }, { status: 400, headers: responseHeaders }); }
+    if (!isRecord(payload) || Object.keys(payload).length !== 2 ||
+      typeof payload.revokeCommercial !== "boolean" || typeof payload.revokeResearch !== "boolean" ||
+      (!payload.revokeCommercial && !payload.revokeResearch)) {
+      return Response.json({ error: "Selecciona al menos una preferencia." }, { status: 400, headers: responseHeaders });
+    }
     const result = await revokeDiagnosticOptionalIntents(env.DB, {
       requestId, accessTokenDigest: await digestOpaqueToken(token), now: new Date(),
-      revokeCommercial: true, revokeResearch: true,
+      revokeCommercial: payload.revokeCommercial, revokeResearch: payload.revokeResearch,
     });
     if (!result.authorized) return notFound();
     return Response.json({ ok: true, commercialRevoked: result.commercialRevoked, researchRevoked: result.researchRevoked }, { headers: responseHeaders });
@@ -64,11 +78,15 @@ export function headers() { return responseHeaders; }
 
 export default function IdentifiedDiagnosticReport() {
   const data = useLoaderData<typeof loader>();
+  const [revokeCommercial, setRevokeCommercial] = useState(false);
+  const [revokeResearch, setRevokeResearch] = useState(false);
   return (
     <main className="rp-page df-identified-report">
       <nav className="df-identified-report__nav" aria-label="Navegación del diagnóstico">
         <a className="text-link" href="/diagnostico">Volver a mi diagnóstico</a>
-        <button className="df-link-button" onClick={() => void revokeOptionalIntents(data.requestId)} type="button">Revocar permisos opcionales</button>
+        <label><input type="checkbox" checked={revokeCommercial} onChange={(event) => setRevokeCommercial(event.target.checked)} /> Revocar contacto comercial</label>
+        <label><input type="checkbox" checked={revokeResearch} onChange={(event) => setRevokeResearch(event.target.checked)} /> Revocar uso para investigación</label>
+        <button className="df-link-button" disabled={!revokeCommercial && !revokeResearch} onClick={() => void revokeOptionalIntents(data.requestId, revokeCommercial, revokeResearch)} type="button">Guardar revocaciones</button>
         <button className="df-link-button" onClick={() => void deleteRequest(data.requestId)} type="button">Eliminar esta solicitud</button>
       </nav>
       <DiagnosticReport paper="a4" report={data.report} />
@@ -76,9 +94,13 @@ export default function IdentifiedDiagnosticReport() {
   );
 }
 
-async function revokeOptionalIntents(requestId: string) {
-  if (!window.confirm("¿Revocar el consentimiento comercial y de investigación? El acceso a tu informe continuará disponible.")) return;
-  const response = await fetch(`/diagnostico/informe/${encodeURIComponent(requestId)}`, { method: "PATCH", headers: { "Accept": "application/json" } });
+async function revokeOptionalIntents(requestId: string, revokeCommercial: boolean, revokeResearch: boolean) {
+  if ((!revokeCommercial && !revokeResearch) || !window.confirm("¿Confirmas revocar los permisos seleccionados? Tu informe seguirá disponible.")) return;
+  const response = await fetch(`/diagnostico/informe/${encodeURIComponent(requestId)}`, {
+    method: "PATCH",
+    headers: { "Accept": "application/json", "Content-Type": "application/json" },
+    body: JSON.stringify({ revokeCommercial, revokeResearch }),
+  });
   if (response.ok) window.alert("Se han procesado tus preferencias opcionales.");
   else window.alert("No se pudieron actualizar tus preferencias. Vuelve a intentarlo.");
 }
