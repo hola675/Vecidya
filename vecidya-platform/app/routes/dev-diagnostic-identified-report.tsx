@@ -84,29 +84,47 @@ export default function IdentifiedDiagnosticReport() {
   const data = useLoaderData<typeof loader>();
   const [revokeCommercial, setRevokeCommercial] = useState(false);
   const [revokeResearch, setRevokeResearch] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  async function submitRevocation() {
+    if (busy || (!revokeCommercial && !revokeResearch)) return;
+    setBusy(true);
+    setFeedback("");
+    try {
+      const completed = await revokeOptionalIntents(data.requestId, revokeCommercial, revokeResearch);
+      if (completed) {
+        setRevokeCommercial(false);
+        setRevokeResearch(false);
+        setFeedback("Solicitud procesada. Los permisos seleccionados se han revocado cuando estaban vigentes.");
+      }
+    } catch {
+      setFeedback("No se pudieron actualizar tus preferencias. Vuelve a intentarlo.");
+    } finally { setBusy(false); }
+  }
   return (
     <main className="rp-page df-identified-report">
       <nav className="df-identified-report__nav" aria-label="Navegación del diagnóstico">
         <a className="text-link" href="/diagnostico">Volver a mi diagnóstico</a>
         <label><input type="checkbox" checked={revokeCommercial} onChange={(event) => setRevokeCommercial(event.target.checked)} /> Revocar contacto comercial</label>
         <label><input type="checkbox" checked={revokeResearch} onChange={(event) => setRevokeResearch(event.target.checked)} /> Revocar uso para investigación</label>
-        <button className="df-link-button" disabled={!revokeCommercial && !revokeResearch} onClick={() => void revokeOptionalIntents(data.requestId, revokeCommercial, revokeResearch)} type="button">Guardar revocaciones</button>
-        <button className="df-link-button" onClick={() => void deleteRequest(data.requestId)} type="button">Eliminar esta solicitud</button>
+        <button className="df-link-button" disabled={busy || (!revokeCommercial && !revokeResearch)} onClick={() => void submitRevocation()} type="button">Guardar revocaciones</button>
+        <button className="df-link-button" disabled={busy} onClick={() => void deleteRequest(data.requestId)} type="button">Eliminar esta solicitud</button>
       </nav>
+      {feedback && <p role="status" aria-live="polite">{feedback}</p>}
       <DiagnosticReport paper="a4" report={data.report} />
     </main>
   );
 }
 
-async function revokeOptionalIntents(requestId: string, revokeCommercial: boolean, revokeResearch: boolean) {
-  if ((!revokeCommercial && !revokeResearch) || !window.confirm("¿Confirmas revocar los permisos seleccionados? Tu informe seguirá disponible.")) return;
+async function revokeOptionalIntents(requestId: string, revokeCommercial: boolean, revokeResearch: boolean): Promise<boolean> {
+  if ((!revokeCommercial && !revokeResearch) || !window.confirm("¿Confirmas revocar los permisos seleccionados? Tu informe seguirá disponible.")) return false;
   const response = await fetch(`/diagnostico/informe/${encodeURIComponent(requestId)}`, {
     method: "PATCH",
     headers: { "Accept": "application/json", "Content-Type": "application/json" },
     body: JSON.stringify({ revokeCommercial, revokeResearch }),
   });
-  if (response.ok) window.alert("Se han procesado tus preferencias opcionales.");
-  else window.alert("No se pudieron actualizar tus preferencias. Vuelve a intentarlo.");
+  if (!response.ok) throw new Error("No se pudieron actualizar las preferencias.");
+  return true;
 }
 
 async function deleteRequest(requestId: string) {
