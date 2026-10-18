@@ -309,10 +309,11 @@ export async function purgeExpiredIdentifiedReports(binding: D1Database, now: Da
  */
 export async function revokeDiagnosticOptionalIntents(
   binding: D1Database,
-  input: { requestId: string; accessTokenDigest: string; now: Date },
+  input: { requestId: string; accessTokenDigest: string; now: Date; revokeCommercial: boolean; revokeResearch: boolean },
 ): Promise<{ authorized: boolean; commercialRevoked: boolean; researchRevoked: boolean }> {
   const now = input.now.getTime();
-  if (!input.requestId || !input.accessTokenDigest || !Number.isFinite(now)) {
+  if (!input.requestId || !input.accessTokenDigest || !Number.isFinite(now) ||
+    (!input.revokeCommercial && !input.revokeResearch)) {
     return { authorized: false, commercialRevoked: false, researchRevoked: false };
   }
   const authorized = await binding.prepare(`SELECT 1 AS authorized
@@ -335,17 +336,21 @@ export async function revokeDiagnosticOptionalIntents(
     WHERE a.request_id = ? AND a.token_digest = ? AND a.revoked_at IS NULL
       AND a.expires_at > ? AND r.expires_at > ? AND s.expires_at > ?
       AND r.status = 'verified')`;
-  const updates = await binding.batch([
+  const statements = [];
+  if (input.revokeCommercial) statements.push(
     binding.prepare(`UPDATE commercial_contact_intent SET revoked_at = ?
       WHERE request_id = ? AND revoked_at IS NULL AND ${guard}`)
       .bind(now, input.requestId, input.requestId, input.accessTokenDigest, now, now, now),
+  );
+  if (input.revokeResearch) statements.push(
     binding.prepare(`UPDATE diagnostic_research_intent SET revoked_at = ?
       WHERE request_id = ? AND revoked_at IS NULL AND ${guard}`)
       .bind(now, input.requestId, input.requestId, input.accessTokenDigest, now, now, now),
-  ]);
+  );
+  const updates = await binding.batch(statements);
   return {
     authorized: true,
-    commercialRevoked: (updates[0]?.meta?.changes ?? 0) > 0,
-    researchRevoked: (updates[1]?.meta?.changes ?? 0) > 0,
+    commercialRevoked: input.revokeCommercial && (updates[0]?.meta?.changes ?? 0) > 0,
+    researchRevoked: input.revokeResearch && (updates[input.revokeCommercial ? 1 : 0]?.meta?.changes ?? 0) > 0,
   };
 }
