@@ -1,3 +1,11 @@
+## FUNNEL-01D.2 — implementación incremental y derechos (2026-10-17)
+
+**Decisión de producto autorizada:** distinguir revocación de preferencia comercial y solicitud de eliminación de datos personales. Ambas operaciones requieren identidad verificada, no deben exponer existencia de emails o solicitudes y deben tener registro mínimo de evidencia sin conservar respuestas del diagnóstico en el registro de auditoría. La revocación de contacto no revoca automáticamente el acceso al informe; la eliminación sí revoca accesos y elimina información vinculada, sujeta a una política de retención/excepciones legales aprobada antes de habilitarla públicamente.
+
+**Secuencia técnica pendiente:** (1) certificar 01D.1 y reconciliar main; (2) definir contrato de operaciones de derechos, autorización por grant vigente o challenge one-time y respuestas genéricas; (3) implementar revocación de preferencias B/C con idempotencia y transacción; (4) implementar solicitud de eliminación verificable, estado y acuse sin datos sensibles; (5) pruebas adversariales de enumeración, concurrencia, doble envío, revocación, expiración y conservación de agregados anónimos; (6) validación de aviso, plazos y política legal; (7) preparar 01D.3 sin envío automático a GHL.
+
+**Límites:** no declarar la funcionalidad implementada por este documento. No aplicar migraciones D1 remotas, no activar email real ni endpoints públicos hasta certificación. Mantener `main` como referencia y PR #6 en borrador hasta corregir conflictos y checks.
+
 # Roadmap
 
 ## FUNNEL-01D — secuencia aprobada (2026-10-16)
