@@ -122,7 +122,7 @@ export default function AppPage() {
           <div>
             <p className="eyebrow">ACCESO CONTROLADO</p>
             <h2>Comienza con tu primera organización</h2>
-            <p>Puedes crear otra organización desde tu cuenta. La publicación y las funciones comerciales dependen de las licencias contratadas para cada organización.</p>
+            <p>Con al menos una licencia Vecidya activa puedes gestionar varios negocios, completar sus perfiles, solicitar servicios y aparecer en Vecindario. El CRM de Barrio o Ciudad requiere licencia propia por organización.</p>
           </div>
         </Card>
       ) : (
@@ -181,7 +181,7 @@ export default function AppPage() {
         <div>
           <p className="eyebrow">NUEVA ORGANIZACIÓN</p>
           <h2>{organizations.length ? "Añadir otro negocio" : "Crear mi organización"}</h2>
-          <p>Cada organización tiene sus propias licencias. Cuadra, CRM y otras funciones se habilitan según la contratación correspondiente.</p>
+          <p>Una licencia Vecidya activa permite administrar varios negocios y su presencia en Vecindario. Barrio y Ciudad habilitan el CRM solo en la organización que tenga contratada esa licencia.</p>
         </div>
         <Form className="organization-form" method="post" onSubmit={handleCreateOrganization}>
           <label>Nombre del negocio<input autoComplete="organization" name="name" required maxLength={100} placeholder="Ej. Barrio Centro" /></label>
