@@ -261,8 +261,9 @@ try {
   if (createdUserIds.length) {
     deletes.push(`DELETE FROM user WHERE id IN (${createdUserIds.map((id) => `'${id}'`).join(",")})`);
   }
+  // Retirar primero las licencias y la cuenta de facturación de prueba para respetar las FK.
+  await d1(`DELETE FROM organization_license WHERE billing_account_id IN (SELECT id FROM billing_account WHERE owner_user_id IN (SELECT id FROM user WHERE email = 'miniweb-owner-b-${suffix}@vecidya.test')); DELETE FROM billing_account WHERE owner_user_id IN (SELECT id FROM user WHERE email = 'miniweb-owner-b-${suffix}@vecidya.test'); DELETE FROM license_price WHERE id NOT IN (SELECT price_id FROM organization_license) AND amount_cents = 3900 AND effective_from >= ${Number(0)};`);
   if (deletes.length) await d1(`${deletes.join(";\n")};`);
-  await d1(`DELETE FROM billing_account WHERE owner_user_id IN (SELECT id FROM user WHERE email LIKE 'miniweb-owner-b-${suffix}@vecidya.test');`);
 } catch (error) {
   harnessFailure ??= new HarnessError(`HARNESS: no se pudieron limpiar las fixtures de prueba: ${error instanceof Error ? error.message : String(error)}`);
 }
