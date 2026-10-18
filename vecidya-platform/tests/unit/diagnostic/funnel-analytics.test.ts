@@ -69,10 +69,11 @@ test("0019 conserva el marcador ya registrado antes de retirar la columna del gr
 });
 
 
-test("la limpieza de fixtures conserva agregados históricos ajenos", () => {
-  const source = readFileSync(new URL("../../../app/routes/dev-diagnostic-lifecycle-fixture.ts", import.meta.url), "utf8");
-  const cleanup = source.match(/if \(op === "cleanup"\) \{([\s\S]*?)\n  \}/)?.[1];
-  assert.ok(cleanup, "la fixture define cleanup");
-  assert.match(cleanup, /DELETE\s+FROM\s+identified_diagnostic_request\s+WHERE\s+id\s*=\s*\?/i, "cleanup restringido al requestId");
-  assert.doesNotMatch(source, /DELETE\s+FROM\s+diagnostic_funnel_aggregate/i, "no se permite borrado global de agregados");
+test("la fixture de limpieza no elimina agregados anónimos de otras sesiones", () => {
+  const fixture = readFileSync(new URL("../../../app/routes/dev-diagnostic-lifecycle-fixture.ts", import.meta.url), "utf8");
+  const cleanup = fixture.match(/if \(op === "cleanup"\) \{([\s\S]*?)\n  \}/)?.[1];
+  assert.ok(cleanup, "la fixture debe declarar una operación de limpieza explícita");
+  assert.doesNotMatch(cleanup, /DELETE\s+FROM\s+diagnostic_funnel_aggregate/i, "cleanup no puede borrar agregados globales");
+  assert.match(cleanup, /DELETE\s+FROM\s+identified_diagnostic_request\s+WHERE\s+id\s*=\s*\?/i, "cleanup debe limitar el borrado al requestId");
+  assert.doesNotMatch(fixture, /DELETE\s+FROM\s+diagnostic_funnel_aggregate/i, "ninguna operación de fixture puede eliminar la analítica histórica");
 });
