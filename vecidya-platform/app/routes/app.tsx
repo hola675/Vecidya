@@ -122,7 +122,7 @@ export default function AppPage() {
           <div>
             <p className="eyebrow">ACCESO CONTROLADO</p>
             <h2>Comienza con tu primera organización</h2>
-            <p>Puedes crear un espacio gratuito para tu negocio y preparar su perfil público en Vecindario. Los servicios premium requieren una licencia por organización.</p>
+            <p>Puedes crear otra organización desde tu cuenta. La publicación y las funciones comerciales dependen de las licencias contratadas para cada organización.</p>
           </div>
         </Card>
       ) : (
@@ -181,12 +181,12 @@ export default function AppPage() {
         <div>
           <p className="eyebrow">NUEVA ORGANIZACIÓN</p>
           <h2>{organizations.length ? "Añadir otro negocio" : "Crear mi organización"}</h2>
-          <p>Tu perfil básico y su publicación en Vecindario están incluidos gratuitamente. CRM y otras funciones premium se contratan por separado para cada organización.</p>
+          <p>Cada organización tiene sus propias licencias. Cuadra, CRM y otras funciones se habilitan según la contratación correspondiente.</p>
         </div>
         <Form className="organization-form" method="post" onSubmit={handleCreateOrganization}>
           <label>Nombre del negocio<input autoComplete="organization" name="name" required maxLength={100} placeholder="Ej. Barrio Centro" /></label>
           <label>Identificador público<input autoComplete="off" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="barrio-centro" spellCheck={false} /></label>
-          <Button disabled={submitting} type="submit">{submitting ? "Creando…" : "Crear organización gratuita"}</Button>
+          <Button disabled={submitting} type="submit">{submitting ? "Creando…" : "Crear organización"}</Button>
         </Form>
       </Card>
     </main>
