@@ -6,7 +6,7 @@ import { sendOrganizationInvitation, type InvitationEmailConfig } from "./email/
 
 /** Política del plugin Organization: la comparten el runtime y el CLI de esquema (`better-auth.config.ts`). */
 export const organizationPolicy = {
-  allowUserToCreateOrganization: true,
+  allowUserToCreateOrganization: false,
   // Sin flujo de borrado: la cascada eliminaría servicios, integraciones y gobierno asignados
   // por la plataforma, y `platform_audit_log` no admite cascada.
   disableOrganizationDeletion: true,
