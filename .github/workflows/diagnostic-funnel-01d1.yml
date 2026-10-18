@@ -109,7 +109,7 @@ jobs:
         if: ${{ always() && steps.playwright.outcome == 'success' && steps.migrations.outcome == 'success' }}
         continue-on-error: true
         run: |
-          pnpm run dev -- --host 127.0.0.1 > "$RUNNER_TEMP/diagnostic-funnel-01d1/worker-dev.log" 2>&1 &
+          pnpm exec vite --host 127.0.0.1 --port 5173 --strictPort > "$RUNNER_TEMP/diagnostic-funnel-01d1/worker-dev.log" 2>&1 &
           worker_pid=$!
           trap 'kill "$worker_pid" 2>/dev/null || true; wait "$worker_pid" 2>/dev/null || true' EXIT
 
