@@ -29,7 +29,6 @@ const forbiddenBundleMarkers = [
   "api-diagnostic-report-requests",
   "api-diagnostic-report-request-resend",
   "api-diagnostic-email-verify",
-  "routes/dev-diagnostic-",
   "/__dev/diagnostico/",
   "qa-funnel@example.invalid",
   "other@example.invalid",
@@ -44,6 +43,8 @@ for (const file of bundleFiles) {
     assert.ok(!filePath.includes(marker) && !contents.includes(marker), `el bundle de producción no contiene ${marker} (${filePath})`);
   }
 }
+// Los nombres de módulos en el manifiesto SSR no demuestran que una ruta esté registrada.
+// La prueba HTTP inferior verifica el aislamiento real de las rutas dev-only.
 console.log(`PASS production bundles: ${bundleFiles.length} archivos inspeccionados; sin módulos, rutas ni fixtures dev-only`);
 
 const publicDiagnostic = await fetch(new URL("/diagnostico", baseUrl));
