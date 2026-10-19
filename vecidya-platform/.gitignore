@@ -1,7 +1,9 @@
 node_modules/
 .playwright-mcp/
+.playwright-mcp/
 .wrangler/
 .react-router/
+.*/
 build/
 dist/
 coverage/

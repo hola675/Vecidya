@@ -1,5 +1,5 @@
 /legacy
-.devcontainer/
+/.devcontainer/
 /archive/git-metadata-backups/
 /.playwright-mcp/
 /.codebase-memory/
