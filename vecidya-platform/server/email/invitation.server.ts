@@ -62,7 +62,7 @@ export type InvitationDeliveryState = "provider_accepted" | "simulated" | "uncon
  * A send error does not roll back a created invitation: API/UI must report that uncertainty.
  * Do not retry automatically (Gmail may have accepted a message before a network failure).
  */
-export async function createAndDeliverOrganizationInvitation<T extends { id: string; email: string; role: string }>(
+export async function createAndDeliverOrganizationInvitation<T extends { id: string; email: string; role?: string | null }>(
   create: () => Promise<T>,
   config: InvitationEmailConfig,
   organizationName: string,
@@ -72,7 +72,7 @@ export async function createAndDeliverOrganizationInvitation<T extends { id: str
     const result = await sendOrganizationInvitation({
       id: invitation.id,
       email: invitation.email,
-      role: invitation.role,
+      role: invitation.role ?? "member",
       organization: { name: organizationName },
     }, config);
     return { invitation, delivery: result.provider === "fake" ? "simulated" : "provider_accepted" };
