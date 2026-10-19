@@ -5,7 +5,7 @@ import {
   requireOrganizationPermission,
 } from "../../server/auth/authorization.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
-import { EmailDeliveryUnavailableError, isOrganizationInvitationEmailConfigured } from "../../server/email/invitation.server";
+import { EmailDeliveryUnavailableError, createAndDeliverOrganizationInvitation, isOrganizationInvitationEmailConfigured } from "../../server/email/invitation.server";
 
 import type { Route } from "./+types/api-organization-invitations";
 
@@ -31,9 +31,9 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
 
 export async function action({ context, params, request }: Route.ActionArgs) {
   const { env } = context.get(cloudflareContext);
-  await requireOrganizationPermission(env, request, params.organizationId, "member:invite");
+  const membership = await requireOrganizationPermission(env, request, params.organizationId, "member:invite");
   const body = (await request.json()) as { operation?: unknown; email?: unknown; role?: unknown; invitationId?: unknown };
-  const auth = createAuth(env, request);
+  const auth = createAuth(env, request, { invitationDeliveryManagedByRoute: true });
 
   if (body.operation === "invite") {
     if (typeof body.email !== "string" || !/^\S+@\S+\.\S+$/.test(body.email) || !(body.role === "member" || body.role === "admin")) {
@@ -43,11 +43,19 @@ export async function action({ context, params, request }: Route.ActionArgs) {
       return Response.json({ error: "Organization invitation email delivery is not configured" }, { status: 503 });
     }
     try {
-      const invitation = await auth.api.createInvitation({
-        headers: request.headers,
-        body: { email: body.email.trim().toLowerCase(), role: body.role, organizationId: params.organizationId },
-      });
-      return Response.json(invitation, { status: 201 });
+      const created = await createAndDeliverOrganizationInvitation(
+        () => auth.api.createInvitation({
+          headers: request.headers,
+          body: { email: String(body.email).trim().toLowerCase(), role: body.role as "member" | "admin", organizationId: params.organizationId },
+        }),
+        invitationEmailConfig(env),
+        membership.name,
+      );
+      return Response.json({
+        ...created.invitation,
+        deliveryStatus: created.delivery,
+        ...(created.delivery === "unconfirmed" ? { warning: "Invitation created; email delivery not confirmed. No automatic retry." } : {}),
+      }, { status: created.delivery === "unconfirmed" ? 202 : 201 });
     } catch (error) {
       return responseFromError(error, "Invitation delivery is unavailable");
     }

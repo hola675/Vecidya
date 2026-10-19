@@ -13,7 +13,7 @@ import {
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getActiveOrganization } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
-import { isOrganizationInvitationEmailConfigured } from "../../server/email/invitation.server";
+import { createAndDeliverOrganizationInvitation, isOrganizationInvitationEmailConfigured } from "../../server/email/invitation.server";
 import { Alert, Badge, Button, Card } from "../components/ui";
 import { ClientAreaShell } from "../components/client-area-shell";
 import { describeRolePermissions, invitationStateLabels, roleLabel } from "../lib/team-labels";
@@ -84,7 +84,7 @@ export async function action({ context, request }: Route.ActionArgs): Promise<Fe
   const formData = await request.formData();
   const operation = String(formData.get("operation"));
   const memberId = String(formData.get("memberId"));
-  const auth = createAuth(env, request);
+  const auth = createAuth(env, request, { invitationDeliveryManagedByRoute: true });
 
   if (operation === "update-role") {
     const role = String(formData.get("role"));
@@ -129,15 +129,24 @@ export async function action({ context, request }: Route.ActionArgs): Promise<Fe
       return { scope: "invitations", error: "La invitación no se creó: el envío de correos no está disponible en este momento." };
     }
     try {
-      await auth.api.createInvitation({
-        headers: request.headers,
-        body: { email, role, organizationId: organization.id },
-      });
+      const created = await createAndDeliverOrganizationInvitation(
+        () => auth.api.createInvitation({
+          headers: request.headers,
+          body: { email, role: role as "admin" | "member", organizationId: organization.id },
+        }),
+        invitationEmailConfig(env),
+        organization.name,
+      );
+      if (created.delivery === "unconfirmed") {
+        return { scope: "invitations", error: "La invitación se creó, pero no pudimos confirmar el envío del correo. No se reenviará automáticamente. Puedes cancelar la invitación desde la lista antes de crear otra." };
+      }
+      if (created.delivery === "simulated") {
+        return { scope: "invitations", success: "Invitación creada en pruebas: este entorno no envía correos reales.", invited: true };
+      }
+      return { scope: "invitations", success: "Invitación creada. Gmail aceptó el correo para " + email + "; la recepción todavía no está confirmada.", invited: true };
     } catch (error) {
       return { scope: "invitations", error: invitationCreateErrorMessage(betterAuthErrorCode(error)) };
     }
-    // Solo consta que se creó: Better Auth no informa si el correo falló (INVITE-DELIVERY-SILENT-001).
-    return { scope: "invitations", success: `Invitación creada para ${email}.`, invited: true };
   }
 
   if (operation === "cancel-invitation") {
@@ -264,7 +273,7 @@ export default function OrganizationPage() {
             <ul className="members-list">
               {pendingInvitations.map((invitation) => (
                 <li className="member-row invitation-row" key={invitation.id}>
-                  <div><strong>{invitation.email}</strong><span>Enviada el {invitation.sentAt} · vence el {invitation.expiresAt}</span></div>
+                  <div><strong>{invitation.email}</strong><span>Creada el {invitation.sentAt} · vence el {invitation.expiresAt}</span></div>
                   <Badge>{roleLabel(invitation.role)}</Badge>
                   <Badge tone={stateTones.pending}>{invitationStateLabels.pending}</Badge>
                   <Form method="post">
@@ -284,7 +293,7 @@ export default function OrganizationPage() {
             <ul className="members-list">
               {pastInvitations.map((invitation) => (
                 <li className="member-row invitation-row" key={invitation.id}>
-                  <div><strong>{invitation.email}</strong><span>Enviada el {invitation.sentAt}</span></div>
+                  <div><strong>{invitation.email}</strong><span>Creada el {invitation.sentAt}</span></div>
                   <Badge>{roleLabel(invitation.role)}</Badge>
                   <Badge tone={stateTones[invitation.state]}>{invitationStateLabels[invitation.state]}</Badge>
                 </li>
