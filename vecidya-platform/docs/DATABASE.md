@@ -262,7 +262,7 @@ grandfathering de precio. Ver [TESTING.md](TESTING.md).
 | 0018 | `0018_diagnostic-funnel-aggregates.sql` | FUNNEL-01D.1 | `diagnostic_funnel_aggregate`; columna de grant inicial supersedida en 0019 |
 | 0019 | `0019_diagnostic-funnel-request-first-open.sql` | FUNNEL-01D.1-R | `identified_diagnostic_request.first_report_opened_at`; elimina `diagnostic_report_access.first_opened_at` |
 
-Estado de aplicación: cadena `0000`–`0019` ejecutada en D1 temporal nueva. El ledger local compartido no se alteró y puede mantener pendientes `0016`/`0017`. El estado remoto no se consultó ni modificó; no se usó `--remote`.
+Estado de aplicación: cadena `0000`–`0019` ejecutada en D1 temporal nueva. **Reverificada 2026-10-19** desde el worktree aislado APP-CLIENTE-00, partiendo de ledger vacío; las 20 migraciones aplicaron en orden sin error y el E2E MiniWeb completó allí 33/33. El ledger/D1 local del checkout compartido no se alteró; el estado remoto no se consultó ni modificó y no se usó `--remote`. La nota histórica sobre posibles pendientes locales `0016`/`0017` aplica al checkout previo, no a la D1 efímera del último corte.
 
 ## Persistencia del Diagnóstico (DIAG-V3-06)
 

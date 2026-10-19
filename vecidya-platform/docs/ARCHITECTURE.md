@@ -215,6 +215,21 @@ sin exposición parcial. No presentar el snapshot estructural de 02A como una
 solución completa de publicación de contenido ni crear historial de revisiones
 sin necesidad demostrada.
 
+**Consecuencia observada en APP-CLIENTE-00:** `CODE` confirma que guardar un
+perfil cuyo estado ya es `published` actualiza la misma fila preservando ese
+estado; el loader público consume los datos actuales. El E2E local prueba por
+separado que el draft estructural no altera el snapshot hasta `publish` y que
+los módulos desactivados no se renderizan, pero no incluye una aserción de
+regresión específica que edite un campo del perfil ya publicado y lo vuelva a
+leer anónimamente. Por ello el comportamiento del código implica exposición
+inmediata de los datos editados bajo la composición estructural publicada
+anterior, y queda pendiente cubrirlo explícitamente. Las dos acciones no forman
+una transacción ni una versión atómica del sitio entero. Antes de APP-MINI-02B,
+especificar y probar una única frontera pública coherente para contenido y
+composición, incluyendo preview, concurrencia, rollback/versionado si es
+necesario y comportamiento de perfiles legacy. Esta recomendación no autoriza
+cambiar el modelo en APP-CLIENTE-00.
+
 APP-MINI-03 debe exponer estados/derechos reales sin pagos automáticos.
 GHL-BARRIO-01 es independiente y no empieza sin cuenta, permisos/scopes reales
 y autorización. El copy de `/licencias` aclara que Cuadra no incluye seguimiento
