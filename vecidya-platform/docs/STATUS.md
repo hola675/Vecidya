@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## DIAG-CLOSE-01 — destino QA-03B preparado (2026-10-19)
+
+QA-03B queda fijada como identidad objetivo del futuro cutover. Los IDs candidate-only de banco, respuesta, contexto, aplicabilidad, scoring, planner, pipeline y sesión tienen una única fuente en `qa03b/contract.ts`; pruebas focales verifican identidad estricta, separación de ACT raíz y compatibilidad del V3 público. RAN: QA-03B/compatibilidad focal **126/126 PASS**, typecheck/build y escaneo de `build/client`/`build/server` (0 marcadores candidate-only): **PASS**. No se ejecutó smoke del Worker. No se activa `/diagnostico`, no se modifica la sesión pública schema/key 2, el PDF ni el runtime público; ACT-04 y eliminación de legacy siguen fuera de alcance.
+
 ## PLATFORM-ADMIN-GLOBAL — spec escrita para revisión (2026-10-17)
 
 Propuesta documental para revisión y aprobación explícita; no es diseño aprobado ni implementación. El actor `platform_admin` conserva identidad de plataforma, sin impersonación ni membresía comercial; `/app/internal` y sus endpoints quedan previstos, sin nuevas rutas. Arquitectura, matriz de roles, ciclo organización/invitación, capacitación, endpoints, entidades candidatas, riesgos y decisiones pendientes constan en `ARCHITECTURE.md`; persistencia candidata en `DATABASE.md`. Sin código/schema/migraciones. APP-MINI-02B espera hasta que este checkpoint quede aprobado e integrado.
@@ -61,9 +65,9 @@ Las vistas y APIs de identificación solo se registran en desarrollo; el informe
 
 ## VECIDYA-LEGACY-00 — inventario listo (2026-10-12)
 
-**`LEGACY_INVENTORY_READY` — auditoría documental, no limpieza.** Baseline Git `50026d00c59269554500a4f2552fe7385e35ec7f` (`main` = `origin/main`); cambios locales sin commit excluidos y preservados. Inventario, grafo, clasificación, duplicaciones, orden y rollback están consolidados en `ARCHITECTURE.md`, `STRUCTURE.md`, `DATABASE.md`, `TESTING.md` y `ROADMAP.md`. Sin cambios de código, configuración, secretos, D1 o migraciones; QA-03B, RESULT-UX-02 y FUNNEL-01B no se reabren. ACT-04, push y deploy no ejecutados.
+**`LEGACY_INVENTORY_READY` — auditoría documental, no limpieza.** Baseline Git `50026d00c59269554500a4f2552fe7385e35ec7f` (`main` = `origin/main`); cambios locales sin commit excluidos y preservados. Inventario, grafo, clasificación, duplicaciones, orden y rollback están consolidados en `ARCHITECTURE.md`, `STRUCTURE.md`, `DATABASE.md`, `TESTING.md` y `ROADMAP.md`. DIAG-CLOSE-01 elige QA-03B como identidad destino; el V3 público continúa activo hasta un ACT-04 autorizado. Sin eliminación de código ni reinterpretación de sesiones históricas.
 
-Bloqueador: `GATE_B_PARTIAL` continúa; ACT-04 necesita autorización y decisión explícita entre identidad candidata ACT raíz y QA-03B. Ninguna candidata se elimina mientras el V3 público siga siendo necesario para FUNNEL.
+Bloqueador: `GATE_B_PARTIAL` continúa y ACT-04 requiere autorización propia, gates de compatibilidad y cutover. La identidad destino QA-03B ya está elegida; no eliminar la candidata ACT raíz ni dependencias compartidas antes de completar el cutover y probar que no quedan consumidores. El V3 público sigue siendo necesario para FUNNEL mientras no ocurra el cutover.
 
 DIAG-V3-RESULT-UX-02 (2026-10-12): **`VISUAL_ACCEPTED`, con alcance limitado a las tres capturas revisadas por el usuario (escritorio, móvil y FUNNEL móvil).** La jerarquía, legibilidad y organización se aceptan; compactar el encabezado móvil, reforzar la lectura preliminar ante evidencia limitada, sustituir emojis gradualmente y terminar el prototipo FUNNEL son observaciones para pulido posterior. No implica inspección de dimensiones expandidas ni del informe entero.
 

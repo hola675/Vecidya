@@ -4,6 +4,7 @@ import { CANDIDATE_CALIBRATION_IDENTITY_V3, CANDIDATE_CALIBRATION_VERSION_V3 } f
 import { CANDIDATE_OBSERVABILITY_MODEL_IDENTITY_V3 } from "./qbv2-candidate-overall";
 import type { CandidateDigitalPresenceIndexV3 } from "./qbv2-candidate-overall";
 import { CANDIDATE_PLANNER_IDENTITY_V3, buildCandidateQuestionPlanV3, type CandidateQuestionPlanV3 } from "./qbv2-candidate-planner";
+import { ANSWER_SCHEMA_ID, APPLICABILITY_ID, CONTEXT_ID, PIPELINE_ID, QUESTION_BANK_ID, SCORING_ID } from "./contract";
 import type { CommercialClarificationAnswer, CommercialLicense } from "../commercial-recommendation";
 import type { DigitalPresenceStatus } from "../qbv2-overall";
 import type { AnswersV2 } from "../qbv2-rules";
@@ -12,18 +13,18 @@ import type { AnswersV2 } from "../qbv2-rules";
  * DIAG-V3 activation boundary. This facade is candidate-only and intentionally is not re-exported
  * by the public diagnostic barrel or imported by any public route.
  */
-export const CANDIDATE_PIPELINE_IDENTITY_V3 = "diag-v3-candidate-operation-history-v1" as const;
+export const CANDIDATE_PIPELINE_IDENTITY_V3 = PIPELINE_ID;
 
 /** Minimal identity required to reproduce a candidate result without ceremonial per-function versions. */
 export const CANDIDATE_RESULT_IDENTITY_V3 = Object.freeze({
   engine: CANDIDATE_PIPELINE_IDENTITY_V3,
-  questionBank: "reviewed-evidence-v4",
-  answerSchema: "qbv2-answers-v3",
-  context: "diag-v3-context-operation-history-v1",
+  questionBank: QUESTION_BANK_ID,
+  answerSchema: ANSWER_SCHEMA_ID,
+  context: CONTEXT_ID,
   planner: CANDIDATE_PLANNER_IDENTITY_V3,
   evidence: "r3-evidence-v3",
-  applicability: "r4-applicability-operation-history-v1",
-  scoring: "r3-evidence-v3+r4-applicability-operation-history-v1",
+  applicability: APPLICABILITY_ID,
+  scoring: SCORING_ID,
   calibration: CANDIDATE_CALIBRATION_IDENTITY_V3,
   calibrationVersion: CANDIDATE_CALIBRATION_VERSION_V3,
   siblingAggregation: "KEEP_CURRENT_MEAN",
@@ -65,4 +66,3 @@ export function runCandidateDiagnosticPipelineV3(answers: AnswersV2, options: Ca
   });
   return { ...result, engineIdentity: CANDIDATE_RESULT_IDENTITY_V3, plan };
 }
-

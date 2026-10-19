@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-19 — DIAG-CLOSE-01: QA-03B como identidad destino
+
+- Centralizados en `qa03b/contract.ts` los identificadores de contrato repetidos por el pipeline y la sesión QA-03B; la identidad del resultado mantiene comparación estricta y versionada.
+- Actualizada la decisión arquitectónica: QA-03B es el destino del futuro cutover; el V3 público y ACT raíz siguen intactos para compatibilidad y rollback. No se activa `/diagnostico`, no se reinterpretan sesiones y no se toca el generador PDF.
+- Suites focales QA-03B/compatibilidad: 126/126 PASS; typecheck/build PASS y 0 marcadores candidate-only en `build/client`/`build/server`. Sin smoke Worker, HTTP, cutover o deploy.
+
 ## 2026-10-19 — consolidación Git y retirada de workflows
 
 - PR #11 integró la candidata `5864a2f` en `main`; el merge commit fue `469ef7a`. Se cerraron los PR redundantes #6 y #12, y se retiraron las ramas/worktrees temporales tras guardar respaldo verificable y conservar sus directorios ignorados fuera del checkout.
