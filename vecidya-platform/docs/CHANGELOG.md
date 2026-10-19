@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-19 — Reconciliación y certificación local de Fase 00 (no publicada)
+
+- La integración se prepara desde `origin/integration/phase-00-main-reconcile` en worktree dedicado, con `origin/main` como ancestro. `main` no se modificó; el estado de GitHub/PR del SHA actual no fue accesible y no se declara merge ni publicación.
+- Se corrigió el resultado del borrado autorizado cuando D1 incluye cambios de filas descendientes en cascada; la respuesta ahora se basa en `meta.changes > 0` bajo el predicado de autorización y request ID. Se añadió regresión para `changes=7` y `changes=0`.
+- Se ajustaron harnesses E2E locales a invitación/licencia actuales, limpieza de fixtures y ejecución directa del Wrangler CLI en Windows; no cambia la autorización ni los estados comerciales de la aplicación.
+- Se consolidaron los seis documentos de fase/auditoría en `ARCHITECTURE.md`, `ROADMAP.md`, `STATUS.md`, `PROJECT_STATE.md`, `DATABASE.md`, `STRUCTURE.md` y `TESTING.md`. Quedan 16 documentos canónicos frente al techo de 20; dos anexos preexistentes permanecen fuera del inventario canónico.
+- El D1 aislado de pruebas preservó el sentinel histórico; se encontró una solicitud identificada de procedencia no comprobada junto a su snapshot/challenge/intents. No se purgó ni se enlazó con agregados; G00-07 queda bloqueado hasta resolver procedencia/retención.
+- Ver `TESTING.md` para estados G00-05–G00-10. No se ejecutó D1 remota, correo real, deploy, sincronización GHL ni merge a `main`; APP-MINI-02B/PLATFORM-ADMIN-GLOBAL conserva su aprobación pendiente.
+
 ## 2026-10-17 — PLATFORM-ADMIN-GLOBAL especificación para aprobación
 
 - Reconciliada la especificación documental del control plane: actor `platform_admin` permanece independiente de owners, sin impersonación, membresías inventadas ni bypass de APIs de clientes.

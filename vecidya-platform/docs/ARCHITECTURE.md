@@ -248,6 +248,13 @@ flowchart TD
 
 El V3 público vigente es el runtime adaptativo `QUESTION_BANK_V2` (85), `qbv2-planner.ts` y `qbv2-session.ts`, replayado por FUNNEL-01B con DTO allowlisted. No es el candidato QA-03B. QA-03B tiene identidad/banco `reviewed-evidence-v4`, sesión schema/key 3 y rutas dev-only. También existe una candidata anterior ACT-01–03 en archivos `qbv2-candidate-*` raíz, con sesión e identidad distintas. No se presume que ACT raíz y QA-03B sean contratos intercambiables: la identidad destino de ACT-04 debe decidirse expresamente.
 
+#### Identidad y consolidación sin degradar evidencia
+
+- `public-diagnostic-engine-identity.ts` fija la identidad persistida `diag-v3-public` y declara `questionBank: "QUESTION_BANK_V2"`. No se debe confundir con el loader experimental `getQuestionBank(2)` de `qbv2-engine.ts`, cuyo `CURRENT_QUESTION_BANK_VERSION` sigue en 1 y que no es el camino público.
+- `qa03b/bank.ts` deriva su banco de `REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3` en `qbv2-reviewed-evidence.ts`; quitar esa fuente rompería el candidato aunque un nombre `qbv2-*` sugiera antigüedad.
+- La consolidación se hace por consumidor e identidad: inventariar imports/rutas/pruebas y versiones persistidas, comparar IDs/versiones/opciones/aplicabilidad/resultados con casos canónicos y decidir una migración versionada antes de cambiar contratos. Los resúmenes anónimos y los informes identificados deben derivar del mismo resultado versionado.
+- Mantener sesiones, informes y puntuaciones históricas; retirar solo módulos/exportaciones que no tengan consumidores demostrables después del cutover autorizado. No inferir obsolescencia por prefijo, no sobrescribir una implementación vigente con una candidata ni cambiar puntuaciones silenciosamente.
+
 ### Inventario y clasificación
 
 | Ruta / grupo versionado | Clase | Imports, rutas y pruebas | Riesgo o justificación |

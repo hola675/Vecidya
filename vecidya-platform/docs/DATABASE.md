@@ -347,5 +347,5 @@ ORDER BY event_day, diagnostic_version, event_type;
 3. Nunca `--remote` sin autorización explícita.
 4. No usar `drizzle-kit push` como flujo normal.
 5. Nunca modificar manualmente un schema remoto ni guardar secretos en Git.
-6. El D1 `vecidya-staging` sirve hoy el dominio público; `vecidya-prod` está provisionada y clonada, pero requiere cutover autorizado para servirlo (`PROD-INDEPENDENT-001`).
+6. El Worker público usa `vecidya-prod` desde el cutover registrado el 2026-10-02; `vecidya-staging` es un entorno separado y no debe tratarse como el D1 público. Ver `ENVIRONMENTS.md` para la fecha y evidencia de publicación. Cualquier migración remota requiere autorización explícita.
 7. Todo recurso con `organization_id` se consulta filtrando por la organización verificada (membresía) y nunca por un identificador del cliente sin verificar.

@@ -57,7 +57,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     ├── worker/                 durable-objects/, queues/, workflows/ vacíos
     ├── public/                 assets/selected/** + assets/catalog/** (PNG comerciales y estados diagnósticos) y brand/vecidya-app-icon.png
     ├── tests/e2e/              33 `.mjs` + 4 `.ps1` (ver TESTING.md); tests/unit/ (7 suites del Diagnóstico + 2 archivos de personas + 1 suite de slug de Business Profile + 2 hooks de resolución TS); integration/ vacío
-    ├── docs/                   14 documentos canónicos con los READMEs
+    ├── docs/                   14 archivos Markdown tras consolidar los seis informes de fase; 12 pertenecen al inventario canónico de GOVERNANCE.md y 2 son anexos preexistentes (CRM_PORTAL_01 y VECIDYA-UI-UX)
     ├── wrangler.jsonc, drizzle.config.ts, react-router.config.ts, vite.config.ts,
     │   tsconfig*.json, better-auth.config.ts, worker-configuration.d.ts (generado)
     └── vecidya-platform.zip    snapshot binario obsoleto versionado (deuda REPO-HYGIENE-001)

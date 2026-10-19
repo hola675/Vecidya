@@ -14,7 +14,18 @@
 
 **Reglas:** no borrar `db/migrations`, no eliminar claves históricas ni adaptar sesiones completadas sin versionado; no activar correo real, sincronización GHL o D1 remota sin autorización. El roadmap histórico anterior se conserva como evidencia, incluso donde indique gates bloqueados.
 
-**Estado a fecha 2026-10-18:** D0 en análisis, D1-D6 pendientes de certificación. Las pruebas de código existentes y los commits de licencias no certifican el nuevo motor de preguntas. No realizar limpieza destructiva hasta resolver `GATE_B_PARTIAL` y el gate de FUNNEL-01D.1.
+#### Criterios de revisión del banco (consolidados desde la auditoría 2026-10-18)
+
+1. Mantener IDs/versiones estables y valores de opción semánticamente inequívocos; `unknown`, `unsure` y respuestas excluyentes no deben permitir selecciones contradictorias.
+2. Hacer determinista la aplicabilidad, sin rutas sin salida ni preguntas que obliguen a declarar información no pertinente.
+3. Distinguir estado operativo, historial de clientes, comprador directo, beneficiario, modalidad de prestación y compra en línea; no inferir respuestas omitidas.
+4. Solicitar confirmación ante contradicciones materiales cuando corresponda y conservar la procedencia de cada respuesta.
+5. Trazar resultados y recomendaciones hasta pregunta, evidencia, versión de banco y motor. Resumen anónimo e informe detallado derivan del mismo resultado versionado, con proyecciones de acceso distintas.
+6. Cubrir golden personas, rutas límite, reinicio/reanudación, cambio de versión, descarga, verificación y caducidad.
+
+**Ejecución inicial:** D0-A construye la matriz de consumidores e identidades; D1-A compara determinísticamente `QUESTION_BANK_V2` y `qa03b` (IDs, versiones, opciones, elegibilidad y copy); D2-A corrige solo divergencias demostradas con regresiones. No hay reemplazo masivo ni limpieza de módulos legacy por nombre.
+
+**Estado a fecha 2026-10-19:** D0 sigue en análisis y D1-D6 no están certificados. La integración local obtuvo PASS técnico en FUNNEL-01D.1 y las regresiones Worker asociadas, pero G00-07 y el estado de GitHub del commit actual siguen bloqueados; esto no certifica equivalencia con QA-03B ni autoriza cutover. Mantener `GATE_B_PARTIAL`; no borrar código ni iniciar ACT-04.
 
 ## FUNNEL-01D.2 — implementación incremental y derechos (2026-10-17)
 
@@ -35,7 +46,7 @@ Cuadra USD 39/mes no incluye ni requiere GHL; Barrio USD 59/mes inicia CRM GHL y
 | Checkpoint | Alcance | Estado/gate |
 | --- | --- | --- |
 | **APP-MINI-01C** | Cerrar baseline: E2E, HTTP público y capturas dashboard/editor/página en desktop/mobile | Cerrado técnicamente en local; no desplegado |
-| **APP-MINI-02A** | Core modular: registries versionados, config draft/published, default virtual legacy, compositor y controles básicos | Código local implementado; cadena `0000`–`0017` aplicada en D1 aislada limpia y MiniWeb E2E `33/33 PASS` allí. D1 local compartida sin cambios, ledger pendiente; D1 remota sin cambios; no deploy |
+| **APP-MINI-02A** | Core modular: registries versionados, config draft/published, default virtual legacy, compositor y controles básicos | Código local implementado; el E2E MiniWeb `33/33 PASS` se ejecutó sobre D1 aislada con la cadena `0000`–`0019`. El D1 compartido del checkout original y el remoto no se tocaron; no deploy |
 | **PLATFORM-ADMIN-GLOBAL** | Control plane interno auditado: operaciones cross-org, creación/invitación de usuarios, roles existentes, settings/MiniWeb y asignaciones de capacitación | Especificación propuesta para aprobación humana explícita; implementación pendiente. Precedencia sobre 02B; no impersonación ni bypass de APIs cliente |
 | **APP-MINI-02B** | Crear `business_offering` público independiente; servicios/productos del negocio y FAQ | Diseño de publicación aprobado y documentado; implementación no iniciada, sin crear aún tablas ni contenido público. Bloqueado por precedencia de PLATFORM-ADMIN-GLOBAL |
 | **APP-MINI-02C** | R2, referencias/metadatos, portada/galería e imagen/video limitado | Requiere modelo de medios, permisos y subida segura; blobs fuera de D1 |
@@ -51,7 +62,7 @@ Todos los bloques conservan una organización/negocio/MiniWeb, URL pública `/ve
 
 | Checkpoint | Alcance | Estado/gate |
 | --- | --- | --- |
-| **FUNNEL-01D.1** | Seis contadores agregados del embudo; sin respuestas/identidad ni dashboard | **`FUNNEL_ANALYTICS_BLOCKED`**; `BLOCKED_DEPENDENCIES` impide Worker E2E, regresiones, typecheck/build y bundle check. No activar producción ni avanzar a 01D.2 hasta cierre/aprobación independiente |
+| **FUNNEL-01D.1** | Seis contadores agregados del embudo; sin respuestas/identidad ni dashboard | **PASS técnico local; integración global bloqueada** por G00-01/G00-10 y checks externos sin verificar. Worker/D1, suite, typecheck/build y aislamiento local se validan en `TESTING.md`; no activar producción ni avanzar a 01D.2 hasta cierre y aprobación independiente |
 | **FUNNEL-01D.2** | Preferencias y privacidad | Siguiente fase secuencial; no iniciar hasta cierre/aprobación independiente de 01D.1 |
 | **FUNNEL-01D.3** | Preparación comercial | Después de 01D.2; solo transferencia para contactos autorizados, sin sync/oportunidades automáticas; autorización separada |
 
