@@ -1,5 +1,11 @@
 # Estado de implementación
 
+## DIAG-CLOSE-02 — certificación técnica previa a ACT-04 (2026-10-19)
+
+PR #14 integrado en `origin/main`; no se ejecutó ACT-04. Contratos y sesiones QA-03B, 176/176 unitarias, comparación determinista de V3/QA-03B, QA-03B local `6/6` + reload/concurrencia, FUNNEL-01B `6/6`, typecheck, build y escaneo bundle PASS. Diferencias de scoring observadas son deliberadas: V3 retail `82`; QA-03B no publica un global con evidencia insuficiente, aunque conserva dimensiones con score `75`. La sesión QA-03B genera/reconstruye su informe desde resultado con identidad QA versionada.
+
+**NO-GO ACT-04:** el replay Worker público aún ejecuta V3; QA-03B completa/reconstruye en cliente y no existe replay server-authoritative QA que alimente el mismo resultado versionado al resumen allowlisted y al informe identificado. Requiere un adaptador de replay server QA con identidad/answer schema estrictos y una prueba E2E atómica de summary/report/rollback. Siguen abiertos `GATE_B_PARTIAL`, aceptación PDF/UA independiente (PAC/Acrobat/NVDA) y FUNNEL-01D.2/01D.3. No tocar API pública, claves antiguas, PDF, D1 ni producción hasta su checkpoint autorizado.
+
 ## DIAG-CLOSE-01 — destino QA-03B preparado (2026-10-19)
 
 QA-03B queda fijada como identidad objetivo del futuro cutover. Los IDs candidate-only de banco, respuesta, contexto, aplicabilidad, scoring, planner, pipeline y sesión tienen una única fuente en `qa03b/contract.ts`; pruebas focales verifican identidad estricta, separación de ACT raíz y compatibilidad del V3 público. RAN: QA-03B/compatibilidad focal **126/126 PASS**, typecheck/build y escaneo de `build/client`/`build/server` (0 marcadores candidate-only): **PASS**. No se ejecutó smoke del Worker. No se activa `/diagnostico`, no se modifica la sesión pública schema/key 2, el PDF ni el runtime público; ACT-04 y eliminación de legacy siguen fuera de alcance.

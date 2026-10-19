@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-19 — DIAG-CLOSE-02: certificación técnica QA-03B
+
+- PR #14 integrado; suites diagnósticas focales 176/176, Worker/FUNNEL-01B 6/6, QA-03B E2E 6 recorridos + persistencia/concurrencia, typecheck y build PASS. Sin cambios de código funcional.
+- Confirmada separación: QA-03B permanece client-side/dev-only; replay Worker público, resumen anónimo y sesión pública siguen en V3. El informe QA local reconstruye su resultado versionado, pero todavía no comparte replay Worker con el resumen.
+- NO-GO ACT-04: integrar replay server-authoritative QA y el resultado único para resumen/informe; resolver `GATE_B_PARTIAL`, aceptación PDF/UA independiente y FUNNEL-01D.2/01D.3. Sin migraciones, API pública cambiada ni deploy.
+
 ## 2026-10-19 — DIAG-CLOSE-01: QA-03B como identidad destino
 
 - Centralizados en `qa03b/contract.ts` los identificadores de contrato repetidos por el pipeline y la sesión QA-03B; la identidad del resultado mantiene comparación estricta y versionada.
