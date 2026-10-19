@@ -7,13 +7,13 @@ Propuesta documental para revisión y aprobación explícita; no es diseño apro
 
 ## DIAG-V3-FUNNEL-01D.1-R — certificación técnica local (2026-10-19)
 
-**`LOCAL_VALIDATION_PASS` / `GLOBAL_INTEGRATION_BLOCKED`.** La rama remota `integration/phase-00-main-reconcile` (`82608d5`) contiene `origin/main` (`18de1be`, 0 behind / 165 ahead) y se abrió en un worktree dedicado. La reconciliación local pasó suite unitaria completa, typecheck/build, D1 aislada con migraciones `0000`–`0019`, regresiones Worker 01B/01C.3, analítica con sentinel, E2E MiniWeb/perfil/slug/licencias/Aprende y aislamiento de rutas/bundle de producción. El detalle y estado individual de G00-05–G00-10 están en `TESTING.md`.
+**`LOCAL_VALIDATION_PASS` previo / `GIT_INTEGRATION_MERGED`; sin certificación funcional nueva en el cierre.** La candidata `5864a2f` se integró mediante PR #11; el merge commit de `main` es `469ef7a`. Los resultados locales enumerados abajo corresponden al trabajo previo en el worktree, no a una ejecución sobre el merge commit. El checkpoint de cierre Git no ejecutó tests, typecheck, builds ni CI. Los tres workflows GitHub Actions se retiraron por decisión autorizada; consultar `TESTING.md` y `ENVIRONMENTS.md` para su estado.
 
-El estado de PR/checks externos del SHA actual no se pudo verificar: `gh` no está instalado y la API anónima de GitHub devuelve 404. G00-01 sigue parcial porque hay worktrees con cambios locales no reconciliados; G00-07 está bloqueado por una solicitud identificada de procedencia desconocida en el D1 local aislado, que se preservó; G00-09 conserva la deuda documentada de `organization-authorization-check.mjs` (timeout previo de 600 s, no repetido sin diagnóstico); G00-10 y cualquier publicación requieren estado GitHub accesible. No se declara mergeable ni CI verde.
+El contenido quedó incorporado a `main`; las ramas temporales y worktrees del checkpoint se retiraron después de preservar sus referencias y almacenamientos ignorados fuera del checkout. G00-07 conserva una solicitud identificada de procedencia desconocida en el D1 local aislado; el directorio ignorado `.wrangler` fue preservado sin inspeccionar en el archivo local de almacenamiento de worktrees. G00-09 conserva la deuda de `organization-authorization-check.mjs` (timeout previo de 600 s; no repetido aquí). La integración de Git no es certificación funcional y los checks históricos no se convierten en PASS.
 
 El first-open se deduplica por `identified_diagnostic_request`; `0019` hace backfill del mínimo timestamp previo. La apertura y los eventos de dominio comparten batch, con fallback al batch operacional si falla analítica (posible subconteo, sin impedir completar la solicitud). No se reutiliza DIAG-V3-08 ni se añaden respuestas/PII/IDs al agregado.
 
-**Límites y fases:** solo validación local; no correo real, D1 remota, deploy, publicación ni GHL. `FUNNEL-01D.2`/`01D.3` no se iniciaron. Cuadra/GHL, consentimiento, retención y derechos mantienen sus límites/aprobaciones vigentes.
+**Límites y fases:** no se ejecutaron tests, CI, builds, typecheck, D1 ni deploy en el cierre Git; no hubo correo real ni publicación. `FUNNEL-01D.2`/`01D.3` no se iniciaron. Cuadra/GHL, consentimiento, retención y derechos mantienen sus límites/aprobaciones vigentes.
 
 ## APP-MINI-00 — contrato documental (2026-10-12)
 

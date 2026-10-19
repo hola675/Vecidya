@@ -1,6 +1,6 @@
-## Codespaces y CI — propuesta VEC-CLOUD-CI-001 (2026-10-17)
+## Codespaces y GitHub Actions — estado (2026-10-19)
 
-PR #10 incorpora `.devcontainer/devcontainer.json` (Node 24, pnpm 11.21.0, instalación congelada y Playwright Chromium) y `.github/workflows/vecidya-ci.yml` (CI alojada por GitHub para PR/main). Codespaces es **entorno de desarrollo**, no staging ni producción: la apertura y ejecución todavía no están verificadas. No configurar secretos de producción en Codespaces, no ejecutar `wrangler deploy`, `--remote` ni aplicar migraciones D1 remotas. Los E2E con D1 requieren un entorno local efímero separado y no forman parte de este primer CI. No hay despliegue ni cambio de bindings.
+`.devcontainer/devcontainer.json` permanece como configuración propuesta para Codespaces (Node 24, pnpm 11.21.0 e instalación congelada); no se verificó la apertura/ejecución de Codespaces. Los workflows `diagnostic-funnel-01d1.yml`, `vecidya-ci.yml` y `vecidya-licensing.yml` se retiran del repositorio por decisión autorizada. No hay CI GitHub Actions configurada por estos archivos; no se ejecutaron checks, tests ni builds al retirarlos. Esta operación no cambia Workers, bindings, despliegues ni D1, y no reactiva integraciones Cloudflare.
 
 # Entornos
 
