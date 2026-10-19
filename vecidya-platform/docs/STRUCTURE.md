@@ -6,6 +6,7 @@
 | --- | --- | --- | --- |
 | `/privacidad` → `app/routes/privacy.tsx` | Pública / estática | Guía de privacidad de datos, publicación, Diagnóstico público, derechos y contacto | Código en rama; no publicado |
 | `/terminos` → `app/routes/terms.tsx` | Pública / estática nueva | Condiciones de uso generales con FAQ y límites de responsabilidad orientativa | Código en rama; revisión legal y QA pendientes |
+| `app/routes/sitemap.ts` | Sitemap | Incluye `/terminos` junto a `/privacidad` | Código en rama |
 | `app/components/legal-page.tsx` | Presentación compartida | Cabecera, navegación por secciones y contacto de las páginas legales | Código en rama |
 | `app/components/public-layout.tsx`, `app/routes/register.tsx` | Navegación | Enlaces a privacidad y condiciones sin nuevas casillas de consentimiento | Código en rama |
 
