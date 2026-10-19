@@ -133,6 +133,25 @@ El E2E usa Worker local (`pnpm run dev`) y Chrome local; no publica datos de pru
 
 **VEC-APRENDE-04/05 — RAN 2026-10-16 en el worktree de integración (base `a7949dd`):** contenido `4/4 PASS`; suite unitaria completa `1558/1558 PASS`; typecheck, build, E2E Aprende en 1366/768/390/360 y `git diff --check` PASS. El primer typecheck coincidió con el bootstrap automático de PNPM y no encontró `@babel/types`; tras terminar la instalación local, el mismo comando pasó. Sin aceptación visual humana, certificación WCAG ni HTTP de producción.
 
+## APP-CLIENTE-00 — baseline de certificación focal (2026-10-19)
+
+**Corte local aislado:** worktree `D:\Proyectos\Vecidya-APP-CLIENTE-00`, rama `feat/app-mini-client-00`, base `origin/main=5e1c3fec0dbb65f23a6e6624e8eaeead55b53e51`. `pnpm install --frozen-lockfile` instaló 267 paquetes sin modificar lockfile. Se generó un secreto `BETTER_AUTH_SECRET` efímero solo en el proceso local; no se leyó ni creó `.env`/`.dev.vars`. Wrangler aplicó en la D1 de este worktree las 20 migraciones `0000`–`0019`; no se usó `--remote` y no se tocó la D1 compartida.
+
+| Comprobación | Resultado RAN 2026-10-19 | Alcance / límite |
+| --- | --- | --- |
+| `pnpm run test:unit` | **1592/1592 PASS** | Suite completa de unitarias. |
+| `pnpm run typecheck` | **PASS** | `react-router typegen && tsc -b`. |
+| `pnpm run build` | **PASS** | Client + Worker build; avisa que los secretos requeridos de autenticación/correo no están completos en este entorno aislado. No bloqueó build. |
+| `pnpm exec node tests/e2e/miniweb-core-check.mjs` | **33/33 PASS** | Auth, memberships, roles, aislamiento A/B, validación server-side, draft/snapshot, perfil legacy, suspensión, corrupción y viewport editor 1366/768/390/360. |
+| `pnpm exec node tests/e2e/business-profile-experience-check.mjs` | **PASS** | Guardar/publicar, preview privada, canales, cobertura/horarios, dashboard y tenant A/B a 1366/768/390/360. |
+| `pnpm exec node tests/e2e/business-profile-slug-lifecycle-check.mjs` | **PASS** | Generación, estabilidad, colisión y longitud máxima del slug. |
+| `pnpm exec node tests/e2e/licenses-experience-check.mjs` | **PASS** | Copy/precios/licencias públicas, teclado y responsive a 1366/768/390/360. |
+| `organization-authorization-check.mjs` | **BLOCKED — corrida interrumpida, sin veredicto** | El script ejecuta peticiones seriales y crea un nuevo proceso Wrangler síncrono en cada consulta D1; no informa progreso hasta el final y depende de `finally` para limpiar fixtures. El test se ejecutó con server y `BASE_URL` IPv4 para evitar el problema `::1` que el propio script comenta. La corrida dejó en la D1 efímera de este worktree 17 users, 7 organizations, 24 invitations, 11 memberships, 1 billing account y 1 license bajo prefijo `authz-`; el proceso no alcanzó teardown normal. Se preservaron intactos (no se borraron). La evidencia apunta a interrupción externa/límite temporal del harness, no a un fallo de autorización reproducido; no permite precisar qué operación quedó lenta. No repetir hasta instrumentar por etapas la duración/operación Wrangler y el lifecycle de cancelación/cleanup en otra D1 desechable aislada. Pruebas focales no certifican la matriz general. |
+
+No se aplicaron correcciones de producto: el baseline no demostró una falla pequeña corregible sin decidir arquitectura/publicación; la separación perfil/MiniWeb se registra como deuda y requiere diseño previo a APP-MINI-02B. No hubo correo real, acceso autenticado a producción, remote E2E, cambios de datos compartidos, push, deploy o migraciones remotas. La D1 residual es solo la emulación efímera ignorada de este worktree; se conserva por la restricción de no eliminar datos y no se debe interpretar como fixture limpio. Las verificaciones de rutas públicas anónimas fechadas están en `ENVIRONMENTS.md`.
+
+`CODE` muestra que guardar un perfil con `status=published` actualiza la misma fila y conserva ese estado; el E2E prueba separadamente que el draft estructural MiniWeb no cambia el snapshot público hasta publicar. Ninguna aserción de este corte actualiza un campo del perfil ya publicado y luego lo verifica anónimamente; este límite de prueba se documenta en `ARCHITECTURE.md` y no se declara probado de extremo a extremo.
+
 ## APP-MINI-01C + APP-MINI-02A — baseline y core modular (2026-10-15)
 
 **Runner:** Worker local (`pnpm run dev`) + D1 local; sin `--remote`, pagos ni fixtures publicados. Si Chromium no está instalado y Chrome está disponible, define `PLAYWRIGHT_CHROMIUM_EXECUTABLE` a la ruta local de Chrome. Las capturas E2E usan datos sintéticos de prueba, no contenido de producción.
