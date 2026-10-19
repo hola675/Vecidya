@@ -1,5 +1,18 @@
 # Estructura del código
 
+## LEGAL-UX-01 — rutas y componentes añadidos (2026-10-19; rama)
+
+| Ruta/source | Clase | Función | Estado |
+| --- | --- | --- | --- |
+| `/privacidad` → `app/routes/privacy.tsx` | Pública / estática | Guía de privacidad de datos, publicación, Diagnóstico público, derechos y contacto | Código en rama; no publicado |
+| `/terminos` → `app/routes/terms.tsx` | Pública / estática nueva | Condiciones de uso generales con FAQ y límites de responsabilidad orientativa | Código en rama; revisión legal y QA pendientes |
+| `app/routes/sitemap.ts` | Sitemap | Incluye `/terminos` junto a `/privacidad` | Código en rama |
+| `app/components/legal-page.tsx` | Presentación compartida | Cabecera, navegación por secciones y contacto de las páginas legales | Código en rama |
+| `app/components/public-layout.tsx`, `app/routes/register.tsx` | Navegación | Enlaces a privacidad y condiciones sin nuevas casillas de consentimiento | Código en rama |
+
+El estilo `legal-*` sustituye al CSS antiguo `privacy-*` en `app/app.css`. Sin rutas protegidas, API, schema, migraciones, integraciones externas ni consentimiento nuevo.
+
+
 Última reconciliación: 2026-10-16 (FUNNEL-01D.1-R local; `0018`/`0019`, lectura/emisión/fixtures loopback dev-only). Rutas verificadas contra `app/routes.ts`; la tabla describe código local, no producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas. Abreviaturas: [TESTING.md](TESTING.md).
 
 ## LEGACY-00 — inventario de rutas (baseline `50026d0`)

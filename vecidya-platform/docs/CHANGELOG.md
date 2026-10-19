@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-19 — LEGAL-UX-01 (rama, pendiente de QA y aprobación jurídica)
+
+- Rediseñada la página pública de Privacidad con lenguaje claro, índice de lectura y explicaciones de datos de cuenta, organización, perfil publicado, contacto, Diagnóstico anónimo y derechos.
+- Nueva página pública `/terminos`: condiciones de participación, publicación, orientación/servicios, buenas prácticas y respuestas frecuentes; navegación desde pie móvil/escritorio y el registro. Se reutilizan logo, colores y diseño accesible de la marca sin automatizar consentimientos.
+- Se añade `tests/unit/legal/legal-pages.test.ts` y CSS responsive/reduced-motion; sin cambios en datos, GHL, pagos, APIs, secretos, migraciones ni producción. E2E, typecheck, build y revisión jurídica pendientes.
+
+
 ## 2026-10-19 — EMAIL-TRANSACTIONAL-UX-02 (rama, pendiente de validación)
 
 - Se centralizan y rediseñan las plantillas transaccionales HTML+texto con logo y paleta oficial de Vecidya: invitación, verificación, solicitud de restablecimiento, confirmación de contraseña ya cambiada y acceso/recuperación del informe Diagnóstico en buzón local simulado.

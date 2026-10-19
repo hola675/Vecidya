@@ -74,6 +74,7 @@ export default function Register() {
           Contraseña
           <input name="password" type="password" autoComplete="new-password" minLength={8} required />
         </label>
+        <p className="auth-switch">Antes de continuar, consulta nuestras <Link to="/terminos">condiciones de uso</Link> y la información sobre <Link to="/privacidad">privacidad y datos personales</Link>.</p>
         {error ? <Alert>{error}</Alert> : null}
         <Button disabled={submitting} type="submit">
           {submitting ? "Creando…" : "Registrarme"}
