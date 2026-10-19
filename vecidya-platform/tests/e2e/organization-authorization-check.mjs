@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { setDefaultAutoSelectFamilyAttemptTimeout } from "node:net";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
 
 import { baseUrl, assertLocalBaseUrl } from "./test-safety.mjs";
 
@@ -26,7 +27,8 @@ function executeD1(sql) {
   const directory = mkdtempSync(join(tmpdir(), "vecidya-authz-"));
   const file = join(directory, "step.sql");
   writeFileSync(file, sql, "utf8");
-  const result = spawnSync(process.env.ComSpec ?? "cmd.exe", ["/d", "/c", `pnpm.cmd wrangler d1 execute DB --local --json --file ${file}`], { cwd: process.cwd(), encoding: "utf8" });
+  const wranglerCli = fileURLToPath(import.meta.resolve("wrangler"));
+  const result = spawnSync(process.execPath, [wranglerCli, "d1", "execute", "DB", "--local", "--json", "--file", file], { cwd: process.cwd(), encoding: "utf8", windowsHide: true });
   rmSync(directory, { recursive: true, force: true });
   harness(result.status === 0, `D1 local falló: ${result.stderr}`);
   return JSON.parse(result.stdout).flatMap((statement) => statement.results ?? []);
@@ -61,17 +63,24 @@ class SessionClient {
     }
     return response;
   }
-  json(path, body) { return this.fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }); }
+  json(path, body, extraHeaders = {}) { return this.fetch(path, { method: "POST", headers: { "content-type": "application/json", ...extraHeaders }, body: JSON.stringify(body) }); }
   form(path, values) { return this.fetch(path, { method: "POST", body: new URLSearchParams(values) }); }
 }
 
 const email = (key) => `authz-${key}-${suffix}@vecidya.test`;
 const slug = (key) => `authz-${key}-${suffix}`;
 const orgName = (key) => `AUTHZ Org ${key} ${suffix}`;
+const signupKeys = ["owner-a", "owner-b", "intruder", "admin-a", "member-a", "bystander", "promotable", "removable", "leaver", "revoked", "stale", "invitee", "unverified", "stranger", "no-org", "platform-admin"];
+const signupInvitations = Object.fromEntries(signupKeys.map((key) => [key, crypto.randomUUID()]));
+const fixtureInviterId = crypto.randomUUID();
+const fixtureOrganizationId = crypto.randomUUID();
+const billingAccountId = crypto.randomUUID();
+const licensePriceId = crypto.randomUUID();
+const organizationLicenseId = crypto.randomUUID();
 
 async function signUp(key) {
   const client = new SessionClient();
-  const response = await client.json("/api/auth/sign-up/email", { name: `AUTHZ ${key} ${suffix}`, email: email(key), password: `test-only-password-${suffix}` });
+  const response = await client.json("/api/auth/sign-up/email", { name: `AUTHZ ${key} ${suffix}`, email: email(key), password: `test-only-password-${suffix}` }, { "X-Vecidya-Invitation": signupInvitations[key] });
   harness(response.status === 200, `registro de ${key} devolvió ${response.status}`);
   const { user } = await response.json();
   return { key, client, userId: user.id, email: user.email };
@@ -107,11 +116,67 @@ const memberRole = async (memberId) => (await d1(`SELECT role FROM member WHERE 
 const invitationStatus = async (invitationId) => (await d1(`SELECT status FROM invitation WHERE id = '${invitationId}';`))[0]?.status ?? null;
 const organizationRow = async (organizationId) => (await d1(`SELECT name FROM organization WHERE id = '${organizationId}';`))[0] ?? null;
 
+async function seedInvitationFixture() {
+  const now = Date.now();
+  const expiresAt = now + 86_400_000;
+  const inviteValues = signupKeys.map((key) => `('${signupInvitations[key]}', '${fixtureOrganizationId}', '${email(key)}', 'member', 'pending', ${expiresAt}, ${now}, '${fixtureInviterId}')`).join(",\n");
+  await d1(`
+    INSERT INTO user (id, name, email, email_verified, created_at, updated_at)
+      VALUES ('${fixtureInviterId}', 'AUTHZ test inviter', 'authz-inviter-${suffix}@vecidya.test', 1, ${now}, ${now});
+    INSERT INTO organization (id, name, slug, created_at)
+      VALUES ('${fixtureOrganizationId}', 'AUTHZ invitation fixture', '${slug("fixture")}', ${now});
+    INSERT INTO invitation (id, organization_id, email, role, status, expires_at, created_at, inviter_id)
+      VALUES ${inviteValues};
+  `);
+}
+
+async function seedOwnerALicense(ownerUserId, organizationId) {
+  const now = Date.now();
+  await d1(`
+    INSERT INTO billing_account (id, owner_user_id, kind, created_at, updated_at)
+      VALUES ('${billingAccountId}', '${ownerUserId}', 'individual', ${now}, ${now});
+    INSERT INTO license_price (id, plan_code, currency, amount_cents, billing_interval, effective_from, status, created_at, updated_at)
+      VALUES ('${licensePriceId}', 'cuadra', 'USD', 3900, 'monthly', ${now}, 'active', ${now}, ${now});
+    INSERT INTO organization_license (id, organization_id, billing_account_id, plan_code, price_id, status, started_at, activated_at, created_at, updated_at)
+      VALUES ('${organizationLicenseId}', '${organizationId}', '${billingAccountId}', 'cuadra', '${licensePriceId}', 'active', ${now}, ${now}, ${now}, ${now});
+  `);
+}
+
+function cleanupFixtures() {
+  const rows = executeD1(`
+    DELETE FROM organization_license WHERE id = '${organizationLicenseId}';
+    DELETE FROM billing_account WHERE id = '${billingAccountId}';
+    DELETE FROM license_price WHERE id = '${licensePriceId}';
+    DELETE FROM business_profile WHERE organization_id IN (SELECT id FROM organization WHERE slug LIKE 'authz-%-${suffix}');
+    DELETE FROM platform_member WHERE user_id IN (SELECT id FROM user WHERE email LIKE 'authz-%-${suffix}@vecidya.test');
+    DELETE FROM member WHERE organization_id IN (SELECT id FROM organization WHERE slug LIKE 'authz-%-${suffix}');
+    DELETE FROM invitation WHERE organization_id IN (SELECT id FROM organization WHERE slug LIKE 'authz-%-${suffix}') OR email LIKE 'authz-%-${suffix}@vecidya.test';
+    DELETE FROM organization WHERE slug LIKE 'authz-%-${suffix}';
+    DELETE FROM session WHERE user_id IN (SELECT id FROM user WHERE email LIKE 'authz-%-${suffix}@vecidya.test');
+    DELETE FROM account WHERE user_id IN (SELECT id FROM user WHERE email LIKE 'authz-%-${suffix}@vecidya.test');
+    DELETE FROM verification WHERE identifier LIKE 'authz-%-${suffix}@vecidya.test';
+    DELETE FROM user WHERE email LIKE 'authz-%-${suffix}@vecidya.test';
+    SELECT
+      (SELECT COUNT(*) FROM user WHERE email LIKE 'authz-%-${suffix}@vecidya.test') AS users,
+      (SELECT COUNT(*) FROM organization WHERE slug LIKE 'authz-%-${suffix}') AS organizations,
+      (SELECT COUNT(*) FROM invitation WHERE organization_id = '${fixtureOrganizationId}' OR email LIKE 'authz-%-${suffix}@vecidya.test') AS invitations,
+      (SELECT COUNT(*) FROM member WHERE organization_id = '${fixtureOrganizationId}') AS fixture_members,
+      (SELECT COUNT(*) FROM billing_account WHERE id = '${billingAccountId}') AS billing_accounts,
+      (SELECT COUNT(*) FROM license_price WHERE id = '${licensePriceId}') AS prices,
+      (SELECT COUNT(*) FROM organization_license WHERE id = '${organizationLicenseId}') AS licenses;
+  `);
+  const remaining = rows[0];
+  harness(remaining && Object.values(remaining).every((value) => Number(value) === 0), "quedaron fixtures locales AUTHZ tras el teardown.");
+}
+
 let harnessFailure = null;
+let cleanupFailure = null;
 try {
   // --- Preparación -------------------------------------------------------------------------
+  await seedInvitationFixture();
   const ownerA = await signUp("owner-a");
   const orgA = await createOrganization(ownerA, "org-a");
+  await seedOwnerALicense(ownerA.userId, orgA);
   const orgC = await createOrganization(ownerA, "org-c");
   const orgDisposable = await createOrganization(ownerA, "org-d");
   await setActive(ownerA, orgA);
@@ -123,6 +188,8 @@ try {
   const [adminA, memberA, bystander, promotable, removable, leaver, revoked, stale, invitee, unverified, stranger, noOrg, platformAdmin] = await Promise.all(
     ["admin-a", "member-a", "bystander", "promotable", "removable", "leaver", "revoked", "stale", "invitee", "unverified", "stranger", "no-org", "platform-admin"].map(signUp),
   );
+
+  await d1(`DELETE FROM member WHERE user_id = '${noOrg.userId}' AND organization_id = '${fixtureOrganizationId}'; UPDATE session SET active_organization_id = NULL WHERE user_id = '${noOrg.userId}';`);
 
   const now = Date.now();
   const expiresAt = now + 86_400_000;
@@ -302,8 +369,9 @@ try {
   harnessFailure = error;
 } finally {
   try {
-    executeD1(`DELETE FROM organization WHERE slug LIKE 'authz-%-${suffix}'; DELETE FROM user WHERE email LIKE 'authz-%-${suffix}@vecidya.test';`);
+    cleanupFixtures();
   } catch (error) {
+    cleanupFailure = error;
     console.error(`Limpieza de fixtures incompleta: ${error.message}`);
   }
 }
@@ -313,6 +381,7 @@ if (harnessFailure) {
   console.error(`\nHARNESS FAILURE (no es un resultado de autorización): ${harnessFailure.message} ${harnessFailure.cause?.code ?? ""}`);
   process.exit(2);
 }
+if (cleanupFailure) process.exit(2);
 const failures = results.filter((result) => !result.ok);
 if (failures.length) {
   console.error(`\nFAIL: ${failures.length}/${results.length} comprobaciones de autorización fallaron.`);
