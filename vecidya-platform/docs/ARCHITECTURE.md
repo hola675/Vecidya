@@ -1,5 +1,14 @@
 # Arquitectura de Vecidya
 
+## EMAIL-TRANSACTIONAL-UX-02 — diseño de envío (2026-10-19, pendiente de validación)
+
+Las plantillas transaccionales de Vecidya se centralizan en `server/email/templates.server.ts` (HTML de tablas con estilos inline + `text/plain`). Usan el logo real `https://vecidya.com/brand/vecidya-icon-3d.png` y colores de `app.css`; no usan imágenes de terceros, tracking, JavaScript ni fuentes web. `sendResetPassword`/verificación de Better Auth reutilizan la plantilla y un `onPasswordReset` publica un aviso de seguridad solo después del cambio real; si falla ese aviso no se revierte ni falsea el cambio.
+
+Better Auth 1.7.5 puede absorber errores del callback de invitación. Para las dos rutas propias protegidas, `createAuth(..., { invitationDeliveryManagedByRoute: true })` evita enviar desde el callback; cada ruta crea la invitación y llama explícitamente al adaptador Gmail una vez, sin dobles copias. El resultado diferencia aceptación del proveedor de envío simulado y fallo no confirmado: Gmail API send no acredita entrega al inbox. Si falla después de crear, la invitación permanece pendiente y el usuario recibe un aviso honesto; no hay reintento automático ni outbox persistente, por riesgo de duplicación. El plugin conserva su envío predeterminado en otros contextos. Requiere E2E real antes del cierre del riesgo.
+
+El Diagnóstico mantiene exclusivamente `diagnostic-dev-inbox.server.ts` para verificación y `access_recovery`, y únicamente `import.meta.env.DEV` habilita ese transporte; las nuevas plantillas no autorizan envío real, acceso al informe ni activación del embudo. Contratos Vecidya↔GHL, datos, derechos y privacidad no se modifican.
+
+
 ## PLATFORM-ADMIN-GLOBAL — especificación para aprobación (2026-10-17)
 
 **Estado:** propuesta documental consolidada, pendiente de revisión y aprobación explícita del usuario. No se han añadido rutas, código, schema ni migraciones. Este control plane complementa el sistema interno existente; no convierte a su operador en usuario de cliente.
