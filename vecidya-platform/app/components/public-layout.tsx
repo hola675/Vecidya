@@ -71,7 +71,8 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
             <NavLink to="/sobre-nosotros">Sobre nosotros</NavLink>
             <NavLink to="/unete">Únete</NavLink>
             <NavLink to="/contacto">Contacto</NavLink>
-            <NavLink to="/privacidad">Privacidad</NavLink>
+            <NavLink to="/privacidad">Privacidad y datos</NavLink>
+            <NavLink to="/terminos">Condiciones de uso</NavLink>
             <NavLink to="/login">Acceder</NavLink>
             <NavLink className="button button--primary" to="/unete">Únete a Vecidya</NavLink>
           </nav>
@@ -114,8 +115,8 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           </div>
           <div>
             <strong>Legal</strong>
-            <Link to="/privacidad">Privacidad</Link>
-            <Link to="/login">Acceder</Link>
+            <Link to="/privacidad">Privacidad y datos</Link>
+            <Link to="/terminos">Condiciones de uso</Link>
           </div>
         </nav>
         <PlatformFooter area="public" />
