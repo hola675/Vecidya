@@ -1,6 +1,6 @@
 ## CONSOLIDACIÓN-DIAG-2026-10-18 — roadmap de unificación (propuesto, sin cutover)
 
-**Objetivo:** terminar el diagnóstico público con un único contrato de preguntas, respuestas, rutas, scoring, resumen anónimo e informe identificado, sin conservar dos motores públicos ni borrar evidencia histórica. La ruta pública actual `/diagnostico` utiliza `AnonymousDiagnosticFlow` y el motor V3; el banco QA-03B y la candidata ACT siguen separados y no deben declararse equivalentes sin pruebas de paridad.
+**Objetivo:** terminar el diagnóstico público con un único contrato de preguntas, respuestas, rutas, scoring, resumen anónimo e informe identificado, sin conservar dos motores públicos ni borrar evidencia histórica. La ruta pública actual `/diagnostico` utiliza `AnonymousDiagnosticFlow` y el motor V3. QA-03B queda definida en DIAG-CLOSE-01 como identidad destino; ACT raíz conserva su identidad separada durante comparación y rollback. El destino elegido no equivale a paridad certificada ni autoriza el cutover.
 
 | Fase | Trabajo | Gate de salida |
 | --- | --- | --- |
@@ -23,9 +23,9 @@
 5. Trazar resultados y recomendaciones hasta pregunta, evidencia, versión de banco y motor. Resumen anónimo e informe detallado derivan del mismo resultado versionado, con proyecciones de acceso distintas.
 6. Cubrir golden personas, rutas límite, reinicio/reanudación, cambio de versión, descarga, verificación y caducidad.
 
-**Ejecución inicial:** D0-A construye la matriz de consumidores e identidades; D1-A compara determinísticamente `QUESTION_BANK_V2` y `qa03b` (IDs, versiones, opciones, elegibilidad y copy); D2-A corrige solo divergencias demostradas con regresiones. No hay reemplazo masivo ni limpieza de módulos legacy por nombre.
+**Ejecución inicial:** D0-A construye la matriz de consumidores e identidades sobre QA-03B como destino; D1-A compara determinísticamente `QUESTION_BANK_V2` y `qa03b` (IDs, versiones, opciones, elegibilidad y copy); D2-A corrige solo divergencias demostradas con regresiones. No hay reemplazo masivo ni limpieza de módulos legacy por nombre.
 
-**Estado a fecha 2026-10-19:** D0 sigue en análisis y D1-D6 no están certificados. La integración local obtuvo PASS técnico en FUNNEL-01D.1 y las regresiones Worker asociadas, pero G00-07 y el estado de GitHub del commit actual siguen bloqueados; esto no certifica equivalencia con QA-03B ni autoriza cutover. Mantener `GATE_B_PARTIAL`; no borrar código ni iniciar ACT-04.
+**Estado a fecha 2026-10-19:** DIAG-CLOSE-01 prepara contratos/consumidores y fija QA-03B como destino; D0-D6 siguen sin certificación de equivalencia/cutover. La integración local obtuvo PASS técnico en FUNNEL-01D.1 y las regresiones Worker asociadas, pero G00-07 y el estado de GitHub del commit actual siguen bloqueados; esto no certifica paridad con QA-03B ni autoriza cutover. Mantener `GATE_B_PARTIAL`; no borrar código ni iniciar ACT-04.
 
 ## FUNNEL-01D.2 — implementación incremental y derechos (2026-10-17)
 

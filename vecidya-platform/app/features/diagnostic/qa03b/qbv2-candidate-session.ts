@@ -2,13 +2,14 @@
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
 import { CANDIDATE_RESULT_IDENTITY_V3, isCandidateResultIdentityV3, runCandidateDiagnosticPipelineV3 } from "./qbv2-candidate-pipeline";
 import { buildCandidateQuestionPlanV3 } from "./qbv2-candidate-planner";
+import { QUESTION_BANK_ID, SESSION_KEY, SESSION_SCHEMA } from "./contract";
 import type { QuestionDefinitionV2 } from "../qbv2-contract";
 import type { AnswersV2 } from "../qbv2-rules";
 
-export const CANDIDATE_SESSION_SCHEMA_V3 = 3 as const;
-export const CANDIDATE_SESSION_STORAGE_KEY_V3 = "vecidya.diagnostic.v3.candidate.session.3";
+export const CANDIDATE_SESSION_SCHEMA_V3 = SESSION_SCHEMA;
+export const CANDIDATE_SESSION_STORAGE_KEY_V3 = SESSION_KEY;
 export const CANDIDATE_SESSION_TTL_MS_V3 = 14 * 24 * 60 * 60 * 1000;
-export const CANDIDATE_QUESTION_BANK_ID_V3 = "reviewed-evidence-v4" as const;
+export const CANDIDATE_QUESTION_BANK_ID_V3 = QUESTION_BANK_ID;
 
 export type CandidateTerminalReasonV3 = "no_useful_questions" | "budget_blocked" | "hard_cap";
 export type CandidateSessionV3 = {

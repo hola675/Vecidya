@@ -289,6 +289,14 @@ La prueba browser usa el Worker local de Cloudflare con `BASE_URL=http://127.0.0
 
 Solo los estados y validaciones locales de las tablas se certifican en esta fase; los escenarios etiquetados backend siguen pendientes y no se cuentan como simulaciones E2E. El uso de run ID en analítica requiere revisión de privacidad: seudónimo no significa anónimo. Ninguna métrica de conversión prueba validez de score. La ruta del prototipo carga el pipeline completo localmente y no es control de acceso; F3 debe aislarlo antes de publicar.
 
+## DIAG-CLOSE-01 — preparación de identidad QA-03B (2026-10-19)
+
+QA-03B es la identidad destino del futuro cutover, no el motor público actual. Su `contract.ts` es autoridad para IDs de banco (`reviewed-evidence-v4`), respuestas (`qbv2-answers-v3`), contexto, aplicabilidad, scoring, planner, pipeline y sesión schema/key 3. La identidad compuesta de resultado se valida de forma exacta; una identidad híbrida o con campos adicionales se rechaza. ACT raíz mantiene banco/respuestas y sesión separados.
+
+RAN: suites QA-03B y compatibilidad focal (contrato, contexto, 61 fragmentos conceptuales, recorridos/sesión, FUNNEL, readiness público, resumen anónimo e informe legacy/caracterización): **126/126 PASS**. El primer intento sin `node_modules` no pudo cargar `react` para la prueba de informe; tras `pnpm install --offline --frozen-lockfile` (lockfile intacto, paquetes completos de caché local), el comando pasó. El readiness confirma que `/diagnostico` sigue en el flujo V3 y el replay de FUNNEL usa el runtime V3; las rutas QA-03B siguen dev-only. `pnpm run typecheck` y `pnpm run build`: **PASS**. Escaneo completo de `build/client` y `build/server` para banco, identidad y ruta QA-03B: **0 coincidencias**. No se ejecutó smoke Worker ni HTTP local; las rutas se protegieron con la prueba de readiness y el build, no con comprobación de servicio en ejecución.
+
+La sesión QA-03B conserva su implementación de almacenamiento: la sesión ACT anterior tiene schema/key 2, migración propia y comportamiento histórico. Unificar ambas rutinas alteraría consumers/compatibilidad; se mantiene duplicación hasta el cutover y auditoría de consumers. No se modificaron rutas públicas, puntuaciones, preguntas, cálculo, generador PDF ni historial. `git diff --check`: PASS.
+
 ## DIAG-V3-QA-03B — certificación candidata local (2026-10-11)
 
 **Resultado: `CONTRACT_CERTIFIED`; elegibilidad D2: `D2_ELIGIBILITY_APPROVED`.** La certificación se limita al contrato candidato y al runtime local. No activa la candidata, no modifica el contrato público ni las sesiones históricas, y no cierra `GATE_B_PARTIAL`.
