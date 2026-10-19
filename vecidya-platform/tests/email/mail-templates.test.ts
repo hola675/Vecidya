@@ -5,6 +5,7 @@ import { buildMimeMessage } from "../../server/email/mail.server.ts";
 import {
   buildDiagnosticAccessEmail,
   buildInvitationEmail,
+  buildPasswordChangedEmail,
   buildPasswordResetEmail,
   buildVerificationEmail,
 } from "../../server/email/templates.server.ts";
@@ -17,6 +18,7 @@ test("plantillas preservan marca, identidad visual, texto alternativo y CTA acce
     buildInvitationEmail({ organizationName: "Taller Uno", role: "admin", url: link }),
     buildVerificationEmail("https://vecidya.com/api/auth/verify-email?token=abc"),
     buildPasswordResetEmail("https://vecidya.com/reset-password?token=abc"),
+    buildPasswordChangedEmail(),
     buildDiagnosticAccessEmail({ purpose: "verification", url: "http://127.0.0.1:5173/diagnostico/verificar#requestId=abc" }),
     buildDiagnosticAccessEmail({ purpose: "access_recovery", url: "http://localhost:5173/diagnostico/verificar#requestId=abc" }),
   ];
@@ -45,6 +47,14 @@ test("invitación usa rol en español y evita Vecidya duplicado en asunto", () =
   const external = buildInvitationEmail({ organizationName: "Taller Uno", role: "member", url: link });
   assert.equal(external.subject, "Invitación a Taller Uno | Vecidya");
   assert.match(external.text, /como miembro/);
+});
+
+test("el aviso de contraseña cambiada no incluye secreto ni restablecimiento", () => {
+  const changed = buildPasswordChangedEmail();
+  assert.equal(changed.subject, "Tu contraseña se actualizó | Vecidya");
+  assert.match(changed.text, /se actualizó correctamente/);
+  assert.match(changed.text, /no reconoces este cambio/i);
+  assert.doesNotMatch(changed.text, /token=|nueva contraseña|Crear nueva contraseña/);
 });
 
 test("escapa contenido no confiable sin permitir HTML ni URLs inseguras", () => {
