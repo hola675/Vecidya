@@ -1,8 +1,14 @@
 # Changelog
 
-## 2026-10-19 — Reconciliación y certificación local de Fase 00 (no publicada)
+## 2026-10-19 — consolidación Git y retirada de workflows
 
-- La integración se prepara desde `origin/integration/phase-00-main-reconcile` en worktree dedicado, con `origin/main` como ancestro. `main` no se modificó; el estado de GitHub/PR del SHA actual no fue accesible y no se declara merge ni publicación.
+- PR #11 integró la candidata `5864a2f` en `main`; el merge commit fue `469ef7a`. Se cerraron los PR redundantes #6 y #12, y se retiraron las ramas/worktrees temporales tras guardar respaldo verificable y conservar sus directorios ignorados fuera del checkout.
+- Por decisión autorizada se retiraron `.github/workflows/diagnostic-funnel-01d1.yml`, `.github/workflows/vecidya-ci.yml` y `.github/workflows/vecidya-licensing.yml`. No se modificaron Workers ni se reactivó la integración Cloudflare.
+- La operación fue de conciliación Git: no ejecutó tests, E2E, typecheck, build, CI manual, deploy ni migraciones D1. No representa certificación funcional nueva; los checks históricos conservan su estado y procedencia.
+
+## 2026-10-19 — Fase 00: reconciliación local previa al merge (sin publicación)
+
+- En este corte inicial, la integración se preparó desde `origin/integration/phase-00-main-reconcile` en worktree dedicado, con `origin/main` como ancestro. Todavía no había merge ni publicación; el resultado posterior se documenta en la entrada más reciente de este changelog.
 - Se corrigió el resultado del borrado autorizado cuando D1 incluye cambios de filas descendientes en cascada; la respuesta ahora se basa en `meta.changes > 0` bajo el predicado de autorización y request ID. Se añadió regresión para `changes=7` y `changes=0`.
 - Se ajustaron harnesses E2E locales a invitación/licencia actuales, limpieza de fixtures y ejecución directa del Wrangler CLI en Windows; no cambia la autorización ni los estados comerciales de la aplicación.
 - Se consolidaron los seis documentos de fase/auditoría en `ARCHITECTURE.md`, `ROADMAP.md`, `STATUS.md`, `PROJECT_STATE.md`, `DATABASE.md`, `STRUCTURE.md` y `TESTING.md`. Quedan 16 documentos canónicos frente al techo de 20; dos anexos preexistentes permanecen fuera del inventario canónico.
