@@ -10,6 +10,7 @@ const routes = read("app/routes.ts");
 const layout = read("app/components/public-layout.tsx");
 const register = read("app/routes/register.tsx");
 const css = read("app/app.css");
+const sitemap = read("app/routes/sitemap.ts");
 
 test("ambos documentos tienen título, índice y secciones enlazables", () => {
   for (const page of [privacy, terms]) {
@@ -33,6 +34,7 @@ test("ambos documentos tienen título, índice y secciones enlazables", () => {
 test("navegación, registro y rutas exponen ambos documentos", () => {
   assert.match(routes, /route\("privacidad", "routes\/privacy\.tsx"\)/);
   assert.match(routes, /route\("terminos", "routes\/terms\.tsx"\)/);
+  assert.match(sitemap, /"\/terminos"/);
   for (const path of ["/privacidad", "/terminos"]) {
     assert.ok(layout.includes(`to="${path}"`));
     assert.ok(register.includes(`to="${path}"`));
