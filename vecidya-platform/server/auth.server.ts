@@ -8,7 +8,7 @@ import * as schema from "../db/schema";
 import { createOrganizationPlugin } from "./auth-plugins.server";
 import { isBlockedOrganizationHttpCall } from "./auth/organization-http-surface";
 import { createTransactionalMailer, type MailEnvironment } from "./email/mail.server";
-import { buildPasswordResetEmail, buildVerificationEmail } from "./email/templates.server";
+import { buildPasswordChangedEmail, buildPasswordResetEmail, buildVerificationEmail } from "./email/templates.server";
 
 export type AuthEnvironment = Env & {
   BETTER_AUTH_SECRET?: string;
@@ -46,6 +46,16 @@ export function createAuth(env: AuthEnvironment, request: Request, options: { in
       enabled: true,
       sendResetPassword: async ({ user, url }) => {
         await mailer.sendTransactionalEmail({ ...buildPasswordResetEmail(url), to: user.email });
+      },
+      // Better Auth fires this only after the password was changed.
+      // Never turn a successful password reset into a user-facing error if its
+      // follow-up notification cannot be delivered.
+      onPasswordReset: async ({ user }) => {
+        try {
+          await mailer.sendTransactionalEmail({ ...buildPasswordChangedEmail(), to: user.email });
+        } catch {
+          console.error("PASSWORD_CHANGE_NOTICE_UNCONFIRMED");
+        }
       },
     },
     emailVerification: {
