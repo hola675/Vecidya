@@ -1,5 +1,12 @@
 # Estado de implementación
 
+## LEGAL-UX-01 — lectura clara de privacidad y condiciones (2026-10-19; rama, no publicado)
+
+**CODE/TEST en `feat/legal-trust-content-20261019`; RAN de suite/Worker pendiente.** `/privacidad` se reorganizó para explicar de forma comprensible cuenta, organización, perfiles públicos, canales de contacto, Diagnóstico público y solicitudes de derechos; se conserva el límite de 14 días del progreso del Diagnóstico ya documentado. Se añade `/terminos` como guía de condiciones de uso para exploración, roles, publicación, orientación del Diagnóstico y contratación; evita garantías de resultados y afirmaciones legales no confirmadas. Identidad visual oficial y navegación temática reutilizable, links desde footer/mobile/registro, CSS responsive y `prefers-reduced-motion`. TEST nuevo `tests/unit/legal/legal-pages.test.ts`; no hay modificación de contratos, autorización, consentimiento, datos ni mecanismos de retención.
+
+**Pendiente:** tests, typecheck, build, Worker local y revisión visual de 320/390/768/1440, zoom y teclado. Revisión jurídica humana antes de publicación como condiciones vinculantes: faltan identificación y datos oficiales del responsable, jurisdicción, bases legales, plazos completos por categoría, terceros y transferencias, procedimiento/plazos de solicitudes, condiciones comerciales y políticas de cookies aplicables. No atribuir certificación legal ni publicación a este PR.
+
+
 ## EMAIL-TRANSACTIONAL-UX-02 — plantillas y confirmación de correo (2026-10-19; rama, no publicado)
 
 **CODE en `fix/email-transactional-ux-20261019`; TEST añadido, RAN pendiente.** Nueva plantilla transaccional HTML/texto sin CSS ni fuentes externas: símbolo oficial `public/brand/vecidya-icon-3d.png`, tokens cromáticos de `app.css`, instrucciones, botón, URL alternativa y aviso de seguridad. Aplicada a invitación, verificación de cuenta, solicitud de recuperación, aviso de contraseña ya cambiada (callback `onPasswordReset`) y simulación dev-only de verificación/recuperación del Diagnóstico. No adjunta informes ni habilita envíos reales del Diagnóstico.
