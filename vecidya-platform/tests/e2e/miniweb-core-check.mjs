@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:
 import { setDefaultAutoSelectFamilyAttemptTimeout } from "node:net";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
 
 import { baseUrl, assertLocalBaseUrl } from "./test-safety.mjs";
 import { chromium } from "playwright";
@@ -20,11 +21,8 @@ function executeD1(sql) {
   const directory = mkdtempSync(join(tmpdir(), "vecidya-miniweb-"));
   const file = join(directory, "step.sql");
   writeFileSync(file, sql, "utf8");
-  const command = process.platform === "win32" ? (process.env.ComSpec ?? "cmd.exe") : "pnpm";
-  const args = process.platform === "win32"
-    ? ["/d", "/s", "/c", `pnpm.cmd wrangler d1 execute DB --local --json --file "${file}"`]
-    : ["exec", "wrangler", "d1", "execute", "DB", "--local", "--json", "--file", file];
-  const result = spawnSync(command, args, { cwd: process.cwd(), encoding: "utf8" });
+  const wranglerCli = fileURLToPath(import.meta.resolve("wrangler"));
+  const result = spawnSync(process.execPath, [wranglerCli, "d1", "execute", "DB", "--local", "--json", "--file", file], { cwd: process.cwd(), encoding: "utf8", windowsHide: true });
   rmSync(directory, { recursive: true, force: true });
   harness(result.status === 0, `D1 local falló: ${result.stderr}`);
   return JSON.parse(result.stdout).flatMap((statement) => statement.results ?? []);
@@ -107,6 +105,7 @@ const createdOrganizationIds = [];
 const fixtureInviterId = crypto.randomUUID();
 const fixtureOrganizationId = crypto.randomUUID();
 const fixturePriceId = crypto.randomUUID();
+const priceAId = crypto.randomUUID();
 
 let harnessFailure = null;
 let browser = null;
@@ -119,7 +118,6 @@ try {
   const organizationA = await createOrganization(ownerA, "org-a");
   // Los perfiles públicos requieren una licencia activa del propietario (no basta el estado published).
   const billingAId = crypto.randomUUID();
-  const priceAId = crypto.randomUUID();
   const licenseAId = crypto.randomUUID();
   const licenseAAt = Date.now();
   await d1(`INSERT INTO billing_account (id, owner_user_id, kind, created_at, updated_at) VALUES ('${billingAId}', '${ownerA.userId}', 'individual', ${licenseAAt}, ${licenseAAt}); INSERT INTO license_price (id, plan_code, currency, amount_cents, billing_interval, effective_from, status, created_at, updated_at) VALUES ('${priceAId}', 'cuadra', 'USD', 3900, 'monthly', ${licenseAAt}, 'active', ${licenseAAt}, ${licenseAAt}); INSERT INTO organization_license (id, organization_id, billing_account_id, plan_code, price_id, status, started_at, activated_at, created_at, updated_at) VALUES ('${licenseAId}', '${organizationA}', '${billingAId}', 'cuadra', '${priceAId}', 'active', ${licenseAAt}, ${licenseAAt}, ${licenseAAt}, ${licenseAAt});`);

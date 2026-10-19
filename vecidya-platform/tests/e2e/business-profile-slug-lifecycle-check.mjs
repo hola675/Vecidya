@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
 import { baseUrl, assertLocalBaseUrl } from "./test-safety.mjs";
@@ -11,6 +12,13 @@ const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\ms
 const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
 const suffix = Date.now().toString();
 const email = `slug-life-${suffix}@vecidya.test`;
+const inviterEmail = `slug-life-inviter-${suffix}@vecidya.test`;
+const inviterId = crypto.randomUUID();
+const fixtureOrganizationId = crypto.randomUUID();
+const invitationId = crypto.randomUUID();
+const billingAccountId = crypto.randomUUID();
+const priceId = crypto.randomUUID();
+const licenseId = crypto.randomUUID();
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const feedbackSelector = "main .alert, main .success-message";
 
@@ -18,20 +26,25 @@ function executeD1(sql) {
   const directory = mkdtempSync(join(tmpdir(), "vecidya-slug-lifecycle-"));
   const file = join(directory, "query.sql");
   writeFileSync(file, sql, "utf8");
-  const result = spawnSync(process.env.ComSpec ?? "cmd.exe", ["/d", "/c", `pnpm.cmd wrangler d1 execute ${d1Database} --local --file ${file}`], { cwd: process.cwd(), encoding: "utf8", windowsHide: true });
+  const wranglerCli = fileURLToPath(import.meta.resolve("wrangler"));
+  const result = spawnSync(process.execPath, [wranglerCli, "d1", "execute", d1Database, "--local", "--file", file], { cwd: process.cwd(), encoding: "utf8", windowsHide: true });
   rmSync(directory, { recursive: true, force: true });
   if (result.status !== 0) throw new Error(`D1 local falló: ${result.stderr}`);
 }
 
 function cleanup() {
   executeD1(`
+    DELETE FROM organization_license WHERE id = '${licenseId}';
+    DELETE FROM billing_account WHERE id = '${billingAccountId}';
+    DELETE FROM license_price WHERE id = '${priceId}';
     DELETE FROM business_profile WHERE organization_id IN (SELECT id FROM organization WHERE slug LIKE 'slug-life-%-${suffix}');
     DELETE FROM member WHERE organization_id IN (SELECT id FROM organization WHERE slug LIKE 'slug-life-%-${suffix}');
+    DELETE FROM invitation WHERE organization_id IN (SELECT id FROM organization WHERE slug LIKE 'slug-life-%-${suffix}') OR email IN ('${email}', '${inviterEmail}');
     DELETE FROM organization WHERE slug LIKE 'slug-life-%-${suffix}';
-    DELETE FROM session WHERE user_id IN (SELECT id FROM user WHERE email = '${email}');
-    DELETE FROM account WHERE user_id IN (SELECT id FROM user WHERE email = '${email}');
-    DELETE FROM verification WHERE identifier = '${email}';
-    DELETE FROM user WHERE email = '${email}';
+    DELETE FROM session WHERE user_id IN (SELECT id FROM user WHERE email IN ('${email}', '${inviterEmail}'));
+    DELETE FROM account WHERE user_id IN (SELECT id FROM user WHERE email IN ('${email}', '${inviterEmail}'));
+    DELETE FROM verification WHERE identifier IN ('${email}', '${inviterEmail}');
+    DELETE FROM user WHERE email IN ('${email}', '${inviterEmail}');
   `);
 }
 
@@ -39,13 +52,58 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+class SessionClient {
+  #cookies = new Map();
+
+  async post(path, data, extraHeaders = {}) {
+    const headers = new Headers({ "content-type": "application/json", ...extraHeaders });
+    headers.set("origin", baseUrl);
+    if (this.#cookies.size) headers.set("cookie", [...this.#cookies.values()].map(({ name, value }) => `${name}=${value}`).join("; "));
+    const response = await fetch(new URL(path, baseUrl), { method: "POST", headers, body: JSON.stringify(data), redirect: "manual" });
+    for (const setCookie of response.headers.getSetCookie()) {
+      const [pair, ...attributes] = setCookie.split(";").map((attribute) => attribute.trim());
+      const [name, ...value] = pair.split("=");
+      const cookie = { name, value: value.join("=") };
+      for (const attribute of attributes) {
+        const [attributeName, attributeValue] = attribute.split("=", 2);
+        if (attributeName.toLowerCase() === "path") cookie.path = attributeValue;
+        if (attributeName.toLowerCase() === "secure") cookie.secure = true;
+        if (attributeName.toLowerCase() === "httponly") cookie.httpOnly = true;
+        if (attributeName.toLowerCase() === "samesite" && ["strict", "lax", "none"].includes(attributeValue.toLowerCase())) {
+          cookie.sameSite = attributeValue[0].toUpperCase() + attributeValue.slice(1).toLowerCase();
+        }
+      }
+      this.#cookies.set(name, cookie);
+    }
+    return { status: () => response.status, json: () => response.json(), text: () => response.text() };
+  }
+
+  cookies() {
+    return [...this.#cookies.values()];
+  }
+}
+
 const browser = await chromium.launch(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {});
 
 try {
   const context = await browser.newContext({ baseURL: baseUrl, viewport: { width: 1366, height: 900 } });
-  const post = (path, data) => context.request.post(path, { data, headers: { origin: baseUrl } });
-  const signUp = await post("/api/auth/sign-up/email", { name: `Slug Lifecycle ${suffix}`, email, password: `test-only-password-${suffix}` });
+  const client = new SessionClient();
+  const post = (path, data, headers = {}) => client.post(path, data, headers);
+  const now = Date.now();
+  executeD1(`INSERT INTO user (id, name, email, email_verified, created_at, updated_at) VALUES ('${inviterId}', 'Slug test inviter', '${inviterEmail}', 1, ${now}, ${now}); INSERT INTO organization (id, name, slug, created_at) VALUES ('${fixtureOrganizationId}', 'Slug test fixture', 'slug-life-fixture-${suffix}', ${now}); INSERT INTO invitation (id, organization_id, email, role, status, expires_at, created_at, inviter_id) VALUES ('${invitationId}', '${fixtureOrganizationId}', '${email}', 'member', 'pending', ${now + 86400000}, ${now}, '${inviterId}');`);
+  const signUp = await post("/api/auth/sign-up/email", { name: `Slug Lifecycle ${suffix}`, email, password: `test-only-password-${suffix}` }, { "X-Vecidya-Invitation": invitationId });
   assert(signUp.status() === 200, `No se pudo registrar el propietario: ${signUp.status()}`);
+  assert(client.cookies().length > 0, "El registro no creó la sesión de prueba.");
+  const ownerUserId = (await signUp.json()).user.id;
+  await context.addCookies(client.cookies().map(({ name, value, path, secure, httpOnly, sameSite }) => ({
+    name,
+    value,
+    domain: new URL(baseUrl).hostname,
+    path: path ?? "/",
+    ...(secure ? { secure } : {}),
+    ...(httpOnly ? { httpOnly } : {}),
+    ...(sameSite ? { sameSite } : {}),
+  })));
 
   const page = await context.newPage();
   const nameInput = page.getByLabel("Nombre visible", { exact: true });
@@ -73,12 +131,14 @@ try {
 
   async function openNewOrganization(key) {
     const created = await post("/api/auth/organization/create", { name: `Slug ${key} ${suffix}`, slug: `slug-life-${key}-${suffix}` });
-    assert(created.status() === 200, `No se pudo crear la organización ${key}: ${created.status()}`);
-    const active = await post("/api/auth/organization/set-active", { organizationId: (await created.json()).id });
+    if (created.status() !== 200) throw new Error(`No se pudo crear la organización ${key}: ${created.status()} ${(await created.text()).slice(0, 250)}`);
+    const organizationId = (await created.json()).id;
+    const active = await post("/api/auth/organization/set-active", { organizationId });
     assert(active.status() === 200, `No se pudo activar la organización ${key}: ${active.status()}`);
     await page.goto("/app/business-profile", { waitUntil: "networkidle" });
     await waitForHydratedForm();
     assert((await heading()) === "Crea tu perfil de negocio", `La organización ${key} no empezó sin perfil.`);
+    return organizationId;
   }
 
   // Un <Form> de React Router se envía por fetch, sin navegación: se espera la respuesta del POST
@@ -101,7 +161,9 @@ try {
   }
 
   // Perfil nuevo: el slug sigue al nombre, se puede sobrescribir y vuelve a seguirlo al vaciarlo.
-  await openNewOrganization("new");
+  const initialOrganizationId = await openNewOrganization("new");
+  const licensedAt = Date.now();
+  executeD1(`INSERT INTO billing_account (id, owner_user_id, kind, created_at, updated_at) VALUES ('${billingAccountId}', '${ownerUserId}', 'individual', ${licensedAt}, ${licensedAt}); INSERT INTO license_price (id, plan_code, currency, amount_cents, billing_interval, effective_from, status, created_at, updated_at) VALUES ('${priceId}', 'cuadra', 'USD', 3900, 'monthly', ${licensedAt}, 'active', ${licensedAt}, ${licensedAt}); INSERT INTO organization_license (id, organization_id, billing_account_id, plan_code, price_id, status, started_at, activated_at, created_at, updated_at) VALUES ('${licenseId}', '${initialOrganizationId}', '${billingAccountId}', 'cuadra', '${priceId}', 'active', ${licensedAt}, ${licensedAt}, ${licensedAt}, ${licensedAt});`);
   await nameInput.fill("Mi Negocio");
   assert((await slugInput.inputValue()) === "mi-negocio", `«Mi Negocio» generó «${await slugInput.inputValue()}».`);
   await nameInput.fill("");
