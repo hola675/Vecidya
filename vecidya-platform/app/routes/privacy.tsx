@@ -95,6 +95,10 @@ export default function Privacy() {
               <p className="legal-topic__note">La página de contacto no tiene un formulario propio de recepción de mensajes.</p>
             </article>
           </div>
+          <div className="legal-inline-note">
+            <strong>Una diferencia importante</strong>
+            <p>Los datos que eliges mostrar en un perfil público pueden ser consultados por otras personas. Tu contraseña y el contenido privado de tu cuenta no forman parte de esa publicación. Vecidya no ofrece tus datos personales a la venta desde su web pública.</p>
+          </div>
         </section>
 
         <section aria-labelledby="privacy-diagnostic-title" className="legal-highlight" id="diagnostico">
@@ -107,8 +111,8 @@ export default function Privacy() {
           <div className="legal-highlight__steps">
             <div><strong>Mientras avanzas</strong><p>Tus respuestas se conservan en este navegador para que puedas continuar si recargas la página.</p></div>
             <div><strong>Si dejas de utilizarlo</strong><p>Ese progreso se elimina tras 14 días sin actividad o antes si decides empezar de nuevo.</p></div>
-            <div><strong>Al terminar</strong><p>Se calcula un resumen anónimo de las respuestas. El flujo público no guarda esas respuestas en el servidor ni ofrece todavía acceso al informe personalizado completo.</p></div>
-            <div><strong>Si cambias de dispositivo</strong><p>El progreso de este flujo no se recupera mediante un código desde otro navegador.</p></div>
+            <div><strong>Al terminar</strong><p>Las respuestas sirven para generar un resumen anónimo; no se conservan como un historial personal del diagnóstico público. El informe personalizado completo todavía no está disponible en este flujo.</p></div>
+            <div><strong>Si cambias de dispositivo</strong><p>Para continuar desde otro navegador o dispositivo tendrás que empezar de nuevo.</p></div>
           </div>
         </section>
 
