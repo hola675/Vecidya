@@ -1,5 +1,12 @@
 # Pruebas
 
+## EMAIL-TRANSACTIONAL-UX-02 — pruebas añadidas (2026-10-19)
+
+**TEST (versionado, no ejecutado en el repositorio completo en este entorno):** `tests/email/mail-templates.test.ts` cubre cinco/seis variantes de plantilla, tokens de marca, HTML alternativo, MIME, roles localizados, escapar HTML/URLs, enlace de Diagnóstico sin informe adjunto, mensaje de contraseña cambiada y entrega de invitación simulada/no confirmada sin reintentos. El comando `pnpm run test:email` invoca la suite preexistente de adaptador y la nueva usando el resolver TS del proyecto. **RAN:** no disponible en este entorno conectado a GitHub: no hay worktree instalable de `vecidya-platform/` ni dependencias locales; no declarar PASS de test, typecheck, build, test E2E o revisión visual. Se requiere ejecutar en worktree desde esta rama antes de autorizar merge o deploy. No ejecutar tests remotos ni envíos a destinatarios reales sin autorización.
+
+Pruebas obligatorias de integración pendientes: crear invitación con proveedor `fake` (una sola llamada); simular respuesta Gmail 429/500/timeout y comprobar `unconfirmed` sin borrar el registro ni duplicar envío; comprobar rollback inexistente expresado honestamente; validar `onPasswordReset` tras cambio exitoso sin alterar el estado por fallo del aviso; MIME responsive en Gmail/Outlook; revalidar aislamiento productivo de buzón Diagnóstico; `typecheck`, `build`, `test:email` y E2E de invitaciones/diagnóstico.
+
+
 ## VECIDYA — reconciliación Fase 00 y gates G00-05 a G00-10 (2026-10-19)
 
 Este corte se ejecutó inicialmente en el worktree dedicado `integration/phase-00-main-reconcile`, iniciado en `origin/integration/phase-00-main-reconcile=82608d5` desde `origin/main=18de1be`. La candidata `5864a2f` se integró después mediante PR #11; el merge Git quedó en `469ef7a`. Los resultados siguientes pertenecen a validaciones locales anteriores a esa integración y no son checks ejecutados sobre el merge commit. La operación Git de cierre no ejecutó pruebas ni les otorga certificación funcional nueva.
