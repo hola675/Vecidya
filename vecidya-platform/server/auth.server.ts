@@ -7,7 +7,8 @@ import { getInvitationWithOrganization } from "../db/queries/organization.server
 import * as schema from "../db/schema";
 import { createOrganizationPlugin } from "./auth-plugins.server";
 import { isBlockedOrganizationHttpCall } from "./auth/organization-http-surface";
-import { createTransactionalMailer, escapeHtml, type MailEnvironment } from "./email/mail.server";
+import { createTransactionalMailer, type MailEnvironment } from "./email/mail.server";
+import { buildPasswordResetEmail, buildVerificationEmail } from "./email/templates.server";
 
 export type AuthEnvironment = Env & {
   BETTER_AUTH_SECRET?: string;
@@ -18,7 +19,7 @@ export type AuthEnvironment = Env & {
   APP_URL?: string;
 } & MailEnvironment;
 
-export function createAuth(env: AuthEnvironment, request: Request) {
+export function createAuth(env: AuthEnvironment, request: Request, options: { invitationDeliveryManagedByRoute?: boolean } = {}) {
   const secret = env.BETTER_AUTH_SECRET;
 
   if (!secret) {
@@ -44,22 +45,12 @@ export function createAuth(env: AuthEnvironment, request: Request) {
     emailAndPassword: {
       enabled: true,
       sendResetPassword: async ({ user, url }) => {
-        await mailer.sendTransactionalEmail({
-          to: user.email,
-          subject: "Restablece tu contraseña de Vecidya",
-          text: `Recibimos una solicitud para restablecer tu contraseña. Si fuiste tú, abre este enlace: ${url}`,
-          html: `<p>Recibimos una solicitud para restablecer tu contraseña de Vecidya.</p><p><a href="${escapeHtml(url)}">Restablecer contraseña</a></p><p>Si no lo solicitaste, puedes ignorar este mensaje.</p>`,
-        });
+        await mailer.sendTransactionalEmail({ ...buildPasswordResetEmail(url), to: user.email });
       },
     },
     emailVerification: {
       sendVerificationEmail: async ({ user, url }) => {
-        await mailer.sendTransactionalEmail({
-          to: user.email,
-          subject: "Verifica tu correo en Vecidya",
-          text: `Verifica tu correo electrónico de Vecidya abriendo este enlace: ${url}`,
-          html: `<p>Confirma tu correo electrónico para completar tu cuenta de Vecidya.</p><p><a href="${escapeHtml(url)}">Verificar correo</a></p>`,
-        });
+        await mailer.sendTransactionalEmail({ ...buildVerificationEmail(url), to: user.email });
       },
       sendOnSignUp: false,
     },
@@ -81,7 +72,7 @@ export function createAuth(env: AuthEnvironment, request: Request) {
         }
       }),
     },
-    plugins: [createOrganizationPlugin(emailConfig, createDatabase(env.DB))],
+    plugins: [createOrganizationPlugin(emailConfig, createDatabase(env.DB), options.invitationDeliveryManagedByRoute ?? false)],
     secret,
     trustedOrigins: [browserOrigin, workerOrigin],
   });
