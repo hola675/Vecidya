@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-19 — EMAIL-TRANSACTIONAL-UX-02 (rama, pendiente de validación)
+
+- Se centralizan y rediseñan las plantillas transaccionales HTML+texto con logo y paleta oficial de Vecidya: invitación, verificación, solicitud de restablecimiento, confirmación de contraseña ya cambiada y acceso/recuperación del informe Diagnóstico en buzón local simulado.
+- Invitaciones por rutas propias: envío explícito único tras crear, tres estados de proveedor y mensaje honesto en caso no confirmado; sin duplicar callback ni reintento ciego. Se renombra la fecha visible del listado a «Creada el».
+- Se agregan pruebas `tests/email/mail-templates.test.ts` y amplía `test:email`. En este entorno de edición GitHub **no se ejecutaron** tests, typecheck, build, E2E ni se publicó. No hay secretos/migraciones/CRM/GHL/activación de diagnóstico nuevos.
+
+
 ## 2026-10-19 — DIAG-CLOSE-01: QA-03B como identidad destino
 
 - Centralizados en `qa03b/contract.ts` los identificadores de contrato repetidos por el pipeline y la sesión QA-03B; la identidad del resultado mantiene comparación estricta y versionada.
