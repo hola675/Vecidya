@@ -19,8 +19,12 @@ type ActionContent = {
   safety: string;
 };
 
+function cleanText(value: string, maxLength = 800): string {
+  return value.replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s+/g, " ").trim().slice(0, maxLength);
+}
+
 function label(value: string): string {
-  return value.replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 120);
+  return cleanText(value, 120);
 }
 
 function safeLink(value: string): string {
@@ -38,10 +42,10 @@ function paragraph(text: string): string {
 function render(content: ActionContent): Pick<TransactionalEmail, "text" | "html"> {
   const heading = label(content.heading);
   const eyebrow = label(content.eyebrow);
-  const introduction = label(content.introduction);
-  const details = (content.details ?? []).map(label).filter(Boolean);
+  const introduction = cleanText(content.introduction);
+  const details = (content.details ?? []).map((detail) => cleanText(detail)).filter(Boolean);
   const button = label(content.button);
-  const safety = label(content.safety);
+  const safety = cleanText(content.safety);
   const actionUrl = safeLink(content.url);
   const text = [
     "VECIDYA",
