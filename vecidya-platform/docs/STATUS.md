@@ -1,5 +1,12 @@
 # Estado de implementación
 
+## EMAIL-TRANSACTIONAL-UX-02 — plantillas y confirmación de correo (2026-10-19; rama, no publicado)
+
+**CODE en `fix/email-transactional-ux-20261019`; TEST añadido, RAN pendiente.** Nueva plantilla transaccional HTML/texto sin CSS ni fuentes externas: símbolo oficial `public/brand/vecidya-icon-3d.png`, tokens cromáticos de `app.css`, instrucciones, botón, URL alternativa y aviso de seguridad. Aplicada a invitación, verificación de cuenta, solicitud de recuperación, aviso de contraseña ya cambiada (callback `onPasswordReset`) y simulación dev-only de verificación/recuperación del Diagnóstico. No adjunta informes ni habilita envíos reales del Diagnóstico.
+
+**INVITE-DELIVERY-SILENT-001 — mitigación en rama, no certificada:** las dos rutas propias de invitaciones crean mediante Better Auth con callback de entrega suprimida solo en esas instancias y llaman explícitamente a Gmail una sola vez. Informan `provider_accepted`, `simulated` o `unconfirmed`; un fallo tras crear conserva la invitación y no afirma entrega ni reintenta automáticamente. El flujo externo/directo del plugin mantiene su callback normal; la allowlist HTTP vigente impide crear invitaciones por endpoint directo. No existen métricas de entrega final, outbox persistente ni confirmación de inbox. Faltan ejecución real de `pnpm test:email`, typecheck, build y E2E Worker; la rama no se ha fusionado ni desplegado. No hay migración, secretos, D1 remota ni envío nuevo de prueba.
+
+
 ## DIAG-CLOSE-01 — destino QA-03B preparado (2026-10-19)
 
 QA-03B queda fijada como identidad objetivo del futuro cutover. Los IDs candidate-only de banco, respuesta, contexto, aplicabilidad, scoring, planner, pipeline y sesión tienen una única fuente en `qa03b/contract.ts`; pruebas focales verifican identidad estricta, separación de ACT raíz y compatibilidad del V3 público. RAN: QA-03B/compatibilidad focal **126/126 PASS**, typecheck/build y escaneo de `build/client`/`build/server` (0 marcadores candidate-only): **PASS**. No se ejecutó smoke del Worker. No se activa `/diagnostico`, no se modifica la sesión pública schema/key 2, el PDF ni el runtime público; ACT-04 y eliminación de legacy siguen fuera de alcance.
