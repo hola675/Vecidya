@@ -153,6 +153,23 @@ export function buildPasswordResetEmail(url: string): TransactionalEmail {
   };
 }
 
+
+export function buildPasswordChangedEmail(): TransactionalEmail {
+  return {
+    to: "",
+    subject: "Tu contraseña se actualizó | Vecidya",
+    ...render({
+      eyebrow: "Aviso de seguridad",
+      heading: "Tu contraseña ha cambiado",
+      introduction: "La contraseña de tu cuenta Vecidya se actualizó correctamente.",
+      details: ["Este aviso confirma el cambio. No incluye contraseñas ni enlaces para restablecerlas."],
+      button: "Entrar a Vecidya",
+      url: BRAND_ORIGIN + "/login",
+      safety: "Si no reconoces este cambio, comunícate con Vecidya en hola@vecidya.com para revisar la seguridad de tu cuenta.",
+    }),
+  };
+}
+
 export function buildDiagnosticAccessEmail(input: {
   purpose: "verification" | "access_recovery";
   url: string;
