@@ -46,7 +46,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
       const created = await createAndDeliverOrganizationInvitation(
         () => auth.api.createInvitation({
           headers: request.headers,
-          body: { email: body.email.trim().toLowerCase(), role: body.role as "member" | "admin", organizationId: params.organizationId },
+          body: { email: String(body.email).trim().toLowerCase(), role: body.role as "member" | "admin", organizationId: params.organizationId },
         }),
         invitationEmailConfig(env),
         membership.name,
