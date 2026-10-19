@@ -36,6 +36,15 @@ type View =
 
 type StoredSummaryV1 = { readonly version: 1; readonly status: "pending" } | { readonly version: 1; readonly status: "ready"; readonly summary: AnonymousDiagnosticSummaryV1; readonly engineIdentity?: PublicDiagnosticEngineIdentityV1 };
 const summaryKey = (sessionId: string) => "vecidya.diagnostic.v3.anonymous-summary.1." + encodeURIComponent(sessionId);
+const sendFunnelEvent = (event: "diagnostic_started" | "detailed_report_cta_clicked") => {
+  if (!import.meta.env.DEV) return;
+  void fetch("/api/diagnostic/funnel-analytics", {
+    method: "POST",
+    credentials: "omit",
+    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    body: JSON.stringify({ event }),
+  }).catch(() => undefined);
+};
 
 function readStoredSummary(sessionId: string): StoredSummaryV1 | null {
   try {
@@ -131,6 +140,7 @@ export function AnonymousDiagnosticFlow() {
   }, []);
 
   const start = () => {
+    sendFunnelEvent("diagnostic_started");
     setSession(createSessionV3({ sessionId: newSessionId(), now: Date.now() }));
     setResultIdentity(null);
     setActiveSummary(null);
@@ -189,7 +199,7 @@ export function AnonymousDiagnosticFlow() {
     onRetry={() => session && void finish(session)}
     title="No pudimos preparar tu resumen"
   />;
-  else if (view.kind === "result") content = <AnonymousSummaryScreen onRestart={requestReset} onRequestReport={() => { if (import.meta.env.DEV && view.engineIdentity && session) setView({ kind: "identify" }); }} reportRequestEnabled={Boolean(import.meta.env.DEV && view.engineIdentity && session)} summary={view.summary} />;
+  else if (view.kind === "result") content = <AnonymousSummaryScreen onRestart={requestReset} onRequestReport={() => { if (import.meta.env.DEV && view.engineIdentity && session) { sendFunnelEvent("detailed_report_cta_clicked"); setView({ kind: "identify" }); } }} reportRequestEnabled={Boolean(import.meta.env.DEV && view.engineIdentity && session)} summary={view.summary} />;
   else if (view.kind === "identify" && session && resultIdentity && activeSummary) content = <IdentifiedDiagnosticRequestForm engineIdentity={resultIdentity} onCancel={() => setView({ kind: "result", summary: activeSummary, engineIdentity: resultIdentity })} onSubmitted={(requestId) => { setPendingRequestId(requestId); setView({ kind: "verification-pending", requestId }); }} session={session} />;
   else if (view.kind === "verification-pending" && pendingRequestId === view.requestId && activeSummary) content = <DiagnosticVerificationPending onBack={() => setView({ kind: "result", summary: activeSummary, engineIdentity: resultIdentity })} requestId={view.requestId} />;
   else if (session && session.status === "completing" && session.reviewIndex === null) {

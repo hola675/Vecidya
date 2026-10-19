@@ -1,7 +1,9 @@
-import { useState } from "react";
 import { Form, Link, useLoaderData, useNavigate } from "react-router";
+import { useState } from "react";
 
 import { createDatabase } from "../../db/client.server";
+import { and, eq, gt, isNull, or } from "drizzle-orm";
+import { billingAccount, organizationLicense } from "../../db/schema";
 import { getBusinessProfileCompletion } from "../../db/business-profile-rules";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
 import { listOrganizationServices } from "../../db/queries/organization-services.server";
@@ -10,8 +12,8 @@ import { cloudflareContext } from "../../server/cloudflare-context";
 import { getActiveOrganization } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
 import { Alert, Badge, Button, Card, Icon } from "../components/ui";
-import { ClientAreaShell } from "../components/client-area-shell";
 import { authClient } from "../lib/auth-client";
+import { ClientAreaShell } from "../components/client-area-shell";
 import { publicAssets } from "../assets/public-assets";
 
 import type { Route } from "./+types/app";
@@ -30,6 +32,9 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     getActiveOrganization(env, request),
   ]);
   const database = createDatabase(env.DB);
+  const billing = await database.query.billingAccount.findFirst({ where: eq(billingAccount.ownerUserId, workspaceUser.id) });
+  const activeLicense = billing ? await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, billing.id), eq(organizationLicense.status, "active"), or(isNull(organizationLicense.endsAt), gt(organizationLicense.endsAt, new Date()))) }) : null;
+  const canCreateOrganizations = Boolean(activeLicense) || !organizations.some((item) => item.role === "owner");
   const [businessProfile, services, memberCount] = activeOrganization
     ? await Promise.all([
       getBusinessProfileForOrganization(database, activeOrganization.id),
@@ -46,6 +51,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     businessProfileCompletion: getBusinessProfileCompletion(businessProfile),
     services,
     memberCount,
+    canCreateOrganizations,
   };
 }
 
@@ -71,28 +77,26 @@ function getPrimaryAction(businessProfile: LoaderData["businessProfile"], comple
 }
 
 export default function AppPage() {
-  const { activeOrganization, businessProfile, businessProfileCompletion, organizations, workspaceUser, isPlatformAdmin, services, memberCount } = useLoaderData<typeof loader>();
+  const { activeOrganization, businessProfile, businessProfileCompletion, organizations, workspaceUser, isPlatformAdmin, services, memberCount, canCreateOrganizations } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleCreateOrganization(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submitting) return;
     setSubmitting(true);
     setError(null);
-
     const formData = new FormData(event.currentTarget);
     const result = await authClient.organization.create({
-      name: String(formData.get("name")),
-      slug: String(formData.get("slug")),
+      name: String(formData.get("name")).trim(),
+      slug: String(formData.get("slug")).trim(),
     });
-
     if (result.error) {
       setError(result.error.message ?? "No se pudo crear la organización.");
       setSubmitting(false);
       return;
     }
-
     setSubmitting(false);
     navigate("/app", { replace: true });
   }
@@ -122,9 +126,9 @@ export default function AppPage() {
         <Card className="empty-state">
           <img alt="" height="512" src={publicAssets.brand.symbol3d} width="512" />
           <div>
-            <p className="eyebrow">PRIMER PASO</p>
-            <h2>Crea tu primera organización</h2>
-            <p>Será el espacio seguro desde el que gestionarás tu presencia digital.</p>
+            <p className="eyebrow">ACCESO CONTROLADO</p>
+            <h2>Comienza con tu primera organización</h2>
+            <p>Con al menos una licencia Vecidya activa puedes gestionar varios negocios, completar sus perfiles, solicitar servicios y aparecer en Vecindario. El CRM de Barrio o Ciudad requiere licencia propia por organización.</p>
           </div>
         </Card>
       ) : (
@@ -181,23 +185,15 @@ export default function AppPage() {
 
       <Card className="setup-card" id="organization-setup">
         <div>
-          <p className="eyebrow">ORGANIZACIONES</p>
-          <h2>{organizations.length ? "Crea otro espacio" : "Crea tu espacio Vecidya"}</h2>
-          <p>Usa un nombre claro y un slug único en minúsculas.</p>
+          <p className="eyebrow">NUEVA ORGANIZACIÓN</p>
+          <h2>{organizations.length ? "Añadir otro negocio" : "Crear mi organización"}</h2>
+          <p>Una licencia Vecidya activa permite administrar varios negocios y su presencia en Vecindario. Barrio y Ciudad habilitan el CRM solo en la organización que tenga contratada esa licencia.</p>
         </div>
-        <Form className="organization-form" method="post" onSubmit={handleCreateOrganization}>
-          <label>
-            Nombre
-            <input autoComplete="organization" name="name" placeholder="Ej. Barrio Centro…" required />
-          </label>
-          <label>
-            Slug
-            <input autoComplete="off" name="slug" pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="barrio-centro…" required spellCheck={false} />
-          </label>
-          <Button disabled={submitting} type="submit">
-            {submitting ? "Creando…" : "Crear organización"}
-          </Button>
-        </Form>
+        {canCreateOrganizations ? <Form className="organization-form" method="post" onSubmit={handleCreateOrganization}>
+          <label>Nombre del negocio<input autoComplete="organization" name="name" required maxLength={100} placeholder="Ej. Barrio Centro" /></label>
+          <label>Identificador público<input autoComplete="off" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="barrio-centro" spellCheck={false} /></label>
+          <Button disabled={submitting} type="submit">{submitting ? "Creando…" : "Crear organización"}</Button>
+        </Form> : <p>Para añadir organizaciones necesitas al menos una licencia Vecidya activa. <Link to="/licencias">Consultar licencias</Link>.</p>}
       </Card>
     </main>
     </ClientAreaShell>

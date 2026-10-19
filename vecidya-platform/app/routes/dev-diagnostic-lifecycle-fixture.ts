@@ -4,12 +4,13 @@ import { consumeChallengeAndGrantAccess, deleteIdentifiedReport, findRequestWith
 import { VERIFIED_EMAIL_CHALLENGE_TTL_HOURS } from "../features/diagnostic/identified-report-constants";
 import { createOpaqueToken, digestOpaqueToken } from "../features/diagnostic/report-access-crypto.server";
 import { deliverDiagnosticVerificationEmail, discardDiagnosticDevInboxMessage, readDiagnosticDevInbox } from "../../server/email/diagnostic-dev-inbox.server";
+import { FUNNEL_ANALYTICS_DIAGNOSTIC_VERSION, FUNNEL_ANALYTICS_CONTRACT_VERSION, isLoopbackDevelopmentHost, utcAnalyticsDay } from "../features/diagnostic/funnel-analytics-contract";
 
 import type { ActionFunctionArgs } from "react-router";
 
 const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
 const failure = (status: number, error: string) => Response.json({ error }, { status, headers });
-const allowedOperations = ["inspect", "lock_challenge", "tamper_snapshot", "expire_children", "expire_request", "expire_request_only", "expire_snapshot_only", "restore_snapshot_expiry", "expiry_matrix", "seed_lost_response_fixture", "revoke_access", "restore_access", "install_purge_failpoint", "remove_purge_failpoint", "cleanup"] as const;
+const allowedOperations = ["inspect", "inspect_funnel_aggregate", "lock_challenge", "tamper_snapshot", "expire_children", "expire_request", "expire_request_only", "expire_snapshot_only", "restore_snapshot_expiry", "expiry_matrix", "seed_lost_response_fixture", "revoke_access", "restore_access", "install_purge_failpoint", "remove_purge_failpoint", "install_funnel_analytics_failpoint", "remove_funnel_analytics_failpoint", "cleanup"] as const;
 type Operation = typeof allowedOperations[number];
 
 async function runExpiryMatrix(db: D1Database, sourceRequestId: string) {
@@ -67,6 +68,7 @@ async function runExpiryMatrix(db: D1Database, sourceRequestId: string) {
     const consume = (offset: number) => consumeChallengeAndGrantAccess(db, {
       requestId, challengeId, tokenDigest: challengeDigest, purpose: "verification",
       access: { ...access, issuedAt: at(offset) }, now: at(offset),
+      recordFunnelAnalytics: false,
     });
     const consumeAtExpiry = await consume(20_000);
     const consumeAfterExpiry = await consume(20_001);
@@ -181,8 +183,10 @@ async function seedLostResponseFixture(db: D1Database, sourceRequestId: string, 
 
 export function loader() { return failure(405, "Método no permitido."); }
 
+const isLoopbackRequest = (request: Request) => isLoopbackDevelopmentHost(new URL(request.url).hostname);
+
 export async function action({ context, params, request }: ActionFunctionArgs) {
-  if (!import.meta.env.DEV) return failure(404, "No disponible.");
+  if (!import.meta.env.DEV || !isLoopbackRequest(request)) return failure(404, "No disponible.");
   if (request.method !== "POST") return failure(405, "Método no permitido.");
   if (request.headers.get("origin") !== new URL(request.url).origin) return failure(403, "Origen no permitido.");
   if (!/^application\/json(?:\s*;|$)/i.test(request.headers.get("content-type") ?? "")) return failure(415, "Formato no permitido.");
@@ -196,13 +200,32 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
   if (!body || typeof body !== "object" || Array.isArray(body) || Object.keys(body).length !== 1 || !allowedOperations.includes((body as { op?: Operation }).op as Operation)) return failure(400, "Operación no válida.");
   const op = (body as { op: Operation }).op;
   const triggerName = `diag_qa_purge_abort_${requestId.replaceAll("-", "")}`;
+  const analyticsTriggerName = `diag_qa_funnel_abort_${requestId.replaceAll("-", "")}`;
   if (op === "cleanup") {
     discardDiagnosticDevInboxMessage(requestId);
     await db.prepare(`DROP TRIGGER IF EXISTS ${triggerName}`).run();
+    await db.prepare(`DROP TRIGGER IF EXISTS ${analyticsTriggerName}`).run();
     if (requestRow) await db.prepare("DELETE FROM identified_diagnostic_request WHERE id = ?").bind(requestId).run();
     return Response.json({ ok: true, existed: Boolean(requestRow) }, { headers });
   }
+  if (op === "inspect_funnel_aggregate") {
+    const [rows, columns] = await Promise.all([
+      db.prepare(`SELECT event_day AS date, diagnostic_version AS version, contract_version AS contractVersion, event_type AS event, event_count AS count
+        FROM diagnostic_funnel_aggregate WHERE event_day = ? AND diagnostic_version = ? AND contract_version = ?
+        ORDER BY event_type`).bind(utcAnalyticsDay(new Date()), FUNNEL_ANALYTICS_DIAGNOSTIC_VERSION, FUNNEL_ANALYTICS_CONTRACT_VERSION).all(),
+      db.prepare("PRAGMA table_info(diagnostic_funnel_aggregate)").all<{ name: string }>(),
+    ]);
+    return Response.json({ metrics: rows.results, columns: columns.results?.map((column) => column.name) ?? [] }, { headers });
+  }
   if (!requestRow) return failure(404, "Fixture local no disponible.");
+  if (op === "install_funnel_analytics_failpoint") {
+    await db.prepare(`CREATE TRIGGER IF NOT EXISTS ${analyticsTriggerName} BEFORE INSERT ON diagnostic_funnel_aggregate BEGIN SELECT RAISE(ABORT, 'qa local analytics failpoint'); END`).run();
+    return Response.json({ ok: true }, { headers });
+  }
+  if (op === "remove_funnel_analytics_failpoint") {
+    await db.prepare(`DROP TRIGGER IF EXISTS ${analyticsTriggerName}`).run();
+    return Response.json({ ok: true }, { headers });
+  }
   if (op === "seed_lost_response_fixture") {
     try { return Response.json(await seedLostResponseFixture(db, requestId, new URL(request.url).origin), { headers }); }
     catch { return failure(500, "No se pudo crear la fixture local."); }
@@ -221,13 +244,14 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
       (SELECT COUNT(*) FROM verified_email_challenge WHERE request_id = ? AND status = 'superseded') AS supersededChallenges,
       (SELECT COUNT(*) FROM diagnostic_report_access WHERE request_id = ?) AS access,
       (SELECT COUNT(*) FROM diagnostic_report_access WHERE request_id = ? AND revoked_at IS NULL AND expires_at > CAST(strftime('%s','now') AS INTEGER) * 1000) AS activeAccess,
-      (SELECT COUNT(*) FROM diagnostic_report_access WHERE request_id = ? AND revoked_at IS NOT NULL) AS revokedAccess,
-      (SELECT MAX(expires_at) FROM diagnostic_report_access WHERE request_id = ?) AS latestAccessExpiresAt,
-      (SELECT expires_at FROM identified_diagnostic_request WHERE id = ?) AS requestExpiresAt,
-      (SELECT expires_at FROM diagnostic_report_snapshot WHERE request_id = ?) AS snapshotExpiresAt,
+       (SELECT COUNT(*) FROM diagnostic_report_access WHERE request_id = ? AND revoked_at IS NOT NULL) AS revokedAccess,
+       (SELECT MAX(expires_at) FROM diagnostic_report_access WHERE request_id = ?) AS latestAccessExpiresAt,
+       (SELECT expires_at FROM identified_diagnostic_request WHERE id = ?) AS requestExpiresAt,
+       (SELECT first_report_opened_at FROM identified_diagnostic_request WHERE id = ?) AS firstReportOpenedAt,
+       (SELECT expires_at FROM diagnostic_report_snapshot WHERE request_id = ?) AS snapshotExpiresAt,
       (SELECT COUNT(*) FROM identified_diagnostic_request WHERE id = ? AND status = 'verified') AS verifiedRequests,
       (SELECT COUNT(*) FROM commercial_contact_intent WHERE request_id = ?) AS commercialIntents,
-      (SELECT COUNT(*) FROM diagnostic_research_intent WHERE request_id = ?) AS researchIntents`).bind(requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId).first<Record<string, number>>();
+       (SELECT COUNT(*) FROM diagnostic_research_intent WHERE request_id = ?) AS researchIntents`).bind(requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId, requestId).first<Record<string, number>>();
     const snapshot = await db.prepare(`SELECT engine_identity AS engineIdentity, report_version AS reportVersion,
       methodology_version AS methodologyVersion, report_sha256 AS reportSha256
       FROM diagnostic_report_snapshot WHERE request_id = ?`).bind(requestId).first<Record<string, string>>();

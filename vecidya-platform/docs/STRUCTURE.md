@@ -1,6 +1,6 @@
 # Estructura del código
 
-Última reconciliación: 2026-10-15 (APP-MINI-02A local; ruta privada `/app/miniweb`, API tenant-scoped y schema/migración `0017`, sin deploy). Rutas verificadas contra `app/routes.ts`; la tabla describe el código local, no producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas. Abreviaturas: [TESTING.md](TESTING.md).
+Última reconciliación: 2026-10-16 (FUNNEL-01D.1-R local; `0018`/`0019`, lectura/emisión/fixtures loopback dev-only). Rutas verificadas contra `app/routes.ts`; la tabla describe código local, no producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas. Abreviaturas: [TESTING.md](TESTING.md).
 
 ## LEGACY-00 — inventario de rutas (baseline `50026d0`)
 
@@ -10,6 +10,7 @@ Resultado `LEGACY_INVENTORY_READY`; auditoría sin eliminación. La clasificaci�
 | --- | --- | --- | --- |
 | `/diagnostico` | `KEEP` | `diagnostic.tsx` → `AnonymousDiagnosticFlow` → session V3/key 2; E2E `diagnostic`, `funnel-01b` | Necesario para FUNNEL-01B; aún sin deploy. |
 | `/api/diagnostic/anonymous-summary` | `KEEP` | Replay Worker con bank/planner/session V3; E2E `funnel-01b` | DTO allowlisted; no es backend QA-03B. |
+| `/api/diagnostic/funnel-analytics` | `DEV ONLY` | `api-diagnostic-funnel-analytics.ts`; agregado `diagnostic_funnel_aggregate` | Solo se registra cuando `NODE_ENV=development`; GET suprime `<5`, POST admite dos eventos con rate limit y host loopback. Bundle isolation pendiente de validación. |
 | `/diagnostico/metodologia` | `KEEP` | metodologia → `qbv2-methodology`; E2E methodology | Versión y contenido aún ligados al V3 público. |
 | `/diagnostico/informe` source `diagnostico-informe.tsx`, sin `route()` | `KEEP` barrera | Leído por `diagnostic-report.test.ts` y readiness | Source no registrado, pero test protege la no exposición. |
 | `/__dev/diagnostico/v3`, `/resultado/*`, `/metodologia`, `/informe/*` | `ARCHIVE` / `REMOVE_AFTER_CUTOVER` | Previews/golden y E2E V3 | Sólo dev; mantener para comparación hasta sustitución. |
@@ -17,7 +18,7 @@ Resultado `LEGACY_INVENTORY_READY`; auditoría sin eliminación. La clasificaci�
 | `/__dev/diagnostico/qa03b*` | `KEEP` | QA-03B bank/session/pipeline + suites QA | Candidata certificada; rutas dev-only. |
 | APIs persistence/recovery/analytics sin route registration | `REMOVE_AFTER_CUTOVER` / `INVESTIGATE` | No importadores app localizados; evidencia DIAG-V3-13 | Revisar Worker config, tests y scripts antes de retirar. |
 
-HEAD contiene 15 archivos fuente de ruta relacionados con diagnóstico; el registro público vigente conserva `/diagnostico`, metodología y anonymous-summary API. Rutas `__dev` dependen de `NODE_ENV=development` y guardas loader; contar archivo no equivale a ruta registrada.
+HEAD contiene 16 archivos fuente de ruta relacionados con diagnóstico; el registro público vigente conserva `/diagnostico`, metodología y anonymous-summary API. Rutas `__dev` dependen de `NODE_ENV=development` y guardas loader; contar archivo no equivale a ruta registrada.
 
 Medición desde blobs Git: `app/features/diagnostic` contiene 116 fuentes y 1.359.978 bytes; `qa03b/**` son 21/203.991 bytes; las dos familias `qbv2-candidate-*` suman 25/276.821 bytes brutos. Esas cantidades se traslapan con dependencias compartidas y no equivalen a reducción de bundle/instalación. La estimación condicional por identidad está en [ARCHITECTURE.md](ARCHITECTURE.md#estimación-de-retirada-potencial).
 
@@ -56,7 +57,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     ├── worker/                 durable-objects/, queues/, workflows/ vacíos
     ├── public/                 assets/selected/** + assets/catalog/** (PNG comerciales y estados diagnósticos) y brand/vecidya-app-icon.png
     ├── tests/e2e/              33 `.mjs` + 4 `.ps1` (ver TESTING.md); tests/unit/ (7 suites del Diagnóstico + 2 archivos de personas + 1 suite de slug de Business Profile + 2 hooks de resolución TS); integration/ vacío
-    ├── docs/                   14 documentos canónicos con los READMEs
+    ├── docs/                   14 archivos Markdown tras consolidar los seis informes de fase; 12 pertenecen al inventario canónico de GOVERNANCE.md y 2 son anexos preexistentes (CRM_PORTAL_01 y VECIDYA-UI-UX)
     ├── wrangler.jsonc, drizzle.config.ts, react-router.config.ts, vite.config.ts,
     │   tsconfig*.json, better-auth.config.ts, worker-configuration.d.ts (generado)
     └── vecidya-platform.zip    snapshot binario obsoleto versionado (deuda REPO-HYGIENE-001)

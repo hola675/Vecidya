@@ -1,7 +1,7 @@
 import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 // Este archivo se evalúa en Node; la configuración de tipos de la app no incluye los tipos de Node.
-const isDevelopmentServer = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.NODE_ENV === "development";
+const isDevelopmentServer = (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV === "development";
 
 export default [
   index("routes/home.tsx"),
@@ -48,6 +48,8 @@ export default [
   route("api/platform/organizations/:organizationId/integrations", "routes/api-platform-integrations.ts"),
   route("api/platform/organizations/:organizationId/license", "routes/api-platform-licensing.ts"),
   route("app/internal/services", "routes/internal-services.tsx"),
+  route("app/internal/diagnostic-leads", "routes/internal-diagnostic-leads.tsx"),
+  route("app/internal/diagnostic-analytics", "routes/internal-diagnostic-analytics.tsx"),
   route("app/internal", "routes/internal.tsx"),
   route("app/internal/organizations", "routes/internal-organizations.tsx"),
   route("app/internal/organizations/:organizationId", "routes/internal-organization-detail.tsx"),
@@ -70,10 +72,11 @@ export default [
   route("app/services", "routes/services-app.tsx"),
   route("vecindario/:slug", "routes/public-business-profile.tsx"),
   route("__health/db", "routes/health-db.ts"),
-  // DIAG-V3-09/10B/11/12: vista previa local del resultado (12 personas golden), integración privada del diagnóstico
+  // FUNNEL-01D.1/DIAG-V3-09/10B/11/12: métricas agregadas locales, vista previa del resultado (12 personas golden), integración privada del diagnóstico
   // adaptativo V3, su metodología y su informe PDF. Solo con `react-router dev`: build y typegen cargan este archivo con
   // NODE_ENV=production, así que nunca entran en el bundle publicado.
   ...(isDevelopmentServer ? [
+    route("api/diagnostic/funnel-analytics", "routes/api-diagnostic-funnel-analytics.ts"),
     route("api/diagnostic/report-requests", "routes/api-diagnostic-report-requests.ts"),
     route("api/diagnostic/report-requests/:requestId/resend", "routes/api-diagnostic-report-request-resend.ts"),
     route("api/diagnostic/email/verify", "routes/api-diagnostic-email-verify.ts"),

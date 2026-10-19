@@ -20,6 +20,9 @@ const lifecycleFixture = async (requestId, op) => {
   assert.equal(response.ok(), true, `operación de fixture ${op} disponible en D1 local`);
   return response.json();
 };
+const funnelAggregate = async (requestId) => lifecycleFixture(requestId, "inspect_funnel_aggregate");
+const funnelCount = (aggregate, event) => aggregate.metrics.find((metric) => metric.event === event)?.count ?? 0;
+const funnelEndpoint = new URL("/api/diagnostic/funnel-analytics", base).toString();
 const purgeExpired = async () => {
   const response = await page.request.post(new URL("/__dev/diagnostico/lifecycle/purge-expired", base).toString(), { headers: { Origin: base.origin, "Content-Type": "application/json" }, data: { confirm: "PURGE_EXPIRED_IDENTIFIED_DIAGNOSTICS" } });
   return { status: response.status(), body: await response.json() };
@@ -38,6 +41,9 @@ const answer = async () => {
 try {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  const initialAggregate = await funnelAggregate(crypto.randomUUID());
+  assert.deepEqual(initialAggregate.metrics, [], "la D1 temporal empieza sin agregados previos");
+  assert.deepEqual(initialAggregate.columns, ["event_day", "diagnostic_version", "contract_version", "event_type", "event_count"], "la tabla agregada excluye columnas de identidad y contenido diagnóstico");
   await page.goto(new URL("/diagnostico", base).toString(), { waitUntil: "commit" });
   await page.evaluate(() => { localStorage.removeItem("vecidya.diagnostic.v3.session.2"); for (const key of Object.keys(localStorage)) if (key.startsWith("vecidya.diagnostic.v3.anonymous-summary.1.")) localStorage.removeItem(key); });
   await page.reload({ waitUntil: "commit" });
@@ -46,14 +52,18 @@ try {
     const propsKey = button && Object.keys(button).find((key) => key.startsWith("__reactProps$"));
     return Boolean(propsKey && typeof button?.[propsKey]?.onClick === "function");
   });
+  const startedResponsePromise = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/diagnostic/funnel-analytics" && response.request().method() === "POST");
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
+  assert.equal((await startedResponsePromise).status(), 204, "el inicio envía solo la clave estimada sin cookies");
   await page.waitForSelector(".df-option__input");
   for (let index = 0; index < 24 && !(await page.locator(".df-ready").count()); index += 1) await answer();
   assert.equal(await page.locator(".df-ready").count(), 1, "el cuestionario V3 actual completa la ruta");
   await page.getByRole("button", { name: "Ver mi resultado" }).click();
   await page.waitForSelector(".df-anon-summary");
   const storedSession = await page.evaluate(() => JSON.parse(localStorage.getItem("vecidya.diagnostic.v3.session.2")));
+  const ctaResponsePromise = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/diagnostic/funnel-analytics" && response.request().method() === "POST");
   await page.getByRole("button", { name: "Ver diagnóstico completo" }).click();
+  assert.equal((await ctaResponsePromise).status(), 204, "el CTA registra solo la intención estimada y no crea solicitud");
   await page.getByRole("heading", { name: "Solicita tu diagnóstico completo" }).waitFor();
   await page.screenshot({ path: `${screenshotDir}/request-desktop.png`, fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
@@ -99,6 +109,27 @@ try {
   assert.equal(submitted[0].body.fullName, "QA Funnel Sintético");
   assert.deepEqual(submitted[0].body.answers.map((entry) => entry.questionId), storedSession.answeredQuestionIds, "se envían las respuestas reales de la sesión local activa");
   await page.getByRole("heading", { name: "Revisa la verificación de tu correo" }).waitFor();
+
+  const invalidEvent = await page.request.post(funnelEndpoint, { headers: { Origin: base.origin, "Content-Type": "application/json" }, data: { event: "question_answered" } });
+  assert.equal(invalidEvent.status(), 400, "telemetría rechaza eventos que no forman parte de la allowlist");
+  const extraEventField = await page.request.post(funnelEndpoint, { headers: { Origin: base.origin, "Content-Type": "application/json" }, data: { event: "diagnostic_started", requestId: created.requestId } });
+  assert.equal(extraEventField.status(), 400, "telemetría rechaza identificadores y campos adicionales");
+  const crossOriginEvent = await page.request.post(funnelEndpoint, { headers: { Origin: "https://example.invalid", "Content-Type": "application/json" }, data: { event: "diagnostic_started" } });
+  assert.equal(crossOriginEvent.status(), 403, "telemetría rechaza solicitudes de otro origen");
+  const parallelStarts = await Promise.all(Array.from({ length: 5 }, () => page.request.post(funnelEndpoint, { headers: { Origin: base.origin, "Content-Type": "application/json" }, data: { event: "diagnostic_started" } })));
+  assert.ok(parallelStarts.every((item) => item.status() === 204), "un solo Worker acepta cinco incrementos paralelos bajo el límite de frecuencia");
+  const metricsAfterParallelStarts = await funnelAggregate(created.requestId);
+  assert.equal(funnelCount(metricsAfterParallelStarts, "diagnostic_started"), 6, "los incrementos paralelos no se pierden");
+  assert.equal(funnelCount(metricsAfterParallelStarts, "diagnostic_completed"), 1, "solo un replay correcto del resumen cuenta");
+  assert.equal(funnelCount(metricsAfterParallelStarts, "detailed_report_cta_clicked"), 1);
+  assert.equal(funnelCount(metricsAfterParallelStarts, "identified_request_created"), 1, "retry con la misma clave no vuelve a contar la solicitud creada");
+  const startedAggregate = metricsAfterParallelStarts.metrics.find((metric) => metric.event === "diagnostic_started");
+  assert.equal(startedAggregate.version, "diag-v3-public-v1");
+  assert.match(startedAggregate.date, /^\d{4}-\d{2}-\d{2}$/u);
+  const publicMetrics = await (await page.request.get(funnelEndpoint)).json();
+  const todayMetrics = publicMetrics.metrics.filter((metric) => metric.date === startedAggregate.date && metric.version === startedAggregate.version);
+  assert.deepEqual(todayMetrics.map((metric) => metric.event), ["diagnostic_started"], "la lectura visible suprime recuentos menores de cinco para el día actual, sin mezclar el sentinel histórico");
+  assert.equal(todayMetrics[0].count, 6);
 
   const expiryMatrix = await lifecycleFixture(created.requestId, "expiry_matrix");
   assert.deepEqual(expiryMatrix.challengePending, [true, false, false], "challenge: before expiry is valid; exact and after are expired");
@@ -147,6 +178,7 @@ try {
   const lostState = await lifecycleFixture(lostResponseRequestId, "inspect");
   assert.equal(lostState.counts.access, 1, "la respuesta perdida no duplica el grant ya persistido");
   assert.equal(lostState.counts.consumedChallenges, 1, "el challenge consumido queda registrado una sola vez");
+  assert.equal(funnelCount(await funnelAggregate(lostResponseRequestId), "email_verified"), 1, "la primera transición de verificación cuenta una vez aunque la respuesta se pierda");
   assert.ok(lostState.snapshot?.reportSha256, "la fixture expone solo metadata/hash del snapshot para comprobar integridad semántica");
   assert.equal((await page.request.get(new URL(`/diagnostico/informe/${lostResponseRequestId}`, base).toString())).status(), 404, "sin la cookie no hay acceso aunque exista un grant persistido");
   const recoveryUrl = new URL(`/api/diagnostic/report-requests/${lostResponseRequestId}/resend`, base).toString();
@@ -218,26 +250,42 @@ try {
   assert.equal(recoveredReportResponse.status(), 200, "la cookie nueva recupera acceso a la misma solicitud");
   assert.match(recoveredReportResponse.headers()["cache-control"] ?? "", /no-store/u, "el informe recuperado sigue sin cachearse");
   assert.equal((await page.context().cookies(new URL(recovered.reportPath, base).toString())).length, 1, "el navegador recibe solo la cookie del grant nuevo");
+  assert.equal(funnelCount(await funnelAggregate(lostResponseRequestId), "detailed_report_first_opened"), 1, "primer load autorizado cuenta una sola vez por solicitud");
   const noCookieAfterRecovery = await browser.newContext();
   assert.equal((await noCookieAfterRecovery.request.get(new URL(recovered.reportPath, base).toString())).status(), 404, "ni siquiera después de solicitar recovery el UUID concede acceso a otro navegador");
   await noCookieAfterRecovery.close();
-  const staleReplayAfterRecovery = await page.evaluate(async ({ requestId, token }) => {
-    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": "198.51.100.33" }, body: JSON.stringify({ requestId, token }) });
-    return response.status;
-  }, { requestId: lostResponseRequestId, token: lostResponseToken });
-  assert.equal(staleReplayAfterRecovery, 404, "reutilizar el token inicial tras recovery no crea un grant adicional");
+  // El token inicial ya se rechaza tras consumirse y mientras existe un challenge
+  // recovery; repetirlo después excede el límite por solicitud antes del recovery repetido.
+  const repeatRecoveryResponse = await page.request.post(recoveryUrl, { headers: { Origin: base.origin, "cf-connecting-ip": "198.51.100.36" } });
+  assert.equal(repeatRecoveryResponse.status(), 202, "la misma solicitud admite una recuperación posterior después de abrir el informe");
+  const repeatRecoveryMailbox = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).json();
+  assert.equal(repeatRecoveryMailbox.purpose, "access_recovery");
+  assert.notEqual(repeatRecoveryMailbox.text, recoveryMailbox.text, "cada recuperación aceptada debe emitir un enlace nuevo, no reutilizar el token anterior");
+  const repeatRecoveryLink = repeatRecoveryMailbox.text.match(/https?:\/\/[^\s]+/u)?.[0];
+  assert.ok(repeatRecoveryLink, "la recuperación repetida debe entregar un enlace nuevo");
+  const repeatRecoveryToken = new URLSearchParams(new URL(repeatRecoveryLink).hash.slice(1)).get("token");
+  assert.ok(repeatRecoveryToken, "el nuevo enlace debe incluir token");
+  const repeatRecoveryVerification = await page.evaluate(async ({ requestId, token, ip }) => {
+    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
+    return { status: response.status, body: (await response.text()).slice(0, 600) };
+  }, { requestId: lostResponseRequestId, token: repeatRecoveryToken, ip: "198.51.100.37" });
+  assert.equal(repeatRecoveryVerification.status, 200, `recovery reemite acceso sin volver a contar email_verified: ${JSON.stringify(repeatRecoveryVerification)}`);
+  assert.equal((await page.request.get(new URL(recovered.reportPath, base).toString())).status(), 200, "el grant recuperado vuelve a abrir el informe");
+  const afterRepeatRecovery = await funnelAggregate(lostResponseRequestId);
+  assert.equal(funnelCount(afterRepeatRecovery, "detailed_report_first_opened"), 1, "recovery y revisitas no duplican la primera apertura de la solicitud");
+  assert.equal(funnelCount(afterRepeatRecovery, "email_verified"), 1, "recovery no se cuenta como primera verificación");
   await lifecycleFixture(lostResponseRequestId, "expire_snapshot_only");
   const expiredSnapshotRecovery = await page.request.post(recoveryUrl, { headers: { Origin: base.origin, "cf-connecting-ip": "198.51.100.34" } });
   assert.equal(expiredSnapshotRecovery.status(), 202, "la solicitud con snapshot vencido conserva una respuesta genérica");
   assert.equal((await expiredSnapshotRecovery.json()).accepted, true);
   const noSnapshotRecoveryEmail = await lifecycleFixture(lostResponseRequestId, "inspect");
-  assert.equal(noSnapshotRecoveryEmail.localMessage?.createdAt, recoveryMailbox.createdAt, "snapshot vencido no genera otro mensaje local");
+  assert.equal(noSnapshotRecoveryEmail.localMessage?.createdAt, repeatRecoveryMailbox.createdAt, "snapshot vencido no genera otro mensaje local");
   await lifecycleFixture(lostResponseRequestId, "restore_snapshot_expiry");
   await lifecycleFixture(lostResponseRequestId, "expire_request_only");
   const expiredRequestRecovery = await page.request.post(recoveryUrl, { headers: { Origin: base.origin, "cf-connecting-ip": "198.51.100.35" } });
   assert.equal(expiredRequestRecovery.status(), 202, "la solicitud vencida conserva una respuesta genérica");
   const noRequestRecoveryEmail = await lifecycleFixture(lostResponseRequestId, "inspect");
-  assert.equal(noRequestRecoveryEmail.localMessage?.createdAt, recoveryMailbox.createdAt, "solicitud vencida no genera otro mensaje local");
+  assert.equal(noRequestRecoveryEmail.localMessage?.createdAt, repeatRecoveryMailbox.createdAt, "solicitud vencida no genera otro mensaje local");
   assert.equal((await page.request.get(new URL(recovered.reportPath, base).toString())).status(), 404, "la solicitud vencida niega el informe aun con la cookie nueva");
 
   const mailbox = await page.request.get(new URL(`/__dev/diagnostico/buzon/${created.requestId}`, base).toString());
@@ -300,7 +348,9 @@ try {
     const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
     return { status: response.status, body: await response.json() };
   }, { requestId: created.requestId, token: resentToken, ip: "198.51.100.15" });
+  await lifecycleFixture(created.requestId, "install_funnel_analytics_failpoint");
   const concurrentVerify = await Promise.all(verificationTabs.map(verifyInTab));
+  await lifecycleFixture(created.requestId, "remove_funnel_analytics_failpoint");
   await verificationTabs[1].close();
   assert.equal(concurrentVerify.filter((entry) => entry.status === 200).length, 1, "dos verificaciones simultáneas solo consumen el challenge una vez");
   assert.ok(concurrentVerify.every((entry) => entry.status === 200 || (entry.status >= 400 && entry.status < 500)), "dos pestañas concurrentes fallan cerradas salvo el único canje");
@@ -311,6 +361,7 @@ try {
   assert.equal(fixtureState.counts.pendingChallenges, 0, "no quedan challenges incompatibles activos tras verificar");
   assert.equal(fixtureState.counts.consumedChallenges, 1, "el challenge consumido queda registrado exactamente una vez");
   assert.equal(fixtureState.counts.verifiedRequests, 1, "la solicitud pasa a verified una sola vez");
+  assert.equal(funnelCount(await funnelAggregate(created.requestId), "email_verified"), 1, "fallo analítico no revierte una verificación aceptada; queda el conteo confirmado previo");
   const cookies = await page.context().cookies(new URL(verified.reportPath, base).toString());
   assert.equal(cookies.length, 1);
   assert.equal(cookies[0].httpOnly, true);
@@ -318,14 +369,21 @@ try {
   assert.equal(cookies[0].path, "/diagnostico/informe");
   assert.equal(cookies[0].secure, false, "HTTP local no activa Secure");
   assert.equal(verified.reportPath, `/diagnostico/informe/${created.requestId}`);
-  const secondRequestResponse = await page.evaluate(async (body) => {
-    const response = await fetch("/api/diagnostic/report-requests", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": crypto.randomUUID() }, body: JSON.stringify(body) });
-    return { status: response.status, payload: await response.json() };
-  }, submitted[0].body);
+  await lifecycleFixture(created.requestId, "install_funnel_analytics_failpoint");
+  let secondRequestResponse;
+  try {
+    secondRequestResponse = await page.evaluate(async (body) => {
+      const response = await fetch("/api/diagnostic/report-requests", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": crypto.randomUUID() }, body: JSON.stringify(body) });
+      return { status: response.status, payload: await response.json() };
+    }, submitted[0].body);
+  } finally {
+    await lifecycleFixture(created.requestId, "remove_funnel_analytics_failpoint");
+  }
   assert.equal(secondRequestResponse.status, 202);
   assert.equal(Object.hasOwn(secondRequestResponse.payload, "report"), false);
   const secondRequestId = secondRequestResponse.payload.requestId;
   fixtureRequestIds.push(secondRequestId);
+  assert.equal(funnelCount(await funnelAggregate(secondRequestId), "identified_request_created"), 1, "fallo analítico no bloquea la nueva solicitud y deja explícito el subconteo best-effort");
   const crossRequestToken = await page.evaluate(async ({ requestId, token, ip }) => {
     const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
     return response.status;
@@ -375,12 +433,14 @@ try {
     secondRecovered = secondVerification === 200;
   }
   assert.equal(secondVerification, 200, "la segunda solicitud obtiene un grant propio");
+  assert.equal(funnelCount(await funnelAggregate(secondRequestId), "email_verified"), 2, "el total es una verificación de lost-response fixture más esta solicitud; access_recovery no suma");
   const secondFixtureState = await lifecycleFixture(secondRequestId, "inspect");
   assert.equal(secondFixtureState.counts.pendingChallenges, 0, "verificación/reenvío concurrente no deja challenges activos incompatibles");
   assert.equal(secondFixtureState.counts.access, secondRecovered ? 2 : 1, "el reenvío concurrente solo añade un grant si requirió recovery");
   assert.equal(secondFixtureState.counts.activeAccess, 1, "el canje/reenvío concurrente crea exactamente un grant activo");
   assert.equal(secondFixtureState.counts.revokedAccess, secondRecovered ? 1 : 0, "si el verify ganó primero, el recovery revoca el grant previo");
   const secondReportUrl = new URL(secondReportPath, base).toString();
+  await lifecycleFixture(secondRequestId, "install_funnel_analytics_failpoint");
   const [readDuringRevocation] = await Promise.all([
     page.request.get(secondReportUrl),
     lifecycleFixture(secondRequestId, "revoke_access"),
@@ -390,6 +450,10 @@ try {
   assert.equal((await page.request.get(secondReportUrl)).status(), 404, "lecturas posteriores a revocar no sirven el informe");
   await lifecycleFixture(secondRequestId, "restore_access");
   assert.equal((await page.request.get(secondReportUrl)).status(), 200, "el fixture restaura únicamente el grant sintético para la prueba de borrado");
+  const secondRequestAfterFailedOpen = await lifecycleFixture(secondRequestId, "inspect");
+  assert.ok(secondRequestAfterFailedOpen.counts.firstReportOpenedAt, "el marcador de primera apertura se persiste por solicitud aunque falle el agregado");
+  assert.equal(funnelCount(await funnelAggregate(secondRequestId), "detailed_report_first_opened"), 1, "se conserva el único first-open previo; el failpoint no bloquea el informe ni crea otro conteo");
+  await lifecycleFixture(secondRequestId, "remove_funnel_analytics_failpoint");
   const [racingRead, racingDelete] = await Promise.all([
     page.request.get(secondReportUrl),
     page.request.delete(secondReportUrl, { headers: { Origin: base.origin } }),
@@ -402,6 +466,7 @@ try {
 
   const reportResponse = await page.goto(new URL(verified.reportPath, base).toString(), { waitUntil: "domcontentloaded" });
   assert.match(reportResponse.headers()["cache-control"] ?? "", /no-store/u, "el informe protegido no se cachea públicamente");
+  assert.equal(funnelCount(await funnelAggregate(created.requestId), "detailed_report_first_opened"), 2, "first-open cuenta el fixture perdido y la solicitud principal; el otro request tuvo failpoint");
   await page.waitForTimeout(1200);
   await page.locator(".rp-doc").waitFor();
   assert.equal(await page.locator(".rp-dim").count(), 8, "el informe usa las ocho dimensiones V3");
@@ -410,6 +475,22 @@ try {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true, "informe sin overflow móvil");
   await page.screenshot({ path: `${screenshotDir}/report-mobile.png`, fullPage: true });
   await page.setViewportSize({ width: 1280, height: 900 });
+  const repeatedRecoveryUrl = new URL(`/api/diagnostic/report-requests/${created.requestId}/resend`, base).toString();
+  const repeatedRecovery = await page.request.post(repeatedRecoveryUrl, { headers: { Origin: base.origin, "cf-connecting-ip": "198.51.100.50" } });
+  assert.equal(repeatedRecovery.status(), 202, "solicitud ya abierta permite recuperar acceso con un grant nuevo");
+  const repeatedRecoveryMailbox = await (await page.request.get(new URL(`/__dev/diagnostico/buzon/${created.requestId}`, base).toString())).json();
+  assert.equal(repeatedRecoveryMailbox.purpose, "access_recovery");
+  const repeatedRecoveryLink = repeatedRecoveryMailbox.text.match(/https?:\/\/[^\s]+/u)?.[0];
+  const repeatedRecoveryToken = new URLSearchParams(new URL(repeatedRecoveryLink).hash.slice(1)).get("token");
+  const repeatedRecoveryStatus = await page.evaluate(async ({ requestId, token, ip }) => {
+    const response = await fetch("/api/diagnostic/email/verify", { method: "POST", headers: { "Content-Type": "application/json", "cf-connecting-ip": ip }, body: JSON.stringify({ requestId, token }) });
+    return response.status;
+  }, { requestId: created.requestId, token: repeatedRecoveryToken, ip: "198.51.100.51" });
+  assert.equal(repeatedRecoveryStatus, 200, "recovery produce un grant distinto sin una nueva verificación de correo");
+  assert.equal((await page.request.get(new URL(verified.reportPath, base).toString())).status(), 200, "la revisita autorizada carga con el nuevo grant");
+  const afterRepeatedRecovery = await funnelAggregate(created.requestId);
+  assert.equal(funnelCount(afterRepeatedRecovery, "detailed_report_first_opened"), 2, "recargas y grants recuperados no duplican primera apertura por solicitud");
+  assert.equal(funnelCount(afterRepeatedRecovery, "email_verified"), 2, "access_recovery no incrementa email_verified");
   assert.equal(errors.length, 0, `sin errores en el navegador: ${errors.join("; ")}`);
 
   const duplicates = await page.evaluate(async ({ body, key }) => Promise.all([0, 1].map(async () => {
@@ -467,7 +548,7 @@ try {
   assert.equal((await page.request.get(new URL(`/__dev/diagnostico/buzon/${lostResponseRequestId}`, base).toString())).status(), 404, "cleanup retira el mensaje sintético con el token del buzón local");
   const alreadyPurged = await lifecycleFixture(created.requestId, "cleanup");
   assert.equal(alreadyPurged.existed, false, "cleanup acotado es idempotente y limpia también el buzón de la fixture purgada");
-  console.log("diagnostic-v3-funnel-01c-check: PASS — recovery one-time, expiración exacta, concurrencia, grant único activo, integridad snapshot, privacidad y purga atómica/idempotente");
+  console.log("diagnostic-v3-funnel-01c-check: PASS — ciclo 01C.3 + seis métricas 01D.1, concurrencia, reintentos, recovery por request, celdas pequeñas, privacidad y limpieza");
 } finally {
   try {
     for (const requestId of fixtureRequestIds.reverse()) await lifecycleFixture(requestId, "cleanup");

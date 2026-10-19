@@ -1,5 +1,103 @@
 # Arquitectura de Vecidya
 
+## PLATFORM-ADMIN-GLOBAL — especificación para aprobación (2026-10-17)
+
+**Estado:** propuesta documental consolidada, pendiente de revisión y aprobación explícita del usuario. No se han añadido rutas, código, schema ni migraciones. Este control plane complementa el sistema interno existente; no convierte a su operador en usuario de cliente.
+
+### Actor, frontera de autoridad y auditoría
+
+La identidad es la cuenta autenticada existente (`user`) junto a su fila única `platform_member` con `role=platform_admin` y `status=active`. El login, la sesión personal y el correo verificado pertenecen a esa cuenta. No se crean contraseñas para terceros, membresías ficticias, cambio de `activeOrganizationId` ni impersonación. `platform_admin` no se incorpora a `member.role`; las APIs cliente conservan `requireOrganizationPermission` y exigen membresía real y permiso de negocio en cada petición.
+
+Las operaciones transversales solo se expondrían en endpoints administrativos propios. Cada petición mutativa requiere sesión, plataforma activa, nombre de acción de una allowlist cerrada, target organization explícito y existente (salvo la creación inicial), validación de pertenencia del recurso y auditoría. El guard propuesto (`requirePlatformAdminAction`) expresa autorización de plataforma por operación, no roles organizacionales ni privilegios heredados; hoy el código solo tiene `requirePlatformAdmin` general, por lo que el catálogo de acciones y su posible partición humana siguen pendientes de aprobación. Nunca se llamará a una API cliente con headers/identidad del actor para obtener acceso de negocio.
+
+`platform_audit_log` ya registra actor user, acción, tipo/ID de entidad, organización, valores anterior/nuevo, metadata e instante; debe reutilizarse y extenderse solo si el contrato no cabe allí. Para una entidad global sin organización afectada (p. ej. lectura de catálogo o fallo de prealta) la acción no se ejecutará si no puede registrar auditoría conforme al diseño elegido; decidir antes cómo representar `organization_id` nullable o cómo auditar esos casos. Cada intento sensible guarda actor real, org afectada, acción allowlisted, resultado (`success|denied|failed`), instante y motivo/correlation ID no sensible. No guardar token, contraseña, credenciales, respuestas de formación innecesarias ni PII libre en metadata. Auditoría es append-only desde la UI, legible solo por plataforma autorizada, con política de retención aún por decidir; fallo al registrar auditoría debe abortar la mutación atómica.
+
+### Organización pendiente, propietario e invitación
+
+Estados propuestos: `pending_owner` (fila de organización creada, sin owner/member comercial), `owner_invited` (invitación activa), `active` (aceptación comprobada, correo verificado y una membresía `owner` válida), `suspended` (bloqueo administrativo reversible) y `closed` (estado terminal lógico, sin borrado físico en este checkpoint). Transiciones permitidas: `pending_owner → owner_invited`; reenvío conserva estado y reemplaza token; revocar/expirar retorna a `pending_owner`; aceptación válida `owner_invited → active`; `active ↔ suspended`; cierre lógico solo desde una operación separada con aprobación y tratamiento de datos definido. No se habilitan transiciones directas a `active` sin owner válido. Resolver propietario único por organización y permitir que una misma persona sea owner de varias organizaciones; transferencia de owner exige doble validación, auditoría y decisión de política.
+
+La administración crea una organización `pending_owner` sin insertar una fila en `member` y sin asignar al actor como owner. Se validan slug global disponible, nombre y datos mínimos; se conserva el email normalizado del propietario previsto y el ID real solo cuando la identidad ya existe y está verificada. Una organización pendiente solo aparece en `/app/internal`; no se muestra en `/app`, selección de organización, directorio, sitemap, rutas públicas ni acceso a recursos tenant. Restricciones de slug y estados se comprueban dentro de la transacción para prevenir colisiones/carreras. No se crea licencia, servicio, perfil publicado ni contenido público por defecto.
+
+Una invitación usa un secreto aleatorio de alta entropía y una sola finalidad/organización/rol. Guardar únicamente digest del token; enviar el token una vez por canal de correo aprobado. La pantalla permite registro o login con cuenta personal y exige verificación del correo. Antes de aceptar se comprueba constant-time/seguro el digest, expiración, estado pendiente, org y estado del ciclo, igualdad con el email de la invitación y verificación de esa cuenta. Identidad discordante no puede cambiar destinatario ni transferir invitación; respuesta no debe filtrar existencia de emails/organizaciones. El consumo, creación de la membresía `owner`, marcado aceptado, activación y audit deben ser atómicos en una sola operación lógica; la recuperación idempotente solo aplica ante un fallo técnico confirmado y no puede producir estado parcialmente activo. Si no puede lograrse con las APIs transaccionales de Better Auth, detenerse y presentar alternativa para aprobación. Expirar, revocar y reenviar invalidan todos los tokens anteriores; reuso devuelve estado terminal sin segunda membresía. Rate-limit por invitación/cuenta/IP según política aprobada, sin persistir IP por defecto.
+
+El proyecto fija Better Auth `1.7.5`; el código local confirma la tabla `invitation`, `requireEmailVerificationOnInvitation: true`, el handler existente de aceptación y la allowlist HTTP restringida del plugin. La documentación oficial de APIs consultada describe `auth.api.createInvitation` y `auth.api.acceptInvitation`: la creación requiere membresía/permiso del actor, por lo que el platform admin sin membership no puede reutilizarla directamente sin suplantar; la aceptación valida invitación pendiente y email, y ofrece protección contra doble aceptación dentro de Better Auth. No se verificó el código interno empacado de `1.7.5` ni que esa atomicidad se pueda ampliar a `platform_organization_lifecycle` y `platform_audit_log`; la tabla integrada tampoco incluye por sí sola nuestro digest/token lifecycle. La API documentada `createOrganization(userId)` asigna owner a ese usuario; `addMember` no forma parte del contrato de APIs server-side consultado. Por tanto, NO se especifica `auth.api.addMember` ni se afirma atomicidad end-to-end. Antes de implementar hay que verificar hooks/garantías contra el paquete instalado y diseñar cómo agrupar ciclo, membership y audit sin acceso privilegiado artificial. La aceptación atómica end-to-end es requisito; si Better Auth no la admite, detenerse para proponer y aprobar un diseño alternativo con prueba de carrera y recuperación.
+
+### Usuarios, roles y permisos de negocio
+
+Las cuentas personales siguen siendo globales (`user`); `member` es vínculo por organización y `platform_member` es autoridad independiente. Owner/admin solo gestionan personas dentro de su organización mediante permisos vigentes; member no gestiona equipo. La invitación nueva nunca crea una contraseña para el destinatario. El email equivocado, no verificado, invitación expirada/revocada/aceptada y conflicto de owner se resuelven con estados seguros, sin enumeración ni elevación.
+
+| Actor | Organización | Invitaciones | Equipo | Capacitación | Auditoría | MiniWeb |
+| --- | --- | --- | --- | --- | --- | --- |
+| `platform_admin` activo | `R/W` lifecycle vía control plane, target obligatorio; activación solo al satisfacer condiciones; `A` gobierno de perfil según operación autorizada | `R/W` crear/revocar/reenviar para target, actor auditado; nunca aceptar por destinatario | `R/W` target; roles cerrados; no transferir owner implícitamente | `R/W` asignar general/individual, leer agregado; corregir progreso ajeno solo con motivo + auditoría | `R` según política; `W` solo eventos del sistema/transacción | `R/W`; `P` solo con acción explícita y auditada; nunca automático |
+| `owner` | `R` propia; no alta/cierre global ni suspensión de plataforma | `R/W` gestionar invitaciones de su org; no aceptar por otra identidad | `R/W` equipo según `member:*`; transferencia owner separada | `R/W` asignación de su org y agregado; no corregir progreso ajeno salvo política aprobada | Sin acceso a auditoría de plataforma | `R/W`; `P` según `business-profile:publish` |
+| `admin` | `R` propia; sin ciclo global | `R/W` dentro del permiso `member:invite` | `R/W` solo operaciones permitidas por `member:*`; no transferir owner | `R/W` asignaciones de org si se aprueba el permiso; agregado | Sin acceso a auditoría de plataforma | `R/W/P` únicamente con permisos cliente concedidos |
+| `member` | `R` según permiso en org con membership válida; sin gestión global | `R` invitación propia compatible; no administrar las del equipo | `R` lo permitido; sin mutaciones de equipo | `R/W` sus asignaciones/progreso propios; no escribir progreso ajeno | Sin acceso | `R` privado/draft permitido; no publicar |
+| Usuario autenticado sin membership | Sin `R/W` tenant ni acceso por ID/activeOrganizationId | Solo su flujo de invitación; `A` aceptación propia tras login + email verificado coincidente | Sin acceso | Sin acceso hasta obtener membership/assignment | Sin acceso | Solo páginas públicas realmente publicadas/no suspendidas; sin preview ni escritura |
+| Visitante anónimo | Sin acceso privado ni lifecycle | Landing mínima del token; sin aceptar ni enumerar; requiere cuenta | Sin acceso | Sin acceso | Sin acceso | `R` contenido publicado/no suspendido únicamente; sin preview/escritura/publicación |
+
+Leyenda: `R` lectura, `W` escritura/gestión, `A` aprobación administrativa (solo moderación/verificación si se autoriza; aceptar invitación propia no es aprobación de plataforma), `P` publicación pública. La aprobación humana de esta especificación no es permiso runtime. La activación de organización se deriva de condiciones verificables, no de una aprobación ficticia ni de que el creador sea admin. Toda operación queda sujeta a acción explícita y scope indicado; autenticación sola nunca la habilita.
+
+### Capacitación con contenido de Aprende
+
+Vecidya controla asignaciones y seguimiento, no el contenido editorial. El catálogo se obtiene del contenido existente en `app/content/learn.ts` (`LearnArticle`/slug; incluir solo contenido publicable vigente) y enlaza a la URL pública `/aprende/:slug`. No copiar títulos/cuerpos ni crear editor, CMS o autoría paralela. La curación debe tolerar contenido retirado: la asignación histórica se conserva y se etiqueta `unavailable`, no se reasigna silenciosamente a otro artículo.
+
+Contrato propuesto: asignación a organización completa o a miembros elegidos de esa organización; una asignación general habilita lectura para todos los miembros activos, y la asignación individual limita al destinatario. Progreso (`not_started|in_progress|completed`) lo escribe el propio miembro; una corrección por admin/owner/platform-admin requiere motivo, actor y audit, no una edición silenciosa. Historial mínimo conserva actor, transición anterior/nueva e instante, evitando telemetría de visitas. El resumen administrativo presenta conteos agregados por estado y denominador explícito de miembros activos; no ofrece ranking individual innecesario. Pendiente de decisión: ¿se requiere asignación general, individual o ambas?, quién puede hacer correcciones, y si “completado” es declaración propia o requiere evidencia adicional. Nada de tracking de tiempo/lecturas se infiere de visitas a Aprende.
+
+### Navegación prevista, sin registrar rutas
+
+`/app/internal`: resumen; organizaciones (lista, detalle y estados); usuarios/acceso; invitaciones; capacitación; auditoría. El detalle puede agrupar configuración, equipo, servicios y MiniWeb bajo secciones separadas con el target visible. La UI cliente `/app/capacitacion` muestra solo las asignaciones vigentes de la organización activa y del miembro autenticado, con progreso propio. Son contratos de navegación, no rutas existentes en este checkpoint. Para la vista interna, cada loader/action vuelve a exigir actor y permiso; ocultar controles no es autorización.
+
+### Endpoints propuestos (no implementados)
+
+| Método y ruta propuesta | Operación / permiso de plataforma | Garantías y auditoría |
+| --- | --- | --- |
+| `GET /api/internal/summary` | `platform.dashboard.read` | Conteos agregados; no PII innecesaria; auditar acceso según política aprobada |
+| `GET /api/internal/organizations` / `GET /api/internal/organizations/:id` | `platform.organization.read` | Paginación; target explícito; sin filtrado por activeOrganizationId |
+| `POST /api/internal/organizations` | `platform.organization.create` | Idempotency key, slug único, estado pending, sin member/license/profile público; audit transaccional |
+| `PATCH /api/internal/organizations/:id/status` | `platform.organization.suspend|reactivate|close` | Transiciones cerradas, motivo, revisión optimista; cierre no disponible hasta aprobación |
+| `POST /api/internal/organizations/:id/owner-invitations` | `platform.invitation.create` | Receptor exacto/rol owner, token digest, TTL, rate limit, envío desacoplado y estado recuperable |
+| `GET /api/internal/invitations`; `POST /api/internal/invitations/:id/revoke|resend` | `platform.invitation.read|revoke|resend` | Reenvío invalida token previo; no exponer secreto; auditar intentos sensibles |
+| `POST /api/organization-invitations/:token/accept` | invitado autenticado; email verificado coincidente (no permiso de plataforma) | One-time, atómico, no aceptar por URL GET; activa solo al garantizar owner/member + auditoría |
+| `GET /api/internal/organizations/:id/members`; `PATCH/DELETE /api/internal/organizations/:id/members/:memberId` | acciones `platform.team.read|role.update|remove` | Cada memberId pertenece al target; roles cerrados; no dejar org sin owner |
+| `GET /api/internal/training/catalog`; `GET/PUT/DELETE /api/internal/organizations/:id/training-assignments` | `platform.training.catalog.read|assignment.manage` | Slugs allowlisted del catálogo actual; asignación idempotente; tenant del destinatario validado |
+| `GET/PUT /api/organizations/:id/training/me` | membership real; `training.read:self` / `training.progress:update:self` | Solo assignments visibles al miembro; progreso propio; no aceptar userId del cliente |
+| `PATCH /api/internal/organizations/:id/training-progress/:memberId` | `platform.training.progress.correct` | Motivo requerido, target membership, historial y audit atómicos |
+| `GET /api/internal/audit?organizationId=...` | `platform.audit.read` | Paginación/orden estable, filtros tenant-scoped, no PII sensible |
+| `GET/PATCH /api/internal/organizations/:id/profile|miniweb`; `POST .../publish` | read/write/publish separados por acción | Reutilizar servicios de dominio y validadores; guard interno propio, target ownership, version check; no llamar APIs cliente mediante suplantación |
+
+Todos los writes validan esquema estricto, estado esperado/revisión (optimistic concurrency), target y actor de nuevo en server. Respuestas idempotentes para operaciones repetibles; conflictos concurrentes dan 409 y no sobrescriben silenciosamente. Si un proveedor de correo falla, la organización/invitación queda en estado recuperable claramente indicado; no se comunica “enviada” hasta confirmación observable. Una tarea de correo no confirma aceptación.
+
+### Persistencia candidata y aislamiento
+
+Reutilizar sin duplicar: `user`, `session`, `platform_member`, `organization`, `member`, `invitation` de Better Auth; `platform_audit_log`; perfil/gobernanza, `miniweb_site`/`miniweb_module`, catálogo de Aprende en código; servicios/licencias existentes. En esta especificación se proponen estrictamente tres entidades persistentes nuevas:
+
+1. `platform_organization_lifecycle`: `organization_id` PK/FK, estado cerrado, `intended_owner_email_normalized`, `owner_user_id` nullable FK, `revision`, timestamps y actor creador/actualizador; índice estado/fecha. Una fila por organización administrada en este flujo. No guardar atributos editables de organización duplicados.
+2. `organization_training_assignment`: id, `organization_id`, `content_slug`, `scope` (`all_members|member`), `member_user_id` nullable, estado (`active|withdrawn`), actor, timestamps/revision; FK compuesta o validación transaccional que garantice que el destinatario pertenece al mismo tenant; único idempotente por organización, slug, scope y miembro; índice `(organization_id,status)` y `(member_user_id,status)`.
+
+3. `organization_training_progress`: `(assignment_id,member_user_id)` único, estado (`not_started|in_progress|completed`), actor y `updated_at`/`revision`; la pertenencia miembro↔organización se valida en la misma transacción. Se persiste solo el último estado; auditoría existente registra transiciones y correcciones motivadas, sujeto a decidir si cambios propios requieren historial separado.
+
+Los tokens de invitación de owner se proponen como extensión acotada de la tabla `invitation` existente con `token_hash`, `accepted_at`, `revoked_at`, `accepted_by_user_id` y clave idempotente/estado terminal; antes de decidir columnas hay que confirmar que no se puede cumplir con el contrato integrado de Better Auth. No se duplica una tabla de invitaciones. Restricciones: estados validados en código y, si compatible con el patrón de schema del proyecto, CHECK; unicidad idempotente y digest de token único. Las escrituras que cruzan organización, miembro, asignación, invitación y audit deben correr en una transacción D1; jamás confiar en `activeOrganizationId` sin membership. La garantía “un owner activo por org” necesita restricción concurrente validada (índice parcial si disponible o CAS transaccional), no solo chequeo previo.
+
+### Riesgos y decisiones de cierre previas a implementación
+
+| Riesgo | Control contractual / decisión pendiente |
+| --- | --- |
+| Escalada de privilegios | Sesión + `platform_member` activo + acción allowlisted + target + pertenencia; definir si todos los platform_admin comparten todos los permisos o se necesitan capacidades diferenciadas |
+| Acceso entre tenants | Consultas siempre filtradas por target y FK/revisión de membership; IDs ajenos responden igual que inexistentes |
+| Token reutilizado/interceptado | Digest único, alta entropía, TTL, revocación/reenvío invalida previo, destinatario verificado, aceptación POST atómica; decidir TTL y política de correo |
+| Activar sin owner / owner duplicado | Estado pending hasta membership owner verificada; unicidad por organización y transferencia gobernada; decidir política de co-owners y owner saliente |
+| Acción sin audit | Mutación + audit commit/rollback conjunto, conservar actor real/result; resolver organización nula en eventos pre-organización y retención |
+| Manipular progreso ajeno | UI cliente solo self; roles gestores no cambian progreso sin corrección motivada y audit; optimistic revision y log mínimo |
+| Estado user/member/org inconsistente | Actualizar invitación, member, lifecycle, sesión activa y audit como una unidad recuperable; prevenir activar si identidad/verification no coincide |
+| Concurrencia | CAS por estado/revision, unicidades DB, transacción; 409 ante conflicto, pruebas de doble aceptación/reenvío/cambio owner |
+| Fallo parcial de correo/Better Auth | No afirmar envío ni aceptación; outbox/estado de entrega pendiente y reconciliación idempotente a diseñar; no compromiso entre sistema externo y D1 |
+| Fallo de audit o transacción | Abort total; reparación solo vía reintento idempotente o acción compensatoria auditada |
+| Capacitación contenido retirado | Slug histórico queda como unavailable; no reemplazo de contenido ni autoría duplicada |
+| Publicación accidental | Separar write/publish; solo acción explícita, consentimiento operativo y guards estado publicado/suspendido existentes |
+
+Decisiones que requieren aprobación: matriz de permisos internos y diferencia admin global/staff; si creación acepta propietario existente y/o nuevo; TTL y entrega/revocación/resend; política owner único/transferencia; estados y significado de `closed`; quién asigna capacitación/correcciones y si se mide progreso declarado; retención y acceso a auditoría; cómo admitir eventos sin organization target; estrategia de aceptación realmente atómica con la versión Better Auth instalada; si la implementación requiere ampliar columnas de invitación y si cambios propios de progreso requieren historial separado. No se declara implementado ni se inicia la siguiente fase sin aprobación explícita.
+
+
 ## APP-MINI-00 — contrato de aplicación cliente y minisitio (2026-10-12)
 
 **Estado: contrato documental reconciliado; sin cambios funcionales.** La
@@ -101,15 +199,21 @@ disponibilidad, orden, variante y settings. Owner/admin escriben/publican según
 permisos actuales; member solo lee. No se introduce CRM, editor libre, HTML/CSS
 del cliente ni dependencia de GHL.
 
-La migración `0017_miniweb-core.sql` contiene las dos tablas. Una D1 aislada y
-limpia recibió correctamente la cadena completa `0000`–`0017`; MiniWeb E2E
-terminó `33/33 PASS` en ese entorno. La D1 local compartida no se modificó y su
-ledger queda pendiente de reconciliación; la D1 remota tampoco se modificó.
+La migración `0017_miniweb-core.sql` contiene las dos tablas. El ledger local
+también tiene `0016` de otro checkpoint en espera; 0017 se validó ejecutando su
+SQL en D1 local para E2E, sin ejecutar la cadena compartida ni tocar D1 remota.
+Las tablas temporales se retiraron tras las pruebas; el ledger local aún reporta
+0016/0017 pendientes, por lo que `migrations apply` debe reconciliar la cadena
+antes de otro uso de D1 local.
 
-**Decisión de publicación para 02B aprobada:** el snapshot estructural de 02A
-no versiona el contenido de `business_profile` ni las futuras ofertas/FAQ. 02B
-añade un snapshot público completo, allowlisted, atómico y sin historial de
-revisiones; el contrato está detallado en la sección APP-MINI-02B.
+**Límite de publicación que 02B debe resolver:** el snapshot de 02A separa la
+configuración de módulos, no versiona el contenido de `business_profile` ni los
+futuros contenidos estructurados. El comportamiento de edición/publicación de
+esos datos sigue siendo el existente; antes de añadir ofertas/FAQ en 02B se debe
+decidir si el MiniWeb necesita un snapshot público completo que permita editar
+sin exposición parcial. No presentar el snapshot estructural de 02A como una
+solución completa de publicación de contenido ni crear historial de revisiones
+sin necesidad demostrada.
 
 APP-MINI-03 debe exponer estados/derechos reales sin pagos automáticos.
 GHL-BARRIO-01 es independiente y no empieza sin cuenta, permisos/scopes reales
@@ -143,6 +247,13 @@ flowchart TD
 ```
 
 El V3 público vigente es el runtime adaptativo `QUESTION_BANK_V2` (85), `qbv2-planner.ts` y `qbv2-session.ts`, replayado por FUNNEL-01B con DTO allowlisted. No es el candidato QA-03B. QA-03B tiene identidad/banco `reviewed-evidence-v4`, sesión schema/key 3 y rutas dev-only. También existe una candidata anterior ACT-01–03 en archivos `qbv2-candidate-*` raíz, con sesión e identidad distintas. No se presume que ACT raíz y QA-03B sean contratos intercambiables: la identidad destino de ACT-04 debe decidirse expresamente.
+
+#### Identidad y consolidación sin degradar evidencia
+
+- `public-diagnostic-engine-identity.ts` fija la identidad persistida `diag-v3-public` y declara `questionBank: "QUESTION_BANK_V2"`. No se debe confundir con el loader experimental `getQuestionBank(2)` de `qbv2-engine.ts`, cuyo `CURRENT_QUESTION_BANK_VERSION` sigue en 1 y que no es el camino público.
+- `qa03b/bank.ts` deriva su banco de `REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3` en `qbv2-reviewed-evidence.ts`; quitar esa fuente rompería el candidato aunque un nombre `qbv2-*` sugiera antigüedad.
+- La consolidación se hace por consumidor e identidad: inventariar imports/rutas/pruebas y versiones persistidas, comparar IDs/versiones/opciones/aplicabilidad/resultados con casos canónicos y decidir una migración versionada antes de cambiar contratos. Los resúmenes anónimos y los informes identificados deben derivar del mismo resultado versionado.
+- Mantener sesiones, informes y puntuaciones históricas; retirar solo módulos/exportaciones que no tengan consumidores demostrables después del cutover autorizado. No inferir obsolescencia por prefijo, no sobrescribir una implementación vigente con una candidata ni cambiar puntuaciones silenciosamente.
 
 ### Inventario y clasificación
 
@@ -274,6 +385,37 @@ No usar IP, user-agent, fingerprinting, campos ocultos ni valores de respuesta p
 
 Los plazos de diseño son **propuestas para decisión**, no política vigente: snapshot y datos identificativos por 30 días desde la emisión, grant por 24 h, eventos pseudónimos crudos por hasta 30 días y luego solo agregados no identificables; preferencias comerciales se retienen mientras estén vigentes o hasta retirada, sujeto a la política que apruebe el responsable. Solicitar borrado elimina petición, snapshot, grant e intención relacionada; logs técnicos no deben conservar su contenido. Antes de implementar se requiere confirmar base legal y plazos con revisión legal/privacidad y especificar exportación/borrado verificables.
 
+### FUNNEL-01D.1 — analítica agregada local
+
+`DIAG-V3-08` y su tabla `diagnostic_event` quedan como artefactos históricos: su flujo por pregunta/sesión y sus métricas no se reutilizan en este checkpoint. El nuevo contrato `funnel-analytics-contract.ts`, versión `1`, solo permite seis eventos y agrega en D1 por día UTC, `diag-v3-public-v1`, versión de contrato y tipo. No hay filas de eventos crudos, identificadores de visitante ni FK hacia solicitudes personales.
+
+| Evento | Unidad y confirmación |
+| --- | --- |
+| `diagnostic_started` | Una activación del botón de inicio en navegador; estimado, no personas únicas. |
+| `diagnostic_completed` | Una reproducción del resumen que finaliza correctamente en Worker; confirmado por el servidor. Reintentos que recalculan cuentan otra vez. |
+| `detailed_report_cta_clicked` | Una activación del CTA desde el resumen; estimado, no solicitud ni visitante único. |
+| `identified_request_created` | Solicitud nueva y bundle request/snapshot/challenge confirmados en el mismo batch D1 que el incremento. Reintentos idempotentes no cuentan. |
+| `email_verified` | Primera transición `verification` + grant en el mismo batch D1 que el incremento. Recovery, reenvío y replay no cuentan. |
+| `detailed_report_first_opened` | Primer load autorizado tras validar integridad del informe; el marcador está en la solicitud y el contador se actualiza en el mismo batch. Recovery/revisitas no cuentan. |
+
+El payload de navegador acepta exclusivamente uno de los dos eventos estimados y no acepta fecha, versión ni otros campos. El Worker fija día/versión, valida origen y host loopback, aplica límite de frecuencia y solo registra en desarrollo. Los demás eventos se derivan de operaciones confirmadas del Worker. Los incrementos usan `UPSERT event_count = event_count + 1`; no hay contador por visitante.
+
+`identified_request_created` y `email_verified` actualizan dominio + agregado en el mismo batch transaccional. Si ese batch falla, se reintenta solo la operación de dominio para no bloquear solicitud/verificación; el evento puede quedar subcontado. `detailed_report_first_opened` marca `identified_diagnostic_request.first_report_opened_at` y suma en un batch; ante fallo del agregado intenta persistir solo el marcador y deja el informe autorizado disponible, con posible subconteo. `diagnostic_completed` y la telemetría de navegador también son best-effort. Por tanto, todas las filas presentes representan transiciones/eventos confirmados, pero una caída de D1 puede omitirlas; no se promete exactitud frente a ese fallo.
+
+El esquema `diagnostic_funnel_aggregate` contiene solo `event_day`, `diagnostic_version`, `contract_version`, `event_type` y `event_count`, con clave compuesta y restricciones cerradas; no contiene email, nombre, teléfono, respuestas, scores, dimensiones, request/session/grant ID, IP, user-agent ni fingerprint. `first_report_opened_at` es una marca operacional ligada a la solicitud, no a la tabla analítica; `0019` migra el marcador anterior desde grants y retira esa columna por grant. La lectura dev-only devuelve fecha, versión, tipo y cantidad; omite celdas con menos de cinco eventos. No hay dashboard; la ruta solo se añade a RouteConfig cuando `NODE_ENV=development` (build-isolation pendiente de validación).
+
+Las fechas diarias agregan eventos del mismo día y versión, no describen cohortes enlazadas. Inicios y CTA son estimaciones manipulables/repetibles; los demás son eventos confirmados, no personas. Dividir contadores del mismo período no es una tasa exacta ni prueba causal/comercial. B continúa separado: no es conversión ni autorización para enlazar el agregado.
+
+**Retención propuesta, no aprobada:** conservar agregados locales hasta 30 días y después eliminarlos mediante purga local explícita; no hay scheduler ni plazo legal/operativo aprobado. La lectura omite celdas menores de cinco para reducir singularización. No habilitar analítica pública persistente antes de revisión/aprobación de privacidad; la prueba local no concede esa aprobación.
+
+### GHL
+
+GHL continúa siendo sistema de registro futuro para contactos, conversaciones y oportunidades; `integration_connection` actual no implementa esta integración. Solo un consentimiento B vigente permitiría producir un evento de handoff a la integración de una fase autorizada. El destinatario puede deduplicarse en GHL como contacto con procedencia y fecha de permiso, sin copiar pipelines/historial a D1 ni crear oportunidad automáticamente. Opt-in C no equivale a B. Sin opt-in B, no se inicia seguimiento comercial. No se ha enviado dato a GHL.
+
+GHL continúa siendo sistema de registro futuro para contactos, conversaciones y oportunidades; `integration_connection` actual no implementa esta integración. Solo un consentimiento B vigente permitiría producir un evento de handoff a la integración de una fase autorizada. El destinatario puede deduplicarse en GHL como contacto con procedencia y fecha de permiso, sin copiar pipelines/historial a D1 ni crear oportunidad automáticamente. Opt-in C no equivale a B. Sin opt-in B, no se inicia seguimiento comercial. No se ha enviado dato a GHL.
+
+La compatibilidad con QA-03B se conserva mediante su `diagnosticIdentity` completa y las versiones de metodología/reporte. No se leen ni se reescriben sesiones históricas; una sesión editada tras completar invalida su resultado derivado y exige recálculo antes de emitir reporte. En una versión posterior, errores de registro, expiración, doble envío, concurrencia entre pestañas, acceso cruzado, recuperación, borrado y paridad de score son gates de backend; el prototipo local no los simula como aprobados.
+
 ### Eventos y GHL
 
 La taxonomía declarada de 11 eventos y las métricas se especifican aquí y en `TESTING.md`; FUNNEL-01A no crea emisor, binding, tabla, beacon ni dashboard. Si se usa `funnelRunId` para deduplicar y unir pasos, ese identificador es **seudónimo, no anónimo**: TTL corto, sin vínculo a petición/email/informe, sin IP/UA ni valores reales de respuestas, y sin uso antes de determinar base legal/consentimiento. En ausencia de tal base, usar contadores agregados no enlazables. Conversión mide comportamiento del producto, nunca validez científica de las puntuaciones.
@@ -297,6 +439,7 @@ Los plazos son máximos propuestos para eventos sin identidad directa; la retenc
 GHL continúa siendo sistema de registro futuro para contactos, conversaciones y oportunidades; `integration_connection` actual no implementa esta integración. Solo un consentimiento B vigente permitiría producir un evento de handoff a la integración de una fase autorizada. El destinatario puede deduplicarse en GHL como contacto con procedencia y fecha de permiso, sin copiar pipelines/historial a D1 ni crear oportunidad automáticamente. Opt-in C no equivale a B. Sin opt-in B, no se inicia seguimiento comercial. No se ha enviado dato a GHL.
 
 La compatibilidad con QA-03B se conserva mediante su `diagnosticIdentity` completa y las versiones de metodología/reporte. No se leen ni se reescriben sesiones históricas; una sesión editada tras completar invalida su resultado derivado y exige recálculo antes de emitir reporte. En una versión posterior, errores de registro, expiración, doble envío, concurrencia entre pestañas, acceso cruzado, recuperación, borrado y paridad de score son gates de backend; el prototipo local no los simula como aprobados.
+
 
 ## DIAG-V3-QA-03B — contrato candidato certificado (2026-10-11)
 
@@ -1324,12 +1467,11 @@ Cloudflare D1 (producción: vecidya-prod; staging: vecidya-staging)
 ## Fronteras de seguridad
 
 - Las rutas privadas requieren sesión. Sin sesión, páginas **y APIs** responden **302 → `/login`** (nunca 401).
-- Todo recurso de cliente con `organizationId` requiere membresía verificada; el `organizationId` de la URL nunca se confía sin comprobar `member`, y la organización activa se revalida contra `member` en cada request.
-- Las operaciones tenant-scoped de cliente requieren un permiso de la matriz propia, salvo lecturas que solo exigen membresía (`GET /api/organizations/:id`, `…/integrations`, `/app`, `/app/services`).
+- Todo recurso con `organizationId` requiere membresía verificada; el `organizationId` de la URL nunca se confía sin comprobar `member`, y la organización de sesión se revalida contra `member` en cada request.
+- Las operaciones tenant-scoped requieren un permiso de la matriz propia, salvo lecturas que solo exigen membresía (`GET /api/organizations/:id`, `…/integrations`, `/app`, `/app/services`).
 - Un ID de recurso recibido del cliente (miembro, invitación) debe pertenecer a la organización verificada; si no existe o es de otra organización, la respuesta es el mismo 403.
 - `activeOrganizationId` solo selecciona contexto: no concede autorización. Una organización activa sin membresía (stale o ajena) responde 403.
 - La administración interna usa `platform_member` (rol `platform_admin` y estado `active`); no deriva autoridad de `member.role`. `staff` existe en el schema pero no otorga ninguna capacidad.
-- La especificación pendiente de aprobación `PLATFORM-ADMIN-GLOBAL` propone una excepción solo para endpoints del control plane interno: `platform_admin` operaría sobre target organization explícito con acción allowlisted, actor/target y auditoría. No está implementada. Nunca cambia la identidad a `owner` ni abre bypass en rutas/API cliente.
 - Un owner/admin/member de organización no obtiene privilegios de plataforma por ese rol.
 
 ### Helpers de autorización
@@ -1379,103 +1521,6 @@ Cloudflare D1 (producción: vecidya-prod; staging: vecidya-staging)
 | Fijar `activeOrganizationId` | `/update-session` | — | rechazado: el campo es `input: false` |
 
 Login y registro aceptan `redirectTo` solo hacia rutas internas de `/app` (`app/lib/safe-redirect.ts`), para que el retorno a una invitación no sirva de open redirect. Retirar un miembro por la ruta propia limpia sus sesiones activas (`afterRemoveMember`). Si aun así queda un ID stale (escritura fuera de banda), las guardas responden 403. Límite de creación de organizaciones y rate limiting quedan fuera de esta frontera (`AUTH-ABUSE-001`).
-
-## PLATFORM-ADMIN-GLOBAL — especificación para aprobación (2026-10-17)
-
-**Estado:** propuesta documental consolidada, pendiente de revisión y aprobación explícita del usuario. No se han añadido rutas, código, schema ni migraciones. Este control plane complementa el sistema interno existente; no convierte a su operador en usuario de cliente.
-
-### Actor, frontera de autoridad y auditoría
-
-La identidad es la cuenta autenticada existente (`user`) junto a su fila única `platform_member` con `role=platform_admin` y `status=active`. El login, la sesión personal y el correo verificado pertenecen a esa cuenta. No se crean contraseñas para terceros, membresías ficticias, cambio de `activeOrganizationId` ni impersonación. `platform_admin` no se incorpora a `member.role`; las APIs cliente conservan `requireOrganizationPermission` y exigen membresía real y permiso de negocio en cada petición.
-
-Las operaciones transversales solo se expondrían en endpoints administrativos propios. Cada petición mutativa requiere sesión, plataforma activa, nombre de acción de una allowlist cerrada, target organization explícito y existente (salvo la creación inicial), validación de pertenencia del recurso y auditoría. El guard propuesto (`requirePlatformAdminAction`) expresa autorización de plataforma por operación, no roles organizacionales ni privilegios heredados; hoy el código solo tiene `requirePlatformAdmin` general, por lo que el catálogo de acciones y su posible partición humana siguen pendientes de aprobación. Nunca se llamará a una API cliente con headers/identidad del actor para obtener acceso de negocio.
-
-`platform_audit_log` ya registra actor user, acción, tipo/ID de entidad, organización, valores anterior/nuevo, metadata e instante; debe reutilizarse y extenderse solo si el contrato no cabe allí. Para una entidad global sin organización afectada (p. ej. lectura de catálogo o fallo de prealta) la acción no se ejecutará si no puede registrar auditoría conforme al diseño elegido; decidir antes cómo representar `organization_id` nullable o cómo auditar esos casos. Cada intento sensible guarda actor real, org afectada, acción allowlisted, resultado (`success|denied|failed`), instante y motivo/correlation ID no sensible. No guardar token, contraseña, credenciales, respuestas de formación innecesarias ni PII libre en metadata. Auditoría es append-only desde la UI, legible solo por plataforma autorizada, con política de retención aún por decidir; fallo al registrar auditoría debe abortar la mutación atómica.
-
-### Organización pendiente, propietario e invitación
-
-Estados propuestos: `pending_owner` (fila de organización creada, sin owner/member comercial), `owner_invited` (invitación activa), `active` (aceptación comprobada, correo verificado y una membresía `owner` válida), `suspended` (bloqueo administrativo reversible) y `closed` (estado terminal lógico, sin borrado físico en este checkpoint). Transiciones permitidas: `pending_owner → owner_invited`; reenvío conserva estado y reemplaza token; revocar/expirar retorna a `pending_owner`; aceptación válida `owner_invited → active`; `active ↔ suspended`; cierre lógico solo desde una operación separada con aprobación y tratamiento de datos definido. No se habilitan transiciones directas a `active` sin owner válido. Resolver propietario único por organización y permitir que una misma persona sea owner de varias organizaciones; transferencia de owner exige doble validación, auditoría y decisión de política.
-
-La administración crea una organización `pending_owner` sin insertar una fila en `member` y sin asignar al actor como owner. Se validan slug global disponible, nombre y datos mínimos; se conserva el email normalizado del propietario previsto y el ID real solo cuando la identidad ya existe y está verificada. Una organización pendiente solo aparece en `/app/internal`; no se muestra en `/app`, selección de organización, directorio, sitemap, rutas públicas ni acceso a recursos tenant. Restricciones de slug y estados se comprueban dentro de la transacción para prevenir colisiones/carreras. No se crea licencia, servicio, perfil publicado ni contenido público por defecto.
-
-Una invitación usa un secreto aleatorio de alta entropía y una sola finalidad/organización/rol. Guardar únicamente digest del token; enviar el token una vez por canal de correo aprobado. La pantalla permite registro o login con cuenta personal y exige verificación del correo. Antes de aceptar se comprueba constant-time/seguro el digest, expiración, estado pendiente, org y estado del ciclo, igualdad con el email de la invitación y verificación de esa cuenta. Identidad discordante no puede cambiar destinatario ni transferir invitación; respuesta no debe filtrar existencia de emails/organizaciones. El consumo, creación de la membresía `owner`, marcado aceptado, activación y audit deben ser atómicos en una sola operación lógica; la recuperación idempotente solo aplica ante un fallo técnico confirmado y no puede producir estado parcialmente activo. Si no puede lograrse con las APIs transaccionales de Better Auth, detenerse y presentar alternativa para aprobación. Expirar, revocar y reenviar invalidan todos los tokens anteriores; reuso devuelve estado terminal sin segunda membresía. Rate-limit por invitación/cuenta/IP según política aprobada, sin persistir IP por defecto.
-
-El proyecto fija Better Auth `1.7.5`; el código local confirma la tabla `invitation`, `requireEmailVerificationOnInvitation: true`, el handler existente de aceptación y la allowlist HTTP restringida del plugin. La documentación oficial de APIs consultada describe `auth.api.createInvitation` y `auth.api.acceptInvitation`: la creación requiere membresía/permiso del actor, por lo que el platform admin sin membership no puede reutilizarla directamente sin suplantar; la aceptación valida invitación pendiente y email, y ofrece protección contra doble aceptación dentro de Better Auth. No se verificó el código interno empacado de `1.7.5` ni que esa atomicidad se pueda ampliar a `platform_organization_lifecycle` y `platform_audit_log`; la tabla integrada tampoco incluye por sí sola nuestro digest/token lifecycle. La API documentada `createOrganization(userId)` asigna owner a ese usuario; `addMember` no forma parte del contrato de APIs server-side consultado. Por tanto, NO se especifica `auth.api.addMember` ni se afirma atomicidad end-to-end. Antes de implementar hay que verificar hooks/garantías contra el paquete instalado y diseñar cómo agrupar ciclo, membership y audit sin acceso privilegiado artificial. La aceptación atómica end-to-end es requisito; si Better Auth no la admite, detenerse para proponer y aprobar un diseño alternativo con prueba de carrera y recuperación.
-
-### Usuarios, roles y permisos de negocio
-
-Las cuentas personales siguen siendo globales (`user`); `member` es vínculo por organización y `platform_member` es autoridad independiente. Owner/admin solo gestionan personas dentro de su organización mediante permisos vigentes; member no gestiona equipo. La invitación nueva nunca crea una contraseña para el destinatario. El email equivocado, no verificado, invitación expirada/revocada/aceptada y conflicto de owner se resuelven con estados seguros, sin enumeración ni elevación.
-
-| Actor | Organización | Invitaciones | Equipo | Capacitación | Auditoría | MiniWeb |
-| --- | --- | --- | --- | --- | --- | --- |
-| `platform_admin` activo | `R/W` lifecycle vía control plane, target obligatorio; activación solo al satisfacer condiciones; `A` gobierno de perfil según operación autorizada | `R/W` crear/revocar/reenviar para target, actor auditado; nunca aceptar por destinatario | `R/W` target; roles cerrados; no transferir owner implícitamente | `R/W` asignar general/individual, leer agregado; corregir progreso ajeno solo con motivo + auditoría | `R` según política; `W` solo eventos del sistema/transacción | `R/W`; `P` solo con acción explícita y auditada; nunca automático |
-| `owner` | `R` propia; no alta/cierre global ni suspensión de plataforma | `R/W` gestionar invitaciones de su org; no aceptar por otra identidad | `R/W` equipo según `member:*`; transferencia owner separada | `R/W` asignación de su org y agregado; no corregir progreso ajeno salvo política aprobada | Sin acceso a auditoría de plataforma | `R/W`; `P` según `business-profile:publish` |
-| `admin` | `R` propia; sin ciclo global | `R/W` dentro del permiso `member:invite` | `R/W` solo operaciones permitidas por `member:*`; no transferir owner | `R/W` asignaciones de org si se aprueba el permiso; agregado | Sin acceso a auditoría de plataforma | `R/W/P` únicamente con permisos cliente concedidos |
-| `member` | `R` según permiso en org con membership válida; sin gestión global | `R` invitación propia compatible; no administrar las del equipo | `R` lo permitido; sin mutaciones de equipo | `R/W` sus asignaciones/progreso propios; no escribir progreso ajeno | Sin acceso | `R` privado/draft permitido; no publicar |
-| Usuario autenticado sin membership | Sin `R/W` tenant ni acceso por ID/activeOrganizationId | Solo su flujo de invitación; `A` aceptación propia tras login + email verificado coincidente | Sin acceso | Sin acceso hasta obtener membership/assignment | Sin acceso | Solo páginas públicas realmente publicadas/no suspendidas; sin preview ni escritura |
-| Visitante anónimo | Sin acceso privado ni lifecycle | Landing mínima del token; sin aceptar ni enumerar; requiere cuenta | Sin acceso | Sin acceso | Sin acceso | `R` contenido publicado/no suspendido únicamente; sin preview/escritura/publicación |
-
-Leyenda: `R` lectura, `W` escritura/gestión, `A` aprobación administrativa (solo moderación/verificación si se autoriza; aceptar invitación propia no es aprobación de plataforma), `P` publicación pública. La aprobación humana de esta especificación no es permiso runtime. La activación de organización se deriva de condiciones verificables, no de una aprobación ficticia ni de que el creador sea admin. Toda operación queda sujeta a acción explícita y scope indicado; autenticación sola nunca la habilita.
-
-### Capacitación con contenido de Aprende
-
-Vecidya controla asignaciones y seguimiento, no el contenido editorial. El catálogo se obtiene del contenido existente en `app/content/learn.ts` (`LearnArticle`/slug; incluir solo contenido publicable vigente) y enlaza a la URL pública `/aprende/:slug`. No copiar títulos/cuerpos ni crear editor, CMS o autoría paralela. La curación debe tolerar contenido retirado: la asignación histórica se conserva y se etiqueta `unavailable`, no se reasigna silenciosamente a otro artículo.
-
-Contrato propuesto: asignación a organización completa o a miembros elegidos de esa organización; una asignación general habilita lectura para todos los miembros activos, y la asignación individual limita al destinatario. Progreso (`not_started|in_progress|completed`) lo escribe el propio miembro; una corrección por admin/owner/platform-admin requiere motivo, actor y audit, no una edición silenciosa. Historial mínimo conserva actor, transición anterior/nueva e instante, evitando telemetría de visitas. El resumen administrativo presenta conteos agregados por estado y denominador explícito de miembros activos; no ofrece ranking individual innecesario. Pendiente de decisión: ¿se requiere asignación general, individual o ambas?, quién puede hacer correcciones, y si “completado” es declaración propia o requiere evidencia adicional. Nada de tracking de tiempo/lecturas se infiere de visitas a Aprende.
-
-### Navegación prevista, sin registrar rutas
-
-`/app/internal`: resumen; organizaciones (lista, detalle y estados); usuarios/acceso; invitaciones; capacitación; auditoría. El detalle puede agrupar configuración, equipo, servicios y MiniWeb bajo secciones separadas con el target visible. La UI cliente `/app/capacitacion` muestra solo las asignaciones vigentes de la organización activa y del miembro autenticado, con progreso propio. Son contratos de navegación, no rutas existentes en este checkpoint. Para la vista interna, cada loader/action vuelve a exigir actor y permiso; ocultar controles no es autorización.
-
-### Endpoints propuestos (no implementados)
-
-| Método y ruta propuesta | Operación / permiso de plataforma | Garantías y auditoría |
-| --- | --- | --- |
-| `GET /api/internal/summary` | `platform.dashboard.read` | Conteos agregados; no PII innecesaria; auditar acceso según política aprobada |
-| `GET /api/internal/organizations` / `GET /api/internal/organizations/:id` | `platform.organization.read` | Paginación; target explícito; sin filtrado por activeOrganizationId |
-| `POST /api/internal/organizations` | `platform.organization.create` | Idempotency key, slug único, estado pending, sin member/license/profile público; audit transaccional |
-| `PATCH /api/internal/organizations/:id/status` | `platform.organization.suspend|reactivate|close` | Transiciones cerradas, motivo, revisión optimista; cierre no disponible hasta aprobación |
-| `POST /api/internal/organizations/:id/owner-invitations` | `platform.invitation.create` | Receptor exacto/rol owner, token digest, TTL, rate limit, envío desacoplado y estado recuperable |
-| `GET /api/internal/invitations`; `POST /api/internal/invitations/:id/revoke|resend` | `platform.invitation.read|revoke|resend` | Reenvío invalida token previo; no exponer secreto; auditar intentos sensibles |
-| `POST /api/organization-invitations/:token/accept` | invitado autenticado; email verificado coincidente (no permiso de plataforma) | One-time, atómico, no aceptar por URL GET; activa solo al garantizar owner/member + auditoría |
-| `GET /api/internal/organizations/:id/members`; `PATCH/DELETE /api/internal/organizations/:id/members/:memberId` | acciones `platform.team.read|role.update|remove` | Cada memberId pertenece al target; roles cerrados; no dejar org sin owner |
-| `GET /api/internal/training/catalog`; `GET/PUT/DELETE /api/internal/organizations/:id/training-assignments` | `platform.training.catalog.read|assignment.manage` | Slugs allowlisted del catálogo actual; asignación idempotente; tenant del destinatario validado |
-| `GET/PUT /api/organizations/:id/training/me` | membership real; `training.read:self` / `training.progress:update:self` | Solo assignments visibles al miembro; progreso propio; no aceptar userId del cliente |
-| `PATCH /api/internal/organizations/:id/training-progress/:memberId` | `platform.training.progress.correct` | Motivo requerido, target membership, historial y audit atómicos |
-| `GET /api/internal/audit?organizationId=...` | `platform.audit.read` | Paginación/orden estable, filtros tenant-scoped, no PII sensible |
-| `GET/PATCH /api/internal/organizations/:id/profile|miniweb`; `POST .../publish` | read/write/publish separados por acción | Reutilizar servicios de dominio y validadores; guard interno propio, target ownership, version check; no llamar APIs cliente mediante suplantación |
-
-Todos los writes validan esquema estricto, estado esperado/revisión (optimistic concurrency), target y actor de nuevo en server. Respuestas idempotentes para operaciones repetibles; conflictos concurrentes dan 409 y no sobrescriben silenciosamente. Si un proveedor de correo falla, la organización/invitación queda en estado recuperable claramente indicado; no se comunica “enviada” hasta confirmación observable. Una tarea de correo no confirma aceptación.
-
-### Persistencia candidata y aislamiento
-
-Reutilizar sin duplicar: `user`, `session`, `platform_member`, `organization`, `member`, `invitation` de Better Auth; `platform_audit_log`; perfil/gobernanza, `miniweb_site`/`miniweb_module`, catálogo de Aprende en código; servicios/licencias existentes. En esta especificación se proponen estrictamente tres entidades persistentes nuevas:
-
-1. `platform_organization_lifecycle`: `organization_id` PK/FK, estado cerrado, `intended_owner_email_normalized`, `owner_user_id` nullable FK, `revision`, timestamps y actor creador/actualizador; índice estado/fecha. Una fila por organización administrada en este flujo. No guardar atributos editables de organización duplicados.
-2. `organization_training_assignment`: id, `organization_id`, `content_slug`, `scope` (`all_members|member`), `member_user_id` nullable, estado (`active|withdrawn`), actor, timestamps/revision; FK compuesta o validación transaccional que garantice que el destinatario pertenece al mismo tenant; único idempotente por organización, slug, scope y miembro; índice `(organization_id,status)` y `(member_user_id,status)`.
-
-3. `organization_training_progress`: `(assignment_id,member_user_id)` único, estado (`not_started|in_progress|completed`), actor y `updated_at`/`revision`; la pertenencia miembro↔organización se valida en la misma transacción. Se persiste solo el último estado; auditoría existente registra transiciones y correcciones motivadas, sujeto a decidir si cambios propios requieren historial separado.
-
-Los tokens de invitación de owner se proponen como extensión acotada de la tabla `invitation` existente con `token_hash`, `accepted_at`, `revoked_at`, `accepted_by_user_id` y clave idempotente/estado terminal; antes de decidir columnas hay que confirmar que no se puede cumplir con el contrato integrado de Better Auth. No se duplica una tabla de invitaciones. Restricciones: estados validados en código y, si compatible con el patrón de schema del proyecto, CHECK; unicidad idempotente y digest de token único. Las escrituras que cruzan organización, miembro, asignación, invitación y audit deben correr en una transacción D1; jamás confiar en `activeOrganizationId` sin membership. La garantía “un owner activo por org” necesita restricción concurrente validada (índice parcial si disponible o CAS transaccional), no solo chequeo previo.
-
-### Riesgos y decisiones de cierre previas a implementación
-
-| Riesgo | Control contractual / decisión pendiente |
-| --- | --- |
-| Escalada de privilegios | Sesión + `platform_member` activo + acción allowlisted + target + pertenencia; definir si todos los platform_admin comparten todos los permisos o se necesitan capacidades diferenciadas |
-| Acceso entre tenants | Consultas siempre filtradas por target y FK/revisión de membership; IDs ajenos responden igual que inexistentes |
-| Token reutilizado/interceptado | Digest único, alta entropía, TTL, revocación/reenvío invalida previo, destinatario verificado, aceptación POST atómica; decidir TTL y política de correo |
-| Activar sin owner / owner duplicado | Estado pending hasta membership owner verificada; unicidad por organización y transferencia gobernada; decidir política de co-owners y owner saliente |
-| Acción sin audit | Mutación + audit commit/rollback conjunto, conservar actor real/result; resolver organización nula en eventos pre-organización y retención |
-| Manipular progreso ajeno | UI cliente solo self; roles gestores no cambian progreso sin corrección motivada y audit; optimistic revision y log mínimo |
-| Estado user/member/org inconsistente | Actualizar invitación, member, lifecycle, sesión activa y audit como una unidad recuperable; prevenir activar si identidad/verification no coincide |
-| Concurrencia | CAS por estado/revision, unicidades DB, transacción; 409 ante conflicto, pruebas de doble aceptación/reenvío/cambio owner |
-| Fallo parcial de correo/Better Auth | No afirmar envío ni aceptación; outbox/estado de entrega pendiente y reconciliación idempotente a diseñar; no compromiso entre sistema externo y D1 |
-| Fallo de audit o transacción | Abort total; reparación solo vía reintento idempotente o acción compensatoria auditada |
-| Capacitación contenido retirado | Slug histórico queda como unavailable; no reemplazo de contenido ni autoría duplicada |
-| Publicación accidental | Separar write/publish; solo acción explícita, consentimiento operativo y guards estado publicado/suspendido existentes |
-
-Decisiones que requieren aprobación: matriz de permisos internos y diferencia admin global/staff; si creación acepta propietario existente y/o nuevo; TTL y entrega/revocación/resend; política owner único/transferencia; estados y significado de `closed`; quién asigna capacitación/correcciones y si se mide progreso declarado; retención y acceso a auditoría; cómo admitir eventos sin organization target; estrategia de aceptación realmente atómica con la versión Better Auth instalada; si la implementación requiere ampliar columnas de invitación y si cambios propios de progreso requieren historial separado. No se declara implementado ni se inicia la siguiente fase sin aprobación explícita.
 
 ## Licenciamiento multi-negocio (LICENSE-STRATEGY-001, foundation)
 

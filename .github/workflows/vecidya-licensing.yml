@@ -1,0 +1,52 @@
+name: Vecidya Licensing and Vecindario CI
+
+on:
+  pull_request:
+    paths:
+      - "vecidya-platform/**"
+      - ".github/workflows/vecidya-licensing.yml"
+  push:
+    branches: [feat/diagnostic-funnel-01d1]
+    paths:
+      - "vecidya-platform/**"
+      - ".github/workflows/vecidya-licensing.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vecidya-licensing-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Licensing, organization and publication checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: vecidya-platform
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+          cache-dependency-path: vecidya-platform/pnpm-lock.yaml
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Licensing source contract checks
+        run: node --test tests/ci/licensing-contract.test.mjs
+      - name: Typecheck
+        run: pnpm run typecheck
+      - name: Unit tests
+        run: pnpm run test:unit
+      - name: Production build
+        run: pnpm run build

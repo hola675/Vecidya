@@ -5,7 +5,7 @@ import type { Route } from "./+types/diagnostico-metodologia";
 
 /**
  * DIAG-V3-13 — metodología y fuentes del diagnóstico, pública desde el corte (antes solo en la ruta
- * privada `/__dev/diagnostico/metodologia`, DIAG-V3-11). Contenido evergreen, indexable: explica cómo
+ * de pruebas DIAG-V3-11). Contenido evergreen, indexable: explica cómo
  * funciona el diagnóstico sin depender de un resultado concreto.
  */
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-19 — Reconciliación y certificación local de Fase 00 (no publicada)
+
+- La integración se prepara desde `origin/integration/phase-00-main-reconcile` en worktree dedicado, con `origin/main` como ancestro. `main` no se modificó; el estado de GitHub/PR del SHA actual no fue accesible y no se declara merge ni publicación.
+- Se corrigió el resultado del borrado autorizado cuando D1 incluye cambios de filas descendientes en cascada; la respuesta ahora se basa en `meta.changes > 0` bajo el predicado de autorización y request ID. Se añadió regresión para `changes=7` y `changes=0`.
+- Se ajustaron harnesses E2E locales a invitación/licencia actuales, limpieza de fixtures y ejecución directa del Wrangler CLI en Windows; no cambia la autorización ni los estados comerciales de la aplicación.
+- Se consolidaron los seis documentos de fase/auditoría en `ARCHITECTURE.md`, `ROADMAP.md`, `STATUS.md`, `PROJECT_STATE.md`, `DATABASE.md`, `STRUCTURE.md` y `TESTING.md`. Quedan 16 documentos canónicos frente al techo de 20; dos anexos preexistentes permanecen fuera del inventario canónico.
+- El D1 aislado de pruebas preservó el sentinel histórico; se encontró una solicitud identificada de procedencia no comprobada junto a su snapshot/challenge/intents. No se purgó ni se enlazó con agregados; G00-07 queda bloqueado hasta resolver procedencia/retención.
+- Ver `TESTING.md` para estados G00-05–G00-10. No se ejecutó D1 remota, correo real, deploy, sincronización GHL ni merge a `main`; APP-MINI-02B/PLATFORM-ADMIN-GLOBAL conserva su aprobación pendiente.
+
 ## 2026-10-17 — PLATFORM-ADMIN-GLOBAL especificación para aprobación
 
 - Reconciliada la especificación documental del control plane: actor `platform_admin` permanece independiente de owners, sin impersonación, membresías inventadas ni bypass de APIs de clientes.
@@ -21,6 +30,15 @@
 - Se reutilizan `LearnArticle`, bloques editoriales, rutas `/aprende/:slug`, metadatos y sitemap actuales; no se modificaron guías anteriores ni se añadieron componentes, CMS, persistencia o dependencias. `learn-content.test.ts` 9/9 y suite unitaria 1570/1570 PASS; typecheck, build y E2E local en 1366/768/390/360 PASS. Inspección visual de escritorio y móvil (390 px) sin desbordamiento horizontal. Build con advertencias conocidas de secretos locales de autenticación/correo ausentes.
 - El Worker E2E usó Chrome local y una D1 aislada del worktree con migraciones locales solo para que el sitemap consultara el esquema; sin `--remote` ni datos de negocio. No es certificación WCAG ni inspección de producción.
 - Sin publicación, D1 remota, deploy, merge a `main` ni creación de PR.
+## 2026-10-17 — DIAG-V3-FUNNEL-01D.1-R (integración preparada, entorno bloqueado)
+
+- Conservado el contrato de seis eventos. `identified_request_created` y `email_verified` comparten batch transaccional con el dominio y hacen fallback al batch operacional si falla analytics. El first-open se deduplica por solicitud, también tras recovery; `0019` hace backfill del timestamp mínimo existente.
+- La cadena `0000`–`0019` y el backfill se probaron previamente en D1 temporales locales; unitarias focales 8/8 y comprobaciones SQL PASS. En esta continuación, `pnpm install --frozen-lockfile --prefer-offline` expiró tras 600 s con errores de transferencia curl 23. Un store aislado llegó a 173/267 paquetes antes de expirar otros 600 s; la transferencia del tarball Windows de workerd volvió a fallar. No se pudo ejecutar Worker E2E, suite completa, typecheck/build ni aislamiento de bundle.
+- DNS de `registry.npmjs.org` resolvió; HTTPS HEAD de metadata de `@emnapi/runtime@1.11.3` y `@fontsource/arimo@5.3.0` respondió 200; Node descargó tarballs de 68.501 y 4.829.680 bytes. La descarga del tarball workerd excedió 180 s. Variables y configuración proxy de pnpm no están definidas y no se encontró proceso/servicio Proxifier activo. El fallo probado afecta las descargas de dependencias completas, no demuestra que la instalación o el lockfile estén corruptos.
+- `package.json` y `pnpm-lock.yaml` permanecen intactos. El store compartido reportó cinco paquetes modificados antes de instalar y solo `@emnapi/runtime@1.11.3` después; no se hizo limpieza ni se alteró configuración/versiones. No se completó ENV-01.
+- Rama `feat/diagnostic-funnel-01d1`: se integró `origin/main=90215da` en commit `d49a170`; rutas, migraciones/journal y schema auto-mergearon y se conservaron los cambios de Aprende/CRM. En `0cc681f`, la rama queda 0 behind / 8 ahead de main. PR #6 existe para esta rama. GitHub informa `mergeable=true`, `mergeable_state=unstable`, con check fallido `Workers Builds: vecidya-crm-portal` y merge sintético sin conflicto. La API de branch protection devuelve 403; no se confirmó si ese check es requerido. Sin merge final, D1 compartida/remota ni deploy.
+
+**Recuperación CI (en curso, 2026-10-17):** añadido workflow PR-only Ubuntu con Node `24.21.0`, pnpm `11.21.0`, install frozen sin caché, D1 `--local`, unitarias/E2E secuenciales sobre un Worker, build y aislamiento de rutas/bundles de producción. Los logs se suben como artifact (30 días); `contents: read`, sin secretos/credenciales Cloudflare ni deploy. YAML y harness superan validación sintáctica local; primera ejecución pendiente. Estado técnico permanece `FUNNEL_ANALYTICS_BLOCKED`.
 
 ## 2026-10-17 — VEC-APRENDE-06A Tecnología explicada (local, no publicado)
 
@@ -48,7 +66,7 @@
 - Registro versionado de familias `services`, `catalog`, `gastronomy` y `professional`, con solo la plantilla compatible y módulos `hero`, `about`, `contact`, `hours`, `location` disponibles.
 - Añadidos `miniweb_site`/`miniweb_module` y migración `0017`; default virtual legacy sin backfill; draft y snapshot publicado de configuración separados.
 - `/app/miniweb` ofrece los módulos operativos, activación, orden, preview privada y publicación explícita; `/vecindario/:slug` compone DTOs allowlisted, omite módulos apagados/sin contenido y falla cerrado si el snapshot público es inválido.
-- E2E MiniWeb `33/33`, perfil, slug y licencias; unitarias `1557/1557`, typecheck y build PASS. La cadena `0000`–`0017` se aplicó a D1 aislada limpia y dio MiniWeb `33/33`; D1 local compartida sin cambios y ledger pendiente de reconciliación; D1 remota sin cambios. Sin deploy.
+- E2E MiniWeb `33/33`, perfil, slug y licencias; unitarias `1557/1557`, typecheck y build PASS. Schema local usado para E2E y revertido; ledger local mantiene 0016/0017 pendientes. Sin D1 remota ni deploy.
 
 ## 2026-10-15 — APP-MINI-01C (local, cierre técnico)
 

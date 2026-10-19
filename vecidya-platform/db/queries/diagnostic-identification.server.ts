@@ -1,10 +1,13 @@
 import { and, desc, eq, gt, isNull, lte, lt, sql } from "drizzle-orm";
 
 import { createDatabase } from "../client.server";
+import { withBestEffortFunnelAnalytics } from "./diagnostic-funnel-transaction.server";
+import { FUNNEL_ANALYTICS_CONTRACT_VERSION, FUNNEL_ANALYTICS_DIAGNOSTIC_VERSION, utcAnalyticsDay } from "../../app/features/diagnostic/funnel-analytics-contract";
 import {
   commercialContactIntent,
   diagnosticReportAccess,
   diagnosticReportSnapshot,
+  diagnosticFunnelAggregate,
   diagnosticResearchIntent,
   identifiedDiagnosticRequest,
   verifiedEmailChallenge,
@@ -29,7 +32,22 @@ export async function createReportRequestBundle(binding: D1Database, bundle: Rep
     ...(bundle.commercialIntent ? [database.insert(commercialContactIntent).values(bundle.commercialIntent)] : []),
     ...(bundle.researchIntent ? [database.insert(diagnosticResearchIntent).values(bundle.researchIntent)] : []),
   ];
-  await database.batch(statements as [typeof statements[number], ...typeof statements[number][]]);
+  const aggregateIncrement = database.insert(diagnosticFunnelAggregate).values({
+    eventDay: utcAnalyticsDay(bundle.request.createdAt),
+    diagnosticVersion: FUNNEL_ANALYTICS_DIAGNOSTIC_VERSION,
+    contractVersion: FUNNEL_ANALYTICS_CONTRACT_VERSION,
+    eventType: "identified_request_created",
+    eventCount: 1,
+  }).onConflictDoUpdate({
+    target: [diagnosticFunnelAggregate.eventDay, diagnosticFunnelAggregate.diagnosticVersion, diagnosticFunnelAggregate.contractVersion, diagnosticFunnelAggregate.eventType],
+    set: { eventCount: sql`${diagnosticFunnelAggregate.eventCount} + 1` },
+  });
+
+  const statementsWithAnalytics = [...statements, aggregateIncrement];
+  await withBestEffortFunnelAnalytics(
+    async () => { await database.batch(statementsWithAnalytics as [typeof statementsWithAnalytics[number], ...typeof statementsWithAnalytics[number][]]); },
+    async () => { await database.batch(statements as [typeof statements[number], ...typeof statements[number][]]); },
+  );
 }
 
 export async function findReportRequestById(binding: D1Database, requestId: string) {
@@ -118,57 +136,71 @@ export async function consumeChallengeAndGrantAccess(binding: D1Database, input:
   readonly purpose: ChallengePurpose;
   readonly access: typeof diagnosticReportAccess.$inferInsert;
   readonly now: Date;
+  readonly recordFunnelAnalytics?: boolean;
 }): Promise<boolean> {
   const timestamp = input.now.getTime();
   const expectedRequestStatus = input.purpose === "verification" ? "verification_pending" : "verified";
   const accessExpiresAt = input.access.expiresAt.getTime();
   if (input.access.requestId !== input.requestId || input.access.challengeId !== input.challengeId || input.access.issuedAt.getTime() !== timestamp || accessExpiresAt <= timestamp) return false;
 
-  const challengeConsume = binding.prepare(`UPDATE verified_email_challenge
-    SET status = 'consumed', consumed_at = ?
-    WHERE id = ? AND request_id = ? AND token_digest = ? AND purpose = ? AND status = 'pending' AND expires_at > ? AND attempts < 5
-      AND EXISTS (
-        SELECT 1 FROM identified_diagnostic_request r
-        INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
-        WHERE r.id = ? AND r.status = ? AND r.expires_at > ? AND s.expires_at > ?
-          AND r.expires_at >= ? AND s.expires_at >= ?
-      )`)
-    .bind(timestamp, input.challengeId, input.requestId, input.tokenDigest, input.purpose, timestamp, input.requestId, expectedRequestStatus, timestamp, timestamp, accessExpiresAt, accessExpiresAt);
-  const requestTransition = input.purpose === "verification"
-    ? binding.prepare(`UPDATE identified_diagnostic_request SET status = 'verified', updated_at = ?
-        WHERE id = ? AND status = 'verification_pending' AND expires_at > ?
-          AND EXISTS (SELECT 1 FROM verified_email_challenge c WHERE c.id = ? AND c.request_id = ? AND c.purpose = 'verification' AND c.status = 'consumed' AND c.consumed_at = ?)
-          AND EXISTS (SELECT 1 FROM diagnostic_report_snapshot s WHERE s.request_id = identified_diagnostic_request.id AND s.expires_at > ?)`)
-      .bind(timestamp, input.requestId, timestamp, input.challengeId, input.requestId, timestamp, timestamp)
-    : binding.prepare(`UPDATE identified_diagnostic_request SET updated_at = ?
-        WHERE id = ? AND status = 'verified' AND expires_at > ?
-          AND EXISTS (SELECT 1 FROM verified_email_challenge c WHERE c.id = ? AND c.request_id = ? AND c.purpose = 'access_recovery' AND c.status = 'consumed' AND c.consumed_at = ?)
-          AND EXISTS (SELECT 1 FROM diagnostic_report_snapshot s WHERE s.request_id = identified_diagnostic_request.id AND s.expires_at > ?)`)
-      .bind(timestamp, input.requestId, timestamp, input.challengeId, input.requestId, timestamp, timestamp);
-  const revokePreviousAccess = input.purpose === "access_recovery"
-    ? [binding.prepare(`UPDATE diagnostic_report_access SET revoked_at = ?
-        WHERE request_id = ? AND challenge_id <> ? AND revoked_at IS NULL
-          AND EXISTS (
-            SELECT 1 FROM verified_email_challenge c
-            INNER JOIN identified_diagnostic_request r ON r.id = c.request_id
-            INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
-            WHERE c.id = ? AND c.request_id = ? AND c.purpose = 'access_recovery' AND c.status = 'consumed' AND c.consumed_at = ?
-              AND r.status = 'verified' AND r.expires_at > ? AND s.expires_at > ?
-          )`)
-      .bind(timestamp, input.requestId, input.challengeId, input.challengeId, input.requestId, timestamp, timestamp, timestamp)]
-    : [];
-  const accessWrite = binding.prepare(`INSERT INTO diagnostic_report_access
-    (id, request_id, challenge_id, token_digest, issued_at, expires_at, revoked_at)
-    SELECT ?, ?, c.id, ?, ?, ?, NULL
-    FROM verified_email_challenge c
-    INNER JOIN identified_diagnostic_request r ON r.id = c.request_id
-    INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
-    WHERE c.id = ? AND c.request_id = ? AND c.purpose = ? AND c.status = 'consumed' AND c.consumed_at = ?
-      AND r.status = 'verified' AND r.expires_at > ? AND s.expires_at > ?
-      AND r.expires_at >= ? AND s.expires_at >= ?
-    ON CONFLICT(challenge_id) DO NOTHING`)
-    .bind(input.access.id, input.access.requestId, input.access.tokenDigest, timestamp, accessExpiresAt, input.challengeId, input.requestId, input.purpose, timestamp, timestamp, timestamp, accessExpiresAt, accessExpiresAt);
-  const results = await binding.batch([challengeConsume, requestTransition, ...revokePreviousAccess, accessWrite]);
+  const buildStatements = (includeAnalytics: boolean): [D1PreparedStatement, ...D1PreparedStatement[]] => {
+    const challengeConsume = binding.prepare(`UPDATE verified_email_challenge
+      SET status = 'consumed', consumed_at = ?
+      WHERE id = ? AND request_id = ? AND token_digest = ? AND purpose = ? AND status = 'pending' AND expires_at > ? AND attempts < 5
+        AND EXISTS (
+          SELECT 1 FROM identified_diagnostic_request r
+          INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
+          WHERE r.id = ? AND r.status = ? AND r.expires_at > ? AND s.expires_at > ?
+            AND r.expires_at >= ? AND s.expires_at >= ?
+        )`)
+      .bind(timestamp, input.challengeId, input.requestId, input.tokenDigest, input.purpose, timestamp, input.requestId, expectedRequestStatus, timestamp, timestamp, accessExpiresAt, accessExpiresAt);
+    const requestTransition = input.purpose === "verification"
+      ? binding.prepare(`UPDATE identified_diagnostic_request SET status = 'verified', updated_at = ?
+          WHERE id = ? AND status = 'verification_pending' AND expires_at > ?
+            AND EXISTS (SELECT 1 FROM verified_email_challenge c WHERE c.id = ? AND c.request_id = ? AND c.purpose = 'verification' AND c.status = 'consumed' AND c.consumed_at = ?)
+            AND EXISTS (SELECT 1 FROM diagnostic_report_snapshot s WHERE s.request_id = identified_diagnostic_request.id AND s.expires_at > ?)`)
+        .bind(timestamp, input.requestId, timestamp, input.challengeId, input.requestId, timestamp, timestamp)
+      : binding.prepare(`UPDATE identified_diagnostic_request SET updated_at = ?
+          WHERE id = ? AND status = 'verified' AND expires_at > ?
+            AND EXISTS (SELECT 1 FROM verified_email_challenge c WHERE c.id = ? AND c.request_id = ? AND c.purpose = 'access_recovery' AND c.status = 'consumed' AND c.consumed_at = ?)
+            AND EXISTS (SELECT 1 FROM diagnostic_report_snapshot s WHERE s.request_id = identified_diagnostic_request.id AND s.expires_at > ?)`)
+        .bind(timestamp, input.requestId, timestamp, input.challengeId, input.requestId, timestamp, timestamp);
+    const emailVerifiedIncrement = input.purpose === "verification" && includeAnalytics && input.recordFunnelAnalytics !== false
+      ? [binding.prepare(`INSERT INTO diagnostic_funnel_aggregate (event_day, diagnostic_version, contract_version, event_type, event_count)
+          SELECT ?, ?, ?, 'email_verified', 1 WHERE changes() = 1
+          ON CONFLICT(event_day, diagnostic_version, contract_version, event_type)
+          DO UPDATE SET event_count = event_count + 1`)
+        .bind(utcAnalyticsDay(input.now), FUNNEL_ANALYTICS_DIAGNOSTIC_VERSION, FUNNEL_ANALYTICS_CONTRACT_VERSION)]
+      : [];
+    const revokePreviousAccess = input.purpose === "access_recovery"
+      ? [binding.prepare(`UPDATE diagnostic_report_access SET revoked_at = ?
+          WHERE request_id = ? AND challenge_id <> ? AND revoked_at IS NULL
+            AND EXISTS (
+              SELECT 1 FROM verified_email_challenge c
+              INNER JOIN identified_diagnostic_request r ON r.id = c.request_id
+              INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
+              WHERE c.id = ? AND c.request_id = ? AND c.purpose = 'access_recovery' AND c.status = 'consumed' AND c.consumed_at = ?
+                AND r.status = 'verified' AND r.expires_at > ? AND s.expires_at > ?
+            )`)
+        .bind(timestamp, input.requestId, input.challengeId, input.challengeId, input.requestId, timestamp, timestamp, timestamp)]
+      : [];
+    const accessWrite = binding.prepare(`INSERT INTO diagnostic_report_access
+      (id, request_id, challenge_id, token_digest, issued_at, expires_at, revoked_at)
+      SELECT ?, ?, c.id, ?, ?, ?, NULL
+      FROM verified_email_challenge c
+      INNER JOIN identified_diagnostic_request r ON r.id = c.request_id
+      INNER JOIN diagnostic_report_snapshot s ON s.request_id = r.id
+      WHERE c.id = ? AND c.request_id = ? AND c.purpose = ? AND c.status = 'consumed' AND c.consumed_at = ?
+        AND r.status = 'verified' AND r.expires_at > ? AND s.expires_at > ?
+        AND r.expires_at >= ? AND s.expires_at >= ?
+      ON CONFLICT(challenge_id) DO NOTHING`)
+      .bind(input.access.id, input.access.requestId, input.access.tokenDigest, timestamp, accessExpiresAt, input.challengeId, input.requestId, input.purpose, timestamp, timestamp, timestamp, accessExpiresAt, accessExpiresAt);
+    return [challengeConsume, requestTransition, ...emailVerifiedIncrement, ...revokePreviousAccess, accessWrite];
+  };
+
+  const results = input.purpose === "verification"
+    ? await withBestEffortFunnelAnalytics(() => binding.batch(buildStatements(true)), () => binding.batch(buildStatements(false)))
+    : await binding.batch(buildStatements(false));
   const accessResult = results[results.length - 1] as { readonly meta?: { readonly changes?: number } } | undefined;
   return accessResult?.meta?.changes === 1;
 }
@@ -192,6 +224,29 @@ export async function getAuthorizedReport(binding: D1Database, tokenDigest: stri
       gt(diagnosticReportSnapshot.expiresAt, now),
     )).limit(1);
   return row ?? null;
+}
+
+export async function recordDetailedReportFirstOpen(binding: D1Database, accessId: string, requestId: string, now: Date): Promise<void> {
+  const timestamp = now.getTime();
+  const markRequestFirstOpen = () => binding.prepare(`UPDATE identified_diagnostic_request SET first_report_opened_at = ?
+    WHERE id = ? AND status = 'verified' AND first_report_opened_at IS NULL AND expires_at > ?
+      AND EXISTS (SELECT 1 FROM diagnostic_report_snapshot s WHERE s.request_id = identified_diagnostic_request.id AND s.expires_at > ?)
+      AND EXISTS (SELECT 1 FROM diagnostic_report_access a
+        WHERE a.id = ? AND a.request_id = identified_diagnostic_request.id AND a.revoked_at IS NULL AND a.expires_at > ?)`)
+    .bind(timestamp, requestId, timestamp, timestamp, accessId, timestamp);
+  try {
+    await binding.batch([
+      markRequestFirstOpen(),
+      binding.prepare(`INSERT INTO diagnostic_funnel_aggregate (event_day, diagnostic_version, contract_version, event_type, event_count)
+        SELECT ?, ?, ?, 'detailed_report_first_opened', 1 WHERE changes() = 1
+        ON CONFLICT(event_day, diagnostic_version, contract_version, event_type)
+        DO UPDATE SET event_count = event_count + 1`)
+        .bind(utcAnalyticsDay(now), FUNNEL_ANALYTICS_DIAGNOSTIC_VERSION, FUNNEL_ANALYTICS_CONTRACT_VERSION),
+    ]);
+  } catch {
+    try { await markRequestFirstOpen().run(); }
+    catch { /* Neither an analytics outage nor a marker-write failure denies an already authorized report. */ }
+  }
 }
 
 export async function deleteIdentifiedReport(binding: D1Database, requestId: string): Promise<void> {
@@ -244,4 +299,87 @@ export async function purgeExpiredIdentifiedReports(binding: D1Database, now: Da
     orphanedResearchIntents: changes[4] ?? 0,
     expiredRequests: changes[5] ?? 0,
   };
+}
+
+/**
+ * FUNNEL-01D.2: revocación idempotente de preferencias opt-in.
+ * Solo se permite con un grant vigente, no revocado, vinculado a la solicitud.
+ * No borra el informe ni altera los agregados anónimos.
+ * Uso server-only; no expone una ruta pública por sí mismo.
+ */
+export async function revokeDiagnosticOptionalIntents(
+  binding: D1Database,
+  input: { requestId: string; accessTokenDigest: string; now: Date; revokeCommercial: boolean; revokeResearch: boolean },
+): Promise<{ authorized: boolean; commercialRevoked: boolean; researchRevoked: boolean }> {
+  const now = input.now.getTime();
+  if (!input.requestId || !input.accessTokenDigest || !Number.isFinite(now) ||
+    (!input.revokeCommercial && !input.revokeResearch)) {
+    return { authorized: false, commercialRevoked: false, researchRevoked: false };
+  }
+  const authorized = await binding.prepare(`SELECT 1 AS authorized
+    FROM diagnostic_report_access a
+    JOIN identified_diagnostic_request r ON r.id = a.request_id
+    JOIN diagnostic_report_snapshot s ON s.request_id = r.id
+    WHERE a.request_id = ? AND a.token_digest = ? AND a.revoked_at IS NULL
+      AND a.expires_at > ? AND r.expires_at > ? AND s.expires_at > ?
+      AND r.status = 'verified' LIMIT 1`)
+    .bind(input.requestId, input.accessTokenDigest, now, now, now)
+    .first<{ authorized: number }>();
+  if (!authorized) return { authorized: false, commercialRevoked: false, researchRevoked: false };
+
+  // Revalida el grant dentro de cada UPDATE para impedir escrituras si fue revocado
+  // entre la lectura inicial y el batch. D1 ejecuta el batch transaccionalmente.
+  const guard = `EXISTS (
+    SELECT 1 FROM diagnostic_report_access a
+    JOIN identified_diagnostic_request r ON r.id = a.request_id
+    JOIN diagnostic_report_snapshot s ON s.request_id = r.id
+    WHERE a.request_id = ? AND a.token_digest = ? AND a.revoked_at IS NULL
+      AND a.expires_at > ? AND r.expires_at > ? AND s.expires_at > ?
+      AND r.status = 'verified')`;
+  const statements = [];
+  if (input.revokeCommercial) statements.push(
+    binding.prepare(`UPDATE commercial_contact_intent SET revoked_at = ?
+      WHERE request_id = ? AND revoked_at IS NULL AND ${guard}`)
+      .bind(now, input.requestId, input.requestId, input.accessTokenDigest, now, now, now),
+  );
+  if (input.revokeResearch) statements.push(
+    binding.prepare(`UPDATE diagnostic_research_intent SET revoked_at = ?
+      WHERE request_id = ? AND revoked_at IS NULL AND ${guard}`)
+      .bind(now, input.requestId, input.requestId, input.accessTokenDigest, now, now, now),
+  );
+  const updates = await binding.batch(statements);
+  return {
+    authorized: true,
+    commercialRevoked: input.revokeCommercial && (updates[0]?.meta?.changes ?? 0) > 0,
+    researchRevoked: input.revokeResearch && (updates[input.revokeCommercial ? 1 : 0]?.meta?.changes ?? 0) > 0,
+  };
+}
+
+/**
+ * FUNNEL-01D.2: borrado solicitado desde un informe verificado.
+ * La autorización se revalida en el mismo DELETE (evita la ventana
+ * entre la lectura del grant y el borrado). Los registros relacionados
+ * se eliminan por FK ON DELETE CASCADE; los agregados anónimos no
+ * están vinculados a la solicitud y se conservan.
+ * No es un registro de solicitud de supresión ni un flujo público.
+ */
+export async function deleteAuthorizedIdentifiedReport(
+  binding: D1Database,
+  input: { requestId: string; accessTokenDigest: string; now: Date },
+): Promise<boolean> {
+  const now = input.now.getTime();
+  if (!input.requestId || !input.accessTokenDigest || !Number.isFinite(now)) return false;
+  const result = await binding.prepare(`DELETE FROM identified_diagnostic_request
+    WHERE id = ? AND status = 'verified' AND expires_at > ?
+      AND EXISTS (
+        SELECT 1 FROM diagnostic_report_access a
+        JOIN diagnostic_report_snapshot s ON s.request_id = identified_diagnostic_request.id
+        WHERE a.request_id = identified_diagnostic_request.id
+          AND a.token_digest = ? AND a.revoked_at IS NULL
+          AND a.expires_at > ? AND s.expires_at > ?
+      )`)
+    .bind(input.requestId, now, input.accessTokenDigest, now, now).run();
+  // D1 may include rows removed through foreign-key cascades in this count.
+  // The request ID predicate can match at most one parent row, so any change means success.
+  return (result.meta?.changes ?? 0) > 0;
 }

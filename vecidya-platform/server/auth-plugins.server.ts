@@ -1,12 +1,12 @@
 import { organization } from "better-auth/plugins";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull, or, gt } from "drizzle-orm";
 import { createDatabase } from "../db/client.server";
-import { session } from "../db/schema";
+import { session, billingAccount, organizationLicense, member } from "../db/schema";
 import { sendOrganizationInvitation, type InvitationEmailConfig } from "./email/invitation.server";
 
 /** Política del plugin Organization: la comparten el runtime y el CLI de esquema (`better-auth.config.ts`). */
 export const organizationPolicy = {
-  allowUserToCreateOrganization: true,
+  allowUserToCreateOrganization: false,
   // Sin flujo de borrado: la cascada eliminaría servicios, integraciones y gobierno asignados
   // por la plataforma, y `platform_audit_log` no admite cascada.
   disableOrganizationDeletion: true,
@@ -20,6 +20,14 @@ export const organizationPolicy = {
 export function createOrganizationPlugin(emailConfig: InvitationEmailConfig, database: ReturnType<typeof createDatabase>) {
   return organization({
     ...organizationPolicy,
+    allowUserToCreateOrganization: async (user) => {
+      const owned = await database.query.member.findFirst({ where: and(eq(member.userId, user.id), eq(member.role, "owner")) });
+      if (!owned) return true; // Alta inicial: la primera organización aún no tiene licencia.
+      const account = await database.query.billingAccount.findFirst({ where: eq(billingAccount.ownerUserId, user.id) });
+      if (!account) return false;
+      const active = await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, account.id), eq(organizationLicense.status, "active"), or(isNull(organizationLicense.endsAt), gt(organizationLicense.endsAt, new Date()))) });
+      return Boolean(active);
+    },
     sendInvitationEmail: (data) => sendOrganizationInvitation(data, emailConfig),
     organizationHooks: {
       afterRemoveMember: async ({ member }) => {

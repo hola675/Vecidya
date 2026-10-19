@@ -25,9 +25,9 @@ function resolve(answers: AnswersV2, bank: QuestionBankV2) {
       for (const production of option.produces ?? []) entries.push({ origin: { questionId: question.id, optionId: option.value }, production });
     }
   }
-  const oldSignals = foldSignalProductions(entries);
-  const niche = oldSignals.declaredNicheId ? toNicheId(oldSignals.declaredNicheId.value) : undefined;
-  return resolveContractContext(oldSignals, deriveContractSignals(answers), niche ? lookupNicheArchetypeHints(niche) : undefined);
+  const signals = foldSignalProductions(entries);
+  const niche = signals.declaredNicheId ? toNicheId(signals.declaredNicheId.value) : undefined;
+  return resolveContractContext(signals, deriveContractSignals(answers), niche ? lookupNicheArchetypeHints(niche) : undefined);
 }
 function eligible(question: QuestionDefinitionV2, answers: AnswersV2, context: ResolvedDomainContext): boolean {
   return (question.appliesWhen ? evaluateRuleV2(question.appliesWhen, answers, context) : !question.materialAppliesWhen)
@@ -36,6 +36,10 @@ function eligible(question: QuestionDefinitionV2, answers: AnswersV2, context: R
 /** Convergencia decreciente y fail-closed; nunca reutiliza el resolver de elegibilidad del banco anterior. */
 export function resolveEligibleQuestionsV2(rawAnswers: AnswersV2, bank: QuestionBankV2): ResolveEligibleQuestionsResult {
   const byId = new Map(bank.map(question => [question.id, question]));
+  // A duplicate ID would silently overwrite a question and corrupt routing/results.
+  if (byId.size !== bank.length) {
+    throw new Error("El banco QA-03B contiene identificadores de preguntas duplicados.");
+  }
   let current: AnswersV2 = Object.fromEntries(Object.entries(rawAnswers).filter(([id, answer]) => byId.has(id) && validAnswer(byId.get(id)!, answer)));
   for (let iteration = 1; iteration <= bank.length + 1; iteration++) {
     const { context, trace } = resolve(current, bank);

@@ -3,6 +3,7 @@ import { APIError, createAuthMiddleware } from "better-auth/api";
 import { betterAuth } from "better-auth/minimal";
 
 import { createDatabase } from "../db/client.server";
+import { getInvitationWithOrganization } from "../db/queries/organization.server";
 import * as schema from "../db/schema";
 import { createOrganizationPlugin } from "./auth-plugins.server";
 import { isBlockedOrganizationHttpCall } from "./auth/organization-http-surface";
@@ -66,6 +67,15 @@ export function createAuth(env: AuthEnvironment, request: Request) {
       // `ctx.path` es la ruta ya resuelta del endpoint y `ctx.request` solo existe cuando la
       // llamada llega por HTTP: las llamadas `auth.api.*` de las rutas propias no se bloquean.
       before: createAuthMiddleware(async (ctx) => {
+        if (ctx.path === "/sign-up/email" && ctx.request) {
+          const invitationId = ctx.request.headers.get("X-Vecidya-Invitation");
+          const email = String(ctx.body?.email ?? "").trim().toLowerCase();
+          if (!invitationId || !email) throw new APIError("FORBIDDEN", { message: "El registro requiere una invitación válida." });
+          const invitation = await getInvitationWithOrganization(createDatabase(env.DB), invitationId);
+          if (!invitation || invitation.status !== "pending" || new Date(invitation.expiresAt).getTime() <= Date.now() || invitation.email.trim().toLowerCase() !== email) {
+            throw new APIError("FORBIDDEN", { message: "La invitación no es válida para este correo." });
+          }
+        }
         if (isBlockedOrganizationHttpCall(ctx.path, Boolean(ctx.request))) {
           throw new APIError("NOT_FOUND");
         }

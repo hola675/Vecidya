@@ -1,3 +1,42 @@
+## CONSOLIDACIÓN-DIAG-2026-10-18 — roadmap de unificación (propuesto, sin cutover)
+
+**Objetivo:** terminar el diagnóstico público con un único contrato de preguntas, respuestas, rutas, scoring, resumen anónimo e informe identificado, sin conservar dos motores públicos ni borrar evidencia histórica. La ruta pública actual `/diagnostico` utiliza `AnonymousDiagnosticFlow` y el motor V3; el banco QA-03B y la candidata ACT siguen separados y no deben declararse equivalentes sin pruebas de paridad.
+
+| Fase | Trabajo | Gate de salida |
+| --- | --- | --- |
+| D0 Inventario | Clasificar imports/consumidores de `questions.ts`, `answers.ts`, `qbv2-*`, `qa03b/*`, rutas dev y migraciones; inventariar versiones persistidas y claves de localStorage | Matriz de consumidores y rollback aprobados |
+| D1 Contrato único | Definir identidad/versiones de banco de preguntas, opción, respuesta, aplicabilidad, planificador, scoring y reporte; distinguir anónimo e identificado | Pruebas de compatibilidad de contratos y fixtures |
+| D2 Preguntas y respuestas | Revisar redacción, opciones, exclusividad, saltos, dependencias, contradicciones y cobertura por tipo de negocio; conservar procedencia de cada respuesta | Golden personas, rutas adversariales y tests de consistencia PASS |
+| D3 Motor y resultados | Conectar el banco revisado al flujo público tras comparar rutas y resultados con V3; evitar mezclar resultados de metodologías distintas | Paridad documentada o migración versionada aprobada; E2E y pruebas de regresión |
+| D4 Embudo | Resumen anónimo descargable sin datos, solicitud voluntaria de detalle, verificación email y reporte personalizado; separar consentimiento comercial | Worker/D1 temporal, seguridad y privacidad certificadas |
+| D5 Cutover controlado | Activar una sola ruta pública; retirar imports muertos, componentes y assets legacy demostrablemente no utilizados; preservar migraciones y adaptadores históricos necesarios | Typecheck, build, tests, E2E, visual desktop/mobile, rollback |
+| D6 Operación | Analítica agregada sin identidad; derechos de datos; integración comercial opt-in independiente de GHL | Aprobaciones legales/comerciales y CI verde antes de deploy |
+
+**Reglas:** no borrar `db/migrations`, no eliminar claves históricas ni adaptar sesiones completadas sin versionado; no activar correo real, sincronización GHL o D1 remota sin autorización. El roadmap histórico anterior se conserva como evidencia, incluso donde indique gates bloqueados.
+
+#### Criterios de revisión del banco (consolidados desde la auditoría 2026-10-18)
+
+1. Mantener IDs/versiones estables y valores de opción semánticamente inequívocos; `unknown`, `unsure` y respuestas excluyentes no deben permitir selecciones contradictorias.
+2. Hacer determinista la aplicabilidad, sin rutas sin salida ni preguntas que obliguen a declarar información no pertinente.
+3. Distinguir estado operativo, historial de clientes, comprador directo, beneficiario, modalidad de prestación y compra en línea; no inferir respuestas omitidas.
+4. Solicitar confirmación ante contradicciones materiales cuando corresponda y conservar la procedencia de cada respuesta.
+5. Trazar resultados y recomendaciones hasta pregunta, evidencia, versión de banco y motor. Resumen anónimo e informe detallado derivan del mismo resultado versionado, con proyecciones de acceso distintas.
+6. Cubrir golden personas, rutas límite, reinicio/reanudación, cambio de versión, descarga, verificación y caducidad.
+
+**Ejecución inicial:** D0-A construye la matriz de consumidores e identidades; D1-A compara determinísticamente `QUESTION_BANK_V2` y `qa03b` (IDs, versiones, opciones, elegibilidad y copy); D2-A corrige solo divergencias demostradas con regresiones. No hay reemplazo masivo ni limpieza de módulos legacy por nombre.
+
+**Estado a fecha 2026-10-19:** D0 sigue en análisis y D1-D6 no están certificados. La integración local obtuvo PASS técnico en FUNNEL-01D.1 y las regresiones Worker asociadas, pero G00-07 y el estado de GitHub del commit actual siguen bloqueados; esto no certifica equivalencia con QA-03B ni autoriza cutover. Mantener `GATE_B_PARTIAL`; no borrar código ni iniciar ACT-04.
+
+## FUNNEL-01D.2 — implementación incremental y derechos (2026-10-17)
+
+**Avance técnico 01D.2-B (2026-10-17):** se añadió `revokeDiagnosticOptionalIntents` en `db/queries/diagnostic-identification.server.ts` con autorización mediante grant vigente, actualizaciones idempotentes de consentimiento comercial e investigación y revalidación en cada UPDATE. **Sin pruebas ejecutadas, sin API/UI pública y sin aprobación de 01D.1.** No se ha implementado la solicitud de eliminación ni el registro de derechos; se mantienen como pendientes. Este avance de código aislado no autoriza activar la fase ni saltar sus gates.
+
+**Decisión de producto autorizada:** distinguir revocación de preferencia comercial y solicitud de eliminación de datos personales. Ambas operaciones requieren identidad verificada, no deben exponer existencia de emails o solicitudes y deben tener registro mínimo de evidencia sin conservar respuestas del diagnóstico en el registro de auditoría. La revocación de contacto no revoca automáticamente el acceso al informe; la eliminación sí revoca accesos y elimina información vinculada, sujeta a una política de retención/excepciones legales aprobada antes de habilitarla públicamente.
+
+**Secuencia técnica pendiente:** (1) certificar 01D.1 y reconciliar main; (2) definir contrato de operaciones de derechos, autorización por grant vigente o challenge one-time y respuestas genéricas; (3) implementar revocación de preferencias B/C con idempotencia y transacción; (4) implementar solicitud de eliminación verificable, estado y acuse sin datos sensibles; (5) pruebas adversariales de enumeración, concurrencia, doble envío, revocación, expiración y conservación de agregados anónimos; (6) validación de aviso, plazos y política legal; (7) preparar 01D.3 sin envío automático a GHL.
+
+**Límites:** no declarar la funcionalidad implementada por este documento. No aplicar migraciones D1 remotas, no activar email real ni endpoints públicos hasta certificación. Mantener `main` como referencia y PR #6 en borrador hasta corregir conflictos y checks.
+
 # Roadmap
 
 ## PLATFORM-ADMIN-GLOBAL + APP-CLIENTE / MINIWEB-CUADRA-01 (2026-10-17)
@@ -7,7 +46,7 @@ Cuadra USD 39/mes no incluye ni requiere GHL; Barrio USD 59/mes inicia CRM GHL y
 | Checkpoint | Alcance | Estado/gate |
 | --- | --- | --- |
 | **APP-MINI-01C** | Cerrar baseline: E2E, HTTP público y capturas dashboard/editor/página en desktop/mobile | Cerrado técnicamente en local; no desplegado |
-| **APP-MINI-02A** | Core modular: registries versionados, config draft/published, default virtual legacy, compositor y controles básicos | Código local implementado; cadena `0000`–`0017` aplicada en D1 aislada limpia y MiniWeb E2E `33/33 PASS` allí. D1 local compartida sin cambios, ledger pendiente; D1 remota sin cambios; no deploy |
+| **APP-MINI-02A** | Core modular: registries versionados, config draft/published, default virtual legacy, compositor y controles básicos | Código local implementado; el E2E MiniWeb `33/33 PASS` se ejecutó sobre D1 aislada con la cadena `0000`–`0019`. El D1 compartido del checkout original y el remoto no se tocaron; no deploy |
 | **PLATFORM-ADMIN-GLOBAL** | Control plane interno auditado: operaciones cross-org, creación/invitación de usuarios, roles existentes, settings/MiniWeb y asignaciones de capacitación | Especificación propuesta para aprobación humana explícita; implementación pendiente. Precedencia sobre 02B; no impersonación ni bypass de APIs cliente |
 | **APP-MINI-02B** | Crear `business_offering` público independiente; servicios/productos del negocio y FAQ | Diseño de publicación aprobado y documentado; implementación no iniciada, sin crear aún tablas ni contenido público. Bloqueado por precedencia de PLATFORM-ADMIN-GLOBAL |
 | **APP-MINI-02C** | R2, referencias/metadatos, portada/galería e imagen/video limitado | Requiere modelo de medios, permisos y subida segura; blobs fuera de D1 |
@@ -17,6 +56,34 @@ Cuadra USD 39/mes no incluye ni requiere GHL; Barrio USD 59/mes inicia CRM GHL y
 | **GHL-BARRIO-01** | Evaluar conexión/entrada GHL solo para Barrio/Ciudad | Cuenta, permisos/scopes, tenant mapping y autorización reales; fase independiente |
 
 Todos los bloques conservan una organización/negocio/MiniWeb, URL pública `/vecindario/:slug`, gobernanza, aislamiento tenant-scoped y frontera entre oferta del negocio y servicio Vecidya contratado. No crear CRM en Vecidya ni editor Wix/HTML/CSS libre. El control plane no edita contenido de Aprende ni cambia Diagnóstico; usa el catálogo de Aprende solo para asignar y seguir avance. No publicar, desplegar ni modificar D1 remota sin autorización explícita. APP-MINI-02B no inicia hasta la aprobación explícita e integración de PLATFORM-ADMIN-GLOBAL y una nueva autorización de implementación.
+
+
+## FUNNEL-01D — secuencia aprobada (2026-10-16)
+
+| Checkpoint | Alcance | Estado/gate |
+| --- | --- | --- |
+| **FUNNEL-01D.1** | Seis contadores agregados del embudo; sin respuestas/identidad ni dashboard | **PASS técnico local; integración global bloqueada** por G00-01/G00-10 y checks externos sin verificar. Worker/D1, suite, typecheck/build y aislamiento local se validan en `TESTING.md`; no activar producción ni avanzar a 01D.2 hasta cierre y aprobación independiente |
+| **FUNNEL-01D.2** | Preferencias y privacidad | Siguiente fase secuencial; no iniciar hasta cierre/aprobación independiente de 01D.1 |
+| **FUNNEL-01D.3** | Preparación comercial | Después de 01D.2; solo transferencia para contactos autorizados, sin sync/oportunidades automáticas; autorización separada |
+
+El almacén analítico no se conecta a GHL ni vincula agregado con identidad. La certificación local de 01D.1 no aprueba email real, retención ni activación pública.
+
+## APP-CLIENTE / MINIWEB-CUADRA-01 — siguiente línea de producto (2026-10-15)
+
+Cuadra USD 39/mes no incluye ni requiere GHL; Barrio USD 59/mes inicia CRM GHL y Ciudad USD 89/mes amplía el alcance. Vecidya conserva autoridad de cuenta, organización, licencia, perfil/MiniWeb y Vecindario; GHL conserva CRM y operación comercial desde Barrio.
+
+| Checkpoint | Alcance | Estado/gate |
+| --- | --- | --- |
+| **APP-MINI-01C** | Cerrar baseline: E2E, HTTP público y capturas dashboard/editor/página en desktop/mobile | Cerrado técnicamente en local; no desplegado |
+| **APP-MINI-02A** | Core modular: registries versionados, config draft/published, default virtual legacy, compositor y controles básicos | Código y E2E local implementados. Migration ledger local 0016/0017 sigue pendiente; no D1 remota ni deploy. No crear filas legacy en masa |
+| **APP-MINI-02B** | Crear `business_offering` público independiente; servicios/productos del negocio y FAQ | Siguiente checkpoint; decidir snapshot/publicación de contenido completo antes de ampliar contenido editable |
+| **APP-MINI-02C** | R2, referencias/metadatos, portada/galería e imagen/video limitado | Requiere modelo de medios, permisos y subida segura; blobs fuera de D1 |
+| **APP-MINI-02D** | Editor MiniWeb completo: Diseño / Secciones / Contenido / Preview / Publicar | Después de 02B/02C; no convertir `business-profile.tsx` en formulario monolítico |
+| **APP-MINI-02E** | Vecindario como índice/buscador y fichas basadas en MiniWeb | Categoría, especialidad/tags, ubicación, modalidad, ofertas y módulos; sin duplicar fuente comercial |
+| **APP-MINI-03** | Presentar licencias, derechos y estados reales | Autorización separada; no checkout ni cobro automático |
+| **GHL-BARRIO-01** | Evaluar conexión/entrada GHL solo para Barrio/Ciudad | Cuenta, permisos/scopes, tenant mapping y autorización reales; fase independiente |
+
+Todos los bloques conservan una organización/negocio/MiniWeb, URL pública `/vecindario/:slug`, gobernanza, aislamiento tenant-scoped y frontera entre oferta del negocio y servicio Vecidya contratado. No crear CRM en Vecidya ni editor Wix/HTML/CSS libre. No tocar Diagnóstico o Aprende en esta línea. No publicar, desplegar ni modificar D1 remota sin autorización explícita. APP-MINI-02B no se inicia automáticamente.
 
 ## FUNNEL-01C.2 — estado del checkpoint autorizado (2026-10-14)
 
@@ -424,3 +491,73 @@ PROD-001 y EMAIL-001 están cerrados en sus alcances; `app.vecidya.com`/`admin.v
 - Migración directa de la arquitectura Astro Legacy.
 - Datos comerciales ficticios.
 - Marketing político persuasivo, segmentación electoral o manipulación de audiencias.
+
+## Actualización operativa — 2026-10-17: integración Diagnóstico V3 y plataforma
+
+**Objetivo inmediato:** cerrar DIAG-V3-FUNNEL-01D.1/01D.2 con pruebas reproducibles y reconciliar PR #6 con main antes de despliegue. La rama `feat/diagnostic-funnel-01d1` estaba 24 commits por delante y 8 por detrás de `main` al inicio de este corte; revisar de nuevo antes de integrar.
+
+1. **Integración primero:** resolver conflictos de PR #6 preservando el estado de plataforma, roles, licencias y perfiles; no sobrescribir cambios recientes de main. Ejecutar `pnpm install --frozen-lockfile`, `test:unit`, `typecheck`, `build`, migraciones D1 **locales** y E2E 01B/01C/01D.1. No desplegar ni tocar D1 remota sin autorización.
+2. **01D.1 analítica:** conservar `diagnostic_funnel_aggregate` anónimo al limpiar solicitudes; verificar conteos, privacidad, aislamiento y ausencia de duplicados. El alias E2E 01D.1 actualmente reimporta 01C.3: reemplazarlo por suite dedicada antes de declararlo certificado.
+3. **01D.2 privacidad:** interfaz DEV con selección independiente de revocación comercial/investigación y PATCH autenticado; añadir E2E de revocación selectiva, doble, repetida, caducidad y error. Diseñar eliminación verificable con registro mínimo de trazabilidad y retención aprobada; la eliminación directa DEV existente **no equivale** al flujo público definitivo.
+4. **01D.3 captación:** registro de interés voluntario en Vecidya, trazabilidad de consentimientos y handoff comercial explícito, **sin sincronización automática con GHL**.
+5. **01E informe:** anónimo resumido sin forzar datos; identificado detallado tras verificación, con impresión/descarga limitada a su nivel y recomendaciones accionables.
+6. **Aplicación de clientes:** perfiles públicos y MiniWeb de 39 USD como producto Vecidya; CRM/automatizaciones de GHL fuera del núcleo Vecidya. Respetar secuencia AUTH-ABUSE → MEDIA R2 → publicación autónoma y las autorizaciones independientes de producción.
+
+**Puertas de salida:** PR integrable, tests PASS documentados, protección de PII y aislamiento tenant verificados, consentimiento legal/retención resueltos, revisión visual y aprobación de despliegue. Ninguna puerta se presume superada por commits de implementación.
+
+### 01D.2 — corte de implementación 2026-10-17 (sin certificación)
+
+- Revocación comercial y de investigación selectiva con grant vigente, interfaz DEV, feedback accesible y lectura acotada del body: **implementado en rama**.
+- Borrado DEV con confirmación y DELETE protegido por autorización en la propia sentencia SQL, preservando agregados anónimos: **implementado en rama** (`9a01674`, `616a761`).
+- **No cerrar 01D.2 funcional/públicamente todavía:** falta definir y desarrollar registro de solicitud de supresión, retención y evidencia mínima autorizada; pruebas reales aplazadas por decisión del usuario. No declarar PASS, certificación ni deploy.
+- Próximo desarrollo sin pruebas: contrato de solicitud de supresión verificable y trazable, sin guardar PII innecesaria ni sincronizar GHL; después 01D.3 handoff comercial explícito.
+
+### Decisión de producto — 01D.3, 2026-10-17
+
+**GHL queda aplazado sin fecha**: no crear sincronizadores, webhooks, contactos GHL ni dependencias de CRM. La captación identificada vive exclusivamente en D1 de Vecidya. El acceso administrativo se realiza mediante `/app/internal/diagnostic-leads`, protegido con `requirePlatformAdmin`, paginado y de solo lectura; lista datos mínimos de solicitudes vigentes y los estados separados de consentimiento comercial/investigación. No expone informes, códigos de verificación ni digests de tokens. Entrada desde el dashboard `/app/internal`. Implementación en rama: `07d6f93`, `33e6b64`, `a15f171`. **01D.3: base administrativa implementada, no certificada ni desplegada.**
+
+Siguiente desarrollo: filtros y búsqueda seguros del lado servidor, estados y auditoría interna de acciones futuras; antes de permitir contacto, definir tratamiento de retención, política legal y permisos de operador. Las pruebas reales siguen aplazadas por decisión del usuario.
+
+### 01D.3 — filtros internos (implementación sin pruebas)
+
+En `/app/internal/diagnostic-leads` se incorporó búsqueda por nombre/correo/negocio, filtro por verificados/pendientes/contacto comercial autorizado y paginación que conserva los criterios (`8b2bb35`). La búsqueda se ejecuta en D1 mediante parámetros vinculados y límite de 80 caracteres, no mediante filtrado de PII enviada masivamente al navegador. El módulo permanece read-only y exclusivo de `platform_admin`; sin exportación, envío, sincronización ni GHL. **Pendiente**: QA, verificación de índices y rendimiento, retención y auditoría de accesos a PII. No marcar la fase como certificada.
+
+### 01D.3 — analítica interna y gráficos (2026-10-17)
+
+Implementada en rama la ruta protegida `/app/internal/diagnostic-analytics`: métricas agregadas existentes de D1, seis contadores de eventos, tres ratios orientativos, cuatro gráficos de tendencia diaria SVG, tabla diaria y periodos 7/30/90 días. Se incorporaron accesos desde dashboard y navegación de AdminShell, junto con entrada independiente para `/app/internal/diagnostic-leads`. La analítica no expone PII ni reportes individuales; el listado de interesados mantiene acceso solo a platform admin. **Los ratios son cocientes de eventos del intervalo, no tasas de conversión por cohortes**. No hay integración con GHL. Pruebas y certificación aplazadas; sin despliegue.
+
+### UI/UX transversal — premium polish (2026-10-17)
+
+Se añadió `app/styles/vecidya-polish.css` e importación en `app/root.tsx` para compartir tokens de movimiento, transiciones, foco accesible, hover contextual, tablas y ajustes responsive entre web pública, espacio cliente y App Internal (`7c9f1e0`, `87044e4`). Se añadió enlace de salto al contenido de App Internal (`b73cc1f`). Efectos condicionados a `hover` y `prefers-reduced-motion`; no se incorporaron librerías ni fuentes externas. **Esto es la primera capa transversal, no una revisión terminada de cada página.** Pendientes: auditoría visual por ruta, contraste, responsive 320–1440 px, teclado, Lighthouse, compilación y pruebas reales. No certificado ni desplegado.
+
+### UI/UX transversal — pulido de Mi Vecidya (2026-10-17)
+
+Aplicado en la capa compartida `app/styles/vecidya-polish.css` un refinamiento específico del dashboard cliente (`app-primary-action`, accesos rápidos y progreso), editor de perfil (foco por tarjeta, legibilidad de ayudas) y MiniWeb (separación controles/vista previa, feedback de módulos, responsive). Commit `05ea2f1`. Animación solo en hover compatible y respetando movimiento reducido. No se alteraron modelos de datos, rutas, precios ni funcionalidades comerciales; GHL continúa aplazado. Pendiente revisión visual real, compilación, accesibilidad y contraste; no declarar certificación ni despliegue.
+
+### UI/UX transversal — componentes compartidos (2026-10-17)
+
+Se amplió `app/styles/vecidya-polish.css` con estilos globales de controles (foco, error `aria-invalid`, deshabilitado, interacción táctil, tarjetas, estados vacíos y tipografía en móvil) en web pública, cliente y administración. Commit `bbc7b76`. Los estilos son mejoras progresivas; no implican que todos los formularios existentes utilicen aún `aria-invalid`, ni sustituyen una revisión individual de pantallas. Mantener diseño de marca y `prefers-reduced-motion`. Sin dependencias externas, sin GHL, sin despliegue y sin certificación.
+
+### UI/UX transversal — web pública y diagnóstico (2026-10-17)
+
+Refinadas las clases reales de `home.tsx`, `services.tsx`, `diagnostic.tsx` y `diagnostico-informe.tsx` mediante la capa global de estilos: CTA flexibles, tarjetas con hover condicionado, tratamiento visual del pin 3D, enfoque accesible, y barra de acciones del informe adaptable a móvil. Commit `7c4b73a`. No se cambió contenido, lógica de evaluación, resultados, datos ni embudo. Sigue pendiente la revisión visual y de interacción real en cada viewport, y la comprobación de compatibilidad de selectores con las hojas existentes. Sin pruebas/certificación/despliegue.
+
+### UI/UX transversal — Únete, Contacto y Aprende (2026-10-17)
+
+Se añadieron reglas específicas de pulido para `join.tsx`, `contact.tsx` y `learn-article.tsx` en la capa global: jerarquía y hover de decisiones, lectura de correo y acciones en móvil, tipografía editorial, navegación por anclas, tarjetas relacionadas y distribución responsive. Commit `e70d465`. No se modificaron datos, lógica de contacto ni contenido editorial. Queda pendiente inspección visual real, compatibilidad CSS, compilación y pruebas; no certificado ni desplegado.
+
+### Política de altas — solo invitación (2026-10-17)
+
+Decisión de producto: no existe registro libre para clientes. La organización y su licencia se gestionan desde App Internal; una persona sin cuenta puede registrarse únicamente mediante invitación pendiente, vigente y dirigida a su correo. Cambios: middleware Better Auth valida `X-Vecidya-Invitation` en `/sign-up/email` (`40e9d94`); `/register` solo permite el formulario con `redirectTo` de invitación y transmite identificador (`ba48220`); `/login` elimina CTA de alta pública (`b40cf59`). Se mantiene aceptación/verificación existente. **Pendiente validar**: compilación/types, comportamiento real del middleware Better Auth y validación del vínculo entre invitación y organización/licencia. Sin pruebas ni despliegue.
+
+### Bloqueo de organizaciones autogestionadas (2026-10-17)
+
+Se detectó que el registro por invitación no bastaba: `/organization/create` seguía abierto desde navegador y `/app` ofrecía crear espacios propios. Se retiró de la lista HTTP permitida (`e74a617`), se eliminó el manejador de creación de `app.tsx` (`b3864ad`) y el formulario residual (`7fb1b21`). El estado sin organización ahora explica la asignación administrada. **Pendiente funcional prioritario:** construir alta de organizaciones desde App Internal con autorización platform_admin, propietario/invitación y licencia antes de habilitar el espacio; auditar otras vías de creación de organizaciones y verificar en runtime que Better Auth bloquea la ruta. No se ejecutaron pruebas ni despliegues.
+
+### Corrección de política comercial: organizaciones gratuitas (2026-10-17)
+
+La política definitiva distingue **registro de usuarios** (solo invitación) de **creación de organizaciones** (permitida a usuarios autenticados con permisos). Cada organización puede tener perfil básico gratuito y publicarse en Vecindario; CRM, Barrio/Ciudad y demás productos premium requieren licencias independientes por organización. Se reabrió `/organization/create` (`4784f94`) y se recuperó el formulario en Mi Vecidya (`510648b`). Las notas anteriores que proponían reservar todas las organizaciones a App Internal quedan **superadas**. Pendiente: verificar el control de permisos en backend, la asignación automática del plan gratuito, la no herencia de licencias premium, y la compilación y pruebas end-to-end. Sin despliegue.
+
+### Rectificación comercial — Cuadra (2026-10-17)
+
+**Corrección posterior y prevalente:** la licencia **Cuadra es de pago**. La creación de organizaciones por usuarios autenticados autorizados no implica licencia gratuita ni publicación automática en Vecindario. Las capacidades publicables se rigen por la licencia de cada organización; CRM y otros servicios también requieren su habilitación correspondiente. Se corrigió el texto del dashboard (`21f2822`). La sección anterior que afirmaba «perfil básico gratuito y publicación gratuita» es incorrecta y queda anulada. Pendiente verificar los gates reales de publicación y licencias en backend.

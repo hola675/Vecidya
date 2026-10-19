@@ -6,6 +6,7 @@ import { dayOfWeekLabels, type BusinessHoursEntry } from "../../db/business-hour
 import { businessProfileSlugMaxLength, serviceModeLabels, slugifyBusinessName } from "../../db/business-profile-rules";
 import {
   getBusinessProfileForOrganization,
+  hasActiveLicenseForOrganizationOwner,
   publishBusinessProfileForOrganization,
   saveBusinessProfileForOrganization,
 } from "../../db/queries/business-profile.server";
@@ -57,8 +58,9 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     listBusinessHoursForOrganization(database, organization.id),
   ]);
   const governance = profile ? await getBusinessProfileGovernance(database, profile.id) : null;
+  const canPublish = await hasActiveLicenseForOrganizationOwner(database, organization.id);
 
-  return { completion: getBusinessProfileCompletion(profile), governance, membership, profile, hours, ...shell, activeOrganization: organization };
+  return { completion: getBusinessProfileCompletion(profile), governance, membership, profile, hours, canPublish, ...shell, activeOrganization: organization };
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
@@ -85,6 +87,8 @@ export async function action({ context, request }: Route.ActionArgs) {
     }
 
     if (intent === "publish") {
+      const activeLicense = await hasActiveLicenseForOrganizationOwner(database, organization.id);
+      if (!activeLicense) return { kind: "profile" as const, error: "Necesitas una licencia Vecidya activa para publicar en Vecindario." };
       await requireOrganizationPermission(env, request, organization.id, "business-profile:publish");
 
       if (publicationIssues.length) {
@@ -167,7 +171,7 @@ function getHoursPreview(formData: FormData): BusinessHoursEntry[] {
 }
 
 export default function BusinessProfilePage() {
-  const { completion: loaderCompletion, governance, hours: loaderHours, membership, profile: loaderProfile, workspaceUser, organizations, isPlatformAdmin, activeOrganization } = useLoaderData<typeof loader>();
+  const { completion: loaderCompletion, governance, hours: loaderHours, membership, profile: loaderProfile, workspaceUser, organizations, isPlatformAdmin, activeOrganization, canPublish } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const profileActionData = actionData?.kind === "profile" ? actionData : undefined;
@@ -330,12 +334,13 @@ export default function BusinessProfilePage() {
                 <Button name="intent" type="submit" value="save">
                   {isSaving ? "Guardando…" : "Guardar"}
                 </Button>
-                {profile?.status !== "published" ? (
+                {profile?.status !== "published" && canPublish ? (
                   <Button name="intent" tone="secondary" type="submit" value="publish">
                     Publicar perfil
                   </Button>
                 ) : null}
               </div>
+              {!canPublish && profile?.status !== "published" ? <p className="form-help">Para publicar en Vecindario necesitas una licencia Vecidya activa. Puedes guardar el perfil como borrador.</p> : null}
               {profile?.status === "published" ? <p className="form-help">Para mantener la página pública, los campos necesarios no pueden quedar incompletos.</p> : null}
             </fieldset>
           </Form>

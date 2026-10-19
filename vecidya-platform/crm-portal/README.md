@@ -1,13 +1,27 @@
-# Landing `crm.vecidya.com`
+# Portal de acceso en `crm.vecidya.com`
 
-Sitio estático independiente, sin credenciales ni sesiones. Su botón lleva a `https://vecidya.com/login?redirectTo=%2Fapp%2Fcrm` y, tras autenticación con Better Auth, a `/app/crm`.
+El portal es un **Cloudflare Worker con Static Assets**, independiente del Worker principal `vecidya-platform`.
 
-## Deploy Cloudflare
-1. Crear proyecto **Pages** con repositorio Vecidya (Git).
-2. Directorio raíz / build output: `vecidya-platform/crm-portal`; framework: None; sin comando de build (según configuración de Pages).
-3. Añadir dominio personalizado `crm.vecidya.com` desde Workers & Pages > proyecto > Custom domains.
-4. Confirmar registro DNS, certificado TLS, HTTP 200 y enlace de login sin redirecciones inesperadas.
-5. No cambiar cookies de `vecidya.com`, `APP_URL` ni Better Auth: este host es exclusivamente una landing pública.
-6. No publicar antes de verificar que la página principal y la ruta privada estén desplegadas.
+## Configuración Git deploy (Workers & Pages → Workers)
 
-No se necesitan credenciales HighLevel ni la API de GHL para esta fase.
+- Repository: `hola675/Vecidya`
+- Branch: rama de integración para preview temporal, o `main` **solo después de fusionar y validar los cambios**
+- Root directory: `vecidya-platform`
+- Build command: `exit 0`
+- Deploy command: `npx wrangler deploy --config wrangler.crm-portal.jsonc`
+
+El archivo exclusivo `wrangler.crm-portal.jsonc` publica `./crm-portal`; no utiliza `build/client`, ni `workers/app.ts`, ni modifica rutas existentes del dominio principal.
+
+## Custom domain
+Cuando el Worker haya desplegado correctamente, entrar en Workers & Pages → `vecidya-crm-portal` → Settings → Domains & Routes → Add → Custom Domain → `crm.vecidya.com`. Revisar DNS previo y HTTPS.
+
+## Comprobaciones
+1. `workers.dev` del Worker CRM muestra `index.html`.
+2. Botón «Entrar en Mi Vecidya» apunta a `https://vecidya.com/login?redirectTo=%2Fapp%2Fcrm`.
+3. `crm.vecidya.com` presenta certificado TLS válido.
+4. `vecidya.com` sigue usando su Worker principal sin cambios.
+5. `/app/crm` únicamente estará disponible en la web principal tras fusionar y desplegar el PR.
+
+Si se crea un **Cloudflare Pages** real en lugar de un Worker, configurar el output estático con `vecidya-platform/crm-portal` y no ejecutar `wrangler deploy`. No combinar ambos procedimientos.
+
+Ningún servicio de esta fase solicita credenciales de HighLevel ni cambia Better Auth o las cookies de `vecidya.com`.

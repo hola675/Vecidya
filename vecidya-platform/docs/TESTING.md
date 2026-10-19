@@ -1,8 +1,38 @@
+# Pruebas
+
+## VECIDYA — reconciliación Fase 00 y gates G00-05 a G00-10 (2026-10-19)
+
+Este corte se ejecutó en el worktree dedicado `integration/phase-00-main-reconcile`, iniciado en `origin/integration/phase-00-main-reconcile=82608d5`. Tras `git fetch origin` el 2026-10-19, la referencia seguía en `origin/main=18de1be`; `main` es ancestro de integración (0 detrás / 165 commits exclusivos de integración). La main compartida permaneció limpia y sin merge. La evidencia siguiente corresponde al worktree local; no implica publicación.
+
+| Gate | Estado | Evidencia / límite |
+| --- | --- | --- |
+| G00-05 — D1 aislada y migraciones | **PASS local** | Wrangler aplicó y consultó `0000`–`0019` en el D1 nuevo del worktree. El checkout compartido, su D1 local y D1 remota no se tocaron. |
+| G00-06 — regresiones Worker/funnel | **PASS local** | `diagnostic-v3-funnel-01b-check.mjs` `6/6`; `diagnostic-v3-funnel-01c-check.mjs` PASS en Worker + D1 local, incluida deduplicación 01D.1, recuperación y borrado autorizado. |
+| G00-07 — no pérdida de datos | **BLOCKED — preservar** | Sentinel agregado histórico `2000-01-01 / diagnostic_started / 7919` preservado. El D1 local de integración conserva una solicitud identificada no correspondiente al alias sintético QA, con snapshot/challenge e intents B/C, sin grant; hay 1 solicitud, 1 snapshot, 1 challenge, 0 grants y 2 intents. Su procedencia es desconocida; no se borró ni se atribuyó a la E2E. Los agregados del día tampoco son atribuibles individualmente; se conservan sin intentar vincularlos. |
+| G00-08 — aislamiento productivo | **PASS local** | `diagnostic-production-isolation-check.mjs` ejecutado contra `vite preview` local tras build: rutas/fixtures dev-only no accesibles en la entrega productiva. |
+| G00-09 — Aprende, MiniWeb, licencias y tenant | **PASS focal / PARCIAL global** | MiniWeb core `33/33`; experiencia de perfil, ciclo de slug, licencias y Aprende (11 guías) PASS en Worker local. El test general `organization-authorization-check.mjs` había expirado a 600 s sin emitir resultado; no se repitió sin diagnóstico. APP-MINI-02B sigue sin implementación/activación. |
+| G00-10 — documentos, rollback y PR/checks | **PARCIAL / BLOQUEADO** | Se consolidaron los seis informes de fase en documentos canónicos; no hubo operación remota ni merge. No se pudo consultar el estado del PR/checks del SHA actual: `gh` no está instalado y GitHub API anónima devolvió 404. |
+
+La certificación transversal complementaria pasó: `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, E2E de interfaz y `git diff --check` se revalidan contra el diff final. La suite `organization-authorization-check.mjs` no forma parte del PASS global mientras siga sin diagnóstico.
+
+**Correcciones cubiertas por regresión:** D1 reportó `meta.changes=7` al borrar un request con hijos en cascada; el DELETE autorizado ahora considera éxito cualquier cambio positivo, mientras la condición SQL sigue restringida a un `requestId` y a un grant vigente. La suite focal prueba `changes=7` y `changes=0`. La E2E 01C.3 mantiene el límite 6/60 por solicitud y omite solo una repetición de token obsoleta redundante con las comprobaciones anteriores (tras consumo y durante recovery). Los harnesses MiniWeb invocan el entrypoint Wrangler mediante Node para evitar quoting de `cmd.exe`, siembran invitación/licencia de prueba según las reglas actuales y limpian sus fixtures. No se eliminó la solicitud local de procedencia desconocida indicada en G00-07.
+
+### Conciliación de ramas y exclusiones seguras
+
+- El merge histórico `393415d51acc3dda37cd43940bec741325ae866b` tiene padres `72787285` y `18de1be`; la ref remota actual conserva la historia de main y apunta a `82608d5`. No se aplicó `ours`/`theirs` global ni se alteró `main`.
+- En la auditoría previa al merge, los ocho commits exclusivos de main afectaban 17 rutas: nueve archivos ya eran idénticos (devcontainer, `AGENTS.md`, catálogo/tests/assets de Aprende y ENVIRONMENTS/GOVERNANCE) y ocho diferían (workflow CI y ARCHITECTURE/CHANGELOG/DATABASE/PROJECT_STATE/ROADMAP/STATUS/TESTING). Se conservó por ruta la versión de integración para CI y documentación, dejando los blobs de Aprende idénticos; esa clasificación histórica motivó la reconciliación semántica y no un checkout global de una rama.
+- Se preservaron todos los worktrees y cambios de origen. `Vecidya-aprende-05` mantiene cambios locales de cuatro artículos; la candidata integrada conserva 11 y los siete artículos/activos adicionales, por lo que no se reemplazó la biblioteca vigente por la copia reducida.
+- En el worktree temporal de Diagnóstico 01D.1, `docs/TESTING.md` se resolvió semánticamente y se stageó solo ese archivo; conserva ambos bloques de evidencia 01D.1 y Aprende 06C. Las otras modificaciones de Aprende quedaron en su worktree. El contenido, tests y SVG de los 11 artículos ya coinciden con integración, por lo que no se copió nada. `vecidya-ledger-check` y `platform-admin-global-impl` permanecen separados por aprobación pendiente.
+- `fix/diag-pr6-analytics-isolation` conserva cinco archivos modificados y no se cherry-pickeó: su E2E exige un sentinel `1900-01-01/count=7`, mientras que el workflow integrado siembra/verifica `2000-01-01/count=7919`; el check del workflow ya cubre la conservación del sentinel correcto. El override local de persistencia Vite tampoco se aplicó sin dependencia demostrada.
+- `work/diag-v3-01c3-reconciled` no se integró: su árbol relativo a la candidata suprime 91 archivos y 5.028 líneas. Se mantiene como worktree de origen, no como rama de integración.
+
+### Evidencia histórica que no certifica el SHA actual
+
+La revisión inicial de Fase 00 documentó PR #6 en `0cc681f`, una divergencia de 104 adelante/8 detrás y un check `Workers Builds: vecidya-crm-portal` fallido; el run `39097001002` correspondía al commit `9f90d8bc` y el run `39097394295` al commit `1424e003`. Esos estados corresponden a otros commits y no sustituyen los checks del SHA actual. La reconciliación de `393415d` y el estado G00-05…G00-10 actual se conservan aquí; la certificación remota continúa pendiente.
+
 ## VEC-CLOUD-CI-001 — Codespaces y CI (2026-10-17)
 
 Configuración propuesta en PR #10 (`fix/codespaces-ci-bootstrap`): GitHub Actions ejecuta instalación pnpm congelada, `test:unit`, `typecheck` y `build` en runner alojado por GitHub, sin secretos, D1 remota ni deploy. Codespaces define Node 24, pnpm 11.21.0, Chromium y puerto 5173. **Estado: CONFIG propuesta; pruebas CI todavía sin PASS confirmado y Codespace no abierto/verificado.** E2E con Worker/D1 aislada queda para checkpoint posterior; no se declara cobertura E2E en CI. Para aprobar merge: CI verde, diff revisado, documentación reconciliada y aprobación explícita; si CI falla, no fusionar.
-
-# Pruebas
 
 ## VEC-APRENDE-06C — tres guías nuevas (2026-10-17)
 
@@ -20,6 +50,7 @@ pnpm run build
 git diff --check
 ```
 
+
 ## VEC-APRENDE-06B — tres guías de Tecnología explicada (2026-10-17)
 
 **Resultados observados en worktree aislado desde `origin/main` actualizado:** catálogo `learn-content.test.ts` `9/9 PASS`; suite unitaria completa `1570/1570 PASS`; typecheck y build PASS; E2E local PASS en 1366/768/390/360, con rutas, títulos/canonical, categoría de metadatos, índice, definiciones, ejemplos, pasos, fuentes, SVG y sitemap. Inspección visual en navegador de escritorio y captura móvil de 390 px: título, diagrama, índice y texto legibles, sin desbordamiento horizontal. Build final completado con advertencias de secretos de correo/autenticación no configurados localmente; estas funciones no forman parte del alcance.
@@ -36,6 +67,53 @@ pnpm run build
 git diff --check
 ```
 
+
+## PLATFORM-ADMIN-GLOBAL — especificación documental (2026-10-17)
+
+Este checkpoint prepara la especificación para aprobación; no modifica comportamiento, rutas, permisos, schema o migraciones. No se ejecutaron suites funcionales, typecheck ni build por tratarse de reconciliación documental. Verificaciones de documentación ejecutadas al cierre: `git diff --check`, revisión completa del diff y comprobación de paths modificados para confirmar que no incluyen código funcional, schema ni migraciones. Los gates propuestos para una implementación futura incluyen actor/acción/target/audit, denegación de IDs cross-tenant, onboarding de owner con correo verificado, expiración/revocación/reenvío y doble aceptación concurrente, roles y último owner, progreso propio frente a ajeno, recuperación de fallos parciales, tenant isolation y ausencia de rutas/cambios en Aprende. No se reportan como pruebas ejecutadas.
+
+**VEC-APRENDE-04/05 — RAN 2026-10-16 en el worktree de integración (base `a7949dd`):** contenido `4/4 PASS`; suite unitaria completa `1558/1558 PASS`; typecheck, build, E2E Aprende en 1366/768/390/360 y `git diff --check` PASS. El primer typecheck coincidió con el bootstrap automático de PNPM y no encontró `@babel/types`; tras terminar la instalación local, el mismo comando pasó. Sin aceptación visual humana, certificación WCAG ni HTTP de producción.
+
+
+## DIAG-V3-FUNNEL-01D.1-R — primer corte de evidencia (histórico, 2026-10-17)
+
+**Unitarias focales: 8/8 PASS, reejecutadas tras reconciliar `origin/main=90215da`** con `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/funnel-analytics.test.ts tests/unit/diagnostic/funnel-analytics-transaction.test.ts`. Cubren seis claves, UTC/versión, host loopback, marcador por request, backfill 0019 y fallback dominio-si-analítica-falla. En ese primer corte el E2E Worker no se ejecutó; la evidencia posterior está en la tabla de gates de Fase 00 al inicio de este documento.
+
+**D1 temporal SQL/migración:** Wrangler aplicó `0000`–`0019` a `C:\Users\Admin\AppData\Local\Temp\kilo\vecidya-funnel-01d1-r2-d1`; ledger final `0019`, tabla agregada de cinco columnas sin identificadores y cero solicitudes/grants/agregados tras limpieza. El SQL request-scoped probó aperturas repetidas y cambio de grant por recovery con un único contador; borrar el request mantuvo el agregado sin FK. Un D1 mínimo aislado probó backfill `MIN(first_opened_at)=100` y que 0019 quite la columna por grant; sus fixtures quedaron a cero. El SQL de supresión ocultó count 4 y mostró count 5; clave `question_answered` rechazó CHECK. Esto es evidencia SQL/migración, no concurrencia Worker.
+
+## ENV-01 — fallo inicial de instalación (histórico, 2026-10-17)
+
+Node `v24.21.0` y pnpm `11.21.0`; registry `https://registry.npmjs.org`. DNS resolvió y metadata HTTPS de `@emnapi/runtime@1.11.3` / `@fontsource/arimo@5.3.0` respondió 200. Node obtuvo tarballs HTTPS de 68.501 bytes (`@emnapi/runtime`) y 4.829.680 bytes (`@esbuild/win32-x64`); la descarga de `@cloudflare/workerd-windows-64@1.20260918.1` excedió 180 s. La instalación solicitada con store usual expiró tras 600 s, repetidos errores de descarga curl 23 para workerd y binarios Windows. Un reintento reproducible con store aislado (`--network-concurrency=1`) avanzó hasta 173/267 paquetes y expiró también tras 600 s, con workerd fallido. No se pudo discriminar si la lentitud/interrupción del tarball grande es del trayecto de red/VPN o de la transferencia del registry; no es evidencia de bloqueo total ni fallo TLS. Variables de proxy y proxy pnpm unset; no había servicio/proceso Proxifier activo. `pnpm store status` identificó antes cinco entradas modificadas y después una (`@emnapi/runtime@1.11.3`); no se ejecutó prune ni se limpió el store compartido. `package.json` y `pnpm-lock.yaml` sin cambios. Vite, Wrangler, TypeScript, workerd y esbuild no quedaron disponibles en `node_modules/.bin`; ENV-01 falla.
+
+En ese corte, por ENV-01, quedaron `NOT_RUN`: E2E `diagnostic-v3-funnel-01d1-check.mjs`, regresiones Worker 01B/01C.3, concurrencia en un Worker, fallos D1 en runtime, suite completa, typecheck/build y aislamiento del bundle. El bloqueo se resolvió en el worktree de integración: `pnpm install --frozen-lockfile` terminó con Node 24.21.0/pnpm 11.21.0 y las validaciones actualizadas constan en la tabla G00 al inicio. No se atribuye PASS retroactivo a las ejecuciones de 2026-10-17.
+
+El contrato existente escribe eventos identificados dentro del batch D1 de la transición de dominio. Si falla el batch con analytics se reintenta solo el batch operacional para no impedir a la persona completar la acción; la métrica puede quedar subcontada permanentemente y no se presenta como total exacto. La primera apertura persiste un marcador por solicitud aunque falle el agregado, evitando contar recovery/revisitas como otra primera apertura. La consulta dev suprime celdas `<5`; inicios/CTA son estimaciones repetibles y las tasas diarias no son cohortes exactas. Los seis agregados no incluyen PII, respuestas ni IDs según contrato/código; este corte no ejecutó el aislamiento en bundle productivo.
+
+### CI aislado para PR #6 — estado histórico al 2026-10-17
+
+Workflow `.github/workflows/diagnostic-funnel-01d1.yml`: evento `pull_request` hacia `main`, runner `ubuntu-latest`, Node `24.21.0`, pnpm `11.21.0`, `pnpm install --frozen-lockfile` sin caché. El job no declara secretos, credenciales de Cloudflare ni permisos superiores a `contents: read`; aplica D1 solo con `--local` y no contiene deploy ni migraciones remotas.
+
+La certificación ejecuta `test:unit`, `typecheck`, `build`, verifica el ledger local hasta `0019`, y corre 01B/01C.3/01D.1 secuencialmente contra un único `pnpm run dev`/Worker. Las E2E requieren su marcador final de aserciones; el Worker dev debe detenerse antes de consultar la D1 o iniciar el preview. Al terminar se comprueba que solicitudes, snapshots, challenges, grants, consentimientos y agregados de la D1 temporal estén vacíos. `vite preview` ejecuta el build con el Cloudflare Vite plugin/Worker local para comprobar que rutas/módulos/fixtures dev-only no aparecen en los bundles y que rutas de identificación/informe no se entregan anónimamente.
+
+Los logs de toolchain, instalación, cada suite y resultado final se guardan en `$RUNNER_TEMP` y se suben como artifact durante 30 días incluso ante fallos. Validación local de sintaxis: YAML parseado con PyYAML y `node --check` del harness PASS. En aquel corte GitHub Actions estaba pendiente. Para el SHA actual `82608d5` no se obtuvo estado GitHub: la CLI no está instalada y la API anónima devolvió 404; no atribuir estos checks históricos al SHA actual.
+
+## VEC-APRENDE-06A — Tecnología explicada (2026-10-17)
+
+**Runner:** Worker local (`pnpm run dev`) + D1 local con migraciones aplicadas en el worktree aislado para servir el sitemap. Sin `--remote`; no se modifica D1 remota. Con Chrome local:
+
+```powershell
+$env:BASE_URL='http://localhost:5173'
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE='C:\Program Files\Google\Chrome\Application\chrome.exe'
+pnpm exec node tests/e2e/learn-experience-check.mjs
+pnpm run test:unit
+pnpm run typecheck
+pnpm run build
+git diff --check
+```
+
+**Resultados integrados — RAN 2026-10-17 contra `origin/main` `e910c69` (incluye PR #2):** suite unitaria completa `1566/1566 PASS`; `learn-content.test.ts` PASS; typecheck/build PASS; E2E local PASS para las cinco guías en 1366/768/390/360, con índice, CTA, fuentes, SVG, metadata individual, lecturas relacionadas y sitemap. Inspección Playwright del diagrama en 1366 y 360 px: etiquetas legibles, retorno DNS y solicitud HTTPS completos, sin recorte ni overflow. El build advierte que faltan secretos locales de correo/autenticación, pero termina correctamente. D1 del worktree aislado recibió migraciones locales; no se usaron datos remotos ni deploy. La observación `LEARN-SVG-MOBILE-LABELS-001` continúa abierta; esto no certifica aceptación visual humana ni WCAG 2.2 AA.
+
+**VEC-APRENDE-04/05 — RAN 2026-10-16 en el worktree de integración (base `a7949dd`):** contenido `4/4 PASS`; suite unitaria completa `1558/1558 PASS`; typecheck, build, E2E Aprende en 1366/768/390/360 y `git diff --check` PASS. El primer typecheck coincidió con el bootstrap automático de PNPM y no encontró `@babel/types`; tras terminar la instalación local, el mismo comando pasó. Sin aceptación visual humana, certificación WCAG ni HTTP de producción.
 ## VEC-APRENDE-06A — Tecnología explicada (2026-10-17)
 
 **Runner:** Worker local (`pnpm run dev`) + D1 local con migraciones aplicadas en el worktree aislado para servir el sitemap. Sin `--remote`; no se modifica D1 remota. Con Chrome local:
@@ -52,10 +130,6 @@ git diff --check
 
 **Resultados integrados — RAN 2026-10-17 contra `origin/main` `e910c69` (incluye PR #2):** suite unitaria completa `1566/1566 PASS`; `learn-content.test.ts` PASS; typecheck/build PASS; E2E local PASS para las cinco guías a 1366/768/390/360, con índice, CTA, fuentes, imagen SVG, metadata individual, lecturas relacionadas y sitemap. Inspección Playwright del diagrama en 1366 y 360 px: etiquetas legibles, retorno DNS y solicitud HTTPS completos, sin recorte ni overflow. El build advierte que faltan secretos locales de correo/autenticación, pero termina correctamente. La D1 de este worktree aislado recibió migraciones locales; sin datos remotos ni deploy.
 El E2E usa Worker local (`pnpm run dev`) y Chrome local; no publica datos de prueba ni ejecuta pruebas remotas. La observación `LEARN-SVG-MOBILE-LABELS-001` continúa abierta para diagramas preexistentes y la aceptación visual humana/WCAG 2.2 AA es independiente; estos PASS no las sustituyen.
-
-## PLATFORM-ADMIN-GLOBAL — especificación documental (2026-10-17)
-
-Este checkpoint prepara la especificación para aprobación; no modifica comportamiento, rutas, permisos, schema o migraciones. No se ejecutaron suites funcionales, typecheck ni build por tratarse de reconciliación documental. Verificaciones de documentación ejecutadas al cierre: `git diff --check`, revisión completa del diff y comprobación de paths modificados para confirmar que no incluyen código funcional, schema ni migraciones. Los gates propuestos para una implementación futura incluyen actor/acción/target/audit, denegación de IDs cross-tenant, onboarding de owner con correo verificado, expiración/revocación/reenvío y doble aceptación concurrente, roles y último owner, progreso propio frente a ajeno, recuperación de fallos parciales, tenant isolation y ausencia de rutas/cambios en Aprende. No se reportan como pruebas ejecutadas.
 
 **VEC-APRENDE-04/05 — RAN 2026-10-16 en el worktree de integración (base `a7949dd`):** contenido `4/4 PASS`; suite unitaria completa `1558/1558 PASS`; typecheck, build, E2E Aprende en 1366/768/390/360 y `git diff --check` PASS. El primer typecheck coincidió con el bootstrap automático de PNPM y no encontró `@babel/types`; tras terminar la instalación local, el mismo comando pasó. Sin aceptación visual humana, certificación WCAG ni HTTP de producción.
 
@@ -78,11 +152,11 @@ git diff --check
 
 **Resultados observados:** MiniWeb E2E `33/33 PASS` (tenant A/B, owner/admin/member, entradas inválidas, draft vs snapshot publicado, orden, módulos disabled/sin contenido, legacy, draft/suspendido, snapshot inválido fail-closed, slug/SEO y UI responsive). Perfil, ciclo de slug y licencias: PASS. Unitarias `1557/1557`, typecheck, build y diff-check: PASS. Overflow editor y perfil: 1366/768/390/360. El E2E MiniWeb elimina sus usuarios/organizaciones/perfiles sintéticos al finalizar. Capturas APP-MINI-01 en `.playwright-mcp/app-mini-01-{dashboard,editor,public}-{desktop,mobile}.png`; 02A en `.playwright-mcp/app-mini-02a-editor-{1366,768,390,360}.png` y `app-mini-02a-public-{1366,390}.png`.
 
-La cadena de migraciones `0000`–`0017` se aplicó en una D1 aislada limpia para este E2E; `0016` y `0017` quedaron confirmadas en el ledger de ese entorno. MiniWeb E2E `33/33 PASS` y sus fixtures se limpiaron. La D1 local compartida no se modificó y su ledger sigue pendiente de reconciliación; D1 remota sin cambios. Ninguna prueba remota ni deploy.
+En el snapshot de 2026-10-15 el ledger del checkout compartido mostraba 0016 y 0017 pendientes; para ese E2E se ejecutó temporalmente solo el SQL generado `0017_miniweb-core.sql` y se restauró el D1 local. En la certificación posterior, un D1 nuevo y aislado dentro del worktree de integración recibió la cadena completa `0000`–`0019`; el checkout compartido y D1 remoto permanecieron intactos.
 
 `organization-authorization-check.mjs` se intentó una vez con timeout de 600 s y no emitió resultado; el E2E MiniWeb específico sí pasó sus matrices de tenant y roles. No repetir la suite general sin diagnosticar el timeout.
 
-Después del último E2E MiniWeb aprobado se añadió limpieza de identidades/organizaciones creadas por el propio script. La prueba no se repitió tras ese ajuste de teardown; se verificaron sintaxis y diff-check, y las fixtures anteriores se limpiaron en el D1 de pruebas aislado.
+Se añadieron fixtures de invitación y licencia para reproducir el contrato actual de registro y publicación, además de invocación directa de Wrangler sin el problema de quoting de `cmd.exe`. El teardown de MiniWeb se corrigió y se reejecutó: 33/33 PASS con limpieza automática de usuarios/organizaciones/perfiles; el perfil/slug y las licencias también pasaron. El test general de autorización sigue sin repetirse por el timeout histórico de 600 s.
 
 ## DIAG-V3-FUNNEL-01C.2 — cierre adversarial y privacidad local (2026-10-14)
 

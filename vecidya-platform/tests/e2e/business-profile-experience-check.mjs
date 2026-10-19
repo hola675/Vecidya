@@ -1,16 +1,62 @@
-import { existsSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { join } from "node:path";
+import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
 
 import { chromium } from "playwright";
 
 import { baseUrl, assertLocalBaseUrl } from "./test-safety.mjs";
 assertLocalBaseUrl();
 const suffix = Date.now().toString();
+const ownerEmail = `7c-owner-${suffix}@vecidya.test`;
+const inviterEmail = `7c-inviter-${suffix}@vecidya.test`;
+const inviterId = crypto.randomUUID();
+const fixtureOrganizationId = crypto.randomUUID();
+const invitationId = crypto.randomUUID();
+const billingAccountId = crypto.randomUUID();
+const priceId = crypto.randomUUID();
+const licenseAId = crypto.randomUUID();
+const licenseBId = crypto.randomUUID();
 const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
 const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function executeD1(sql) {
+  const directory = mkdtempSync(join(tmpdir(), "vecidya-profile-experience-"));
+  const file = join(directory, "fixture.sql");
+  writeFileSync(file, sql, "utf8");
+  const wranglerCli = fileURLToPath(import.meta.resolve("wrangler"));
+  const result = spawnSync(process.execPath, [wranglerCli, "d1", "execute", "DB", "--local", "--file", file], { cwd: process.cwd(), encoding: "utf8", windowsHide: true });
+  rmSync(directory, { recursive: true, force: true });
+  if (result.error || result.status !== 0) throw new Error(`D1 local fixture failed: ${result.error?.message ?? result.stderr ?? result.stdout}`);
+}
+
+function seedLicense(ownerUserId, organizationId, licenseId) {
+  const now = Date.now();
+  const accountAndPrice = licenseId === licenseAId
+    ? `INSERT INTO billing_account (id, owner_user_id, kind, created_at, updated_at) VALUES ('${billingAccountId}', '${ownerUserId}', 'individual', ${now}, ${now}); INSERT INTO license_price (id, plan_code, currency, amount_cents, billing_interval, effective_from, status, created_at, updated_at) VALUES ('${priceId}', 'cuadra', 'USD', 3900, 'monthly', ${now}, 'active', ${now}, ${now});`
+    : "";
+  executeD1(`${accountAndPrice} INSERT INTO organization_license (id, organization_id, billing_account_id, plan_code, price_id, status, started_at, activated_at, created_at, updated_at) VALUES ('${licenseId}', '${organizationId}', '${billingAccountId}', 'cuadra', '${priceId}', 'active', ${now}, ${now}, ${now}, ${now});`);
+}
+
+function cleanup() {
+  executeD1(`
+    DELETE FROM organization_license WHERE id IN ('${licenseAId}', '${licenseBId}');
+    DELETE FROM billing_account WHERE id = '${billingAccountId}';
+    DELETE FROM license_price WHERE id = '${priceId}';
+    DELETE FROM business_profile WHERE organization_id IN (SELECT id FROM organization WHERE slug IN ('profile-fixture-${suffix}', 'org-a-${suffix}', 'org-b-${suffix}'));
+    DELETE FROM member WHERE organization_id IN (SELECT id FROM organization WHERE slug IN ('profile-fixture-${suffix}', 'org-a-${suffix}', 'org-b-${suffix}'));
+    DELETE FROM invitation WHERE organization_id IN (SELECT id FROM organization WHERE slug IN ('profile-fixture-${suffix}', 'org-a-${suffix}', 'org-b-${suffix}')) OR email IN ('${ownerEmail}', '${inviterEmail}');
+    DELETE FROM organization WHERE slug IN ('profile-fixture-${suffix}', 'org-a-${suffix}', 'org-b-${suffix}');
+    DELETE FROM session WHERE user_id IN (SELECT id FROM user WHERE email IN ('${ownerEmail}', '${inviterEmail}'));
+    DELETE FROM account WHERE user_id IN (SELECT id FROM user WHERE email IN ('${ownerEmail}', '${inviterEmail}'));
+    DELETE FROM verification WHERE identifier IN ('${ownerEmail}', '${inviterEmail}');
+    DELETE FROM user WHERE email IN ('${ownerEmail}', '${inviterEmail}');
+  `);
 }
 
 async function assertResponsive(page, label) {
@@ -66,8 +112,8 @@ class SessionClient {
     return response;
   }
 
-  json(path, body) {
-    return this.fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+  json(path, body, extraHeaders = {}) {
+    return this.fetch(path, { method: "POST", headers: { "content-type": "application/json", ...extraHeaders }, body: JSON.stringify(body) });
   }
 
   cookies() {
@@ -82,12 +128,15 @@ class SessionClient {
 
 async function createIdentity() {
   const client = new SessionClient();
+  const now = Date.now();
+  executeD1(`INSERT INTO user (id, name, email, email_verified, created_at, updated_at) VALUES ('${inviterId}', 'Profile test inviter', '${inviterEmail}', 1, ${now}, ${now}); INSERT INTO organization (id, name, slug, created_at) VALUES ('${fixtureOrganizationId}', 'Profile test fixture', 'profile-fixture-${suffix}', ${now}); INSERT INTO invitation (id, organization_id, email, role, status, expires_at, created_at, inviter_id) VALUES ('${invitationId}', '${fixtureOrganizationId}', '${ownerEmail}', 'member', 'pending', ${now + 86400000}, ${now}, '${inviterId}');`);
   const signUp = await client.json("/api/auth/sign-up/email", {
     name: `7C Owner ${suffix}`,
-    email: `7c-owner-${suffix}@vecidya.test`,
+    email: ownerEmail,
     password: `test-only-password-${suffix}`,
-  });
+  }, { "X-Vecidya-Invitation": invitationId });
   assert(signUp.status === 200, `No se pudo registrar el propietario: ${signUp.status}`);
+  const ownerUserId = (await signUp.json()).user.id;
   const organization = await client.json("/api/auth/organization/create", {
     name: `Organización A ${suffix}`,
     slug: `org-a-${suffix}`,
@@ -95,7 +144,8 @@ async function createIdentity() {
   assert(organization.status === 200, `No se pudo crear la organización A: ${organization.status}`);
   const organizationId = (await organization.json()).id;
   assert(organizationId, "La organización A no devolvió ID.");
-  return { client, organizationId };
+  seedLicense(ownerUserId, organizationId, licenseAId);
+  return { client, ownerUserId, organizationId };
 }
 
 async function expectStatus(responsePromise, expected, label) {
@@ -104,13 +154,15 @@ async function expectStatus(responsePromise, expected, label) {
   return response;
 }
 
-const { client, organizationId: organizationA } = await createIdentity();
+try {
+const { client, ownerUserId, organizationId: organizationA } = await createIdentity();
 const organizationBResponse = await client.json("/api/auth/organization/create", {
   name: `Organización B ${suffix}`,
   slug: `org-b-${suffix}`,
 });
 assert(organizationBResponse.status === 200, `No se pudo crear la organización B: ${organizationBResponse.status}`);
 const organizationB = (await organizationBResponse.json()).id;
+seedLicense(ownerUserId, organizationB, licenseBId);
 
 await client.json("/api/auth/organization/set-active", { organizationId: organizationA });
 const incomplete = await client.form("/app/business-profile", {
@@ -219,3 +271,6 @@ const profileBHtml = await profileB.text();
 assert(profileBHtml.includes(`Negocio B ${suffix}`) && !profileBHtml.includes(`Negocio A ${suffix}`), "El cambio a B no aisló el perfil B.");
 
 console.log("PASS: validación/publicación, CTA, preview en vivo, aislamiento A/B y responsive 1366/768/390/360 verificados.");
+} finally {
+  cleanup();
+}

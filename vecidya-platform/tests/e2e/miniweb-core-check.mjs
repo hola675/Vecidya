@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:
 import { setDefaultAutoSelectFamilyAttemptTimeout } from "node:net";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
 
 import { baseUrl, assertLocalBaseUrl } from "./test-safety.mjs";
 import { chromium } from "playwright";
@@ -20,7 +21,8 @@ function executeD1(sql) {
   const directory = mkdtempSync(join(tmpdir(), "vecidya-miniweb-"));
   const file = join(directory, "step.sql");
   writeFileSync(file, sql, "utf8");
-  const result = spawnSync(process.env.ComSpec ?? "cmd.exe", ["/d", "/c", `pnpm.cmd wrangler d1 execute DB --local --json --file ${file}`], { cwd: process.cwd(), encoding: "utf8" });
+  const wranglerCli = fileURLToPath(import.meta.resolve("wrangler"));
+  const result = spawnSync(process.execPath, [wranglerCli, "d1", "execute", "DB", "--local", "--json", "--file", file], { cwd: process.cwd(), encoding: "utf8", windowsHide: true });
   rmSync(directory, { recursive: true, force: true });
   harness(result.status === 0, `D1 local falló: ${result.stderr}`);
   return JSON.parse(result.stdout).flatMap((statement) => statement.results ?? []);
@@ -53,8 +55,8 @@ class SessionClient {
     }
     return response;
   }
-  json(path, body, method = "POST") {
-    return this.fetch(path, { method, headers: { "content-type": "application/json" }, body: method === "GET" ? undefined : JSON.stringify(body) });
+  json(path, body, method = "POST", extraHeaders = {}) {
+    return this.fetch(path, { method, headers: { "content-type": "application/json", ...extraHeaders }, body: method === "GET" ? undefined : JSON.stringify(body) });
   }
   cookies() {
     return [...this.#cookies.entries()].map(([name, value]) => ({ name, value }));
@@ -65,12 +67,15 @@ async function signUp(key) {
   const client = new SessionClient();
   const email = `miniweb-${key}-${suffix}@vecidya.test`;
   const password = `test-only-password-${suffix}`;
+  const invitationId = crypto.randomUUID();
+  const now = Date.now();
+  await d1(`INSERT INTO invitation (id, organization_id, email, role, status, expires_at, created_at, inviter_id) VALUES ('${invitationId}', '${fixtureOrganizationId}', '${email}', 'member', 'pending', ${now + 86400000}, ${now}, '${fixtureInviterId}');`);
   const response = await client.json("/api/auth/sign-up/email", {
     name: `MiniWeb ${key} ${suffix}`,
     email,
     password,
-  });
-  harness(response.status === 200, `registro de ${key} devolvió ${response.status}`);
+  }, "POST", { "X-Vecidya-Invitation": invitationId });
+  harness(response.status === 200, `registro de ${key} devolvió ${response.status}: ${(await response.clone().text()).slice(0, 500)}`);
   const { user } = await response.json();
   createdUserIds.push(user.id);
   return { client, userId: user.id, email, password };
@@ -97,15 +102,34 @@ const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\ms
 const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
 const createdUserIds = [];
 const createdOrganizationIds = [];
+const fixtureInviterId = crypto.randomUUID();
+const fixtureOrganizationId = crypto.randomUUID();
+const fixturePriceId = crypto.randomUUID();
+const priceAId = crypto.randomUUID();
 
 let harnessFailure = null;
 let browser = null;
 try {
+  const fixtureNow = Date.now();
+  await d1(`INSERT INTO user (id, name, email, email_verified, created_at, updated_at) VALUES ('${fixtureInviterId}', 'MiniWeb CI inviter', 'miniweb-inviter-${suffix}@vecidya.test', 1, ${fixtureNow}, ${fixtureNow}); INSERT INTO organization (id, name, slug, created_at) VALUES ('${fixtureOrganizationId}', 'MiniWeb CI fixture', 'miniweb-fixture-${suffix}', ${fixtureNow});`);
+  createdUserIds.push(fixtureInviterId);
+  createdOrganizationIds.push(fixtureOrganizationId);
   const ownerA = await signUp("owner-a");
   const organizationA = await createOrganization(ownerA, "org-a");
+  // Los perfiles públicos requieren una licencia activa del propietario (no basta el estado published).
+  const billingAId = crypto.randomUUID();
+  const licenseAId = crypto.randomUUID();
+  const licenseAAt = Date.now();
+  await d1(`INSERT INTO billing_account (id, owner_user_id, kind, created_at, updated_at) VALUES ('${billingAId}', '${ownerA.userId}', 'individual', ${licenseAAt}, ${licenseAAt}); INSERT INTO license_price (id, plan_code, currency, amount_cents, billing_interval, effective_from, status, created_at, updated_at) VALUES ('${priceAId}', 'cuadra', 'USD', 3900, 'monthly', ${licenseAAt}, 'active', ${licenseAAt}, ${licenseAAt}); INSERT INTO organization_license (id, organization_id, billing_account_id, plan_code, price_id, status, started_at, activated_at, created_at, updated_at) VALUES ('${licenseAId}', '${organizationA}', '${billingAId}', 'cuadra', '${priceAId}', 'active', ${licenseAAt}, ${licenseAAt}, ${licenseAAt}, ${licenseAAt});`);
   await setActive(ownerA, organizationA);
   const ownerB = await signUp("owner-b");
   const organizationB = await createOrganization(ownerB, "org-b");
+  // La segunda organización exige una licencia activa: fixture local del propietario B.
+  const billingId = crypto.randomUUID();
+  const priceId = fixturePriceId;
+  const licenseId = crypto.randomUUID();
+  const licensedAt = Date.now();
+  await d1(`INSERT INTO billing_account (id, owner_user_id, kind, created_at, updated_at) VALUES ('${billingId}', '${ownerB.userId}', 'individual', ${licensedAt}, ${licensedAt}); INSERT INTO license_price (id, plan_code, currency, amount_cents, billing_interval, effective_from, status, created_at, updated_at) VALUES ('${priceId}', 'cuadra', 'USD', 3900, 'monthly', ${licensedAt}, 'active', ${licensedAt}, ${licensedAt}); INSERT INTO organization_license (id, organization_id, billing_account_id, plan_code, price_id, status, started_at, activated_at, created_at, updated_at) VALUES ('${licenseId}', '${organizationB}', '${billingId}', 'cuadra', '${priceId}', 'active', ${licensedAt}, ${licensedAt}, ${licensedAt}, ${licensedAt});`);
   const organizationC = await createOrganization(ownerB, "org-c");
   const organizationD = await createOrganization(ownerB, "org-d");
   await setActive(ownerB, organizationB);
@@ -151,7 +175,9 @@ try {
   check((await memberA.client.json(pathA, null, "GET")).status === 200, "member conserva acceso de lectura a la configuración");
   check((await memberA.client.json(pathA, { intent: "save", configuration: draft })).status === 403, "member read-only no puede modificar la configuración");
   check((await ownerA.client.json(pathA, { intent: "save", configuration: draft })).status === 200, "owner puede guardar la configuración draft");
-  const publicBeforePublish = await (await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`)).text();
+  const publicBeforePublishResponse = await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`);
+  const publicBeforePublish = await publicBeforePublishResponse.text();
+  console.log(JSON.stringify({ miniwebPublicBeforePublish: { status: publicBeforePublishResponse.status, url: publicBeforePublishResponse.url, titlePresent: publicBeforePublish.includes(`MiniWeb público A ${suffix}`), descriptionPresent: publicBeforePublish.includes("Descripción A"), emailPresent: publicBeforePublish.includes(`a-${suffix}@example.invalid`), bodyExcerpt: publicBeforePublish.slice(0, 350) } }));
   check(publicBeforePublish.includes("Descripción A") && publicBeforePublish.includes(`a-${suffix}@example.invalid`), "guardar un draft no altera un MiniWeb ya publicado");
   check((await adminA.client.json(pathA, { intent: "publish" })).status === 200, "admin puede publicar explícitamente la configuración");
 
@@ -162,7 +188,9 @@ try {
   check(published.publishedConfiguration.modules.some((module) => module.type === "contact" && !module.enabled), "el snapshot publicado conserva el módulo desactivado");
   check((await d1(`SELECT COUNT(*) AS count FROM miniweb_site WHERE organization_id = '${organizationA}';`))[0]?.count === 1, "una organización tiene una sola configuración MiniWeb");
 
-  const publicA = await (await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`)).text();
+  const publicAResponse = await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`);
+  const publicA = await publicAResponse.text();
+  console.log(JSON.stringify({ miniwebPublicAfterPublish: { status: publicAResponse.status, url: publicAResponse.url, titlePresent: publicA.includes(`MiniWeb público A ${suffix}`), bodyExcerpt: publicA.slice(0, 350) } }));
   const publicB = await (await ownerB.client.fetch(`/vecindario/${profileSlug("legacy-b")}`)).text();
   check(publicA.includes(`MiniWeb público A ${suffix}`), "la página publicada A conserva su slug estable");
   check(!publicA.includes("Descripción A") && !publicA.includes(`a-${suffix}@example.invalid`) && !publicA.includes("Contacto directo"), "los módulos desactivados no aparecen en el sitio público");
@@ -242,6 +270,8 @@ try {
   if (createdUserIds.length) {
     deletes.push(`DELETE FROM user WHERE id IN (${createdUserIds.map((id) => `'${id}'`).join(",")})`);
   }
+  // Retirar primero las licencias y la cuenta de facturación de prueba para respetar las FK.
+  await d1(`DELETE FROM organization_license WHERE billing_account_id IN (SELECT id FROM billing_account WHERE owner_user_id IN (SELECT id FROM user WHERE email IN ('miniweb-owner-a-${suffix}@vecidya.test', 'miniweb-owner-b-${suffix}@vecidya.test'))); DELETE FROM billing_account WHERE owner_user_id IN (SELECT id FROM user WHERE email IN ('miniweb-owner-a-${suffix}@vecidya.test', 'miniweb-owner-b-${suffix}@vecidya.test')); DELETE FROM license_price WHERE id IN ('${priceAId}', '${fixturePriceId}');`);
   if (deletes.length) await d1(`${deletes.join(";\n")};`);
 } catch (error) {
   harnessFailure ??= new HarnessError(`HARNESS: no se pudieron limpiar las fixtures de prueba: ${error instanceof Error ? error.message : String(error)}`);
@@ -249,4 +279,8 @@ try {
 
 const failed = checks.filter((result) => !result.ok);
 console.log(JSON.stringify({ checks: checks.length, passed: checks.length - failed.length, failed: failed.map((result) => result.label), fixturesCleaned: createdOrganizationIds.length > 0 || createdUserIds.length > 0, harness: harnessFailure?.message ?? null }, null, 2));
-if (harnessFailure || failed.length) process.exitCode = 1;
+if (harnessFailure || failed.length) {
+  process.exitCode = 1;
+} else {
+  console.log(`MINIWEB_02A_E2E_PASS checks=${checks.length}`);
+}
