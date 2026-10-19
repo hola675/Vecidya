@@ -1,3 +1,9 @@
+## Verificación anónima de Mi Vecidya (2026-10-19)
+
+**HTTP RAN 2026-10-19T22:25Z**, solo GET anónimo, sin datos ni sesión: `/` respondió 200 y el footer sirvió `Versión pública 0.6.1` + `© 2026 Vecidya`; `/app`, `/app/business-profile` y `/app/internal` redirigieron a `/login`; `/app/miniweb` y `/app/crm` respondieron 404; `/licencias` y `/vecindario/vecidya` respondieron 200. No se siguieron redirecciones con sesión ni se modificó producción. Esto demuestra que las rutas MiniWeb/CRM del código local actual no están presentes en la superficie pública observada en esa fecha; no comprueba acceso autenticado ni cambios de datos públicos.
+
+El package local también informa `0.6.1`, pero coincidencia de versión no demuestra igualdad de SHA o de código desplegado. Último deploy documentado sigue siendo el Worker público `vecidya-platform`, Version ID `8bf2c1c4-d6cb-47ca-ae74-01de28392d67`, conforme al release histórico; no se consultó API de deployments. No deploy, migración remota o acceso autenticado en este checkpoint.
+
 ## Codespaces y GitHub Actions — estado (2026-10-19)
 
 `.devcontainer/devcontainer.json` permanece como configuración propuesta para Codespaces (Node 24, pnpm 11.21.0 e instalación congelada); no se verificó la apertura/ejecución de Codespaces. Los workflows `diagnostic-funnel-01d1.yml`, `vecidya-ci.yml` y `vecidya-licensing.yml` se retiran del repositorio por decisión autorizada. No hay CI GitHub Actions configurada por estos archivos; no se ejecutaron checks, tests ni builds al retirarlos. Esta operación no cambia Workers, bindings, despliegues ni D1, y no reactiva integraciones Cloudflare.
