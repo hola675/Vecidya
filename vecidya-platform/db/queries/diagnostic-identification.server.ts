@@ -379,5 +379,7 @@ export async function deleteAuthorizedIdentifiedReport(
           AND a.expires_at > ? AND s.expires_at > ?
       )`)
     .bind(input.requestId, now, input.accessTokenDigest, now, now).run();
-  return (result.meta?.changes ?? 0) === 1;
+  // D1 may include rows removed through foreign-key cascades in this count.
+  // The request ID predicate can match at most one parent row, so any change means success.
+  return (result.meta?.changes ?? 0) > 0;
 }
