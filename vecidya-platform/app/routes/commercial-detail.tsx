@@ -2,8 +2,7 @@ import { Link } from "react-router";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { getCommercialOffer, LICENSE_OFFERS } from "../content/commercial-detail";
 
-import type { CommercialKind } from "../content/commercial-detail";
-import type { Route } from "./+types/commercial-detail";
+import type { CommercialKind, CommercialOffer } from "../content/commercial-detail";
 
 const groupNames: Record<CommercialKind, string> = {
   license: "Licencias",
@@ -16,14 +15,14 @@ function kindFromPath(path: string): CommercialKind | null {
   return first === "licencias" ? "license" : first === "addons" ? "addon" : first === "servicios" ? "service" : null;
 }
 
-export function loader({ request, params }: Route.LoaderArgs) {
+export function loader({ request, params }: { request: Request; params: { slug?: string } }) {
   const kind = kindFromPath(new URL(request.url).pathname);
   const offer = kind && params.slug ? getCommercialOffer(kind, params.slug) : undefined;
   if (!kind || !offer) throw new Response("Ficha no encontrada", { status: 404 });
   return { offer };
 }
 
-export function meta({ loaderData }: Route.MetaArgs) {
+export function meta({ loaderData }: { loaderData?: { offer?: CommercialOffer } }) {
   if (!loaderData?.offer) return publicMeta("Ficha no encontrada", "No encontramos esa oferta.", "/licencias", "noindex, nofollow");
   const { offer } = loaderData;
   return publicMeta(`${offer.title} — ${groupNames[offer.kind]}`, offer.summary, offer.detailPath);
@@ -38,7 +37,7 @@ function BulletGroup({ title, values }: { title: string; values: readonly string
   );
 }
 
-export default function CommercialDetail({ loaderData }: Route.ComponentProps) {
+export default function CommercialDetail({ loaderData }: { loaderData: { offer: CommercialOffer } }) {
   const { offer } = loaderData;
   const modules = offer.kind === "license" ? LICENSE_OFFERS.find((candidate) => candidate.id === offer.id)?.standardModules : undefined;
   return (
