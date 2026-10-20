@@ -18,7 +18,6 @@ test("catálogo publica 3 licencias, 7 complementos y 7 servicios distintos", ()
     assert(Object.prototype.hasOwnProperty.call(COMMERCIAL_CONTACT_INTERESTS, offer.contactInterest));
     assert(offer.includes.length > 0 && offer.excludes.length > 0);
     assert(offer.examples.length > 0);
-    assert(offer.benefits.length >= 2, `${offer.title} sin beneficios comprensibles`);
     assert(offer.benefits.length >= 2, `Faltan ventajas prácticas de ${offer.id}`);
     assert(offer.benefits.every((benefit) => benefit.trim().length >= 25));
 
