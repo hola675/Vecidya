@@ -22,6 +22,7 @@ const addons = ADDON_OFFERS.map((offer) => ({
   id: offer.id,
   name: offer.title,
   value: offer.promise,
+  benefit: offer.benefits[0],
   price: offer.price.replace("USD ", "$"),
   dependency: offer.id === "connections-integrations" ? "Según sistema y licencia" : "Requiere Barrio o Ciudad",
   icon: addonIcons[offer.id as keyof typeof addonIcons],
@@ -72,6 +73,7 @@ export default function Addons() {
                   </div>
                   <h3>{addon.name}</h3>
                   <p className="addon-card__value">{addon.value}</p>
+                  <p className="addon-card__benefit"><strong>Ventaja:</strong> {addon.benefit}</p>
                   <p className="addon-card__price">{addon.price}</p>
                   {addon.dependency ? <p className="addon-card__dependency">{addon.dependency}</p> : null}
                   <div className="commercial-catalog__actions">
