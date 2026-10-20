@@ -46,5 +46,5 @@ test("complementos y servicios no se facturan dentro de la plantilla estándar",
   assert(SERVICE_OFFERS.some((o) => /sin licencia/i.test(o.dependencies)));
   assert(ADDON_OFFERS.find((o) => o.id === "connections-integrations")?.dependencies.includes("Cuadra"));
   const publicText = all.map((o) => Object.values(o).flat().join(" ")).join(" ");
-  assert(!/\\bGHL\\b|HighLevel|GoHighLevel/i.test(publicText));
+  assert(!/\bGHL\b|HighLevel|GoHighLevel/i.test(publicText));
 });
