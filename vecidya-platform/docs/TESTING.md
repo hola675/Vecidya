@@ -1,5 +1,10 @@
 # Pruebas
 
+## UX-COMMERCIAL-POLISH-04 — fichas sin duplicación ni saltos rotos (2026-10-20)
+
+**TEST versionado, no ejecutado.** `tests/e2e/commercial-details-check.mjs` se amplía a 320/390/768/1366 px para validar 17 fichas (3 licencias, 7 complementos y 7 servicios), unicidad de `id` en `main`, una sola sección de ventajas/recorrido/continuidad, índice de saltos internos con destino existente exactamente una vez, comparación con otras licencias, enlace a Barrio y recorrido desde la ficha de WhatsApp hasta Contacto, preservando interés y regreso al catálogo. `tests/unit/commercial-contact.test.ts` ya exigía «Volver al servicio/complemento» y permite comprobar la corrección de gramática en código. Repetir navegación histórica en `public-commercial-journeys-check.mjs`, además de typecheck y build contra una rama integrada de prueba; validar manualmente keyboard-only, zoom 200 %, contraste y overflow. La evidencia estática no acredita cumplimiento de accesibilidad ni publicación.
+
+
 ## UX-PUBLIC-JOURNEYS-03 — recorridos públicos y regreso a oferta (2026-10-20)
 
 **TEST versionado / NO RAN.** `tests/unit/commercial-contact.test.ts` amplía la verificación de `resolveCommercialContactReturn`, todos los intereses permitidos, retornos a anclas internas y rechazo de destinos ajenos. `tests/e2e/public-commercial-journeys-check.mjs`, incorporado a `tests/e2e/run-local-e2e.mjs`, cubre en 320/390/768/1366 px: Inicio → Licencias (Cuadra) → Contacto con contexto → ficha; Inicio → tarjeta Web & Conversión → Contacto → ficha; Licencias → Complementos (WhatsApp Business) → Contacto → ficha; e Inicio → Aprende → Diagnóstico o Contacto genérico. Comprueba que el correo/WhatsApp solo preparan mensajes contextualizados, sin enviarlos. Se actualizan aserciones de CTA en `licenses-experience-check.mjs`.
