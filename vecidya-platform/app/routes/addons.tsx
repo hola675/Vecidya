@@ -3,28 +3,30 @@ import { Link } from "react-router";
 import { publicAssets } from "../assets/public-assets";
 import { CommercialBoundary, CTASection } from "../components/public-v2";
 import { DIAGNOSTIC_CTA_COPY, PUBLIC_ACTION_LABELS } from "../content/public-copy";
+import { ADDON_OFFERS } from "../content/commercial-detail";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 
 import type { Route } from "./+types/addons";
 
-type Addon = {
-  id: string;
-  name: string;
-  value: string;
-  price: string;
-  dependency?: string;
-  icon: string;
-};
+const addonIcons = {
+  "whatsapp-business": publicAssets.catalog.addons.whatsapp,
+  "telephony-sms": publicAssets.catalog.addons.telefonia,
+  "reputation-reviews": publicAssets.catalog.addons.automatizaciones,
+  "campaigns-diffusion": publicAssets.catalog.addons.sms,
+  "conversational-ai": publicAssets.catalog.addons.aiConversacional,
+  "voice-ai": publicAssets.catalog.addons.aiVoice,
+  "connections-integrations": publicAssets.catalog.addons.integraciones,
+} as const;
 
-const addons: Addon[] = [
-  { id: "whatsapp-business", name: "WhatsApp Business", value: "Centraliza conversaciones y próximos pasos.", price: "$9/mes + uso", dependency: "Requiere Barrio o Ciudad", icon: publicAssets.catalog.addons.whatsapp },
-  { id: "telephony-sms", name: "Telefonía & SMS", value: "Conecta llamadas, recordatorios y mensajes.", price: "$9/mes + uso", dependency: "Requiere Barrio o Ciudad", icon: publicAssets.catalog.addons.telefonia },
-  { id: "reputation-reviews", name: "Reputación & Reseñas", value: "Haz más constante la solicitud de reseñas.", price: "$12/mes", dependency: "Requiere Barrio o Ciudad", icon: publicAssets.catalog.addons.automatizaciones },
-  { id: "campaigns-diffusion", name: "Campañas & Difusión", value: "Mantén informada a tu comunidad.", price: "$15/mes + uso", dependency: "Requiere Barrio o Ciudad", icon: publicAssets.catalog.addons.sms },
-  { id: "conversational-ai", name: "IA Conversacional", value: "Asiste respuestas y clasificación inicial.", price: "$15/mes + uso", dependency: "Requiere Barrio o Ciudad", icon: publicAssets.catalog.addons.aiConversacional },
-  { id: "voice-ai", name: "IA de Voz", value: "Atiende conversaciones iniciales por voz.", price: "$20/mes + uso", dependency: "Requiere Barrio o Ciudad", icon: publicAssets.catalog.addons.aiVoice },
-  { id: "connections-integrations", name: "Conexiones & Integraciones", value: "Conecta Vecidya con otras herramientas.", price: "$12/mes/conexión + uso", icon: publicAssets.catalog.addons.integraciones },
-];
+const addons = ADDON_OFFERS.map((offer) => ({
+  id: offer.id,
+  name: offer.title,
+  value: offer.promise,
+  price: offer.price.replace("USD ", "$"),
+  dependency: offer.id === "connections-integrations" ? "Según sistema y licencia" : "Requiere Barrio o Ciudad",
+  icon: addonIcons[offer.id as keyof typeof addonIcons],
+  detailPath: offer.detailPath,
+}));
 
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
@@ -42,16 +44,16 @@ export default function Addons() {
           <div className="addons-hero__copy">
             <p className="eyebrow">COMPLEMENTOS</p>
             <h1 id="addons-title">Añade capacidades cuando las necesites.</h1>
-            <p>Añade capacidades a tu sistema cuando realmente hagan falta.</p>
+            <p>Activa canales y herramientas adicionales cuando aporten valor. Cada complemento tiene requisitos y costes propios; ninguno sustituye tu licencia base.</p>
             <div className="public-actions">
               <Link className="button button--primary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnosticDiscovery}</Link>
               <Link className="button button--secondary" to="/licencias">{PUBLIC_ACTION_LABELS.licenses}</Link>
             </div>
           </div>
-          <aside aria-label="Cómo funciona un addon" className="addons-hero__formula">
+          <aside aria-label="Cómo funciona un complemento" className="addons-hero__formula">
             <div><span>BASE</span><strong>Licencia Vecidya</strong></div>
             <div aria-hidden="true" className="addons-hero__operator">+</div>
-            <div><span>CAPACIDAD</span><strong>Addon específico</strong></div>
+            <div><span>CAPACIDAD</span><strong>Complemento específico</strong></div>
             <div aria-hidden="true" className="addons-hero__operator">↓</div>
             <div className="addons-hero__result"><span>RESULTADO</span><strong>Una nueva capacidad para tu momento.</strong></div>
           </aside>
@@ -72,7 +74,10 @@ export default function Addons() {
                   <p className="addon-card__value">{addon.value}</p>
                   <p className="addon-card__price">{addon.price}</p>
                   {addon.dependency ? <p className="addon-card__dependency">{addon.dependency}</p> : null}
-                  <Link className="text-link" to={`/contacto?interes=complemento-${addon.id}`}>Consultar este complemento <span aria-hidden="true">→</span></Link>
+                  <div className="commercial-catalog__actions">
+                    <Link className="text-link" to={addon.detailPath}>Ver detalles de {addon.name} <span aria-hidden="true">→</span></Link>
+                    <Link className="text-link" to={`/contacto?interes=complemento-${addon.id}`}>Consultar este complemento <span aria-hidden="true">→</span></Link>
+                  </div>
                 </article>
             ))}
           </div>
