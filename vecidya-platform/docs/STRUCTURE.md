@@ -1,5 +1,20 @@
 # Estructura del código
 
+## UX-COHERENCE-03 — componentes compartidos (2026-10-19)
+
+| Ruta / módulo | Uso nuevo | Límite |
+| --- | --- | --- |
+| `app/components/experience-system.tsx` | Guía, métrica, progreso, comparación por barras | Solo presentación; sin acceso a datos ni autorización |
+| `app/lib/experience-metrics.ts` | Escala relativa, porcentaje y recuento finito | Puro; no crea ni estima métricas |
+| `/` → `routes/home.tsx` | Guía pública Descubre → Comprende → Decide | Sin conversiones, testimonios ni cifras ficticias |
+| `/app` → `routes/app.tsx` | Guía contextual y barra del perfil con datos de organización activa | Guardas del loader y tenant intactos |
+| `/app/internal` → `routes/internal.tsx` | Métricas actuales, comparación de pendientes y guía operativa | Guardia `requirePlatformAdmin` intacta |
+| `/app/internal/diagnostic-analytics` | Eventos agregados, barras y tendencia con cero real | No cohortes ni datos personales; mismo acceso protegido |
+| `public-layout.tsx`, `client-area-shell.tsx`, `admin-shell.tsx` | Símbolo y retornos visuales coherentes | Solo navegación entre zonas, sin elevación de privilegios |
+
+CSS transversal `experience-*` en `app/app.css`, responsive y modo de movimiento reducido; no se añaden nuevas rutas.
+
+
 ## LEGAL-UX-01 — rutas y componentes añadidos (2026-10-19; rama)
 
 | Ruta/source | Clase | Función | Estado |
