@@ -78,7 +78,7 @@ export default function Addons() {
                   {addon.dependency ? <p className="addon-card__dependency">{addon.dependency}</p> : null}
                   <div className="commercial-catalog__actions">
                     <Link className="text-link" to={addon.detailPath}>Ver detalles de {addon.name} <span aria-hidden="true">→</span></Link>
-                    <Link className="text-link" to={`/contacto?interes=complemento-${addon.id}`}>Consultar este complemento <span aria-hidden="true">→</span></Link>
+                    <Link className="text-link" to={`/contacto?interes=complemento-${addon.id}`}>Consultar {addon.name} <span aria-hidden="true">→</span></Link>
                   </div>
                 </article>
             ))}
