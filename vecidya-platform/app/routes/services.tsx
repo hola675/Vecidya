@@ -27,7 +27,7 @@ const services = SERVICE_OFFERS.map((offer, index) => ({
   problem: offer.bestFor,
   result: offer.summary,
   benefit: offer.benefits[0],
-  support: offer.includes,
+  support: offer.includes.slice(0, 2),
   detailPath: offer.detailPath,
 }));
 
@@ -77,7 +77,7 @@ export default function Services() {
                 <div className="services-core-card__problem"><span>Tu situación</span><p>{service.problem}</p></div>
                 <div className="services-core-card__result"><span>Qué podemos aportar</span><p>{service.result}</p></div>
                 <p className="services-core-card__benefit"><strong>Lo que ganas:</strong> {service.benefit}</p>
-                <p className="services-core-card__support"><span>Incluye según alcance</span> {service.support.join(" · ")}</p>
+                <p className="services-core-card__support"><span>Alcance orientativo</span> {service.support.join(" · ")}. La ficha explica el resto y las condiciones.</p>
                 <div className="commercial-catalog__actions">
                   <Link className="text-link" to={service.detailPath}>Ver detalles de {service.title} <span aria-hidden="true">→</span></Link>
                   <Link className="text-link services-core-card__cta" to={`/contacto?interes=servicio-${service.id}`}>Consultar {service.title} <span aria-hidden="true">→</span></Link>
