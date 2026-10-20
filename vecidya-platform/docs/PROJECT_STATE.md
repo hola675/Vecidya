@@ -1,3 +1,18 @@
+**APRENDE-EDITORIAL-02 (2026-10-20; rama `feat/aprende-editorial-02`; CODE/TEST, RAN pendiente):** biblioteca educativa ampliada a 24 guías con cuatro recorridos iniciales y bloque «En pocas palabras». Once artículos anteriores conservan identidad/slug y recibieron intros/extractos más comprensibles. Trece guías nuevas son borradores identificados, no indexables, no incluidos en sitemap y sin falsa autoría humana. No hay CMS, D1, perfiles de aprendizaje ni recolección de datos personales. Nuevos diagramas SVG sintéticos/educativos con descripciones textuales. Certificación técnica/editorial y despliegue diferidos.
+
+### Matriz educativa — investigación de necesidades de negocios
+
+| Competencia (ITU/DigComp) | Pregunta práctica del negocio | Cobertura de Aprende |
+| --- | --- | --- |
+| Información y datos | ¿Cómo buscar información fiable, organizar archivos, revisar pedidos y entender números? | hojas de cálculo, copias, analítica, fuentes y revisión de datos |
+| Comunicación y colaboración | ¿Cómo escribir un correo, atender una consulta o usar canales sin perder información? | correo, respuesta inicial, consultas, CRM y presencia |
+| Creación de contenidos | ¿Cómo explicar qué vendo, tomar fotos honestas y escoger web o redes? | presentación, fotos, redes/web, presencia y Google |
+| Protección | ¿Cómo evitar estafas, usar contraseñas, cuidar datos y recuperar archivos? | ciberseguridad, privacidad, HTTPS y backups |
+| Solución de problemas | ¿Qué herramienta necesito, cuándo conectar o automatizar y cuándo usar IA? | primeros pasos, equipos, integraciones, automatización e IA |
+| Operación comercial aplicable | ¿Cómo recibir pedidos, cobros, opiniones y evaluar resultados sin promesas? | comercio inicial, reseñas, seguimiento, campañas y analítica |
+
+El mapa es adaptación educativa de marcos de habilidades digitales, **no certificación ni un temario oficial emitido por UIT/DigComp**. Fuentes públicas verificadas: https://www.itu.int/itu-d/reports/statistics/2025/11/17/gcr-2025-chapter-5/ ; https://esco.ec.europa.eu/en/about-esco/escopedia/escopedia/european-digital-competence-framework-citizens-digcomp ; https://www.w3.org/WAI/tips/writing/ ; https://developers.google.com/search/docs/fundamentals/creating-helpful-content?hl=es ; https://www.ftc.gov/es/guia-para-negocios/protegiendo-pequenos-negocios/ciberseguridad . Las fuentes detalladas por tema están en cada borrador.
+
 **APRENDE-DISCOVERY-01 (2026-10-20, rama `feat/aprende-discovery-01`, CODE/no validado):** la biblioteca Aprende ofrece búsqueda y filtro temático con parámetros GET seguros, datos SSR del catálogo editorial estático, conteos reales, enlaces compartibles y estado sin resultados. Los 11 artículos y sus rutas se mantienen. Sin pruebas ejecutadas por decisión del usuario, sin checkout/deploy ni efectos en otras áreas.
 
 **WEB-COMERCIAL-01 (2026-10-20; rama `feat/web-comercial-01`; CODE/TEST, RAN pendiente):** clarifica el alcance real de Cuadra/Barrio/Ciudad en `/licencias`, alinea las siete familias profesionales de `/servicios` y agrega el contexto comercial permitido al correo/WhatsApp de `/contacto` sin datos persistidos. `/unete` explica la incorporación asistida por invitación. Solo web pública; pruebas añadidas no ejecutadas aún, sin despliegue ni cambios en precios, checkout, GHL, administración, app, diagnóstico o migraciones.

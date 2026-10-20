@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-20 — APRENDE-EDITORIAL-02 (rama de trabajo, pendiente de QA y revisión)
+
+- Investigación curricular basada en ITU, DigComp, W3C, Google Search Central, FTC/NIST/CISA y guías de software oficiales; doce preguntas fundamentales convertidas en lectura práctica.
+- `Aprende` pasa de 11 guías a 24 en código: 13 nuevos borradores asistidos por IA sobre entrada digital, herramientas, correo, seguridad, archivos, hojas de cálculo, web/redes, explicación de oferta, atención, contenido, pedidos, privacidad y reseñas. Nuevos SVG educativos para esos temas.
+- Once artículos existentes conservan sus slugs y desarrollos y añaden un resumen de tres ideas, con introducciones más claras.
+- Cuatro rutas de lectura guiada, opciones para aprender por tema y nuevos bloques «En pocas palabras».
+- Los 13 borradores se señalan como tales, carecen de atribución humana no verificada y están excluidos del sitemap e indexación. No se ejecutaron pruebas por indicación del usuario; sin merge ni deploy de este checkpoint.
+
+
 ## 2026-10-20 — APRENDE-DISCOVERY-01 (rama, no publicado)
 
 - Biblioteca `/aprende`: búsqueda de 11 guías reales, filtro de cinco categorías, enlaces GET compartibles, conteos y recuperación ante cero resultados.

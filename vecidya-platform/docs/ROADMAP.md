@@ -1,5 +1,10 @@
 ## CONSOLIDACIÓN-DIAG-2026-10-18 — roadmap de unificación (propuesto, sin cutover)
 
+### APRENDE — próxima certificación editorial de la biblioteca
+
+Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos borradores educativos (hechos, lenguaje sin jerga, fuentes, ejemplos hipotéticos, imágenes móviles y autoría), ejecutar los gates de `TESTING.md`, y retirar `editorialDraft` solo de guías aprobadas individualmente. La eliminación del estado de borrador modifica exposición/indexación y no debe hacerse sin revisión editorial explícita. Realizar seguimiento de temas por sector o jurisdicción (normas de pagos/consentimiento, costos y herramientas regionales) solo con evidencia y contexto; no inventar leyes generales. No es un permiso de publicar o desplegar.
+
+
 **Objetivo:** terminar el diagnóstico público con un único contrato de preguntas, respuestas, rutas, scoring, resumen anónimo e informe identificado, sin conservar dos motores públicos ni borrar evidencia histórica. La ruta pública actual `/diagnostico` utiliza `AnonymousDiagnosticFlow` y el motor V3. QA-03B queda definida en DIAG-CLOSE-01 como identidad destino; ACT raíz conserva su identidad separada durante comparación y rollback. El destino elegido no equivale a paridad certificada ni autoriza el cutover.
 
 | Fase | Trabajo | Gate de salida |

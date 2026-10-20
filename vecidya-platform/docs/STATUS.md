@@ -1,5 +1,14 @@
 # Estado de implementación
 
+## APRENDE-EDITORIAL-02 — biblioteca de alfabetización digital para negocios (2026-10-20; rama / borrador)
+
+**CODE + TEST versionado / RAN diferido por decisión del usuario.** Investigación documental con fuentes UIT/DigComp, W3C, Google Search Central, NIST, FTC, CISA, Microsoft y documentación oficial de Google. Se incorpora una biblioteca de **24 guías**: 11 artículos anteriores preservados con entradas y extractos más claros y tres ideas iniciales; 13 nuevos borradores con situaciones hipotéticas, explicaciones sin jerga, pasos, preguntas frecuentes y fuentes verificables. Cuatro itinerarios de aprendizaje ayudan a empezar según necesidad: fundamentos, presencia, atención/venta, mejora. Diagramas SVG nuevos con alt, title y descripción, y estilos de lectura añadidos.
+
+**PROTECCIÓN EDITORIAL:** los 13 artículos nuevos llevan `editorialDraft: true`, se identifican como «En revisión» en índice y página, omiten atribución «Por Yoan Ortiz», reciben `noindex, nofollow` y no entran en `sitemap.xml`. Son borradores educativos asistidos por IA; antes de convertirlos en contenido final se requiere revisión humana de exactitud, estilo, enlaces, legislación según país/sector y autoría. No se afirma publicación o validación.
+
+**Fronteras:** sin modificaciones a Diagnóstico, Mi Vecidya, GHL, DB, licencias o pagos. La rama `feat/aprende-editorial-02` no se integra ni despliega automáticamente. Suites, typecheck, build y QA visual están pendientes; los cambios de contenido no se consideran certificados.
+
+
 ## APRENDE-DISCOVERY-01 — exploración de las guías (2026-10-20; rama, sin publicar)
 
 **CODE; validaciones diferidas por decisión del usuario.** `/aprende` incluye búsqueda GET accesible por título, introducción, extracto, categoría y encabezados de sección; filtros por las cinco categorías existentes, conteos calculados desde las guías reales, navegación de categorías a resultados, URL compartible (`q`/`tema`) y estado vacío con retorno a todo el catálogo. Se muestran solo los datos resumidos de las guías; los 11 artículos, slugs, autorías, CTAs y metadata canonicals originales siguen intactos. Entrada de búsqueda acotada a 100 caracteres; categorías con allowlist del catálogo. No hay formularios de captación, registro ni persistencia de consultas.

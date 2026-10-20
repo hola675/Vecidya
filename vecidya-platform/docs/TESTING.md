@@ -1,5 +1,14 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-02 — controles diferidos de biblioteca (2026-10-20)
+
+**TEST versionado, NOT RUN por instrucción del usuario.** Nueva suite `tests/unit/learn/learn-curriculum.test.ts` incluye cinco controles de integridad: 24 slugs únicos, 11 guías originales + 13 borradores, resúmenes útiles, fuentes oficiales con HTTPS, bloques pedagógicos, referencias entre guías, cuatro itinerarios y existencia de diagramas con metadatos accesibles. Esta suite está escrita, **no ejecutada ni certificada**.
+
+**Gate técnico futuro (en worktree aislado):** `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check` y E2E `tests/e2e/learn-experience-check.mjs` contra Worker local, con búsqueda/filtros de `APRENDE-DISCOVERY-01`, 24 rutas disponibles en preview, 13 noindex/no sitemap, navegación de cuatro caminos y encabezados/FAQ. Validar imagen y diagrama en desktop/tablet/móvil 360/390/768/1366, zoom 200 %, lectura con teclado, foco, contrastes y legibilidad en pantalla pequeña. No publicar borradores automáticamente.
+
+**Gate editorial obligatorio antes de retirar `editorialDraft`:** corrección factual por tema, revisión de lenguaje sencillo por lector de negocio sin experiencia técnica, enlaces/fuentes oficiales vivos, regulación contextual para pagos, privacidad y publicidad; permiso y autoría veraces; evitar métricas/testimonios/promesas inventadas y verificar que los ejemplos sean hipotéticos. La ausencia de QA técnico o editorial impide declarar CERRADA/ONLINE la ampliación.
+
+
 ## APRENDE-DISCOVERY-01 — validación expresamente diferida (2026-10-20)
 
 **CODE / NOT RUN.** Se añadieron búsqueda y filtros en `app/routes/knowledge.tsx` y CSS adaptativo en `app/app.css`, sin ejecutar comandos ni crear pruebas en este checkpoint por petición del usuario. Antes de cualquier certificación o publicación: ejecutar `pnpm install --frozen-lockfile`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`, suite focal `learn-experience-check.mjs` contra Worker local; extender casos GET a `/aprende?q=crm`, `?tema=Tecnología+explicada`, búsqueda acentuada, filtro combinado y sin resultados, más teclado/foco y responsive a 360/390/768/1366. Ninguna validación se reporta PASS aquí. No Actions CI ni deploy.
