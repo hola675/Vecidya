@@ -4,6 +4,7 @@ import { publicAssets } from "../assets/public-assets";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { learnArticles, learnCategories, learnPathways } from "../content/learn";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
+import { publicListingRobots } from "../lib/public-seo";
 
 import type { Route } from "./+types/knowledge";
 
@@ -52,11 +53,12 @@ export function loader({ request }: Route.LoaderArgs) {
   return { articles, topics, pathways, search, category, total: learnArticles.length };
 }
 
-export function meta(_: Route.MetaArgs) {
+export function meta({ location }: Route.MetaArgs) {
   return publicMeta(
     "Aprende",
     "Guías para usar tecnología, organizar equipos y mejorar negocios y empresas de cualquier tamaño.",
     "/aprende",
+    publicListingRobots(location.search),
   );
 }
 

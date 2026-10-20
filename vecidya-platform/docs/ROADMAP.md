@@ -1,5 +1,10 @@
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
+### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)
+
+**Observación de código, sin HTTP ni explotación demostrada:** el JSON-LD de `app/routes/public-business-profile.tsx` construye la URL pública con `origin` de `request.url`, aunque `publicMeta` ya declara el origen canónico. El agente responsable de Mi Vecidya debe verificar en su siguiente checkpoint si corresponde usar el origen oficial compartido, revisar efectos sobre test de slug/perfil y actualizar la cobertura sin tocar permisos ni publicación accidental. No se autoriza que otro agente reescriba el flujo MiniWeb por este hallazgo.
+
+
 ### APRENDE-GESTIÓN-03 — educación para decidir, supervisar y mejorar (2026-10-20)
 
 **Implementado como borrador, no certificado ni publicado:** presupuestos y costos reales de herramientas, solicitudes y aprobaciones de compra, continuidad si falla internet o un sistema, límites y supervisión de IA, evaluación de un proyecto digital. El nuevo camino «Dirige y mejora con criterio» usa casos hipotéticos y pasos proporcionales para negocios pequeños, empresas con equipos y grupos con varias sedes. Reconciliado con APRENDE-OPERACIONES-02 ya fusionado en main: 38 artículos (11 originales + 27 borradores) y 7 itinerarios en esta rama. Sin CRM/ERP transaccionales, nuevos pagos, cambios de DB ni obligaciones legales universales.

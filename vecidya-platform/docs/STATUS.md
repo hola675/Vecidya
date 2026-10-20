@@ -1,5 +1,14 @@
 # Estado de implementación
 
+## WEB-PUBLIC-SEO-01 — auditoría focal de índices públicos y origen canónico (2026-10-20; PR pendiente)
+
+**CODE + TEST versionado / RAN pendiente; sin deploy.** Hallazgo comprobado en `main`: `robots.txt` y `sitemap.xml` tomaban el origen desde `request.url`, mientras `publicMeta` fijaba `https://vecidya.com`. La ruta `/aprende` permitía indexación de filtros GET (`q`/`tema`) aunque `/vecindario` ya usaba `noindex, follow` para filtros. En `fix/public-seo-canonical-20261020` se unifica el origen oficial mediante `app/lib/public-seo.ts`; el sitemap conserva solo guías no borrador y perfiles publicados. La biblioteca conserva 38 guías y no se modifican contenidos, políticas de publicación ni CTA. Test unitario nuevo verifica origen, valores de robots y contrato de uso estático.
+
+**Deuda detectada y NO corregida — APP-PROFILE-SEO-ORIGIN-001 (prioridad media, posible riesgo SEO):** `app/routes/public-business-profile.tsx` construye el campo `url` del JSON-LD con `origin` leído de `request.url` (líneas alrededor de 28/69 en el corte). Ese módulo pertenece a Mi Vecidya/MiniWeb y debe revisarse en su checkpoint de permisos/publicación para fijar origen canónico sin alterar modelo público o accesos. Su exposición real no está verificada con HTTP. No se infiere vulnerabilidad explotable ni explotación.
+
+**Validación:** no se ejecutaron typecheck, build, unitarias ni E2E desde este entorno de edición conectado a GitHub. El dominio público no fue accesible por la herramienta de consulta, por lo que **NO existe verificación HTTP** en este corte. Sin cambios de Auth, Diagnóstico, Mi Vecidya, GHL, DB ni producción.
+
+
 ## APRENDE-GESTIÓN-03 — guías de dirección digital (2026-10-20; PR borrador)
 
 **CODE + TEST versionado / RAN pendiente, sin deploy.** Cinco guías en `learn-management-03.ts`: presupuesto de herramientas, compras/proveedores, continuidad frente a fallos, gobierno de IA y evaluación de proyectos digitales. Cinco SVG con `title`, `desc` y alt; cada guía tiene tres ideas, ejemplo hipotético, pasos, FAQ, fuentes y `editorialDraft: true`. La rama integró el nuevo `main` tras el merge del PR #26 **sin descartar las cinco guías de Operaciones-02**. Resultado estructural: 38 guías (11 originales + 27 borradores), 6 categorías, 7 itinerarios.

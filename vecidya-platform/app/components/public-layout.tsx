@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router";
 import { useEffect, useRef } from "react";
 import { publicAssets } from "../assets/public-assets";
+import { publicSiteUrl } from "../lib/public-seo";
 import { PlatformFooter } from "./platform-footer";
 
 export const commercialWhatsAppUrl = "https://wa.me/573244321864";
@@ -125,12 +126,10 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-const publicOrigin = "https://vecidya.com";
-
 export const publicMeta = (title: string, description: string, canonical: string, robots = "index, follow") => {
   const pageTitle = title === "Vecidya" ? title : `${title} | Vecidya`;
-  const canonicalUrl = canonical.startsWith("http") ? canonical : `${publicOrigin}${canonical}`;
-  const imageUrl = `${publicOrigin}${publicAssets.social.openGraph}`;
+  const canonicalUrl = canonical.startsWith("http") ? canonical : publicSiteUrl(canonical);
+  const imageUrl = publicSiteUrl(publicAssets.social.openGraph);
 
   return [
     { title: pageTitle },
