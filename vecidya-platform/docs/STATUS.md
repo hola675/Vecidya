@@ -1,5 +1,12 @@
 # Estado de implementación
 
+## APRENDE-DISCOVERY-01 — exploración de las guías (2026-10-20; rama, sin publicar)
+
+**CODE; validaciones diferidas por decisión del usuario.** `/aprende` incluye búsqueda GET accesible por título, introducción, extracto, categoría y encabezados de sección; filtros por las cinco categorías existentes, conteos calculados desde las guías reales, navegación de categorías a resultados, URL compartible (`q`/`tema`) y estado vacío con retorno a todo el catálogo. Se muestran solo los datos resumidos de las guías; los 11 artículos, slugs, autorías, CTAs y metadata canonicals originales siguen intactos. Entrada de búsqueda acotada a 100 caracteres; categorías con allowlist del catálogo. No hay formularios de captación, registro ni persistencia de consultas.
+
+**NO RAN:** por indicación expresa, pruebas y certificación se reservan para otro checkpoint. No se declara PASS técnico, QA responsive ni publicación. Rama `feat/aprende-discovery-01`; sin cambios a Diagnóstico, Mi Vecidya, GHL, D1, producción o despliegues.
+
+
 ## WEB-COMERCIAL-01 — claridad comercial y contacto contextual (2026-10-20; rama, no desplegado)
 
 **CODE + TEST, RAN pendiente.** Se reconciliaron las capacidades públicas de Cuadra/Barrio/Ciudad en `/licencias` con el catálogo comercial: MiniWeb y Vecindario en Cuadra, sin CRM/GHL; Barrio y Ciudad distinguen CRM externo. Se actualizaron problemas/resultados de siete familias en `/servicios` y sus CTA llevan a `/contacto?interes=<id>`. Contacto utiliza únicamente IDs comerciales permitidos para preparar borradores editables de correo o WhatsApp; valores desconocidos no se reflejan ni persisten. `/unete` aclara contratación asistida y acceso por invitación, sin altas o cobros automáticos.

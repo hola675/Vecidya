@@ -1,5 +1,10 @@
 # Pruebas
 
+## APRENDE-DISCOVERY-01 — validación expresamente diferida (2026-10-20)
+
+**CODE / NOT RUN.** Se añadieron búsqueda y filtros en `app/routes/knowledge.tsx` y CSS adaptativo en `app/app.css`, sin ejecutar comandos ni crear pruebas en este checkpoint por petición del usuario. Antes de cualquier certificación o publicación: ejecutar `pnpm install --frozen-lockfile`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`, suite focal `learn-experience-check.mjs` contra Worker local; extender casos GET a `/aprende?q=crm`, `?tema=Tecnología+explicada`, búsqueda acentuada, filtro combinado y sin resultados, más teclado/foco y responsive a 360/390/768/1366. Ninguna validación se reporta PASS aquí. No Actions CI ni deploy.
+
+
 ## WEB-COMERCIAL-01 — pruebas comerciales (2026-10-20)
 
 **TEST versionado / RAN pendiente:** `tests/unit/commercial-contact.test.ts` verifica allowlist de intereses, rechazo de entrada arbitraria, enlace sin contexto y borradores de canal. `tests/e2e/licenses-experience-check.mjs` amplía regresión a MiniWeb/Vecindario, GHL separado y CTA de las tres licencias; `tests/e2e/web-commercial-contact-check.mjs` comprueba las siete tarjetas de servicios, sus enlaces, selección en Contacto, rechazo de parámetros extraños y explicación de invitaciones a 1366/390 px.

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-20 — APRENDE-DISCOVERY-01 (rama, no publicado)
+
+- Biblioteca `/aprende`: búsqueda de 11 guías reales, filtro de cinco categorías, enlaces GET compartibles, conteos y recuperación ante cero resultados.
+- CSS accesible y adaptable, con foco visible; permanece pendiente su verificación en runtime y dispositivos.
+- No cambian los artículos, slugs, precios, contratos, Diagnóstico, App, D1 o GHL. Validaciones y certificación diferidas según indicación del usuario.
+
+
 ## 2026-10-20 — WEB-COMERCIAL-01 (rama, pendiente de validación y merge)
 
 - Licencias: descripción clara de MiniWeb/Vecindario en Cuadra y CRM externo únicamente desde Barrio; precios y activación sin cambios.
