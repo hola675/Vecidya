@@ -404,6 +404,11 @@ export const learnOperations02Articles: LearnArticle[] = [
             "type": "sources",
             "items": [
               {
+                "label": "Gobierno de Australia — Gestionar inventario",
+                "url": "https://business.gov.au/products-and-services/inventory-management/manage-your-inventory",
+                "scope": "Guía pública que explica registros de entradas y devoluciones, recuentos físicos, existencias y reaprovisionamiento. Los requisitos fiscales descritos corresponden a Australia, no a todos los países."
+              },
+              {
                 "label": "OCDE — Digitalización y competitividad de las pymes (2025)",
                 "url": "https://www.oecd.org/en/publications/sme-digitalisation-for-competitiveness_197e3077-en.html",
                 "scope": "Encuesta comparativa sobre necesidades de habilidades digitales y adopción en empresas participantes; no representa a todos los países ni garantiza un ahorro."
