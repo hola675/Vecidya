@@ -55,7 +55,7 @@ export function loader({ request }: Route.LoaderArgs) {
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
     "Aprende",
-    "Ideas claras para entender y mejorar la presencia digital de tu negocio.",
+    "Guías para usar tecnología, organizar equipos y mejorar negocios y empresas de cualquier tamaño.",
     "/aprende",
   );
 }
@@ -69,8 +69,8 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
         <section className="learn-experience-hero" aria-labelledby="learn-title">
           <div>
             <p className="eyebrow">APRENDE</p>
-            <h1 id="learn-title">Aprende a organizar, mejorar y entender la presencia digital de tu negocio.</h1>
-            <p>Respuestas sencillas, ejemplos cotidianos y pasos que puedes poner en práctica. Los nuevos materiales están identificados como borradores editoriales hasta completar su revisión.</p>
+            <h1 id="learn-title">Aprende a usar la tecnología para mejorar tu negocio o empresa.</h1>
+            <p>Desde un negocio pequeño hasta empresas con equipos, sedes o varias marcas. Encuentra respuestas sencillas, ejemplos cotidianos y pasos que puedes aplicar sin aprender palabras complicadas. Los materiales nuevos siguen identificados como borradores hasta su revisión editorial.</p>
             <div className="public-actions">
               <Link className="button button--primary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
               <Link className="button button--secondary" to="/contacto">Hacer una pregunta</Link>

@@ -1,3 +1,5 @@
+import { learnBusinessOperationsArticles } from "./learn-business-operations";
+
 export type LearnBlock =
   | { type: "paragraph"; text: string }
   | { type: "list"; items: string[] }
@@ -39,6 +41,7 @@ export const learnCategories = [
   { name: "Inteligencia Artificial", description: "Usos reales de IA para negocios y equipos." },
   { name: "CRM y clientes", description: "Contactos, oportunidades y conversaciones con contexto." },
   { name: "Tecnología explicada", description: "Conceptos digitales explicados sin jerga." },
+  { name: "Gestión y equipos", description: "Coordinar personas, sedes, información y varios negocios sin perder claridad." },
 ] as const;
 
 export const learnArticles: LearnArticle[] = [
@@ -4005,6 +4008,7 @@ export const learnArticles: LearnArticle[] = [
     ]
   },
 
+  ...learnBusinessOperationsArticles,
 ];
 
 
@@ -4049,6 +4053,16 @@ export const learnPathways = [
       "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio",
       "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
       "conectar-herramientas-digitales-sin-complicar-tu-negocio",
+    ],
+  },
+  {
+    title: "Coordina equipos y varios negocios",
+    description: "Aprende a gestionar sedes, responsabilidades, herramientas y resultados sin mezclar información.",
+    slugs: [
+      "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo",
+      "quien-puede-ver-cambiar-y-publicar-en-tu-empresa",
+      "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
+      "como-comparar-resultados-de-sedes-sin-mezclar-las-cifras",
     ],
   },
 ] as const;
