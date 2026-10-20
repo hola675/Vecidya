@@ -18,6 +18,9 @@ test("catálogo publica 3 licencias, 7 complementos y 7 servicios distintos", ()
     assert(Object.prototype.hasOwnProperty.call(COMMERCIAL_CONTACT_INTERESTS, offer.contactInterest));
     assert(offer.includes.length > 0 && offer.excludes.length > 0);
     assert(offer.examples.length > 0);
+    assert(offer.benefits.length >= 2, `Faltan ventajas prácticas de ${offer.id}`);
+    assert(offer.benefits.every((benefit) => benefit.trim().length >= 25));
+
     assert(offer.dependencies.length > 20 && offer.externalCosts.length > 20);
   }
   for (const kind of ["license", "addon", "service"] as const) {
@@ -47,4 +50,15 @@ test("complementos y servicios no se facturan dentro de la plantilla estándar",
   assert(ADDON_OFFERS.find((o) => o.id === "connections-integrations")?.dependencies.includes("Cuadra"));
   const publicText = all.map((o) => Object.values(o).flat().join(" ")).join(" ");
   assert(!/\bGHL\b|HighLevel|GoHighLevel/i.test(publicText));
+});
+
+test("WhatsApp explica creación de contacto, relación comercial y continuidad con límites", () => {
+  const whatsapp = ADDON_OFFERS.find((offer) => offer.id === "whatsapp-business");
+  assert(whatsapp);
+  assert(whatsapp.benefits.some((item) => /contacto|registr/i.test(item)));
+  assert(whatsapp.journey && whatsapp.journey.length >= 3);
+  assert(whatsapp.journey.some((step) => /oportunidad|responsable/i.test(step)));
+  assert(whatsapp.continuity && /bloque|desconect|conexión/i.test(whatsapp.continuity));
+  assert(/historial|mensaje/i.test(whatsapp.continuity));
+  assert(/no|deja|depend/i.test(whatsapp.continuity));
 });
