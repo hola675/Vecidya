@@ -28,6 +28,9 @@ try {
     const label = `${width}px`;
     await page.goto(new URL("/", baseUrl).toString(), { waitUntil: "networkidle" });
     await assertNoOverflow(page, `${label} inicio`);
+    for (const path of ["/licencias", "/servicios", "/aprende", "/contacto"]) {
+      assert(await page.locator(`main a[href="${path}"]`).count() > 0, `${label}: Home sin recorrido directo a ${path}`);
+    }
     assert(await page.getByRole("link", { name: "Saltar al contenido" }).count() === 1, `${label}: falta enlace de salto`);
     assert(await page.locator("header .site-brand").getAttribute("href") === "/", `${label}: marca sin enlace al inicio`);
 
