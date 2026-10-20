@@ -1,9 +1,9 @@
-import { useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 
 import { commercialWhatsAppUrl, PublicLayout, publicMeta, whatsAppChannelUrl } from "../components/public-layout";
 import { publicAssets } from "../assets/public-assets";
 import { CTASection } from "../components/public-v2";
-import { buildCommercialContactLinks, PUBLIC_ACTION_LABELS } from "../content/public-copy";
+import { buildCommercialContactLinks, PUBLIC_ACTION_LABELS, resolveCommercialContactReturn } from "../content/public-copy";
 
 import type { Route } from "./+types/contact";
 
@@ -13,7 +13,9 @@ export function meta(_: Route.MetaArgs) {
 
 export default function Contact() {
   const [searchParams] = useSearchParams();
-  const { interest, emailHref, whatsappHref } = buildCommercialContactLinks(searchParams.get("interes"), commercialWhatsAppUrl);
+  const requestedInterest = searchParams.get("interes");
+  const { interest, emailHref, whatsappHref } = buildCommercialContactLinks(requestedInterest, commercialWhatsAppUrl);
+  const returnToOffer = resolveCommercialContactReturn(requestedInterest);
 
   return (
     <PublicLayout>
@@ -22,7 +24,17 @@ export default function Contact() {
           <p className="eyebrow">CONTACTO</p>
           <h1 id="contact-title">Hablemos de lo que estás intentando resolver.</h1>
           <p>Cuéntanos tu contexto por correo electrónico o WhatsApp directo. Ninguno de estos canales activa automáticamente una compra o suscripción.</p>
-          {interest && <aside aria-label="Consulta seleccionada" className="contact-selection"><strong>Interés seleccionado: {interest.label}</strong><p>El mensaje se preparará con ese contexto para que puedas revisarlo antes de enviarlo.</p></aside>}
+          {interest && (
+            <aside aria-label="Consulta seleccionada" className="contact-selection">
+              <strong>Interés seleccionado: {interest.label}</strong>
+              <p>El mensaje se preparará con ese contexto para que puedas revisarlo antes de enviarlo.</p>
+              {returnToOffer && (
+                <Link className="text-link contact-selection__return" to={returnToOffer.to}>
+                  {returnToOffer.label} <span aria-hidden="true">←</span>
+                </Link>
+              )}
+            </aside>
+          )}
           <div className="public-actions">
             <a className="button button--primary" href={emailHref}>Escribir a hola@vecidya.com</a>
             <a className="button button--secondary" href={whatsappHref} rel="noreferrer" target="_blank">
