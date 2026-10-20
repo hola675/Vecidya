@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import type { ReactNode } from "react";
 
 import { Icon, type IconName } from "./ui";
+import { clampPercentage, formatCount, nonNegativeCount, relativeBarWidth } from "../lib/experience-metrics";
 
 export type ExperienceStep = {
   title: string;
@@ -68,7 +69,7 @@ export function MetricCard({
     <section className={`card experience-metric ${className}`}>
       {icon ? <Icon name={icon} /> : null}
       <div className="experience-metric__body">
-        <strong>{value}</strong>
+        <strong>{typeof value === "number" ? formatCount(value) : value}</strong>
         <p>{label}</p>
         {description ? <div className="experience-metric__detail">{description}</div> : null}
       </div>
@@ -86,7 +87,7 @@ export function ProgressMeter({
   value: number;
   className?: string;
 }) {
-  const percentage = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 0;
+  const percentage = clampPercentage(value);
   return (
     <div
       aria-label={label}
@@ -116,7 +117,7 @@ export function ComparisonBars({
   description: string;
   values: readonly ComparisonValue[];
 }) {
-  const largest = Math.max(0, ...values.map((item) => Number.isFinite(item.value) ? Math.max(0, item.value) : 0));
+  const largest = Math.max(0, ...values.map((item) => nonNegativeCount(item.value)));
   return (
     <section aria-label={title} className="experience-comparison">
       <div className="experience-comparison__intro">
@@ -125,15 +126,15 @@ export function ComparisonBars({
       </div>
       <ul className="experience-comparison__list">
         {values.map((item) => {
-          const value = Number.isFinite(item.value) ? Math.max(0, item.value) : 0;
+          const value = nonNegativeCount(item.value);
           return (
             <li key={item.label}>
               <div className="experience-comparison__labels">
                 <span>{item.label}</span>
-                <strong>{value.toLocaleString("es-CO")}</strong>
+                <strong>{formatCount(value)}</strong>
               </div>
               <div aria-hidden="true" className="experience-comparison__track">
-                <span style={{ width: `${largest > 0 ? value / largest * 100 : 0}%` }} />
+                <span style={{ width: `${relativeBarWidth(value, largest)}%` }} />
               </div>
               {item.detail ? <p>{item.detail}</p> : null}
             </li>
