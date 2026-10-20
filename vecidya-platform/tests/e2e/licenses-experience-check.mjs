@@ -60,7 +60,7 @@ async function runViewport(width, height) {
   for (const plan of ["cuadra", "barrio", "ciudad"]) {
     assert(await page.getByRole("link", { name: `Ver detalles de ${plan[0].toUpperCase() + plan.slice(1)}` }).getAttribute("href") === `/licencias/${plan}`, `${label} falta ficha detallada ${plan}`);
   }
-  assert(!(await page.locator("main").innerText()).match(/\\bGHL\\b|HighLevel|GoHighLevel/i), `${label} muestra marca de proveedor en Licencias.`);
+  assert(!(await page.locator("main").innerText()).match(/\bGHL\b|HighLevel|GoHighLevel/i), `${label} muestra marca de proveedor en Licencias.`);
 
   const html = await page.content();
   for (const price of ["USD 39/mes", "USD 59/mes", "USD 89/mes"]) {
