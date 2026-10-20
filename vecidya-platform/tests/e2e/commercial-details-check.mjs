@@ -29,6 +29,15 @@ try {
         assert(await page.locator("main h1").count() === 1, `${width}: H1 incorrecto en ${path}`);
         assert(await page.locator(".commercial-detail__columns section").count() === 2, `${width}: faltan inclusiones/exclusiones en ${path}`);
         assert(await page.locator(".commercial-detail__decision").isVisible(), `${width}: sin recomendación en ${path}`);
+        assert(await page.locator(".commercial-detail__benefits li").count() >= 2, `${width}: ficha sin ventajas prácticas ${path}`);
+        if (path === "/addons/whatsapp-business") {
+          assert(await page.locator(".commercial-detail__journey li").count() === 4, `${width}: falta recorrido de WhatsApp a CRM`);
+          const continuity = await page.locator(".commercial-detail__continuity").innerText();
+          assert(continuity.includes("mensajes que el CRM ya recibió"), `${width}: no explica conservación de historial`);
+          assert(continuity.includes("no están garantizados"), `${width}: promete recuperar mensajes no recibidos`);
+          const benefits = await page.locator(".commercial-detail__benefits").innerText();
+          assert(benefits.includes("contacto") && benefits.includes("Instagram"), `${width}: no explica captura o multicanal`);
+        }
         assert(await page.locator(`a[href="${category.path}"]`).count() > 0, `${width}: sin regreso al catálogo en ${path}`);
         assert(await page.locator('main a[href^="/contacto?interes="]').count() >= 1, `${width}: sin consulta contextual en ${path}`);
         const html = await page.content();
