@@ -27,12 +27,12 @@ export const PUBLIC_HEADER_PRIMARY_LINKS = [
   navigation.vecindario,
   navigation.aprende,
   navigation.diagnostico,
-  navigation.servicios,
   navigation.contacto,
 ] as const;
 
 export const PUBLIC_HEADER_SOLUTIONS_LINKS = [
   navigation.licencias,
+  navigation.servicios,
   navigation.complementos,
 ] as const;
 
