@@ -164,7 +164,24 @@ Referencias oficiales técnicas consultadas en octubre de 2026 — **solo para e
 - [Condicionales](https://help.gohighlevel.com/support/solutions/articles/155000002471)
 - [Precio y facturación de proveedor](https://help.gohighlevel.com/support/solutions/articles/155000001156-highlevel-pricing-guide)
 
-**Riesgo de margen pendiente de verificación interna:** el complemento WhatsApp Business tiene un fee comercial Vecidya de USD 9/mes + uso; el proveedor publica una tarifa de referencia de integración de USD 10/mes/subcuenta, más mensajes. Antes de vender debe determinarse si la tarifa del proveedor se traslada separadamente, si se absorbe o si el precio comercial requiere autorización de cambio. NO presentar USD 9 como coste total garantizado. Tarifas por país, mensajes, A2P, telefonía, IA y uso deben consultarse en la cuenta real y condiciones actuales.
+**Política de precios aprobada por el usuario (2026-10-20) — RECARGO del 20 % sobre COSTE REAL EXTERNO:**
+- Importe al cliente = coste facturado a Vecidya por el proveedor (incluidos recargos/cargos ya aplicados al canal) × **1,20**; redondeo hacia arriba a centavo sobre el cargo agregado. No añadir el mismo recargo del proveedor dos veces.
+- **No es un margen bruto del 20 % sobre la venta**, sino un recargo del 20 % sobre el coste (margen bruto equivalente aproximado del 16,67 % antes de otros gastos).
+- Cuando una herramienta, flujo, campaña, registro de reseñas o integración estándar ya está incluido en Barrio/Ciudad, su cargo incremental externo es **cero** y no se inventa un fee mensual por revender esa misma capacidad. Puede existir consumo real del canal o IA facturado aparte.
+- El precio fijo de WhatsApp Business parte de la referencia oficial documentada **$10/mes por subcuenta habilitada** → **$12/mes Vecidya** (10 × 1,20), más mensajes/cargos aplicables. Verificar país, ciclo y cuenta antes de contratar.
+- No fijar una cuota mensual genérica de Telefonía/SMS sin coste fijo universal del proveedor: número, llamadas y mensajes se repercuten según cargos reales + 20 %.
+- La suite de IA puede funcionar por **uso** sin suscripción mensual o con **un único plan compartido por subcuenta**: Growth base proveedor $50/mes → $60/mes Vecidya; Unlimited base $97/mes → $116,40/mes Vecidya. No cobrar un Growth/Unlimited entero en IA Conversacional y otra vez en IA de Voz de la misma cuenta. Voz aún tiene costes telefónicos separados.
+- Referencia de correo: base proveedor $0,675 por 1000 correos; aplicar el 20 % sobre el cargo agregado real de la factura. Para estimación simple de 1000 correos: $0,81, pero la factura real y otros cargos gobiernan.
+- **Servicios profesionales**: son trabajo humano/desarrollo, no reventa de proveedor; se presupuestan por alcance y no se derivan automáticamente con la fórmula de 20 %. Licencias $39/$59/$89 mantienen su precio ya aprobado; el plan de agencia/infraestructura es un coste compartido, no una tarifa fija por cliente verificable.
+- Antes de automatizar el cobro verificar en la cuenta real el plan y funcionalidades habilitados, precios efectivos, reglas de rebilling y proveedores locales. Reventa/recargos de uso pueden requerir modalidad de cuenta; no prometerlos como integración activada.
+- Los siete registros de la página Complementos son categorías de capacidad comercial, no siete suscripciones mensuales obligatorias. Si el proveedor no factura algo adicional, no se inventa coste para el cliente.
+
+**Fuentes oficiales para el equipo (no exponer nombres tecnológicos en la web comercial):**
+- [Cuota y cargos WhatsApp](https://help.gohighlevel.com/support/solutions/articles/155000001428-whatsapp-pricing-billing-and-rebilling-guide)
+- [IA por consumo y planes compartidos](https://help.gohighlevel.com/support/solutions/articles/155000003906-ai-employee-access-rebilling-and-reselling)
+- [Teléfono, SMS y recargos de transportista](https://help.gohighlevel.com/support/solutions/articles/48001223556-phone-system-pricing-billing-guide)
+- [Correo y costes por envío](https://help.gohighlevel.com/support/solutions/articles/48001220605)
+
 
 **Límite de licenciamiento multi-organización abierto:** el catálogo histórico autoriza ciertos perfiles adicionales de una persona con licencia activa, mientras otros documentos exigen licencia de la organización para publicación. No se cambia la lógica de permisos ni se promete publicación multiorganización ilimitada hasta reconciliar una regla contractual verificable.
 
@@ -223,13 +240,13 @@ Internamente pueden mantenerse como `ADDON`.
 
 | Complemento | Fee Vecidya | Costes adicionales |
 |---|---:|---|
-| **WhatsApp Business** | **$9/mes** | proveedor + mensajes |
-| **Telefonía & SMS** | **$9/mes** | número, llamadas, SMS/MMS, A2P |
-| **Reputación & Reseñas** | **$12/mes** | mensajería/IA cuando aplique |
-| **Campañas & Difusión** | **$15/mes** | email/SMS/WhatsApp |
-| **IA Conversacional** | **$15/mes** | IA/plan/uso |
-| **IA de Voz** | **$20/mes** | IA + minutos + telefonía |
-| **Conexiones & Integraciones** | **$12/mes/conexión** | APIs/ejecuciones cuando aplique |
+| **WhatsApp Business** | **$12/mes** sobre referencia de proveedor $10/mes | mensajes y cargos aplicables a coste real + 20 % |
+| **Telefonía & SMS** | **Sin fee fijo artificial** | alquiler de número, llamadas, SMS/MMS, registro y tasas reales + 20 % |
+| **Reputación & Reseñas** | **Gestión estándar incluida en Barrio/Ciudad** | IA y mensajes opcionales, solo si generan un cargo real + 20 % |
+| **Campañas & Difusión** | **Funciones estándar del CRM incluidas** | envíos y herramientas externas reales + 20 %; producción/gestión personalizada como servicio |
+| **IA Conversacional** | **Según uso o plan de IA compartido** | cargos reales de IA + 20 %, sin segunda suscripción por otra función de IA |
+| **IA de Voz** | **Según el mismo plan de IA compartido o consumo** | costes reales de IA + 20 % y telefonía aparte + 20 % |
+| **Conexiones & Integraciones** | **Solo si existe un coste externo real de conexión** | API, aplicación o ejecuciones facturadas + 20 %; desarrollo especial como servicio |
 
 La licencia mínima normal para complementos dependientes del CRM es **Barrio**.
 
@@ -237,7 +254,7 @@ Cuadra no obtiene un CRM mediante complementos.
 
 Si necesita CRM, la frontera funcional es Barrio.
 
-La puesta en marcha estándar del complemento está incluida en su fee.
+La habilitación estándar de una capacidad incluida en la licencia no crea un cargo nuevo. Si existe suscripción externa verificable (como WhatsApp), el precio de reventa cubre ese cargo más el 20 %; si solo existe consumo, se cobra el consumo real más el 20 %. Los servicios de implantación especial se cotizan por separado.
 
 Una implementación especial continúa siendo un servicio profesional.
 
