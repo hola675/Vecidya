@@ -120,7 +120,7 @@ export const CANDIDATE_ACTIVATION_MANIFEST_V3 = Object.freeze({
   candidateMethodologyRoute: "/__dev/diagnostico/candidate/metodologia",
   candidateReportRoute: "/__dev/diagnostico/candidate/informe",
   activationPreconditions: [
-    "QA-03B requires server-authoritative replay with exact engine and answer-schema identity; the same versioned result must feed the anonymous summary and identified report",
+    "The selected cutover target requires server-authoritative replay with exact engine and answer-schema identity; that same versioned result must feed the anonymous summary and identified report",
     "ACT-04 must switch /diagnostico, /diagnostico/metodologia and /diagnostico/informe together to candidate session, result, methodology and report adapters",
     "Keep the candidate session key and exact engine identity; do not migrate or reinterpret legacy sessions",
     "Run the full local candidate and legacy E2E suites, typecheck, production build and anonymous route-isolation checks after the cutover change",
@@ -133,7 +133,7 @@ export const CANDIDATE_ACTIVATION_MANIFEST_V3 = Object.freeze({
     pdfUaCertified: false,
   },
   blockers: [
-    "QA-03B has no server-authoritative replay yet; public summary and identified report must consume the same validated versioned result before ACT-04",
+    "The selected cutover target lacks server-authoritative replay; public summary and identified report must consume the same validated versioned result before ACT-04",
   ],
   publicRouteTargets: ["/diagnostico", "/diagnostico/metodologia", "/diagnostico/informe"],
   activationStrategy: "Replace the route adapters and runtime imports for the three publicRouteTargets in one ACT-04 change; keep the candidate route dev-only until then.",

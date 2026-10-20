@@ -126,7 +126,7 @@ test("DIAG-V3 activation readiness: PDF owner review is non-blocking and Worker 
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.publicRuntimeChanged, false);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateIdentity, CANDIDATE_RESULT_IDENTITY_V3);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers.length, 1);
-  assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers[0], /QA-03B.*server-authoritative replay/i);
+  assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers[0], /selected cutover target lacks server-authoritative replay/i);
   assert.ok(!CANDIDATE_ACTIVATION_MANIFEST_V3.blockers.some((blocker) => /PDF\/UA|PAC|Acrobat|NVDA/i.test(blocker)));
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.ownerReview.id, "PDF_OWNER_REVIEW");
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.ownerReview.blocking, false);
@@ -165,5 +165,5 @@ test("DIAG-V3 activation readiness: public summary stays on active V3 while QA-0
   assert.match(reportModel, /export function buildDiagnosticReport/);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateActive, false);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.publicRuntimeChanged, false);
-  assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers[0], /QA-03B.*server-authoritative replay/i);
+  assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers[0], /selected cutover target lacks server-authoritative replay/i);
 });
