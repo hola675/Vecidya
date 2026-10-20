@@ -40,7 +40,7 @@ test("header, menú móvil y footer reutilizan etiquetas y destinos sin duplicac
 test("las familias visuales del footer y Soluciones preservan la clasificación comercial", () => {
   assert.deepEqual(PUBLIC_FOOTER_GROUPS.map((group) => group.title),
     ["Explorar", "Soluciones", "Vecidya", "Información legal"]);
-  assert.deepEqual(destinations(PUBLIC_HEADER_SOLUTIONS_LINKS), ["/licencias", "/addons"]);
+  assert.deepEqual(destinations(PUBLIC_HEADER_SOLUTIONS_LINKS), ["/licencias", "/servicios", "/addons"]);
   assert.deepEqual(
     destinations(PUBLIC_FOOTER_GROUPS.find((group) => group.id === "soluciones")!.links),
     ["/licencias", "/servicios", "/addons"],
