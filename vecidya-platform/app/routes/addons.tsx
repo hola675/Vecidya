@@ -72,7 +72,7 @@ export default function Addons() {
                   <p className="addon-card__value">{addon.value}</p>
                   <p className="addon-card__price">{addon.price}</p>
                   {addon.dependency ? <p className="addon-card__dependency">{addon.dependency}</p> : null}
-                  <Link className="text-link" to="/contacto">Consultar <span aria-hidden="true">→</span></Link>
+                  <Link className="text-link" to={`/contacto?interes=complemento-${addon.id}`}>Consultar este complemento <span aria-hidden="true">→</span></Link>
                 </article>
             ))}
           </div>
