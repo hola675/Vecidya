@@ -297,13 +297,13 @@ Internamente pueden mantenerse como `ADDON`.
 
 | Complemento | Fee Vecidya | Costes adicionales |
 |---|---:|---|
-| **WhatsApp Business** | **Desde $15/mes, propuesto** sobre referencia de proveedor $10/mes | mensajes, comisiones y otros consumos cotizados según margen bruto >= 20 % |
-| **Telefonía & SMS** | **Sin fee fijo artificial** | números, llamadas, SMS/MMS, registros y otros costes con margen bruto >= 20 % |
-| **Reputación & Reseñas** | **Gestión estándar incluida en Barrio/Ciudad** | IA y mensajes opcionales con margen bruto >= 20 % |
-| **Campañas & Difusión** | **Funciones estándar del CRM incluidas** | envíos y herramientas con margen bruto >= 20 %; producción/gestión personalizada como servicio |
-| **IA Conversacional** | **Según uso o plan de IA compartido** | tarifa cotizada con margen bruto >= 20 %, sin segunda suscripción por otra función de IA |
-| **IA de Voz** | **Según el mismo plan de IA compartido o consumo** | IA y telefonía cotizadas con margen bruto >= 20 %, sin doble suscripción |
-| **Conexiones & Integraciones** | **Solo si existe coste externo real de conexión** | API, aplicación o ejecuciones con margen bruto >= 20 %; desarrollo especial como servicio |
+| **WhatsApp Business** | **$12/mes** sobre referencia de proveedor $10/mes | mensajes y cargos reales del canal × 1,20, sin duplicar recargos |
+| **Telefonía & SMS** | **Sin fee fijo artificial** | números, llamadas, SMS/MMS, registros y otros costes con recargo del 20 % sobre coste externo verificado |
+| **Reputación & Reseñas** | **Gestión estándar incluida en Barrio/Ciudad** | IA y mensajes opcionales con recargo del 20 % sobre coste externo verificado |
+| **Campañas & Difusión** | **Funciones estándar del CRM incluidas** | envíos y herramientas con recargo del 20 % sobre coste externo verificado; producción/gestión personalizada como servicio |
+| **IA Conversacional** | **Según uso o plan de IA compartido** | tarifa cotizada con recargo del 20 % sobre coste externo verificado, sin segunda suscripción por otra función de IA |
+| **IA de Voz** | **Según el mismo plan de IA compartido o consumo** | IA y telefonía cobradas al coste facturado × 1,20, sin doble suscripción |
+| **Conexiones & Integraciones** | **Solo si existe coste externo real de conexión** | API, aplicación o ejecuciones con recargo del 20 % sobre coste externo verificado; desarrollo especial como servicio |
 
 La licencia mínima normal para complementos dependientes del CRM es **Barrio**.
 
