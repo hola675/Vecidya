@@ -3,85 +3,32 @@ import { Link } from "react-router";
 import { publicAssets } from "../assets/public-assets";
 import { CTASection } from "../components/public-v2";
 import { DIAGNOSTIC_CTA_COPY, PUBLIC_ACTION_LABELS } from "../content/public-copy";
+import { SERVICE_OFFERS } from "../content/commercial-detail";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 
 import type { Route } from "./+types/services";
 
-type ServiceArea = {
-  id: string;
-  icon: string;
-  eyebrow: string;
-  title: string;
-  problem: string;
-  result: string;
-  support: string[];
-};
+const serviceIcons = {
+  estructuracion: publicAssets.catalog.services.organizacion,
+  formalizacion: publicAssets.icons.serviceFormalization,
+  "presencia-digital": publicAssets.catalog.services.presenciaDigital,
+  automatizacion: publicAssets.catalog.services.automatizacion,
+  "inteligencia-artificial": publicAssets.catalog.services.automatizacion,
+  visibilidad: publicAssets.catalog.services.inteligenciaArtificial,
+  "desarrollo-empresarial": publicAssets.catalog.services.organizacion,
+} as const;
 
-const services: ServiceArea[] = [
-  {
-    id: "estructuracion",
-    icon: publicAssets.catalog.services.organizacion,
-    eyebrow: "ORDENAR",
-    title: "Presencia & Marca",
-    problem: "Tu negocio no tiene identidad, mensajes o presentación consistentes.",
-    result: "Identidad y presentación profesional para que se entienda quién eres y qué ofreces.",
-    support: ["Identidad", "Mensajes", "Guía de presencia"],
-  },
-  {
-    id: "formalizacion",
-    icon: publicAssets.icons.serviceFormalization,
-    eyebrow: "CONVERTIR",
-    title: "Web & Conversión",
-    problem: "Tus visitantes no encuentran fácilmente tus servicios ni cómo contactarte.",
-    result: "Webs y páginas de captación con información clara y pasos de contacto definidos.",
-    support: ["Web", "Landing", "Ecommerce"],
-  },
-  {
-    id: "presencia-digital",
-    icon: publicAssets.catalog.services.presenciaDigital,
-    eyebrow: "ENCONTRAR",
-    title: "Visibilidad & Marketing",
-    problem: "Tu negocio es difícil de encontrar o sus canales no explican bien lo que ofrece.",
-    result: "Estrategia de contenido, posicionamiento y campañas para mejorar el descubrimiento.",
-    support: ["SEO local", "Contenido", "Campañas"],
-  },
-  {
-    id: "automatizacion",
-    icon: publicAssets.catalog.services.automatizacion,
-    eyebrow: "CAPTAR",
-    title: "Sistema Comercial",
-    problem: "Las consultas llegan por varios canales y no existe un proceso de atención definido.",
-    result: "Diseño de captación, atención y seguimiento; la operación CRM corresponde a GHL cuando aplica.",
-    support: ["Captación", "Pipeline", "Seguimiento"],
-  },
-  {
-    id: "inteligencia-artificial",
-    icon: publicAssets.catalog.services.automatizacion,
-    eyebrow: "CONECTAR",
-    title: "Automatización & Integraciones",
-    problem: "Las tareas repetitivas y las herramientas desconectadas consumen tiempo.",
-    result: "Automatizaciones e integraciones diseñadas para procesos y sistemas concretos.",
-    support: ["Workflows", "Integraciones", "Procesos"],
-  },
-  {
-    id: "visibilidad",
-    icon: publicAssets.catalog.services.inteligenciaArtificial,
-    eyebrow: "ASISTIR",
-    title: "IA Aplicada",
-    problem: "Quieres utilizar IA para apoyar la atención o tareas internas con límites claros.",
-    result: "IA aplicada a la atención y procesos concretos, con supervisión humana.",
-    support: ["IA conversacional", "IA de voz", "Asistentes"],
-  },
-  {
-    id: "desarrollo-empresarial",
-    icon: publicAssets.catalog.services.organizacion,
-    eyebrow: "DESARROLLAR",
-    title: "Desarrollo Empresarial",
-    problem: "La operación necesita una mirada más amplia para avanzar con criterio.",
-    result: "Acompañamiento para ordenar prioridades, procesos y próximos pasos.",
-    support: ["Diagnóstico", "Planificación", "Acompañamiento"],
-  },
-];
+const serviceEyebrows = ["ORDENAR", "CONVERTIR", "ENCONTRAR", "CAPTAR", "CONECTAR", "ASISTIR", "DESARROLLAR"] as const;
+const services = SERVICE_OFFERS.map((offer, index) => ({
+  id: offer.id,
+  icon: serviceIcons[offer.id as keyof typeof serviceIcons],
+  eyebrow: serviceEyebrows[index],
+  title: offer.title,
+  problem: offer.bestFor,
+  result: offer.summary,
+  support: offer.includes,
+  detailPath: offer.detailPath,
+}));
 
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
@@ -116,7 +63,7 @@ export default function Services() {
           <div className="services-section-heading">
             <p className="eyebrow">SIETE FAMILIAS</p>
             <h2 id="services-core-title">Del problema concreto a un siguiente paso claro.</h2>
-            <p>Son servicios profesionales con alcance acordado; no todos requieren una licencia.</p>
+            <p>Son trabajos profesionales con alcance y entrega acordados; no todos requieren licencia. Las funciones estándar incluidas en Barrio o Ciudad no se cobran nuevamente como servicio.</p>
           </div>
           <div className="services-core-grid">
             {services.map((service) => (
@@ -129,7 +76,10 @@ export default function Services() {
                 <div className="services-core-card__problem"><span>Tu situación</span><p>{service.problem}</p></div>
                 <div className="services-core-card__result"><span>Qué podemos aportar</span><p>{service.result}</p></div>
                 <p className="services-core-card__support"><span>Ejemplos</span> {service.support.join(" · ")}</p>
-                <Link className="text-link services-core-card__cta" to={`/contacto?interes=servicio-${service.id}`}>Consultar este servicio <span aria-hidden="true">→</span></Link>
+                <div className="commercial-catalog__actions">
+                  <Link className="text-link" to={service.detailPath}>Ver detalles de {service.title} <span aria-hidden="true">→</span></Link>
+                  <Link className="text-link services-core-card__cta" to={`/contacto?interes=servicio-${service.id}`}>Consultar este servicio <span aria-hidden="true">→</span></Link>
+                </div>
               </article>
             ))}
           </div>
