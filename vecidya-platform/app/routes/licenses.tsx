@@ -93,7 +93,7 @@ export default function Licenses() {
                 <p className="license-card__activation">Puesta en marcha ${license.activationUsd} una vez</p>
                 <div className="commercial-catalog__actions">
                   <Link className="text-link" to={license.detailPath}>Ver detalles de {license.name} <span aria-hidden="true">→</span></Link>
-                  <Link className="license-card__availability" to={`/contacto?interes=${license.id}`}>Empezar con {license.name} <span aria-hidden="true">→</span></Link>
+                  <Link className="license-card__availability" to={`/contacto?interes=${license.id}`}>Consultar licencia {license.name} <span aria-hidden="true">→</span></Link>
                 </div>
               </article>
             ))}
