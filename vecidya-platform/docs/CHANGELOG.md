@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-20 — APRENDE-OPERACIONES-02 (rama independiente, sin desplegar)
+
+- Cinco nuevas guías educativas, marcadas como borradores para revisión editorial: tareas y responsables, inventario, capacitación digital, ERP sin jerga y proyectos piloto reversibles.
+- Se añadió el sexto itinerario de Aprende: «Trabaja mejor cada día»; total de catálogo **33 guías**, con once originales y veintidós borradores.
+- Cinco diagramas SVG accesibles de iconografía grande sin etiquetas diminutas; ejemplos hipotéticos y fuentes institucionales con alcance geográfico señalado.
+- Pruebas de integridad curricular y preservación de contenidos históricos actualizadas pero **no ejecutadas**. Sin alteraciones en Diagnóstico, Mi Vecidya, GHL, D1 o producción.
+
+
 ## 2026-10-20 — APRENDE-EMPRESAS-01 (rama dependiente, no publicado)
 
 - Cuatro borradores educativos sobre coordinación de sedes/marcas, control de permisos, elección de herramientas y lectura de indicadores por operación.

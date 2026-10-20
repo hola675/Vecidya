@@ -5,11 +5,22 @@ import { join } from "node:path";
 
 import { learnArticles, learnCategories, learnPathways } from "../../../app/content/learn.ts";
 
-test("Aprende conserva las once guías originales y agrega trece borradores educativos", () => {
-  assert.equal(learnArticles.length, 24);
-  assert.equal(new Set(learnArticles.map((article) => article.slug)).size, 24);
-  assert.equal(learnArticles.filter((article) => article.editorialDraft).length, 13);
+test("Aprende conserva las once guías originales y añade 22 borradores, incluidas cinco guías operativas", () => {
+  assert.equal(learnArticles.length, 33);
+  assert.equal(new Set(learnArticles.map((article) => article.slug)).size, 33);
+  assert.equal(learnArticles.filter((article) => article.editorialDraft).length, 22);
   assert.equal(learnArticles.filter((article) => !article.editorialDraft).length, 11);
+  for (const slug of [
+    "como-organizar-tareas-y-responsables-en-tu-equipo",
+    "como-controlar-inventario-sin-perder-productos-ni-datos",
+    "como-capacitar-al-equipo-en-herramientas-digitales",
+    "cuando-necesita-tu-empresa-un-sistema-erp",
+    "como-empezar-proyecto-digital-sin-detener-negocio",
+  ]) {
+    const article = learnArticles.find((candidate) => candidate.slug === slug);
+    assert(article?.editorialDraft, `Guía operativa ausente o publicada prematuramente: ${slug}`);
+    assert.equal(article.sections.length, 9, `La guía operativa debe ofrecer nueve secciones: ${slug}`);
+  }
 });
 
 test("cada guía responde una pregunta, resume tres ideas y conserva fuentes", () => {
@@ -40,7 +51,8 @@ test("nuevas guías conservan contexto, pasos, preguntas y fuentes oficiales", (
 
 test("itinerarios apuntan únicamente a artículos reales y tienen pasos útiles", () => {
   const slugs = new Set(learnArticles.map((article) => article.slug));
-  assert.equal(learnPathways.length, 4);
+  assert.equal(learnPathways.length, 6);
+  assert(learnPathways.some((path) => path.title === "Trabaja mejor cada día" && path.slugs.length === 5));
   for (const path of learnPathways) {
     assert(path.title && path.description && path.slugs.length >= 3);
     assert.equal(new Set(path.slugs).size, path.slugs.length, `Duplicado en ${path.title}`);
