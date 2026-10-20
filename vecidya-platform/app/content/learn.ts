@@ -27,6 +27,7 @@ export type LearnArticle = {
   image: string;
   imageAlt: string;
   relatedSlugs?: string[];
+  enPocasPalabras: [string, string, string];
   cta: { label: string; to: string; copy: string };
   sections: { heading: string; paragraphs: string[]; bullets?: string[]; blocks?: LearnBlock[] }[];
 };
@@ -46,6 +47,7 @@ export const learnArticles: LearnArticle[] = [
     title: "¿Qué es un CRM y por qué un negocio pequeño puede necesitarlo?",
     intro: "Un CRM es una forma de organizar contactos y conversaciones para saber qué necesita cada persona y cuál es el siguiente paso, sin depender solo de la memoria.",
     excerpt: "Aprende qué información organizar, cuándo basta una hoja de cálculo y cómo crear una rutina de seguimiento proporcional.",
+    enPocasPalabras: ["Empieza con una lista sencilla si todavía puedes llevar bien tus consultas.","Anota qué necesita la persona y qué harás después.","Un CRM ayuda cuando coordinar el seguimiento se vuelve difícil."],
     image: "/assets/learn/diagram-crm.svg",
     imageAlt: "Una consulta se registra con contexto y puede continuar, retomarse después o cerrarse, según lo que ocurra",
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no es un CRM ni crea una base de contactos." },
@@ -197,6 +199,7 @@ export const learnArticles: LearnArticle[] = [
     title: "¿Qué puede hacer una inteligencia artificial por un negocio?",
     intro: "La inteligencia artificial puede apoyar tareas concretas, como preparar un borrador o clasificar consultas. Su utilidad depende de la información disponible, los límites definidos y la revisión humana; no es una respuesta automática para todo negocio.",
     excerpt: "Distingue IA de automatización, evalúa usos cotidianos y aprende a probar un asistente con límites claros.",
+    enPocasPalabras: ["La IA puede preparar borradores, pero también puede equivocarse.","Prueba primero una tarea pequeña y fácil de revisar.","No compartas datos privados ni dejes decisiones importantes sin supervisión."],
     image: "/assets/learn/diagram-ai.svg",
     imageAlt: "Una consulta se convierte en un borrador de IA que una persona revisa antes de responder o transferir",
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos y prioridades digitales; no instala asistentes ni activa herramientas de IA." },
@@ -367,6 +370,7 @@ export const learnArticles: LearnArticle[] = [
     title: "Antes de hacer publicidad, organiza tu presencia digital",
     intro: "La presencia digital es el conjunto de lugares y señales donde una persona puede conocer un negocio, entender qué ofrece y decidir cómo acercarse. Organizarla puede ayudar a ofrecer información clara, pero no obliga a anunciarse ni garantiza descubrimiento o ventas.",
     excerpt: "Aclara tu oferta, ordena los canales, comprueba el contacto y decide con evidencia si la publicidad tiene sentido.",
+    enPocasPalabras: ["Antes de pagar anuncios, explica claramente qué ofreces.","Comprueba horarios, canales y datos en todos tus perfiles.","La publicidad no arregla una página confusa o difícil de contactar."],
     image: "/assets/learn/diagram-presence-digital.svg",
     imageAlt: "Tres canales digitales —sitio web, perfil de empresa y redes sociales— muestran de forma coherente una oferta, una zona de atención y opciones de contacto",
     cta: { label: "Conocer el Diagnóstico", to: "/diagnostico", copy: "Si quieres ordenar prioridades, el Diagnóstico de presencia digital puede servir como punto de partida; no promete visibilidad, clientes ni resultados comerciales." },
@@ -649,6 +653,7 @@ export const learnArticles: LearnArticle[] = [
     title: "Automatizaciones: ahorrar tiempo sin complicar tu negocio",
     intro: "Una automatización bien delimitada ejecuta pasos repetibles cuando ocurre algo y se cumplen ciertas condiciones. Aprenderás a elegir un proceso, probarlo y supervisarlo sin delegar decisiones que requieren criterio humano.",
     excerpt: "Aprende a identificar, documentar, probar y supervisar automatizaciones sencillas, con ejemplos operativos y comerciales.",
+    enPocasPalabras: ["Automatiza una tarea repetitiva que ya sabes hacer manualmente.","Decide qué la inicia y cuándo debe intervenir alguien.","Prueba los errores posibles y conserva una forma de detenerla."],
     image: "/assets/learn/diagram-automation.svg",
     imageAlt: "Flujo de automatización: un evento se evalúa mediante una condición y puede ejecutar una acción o pasar a revisión humana si no se cumple",
     cta: { label: "Consultar servicios", to: "/servicios", copy: "La implementación de una automatización personalizada puede formar parte de un servicio profesional; su alcance debe confirmarse previamente." },
@@ -858,6 +863,7 @@ export const learnArticles: LearnArticle[] = [
     title: "Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos",
     intro: "Un dominio es el nombre que una persona escribe; el hosting mantiene disponible el sitio, y el DNS ayuda a encontrar el servidor. Son piezas distintas aunque un proveedor las ofrezca juntas.",
     excerpt: "Entiende qué registrar, dónde se aloja una web, cómo se conecta con DNS y qué debes conservar para no perder el control.",
+    enPocasPalabras: ["El dominio es la dirección que escriben las personas; el sitio es lo que ven.","El alojamiento guarda la web y el DNS conecta la dirección con el servidor.","Conserva el acceso y las fechas de renovación de cada servicio."],
     image: "/assets/learn/diagram-domain-dns-hosting.svg",
     imageAlt: "Recorrido de una persona al escribir una dirección: el navegador puede consultar DNS si no tiene una respuesta vigente en caché, conecta con el servidor web y recibe la página solicitada.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
@@ -1087,6 +1093,7 @@ export const learnArticles: LearnArticle[] = [
     title: "HTTPS y certificados TLS: qué protegen y qué no",
     intro: "HTTPS protege el intercambio de datos entre el navegador y un sitio, pero no certifica que el negocio detrás de la página sea honesto. Aprende qué significa el candado, qué hacer ante un aviso y cómo revisar tu propia web.",
     excerpt: "Entiende HTTPS y TLS, identifica errores de certificado y comprueba que la web de tu negocio proteja correctamente a sus visitantes.",
+    enPocasPalabras: ["HTTPS protege la comunicación entre tu navegador y una página.","Un candado no garantiza que el vendedor sea de confianza.","Revisa cualquier aviso de seguridad antes de introducir datos."],
     image: "/assets/learn/diagram-domain-dns-hosting.svg",
     imageAlt: "Una persona navega por una conexión HTTPS hacia un servidor web; TLS protege el trayecto, pero no verifica la honestidad del negocio.",
     relatedSlugs: ["dominio-hosting-sitio-web-como-funcionan", "antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
@@ -1187,6 +1194,7 @@ export const learnArticles: LearnArticle[] = [
     title: "Analítica web básica: qué debes medir en tu negocio",
     intro: "La analítica web convierte señales de uso de un sitio en información para decidir qué revisar. No es una lista de visitas: primero define qué acción importa y cómo medirla sin confundir actividad con resultados.",
     excerpt: "Distingue visitas, interacciones y conversiones; elige indicadores útiles para un negocio pequeño y evita errores de interpretación y privacidad.",
+    enPocasPalabras: ["Una visita no es una consulta ni una venta.","Elige una acción útil y comprueba si tu página facilita realizarla.","Mide lo necesario y evita conclusiones basadas en pocos datos."],
     image: "/assets/learn/diagram-analytics.svg",
     imageAlt: "Diagrama que muestra cómo una parte de las visitas realiza interacciones y una parte de esas interacciones completa una conversión definida por el negocio.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital", "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio"],
@@ -1299,6 +1307,7 @@ export const learnArticles: LearnArticle[] = [
     title: "Cómo conectar herramientas digitales sin complicar tu negocio",
     intro: "Integrar herramientas significa hacer que compartan información o coordinen una tarea. Antes de conectar aplicaciones, aclara qué dato se mueve, quién lo mantiene y cómo corregir errores o deshacer el flujo.",
     excerpt: "Aprende qué son API, webhooks y CSV, cuándo sirven y qué controles reducen duplicados, pérdidas de información y sorpresas entre plataformas.",
+    enPocasPalabras: ["Conecta herramientas solo cuando resuelvas un problema concreto.","Decide dónde está la información correcta y qué pasa si falla la conexión.","Prueba con ejemplos antes de usar datos reales."],
     image: "/assets/learn/diagram-integrations.svg",
     imageAlt: "Dos herramientas intercambian solo los datos acordados mediante una conexión revisada, con una persona que verifica duplicados y errores.",
     relatedSlugs: ["automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio", "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"],
@@ -1403,6 +1412,7 @@ export const learnArticles: LearnArticle[] = [
     title: "Tu Perfil de Empresa en Google: qué completar y mantener actualizado",
     intro: "Un perfil puede ayudar a las personas a consultar información de un negocio en Google Search y Maps. Su utilidad empieza por datos correctos y actuales; tenerlo no garantiza posiciones, visitas ni ventas.",
     excerpt: "Revisa la elegibilidad, los datos, fotos, reseñas y actualizaciones de tu perfil sin prometer resultados de búsqueda.",
+    enPocasPalabras: ["Comprueba primero si tu negocio puede tener un Perfil de Empresa en Google.","Si puedes crearlo, revisa horario, contacto y fotos reales.","Mantenerlo actualizado orienta a las personas, pero no garantiza visitas."],
     image: "/assets/learn/diagram-presence-digital.svg",
     imageAlt: "El Perfil de Empresa forma parte de una presencia coherente junto con el sitio web y otros canales digitales.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
@@ -1490,6 +1500,7 @@ export const learnArticles: LearnArticle[] = [
     title: "Cómo organizar mensajes, llamadas y formularios sin perder consultas",
     intro: "Un registro sencillo ayuda a recordar quién responde las consultas de mensajes, llamadas y formularios y cuál es el siguiente paso.",
     excerpt: "Organiza consultas de mensajes, llamadas y formularios con contexto, responsables y próximos pasos; distingue la atención de una promoción comercial.",
+    enPocasPalabras: ["Reúne las consultas pendientes en un solo lugar.","Deja claro quién responde y qué hará después.","Atender una solicitud no da permiso automático para enviar publicidad."],
     image: "/assets/learn/diagram-crm.svg",
     imageAlt: "Una consulta se registra, recibe un responsable y un próximo paso hasta resolverse o cerrarse.",
     relatedSlugs: ["que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"],
@@ -1572,6 +1583,7 @@ export const learnArticles: LearnArticle[] = [
     title: "Cómo utilizar IA para preparar respuestas y publicaciones sin perder el control",
     intro: "La IA puede proponer un borrador, pero no conoce tus datos vigentes por defecto. Delimita la tarea, comparte contexto autorizado y revisa antes de usar el texto.",
     excerpt: "Aprende a dar instrucciones claras a una IA, proteger información sensible y revisar dos tipos de borrador antes de responder o publicar.",
+    enPocasPalabras: ["La IA prepara borradores; tú confirmas los datos.","Dile qué información puede utilizar y qué no debe inventar.","Revisa y aprueba todo mensaje antes de enviarlo o publicarlo."],
     image: "/assets/learn/diagram-ai.svg",
     imageAlt: "La IA prepara un borrador que una persona revisa antes de responder o publicar.",
     relatedSlugs: ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio"],
