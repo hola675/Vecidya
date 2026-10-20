@@ -670,3 +670,79 @@
   outline: 3px solid var(--blue);
   outline-offset: 3px;
 }
+
+
+/* UX-COMMERCIAL-POLISH-04: index, anchors and mobile reading on one canonical detail per offer. */
+.commercial-detail__quick-nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  border-top: 1px solid #d6e2ef;
+  border-bottom: 1px solid #d6e2ef;
+  padding-block: .75rem;
+}
+.commercial-detail__quick-nav strong {
+  color: #173957;
+  margin-right: .35rem;
+}
+.commercial-detail__quick-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: .3rem;
+  color: #064d94;
+  font-weight: 700;
+  text-underline-offset: .25em;
+  text-decoration: underline;
+}
+.commercial-detail__quick-nav a:hover {
+  text-decoration-thickness: 2px;
+}
+.commercial-detail-page :is(#beneficios, #incluye, #modulos, #recorrido, #continuidad, #compatibilidad) {
+  scroll-margin-top: 6rem;
+}
+.commercial-detail__price strong {
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+.commercial-detail__license-options {
+  border-top: 1px solid #d6e2ef;
+  margin-top: 1.4rem;
+  padding-top: 1.2rem;
+}
+.commercial-detail__license-options > p,
+.commercial-detail__license-guidance {
+  max-width: 70ch;
+}
+.commercial-detail__license-guidance {
+  margin-top: 1.3rem;
+}
+.commercial-detail__license-guidance a {
+  color: #064d94;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+.services-core-card__support {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .commercial-detail__quick-nav {
+    gap: .15rem .8rem;
+  }
+  .commercial-detail__quick-nav strong {
+    flex-basis: 100%;
+  }
+  .commercial-detail__quick-nav a {
+    font-size: .92rem;
+  }
+  .commercial-detail__hero .public-actions {
+    align-items: stretch;
+  }
+  .commercial-detail__hero .public-actions > a {
+    justify-content: center;
+    text-align: center;
+  }
+}
