@@ -32,8 +32,9 @@ async function assertContext(page, { interest, label, returnTo, returnLabel, mes
   assert(whatsapp && decodeURIComponent(whatsapp).includes(messageText), `${interest}: WhatsApp sin contexto`);
   await assertNoHorizontalOverflow(page, `Contacto ${interest}`);
   await returnLink.click();
-  assert(new URL(page.url()).pathname + new URL(page.url()).hash === returnTo, `${interest}: no volvió a la oferta original`);
-  assert(await page.locator(returnTo.split("#")[1] ? `#${returnTo.split("#")[1]}` : "main").isVisible(), `${interest}: ancla de oferta no existe`);
+  await page.waitForURL((url) => url.pathname + url.hash === returnTo);
+  const anchorId = returnTo.split("#")[1];
+  assert(anchorId && await page.locator(`[id="${anchorId}"]`).isVisible(), `${interest}: ancla de oferta no existe`);
 }
 
 const browser = await chromium.launch(executablePath ? { executablePath } : {});
@@ -55,8 +56,18 @@ try {
 
     // Home → Servicios → consulta específica → vuelta a la familia.
     await visit(page, "/");
-    await page.locator('main a[href="/servicios"]').first().click();
-    await page.waitForURL("**/servicios");
+    const expectedPreviews = {
+      "Presencia & Marca": "/servicios#estructuracion",
+      "Web & Conversión": "/servicios#formalizacion",
+      "Visibilidad & Marketing": "/servicios#presencia-digital",
+      "Sistema Comercial": "/servicios#automatizacion",
+    };
+    for (const [name, href] of Object.entries(expectedPreviews)) {
+      assert(await page.locator(`main a[href="${href}"]`).count() === 1, `${width}px: Home no enlaza el servicio ${name}`);
+    }
+    await page.getByRole("link", { name: "Conocer Web & Conversión" }).click();
+    await page.waitForURL("**/servicios#formalizacion");
+    assert(await page.locator("#formalizacion").isVisible(), `${width}px: ficha de servicio ausente`);
     await page.getByRole("link", { name: "Consultar Web & Conversión" }).click();
     await assertContext(page, {
       interest: "servicio-formalizacion", label: "el servicio Web & Conversión",
