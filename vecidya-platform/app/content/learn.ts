@@ -2744,6 +2744,1267 @@ export const learnArticles: LearnArticle[] = [
     ]
   },
 
+  {
+    "slug": "redes-sociales-o-pagina-web-que-necesita-tu-negocio",
+    "category": "Negocios digitales",
+    "title": "¿Redes sociales o página web? Cómo elegir sin gastar de más",
+    "intro": "Publicas en redes, pero la gente sigue preguntando por horarios y servicios. ¿Necesitas una web? Primero averigua qué información no encuentran.",
+    "excerpt": "Aprende qué resuelven las redes y una web, con ejemplos cercanos y sin gastar por impulso.",
+    "enPocasPalabras": [
+      "Las redes ayudan a conversar; una página web reúne datos que deben encontrarse fácilmente.",
+      "No necesitas un sitio enorme: explica qué haces, dónde atiendes y cómo contactarte.",
+      "Escoge canales que puedas mantener, no los que estén de moda."
+    ],
+    "image": "/assets/learn/diagram-redes-sociales.svg",
+    "imageAlt": "Redes; Web sencilla; Información clara",
+    "relatedSlugs": [
+      "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+      "dominio-hosting-sitio-web-como-funcionan"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Revisar mi presencia digital",
+      "to": "/diagnostico",
+      "copy": "Puedes revisar qué necesita tu negocio antes de crear más canales."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Alguien ve una foto de tu trabajo. Le interesa, pero no encuentra qué ofreces, dónde atiendes ni cómo pedir información.",
+          "El problema no siempre es la falta de una página web. Puede ser que los datos importantes estén escondidos entre publicaciones."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Redes sociales",
+                "definition": "Lugares para compartir novedades, enseñar tu trabajo y conversar; una publicación puede quedar enterrada."
+              },
+              {
+                "term": "Página web",
+                "definition": "Un lugar estable para reunir servicios, horarios, ubicación y contacto."
+              },
+              {
+                "term": "Ficha de negocio",
+                "definition": "Una presentación breve con datos esenciales y un enlace que puedas compartir."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Escucha las preguntas",
+                "detail": "Anota las dudas más repetidas de tus visitantes."
+              },
+              {
+                "title": "Ordena la información",
+                "detail": "Escribe qué haces, dónde atiendes y cómo se consulta disponibilidad."
+              },
+              {
+                "title": "Elige el canal",
+                "detail": "Empieza con una ficha o página pequeña si eso resuelve la necesidad."
+              },
+              {
+                "title": "Prueba desde un teléfono",
+                "detail": "Pide a alguien que encuentre tu contacto sin que le des pistas."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: una profesora de guitarra que recibe siempre las mismas preguntas",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una profesora de guitarra que recibe siempre las mismas preguntas",
+            "hypothetical": true,
+            "context": "Publica videos tocando guitarra y recibe mensajes sobre clases.",
+            "problem": "Cada semana explica si enseña a principiantes y cómo preguntar por horarios.",
+            "approach": "Mantiene sus videos y prepara una ficha con información fácil de consultar.",
+            "actions": [
+              "Escribe «Clases de guitarra para principiantes, en línea».",
+              "Indica cómo consultar disponibilidad sin prometer horarios libres.",
+              "Comparte ese enlace y revisa qué dudas quedan."
+            ],
+            "lesson": "Las redes ayudan a conocer su trabajo y la ficha ayuda a entenderlo."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Abrir muchos perfiles que luego nadie atiende.",
+              "Crear una web con páginas vacías o datos contradictorios.",
+              "Prometer ventas solo porque ahora existe una página."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Las redes ayudan a conversar; una página web reúne datos que deben encontrarse fácilmente.",
+              "No necesitas un sitio enorme: explica qué haces, dónde atiendes y cómo contactarte.",
+              "Escoge canales que puedas mantener, no los que estén de moda."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Una web me traerá más clientes?",
+                "answer": "No hay garantía. Puede facilitar que alguien te entienda y te contacte, pero el resultado depende de muchos factores."
+              },
+              {
+                "question": "¿Debo cerrar mis redes?",
+                "answer": "No. Pueden complementarse si tienes tiempo para mantenerlas."
+              },
+              {
+                "question": "¿Necesito una tienda en línea?",
+                "answer": "Solo si vender y gestionar pedidos por internet forma parte de tus necesidades reales."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "SEO para principiantes — Google Search Central",
+                "url": "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
+                "scope": "Consejos para que la información de una página sea fácil de entender y encontrar."
+              },
+              {
+                "label": "Escritura clara — W3C WAI",
+                "url": "https://www.w3.org/WAI/tips/writing/",
+                "scope": "Recomienda titulares útiles y explicaciones sencillas."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "como-explicar-lo-que-vendes-para-que-te-entiendan",
+    "category": "Negocios digitales",
+    "title": "¿Qué vendes exactamente? Explícalo para que te entiendan",
+    "intro": "«Ofrecemos soluciones integrales de calidad». Suena importante, pero ¿qué significa? Una buena presentación debería decir qué haces sin obligar a adivinar.",
+    "excerpt": "Cambia frases vacías por explicaciones concretas que suenen cercanas y verdaderas.",
+    "enPocasPalabras": [
+      "Di qué haces, para quién y cómo pueden preguntarte.",
+      "Cambia palabras vagas por ejemplos reales de tu trabajo.",
+      "Pide a alguien que no te conozca que te diga qué entendió."
+    ],
+    "image": "/assets/learn/diagram-como-explicar.svg",
+    "imageAlt": "Servicio; Público; Siguiente paso",
+    "relatedSlugs": [
+      "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+      "redes-sociales-o-pagina-web-que-necesita-tu-negocio"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Consultar sobre mi negocio",
+      "to": "/contacto",
+      "copy": "Si buscas comunicar mejor tu trabajo, podemos conversar sobre tu necesidad."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "«Transformamos experiencias mediante soluciones innovadoras». Un cliente que no te conoce quizá no pueda imaginar qué vendes.",
+          "«Reparamos computadoras y explicamos el problema antes de hacer cambios». La segunda frase es más directa y permite entender el trabajo."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Qué haces",
+                "definition": "El servicio o producto concreto que ofreces."
+              },
+              {
+                "term": "Para quién",
+                "definition": "Las personas o negocios que realmente puedes atender."
+              },
+              {
+                "term": "Siguiente paso",
+                "definition": "Lo que alguien puede hacer después de leer: consultar, pedir información o reservar si está disponible."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Escribe un verbo simple",
+                "detail": "Reparo, enseño, preparo, pinto, diseño o vendo."
+              },
+              {
+                "title": "Explica a quién atiendes",
+                "detail": "No hace falta afirmar que eres para todo el mundo."
+              },
+              {
+                "title": "Aclara lugar o modalidad",
+                "detail": "Cuenta si trabajas por cita, a domicilio, en línea o en un local."
+              },
+              {
+                "title": "Muestra el contacto real",
+                "detail": "Utiliza un canal que puedas atender y revisa el enlace."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: una pastelera que quiere explicar sus pedidos",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una pastelera que quiere explicar sus pedidos",
+            "hypothetical": true,
+            "context": "Publica fotos de pasteles hechos por encargo.",
+            "problem": "Su perfil dice «endulzamos sueños», pero no explica si acepta pedidos.",
+            "approach": "Presenta la actividad real, sin inventar plazos, cantidades ni precios.",
+            "actions": [
+              "Escribe «Preparamos pasteles personalizados por encargo».",
+              "Cuenta dónde se entregan o recogen, si lo tiene definido.",
+              "Indica cómo consultar disponibilidad."
+            ],
+            "lesson": "Una frase más concreta ayuda a que la persona haga la pregunta correcta."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Escribir solo adjetivos como «líder», «mejor» o «innovador».",
+              "Prometer resultados que no se pueden demostrar.",
+              "Esconder el contacto detrás de frases confusas."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Di qué haces, para quién y cómo pueden preguntarte.",
+              "Cambia palabras vagas por ejemplos reales de tu trabajo.",
+              "Pide a alguien que no te conozca que te diga qué entendió."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Necesito publicar mis precios?",
+                "answer": "Depende del servicio. Si varían, puedes explicar cómo se prepara un presupuesto."
+              },
+              {
+                "question": "¿Y si hago muchas cosas?",
+                "answer": "Empieza por lo que tu público necesita entender primero y organiza lo demás."
+              },
+              {
+                "question": "¿Debo usar palabras técnicas?",
+                "answer": "Solo cuando ayuden. Si alguien no las conoce, explícalas con un ejemplo."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Escritura accesible — W3C",
+                "url": "https://www.w3.org/WAI/tips/writing/",
+                "scope": "Recomienda palabras claras, párrafos breves y enlaces descriptivos."
+              },
+              {
+                "label": "Contenido útil — Google Search Central",
+                "url": "https://developers.google.com/search/docs/fundamentals/creating-helpful-content?hl=es",
+                "scope": "Consejos para crear información centrada en las preguntas de las personas."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "como-responder-la-primera-consulta-de-un-cliente",
+    "category": "CRM y clientes",
+    "title": "Te escribieron por tu negocio: cómo responder sin sonar a robot",
+    "intro": "Llega un «Hola, ¿cuánto cuesta?». ¿Mandas una lista enorme o contestas solo «depende»? Una respuesta útil puede ser breve, amable y honesta.",
+    "excerpt": "Aprende a atender preguntas reales sin mensajes largos ni promesas que no puedes cumplir.",
+    "enPocasPalabras": [
+      "Saluda y responde primero lo que realmente sabes.",
+      "Si faltan datos, pregunta solo lo necesario para orientar.",
+      "Termina con un paso claro y respeta si la persona no continúa."
+    ],
+    "image": "/assets/learn/diagram-como-responder.svg",
+    "imageAlt": "Escuchar; Responder; Acordar",
+    "relatedSlugs": [
+      "organizar-consultas-mensajes-llamadas-formularios",
+      "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Conversar con Vecidya",
+      "to": "/contacto",
+      "copy": "Si necesitas ordenar las consultas de tu negocio, podemos conversar sobre el punto de partida."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Te escriben: «Hola, ¿hacen reparaciones?». Un «sí» no ayuda mucho; enviar todo el catálogo puede cansar a la persona.",
+          "Puedes contestar: «¡Hola! Sí, hacemos ese tipo de reparaciones. ¿Qué equipo tienes y qué le sucede? Así podemos orientarte»."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Consulta",
+                "definition": "Una persona pide información: todavía no es una venta."
+              },
+              {
+                "term": "Respuesta útil",
+                "definition": "Información que contesta la pregunta y deja claro qué falta."
+              },
+              {
+                "term": "Seguimiento",
+                "definition": "Revisar el siguiente paso que se acordó, sin insistir sin motivo."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Reconoce la pregunta",
+                "detail": "Saluda y menciona brevemente lo que necesita."
+              },
+              {
+                "title": "Responde lo que sabes",
+                "detail": "Da el horario, tipo de servicio o condición que esté confirmada."
+              },
+              {
+                "title": "Pide un dato si hace falta",
+                "detail": "Pregunta solo aquello que permita orientar mejor."
+              },
+              {
+                "title": "Cierra con claridad",
+                "detail": "Cuenta cuándo o cómo puedes continuar, si puedes cumplirlo."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: un taller y la pregunta por el ventilador",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Un taller y la pregunta por el ventilador",
+            "hypothetical": true,
+            "context": "Un taller recibe «¿Cuánto cuesta reparar mi ventilador?».",
+            "problem": "No ha revisado el equipo y desconoce el costo.",
+            "approach": "Reconoce lo que falta y pide la información imprescindible.",
+            "actions": [
+              "Da las gracias por escribir.",
+              "Pregunta qué modelo tiene y qué falla.",
+              "Explica cómo se revisa el equipo y prepara el presupuesto sin inventar el precio."
+            ],
+            "lesson": "La conversación puede avanzar sin fingir certeza."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Hacer demasiadas preguntas antes de contestar algo útil.",
+              "Enviar bloques de texto copiados que no responden al caso.",
+              "Mandar promociones a una persona que solo pidió información."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Saluda y responde primero lo que realmente sabes.",
+              "Si faltan datos, pregunta solo lo necesario para orientar.",
+              "Termina con un paso claro y respeta si la persona no continúa."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Cuánto debería tardar en responder?",
+                "answer": "Depende de tu horario. Comunica tiempos que puedas cumplir."
+              },
+              {
+                "question": "¿Puedo usar respuestas automáticas?",
+                "answer": "Pueden ayudar con horarios o confirmaciones, pero deben ser correctas y permitir atención humana cuando haga falta."
+              },
+              {
+                "question": "¿Y si dejan de escribir?",
+                "answer": "Respeta su decisión; no envíes mensajes repetidos sin una razón acordada."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Escribir para la accesibilidad — W3C",
+                "url": "https://www.w3.org/WAI/tips/writing/",
+                "scope": "Ayuda a comunicar mensajes breves y claros."
+              },
+              {
+                "label": "Protección de datos — FTC",
+                "url": "https://www.ftc.gov/business-guidance/resources/start-security-guide-business",
+                "scope": "Recuerda guardar solo datos necesarios para una tarea."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "fotos-y-publicaciones-utiles-sin-ser-disenador",
+    "category": "Negocios digitales",
+    "title": "¿Qué publicar de tu negocio si no eres diseñador?",
+    "intro": "Una foto bonita no explica todo. A veces basta una imagen clara y dos frases que respondan qué vendes, para quién y cómo pedir información.",
+    "excerpt": "Ideas fáciles para hacer fotos, escribir publicaciones y mantener la información útil y accesible.",
+    "enPocasPalabras": [
+      "Publica información que resuelva una duda, no solo contenido para llenar el perfil.",
+      "Usa fotos reales con buena luz y permiso cuando corresponda.",
+      "Incluye un texto claro: qué muestras, para quién sirve y qué se puede hacer después."
+    ],
+    "image": "/assets/learn/diagram-fotos-y.svg",
+    "imageAlt": "Pregunta real; Foto clara; Mensaje útil",
+    "relatedSlugs": [
+      "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+      "como-explicar-lo-que-vendes-para-que-te-entiendan"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Leer otras guías de Aprende",
+      "to": "/aprende",
+      "copy": "Puedes mejorar tu presencia con prácticas sencillas y verificables."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Publicas una fotografía de un producto y la acompañas con «¡Lo mejor para ti!». Alguien interesado sigue sin saber tamaño, uso o cómo consultarlo.",
+          "Una publicación útil puede mostrar el objeto con buena luz, contar para qué sirve y explicar el siguiente paso."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Foto útil",
+                "definition": "Una imagen real, nítida y que ayuda a entender el producto o el trabajo."
+              },
+              {
+                "term": "Texto alternativo",
+                "definition": "Una breve descripción para personas que no pueden ver la imagen cuando la plataforma lo permite."
+              },
+              {
+                "term": "Llamada a la acción",
+                "definition": "Una invitación sencilla y auténtica: por ejemplo, «Consulta disponibilidad por este canal»."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Piensa en una pregunta",
+                "detail": "Elige una duda que recibes de verdad."
+              },
+              {
+                "title": "Muestra algo reconocible",
+                "detail": "Fotografía el producto o trabajo con luz clara, fondo que no distraiga y sin datos privados."
+              },
+              {
+                "title": "Escribe como hablarías",
+                "detail": "Usa una frase directa y comprensible."
+              },
+              {
+                "title": "Revisa en móvil",
+                "detail": "Comprueba que la imagen, el texto y el enlace se entienden desde un teléfono."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: una zapatería muestra un nuevo servicio",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una zapatería muestra un nuevo servicio",
+            "hypothetical": true,
+            "context": "El negocio ofrece reparación de suelas.",
+            "problem": "Publica una imagen con el texto «excelencia y pasión» que no explica el servicio.",
+            "approach": "Muestra una reparación real con permiso y escribe qué trabajo se hizo.",
+            "actions": [
+              "Fotografía el antes y después solo si es auténtico y autorizado.",
+              "Escribe «Reparamos suelas gastadas; consulta si tu calzado admite reparación».",
+              "Explica dónde pueden preguntar y evita prometer resultados idénticos."
+            ],
+            "lesson": "Una prueba visual honesta y una frase clara sirven más que muchos adjetivos."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Usar fotografías ajenas sin permiso.",
+              "Editar imágenes hasta que el producto parezca algo que no es.",
+              "Publicar todos los días información repetida que no ayuda."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Publica información que resuelva una duda, no solo contenido para llenar el perfil.",
+              "Usa fotos reales con buena luz y permiso cuando corresponda.",
+              "Incluye un texto claro: qué muestras, para quién sirve y qué se puede hacer después."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Necesito una cámara profesional?",
+                "answer": "No necesariamente. La buena luz, el enfoque y una descripción clara ayudan más que el equipo caro."
+              },
+              {
+                "question": "¿Debo publicar a diario?",
+                "answer": "No hay una frecuencia universal. Elige una rutina que puedas sostener con información valiosa."
+              },
+              {
+                "question": "¿Puedo usar IA para las imágenes?",
+                "answer": "Si lo haces, evita presentar como reales escenas, productos o resultados que no lo son. Revisa permisos y contexto."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Imágenes y textos alternativos — W3C",
+                "url": "https://www.w3.org/WAI/tutorials/images/informative/",
+                "scope": "Cómo describir la información que transmite una imagen."
+              },
+              {
+                "label": "Contenido útil — Google",
+                "url": "https://developers.google.com/search/docs/fundamentals/creating-helpful-content?hl=es",
+                "scope": "Prioriza contenido que las personas puedan utilizar y entender."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "como-vender-por-internet-sin-perder-el-control-pedidos-pagos",
+    "category": "Negocios digitales",
+    "title": "¿Cómo empezar a recibir pedidos por internet sin complicarte?",
+    "intro": "Vender por internet no empieza instalando una tienda. Empieza cuando sabes explicar el producto, confirmar el pedido, cobrar de forma segura y cumplir lo prometido.",
+    "excerpt": "Organiza pedidos, entregas, cobros y atención antes de abrir una tienda en línea.",
+    "enPocasPalabras": [
+      "Aclara el producto, el precio confirmado, la entrega y las condiciones antes de cobrar.",
+      "Utiliza servicios de pago confiables y verifica sus costos y requisitos.",
+      "Lleva un registro de pedidos y explica cómo resolver cambios o problemas."
+    ],
+    "image": "/assets/learn/diagram-como-vender.svg",
+    "imageAlt": "Pedido claro; Cobro seguro; Entrega real",
+    "relatedSlugs": [
+      "hojas-de-calculo-para-organizar-un-negocio-pequeno",
+      "como-responder-la-primera-consulta-de-un-cliente"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Explorar soluciones para mi negocio",
+      "to": "/servicios",
+      "copy": "Puedes revisar servicios según tu necesidad; no todos requieren una tienda en línea."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Alguien ve un producto y quiere comprarlo. Falta confirmar si está disponible, cuánto cuesta entregarlo y cómo pagarlo.",
+          "Abrir una tienda no resuelve esas preguntas. Antes necesitas un proceso entendible para aceptar, preparar y completar un pedido."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Pedido",
+                "definition": "Una solicitud concreta de producto o servicio con detalles y confirmación."
+              },
+              {
+                "term": "Proveedor de pagos",
+                "definition": "Un servicio que procesa cobros según sus condiciones y requisitos."
+              },
+              {
+                "term": "Comprobante",
+                "definition": "Una constancia que ayuda a documentar la operación según las reglas aplicables."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Explica la oferta",
+                "detail": "Describe características, precio confirmado, disponibilidad y costo de envío cuando corresponda."
+              },
+              {
+                "title": "Define el pedido",
+                "detail": "Decide qué datos mínimos hacen falta y quién lo confirma."
+              },
+              {
+                "title": "Elige cómo cobrar",
+                "detail": "Revisa proveedor, comisiones, seguridad, devoluciones y requisitos locales sin guardar datos de tarjeta por tu cuenta."
+              },
+              {
+                "title": "Acompaña la entrega",
+                "detail": "Confirma condiciones, actualiza el estado y atiende problemas o devoluciones conforme a tus obligaciones."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: una artesana vende libretas por mensaje",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una artesana vende libretas por mensaje",
+            "hypothetical": true,
+            "context": "Publica fotografías de libretas hechas a mano.",
+            "problem": "Algunos clientes creen que el precio incluye entrega y que todos los diseños están disponibles.",
+            "approach": "Aclara existencias, opciones, costo total y plazo antes de aceptar el pago.",
+            "actions": [
+              "Envía la descripción real, disponibilidad y total acordado.",
+              "Confirma método de pago admitido mediante proveedor reconocido.",
+              "Registra pedido, comprobante y entrega según corresponda."
+            ],
+            "lesson": "Un proceso claro evita confusiones aunque todavía no tengas una tienda completa."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Cobrar antes de comprobar que podrás cumplir.",
+              "Pedir datos completos de tarjeta por mensajes.",
+              "Copiar condiciones de devolución de otro país sin revisar las propias."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Aclara el producto, el precio confirmado, la entrega y las condiciones antes de cobrar.",
+              "Utiliza servicios de pago confiables y verifica sus costos y requisitos.",
+              "Lleva un registro de pedidos y explica cómo resolver cambios o problemas."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Necesito una tienda en línea para empezar?",
+                "answer": "No siempre; un proceso de pedidos bien explicado puede servir mientras compruebas la demanda."
+              },
+              {
+                "question": "¿Qué medios de pago debo aceptar?",
+                "answer": "Depende de tu país, proveedor, clientes y requisitos legales. Compara las opciones disponibles y seguras."
+              },
+              {
+                "question": "¿Puedo prometer una fecha de entrega cualquiera?",
+                "answer": "No. Solo confirma plazos que puedas respaldar; las obligaciones concretas cambian según la jurisdicción."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Buenas prácticas de venta a distancia — FTC",
+                "url": "https://www.ftc.gov/business-guidance/resources/business-guide-ftcs-mail-internet-or-telephone-order-merchandise-rule",
+                "scope": "Ejemplo de requisitos estadounidenses sobre promesas de entrega y reembolsos; consulta normas locales."
+              },
+              {
+                "label": "Protección de datos en negocios — FTC",
+                "url": "https://www.ftc.gov/business-guidance/resources/start-security-guide-business",
+                "scope": "Recomienda limitar los datos que se recopilan y almacenan."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "datos-de-clientes-que-puedes-pedir-y-como-protegerlos",
+    "category": "CRM y clientes",
+    "title": "¿Qué datos deberías pedir a un cliente y cuáles no?",
+    "intro": "Para atender una consulta tal vez necesites un nombre y un medio de respuesta. Eso no significa que debas pedir dirección, documento, fecha de nacimiento o información privada.",
+    "excerpt": "Aprende a pedir lo mínimo necesario, explicar para qué se usa y protegerlo con responsabilidad.",
+    "enPocasPalabras": [
+      "Pide solo lo necesario para atender la solicitud concreta.",
+      "Aclara para qué usarás los datos y quién podrá verlos.",
+      "Responder una consulta no equivale a aceptar publicidad ni campañas."
+    ],
+    "image": "/assets/learn/diagram-datos-de.svg",
+    "imageAlt": "Dato necesario; Uso claro; Acceso limitado",
+    "relatedSlugs": [
+      "organizar-consultas-mensajes-llamadas-formularios",
+      "como-proteger-cuentas-contrasenas-estafas-negocio"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Leer sobre protección digital",
+      "to": "/aprende",
+      "copy": "Puedes seguir aprendiendo antes de decidir qué datos guardar."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Un formulario para preguntar horarios pide fecha de nacimiento y dirección completa. ¿De verdad hacen falta?",
+          "Los datos personales merecen cuidado. Antes de pedirlos, explica qué tarea realizarás con ellos y si podrías resolverla con menos información."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Dato personal",
+                "definition": "Información que identifica o puede identificar a una persona."
+              },
+              {
+                "term": "Finalidad",
+                "definition": "La razón concreta por la que pides un dato."
+              },
+              {
+                "term": "Acceso limitado",
+                "definition": "Dar acceso a los datos solo a quienes realmente necesitan utilizarlos."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Define la tarea",
+                "detail": "Por ejemplo, devolver una llamada o preparar un presupuesto."
+              },
+              {
+                "title": "Pide lo indispensable",
+                "detail": "Quizá baste un nombre y un canal de respuesta; evita campos sin motivo."
+              },
+              {
+                "title": "Explica el uso",
+                "detail": "Indica con palabras claras para qué se utilizará la información."
+              },
+              {
+                "title": "Protege y revisa",
+                "detail": "Controla quién accede, cuánto se conserva y cómo se elimina según las reglas aplicables."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: una persona pregunta por clases",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una persona pregunta por clases",
+            "hypothetical": true,
+            "context": "Un profesor recibe una consulta sobre horarios.",
+            "problem": "Su formulario pide domicilio, documento y varios datos no relacionados con la pregunta.",
+            "approach": "Reduce el formulario al nombre de referencia, mensaje y medio de respuesta si hacen falta.",
+            "actions": [
+              "Elimina preguntas no necesarias para la consulta.",
+              "Explica cuándo y por qué responderá.",
+              "Guarda solo lo necesario y limita el acceso al responsable."
+            ],
+            "lesson": "Un formulario más corto también puede ser más respetuoso con las personas."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Guardar documentos personales sin necesidad.",
+              "Compartir listados de clientes en grupos sin control.",
+              "Usar una consulta para enviar publicidad sin revisar el permiso y las normas aplicables."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Pide solo lo necesario para atender la solicitud concreta.",
+              "Aclara para qué usarás los datos y quién podrá verlos.",
+              "Responder una consulta no equivale a aceptar publicidad ni campañas."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Puedo guardar teléfonos de quienes preguntaron?",
+                "answer": "Depende de la finalidad, el aviso y las reglas aplicables. Guarda solo lo necesario para atenderles."
+              },
+              {
+                "question": "¿Qué hago cuando ya no necesito un dato?",
+                "answer": "Revisa tus obligaciones de conservación y elimina lo que puedas de manera segura."
+              },
+              {
+                "question": "¿Debo usar la misma política en todos los países?",
+                "answer": "No. Las leyes y obligaciones cambian; busca orientación local si manejas información sensible."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Start with Security — FTC",
+                "url": "https://www.ftc.gov/business-guidance/resources/start-security-guide-business",
+                "scope": "Explica por qué conviene recoger y guardar solo datos necesarios."
+              },
+              {
+                "label": "Marco de privacidad — NIST",
+                "url": "https://www.nist.gov/privacy-framework",
+                "scope": "Orientación general sobre riesgos para las personas al utilizar información."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "como-pedir-resenas-reales-y-responder-criticas",
+    "category": "CRM y clientes",
+    "title": "¿Cómo pedir opiniones reales sin comprar reseñas?",
+    "intro": "Una opinión ayuda cuando cuenta una experiencia verdadera. Inventar reseñas o pagar solo por comentarios positivos puede dañar la confianza y contravenir reglas.",
+    "excerpt": "Aprende a pedir opiniones de forma respetuosa, responder críticas y evitar reseñas engañosas.",
+    "enPocasPalabras": [
+      "Pide opiniones auténticas sin exigir que sean positivas.",
+      "No publiques reseñas inventadas, ni siquiera si una IA las redacta.",
+      "Responde las críticas con calma, sin revelar información privada."
+    ],
+    "image": "/assets/learn/diagram-como-pedir.svg",
+    "imageAlt": "Opinión real; Respuesta respetuosa; Confianza",
+    "relatedSlugs": [
+      "perfil-empresa-google-completar-y-mantener-actualizado",
+      "datos-de-clientes-que-puedes-pedir-y-como-protegerlos"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Seguir aprendiendo",
+      "to": "/aprende",
+      "copy": "Una buena reputación se construye cumpliendo y atendiendo, no inventando testimonios."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Un proveedor ofrece venderte cincuenta opiniones de cinco estrellas para mejorar tu perfil. Suena fácil, pero esas reseñas no describen experiencias reales.",
+          "La confianza depende de lo que haces y de cómo respondes, también cuando algo sale mal."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Reseña",
+                "definition": "Una opinión de una persona sobre su experiencia con un negocio."
+              },
+              {
+                "term": "Testimonio",
+                "definition": "Una recomendación presentada para apoyar la reputación de un producto o servicio."
+              },
+              {
+                "term": "Opinión falsa",
+                "definition": "Un comentario que inventa una experiencia o presenta como independiente a alguien que no lo es."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Cumple primero",
+                "detail": "La mejor base para una buena opinión es un trabajo bien realizado."
+              },
+              {
+                "title": "Pide con respeto",
+                "detail": "Invita a valorar la experiencia sin presionar y siguiendo las normas de la plataforma."
+              },
+              {
+                "title": "Acepta críticas",
+                "detail": "Escucha el problema y responde con hechos sin discutir públicamente datos privados."
+              },
+              {
+                "title": "Corrige lo necesario",
+                "detail": "Usa los comentarios para revisar procesos reales del negocio."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: una cafetería recibe una reseña negativa",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una cafetería recibe una reseña negativa",
+            "hypothetical": true,
+            "context": "Una persona comenta que esperó demasiado.",
+            "problem": "La dueña quiere responder discutiendo los detalles de la compra.",
+            "approach": "Agradece el aviso, reconoce la experiencia sin revelar información y ofrece revisar la situación por un canal adecuado.",
+            "actions": [
+              "Responde con calma y sin insultos.",
+              "No publica datos privados ni acusa al cliente.",
+              "Revisa internamente qué ocurrió con los tiempos de espera."
+            ],
+            "lesson": "Responder con respeto puede ser más útil que intentar borrar toda crítica."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Comprar reseñas o inventar clientes.",
+              "Premiar solamente las valoraciones positivas.",
+              "Publicar datos personales al responder una queja."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Pide opiniones auténticas sin exigir que sean positivas.",
+              "No publiques reseñas inventadas, ni siquiera si una IA las redacta.",
+              "Responde las críticas con calma, sin revelar información privada."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Puedo pedir una reseña después de un servicio?",
+                "answer": "Sí, respetando las reglas de la plataforma y evitando presiones o incentivos engañosos."
+              },
+              {
+                "question": "¿Y si una opinión es injusta?",
+                "answer": "Puedes responder con respeto y usar el procedimiento oficial de la plataforma cuando haya incumplimientos."
+              },
+              {
+                "question": "¿Puedo usar testimonios creados por IA?",
+                "answer": "No los presentes como experiencias reales de personas que nunca existieron."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Guía de opiniones y testimonios — FTC",
+                "url": "https://www.ftc.gov/business-guidance/resources/consumer-reviews-testimonials-rule-questions-answers",
+                "scope": "Explica normas de Estados Unidos sobre reseñas falsas e incentivos; revisa la normativa local."
+              },
+              {
+                "label": "Políticas de representación de negocios — Google",
+                "url": "https://support.google.com/business/answer/3038177",
+                "scope": "Orientaciones oficiales para mantener la información de un perfil empresarial fiel a la realidad."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
 ];
 
 export function getLearnArticle(slug: string) {
