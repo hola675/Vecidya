@@ -81,7 +81,7 @@ try {
     await page.getByRole("link", { name: "Consultar WhatsApp Business" }).click();
     await page.waitForURL("**/contacto?interes=complemento-whatsapp-business");
     assert(await page.getByText("Interés seleccionado: el complemento WhatsApp Business").isVisible(), `${width}: se pierde el interés desde la ficha de detalle`);
-    const returnLink = page.getByRole("link", { name: "Volver a el complemento WhatsApp Business" });
+    const returnLink = page.getByRole("link", { name: "Volver al complemento WhatsApp Business" });
     assert(await returnLink.getAttribute("href") === "/addons#whatsapp-business", `${width}: enlace de regreso incorrecto`);
     await returnLink.click();
     await page.waitForURL("**/addons#whatsapp-business");
