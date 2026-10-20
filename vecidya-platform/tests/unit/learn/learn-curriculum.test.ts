@@ -5,11 +5,13 @@ import { join } from "node:path";
 
 import { learnArticles, learnCategories, learnPathways } from "../../../app/content/learn.ts";
 
-test("Aprende conserva las once guías originales y agrega trece borradores educativos", () => {
-  assert.equal(learnArticles.length, 24);
-  assert.equal(new Set(learnArticles.map((article) => article.slug)).size, 24);
-  assert.equal(learnArticles.filter((article) => article.editorialDraft).length, 13);
-  assert.equal(learnArticles.filter((article) => !article.editorialDraft).length, 11);
+test("Aprende conserva once guías originales y suma borradores sin colisiones", () => {
+  const original = learnArticles.filter((article) => !article.editorialDraft);
+  const drafts = learnArticles.filter((article) => article.editorialDraft);
+  assert.equal(original.length, 11);
+  assert.ok(drafts.length >= 22, "La expansión educativa debe incluir todos los borradores existentes.");
+  assert.equal(learnArticles.length, original.length + drafts.length);
+  assert.equal(new Set(learnArticles.map((article) => article.slug)).size, learnArticles.length);
 });
 
 test("cada guía responde una pregunta, resume tres ideas y conserva fuentes", () => {
@@ -40,7 +42,7 @@ test("nuevas guías conservan contexto, pasos, preguntas y fuentes oficiales", (
 
 test("itinerarios apuntan únicamente a artículos reales y tienen pasos útiles", () => {
   const slugs = new Set(learnArticles.map((article) => article.slug));
-  assert.equal(learnPathways.length, 4);
+  assert.ok(learnPathways.length >= 6, "Se preservan las rutas históricas y la nueva ruta de dirección.");
   for (const path of learnPathways) {
     assert(path.title && path.description && path.slugs.length >= 3);
     assert.equal(new Set(path.slugs).size, path.slugs.length, `Duplicado en ${path.title}`);

@@ -18,7 +18,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     "editorialDraft": true,
     "relatedSlugs": [
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
-      "como-empezar-proyecto-digital-sin-detener-negocio"
+      "como-saber-si-una-mejora-tecnologica-funciona-en-tu-empresa"
     ],
     "cta": {
       "label": "Revisar mis necesidades",
@@ -219,7 +219,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     "imageAlt": "Tres tarjetas muestran una solicitud, una aprobación y una recepción comprobada.",
     "editorialDraft": true,
     "relatedSlugs": [
-      "como-controlar-inventario-sin-perder-productos-ni-datos",
+      "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo",
       "quien-puede-ver-cambiar-y-publicar-en-tu-empresa"
     ],
     "cta": {
@@ -825,7 +825,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     "editorialDraft": true,
     "relatedSlugs": [
       "analitica-web-que-medir-en-tu-negocio",
-      "como-empezar-proyecto-digital-sin-detener-negocio"
+      "como-preparar-presupuesto-para-herramientas-digitales"
     ],
     "cta": {
       "label": "Revisar prioridades",
