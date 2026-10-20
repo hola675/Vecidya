@@ -1,5 +1,14 @@
 # Arquitectura de Vecidya
 
+## UX-COHERENCE-03 — sistema de experiencia de las tres superficies (2026-10-19; pendiente de QA)
+
+Una identidad compartida no implica unificar permisos ni intención de usuario. **Web** descubre y orienta; **Mi Vecidya** trabaja en la organización activa; **Administración interna** consulta/gestiona operaciones de plataforma como actor `platform_admin`. Las guías editoriales de `JourneyGuide` no ejecutan acciones ni reescriben estados de dominio; los links solo navegan a rutas ya existentes y protegidas. Las clases `experience-*` utilizan tokens `app.css`, tipografía Arial y símbolo oficial `publicAssets.brand.symbol3d`; mantienen titulares, contrastes, ayudas y orden de lectura. Variantes `public`/`client`/`admin` comparten estilo, pero el contexto visual y el copy respetan sus audiencias.
+
+`ProgressMeter` solo se usa para completitud con base calculada por `getBusinessProfileCompletion` y `role=progressbar`. `MetricCard` toma números del loader del ámbito correspondiente. `ComparisonBars` representa magnitudes de origen real con escala relativa al mayor valor visible (`relativeBarWidth`), **no** conversiones de cohortes ni fracción de usuarios; números explícitos junto a barras decorativas para no depender del color. En el panel de diagnóstico se conservan las series originales, los filtros temporales y la tabla de eventos; solo cambia presentación y estado cero. Valores no finitos/negativos nunca producen barras inválidas; esto no modifica la fuente.
+
+No se crean endpoints, migraciones, consultas entre tenants, scores nuevos, métricas ficticias, enlaces GHL ni nuevas capacidades internas. El gate de publicación sigue independiente de Git/PR. Validación Worker/teclado/móvil y revisión visual siguen abiertas.
+
+
 ## EMAIL-TRANSACTIONAL-UX-02 — diseño de envío (2026-10-19, pendiente de validación)
 
 Las plantillas transaccionales de Vecidya se centralizan en `server/email/templates.server.ts` (HTML de tablas con estilos inline + `text/plain`). Usan el logo real `https://vecidya.com/brand/vecidya-icon-3d.png` y colores de `app.css`; no usan imágenes de terceros, tracking, JavaScript ni fuentes web. `sendResetPassword`/verificación de Better Auth reutilizan la plantilla y un `onPasswordReset` publica un aviso de seguridad solo después del cambio real; si falla ese aviso no se revierte ni falsea el cambio.
