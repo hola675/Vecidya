@@ -45,7 +45,7 @@ test("la diferencia de precio corresponde a capacidades, no a cuotas artificiale
 
 test("complementos y servicios no se facturan dentro de la plantilla estándar", () => {
   assert(ADDON_OFFERS.every((o) => o.kind === "addon" && o.price.length > 8));
-  assert.equal(ADDON_OFFERS.find((o) => o.id === "whatsapp-business")?.price, "Desde USD 15/mes + consumo");
+  assert.equal(ADDON_OFFERS.find((o) => o.id === "whatsapp-business")?.price, "USD 12.00/mes + consumo");
   assert(ADDON_OFFERS.some((o) => o.id === "reputation-reviews" && /incluid[ao]/i.test(o.price)));
   const whatsapp = ADDON_OFFERS.find((o) => o.id === "whatsapp-business");
   assert(whatsapp?.journey?.length === 4);
