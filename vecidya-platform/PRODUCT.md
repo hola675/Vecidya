@@ -42,7 +42,7 @@ Una comunidad digital (el Vecindario) más un diagnóstico honesto que nunca inv
 
 ## Capabilities and Constraints
 
-- La capacidad real de cada función está en `docs/STATUS.md`; este archivo no la repite. Pagos, checkout y la integración con HighLevel **no** están implementados.
+- La capacidad real de cada función está en `docs/STATUS.md`; este archivo no la repite. Pagos, checkout y la integración operativa de Vecidya con el CRM externo **no** están certificados como implementados.
 - **Límites permanentes:** sin CRM paralelo al CRM; sin negocios, testimonios, métricas, reseñas, calificaciones ni datos comerciales ficticios; sin asociar un negocio a una marca de terceros sin autorización; todo recurso de una organización verifica sesión, membresía y permiso.
 - **Idioma:** español. La terminología depende del tipo de negocio (perfiles de lenguaje congelados en `app/features/diagnostic/qbv2-terminology.ts`): «pacientes» solo en salud con práctica con licencia, lenguaje no comercial en organizaciones sin fines de lucro, y antes del lanzamiento no se habla de clientes existentes.
 - **Diagnóstico:** en V3 el porcentaje de presencia digital es un resumen (promedio de las áreas con lectura, con cobertura y confianza aparte; sin porcentaje si hay pocas áreas o antes del lanzamiento) y nunca decide prioridades; la certeza nunca sube (confirmado / hay señales / sin información); un área sin evidencia nunca se presenta como debilidad; las ofertas de Vecidya aparecen solo al final, ligadas a una prioridad y con su explicación; metodología con fuentes citadas solo en vista privada (DIAG-V3-11), todavía sin publicar.
@@ -51,7 +51,7 @@ Una comunidad digital (el Vecindario) más un diagnóstico honesto que nunca inv
 ## Brand Commitments
 
 - Nombre **Vecidya**; vocabulario propio: Vecindario, Aprende, licencias Cuadra · Barrio · Ciudad.
-- Precios públicos de licencias en USD/mes (`$39`, `$59`, `$89`), publicados en `/licencias` desde el 2026-09-25. Los siete complementos tienen fees propios en `docs/business/VECIDYA_PRODUCT_CATALOG.md` separados de consumos externos; los servicios profesionales se cotizan por alcance, sin inventar tarifas.
+- Precios públicos de licencias en USD/mes (`$39`, `$59`, `$89`), publicados en `/licencias` desde el 2026-09-25. Los siete complementos son categorías de capacidad: solo se cobra cuota externa real del proveedor y su recargo aprobado del 20 %, o consumo facturado + 20 % cuando corresponda. Capacidades estándar ya incluidas en el CRM no reciben cuotas inventadas; los servicios profesionales se cotizan por alcance.
 - **Voz:** español claro y directo; honesta sobre la incertidumbre; nunca alarmista ni culpabilizadora (el Diagnóstico tiene frases duras prohibidas); orientación, no auditoría ni certificación; puede decir que el negocio todavía no necesita nada.
 - Los recursos de marca vigentes están en `public/` y `app/assets/public-assets.ts`.
 
