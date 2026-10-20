@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { publicAssets } from "../assets/public-assets";
 import { publicSiteUrl } from "../lib/public-seo";
 import { PlatformFooter } from "./platform-footer";
+import { PUBLIC_FOOTER_GROUPS, PUBLIC_HEADER_PRIMARY_LINKS, PUBLIC_HEADER_SOLUTIONS_LINKS, PUBLIC_MOBILE_LINKS, PUBLIC_NAVIGATION_LINKS } from "./public-navigation";
 
 export const commercialWhatsAppUrl = "https://wa.me/573244321864";
 // Canal oficial de difusión de Vecidya en WhatsApp (sustituye al grupo comunitario retirado).
@@ -55,40 +56,35 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           <img alt="" height={32} src={publicAssets.brand.symbol3d} width={32} />Vecidya
         </Link>
         <nav className="site-nav" aria-label="Navegación pública">
-          <NavLink to="/vecindario">Vecindario</NavLink>
-          <NavLink to="/aprende">Aprende</NavLink>
-          <NavLink to="/diagnostico">Diagnóstico</NavLink>
-          <NavLink to="/servicios">Servicios</NavLink>
-          <NavLink to="/contacto">Contacto</NavLink>
+          {PUBLIC_HEADER_PRIMARY_LINKS.map((link) => (
+            <NavLink key={link.to} to={link.to}>{link.label}</NavLink>
+          ))}
           <details className="site-nav__group" ref={solutionsMenuRef}>
             <summary>Soluciones</summary>
             <div className="site-nav__panel" onClick={(event) => { if ((event.target as HTMLElement).closest("a") && solutionsMenuRef.current) solutionsMenuRef.current.open = false; }}>
-              <NavLink to="/licencias">Licencias</NavLink>
-              <NavLink to="/addons">Complementos</NavLink>
-              <NavLink to="/sobre-nosotros">Sobre nosotros</NavLink>
+              {PUBLIC_HEADER_SOLUTIONS_LINKS.map((link) => (
+                <NavLink key={link.to} to={link.to}>{link.label}</NavLink>
+              ))}
             </div>
           </details>
         </nav>
         <div className="site-header__actions">
-          <Link className="site-login-link" to="/login">Acceder</Link>
-          <Link className="button button--primary" to="/unete">Únete a Vecidya</Link>
+          <Link className="site-login-link" to={PUBLIC_NAVIGATION_LINKS.acceder.to}>{PUBLIC_NAVIGATION_LINKS.acceder.label}</Link>
+          <Link className="button button--primary" to={PUBLIC_NAVIGATION_LINKS.unete.to}>{PUBLIC_NAVIGATION_LINKS.unete.label}</Link>
         </div>
         <details className="site-mobile-menu" ref={mobileMenuRef}>
           <summary aria-label="Menú de navegación">Menú</summary>
           <nav aria-label="Navegación pública móvil" onClick={closeMobileMenu}>
-            <NavLink end to="/">Inicio</NavLink>
-            <NavLink to="/vecindario">Vecindario</NavLink>
-            <NavLink to="/licencias">Licencias</NavLink>
-            <NavLink to="/addons">Complementos</NavLink>
-            <NavLink to="/diagnostico">Diagnóstico</NavLink>
-            <NavLink to="/aprende">Aprende</NavLink>
-            <NavLink to="/servicios">Servicios</NavLink>
-            <NavLink to="/sobre-nosotros">Sobre nosotros</NavLink>
-            <NavLink to="/contacto">Contacto</NavLink>
-            <NavLink to="/privacidad">Privacidad y datos</NavLink>
-            <NavLink to="/terminos">Condiciones de uso</NavLink>
-            <NavLink to="/login">Acceder</NavLink>
-            <NavLink className="button button--primary" to="/unete">Únete a Vecidya</NavLink>
+            {PUBLIC_MOBILE_LINKS.map((link) => (
+              <NavLink
+                className={link.to === PUBLIC_NAVIGATION_LINKS.unete.to ? "button button--primary" : undefined}
+                end={link.to === "/"}
+                key={link.to}
+                to={link.to}
+              >
+                {link.label}
+              </NavLink>
+            ))}
           </nav>
         </details>
       </header>
@@ -101,37 +97,26 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           <p>Comunidad digital para ordenar presencia, aprendizaje y próximos pasos.</p>
         </div>
         <nav aria-label="Enlaces del pie" className="site-footer__nav">
-          <div>
-            <strong>Explorar</strong>
-            <NavLink to="/vecindario">Vecindario</NavLink>
-            <NavLink to="/licencias">Licencias</NavLink>
-            <NavLink to="/addons">Complementos</NavLink>
-            <NavLink to="/servicios">Servicios</NavLink>
-            <NavLink to="/aprende">Aprende</NavLink>
-            <NavLink to="/sobre-nosotros">Nosotros</NavLink>
-          </div>
-          <div>
-            <strong>Empezar</strong>
-            <NavLink to="/diagnostico">Diagnóstico</NavLink>
-            <NavLink to="/contacto">Contacto</NavLink>
-            <NavLink to="/unete">Únete</NavLink>
-            <a className="site-footer__community-link" href={commercialWhatsAppUrl} rel="noreferrer" target="_blank">
-              <img alt="" height={18} src={publicAssets.icons.whatsapp} width={18} />
-              WhatsApp Vecidya
-            </a>
-          </div>
-          <div>
-            <strong>Síguenos</strong>
-            <a className="site-footer__community-link" href={whatsAppChannelUrl} rel="noreferrer" target="_blank">
-              <img alt="" height={18} src={publicAssets.icons.whatsapp} width={18} />
-              Canal de WhatsApp
-            </a>
-          </div>
-          <div>
-            <strong>Legal</strong>
-            <NavLink to="/privacidad">Privacidad y datos</NavLink>
-            <NavLink to="/terminos">Condiciones de uso</NavLink>
-          </div>
+          {PUBLIC_FOOTER_GROUPS.map((group) => (
+            <div key={group.id}>
+              <strong>{group.title}</strong>
+              {group.links.map((link) => (
+                <NavLink key={link.to} to={link.to}>{link.label}</NavLink>
+              ))}
+              {group.id === "vecidya" ? (
+                <>
+                  <a className="site-footer__community-link" href={commercialWhatsAppUrl} rel="noopener noreferrer" target="_blank">
+                    <img alt="" height={18} src={publicAssets.icons.whatsapp} width={18} />
+                    WhatsApp directo
+                  </a>
+                  <a className="site-footer__community-link" href={whatsAppChannelUrl} rel="noopener noreferrer" target="_blank">
+                    <img alt="" height={18} src={publicAssets.icons.whatsapp} width={18} />
+                    Canal de WhatsApp
+                  </a>
+                </>
+              ) : null}
+            </div>
+          ))}
         </nav>
         <PlatformFooter area="public" />
       </footer>
