@@ -28,7 +28,7 @@ const addons: Addon[] = [
 
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
-    "Addons Vecidya",
+    "Complementos Vecidya",
     "Amplía tu sistema Vecidya con capacidades adicionales para comunicación, automatización, inteligencia artificial e integraciones.",
     "/addons",
   );

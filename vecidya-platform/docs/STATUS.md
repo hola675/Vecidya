@@ -1,5 +1,13 @@
 # Estado de implementación
 
+
+## UX-WEB-NAV-02 — coherencia de destinos públicos y footer (2026-10-20; rama `fix/ux-web-nav-02-20261020`)
+
+**CODE + TEST versionados / RAN pendiente; sin deploy.** El PR #29 (`UX-WEB-NAV-01`) fue integrado en `main@66939d4`; no se encontraron runs CI asociados a su HEAD al consultar el repositorio. Esta continuación organiza un único catálogo tipado en `app/components/public-navigation.ts` para header, menú móvil y footer, eliminando la divergencia de nombres y destinos. El footer separa «Explorar», «Soluciones», «Vecidya» e «Información legal». En «Soluciones» del header quedan agrupados Licencias, Servicios y Complementos; «Sobre nosotros» se mantiene accesible desde móvil y footer. Se conserva `/addons` como URL canónica bajo el nombre visible «Complementos», sin alias/redirect nuevo. Se mejoran affordances de enlaces y tamaño vertical mínimo de 32 px en el footer. La ruta legada `/que-debes-saber` mantiene el 301 existente a `/aprende`.
+
+**Pruebas versionadas, no ejecutadas:** nueva `tests/unit/public-navigation.test.ts`, contrato de copy actualizado y E2E móvil/desktop extendido a 320 px, taxonomía de columnas y enlaces contextualizados. Se reconcilian también dos aserciones históricas incompatibles con la web vigente: mención explícita de GHL solo como CRM externo y disponibilidad real de `/terminos`. No se ha ejecutado pnpm, typecheck, build o navegador local en este entorno; no se comprobó producción por HTTP. Sin cambios a D1, Auth, GHL, MiniWeb, Diagnóstico, pagos o despliegue. El PR se mantiene pendiente de validación y autorización de merge.
+
+
 ## WEB-PUBLIC-SEO-01 — auditoría focal de índices públicos y origen canónico (2026-10-20; PR pendiente)
 
 **CODE + TEST versionado / RAN pendiente; sin deploy.** Hallazgo comprobado en `main`: `robots.txt` y `sitemap.xml` tomaban el origen desde `request.url`, mientras `publicMeta` fijaba `https://vecidya.com`. La ruta `/aprende` permitía indexación de filtros GET (`q`/`tema`) aunque `/vecindario` ya usaba `noindex, follow` para filtros. En `fix/public-seo-canonical-20261020` se unifica el origen oficial mediante `app/lib/public-seo.ts`; el sitemap conserva solo guías no borrador y perfiles publicados. La biblioteca conserva 38 guías y no se modifican contenidos, políticas de publicación ni CTA. Test unitario nuevo verifica origen, valores de robots y contrato de uso estático.

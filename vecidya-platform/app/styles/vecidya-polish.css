@@ -402,3 +402,33 @@
   }
   .site-header .site-mobile-menu nav .button { margin-top: .35rem; color: #fff; }
 }
+
+
+/* UX-WEB-NAV-02: footer navigation affordance, readability and touch spacing. */
+.site-footer__nav > div {
+  min-width: 0;
+}
+.site-footer__nav > div > strong {
+  margin-bottom: .25rem;
+  font-weight: 800;
+}
+.site-footer__nav a {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  text-decoration-thickness: 1.5px;
+}
+.site-footer__nav a[aria-current="page"] {
+  font-weight: 800;
+}
+.site-footer__nav .site-footer__community-link {
+  justify-content: flex-start;
+  align-items: center;
+}
+@media (max-width: 480px) {
+  .site-footer__nav {
+    column-gap: 1rem !important;
+  }
+}
