@@ -11,6 +11,21 @@
 - Confirmada separación: QA-03B permanece client-side/dev-only; replay Worker público, resumen anónimo y sesión pública siguen en V3. El informe QA local reconstruye su resultado versionado, pero todavía no comparte replay Worker con el resumen.
 - NO-GO ACT-04: integrar replay server-authoritative QA y el resultado único para resumen/informe. La revisión propietaria PDF no forma parte del gate actual. FUNNEL-01D.2/01D.3 siguen como fases independientes. Sin migraciones, API pública cambiada ni deploy.
 
+## 2026-10-19 — UX-COHERENCE-03 (rama, pendiente de QA)
+
+- Nuevo sistema de guías, tarjetas de métricas, progreso accesible y comparación visual basada en datos reales para las tres superficies.
+- Web: recorrido público Descubre/Comprende/Decide sin datos ficticios. Cliente: guía contextual y progreso de completitud existentes. Interna: indicadores, revisión visual de pendientes y comparativas de eventos del Diagnóstico con advertencias sobre conteos/cohortes.
+- Logo oficial armonizado entre shells, navegación cruzada explícita entre Web, Mi Vecidya e Interna. Pruebas focales nuevas; inspección estática de 22/22; tests del proyecto, build, QA visual y despliegue no ejecutados.
+- Sin CRM paralelo, D1, migraciones, nuevas APIs, secretos, cambios de permisos o publicación.
+
+
+## 2026-10-19 — LEGAL-UX-01 (rama, pendiente de QA y aprobación jurídica)
+
+- Rediseñada la página pública de Privacidad con lenguaje claro, índice de lectura y explicaciones de datos de cuenta, organización, perfil publicado, contacto, Diagnóstico anónimo y derechos.
+- Nueva página pública `/terminos`: condiciones de participación, publicación, orientación/servicios, buenas prácticas y respuestas frecuentes; navegación desde pie móvil/escritorio y el registro. Se reutilizan logo, colores y diseño accesible de la marca sin automatizar consentimientos.
+- Se añade `tests/unit/legal/legal-pages.test.ts` y CSS responsive/reduced-motion; sin cambios en datos, GHL, pagos, APIs, secretos, migraciones ni producción. E2E, typecheck, build y revisión jurídica pendientes.
+
+
 ## 2026-10-19 — EMAIL-TRANSACTIONAL-UX-02 (rama, pendiente de validación)
 
 - Se centralizan y rediseñan las plantillas transaccionales HTML+texto con logo y paleta oficial de Vecidya: invitación, verificación, solicitud de restablecimiento, confirmación de contraseña ya cambiada y acceso/recuperación del informe Diagnóstico en buzón local simulado.

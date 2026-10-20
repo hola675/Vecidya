@@ -9,6 +9,7 @@ import { listPlatformIntegrations } from "../../db/queries/platform-integrations
 import { listPlatformAuditLog } from "../../db/queries/platform-governance.server";
 import { AdminShell } from "../components/admin-shell";
 import { Icon } from "../components/ui";
+import { ComparisonBars, JourneyGuide, MetricCard } from "../components/experience-system";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { requirePlatformAdmin } from "../../server/platform-authorization.server";
 
@@ -78,10 +79,10 @@ export default function InternalHome() {
         </div>
 
         <div className="admin-stat-grid" aria-label="Resumen de plataforma">
-          <section className="card admin-stat-card"><Icon name="organizations" /><div><strong>{counts.organizations}</strong><p>Organizaciones</p></div></section>
-          <section className="card admin-stat-card"><Icon name="building" /><div><strong>{counts.profiles}</strong><p>Perfiles de negocio</p></div></section>
-          <section className="card admin-stat-card"><Icon name="spark" /><div><strong>{counts.servicesAssigned}</strong><p>Servicios asignados</p></div></section>
-          <section className="card admin-stat-card"><Icon name="integrations" /><div><strong>{counts.integrations}</strong><p>Integraciones registradas</p></div></section>
+          <MetricCard className="admin-stat-card" icon="organizations" label="Organizaciones" value={counts.organizations} />
+          <MetricCard className="admin-stat-card" icon="building" label="Perfiles de negocio" value={counts.profiles} />
+          <MetricCard className="admin-stat-card" icon="spark" label="Servicios asignados" value={counts.servicesAssigned} />
+          <MetricCard className="admin-stat-card" icon="integrations" label="Integraciones registradas" value={counts.integrations} />
         </div>
 
         <section aria-labelledby="admin-attention-title" className="card admin-attention">
@@ -95,6 +96,29 @@ export default function InternalHome() {
             </ul>
           ) : <p className="admin-attention__empty">No hay elementos que requieran revisión.</p>}
         </section>
+
+        <JourneyGuide
+          area="admin"
+          title="Supervisa sin perder el contexto"
+          description="Las tareas dependen de los permisos de administración de plataforma. Consultar no equivale a publicar, contratar ni modificar datos de una organización."
+          steps={[
+            { title: "Revisa los pendientes", description: "Comprueba los elementos que necesitan revisión antes de actuar.", to: "/app/internal/businesses", action: "Ver perfiles de negocio" },
+            { title: "Consulta las organizaciones", description: "Inspecciona datos y estados dentro del área interna autorizada.", to: "/app/internal/organizations", action: "Abrir organizaciones" },
+            { title: "Verifica la trazabilidad", description: "Revisa las acciones registradas y su fecha antes de continuar.", to: "/app/internal/audit", action: "Ver auditoría" },
+          ]}
+        />
+
+        <div className="experience-admin-data">
+          <ComparisonBars
+            title="Elementos que merecen revisión"
+            description="Recuentos independientes del estado actual, no porcentajes de un único conjunto. Un perfil puede estar sin publicar y suspendido a la vez."
+            values={[
+              { label: "Perfiles sin publicar", value: attention.draftCount },
+              { label: "Perfiles suspendidos", value: attention.suspendedCount },
+              { label: "Servicios pendientes", value: attention.pendingServicesCount },
+            ]}
+          />
+        </div>
 
         <section className="card admin-attention" aria-labelledby="admin-diagnostic-leads-title">
           <p className="eyebrow">CAPTACIÓN VECIDYA</p>

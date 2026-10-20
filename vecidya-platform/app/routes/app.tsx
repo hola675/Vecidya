@@ -14,6 +14,7 @@ import { getClientWorkspaceContext } from "../../server/auth/client-workspace.se
 import { Alert, Badge, Button, Card, Icon } from "../components/ui";
 import { authClient } from "../lib/auth-client";
 import { ClientAreaShell } from "../components/client-area-shell";
+import { JourneyGuide, ProgressMeter } from "../components/experience-system";
 import { publicAssets } from "../assets/public-assets";
 
 import type { Route } from "./+types/app";
@@ -151,9 +152,11 @@ export default function AppPage() {
             <Card className="app-state-tile">
               <p className="eyebrow">MI NEGOCIO</p>
               <strong>{businessProfile ? (businessProfile.status === "published" ? "Publicado" : "Borrador") : "Sin crear"}</strong>
-              <div aria-label={`${businessProfileCompletion.percentage}% del perfil completado`} className="completion-track app-state-tile__progress" role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={businessProfileCompletion.percentage}>
-                <span style={{ width: `${businessProfileCompletion.percentage}%` }} />
-              </div>
+              <ProgressMeter
+                className="app-state-tile__progress"
+                label={`${businessProfileCompletion.percentage}% del perfil completado`}
+                value={businessProfileCompletion.percentage}
+              />
               <p>{businessProfile ? `${businessProfileCompletion.percentage}% · ${businessProfileCompletion.completed} de ${businessProfileCompletion.total} campos mínimos completos.` : "Crea tu perfil para empezar."}</p>
             </Card>
             <Card className="app-state-tile">
@@ -167,6 +170,35 @@ export default function AppPage() {
               <p>Tu rol es {roleLabels[activeOrganization.role] ?? "Miembro"}.</p>
             </Card>
           </section>
+
+          <JourneyGuide
+            area="client"
+            title="De tu perfil a tu presencia pública"
+            description="Esta guía refleja el estado del perfil de la organización seleccionada. No mide ventas ni rendimiento comercial."
+            steps={[
+              {
+                title: "Completa la información",
+                description: "Añade los campos necesarios para que las personas entiendan qué haces.",
+                to: "/app/business-profile",
+                action: "Revisar mi perfil",
+                state: businessProfile && businessProfileCompletion.issues.length === 0 ? "complete" : "current",
+              },
+              {
+                title: "Revisa y publica",
+                description: "Comprueba los datos y decide cuándo mostrar el perfil en Vecindario.",
+                to: "/app/business-profile",
+                action: "Gestionar publicación",
+                state: businessProfile?.status === "published" ? "complete" : businessProfile && businessProfileCompletion.issues.length === 0 ? "current" : "upcoming",
+              },
+              {
+                title: "Mantén tu información al día",
+                description: "Una vez publicado, puedes regresar para corregir contactos, horarios y descripción.",
+                to: "/app/business-profile",
+                action: "Actualizar mi negocio",
+                state: businessProfile?.status === "published" ? "current" : "upcoming",
+              },
+            ]}
+          />
 
           <section aria-label="Acciones rápidas" className="app-quick-actions">
             <p className="eyebrow">ACCIONES RÁPIDAS</p>

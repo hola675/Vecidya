@@ -1,5 +1,17 @@
 # Pruebas
 
+## UX-COHERENCE-03 — gates de diseño y medición (2026-10-19)
+
+**TEST versionado:** `tests/unit/ux/experience-system.test.ts` prueba `clampPercentage`, `relativeBarWidth`, casos NaN/infinito/negativos, normalización y visualización localizada; presencia de guías en Web/cliente/interno, reutilización del logo, preservación de permisos, origen de métricas, estado sin eventos y responsive. **Inspección estática RAN 22/22 PASS** a través de fuentes conectadas a GitHub; esta comprobación **no ejecuta** `node --test`, TypeScript, React, Cloudflare ni navegador.
+
+**Gates NOT RUN:** desde `vecidya-platform/`, `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`. Ejecutar E2E locales existentes de Home/experiencia cliente/permisos y analytics admin en Worker aislado. Validar los tres ámbitos y 320/390/768/1440 px, zoom 200 %, navegación de teclado/foco, lector de pantalla, contrastes, estados sin datos y con datos, escalas 0/100 y recuentos superpuestos. No hay workflows GitHub Actions actuales; sin CI no se puede declarar PASS automático. No tocar producción ni D1 remota.
+
+
+## LEGAL-UX-01 — pruebas de rutas legales (2026-10-19; rama)
+
+**TEST añadido, no ejecutado en el worktree:** Inspección de fuentes mediante conexión GitHub: 29 comprobaciones estáticas PASS (navegación, anclas, CSS y contenido); no equivalen a ejecución de pruebas unitarias o runtime.  `tests/unit/legal/legal-pages.test.ts` comprueba semántica de página, índice con anclas, rutas/navegación en footer y registro, contenido descriptivo de Diagnóstico/derechos, ausencia de promesas de informe completo, límites de orientación de condiciones y estilos adaptables/reducción de movimiento. Requiere `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`; probar las dos rutas con Worker local (HTTP 200, title/canonical, navegación por teclado, links `mailto:`, overflow a 320/390/768/1440, zoom al 200 %, lector de pantalla y contraste). Sin dependencias disponibles en el entorno de edición GitHub no se declaran gates PASS. Revisar el texto jurídicamente antes de aprobar publicación o generar consentimiento.
+
+
 ## EMAIL-TRANSACTIONAL-UX-02 — pruebas añadidas (2026-10-19)
 
 **TEST (versionado, no ejecutado en el repositorio completo en este entorno):** `tests/email/mail-templates.test.ts` cubre cinco/seis variantes de plantilla, tokens de marca, HTML alternativo, MIME, roles localizados, escapar HTML/URLs, enlace de Diagnóstico sin informe adjunto, mensaje de contraseña cambiada y entrega de invitación simulada/no confirmada sin reintentos. El comando `pnpm run test:email` invoca la suite preexistente de adaptador y la nueva usando el resolver TS del proyecto. **RAN:** no disponible en este entorno conectado a GitHub: no hay worktree instalable de `vecidya-platform/` ni dependencias locales; no declarar PASS de test, typecheck, build, test E2E o revisión visual. Se requiere ejecutar en worktree desde esta rama antes de autorizar merge o deploy. No ejecutar tests remotos ni envíos a destinatarios reales sin autorización.

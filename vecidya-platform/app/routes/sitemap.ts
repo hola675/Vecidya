@@ -34,6 +34,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     "/sobre-nosotros",
     "/aprende",
     "/privacidad",
+    "/terminos",
   ];
   const profilePaths = profiles.map((profile) => `/vecindario/${profile.slug}`);
   const articlePaths = learnArticles.map((article) => `/aprende/${article.slug}`);

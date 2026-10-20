@@ -5,6 +5,7 @@ import { listPublishedBusinessProfiles } from "../../db/queries/business-profile
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { publicAssets } from "../assets/public-assets";
 import { BusinessCardV2, CTASection, DiagnosticChoice, JsonLd, ServiceCard } from "../components/public-v2";
+import { JourneyGuide } from "../components/experience-system";
 import { PublicLayout, publicMeta, whatsAppChannelUrl } from "../components/public-layout";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
@@ -63,6 +64,18 @@ export default function Home() {
           <span className="home-hero-visual__pin" aria-hidden="true"><span>V</span></span>
         </div>
       </section>
+
+      <JourneyGuide
+        area="public"
+        className="experience-journey--home"
+        title="Tu recorrido, con un siguiente paso claro."
+        description="Empieza con lo que hoy necesitas. Explorar y conocer tu punto de partida no te obliga a contratar."
+        steps={[
+          { title: "Descubre", description: "Conoce negocios y perfiles reales de la comunidad.", to: "/vecindario", action: "Explorar Vecindario" },
+          { title: "Comprende", description: "Responde a tu ritmo y recibe orientación según tu situación.", to: "/diagnostico", action: "Hacer el Diagnóstico" },
+          { title: "Decide", description: "Conoce las opciones de Vecidya y pregunta antes de avanzar.", to: "/licencias", action: "Conocer licencias" },
+        ]}
+      />
 
       <section aria-labelledby="home-neighborhood-title" className="public-v2-section home-neighborhood-preview">
         <div className="home-section-heading">
