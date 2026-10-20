@@ -1,7 +1,6 @@
-import type { Route } from "./+types/robots";
+import { publicSiteUrl } from "../lib/public-seo";
 
-export function loader({ request }: Route.LoaderArgs) {
-  const { origin } = new URL(request.url);
+export function loader() {
   const body = [
     "User-agent: *",
     "Allow: /",
@@ -10,7 +9,7 @@ export function loader({ request }: Route.LoaderArgs) {
     "Disallow: /login",
     "Disallow: /register",
     "",
-    `Sitemap: ${origin}/sitemap.xml`,
+    `Sitemap: ${publicSiteUrl("/sitemap.xml")}`,
     "",
   ].join("\n");
 
