@@ -187,7 +187,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["Se prepara un recordatorio de cita por un canal autorizado y con consumo medido."],
     dependencies: "Requiere Barrio o Ciudad; disponibilidad geográfica, número y requisitos normativos del canal.",
     decision: "El complemento no exige Ciudad por sí solo; depende del proceso que necesite coordinar.",
-    price: `Cotización según uso (margen objetivo ${PROVIDER_TARGET_MARGIN_PERCENT} %)`, externalCosts: "El proveedor no exige una cuota genérica de USD 9 por activar el sistema telefónico: se pagan números, llamadas, segmentos SMS/MMS, registros y tasas reales según país y uso, más el 20 % de Vecidya sobre el importe facturado, con todos los costes directos contemplados.",
+    price: `Cotización según uso (margen objetivo ${PROVIDER_TARGET_MARGIN_PERCENT} %)`, externalCosts: "El proveedor no exige una cuota genérica de USD 9 por activar el sistema telefónico: se pagan números, llamadas, segmentos SMS/MMS, registros y tasas reales según país y uso, con un precio que preserve al menos el 20 % de margen bruto tras todos los costes directos.",
     contactInterest: "complemento-telephony-sms", catalogPath: "/addons", detailPath: addon("telephony-sms"),
   },
   {
@@ -218,7 +218,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["Se avisa a los contactos autorizados de un cambio de horario o una novedad."],
     dependencies: "Requiere Barrio o Ciudad y consentimiento, canales y proveedores habilitados.",
     decision: "Contratar campañas no exige Ciudad cuando siguen un único proceso comercial.",
-    price: `Envíos reales con margen ${PROVIDER_TARGET_MARGIN_PERCENT} %`, externalCosts: "La configuración estándar de campañas pertenece al CRM. Se cobran únicamente cargos reales de email, SMS, WhatsApp u otros canales + 20 %, y servicios profesionales especiales solo mediante propuesta.",
+    price: `Envíos reales con margen ${PROVIDER_TARGET_MARGIN_PERCENT} %`, externalCosts: "La configuración estándar de campañas pertenece al CRM. Se cobran únicamente cargos reales de email, SMS, WhatsApp u otros canales con margen bruto mínimo del 20 %, y servicios profesionales especiales solo mediante propuesta.",
     contactInterest: "complemento-campaigns-diffusion", catalogPath: "/addons", detailPath: addon("campaigns-diffusion"),
   },
   {
@@ -233,7 +233,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["El asistente aclara una pregunta frecuente y deja el siguiente paso para revisión humana cuando lo necesita."],
     dependencies: "Requiere Barrio o Ciudad, canal compatible y configuración de proveedor/uso de IA.",
     decision: "Una IA para un proceso sencillo puede acompañar Barrio; la coordinación multiproceso puede justificar Ciudad.",
-    price: `Plan de IA compartido o consumo; margen ${PROVIDER_TARGET_MARGIN_PERCENT} %`, externalCosts: "Se cobra según uso o plan IA de la localización: Growth (referencia proveedor USD 50/mes → USD 60/mes Vecidya), Unlimited (USD 97 → USD 116.40), sujetos a condiciones. Es UNA suscripción IA compartida por localización para funciones compatibles; no se duplica por voz y conversación.",
+    price: `Plan de IA compartido o consumo; margen ${PROVIDER_TARGET_MARGIN_PERCENT} %`, externalCosts: "Se cobra según uso o plan IA de la localización: Growth (referencia proveedor USD 50/mes → mínimo USD 62.50), Unlimited (USD 97 → mínimo USD 121.25), sujetos a condiciones. Es UNA suscripción IA compartida por localización para funciones compatibles; no se duplica por voz y conversación.",
     contactInterest: "complemento-conversational-ai", catalogPath: "/addons", detailPath: addon("conversational-ai"),
   },
   {
@@ -264,7 +264,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["Sincronizar una herramienta admitida con el CRM cuando la licencia permite esa operación."],
     dependencies: "La compatibilidad depende del destino: si modifica contactos, oportunidades o automatizaciones del CRM exige Barrio o Ciudad; si solo usa Vecidya, se evalúa con Cuadra caso por caso.",
     decision: "Una conexión estándar no requiere Ciudad; la necesidad de varios procesos coordinados sí puede justificarlo.",
-    price: `Coste externo aplicable + ${PROVIDER_MARKUP_PERCENT} %`, externalCosts: "Las integraciones estándar incluidas en la licencia no llevan cuota extra. Solo si una conexión externa genera un cargo real de app, API o ejecución, se repercute + 20 %. Desarrollo a medida se cotiza como servicio.",
+    price: `Coste externo aplicable con margen ${PROVIDER_TARGET_MARGIN_PERCENT} %`, externalCosts: "Las integraciones estándar incluidas en la licencia no llevan cuota extra. Solo si una conexión externa genera un cargo real de app, API o ejecución, se cotiza respetando el margen bruto mínimo del 20 %. Desarrollo a medida se cotiza como servicio.",
     contactInterest: "complemento-connections-integrations", catalogPath: "/addons", detailPath: addon("connections-integrations"),
   },
 ];
