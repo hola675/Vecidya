@@ -1,5 +1,14 @@
 # Estado de implementación
 
+## COM-CATALOG-DETAILS-01 / COM-CATALOG-BENEFITS-02 / COM-PRICING-20-01 — oferta comercial detallada (2026-10-20)
+
+**CODE + TEST versionado / RAN pendiente, NO PUBLICADO.** Rama `feat/commercial-catalog-details-20261020` a partir de `main@a2f6f7c`. Catálogo central de 17 ofertas (3 licencias, 7 capacidades adicionales, 7 servicios), rutas `/licencias/:slug`, `/addons/:slug` y `/servicios/:slug`, fichas con inclusión/exclusión, precio, compatibilidad y límites. Barrio Standard se define como proceso comercial principal y Ciudad como biblioteca modular multiproceso, sin convertir automatizaciones base en add-ons. Se añadieron **beneficios cotidianos** en todas las fichas, ejemplos de recorrido en capacidades apropiadas y cautelas de continuidad de canales. WhatsApp explica recepción, creación/actualización de contactos, creación de oportunidad solo con workflow configurado, bandeja multicanal y permanencia condicionada de datos ya guardados cuando se desconecta el canal; **no** promete recuperar mensajes no recibidos ni funcionamiento mientras esté bloqueado.
+
+**Política de precio comercial propuesta por el usuario:** recargo **20 % sobre coste real facturado por proveedores** (cargos agregados en centavos), no sobre precio final. WhatsApp: referencia proveedor USD 10/subcuenta/mes → Vecidya USD 12/mes, más uso si procede; otras capacidades no reciben fees inventados si el CRM las cubre. Planes IA pueden compartir cuota por localización; no doble facturación. Precios base de licencias $39/$59/$89 y puesta en marcha histórica $0/$10/$15 preservados (sin recalcular mediante 20 %). Confirmación de costes efectivos, autorización de reventa y condiciones contractuales necesaria antes de ofertar como disponible. Sitio público sin marca comercial del proveedor; trazabilidad interna no eliminada.
+
+**No se han ejecutado** typecheck, build, unitarias o E2E contra Worker local, ni verificación HTTP de producción, deployment, cambios a CRM real o facturación. Pruebas de catálogo, política de recargo y detalles versionadas. Este bloque es descripción de oferta objetivo hasta implementación y certificación operacional. No fusionar ni desplegar sin gates y autorización.
+
+
 
 ## UX-WEB-NAV-02 — coherencia de destinos públicos y footer (2026-10-20; rama `fix/ux-web-nav-02-20261020`)
 
