@@ -618,3 +618,34 @@
 @media (max-width: 760px) {
   .commercial-detail__benefits ul { grid-template-columns: minmax(0, 1fr); }
 }
+
+
+/* Beneficios concretos, recorrido y continuidad del contexto comercial. */
+.commercial-detail__benefits,
+.commercial-detail__journey,
+.commercial-detail__continuity {
+  margin-top: clamp(2rem, 5vw, 4rem);
+}
+.commercial-detail__benefits ul,
+.commercial-detail__journey ol {
+  display: grid;
+  gap: 1rem;
+  padding-left: 1.5rem;
+  max-width: 76ch;
+}
+.commercial-detail__benefits li,
+.commercial-detail__journey li {
+  line-height: 1.65;
+}
+.commercial-detail__journey,
+.commercial-detail__continuity {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid #d6e2ef;
+  border-radius: 1rem;
+  background: #f5f9ff;
+}
+.commercial-detail__journey > p:last-child,
+.commercial-detail__continuity > p:last-child {
+  max-width: 77ch;
+  margin-bottom: 0;
+}
