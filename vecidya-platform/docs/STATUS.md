@@ -1,5 +1,12 @@
 # Estado de implementación
 
+## UX-COHERENCE-03 — patrones compartidos en Web, Mi Vecidya y Administración (2026-10-19)
+
+**CODE + TEST en rama `feat/ux-three-surfaces-20261019`; inspección estática 22/22 PASS; sin RAN de suites.** Se crea `app/components/experience-system.tsx` con `JourneyGuide`, `MetricCard`, `ProgressMeter` y `ComparisonBars` y lógica pura de presentación en `app/lib/experience-metrics.ts`. La Web pública usa una guía de descubrimiento sin datos ficticios; el dashboard de Mi Vecidya usa progreso y estados derivados de `getBusinessProfileCompletion` y publicación real; el dashboard interno usa indicadores existentes y comparación de perfiles sin publicar, suspendidos y servicios pendientes **sin sumar ni convertir categorías superpuestas en porcentajes**; el panel de analítica del Diagnóstico muestra barras de eventos del periodo y una vista vacía cuando no hay datos, preservando el aviso de que los conteos no son cohortes de personas únicas. El encabezado público reutiliza el símbolo 3D del catálogo; los shells de cliente/admin ofrecen retornos explícitos, sin alterar guards ni relaciones tenant.
+
+**Alcance real:** primera integración transversal de componentes, no rediseño de todas las rutas. Datos, permisos, SQL, GHL, despliegue y contratos del Diagnóstico intactos. **Pendientes:** `test:unit`, `typecheck`, `build`, `git diff --check`, QA visual/teclado/zoom/contraste con Worker local y revisión manual de otras pantallas. `UX-COHERENCE-03-REMAINING` permanece como deuda, no se declara WCAG AA ni integración total.
+
+
 ## LEGAL-UX-01 — lectura clara de privacidad y condiciones (2026-10-19; rama, no publicado)
 
 **CODE/TEST en `feat/legal-trust-content-20261019`; inspección estática de 29 comprobaciones PASS, suite/Worker pendientes.** `/privacidad` se reorganizó para explicar de forma comprensible cuenta, organización, perfiles públicos, canales de contacto, Diagnóstico público y solicitudes de derechos; se conserva el límite de 14 días del progreso del Diagnóstico ya documentado. Se añade `/terminos` como guía de condiciones de uso para exploración, roles, publicación, orientación del Diagnóstico y contratación; evita garantías de resultados y afirmaciones legales no confirmadas. Identidad visual oficial y navegación temática reutilizable, links desde footer/mobile/registro, CSS responsive y `prefers-reduced-motion`. TEST nuevo `tests/unit/legal/legal-pages.test.ts`; no hay modificación de contratos, autorización, consentimiento, datos ni mecanismos de retención.
