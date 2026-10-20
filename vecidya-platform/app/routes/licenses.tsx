@@ -164,7 +164,7 @@ export default function Licenses() {
           <div className="licenses-addons__content">
             <p>Los complementos añaden capacidades cuando realmente las necesitas.</p>
             <ul><li>WhatsApp</li><li>Inteligencia Artificial</li><li>Telefonía</li><li>Automatizaciones</li><li>Integraciones</li></ul>
-            <Link className="text-link" to="/addons">Conoce los addons <span aria-hidden="true">→</span></Link>
+            <Link className="text-link" to="/addons">Conoce los complementos <span aria-hidden="true">→</span></Link>
           </div>
         </section>
 
