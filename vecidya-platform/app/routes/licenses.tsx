@@ -128,7 +128,7 @@ export default function Licenses() {
                   <ul>{license.includes.map((item) => <li key={item}><span aria-hidden="true">✓</span>{item}</li>)}</ul>
                 </div>
                 <p className="license-card__activation">Puesta en marcha ${license.activationUsd} una vez</p>
-                <Link className="license-card__availability" to={`/contacto?interes=${license.id}`}>Empezar con {license.name} <span aria-hidden="true">→</span></Link>
+                <Link className="license-card__availability" to={`/contacto?interes=${license.id}`}>Consultar licencia {license.name} <span aria-hidden="true">→</span></Link>
               </article>
             ))}
           </div>
