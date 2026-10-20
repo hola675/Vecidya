@@ -432,3 +432,20 @@
     column-gap: 1rem !important;
   }
 }
+
+
+/* UX-PUBLIC-JOURNEYS-03: return path to the specific offer from Contact. */
+.contact-selection__return {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: .35rem;
+  min-height: 44px;
+  padding-block: .35rem;
+  text-decoration: underline;
+  text-underline-offset: .22em;
+  overflow-wrap: anywhere;
+}
+.contact-selection__return:hover {
+  text-decoration-thickness: 2px;
+}
