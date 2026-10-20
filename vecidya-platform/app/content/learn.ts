@@ -1,4 +1,5 @@
 import { learnBusinessOperationsArticles } from "./learn-business-operations";
+import { learnManagement03Articles } from "./learn-management-03";
 
 export type LearnBlock =
   | { type: "paragraph"; text: string }
@@ -4009,6 +4010,7 @@ export const learnArticles: LearnArticle[] = [
   },
 
   ...learnBusinessOperationsArticles,
+  ...learnManagement03Articles,
 ];
 
 
@@ -4063,6 +4065,17 @@ export const learnPathways = [
       "quien-puede-ver-cambiar-y-publicar-en-tu-empresa",
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
       "como-comparar-resultados-de-sedes-sin-mezclar-las-cifras",
+    ],
+  },
+  {
+    title: "Dirige y mejora con criterio",
+    description: "Presupuestos, compras, continuidad y decisiones con datos e IA bajo supervisión.",
+    slugs: [
+      "como-preparar-presupuesto-para-herramientas-digitales",
+      "como-ordenar-compras-proveedores-y-aprobaciones-en-una-empresa",
+      "que-hacer-si-falla-internet-o-el-sistema-de-tu-negocio",
+      "como-usar-inteligencia-artificial-en-una-empresa-con-supervision",
+      "como-saber-si-una-mejora-tecnologica-funciona-en-tu-empresa",
     ],
   },
 ] as const;
