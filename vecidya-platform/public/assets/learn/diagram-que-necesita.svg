@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" role="img" aria-labelledby="title desc">
+<title id="title">Tres pasos: Definir tareas, Usar equipo útil, Preparar alternativa</title>
+<desc id="desc">Tres tarjetas unidas que muestran una secuencia educativa sencilla.</desc>
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#EFF5FF"/><stop offset="1" stop-color="#FFF5ED"/></linearGradient><filter id="shadow" x="-20%" y="-40%" width="140%" height="190%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#142B4A" flood-opacity=".13"/></filter></defs>
+<rect width="960" height="360" rx="24" fill="url(#bg)"/>
+<path d="M45 56h870" stroke="#DBE5F2" stroke-width="2" stroke-dasharray="6 9"/>
+<g filter="url(#shadow)"><rect x="42" y="102" width="254" height="162" rx="22" fill="#fff" stroke="#D9E3F0" stroke-width="2"/></g><circle cx="81" cy="146" r="23" fill="#175BBD"/><text x="81" y="155" font-size="27" font-weight="800" font-family="Arial, sans-serif" text-anchor="middle" fill="#fff">1</text><text x="64" y="210" font-size="27" font-weight="700" font-family="Arial, sans-serif" fill="#17324D">Definir tareas</text>
+<g filter="url(#shadow)"><rect x="352" y="102" width="254" height="162" rx="22" fill="#fff" stroke="#D9E3F0" stroke-width="2"/></g><circle cx="391" cy="146" r="23" fill="#F16B21"/><text x="391" y="155" font-size="27" font-weight="800" font-family="Arial, sans-serif" text-anchor="middle" fill="#fff">2</text><text x="374" y="210" font-size="27" font-weight="700" font-family="Arial, sans-serif" fill="#17324D">Usar equipo útil</text>
+<g filter="url(#shadow)"><rect x="662" y="102" width="254" height="162" rx="22" fill="#fff" stroke="#D9E3F0" stroke-width="2"/></g><circle cx="701" cy="146" r="23" fill="#175BBD"/><text x="701" y="155" font-size="27" font-weight="800" font-family="Arial, sans-serif" text-anchor="middle" fill="#fff">3</text><text x="684" y="210" font-size="27" font-weight="700" font-family="Arial, sans-serif" fill="#17324D">Preparar alternativa</text>
+<path d="M297 183h42m-12 -10 12 10 -12 10M607 183h42m-12 -10 12 10 -12 10" fill="none" stroke="#F16B21" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

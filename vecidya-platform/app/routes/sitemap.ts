@@ -37,7 +37,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     "/terminos",
   ];
   const profilePaths = profiles.map((profile) => `/vecindario/${profile.slug}`);
-  const articlePaths = learnArticles.map((article) => `/aprende/${article.slug}`);
+  const articlePaths = learnArticles.filter((article) => !article.editorialDraft).map((article) => `/aprende/${article.slug}`);
   const entries = [...staticPaths, ...articlePaths, ...profilePaths].map((path) => urlEntry(`${origin}${path}`));
   const body = [
     '<?xml version="1.0" encoding="UTF-8"?>',

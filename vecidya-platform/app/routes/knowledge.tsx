@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 import { publicAssets } from "../assets/public-assets";
 import { PublicLayout, publicMeta } from "../components/public-layout";
-import { learnArticles, learnCategories } from "../content/learn";
+import { learnArticles, learnCategories, learnPathways } from "../content/learn";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
 import type { Route } from "./+types/knowledge";
@@ -33,15 +33,23 @@ export function loader({ request }: Route.LoaderArgs) {
       const summary = [article.title, article.intro, article.excerpt, article.category, ...article.sections.map((section) => section.heading)].join(" ");
       return searchable(summary).includes(needle);
     })
-    .map(({ slug, title, excerpt, image, category: articleCategory }) => ({
-      slug, title, excerpt, image, category: articleCategory,
+    .map(({ slug, title, excerpt, image, category: articleCategory, editorialDraft }) => ({
+      slug, title, excerpt, image, category: articleCategory, editorialDraft: editorialDraft ?? false,
     }));
   const topics = learnCategories.map((topic, index) => ({
     ...topic,
     number: String(index + 1).padStart(2, "0"),
     count: learnArticles.filter((article) => article.category === topic.name).length,
   }));
-  return { articles, topics, search, category, total: learnArticles.length };
+  const pathways = learnPathways.map((path) => ({
+    title: path.title, description: path.description,
+    guides: path.slugs.map((slug) => {
+      const guide = learnArticles.find((article) => article.slug === slug);
+      if (!guide) throw new Error(`Guía del itinerario no encontrada: ${slug}`);
+      return { slug: guide.slug, title: guide.title, editorialDraft: guide.editorialDraft ?? false };
+    }),
+  }));
+  return { articles, topics, pathways, search, category, total: learnArticles.length };
 }
 
 export function meta(_: Route.MetaArgs) {
@@ -53,7 +61,7 @@ export function meta(_: Route.MetaArgs) {
 }
 
 export default function Knowledge({ loaderData }: Route.ComponentProps) {
-  const { articles, topics, search, category, total } = loaderData;
+  const { articles, topics, pathways, search, category, total } = loaderData;
 
   return (
     <PublicLayout>
@@ -62,7 +70,7 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
           <div>
             <p className="eyebrow">APRENDE</p>
             <h1 id="learn-title">Aprende a organizar, mejorar y entender la presencia digital de tu negocio.</h1>
-            <p>Guías escritas por Yoan Ortiz para entender problemas digitales reales y elegir el siguiente paso sin tecnicismos innecesarios ni promesas vacías.</p>
+            <p>Respuestas sencillas, ejemplos cotidianos y pasos que puedes poner en práctica. Los nuevos materiales están identificados como borradores editoriales hasta completar su revisión.</p>
             <div className="public-actions">
               <Link className="button button--primary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
               <Link className="button button--secondary" to="/contacto">Hacer una pregunta</Link>
@@ -71,6 +79,26 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
           <div className="learn-experience-hero__visual" aria-hidden="true">
             <img alt="" decoding="async" height={1254} src={publicAssets.illustrations.taskSchedulePanel} width={1254} />
             <span>Decisiones claras</span>
+          </div>
+        </section>
+
+        <section className="learn-pathways" aria-labelledby="learn-pathways-title">
+          <div className="learn-section-heading">
+            <p className="eyebrow">APRENDE A TU RITMO</p>
+            <h2 id="learn-pathways-title">Elige por dónde empezar.</h2>
+            <p>No necesitas leerlo todo. Sigue un camino corto según lo que hoy te cuesta resolver.</p>
+          </div>
+          <div className="learn-pathways-grid">
+            {pathways.map((path, index) => (
+              <article className="learn-pathway-card" key={path.title}>
+                <p className="learn-pathway-card__step">CAMINO {String(index + 1).padStart(2, "0")}</p>
+                <h3>{path.title}</h3>
+                <p>{path.description}</p>
+                <ol>{path.guides.map((guide) => (
+                  <li key={guide.slug}><Link to={`/aprende/${guide.slug}`}>{guide.title}</Link>{guide.editorialDraft && <small>En revisión</small>}</li>
+                ))}</ol>
+              </article>
+            ))}
           </div>
         </section>
 
@@ -133,7 +161,7 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
                 <article className="learn-article-card" key={article.slug}>
                   <img src={article.image} alt="" width={900} height={360} loading="lazy" />
                   <div>
-                    <p className="eyebrow">{article.category}</p>
+                    <p className="eyebrow">{article.category}{article.editorialDraft ? " · En revisión" : ""}</p>
                     <h3><Link to={`/aprende/${article.slug}`}>{article.title}</Link></h3>
                     <p>{article.excerpt}</p>
                     <Link className="text-link" to={`/aprende/${article.slug}`}>Leer guía <span aria-hidden="true">→</span></Link>
