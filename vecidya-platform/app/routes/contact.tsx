@@ -30,7 +30,7 @@ export default function Contact() {
               <p>El mensaje se preparará con ese contexto para que puedas revisarlo antes de enviarlo.</p>
               {returnToOffer && (
                 <Link className="text-link contact-selection__return" to={returnToOffer.to}>
-                  {returnToOffer.label} <span aria-hidden="true">←</span>
+                  <span aria-hidden="true">←</span> {returnToOffer.label}
                 </Link>
               )}
             </aside>
