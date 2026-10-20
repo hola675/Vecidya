@@ -23,7 +23,7 @@ async function assertNoOverflow(page, label) {
 
 const browser = await chromium.launch(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {});
 try {
-  for (const width of [1366, 1024, 960, 768, 390, 360]) {
+  for (const width of [1366, 1024, 960, 768, 390, 360, 320]) {
     const page = await browser.newPage({ viewport: { width, height: 850 } });
     const label = `${width}px`;
     await page.goto(new URL("/", baseUrl).toString(), { waitUntil: "networkidle" });
@@ -62,6 +62,9 @@ try {
       assert(await solutions.getAttribute("open") === null, `${label}: Escape no cierra Soluciones`);
     }
 
+    const footerGroups = await page.locator("footer .site-footer__nav > div > strong").allTextContents();
+    assert(JSON.stringify(footerGroups) === JSON.stringify(["Explorar", "Soluciones", "Vecidya", "Información legal"]), `${label}: grupos del footer divergentes`);
+    assert(await page.locator('footer .site-footer__nav a[href="/addons"]').innerText() === "Complementos", `${label}: etiqueta del enlace Complementos`);
     await page.goto(new URL("/licencias", baseUrl).toString(), { waitUntil: "networkidle" });
     assert(await page.locator('.site-footer__nav a[href="/licencias"][aria-current="page"]').count() === 1, `${label}: footer sin estado activo`);
     assert(await page.locator('a[href="/contacto?interes=cuadra"]').count() > 0, `${label}: Cuadra no conserva interés`);
@@ -83,7 +86,7 @@ try {
 
   const alias = await fetch(new URL("/que-debes-saber", baseUrl), { redirect: "manual" });
   assert(alias.status === 301 && alias.headers.get("location")?.endsWith("/aprende"), "Alias de Aprende no redirige con 301");
-  console.log("PASS: navegación, estado activo, menús y CTA comerciales en 1366/1024/960/768/390/360.");
+  console.log("PASS: navegación, taxonomía, enlaces activos y CTA comerciales en 1366/1024/960/768/390/360/320.");
 } finally {
   await browser.close();
 }
