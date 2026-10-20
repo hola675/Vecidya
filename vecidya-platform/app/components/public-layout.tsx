@@ -24,8 +24,23 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
       }
     };
 
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (mobileMenuRef.current?.open && !mobileMenuRef.current.contains(target)) {
+        mobileMenuRef.current.open = false;
+      }
+      if (solutionsMenuRef.current?.open && !solutionsMenuRef.current.contains(target)) {
+        solutionsMenuRef.current.open = false;
+      }
+    };
+
     document.addEventListener("keydown", closeOnEscape);
-    return () => document.removeEventListener("keydown", closeOnEscape);
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    return () => {
+      document.removeEventListener("keydown", closeOnEscape);
+      document.removeEventListener("pointerdown", closeOnOutsidePointer);
+    };
   }, []);
 
   const closeMobileMenu = () => {
@@ -49,8 +64,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
             <summary>Soluciones</summary>
             <div className="site-nav__panel" onClick={(event) => { if ((event.target as HTMLElement).closest("a") && solutionsMenuRef.current) solutionsMenuRef.current.open = false; }}>
               <NavLink to="/licencias">Licencias</NavLink>
-              <NavLink to="/addons">Addons</NavLink>
-              <NavLink to="/servicios">Servicios</NavLink>
+              <NavLink to="/addons">Complementos</NavLink>
               <NavLink to="/sobre-nosotros">Sobre nosotros</NavLink>
             </div>
           </details>
@@ -60,17 +74,16 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           <Link className="button button--primary" to="/unete">Únete a Vecidya</Link>
         </div>
         <details className="site-mobile-menu" ref={mobileMenuRef}>
-          <summary aria-label="Abrir navegación pública">Menú</summary>
+          <summary aria-label="Menú de navegación">Menú</summary>
           <nav aria-label="Navegación pública móvil" onClick={closeMobileMenu}>
             <NavLink end to="/">Inicio</NavLink>
             <NavLink to="/vecindario">Vecindario</NavLink>
             <NavLink to="/licencias">Licencias</NavLink>
-            <NavLink to="/addons">Addons</NavLink>
+            <NavLink to="/addons">Complementos</NavLink>
             <NavLink to="/diagnostico">Diagnóstico</NavLink>
             <NavLink to="/aprende">Aprende</NavLink>
             <NavLink to="/servicios">Servicios</NavLink>
             <NavLink to="/sobre-nosotros">Sobre nosotros</NavLink>
-            <NavLink to="/unete">Únete</NavLink>
             <NavLink to="/contacto">Contacto</NavLink>
             <NavLink to="/privacidad">Privacidad y datos</NavLink>
             <NavLink to="/terminos">Condiciones de uso</NavLink>
@@ -90,18 +103,18 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
         <nav aria-label="Enlaces del pie" className="site-footer__nav">
           <div>
             <strong>Explorar</strong>
-            <Link to="/vecindario">Vecindario</Link>
-            <Link to="/licencias">Licencias</Link>
-            <Link to="/addons">Addons</Link>
-            <Link to="/servicios">Servicios</Link>
-            <Link to="/aprende">Aprende</Link>
-            <Link to="/sobre-nosotros">Nosotros</Link>
+            <NavLink to="/vecindario">Vecindario</NavLink>
+            <NavLink to="/licencias">Licencias</NavLink>
+            <NavLink to="/addons">Complementos</NavLink>
+            <NavLink to="/servicios">Servicios</NavLink>
+            <NavLink to="/aprende">Aprende</NavLink>
+            <NavLink to="/sobre-nosotros">Nosotros</NavLink>
           </div>
           <div>
             <strong>Empezar</strong>
-            <Link to="/diagnostico">Diagnóstico</Link>
-            <Link to="/contacto">Contacto</Link>
-            <Link to="/unete">Únete</Link>
+            <NavLink to="/diagnostico">Diagnóstico</NavLink>
+            <NavLink to="/contacto">Contacto</NavLink>
+            <NavLink to="/unete">Únete</NavLink>
             <a className="site-footer__community-link" href={commercialWhatsAppUrl} rel="noreferrer" target="_blank">
               <img alt="" height={18} src={publicAssets.icons.whatsapp} width={18} />
               WhatsApp Vecidya
@@ -116,8 +129,8 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           </div>
           <div>
             <strong>Legal</strong>
-            <Link to="/privacidad">Privacidad y datos</Link>
-            <Link to="/terminos">Condiciones de uso</Link>
+            <NavLink to="/privacidad">Privacidad y datos</NavLink>
+            <NavLink to="/terminos">Condiciones de uso</NavLink>
           </div>
         </nav>
         <PlatformFooter area="public" />
