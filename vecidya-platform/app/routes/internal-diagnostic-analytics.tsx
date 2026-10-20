@@ -4,6 +4,7 @@ import { cloudflareContext } from "../../server/cloudflare-context";
 import { requirePlatformAdmin } from "../../server/platform-authorization.server";
 import { listFunnelAnalytics } from "../../db/queries/diagnostic-funnel-analytics.server";
 import { AdminShell } from "../components/admin-shell";
+import { ComparisonBars, MetricCard } from "../components/experience-system";
 import type { Route } from "./+types/internal-diagnostic-analytics";
 
 const EVENTS = [
@@ -62,15 +63,18 @@ function Trend({ series, keyName, label }: {
   keyName: "started" | "completed" | "identified" | "verified"; label: string;
 }) {
   const values = series.map((point) => point[keyName]);
-  const max = Math.max(1, ...values);
+  const max = Math.max(0, ...values);
   const points = values.map((value, index) =>
-    `${(index / Math.max(1, values.length - 1)) * 100},${36 - (value / max) * 32}`).join(" ");
+    `${(index / Math.max(1, values.length - 1)) * 100},${36 - (value / Math.max(1, max)) * 32}`).join(" ");
+  const total = values.reduce((sum, value) => sum + value, 0);
   return <div className="diagnostic-admin-chart">
     <h3>{label}</h3>
-    <svg viewBox="0 0 100 40" role="img" aria-label={`Tendencia diaria de ${label.toLowerCase()}`} style={{ width: "100%", height: 110 }} preserveAspectRatio="none">
-      <polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
-    </svg>
-    <p className="admin-table__meta">Máximo diario: {max === 1 && values.every((value) => value === 0) ? 0 : max}</p>
+    {max === 0 ? <p className="experience-chart-empty">Sin eventos registrados en este periodo.</p> : (
+      <svg viewBox="0 0 100 40" role="img" aria-label={`Evolución diaria de ${label.toLowerCase()}, máximo diario ${max}, total de eventos del periodo ${total}`} style={{ width: "100%", height: 110 }} preserveAspectRatio="none">
+        <polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+      </svg>
+    )}
+    <p className="admin-table__meta">Máximo diario: {max.toLocaleString("es-CO")} · Total de eventos: {total.toLocaleString("es-CO")}</p>
   </div>;
 }
 
@@ -91,10 +95,15 @@ export default function InternalDiagnosticAnalytics() {
         <Link className="text-link" to="/app/internal/diagnostic-leads">Ver interesados →</Link>
       </nav>
       <div className="admin-stat-grid" aria-label="Indicadores del embudo">
-        {EVENTS.map(([key, label]) => <section className="card admin-stat-card" key={key}>
-          <div><strong>{totals[key].toLocaleString("es-CO")}</strong><p>{label}</p></div>
-        </section>)}
+        {EVENTS.map(([key, label]) => (
+          <MetricCard className="admin-stat-card" key={key} label={label} value={totals[key].toLocaleString("es-CO")} />
+        ))}
       </div>
+      <ComparisonBars
+        title="Volumen de eventos del recorrido"
+        description="Comparación de eventos agregados en los últimos días seleccionados; cada barra usa el valor máximo visible como referencia, no representa una tasa de conversión ni personas únicas."
+        values={EVENTS.map(([key, label]) => ({ label, value: totals[key] }))}
+      />
       <section className="card">
         <h2>Indicadores orientativos</h2>
         <p>Finalización sobre inicios: <strong>{ratio(totals.diagnostic_completed, totals.diagnostic_started)}</strong></p>

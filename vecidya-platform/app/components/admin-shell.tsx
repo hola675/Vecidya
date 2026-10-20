@@ -57,10 +57,11 @@ export function AdminShell({ active, children, workspaceUser }: AdminShellProps)
           {workspaceUser ? (
             <div className="admin-sidebar__user">
               <span className="avatar" aria-hidden="true">{workspaceUser.name.slice(0, 1).toUpperCase()}</span>
-              <span><strong>{workspaceUser.name}</strong><small>Platform Admin</small></span>
+              <span><strong>{workspaceUser.name}</strong><small>Administrador de plataforma</small></span>
             </div>
           ) : null}
-          <Link className="admin-sidebar__return" to="/app"><Icon name="user" /> Volver al espacio cliente</Link>
+          <Link className="admin-sidebar__return" to="/app"><Icon name="user" /> Volver a Mi Vecidya</Link>
+          <Link className="admin-sidebar__return" to="/vecindario"><Icon name="eye" /> Ver sitio público</Link>
           <Form method="post" onSubmit={handleSignOut}>
             <Button className="admin-sidebar__signout" disabled={submitting} tone="ghost" type="submit">
               {submitting ? "Procesando…" : "Cerrar sesión"}

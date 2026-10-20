@@ -1,4 +1,7 @@
 
+**UX-COHERENCE-03 (2026-10-19, rama `feat/ux-three-surfaces-20261019`; CODE/TEST, inspección estática 22/22, runtime NOT RUN):** patrón visual compartido de guía/indicadores/progreso/barras para Home, dashboard cliente, dashboard administrador y vista de analítica; símbolo oficial armonizado y navegación cruzada. El progreso procede de la completitud y estado de publicación; comparaciones internas de los conteos existentes, sin cohortes ni estadísticas inventadas. No se modifica permisos, fuentes de datos, Diagnóstico, GHL ni publicación. Suite unitaria, typecheck, build, E2E Worker, pruebas de accesibilidad y revisión visual están pendientes; el resto de pantallas exige auditoría progresiva aparte. No hay certificación transversal WCAG ni deploy.
+
+
 **LEGAL-UX-01 (2026-10-19; rama `feat/legal-trust-content-20261019`; CODE/TEST, RAN pendiente):** renovación de `/privacidad` y nueva `/terminos` en la web pública, con explicaciones de datos y derechos orientadas al usuario y estructura responsive común; enlaces desde navegación legal y registro. El Diagnóstico permanece anónimo público en el estado actual y su informe completo sigue sin activarse. No se modifica el tratamiento de datos, políticas efectivas, identidad comercial, consentimientos, GHL, D1 ni deploy. Los textos aún requieren revisión jurídica de titularidad, jurisdicción, fines/base de uso, conservación, terceros, derechos/procedimiento y condiciones comerciales; el PR no acredita conformidad legal ni publicación.
 
 
