@@ -4,8 +4,8 @@
 
 - Catálogo de 17 ofertas con fichas, rutas canónicas, beneficios, explicaciones de continuidad y separación licencias/complementos/servicios.
 - Explicación de captura de contactos y atención multicanal para WhatsApp; oportunidad de ventas solo si se configura workflow; historial preservable de datos recibidos pero sin garantía de mensajes nuevos en canal desconectado/bloqueado.
-- Política de recargo del 20 % sobre costes externos realmente facturados, redondeo por cargo agregado y prohibición de doble cobro por capacidades estándar o planes IA compartidos.
-- WhatsApp comercial a USD 12/mes sobre referencia externa de USD 10, más cargos reales; sin cuotas inventadas para SMS, reseñas básicas, campañas estándar o integraciones sin coste externo.
+- Margen bruto mínimo objetivo del 20 % sobre precio de venta después de costes directos; pruebas de piso de precio y prohibición de doble cobro por capacidades estándar o planes IA compartidos.
+- WhatsApp propuesto desde USD 15/mes sobre referencia externa de USD 10 y costes directos de soporte/comisiones pendientes de verificar; consumo variable según tarifas vigentes desde octubre de 2026, sin cuotas inventadas para capacidades básicas.
 - Se conservan $39/$59/$89/mes y $0/$10/$15 de puesta en marcha, sin cambiar derechos de licencias ni facturación.
 - Pruebas unitarias/E2E de catálogo/beneficios/precios actualizadas pero NO EJECUTADAS; sin deploy, merge, datos CRM o cobro real.
 
