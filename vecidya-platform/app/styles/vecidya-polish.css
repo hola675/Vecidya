@@ -668,3 +668,36 @@
 .services-core-card__benefit strong {
   color: #163957;
 }
+
+/* UX-PUBLIC-JOURNEYS-03: return path to the specific offer from Contact. */
+.contact-selection__return {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: .35rem;
+  min-height: 44px;
+  padding-block: .35rem;
+  text-decoration: underline;
+  text-underline-offset: .22em;
+  overflow-wrap: anywhere;
+}
+.contact-selection__return:hover {
+  text-decoration-thickness: 2px;
+}
+
+
+/* UX-PUBLIC-JOURNEYS-03: Home previews link straight to canonical service cards. */
+.home-services-grid .public-v2-service-card .text-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: .3rem;
+  margin-top: .5rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  text-underline-offset: .2em;
+}
+.home-services-grid .public-v2-service-card .text-link:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+}
