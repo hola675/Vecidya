@@ -93,6 +93,7 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
               <Icon name="admin" /> Administración Vecidya
             </Link>
           ) : null}
+          <Link className="app-sidebar__public-link" to="/vecindario"><Icon name="eye" /> Explorar el Vecindario</Link>
           <div className="sidebar-note">
             <span className="sidebar-note__icon"><Icon name="spark" /></span>
             <p>{activeOrganization ? `Trabajando en ${activeOrganization.name}.` : "Tu espacio Vecidya está protegido por organización."}</p>
