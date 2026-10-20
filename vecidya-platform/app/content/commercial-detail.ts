@@ -73,7 +73,7 @@ export const LICENSE_OFFERS: readonly LicenseOffer[] = [
     promise: "Capta y da seguimiento sin perder oportunidades.",
     summary: "Todo Cuadra, más un CRM preparado por Vecidya para gestionar de principio a fin un proceso comercial principal y repetible.",
     bestFor: "Negocios que reciben consultas de forma recurrente, tienen citas o venden mediante una secuencia de contacto, atención, propuesta y seguimiento.",
-    price: "USD 59/mes", priceUsd: 59, setupUsd: 10,
+    price: "USD 59/mes", priceUsd: 59, setupUsd: 19,
     preview: ["Todo Cuadra", "CRM: contactos y oportunidades", "Proceso comercial principal y agenda", "Seguimiento y automatización estándar"],
     includes: [
       "Todas las capacidades de Cuadra.",
@@ -109,7 +109,7 @@ export const LICENSE_OFFERS: readonly LicenseOffer[] = [
     promise: "Coordina procesos, responsables y automatizaciones.",
     summary: "Todo Barrio, más una biblioteca modular de procesos operativos estándar para coordinar varias etapas del trabajo sin reconstruir cada sistema desde cero.",
     bestFor: "Organizaciones donde ventas, incorporación, atención, renovaciones u otros procesos relacionados necesitan distintos responsables, reglas y visibilidad de conjunto.",
-    price: "USD 89/mes", priceUsd: 89, setupUsd: 15,
+    price: "USD 89/mes", priceUsd: 89, setupUsd: 29,
     preview: ["Todo Barrio", "Biblioteca modular multiproceso", "Coordinación de equipos y asignaciones", "Automatizaciones conectadas y control"],
     includes: [
       "Todas las capacidades de Barrio, incluido el CRM estándar.",
@@ -155,7 +155,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["Una nueva consulta entra por WhatsApp y queda asociada a su seguimiento comercial."],
     dependencies: "Requiere Barrio o Ciudad, cuenta/canal admisible y aprobación del proveedor del canal.",
     decision: "No exige Ciudad si solo añades WhatsApp al proceso estándar de Barrio.",
-    price: "USD 9/mes + uso", externalCosts: "Mensajes y posibles tarifas del proveedor por país/tipo de conversación.",
+    price: "USD 19/mes + uso", externalCosts: "La cuota fija estándar del canal se contempla en la cuota del complemento cuando se habilita bajo ese esquema; mensajes de pago y recargos del proveedor se informan aparte antes de activar.",
     contactInterest: "complemento-whatsapp-business", catalogPath: "/addons", detailPath: addon("whatsapp-business"),
   },
   {
@@ -174,9 +174,9 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
   {
     id: "reputation-reviews", kind: "addon", title: "Reputación y Reseñas",
     promise: "Solicita y acompaña reseñas con un proceso consistente.",
-    summary: "Capacidad recurrente para organizar solicitudes y seguimiento de reseñas reales.",
+    summary: "Kit recurrente de flujos de reseñas y seguimiento adicional, distinto de las solicitudes básicas que el CRM ya permite sin contratar este complemento.",
     bestFor: "Negocios que buscan cuidar su reputación sin fabricar opiniones.",
-    includes: ["Configuración estándar de solicitud de reseñas.", "Seguimiento de solicitudes a través de un proceso autorizado."],
+    includes: ["Circuito adicional de solicitud y seguimiento de reseñas reales, más allá del seguimiento comercial básico.", "Configuración de un modelo de reseñas previamente definido, revisión de estado y adaptación menor bajo el alcance del complemento."],
     excludes: ["No incluye reseñas pagadas o inventadas.", "No incluye campañas o agentes personalizados.", "No incluye consumos de mensajes cuando correspondan."],
     examples: ["Después de una atención real, se solicita voluntariamente una reseña mediante un canal permitido."],
     dependencies: "Normalmente Barrio o Ciudad para automatizar el seguimiento; revisión de canales y políticas de reseñas.",
@@ -187,7 +187,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
   {
     id: "campaigns-diffusion", kind: "addon", title: "Campañas y Difusión",
     promise: "Comunica novedades a públicos autorizados.",
-    summary: "Capacidad recurrente para organizar envíos y comunicaciones, diferenciada de crear o gestionar una campaña publicitaria profesional.",
+    summary: "Difusión segmentada recurrente adicional al seguimiento estándar de Barrio; no incluye producción creativa ni gestión publicitaria profesional.",
     bestFor: "Negocios con una audiencia que ha autorizado recibir comunicaciones.",
     includes: ["Preparación estándar del canal de difusión y segmentos básicos.", "Configuración recurrente compatible con el proceso CRM contratado."],
     excludes: ["No incluye el diseño y gestión de campañas a medida.", "No incluye pauta publicitaria ni envíos ilimitados."],
@@ -207,7 +207,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["El asistente aclara una pregunta frecuente y deja el siguiente paso para revisión humana cuando lo necesita."],
     dependencies: "Requiere Barrio o Ciudad, canal compatible y configuración de proveedor/uso de IA.",
     decision: "Una IA para un proceso sencillo puede acompañar Barrio; la coordinación multiproceso puede justificar Ciudad.",
-    price: "USD 15/mes + uso", externalCosts: "Uso del modelo de IA, mensajes y acciones de proveedores cuando apliquen.",
+    price: "USD 19/mes + uso", externalCosts: "Uso del modelo de IA, mensajes y acciones de proveedores cuando apliquen. No incluye suscripción externa de IA ilimitada.",
     contactInterest: "complemento-conversational-ai", catalogPath: "/addons", detailPath: addon("conversational-ai"),
   },
   {
@@ -220,7 +220,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["Un agente solicita el motivo de la llamada y remite una consulta al responsable correspondiente."],
     dependencies: "Requiere Barrio o Ciudad, canal telefónico compatible y costes de voz/IA activados.",
     decision: "La IA de Voz no requiere Ciudad por sí misma; el número de procesos coordinados determina la licencia.",
-    price: "USD 20/mes + uso", externalCosts: "Minutos, telefonía, modelos de IA y posibles tarifas adicionales.",
+    price: "USD 29/mes + uso", externalCosts: "Minutos, telefonía, modelos de IA y posibles tarifas adicionales. No incluye un plan externo de IA de tarifa fija.",
     contactInterest: "complemento-voice-ai", catalogPath: "/addons", detailPath: addon("voice-ai"),
   },
   {
@@ -233,7 +233,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["Sincronizar una herramienta admitida con el CRM cuando la licencia permite esa operación."],
     dependencies: "La compatibilidad depende del destino: si modifica contactos, oportunidades o automatizaciones del CRM exige Barrio o Ciudad; si solo usa Vecidya, se evalúa con Cuadra caso por caso.",
     decision: "Una conexión estándar no requiere Ciudad; la necesidad de varios procesos coordinados sí puede justificarlo.",
-    price: "USD 12/mes por conexión + uso", externalCosts: "APIs, ejecuciones, cuentas externas y suscripciones del destino, cuando apliquen.",
+    price: "USD 19/mes por conexión + uso", externalCosts: "APIs, ejecuciones, cuentas externas y suscripciones del destino, cuando apliquen.",
     contactInterest: "complemento-connections-integrations", catalogPath: "/addons", detailPath: addon("connections-integrations"),
   },
 ];
