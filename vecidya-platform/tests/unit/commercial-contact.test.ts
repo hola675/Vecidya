@@ -8,6 +8,8 @@ const whatsapp = "https://wa.me/573244321864";
 test("acepta solo identificadores comerciales explícitos", () => {
   assert.equal(resolveCommercialContactInterest("cuadra")?.label, "la licencia Cuadra");
   assert.equal(resolveCommercialContactInterest("servicio-visibilidad")?.label, "el servicio IA Aplicada");
+  assert.equal(resolveCommercialContactInterest("complemento-voice-ai")?.label, "el complemento IA de Voz");
+  assert.equal(resolveCommercialContactInterest("complemento-whatsapp-business")?.label, "el complemento WhatsApp Business");
   for (const value of [null, "", "Cuadra", "otro", "<script>alert(1)</script>", "__proto__", "constructor"]) {
     assert.equal(resolveCommercialContactInterest(value), null);
   }
@@ -24,6 +26,10 @@ test("preserva contexto legítimo en borradores de email y WhatsApp", () => {
   assert.equal(links.interest?.code, "barrio");
   assert(links.emailHref.includes(encodeURIComponent("Consulta Vecidya: la licencia Barrio")));
   assert(links.whatsappHref.includes(encodeURIComponent("me interesa la licencia Barrio")));
+  const addonLinks = buildCommercialContactLinks("complemento-voice-ai", whatsapp);
+  assert.equal(addonLinks.interest?.code, "complemento-voice-ai");
+  assert(addonLinks.emailHref.includes(encodeURIComponent("el complemento IA de Voz")));
+  assert(addonLinks.whatsappHref.includes(encodeURIComponent("me interesa el complemento IA de Voz")));
 });
 
 test("descarta interés desconocido sin reflejar la entrada", () => {
