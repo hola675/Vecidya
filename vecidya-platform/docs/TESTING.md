@@ -1,5 +1,10 @@
 # Pruebas
 
+## APRENDE-EMPRESAS-01 — pruebas y revisión editorial diferidas (2026-10-20)
+
+**TEST NOT RUN por acuerdo de revisión posterior.** Revalidar desde rama integrada, en worktree aislado: `pnpm run typecheck`, `pnpm run build`, `git diff --check`, prueba de integridad editorial (categoría permitida, slugs únicos, enlaces internos, imágenes existentes, tres ideas clave, marcado de borradores, fuentes verificadas), y `tests/e2e/learn-experience-check.mjs` extendida al quinto itinerario y cuatro nuevas URLs. Revisar SEO: borradores `noindex,nofollow`, sin autoría humana atribuida prematuramente; revisar sitemap de borradores, 360/390/768/1366 px, teclado, contraste, lector de pantalla y claridad con lectores de perfiles diferentes. Validar hipervínculos institucionales y textos sensibles a jurisdicción antes de retirar `editorialDraft`. Sin afirmación de PASS ni cobertura WCAG.
+
+
 ## APRENDE-EDITORIAL-02 — controles diferidos de biblioteca (2026-10-20)
 
 **TEST versionado, NOT RUN por instrucción del usuario.** Nueva suite `tests/unit/learn/learn-curriculum.test.ts` incluye cinco controles de integridad: 24 slugs únicos, 11 guías originales + 13 borradores, resúmenes útiles, fuentes oficiales con HTTPS, bloques pedagógicos, referencias entre guías, cuatro itinerarios y existencia de diagramas con metadatos accesibles. Esta suite está escrita, **no ejecutada ni certificada**.
