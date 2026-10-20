@@ -13,7 +13,7 @@ test("Aprende conserva las once guías originales y agrega trece borradores educ
 });
 
 test("cada guía responde una pregunta, resume tres ideas y conserva fuentes", () => {
-  const categoryNames = new Set(learnCategories.map((category) => category.name));
+  const categoryNames = new Set<string>(learnCategories.map((category) => category.name));
   for (const article of learnArticles) {
     assert(categoryNames.has(article.category), `Categoría desconocida: ${article.slug}`);
     assert(article.title.trim() && article.intro.trim() && article.excerpt.trim(), `Texto faltante: ${article.slug}`);
