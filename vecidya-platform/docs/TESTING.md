@@ -337,6 +337,14 @@ RAN: suites QA-03B y compatibilidad focal (contrato, contexto, 61 fragmentos con
 
 La sesión QA-03B conserva su implementación de almacenamiento: la sesión ACT anterior tiene schema/key 2, migración propia y comportamiento histórico. Unificar ambas rutinas alteraría consumers/compatibilidad; se mantiene duplicación hasta el cutover y auditoría de consumers. No se modificaron rutas públicas, puntuaciones, preguntas, cálculo, generador PDF ni historial. `git diff --check`: PASS.
 
+## DIAG-CLOSE-02 — certificación técnica previa a ACT-04 (2026-10-19)
+
+PR #14 está integrado en la base usada para esta certificación. QA-03B mantiene IDs y lecturas R3 migradas, 17 preguntas pendientes sin migración inventada, reglas de elegibilidad, estado/historia, buyer-recipient, scoring/calibración, recomendaciones e identidad compuesta; V3 sigue caracterizado. Un cotejo determinista de fixtures/versiones independientes (no conversión de sesiones) da V3 `physical_retail=82`; QA-03B `hybrid-retail-checkout` conserva `digital_foundation=75` y `discovery=75` pero no presenta score global con evidencia insuficiente. Un caso QA con estado operativo y dos señales migradas produce `digital_readiness=75`. No se forzó igualdad ni se alteraron fixtures.
+
+**RAN:** suites focales/compatibilidad combinadas `176/176 PASS`; QA-03B local `6/6 recorridos + reload/resume + cross-tab Web Locks PASS`; FUNNEL-01B Worker/UI `6/6 PASS` (23 respuestas replayadas en Worker, allowlist exacta, `no-store`, sesión V3 preservada y ruta anónima de informe cerrada); `pnpm run typecheck` y `pnpm run build` PASS. Escaneo bundle: `0` marcadores QA-03B-only en client/server; client conserva `vecidya.diagnostic.v3.session.2` y llamada `/api/diagnostic/anonymous-summary`, server conserva `runDiagnosticPipelineV3` y replay del endpoint.
+
+El E2E QA produce/reconstruye el resultado y el informe PDF localmente con identidad QA; no es replay autoritativo de QA en Worker. El endpoint público probado sigue siendo V3. Por tanto la relación común QA `Worker → resumen anónimo + informe identificado` queda **BLOCKED / no disponible** sin implementar la integración server-only. PAC/Acrobat, NVDA y la aceptación visual/humana no se ejecutaron en ese corte; por decisión propietaria ahora quedan `PDF_OWNER_REVIEW`, manual y no bloqueante, sin afirmar conformidad PDF/UA ni repetir verificaciones. FUNNEL-01D.2/01D.3 continúan independientes. Sin email real, D1 remota, migraciones, deploy o cambio público.
+
 ## DIAG-V3-QA-03B — certificación candidata local (2026-10-11)
 
 **Resultado: `CONTRACT_CERTIFIED`; elegibilidad D2: `D2_ELIGIBILITY_APPROVED`.** La certificación se limita al contrato candidato y al runtime local. No activa la candidata, no modifica el contrato público ni las sesiones históricas, y no cierra `GATE_B_PARTIAL`.

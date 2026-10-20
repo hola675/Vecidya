@@ -27,6 +27,8 @@
 
 **Estado a fecha 2026-10-19:** DIAG-CLOSE-01 prepara contratos/consumidores y fija QA-03B como destino; D0-D6 siguen sin certificación de equivalencia/cutover. La integración local obtuvo PASS técnico en FUNNEL-01D.1 y las regresiones Worker asociadas, pero G00-07 y el estado de GitHub del commit actual siguen bloqueados; esto no certifica paridad con QA-03B ni autoriza cutover. Mantener `GATE_B_PARTIAL`; no borrar código ni iniciar ACT-04.
 
+**DIAG-CLOSE-02 (2026-10-19):** PR #14 integrado; evidencia local PASS de contrato, escenarios deterministas, sesión QA-03B, replay/allowlist público V3, E2E, typecheck/build y bundle. NO-GO ACT-04: el Worker público continúa en V3 y QA-03B no tiene replay server-authoritative; hace falta conectar un único resultado versionado al resumen y al informe en el cambio atómico. `PDF_OWNER_REVIEW` es manual/no bloqueante y no implica certificación PDF/UA; FUNNEL-01D.2/01D.3 siguen independientes salvo dependencia técnica/de privacidad demostrada. No modifica ruta ni API pública ni habilita ACT-04.
+
 ## FUNNEL-01D.2 — implementación incremental y derechos (2026-10-17)
 
 **Avance técnico 01D.2-B (2026-10-17):** se añadió `revokeDiagnosticOptionalIntents` en `db/queries/diagnostic-identification.server.ts` con autorización mediante grant vigente, actualizaciones idempotentes de consentimiento comercial e investigación y revalidación en cada UPDATE. **Sin pruebas ejecutadas, sin API/UI pública y sin aprobación de 01D.1.** No se ha implementado la solicitud de eliminación ni el registro de derechos; se mantienen como pendientes. Este avance de código aislado no autoriza activar la fase ni saltar sus gates.

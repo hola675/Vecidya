@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-10-19 — `PDF_OWNER_REVIEW`: gate manual no bloqueante
+
+- Decisión del propietario: revisión visual/contenido/calidad del PDF exclusivamente manual, `PDF_OWNER_REVIEW`; no bloquea desarrollo ni ACT-04. PAC, Acrobat, NVDA y certificaciones/revisiones automáticas dejan de ser condiciones de aprobación.
+- Se conserva el historial `NOT_RUN` y no se declara certificación PDF/UA. No se modifican renderer, generador ni dependencias. El NO-GO técnico de ACT-04 permanece por replay Worker QA-03B y resultado común summary/informe.
+
+## 2026-10-19 — DIAG-CLOSE-02: certificación técnica QA-03B
+
+- PR #14 integrado; suites diagnósticas focales 176/176, Worker/FUNNEL-01B 6/6, QA-03B E2E 6 recorridos + persistencia/concurrencia, typecheck y build PASS. Sin cambios de código funcional.
+- Confirmada separación: QA-03B permanece client-side/dev-only; replay Worker público, resumen anónimo y sesión pública siguen en V3. El informe QA local reconstruye su resultado versionado, pero todavía no comparte replay Worker con el resumen.
+- NO-GO ACT-04: integrar replay server-authoritative QA y el resultado único para resumen/informe. La revisión propietaria PDF no forma parte del gate actual. FUNNEL-01D.2/01D.3 siguen como fases independientes. Sin migraciones, API pública cambiada ni deploy.
+
 ## 2026-10-19 — UX-COHERENCE-03 (rama, pendiente de QA)
 
 - Nuevo sistema de guías, tarjetas de métricas, progreso accesible y comparación visual basada en datos reales para las tres superficies.
@@ -20,7 +31,6 @@
 - Se centralizan y rediseñan las plantillas transaccionales HTML+texto con logo y paleta oficial de Vecidya: invitación, verificación, solicitud de restablecimiento, confirmación de contraseña ya cambiada y acceso/recuperación del informe Diagnóstico en buzón local simulado.
 - Invitaciones por rutas propias: envío explícito único tras crear, tres estados de proveedor y mensaje honesto en caso no confirmado; sin duplicar callback ni reintento ciego. Se renombra la fecha visible del listado a «Creada el».
 - Se agregan pruebas `tests/email/mail-templates.test.ts` y amplía `test:email`. En este entorno de edición GitHub **no se ejecutaron** tests, typecheck, build, E2E ni se publicó. No hay secretos/migraciones/CRM/GHL/activación de diagnóstico nuevos.
-
 
 
 
