@@ -17,7 +17,7 @@ async function fetchPage(path) {
   assert(html.includes("<title") && html.includes('name="description"') && html.includes('rel="canonical"'), `${path} no tiene metadata SEO base.`);
   // La separación comercial se explica en Licencias y Servicios: GHL es externo, no nativo.
   // Fuera de esas dos páginas públicas no se introduce un nombre de proveedor.
-  if (/\\bGHL\\b|HighLevel/i.test(html)) {
+  if (/\bGHL\b|HighLevel/i.test(html)) {
     assert(["/licencias", "/servicios"].includes(path), `${path} incluye proveedor CRM fuera de su explicación comercial.`);
     assert(/extern[ao]|corresponde a GHL/i.test(html), `${path} no diferencia el CRM externo de Vecidya.`);
   }
