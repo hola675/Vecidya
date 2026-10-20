@@ -1,5 +1,12 @@
 # Pruebas
 
+## WEB-COMERCIAL-01 — pruebas comerciales (2026-10-20)
+
+**TEST versionado / RAN pendiente:** `tests/unit/commercial-contact.test.ts` verifica allowlist de intereses, rechazo de entrada arbitraria, enlace sin contexto y borradores de canal. `tests/e2e/licenses-experience-check.mjs` amplía regresión a MiniWeb/Vecindario, GHL separado y CTA de las tres licencias; `tests/e2e/web-commercial-contact-check.mjs` comprueba las siete tarjetas de servicios, sus enlaces, selección en Contacto, rechazo de parámetros extraños y explicación de invitaciones a 1366/390 px.
+
+**Gates pendientes de ejecutar en worktree aislado con dependencias:** `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`. Contra Worker local `pnpm run dev` con configuración de prueba, ejecutar `node tests/e2e/licenses-experience-check.mjs` y `node tests/e2e/web-commercial-contact-check.mjs`. Revisar manualmente claridad, foco/teclado, zoom 200 %, contraste, móvil 360/390/768/1366 y enlaces de correo/WhatsApp sin enviar mensajes. Este registro describe cobertura añadida, **no resultados PASS**; no CI Actions, deploy, D1 remota ni emisión real.
+
+
 ## UX-COHERENCE-03 — gates de diseño y medición (2026-10-19)
 
 **TEST versionado:** `tests/unit/ux/experience-system.test.ts` prueba `clampPercentage`, `relativeBarWidth`, casos NaN/infinito/negativos, normalización y visualización localizada; presencia de guías en Web/cliente/interno, reutilización del logo, preservación de permisos, origen de métricas, estado sin eventos y responsive. **Inspección estática RAN 22/22 PASS** a través de fuentes conectadas a GitHub; esta comprobación **no ejecuta** `node --test`, TypeScript, React, Cloudflare ni navegador.

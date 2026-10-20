@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-20 — WEB-COMERCIAL-01 (rama, pendiente de validación y merge)
+
+- Licencias: descripción clara de MiniWeb/Vecindario en Cuadra y CRM externo únicamente desde Barrio; precios y activación sin cambios.
+- Servicios: siete familias y sus problemas/resultados alineados con el catálogo, CTA conservando el interés seleccionado.
+- Contacto y Únete: enlaces de correo/WhatsApp con contexto permitido, canales explicados sin contradicción y alta comercial por contacto/invitación; sin formulario, cobro ni envío automático.
+- Pruebas unitarias y E2E agregadas, **sin ejecución certificada** desde esta sesión de edición conectada a GitHub. Sin deploy.
+
+
 ## 2026-10-19 — `PDF_OWNER_REVIEW`: gate manual no bloqueante
 
 - Decisión del propietario: revisión visual/contenido/calidad del PDF exclusivamente manual, `PDF_OWNER_REVIEW`; no bloquea desarrollo ni ACT-04. PAC, Acrobat, NVDA y certificaciones/revisiones automáticas dejan de ser condiciones de aprobación.
