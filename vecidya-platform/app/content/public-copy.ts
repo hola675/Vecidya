@@ -3,7 +3,7 @@ export const PUBLIC_ACTION_LABELS = {
   diagnosticDiscovery: "Encontrar qué necesito",
   contact: "Contactar",
   services: "Ver servicios",
-  addons: "Ver addons",
+  addons: "Ver complementos",
   licenses: "Ver licencias",
 } as const;
 
