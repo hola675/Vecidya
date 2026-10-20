@@ -48,7 +48,7 @@ try {
       await page.keyboard.press("Escape");
       assert(await mobileMenu.getAttribute("open") === null, `${label}: Escape no cierra el menú`);
       await mobileMenu.locator("summary").click();
-      await page.locator("main h1").first().click();
+      await page.mouse.click(8, 300); // fuera del panel flotante incluso a 360 px
       assert(await mobileMenu.getAttribute("open") === null, `${label}: pulsación fuera no cierra el menú`);
     } else {
       const primary = page.locator("header .site-nav");
