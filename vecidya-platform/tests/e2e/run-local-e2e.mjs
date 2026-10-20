@@ -31,6 +31,7 @@ const scripts = [
   "join-contact-experience-check.mjs",
   "about-experience-check.mjs",
   "learn-experience-check.mjs",
+  "public-navigation-a11y-check.mjs",
   "commercial-experience-review-check.mjs",
   "legal-trust-experience-check.mjs",
   "product-experience-b-client-app-check.mjs",
