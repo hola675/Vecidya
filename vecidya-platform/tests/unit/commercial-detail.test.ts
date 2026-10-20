@@ -18,6 +18,7 @@ test("catálogo publica 3 licencias, 7 complementos y 7 servicios distintos", ()
     assert(Object.prototype.hasOwnProperty.call(COMMERCIAL_CONTACT_INTERESTS, offer.contactInterest));
     assert(offer.includes.length > 0 && offer.excludes.length > 0);
     assert(offer.examples.length > 0);
+    assert(offer.benefits.length >= 2, `${offer.title} sin beneficios comprensibles`);
     assert(offer.benefits.length >= 2, `Faltan ventajas prácticas de ${offer.id}`);
     assert(offer.benefits.every((benefit) => benefit.trim().length >= 25));
 
@@ -43,7 +44,14 @@ test("la diferencia de precio corresponde a capacidades, no a cuotas artificiale
 });
 
 test("complementos y servicios no se facturan dentro de la plantilla estándar", () => {
-  assert(ADDON_OFFERS.every((o) => o.kind === "addon" && o.price.includes("USD")));
+  assert(ADDON_OFFERS.every((o) => o.kind === "addon" && o.price.length > 8));
+  assert.equal(ADDON_OFFERS.find((o) => o.id === "whatsapp-business")?.price, "USD 12.00/mes + consumo");
+  assert(ADDON_OFFERS.some((o) => o.id === "reputation-reviews" && /incluid[ao]/i.test(o.price)));
+  const whatsapp = ADDON_OFFERS.find((o) => o.id === "whatsapp-business");
+  assert(whatsapp?.journey?.length === 4);
+  assert(whatsapp?.benefits.some((benefit) => /contacto|CRM/i.test(benefit)));
+  assert(whatsapp?.continuity?.includes("no están garantizados"));
+  assert(SERVICE_OFFERS.every((o) => o.benefits.length >= 2));
   assert(SERVICE_OFFERS.every((o) => o.kind === "service" && o.price === "Propuesta según alcance"));
   assert(ADDON_OFFERS.every((o) => o.excludes.some((v) => /no incluye/i.test(v))));
   assert(SERVICE_OFFERS.some((o) => /sin licencia/i.test(o.dependencies)));
