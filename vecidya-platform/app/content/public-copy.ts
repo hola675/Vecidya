@@ -69,3 +69,26 @@ export function buildCommercialContactLinks(value: string | null, whatsappBaseUr
     whatsappHref: `${whatsappBaseUrl}?text=${encodeURIComponent(message)}`,
   };
 }
+
+
+/**
+ * Regreso a la oferta concreta que abrió Contacto.
+ * Solo se utilizan identificadores previamente aceptados en la allowlist.
+ * No se aceptan URLs, slugs arbitrarios ni parámetros de redirección externos.
+ */
+export function resolveCommercialContactReturn(value: string | null) {
+  const interest = resolveCommercialContactInterest(value);
+  if (!interest) return null;
+  const { code, label } = interest;
+  let to: string;
+  if (code === "cuadra" || code === "barrio" || code === "ciudad") {
+    to = `/licencias#${code}`;
+  } else if (code.startsWith("servicio-")) {
+    to = `/servicios#${code.slice("servicio-".length)}`;
+  } else if (code.startsWith("complemento-")) {
+    to = `/addons#${code.slice("complemento-".length)}`;
+  } else {
+    return null;
+  }
+  return { to, label: `Volver a ${label}` };
+}
