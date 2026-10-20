@@ -46,9 +46,10 @@ async function runViewport(width, height) {
   for (const href of ["/vecindario", "/servicios", "/aprende", "/contacto", "/diagnostico"]) {
     assert(await page.locator(`header .site-nav a[href="${href}"]`).count() === 1 || await page.locator(`header .site-nav__panel a[href="${href}"]`).count() === 1, `${label} header no enlaza ${href}.`);
   }
-  for (const href of ["/licencias", "/addons", "/sobre-nosotros"]) {
+  for (const href of ["/licencias", "/addons"]) {
     assert(await page.locator(`header .site-nav__panel a[href="${href}"]`).count() === 1, `${label} menú Soluciones no enlaza ${href}.`);
   }
+  assert(await page.locator('footer .site-footer__nav a[href="/sobre-nosotros"]').count() === 1, `${label} Nosotros no está disponible en footer.`);
   await page.goto(new URL("/aprende", baseUrl).toString(), { waitUntil: "networkidle" });
   for (const href of ["/diagnostico", "/contacto"]) assert(await page.locator(`a[href="${href}"]`).count() > 0, `${label} Aprende no enlaza ${href}.`);
   await page.goto(new URL("/licencias", baseUrl).toString(), { waitUntil: "networkidle" });
