@@ -32,7 +32,7 @@ try {
         assert(await page.locator(`a[href="${category.path}"]`).count() > 0, `${width}: sin regreso al catálogo en ${path}`);
         assert(await page.locator('main a[href^="/contacto?interes="]').count() >= 1, `${width}: sin consulta contextual en ${path}`);
         const html = await page.content();
-        assert(!/\\bGHL\\b|HighLevel|GoHighLevel/i.test(html), `${width}: marca tecnológica en ficha pública ${path}`);
+        assert(!/\bGHL\b|HighLevel|GoHighLevel/i.test(html), `${width}: marca tecnológica en ficha pública ${path}`);
         const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
         assert(canonical === `https://vecidya.com${path}`, `${width}: canonical incorrecta ${path}`);
         const dims = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
