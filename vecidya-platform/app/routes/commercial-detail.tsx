@@ -76,6 +76,29 @@ export default function CommercialDetail({ loaderData }: { loaderData: { offer: 
           <p>{offer.bestFor}</p>
         </section>
 
+        <section className="commercial-detail__benefits" aria-labelledby="commercial-benefits-title">
+          <p className="eyebrow">VENTAJAS EN EL DÍA A DÍA</p>
+          <h2 id="commercial-benefits-title">¿Qué ganas realmente al contratarlo?</h2>
+          <ul>{offer.benefits.map((benefit) => <li key={benefit}>{benefit}</li>)}</ul>
+        </section>
+
+        {offer.journey && offer.journey.length > 0 && (
+          <section className="commercial-detail__journey" aria-labelledby="commercial-journey-title">
+            <p className="eyebrow">RECORRIDO ILUSTRATIVO</p>
+            <h2 id="commercial-journey-title">Así funciona en la práctica.</h2>
+            <p>Ejemplo del funcionamiento objetivo cuando el canal, la configuración y los permisos correspondientes están habilitados.</p>
+            <ol>{offer.journey.map((step) => <li key={step}>{step}</li>)}</ol>
+          </section>
+        )}
+
+        {offer.continuity && (
+          <aside className="commercial-detail__continuity" aria-labelledby="commercial-continuity-title">
+            <p className="eyebrow">CONTINUIDAD Y LÍMITES</p>
+            <h2 id="commercial-continuity-title">¿Qué pasa si se desconecta o bloquea un canal?</h2>
+            <p>{offer.continuity}</p>
+          </aside>
+        )}
+
         <div className="commercial-detail__columns">
           <BulletGroup title={offer.kind === "service" ? "Qué trabajo incluye la propuesta" : "Qué incluye"} values={offer.includes} />
           <BulletGroup title="Qué no está incluido" values={offer.excludes} />
