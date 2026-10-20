@@ -27,10 +27,10 @@ const licenses: License[] = [
     id: "cuadra",
     name: "Cuadra",
     objective: "Organiza.",
-    idealFor: "Para organizar presencia, información y prioridades.",
+    idealFor: "Para presentar tu negocio en Vecidya y formar parte del Vecindario, sin CRM.",
     marker: "C",
     icon: publicAssets.catalog.plans.cuadra,
-    includes: ["Presencia organizada", "Información y prioridades", "Base Vecidya", "Acompañamiento inicial"],
+    includes: ["Cuenta y organización Vecidya", "Perfil y MiniWeb del negocio", "Presencia en Vecindario", "Información y prioridades"],
     level: "Base",
     priceUsd: 39,
     activationUsd: 0,
@@ -39,10 +39,10 @@ const licenses: License[] = [
     id: "barrio",
     name: "Barrio",
     objective: "Capta y da seguimiento.",
-    idealFor: "Para consultas, oportunidades y seguimiento recurrente.",
+    idealFor: "Para coordinar consultas y oportunidades con un CRM externo gestionado mediante GHL.",
     marker: "B",
     icon: publicAssets.catalog.plans.barrio,
-    includes: ["CRM comercial", "Pipeline", "Calendario", "Captación", "Seguimiento"],
+    includes: ["Presencia Vecidya y MiniWeb", "CRM externo (GHL)", "Contactos y oportunidades", "Pipeline, captación y seguimiento"],
     level: "Crecimiento",
     priceUsd: 59,
     activationUsd: 10,
@@ -51,10 +51,10 @@ const licenses: License[] = [
     id: "ciudad",
     name: "Ciudad",
     objective: "Automatiza y controla.",
-    idealFor: "Para varios procesos, equipos y routing coordinado.",
+    idealFor: "Para coordinar varios procesos comerciales, equipos y automatizaciones.",
     marker: "C",
     icon: publicAssets.catalog.plans.ciudad,
-    includes: ["Todo Barrio", "Routing", "Handoffs", "Automatización multiproceso", "Control operativo"],
+    includes: ["Todo Barrio", "Procesos comerciales relacionados", "Asignación y coordinación de equipos", "Automatización multiproceso", "Control operativo"],
     level: "Escala",
     priceUsd: 89,
     activationUsd: 15,
@@ -64,7 +64,9 @@ const licenses: License[] = [
 const comparisonRows = [
   { label: "Objetivo", values: ["Ordenar", "Captar", "Automatizar"] },
   { label: "Etapa", values: ["Inicio", "Crecimiento", "Escala"] },
-  { label: "Organización", values: ["Base", "Base", "Base"] },
+  { label: "Organización", values: ["Base Vecidya", "Base Vecidya", "Base Vecidya"] },
+  { label: "MiniWeb y Vecindario", values: ["Incluidos", "Incluidos", "Incluidos"] },
+  { label: "CRM externo (GHL)", values: ["No incluido", "Estándar", "Avanzado"] },
   { label: "Seguimiento CRM", values: ["No incluido", "Estándar", "Avanzado"] },
   { label: "Automatizaciones CRM", values: ["No incluidas", "Estándar", "Avanzadas"] },
 ] as const;
@@ -104,7 +106,8 @@ export default function Licenses() {
           <div className="licenses-section-heading">
             <p className="eyebrow">TRES MOMENTOS</p>
             <h2 id="licenses-levels-title">Tres productos. Una decisión clara.</h2>
-            <p className="licenses-price-note">Precios públicos en USD. La activación se coordina por contacto.</p>
+            <p className="licenses-price-note">Precios públicos en USD. La activación se coordina por contacto; no hay compra automática.</p>
+            <p className="licenses-price-note">Cuadra funciona de forma independiente y no requiere GHL. Barrio y Ciudad incorporan capacidades CRM externas.</p>
           </div>
           <div className="licenses-grid">
             {licenses.map((license, index) => (
@@ -125,7 +128,7 @@ export default function Licenses() {
                   <ul>{license.includes.map((item) => <li key={item}><span aria-hidden="true">✓</span>{item}</li>)}</ul>
                 </div>
                 <p className="license-card__activation">Puesta en marcha ${license.activationUsd} una vez</p>
-                <Link className="license-card__availability" to="/contacto">Empezar con {license.name} <span aria-hidden="true">→</span></Link>
+                <Link className="license-card__availability" to={`/contacto?interes=${license.id}`}>Empezar con {license.name} <span aria-hidden="true">→</span></Link>
               </article>
             ))}
           </div>
@@ -134,7 +137,7 @@ export default function Licenses() {
         <section aria-labelledby="licenses-compare-title" className="licenses-comparison public-v2-section">
           <div className="licenses-section-heading">
             <p className="eyebrow">A SIMPLE VISTA</p>
-            <h2 id="licenses-compare-title">Compara el nivel de acompañamiento.</h2>
+            <h2 id="licenses-compare-title">Compara las capacidades de cada licencia.</h2>
           </div>
           <div className="licenses-compare-table-wrap">
             <table className="licenses-compare-table">

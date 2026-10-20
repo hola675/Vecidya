@@ -50,6 +50,13 @@ async function runViewport(width, height) {
   assert(comparisonRows.some((row) => row.includes("Automatizaciones CRM") && row.includes("No incluidas") && row.includes("Estándar") && row.includes("Avanzadas")), `${label} no deja claro que Cuadra no incluye automatizaciones CRM.`);
   assert(!comparisonRows.some((row) => /Seguimiento.*Básico|Automatización.*Inicial/i.test(row)), `${label} conserva copy CRM ambiguo en Cuadra.`);
   assert(await page.getByRole("link", { name: /Empezar con/ }).count() === 3, `${label} no ofrece CTA para cada nivel.`);
+  for (const plan of ["cuadra", "barrio", "ciudad"]) {
+    const visibleName = plan[0].toUpperCase() + plan.slice(1);
+    assert(await page.getByRole("link", { name: `Empezar con ${visibleName}` }).getAttribute("href") === `/contacto?interes=${plan}`, `${label} el CTA de ${visibleName} no conserva la selección.`);
+  }
+  assert(comparisonRows.some((row) => row.includes("MiniWeb y Vecindario") && row.includes("Incluidos")), `${label} no presenta MiniWeb y Vecindario.`);
+  assert(comparisonRows.some((row) => row.includes("CRM externo (GHL)") && row.includes("No incluido")), `${label} no separa Cuadra de GHL.`);
+  assert(await page.getByText(/Cuadra funciona de forma independiente/).isVisible(), `${label} no explica la independencia de Cuadra.`);
   const html = await page.content();
   for (const price of ["USD 39/mes", "USD 59/mes", "USD 89/mes"]) {
     assert(html.includes(price), `${label} no mostró el precio público ${price}.`);
@@ -61,7 +68,7 @@ async function runViewport(width, height) {
   } else {
     assert(await page.locator(".licenses-compare-mobile").isVisible(), `${label} no mostró el comparador móvil.`);
     await page.locator(".licenses-compare-mobile details").first().locator("summary").click();
-    assert(await page.locator(".licenses-compare-mobile details").first().locator("dd").count() === 5, `${label} comparador móvil incompleto.`);
+    assert(await page.locator(".licenses-compare-mobile details").first().locator("dd").count() === 7, `${label} comparador móvil incompleto.`);
   }
 
   await page.getByRole("link", { name: "Encontrar mi punto de partida" }).focus();

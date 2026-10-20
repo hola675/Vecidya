@@ -1,5 +1,12 @@
 # Estado de implementación
 
+## WEB-COMERCIAL-01 — claridad comercial y contacto contextual (2026-10-20; rama, no desplegado)
+
+**CODE + TEST, RAN pendiente.** Se reconciliaron las capacidades públicas de Cuadra/Barrio/Ciudad en `/licencias` con el catálogo comercial: MiniWeb y Vecindario en Cuadra, sin CRM/GHL; Barrio y Ciudad distinguen CRM externo. Se actualizaron problemas/resultados de siete familias en `/servicios` y sus CTA llevan a `/contacto?interes=<id>`. Contacto utiliza únicamente IDs comerciales permitidos para preparar borradores editables de correo o WhatsApp; valores desconocidos no se reflejan ni persisten. `/unete` aclara contratación asistida y acceso por invitación, sin altas o cobros automáticos.
+
+**Límites:** código aislado en `feat/web-comercial-01`, no publicado; precios $39/$59/$89 y puesta en marcha intactos. Sin GHL nuevo, CRM propio, DB, rutas autenticadas ni cambios en Diagnóstico o Mi Vecidya. Se añadieron unitarias de allowlist/contacto, E2E para las rutas comerciales y regresiones del comparador. Se requiere ejecución en worktree de `test:unit`, `typecheck`, `build`, diff-check y E2E Worker responsive; no se declaran PASS ejecutados ni conformidad WCAG.
+
+
 ## DIAG-CLOSE-02 — certificación técnica previa a ACT-04 (2026-10-19)
 
 PR #14 integrado en `origin/main`; no se ejecutó ACT-04. Contratos y sesiones QA-03B, 176/176 unitarias, comparación determinista de V3/QA-03B, QA-03B local `6/6` + reload/concurrencia, FUNNEL-01B `6/6`, typecheck, build y escaneo bundle PASS. Diferencias de scoring observadas son deliberadas: V3 retail `82`; QA-03B no publica un global con evidencia insuficiente, aunque conserva dimensiones con score `75`. La sesión QA-03B genera/reconstruye su informe desde resultado con identidad QA versionada.
