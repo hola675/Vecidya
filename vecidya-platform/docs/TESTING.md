@@ -1,5 +1,13 @@
 # Pruebas
 
+
+## UX-WEB-NAV-02 — matriz de navegación pública (2026-10-20)
+
+**TEST versionado / NO RAN.** `tests/unit/public-navigation.test.ts` verifica nombres, destinos canónicos, unicidad, familias del footer y paridad móvil; `tests/unit/public-copy.test.ts` conserva el contrato de etiquetas; `tests/e2e/public-navigation-a11y-check.mjs` cubre header, menú responsive/teclado, footer agrupado, CTA y contexto de Contacto a 320/360/390/768/960/1024/1366 px. Se ajusta `commercial-experience-review-check.mjs` para validar «Sobre nosotros» desde el footer en lugar del submenú Soluciones.
+
+**Pendiente antes de aceptación:** en un worktree aislado `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build` y `git diff --check`. Contra Worker local con datos seguros, ejecutar `node tests/e2e/public-navigation-a11y-check.mjs`, `node tests/e2e/commercial-experience-review-check.mjs` y `node tests/e2e/addons-experience-check.mjs`. Comprobar foco, contraste WCAG, ampliación 200 %, estados de hover/táctil, externos mailto/WhatsApp y ausencia de overflow en móvil/tablet. Los tests locales no prueban automáticamente producción; para estado publicado se necesita HTTP anónimo fechado y autorización de despliegue aparte.
+
+
 ## WEB-PUBLIC-SEO-01 — controles SEO públicos (2026-10-20)
 
 **TEST versionado; NO RAN.** `tests/unit/public-seo.test.ts` comprueba `https://vecidya.com` como origen, validación de rutas relativas, respuesta de `robots.txt`, ausencia de `request.url` en el sitemap y `noindex, follow` para búsquedas/filtros de Aprende. Antes de certificar: `pnpm run typecheck`, `pnpm run build`, `pnpm run test:unit` y `git diff --check` en worktree local aislado. Comprobar vía Worker local `GET /robots.txt`, `GET /sitemap.xml`, `GET /aprende`, `GET /aprende?q=erp` y `GET /aprende?tema=Gestión+y+equipos`; garantizar canonical, meta robots, sitemap con solo artículos aprobados, perfiles publicados y sin origen externo. Los tests de staging/remotos requieren autorización expresa. No se hizo HTTP a producción ni deploy.
