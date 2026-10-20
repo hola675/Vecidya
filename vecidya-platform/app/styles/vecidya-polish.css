@@ -649,3 +649,22 @@
   max-width: 77ch;
   margin-bottom: 0;
 }
+
+
+/* COM-CATALOG-BENEFITS-02 — concise proof of value in product grids. */
+.addon-card__benefit,
+.services-core-card__benefit {
+  min-width: 0;
+  margin: .5rem 0;
+  border-left: 3px solid #5988b7;
+  padding: .45rem .7rem;
+  background: #f3f8fd;
+  color: #244361;
+  font-size: .91rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.addon-card__benefit strong,
+.services-core-card__benefit strong {
+  color: #163957;
+}
