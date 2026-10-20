@@ -85,6 +85,6 @@ assert(licenses.includes("Precios públicos en USD."), "Licencias no aclara sus 
 assert(/USD\s*39\/mes/.test(licenses) && /USD\s*59\/mes/.test(licenses) && /USD\s*89\/mes/.test(licenses), "Licencias no muestra los tres precios públicos.");
 assert((licenses.match(/Empezar con/g) ?? []).length === 3, "Licencias no ofrece el CTA en cada nivel.");
 const addons = await fetchPage("/addons");
-assert(/Costes de uso/i.test(addons) && /\$9\/mes|\$12\/mes|\$15\/mes|\$20\/mes/i.test(addons), "Addons no muestra precios V1 y costes de uso.");
+assert(/Costes de uso/i.test(addons) && /\$12\.00\/mes/.test(addons) && /20\s*%/.test(addons), "Complementos no explican tarifa WhatsApp y recargo transparente sobre costes externos.");
 
 console.log("PASS: UX-002.7 verificó flujo comercial, CTAs cruzados, navegación agrupada, SEO, precios públicos de licencias en USD, exclusión de rutas privadas y responsive 1366/768/390/360.");
