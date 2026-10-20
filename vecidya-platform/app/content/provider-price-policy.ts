@@ -1,26 +1,28 @@
 /**
- * COM-PRICING-20 — piso interno de margen bruto, no motor de facturación.
- * La meta autorizada es margen bruto >=20% del precio de venta
- * incluyendo TODOS los costes directos, no un recargo de 20% sobre costes.
- * Las herramientas incluidas en Barrio/Ciudad no reciben fees artificiales.
+ * COM-PRICING-20 — recargo comercial aprobado: 20 % SOBRE COSTE REAL.
+ * No es 20 % de margen bruto sobre el precio final.
+ * El coste incluye todos los cargos directos del proveedor facturados a Vecidya
+ * antes del recargo (incluidas comisiones efectivas), sin duplicar importes.
+ * El cálculo se aplica sobre cargos agregados en centavos enteros.
+ * No es motor de facturación y no determina impuestos o derechos de revender.
  */
-export const PROVIDER_TARGET_MARGIN_PERCENT = 20 as const;
+export const PROVIDER_MARKUP_PERCENT = 20 as const;
 
-/** Precio mínimo teórico a partir del cargo directo verificado, en centavos. */
+/** Importe resultante de un coste total de proveedor validado, redondeado al centavo superior. */
 export function providerResaleCents(directCostCents: number): number {
   if (!Number.isSafeInteger(directCostCents) || directCostCents < 0) {
     throw new RangeError("Se requiere un coste directo no negativo en centavos enteros.");
   }
-  const result = Math.ceil(directCostCents / (1 - PROVIDER_TARGET_MARGIN_PERCENT / 100));
-  if (!Number.isSafeInteger(result)) throw new RangeError("Coste fuera de rango.");
-  return result;
+  const total = Math.ceil(directCostCents * (100 + PROVIDER_MARKUP_PERCENT) / 100);
+  if (!Number.isSafeInteger(total)) throw new RangeError("Coste fuera de rango.");
+  return total;
 }
 
 export function formatProviderResaleUsd(directCostCents: number): string {
   return (providerResaleCents(directCostCents) / 100).toFixed(2);
 }
 
-/** Referencias de proveedor; NO acreditan costes reales de la cuenta Vecidya. */
+/** Referencias oficiales, NO recibos de la cuenta real de Vecidya. */
 export const PROVIDER_BASELINE_USD_CENTS = {
   whatsappBusinessMonthly: 1_000,
   aiGrowthSharedMonthly: 5_000,
