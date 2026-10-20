@@ -80,7 +80,7 @@ export default function Services() {
                 <p className="services-core-card__support"><span>Incluye según alcance</span> {service.support.join(" · ")}</p>
                 <div className="commercial-catalog__actions">
                   <Link className="text-link" to={service.detailPath}>Ver detalles de {service.title} <span aria-hidden="true">→</span></Link>
-                  <Link className="text-link services-core-card__cta" to={`/contacto?interes=servicio-${service.id}`}>Consultar este servicio <span aria-hidden="true">→</span></Link>
+                  <Link className="text-link services-core-card__cta" to={`/contacto?interes=servicio-${service.id}`}>Consultar {service.title} <span aria-hidden="true">→</span></Link>
                 </div>
               </article>
             ))}
