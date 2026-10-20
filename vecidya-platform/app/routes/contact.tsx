@@ -22,7 +22,7 @@ export default function Contact() {
           <p className="eyebrow">CONTACTO</p>
           <h1 id="contact-title">Hablemos de lo que estás intentando resolver.</h1>
           <p>Cuéntanos tu contexto por correo electrónico o WhatsApp directo. Ninguno de estos canales activa automáticamente una compra o suscripción.</p>
-          {interest && <p><strong>Interés seleccionado:</strong> {interest.label}. El mensaje se preparará con ese contexto para que puedas revisarlo antes de enviarlo.</p>}
+          {interest && <aside aria-label="Consulta seleccionada" className="contact-selection"><strong>Interés seleccionado: {interest.label}</strong><p>El mensaje se preparará con ese contexto para que puedas revisarlo antes de enviarlo.</p></aside>}
           <div className="public-actions">
             <a className="button button--primary" href={emailHref}>Escribir a hola@vecidya.com</a>
             <a className="button button--secondary" href={whatsappHref} rel="noreferrer" target="_blank">

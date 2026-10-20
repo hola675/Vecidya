@@ -126,8 +126,8 @@ export default function Services() {
                   <p className="eyebrow">{service.eyebrow}</p>
                 </div>
                 <h3>{service.title}</h3>
-                <p className="services-core-card__problem">{service.problem}</p>
-                <p className="services-core-card__result">{service.result}</p>
+                <div className="services-core-card__problem"><span>Tu situación</span><p>{service.problem}</p></div>
+                <div className="services-core-card__result"><span>Qué podemos aportar</span><p>{service.result}</p></div>
                 <p className="services-core-card__support"><span>Ejemplos</span> {service.support.join(" · ")}</p>
                 <Link className="text-link services-core-card__cta" to={`/contacto?interes=servicio-${service.id}`}>Consultar este servicio <span aria-hidden="true">→</span></Link>
               </article>
