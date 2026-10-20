@@ -1,5 +1,15 @@
 # Changelog
 
+
+## 2026-10-20 — UX-WEB-NAV-02 (rama de auditoría, sin deploy)
+
+- El PR #29 de navegación pública ya está integrado en `main@66939d4`; no se asume certificación runtime por el merge.
+- Centralizado el catálogo público de destinos y etiquetas para header, menú móvil y footer; separadas las columnas por exploración, soluciones, marca y legal.
+- Normalizada la etiqueta comercial «Complementos» manteniendo `/addons` como ruta estable; «Sobre nosotros» deja el desplegable «Soluciones» pero permanece en móvil y footer.
+- Estilos del footer con affordance, foco y objetivos táctiles; pruebas de integridad de menú y rutas, E2E ampliado a 320 px.
+- Cambios documentados en rama independiente, pruebas no ejecutadas; sin GHL, D1, Auth, esquema, pagos ni despliegue.
+
+
 ## 2026-10-20 — WEB-PUBLIC-SEO-01 (rama, sin desplegar)
 
 - Centralizado el origen canónico de `publicMeta`, `robots.txt` y `sitemap.xml` como `https://vecidya.com`, sin aceptar el origen del request.
