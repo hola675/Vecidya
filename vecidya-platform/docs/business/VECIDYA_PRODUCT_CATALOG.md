@@ -222,25 +222,23 @@ Referencias oficiales técnicas consultadas en octubre de 2026 — **solo para e
 - [Condicionales](https://help.gohighlevel.com/support/solutions/articles/155000002471)
 - [Precio y facturación de proveedor](https://help.gohighlevel.com/support/solutions/articles/155000001156-highlevel-pricing-guide)
 
-**Política objetivo aprobada: margen bruto mínimo del 20 % sobre el precio de venta, no un recargo del 20 % sobre el coste (2026-10-20).**
+**Política aprobada el 2026-10-20: recargo del 20 % SOBRE el coste real del proveedor.** No equivale a un margen bruto del 20 % sobre el precio de venta. La fórmula exacta es **precio = coste externo directo validado × 1,20**, redondeado hacia arriba al centavo por cargo agregado. El margen bruto resultante es aproximadamente 16,67 % del precio final, antes de otros gastos internos.
 
-- Fórmula del piso: **precio = coste directo total / 0,80**, redondeado hacia arriba a centavos. El coste directo integra cargo real de proveedor, comisiones, soporte imputado y operaciones de entrega necesarias; no prometer que un precio alcanza 20 % sin medir estos costes.
-- El CRM de Barrio ya incluye contactos, oportunidades, pipeline, agenda y automatización estándar. Ciudad ya incluye su biblioteca estándar multiproceso. Esas capacidades no crean complementos o servicios ficticios con segunda tarifa mensual.
-- **WhatsApp Business:** referencia oficial de proveedor **USD 10/mes por subcuenta**, más mensajes y posibles recargos. Piso teórico de reventa **USD 12,50/mes** si no existe ningún otro coste directo. Precio comercial **propuesto desde USD 15/mes + consumo**, viable para el 20 % solo cuando todos los costes directos no superen **USD 12/mes**. Si superan ese valor, cotizar con datos reales o revisar tarifa; no ocultar el coste.
-- **Cambio del 1 de octubre de 2026:** los primeros 1.000 mensajes de servicio por número y mes mantienen franquicia gratuita; después existen mensajes de servicio facturables, y ciertos mensajes de utilidad también pueden facturarse según mercado, ventana y tarifa. No afirmar que todo mensaje de respuesta es gratis; consultar el tarifario oficial y factura reales.
-- **Telefonía/SMS:** no inventar una cuota de activación universal; números, llamadas, mensajes, registros y cargos pueden generar coste y precisan una tarifa final que deje al menos 20 % de margen bruto.
-- **IA compartida:** pueden existir modalidades de pago por uso o suscripción por localización. Con referencias de coste USD 50/mes y USD 97/mes, los precios mínimos teóricos son **USD 62,50** y **USD 121,25** antes de soporte/comisiones adicionales. El mismo plan compatible no se vende una vez para IA conversacional y otra vez para IA de voz del mismo cliente; verificar coberturas, uso y condiciones.
-- **Licencias USD 39/59/89:** conservan sus precios confirmados. Su margen no está certificado sin datos de coste por organización, soporte, hosting y operación; revisar internamente y evitar regalar servicios profesionales a cambio de una cuota mensual.
-- **Alta estándar:** se conservan USD 0/10/15 de la política comercial vigente por contratación inicial, con alcance muy limitado. Antes de aceptar un alta, confirmar horas y costes directos para sostener el margen del 20 %; una implantación a medida se cotiza como servicio. Pendiente verificación de horas y política de cambio entre planes; no convertirla en consultoría sin límite.
-- **Servicios:** cotizar mano de obra, revisión, entregables, mantenimiento acordado y costes externos. El margen mínimo del 20 % también debe sostenerse en el trabajo profesional; no se calcula únicamente sobre una tarifa base de software.
-- Sin costes verificados, la cifra es **propuesta, no promesa de margen ni precio activado**. No automatizar cobros o cambios de licencia desde esta definición.
+- El coste externo directo incluye el cargo de proveedor, comisiones o recargos efectivamente facturados a Vecidya por esa operación. No se duplican comisiones ni se aplica el 20 % dos veces al mismo importe.
+- El CRM de Barrio ya incluye contactos, oportunidades, pipeline, agenda y automatización estándar. Ciudad ya incluye su biblioteca multiproceso estándar. **No se inventan fees mensuales por revender funciones ya incluidas.**
+- **WhatsApp Business:** referencia proveedor **USD 10/mes por subcuenta** → **USD 12/mes Vecidya** (10 × 1,20), más consumos verificables del canal facturados aparte con el mismo criterio. El importe definitivo depende de la factura, país y estado de canal.
+- **Cambio del 1 de octubre de 2026:** después de los primeros 1.000 mensajes de servicio gratuitos por número y mes, otros mensajes de servicio pueden facturarse; algunas plantillas de utilidad también generan cargos. No afirmar que todos los mensajes son gratis. Verificar reglas y franquicias actuales del proveedor.
+- **Telefonía/SMS:** no existe un cargo mensual universal de USD 9 por activar el CRM telefónico. Números, minutos, SMS/MMS, registros y cargos reales se repercuten × 1,20. El envío queda sujeto a permisos y requisitos del país.
+- **IA compartida:** modalidades por uso o suscripción por localización; referencias de proveedor USD 50/mes → **USD 60/mes** y USD 97/mes → **USD 116,40/mes**, únicamente si esa modalidad se contrató y aplica. Un mismo plan compatible no se factura por duplicado para IA conversacional y de voz.
+- **Licencias:** Cuadra USD 39, Barrio USD 59 y Ciudad USD 89/mes permanecen según la decisión comercial previa. El 20 % sobre coste de terceros NO altera por sí solo esos precios; la rentabilidad real de las licencias debe evaluarse internamente con costes totales por organización.
+- **Puesta en marcha:** se conservan USD 0/10/15 una sola vez para la activación inicial estándar, sin extenderlos a servicios profesionales a medida. Las condiciones de cambio entre planes y horas de entrega requieren política separada.
+- **Servicios profesionales:** se cotizan individualmente por trabajo y alcance acordados. El recargo del 20 % sobre costes de proveedores no es una tarifa por hora ni una fórmula automática de cotización de servicios.
+- **Control:** la cifra ilustrativa no certifica el costo efectivo en la cuenta de Vecidya, ni que la función esté instalada, conectada o habilitada para reventa. Validar factura y condiciones antes de vender.
 
-**Fuentes oficiales para el equipo (no exponer nombres tecnológicos en la web comercial):**
-- [Cuota y cargos WhatsApp](https://help.gohighlevel.com/support/solutions/articles/155000001428-whatsapp-pricing-billing-and-rebilling-guide)
+**Fuentes oficiales técnicas internas** (no mostrar la marca tecnológica al cliente):
+- [Tarifas y recargos WhatsApp](https://help.gohighlevel.com/support/solutions/articles/155000001428-whatsapp-pricing-billing-and-rebilling-guide)
 - [IA por consumo y planes compartidos](https://help.gohighlevel.com/support/solutions/articles/155000003906-ai-employee-access-rebilling-and-reselling)
-- [Teléfono, SMS y recargos de transportista](https://help.gohighlevel.com/support/solutions/articles/48001223556-phone-system-pricing-billing-guide)
-- [Correo y costes por envío](https://help.gohighlevel.com/support/solutions/articles/48001220605)
-
+- [Teléfono y SMS](https://help.gohighlevel.com/support/solutions/articles/48001223556-phone-system-pricing-billing-guide)
 
 **Límite de licenciamiento multi-organización abierto:** el catálogo histórico autoriza ciertos perfiles adicionales de una persona con licencia activa, mientras otros documentos exigen licencia de la organización para publicación. No se cambia la lógica de permisos ni se promete publicación multiorganización ilimitada hasta reconciliar una regla contractual verificable.
 
