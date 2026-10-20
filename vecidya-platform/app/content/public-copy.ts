@@ -90,5 +90,7 @@ export function resolveCommercialContactReturn(value: string | null) {
   } else {
     return null;
   }
-  return { to, label: `Volver a ${label}` };
+  // Los valores proceden de la allowlist, nunca de texto arbitrario del usuario.
+  const returnLabel = label.startsWith("el ") ? `Volver al ${label.slice(3)}` : `Volver a ${label}`;
+  return { to, label: returnLabel };
 }
