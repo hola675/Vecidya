@@ -1,5 +1,12 @@
 # Pruebas
 
+## APRENDE-OPERACIONES-02 — evidencia y validación pendiente (2026-10-20)
+
+**TEST versionado / NOT RUN por decisión del usuario.** Se actualizaron `tests/unit/learn/learn-curriculum.test.ts` para certificar el catálogo ampliado de 33 guías, 22 borradores, seis itinerarios, cinco nuevos slugs y sus nueve secciones, y `tests/unit/learn-content.test.ts` para conservar las 11 guías originales sin exigir que toda la biblioteca siga teniendo once artículos. Las comprobaciones de integridad de enlaces internos, ejemplos hipotéticos, imágenes SVG con `<title>`/`<desc>`, fuentes HTTPS y categoría existente permanecen activas.
+
+**Gates para una sesión posterior en worktree aislado:** `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`; contra Worker local, `node tests/e2e/learn-experience-check.mjs` y ampliación futura del E2E para los nuevos artículos, índice, imágenes, etiquetas de borrador, SEO `noindex`, fuentes y navegación 360/390/768/1366. Realizar revisión humana del lenguaje, ejemplos, precisión de inventario/ERP, referencias oficiales, dispositivos de bajo ancho de banda, accesibilidad y aspectos jurídicos por país antes de retirar `editorialDraft`. Sin resultados PASS reportados, sin prueba ni cambio remoto y sin publicación autorizada.
+
+
 ## APRENDE-EMPRESAS-01 — pruebas y revisión editorial diferidas (2026-10-20)
 
 **TEST NOT RUN por acuerdo de revisión posterior.** Revalidar desde rama integrada, en worktree aislado: `pnpm run typecheck`, `pnpm run build`, `git diff --check`, prueba de integridad editorial (categoría permitida, slugs únicos, enlaces internos, imágenes existentes, tres ideas clave, marcado de borradores, fuentes verificadas), y `tests/e2e/learn-experience-check.mjs` extendida al quinto itinerario y cuatro nuevas URLs. Revisar SEO: borradores `noindex,nofollow`, sin autoría humana atribuida prematuramente; revisar sitemap de borradores, 360/390/768/1366 px, teclado, contraste, lector de pantalla y claridad con lectores de perfiles diferentes. Validar hipervínculos institucionales y textos sensibles a jurisdicción antes de retirar `editorialDraft`. Sin afirmación de PASS ni cobertura WCAG.

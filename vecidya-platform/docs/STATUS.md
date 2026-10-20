@@ -1,5 +1,14 @@
 # Estado de implementación
 
+## APRENDE-OPERACIONES-02 — cinco guías de operación y tecnología empresarial (2026-10-20)
+
+**CODE + TEST versionado / RAN pendiente, sin deploy.** Sobre `main` posterior a PR #24/#25: se incorporaron cinco borradores editoriales en `app/content/learn-operations-02.ts` sobre tareas y responsables, control de inventario, capacitación del personal, sistemas de gestión ERP y pruebas piloto de proyectos digitales. Se incorporan mediante el catálogo público `learnArticles` y el sexto itinerario «Trabaja mejor cada día». Total de catálogo en el corte: **33 guías** (11 originales conservadas + 22 borradores), seis categorías, seis itinerarios. Los cinco artículos tienen tres ideas clave, nueve secciones, casos hipotéticos, pasos concretos, FAQs y fuentes institucionales; todos llevan `editorialDraft: true`, por lo que conservan etiqueta «En revisión», sin atribución humana nueva ni indexación. Cinco SVG nuevos de formas grandes, sin tipografía interna diminuta, incluyen título/descripcion accesible, y cada guía tiene alt específico.
+
+**Referencia editorial:** guía de inventario del portal público australiano business.gov.au; W3C WAI (lectura clara); OCDE D4SME 2025 (necesidades digitales), NIST CSF SP1300 (riesgos proporcionales), manual GOV.UK (pruebas pequeñas e iteración) y documentación introductoria de Microsoft Learn (definición ERP). Estas fuentes orientan; no constituyen leyes universales, promesa de ventas ni recomendaciones comerciales de proveedor.
+
+**Validación diferida:** se actualizan las pruebas de integridad curricular y las pruebas históricas de 11 guías para que no fallen por ampliar el catálogo. **No se han ejecutado** unitarias, typecheck, build, E2E, auditoría visual ni verificación individual de todas las URL externas; la certificación editorial humana y despliegue requieren autorización separada. Rama `feat/aprende-operaciones-02`, PR pendiente. No se modificó Diagnóstico, Mi Vecidya, GHL, Auth, D1, costos/licencias ni producción.
+
+
 ## APRENDE-EMPRESAS-01 — formación digital para negocios, empresas y multinegocios (2026-10-20; rama dependiente, borrador)
 
 **CODE, no certificado / sin deploy.** Este checkpoint complementario parte de la rama editorial `feat/aprende-editorial-02`, sin modificarla directamente. Añade `app/content/learn-business-operations.ts` con cuatro guías en estado `editorialDraft: true`: coordinación entre sedes y negocios, permisos y responsabilidades, selección de herramientas, y comparación de indicadores entre sedes. `learn.ts` integra la categoría «Gestión y equipos» y un itinerario empresarial; `knowledge.tsx` aclara desde el encabezado que Aprende se dirige a pequeños negocios, empresas y organizaciones con múltiples marcas, sedes o equipos. Se mantienen los contenidos previos, enlaces y rutas existentes.

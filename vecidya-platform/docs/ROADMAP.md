@@ -1,3 +1,9 @@
+### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
+
+La primera extensión de operaciones cubre **organización de tareas**, **movimientos y comprobación de inventario**, **capacitación práctica del personal**, **introducción a ERP frente a CRM** y **proyectos digitales piloto con seguimiento y reversión**. Se integra en el sexto itinerario «Trabaja mejor cada día» con cinco guías en estado `editorialDraft: true`. Las fuentes, ejemplos y CTA son orientativos, sin ventas garantizadas; certificación de código, revisión editorial humana y publicación continúan pendientes.
+
+**Brechas aún abiertas — no implementadas:** aprobaciones complejas y compras/proveedores, gestión financiera y presupuestos, continuidad entre sedes, formación especializada y accesibilidad de capacitación, dirección con indicadores consistentes, incidentes de seguridad, gobierno de IA y normas sectoriales por país. Evitar convertir una biblioteca educativa en ERP/CRM o herramientas transaccionales.
+
 ## APRENDE — mapa educativo empresarial pendiente (investigación 2026-10-20)
 
 **Audiencia transversal:** negocios pequeños, empresas con departamentos, organizaciones con sedes, grupos con varias marcas o entidades; también profesionales y organizaciones sin fines de lucro cuando las recomendaciones sean aplicables. El aprendizaje se adapta a la complejidad de la tarea, permisos, equipo y datos, sin asumir que todos parten de cero ni que todos necesitan contratar software.
