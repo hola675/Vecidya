@@ -1,5 +1,12 @@
 # Estado de implementación
 
+## APRENDE-GESTIÓN-03 — guías de dirección digital (2026-10-20; PR borrador)
+
+**CODE + TEST versionado / RAN pendiente, sin deploy.** Cinco guías en `learn-management-03.ts`: presupuesto de herramientas, compras/proveedores, continuidad frente a fallos, gobierno de IA y evaluación de proyectos digitales. Cinco SVG con `title`, `desc` y alt; cada guía tiene tres ideas, ejemplo hipotético, pasos, FAQ, fuentes y `editorialDraft: true`. La rama integró el nuevo `main` tras el merge del PR #26 **sin descartar las cinco guías de Operaciones-02**. Resultado estructural: 38 guías (11 originales + 27 borradores), 6 categorías, 7 itinerarios.
+
+**Límites:** ningún cambio a App, Diagnóstico, GHL, Auth, DB, precios ni producción. No se declara PASS de tests, QA, verificación editorial, fuentes externas o publicación. Los borradores siguen sin autoría humana asignada y con `noindex`; falta revisión expresa antes de modificarlo.
+
+
 ## APRENDE-OPERACIONES-02 — cinco guías de operación y tecnología empresarial (2026-10-20)
 
 **CODE + TEST versionado / RAN pendiente, sin deploy.** Sobre `main` posterior a PR #24/#25: se incorporaron cinco borradores editoriales en `app/content/learn-operations-02.ts` sobre tareas y responsables, control de inventario, capacitación del personal, sistemas de gestión ERP y pruebas piloto de proyectos digitales. Se incorporan mediante el catálogo público `learnArticles` y el sexto itinerario «Trabaja mejor cada día». Total de catálogo en el corte: **33 guías** (11 originales conservadas + 22 borradores), seis categorías, seis itinerarios. Los cinco artículos tienen tres ideas clave, nueve secciones, casos hipotéticos, pasos concretos, FAQs y fuentes institucionales; todos llevan `editorialDraft: true`, por lo que conservan etiqueta «En revisión», sin atribución humana nueva ni indexación. Cinco SVG nuevos de formas grandes, sin tipografía interna diminuta, incluyen título/descripcion accesible, y cada guía tiene alt específico.

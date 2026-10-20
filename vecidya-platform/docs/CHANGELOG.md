@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-20 — APRENDE-GESTIÓN-03 (rama no publicada)
+
+- Cinco nuevas guías sobre costos tecnológicos, compras, continuidad, IA y medición de resultados, con cinco ilustraciones accesibles.
+- Siete itinerarios y 38 guías en la rama reconciliada con APRENDE-OPERACIONES-02 (27 borradores sin publicación).
+- Nuevas pruebas de integridad versionadas, pero NO ejecutadas. Sin modificación de Diagnóstico, App, GHL, D1 o producción.
+
+
 ## 2026-10-20 — APRENDE-OPERACIONES-02 (rama independiente, sin desplegar)
 
 - Cinco nuevas guías educativas, marcadas como borradores para revisión editorial: tareas y responsables, inventario, capacitación digital, ERP sin jerga y proyectos piloto reversibles.

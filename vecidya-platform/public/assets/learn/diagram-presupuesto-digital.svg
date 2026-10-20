@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="384" viewBox="0 0 960 384" role="img" aria-labelledby="title desc">
+  <title id="title">Presupuesto digital completo</title><desc id="desc">Una cuota, tiempo dedicado y comprobación de costos totales</desc>
+  <defs><linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#F8FBFF"/><stop offset="1" stop-color="#EFF6FF"/></linearGradient></defs>
+  <rect width="960" height="384" rx="32" fill="url(#bg)"/>
+  <path d="M300 190h48m-18-18 18 18-18 18M610 190h48m-18-18 18 18-18 18" fill="none" stroke="#FF813E" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="translate(40 54)">
+    <rect x="0" y="0" width="260" height="275" rx="32" fill="#E8F2FF" stroke="#C4D6E4" stroke-width="2"/>
+    <circle cx="130" cy="131" r="102" fill="#fff" fill-opacity=".72"/>
+    <g fill="none" stroke="#164577" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" transform="translate(35 30)">
+      <path d="M41 75h108v99H41zM67 111h58M67 139h58"/><path d="M59 57h70"/>
+    </g>
+  </g>
+<g transform="translate(350 54)">
+    <rect x="0" y="0" width="260" height="275" rx="32" fill="#FFF1E6" stroke="#C4D6E4" stroke-width="2"/>
+    <circle cx="130" cy="131" r="102" fill="#fff" fill-opacity=".72"/>
+    <g fill="none" stroke="#164577" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" transform="translate(35 30)">
+      <circle cx="95" cy="118" r="63"/><path d="M95 80v42l33 19M76 57h38"/>
+    </g>
+  </g>
+<g transform="translate(660 54)">
+    <rect x="0" y="0" width="260" height="275" rx="32" fill="#E5F8F4" stroke="#C4D6E4" stroke-width="2"/>
+    <circle cx="130" cy="131" r="102" fill="#fff" fill-opacity=".72"/>
+    <g fill="none" stroke="#164577" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" transform="translate(35 30)">
+      <rect x="35" y="55" width="120" height="135" rx="12"/><path d="M58 88h76M58 118h45M58 149h27m23-7 16 17 30-37"/>
+    </g>
+  </g>
+</svg>

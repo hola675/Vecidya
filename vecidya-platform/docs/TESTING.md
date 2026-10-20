@@ -1,5 +1,10 @@
 # Pruebas
 
+## APRENDE-GESTIÓN-03 — controles diferidos (2026-10-20)
+
+**NOT RUN por decisión del usuario:** nuevas unitarias en `tests/unit/learn/learn-management-03.test.ts`; el catálogo ahora contiene 38 artículos (11 originales, 27 borradores) y 7 itinerarios; `learn-curriculum.test.ts` conserva aserciones de integridad, los cinco artículos de Operaciones-02 y añade el nuevo total. `learn-content.test.ts` de main ya validaba recuentos dinámicos. Antes de certificar, ejecutar `pnpm run typecheck`, `pnpm run build`, `pnpm run test:unit`, `git diff --check`, E2E de Aprende contra Worker local, comprobación `noindex` y rutas, responsividad/zoom/teclado, URLs institucionales y revisión editorial humana. Sin autorización de deploy o retiro de borradores.
+
+
 ## APRENDE-OPERACIONES-02 — evidencia y validación pendiente (2026-10-20)
 
 **TEST versionado / NOT RUN por decisión del usuario.** Se actualizaron `tests/unit/learn/learn-curriculum.test.ts` para certificar el catálogo ampliado de 33 guías, 22 borradores, seis itinerarios, cinco nuevos slugs y sus nueve secciones, y `tests/unit/learn-content.test.ts` para conservar las 11 guías originales sin exigir que toda la biblioteca siga teniendo once artículos. Las comprobaciones de integridad de enlaces internos, ejemplos hipotéticos, imágenes SVG con `<title>`/`<desc>`, fuentes HTTPS y categoría existente permanecen activas.
