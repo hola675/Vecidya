@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-20 — APRENDE-EMPRESAS-01 (rama dependiente, no publicado)
+
+- Cuatro borradores educativos sobre coordinación de sedes/marcas, control de permisos, elección de herramientas y lectura de indicadores por operación.
+- Nueva categoría «Gestión y equipos» y quinto itinerario de aprendizaje para empresas y multinegocios, ampliando el lenguaje de Aprende a cualquier escala de organización.
+- Contenido con tres ideas clave, casos hipotéticos, pasos aplicables, preguntas frecuentes y fuentes institucionales; pruebas y aprobación editorial pendientes. Sin cambios de datos de cliente, GHL, Diagnóstico o Mi Vecidya.
+
+
 ## 2026-10-20 — APRENDE-EDITORIAL-02 (rama de trabajo, pendiente de QA y revisión)
 
 - Investigación curricular basada en ITU, DigComp, W3C, Google Search Central, FTC/NIST/CISA y guías de software oficiales; doce preguntas fundamentales convertidas en lectura práctica.

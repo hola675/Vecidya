@@ -1,3 +1,20 @@
+## APRENDE — mapa educativo empresarial pendiente (investigación 2026-10-20)
+
+**Audiencia transversal:** negocios pequeños, empresas con departamentos, organizaciones con sedes, grupos con varias marcas o entidades; también profesionales y organizaciones sin fines de lucro cuando las recomendaciones sean aplicables. El aprendizaje se adapta a la complejidad de la tarea, permisos, equipo y datos, sin asumir que todos parten de cero ni que todos necesitan contratar software.
+
+**Ruta incorporada como borrador en rama dependiente:** coordinación de sedes y negocios, permisos y responsables, selección de herramientas y comparación responsable de indicadores. Antes de incorporarla definitivamente se requiere revisión editorial/fuentes y certificación técnica sin interferir con `feat/aprende-editorial-02`.
+
+**Brechas para futuros checkpoints, NO IMPLEMENTADAS:**
+- Operaciones y productividad: documentos compartidos, aprobaciones, tareas, compras, inventario, proyectos y continuidad entre sedes; cuándo hace falta un ERP y cuándo no.
+- Personas y capacitación: incorporación de personal a herramientas, guías internas breves, responsabilidades y adopción sin sobrecargar al equipo.
+- Comunicación y clientes: coherencia de marca y mensajes por sede, atención por turnos, servicio entre canales, medición sin confundir personas con contactos.
+- Datos y decisiones: calidad de registros, definiciones comunes, reportes por equipo/sede, tablero directivo, privacidad y separación de unidades legales.
+- Seguridad y continuidad: inventario de sistemas, MFA, roles, salidas del personal, copias/restauración, proveedores, respuesta a incidentes y normas específicas por país.
+- Inteligencia artificial: usos por función, datos permitidos, supervisión, aprobación de resultados, costos, límites y controles organizativos.
+- Estrategia: cómo priorizar según procesos reales, costos totales, pilotos de tecnología, capacitación, evaluación de resultados y retiro de sistemas.
+
+**Criterio editorial:** una pregunta real como título; resumen en tres ideas; ejemplo cercano de negocio y variación para equipos/sedes; pasos realizables; glosario de términos inevitables; preguntas frecuentes; fuentes oficiales y límites expresos. No hacer afirmaciones de resultados ni presentar ejemplos sintéticos como experiencias reales. Basado en OCDE (2025), Eurostat (2026), NIST CSF 2.0 y guía W3C de escritura clara.
+
 ## CONSOLIDACIÓN-DIAG-2026-10-18 — roadmap de unificación (propuesto, sin cutover)
 
 ### APRENDE — próxima certificación editorial de la biblioteca

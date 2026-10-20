@@ -1,5 +1,12 @@
 # Estado de implementación
 
+## APRENDE-EMPRESAS-01 — formación digital para negocios, empresas y multinegocios (2026-10-20; rama dependiente, borrador)
+
+**CODE, no certificado / sin deploy.** Este checkpoint complementario parte de la rama editorial `feat/aprende-editorial-02`, sin modificarla directamente. Añade `app/content/learn-business-operations.ts` con cuatro guías en estado `editorialDraft: true`: coordinación entre sedes y negocios, permisos y responsabilidades, selección de herramientas, y comparación de indicadores entre sedes. `learn.ts` integra la categoría «Gestión y equipos» y un itinerario empresarial; `knowledge.tsx` aclara desde el encabezado que Aprende se dirige a pequeños negocios, empresas y organizaciones con múltiples marcas, sedes o equipos. Se mantienen los contenidos previos, enlaces y rutas existentes.
+
+**Editorial:** todos los ejemplos nuevos son hipotéticos; las referencias institucionales (OCDE, NIST, Eurostat y W3C) informan las recomendaciones y no certifican resultados comerciales. Requieren revisión de comprensión, exactitud, derechos de autor y jurisdicción, además de validación técnica. No se modifican GHL, diagnóstico, Mi Vecidya, D1 ni producción.
+
+
 ## APRENDE-EDITORIAL-02 — biblioteca de alfabetización digital para negocios (2026-10-20; rama / borrador)
 
 **CODE + TEST versionado / RAN diferido por decisión del usuario.** Investigación documental con fuentes UIT/DigComp, W3C, Google Search Central, NIST, FTC, CISA, Microsoft y documentación oficial de Google. Se incorpora una biblioteca de **24 guías**: 11 artículos anteriores preservados con entradas y extractos más claros y tres ideas iniciales; 13 nuevos borradores con situaciones hipotéticas, explicaciones sin jerga, pasos, preguntas frecuentes y fuentes verificables. Cuatro itinerarios de aprendizaje ayudan a empezar según necesidad: fundamentos, presencia, atención/venta, mejora. Diagramas SVG nuevos con alt, title y descripción, y estilos de lectura añadidos.
