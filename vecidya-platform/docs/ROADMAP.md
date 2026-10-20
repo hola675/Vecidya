@@ -1,5 +1,12 @@
 ## APRENDE — mapa educativo empresarial pendiente (investigación 2026-10-20)
 
+### APRENDE-GESTIÓN-03 — cinco temas de dirección digital (2026-10-20)
+
+**Implementados únicamente como borradores en rama independiente:** presupuestos tecnológicos y costos totales, compras/proveedores/aprobaciones, continuidad ante fallos de sistemas, supervisión de IA y medición de mejoras. Cada artículo diferencia recomendaciones para equipos pequeños y múltiples sedes, incluye caso hipotético, pasos y fuentes. La integración con APRENDE-OPERACIONES-02 (PR #26, no fusionado en el corte de esta rama) exige reconciliación explícita de `learn.ts`, itinerarios y tests, conservando 11 guías originales y todos los borradores (objetivo posterior a ambos merges: 38 guías y 7 itinerarios).
+
+**No implementado ni autorizado:** CMS, experiencias transaccionales, automatizaciones de negocio, políticas específicas por país, simuladores financieros, publicación de los artículos, aprobación de autoría, eliminación de límites `editorialDraft` y cambios operativos fuera de Aprende. Revisión editorial humana, integridad técnica, SEO y accesibilidad se planifican después, conforme a indicación del usuario.
+
+
 **Audiencia transversal:** negocios pequeños, empresas con departamentos, organizaciones con sedes, grupos con varias marcas o entidades; también profesionales y organizaciones sin fines de lucro cuando las recomendaciones sean aplicables. El aprendizaje se adapta a la complejidad de la tarea, permisos, equipo y datos, sin asumir que todos parten de cero ni que todos necesitan contratar software.
 
 **Ruta incorporada como borrador en rama dependiente:** coordinación de sedes y negocios, permisos y responsables, selección de herramientas y comparación responsable de indicadores. Antes de incorporarla definitivamente se requiere revisión editorial/fuentes y certificación técnica sin interferir con `feat/aprende-editorial-02`.

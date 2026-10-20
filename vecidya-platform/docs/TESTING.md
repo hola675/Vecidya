@@ -1,5 +1,12 @@
 # Pruebas
 
+## APRENDE-GESTIÓN-03 — validación diferida (2026-10-20)
+
+**TEST versionado / NO RAN.** `tests/unit/learn/learn-management-03.test.ts` cubre cinco slugs, autoría en borrador, tres ideas clave, secciones, enlaces relacionados válidos, FAQ, fuentes HTTPS, ejemplos hipotéticos, pasos, imágenes físicas y el itinerario. Se actualizaron las expectativas históricas de `learn-content.test.ts` y `learn-curriculum.test.ts` para que el catálogo pueda crecer sin falsos fallos por recuentos obsoletos; siguen verificando la conservación de las once guías originales y la unicidad. No se ejecutaron en esta sesión.
+
+**Gates pendientes:** reconciliar el PR #26 de operaciones, verificar conteo de 38 guías y 7 itinerarios tras integrar ambos; `pnpm run typecheck`, `pnpm run build`, `pnpm run test:unit` si está disponible y `git diff --check`. Ejecutar `tests/e2e/learn-experience-check.mjs` contra Worker local para navegación, búsqueda, metadatos `noindex` de borradores, fuentes y carga de cinco SVG a 360/390/768/1366 px. Revisar lectura, focalización, tamaño de diagramas, autoría y enlaces institucionales uno por uno. No se autoriza publicar ni retirar `editorialDraft` con esta entrega.
+
+
 ## APRENDE-EMPRESAS-01 — pruebas y revisión editorial diferidas (2026-10-20)
 
 **TEST NOT RUN por acuerdo de revisión posterior.** Revalidar desde rama integrada, en worktree aislado: `pnpm run typecheck`, `pnpm run build`, `git diff --check`, prueba de integridad editorial (categoría permitida, slugs únicos, enlaces internos, imágenes existentes, tres ideas clave, marcado de borradores, fuentes verificadas), y `tests/e2e/learn-experience-check.mjs` extendida al quinto itinerario y cuatro nuevas URLs. Revisar SEO: borradores `noindex,nofollow`, sin autoría humana atribuida prematuramente; revisar sitemap de borradores, 360/390/768/1366 px, teclado, contraste, lector de pantalla y claridad con lectores de perfiles diferentes. Validar hipervínculos institucionales y textos sensibles a jurisdicción antes de retirar `editorialDraft`. Sin afirmación de PASS ni cobertura WCAG.

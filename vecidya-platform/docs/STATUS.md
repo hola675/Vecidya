@@ -1,5 +1,14 @@
 # Estado de implementación
 
+## APRENDE-GESTIÓN-03 — dirección y decisiones digitales (2026-10-20; rama, borrador)
+
+**CODE + TEST versionado / RAN pendiente; sin deploy.** Cinco guías nuevas en `app/content/learn-management-03.ts` sobre presupuesto digital, compras/proveedores, continuidad de sistemas, gobierno responsable de IA y evaluación de mejoras tecnológicas. Todas conservan `editorialDraft: true`, tres ideas principales, casos identificados como hipotéticos, pasos prácticos, FAQs, fuentes institucionales y un diagrama SVG propio con títulos/descripciones accesibles. Se conectan a `learnArticles`, la búsqueda/categorías existentes y el nuevo itinerario «Dirige y mejora con criterio». El cambio se inició desde `main` `5861c09bbcd4`: ese corte tiene 28 guías, y la rama añade cinco (33 en total). **PR #26 APRENDE-OPERACIONES-02 permanece abierto y añade otras cinco**; tras su integración deberán reconciliarse los imports y rutas para una biblioteca conjunta de 38 sin perder ninguno.
+
+**Alcance:** solo biblioteca educativa y documentación; sin cambios de Auth, Diagnóstico, Mi Vecidya, GHL, D1, precios, pagos o producción. No se retiran borradores ni se atribuye autoría humana a material generado sin aprobación. Las fuentes SBA, Ready.gov, CISA, NIST, GOV.UK, OCDE y W3C son referencias orientativas; no se presentan obligaciones legales, resultados financieros o comerciales universales.
+
+**Validación:** pruebas unitarias de integridad actualizadas y suite específica añadida; no ejecutadas por instrucción del usuario. Typecheck, build, E2E Worker, auditoría responsive y revisión humana de fuentes/precisión pendientes. Nunca declarar PASS ni publicación sobre esta base.
+
+
 ## APRENDE-EMPRESAS-01 — formación digital para negocios, empresas y multinegocios (2026-10-20; rama dependiente, borrador)
 
 **CODE, no certificado / sin deploy.** Este checkpoint complementario parte de la rama editorial `feat/aprende-editorial-02`, sin modificarla directamente. Añade `app/content/learn-business-operations.ts` con cuatro guías en estado `editorialDraft: true`: coordinación entre sedes y negocios, permisos y responsabilidades, selección de herramientas, y comparación de indicadores entre sedes. `learn.ts` integra la categoría «Gestión y equipos» y un itinerario empresarial; `knowledge.tsx` aclara desde el encabezado que Aprende se dirige a pequeños negocios, empresas y organizaciones con múltiples marcas, sedes o equipos. Se mantienen los contenidos previos, enlaces y rutas existentes.

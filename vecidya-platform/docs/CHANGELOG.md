@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-20 — APRENDE-GESTIÓN-03 (rama, contenido no certificado)
+
+- Cinco guías nuevas sobre presupuestos digitales, compras y proveedores, continuidad operacional, uso responsable de IA y evaluación de mejoras.
+- Nuevo itinerario «Dirige y mejora con criterio», cinco ilustraciones SVG accesibles y cobertura unitaria de integridad curricular.
+- Redacción llana para pequeños negocios, empresas con departamentos y grupos multinegocio: casos hipotéticos, tres ideas clave, pasos, FAQs y fuentes sin promesas.
+- Dependencia futura de la integración del PR #26; certificación, revisión editorial, merge y despliegue pendientes. No se modificaron Diagnóstico, App, GHL o base de datos.
+
+
 ## 2026-10-20 — APRENDE-EMPRESAS-01 (rama dependiente, no publicado)
 
 - Cuatro borradores educativos sobre coordinación de sedes/marcas, control de permisos, elección de herramientas y lectura de indicadores por operación.
