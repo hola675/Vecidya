@@ -5633,3 +5633,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .learn-discovery__search { grid-template-columns:minmax(0,1fr); }
   .learn-discovery__search .button { width:100%; }
 }
+
+/* APRENDE-EDITORIAL-02 — rutas de lectura y resúmenes; requiere QA visual posterior */
+.learn-pathways { display:grid; gap:1.5rem; }
+.learn-pathways-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
+.learn-pathway-card { display:grid; align-content:start; gap:.7rem; min-width:0; border:1px solid var(--line); border-radius:var(--radius-md); padding:clamp(1.25rem,3vw,1.75rem); background:#fff; box-shadow:0 .6rem 1.5rem rgb(20 43 74 / 4%); }
+.learn-pathway-card__step { color:var(--orange); font-size:.8rem; font-weight:850; letter-spacing:.08em; }
+.learn-pathway-card h3 { margin:0; font-size:clamp(1.35rem,2.8vw,1.8rem); line-height:1.2; }
+.learn-pathway-card > p:not(.learn-pathway-card__step) { margin:0; color:var(--muted); line-height:1.55; }
+.learn-pathway-card ol { display:grid; gap:.65rem; padding-left:1.5rem; margin:.7rem 0 0; }
+.learn-pathway-card li { line-height:1.35; }
+.learn-pathway-card li::marker { color:var(--orange); font-weight:800; }
+.learn-pathway-card li a { color:var(--blue); font-weight:700; text-underline-offset:.2rem; }
+.learn-pathway-card li small { display:inline-block; margin-left:.5rem; color:var(--muted); font-size:.75rem; }
+.learn-article-quick { display:grid; gap:.85rem; max-width:50rem; margin-top:1.3rem; border:1px solid rgb(21 95 197 / 25%); border-radius:var(--radius-md); padding:clamp(1.1rem,3vw,1.65rem); background:#f4f8ff; }
+.learn-article-quick h2 { margin:0; color:var(--blue); font-size:clamp(1.35rem,2.8vw,1.8rem); letter-spacing:-.03em; }
+.learn-article-quick ul { display:grid; gap:.65rem; margin:0; padding-left:1.4rem; }
+.learn-article-quick li { color:var(--ink); font-size:1.03rem; line-height:1.55; }
+.learn-article-quick li::marker { color:var(--orange); font-weight:850; }
+@media (max-width:760px) { .learn-pathways-grid { grid-template-columns:1fr; } }

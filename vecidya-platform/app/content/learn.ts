@@ -4007,6 +4007,52 @@ export const learnArticles: LearnArticle[] = [
 
 ];
 
+
+export const learnPathways = [
+  {
+    title: "Empieza desde cero",
+    description: "Entiende qué necesitas, organiza tus cuentas y aprende a proteger lo importante.",
+    slugs: [
+      "como-empezar-a-digitalizar-un-negocio-desde-cero",
+      "que-necesita-un-negocio-para-usar-internet-y-herramientas",
+      "correo-para-mi-negocio-como-usarlo-sin-perder-mensajes",
+      "como-proteger-cuentas-contrasenas-estafas-negocio",
+      "como-hacer-copias-de-seguridad-de-tu-negocio",
+    ],
+  },
+  {
+    title: "Que te encuentren y te entiendan",
+    description: "Presenta tu negocio con palabras claras y elige dónde mostrarlo.",
+    slugs: [
+      "como-explicar-lo-que-vendes-para-que-te-entiendan",
+      "redes-sociales-o-pagina-web-que-necesita-tu-negocio",
+      "fotos-y-publicaciones-utiles-sin-ser-disenador",
+      "perfil-empresa-google-completar-y-mantener-actualizado",
+    ],
+  },
+  {
+    title: "Atiende, vende y genera confianza",
+    description: "Responde bien, organiza pedidos y protege la confianza de tus clientes.",
+    slugs: [
+      "como-responder-la-primera-consulta-de-un-cliente",
+      "hojas-de-calculo-para-organizar-un-negocio-pequeno",
+      "como-vender-por-internet-sin-perder-el-control-pedidos-pagos",
+      "datos-de-clientes-que-puedes-pedir-y-como-protegerlos",
+      "como-pedir-resenas-reales-y-responder-criticas",
+    ],
+  },
+  {
+    title: "Mejora sin complicarte",
+    description: "Cuando tengas una base clara, aprende a medir, automatizar y usar IA con criterio.",
+    slugs: [
+      "analitica-web-que-medir-en-tu-negocio",
+      "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio",
+      "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
+      "conectar-herramientas-digitales-sin-complicar-tu-negocio",
+    ],
+  },
+] as const;
+
 export function getLearnArticle(slug: string) {
   return learnArticles.find((article) => article.slug === slug);
 }
