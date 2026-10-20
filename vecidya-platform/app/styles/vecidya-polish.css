@@ -567,3 +567,54 @@
   .commercial-detail__decision { grid-template-columns: minmax(0,1fr); }
   .commercial-detail__price { max-width: none; }
 }
+
+
+/* COM-CATALOG-BENEFITS-02 — benefits and channel continuity explained in plain language. */
+.commercial-detail__benefits,
+.commercial-detail__journey,
+.commercial-detail__continuity {
+  margin-top: clamp(2rem, 5vw, 4rem);
+}
+.commercial-detail__benefits ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .85rem;
+  list-style: none;
+  padding: 0;
+}
+.commercial-detail__benefits li {
+  min-width: 0;
+  border: 1px solid #d6e2ef;
+  border-radius: .85rem;
+  padding: 1rem 1.2rem;
+  background: #f7faff;
+}
+.commercial-detail__benefits li::before {
+  content: "✓";
+  color: #126344;
+  font-weight: 800;
+  margin-right: .55rem;
+}
+.commercial-detail__journey {
+  border-radius: 1.25rem;
+  padding: clamp(1.1rem, 3vw, 2rem);
+  background: #eef5fc;
+}
+.commercial-detail__journey > p:not(.eyebrow) { max-width: 67ch; }
+.commercial-detail__journey ol {
+  display: grid;
+  gap: .85rem;
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.commercial-detail__journey li { padding-left: .35rem; }
+.commercial-detail__continuity {
+  border-left: 4px solid #286fa2;
+  border-radius: .5rem;
+  padding: 1rem clamp(1rem, 3vw, 1.75rem);
+  background: #f4f8ff;
+}
+.commercial-detail__continuity > p:not(.eyebrow) { max-width: 75ch; }
+@media (max-width: 760px) {
+  .commercial-detail__benefits ul { grid-template-columns: minmax(0, 1fr); }
+}
