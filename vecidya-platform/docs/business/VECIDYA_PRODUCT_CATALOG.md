@@ -87,6 +87,50 @@ No se vende por cantidad de workflows o pipelines.
 ---
 
 
+## Beneficios funcionales explicados desde el trabajo diario (COM-CATALOG-BENEFITS-02)
+
+**Regla editorial de la oferta:** toda licencia, complemento o servicio debe describir el resultado cotidiano, un ejemplo realista del recorrido y sus límites. Evitar frases vacías como «potencia tu productividad». Las prestaciones descritas son **objetivo del producto** hasta validar configuración, permisos, conexión y entrega real.
+
+### WhatsApp Business con Barrio/Ciudad — ejemplo prioritario
+
+1. El cliente inicia una conversación por el WhatsApp Business integrado y aprobado.
+2. El CRM registra el mensaje y puede crear o actualizar la ficha de contacto. La coincidencia/duplicado depende de identificadores y de la configuración de deduplicación.
+3. Una automatización **configurada** puede crear o actualizar una oportunidad de ventas, asignar responsable, etapa, recordatorio y siguiente tarea. La recepción de un mensaje **no garantiza por sí sola** una oportunidad de ventas.
+4. Con los otros canales habilitados —por ejemplo correo, SMS, Instagram y Facebook— el equipo consulta la bandeja e historial disponibles del contacto, sin gestionar la misma consulta a ciegas en cinco aplicaciones.
+5. Si se corta o bloquea WhatsApp, los mensajes, notas, contactos, oportunidades y tareas **que ya se guardaron en el CRM** no desaparecen por el simple hecho de desconectar el canal, siempre sujetos a retención, permisos y estado de cuenta. El canal afectado puede dejar de enviar/recibir **nuevos mensajes** y no se puede prometer sincronización retroactiva, importación completa ni recuperación de mensajes no recibidos. Los otros canales solo siguen disponibles si también están habilitados.
+6. La relación comercial y la siguiente tarea pueden continuar desde el CRM, aunque el equipo deba contactar al cliente por otro canal permitido. **Nunca afirmar continuidad ininterrumpida de WhatsApp.**
+
+**Diferencia crítica:** «registro de contacto automático» puede ser nativo según canal y deduplicación; «nueva oportunidad», «asignación automática» y «reintentos» son configuración de workflows de Barrio/Ciudad, no efectos inevitables de añadir un canal.
+
+### Beneficios de las otras capacidades sin duplicar servicios
+
+| Oferta | Ventaja comprensible | Límite que se debe comunicar |
+|---|---|---|
+| Telefonía/SMS | Registrar seguimiento y tareas después de llamadas/mensajes | Canales, grabaciones y transcripciones requieren habilitación; desconexión interrumpe entrega |
+| Reputación y Reseñas | Solicitar reseñas auténticas después de atenciones reales y conocer qué solicitudes siguen pendientes | No inventar reseñas; envío/canales e IA pueden costar |
+| Campañas y Difusión | Comunicar novedades a públicos que han dado permiso y relacionar respuestas con contactos | Envios y canal pueden facturar uso; estrategia/campañas gestionadas son servicio |
+| IA Conversacional | Responder dudas repetitivas y pasar el contexto al equipo | Solo en canales compatibles, con límites y supervisión; una caída no garantiza respuesta |
+| IA de Voz | Atender la primera consulta de una llamada y registrar un siguiente paso | El número, los minutos y el modelo pueden tener costes; no se registran todas las llamadas automáticamente |
+| Conexiones e Integraciones | Evitar copiar los mismos datos manualmente entre sistemas compatibles | Fallos requieren trazabilidad y recuperación diseñada; nunca sincronización garantizada |
+| Presencia & Marca | Hacer reconocible el negocio y coherentes sus mensajes | Diseño y entregables contratados; no requiere CRM por sí mismo |
+| Web & Conversión | Facilitar que alguien encuentre servicios y contacte sin confusión | Web a medida ≠ MiniWeb estándar; si necesita seguimiento CRM, licencia adecuada |
+| Visibilidad & Marketing | Priorizar contenido/posicionamiento, medir acciones y reducir dispersión | No prometer ventas ni posicionamiento; campañas gestionadas son servicio |
+| Sistema Comercial | Diseñar etapas y responsables claros cuando el estándar no cubre el caso | Barrio Standard y módulos Ciudad ya incluidos no se vuelven a facturar |
+| Automatización & Integraciones | Diseñar soluciones especializadas, control de errores y pasos manuales de respaldo | No vender «resiliencia» sin reintentos, registros y pruebas implementadas |
+| IA Aplicada | Crear un asistente adaptado al proceso con límites y traspaso humano | El agente a medida es servicio; consumo/plataforma de IA es distinto |
+| Desarrollo Empresarial | Priorizar cambios antes de comprar sistemas innecesarios | Puede no requerir licencia |
+
+**Control de calidad:** las páginas públicas deben tener secciones separadas «Qué ganas», «Cómo funciona» (si es pertinente), «Qué sucede si se interrumpe» (si opera con un canal externo), «Qué incluye», «No incluido», «Dependencias» y «Costes». Las fichas no afirman que la interoperabilidad concreta ya fue certificada.
+
+**Fuentes técnicas oficiales para el equipo** (nombres de proveedor solo en enlaces de documentación interna):
+- [Bandeja y línea de tiempo multicanal](https://help.gohighlevel.com/support/solutions/articles/155000006610-getting-started-with-the-conversations-tab)
+- [Vincular Facebook/Instagram y deduplicación](https://help.gohighlevel.com/support/solutions/articles/155000005068)
+- [Captura de contactos desde WhatsApp por identificador](https://help.gohighlevel.com/support/solutions/articles/155000008387-whatsapp-usernames-contact-capture-without-phone-numbers)
+- [Crear oportunidad mediante workflow](https://help.gohighlevel.com/support/solutions/articles/155000004752-workflow-action-create-opportunity)
+- [Widget de chat multicanal y canales habilitados](https://help.gohighlevel.com/support/solutions/articles/155000004779-how-to-use-the-all-in-one-chat-widget)
+
+---
+
 ## 3.1. Modelo comercial objetivo y demostración del valor
 
 **Corte de diseño 2026-10-20 — alcance objetivo, no certificación de despliegue ni de derechos técnicos habilitados.** El proveedor del sistema comercial es infraestructura de operación reservada para documentación técnica interna; la documentación y páginas comerciales se limitan a denominarlo **CRM**. El espacio Vecidya y el CRM no se duplican.
