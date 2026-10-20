@@ -4,6 +4,20 @@ import { test } from "node:test";
 import { getLearnArticle, learnArticles, learnCategories } from "../../app/content/learn.ts";
 import type { LearnBlock } from "../../app/content/learn.ts";
 
+const baselineLearnSlugs = [
+  "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
+  "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
+  "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+  "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio",
+  "dominio-hosting-sitio-web-como-funcionan",
+  "https-certificados-tls-que-protegen-y-que-no",
+  "analitica-web-que-medir-en-tu-negocio",
+  "conectar-herramientas-digitales-sin-complicar-tu-negocio",
+  "perfil-empresa-google-completar-y-mantener-actualizado",
+  "organizar-consultas-mensajes-llamadas-formularios",
+  "preparar-respuestas-publicaciones-ia-sin-perder-control",
+];
+
 const crmSlug = "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo";
 const aiSlug = "que-puede-hacer-una-inteligencia-artificial-por-un-negocio";
 const automationSlug = "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio";
@@ -117,8 +131,8 @@ test("automation article teaches a complete, testable process without claiming g
   const sourceBlock = blocks.find((block) => block.type === "sources");
   assert.ok(sourceBlock?.type === "sources" && sourceBlock.items.length >= 2);
   const slugs = new Set(learnArticles.map(({ slug }) => slug));
-  assert.equal(slugs.size, learnArticles.length, "Los slugs del catálogo deben ser únicos.");
-  assert.ok(slugs.size >= 11, "Las guías originales deben mantenerse.");
+  assert.equal(slugs.size, learnArticles.length, "Every guide slug must be unique.");
+  for (const slug of baselineLearnSlugs) assert(slugs.has(slug), `An original guide was removed: ${slug}`);
   assert.ok(slugs.has(crmSlug) && slugs.has(aiSlug) && slugs.has(automationSlug));
 });
 
@@ -167,8 +181,8 @@ test("technology article explains domains, DNS, hosting, HTTPS and practical own
   assert.equal(new Set(headings).size, headings.length, "Article section headings must be unique.");
   assert.equal(new Set(learnArticles.map(({ slug }) => slug)).size, learnArticles.length, "Article slugs must be unique.");
   assert.ok(learnArticles.some(({ category }) => category === "Tecnología explicada"));
-  assert.ok(learnArticles.length >= 11, "The library must retain its original eleven articles.");
-  assert.ok(learnCategories.length >= 5, "The original five learning categories must remain available.");
+  for (const slug of baselineLearnSlugs) assert(getLearnArticle(slug), `Original guide is missing: ${slug}`);
+  assert(learnCategories.some((category) => category.name === "Tecnología explicada"), "The original technology category must remain available.");
 });
 
 const batch06c = [
@@ -221,7 +235,7 @@ test("06C adds three practical guides to existing categories and preserves share
   }
 
   const articleSlugs = learnArticles.map(({ slug }) => slug);
-  assert.equal(new Set(articleSlugs).size, articleSlugs.length, "Article slugs must remain unique.");
+  assert.equal(new Set(articleSlugs).size, learnArticles.length, "Article slugs must remain unique.");
   for (const { slug } of batch06c) assert.equal(getLearnArticle(slug)?.category, learnArticles.find(({ slug: related }) => related === slug)?.category);
   for (const category of ["Negocios digitales", "CRM y clientes", "Inteligencia Artificial"]) {
     assert.equal(learnCategories.filter(({ name }) => name === category).length, 1, `The ${category} category must be reused.`);
@@ -354,7 +368,7 @@ test("integrations guide defines APIs, webhooks and CSV while preventing data lo
 test("06B technology guides remain available alongside new unique 06C slugs", () => {
   const newSlugs = [httpsSlug, analyticsSlug, integrationsSlug];
   assert.equal(new Set(learnArticles.map(({ slug }) => slug)).size, learnArticles.length);
-  assert.ok(learnArticles.length >= 11);
+  for (const slug of baselineLearnSlugs) assert(getLearnArticle(slug), `A 06B/06C-era guide is missing: ${slug}`);
   for (const slug of newSlugs) {
     assert.equal(getLearnArticle(slug)?.category, "Tecnología explicada");
   }

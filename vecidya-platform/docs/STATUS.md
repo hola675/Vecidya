@@ -1,12 +1,19 @@
 # Estado de implementación
 
-## APRENDE-GESTIÓN-03 — dirección y decisiones digitales (2026-10-20; rama, borrador)
+## APRENDE-GESTIÓN-03 — guías de dirección digital (2026-10-20; PR borrador)
 
-**CODE + TEST versionado / RAN pendiente; sin deploy.** Cinco guías nuevas en `app/content/learn-management-03.ts` sobre presupuesto digital, compras/proveedores, continuidad de sistemas, gobierno responsable de IA y evaluación de mejoras tecnológicas. Todas conservan `editorialDraft: true`, tres ideas principales, casos identificados como hipotéticos, pasos prácticos, FAQs, fuentes institucionales y un diagrama SVG propio con títulos/descripciones accesibles. Se conectan a `learnArticles`, la búsqueda/categorías existentes y el nuevo itinerario «Dirige y mejora con criterio». El cambio se inició desde `main` `5861c09bbcd4`: ese corte tiene 28 guías, y la rama añade cinco (33 en total). **PR #26 APRENDE-OPERACIONES-02 permanece abierto y añade otras cinco**; tras su integración deberán reconciliarse los imports y rutas para una biblioteca conjunta de 38 sin perder ninguno.
+**CODE + TEST versionado / RAN pendiente, sin deploy.** Cinco guías en `learn-management-03.ts`: presupuesto de herramientas, compras/proveedores, continuidad frente a fallos, gobierno de IA y evaluación de proyectos digitales. Cinco SVG con `title`, `desc` y alt; cada guía tiene tres ideas, ejemplo hipotético, pasos, FAQ, fuentes y `editorialDraft: true`. La rama integró el nuevo `main` tras el merge del PR #26 **sin descartar las cinco guías de Operaciones-02**. Resultado estructural: 38 guías (11 originales + 27 borradores), 6 categorías, 7 itinerarios.
 
-**Alcance:** solo biblioteca educativa y documentación; sin cambios de Auth, Diagnóstico, Mi Vecidya, GHL, D1, precios, pagos o producción. No se retiran borradores ni se atribuye autoría humana a material generado sin aprobación. Las fuentes SBA, Ready.gov, CISA, NIST, GOV.UK, OCDE y W3C son referencias orientativas; no se presentan obligaciones legales, resultados financieros o comerciales universales.
+**Límites:** ningún cambio a App, Diagnóstico, GHL, Auth, DB, precios ni producción. No se declara PASS de tests, QA, verificación editorial, fuentes externas o publicación. Los borradores siguen sin autoría humana asignada y con `noindex`; falta revisión expresa antes de modificarlo.
 
-**Validación:** pruebas unitarias de integridad actualizadas y suite específica añadida; no ejecutadas por instrucción del usuario. Typecheck, build, E2E Worker, auditoría responsive y revisión humana de fuentes/precisión pendientes. Nunca declarar PASS ni publicación sobre esta base.
+
+## APRENDE-OPERACIONES-02 — cinco guías de operación y tecnología empresarial (2026-10-20)
+
+**CODE + TEST versionado / RAN pendiente, sin deploy.** Sobre `main` posterior a PR #24/#25: se incorporaron cinco borradores editoriales en `app/content/learn-operations-02.ts` sobre tareas y responsables, control de inventario, capacitación del personal, sistemas de gestión ERP y pruebas piloto de proyectos digitales. Se incorporan mediante el catálogo público `learnArticles` y el sexto itinerario «Trabaja mejor cada día». Total de catálogo en el corte: **33 guías** (11 originales conservadas + 22 borradores), seis categorías, seis itinerarios. Los cinco artículos tienen tres ideas clave, nueve secciones, casos hipotéticos, pasos concretos, FAQs y fuentes institucionales; todos llevan `editorialDraft: true`, por lo que conservan etiqueta «En revisión», sin atribución humana nueva ni indexación. Cinco SVG nuevos de formas grandes, sin tipografía interna diminuta, incluyen título/descripcion accesible, y cada guía tiene alt específico.
+
+**Referencia editorial:** guía de inventario del portal público australiano business.gov.au; W3C WAI (lectura clara); OCDE D4SME 2025 (necesidades digitales), NIST CSF SP1300 (riesgos proporcionales), manual GOV.UK (pruebas pequeñas e iteración) y documentación introductoria de Microsoft Learn (definición ERP). Estas fuentes orientan; no constituyen leyes universales, promesa de ventas ni recomendaciones comerciales de proveedor.
+
+**Validación diferida:** se actualizan las pruebas de integridad curricular y las pruebas históricas de 11 guías para que no fallen por ampliar el catálogo. **No se han ejecutado** unitarias, typecheck, build, E2E, auditoría visual ni verificación individual de todas las URL externas; la certificación editorial humana y despliegue requieren autorización separada. Rama `feat/aprende-operaciones-02`, PR pendiente. No se modificó Diagnóstico, Mi Vecidya, GHL, Auth, D1, costos/licencias ni producción.
 
 
 ## APRENDE-EMPRESAS-01 — formación digital para negocios, empresas y multinegocios (2026-10-20; rama dependiente, borrador)

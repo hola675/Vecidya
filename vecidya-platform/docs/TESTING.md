@@ -1,10 +1,15 @@
 # Pruebas
 
-## APRENDE-GESTIÓN-03 — validación diferida (2026-10-20)
+## APRENDE-GESTIÓN-03 — controles diferidos (2026-10-20)
 
-**TEST versionado / NO RAN.** `tests/unit/learn/learn-management-03.test.ts` cubre cinco slugs, autoría en borrador, tres ideas clave, secciones, enlaces relacionados válidos, FAQ, fuentes HTTPS, ejemplos hipotéticos, pasos, imágenes físicas y el itinerario. Se actualizaron las expectativas históricas de `learn-content.test.ts` y `learn-curriculum.test.ts` para que el catálogo pueda crecer sin falsos fallos por recuentos obsoletos; siguen verificando la conservación de las once guías originales y la unicidad. No se ejecutaron en esta sesión.
+**NOT RUN por decisión del usuario:** nuevas unitarias en `tests/unit/learn/learn-management-03.test.ts`; el catálogo ahora contiene 38 artículos (11 originales, 27 borradores) y 7 itinerarios; `learn-curriculum.test.ts` conserva aserciones de integridad, los cinco artículos de Operaciones-02 y añade el nuevo total. `learn-content.test.ts` de main ya validaba recuentos dinámicos. Antes de certificar, ejecutar `pnpm run typecheck`, `pnpm run build`, `pnpm run test:unit`, `git diff --check`, E2E de Aprende contra Worker local, comprobación `noindex` y rutas, responsividad/zoom/teclado, URLs institucionales y revisión editorial humana. Sin autorización de deploy o retiro de borradores.
 
-**Gates pendientes:** reconciliar el PR #26 de operaciones, verificar conteo de 38 guías y 7 itinerarios tras integrar ambos; `pnpm run typecheck`, `pnpm run build`, `pnpm run test:unit` si está disponible y `git diff --check`. Ejecutar `tests/e2e/learn-experience-check.mjs` contra Worker local para navegación, búsqueda, metadatos `noindex` de borradores, fuentes y carga de cinco SVG a 360/390/768/1366 px. Revisar lectura, focalización, tamaño de diagramas, autoría y enlaces institucionales uno por uno. No se autoriza publicar ni retirar `editorialDraft` con esta entrega.
+
+## APRENDE-OPERACIONES-02 — evidencia y validación pendiente (2026-10-20)
+
+**TEST versionado / NOT RUN por decisión del usuario.** Se actualizaron `tests/unit/learn/learn-curriculum.test.ts` para certificar el catálogo ampliado de 33 guías, 22 borradores, seis itinerarios, cinco nuevos slugs y sus nueve secciones, y `tests/unit/learn-content.test.ts` para conservar las 11 guías originales sin exigir que toda la biblioteca siga teniendo once artículos. Las comprobaciones de integridad de enlaces internos, ejemplos hipotéticos, imágenes SVG con `<title>`/`<desc>`, fuentes HTTPS y categoría existente permanecen activas.
+
+**Gates para una sesión posterior en worktree aislado:** `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`; contra Worker local, `node tests/e2e/learn-experience-check.mjs` y ampliación futura del E2E para los nuevos artículos, índice, imágenes, etiquetas de borrador, SEO `noindex`, fuentes y navegación 360/390/768/1366. Realizar revisión humana del lenguaje, ejemplos, precisión de inventario/ERP, referencias oficiales, dispositivos de bajo ancho de banda, accesibilidad y aspectos jurídicos por país antes de retirar `editorialDraft`. Sin resultados PASS reportados, sin prueba ni cambio remoto y sin publicación autorizada.
 
 
 ## APRENDE-EMPRESAS-01 — pruebas y revisión editorial diferidas (2026-10-20)

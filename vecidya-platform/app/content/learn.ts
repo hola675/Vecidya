@@ -1,4 +1,5 @@
 import { learnBusinessOperationsArticles } from "./learn-business-operations";
+import { learnOperations02Articles } from "./learn-operations-02";
 import { learnManagement03Articles } from "./learn-management-03";
 
 export type LearnBlock =
@@ -4010,6 +4011,7 @@ export const learnArticles: LearnArticle[] = [
   },
 
   ...learnBusinessOperationsArticles,
+  ...learnOperations02Articles,
   ...learnManagement03Articles,
 ];
 
@@ -4065,6 +4067,17 @@ export const learnPathways = [
       "quien-puede-ver-cambiar-y-publicar-en-tu-empresa",
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
       "como-comparar-resultados-de-sedes-sin-mezclar-las-cifras",
+    ],
+  },
+  {
+    title: "Trabaja mejor cada día",
+    description: "Organiza tareas, productos, formación y proyectos digitales sin complicar los procesos.",
+    slugs: [
+      "como-organizar-tareas-y-responsables-en-tu-equipo",
+      "como-controlar-inventario-sin-perder-productos-ni-datos",
+      "como-capacitar-al-equipo-en-herramientas-digitales",
+      "cuando-necesita-tu-empresa-un-sistema-erp",
+      "como-empezar-proyecto-digital-sin-detener-negocio",
     ],
   },
   {

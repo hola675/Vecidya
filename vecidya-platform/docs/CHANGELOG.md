@@ -1,11 +1,18 @@
 # Changelog
 
-## 2026-10-20 — APRENDE-GESTIÓN-03 (rama, contenido no certificado)
+## 2026-10-20 — APRENDE-GESTIÓN-03 (rama no publicada)
 
-- Cinco guías nuevas sobre presupuestos digitales, compras y proveedores, continuidad operacional, uso responsable de IA y evaluación de mejoras.
-- Nuevo itinerario «Dirige y mejora con criterio», cinco ilustraciones SVG accesibles y cobertura unitaria de integridad curricular.
-- Redacción llana para pequeños negocios, empresas con departamentos y grupos multinegocio: casos hipotéticos, tres ideas clave, pasos, FAQs y fuentes sin promesas.
-- Dependencia futura de la integración del PR #26; certificación, revisión editorial, merge y despliegue pendientes. No se modificaron Diagnóstico, App, GHL o base de datos.
+- Cinco nuevas guías sobre costos tecnológicos, compras, continuidad, IA y medición de resultados, con cinco ilustraciones accesibles.
+- Siete itinerarios y 38 guías en la rama reconciliada con APRENDE-OPERACIONES-02 (27 borradores sin publicación).
+- Nuevas pruebas de integridad versionadas, pero NO ejecutadas. Sin modificación de Diagnóstico, App, GHL, D1 o producción.
+
+
+## 2026-10-20 — APRENDE-OPERACIONES-02 (rama independiente, sin desplegar)
+
+- Cinco nuevas guías educativas, marcadas como borradores para revisión editorial: tareas y responsables, inventario, capacitación digital, ERP sin jerga y proyectos piloto reversibles.
+- Se añadió el sexto itinerario de Aprende: «Trabaja mejor cada día»; total de catálogo **33 guías**, con once originales y veintidós borradores.
+- Cinco diagramas SVG accesibles de iconografía grande sin etiquetas diminutas; ejemplos hipotéticos y fuentes institucionales con alcance geográfico señalado.
+- Pruebas de integridad curricular y preservación de contenidos históricos actualizadas pero **no ejecutadas**. Sin alteraciones en Diagnóstico, Mi Vecidya, GHL, D1 o producción.
 
 
 ## 2026-10-20 — APRENDE-EMPRESAS-01 (rama dependiente, no publicado)

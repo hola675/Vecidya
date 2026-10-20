@@ -1,11 +1,17 @@
+### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
+
+### APRENDE-GESTIÓN-03 — educación para decidir, supervisar y mejorar (2026-10-20)
+
+**Implementado como borrador, no certificado ni publicado:** presupuestos y costos reales de herramientas, solicitudes y aprobaciones de compra, continuidad si falla internet o un sistema, límites y supervisión de IA, evaluación de un proyecto digital. El nuevo camino «Dirige y mejora con criterio» usa casos hipotéticos y pasos proporcionales para negocios pequeños, empresas con equipos y grupos con varias sedes. Reconciliado con APRENDE-OPERACIONES-02 ya fusionado en main: 38 artículos (11 originales + 27 borradores) y 7 itinerarios en esta rama. Sin CRM/ERP transaccionales, nuevos pagos, cambios de DB ni obligaciones legales universales.
+
+**Siguiente gate:** revisión editorial de cada borrador por una persona autorizada, fuentes institucionales actuales, integridad/certificación técnica, accesibilidad visual y verificación de enlaces. No retirar `editorialDraft`, no integrar PR ni publicar por inferencia.
+
+
+La primera extensión de operaciones cubre **organización de tareas**, **movimientos y comprobación de inventario**, **capacitación práctica del personal**, **introducción a ERP frente a CRM** y **proyectos digitales piloto con seguimiento y reversión**. Se integra en el sexto itinerario «Trabaja mejor cada día» con cinco guías en estado `editorialDraft: true`. Las fuentes, ejemplos y CTA son orientativos, sin ventas garantizadas; certificación de código, revisión editorial humana y publicación continúan pendientes.
+
+**Brechas aún abiertas — no implementadas:** aprobaciones complejas y compras/proveedores, gestión financiera y presupuestos, continuidad entre sedes, formación especializada y accesibilidad de capacitación, dirección con indicadores consistentes, incidentes de seguridad, gobierno de IA y normas sectoriales por país. Evitar convertir una biblioteca educativa en ERP/CRM o herramientas transaccionales.
+
 ## APRENDE — mapa educativo empresarial pendiente (investigación 2026-10-20)
-
-### APRENDE-GESTIÓN-03 — cinco temas de dirección digital (2026-10-20)
-
-**Implementados únicamente como borradores en rama independiente:** presupuestos tecnológicos y costos totales, compras/proveedores/aprobaciones, continuidad ante fallos de sistemas, supervisión de IA y medición de mejoras. Cada artículo diferencia recomendaciones para equipos pequeños y múltiples sedes, incluye caso hipotético, pasos y fuentes. La integración con APRENDE-OPERACIONES-02 (PR #26, no fusionado en el corte de esta rama) exige reconciliación explícita de `learn.ts`, itinerarios y tests, conservando 11 guías originales y todos los borradores (objetivo posterior a ambos merges: 38 guías y 7 itinerarios).
-
-**No implementado ni autorizado:** CMS, experiencias transaccionales, automatizaciones de negocio, políticas específicas por país, simuladores financieros, publicación de los artículos, aprobación de autoría, eliminación de límites `editorialDraft` y cambios operativos fuera de Aprende. Revisión editorial humana, integridad técnica, SEO y accesibilidad se planifican después, conforme a indicación del usuario.
-
 
 **Audiencia transversal:** negocios pequeños, empresas con departamentos, organizaciones con sedes, grupos con varias marcas o entidades; también profesionales y organizaciones sin fines de lucro cuando las recomendaciones sean aplicables. El aprendizaje se adapta a la complejidad de la tarea, permisos, equipo y datos, sin asumir que todos parten de cero ni que todos necesitan contratar software.
 
