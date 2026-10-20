@@ -122,6 +122,30 @@ export default function CommercialDetail({ loaderData }: { loaderData: { offer: 
           </section>
         )}
 
+
+        <section className="commercial-detail__benefits" aria-labelledby="commercial-benefits-title">
+          <p className="eyebrow">BENEFICIOS PRÁCTICOS</p>
+          <h2 id="commercial-benefits-title">Qué ganas al incorporarlo</h2>
+          <ul>{offer.benefits.map((benefit) => <li key={benefit}>{benefit}</li>)}</ul>
+        </section>
+
+        {offer.journey && offer.journey.length > 0 && (
+          <section className="commercial-detail__journey" aria-labelledby="commercial-journey-title">
+            <p className="eyebrow">EJEMPLO DE RECORRIDO</p>
+            <h2 id="commercial-journey-title">De una consulta al siguiente paso</h2>
+            <ol>{offer.journey.map((step) => <li key={step}>{step}</li>)}</ol>
+            <p>Este recorrido depende de conectar correctamente los canales y configurar los flujos correspondientes; no se activa automáticamente al contratar una licencia.</p>
+          </section>
+        )}
+
+        {offer.continuity && (
+          <section className="commercial-detail__continuity" aria-labelledby="commercial-continuity-title">
+            <p className="eyebrow">SI UN CANAL DEJA DE FUNCIONAR</p>
+            <h2 id="commercial-continuity-title">Conserva el contexto que ya quedó registrado</h2>
+            <p>{offer.continuity}</p>
+          </section>
+        )}
+
         <section className="commercial-detail__examples" aria-labelledby="commercial-examples-title">
           <p className="eyebrow">EJEMPLOS ORIENTATIVOS</p>
           <h2 id="commercial-examples-title">Cómo se aplicaría a tu negocio</h2>
