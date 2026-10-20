@@ -60,7 +60,7 @@ There is no `test` script. E2E scripts live in `tests/e2e/`; read `vecidya-platf
 
 ## Validation
 
-- Prefer focused tests and certification for the changed behavior and implementation; run broader suites only when the change's scope or cross-cutting regression risk justifies them.
+- Prefer focused tests and certification only for changes and implementations made in the active checkpoint; run broader suites only when that checkpoint's scope or cross-cutting regression risk justifies them.
 - After changing `wrangler.jsonc`, run `pnpm run cf-typegen`.
 - Before committing application changes, run `pnpm run typecheck` and `pnpm run build`; run `git diff --check`.
 - Validate Worker-facing behavior through the real local Cloudflare runtime.

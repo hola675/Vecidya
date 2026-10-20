@@ -11,6 +11,43 @@
 
 **Gates pendientes de ejecutar en worktree aislado con dependencias:** `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`. Contra Worker local `pnpm run dev` con configuración de prueba, ejecutar `node tests/e2e/licenses-experience-check.mjs` y `node tests/e2e/web-commercial-contact-check.mjs`. Revisar manualmente claridad, foco/teclado, zoom 200 %, contraste, móvil 360/390/768/1366 y enlaces de correo/WhatsApp sin enviar mensajes. Este registro describe cobertura añadida, **no resultados PASS**; no CI Actions, deploy, D1 remota ni emisión real.
 
+## APP-CLIENTE-00A — matriz general de autorización (2026-10-20)
+
+**Resultado: PASS local, sobre el HEAD probado `ae377d8397fdc7ce8259fe9fb14a5c448e147ee3`, base `origin/main=0c1f7230d7ec1396b2576c639a191aff858e9ecb`.** Ejecución exclusiva `runId=f4c06d47-ebac-4d5f-92db-0527f81856d9`; D1 aislada nueva `C:\Users\Admin\AppData\Local\Temp\kilo\vecidya-app-client-00a\authz-runs\f4c06d47-ebac-4d5f-92db-0527f81856d9`; Worker local IPv4 `127.0.0.1:5183`; secreto de autenticación aleatorio en memoria del proceso. Sin D1 remota/compartida, correo real, deploy ni datos reales.
+
+**Setup y comando del corte:** `pnpm install --frozen-lockfile`; `pnpm wrangler d1 migrations apply DB --local --persist-to <AUTHZ_D1_PERSIST_TO>` (20 migraciones, `0000–0019`); `pnpm run dev -- --host 127.0.0.1 --port <puerto>` con `AUTHZ_D1_PERSIST_TO` y `BETTER_AUTH_SECRET` efímero en el proceso; después `pnpm exec node tests/e2e/organization-authorization-check.mjs` con `BASE_URL=http://127.0.0.1:<puerto>`, `AUTHZ_RUN_ID=<UUID único>` y el mismo `AUTHZ_D1_PERSIST_TO`. No ejecutar procesos concurrentes contra el mismo path; asignar directorio y UUID nuevos para cada repetición. Wrangler migration y test usan explícitamente `--local`, nunca `--remote`.
+
+| Etapa | Duración |
+| --- | ---: |
+| Preflight D1 recién migrada/vacía | 38,076 ms |
+| Fixtures, altas y preparación | 9,272 ms |
+| Licencia de organización inicial | 6,901 ms |
+| Organizaciones y usuarios adicionales | 17,334 ms |
+| Superficie Better Auth | 7,144 ms |
+| Organización activa | 13,253 ms |
+| Sesión stale y membresía retirada | 9,251 ms |
+| Roles, operaciones y licencia/publicación | 32,985 ms |
+| Aislamiento entre organizaciones | 7,649 ms |
+| Ciclo de invitaciones | 20,312 ms |
+| Teardown y readback | 5,628 ms |
+| **Total** | **167,820 ms (2 min 47.820 s)** |
+
+La salida progresiva clasificó **173/173 checks PASS; 0 fallidos, 0 pendientes; `RUN END PASS`**. Cobertura: sesión anónima/autenticada, organización ausente/válida/ajena/inexistente, memberships activas/retiradas/stale, owner/admin/member y permisos, operaciones de Better Auth, intents de cambio cross-tenant, invitaciones y restricciones por identidad, `platform_admin` en servicios y publicación de perfil con/sin licencia. Los rechazos de mutación llevan readback D1 de estado/datos para comprobar que no escribieron. Las invitaciones que requieren proveedor de correo local responden el `503` esperado y no crean filas; no se certificó entrega real.
+
+**Coste del harness:** 16 comandos síncronos `wrangler d1 execute`, cada uno con timeout de 45 s; duración acumulada de procesos Wrangler **103,413 ms** (media 6,463 ms; mediana 6,187 ms), aproximadamente 62% del total. Los tres más lentos fueron `D1-83` 9,277 ms, `D1-164` 8,737 ms y `D1-4` 8,485 ms. Esto demuestra que iniciar un Wrangler por consulta es un coste mayor y hace verosímil la contribución del harness al timeout histórico de 600 s; el timeout histórico exacto no se reprodujo ni puede atribuirse exclusivamente a ese coste. Se agruparon mutaciones/readbacks y se bajó a 16 llamadas D1 sin retirar aserciones. Se mantiene `spawnSync` acotado porque esta matriz completa terminó dentro del límite y el wrapper ahora identifica timeout, pid/señal/estado del proceso y etiqueta la causa como `HARNESS`; los requests y las etapas muestran duración y progreso.
+
+**Recuperación de Worker local:** se registró un timeout del primer `GET /api/auth/ok` (`HTTP-2`, límite 22 s, 22,026 ms) y cinco `TypeError` de conexión posteriores a llamadas D1 (`HTTP-84/94/155/165/189`, 10–14 ms). El calentamiento/reintento inmediato de cada caso respondió 200 (`HTTP-3/85/95/156/166/190`). No hubo timeout D1, aserción fallida ni rechazo de autorización incorrecto. La forma coincide con el conocido `TEST-D1-RESET-001` de Wrangler local con Worker activo; en esta corrida se recuperó y registró, pero no se afirma una causa TCP interna adicional.
+
+**Limpieza verificable:** el teardown inventarió el alcance por run (17 usuarios, 7 organizaciones, 24 invitaciones, 15 IDs de membresía, 1 `platform_member`, 2 perfiles, 1 asignación de servicio, 16 sesiones y 16 cuentas). El inventario antes de limpiar tenía 17 usuarios, 7 organizaciones, 24 invitaciones, 12 memberships vigentes, 1 plataforma, 2 perfiles, 1 servicio, 1 billing account y 1 licencia; el readback posterior tuvo **0** usuarios, organizaciones, invitaciones, memberships, sesiones, cuentas, platform members, audit logs, perfiles, horas, servicios, integraciones, sitios MiniWeb, billing accounts, licencias, precios y verificaciones. Una consulta Wrangler de solo lectura posterior confirmó ledger 20 y 0 en usuarios, organizaciones, invitaciones, memberships, sesiones, cuentas, platform members, perfiles, servicios, billing accounts y licencias. Las nueve D1 efímeras creadas durante el diagnóstico/repeticiones del checkpoint fueron auditadas al cierre: cada una mantiene 20 migraciones y 0 filas en esas tablas de fixtures; ninguna se reutilizó como D1 compartida.
+
+Una ejecución exploratoria anterior se invalidó después de detectar que dos procesos habían compartido por error una D1 de prueba; se inventariaron sus IDs sintéticos antes de una limpieza limitada a esa D1, se verificó su ledger/estado y la certificación final se repitió en otra ruta nueva, sin concurrencia. No se modificó ni limpió la D1 del worktree APP-CLIENTE-00.
+
+**Validación focal del cambio:** `tests/unit/auth/authorization-harness-diagnostics.test.ts` **4/4 PASS** (trazas/duración/progreso, redacción de secretos, diagnóstico de proceso y alcance SQL vacío/escapado); `node --check` de ambos scripts; `pnpm run typecheck`; `pnpm run build`; `git diff --check`: **PASS**, sobre el mismo HEAD. No se ejecutó toda la suite unitaria: la certificación focal se limitó al harness/contratos cambiados, según la regla de alcance en `AGENTS.md`. Typecheck/build se ejecutaron también por cambio de configuración de Vite; no hubo cambios de aplicación.
+
+## APP-CLIENTE-00A — revisión del diagnóstico previo
+
+El timeout histórico de 600 s ya no se reprodujo. El harness anterior no mostraba progreso, hacía consultas D1 una por Wrangler y dejaba el costo dentro de un silencio largo. La versión instrumentada aporta UUID por ejecución, etapas, IDs/duración/timeout por D1 y HTTP, conteo de checks pendientes, redacción de cookies/tokens/passwords, status/pid/señal del proceso Wrangler y separación `HARNESS FAIL` / `AUTHORIZATION FAIL` / `PASS`. El cleanup usa IDs del run y scope de organizaciones/usuarios generadas solo en la D1 nueva, comprueba filas antes/después y falla cerrado si quedan registros. El timeout no se “arregló” reduciendo cobertura.
+
 
 ## UX-COHERENCE-03 — gates de diseño y medición (2026-10-19)
 
