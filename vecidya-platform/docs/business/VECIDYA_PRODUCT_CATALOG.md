@@ -311,7 +311,7 @@ Cuadra no obtiene un CRM mediante complementos.
 
 Si necesita CRM, la frontera funcional es Barrio.
 
-La habilitación estándar de una capacidad incluida en la licencia no crea un cargo nuevo. Si existe suscripción externa verificable (como WhatsApp), la tarifa debe cubrir costes directos y al menos 20 % de margen bruto; si solo existe consumo, se calcula igual sobre el coste completo, sin esconderlo. Los servicios de implantación especial se cotizan por separado.
+La habilitación estándar de una capacidad incluida en la licencia no crea un cargo nuevo. Si existe suscripción externa verificable (como WhatsApp), la tarifa de reventa aplica el recargo aprobado del 20 % sobre el coste externo verificado; si solo existe consumo, se calcula sobre el cargo realmente facturado, sin cargos ocultos. Los servicios de implantación especial se cotizan por separado.
 
 Una implementación especial continúa siendo un servicio profesional.
 
