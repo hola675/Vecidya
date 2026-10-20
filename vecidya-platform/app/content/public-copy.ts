@@ -43,6 +43,13 @@ export const COMMERCIAL_CONTACT_INTERESTS = {
   "servicio-inteligencia-artificial": "el servicio Automatización & Integraciones",
   "servicio-visibilidad": "el servicio IA Aplicada",
   "servicio-desarrollo-empresarial": "el servicio Desarrollo Empresarial",
+  "complemento-whatsapp-business": "el complemento WhatsApp Business",
+  "complemento-telephony-sms": "el complemento Telefonía y SMS",
+  "complemento-reputation-reviews": "el complemento Reputación y Reseñas",
+  "complemento-campaigns-diffusion": "el complemento Campañas y Difusión",
+  "complemento-conversational-ai": "el complemento IA Conversacional",
+  "complemento-voice-ai": "el complemento IA de Voz",
+  "complemento-connections-integrations": "el complemento Conexiones e Integraciones",
 } as const;
 
 export function resolveCommercialContactInterest(value: string | null) {

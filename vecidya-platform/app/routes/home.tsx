@@ -134,6 +134,20 @@ export default function Home() {
         </div>
       </section>
 
+      <section aria-labelledby="home-learn-contact-title" className="public-v2-section home-guidance-feature">
+        <div className="home-section-heading">
+          <div>
+            <p className="eyebrow">GUÍAS Y AYUDA</p>
+            <h2 id="home-learn-contact-title">Aprende a tu ritmo o consúltanos.</h2>
+          </div>
+          <p className="home-section-heading__note">Explora recursos prácticos o comparte directamente tu necesidad.</p>
+        </div>
+        <div className="public-actions">
+          <Link className="button button--secondary" to="/aprende">Explorar guías de Aprende</Link>
+          <Link className="text-link" to="/contacto">Hablar con Vecidya <span aria-hidden="true">→</span></Link>
+        </div>
+      </section>
+
       <CTASection
         eyebrow="SIGUIENTE PASO"
         title="Empieza por entender dónde estás."

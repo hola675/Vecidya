@@ -338,3 +338,67 @@
 @media (max-width: 480px) {
   :is(.contact-experience-page,.join-experience-page) .public-actions > .button { flex: 1 1 12rem; }
 }
+
+/* UX-WEB-NAV-01: public navigation states, discoverability and tablet menu. */
+.site-header .site-nav > a[aria-current="page"],
+.site-header .site-nav__group:has(.site-nav__panel a[aria-current="page"]) > summary {
+  color: var(--blue);
+  background: #eef4ff;
+}
+.site-footer__nav a:hover,
+.site-footer__nav a[aria-current="page"] {
+  color: var(--blue);
+  text-decoration: underline;
+  text-underline-offset: .22em;
+}
+.site-footer__nav a:focus-visible,
+.site-mobile-menu > summary:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+}
+.site-mobile-menu > summary {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #b8c9df;
+  border-radius: .65rem;
+  padding: .55rem .9rem;
+  list-style: none;
+}
+.site-mobile-menu > summary::-webkit-details-marker { display: none; }
+.site-mobile-menu[open] > summary { color: var(--blue); background: #eef4ff; }
+
+@media (max-width: 960px) {
+  .site-header { align-items: center; }
+  .site-header .site-nav, .site-header__actions { display: none; }
+  .site-mobile-menu { display: block; position: relative; }
+  .site-header .site-mobile-menu nav {
+    display: grid;
+    position: absolute;
+    z-index: 8;
+    top: calc(100% + .75rem);
+    right: 0;
+    width: min(18rem, calc(100vw - 2rem));
+    max-height: min(75vh, 38rem);
+    overflow-y: auto;
+    gap: .25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: .75rem;
+    background: #fff;
+    box-shadow: var(--shadow);
+  }
+  .site-header .site-mobile-menu nav a {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    border-radius: .55rem;
+    padding: .65rem .7rem;
+  }
+  .site-header .site-mobile-menu nav a:hover,
+  .site-header .site-mobile-menu nav a[aria-current="page"] {
+    background: #eef4ff;
+  }
+  .site-header .site-mobile-menu nav .button { margin-top: .35rem; color: #fff; }
+}
