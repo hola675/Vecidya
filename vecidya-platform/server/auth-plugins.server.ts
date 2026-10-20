@@ -17,7 +17,7 @@ export const organizationPolicy = {
  * Devuelve el plugin, no un array: Better Auth solo infiere los campos que el plugin añade a la
  * sesión (`activeOrganizationId`) cuando `plugins: [...]` es un literal dentro de `betterAuth()`.
  */
-export function createOrganizationPlugin(emailConfig: InvitationEmailConfig, database: ReturnType<typeof createDatabase>) {
+export function createOrganizationPlugin(emailConfig: InvitationEmailConfig, database: ReturnType<typeof createDatabase>, invitationDeliveryManagedByRoute = false) {
   return organization({
     ...organizationPolicy,
     allowUserToCreateOrganization: async (user) => {
@@ -28,7 +28,13 @@ export function createOrganizationPlugin(emailConfig: InvitationEmailConfig, dat
       const active = await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, account.id), eq(organizationLicense.status, "active"), or(isNull(organizationLicense.endsAt), gt(organizationLicense.endsAt, new Date()))) });
       return Boolean(active);
     },
-    sendInvitationEmail: (data) => sendOrganizationInvitation(data, emailConfig),
+    // Better Auth absorbe los errores de esta callback. Las rutas de invitación con
+    // entrega gestionada envían explícitamente después de crear el registro,
+    // sin enviar una segunda copia desde el plugin.
+    sendInvitationEmail: async (data) => {
+      if (invitationDeliveryManagedByRoute) return;
+      await sendOrganizationInvitation(data, emailConfig);
+    },
     organizationHooks: {
       afterRemoveMember: async ({ member }) => {
         await database

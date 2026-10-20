@@ -120,14 +120,17 @@ test("DIAG-V3 activation readiness: certified representative, adversarial and de
   console.log("DIAG-V3 readiness comparison", JSON.stringify({ cases: corpus.length, differences: changed, classification, routeDistribution, commercial, holdoutCommercial }));
 });
 
-test("DIAG-V3 activation readiness: ACT-03 disposition and explicit PDF accessibility blocker are current", () => {
+test("DIAG-V3 activation readiness: PDF owner review is non-blocking and Worker replay remains gated", () => {
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.readiness, "READY_WITH_EXPLICIT_BLOCKERS");
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateActive, false);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.publicRuntimeChanged, false);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateIdentity, CANDIDATE_RESULT_IDENTITY_V3);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers.length, 1);
-  assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers[0], /ACT-03\.1 is BLOCKED.*PDF\/UA.*not certified/i);
-  assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers[0], /PAC\/Acrobat.*NVDA/i);
+  assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers[0], /QA-03B.*server-authoritative replay/i);
+  assert.ok(!CANDIDATE_ACTIVATION_MANIFEST_V3.blockers.some((blocker) => /PDF\/UA|PAC|Acrobat|NVDA/i.test(blocker)));
+  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.ownerReview.id, "PDF_OWNER_REVIEW");
+  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.ownerReview.blocking, false);
+  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.ownerReview.pdfUaCertified, false);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.rollback.ref, "a8b1d08");
   assert.deepEqual(CANDIDATE_ACTIVATION_MANIFEST_V3.publicRouteTargets, ["/diagnostico", "/diagnostico/metodologia", "/diagnostico/informe"]);
   assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.expectedRuntimeModules.includes("app/features/diagnostic/qbv2-candidate-pipeline.ts"));
@@ -139,6 +142,7 @@ test("DIAG-V3 activation readiness: ACT-03 disposition and explicit PDF accessib
   assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateSession.concurrency, /Web Locks/);
   assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateSession.retention, /logical expiry/);
   assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.activationPreconditions.some((condition) => condition.includes("ACT-04")));
+  assert.ok(!CANDIDATE_ACTIVATION_MANIFEST_V3.activationPreconditions.some((condition) => /PDF\/UA|PAC|Acrobat|NVDA/i.test(condition)));
   assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.postActivationChecks.length >= 4);
   assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.bundleExpectation, /513253 bytes \(117103 gzip\)/);
 });
@@ -161,5 +165,5 @@ test("DIAG-V3 activation readiness: public summary stays on active V3 while QA-0
   assert.match(reportModel, /export function buildDiagnosticReport/);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateActive, false);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.publicRuntimeChanged, false);
-  assert.ok(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers[0].includes("reading-order"));
+  assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers[0], /QA-03B.*server-authoritative replay/i);
 });

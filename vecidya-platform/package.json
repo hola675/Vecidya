@@ -16,7 +16,7 @@
     "test:e2e:diagnostic-act031": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/diagnostic-v3-candidate-session-hardening-check.mjs && node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/diagnostic-v3-candidate-pdf-samples.mjs",
     "test:e2e:diagnostic-act032": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/diagnostic-v3-candidate-session-hardening-check.mjs",
     "benchmark:diagnostic-candidate": "node tests/e2e/measure-diagnostic-candidate-bundle.mjs",
-    "test:email": "node --experimental-strip-types --test tests/email/mail-adapter.test.ts",
+    "test:email": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/email/mail-adapter.test.ts tests/email/mail-templates.test.ts",
     "test:unit": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test \"tests/unit/**/*.test.ts\"",
     "typecheck": "react-router typegen && tsc -b",
     "cf-typegen": "wrangler types"

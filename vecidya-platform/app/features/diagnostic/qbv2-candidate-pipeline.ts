@@ -120,14 +120,20 @@ export const CANDIDATE_ACTIVATION_MANIFEST_V3 = Object.freeze({
   candidateMethodologyRoute: "/__dev/diagnostico/candidate/metodologia",
   candidateReportRoute: "/__dev/diagnostico/candidate/informe",
   activationPreconditions: [
-    "Resolve the PDF/UA accessibility blocker with an independent tagged-PDF audit; any alternative HTML export requires an explicit product decision and does not silently waive the PDF gate",
+    "QA-03B requires server-authoritative replay with exact engine and answer-schema identity; the same versioned result must feed the anonymous summary and identified report",
     "ACT-04 must switch /diagnostico, /diagnostico/metodologia and /diagnostico/informe together to candidate session, result, methodology and report adapters",
     "Keep the candidate session key and exact engine identity; do not migrate or reinterpret legacy sessions",
     "Run the full local candidate and legacy E2E suites, typecheck, production build and anonymous route-isolation checks after the cutover change",
     "Obtain explicit authorization for ACT-04; ACT-03 does not activate, deploy or publish",
   ],
+  ownerReview: {
+    id: "PDF_OWNER_REVIEW",
+    owner: "project_owner",
+    blocking: false,
+    pdfUaCertified: false,
+  },
   blockers: [
-    "ACT-03.1 is BLOCKED: PDF/UA conformance is not certified. Chromium generated 14 tagged A4/Letter samples and automated DOM/AX checks covered headings, lists, term/value pairs, links, decorative-image alternatives, Spanish content, states, priorities and commercial disclosures; independent PAC/Acrobat tagged-PDF review, effective PDF reading-order validation and real NVDA screen-reader checks remain outstanding before ACT-04",
+    "QA-03B has no server-authoritative replay yet; public summary and identified report must consume the same validated versioned result before ACT-04",
   ],
   publicRouteTargets: ["/diagnostico", "/diagnostico/metodologia", "/diagnostico/informe"],
   activationStrategy: "Replace the route adapters and runtime imports for the three publicRouteTargets in one ACT-04 change; keep the candidate route dev-only until then.",

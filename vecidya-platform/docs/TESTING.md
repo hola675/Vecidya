@@ -1,5 +1,14 @@
 # Pruebas
 
+## EMAIL-TRANSACTIONAL-UX-02 — pruebas añadidas (2026-10-19)
+
+**TEST (versionado, no ejecutado en el repositorio completo en este entorno):** `tests/email/mail-templates.test.ts` cubre cinco/seis variantes de plantilla, tokens de marca, HTML alternativo, MIME, roles localizados, escapar HTML/URLs, enlace de Diagnóstico sin informe adjunto, mensaje de contraseña cambiada y entrega de invitación simulada/no confirmada sin reintentos. El comando `pnpm run test:email` invoca la suite preexistente de adaptador y la nueva usando el resolver TS del proyecto. **RAN:** no disponible en este entorno conectado a GitHub: no hay worktree instalable de `vecidya-platform/` ni dependencias locales; no declarar PASS de test, typecheck, build, test E2E o revisión visual. Se requiere ejecutar en worktree desde esta rama antes de autorizar merge o deploy. No ejecutar tests remotos ni envíos a destinatarios reales sin autorización.
+
+Pruebas obligatorias de integración pendientes: crear invitación con proveedor `fake` (una sola llamada); simular respuesta Gmail 429/500/timeout y comprobar `unconfirmed` sin borrar el registro ni duplicar envío; comprobar rollback inexistente expresado honestamente; validar `onPasswordReset` tras cambio exitoso sin alterar el estado por fallo del aviso; MIME responsive en Gmail/Outlook; revalidar aislamiento productivo de buzón Diagnóstico; `typecheck`, `build`, `test:email` y E2E de invitaciones/diagnóstico.
+
+
+
+
 ## VECIDYA — reconciliación Fase 00 y gates G00-05 a G00-10 (2026-10-19)
 
 Este corte se ejecutó inicialmente en el worktree dedicado `integration/phase-00-main-reconcile`, iniciado en `origin/integration/phase-00-main-reconcile=82608d5` desde `origin/main=18de1be`. La candidata `5864a2f` se integró después mediante PR #11; el merge Git quedó en `469ef7a`. Los resultados siguientes pertenecen a validaciones locales anteriores a esa integración y no son checks ejecutados sobre el merge commit. La operación Git de cierre no ejecutó pruebas ni les otorga certificación funcional nueva.
@@ -322,7 +331,7 @@ PR #14 está integrado en la base usada para esta certificación. QA-03B mantien
 
 **RAN:** suites focales/compatibilidad combinadas `176/176 PASS`; QA-03B local `6/6 recorridos + reload/resume + cross-tab Web Locks PASS`; FUNNEL-01B Worker/UI `6/6 PASS` (23 respuestas replayadas en Worker, allowlist exacta, `no-store`, sesión V3 preservada y ruta anónima de informe cerrada); `pnpm run typecheck` y `pnpm run build` PASS. Escaneo bundle: `0` marcadores QA-03B-only en client/server; client conserva `vecidya.diagnostic.v3.session.2` y llamada `/api/diagnostic/anonymous-summary`, server conserva `runDiagnosticPipelineV3` y replay del endpoint.
 
-El E2E QA produce/reconstruye el resultado y el informe PDF localmente con identidad QA; no es replay autoritativo de QA en Worker. El endpoint público probado sigue siendo V3. Por tanto la relación común QA `Worker → resumen anónimo + informe identificado` queda **NOT RUN / no disponible** sin implementar la integración server-only, que está fuera de este checkpoint. La prueba del generador local no constituye aceptación PDF/UA: PAC/Acrobat, NVDA y aceptación humana siguen NOT RUN (`GATE_B_PARTIAL`). FUNNEL-01D.2/01D.3 continúan pendientes. Sin email real, D1 remota, migraciones, deploy o cambio público.
+El E2E QA produce/reconstruye el resultado y el informe PDF localmente con identidad QA; no es replay autoritativo de QA en Worker. El endpoint público probado sigue siendo V3. Por tanto la relación común QA `Worker → resumen anónimo + informe identificado` queda **BLOCKED / no disponible** sin implementar la integración server-only. PAC/Acrobat, NVDA y la aceptación visual/humana no se ejecutaron en ese corte; por decisión propietaria ahora quedan `PDF_OWNER_REVIEW`, manual y no bloqueante, sin afirmar conformidad PDF/UA ni repetir verificaciones. FUNNEL-01D.2/01D.3 continúan independientes. Sin email real, D1 remota, migraciones, deploy o cambio público.
 
 ## DIAG-V3-QA-03B — certificación candidata local (2026-10-11)
 

@@ -1,4 +1,6 @@
-type LocalVerificationEmail = { readonly requestId: string; readonly purpose: "verification" | "access_recovery"; readonly recipient: string; readonly subject: string; readonly text: string; readonly createdAt: number };
+import { buildDiagnosticAccessEmail } from "./templates.server";
+
+type LocalVerificationEmail = { readonly requestId: string; readonly purpose: "verification" | "access_recovery"; readonly recipient: string; readonly subject: string; readonly text: string; readonly html: string; readonly createdAt: number };
 type LocalMailboxGlobal = typeof globalThis & { __vecidyaDiagnosticDevInbox?: Map<string, Map<string, LocalVerificationEmail>> };
 
 function inbox(): Map<string, Map<string, LocalVerificationEmail>> {
@@ -27,14 +29,14 @@ export function deliverDiagnosticVerificationEmail(input: {
     messages = new Map();
     inbox().set(input.requestId, messages);
   }
+  const email = buildDiagnosticAccessEmail({ purpose, url: link.toString() });
   messages.set(input.challengeId, {
     requestId: input.requestId,
     purpose,
     recipient: input.recipient,
-    subject: purpose === "access_recovery" ? "Recupera el acceso a tu diagnóstico" : "Confirma el correo para acceder a tu diagnóstico",
-    text: purpose === "access_recovery"
-      ? `Solicitaste un nuevo enlace local para acceder al informe. El enlace vence según la vigencia del informe.\n\n${link.toString()}`
-      : `Abre este enlace local para verificar el acceso al informe. El enlace vence en 24 horas.\n\n${link.toString()}`,
+    subject: email.subject,
+    text: email.text,
+    html: email.html ?? "",
     createdAt,
   });
 }

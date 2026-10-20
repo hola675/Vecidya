@@ -1,15 +1,13 @@
-import { EmailConfigurationError, createTransactionalMailer, escapeHtml, isMailConfigured, type MailEnvironment } from "./mail.server";
+import { EmailConfigurationError, createTransactionalMailer, isMailConfigured, type MailEnvironment, type MailResult } from "./mail.server";
+import { buildInvitationEmail } from "./templates.server";
 
-export type InvitationEmailConfig = MailEnvironment & {
-  appUrl?: string;
-};
+export type InvitationEmailConfig = MailEnvironment & { appUrl?: string };
 
 type InvitationData = {
   id?: unknown;
   email?: unknown;
   role?: unknown;
   organization?: { name?: unknown };
-  inviter?: { name?: unknown; email?: unknown };
 };
 
 export class EmailDeliveryUnavailableError extends Error {
@@ -34,26 +32,53 @@ function text(value: unknown, fallback: string): string {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;
 }
 
-export async function sendOrganizationInvitation(rawData: unknown, config: InvitationEmailConfig): Promise<void> {
+export async function sendOrganizationInvitation(rawData: unknown, config: InvitationEmailConfig): Promise<MailResult> {
   if (!isOrganizationInvitationEmailConfigured(config)) throw new EmailDeliveryUnavailableError();
   const data = (rawData ?? {}) as InvitationData;
   const invitationId = text(data.id, "");
   const recipient = text(data.email, "");
   if (!invitationId || !recipient) throw new EmailDeliveryError("Organization invitation payload is incomplete");
   const organizationName = text(data.organization?.name, "tu organización");
-  const role = text(data.role, "member");
-  const inviter = text(data.inviter?.name ?? data.inviter?.email, "Un miembro del equipo");
-  const invitationUrl = new URL(`/app/invitations/${encodeURIComponent(invitationId)}`, config.appUrl).toString();
+  const rawRole = text(data.role, "member");
+  const role = rawRole === "admin" || rawRole === "owner" ? rawRole : "member";
+  const invitationUrl = new URL("/app/invitations/" + encodeURIComponent(invitationId), config.appUrl).toString();
 
   try {
-    await createTransactionalMailer(config).sendTransactionalEmail({
+    return await createTransactionalMailer(config).sendTransactionalEmail({
+      ...buildInvitationEmail({ organizationName, role, url: invitationUrl }),
       to: recipient,
-      subject: `Invitación a ${organizationName} en Vecidya`,
-      text: `${inviter} te ha invitado a unirte a ${organizationName} en Vecidya con el rol ${role}. Acepta la invitación: ${invitationUrl}`,
-      html: `<p>${escapeHtml(inviter)} te ha invitado a unirte a <strong>${escapeHtml(organizationName)}</strong> en Vecidya con el rol <strong>${escapeHtml(role)}</strong>.</p><p><a href="${escapeHtml(invitationUrl)}">Aceptar invitación</a></p>`,
     });
   } catch (error) {
     if (error instanceof EmailConfigurationError) throw new EmailDeliveryUnavailableError();
-    throw new EmailDeliveryError("Transactional email provider rejected the invitation");
+    throw new EmailDeliveryError("Transactional email provider did not confirm invitation");
+  }
+}
+
+export type InvitationDeliveryState = "provider_accepted" | "simulated" | "unconfirmed";
+
+/**
+ * Called only from the guarded Vecidya invitation routes.
+ * They create the Better Auth invitation with its callback suppressed and send once, explicitly.
+ * A send error does not roll back a created invitation: API/UI must report that uncertainty.
+ * Do not retry automatically (Gmail may have accepted a message before a network failure).
+ */
+export async function createAndDeliverOrganizationInvitation<T extends { id: string; email: string; role?: string | null }>(
+  create: () => Promise<T>,
+  config: InvitationEmailConfig,
+  organizationName: string,
+): Promise<{ invitation: T; delivery: InvitationDeliveryState }> {
+  const invitation = await create();
+  try {
+    const result = await sendOrganizationInvitation({
+      id: invitation.id,
+      email: invitation.email,
+      role: invitation.role ?? "member",
+      organization: { name: organizationName },
+    }, config);
+    return { invitation, delivery: result.provider === "fake" ? "simulated" : "provider_accepted" };
+  } catch {
+    // No destinatario, token ni URL de acceso en logs.
+    console.error("INVITE_DELIVERY_UNCONFIRMED", { invitationId: invitation.id });
+    return { invitation, delivery: "unconfirmed" };
   }
 }
