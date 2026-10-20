@@ -84,7 +84,7 @@ export const LICENSE_OFFERS: readonly LicenseOffer[] = [
     bestFor: "Negocios que reciben consultas de forma recurrente, tienen citas o venden mediante una secuencia de contacto, atención, propuesta y seguimiento.",
     benefits: ["Cada contacto y oportunidad queda relacionado con un proceso comercial que permite recordar lo que ya se habló y qué hacer después.","Puedes atender mensajes de canales conectados desde un historial común, sujeto a la identidad y vinculación correcta de cada contacto.","Los recordatorios y tareas estándares reducen el riesgo de olvidar consultas sin añadir un servicio a medida."],
     continuity: "Los contactos, oportunidades, tareas y mensajes ya sincronizados con el CRM se consultan allí mientras se conserven. Una desconexión impide sincronizar nuevos mensajes por el canal afectado; no garantiza recuperación posterior de mensajes perdidos.",
-    price: "USD 59/mes", priceUsd: 59, setupUsd: 19,
+    price: "USD 59/mes", priceUsd: 59, setupUsd: 10,
     preview: ["Todo Cuadra", "CRM: contactos y oportunidades", "Proceso comercial principal y agenda", "Seguimiento y automatización estándar"],
     includes: [
       "Todas las capacidades de Cuadra.",
@@ -122,7 +122,7 @@ export const LICENSE_OFFERS: readonly LicenseOffer[] = [
     bestFor: "Organizaciones donde ventas, incorporación, atención, renovaciones u otros procesos relacionados necesitan distintos responsables, reglas y visibilidad de conjunto.",
     benefits: ["Cuando ventas cierra una oportunidad, otro responsable puede recibir el siguiente paso sin reconstruir los datos desde cero.","Se conoce el estado de varias etapas relacionadas, quién se ocupa y qué tareas siguen pendientes.","Los módulos estándar permiten coordinar procesos sin cobrar cada plantilla como complemento independiente."],
     continuity: "Si falla un canal externo, los procesos, tareas y datos previamente guardados en el CRM continúan dependiendo de la disponibilidad y conservación del CRM, no del canal. La automatización hacia ese canal puede quedar interrumpida.",
-    price: "USD 89/mes", priceUsd: 89, setupUsd: 29,
+    price: "USD 89/mes", priceUsd: 89, setupUsd: 15,
     preview: ["Todo Barrio", "Biblioteca modular multiproceso", "Coordinación de equipos y asignaciones", "Automatizaciones conectadas y control"],
     includes: [
       "Todas las capacidades de Barrio, incluido el CRM estándar.",
