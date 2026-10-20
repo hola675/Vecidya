@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-20 — WEB-PUBLIC-SEO-01 (rama, sin desplegar)
+
+- Centralizado el origen canónico de `publicMeta`, `robots.txt` y `sitemap.xml` como `https://vecidya.com`, sin aceptar el origen del request.
+- `/aprende` conserva la portada indexable y marca las URLs con filtros y búsquedas como `noindex, follow`.
+- Añadido test unitario de origen, SEO de indexación y contrato de sitemap. Inspección de perfil público detectó JSON-LD con origen de petición; se asigna seguimiento APP-PROFILE-SEO-ORIGIN-001 sin editar el módulo MiniWeb.
+- No hay certificación ejecutada, cambio de datos, integración a main ni deploy por este checkpoint.
+
+
 ## 2026-10-20 — APRENDE-GESTIÓN-03 (rama no publicada)
 
 - Cinco nuevas guías sobre costos tecnológicos, compras, continuidad, IA y medición de resultados, con cinco ilustraciones accesibles.

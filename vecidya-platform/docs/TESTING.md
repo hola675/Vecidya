@@ -1,5 +1,10 @@
 # Pruebas
 
+## WEB-PUBLIC-SEO-01 — controles SEO públicos (2026-10-20)
+
+**TEST versionado; NO RAN.** `tests/unit/public-seo.test.ts` comprueba `https://vecidya.com` como origen, validación de rutas relativas, respuesta de `robots.txt`, ausencia de `request.url` en el sitemap y `noindex, follow` para búsquedas/filtros de Aprende. Antes de certificar: `pnpm run typecheck`, `pnpm run build`, `pnpm run test:unit` y `git diff --check` en worktree local aislado. Comprobar vía Worker local `GET /robots.txt`, `GET /sitemap.xml`, `GET /aprende`, `GET /aprende?q=erp` y `GET /aprende?tema=Gestión+y+equipos`; garantizar canonical, meta robots, sitemap con solo artículos aprobados, perfiles publicados y sin origen externo. Los tests de staging/remotos requieren autorización expresa. No se hizo HTTP a producción ni deploy.
+
+
 ## APRENDE-GESTIÓN-03 — controles diferidos (2026-10-20)
 
 **NOT RUN por decisión del usuario:** nuevas unitarias en `tests/unit/learn/learn-management-03.test.ts`; el catálogo ahora contiene 38 artículos (11 originales, 27 borradores) y 7 itinerarios; `learn-curriculum.test.ts` conserva aserciones de integridad, los cinco artículos de Operaciones-02 y añade el nuevo total. `learn-content.test.ts` de main ya validaba recuentos dinámicos. Antes de certificar, ejecutar `pnpm run typecheck`, `pnpm run build`, `pnpm run test:unit`, `git diff --check`, E2E de Aprende contra Worker local, comprobación `noindex` y rutas, responsividad/zoom/teclado, URLs institucionales y revisión editorial humana. Sin autorización de deploy o retiro de borradores.
