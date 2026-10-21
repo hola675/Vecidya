@@ -23,7 +23,9 @@ async function assertNoHorizontalOverflow(page, label) {
 
 async function assertContext(page, { interest, label, returnTo, returnLabel, messageText }) {
   await page.waitForURL(`**/contacto?interes=${interest}`);
-  assert(await page.getByText(`Interés seleccionado: ${label}`).isVisible(), `${interest}: falta contexto en Contacto`);
+  const selection = page.getByText(`Interés seleccionado: ${label}`);
+  await selection.waitFor({ state: "visible" });
+  assert(await selection.isVisible(), `${interest}: falta contexto en Contacto`);
   const returnLink = page.getByRole("link", { name: returnLabel });
   assert(await returnLink.getAttribute("href") === returnTo, `${interest}: retorno incorrecto`);
   const email = await page.locator('.contact-experience-hero a[href^="mailto:"]').getAttribute("href");
@@ -34,7 +36,8 @@ async function assertContext(page, { interest, label, returnTo, returnLabel, mes
   await returnLink.click();
   await page.waitForURL((url) => url.pathname + url.hash === returnTo);
   const anchorId = returnTo.split("#")[1];
-  assert(anchorId && await page.locator(`[id="${anchorId}"]`).isVisible(), `${interest}: ancla de oferta no existe`);
+  assert(anchorId, `${interest}: destino sin ancla`);
+  await page.locator(`[id="${anchorId}"]`).waitFor({ state: "visible" });
 }
 
 const browser = await chromium.launch(executablePath ? { executablePath } : {});
@@ -47,7 +50,7 @@ try {
     await page.locator('main a[href="/licencias"]').first().click();
     await page.waitForURL("**/licencias");
     await assertNoHorizontalOverflow(page, `${width}px Licencias`);
-    await page.getByRole("link", { name: "Consultar licencia Cuadra" }).click();
+    await page.getByRole("link", { name: "Empezar con Cuadra" }).click();
     await assertContext(page, {
       interest: "cuadra", label: "la licencia Cuadra",
       returnTo: "/licencias#cuadra", returnLabel: "Volver a la licencia Cuadra",
@@ -60,15 +63,15 @@ try {
       "Presencia & Marca": "/servicios#estructuracion",
       "Web & Conversión": "/servicios#formalizacion",
       "Visibilidad & Marketing": "/servicios#presencia-digital",
-      "Sistema Comercial": "/servicios#automatizacion",
+      "Sistema Comercial": "/servicios#visibilidad",
     };
     for (const [name, href] of Object.entries(expectedPreviews)) {
       assert(await page.locator(`main a[href="${href}"]`).count() === 1, `${width}px: Home no enlaza el servicio ${name}`);
     }
     await page.getByRole("link", { name: "Conocer Web & Conversión" }).click();
     await page.waitForURL("**/servicios#formalizacion");
-    assert(await page.locator("#formalizacion").isVisible(), `${width}px: ficha de servicio ausente`);
-    await page.getByRole("link", { name: "Consultar Web & Conversión" }).click();
+    await page.locator("#formalizacion").waitFor({ state: "visible" });
+    await page.locator('main a[href="/contacto?interes=servicio-formalizacion"]').click();
     await assertContext(page, {
       interest: "servicio-formalizacion", label: "el servicio Web & Conversión",
       returnTo: "/servicios#formalizacion", returnLabel: "Volver al servicio Web & Conversión",
@@ -79,7 +82,7 @@ try {
     await visit(page, "/licencias");
     await page.locator('main a[href="/addons"]').first().click();
     await page.waitForURL("**/addons");
-    await page.getByRole("link", { name: "Consultar WhatsApp Business" }).click();
+    await page.locator('main a[href="/contacto?interes=complemento-whatsapp-business"]').click();
     await assertContext(page, {
       interest: "complemento-whatsapp-business", label: "el complemento WhatsApp Business",
       returnTo: "/addons#whatsapp-business", returnLabel: "Volver al complemento WhatsApp Business",
@@ -97,6 +100,7 @@ try {
     await visit(page, "/aprende");
     await page.getByRole("link", { name: "Hacer una pregunta" }).click();
     await page.waitForURL("**/contacto");
+    await page.locator('.contact-experience-hero a[href="mailto:hola@vecidya.com"]').waitFor({ state: "visible" });
     assert(await page.locator(".contact-selection").count() === 0, `${width}px: Contacto general muestra interés anterior`);
     assert(await page.locator('.contact-experience-hero a[href="mailto:hola@vecidya.com"]').count() === 1, `${width}px: Contacto general sin email`);
     await assertNoHorizontalOverflow(page, `${width}px Contacto general`);

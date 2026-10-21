@@ -79,6 +79,7 @@ try {
     assert(await page.locator('.addon-card a[href^="/contacto?interes=complemento-"]').count() === 7, `${label}: complementos pierden el contexto`);
     await page.locator('.addon-card a[href="/contacto?interes=complemento-whatsapp-business"]').click();
     await page.waitForURL("**/contacto?interes=complemento-whatsapp-business");
+    await page.getByText(/Interés seleccionado:.*WhatsApp Business/).waitFor({ state: "visible" });
     assert(await page.getByText(/Interés seleccionado:.*WhatsApp Business/).isVisible(), `${label}: Contacto no presenta el complemento seleccionado`);
     await assertNoOverflow(page, `${label} contacto`);
     await page.close();

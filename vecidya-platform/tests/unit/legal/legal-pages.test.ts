@@ -8,6 +8,7 @@ const terms = read("app/routes/terms.tsx");
 const intro = read("app/components/legal-page.tsx");
 const routes = read("app/routes.ts");
 const layout = read("app/components/public-layout.tsx");
+const navigation = read("app/components/public-navigation.ts");
 const register = read("app/routes/register.tsx");
 const css = read("app/app.css");
 const sitemap = read("app/routes/sitemap.ts");
@@ -35,25 +36,26 @@ test("navegación, registro y rutas exponen ambos documentos", () => {
   assert.match(routes, /route\("privacidad", "routes\/privacy\.tsx"\)/);
   assert.match(routes, /route\("terminos", "routes\/terms\.tsx"\)/);
   assert.match(sitemap, /"\/terminos"/);
+  assert.match(layout, /PUBLIC_FOOTER_GROUPS\.map/);
   for (const path of ["/privacidad", "/terminos"]) {
-    assert.ok(layout.includes(`to="${path}"`));
+    assert.ok(navigation.includes(`to: "${path}"`));
     assert.ok(register.includes(`to="${path}"`));
   }
 });
 
 test("privacidad contiene información práctica y evita prometer funciones futuras", () => {
   assert.match(privacy, /14 días sin actividad/);
-  assert.match(privacy, /no necesitas|sin indicar tu nombre/i);
+  assert.match(privacy, /no exige registro|sin indicar tu nombre/i);
   assert.match(privacy, /corregir o actualizar|corrección/i);
   assert.match(privacy, /eliminación/);
   assert.match(privacy, /cuando proceda/);
-  assert.match(privacy, /no está disponible en este flujo/);
+  assert.match(privacy, /no est[aá]n disponibles en este flujo/);
   assert.doesNotMatch(privacy, /tus datos se eliminan automáticamente de todos los sistemas/i);
 });
 
 test("las condiciones dejan claro el límite de recomendaciones y contratación", () => {
   assert.match(terms, /no es una promesa/i);
-  assert.match(terms, /no es una certificación/i);
+  assert.match(terms, /no (?:es|son) una certificación/i);
   assert.match(terms, /no sustituye los acuerdos particulares/i);
   assert.match(terms, /no publiques contenido/i);
   assert.match(terms, /<details>/);

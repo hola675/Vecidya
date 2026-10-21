@@ -131,9 +131,9 @@ export default function Home() {
             <p>Contenido, posicionamiento y campañas para facilitar el descubrimiento.</p>
             <Link className="text-link" to="/servicios#presencia-digital">Conocer Visibilidad & Marketing <span aria-hidden="true">→</span></Link>
           </ServiceCard>
-          <ServiceCard icon={publicAssets.catalog.services.automatizacion} eyebrow="CAPTAR" title="Sistema Comercial">
+          <ServiceCard icon={publicAssets.catalog.services.visibilidad} eyebrow="CAPTAR" title="Sistema Comercial">
             <p>Una ruta de captación y seguimiento cuando tu negocio la necesita.</p>
-            <Link className="text-link" to="/servicios#automatizacion">Conocer Sistema Comercial <span aria-hidden="true">→</span></Link>
+            <Link className="text-link" to="/servicios#visibilidad">Conocer Sistema Comercial <span aria-hidden="true">→</span></Link>
           </ServiceCard>
         </div>
       </section>

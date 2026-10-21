@@ -4,6 +4,7 @@ import { test } from "node:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import { ADDON_OFFERS, LICENSE_OFFERS, SERVICE_OFFERS } from "../../../app/content/commercial-detail.ts";
 import { DiagnosticResult, STATUS_ASSETS } from "../../../app/components/diagnostic-result/index.ts";
 import { COMMERCIAL_ROLE_DISPLAY } from "../../../app/components/diagnostic-result/presentation.ts";
 import {
@@ -365,16 +366,38 @@ test("10 catalog: every offering name exists in the canonical catalog (or the pu
   const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
   const catalog = read("../../../docs/business/VECIDYA_PRODUCT_CATALOG.md");
   const publicPages = { license: read("../../../app/routes/licenses.tsx"), addon: read("../../../app/routes/addons.tsx"), services: read("../../../app/routes/services.tsx") };
+  assert.match(publicPages.license, /LICENSE_OFFERS\.map/);
+  assert.match(publicPages.addon, /ADDON_OFFERS\.map/);
+  assert.match(publicPages.services, /SERVICE_OFFERS\.map/);
+  const addonIds: Readonly<Record<string, string>> = {
+    whatsapp: "whatsapp-business", automatizaciones: "reputation-reviews", "ai-conversacional": "conversational-ai",
+    sms: "telephony-sms", campaigns: "campaigns-diffusion", voice: "voice-ai", integrations: "connections-integrations",
+  };
   const v1Names: Readonly<Record<string, string>> = {
     Cuadra: "Cuadra", Barrio: "Barrio", Ciudad: "Ciudad", SMS: "Telefonía & SMS", "Páginas web": "Web & Conversión", "Landing pages": "Web & Conversión", Ecommerce: "Web & Conversión", Contenido: "Presencia & Marca", SEO: "Visibilidad & Marketing", "Google Ads": "Visibilidad & Marketing", "Meta Ads": "Visibilidad & Marketing", CRM: "Sistema Comercial", Workflows: "Automatización & Integraciones", Integraciones: "Automatización & Integraciones", Estrategia: "Desarrollo Empresarial", "Organización del negocio": "Presencia & Marca",
   };
   for (const offering of Object.values(COMMERCIAL_CATALOG)) {
-    if (offering.source === "public_services") assert.ok(publicPages.services.includes(`title: "${offering.name}"`) || publicPages.services.includes(`title: "${v1Names[offering.name] ?? offering.name}"`), offering.name);
+    if (offering.source === "public_services") {
+      const id = offering.publicPath?.split("#")[1];
+      const offer = SERVICE_OFFERS.find((candidate) => candidate.id === id);
+      assert.equal(offer?.title, v1Names[offering.name] ?? offering.name, offering.name);
+    }
     else assert.ok(new RegExp(`^\\| (\\*\\*)?${offering.name}(\\*\\*)? \\|`, "m").test(catalog) || catalog.includes(`## ${offering.name}`) || catalog.includes(`**${v1Names[offering.name] ?? offering.name}**`), `${offering.name} missing from the product catalog`);
-    if (offering.kind === "license") assert.ok(publicPages.license.includes(`name: "${offering.name}"`), offering.name);
-    if (offering.kind === "addon") assert.ok((publicPages.addon.includes(`name: "${offering.name}"`) || publicPages.addon.includes(`name: "${v1Names[offering.name] ?? offering.name}"`)) && offering.requiresLicense, offering.name);
+    if (offering.kind === "license") assert.equal(LICENSE_OFFERS.find(({ id }) => id === offering.id)?.title, offering.name, offering.name);
+    if (offering.kind === "addon") {
+      const publicName = v1Names[offering.name] ?? offering.name;
+      const normalizeCatalogName = (name: string) => name.replaceAll(" & ", " y ").replaceAll(" e ", " y ");
+      const offer = ADDON_OFFERS.find(({ id }) => id === addonIds[offering.id]);
+      assert.equal(offer && normalizeCatalogName(offer.title), normalizeCatalogName(publicName), offering.name);
+      assert(offering.requiresLicense, offering.name);
+    }
     assert.ok(!/\$|USD|\d+\s*(%|mes)/i.test(`${offering.summary} ${offering.contracting} ${offering.externalCost ?? ""}`), `${offering.name}: no prices`);
-    if (offering.publicPath?.startsWith("/servicios#")) assert.ok(publicPages.services.includes(`id: "${offering.publicPath.split("#")[1]}"`), `${offering.name}: public anchor`);
+    if (offering.publicPath?.startsWith("/servicios#")) {
+      const id = offering.publicPath.split("#")[1];
+      const offer = SERVICE_OFFERS.find((candidate) => candidate.id === id);
+      assert.ok(offer, `${offering.name}: public anchor`);
+      assert.equal(offer.title, v1Names[offering.name] ?? offering.name, `${offering.name}: public title`);
+    }
   }
   for (const rules of Object.values(SOLUTION_OFFERINGS)) for (const rule of rules ?? []) assert.ok(rule.offering in COMMERCIAL_CATALOG);
 });

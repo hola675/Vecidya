@@ -1,11 +1,18 @@
 # Pruebas
 
+## COM-CATALOG-BENEFITS-02 / PRICING-20-01 — integración local (2026-10-21)
+
+**RAN local antes del commit de integración:** suite `pnpm run test:unit` 1637/1637 PASS; `pnpm run typecheck` y `pnpm run build` PASS. Contra Worker con D1 local migrada y Chrome: `commercial-details-check.mjs` (17 fichas, 360/1024 px), `addons-experience-check.mjs` y `commercial-experience-review-check.mjs` (1366/768/390/360 px) PASS. Las fichas incluyen HTTP 200 real, SEO, retorno, CTA, 404 y ausencia de secciones duplicadas. WhatsApp desde USD 15 depende del coste directo total; el piso teórico sobre USD 10 es USD 12,50 para margen bruto del 20 %.
+
+**Pendiente independiente:** inspección manual de teclado/reflow 200 %/contraste y prueba real autorizada de canales, deduplicación, oportunidad condicionada, historial, desconexión y recuperación. No inferir esas condiciones de un E2E estático. Verificar facturas reales y autorización de reventa antes de ofertar precios como contractuales; no duplicar planes IA. No se desplegó ni se usaron canales o datos reales.
+
+
 
 ## UX-PUBLIC-JOURNEYS-03 — recorridos públicos y regreso a oferta (2026-10-20)
 
-**TEST versionado / NO RAN.** `tests/unit/commercial-contact.test.ts` amplía la verificación de `resolveCommercialContactReturn`, todos los intereses permitidos, retornos a anclas internas y rechazo de destinos ajenos. `tests/e2e/public-commercial-journeys-check.mjs`, incorporado a `tests/e2e/run-local-e2e.mjs`, cubre en 320/390/768/1366 px: Inicio → Licencias (Cuadra) → Contacto con contexto → ficha; Inicio → tarjeta Web & Conversión → Contacto → ficha; Licencias → Complementos (WhatsApp Business) → Contacto → ficha; e Inicio → Aprende → Diagnóstico o Contacto genérico. Comprueba que el correo/WhatsApp solo preparan mensajes contextualizados, sin enviarlos. Se actualizan aserciones de CTA en `licenses-experience-check.mjs`.
+**RAN local en integración:** `tests/unit/commercial-contact.test.ts` incluido en la suite completa PASS. `public-commercial-journeys-check.mjs` (320/390/768/1366 px), `licenses-experience-check.mjs` y `join-contact-experience-check.mjs` (1366/768/390/360 px), y `public-navigation-a11y-check.mjs` (1366/1024/960/768/390/360/320 px) PASS con Chrome y Worker locales. Correo y WhatsApp solo preparan mensajes; no envían ni automatizan CRM.
 
-**Gates pendientes:** `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`; ejecutar el nuevo E2E, `licenses-experience-check.mjs`, `public-navigation-a11y-check.mjs`, `addons-experience-check.mjs` y `join-contact-experience-check.mjs` contra Worker local seguro. Realizar comprobación manual de foco por teclado, enlaces externos, controles de 44 px, reflow 200 %, legibilidad y ausencia de overflow. Las pruebas no se han ejecutado en este entorno de edición mediante GitHub; no representan validación de producción o cumplimiento WCAG.
+**Límite:** falta revisión visual manual completa del foco, contraste, controles de 44 px y reflow al 200 %. PASS locales no certifican producción, WCAG ni entrega de mensajes.
 
 
 
@@ -424,6 +431,14 @@ La prueba browser usa el Worker local de Cloudflare con `BASE_URL=http://127.0.0
 | 21 | Eliminación de datos | **NOT RUN**: no existe fila que borrar en FUNNEL-01A | Purga en cascada, exportación y comprobación de borrado |
 
 Solo los estados y validaciones locales de las tablas se certifican en esta fase; los escenarios etiquetados backend siguen pendientes y no se cuentan como simulaciones E2E. El uso de run ID en analítica requiere revisión de privacidad: seudónimo no significa anónimo. Ninguna métrica de conversión prueba validez de score. La ruta del prototipo carga el pipeline completo localmente y no es control de acceso; F3 debe aislarlo antes de publicar.
+
+## DIAG-CLOSE-03 — replay QA-03B en Worker (2026-10-21)
+
+**Revalidación sobre integración con catálogo comercial en `main` (2026-10-21):** `pnpm install --frozen-lockfile`, 157/157 unitarias focales/compatibilidad, `pnpm run typecheck`, `pnpm run build`, E2E `diagnostic-v3-qa03b-check.mjs` (6 rutas, negativos, reanudación, concurrencia e informe HTML identificado) y `diagnostic-v3-funnel-01b-check.mjs` (6/6) PASS en Worker y D1 locales aislados. El E2E espera la respuesta de replay antes de comprobar el estado visual reanudado; no añade lógica de producto. Conflictos exclusivos de CHANGELOG/PROJECT_STATE/STATUS reconciliados sin retirar el catálogo comercial. Sin CI en GitHub, correo real, producción o deploy.
+
+`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test --test-concurrency=4 tests/unit/diagnostic/qa03b-*.test.ts tests/unit/diagnostic/identified-report-contracts.test.ts tests/unit/diagnostic/anonymous-summary.test.ts tests/unit/diagnostic/diagnostic-report.test.ts tests/unit/diagnostic/characterization.test.ts tests/unit/diagnostic/qbv2-session.test.ts tests/unit/diagnostic/qbv2-candidate-readiness.test.ts`: **157/157 PASS**. El replay reconstruye ruta, edición y replan desde el transcript opcional schema/key 3; rechaza identidades V3/ACT/híbridas, respuestas duplicadas/inválidas/fuera de orden, expiradas e incompletas. Las sesiones 3 anteriores sin transcript se aceptan solo si la ruta final es reproducible.
+
+Worker local con D1 aislada (`pnpm wrangler d1 migrations apply DB --local`): `diagnostic-v3-qa03b-check.mjs` **6/6 recorridos PASS**, 7 rechazos HTTP, reanudación, edición y concurrencia; un caso completa solicitud, replay identificado, resumen idéntico, retry idempotente, verificación de correo con buzón local, acceso con grant/cookie y render HTML del informe. No se ejecutó descarga PDF: el flujo identificado existente solo muestra HTML y no se modificó el generador. `diagnostic-v3-funnel-01b-check.mjs` **6/6 PASS**, V3 público y allowlist sin cambio. `pnpm run typecheck`, `pnpm run build`, `git diff --check`: **PASS**; escaneo de bundles client/server productivos: cero marcadores QA-03B. No se envió correo real, ni se tocó D1 remota o producción. Activación y rollback público ACT-04: **NOT RUN** (checkpoint independiente).
 
 ## DIAG-CLOSE-01 — preparación de identidad QA-03B (2026-10-19)
 

@@ -208,7 +208,7 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
 const longDate = (date: Date) => new Intl.DateTimeFormat("es", { dateStyle: "long", timeZone: "UTC" }).format(date);
 const isoDate = (date: Date) => date.toISOString().slice(0, 10);
 
-export function buildCandidateDiagnosticReportV1(result: CandidatePipelineResultV3, completedAt: Date, generatedAt: Date = new Date()): CandidateDiagnosticReportV1 {
+export function buildCandidateDiagnosticReportV1(result: CandidatePipelineResultV3, completedAt: Date, generatedAt: Date = new Date(), businessName: string | null = null): CandidateDiagnosticReportV1 {
   const view = buildCandidateResultPresentationV3(result);
   const narrative = result.narrative;
   const constraint = narrative.primaryConstraint;
@@ -224,7 +224,7 @@ export function buildCandidateDiagnosticReportV1(result: CandidatePipelineResult
     completedLabel: longDate(completedAt),
     identity: {
       title: REPORT_TITLE,
-      businessName: null,
+      businessName: businessName?.trim().replace(/\s+/gu, " ") || null,
       profileLabel: view.profileLabel,
       lifecycleLabel: view.lifecycleLabel,
       dateLabel: "Fecha de finalización del diagnóstico",

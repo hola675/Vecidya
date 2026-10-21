@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-10-21 — DIAG-CLOSE-03: replay QA-03B Worker local
+
+- Reproducción estricta QA-03B con transcript local opcional (schema/key 3), validación de versiones/ruta/ediciones y cálculo exclusivamente desde el pipeline QA en Worker; el resultado proyecta resumen anónimo allowlisted e informe HTML identificado bajo correo verificado y grant existentes, solo en DEV. Un retry idempotente devuelve el mismo resumen versionado.
+- Pruebas de la rama: 157/157 unitarias focales, seis recorridos QA + siete rechazos HTTP y ciclo identificado en Worker local, FUNNEL-01B 6/6, typecheck/build/bundle PASS. Sin cutover público, migración, despliegue, correo real ni modificación del PDF.
+
+## 2026-10-20 — COM-CATALOG-DETAILS-01 / BENEFITS-02 / PRICING-20-01 (rama, sin publicar)
+
+- Catálogo de 17 ofertas con fichas, rutas canónicas, beneficios, explicaciones de continuidad y separación licencias/complementos/servicios.
+- Explicación de captura de contactos y atención multicanal para WhatsApp; oportunidad de ventas solo si se configura workflow; historial preservable de datos recibidos pero sin garantía de mensajes nuevos en canal desconectado/bloqueado.
+- Margen bruto mínimo objetivo del 20 % sobre precio de venta después de costes directos; pruebas de piso de precio y prohibición de doble cobro por capacidades estándar o planes IA compartidos.
+- WhatsApp propuesto desde USD 15/mes sobre referencia externa de USD 10 y costes directos de soporte/comisiones pendientes de verificar; consumo variable según tarifas vigentes desde octubre de 2026, sin cuotas inventadas para capacidades básicas.
+- Se conservan $39/$59/$89/mes y $0/$10/$15 de puesta en marcha, sin cambiar derechos de licencias ni facturación.
+- Pruebas unitarias/E2E de catálogo/beneficios/precios actualizadas pero NO EJECUTADAS; sin deploy, merge, datos CRM o cobro real.
+
 
 ## 2026-10-20 — UX-PUBLIC-JOURNEYS-03 (rama, no desplegada)
 

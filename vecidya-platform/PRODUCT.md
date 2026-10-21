@@ -20,20 +20,30 @@ Vecidya ayuda a negocios locales y profesionales a construir su presencia digita
 
 ## Positioning
 
-Una comunidad digital (el Vecindario) más un diagnóstico honesto que nunca inventa datos, más licencias que evolucionan con el negocio: **Cuadra** (ordenar), **Barrio** (captar y dar seguimiento) y **Ciudad** (automatizar y escalar). Vecidya no es otro CRM: HighLevel (GHL) sigue siendo el sistema de contactos, oportunidades, conversaciones, automatizaciones y seguimiento. Posicionamiento confirmado por el usuario el 2026-10-01.
+Una comunidad digital (el Vecindario) más un diagnóstico honesto que nunca inventa datos, más licencias que evolucionan con el negocio: **Cuadra** (ordenar), **Barrio** (captar y dar seguimiento) y **Ciudad** (automatizar y escalar). Vecidya no es otro CRM: el CRM operativo integrado sigue siendo el sistema de contactos, oportunidades, conversaciones, automatizaciones y seguimiento. Posicionamiento confirmado por el usuario el 2026-10-01.
 
 ## Operating Context
 
-- **Web pública:** Inicio, Vecindario (`/vecindario` y un perfil por negocio publicado), Diagnóstico (`/diagnostico`), Licencias, Addons, Servicios, Aprende (artículos educativos), Únete, Contacto, Sobre nosotros y Privacidad.
+- **Web pública:** Inicio, Vecindario (`/vecindario` y un perfil por negocio publicado), Diagnóstico (`/diagnostico`), Licencias, Complementos, Servicios, Aprende (artículos educativos), Únete, Contacto, Sobre nosotros y Privacidad.
 - **Diagnóstico:** anónimo, sin cuenta; se puede guardar y retomar con un código de recuperación. El resultado V3 (DIAG-V3) se presenta como un informe, no como un tablero.
 - **Área de cliente** (`/app`): una organización por cuenta, con perfil comercial, servicios, equipo e invitaciones.
 - **Área interna** (`/app/internal`): gobierno de organizaciones, perfiles, servicios, integraciones y auditoría.
 - **Contratación:** por contacto directo (correo `hola@vecidya.com` o WhatsApp). No hay checkout ni cobro automático.
 
+## Oferta comercial objetivo
+
+- **Cuadra USD 39/mes:** organización, perfil, MiniWeb y Vecindario; sin CRM.
+- **Barrio USD 59/mes:** Cuadra + CRM estándar para un proceso comercial principal: captación, contactos, oportunidades, agenda cuando aplica, tareas y automatización de seguimiento.
+- **Ciudad USD 89/mes:** Barrio + biblioteca de módulos operativos estándar para procesos relacionados y coordinación de equipos.
+- **Complementos:** siete capacidades recurrentes con requisitos y fees propios; no sustituyen licencias ni convierten Cuadra en CRM. Los canales, IA y APIs pueden generar consumo adicional.
+- **Servicios:** siete familias de trabajo profesional cotizadas por alcance; la implantación a medida no es una función estándar de la licencia.
+- **Marca del proveedor:** no se publica en el catálogo o web comercial. Documentos internos de integración conservan procedencia técnica.
+- **Estado:** el alcance es la oferta objetivo; lo implementado/certificado debe verificarse en STATUS y pruebas ejecutadas.
+
 ## Capabilities and Constraints
 
-- La capacidad real de cada función está en `docs/STATUS.md`; este archivo no la repite. Pagos, checkout y la integración con HighLevel **no** están implementados.
-- **Límites permanentes:** sin CRM paralelo a GHL; sin negocios, testimonios, métricas, reseñas, calificaciones ni datos comerciales ficticios; sin asociar un negocio a una marca de terceros sin autorización; todo recurso de una organización verifica sesión, membresía y permiso.
+- La capacidad real de cada función está en `docs/STATUS.md`; este archivo no la repite. Pagos, checkout y la integración operativa de Vecidya con el CRM externo **no** están certificados como implementados.
+- **Límites permanentes:** sin CRM paralelo al CRM; sin negocios, testimonios, métricas, reseñas, calificaciones ni datos comerciales ficticios; sin asociar un negocio a una marca de terceros sin autorización; todo recurso de una organización verifica sesión, membresía y permiso.
 - **Idioma:** español. La terminología depende del tipo de negocio (perfiles de lenguaje congelados en `app/features/diagnostic/qbv2-terminology.ts`): «pacientes» solo en salud con práctica con licencia, lenguaje no comercial en organizaciones sin fines de lucro, y antes del lanzamiento no se habla de clientes existentes.
 - **Diagnóstico:** en V3 el porcentaje de presencia digital es un resumen (promedio de las áreas con lectura, con cobertura y confianza aparte; sin porcentaje si hay pocas áreas o antes del lanzamiento) y nunca decide prioridades; la certeza nunca sube (confirmado / hay señales / sin información); un área sin evidencia nunca se presenta como debilidad; las ofertas de Vecidya aparecen solo al final, ligadas a una prioridad y con su explicación; metodología con fuentes citadas solo en vista privada (DIAG-V3-11), todavía sin publicar.
 - **Versión y publicación:** la versión es la de `package.json`. Las páginas públicas, `/app` y `/app/internal` muestran el pie compartido con la versión y «© 2026 Vecidya». «Publicado» exige un deploy autorizado y una verificación HTTP anónima con fecha.
@@ -41,7 +51,7 @@ Una comunidad digital (el Vecindario) más un diagnóstico honesto que nunca inv
 ## Brand Commitments
 
 - Nombre **Vecidya**; vocabulario propio: Vecindario, Aprende, licencias Cuadra · Barrio · Ciudad.
-- Precios públicos de licencias en USD/mes (`$39`, `$59`, `$89`), publicados en `/licencias` desde el 2026-09-25. Los precios de addons y servicios no están definidos y no se inventan.
+- Precios públicos de licencias en USD/mes (`$39`, `$59`, `$89`), publicados en `/licencias` desde el 2026-09-25. Los siete complementos son categorías de capacidad: solo se cobra cuota externa real del proveedor y su recargo aprobado del 20 %, o consumo facturado + 20 % cuando corresponda. Capacidades estándar ya incluidas en el CRM no reciben cuotas inventadas; los servicios profesionales se cotizan por alcance.
 - **Voz:** español claro y directo; honesta sobre la incertidumbre; nunca alarmista ni culpabilizadora (el Diagnóstico tiene frases duras prohibidas); orientación, no auditoría ni certificación; puede decir que el negocio todavía no necesita nada.
 - Los recursos de marca vigentes están en `public/` y `app/assets/public-assets.ts`.
 
@@ -57,7 +67,7 @@ Una comunidad digital (el Vecindario) más un diagnóstico honesto que nunca inv
 1. **La honestidad antes que la persuasión:** la certeza nunca se exagera y la falta de evidencia se dice como tal.
 2. **Primero entender, luego actuar:** el Diagnóstico explica dónde está el negocio y qué atender primero antes de ofrecer nada.
 3. **Crecer por etapas:** cada licencia responde a una necesidad real del momento del negocio, no a un paquete máximo.
-4. **No duplicar sistemas:** HighLevel conserva el CRM; Vecidya cubre presencia, comunidad, diagnóstico y gobierno de la cuenta.
+4. **No duplicar sistemas:** El CRM operativo conserva los datos y procesos comerciales; Vecidya cubre presencia, comunidad, diagnóstico y gobierno de la cuenta.
 5. **El lenguaje del negocio de cada quien:** el producto habla en los términos del tipo de negocio y de su etapa.
 
 ## Accessibility & Inclusion
