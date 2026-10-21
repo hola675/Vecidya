@@ -1,6 +1,17 @@
 # Changelog
 
 
+## 2026-10-20 — UX-PUBLIC-JOURNEYS-03 (rama, no desplegada)
+
+- En las fichas de las tres licencias, siete servicios y siete complementos, cada CTA identifica la oferta concreta sin cambiar `/contacto?interes=`.
+- Contacto mantiene email/WhatsApp editables y añade el regreso seguro a la tarjeta elegida, sin permitir direcciones externas desde parámetros.
+- Home alinea cuatro previews con los nombres reales de Servicios y sus anclas canónicas.
+- Mejorados legibilidad y objetivo táctil de los enlaces nuevos, y el texto de la portada de Complementos.
+- Añadidas pruebas unitarias y E2E de recorridos públicos, integradas en el runner; actualizada la prueba de Licencias.
+- Evidencia estática `CODE + TEST`; **sin pruebas ejecutadas**, merge ni deploy en este checkpoint. Sin alteraciones de D1, Auth, GHL, Diagnóstico, licencias, precios o pagos.
+
+
+
 ## 2026-10-20 — UX-WEB-NAV-02 (rama de auditoría, sin deploy)
 
 - El PR #29 de navegación pública ya está integrado en `main@66939d4`; no se asume certificación runtime por el merge.

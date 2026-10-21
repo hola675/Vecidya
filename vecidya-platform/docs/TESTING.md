@@ -1,6 +1,14 @@
 # Pruebas
 
 
+## UX-PUBLIC-JOURNEYS-03 — recorridos públicos y regreso a oferta (2026-10-20)
+
+**TEST versionado / NO RAN.** `tests/unit/commercial-contact.test.ts` amplía la verificación de `resolveCommercialContactReturn`, todos los intereses permitidos, retornos a anclas internas y rechazo de destinos ajenos. `tests/e2e/public-commercial-journeys-check.mjs`, incorporado a `tests/e2e/run-local-e2e.mjs`, cubre en 320/390/768/1366 px: Inicio → Licencias (Cuadra) → Contacto con contexto → ficha; Inicio → tarjeta Web & Conversión → Contacto → ficha; Licencias → Complementos (WhatsApp Business) → Contacto → ficha; e Inicio → Aprende → Diagnóstico o Contacto genérico. Comprueba que el correo/WhatsApp solo preparan mensajes contextualizados, sin enviarlos. Se actualizan aserciones de CTA en `licenses-experience-check.mjs`.
+
+**Gates pendientes:** `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`; ejecutar el nuevo E2E, `licenses-experience-check.mjs`, `public-navigation-a11y-check.mjs`, `addons-experience-check.mjs` y `join-contact-experience-check.mjs` contra Worker local seguro. Realizar comprobación manual de foco por teclado, enlaces externos, controles de 44 px, reflow 200 %, legibilidad y ausencia de overflow. Las pruebas no se han ejecutado en este entorno de edición mediante GitHub; no representan validación de producción o cumplimiento WCAG.
+
+
+
 ## UX-WEB-NAV-02 — matriz de navegación pública (2026-10-20)
 
 **TEST versionado / NO RAN.** `tests/unit/public-navigation.test.ts` verifica nombres, destinos canónicos, unicidad, familias del footer y paridad móvil; `tests/unit/public-copy.test.ts` conserva el contrato de etiquetas; `tests/e2e/public-navigation-a11y-check.mjs` cubre header, menú responsive/teclado, footer agrupado, CTA y contexto de Contacto a 320/360/390/768/960/1024/1366 px. Se ajusta `commercial-experience-review-check.mjs` para validar «Sobre nosotros» desde el footer en lugar del submenú Soluciones y reconocer GHL solo como proveedor CRM externo en las páginas que lo explican; `legal-trust-experience-check.mjs` verifica el enlace a la ruta `/terminos` realmente existente.

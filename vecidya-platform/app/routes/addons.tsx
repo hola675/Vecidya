@@ -42,7 +42,7 @@ export default function Addons() {
           <div className="addons-hero__copy">
             <p className="eyebrow">COMPLEMENTOS</p>
             <h1 id="addons-title">Añade capacidades cuando las necesites.</h1>
-            <p>Añade capacidades a tu sistema cuando realmente hagan falta.</p>
+            <p>Revisa qué aporta cada complemento, qué licencia puede requerir y qué costes de uso se cobran aparte.</p>
             <div className="public-actions">
               <Link className="button button--primary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnosticDiscovery}</Link>
               <Link className="button button--secondary" to="/licencias">{PUBLIC_ACTION_LABELS.licenses}</Link>
@@ -72,7 +72,7 @@ export default function Addons() {
                   <p className="addon-card__value">{addon.value}</p>
                   <p className="addon-card__price">{addon.price}</p>
                   {addon.dependency ? <p className="addon-card__dependency">{addon.dependency}</p> : null}
-                  <Link className="text-link" to={`/contacto?interes=complemento-${addon.id}`}>Consultar este complemento <span aria-hidden="true">→</span></Link>
+                  <Link className="text-link" to={`/contacto?interes=complemento-${addon.id}`}>Consultar {addon.name} <span aria-hidden="true">→</span></Link>
                 </article>
             ))}
           </div>

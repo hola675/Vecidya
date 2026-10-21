@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { buildCommercialContactLinks, resolveCommercialContactInterest } from "../../app/content/public-copy.ts";
+import { buildCommercialContactLinks, COMMERCIAL_CONTACT_INTERESTS, resolveCommercialContactInterest, resolveCommercialContactReturn } from "../../app/content/public-copy.ts";
 
 const whatsapp = "https://wa.me/573244321864";
 
@@ -39,4 +39,32 @@ test("descarta interés desconocido sin reflejar la entrada", () => {
   assert.equal(links.emailHref, "mailto:hola@vecidya.com");
   assert.equal(links.whatsappHref, whatsapp);
   assert(!JSON.stringify(links).includes(input));
+});
+
+test("regresa a la tarjeta exacta desde un interés incluido en la allowlist", () => {
+  const cases = [
+    ["cuadra", "/licencias#cuadra", "Volver a la licencia Cuadra"],
+    ["barrio", "/licencias#barrio", "Volver a la licencia Barrio"],
+    ["ciudad", "/licencias#ciudad", "Volver a la licencia Ciudad"],
+    ["servicio-formalizacion", "/servicios#formalizacion", "Volver al servicio Web & Conversión"],
+    ["servicio-visibilidad", "/servicios#visibilidad", "Volver al servicio IA Aplicada"],
+    ["complemento-voice-ai", "/addons#voice-ai", "Volver al complemento IA de Voz"],
+    ["complemento-whatsapp-business", "/addons#whatsapp-business", "Volver al complemento WhatsApp Business"],
+  ] as const;
+
+  for (const [interest, to, label] of cases) {
+    assert.deepEqual(resolveCommercialContactReturn(interest), { to, label });
+  }
+  for (const code of Object.keys(COMMERCIAL_CONTACT_INTERESTS)) {
+    const result = resolveCommercialContactReturn(code);
+    assert(result?.to.startsWith("/"), `No hay ruta de regreso para ${code}`);
+    assert(result.to.includes("#"), `No hay ancla específica para ${code}`);
+    assert(!result.to.startsWith("//"));
+  }
+});
+
+test("el enlace de retorno rechaza cualquier parámetro externo o manipulado", () => {
+  for (const value of [null, "", "https://evil.example", "//evil.example", "../licencias", "__proto__", "constructor", "servicio-<script>", "complemento-otro"]) {
+    assert.equal(resolveCommercialContactReturn(value), null);
+  }
 });

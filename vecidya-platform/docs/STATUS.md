@@ -1,6 +1,14 @@
 # Estado de implementación
 
 
+## UX-PUBLIC-JOURNEYS-03 — continuidad de ofertas, Contacto y Aprende (2026-10-20; rama `fix/ux-public-journeys-03-20261020`)
+
+**CODE + TEST versionado / RAN pendiente; sin deploy.** Partiendo de `main@a2f6f7c`, con PR #30 ya fusionado, el catálogo de Servicios conserva las siete familias y el de Complementos las siete capacidades. Los CTA de cada tarjeta ahora nombran la licencia, servicio o complemento específico; conservan `/contacto?interes=` con allowlist y sin envío automático. Contacto ofrece enlace de regreso a la ficha original usando exclusivamente un identificador comercial permitido (ancla interna), nunca un redirect libre. Home muestra cuatro servicios con nombres iguales a las fichas canónicas y enlaces directos `/servicios#...`. Se precisó la introducción de Complementos respecto de dependencias y consumos.
+
+**Evidencia estática del corte:** 17 intereses comerciales admitidos, correspondientes a 3 licencias, 7 servicios y 7 complementos, y cuatro anclas de previsualización que existen en el catálogo de Servicios. **Pruebas versionadas, no ejecutadas:** unitarias de retorno seguro y cobertura E2E para Inicio → oferta → Contacto → ficha e Inicio → Aprende → Diagnóstico/Contacto en 320/390/768/1366 px, integrado en runner local; `licenses-experience-check.mjs` adaptado al texto exacto de CTA. No hay certificados runtime, visuales ni HTTP; no se modifica GHL, DB, permisos, precios, pagos ni producción. Merge/deploy no autorizados por este checkpoint.
+
+
+
 ## UX-WEB-NAV-02 — coherencia de destinos públicos y footer (2026-10-20; rama `fix/ux-web-nav-02-20261020`)
 
 **CODE + TEST versionados / RAN pendiente; sin deploy.** El PR #29 (`UX-WEB-NAV-01`) fue integrado en `main@66939d4`; no se encontraron runs CI asociados a su HEAD al consultar el repositorio. Esta continuación organiza un único catálogo tipado en `app/components/public-navigation.ts` para header, menú móvil y footer, eliminando la divergencia de nombres y destinos. El footer separa «Explorar», «Soluciones», «Vecidya» e «Información legal». En «Soluciones» del header quedan agrupados Licencias, Servicios y Complementos; «Sobre nosotros» se mantiene accesible desde móvil y footer. Se conserva `/addons` como URL canónica bajo el nombre visible «Complementos», sin alias/redirect nuevo. Se mejoran affordances de enlaces y tamaño vertical mínimo de 32 px en el footer. La ruta legada `/que-debes-saber` mantiene el 301 existente a `/aprende`.
