@@ -1,6 +1,5 @@
 # Changelog
 
-
 ## 2026-10-20 — UX-PUBLIC-JOURNEYS-03 (rama, no desplegada)
 
 - En las fichas de las tres licencias, siete servicios y siete complementos, cada CTA identifica la oferta concreta sin cambiar `/contacto?interes=`.
@@ -9,6 +8,15 @@
 - Mejorados legibilidad y objetivo táctil de los enlaces nuevos, y el texto de la portada de Complementos.
 - Añadidas pruebas unitarias y E2E de recorridos públicos, integradas en el runner; actualizada la prueba de Licencias.
 - Evidencia estática `CODE + TEST`; **sin pruebas ejecutadas**, merge ni deploy en este checkpoint. Sin alteraciones de D1, Auth, GHL, Diagnóstico, licencias, precios o pagos.
+
+## 2026-10-20 — COM-CATALOG-DETAILS-01 / BENEFITS-02 / PRICING-20-01 (rama, sin publicar)
+
+- Catálogo de 17 ofertas con fichas, rutas canónicas, beneficios, explicaciones de continuidad y separación licencias/complementos/servicios.
+- Explicación de captura de contactos y atención multicanal para WhatsApp; oportunidad de ventas solo si se configura workflow; historial preservable de datos recibidos pero sin garantía de mensajes nuevos en canal desconectado/bloqueado.
+- Recargo del 20 % sobre coste externo facturado (no margen bruto sobre precio de venta); pruebas de centavos y prohibición de doble cobro por capacidades estándar o planes IA compartidos.
+- WhatsApp de referencia USD 12/mes sobre cargo externo de USD 10; comisiones y consumos externos pendientes de confirmar; consumo variable según tarifas vigentes desde octubre de 2026, sin cuotas inventadas para capacidades básicas.
+- Se conservan $39/$59/$89/mes y $0/$10/$15 de puesta en marcha, sin cambiar derechos de licencias ni facturación.
+- Pruebas unitarias/E2E de catálogo/beneficios/precios actualizadas pero NO EJECUTADAS; sin deploy, merge, datos CRM o cobro real.
 
 
 

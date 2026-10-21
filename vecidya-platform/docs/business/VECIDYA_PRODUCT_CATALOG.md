@@ -46,7 +46,7 @@ Uso variable → coste de uso.**
 | Precio | **$39/mes** | **$59/mes** | **$89/mes** |
 | Función | **Organiza** | **Capta y da seguimiento** | **Automatiza y controla** |
 | Puesta en marcha | **$0** | **$10 una vez** | **$15 una vez** |
-| CRM GHL | No | Sí | Sí |
+| CRM operativo | No | Sí | Sí |
 | Proceso comercial | No requerido | Principal/estándar | Multiproceso |
 | Captación | Vecidya/presencia | Estándar | Avanzada |
 | Pipeline | — | Estándar Vecidya | Procesos relacionados |
@@ -55,6 +55,20 @@ Uso variable → coste de uso.**
 | Automatización | — | Estándar | Multiproceso/avanzada |
 | Routing/equipos | — | Básico cuando aplica | Avanzado |
 | Control | Vecidya | Comercial | Operacional |
+
+## Beneficios concretos, unificación y continuidad (modelo comercial objetivo)
+
+La descripción pública de cada complemento o servicio debe responder **qué trabajo ahorra**, **qué mejora para el cliente** y **qué se conserva si un canal falla**; no basta enumerar nombres tecnológicos.
+
+**WhatsApp conectado a Barrio/Ciudad:** un mensaje entrante puede crear o identificar al contacto y asociar la conversación al CRM. Con el flujo estándar configurado, puede enlazarse a una oportunidad y asignarse seguimiento. Cuando además están activos email, SMS, Facebook o Instagram compatibles, el equipo puede consultar el historial disponible desde una bandeja y pasar a otro canal autorizado. No se promete deduplicación perfecta de identidades entre plataformas ni la creación automática de oportunidades sin workflows habilitados.
+
+**Canal desconectado, restringido o bloqueado:** el historial **ya recibido y conservado** en el CRM, el contacto, sus tareas y oportunidades pueden seguir consultándose conforme a permisos/retención. Eso ayuda a continuar por otro canal habilitado y con datos de contacto válidos. **No equivale a recibir mensajes nuevos del canal caído, exportar chats no sincronizados, desbloquear el canal, mantener su número o restaurar retrospectivamente su historial.** Debe diseñarse un procedimiento de alerta, revisión del último mensaje recibido, verificación del estado y seguimiento humano por otro medio consentido. El estado efectivo solo se certifica mediante pruebas reales del proveedor y cuentas enlazadas.
+
+**Otros ejemplos por categoría:** teléfono/SMS → relación entre llamadas, avisos y oportunidades; reseñas → solicitud contextual sin fabricar reseñas; difusión → segmentación consentida sin rehacer listas; IA conversacional → preguntas frecuentes y transferencia humana; IA de voz → clasificar el motivo y conservar resumen solo si la integración lo registra; integraciones → menos copia manual con trazabilidad y advertencia de sincronización detenida; servicios a medida → entregables claros y separación entre construir y operar.
+
+El proveedor documenta el inbox multicanal, cronología de contactos y triggers de contacto/WhatsApp; esas son **capacidades técnicas potenciales de la oferta**, no evidencia de que Vecidya ya configuró y validó cada canal o workflow para cada cliente. El contrato debe especificar módulos, activación, límites, canales y costes acordados.
+
+**Fuentes técnicas internas:** [Conversations y panel de historial](https://help.gohighlevel.com/support/solutions/articles/155000006610-getting-started-with-the-conversations-tab); [Contacto y actividad](https://help.gohighlevel.com/support/solutions/articles/155000006651-the-all-new-contact-detail-page); [Trigger de WhatsApp](https://help.gohighlevel.com/support/solutions/articles/155000005602-workflow-trigger-click-to-whatsapp-ads-facebook-page-cta); [Integración de mensajes de Meta](https://help.gohighlevel.com/support/solutions/articles/155000005068); [Cobros de WhatsApp, octubre de 2026](https://help.gohighlevel.com/support/solutions/articles/155000001428-whatsapp-pricing-billing-and-rebilling-guide).
 
 ## Cuadra
 
@@ -86,6 +100,149 @@ No se vende por cantidad de workflows o pipelines.
 
 ---
 
+
+## Beneficios funcionales explicados desde el trabajo diario (COM-CATALOG-BENEFITS-02)
+
+**Regla editorial de la oferta:** toda licencia, complemento o servicio debe describir el resultado cotidiano, un ejemplo realista del recorrido y sus límites. Evitar frases vacías como «potencia tu productividad». Las prestaciones descritas son **objetivo del producto** hasta validar configuración, permisos, conexión y entrega real.
+
+### WhatsApp Business con Barrio/Ciudad — ejemplo prioritario
+
+1. El cliente inicia una conversación por el WhatsApp Business integrado y aprobado.
+2. El CRM registra el mensaje y puede crear o actualizar la ficha de contacto. La coincidencia/duplicado depende de identificadores y de la configuración de deduplicación.
+3. Una automatización **configurada** puede crear o actualizar una oportunidad de ventas, asignar responsable, etapa, recordatorio y siguiente tarea. La recepción de un mensaje **no garantiza por sí sola** una oportunidad de ventas.
+4. Con los otros canales habilitados —por ejemplo correo, SMS, Instagram y Facebook— el equipo consulta la bandeja e historial disponibles del contacto, sin gestionar la misma consulta a ciegas en cinco aplicaciones.
+5. Si se corta o bloquea WhatsApp, los mensajes, notas, contactos, oportunidades y tareas **que ya se guardaron en el CRM** no desaparecen por el simple hecho de desconectar el canal, siempre sujetos a retención, permisos y estado de cuenta. El canal afectado puede dejar de enviar/recibir **nuevos mensajes** y no se puede prometer sincronización retroactiva, importación completa ni recuperación de mensajes no recibidos. Los otros canales solo siguen disponibles si también están habilitados.
+6. La relación comercial y la siguiente tarea pueden continuar desde el CRM, aunque el equipo deba contactar al cliente por otro canal permitido. **Nunca afirmar continuidad ininterrumpida de WhatsApp.**
+
+**Diferencia crítica:** «registro de contacto automático» puede ser nativo según canal y deduplicación; «nueva oportunidad», «asignación automática» y «reintentos» son configuración de workflows de Barrio/Ciudad, no efectos inevitables de añadir un canal.
+
+### Beneficios de las otras capacidades sin duplicar servicios
+
+| Oferta | Ventaja comprensible | Límite que se debe comunicar |
+|---|---|---|
+| Telefonía/SMS | Registrar seguimiento y tareas después de llamadas/mensajes | Canales, grabaciones y transcripciones requieren habilitación; desconexión interrumpe entrega |
+| Reputación y Reseñas | Solicitar reseñas auténticas después de atenciones reales y conocer qué solicitudes siguen pendientes | No inventar reseñas; envío/canales e IA pueden costar |
+| Campañas y Difusión | Comunicar novedades a públicos que han dado permiso y relacionar respuestas con contactos | Envios y canal pueden facturar uso; estrategia/campañas gestionadas son servicio |
+| IA Conversacional | Responder dudas repetitivas y pasar el contexto al equipo | Solo en canales compatibles, con límites y supervisión; una caída no garantiza respuesta |
+| IA de Voz | Atender la primera consulta de una llamada y registrar un siguiente paso | El número, los minutos y el modelo pueden tener costes; no se registran todas las llamadas automáticamente |
+| Conexiones e Integraciones | Evitar copiar los mismos datos manualmente entre sistemas compatibles | Fallos requieren trazabilidad y recuperación diseñada; nunca sincronización garantizada |
+| Presencia & Marca | Hacer reconocible el negocio y coherentes sus mensajes | Diseño y entregables contratados; no requiere CRM por sí mismo |
+| Web & Conversión | Facilitar que alguien encuentre servicios y contacte sin confusión | Web a medida ≠ MiniWeb estándar; si necesita seguimiento CRM, licencia adecuada |
+| Visibilidad & Marketing | Priorizar contenido/posicionamiento, medir acciones y reducir dispersión | No prometer ventas ni posicionamiento; campañas gestionadas son servicio |
+| Sistema Comercial | Diseñar etapas y responsables claros cuando el estándar no cubre el caso | Barrio Standard y módulos Ciudad ya incluidos no se vuelven a facturar |
+| Automatización & Integraciones | Diseñar soluciones especializadas, control de errores y pasos manuales de respaldo | No vender «resiliencia» sin reintentos, registros y pruebas implementadas |
+| IA Aplicada | Crear un asistente adaptado al proceso con límites y traspaso humano | El agente a medida es servicio; consumo/plataforma de IA es distinto |
+| Desarrollo Empresarial | Priorizar cambios antes de comprar sistemas innecesarios | Puede no requerir licencia |
+
+**Control de calidad:** las páginas públicas deben tener secciones separadas «Qué ganas», «Cómo funciona» (si es pertinente), «Qué sucede si se interrumpe» (si opera con un canal externo), «Qué incluye», «No incluido», «Dependencias» y «Costes». Las fichas no afirman que la interoperabilidad concreta ya fue certificada.
+
+**Fuentes técnicas oficiales para el equipo** (nombres de proveedor solo en enlaces de documentación interna):
+- [Bandeja y línea de tiempo multicanal](https://help.gohighlevel.com/support/solutions/articles/155000006610-getting-started-with-the-conversations-tab)
+- [Vincular Facebook/Instagram y deduplicación](https://help.gohighlevel.com/support/solutions/articles/155000005068)
+- [Captura de contactos desde WhatsApp por identificador](https://help.gohighlevel.com/support/solutions/articles/155000008387-whatsapp-usernames-contact-capture-without-phone-numbers)
+- [Crear oportunidad mediante workflow](https://help.gohighlevel.com/support/solutions/articles/155000004752-workflow-action-create-opportunity)
+- [Widget de chat multicanal y canales habilitados](https://help.gohighlevel.com/support/solutions/articles/155000004779-how-to-use-the-all-in-one-chat-widget)
+
+---
+
+## 3.1. Modelo comercial objetivo y demostración del valor
+
+**Corte de diseño 2026-10-20 — alcance objetivo, no certificación de despliegue ni de derechos técnicos habilitados.** El proveedor del sistema comercial es infraestructura de operación reservada para documentación técnica interna; la documentación y páginas comerciales se limitan a denominarlo **CRM**. El espacio Vecidya y el CRM no se duplican.
+
+- **Cuadra USD 39/mes**: identidad de organización, perfil público, MiniWeb del negocio, Vecindario, equipos autorizados, información de presencia y relación con Vecidya; sin CRM. El Diagnóstico anónimo y Aprende son recursos públicos, no prestaciones exclusivas de pago.
+- **Barrio USD 59/mes**: todo Cuadra + CRM configurado para **un proceso comercial principal y repetible**, con contactos, oportunidades, etapas, captación por formulario estándar, agenda cuando aplica, tareas, seguimiento y automatizaciones estándar de **ese mismo proceso**. Diferencia USD 20/mes; no se cobran como addons independientes esos flujos básicos.
+- **Ciudad USD 89/mes**: todo Barrio + **biblioteca modular de procesos relacionados**, selección/configuración de módulos estándar, reglas condicionales, asignaciones y coordinación entre responsables/procesos. Diferencia USD 30/mes respecto a Barrio. Un módulo incluido en Ciudad no se factura otra vez como servicio o complemento genérico.
+
+### Plantilla Barrio Standard — incluida en licencia
+
+El estándar comercial configura el proceso real de cada negocio, no un conjunto arbitrario de límites. Sus cuatro componentes son:
+
+1. **Entrada y registro:** formulario o fuente compatible, contacto y oportunidad.
+2. **Seguimiento:** etapas del proceso principal, responsable, tareas y próximos pasos.
+3. **Agenda cuando aplica:** reserva y avisos por canales habilitados, con consumo separado si corresponde.
+4. **Confirmación/cierre:** estado y recordatorios estándares del mismo recorrido.
+
+El catálogo no promete WhatsApp, SMS, telefonía, IA, campañas o integraciones premium gratis. Tampoco presupone que el cliente necesite todos los componentes: se configura lo adecuado a su operación.
+
+### Biblioteca modular Ciudad — incluida en licencia
+
+La biblioteca objetivo diferencia seis módulos estándar seleccionables, no seis productos cobrados aparte:
+
+| Módulo estándar | Propósito | Frontera comercial |
+|---|---|---|
+| Ventas y oportunidades | Etapas y traspasos relacionados | Incluido; canales externos aparte |
+| Incorporación del cliente | Tareas y responsables después de contratar | Incluido; flujo excepcional a medida = servicio |
+| Atención y seguimiento | Clasificación, derivación y cierre de solicitudes | Incluido; centro de atención a medida = servicio |
+| Reactivación | Segmentación y recuperación con consentimiento | Incluido; campañas gestionadas/canales = aparte |
+| Renovaciones | Fechas, tareas, seguimientos y responsable | Incluido; integraciones específicas = servicio/addon según naturaleza |
+| Asignación y coordinación | Distribución de casos y cambios entre procesos/equipos | Incluido; arquitectura excepcional = servicio |
+
+Los módulos se ofrecen únicamente cuando sean aplicables; no se impone activarlos todos. No se ofrecen cupos ficticios del tipo «Barrio 5 workflows / Ciudad 20». La frontera no es cantidad de contactos, reglas, usuarios o gasto: **Ciudad solo se justifica por procesos coordinados**. La cuenta/plan CRM contratado no prueba, por sí solo, que una plantilla Vecidya esté desarrollada, instalada o certificada.
+
+### Matriz de compatibilidad y contratación
+
+| Producto | Cuadra | Barrio | Ciudad | Qué se cobra aparte |
+|---|---|---|---|---|
+| MiniWeb / perfil / Vecindario | Sí, según aprobación y derechos de organización | Sí | Sí | Producción o desarrollo a medida |
+| CRM y un proceso comercial estándar | No | Sí | Sí | Consumos de canales |
+| Biblioteca multiproceso estándar | No | No | Sí | Desarrollo o integración fuera de estándar |
+| WhatsApp Business | No como canal CRM | Complemento | Complemento | Fee + mensajes/proveedor |
+| Telefonía y SMS | No como canal CRM | Complemento | Complemento | Fee + número, llamadas y mensajes |
+| Reputación y Reseñas automatizada | No como flujo CRM | Complemento | Complemento | Fee + canales/uso cuando corresponda |
+| Campañas y Difusión | No como envío CRM | Complemento | Complemento | Fee + envíos/medios |
+| IA Conversacional | No como flujo CRM | Complemento | Complemento | Fee + IA/canales |
+| IA de Voz | No como flujo CRM | Complemento | Complemento | Fee + telefonía, IA y minutos |
+| Conexiones e Integraciones estándar | Solo si afecta exclusivamente a Vecidya y se confirma compatibilidad | Según integración | Según integración | Fee por conexión + API/uso; desarrollo a medida como servicio |
+| Presencia & Marca / Web & Conversión / Visibilidad & Marketing | Servicio independiente | Servicio independiente | Servicio independiente | Propuesta profesional y medios externos |
+| Sistema Comercial / Automatización & Integraciones / IA Aplicada | Diseño independiente; operación CRM no incluida | Servicio para trabajos fuera del estándar | Servicio para trabajos fuera de módulos estándar | Implementación pactada y consumo |
+| Desarrollo Empresarial | Servicio independiente | Servicio independiente | Servicio independiente | Propuesta profesional |
+
+### Cuándo mantener, subir o bajar
+
+**Mantener Cuadra:** se necesita presencia, MiniWeb y contacto directo, pero no hay seguimiento de oportunidades recurrente.
+
+**Pasar a Barrio:** ya existe necesidad real de registrar y dar seguimiento a consultas, oportunidades, reservas o un ciclo comercial estable.
+
+**Pasar a Ciudad:** existen al menos dos procesos conectados que requieren traspasos, responsables y automatizaciones coordinadas, confirmado por la situación real. Un complemento de IA o WhatsApp en Barrio no justifica Ciudad automáticamente.
+
+**Volver a un plan inferior:** cuando cesa la necesidad multiproceso o el CRM deja de aportar valor, sujeto a conservar/exportar información y a la política contractual acordada.
+
+**Sin licencia:** un servicio profesional independiente puede bastar para la necesidad del cliente.
+
+**Políticas económicas aún por aprobar:** prorrateos, cambio de plan, activación diferencial, impuestos, cancelación y migración. Los USD 0/10/15 son importes de alta inicial estándar, no promesas automáticas de upgrade.
+
+### Diferenciación técnica verificable vs. oferta propia
+
+Las funciones del proveedor permiten estructuras reutilizables de **pipelines, calendarios, formularios y workflows**, así como snapshots selectivos y reglas condicionales. La biblioteca Barrio/Ciudad es la **configuración de Vecidya** que habrá que construir, versionar, probar y validar contra el contrato operativo; no viene terminada de fábrica por contratar una cuenta CRM.
+
+Referencias oficiales técnicas consultadas en octubre de 2026 — **solo para equipo interno, no para publicar marcas en la web comercial**:
+- [Snapshots reutilizables](https://help.gohighlevel.com/support/solutions/articles/48000982512-creating-new-snapshots)
+- [Pipelines y oportunidades](https://help.gohighlevel.com/support/solutions/articles/155000005062)
+- [Workflows](https://help.gohighlevel.com/support/solutions/articles/155000002288)
+- [Condicionales](https://help.gohighlevel.com/support/solutions/articles/155000002471)
+- [Precio y facturación de proveedor](https://help.gohighlevel.com/support/solutions/articles/155000001156-highlevel-pricing-guide)
+
+**Política aprobada el 2026-10-20: recargo del 20 % SOBRE el coste real del proveedor.** No equivale a un margen bruto del 20 % sobre el precio de venta. La fórmula exacta es **precio = coste externo directo validado × 1,20**, redondeado hacia arriba al centavo por cargo agregado. El margen bruto resultante es aproximadamente 16,67 % del precio final, antes de otros gastos internos.
+
+- El coste externo directo incluye el cargo de proveedor, comisiones o recargos efectivamente facturados a Vecidya por esa operación. No se duplican comisiones ni se aplica el 20 % dos veces al mismo importe.
+- El CRM de Barrio ya incluye contactos, oportunidades, pipeline, agenda y automatización estándar. Ciudad ya incluye su biblioteca multiproceso estándar. **No se inventan fees mensuales por revender funciones ya incluidas.**
+- **WhatsApp Business:** referencia proveedor **USD 10/mes por subcuenta** → **USD 12/mes Vecidya** (10 × 1,20), más consumos verificables del canal facturados aparte con el mismo criterio. El importe definitivo depende de la factura, país y estado de canal.
+- **Cambio del 1 de octubre de 2026:** después de los primeros 1.000 mensajes de servicio gratuitos por número y mes, otros mensajes de servicio pueden facturarse; algunas plantillas de utilidad también generan cargos. No afirmar que todos los mensajes son gratis. Verificar reglas y franquicias actuales del proveedor.
+- **Telefonía/SMS:** no existe un cargo mensual universal de USD 9 por activar el CRM telefónico. Números, minutos, SMS/MMS, registros y cargos reales se repercuten × 1,20. El envío queda sujeto a permisos y requisitos del país.
+- **IA compartida:** modalidades por uso o suscripción por localización; referencias de proveedor USD 50/mes → **USD 60/mes** y USD 97/mes → **USD 116,40/mes**, únicamente si esa modalidad se contrató y aplica. Un mismo plan compatible no se factura por duplicado para IA conversacional y de voz.
+- **Licencias:** Cuadra USD 39, Barrio USD 59 y Ciudad USD 89/mes permanecen según la decisión comercial previa. El 20 % sobre coste de terceros NO altera por sí solo esos precios; la rentabilidad real de las licencias debe evaluarse internamente con costes totales por organización.
+- **Puesta en marcha:** se conservan USD 0/10/15 una sola vez para la activación inicial estándar, sin extenderlos a servicios profesionales a medida. Las condiciones de cambio entre planes y horas de entrega requieren política separada.
+- **Servicios profesionales:** se cotizan individualmente por trabajo y alcance acordados. El recargo del 20 % sobre costes de proveedores no es una tarifa por hora ni una fórmula automática de cotización de servicios.
+- **Control:** la cifra ilustrativa no certifica el costo efectivo en la cuenta de Vecidya, ni que la función esté instalada, conectada o habilitada para reventa. Validar factura y condiciones antes de vender.
+
+**Fuentes oficiales técnicas internas** (no mostrar la marca tecnológica al cliente):
+- [Tarifas y recargos WhatsApp](https://help.gohighlevel.com/support/solutions/articles/155000001428-whatsapp-pricing-billing-and-rebilling-guide)
+- [IA por consumo y planes compartidos](https://help.gohighlevel.com/support/solutions/articles/155000003906-ai-employee-access-rebilling-and-reselling)
+- [Teléfono y SMS](https://help.gohighlevel.com/support/solutions/articles/48001223556-phone-system-pricing-billing-guide)
+
+**Límite de licenciamiento multi-organización abierto:** el catálogo histórico autoriza ciertos perfiles adicionales de una persona con licencia activa, mientras otros documentos exigen licencia de la organización para publicación. No se cambia la lógica de permisos ni se promete publicación multiorganización ilimitada hasta reconciliar una regla contractual verificable.
+
+
 # 4. Frontera Vecidya ↔ CRM
 
 Vecidya es la plataforma y relación comercial.
@@ -96,7 +253,7 @@ El CRM externo es el sistema operacional.
 
 organización, miembros, negocio, perfil, Vecindario, servicios ofrecidos, Diagnóstico, prioridades, licencia, complementos, servicios profesionales, soporte, recomendaciones y relación contractual.
 
-**GHL administra:**
+**El sistema CRM administra:**
 
 contactos, leads, oportunidades, pipelines, conversaciones, citas, workflows, automatizaciones y seguimiento comercial diario.
 
@@ -140,13 +297,13 @@ Internamente pueden mantenerse como `ADDON`.
 
 | Complemento | Fee Vecidya | Costes adicionales |
 |---|---:|---|
-| **WhatsApp Business** | **$9/mes** | proveedor + mensajes |
-| **Telefonía & SMS** | **$9/mes** | número, llamadas, SMS/MMS, A2P |
-| **Reputación & Reseñas** | **$12/mes** | mensajería/IA cuando aplique |
-| **Campañas & Difusión** | **$15/mes** | email/SMS/WhatsApp |
-| **IA Conversacional** | **$15/mes** | IA/plan/uso |
-| **IA de Voz** | **$20/mes** | IA + minutos + telefonía |
-| **Conexiones & Integraciones** | **$12/mes/conexión** | APIs/ejecuciones cuando aplique |
+| **WhatsApp Business** | **$12/mes** sobre referencia de proveedor $10/mes | mensajes y cargos reales del canal × 1,20, sin duplicar recargos |
+| **Telefonía & SMS** | **Sin fee fijo artificial** | números, llamadas, SMS/MMS, registros y otros costes con recargo del 20 % sobre coste externo verificado |
+| **Reputación & Reseñas** | **Gestión estándar incluida en Barrio/Ciudad** | IA y mensajes opcionales con recargo del 20 % sobre coste externo verificado |
+| **Campañas & Difusión** | **Funciones estándar del CRM incluidas** | envíos y herramientas con recargo del 20 % sobre coste externo verificado; producción/gestión personalizada como servicio |
+| **IA Conversacional** | **Según uso o plan de IA compartido** | tarifa cotizada con recargo del 20 % sobre coste externo verificado, sin segunda suscripción por otra función de IA |
+| **IA de Voz** | **Según el mismo plan de IA compartido o consumo** | IA y telefonía cobradas al coste facturado × 1,20, sin doble suscripción |
+| **Conexiones & Integraciones** | **Solo si existe coste externo real de conexión** | API, aplicación o ejecuciones con recargo del 20 % sobre coste externo verificado; desarrollo especial como servicio |
 
 La licencia mínima normal para complementos dependientes del CRM es **Barrio**.
 
@@ -154,7 +311,7 @@ Cuadra no obtiene un CRM mediante complementos.
 
 Si necesita CRM, la frontera funcional es Barrio.
 
-La puesta en marcha estándar del complemento está incluida en su fee.
+La habilitación estándar de una capacidad incluida en la licencia no crea un cargo nuevo. Si existe suscripción externa verificable (como WhatsApp), la tarifa de reventa aplica el recargo aprobado del 20 % sobre el coste externo verificado; si solo existe consumo, se calcula sobre el cargo realmente facturado, sin cargos ocultos. Los servicios de implantación especial se cotizan por separado.
 
 Una implementación especial continúa siendo un servicio profesional.
 
@@ -459,7 +616,7 @@ Con estados adicionales cuando corresponda:
 
 # 18. Propiedad intelectual operacional
 
-La diferenciación de Vecidya no reside solamente en utilizar GHL.
+La diferenciación de Vecidya no reside solamente en utilizar tecnología CRM de terceros.
 
 Reside en construir y mantener:
 
@@ -483,7 +640,7 @@ El producto comercial es Vecidya.
 
 No forma parte todavía del contrato V1:
 
-checkout automático, Stripe, facturación automática, SaaS Mode, aprovisionamiento automático de GHL, recomendaciones automáticas en producción, sincronización CRM read-only, ampliaciones públicas, planes anuales, descuentos públicos de portafolio, Social Planner como producto, Commerce/Pagos como complemento o nuevas capacidades no aprobadas.
+checkout automático, Stripe, facturación automática, SaaS Mode, aprovisionamiento automático del CRM, recomendaciones automáticas en producción, sincronización CRM read-only, ampliaciones públicas, planes anuales, descuentos públicos de portafolio, Social Planner como producto, Commerce/Pagos como complemento o nuevas capacidades no aprobadas.
 
 Tampoco define todavía términos legales de:
 
