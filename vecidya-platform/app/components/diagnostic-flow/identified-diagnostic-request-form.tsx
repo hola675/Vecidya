@@ -5,19 +5,20 @@ import {
   DIAGNOSTIC_RESEARCH_NOTICE_VERSION,
   REPORT_SERVICE_NOTICE_VERSION,
 } from "../../features/diagnostic/identified-report-constants";
-import type { PublicDiagnosticEngineIdentityV1 } from "../../features/diagnostic/public-diagnostic-engine-identity";
-import type { DiagnosticSessionV3 } from "../../features/diagnostic/qbv2-session";
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 
 export function IdentifiedDiagnosticRequestForm({
-  engineIdentity,
   onCancel,
   onSubmitted,
-  session,
+  source,
 }: {
-  readonly engineIdentity: PublicDiagnosticEngineIdentityV1;
   readonly onCancel: () => void;
   readonly onSubmitted: (requestId: string) => void;
-  readonly session: DiagnosticSessionV3;
+  readonly source: {
+    readonly payload: Readonly<Record<string, unknown>>;
+    readonly validateResponse?: (value: unknown) => boolean;
+  };
 }) {
   const idempotencyKey = useRef<string | null>(null);
   const [fullName, setFullName] = useState("");
@@ -35,14 +36,11 @@ export function IdentifiedDiagnosticRequestForm({
     setState({ kind: "submitting" });
     idempotencyKey.current ??= window.crypto.randomUUID();
     try {
-      const answers = session.answeredQuestionIds.map((questionId) => ({ questionId, value: session.answers[questionId] }));
-      if (answers.some((entry) => entry.value === undefined)) throw new Error("INCOMPLETE_SESSION");
       const response = await fetch("/api/diagnostic/report-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json", "Idempotency-Key": idempotencyKey.current },
         body: JSON.stringify({
-          engineIdentity,
-          answers,
+          ...source.payload,
           fullName,
           businessName: businessName.trim() || null,
           email,
@@ -56,11 +54,11 @@ export function IdentifiedDiagnosticRequestForm({
         }),
       });
       const payload: unknown = await response.json();
-      if (!response.ok || typeof payload !== "object" || payload === null || Array.isArray(payload) || typeof (payload as Record<string, unknown>).requestId !== "string") {
+      if (!response.ok || !isRecord(payload) || typeof payload.requestId !== "string" || (source.validateResponse && !source.validateResponse(payload))) {
         setState({ kind: "error", message: (payload as { error?: unknown } | null)?.error === "Este resultado pertenece a otra versión. Inicia un diagnóstico nuevo para solicitar el informe." ? "Este resumen pertenece a una sesión anterior. Conserva su lectura o inicia un diagnóstico nuevo para solicitar el informe completo." : "No se registró la solicitud. Revisa tus datos y vuelve a intentarlo." });
         return;
       }
-      onSubmitted((payload as { requestId: string }).requestId);
+      onSubmitted(payload.requestId);
     } catch {
       setState({ kind: "error", message: "No pudimos enviar la solicitud. Tus respuestas siguen en este navegador; vuelve a intentarlo cuando tengas conexión." });
     }

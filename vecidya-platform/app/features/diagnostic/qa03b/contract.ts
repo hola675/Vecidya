@@ -8,6 +8,7 @@ export const PLANNER_ID = "reviewed-evidence-v4+r3+r4-operation-history+candidat
 export const PIPELINE_ID = "diag-v3-candidate-operation-history-v1" as const;
 export const SESSION_SCHEMA = 3 as const;
 export const SESSION_KEY = "vecidya.diagnostic.v3.candidate.session.3" as const;
+export const WORKER_REPLAY_VERSION = "qa03b-worker-replay-v1" as const;
 
 export const OPERATIONAL_STATUSES = ["preparing", "operating", "paused", "unknown"] as const;
 export type OperationalStatus = typeof OPERATIONAL_STATUSES[number];

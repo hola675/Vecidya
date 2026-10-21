@@ -43,8 +43,12 @@ export async function action({ context, request }: ActionFunctionArgs) {
   let value: unknown;
   try { value = JSON.parse(raw); }
   catch { return failure(400, "Revisa los datos e inténtalo de nuevo."); }
-  const input = validateDiagnosticReportRequest(value);
-  if (!input || !isCurrentPublicDiagnosticEngineIdentityV1(input.engineIdentity)) return failure(409, "Este resultado pertenece a otra versión. Inicia un diagnóstico nuevo para solicitar el informe.");
+  const publicInput = validateDiagnosticReportRequest(value);
+  const qa03bInput = !publicInput && import.meta.env.DEV
+    ? (await import("../features/diagnostic/qa03b/identified-report-request.server")).validateQa03bDiagnosticReportRequest(value)
+    : null;
+  const input = publicInput ?? qa03bInput;
+  if (!input || (publicInput && !isCurrentPublicDiagnosticEngineIdentityV1(publicInput.engineIdentity))) return failure(409, "Este resultado pertenece a otra versión. Inicia un diagnóstico nuevo para solicitar el informe.");
 
   const emailDigest = await digestOpaqueToken(input.email);
   if (!await allowRateLimitedActor(env.DIAGNOSTIC_IDENTIFICATION_RATE_LIMITER, "report-submit", `email:${emailDigest}`)) return failure(429, "Espera un momento antes de volver a intentarlo.");
@@ -52,26 +56,55 @@ export async function action({ context, request }: ActionFunctionArgs) {
   const requestFingerprintHash = await digestOpaqueToken(`${idempotencyHash}:${JSON.stringify(input)}`);
   const existing = await findReportRequestByIdempotencyHash(env.DB, idempotencyHash);
   if (existing) return existing.requestFingerprintHash === requestFingerprintHash
-    ? Response.json({ requestId: existing.id, status: existing.status, reused: true }, { status: 202, headers })
+    ? Response.json({ requestId: existing.id, status: existing.status, reused: true, ...(qa03bInput ? { summaryVersion: qa03bInput.anonymousSummary.contractVersion, summary: qa03bInput.anonymousSummary } : {}) }, { status: 202, headers })
     : failure(409, "La clave de este intento ya se usó con datos distintos. Vuelve al formulario e inténtalo de nuevo.");
 
-  const replay = replayPublicDiagnosticV3(input.answers);
-  if (!replay.ok) return failure(422, "Las respuestas guardadas ya no corresponden a una ruta vigente. Inicia un diagnóstico nuevo.");
-
   const now = new Date();
+  let engineIdentity: string;
+  let reportVersion: string;
+  let methodologyVersion: string;
+  let reportJson: string;
+  let summary: unknown;
+  if (qa03bInput) {
+    const { replayQa03bSessionV1, buildQa03bReplayProjectionsV1 } = await import("../features/diagnostic/qa03b/worker-replay.server");
+    const replay = replayQa03bSessionV1({
+      replayVersion: qa03bInput.replayVersion,
+      engineIdentity: qa03bInput.engineIdentity,
+      answerSchema: qa03bInput.answerSchema,
+      questionBank: qa03bInput.questionBank,
+      sessionSchema: qa03bInput.sessionSchema,
+      sessionKey: qa03bInput.sessionKey,
+      session: qa03bInput.session,
+    }, now.getTime());
+    if (!replay.ok) return failure(422, "La sesión QA-03B no corresponde a una ruta vigente y completa. Inicia o reanuda el diagnóstico.");
+    const projections = buildQa03bReplayProjectionsV1(replay, qa03bInput.businessName, now);
+    if (JSON.stringify(projections.summary) !== JSON.stringify(qa03bInput.anonymousSummary)) return failure(409, "El resumen cambió respecto a la sesión. Vuelve al diagnóstico para actualizarlo.");
+    engineIdentity = JSON.stringify(replay.result.engineIdentity);
+    reportVersion = projections.report.reportVersion;
+    methodologyVersion = projections.report.methodologyVersion;
+    reportJson = JSON.stringify(projections.report);
+    summary = projections.summary;
+  } else {
+    const replay = replayPublicDiagnosticV3(publicInput!.answers);
+    if (!replay.ok) return failure(422, "Las respuestas guardadas ya no corresponden a una ruta vigente. Inicia un diagnóstico nuevo.");
+    engineIdentity = JSON.stringify(PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1);
+    reportVersion = PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1.reportVersion;
+    methodologyVersion = PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1.methodologyVersion;
+    reportJson = JSON.stringify(buildPublicDiagnosticReport(replay.result, publicInput!.businessName, now));
+    summary = toAnonymousDiagnosticSummaryV1(replay.result);
+  }
   const requestId = crypto.randomUUID();
   const token = createOpaqueToken();
   const tokenDigest = await digestOpaqueToken(token);
   const expiresAt = new Date(now.getTime() + IDENTIFIED_REPORT_RETENTION_DAYS * 24 * 60 * 60 * 1000);
-  const reportJson = JSON.stringify(buildPublicDiagnosticReport(replay.result, input.businessName, now));
   const reportSha256 = await digestOpaqueToken(reportJson);
   const requestRecord = {
     id: requestId,
     idempotencyKeyHash: idempotencyHash,
     requestFingerprintHash,
-    engineIdentity: JSON.stringify(PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1),
-    reportVersion: PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1.reportVersion,
-    methodologyVersion: PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1.methodologyVersion,
+    engineIdentity,
+    reportVersion,
+    methodologyVersion,
     status: "verification_pending" as const,
     fullName: input.fullName,
     businessName: input.businessName,
@@ -122,12 +155,12 @@ export async function action({ context, request }: ActionFunctionArgs) {
   } catch {
     const raced = await findReportRequestByIdempotencyHash(env.DB, idempotencyHash).catch(() => null);
     if (raced) return raced.requestFingerprintHash === requestFingerprintHash
-      ? Response.json({ requestId: raced.id, status: raced.status, reused: true }, { status: 202, headers })
+      ? Response.json({ requestId: raced.id, status: raced.status, reused: true, ...(qa03bInput ? { summaryVersion: qa03bInput.anonymousSummary.contractVersion, summary: qa03bInput.anonymousSummary } : {}) }, { status: 202, headers })
       : failure(409, "La clave de este intento ya se usó con datos distintos. Vuelve al formulario e inténtalo de nuevo.");
     return failure(503, "No pudimos guardar la solicitud. Tus respuestas anónimas siguen disponibles en este navegador.");
   }
 
   deliverDiagnosticVerificationEmail({ requestId, challengeId: challenge.id, recipient: input.email, token, origin: new URL(request.url).origin, now: now.getTime() });
-  const summary = toAnonymousDiagnosticSummaryV1(replay.result);
-  return Response.json({ requestId, status: "verification_pending", expiresAt: expiresAt.toISOString(), summaryVersion: summary.version }, { status: 202, headers });
+  const summaryVersion = qa03bInput ? "anonymous-diagnostic-summary-v1" : (summary as ReturnType<typeof toAnonymousDiagnosticSummaryV1>).version;
+  return Response.json({ requestId, status: "verification_pending", expiresAt: expiresAt.toISOString(), summaryVersion, ...(qa03bInput ? { summary } : {}) }, { status: 202, headers });
 }

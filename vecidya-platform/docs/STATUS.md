@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## DIAG-CLOSE-03 — replay QA-03B en Worker local (2026-10-21)
+
+`qa03b/worker-replay.server.ts` valida identidad, banco/schema/key y transcript de sesión 3, reconstruye ruta y ediciones con el planner QA-03B y recalcula el resultado sin aceptar scores del navegador. En la ruta **dev-only** QA-03B el Worker devuelve solo resumen allowlisted; la solicitud identificada reutiliza el replay, comprueba igualdad del resumen y guarda únicamente el informe versionado en el flujo D1/grant/correo ya existente. `/diagnostico` y el replay público V3 permanecen intactos; QA-03B no se activa en producción. La sesión 3 admite transcript opcional nuevo sin cambiar key/schema ni convertir sesiones V3/ACT. E2E de la rama original: 6 rutas QA, 7 rechazos HTTP, reanudación/concurrencia, solicitud/correo verificado/acceso identificado, FUNNEL-01B 6/6 y 157/157 unitarias focales PASS. `PDF_OWNER_REVIEW` manual no bloquea; el flujo identificado actual muestra HTML, **no descarga PDF**, y no se tocó el generador. ACT-04 requiere autorización independiente y pruebas de activación/rollback sobre la integración pública.
+
 ## COM-CATALOG-DETAILS-01 / COM-CATALOG-BENEFITS-02 / COM-PRICING-20-01 — oferta comercial detallada (2026-10-20)
 
 **Actualización de integración local (2026-10-21): CODE + TEST, RAN local, NO PUBLICADO.** Se corrigieron conflictos y los fallos de precio/contrato de catálogo; suite unitaria 1637/1637, typecheck, build y E2E comerciales/navegación en Worker+D1+Chrome local PASS (TESTING.md). Los párrafos históricos siguientes describen el estado previo a esta integración; ya no aplican las indicaciones «RAN pendiente» o «No se han ejecutado» para este árbol. Quedan sin certificar condiciones reales del proveedor, WCAG, producción y deploy.
