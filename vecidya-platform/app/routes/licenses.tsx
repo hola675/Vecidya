@@ -24,7 +24,7 @@ const licenses = LICENSE_OFFERS.map((offer) => ({
 }));
 
 const comparisonRows = [
-  { label: "Objetivo", values: ["Ordenar", "Captar", "Automatizar"] },
+  { label: "Objetivo", values: ["Presentar y organizar", "Captar y dar seguimiento", "Coordinar procesos"] },
   { label: "Etapa", values: ["Inicio", "Crecimiento", "Escala"] },
   { label: "Organización", values: ["Base Vecidya", "Base Vecidya", "Base Vecidya"] },
   { label: "MiniWeb y Vecindario", values: ["Incluidos", "Incluidos", "Incluidos"] },
@@ -49,7 +49,7 @@ export default function Licenses() {
           <div className="licenses-hero__copy">
             <p className="eyebrow">LICENCIAS VECIDYA</p>
             <h1 id="licenses-title">Elige tu sistema base.</h1>
-            <p>Cuadra, Barrio o Ciudad. Tres formas de organizar, captar o controlar tu operación.</p>
+            <p>Cuadra para presentar y organizar, Barrio para dar seguimiento comercial y Ciudad para coordinar procesos. Elige lo que realmente necesitas.</p>
             <div className="public-actions">
               <Link className="button button--primary" to="/diagnostico">Encontrar mi punto de partida</Link>
               <Link className="button button--secondary" to="/servicios">{PUBLIC_ACTION_LABELS.services}</Link>
@@ -67,7 +67,7 @@ export default function Licenses() {
         <section aria-labelledby="licenses-levels-title" className="licenses-levels">
           <div className="licenses-section-heading">
             <p className="eyebrow">TRES MOMENTOS</p>
-            <h2 id="licenses-levels-title">Tres productos. Una decisión clara.</h2>
+            <h2 id="licenses-levels-title">Tres licencias. Paga por la capacidad que necesitas.</h2>
             <p className="licenses-price-note">Precios públicos en USD. La activación se coordina por contacto; no hay compra automática.</p>
             <p className="licenses-price-note">Cuadra funciona de forma independiente y no requiere CRM. Barrio incorpora el CRM para un proceso comercial principal; Ciudad coordina procesos relacionados.</p>
             <p className="licenses-price-note">De Cuadra a Barrio: USD 20/mes más para captar y dar seguimiento. De Barrio a Ciudad: USD 30/mes más para coordinar varios procesos. No necesitas subir de nivel si tu licencia actual ya resuelve el trabajo.</p>

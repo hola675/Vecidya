@@ -42,7 +42,7 @@ async function runViewport(width, height) {
   }
   assert(await page.getByRole("link", { name: "Encontrar mi punto de partida" }).getAttribute("href") === "/diagnostico", `${label} CTA de Diagnóstico incorrecto.`);
   assert(await page.getByRole("link", { name: "Ver servicios" }).getAttribute("href") === "/servicios", `${label} CTA de Servicios incorrecto.`);
-  assert(await page.getByRole("heading", { name: "Tres productos. Una decisión clara." }).isVisible(), `${label} no mostró los productos.`);
+  assert(await page.getByRole("heading", { name: "Tres licencias. Paga por la capacidad que necesitas." }).isVisible(), `${label} no mostró los productos.`);
   assert(await page.getByRole("heading", { name: "Amplía tu sistema cuando lo necesites." }).isVisible(), `${label} no mostró addons.`);
   assert(await page.getByText("Precios públicos en USD.").isVisible(), `${label} no aclaró precios.`);
   const comparisonRows = await page.locator(".licenses-compare-table tbody tr").allTextContents();

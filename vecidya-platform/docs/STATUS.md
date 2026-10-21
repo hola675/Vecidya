@@ -1,5 +1,12 @@
 # Estado de implementación
 
+## UX-COMMERCIAL-POLISH-04 — lectura y navegación final del catálogo (2026-10-20, rama dependiente de PR #32)
+
+**CODE + TEST versionado, RAN pendiente; no publicado.** El PR #32 todavía no está integrado en `main`; este checkpoint toma como base su rama conciliada para no sobrescribir #31/#32. En la plantilla común de fichas `/licencias/:slug`, `/addons/:slug` y `/servicios/:slug` se eliminaron secciones duplicadas de ventajas, recorrido y continuidad (con sus ids ARIA repetidos), se incorporó índice interno con enlaces a beneficios, inclusiones, módulos opcionales, recorridos, continuidad y compatibilidad/costes, se añadió comparación contextual con licencias cercanas y se corrigió «Volver a el…» por «Volver al…» en Contacto. La etiqueta de precio de complementos ahora reconoce cuotas/consumos variables, no presupone siempre suscripción mensual. En el resumen de Servicios se limitan los entregables visibles para que la ficha detallada contenga el alcance completo.
+
+**Tests versionados:** `commercial-details-check.mjs` comprueba ausencia de ids repetidos, destino único de cada ancla, una sección de ventajas por ficha, enlace específico a Barrio desde un complemento, continuidad WhatsApp y navegación ficha → Contacto → oferta original en 320/390/768/1366 px. Tests previos de retorno comercial se conservan y respaldan la gramática corregida. **No se ejecutaron** pruebas Node, typecheck, build, E2E del Worker local, análisis visual ni HTTP de producción. No cambian precios ($39/$59/$89 y coste externo +20 %), capacidades, permisos, D1, CRM, checkout ni datos de clientes. No fusionar ni desplegar sin gates y autorización.
+
+
 ## UX-PUBLIC-JOURNEYS-03 — continuidad de ofertas, Contacto y Aprende (2026-10-20; rama `fix/ux-public-journeys-03-20261020`)
 
 **CODE + TEST versionado / RAN pendiente; sin deploy.** Partiendo de `main@a2f6f7c`, con PR #30 ya fusionado, el catálogo de Servicios conserva las siete familias y el de Complementos las siete capacidades. Los CTA de cada tarjeta ahora nombran la licencia, servicio o complemento específico; conservan `/contacto?interes=` con allowlist y sin envío automático. Contacto ofrece enlace de regreso a la ficha original usando exclusivamente un identificador comercial permitido (ancla interna), nunca un redirect libre. Home muestra cuatro servicios con nombres iguales a las fichas canónicas y enlaces directos `/servicios#...`. Se precisó la introducción de Complementos respecto de dependencias y consumos.

@@ -40,6 +40,9 @@ function BulletGroup({ title, values }: { title: string; values: readonly string
 export default function CommercialDetail({ loaderData }: { loaderData: { offer: CommercialOffer } }) {
   const { offer } = loaderData;
   const modules = offer.kind === "license" ? LICENSE_OFFERS.find((candidate) => candidate.id === offer.id)?.standardModules : undefined;
+  const relatedLicenses = offer.kind === "license"
+    ? LICENSE_OFFERS.filter((license) => license.id !== offer.id)
+    : [];
   return (
     <PublicLayout>
       <main className="public-page commercial-detail-page">
@@ -61,7 +64,7 @@ export default function CommercialDetail({ loaderData }: { loaderData: { offer: 
             </div>
           </div>
           <aside className="commercial-detail__price" aria-label="Precio y condiciones de la oferta">
-            <span>{offer.kind === "license" ? "Licencia mensual" : offer.kind === "addon" ? "Complemento mensual" : "Cotización"}</span>
+            <span>{offer.kind === "license" ? "Licencia mensual" : offer.kind === "addon" ? "Tarifa y consumos" : "Servicio por propuesta"}</span>
             <strong>{offer.price}</strong>
             {offer.kind === "license" && (
               <p>Puesta en marcha estándar: USD {LICENSE_OFFERS.find((candidate) => candidate.id === offer.id)?.setupUsd ?? 0} una vez para contratación inicial.</p>
@@ -70,20 +73,30 @@ export default function CommercialDetail({ loaderData }: { loaderData: { offer: 
           </aside>
         </header>
 
+        <nav className="commercial-detail__quick-nav" aria-label="Secciones de esta ficha">
+          <strong>En esta ficha</strong>
+          <a href="#beneficios">Ventajas</a>
+          <a href="#incluye">Qué incluye</a>
+          {modules && modules.length > 0 && <a href="#modulos">Módulos</a>}
+          {offer.journey && offer.journey.length > 0 && <a href="#recorrido">Cómo funciona</a>}
+          {offer.continuity && <a href="#continuidad">Continuidad</a>}
+          <a href="#compatibilidad">Compatibilidad y costes</a>
+        </nav>
+
         <section className="commercial-detail__introduction" aria-labelledby="commercial-ideal-title">
           <p className="eyebrow">CUÁNDO TIENE SENTIDO</p>
           <h2 id="commercial-ideal-title">¿Para quién es?</h2>
           <p>{offer.bestFor}</p>
         </section>
 
-        <section className="commercial-detail__benefits" aria-labelledby="commercial-benefits-title">
+        <section id="beneficios" className="commercial-detail__benefits" aria-labelledby="commercial-benefits-title">
           <p className="eyebrow">VENTAJAS EN EL DÍA A DÍA</p>
           <h2 id="commercial-benefits-title">¿Qué ganas realmente al contratarlo?</h2>
           <ul>{offer.benefits.map((benefit) => <li key={benefit}>{benefit}</li>)}</ul>
         </section>
 
         {offer.journey && offer.journey.length > 0 && (
-          <section className="commercial-detail__journey" aria-labelledby="commercial-journey-title">
+          <section id="recorrido" className="commercial-detail__journey" aria-labelledby="commercial-journey-title">
             <p className="eyebrow">RECORRIDO ILUSTRATIVO</p>
             <h2 id="commercial-journey-title">Así funciona en la práctica.</h2>
             <p>Ejemplo del funcionamiento objetivo cuando el canal, la configuración y los permisos correspondientes están habilitados.</p>
@@ -92,20 +105,20 @@ export default function CommercialDetail({ loaderData }: { loaderData: { offer: 
         )}
 
         {offer.continuity && (
-          <aside className="commercial-detail__continuity" aria-labelledby="commercial-continuity-title">
+          <aside id="continuidad" className="commercial-detail__continuity" aria-labelledby="commercial-continuity-title">
             <p className="eyebrow">CONTINUIDAD Y LÍMITES</p>
             <h2 id="commercial-continuity-title">¿Qué pasa si se desconecta o bloquea un canal?</h2>
             <p>{offer.continuity}</p>
           </aside>
         )}
 
-        <div className="commercial-detail__columns">
+        <div id="incluye" className="commercial-detail__columns">
           <BulletGroup title={offer.kind === "service" ? "Qué trabajo incluye la propuesta" : "Qué incluye"} values={offer.includes} />
           <BulletGroup title="Qué no está incluido" values={offer.excludes} />
         </div>
 
         {modules && modules.length > 0 && (
-          <section className="commercial-detail__modules" aria-labelledby="commercial-modules-title">
+          <section id="modulos" className="commercial-detail__modules" aria-labelledby="commercial-modules-title">
             <p className="eyebrow">{offer.id === "ciudad" ? "BIBLIOTECA MODULAR ESTÁNDAR" : "PLANTILLA OPERATIVA ESTÁNDAR"}</p>
             <h2 id="commercial-modules-title">{offer.id === "ciudad" ? "Activa los módulos que realmente necesitas." : "Un proceso comercial listo para organizar tu seguimiento."}</h2>
             <p>{offer.id === "ciudad"
@@ -123,29 +136,6 @@ export default function CommercialDetail({ loaderData }: { loaderData: { offer: 
         )}
 
 
-        <section className="commercial-detail__benefits" aria-labelledby="commercial-benefits-title">
-          <p className="eyebrow">BENEFICIOS PRÁCTICOS</p>
-          <h2 id="commercial-benefits-title">Qué ganas al incorporarlo</h2>
-          <ul>{offer.benefits.map((benefit) => <li key={benefit}>{benefit}</li>)}</ul>
-        </section>
-
-        {offer.journey && offer.journey.length > 0 && (
-          <section className="commercial-detail__journey" aria-labelledby="commercial-journey-title">
-            <p className="eyebrow">EJEMPLO DE RECORRIDO</p>
-            <h2 id="commercial-journey-title">De una consulta al siguiente paso</h2>
-            <ol>{offer.journey.map((step) => <li key={step}>{step}</li>)}</ol>
-            <p>Este recorrido depende de conectar correctamente los canales y configurar los flujos correspondientes; no se activa automáticamente al contratar una licencia.</p>
-          </section>
-        )}
-
-        {offer.continuity && (
-          <section className="commercial-detail__continuity" aria-labelledby="commercial-continuity-title">
-            <p className="eyebrow">SI UN CANAL DEJA DE FUNCIONAR</p>
-            <h2 id="commercial-continuity-title">Conserva el contexto que ya quedó registrado</h2>
-            <p>{offer.continuity}</p>
-          </section>
-        )}
-
         <section className="commercial-detail__examples" aria-labelledby="commercial-examples-title">
           <p className="eyebrow">EJEMPLOS ORIENTATIVOS</p>
           <h2 id="commercial-examples-title">Cómo se aplicaría a tu negocio</h2>
@@ -159,7 +149,7 @@ export default function CommercialDetail({ loaderData }: { loaderData: { offer: 
             <p>{offer.decision}</p>
           </div>
           <div>
-            <h3>Requisitos y compatibilidad</h3>
+            <h3 id="compatibilidad">Requisitos y compatibilidad</h3>
             <p>{offer.dependencies}</p>
             <h3>Costes adicionales</h3>
             <p>{offer.externalCosts}</p>
@@ -174,6 +164,20 @@ export default function CommercialDetail({ loaderData }: { loaderData: { offer: 
             <Link to="/addons">Ver complementos</Link>
             <Link to="/servicios">Ver servicios profesionales</Link>
           </div>
+          {offer.kind === "license" && (
+            <div className="commercial-detail__license-options" aria-label="Otras licencias de Vecidya">
+              <h3>¿Necesitas otro nivel?</h3>
+              <p>Puedes elegir una licencia distinta si resuelve mejor tu trabajo. No es obligatorio pasar al plan superior.</p>
+              <div className="commercial-detail__related-links">
+                {relatedLicenses.map((license) => (
+                  <Link key={license.id} to={license.detailPath}>{license.title} — USD {license.priceUsd}/mes</Link>
+                ))}
+              </div>
+            </div>
+          )}
+          {offer.kind === "addon" && (
+            <p className="commercial-detail__license-guidance">¿Todavía no tienes una licencia con CRM? <Link to="/licencias/barrio">Conoce Barrio</Link> o <Link to="/licencias/ciudad">consulta Ciudad</Link>. La compatibilidad exacta depende del complemento y se explica arriba.</p>
+          )}
         </section>
 
         <div className="commercial-detail__closing">

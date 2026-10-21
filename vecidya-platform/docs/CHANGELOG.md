@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-20 — UX-COMMERCIAL-POLISH-04 (rama dependiente de PR #32)
+
+- Una sola sección de beneficios, recorrido y continuidad por ficha; eliminados duplicados de contenido y ids de accesibilidad.
+- Índice de navegación interna y destinos de salto estables; navegación para comparar licencias sin forzar upgrade.
+- «Tarifa y consumos» para complementos de costes variables; CTA y regreso a Contacto con redacción española natural y parámetros seguros.
+- Servicios muestran un alcance breve en catálogo y dejan los detalles al artículo individual; diseño de lectura responsive y objetivos de enlaces 44 px.
+- E2E ampliados a cuatro anchuras y verificación de anclas únicas; no se han ejecutado pruebas ni realizado merge o deploy. Política de precio y funciones no modificadas.
+
+
 ## 2026-10-20 — UX-PUBLIC-JOURNEYS-03 (rama, no desplegada)
 
 - En las fichas de las tres licencias, siete servicios y siete complementos, cada CTA identifica la oferta concreta sin cambiar `/contacto?interes=`.

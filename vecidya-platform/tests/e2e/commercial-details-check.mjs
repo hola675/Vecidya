@@ -14,7 +14,7 @@ const group = [
 
 const browser = await chromium.launch(executablePath ? { executablePath } : {});
 try {
-  for (const width of [360, 1024]) {
+  for (const width of [320, 390, 768, 1366]) {
     const page = await browser.newPage({ viewport: { width, height: 900 } });
     for (const category of group) {
       await page.goto(new URL(category.path, baseUrl).toString(), { waitUntil: "networkidle" });
@@ -29,7 +29,26 @@ try {
         assert(await page.locator("main h1").count() === 1, `${width}: H1 incorrecto en ${path}`);
         assert(await page.locator(".commercial-detail__columns section").count() === 2, `${width}: faltan inclusiones/exclusiones en ${path}`);
         assert(await page.locator(".commercial-detail__decision").isVisible(), `${width}: sin recomendación en ${path}`);
+        assert(await page.locator(".commercial-detail__benefits").count() === 1, `${width}: sección de ventajas duplicada en ${path}`);
         assert(await page.locator(".commercial-detail__benefits li").count() >= 2, `${width}: ficha sin ventajas prácticas ${path}`);
+        const journeyCount = await page.locator(".commercial-detail__journey").count();
+        const continuityCount = await page.locator(".commercial-detail__continuity").count();
+        assert(journeyCount <= 1 && continuityCount <= 1, `${width}: recorrido o continuidad repetidos en ${path}`);
+        const sectionTargets = await page.locator(".commercial-detail__quick-nav a").evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute("href")));
+        assert(sectionTargets.includes("#beneficios") && sectionTargets.includes("#incluye") && sectionTargets.includes("#compatibilidad"), `${width}: faltan accesos internos básicos en ${path}`);
+        for (const target of sectionTargets) {
+          assert(target && /^#[a-z-]+$/.test(target), `${width}: ancla inválida ${target}`);
+          assert(await page.locator(`main [id="${target.slice(1)}"]`).count() === 1, `${width}: destino ausente o duplicado en ${path}: ${target}`);
+        }
+        const duplicateIds = await page.locator("main [id]").evaluateAll((items) => {
+          const seen = new Set();
+          return items.map((item) => item.id).filter((id) => {
+            if (seen.has(id)) return true;
+            seen.add(id);
+            return false;
+          });
+        });
+        assert(duplicateIds.length === 0, `${width}: identificadores duplicados en ${path}: ${duplicateIds.join(", ")}`);
         if (path === "/addons/whatsapp-business") {
           assert(await page.locator(".commercial-detail__journey li").count() === 4, `${width}: falta recorrido de WhatsApp a CRM`);
           const continuity = await page.locator(".commercial-detail__continuity").innerText();
@@ -46,17 +65,31 @@ try {
         assert(canonical === `https://vecidya.com${path}`, `${width}: canonical incorrecta ${path}`);
         const dims = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
         assert(dims[0] <= dims[1] + 1, `${width}: overflow en ${path}, ${dims}`);
+        if (path === "/licencias/cuadra" || path === "/licencias/barrio" || path === "/licencias/ciudad") {
+          assert(await page.locator(".commercial-detail__license-options a").count() === 2, `${width}: comparar otras licencias es inaccesible en ${path}`);
+        }
+        if (path === "/addons/whatsapp-business") {
+          assert(await page.getByRole("link", { name: "Conoce Barrio" }).getAttribute("href") === "/licencias/barrio", `${width}: dependencia con Barrio no aparece`);
+        }
         if (path === "/licencias/ciudad") {
           assert(await page.locator(".commercial-detail__module-grid article").count() >= 6, "Ciudad debe describir su biblioteca modular");
         }
         await page.goto(new URL(category.path, baseUrl).toString(), { waitUntil: "networkidle" });
       }
     }
+    await page.goto(new URL("/addons/whatsapp-business", baseUrl).toString());
+    await page.getByRole("link", { name: "Consultar WhatsApp Business" }).click();
+    await page.waitForURL("**/contacto?interes=complemento-whatsapp-business");
+    assert(await page.getByText("Interés seleccionado: el complemento WhatsApp Business").isVisible(), `${width}: se pierde el interés desde la ficha de detalle`);
+    const returnLink = page.getByRole("link", { name: "Volver al complemento WhatsApp Business" });
+    assert(await returnLink.getAttribute("href") === "/addons#whatsapp-business", `${width}: enlace de regreso incorrecto`);
+    await returnLink.click();
+    await page.waitForURL("**/addons#whatsapp-business");
     const invalid = await page.goto(new URL("/licencias/plan-inexistente", baseUrl));
     assert(invalid?.status() === 404, `${width}: plan inexistente no devuelve 404`);
     await page.close();
   }
-  console.log("PASS: 17 fichas comerciales, sitemap/SEO, inclusión/exclusión, CTAs y 404 en 360/1024 px.");
+  console.log("PASS: 17 fichas comerciales, navegación interna sin duplicados, compra contextual, SEO y responsive 320/390/768/1366.");
 } finally {
   await browser.close();
 }
