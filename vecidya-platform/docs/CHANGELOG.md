@@ -5,6 +5,80 @@
 - Reproducción estricta QA-03B con transcript local opcional (schema/key 3), validación de versiones/ruta/ediciones y cálculo exclusivamente desde el pipeline QA en Worker; el resultado proyecta resumen anónimo allowlisted e informe HTML identificado bajo correo verificado y grant existentes, solo en DEV. Un retry idempotente devuelve el mismo resumen versionado.
 - Pruebas: 157/157 unitarias focales, seis recorridos QA + siete rechazos HTTP y ciclo identificado en Worker local, FUNNEL-01B 6/6, typecheck/build/bundle PASS. Sin cutover público, migración, despliegue, correo real ni modificación del PDF.
 
+## 2026-10-20 — UX-PUBLIC-JOURNEYS-03 (rama, no desplegada)
+
+- En las fichas de las tres licencias, siete servicios y siete complementos, cada CTA identifica la oferta concreta sin cambiar `/contacto?interes=`.
+- Contacto mantiene email/WhatsApp editables y añade el regreso seguro a la tarjeta elegida, sin permitir direcciones externas desde parámetros.
+- Home alinea cuatro previews con los nombres reales de Servicios y sus anclas canónicas.
+- Mejorados legibilidad y objetivo táctil de los enlaces nuevos, y el texto de la portada de Complementos.
+- Añadidas pruebas unitarias y E2E de recorridos públicos, integradas en el runner; actualizada la prueba de Licencias.
+- Evidencia estática `CODE + TEST`; **sin pruebas ejecutadas**, merge ni deploy en este checkpoint. Sin alteraciones de D1, Auth, GHL, Diagnóstico, licencias, precios o pagos.
+
+
+
+## 2026-10-20 — UX-WEB-NAV-02 (rama de auditoría, sin deploy)
+
+- El PR #29 de navegación pública ya está integrado en `main@66939d4`; no se asume certificación runtime por el merge.
+- Centralizado el catálogo público de destinos y etiquetas para header, menú móvil y footer; separadas las columnas por exploración, soluciones, marca y legal.
+- Normalizada la etiqueta comercial «Complementos» manteniendo `/addons` como ruta estable; el desplegable «Soluciones» agrupa Licencias, Servicios y Complementos, mientras «Sobre nosotros» permanece en móvil y footer.
+- Estilos del footer con affordance, foco y objetivos táctiles; pruebas de integridad de menú y rutas, E2E ampliado a 320 px.
+- Cambios documentados en rama independiente, pruebas no ejecutadas; sin GHL, D1, Auth, esquema, pagos ni despliegue.
+
+
+## 2026-10-20 — WEB-PUBLIC-SEO-01 (rama, sin desplegar)
+
+- Centralizado el origen canónico de `publicMeta`, `robots.txt` y `sitemap.xml` como `https://vecidya.com`, sin aceptar el origen del request.
+- `/aprende` conserva la portada indexable y marca las URLs con filtros y búsquedas como `noindex, follow`.
+- Añadido test unitario de origen, SEO de indexación y contrato de sitemap. Inspección de perfil público detectó JSON-LD con origen de petición; se asigna seguimiento APP-PROFILE-SEO-ORIGIN-001 sin editar el módulo MiniWeb.
+- No hay certificación ejecutada, cambio de datos, integración a main ni deploy por este checkpoint.
+
+
+## 2026-10-20 — APRENDE-GESTIÓN-03 (rama no publicada)
+
+- Cinco nuevas guías sobre costos tecnológicos, compras, continuidad, IA y medición de resultados, con cinco ilustraciones accesibles.
+- Siete itinerarios y 38 guías en la rama reconciliada con APRENDE-OPERACIONES-02 (27 borradores sin publicación).
+- Nuevas pruebas de integridad versionadas, pero NO ejecutadas. Sin modificación de Diagnóstico, App, GHL, D1 o producción.
+
+
+## 2026-10-20 — APRENDE-OPERACIONES-02 (rama independiente, sin desplegar)
+
+- Cinco nuevas guías educativas, marcadas como borradores para revisión editorial: tareas y responsables, inventario, capacitación digital, ERP sin jerga y proyectos piloto reversibles.
+- Se añadió el sexto itinerario de Aprende: «Trabaja mejor cada día»; total de catálogo **33 guías**, con once originales y veintidós borradores.
+- Cinco diagramas SVG accesibles de iconografía grande sin etiquetas diminutas; ejemplos hipotéticos y fuentes institucionales con alcance geográfico señalado.
+- Pruebas de integridad curricular y preservación de contenidos históricos actualizadas pero **no ejecutadas**. Sin alteraciones en Diagnóstico, Mi Vecidya, GHL, D1 o producción.
+
+
+## 2026-10-20 — APRENDE-EMPRESAS-01 (rama dependiente, no publicado)
+
+- Cuatro borradores educativos sobre coordinación de sedes/marcas, control de permisos, elección de herramientas y lectura de indicadores por operación.
+- Nueva categoría «Gestión y equipos» y quinto itinerario de aprendizaje para empresas y multinegocios, ampliando el lenguaje de Aprende a cualquier escala de organización.
+- Contenido con tres ideas clave, casos hipotéticos, pasos aplicables, preguntas frecuentes y fuentes institucionales; pruebas y aprobación editorial pendientes. Sin cambios de datos de cliente, GHL, Diagnóstico o Mi Vecidya.
+
+
+## 2026-10-20 — APRENDE-EDITORIAL-02 (rama de trabajo, pendiente de QA y revisión)
+
+- Investigación curricular basada en ITU, DigComp, W3C, Google Search Central, FTC/NIST/CISA y guías de software oficiales; doce preguntas fundamentales convertidas en lectura práctica.
+- `Aprende` pasa de 11 guías a 24 en código: 13 nuevos borradores asistidos por IA sobre entrada digital, herramientas, correo, seguridad, archivos, hojas de cálculo, web/redes, explicación de oferta, atención, contenido, pedidos, privacidad y reseñas. Nuevos SVG educativos para esos temas.
+- Once artículos existentes conservan sus slugs y desarrollos y añaden un resumen de tres ideas, con introducciones más claras.
+- Cuatro rutas de lectura guiada, opciones para aprender por tema y nuevos bloques «En pocas palabras».
+- Los 13 borradores se señalan como tales, carecen de atribución humana no verificada y están excluidos del sitemap e indexación. No se ejecutaron pruebas por indicación del usuario; sin merge ni deploy de este checkpoint.
+
+
+## 2026-10-20 — APRENDE-DISCOVERY-01 (rama, no publicado)
+
+- Biblioteca `/aprende`: búsqueda de 11 guías reales, filtro de cinco categorías, enlaces GET compartibles, conteos y recuperación ante cero resultados.
+- CSS accesible y adaptable, con foco visible; permanece pendiente su verificación en runtime y dispositivos.
+- No cambian los artículos, slugs, precios, contratos, Diagnóstico, App, D1 o GHL. Validaciones y certificación diferidas según indicación del usuario.
+
+
+## 2026-10-20 — WEB-COMERCIAL-01 (rama, pendiente de validación y merge)
+
+- Licencias: descripción clara de MiniWeb/Vecindario en Cuadra y CRM externo únicamente desde Barrio; precios y activación sin cambios.
+- Servicios: siete familias y sus problemas/resultados alineados con el catálogo, CTA conservando el interés seleccionado.
+- Contacto y Únete: enlaces de correo/WhatsApp con contexto permitido, canales explicados sin contradicción y alta comercial por contacto/invitación; sin formulario, cobro ni envío automático.
+- Pruebas unitarias y E2E agregadas, **sin ejecución certificada** desde esta sesión de edición conectada a GitHub. Sin deploy.
+
+
 ## 2026-10-19 — `PDF_OWNER_REVIEW`: gate manual no bloqueante
 
 - Decisión del propietario: revisión visual/contenido/calidad del PDF exclusivamente manual, `PDF_OWNER_REVIEW`; no bloquea desarrollo ni ACT-04. PAC, Acrobat, NVDA y certificaciones/revisiones automáticas dejan de ser condiciones de aprobación.

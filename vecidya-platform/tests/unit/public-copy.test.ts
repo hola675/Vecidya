@@ -17,7 +17,7 @@ test("public actions keep stable labels while pages stop duplicating literals", 
     diagnosticDiscovery: "Encontrar qué necesito",
     contact: "Contactar",
     services: "Ver servicios",
-    addons: "Ver addons",
+    addons: "Ver complementos",
     licenses: "Ver licencias",
   });
 });

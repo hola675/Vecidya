@@ -1,4 +1,44 @@
+### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
+
+### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)
+
+**Observación de código, sin HTTP ni explotación demostrada:** el JSON-LD de `app/routes/public-business-profile.tsx` construye la URL pública con `origin` de `request.url`, aunque `publicMeta` ya declara el origen canónico. El agente responsable de Mi Vecidya debe verificar en su siguiente checkpoint si corresponde usar el origen oficial compartido, revisar efectos sobre test de slug/perfil y actualizar la cobertura sin tocar permisos ni publicación accidental. No se autoriza que otro agente reescriba el flujo MiniWeb por este hallazgo.
+
+
+### APRENDE-GESTIÓN-03 — educación para decidir, supervisar y mejorar (2026-10-20)
+
+**Implementado como borrador, no certificado ni publicado:** presupuestos y costos reales de herramientas, solicitudes y aprobaciones de compra, continuidad si falla internet o un sistema, límites y supervisión de IA, evaluación de un proyecto digital. El nuevo camino «Dirige y mejora con criterio» usa casos hipotéticos y pasos proporcionales para negocios pequeños, empresas con equipos y grupos con varias sedes. Reconciliado con APRENDE-OPERACIONES-02 ya fusionado en main: 38 artículos (11 originales + 27 borradores) y 7 itinerarios en esta rama. Sin CRM/ERP transaccionales, nuevos pagos, cambios de DB ni obligaciones legales universales.
+
+**Siguiente gate:** revisión editorial de cada borrador por una persona autorizada, fuentes institucionales actuales, integridad/certificación técnica, accesibilidad visual y verificación de enlaces. No retirar `editorialDraft`, no integrar PR ni publicar por inferencia.
+
+
+La primera extensión de operaciones cubre **organización de tareas**, **movimientos y comprobación de inventario**, **capacitación práctica del personal**, **introducción a ERP frente a CRM** y **proyectos digitales piloto con seguimiento y reversión**. Se integra en el sexto itinerario «Trabaja mejor cada día» con cinco guías en estado `editorialDraft: true`. Las fuentes, ejemplos y CTA son orientativos, sin ventas garantizadas; certificación de código, revisión editorial humana y publicación continúan pendientes.
+
+**Brechas aún abiertas — no implementadas:** aprobaciones complejas y compras/proveedores, gestión financiera y presupuestos, continuidad entre sedes, formación especializada y accesibilidad de capacitación, dirección con indicadores consistentes, incidentes de seguridad, gobierno de IA y normas sectoriales por país. Evitar convertir una biblioteca educativa en ERP/CRM o herramientas transaccionales.
+
+## APRENDE — mapa educativo empresarial pendiente (investigación 2026-10-20)
+
+**Audiencia transversal:** negocios pequeños, empresas con departamentos, organizaciones con sedes, grupos con varias marcas o entidades; también profesionales y organizaciones sin fines de lucro cuando las recomendaciones sean aplicables. El aprendizaje se adapta a la complejidad de la tarea, permisos, equipo y datos, sin asumir que todos parten de cero ni que todos necesitan contratar software.
+
+**Ruta incorporada como borrador en rama dependiente:** coordinación de sedes y negocios, permisos y responsables, selección de herramientas y comparación responsable de indicadores. Antes de incorporarla definitivamente se requiere revisión editorial/fuentes y certificación técnica sin interferir con `feat/aprende-editorial-02`.
+
+**Brechas para futuros checkpoints, NO IMPLEMENTADAS:**
+- Operaciones y productividad: documentos compartidos, aprobaciones, tareas, compras, inventario, proyectos y continuidad entre sedes; cuándo hace falta un ERP y cuándo no.
+- Personas y capacitación: incorporación de personal a herramientas, guías internas breves, responsabilidades y adopción sin sobrecargar al equipo.
+- Comunicación y clientes: coherencia de marca y mensajes por sede, atención por turnos, servicio entre canales, medición sin confundir personas con contactos.
+- Datos y decisiones: calidad de registros, definiciones comunes, reportes por equipo/sede, tablero directivo, privacidad y separación de unidades legales.
+- Seguridad y continuidad: inventario de sistemas, MFA, roles, salidas del personal, copias/restauración, proveedores, respuesta a incidentes y normas específicas por país.
+- Inteligencia artificial: usos por función, datos permitidos, supervisión, aprobación de resultados, costos, límites y controles organizativos.
+- Estrategia: cómo priorizar según procesos reales, costos totales, pilotos de tecnología, capacitación, evaluación de resultados y retiro de sistemas.
+
+**Criterio editorial:** una pregunta real como título; resumen en tres ideas; ejemplo cercano de negocio y variación para equipos/sedes; pasos realizables; glosario de términos inevitables; preguntas frecuentes; fuentes oficiales y límites expresos. No hacer afirmaciones de resultados ni presentar ejemplos sintéticos como experiencias reales. Basado en OCDE (2025), Eurostat (2026), NIST CSF 2.0 y guía W3C de escritura clara.
+
 ## CONSOLIDACIÓN-DIAG-2026-10-18 — roadmap de unificación (propuesto, sin cutover)
+
+### APRENDE — próxima certificación editorial de la biblioteca
+
+Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos borradores educativos (hechos, lenguaje sin jerga, fuentes, ejemplos hipotéticos, imágenes móviles y autoría), ejecutar los gates de `TESTING.md`, y retirar `editorialDraft` solo de guías aprobadas individualmente. La eliminación del estado de borrador modifica exposición/indexación y no debe hacerse sin revisión editorial explícita. Realizar seguimiento de temas por sector o jurisdicción (normas de pagos/consentimiento, costos y herramientas regionales) solo con evidencia y contexto; no inventar leyes generales. No es un permiso de publicar o desplegar.
+
 
 **Objetivo:** terminar el diagnóstico público con un único contrato de preguntas, respuestas, rutas, scoring, resumen anónimo e informe identificado, sin conservar dos motores públicos ni borrar evidencia histórica. La ruta pública actual `/diagnostico` utiliza `AnonymousDiagnosticFlow` y el motor V3. QA-03B queda definida en DIAG-CLOSE-01 como identidad destino; ACT raíz conserva su identidad separada durante comparación y rollback. El destino elegido no equivale a paridad certificada ni autoriza el cutover.
 

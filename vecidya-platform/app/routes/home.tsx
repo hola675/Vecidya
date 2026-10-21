@@ -119,18 +119,36 @@ export default function Home() {
           <Link className="text-link" to="/servicios">Ver todos los servicios <span aria-hidden="true">→</span></Link>
         </div>
         <div className="home-services-grid">
-          <ServiceCard icon={publicAssets.icons.serviceStructure} eyebrow="ORDENAR" title="Estructuración">
-            <p>Una ruta clara para ideas, canales y tareas dispersas.</p>
+          <ServiceCard icon={publicAssets.icons.serviceStructure} eyebrow="ORDENAR" title="Presencia & Marca">
+            <p>Identidad y presentación para explicar quién eres y qué ofreces.</p>
+            <Link className="text-link" to="/servicios#estructuracion">Conocer Presencia & Marca <span aria-hidden="true">→</span></Link>
           </ServiceCard>
-          <ServiceCard icon={publicAssets.icons.serviceFormalization} eyebrow="BASE" title="Formalización">
-            <p>Una base más organizada para operar y presentarte mejor.</p>
+          <ServiceCard icon={publicAssets.icons.serviceFormalization} eyebrow="CONVERTIR" title="Web & Conversión">
+            <p>Webs y páginas que ayudan a encontrar tus servicios y cómo contactarte.</p>
+            <Link className="text-link" to="/servicios#formalizacion">Conocer Web & Conversión <span aria-hidden="true">→</span></Link>
           </ServiceCard>
-          <ServiceCard icon={publicAssets.icons.serviceDigitalPresence} eyebrow="EXPLICAR" title="Presencia digital">
-            <p>Información y mensajes que ayudan a entender qué haces.</p>
+          <ServiceCard icon={publicAssets.icons.serviceDigitalPresence} eyebrow="ENCONTRAR" title="Visibilidad & Marketing">
+            <p>Contenido, posicionamiento y campañas para facilitar el descubrimiento.</p>
+            <Link className="text-link" to="/servicios#presencia-digital">Conocer Visibilidad & Marketing <span aria-hidden="true">→</span></Link>
           </ServiceCard>
-          <ServiceCard icon={publicAssets.icons.serviceVisibility} eyebrow="ENCONTRAR" title="Visibilidad">
-            <p>Contenido y estructura para ser encontrado sin promesas vacías.</p>
+          <ServiceCard icon={publicAssets.catalog.services.automatizacion} eyebrow="CAPTAR" title="Sistema Comercial">
+            <p>Una ruta de captación y seguimiento cuando tu negocio la necesita.</p>
+            <Link className="text-link" to="/servicios#automatizacion">Conocer Sistema Comercial <span aria-hidden="true">→</span></Link>
           </ServiceCard>
+        </div>
+      </section>
+
+      <section aria-labelledby="home-learn-contact-title" className="public-v2-section home-guidance-feature">
+        <div className="home-section-heading">
+          <div>
+            <p className="eyebrow">GUÍAS Y AYUDA</p>
+            <h2 id="home-learn-contact-title">Aprende a tu ritmo o consúltanos.</h2>
+          </div>
+          <p className="home-section-heading__note">Explora recursos prácticos o comparte directamente tu necesidad.</p>
+        </div>
+        <div className="public-actions">
+          <Link className="button button--secondary" to="/aprende">Explorar guías de Aprende</Link>
+          <Link className="text-link" to="/contacto">Hablar con Vecidya <span aria-hidden="true">→</span></Link>
         </div>
       </section>
 

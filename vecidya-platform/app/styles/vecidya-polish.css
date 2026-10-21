@@ -338,3 +338,131 @@
 @media (max-width: 480px) {
   :is(.contact-experience-page,.join-experience-page) .public-actions > .button { flex: 1 1 12rem; }
 }
+
+/* UX-WEB-NAV-01: public navigation states, discoverability and tablet menu. */
+.site-header .site-nav > a[aria-current="page"],
+.site-header .site-nav__group:has(.site-nav__panel a[aria-current="page"]) > summary {
+  color: var(--blue);
+  background: #eef4ff;
+}
+.site-footer__nav a:hover,
+.site-footer__nav a[aria-current="page"] {
+  color: var(--blue);
+  text-decoration: underline;
+  text-underline-offset: .22em;
+}
+.site-footer__nav a:focus-visible,
+.site-mobile-menu > summary:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+}
+.site-mobile-menu > summary {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #b8c9df;
+  border-radius: .65rem;
+  padding: .55rem .9rem;
+  list-style: none;
+}
+.site-mobile-menu > summary::-webkit-details-marker { display: none; }
+.site-mobile-menu[open] > summary { color: var(--blue); background: #eef4ff; }
+
+@media (max-width: 960px) {
+  .site-header { align-items: center; }
+  .site-header .site-nav, .site-header__actions { display: none; }
+  .site-mobile-menu { display: block; position: relative; }
+  .site-header .site-mobile-menu nav {
+    display: grid;
+    position: absolute;
+    z-index: 8;
+    top: calc(100% + .75rem);
+    right: 0;
+    width: min(18rem, calc(100vw - 2rem));
+    max-height: min(75vh, 38rem);
+    overflow-y: auto;
+    gap: .25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: .75rem;
+    background: #fff;
+    box-shadow: var(--shadow);
+  }
+  .site-header .site-mobile-menu nav a {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    border-radius: .55rem;
+    padding: .65rem .7rem;
+  }
+  .site-header .site-mobile-menu nav a:hover,
+  .site-header .site-mobile-menu nav a[aria-current="page"] {
+    background: #eef4ff;
+  }
+  .site-header .site-mobile-menu nav .button { margin-top: .35rem; color: #fff; }
+}
+
+
+/* UX-WEB-NAV-02: footer navigation affordance, readability and touch spacing. */
+.site-footer__nav > div {
+  min-width: 0;
+}
+.site-footer__nav > div > strong {
+  margin-bottom: .25rem;
+  font-weight: 800;
+}
+.site-footer__nav a {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  text-decoration-thickness: 1.5px;
+}
+.site-footer__nav a[aria-current="page"] {
+  font-weight: 800;
+}
+.site-footer__nav .site-footer__community-link {
+  justify-content: flex-start;
+  align-items: center;
+}
+@media (max-width: 480px) {
+  .site-footer__nav {
+    column-gap: 1rem !important;
+  }
+}
+
+
+/* UX-PUBLIC-JOURNEYS-03: return path to the specific offer from Contact. */
+.contact-selection__return {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: .35rem;
+  min-height: 44px;
+  padding-block: .35rem;
+  text-decoration: underline;
+  text-underline-offset: .22em;
+  overflow-wrap: anywhere;
+}
+.contact-selection__return:hover {
+  text-decoration-thickness: 2px;
+}
+
+
+/* UX-PUBLIC-JOURNEYS-03: Home previews link straight to canonical service cards. */
+.home-services-grid .public-v2-service-card .text-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: .3rem;
+  margin-top: .5rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  text-underline-offset: .2em;
+}
+.home-services-grid .public-v2-service-card .text-link:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+}

@@ -5,7 +5,12 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [
-    cloudflare({ viteEnvironment: { name: "ssr" } }),
+    cloudflare({
+      persistState: process.env.AUTHZ_D1_PERSIST_TO
+        ? { path: process.env.AUTHZ_D1_PERSIST_TO }
+        : true,
+      viteEnvironment: { name: "ssr" },
+    }),
     tailwindcss(),
     reactRouter(),
   ],

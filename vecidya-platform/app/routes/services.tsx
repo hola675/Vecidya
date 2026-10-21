@@ -23,8 +23,8 @@ const services: ServiceArea[] = [
     icon: publicAssets.catalog.services.organizacion,
     eyebrow: "ORDENAR",
     title: "Presencia & Marca",
-    problem: "La información, las prioridades y los procesos están dispersos.",
-    result: "Una base ordenada para tomar decisiones y saber qué construir primero.",
+    problem: "Tu negocio no tiene identidad, mensajes o presentación consistentes.",
+    result: "Identidad y presentación profesional para que se entienda quién eres y qué ofreces.",
     support: ["Identidad", "Mensajes", "Guía de presencia"],
   },
   {
@@ -32,8 +32,8 @@ const services: ServiceArea[] = [
     icon: publicAssets.icons.serviceFormalization,
     eyebrow: "CONVERTIR",
     title: "Web & Conversión",
-    problem: "Ya hay actividad, pero falta una estructura clara para operar y presentarse.",
-    result: "Una base más responsable para sostener el trabajo y explicar cómo funciona.",
+    problem: "Tus visitantes no encuentran fácilmente tus servicios ni cómo contactarte.",
+    result: "Webs y páginas de captación con información clara y pasos de contacto definidos.",
     support: ["Web", "Landing", "Ecommerce"],
   },
   {
@@ -41,8 +41,8 @@ const services: ServiceArea[] = [
     icon: publicAssets.catalog.services.presenciaDigital,
     eyebrow: "ENCONTRAR",
     title: "Visibilidad & Marketing",
-    problem: "Lo publicado no explica bien qué haces, para quién es ni cuál es el siguiente paso.",
-    result: "Una presencia clara donde quienes te buscan puedan encontrarte y entenderte.",
+    problem: "Tu negocio es difícil de encontrar o sus canales no explican bien lo que ofrece.",
+    result: "Estrategia de contenido, posicionamiento y campañas para mejorar el descubrimiento.",
     support: ["SEO local", "Contenido", "Campañas"],
   },
   {
@@ -50,26 +50,26 @@ const services: ServiceArea[] = [
     icon: publicAssets.catalog.services.automatizacion,
     eyebrow: "CAPTAR",
     title: "Sistema Comercial",
-    problem: "Las tareas repetitivas consumen tiempo y dependen de recordatorios manuales.",
-    result: "Procesos más ordenados para sostener formularios, seguimiento e integraciones.",
+    problem: "Las consultas llegan por varios canales y no existe un proceso de atención definido.",
+    result: "Diseño de captación, atención y seguimiento; la operación CRM corresponde a GHL cuando aplica.",
     support: ["Captación", "Pipeline", "Seguimiento"],
   },
   {
     id: "inteligencia-artificial",
-    icon: publicAssets.catalog.services.inteligenciaArtificial,
+    icon: publicAssets.catalog.services.automatizacion,
     eyebrow: "CONECTAR",
     title: "Automatización & Integraciones",
-    problem: "Quieres atender, clasificar o acompañar conversaciones con más capacidad.",
-    result: "Asistentes conversacionales o de voz definidos para un caso concreto.",
+    problem: "Las tareas repetitivas y las herramientas desconectadas consumen tiempo.",
+    result: "Automatizaciones e integraciones diseñadas para procesos y sistemas concretos.",
     support: ["Workflows", "Integraciones", "Procesos"],
   },
   {
     id: "visibilidad",
-    icon: publicAssets.catalog.services.visibilidad,
+    icon: publicAssets.catalog.services.inteligenciaArtificial,
     eyebrow: "ASISTIR",
     title: "IA Aplicada",
-    problem: "Tu negocio necesita más visibilidad, pero no quieres sumar acciones sin dirección.",
-    result: "Mejores criterios para conectar contenido, campañas y descubrimiento.",
+    problem: "Quieres utilizar IA para apoyar la atención o tareas internas con límites claros.",
+    result: "IA aplicada a la atención y procesos concretos, con supervisión humana.",
     support: ["IA conversacional", "IA de voz", "Asistentes"],
   },
   {
@@ -78,7 +78,7 @@ const services: ServiceArea[] = [
     eyebrow: "DESARROLLAR",
     title: "Desarrollo Empresarial",
     problem: "La operación necesita una mirada más amplia para avanzar con criterio.",
-    result: "Decisiones y capacidades alineadas con el siguiente momento.",
+    result: "Acompañamiento para ordenar prioridades, procesos y próximos pasos.",
     support: ["Diagnóstico", "Planificación", "Acompañamiento"],
   },
 ];
@@ -116,6 +116,7 @@ export default function Services() {
           <div className="services-section-heading">
             <p className="eyebrow">SIETE FAMILIAS</p>
             <h2 id="services-core-title">Del problema concreto a un siguiente paso claro.</h2>
+            <p>Son servicios profesionales con alcance acordado; no todos requieren una licencia.</p>
           </div>
           <div className="services-core-grid">
             {services.map((service) => (
@@ -125,9 +126,10 @@ export default function Services() {
                   <p className="eyebrow">{service.eyebrow}</p>
                 </div>
                 <h3>{service.title}</h3>
-                <p className="services-core-card__result">{service.result}</p>
+                <div className="services-core-card__problem"><span>Tu situación</span><p>{service.problem}</p></div>
+                <div className="services-core-card__result"><span>Qué podemos aportar</span><p>{service.result}</p></div>
                 <p className="services-core-card__support"><span>Ejemplos</span> {service.support.join(" · ")}</p>
-                <Link className="text-link services-core-card__cta" to="/contacto">Solicitar propuesta <span aria-hidden="true">→</span></Link>
+                <Link className="text-link services-core-card__cta" to={`/contacto?interes=servicio-${service.id}`}>Consultar {service.title} <span aria-hidden="true">→</span></Link>
               </article>
             ))}
           </div>

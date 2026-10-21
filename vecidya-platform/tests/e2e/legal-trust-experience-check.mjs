@@ -40,7 +40,7 @@ async function runViewport(width, height) {
   assert(await page.locator('a[href^="mailto:hola@vecidya.com"]').count() >= 2, `${label} no mostró mailto de privacidad.`);
   assert(await page.getByRole("link", { name: "Ver contacto" }).getAttribute("href") === "/contacto", `${label} no enlazó Contacto.`);
   assert(await page.getByRole("link", { name: "Volver al inicio" }).getAttribute("href") === "/", `${label} no enlazó Inicio.`);
-  assert(await page.locator('a[href="/terminos"]').count() === 0, `${label} enlaza términos inexistentes.`);
+  assert(await page.locator('footer a[href="/terminos"]').count() === 1, `${label} falta enlace a la página real de términos.`);
   await page.getByRole("link", { name: "Ver contacto" }).focus();
   assert(await page.getByRole("link", { name: "Ver contacto" }).evaluate((element) => document.activeElement === element), `${label} el enlace no recibe foco.`);
   await assertNoOverflow(page, label);
@@ -57,4 +57,4 @@ for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]])
   await runViewport(width, height);
 }
 
-console.log("PASS: Legal/Trust verificó Privacidad 200, metadata, mailto, footer, ausencia de términos inexistentes, keyboard focus y responsive 1366/768/390/360.");
+console.log("PASS: Legal/Trust verificó Privacidad 200, metadata, mailto, footer, enlace vigente a términos, keyboard focus y responsive 1366/768/390/360.");

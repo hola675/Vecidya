@@ -16,9 +16,9 @@ export function meta({ loaderData }: Route.MetaArgs) {
   if (!loaderData?.article) return publicMeta("Artículo no encontrado", "El artículo que buscas no está disponible.", "/aprende", "noindex, nofollow");
   const { article } = loaderData;
   return [
-    ...publicMeta(article.title, article.intro, `/aprende/${article.slug}`).filter((tag) => !("property" in tag && tag.property === "og:type")),
+    ...publicMeta(article.title, article.intro, `/aprende/${article.slug}`, article.editorialDraft ? "noindex, nofollow" : undefined).filter((tag) => !("property" in tag && tag.property === "og:type")),
     { property: "og:type", content: "article" },
-    { property: "article:author", content: "Yoan Ortiz" },
+    ...(!article.editorialDraft ? [{ property: "article:author", content: "Yoan Ortiz" }] : []),
     { property: "article:section", content: article.category },
   ];
 }
@@ -62,7 +62,7 @@ function renderLearnBlock(block: LearnBlock, key: string) {
       </li>)}</ul>;
     case "summary":
       return <aside className="learn-block learn-block--summary" key={key}>
-        <h3>Acciones recomendadas</h3>
+        <h3>Qué puedes hacer ahora</h3>
         <ul>{block.items.map((item) => <li key={item}>{item}</li>)}</ul>
       </aside>;
     default:
@@ -88,7 +88,15 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
             <p className="eyebrow">{article.category}</p>
             <h1>{article.title}</h1>
             <p className="learn-article-intro">{article.intro}</p>
-            <p className="learn-article-byline">Por <strong>Yoan Ortiz</strong> · Aprende Vecidya</p>
+            {article.editorialDraft ? (
+              <p className="learn-article-byline"><strong>Borrador educativo de Aprende Vecidya</strong> · contenido asistido por IA, pendiente de revisión editorial y autoría</p>
+            ) : (
+              <p className="learn-article-byline">Por <strong>Yoan Ortiz</strong> · Aprende Vecidya</p>
+            )}
+            <aside className="learn-article-quick" aria-label="Resumen sencillo de la guía">
+              <h2>En pocas palabras</h2>
+              <ul>{article.enPocasPalabras.map((point) => <li key={point}>{point}</li>)}</ul>
+            </aside>
           </header>
           <img className="learn-article-image" src={article.image} alt={article.imageAlt} width={900} height={360} />
           <div className="learn-article-layout">

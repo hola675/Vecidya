@@ -1,5 +1,101 @@
 # Pruebas
 
+
+## UX-PUBLIC-JOURNEYS-03 — recorridos públicos y regreso a oferta (2026-10-20)
+
+**TEST versionado / NO RAN.** `tests/unit/commercial-contact.test.ts` amplía la verificación de `resolveCommercialContactReturn`, todos los intereses permitidos, retornos a anclas internas y rechazo de destinos ajenos. `tests/e2e/public-commercial-journeys-check.mjs`, incorporado a `tests/e2e/run-local-e2e.mjs`, cubre en 320/390/768/1366 px: Inicio → Licencias (Cuadra) → Contacto con contexto → ficha; Inicio → tarjeta Web & Conversión → Contacto → ficha; Licencias → Complementos (WhatsApp Business) → Contacto → ficha; e Inicio → Aprende → Diagnóstico o Contacto genérico. Comprueba que el correo/WhatsApp solo preparan mensajes contextualizados, sin enviarlos. Se actualizan aserciones de CTA en `licenses-experience-check.mjs`.
+
+**Gates pendientes:** `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`; ejecutar el nuevo E2E, `licenses-experience-check.mjs`, `public-navigation-a11y-check.mjs`, `addons-experience-check.mjs` y `join-contact-experience-check.mjs` contra Worker local seguro. Realizar comprobación manual de foco por teclado, enlaces externos, controles de 44 px, reflow 200 %, legibilidad y ausencia de overflow. Las pruebas no se han ejecutado en este entorno de edición mediante GitHub; no representan validación de producción o cumplimiento WCAG.
+
+
+
+## UX-WEB-NAV-02 — matriz de navegación pública (2026-10-20)
+
+**TEST versionado / NO RAN.** `tests/unit/public-navigation.test.ts` verifica nombres, destinos canónicos, unicidad, familias del footer y paridad móvil; `tests/unit/public-copy.test.ts` conserva el contrato de etiquetas; `tests/e2e/public-navigation-a11y-check.mjs` cubre header, menú responsive/teclado, footer agrupado, CTA y contexto de Contacto a 320/360/390/768/960/1024/1366 px. Se ajusta `commercial-experience-review-check.mjs` para validar «Sobre nosotros» desde el footer en lugar del submenú Soluciones y reconocer GHL solo como proveedor CRM externo en las páginas que lo explican; `legal-trust-experience-check.mjs` verifica el enlace a la ruta `/terminos` realmente existente.
+
+**Pendiente antes de aceptación:** en un worktree aislado `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build` y `git diff --check`. Contra Worker local con datos seguros, ejecutar `node tests/e2e/public-navigation-a11y-check.mjs`, `node tests/e2e/commercial-experience-review-check.mjs` y `node tests/e2e/addons-experience-check.mjs`. Comprobar foco, contraste WCAG, ampliación 200 %, estados de hover/táctil, externos mailto/WhatsApp y ausencia de overflow en móvil/tablet. Los tests locales no prueban automáticamente producción; para estado publicado se necesita HTTP anónimo fechado y autorización de despliegue aparte.
+
+
+## WEB-PUBLIC-SEO-01 — controles SEO públicos (2026-10-20)
+
+**TEST versionado; NO RAN.** `tests/unit/public-seo.test.ts` comprueba `https://vecidya.com` como origen, validación de rutas relativas, respuesta de `robots.txt`, ausencia de `request.url` en el sitemap y `noindex, follow` para búsquedas/filtros de Aprende. Antes de certificar: `pnpm run typecheck`, `pnpm run build`, `pnpm run test:unit` y `git diff --check` en worktree local aislado. Comprobar vía Worker local `GET /robots.txt`, `GET /sitemap.xml`, `GET /aprende`, `GET /aprende?q=erp` y `GET /aprende?tema=Gestión+y+equipos`; garantizar canonical, meta robots, sitemap con solo artículos aprobados, perfiles publicados y sin origen externo. Los tests de staging/remotos requieren autorización expresa. No se hizo HTTP a producción ni deploy.
+
+
+## APRENDE-GESTIÓN-03 — controles diferidos (2026-10-20)
+
+**NOT RUN por decisión del usuario:** nuevas unitarias en `tests/unit/learn/learn-management-03.test.ts`; el catálogo ahora contiene 38 artículos (11 originales, 27 borradores) y 7 itinerarios; `learn-curriculum.test.ts` conserva aserciones de integridad, los cinco artículos de Operaciones-02 y añade el nuevo total. `learn-content.test.ts` de main ya validaba recuentos dinámicos. Antes de certificar, ejecutar `pnpm run typecheck`, `pnpm run build`, `pnpm run test:unit`, `git diff --check`, E2E de Aprende contra Worker local, comprobación `noindex` y rutas, responsividad/zoom/teclado, URLs institucionales y revisión editorial humana. Sin autorización de deploy o retiro de borradores.
+
+
+## APRENDE-OPERACIONES-02 — evidencia y validación pendiente (2026-10-20)
+
+**TEST versionado / NOT RUN por decisión del usuario.** Se actualizaron `tests/unit/learn/learn-curriculum.test.ts` para certificar el catálogo ampliado de 33 guías, 22 borradores, seis itinerarios, cinco nuevos slugs y sus nueve secciones, y `tests/unit/learn-content.test.ts` para conservar las 11 guías originales sin exigir que toda la biblioteca siga teniendo once artículos. Las comprobaciones de integridad de enlaces internos, ejemplos hipotéticos, imágenes SVG con `<title>`/`<desc>`, fuentes HTTPS y categoría existente permanecen activas.
+
+**Gates para una sesión posterior en worktree aislado:** `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`; contra Worker local, `node tests/e2e/learn-experience-check.mjs` y ampliación futura del E2E para los nuevos artículos, índice, imágenes, etiquetas de borrador, SEO `noindex`, fuentes y navegación 360/390/768/1366. Realizar revisión humana del lenguaje, ejemplos, precisión de inventario/ERP, referencias oficiales, dispositivos de bajo ancho de banda, accesibilidad y aspectos jurídicos por país antes de retirar `editorialDraft`. Sin resultados PASS reportados, sin prueba ni cambio remoto y sin publicación autorizada.
+
+
+## APRENDE-EMPRESAS-01 — pruebas y revisión editorial diferidas (2026-10-20)
+
+**TEST NOT RUN por acuerdo de revisión posterior.** Revalidar desde rama integrada, en worktree aislado: `pnpm run typecheck`, `pnpm run build`, `git diff --check`, prueba de integridad editorial (categoría permitida, slugs únicos, enlaces internos, imágenes existentes, tres ideas clave, marcado de borradores, fuentes verificadas), y `tests/e2e/learn-experience-check.mjs` extendida al quinto itinerario y cuatro nuevas URLs. Revisar SEO: borradores `noindex,nofollow`, sin autoría humana atribuida prematuramente; revisar sitemap de borradores, 360/390/768/1366 px, teclado, contraste, lector de pantalla y claridad con lectores de perfiles diferentes. Validar hipervínculos institucionales y textos sensibles a jurisdicción antes de retirar `editorialDraft`. Sin afirmación de PASS ni cobertura WCAG.
+
+
+## APRENDE-EDITORIAL-02 — controles diferidos de biblioteca (2026-10-20)
+
+**TEST versionado, NOT RUN por instrucción del usuario.** Nueva suite `tests/unit/learn/learn-curriculum.test.ts` incluye cinco controles de integridad: 24 slugs únicos, 11 guías originales + 13 borradores, resúmenes útiles, fuentes oficiales con HTTPS, bloques pedagógicos, referencias entre guías, cuatro itinerarios y existencia de diagramas con metadatos accesibles. Esta suite está escrita, **no ejecutada ni certificada**.
+
+**Gate técnico futuro (en worktree aislado):** `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check` y E2E `tests/e2e/learn-experience-check.mjs` contra Worker local, con búsqueda/filtros de `APRENDE-DISCOVERY-01`, 24 rutas disponibles en preview, 13 noindex/no sitemap, navegación de cuatro caminos y encabezados/FAQ. Validar imagen y diagrama en desktop/tablet/móvil 360/390/768/1366, zoom 200 %, lectura con teclado, foco, contrastes y legibilidad en pantalla pequeña. No publicar borradores automáticamente.
+
+**Gate editorial obligatorio antes de retirar `editorialDraft`:** corrección factual por tema, revisión de lenguaje sencillo por lector de negocio sin experiencia técnica, enlaces/fuentes oficiales vivos, regulación contextual para pagos, privacidad y publicidad; permiso y autoría veraces; evitar métricas/testimonios/promesas inventadas y verificar que los ejemplos sean hipotéticos. La ausencia de QA técnico o editorial impide declarar CERRADA/ONLINE la ampliación.
+
+
+## APRENDE-DISCOVERY-01 — validación expresamente diferida (2026-10-20)
+
+**CODE / NOT RUN.** Se añadieron búsqueda y filtros en `app/routes/knowledge.tsx` y CSS adaptativo en `app/app.css`, sin ejecutar comandos ni crear pruebas en este checkpoint por petición del usuario. Antes de cualquier certificación o publicación: ejecutar `pnpm install --frozen-lockfile`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`, suite focal `learn-experience-check.mjs` contra Worker local; extender casos GET a `/aprende?q=crm`, `?tema=Tecnología+explicada`, búsqueda acentuada, filtro combinado y sin resultados, más teclado/foco y responsive a 360/390/768/1366. Ninguna validación se reporta PASS aquí. No Actions CI ni deploy.
+
+
+## WEB-COMERCIAL-01 — pruebas comerciales (2026-10-20)
+
+**TEST versionado / RAN pendiente:** `tests/unit/commercial-contact.test.ts` verifica allowlist de intereses, rechazo de entrada arbitraria, enlace sin contexto y borradores de canal. `tests/e2e/licenses-experience-check.mjs` amplía regresión a MiniWeb/Vecindario, GHL separado y CTA de las tres licencias; `tests/e2e/web-commercial-contact-check.mjs` comprueba las siete tarjetas de servicios, sus enlaces, selección en Contacto, rechazo de parámetros extraños y explicación de invitaciones a 1366/390 px.
+
+**Gates pendientes de ejecutar en worktree aislado con dependencias:** `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`. Contra Worker local `pnpm run dev` con configuración de prueba, ejecutar `node tests/e2e/licenses-experience-check.mjs` y `node tests/e2e/web-commercial-contact-check.mjs`. Revisar manualmente claridad, foco/teclado, zoom 200 %, contraste, móvil 360/390/768/1366 y enlaces de correo/WhatsApp sin enviar mensajes. Este registro describe cobertura añadida, **no resultados PASS**; no CI Actions, deploy, D1 remota ni emisión real.
+
+## APP-CLIENTE-00A — matriz general de autorización (2026-10-20)
+
+**Resultado: PASS local, sobre el HEAD probado `18745d41469dfdcf4b797162e13cade3747f3209`, base `origin/main=dddd96b838318e2f785a55fef10a877c4f4ff346`.** Ejecución exclusiva `runId=67f2ebf6-b00f-4952-a386-0abb16084c2e`; D1 aislada nueva `C:\Users\Admin\AppData\Local\Temp\kilo\vecidya-app-client-00a\authz-runs\67f2ebf6-b00f-4952-a386-0abb16084c2e`; Worker local IPv4 `127.0.0.1:5184`; secreto de autenticación aleatorio en memoria del proceso. Sin D1 remota/compartida, correo real, deploy ni datos reales.
+
+**Setup y comando del corte:** `pnpm install --frozen-lockfile`; `pnpm wrangler d1 migrations apply DB --local --persist-to <AUTHZ_D1_PERSIST_TO>` (20 migraciones, `0000–0019`); `pnpm run dev -- --host 127.0.0.1 --port <puerto>` con `AUTHZ_D1_PERSIST_TO` y `BETTER_AUTH_SECRET` efímero en el proceso; después `pnpm exec node tests/e2e/organization-authorization-check.mjs` con `BASE_URL=http://127.0.0.1:<puerto>`, `AUTHZ_RUN_ID=<UUID único>` y el mismo `AUTHZ_D1_PERSIST_TO`. No ejecutar procesos concurrentes contra el mismo path; asignar directorio y UUID nuevos para cada repetición. Wrangler migration y test usan explícitamente `--local`, nunca `--remote`.
+
+| Etapa | Duración |
+| --- | ---: |
+| Preflight D1 recién migrada/vacía | 16,826 ms |
+| Fixtures, altas y preparación | 3,928 ms |
+| Licencia de organización inicial | 3,843 ms |
+| Organizaciones y usuarios adicionales | 9,657 ms |
+| Superficie Better Auth | 9,873 ms |
+| Organización activa | 6,181 ms |
+| Sesión stale y membresía retirada | 4,920 ms |
+| Roles, operaciones y licencia/publicación | 21,096 ms |
+| Aislamiento entre organizaciones | 5,126 ms |
+| Ciclo de invitaciones | 13,045 ms |
+| Teardown y readback | 5,122 ms |
+| **Total** | **99,639 ms (1 min 39.639 s)** |
+
+La salida progresiva clasificó **173/173 checks PASS; 0 fallidos, 0 pendientes; `RUN END PASS` en 99,639 ms (1 min 39.639 s)**, con **216 operaciones instrumentadas: 16 D1 y 200 HTTP**. Cobertura: sesión anónima/autenticada, organización ausente/válida/ajena/inexistente, memberships activas/retiradas/stale, owner/admin/member y permisos, operaciones de Better Auth, intents de cambio cross-tenant, invitaciones y restricciones por identidad, `platform_admin` en servicios y publicación de perfil con/sin licencia. Los rechazos de mutación llevan readback D1 de estado/datos para comprobar que no escribieron. Las invitaciones que requieren proveedor de correo local responden el `503` esperado y no crean filas; no se certificó entrega real.
+
+**Coste del harness:** 16 comandos síncronos `wrangler d1 execute`, cada uno con timeout de 45 s; duración acumulada de procesos Wrangler **68,759 ms** (media 4,297.44 ms; mediana 4,131.5 ms), aproximadamente 69% del tiempo total. Los tres más lentos fueron `D1-67` 7,160 ms, `D1-216` 5,115 ms y `D1-167` 4,904 ms. Esto demuestra que iniciar un Wrangler por consulta es un coste material y hace verosímil que contribuya a un timeout; el timeout histórico exacto de 600 s no se reprodujo ni puede atribuirse exclusivamente a ese coste. Se agruparon mutaciones/readbacks y se bajó a 16 llamadas D1 sin retirar aserciones. Se mantiene `spawnSync` acotado porque la matriz completa terminó en 99.639 s y el wrapper identifica timeout, pid/señal/estado del proceso y etiqueta su causa como `HARNESS`; los requests y las etapas muestran duración y progreso.
+
+**Recuperación de Worker local:** no hubo operaciones con timeout. Dos `TypeError` transitorios posteriores a llamadas D1 (`HTTP-32` 17 ms y `HTTP-68` 6 ms) fueron seguidos por respuestas 200 (`HTTP-33` y `HTTP-69`). No hubo timeout D1, aserción fallida ni rechazo de autorización incorrecto. La forma coincide con el conocido `TEST-D1-RESET-001` de Wrangler local con Worker activo; en esta corrida se recuperó y registró, pero no se afirma una causa TCP interna adicional. La mayor petición HTTP fue `HTTP-2`, 12,109 ms, `GET /api/auth/ok` → 200.
+
+**Limpieza verificable:** el teardown inventarió el alcance por run (17 usuarios, 7 organizaciones, 24 invitaciones, 15 IDs de membresía, 1 `platform_member`, 2 perfiles, 1 asignación de servicio, 16 sesiones y 16 cuentas). El inventario antes de limpiar tenía 17 usuarios, 7 organizaciones, 24 invitaciones, 12 memberships vigentes, 1 plataforma, 2 perfiles, 1 servicio, 1 billing account y 1 licencia; el readback posterior dejó en **0** los fixtures de usuario, organización, invitación, membresía, sesión, cuenta, platform member, audit log, perfil, horas, servicio, integración, sitio MiniWeb, billing account, licencia, precio de prueba y verificación. El catálogo de la migración conserva **3 filas base de `license_price`**, verificadas fuera del alcance de cleanup. Una consulta Wrangler de solo lectura posterior confirmó ledger 20 y 0 usuarios, organizaciones, invitaciones, memberships, sesiones, cuentas, platform members, audit logs, perfiles, horas, servicios, integraciones, sitios MiniWeb, billing accounts y licencias (precios seed: 3). Las **diez** D1 efímeras creadas durante el diagnóstico/repeticiones del checkpoint fueron auditadas al cierre: cada una mantiene 20 migraciones y 0 filas en las tablas de fixtures; ninguna se reutilizó como D1 compartida.
+
+Una ejecución exploratoria anterior se invalidó después de detectar que dos procesos habían compartido por error una D1 de prueba; se inventariaron sus IDs sintéticos antes de una limpieza limitada a esa D1, se verificó su ledger/estado y la certificación final se repitió en otra ruta nueva, sin concurrencia. No se modificó ni limpió la D1 del worktree APP-CLIENTE-00.
+
+**Validación focal del cambio:** `tests/unit/auth/authorization-harness-diagnostics.test.ts` **4/4 PASS** (trazas/duración/progreso, redacción de secretos, diagnóstico de proceso y alcance SQL vacío/escapado); `node --check` de ambos scripts; `pnpm run typecheck`; `pnpm run build`; `git diff --check`: **PASS**, sobre el HEAD `18745d41469dfdcf4b797162e13cade3747f3209`. Build termina bien pero advierte que secretos de auth/Gmail requeridos no están configurados en este entorno; el E2E usa secreto Better Auth efímero y no usa correo real. No se ejecutó toda la suite unitaria: la certificación focal se limitó al harness/contratos cambiados, según la regla de alcance en `AGENTS.md`. Typecheck/build se ejecutaron también por cambio de configuración de Vite; no hubo cambios de aplicación.
+
+## APP-CLIENTE-00A — revisión del diagnóstico previo
+
+El timeout histórico de 600 s ya no se reprodujo. El harness anterior no mostraba progreso, hacía consultas D1 una por Wrangler y dejaba el costo dentro de un silencio largo. La versión instrumentada aporta UUID por ejecución, etapas, IDs/duración/timeout por D1 y HTTP, conteo de checks pendientes, redacción de cookies/tokens/passwords, status/pid/señal del proceso Wrangler y separación `HARNESS FAIL` / `AUTHORIZATION FAIL` / `PASS`. El cleanup usa IDs del run y scope de organizaciones/usuarios generadas solo en la D1 nueva, comprueba filas antes/después y falla cerrado si quedan registros. El timeout no se “arregló” reduciendo cobertura.
+
+
 ## UX-COHERENCE-03 — gates de diseño y medición (2026-10-19)
 
 **TEST versionado:** `tests/unit/ux/experience-system.test.ts` prueba `clampPercentage`, `relativeBarWidth`, casos NaN/infinito/negativos, normalización y visualización localizada; presencia de guías en Web/cliente/interno, reutilización del logo, preservación de permisos, origen de métricas, estado sin eventos y responsive. **Inspección estática RAN 22/22 PASS** a través de fuentes conectadas a GitHub; esta comprobación **no ejecuta** `node --test`, TypeScript, React, Cloudflare ni navegador.

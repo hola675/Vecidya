@@ -15,7 +15,12 @@ async function fetchPage(path) {
   const html = await response.text();
   assert(response.status === 200, `${path} devolvió ${response.status}`);
   assert(html.includes("<title") && html.includes('name="description"') && html.includes('rel="canonical"'), `${path} no tiene metadata SEO base.`);
-  assert(!/\bGHL\b|HighLevel/i.test(html), `${path} expone GHL/HighLevel como producto público.`);
+  // La separación comercial se explica en Licencias y Servicios: GHL es externo, no nativo.
+  // Fuera de esas dos páginas públicas no se introduce un nombre de proveedor.
+  if (/\bGHL\b|HighLevel/i.test(html)) {
+    assert(["/licencias", "/servicios"].includes(path), `${path} incluye proveedor CRM fuera de su explicación comercial.`);
+    assert(/extern[ao]|corresponde a GHL/i.test(html), `${path} no diferencia el CRM externo de Vecidya.`);
+  }
   return html;
 }
 
@@ -46,9 +51,10 @@ async function runViewport(width, height) {
   for (const href of ["/vecindario", "/servicios", "/aprende", "/contacto", "/diagnostico"]) {
     assert(await page.locator(`header .site-nav a[href="${href}"]`).count() === 1 || await page.locator(`header .site-nav__panel a[href="${href}"]`).count() === 1, `${label} header no enlaza ${href}.`);
   }
-  for (const href of ["/licencias", "/addons", "/sobre-nosotros"]) {
+  for (const href of ["/licencias", "/servicios", "/addons"]) {
     assert(await page.locator(`header .site-nav__panel a[href="${href}"]`).count() === 1, `${label} menú Soluciones no enlaza ${href}.`);
   }
+  assert(await page.locator('footer .site-footer__nav a[href="/sobre-nosotros"]').count() === 1, `${label} Nosotros no está disponible en footer.`);
   await page.goto(new URL("/aprende", baseUrl).toString(), { waitUntil: "networkidle" });
   for (const href of ["/diagnostico", "/contacto"]) assert(await page.locator(`a[href="${href}"]`).count() > 0, `${label} Aprende no enlaza ${href}.`);
   await page.goto(new URL("/licencias", baseUrl).toString(), { waitUntil: "networkidle" });

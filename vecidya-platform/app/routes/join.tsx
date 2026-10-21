@@ -18,6 +18,7 @@ export default function Join() {
             <p className="eyebrow">ÚNETE</p>
             <h1 id="join-title">Empieza por el siguiente paso que sí tienes claro.</h1>
             <p>No necesitas tener todo resuelto. Elige la entrada que mejor describe dónde estás hoy.</p>
+            <p>La activación de una licencia y el acceso por invitación se coordinan con Vecidya. Esta página no crea cuentas ni procesa pagos.</p>
             <div className="public-actions">
               <a className="button button--primary" href="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</a>
               <a className="button button--secondary" href="/contacto">Hablar con Vecidya</a>
@@ -83,7 +84,7 @@ export default function Join() {
           eyebrow="PRIMER PASO"
           title="No necesitas llegar con todo resuelto."
         >
-          <p>Si aún estás ubicando tu necesidad, empieza por el diagnóstico. Si ya tienes una pregunta, escríbenos.</p>
+          <p>Si aún estás ubicando tu necesidad, empieza por el diagnóstico. Si ya tienes una pregunta, escríbenos. También puedes <a href="/licencias">comparar las licencias</a> antes de contactar.</p>
         </CTASection>
       </main>
     </PublicLayout>

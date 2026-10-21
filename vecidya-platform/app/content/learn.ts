@@ -1,3 +1,7 @@
+import { learnBusinessOperationsArticles } from "./learn-business-operations";
+import { learnOperations02Articles } from "./learn-operations-02";
+import { learnManagement03Articles } from "./learn-management-03";
+
 export type LearnBlock =
   | { type: "paragraph"; text: string }
   | { type: "list"; items: string[] }
@@ -27,6 +31,8 @@ export type LearnArticle = {
   image: string;
   imageAlt: string;
   relatedSlugs?: string[];
+  enPocasPalabras: [string, string, string];
+  editorialDraft?: boolean;
   cta: { label: string; to: string; copy: string };
   sections: { heading: string; paragraphs: string[]; bullets?: string[]; blocks?: LearnBlock[] }[];
 };
@@ -37,6 +43,7 @@ export const learnCategories = [
   { name: "Inteligencia Artificial", description: "Usos reales de IA para negocios y equipos." },
   { name: "CRM y clientes", description: "Contactos, oportunidades y conversaciones con contexto." },
   { name: "Tecnología explicada", description: "Conceptos digitales explicados sin jerga." },
+  { name: "Gestión y equipos", description: "Coordinar personas, sedes, información y varios negocios sin perder claridad." },
 ] as const;
 
 export const learnArticles: LearnArticle[] = [
@@ -44,8 +51,9 @@ export const learnArticles: LearnArticle[] = [
     slug: "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
     category: "CRM y clientes",
     title: "¿Qué es un CRM y por qué un negocio pequeño puede necesitarlo?",
-    intro: "Un CRM es una forma de organizar contactos y conversaciones para saber qué necesita cada persona y cuál es el siguiente paso, sin depender solo de la memoria.",
-    excerpt: "Aprende qué información organizar, cuándo basta una hoja de cálculo y cómo crear una rutina de seguimiento proporcional.",
+    intro: "¿Te ha pasado que prometes responderle a alguien y luego no encuentras su mensaje? Un CRM ayuda a organizar consultas y próximos pasos, pero una lista sencilla puede bastar para empezar.",
+    excerpt: "Descubre cómo recordar pendientes, cuándo basta una tabla y en qué momento tiene sentido usar un CRM.",
+    enPocasPalabras: ["Empieza con una lista sencilla si todavía puedes llevar bien tus consultas.","Anota qué necesita la persona y qué harás después.","Un CRM ayuda cuando coordinar el seguimiento se vuelve difícil."],
     image: "/assets/learn/diagram-crm.svg",
     imageAlt: "Una consulta se registra con contexto y puede continuar, retomarse después o cerrarse, según lo que ocurra",
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no es un CRM ni crea una base de contactos." },
@@ -195,8 +203,9 @@ export const learnArticles: LearnArticle[] = [
     slug: "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
     category: "Inteligencia Artificial",
     title: "¿Qué puede hacer una inteligencia artificial por un negocio?",
-    intro: "La inteligencia artificial puede apoyar tareas concretas, como preparar un borrador o clasificar consultas. Su utilidad depende de la información disponible, los límites definidos y la revisión humana; no es una respuesta automática para todo negocio.",
-    excerpt: "Distingue IA de automatización, evalúa usos cotidianos y aprende a probar un asistente con límites claros.",
+    intro: "¿Te gustaría recibir ayuda para escribir un mensaje o ordenar preguntas repetidas? La inteligencia artificial puede preparar borradores, pero hay que comprobar lo que dice.",
+    excerpt: "Conoce tareas pequeñas para probar IA, cómo evitar errores y qué decisiones conviene mantener en manos humanas.",
+    enPocasPalabras: ["La IA puede preparar borradores, pero también puede equivocarse.","Prueba primero una tarea pequeña y fácil de revisar.","No compartas datos privados ni dejes decisiones importantes sin supervisión."],
     image: "/assets/learn/diagram-ai.svg",
     imageAlt: "Una consulta se convierte en un borrador de IA que una persona revisa antes de responder o transferir",
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos y prioridades digitales; no instala asistentes ni activa herramientas de IA." },
@@ -365,8 +374,9 @@ export const learnArticles: LearnArticle[] = [
     slug: "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
     category: "Negocios digitales",
     title: "Antes de hacer publicidad, organiza tu presencia digital",
-    intro: "La presencia digital es el conjunto de lugares y señales donde una persona puede conocer un negocio, entender qué ofrece y decidir cómo acercarse. Organizarla puede ayudar a ofrecer información clara, pero no obliga a anunciarse ni garantiza descubrimiento o ventas.",
-    excerpt: "Aclara tu oferta, ordena los canales, comprueba el contacto y decide con evidencia si la publicidad tiene sentido.",
+    intro: "Antes de pagar anuncios, hazte una pregunta: si alguien llega hoy a tu perfil, ¿entiende qué haces y cómo contactarte? Empieza por ordenar esa información.",
+    excerpt: "Revisa tus datos, canales y contacto antes de decidir si vale la pena invertir en publicidad.",
+    enPocasPalabras: ["Antes de pagar anuncios, explica claramente qué ofreces.","Comprueba horarios, canales y datos en todos tus perfiles.","La publicidad no arregla una página confusa o difícil de contactar."],
     image: "/assets/learn/diagram-presence-digital.svg",
     imageAlt: "Tres canales digitales —sitio web, perfil de empresa y redes sociales— muestran de forma coherente una oferta, una zona de atención y opciones de contacto",
     cta: { label: "Conocer el Diagnóstico", to: "/diagnostico", copy: "Si quieres ordenar prioridades, el Diagnóstico de presencia digital puede servir como punto de partida; no promete visibilidad, clientes ni resultados comerciales." },
@@ -647,8 +657,9 @@ export const learnArticles: LearnArticle[] = [
     slug: "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio",
     category: "Automatización",
     title: "Automatizaciones: ahorrar tiempo sin complicar tu negocio",
-    intro: "Una automatización bien delimitada ejecuta pasos repetibles cuando ocurre algo y se cumplen ciertas condiciones. Aprenderás a elegir un proceso, probarlo y supervisarlo sin delegar decisiones que requieren criterio humano.",
-    excerpt: "Aprende a identificar, documentar, probar y supervisar automatizaciones sencillas, con ejemplos operativos y comerciales.",
+    intro: "¿Repites la misma tarea todos los días? Algunas se pueden hacer de forma automática. Antes de intentarlo, conviene tener claros los pasos y los posibles errores.",
+    excerpt: "Aprende a escoger una tarea repetitiva, probarla sin riesgos y mantener una forma de detenerla.",
+    enPocasPalabras: ["Automatiza una tarea repetitiva que ya sabes hacer manualmente.","Decide qué la inicia y cuándo debe intervenir alguien.","Prueba los errores posibles y conserva una forma de detenerla."],
     image: "/assets/learn/diagram-automation.svg",
     imageAlt: "Flujo de automatización: un evento se evalúa mediante una condición y puede ejecutar una acción o pasar a revisión humana si no se cumple",
     cta: { label: "Consultar servicios", to: "/servicios", copy: "La implementación de una automatización personalizada puede formar parte de un servicio profesional; su alcance debe confirmarse previamente." },
@@ -856,8 +867,9 @@ export const learnArticles: LearnArticle[] = [
     slug: "dominio-hosting-sitio-web-como-funcionan",
     category: "Tecnología explicada",
     title: "Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos",
-    intro: "Un dominio es el nombre que una persona escribe; el hosting mantiene disponible el sitio, y el DNS ayuda a encontrar el servidor. Son piezas distintas aunque un proveedor las ofrezca juntas.",
-    excerpt: "Entiende qué registrar, dónde se aloja una web, cómo se conecta con DNS y qué debes conservar para no perder el control.",
+    intro: "Una persona escribe la dirección de tu negocio y aparece tu página. ¿Cómo sucede eso? Te explicamos el dominio, el alojamiento y la conexión entre ambos sin enredos.",
+    excerpt: "Entiende las piezas de una web y qué accesos conviene conservar a tu nombre.",
+    enPocasPalabras: ["El dominio es la dirección que escriben las personas; el sitio es lo que ven.","El alojamiento guarda la web y el DNS conecta la dirección con el servidor.","Conserva el acceso y las fechas de renovación de cada servicio."],
     image: "/assets/learn/diagram-domain-dns-hosting.svg",
     imageAlt: "Recorrido de una persona al escribir una dirección: el navegador puede consultar DNS si no tiene una respuesta vigente en caché, conecta con el servidor web y recibe la página solicitada.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
@@ -1085,8 +1097,9 @@ export const learnArticles: LearnArticle[] = [
     slug: "https-certificados-tls-que-protegen-y-que-no",
     category: "Tecnología explicada",
     title: "HTTPS y certificados TLS: qué protegen y qué no",
-    intro: "HTTPS protege el intercambio de datos entre el navegador y un sitio, pero no certifica que el negocio detrás de la página sea honesto. Aprende qué significa el candado, qué hacer ante un aviso y cómo revisar tu propia web.",
-    excerpt: "Entiende HTTPS y TLS, identifica errores de certificado y comprueba que la web de tu negocio proteja correctamente a sus visitantes.",
+    intro: "Ves un candado junto a la dirección de una página. ¿Eso quiere decir que la tienda es confiable? No necesariamente. Aprende qué protege la conexión y qué no.",
+    excerpt: "Descubre qué significa HTTPS, qué hacer ante una advertencia y cómo revisar una web.",
+    enPocasPalabras: ["HTTPS protege la comunicación entre tu navegador y una página.","Un candado no garantiza que el vendedor sea de confianza.","Revisa cualquier aviso de seguridad antes de introducir datos."],
     image: "/assets/learn/diagram-domain-dns-hosting.svg",
     imageAlt: "Una persona navega por una conexión HTTPS hacia un servidor web; TLS protege el trayecto, pero no verifica la honestidad del negocio.",
     relatedSlugs: ["dominio-hosting-sitio-web-como-funcionan", "antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
@@ -1185,8 +1198,9 @@ export const learnArticles: LearnArticle[] = [
     slug: "analitica-web-que-medir-en-tu-negocio",
     category: "Tecnología explicada",
     title: "Analítica web básica: qué debes medir en tu negocio",
-    intro: "La analítica web convierte señales de uso de un sitio en información para decidir qué revisar. No es una lista de visitas: primero define qué acción importa y cómo medirla sin confundir actividad con resultados.",
-    excerpt: "Distingue visitas, interacciones y conversiones; elige indicadores útiles para un negocio pequeño y evita errores de interpretación y privacidad.",
+    intro: "Tu página recibió visitas, pero ¿alguien preguntó por un servicio? Los números sirven cuando ayudan a responder una pregunta concreta, no cuando solo se ven grandes.",
+    excerpt: "Aprende a distinguir visitas de consultas y a revisar datos sin sacar conclusiones apresuradas.",
+    enPocasPalabras: ["Una visita no es una consulta ni una venta.","Elige una acción útil y comprueba si tu página facilita realizarla.","Mide lo necesario y evita conclusiones basadas en pocos datos."],
     image: "/assets/learn/diagram-analytics.svg",
     imageAlt: "Diagrama que muestra cómo una parte de las visitas realiza interacciones y una parte de esas interacciones completa una conversión definida por el negocio.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital", "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio"],
@@ -1297,8 +1311,9 @@ export const learnArticles: LearnArticle[] = [
     slug: "conectar-herramientas-digitales-sin-complicar-tu-negocio",
     category: "Tecnología explicada",
     title: "Cómo conectar herramientas digitales sin complicar tu negocio",
-    intro: "Integrar herramientas significa hacer que compartan información o coordinen una tarea. Antes de conectar aplicaciones, aclara qué dato se mueve, quién lo mantiene y cómo corregir errores o deshacer el flujo.",
-    excerpt: "Aprende qué son API, webhooks y CSV, cuándo sirven y qué controles reducen duplicados, pérdidas de información y sorpresas entre plataformas.",
+    intro: "Una persona llena un formulario, pero su mensaje se pierde antes de llegar a quien debe responder. Conectar herramientas puede ayudar, si sabes qué información pasa de un lugar a otro.",
+    excerpt: "Entiende cómo comparten datos las aplicaciones y qué comprobar antes de conectarlas.",
+    enPocasPalabras: ["Conecta herramientas solo cuando resuelvas un problema concreto.","Decide dónde está la información correcta y qué pasa si falla la conexión.","Prueba con ejemplos antes de usar datos reales."],
     image: "/assets/learn/diagram-integrations.svg",
     imageAlt: "Dos herramientas intercambian solo los datos acordados mediante una conexión revisada, con una persona que verifica duplicados y errores.",
     relatedSlugs: ["automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio", "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"],
@@ -1401,8 +1416,9 @@ export const learnArticles: LearnArticle[] = [
     slug: "perfil-empresa-google-completar-y-mantener-actualizado",
     category: "Negocios digitales",
     title: "Tu Perfil de Empresa en Google: qué completar y mantener actualizado",
-    intro: "Un perfil puede ayudar a las personas a consultar información de un negocio en Google Search y Maps. Su utilidad empieza por datos correctos y actuales; tenerlo no garantiza posiciones, visitas ni ventas.",
-    excerpt: "Revisa la elegibilidad, los datos, fotos, reseñas y actualizaciones de tu perfil sin prometer resultados de búsqueda.",
+    intro: "Alguien busca un negocio como el tuyo y quiere comprobar horario, lugar y contacto. Una ficha correcta puede ayudarle, pero antes debes saber si tu actividad puede tenerla.",
+    excerpt: "Revisa quién puede crear la ficha y cómo mantener datos, fotos y horarios verdaderos.",
+    enPocasPalabras: ["Comprueba primero si tu negocio puede tener un Perfil de Empresa en Google.","Si puedes crearlo, revisa horario, contacto y fotos reales.","Mantenerlo actualizado orienta a las personas, pero no garantiza visitas."],
     image: "/assets/learn/diagram-presence-digital.svg",
     imageAlt: "El Perfil de Empresa forma parte de una presencia coherente junto con el sitio web y otros canales digitales.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
@@ -1488,8 +1504,9 @@ export const learnArticles: LearnArticle[] = [
     slug: "organizar-consultas-mensajes-llamadas-formularios",
     category: "CRM y clientes",
     title: "Cómo organizar mensajes, llamadas y formularios sin perder consultas",
-    intro: "Un registro sencillo ayuda a recordar quién responde las consultas de mensajes, llamadas y formularios y cuál es el siguiente paso.",
-    excerpt: "Organiza consultas de mensajes, llamadas y formularios con contexto, responsables y próximos pasos; distingue la atención de una promoción comercial.",
+    intro: "Te escriben por una red, te llaman y después alguien completa un formulario. ¿Cómo recuerdas a quién debes responder? Empieza con una lista de pendientes clara.",
+    excerpt: "Organiza mensajes, llamadas y formularios sin perder el siguiente paso.",
+    enPocasPalabras: ["Reúne las consultas pendientes en un solo lugar.","Deja claro quién responde y qué hará después.","Atender una solicitud no da permiso automático para enviar publicidad."],
     image: "/assets/learn/diagram-crm.svg",
     imageAlt: "Una consulta se registra, recibe un responsable y un próximo paso hasta resolverse o cerrarse.",
     relatedSlugs: ["que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"],
@@ -1570,8 +1587,9 @@ export const learnArticles: LearnArticle[] = [
     slug: "preparar-respuestas-publicaciones-ia-sin-perder-control",
     category: "Inteligencia Artificial",
     title: "Cómo utilizar IA para preparar respuestas y publicaciones sin perder el control",
-    intro: "La IA puede proponer un borrador, pero no conoce tus datos vigentes por defecto. Delimita la tarea, comparte contexto autorizado y revisa antes de usar el texto.",
-    excerpt: "Aprende a dar instrucciones claras a una IA, proteger información sensible y revisar dos tipos de borrador antes de responder o publicar.",
+    intro: "¿Quieres ayuda para responder un mensaje o escribir una publicación? La IA puede preparar el primer borrador. La información real y la decisión de publicarlo siguen siendo tuyas.",
+    excerpt: "Aprende a pedir un borrador útil, proteger datos y revisar cada frase antes de enviarla.",
+    enPocasPalabras: ["La IA prepara borradores; tú confirmas los datos.","Dile qué información puede utilizar y qué no debe inventar.","Revisa y aprueba todo mensaje antes de enviarlo o publicarlo."],
     image: "/assets/learn/diagram-ai.svg",
     imageAlt: "La IA prepara un borrador que una persona revisa antes de responder o publicar.",
     relatedSlugs: ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio"],
@@ -1650,7 +1668,2430 @@ export const learnArticles: LearnArticle[] = [
       },
     ],
   },
+  {
+    "slug": "como-empezar-a-digitalizar-un-negocio-desde-cero",
+    "category": "Negocios digitales",
+    "title": "Quiero llevar mi negocio a internet: ¿por dónde empiezo?",
+    "intro": "No necesitas comprar cinco programas ni abrir todas las redes. Empieza por entender qué haces hoy, qué te cuesta trabajo y qué podrías resolver con una herramienta sencilla.",
+    "excerpt": "Una ruta práctica para dar tus primeros pasos digitales sin gastar por impulso.",
+    "enPocasPalabras": [
+      "Digitalizar no es comprar aplicaciones: es trabajar mejor con ayuda de ellas.",
+      "Elige un problema real antes de decidir qué herramienta necesitas.",
+      "Empieza con una mejora pequeña que puedas mantener."
+    ],
+    "image": "/assets/learn/diagram-como-empezar.svg",
+    "imageAlt": "Problema real; Prueba pequeña; Mejora útil",
+    "relatedSlugs": [
+      "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+      "dominio-hosting-sitio-web-como-funcionan"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Revisar mi situación",
+      "to": "/diagnostico",
+      "copy": "Puedes analizar tu punto de partida antes de contratar herramientas."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Anotas pedidos en papeles, contestas mensajes desde tu teléfono y publicas cuando tienes un rato. Te dicen que debes digitalizarte, pero nadie te explica qué significa.",
+          "Digitalizar es usar herramientas para hacer más fácil una parte del trabajo: ordenar pedidos, encontrar documentos, compartir horarios o responder una pregunta."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Herramienta digital",
+                "definition": "Un recurso como el correo, una hoja de cálculo, una página web o una aplicación que te ayuda con una tarea."
+              },
+              {
+                "term": "Proceso",
+                "definition": "Los pasos que sigues para hacer un trabajo, desde recibir una solicitud hasta resolverla."
+              },
+              {
+                "term": "Mejora útil",
+                "definition": "Algo que reduce confusión o tiempo perdido y que puedes mantener sin depender de un experto."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza por la opción más sencilla que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Elige una dificultad",
+                "detail": "Anota algo que se repite: pedidos extraviados, horarios desactualizados o tareas olvidadas."
+              },
+              {
+                "title": "Prueba una solución sencilla",
+                "detail": "Empieza con una lista, un calendario compartido o una ficha pública. No necesitas todo a la vez."
+              },
+              {
+                "title": "Revisa qué cambió",
+                "detail": "Comprueba si ahora encuentras mejor la información o resuelves más fácilmente esa tarea."
+              },
+              {
+                "title": "Conserva lo que funciona",
+                "detail": "Explica el método a quien trabaje contigo antes de añadir otra herramienta."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo sencillo: una peluquería con horarios confusos",
+        "paragraphs": [
+          "Situación imaginaria que sirve para practicar, no un caso real ni un resultado garantizado."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una peluquería con horarios confusos",
+            "hypothetical": true,
+            "context": "Una dueña responde repetidas veces cuándo abre y cómo pedir cita.",
+            "problem": "Algunas personas tienen el horario antiguo y otras escriben cuando el negocio está cerrado.",
+            "approach": "Actualiza el horario público y acuerda un único canal de consultas antes de pagar por reservas automáticas.",
+            "actions": [
+              "Anota el horario real y cuándo responde mensajes.",
+              "Corrige el mismo dato en todos los perfiles que usa.",
+              "Prueba con una amiga si encuentra el horario correcto."
+            ],
+            "lesson": "Lo digital empieza por información clara, no por una compra."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No busques hacerlo perfecto desde el primer día. Evitar estos tropiezos ya es avanzar."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Abrir perfiles que luego no podrás atender.",
+              "Pagar una aplicación sin saber qué problema resuelve.",
+              "Confiar en que una herramienta hará el trabajo sin responsables."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Digitalizar no es comprar aplicaciones: es trabajar mejor con ayuda de ellas.",
+              "Elige un problema real antes de decidir qué herramienta necesitas.",
+              "Empieza con una mejora pequeña que puedas mantener."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Tengo que aprender programación?",
+                "answer": "No. La mayoría de las tareas básicas se realizan con herramientas comunes y hábitos de organización."
+              },
+              {
+                "question": "¿Necesito una página web desde el primer día?",
+                "answer": "No siempre. Primero define qué necesita encontrar una persona interesada y cómo mantener esa información."
+              },
+              {
+                "question": "¿Qué hago si solo tengo un teléfono?",
+                "answer": "Puedes empezar con tareas sencillas desde el móvil. Protege el acceso y haz copias de tus archivos importantes."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas referencias aportan orientación general. Si una decisión afecta leyes, dinero o datos delicados, verifica las obligaciones de tu país y sector."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Competencias digitales — Unión Internacional de Telecomunicaciones",
+                "url": "https://www.itu.int/itu-d/reports/statistics/2025/11/17/gcr-2025-chapter-5/",
+                "scope": "Explica áreas de habilidades que van más allá de saber abrir aplicaciones."
+              },
+              {
+                "label": "Marco DigComp — Comisión Europea",
+                "url": "https://esco.ec.europa.eu/en/about-esco/escopedia/escopedia/european-digital-competence-framework-citizens-digcomp",
+                "scope": "Organiza las habilidades para buscar información, comunicarse, crear, protegerse y resolver problemas."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "que-necesita-un-negocio-para-usar-internet-y-herramientas",
+    "category": "Tecnología explicada",
+    "title": "¿Qué equipo e internet necesitas para trabajar en digital?",
+    "intro": "¿Hace falta una computadora cara? ¿Cuántas aplicaciones deberías instalar? Antes de gastar, revisa qué tareas harás y qué conexión tienes.",
+    "excerpt": "Aprende a elegir teléfono, computadora, conexión y herramientas según tareas reales.",
+    "enPocasPalabras": [
+      "Empieza con el dispositivo que permite hacer bien tu trabajo.",
+      "Una conexión confiable importa más que tener muchos programas.",
+      "Protege el equipo y prepara una alternativa cuando se vaya internet."
+    ],
+    "image": "/assets/learn/diagram-que-necesita.svg",
+    "imageAlt": "Tu tarea; Equipo suficiente; Plan alternativo",
+    "relatedSlugs": [
+      "como-empezar-a-digitalizar-un-negocio-desde-cero",
+      "dominio-hosting-sitio-web-como-funcionan"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Conocer los primeros pasos",
+      "to": "/aprende",
+      "copy": "Puedes seguir con otras guías básicas antes de invertir en tecnología."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Un pequeño taller usa un teléfono para mensajes y fotos de sus trabajos. Una persona le recomienda comprar un equipo costoso para 'ponerse al día'.",
+          "La pregunta útil no es cuál es el equipo más moderno, sino qué tareas necesitas cumplir: recibir pedidos, escribir presupuestos, guardar archivos o atender videollamadas."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Dispositivo",
+                "definition": "El teléfono, tableta o computadora con el que realizas una tarea."
+              },
+              {
+                "term": "Conexión",
+                "definition": "La forma de acceder a internet, como una red móvil o una conexión fija."
+              },
+              {
+                "term": "Aplicación",
+                "definition": "Un programa para una tarea concreta. Instalar más no significa trabajar mejor."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza por la opción más sencilla que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Anota las tareas",
+                "detail": "Separa mensajes, fotos, facturas, tablas y reuniones. Mira cuál cuesta más hacer."
+              },
+              {
+                "title": "Revisa lo que tienes",
+                "detail": "Comprueba si el equipo actual es suficiente y recibe actualizaciones de seguridad."
+              },
+              {
+                "title": "Prueba la conexión",
+                "detail": "Verifica si envías archivos o atiendes llamadas de manera estable en tu lugar de trabajo."
+              },
+              {
+                "title": "Prepara una alternativa",
+                "detail": "Decide qué datos necesitas sin conexión y cómo atenderás cuando falle internet."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo sencillo: una costurera que trabaja desde el móvil",
+        "paragraphs": [
+          "Situación imaginaria que sirve para practicar, no un caso real ni un resultado garantizado."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una costurera que trabaja desde el móvil",
+            "hypothetical": true,
+            "context": "Recibe fotos de prendas, confirma trabajos y anota medidas autorizadas.",
+            "problem": "Las fotos se mezclan con archivos personales y cuesta recuperar una solicitud.",
+            "approach": "Antes de comprar computadora, crea carpetas de trabajo y una lista de pedidos sin datos innecesarios.",
+            "actions": [
+              "Separa carpetas por mes o pedido.",
+              "Anota el estado de cada encargo en una lista protegida.",
+              "Comprueba si puede encontrar un pedido antiguo sin buscar en todas sus conversaciones."
+            ],
+            "lesson": "Organizar lo que ya tiene puede aportar más que comprar otro equipo."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No busques hacerlo perfecto desde el primer día. Evitar estos tropiezos ya es avanzar."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Elegir equipos por moda en vez de necesidades.",
+              "Compartir el teléfono sin bloqueo ni cuentas separadas.",
+              "Depender de una sola conexión para todas las tareas críticas."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Empieza con el dispositivo que permite hacer bien tu trabajo.",
+              "Una conexión confiable importa más que tener muchos programas.",
+              "Protege el equipo y prepara una alternativa cuando se vaya internet."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Un teléfono es suficiente para empezar?",
+                "answer": "En muchos casos sí, si puedes realizar las tareas con claridad y seguridad."
+              },
+              {
+                "question": "¿Siempre necesito internet?",
+                "answer": "Algunas tareas funcionan sin conexión, pero enviar datos o sincronizarlos requiere conectividad."
+              },
+              {
+                "question": "¿Qué pasa si se corta la electricidad?",
+                "answer": "Ten un plan realista para conservar información y avisar a quienes esperan respuesta, sin prometer disponibilidad constante."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas referencias aportan orientación general. Si una decisión afecta leyes, dinero o datos delicados, verifica las obligaciones de tu país y sector."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Competencias digitales — UIT",
+                "url": "https://www.itu.int/itu-d/reports/statistics/2025/11/17/gcr-2025-chapter-5/",
+                "scope": "Explica por qué usar internet no implica dominar todas las habilidades digitales."
+              },
+              {
+                "label": "Protección de equipos — FTC",
+                "url": "https://www.ftc.gov/es/guia-para-negocios/protegiendo-pequenos-negocios/ciberseguridad",
+                "scope": "Recomienda actualizaciones, bloqueo y protección de dispositivos de trabajo."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "correo-para-mi-negocio-como-usarlo-sin-perder-mensajes",
+    "category": "Tecnología explicada",
+    "title": "¿Cómo usar el correo de tu negocio sin perder mensajes?",
+    "intro": "Un correo es mucho más que una dirección para registrarte en aplicaciones. También puede servir para recibir documentos, dar seguimiento y mantener las cuentas de tu negocio bajo control.",
+    "excerpt": "Organiza el correo y las cuentas de trabajo con hábitos fáciles de recordar.",
+    "enPocasPalabras": [
+      "Usa un correo que controles para las cuentas importantes del negocio.",
+      "Escribe asuntos claros y guarda los documentos donde puedas encontrarlos.",
+      "No compartas contraseñas: da acceso a cada persona cuando el servicio lo permita."
+    ],
+    "image": "/assets/learn/diagram-correo-para.svg",
+    "imageAlt": "Cuenta propia; Mensajes claros; Acceso seguro",
+    "relatedSlugs": [
+      "como-empezar-a-digitalizar-un-negocio-desde-cero",
+      "como-proteger-cuentas-contrasenas-estafas-negocio"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Seguir aprendiendo",
+      "to": "/aprende",
+      "copy": "Puedes continuar con seguridad y organización de archivos."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Un cliente envía un documento importante. Tres días después no lo encuentras porque quedó entre promociones y mensajes de aplicaciones.",
+          "Un correo organizado te ayuda a responder y guardar pruebas de acuerdos. No hace falta escribir de manera complicada."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Correo electrónico",
+                "definition": "Un mensaje que llega a una dirección y permite adjuntar archivos."
+              },
+              {
+                "term": "Asunto",
+                "definition": "La frase breve que explica de qué trata el mensaje: por ejemplo, «Presupuesto de reparación — bicicleta»."
+              },
+              {
+                "term": "Cuenta de recuperación",
+                "definition": "Una forma segura de recuperar acceso si olvidas la contraseña de la cuenta principal."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza por la opción más sencilla que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Separa lo importante",
+                "detail": "Usa etiquetas o carpetas para consultas, proveedores y documentos."
+              },
+              {
+                "title": "Escribe asuntos útiles",
+                "detail": "Evita asuntos como «Hola». Nombra la tarea o el pedido."
+              },
+              {
+                "title": "Responde con un paso claro",
+                "detail": "Indica qué recibiste y qué información falta, sin prometer fechas que no puedas cumplir."
+              },
+              {
+                "title": "Protege la cuenta",
+                "detail": "Activa verificación adicional, revisa recuperación y conserva el acceso a nombre del negocio."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo sencillo: un proveedor envió dos presupuestos",
+        "paragraphs": [
+          "Situación imaginaria que sirve para practicar, no un caso real ni un resultado garantizado."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Un proveedor envió dos presupuestos",
+            "hypothetical": true,
+            "context": "Una tienda compara dos propuestas de compra.",
+            "problem": "Los correos quedaron mezclados y se envía por error una versión antigua.",
+            "approach": "Se organiza el hilo por proveedor y se guarda la propuesta vigente en una carpeta con fecha.",
+            "actions": [
+              "Busca por el nombre del proveedor y por el asunto.",
+              "Identifica la propuesta correcta por su fecha.",
+              "Responde en el mismo hilo confirmando cuál se está revisando."
+            ],
+            "lesson": "Un asunto y una carpeta pueden evitar errores costosos."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No busques hacerlo perfecto desde el primer día. Evitar estos tropiezos ya es avanzar."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Dar la contraseña a otra persona por mensaje.",
+              "Usar el correo privado de alguien como único dueño de la cuenta del negocio.",
+              "Abrir enlaces urgentes sin comprobar quién los envió."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Usa un correo que controles para las cuentas importantes del negocio.",
+              "Escribe asuntos claros y guarda los documentos donde puedas encontrarlos.",
+              "No compartas contraseñas: da acceso a cada persona cuando el servicio lo permita."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Necesito un correo con dominio propio?",
+                "answer": "No para dar tus primeros pasos. Puede ser útil más adelante, pero lo importante es controlar y proteger la cuenta."
+              },
+              {
+                "question": "¿Qué hago si recibo mensajes sospechosos?",
+                "answer": "No abras enlaces por presión. Contacta al proveedor por una dirección que ya conocías."
+              },
+              {
+                "question": "¿Puedo enviar promociones a toda mi libreta?",
+                "answer": "No asumas que una dirección de contacto es permiso para campañas; consulta las reglas aplicables y las preferencias de las personas."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas referencias aportan orientación general. Si una decisión afecta leyes, dinero o datos delicados, verifica las obligaciones de tu país y sector."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Protección frente al fraude — CISA",
+                "url": "https://www.cisa.gov/secure-our-world",
+                "scope": "Ayuda a reconocer mensajes engañosos y proteger el acceso a cuentas."
+              },
+              {
+                "label": "Ciberseguridad para pequeños negocios — FTC",
+                "url": "https://www.ftc.gov/es/guia-para-negocios/protegiendo-pequenos-negocios/ciberseguridad",
+                "scope": "Consejos para proteger correo y datos de la empresa."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "como-proteger-cuentas-contrasenas-estafas-negocio",
+    "category": "Tecnología explicada",
+    "title": "¿Cómo evitar que te roben una cuenta o te engañen por mensaje?",
+    "intro": "Recibes un aviso urgente: «Tu cuenta será bloqueada, entra aquí». Antes de pulsar el enlace, aprende a reconocer señales de engaño y a proteger las cuentas de tu negocio.",
+    "excerpt": "Contraseñas únicas, verificación adicional y señales de estafa explicadas sin tecnicismos.",
+    "enPocasPalabras": [
+      "No reutilices contraseñas; considera un gestor de contraseñas confiable.",
+      "Activa la verificación en dos pasos en las cuentas importantes.",
+      "Si un mensaje te mete prisa, verifica por el canal oficial antes de actuar."
+    ],
+    "image": "/assets/learn/diagram-como-proteger.svg",
+    "imageAlt": "Contraseña única; Verificación adicional; Comprobar antes",
+    "relatedSlugs": [
+      "correo-para-mi-negocio-como-usarlo-sin-perder-mensajes",
+      "como-hacer-copias-de-seguridad-de-tu-negocio"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Ver más guías básicas",
+      "to": "/aprende",
+      "copy": "Proteger una cuenta también es una habilidad digital que se aprende."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Llega un mensaje que parece de un servicio conocido. Dice que perderás la cuenta en una hora y te pide contraseña o código.",
+          "Las estafas suelen aprovechar la urgencia. Una cuenta protegida y un hábito de verificación reducen riesgos, aunque no los eliminan por completo."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Contraseña única",
+                "definition": "Una clave diferente para cada cuenta. Reutilizarla expone varias si una se filtra."
+              },
+              {
+                "term": "Verificación en dos pasos",
+                "definition": "Un segundo control para acceder: por ejemplo, una aplicación de autenticación o llave de seguridad."
+              },
+              {
+                "term": "Suplantación",
+                "definition": "Cuando alguien finge ser una empresa o persona para robar información o conseguir dinero."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza por la opción más sencilla que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Cambia claves repetidas",
+                "detail": "Empieza por correo, redes, cobros y servicios donde guardas datos."
+              },
+              {
+                "title": "Activa la verificación adicional",
+                "detail": "Guarda los métodos de recuperación en un lugar protegido."
+              },
+              {
+                "title": "Verifica avisos urgentes",
+                "detail": "Abre la aplicación o web oficial por tu cuenta, sin seguir el enlace sospechoso."
+              },
+              {
+                "title": "Prepara la recuperación",
+                "detail": "Mantén actualizados los métodos autorizados para recuperar acceso y revísalos periódicamente."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo sencillo: el supuesto aviso de una red social",
+        "paragraphs": [
+          "Situación imaginaria que sirve para practicar, no un caso real ni un resultado garantizado."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "El supuesto aviso de una red social",
+            "hypothetical": true,
+            "context": "Una emprendedora recibe un mensaje: «Te cerramos tu página hoy».",
+            "problem": "El enlace lleva a una página que pide contraseña y un código de acceso.",
+            "approach": "En vez de entrar, abre directamente la aplicación conocida y comprueba notificaciones.",
+            "actions": [
+              "No responde al mensaje ni comparte el código.",
+              "Accede desde la aplicación oficial que ya utiliza.",
+              "Si detecta actividad extraña, cambia el acceso y solicita ayuda por el soporte oficial."
+            ],
+            "lesson": "La prisa del mensaje no demuestra que sea verdadero."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No busques hacerlo perfecto desde el primer día. Evitar estos tropiezos ya es avanzar."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Compartir códigos de verificación con quien llama.",
+              "Usar la misma clave en correo, banco y redes.",
+              "Pagar para recuperar una cuenta sin verificar el canal."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "No reutilices contraseñas; considera un gestor de contraseñas confiable.",
+              "Activa la verificación en dos pasos en las cuentas importantes.",
+              "Si un mensaje te mete prisa, verifica por el canal oficial antes de actuar."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Es suficiente una contraseña larga?",
+                "answer": "Es una buena base, pero conviene usar claves únicas y verificación adicional."
+              },
+              {
+                "question": "¿Qué hago si ya envié mi contraseña?",
+                "answer": "Cámbiala desde el servicio oficial, cierra sesiones si puedes y revisa accesos y recuperación. Busca asistencia especializada si corresponde."
+              },
+              {
+                "question": "¿La verificación en dos pasos elimina todas las estafas?",
+                "answer": "No. Reduce riesgos de acceso no autorizado, pero debes seguir comprobando mensajes y solicitudes."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas referencias aportan orientación general. Si una decisión afecta leyes, dinero o datos delicados, verifica las obligaciones de tu país y sector."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Protege tu mundo digital — CISA",
+                "url": "https://www.cisa.gov/secure-our-world",
+                "scope": "Pasos oficiales sobre contraseñas, verificación adicional y mensajes sospechosos."
+              },
+              {
+                "label": "Ciberseguridad para negocios — FTC",
+                "url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity",
+                "scope": "Guía para pequeñas empresas sobre suplantación, protección de datos y personal."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "como-hacer-copias-de-seguridad-de-tu-negocio",
+    "category": "Tecnología explicada",
+    "title": "Si se rompe tu teléfono, ¿cómo recuperas los archivos del negocio?",
+    "intro": "Piensa en tus fotos, presupuestos, documentos y listas de pedidos. Si hoy pierdes el teléfono, ¿podrías volver a encontrarlos? Una copia de seguridad puede evitar un problema grande.",
+    "excerpt": "Carpetas sencillas, copias protegidas y una prueba de recuperación para archivos de trabajo.",
+    "enPocasPalabras": [
+      "Organiza los documentos antes de copiarlos para encontrarlos después.",
+      "Mantén una copia protegida que no dependa del mismo teléfono.",
+      "Prueba a recuperar un archivo: una copia que nunca se comprobó podría fallar."
+    ],
+    "image": "/assets/learn/diagram-como-hacer.svg",
+    "imageAlt": "Organizar; Guardar copia; Probar recuperación",
+    "relatedSlugs": [
+      "como-empezar-a-digitalizar-un-negocio-desde-cero",
+      "como-proteger-cuentas-contrasenas-estafas-negocio"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Ver otras guías prácticas",
+      "to": "/aprende",
+      "copy": "Puedes seguir con el uso seguro de otras herramientas cotidianas."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Una persona cambia de teléfono y descubre que las fotos de sus productos solo estaban en el equipo anterior.",
+          "Guardar documentos en carpetas o en internet ayuda, pero una copia de seguridad es una segunda versión que puedas recuperar cuando algo falla."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Carpeta",
+                "definition": "Un lugar para reunir archivos relacionados: fotos, presupuestos o facturas."
+              },
+              {
+                "term": "Almacenamiento en la nube",
+                "definition": "Un servicio que guarda archivos en servidores a los que puedes acceder con tu cuenta y permisos."
+              },
+              {
+                "term": "Copia de seguridad",
+                "definition": "Una versión adicional y protegida para recuperar información si se pierde o daña la principal."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza por la opción más sencilla que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Identifica lo importante",
+                "detail": "Escoge documentos y archivos que necesitarías para seguir trabajando."
+              },
+              {
+                "title": "Ordénalos con nombres simples",
+                "detail": "Por ejemplo, «presupuestos-2026» y un archivo con fecha y servicio, sin incluir datos sensibles en nombres públicos."
+              },
+              {
+                "title": "Guarda otra copia protegida",
+                "detail": "Utiliza un servicio confiable o dispositivo separado según la sensibilidad de los datos."
+              },
+              {
+                "title": "Haz una prueba",
+                "detail": "Abre una copia desde otro dispositivo autorizado y comprueba que puedes recuperar un archivo."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo sencillo: una tienda pierde las fotos de temporada",
+        "paragraphs": [
+          "Situación imaginaria que sirve para practicar, no un caso real ni un resultado garantizado."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una tienda pierde las fotos de temporada",
+            "hypothetical": true,
+            "context": "Una tienda toma fotos de sus productos con un teléfono.",
+            "problem": "El teléfono falla y las imágenes no existen en otra parte.",
+            "approach": "Crea carpetas por colección y copias periódicas en un lugar seguro.",
+            "actions": [
+              "Guarda una carpeta de fotografías originales.",
+              "Crea una copia fuera del teléfono que utiliza a diario.",
+              "Comprueba que puede abrir y recuperar una imagen de la copia."
+            ],
+            "lesson": "La prueba de recuperación es tan importante como pulsar «guardar»."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No busques hacerlo perfecto desde el primer día. Evitar estos tropiezos ya es avanzar."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Pensar que sincronizar siempre equivale a tener una copia independiente.",
+              "Guardar toda la información en un único teléfono.",
+              "Compartir carpetas con permisos más amplios de los necesarios."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Organiza los documentos antes de copiarlos para encontrarlos después.",
+              "Mantén una copia protegida que no dependa del mismo teléfono.",
+              "Prueba a recuperar un archivo: una copia que nunca se comprobó podría fallar."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿La nube es obligatoria?",
+                "answer": "No. Puedes usar otros medios protegidos, pero necesitas una copia separada y una forma segura de acceder a ella."
+              },
+              {
+                "question": "¿Con qué frecuencia hago copias?",
+                "answer": "Depende de cuánto cambien tus datos y cuánto puedes permitirte perder. Decide una rutina realista."
+              },
+              {
+                "question": "¿Puedo guardar datos de clientes?",
+                "answer": "Guarda solo lo necesario, protege el acceso y cumple las reglas aplicables a tus datos."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas referencias aportan orientación general. Si una decisión afecta leyes, dinero o datos delicados, verifica las obligaciones de tu país y sector."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Ciberseguridad básica — FTC",
+                "url": "https://www.ftc.gov/es/guia-para-negocios/protegiendo-pequenos-negocios/ciberseguridad",
+                "scope": "Recomienda copias periódicas, actualizaciones y accesos limitados."
+              },
+              {
+                "label": "Organizar archivos — Google Drive Help",
+                "url": "https://support.google.com/drive/answer/2375091?hl=en",
+                "scope": "Explica carpetas y nombres de archivos para encontrar información."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "hojas-de-calculo-para-organizar-un-negocio-pequeno",
+    "category": "Tecnología explicada",
+    "title": "¿Para qué sirve una hoja de cálculo en un negocio pequeño?",
+    "intro": "No hace falta ser experto en números. Una tabla sencilla puede ayudarte a recordar pedidos, ordenar gastos o revisar existencias sin depender de la memoria.",
+    "excerpt": "Aprende a crear tu primera tabla útil con columnas claras, datos mínimos y revisiones simples.",
+    "enPocasPalabras": [
+      "Cada fila representa un registro; cada columna guarda un dato concreto.",
+      "Empieza con pocas columnas que realmente usarás.",
+      "Una tabla ordenada ayuda a revisar pendientes, pero no sustituye una contabilidad profesional cuando hace falta."
+    ],
+    "image": "/assets/learn/diagram-hojas-de.svg",
+    "imageAlt": "Filas; Columnas; Revisión semanal",
+    "relatedSlugs": [
+      "organizar-consultas-mensajes-llamadas-formularios",
+      "como-hacer-copias-de-seguridad-de-tu-negocio"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Seguir con otras herramientas",
+      "to": "/aprende",
+      "copy": "Puedes explorar guías sobre datos, comunicación y organización."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "En una libreta tienes encargos, pagos pendientes y una lista de materiales. Encontrar el estado de un pedido te lleva demasiado tiempo.",
+          "Una hoja de cálculo es como una libreta organizada en casillas. Puedes buscar, ordenar y sumar sin tener que crear un programa."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Fila",
+                "definition": "Una línea que representa un pedido, producto u otra unidad de trabajo."
+              },
+              {
+                "term": "Columna",
+                "definition": "El tipo de dato que guardas: fecha, tarea, importe o estado."
+              },
+              {
+                "term": "Filtro",
+                "definition": "Una forma de ver solo las filas que cumplen una condición, como «pendiente»."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza por la opción más sencilla que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Elige una sola tarea",
+                "detail": "Por ejemplo, el seguimiento de pedidos. No mezcles todo el negocio en una sola tabla."
+              },
+              {
+                "title": "Prepara cuatro columnas",
+                "detail": "Fecha, pedido, responsable y estado pueden ser suficientes para empezar."
+              },
+              {
+                "title": "Registra ejemplos sin datos privados",
+                "detail": "Prueba con pedidos ficticios antes de introducir información real."
+              },
+              {
+                "title": "Revísala cada semana",
+                "detail": "Corrige errores, elimina duplicados y protege el acceso."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo sencillo: una panadería controla encargos",
+        "paragraphs": [
+          "Situación imaginaria que sirve para practicar, no un caso real ni un resultado garantizado."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una panadería controla encargos",
+            "hypothetical": true,
+            "context": "Recibe pedidos de tartas para distintos días.",
+            "problem": "No siempre está claro cuáles siguen pendientes.",
+            "approach": "Usa una tabla simple: fecha, tipo de encargo, estado y persona responsable.",
+            "actions": [
+              "Anota cada encargo autorizado en una fila.",
+              "Marca «pendiente», «en preparación» o «entregado».",
+              "Filtra los pedidos pendientes para revisar los siguientes."
+            ],
+            "lesson": "La tabla sirve cuando alguien se responsabiliza de mantenerla al día."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No busques hacerlo perfecto desde el primer día. Evitar estos tropiezos ya es avanzar."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Crear veinte columnas que nadie completa.",
+              "Compartir toda la tabla con personas que no necesitan verla.",
+              "Confundir una lista operativa con facturación o registros contables exigidos por ley."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Cada fila representa un registro; cada columna guarda un dato concreto.",
+              "Empieza con pocas columnas que realmente usarás.",
+              "Una tabla ordenada ayuda a revisar pendientes, pero no sustituye una contabilidad profesional cuando hace falta."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Necesito pagar por una hoja de cálculo?",
+                "answer": "No necesariamente. Hay opciones gratuitas y de pago; compara privacidad, acceso y facilidad de uso."
+              },
+              {
+                "question": "¿Tengo que aprender fórmulas?",
+                "answer": "No para empezar. Primero domina filas, columnas, ordenar y filtrar."
+              },
+              {
+                "question": "¿Puedo gestionar pagos solo con esa tabla?",
+                "answer": "Puede servir de apoyo, pero revisa qué registros y comprobantes exige tu actividad y la normativa local."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas referencias aportan orientación general. Si una decisión afecta leyes, dinero o datos delicados, verifica las obligaciones de tu país y sector."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Tareas básicas en Excel — Microsoft Support",
+                "url": "https://support.microsoft.com/es-es/excel/basic-tasks-in-excel",
+                "scope": "Explica filas, columnas, tablas y fórmulas elementales."
+              },
+              {
+                "label": "Organizar datos y protegerlos — FTC",
+                "url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity",
+                "scope": "Pautas generales para limitar accesos y proteger datos de trabajo."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  {
+    "slug": "redes-sociales-o-pagina-web-que-necesita-tu-negocio",
+    "category": "Negocios digitales",
+    "title": "¿Redes sociales o página web? Cómo elegir sin gastar de más",
+    "intro": "Publicas en redes, pero la gente sigue preguntando por horarios y servicios. ¿Necesitas una web? Primero averigua qué información no encuentran.",
+    "excerpt": "Aprende qué resuelven las redes y una web, con ejemplos cercanos y sin gastar por impulso.",
+    "enPocasPalabras": [
+      "Las redes ayudan a conversar; una página web reúne datos que deben encontrarse fácilmente.",
+      "No necesitas un sitio enorme: explica qué haces, dónde atiendes y cómo contactarte.",
+      "Escoge canales que puedas mantener, no los que estén de moda."
+    ],
+    "image": "/assets/learn/diagram-redes-sociales.svg",
+    "imageAlt": "Redes; Web sencilla; Información clara",
+    "relatedSlugs": [
+      "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+      "dominio-hosting-sitio-web-como-funcionan"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Revisar mi presencia digital",
+      "to": "/diagnostico",
+      "copy": "Puedes revisar qué necesita tu negocio antes de crear más canales."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Alguien ve una foto de tu trabajo. Le interesa, pero no encuentra qué ofreces, dónde atiendes ni cómo pedir información.",
+          "El problema no siempre es la falta de una página web. Puede ser que los datos importantes estén escondidos entre publicaciones."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Redes sociales",
+                "definition": "Lugares para compartir novedades, enseñar tu trabajo y conversar; una publicación puede quedar enterrada."
+              },
+              {
+                "term": "Página web",
+                "definition": "Un lugar estable para reunir servicios, horarios, ubicación y contacto."
+              },
+              {
+                "term": "Ficha de negocio",
+                "definition": "Una presentación breve con datos esenciales y un enlace que puedas compartir."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Escucha las preguntas",
+                "detail": "Anota las dudas más repetidas de tus visitantes."
+              },
+              {
+                "title": "Ordena la información",
+                "detail": "Escribe qué haces, dónde atiendes y cómo se consulta disponibilidad."
+              },
+              {
+                "title": "Elige el canal",
+                "detail": "Empieza con una ficha o página pequeña si eso resuelve la necesidad."
+              },
+              {
+                "title": "Prueba desde un teléfono",
+                "detail": "Pide a alguien que encuentre tu contacto sin que le des pistas."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: una profesora de guitarra que recibe siempre las mismas preguntas",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una profesora de guitarra que recibe siempre las mismas preguntas",
+            "hypothetical": true,
+            "context": "Publica videos tocando guitarra y recibe mensajes sobre clases.",
+            "problem": "Cada semana explica si enseña a principiantes y cómo preguntar por horarios.",
+            "approach": "Mantiene sus videos y prepara una ficha con información fácil de consultar.",
+            "actions": [
+              "Escribe «Clases de guitarra para principiantes, en línea».",
+              "Indica cómo consultar disponibilidad sin prometer horarios libres.",
+              "Comparte ese enlace y revisa qué dudas quedan."
+            ],
+            "lesson": "Las redes ayudan a conocer su trabajo y la ficha ayuda a entenderlo."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Abrir muchos perfiles que luego nadie atiende.",
+              "Crear una web con páginas vacías o datos contradictorios.",
+              "Prometer ventas solo porque ahora existe una página."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Las redes ayudan a conversar; una página web reúne datos que deben encontrarse fácilmente.",
+              "No necesitas un sitio enorme: explica qué haces, dónde atiendes y cómo contactarte.",
+              "Escoge canales que puedas mantener, no los que estén de moda."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Una web me traerá más clientes?",
+                "answer": "No hay garantía. Puede facilitar que alguien te entienda y te contacte, pero el resultado depende de muchos factores."
+              },
+              {
+                "question": "¿Debo cerrar mis redes?",
+                "answer": "No. Pueden complementarse si tienes tiempo para mantenerlas."
+              },
+              {
+                "question": "¿Necesito una tienda en línea?",
+                "answer": "Solo si vender y gestionar pedidos por internet forma parte de tus necesidades reales."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "SEO para principiantes — Google Search Central",
+                "url": "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
+                "scope": "Consejos para que la información de una página sea fácil de entender y encontrar."
+              },
+              {
+                "label": "Escritura clara — W3C WAI",
+                "url": "https://www.w3.org/WAI/tips/writing/",
+                "scope": "Recomienda titulares útiles y explicaciones sencillas."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "como-explicar-lo-que-vendes-para-que-te-entiendan",
+    "category": "Negocios digitales",
+    "title": "¿Qué vendes exactamente? Explícalo para que te entiendan",
+    "intro": "«Ofrecemos soluciones integrales de calidad». Suena importante, pero ¿qué significa? Una buena presentación debería decir qué haces sin obligar a adivinar.",
+    "excerpt": "Cambia frases vacías por explicaciones concretas que suenen cercanas y verdaderas.",
+    "enPocasPalabras": [
+      "Di qué haces, para quién y cómo pueden preguntarte.",
+      "Cambia palabras vagas por ejemplos reales de tu trabajo.",
+      "Pide a alguien que no te conozca que te diga qué entendió."
+    ],
+    "image": "/assets/learn/diagram-como-explicar.svg",
+    "imageAlt": "Servicio; Público; Siguiente paso",
+    "relatedSlugs": [
+      "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+      "redes-sociales-o-pagina-web-que-necesita-tu-negocio"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Consultar sobre mi negocio",
+      "to": "/contacto",
+      "copy": "Si buscas comunicar mejor tu trabajo, podemos conversar sobre tu necesidad."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "«Transformamos experiencias mediante soluciones innovadoras». Un cliente que no te conoce quizá no pueda imaginar qué vendes.",
+          "«Reparamos computadoras y explicamos el problema antes de hacer cambios». La segunda frase es más directa y permite entender el trabajo."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Qué haces",
+                "definition": "El servicio o producto concreto que ofreces."
+              },
+              {
+                "term": "Para quién",
+                "definition": "Las personas o negocios que realmente puedes atender."
+              },
+              {
+                "term": "Siguiente paso",
+                "definition": "Lo que alguien puede hacer después de leer: consultar, pedir información o reservar si está disponible."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Escribe un verbo simple",
+                "detail": "Reparo, enseño, preparo, pinto, diseño o vendo."
+              },
+              {
+                "title": "Explica a quién atiendes",
+                "detail": "No hace falta afirmar que eres para todo el mundo."
+              },
+              {
+                "title": "Aclara lugar o modalidad",
+                "detail": "Cuenta si trabajas por cita, a domicilio, en línea o en un local."
+              },
+              {
+                "title": "Muestra el contacto real",
+                "detail": "Utiliza un canal que puedas atender y revisa el enlace."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: una pastelera que quiere explicar sus pedidos",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una pastelera que quiere explicar sus pedidos",
+            "hypothetical": true,
+            "context": "Publica fotos de pasteles hechos por encargo.",
+            "problem": "Su perfil dice «endulzamos sueños», pero no explica si acepta pedidos.",
+            "approach": "Presenta la actividad real, sin inventar plazos, cantidades ni precios.",
+            "actions": [
+              "Escribe «Preparamos pasteles personalizados por encargo».",
+              "Cuenta dónde se entregan o recogen, si lo tiene definido.",
+              "Indica cómo consultar disponibilidad."
+            ],
+            "lesson": "Una frase más concreta ayuda a que la persona haga la pregunta correcta."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Escribir solo adjetivos como «líder», «mejor» o «innovador».",
+              "Prometer resultados que no se pueden demostrar.",
+              "Esconder el contacto detrás de frases confusas."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Di qué haces, para quién y cómo pueden preguntarte.",
+              "Cambia palabras vagas por ejemplos reales de tu trabajo.",
+              "Pide a alguien que no te conozca que te diga qué entendió."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Necesito publicar mis precios?",
+                "answer": "Depende del servicio. Si varían, puedes explicar cómo se prepara un presupuesto."
+              },
+              {
+                "question": "¿Y si hago muchas cosas?",
+                "answer": "Empieza por lo que tu público necesita entender primero y organiza lo demás."
+              },
+              {
+                "question": "¿Debo usar palabras técnicas?",
+                "answer": "Solo cuando ayuden. Si alguien no las conoce, explícalas con un ejemplo."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Escritura accesible — W3C",
+                "url": "https://www.w3.org/WAI/tips/writing/",
+                "scope": "Recomienda palabras claras, párrafos breves y enlaces descriptivos."
+              },
+              {
+                "label": "Contenido útil — Google Search Central",
+                "url": "https://developers.google.com/search/docs/fundamentals/creating-helpful-content?hl=es",
+                "scope": "Consejos para crear información centrada en las preguntas de las personas."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "como-responder-la-primera-consulta-de-un-cliente",
+    "category": "CRM y clientes",
+    "title": "Te escribieron por tu negocio: cómo responder sin sonar a robot",
+    "intro": "Llega un «Hola, ¿cuánto cuesta?». ¿Mandas una lista enorme o contestas solo «depende»? Una respuesta útil puede ser breve, amable y honesta.",
+    "excerpt": "Aprende a atender preguntas reales sin mensajes largos ni promesas que no puedes cumplir.",
+    "enPocasPalabras": [
+      "Saluda y responde primero lo que realmente sabes.",
+      "Si faltan datos, pregunta solo lo necesario para orientar.",
+      "Termina con un paso claro y respeta si la persona no continúa."
+    ],
+    "image": "/assets/learn/diagram-como-responder.svg",
+    "imageAlt": "Escuchar; Responder; Acordar",
+    "relatedSlugs": [
+      "organizar-consultas-mensajes-llamadas-formularios",
+      "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Conversar con Vecidya",
+      "to": "/contacto",
+      "copy": "Si necesitas ordenar las consultas de tu negocio, podemos conversar sobre el punto de partida."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Te escriben: «Hola, ¿hacen reparaciones?». Un «sí» no ayuda mucho; enviar todo el catálogo puede cansar a la persona.",
+          "Puedes contestar: «¡Hola! Sí, hacemos ese tipo de reparaciones. ¿Qué equipo tienes y qué le sucede? Así podemos orientarte»."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Consulta",
+                "definition": "Una persona pide información: todavía no es una venta."
+              },
+              {
+                "term": "Respuesta útil",
+                "definition": "Información que contesta la pregunta y deja claro qué falta."
+              },
+              {
+                "term": "Seguimiento",
+                "definition": "Revisar el siguiente paso que se acordó, sin insistir sin motivo."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Reconoce la pregunta",
+                "detail": "Saluda y menciona brevemente lo que necesita."
+              },
+              {
+                "title": "Responde lo que sabes",
+                "detail": "Da el horario, tipo de servicio o condición que esté confirmada."
+              },
+              {
+                "title": "Pide un dato si hace falta",
+                "detail": "Pregunta solo aquello que permita orientar mejor."
+              },
+              {
+                "title": "Cierra con claridad",
+                "detail": "Cuenta cuándo o cómo puedes continuar, si puedes cumplirlo."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: un taller y la pregunta por el ventilador",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Un taller y la pregunta por el ventilador",
+            "hypothetical": true,
+            "context": "Un taller recibe «¿Cuánto cuesta reparar mi ventilador?».",
+            "problem": "No ha revisado el equipo y desconoce el costo.",
+            "approach": "Reconoce lo que falta y pide la información imprescindible.",
+            "actions": [
+              "Da las gracias por escribir.",
+              "Pregunta qué modelo tiene y qué falla.",
+              "Explica cómo se revisa el equipo y prepara el presupuesto sin inventar el precio."
+            ],
+            "lesson": "La conversación puede avanzar sin fingir certeza."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Hacer demasiadas preguntas antes de contestar algo útil.",
+              "Enviar bloques de texto copiados que no responden al caso.",
+              "Mandar promociones a una persona que solo pidió información."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Saluda y responde primero lo que realmente sabes.",
+              "Si faltan datos, pregunta solo lo necesario para orientar.",
+              "Termina con un paso claro y respeta si la persona no continúa."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Cuánto debería tardar en responder?",
+                "answer": "Depende de tu horario. Comunica tiempos que puedas cumplir."
+              },
+              {
+                "question": "¿Puedo usar respuestas automáticas?",
+                "answer": "Pueden ayudar con horarios o confirmaciones, pero deben ser correctas y permitir atención humana cuando haga falta."
+              },
+              {
+                "question": "¿Y si dejan de escribir?",
+                "answer": "Respeta su decisión; no envíes mensajes repetidos sin una razón acordada."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Escribir para la accesibilidad — W3C",
+                "url": "https://www.w3.org/WAI/tips/writing/",
+                "scope": "Ayuda a comunicar mensajes breves y claros."
+              },
+              {
+                "label": "Protección de datos — FTC",
+                "url": "https://www.ftc.gov/business-guidance/resources/start-security-guide-business",
+                "scope": "Recuerda guardar solo datos necesarios para una tarea."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "fotos-y-publicaciones-utiles-sin-ser-disenador",
+    "category": "Negocios digitales",
+    "title": "¿Qué publicar de tu negocio si no eres diseñador?",
+    "intro": "Una foto bonita no explica todo. A veces basta una imagen clara y dos frases que respondan qué vendes, para quién y cómo pedir información.",
+    "excerpt": "Ideas fáciles para hacer fotos, escribir publicaciones y mantener la información útil y accesible.",
+    "enPocasPalabras": [
+      "Publica información que resuelva una duda, no solo contenido para llenar el perfil.",
+      "Usa fotos reales con buena luz y permiso cuando corresponda.",
+      "Incluye un texto claro: qué muestras, para quién sirve y qué se puede hacer después."
+    ],
+    "image": "/assets/learn/diagram-fotos-y.svg",
+    "imageAlt": "Pregunta real; Foto clara; Mensaje útil",
+    "relatedSlugs": [
+      "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+      "como-explicar-lo-que-vendes-para-que-te-entiendan"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Leer otras guías de Aprende",
+      "to": "/aprende",
+      "copy": "Puedes mejorar tu presencia con prácticas sencillas y verificables."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Publicas una fotografía de un producto y la acompañas con «¡Lo mejor para ti!». Alguien interesado sigue sin saber tamaño, uso o cómo consultarlo.",
+          "Una publicación útil puede mostrar el objeto con buena luz, contar para qué sirve y explicar el siguiente paso."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Foto útil",
+                "definition": "Una imagen real, nítida y que ayuda a entender el producto o el trabajo."
+              },
+              {
+                "term": "Texto alternativo",
+                "definition": "Una breve descripción para personas que no pueden ver la imagen cuando la plataforma lo permite."
+              },
+              {
+                "term": "Llamada a la acción",
+                "definition": "Una invitación sencilla y auténtica: por ejemplo, «Consulta disponibilidad por este canal»."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Piensa en una pregunta",
+                "detail": "Elige una duda que recibes de verdad."
+              },
+              {
+                "title": "Muestra algo reconocible",
+                "detail": "Fotografía el producto o trabajo con luz clara, fondo que no distraiga y sin datos privados."
+              },
+              {
+                "title": "Escribe como hablarías",
+                "detail": "Usa una frase directa y comprensible."
+              },
+              {
+                "title": "Revisa en móvil",
+                "detail": "Comprueba que la imagen, el texto y el enlace se entienden desde un teléfono."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: una zapatería muestra un nuevo servicio",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una zapatería muestra un nuevo servicio",
+            "hypothetical": true,
+            "context": "El negocio ofrece reparación de suelas.",
+            "problem": "Publica una imagen con el texto «excelencia y pasión» que no explica el servicio.",
+            "approach": "Muestra una reparación real con permiso y escribe qué trabajo se hizo.",
+            "actions": [
+              "Fotografía el antes y después solo si es auténtico y autorizado.",
+              "Escribe «Reparamos suelas gastadas; consulta si tu calzado admite reparación».",
+              "Explica dónde pueden preguntar y evita prometer resultados idénticos."
+            ],
+            "lesson": "Una prueba visual honesta y una frase clara sirven más que muchos adjetivos."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Usar fotografías ajenas sin permiso.",
+              "Editar imágenes hasta que el producto parezca algo que no es.",
+              "Publicar todos los días información repetida que no ayuda."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Publica información que resuelva una duda, no solo contenido para llenar el perfil.",
+              "Usa fotos reales con buena luz y permiso cuando corresponda.",
+              "Incluye un texto claro: qué muestras, para quién sirve y qué se puede hacer después."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Necesito una cámara profesional?",
+                "answer": "No necesariamente. La buena luz, el enfoque y una descripción clara ayudan más que el equipo caro."
+              },
+              {
+                "question": "¿Debo publicar a diario?",
+                "answer": "No hay una frecuencia universal. Elige una rutina que puedas sostener con información valiosa."
+              },
+              {
+                "question": "¿Puedo usar IA para las imágenes?",
+                "answer": "Si lo haces, evita presentar como reales escenas, productos o resultados que no lo son. Revisa permisos y contexto."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Imágenes y textos alternativos — W3C",
+                "url": "https://www.w3.org/WAI/tutorials/images/informative/",
+                "scope": "Cómo describir la información que transmite una imagen."
+              },
+              {
+                "label": "Contenido útil — Google",
+                "url": "https://developers.google.com/search/docs/fundamentals/creating-helpful-content?hl=es",
+                "scope": "Prioriza contenido que las personas puedan utilizar y entender."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "como-vender-por-internet-sin-perder-el-control-pedidos-pagos",
+    "category": "Negocios digitales",
+    "title": "¿Cómo empezar a recibir pedidos por internet sin complicarte?",
+    "intro": "Vender por internet no empieza instalando una tienda. Empieza cuando sabes explicar el producto, confirmar el pedido, cobrar de forma segura y cumplir lo prometido.",
+    "excerpt": "Organiza pedidos, entregas, cobros y atención antes de abrir una tienda en línea.",
+    "enPocasPalabras": [
+      "Aclara el producto, el precio confirmado, la entrega y las condiciones antes de cobrar.",
+      "Utiliza servicios de pago confiables y verifica sus costos y requisitos.",
+      "Lleva un registro de pedidos y explica cómo resolver cambios o problemas."
+    ],
+    "image": "/assets/learn/diagram-como-vender.svg",
+    "imageAlt": "Pedido claro; Cobro seguro; Entrega real",
+    "relatedSlugs": [
+      "hojas-de-calculo-para-organizar-un-negocio-pequeno",
+      "como-responder-la-primera-consulta-de-un-cliente"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Explorar soluciones para mi negocio",
+      "to": "/servicios",
+      "copy": "Puedes revisar servicios según tu necesidad; no todos requieren una tienda en línea."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Alguien ve un producto y quiere comprarlo. Falta confirmar si está disponible, cuánto cuesta entregarlo y cómo pagarlo.",
+          "Abrir una tienda no resuelve esas preguntas. Antes necesitas un proceso entendible para aceptar, preparar y completar un pedido."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Pedido",
+                "definition": "Una solicitud concreta de producto o servicio con detalles y confirmación."
+              },
+              {
+                "term": "Proveedor de pagos",
+                "definition": "Un servicio que procesa cobros según sus condiciones y requisitos."
+              },
+              {
+                "term": "Comprobante",
+                "definition": "Una constancia que ayuda a documentar la operación según las reglas aplicables."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Explica la oferta",
+                "detail": "Describe características, precio confirmado, disponibilidad y costo de envío cuando corresponda."
+              },
+              {
+                "title": "Define el pedido",
+                "detail": "Decide qué datos mínimos hacen falta y quién lo confirma."
+              },
+              {
+                "title": "Elige cómo cobrar",
+                "detail": "Revisa proveedor, comisiones, seguridad, devoluciones y requisitos locales sin guardar datos de tarjeta por tu cuenta."
+              },
+              {
+                "title": "Acompaña la entrega",
+                "detail": "Confirma condiciones, actualiza el estado y atiende problemas o devoluciones conforme a tus obligaciones."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: una artesana vende libretas por mensaje",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una artesana vende libretas por mensaje",
+            "hypothetical": true,
+            "context": "Publica fotografías de libretas hechas a mano.",
+            "problem": "Algunos clientes creen que el precio incluye entrega y que todos los diseños están disponibles.",
+            "approach": "Aclara existencias, opciones, costo total y plazo antes de aceptar el pago.",
+            "actions": [
+              "Envía la descripción real, disponibilidad y total acordado.",
+              "Confirma método de pago admitido mediante proveedor reconocido.",
+              "Registra pedido, comprobante y entrega según corresponda."
+            ],
+            "lesson": "Un proceso claro evita confusiones aunque todavía no tengas una tienda completa."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Cobrar antes de comprobar que podrás cumplir.",
+              "Pedir datos completos de tarjeta por mensajes.",
+              "Copiar condiciones de devolución de otro país sin revisar las propias."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Aclara el producto, el precio confirmado, la entrega y las condiciones antes de cobrar.",
+              "Utiliza servicios de pago confiables y verifica sus costos y requisitos.",
+              "Lleva un registro de pedidos y explica cómo resolver cambios o problemas."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Necesito una tienda en línea para empezar?",
+                "answer": "No siempre; un proceso de pedidos bien explicado puede servir mientras compruebas la demanda."
+              },
+              {
+                "question": "¿Qué medios de pago debo aceptar?",
+                "answer": "Depende de tu país, proveedor, clientes y requisitos legales. Compara las opciones disponibles y seguras."
+              },
+              {
+                "question": "¿Puedo prometer una fecha de entrega cualquiera?",
+                "answer": "No. Solo confirma plazos que puedas respaldar; las obligaciones concretas cambian según la jurisdicción."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Buenas prácticas de venta a distancia — FTC",
+                "url": "https://www.ftc.gov/business-guidance/resources/business-guide-ftcs-mail-internet-or-telephone-order-merchandise-rule",
+                "scope": "Ejemplo de requisitos estadounidenses sobre promesas de entrega y reembolsos; consulta normas locales."
+              },
+              {
+                "label": "Protección de datos en negocios — FTC",
+                "url": "https://www.ftc.gov/business-guidance/resources/start-security-guide-business",
+                "scope": "Recomienda limitar los datos que se recopilan y almacenan."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "datos-de-clientes-que-puedes-pedir-y-como-protegerlos",
+    "category": "CRM y clientes",
+    "title": "¿Qué datos deberías pedir a un cliente y cuáles no?",
+    "intro": "Para atender una consulta tal vez necesites un nombre y un medio de respuesta. Eso no significa que debas pedir dirección, documento, fecha de nacimiento o información privada.",
+    "excerpt": "Aprende a pedir lo mínimo necesario, explicar para qué se usa y protegerlo con responsabilidad.",
+    "enPocasPalabras": [
+      "Pide solo lo necesario para atender la solicitud concreta.",
+      "Aclara para qué usarás los datos y quién podrá verlos.",
+      "Responder una consulta no equivale a aceptar publicidad ni campañas."
+    ],
+    "image": "/assets/learn/diagram-datos-de.svg",
+    "imageAlt": "Dato necesario; Uso claro; Acceso limitado",
+    "relatedSlugs": [
+      "organizar-consultas-mensajes-llamadas-formularios",
+      "como-proteger-cuentas-contrasenas-estafas-negocio"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Leer sobre protección digital",
+      "to": "/aprende",
+      "copy": "Puedes seguir aprendiendo antes de decidir qué datos guardar."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Un formulario para preguntar horarios pide fecha de nacimiento y dirección completa. ¿De verdad hacen falta?",
+          "Los datos personales merecen cuidado. Antes de pedirlos, explica qué tarea realizarás con ellos y si podrías resolverla con menos información."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Dato personal",
+                "definition": "Información que identifica o puede identificar a una persona."
+              },
+              {
+                "term": "Finalidad",
+                "definition": "La razón concreta por la que pides un dato."
+              },
+              {
+                "term": "Acceso limitado",
+                "definition": "Dar acceso a los datos solo a quienes realmente necesitan utilizarlos."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Define la tarea",
+                "detail": "Por ejemplo, devolver una llamada o preparar un presupuesto."
+              },
+              {
+                "title": "Pide lo indispensable",
+                "detail": "Quizá baste un nombre y un canal de respuesta; evita campos sin motivo."
+              },
+              {
+                "title": "Explica el uso",
+                "detail": "Indica con palabras claras para qué se utilizará la información."
+              },
+              {
+                "title": "Protege y revisa",
+                "detail": "Controla quién accede, cuánto se conserva y cómo se elimina según las reglas aplicables."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: una persona pregunta por clases",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una persona pregunta por clases",
+            "hypothetical": true,
+            "context": "Un profesor recibe una consulta sobre horarios.",
+            "problem": "Su formulario pide domicilio, documento y varios datos no relacionados con la pregunta.",
+            "approach": "Reduce el formulario al nombre de referencia, mensaje y medio de respuesta si hacen falta.",
+            "actions": [
+              "Elimina preguntas no necesarias para la consulta.",
+              "Explica cuándo y por qué responderá.",
+              "Guarda solo lo necesario y limita el acceso al responsable."
+            ],
+            "lesson": "Un formulario más corto también puede ser más respetuoso con las personas."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Guardar documentos personales sin necesidad.",
+              "Compartir listados de clientes en grupos sin control.",
+              "Usar una consulta para enviar publicidad sin revisar el permiso y las normas aplicables."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Pide solo lo necesario para atender la solicitud concreta.",
+              "Aclara para qué usarás los datos y quién podrá verlos.",
+              "Responder una consulta no equivale a aceptar publicidad ni campañas."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Puedo guardar teléfonos de quienes preguntaron?",
+                "answer": "Depende de la finalidad, el aviso y las reglas aplicables. Guarda solo lo necesario para atenderles."
+              },
+              {
+                "question": "¿Qué hago cuando ya no necesito un dato?",
+                "answer": "Revisa tus obligaciones de conservación y elimina lo que puedas de manera segura."
+              },
+              {
+                "question": "¿Debo usar la misma política en todos los países?",
+                "answer": "No. Las leyes y obligaciones cambian; busca orientación local si manejas información sensible."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Start with Security — FTC",
+                "url": "https://www.ftc.gov/business-guidance/resources/start-security-guide-business",
+                "scope": "Explica por qué conviene recoger y guardar solo datos necesarios."
+              },
+              {
+                "label": "Marco de privacidad — NIST",
+                "url": "https://www.nist.gov/privacy-framework",
+                "scope": "Orientación general sobre riesgos para las personas al utilizar información."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "como-pedir-resenas-reales-y-responder-criticas",
+    "category": "CRM y clientes",
+    "title": "¿Cómo pedir opiniones reales sin comprar reseñas?",
+    "intro": "Una opinión ayuda cuando cuenta una experiencia verdadera. Inventar reseñas o pagar solo por comentarios positivos puede dañar la confianza y contravenir reglas.",
+    "excerpt": "Aprende a pedir opiniones de forma respetuosa, responder críticas y evitar reseñas engañosas.",
+    "enPocasPalabras": [
+      "Pide opiniones auténticas sin exigir que sean positivas.",
+      "No publiques reseñas inventadas, ni siquiera si una IA las redacta.",
+      "Responde las críticas con calma, sin revelar información privada."
+    ],
+    "image": "/assets/learn/diagram-como-pedir.svg",
+    "imageAlt": "Opinión real; Respuesta respetuosa; Confianza",
+    "relatedSlugs": [
+      "perfil-empresa-google-completar-y-mantener-actualizado",
+      "datos-de-clientes-que-puedes-pedir-y-como-protegerlos"
+    ],
+    "editorialDraft": true,
+    "cta": {
+      "label": "Seguir aprendiendo",
+      "to": "/aprende",
+      "copy": "Una buena reputación se construye cumpliendo y atendiendo, no inventando testimonios."
+    },
+    "sections": [
+      {
+        "heading": "La pregunta detrás del problema",
+        "paragraphs": [
+          "Un proveedor ofrece venderte cincuenta opiniones de cinco estrellas para mejorar tu perfil. Suena fácil, pero esas reseñas no describen experiencias reales.",
+          "La confianza depende de lo que haces y de cómo respondes, también cuando algo sale mal."
+        ]
+      },
+      {
+        "heading": "Tres ideas que conviene conocer",
+        "paragraphs": [
+          "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
+        ],
+        "blocks": [
+          {
+            "type": "definitions",
+            "items": [
+              {
+                "term": "Reseña",
+                "definition": "Una opinión de una persona sobre su experiencia con un negocio."
+              },
+              {
+                "term": "Testimonio",
+                "definition": "Una recomendación presentada para apoyar la reputación de un producto o servicio."
+              },
+              {
+                "term": "Opinión falsa",
+                "definition": "Un comentario que inventa una experiencia o presenta como independiente a alguien que no lo es."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Cómo ponerlo en práctica",
+        "paragraphs": [
+          "Empieza con algo pequeño que puedas comprobar y mantener."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Pasos para empezar",
+            "items": [
+              {
+                "title": "Cumple primero",
+                "detail": "La mejor base para una buena opinión es un trabajo bien realizado."
+              },
+              {
+                "title": "Pide con respeto",
+                "detail": "Invita a valorar la experiencia sin presionar y siguiendo las normas de la plataforma."
+              },
+              {
+                "title": "Acepta críticas",
+                "detail": "Escucha el problema y responde con hechos sin discutir públicamente datos privados."
+              },
+              {
+                "title": "Corrige lo necesario",
+                "detail": "Usa los comentarios para revisar procesos reales del negocio."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo cotidiano: una cafetería recibe una reseña negativa",
+        "paragraphs": [
+          "Caso imaginario para practicar; no describe a un cliente real ni garantiza resultados."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "Una cafetería recibe una reseña negativa",
+            "hypothetical": true,
+            "context": "Una persona comenta que esperó demasiado.",
+            "problem": "La dueña quiere responder discutiendo los detalles de la compra.",
+            "approach": "Agradece el aviso, reconoce la experiencia sin revelar información y ofrece revisar la situación por un canal adecuado.",
+            "actions": [
+              "Responde con calma y sin insultos.",
+              "No publica datos privados ni acusa al cliente.",
+              "Revisa internamente qué ocurrió con los tiempos de espera."
+            ],
+            "lesson": "Responder con respeto puede ser más útil que intentar borrar toda crítica."
+          }
+        ]
+      },
+      {
+        "heading": "Errores que puedes evitar",
+        "paragraphs": [
+          "No necesitas hacerlo perfecto desde el principio. Estos tropiezos suelen complicar el trabajo."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Comprar reseñas o inventar clientes.",
+              "Premiar solamente las valoraciones positivas.",
+              "Publicar datos personales al responder una queja."
+            ]
+          },
+          {
+            "type": "summary",
+            "items": [
+              "Pide opiniones auténticas sin exigir que sean positivas.",
+              "No publiques reseñas inventadas, ni siquiera si una IA las redacta.",
+              "Responde las críticas con calma, sin revelar información privada."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "paragraphs": [],
+        "blocks": [
+          {
+            "type": "faq",
+            "items": [
+              {
+                "question": "¿Puedo pedir una reseña después de un servicio?",
+                "answer": "Sí, respetando las reglas de la plataforma y evitando presiones o incentivos engañosos."
+              },
+              {
+                "question": "¿Y si una opinión es injusta?",
+                "answer": "Puedes responder con respeto y usar el procedimiento oficial de la plataforma cuando haya incumplimientos."
+              },
+              {
+                "question": "¿Puedo usar testimonios creados por IA?",
+                "answer": "No los presentes como experiencias reales de personas que nunca existieron."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Fuentes para seguir aprendiendo",
+        "paragraphs": [
+          "Estas fuentes ofrecen orientaciones generales. Para obligaciones sobre dinero, publicidad o datos, comprueba también las reglas de tu país y actividad."
+        ],
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              {
+                "label": "Guía de opiniones y testimonios — FTC",
+                "url": "https://www.ftc.gov/business-guidance/resources/consumer-reviews-testimonials-rule-questions-answers",
+                "scope": "Explica normas de Estados Unidos sobre reseñas falsas e incentivos; revisa la normativa local."
+              },
+              {
+                "label": "Políticas de representación de negocios — Google",
+                "url": "https://support.google.com/business/answer/3038177",
+                "scope": "Orientaciones oficiales para mantener la información de un perfil empresarial fiel a la realidad."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  ...learnBusinessOperationsArticles,
+  ...learnOperations02Articles,
+  ...learnManagement03Articles,
 ];
+
+
+export const learnPathways = [
+  {
+    title: "Empieza desde cero",
+    description: "Entiende qué necesitas, organiza tus cuentas y aprende a proteger lo importante.",
+    slugs: [
+      "como-empezar-a-digitalizar-un-negocio-desde-cero",
+      "que-necesita-un-negocio-para-usar-internet-y-herramientas",
+      "correo-para-mi-negocio-como-usarlo-sin-perder-mensajes",
+      "como-proteger-cuentas-contrasenas-estafas-negocio",
+      "como-hacer-copias-de-seguridad-de-tu-negocio",
+    ],
+  },
+  {
+    title: "Que te encuentren y te entiendan",
+    description: "Presenta tu negocio con palabras claras y elige dónde mostrarlo.",
+    slugs: [
+      "como-explicar-lo-que-vendes-para-que-te-entiendan",
+      "redes-sociales-o-pagina-web-que-necesita-tu-negocio",
+      "fotos-y-publicaciones-utiles-sin-ser-disenador",
+      "perfil-empresa-google-completar-y-mantener-actualizado",
+    ],
+  },
+  {
+    title: "Atiende, vende y genera confianza",
+    description: "Responde bien, organiza pedidos y protege la confianza de tus clientes.",
+    slugs: [
+      "como-responder-la-primera-consulta-de-un-cliente",
+      "hojas-de-calculo-para-organizar-un-negocio-pequeno",
+      "como-vender-por-internet-sin-perder-el-control-pedidos-pagos",
+      "datos-de-clientes-que-puedes-pedir-y-como-protegerlos",
+      "como-pedir-resenas-reales-y-responder-criticas",
+    ],
+  },
+  {
+    title: "Mejora sin complicarte",
+    description: "Cuando tengas una base clara, aprende a medir, automatizar y usar IA con criterio.",
+    slugs: [
+      "analitica-web-que-medir-en-tu-negocio",
+      "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio",
+      "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
+      "conectar-herramientas-digitales-sin-complicar-tu-negocio",
+    ],
+  },
+  {
+    title: "Coordina equipos y varios negocios",
+    description: "Aprende a gestionar sedes, responsabilidades, herramientas y resultados sin mezclar información.",
+    slugs: [
+      "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo",
+      "quien-puede-ver-cambiar-y-publicar-en-tu-empresa",
+      "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
+      "como-comparar-resultados-de-sedes-sin-mezclar-las-cifras",
+    ],
+  },
+  {
+    title: "Trabaja mejor cada día",
+    description: "Organiza tareas, productos, formación y proyectos digitales sin complicar los procesos.",
+    slugs: [
+      "como-organizar-tareas-y-responsables-en-tu-equipo",
+      "como-controlar-inventario-sin-perder-productos-ni-datos",
+      "como-capacitar-al-equipo-en-herramientas-digitales",
+      "cuando-necesita-tu-empresa-un-sistema-erp",
+      "como-empezar-proyecto-digital-sin-detener-negocio",
+    ],
+  },
+  {
+    title: "Dirige y mejora con criterio",
+    description: "Presupuestos, compras, continuidad y decisiones con datos e IA bajo supervisión.",
+    slugs: [
+      "como-preparar-presupuesto-para-herramientas-digitales",
+      "como-ordenar-compras-proveedores-y-aprobaciones-en-una-empresa",
+      "que-hacer-si-falla-internet-o-el-sistema-de-tu-negocio",
+      "como-usar-inteligencia-artificial-en-una-empresa-con-supervision",
+      "como-saber-si-una-mejora-tecnologica-funciona-en-tu-empresa",
+    ],
+  },
+] as const;
 
 export function getLearnArticle(slug: string) {
   return learnArticles.find((article) => article.slug === slug);
