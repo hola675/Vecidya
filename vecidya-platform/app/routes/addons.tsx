@@ -62,7 +62,7 @@ export default function Addons() {
 
         <section aria-labelledby="addons-list-title" className="addons-list">
           <div className="addons-section-heading">
-            <p className="eyebrow">SIETE COMPLEMENTOS V1</p>
+            <p className="eyebrow">SIETE CAPACIDADES COMPLEMENTARIAS</p>
             <h2 id="addons-list-title">Una capacidad por necesidad.</h2>
           </div>
           <div className="addons-grid">
@@ -83,7 +83,7 @@ export default function Addons() {
                 </article>
             ))}
           </div>
-          <div className="addons-price-note"><strong>Costes de uso</strong><p>Algunos canales y proveedores cobran según mensajes, llamadas, IA, envíos o APIs. Estos costes se muestran aparte del precio Vecidya.</p></div>
+          <div className="addons-price-note"><strong>Qué se cobra aparte</strong><p>Algunas funciones estándar ya forman parte de Barrio o Ciudad. Cuando un canal, IA o proveedor genera un coste real, se informa el consumo y el recargo comercial antes de contratar. No se cobran por duplicado las funciones incluidas en la licencia.</p></div>
         </section>
 
         <CommercialBoundary current="addon" />
