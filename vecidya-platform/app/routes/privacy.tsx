@@ -105,13 +105,12 @@ export default function Privacy() {
           <div className="legal-highlight__intro">
             <p className="eyebrow">DIAGNÓSTICO VECIDYA</p>
             <h2 id="privacy-diagnostic-title">Explora tu situación sin crear una cuenta.</h2>
-            <p>El diagnóstico público está pensado para orientarte. Puedes responder sin indicar tu nombre, correo electrónico ni teléfono.</p>
+            <p>El diagnóstico público está pensado para orientarte y no exige registro, nombre, correo ni teléfono.</p>
             <Link className="button button--secondary" to="/diagnostico">Conocer el diagnóstico</Link>
           </div>
           <div className="legal-highlight__steps">
-            <div><strong>Mientras avanzas</strong><p>Tus respuestas se conservan en este navegador para que puedas continuar si recargas la página.</p></div>
-            <div><strong>Si dejas de utilizarlo</strong><p>Ese progreso se elimina tras 14 días sin actividad o antes si decides empezar de nuevo.</p></div>
-            <div><strong>Al terminar</strong><p>Las respuestas sirven para generar un resumen anónimo; no se conservan como un historial personal del diagnóstico público. El informe personalizado completo todavía no está disponible en este flujo.</p></div>
+            <div><strong>Mientras avanzas</strong><p>Tus respuestas se guardan en este navegador para que puedas continuar si recargas la página. Se eliminan tras 14 días sin actividad o antes si empiezas de nuevo.</p></div>
+            <div><strong>Al terminar</strong><p>Las respuestas se envían temporalmente al servidor para calcular el resumen anónimo; no se guardan allí ni quedan vinculadas a una identidad. En el entorno público no recogemos métricas de uso del diagnóstico. La descarga del resumen y el acceso al informe completo todavía no están disponibles en este flujo.</p></div>
             <div><strong>Si cambias de dispositivo</strong><p>Para continuar desde otro navegador o dispositivo tendrás que empezar de nuevo.</p></div>
           </div>
         </section>

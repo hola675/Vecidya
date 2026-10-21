@@ -1,7 +1,20 @@
 # Estado de implementación
 
+## COM-CATALOG-DETAILS-01 / COM-CATALOG-BENEFITS-02 / COM-PRICING-20-01 — oferta comercial detallada (2026-10-20)
+
+**Actualización de integración local (2026-10-21): CODE + TEST, RAN local, NO PUBLICADO.** Se corrigieron conflictos y los fallos de precio/contrato de catálogo; suite unitaria 1637/1637, typecheck, build y E2E comerciales/navegación en Worker+D1+Chrome local PASS (TESTING.md). Los párrafos históricos siguientes describen el estado previo a esta integración; ya no aplican las indicaciones «RAN pendiente» o «No se han ejecutado» para este árbol. Quedan sin certificar condiciones reales del proveedor, WCAG, producción y deploy.
+
+**CODE + TEST versionado / RAN pendiente, NO PUBLICADO.** Rama `feat/commercial-catalog-details-20261020` a partir de `main@a2f6f7c`. Catálogo central de 17 ofertas (3 licencias, 7 capacidades adicionales, 7 servicios), rutas `/licencias/:slug`, `/addons/:slug` y `/servicios/:slug`, fichas con inclusión/exclusión, precio, compatibilidad y límites. Barrio Standard se define como proceso comercial principal y Ciudad como biblioteca modular multiproceso, sin convertir automatizaciones base en add-ons. Se añadieron **beneficios cotidianos** en todas las fichas, ejemplos de recorrido en capacidades apropiadas y cautelas de continuidad de canales. WhatsApp explica recepción, creación/actualización de contactos, creación de oportunidad solo con workflow configurado, bandeja multicanal y permanencia condicionada de datos ya guardados cuando se desconecta el canal; **no** promete recuperar mensajes no recibidos ni funcionamiento mientras esté bloqueado.
+
+**Política de rentabilidad objetivo:** margen bruto mínimo **20 % del precio de venta** después de los costes directos verificables (no recargo del 20 % sobre costes). WhatsApp: referencia proveedor USD 10/subcuenta/mes → piso teórico USD 12,50 sin soporte/comisiones, propuesta desde USD 15/mes + uso pendiente de evaluación de costes. Algunas respuestas WhatsApp pasan a ser facturables desde el 1 de octubre de 2026 según categoría y franquicia. Las capacidades nativas del CRM no reciben cuotas inventadas. IA puede compartir plan por localización sin duplicar cobro. Licencias $39/$59/$89 y altas $0/$10/$15 conservadas; sus márgenes no están certificados hasta analizar costes reales. Confirmación de costes efectivos, autorización de reventa y condiciones contractuales necesaria antes de ofertar como disponible. Sitio público sin marca comercial del proveedor; trazabilidad interna no eliminada.
+
+**No se han ejecutado** typecheck, build, unitarias o E2E contra Worker local, ni verificación HTTP de producción, deployment, cambios a CRM real o facturación. Pruebas de catálogo, política de recargo y detalles versionadas. Este bloque es descripción de oferta objetivo hasta implementación y certificación operacional. No fusionar ni desplegar sin gates y autorización.
+
+
 
 ## UX-PUBLIC-JOURNEYS-03 — continuidad de ofertas, Contacto y Aprende (2026-10-20; rama `fix/ux-public-journeys-03-20261020`)
+
+**Actualización de integración local (2026-10-21): RAN local, NO PUBLICADO.** Retornos y CTA reconciliados con los IDs reales del catálogo; suite unitaria y E2E de recorridos, licencias, navegación y contacto PASS en Worker local. El texto posterior describe el estado anterior a esta ejecución. Sin envío de mensajes, comprobación visual humana completa ni deploy.
 
 **CODE + TEST versionado / RAN pendiente; sin deploy.** Partiendo de `main@a2f6f7c`, con PR #30 ya fusionado, el catálogo de Servicios conserva las siete familias y el de Complementos las siete capacidades. Los CTA de cada tarjeta ahora nombran la licencia, servicio o complemento específico; conservan `/contacto?interes=` con allowlist y sin envío automático. Contacto ofrece enlace de regreso a la ficha original usando exclusivamente un identificador comercial permitido (ancla interna), nunca un redirect libre. Home muestra cuatro servicios con nombres iguales a las fichas canónicas y enlaces directos `/servicios#...`. Se precisó la introducción de Complementos respecto de dependencias y consumos.
 

@@ -39,9 +39,9 @@ export const COMMERCIAL_CONTACT_INTERESTS = {
   "servicio-estructuracion": "el servicio Presencia & Marca",
   "servicio-formalizacion": "el servicio Web & Conversión",
   "servicio-presencia-digital": "el servicio Visibilidad & Marketing",
-  "servicio-automatizacion": "el servicio Sistema Comercial",
-  "servicio-inteligencia-artificial": "el servicio Automatización & Integraciones",
-  "servicio-visibilidad": "el servicio IA Aplicada",
+  "servicio-automatizacion": "el servicio Automatización & Integraciones",
+  "servicio-inteligencia-artificial": "el servicio IA Aplicada",
+  "servicio-visibilidad": "el servicio Sistema Comercial",
   "servicio-desarrollo-empresarial": "el servicio Desarrollo Empresarial",
   "complemento-whatsapp-business": "el complemento WhatsApp Business",
   "complemento-telephony-sms": "el complemento Telefonía y SMS",
@@ -90,5 +90,6 @@ export function resolveCommercialContactReturn(value: string | null) {
   } else {
     return null;
   }
-  return { to, label: `Volver a ${label}` };
+  const destination = label.startsWith("el ") ? `al ${label.slice(3)}` : `a ${label}`;
+  return { to, label: `Volver ${destination}` };
 }

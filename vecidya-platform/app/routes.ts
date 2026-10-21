@@ -6,8 +6,11 @@ const isDevelopmentServer = (globalThis as { process?: { env?: { NODE_ENV?: stri
 export default [
   index("routes/home.tsx"),
   route("licencias", "routes/licenses.tsx"),
+  route("licencias/:slug", "routes/license-detail.tsx"),
   route("addons", "routes/addons.tsx"),
+  route("addons/:slug", "routes/addon-detail.tsx"),
   route("servicios", "routes/services.tsx"),
+  route("servicios/:slug", "routes/service-detail.tsx"),
   route("unete", "routes/join.tsx"),
   route("contacto", "routes/contact.tsx"),
   route("vecindario", "routes/directory.tsx"),
