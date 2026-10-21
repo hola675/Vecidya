@@ -7,7 +7,7 @@ const whatsapp = "https://wa.me/573244321864";
 
 test("acepta solo identificadores comerciales explícitos", () => {
   assert.equal(resolveCommercialContactInterest("cuadra")?.label, "la licencia Cuadra");
-  assert.equal(resolveCommercialContactInterest("servicio-visibilidad")?.label, "el servicio IA Aplicada");
+  assert.equal(resolveCommercialContactInterest("servicio-visibilidad")?.label, "el servicio Sistema Comercial");
   assert.equal(resolveCommercialContactInterest("complemento-voice-ai")?.label, "el complemento IA de Voz");
   assert.equal(resolveCommercialContactInterest("complemento-whatsapp-business")?.label, "el complemento WhatsApp Business");
   for (const value of [null, "", "Cuadra", "otro", "<script>alert(1)</script>", "__proto__", "constructor"]) {
@@ -47,7 +47,9 @@ test("regresa a la tarjeta exacta desde un interés incluido en la allowlist", (
     ["barrio", "/licencias#barrio", "Volver a la licencia Barrio"],
     ["ciudad", "/licencias#ciudad", "Volver a la licencia Ciudad"],
     ["servicio-formalizacion", "/servicios#formalizacion", "Volver al servicio Web & Conversión"],
-    ["servicio-visibilidad", "/servicios#visibilidad", "Volver al servicio IA Aplicada"],
+    ["servicio-automatizacion", "/servicios#automatizacion", "Volver al servicio Automatización & Integraciones"],
+    ["servicio-inteligencia-artificial", "/servicios#inteligencia-artificial", "Volver al servicio IA Aplicada"],
+    ["servicio-visibilidad", "/servicios#visibilidad", "Volver al servicio Sistema Comercial"],
     ["complemento-voice-ai", "/addons#voice-ai", "Volver al complemento IA de Voz"],
     ["complemento-whatsapp-business", "/addons#whatsapp-business", "Volver al complemento WhatsApp Business"],
   ] as const;

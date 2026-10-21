@@ -1,11 +1,18 @@
 # Pruebas
 
+## COM-CATALOG-BENEFITS-02 / PRICING-20-01 — integración local (2026-10-21)
+
+**RAN local antes del commit de integración:** suite `pnpm run test:unit` 1637/1637 PASS; `pnpm run typecheck` y `pnpm run build` PASS. Contra Worker con D1 local migrada y Chrome: `commercial-details-check.mjs` (17 fichas, 360/1024 px), `addons-experience-check.mjs` y `commercial-experience-review-check.mjs` (1366/768/390/360 px) PASS. Las fichas incluyen HTTP 200 real, SEO, retorno, CTA, 404 y ausencia de secciones duplicadas. WhatsApp desde USD 15 depende del coste directo total; el piso teórico sobre USD 10 es USD 12,50 para margen bruto del 20 %.
+
+**Pendiente independiente:** inspección manual de teclado/reflow 200 %/contraste y prueba real autorizada de canales, deduplicación, oportunidad condicionada, historial, desconexión y recuperación. No inferir esas condiciones de un E2E estático. Verificar facturas reales y autorización de reventa antes de ofertar precios como contractuales; no duplicar planes IA. No se desplegó ni se usaron canales o datos reales.
+
+
 
 ## UX-PUBLIC-JOURNEYS-03 — recorridos públicos y regreso a oferta (2026-10-20)
 
-**TEST versionado / NO RAN.** `tests/unit/commercial-contact.test.ts` amplía la verificación de `resolveCommercialContactReturn`, todos los intereses permitidos, retornos a anclas internas y rechazo de destinos ajenos. `tests/e2e/public-commercial-journeys-check.mjs`, incorporado a `tests/e2e/run-local-e2e.mjs`, cubre en 320/390/768/1366 px: Inicio → Licencias (Cuadra) → Contacto con contexto → ficha; Inicio → tarjeta Web & Conversión → Contacto → ficha; Licencias → Complementos (WhatsApp Business) → Contacto → ficha; e Inicio → Aprende → Diagnóstico o Contacto genérico. Comprueba que el correo/WhatsApp solo preparan mensajes contextualizados, sin enviarlos. Se actualizan aserciones de CTA en `licenses-experience-check.mjs`.
+**RAN local en integración:** `tests/unit/commercial-contact.test.ts` incluido en la suite completa PASS. `public-commercial-journeys-check.mjs` (320/390/768/1366 px), `licenses-experience-check.mjs` y `join-contact-experience-check.mjs` (1366/768/390/360 px), y `public-navigation-a11y-check.mjs` (1366/1024/960/768/390/360/320 px) PASS con Chrome y Worker locales. Correo y WhatsApp solo preparan mensajes; no envían ni automatizan CRM.
 
-**Gates pendientes:** `pnpm install --frozen-lockfile`, `pnpm run test:unit`, `pnpm run typecheck`, `pnpm run build`, `git diff --check`; ejecutar el nuevo E2E, `licenses-experience-check.mjs`, `public-navigation-a11y-check.mjs`, `addons-experience-check.mjs` y `join-contact-experience-check.mjs` contra Worker local seguro. Realizar comprobación manual de foco por teclado, enlaces externos, controles de 44 px, reflow 200 %, legibilidad y ausencia de overflow. Las pruebas no se han ejecutado en este entorno de edición mediante GitHub; no representan validación de producción o cumplimiento WCAG.
+**Límite:** falta revisión visual manual completa del foco, contraste, controles de 44 px y reflow al 200 %. PASS locales no certifican producción, WCAG ni entrega de mensajes.
 
 
 

@@ -33,6 +33,7 @@ const scripts = [
   "learn-experience-check.mjs",
   "public-navigation-a11y-check.mjs",
   "public-commercial-journeys-check.mjs",
+  "commercial-details-check.mjs",
   "commercial-experience-review-check.mjs",
   "legal-trust-experience-check.mjs",
   "product-experience-b-client-app-check.mjs",

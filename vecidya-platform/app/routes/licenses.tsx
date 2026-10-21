@@ -4,71 +4,33 @@ import { publicAssets } from "../assets/public-assets";
 import { CTASection } from "../components/public-v2";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { DIAGNOSTIC_CTA_COPY, PUBLIC_ACTION_LABELS } from "../content/public-copy";
+import { LICENSE_OFFERS } from "../content/commercial-detail";
 
 import type { Route } from "./+types/licenses";
 
-type License = {
-  id: "cuadra" | "barrio" | "ciudad";
-  name: string;
-  objective: string;
-  idealFor: string;
-  marker: string;
-  icon: string;
-  includes: string[];
-  level: string;
-  priceUsd: number;
-  activationUsd: number;
-};
-
-// Precios de referencia de docs/business/VECIDYA_PRODUCT_CATALOG.md, confirmados por el usuario
-// el 2026-09-25 como precio público real (no un checkout: activación sigue siendo por contacto).
-const licenses: License[] = [
-  {
-    id: "cuadra",
-    name: "Cuadra",
-    objective: "Organiza.",
-    idealFor: "Para presentar tu negocio en Vecidya y formar parte del Vecindario, sin CRM.",
-    marker: "C",
-    icon: publicAssets.catalog.plans.cuadra,
-    includes: ["Cuenta y organización Vecidya", "Perfil y MiniWeb del negocio", "Presencia en Vecindario", "Información y prioridades"],
-    level: "Base",
-    priceUsd: 39,
-    activationUsd: 0,
-  },
-  {
-    id: "barrio",
-    name: "Barrio",
-    objective: "Capta y da seguimiento.",
-    idealFor: "Para coordinar consultas y oportunidades con un CRM externo gestionado mediante GHL.",
-    marker: "B",
-    icon: publicAssets.catalog.plans.barrio,
-    includes: ["Presencia Vecidya y MiniWeb", "CRM externo (GHL)", "Contactos y oportunidades", "Pipeline, captación y seguimiento"],
-    level: "Crecimiento",
-    priceUsd: 59,
-    activationUsd: 10,
-  },
-  {
-    id: "ciudad",
-    name: "Ciudad",
-    objective: "Automatiza y controla.",
-    idealFor: "Para coordinar varios procesos comerciales, equipos y automatizaciones.",
-    marker: "C",
-    icon: publicAssets.catalog.plans.ciudad,
-    includes: ["Todo Barrio", "Procesos comerciales relacionados", "Asignación y coordinación de equipos", "Automatización multiproceso", "Control operativo"],
-    level: "Escala",
-    priceUsd: 89,
-    activationUsd: 15,
-  },
-];
+// Catálogo de precios, alcances y fichas desde la misma fuente comercial.
+const licenses = LICENSE_OFFERS.map((offer) => ({
+  id: offer.id,
+  name: offer.title,
+  objective: offer.promise,
+  idealFor: offer.bestFor,
+  marker: offer.id[0].toUpperCase(),
+  icon: publicAssets.catalog.plans[offer.id],
+  includes: offer.preview,
+  level: offer.level,
+  priceUsd: offer.priceUsd,
+  activationUsd: offer.setupUsd,
+  detailPath: offer.detailPath,
+}));
 
 const comparisonRows = [
   { label: "Objetivo", values: ["Ordenar", "Captar", "Automatizar"] },
   { label: "Etapa", values: ["Inicio", "Crecimiento", "Escala"] },
   { label: "Organización", values: ["Base Vecidya", "Base Vecidya", "Base Vecidya"] },
   { label: "MiniWeb y Vecindario", values: ["Incluidos", "Incluidos", "Incluidos"] },
-  { label: "CRM externo (GHL)", values: ["No incluido", "Estándar", "Avanzado"] },
-  { label: "Seguimiento CRM", values: ["No incluido", "Estándar", "Avanzado"] },
-  { label: "Automatizaciones CRM", values: ["No incluidas", "Estándar", "Avanzadas"] },
+  { label: "CRM operativo", values: ["No incluido", "Proceso principal", "Multiproceso"] },
+  { label: "Seguimiento CRM", values: ["No incluido", "Proceso principal", "Coordinado"] },
+  { label: "Automatizaciones CRM", values: ["No incluidas", "Del proceso principal", "Entre procesos"] },
 ] as const;
 
 export function meta(_: Route.MetaArgs) {
@@ -107,7 +69,8 @@ export default function Licenses() {
             <p className="eyebrow">TRES MOMENTOS</p>
             <h2 id="licenses-levels-title">Tres productos. Una decisión clara.</h2>
             <p className="licenses-price-note">Precios públicos en USD. La activación se coordina por contacto; no hay compra automática.</p>
-            <p className="licenses-price-note">Cuadra funciona de forma independiente y no requiere GHL. Barrio y Ciudad incorporan capacidades CRM externas.</p>
+            <p className="licenses-price-note">Cuadra funciona de forma independiente y no requiere CRM. Barrio incorpora el CRM para un proceso comercial principal; Ciudad coordina procesos relacionados.</p>
+            <p className="licenses-price-note">De Cuadra a Barrio: USD 20/mes más para captar y dar seguimiento. De Barrio a Ciudad: USD 30/mes más para coordinar varios procesos. No necesitas subir de nivel si tu licencia actual ya resuelve el trabajo.</p>
           </div>
           <div className="licenses-grid">
             {licenses.map((license, index) => (
@@ -128,7 +91,10 @@ export default function Licenses() {
                   <ul>{license.includes.map((item) => <li key={item}><span aria-hidden="true">✓</span>{item}</li>)}</ul>
                 </div>
                 <p className="license-card__activation">Puesta en marcha ${license.activationUsd} una vez</p>
-                <Link className="license-card__availability" to={`/contacto?interes=${license.id}`}>Consultar licencia {license.name} <span aria-hidden="true">→</span></Link>
+                <div className="commercial-catalog__actions">
+                  <Link className="text-link" to={license.detailPath}>Ver detalles de {license.name} <span aria-hidden="true">→</span></Link>
+                  <Link className="license-card__availability" to={`/contacto?interes=${license.id}`}>Empezar con {license.name} <span aria-hidden="true">→</span></Link>
+                </div>
               </article>
             ))}
           </div>
@@ -162,8 +128,8 @@ export default function Licenses() {
             <h2 id="licenses-addons-title">Amplía tu sistema cuando lo necesites.</h2>
           </div>
           <div className="licenses-addons__content">
-            <p>Los complementos añaden capacidades cuando realmente las necesitas.</p>
-            <ul><li>WhatsApp</li><li>Inteligencia Artificial</li><li>Telefonía</li><li>Automatizaciones</li><li>Integraciones</li></ul>
+            <p>Los complementos son capacidades recurrentes adicionales con sus propias condiciones y costes. Las automatizaciones estándar de Barrio y los módulos multiproceso de Ciudad ya pertenecen a esas licencias: no se cobran de nuevo como complemento genérico.</p>
+            <ul><li>WhatsApp</li><li>Inteligencia Artificial</li><li>Telefonía</li><li>Reputación y campañas</li><li>Conexiones estándar</li></ul>
             <Link className="text-link" to="/addons">Conoce los complementos <span aria-hidden="true">→</span></Link>
           </div>
         </section>

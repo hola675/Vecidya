@@ -1504,7 +1504,7 @@ export const learnArticles: LearnArticle[] = [
     slug: "organizar-consultas-mensajes-llamadas-formularios",
     category: "CRM y clientes",
     title: "Cómo organizar mensajes, llamadas y formularios sin perder consultas",
-    intro: "Te escriben por una red, te llaman y después alguien completa un formulario. ¿Cómo recuerdas a quién debes responder? Empieza con una lista de pendientes clara.",
+    intro: "Recibes mensajes por una red, llamadas y formularios. ¿Cómo recuerdas a quién debes responder? Empieza con una lista de pendientes clara.",
     excerpt: "Organiza mensajes, llamadas y formularios sin perder el siguiente paso.",
     enPocasPalabras: ["Reúne las consultas pendientes en un solo lugar.","Deja claro quién responde y qué hará después.","Atender una solicitud no da permiso automático para enviar publicidad."],
     image: "/assets/learn/diagram-crm.svg",

@@ -37,14 +37,16 @@ async function runViewport(width, height) {
   const sitemap = await fetch(new URL("/sitemap.xml", baseUrl));
   assert((await sitemap.text()).includes("/addons"), `${label} sitemap no incluye Addons.`);
   assert(await page.getByRole("heading", { name: "Añade capacidades cuando las necesites." }).isVisible(), `${label} no mostró el hero.`);
-  for (const name of ["WhatsApp Business", "Telefonía & SMS", "Reputación & Reseñas", "Campañas & Difusión", "IA Conversacional", "IA de Voz", "Conexiones & Integraciones"]) {
+  for (const name of ["WhatsApp Business", "Telefonía y SMS", "Reputación y Reseñas", "Campañas y Difusión", "IA Conversacional", "IA de Voz", "Conexiones e Integraciones"]) {
     assert(await page.locator(".addon-card").getByRole("heading", { name, exact: true }).isVisible(), `${label} no mostró el addon ${name}.`);
   }
   assert(await page.locator(".addons-hero").getByRole("link", { name: "Encontrar qué necesito" }).getAttribute("href") === "/diagnostico", `${label} CTA de Diagnóstico incorrecto.`);
   assert(await page.locator(".addons-hero").getByRole("link", { name: "Ver licencias" }).getAttribute("href") === "/licencias", `${label} CTA de Licencias incorrecto.`);
   assert(await page.getByRole("heading", { name: "Cada necesidad tiene su lugar." }).isVisible(), `${label} no mostró la separación comercial.`);
   assert(await page.getByRole("link", { name: /Ver servicios/i }).getAttribute("href") === "/servicios", `${label} CTA de Servicios incorrecto.`);
-  assert((await page.content()).match(/\$9\/mes|\$12\/mes|\$15\/mes|\$20\/mes/i), `${label} no mostró precios V1.`);
+  assert(await page.locator(".addon-card__price").first().innerText() === "Desde $15/mes + consumo", `${label} propuesta WhatsApp no respeta el umbral documentado de margen bruto.`);
+  assert(await page.locator('a[href="/addons/whatsapp-business"]').count() === 1, `${label} falta ficha de beneficios de WhatsApp.`);
+  assert(!(await page.locator("main").innerText()).includes("$9/mes"), `${label} conserva fees ficticios anteriores.`);
 
   await page.getByRole("link", { name: "Encontrar qué necesito" }).focus();
   assert(await page.getByRole("link", { name: "Encontrar qué necesito" }).evaluate((element) => document.activeElement === element), `${label} CTA no recibe foco.`);

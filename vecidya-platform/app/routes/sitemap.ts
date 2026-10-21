@@ -2,6 +2,7 @@ import { createDatabase } from "../../db/client.server";
 import { listPublishedBusinessProfiles } from "../../db/queries/business-profile.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { learnArticles } from "../content/learn";
+import { LICENSE_OFFERS, ADDON_OFFERS, SERVICE_OFFERS } from "../content/commercial-detail";
 import { publicSiteUrl } from "../lib/public-seo";
 
 import type { Route } from "./+types/sitemap";
@@ -36,9 +37,10 @@ export async function loader({ context }: Route.LoaderArgs) {
     "/privacidad",
     "/terminos",
   ];
+  const detailPaths = [...LICENSE_OFFERS, ...ADDON_OFFERS, ...SERVICE_OFFERS].map((offer) => offer.detailPath);
   const profilePaths = profiles.map((profile) => `/vecindario/${profile.slug}`);
   const articlePaths = learnArticles.filter((article) => !article.editorialDraft).map((article) => `/aprende/${article.slug}`);
-  const entries = [...staticPaths, ...articlePaths, ...profilePaths].map((path) => urlEntry(publicSiteUrl(path)));
+  const entries = [...staticPaths, ...detailPaths, ...articlePaths, ...profilePaths].map((path) => urlEntry(publicSiteUrl(path)));
   const body = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',

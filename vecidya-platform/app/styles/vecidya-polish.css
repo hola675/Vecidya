@@ -453,6 +453,26 @@
 
 /* UX-PUBLIC-JOURNEYS-03: Home previews link straight to canonical service cards. */
 .home-services-grid .public-v2-service-card .text-link {
+  margin-top: .5rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: .2em;
+}
+.home-services-grid .public-v2-service-card .text-link:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+}
+
+/* COM-CATALOG-DETAILS-01: fichas comerciales extensas sin sobrecargar catálogos. */
+.commercial-catalog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .35rem 1rem;
+  margin-top: auto;
+}
+.commercial-catalog__actions > a {
   display: inline-flex;
   min-height: 44px;
   align-items: center;
@@ -462,7 +482,221 @@
   overflow-wrap: anywhere;
   text-underline-offset: .2em;
 }
-.home-services-grid .public-v2-service-card .text-link:focus-visible {
-  outline: 3px solid var(--blue);
-  outline-offset: 3px;
+.commercial-catalog__actions > a:focus-visible,
+.commercial-detail-page a:focus-visible {
+  outline: 3px solid #0059ba;
+  outline-offset: 4px;
+}
+.commercial-detail-page {
+  max-width: 72rem;
+  overflow-wrap: anywhere;
+}
+.commercial-detail__breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: clamp(1.5rem, 4vw, 3rem);
+  color: #43566c;
+}
+.commercial-detail__breadcrumb a {
+  color: #064d94;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+.commercial-detail__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(15rem, .8fr);
+  gap: clamp(1.25rem, 4vw, 3.25rem);
+  align-items: start;
+}
+.commercial-detail__hero > div { min-width: 0; }
+.commercial-detail__hero h1 {
+  max-width: 19ch;
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+  line-height: 1.05;
+}
+.commercial-detail__promise {
+  color: #15395c;
+  font-size: clamp(1.25rem, 2.4vw, 1.7rem);
+  font-weight: 700;
+  line-height: 1.32;
+}
+.commercial-detail__hero > div > p:not(.eyebrow) { max-width: 62ch; line-height: 1.65; }
+.commercial-detail__price {
+  display: grid;
+  gap: .7rem;
+  min-width: 0;
+  padding: clamp(1.1rem, 3vw, 2rem);
+  border: 1px solid #c6d8ed;
+  border-radius: 1.25rem;
+  background: #f5f9ff;
+}
+.commercial-detail__price > strong {
+  font-size: clamp(1.45rem, 3.5vw, 2.25rem);
+  color: #143a62;
+  line-height: 1.15;
+}
+.commercial-detail__price > p { margin: 0; font-size: .94rem; line-height: 1.55; }
+.commercial-detail__introduction,
+.commercial-detail__examples,
+.commercial-detail__modules,
+.commercial-detail__related,
+.commercial-detail__decision,
+.commercial-detail__closing { margin-top: clamp(2rem, 5vw, 4rem); }
+.commercial-detail-page :is(h2,h3) { line-height: 1.24; }
+.commercial-detail-page p,
+.commercial-detail-page li { line-height: 1.65; }
+.commercial-detail__columns { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; margin-top: 2rem; }
+.commercial-detail__panel,
+.commercial-detail__module-grid > article,
+.commercial-detail__decision,
+.commercial-detail__related {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid #d6e2ef;
+  border-radius: 1rem;
+  background: #fff;
+}
+.commercial-detail__panel ul,
+.commercial-detail__examples ul { padding-left: 1.4rem; }
+.commercial-detail__panel li,
+.commercial-detail__examples li { margin-bottom: .7rem; }
+.commercial-detail__module-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 1rem;
+  margin-top: 1.35rem;
+}
+.commercial-detail__module-grid h3 { font-size: 1.13rem; }
+.commercial-detail__module-grid p { margin-bottom: 0; color: #41546c; }
+.commercial-detail__decision {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 2rem;
+  background: #f4f8ff;
+}
+.commercial-detail__related-links { display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; }
+.commercial-detail__related-links a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: #064d94;
+  font-weight: 700;
+  text-decoration: underline;
+}
+.commercial-detail__closing {
+  display: grid;
+  gap: 1.2rem;
+  justify-items: start;
+  border-top: 1px solid #d6e2ef;
+  padding-top: 1.5rem;
+}
+.commercial-detail__closing > p { max-width: 75ch; }
+@media (max-width: 760px) {
+  .commercial-detail__hero,
+  .commercial-detail__columns,
+  .commercial-detail__module-grid,
+  .commercial-detail__decision { grid-template-columns: minmax(0,1fr); }
+  .commercial-detail__price { max-width: none; }
+}
+
+
+/* COM-CATALOG-BENEFITS-02 — benefits and channel continuity explained in plain language. */
+.commercial-detail__benefits,
+.commercial-detail__journey,
+.commercial-detail__continuity {
+  margin-top: clamp(2rem, 5vw, 4rem);
+}
+.commercial-detail__benefits ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .85rem;
+  list-style: none;
+  padding: 0;
+}
+.commercial-detail__benefits li {
+  min-width: 0;
+  border: 1px solid #d6e2ef;
+  border-radius: .85rem;
+  padding: 1rem 1.2rem;
+  background: #f7faff;
+}
+.commercial-detail__benefits li::before {
+  content: "✓";
+  color: #126344;
+  font-weight: 800;
+  margin-right: .55rem;
+}
+.commercial-detail__journey {
+  border-radius: 1.25rem;
+  padding: clamp(1.1rem, 3vw, 2rem);
+  background: #eef5fc;
+}
+.commercial-detail__journey > p:not(.eyebrow) { max-width: 67ch; }
+.commercial-detail__journey ol {
+  display: grid;
+  gap: .85rem;
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.commercial-detail__journey li { padding-left: .35rem; }
+.commercial-detail__continuity {
+  border-left: 4px solid #286fa2;
+  border-radius: .5rem;
+  padding: 1rem clamp(1rem, 3vw, 1.75rem);
+  background: #f4f8ff;
+}
+.commercial-detail__continuity > p:not(.eyebrow) { max-width: 75ch; }
+@media (max-width: 760px) {
+  .commercial-detail__benefits ul { grid-template-columns: minmax(0, 1fr); }
+}
+
+
+/* Beneficios concretos, recorrido y continuidad del contexto comercial. */
+.commercial-detail__benefits,
+.commercial-detail__journey,
+.commercial-detail__continuity {
+  margin-top: clamp(2rem, 5vw, 4rem);
+}
+.commercial-detail__benefits ul,
+.commercial-detail__journey ol {
+  display: grid;
+  gap: 1rem;
+  padding-left: 1.5rem;
+  max-width: 76ch;
+}
+.commercial-detail__benefits li,
+.commercial-detail__journey li {
+  line-height: 1.65;
+}
+.commercial-detail__journey,
+.commercial-detail__continuity {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid #d6e2ef;
+  border-radius: 1rem;
+  background: #f5f9ff;
+}
+.commercial-detail__journey > p:last-child,
+.commercial-detail__continuity > p:last-child {
+  max-width: 77ch;
+  margin-bottom: 0;
+}
+
+
+/* COM-CATALOG-BENEFITS-02 — concise proof of value in product grids. */
+.addon-card__benefit,
+.services-core-card__benefit {
+  min-width: 0;
+  margin: .5rem 0;
+  border-left: 3px solid #5988b7;
+  padding: .45rem .7rem;
+  background: #f3f8fd;
+  color: #244361;
+  font-size: .91rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.addon-card__benefit strong,
+.services-core-card__benefit strong {
+  color: #163957;
 }
