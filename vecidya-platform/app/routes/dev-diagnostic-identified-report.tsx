@@ -3,10 +3,11 @@ import { useState } from "react";
 import { readRequestBodyLimited, RequestBodyTooLargeError } from "../features/diagnostic/bounded-request-body.server";
 
 import { deleteAuthorizedIdentifiedReport, getAuthorizedReport, recordDetailedReportFirstOpen, revokeDiagnosticOptionalIntents } from "../../db/queries/diagnostic-identification.server";
-import { REPORT_VERSION, type DiagnosticReportV1 } from "../components/diagnostic-report/report-model";
+import { REPORT_VERSION, type DiagnosticReportDocumentV1 } from "../components/diagnostic-report/report-model";
 import { DiagnosticReport } from "../components/diagnostic-report/diagnostic-report";
 import { readCookie, digestOpaqueToken, constantTimeEqual } from "../features/diagnostic/report-access-crypto.server";
 import { isCurrentPublicDiagnosticEngineIdentityV1 } from "../features/diagnostic/public-diagnostic-replay.server";
+import { METHODOLOGY_VERSION } from "../features/diagnostic/qbv2-methodology";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "react-router";
 
@@ -36,10 +37,21 @@ export async function loader({ context, params, request }: LoaderFunctionArgs) {
   } catch {
     throw notFound();
   }
-  if (!isCurrentPublicDiagnosticEngineIdentityV1(storedIdentity) || !isRecord(report) || report.reportVersion !== row.snapshot.reportVersion || !isRecord(report.overallPresence) || !Array.isArray(report.dimensions) || !Array.isArray(report.recommendations)) throw notFound();
+  if (!isRecord(report) || report.reportVersion !== row.snapshot.reportVersion || !isRecord(report.overallPresence) || !Array.isArray(report.dimensions) || !Array.isArray(report.recommendations)) throw notFound();
+  const publicReport = isCurrentPublicDiagnosticEngineIdentityV1(storedIdentity);
+  let candidateReport = false;
+  if (!publicReport && import.meta.env.DEV) {
+    const { CANDIDATE_RESULT_IDENTITY_V3, isCandidateResultIdentityV3 } = await import("../features/diagnostic/qa03b/qbv2-candidate-pipeline");
+    candidateReport = isCandidateResultIdentityV3(storedIdentity)
+      && JSON.stringify(storedIdentity) === JSON.stringify(CANDIDATE_RESULT_IDENTITY_V3)
+      && isCandidateResultIdentityV3(report.candidateEngineIdentity)
+      && JSON.stringify(report.candidateEngineIdentity) === JSON.stringify(CANDIDATE_RESULT_IDENTITY_V3)
+      && report.methodologyVersion === METHODOLOGY_VERSION;
+  }
+  if (!publicReport && !candidateReport) throw notFound();
   try { await recordDetailedReportFirstOpen(env.DB, row.access.id, params.requestId, new Date()); }
   catch { /* Analytics must not prevent opening an already authorized report. */ }
-  return { requestId: params.requestId, report: report as unknown as DiagnosticReportV1 };
+  return { requestId: params.requestId, report: report as unknown as DiagnosticReportDocumentV1 };
 }
 
 export async function action({ context, params, request }: ActionFunctionArgs) {

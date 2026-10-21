@@ -82,14 +82,12 @@ export function normalizeReportEmail(value: unknown): string | null {
   return text.toLowerCase();
 }
 
-export function validateDiagnosticReportRequest(value: unknown): ValidatedDiagnosticReportRequest | null {
-  if (!isRecord(value) || !hasExactKeys(value, [
-    "engineIdentity", "answers", "fullName", "businessName", "email", "phone",
-    "serviceNoticeVersion", "serviceNoticeAcknowledged", "commercialContactOptIn", "commercialNoticeVersion",
-    "researchParticipationOptIn", "researchNoticeVersion",
-  ])) return null;
-  if (!hasPublicDiagnosticEngineIdentityV1(value.engineIdentity)) return null;
-  if (!Array.isArray(value.answers)) return null;
+export type ValidatedReportDetails = Pick<ValidatedDiagnosticReportRequest,
+  "fullName" | "businessName" | "email" | "phone" | "serviceNoticeVersion" | "serviceNoticeAcknowledged" |
+  "commercialContactOptIn" | "commercialNoticeVersion" | "researchParticipationOptIn" | "researchNoticeVersion"
+>;
+
+export function validateReportDetails(value: Record<string, unknown>): ValidatedReportDetails | null {
   const fullName = cleanText(value.fullName, 120);
   const businessName = value.businessName === null ? null : cleanText(value.businessName, 160);
   const email = normalizeReportEmail(value.email);
@@ -101,8 +99,6 @@ export function validateDiagnosticReportRequest(value: unknown): ValidatedDiagno
   if (value.commercialContactOptIn ? value.commercialNoticeVersion !== COMMERCIAL_CONTACT_NOTICE_VERSION : value.commercialNoticeVersion !== null) return null;
   if (value.researchParticipationOptIn ? value.researchNoticeVersion !== DIAGNOSTIC_RESEARCH_NOTICE_VERSION : value.researchNoticeVersion !== null) return null;
   return {
-    engineIdentity: value.engineIdentity,
-    answers: value.answers as DiagnosticReportRequest["answers"],
     fullName,
     businessName,
     email,
@@ -113,6 +109,23 @@ export function validateDiagnosticReportRequest(value: unknown): ValidatedDiagno
     commercialNoticeVersion: value.commercialContactOptIn ? COMMERCIAL_CONTACT_NOTICE_VERSION : null,
     researchParticipationOptIn: value.researchParticipationOptIn,
     researchNoticeVersion: value.researchParticipationOptIn ? DIAGNOSTIC_RESEARCH_NOTICE_VERSION : null,
+  };
+}
+
+export function validateDiagnosticReportRequest(value: unknown): ValidatedDiagnosticReportRequest | null {
+  if (!isRecord(value) || !hasExactKeys(value, [
+    "engineIdentity", "answers", "fullName", "businessName", "email", "phone",
+    "serviceNoticeVersion", "serviceNoticeAcknowledged", "commercialContactOptIn", "commercialNoticeVersion",
+    "researchParticipationOptIn", "researchNoticeVersion",
+  ])) return null;
+  if (!hasPublicDiagnosticEngineIdentityV1(value.engineIdentity)) return null;
+  if (!Array.isArray(value.answers)) return null;
+  const details = validateReportDetails(value);
+  if (!details) return null;
+  return {
+    engineIdentity: value.engineIdentity,
+    answers: value.answers as DiagnosticReportRequest["answers"],
+    ...details,
   };
 }
 

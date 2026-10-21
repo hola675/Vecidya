@@ -200,7 +200,7 @@ export function AnonymousDiagnosticFlow() {
     title="No pudimos preparar tu resumen"
   />;
   else if (view.kind === "result") content = <AnonymousSummaryScreen onRestart={requestReset} onRequestReport={() => { if (import.meta.env.DEV && view.engineIdentity && session) { sendFunnelEvent("detailed_report_cta_clicked"); setView({ kind: "identify" }); } }} reportRequestEnabled={Boolean(import.meta.env.DEV && view.engineIdentity && session)} summary={view.summary} />;
-  else if (view.kind === "identify" && session && resultIdentity && activeSummary) content = <IdentifiedDiagnosticRequestForm engineIdentity={resultIdentity} onCancel={() => setView({ kind: "result", summary: activeSummary, engineIdentity: resultIdentity })} onSubmitted={(requestId) => { setPendingRequestId(requestId); setView({ kind: "verification-pending", requestId }); }} session={session} />;
+  else if (view.kind === "identify" && session && resultIdentity && activeSummary) content = <IdentifiedDiagnosticRequestForm source={{ payload: { engineIdentity: resultIdentity, answers: session.answeredQuestionIds.map((questionId) => ({ questionId, value: session.answers[questionId] })) } }} onCancel={() => setView({ kind: "result", summary: activeSummary, engineIdentity: resultIdentity })} onSubmitted={(requestId) => { setPendingRequestId(requestId); setView({ kind: "verification-pending", requestId }); }} />;
   else if (view.kind === "verification-pending" && pendingRequestId === view.requestId && activeSummary) content = <DiagnosticVerificationPending onBack={() => setView({ kind: "result", summary: activeSummary, engineIdentity: resultIdentity })} requestId={view.requestId} />;
   else if (session && session.status === "completing" && session.reviewIndex === null) {
     content = <>
