@@ -5,6 +5,7 @@ import {
 } from "../../../components/diagnostic-flow/qa03b-presentation";
 import {
   CANDIDATE_RESULT_IDENTITY_V3,
+  isCandidateResultIdentityV3,
   type CandidatePipelineResultV3,
 } from "./qbv2-candidate-pipeline";
 
@@ -37,6 +38,20 @@ export type AnonymousDiagnosticSummaryV1 = {
   readonly methodologyVersion: string;
   readonly diagnosticIdentity: typeof CANDIDATE_RESULT_IDENTITY_V3;
 };
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
+
+export function isAnonymousDiagnosticSummaryV1(value: unknown): value is AnonymousDiagnosticSummaryV1 {
+  if (!isRecord(value) || Object.keys(value).length !== 11) return false;
+  if (value.contractVersion !== "anonymous-diagnostic-summary-v1" || typeof value.overallStatus !== "string" || typeof value.confidence !== "string" || typeof value.coverage !== "string" || typeof value.executiveSummary !== "string") return false;
+  if (!(value.score === null || (typeof value.score === "number" && Number.isFinite(value.score) && value.score >= 0 && value.score <= 100))) return false;
+  if (!(value.primaryOpportunity === null || typeof value.primaryOpportunity === "string")) return false;
+  if (!(value.firstRecommendedAction === null || (isRecord(value.firstRecommendedAction) && Object.keys(value.firstRecommendedAction).length === 2 && typeof value.firstRecommendedAction.title === "string" && typeof value.firstRecommendedAction.explanation === "string"))) return false;
+  if (!Array.isArray(value.limitations) || !value.limitations.every((item) => typeof item === "string") || typeof value.methodologyVersion !== "string") return false;
+  if (!isCandidateResultIdentityV3(value.diagnosticIdentity) || value.methodologyVersion !== value.diagnosticIdentity.methodology) return false;
+  const allowed = ["contractVersion", "overallStatus", "score", "confidence", "coverage", "executiveSummary", "primaryOpportunity", "firstRecommendedAction", "limitations", "methodologyVersion", "diagnosticIdentity"];
+  return Object.keys(value).every((key) => allowed.includes(key));
+}
 
 /** Allowlistada desde la presentación certificada; no reconstruye scoring ni recomendaciones. */
 export function buildAnonymousDiagnosticSummaryV1(

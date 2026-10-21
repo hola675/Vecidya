@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## DIAG-CLOSE-03 — replay QA-03B en Worker local (2026-10-21)
+
+`qa03b/worker-replay.server.ts` valida identidad, banco/schema/key y transcript de sesión 3, reconstruye ruta y ediciones con el planner QA-03B y recalcula el resultado sin aceptar scores del navegador. En la ruta **dev-only** QA-03B el Worker devuelve solo resumen allowlisted; la solicitud identificada reutiliza el replay, comprueba igualdad del resumen y guarda únicamente el informe versionado en el flujo D1/grant/correo ya existente. `/diagnostico` y el replay público V3 permanecen intactos; QA-03B no se activa en producción. La sesión 3 admite transcript opcional nuevo sin cambiar key/schema ni convertir sesiones V3/ACT. E2E Worker local: 6 rutas QA, 7 rechazos HTTP, reanudación/concurrencia, solicitud/correo verificado/acceso identificado, FUNNEL-01B 6/6 y 157/157 unitarias focales PASS. `PDF_OWNER_REVIEW` manual no bloquea; el flujo identificado actual muestra HTML, **no descarga PDF**, y no se tocó el generador. ACT-04 requiere autorización independiente y pruebas de activación/rollback sobre la integración pública.
+
 ## DIAG-CLOSE-02 — certificación técnica previa a ACT-04 (2026-10-19)
 
 PR #14 integrado en `origin/main`; no se ejecutó ACT-04. Contratos y sesiones QA-03B, 176/176 unitarias, comparación determinista de V3/QA-03B, QA-03B local `6/6` + reload/concurrencia, FUNNEL-01B `6/6`, typecheck, build y escaneo bundle PASS. Diferencias de scoring observadas son deliberadas: V3 retail `82`; QA-03B no publica un global con evidencia insuficiente, aunque conserva dimensiones con score `75`. La sesión QA-03B genera/reconstruye su informe desde resultado con identidad QA versionada.

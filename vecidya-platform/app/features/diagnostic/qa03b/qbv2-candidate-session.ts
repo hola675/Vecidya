@@ -1,7 +1,7 @@
 // Orquestador aislado QA-03B; el original certificado permanece reproducible.
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
 import { CANDIDATE_RESULT_IDENTITY_V3, isCandidateResultIdentityV3, runCandidateDiagnosticPipelineV3 } from "./qbv2-candidate-pipeline";
-import { buildCandidateQuestionPlanV3 } from "./qbv2-candidate-planner";
+import { buildCandidateQuestionPlanV3, CANDIDATE_ROUTE_HARD_CAP_V3 } from "./qbv2-candidate-planner";
 import { QUESTION_BANK_ID, SESSION_KEY, SESSION_SCHEMA } from "./contract";
 import type { QuestionDefinitionV2 } from "../qbv2-contract";
 import type { AnswersV2 } from "../qbv2-rules";
@@ -10,8 +10,15 @@ export const CANDIDATE_SESSION_SCHEMA_V3 = SESSION_SCHEMA;
 export const CANDIDATE_SESSION_STORAGE_KEY_V3 = SESSION_KEY;
 export const CANDIDATE_SESSION_TTL_MS_V3 = 14 * 24 * 60 * 60 * 1000;
 export const CANDIDATE_QUESTION_BANK_ID_V3 = QUESTION_BANK_ID;
+export const CANDIDATE_REPLAY_TRANSCRIPT_LIMIT_V3 = CANDIDATE_ROUTE_HARD_CAP_V3 * 16;
 
 export type CandidateTerminalReasonV3 = "no_useful_questions" | "budget_blocked" | "hard_cap";
+export type CandidateReplayEventV3 = {
+  readonly questionId: string;
+  readonly value: string | readonly string[];
+  readonly mode: "answer" | "edit";
+  readonly reviewIndex: number | null;
+};
 export type CandidateSessionV3 = {
   readonly schemaVersion: typeof CANDIDATE_SESSION_SCHEMA_V3;
   readonly engineIdentity: typeof CANDIDATE_RESULT_IDENTITY_V3;
@@ -28,6 +35,8 @@ export type CandidateSessionV3 = {
   readonly reviewIndex: number | null;
   readonly status: "in_progress" | "completing" | "completed";
   readonly terminalReason: CandidateTerminalReasonV3 | null;
+  /** Browser-stored transcript sent transiently to Worker for validation; never persisted server-side. */
+  readonly replayTranscript?: readonly CandidateReplayEventV3[];
 };
 
 export type CandidateCreateOptionsV3 = { readonly sessionId: string; readonly writerId: string; readonly now: number };
@@ -91,7 +100,7 @@ export function createCandidateSessionV3({ sessionId, writerId, now }: Candidate
     engineIdentity: CANDIDATE_RESULT_IDENTITY_V3,
     questionBankIdentity: CANDIDATE_QUESTION_BANK_ID_V3,
     sessionId, startedAt: now, updatedAt: now, completedAt: null, revision: 0, writerId,
-    answers: {}, answeredQuestionIds: [], queue: [], reviewIndex: null, status: "in_progress", terminalReason: null,
+    answers: {}, answeredQuestionIds: [], queue: [], reviewIndex: null, status: "in_progress", terminalReason: null, replayTranscript: [],
   };
   return replan(initial);
 }
@@ -102,7 +111,7 @@ export function currentCandidateQuestionIdV3(session: CandidateSessionV3): strin
   return session.queue[0] ?? null;
 }
 
-export type CandidateSubmitResultV3 = { readonly ok: true; readonly session: CandidateSessionV3 } | { readonly ok: false; readonly reason: "required" | "invalid" | "not_current" };
+export type CandidateSubmitResultV3 = { readonly ok: true; readonly session: CandidateSessionV3 } | { readonly ok: false; readonly reason: "required" | "invalid" | "not_current" | "history_limit" };
 
 export function submitCandidateAnswerV3(session: CandidateSessionV3, questionId: string, value: unknown, writerId: string, now: number): CandidateSubmitResultV3 {
   if (currentCandidateQuestionIdV3(session) !== questionId) return { ok: false, reason: "not_current" };
@@ -111,6 +120,19 @@ export function submitCandidateAnswerV3(session: CandidateSessionV3, questionId:
   if (value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0)) return { ok: false, reason: "required" };
   if (!validateCandidateAnswerV3(question, value)) return { ok: false, reason: "invalid" };
   const normalized = Array.isArray(value) ? question.options.filter((option) => value.includes(option.value)).map((option) => option.value) : value;
+  const priorTranscript = session.replayTranscript ?? session.answeredQuestionIds.map((id) => ({
+    questionId: id,
+    value: session.answers[id]!,
+    mode: "answer" as const,
+    reviewIndex: null,
+  }));
+  if (priorTranscript.length >= CANDIDATE_REPLAY_TRANSCRIPT_LIMIT_V3) return { ok: false, reason: "history_limit" };
+  const replayTranscript: readonly CandidateReplayEventV3[] = [...priorTranscript, {
+    questionId,
+    value: normalized as string | readonly string[],
+    mode: session.reviewIndex === null ? "answer" : "edit",
+    reviewIndex: session.reviewIndex,
+  }];
   const changed = JSON.stringify(session.answers[questionId]) !== JSON.stringify(normalized);
   const answers: AnswersV2 = { ...session.answers, [questionId]: normalized as string | readonly string[] };
   const answeredQuestionIds = session.reviewIndex === null
@@ -120,6 +142,7 @@ export function submitCandidateAnswerV3(session: CandidateSessionV3, questionId:
   const next = touch(session, writerId, now, {
     answers,
     answeredQuestionIds,
+    replayTranscript,
     queue: isReview ? [] : session.queue.slice(1),
     reviewIndex: session.reviewIndex === null ? null : null,
     status: "in_progress",
@@ -141,10 +164,16 @@ export function goBackCandidateV3(session: CandidateSessionV3, writerId: string,
 }
 
 export function completeCandidateSessionV3(session: CandidateSessionV3, writerId: string, now: number) {
-  if (session.status !== "completing" || session.reviewIndex !== null || session.queue.length !== 0 || !session.terminalReason) return null;
-  const result = runCandidateDiagnosticPipelineV3(session.answers);
+  const completedSession = markCandidateSessionCompletedV3(session, writerId, now);
+  if (!completedSession) return null;
+  const result = runCandidateDiagnosticPipelineV3(completedSession.answers);
   if (result.engineIdentity !== CANDIDATE_RESULT_IDENTITY_V3) return null;
-  return { session: touch(session, writerId, now, { status: "completed", completedAt: now }), result };
+  return { session: completedSession, result };
+}
+
+export function markCandidateSessionCompletedV3(session: CandidateSessionV3, writerId: string, now: number): CandidateSessionV3 | null {
+  if (session.status !== "completing" || session.reviewIndex !== null || session.queue.length !== 0 || !session.terminalReason) return null;
+  return touch(session, writerId, now, { status: "completed", completedAt: now });
 }
 
 export function rebuildCompletedCandidateResultV3(session: CandidateSessionV3) {
@@ -173,6 +202,18 @@ function parseSession(raw: string | null, now: number, schemaVersion: number): R
   }
   if (!answeredQuestionIds.every((id) => typeof id === "string" && answers[id] !== undefined) || new Set(answeredQuestionIds).size !== answeredQuestionIds.length) return null;
   if (answeredQuestionIds.length !== Object.keys(answers).length || !Object.keys(answers).every((id) => answeredQuestionIds.includes(id))) return null;
+  if (parsed.replayTranscript !== undefined) {
+    if (!Array.isArray(parsed.replayTranscript) || parsed.replayTranscript.length > CANDIDATE_REPLAY_TRANSCRIPT_LIMIT_V3 || (parsed.replayTranscript.length === 0 && answeredQuestionIds.length > 0)) return null;
+    const latestHistoryValues = new Map<string, unknown>();
+    for (const event of parsed.replayTranscript) {
+      if (!isRecord(event) || Object.keys(event).length !== 4 || typeof event.questionId !== "string") return null;
+      if (!(event.mode === "answer" && event.reviewIndex === null) && !(event.mode === "edit" && Number.isInteger(event.reviewIndex) && (event.reviewIndex as number) >= 0 && (event.reviewIndex as number) < CANDIDATE_ROUTE_HARD_CAP_V3)) return null;
+      const question = questionFor(event.questionId);
+      if (!question || !validateCandidateAnswerV3(question, event.value)) return null;
+      latestHistoryValues.set(event.questionId, event.value);
+    }
+    if (Object.entries(answers).some(([id, value]) => JSON.stringify(latestHistoryValues.get(id)) !== JSON.stringify(value))) return null;
+  }
   if (!queue.every((id) => typeof id === "string" && questionFor(id) && answers[id] === undefined) || new Set(queue).size !== queue.length) return null;
   const active = buildCandidateQuestionPlanV3({ answers: answers as AnswersV2 }).activeAnswers;
   // Corrupt or obsolete applicability state fails closed; do not silently reinterpret persisted answers.
@@ -187,7 +228,8 @@ function parseSession(raw: string | null, now: number, schemaVersion: number): R
     if (terminalReason !== expectedReason) return null;
   }
   if (schemaVersion === CANDIDATE_SESSION_SCHEMA_V3) {
-    const allowedFields = ["schemaVersion", "engineIdentity", "questionBankIdentity", "sessionId", "startedAt", "updatedAt", "completedAt", "revision", "writerId", "answers", "answeredQuestionIds", "queue", "reviewIndex", "status", "terminalReason"];
+    const baseFields = ["schemaVersion", "engineIdentity", "questionBankIdentity", "sessionId", "startedAt", "updatedAt", "completedAt", "revision", "writerId", "answers", "answeredQuestionIds", "queue", "reviewIndex", "status", "terminalReason"];
+    const allowedFields = parsed.replayTranscript === undefined ? baseFields : [...baseFields, "replayTranscript"];
     if (Object.keys(parsed).length !== allowedFields.length || Object.keys(parsed).some((key) => !allowedFields.includes(key))) return null;
   }
   return parsed;

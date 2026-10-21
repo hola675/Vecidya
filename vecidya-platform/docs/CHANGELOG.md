@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-21 — DIAG-CLOSE-03: replay QA-03B Worker local
+
+- Reproducción estricta QA-03B con transcript local opcional (schema/key 3), validación de versiones/ruta/ediciones y cálculo exclusivamente desde el pipeline QA en Worker; el resultado proyecta resumen anónimo allowlisted e informe HTML identificado bajo correo verificado y grant existentes, solo en DEV. Un retry idempotente devuelve el mismo resumen versionado.
+- Pruebas: 157/157 unitarias focales, seis recorridos QA + siete rechazos HTTP y ciclo identificado en Worker local, FUNNEL-01B 6/6, typecheck/build/bundle PASS. Sin cutover público, migración, despliegue, correo real ni modificación del PDF.
+
 ## 2026-10-19 — `PDF_OWNER_REVIEW`: gate manual no bloqueante
 
 - Decisión del propietario: revisión visual/contenido/calidad del PDF exclusivamente manual, `PDF_OWNER_REVIEW`; no bloquea desarrollo ni ACT-04. PAC, Acrobat, NVDA y certificaciones/revisiones automáticas dejan de ser condiciones de aprobación.
