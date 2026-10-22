@@ -9,13 +9,13 @@ import { scoreCandidateContextualDimensionsV3 as score } from "../../../app/feat
 import { AUTHORED_UNKNOWN_CAPABILITIES as base } from "./qa03b-fixtures";
 
 test("QA-03B: 21 migradas y 17 pendientes preservan versiones y lecturas R3", () => {
-  assert.equal(BANK.length, 40);
+  assert.equal(BANK.length, 41);
   for (const status of ["migrated", "pending"]) assert.equal(BANK.filter(q => q.evidenceMigration === status).length, status === "migrated" ? 21 : 17);
   for (const old of OLD.filter(q => q.evidenceMigration === "migrated")) {
     const q = BANK.find(q => q.id === old.id)!;
     assert.equal(q.version, old.version); assert.deepEqual(q.options, old.options); assert.deepEqual(q.evidenceV3, old.evidenceV3);
   }
-  assert.equal(BANK.filter(q => !q.evidenceMigration).length, 2);
+  assert.equal(BANK.filter(q => !q.evidenceMigration).length, 3);
 });
 test("QA-03B: el predicado real D2 coincide con el contrato en sectores canónicos", () => {
   const sectors = BANK.find(q => q.id === "q2_sector")!.options.map(o => o.value);
@@ -61,6 +61,19 @@ test("QA-03B: remoto, citas y lugar no fabrican ecommerce ni dos actividades", (
   const hybrid = resolve({ ...base, q2_delivery: ["retail", "online_checkout"] }, BANK).context;
   assert.equal(hybrid.archetype.status === "resolved" && hybrid.archetype.value, "hybrid"); assert.deepEqual(hybrid.archetypeComponents, ["ecommerce", "retail"]);
   assert.equal(resolve({ ...base, q2_delivery: ["remote_service", "unsure"] }, BANK).activeAnswers.q2_delivery, undefined);
+});
+test("QA-03B B: herramientas TIC se preguntan solo en operación relevante y no crean evidencia de eficacia", () => {
+  const answers = { ...base, q2_operational_status: "operating", q2_goal: "organize" };
+  const eligible = resolve(answers, BANK);
+  assert.ok(eligible.eligibleQuestionIds.includes("q2_digital_tools_in_use"));
+  const withTools = resolve({ ...answers, q2_digital_tools_in_use: ["documents_records", "customer_followup"] }, BANK);
+  assert.deepEqual(withTools.context.digitalToolUse, { status: "resolved", value: "documents_records|customer_followup", source: "signal" });
+  assert.equal(withTools.trace.digitalToolUse.status, "resolved");
+  assert.deepEqual(withTools.trace.digitalToolUse.supportingSignals, ["q2_digital_tools_in_use"]);
+  assert.equal(BANK.find(question => question.id === "q2_digital_tools_in_use")?.evidenceMigration, undefined);
+  const paused = resolve({ ...answers, q2_operational_status: "paused" }, BANK);
+  assert.ok(!paused.eligibleQuestionIds.includes("q2_digital_tools_in_use"));
+  assert.deepEqual(score({ answers }).dimensions, score({ answers: { ...answers, q2_digital_tools_in_use: ["documents_records"] } }).dimensions);
 });
 test("QA-03B: alcance/comprador unknown y financiación siguen neutrales", () => {
   const result = score({ answers: base });

@@ -367,6 +367,14 @@ export function buildDiagnosticNarrative(input: NarrativeInput): DiagnosticNarra
   if (lifecycle === "live" && lowConfidence.length >= 2 && lowConfidence.length * 2 >= readingFacts.length && summary.length < 4) {
     summary.push(block({ id: "summary:confidence", kind: "summary", text: "Varias lecturas se basan en pocas respuestas: conviene tomarlas como señales, no como conclusiones firmes.", certainty: "probable", sourceFactIds: lowConfidence.map((fact) => fact.id) }));
   }
+  if (context.digitalToolUse.status === "resolved" && summary.length < 4) {
+    const question = bank.find((item) => item.id === "q2_digital_tools_in_use");
+    const labels = context.digitalToolUse.value.split("|").filter(Boolean).map((value) => question?.options.find((option) => option.value === value)?.label.replace(/[.]$/, "") ?? value);
+    const text = labels.length
+      ? `Mencionaste estas herramientas digitales: ${labels.join("; ")}. Esto registra su uso, pero no demuestra por sí solo qué tan bien funcionan.`
+      : "Declaraste que no usas herramientas digitales para estas tareas; esto no indica por sí solo que haya un problema.";
+    summary.push(block({ id: "summary:digital-tools", kind: "summary", text, certainty: "confirmed", sourceContext: ["digitalToolUse"], sourceQuestionIds: ["q2_digital_tools_in_use"] }));
+  }
   if (summary.length < 2) {
     const fallback = topStrength ? `Lo más sólido es ${topic(topStrength.dimension!)}.` : "Todavía no hay lecturas suficientes para destacar un área.";
     summary.push(block({ id: "summary:strength", kind: "summary", text: fallback, certainty: topStrength ? resultCertainty(topStrength) : "unknown", sourceFactIds: topStrength ? [topStrength.id] : readingFacts.map((fact) => fact.id), sourceContext: topStrength ? [] : ["growthStage"] }));

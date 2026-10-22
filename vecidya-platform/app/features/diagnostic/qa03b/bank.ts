@@ -40,8 +40,21 @@ const replacement: Readonly<Record<string, Partial<QuestionDefinitionV2>>> = {
     ],
   },
   q2_delivery: {
-    version: 3, prompt: "¿De qué formas prestas el servicio o vendes lo que ofreces?",
-    hint: "Elige todas las formas habituales. La cita, el lugar de atención y la compra por internet describen cosas distintas.",
+    version: 4, prompt: "¿Qué formas de atención o venta corresponden a tu actividad?",
+    hint: "Activa: formas que usas; en pausa: las que usabas; en preparación: las que planeas. Citas, lugar y pago en línea son distintos.",
+    variants: [{
+      target: { activity: "prelaunch" },
+      prompt: "¿Qué formas de atención o venta planeas usar?",
+      optionLabels: {
+        physical_location: "Planeo atender en un local, oficina o instalación propia.",
+        appointments: "Planeo atender con citas o sesiones reservadas.",
+        travels: "Planeo desplazarme al domicilio o lugar de la persona.",
+        remote_service: "Planeo prestar el servicio a distancia, por videollamada, teléfono, internet o mensajes.",
+        retail: "Planeo vender productos en una tienda física.",
+        onsite: "Las personas podrán consumir o usar lo que ofrezco en mi establecimiento.",
+        online_checkout: "Las personas podrán elegir y pagar una compra directamente por internet.",
+      },
+    }],
     options: [
       { value: "physical_location", label: "Atiendes en un local, oficina o instalación propia." },
       { value: "appointments", label: "Atiendes con citas o sesiones reservadas." },
@@ -75,7 +88,26 @@ const replacement: Readonly<Record<string, Partial<QuestionDefinitionV2>>> = {
     options: [...historicalBank.find(q => q.id === "q2_sector")!.options,
       { value: "unknown", label: "Todavía no lo tengo claro.", kind: "unknown" }],
   },
-  q2_monetization: { appliesWhen: undefined },
+  q2_monetization: {
+    version: 3, appliesWhen: undefined,
+    prompt: "¿Cuál es la fuente principal de ingresos o aportes de tu actividad?",
+    hint: "Hoy; en pausa, el periodo anterior; en preparación, lo que esperas. Si aún no genera ingresos o aportes, indícalo.",
+    variants: [{
+      target: { activity: "prelaunch" },
+      prompt: "Si tu actividad empieza a operar, ¿de dónde esperas que provengan los ingresos o aportes?",
+      optionLabels: {
+        services: "Espero cobrar por servicios o trabajo profesional",
+        goods: "Espero vender productos",
+        commission: "Espero recibir comisiones por ventas, referidos o intermediación",
+        audience: "Espero generar ingresos con contenido, audiencia, publicidad o patrocinios",
+        recurring: "Espero cobrar membresías, suscripciones o cuotas recurrentes",
+        mission: "Esperamos recibir donaciones, fondos o aportes",
+        no_revenue_yet: "No esperamos generar ingresos o aportes al inicio",
+      },
+    }],
+    options: [...historicalBank.find(q => q.id === "q2_monetization")!.options,
+      { value: "no_revenue_yet", label: "Todavía no genera ingresos o aportes por esta actividad.", kind: "none" }],
+  },
 };
 
 // La elegibilidad cambia por contrato de banco, sin cambiar el significado/version/mapping de fuentes R3.
@@ -129,6 +161,27 @@ export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefiniti
       { value: "same_party", label: "Sí, quien compra también lo recibe o utiliza." },
       { value: "third_party", label: "No, lo compra o contrata para otras personas." },
       { value: "unknown", label: "Todavía no lo tengo claro.", kind: "unknown" },
+    ],
+  },
+  {
+    id: "q2_digital_tools_in_use", version: 1, module: "operations", type: "multi", routingRole: "adaptive",
+    prompt: "¿Qué tipos de herramientas digitales usas hoy para organizar o dar seguimiento a tu actividad?",
+    hint: "Marca solo las que realmente usas. Que exista una herramienta no indica por sí sola qué tan bien funciona el proceso.",
+    purpose: ["diagnostic"], priority: "normal",
+    appliesWhen: andV2(operating, orV2(
+      inV2("q2_goal", ["organize", "automate", "stop_losing", "measure"]),
+      inV2("q2_friction", ["operations", "follow_up"]),
+    )),
+    options: [
+      { value: "calendar_scheduling", label: "Agenda o calendario para coordinar fechas y citas." },
+      { value: "documents_records", label: "Documentos o tablas para guardar datos, pedidos o registros." },
+      { value: "tasks_projects", label: "Herramientas para organizar tareas, proyectos o responsables." },
+      { value: "customer_followup", label: "Herramientas para registrar consultas y retomar pendientes." },
+      { value: "inventory_operations", label: "Herramientas para controlar productos, existencias o procesos." },
+      { value: "other", label: "Otro tipo de herramienta digital." },
+      { value: "none", label: "No uso herramientas digitales para estas tareas.", kind: "none", exclusive: true },
+      { value: "not_needed", label: "No necesito herramientas digitales para estas tareas.", kind: "not_applicable", exclusive: true },
+      { value: "unknown", label: "No estoy seguro de cuáles herramientas usamos.", kind: "unknown", exclusive: true },
     ],
   },
 ];
