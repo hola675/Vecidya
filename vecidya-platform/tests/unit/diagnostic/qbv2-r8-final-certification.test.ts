@@ -190,7 +190,7 @@ test("R8-FINAL: candidate pipeline identity and upstream certification suites re
   for (const [name, [file, expected]] of Object.entries(suites)) assert.equal(testCount(read(file)), expected, `${name} suite inventory`);
 });
 
-test("R8-FINAL: legacy runtime stays on its frozen contract and candidate modules remain unreachable from app entry points", async () => {
+test("R8-FINAL: legacy runtime stays frozen and ACT-root candidate modules remain unreachable from app entry points", async () => {
   assert.deepEqual(CAPABILITY_CONTRIBUTION, { strong: 1, established: 0.75, partial: 0.5, weak: 0.25, dependency: 0.25, missing: 0, constraint: null, uncertainty: null, not_applicable: null });
   assert.deepEqual([SCORING_MODEL, CONFIDENCE_MODEL, SEVERITY_BANDS], [
     { directWeight: 1, supportingWeight: 0.5, supportingCapRatio: 0.5 },
@@ -219,7 +219,7 @@ test("R8-FINAL: legacy runtime stays on its frozen contract and candidate module
   const appRoot = new URL("../../../app/", import.meta.url);
   const files = (readdirSync(appRoot, { recursive: true }) as string[]).map((file) => file.replaceAll("\\", "/")).filter((file) => /\.tsx?$/.test(file));
   const localCandidateEntries = new Set([
-    // QA-03B: entradas locales explícitas; las rutas siguen excluidas del build.
+    // QA-03B está activo en la superficie pública; su módulo de scoring sigue bajo qa03b/.
     "components/diagnostic-flow/qa03b-diagnostic-flow.tsx",
     "components/diagnostic-flow/qa03b-result.tsx",
     "components/diagnostic-flow/qa03b-presentation.ts",
@@ -227,6 +227,7 @@ test("R8-FINAL: legacy runtime stays on its frozen contract and candidate module
     "routes/dev-diagnostic-qa03b-methodology.tsx",
     "routes/dev-diagnostic-qa03b-report.tsx",
     "routes/dev-diagnostic-qa03b-funnel.tsx",
+    "routes/dev-diagnostic-identified-report.tsx",
     "components/diagnostic-flow/candidate-diagnostic-flow.tsx",
     "components/diagnostic-flow/candidate-result.tsx",
     "components/diagnostic-flow/candidate-presentation.ts",
@@ -234,8 +235,8 @@ test("R8-FINAL: legacy runtime stays on its frozen contract and candidate module
     "routes/dev-diagnostic-candidate-methodology.tsx",
     "routes/dev-diagnostic-candidate-report.tsx",
   ]);
-  const leaks = files.filter((file) => !/(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file) && !localCandidateEntries.has(file) && readFileSync(new URL(file, appRoot), "utf8").includes("qbv2-candidate-"));
-  assert.deepEqual(leaks, [], "candidate computational modules remain private; only the explicit development harness may import them");
+  const leaks = files.filter((file) => !file.startsWith("features/diagnostic/qa03b/") && !/(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file) && !localCandidateEntries.has(file) && readFileSync(new URL(file, appRoot), "utf8").includes("qbv2-candidate-"));
+  assert.deepEqual(leaks, [], "ACT-root candidate computational modules remain private; QA-03B uses its separate submodule");
   assert.match(read("../../../app/routes.ts"), /route\("__dev\/diagnostico\/candidate", "routes\/dev-diagnostic-candidate\.tsx"\)/);
   assert.match(read("../../../app/routes.ts"), /route\("__dev\/diagnostico\/candidate\/metodologia", "routes\/dev-diagnostic-candidate-methodology\.tsx"\)/);
   assert.match(read("../../../app/routes.ts"), /route\("__dev\/diagnostico\/candidate\/informe", "routes\/dev-diagnostic-candidate-report\.tsx"\)/);

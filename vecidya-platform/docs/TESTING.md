@@ -4,6 +4,16 @@
 
 `pnpm run typecheck`, `pnpm run build`, `git diff --check` y aplicación de migraciones `0000–0021` a D1 local aislada PASS. No se ejecutaron suites automatizadas ni E2E. Pendiente certificar registro/invitación, doble aceptación/reenvío concurrente, guards de tenant al suspender/reactivar, permisos de roles y operaciones MiniWeb con auditoría. No usar pruebas remotas ni correo real en este checkpoint.
 
+## ACT-04 — cutover QA-03B local (2026-10-22)
+
+**Worker local: PASS.** `pnpm run test:unit` pasó `1645/1645`; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. `diagnostic-act-04-check.mjs` pasó `3/3`: formulario y replay QA-03B con nueve respuestas; metodología pública sin identificadores técnicos; rechazo de sobres V3/ACT incompatibles e informe privado cerrado. `diagnostic-v3-qa03b-check.mjs` pasó seis rutas con reanudación y concurrencia. `diagnostic-production-isolation-check.mjs`: 92 archivos sin rutas/fixtures dev-only y nueve rutas privadas con HTTP 404 en Wrangler local `APP_ENV=production`.
+
+**Ensayo de rollback:** se sustituyeron temporalmente `/diagnostico` y `/diagnostico/metodologia` por sus adaptadores V3 previos, manteniendo el endpoint dual en la rama. `diagnostic-v3-funnel-01b-check.mjs`: **6/6 PASS**; V3 envió `{ answers }`, obtuvo la respuesta versionada anterior, reanudó el resumen local y conservó una sesión completada sin sidecar. Luego se restauró el adaptador público QA-03B; `diagnostic-act-04-check.mjs` volvió a pasar 3/3. Esto certifica rollback local ensayado, no rollback en producción.
+
+Las migraciones D1 se aplicaron solo localmente (0000–0019; sin esquema nuevo ni `--remote`). No hubo correo real, datos reales, cambios remotos, deploy ni HTTP público fechado. El build avisa que faltan secretos para otros flujos; no se leyeron ni configuraron.
+
+El build avisa que faltan secretos de autenticación/Gmail para flujos que no forman parte del cutover; no se leyeron ni configuraron secretos. El informe identificado y el envío siguen dev-only.
+
 ## COM-CATALOG-BENEFITS-02 / PRICING-20-01 — integración local (2026-10-21)
 
 **RAN local antes del commit de integración:** suite `pnpm run test:unit` 1637/1637 PASS; `pnpm run typecheck` y `pnpm run build` PASS. Contra Worker con D1 local migrada y Chrome: `commercial-details-check.mjs` (17 fichas, 360/1024 px), `addons-experience-check.mjs` y `commercial-experience-review-check.mjs` (1366/768/390/360 px) PASS. Las fichas incluyen HTTP 200 real, SEO, retorno, CTA, 404 y ausencia de secciones duplicadas. WhatsApp desde USD 15 depende del coste directo total; el piso teórico sobre USD 10 es USD 12,50 para margen bruto del 20 %.

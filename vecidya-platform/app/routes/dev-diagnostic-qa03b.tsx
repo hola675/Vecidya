@@ -43,7 +43,7 @@ export async function action({ context, request }: ActionFunctionArgs) {
 }
 
 export default function DevDiagnosticCandidate() {
-  return <PublicLayout><main className="df-page"><CandidateDiagnosticFlow /></main></PublicLayout>;
+  return <PublicLayout><main className="df-page"><CandidateDiagnosticFlow devMethodologyHref="/__dev/diagnostico/qa03b/metodologia" /></main></PublicLayout>;
 }
 
 export function ErrorBoundary() {

@@ -9,6 +9,11 @@
 - MiniWeb administrativa permite guardar JSON draft y publicar explícitamente, con audit. Capacitación conserva asignación, auto-reporte y corrección motivada.
 - Migraciones `0020`/`0021` aplicadas en D1 local del worktree. `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. No se ejecutaron suites automatizadas. Sin D1 remota, correo real, deploy o publicación.
 
+## 2026-10-22 — ACT-04 (rama local, no publicada)
+
+- Cutover del cuestionario público y metodología al nuevo diagnóstico, con replay recalculado en Worker y resumen anónimo allowlisted; se ocultan identidades técnicas en títulos, resultados y SEO públicos.
+- Se conserva el contrato V3 `{ answers }` para restaurar el adaptador anterior sin tocar sesiones históricas; ensayo de rollback local pasó el flujo público V3 6/6. Informe identificado/correo siguen cerrados; sin migración ni publicación. Evidencia en `TESTING.md`.
+
 ## 2026-10-21 — DIAG-CLOSE-03: replay QA-03B Worker local
 
 - Reproducción estricta QA-03B con transcript local opcional (schema/key 3), validación de versiones/ruta/ediciones y cálculo exclusivamente desde el pipeline QA en Worker; el resultado proyecta resumen anónimo allowlisted e informe HTML identificado bajo correo verificado y grant existentes, solo en DEV. Un retry idempotente devuelve el mismo resumen versionado.

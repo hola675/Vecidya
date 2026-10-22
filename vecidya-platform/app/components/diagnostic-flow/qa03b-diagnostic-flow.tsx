@@ -30,7 +30,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> => typeof va
 const sessionId = () => globalThis.crypto?.randomUUID?.() ?? `candidate-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 const tabId = () => globalThis.crypto?.randomUUID?.() ?? `tab-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-export function CandidateDiagnosticFlow() {
+export function CandidateDiagnosticFlow({ publicMode = false, devMethodologyHref }: { readonly publicMode?: boolean; readonly devMethodologyHref?: string }) {
   const store = useMemo(() => new CandidateSessionStoreV3(), []);
   const replayFetcher = useFetcher();
   const replaySessionRef = useRef<CandidateSessionV3 | null>(null);
@@ -75,21 +75,21 @@ export function CandidateDiagnosticFlow() {
       sessionSchema: completed.schemaVersion,
       sessionKey: CANDIDATE_SESSION_STORAGE_KEY_V3,
       session: completed,
-    }, { method: "post", action: window.location.pathname, encType: "application/json" });
-  }, [replayFetcher]);
+    }, { method: "post", action: publicMode ? "/api/diagnostic/anonymous-summary" : window.location.pathname, encType: "application/json" });
+  }, [publicMode, replayFetcher]);
   useEffect(() => {
     const completed = replaySessionRef.current;
     if (replayFetcher.state !== "idle" || !completed) return;
     replaySessionRef.current = null;
     const payload: unknown = replayFetcher.data;
     if (!isRecord(payload) || Object.keys(payload).length !== 1 || !isAnonymousDiagnosticSummaryV1(payload.summary) || JSON.stringify(payload.summary.diagnosticIdentity) !== JSON.stringify(completed.engineIdentity)) {
-      setError("El Worker no pudo validar la ruta QA-03B. Revisa o reinicia la sesión antes de solicitar el informe.");
+      setError(publicMode ? "No pudimos validar esta sesión. Revisa tus respuestas o inicia un diagnóstico nuevo." : "El Worker no pudo validar la ruta QA-03B. Revisa o reinicia la sesión antes de solicitar el informe.");
       setView("error");
       return;
     }
     setWorkerSummary(payload.summary);
     setView("result");
-  }, [replayFetcher.data, replayFetcher.state]);
+  }, [publicMode, replayFetcher.data, replayFetcher.state]);
   useEffect(() => {
     const warnBeforeUnload = (event: BeforeUnloadEvent) => {
       if (!savingRef.current) return;
@@ -182,16 +182,16 @@ export function CandidateDiagnosticFlow() {
   else if (view === "start") content = <StartScreen onStart={start} />;
   else if (view === "resume" && storedSession) content = <ResumeScreen answered={storedSession.answeredQuestionIds.length} completed={storedSession.status !== "in_progress"} onContinue={() => resume(storedSession)} onRestart={requestReset} />;
   else if (view === "preparing") content = <PreparingScreen />;
-  else if (view === "replaying") content = <section aria-busy="true" aria-live="polite" className="df-screen"><h1 className="df-screen__title">Validando tu resumen…</h1><p className="df-screen__lead">El Worker está reconstruyendo la ruta QA-03B desde tus respuestas.</p></section>;
+  else if (view === "replaying") content = <section aria-busy="true" aria-live="polite" className="df-screen"><h1 className="df-screen__title">{publicMode ? "Preparando tu resumen…" : "Validando tu resumen…"}</h1><p className="df-screen__lead">{publicMode ? "Estamos comprobando tus respuestas para preparar una lectura fiable." : "El Worker está reconstruyendo la ruta QA-03B desde tus respuestas."}</p></section>;
   else if (view === "conflict") content = <section aria-labelledby="candidate-conflict-title" className="df-screen" role="alert"><h1 className="df-screen__title" id="candidate-conflict-title">Esta sesión se está editando en otra pestaña</h1><p className="df-screen__lead">Para conservar las respuestas más recientes, esta pestaña quedó en pausa. Recarga la página para continuar con la versión guardada.</p><button className="button button--primary" onClick={() => window.location.reload()} type="button">Recargar sesión</button></section>;
-  else if (view === "error") content = <FlowErrorScreen message={writeUnavailable ? "El navegador no permitió leer, guardar o borrar la sesión local, o el almacenamiento está lleno. Activa el almacenamiento del sitio y reintenta; una escritura sin confirmar no se muestra como guardada." : error ?? "No pudimos validar el resultado QA-03B. Tus respuestas siguen guardadas."} onRetry={() => {
+  else if (view === "error") content = <FlowErrorScreen message={writeUnavailable ? "El navegador no permitió leer, guardar o borrar la sesión local, o el almacenamiento está lleno. Activa el almacenamiento del sitio y reintenta; una escritura sin confirmar no se muestra como guardada." : error ?? (publicMode ? "No pudimos preparar tu resumen. Tus respuestas siguen guardadas." : "No pudimos validar el resultado QA-03B. Tus respuestas siguen guardadas.")} onRetry={() => {
      if (writeUnavailable) { window.location.reload(); return; }
      if (!session) return;
      setError(null);
      if (session.status === "completed" || session.status === "completing") void replayOnWorker(session);
      else setView("flow");
    }} onRestart={requestReset} title={writeUnavailable ? "No podemos acceder al almacenamiento local" : "No pudimos preparar el resumen verificado"} />;
-  else if (view === "result" && workerSummary && session) content = <CandidateDiagnosticResult summary={workerSummary} onEdit={() => { setDraft({ key: "", value: undefined }); setWorkerSummary(null); setPendingRequestId(null); void commit(goBackCandidateV3(session, ownerId, Date.now()), "flow"); }} onRequestReport={() => setView("identify")} />;
+  else if (view === "result" && workerSummary && session) content = <CandidateDiagnosticResult publicMode={publicMode} methodologyHref={devMethodologyHref} summary={workerSummary} onEdit={() => { setDraft({ key: "", value: undefined }); setWorkerSummary(null); setPendingRequestId(null); void commit(goBackCandidateV3(session, ownerId, Date.now()), "flow"); }} onRequestReport={() => setView("identify")} />;
   else if (view === "identify" && session && workerSummary) content = <IdentifiedDiagnosticRequestForm
     source={{
       payload: {
@@ -210,9 +210,9 @@ export function CandidateDiagnosticFlow() {
     onSubmitted={(requestId) => { setPendingRequestId(requestId); setView("verification-pending"); }}
   />;
   else if (view === "verification-pending" && pendingRequestId) content = <DiagnosticVerificationPending requestId={pendingRequestId} onBack={() => setView("result")} />;
-  else if (session?.status === "completing" && view === "flow") content = <section aria-labelledby="candidate-ready-title" className="df-screen df-ready"><p className="df-screen__kicker">Candidata de prueba</p><h1 className="df-screen__title" id="candidate-ready-title">Terminó la ruta adaptativa</h1><p className="df-screen__lead">El Worker reconstruirá la ruta antes de mostrar el resumen anónimo.</p><div className="df-screen__actions"><button className="button button--primary" onClick={() => finish(session)} type="button">Validar resumen en Worker</button><button className="button button--secondary" onClick={back} type="button">Revisar última respuesta</button></div></section>;
+  else if (session?.status === "completing" && view === "flow") content = <section aria-labelledby="candidate-ready-title" className="df-screen df-ready"><p className="df-screen__kicker">{publicMode ? "Diagnóstico completado" : "Candidata de prueba"}</p><h1 className="df-screen__title" id="candidate-ready-title">{publicMode ? "Terminaste el diagnóstico" : "Terminó la ruta adaptativa"}</h1><p className="df-screen__lead">{publicMode ? "Prepararemos un resumen a partir de tus respuestas." : "El Worker reconstruirá la ruta antes de mostrar el resumen anónimo."}</p><div className="df-screen__actions"><button className="button button--primary" onClick={() => finish(session)} type="button">{publicMode ? "Ver mi resumen" : "Validar resumen en Worker"}</button><button className="button button--secondary" onClick={back} type="button">Revisar última respuesta</button></div></section>;
   else if (session && presented) content = <><QuestionStep canGoBack={session.answeredQuestionIds.length > 0 && session.reviewIndex !== 0} error={error} onBack={back} onSelect={select} onSubmit={submit} presented={presented} progress={progress} reviewing={session.reviewIndex !== null} value={value} /><p className="df-restart"><button className="df-link-button" onClick={requestReset} type="button">Empezar de nuevo</button></p></>;
   else content = <FlowErrorScreen message="El planner no produjo una pregunta utilizable. La sesión se conserva para reanudar o reiniciar." onRetry={() => session && setSession({ ...session })} onRestart={requestReset} title="No encontramos la siguiente pregunta" />;
 
-  return <div className={`df-flow df-flow--${view}`}><div className="df-screen__kicker" role="note">Entorno local de prueba · Motor candidato inactivo en producción</div>{confirmReset ? <ResetConfirm onCancel={() => setConfirmReset(false)} onConfirm={() => void reset()} /> : null}{content}</div>;
+  return <div className={`df-flow df-flow--${view}`}>{publicMode ? null : <div className="df-screen__kicker" role="note">Entorno local de prueba · Motor QA-03B</div>}{confirmReset ? <ResetConfirm onCancel={() => setConfirmReset(false)} onConfirm={() => void reset()} /> : null}{content}</div>;
 }

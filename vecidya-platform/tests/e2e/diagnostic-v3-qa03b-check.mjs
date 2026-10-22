@@ -213,6 +213,11 @@ try {
     results.push({ id: name, viewport: mobile ? "390x844" : "1366x900", questions: order, count: Object.keys(saved.answers).length, terminal: saved.terminalReason, elapsedMs: Date.now() - started, completedAt: saved.completedAt, engineIdentity: saved.engineIdentity });
     console.log(`PASS QA-03B navegador ${name}, ${Object.keys(saved.answers).length} respuestas, ${saved.terminalReason}`);
     await context.close();
+    if (name === "paused-history") {
+      // The shared local Worker binding enforces the production-equivalent 12/minute limit.
+      // The first scenario intentionally sends seven negative requests, so let its window expire.
+      await new Promise(resolve => setTimeout(resolve, 61_000));
+    }
   }
   const resumeContext = await browser.newContext(); const resumePage = await resumeContext.newPage();
   await resumePage.goto(route, { waitUntil: "domcontentloaded" }); await startDiagnosis(resumePage);
