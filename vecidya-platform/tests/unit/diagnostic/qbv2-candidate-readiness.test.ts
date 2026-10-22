@@ -147,23 +147,20 @@ test("DIAG-V3 activation readiness: PDF owner review is non-blocking and Worker 
   assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.bundleExpectation, /513253 bytes \(117103 gzip\)/);
 });
 
-test("DIAG-V3 activation readiness: public summary stays on active V3 while QA-03B candidate remains inactive", () => {
+test("ACT-04 cutover: the public questionnaire, replay and methodology use QA-03B without opening identified reports", () => {
   const route = source("../../../app/routes/diagnostic.tsx");
-  const anonymousFlow = source("../../../app/components/diagnostic-flow/anonymous-diagnostic-flow.tsx");
+  const qa03bFlow = source("../../../app/components/diagnostic-flow/qa03b-diagnostic-flow.tsx");
   const anonymousEndpoint = source("../../../app/routes/api-diagnostic-anonymous-summary.ts");
-  const flow = source("../../../app/components/diagnostic-flow/diagnostic-flow.tsx");
   const methodologyRoute = source("../../../app/routes/diagnostico-metodologia.tsx");
-  const reportRoute = source("../../../app/routes/diagnostico-informe.tsx");
-  const reportModel = source("../../../app/components/diagnostic-report/report-model.ts");
-  const publicBarrel = source("../../../app/features/diagnostic/index.ts");
-  assert.match(route, /<AnonymousDiagnosticFlow\s*\/>/);
-  assert.doesNotMatch(route + anonymousFlow + flow + methodologyRoute + reportRoute + reportModel + publicBarrel, /qbv2-candidate-pipeline/);
-  assert.match(anonymousFlow, /fetch\("\/api\/diagnostic\/anonymous-summary"/);
-  assert.match(anonymousEndpoint, /replayPublicDiagnosticV3/);
-  assert.match(anonymousEndpoint, /PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1/);
-  assert.match(flow, /completeSessionV3/);
-  assert.match(reportModel, /export function buildDiagnosticReport/);
-  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateActive, false);
-  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.publicRuntimeChanged, false);
-  assert.match(CANDIDATE_ACTIVATION_MANIFEST_V3.blockers[0], /selected cutover target lacks server-authoritative replay/i);
+  const result = source("../../../app/components/diagnostic-flow/qa03b-result.tsx");
+  const methodology = source("../../../app/components/diagnostic-flow/qa03b-methodology.tsx");
+  assert.match(route, /<CandidateDiagnosticFlow publicMode\s*\/>/);
+  assert.match(qa03bFlow, /action: publicMode \? "\/api\/diagnostic\/anonymous-summary"/);
+  assert.match(anonymousEndpoint, /replayQa03bSessionV1/);
+  assert.doesNotMatch(anonymousEndpoint, /replayPublicDiagnosticV3|PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1/);
+  assert.match(methodologyRoute, /<CandidateMethodologyArticle publicMode\s*\/>/);
+  assert.match(methodology, /to=\{base\}/);
+  assert.match(result, /publicMode \? null : <button/);
+  assert.match(result, /El informe detallado no está disponible/);
+  assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateActive, false, "el motor ACT raíz sigue aislado del cutover QA-03B");
 });

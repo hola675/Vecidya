@@ -153,7 +153,7 @@ test("R7-FINAL: R3/R4/R5 freezes, candidate identities, runtime versions and the
   assert.match(read("../../../app/features/diagnostic/qbv2-solutions.ts"), /^const SOUND = /m);
 });
 
-test("R7-FINAL: the candidate stays inactive and isolated — no barrel export, no non-candidate importer, no app → tests import", async () => {
+test("R7-FINAL: the ACT-root candidate stays isolated — no barrel export, no root-candidate importer, no app → tests import", async () => {
   const barrel = (await import("../../../app/features/diagnostic/index")) as Record<string, unknown>;
   for (const symbol of [
     "buildCandidateCommercialBoundaryV3", "buildCandidateRecommendationsAndSolutionsV3", "buildCandidateQuestionPlanV3", "candidateSolutionContextOfV3",
@@ -163,7 +163,7 @@ test("R7-FINAL: the candidate stays inactive and isolated — no barrel export, 
   const appRoot = new URL("../../../app/", import.meta.url);
   const files = (readdirSync(appRoot, { recursive: true }) as string[]).map((f) => f.replaceAll("\\", "/")).filter((f) => /\.tsx?$/.test(f));
   const localCandidateEntries = new Set([
-    // QA-03B: entradas locales explícitas; las rutas siguen excluidas del build.
+    // QA-03B ahora es el motor público; sus contratos internos conservan el submódulo aislado.
     "components/diagnostic-flow/qa03b-diagnostic-flow.tsx",
     "components/diagnostic-flow/qa03b-result.tsx",
     "components/diagnostic-flow/qa03b-presentation.ts",
@@ -171,6 +171,7 @@ test("R7-FINAL: the candidate stays inactive and isolated — no barrel export, 
     "routes/dev-diagnostic-qa03b-methodology.tsx",
     "routes/dev-diagnostic-qa03b-report.tsx",
     "routes/dev-diagnostic-qa03b-funnel.tsx",
+    "routes/dev-diagnostic-identified-report.tsx",
     "components/diagnostic-flow/candidate-diagnostic-flow.tsx",
     "components/diagnostic-flow/candidate-result.tsx",
     "components/diagnostic-flow/candidate-presentation.ts",
@@ -179,7 +180,7 @@ test("R7-FINAL: the candidate stays inactive and isolated — no barrel export, 
   const offenders = files.flatMap((file) => {
     const source = readFileSync(new URL(file, appRoot), "utf8");
     return [
-      ...(!/(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file) && !localCandidateEntries.has(file) && source.includes("qbv2-candidate-") ? [`${file}: references a candidate module`] : []),
+      ...(!file.startsWith("features/diagnostic/qa03b/") && !/(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file) && !localCandidateEntries.has(file) && source.includes("qbv2-candidate-") ? [`${file}: references the ACT-root candidate module`] : []),
       ...(/(from|import)\s*\(?\s*["'][^"']*\/tests\//.test(source) ? [`${file}: imports test code`] : []),
     ];
   });

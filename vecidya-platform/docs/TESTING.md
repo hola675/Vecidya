@@ -1,5 +1,11 @@
 # Pruebas
 
+## ACT-04 — cutover QA-03B local (2026-10-22)
+
+**Worker local: PASS.** `pnpm run test:unit` pasó `1645/1645`; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. `diagnostic-act-04-check.mjs` pasó `3/3`: formulario y replay anónimo QA-03B con nueve respuestas; metodología pública del motor correcto; rechazo de sesiones V3 incompatibles e informe privado cerrado, conservando runtime V3 dev-only para rollback. `diagnostic-v3-qa03b-check.mjs` pasó seis rutas con reanudación, concurrencia y prueba del informe HTML identificado en entorno dev. `diagnostic-production-isolation-check.mjs` pasó: 92 archivos del bundle sin rutas/fixtures dev-only y nueve endpoints dev-only con HTTP 404 en Wrangler local `APP_ENV=production`. Migraciones de D1 aplicadas solo a la base local (0000–0019, sin esquema nuevo ni `--remote`). No hubo correo real, datos reales, cambios remotos, deploy ni comprobación HTTP pública fechada.
+
+El build avisa que faltan secretos de autenticación/Gmail para flujos que no forman parte del cutover; no se leyeron ni configuraron secretos. El informe identificado y el envío siguen dev-only.
+
 ## COM-CATALOG-BENEFITS-02 / PRICING-20-01 — integración local (2026-10-21)
 
 **RAN local antes del commit de integración:** suite `pnpm run test:unit` 1637/1637 PASS; `pnpm run typecheck` y `pnpm run build` PASS. Contra Worker con D1 local migrada y Chrome: `commercial-details-check.mjs` (17 fichas, 360/1024 px), `addons-experience-check.mjs` y `commercial-experience-review-check.mjs` (1366/768/390/360 px) PASS. Las fichas incluyen HTTP 200 real, SEO, retorno, CTA, 404 y ausencia de secciones duplicadas. WhatsApp desde USD 15 depende del coste directo total; el piso teórico sobre USD 10 es USD 12,50 para margen bruto del 20 %.

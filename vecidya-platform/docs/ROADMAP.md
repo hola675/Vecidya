@@ -71,6 +71,8 @@ Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos bo
 
 **DIAG-CLOSE-03 (2026-10-21):** replay QA server-only y resumen allowlisted ensayados en ruta dev-only; informe HTML identificado deriva del mismo resultado validado por Worker y requiere correo/grant. ACT-04 aún debe autorizar y probar el cambio atómico de rutas públicas, aislamiento de sesiones y rollback: no se ha hecho cutover ni deploy. El flujo identificado actual no descarga PDF; `PDF_OWNER_REVIEW` sigue manual y no bloqueante. FUNNEL-01D.2/01D.3 no se dan por completados.
 
+**ACT-04 (2026-10-22):** autorización recibida e implementación en rama aislada desde `origin/main`; cutover local de `/diagnostico` y metodología a QA-03B con replay server-authoritative, compatibilidad estricta y rollback dev-only. Código no integrado ni publicado. El gate de informe identificado/correo real sigue cerrado; no se toca D1 remota ni se publica automáticamente.
+
 ## FUNNEL-01D.2 — implementación incremental y derechos (2026-10-17)
 
 **Avance técnico 01D.2-B (2026-10-17):** se añadió `revokeDiagnosticOptionalIntents` en `db/queries/diagnostic-identification.server.ts` con autorización mediante grant vigente, actualizaciones idempotentes de consentimiento comercial e investigación y revalidación en cada UPDATE. **Sin pruebas ejecutadas, sin API/UI pública y sin aprobación de 01D.1.** No se ha implementado la solicitud de eliminación ni el registro de derechos; se mantienen como pendientes. Este avance de código aislado no autoriza activar la fase ni saltar sus gates.

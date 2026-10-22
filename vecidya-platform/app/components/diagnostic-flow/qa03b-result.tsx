@@ -2,19 +2,19 @@ import { Link } from "react-router";
 
 import type { AnonymousDiagnosticSummaryV1 } from "../../features/diagnostic/qa03b/qbv2-candidate-funnel";
 
-const methodologyPath = "/__dev/diagnostico/qa03b/metodologia";
-
-export function CandidateDiagnosticResult({ summary, onEdit, onRequestReport }: {
+export function CandidateDiagnosticResult({ summary, onEdit, onRequestReport, publicMode = false, methodologyHref = "/diagnostico/metodologia" }: {
   readonly summary: AnonymousDiagnosticSummaryV1;
   readonly onEdit: () => void;
   readonly onRequestReport: () => void;
+  readonly publicMode?: boolean;
+  readonly methodologyHref?: string;
 }) {
   return (
     <article aria-labelledby="candidate-result-title" className="dr-result">
       <header className="dr-hero">
-        <p className="dr-hero__eyebrow">Resumen anónimo verificado en Worker</p>
+        <p className="dr-hero__eyebrow">Resumen {publicMode ? "anónimo calculado por Vecidya" : "anónimo verificado en Worker"}</p>
         <h1 className="eyebrow dr-hero__title" id="candidate-result-title" tabIndex={-1}>Tu resumen del diagnóstico</h1>
-        <p className="dr-note">Motor {summary.diagnosticIdentity.engine} · Metodología {summary.methodologyVersion}</p>
+        <p className="dr-note">{publicMode ? "Motor QA-03B" : `Motor ${summary.diagnosticIdentity.engine}`} · Metodología {summary.methodologyVersion}</p>
       </header>
       <section aria-labelledby="candidate-overall-title" className="dr-presence dr-candidate-overall">
         <div className="dr-presence__main">
@@ -40,10 +40,11 @@ export function CandidateDiagnosticResult({ summary, onEdit, onRequestReport }: 
       </section> : null}
       {summary.limitations.length ? <p className="dr-note">{summary.limitations.join(" · ")}</p> : null}
       <nav aria-label="Acciones del resumen" className="dr-candidate-actions">
-        <button className="button button--primary" onClick={onRequestReport} type="button">Solicitar informe completo</button>
+        {publicMode ? null : <button className="button button--primary" onClick={onRequestReport} type="button">Solicitar informe completo</button>}
         <button className="button button--secondary" onClick={onEdit} type="button">Editar respuestas</button>
-        <Link className="button button--secondary" to={methodologyPath}>Consultar metodología</Link>
+        <Link className="button button--secondary" to={methodologyHref}>Consultar metodología</Link>
       </nav>
+      {publicMode ? <p className="dr-note">Este resumen es anónimo. El informe detallado no está disponible en este momento.</p> : null}
     </article>
   );
 }

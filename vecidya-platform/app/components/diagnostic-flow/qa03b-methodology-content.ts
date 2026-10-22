@@ -51,7 +51,7 @@ export const CANDIDATE_METHODOLOGY_SECTIONS_V3 = [
   {
     id: "priorities",
     title: "Cómo se detectan las prioridades",
-    summary: "Las prioridades y su orden proceden de las restricciones, objetivos, dependencias y evidencia que calcula el motor candidato. Un porcentaje bajo, por sí solo, no elige qué atender primero.",
+    summary: "Las prioridades y su orden proceden de las restricciones, objetivos, dependencias y evidencia que calcula el motor QA-03B. Un porcentaje bajo, por sí solo, no elige qué atender primero.",
     points: [
       "Cuando varias preguntas observan un mismo aspecto, la lectura conserva las diferencias respaldadas entre sus respuestas.",
       "Una prioridad pendiente de confirmación se presenta como tal antes de recomendar una intervención.",
@@ -63,13 +63,13 @@ export const CANDIDATE_METHODOLOGY_SECTIONS_V3 = [
     summary: "Las recomendaciones, las soluciones y la relación comercial de Vecidya son salidas separadas del motor. La licencia puede ser ninguna cuando la evidencia aún no la justifica.",
     points: [
       "Si una recomendación necesita confirmación previa, se indica esa condición. Cuando no existe una solución respaldada, se muestra que no hay una correspondencia justificada.",
-      "La licencia y las ofertas se muestran según el contrato comercial candidato y su certeza. No cambian el índice, las dimensiones ni el orden de prioridades.",
+      "La licencia y las ofertas se muestran según el contrato comercial vigente y su certeza. No cambian el índice, las dimensiones ni el orden de prioridades.",
     ],
   },
   {
     id: "limits",
     title: "Límites del diagnóstico",
-    summary: "La candidata cuenta con certificaciones deterministas del código y sus contratos. Eso prueba reproducibilidad y consistencia interna; no prueba validez predictiva con resultados empresariales reales.",
+    summary: "Las pruebas deterministas del código y sus contratos verifican reproducibilidad y consistencia interna; no prueban validez predictiva con resultados empresariales reales.",
     points: [
       "La evaluación depende de las respuestas y no inspecciona perfiles, sitios, cuentas ni datos externos por su cuenta.",
       "El recorrido puede dejar incertidumbres, áreas sin evidencia y dimensiones no observables. Conviene confirmar esos límites antes de tomar decisiones.",

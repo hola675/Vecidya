@@ -14,8 +14,7 @@ export default [
   route("unete", "routes/join.tsx"),
   route("contacto", "routes/contact.tsx"),
   route("vecindario", "routes/directory.tsx"),
-  // DIAG-V3-13 / FUNNEL-01B: cuestionario público y resumen anónimo calculado en Worker.
-  // El informe detallado queda fuera del acceso anónimo hasta que exista el flujo de identificación.
+  // ACT-04: cuestionario QA-03B y resumen anónimo reconstruido por el Worker.
   route("diagnostico", "routes/diagnostic.tsx"),
   route("diagnostico/metodologia", "routes/diagnostico-metodologia.tsx"),
   route("sobre-nosotros", "routes/about.tsx"),
