@@ -1,5 +1,7 @@
 import { readRequestBodyLimited, RequestBodyTooLargeError } from "../features/diagnostic/bounded-request-body.server";
 import { allowRateLimitedRequest } from "../features/diagnostic/diagnostic-rate-limit.server";
+import { toAnonymousDiagnosticSummaryV1 } from "../features/diagnostic/anonymous-summary.server";
+import { PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1, replayPublicDiagnosticV3 } from "../features/diagnostic/public-diagnostic-replay.server";
 import { replayQa03bSessionV1, buildQa03bReplayProjectionsV1 } from "../features/diagnostic/qa03b/worker-replay.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 
@@ -52,15 +54,29 @@ export async function action({ context, request }: Route.ActionArgs) {
   } catch {
     return failure(400, "Las respuestas no tienen un formato válido.");
   }
-  if (!isRecord(input) || !hasExactKeys(input, ["replayVersion", "engineIdentity", "answerSchema", "questionBank", "sessionSchema", "sessionKey", "session"])) {
+
+  let responseBody: { readonly summary: unknown; readonly engineIdentity?: typeof PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1 };
+  if (isRecord(input) && hasExactKeys(input, ["answers"]) && Array.isArray(input.answers)) {
+    // Rollback contract: the prior public adapter submits only ordered V3 answers.
+    const replay = replayPublicDiagnosticV3(input.answers);
+    if (!replay.ok) {
+      if (replay.reason === "incomplete" || replay.reason === "completion") return failure(422, "No pudimos preparar una lectura fiable con estas respuestas.");
+      if (replay.reason === "order") return failure(400, "La ruta de respuestas no corresponde al diagnóstico.");
+      if (replay.reason === "duplicate") return failure(400, "Hay respuestas repetidas.");
+      return failure(400, "Las respuestas no cumplen el contrato vigente.");
+    }
+    responseBody = { summary: toAnonymousDiagnosticSummaryV1(replay.result), engineIdentity: PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1 };
+  } else if (isRecord(input) && hasExactKeys(input, ["replayVersion", "engineIdentity", "answerSchema", "questionBank", "sessionSchema", "sessionKey", "session"])) {
+    const replay = replayQa03bSessionV1(input);
+    if (!replay.ok) {
+      if (replay.reason === "identity" || replay.reason === "schema" || replay.reason === "bank" || replay.reason === "request") return failure(409, "La sesión no corresponde a la versión vigente del diagnóstico.");
+      if (replay.reason === "expired") return failure(410, "La sesión venció. Inicia un diagnóstico nuevo.");
+      if (replay.reason === "incomplete") return failure(422, "No pudimos preparar una lectura fiable con estas respuestas.");
+      return failure(400, "La ruta de respuestas no cumple el contrato vigente.");
+    }
+    responseBody = { summary: buildQa03bReplayProjectionsV1(replay, null, new Date(replay.completedAt)).summary };
+  } else {
     return failure(400, "Las respuestas no tienen un formato válido.");
-  }
-  const replay = replayQa03bSessionV1(input);
-  if (!replay.ok) {
-    if (replay.reason === "identity" || replay.reason === "schema" || replay.reason === "bank" || replay.reason === "request") return failure(409, "La sesión no corresponde a la versión vigente del diagnóstico.");
-    if (replay.reason === "expired") return failure(410, "La sesión venció. Inicia un diagnóstico nuevo.");
-    if (replay.reason === "incomplete") return failure(422, "No pudimos preparar una lectura fiable con estas respuestas.");
-    return failure(400, "La ruta de respuestas no cumple el contrato vigente.");
   }
 
   if (import.meta.env.DEV) {
@@ -68,8 +84,5 @@ export async function action({ context, request }: Route.ActionArgs) {
     catch { /* A missing local analytics write must not block the summary. */ }
   }
 
-  return Response.json(
-    { summary: buildQa03bReplayProjectionsV1(replay, null, new Date(replay.completedAt)).summary },
-    { headers },
-  );
+  return Response.json(responseBody, { headers });
 }

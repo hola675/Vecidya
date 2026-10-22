@@ -14,7 +14,7 @@ export function CandidateDiagnosticResult({ summary, onEdit, onRequestReport, pu
       <header className="dr-hero">
         <p className="dr-hero__eyebrow">Resumen {publicMode ? "anónimo calculado por Vecidya" : "anónimo verificado en Worker"}</p>
         <h1 className="eyebrow dr-hero__title" id="candidate-result-title" tabIndex={-1}>Tu resumen del diagnóstico</h1>
-        <p className="dr-note">{publicMode ? "Motor QA-03B" : `Motor ${summary.diagnosticIdentity.engine}`} · Metodología {summary.methodologyVersion}</p>
+        <p className="dr-note">{publicMode ? "Diagnóstico de Vecidya" : `Motor ${summary.diagnosticIdentity.engine}`} · Metodología {summary.methodologyVersion}</p>
       </header>
       <section aria-labelledby="candidate-overall-title" className="dr-presence dr-candidate-overall">
         <div className="dr-presence__main">

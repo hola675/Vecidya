@@ -10,7 +10,7 @@ export function CandidateMethodologyArticle({ devBaseHref, devReportHref }: { re
     <article aria-labelledby="candidate-methodology-title" className="dm dm-candidate">
       <header className="dm-hero">
         <h1 className="dm-hero__title" id="candidate-methodology-title">{publicMode ? "Cómo funciona el diagnóstico de Vecidya" : "Cómo funciona el diagnóstico candidato de Vecidya"}</h1>
-        <p className="dm-hero__lead">Metodología {CANDIDATE_METHODOLOGY_IDENTITY_V3.replace("diagnostic-methodology-", "")} · motor QA-03B.</p>
+        <p className="dm-hero__lead">{publicMode ? "Metodología " : "Metodología candidata "}{CANDIDATE_METHODOLOGY_IDENTITY_V3.replace("diagnostic-methodology-", "")}{publicMode ? " · Diagnóstico de Vecidya." : " · motor QA-03B."}</p>
       </header>
       {publicMode ? null : <p className="dr-note">Esta página acompaña la ruta QA-03B en desarrollo local.</p>}
       <nav aria-label={publicMode ? "Contenido de la metodología" : "Contenido de la metodología candidata"} className="dm-toc">

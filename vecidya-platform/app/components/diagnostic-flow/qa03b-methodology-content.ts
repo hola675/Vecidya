@@ -51,7 +51,7 @@ export const CANDIDATE_METHODOLOGY_SECTIONS_V3 = [
   {
     id: "priorities",
     title: "Cómo se detectan las prioridades",
-    summary: "Las prioridades y su orden proceden de las restricciones, objetivos, dependencias y evidencia que calcula el motor QA-03B. Un porcentaje bajo, por sí solo, no elige qué atender primero.",
+    summary: "Las prioridades y su orden proceden de las restricciones, objetivos, dependencias y evidencia que calcula el Diagnóstico de Vecidya. Un porcentaje bajo, por sí solo, no elige qué atender primero.",
     points: [
       "Cuando varias preguntas observan un mismo aspecto, la lectura conserva las diferencias respaldadas entre sus respuestas.",
       "Una prioridad pendiente de confirmación se presenta como tal antes de recomendar una intervención.",

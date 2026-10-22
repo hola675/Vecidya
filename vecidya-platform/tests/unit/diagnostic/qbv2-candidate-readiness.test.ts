@@ -157,9 +157,11 @@ test("ACT-04 cutover: the public questionnaire, replay and methodology use QA-03
   assert.match(route, /<CandidateDiagnosticFlow publicMode\s*\/>/);
   assert.match(qa03bFlow, /action: publicMode \? "\/api\/diagnostic\/anonymous-summary"/);
   assert.match(anonymousEndpoint, /replayQa03bSessionV1/);
-  assert.doesNotMatch(anonymousEndpoint, /replayPublicDiagnosticV3|PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1/);
-  assert.match(methodologyRoute, /<CandidateMethodologyArticle publicMode\s*\/>/);
+  assert.match(anonymousEndpoint, /replayPublicDiagnosticV3/);
+  assert.match(anonymousEndpoint, /hasExactKeys\(input, \["answers"\]\)/, "the prior V3 adapter contract remains available for rollback");
+  assert.match(methodologyRoute, /<CandidateMethodologyArticle\s*\/>/);
   assert.match(methodology, /to=\{base\}/);
+  assert.match(methodology, /const publicMode = !devBaseHref/);
   assert.match(result, /publicMode \? null : <button/);
   assert.match(result, /El informe detallado no está disponible/);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateActive, false, "el motor ACT raíz sigue aislado del cutover QA-03B");

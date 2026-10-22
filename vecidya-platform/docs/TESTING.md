@@ -2,7 +2,11 @@
 
 ## ACT-04 — cutover QA-03B local (2026-10-22)
 
-**Worker local: PASS.** `pnpm run test:unit` pasó `1645/1645`; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. `diagnostic-act-04-check.mjs` pasó `3/3`: formulario y replay anónimo QA-03B con nueve respuestas; metodología pública del motor correcto; rechazo de sesiones V3 incompatibles e informe privado cerrado, conservando runtime V3 dev-only para rollback. `diagnostic-v3-qa03b-check.mjs` pasó seis rutas con reanudación, concurrencia y prueba del informe HTML identificado en entorno dev. `diagnostic-production-isolation-check.mjs` pasó: 92 archivos del bundle sin rutas/fixtures dev-only y nueve endpoints dev-only con HTTP 404 en Wrangler local `APP_ENV=production`. Migraciones de D1 aplicadas solo a la base local (0000–0019, sin esquema nuevo ni `--remote`). No hubo correo real, datos reales, cambios remotos, deploy ni comprobación HTTP pública fechada.
+**Worker local: PASS.** `pnpm run test:unit` pasó `1645/1645`; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. `diagnostic-act-04-check.mjs` pasó `3/3`: formulario y replay QA-03B con nueve respuestas; metodología pública sin identificadores técnicos; rechazo de sobres V3/ACT incompatibles e informe privado cerrado. `diagnostic-v3-qa03b-check.mjs` pasó seis rutas con reanudación y concurrencia. `diagnostic-production-isolation-check.mjs`: 92 archivos sin rutas/fixtures dev-only y nueve rutas privadas con HTTP 404 en Wrangler local `APP_ENV=production`.
+
+**Ensayo de rollback:** se sustituyeron temporalmente `/diagnostico` y `/diagnostico/metodologia` por sus adaptadores V3 previos, manteniendo el endpoint dual en la rama. `diagnostic-v3-funnel-01b-check.mjs`: **6/6 PASS**; V3 envió `{ answers }`, obtuvo la respuesta versionada anterior, reanudó el resumen local y conservó una sesión completada sin sidecar. Luego se restauró el adaptador público QA-03B; `diagnostic-act-04-check.mjs` volvió a pasar 3/3. Esto certifica rollback local ensayado, no rollback en producción.
+
+Las migraciones D1 se aplicaron solo localmente (0000–0019; sin esquema nuevo ni `--remote`). No hubo correo real, datos reales, cambios remotos, deploy ni HTTP público fechado. El build avisa que faltan secretos para otros flujos; no se leyeron ni configuraron.
 
 El build avisa que faltan secretos de autenticación/Gmail para flujos que no forman parte del cutover; no se leyeron ni configuraron secretos. El informe identificado y el envío siguen dev-only.
 

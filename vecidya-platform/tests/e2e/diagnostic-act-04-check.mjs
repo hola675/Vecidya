@@ -31,6 +31,8 @@ try {
 
   await page.goto(route, { waitUntil: "commit" });
   assert.equal(await page.getByText(/Motor candidato inactivo|Entorno local de prueba/).count(), 0, "la ruta pública no presenta etiquetas de prueba");
+  assert.doesNotMatch(await page.title(), /QA-03B|candidate|candidata|diag-v3/i);
+  assert.doesNotMatch((await page.locator('meta[name="description"]').getAttribute("content")) ?? "", /QA-03B|candidate|candidata|diag-v3/i);
   await page.evaluate(({ legacyKey, legacyValue, qa03bKey }) => {
     localStorage.setItem(legacyKey, legacyValue);
     localStorage.removeItem(qa03bKey);
@@ -78,6 +80,7 @@ try {
   assert.equal(rawSummaryResponse.summary.diagnosticIdentity.engine, requests[0].engineIdentity.engine);
   assert.equal(await page.getByRole("button", { name: "Solicitar informe completo" }).count(), 0);
   assert.equal(await page.getByText(/diag-v3-candidate|candidata de prueba/i).count(), 0, "la interfaz pública no expone la identidad ni etiquetas internas de la candidata");
+  assert.doesNotMatch(await page.locator("body").innerText(), /QA-03B|candidate|candidata|diag-v3/i);
   assert.equal(await page.getByText("El informe detallado no está disponible en este momento.").count(), 1);
   assert.equal(await page.evaluate((key) => localStorage.getItem(key), legacyKey), legacyValue, "la sesión V3 preexistente no se reescribe");
   const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? "null"), qa03bKey);
@@ -89,6 +92,9 @@ try {
   await page.waitForURL("**/diagnostico/metodologia");
   await page.getByRole("heading", { name: "Cómo funciona el diagnóstico de Vecidya" }).waitFor();
   assert.equal(await page.getByText(/todavía no está activo en producción|motor candidato/i).count(), 0);
+  assert.doesNotMatch(await page.title(), /QA-03B|candidate|candidata|diag-v3/i);
+  assert.doesNotMatch((await page.locator('meta[name="description"]').getAttribute("content")) ?? "", /QA-03B|candidate|candidata|diag-v3/i);
+  assert.doesNotMatch(await page.locator("body").innerText(), /QA-03B|candidate|candidata|diag-v3/i);
   pass("metodología pública corresponde al motor QA-03B y no a una prueba privada");
 
   for (const identity of [

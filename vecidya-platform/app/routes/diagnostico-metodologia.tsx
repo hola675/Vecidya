@@ -4,13 +4,13 @@ import { PublicLayout, publicMeta } from "../components/public-layout";
 import type { Route } from "./+types/diagnostico-metodologia";
 
 /**
- * ACT-04 — metodología pública del motor QA-03B.
+ * ACT-04 — metodología pública del Diagnóstico de Vecidya.
  */
 
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
     "Metodología del diagnóstico",
-    "Cómo funciona el diagnóstico QA-03B de Vecidya: la ruta adaptativa, la evidencia, la confianza, las prioridades y los límites de la evaluación.",
+    "Cómo funciona el Diagnóstico de Vecidya: la ruta adaptativa, la evidencia, la confianza, las prioridades y los límites de la evaluación.",
     "/diagnostico/metodologia",
   );
 }

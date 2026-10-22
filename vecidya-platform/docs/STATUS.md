@@ -2,7 +2,7 @@
 
 ## ACT-04 — cutover QA-03B local (2026-10-22)
 
-**CODE + TEST en rama `feat/diagnostic-act-04-20261022`; NO PUBLICADO.** `/diagnostico` y `/diagnostico/metodologia` usan QA-03B con replay autoritativo en Worker y resumen anónimo allowlisted. Se conserva la key/schema 3 propia de QA-03B; las sesiones V3/ACT incompatibles reciben rechazo, y las rutas privadas de informe/identificación permanecen cerradas en producción. El informe detallado muestra disponibilidad no confirmada y no se habilita correo simulado. Evidencia local y gates actualizados en `TESTING.md`; rollback conservado en la ruta dev-only V3. No hay migración nueva, despliegue ni HTTP público fechado.
+**CODE + TEST en rama `feat/diagnostic-act-04-20261022`; NO PUBLICADO.** `/diagnostico` y `/diagnostico/metodologia` usan el motor QA-03B, con replay autoritativo en Worker y resumen anónimo allowlisted. La sesión QA-03B conserva key/schema 3; un sobre QA-03B con identidad/sesión V3 o ACT se rechaza y las claves V3 históricas no se migran ni alteran. El endpoint conserva además el contrato exacto de respuestas V3 anterior para hacer posible el rollback. Las rutas de informe identificado y correo siguen cerradas en producción. Ensayo local restauró temporalmente los dos adaptadores públicos V3 y pasó el flujo anterior 6/6. Sin migración nueva, despliegue ni HTTP público fechado.
 
 ## DIAG-CLOSE-03 — replay QA-03B en Worker local (2026-10-21)
 
