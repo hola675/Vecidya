@@ -148,7 +148,7 @@ test("R7-B-FINAL: R7-A coverage, R3/R4/R5 freezes, candidate identities and runt
   );
 });
 
-test("R7-B-FINAL: the candidate stays inactive and isolated — no barrel export, no non-candidate importer, no app → tests import", async () => {
+test("R7-B-FINAL: the ACT-root candidate stays isolated — no barrel export, no root-candidate importer, no app → tests import", async () => {
   const barrel = (await import("../../../app/features/diagnostic/index")) as Record<string, unknown>;
   for (const symbol of [
     "buildCandidateCommercialBoundaryV3", "buildCandidateRecommendationsAndSolutionsV3", "buildCandidateQuestionPlanV3", "candidateSolutionContextOfV3",
@@ -158,7 +158,7 @@ test("R7-B-FINAL: the candidate stays inactive and isolated — no barrel export
   const appRoot = new URL("../../../app/", import.meta.url);
   const offenders: string[] = [];
   const localCandidateEntries = new Set([
-    // QA-03B: entradas locales explícitas; las rutas siguen excluidas del build.
+    // QA-03B ahora es el motor público; sus contratos internos conservan el submódulo aislado.
     "components/diagnostic-flow/qa03b-diagnostic-flow.tsx",
     "components/diagnostic-flow/qa03b-result.tsx",
     "components/diagnostic-flow/qa03b-presentation.ts",
@@ -166,6 +166,7 @@ test("R7-B-FINAL: the candidate stays inactive and isolated — no barrel export
     "routes/dev-diagnostic-qa03b-methodology.tsx",
     "routes/dev-diagnostic-qa03b-report.tsx",
     "routes/dev-diagnostic-qa03b-funnel.tsx",
+    "routes/dev-diagnostic-identified-report.tsx",
     "components/diagnostic-flow/candidate-diagnostic-flow.tsx",
     "components/diagnostic-flow/candidate-result.tsx",
     "components/diagnostic-flow/candidate-presentation.ts",
@@ -173,7 +174,7 @@ test("R7-B-FINAL: the candidate stays inactive and isolated — no barrel export
   ]);
   for (const file of (readdirSync(appRoot, { recursive: true }) as string[]).map((f) => f.replaceAll("\\", "/")).filter((f) => /\.tsx?$/.test(f))) {
     const source = readFileSync(new URL(file, appRoot), "utf8");
-    if (!/(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file) && !localCandidateEntries.has(file) && source.includes("qbv2-candidate-")) offenders.push(`${file}: references a candidate module`);
+    if (!file.startsWith("features/diagnostic/qa03b/") && !/(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file) && !localCandidateEntries.has(file) && source.includes("qbv2-candidate-")) offenders.push(`${file}: references the ACT-root candidate module`);
     if (/(from|import)\s*\(?\s*["'][^"']*\/tests\//.test(source)) offenders.push(`${file}: imports test code`);
   }
   assert.deepEqual(offenders, []);

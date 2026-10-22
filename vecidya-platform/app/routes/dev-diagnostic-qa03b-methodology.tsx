@@ -13,7 +13,7 @@ export function loader(_args: LoaderFunctionArgs) {
 }
 
 export default function DevDiagnosticCandidateMethodology() {
-  return <main className="dm-page"><div className="rp-toolbar"><Link to="/__dev/diagnostico/qa03b">Regresar a la prueba candidata</Link></div><CandidateMethodologyArticle /></main>;
+  return <main className="dm-page"><div className="rp-toolbar"><Link to="/__dev/diagnostico/qa03b">Regresar a la prueba candidata</Link></div><CandidateMethodologyArticle devBaseHref="/__dev/diagnostico/qa03b" devReportHref="/__dev/diagnostico/qa03b/informe" /></main>;
 }
 
 export function ErrorBoundary() {

@@ -1,8 +1,12 @@
 # Estado de implementación
 
+## ACT-04 — cutover QA-03B local (2026-10-22)
+
+**CODE + TEST en rama `feat/diagnostic-act-04-20261022`; NO PUBLICADO.** `/diagnostico` y `/diagnostico/metodologia` usan el motor QA-03B, con replay autoritativo en Worker y resumen anónimo allowlisted. La sesión QA-03B conserva key/schema 3; un sobre QA-03B con identidad/sesión V3 o ACT se rechaza y las claves V3 históricas no se migran ni alteran. El endpoint conserva además el contrato exacto de respuestas V3 anterior para hacer posible el rollback. Las rutas de informe identificado y correo siguen cerradas en producción. Ensayo local restauró temporalmente los dos adaptadores públicos V3 y pasó el flujo anterior 6/6. Sin migración nueva, despliegue ni HTTP público fechado.
+
 ## DIAG-CLOSE-03 — replay QA-03B en Worker local (2026-10-21)
 
-`qa03b/worker-replay.server.ts` valida identidad, banco/schema/key y transcript de sesión 3, reconstruye ruta y ediciones con el planner QA-03B y recalcula el resultado sin aceptar scores del navegador. En la ruta **dev-only** QA-03B el Worker devuelve solo resumen allowlisted; la solicitud identificada reutiliza el replay, comprueba igualdad del resumen y guarda únicamente el informe versionado en el flujo D1/grant/correo ya existente. `/diagnostico` y el replay público V3 permanecen intactos; QA-03B no se activa en producción. La sesión 3 admite transcript opcional nuevo sin cambiar key/schema ni convertir sesiones V3/ACT. E2E de la rama original: 6 rutas QA, 7 rechazos HTTP, reanudación/concurrencia, solicitud/correo verificado/acceso identificado, FUNNEL-01B 6/6 y 157/157 unitarias focales PASS. `PDF_OWNER_REVIEW` manual no bloquea; el flujo identificado actual muestra HTML, **no descarga PDF**, y no se tocó el generador. ACT-04 requiere autorización independiente y pruebas de activación/rollback sobre la integración pública.
+`qa03b/worker-replay.server.ts` valida identidad, banco/schema/key y transcript de sesión 3, reconstruye ruta y ediciones con el planner QA-03B y recalcula el resultado sin aceptar scores del navegador. En DIAG-CLOSE-03, `/diagnostico` todavía era V3 y QA-03B solo estaba en rutas dev; el checkpoint ACT-04 arriba registra el cutover en esta rama. La solicitud identificada y su flujo de correo siguen dev-only; no se afirma correo real ni PDF descargable. `PDF_OWNER_REVIEW` manual no bloquea.
 
 ## COM-CATALOG-DETAILS-01 / COM-CATALOG-BENEFITS-02 / COM-PRICING-20-01 — oferta comercial detallada (2026-10-20)
 
