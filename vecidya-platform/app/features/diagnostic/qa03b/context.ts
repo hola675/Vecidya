@@ -8,8 +8,10 @@ export type ContractSignal<T> = Signal<T> & { readonly questionId: string; reado
 const declaration = <T>(value: T, questionId: string, questionVersion: number): ContractSignal<T> => ({ value, provenance: "explicit_declaration", questionId, questionVersion });
 export type ContractSignals = {
   readonly entity?: ContractSignal<EntityType>;
+  readonly entityUnknown?: ContractSignal<boolean>;
   readonly operationalStatus?: ContractSignal<OperationalStatus>;
   readonly hasEverHadRealPeople?: ContractSignal<boolean>;
+  readonly historyUnknown?: ContractSignal<boolean>;
   readonly buyer?: ContractSignal<BuyerDisposition>;
   readonly reachUnknown?: ContractSignal<boolean>;
   readonly serviceSetting: readonly ContractSignal<"physical_location" | "travels" | "remote_service">[];
@@ -30,9 +32,11 @@ export function deriveContractSignals(answers: AnswersV2): ContractSignals {
   const buyer = answers.q2_customer_buyer;
   const role = answers.q2_buyer_recipient_relation;
   return {
-    ...(["individual", "business", "organization", "project"].includes(String(entity)) ? { entity: declaration(entity as EntityType, "q2_entity", 2) } : {}),
+    ...(["individual", "business", "organization", "project"].includes(String(entity)) ? { entity: declaration(entity as EntityType, "q2_entity", 3) } : {}),
+    ...(entity === "unknown" ? { entityUnknown: declaration(true, "q2_entity", 3) } : {}),
     ...((OPERATIONAL_STATUSES as readonly unknown[]).includes(state) ? { operationalStatus: declaration(state as OperationalStatus, "q2_operational_status", 1) } : {}),
-    ...(["yes", "no"].includes(String(answers.q2_has_customers)) ? { hasEverHadRealPeople: declaration(answers.q2_has_customers === "yes", "q2_has_customers", 2) } : {}),
+    ...(["yes", "no"].includes(String(answers.q2_has_customers)) ? { hasEverHadRealPeople: declaration(answers.q2_has_customers === "yes", "q2_has_customers", 3) } : {}),
+    ...(answers.q2_has_customers === "unknown" ? { historyUnknown: declaration(true, "q2_has_customers", 3) } : {}),
     ...(["b2c", "b2b", "mixed", "no_direct_purchase", "unknown"].includes(String(buyer)) ? { buyer: declaration(buyer as BuyerDisposition, "q2_customer_buyer", 3) } : {}),
     ...(answers.q2_customer_reach === "unknown" ? { reachUnknown: declaration(true, "q2_customer_reach", 3) } : {}),
     serviceSetting: (["physical_location", "travels", "remote_service"] as const).filter(value => delivery.includes(value)).map(value => declaration(value, "q2_delivery", 3)),
@@ -94,7 +98,7 @@ export function resolveContractContext(legacySignals: DiagnosticSignalsV3, facts
   const growthStage = state === "preparing" && ever !== true ? resolved("idea", "signal")
     : state === "operating" && ever === true ? old.context.growthStage
       : unresolved<import("../contracts").GrowthStage>(state === "unknown" ? "declared_unknown" : "insufficient_evidence", state === "operating" ? ["starting", "operating", "growing", "scaling"] : []);
-  const entity = facts.entity ? resolved(facts.entity.value, "signal") : unresolved<EntityType>("not_asked");
+  const entity = facts.entity ? resolved(facts.entity.value, "signal") : unresolved<EntityType>(facts.entityUnknown ? "declared_unknown" : "not_asked");
   const buyer = facts.buyer?.value;
   const buyerResolution = buyer === "b2c" || buyer === "b2b" || buyer === "mixed" ? resolved<CustomerBuyer>(buyer, "signal") : unresolved<CustomerBuyer>(buyer === "unknown" ? "declared_unknown" : buyer === "no_direct_purchase" ? "insufficient_evidence" : "not_asked");
   const reach = facts.reachUnknown ? unresolved<CustomerReach>("declared_unknown") : old.context.customerModel.reach;
@@ -108,7 +112,7 @@ export function resolveContractContext(legacySignals: DiagnosticSignalsV3, facts
     buyerDisposition: buyer ?? null, buyerRecipient, funding: facts.funding?.value ?? null,
     delivery: { serviceSetting: facts.serviceSetting, appointmentMode: facts.appointmentMode, purchaseChannel: facts.purchaseChannel, onsiteConsumption: facts.onsiteConsumption, otherDelivery: facts.otherDelivery },
   };
-  const historyResolution = ever === undefined ? unresolved<string>("not_asked") : resolved(ever ? "yes" : "no", "signal");
+  const historyResolution = ever === undefined ? unresolved<string>(facts.historyUnknown ? "declared_unknown" : "not_asked") : resolved(ever ? "yes" : "no", "signal");
   const fundingResolution = facts.funding ? resolved(facts.funding.value, "signal") : unresolved<string>("not_asked");
   return { context, trace: { ...old.trace,
     entity: fieldTrace("entity", entity, ["entityDeclared"]), activity: fieldTrace("activity", activity, ["operationalStatus"]),

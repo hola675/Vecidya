@@ -33,7 +33,7 @@ test("QA-03B.0: banco, respuestas y sesión tienen identidad distinta", () => {
   assert.equal(PLANNER_ID, CANDIDATE_RESULT_IDENTITY_V3.planner);
   assert.equal(SESSION_KEY, CANDIDATE_SESSION_STORAGE_KEY_V3);
   assert.equal(SESSION_SCHEMA, CANDIDATE_SESSION_SCHEMA_V3);
-  assert.equal(SESSION_SCHEMA, 3);
+  assert.equal(SESSION_SCHEMA, 4);
   assert.notEqual(QUESTION_BANK_ID, ACT_IDENTITY_V3.questionBank);
   assert.notEqual(ANSWER_SCHEMA_ID, ACT_IDENTITY_V3.answerSchema);
   assert.notEqual(SESSION_KEY, ACT_SESSION_KEY_V3);

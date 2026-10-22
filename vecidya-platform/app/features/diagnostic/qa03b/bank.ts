@@ -12,21 +12,31 @@ export const BUYER_RECIPIENT_RULE = andV2(confirmedBuyer, orV2(
 
 const replacement: Readonly<Record<string, Partial<QuestionDefinitionV2>>> = {
   q2_entity: {
-    version: 2, prompt: "¿Qué tipo de actividad quieres evaluar?",
+    version: 3, prompt: "¿Qué tipo de actividad quieres evaluar?",
     hint: "Elige la forma de tu actividad. Puede estar preparándose o ya operar; un proyecto puede generar ingresos.",
     options: [
       { value: "individual", label: "Trabajo por cuenta propia, como profesional o persona independiente, incluso con un nombre comercial." },
       { value: "business", label: "Un negocio o empresa con actividad comercial." },
       { value: "organization", label: "Una organización o iniciativa comunitaria sin fines de lucro." },
       { value: "project", label: "Un proyecto personal o colectivo que todavía no tiene forma de negocio u organización." },
+      { value: "unknown", label: "Todavía no puedo clasificarla.", kind: "unknown" },
+    ],
+  },
+  q2_other_staff: {
+    version: 2,
+    options: [
+      { value: "no", label: "Trabajo por mi cuenta." },
+      { value: "yes", label: "Hay al menos otra persona que trabaja conmigo de forma habitual." },
+      { value: "unknown", label: "No estoy seguro todavía.", kind: "unknown" },
     ],
   },
   q2_has_customers: {
-    version: 2, prompt: "¿Tu actividad ya ha tenido clientes, compradores, usuarios o beneficiarios reales?",
+    version: 3, prompt: "Hasta hoy, ¿tu actividad ya ha tenido clientes, compradores, usuarios o beneficiarios reales?",
     hint: "Cuenta experiencias reales, aunque tu actividad esté en pausa. El interés o los seguidores por sí solos no cuentan.", variants: [],
     options: [
       { value: "yes", label: "Sí, ya hubo personas reales que compraron, contrataron, usaron o recibieron lo que ofrezco." },
       { value: "no", label: "No, todavía no ha habido personas reales en esas situaciones." },
+      { value: "unknown", label: "No tengo información suficiente para responder.", kind: "unknown" },
     ],
   },
   q2_delivery: {
@@ -59,6 +69,11 @@ const replacement: Readonly<Record<string, Partial<QuestionDefinitionV2>>> = {
       { value: "no_direct_purchase", label: "No hay una compra directa; la actividad se sostiene con donaciones, subvenciones o aportes." },
       { value: "unknown", label: "Todavía no lo tengo claro.", kind: "unknown" },
     ],
+  },
+  q2_sector: {
+    version: 3,
+    options: [...historicalBank.find(q => q.id === "q2_sector")!.options,
+      { value: "unknown", label: "Todavía no lo tengo claro.", kind: "unknown" }],
   },
   q2_monetization: { appliesWhen: undefined },
 };
@@ -107,7 +122,7 @@ export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefiniti
   },
   {
     id: "q2_buyer_recipient_relation", version: 1, module: "nonprofit", type: "single", routingRole: "core",
-    prompt: "¿Quien compra o contrata es también quien recibe el servicio o producto?",
+    prompt: "¿Quién compra o contrata es también quien recibe el servicio o producto?",
     hint: "Por ejemplo, alguien puede contratar un servicio para otra persona.",
     purpose: ["classification"], priority: "high", appliesWhen: BUYER_RECIPIENT_RULE,
     options: [

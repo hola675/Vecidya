@@ -39,6 +39,16 @@ test("QA-03B: entidad, estado actual e historia son independientes", () => {
   assert.equal(assetsOnly.context.operationalStatus.status, "unresolved"); assert.equal(assetsOnly.context.activity.status, "unresolved");
   assert.ok(assetsOnly.eligibleQuestionIds.includes("q2_operational_status"));
 });
+test("QA-03B A: desconocido conserva incertidumbre declarada sin volverse no o no aplica", () => {
+  const unresolved = resolve({ ...base, q2_entity: "unknown", q2_has_customers: "unknown", q2_other_staff: "unknown", q2_sector: "unknown" }, BANK);
+  assert.deepEqual(unresolved.context.entity, { status: "unresolved", reason: "declared_unknown", candidates: [] });
+  assert.equal(unresolved.context.hasEverHadRealPeople, null);
+  assert.equal(unresolved.context.growthStage.status, "unresolved");
+  assert.equal(unresolved.trace.history.reason, "declared_unknown");
+  assert.equal(unresolved.context.activity.status, "resolved", "la respuesta operativa explícita sigue siendo independiente de una historia desconocida");
+  assert.equal(unresolved.activeAnswers.q2_operations_handoffs, undefined);
+  assert.equal(unresolved.activeAnswers.q2_buyer_recipient_relation, undefined);
+});
 test("QA-03B: pausa conserva historia y retira evidencia de operación actual", () => {
   const paused = resolve({ ...base, q2_operational_status: "paused", q2_has_customers: "yes", q2_regularity: "regular", q2_demand_trend: "increasing", q2_b2b_pipeline: "defined", q2_customer_buyer: "b2b", q2_process_systemization: "defined", q2_reputation_flow: "strong" }, BANK);
   assert.equal(paused.context.hasEverHadRealPeople, true); assert.equal(paused.context.growthStage.status, "unresolved");

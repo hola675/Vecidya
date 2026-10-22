@@ -12,7 +12,7 @@ import type { DigitalDimensionId } from "../qbv2-dimensions";
 import { FRICTION_RELEVANCE, GOAL_RELEVANCE } from "../qbv2-priorities";
 import { DEFAULT_ROUTE_BUDGET_V1, ROUTE_BANDS, ROUTE_HARD_CAP, type RouteBudgetV1, type QuestionSelectionReason } from "../qbv2-planner";
 
-export const CANDIDATE_PLANNER_IDENTITY_V3 = "reviewed-evidence-v4+r3+r4-operation-history+candidate-planner-v3" as const;
+export const CANDIDATE_PLANNER_IDENTITY_V3 = "reviewed-evidence-v5+r3+r4-operation-history+candidate-planner-v3" as const;
 export const CANDIDATE_ROUTE_HARD_CAP_V3 = ROUTE_HARD_CAP;
 export type CandidateEvidenceSufficiencyV3 = {
   readonly applicableDimensions: readonly DigitalDimensionId[];
