@@ -2,10 +2,14 @@ import { createTransactionalMailer, type MailEnvironment, type MailResult } from
 import { buildInvitationEmail } from "./templates.server";
 import { isOrganizationInvitationEmailConfigured, type InvitationEmailConfig } from "./invitation.server";
 
-export type PlatformOwnerInvitationEmailConfig = MailEnvironment & InvitationEmailConfig;
+export type PlatformOwnerInvitationEmailConfig = MailEnvironment & InvitationEmailConfig & { APP_URL?: string };
+
+function normalizedConfig(config: PlatformOwnerInvitationEmailConfig): PlatformOwnerInvitationEmailConfig {
+  return { ...config, appUrl: config.APP_URL || config.appUrl };
+}
 
 export function isPlatformOwnerInvitationEmailConfigured(config: PlatformOwnerInvitationEmailConfig) {
-  return isOrganizationInvitationEmailConfigured(config);
+  return isOrganizationInvitationEmailConfigured(normalizedConfig(config));
 }
 
 export async function sendPlatformOwnerInvitation(input: {
@@ -14,13 +18,14 @@ export async function sendPlatformOwnerInvitation(input: {
   email: string;
   organizationName: string;
 }, config: PlatformOwnerInvitationEmailConfig): Promise<MailResult> {
-  if (!isPlatformOwnerInvitationEmailConfigured(config) || !config.appUrl) {
+  const mailConfig = normalizedConfig(config);
+  if (!isOrganizationInvitationEmailConfigured(mailConfig) || !mailConfig.appUrl) {
     throw new Error("PLATFORM_OWNER_INVITATION_EMAIL_UNCONFIGURED");
   }
-  const url = new URL(`/app/owner-invitations/${encodeURIComponent(input.invitationId)}`, config.appUrl);
+  const url = new URL(`/app/owner-invitations/${encodeURIComponent(input.invitationId)}`, mailConfig.appUrl);
   url.searchParams.set("token", input.token);
   try {
-    return await createTransactionalMailer(config).sendTransactionalEmail({
+    return await createTransactionalMailer(mailConfig).sendTransactionalEmail({
       ...buildInvitationEmail({ organizationName: input.organizationName, role: "owner", url: url.toString() }),
       to: input.email,
     });
