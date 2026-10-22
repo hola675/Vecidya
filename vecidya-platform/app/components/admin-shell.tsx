@@ -22,9 +22,10 @@ type AdminShellProps = {
   active: "home" | "diagnostic" | "leads" | "services" | "organizations" | "businesses" | "integrations" | "audit";
   children: ReactNode;
   workspaceUser?: { name: string; email: string };
+  platformRole?: "staff" | "platform_admin";
 };
 
-export function AdminShell({ active, children, workspaceUser }: AdminShellProps) {
+export function AdminShell({ active, children, workspaceUser, platformRole = "platform_admin" }: AdminShellProps) {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
 
@@ -46,7 +47,7 @@ export function AdminShell({ active, children, workspaceUser }: AdminShellProps)
           <span><strong>Vecidya</strong><small>Operaciones de plataforma</small></span>
         </Link>
         <nav aria-label="Navegación administrativa" className="admin-navigation">
-          {navigation.map((item) => (
+          {navigation.filter((item) => platformRole === "platform_admin" || item.active === "organizations").map((item) => (
             <Link aria-current={active === item.active ? "page" : undefined} className={active === item.active ? "is-active" : ""} key={item.to} to={item.to}>
               <Icon name={item.icon} />
               {item.label}
@@ -57,7 +58,7 @@ export function AdminShell({ active, children, workspaceUser }: AdminShellProps)
           {workspaceUser ? (
             <div className="admin-sidebar__user">
               <span className="avatar" aria-hidden="true">{workspaceUser.name.slice(0, 1).toUpperCase()}</span>
-              <span><strong>{workspaceUser.name}</strong><small>Administrador de plataforma</small></span>
+              <span><strong>{workspaceUser.name}</strong><small>{platformRole === "staff" ? "Personal de plataforma · solo lectura" : "Administrador de plataforma"}</small></span>
             </div>
           ) : null}
           <Link className="admin-sidebar__return" to="/app"><Icon name="user" /> Volver a Mi Vecidya</Link>

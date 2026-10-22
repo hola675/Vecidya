@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-22 — PLATFORM-ADMIN-GLOBAL (implementación local, sin publicar)
+
+- Guard de lectura para `platform_member` activo; `staff` puede consultar organizaciones y detalles, mientras que las demás áreas internas siguen reservadas a `platform_admin`.
+- Se añade asignación de artículos existentes de Aprende por organización, página cliente `/app/training` para auto-declarar progreso y corrección de administrador con motivo. La mutación administrativa conserva `actorUserId`, target organización, historial y audit en batch. No se crea catálogo editorial ni se registra telemetría de lectura.
+- Alta con invitación propia de owner: digest de token de un uso, correo coincidente verificado, vencimiento de siete días y consumo D1 condicional con membership/lifecycle/auditoría. Reenvío rota token; revocación vuelve a `pending_owner`. El panel distingue proveedor aceptado, simulación y envío no confirmado.
+- Roles `admin|member` auditados; owner no se puede cambiar. Lifecycle limitado a `pending_owner`, `owner_invited`, `active` y `suspended`; no existe `closed`. Guards de cliente rechazan organizaciones suspendidas y perfiles públicos no las listan.
+- MiniWeb administrativa permite guardar JSON draft y publicar explícitamente, con audit. Capacitación conserva asignación, auto-reporte y corrección motivada.
+- Migraciones `0020`/`0021` aplicadas en D1 local del worktree. `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. No se ejecutaron suites automatizadas. Sin D1 remota, correo real, deploy o publicación.
+
 ## 2026-10-21 — DIAG-CLOSE-03: replay QA-03B Worker local
 
 - Reproducción estricta QA-03B con transcript local opcional (schema/key 3), validación de versiones/ruta/ediciones y cálculo exclusivamente desde el pipeline QA en Worker; el resultado proyecta resumen anónimo allowlisted e informe HTML identificado bajo correo verificado y grant existentes, solo en DEV. Un retry idempotente devuelve el mismo resumen versionado.

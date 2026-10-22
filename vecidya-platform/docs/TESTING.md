@@ -1,5 +1,9 @@
 # Pruebas
 
+## PLATFORM-ADMIN-GLOBAL — implementación local (2026-10-22)
+
+`pnpm run typecheck`, `pnpm run build`, `git diff --check` y aplicación de migraciones `0000–0021` a D1 local aislada PASS. No se ejecutaron suites automatizadas ni E2E. Pendiente certificar registro/invitación, doble aceptación/reenvío concurrente, guards de tenant al suspender/reactivar, permisos de roles y operaciones MiniWeb con auditoría. No usar pruebas remotas ni correo real en este checkpoint.
+
 ## COM-CATALOG-BENEFITS-02 / PRICING-20-01 — integración local (2026-10-21)
 
 **RAN local antes del commit de integración:** suite `pnpm run test:unit` 1637/1637 PASS; `pnpm run typecheck` y `pnpm run build` PASS. Contra Worker con D1 local migrada y Chrome: `commercial-details-check.mjs` (17 fichas, 360/1024 px), `addons-experience-check.mjs` y `commercial-experience-review-check.mjs` (1366/768/390/360 px) PASS. Las fichas incluyen HTTP 200 real, SEO, retorno, CTA, 404 y ausencia de secciones duplicadas. WhatsApp desde USD 15 depende del coste directo total; el piso teórico sobre USD 10 es USD 12,50 para margen bruto del 20 %.
@@ -192,9 +196,9 @@ git diff --check
 ```
 
 
-## PLATFORM-ADMIN-GLOBAL — especificación documental (2026-10-17)
+## PLATFORM-ADMIN-GLOBAL — implementación local (2026-10-22)
 
-Este checkpoint prepara la especificación para aprobación; no modifica comportamiento, rutas, permisos, schema o migraciones. No se ejecutaron suites funcionales, typecheck ni build por tratarse de reconciliación documental. Verificaciones de documentación ejecutadas al cierre: `git diff --check`, revisión completa del diff y comprobación de paths modificados para confirmar que no incluyen código funcional, schema ni migraciones. Los gates propuestos para una implementación futura incluyen actor/acción/target/audit, denegación de IDs cross-tenant, onboarding de owner con correo verificado, expiración/revocación/reenvío y doble aceptación concurrente, roles y último owner, progreso propio frente a ajeno, recuperación de fallos parciales, tenant isolation y ausencia de rutas/cambios en Aprende. No se reportan como pruebas ejecutadas.
+`RAN` en el worktree `feat/app-mini-platform-admin-global`: `pnpm drizzle-kit generate --name=platform-admin-training` creó `0020`; `pnpm wrangler d1 migrations list DB --local` mostró `0000–0020` pendientes; `pnpm wrangler d1 migrations apply DB --local` aplicó los 21 scripts a la D1 local aislada; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. No se ejecutaron pruebas nuevas ni existentes en este corte. Antes de cerrar, certificar: miembro sin asignación, acceso cruzado a org/assignment/member, progreso propio, rechazo de progreso ajeno, corrección con motivo, atomicidad de historial/audit y duplicado concurrente de asignación. Invitaciones, lifecycle, roles y administración MiniWeb cross-org no están implementados ni certificados. No se usó D1 remota.
 
 **VEC-APRENDE-04/05 — RAN 2026-10-16 en el worktree de integración (base `a7949dd`):** contenido `4/4 PASS`; suite unitaria completa `1558/1558 PASS`; typecheck, build, E2E Aprende en 1366/768/390/360 y `git diff --check` PASS. El primer typecheck coincidió con el bootstrap automático de PNPM y no encontró `@babel/types`; tras terminar la instalación local, el mismo comando pasó. Sin aceptación visual humana, certificación WCAG ni HTTP de producción.
 

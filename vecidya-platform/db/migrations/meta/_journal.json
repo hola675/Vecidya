@@ -141,6 +141,20 @@
       "when": 1792181482227,
       "tag": "0019_diagnostic-funnel-request-first-open",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1792702022647,
+      "tag": "0020_platform-admin-training",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "6",
+      "when": 1792704230073,
+      "tag": "0021_platform-organization-lifecycle-invitations",
+      "breakpoints": true
     }
   ]
 }

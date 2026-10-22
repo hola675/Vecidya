@@ -7,7 +7,7 @@ import { AdminShell } from "../components/admin-shell";
 import { Badge, Icon } from "../components/ui";
 import { publicAssets } from "../assets/public-assets";
 import { cloudflareContext } from "../../server/cloudflare-context";
-import { requirePlatformAdmin } from "../../server/platform-authorization.server";
+import { requirePlatformReadAccess } from "../../server/platform-authorization.server";
 
 import type { Route } from "./+types/internal-organizations";
 
@@ -17,8 +17,8 @@ type ProfileFilter = "all" | "published" | "draft" | "none";
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  const access = await requirePlatformAdmin(env, request);
-  return { organizations: await listPlatformOrganizations(createDatabase(env.DB)), workspaceUser: access.workspaceUser };
+  const access = await requirePlatformReadAccess(env, request);
+  return { organizations: await listPlatformOrganizations(createDatabase(env.DB)), workspaceUser: access.workspaceUser, platformRole: access.role };
 }
 
 function profileLabel(profile: { status: string } | null) {
@@ -31,7 +31,7 @@ function profileTone(profile: { status: string } | null): "success" | "neutral" 
 }
 
 export default function InternalOrganizations() {
-  const { organizations, workspaceUser } = useLoaderData<typeof loader>();
+  const { organizations, workspaceUser, platformRole } = useLoaderData<typeof loader>();
   const [search, setSearch] = useState("");
   const [profileFilter, setProfileFilter] = useState<ProfileFilter>("all");
 
@@ -47,10 +47,10 @@ export default function InternalOrganizations() {
   }, [organizations, search, profileFilter]);
 
   return (
-    <AdminShell active="organizations" workspaceUser={workspaceUser}>
+    <AdminShell active="organizations" workspaceUser={workspaceUser} platformRole={platformRole}>
       <main className="admin-main">
         <Link className="back-link" to="/app/internal">← Volver a administración</Link>
-        <div className="page-heading"><div><p className="eyebrow">ORGANIZACIONES</p><h1>Organizaciones Vecidya</h1><p>Consulta el estado general de los espacios que administra Vecidya.</p></div><Badge tone="neutral">{organizations.length} en total</Badge></div>
+        <div className="page-heading"><div><p className="eyebrow">ORGANIZACIONES</p><h1>Organizaciones Vecidya</h1><p>Consulta el estado general de los espacios que administra Vecidya.</p></div><Badge tone="neutral">{organizations.length} en total</Badge>{platformRole === "platform_admin" ? <Link className="button button--primary" to="/app/internal/organizations/new">Crear organización</Link> : null}</div>
 
         {organizations.length ? (
           <>
@@ -81,13 +81,14 @@ export default function InternalOrganizations() {
               <div className="admin-table-wrap">
                 <table className="admin-table">
                   <thead>
-                    <tr><th>Organización</th><th>Owner</th><th>Miembros</th><th>Perfil</th><th>Servicios</th><th>Integraciones</th><th className="admin-table__action">Acción</th></tr>
+                    <tr><th>Organización</th><th>Owner</th><th>Estado</th><th>Miembros</th><th>Perfil</th><th>Servicios</th><th>Integraciones</th><th className="admin-table__action">Acción</th></tr>
                   </thead>
                   <tbody>
                     {filtered.map((item) => (
                       <tr key={item.id}>
                         <td><strong>{item.name}</strong><span className="admin-table__meta">{item.slug}</span></td>
                         <td>{item.owner ? <>{item.owner.name}<span className="admin-table__meta">{item.owner.email}</span></> : <span className="admin-table__meta">Sin owner registrado</span>}</td>
+                        <td><Badge tone={item.lifecycleStatus === "active" ? "success" : item.lifecycleStatus === "suspended" ? "neutral" : "neutral"}>{item.lifecycleStatus}</Badge></td>
                         <td>{item.membersCount}</td>
                         <td><Badge tone={profileTone(item.profile)}>{profileLabel(item.profile)}</Badge></td>
                         <td>{item.servicesCount}</td>

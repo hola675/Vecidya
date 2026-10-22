@@ -17,5 +17,5 @@ export function safeAppRedirect(value: string | null | undefined) {
 }
 
 export function isInvitationPath(path: string | null) {
-  return Boolean(path?.startsWith("/app/invitations/"));
+  return Boolean(path?.startsWith("/app/invitations/") || path?.startsWith("/app/owner-invitations/"));
 }

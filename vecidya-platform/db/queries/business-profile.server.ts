@@ -1,13 +1,18 @@
 import { and, asc, eq, getTableColumns, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 
 import type { Database } from "../client.server";
-import { businessProfile, businessProfileGovernance, member, billingAccount, organizationLicense } from "../schema";
+import { businessProfile, businessProfileGovernance, member, billingAccount, organizationLicense, platformOrganizationLifecycle } from "../schema";
 import { getBusinessProfilePublicationIssues } from "../business-profile-rules";
 
 const notSuspended = or(
   isNull(businessProfileGovernance.id),
   eq(businessProfileGovernance.platformStatus, "active"),
 );
+const organizationNotSuspended = sql`NOT EXISTS (
+  SELECT 1 FROM ${platformOrganizationLifecycle}
+  WHERE ${platformOrganizationLifecycle.organizationId} = ${businessProfile.organizationId}
+    AND ${platformOrganizationLifecycle.status} = ${"suspended"}
+)`;
 
 // Un perfil solo es visible mientras alguno de sus propietarios tenga una licencia activa
 // en su propia cuenta de facturación. No se hereda de membresías ajenas.
@@ -71,6 +76,7 @@ export async function getPublishedBusinessProfileBySlug(database: Database, slug
       eq(businessProfile.slug, slug),
       eq(businessProfile.status, "published"),
       notSuspended,
+      organizationNotSuspended,
       hasActiveOwnerLicense,
     ))
     .limit(1);
@@ -103,6 +109,7 @@ export async function listPublishedBusinessProfiles(database: Database, filters:
     .where(and(
       eq(businessProfile.status, "published"),
       notSuspended,
+      organizationNotSuspended,
       hasActiveOwnerLicense,
       search ? sql`${businessProfile.displayName} LIKE ${`%${search}%`} ESCAPE '\\'` : undefined,
       filters.category ? eq(businessProfile.category, filters.category) : undefined,
@@ -113,8 +120,8 @@ export async function listPublishedBusinessProfiles(database: Database, filters:
 
 export async function getPublishedBusinessProfileFilterOptions(database: Database) {
   const [categories, cities] = await Promise.all([
-    database.selectDistinct({ value: businessProfile.category }).from(businessProfile).leftJoin(businessProfileGovernance, eq(businessProfileGovernance.businessProfileId, businessProfile.id)).where(and(eq(businessProfile.status, "published"), notSuspended, hasActiveOwnerLicense, isNotNull(businessProfile.category), ne(businessProfile.category, ""))).orderBy(asc(businessProfile.category)),
-    database.selectDistinct({ value: businessProfile.city }).from(businessProfile).leftJoin(businessProfileGovernance, eq(businessProfileGovernance.businessProfileId, businessProfile.id)).where(and(eq(businessProfile.status, "published"), notSuspended, hasActiveOwnerLicense, isNotNull(businessProfile.city), ne(businessProfile.city, ""))).orderBy(asc(businessProfile.city)),
+    database.selectDistinct({ value: businessProfile.category }).from(businessProfile).leftJoin(businessProfileGovernance, eq(businessProfileGovernance.businessProfileId, businessProfile.id)).where(and(eq(businessProfile.status, "published"), notSuspended, organizationNotSuspended, hasActiveOwnerLicense, isNotNull(businessProfile.category), ne(businessProfile.category, ""))).orderBy(asc(businessProfile.category)),
+    database.selectDistinct({ value: businessProfile.city }).from(businessProfile).leftJoin(businessProfileGovernance, eq(businessProfileGovernance.businessProfileId, businessProfile.id)).where(and(eq(businessProfile.status, "published"), notSuspended, organizationNotSuspended, hasActiveOwnerLicense, isNotNull(businessProfile.city), ne(businessProfile.city, ""))).orderBy(asc(businessProfile.city)),
   ]);
   return { categories: categories.map(({ value }) => value).filter((value): value is string => value !== null), cities: cities.map(({ value }) => value).filter((value): value is string => value !== null) };
 }

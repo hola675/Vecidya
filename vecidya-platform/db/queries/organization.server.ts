@@ -25,6 +25,7 @@ export async function getOrganizationMembership(
   const [membership] = await database
     .select({
       id: organization.id,
+      userId: member.userId,
       name: organization.name,
       slug: organization.slug,
       role: member.role,

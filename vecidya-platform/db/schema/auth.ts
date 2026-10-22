@@ -178,6 +178,60 @@ export const organizationService = sqliteTable("organization_service", {
 
 export const platformMember = sqliteTable("platform_member", { id: text("id").primaryKey(), userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }).unique(), role: text("role", { enum: ["staff", "platform_admin"] }).notNull(), status: text("status", { enum: ["active", "inactive"] }).default("active").notNull(), createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(), updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull() });
 
+export const platformOrganizationLifecycle = sqliteTable("platform_organization_lifecycle", {
+  organizationId: text("organization_id").primaryKey().references(() => organization.id, { onDelete: "cascade" }),
+  status: text("status", { enum: ["pending_owner", "owner_invited", "active", "suspended"] }).notNull(),
+  intendedOwnerEmail: text("intended_owner_email").notNull(),
+  ownerUserId: text("owner_user_id").references(() => user.id),
+  createdBy: text("created_by").notNull().references(() => user.id),
+  updatedBy: text("updated_by").notNull().references(() => user.id),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+}, (table) => [index("platform_organization_lifecycle_status_idx").on(table.status, table.updatedAt)]);
+
+export const platformOwnerInvitation = sqliteTable("platform_owner_invitation", {
+  id: text("id").primaryKey(),
+  organizationId: text("organization_id").notNull().references(() => organization.id, { onDelete: "cascade" }),
+  email: text("email").notNull(),
+  tokenDigest: text("token_digest").notNull().unique(),
+  status: text("status", { enum: ["pending", "accepted", "revoked"] }).default("pending").notNull(),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+  createdBy: text("created_by").notNull().references(() => user.id),
+  acceptedBy: text("accepted_by").references(() => user.id),
+  acceptedAt: integer("accepted_at", { mode: "timestamp_ms" }),
+  acceptanceId: text("acceptance_id"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+}, (table) => [
+  index("platform_owner_invitation_org_idx").on(table.organizationId, table.status),
+  uniqueIndex("platform_owner_invitation_pending_org_unique").on(table.organizationId).where(sql`${table.status} = 'pending'`),
+]);
+
+export const organizationTrainingAssignment = sqliteTable("organization_training_assignment", {
+  id: text("id").primaryKey(),
+  organizationId: text("organization_id").notNull().references(() => organization.id, { onDelete: "cascade" }),
+  trainingSlug: text("training_slug").notNull(),
+  assignedBy: text("assigned_by").notNull().references(() => user.id),
+  assignedAt: integer("assigned_at", { mode: "timestamp_ms" }).notNull(),
+}, (table) => [uniqueIndex("organization_training_assignment_unique").on(table.organizationId, table.trainingSlug), index("organization_training_assignment_org_idx").on(table.organizationId)]);
+
+export const organizationTrainingProgress = sqliteTable("organization_training_progress", {
+  id: text("id").primaryKey(),
+  assignmentId: text("assignment_id").notNull().references(() => organizationTrainingAssignment.id, { onDelete: "cascade" }),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  status: text("status", { enum: ["not_started", "in_progress", "completed"] }).default("not_started").notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+}, (table) => [uniqueIndex("organization_training_progress_member_unique").on(table.assignmentId, table.userId), index("organization_training_progress_assignment_idx").on(table.assignmentId)]);
+
+export const organizationTrainingProgressHistory = sqliteTable("organization_training_progress_history", {
+  id: text("id").primaryKey(),
+  progressId: text("progress_id").notNull().references(() => organizationTrainingProgress.id, { onDelete: "cascade" }),
+  actorUserId: text("actor_user_id").notNull().references(() => user.id),
+  previousStatus: text("previous_status", { enum: ["not_started", "in_progress", "completed"] }).notNull(),
+  newStatus: text("new_status", { enum: ["not_started", "in_progress", "completed"] }).notNull(),
+  reason: text("reason"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+}, (table) => [index("organization_training_progress_history_progress_idx").on(table.progressId, table.createdAt)]);
+
 export const integrationConnection = sqliteTable("integration_connection", { id: text("id").primaryKey(), organizationId: text("organization_id").notNull().references(() => organization.id, { onDelete: "cascade" }), provider: text("provider").notNull(), externalId: text("external_id").notNull(), status: text("status", { enum: ["pending", "active", "inactive", "error"] }).default("pending").notNull(), metadata: text("metadata"), createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(), updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull() }, (table) => [uniqueIndex("integration_connection_provider_external_unique").on(table.provider, table.externalId), index("integration_connection_organization_idx").on(table.organizationId)]);
 
 export const invitation = sqliteTable(

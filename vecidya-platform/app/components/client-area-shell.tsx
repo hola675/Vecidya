@@ -21,6 +21,7 @@ const groups: NavGroup[] = [
     ],
   },
   { label: "ORGANIZACIÓN", links: [{ id: "organization", label: "Equipo", to: "/app/organization", icon: "team" }] },
+  { label: "APRENDIZAJE", links: [{ id: "training", label: "Capacitación", to: "/app/training", icon: "spark" }] },
   { label: "CUENTA", links: [{ id: "account", label: "Mi cuenta", to: "/app/account", icon: "user" }] },
 ];
 
