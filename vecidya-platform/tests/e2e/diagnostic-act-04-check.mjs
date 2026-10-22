@@ -8,7 +8,7 @@ const edgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(edgePath) ? edgePath : undefined);
 const route = new URL("/diagnostico", baseUrl).toString();
 const apiPath = "/api/diagnostic/anonymous-summary";
-const qa03bKey = "vecidya.diagnostic.v3.candidate.session.3";
+const qa03bKey = "vecidya.diagnostic.v3.candidate.session.5";
 const legacyKey = "vecidya.diagnostic.v3.session.2";
 const legacyValue = "legacy-session-preserved-byte-for-byte";
 const browser = await chromium.launch({ headless: true, ...(executablePath ? { executablePath } : {}) });
@@ -63,8 +63,8 @@ try {
   await page.getByRole("heading", { name: "Tu resumen del diagnóstico" }).waitFor();
   assert.equal(requests.length, 1, "un solo replay público");
   assert.deepEqual(Object.keys(requests[0]).sort(), ["answerSchema", "engineIdentity", "questionBank", "replayVersion", "session", "sessionKey", "sessionSchema"].sort());
-  assert.equal(requests[0].engineIdentity.engine, "diag-v3-candidate-operation-history-v1");
-  assert.equal(requests[0].sessionSchema, 3);
+  assert.equal(requests[0].engineIdentity.engine, "diag-v3-candidate-operation-history-v3");
+  assert.equal(requests[0].sessionSchema, 5);
   assert.ok(!("score" in requests[0]) && !("email" in requests[0]), "el navegador no envía un resultado ni identificación");
   assert.equal(responses.length, 1);
   assert.equal(responses[0].status, 200);
@@ -84,7 +84,7 @@ try {
   assert.equal(await page.getByText("El informe detallado no está disponible en este momento.").count(), 1);
   assert.equal(await page.evaluate((key) => localStorage.getItem(key), legacyKey), legacyValue, "la sesión V3 preexistente no se reescribe");
   const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? "null"), qa03bKey);
-  assert.equal(saved.schemaVersion, 3);
+  assert.equal(saved.schemaVersion, 5);
   assert.equal(saved.status, "completed");
   pass(`Worker local valida QA-03B y genera resumen anónimo para ${answered.length} respuestas`);
 

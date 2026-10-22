@@ -71,7 +71,9 @@ Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos bo
 
 **DIAG-CLOSE-03 (2026-10-21):** replay QA server-only y resumen allowlisted ensayados en ruta dev-only; informe HTML identificado deriva del mismo resultado validado por Worker y requiere correo/grant. ACT-04 aún debe autorizar y probar el cambio atómico de rutas públicas, aislamiento de sesiones y rollback: no se ha hecho cutover ni deploy. El flujo identificado actual no descarga PDF; `PDF_OWNER_REVIEW` sigue manual y no bloqueante. FUNNEL-01D.2/01D.3 no se dan por completados.
 
-**ACT-04 (2026-10-22):** autorización recibida e implementación en rama aislada desde `origin/main`; cutover local de `/diagnostico` y metodología a QA-03B con replay server-authoritative, compatibilidad estricta y rollback dev-only. Código no integrado ni publicado. El gate de informe identificado/correo real sigue cerrado; no se toca D1 remota ni se publica automáticamente.
+**ACT-04 (2026-10-22):** PR #37 integrado en `main@3b67d20` tras autorización; cutover de `/diagnostico` y metodología a QA-03B con replay server-authoritative, compatibilidad estricta y rollback dev-only. Integrado, no publicado. El gate de informe identificado/correo real sigue cerrado; no se tocó D1 remota ni se publica automáticamente.
+
+**DIAG-QA-CONTENIDO-01 (2026-10-22):** A/B/C completados en commits incrementales sobre el ACT-04 integrado. El banco conserva 40 preguntas existentes y añade una pregunta adaptativa de herramientas TIC; preguntas sobre ingresos y modalidad distinguen operación activa, pausa e intención futura. Las opciones desconocidas mantienen incertidumbre. La evidencia directa R3 migrada no cambió. Medición sigue sin fuente directa validada y no se puntúa; se verifica antes de recomendar acciones. Sesiones anteriores permanecen bajo sus claves/versiones, Worker continúa como autoridad. Sin deploy. La siguiente fase de informe/PDF, retiro de legacy o publicación requiere alcance y gates propios; no se ejecutan automáticamente.
 
 ## FUNNEL-01D.2 — implementación incremental y derechos (2026-10-17)
 

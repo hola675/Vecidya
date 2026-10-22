@@ -14,7 +14,6 @@ export type ContractSignals = {
   readonly historyUnknown?: ContractSignal<boolean>;
   readonly digitalToolUse?: ContractSignal<string>;
   readonly digitalToolUseUnknown?: ContractSignal<boolean>;
-  readonly digitalToolUseNotApplicable?: ContractSignal<boolean>;
   readonly buyer?: ContractSignal<BuyerDisposition>;
   readonly reachUnknown?: ContractSignal<boolean>;
   readonly serviceSetting: readonly ContractSignal<"physical_location" | "travels" | "remote_service">[];
@@ -44,7 +43,6 @@ export function deriveContractSignals(answers: AnswersV2): ContractSignals {
     ...(digitalTools.includes("none") ? { digitalToolUse: declaration("", "q2_digital_tools_in_use", 1) } : {}),
     ...(digitalTools.some(value => ["calendar_scheduling", "documents_records", "tasks_projects", "customer_followup", "inventory_operations", "other"].includes(value)) ? { digitalToolUse: declaration(digitalTools.filter(value => value !== "none" && value !== "unknown" && value !== "not_needed").join("|"), "q2_digital_tools_in_use", 1) } : {}),
     ...(digitalTools.includes("unknown") ? { digitalToolUseUnknown: declaration(true, "q2_digital_tools_in_use", 1) } : {}),
-    ...(digitalTools.includes("not_needed") ? { digitalToolUseNotApplicable: declaration(true, "q2_digital_tools_in_use", 1) } : {}),
     ...(["b2c", "b2b", "mixed", "no_direct_purchase", "unknown"].includes(String(buyer)) ? { buyer: declaration(buyer as BuyerDisposition, "q2_customer_buyer", 3) } : {}),
     ...(answers.q2_customer_reach === "unknown" ? { reachUnknown: declaration(true, "q2_customer_reach", 3) } : {}),
     serviceSetting: (["physical_location", "travels", "remote_service"] as const).filter(value => delivery.includes(value)).map(value => declaration(value, "q2_delivery", 4)),

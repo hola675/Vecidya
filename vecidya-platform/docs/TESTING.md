@@ -1,5 +1,9 @@
 # Pruebas
 
+## DIAG-QA-CONTENIDO-01 — QA-03B (2026-10-22)
+
+**RAN local.** Baseline anterior a los cambios: `pnpm run test:unit` 1645/1645 PASS. Incremento A: pruebas focales 54/54, typecheck/build PASS. Incremento B: QA-03B, compatibilidad de sesión/replay, contratos de informe y FUNNEL: 60/60 PASS. Incremento C: contexto QA-03B 11/11 PASS, incluida trazabilidad de respuesta activa→hecho semántico→dimensión→recomendación, score nulo para medición sin fuente directa R3 y ausencia de nuevas puntuaciones/recomendaciones por herramientas TIC. Suite unitaria final A/B/C: **1648/1648 PASS**. E2E sobre Worker local: `diagnostic-act-04-check.mjs` 3/3; `diagnostic-v3-qa03b-check.mjs` 6/6 recorridos, reanudación, concurrencia e informe HTML identificado PASS. Para el segundo E2E se aplicaron localmente las migraciones existentes 0000–0019 a la D1 efímera del worktree; no hubo cambio de esquema ni acceso remoto. Typecheck/build/diff-check PASS. Build avisa secretos locales opcionales de Auth/Gmail; no se leyeron ni configuraron. Sin deploy.
+
 ## ACT-04 — cutover QA-03B local (2026-10-22)
 
 **Worker local: PASS.** `pnpm run test:unit` pasó `1645/1645`; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. `diagnostic-act-04-check.mjs` pasó `3/3`: formulario y replay QA-03B con nueve respuestas; metodología pública sin identificadores técnicos; rechazo de sobres V3/ACT incompatibles e informe privado cerrado. `diagnostic-v3-qa03b-check.mjs` pasó seis rutas con reanudación y concurrencia. `diagnostic-production-isolation-check.mjs`: 92 archivos sin rutas/fixtures dev-only y nueve rutas privadas con HTTP 404 en Wrangler local `APP_ENV=production`.

@@ -6,8 +6,8 @@ import { AUTHORED_JOURNEYS } from "../unit/diagnostic/qa03b-fixtures.ts";
 assertLocalBaseUrl();
 const route = new URL("/__dev/diagnostico/qa03b", baseUrl).toString();
 const base = new URL(baseUrl);
-const key = "vecidya.diagnostic.v3.candidate.session.3";
-const oldKeys = ["vecidya.diagnostic.v3.session.2", "vecidya.diagnostic.v3.candidate.session.1", "vecidya.diagnostic.v3.candidate.session.2"];
+const key = "vecidya.diagnostic.v3.candidate.session.5";
+const oldKeys = ["vecidya.diagnostic.v3.session.2", "vecidya.diagnostic.v3.candidate.session.1", "vecidya.diagnostic.v3.candidate.session.2", "vecidya.diagnostic.v3.candidate.session.3", "vecidya.diagnostic.v3.candidate.session.4"];
 const artifacts = "tmp/diag-v3-qa-03b/browser";
 const fixtureRequestIds = [];
 mkdirSync(artifacts, { recursive: true });
@@ -104,11 +104,11 @@ try {
     assert.ok(!replayWire.includes("fullName") && !replayWire.includes("email"));
     await page.getByRole("heading", { name: "Tu resumen del diagnóstico" }).waitFor();
     const saved = await page.evaluate(k => JSON.parse(localStorage.getItem(k)), key);
-    assert.equal(saved.schemaVersion, 3); assert.equal(saved.status, "completed"); assert.ok(saved.completedAt);
-    assert.equal(saved.engineIdentity.engine, "diag-v3-candidate-operation-history-v1");
+    assert.equal(saved.schemaVersion, 5); assert.equal(saved.status, "completed"); assert.ok(saved.completedAt);
+    assert.equal(saved.engineIdentity.engine, "diag-v3-candidate-operation-history-v3");
     assert.ok(Array.isArray(saved.replayTranscript));
     if (name === "open-no-clients") {
-      const envelope = { replayVersion: "qa03b-worker-replay-v1", engineIdentity: saved.engineIdentity, answerSchema: "qbv2-answers-v3", questionBank: saved.questionBankIdentity, sessionSchema: 3, sessionKey: key, session: saved };
+      const envelope = { replayVersion: "qa03b-worker-replay-v3", engineIdentity: saved.engineIdentity, answerSchema: "qbv2-answers-v5", questionBank: saved.questionBankIdentity, sessionSchema: 5, sessionKey: key, session: saved };
       const negative = [
         { case: "V3", body: { ...envelope, engineIdentity: { ...saved.engineIdentity, engine: "diag-v3-public" } } },
         { case: "ACT", body: { ...envelope, questionBank: "reviewed-evidence-v3", answerSchema: "qbv2-answers-v2" } },
@@ -151,8 +151,8 @@ try {
       assert.equal(Object.hasOwn(requestPayload, "report"), false, "POST anónimo no filtra el informe");
       const submitted = reportRequestResponse.request().postDataJSON();
       assert.equal(submitted.engineIdentity.engine, saved.engineIdentity.engine);
-      assert.equal(submitted.answerSchema, "qbv2-answers-v3");
-      assert.equal(submitted.sessionSchema, 3);
+      assert.equal(submitted.answerSchema, "qbv2-answers-v5");
+      assert.equal(submitted.sessionSchema, 5);
       assert.equal(submitted.sessionKey, key);
       assert.equal(submitted.anonymousSummary.diagnosticIdentity.engine, saved.engineIdentity.engine);
       assert.equal(Object.hasOwn(submitted, "answers"), false);
@@ -192,7 +192,7 @@ try {
       await page.waitForURL(`**${reportPath}`, { waitUntil: "domcontentloaded" });
       await page.locator('.rp[data-ready="true"]').waitFor().catch(async (error) => { throw new Error(`informe no renderizado: url=${page.url()}; main=${await page.locator("main").innerText()}; cause=${error.message}`); });
       assert.equal(await page.locator(".rp-business").innerText(), "Proyecto QA03B Local");
-      assert.ok((await page.locator(".rp-technical").innerText()).includes("diag-v3-candidate-operation-history-v1"));
+      assert.ok((await page.locator(".rp-technical").innerText()).includes("diag-v3-candidate-operation-history-v3"));
       assert.equal(lifecycleState.snapshot.methodologyVersion, "3.0");
     }
     if (name === "open-no-clients") await page.goto(route, { waitUntil: "domcontentloaded" });
@@ -229,7 +229,7 @@ try {
   await resumePage.getByRole("button", { name: "Continuar diagnóstico" }).click();
   await resumePage.locator(".df-option__input").first().waitFor();
   const resumed = await resumePage.evaluate(k => JSON.parse(localStorage.getItem(k)), key);
-  assert.deepEqual(resumed.answers, beforeReload.answers); assert.equal(resumed.engineIdentity.questionBank, "reviewed-evidence-v4");
+  assert.deepEqual(resumed.answers, beforeReload.answers); assert.equal(resumed.engineIdentity.questionBank, "reviewed-evidence-v6");
   results.push({ id: "reload-resume", status: "PASS", schemaVersion: resumed.schemaVersion }); await resumeContext.close();
   const context = await browser.newContext(); const first = await context.newPage();
   await first.goto(route, { waitUntil: "domcontentloaded" }); await startDiagnosis(first);

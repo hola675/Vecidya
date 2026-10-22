@@ -6,6 +6,7 @@ import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as OLD } from "../../../app/fe
 import { shouldClarifyBuyerRecipient } from "../../../app/features/diagnostic/qa03b/contract";
 import { evaluateRuleV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import { scoreCandidateContextualDimensionsV3 as score } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
+import { buildCandidateRecommendationsAndSolutionsV3 as recommend } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-recommendations";
 import { AUTHORED_UNKNOWN_CAPABILITIES as base } from "./qa03b-fixtures";
 
 test("QA-03B: 21 migradas y 17 pendientes preservan versiones y lecturas R3", () => {
@@ -70,10 +71,40 @@ test("QA-03B B: herramientas TIC se preguntan solo en operación relevante y no 
   assert.deepEqual(withTools.context.digitalToolUse, { status: "resolved", value: "documents_records|customer_followup", source: "signal" });
   assert.equal(withTools.trace.digitalToolUse.status, "resolved");
   assert.deepEqual(withTools.trace.digitalToolUse.supportingSignals, ["q2_digital_tools_in_use"]);
-  assert.equal(BANK.find(question => question.id === "q2_digital_tools_in_use")?.evidenceMigration, undefined);
+  const toolsQuestion = BANK.find(question => question.id === "q2_digital_tools_in_use")!;
+  assert.equal(toolsQuestion.evidenceMigration, undefined);
+  assert.equal(toolsQuestion.options.find(option => option.value === "none")?.kind, "none");
+  assert.equal(toolsQuestion.options.find(option => option.value === "not_needed")?.kind, "not_applicable");
+  assert.equal(toolsQuestion.options.find(option => option.value === "unknown")?.kind, "unknown");
   const paused = resolve({ ...answers, q2_operational_status: "paused" }, BANK);
   assert.ok(!paused.eligibleQuestionIds.includes("q2_digital_tools_in_use"));
   assert.deepEqual(score({ answers }).dimensions, score({ answers: { ...answers, q2_digital_tools_in_use: ["documents_records"] } }).dimensions);
+  assert.deepEqual(recommend({ answers }).recommendations, recommend({ answers: { ...answers, q2_digital_tools_in_use: ["documents_records"] } }).recommendations);
+});
+test("QA-03B C: recomendaciones conservan la cadena de respuesta, hecho, dimensión e interpretación", () => {
+  const answers = { ...base, q2_operational_status: "operating", q2_has_customers: "yes", q2_customer_buyer: "b2c", q2_goal: "measure" };
+  const result = recommend({ answers });
+  const active = resolve(answers, BANK).activeAnswers;
+  const facts = new Map(result.semanticFacts.facts.map(fact => [fact.id, fact]));
+  for (const item of result.recommendations.items) {
+    const priority = facts.get(`priority:${item.rank}`);
+    assert.ok(priority, `${item.id}: recommendation has a semantic priority fact`);
+    assert.equal(priority.dimension, item.dimension);
+    assert.equal(item.sourcePriority.rank, item.rank);
+    assert.equal(item.sourcePriority.constraintId, item.sourceConstraint.id);
+    assert.ok(facts.has(priority.priority!.targetFactId), `${item.id}: priority points to an interpreted target fact`);
+    for (const factId of item.sourceFactIds) assert.ok(facts.has(factId), `${item.id}: source fact ${factId} exists`);
+    for (const questionId of item.sourceQuestionIds) assert.ok(active[questionId] !== undefined, `${item.id}: source response ${questionId} is active`);
+    for (const questionId of item.evidence.sourceQuestionIds) assert.ok(active[questionId] !== undefined, `${item.id}: evidence response ${questionId} is active`);
+  }
+  const measurement = result.recommendations.items.find(item => item.dimension === "measurement_optimization");
+  const measurementScore = result.scoring.dimensions.find(item => item.id === "measurement_optimization")!;
+  assert.equal(measurementScore.score, null, "measurement remains unscored without a direct R3 source");
+  if (measurement) {
+    assert.equal(measurement.mode, "verify");
+    assert.equal(measurement.sourceConstraint.score, null);
+    assert.equal(measurement.framing, "verify_first");
+  }
 });
 test("QA-03B: alcance/comprador unknown y financiación siguen neutrales", () => {
   const result = score({ answers: base });

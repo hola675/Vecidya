@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-22 — DIAG-QA-CONTENIDO-01 (rama local, sin publicar)
+
+- A: añadidas opciones desconocidas donde faltaban, conservando su incertidumbre declarada y versionando banco, respuesta, contexto, sesión y replay para proteger sesiones históricas.
+- B: copy de modalidad e ingresos aclara operación actual, periodo previo en pausa y expectativa futura; una pregunta TIC adaptativa registra categorías de herramientas sin afirmar que sean eficaces.
+- C: regresiones cubren la cadena de procedencia de recomendaciones. Medición/optimización conserva `null` sin fuente R3 directa validada; la recomendación, si aplica, pide verificar evidencia.
+- Tres commits incrementales A/B/C. Suite unitaria final 1648/1648; E2E Worker local ACT-04 3/3 y QA-03B 6/6 recorridos más reanudación, concurrencia e informe identificado; typecheck, build y diff-check PASS. Se usaron solo migraciones existentes en D1 local. Sin deploy, cambio de esquema ni HTTP público fechado.
+
 ## 2026-10-22 — ACT-04 (rama local, no publicada)
 
 - Cutover del cuestionario público y metodología al nuevo diagnóstico, con replay recalculado en Worker y resumen anónimo allowlisted; se ocultan identidades técnicas en títulos, resultados y SEO públicos.
