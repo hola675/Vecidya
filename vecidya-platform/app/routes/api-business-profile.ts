@@ -3,7 +3,7 @@ import {
   getBusinessProfileForOrganization,
   saveBusinessProfileForOrganization,
 } from "../../db/queries/business-profile.server";
-import { getBusinessDraftRevision } from "../../db/queries/business-publication.server";
+import { readConsistentBusinessDraft } from "../../db/queries/business-publication.server";
 import { requireOrganizationPermission } from "../../server/auth/authorization.server";
 import { parseBusinessProfileForm } from "../../server/business-profile-validation.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
@@ -20,10 +20,11 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   );
 
   const database = createDatabase(env.DB);
-  const [profile, draftRevision] = await Promise.all([
-    getBusinessProfileForOrganization(database, params.organizationId),
-    getBusinessDraftRevision(database, params.organizationId),
-  ]);
+  const { data: profile, draftRevision } = await readConsistentBusinessDraft(
+    database,
+    params.organizationId,
+    () => getBusinessProfileForOrganization(database, params.organizationId),
+  );
 
   return Response.json({ profile, draftRevision });
 }

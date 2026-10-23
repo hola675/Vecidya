@@ -2,7 +2,7 @@ import { createDatabase } from "../../db/client.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
 import { getBusinessProfileGovernance } from "../../db/queries/platform-governance.server";
-import { getBusinessDraftRevision, publishBusinessPublicationForOrganization } from "../../db/queries/business-publication.server";
+import { readConsistentBusinessDraft, publishBusinessPublicationForOrganization } from "../../db/queries/business-publication.server";
 import { hasActiveLicenseForOrganizationOwner } from "../../db/queries/business-profile.server";
 import {
   getMiniWebConfigurationForOrganization,
@@ -34,13 +34,15 @@ async function getOrganizationContext(context: Route.LoaderArgs["context"], requ
 export async function loader({ context, params, request }: Route.LoaderArgs) {
   const { env, organization, database } = await getOrganizationContext(context, request, params.organizationId);
   const membership = await requireOrganizationPermission(env, request, organization.id, "business-profile:read");
-  const [profile, hours] = await Promise.all([
-    getBusinessProfileForOrganization(database, organization.id),
-    listBusinessHoursForOrganization(database, organization.id),
-  ]);
+  const { data: { profile, hours, configuration }, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
+    const [profile, hours] = await Promise.all([
+      getBusinessProfileForOrganization(database, organization.id),
+      listBusinessHoursForOrganization(database, organization.id),
+    ]);
+    const configuration = await getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
+    return { profile, hours, configuration };
+  });
   const governance = profile ? await getBusinessProfileGovernance(database, profile.id) : null;
-  const configuration = await getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
-  const draftRevision = await getBusinessDraftRevision(database, organization.id);
 
   return Response.json({
     hasPersistedConfiguration: configuration.hasPersistedConfiguration,

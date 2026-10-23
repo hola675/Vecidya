@@ -172,6 +172,45 @@ try {
   check((await ownerA.client.json(pathB, null, "GET")).status === 403, "la organización A no puede leer la configuración de B");
   check((await ownerA.client.json(pathB, { intent: "save", configuration: initial.draftConfiguration })).status === 403, "la organización A no puede escribir la configuración de B");
 
+  let staleLegacyPublish = await ownerA.client.json(pathA, { intent: "publish", draftRevision: 99 });
+  let staleLegacyPublishBody = await staleLegacyPublish.clone().text();
+  if (staleLegacyPublish.status >= 500 && staleLegacyPublishBody.includes("Network connection lost")) {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    staleLegacyPublish = await ownerA.client.json(pathA, { intent: "publish", draftRevision: 99 });
+    staleLegacyPublishBody = await staleLegacyPublish.clone().text();
+  }
+  check(staleLegacyPublish.status === 409, `publicar un perfil legacy con revisión incorrecta devuelve 409 (${staleLegacyPublish.status}: ${staleLegacyPublishBody.slice(0, 160)})`);
+  const legacyAState = (await d1(`SELECT published_version, snapshot_json FROM business_profile_publication WHERE organization_id = '${organizationA}';`))[0];
+  check(Number(legacyAState?.published_version) === 1 && JSON.parse(legacyAState.snapshot_json).profile.displayName === `MiniWeb público A ${suffix}`, "el 409 conserva el snapshot público legacy original");
+
+  const profilePathB = `/api/organizations/${organizationB}/business-profile`;
+  const legacyBProfile = await (await ownerB.client.json(profilePathB, null, "GET")).json();
+  const makeProfileForm = (profile, revision, displayName) => {
+    const form = new FormData();
+    for (const key of ["displayName", "slug", "shortDescription", "description", "category", "city", "country", "phone", "publicEmail", "websiteUrl", "logoUrl", "whatsapp", "instagramUrl", "facebookUrl", "linkedinUrl", "serviceMode", "serviceArea"]) {
+      const value = key === "displayName" ? displayName : profile[key];
+      form.set(key, value ?? "");
+    }
+    form.set("draftRevision", String(revision));
+    return form;
+  };
+  const concurrentInitializers = await Promise.all([
+    ownerB.client.fetch(profilePathB, { method: "POST", body: makeProfileForm(legacyBProfile.profile, legacyBProfile.draftRevision, `Borrador B1 ${suffix}`) }),
+    ownerB.client.fetch(profilePathB, { method: "POST", body: makeProfileForm(legacyBProfile.profile, legacyBProfile.draftRevision, `Borrador B2 ${suffix}`) }),
+  ]);
+  check(concurrentInitializers.map(({ status }) => status).sort().join(",") === "200,409", "dos inicializaciones/guardados legacy simultáneos producen un solo escritor ganador");
+  const legacyBState = (await d1(`SELECT published_version, snapshot_json FROM business_profile_publication WHERE organization_id = '${organizationB}';`))[0];
+  const legacyBSnapshot = JSON.parse(legacyBState.snapshot_json);
+  check(Number(legacyBState.published_version) === 1 && legacyBSnapshot.profile.displayName === `MiniWeb legacy B ${suffix}`, "las dos inicializaciones conservan una única versión pública legacy coherente");
+  const legacyBAnonymous = await fetch(new URL(`/vecindario/${profileSlug("legacy-b")}`, baseUrl));
+  const legacyBAnonymousHtml = await legacyBAnonymous.text();
+  check(legacyBAnonymous.status === 200 && legacyBAnonymousHtml.includes(`MiniWeb legacy B ${suffix}`) && !legacyBAnonymousHtml.includes("Borrador B"), "los cambios draft posteriores permanecen ocultos a visitantes anónimos");
+  await d1(`UPDATE business_profile_publication SET snapshot_schema_version = NULL, snapshot_json = NULL WHERE organization_id = '${organizationB}';`);
+  const incompleteLegacyAnonymous = await fetch(new URL(`/vecindario/${profileSlug("legacy-b")}`, baseUrl));
+  check(incompleteLegacyAnonymous.status === 404, "un estado de publicación existente sin snapshot válido falla cerrado para visitantes anónimos");
+  const escapedLegacySnapshot = legacyBState.snapshot_json.replaceAll("'", "''");
+  await d1(`UPDATE business_profile_publication SET snapshot_schema_version = 1, snapshot_json = '${escapedLegacySnapshot}' WHERE organization_id = '${organizationB}';`);
+
   const invalidTemplate = { ...initial.draftConfiguration, templateKey: "custom-html" };
   let invalidTemplateResponse = await ownerA.client.json(pathA, { intent: "save", configuration: invalidTemplate });
   let invalidTemplateResponseBody = await invalidTemplateResponse.clone().text();
@@ -199,20 +238,12 @@ try {
   const profilePathA = `/api/organizations/${organizationA}/business-profile`;
   const profileRead = await ownerA.client.json(profilePathA, null, "GET");
   const profileState = await profileRead.json();
-  const makeProfileForm = (revision, displayName) => {
-    const form = new FormData();
-    for (const key of ["displayName", "slug", "shortDescription", "description", "category", "city", "country", "phone", "publicEmail", "websiteUrl", "logoUrl", "whatsapp", "instagramUrl", "facebookUrl", "linkedinUrl", "serviceMode", "serviceArea"]) {
-      const value = key === "displayName" ? displayName : profileState.profile[key];
-      form.set(key, value ?? "");
-    }
-    form.set("draftRevision", String(revision));
-    return form;
-  };
+  const makeProfileFormA = (revision, displayName) => makeProfileForm(profileState.profile, revision, displayName);
   const staleRevision = profileState.draftRevision;
   const draftName = `Nombre draft ${suffix}`;
-  const profileSave = await ownerA.client.fetch(profilePathA, { method: "POST", body: makeProfileForm(staleRevision, draftName) });
+  const profileSave = await ownerA.client.fetch(profilePathA, { method: "POST", body: makeProfileFormA(staleRevision, draftName) });
   check(profileSave.status === 200, `owner puede guardar perfil como borrador (${profileSave.status})`);
-  const staleWrite = await adminA.client.fetch(profilePathA, { method: "POST", body: makeProfileForm(staleRevision, `Nombre stale ${suffix}`) });
+  const staleWrite = await adminA.client.fetch(profilePathA, { method: "POST", body: makeProfileFormA(staleRevision, `Nombre stale ${suffix}`) });
   check(staleWrite.status === 409, "un segundo editor con revisión obsoleta recibe conflicto y no sobrescribe el borrador");
   const hoursForm = new FormData();
   hoursForm.set("intent", "save-hours");
@@ -221,7 +252,11 @@ try {
   hoursForm.set("hours_1_closes", "17:00");
   const hoursSave = await ownerA.client.fetch("/app/business-profile", { method: "POST", body: hoursForm });
   check(hoursSave.status === 200, `owner puede guardar horarios como borrador (${hoursSave.status})`);
-  const publicBeforePublishResponse = await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`);
+  const profileAfterDraft = await (await ownerA.client.json(profilePathA, null, "GET")).json();
+  const miniwebAfterDraft = await (await ownerA.client.json(pathA, null, "GET")).json();
+  check(profileAfterDraft.draftRevision === staleRevision + 2 && miniwebAfterDraft.draftRevision === profileAfterDraft.draftRevision, "lecturas JSON de perfil y MiniWeb devuelven la revisión vigente tras guardar perfil y horarios");
+  check(miniwebAfterDraft.profile.displayName === draftName && miniwebAfterDraft.hours.some((entry) => entry.dayOfWeek === 1 && entry.opensAt === "09:00"), "el endpoint JSON de MiniWeb entrega perfil y horarios del borrador junto con esa revisión");
+  const publicBeforePublishResponse = await fetch(new URL(`/vecindario/${profileSlug("public-a")}`, baseUrl));
   const publicBeforePublish = await publicBeforePublishResponse.text();
   console.log(JSON.stringify({ miniwebPublicBeforePublish: { status: publicBeforePublishResponse.status, url: publicBeforePublishResponse.url, titlePresent: publicBeforePublish.includes(`MiniWeb público A ${suffix}`), descriptionPresent: publicBeforePublish.includes("Descripción A"), emailPresent: publicBeforePublish.includes(`a-${suffix}@example.invalid`), bodyExcerpt: publicBeforePublish.slice(0, 350) } }));
   check(publicBeforePublish.includes(`MiniWeb público A ${suffix}`) && !publicBeforePublish.includes(draftName), "editar nombre, perfil y MiniWeb conserva la versión pública previa hasta publicar");
@@ -235,7 +270,7 @@ try {
   check(published.publishedConfiguration.modules.some((module) => module.type === "contact" && !module.enabled), "el snapshot publicado conserva el módulo desactivado");
   check((await d1(`SELECT COUNT(*) AS count FROM miniweb_site WHERE organization_id = '${organizationA}';`))[0]?.count === 1, "una organización tiene una sola configuración MiniWeb");
 
-  const publicAResponse = await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`);
+  const publicAResponse = await fetch(new URL(`/vecindario/${profileSlug("public-a")}`, baseUrl));
   const publicA = await publicAResponse.text();
   const snapshotRows = await d1(`SELECT snapshot_json FROM business_profile_publication WHERE organization_id = '${organizationA}';`);
   const fullSnapshot = JSON.parse(snapshotRows[0].snapshot_json);

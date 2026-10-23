@@ -85,25 +85,56 @@ export async function getBusinessDraftRevision(database: Database, organizationI
   return state?.draftRevision ?? 0;
 }
 
+export async function readConsistentBusinessDraftState<T>(
+  readRevision: () => Promise<number>,
+  readData: () => Promise<T>,
+  maxAttempts = 3,
+): Promise<{ data: T; draftRevision: number }> {
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const revisionBefore = await readRevision();
+    const data = await readData();
+    const revisionAfter = await readRevision();
+    if (revisionBefore === revisionAfter) return { data, draftRevision: revisionAfter };
+  }
+  throw new Response("El borrador cambió mientras se cargaba. Recarga la página antes de continuar.", { status: 409 });
+}
+
+export function readConsistentBusinessDraft<T>(database: Database, organizationId: string, readData: () => Promise<T>) {
+  return readConsistentBusinessDraftState(
+    () => getBusinessDraftRevision(database, organizationId),
+    readData,
+  );
+}
+
 export async function ensureLegacyBusinessPublicationSnapshot(database: Database, organizationId: string) {
   const state = await database.query.businessProfilePublication.findFirst({ where: eq(businessProfilePublication.organizationId, organizationId) });
-  if (state?.snapshotJson) return state;
+  if (parseBusinessPublicationSnapshot(state?.snapshotJson ?? null, state?.snapshotSchemaVersion ?? null)) return state;
+  // A non-empty but invalid snapshot is corruption, not an uninitialized legacy row.
+  if (state && (state.snapshotJson !== null || state.snapshotSchemaVersion !== null)) return state;
   const profile = await getBusinessProfileForOrganization(database, organizationId);
   if (profile?.status !== "published") return state ?? null;
-  const [hours] = await Promise.all([listBusinessHoursForOrganization(database, organizationId)]);
+  const hours = await listBusinessHoursForOrganization(database, organizationId);
   const miniweb = await getMiniWebConfigurationForOrganization(database, organizationId, profile, hours);
   const snapshot = createBusinessPublicationSnapshot(profile, hours, miniweb.publishedConfiguration);
   const serialized = serializeBusinessPublicationSnapshot(snapshot);
-  await database.insert(businessProfilePublication).values({
-    organizationId,
-    draftRevision: state?.draftRevision ?? 0,
-    draftWriteToken: state?.draftWriteToken ?? null,
-    publishedVersion: 1,
-    publishedSlug: snapshot.profile.slug,
-    snapshotSchemaVersion: BUSINESS_PUBLICATION_SCHEMA_VERSION,
-    snapshotJson: serialized,
-    updatedAt: new Date(),
-  }).onConflictDoNothing();
+  const now = Date.now();
+  if (!state) {
+    await database.insert(businessProfilePublication).values({
+      organizationId,
+      draftRevision: 0,
+      publishedVersion: 1,
+      publishedSlug: snapshot.profile.slug,
+      snapshotSchemaVersion: BUSINESS_PUBLICATION_SCHEMA_VERSION,
+      snapshotJson: serialized,
+      updatedAt: new Date(now),
+    }).onConflictDoNothing();
+  } else if (state.publishedVersion === 0 && state.draftRevision === 0) {
+    await database.$client.prepare(`UPDATE business_profile_publication SET published_version = 1, published_slug = ?,
+      snapshot_schema_version = ?, snapshot_json = ?, updated_at = ?
+      WHERE organization_id = ? AND draft_revision = ? AND published_version = 0
+        AND snapshot_schema_version IS NULL AND snapshot_json IS NULL`)
+      .bind(snapshot.profile.slug, BUSINESS_PUBLICATION_SCHEMA_VERSION, serialized, now, organizationId, state.draftRevision).run();
+  }
   return database.query.businessProfilePublication.findFirst({ where: eq(businessProfilePublication.organizationId, organizationId) });
 }
 
@@ -135,6 +166,7 @@ export async function commitBusinessDraftMutation(
 }
 
 export async function publishBusinessPublicationForOrganization(database: Database, organizationId: string, expectedRevision: number, audit?: { actorUserId: string }) {
+  await ensureLegacyBusinessPublicationSnapshot(database, organizationId);
   const [profile, hours, state] = await Promise.all([
     getBusinessProfileForOrganization(database, organizationId),
     listBusinessHoursForOrganization(database, organizationId),

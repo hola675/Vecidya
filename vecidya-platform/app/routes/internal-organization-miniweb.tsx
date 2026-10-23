@@ -3,7 +3,7 @@ import { createDatabase } from "../../db/client.server";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
 import { getMiniWebConfigurationForOrganization, saveMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
-import { getBusinessDraftRevision, publishBusinessPublicationForOrganization } from "../../db/queries/business-publication.server";
+import { readConsistentBusinessDraft, publishBusinessPublicationForOrganization } from "../../db/queries/business-publication.server";
 import { hasActiveLicenseForOrganizationOwner } from "../../db/queries/business-profile.server";
 import { AdminShell } from "../components/admin-shell";
 import { Button, Card } from "../components/ui";
@@ -19,9 +19,10 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   const database = createDatabase(env.DB);
   const organization = await database.query.organization.findFirst({ where: (table, { eq }) => eq(table.id, params.organizationId) });
   if (!organization) throw new Response("Organización no encontrada", { status: 404 });
-  const [profile, hours] = await Promise.all([getBusinessProfileForOrganization(database, organization.id), listBusinessHoursForOrganization(database, organization.id)]);
-  const state = await getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
-  const draftRevision = await getBusinessDraftRevision(database, organization.id);
+  const { data: state, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
+    const [profile, hours] = await Promise.all([getBusinessProfileForOrganization(database, organization.id), listBusinessHoursForOrganization(database, organization.id)]);
+    return getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
+  });
   return { organization, configuration: state.draftConfiguration, draftRevision, published: JSON.stringify(state.draftConfiguration) === JSON.stringify(state.publishedConfiguration), workspaceUser: access.workspaceUser };
 }
 

@@ -9,7 +9,7 @@ import {
   hasActiveLicenseForOrganizationOwner,
   saveBusinessProfileForOrganization,
 } from "../../db/queries/business-profile.server";
-import { getBusinessDraftRevision, publishBusinessPublicationForOrganization } from "../../db/queries/business-publication.server";
+import { readConsistentBusinessDraft, publishBusinessPublicationForOrganization } from "../../db/queries/business-publication.server";
 import {
   listBusinessHoursForOrganization,
   replaceBusinessHoursForOrganization,
@@ -53,14 +53,15 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     getClientWorkspaceContext(env, request),
   ]);
   const database = createDatabase(env.DB);
-  const [profile, hours] = await Promise.all([
-    getBusinessProfileForOrganization(database, organization.id),
-    listBusinessHoursForOrganization(database, organization.id),
-  ]);
+  const { data: { profile, hours }, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
+    const [profile, hours] = await Promise.all([
+      getBusinessProfileForOrganization(database, organization.id),
+      listBusinessHoursForOrganization(database, organization.id),
+    ]);
+    return { profile, hours };
+  });
   const governance = profile ? await getBusinessProfileGovernance(database, profile.id) : null;
   const canPublish = await hasActiveLicenseForOrganizationOwner(database, organization.id);
-
-  const draftRevision = await getBusinessDraftRevision(database, organization.id);
   return { completion: getBusinessProfileCompletion(profile), governance, membership, profile, hours, canPublish, draftRevision, ...shell, activeOrganization: organization };
 }
 

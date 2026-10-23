@@ -5,7 +5,7 @@ import { createDatabase } from "../../db/client.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
 import { getBusinessProfileGovernance } from "../../db/queries/platform-governance.server";
-import { getBusinessDraftRevision } from "../../db/queries/business-publication.server";
+import { readConsistentBusinessDraft } from "../../db/queries/business-publication.server";
 import { getMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
 import { requireOrganizationPermission } from "../../server/auth/authorization.server";
 import { requireOrganization } from "../../server/auth/session.server";
@@ -35,13 +35,15 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     getClientWorkspaceContext(env, request),
   ]);
   const database = createDatabase(env.DB);
-  const [profile, hours] = await Promise.all([
-    getBusinessProfileForOrganization(database, organization.id),
-    listBusinessHoursForOrganization(database, organization.id),
-  ]);
+  const { data: { profile, hours, state }, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
+    const [profile, hours] = await Promise.all([
+      getBusinessProfileForOrganization(database, organization.id),
+      listBusinessHoursForOrganization(database, organization.id),
+    ]);
+    const state = await getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
+    return { profile, hours, state };
+  });
   const governance = profile ? await getBusinessProfileGovernance(database, profile.id) : null;
-  const state = await getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
-  const draftRevision = await getBusinessDraftRevision(database, organization.id);
 
   return {
     ...shell,

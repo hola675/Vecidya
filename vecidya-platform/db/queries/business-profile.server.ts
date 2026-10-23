@@ -71,6 +71,7 @@ export async function getPublishedBusinessProfileBySlug(database: Database, slug
     .select({
       ...getTableColumns(businessProfile),
       verificationStatus: businessProfileGovernance.verificationStatus,
+      publicationStateId: businessProfilePublication.organizationId,
       snapshotJson: businessProfilePublication.snapshotJson,
       snapshotSchemaVersion: businessProfilePublication.snapshotSchemaVersion,
     })
@@ -88,6 +89,7 @@ export async function getPublishedBusinessProfileBySlug(database: Database, slug
 
   if (!row) return null;
   const snapshot = parseBusinessPublicationSnapshot(row.snapshotJson, row.snapshotSchemaVersion);
+  if (row.publicationStateId && !snapshot) return null;
   if ((row.snapshotJson !== null || row.snapshotSchemaVersion !== null) && !snapshot) return null;
   if (snapshot && snapshot.profile.slug !== slug) return null;
   return {
@@ -104,6 +106,7 @@ export async function listPublishedBusinessProfiles(database: Database, filters:
   const rows = await database
     .select({
       ...getTableColumns(businessProfile),
+      publicationStateId: businessProfilePublication.organizationId,
       snapshotJson: businessProfilePublication.snapshotJson,
       snapshotSchemaVersion: businessProfilePublication.snapshotSchemaVersion,
     })
@@ -120,6 +123,7 @@ export async function listPublishedBusinessProfiles(database: Database, filters:
   const search = filters.q ? filters.q.toLocaleLowerCase() : undefined;
   return rows.flatMap((row) => {
     const snapshot = parseBusinessPublicationSnapshot(row.snapshotJson, row.snapshotSchemaVersion);
+    if (row.publicationStateId && !snapshot) return [];
     if ((row.snapshotJson !== null || row.snapshotSchemaVersion !== null) && !snapshot) return [];
     const profile = snapshot?.profile ?? row;
     if (filters.category && profile.category !== filters.category) return [];
