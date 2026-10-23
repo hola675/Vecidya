@@ -23,8 +23,24 @@ const scheduled = async () => {
   });
   return { status: response.status, body: await response.json() };
 };
+const triggerCron = async () => fetch(new URL("/cdn-cgi/local/scheduled", base));
 
 try {
+  const cronId = randomUUID();
+  fixtureIds.push(cronId);
+  const cronSeed = await fixture(cronId, "seed_purge_batch");
+  assert.equal(cronSeed.challenges, 106);
+  const cronFirstRun = await triggerCron();
+  assert.equal(cronFirstRun.status, 200, "Wrangler invoca el scheduled() real en el Worker local");
+  let cronState = await fixture(cronId, "inspect");
+  assert.equal(cronState.counts.requests, 1, "la corrida programada respeta el límite y deja el request hasta agotar hijos");
+  assert.equal(cronState.counts.challenges, 6);
+  const cronSecondRun = await triggerCron();
+  assert.equal(cronSecondRun.status, 200, "la siguiente activación programada continúa el lote pendiente");
+  cronState = await fixture(cronId, "inspect");
+  assert.equal(cronState.counts.requests, 0, "scheduled() elimina el request vencido tras agotar dependencias");
+  assert.equal(cronState.counts.challenges, 0);
+
   const activeId = randomUUID();
   fixtureIds.push(activeId);
   const activeSeed = await fixture(activeId, "seed_purge_active_control");
