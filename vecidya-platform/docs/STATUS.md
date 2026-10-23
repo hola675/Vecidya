@@ -8,7 +8,7 @@ Las rutas del embudo se registran para producción pero requieren `DIAGNOSTIC_RE
 
 **NO-GO para activar o publicar:** aviso/retención de 30 días requieren aprobación de privacidad/legal; la expiración bloquea lectura, pero no existe scheduler de purga automática y la ruta de purga permanece manual/dev. `vecidya-prod` tiene como último estado documentado las migraciones `0000–0010`; el código depende del esquema de la cadena posterior, y no se verificó ni cambió ninguna D1 remota. Deben validarse configuración y secretos sin leer valores, migrar en secuencia con respaldo/rollback, aprobar política, probar entrega Gmail en entorno autorizado y completar aceptación del informe/PDF antes de retirar el flag. El informe actual es HTML; el generador PDF no se modificó.
 
-Validación de este checkpoint: suite completa 1651/1651, focales finales 7/7, correo 12/12 con mocks, typecheck/build PASS; QA-03B E2E y aislamiento de Worker local PASS. Evidencia detallada en `TESTING.md`. Sin despliegue ni HTTP público.
+Verificación final incluye `PlatformFooter` (copyright y versión compartidos) en verificación, informe identificado y sus `ErrorBoundary`; el E2E cubre escritorio/móvil y confirma que el footer no aparece en impresión del informe. La copy informa que la eliminación automática sigue pendiente. Suite completa 1651/1651, correo 12/12 con mocks, `cf-typegen`, typecheck/build, QA-03B E2E y aislamiento del Worker local PASS; detalle en `TESTING.md`. Sin despliegue ni HTTP público.
 
 ## DIAG-QA-CONTENIDO-01 — contenido y evidencia QA-03B (2026-10-22)
 

@@ -5,6 +5,7 @@ import { readRequestBodyLimited, RequestBodyTooLargeError } from "../features/di
 import { deleteAuthorizedIdentifiedReport, getAuthorizedReport, recordDetailedReportFirstOpen, revokeDiagnosticOptionalIntents } from "../../db/queries/diagnostic-identification.server";
 import { REPORT_VERSION, type DiagnosticReportDocumentV1 } from "../components/diagnostic-report/report-model";
 import { DiagnosticReport } from "../components/diagnostic-report/diagnostic-report";
+import { PlatformFooter } from "../components/platform-footer";
 import { readCookie, digestOpaqueToken, constantTimeEqual } from "../features/diagnostic/report-access-crypto.server";
 import { isCurrentPublicDiagnosticEngineIdentityV1 } from "../features/diagnostic/public-diagnostic-replay.server";
 import { METHODOLOGY_VERSION } from "../features/diagnostic/qbv2-methodology";
@@ -120,7 +121,7 @@ export default function IdentifiedDiagnosticReport() {
       setFeedback("No se pudieron actualizar tus preferencias. Vuelve a intentarlo.");
     } finally { setBusy(false); }
   }
-  return (
+  return <>
     <main className="rp-page df-identified-report">
       <nav className="df-identified-report__nav" aria-label="Navegación del diagnóstico">
         <a className="text-link" href="/diagnostico">Volver a mi diagnóstico</a>
@@ -132,7 +133,8 @@ export default function IdentifiedDiagnosticReport() {
       {feedback && <p role={feedbackError ? "alert" : "status"} aria-live={feedbackError ? "assertive" : "polite"}>{feedback}</p>}
       <DiagnosticReport paper="a4" report={data.report} />
     </main>
-  );
+    <PlatformFooter area="public" />
+  </>;
 }
 
 async function revokeOptionalIntents(requestId: string, revokeCommercial: boolean, revokeResearch: boolean): Promise<boolean> {
@@ -156,5 +158,11 @@ async function deleteRequest(requestId: string) {
 export function ErrorBoundary() {
   const error = useRouteError();
   const unavailable = isRouteErrorResponse(error) && error.status === 404;
-  return <main className="rp-page"><p role="alert">{unavailable ? "Este informe no está disponible o el acceso expiró." : "No pudimos abrir el informe. Vuelve a tu diagnóstico e inténtalo otra vez."}</p><a href="/diagnostico">Volver a mi diagnóstico</a></main>;
+  return <>
+    <main className="rp-page">
+      <p role="alert">{unavailable ? "Este informe no está disponible o el acceso expiró." : "No pudimos abrir el informe. Vuelve a tu diagnóstico e inténtalo otra vez."}</p>
+      <a href="/diagnostico">Volver a mi diagnóstico</a>
+    </main>
+    <PlatformFooter area="public" />
+  </>;
 }

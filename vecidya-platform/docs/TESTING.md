@@ -1,5 +1,11 @@
 # Pruebas
 
+## DIAG-FUNNEL-PROD-01 — fix del footer PR #40 (2026-10-22)
+
+**RAN local; flag de producción sigue cerrado.** El E2E reprodujo primero la ausencia del footer en verificación (RED) y pasó tras la corrección. `PlatformFooter` y su versión/copyright compartidos se verifican en verificación e informe; el isolation check comprueba ambos `ErrorBoundary` con HTTP 404 y el flag `false`. QA-03B cubre visibilidad del footer a 390 px sin overflow, informe en impresión con footer oculto y copy que dice que la eliminación automática sigue pendiente. Worker QA-03B: seis recorridos, reanudación, concurrencia y snapshot HTML PASS. Worker local con config de producción: 101 archivos del bundle, cuatro rutas dev-only no registradas y cinco endpoints/páginas identificadas devuelven 404, con footer/version en páginas de error.
+
+`pnpm run cf-typegen`, `pnpm run test:unit` (**1651/1651**), `pnpm run test:email` (**12/12**, mocks), `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Se normalizó whitespace final generado en `worker-configuration.d.ts` para que el diff pase. La retención de 30 días sigue provisional; expiración no ejecuta borrado automático. No se cambió `wrangler.jsonc`, scoring, esquema, secretos, D1 remota ni PDF; sin correo real, deploy o HTTP público.
+
 ## DIAG-FUNNEL-PROD-01 — validación local (2026-10-22)
 
 **RAN local; producción/staging NO-GO.** `pnpm run test:unit`: **1651/1651 PASS**. Pruebas focales posteriores al ajuste del contrato (teléfono no admitido): **7/7 PASS**. `pnpm run test:email`: **12/12 PASS** con adaptadores de prueba, sin enviar correo real. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. En Worker local, `diagnostic-v3-qa03b-check.mjs`: **6 recorridos PASS**, incluyendo replay, reanudación, concurrencia, solicitud identificada, buzón simulado, verificación y snapshot HTML. `diagnostic-production-isolation-check.mjs`: bundle inspeccionado (101 archivos), cuatro rutas auxiliares dev-only y cinco rutas identificadas con HTTP 404 cuando `DIAGNOSTIC_REPORT_FUNNEL_ENABLED=false`.

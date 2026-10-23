@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { isRouteErrorResponse, useRouteError } from "react-router";
 import { cloudflareContext } from "../../server/cloudflare-context";
+import { PlatformFooter } from "../components/platform-footer";
 import { isIdentifiedReportJourneyAvailable } from "../features/diagnostic/identified-report-availability.server";
 import type { Route } from "./+types/dev-diagnostic-verify-email";
 
@@ -72,7 +74,7 @@ export default function VerifyDiagnosticEmail() {
     }
   };
 
-  return (
+  return <>
     <main className="df-page df-identification-page">
       <section aria-labelledby="df-verify-title" className="df-identification">
         {import.meta.env.DEV ? <p className="df-identification__local-note" role="note">Entorno local de prueba. Usa datos sintéticos; no se envían correos reales.</p> : null}
@@ -100,5 +102,21 @@ export default function VerifyDiagnosticEmail() {
         <p><a className="text-link" href="/diagnostico">Volver al resumen anónimo</a></p>
       </section>
     </main>
-  );
+    <PlatformFooter area="public" />
+  </>;
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  const unavailable = isRouteErrorResponse(error) && error.status === 404;
+  return <>
+    <main className="df-page df-identification-page">
+      <section aria-labelledby="df-verify-error-title" className="df-identification">
+        <h1 id="df-verify-error-title">{unavailable ? "Este acceso no está disponible." : "No pudimos abrir esta página."}</h1>
+        <p>Regresa al diagnóstico para consultar tu resumen o solicitar otro acceso.</p>
+        <p><a className="text-link" href="/diagnostico">Volver al diagnóstico</a></p>
+      </section>
+    </main>
+    <PlatformFooter area="public" />
+  </>;
 }

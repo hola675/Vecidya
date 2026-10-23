@@ -8,6 +8,7 @@ import { assertLocalBaseUrl, baseUrl } from "./test-safety.mjs";
 assertLocalBaseUrl();
 
 const bundleRoots = ["build/client", "build/server"].map((path) => resolve(path));
+const { version: platformVersion } = JSON.parse(readFileSync(resolve("package.json"), "utf8"));
 const textExtensions = new Set([".cjs", ".html", ".js", ".json", ".map", ".mjs"]);
 
 function textFiles(directory) {
@@ -79,6 +80,11 @@ for (const entry of gatedRequests) {
     ...(entry.body ? { body: entry.body } : {}),
     redirect: "manual",
   });
+  const body = await response.text();
   assert.equal(response.status, 404, `${entry.path} está registrado pero desactivado por DIAGNOSTIC_REPORT_FUNNEL_ENABLED=false`);
+  if (entry.path === "/diagnostico/verificar" || entry.path.startsWith("/diagnostico/informe/")) {
+    assert.ok(body.includes("© 2026 Vecidya"), `${entry.path} ErrorBoundary conserva copyright compartido con el flag apagado`);
+    assert.ok(body.includes(`Versión pública ${platformVersion}`), `${entry.path} ErrorBoundary conserva versión compartida con el flag apagado`);
+  }
 }
 console.log(`PASS production Worker: ${gatedRequests.length} endpoints/páginas identificadas permanecen cerrados por configuración`);
