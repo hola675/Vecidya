@@ -73,7 +73,11 @@ Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos bo
 
 **DIAG-FUNNEL-PROD-01 (2026-10-22; integrado en PR #40, merge `f10ea8a`):** QA-03B enlazado al informe identificado, replay, correo, verificación, grants, recovery y derechos; flag del funnel cerrado en production/staging.
 
-**DIAG-PRIVACY-PURGE-01 (CODE + TEST local, PR pendiente):** Cron diario y purga por lotes acotados ya implementados; corrida destructiva mantiene doble switch en `false` en producción y staging y staging no tiene trigger programado. La propuesta de retención de `DATABASE.md` requiere aprobación legal/operativa; 30 d/24 h son provisionales. Próximas dependencias: aprobar plazos/evidencia/excepciones y cómo encender la tarea, luego ejecutar DIAG-D1-RELEASE-01 (chain/backups/rollback) y DIAG-MAIL-ACCEPTANCE-01 (Gmail autorizado); el informe es HTML y la aceptación PDF sigue pendiente. No activar, migrar remoto ni desplegar en esta fase.
+**DIAG-PRIVACY-PURGE-01 (PR #41 integrado; CODE + TEST local):** Cron diario y purga por lotes acotados; switches en `false` en producción/staging y staging no tiene Cron. Retención legal/operativa sigue pendiente; 30 d/24 h son provisionales.
+
+**DIAG-D1-RELEASE-01 (2026-10-23): PASS TÉCNICO local; NO-GO remoto.** Certificada localmente la cadena limpia y el upgrade sintético desde `0010`; matriz, preflight, staging, rollback y gates están en `DATABASE.md`. El ledger remoto y Worker desplegado siguen sin verificarse y no se consultaron. Requiere autorización específica incluso para lectura.
+
+**Siguientes dependencias:** autorización de lectura remota para preflight; aprobación separada para D1 staging y, después, producción; DIAG-MAIL-ACCEPTANCE-01 en entorno/recipient autorizados; aprobación de privacidad/retención y backlog antes de abrir Cron; aceptación del informe HTML y decisión PDF. No se habilita ni despliega por este checkpoint.
 
 **ACT-04 (2026-10-22):** PR #37 integrado en `main@3b67d20` tras autorización; cutover de `/diagnostico` y metodología a QA-03B con replay server-authoritative, compatibilidad estricta y rollback dev-only. Integrado, no publicado. El gate de informe identificado/correo real sigue cerrado; no se tocó D1 remota ni se publica automáticamente.
 
