@@ -71,6 +71,10 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 
 export default function MiniWebEditorPage() {
   const data = useLoaderData<typeof loader>();
+  return <MiniWebEditor key={data.activeOrganization.id} data={data} />;
+}
+
+function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const { revalidate } = useRevalidator();
   const [configuration, setConfiguration] = useState(data.draftConfiguration);
   const [draftRevision, setDraftRevision] = useState(data.draftRevision);

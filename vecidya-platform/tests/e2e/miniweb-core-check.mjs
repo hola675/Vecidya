@@ -288,6 +288,13 @@ try {
   check(new RegExp(`href=["']https://vecidya\\.com/vecindario/${profileSlug("legacy-b")}(["']|/)`).test(publicB), "el canonical actual de Vecindario se conserva");
   check(publicB.includes('name="description" content="Resumen B"') && publicB.includes('property="og:type" content="website"') && publicB.includes('name="robots" content="index, follow"'), "los metadatos SEO públicos actuales se conservan");
 
+  const orgBConfigBeforeSwitch = await (await ownerB.client.json(pathB, null, "GET")).json();
+  const orgBRevisionAdvance = await ownerB.client.json(pathB, { intent: "save", configuration: orgBConfigBeforeSwitch.draftConfiguration, draftRevision: orgBConfigBeforeSwitch.draftRevision });
+  check(orgBRevisionAdvance.status === 200, "el fixture de organización B avanza su revisión para probar el cambio de organización en el editor");
+  await setActive(ownerB, organizationD);
+  const organizationDConfig = await (await ownerB.client.json(pathFor(organizationD), null, "GET")).json();
+  await setActive(ownerB, organizationB);
+
   const draftSlug = profileSlug("draft");
   const suspendedSlug = profileSlug("suspended");
   const suspendedProfileId = profileId();
@@ -313,7 +320,15 @@ try {
   await page.getByLabel("Contraseña").fill(ownerA.password);
   await page.getByRole("button", { name: "Entrar a mi espacio" }).click();
   await page.waitForURL((url) => url.pathname === "/app", { timeout: 15000 });
+  await d1(`UPDATE business_profile SET status = 'draft' WHERE organization_id = '${organizationA}';`);
   await page.goto(new URL("/app/business-profile", baseUrl).toString(), { waitUntil: "networkidle" });
+  await page.getByRole("button", { name: "Publicar perfil" }).click();
+  await page.getByText("Perfil publicado.").waitFor();
+  const profileAfterUiPublish = await (await ownerA.client.json(profilePathA, null, "GET")).json();
+  check(Number(await page.locator('form.business-profile-form input[name="draftRevision"]').inputValue()) === profileAfterUiPublish.draftRevision, "publicar el perfil devuelve la revisión posterior a guardar y publicar");
+  await page.getByRole("button", { name: "Guardar horarios" }).click();
+  await page.getByText("Horarios guardados.").waitFor();
+  check((await ownerA.client.json(profilePathA, null, "GET")).status === 200, "guardar horarios inmediatamente después de publicar no recibe un 409 falso");
   const profileEditorRevision = Number(await page.locator('form.business-profile-form input[name="draftRevision"]').inputValue());
   const staleName = `Nombre obsoleto ${suffix}`;
   await page.getByLabel("Nombre visible").fill(staleName);
@@ -356,8 +371,12 @@ try {
   await page.getByText("Horarios guardados.").waitFor();
 
   const platformContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
-  await platformContext.addCookies(adminA.client.cookies().map(({ name, value }) => ({ name, value, url: baseUrl })));
   const platformPage = await platformContext.newPage();
+  await platformPage.goto(new URL("/login", baseUrl).toString(), { waitUntil: "networkidle" });
+  await platformPage.getByLabel("Correo electrónico").fill(adminA.email);
+  await platformPage.getByLabel("Contraseña").fill(adminA.password);
+  await platformPage.getByRole("button", { name: "Entrar a mi espacio" }).click();
+  await platformPage.waitForURL((url) => url.pathname === "/app", { timeout: 15000 });
   const internalMiniwebResponse = await platformPage.goto(new URL(`/app/internal/organizations/${organizationA}/miniweb`, baseUrl).toString(), { waitUntil: "networkidle" });
   check(internalMiniwebResponse?.status() === 200, "la administración interna abre MiniWeb con sesión platform_admin activa");
   check(await platformPage.getByRole("button", { name: "Publicar MiniWeb" }).isEnabled(), "la pantalla interna permite publicar cambios de perfil/horarios aunque la configuración no cambie");
@@ -366,6 +385,26 @@ try {
   const editorResponse = await page.goto(new URL("/app/miniweb", baseUrl).toString(), { waitUntil: "networkidle" });
   check(editorResponse?.status() === 200, "el editor privado Mi MiniWeb responde para el owner");
   check(await page.locator(".miniweb-editor__publication-state").getByText("Hay cambios guardados que todavía no se han publicado.").count() === 1, "el estado de MiniWeb identifica cambios de perfil/horarios aunque el diseño siga igual");
+  const ownerBContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
+  const ownerBPage = await ownerBContext.newPage();
+  await ownerBPage.goto(new URL("/login", baseUrl).toString(), { waitUntil: "networkidle" });
+  await ownerBPage.getByLabel("Correo electrónico").fill(ownerB.email);
+  await ownerBPage.getByLabel("Contraseña").fill(ownerB.password);
+  await ownerBPage.getByRole("button", { name: "Entrar a mi espacio" }).click();
+  await ownerBPage.waitForURL((url) => url.pathname === "/app", { timeout: 15000 });
+  await ownerBPage.goto(new URL("/app/miniweb", baseUrl).toString(), { waitUntil: "networkidle" });
+  await ownerBPage.locator("#organization-switcher").selectOption(organizationD);
+  await ownerBPage.getByText(`Trabajando en MiniWeb org-d ${suffix}.`).waitFor();
+  check(organizationDConfig.draftRevision !== (await orgBRevisionAdvance.json()).draftRevision, "las organizaciones B y D usan revisiones distintas para hacer determinista el cambio de contexto");
+  const aboutToggle = ownerBPage.locator('.miniweb-module-list__item[data-module-type="about"] input[type="checkbox"]');
+  await aboutToggle.setChecked(!(await aboutToggle.isChecked()));
+  const switchedOrgSaveRequest = ownerBPage.waitForRequest((request) => request.url().includes(`/api/organizations/${organizationD}/miniweb-config`) && request.method() === "POST");
+  await ownerBPage.getByRole("button", { name: "Guardar borrador" }).click();
+  const switchedOrgRequest = await switchedOrgSaveRequest;
+  const switchedOrgBody = switchedOrgRequest.postDataJSON();
+  check(switchedOrgBody.draftRevision === organizationDConfig.draftRevision, "al cambiar de organización, MiniWeb asocia su configuración con la revisión de D");
+  await ownerBPage.getByRole("status").filter({ hasText: "Borrador guardado." }).waitFor();
+  await ownerBContext.close();
   const designBeforeDataOnlyPublish = await (await ownerA.client.json(pathA, null, "GET")).json();
   await page.getByRole("button", { name: "Publicar configuración" }).click();
   await page.getByRole("status").filter({ hasText: "La página completa quedó publicada." }).waitFor();

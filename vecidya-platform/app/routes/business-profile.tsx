@@ -103,14 +103,14 @@ export async function action({ context, request }: Route.ActionArgs) {
     if (!profile) throw new Error("No se pudo guardar el perfil.");
 
     if (intent === "publish") {
-      await publishBusinessPublicationForOrganization(database, organization.id, expectedRevision + 1);
+      const publication = await publishBusinessPublicationForOrganization(database, organization.id, expectedRevision + 1);
       const publishedProfile = await getBusinessProfileForOrganization(database, organization.id);
       if (!publishedProfile) throw new Error("El perfil desapareció durante la publicación.");
       return {
         kind: "profile" as const,
         completion: getBusinessProfileCompletion(publishedProfile),
         profile: publishedProfile,
-        draftRevision: expectedRevision + 1,
+        draftRevision: publication.state.draftRevision,
         success: "Perfil publicado.",
       };
     }
