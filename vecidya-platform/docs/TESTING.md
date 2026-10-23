@@ -1,10 +1,12 @@
 # Pruebas
 
-## APP-CLIENTE-00-PUBLISH-001 — certificación local (2026-10-23)
+## APP-CLIENTE-00-PUBLISH-001-R1 — certificación local (2026-10-23)
 
-**RAN PASS en Worker + D1 aislada.** Migraciones `0000–0023` aplicadas desde cero. `tests/e2e/miniweb-core-check.mjs`: **37/37**, incluido guardado de perfil/horarios/MiniWeb como draft, rechazo `409` de revisión obsoleta, lectura pública estable antes de publicar y snapshot conjunto después, gate de licencia, aislamiento cross-tenant y cierre `404` al corromper el snapshot canónico. El harness limpió las organizaciones/usuarios de prueba.
+**Código probado:** `edbc8ab529712b57f798bd9b407ccdcf022132d2` (rama `feat/app-mini-publish-001`, desde `8b777e4`). `pnpm run test:unit`: **1653/1653**; `pnpm run typecheck`: **PASS**; `pnpm run build`: **PASS**; `git diff --check`: **PASS**.
 
-`pnpm run test:unit`: **1651/1651**; `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. La cadena de migraciones se validó en la D1 temporal local. El build advierte que faltan secretos Gmail no usados por esta prueba. No se usó correo real, D1 compartida/remota, deploy o HTTP público fechado. No incluye certificación de oferta/FAQ de APP-MINI-02B.
+`node tests/e2e/miniweb-core-check.mjs`: **45/45** en Worker local con D1 efímera. La prueba unitaria determinista pausa la lectura de A, cambia perfil/horarios/configuración y revisión desde B, y confirma que A reintenta y recibe los datos de B con la revisión correspondiente; una escritura con la revisión anterior recibe `409`. E2E cubre lecturas JSON de perfil/MiniWeb, rechazo CAS obsoleto, publicación legacy fallida con `409`, posterior guardado draft aún oculto por HTTP anónimo, publicación explícita del contenido nuevo, dos inicializadores/guardados simultáneos con un solo ganador y una versión pública legacy coherente. Una fila de publicación sin snapshot devuelve `404` al visitante anónimo.
+
+Se aplicaron desde cero las migraciones `0000–0023`; el ledger confirmó la cadena completa. Tras E2E se verificaron cero usuarios y organizaciones fixture y se eliminó el directorio D1 temporal. Build: advertencias de secretos Gmail ausentes y dynamic imports preexistentes; no bloquearon compilación. No se usó Gmail real, D1 compartida/remota, deploy ni HTTP público fechado. `REAL_EMAIL_NOT_VERIFIED` sigue diferido al release autorizado. APP-MINI-02B no forma parte de esta certificación.
 
 ## PLATFORM-ADMIN-GLOBAL — certificación focal local (2026-10-22)
 

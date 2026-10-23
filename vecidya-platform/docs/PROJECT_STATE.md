@@ -1,6 +1,6 @@
-## Estado vigente — APP-CLIENTE-00-PUBLISH-001 (2026-10-23)
+## Estado vigente — APP-CLIENTE-00-PUBLISH-001-R1 (2026-10-23)
 
-PR #39 de PLATFORM-ADMIN-GLOBAL integrado en `origin/main@475880bdbdc20922c92177478efaef793168ee15`. En `feat/app-mini-publish-001` se implementa publicación atómica de perfil, horarios y MiniWeb mediante snapshot versionado, borradores con control CAS de revisión/token y lectura pública coherente. Migraciones `0022`/`0023` aditivas. Verificación: D1 aislada con `0000–0023`, E2E Worker 37/37, unitarias 1651/1651, typecheck/build/diff-check PASS. No deploy, migración remota ni HTTP pública fechada. El PR del checkpoint aún debe integrarse antes de APP-MINI-02B; el contrato deberá incorporar futuras ofertas/FAQ.
+PR #42 sigue abierto y sin fusionar; el commit de código probado es `edbc8ab529712b57f798bd9b407ccdcf022132d2`. Perfil, horarios y configuración se leen con revisión cercada en los loaders de perfil, MiniWeb, API JSON y administración. Las mutaciones obsoletas reciben `409`; inicialización legacy condicional protege el snapshot público previo, y cualquier fila de publicación existente sin snapshot válido falla cerrada en superficie pública. Se conservan el snapshot unificado y las migraciones `0022`/`0023`. Verificación local: unitarias 1653/1653, typecheck/build, `miniweb-core-check.mjs` 45/45, D1 efímera `0000–0023` eliminada tras confirmar fixtures limpios. No deploy, D1 remota, correo real ni HTTP público fechado. APP-MINI-02B espera la integración de PR #42; Gmail real continúa `REAL_EMAIL_NOT_VERIFIED` y diferido al release autorizado.
 
 ## Estado vigente — DIAG-FUNNEL-PROD-01 (2026-10-22)
 

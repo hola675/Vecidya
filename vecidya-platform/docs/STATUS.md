@@ -1,8 +1,12 @@
 # Estado de implementación
 
-## APP-CLIENTE-00-PUBLISH-001 — publicación coherente de Mi Vecidya (2026-10-23)
+## APP-CLIENTE-00-PUBLISH-001-R1 — lecturas consistentes y publicación legacy segura (2026-10-23)
 
-**Implementado y certificado localmente en `feat/app-mini-publish-001`; PR de este checkpoint pendiente.** PR #39 de control plane ya está integrado en `origin/main@475880bdbdc20922c92177478efaef793168ee15`. Perfil, horarios y composición MiniWeb se leen del mismo snapshot publicado; guardar actualiza solo el borrador. CAS con revisión y token de escritura liga cada lote de cambios a la revisión ganadora. Migraciones aditivas `0022`/`0023`; D1 aislada con cadena `0000–0023`. `miniweb-core-check.mjs` 37/37, unitarias 1651/1651, typecheck, build y diff-check PASS. Sin D1 remota, publicación/deploy ni HTTP público fechado. APP-MINI-02B queda pendiente de integrar este PR y debe ampliar el snapshot con sus ofertas/FAQ.
+**Implementado y probado localmente en `feat/app-mini-publish-001`, código `edbc8ab529712b57f798bd9b407ccdcf022132d2`; PR #42 abierto, pendiente de nueva revisión automática.** Los loaders de perfil, MiniWeb, API JSON y administración interna cercan sus lecturas con revisión antes/después, reintentan hasta tres veces y fallan con `409` si no hay revisión estable. Los snapshots legacy completan condicionalmente una fila vacía solo en la revisión inicial; las filas existentes sin snapshot válido fallan cerradas en perfil público, directorio y sitemap. Se mantienen las migraciones `0022`/`0023` y el snapshot unificado.
+
+Evidencia local: `test:unit` 1653/1653; `typecheck`, `build` y `git diff --check` PASS; `miniweb-core-check.mjs` 45/45. Incluye carrera determinista de dos editores, rechazo CAS de escritura obsoleta, perfil legacy tras publicación fallida `409`, dos inicializaciones/guardados concurrentes con una sola versión pública y comprobaciones HTTP anónimas antes/después de publicar y ante snapshot faltante. D1 efímera aplicó `0000–0023`, se confirmaron cero fixtures restantes y se eliminó el directorio. Sin D1 remota, correo real, deploy, merge ni HTTP público fechado.
+
+APP-MINI-02B permanece pendiente de integrar este PR; ampliar el snapshot con ofertas/FAQ sigue fuera de este checkpoint. **`REAL_EMAIL_NOT_VERIFIED` permanece diferido al release autorizado.**
 
 ## DIAG-FUNNEL-PROD-01 — entrega identificada preparada; activación cerrada (2026-10-22)
 

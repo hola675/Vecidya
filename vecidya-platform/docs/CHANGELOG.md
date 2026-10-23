@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R1 (revisión local de PR #42)
+
+- Los loaders de perfil, horarios y MiniWeb leen los datos detrás de una revisión estable, con hasta tres intentos; si el draft cambia durante la lectura, no devuelven una revisión que identifique otros datos. Se cubren también API JSON y administración interna.
+- La inicialización legacy completa solo filas vacías en revisión inicial mediante compare-and-set. Una fila de publicación existente sin snapshot válido ya no habilita lectura del perfil vivo: las rutas públicas fallan cerradas hasta una publicación explícita.
+- Se agregan regresiones de carrera determinista, escrituras obsoletas, 409 de publicación legacy, doble inicialización y HTTP anónimo pre/post publicación. Commit probado `edbc8ab529712b57f798bd9b407ccdcf022132d2`; unitarias 1653/1653, MiniWeb E2E 45/45, typecheck, build y diff-check PASS. PR #42 abierto, no fusionado ni desplegado; Gmail real continúa diferido al release autorizado.
+
 ## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001 (certificación local)
 
 - Se integra como base PR #39 por `475880bdbdc20922c92177478efaef793168ee15` y se implementa un snapshot público versionado con perfil, horarios y composición MiniWeb. Los cambios se guardan como borrador hasta publicar; revisión CAS/token protege escrituras concurrentes y la publicación actualiza la versión pública en un batch D1.

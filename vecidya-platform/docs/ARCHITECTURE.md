@@ -20,6 +20,12 @@ El Diagnóstico mantiene exclusivamente `diagnostic-dev-inbox.server.ts` para ve
 
 
 
+## APP-CLIENTE-00-PUBLISH-001-R1 — consistencia del borrador y snapshot legacy (2026-10-23)
+
+El draft profile, hours y MiniWeb se leen bajo una revisión compartida: el loader lee la revisión antes y después del conjunto de consultas, reintenta tres veces si cambió y responde `409` si no puede fijar una lectura estable. Las escrituras conservan el compare-and-set de revisión y token en un batch D1; una respuesta antigua nunca recibe la revisión nueva para habilitar que sobrescriba el cambio concurrente.
+
+Una fila `business_profile_publication` por sí sola no es evidencia de contenido público válido. La inicialización legacy copia el contenido publicado solo cuando no hay snapshot y la fila vacía sigue en revisión inicial, mediante actualización condicional. Toda fila existente sin snapshot válido falla cerrada en perfil, directorio y sitemap. Si la organización todavía no tiene fila, el perfil legacy sigue visible hasta que cualquier mutación materialice su snapshot antes de cambiar datos. Sin cambio de schema ni nueva migración; `0022`/`0023` permanecen intactas.
+
 ## PLATFORM-ADMIN-GLOBAL — contrato aprobado e implementación local (2026-10-22)
 
 **Estado actualizado al 2026-10-23:** el PR #39 se integró en `origin/main` por `475880bdbdc20922c92177478efaef793168ee15`. La certificación local y el gate de correo real están en `STATUS.md`/`TESTING.md`; el correo real sigue diferido al release y no se declara verificado. El usuario aprobó la invitación propia descrita aquí. La UI interna permite alta de organización, reenvío/revocación de invitación, suspensión/reactivación de organizaciones con ciclo vigente, cambios de rol `admin|member`, edición JSON de configuración MiniWeb y publicación explícita, además de capacitación. Staff conserva lectura. `closed`, transferencia/eliminación de owner y cambio de roles owner siguen deshabilitados.
