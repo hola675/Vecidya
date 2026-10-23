@@ -25,8 +25,8 @@ const replacement: Readonly<Record<string, Partial<QuestionDefinitionV2>>> = {
   q2_other_staff: {
     version: 2,
     options: [
-      { value: "no", label: "Trabajo por mi cuenta." },
-      { value: "yes", label: "Hay al menos otra persona que trabaja conmigo de forma habitual." },
+      { value: "no", label: "Trabajo por mi cuenta.", produces: [{ kind: "hasOtherPaidStaff", value: false, provenance: "explicit_declaration" }] },
+      { value: "yes", label: "Hay al menos otra persona que trabaja conmigo de forma habitual.", produces: [{ kind: "hasOtherPaidStaff", value: true, provenance: "explicit_declaration" }] },
       { value: "unknown", label: "No estoy seguro todavía.", kind: "unknown" },
     ],
   },

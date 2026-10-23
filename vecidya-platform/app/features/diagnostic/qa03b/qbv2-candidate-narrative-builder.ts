@@ -369,8 +369,11 @@ export function buildDiagnosticNarrative(input: NarrativeInput): DiagnosticNarra
   }
   if (context.digitalToolUse.status === "resolved" && summary.length < 4) {
     const question = bank.find((item) => item.id === "q2_digital_tools_in_use");
-    const labels = context.digitalToolUse.value.split("|").filter(Boolean).map((value) => question?.options.find((option) => option.value === value)?.label.replace(/[.]$/, "") ?? value);
-    const text = labels.length
+    const value = context.digitalToolUse.value;
+    const labels = value === "none" || value === "not_needed" ? [] : value.split("|").filter(Boolean).map((item) => question?.options.find((option) => option.value === item)?.label.replace(/[.]$/, "") ?? item);
+    const text = value === "not_needed"
+      ? "Indicaste que no consideras necesarias herramientas digitales para estas tareas."
+      : labels.length
       ? `Mencionaste estas herramientas digitales: ${labels.join("; ")}. Esto registra su uso, pero no demuestra por sí solo qué tan bien funcionan.`
       : "Declaraste que no usas herramientas digitales para estas tareas; esto no indica por sí solo que haya un problema.";
     summary.push(block({ id: "summary:digital-tools", kind: "summary", text, certainty: "confirmed", sourceContext: ["digitalToolUse"], sourceQuestionIds: ["q2_digital_tools_in_use"] }));

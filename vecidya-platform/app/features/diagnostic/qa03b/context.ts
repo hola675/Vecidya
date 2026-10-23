@@ -9,6 +9,8 @@ const declaration = <T>(value: T, questionId: string, questionVersion: number): 
 export type ContractSignals = {
   readonly entity?: ContractSignal<EntityType>;
   readonly entityUnknown?: ContractSignal<boolean>;
+  readonly hasOtherPaidStaff?: ContractSignal<boolean>;
+  readonly hasOtherPaidStaffUnknown?: ContractSignal<boolean>;
   readonly operationalStatus?: ContractSignal<OperationalStatus>;
   readonly hasEverHadRealPeople?: ContractSignal<boolean>;
   readonly historyUnknown?: ContractSignal<boolean>;
@@ -37,10 +39,13 @@ export function deriveContractSignals(answers: AnswersV2): ContractSignals {
   return {
     ...(["individual", "business", "organization", "project"].includes(String(entity)) ? { entity: declaration(entity as EntityType, "q2_entity", 3) } : {}),
     ...(entity === "unknown" ? { entityUnknown: declaration(true, "q2_entity", 3) } : {}),
+    ...(["yes", "no"].includes(String(answers.q2_other_staff)) ? { hasOtherPaidStaff: declaration(answers.q2_other_staff === "yes", "q2_other_staff", 2) } : {}),
+    ...(answers.q2_other_staff === "unknown" ? { hasOtherPaidStaffUnknown: declaration(true, "q2_other_staff", 2) } : {}),
     ...((OPERATIONAL_STATUSES as readonly unknown[]).includes(state) ? { operationalStatus: declaration(state as OperationalStatus, "q2_operational_status", 1) } : {}),
     ...(["yes", "no"].includes(String(answers.q2_has_customers)) ? { hasEverHadRealPeople: declaration(answers.q2_has_customers === "yes", "q2_has_customers", 3) } : {}),
     ...(answers.q2_has_customers === "unknown" ? { historyUnknown: declaration(true, "q2_has_customers", 3) } : {}),
-    ...(digitalTools.includes("none") ? { digitalToolUse: declaration("", "q2_digital_tools_in_use", 1) } : {}),
+    ...(digitalTools.includes("none") ? { digitalToolUse: declaration("none", "q2_digital_tools_in_use", 1) } : {}),
+    ...(digitalTools.includes("not_needed") ? { digitalToolUse: declaration("not_needed", "q2_digital_tools_in_use", 1) } : {}),
     ...(digitalTools.some(value => ["calendar_scheduling", "documents_records", "tasks_projects", "customer_followup", "inventory_operations", "other"].includes(value)) ? { digitalToolUse: declaration(digitalTools.filter(value => value !== "none" && value !== "unknown" && value !== "not_needed").join("|"), "q2_digital_tools_in_use", 1) } : {}),
     ...(digitalTools.includes("unknown") ? { digitalToolUseUnknown: declaration(true, "q2_digital_tools_in_use", 1) } : {}),
     ...(["b2c", "b2b", "mixed", "no_direct_purchase", "unknown"].includes(String(buyer)) ? { buyer: declaration(buyer as BuyerDisposition, "q2_customer_buyer", 3) } : {}),
@@ -58,6 +63,7 @@ export function deriveContractSignals(answers: AnswersV2): ContractSignals {
 
 export type ResolvedDomainContext = HistoricalContext & {
   readonly contractIdentity: typeof CONTEXT_ID;
+  readonly hasOtherPaidStaff: Resolution<"yes" | "no">;
   readonly operationalStatus: Resolution<Exclude<OperationalStatus, "unknown">>;
   readonly hasEverHadRealPeople: boolean | null;
   readonly buyerDisposition: BuyerDisposition | null;
@@ -66,7 +72,7 @@ export type ResolvedDomainContext = HistoricalContext & {
   readonly funding: "donations_grants_contributions" | null;
   readonly delivery: Pick<ContractSignals, "serviceSetting" | "appointmentMode" | "purchaseChannel" | "onsiteConsumption" | "otherDelivery">;
 };
-export type ContextResolutionTrace = HistoricalTrace & { readonly operationalStatus: FieldTrace; readonly history: FieldTrace; readonly buyerRecipient: FieldTrace; readonly funding: FieldTrace; readonly digitalToolUse: FieldTrace };
+export type ContextResolutionTrace = HistoricalTrace & { readonly hasOtherPaidStaff: FieldTrace; readonly operationalStatus: FieldTrace; readonly history: FieldTrace; readonly buyerRecipient: FieldTrace; readonly funding: FieldTrace; readonly digitalToolUse: FieldTrace };
 const fieldTrace = (field: string, value: Resolution<string>, sources: readonly string[]): FieldTrace => value.status === "resolved"
   ? { status: "resolved", field, value: value.value, supportingSignals: sources, resolutionReason: "hecho explícito del contrato QA-03B" }
   : { status: "unresolved", field, reason: value.reason, candidates: value.candidates, supportingSignals: sources };
@@ -101,6 +107,8 @@ export function resolveContractContext(legacySignals: DiagnosticSignalsV3, facts
     hasRealCustomers: state === "operating" && ever !== undefined ? { value: ever, provenance: "explicit_declaration" } : undefined,
   }, nicheHints);
   const operationalStatus: ResolvedDomainContext["operationalStatus"] = state && state !== "unknown" ? resolved(state, "signal") : unresolved(state === "unknown" ? "declared_unknown" : "not_asked");
+  const hasOtherPaidStaff = facts.hasOtherPaidStaff ? resolved(facts.hasOtherPaidStaff.value ? "yes" : "no", "signal")
+    : unresolved<"yes" | "no">(facts.hasOtherPaidStaffUnknown ? "declared_unknown" : "not_asked");
   const activity: HistoricalContext["activity"] = state === "operating" ? resolved("active", "signal") : state === "preparing" ? resolved("prelaunch", "signal") : unresolved(state === "unknown" ? "declared_unknown" : state === "paused" ? "insufficient_evidence" : "not_asked");
   const growthStage = state === "preparing" && ever !== true ? resolved("idea", "signal")
     : state === "operating" && ever === true ? old.context.growthStage
@@ -111,11 +119,11 @@ export function resolveContractContext(legacySignals: DiagnosticSignalsV3, facts
   const reach = facts.reachUnknown ? unresolved<CustomerReach>("declared_unknown") : old.context.customerModel.reach;
   const recipient = facts.buyerRecipient?.value;
   const buyerRecipient = recipient && recipient !== "unknown" ? resolved(recipient, "signal") : unresolved<"same_party" | "third_party">(recipient === "unknown" ? "declared_unknown" : "not_asked");
-  const digitalToolUse = facts.digitalToolUse ? resolved(facts.digitalToolUse.value, "signal")
+  const digitalToolUse = facts.digitalToolUse !== undefined ? resolved(facts.digitalToolUse.value, "signal")
     : unresolved<string>(facts.digitalToolUseUnknown ? "declared_unknown" : "not_asked");
   const archetype = resolveDelivery(facts, nicheHints);
   const context: ResolvedDomainContext = {
-    ...old.context, contractIdentity: CONTEXT_ID, entity, activity, growthStage,
+    ...old.context, contractIdentity: CONTEXT_ID, entity, activity, growthStage, hasOtherPaidStaff,
     archetype: archetype.resolution, archetypeComponents: archetype.components,
     customerModel: { reach, buyer: buyerResolution }, operationalStatus, hasEverHadRealPeople: ever ?? null, digitalToolUse,
     buyerDisposition: buyer ?? null, buyerRecipient, funding: facts.funding?.value ?? null,
@@ -128,6 +136,7 @@ export function resolveContractContext(legacySignals: DiagnosticSignalsV3, facts
     growthStage: fieldTrace("growthStage", growthStage, ["operationalStatus", "hasEverHadRealPeople", "operatingRegularity"]),
     archetype: fieldTrace("archetype", archetype.resolution, ["serviceSetting", "appointmentMode", "purchaseChannel", "onsiteConsumption"]),
     customerBuyer: fieldTrace("customerBuyer", buyerResolution, ["directBuyer"]), customerReach: fieldTrace("customerReach", reach, facts.reachUnknown ? ["customerReachUnknown"] : ["customerReach"]),
+    hasOtherPaidStaff: fieldTrace("hasOtherPaidStaff", hasOtherPaidStaff, ["q2_other_staff"]),
     operationalStatus: fieldTrace("operationalStatus", operationalStatus, ["operationalStatus"]), history: fieldTrace("history", historyResolution, ["hasEverHadRealPeople"]),
     buyerRecipient: fieldTrace("buyerRecipient", buyerRecipient, ["buyerRecipientRelation"]), funding: fieldTrace("funding", fundingResolution, ["fundingMechanism"]), digitalToolUse: fieldTrace("digitalToolUse", digitalToolUse, ["q2_digital_tools_in_use"]),
   } };

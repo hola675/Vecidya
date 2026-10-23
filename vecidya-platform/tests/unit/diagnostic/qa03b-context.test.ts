@@ -7,6 +7,7 @@ import { shouldClarifyBuyerRecipient } from "../../../app/features/diagnostic/qa
 import { evaluateRuleV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import { scoreCandidateContextualDimensionsV3 as score } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
 import { buildCandidateRecommendationsAndSolutionsV3 as recommend } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-recommendations";
+import { buildCandidateNarrativeAndOverallV3 as narrate } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-narrative";
 import { AUTHORED_UNKNOWN_CAPABILITIES as base } from "./qa03b-fixtures";
 
 test("QA-03B: 21 migradas y 17 pendientes preservan versiones y lecturas R3", () => {
@@ -39,6 +40,22 @@ test("QA-03B: entidad, estado actual e historia son independientes", () => {
   const assetsOnly = resolve({ q2_entity: "business", q2_has_customers: "yes", q2_presence_digital_base: "reliable_presence" }, BANK);
   assert.equal(assetsOnly.context.operationalStatus.status, "unresolved"); assert.equal(assetsOnly.context.activity.status, "unresolved");
   assert.ok(assetsOnly.eligibleQuestionIds.includes("q2_operational_status"));
+});
+test("QA-03B: el dato de personal adicional se conserva sin reclasificar a quien trabaja por cuenta propia", () => {
+  const staffQuestion = BANK.find(question => question.id === "q2_other_staff")!;
+  assert.deepEqual(staffQuestion.options.find(option => option.value === "yes")?.produces, [{ kind: "hasOtherPaidStaff", value: true, provenance: "explicit_declaration" }]);
+  assert.deepEqual(staffQuestion.options.find(option => option.value === "no")?.produces, [{ kind: "hasOtherPaidStaff", value: false, provenance: "explicit_declaration" }]);
+  for (const [answer, expected] of [["yes", "yes"], ["no", "no"]] as const) {
+    const result = resolve({ ...base, q2_entity: "individual", q2_other_staff: answer }, BANK);
+    assert.deepEqual(result.context.entity, { status: "resolved", value: "individual", source: "signal" });
+    assert.deepEqual(result.context.hasOtherPaidStaff, { status: "resolved", value: expected, source: "signal" });
+    assert.deepEqual(result.trace.hasOtherPaidStaff.supportingSignals, ["q2_other_staff"]);
+  }
+  const unknown = resolve({ ...base, q2_entity: "individual", q2_other_staff: "unknown" }, BANK);
+  assert.deepEqual(unknown.context.entity, { status: "resolved", value: "individual", source: "signal" });
+  assert.deepEqual(unknown.context.hasOtherPaidStaff, { status: "unresolved", reason: "declared_unknown", candidates: [] });
+  const notAsked = resolve({ ...base, q2_entity: "individual", q2_other_staff: undefined }, BANK);
+  assert.deepEqual(notAsked.context.hasOtherPaidStaff, { status: "unresolved", reason: "not_asked", candidates: [] });
 });
 test("QA-03B A: desconocido conserva incertidumbre declarada sin volverse no o no aplica", () => {
   const unresolved = resolve({ ...base, q2_entity: "unknown", q2_has_customers: "unknown", q2_other_staff: "unknown", q2_sector: "unknown" }, BANK);
@@ -76,6 +93,30 @@ test("QA-03B B: herramientas TIC se preguntan solo en operación relevante y no 
   assert.equal(toolsQuestion.options.find(option => option.value === "none")?.kind, "none");
   assert.equal(toolsQuestion.options.find(option => option.value === "not_needed")?.kind, "not_applicable");
   assert.equal(toolsQuestion.options.find(option => option.value === "unknown")?.kind, "unknown");
+  const none = resolve({ ...answers, q2_digital_tools_in_use: ["none"] }, BANK);
+  assert.deepEqual(none.context.digitalToolUse, { status: "resolved", value: "none", source: "signal" });
+  const notNeeded = resolve({ ...answers, q2_digital_tools_in_use: ["not_needed"] }, BANK);
+  assert.deepEqual(notNeeded.context.digitalToolUse, { status: "resolved", value: "not_needed", source: "signal" });
+  const unknown = resolve({ ...answers, q2_digital_tools_in_use: ["unknown"] }, BANK);
+  assert.deepEqual(unknown.context.digitalToolUse, { status: "unresolved", reason: "declared_unknown", candidates: [] });
+  const notAsked = resolve(answers, BANK);
+  assert.deepEqual(notAsked.context.digitalToolUse, { status: "unresolved", reason: "not_asked", candidates: [] });
+  const describedNone = narrate({ answers: { ...answers, q2_digital_tools_in_use: ["none"] } }).narrative.executiveSummary.find(block => block.id === "summary:digital-tools");
+  assert.match(describedNone?.text ?? "", /no usas herramientas digitales/);
+  assert.deepEqual(describedNone?.sourceQuestionIds, ["q2_digital_tools_in_use"]);
+  assert.equal(describedNone?.dimension, undefined, "el resumen descriptivo no se presenta como capacidad evaluada");
+  const describedNotNeeded = narrate({ answers: { ...answers, q2_digital_tools_in_use: ["not_needed"] } }).narrative.executiveSummary.find(block => block.id === "summary:digital-tools");
+  assert.match(describedNotNeeded?.text ?? "", /no consideras necesarias herramientas digitales/);
+  const describedTools = narrate({ answers: { ...answers, q2_digital_tools_in_use: ["documents_records", "customer_followup"] } }).narrative.executiveSummary.find(block => block.id === "summary:digital-tools");
+  assert.match(describedTools?.text ?? "", /Documentos o tablas.*Herramientas para registrar consultas/);
+  assert.equal(describedTools?.dimension, undefined, "la lista de herramientas no se presenta como capacidad evaluada");
+  for (const value of [["none"], ["not_needed"], ["unknown"]]) {
+    assert.deepEqual(score({ answers }).dimensions, score({ answers: { ...answers, q2_digital_tools_in_use: value } }).dimensions);
+    assert.deepEqual(recommend({ answers }).recommendations, recommend({ answers: { ...answers, q2_digital_tools_in_use: value } }).recommendations);
+  }
+  for (const value of [["unknown"], undefined]) {
+    assert.equal(narrate({ answers: { ...answers, q2_digital_tools_in_use: value } }).narrative.executiveSummary.some(block => block.id === "summary:digital-tools"), false);
+  }
   const paused = resolve({ ...answers, q2_operational_status: "paused" }, BANK);
   assert.ok(!paused.eligibleQuestionIds.includes("q2_digital_tools_in_use"));
   assert.deepEqual(score({ answers }).dimensions, score({ answers: { ...answers, q2_digital_tools_in_use: ["documents_records"] } }).dimensions);

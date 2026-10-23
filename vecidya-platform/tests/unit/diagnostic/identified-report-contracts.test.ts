@@ -64,7 +64,7 @@ test("identified QA-03B request accepts only its exact session, answer and summa
     diagnosticIdentity: CANDIDATE_RESULT_IDENTITY_V3,
   };
   const qaRequest = () => ({
-    replayVersion: "qa03b-worker-replay-v3",
+    replayVersion: "qa03b-worker-replay-v4",
     engineIdentity: CANDIDATE_RESULT_IDENTITY_V3,
     answerSchema: ANSWER_SCHEMA_ID,
     questionBank: QUESTION_BANK_ID,
