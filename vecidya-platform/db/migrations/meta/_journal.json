@@ -169,6 +169,13 @@
       "when": 1792725860516,
       "tag": "0023_business-profile-publication-draft-revision-token",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "6",
+      "when": 1792784232869,
+      "tag": "0024_business-offerings-faq",
+      "breakpoints": true
     }
   ]
 }

@@ -6,9 +6,11 @@ import { listBusinessHoursForOrganization, type BusinessHoursEntry } from "./bus
 import { getBusinessProfileForOrganization, type BusinessProfileInput } from "./business-profile.server";
 import { getBusinessProfilePublicationIssues } from "../business-profile-rules";
 import { getMiniWebConfigurationForOrganization } from "./miniweb.server";
-import type { MiniWebConfiguration } from "../../app/features/miniweb/registry";
+import { getMiniWebContentForOrganization } from "./miniweb-content.server";
+import { ensureAvailableMiniWebModules, type MiniWebConfiguration } from "../../app/features/miniweb/registry";
+import { validateBusinessFaqItems, validateBusinessOfferings, type BusinessFaqItem, type BusinessOffering } from "../../app/features/miniweb/content";
 
-export const BUSINESS_PUBLICATION_SCHEMA_VERSION = 1;
+export const BUSINESS_PUBLICATION_SCHEMA_VERSION = 2;
 type BatchItem = ReturnType<Database["$client"]["prepare"]>;
 
 export type BusinessPublicationSnapshot = {
@@ -16,6 +18,8 @@ export type BusinessPublicationSnapshot = {
   profile: BusinessProfileInput & { logoUrl: string | null };
   hours: BusinessHoursEntry[];
   configuration: MiniWebConfiguration;
+  offerings: BusinessOffering[];
+  faqs: BusinessFaqItem[];
 };
 
 export function serializeBusinessPublicationSnapshot(snapshot: BusinessPublicationSnapshot) {
@@ -23,16 +27,25 @@ export function serializeBusinessPublicationSnapshot(snapshot: BusinessPublicati
 }
 
 export function parseBusinessPublicationSnapshot(value: string | null, schemaVersion: number | null): BusinessPublicationSnapshot | null {
-  if (!value || schemaVersion !== BUSINESS_PUBLICATION_SCHEMA_VERSION) return null;
+  if (!value || (schemaVersion !== 1 && schemaVersion !== BUSINESS_PUBLICATION_SCHEMA_VERSION)) return null;
   try {
     const parsed: unknown = JSON.parse(value);
     if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
+    const isLegacySnapshot = Number(schemaVersion) === 1;
     const snapshot = parsed as Partial<BusinessPublicationSnapshot>;
-    if (snapshot.schemaVersion !== BUSINESS_PUBLICATION_SCHEMA_VERSION
+    if (snapshot.schemaVersion !== schemaVersion
       || !snapshot.profile || typeof snapshot.profile !== "object"
       || !Array.isArray(snapshot.hours)
       || !snapshot.configuration || typeof snapshot.configuration !== "object") return null;
-    return snapshot as BusinessPublicationSnapshot;
+    const offerings = validateBusinessOfferings(isLegacySnapshot ? [] : snapshot.offerings);
+    const faqs = validateBusinessFaqItems(isLegacySnapshot ? [] : snapshot.faqs);
+    return {
+      ...snapshot,
+      schemaVersion: BUSINESS_PUBLICATION_SCHEMA_VERSION,
+      configuration: ensureAvailableMiniWebModules(snapshot.configuration),
+      offerings,
+      faqs,
+    } as BusinessPublicationSnapshot;
   } catch {
     return null;
   }
@@ -42,6 +55,8 @@ export function createBusinessPublicationSnapshot(
   profile: NonNullable<Awaited<ReturnType<typeof getBusinessProfileForOrganization>>>,
   hours: BusinessHoursEntry[],
   configuration: MiniWebConfiguration,
+  offerings: BusinessOffering[] = [],
+  faqs: BusinessFaqItem[] = [],
 ): BusinessPublicationSnapshot {
   return {
     schemaVersion: BUSINESS_PUBLICATION_SCHEMA_VERSION,
@@ -66,6 +81,8 @@ export function createBusinessPublicationSnapshot(
     },
     hours,
     configuration,
+    offerings,
+    faqs,
   };
 }
 
@@ -135,8 +152,11 @@ export async function ensureLegacyBusinessPublicationSnapshot(database: Database
   const profile = await getBusinessProfileForOrganization(database, organizationId);
   if (profile?.status !== "published") return state ?? null;
   const hours = await listBusinessHoursForOrganization(database, organizationId);
-  const miniweb = await getMiniWebConfigurationForOrganization(database, organizationId, profile, hours);
-  const snapshot = createBusinessPublicationSnapshot(profile, hours, miniweb.publishedConfiguration);
+  const [miniweb, content] = await Promise.all([
+    getMiniWebConfigurationForOrganization(database, organizationId, profile, hours),
+    getMiniWebContentForOrganization(database, organizationId),
+  ]);
+  const snapshot = createBusinessPublicationSnapshot(profile, hours, miniweb.publishedConfiguration, content.offerings, content.faqs);
   const serialized = serializeBusinessPublicationSnapshot(snapshot);
   const now = Date.now();
   if (!state) {
@@ -199,7 +219,8 @@ export async function publishBusinessPublicationForOrganization(database: Databa
   if (issues.length) throw new Response(`Completa estos campos antes de publicar: ${issues.join(", ")}.`, { status: 400 });
 
   const miniweb = await getMiniWebConfigurationForOrganization(database, organizationId, profile, hours);
-  const snapshot = createBusinessPublicationSnapshot(profile, hours, miniweb.draftConfiguration);
+  const content = await getMiniWebContentForOrganization(database, organizationId);
+  const snapshot = createBusinessPublicationSnapshot(profile, hours, miniweb.draftConfiguration, content.offerings, content.faqs);
   const serialized = serializeBusinessPublicationSnapshot(snapshot);
   const now = new Date();
   const publishToken = crypto.randomUUID();

@@ -3,6 +3,7 @@ import { createDatabase } from "../../db/client.server";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
 import { getMiniWebConfigurationForOrganization, saveMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
+import { getMiniWebContentForOrganization } from "../../db/queries/miniweb-content.server";
 import { createBusinessPublicationSnapshot, getBusinessPublicationSnapshotForOrganization, isBusinessPublicationCurrent, readConsistentBusinessDraft, publishBusinessPublicationForOrganization } from "../../db/queries/business-publication.server";
 import { hasActiveLicenseForOrganizationOwner } from "../../db/queries/business-profile.server";
 import { AdminShell } from "../components/admin-shell";
@@ -21,12 +22,13 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   if (!organization) throw new Response("Organización no encontrada", { status: 404 });
   const { data: state, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
     const [profile, hours] = await Promise.all([getBusinessProfileForOrganization(database, organization.id), listBusinessHoursForOrganization(database, organization.id)]);
-    const [configuration, publication] = await Promise.all([
+    const [configuration, publication, content] = await Promise.all([
       getMiniWebConfigurationForOrganization(database, organization.id, profile, hours),
       getBusinessPublicationSnapshotForOrganization(database, organization.id),
+      getMiniWebContentForOrganization(database, organization.id),
     ]);
     const currentSnapshot = profile?.status === "published"
-      ? createBusinessPublicationSnapshot(profile, hours, configuration.draftConfiguration)
+      ? createBusinessPublicationSnapshot(profile, hours, configuration.draftConfiguration, content.offerings, content.faqs)
       : null;
     return {
       draftConfiguration: configuration.draftConfiguration,

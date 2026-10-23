@@ -5,9 +5,12 @@ import { miniWebModule, miniWebSite } from "../schema";
 import type { BusinessHoursEntry } from "./business-hours.server";
 import { getBusinessProfileForOrganization } from "./business-profile.server";
 import { commitBusinessDraftMutation, ensureLegacyBusinessPublicationSnapshot, getBusinessDraftRevision, publishBusinessPublicationForOrganization } from "./business-publication.server";
+import { buildMiniWebContentReplacementStatements } from "./miniweb-content.server";
+import type { BusinessFaqItem, BusinessOffering } from "../../app/features/miniweb/content";
 import {
   buildSafeMiniWebConfiguration,
   buildVirtualMiniWebConfiguration,
+  ensureAvailableMiniWebModules,
   parseMiniWebConfigurationJson,
   serializeMiniWebConfiguration,
   validateMiniWebDraft,
@@ -66,7 +69,7 @@ export async function getMiniWebConfigurationForOrganization(
   });
   let draftConfiguration: MiniWebConfiguration;
   try {
-    draftConfiguration = validateMiniWebDraft({
+    draftConfiguration = ensureAvailableMiniWebModules(validateMiniWebDraft({
       templateKey: site.templateKey,
       templateVersion: site.templateVersion,
       layoutVariant: site.layoutVariant,
@@ -78,7 +81,7 @@ export async function getMiniWebConfigurationForOrganization(
         layoutVariant: row.layoutVariant,
         settings: row.settingsJson === null ? null : JSON.parse(row.settingsJson),
       })),
-    });
+    }));
   } catch {
     draftConfiguration = virtual;
   }
@@ -101,6 +104,7 @@ export async function saveMiniWebConfigurationForOrganization(
   draftInput: unknown,
   audit?: { actorUserId: string },
   expectedRevision?: number,
+  content?: { offerings: BusinessOffering[]; faqs: BusinessFaqItem[] },
 ) {
   const configuration = validateMiniWebDraft(draftInput);
   await ensureLegacyBusinessPublicationSnapshot(database, organizationId);
@@ -147,6 +151,7 @@ export async function saveMiniWebConfigurationForOrganization(
         crypto.randomUUID(), audit.actorUserId, "organization.miniweb.save", "miniweb_site", site.id, organizationId,
         JSON.stringify({ templateKey: configuration.templateKey, modules: configuration.modules.map(({ type, enabled, sortOrder }) => ({ type, enabled, sortOrder })) }), now.getTime(), organizationId, nextRevision, token,
       )] : []),
+    ...(content ? buildMiniWebContentReplacementStatements(database, organizationId, content.offerings, content.faqs, nextRevision, token) : []),
   ];
   const state = await commitBusinessDraftMutation(database, organizationId, currentRevision, statements);
   return { configuration, draftRevision: state.draftRevision };

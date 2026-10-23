@@ -2,7 +2,7 @@
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)
 
-**Observación de código, sin HTTP ni explotación demostrada:** el JSON-LD de `app/routes/public-business-profile.tsx` construye la URL pública con `origin` de `request.url`, aunque `publicMeta` ya declara el origen canónico. El agente responsable de Mi Vecidya debe verificar en su siguiente checkpoint si corresponde usar el origen oficial compartido, revisar efectos sobre test de slug/perfil y actualizar la cobertura sin tocar permisos ni publicación accidental. No se autoriza que otro agente reescriba el flujo MiniWeb por este hallazgo.
+**Resuelto en APP-MINI-02B (CODE; sin prueba HTTP):** JSON-LD usa `publicSiteUrl()` y el origen canónico `PUBLIC_SITE_ORIGIN`, nunca el Host de la petición. No cambia guards, publicación ni URL pública.
 
 
 ### APRENDE-GESTIÓN-03 — educación para decidir, supervisar y mejorar (2026-10-20)
@@ -106,8 +106,8 @@ Cuadra USD 39/mes no incluye ni requiere GHL; Barrio USD 59/mes inicia CRM GHL y
 | **APP-MINI-01C** | Cerrar baseline: E2E, HTTP público y capturas dashboard/editor/página en desktop/mobile | Cerrado técnicamente en local; no desplegado |
 | **APP-MINI-02A** | Core modular: registries versionados, config draft/published, default virtual legacy, compositor y controles básicos | Código local implementado; el E2E MiniWeb `33/33 PASS` se ejecutó sobre D1 aislada con la cadena `0000`–`0019`. El D1 compartido del checkout original y el remoto no se tocaron; no deploy |
 | **PLATFORM-ADMIN-GLOBAL** | Control plane interno auditado: operaciones cross-org, creación/invitación de usuarios, roles existentes, settings/MiniWeb y asignaciones de capacitación | PR #39 integrado en `origin/main@475880bdbdc20922c92177478efaef793168ee15`. Certificación focal Worker/D1 efímera PASS; unitarias 1649/1649, typecheck/build y migraciones `0000–0021`. `REAL_EMAIL_NOT_VERIFIED` sigue diferido como gate de release, no PASS. Sin impersonación, `closed`, deploy ni D1 remota. |
-| **APP-CLIENTE-00-PUBLISH-001** | Snapshot público versionado para publicar atómicamente perfil, horarios y composición MiniWeb | PR #42 integrado en `origin/main@4d6107730e98e1dda4c333c9c565e40645213ff8`; R2 certificado localmente (E2E 64/64, unitarias 1655/1655, typecheck/build y D1 `0000–0023`). Dos P2 post-merge corregidos en `fix/miniweb-review-p2`, commit `774d162`; E2E 69/69 y validaciones PASS. PR #45 abierto/mergeable; Codex sin hallazgos mayores en HEAD `9f427e2`; sin checks CI, D1 remota ni deploy. |
-| **APP-MINI-02B** | Crear `business_offering` público independiente; servicios/productos del negocio y FAQ | Diseñado; implementación no iniciada. Siguiente tras integrar la corrección de los P2 post-merge; incorporar ofertas/FAQ al contrato de publicación. No inventario transaccional, pagos, reservas, leads ni oportunidades. |
+| **APP-CLIENTE-00-PUBLISH-001** | Snapshot público versionado para publicar atómicamente perfil, horarios y composición MiniWeb | PR #42 integrado por `4d61077`; los dos P2 post-merge se corrigieron y PR #45 se integró por `85ba1e0`. Revisión Codex sin hallazgos mayores. Certificación local de #45: E2E 69/69, unitarias 1655/1655, typecheck/build y D1 efímera `0000–0023`; sin D1 remota ni deploy. |
+| **APP-MINI-02B** | Crear `business_offering` público independiente; servicios/productos del negocio y FAQ | PR #49 draft sobre `origin/main@038750a`: modelo por organización, edición protegida, preview, snapshot v2 y migración `0024`. Typecheck/build PASS; validación funcional pendiente. No inventario transaccional, pagos, reservas, leads ni oportunidades. |
 | **APP-MINI-02C** | R2, referencias/metadatos, portada/galería e imagen/video limitado | Requiere modelo de medios, permisos y subida segura; blobs fuera de D1 |
 | **APP-MINI-02D** | Editor MiniWeb completo: Diseño / Secciones / Contenido / Preview / Publicar | Después de 02B/02C; no convertir `business-profile.tsx` en formulario monolítico |
 | **APP-MINI-02E** | Vecindario como índice/buscador y fichas basadas en MiniWeb | Categoría, especialidad/tags, ubicación, modalidad, ofertas y módulos; sin duplicar fuente comercial |
@@ -135,14 +135,14 @@ Cuadra USD 39/mes no incluye ni requiere GHL; Barrio USD 59/mes inicia CRM GHL y
 | --- | --- | --- |
 | **APP-MINI-01C** | Cerrar baseline: E2E, HTTP público y capturas dashboard/editor/página en desktop/mobile | Cerrado técnicamente en local; no desplegado |
 | **APP-MINI-02A** | Core modular: registries versionados, config draft/published, default virtual legacy, compositor y controles básicos | Código y E2E local implementados. Migration ledger local 0016/0017 sigue pendiente; no D1 remota ni deploy. No crear filas legacy en masa |
-| **APP-MINI-02B** | Crear `business_offering` público independiente; servicios/productos del negocio y FAQ | Siguiente checkpoint tras integrar la corrección de los dos P2 post-merge; añadir sus datos al contrato de publicación. No inventario transaccional, pagos, reservas, leads ni oportunidades |
+| **APP-MINI-02B** | Crear `business_offering` público independiente; servicios/productos del negocio y FAQ | Implementación en curso desde `origin/main@85ba1e0`; ofertas/FAQ ya forman parte del contrato de publicación candidato. No inventario transaccional, pagos, reservas, leads ni oportunidades |
 | **APP-MINI-02C** | R2, referencias/metadatos, portada/galería e imagen/video limitado | Requiere modelo de medios, permisos y subida segura; blobs fuera de D1 |
 | **APP-MINI-02D** | Editor MiniWeb completo: Diseño / Secciones / Contenido / Preview / Publicar | Después de 02B/02C; no convertir `business-profile.tsx` en formulario monolítico |
 | **APP-MINI-02E** | Vecindario como índice/buscador y fichas basadas en MiniWeb | Categoría, especialidad/tags, ubicación, modalidad, ofertas y módulos; sin duplicar fuente comercial |
 | **APP-MINI-03** | Presentar licencias, derechos y estados reales | Autorización separada; no checkout ni cobro automático |
 | **GHL-BARRIO-01** | Evaluar conexión/entrada GHL solo para Barrio/Ciudad | Cuenta, permisos/scopes, tenant mapping y autorización reales; fase independiente |
 
-Todos los bloques conservan una organización/negocio/MiniWeb, URL pública `/vecindario/:slug`, gobernanza, aislamiento tenant-scoped y frontera entre oferta del negocio y servicio Vecidya contratado. No crear CRM en Vecidya ni editor Wix/HTML/CSS libre. No tocar Diagnóstico o Aprende en esta línea. No publicar, desplegar ni modificar D1 remota sin autorización explícita. APP-MINI-02B no se inicia automáticamente.
+Todos los bloques conservan una organización/negocio/MiniWeb, URL pública `/vecindario/:slug`, gobernanza, aislamiento tenant-scoped y frontera entre oferta del negocio y servicio Vecidya contratado. No crear CRM en Vecidya ni editor Wix/HTML/CSS libre. No tocar Diagnóstico o Aprende en esta línea. No publicar, desplegar ni modificar D1 remota sin autorización explícita.
 
 ## FUNNEL-01C.2 — estado del checkpoint autorizado (2026-10-14)
 

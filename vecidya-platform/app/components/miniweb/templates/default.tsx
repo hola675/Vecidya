@@ -7,9 +7,12 @@ import { ContactModule } from "../modules/contact";
 import { HeroModule } from "../modules/hero";
 import { HoursModule } from "../modules/hours";
 import { LocationModule } from "../modules/location";
+import { FaqModule } from "../modules/faq";
+import { OfferingsModule } from "../modules/offerings";
 import type { PublicBusinessProfile } from "../../public-business-profile-view";
+import type { BusinessFaqItem, BusinessOffering } from "../../../features/miniweb/content";
 
-type ModuleProps = { profile: PublicBusinessProfile; hours: BusinessHoursEntry[]; preview: boolean; contactEnabled: boolean };
+type ModuleProps = { profile: PublicBusinessProfile; hours: BusinessHoursEntry[]; offerings: BusinessOffering[]; faqs: BusinessFaqItem[]; preview: boolean; contactEnabled: boolean };
 type ModuleRenderer = (props: ModuleProps) => ReactNode;
 
 const moduleRenderers: Partial<Record<MiniWebModuleConfig["type"], ModuleRenderer>> = {
@@ -18,13 +21,18 @@ const moduleRenderers: Partial<Record<MiniWebModuleConfig["type"], ModuleRendere
   contact: ({ profile, preview }) => <ContactModule profile={profile} preview={preview} />,
   hours: ({ hours }) => <HoursModule hours={hours} />,
   location: ({ profile }) => <LocationModule profile={profile} />,
+  services: ({ offerings }) => <OfferingsModule offerings={offerings} kind="service" />,
+  products: ({ offerings }) => <OfferingsModule offerings={offerings} kind="product" />,
+  faq: ({ faqs }) => <FaqModule items={faqs} />,
 };
 
-export function DefaultMiniWebTemplate({ configuration, modules, profile, hours, preview = false }: {
+export function DefaultMiniWebTemplate({ configuration, modules, profile, hours, offerings, faqs, preview = false }: {
   configuration: MiniWebConfiguration;
   modules: MiniWebModuleConfig[];
   profile: PublicBusinessProfile;
   hours: BusinessHoursEntry[];
+  offerings: BusinessOffering[];
+  faqs: BusinessFaqItem[];
   preview?: boolean;
 }) {
   const contactEnabled = modules.some((module) => module.type === "contact");
@@ -36,7 +44,7 @@ export function DefaultMiniWebTemplate({ configuration, modules, profile, hours,
     if (!renderer) return null;
     return (
       <div className={`miniweb-template__module miniweb-template__module--${module.type}`} data-miniweb-module={module.type} key={module.type}>
-        {renderer({ profile, hours, preview, contactEnabled })}
+        {renderer({ profile, hours, offerings, faqs, preview, contactEnabled })}
       </div>
     );
   };

@@ -8,6 +8,8 @@ import {
   getMiniWebConfigurationForOrganization,
   saveMiniWebConfigurationForOrganization,
 } from "../../db/queries/miniweb.server";
+import { getMiniWebContentForOrganization } from "../../db/queries/miniweb-content.server";
+import { MAX_BUSINESS_CONTENT_BYTES, validateBusinessFaqItems, validateBusinessOfferings } from "../features/miniweb/content";
 import { MAX_MINIWEB_CONFIGURATION_BYTES, validateMiniWebDraft } from "../features/miniweb/registry";
 import { toMiniWebPublicProfile } from "../features/miniweb/public-model";
 import { requireOrganizationPermission } from "../../server/auth/authorization.server";
@@ -34,13 +36,16 @@ async function getOrganizationContext(context: Route.LoaderArgs["context"], requ
 export async function loader({ context, params, request }: Route.LoaderArgs) {
   const { env, organization, database } = await getOrganizationContext(context, request, params.organizationId);
   const membership = await requireOrganizationPermission(env, request, organization.id, "business-profile:read");
-  const { data: { profile, hours, configuration }, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
+  const { data: { profile, hours, configuration, content }, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
     const [profile, hours] = await Promise.all([
       getBusinessProfileForOrganization(database, organization.id),
       listBusinessHoursForOrganization(database, organization.id),
     ]);
-    const configuration = await getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
-    return { profile, hours, configuration };
+    const [configuration, content] = await Promise.all([
+      getMiniWebConfigurationForOrganization(database, organization.id, profile, hours),
+      getMiniWebContentForOrganization(database, organization.id),
+    ]);
+    return { profile, hours, configuration, content };
   });
   const governance = profile ? await getBusinessProfileGovernance(database, profile.id) : null;
 
@@ -50,6 +55,7 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
     publishedConfiguration: configuration.publishedConfiguration,
     profile: toMiniWebPublicProfile(profile, governance?.verificationStatus ?? "unverified"),
     hours: hours.map(({ dayOfWeek, isClosed, opensAt, closesAt }) => ({ dayOfWeek, isClosed, opensAt, closesAt })),
+    ...content,
     role: membership.role,
     draftRevision,
   });
@@ -58,11 +64,12 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
 export async function action({ context, params, request }: Route.ActionArgs) {
   const { env, organization, database } = await getOrganizationContext(context, request, params.organizationId);
   const contentLength = Number(request.headers.get("content-length") ?? 0);
-  if (Number.isFinite(contentLength) && contentLength > MAX_MINIWEB_CONFIGURATION_BYTES + 256) {
+  const maxRequestBytes = MAX_BUSINESS_CONTENT_BYTES + MAX_MINIWEB_CONFIGURATION_BYTES + 1024;
+  if (Number.isFinite(contentLength) && contentLength > maxRequestBytes) {
     return Response.json({ error: "La solicitud excede el tamaño permitido." }, { status: 413 });
   }
   const text = await request.text();
-  if (new TextEncoder().encode(text).byteLength > MAX_MINIWEB_CONFIGURATION_BYTES + 256) {
+  if (new TextEncoder().encode(text).byteLength > maxRequestBytes) {
     return Response.json({ error: "La solicitud excede el tamaño permitido." }, { status: 413 });
   }
 
@@ -72,7 +79,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   } catch {
     return badRequest("El cuerpo JSON no es válido.");
   }
-  if (!isRecord(body) || Object.keys(body).some((key) => !["intent", "configuration", "draftRevision"].includes(key))) {
+  if (!isRecord(body) || Object.keys(body).some((key) => !["intent", "configuration", "offerings", "faqs", "draftRevision"].includes(key))) {
     return badRequest("La solicitud MiniWeb tiene campos no permitidos.");
   }
 
@@ -89,13 +96,19 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   try {
     if (intent === "save") {
       const configuration = validateMiniWebDraft(body.configuration);
-      const saved = await saveMiniWebConfigurationForOrganization(database, organization.id, profile, hours, configuration, undefined, Number(expectedRevision));
-      return Response.json({ ok: true, configuration: saved.configuration, draftRevision: saved.draftRevision });
+      const content = body.offerings === undefined && body.faqs === undefined
+        ? undefined
+        : { offerings: validateBusinessOfferings(body.offerings), faqs: validateBusinessFaqItems(body.faqs) };
+      const saved = await saveMiniWebConfigurationForOrganization(database, organization.id, profile, hours, configuration, undefined, Number(expectedRevision), content);
+      return Response.json({ ok: true, configuration: saved.configuration, draftRevision: saved.draftRevision, ...(content ?? {}) });
     }
     if (!await hasActiveLicenseForOrganizationOwner(database, organization.id)) return Response.json({ error: "Necesitas una licencia Vecidya activa para publicar en Vecindario." }, { status: 400 });
     const publication = await publishBusinessPublicationForOrganization(database, organization.id, Number(expectedRevision));
-    const published = await getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
-    return Response.json({ ok: true, configuration: published.draftConfiguration, draftRevision: publication.state.draftRevision });
+    const [published, content] = await Promise.all([
+      getMiniWebConfigurationForOrganization(database, organization.id, profile, hours),
+      getMiniWebContentForOrganization(database, organization.id),
+    ]);
+    return Response.json({ ok: true, configuration: published.draftConfiguration, ...content, draftRevision: publication.state.draftRevision });
   } catch (error) {
     if (error instanceof Response && (error.status === 400 || error.status === 409)) return Response.json({ error: await error.text() }, { status: error.status });
     if (error instanceof TypeError) return badRequest(error.message);

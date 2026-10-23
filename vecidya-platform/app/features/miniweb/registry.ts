@@ -121,12 +121,12 @@ const definitions: Record<MiniWebModuleType, Omit<MiniWebModuleDefinition, "type
   about: { version: 1, label: "Acerca del negocio", description: "Descripción del negocio declarada en el perfil.", icon: "file-text", source: "business_profile", supportedTemplates: commonTemplate, configurable: false, reorderable: true, required: false, availability: "available", layoutVariants: ["standard"] },
   contact: { version: 1, label: "Contacto", description: "Canales directos configurados por el negocio.", icon: "phone", source: "business_profile", supportedTemplates: commonTemplate, configurable: false, reorderable: true, required: false, availability: "available", layoutVariants: ["standard"] },
   hours: { version: 1, label: "Horarios", description: "Horarios de atención existentes.", icon: "clock", source: "business_hours", supportedTemplates: commonTemplate, configurable: false, reorderable: true, required: false, availability: "available", layoutVariants: ["standard"] },
-  services: { version: 1, label: "Servicios ofrecidos", description: "Ofertas públicas del negocio; se habilitarán con APP-MINI-02B.", icon: "spark", source: "business_offering", supportedTemplates: ["vecidya-default", "services-studio", "professional-profile"], configurable: true, reorderable: true, required: false, availability: "planned", layoutVariants: ["standard"] },
+  services: { version: 1, label: "Servicios ofrecidos", description: "Servicios que el negocio decide presentar en su MiniWeb.", icon: "spark", source: "business_offering", supportedTemplates: ["vecidya-default"], configurable: true, reorderable: true, required: false, availability: "available", layoutVariants: ["standard"] },
   gallery: { version: 1, label: "Galería", description: "Medios gestionados con almacenamiento externo en APP-MINI-02C.", icon: "image", source: "r2_media", supportedTemplates: ["vecidya-default", "services-studio", "catalog-store", "gastronomy-table", "professional-profile"], configurable: true, reorderable: true, required: false, availability: "planned", layoutVariants: ["standard"] },
   location: { version: 1, label: "Ubicación y modalidad", description: "Ciudad, país, modalidad y área de atención existentes.", icon: "map-pin", source: "business_profile", supportedTemplates: commonTemplate, configurable: false, reorderable: true, required: false, availability: "available", layoutVariants: ["standard"] },
-  products: { version: 1, label: "Productos", description: "Contenido comercial estructurado de checkpoints posteriores.", icon: "package", source: "business_offering", supportedTemplates: ["catalog-store", "gastronomy-table"], configurable: true, reorderable: true, required: false, availability: "planned", layoutVariants: ["standard"] },
+  products: { version: 1, label: "Productos", description: "Productos que el negocio decide presentar en su MiniWeb.", icon: "package", source: "business_offering", supportedTemplates: commonTemplate, configurable: true, reorderable: true, required: false, availability: "available", layoutVariants: ["standard"] },
   articles: { version: 1, label: "Artículos", description: "Contenido editorial estructurado futuro.", icon: "newspaper", source: "business_article", supportedTemplates: ["vecidya-default", "professional-profile"], configurable: true, reorderable: true, required: false, availability: "planned", layoutVariants: ["standard"] },
-  faq: { version: 1, label: "Preguntas frecuentes", description: "Contenido estructurado futuro.", icon: "circle-help", source: "business_faq", supportedTemplates: ["vecidya-default", "services-studio", "professional-profile"], configurable: true, reorderable: true, required: false, availability: "planned", layoutVariants: ["standard"] },
+  faq: { version: 1, label: "Preguntas frecuentes", description: "Respuestas que ayudan a las personas a conocer el negocio.", icon: "circle-help", source: "business_faq", supportedTemplates: commonTemplate, configurable: true, reorderable: true, required: false, availability: "available", layoutVariants: ["standard"] },
   team: { version: 1, label: "Equipo", description: "Perfiles estructurados del equipo en un checkpoint posterior.", icon: "users", source: "business_team", supportedTemplates: ["services-studio", "gastronomy-table", "professional-profile"], configurable: true, reorderable: true, required: false, availability: "planned", layoutVariants: ["standard"] },
   certifications: { version: 1, label: "Certificaciones", description: "Credenciales estructuradas futuras.", icon: "badge-check", source: "business_certification", supportedTemplates: ["professional-profile"], configurable: true, reorderable: true, required: false, availability: "planned", layoutVariants: ["standard"] },
   testimonials: { version: 1, label: "Testimonios", description: "Testimonios estructurados futuros.", icon: "quote", source: "business_testimonial", supportedTemplates: ["services-studio", "professional-profile"], configurable: true, reorderable: true, required: false, availability: "planned", layoutVariants: ["standard"] },
@@ -249,10 +249,28 @@ export function serializeMiniWebConfiguration(value: unknown) {
 export function parseMiniWebConfigurationJson(value: unknown): MiniWebConfiguration | null {
   if (typeof value !== "string" || new TextEncoder().encode(value).byteLength > MAX_MINIWEB_CONFIGURATION_BYTES) return null;
   try {
-    return validateMiniWebDraft(JSON.parse(value));
+    return ensureAvailableMiniWebModules(validateMiniWebDraft(JSON.parse(value)));
   } catch {
     return null;
   }
+}
+
+export function ensureAvailableMiniWebModules(configuration: MiniWebConfiguration): MiniWebConfiguration {
+  const template = MINIWEB_TEMPLATE_REGISTRY[configuration.templateKey];
+  if (!template) return configuration;
+  const present = new Set(configuration.modules.map((module) => module.type));
+  const nextOrder = configuration.modules.reduce((max, module) => Math.max(max, module.sortOrder), -1) + 1;
+  const additions = template.supportedModules
+    .filter((type) => MINIWEB_MODULE_REGISTRY[type].availability === "available" && !present.has(type))
+    .map((type, index) => ({
+      type,
+      moduleVersion: MINIWEB_MODULE_REGISTRY[type].version,
+      enabled: false,
+      sortOrder: nextOrder + index,
+      layoutVariant: MINIWEB_MODULE_REGISTRY[type].layoutVariants[0],
+      settings: null,
+    }));
+  return additions.length ? validateMiniWebDraft({ ...configuration, modules: [...configuration.modules, ...additions] }) : configuration;
 }
 
 export type MiniWebProfileSource = {

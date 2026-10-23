@@ -1,5 +1,11 @@
 # Arquitectura de Vecidya
 
+## APP-MINI-02B — ofertas del negocio y preguntas frecuentes (2026-10-23; implementación local)
+
+Las ofertas de un negocio se modelan separadas del catálogo de servicios de Vecidya: `business_offering` guarda servicios o productos escritos por la organización, y `business_faq` guarda sus preguntas/respuestas. Ambas tablas filtran por organización, se guardan junto con la configuración MiniWeb mediante una sola revisión CAS y no crean pedidos, pagos, reservas ni CRM.
+
+El snapshot público pasa a versión 2 e incluye perfil, horarios, configuración, ofertas y FAQ. Snapshots v1 se leen con ofertas/FAQ vacías y módulos nuevos desactivados; no se toma contenido de borrador para completar una publicación histórica. La UI permite editar y previsualizar antes de guardar/publicar; el renderer anónimo solo recibe el snapshot publicado y muestra elementos activos de módulos habilitados. `services`, `products` y `faq` están disponibles en `vecidya-default`. Implementación local sin certificación funcional aún; ver `STATUS.md`, `DATABASE.md` y `TESTING.md`.
+
 ## UX-COHERENCE-03 — sistema de experiencia de las tres superficies (2026-10-19; pendiente de QA)
 
 Una identidad compartida no implica unificar permisos ni intención de usuario. **Web** descubre y orienta; **Mi Vecidya** trabaja en la organización activa; **Administración interna** consulta/gestiona operaciones de plataforma como actor `platform_admin`. Las guías editoriales de `JourneyGuide` no ejecutan acciones ni reescriben estados de dominio; los links solo navegan a rutas ya existentes y protegidas. Las clases `experience-*` utilizan tokens `app.css`, tipografía Arial y símbolo oficial `publicAssets.brand.symbol3d`; mantienen titulares, contrastes, ayudas y orden de lectura. Variantes `public`/`client`/`admin` comparten estilo, pero el contexto visual y el copy respetan sus audiencias.

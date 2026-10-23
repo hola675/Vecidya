@@ -5599,6 +5599,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .miniweb-editor__preview .miniweb-template__sections { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); }
 .miniweb-editor__empty-preview { margin-top: 1rem; border: 1px dashed var(--line); border-radius: var(--radius-md); padding: 1.5rem; color: var(--muted); text-align: center; }
 .miniweb-editor__publication-state { margin: 1rem 0 0; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
+.miniweb-content-editor { display: grid; gap: 0.9rem; min-width: 0; }
+.miniweb-content-editor__item { display: grid; gap: 0.8rem; min-width: 0; margin: 0; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; }
+.miniweb-content-editor__item legend { padding: 0 0.3rem; font-weight: 700; }
+.miniweb-content-editor__item label { display: grid; gap: 0.35rem; color: var(--ink); font-size: 0.9rem; font-weight: 700; }
+.miniweb-content-editor__item :is(input:not([type="checkbox"]), textarea, select) { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.7rem; font: inherit; font-weight: 400; }
+.miniweb-content-editor__toggle { display: flex !important; align-items: center; gap: 0.55rem !important; }
+.miniweb-content-editor__toggle input { width: 1.1rem; height: 1.1rem; accent-color: var(--blue); }
+.miniweb-content-list__items { display: grid; gap: 0.75rem; }
+.miniweb-content-list__item { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; }
+.miniweb-content-list__item h3 { margin: 0; }
+.miniweb-content-list__item p { margin: 0.5rem 0 0; line-height: 1.55; }
+.miniweb-content-list__item .miniweb-content-list__price { font-weight: 700; }
+.miniweb-faq dl { display: grid; gap: 0.75rem; margin: 0; }
+.miniweb-faq__item { border-bottom: 1px solid var(--line); padding: 0 0 0.75rem; }
+.miniweb-faq__item dt { font-weight: 700; }
+.miniweb-faq__item dd { margin: 0.4rem 0 0; line-height: 1.55; }
 .miniweb-template__sections { align-items: start; }
 .miniweb-template__module { min-width: 0; }
 .miniweb-template__module--about { grid-column: 1; grid-row: 1 / span 4; }
