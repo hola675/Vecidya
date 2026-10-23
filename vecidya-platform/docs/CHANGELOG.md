@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R2 (integración local del PR #42)
+
+- Después de `409`, perfil y horarios mantienen la revisión asociada a los valores abiertos y bloquean ambos guardados hasta recargar; un guardado exitoso adopta la revisión exacta que produjo.
+- El estado de publicación compara perfil/contacto, horarios y configuración MiniWeb como snapshot completo. El E2E verifica el botón interno habilitado ante cambios solo de perfil/horarios y deshabilitado tras publicar.
+- Se integró `origin/main@bfce022`; el commit `2a1ddae` pasó unitarias 1655/1655, E2E MiniWeb 64/64, typecheck y build con D1 efímera `0000–0023` limpia. PR #42 abierto, no fusionado ni desplegado; nueva revisión Codex pendiente.
+
+## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R1.1 (observaciones P2 de PR #42)
+
+- Tras un `409` en perfil u horarios, ambos formularios quedan bloqueados hasta recargar; la acción explica que el borrador cambió y ofrece descartar los valores obsoletos explícitamente.
+- Los indicadores administrativos y del editor MiniWeb comparan el snapshot completo publicado (perfil/contacto, horarios y configuración). Cambios solo de teléfono/descripción/horarios dejan publicación pendiente y permiten publicar sin tocar el diseño.
+- RED de E2E: 42/45; GREEN después del fix: 59/59; tras integrar `origin/main@bfce022`: E2E 64/64, unitarias 1655/1655, typecheck/build/diff-check PASS. PR #42 sigue abierto y pendiente de nueva revisión; sin D1 remota, correo real, deploy o merge a `main`.
+
+## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R1 (revisión local de PR #42)
+
+- Los loaders de perfil, horarios y MiniWeb leen los datos detrás de una revisión estable, con hasta tres intentos; si el draft cambia durante la lectura, no devuelven una revisión que identifique otros datos. Se cubren también API JSON y administración interna.
+- La inicialización legacy completa solo filas vacías en revisión inicial mediante compare-and-set. Una fila de publicación existente sin snapshot válido ya no habilita lectura del perfil vivo: las rutas públicas fallan cerradas hasta una publicación explícita.
+- Se agregan regresiones de carrera determinista, escrituras obsoletas, 409 de publicación legacy, doble inicialización y HTTP anónimo pre/post publicación. Commit probado `edbc8ab529712b57f798bd9b407ccdcf022132d2`; unitarias 1653/1653, MiniWeb E2E 45/45, typecheck, build y diff-check PASS. PR #42 abierto, no fusionado ni desplegado; Gmail real continúa diferido al release autorizado.
+
+## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001 (certificación local)
+
+- Se integra como base PR #39 por `475880bdbdc20922c92177478efaef793168ee15` y se implementa un snapshot público versionado con perfil, horarios y composición MiniWeb. Los cambios se guardan como borrador hasta publicar; revisión CAS/token protege escrituras concurrentes y la publicación actualiza la versión pública en un batch D1.
+- Se agregan migraciones `0022` y `0023`; los perfiles legacy se materializan al escribir, sin backfill global. El público usa una sola versión coherente y un snapshot corrupto falla cerrado.
+- Verificación local: migraciones `0000–0023` en D1 aislada, E2E MiniWeb 37/37, unitarias 1651/1651, typecheck, build y diff-check PASS. Sin deploy, D1 remota ni HTTP público fechado. APP-MINI-02B espera la integración de este checkpoint y deberá ampliar el snapshot para ofertas/FAQ.
 ## 2026-10-23 — DIAG-D1-RELEASE-01 (certificación local)
 
 - Se certifica en D1 aislada la cadena limpia `0000–0021` y la actualización sintética `0010→0021`, preservando datos representativos, seeds, índices y relaciones; `integrity_check` y `foreign_key_check` pasan.

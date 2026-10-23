@@ -160,6 +160,17 @@ export const businessProfileGovernance = sqliteTable("business_profile_governanc
   id: text("id").primaryKey(), businessProfileId: text("business_profile_id").notNull().references(() => businessProfile.id, { onDelete: "cascade" }), verificationStatus: text("verification_status", { enum: ["unverified", "verified"] }).default("unverified").notNull(), verifiedAt: integer("verified_at", { mode: "timestamp_ms" }), verifiedBy: text("verified_by").references(() => user.id), platformStatus: text("platform_status", { enum: ["active", "suspended"] }).default("active").notNull(), suspendedAt: integer("suspended_at", { mode: "timestamp_ms" }), suspendedBy: text("suspended_by").references(() => user.id), createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(), updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
 }, (table) => [uniqueIndex("business_profile_governance_profile_unique").on(table.businessProfileId)]);
 
+export const businessProfilePublication = sqliteTable("business_profile_publication", {
+  organizationId: text("organization_id").primaryKey().references(() => organization.id, { onDelete: "cascade" }),
+  draftRevision: integer("draft_revision").default(0).notNull(),
+  draftWriteToken: text("draft_write_token"),
+  publishedVersion: integer("published_version").default(0).notNull(),
+  publishedSlug: text("published_slug"),
+  snapshotSchemaVersion: integer("snapshot_schema_version"),
+  snapshotJson: text("snapshot_json"),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+}, (table) => [uniqueIndex("business_profile_publication_slug_unique").on(table.publishedSlug)]);
+
 export const platformAuditLog = sqliteTable("platform_audit_log", {
   id: text("id").primaryKey(), actorUserId: text("actor_user_id").notNull().references(() => user.id), action: text("action").notNull(), entityType: text("entity_type").notNull(), entityId: text("entity_id").notNull(), organizationId: text("organization_id").notNull().references(() => organization.id), previousValue: text("previous_value"), newValue: text("new_value"), metadata: text("metadata"), createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
 }, (table) => [index("platform_audit_log_entity_idx").on(table.entityType, table.entityId), index("platform_audit_log_organization_idx").on(table.organizationId), index("platform_audit_log_created_idx").on(table.createdAt)]);
