@@ -103,7 +103,7 @@ try {
   ]) {
     const rejected = await page.request.post(new URL(apiPath, baseUrl).toString(), {
       headers: { Origin: new URL(baseUrl).origin },
-      data: { replayVersion: "qa03b-worker-replay-v1", engineIdentity: { version: 1, ...identity }, answerSchema: identity.answerSchema, questionBank: identity.questionBank, sessionSchema: identity.sessionSchema, sessionKey: identity.sessionKey, session: {} },
+      data: { replayVersion: "qa03b-worker-replay-v4", engineIdentity: { version: 1, ...identity }, answerSchema: identity.answerSchema, questionBank: identity.questionBank, sessionSchema: identity.sessionSchema, sessionKey: identity.sessionKey, session: {} },
     });
     assert.equal(rejected.status(), 409, `el endpoint rechaza la identidad ${identity.engine}`);
     assert.match(rejected.headers()["cache-control"], /no-store/i);

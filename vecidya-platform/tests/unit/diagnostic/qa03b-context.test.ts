@@ -43,6 +43,10 @@ test("QA-03B: entidad, estado actual e historia son independientes", () => {
 });
 test("QA-03B: el dato de personal adicional se conserva sin reclasificar a quien trabaja por cuenta propia", () => {
   const staffQuestion = BANK.find(question => question.id === "q2_other_staff")!;
+  assert.match(staffQuestion.prompt, /persona remunerada.*continua/);
+  assert.match(staffQuestion.hint ?? "", /proveedor ocasional.*encargo puntual/);
+  assert.match(staffQuestion.options.find(option => option.value === "yes")?.label ?? "", /remunerada.*continua/);
+  assert.match(staffQuestion.options.find(option => option.value === "no")?.label ?? "", /personal remunerado.*continua/);
   assert.deepEqual(staffQuestion.options.find(option => option.value === "yes")?.produces, [{ kind: "hasOtherPaidStaff", value: true, provenance: "explicit_declaration" }]);
   assert.deepEqual(staffQuestion.options.find(option => option.value === "no")?.produces, [{ kind: "hasOtherPaidStaff", value: false, provenance: "explicit_declaration" }]);
   for (const [answer, expected] of [["yes", "yes"], ["no", "no"]] as const) {

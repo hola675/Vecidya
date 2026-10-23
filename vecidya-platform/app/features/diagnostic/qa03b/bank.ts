@@ -24,9 +24,11 @@ const replacement: Readonly<Record<string, Partial<QuestionDefinitionV2>>> = {
   },
   q2_other_staff: {
     version: 2,
+    prompt: "¿Trabaja contigo alguna otra persona remunerada de forma continua (empleada o colaboradora pagada)?",
+    hint: "Cuenta a quienes participan de manera regular en la operación, no a un proveedor ocasional o ayudante para un encargo puntual.",
     options: [
-      { value: "no", label: "Trabajo por mi cuenta.", produces: [{ kind: "hasOtherPaidStaff", value: false, provenance: "explicit_declaration" }] },
-      { value: "yes", label: "Hay al menos otra persona que trabaja conmigo de forma habitual.", produces: [{ kind: "hasOtherPaidStaff", value: true, provenance: "explicit_declaration" }] },
+      { value: "no", label: "No, no tengo personal remunerado que trabaje de forma continua.", produces: [{ kind: "hasOtherPaidStaff", value: false, provenance: "explicit_declaration" }] },
+      { value: "yes", label: "Sí, otra persona remunerada trabaja conmigo de forma continua.", produces: [{ kind: "hasOtherPaidStaff", value: true, provenance: "explicit_declaration" }] },
       { value: "unknown", label: "No estoy seguro todavía.", kind: "unknown" },
     ],
   },
