@@ -26,6 +26,12 @@ El draft profile, hours y MiniWeb se leen bajo una revisión compartida: el load
 
 Una fila `business_profile_publication` por sí sola no es evidencia de contenido público válido. La inicialización legacy copia el contenido publicado solo cuando no hay snapshot y la fila vacía sigue en revisión inicial, mediante actualización condicional. Toda fila existente sin snapshot válido falla cerrada en perfil, directorio y sitemap. Si la organización todavía no tiene fila, el perfil legacy sigue visible hasta que cualquier mutación materialice su snapshot antes de cambiar datos. Sin cambio de schema ni nueva migración; `0022`/`0023` permanecen intactas.
 
+## APP-CLIENTE-00-PUBLISH-001-R2 — formularios obsoletos e indicador de publicación (2026-10-23)
+
+Los formularios de perfil y horarios mantienen en estado local la revisión que se mostró junto con sus valores iniciales. La revalidación del loader no puede asociar a esos valores una revisión posterior. Un `409` bloquea perfil y horarios hasta recargar explícitamente; un guardado exitoso avanza la revisión al valor devuelto por su propia mutación. Esto mantiene alineados valores y CAS incluso si otro editor ya guardó.
+
+La administración interna y el editor MiniWeb determinan si la publicación está al día comparando el snapshot allowlisted completo (perfil/contacto, horarios y configuración), dentro de la lectura cercada. Snapshot ausente o inválido se trata como pendiente; sin perfil, la acción interna de publicar queda deshabilitada. No cambia el formato del snapshot ni requiere migraciones.
+
 ## PLATFORM-ADMIN-GLOBAL — contrato aprobado e implementación local (2026-10-22)
 
 **Estado actualizado al 2026-10-23:** el PR #39 se integró en `origin/main` por `475880bdbdc20922c92177478efaef793168ee15`. La certificación local y el gate de correo real están en `STATUS.md`/`TESTING.md`; el correo real sigue diferido al release y no se declara verificado. El usuario aprobó la invitación propia descrita aquí. La UI interna permite alta de organización, reenvío/revocación de invitación, suspensión/reactivación de organizaciones con ciclo vigente, cambios de rol `admin|member`, edición JSON de configuración MiniWeb y publicación explícita, además de capacitación. Staff conserva lectura. `closed`, transferencia/eliminación de owner y cambio de roles owner siguen deshabilitados.

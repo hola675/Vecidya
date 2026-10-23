@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R2 (integración local del PR #42)
+
+- Después de `409`, perfil y horarios mantienen la revisión asociada a los valores abiertos y bloquean ambos guardados hasta recargar; un guardado exitoso adopta la revisión exacta que produjo.
+- El estado de publicación compara perfil/contacto, horarios y configuración MiniWeb como snapshot completo. El E2E verifica el botón interno habilitado ante cambios solo de perfil/horarios y deshabilitado tras publicar.
+- Se integró `origin/main@bfce022`; el commit `2a1ddae` pasó unitarias 1655/1655, E2E MiniWeb 64/64, typecheck y build con D1 efímera `0000–0023` limpia. PR #42 abierto, no fusionado ni desplegado; nueva revisión Codex pendiente.
+
 ## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R1.1 (observaciones P2 de PR #42)
 
 - Tras un `409` en perfil u horarios, ambos formularios quedan bloqueados hasta recargar; la acción explica que el borrador cambió y ofrece descartar los valores obsoletos explícitamente.
