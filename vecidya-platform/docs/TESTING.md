@@ -1,5 +1,11 @@
 # Pruebas
 
+## APP-CLIENTE-00-PUBLISH-001-POST-MERGE-P2 — regresiones locales (2026-10-23)
+
+El commit `774d162` corrige dos hallazgos P2 de la revisión Codex post-merge del PR #42. La action `publish` devuelve `publication.state.draftRevision`, la revisión que realmente dejó el snapshot publicado. El editor MiniWeb se renderiza con `key` de organización activa, reiniciando juntos configuración y revisión al cambiar de organización.
+
+`pnpm exec node tests/e2e/miniweb-core-check.mjs`: **69/69 PASS** en Worker local con D1 efímera nueva y migraciones `0000–0023`. El E2E publicó desde el formulario de perfil y guardó horarios inmediatamente después sin conflicto falso; luego cambió de la organización B a D en la misma sesión del editor y confirmó que el POST usó la revisión de D y guardó correctamente. Unitarias **1655/1655**, `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. La D1 efímera terminó con cero usuarios, organizaciones y perfiles de fixture; se verificó que no quedaban migraciones pendientes y se eliminó el directorio temporal. Build mostró las advertencias locales existentes de credenciales Gmail opcionales y dynamic imports; no bloquean el build. No se accedió a D1 compartida/remota, no se desplegó y no se envió correo real.
+
 ## APP-CLIENTE-00-PUBLISH-001-R2 — revisión Codex y certificación integrada (2026-10-23)
 
 Se atendieron las dos observaciones P2 nuevas reportadas para el HEAD `575cde5` del PR #42. Perfil y horarios conservan en estado local la revisión que acompaña a sus valores iniciales; después de `409`, ambos formularios bloquean el guardado hasta recargar los datos y la revisión juntos. Un guardado exitoso avanza a su revisión exacta. La condición de publicación se calcula desde el snapshot completo (perfil/contacto, horarios y configuración). Sin perfil no se habilita publicar. `miniweb-editor.tsx` informa cambios pendientes del contenido completo.
