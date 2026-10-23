@@ -28,7 +28,7 @@ CSS transversal `experience-*` en `app/app.css`, responsive y modo de movimiento
 El estilo `legal-*` sustituye al CSS antiguo `privacy-*` en `app/app.css`. Sin rutas protegidas, API, schema, migraciones, integraciones externas ni consentimiento nuevo.
 
 
-Última reconciliación: 2026-10-16 (FUNNEL-01D.1-R local; `0018`/`0019`, lectura/emisión/fixtures loopback dev-only). Rutas verificadas contra `app/routes.ts`; la tabla describe código local, no producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas. Abreviaturas: [TESTING.md](TESTING.md).
+Última reconciliación: 2026-10-22 (DIAG-PRIVACY-PURGE-01 local; Cron de Worker y fixtures loopback/dev-only). Rutas verificadas contra `app/routes.ts`; la tabla describe código local, no producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas. Abreviaturas: [TESTING.md](TESTING.md).
 
 ## LEGACY-00 — inventario de rutas (baseline `50026d0`)
 
@@ -39,6 +39,8 @@ Resultado `LEGACY_INVENTORY_READY`; auditoría sin eliminación. La clasificaci�
 | `/diagnostico` | `KEEP` | `diagnostic.tsx` → `CandidateDiagnosticFlow` QA-03B → replay Worker; E2E `diagnostic-act-04`, `diagnostic-v3-qa03b` | QA-03B público; CTA de informe condicionado por `DIAGNOSTIC_REPORT_FUNNEL_ENABLED`. |
 | `/api/diagnostic/anonymous-summary` | `KEEP` | Replay Worker QA-03B con validación de identidad, schema, bank y transcript | DTO allowlisted; conserva adaptador V3 para rollback. |
 | `/api/diagnostic/funnel-analytics` | `DEV ONLY` | `api-diagnostic-funnel-analytics.ts`; agregado `diagnostic_funnel_aggregate` | Solo se registra cuando `NODE_ENV=development`; GET suprime `<5`, POST admite dos eventos con rate limit y host loopback. Bundle isolation pendiente de validación. |
+| `/__dev/diagnostico/lifecycle/scheduled-purge` | `DEV ONLY` | Ejecuta el mismo helper gated que `workers/app.ts → scheduled()` para D1 local temporal; prueba concurrente/fallo/repetición | Solo loopback + same-origin en development; no se registra en production. |
+| `scheduled()` Worker | Evento Cron | `server/identified-report-purge.server.ts` → `purgeExpiredIdentifiedReports()` | Cron base `17 3 * * *`; dos switches destructivos `false`; staging sin Cron. No desplegado. |
 | `/diagnostico/metodologia` | `KEEP` | metodologia → `qbv2-methodology`; E2E methodology | Versión y contenido aún ligados al V3 público. |
 | `/diagnostico/informe` source `diagnostico-informe.tsx`, sin `route()` | `KEEP` barrera | Leído por `diagnostic-report.test.ts` y readiness | Source no registrado, pero test protege la no exposición. |
 | `/__dev/diagnostico/v3`, `/resultado/*`, `/metodologia`, `/informe/*` | `ARCHIVE` / `REMOVE_AFTER_CUTOVER` | Previews/golden y E2E V3 | Sólo dev; mantener para comparación hasta sustitución. |

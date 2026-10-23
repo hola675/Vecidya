@@ -10,7 +10,7 @@ import type { ActionFunctionArgs } from "react-router";
 
 const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
 const failure = (status: number, error: string) => Response.json({ error }, { status, headers });
-const allowedOperations = ["inspect", "inspect_funnel_aggregate", "lock_challenge", "tamper_snapshot", "expire_children", "expire_request", "expire_request_only", "expire_snapshot_only", "restore_snapshot_expiry", "expiry_matrix", "seed_lost_response_fixture", "revoke_access", "restore_access", "install_purge_failpoint", "remove_purge_failpoint", "install_funnel_analytics_failpoint", "remove_funnel_analytics_failpoint", "cleanup"] as const;
+const allowedOperations = ["inspect", "inspect_funnel_aggregate", "lock_challenge", "tamper_snapshot", "expire_children", "expire_request", "expire_request_only", "expire_snapshot_only", "restore_snapshot_expiry", "expiry_matrix", "seed_lost_response_fixture", "seed_purge_batch", "seed_purge_active_control", "revoke_access", "restore_access", "install_purge_failpoint", "remove_purge_failpoint", "install_funnel_analytics_failpoint", "remove_funnel_analytics_failpoint", "cleanup"] as const;
 type Operation = typeof allowedOperations[number];
 
 async function runExpiryMatrix(db: D1Database, sourceRequestId: string) {
@@ -194,11 +194,11 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
   if (!requestId || !isRequestId(requestId)) return failure(404, "La solicitud no está disponible.");
   const { env } = context.get(cloudflareContext);
   const db = env.DB;
-  const requestRow = await db.prepare("SELECT id FROM identified_diagnostic_request WHERE id = ? AND email = 'qa-funnel@example.invalid'").bind(requestId).first<{ id: string }>();
   let body: unknown;
   try { body = await request.json(); } catch { return failure(400, "Operación no válida."); }
   if (!body || typeof body !== "object" || Array.isArray(body) || Object.keys(body).length !== 1 || !allowedOperations.includes((body as { op?: Operation }).op as Operation)) return failure(400, "Operación no válida.");
   const op = (body as { op: Operation }).op;
+  const requestRow = await db.prepare("SELECT id FROM identified_diagnostic_request WHERE id = ? AND email = 'qa-funnel@example.invalid'").bind(requestId).first<{ id: string }>();
   const triggerName = `diag_qa_purge_abort_${requestId.replaceAll("-", "")}`;
   const analyticsTriggerName = `diag_qa_funnel_abort_${requestId.replaceAll("-", "")}`;
   if (op === "cleanup") {
@@ -217,7 +217,7 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
     ]);
     return Response.json({ metrics: rows.results, columns: columns.results?.map((column) => column.name) ?? [] }, { headers });
   }
-  if (!requestRow) return failure(404, "Fixture local no disponible.");
+  if (!requestRow && op !== "seed_purge_batch" && op !== "seed_purge_active_control" && op !== "inspect") return failure(404, "Fixture local no disponible.");
   if (op === "install_funnel_analytics_failpoint") {
     await db.prepare(`CREATE TRIGGER IF NOT EXISTS ${analyticsTriggerName} BEFORE INSERT ON diagnostic_funnel_aggregate BEGIN SELECT RAISE(ABORT, 'qa local analytics failpoint'); END`).run();
     return Response.json({ ok: true }, { headers });
@@ -229,6 +229,51 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
   if (op === "seed_lost_response_fixture") {
     try { return Response.json(await seedLostResponseFixture(db, requestId, new URL(request.url).origin), { headers }); }
     catch { return failure(500, "No se pudo crear la fixture local."); }
+  }
+  if (op === "seed_purge_batch" || op === "seed_purge_active_control") {
+    const now = Date.now();
+    const expiresAt = now + (op === "seed_purge_active_control" ? 86_400_000 : -60_000);
+    const challengeId = crypto.randomUUID();
+    try {
+      await db.batch([
+        db.prepare(`INSERT INTO identified_diagnostic_request (
+          id, idempotency_key_hash, request_fingerprint_hash, engine_identity, report_version, methodology_version, status,
+          full_name, business_name, email, phone, service_notice_version, service_notice_acknowledged_at, created_at, updated_at, expires_at
+        ) VALUES (?, lower(hex(randomblob(32))), lower(hex(randomblob(32))), '{}', 'purge-test-v1', 'purge-test-v1', 'verified',
+          'Fixture local', NULL, 'qa-funnel@example.invalid', NULL, 'purge-test-v1', ?, ?, ?, ?)`)
+          .bind(requestId, now - 1000, now, now, expiresAt),
+        db.prepare(`INSERT INTO diagnostic_report_snapshot (
+          request_id, engine_identity, report_version, methodology_version, report_json, report_sha256, computed_at, expires_at
+        ) VALUES (?, '{}', 'purge-test-v1', 'purge-test-v1', '{}', 'test-hash', ?, ?)`)
+          .bind(requestId, now, expiresAt),
+        db.prepare(`INSERT INTO verified_email_challenge (
+          id, request_id, purpose, token_digest, status, attempts, issued_at, expires_at, consumed_at, created_at
+        ) VALUES (?, ?, 'verification', lower(hex(randomblob(32))), ?, 0, ?, ?, NULL, ?)`)
+          .bind(challengeId, requestId, op === "seed_purge_active_control" ? "pending" : "expired", now, expiresAt, now),
+      ]);
+      if (op === "seed_purge_batch") {
+        for (let offset = 0; offset < 105; offset += 1) {
+          await db.prepare(`INSERT INTO verified_email_challenge (
+            id, request_id, purpose, token_digest, status, attempts, issued_at, expires_at, consumed_at, created_at
+          ) VALUES (?, ?, 'verification', lower(hex(randomblob(32))), 'expired', 0, ?, ?, NULL, ?)`)
+            .bind(crypto.randomUUID(), requestId, now - 120_000, now - 60_000, now - 120_000).run();
+        }
+      } else {
+        await db.batch([
+          db.prepare(`INSERT INTO diagnostic_report_access (id, request_id, challenge_id, token_digest, issued_at, expires_at, revoked_at)
+            VALUES (?, ?, ?, lower(hex(randomblob(32))), ?, ?, NULL)`)
+            .bind(crypto.randomUUID(), requestId, challengeId, now, expiresAt),
+          db.prepare(`INSERT INTO commercial_contact_intent (id, request_id, notice_version, source, consented_at, revoked_at)
+            VALUES (?, ?, 'purge-test-v1', 'test_fixture', ?, NULL)`).bind(crypto.randomUUID(), requestId, now),
+          db.prepare(`INSERT INTO diagnostic_research_intent (id, request_id, notice_version, source, consented_at, revoked_at)
+            VALUES (?, ?, 'purge-test-v1', 'test_fixture', ?, NULL)`).bind(crypto.randomUUID(), requestId, now),
+        ]);
+      }
+      return Response.json({ requestId, challenges: op === "seed_purge_batch" ? 106 : 1, active: op === "seed_purge_active_control" }, { headers });
+    } catch {
+      await deleteIdentifiedReport(db, requestId);
+      return failure(500, "No se pudo crear la fixture local de purga.");
+    }
   }
   if (op === "lock_challenge") await db.prepare(`UPDATE verified_email_challenge SET status = 'locked', attempts = 5 WHERE id = (SELECT id FROM verified_email_challenge WHERE request_id = ? ORDER BY issued_at DESC LIMIT 1)`).bind(requestId).run();
   if (op === "inspect") {

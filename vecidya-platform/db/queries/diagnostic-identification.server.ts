@@ -263,32 +263,58 @@ export type PurgedIdentifiedReportRows = {
   readonly expiredRequests: number;
 };
 
-/** Manual lifecycle operation; callers must choose an approved retention policy before scheduling it. */
+/** A scheduled pass is deliberately small; later invocations safely continue the sweep. */
+export const IDENTIFIED_REPORT_PURGE_BATCH_SIZE = 100;
+
 export async function purgeExpiredIdentifiedReports(binding: D1Database, now: Date): Promise<PurgedIdentifiedReportRows> {
   const timestamp = now.getTime();
+  const limit = IDENTIFIED_REPORT_PURGE_BATCH_SIZE;
   const results = await binding.batch([
-    binding.prepare(`DELETE FROM diagnostic_report_access
-      WHERE revoked_at IS NOT NULL OR expires_at <= ?
-        OR NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = diagnostic_report_access.request_id)
-        OR NOT EXISTS (SELECT 1 FROM verified_email_challenge c WHERE c.id = diagnostic_report_access.challenge_id)`)
-      .bind(timestamp),
-    binding.prepare(`DELETE FROM diagnostic_report_snapshot
-      WHERE expires_at <= ?
-        OR NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = diagnostic_report_snapshot.request_id)`)
-      .bind(timestamp),
-    binding.prepare(`DELETE FROM verified_email_challenge
-      WHERE (expires_at <= ?
-        OR NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = verified_email_challenge.request_id))
+    binding.prepare(`DELETE FROM diagnostic_report_access WHERE rowid IN (
+      SELECT a.rowid FROM diagnostic_report_access a
+      WHERE a.revoked_at IS NOT NULL OR a.expires_at <= ?
+        OR NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = a.request_id AND r.expires_at > ?)
+        OR NOT EXISTS (SELECT 1 FROM verified_email_challenge c WHERE c.id = a.challenge_id)
+      LIMIT ?)`)
+      .bind(timestamp, timestamp, limit),
+    binding.prepare(`DELETE FROM diagnostic_report_snapshot WHERE rowid IN (
+      SELECT s.rowid FROM diagnostic_report_snapshot s
+      WHERE s.expires_at <= ?
+        OR NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = s.request_id AND r.expires_at > ?)
+      LIMIT ?)`)
+      .bind(timestamp, timestamp, limit),
+    binding.prepare(`DELETE FROM verified_email_challenge WHERE rowid IN (
+      SELECT c.rowid FROM verified_email_challenge c
+      WHERE (c.expires_at <= ?
+        OR NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = c.request_id AND r.expires_at > ?))
         AND NOT EXISTS (
           SELECT 1 FROM diagnostic_report_access a
-          WHERE a.challenge_id = verified_email_challenge.id AND a.revoked_at IS NULL AND a.expires_at > ?
-        )`)
-      .bind(timestamp, timestamp),
-    binding.prepare(`DELETE FROM commercial_contact_intent
-      WHERE NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = commercial_contact_intent.request_id)`),
-    binding.prepare(`DELETE FROM diagnostic_research_intent
-      WHERE NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = diagnostic_research_intent.request_id)`),
-    binding.prepare("DELETE FROM identified_diagnostic_request WHERE expires_at <= ?").bind(timestamp),
+          WHERE a.challenge_id = c.id AND a.revoked_at IS NULL AND a.expires_at > ?
+            AND EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = a.request_id AND r.expires_at > ?)
+        )
+      LIMIT ?)`)
+      .bind(timestamp, timestamp, timestamp, timestamp, limit),
+    binding.prepare(`DELETE FROM commercial_contact_intent WHERE rowid IN (
+      SELECT i.rowid FROM commercial_contact_intent i
+      WHERE NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = i.request_id AND r.expires_at > ?)
+      LIMIT ?)`)
+      .bind(timestamp, limit),
+    binding.prepare(`DELETE FROM diagnostic_research_intent WHERE rowid IN (
+      SELECT i.rowid FROM diagnostic_research_intent i
+      WHERE NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = i.request_id AND r.expires_at > ?)
+      LIMIT ?)`)
+      .bind(timestamp, limit),
+    // Do not rely on a potentially large cascade: remove expired children in bounded passes first.
+    binding.prepare(`DELETE FROM identified_diagnostic_request WHERE rowid IN (
+      SELECT r.rowid FROM identified_diagnostic_request r
+      WHERE r.expires_at <= ?
+        AND NOT EXISTS (SELECT 1 FROM diagnostic_report_access a WHERE a.request_id = r.id)
+        AND NOT EXISTS (SELECT 1 FROM diagnostic_report_snapshot s WHERE s.request_id = r.id)
+        AND NOT EXISTS (SELECT 1 FROM verified_email_challenge c WHERE c.request_id = r.id)
+        AND NOT EXISTS (SELECT 1 FROM commercial_contact_intent i WHERE i.request_id = r.id)
+        AND NOT EXISTS (SELECT 1 FROM diagnostic_research_intent i WHERE i.request_id = r.id)
+      LIMIT ?)`)
+      .bind(timestamp, limit),
   ]);
   const changes = results.map((result) => result.meta?.changes ?? 0);
   return {

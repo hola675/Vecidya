@@ -16,6 +16,12 @@
 - Roles `admin|member` auditados; owner no se puede cambiar. Lifecycle limitado a `pending_owner`, `owner_invited`, `active` y `suspended`; no existe `closed`. Guards de cliente rechazan organizaciones suspendidas y perfiles públicos no las listan.
 - MiniWeb administrativa permite guardar JSON draft y publicar explícitamente, con audit. Capacitación conserva asignación, auto-reporte y corrección motivada.
 - Migraciones `0020`/`0021` aplicadas en D1 local del worktree. `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. No se ejecutaron suites automatizadas. Sin D1 remota, correo real, deploy o publicación.
+## 2026-10-22 — DIAG-PRIVACY-PURGE-01 (local; flags cerrados)
+
+- El Worker dispone de Cron diario y reutiliza la purga de informes identificados en tandas máximas de 100 por tabla. Batch transaccional, idempotente, reintentable; no borra solicitudes vigentes ni depende de cascadas grandes.
+- Production tiene Cron configurado pero las compuertas `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED` y `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED` permanecen `false`; staging no tiene Cron y ambas son `false`. Los logs registran conteos sin PII.
+- Confirmados en código los derechos de revocación separada B/C y borrado voluntario con grant vigente. Se documenta una propuesta de retención para aprobación; 30 d/24 h continúan provisionales. Sin migración, D1 remota, deploy, correo real ni ejecución publicada.
+
 ## 2026-10-22 — DIAG-FUNNEL-PROD-01 (CODE local, flag cerrado)
 
 - El recorrido público QA-03B ya puede conectar solicitud identificada, replay Worker autoritativo, snapshot, correo Gmail, verificación explícita, grant/cookie, recovery y reporte HTML usando los contratos existentes. La bandeja simulada sigue solo en desarrollo; el correo real utiliza el adaptador Gmail configurado, sin cambiar ni leer secretos.
