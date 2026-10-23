@@ -44,6 +44,25 @@ async function workerReady(url) {
   throw new Error("El Worker local no respondió tras consultar la D1 aislada.");
 }
 
+async function getPublic(url) {
+  try { return await fetch(url, { headers: { connection: "close" } }); }
+  catch (error) {
+    if (error?.cause?.code !== "ECONNRESET") throw error;
+    await new Promise((resolveWait) => setTimeout(resolveWait, 100));
+    return fetch(url, { headers: { connection: "close" } });
+  }
+}
+
+async function getPublicHtml(url) {
+  let response = await getPublic(url);
+  try { return { response, html: await response.text() }; }
+  catch (error) {
+    if (!(["ECONNRESET", "UND_ERR_SOCKET"].includes(error?.cause?.code) || error?.message === "fetch failed")) throw error;
+    response = await getPublic(url);
+    return { response, html: await response.text() };
+  }
+}
+
 class Client {
   #cookies = new Map();
   constructor(baseUrl) { this.baseUrl = baseUrl; }
@@ -203,6 +222,91 @@ INSERT INTO platform_owner_invitation (id,organization_id,email,token_digest,sta
   const lifecycleAudit = query(`SELECT action,count(*) AS count FROM platform_audit_log WHERE organization_id=${sqlLiteral(stateOrg)} AND action IN ('organization.suspended','organization.active') GROUP BY action;`);
   await workerReady(baseUrl);
   if (![302, 303].includes(reactivate.status) || reactivatedOrganizationApi.status !== 200 || lifecycleAudit.length !== 2 || lifecycleAudit.some((entry) => Number(entry.count) !== 1)) throw new Error(`La reactivación no restauró el acceso/API y su auditoría; HTTP=${reactivate.status}/${reactivatedOrganizationApi.status}, audit=${JSON.stringify(lifecycleAudit)}.`);
+
+  const publicOrgA = randomUUID();
+  const publicOrgB = randomUUID();
+  const draftOrg = randomUUID();
+  const governanceOrg = randomUUID();
+  const noLicenseOrg = randomUUID();
+  const inactiveLicenseOrg = randomUUID();
+  const publicOwnerId = memberIdentity.user.id;
+  const publicOwnerEmail = memberIdentity.email;
+  const publicKeys = ["a", "b", "draft", "governance", "no-license", "inactive-license"];
+  const profileIds = Object.fromEntries(publicKeys.map((key) => [key, randomUUID()]));
+  const publicSlugs = Object.fromEntries(publicKeys.map((key) => [key, `cert-${suffix}-${key}`]));
+  const publicMiniWebJson = JSON.stringify({ templateKey: "vecidya-default", templateVersion: 1, layoutVariant: "standard", modules: [{ type: "hero", moduleVersion: 1, enabled: true, sortOrder: 0, layoutVariant: "standard", settings: null }] });
+  query(`INSERT INTO organization (id,name,slug,created_at) VALUES
+(${sqlLiteral(publicOrgA)},'Public certification A','public-a-${suffix}',${sqlNow}),(${sqlLiteral(publicOrgB)},'Public certification B','public-b-${suffix}',${sqlNow}),(${sqlLiteral(draftOrg)},'Draft certification','draft-${suffix}',${sqlNow}),(${sqlLiteral(governanceOrg)},'Governance certification','governance-${suffix}',${sqlNow}),(${sqlLiteral(noLicenseOrg)},'No license certification','no-license-${suffix}',${sqlNow}),(${sqlLiteral(inactiveLicenseOrg)},'Inactive license certification','inactive-license-${suffix}',${sqlNow});
+INSERT INTO member (id,organization_id,user_id,role,created_at) VALUES
+${[publicOrgA, publicOrgB, draftOrg, governanceOrg, noLicenseOrg, inactiveLicenseOrg].map((organizationId) => `(${sqlLiteral(randomUUID())},${sqlLiteral(organizationId)},${sqlLiteral(publicOwnerId)},'owner',${sqlNow})`).join(",")};
+INSERT INTO platform_organization_lifecycle (organization_id,status,intended_owner_email,owner_user_id,created_by,updated_by,created_at,updated_at) VALUES
+${[publicOrgA, publicOrgB, draftOrg, governanceOrg, noLicenseOrg, inactiveLicenseOrg].map((organizationId) => `(${sqlLiteral(organizationId)},'active',${sqlLiteral(publicOwnerEmail)},${sqlLiteral(publicOwnerId)},${sqlLiteral(adminIdentity.user.id)},${sqlLiteral(adminIdentity.user.id)},${sqlNow},${sqlNow})`).join(",")};
+INSERT INTO business_profile (id,organization_id,display_name,slug,short_description,description,category,city,country,status,created_at,updated_at) VALUES
+(${sqlLiteral(profileIds.a)},${sqlLiteral(publicOrgA)},'Public certification A',${sqlLiteral(publicSlugs.a)},'Published content','Description','Certification category','City A','Test country','published',${sqlNow},${sqlNow}),
+(${sqlLiteral(profileIds.b)},${sqlLiteral(publicOrgB)},'Public certification B',${sqlLiteral(publicSlugs.b)},'Isolation control','Description','Control category','City B','Test country','published',${sqlNow},${sqlNow}),
+(${sqlLiteral(profileIds.draft)},${sqlLiteral(draftOrg)},'Draft certification',${sqlLiteral(publicSlugs.draft)},'Hidden draft','Description','Draft category','Draft city','Test country','draft',${sqlNow},${sqlNow}),
+(${sqlLiteral(profileIds.governance)},${sqlLiteral(governanceOrg)},'Governance certification',${sqlLiteral(publicSlugs.governance)},'Hidden governance','Description','Governance category','Governance city','Test country','published',${sqlNow},${sqlNow}),
+(${sqlLiteral(profileIds.noLicense)},${sqlLiteral(noLicenseOrg)},'No license certification',${sqlLiteral(publicSlugs['no-license'])},'Hidden license','Description','No license category','No license city','Test country','published',${sqlNow},${sqlNow}),
+(${sqlLiteral(profileIds['inactive-license'])},${sqlLiteral(inactiveLicenseOrg)},'Inactive license certification',${sqlLiteral(publicSlugs['inactive-license'])},'Hidden license','Description','Inactive license category','Inactive license city','Test country','published',${sqlNow},${sqlNow});
+INSERT INTO business_profile_governance (id,business_profile_id,platform_status,created_at,updated_at) VALUES (${sqlLiteral(randomUUID())},${sqlLiteral(profileIds.governance)},'suspended',${sqlNow},${sqlNow});
+INSERT INTO billing_account (id,owner_user_id,kind,name,created_at,updated_at) VALUES (${sqlLiteral(randomUUID())},${sqlLiteral(publicOwnerId)},'individual','Synthetic certification account',${sqlNow},${sqlNow}) ON CONFLICT(owner_user_id) DO NOTHING;
+INSERT INTO organization_license (id,organization_id,billing_account_id,plan_code,price_id,status,started_at,activated_at,ends_at,created_at,updated_at) VALUES
+${[publicOrgA, publicOrgB, draftOrg, governanceOrg].map((organizationId) => `(${sqlLiteral(randomUUID())},${sqlLiteral(organizationId)},(SELECT id FROM billing_account WHERE owner_user_id=${sqlLiteral(publicOwnerId)}),'cuadra','license-price-cuadra-v1','active',${sqlNow},${sqlNow},NULL,${sqlNow},${sqlNow})`).join(",")};
+INSERT INTO organization_license (id,organization_id,billing_account_id,plan_code,price_id,status,started_at,activated_at,ends_at,created_at,updated_at)
+SELECT ${sqlLiteral(randomUUID())},org.id,billing.id,'cuadra','license-price-cuadra-v1','suspended',${sqlNow},${sqlNow},NULL,${sqlNow},${sqlNow} FROM organization org CROSS JOIN billing_account billing WHERE org.id=${sqlLiteral(inactiveLicenseOrg)} AND billing.owner_user_id=${sqlLiteral(publicOwnerId)};
+INSERT INTO miniweb_site (id,organization_id,template_key,template_version,layout_variant,published_configuration_json,created_at,updated_at) VALUES
+(${sqlLiteral(randomUUID())},${sqlLiteral(publicOrgA)},'vecidya-default',1,'standard',${sqlLiteral(publicMiniWebJson)},${sqlNow},${sqlNow}),(${sqlLiteral(randomUUID())},${sqlLiteral(publicOrgB)},'vecidya-default',1,'standard',${sqlLiteral(publicMiniWebJson)},${sqlNow},${sqlNow});`);
+  await workerReady(baseUrl);
+  const initialProfile = await getPublic(new URL(`/vecindario/${publicSlugs.a}`, baseUrl));
+  const initialDirectory = await getPublicHtml(new URL("/vecindario", baseUrl));
+  const initialCategory = await getPublicHtml(new URL("/vecindario?category=Certification%20category", baseUrl));
+  const initialCity = await getPublicHtml(new URL("/vecindario?city=City%20A", baseUrl));
+  const initialDirectoryHtml = initialDirectory.html;
+  const initialCategoryHtml = initialCategory.html;
+  const initialCityHtml = initialCity.html;
+  if (initialProfile.status !== 200 || !initialDirectoryHtml.includes("Public certification A") || !initialDirectoryHtml.includes("Public certification B") || !initialCategoryHtml.includes("Public certification A") || !initialCityHtml.includes("Public certification A")) throw new Error("Published profile with active owner license was not visible through HTTP profile/directory/filter routes.");
+  const publicSnapshot = query(`SELECT bp.display_name,bp.short_description,bp.description,bp.status,ol.status AS license_status,m.published_configuration_json,(SELECT count(*) FROM member WHERE organization_id=bp.organization_id) AS membership_count,(SELECT count(*) FROM member WHERE organization_id=bp.organization_id AND role='owner') AS owner_count FROM business_profile bp JOIN organization_license ol ON ol.organization_id=bp.organization_id JOIN miniweb_site m ON m.organization_id=bp.organization_id WHERE bp.id=${sqlLiteral(profileIds.a)};`)[0];
+  const hiddenBefore = [];
+  for (const key of ["draft", "governance", "no-license", "inactive-license"]) hiddenBefore.push({ key, status: (await getPublic(new URL(`/vecindario/${publicSlugs[key]}`, baseUrl))).status });
+  if (hiddenBefore.some(({ status }) => status !== 404)) throw new Error(`Draft/governance/no-license profiles should return 404: ${JSON.stringify(hiddenBefore)}.`);
+
+  const setPublicOrgActive = await targetMember.json("/api/auth/organization/set-active", { organizationId: publicOrgA });
+  if (setPublicOrgActive.status !== 200) throw new Error(`Could not activate tenant session for public certification: ${setPublicOrgActive.status}.`);
+  const publicSuspend = await admin.request(`/app/internal/organizations/${publicOrgA}`, { intent: "suspend" });
+  const suspendedProfile = await getPublic(new URL(`/vecindario/${publicSlugs.a}`, baseUrl));
+  const suspendedDirectory = await getPublicHtml(new URL("/vecindario", baseUrl));
+  const suspendedCategory = await getPublicHtml(new URL("/vecindario?category=Certification%20category", baseUrl));
+  const suspendedCity = await getPublicHtml(new URL("/vecindario?city=City%20A", baseUrl));
+  const suspendedTenantApi = await targetMember.jsonGet(`/api/organizations/${publicOrgA}/training`);
+  const suspendedDirectoryHtml = suspendedDirectory.html;
+  const suspendedCategoryHtml = suspendedCategory.html;
+  const suspendedCityHtml = suspendedCity.html;
+  if (![302, 303].includes(publicSuspend.status) || suspendedProfile.status !== 404 || suspendedDirectoryHtml.includes("Public certification A") || suspendedCategoryHtml.includes("Public certification A") || suspendedCityHtml.includes("Public certification A") || suspendedDirectoryHtml.includes('value="Certification category"') || suspendedDirectoryHtml.includes('value="City A"') || !suspendedDirectoryHtml.includes("Public certification B") || suspendedTenantApi.status !== 403) throw new Error(`Suspension did not hide A from public HTTP surfaces/filters or block tenant API: action=${publicSuspend.status}, profile=${suspendedProfile.status}, api=${suspendedTenantApi.status}.`);
+  const suspendedState = query(`SELECT l.status,bp.status AS profile_status,ol.status AS license_status,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(publicOrgA)} AND a.action='organization.suspended') AS audit_count FROM platform_organization_lifecycle l JOIN business_profile bp ON bp.organization_id=l.organization_id JOIN organization_license ol ON ol.organization_id=l.organization_id WHERE l.organization_id=${sqlLiteral(publicOrgA)};`)[0];
+  if (suspendedState.status !== "suspended" || suspendedState.profile_status !== "published" || suspendedState.license_status !== "active" || Number(suspendedState.audit_count) !== 1) throw new Error(`Suspension changed persisted publication/license state or audit: ${JSON.stringify(suspendedState)}.`);
+
+  const publicActivate = await admin.request(`/app/internal/organizations/${publicOrgA}`, { intent: "activate" });
+  const reactivatedProfile = await getPublic(new URL(`/vecindario/${publicSlugs.a}`, baseUrl));
+  const reactivatedDirectory = await getPublicHtml(new URL("/vecindario", baseUrl));
+  const reactivatedCategory = await getPublicHtml(new URL("/vecindario?category=Certification%20category", baseUrl));
+  const reactivatedCity = await getPublicHtml(new URL("/vecindario?city=City%20A", baseUrl));
+  const reactivatedDirectoryHtml = reactivatedDirectory.html;
+  const reactivatedCategoryHtml = reactivatedCategory.html;
+  const reactivatedCityHtml = reactivatedCity.html;
+  if (![302, 303].includes(publicActivate.status) || reactivatedProfile.status !== 200 || !reactivatedDirectoryHtml.includes("Public certification A") || !reactivatedCategoryHtml.includes("Public certification A") || !reactivatedCityHtml.includes("Public certification A") || !reactivatedDirectoryHtml.includes("Public certification B")) throw new Error("Reactivation did not restore A's public profile/directory filters while preserving B visibility.");
+  const reactivatedState = query(`SELECT l.status AS lifecycle_status,bp.display_name,bp.short_description,bp.description,bp.status AS profile_status,ol.status AS license_status,m.published_configuration_json,(SELECT count(*) FROM member WHERE organization_id=l.organization_id) AS membership_count,(SELECT count(*) FROM member WHERE organization_id=l.organization_id AND role='owner') AS owner_count,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(publicOrgA)} AND a.action='organization.active') AS audit_count FROM platform_organization_lifecycle l JOIN business_profile bp ON bp.organization_id=l.organization_id JOIN organization_license ol ON ol.organization_id=l.organization_id JOIN miniweb_site m ON m.organization_id=l.organization_id WHERE l.organization_id=${sqlLiteral(publicOrgA)};`)[0];
+  const reactivatedTenantApi = await targetMember.jsonGet(`/api/organizations/${publicOrgA}/training`);
+  if (reactivatedState.lifecycle_status !== "active" || reactivatedState.display_name !== publicSnapshot.display_name || reactivatedState.short_description !== publicSnapshot.short_description || reactivatedState.description !== publicSnapshot.description || reactivatedState.profile_status !== publicSnapshot.status || reactivatedState.license_status !== publicSnapshot.license_status || reactivatedState.published_configuration_json !== publicSnapshot.published_configuration_json || reactivatedState.membership_count !== publicSnapshot.membership_count || reactivatedState.owner_count !== publicSnapshot.owner_count || reactivatedTenantApi.status !== 200 || Number(reactivatedState.audit_count) !== 1) throw new Error(`Reactivation changed profile/MiniWeb/license/membership, failed tenant access restore, or missed its audit: ${JSON.stringify(reactivatedState)}, API=${reactivatedTenantApi.status}.`);
+
+  query(`UPDATE organization_license SET status='suspended',updated_at=${Date.now()} WHERE organization_id=${sqlLiteral(publicOrgA)} AND status='active';`);
+  const suspendWithoutLicense = await admin.request(`/app/internal/organizations/${publicOrgA}`, { intent: "suspend" });
+  const activateWithoutLicense = await admin.request(`/app/internal/organizations/${publicOrgA}`, { intent: "activate" });
+  const withoutLicenseProfile = await getPublic(new URL(`/vecindario/${publicSlugs.a}`, baseUrl));
+  const withoutLicenseDirectory = await getPublicHtml(new URL("/vecindario", baseUrl));
+  const withoutLicenseDirectoryHtml = withoutLicenseDirectory.html;
+  const inactiveState = query(`SELECT l.status,ol.status AS license_status,bp.status AS profile_status,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(publicOrgA)} AND a.action IN ('organization.suspended','organization.active')) AS audit_count FROM platform_organization_lifecycle l JOIN organization_license ol ON ol.organization_id=l.organization_id JOIN business_profile bp ON bp.organization_id=l.organization_id WHERE l.organization_id=${sqlLiteral(publicOrgA)};`)[0];
+  if (![302, 303].includes(suspendWithoutLicense.status) || ![302, 303].includes(activateWithoutLicense.status) || withoutLicenseProfile.status !== 404 || withoutLicenseDirectoryHtml.includes("Public certification A") || !withoutLicenseDirectoryHtml.includes("Public certification B") || inactiveState.status !== "active" || inactiveState.license_status !== "suspended" || inactiveState.profile_status !== "published" || Number(inactiveState.audit_count) !== 4) throw new Error(`Inactive license bypassed public visibility or isolation: profile=${withoutLicenseProfile.status}, state=${JSON.stringify(inactiveState)}.`);
+  console.log(JSON.stringify({ publicProfile: { initialHttp: initialProfile.status, directory: initialDirectory.response.status, categoryFilter: initialCategory.response.status, cityFilter: initialCity.response.status, hiddenGuards: hiddenBefore, suspended: { action: publicSuspend.status, profileHttp: suspendedProfile.status, tenantApi: suspendedTenantApi.status }, reactivated: { action: publicActivate.status, profileHttp: reactivatedProfile.status, tenantApi: reactivatedTenantApi.status, membershipsPreserved: reactivatedState.membership_count === publicSnapshot.membership_count, ownerMembershipsPreserved: reactivatedState.owner_count === publicSnapshot.owner_count }, inactiveLicenseAfterReactivation: { suspend: suspendWithoutLicense.status, activate: activateWithoutLicense.status, profileHttp: withoutLicenseProfile.status, lifecycleAuditCount: Number(inactiveState.audit_count) }, organizationB: publicSlugs.b } }, null, 2));
 
   const trainingPath = `/api/platform/organizations/${orgId}/training`;
   const assignmentResponse = await admin.json(trainingPath, { action: "assign", trainingSlug: "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo" });

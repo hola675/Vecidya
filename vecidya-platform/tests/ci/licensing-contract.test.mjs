@@ -30,6 +30,8 @@ test("publication checks organization owner entitlement in loader and action", (
 test("public listing, detail and filters require active owner license", () => {
   assert.ok((queries.match(/hasActiveOwnerLicense/g) || []).length >= 5);
   assert.match(queries, /organizationLicense\.endsAt/);
+  assert.match(queries, /organizationLicense\.organizationId.*businessProfile\.organizationId/);
+  assert.match(queries, /eq\(organizationLicense\.organizationId, organizationId\)/);
 });
 
 test("CRM licensing stays distinct from Vecindario publication", () => {
