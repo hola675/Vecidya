@@ -42,10 +42,11 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   if (!publicProfile) throw new Response("Perfil no encontrado", { status: 404 });
   const offerings = profile.publicationSnapshot?.offerings ?? [];
   const faqs = profile.publicationSnapshot?.faqs ?? [];
-  const renderableModules = getRenderableMiniWebModules(miniweb.publishedConfiguration, publicProfile, hours, offerings, faqs);
+  const media = (profile.publicationSnapshot?.media ?? []).map((asset) => ({ ...asset, publicUrl: `/media/business/${encodeURIComponent(profile.slug)}/${encodeURIComponent(asset.id)}`, sizeBytes: 0, createdAt: new Date(0) }));
+  const renderableModules = getRenderableMiniWebModules(miniweb.publishedConfiguration, publicProfile, hours, offerings, faqs, media);
   const publicModel = restrictMiniWebPublicModel(publicProfile, hours, renderableModules.map((module) => module.type));
 
-  return { ...publicModel, configuration: miniweb.publishedConfiguration, offerings, faqs };
+  return { ...publicModel, configuration: miniweb.publishedConfiguration, offerings, faqs, media };
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
@@ -54,7 +55,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export default function PublicBusinessProfilePage() {
-  const { profile, hours, configuration, offerings, faqs } = useLoaderData<typeof loader>();
+  const { profile, hours, configuration, offerings, faqs, media } = useLoaderData<typeof loader>();
   const sameAs = [profile.websiteUrl, profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].filter(
     (url): url is string => Boolean(url),
   );
@@ -91,7 +92,7 @@ export default function PublicBusinessProfilePage() {
     <PublicLayout>
       <main className="public-page public-business-profile">
         <JsonLd data={localBusinessSchema} />
-        <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} offerings={offerings} faqs={faqs} />
+        <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} offerings={offerings} faqs={faqs} media={media} />
 
         <section aria-labelledby="business-neighborhood-title" className="public-business-neighborhood">
           <div>

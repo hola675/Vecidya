@@ -9,6 +9,8 @@ import {
   type MiniWebHoursSource,
 } from "./registry";
 import type { BusinessFaqItem, BusinessOffering } from "./content";
+import type { BusinessMediaAsset } from "../../../db/queries/business-media.server";
+export type MiniWebMediaAsset = Pick<BusinessMediaAsset, "id" | "mediaType" | "purpose" | "contentType" | "altText"> & { publicUrl: string };
 
 function hasText(...values: (string | null)[]) {
   return values.some((value) => typeof value === "string" && value.trim().length > 0);
@@ -35,7 +37,7 @@ function hasPublicContact(profile: MiniWebProfileSource) {
     || [profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].some(isValidWebUrl);
 }
 
-function hasContent(type: MiniWebModuleType, profile: MiniWebProfileSource, hours: MiniWebHoursSource, offerings: readonly BusinessOffering[], faqs: readonly BusinessFaqItem[]) {
+function hasContent(type: MiniWebModuleType, profile: MiniWebProfileSource, hours: MiniWebHoursSource, offerings: readonly BusinessOffering[], faqs: readonly BusinessFaqItem[], media: readonly MiniWebMediaAsset[]) {
   switch (type) {
     case "hero": return hasText(profile.displayName);
     case "about": return hasText(profile.description);
@@ -45,6 +47,7 @@ function hasContent(type: MiniWebModuleType, profile: MiniWebProfileSource, hour
     case "services": return offerings.some((item) => item.kind === "service" && item.isActive);
     case "products": return offerings.some((item) => item.kind === "product" && item.isActive);
     case "faq": return faqs.some((item) => item.isActive);
+    case "gallery": return media.some((asset) => asset.purpose === "gallery");
     default: return false;
   }
 }
@@ -55,6 +58,7 @@ export function getRenderableMiniWebModules(
   hours: MiniWebHoursSource,
   offerings: readonly BusinessOffering[] = [],
   faqs: readonly BusinessFaqItem[] = [],
+  media: readonly MiniWebMediaAsset[] = [],
 ): MiniWebModuleConfig[] {
   const template = MINIWEB_TEMPLATE_REGISTRY[configuration.templateKey];
   if (!template || template.availability !== "available") return [];
@@ -62,6 +66,6 @@ export function getRenderableMiniWebModules(
     module.enabled
     && MINIWEB_MODULE_REGISTRY[module.type].availability === "available"
     && template.supportedModules.includes(module.type)
-    && hasContent(module.type, profile, hours, offerings, faqs),
+    && hasContent(module.type, profile, hours, offerings, faqs, media),
   );
 }

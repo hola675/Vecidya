@@ -5730,3 +5730,47 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width:760px) { .learn-pathways-grid { grid-template-columns:1fr; } }
 
 @media (max-width: 335px) { body { min-width: 0; } }
+.miniweb-gallery__grid,
+.miniweb-media-list {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.miniweb-gallery__grid figure,
+.miniweb-media-list li {
+  margin: 0;
+  min-width: 0;
+}
+
+.miniweb-gallery__grid img,
+.miniweb-gallery__grid video {
+  aspect-ratio: 4 / 3;
+  border-radius: 0.75rem;
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
+.miniweb-cover {
+  border-radius: 1rem;
+  display: block;
+  margin: 1rem auto;
+  max-height: 28rem;
+  object-fit: cover;
+  width: min(100%, 64rem);
+}
+
+.miniweb-media-list li {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.miniweb-media-list img {
+  border-radius: 0.5rem;
+  object-fit: cover;
+}

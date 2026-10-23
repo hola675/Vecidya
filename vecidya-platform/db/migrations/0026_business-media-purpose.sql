@@ -1,0 +1,1 @@
+ALTER TABLE `business_media_asset` ADD `purpose` text DEFAULT 'gallery' NOT NULL;
