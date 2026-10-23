@@ -4,7 +4,7 @@
 
 - La acción de publicar perfil entrega la revisión final de la publicación, evitando que el siguiente guardado de perfil/horarios choque con un `409` falso.
 - MiniWeb reinicia configuración y revisión al cambiar de organización activa; una edición en la organización seleccionada guarda con su propia revisión.
-- El commit `774d162` pasó unitarias 1655/1655, Worker/D1 E2E 69/69 sobre migraciones `0000–0023`, typecheck, build y diff-check. Fixtures verificados en cero y D1 efímera eliminada. PR #45 abierto/mergeable; Codex revisó `dade623` sin hallazgos mayores. Sin checks CI, D1 remota, correo real, deploy o HTTP público. APP-MINI-02B espera integración.
+- El commit `774d162` pasó unitarias 1655/1655, Worker/D1 E2E 69/69 sobre migraciones `0000–0023`, typecheck, build y diff-check. Fixtures verificados en cero y D1 efímera eliminada. PR #45 abierto/mergeable; Codex revisó HEAD `9f427e2` sin hallazgos mayores. Sin checks CI, D1 remota, correo real, deploy o HTTP público. APP-MINI-02B espera integración.
 
 ## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R2 (PR #42 integrado)
 
