@@ -3,6 +3,7 @@ import { useRef, useState, type FormEvent } from "react";
 import {
   COMMERCIAL_CONTACT_NOTICE_VERSION,
   DIAGNOSTIC_RESEARCH_NOTICE_VERSION,
+  IDENTIFIED_REPORT_RETENTION_DAYS,
   REPORT_SERVICE_NOTICE_VERSION,
 } from "../../features/diagnostic/identified-report-constants";
 
@@ -24,7 +25,6 @@ export function IdentifiedDiagnosticRequestForm({
   const [fullName, setFullName] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [serviceAcknowledged, setServiceAcknowledged] = useState(false);
   const [commercialOptIn, setCommercialOptIn] = useState(false);
   const [researchOptIn, setResearchOptIn] = useState(false);
@@ -44,7 +44,7 @@ export function IdentifiedDiagnosticRequestForm({
           fullName,
           businessName: businessName.trim() || null,
           email,
-          phone: phone.trim() || null,
+          phone: null,
           serviceNoticeVersion: REPORT_SERVICE_NOTICE_VERSION,
           serviceNoticeAcknowledged: serviceAcknowledged,
           commercialContactOptIn: commercialOptIn,
@@ -66,7 +66,7 @@ export function IdentifiedDiagnosticRequestForm({
 
   return (
     <section aria-labelledby="df-identification-title" className="df-identification">
-      <p className="df-identification__local-note" role="note">Entorno local de prueba. Usa datos sintéticos; el correo es simulado y no sale de este proceso.</p>
+      {import.meta.env.DEV ? <p className="df-identification__local-note" role="note">Entorno local de prueba. Usa datos sintéticos; el correo es simulado y no sale de este proceso.</p> : null}
       <h1 id="df-identification-title">Solicita tu diagnóstico completo</h1>
       <p className="df-identification__intro">El resumen anónimo sigue disponible. Para preparar el informe detallado, necesitamos un nombre y un correo donde verificar el acceso.</p>
 
@@ -80,9 +80,6 @@ export function IdentifiedDiagnosticRequestForm({
           </label>
           <label htmlFor="df-request-email">Correo electrónico <span aria-hidden="true">*</span>
             <input autoComplete="email" id="df-request-email" maxLength={254} name="email" onChange={(event) => setEmail(event.target.value)} required type="email" value={email} />
-          </label>
-          <label htmlFor="df-request-phone">Teléfono <span className="df-identification__optional">Opcional</span>
-            <input autoComplete="tel" id="df-request-phone" maxLength={40} name="phone" onChange={(event) => setPhone(event.target.value)} type="tel" value={phone} />
           </label>
         </div>
 
@@ -103,7 +100,7 @@ export function IdentifiedDiagnosticRequestForm({
           </label>
         </fieldset>
 
-        <p className="df-identification__retention">Prueba local: se asignan 30 días a la solicitud y al informe, y 24 horas al enlace. La limpieza automática todavía no está configurada; estos plazos y el tratamiento no están aprobados para producción.</p>
+        <p className="df-identification__retention">La solicitud y el informe se conservan hasta {IDENTIFIED_REPORT_RETENTION_DAYS} días. El enlace de verificación vence a las 24 horas. Puedes eliminar la solicitud antes desde el informe; la aprobación de estos plazos y la eliminación automática de datos vencidos siguen siendo requisitos para habilitar el servicio.</p>
         {state.kind === "error" ? <p className="df-identification__error" role="alert">{state.message}</p> : null}
         <div className="df-identification__actions">
           <button className="button button--primary" disabled={state.kind === "submitting" || !serviceAcknowledged} type="submit">{state.kind === "submitting" ? "Preparando solicitud…" : "Solicitar acceso al informe"}</button>
@@ -123,18 +120,18 @@ export function DiagnosticVerificationPending({ requestId, onBack }: { readonly 
     setMessage(null);
     try {
       const response = await fetch(`/api/diagnostic/report-requests/${encodeURIComponent(requestId)}/resend`, { method: "POST" });
-      setMessage(response.ok ? "Enlace simulado actualizado. Abre el buzón local para continuar." : "No pudimos generar otro enlace. Espera un momento y vuelve a intentarlo.");
+      setMessage(response.ok ? "Si la solicitud y el informe siguen vigentes, procesaremos un nuevo enlace al correo asociado." : "No pudimos procesar otro enlace. Espera un momento y vuelve a intentarlo.");
     } catch {
-      setMessage("No pudimos conectar con el servicio local. Vuelve a intentarlo.");
+      setMessage("No pudimos conectar con el servicio. Vuelve a intentarlo.");
     } finally {
       setResending(false);
     }
   };
   return (
     <section aria-labelledby="df-pending-title" className="df-identification">
-      <p className="df-identification__local-note" role="note">Entorno local de prueba. No se envió un correo real.</p>
+      {import.meta.env.DEV ? <p className="df-identification__local-note" role="note">Entorno local de prueba. No se envió un correo real.</p> : null}
       <h1 id="df-pending-title">Revisa la verificación de tu correo</h1>
-      <p>La solicitud quedó registrada en D1 local. El informe no se abre hasta confirmar el enlace de un solo uso.</p>
+      <p>Si la solicitud sigue vigente, enviaremos un enlace al correo registrado. El informe no se abre hasta confirmar un enlace de un solo uso.</p>
       {import.meta.env.DEV && <a className="button button--primary" href={`/__dev/diagnostico/buzon/${encodeURIComponent(requestId)}`}>Abrir buzón simulado</a>}
       <p className="df-identification__permission-note">El enlace vence en 24 horas y abrirlo no lo consume; debes pulsar “Confirmar” en la página de verificación.</p>
       <button className="button button--secondary" disabled={resending} onClick={() => void resend()} type="button">{resending ? "Preparando enlace…" : "Generar otro enlace"}</button>

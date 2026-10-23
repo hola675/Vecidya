@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-22 — DIAG-FUNNEL-PROD-01 (CODE local, flag cerrado)
+
+- El recorrido público QA-03B ya puede conectar solicitud identificada, replay Worker autoritativo, snapshot, correo Gmail, verificación explícita, grant/cookie, recovery y reporte HTML usando los contratos existentes. La bandeja simulada sigue solo en desarrollo; el correo real utiliza el adaptador Gmail configurado, sin cambiar ni leer secretos.
+- Las rutas identificadas pasan a formar parte del manifiesto, pero `DIAGNOSTIC_REPORT_FUNNEL_ENABLED=false` en production/staging mantiene el CTA oculto y respuestas 404. Se excluye teléfono nuevo del formulario; opciones comerciales e investigación siguen separadas y opcionales.
+- Se registra como bloqueo de activación la aprobación de privacidad/retención (30 días provisional), purga automática, cadena D1 `0000–0019` (producción documentada en `0000–0010`), prueba Gmail autorizada y aceptación PDF. No se añade migración, no se reactiva el generador PDF, no se modifica D1 remota ni se despliega.
+- Fix final PR #40: verificación e informe y sus `ErrorBoundary` comparten `PlatformFooter` con copyright/versión; el pie del informe se oculta en impresión. E2E protege desktop/móvil/impresión, estados 404 con el flag cerrado y el texto honesto de retención. `cf-typegen`, unitarias, correo simulado, typecheck, build, QA-03B y aislamiento Worker local PASS. Sin cambio a scoring, esquema, secretos, D1 remota ni publicación.
+
 ## 2026-10-22 — DIAG-QA-CONTENIDO-01 (rama local, sin publicar)
 
 - A: añadidas opciones desconocidas donde faltaban, conservando su incertidumbre declarada y versionando banco, respuesta, contexto, sesión y replay para proteger sesiones históricas.

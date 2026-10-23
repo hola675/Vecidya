@@ -12,7 +12,7 @@ El package local también informa `0.6.1`, pero coincidencia de versión no demu
 
 ## DIAG-V3-FUNNEL-01C — pruebas locales (2026-10-12)
 
-`wrangler.jsonc` declara rate-limit bindings de resumen e identificación; probados localmente. D1 local `DB` recibió `0014_diagnostic-identification` y `0015_diagnostic-request-fingerprint`; no se ejecutó `--remote`. El correo de identificación usa un buzón efímero en memoria y no invoca Gmail aunque los vars generales nombren ese proveedor. Las nuevas páginas/APIs son dev-only. No hay deploy ni comprobación HTTP pública para este código; `0.6.1` publicada históricamente no cambia.
+**DIAG-FUNNEL-PROD-01 — rama `feat/diagnostic-funnel-prod-01`, CODE + TEST local, no publicado.** `wrangler.jsonc` declara `DIAGNOSTIC_REPORT_FUNNEL_ENABLED=false` tanto en producción como en staging. Las páginas/APIs identificadas están en el manifiesto de producción, pero el Worker responde 404 y el CTA no se ofrece mientras el flag esté cerrado; desarrollo utiliza el buzón fake efímero y nunca llama Gmail. Al habilitarse, el adaptador usa `EMAIL_PROVIDER=gmail`, `EMAIL_FROM`, `EMAIL_REPLY_TO` y secretos OAuth ya declarados; sus valores no se han leído ni modificado. La entrega real no se probó. Para el servicio identificado se requiere la cadena D1 `0000–0019`; el último estado remoto documentado es producción `0000–0010` (HTTP/deploy `0.6.1`, 2026-10-11), sin consulta remota en este checkpoint. No migración, deploy ni HTTP público en esta rama.
 
 ## DIAG-V3-REL-002 — release 0.6.1
 

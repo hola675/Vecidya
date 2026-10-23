@@ -28,7 +28,7 @@ export function validateQa03bDiagnosticReportRequest(value: unknown): Qa03bDiagn
   if (!isRecord(value.session) || !isAnonymousDiagnosticSummaryV1(value.anonymousSummary)) return null;
   if (!isCandidateResultIdentityV3(value.anonymousSummary.diagnosticIdentity)) return null;
   const details = validateReportDetails(value);
-  if (!details) return null;
+  if (!details || details.phone !== null) return null;
   return {
     replayVersion: WORKER_REPLAY_VERSION,
     engineIdentity: CANDIDATE_RESULT_IDENTITY_V3,

@@ -1,11 +1,13 @@
 import assert from "node:assert/strict";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { chromium } from "playwright";
 import { assertLocalBaseUrl, baseUrl } from "./test-safety.mjs";
 import { AUTHORED_JOURNEYS } from "../unit/diagnostic/qa03b-fixtures.ts";
 assertLocalBaseUrl();
-const route = new URL("/__dev/diagnostico/qa03b", baseUrl).toString();
+const route = new URL("/diagnostico", baseUrl).toString();
 const base = new URL(baseUrl);
+const { version: platformVersion } = JSON.parse(readFileSync(resolve("package.json"), "utf8"));
 const key = "vecidya.diagnostic.v3.candidate.session.6";
 const oldKeys = ["vecidya.diagnostic.v3.session.2", "vecidya.diagnostic.v3.candidate.session.1", "vecidya.diagnostic.v3.candidate.session.2", "vecidya.diagnostic.v3.candidate.session.3", "vecidya.diagnostic.v3.candidate.session.4", "vecidya.diagnostic.v3.candidate.session.5"];
 const artifacts = "tmp/diag-v3-qa-03b/browser";
@@ -90,8 +92,8 @@ try {
       }
     }
     await page.locator("#candidate-ready-title").waitFor();
-    const replayResponsePromise = page.waitForResponse(response => new URL(response.url()).pathname.replace(/\.data$/u, "") === "/__dev/diagnostico/qa03b" && response.request().method() === "POST");
-    await page.getByRole("button", { name: "Validar resumen en Worker" }).click();
+    const replayResponsePromise = page.waitForResponse(response => new URL(response.url()).pathname.replace(/\.data$/u, "") === "/api/diagnostic/anonymous-summary" && response.request().method() === "POST");
+    await page.getByRole("button", { name: "Ver mi resumen" }).click();
     const replayResponse = await replayResponsePromise.catch(async (error) => {
       throw new Error(`no llegó respuesta del replay Worker; POST=${JSON.stringify(postRequests)}; main=${await page.locator("main").innerText()}; localSession=${await page.evaluate(k => localStorage.getItem(k), key)}; cause=${error.message}`);
     });
@@ -136,6 +138,9 @@ try {
     if (name === "open-no-clients") {
       await page.getByRole("button", { name: "Solicitar informe completo" }).click();
       await page.getByRole("heading", { name: "Solicita tu diagnóstico completo" }).waitFor();
+      const retentionNotice = await page.locator(".df-identification__retention").innerText();
+      assert.match(retentionNotice, /la aprobación de estos plazos y la eliminación automática de datos vencidos siguen siendo requisitos/u);
+      assert.doesNotMatch(retentionNotice, /se eliminarán automáticamente/u);
       await page.getByLabel(/Tu nombre/).fill("QA03B Worker Sintético");
       await page.getByLabel(/Negocio o proyecto/).fill("Proyecto QA03B Local");
       await page.getByLabel(/Correo electrónico/).fill("qa-funnel@example.invalid");
@@ -177,6 +182,13 @@ try {
       const verificationLink = mailbox.text.match(/https?:\/\/[^\s]+/u)?.[0];
       assert.ok(verificationLink);
       await page.goto(verificationLink, { waitUntil: "domcontentloaded" });
+      assert.equal(await page.getByText("© 2026 Vecidya", { exact: true }).count(), 1, "verificación incluye el footer compartido");
+      assert.equal(await page.locator(`.platform-footer [aria-label="Versión pública ${platformVersion}"]`).count(), 1, "verificación incluye la versión pública");
+      const verificationViewport = page.viewportSize();
+      await page.setViewportSize({ width: 390, height: 844 });
+      assert.equal(await page.locator(".platform-footer").evaluate((footer) => getComputedStyle(footer).display), "flex", "footer de verificación sigue visible en móvil");
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, "verificación no desborda en móvil");
+      await page.setViewportSize(verificationViewport);
       await page.getByRole("button", { name: "Confirmar y abrir el informe" }).click();
       await page.getByRole("link", { name: "Abrir informe", exact: true }).waitFor();
       const accessCookies = await page.context().cookies(new URL(reportPath, base).toString());
@@ -191,13 +203,23 @@ try {
       await page.getByRole("link", { name: "Abrir informe", exact: true }).click();
       await page.waitForURL(`**${reportPath}`, { waitUntil: "domcontentloaded" });
       await page.locator('.rp[data-ready="true"]').waitFor().catch(async (error) => { throw new Error(`informe no renderizado: url=${page.url()}; main=${await page.locator("main").innerText()}; cause=${error.message}`); });
+      assert.equal(await page.getByText("© 2026 Vecidya", { exact: true }).count(), 1, "informe incluye el footer compartido");
+      assert.equal(await page.locator(`.platform-footer [aria-label="Versión pública ${platformVersion}"]`).count(), 1, "informe incluye la versión pública");
+      const reportViewport = page.viewportSize();
+      await page.setViewportSize({ width: 390, height: 844 });
+      assert.equal(await page.locator(".platform-footer").evaluate((footer) => getComputedStyle(footer).display), "flex", "footer del informe sigue visible en móvil");
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, "informe no desborda en móvil");
+      await page.setViewportSize(reportViewport);
+      await page.emulateMedia({ media: "print" });
+      assert.equal(await page.locator(".platform-footer").evaluate((footer) => getComputedStyle(footer).display), "none", "footer no altera la paginación de impresión");
+      await page.emulateMedia({ media: "screen" });
       assert.equal(await page.locator(".rp-business").innerText(), "Proyecto QA03B Local");
       assert.ok((await page.locator(".rp-technical").innerText()).includes("diag-v3-candidate-operation-history-v3"));
       assert.equal(lifecycleState.snapshot.methodologyVersion, "3.0");
     }
     if (name === "open-no-clients") await page.goto(route, { waitUntil: "domcontentloaded" });
     else await page.reload({ waitUntil: "domcontentloaded" });
-    const restoredReplayPromise = page.waitForResponse(response => new URL(response.url()).pathname.replace(/\.data$/u, "") === "/__dev/diagnostico/qa03b" && response.request().method() === "POST");
+    const restoredReplayPromise = page.waitForResponse(response => new URL(response.url()).pathname.replace(/\.data$/u, "") === "/api/diagnostic/anonymous-summary" && response.request().method() === "POST");
     await page.getByRole("button", { name: "Ver mi resultado", exact: true }).click();
     const restoredReplay = await restoredReplayPromise;
     await page.getByRole("heading", { name: "Tu resumen del diagnóstico" }).waitFor().catch(async (cause) => { throw new Error(`replay restaurado ${name}: status=${restoredReplay.status()}, wire=${(await restoredReplay.text()).slice(0, 1500)}; main=${await page.locator("main").innerText()}; ${cause.message}`); });
@@ -205,9 +227,9 @@ try {
     const restored = await page.evaluate(k => JSON.parse(localStorage.getItem(k)), key);
     assert.equal(restored.completedAt, saved.completedAt); assert.deepEqual(restored.answers, saved.answers); assert.deepEqual(restored.engineIdentity, saved.engineIdentity); assert.deepEqual(restored.replayTranscript, saved.replayTranscript);
     await page.getByRole("link", { name: "Consultar metodología" }).click();
-    await page.waitForURL("**/qa03b/metodologia");
-    assert.ok(page.url().includes("/qa03b/metodologia"));
-    await page.getByRole("heading", { name: "Cómo funciona el diagnóstico candidato de Vecidya" }).waitFor();
+    await page.waitForURL("**/diagnostico/metodologia");
+    assert.ok(page.url().includes("/diagnostico/metodologia"));
+    await page.getByRole("heading", { name: "Cómo funciona el Diagnóstico de Vecidya" }).waitFor();
     assert.deepEqual(await page.evaluate(keys => keys.map(k => localStorage.getItem(k)), oldKeys), oldKeys.map(k => `preservado:${k}`));
     assert.deepEqual(errors, []);
     results.push({ id: name, viewport: mobile ? "390x844" : "1366x900", questions: order, count: Object.keys(saved.answers).length, terminal: saved.terminalReason, elapsedMs: Date.now() - started, completedAt: saved.completedAt, engineIdentity: saved.engineIdentity });

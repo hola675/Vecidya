@@ -36,8 +36,8 @@ Resultado `LEGACY_INVENTORY_READY`; auditoría sin eliminación. La clasificaci�
 
 | Ruta/source | Clase | Imports y pruebas | Riesgo |
 | --- | --- | --- | --- |
-| `/diagnostico` | `KEEP` | `diagnostic.tsx` → `AnonymousDiagnosticFlow` → session V3/key 2; E2E `diagnostic`, `funnel-01b` | Necesario para FUNNEL-01B; aún sin deploy. |
-| `/api/diagnostic/anonymous-summary` | `KEEP` | Replay Worker con bank/planner/session V3; E2E `funnel-01b` | DTO allowlisted; no es backend QA-03B. |
+| `/diagnostico` | `KEEP` | `diagnostic.tsx` → `CandidateDiagnosticFlow` QA-03B → replay Worker; E2E `diagnostic-act-04`, `diagnostic-v3-qa03b` | QA-03B público; CTA de informe condicionado por `DIAGNOSTIC_REPORT_FUNNEL_ENABLED`. |
+| `/api/diagnostic/anonymous-summary` | `KEEP` | Replay Worker QA-03B con validación de identidad, schema, bank y transcript | DTO allowlisted; conserva adaptador V3 para rollback. |
 | `/api/diagnostic/funnel-analytics` | `DEV ONLY` | `api-diagnostic-funnel-analytics.ts`; agregado `diagnostic_funnel_aggregate` | Solo se registra cuando `NODE_ENV=development`; GET suprime `<5`, POST admite dos eventos con rate limit y host loopback. Bundle isolation pendiente de validación. |
 | `/diagnostico/metodologia` | `KEEP` | metodologia → `qbv2-methodology`; E2E methodology | Versión y contenido aún ligados al V3 público. |
 | `/diagnostico/informe` source `diagnostico-informe.tsx`, sin `route()` | `KEEP` barrera | Leído por `diagnostic-report.test.ts` y readiness | Source no registrado, pero test protege la no exposición. |
@@ -109,10 +109,10 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/contacto` | `contact.tsx` | estático (`mailto`, WhatsApp directo `wa.me` y canal oficial de WhatsApp; sin grupo comunitario desde 2026-09-25) | — | funcional | `px-a`, `join-contact` | sí |
 | `/vecindario` | `directory.tsx` | D1 lista+filtros | — | funcional | `px-a`, `pg-c1`, `d1` | sí |
 | `/vecindario/:slug` | `public-business-profile.tsx` + `components/miniweb/miniweb-renderer.tsx` | perfil/horarios allowlisted + snapshot modular | — | template compatible, módulos ordenados; conserva 404 si no publicado/suspendido | `bpx`, `slug-life`, `miniweb-core` | APP-MINI-02A local; migración `0017` pendiente del ledger |
-| `/diagnostico` | `diagnostic.tsx` + `AnonymousDiagnosticFlow` | respuestas en localStorage; Worker calcula resumen V3; solicitud identificada dev-only y snapshot D1 local | — | FUNNEL-01B/01C local; no publicado | `diagnostic`, `funnel-01b`, `funnel-01c` | publicación previa sin FUNNEL-01B; requiere deploy para actualizar |
+| `/diagnostico` | `diagnostic.tsx` + `CandidateDiagnosticFlow` | sesión QA-03B en localStorage; Worker calcula resumen allowlisted; solicitud identificada solo si el flag está activo | — | QA-03B local; funnel identificado preparado y cerrado en prod/staging | `diagnostic-act-04`, `diagnostic-v3-qa03b-check.mjs` | sin publicación nueva |
 | `/diagnostico/metodologia` | `diagnostico-metodologia.tsx` | metodología evergreen | — | funcional | methodology | sí (histórico) |
-| `/diagnostico/verificar` | `dev-diagnostic-verify-email.tsx` | fragmento efímero + confirmación explícita | No | solo desarrollo; email simulado | `funnel-01c` | no |
-| `/diagnostico/informe/:requestId` | `dev-diagnostic-identified-report.tsx` | cookie opaca + grant/snapshot D1 local; DELETE con autorización de acceso | No | solo desarrollo; sin exportación PDF | `funnel-01c` | no |
+| `/diagnostico/verificar` | `dev-diagnostic-verify-email.tsx` | token del fragmento, confirmación explícita, grant/cookie; gate del flag; `PlatformFooter` en página y ErrorBoundary | No | desarrollo fake; Gmail fuera de DEV si el gate se habilita | `diagnostic-v3-qa03b-check.mjs`, isolation check | no, flag false |
+| `/diagnostico/informe/:requestId` | `dev-diagnostic-identified-report.tsx` | cookie opaca + grant/snapshot D1; DELETE/PATCH same-origin; `PlatformFooter` en página y ErrorBoundary, oculto al imprimir | No | HTML identificado bajo gate; sin exportación PDF | `diagnostic-v3-qa03b-check.mjs`, isolation check | no, flag false |
 | `/sobre-nosotros` | `about.tsx` | estático + WebP humanos | — | funcional | `about` | sí |
 | `/aprende` | `knowledge.tsx` | estático | — | funcional local / release ready; 5 categorías y 4 artículos | `learn`, `commercial-review` | sí local; deploy pendiente |
 | `/aprende/:slug` | `learn-article.tsx` | estático | — | funcional local / release ready; artículo, índice, CTA y metadata | `learn`, `commercial-review` | sí local; deploy pendiente |
@@ -160,9 +160,9 @@ D:\Proyectos\Vecidya            (raíz Git)
 | --- | --- | --- | --- | --- | --- | --- |
 | `/api/auth/*` | `api-auth.ts` | todos | Better Auth (público por diseño). Del plugin Organization solo responden por HTTP `create`, `list`, `set-active` y `accept-invitation`; los otros 18 dan 404 (hook `before` en `auth.server.ts`, AUTHZ-BA-001) | funcional | `authz`, `unit-authz`; registro/sesión indirectos | sí (allowlist solo local hasta el próximo deploy) |
 | `/api/diagnostic/anonymous-summary` | `api-diagnostic-anonymous-summary.ts` | POST | solo origen same-origin; valida forma, tamaño y replay de ruta V3 | funcional local; no escribe D1/KV ni registra respuestas; devuelve solo resumen V1 `no-store` | `funnel-01b` | no (sin deploy) |
-| `/api/diagnostic/report-requests` | `api-diagnostic-report-requests.ts` | POST | dev-only, same-origin, tamaño, rate limit, identity y replay V3 | D1 local; solicitud/snapshot/challenge/opt-ins; respuesta sin informe; fake email en memoria | `funnel-01c` | no |
-| `/api/diagnostic/report-requests/:requestId/resend` | `api-diagnostic-report-request-resend.ts` | POST | dev-only, same-origin, pendiente y rate limit | reemplaza challenge; correo simulado | `funnel-01c` | no |
-| `/api/diagnostic/email/verify` | `api-diagnostic-email-verify.ts` | POST | dev-only, same-origin, token digest, expiración, intentos y canje atómico | concede cookie opaca una vez; no-store | `funnel-01c` | no |
+| `/api/diagnostic/report-requests` | `api-diagnostic-report-requests.ts` | POST | same-origin, tamaño, rate limit, QA-03B identity/replay; feature gate | D1 snapshot/challenge/opt-ins; Gmail fuera de DEV; respuesta sin informe | `diagnostic-v3-qa03b-check.mjs` | no, flag false |
+| `/api/diagnostic/report-requests/:requestId/resend` | `api-diagnostic-report-request-resend.ts` | POST | same-origin, solicitud/status/expiry y rate limit; feature gate | reemplaza challenge atómicamente; respuesta genérica; Gmail fuera de DEV | `diagnostic-v3-qa03b-check.mjs` | no, flag false |
+| `/api/diagnostic/email/verify` | `api-diagnostic-email-verify.ts` | POST | same-origin, token digest, expiración, intentos, canje atómico y feature gate | concede cookie opaca una vez; no-store | `diagnostic-v3-qa03b-check.mjs` | no, flag false |
 | `/api/organizations/:id` | `api-organization.ts` | GET | `requireMembership` | funcional | `authz` | sí |
 | `…/authorization` | `api-organization-authorization.ts` | GET, POST | `organization:read`; POST comprueba el permiso pedido | funcional; JSON inválido → 500 | `authz` (matriz 3 roles × 10 permisos) | sí |
 | `…/members` | `api-organization-members.ts` | GET; acciones | `member:read`/`member:role:update`/`member:remove` + `requireOrganizationMemberTarget` + Better Auth | funcional | `authz`, `members` (`TEST-D1-RESET-001`) | sí |

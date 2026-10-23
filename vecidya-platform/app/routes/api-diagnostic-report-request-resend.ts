@@ -5,6 +5,7 @@ import { isRequestId, type VerifiedEmailChallengePurpose } from "../features/dia
 import { createOpaqueToken, digestOpaqueToken } from "../features/diagnostic/report-access-crypto.server";
 import { deliverDiagnosticVerificationEmail } from "../../server/email/diagnostic-dev-inbox.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
+import { isIdentifiedReportJourneyAvailable } from "../features/diagnostic/identified-report-availability.server";
 
 import type { ActionFunctionArgs } from "react-router";
 
@@ -14,12 +15,12 @@ const failure = (status: number, error: string) => Response.json({ error }, { st
 export function loader() { return failure(405, "Método no permitido."); }
 
 export async function action({ context, params, request }: ActionFunctionArgs) {
-  if (!import.meta.env.DEV) return failure(404, "No disponible.");
   if (request.method !== "POST") return failure(405, "Método no permitido.");
   if (request.headers.get("origin") !== new URL(request.url).origin) return failure(403, "Origen no permitido.");
   const requestId = params.requestId;
   if (!requestId || !isRequestId(requestId)) return failure(404, "La solicitud no está disponible.");
   const { env } = context.get(cloudflareContext);
+  if (!isIdentifiedReportJourneyAvailable(env)) return failure(404, "No disponible.");
   if (!env.DIAGNOSTIC_IDENTIFICATION_RATE_LIMITER) return failure(503, "El servicio no está disponible temporalmente.");
   if (!await allowRateLimitedRequest(env.DIAGNOSTIC_IDENTIFICATION_RATE_LIMITER, request, "report-resend", [`request:${requestId}`])) return failure(429, "Espera un momento antes de volver a intentarlo.");
   const genericAccepted = () => Response.json({ accepted: true }, { status: 202, headers });
@@ -43,6 +44,10 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
     )), consumedAt: null, createdAt: now,
   };
   if (!await replacePendingChallenge(env.DB, reportRequest.id, challenge)) return genericAccepted();
-  deliverDiagnosticVerificationEmail({ requestId: reportRequest.id, challengeId: challenge.id, recipient: reportRequest.email, token, purpose, origin: new URL(request.url).origin, now: now.getTime() });
+  try {
+    await deliverDiagnosticVerificationEmail({ requestId: reportRequest.id, challengeId: challenge.id, recipient: reportRequest.email, token, purpose, origin: import.meta.env.DEV ? new URL(request.url).origin : env.APP_URL, now: now.getTime() }, env);
+  } catch {
+    // A failed delivery remains intentionally indistinguishable from an unavailable request.
+  }
   return genericAccepted();
 }

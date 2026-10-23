@@ -88,6 +88,7 @@ test("identified QA-03B request accepts only its exact session, answer and summa
   assert.equal(module.validateQa03bDiagnosticReportRequest({ ...qaRequest(), questionBank: "reviewed-evidence-v3" }), null);
   assert.equal(module.validateQa03bDiagnosticReportRequest({ ...qaRequest(), sessionKey: "vecidya.diagnostic.v3.session.2" }), null);
   assert.equal(module.validateQa03bDiagnosticReportRequest({ ...qaRequest(), answers: [{ questionId: "q2_entity", value: "business" }] }), null);
+  assert.equal(module.validateQa03bDiagnosticReportRequest({ ...qaRequest(), phone: "+15555550123" }), null, "new identified QA-03B requests do not collect phone numbers");
   assert.equal(module.validateQa03bDiagnosticReportRequest({ ...qaRequest(), anonymousSummary: { ...summary, email: "ana@example.com" } }), null);
 });
 

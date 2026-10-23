@@ -28,6 +28,11 @@ export default [
   route("sitemap.xml", "routes/sitemap.ts"),
   route("api/auth/*", "routes/api-auth.ts"),
   route("api/diagnostic/anonymous-summary", "routes/api-diagnostic-anonymous-summary.ts"),
+  route("api/diagnostic/report-requests", "routes/api-diagnostic-report-requests.ts"),
+  route("api/diagnostic/report-requests/:requestId/resend", "routes/api-diagnostic-report-request-resend.ts"),
+  route("api/diagnostic/email/verify", "routes/api-diagnostic-email-verify.ts"),
+  route("diagnostico/verificar", "routes/dev-diagnostic-verify-email.tsx"),
+  route("diagnostico/informe/:requestId", "routes/dev-diagnostic-identified-report.tsx"),
   route("api/organizations/:organizationId", "routes/api-organization.ts"),
   route(
     "api/organizations/:organizationId/authorization",
@@ -75,16 +80,9 @@ export default [
   route("app/services", "routes/services-app.tsx"),
   route("vecindario/:slug", "routes/public-business-profile.tsx"),
   route("__health/db", "routes/health-db.ts"),
-  // FUNNEL-01D.1/DIAG-V3-09/10B/11/12: métricas agregadas locales, vista previa del resultado (12 personas golden), integración privada del diagnóstico
-  // adaptativo V3, su metodología y su informe PDF. Solo con `react-router dev`: build y typegen cargan este archivo con
-  // NODE_ENV=production, así que nunca entran en el bundle publicado.
+  // FUNNEL-01D.1 y herramientas QA locales: métricas agregadas, previews y fixtures; solo se registran en desarrollo.
   ...(isDevelopmentServer ? [
     route("api/diagnostic/funnel-analytics", "routes/api-diagnostic-funnel-analytics.ts"),
-    route("api/diagnostic/report-requests", "routes/api-diagnostic-report-requests.ts"),
-    route("api/diagnostic/report-requests/:requestId/resend", "routes/api-diagnostic-report-request-resend.ts"),
-    route("api/diagnostic/email/verify", "routes/api-diagnostic-email-verify.ts"),
-    route("diagnostico/verificar", "routes/dev-diagnostic-verify-email.tsx"),
-    route("diagnostico/informe/:requestId", "routes/dev-diagnostic-identified-report.tsx"),
     route("__dev/diagnostico/buzon/:requestId", "routes/dev-diagnostic-mailbox.ts"),
     route("__dev/diagnostico/lifecycle/purge-expired", "routes/dev-diagnostic-purge-expired.ts"),
     route("__dev/diagnostico/lifecycle/fixture/:requestId", "routes/dev-diagnostic-lifecycle-fixture.ts"),
