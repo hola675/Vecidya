@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-23 — DIAG-D1-RELEASE-01 (certificación local)
+
+- Se certifica en D1 aislada la cadena limpia `0000–0021` y la actualización sintética `0010→0021`, preservando datos representativos, seeds, índices y relaciones; `integrity_check` y `foreign_key_check` pasan.
+- Se documentan en `DATABASE.md` la matriz de migraciones, riesgos de compatibilidad (incluido el `DROP COLUMN` de 0019), preflight, staging, abortos, backups/Time Travel, rollback y autorizaciones por entorno.
+- QA-03B, MiniWeb, la certificación integrada de administración/licencias, correo simulado, unitarias, typecheck y build pasan localmente. `platform-licensing-check.mjs` no alcanza sus aserciones porque su alta de prueba omite la invitación requerida por la política actual.
+- NO se consultó ni modificó D1 remota, no se desplegó, ni se activaron funnel, correo real o purga. Resultado: preparación local certificada; NO-GO para operación remota hasta preflight y autorizaciones separadas.
+
 ## 2026-10-22 — PLATFORM-ADMIN-GLOBAL (certificación focal y concurrencia)
 
 - Se corrigen carreras de reenvío contra aceptación, revocación y cambio de estado, que podían reabrir un lifecycle ya activo o registrar auditorías sin una transición aplicada. Los writes y sus auditorías ahora dependen del compare-and-set que ganó en D1; cambios de rol también exigen el rol anterior observado.

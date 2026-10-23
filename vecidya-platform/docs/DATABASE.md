@@ -1,5 +1,63 @@
 # Base de datos
 
+## DIAG-D1-RELEASE-01 — auditoría y runbook de D1 (2026-10-23)
+
+**Resultado: NO-GO para cualquier D1 remota; CODE + TEST local.** No se consultó D1 remota, ni siquiera en lectura. El último estado documentado para `vecidya-prod` es `0000–0010`, pero no demuestra el ledger actual. Esta matriz es condicional: solo se consideran pendientes las migraciones que el operador autorizado confirme ausentes; nunca se infiere el estado remoto desde los documentos.
+
+### Matriz de migraciones versionadas
+
+| Orden | Migración | Área y efecto de esquema/datos | Riesgo y control de compatibilidad |
+| --- | --- | --- | --- |
+| 0011 | `0011_diagnostic-persistence-foundation.sql` | Diagnóstico: agrega `diagnostic_session`, respuestas y resultado con índices y cascada sesión→hijos. | Tablas nuevas; no actualiza datos previos. No borrar sesiones para “limpiar” una migración. |
+| 0012 | `0012_diagnostic-save-resume.sql` | Diagnóstico: snapshot de reanudación, digest único e índice de expiración. | Tabla nueva vinculada a sesión con `ON DELETE CASCADE`; versiones históricas se leen según el contrato existente. |
+| 0013 | `0013_diagnostic-analytics-foundation.sql` | Diagnóstico: eventos e índices; añade cuatro contadores/fechas a `diagnostic_session`. | Aditiva; defaults `0` conservan filas ya existentes. No añade purga de analítica anónima. |
+| 0014 | `0014_diagnostic-identification.sql` | Diagnóstico: solicitudes, snapshot, challenges, grants y opt-ins; índices de lookup y expiración. | Nuevas tablas personales/operacionales, cascadas por request y challenge. Sin backfill de datos previos. |
+| 0015 | `0015_diagnostic-request-fingerprint.sql` | Diagnóstico: añade `request_fingerprint_hash NOT NULL DEFAULT ''`. | En requests creados entre 0014 y 0015 el default no reconstruye la huella; el código debe tratar el reintento como discrepante, nunca duplicar ni sobrescribir. Confirmar el comportamiento con filas preexistentes. |
+| 0016 | `0016_diagnostic-recovery-challenge-purpose.sql` | Diagnóstico: añade `purpose DEFAULT 'verification'` a challenges. | Aditiva; challenges históricos quedan clasificados como verificación para conservar compatibilidad. |
+| 0017 | `0017_miniweb-core.sql` | MiniWeb: `miniweb_site` y `miniweb_module`, índices únicos y cascada de organización/sitio. | Tablas nuevas sin backfill; la ausencia de configuración continúa usando el default virtual legado. Aplicar aunque no sea Diagnóstico: la cadena es global y ordenada. |
+| 0018 | `0018_diagnostic-funnel-aggregates.sql` | Diagnóstico: tabla de agregado anónimo con CHECK de versión/evento/conteo y columna provisional `diagnostic_report_access.first_opened_at`. | No enlaza agregado con identidad. Columna puente la usa solo la transición siguiente; un Worker intermedio que la lea no puede convivir con 0019. |
+| 0019 | `0019_diagnostic-funnel-request-first-open.sql` | Diagnóstico: añade `identified_diagnostic_request.first_report_opened_at`, backfill con `MIN(first_opened_at)` por solicitud y elimina la columna provisional del grant. | Única contracción detectada. Preserva la primera fecha disponible, pero elimina la columna anterior; abortar si la versión publicada la consulta. Certificada con dos grants sintéticos desordenados. |
+| 0020 | `0020_platform-admin-training.sql` | Administración: asignaciones de Aprende, progreso e historial con índices y FK. | Tablas nuevas sin semillas ni backfill; cascadas de asignación/progreso/historial y referencias históricas a usuario. |
+| 0021 | `0021_platform-organization-lifecycle-invitations.sql` | Administración/Auth: ciclo de organización e invitaciones de owner; índices de estado, digest y unicidad parcial de invitación pendiente por organización. | Tablas nuevas sin backfill. Verificar que versión SQLite/D1 soporta el índice parcial; pasó en Wrangler local. |
+
+No se detectan `DROP TABLE`, borrados de filas, renombrados ni cambios de columnas en tablas de MiniWeb, Auth base o licenciamiento dentro de 0011–0021, salvo el `DROP COLUMN` de 0019. `0010` contiene seeds de tres precios y cuatro tiers; las migraciones posteriores no los actualizan. Integridad de los tres seeds, filas sintéticas de cuenta/organización/membresía/perfil/licencia e índices verificada tras upgrade local.
+
+### Evidencia local ejecutada
+
+- `node tests/e2e/diagnostic-d1-release-check.mjs`: PASS desde D1 sintética exactamente en 0010, con datos representativos, aplicación incremental 0011–0021, ledger exacto, FK/integridad SQLite, índices, seeds y backfill mínimo de 0019. No usa `--remote`.
+- D1 local nueva con `pnpm wrangler d1 migrations apply DB --local`: 0000–0021 aplicadas en orden; sin errores. `PRAGMA integrity_check = ok`; `PRAGMA foreign_key_check` vacío.
+- `pnpm run test:unit` 1652/1652; `pnpm run test:email` 12/12 (fake); typecheck y build PASS. `diagnostic-v3-qa03b-check.mjs` PASS (seis recorridos, reanudación, concurrencia e informe HTML); `miniweb-core-check.mjs` PASS 33/33; `platform-admin-global-certification-check.mjs` PASS con D1 efímera, invitaciones, auth/roles, lifecycle, licenciamiento de perfil, training y MiniWeb.
+- `platform-licensing-check.mjs` no llegó a sus aserciones: el harness intenta registro público sin invitación y recibe `403` («El registro requiere una invitación válida»). Se considera incompatibilidad conocida del arnés con la política actual de registro; no un fallo de las migraciones ni un PASS de licenciamiento. La matriz de licencias y el gate de perfil sí se ejercitaron en pruebas unitarias y en la certificación integrada de administración.
+- La prueba incremental detectó limitación de D1 local: Wrangler deniega `PRAGMA` vía su endpoint; por eso las comprobaciones SQLite se ejecutan sobre el archivo de persistencia local después de cerrar Wrangler. No afecta la base compartida ni remota.
+
+### Preparación de ejecución autorizada (no ejecutada)
+
+Ledger observado y cadena exacta esperada deben contrastarse como dos evidencias independientes. El plan de nombres si el ledger confirmado resulta exactamente `0000–0010` es: `0011_diagnostic-persistence-foundation.sql` → `0012_diagnostic-save-resume.sql` → `0013_diagnostic-analytics-foundation.sql` → `0014_diagnostic-identification.sql` → `0015_diagnostic-request-fingerprint.sql` → `0016_diagnostic-recovery-challenge-purpose.sql` → `0017_miniweb-core.sql` → `0018_diagnostic-funnel-aggregates.sql` → `0019_diagnostic-funnel-request-first-open.sql` → `0020_platform-admin-training.sql` → `0021_platform-organization-lifecycle-invitations.sql`. Si cualquier nombre/firma/orden difiere, hay 0022+, huecos, migración parcialmente aplicada o contenido inesperado, **abortar** y recalcular una matriz con responsable de datos; no saltar ni reaplicar.
+
+| Gate | Staging | Producción |
+| --- | --- | --- |
+| Identidad y preflight | Confirmar explícitamente cuenta, binding/ID, entorno, versión del D1 storage, SHA de Worker desplegado y ledger real; inspeccionar esquema/índices/filas solo con autorización de lectura. | Repetir el mismo preflight para el objetivo explícito. La evidencia de staging no se extrapola. |
+| Compatibilidad | Confirmar que el Worker activo no consulta `diagnostic_report_access.first_opened_at`; probar la versión nueva en local con flags cerrados. Staging conserva `EMAIL_PROVIDER=fake`, flags funnel/purga `false` y no tiene Cron. | Abortar si no se identifica el Worker activo o si lee la columna retirada en 0019. Mantener el Worker anterior durante el cambio solo si esa compatibilidad está demostrada; Wrangler advierte que D1 puede no estar disponible durante cada aplicación. |
+| Backup | Capturar y guardar el bookmark inmediato de Time Travel; comprobar `version: production`. Preparar además export/copia fuera de la base si la política de recuperación lo exige. | Repetir antes de operar. Registrar persona operadora, hora UTC, ID del target, bookmark y destino de copia sin incluir PII en el PR. |
+| Aplicación | Tras aprobación separada: `pnpm wrangler d1 migrations apply DB --remote --env staging`, inspeccionando antes la lista exacta que Wrangler anuncia y confirmando solo 0011–0021 que falten. No ejecutar si hay cualquier discrepancia. | Solo después de staging aprobado y con autorización de producción separada: mismo comando con `--env production`; confirmar el objetivo por nombre/ID antes de aceptar el prompt. Aplicar en ventana acordada por posible indisponibilidad. |
+| Postflight | Comprobar ledger/schema/índices/FK/conteos y módulos MiniWeb/Auth/licencias/Admin/Diagnóstico con flag cerrado y correo fake. Confirmar que staging sigue sin Cron. | Comprobar ledger/schema/FK/conteos, health, rutas previas y gates false. Verificar que cron `scheduled()` con gates cerrados no borra. No abrir gates en este checkpoint. |
+
+**Abortar** ante target ambiguo, ledger/esquema distinto, filas huérfanas, backup/bookmark no verificable, Worker que dependa de columna retirada, error en cualquier migración, checks de postflight fallidos, o migración no prevista. Wrangler revierte la sentencia fallida, pero migraciones anteriores exitosas pueden seguir aplicadas: registrar el ledger parcial y no repetir a ciegas.
+
+**Rollback de aplicación:** desplegar de vuelta el SHA anterior con los flags cerrados y mantener las tablas/columnas ya añadidas. No crear migraciones down improvisadas. **Recuperación de datos/schema:** Time Travel restaura toda la base, sobrescribe cambios posteriores al bookmark y cancela consultas en vuelo; exige aprobación específica, ventana de mantenimiento y evaluación de escrituras posteriores. Anotar el bookmark anterior y el bookmark de deshacer que devuelve la operación; preferir recuperación hacia una copia/export cuando sea viable para preservar escrituras posteriores. Ver [Time Travel y backups de D1](https://developers.cloudflare.com/d1/reference/time-travel/) y [comandos Wrangler D1](https://developers.cloudflare.com/d1/wrangler-commands/). No se ensayó restore.
+
+**Backlog de purga antes de habilitar Cron:** con lectura remota autorizada, obtener solo conteos por tabla de registros vencidos y dependencias, sin listar identidades, correos, tokens ni informes. Contrastar los conteos con el límite de 100 filas por tabla y estimar tandas `ceil(conteo/100)` por tabla; solicitud se elimina solo cuando las dependencias se agotan. Si el backlog, la duración o los conteos no son compatibles con la operación diaria, abortar activación y preparar un drenaje controlado aparte. Ejecutar primero contra staging/copia aislada. Los switches `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED` y `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED` permanecen cerrados hasta checkpoint y autorización aparte; la aprobación de privacidad/retención tampoco se presume.
+
+### Autorizaciones pendientes exactas
+
+1. Autorización explícita para **lectura remota** de la D1 elegida, versión/ledger/schema/conteos, bookmark de Time Travel y SHA del Worker desplegado. Esta autorización no permite escribir.
+2. Aprobación separada para aplicar 0011–0021 en **staging remoto**, solo tras preflight exacto y backup/bookmark.
+3. Aprobación separada para aplicar en **producción**, después de staging, con target y ventana identificados; no se deriva de aprobar staging.
+4. Autorización separada de despliegue si el release la necesita. Ninguna de las anteriores habilita funnel, Cron, correo real o flags.
+5. Para abrir el funnel/purga: aprobación de privacidad/retención, excepciones y backlog, seguida de autorización operativa explícita para cada switch y entorno.
+
+El entorno local de este checkpoint usó D1 aislada del worktree y una D1 temporal sintética; no se leyó/escribió una D1 remota, no se desplegó, y no se abrió ningún switch.
+
 ## DIAG-FUNNEL-PROD-01 — compatibilidad D1 y migración pendiente (2026-10-22)
 
 No se modifica schema ni se genera migración en este checkpoint. La ruta identificada lee solicitud, snapshot, challenge, grant y preferencias (0014–0016); `getAuthorizedReport` también lee `first_report_opened_at` de 0019. Los incrementos agregados de 0018 son best-effort y no bloquean la solicitud si fallan. Para preservar la secuencia global no se pueden saltar migraciones intermedias, incluida 0017 de MiniWeb.

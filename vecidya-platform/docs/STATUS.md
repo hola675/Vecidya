@@ -1,5 +1,11 @@
 # Estado de implementación
 
+## DIAG-D1-RELEASE-01 — certificación local y plan D1 (2026-10-23)
+
+**PASS TÉCNICO LOCAL; NO-GO para D1 remota / publicación.** Desde `origin/main@cc48311` (PR #41 integrado) se inspeccionaron migraciones `0011–0021`, módulos y snapshots/journal; la secuencia global no puede saltarse `0017` MiniWeb ni `0020–0021` de administración. D1 limpia `0000–0021` y upgrade sintético incremental `0010→0021` pasan con integridad/FK limpias, filas sintéticas de Auth/organización/perfil/licencia intactas, seeds `0010` conservados y backfill 0019 correcto. Unitarias `1652/1652`, email fake `12/12`, QA-03B E2E, MiniWeb `33/33`, Admin Global E2E, typecheck y build PASS; evidencia en `TESTING.md` y matriz/runbook en `DATABASE.md`.
+
+**No se accedió a D1 remota ni al Worker publicado.** El último ledger documentado `0000–0010` no se toma como estado actual; no hay SHA desplegado confirmado. El E2E aislado `platform-licensing-check.mjs` está desfasado con el signup actualmente invitación-only y aborta antes de sus asserts (403); licencia de perfil está cubierta en Admin Global E2E y cálculo en unitarias. Quedan gates de lectura/preflight autorizados, staging primero, backup/bookmark, comprobación del Worker y aprobación separada antes de cualquier escritura remota. Ningún deploy, correo real, activación de funnel/purga ni restore.
+
 ## DIAG-PRIVACY-PURGE-01 — purga automática lista técnicamente; sin habilitar (2026-10-22)
 
 **CODE + TEST local; NO PUBLICADO / PURGA DE PRODUCCIÓN DESACTIVADA.** PR #40 está integrado en `origin/main@f10ea8a`. Se reutiliza `purgeExpiredIdentifiedReports()` con lotes de hasta 100 por tabla, tandas repetibles y batch D1 transaccional; el request vencido se borra después de agotar dependencias para evitar cascadas masivas. Worker `scheduled()` queda conectado a Cron diario 03:17 UTC y exige dos switches (`DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED` y `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED`), ambos `false` en producción; staging no registra Cron y conserva ambos `false`. Métricas del log son conteos por tabla, sin PII ni tokens.
