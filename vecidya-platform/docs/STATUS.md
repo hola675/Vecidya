@@ -1,5 +1,13 @@
 # Estado de implementación
 
+## UI-PILOT-01 — Aprende, búsqueda temprana y responsive local (2026-10-23)
+
+**Implementado y validado en la rama local `feat/aprende-ui-pilot-01`; no publicado.** `/aprende` presenta búsqueda en el hero, atlas SVG original, conteos derivados del catálogo, enlaces a itinerarios y temas, y conserva los 38 artículos, 27 marcas `editorialDraft`, 7 itinerarios, 6 temas, filtros GET, metadata y copys existentes. La búsqueda llega a `#guias`; el campo se apila en 320 px. Se corrigieron desbordamientos reproducidos en tarjetas relacionadas y CTA/cuerpo de artículos a 320 px. El ajuste de `body` a 320 px se limita a la ruta de listado Aprende.
+
+`learn-experience-check.mjs` PASS en Worker local: búsqueda con/sin resultados y recuperación, filtros, borradores, once artículos, CTAs, metadata, sitemap, foco por teclado, reduced motion y anchos 320/360/390/768/1024/1366. `typecheck`, `build` y `git diff --check` PASS. Revisión visual final capturada a 320/390/1366; la crítica independiente atendida mejoró contraste, salto a resultados y campo estrecho. Better Auth local recibió secreto efímero, pero no se abrió sesión: el arnés AUTHZ abortó antes de fixtures porque exige 20 migraciones y la rama contiene 24; su cliente de pruebas guarda cookies en memoria y elimina sesiones al limpiar, sin exportación a navegador. No es certificación WCAG ni autorización de publicación. Sin cambios de Auth, datos de cliente, D1 remota, Diagnóstico, versión o despliegue.
+
+Reglas a evaluar antes de una futura promoción al Design System: grillas `minmax(0, 1fr)` y wrapping que contengan contenido a 320 px; búsqueda cercana al inicio con estados sin resultados/recuperación, foco visible y respeto a `prefers-reduced-motion`. Permanecen scoped a Aprende hasta validar reutilización en otra superficie y acordar tokens semánticos; este piloto no cambia tokens globales.
+
 ## APP-CLIENTE-00-PUBLISH-001-R2 — conflictos obsoletos y estado de publicación completo (2026-10-23)
 
 **PR #42 integrado en `origin/main@4d6107730e98e1dda4c333c9c565e40645213ff8`; código R2 certificado sobre `2a1ddae`.** Tras un conflicto `409`, perfil y horarios conservan la revisión asociada a sus valores y bloquean ambos guardados hasta recargar para reconciliar. La acción de publicación compara el snapshot completo: perfil/contacto, horarios y configuración MiniWeb. Sin perfil, publicar permanece deshabilitado. Se mantienen la lectura cercada, la inicialización legacy condicional, el fallo cerrado de snapshots inválidos y las migraciones `0022`/`0023`.

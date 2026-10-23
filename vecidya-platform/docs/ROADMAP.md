@@ -317,6 +317,8 @@ Plan ejecutado y cerrado: **R8-A** Candidate Calibration Isolation & Baseline �
 
 **VIS-001A (auditoría documental, 2026-09-23) y VIS-001B (Foundations Implementation, autorizada y ejecutada 2026-09-24) están cerrados en local.** VIS-001A no cambió producto. VIS-001B sí modificó código: corrigió los tres defectos concretos que la auditoría dejó identificados y consolidó foundation CSS existente, sin nuevas librerías, sin rediseño y sin tocar rutas, modelo comercial, backend ni GHL. Detalle de cierre más abajo. No confundir con VIS-001C (Motion Pilot), que sigue sin autorizar.
 
+**UI-PILOT-01 (2026-10-23) completa un piloto de dirección visual en `/aprende` desde la implementación local vigente.** Búsqueda temprana, atlas propio, filtros/resultados preservados y responsive local están documentados en `STATUS.md`/`TESTING.md`. No cierra VIS-001 global ni autoriza un motion pilot; las páginas restantes, zoom/revisión de accesibilidad y demás bloques conservan sus gates independientes.
+
 ### Conflictos que deben reconciliarse antes de ampliar alcance
 
 - **Entrada histórica:** `package.json` y el lockfile fijan fuente `0.4.1`; `ENVIRONMENTS.md` registra HTTP de producción del 2026-09-23. El commit local `032208e` ya contiene AuthShell compartido y motion CSS, sin publicación documentada. No partir de una UI anterior ni inferir publicación porque coincide el número de versión; VIS-001A no repite el smoke remoto.

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" fill="none">
+  <title>Rutas para aprender</title>
+  <desc>Mapa esquemático de caminos que se separan y vuelven a unirse, para representar distintas preguntas que llevan a nuevas guías.</desc>
+  <g stroke="#A9C9F5" stroke-width="2" opacity=".55">
+    <path d="M14 86c85 24 124 26 196 0s114-44 204-18 154 42 292 6"/>
+    <path d="M2 122c92 19 142 21 214-4s118-44 203-18 151 42 287 8"/>
+    <path d="M-6 160c104 14 160 13 234-12s119-41 199-17 151 43 287 10"/>
+    <path d="M-12 282c82-28 150-35 228-12s147 47 228 28 150-47 294-29"/>
+    <path d="M-8 321c86-31 153-37 230-15s148 45 229 26 149-45 292-27"/>
+    <path d="M0 360c84-28 153-34 230-12s149 43 229 24 150-43 293-25"/>
+  </g>
+  <g stroke="#D9E8FC" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M66 332c62-70 105-83 165-50s85 39 130-19 82-96 145-74 85 44 148 5"/>
+    <path d="M231 282c20-85 55-117 111-125s91-26 127-85"/>
+    <path d="M361 263c41 45 78 70 130 65s91-14 141 21"/>
+    <path d="M506 189c28-42 42-91 54-132"/>
+  </g>
+  <g stroke="#155FC5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M67 332c62-70 105-83 165-50s85 39 130-19 82-96 145-74 85 44 148 5"/>
+    <path d="M231 282c20-85 55-117 111-125s91-26 127-85"/>
+    <path d="M361 263c41 45 78 70 130 65s91-14 141 21"/>
+    <path d="M506 189c28-42 42-91 54-132"/>
+  </g>
+  <g fill="#fff" stroke="#155FC5" stroke-width="5">
+    <circle cx="67" cy="332" r="13"/>
+    <circle cx="231" cy="282" r="13"/>
+    <circle cx="342" cy="263" r="13"/>
+    <circle cx="506" cy="189" r="13"/>
+    <circle cx="655" cy="194" r="13"/>
+  </g>
+  <g fill="#FF8A43" stroke="#155FC5" stroke-width="5">
+    <circle cx="468" cy="138" r="17"/>
+  </g>
+  <circle cx="468" cy="138" r="5" fill="#fff"/>
+</svg>
