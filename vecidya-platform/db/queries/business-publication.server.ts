@@ -38,7 +38,7 @@ export function parseBusinessPublicationSnapshot(value: string | null, schemaVer
   }
 }
 
-function createBusinessPublicationSnapshot(
+export function createBusinessPublicationSnapshot(
   profile: NonNullable<Awaited<ReturnType<typeof getBusinessProfileForOrganization>>>,
   hours: BusinessHoursEntry[],
   configuration: MiniWebConfiguration,
@@ -67,6 +67,27 @@ function createBusinessPublicationSnapshot(
     hours,
     configuration,
   };
+}
+
+export async function getBusinessPublicationSnapshotForOrganization(database: Database, organizationId: string) {
+  const publication = await database.query.businessProfilePublication.findFirst({
+    where: eq(businessProfilePublication.organizationId, organizationId),
+  });
+  return {
+    publishedVersion: publication?.publishedVersion ?? 0,
+    snapshot: parseBusinessPublicationSnapshot(publication?.snapshotJson ?? null, publication?.snapshotSchemaVersion ?? null),
+  };
+}
+
+export function isBusinessPublicationCurrent(
+  publishedVersion: number,
+  publishedSnapshot: BusinessPublicationSnapshot | null,
+  currentSnapshot: BusinessPublicationSnapshot | null,
+) {
+  return publishedVersion > 0
+    && publishedSnapshot !== null
+    && currentSnapshot !== null
+    && serializeBusinessPublicationSnapshot(publishedSnapshot) === serializeBusinessPublicationSnapshot(currentSnapshot);
 }
 
 export async function ensureBusinessPublicationState(database: Database, organizationId: string) {

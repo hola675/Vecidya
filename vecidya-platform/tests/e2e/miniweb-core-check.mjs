@@ -25,7 +25,7 @@ function executeD1(sql) {
   const persistArgs = process.env.VECIDYA_E2E_PERSIST_TO ? ["--persist-to", process.env.VECIDYA_E2E_PERSIST_TO] : [];
   const result = spawnSync(process.execPath, [wranglerCli, "d1", "execute", "DB", "--local", ...persistArgs, "--json", "--file", file], { cwd: process.cwd(), encoding: "utf8", windowsHide: true });
   rmSync(directory, { recursive: true, force: true });
-  harness(result.status === 0, `D1 local falló: ${result.stderr}`);
+  harness(result.status === 0, `D1 local falló (status=${result.status ?? "sin salida"}; error=${result.error?.message ?? "ninguno"}): ${result.stderr || result.stdout || "sin detalle del subproceso"}`);
   return JSON.parse(result.stdout).flatMap((statement) => statement.results ?? []);
 }
 
@@ -155,6 +155,7 @@ try {
   await setActive(adminA, organizationA);
   await setActive(memberA, organizationA);
   await setActive(ownerA, organizationA);
+  await d1(`INSERT INTO platform_member (id, user_id, role, status, created_at, updated_at) VALUES ('${crypto.randomUUID()}', '${adminA.userId}', 'platform_admin', 'active', ${Date.now()}, ${Date.now()});`);
 
   const pathA = pathFor(organizationA);
   const pathB = pathFor(organizationB);
@@ -312,8 +313,68 @@ try {
   await page.getByLabel("Contraseña").fill(ownerA.password);
   await page.getByRole("button", { name: "Entrar a mi espacio" }).click();
   await page.waitForURL((url) => url.pathname === "/app", { timeout: 15000 });
+  await page.goto(new URL("/app/business-profile", baseUrl).toString(), { waitUntil: "networkidle" });
+  const profileEditorRevision = Number(await page.locator('form.business-profile-form input[name="draftRevision"]').inputValue());
+  const staleName = `Nombre obsoleto ${suffix}`;
+  await page.getByLabel("Nombre visible").fill(staleName);
+  const winningProfileState = await (await adminA.client.json(profilePathA, null, "GET")).json();
+  const winnerPhone = "+573009990001";
+  const winningProfileForm = makeProfileForm(winningProfileState.profile, winningProfileState.draftRevision, winningProfileState.profile.displayName);
+  winningProfileForm.set("phone", winnerPhone);
+  const winnerSave = await adminA.client.fetch(profilePathA, { method: "POST", body: winningProfileForm });
+  check(winnerSave.status === 200, `el segundo editor guarda solo el teléfono mientras el primero conserva su formulario (${winnerSave.status})`);
+  await page.getByRole("button", { name: "Guardar", exact: true }).click();
+  await page.locator(".alert").filter({ hasText: "borrador cambió" }).waitFor();
+  check(await page.getByLabel("Nombre visible").inputValue() === staleName, "el conflicto conserva visiblemente los campos locales del editor obsoleto");
+  check(Number(await page.locator('form.business-profile-form input[name="draftRevision"]').inputValue()) === profileEditorRevision, "la revisión original permanece unida a los valores locales tras revalidar el loader");
+  check(await page.getByRole("button", { name: "Guardar", exact: true }).isDisabled(), "un 409 bloquea un segundo guardado de perfil con datos obsoletos");
+  check(await page.getByRole("button", { name: "Guardar horarios" }).isDisabled(), "un 409 de perfil también bloquea horarios que comparten esa revisión");
+  check(await page.getByRole("button", { name: "Recargar para continuar" }).count() === 1, "el conflicto ofrece recargar y descartar explícitamente el formulario obsoleto");
+  const afterBlockedProfileSave = await (await adminA.client.json(profilePathA, null, "GET")).json();
+  check(afterBlockedProfileSave.profile.phone === winnerPhone && afterBlockedProfileSave.draftRevision === profileEditorRevision + 1, "el segundo guardado queda bloqueado y conserva el teléfono ganador");
+
+  await page.getByRole("button", { name: "Recargar para continuar" }).click();
+  await page.waitForLoadState("networkidle");
+  const hoursEditorRevision = Number(await page.locator('form.business-hours-form input[name="draftRevision"]').inputValue());
+  await page.getByLabel("Abre").first().fill("08:30");
+  const currentBeforeHoursConflict = await (await adminA.client.json(profilePathA, null, "GET")).json();
+  const hoursConflictWinnerProfile = { ...currentBeforeHoursConflict.profile, description: `Descripción del segundo editor ${suffix}` };
+  const hoursConflictForm = makeProfileForm(hoursConflictWinnerProfile, currentBeforeHoursConflict.draftRevision, currentBeforeHoursConflict.profile.displayName);
+  const profileWinsHours = await adminA.client.fetch(profilePathA, { method: "POST", body: hoursConflictForm });
+  check(profileWinsHours.status === 200, `el segundo editor avanza la revisión antes del guardado de horarios (${profileWinsHours.status})`);
+  await page.getByRole("button", { name: "Guardar horarios" }).click();
+  await page.locator(".alert").filter({ hasText: "borrador cambió" }).waitFor();
+  check(Number(await page.locator('form.business-hours-form input[name="draftRevision"]').inputValue()) === hoursEditorRevision, "la revisión original de horarios permanece unida a sus valores tras revalidar el loader");
+  check(await page.getByRole("button", { name: "Guardar horarios" }).isDisabled(), "un 409 bloquea un segundo guardado de horarios con la revisión obsoleta");
+  const latestMiniwebAfterHoursConflict = await (await adminA.client.json(pathA, null, "GET")).json();
+  check(latestMiniwebAfterHoursConflict.draftRevision === hoursEditorRevision + 1 && latestMiniwebAfterHoursConflict.profile.description === hoursConflictWinnerProfile.description, "el intento obsoleto de horarios no sobrescribe el cambio del segundo editor");
+  await page.getByRole("button", { name: "Recargar para continuar" }).click();
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel("Abre").first().fill("08:30");
+  await page.getByLabel("Cierra").first().fill("16:30");
+  await page.getByRole("button", { name: "Guardar horarios" }).click();
+  await page.getByText("Horarios guardados.").waitFor();
+
+  const platformContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
+  await platformContext.addCookies(adminA.client.cookies().map(({ name, value }) => ({ name, value, url: baseUrl })));
+  const platformPage = await platformContext.newPage();
+  const internalMiniwebResponse = await platformPage.goto(new URL(`/app/internal/organizations/${organizationA}/miniweb`, baseUrl).toString(), { waitUntil: "networkidle" });
+  check(internalMiniwebResponse?.status() === 200, "la administración interna abre MiniWeb con sesión platform_admin activa");
+  check(await platformPage.getByRole("button", { name: "Publicar MiniWeb" }).isEnabled(), "la pantalla interna permite publicar cambios de perfil/horarios aunque la configuración no cambie");
+  check(await platformPage.getByText("Hay cambios de borrador pendientes de publicación.").count() === 1, "la pantalla interna compara el snapshot completo para indicar cambios pendientes");
+  await platformContext.close();
+
   const editorResponse = await page.goto(new URL("/app/miniweb", baseUrl).toString(), { waitUntil: "networkidle" });
   check(editorResponse?.status() === 200, "el editor privado Mi MiniWeb responde para el owner");
+  check(await page.locator(".miniweb-editor__publication-state").getByText("Hay cambios guardados que todavía no se han publicado.").count() === 1, "el estado de MiniWeb identifica cambios de perfil/horarios aunque el diseño siga igual");
+  const designBeforeDataOnlyPublish = await (await ownerA.client.json(pathA, null, "GET")).json();
+  await page.getByRole("button", { name: "Publicar configuración" }).click();
+  await page.getByRole("status").filter({ hasText: "La página completa quedó publicada." }).waitFor();
+  const dataOnlyPublishedState = await (await ownerA.client.json(pathA, null, "GET")).json();
+  const dataOnlySnapshotRow = (await d1(`SELECT snapshot_json FROM business_profile_publication WHERE organization_id = '${organizationA}';`))[0];
+  const dataOnlySnapshot = JSON.parse(dataOnlySnapshotRow.snapshot_json);
+  check(JSON.stringify(dataOnlyPublishedState.draftConfiguration) === JSON.stringify(designBeforeDataOnlyPublish.draftConfiguration), "publicar solo perfil/horarios conserva la configuración MiniWeb sin editar el diseño");
+  check(dataOnlySnapshot.profile.phone === winnerPhone && dataOnlySnapshot.profile.description === hoursConflictWinnerProfile.description && dataOnlySnapshot.hours.some((entry) => entry.dayOfWeek === 1 && entry.opensAt === "08:30" && entry.closesAt === "16:30"), "la publicación de cambios solo de teléfono y horarios guarda el snapshot completo actualizado");
   check(await page.getByRole("heading", { name: "Mi MiniWeb", level: 1 }).count() === 1, "el editor presenta el punto de entrada Mi MiniWeb");
   check(await page.getByRole("checkbox", { name: "Desactivar Presentación" }).isDisabled(), "la sección hero requerida no se puede apagar");
   check(await page.getByText("Galería", { exact: true }).count() === 0 && await page.getByText("Productos", { exact: true }).count() === 0, "el editor no ofrece módulos todavía no disponibles");

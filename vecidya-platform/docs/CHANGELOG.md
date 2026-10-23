@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R1.1 (observaciones P2 de PR #42)
+
+- Tras un `409` en perfil u horarios, ambos formularios quedan bloqueados hasta recargar; la acción explica que el borrador cambió y ofrece descartar los valores obsoletos explícitamente.
+- Los indicadores administrativos y del editor MiniWeb comparan el snapshot completo publicado (perfil/contacto, horarios y configuración). Cambios solo de teléfono/descripción/horarios dejan publicación pendiente y permiten publicar sin tocar el diseño.
+- RED de E2E: 42/45; GREEN después del fix: 59/59; tras integrar `origin/main@bfce022`: E2E 62/62, unitarias 1655/1655, typecheck/build/diff-check PASS. PR #42 sigue abierto y pendiente de nueva revisión; sin D1 remota, correo real, deploy o merge a `main`.
+
 ## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R1 (revisión local de PR #42)
 
 - Los loaders de perfil, horarios y MiniWeb leen los datos detrás de una revisión estable, con hasta tres intentos; si el draft cambia durante la lectura, no devuelven una revisión que identifique otros datos. Se cubren también API JSON y administración interna.

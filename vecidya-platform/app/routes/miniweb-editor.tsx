@@ -5,7 +5,7 @@ import { createDatabase } from "../../db/client.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
 import { getBusinessProfileGovernance } from "../../db/queries/platform-governance.server";
-import { readConsistentBusinessDraft } from "../../db/queries/business-publication.server";
+import { createBusinessPublicationSnapshot, getBusinessPublicationSnapshotForOrganization, isBusinessPublicationCurrent, readConsistentBusinessDraft } from "../../db/queries/business-publication.server";
 import { getMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
 import { requireOrganizationPermission } from "../../server/auth/authorization.server";
 import { requireOrganization } from "../../server/auth/session.server";
@@ -35,13 +35,20 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     getClientWorkspaceContext(env, request),
   ]);
   const database = createDatabase(env.DB);
-  const { data: { profile, hours, state }, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
+  const { data: { profile, hours, state, publicationIsCurrent }, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
     const [profile, hours] = await Promise.all([
       getBusinessProfileForOrganization(database, organization.id),
       listBusinessHoursForOrganization(database, organization.id),
     ]);
-    const state = await getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
-    return { profile, hours, state };
+    const [state, publication] = await Promise.all([
+      getMiniWebConfigurationForOrganization(database, organization.id, profile, hours),
+      getBusinessPublicationSnapshotForOrganization(database, organization.id),
+    ]);
+    const currentSnapshot = profile?.status === "published"
+      ? createBusinessPublicationSnapshot(profile, hours, state.draftConfiguration)
+      : null;
+    const publicationIsCurrent = isBusinessPublicationCurrent(publication.publishedVersion, publication.snapshot, currentSnapshot);
+    return { profile, hours, state, publicationIsCurrent };
   });
   const governance = profile ? await getBusinessProfileGovernance(database, profile.id) : null;
 
@@ -53,6 +60,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     hasPersistedConfiguration: state.hasPersistedConfiguration,
     draftConfiguration: state.draftConfiguration,
     draftRevision,
+    publicationIsCurrent,
     publishedConfiguration: state.publishedConfiguration,
     profile: toMiniWebPublicProfile(profile, governance?.verificationStatus ?? "unverified"),
     hours: hours.map(({ dayOfWeek, isClosed, opensAt, closesAt }) => ({ dayOfWeek, isClosed, opensAt, closesAt })),
@@ -70,7 +78,6 @@ export default function MiniWebEditorPage() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
   const isDirty = JSON.stringify(configuration) !== JSON.stringify(data.draftConfiguration);
-  const isPublished = JSON.stringify(data.draftConfiguration) === JSON.stringify(data.publishedConfiguration);
   const orderedModules = [...configuration.modules].sort((left, right) => left.sortOrder - right.sortOrder || left.type.localeCompare(right.type));
 
   useEffect(() => setConfiguration(data.draftConfiguration), [data.draftConfiguration]);
@@ -227,7 +234,7 @@ export default function MiniWebEditorPage() {
               </div>
             ) : <div className="miniweb-editor__empty-preview">Completa primero la información de tu negocio para generar una vista previa.</div> : null}
             <p className="miniweb-editor__publication-state">
-              {data.profileStatus === "suspended" ? "El perfil del negocio está suspendido y no aparece en público." : data.profileStatus === "published" ? "El perfil del negocio está publicado." : "El perfil del negocio todavía es un borrador."} {data.hasPersistedConfiguration ? "La configuración tiene cambios guardados." : "La configuración usa los valores iniciales."} {isPublished ? "La configuración efectiva coincide con el borrador." : "Hay cambios guardados que todavía no se han publicado."}
+              {data.profileStatus === "suspended" ? "El perfil del negocio está suspendido y no aparece en público." : data.profileStatus === "published" ? "El perfil del negocio está publicado." : "El perfil del negocio todavía es un borrador."} {data.hasPersistedConfiguration ? "La configuración tiene cambios guardados." : "La configuración usa los valores iniciales."} {data.publicationIsCurrent ? "El perfil, los horarios y la configuración coinciden con la publicación." : "Hay cambios guardados que todavía no se han publicado."}
             </p>
           </Card>
         </div>

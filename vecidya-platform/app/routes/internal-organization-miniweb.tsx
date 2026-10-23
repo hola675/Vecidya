@@ -3,7 +3,7 @@ import { createDatabase } from "../../db/client.server";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
 import { getMiniWebConfigurationForOrganization, saveMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
-import { readConsistentBusinessDraft, publishBusinessPublicationForOrganization } from "../../db/queries/business-publication.server";
+import { createBusinessPublicationSnapshot, getBusinessPublicationSnapshotForOrganization, isBusinessPublicationCurrent, readConsistentBusinessDraft, publishBusinessPublicationForOrganization } from "../../db/queries/business-publication.server";
 import { hasActiveLicenseForOrganizationOwner } from "../../db/queries/business-profile.server";
 import { AdminShell } from "../components/admin-shell";
 import { Button, Card } from "../components/ui";
@@ -21,9 +21,20 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   if (!organization) throw new Response("Organización no encontrada", { status: 404 });
   const { data: state, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
     const [profile, hours] = await Promise.all([getBusinessProfileForOrganization(database, organization.id), listBusinessHoursForOrganization(database, organization.id)]);
-    return getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
+    const [configuration, publication] = await Promise.all([
+      getMiniWebConfigurationForOrganization(database, organization.id, profile, hours),
+      getBusinessPublicationSnapshotForOrganization(database, organization.id),
+    ]);
+    const currentSnapshot = profile?.status === "published"
+      ? createBusinessPublicationSnapshot(profile, hours, configuration.draftConfiguration)
+      : null;
+    return {
+      draftConfiguration: configuration.draftConfiguration,
+      hasProfile: Boolean(profile),
+      published: isBusinessPublicationCurrent(publication.publishedVersion, publication.snapshot, currentSnapshot),
+    };
   });
-  return { organization, configuration: state.draftConfiguration, draftRevision, published: JSON.stringify(state.draftConfiguration) === JSON.stringify(state.publishedConfiguration), workspaceUser: access.workspaceUser };
+  return { organization, configuration: state.draftConfiguration, draftRevision, hasProfile: state.hasProfile, published: state.published, workspaceUser: access.workspaceUser };
 }
 
 export async function action({ context, params, request }: Route.ActionArgs) {
@@ -50,13 +61,13 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 }
 
 export default function InternalOrganizationMiniWeb() {
-  const { organization, configuration, draftRevision, published, workspaceUser } = useLoaderData<typeof loader>();
+  const { organization, configuration, draftRevision, hasProfile, published, workspaceUser } = useLoaderData<typeof loader>();
   return <AdminShell active="organizations" workspaceUser={workspaceUser}><main className="admin-main">
     <Link className="back-link" to={`/app/internal/organizations/${organization.id}`}>← Volver a {organization.name}</Link>
     <div className="page-heading"><div><p className="eyebrow">MINIWEB</p><h1>Configuración de {organization.name}</h1><p>Las acciones se registran en la auditoría de la organización.</p></div></div>
     <Card><h2>Borrador de configuración</h2><Form method="post" className="form-stack"><input name="draftRevision" type="hidden" value={draftRevision} /><textarea aria-label="Configuración JSON" name="configuration" defaultValue={JSON.stringify(configuration, null, 2)} rows={24} spellCheck={false} /><Button type="submit" name="intent" value="save" tone="secondary">Guardar borrador</Button></Form>
-      <Form method="post"><input name="draftRevision" type="hidden" value={draftRevision} /><Button type="submit" name="intent" value="publish" disabled={published}>Publicar MiniWeb</Button></Form>
-      <p>{published ? "El borrador coincide con la versión publicada." : "Hay cambios de borrador pendientes de publicación."}</p>
+      <Form method="post"><input name="draftRevision" type="hidden" value={draftRevision} /><Button type="submit" name="intent" value="publish" disabled={!hasProfile || published}>Publicar MiniWeb</Button></Form>
+      <p>{!hasProfile ? "Completa el perfil antes de publicar." : published ? "El perfil, los horarios y la configuración coinciden con la versión publicada." : "Hay cambios de borrador pendientes de publicación."}</p>
     </Card>
   </main></AdminShell>;
 }

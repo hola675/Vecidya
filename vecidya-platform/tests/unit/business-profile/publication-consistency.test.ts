@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { readConsistentBusinessDraftState } from "../../../db/queries/business-publication.server";
+import { isBusinessPublicationCurrent, readConsistentBusinessDraftState, type BusinessPublicationSnapshot } from "../../../db/queries/business-publication.server";
+import { buildSafeMiniWebConfiguration } from "../../../app/features/miniweb/registry";
 
 test("reintenta una lectura si otro editor cambia el borrador durante el loader", async () => {
   let revision = 4;
@@ -54,4 +55,37 @@ test("rechaza la carga cuando no logra observar una revisión estable", async ()
     ),
     (error: unknown) => error instanceof Response && error.status === 409,
   );
+});
+
+test("la publicación vigente compara perfil, contacto, horarios y configuración como un solo snapshot", () => {
+  const profile: BusinessPublicationSnapshot["profile"] = {
+    slug: "taller-central",
+    displayName: "Taller Central",
+    shortDescription: "Reparación y mantenimiento",
+    description: "Atención local para equipos de trabajo.",
+    category: "Servicios",
+    city: "Bogotá",
+    country: "Colombia",
+    phone: "+573001112233",
+    publicEmail: "contacto@example.invalid",
+    websiteUrl: null,
+    logoUrl: null,
+    whatsapp: null,
+    instagramUrl: null,
+    facebookUrl: null,
+    linkedinUrl: null,
+    serviceMode: "in_person",
+    serviceArea: "Bogotá",
+  };
+  const hours = [{ dayOfWeek: 1, isClosed: false, opensAt: "09:00", closesAt: "17:00" }];
+  const configuration = buildSafeMiniWebConfiguration();
+  const snapshot: BusinessPublicationSnapshot = { schemaVersion: 1, profile, hours, configuration };
+
+  assert.equal(isBusinessPublicationCurrent(1, snapshot, structuredClone(snapshot)), true);
+  assert.equal(isBusinessPublicationCurrent(0, snapshot, structuredClone(snapshot)), false, "una fila inicializada pero no publicada no cuenta como publicada");
+  assert.equal(isBusinessPublicationCurrent(1, snapshot, { ...structuredClone(snapshot), profile: { ...profile, phone: "+573009998877" } }), false, "un cambio solo de teléfono deja pendiente la publicación");
+  assert.equal(isBusinessPublicationCurrent(1, snapshot, { ...structuredClone(snapshot), profile: { ...profile, description: "Descripción editada" } }), false, "un cambio solo de descripción deja pendiente la publicación");
+  assert.equal(isBusinessPublicationCurrent(1, snapshot, { ...structuredClone(snapshot), hours: [{ ...hours[0], closesAt: "18:00" }] }), false, "un cambio solo de horario deja pendiente la publicación");
+  assert.equal(isBusinessPublicationCurrent(1, snapshot, { ...structuredClone(snapshot), configuration: { ...configuration, modules: configuration.modules.map((module, index) => index === 0 ? { ...module, enabled: !module.enabled } : module) } }), false, "un cambio de diseño también deja pendiente la publicación");
+  assert.equal(isBusinessPublicationCurrent(1, snapshot, null), false, "un snapshot ausente falla cerrado");
 });
