@@ -362,7 +362,6 @@ try {
   check(internalMiniwebResponse?.status() === 200, "la administración interna abre MiniWeb con sesión platform_admin activa");
   check(await platformPage.getByRole("button", { name: "Publicar MiniWeb" }).isEnabled(), "la pantalla interna permite publicar cambios de perfil/horarios aunque la configuración no cambie");
   check(await platformPage.getByText("Hay cambios de borrador pendientes de publicación.").count() === 1, "la pantalla interna compara el snapshot completo para indicar cambios pendientes");
-  await platformContext.close();
 
   const editorResponse = await page.goto(new URL("/app/miniweb", baseUrl).toString(), { waitUntil: "networkidle" });
   check(editorResponse?.status() === 200, "el editor privado Mi MiniWeb responde para el owner");
@@ -375,6 +374,10 @@ try {
   const dataOnlySnapshot = JSON.parse(dataOnlySnapshotRow.snapshot_json);
   check(JSON.stringify(dataOnlyPublishedState.draftConfiguration) === JSON.stringify(designBeforeDataOnlyPublish.draftConfiguration), "publicar solo perfil/horarios conserva la configuración MiniWeb sin editar el diseño");
   check(dataOnlySnapshot.profile.phone === winnerPhone && dataOnlySnapshot.profile.description === hoursConflictWinnerProfile.description && dataOnlySnapshot.hours.some((entry) => entry.dayOfWeek === 1 && entry.opensAt === "08:30" && entry.closesAt === "16:30"), "la publicación de cambios solo de teléfono y horarios guarda el snapshot completo actualizado");
+  await platformPage.goto(new URL(`/app/internal/organizations/${organizationA}/miniweb`, baseUrl).toString(), { waitUntil: "networkidle" });
+  check(await platformPage.getByRole("button", { name: "Publicar MiniWeb" }).isDisabled(), "la pantalla interna deshabilita publicación cuando el snapshot completo ya coincide");
+  check(await platformPage.getByText("El perfil, los horarios y la configuración coinciden con la versión publicada.").count() === 1, "la pantalla interna confirma el estado completo publicado");
+  await platformContext.close();
   check(await page.getByRole("heading", { name: "Mi MiniWeb", level: 1 }).count() === 1, "el editor presenta el punto de entrada Mi MiniWeb");
   check(await page.getByRole("checkbox", { name: "Desactivar Presentación" }).isDisabled(), "la sección hero requerida no se puede apagar");
   check(await page.getByText("Galería", { exact: true }).count() === 0 && await page.getByText("Productos", { exact: true }).count() === 0, "el editor no ofrece módulos todavía no disponibles");
