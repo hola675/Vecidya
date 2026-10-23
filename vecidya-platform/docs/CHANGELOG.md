@@ -1,10 +1,11 @@
 # Changelog
 
-## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R2 (integración local del PR #42)
+## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R2 (PR #42 integrado)
 
 - Después de `409`, perfil y horarios mantienen la revisión asociada a los valores abiertos y bloquean ambos guardados hasta recargar; un guardado exitoso adopta la revisión exacta que produjo.
 - El estado de publicación compara perfil/contacto, horarios y configuración MiniWeb como snapshot completo. El E2E verifica el botón interno habilitado ante cambios solo de perfil/horarios y deshabilitado tras publicar.
-- Se integró `origin/main@bfce022`; el commit `2a1ddae` pasó unitarias 1655/1655, E2E MiniWeb 64/64, typecheck y build con D1 efímera `0000–0023` limpia. PR #42 abierto, no fusionado ni desplegado; nueva revisión Codex pendiente.
+- El código se certificó sobre `2a1ddae`: unitarias 1655/1655, E2E MiniWeb 64/64, typecheck y build con D1 efímera `0000–0023` limpia. PR #42 se integró el 2026-10-23 en `4d6107730e98e1dda4c333c9c565e40645213ff8` (HEAD del PR `726af591e32f1b64b0cfa01f3aa89bf0f8bfdec9`). No hubo D1 remota, deploy ni HTTP público fechado.
+- La revisión Codex del HEAD del PR seguía `running` a las 18:44 UTC, sin revisión final ni nuevos hallazgos; se solicitó un reintento y quedó pendiente. Los cuatro hilos P2 figuran resueltos; no se encontraron ejecuciones CI asociadas al merge en ese corte.
 
 ## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R1.1 (observaciones P2 de PR #42)
 
