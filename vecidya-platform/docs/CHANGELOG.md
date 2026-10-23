@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-10-22 — PLATFORM-ADMIN-GLOBAL (certificación focal y concurrencia)
+
+- Se corrigen carreras de reenvío contra aceptación, revocación y cambio de estado, que podían reabrir un lifecycle ya activo o registrar auditorías sin una transición aplicada. Los writes y sus auditorías ahora dependen del compare-and-set que ganó en D1; cambios de rol también exigen el rol anterior observado.
+- La certificación HTTP local del perfil/Vecindario detectó que la licencia activa de otra organización del mismo `billing_account` permitía visibilidad sin licencia propia. Los gates de detalle, listado, filtros y publicación ahora relacionan la licencia con la organización consultada.
+- Se añade `test:e2e:platform-admin-global`: Worker local y D1 efímera desde migración limpia, con casos de invitación, matriz de acceso, ciclo suspensión/reactivación, perfil público, licencia, aislamiento, capacitación, MiniWeb y auditoría. Verificó la limpieza de la D1 temporal; suite integrada 1649/1649, typecheck, build y diff-check PASS.
+- Certificación focal local; el ciclo público queda PASS y la verificación de proveedor/buzón de correo real continúa `BLOCKED — REAL_EMAIL_NOT_VERIFIED`. Sin D1 compartida/remota, envío real, merge ni deploy. Ver `TESTING.md` y deuda `PLATFORM-ADMIN-GLOBAL-INCOMPLETE`.
+- Decisión del usuario: diferir Gmail real, verificación de identidad y buzón controlado al release. El gate permanece pendiente, nunca se marca PASS y no bloquea la integración local una vez aprobada la revisión y pasados los checks.
+
+## 2026-10-22 — PLATFORM-ADMIN-GLOBAL (implementación local, sin publicar)
+
+- Guard de lectura para `platform_member` activo; `staff` puede consultar organizaciones y detalles, mientras que las demás áreas internas siguen reservadas a `platform_admin`.
+- Se añade asignación de artículos existentes de Aprende por organización, página cliente `/app/training` para auto-declarar progreso y corrección de administrador con motivo. La mutación administrativa conserva `actorUserId`, target organización, historial y audit en batch. No se crea catálogo editorial ni se registra telemetría de lectura.
+- Alta con invitación propia de owner: digest de token de un uso, correo coincidente verificado, vencimiento de siete días y consumo D1 condicional con membership/lifecycle/auditoría. Reenvío rota token; revocación vuelve a `pending_owner`. El panel distingue proveedor aceptado, simulación y envío no confirmado.
+- Roles `admin|member` auditados; owner no se puede cambiar. Lifecycle limitado a `pending_owner`, `owner_invited`, `active` y `suspended`; no existe `closed`. Guards de cliente rechazan organizaciones suspendidas y perfiles públicos no las listan.
+- MiniWeb administrativa permite guardar JSON draft y publicar explícitamente, con audit. Capacitación conserva asignación, auto-reporte y corrección motivada.
+- Migraciones `0020`/`0021` aplicadas en D1 local del worktree. `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. No se ejecutaron suites automatizadas. Sin D1 remota, correo real, deploy o publicación.
 ## 2026-10-22 — DIAG-FUNNEL-PROD-01 (CODE local, flag cerrado)
 
 - El recorrido público QA-03B ya puede conectar solicitud identificada, replay Worker autoritativo, snapshot, correo Gmail, verificación explícita, grant/cookie, recovery y reporte HTML usando los contratos existentes. La bandeja simulada sigue solo en desarrollo; el correo real utiliza el adaptador Gmail configurado, sin cambiar ni leer secretos.

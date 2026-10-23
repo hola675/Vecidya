@@ -69,15 +69,15 @@ D:\Proyectos\Vecidya            (raíz Git)
     ├── server/                 lógica exclusiva del servidor
     │   ├── auth.server.ts, auth-plugins.server.ts   Better Auth + plugin Organization
     │   ├── auth/session.server.ts, auth/authorization.server.ts, auth/organization-http-surface.ts (allowlist HTTP del plugin Organization)
-    │   ├── platform-authorization.server.ts          requirePlatformAdmin
+    │   ├── platform-authorization.server.ts          guards platform_admin y staff de solo lectura
     │   ├── business-profile-validation.server.ts, integration-connection-validation.server.ts
     │   ├── email/mail.server.ts, invitation.server.ts adaptador Gmail + invitaciones
     │   ├── cloudflare-context.ts
     │   └── payments/, permissions/, services/, validation/   solo .gitkeep
     ├── db/
-    │   ├── schema/auth.ts (15 tablas), schema/platform-meta.ts, schema/index.ts
-    │   ├── migrations/         0000–0009 + meta/ (snapshots y _journal)
-    │   ├── queries/            10 módulos de consulta
+    │   ├── schema/auth.ts (18 tablas), schema/platform-meta.ts, schema/index.ts
+    │   ├── migrations/         0000–0020 + meta/ (snapshots y _journal)
+    │   ├── queries/            módulos de consulta; platform-training.server.ts
     │   ├── seeds/platform-meta.server.ts    nunca se invoca
     │   ├── client.server.ts    único punto de creación del cliente Drizzle
     │   └── business-profile-rules.ts, business-hours-rules.ts
@@ -136,19 +136,24 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/app` | `app.tsx` | `requireSession` + `getActiveOrganization` | activa (revalidada; stale o ajena → 403) | org, perfil, servicios, miembros | progreso, publicación y siguiente acción reales; sin métricas CRM | `bpx`, `pe-b`, `px-b` (roto), `authz` | APP-MINI-01 local |
 | `/app/account` | `account.tsx` | `requireSession` + `getActiveOrganization` | activa (stale o ajena → 403) | usuario | funcional (solo nombre) | `acct`, `authz` | sí |
 | `/app/organization` | `organization.tsx` | activa + `member:read`; acciones con permiso propio + recurso de la organización (`requireOrganizationMemberTarget`, `requireOrganizationInvitationTarget`); cancelar solo si la invitación sigue pendiente | activa | miembros, invitaciones pendientes vigentes e historial | funcional; UI pulida (INVITE-UI-001, `0.5.4` local) | `team-ui`, `authz`, `invite-flow`, `members` (`TEST-D1-RESET-001`) | sí |
+| `/app/training` | `organization-training.tsx` | organización activa + `organization:read`; el progreso se fija al usuario de sesión | activa y revalidada | asignaciones Aprende de la organización + estado propio | lectura y auto-reporte declarado; local | capacitación plataforma | local |
 | `/app/invitations/:invitationId` | `invitation.tsx` | pública; detalles solo para el destinatario (`db/invitation-rules.ts`); aceptar lo hace Better Auth con el correo verificado de la sesión | la de la invitación | invitación + organización (D1), Better Auth | funcional: estados controlados 200/403/404/410 (INVITE-001) | `invite-flow`, `invitations`, `authz` | sí |
 | `/app/business-profile` | `business-profile.tsx` | `requireOrganization` + `business-profile:read/update/publish` | activa | perfil, horarios | editor agrupado y preview privado inline; sin ruta ni cambio de permisos | `bpx`, `slug-life`, `pe-b`, `authz` | base `0007`/`0008` desplegada; APP-MINI-01 local |
 | `/app/miniweb` | `miniweb-editor.tsx` | organización activa + `business-profile:read` | activa y revalidada | registry, draft/snapshot, DTO de preview | plantilla actual, cinco módulos disponibles, activar/ordenar, preview privada/publicar config | `miniweb-core` | local; migración `0017` pendiente del ledger |
 | `/app/services` | `services-app.tsx` | `requireSession` + `getActiveOrganization` | activa | `organization_service` | funcional (solo lectura) | `services-exp`, `pe-b`, `authz` | sí |
 
-### INTERNAL ADMIN (8) — todas con `requirePlatformAdmin`
+### INTERNAL ADMIN — lecturas con `requirePlatformReadAccess`; mutaciones con `requirePlatformAdminAction`
 
 | Ruta | Archivo | Datos | Mutaciones | E2E | Pub. |
 | --- | --- | --- | --- | --- | --- |
 | `/app/internal` | `internal.tsx` | tarjetas | — | `admin-shell` | sí |
 | `/app/internal/services` | `internal-services.tsx` | orgs, catálogo, asignaciones | upsert de estado (sin auditoría) | `psa` (stale) | sí |
 | `/app/internal/organizations` | `internal-organizations.tsx` | organizaciones | — | `admin-orgs` (stale) | sí |
-| `/app/internal/organizations/:organizationId` | `internal-organization-detail.tsx` | detalle | — | `admin-orgs` (stale) | sí |
+| `/app/internal/organizations/new` | `internal-organization-create.tsx` | alta con invitación owner | `organization:create` | crea org/lifecycle/invitación/audit y envía una vez | local |
+| `/app/internal/organizations/:organizationId` | `internal-organization-detail.tsx` | detalle | `requirePlatformReadAccess` | organizaciones para staff y admin | local |
+| `/app/internal/organizations/:organizationId/miniweb` | `internal-organization-miniweb.tsx` | configuración JSON MiniWeb | `miniweb:save` / `miniweb:publish` | guardar draft y publicación explícita auditados | local |
+| `/app/internal/organizations/:organizationId/training` | `internal-organization-training.tsx` | artículos y avance de capacitación | `requirePlatformAdmin` en loader/action | asigna contenido Aprende y corrige progreso con motivo | local |
+| `/app/owner-invitations/:invitationId` | `platform-owner-invitation.tsx` | aceptación owner | sesión, digest, email verificado y consumo único | membership + lifecycle + audit en batch | local |
 | `/app/internal/businesses` | `internal-businesses.tsx` | perfiles | — | `admin-bp` | sí |
 | `/app/internal/businesses/:businessProfileId` | `internal-business-profile-detail.tsx` | detalle + gobierno + auditoría | verificar/retirar/suspender/reactivar (`0009`) | `admin-bp`, `d1` | sí (sin acciones de gobierno) |
 | `/app/internal/integrations` | `internal-integrations.tsx` | conexiones | — | `admin-int` (stale) | sí |
@@ -173,6 +178,8 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/api/platform/organizations/:id/services` | `api-platform-services.ts` | GET, POST | `requirePlatformAdmin` | funcional; org inexistente → 500 FK | `psa`, `authz` (403 para owner/admin/member de la organización) | sí |
 | `/api/platform/organizations/:id/integrations` | `api-platform-integrations.ts` | GET, POST | `requirePlatformAdmin` | funcional; duplicado → 500 | `psa` (stale) | sí |
 | `/api/platform/organizations/:id/license` | `api-platform-licensing.ts` | GET, POST | `requirePlatformAdmin` | funcional; sin checkout, sin cobro automático (LICENSE-STRATEGY-001) | `platform-licensing` | no (solo local; `0010` sin aplicar a remoto) |
+| `/api/platform/organizations/:id/training` | `api-platform-training.ts` | GET, POST | `requirePlatformAdmin`; target organización explícito | asignación y corrección auditada de progreso | en curso | local |
+| `/api/organizations/:id/training` | `api-organization-training.ts` | GET, POST | `requireOrganizationPermission(..., organization:read)`; solo usuario de membership | lectura y auto-reporte propios; sin userId aceptado del cliente | en curso | local |
 
 Sin autenticación, las rutas privadas y de API responden **302 → `/login`** (nunca 401).
 

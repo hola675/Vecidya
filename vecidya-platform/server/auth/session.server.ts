@@ -2,6 +2,8 @@ import { redirect } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
 import { getOrganizationMembership } from "../../db/queries/organization.server";
+import { platformOrganizationLifecycle } from "../../db/schema";
+import { eq } from "drizzle-orm";
 import { createAuth, type AuthEnvironment } from "../auth.server";
 
 export async function getSession(env: AuthEnvironment, request: Request) {
@@ -31,8 +33,9 @@ export async function getActiveOrganization(
     return null;
   }
 
+  const database = createDatabase(env.DB);
   const membership = await getOrganizationMembership(
-    createDatabase(env.DB),
+    database,
     session.user.id,
     organizationId,
   );
@@ -40,6 +43,8 @@ export async function getActiveOrganization(
   if (!membership) {
     throw new Response("Active organization membership is invalid", { status: 403 });
   }
+  const lifecycle = await database.query.platformOrganizationLifecycle.findFirst({ where: eq(platformOrganizationLifecycle.organizationId, organizationId) });
+  if (lifecycle?.status === "suspended") throw new Response("Organization access is suspended", { status: 403 });
 
   return membership;
 }
@@ -63,8 +68,9 @@ export async function requireMembership(
   organizationId: string,
 ) {
   const session = await requireSession(env, request);
+  const database = createDatabase(env.DB);
   const membership = await getOrganizationMembership(
-    createDatabase(env.DB),
+    database,
     session.user.id,
     organizationId,
   );
@@ -72,6 +78,8 @@ export async function requireMembership(
   if (!membership) {
     throw new Response("Organization membership is required", { status: 403 });
   }
+  const lifecycle = await database.query.platformOrganizationLifecycle.findFirst({ where: eq(platformOrganizationLifecycle.organizationId, organizationId) });
+  if (lifecycle?.status === "suspended") throw new Response("Organization access is suspended", { status: 403 });
 
   return membership;
 }

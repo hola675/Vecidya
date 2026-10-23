@@ -5,6 +5,12 @@ import { platformMember } from "../db/schema";
 import type { AuthEnvironment } from "./auth.server";
 import { requireSession } from "./auth/session.server";
 
+export const platformAdminActions = [
+  "training:assign", "training:progress:correct", "organization:create",
+  "organization:lifecycle:update", "team:role:update", "miniweb:save", "miniweb:publish",
+] as const;
+export type PlatformAdminAction = (typeof platformAdminActions)[number];
+
 export async function requirePlatformAdmin(env: AuthEnvironment, request: Request) {
   const session = await requireSession(env, request);
   const access = await createDatabase(env.DB).query.platformMember.findFirst({
@@ -16,4 +22,21 @@ export async function requirePlatformAdmin(env: AuthEnvironment, request: Reques
   }
 
   return { ...access, workspaceUser: { name: session.user.name, email: session.user.email } };
+}
+
+export async function requirePlatformReadAccess(env: AuthEnvironment, request: Request) {
+  const session = await requireSession(env, request);
+  const access = await createDatabase(env.DB).query.platformMember.findFirst({
+    where: eq(platformMember.userId, session.user.id),
+  });
+  if (!access || access.status !== "active") {
+    throw new Response("Platform access is required", { status: 403 });
+  }
+  return { ...access, workspaceUser: { name: session.user.name, email: session.user.email } };
+}
+
+export async function requirePlatformAdminAction(env: AuthEnvironment, request: Request, action: PlatformAdminAction) {
+  if (!platformAdminActions.includes(action)) throw new Response("Platform action is not permitted", { status: 403 });
+  const access = await requirePlatformAdmin(env, request);
+  return { ...access, action };
 }
