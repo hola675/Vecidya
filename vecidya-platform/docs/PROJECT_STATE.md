@@ -4,7 +4,7 @@ El piloto visual de `/aprende` está implementado en `feat/aprende-ui-pilot-01`,
 
 ## Estado vigente — APP-CLIENTE-00-PUBLISH-001-R2 (2026-10-23)
 
-PR #42 se integró mediante `4d6107730e98e1dda4c333c9c565e40645213ff8`; PR #45 corrigió los dos P2 post-merge y se integró mediante `85ba1e021316bbeb7d0b431e3be2523f038c7faa`. El estado revisado de PR #42 tiene seis hilos P2 resueltos; no hay evidencia de deploy ni de D1 remota modificada. APP-MINI-02B está implementada en PR #49 draft (`c88c531`) sobre `origin/main@038750a`: ofertas de negocio/FAQ tenant-scoped, editor en `/app/miniweb`, módulos públicos y snapshot versión 2; se generó la migración `0024`. Typecheck/build PASS; migración y validación funcional pendientes. No afirmar publicación ni PASS de la fase. `REAL_EMAIL_NOT_VERIFIED` continúa diferido al release autorizado.
+PR #42 se integró mediante `4d6107730e98e1dda4c333c9c565e40645213ff8`; PR #45 corrigió los dos P2 post-merge y se integró mediante `85ba1e021316bbeb7d0b431e3be2523f038c7faa`. El estado revisado de PR #42 tiene seis hilos P2 resueltos; no hay evidencia de deploy ni de D1 remota modificada. APP-MINI-02B está implementada en PR #49 draft sobre `origin/main@038750a`: ofertas de negocio/FAQ tenant-scoped, editor en `/app/miniweb`, módulos públicos y snapshot versión 2; se generó la migración `0024`. Typecheck/build PASS; migración y validación funcional pendientes. No afirmar publicación ni PASS de la fase. `REAL_EMAIL_NOT_VERIFIED` continúa diferido al release autorizado.
 
 ## Estado vigente — Diagnóstico identificado y D1 (2026-10-23)
 
