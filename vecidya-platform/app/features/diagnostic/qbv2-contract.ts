@@ -170,7 +170,7 @@ export type CopyVariantV2 = { readonly target: CopyVariantTarget; readonly promp
  * redacción. `q2_reputation_flow` conserva su versión 2 en el banco legacy; la definición candidata revisada de
  * `q2_ecommerce_traffic_sources` avanza a versión 3 al añadir `messaging`. QBV1 conserva su propio tipo.
  */
-export type QuestionVersionV2 = 1 | 2 | 3;
+export type QuestionVersionV2 = 1 | 2 | 3 | 4;
 export type QuestionRoutingRole = "core" | "adaptive" | "deepening";
 
 export type OptionKindV2 = "value" | "none" | "unknown" | "not_applicable";

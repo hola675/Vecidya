@@ -4,7 +4,7 @@
 
 - Se corrigen carreras de reenvío contra aceptación, revocación y cambio de estado, que podían reabrir un lifecycle ya activo o registrar auditorías sin una transición aplicada. Los writes y sus auditorías ahora dependen del compare-and-set que ganó en D1; cambios de rol también exigen el rol anterior observado.
 - La certificación HTTP local del perfil/Vecindario detectó que la licencia activa de otra organización del mismo `billing_account` permitía visibilidad sin licencia propia. Los gates de detalle, listado, filtros y publicación ahora relacionan la licencia con la organización consultada.
-- Se añade `test:e2e:platform-admin-global`: Worker local y D1 efímera desde migración limpia, con casos de invitación, matriz de acceso, ciclo suspensión/reactivación, perfil público, licencia, aislamiento, capacitación, MiniWeb y auditoría. Verificó la limpieza de la D1 temporal; 1645 unitarias, typecheck, build y diff-check PASS.
+- Se añade `test:e2e:platform-admin-global`: Worker local y D1 efímera desde migración limpia, con casos de invitación, matriz de acceso, ciclo suspensión/reactivación, perfil público, licencia, aislamiento, capacitación, MiniWeb y auditoría. Verificó la limpieza de la D1 temporal; suite integrada 1649/1649, typecheck, build y diff-check PASS.
 - Certificación focal local; el ciclo público queda PASS y la verificación de proveedor/buzón de correo real continúa `BLOCKED — REAL_EMAIL_NOT_VERIFIED`. Sin D1 compartida/remota, envío real, merge ni deploy. Ver `TESTING.md` y deuda `PLATFORM-ADMIN-GLOBAL-INCOMPLETE`.
 
 ## 2026-10-22 — PLATFORM-ADMIN-GLOBAL (implementación local, sin publicar)
@@ -15,6 +15,14 @@
 - Roles `admin|member` auditados; owner no se puede cambiar. Lifecycle limitado a `pending_owner`, `owner_invited`, `active` y `suspended`; no existe `closed`. Guards de cliente rechazan organizaciones suspendidas y perfiles públicos no las listan.
 - MiniWeb administrativa permite guardar JSON draft y publicar explícitamente, con audit. Capacitación conserva asignación, auto-reporte y corrección motivada.
 - Migraciones `0020`/`0021` aplicadas en D1 local del worktree. `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. No se ejecutaron suites automatizadas. Sin D1 remota, correo real, deploy o publicación.
+## 2026-10-22 — DIAG-QA-CONTENIDO-01 (rama local, sin publicar)
+
+- A: añadidas opciones desconocidas donde faltaban, conservando su incertidumbre declarada y versionando banco, respuesta, contexto, sesión y replay para proteger sesiones históricas.
+- B: copy de modalidad e ingresos aclara operación actual, periodo previo en pausa y expectativa futura; una pregunta TIC adaptativa registra categorías de herramientas sin afirmar que sean eficaces.
+- C: regresiones cubren la cadena de procedencia de recomendaciones. Medición/optimización conserva `null` sin fuente R3 directa validada; la recomendación, si aplica, pide verificar evidencia.
+- Tres commits incrementales A/B/C. Suite unitaria final 1648/1648; E2E Worker local ACT-04 3/3 y QA-03B 6/6 recorridos más reanudación, concurrencia e informe identificado; typecheck, build y diff-check PASS. Se usaron solo migraciones existentes en D1 local. Sin deploy, cambio de esquema ni HTTP público fechado.
+
+- Fixes finales en PR #38: restaurada la producción `hasOtherPaidStaff` para `q2_other_staff`, precisada como personal remunerado continuo y versionada como pregunta/señales 3, sin reclasificar una actividad `individual`; distinguidos los estados TIC `none`, `not_needed`, `unknown` y `not_asked`. El informe describe la declaración neutralmente, sin puntuarla ni recomendar por presencia/ausencia de herramientas. Banco/planner/contexto se identifican v7/v7/v4; sesión candidate schema/key 6 y replay v4; key 5 y sesiones históricas preservadas sin migración. Suite 1649/1649, focal 57/57, E2E Worker ACT-04 3/3 y QA-03B seis recorridos más reanudación/concurrencia/informe, typecheck/build/diff-check PASS. PR abierto, sin merge ni deploy.
 
 ## 2026-10-22 — ACT-04 (rama local, no publicada)
 

@@ -75,6 +75,9 @@ test("QA-03B: aislamiento sin migración automática, rollback y expiración", a
   const storage = new Memory();
   const old = JSON.stringify(createOld({ sessionId: "old", writerId: "old-tab", now: clock() }));
   storage.setItem(OLD_KEY, old);
+  storage.setItem("vecidya.diagnostic.v3.candidate.session.3", "sesión QA-03B anterior, preservada sin migración");
+  storage.setItem("vecidya.diagnostic.v3.candidate.session.4", "sesión QA-03B anterior, preservada sin migración");
+  storage.setItem("vecidya.diagnostic.v3.candidate.session.5", "sesión QA-03B anterior, preservada sin migración");
   for (const key of ["vecidya.diagnostic.v3.candidate.session.1", "vecidya.diagnostic.v3.session.2"]) storage.setItem(key, "bytes preservados");
   const original = new Map(storage.values);
   const store = new Store(storage);
