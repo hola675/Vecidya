@@ -2,7 +2,7 @@
 
 ## APP-MINI-02B — ofertas y FAQ (2026-10-23; en implementación)
 
-Sobre `origin/main@038750a`, `pnpm run typecheck` y `pnpm run build`: **PASS**. El build informa los avisos preexistentes de secretos opcionales ausentes y dynamic imports ineficaces. No se han ejecutado pruebas de comportamiento de esta fase ni se aplicó `0000–0024` a D1 efímera; por tanto no hay certificación funcional.
+PR #49 draft, HEAD `c88c531`, sobre `origin/main@038750a`: `pnpm run typecheck`, `pnpm run build` y `git diff --check` **PASS**. El build informa los avisos preexistentes de secretos opcionales ausentes y dynamic imports ineficaces. No se han ejecutado pruebas de comportamiento de esta fase ni se aplicó `0000–0024` a D1 efímera; por tanto no hay certificación funcional.
 
 Pendiente de certificación: migración en D1 efímera; Worker/E2E para lectura y edición por organización, aislamiento tenant, CAS obsoleto, preservación de publicación al guardar borrador, publicación conjunta de perfil/horarios/configuración/ofertas/FAQ, compatibilidad de snapshot v1 y visibilidad HTTP anónima antes/después de publicar. Comprobar cero fixtures y eliminar la D1 temporal. No usar D1 remota.
 
