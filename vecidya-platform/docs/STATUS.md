@@ -1,10 +1,10 @@
 # Estado de implementación
 
-## APP-CLIENTE-00-PUBLISH-001-R1.1 — conflictos obsoletos y estado de publicación completo (2026-10-23)
+## APP-CLIENTE-00-PUBLISH-001-R2 — conflictos obsoletos y estado de publicación completo (2026-10-23)
 
-**Implementado y probado localmente en `feat/app-mini-publish-001`, sobre `origin/main@bfce022` integrado en el worktree; PR #42 sigue abierto, nueva revisión Codex pendiente.** Un conflicto `409` en perfil u horarios ahora bloquea ambos formularios y exige recargar para descartar campos obsoletos antes de guardar. El estado “publicado” compara el snapshot completo: perfil/contacto, horarios y configuración MiniWeb; una edición de teléfono o descripción no deja la acción de publicación bloqueada. Se mantiene la lectura cercada de revisión, la inicialización legacy condicional, fallo cerrado de snapshots inválidos y migraciones `0022`/`0023`.
+**Implementado y probado localmente en `feat/app-mini-publish-001`, código probado `2a1ddae`; integra `origin/main@bfce022`. PR #42 abierto, no fusionado, pendiente nueva revisión Codex.** Tras un conflicto `409`, perfil y horarios conservan la revisión asociada a sus valores y bloquean ambos guardados hasta recargar para reconciliar. La acción de publicación compara el snapshot completo: perfil/contacto, horarios y configuración MiniWeb. Sin perfil, publicar permanece deshabilitado. Se mantienen la lectura cercada, la inicialización legacy condicional, el fallo cerrado de snapshots inválidos y las migraciones `0022`/`0023`.
 
-Evidencia tras integrar `origin/main`: `test:unit` 1655/1655, `typecheck`, `build` y `git diff --check` PASS; `miniweb-core-check.mjs` 62/62 en Worker/D1 local efímera. Regresiones verifican dos editores, segundo guardado bloqueado después de 409 en perfil y horarios, edición solo de teléfono/horarios y publicación posterior sin tocar el diseño. D1 `0000–0023`, fixtures limpiados. Sin D1 remota, Gmail real, deploy ni HTTP público fechado.
+Evidencia sobre `2a1ddae`: `test:unit` 1655/1655, `typecheck`, `build` y `git diff --check` PASS; `miniweb-core-check.mjs` 64/64 en Worker/D1 local efímera. E2E incluye dos editores de perfil/horarios y la administración interna: los conflictos mantienen la revisión original; una edición solo de teléfono, descripción y horarios habilita publicar sin alterar MiniWeb; tras publicar, la acción queda deshabilitada. D1 `0000–0023`, cero fixtures y directorios efímeros retirados. Sin D1 remota, Gmail real, deploy ni HTTP público fechado.
 
 APP-MINI-02B permanece pendiente de integrar este PR; ampliar el snapshot con ofertas/FAQ sigue fuera de este checkpoint. **`REAL_EMAIL_NOT_VERIFIED` permanece diferido al release autorizado.**
 ## DIAG-D1-RELEASE-01 — certificación local y plan D1 (2026-10-23)
