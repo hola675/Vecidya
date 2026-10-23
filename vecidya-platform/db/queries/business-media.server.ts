@@ -28,7 +28,7 @@ export async function listBusinessMediaForOrganization(database: Database, organ
     altText: businessMediaAsset.altText,
     createdAt: businessMediaAsset.createdAt,
   }).from(businessMediaAsset)
-    .where(eq(businessMediaAsset.organizationId, organizationId))
+    .where(and(eq(businessMediaAsset.organizationId, organizationId), eq(businessMediaAsset.isActive, true)))
     .orderBy(asc(businessMediaAsset.createdAt), asc(businessMediaAsset.id))
     .then((assets) => assets.map((asset) => ({
       ...asset,
