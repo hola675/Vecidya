@@ -28,11 +28,11 @@ CSS transversal `experience-*` en `app/app.css`, responsive y modo de movimiento
 El estilo `legal-*` sustituye al CSS antiguo `privacy-*` en `app/app.css`. Sin rutas protegidas, API, schema, migraciones, integraciones externas ni consentimiento nuevo.
 
 
-Última reconciliación: 2026-10-22 (DIAG-PRIVACY-PURGE-01 local; Cron de Worker y fixtures loopback/dev-only). Rutas verificadas contra `app/routes.ts`; la tabla describe código local, no producción. Columna *Pub.* conserva evidencia HTTP/versiones históricas. Abreviaturas: [TESTING.md](TESTING.md).
+Última reconciliación: 2026-10-23 (QA-03B release-close local). Rutas verificadas contra `app/routes.ts`; la tabla describe código local, no producción. ACT-04 ya está integrado, pero sin HTTP público fechado. Columna *Pub.* conserva evidencia histórica. Abreviaturas: [TESTING.md](TESTING.md).
 
 ## LEGACY-00 — inventario de rutas (baseline `50026d0`)
 
-Resultado `LEGACY_INVENTORY_READY`; auditoría sin eliminación. La clasificación por grupos, consumers, riesgos y estados está en [ARCHITECTURE.md](ARCHITECTURE.md#vecidya-legacy-00--inventario-y-consolidación-2026-10-12). Se excluyó el trabajo local sin commit del baseline y se preservó. QA-03B, RESULT-UX-02 y FUNNEL-01B no se reabren; ACT-04 no se ejecuta.
+Inventario original `LEGACY_INVENTORY_READY` (baseline 2026-10-12); no equivale a aprobación de limpieza. ACT-04 ahora está integrado: QA-03B es el runtime público en código. La matriz detallada conserva nombres/consumidores del baseline y debe revalidarse en el checkpoint futuro de limpieza tras deploy y cierre de rollback. No borrar por prefijo o nombre.
 
 | Ruta/source | Clase | Imports y pruebas | Riesgo |
 | --- | --- | --- | --- |
@@ -41,14 +41,14 @@ Resultado `LEGACY_INVENTORY_READY`; auditoría sin eliminación. La clasificaci�
 | `/api/diagnostic/funnel-analytics` | `DEV ONLY` | `api-diagnostic-funnel-analytics.ts`; agregado `diagnostic_funnel_aggregate` | Solo se registra cuando `NODE_ENV=development`; GET suprime `<5`, POST admite dos eventos con rate limit y host loopback. Bundle isolation pendiente de validación. |
 | `/__dev/diagnostico/lifecycle/scheduled-purge` | `DEV ONLY` | Ejecuta el mismo helper gated que `workers/app.ts → scheduled()` para D1 local temporal; prueba concurrente/fallo/repetición | Solo loopback + same-origin en development; no se registra en production. |
 | `scheduled()` Worker | Evento Cron | `server/identified-report-purge.server.ts` → `purgeExpiredIdentifiedReports()` | Cron base `17 3 * * *`; dos switches destructivos `false`; staging sin Cron. No desplegado. |
-| `/diagnostico/metodologia` | `KEEP` | metodologia → `qbv2-methodology`; E2E methodology | Versión y contenido aún ligados al V3 público. |
+| `/diagnostico/metodologia` | `KEEP` | metodología QA-03B; E2E ACT-04 | Implementación integrada; sin evidencia HTTP pública nueva. |
 | `/diagnostico/informe` source `diagnostico-informe.tsx`, sin `route()` | `KEEP` barrera | Leído por `diagnostic-report.test.ts` y readiness | Source no registrado, pero test protege la no exposición. |
 | `/__dev/diagnostico/v3`, `/resultado/*`, `/metodologia`, `/informe/*` | `ARCHIVE` / `REMOVE_AFTER_CUTOVER` | Previews/golden y E2E V3 | Sólo dev; mantener para comparación hasta sustitución. |
-| `/__dev/diagnostico/candidate*` | `KEEP` / `INVESTIGATE` | ACT root, manifiesto + ACT-01–03 | Identidad separada QA-03B; destino ACT-04 pendiente. |
+| `/__dev/diagnostico/candidate*` | `KEEP` / `INVESTIGATE` | ACT root, manifiesto + ACT-01–03 | Dev-only; inspeccionar sus consumidores en el futuro barrido posterior a release. |
 | `/__dev/diagnostico/qa03b*` | `KEEP` | QA-03B bank/session/pipeline + suites QA | Candidata certificada; rutas dev-only. |
 | APIs persistence/recovery/analytics sin route registration | `REMOVE_AFTER_CUTOVER` / `INVESTIGATE` | No importadores app localizados; evidencia DIAG-V3-13 | Revisar Worker config, tests y scripts antes de retirar. |
 
-HEAD contiene 16 archivos fuente de ruta relacionados con diagnóstico; el registro público vigente conserva `/diagnostico`, metodología y anonymous-summary API. Rutas `__dev` dependen de `NODE_ENV=development` y guardas loader; contar archivo no equivale a ruta registrada.
+El registro vigente conserva `/diagnostico` y metodología QA-03B junto a anonymous-summary API con compatibilidad V3 para rollback. El informe identificado sigue gobernado por su flag y las rutas `__dev` dependen de `NODE_ENV=development` y guardas loader; contar archivos no equivale a ruta registrada ni a permiso de borrado.
 
 Medición desde blobs Git: `app/features/diagnostic` contiene 116 fuentes y 1.359.978 bytes; `qa03b/**` son 21/203.991 bytes; las dos familias `qbv2-candidate-*` suman 25/276.821 bytes brutos. Esas cantidades se traslapan con dependencias compartidas y no equivalen a reducción de bundle/instalación. La estimación condicional por identidad está en [ARCHITECTURE.md](ARCHITECTURE.md#estimación-de-retirada-potencial).
 
