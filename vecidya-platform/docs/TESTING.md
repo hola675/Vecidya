@@ -1,5 +1,11 @@
 # Pruebas
 
+## UI-PILOT-01 — Aprende visual y responsive (2026-10-23)
+
+**RAN en Worker local de Wrangler (`wrangler dev --local`) con D1 aislada y migraciones `0000–0023`.** `BASE_URL=http://127.0.0.1:4174 pnpm exec node tests/e2e/learn-experience-check.mjs`: **PASS**; `/sitemap.xml` respondió 200 e incluyó el artículo publicado de dominio. Verifica 38 guías/27 borradores, 7 itinerarios, 6 temas, filtros y búsquedas con/sin resultados, recuperación, submit anclado a `#guias` con resultados visibles, preservación simultánea de `q`/`tema` al saltar a itinerarios y temas, campo/botón apilados a 320 px, once rutas de artículos, CTAs, metadata, sitemap, foco visible de teclado, `prefers-reduced-motion` y ausencia de overflow en 320/360/390/768/1024/1366 px. Capturas antes/después a 320/390/1366 px están fuera del repositorio en el directorio de visualizaciones de esta sesión.
+
+`pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS**; build muestra el aviso existente de secretos opcionales Auth/Gmail ausentes en ese proceso. No existe script `lint`; no se ejecutó suite unitaria (sin cambio de lógica/datos), auditoría WCAG completa, lector de pantalla, zoom 200 % ni HTTP pública. **QA privado intentado, bloqueado antes de fixtures:** con secreto Better Auth efímero y D1 local en `kilo/vecidya-app-client-00a/authz-runs/e95d20b0-6335-4f8a-a148-3156a2beaf69`, `organization-authorization-check.mjs` abortó preflight: esperaba 20 migraciones, pero la rama aplica 24. El teardown verificó que no había comenzado fixtures; no se crearon sesiones ni capturas privadas. La D1 aislada quedó con solo esquema, sin fixtures; el intento de retirar la carpeta temporal fue bloqueado por política de comandos recursivos. Adaptar el harness queda fuera de UI-PILOT-01. Sin D1 remota, correo, deploy o publicación.
+
 ## APP-CLIENTE-00-PUBLISH-001-POST-MERGE-P2 — regresiones locales (2026-10-23)
 
 El commit `774d162` corrige dos hallazgos P2 de la revisión Codex post-merge del PR #42. La action `publish` devuelve `publication.state.draftRevision`, la revisión que realmente dejó el snapshot publicado. El editor MiniWeb se renderiza con `key` de organización activa, reiniciando juntos configuración y revisión al cambiar de organización.

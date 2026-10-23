@@ -1,13 +1,11 @@
 import { Link } from "react-router";
 
-import { publicAssets } from "../assets/public-assets";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { learnArticles, learnCategories, learnPathways } from "../content/learn";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 import { publicListingRobots } from "../lib/public-seo";
 
 import type { Route } from "./+types/knowledge";
-
 
 function searchable(value: string) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es");
@@ -18,7 +16,7 @@ function learnHref(category: string | null, search: string) {
   if (category) params.set("tema", category);
   if (search) params.set("q", search);
   const query = params.toString();
-  return `/aprende${query ? `?${query}` : ""}#guias`;
+  return "/aprende" + (query ? "?" + query : "") + "#guias";
 }
 
 export function loader({ request }: Route.LoaderArgs) {
@@ -37,16 +35,15 @@ export function loader({ request }: Route.LoaderArgs) {
     .map(({ slug, title, excerpt, image, category: articleCategory, editorialDraft }) => ({
       slug, title, excerpt, image, category: articleCategory, editorialDraft: editorialDraft ?? false,
     }));
-  const topics = learnCategories.map((topic, index) => ({
+  const topics = learnCategories.map((topic) => ({
     ...topic,
-    number: String(index + 1).padStart(2, "0"),
     count: learnArticles.filter((article) => article.category === topic.name).length,
   }));
   const pathways = learnPathways.map((path) => ({
     title: path.title, description: path.description,
     guides: path.slugs.map((slug) => {
       const guide = learnArticles.find((article) => article.slug === slug);
-      if (!guide) throw new Error(`Guía del itinerario no encontrada: ${slug}`);
+      if (!guide) throw new Error("Guía del itinerario no encontrada: " + slug);
       return { slug: guide.slug, title: guide.title, editorialDraft: guide.editorialDraft ?? false };
     }),
   }));
@@ -68,76 +65,47 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
   return (
     <PublicLayout>
       <main className="public-page learn-experience-page">
-        <section className="learn-experience-hero" aria-labelledby="learn-title">
-          <div>
-            <p className="eyebrow">APRENDE</p>
-            <h1 id="learn-title">Aprende a usar la tecnología para mejorar tu negocio o empresa.</h1>
-            <p>Desde un negocio pequeño hasta empresas con equipos, sedes o varias marcas. Encuentra respuestas sencillas, ejemplos cotidianos y pasos que puedes aplicar sin aprender palabras complicadas. Los materiales nuevos siguen identificados como borradores hasta su revisión editorial.</p>
-            <div className="public-actions">
-              <Link className="button button--primary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
-              <Link className="button button--secondary" to="/contacto">Hacer una pregunta</Link>
+        <section className="learn-atlas" aria-labelledby="learn-title">
+          <div className="learn-atlas__masthead">
+            <div className="learn-atlas__lead">
+              <p className="learn-atlas__label">APRENDE</p>
+              <h1 id="learn-title">Aprende a usar la tecnología para mejorar tu negocio o empresa.</h1>
+              <p>Desde un negocio pequeño hasta empresas con equipos, sedes o varias marcas.</p>
             </div>
           </div>
-          <div className="learn-experience-hero__visual" aria-hidden="true">
-            <img alt="" decoding="async" height={1254} src={publicAssets.illustrations.taskSchedulePanel} width={1254} />
-            <span>Decisiones claras</span>
+          <form className="learn-discovery__form learn-atlas__form" method="get" action="/aprende#guias" role="search">
+            <label htmlFor="learn-guide-search">Buscar en las guías</label>
+            <div className="learn-discovery__search">
+              <input id="learn-guide-search" type="search" name="q" maxLength={100} defaultValue={search} placeholder="Ej. SEO, consultas, IA o hosting" />
+              {category && <input type="hidden" name="tema" value={category} />}
+              <button className="button button--primary" type="submit">Buscar</button>
+            </div>
+          </form>
+          <div className="learn-atlas__map">
+            <p className="learn-atlas__caption">Decisiones claras</p>
+            <img
+              src="/assets/learn/learn-atlas-routes.svg"
+              alt="Ilustración esquemática de rutas que conectan preguntas, temas y guías."
+              width={720}
+              height={430}
+              decoding="async"
+            />
+            <dl className="learn-atlas__facts" aria-label="Contenido disponible en Aprende">
+              <div><dt>Guías</dt><dd>{total}</dd></div>
+              <div><dt>Itinerarios</dt><dd>{pathways.length}</dd></div>
+              <div><dt>Temas</dt><dd>{topics.length}</dd></div>
+            </dl>
           </div>
-        </section>
-
-        <section className="learn-pathways" aria-labelledby="learn-pathways-title">
-          <div className="learn-section-heading">
-            <p className="eyebrow">APRENDE A TU RITMO</p>
-            <h2 id="learn-pathways-title">Elige por dónde empezar.</h2>
-            <p>No necesitas leerlo todo. Sigue un camino corto según lo que hoy te cuesta resolver.</p>
-          </div>
-          <div className="learn-pathways-grid">
-            {pathways.map((path, index) => (
-              <article className="learn-pathway-card" key={path.title}>
-                <p className="learn-pathway-card__step">CAMINO {String(index + 1).padStart(2, "0")}</p>
-                <h3>{path.title}</h3>
-                <p>{path.description}</p>
-                <ol>{path.guides.map((guide) => (
-                  <li key={guide.slug}><Link to={`/aprende/${guide.slug}`}>{guide.title}</Link>{guide.editorialDraft && <small>En revisión</small>}</li>
-                ))}</ol>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="learn-topics" aria-labelledby="learn-topics-title">
-          <div className="learn-section-heading">
-            <p className="eyebrow">TEMAS PRINCIPALES</p>
-            <h2 id="learn-topics-title">Empieza por la pregunta que tienes hoy.</h2>
-          </div>
-          <div className="learn-topics-grid">
-            {topics.map((topic) => (
-              <article className="learn-topic-card" key={topic.name}>
-                <span className="learn-topic-card__number">{topic.number}</span>
-                <h3>{topic.name}</h3>
-                <p>{topic.description}</p>
-                <Link className="text-link learn-topic-card__link" to={learnHref(topic.name, search)} aria-label={`Ver ${topic.count} guías de ${topic.name}`}>
-                  Ver {topic.count === 1 ? "1 guía" : `${topic.count} guías`} <span aria-hidden="true">→</span>
-                </Link>
-              </article>
-            ))}
-          </div>
+          <nav className="learn-atlas__jump" aria-label="Explorar Aprende">
+            <a href="#itinerarios">Seguir un itinerario</a>
+            <a href="#temas">Explorar temas</a>
+          </nav>
         </section>
 
         <section className="learn-resources" id="guias" aria-labelledby="learn-resources-title">
-          <div className="learn-section-heading">
-            <p className="eyebrow">GUÍAS DE APRENDE</p>
-            <h2 id="learn-resources-title">Empieza por una pregunta concreta.</h2>
-            <p>Explora las guías por tema o busca una duda específica. No necesitas registrarte.</p>
-          </div>
+          <p className="learn-section-kicker">GUÍAS DE APRENDE</p>
+          <h2 className="learn-resources__title" id="learn-resources-title">Empieza por una pregunta concreta.</h2>
           <div className="learn-discovery">
-            <form className="learn-discovery__form" method="get" action="/aprende" role="search">
-              <label htmlFor="learn-guide-search">Buscar en las guías</label>
-              <div className="learn-discovery__search">
-                <input id="learn-guide-search" type="search" name="q" maxLength={100} defaultValue={search} placeholder="Ej. SEO, consultas, IA o hosting" />
-                {category && <input type="hidden" name="tema" value={category} />}
-                <button className="button button--primary" type="submit">Buscar</button>
-              </div>
-            </form>
             <nav className="learn-discovery__topics" aria-label="Filtrar guías por tema">
               <Link className="learn-discovery__chip" to={learnHref(null, search)} aria-current={category === null ? "page" : undefined}>Todas</Link>
               {topics.map((topic) => (
@@ -146,37 +114,92 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
                 </Link>
               ))}
             </nav>
-            <p className="learn-discovery__summary" role="status">
-              {articles.length === 1 ? "1 guía encontrada" : `${articles.length} guías encontradas`} de {total}
-              {category ? ` · ${category}` : ""}{search ? ` · Búsqueda: «${search}»` : ""}
+            <p className="learn-discovery__summary" role="status" aria-live="polite">
+              {articles.length === 1 ? "1 guía encontrada" : articles.length + " guías encontradas"} de {total}
+              {category ? " · " + category : ""}{search ? " · Búsqueda: «" + search + "»" : ""}
             </p>
+            <p className="learn-discovery__note">Explora las guías por tema o busca una duda específica. No necesitas registrarte.</p>
+            <p className="learn-discovery__note">Encuentra respuestas sencillas, ejemplos cotidianos y pasos que puedes aplicar sin aprender palabras complicadas.</p>
+            <p className="learn-editorial-note">Los materiales nuevos siguen identificados como borradores hasta su revisión editorial.</p>
           </div>
           {articles.length === 0 ? (
             <div className="learn-discovery__empty">
               <h3>No encontramos guías con esos criterios.</h3>
               <p>Prueba otra palabra o consulta todas las guías disponibles.</p>
-              <Link className="text-link" to="/aprende#guias">Ver todas las guías <span aria-hidden="true">→</span></Link>
+              <Link className="text-link" to="/aprende#guias">Ver todas las guías</Link>
             </div>
           ) : (
-            <div className="learn-articles-grid">
+            <ol className="learn-guide-list" aria-label="Guías disponibles">
               {articles.map((article) => (
-                <article className="learn-article-card" key={article.slug}>
-                  <img src={article.image} alt="" width={900} height={360} loading="lazy" />
-                  <div>
-                    <p className="eyebrow">{article.category}{article.editorialDraft ? " · En revisión" : ""}</p>
-                    <h3><Link to={`/aprende/${article.slug}`}>{article.title}</Link></h3>
-                    <p>{article.excerpt}</p>
-                    <Link className="text-link" to={`/aprende/${article.slug}`}>Leer guía <span aria-hidden="true">→</span></Link>
-                  </div>
-                </article>
+                <li key={article.slug}>
+                  <article className="learn-guide">
+                    <img src={article.image} alt="" width={144} height={108} loading="lazy" />
+                    <div className="learn-guide__copy">
+                      <p className="learn-guide__topic">
+                        {article.category}
+                        {article.editorialDraft && <span> · En revisión editorial</span>}
+                      </p>
+                      <h3><Link to={"/aprende/" + article.slug}>{article.title}</Link></h3>
+                      <p>{article.excerpt}</p>
+                      <Link className="learn-guide__action" aria-label={"Leer guía: " + article.title} to={"/aprende/" + article.slug}>Leer guía</Link>
+                    </div>
+                  </article>
+                </li>
               ))}
-            </div>
+            </ol>
           )}
+        </section>
+
+        <section className="learn-pathways" id="itinerarios" aria-labelledby="learn-pathways-title">
+          <div className="learn-section-heading">
+            <p className="learn-section-kicker">APRENDE A TU RITMO</p>
+            <h2 id="learn-pathways-title">Elige por dónde empezar.</h2>
+            <p>No necesitas leerlo todo. Sigue un camino corto según lo que hoy te cuesta resolver.</p>
+          </div>
+          <ol className="learn-path-list">
+            {pathways.map((path) => (
+              <li key={path.title}>
+                <details className="learn-path">
+                  <summary>
+                    <span className="learn-path__title">{path.title}</span>
+                    <span className="learn-path__description">{path.description}</span>
+                    <span className="learn-path__count">{path.guides.length} guías</span>
+                  </summary>
+                  <ol className="learn-path__guides">
+                    {path.guides.map((guide) => (
+                      <li key={guide.slug}>
+                        <Link to={"/aprende/" + guide.slug}>{guide.title}</Link>
+                        {guide.editorialDraft && <span>En revisión editorial</span>}
+                      </li>
+                    ))}
+                  </ol>
+                </details>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="learn-topics" id="temas" aria-labelledby="learn-topics-title">
+          <div className="learn-section-heading">
+            <p className="learn-section-kicker">TEMAS PRINCIPALES</p>
+            <h2 id="learn-topics-title">Empieza por la pregunta que tienes hoy.</h2>
+          </div>
+          <ul className="learn-topic-list">
+            {topics.map((topic) => (
+              <li key={topic.name}>
+                <Link to={learnHref(topic.name, search)} aria-label={"Ver " + topic.count + " " + (topic.count === 1 ? "guía" : "guías") + " de " + topic.name}>
+                  <span className="learn-topic-list__name">{topic.name}</span>
+                  <span className="learn-topic-list__description">{topic.description}</span>
+                  <span className="learn-topic-list__count">Ver {topic.count} {topic.count === 1 ? "guía" : "guías"}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
 
         <section className="learn-why" aria-labelledby="learn-why-title">
           <div>
-            <p className="eyebrow">POR QUÉ APRENDER ESTO</p>
+            <p className="learn-section-kicker">POR QUÉ APRENDER ESTO</p>
             <h2 id="learn-why-title">Entender primero ayuda a construir mejor.</h2>
           </div>
           <ul>
@@ -187,12 +210,12 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
         </section>
 
         <section className="learn-final-cta" aria-labelledby="learn-final-title">
-          <p className="eyebrow">SIGUIENTE PASO</p>
+          <p className="learn-section-kicker">Siguiente paso</p>
           <h2 id="learn-final-title">¿No sabes qué necesitas todavía?</h2>
           <p>El diagnóstico te ayuda a convertir una duda general en prioridades iniciales. Si ya tienes una pregunta concreta, también puedes escribirnos.</p>
           <div className="public-actions">
             <Link className="button button--primary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
-            <Link className="button button--secondary" to="/contacto">{PUBLIC_ACTION_LABELS.contact}</Link>
+            <Link className="button button--secondary" to="/contacto">Hacer una pregunta</Link>
           </div>
         </section>
       </main>

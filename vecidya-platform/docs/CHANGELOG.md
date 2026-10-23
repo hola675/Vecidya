@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-23 — UI-PILOT-01 Aprende (implementación local)
+
+- Se rediseñó el primer bloque de `/aprende` como atlas editorial con ilustración original, conteos reales y búsqueda visible antes del catálogo. Se conservan copys, datos, borradores, filtros GET, metadata, itinerarios, temas y CTAs existentes.
+- El formulario ahora lleva a resultados y apila campo/botón a 320 px con control distinguible. Se corrigieron desbordamientos medidos en tarjetas relacionadas y en la grilla/CTA de artículos; `body` solo deja `min-width:320px` en el listado Aprende.
+- Los saltos a itinerarios y temas usan anclas nativas y conservan `q`/`tema`; el E2E cubre ambos parámetros activos durante los dos saltos.
+- Worker E2E, typecheck, build y diff-check PASS; capturas locales a 320/390/1366 px. Sin cambio de Auth, backend, D1, Diagnóstico, versión o publicación.
+
 ## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-POST-MERGE-P2
 
 - La acción de publicar perfil entrega la revisión final de la publicación, evitando que el siguiente guardado de perfil/horarios choque con un `409` falso.
