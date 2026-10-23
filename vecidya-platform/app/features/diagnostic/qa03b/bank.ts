@@ -23,7 +23,7 @@ const replacement: Readonly<Record<string, Partial<QuestionDefinitionV2>>> = {
     ],
   },
   q2_other_staff: {
-    version: 2,
+    version: 3,
     prompt: "¿Trabaja contigo alguna otra persona remunerada de forma continua (empleada o colaboradora pagada)?",
     hint: "Cuenta a quienes participan de manera regular en la operación, no a un proveedor ocasional o ayudante para un encargo puntual.",
     options: [

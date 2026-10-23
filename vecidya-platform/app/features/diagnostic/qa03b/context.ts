@@ -39,8 +39,8 @@ export function deriveContractSignals(answers: AnswersV2): ContractSignals {
   return {
     ...(["individual", "business", "organization", "project"].includes(String(entity)) ? { entity: declaration(entity as EntityType, "q2_entity", 3) } : {}),
     ...(entity === "unknown" ? { entityUnknown: declaration(true, "q2_entity", 3) } : {}),
-    ...(["yes", "no"].includes(String(answers.q2_other_staff)) ? { hasOtherPaidStaff: declaration(answers.q2_other_staff === "yes", "q2_other_staff", 2) } : {}),
-    ...(answers.q2_other_staff === "unknown" ? { hasOtherPaidStaffUnknown: declaration(true, "q2_other_staff", 2) } : {}),
+    ...(["yes", "no"].includes(String(answers.q2_other_staff)) ? { hasOtherPaidStaff: declaration(answers.q2_other_staff === "yes", "q2_other_staff", 3) } : {}),
+    ...(answers.q2_other_staff === "unknown" ? { hasOtherPaidStaffUnknown: declaration(true, "q2_other_staff", 3) } : {}),
     ...((OPERATIONAL_STATUSES as readonly unknown[]).includes(state) ? { operationalStatus: declaration(state as OperationalStatus, "q2_operational_status", 1) } : {}),
     ...(["yes", "no"].includes(String(answers.q2_has_customers)) ? { hasEverHadRealPeople: declaration(answers.q2_has_customers === "yes", "q2_has_customers", 3) } : {}),
     ...(answers.q2_has_customers === "unknown" ? { historyUnknown: declaration(true, "q2_has_customers", 3) } : {}),

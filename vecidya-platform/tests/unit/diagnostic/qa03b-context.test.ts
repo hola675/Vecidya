@@ -3,6 +3,7 @@ import test from "node:test";
 import { resolveEligibleQuestionsV2 as resolve } from "../../../app/features/diagnostic/qa03b/engine";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as BANK, BUYER_RECIPIENT_RULE } from "../../../app/features/diagnostic/qa03b/bank";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as OLD } from "../../../app/features/diagnostic/qbv2-reviewed-evidence";
+import { deriveContractSignals } from "../../../app/features/diagnostic/qa03b/context";
 import { shouldClarifyBuyerRecipient } from "../../../app/features/diagnostic/qa03b/contract";
 import { evaluateRuleV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import { scoreCandidateContextualDimensionsV3 as score } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
@@ -43,6 +44,7 @@ test("QA-03B: entidad, estado actual e historia son independientes", () => {
 });
 test("QA-03B: el dato de personal adicional se conserva sin reclasificar a quien trabaja por cuenta propia", () => {
   const staffQuestion = BANK.find(question => question.id === "q2_other_staff")!;
+  assert.equal(staffQuestion.version, 3);
   assert.match(staffQuestion.prompt, /persona remunerada.*continua/);
   assert.match(staffQuestion.hint ?? "", /proveedor ocasional.*encargo puntual/);
   assert.match(staffQuestion.options.find(option => option.value === "yes")?.label ?? "", /remunerada.*continua/);
@@ -51,11 +53,13 @@ test("QA-03B: el dato de personal adicional se conserva sin reclasificar a quien
   assert.deepEqual(staffQuestion.options.find(option => option.value === "no")?.produces, [{ kind: "hasOtherPaidStaff", value: false, provenance: "explicit_declaration" }]);
   for (const [answer, expected] of [["yes", "yes"], ["no", "no"]] as const) {
     const result = resolve({ ...base, q2_entity: "individual", q2_other_staff: answer }, BANK);
+    assert.equal(deriveContractSignals({ ...base, q2_other_staff: answer }).hasOtherPaidStaff?.questionVersion, 3);
     assert.deepEqual(result.context.entity, { status: "resolved", value: "individual", source: "signal" });
     assert.deepEqual(result.context.hasOtherPaidStaff, { status: "resolved", value: expected, source: "signal" });
     assert.deepEqual(result.trace.hasOtherPaidStaff.supportingSignals, ["q2_other_staff"]);
   }
   const unknown = resolve({ ...base, q2_entity: "individual", q2_other_staff: "unknown" }, BANK);
+  assert.equal(deriveContractSignals({ ...base, q2_other_staff: "unknown" }).hasOtherPaidStaffUnknown?.questionVersion, 3);
   assert.deepEqual(unknown.context.entity, { status: "resolved", value: "individual", source: "signal" });
   assert.deepEqual(unknown.context.hasOtherPaidStaff, { status: "unresolved", reason: "declared_unknown", candidates: [] });
   const notAsked = resolve({ ...base, q2_entity: "individual", q2_other_staff: undefined }, BANK);
