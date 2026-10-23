@@ -8,6 +8,7 @@ import {
   type MiniWebProfileSource,
   type MiniWebHoursSource,
 } from "./registry";
+import type { BusinessFaqItem, BusinessOffering } from "./content";
 
 function hasText(...values: (string | null)[]) {
   return values.some((value) => typeof value === "string" && value.trim().length > 0);
@@ -34,13 +35,16 @@ function hasPublicContact(profile: MiniWebProfileSource) {
     || [profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].some(isValidWebUrl);
 }
 
-function hasContent(type: MiniWebModuleType, profile: MiniWebProfileSource, hours: MiniWebHoursSource) {
+function hasContent(type: MiniWebModuleType, profile: MiniWebProfileSource, hours: MiniWebHoursSource, offerings: readonly BusinessOffering[], faqs: readonly BusinessFaqItem[]) {
   switch (type) {
     case "hero": return hasText(profile.displayName);
     case "about": return hasText(profile.description);
     case "contact": return hasPublicContact(profile);
     case "hours": return hours.length > 0;
     case "location": return hasText(profile.category, profile.city, profile.country, profile.serviceMode, profile.serviceArea);
+    case "services": return offerings.some((item) => item.kind === "service" && item.isActive);
+    case "products": return offerings.some((item) => item.kind === "product" && item.isActive);
+    case "faq": return faqs.some((item) => item.isActive);
     default: return false;
   }
 }
@@ -49,6 +53,8 @@ export function getRenderableMiniWebModules(
   configuration: MiniWebConfiguration,
   profile: MiniWebProfileSource,
   hours: MiniWebHoursSource,
+  offerings: readonly BusinessOffering[] = [],
+  faqs: readonly BusinessFaqItem[] = [],
 ): MiniWebModuleConfig[] {
   const template = MINIWEB_TEMPLATE_REGISTRY[configuration.templateKey];
   if (!template || template.availability !== "available") return [];
@@ -56,6 +62,6 @@ export function getRenderableMiniWebModules(
     module.enabled
     && MINIWEB_MODULE_REGISTRY[module.type].availability === "available"
     && template.supportedModules.includes(module.type)
-    && hasContent(module.type, profile, hours),
+    && hasContent(module.type, profile, hours, offerings, faqs),
   );
 }

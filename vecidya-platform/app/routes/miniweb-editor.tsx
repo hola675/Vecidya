@@ -7,6 +7,7 @@ import { getBusinessProfileForOrganization } from "../../db/queries/business-pro
 import { getBusinessProfileGovernance } from "../../db/queries/platform-governance.server";
 import { createBusinessPublicationSnapshot, getBusinessPublicationSnapshotForOrganization, isBusinessPublicationCurrent, readConsistentBusinessDraft } from "../../db/queries/business-publication.server";
 import { getMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
+import { getMiniWebContentForOrganization } from "../../db/queries/miniweb-content.server";
 import { requireOrganizationPermission } from "../../server/auth/authorization.server";
 import { requireOrganization } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
@@ -17,6 +18,7 @@ import { Button, Card } from "../components/ui";
 import { ClientAreaShell } from "../components/client-area-shell";
 import { MINIWEB_MODULE_REGISTRY, MINIWEB_TEMPLATE_REGISTRY, type MiniWebConfiguration, type MiniWebModuleType } from "../features/miniweb/registry";
 import { getMiniWebPublicationState, toMiniWebPublicProfile } from "../features/miniweb/public-model";
+import { MAX_BUSINESS_FAQ_ITEMS, MAX_BUSINESS_OFFERINGS, type BusinessFaqItem, type BusinessOffering } from "../features/miniweb/content";
 
 import type { Route } from "./+types/miniweb-editor";
 
@@ -35,20 +37,21 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     getClientWorkspaceContext(env, request),
   ]);
   const database = createDatabase(env.DB);
-  const { data: { profile, hours, state, publicationIsCurrent }, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
+  const { data: { profile, hours, state, content, publicationIsCurrent }, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
     const [profile, hours] = await Promise.all([
       getBusinessProfileForOrganization(database, organization.id),
       listBusinessHoursForOrganization(database, organization.id),
     ]);
-    const [state, publication] = await Promise.all([
+    const [state, publication, content] = await Promise.all([
       getMiniWebConfigurationForOrganization(database, organization.id, profile, hours),
       getBusinessPublicationSnapshotForOrganization(database, organization.id),
+      getMiniWebContentForOrganization(database, organization.id),
     ]);
     const currentSnapshot = profile?.status === "published"
-      ? createBusinessPublicationSnapshot(profile, hours, state.draftConfiguration)
+      ? createBusinessPublicationSnapshot(profile, hours, state.draftConfiguration, content.offerings, content.faqs)
       : null;
     const publicationIsCurrent = isBusinessPublicationCurrent(publication.publishedVersion, publication.snapshot, currentSnapshot);
-    return { profile, hours, state, publicationIsCurrent };
+    return { profile, hours, state, content, publicationIsCurrent };
   });
   const governance = profile ? await getBusinessProfileGovernance(database, profile.id) : null;
 
@@ -60,6 +63,8 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     hasPersistedConfiguration: state.hasPersistedConfiguration,
     draftConfiguration: state.draftConfiguration,
     draftRevision,
+    offerings: content.offerings,
+    faqs: content.faqs,
     publicationIsCurrent,
     publishedConfiguration: state.publishedConfiguration,
     profile: toMiniWebPublicProfile(profile, governance?.verificationStatus ?? "unverified"),
@@ -78,10 +83,14 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const { revalidate } = useRevalidator();
   const [configuration, setConfiguration] = useState(data.draftConfiguration);
   const [draftRevision, setDraftRevision] = useState(data.draftRevision);
+  const [offerings, setOfferings] = useState(data.offerings);
+  const [faqs, setFaqs] = useState(data.faqs);
   const [previewVisible, setPreviewVisible] = useState(true);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
-  const isDirty = JSON.stringify(configuration) !== JSON.stringify(data.draftConfiguration);
+  const isDirty = JSON.stringify(configuration) !== JSON.stringify(data.draftConfiguration)
+    || JSON.stringify(offerings) !== JSON.stringify(data.offerings)
+    || JSON.stringify(faqs) !== JSON.stringify(data.faqs);
   const orderedModules = [...configuration.modules].sort((left, right) => left.sortOrder - right.sortOrder || left.type.localeCompare(right.type));
 
   useEffect(() => setConfiguration(data.draftConfiguration), [data.draftConfiguration]);
@@ -104,15 +113,25 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
     });
   }
 
+  function updateOffering(index: number, patch: Partial<BusinessOffering>) {
+    setOfferings((current) => current.map((item, position) => position === index ? { ...item, ...patch } : item));
+  }
+
+  function updateFaq(index: number, patch: Partial<BusinessFaqItem>) {
+    setFaqs((current) => current.map((item, position) => position === index ? { ...item, ...patch } : item));
+  }
+
   async function sendConfiguration(intent: "save" | "publish", value: MiniWebConfiguration, expectedRevision: number) {
     const response = await fetch(`/api/organizations/${encodeURIComponent(data.activeOrganization.id)}/miniweb-config`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ intent, ...(intent === "save" ? { configuration: value } : {}), draftRevision: expectedRevision }),
+      body: JSON.stringify({ intent, ...(intent === "save" ? { configuration: value, offerings, faqs } : {}), draftRevision: expectedRevision }),
     });
-    const result = await response.json() as { error?: string; configuration?: MiniWebConfiguration; draftRevision?: number };
+    const result = await response.json() as { error?: string; configuration?: MiniWebConfiguration; offerings?: BusinessOffering[]; faqs?: BusinessFaqItem[]; draftRevision?: number };
     if (!response.ok || !result.configuration) throw new Error(result.error ?? "No se pudo guardar la configuración.");
     setConfiguration(result.configuration);
+    if (result.offerings) setOfferings(result.offerings);
+    if (result.faqs) setFaqs(result.faqs);
     if (typeof result.draftRevision === "number") setDraftRevision(result.draftRevision);
     await revalidate();
     return result.draftRevision ?? expectedRevision;
@@ -222,7 +241,58 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 <Button disabled={!data.canPublish || busy} onClick={handlePublish}>{busy ? "Procesando…" : "Publicar configuración"}</Button>
               </div>
               {message ? <p className={`alert miniweb-editor__message miniweb-editor__message--${message.kind}`} role={message.kind === "error" ? "alert" : "status"}>{message.text}</p> : null}
-              <p className="miniweb-editor__note">El perfil, los horarios y esta estructura se publican juntos desde el botón de publicación.</p>
+              <p className="miniweb-editor__note">El perfil, los horarios, las ofertas, las preguntas frecuentes y esta estructura se publican juntos.</p>
+            </Card>
+
+            <Card aria-labelledby="miniweb-offerings-title" className="miniweb-content-editor">
+              <div className="miniweb-editor__section-heading">
+                <div><p className="eyebrow">CONTENIDO DEL NEGOCIO</p><h2 id="miniweb-offerings-title">Servicios y productos</h2></div>
+                <span className="miniweb-editor__count">{offerings.length}/{MAX_BUSINESS_OFFERINGS}</span>
+              </div>
+              <p className="miniweb-editor__note">Añade solo información confirmada por tu negocio. El texto de precio es opcional y no procesa pagos ni pedidos.</p>
+              {offerings.map((item, index) => (
+                <fieldset className="miniweb-content-editor__item" key={`offering-${index}`} disabled={!data.canEdit || busy}>
+                  <legend>{item.kind === "service" ? "Servicio" : "Producto"} {index + 1}</legend>
+                  <label>Tipo
+                    <select aria-label={`Tipo de oferta ${index + 1}`} onChange={(event) => updateOffering(index, { kind: event.currentTarget.value as BusinessOffering["kind"] })} value={item.kind}>
+                      <option value="service">Servicio</option><option value="product">Producto</option>
+                    </select>
+                  </label>
+                  <label>Título
+                    <input maxLength={120} onChange={(event) => updateOffering(index, { title: event.currentTarget.value })} required value={item.title} />
+                  </label>
+                  <label>Descripción
+                    <textarea maxLength={600} onChange={(event) => updateOffering(index, { description: event.currentTarget.value })} required rows={3} value={item.description} />
+                  </label>
+                  <label>Texto de precio (opcional)
+                    <input maxLength={80} onChange={(event) => updateOffering(index, { priceLabel: event.currentTarget.value || null })} value={item.priceLabel ?? ""} />
+                  </label>
+                  <label className="miniweb-content-editor__toggle"><input checked={item.isActive} onChange={(event) => updateOffering(index, { isActive: event.currentTarget.checked })} type="checkbox" /> Mostrar cuando se publique</label>
+                  <Button onClick={() => setOfferings((current) => current.filter((_, position) => position !== index).map((entry, sortOrder) => ({ ...entry, sortOrder })))} tone="secondary">Quitar oferta</Button>
+                </fieldset>
+              ))}
+              <Button disabled={!data.canEdit || busy || offerings.length >= MAX_BUSINESS_OFFERINGS} onClick={() => setOfferings((current) => [...current, { kind: "service", title: "", description: "", priceLabel: null, sortOrder: current.length, isActive: true }])} tone="secondary">Añadir servicio o producto</Button>
+            </Card>
+
+            <Card aria-labelledby="miniweb-faq-title" className="miniweb-content-editor">
+              <div className="miniweb-editor__section-heading">
+                <div><p className="eyebrow">AYUDA PARA TUS VISITANTES</p><h2 id="miniweb-faq-title">Preguntas frecuentes</h2></div>
+                <span className="miniweb-editor__count">{faqs.length}/{MAX_BUSINESS_FAQ_ITEMS}</span>
+              </div>
+              {faqs.map((item, index) => (
+                <fieldset className="miniweb-content-editor__item" key={`faq-${index}`} disabled={!data.canEdit || busy}>
+                  <legend>Pregunta {index + 1}</legend>
+                  <label>Pregunta
+                    <input maxLength={240} onChange={(event) => updateFaq(index, { question: event.currentTarget.value })} required value={item.question} />
+                  </label>
+                  <label>Respuesta
+                    <textarea maxLength={1200} onChange={(event) => updateFaq(index, { answer: event.currentTarget.value })} required rows={4} value={item.answer} />
+                  </label>
+                  <label className="miniweb-content-editor__toggle"><input checked={item.isActive} onChange={(event) => updateFaq(index, { isActive: event.currentTarget.checked })} type="checkbox" /> Mostrar cuando se publique</label>
+                  <Button onClick={() => setFaqs((current) => current.filter((_, position) => position !== index).map((entry, sortOrder) => ({ ...entry, sortOrder })))} tone="secondary">Quitar pregunta</Button>
+                </fieldset>
+              ))}
+              <Button disabled={!data.canEdit || busy || faqs.length >= MAX_BUSINESS_FAQ_ITEMS} onClick={() => setFaqs((current) => [...current, { question: "", answer: "", sortOrder: current.length, isActive: true }])} tone="secondary">Añadir pregunta</Button>
             </Card>
           </div>
 
@@ -234,7 +304,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
             <p className="miniweb-editor__note">El borrador se previsualiza aquí; no se guarda ni publica automáticamente.</p>
             {previewVisible ? data.profile ? (
               <div className="miniweb-editor__preview">
-                <MiniWebRenderer configuration={configuration} hours={data.hours} preview profile={profile} />
+              <MiniWebRenderer configuration={configuration} hours={data.hours} offerings={offerings} faqs={faqs} preview profile={profile} />
               </div>
             ) : <div className="miniweb-editor__empty-preview">Completa primero la información de tu negocio para generar una vista previa.</div> : null}
             <p className="miniweb-editor__publication-state">

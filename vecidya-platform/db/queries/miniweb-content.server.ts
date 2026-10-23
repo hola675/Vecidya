@@ -1,0 +1,58 @@
+import { asc, eq } from "drizzle-orm";
+
+import type { Database } from "../client.server";
+import { businessFaq, businessOffering } from "../schema";
+import type { BusinessFaqItem, BusinessOffering } from "../../app/features/miniweb/content";
+
+type BatchItem = ReturnType<Database["$client"]["prepare"]>;
+
+export async function getMiniWebContentForOrganization(database: Database, organizationId: string) {
+  const [offerings, faqs] = await Promise.all([
+    database.query.businessOffering.findMany({
+      where: eq(businessOffering.organizationId, organizationId),
+      orderBy: [asc(businessOffering.sortOrder), asc(businessOffering.id)],
+    }),
+    database.query.businessFaq.findMany({
+      where: eq(businessFaq.organizationId, organizationId),
+      orderBy: [asc(businessFaq.sortOrder), asc(businessFaq.id)],
+    }),
+  ]);
+  return {
+    offerings: offerings.map(({ kind, title, description, priceLabel, sortOrder, isActive }) => ({
+      kind: kind as BusinessOffering["kind"], title, description, priceLabel, sortOrder, isActive,
+    })),
+    faqs: faqs.map(({ question, answer, sortOrder, isActive }) => ({ question, answer, sortOrder, isActive })),
+  };
+}
+
+export function buildMiniWebContentReplacementStatements(
+  database: Database,
+  organizationId: string,
+  offerings: readonly BusinessOffering[],
+  faqs: readonly BusinessFaqItem[],
+  revision: number,
+  token: string,
+): BatchItem[] {
+  const authorized = `EXISTS (SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?)`;
+  const statements: BatchItem[] = [
+    database.$client.prepare(`DELETE FROM business_offering WHERE organization_id = ? AND ${authorized}`)
+      .bind(organizationId, organizationId, revision, token),
+    database.$client.prepare(`DELETE FROM business_faq WHERE organization_id = ? AND ${authorized}`)
+      .bind(organizationId, organizationId, revision, token),
+  ];
+
+  if (offerings.length) {
+    statements.push(database.$client.prepare(`INSERT INTO business_offering
+      (id, organization_id, kind, title, description, price_label, sort_order, is_active, created_at, updated_at)
+      ${offerings.map(() => `SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${authorized}`).join(" UNION ALL ")}`)
+      .bind(...offerings.flatMap((item) => [crypto.randomUUID(), organizationId, item.kind, item.title, item.description, item.priceLabel, item.sortOrder, item.isActive ? 1 : 0, Date.now(), Date.now(), organizationId, revision, token])));
+  }
+
+  if (faqs.length) {
+    statements.push(database.$client.prepare(`INSERT INTO business_faq
+      (id, organization_id, question, answer, sort_order, is_active, created_at, updated_at)
+      ${faqs.map(() => `SELECT ?, ?, ?, ?, ?, ?, ?, ? WHERE ${authorized}`).join(" UNION ALL ")}`)
+      .bind(...faqs.flatMap((item) => [crypto.randomUUID(), organizationId, item.question, item.answer, item.sortOrder, item.isActive ? 1 : 0, Date.now(), Date.now(), organizationId, revision, token])));
+  }
+  return statements;
+}

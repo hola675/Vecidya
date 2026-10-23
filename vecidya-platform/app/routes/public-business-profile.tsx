@@ -5,6 +5,7 @@ import { getPublishedBusinessProfileBySlug } from "../../db/queries/business-pro
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
 import { getMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
+import { publicSiteUrl } from "../lib/public-seo";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { JsonLd } from "../components/public-v2";
 import { MiniWebRenderer } from "../components/miniweb/miniweb-renderer";
@@ -25,7 +26,6 @@ const schemaOrgDayNames: Record<number, string> = {
 
 export async function loader({ context, params, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  const { origin } = new URL(request.url);
   const database = createDatabase(env.DB);
   const profile = await getPublishedBusinessProfileBySlug(database, params.slug);
 
@@ -40,10 +40,12 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
     : await getMiniWebConfigurationForOrganization(database, profile.organizationId, profile, hours);
   const publicProfile = toMiniWebPublicProfile(profile, profile.verificationStatus);
   if (!publicProfile) throw new Response("Perfil no encontrado", { status: 404 });
-  const renderableModules = getRenderableMiniWebModules(miniweb.publishedConfiguration, publicProfile, hours);
+  const offerings = profile.publicationSnapshot?.offerings ?? [];
+  const faqs = profile.publicationSnapshot?.faqs ?? [];
+  const renderableModules = getRenderableMiniWebModules(miniweb.publishedConfiguration, publicProfile, hours, offerings, faqs);
   const publicModel = restrictMiniWebPublicModel(publicProfile, hours, renderableModules.map((module) => module.type));
 
-  return { origin, ...publicModel, configuration: miniweb.publishedConfiguration };
+  return { ...publicModel, configuration: miniweb.publishedConfiguration, offerings, faqs };
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
@@ -52,7 +54,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export default function PublicBusinessProfilePage() {
-  const { origin, profile, hours, configuration } = useLoaderData<typeof loader>();
+  const { profile, hours, configuration, offerings, faqs } = useLoaderData<typeof loader>();
   const sameAs = [profile.websiteUrl, profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].filter(
     (url): url is string => Boolean(url),
   );
@@ -68,7 +70,7 @@ export default function PublicBusinessProfilePage() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     name: profile.displayName,
-    url: `${origin}/vecindario/${profile.slug}`,
+    url: publicSiteUrl(`/vecindario/${profile.slug}`),
     description: profile.description ?? profile.shortDescription ?? undefined,
     image: profile.logoUrl ?? undefined,
     telephone: profile.phone ?? undefined,
@@ -89,7 +91,7 @@ export default function PublicBusinessProfilePage() {
     <PublicLayout>
       <main className="public-page public-business-profile">
         <JsonLd data={localBusinessSchema} />
-        <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} />
+        <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} offerings={offerings} faqs={faqs} />
 
         <section aria-labelledby="business-neighborhood-title" className="public-business-neighborhood">
           <div>

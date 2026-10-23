@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-23 — APP-MINI-02B (implementación local sin certificar)
+
+- Se añadieron ofertas del negocio tipo servicio/producto y FAQ editables por organización en Mi MiniWeb. El contenido se guarda con la configuración bajo una revisión CAS y se incorpora al snapshot público versión 2. Snapshots v1 continúan leyéndose sin contenido nuevo ni filtración desde borradores.
+- Se añadieron los módulos públicos `services`, `products` y `faq`, preview de edición y la migración aditiva `0024_business-offerings-faq.sql`. Typecheck/build PASS sobre `origin/main@038750a`; aplicación de migración y validación funcional pendientes. Sin D1 remota ni deploy.
+- El JSON-LD del perfil usa el origen canónico `PUBLIC_SITE_ORIGIN` mediante `publicSiteUrl()` y no confía en el Host de la petición.
+
 ## 2026-10-23 — UI-PILOT-01 Aprende (implementación local)
 
 - Se rediseñó el primer bloque de `/aprende` como atlas editorial con ilustración original, conteos reales y búsqueda visible antes del catálogo. Se conservan copys, datos, borradores, filtros GET, metadata, itinerarios, temas y CTAs existentes.
