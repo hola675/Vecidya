@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-22 — DIAG-QA-CONTENIDO-01 (rama local, sin publicar)
+
+- A: añadidas opciones desconocidas donde faltaban, conservando su incertidumbre declarada y versionando banco, respuesta, contexto, sesión y replay para proteger sesiones históricas.
+- B: copy de modalidad e ingresos aclara operación actual, periodo previo en pausa y expectativa futura; una pregunta TIC adaptativa registra categorías de herramientas sin afirmar que sean eficaces.
+- C: regresiones cubren la cadena de procedencia de recomendaciones. Medición/optimización conserva `null` sin fuente R3 directa validada; la recomendación, si aplica, pide verificar evidencia.
+- Tres commits incrementales A/B/C. Suite unitaria final 1648/1648; E2E Worker local ACT-04 3/3 y QA-03B 6/6 recorridos más reanudación, concurrencia e informe identificado; typecheck, build y diff-check PASS. Se usaron solo migraciones existentes en D1 local. Sin deploy, cambio de esquema ni HTTP público fechado.
+
+- Fixes finales en PR #38: restaurada la producción `hasOtherPaidStaff` para `q2_other_staff`, precisada como personal remunerado continuo y versionada como pregunta/señales 3, sin reclasificar una actividad `individual`; distinguidos los estados TIC `none`, `not_needed`, `unknown` y `not_asked`. El informe describe la declaración neutralmente, sin puntuarla ni recomendar por presencia/ausencia de herramientas. Banco/planner/contexto se identifican v7/v7/v4; sesión candidate schema/key 6 y replay v4; key 5 y sesiones históricas preservadas sin migración. Suite 1649/1649, focal 57/57, E2E Worker ACT-04 3/3 y QA-03B seis recorridos más reanudación/concurrencia/informe, typecheck/build/diff-check PASS. PR abierto, sin merge ni deploy.
+
 ## 2026-10-22 — ACT-04 (rama local, no publicada)
 
 - Cutover del cuestionario público y metodología al nuevo diagnóstico, con replay recalculado en Worker y resumen anónimo allowlisted; se ocultan identidades técnicas en títulos, resultados y SEO públicos.

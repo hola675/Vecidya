@@ -12,7 +12,7 @@ import type { DigitalDimensionId } from "../qbv2-dimensions";
 import { FRICTION_RELEVANCE, GOAL_RELEVANCE } from "../qbv2-priorities";
 import { DEFAULT_ROUTE_BUDGET_V1, ROUTE_BANDS, ROUTE_HARD_CAP, type RouteBudgetV1, type QuestionSelectionReason } from "../qbv2-planner";
 
-export const CANDIDATE_PLANNER_IDENTITY_V3 = "reviewed-evidence-v4+r3+r4-operation-history+candidate-planner-v3" as const;
+export const CANDIDATE_PLANNER_IDENTITY_V3 = "reviewed-evidence-v7+r3+r4-operation-history+candidate-planner-v3" as const;
 export const CANDIDATE_ROUTE_HARD_CAP_V3 = ROUTE_HARD_CAP;
 export type CandidateEvidenceSufficiencyV3 = {
   readonly applicableDimensions: readonly DigitalDimensionId[];
@@ -151,11 +151,14 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
     const sources = semanticSources(q);
     const fields = producedFields(q);
     const neededContext = new Set<ContextFieldRef>([...CONTEXT_CORE].filter((f) => unresolvedFields.has(f)));
+    const goal = resolution.context.primaryGoal.status === "resolved" ? resolution.context.primaryGoal.value : undefined;
+    const friction = resolution.context.primaryFriction.status === "resolved" ? resolution.context.primaryFriction.value : undefined;
+    const digitalToolsRelevant = q.id === "q2_digital_tools_in_use" && (["organize", "automate", "stop_losing", "measure"].includes(goal ?? "") || ["operations", "follow_up"].includes(friction ?? ""));
     for (const dimension of dimensions.filter((d) => d.applicability === "insufficient_context")) {
       for (const field of R4_CONTEXT_FIELDS[dimension.id] ?? []) if (unresolvedFields.has(field)) neededContext.add(field);
     }
     const unlocksCandidateBranch = unlocks.has(q.id);
-    const contextUtility = q.routingRole !== "deepening" && eligible.has(q.id) && (fields.some((f) => neededContext.has(f)) || ["q2_has_customers", "q2_operational_status", "q2_buyer_recipient_relation"].includes(q.id) || unlocksCandidateBranch || triggered.has(q.id));
+    const contextUtility = q.routingRole !== "deepening" && eligible.has(q.id) && (digitalToolsRelevant || fields.some((f) => neededContext.has(f)) || ["q2_has_customers", "q2_operational_status", "q2_buyer_recipient_relation"].includes(q.id) || unlocksCandidateBranch || triggered.has(q.id));
     const directUtility = eligible.has(q.id) && sources.direct.some((d) => open.has(d));
     // Supporting observations may refine an already scored direct dimension, never close a null score.
     const supportingUtility = eligible.has(q.id) && sources.supporting.some((d) => observedDirect.has(d) && dimensions.find((item) => item.id === d)?.score !== null);

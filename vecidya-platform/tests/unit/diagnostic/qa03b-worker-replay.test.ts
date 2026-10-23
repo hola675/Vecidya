@@ -92,7 +92,7 @@ function completeEditedSession(): CandidateSessionV3 {
 
 function envelope(session: CandidateSessionV3) {
   return {
-    replayVersion: "qa03b-worker-replay-v1",
+    replayVersion: "qa03b-worker-replay-v4",
     engineIdentity: CANDIDATE_RESULT_IDENTITY_V3,
     answerSchema: ANSWER_SCHEMA_ID,
     questionBank: QUESTION_BANK_ID,
@@ -102,12 +102,12 @@ function envelope(session: CandidateSessionV3) {
   };
 }
 
-test("QA-03B keeps schema/key 3 and records a parseable ordered local replay history", () => {
+test("QA-03B v6 keeps earlier storage keys intact and records an ordered replay history", () => {
   const session = completeSession();
   const replayHistory = (session as CandidateSessionV3 & { readonly replayTranscript?: readonly { readonly questionId: string; readonly mode: string }[] }).replayTranscript;
 
   assert.equal(session.schemaVersion, SESSION_SCHEMA);
-  assert.equal(SESSION_KEY, "vecidya.diagnostic.v3.candidate.session.3");
+  assert.equal(SESSION_KEY, "vecidya.diagnostic.v3.candidate.session.6");
   assert.ok(Array.isArray(replayHistory), "la sesión debe conservar los eventos necesarios para revalidar su recorrido");
   assert.deepEqual(replayHistory?.map((event) => event.questionId), session.answeredQuestionIds);
   assert.ok(replayHistory?.every((event) => event.mode === "answer"));
