@@ -287,13 +287,10 @@ export async function purgeExpiredIdentifiedReports(binding: D1Database, now: Da
       SELECT c.rowid FROM verified_email_challenge c
       WHERE (c.expires_at <= ?
         OR NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = c.request_id AND r.expires_at > ?))
-        AND NOT EXISTS (
-          SELECT 1 FROM diagnostic_report_access a
-          WHERE a.challenge_id = c.id AND a.revoked_at IS NULL AND a.expires_at > ?
-            AND EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = a.request_id AND r.expires_at > ?)
-        )
+        -- A challenge delete cascades to its grants. Wait until the bounded access sweep has removed every grant.
+        AND NOT EXISTS (SELECT 1 FROM diagnostic_report_access a WHERE a.challenge_id = c.id)
       LIMIT ?)`)
-      .bind(timestamp, timestamp, timestamp, timestamp, limit),
+      .bind(timestamp, timestamp, limit),
     binding.prepare(`DELETE FROM commercial_contact_intent WHERE rowid IN (
       SELECT i.rowid FROM commercial_contact_intent i
       WHERE NOT EXISTS (SELECT 1 FROM identified_diagnostic_request r WHERE r.id = i.request_id AND r.expires_at > ?)

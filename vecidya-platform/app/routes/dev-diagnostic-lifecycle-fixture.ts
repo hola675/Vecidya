@@ -252,11 +252,21 @@ export async function action({ context, params, request }: ActionFunctionArgs) {
           .bind(challengeId, requestId, op === "seed_purge_active_control" ? "pending" : "expired", now, expiresAt, now),
       ]);
       if (op === "seed_purge_batch") {
+        const challengeIds = [challengeId];
         for (let offset = 0; offset < 105; offset += 1) {
+          const extraChallengeId = crypto.randomUUID();
+          challengeIds.push(extraChallengeId);
           await db.prepare(`INSERT INTO verified_email_challenge (
             id, request_id, purpose, token_digest, status, attempts, issued_at, expires_at, consumed_at, created_at
           ) VALUES (?, ?, 'verification', lower(hex(randomblob(32))), 'expired', 0, ?, ?, NULL, ?)`)
-            .bind(crypto.randomUUID(), requestId, now - 120_000, now - 60_000, now - 120_000).run();
+            .bind(extraChallengeId, requestId, now - 120_000, now - 60_000, now - 120_000).run();
+        }
+        // Reverse grant row order to exercise the challenge FK cascade against the 100-row limit.
+        for (const challengeId of challengeIds.reverse()) {
+          await db.prepare(`INSERT INTO diagnostic_report_access (
+            id, request_id, challenge_id, token_digest, issued_at, expires_at, revoked_at
+          ) VALUES (?, ?, ?, lower(hex(randomblob(32))), ?, ?, NULL)`)
+            .bind(crypto.randomUUID(), requestId, challengeId, now - 120_000, now - 60_000).run();
         }
       } else {
         await db.batch([

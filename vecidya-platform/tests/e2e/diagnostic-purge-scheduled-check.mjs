@@ -35,11 +35,13 @@ try {
   let cronState = await fixture(cronId, "inspect");
   assert.equal(cronState.counts.requests, 1, "la corrida programada respeta el límite y deja el request hasta agotar hijos");
   assert.equal(cronState.counts.challenges, 6);
+  assert.equal(cronState.counts.access, 6, "la FK de challenge no cascada grants por encima del lote de 100");
   const cronSecondRun = await triggerCron();
   assert.equal(cronSecondRun.status, 200, "la siguiente activación programada continúa el lote pendiente");
   cronState = await fixture(cronId, "inspect");
   assert.equal(cronState.counts.requests, 0, "scheduled() elimina el request vencido tras agotar dependencias");
   assert.equal(cronState.counts.challenges, 0);
+  assert.equal(cronState.counts.access, 0);
 
   const activeId = randomUUID();
   fixtureIds.push(activeId);
@@ -63,10 +65,12 @@ try {
   assert.equal(expiredSeed.challenges, 106, "la fixture excede el límite de 100 por corrida");
   const firstRun = await scheduled();
   assert.equal(firstRun.status, 200);
+  assert.equal(firstRun.body.purged.expiredAccess, 100, "el borrado de grants se limita a 100 pese al orden inverso de sus challenges");
   assert.equal(firstRun.body.purged.expiredChallenges, 100, "cada pasada limita challenges a 100 filas");
   let expiredState = await fixture(expiredId, "inspect");
   assert.equal(expiredState.counts.requests, 1, "el request espera a que se borren sus dependencias por tandas");
   assert.equal(expiredState.counts.challenges, 6, "la primera tanda conserva las filas pendientes");
+  assert.equal(expiredState.counts.access, 6, "el cascade de FK no elimina grants pendientes fuera de la tanda");
 
   await fixture(expiredId, "install_purge_failpoint");
   const failedRun = await scheduled();
