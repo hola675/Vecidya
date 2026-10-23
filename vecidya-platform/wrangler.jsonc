@@ -44,7 +44,12 @@
     "EMAIL_PROVIDER": "gmail",
     "EMAIL_FROM": "hola@vecidya.com",
     "EMAIL_REPLY_TO": "hola@vecidya.com",
-    "DIAGNOSTIC_REPORT_FUNNEL_ENABLED": "false"
+    "DIAGNOSTIC_REPORT_FUNNEL_ENABLED": "false",
+    "DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED": "false",
+    "DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED": "false"
+  },
+  "triggers": {
+    "crons": ["17 3 * * *"]
   },
   "d1_databases": [
     {
@@ -65,7 +70,12 @@
         "EMAIL_PROVIDER": "fake",
         "EMAIL_FROM": "hola@vecidya.com",
         "EMAIL_REPLY_TO": "hola@vecidya.com",
-        "DIAGNOSTIC_REPORT_FUNNEL_ENABLED": "false"
+        "DIAGNOSTIC_REPORT_FUNNEL_ENABLED": "false",
+        "DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED": "false",
+        "DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED": "false"
+      },
+      "triggers": {
+        "crons": []
       },
       "secrets": {
         "required": ["BETTER_AUTH_SECRET"]

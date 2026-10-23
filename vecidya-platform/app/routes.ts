@@ -92,6 +92,7 @@ export default [
     route("api/diagnostic/funnel-analytics", "routes/api-diagnostic-funnel-analytics.ts"),
     route("__dev/diagnostico/buzon/:requestId", "routes/dev-diagnostic-mailbox.ts"),
     route("__dev/diagnostico/lifecycle/purge-expired", "routes/dev-diagnostic-purge-expired.ts"),
+    route("__dev/diagnostico/lifecycle/scheduled-purge", "routes/dev-diagnostic-purge-scheduled.ts"),
     route("__dev/diagnostico/lifecycle/fixture/:requestId", "routes/dev-diagnostic-lifecycle-fixture.ts"),
     route("__dev/diagnostico/resultado/:personaId?", "routes/dev-diagnostic-result.tsx"),
     route("__dev/diagnostico/v3", "routes/dev-diagnostic-v3.tsx"),

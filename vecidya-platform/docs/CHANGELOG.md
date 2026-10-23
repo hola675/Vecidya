@@ -11,6 +11,12 @@
 - Se integra como base PR #39 por `475880bdbdc20922c92177478efaef793168ee15` y se implementa un snapshot público versionado con perfil, horarios y composición MiniWeb. Los cambios se guardan como borrador hasta publicar; revisión CAS/token protege escrituras concurrentes y la publicación actualiza la versión pública en un batch D1.
 - Se agregan migraciones `0022` y `0023`; los perfiles legacy se materializan al escribir, sin backfill global. El público usa una sola versión coherente y un snapshot corrupto falla cerrado.
 - Verificación local: migraciones `0000–0023` en D1 aislada, E2E MiniWeb 37/37, unitarias 1651/1651, typecheck, build y diff-check PASS. Sin deploy, D1 remota ni HTTP público fechado. APP-MINI-02B espera la integración de este checkpoint y deberá ampliar el snapshot para ofertas/FAQ.
+## 2026-10-23 — DIAG-D1-RELEASE-01 (certificación local)
+
+- Se certifica en D1 aislada la cadena limpia `0000–0021` y la actualización sintética `0010→0021`, preservando datos representativos, seeds, índices y relaciones; `integrity_check` y `foreign_key_check` pasan.
+- Se documentan en `DATABASE.md` la matriz de migraciones, riesgos de compatibilidad (incluido el `DROP COLUMN` de 0019), preflight, staging, abortos, backups/Time Travel, rollback y autorizaciones por entorno.
+- QA-03B, MiniWeb, la certificación integrada de administración/licencias, correo simulado, unitarias, typecheck y build pasan localmente. `platform-licensing-check.mjs` no alcanza sus aserciones porque su alta de prueba omite la invitación requerida por la política actual.
+- NO se consultó ni modificó D1 remota, no se desplegó, ni se activaron funnel, correo real o purga. Resultado: preparación local certificada; NO-GO para operación remota hasta preflight y autorizaciones separadas.
 
 ## 2026-10-22 — PLATFORM-ADMIN-GLOBAL (certificación focal y concurrencia)
 
@@ -28,6 +34,12 @@
 - Roles `admin|member` auditados; owner no se puede cambiar. Lifecycle limitado a `pending_owner`, `owner_invited`, `active` y `suspended`; no existe `closed`. Guards de cliente rechazan organizaciones suspendidas y perfiles públicos no las listan.
 - MiniWeb administrativa permite guardar JSON draft y publicar explícitamente, con audit. Capacitación conserva asignación, auto-reporte y corrección motivada.
 - Migraciones `0020`/`0021` aplicadas en D1 local del worktree. `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. No se ejecutaron suites automatizadas. Sin D1 remota, correo real, deploy o publicación.
+## 2026-10-22 — DIAG-PRIVACY-PURGE-01 (local; flags cerrados)
+
+- El Worker dispone de Cron diario y reutiliza la purga de informes identificados en tandas máximas de 100 por tabla. Batch transaccional, idempotente, reintentable; no borra solicitudes vigentes ni depende de cascadas grandes.
+- Production tiene Cron configurado pero las compuertas `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED` y `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED` permanecen `false`; staging no tiene Cron y ambas son `false`. Los logs registran conteos sin PII.
+- Confirmados en código los derechos de revocación separada B/C y borrado voluntario con grant vigente. Se documenta una propuesta de retención para aprobación; 30 d/24 h continúan provisionales. Sin migración, D1 remota, deploy, correo real ni ejecución publicada.
+
 ## 2026-10-22 — DIAG-FUNNEL-PROD-01 (CODE local, flag cerrado)
 
 - El recorrido público QA-03B ya puede conectar solicitud identificada, replay Worker autoritativo, snapshot, correo Gmail, verificación explícita, grant/cookie, recovery y reporte HTML usando los contratos existentes. La bandeja simulada sigue solo en desarrollo; el correo real utiliza el adaptador Gmail configurado, sin cambiar ni leer secretos.

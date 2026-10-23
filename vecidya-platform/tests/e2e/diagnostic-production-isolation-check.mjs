@@ -31,6 +31,7 @@ const forbiddenBundleMarkers = [
   "qa-funnel@example.invalid",
   "other@example.invalid",
   "inspect_funnel_aggregate",
+  "/__dev/diagnostico/lifecycle/scheduled-purge",
   "PURGE_EXPIRED_IDENTIFIED_DIAGNOSTICS",
 ];
 
@@ -53,6 +54,7 @@ const devOnlyPaths = [
   "/api/diagnostic/funnel-analytics",
   `/__dev/diagnostico/lifecycle/fixture/${requestId}`,
   "/__dev/diagnostico/lifecycle/purge-expired",
+  "/__dev/diagnostico/lifecycle/scheduled-purge",
   `/__dev/diagnostico/buzon/${requestId}`,
 ];
 
@@ -74,6 +76,8 @@ const gatedRequests = [
   { path: `/diagnostico/informe/${requestId}`, method: "GET" },
 ];
 for (const entry of gatedRequests) {
+  // Wrangler's local Worker proxy can briefly reset a burst of sequential requests.
+  await new Promise((resolve) => setTimeout(resolve, 150));
   const response = await fetch(new URL(entry.path, baseUrl), {
     method: entry.method,
     headers: { Origin: new URL(baseUrl).origin, ...(entry.body ? { "Content-Type": "application/json" } : {}) },

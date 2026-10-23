@@ -71,7 +71,13 @@ Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos bo
 
 **DIAG-CLOSE-03 (2026-10-21):** replay QA server-only y resumen allowlisted ensayados en ruta dev-only; informe HTML identificado deriva del mismo resultado validado por Worker y requiere correo/grant. ACT-04 aún debe autorizar y probar el cambio atómico de rutas públicas, aislamiento de sesiones y rollback: no se ha hecho cutover ni deploy. El flujo identificado actual no descarga PDF; `PDF_OWNER_REVIEW` sigue manual y no bloqueante. FUNNEL-01D.2/01D.3 no se dan por completados.
 
-**DIAG-FUNNEL-PROD-01 (2026-10-22; checkpoint autorizado tras integrar PR #38):** cerrar el embudo identificado de QA-03B reutilizando replay, solicitud, snapshot, challenge, grant, recovery y derechos existentes; integrar Gmail y publicar las rutas bajo un flag explícito. La implementación local queda lista para validar con fake, pero `DIAGNOSTIC_REPORT_FUNNEL_ENABLED=false` en producción/staging. No activar hasta que se aprueben aviso y retención, se automatice/verifique purga, se valide la cadena D1 en entorno aislado y se prepare respaldo/rollback. Proveedor Gmail real requiere entorno/destinatario de prueba autorizado. Informe actual HTML; el generador PDF sigue fuera de cambios mientras esté pausado. Sin D1 remota ni deploy.
+**DIAG-FUNNEL-PROD-01 (2026-10-22; integrado en PR #40, merge `f10ea8a`):** QA-03B enlazado al informe identificado, replay, correo, verificación, grants, recovery y derechos; flag del funnel cerrado en production/staging.
+
+**DIAG-PRIVACY-PURGE-01 (PR #41 integrado; CODE + TEST local):** Cron diario y purga por lotes acotados; switches en `false` en producción/staging y staging no tiene Cron. Retención legal/operativa sigue pendiente; 30 d/24 h son provisionales.
+
+**DIAG-D1-RELEASE-01 (2026-10-23): PASS TÉCNICO local; NO-GO remoto.** Certificada localmente la cadena limpia y el upgrade sintético desde `0010`; matriz, preflight, staging, rollback y gates están en `DATABASE.md`. El ledger remoto y Worker desplegado siguen sin verificarse y no se consultaron. Requiere autorización específica incluso para lectura.
+
+**Siguientes dependencias:** autorización de lectura remota para preflight; aprobación separada para D1 staging y, después, producción; DIAG-MAIL-ACCEPTANCE-01 en entorno/recipient autorizados; aprobación de privacidad/retención y backlog antes de abrir Cron; aceptación del informe HTML y decisión PDF. No se habilita ni despliega por este checkpoint.
 
 **ACT-04 (2026-10-22):** PR #37 integrado en `main@3b67d20` tras autorización; cutover de `/diagnostico` y metodología a QA-03B con replay server-authoritative, compatibilidad estricta y rollback dev-only. Integrado, no publicado. El gate de informe identificado/correo real sigue cerrado; no se tocó D1 remota ni se publica automáticamente.
 
