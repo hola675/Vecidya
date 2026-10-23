@@ -5,12 +5,18 @@
 - Se rediseñó el primer bloque de `/aprende` como atlas editorial con ilustración original, conteos reales y búsqueda visible antes del catálogo. Se conservan copys, datos, borradores, filtros GET, metadata, itinerarios, temas y CTAs existentes.
 - El formulario ahora lleva a resultados y apila campo/botón a 320 px con control distinguible. Se corrigieron desbordamientos medidos en tarjetas relacionadas y en la grilla/CTA de artículos; `body` solo deja `min-width:320px` en el listado Aprende.
 - Worker E2E, typecheck, build y diff-check PASS; capturas locales a 320/390/1366 px. Sin cambio de Auth, backend, D1, Diagnóstico, versión o publicación.
+## 2026-10-23 — DIAG-QA-03B-RELEASE-CLOSE (certificación local, no publicado)
+
+- Se actualiza el E2E ACT-04 para validar recorrido inicial por teclado y ausencia de overflow en 320/390/768/1366 px; el comentario de `diagnostic.tsx` refleja session schema/key 6 y replay v4.
+- Se corrigen harnesses E2E desfasados: MiniWeb conserva atributos de cookie y Admin Global comprueba snapshot `business_profile_publication`, prepara perfil/licencia y envía el token CAS de revisión actual. Admin Global y MiniWeb pasan; no cambió la política del producto.
+- Certificación local: D1 `0000–0023` y upgrade sintético `0010→0023`; unitarias 1655/1655, correo fake 12/12, QA-03B, ACT-04, purga, aislamiento, Admin Global, MiniWeb y licencias PASS. El editor de perfil con vista previa privada tiene un overflow a 768 px encontrado por una suite ajena al diagnóstico y queda documentado como follow-up. Detalle en `TESTING.md`.
+- Lectura de D1/Worker en staging y producción autorizada por el usuario, pero no ejecutada: falta autenticación Wrangler y no hay Cloudflare MCP disponible. Sin escrituras remotas, migración, deploy, activación de flags ni HTTP pública fechada.
 
 ## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-POST-MERGE-P2
 
 - La acción de publicar perfil entrega la revisión final de la publicación, evitando que el siguiente guardado de perfil/horarios choque con un `409` falso.
 - MiniWeb reinicia configuración y revisión al cambiar de organización activa; una edición en la organización seleccionada guarda con su propia revisión.
-- El commit `774d162` pasó unitarias 1655/1655, Worker/D1 E2E 69/69 sobre migraciones `0000–0023`, typecheck, build y diff-check. Fixtures verificados en cero y D1 efímera eliminada. PR #45 abierto/mergeable; Codex revisó HEAD `9f427e2` sin hallazgos mayores. Sin checks CI, D1 remota, correo real, deploy o HTTP público. APP-MINI-02B espera integración.
+- El commit `774d162` pasó unitarias 1655/1655, Worker/D1 E2E 69/69 sobre migraciones `0000–0023`, typecheck, build y diff-check. Fixtures verificados en cero y D1 efímera eliminada. PR #45 integrado en `origin/main@85ba1e0`; Codex revisó HEAD `9f427e2` sin hallazgos mayores. Sin checks CI, D1 remota, correo real, deploy o HTTP público. APP-MINI-02B queda fuera de este checkpoint.
 
 ## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R2 (PR #42 integrado)
 

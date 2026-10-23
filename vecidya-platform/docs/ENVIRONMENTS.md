@@ -10,13 +10,17 @@ El package local también informa `0.6.1`, pero coincidencia de versión no demu
 
 # Entornos
 
+## DIAG-QA-03B-RELEASE-CLOSE — preflight autorizado, bloqueado por autenticación (2026-10-23)
+
+El usuario autorizó consultas read-only de D1/Worker en `vecidya-staging` y `vecidya-prod`. `wrangler whoami` respondió que Wrangler no está autenticado y Cloudflare MCP no está disponible en las herramientas activas, por lo que no se leyó ledger/esquema/bookmark ni SHA del Worker. No se ejecutaron migraciones, escrituras, deploy ni HTTP público en esta fecha. Estado desplegado permanece **DOC histórico**, sin verificación actual. Código local QA-03B integrado todavía no es publicación; ver `DATABASE.md` para desbloquear el preflight. Funnel y switches de purga continúan cerrados.
+
 ## DIAG-PRIVACY-PURGE-01 — automatización preparada, switches cerrados (2026-10-22)
 
 `wrangler.jsonc` programa Cron diario `17 3 * * *` (UTC) para el Worker base, pero `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED=false` y `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED=false` evitan todo borrado en producción hasta aprobación y cambio autorizado de ambos. Staging no registra Cron y mantiene ambos valores en `false`. Desarrollo puede habilitar ambos solo para ensayos con `AUTHZ_D1_PERSIST_TO` dirigido a una D1 temporal. Esto es configuración de código, no cron desplegado ni ejecución publicada: sin deploy, D1 remota o HTTP público. No usar `--remote`.
 
 ## DIAG-V3-FUNNEL-01C — pruebas locales (2026-10-12)
 
-**DIAG-FUNNEL-PROD-01 — rama `feat/diagnostic-funnel-prod-01`, CODE + TEST local, no publicado.** `wrangler.jsonc` declara `DIAGNOSTIC_REPORT_FUNNEL_ENABLED=false` tanto en producción como en staging. Las páginas/APIs identificadas están en el manifiesto de producción, pero el Worker responde 404 y el CTA no se ofrece mientras el flag esté cerrado; desarrollo utiliza el buzón fake efímero y nunca llama Gmail. Al habilitarse, el adaptador usa `EMAIL_PROVIDER=gmail`, `EMAIL_FROM`, `EMAIL_REPLY_TO` y secretos OAuth ya declarados; sus valores no se han leído ni modificado. La entrega real no se probó. La cadena versionada D1 llega a `0021`; el último estado remoto documentado es producción `0000–0010` (HTTP/deploy `0.6.1`, 2026-10-11), sin consulta remota en este checkpoint. No migración, deploy ni HTTP público en esta rama.
+**DIAG-FUNNEL-PROD-01 — integrado en código; no publicado.** `wrangler.jsonc` mantiene `DIAGNOSTIC_REPORT_FUNNEL_ENABLED=false` en producción y staging. Las páginas/APIs identificadas requieren flag; desarrollo utiliza buzón fake y no Gmail real. La entrega real no se probó. La cadena versionada D1 llega a `0023`; último estado remoto documentado producción `0000–0010` es DOC histórico y no se confirmó durante este checkpoint por falta de autenticación. No migración, deploy ni HTTP público nuevo.
 
 ## DIAG-V3-REL-002 — release 0.6.1
 

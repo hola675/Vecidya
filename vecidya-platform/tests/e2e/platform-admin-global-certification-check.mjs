@@ -324,15 +324,23 @@ INSERT INTO miniweb_site (id,organization_id,template_key,template_version,layou
   await workerReady(baseUrl);
   if (correction.status !== 200 || crossTenantCorrection.status !== 404 || trainingState.status !== "completed" || trainingState.previous_status !== "in_progress" || trainingState.new_status !== "completed" || trainingState.reason !== "Corrección verificada en certificación" || Number(trainingState.audit_count) !== 1) throw new Error("La corrección de capacitación no conservó pertenencia, historial y auditoría.");
 
+  const miniwebProfileId = randomUUID();
+  const miniwebBillingAccountId = randomUUID();
+  query(`INSERT INTO billing_account (id,owner_user_id,kind,name,created_at,updated_at) VALUES (${sqlLiteral(miniwebBillingAccountId)},${sqlLiteral(intendedIdentity.user.id)},'individual','Synthetic MiniWeb certification',${sqlNow},${sqlNow}) ON CONFLICT(owner_user_id) DO NOTHING;
+INSERT INTO organization_license (id,organization_id,billing_account_id,plan_code,price_id,status,started_at,activated_at,ends_at,created_at,updated_at) VALUES (${sqlLiteral(randomUUID())},${sqlLiteral(orgId)},(SELECT id FROM billing_account WHERE owner_user_id=${sqlLiteral(intendedIdentity.user.id)}),'cuadra','license-price-cuadra-v1','active',${sqlNow},${sqlNow},NULL,${sqlNow},${sqlNow});
+INSERT INTO business_profile (id,organization_id,display_name,slug,short_description,description,category,city,country,status,created_at,updated_at) VALUES (${sqlLiteral(miniwebProfileId)},${sqlLiteral(orgId)},'MiniWeb certification ${suffix}', 'miniweb-cert-${suffix}','Synthetic profile','Synthetic description','Certification category','Test city','Test country','draft',${sqlNow},${sqlNow});`);
+  await workerReady(baseUrl);
   const miniwebPath = `/app/internal/organizations/${orgId}/miniweb`;
   const configuration = { templateKey: "vecidya-default", templateVersion: 1, layoutVariant: "standard", modules: [{ type: "hero", moduleVersion: 1, enabled: true, sortOrder: 0, layoutVariant: "standard", settings: null }] };
   const savedMiniWeb = await admin.request(miniwebPath, { intent: "save", configuration: JSON.stringify(configuration) });
-  const publishedMiniWeb = await admin.request(miniwebPath, { intent: "publish" });
+  const miniwebDraftRevision = query(`SELECT draft_revision FROM business_profile_publication WHERE organization_id=${sqlLiteral(orgId)};`)[0]?.draft_revision;
+  const publishedMiniWeb = await admin.request(miniwebPath, { intent: "publish", draftRevision: String(miniwebDraftRevision) });
   const staffMiniWeb = await staff.request(miniwebPath, { intent: "save", configuration: JSON.stringify(configuration) });
-  const miniwebState = query(`SELECT published_configuration_json FROM miniweb_site WHERE organization_id=${sqlLiteral(orgId)};`)[0];
+  const miniwebState = query(`SELECT snapshot_json,snapshot_schema_version FROM business_profile_publication WHERE organization_id=${sqlLiteral(orgId)};`)[0];
+  const publishedSnapshot = miniwebState?.snapshot_schema_version === 1 && miniwebState.snapshot_json ? JSON.parse(miniwebState.snapshot_json) : null;
   const miniwebAudit = query(`SELECT action FROM platform_audit_log WHERE organization_id=${sqlLiteral(orgId)} AND action IN ('organization.miniweb.save','organization.miniweb.publish') ORDER BY created_at,rowid;`);
   await workerReady(baseUrl);
-  if (savedMiniWeb.status !== 303 || publishedMiniWeb.status !== 303 || staffMiniWeb.status !== 403 || !miniwebState?.published_configuration_json || miniwebAudit.length !== 2 || miniwebAudit[0].action !== "organization.miniweb.save" || miniwebAudit[1].action !== "organization.miniweb.publish") throw new Error("MiniWeb no pasó autorización, publicación explícita o auditoría.");
+  if (savedMiniWeb.status !== 303 || publishedMiniWeb.status !== 303 || staffMiniWeb.status !== 403 || publishedSnapshot?.configuration?.templateKey !== configuration.templateKey || miniwebAudit.length !== 2 || miniwebAudit[0].action !== "organization.miniweb.save" || miniwebAudit[1].action !== "organization.miniweb.publish") throw new Error(`MiniWeb no pasó autorización/publicación/auditoría: save=${savedMiniWeb.status}, publish=${publishedMiniWeb.status}, staff=${staffMiniWeb.status}, snapshot=${publishedSnapshot?.configuration?.templateKey ?? "ausente"}, audit=${miniwebAudit.map(({ action }) => action).join(",")}.`);
 
   query(`UPDATE member SET role='admin' WHERE organization_id=${sqlLiteral(orgId)} AND user_id=${sqlLiteral(memberIdentity.user.id)};`);
   await workerReady(baseUrl);

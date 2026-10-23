@@ -106,7 +106,7 @@ try {
     catch { return false; }
     finally { candidate.close(); }
   });
-  assert.ok(databaseFile, `no se encontró la D1 efímera con ledger 0000–0021 entre: ${sqliteFiles.join(", ")}`);
+  assert.ok(databaseFile, `no se encontró la D1 efímera con ledger 0000–0023 entre: ${sqliteFiles.join(", ")}`);
   const rawDb = new DatabaseSync(databaseFile);
   const integrity = rawDb.prepare("PRAGMA integrity_check").all();
   const foreignKeyViolations = rawDb.prepare("PRAGMA foreign_key_check").all();
@@ -115,7 +115,7 @@ try {
   assert.deepEqual(foreignKeyViolations, [], `violaciones FK: ${JSON.stringify(foreignKeyViolations)}`);
   const ledger = rawDb.prepare("SELECT name FROM d1_migrations ORDER BY name").all().map(({ name }) => name);
   const expectedMigrations = sourceJournal.entries.map(({ tag }) => `${tag}.sql`);
-  assert.deepEqual(ledger, expectedMigrations, "el ledger debe coincidir exactamente con 0000–0021, sin saltos ni entradas extra");
+  assert.deepEqual(ledger, expectedMigrations, "el ledger debe coincidir exactamente con 0000–0023, sin saltos ni entradas extra");
 
   const preserved = Object.fromEntries(Object.entries(rawDb.prepare(`
     SELECT (SELECT count(*) FROM user WHERE id='release-user') AS users,
@@ -137,14 +137,20 @@ try {
     "identified_diagnostic_request_idempotency_uq", "diagnostic_report_access_challenge_uq",
     "diagnostic_event_uuid_unique", "miniweb_site_organization_unique",
     "organization_training_assignment_unique", "platform_owner_invitation_pending_org_unique",
+    "business_profile_publication_slug_unique",
   ]) assert.ok(requiredIndexes.has(indexName), `índice ausente: ${indexName}`);
   const requestColumns = new Set(rawDb.prepare("PRAGMA table_info(identified_diagnostic_request)").all().map(({ name }) => name));
   assert.ok(requestColumns.has("first_report_opened_at"));
   const accessColumns = new Set(rawDb.prepare("PRAGMA table_info(diagnostic_report_access)").all().map(({ name }) => name));
   assert.ok(!accessColumns.has("first_opened_at"), "0019 debe retirar la columna provisional tras el backfill");
+  const publicationColumns = new Set(rawDb.prepare("PRAGMA table_info(business_profile_publication)").all().map(({ name }) => name));
+  for (const column of ["organization_id", "draft_revision", "published_version", "published_slug", "snapshot_schema_version", "snapshot_json", "updated_at", "draft_write_token"]) {
+    assert.ok(publicationColumns.has(column), `columna de publicación ausente: ${column}`);
+  }
+  assert.equal(rawDb.prepare("SELECT count(*) AS total FROM business_profile_publication").get().total, 0, "0022/0023 no materializan perfiles legacy hasta su primer cambio/publicación");
   rawDb.close();
 
-  console.log("PASS: D1 sintética 0010 → 0021, datos históricos/licencias preservados, backfill 0019 mínimo, seeds e índices verificados, SQLite integrity_check=ok y foreign_key_check vacío.");
+  console.log("PASS: D1 sintética 0010 → 0023, datos históricos/licencias preservados, backfill 0019 mínimo, snapshots 0022/0023, seeds e índices verificados, SQLite integrity_check=ok y foreign_key_check vacío.");
 } finally {
   try {
     rmSync(temporaryRoot, { recursive: true, force: true, maxRetries: 8, retryDelay: 250 });

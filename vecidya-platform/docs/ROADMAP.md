@@ -40,17 +40,19 @@ La primera extensión de operaciones cubre **organización de tareas**, **movimi
 Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos borradores educativos (hechos, lenguaje sin jerga, fuentes, ejemplos hipotéticos, imágenes móviles y autoría), ejecutar los gates de `TESTING.md`, y retirar `editorialDraft` solo de guías aprobadas individualmente. La eliminación del estado de borrador modifica exposición/indexación y no debe hacerse sin revisión editorial explícita. Realizar seguimiento de temas por sector o jurisdicción (normas de pagos/consentimiento, costos y herramientas regionales) solo con evidencia y contexto; no inventar leyes generales. No es un permiso de publicar o desplegar.
 
 
-**Objetivo:** terminar el diagnóstico público con un único contrato de preguntas, respuestas, rutas, scoring, resumen anónimo e informe identificado, sin conservar dos motores públicos ni borrar evidencia histórica. La ruta pública actual `/diagnostico` utiliza `AnonymousDiagnosticFlow` y el motor V3. QA-03B queda definida en DIAG-CLOSE-01 como identidad destino; ACT raíz conserva su identidad separada durante comparación y rollback. El destino elegido no equivale a paridad certificada ni autoriza el cutover.
+**Estado actual reconciliado al 2026-10-23:** el código integrado en `origin/main@03a0158` sirve `/diagnostico` y `/diagnostico/metodologia` con QA-03B y replay autoritativo en Worker. Contrato activo: banco `reviewed-evidence-v7`, respuestas `qbv2-answers-v5`, sesión schema/key 6 y replay `qa03b-worker-replay-v4`. El endpoint anónimo conserva el adaptador V3 para rollback y las sesiones V3 históricas no se migran. ACT-04 está integrado (PR #42); no está publicado. Informe identificado/correo y purga siguen cerrados por flags; sin autorización legal de retención ni HTTP anónimo fechado no hay certificación de publicación.
+
+**Objetivo restante:** cerrar preflight remoto de D1 y Worker, obtener evidencias HTTP anónimas tras un deploy autorizado, mantener desactivados funnel y purga hasta sus aprobaciones específicas y, después de una ventana de rollback acordada, abrir un checkpoint independiente para volver a escanear y retirar solo código legacy sin consumidores. Este checkpoint no realiza escrituras remotas, deploy, merge ni limpieza legacy.
 
 | Fase | Trabajo | Gate de salida |
 | --- | --- | --- |
-| D0 Inventario | Clasificar imports/consumidores de `questions.ts`, `answers.ts`, `qbv2-*`, `qa03b/*`, rutas dev y migraciones; inventariar versiones persistidas y claves de localStorage | Matriz de consumidores y rollback aprobados |
-| D1 Contrato único | Definir identidad/versiones de banco de preguntas, opción, respuesta, aplicabilidad, planificador, scoring y reporte; distinguir anónimo e identificado | Pruebas de compatibilidad de contratos y fixtures |
-| D2 Preguntas y respuestas | Revisar redacción, opciones, exclusividad, saltos, dependencias, contradicciones y cobertura por tipo de negocio; conservar procedencia de cada respuesta | Golden personas, rutas adversariales y tests de consistencia PASS |
-| D3 Motor y resultados | Conectar el banco revisado al flujo público tras comparar rutas y resultados con V3; evitar mezclar resultados de metodologías distintas | Paridad documentada o migración versionada aprobada; E2E y pruebas de regresión |
-| D4 Embudo | Resumen anónimo descargable sin datos, solicitud voluntaria de detalle, verificación email y reporte personalizado; separar consentimiento comercial | Worker/D1 temporal, seguridad y privacidad certificadas |
-| D5 Cutover controlado | Activar una sola ruta pública; retirar imports muertos, componentes y assets legacy demostrablemente no utilizados; preservar migraciones y adaptadores históricos necesarios | Typecheck, build, tests, E2E, visual desktop/mobile, rollback |
-| D6 Operación | Analítica agregada sin identidad; derechos de datos; integración comercial opt-in independiente de GHL | Aprobaciones legales/comerciales y CI verde antes de deploy |
+| D0 Inventario | Inventario inicial realizado; actualizar consumidores/rutas tras release antes de borrar | Re-scan con imports, rutas, tests, manifiesto Worker y ventanas de rollback |
+| D1 Contrato único | Contratos QA-03B y adaptador de rollback integrados | Schema/key 6, bank v7, answer v5, replay v4; tests locales PASS |
+| D2 Preguntas y respuestas | Banco revisado e integrado | QA-03B contenido A/B/C; preservar sesiones previas sin migración |
+| D3 Motor y resultados | QA-03B conectado a ruta y replay Worker | ACT-04 E2E y regresión local PASS; falta deploy/HTTP para publicación |
+| D4 Embudo | Resumen anónimo listo; flujo identificado implementado con compuertas | Funnel flag sigue `false`; correo real y retención sin aceptación/autorización |
+| D5 Cutover controlado | Cutover de código integrado, rollback V3 compatible | No publicado. Deploy autorizado, HTTP anónimo fechado y ventana rollback pendientes; limpieza legacy fuera de este gate |
+| D6 Operación | Purga automatizada implementada y probada localmente | Ambos switches `false`; staging sin Cron; aprobación de privacidad, D1 remota y deploy pendientes |
 
 **Reglas:** no borrar `db/migrations`, no eliminar claves históricas ni adaptar sesiones completadas sin versionado; no activar correo real, sincronización GHL o D1 remota sin autorización. El roadmap histórico anterior se conserva como evidencia, incluso donde indique gates bloqueados.
 
@@ -65,7 +67,7 @@ Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos bo
 
 **Ejecución inicial:** D0-A construye la matriz de consumidores e identidades sobre QA-03B como destino; D1-A compara determinísticamente `QUESTION_BANK_V2` y `qa03b` (IDs, versiones, opciones, elegibilidad y copy); D2-A corrige solo divergencias demostradas con regresiones. No hay reemplazo masivo ni limpieza de módulos legacy por nombre.
 
-**Estado a fecha 2026-10-19:** DIAG-CLOSE-01 prepara contratos/consumidores y fija QA-03B como destino; D0-D6 siguen sin certificación de equivalencia/cutover. La integración local obtuvo PASS técnico en FUNNEL-01D.1 y las regresiones Worker asociadas, pero G00-07 y el estado de GitHub del commit actual siguen bloqueados; esto no certifica paridad con QA-03B ni autoriza cutover. Mantener `GATE_B_PARTIAL`; no borrar código ni iniciar ACT-04.
+**Notas históricas hasta 2026-10-21:** los estados previos de DIAG-CLOSE-01/02/03 describen correctamente sus ramas y no el runtime actual. Fueron supersedidos por ACT-04 integrado en PR #42 y el contenido QA-03B integrado posteriormente. Las limitaciones de correo real, PDF, retención y publicación siguen vigentes.
 
 **DIAG-CLOSE-02 (2026-10-19):** PR #14 integrado; evidencia local PASS de contrato, escenarios deterministas, sesión QA-03B, replay/allowlist público V3, E2E, typecheck/build y bundle. NO-GO ACT-04: el Worker público continúa en V3 y QA-03B no tiene replay server-authoritative; hace falta conectar un único resultado versionado al resumen y al informe en el cambio atómico. `PDF_OWNER_REVIEW` es manual/no bloqueante y no implica certificación PDF/UA; FUNNEL-01D.2/01D.3 siguen independientes salvo dependencia técnica/de privacidad demostrada. No modifica ruta ni API pública ni habilita ACT-04.
 
@@ -77,7 +79,7 @@ Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos bo
 
 **DIAG-D1-RELEASE-01 (2026-10-23): PASS TÉCNICO local; NO-GO remoto.** Certificada localmente la cadena limpia y el upgrade sintético desde `0010`; matriz, preflight, staging, rollback y gates están en `DATABASE.md`. El ledger remoto y Worker desplegado siguen sin verificarse y no se consultaron. Requiere autorización específica incluso para lectura.
 
-**Siguientes dependencias:** autorización de lectura remota para preflight; aprobación separada para D1 staging y, después, producción; DIAG-MAIL-ACCEPTANCE-01 en entorno/recipient autorizados; aprobación de privacidad/retención y backlog antes de abrir Cron; aceptación del informe HTML y decisión PDF. No se habilita ni despliega por este checkpoint.
+**Siguientes dependencias:** el usuario autorizó lectura remota de staging y producción, pero Wrangler no tiene sesión autenticada y el MCP de Cloudflare no está disponible en este entorno. Completar autenticación e inspección read-only; no aplicar migraciones. Cualquier escritura D1, deploy, activación del funnel/purga y ventana de rollback requiere los gates separados de `DATABASE.md`/`ENVIRONMENTS.md`. DIAG-MAIL-ACCEPTANCE-01 requiere destinatario/entorno autorizados; aviso/retención requiere aprobación de privacidad; decisión PDF permanece pendiente. No se habilita ni despliega en este checkpoint.
 
 **ACT-04 (2026-10-22):** PR #37 integrado en `main@3b67d20` tras autorización; cutover de `/diagnostico` y metodología a QA-03B con replay server-authoritative, compatibilidad estricta y rollback dev-only. Integrado, no publicado. El gate de informe identificado/correo real sigue cerrado; no se tocó D1 remota ni se publica automáticamente.
 

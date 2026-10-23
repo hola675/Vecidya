@@ -42,10 +42,21 @@ try {
     const propsKey = button && Object.keys(button).find((key) => key.startsWith("__reactProps$"));
     return Boolean(propsKey && typeof button?.[propsKey]?.onClick === "function");
   });
-  await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
-  await page.locator(".df-option__input").first().waitFor();
+  const startButton = page.getByRole("button", { name: "Empezar diagnóstico" });
+  await startButton.focus();
+  await page.keyboard.press("Enter");
+  const firstOption = page.locator(".df-option__input").first();
+  await firstOption.waitFor();
+  await firstOption.focus();
+  await page.keyboard.press("Space");
+  assert.equal(await firstOption.isChecked(), true, "la primera respuesta funciona con teclado y conserva su estado accesible");
+  const firstQuestionId = await firstOption.getAttribute("name");
+  const firstContinue = page.getByRole("button", { name: "Continuar", exact: true });
+  await firstContinue.focus();
+  await page.keyboard.press("Enter");
+  await page.waitForFunction((previous) => document.querySelector(".df-option__input")?.getAttribute("name") !== previous, firstQuestionId);
 
-  const answered = [];
+  const answered = [firstQuestionId];
   for (let index = 0; index < 24 && !(await page.locator(".df-ready").count()); index += 1) {
     const input = page.locator(".df-option__input").first();
     const questionId = await input.getAttribute("name");
@@ -61,6 +72,13 @@ try {
   assert.ok(answered.length > 0 && answered.length <= 24, "ruta adaptativa termina dentro del límite");
   await page.getByRole("button", { name: "Ver mi resumen" }).click();
   await page.getByRole("heading", { name: "Tu resumen del diagnóstico" }).waitFor();
+  const viewportResults = [];
+  for (const width of [320, 390, 768, 1366]) {
+    await page.setViewportSize({ width, height: 900 });
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+    assert.equal(overflow, false, `el diagnóstico no debe desbordarse horizontalmente en ${width}px`);
+    viewportResults.push({ width, overflow });
+  }
   assert.equal(requests.length, 1, "un solo replay público");
   assert.deepEqual(Object.keys(requests[0]).sort(), ["answerSchema", "engineIdentity", "questionBank", "replayVersion", "session", "sessionKey", "sessionSchema"].sort());
   assert.equal(requests[0].engineIdentity.engine, "diag-v3-candidate-operation-history-v3");
@@ -81,12 +99,12 @@ try {
   assert.equal(await page.getByRole("button", { name: "Solicitar informe completo" }).count(), 0);
   assert.equal(await page.getByText(/diag-v3-candidate|candidata de prueba/i).count(), 0, "la interfaz pública no expone la identidad ni etiquetas internas de la candidata");
   assert.doesNotMatch(await page.locator("body").innerText(), /QA-03B|candidate|candidata|diag-v3/i);
-  assert.equal(await page.getByText("El informe detallado no está disponible en este momento.").count(), 1);
+  assert.equal(await page.getByText("Este resumen es anónimo. La solicitud del informe completo no está disponible en este momento.").count(), 1);
   assert.equal(await page.evaluate((key) => localStorage.getItem(key), legacyKey), legacyValue, "la sesión V3 preexistente no se reescribe");
   const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? "null"), qa03bKey);
   assert.equal(saved.schemaVersion, 6);
   assert.equal(saved.status, "completed");
-  pass(`Worker local valida QA-03B y genera resumen anónimo para ${answered.length} respuestas`);
+  pass(`Worker local valida QA-03B y genera resumen anónimo para ${answered.length} respuestas; viewport ${JSON.stringify(viewportResults)}`);
 
   await page.getByRole("link", { name: "Consultar metodología" }).click();
   await page.waitForURL("**/diagnostico/metodologia");
@@ -112,9 +130,9 @@ try {
   const report = await page.request.get(new URL("/diagnostico/informe/00000000-0000-4000-8000-000000000000", baseUrl).toString());
   assert.equal(report.status(), 404, "el informe identificado no se expone antes de habilitar correo y acceso");
   const rollbackRoute = await page.request.get(new URL("/__dev/diagnostico/v3", baseUrl).toString());
-  assert.equal(rollbackRoute.status(), 200, "el runtime V3 permanece disponible en desarrollo para rollback controlado");
+  assert.equal(rollbackRoute.status(), 404, "la ruta V3 de desarrollo no se expone en el runtime de producción");
   assert.deepEqual(errors, []);
-  pass("sesiones V3 incompatibles e informe identificado cerrados; runtime V3 de rollback conservado");
+  pass("sesiones V3 incompatibles e informe identificado cerrados; ruta V3 dev-only aislada");
   await page.close();
 } finally {
   await browser.close();
