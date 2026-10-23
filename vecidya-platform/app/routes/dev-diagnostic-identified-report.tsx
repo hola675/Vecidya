@@ -5,10 +5,12 @@ import { readRequestBodyLimited, RequestBodyTooLargeError } from "../features/di
 import { deleteAuthorizedIdentifiedReport, getAuthorizedReport, recordDetailedReportFirstOpen, revokeDiagnosticOptionalIntents } from "../../db/queries/diagnostic-identification.server";
 import { REPORT_VERSION, type DiagnosticReportDocumentV1 } from "../components/diagnostic-report/report-model";
 import { DiagnosticReport } from "../components/diagnostic-report/diagnostic-report";
+import { PlatformFooter } from "../components/platform-footer";
 import { readCookie, digestOpaqueToken, constantTimeEqual } from "../features/diagnostic/report-access-crypto.server";
 import { isCurrentPublicDiagnosticEngineIdentityV1 } from "../features/diagnostic/public-diagnostic-replay.server";
 import { METHODOLOGY_VERSION } from "../features/diagnostic/qbv2-methodology";
 import { cloudflareContext } from "../../server/cloudflare-context";
+import { isIdentifiedReportJourneyAvailable } from "../features/diagnostic/identified-report-availability.server";
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "react-router";
 
 
@@ -22,10 +24,11 @@ export const meta: MetaFunction = () => [
 ];
 
 export async function loader({ context, params, request }: LoaderFunctionArgs) {
-  if (!import.meta.env.DEV || !params.requestId || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(params.requestId)) throw notFound();
+  if (!params.requestId || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(params.requestId)) throw notFound();
+  const { env } = context.get(cloudflareContext);
+  if (!isIdentifiedReportJourneyAvailable(env)) throw notFound();
   const token = readCookie(request, "diagnostic_report_access");
   if (!token) throw notFound();
-  const { env } = context.get(cloudflareContext);
   const row = await getAuthorizedReport(env.DB, await digestOpaqueToken(token), params.requestId, new Date());
   if (!row || row.snapshot.reportVersion !== REPORT_VERSION || row.request.reportVersion !== row.snapshot.reportVersion || row.request.methodologyVersion !== row.snapshot.methodologyVersion || row.request.engineIdentity !== row.snapshot.engineIdentity) throw notFound();
   if (!constantTimeEqual(await digestOpaqueToken(row.snapshot.reportJson), row.snapshot.reportSha256)) throw notFound();
@@ -40,7 +43,7 @@ export async function loader({ context, params, request }: LoaderFunctionArgs) {
   if (!isRecord(report) || report.reportVersion !== row.snapshot.reportVersion || !isRecord(report.overallPresence) || !Array.isArray(report.dimensions) || !Array.isArray(report.recommendations)) throw notFound();
   const publicReport = isCurrentPublicDiagnosticEngineIdentityV1(storedIdentity);
   let candidateReport = false;
-  if (!publicReport && import.meta.env.DEV) {
+  if (!publicReport) {
     const { CANDIDATE_RESULT_IDENTITY_V3, isCandidateResultIdentityV3 } = await import("../features/diagnostic/qa03b/qbv2-candidate-pipeline");
     candidateReport = isCandidateResultIdentityV3(storedIdentity)
       && JSON.stringify(storedIdentity) === JSON.stringify(CANDIDATE_RESULT_IDENTITY_V3)
@@ -56,10 +59,11 @@ export async function loader({ context, params, request }: LoaderFunctionArgs) {
 
 export async function action({ context, params, request }: ActionFunctionArgs) {
   const requestId = params.requestId;
-  if (!import.meta.env.DEV || !["DELETE", "PATCH"].includes(request.method) || request.headers.get("origin") !== new URL(request.url).origin || !requestId || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(requestId)) return notFound();
+  if (!["DELETE", "PATCH"].includes(request.method) || request.headers.get("origin") !== new URL(request.url).origin || !requestId || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(requestId)) return notFound();
+  const { env } = context.get(cloudflareContext);
+  if (!isIdentifiedReportJourneyAvailable(env)) return notFound();
   const token = readCookie(request, "diagnostic_report_access");
   if (!token) return notFound();
-  const { env } = context.get(cloudflareContext);
   const authorized = await getAuthorizedReport(env.DB, await digestOpaqueToken(token), requestId, new Date());
   if (!authorized) return notFound();
   if (request.method === "PATCH") {
@@ -117,7 +121,7 @@ export default function IdentifiedDiagnosticReport() {
       setFeedback("No se pudieron actualizar tus preferencias. Vuelve a intentarlo.");
     } finally { setBusy(false); }
   }
-  return (
+  return <>
     <main className="rp-page df-identified-report">
       <nav className="df-identified-report__nav" aria-label="Navegación del diagnóstico">
         <a className="text-link" href="/diagnostico">Volver a mi diagnóstico</a>
@@ -129,7 +133,8 @@ export default function IdentifiedDiagnosticReport() {
       {feedback && <p role={feedbackError ? "alert" : "status"} aria-live={feedbackError ? "assertive" : "polite"}>{feedback}</p>}
       <DiagnosticReport paper="a4" report={data.report} />
     </main>
-  );
+    <PlatformFooter area="public" />
+  </>;
 }
 
 async function revokeOptionalIntents(requestId: string, revokeCommercial: boolean, revokeResearch: boolean): Promise<boolean> {
@@ -153,5 +158,11 @@ async function deleteRequest(requestId: string) {
 export function ErrorBoundary() {
   const error = useRouteError();
   const unavailable = isRouteErrorResponse(error) && error.status === 404;
-  return <main className="rp-page"><p role="alert">{unavailable ? "Este informe no está disponible o el acceso expiró." : "No pudimos abrir el informe. Vuelve a tu diagnóstico e inténtalo otra vez."}</p><a href="/diagnostico">Volver a mi diagnóstico</a></main>;
+  return <>
+    <main className="rp-page">
+      <p role="alert">{unavailable ? "Este informe no está disponible o el acceso expiró." : "No pudimos abrir el informe. Vuelve a tu diagnóstico e inténtalo otra vez."}</p>
+      <a href="/diagnostico">Volver a mi diagnóstico</a>
+    </main>
+    <PlatformFooter area="public" />
+  </>;
 }

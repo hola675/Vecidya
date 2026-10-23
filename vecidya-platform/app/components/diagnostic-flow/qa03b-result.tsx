@@ -2,11 +2,12 @@ import { Link } from "react-router";
 
 import type { AnonymousDiagnosticSummaryV1 } from "../../features/diagnostic/qa03b/qbv2-candidate-funnel";
 
-export function CandidateDiagnosticResult({ summary, onEdit, onRequestReport, publicMode = false, methodologyHref = "/diagnostico/metodologia" }: {
+export function CandidateDiagnosticResult({ summary, onEdit, onRequestReport, publicMode = false, reportRequestEnabled = true, methodologyHref = "/diagnostico/metodologia" }: {
   readonly summary: AnonymousDiagnosticSummaryV1;
   readonly onEdit: () => void;
   readonly onRequestReport: () => void;
   readonly publicMode?: boolean;
+  readonly reportRequestEnabled?: boolean;
   readonly methodologyHref?: string;
 }) {
   return (
@@ -40,11 +41,11 @@ export function CandidateDiagnosticResult({ summary, onEdit, onRequestReport, pu
       </section> : null}
       {summary.limitations.length ? <p className="dr-note">{summary.limitations.join(" · ")}</p> : null}
       <nav aria-label="Acciones del resumen" className="dr-candidate-actions">
-        {publicMode ? null : <button className="button button--primary" onClick={onRequestReport} type="button">Solicitar informe completo</button>}
+        {(!publicMode || reportRequestEnabled) ? <button className="button button--primary" onClick={onRequestReport} type="button">Solicitar informe completo</button> : null}
         <button className="button button--secondary" onClick={onEdit} type="button">Editar respuestas</button>
         <Link className="button button--secondary" to={methodologyHref}>Consultar metodología</Link>
       </nav>
-      {publicMode ? <p className="dr-note">Este resumen es anónimo. El informe detallado no está disponible en este momento.</p> : null}
+      {publicMode && !reportRequestEnabled ? <p className="dr-note">Este resumen es anónimo. La solicitud del informe completo no está disponible en este momento.</p> : null}
     </article>
   );
 }
