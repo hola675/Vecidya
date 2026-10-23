@@ -4,6 +4,7 @@
 
 - Se rediseñó el primer bloque de `/aprende` como atlas editorial con ilustración original, conteos reales y búsqueda visible antes del catálogo. Se conservan copys, datos, borradores, filtros GET, metadata, itinerarios, temas y CTAs existentes.
 - El formulario ahora lleva a resultados y apila campo/botón a 320 px con control distinguible. Se corrigieron desbordamientos medidos en tarjetas relacionadas y en la grilla/CTA de artículos; `body` solo deja `min-width:320px` en el listado Aprende.
+- Los saltos a itinerarios y temas usan anclas nativas para conservar `q`/`tema`; se añadió cobertura E2E de ambos parámetros activos durante los dos saltos.
 - Worker E2E, typecheck, build y diff-check PASS; capturas locales a 320/390/1366 px. Sin cambio de Auth, backend, D1, Diagnóstico, versión o publicación.
 ## 2026-10-23 — DIAG-QA-03B-RELEASE-CLOSE (certificación local, no publicado)
 

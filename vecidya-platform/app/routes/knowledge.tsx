@@ -97,8 +97,8 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
             </dl>
           </div>
           <nav className="learn-atlas__jump" aria-label="Explorar Aprende">
-            <Link to="#itinerarios">Seguir un itinerario</Link>
-            <Link to="#temas">Explorar temas</Link>
+            <a href="#itinerarios">Seguir un itinerario</a>
+            <a href="#temas">Explorar temas</a>
           </nav>
         </section>
 
