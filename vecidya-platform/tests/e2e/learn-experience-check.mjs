@@ -13,15 +13,22 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
 async function assertNoOverflow(page, label) {
   const overflow = await page.evaluate(() => {
     const width = document.documentElement.clientWidth;
-    return [...document.body.querySelectorAll("*")]
+    return {
+      root: {
+        clientWidth: width,
+        documentScrollWidth: document.documentElement.scrollWidth,
+        bodyScrollWidth: document.body.scrollWidth,
+      },
+      elements: [...document.body.querySelectorAll("*")]
       .filter((element) => {
         const rect = element.getBoundingClientRect();
         return rect.width > 0 && rect.height > 0 && rect.right > width + 1;
       })
       .slice(0, 5)
-      .map((element) => ({ tag: element.tagName, className: element.className, right: element.getBoundingClientRect().right, width }));
+      .map((element) => ({ tag: element.tagName, className: element.className, right: element.getBoundingClientRect().right, width })),
+    };
   });
-  assert(overflow.length === 0, `${label} tiene overflow horizontal: ${JSON.stringify(overflow)}`);
+  assert(overflow.root.documentScrollWidth <= overflow.root.clientWidth + 1 && overflow.root.bodyScrollWidth <= overflow.root.clientWidth + 1 && overflow.elements.length === 0, `${label} tiene overflow horizontal: ${JSON.stringify(overflow)}`);
 }
 
 async function runViewport(width, height) {
@@ -37,8 +44,12 @@ async function runViewport(width, height) {
   assert(await page.locator('meta[property="og:image"]').count() === 1, `${label} Aprende no tiene Open Graph image.`);
   assert(await page.getByRole("heading", { name: "Empieza por la pregunta que tienes hoy." }).isVisible(), `${label} no mostró temas.`);
   assert(await page.getByRole("heading", { name: "Empieza por una pregunta concreta." }).isVisible(), `${label} no mostró las guías.`);
-  assert(await page.getByRole("heading", { name: /¿Qué es un CRM y por qué un negocio pequeño puede necesitarlo\?/i }).isVisible(), `${label} no mostró el artículo CRM.`);
-  const domainGuideLink = page.getByRole("link", { name: /Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos/i });
+  assert(await page.locator(".learn-guide-list > li").count() === 38, `${label} el catálogo no conserva las 38 guías.`);
+  assert(await page.locator(".learn-path-list > li").count() === 7, `${label} no muestra los siete itinerarios.`);
+  assert(await page.locator(".learn-topic-list > li").count() === 6, `${label} no muestra los seis temas.`);
+  assert(await page.locator(".learn-guide__topic span").count() === 27, `${label} no conserva los 27 estados editoriales de borrador.`);
+  assert(await page.locator(".learn-guide-list").getByRole("heading", { name: /¿Qué es un CRM y por qué un negocio pequeño puede necesitarlo\?/i }).isVisible(), `${label} no mostró el artículo CRM.`);
+  const domainGuideLink = page.locator(".learn-guide-list").getByRole("link", { name: "Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos", exact: true });
   assert(await domainGuideLink.isVisible(), `${label} no muestra la guía de dominio en el catálogo.`);
   assert((await domainGuideLink.getAttribute("href")) === "/aprende/dominio-hosting-sitio-web-como-funcionan", `${label} el artículo de dominio no enlaza su ruta estable.`);
   for (const [slug, title, category] of [
@@ -49,19 +60,55 @@ async function runViewport(width, height) {
     ["organizar-consultas-mensajes-llamadas-formularios", "Cómo organizar mensajes, llamadas y formularios sin perder consultas", "CRM y clientes"],
     ["preparar-respuestas-publicaciones-ia-sin-perder-control", "Cómo utilizar IA para preparar respuestas y publicaciones sin perder el control", "Inteligencia Artificial"],
   ]) {
-    const link = page.getByRole("link", { name: title, exact: true });
+    const link = page.locator(".learn-guide-list").getByRole("link", { name: title, exact: true });
     assert(await link.isVisible(), `${label} no muestra «${title}» en el catálogo.`);
     assert((await link.getAttribute("href")) === `/aprende/${slug}`, `${label} el artículo no enlaza su slug estable: ${slug}.`);
-    assert(await page.getByRole("heading", { name: category, exact: true }).isVisible(), `${label} no muestra la categoría ${category}.`);
+    assert(await page.locator(".learn-guide__topic").filter({ hasText: category }).count() > 0, `${label} no muestra la categoría ${category}.`);
   }
-  assert(await page.getByRole("heading", { name: "Tecnología explicada", exact: true }).isVisible(), `${label} la categoría Tecnología explicada sigue vacía.`);
+  assert(await page.locator(".learn-discovery__chip").filter({ hasText: "Tecnología explicada" }).count() === 1, `${label} falta el filtro Tecnología explicada.`);
   assert(await page.getByRole("link", { name: "Hacer diagnóstico" }).first().getAttribute("href") === "/diagnostico", `${label} CTA de Diagnóstico incorrecto.`);
   assert(await page.getByRole("link", { name: "Hacer una pregunta" }).getAttribute("href") === "/contacto", `${label} CTA de Contacto incorrecto.`);
-  const articleLink = page.getByRole("link", { name: /Leer guía/i }).first();
+  const articleLink = page.locator(".learn-guide__action").first();
   assert((await articleLink.getAttribute("href"))?.startsWith("/aprende/"), `${label} tarjeta no enlazó artículo.`);
   await page.getByRole("link", { name: "Hacer diagnóstico" }).first().focus();
   assert(await page.getByRole("link", { name: "Hacer diagnóstico" }).first().evaluate((element) => document.activeElement === element), `${label} CTA no recibe foco.`);
+  if (width === 320) {
+    const searchInput = await page.getByRole("searchbox", { name: "Buscar en las guías" }).boundingBox();
+    const searchButton = await page.getByRole("button", { name: "Buscar", exact: true }).boundingBox();
+    assert(searchInput && searchButton && searchButton.y >= searchInput.y + searchInput.height, `${label} el formulario del hero no apila campo y botón.`);
+  }
   await assertNoOverflow(page, label);
+
+  if (width === 390) {
+    const searchInput = page.getByRole("searchbox", { name: "Buscar en las guías" });
+    await searchInput.focus();
+    await searchInput.press("Tab");
+    const searchButton = page.getByRole("button", { name: "Buscar", exact: true });
+    assert(await searchButton.evaluate((element) => document.activeElement === element && getComputedStyle(element).outlineStyle !== "none"), `${label} el botón de búsqueda no muestra foco de teclado.`);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    assert(await page.locator(".learn-atlas__map img").evaluate((element) => getComputedStyle(element).animationName === "none"), `${label} la ilustración no respeta reduced motion.`);
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await searchInput.fill("analitica");
+    await searchButton.click();
+    assert(new URL(page.url()).hash === "#guias", `${label} enviar la búsqueda no conservó el ancla de resultados.`);
+    assert(await page.locator("#guias").evaluate((element) => element.getBoundingClientRect().top < window.innerHeight), `${label} los resultados quedaron fuera del viewport tras buscar.`);
+    assert(await page.locator(".learn-guide-list > li").count() === 1, `${label} la búsqueda con resultados no redujo el catálogo a una guía.`);
+    assert(await page.locator(".learn-guide-list").getByRole("heading", { name: "Analítica web básica: qué debes medir en tu negocio", exact: true }).isVisible(), `${label} la búsqueda no encontró Analítica web.`);
+    await page.getByRole("searchbox", { name: "Buscar en las guías" }).fill("sincoincidencia-ui-pilot");
+    await page.getByRole("button", { name: "Buscar", exact: true }).click();
+    assert(await page.locator(".learn-guide-list").count() === 0, `${label} el estado sin resultados muestra guías.`);
+    assert(await page.getByRole("heading", { name: "No encontramos guías con esos criterios." }).isVisible(), `${label} falta el mensaje sin resultados.`);
+    await page.getByRole("link", { name: "Ver todas las guías" }).click();
+    await page.waitForFunction(() => document.querySelectorAll(".learn-guide-list > li").length === 38);
+    assert(await page.locator(".learn-guide-list > li").count() === 38, `${label} la recuperación no restableció todas las guías.`);
+    await page.locator(".learn-discovery__chip").filter({ hasText: "Tecnología explicada" }).click();
+    await page.waitForFunction(() => document.querySelector(".learn-discovery__chip[aria-current=page]")?.textContent === "Tecnología explicada");
+    assert(await page.locator(".learn-discovery__chip[aria-current='page']").textContent() === "Tecnología explicada", `${label} el filtro no indica el tema seleccionado.`);
+    assert(await page.locator(".learn-guide-list > li").count() > 0 && await page.locator(".learn-guide-list > li").count() < 38, `${label} el filtro de tema no reduce el catálogo.`);
+    await page.locator(".learn-discovery__chip").filter({ hasText: "Todas" }).click();
+    await page.waitForFunction(() => document.querySelectorAll(".learn-guide-list > li").length === 38);
+    assert(await page.locator(".learn-guide-list > li").count() === 38, `${label} quitar el filtro no recuperó todas las guías.`);
+  }
 
   const articleUrl = new URL((await articleLink.getAttribute("href")), baseUrl).toString();
   await page.goto(articleUrl, { waitUntil: "domcontentloaded" });
@@ -161,7 +208,7 @@ async function runViewport(width, height) {
     "Preguntas frecuentes",
     "Fuentes y orientación adicional",
     "Qué puedes hacer ahora",
-  ]) assert(await page.getByRole("heading", { name: heading, exact: true }).isVisible(), `${label} falta la sección «${heading}».`);
+  ]) assert(await page.locator("h2").filter({ hasText: heading }).isVisible(), `${label} falta la sección «${heading}».`);
   assert(await page.locator(".learn-block--example").count() >= 2, `${label} faltan ejemplos operativos y comerciales.`);
   assert(await page.locator(".learn-block--steps ol").count() >= 3, `${label} faltan pasos para documentar y probar.`);
   assert(await page.locator(".learn-block--faq details").count() >= 6, `${label} faltan preguntas frecuentes.`);
@@ -186,7 +233,7 @@ async function runViewport(width, height) {
   assert((await page.locator("h1").textContent())?.trim() === domainTitle, `${label} no cargó el artículo de dominio esperado.`);
   assert((await page.title()).startsWith(domainTitle), `${label} el título de documento del artículo de dominio es incorrecto.`);
   assert(await page.locator('link[rel="canonical"]').getAttribute("href") === `https://vecidya.com/aprende/${domainSlug}`, `${label} canonical del artículo de dominio incorrecta.`);
-  assert(await page.locator('meta[name="description"]').getAttribute("content") === "Un dominio es el nombre que una persona escribe; el hosting mantiene disponible el sitio, y el DNS ayuda a encontrar el servidor. Son piezas distintas aunque un proveedor las ofrezca juntas.", `${label} description individual del artículo de dominio incorrecta.`);
+  assert(await page.locator('meta[name="description"]').getAttribute("content") === "Una persona escribe la dirección de tu negocio y aparece tu página. ¿Cómo sucede eso? Te explicamos el dominio, el alojamiento y la conexión entre ambos sin enredos.", `${label} description individual del artículo de dominio incorrecta.`);
   assert((await page.locator('meta[property="og:title"]').getAttribute("content"))?.startsWith(domainTitle), `${label} Open Graph no refleja el artículo de dominio.`);
   assert(await page.locator('meta[property="og:type"]').getAttribute("content") === "article", `${label} tipo Open Graph del artículo de dominio incorrecto.`);
   assert(await page.locator('meta[name="robots"]').getAttribute("content") === "index, follow", `${label} robots individual del artículo de dominio incorrecto.`);
@@ -247,7 +294,7 @@ async function runViewport(width, height) {
     "Preguntas frecuentes",
     "Fuentes oficiales y alcance",
     "Qué hacer ahora",
-  ]) assert(await page.getByRole("heading", { name: heading, exact: true }).isVisible(), `${label} falta la sección «${heading}».`);
+  ]) assert(await page.locator("h2").filter({ hasText: heading }).isVisible(), `${label} falta la sección «${heading}».`);
   const presenceImage = page.locator(".learn-article-image");
   assert((await presenceImage.getAttribute("alt"))?.includes("sitio web"), `${label} la ilustración de Presencia no describe sus canales.`);
   assert(await presenceImage.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó diagram-presence-digital.svg.`);
@@ -357,8 +404,8 @@ async function runViewport(width, height) {
   await browser.close();
 }
 
-for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]]) {
+for (const [width, height] of [[1366, 900], [1024, 900], [768, 900], [390, 844], [360, 800], [320, 740]]) {
   await runViewport(width, height);
 }
 
-console.log("PASS: Aprende verificó once guías, categorías, autoría, CTAs, metadata, sitemap, keyboard focus y responsive 1366/768/390/360.");
+console.log("PASS: Aprende verificó catálogo, filtros, borradores, estados de búsqueda, once guías, categorías, autoría, CTAs, metadata, sitemap, keyboard focus y responsive 1366/1024/768/390/360/320.");
