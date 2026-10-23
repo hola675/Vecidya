@@ -8,6 +8,7 @@ import { getBusinessProfileGovernance } from "../../db/queries/platform-governan
 import { createBusinessPublicationSnapshot, getBusinessPublicationSnapshotForOrganization, isBusinessPublicationCurrent, readConsistentBusinessDraft } from "../../db/queries/business-publication.server";
 import { getMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
 import { getMiniWebContentForOrganization } from "../../db/queries/miniweb-content.server";
+import { listBusinessMediaForOrganization, type BusinessMediaAsset } from "../../db/queries/business-media.server";
 import { requireOrganizationPermission } from "../../server/auth/authorization.server";
 import { requireOrganization } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
@@ -37,21 +38,22 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     getClientWorkspaceContext(env, request),
   ]);
   const database = createDatabase(env.DB);
-  const { data: { profile, hours, state, content, publicationIsCurrent }, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
+  const { data: { profile, hours, state, content, media, publicationIsCurrent }, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
     const [profile, hours] = await Promise.all([
       getBusinessProfileForOrganization(database, organization.id),
       listBusinessHoursForOrganization(database, organization.id),
     ]);
-    const [state, publication, content] = await Promise.all([
+    const [state, publication, content, media] = await Promise.all([
       getMiniWebConfigurationForOrganization(database, organization.id, profile, hours),
       getBusinessPublicationSnapshotForOrganization(database, organization.id),
       getMiniWebContentForOrganization(database, organization.id),
+      listBusinessMediaForOrganization(database, organization.id),
     ]);
     const currentSnapshot = profile?.status === "published"
-      ? createBusinessPublicationSnapshot(profile, hours, state.draftConfiguration, content.offerings, content.faqs)
+      ? createBusinessPublicationSnapshot(profile, hours, state.draftConfiguration, content.offerings, content.faqs, media)
       : null;
     const publicationIsCurrent = isBusinessPublicationCurrent(publication.publishedVersion, publication.snapshot, currentSnapshot);
-    return { profile, hours, state, content, publicationIsCurrent };
+    return { profile, hours, state, content, media, publicationIsCurrent };
   });
   const governance = profile ? await getBusinessProfileGovernance(database, profile.id) : null;
 
@@ -65,6 +67,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     draftRevision,
     offerings: content.offerings,
     faqs: content.faqs,
+    media: media.map((asset) => ({ ...asset, publicUrl: `/api/organizations/${encodeURIComponent(organization.id)}/business-media/${encodeURIComponent(asset.id)}` })),
     publicationIsCurrent,
     publishedConfiguration: state.publishedConfiguration,
     profile: toMiniWebPublicProfile(profile, governance?.verificationStatus ?? "unverified"),
@@ -85,6 +88,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const [draftRevision, setDraftRevision] = useState(data.draftRevision);
   const [offerings, setOfferings] = useState(data.offerings);
   const [faqs, setFaqs] = useState(data.faqs);
+  const [media, setMedia] = useState(data.media);
+  const [uploading, setUploading] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(true);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
@@ -162,6 +167,35 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
       setMessage({ kind: "error", text: error instanceof Error ? error.message : "No se pudo publicar la configuración." });
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function handleMediaUpload(event: React.ChangeEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const fileInput = form.elements.namedItem("file");
+    const altInput = form.elements.namedItem("altText");
+    if (!(fileInput instanceof HTMLInputElement) || !fileInput.files?.[0] || !(altInput instanceof HTMLInputElement)) return;
+    setUploading(true);
+    setMessage(null);
+    try {
+      const body = new FormData();
+      body.set("file", fileInput.files[0]);
+      body.set("altText", altInput.value);
+      body.set("draftRevision", String(draftRevision));
+      const purposeInput = form.elements.namedItem("purpose");
+      if (purposeInput instanceof HTMLSelectElement) body.set("purpose", purposeInput.value);
+      const response = await fetch(`/api/organizations/${encodeURIComponent(data.activeOrganization.id)}/business-media`, { method: "POST", body });
+      const result = await response.json() as { error?: string; asset?: BusinessMediaAsset; draftRevision?: number };
+      if (!response.ok || !result.asset) throw new Error(result.error ?? "No se pudo subir el archivo.");
+      setMedia((current) => [...current, { ...result.asset!, createdAt: new Date(result.asset!.createdAt), publicUrl: `/api/organizations/${encodeURIComponent(data.activeOrganization.id)}/business-media/${encodeURIComponent(result.asset!.id)}` }]);
+      if (typeof result.draftRevision === "number") setDraftRevision(result.draftRevision);
+      form.reset();
+      setMessage({ kind: "success", text: "Medio guardado como borrador. Solo será visible después de publicar la MiniWeb." });
+    } catch (error) {
+      setMessage({ kind: "error", text: error instanceof Error ? error.message : "No se pudo subir el archivo." });
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -294,6 +328,29 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               ))}
               <Button disabled={!data.canEdit || busy || faqs.length >= MAX_BUSINESS_FAQ_ITEMS} onClick={() => setFaqs((current) => [...current, { question: "", answer: "", sortOrder: current.length, isActive: true }])} tone="secondary">Añadir pregunta</Button>
             </Card>
+
+            <Card aria-labelledby="miniweb-media-title" className="miniweb-content-editor">
+              <div className="miniweb-editor__section-heading">
+                <div><p className="eyebrow">MEDIOS DEL NEGOCIO</p><h2 id="miniweb-media-title">Imágenes y videos</h2></div>
+                <span className="miniweb-editor__count">{media.length} archivos</span>
+              </div>
+              <p className="miniweb-editor__note">Sube imágenes JPEG, PNG o WebP, o videos MP4 o WebM de hasta 32 MB. Los medios se almacenan en privado y pasan a la página pública únicamente al publicar el snapshot.</p>
+              <form className="miniweb-content-editor__item" onSubmit={handleMediaUpload}>
+                <input name="draftRevision" type="hidden" value={draftRevision} />
+                <label>Uso
+                  <select disabled={!data.canEdit || uploading || busy} name="purpose" defaultValue="gallery"><option value="gallery">Galería</option><option value="cover">Portada (una imagen)</option></select>
+                </label>
+                <label>Archivo
+                  <input accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" disabled={!data.canEdit || uploading || busy} name="file" required type="file" />
+                </label>
+                <label>Texto alternativo o descripción breve
+                  <input disabled={!data.canEdit || uploading || busy} maxLength={180} name="altText" required />
+                </label>
+                <Button disabled={!data.canEdit || uploading || busy} type="submit" tone="secondary">{uploading ? "Subiendo…" : "Subir medio"}</Button>
+              </form>
+              {media.length ? <ul className="miniweb-media-list">{media.map((asset) => <li key={asset.id}>{asset.mediaType === "image" ? <img alt="" height="72" loading="lazy" src={asset.publicUrl} width="96" /> : <span aria-hidden="true">▶</span>}<span>{asset.purpose === "cover" ? "Portada" : "Galería"}: {asset.altText}</span><span>{Math.ceil(asset.sizeBytes / 1024)} KB</span></li>)}</ul> : <p className="miniweb-editor__note">Todavía no has subido medios.</p>}
+              <p className="miniweb-editor__note">Activa la sección «Galería» y publica para incluir los medios actuales en el snapshot público. Los archivos nuevos aún no se muestran a visitantes.</p>
+            </Card>
           </div>
 
           <Card aria-labelledby="miniweb-preview-title" className="miniweb-editor__preview-card">
@@ -304,7 +361,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
             <p className="miniweb-editor__note">El borrador se previsualiza aquí; no se guarda ni publica automáticamente.</p>
             {previewVisible ? data.profile ? (
               <div className="miniweb-editor__preview">
-              <MiniWebRenderer configuration={configuration} hours={data.hours} offerings={offerings} faqs={faqs} preview profile={profile} />
+              <MiniWebRenderer configuration={configuration} hours={data.hours} offerings={offerings} faqs={faqs} media={media} preview profile={profile} />
               </div>
             ) : <div className="miniweb-editor__empty-preview">Completa primero la información de tu negocio para generar una vista previa.</div> : null}
             <p className="miniweb-editor__publication-state">

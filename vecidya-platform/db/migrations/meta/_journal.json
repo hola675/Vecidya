@@ -176,6 +176,20 @@
       "when": 1792784232869,
       "tag": "0024_business-offerings-faq",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "6",
+      "when": 1792795716140,
+      "tag": "0025_business-media-assets",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "6",
+      "when": 1792796297532,
+      "tag": "0026_business-media-purpose",
+      "breakpoints": true
     }
   ]
 }

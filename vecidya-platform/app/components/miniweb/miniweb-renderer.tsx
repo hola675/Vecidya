@@ -4,6 +4,7 @@ import { DEFAULT_MINIWEB_TEMPLATE_KEY, MINIWEB_TEMPLATE_REGISTRY, type MiniWebCo
 import type { PublicBusinessProfile } from "../public-business-profile-view";
 import { DefaultMiniWebTemplate } from "./templates/default";
 import type { BusinessFaqItem, BusinessOffering } from "../../features/miniweb/content";
+import type { MiniWebMediaAsset } from "../../features/miniweb/render";
 
 type MiniWebPublicProfile = PublicBusinessProfile;
 
@@ -11,12 +12,13 @@ const templateRenderers = {
   [DEFAULT_MINIWEB_TEMPLATE_KEY]: DefaultMiniWebTemplate,
 };
 
-export function MiniWebRenderer({ configuration, profile, hours, offerings = [], faqs = [], preview = false }: {
+export function MiniWebRenderer({ configuration, profile, hours, offerings = [], faqs = [], media = [], preview = false }: {
   configuration: MiniWebConfiguration;
   profile: MiniWebPublicProfile;
   hours: BusinessHoursEntry[];
   offerings?: BusinessOffering[];
   faqs?: BusinessFaqItem[];
+  media?: MiniWebMediaAsset[];
   preview?: boolean;
 }) {
   const available = MINIWEB_TEMPLATE_REGISTRY[configuration.templateKey]?.availability === "available";
@@ -26,8 +28,8 @@ export function MiniWebRenderer({ configuration, profile, hours, offerings = [],
     templateKey,
     templateVersion: MINIWEB_TEMPLATE_REGISTRY[templateKey].version,
   };
-  const modules = getRenderableMiniWebModules(safeConfiguration, profile, hours, offerings, faqs);
+  const modules = getRenderableMiniWebModules(safeConfiguration, profile, hours, offerings, faqs, media);
   const Template = templateRenderers[templateKey as keyof typeof templateRenderers];
 
-  return <Template configuration={safeConfiguration} modules={modules} profile={profile} hours={hours} offerings={offerings} faqs={faqs} preview={preview} />;
+  return <Template configuration={safeConfiguration} modules={modules} profile={profile} hours={hours} offerings={offerings} faqs={faqs} media={media} preview={preview} />;
 }

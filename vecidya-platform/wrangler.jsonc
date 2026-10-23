@@ -59,6 +59,12 @@
       "migrations_dir": "db/migrations"
     }
   ],
+  "r2_buckets": [
+    {
+      "binding": "BUSINESS_MEDIA",
+      "bucket_name": "vecidya-business-media-prod"
+    }
+  ],
   "env": {
     "staging": {
       "name": "vecidya-platform-staging",
@@ -86,6 +92,12 @@
           "database_name": "vecidya-staging",
           "database_id": "d4af6ebc-97c5-42f6-ad3a-51551021e591",
           "migrations_dir": "db/migrations"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "BUSINESS_MEDIA",
+          "bucket_name": "vecidya-business-media-staging"
         }
       ]
     }

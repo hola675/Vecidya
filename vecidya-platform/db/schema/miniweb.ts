@@ -101,3 +101,26 @@ export const businessFaq = sqliteTable(
     index("business_faq_organization_order_idx").on(table.organizationId, table.sortOrder, table.id),
   ],
 );
+
+export const businessMediaAsset = sqliteTable(
+  "business_media_asset",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    objectKey: text("object_key").notNull(),
+    purpose: text("purpose").notNull().default("gallery"),
+    mediaType: text("media_type").notNull(),
+    contentType: text("content_type").notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    altText: text("alt_text").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex("business_media_asset_object_key_unique").on(table.objectKey),
+    index("business_media_asset_organization_created_idx").on(table.organizationId, table.createdAt, table.id),
+  ],
+);

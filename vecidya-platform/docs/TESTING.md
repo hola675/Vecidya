@@ -1,10 +1,16 @@
 # Pruebas
 
-## APP-MINI-02B — ofertas y FAQ (2026-10-23; en implementación)
+## APP-MINI-02B — ofertas y FAQ (2026-10-23; integrado, validación funcional pendiente)
 
-PR #49 draft sobre `origin/main@038750a`: `pnpm run typecheck`, `pnpm run build` y `git diff --check` **PASS**. El build informa los avisos preexistentes de secretos opcionales ausentes y dynamic imports ineficaces. No se han ejecutado pruebas de comportamiento de esta fase ni se aplicó `0000–0024` a D1 efímera; por tanto no hay certificación funcional.
+PR #49 quedó integrado en `origin/main@6d25b3e`; Codex revisó `3dff014` y reportó revisión completada sin hallazgos. `pnpm run typecheck`, `pnpm run build` y `git diff --check` constan PASS en PR #49. En APP-MINI-02C, `pnpm wrangler d1 migrations apply DB --local --persist-to <directorio-efímero>` aplicó desde cero `0000–0024`; el directorio efímero se eliminó. No se ejecutaron pruebas unitarias ni E2E de APP-MINI-02B en este checkpoint.
 
-Pendiente de certificación: migración en D1 efímera; Worker/E2E para lectura y edición por organización, aislamiento tenant, CAS obsoleto, preservación de publicación al guardar borrador, publicación conjunta de perfil/horarios/configuración/ofertas/FAQ, compatibilidad de snapshot v1 y visibilidad HTTP anónima antes/después de publicar. Comprobar cero fixtures y eliminar la D1 temporal. No usar D1 remota.
+## APP-MINI-02C — medios R2 (2026-10-23; implementación parcial, sin certificación funcional)
+
+En `feat/app-mini-02c` se implementaron el binding `BUSINESS_MEDIA` para prod/staging (nombres configurados; buckets no provisionados), metadatos tenant-scoped (`0025–0026`), portada/galería, subida autenticada con límite de 32 MB por archivo y 100 MB por organización, allowlist JPEG/PNG/WebP/MP4/WebM, comprobación de firmas, revisión CAS al incorporar medios al draft y snapshot v3 compatible con snapshots v1/v2. La lectura pública requiere que el ID esté incluido en el snapshot publicado; la previsualización privada exige membership y permiso de lectura. La galería y portada pueden renderizar imágenes/videos publicados.
+
+Evidencia de este corte: `pnpm run typecheck` y `pnpm run build` PASS (avisos de secretos requeridos ausentes y dynamic imports); migraciones locales `0000–0026` aplicadas desde cero en D1 efímera, luego eliminada. No se ejecutaron pruebas unitarias, E2E ni pruebas de comportamiento de aislamiento/subida/publicación. Falta reemplazo/eliminación de medios, pruebas funcionales y provisionar R2 mediante el proceso operativo autorizado. Sin D1 remota ni deploy.
+
+Pendiente de certificación funcional: Worker/E2E para lectura y edición por organización, aislamiento tenant, CAS obsoleto, preservación de publicación al guardar borrador, publicación conjunta de perfil/horarios/configuración/ofertas/FAQ, compatibilidad de snapshot v1 y visibilidad HTTP anónima antes/después de publicar. Sin D1 compartida/remota, sin deploy.
 
 ## UI-PILOT-01 — Aprende visual y responsive (2026-10-23)
 
