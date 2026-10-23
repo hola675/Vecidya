@@ -5,6 +5,7 @@ import { isRequestId } from "../features/diagnostic/identified-report-contracts"
 import { VERIFIED_REPORT_ACCESS_TTL_DAYS } from "../features/diagnostic/identified-report-constants";
 import { createOpaqueToken, digestOpaqueToken, constantTimeEqual, reportAccessCookie } from "../features/diagnostic/report-access-crypto.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
+import { isIdentifiedReportJourneyAvailable } from "../features/diagnostic/identified-report-availability.server";
 
 import type { ActionFunctionArgs } from "react-router";
 
@@ -15,11 +16,11 @@ const isRecord = (value: unknown): value is Record<string, unknown> => typeof va
 export function loader() { return failure(405, "Método no permitido."); }
 
 export async function action({ context, request }: ActionFunctionArgs) {
-  if (!import.meta.env.DEV) return failure(404, "No disponible.");
   if (request.method !== "POST") return failure(405, "Método no permitido.");
   if (request.headers.get("origin") !== new URL(request.url).origin) return failure(403, "Origen no permitido.");
   if (!/^application\/json(?:\s*;|$)/i.test(request.headers.get("content-type") ?? "")) return failure(415, "Formato no permitido.");
   const { env } = context.get(cloudflareContext);
+  if (!isIdentifiedReportJourneyAvailable(env)) return failure(404, "No disponible.");
   if (!env.DIAGNOSTIC_IDENTIFICATION_RATE_LIMITER) return failure(503, "El servicio no está disponible temporalmente.");
   let raw: string;
   try { raw = await readRequestBodyLimited(request, 2 * 1024); }

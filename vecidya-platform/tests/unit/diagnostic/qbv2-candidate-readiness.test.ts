@@ -154,7 +154,7 @@ test("ACT-04 cutover: the public questionnaire, replay and methodology use QA-03
   const methodologyRoute = source("../../../app/routes/diagnostico-metodologia.tsx");
   const result = source("../../../app/components/diagnostic-flow/qa03b-result.tsx");
   const methodology = source("../../../app/components/diagnostic-flow/qa03b-methodology.tsx");
-  assert.match(route, /<CandidateDiagnosticFlow publicMode\s*\/>/);
+  assert.match(route, /<CandidateDiagnosticFlow publicMode reportRequestEnabled=\{loaderData\.identifiedReportAvailable\}\s*\/>/);
   assert.match(qa03bFlow, /action: publicMode \? "\/api\/diagnostic\/anonymous-summary"/);
   assert.match(anonymousEndpoint, /replayQa03bSessionV1/);
   assert.match(anonymousEndpoint, /replayPublicDiagnosticV3/);
@@ -162,7 +162,7 @@ test("ACT-04 cutover: the public questionnaire, replay and methodology use QA-03
   assert.match(methodologyRoute, /<CandidateMethodologyArticle\s*\/>/);
   assert.match(methodology, /to=\{base\}/);
   assert.match(methodology, /const publicMode = !devBaseHref/);
-  assert.match(result, /publicMode \? null : <button/);
-  assert.match(result, /El informe detallado no está disponible/);
+  assert.match(result, /\(!publicMode \|\| reportRequestEnabled\) \? <button/);
+  assert.match(result, /publicMode && !reportRequestEnabled/);
   assert.equal(CANDIDATE_ACTIVATION_MANIFEST_V3.candidateActive, false, "el motor ACT raíz sigue aislado del cutover QA-03B");
 });

@@ -43,7 +43,8 @@
     "APP_ENV": "production",
     "EMAIL_PROVIDER": "gmail",
     "EMAIL_FROM": "hola@vecidya.com",
-    "EMAIL_REPLY_TO": "hola@vecidya.com"
+    "EMAIL_REPLY_TO": "hola@vecidya.com",
+    "DIAGNOSTIC_REPORT_FUNNEL_ENABLED": "false"
   },
   "d1_databases": [
     {
@@ -63,7 +64,8 @@
         "BETTER_AUTH_URL": "",
         "EMAIL_PROVIDER": "fake",
         "EMAIL_FROM": "hola@vecidya.com",
-        "EMAIL_REPLY_TO": "hola@vecidya.com"
+        "EMAIL_REPLY_TO": "hola@vecidya.com",
+        "DIAGNOSTIC_REPORT_FUNNEL_ENABLED": "false"
       },
       "secrets": {
         "required": ["BETTER_AUTH_SECRET"]

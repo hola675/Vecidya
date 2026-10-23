@@ -172,7 +172,7 @@ async function seedLostResponseFixture(db: D1Database, sourceRequestId: string, 
     if (inserted?.count !== 1) throw new Error("No se pudo crear la solicitud sintética de recuperación.");
     const recipient = await db.prepare("SELECT email FROM identified_diagnostic_request WHERE id = ?").bind(requestId).first<{ email: string }>();
     if (!recipient) throw new Error("No se pudo leer el destinatario sintético.");
-    deliverDiagnosticVerificationEmail({ requestId, challengeId, recipient: recipient.email, token, origin, now: now.getTime() });
+    await deliverDiagnosticVerificationEmail({ requestId, challengeId, recipient: recipient.email, token, origin, now: now.getTime() });
     return { requestId };
   } catch {
     await deleteIdentifiedReport(db, requestId);

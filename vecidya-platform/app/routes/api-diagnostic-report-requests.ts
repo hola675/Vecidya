@@ -14,6 +14,8 @@ import { buildPublicDiagnosticReport, isCurrentPublicDiagnosticEngineIdentityV1,
 import { toAnonymousDiagnosticSummaryV1 } from "../features/diagnostic/anonymous-summary.server";
 import { deliverDiagnosticVerificationEmail } from "../../server/email/diagnostic-dev-inbox.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
+import { isIdentifiedReportJourneyAvailable } from "../features/diagnostic/identified-report-availability.server";
+import { validateQa03bDiagnosticReportRequest } from "../features/diagnostic/qa03b/identified-report-request.server";
 
 import type { ActionFunctionArgs } from "react-router";
 
@@ -24,11 +26,11 @@ export function loader() {
 }
 
 export async function action({ context, request }: ActionFunctionArgs) {
-  if (!import.meta.env.DEV) return failure(404, "No disponible.");
   if (request.method !== "POST") return failure(405, "Método no permitido.");
   if (request.headers.get("origin") !== new URL(request.url).origin) return failure(403, "Origen no permitido.");
   if (!/^application\/json(?:\s*;|$)/i.test(request.headers.get("content-type") ?? "")) return failure(415, "Formato no permitido.");
   const { env } = context.get(cloudflareContext);
+  if (!isIdentifiedReportJourneyAvailable(env)) return failure(404, "No disponible.");
   if (!env.DIAGNOSTIC_IDENTIFICATION_RATE_LIMITER) return failure(503, "El servicio no está disponible temporalmente.");
   if (!await allowRateLimitedRequest(env.DIAGNOSTIC_IDENTIFICATION_RATE_LIMITER, request, "report-submit")) return failure(429, "Espera un momento antes de volver a intentarlo.");
 
@@ -43,11 +45,9 @@ export async function action({ context, request }: ActionFunctionArgs) {
   let value: unknown;
   try { value = JSON.parse(raw); }
   catch { return failure(400, "Revisa los datos e inténtalo de nuevo."); }
-  const publicInput = validateDiagnosticReportRequest(value);
-  const qa03bInput = !publicInput && import.meta.env.DEV
-    ? (await import("../features/diagnostic/qa03b/identified-report-request.server")).validateQa03bDiagnosticReportRequest(value)
-    : null;
-  const input = publicInput ?? qa03bInput;
+  const qa03bInput = validateQa03bDiagnosticReportRequest(value);
+  const publicInput = !qa03bInput && import.meta.env.DEV ? validateDiagnosticReportRequest(value) : null;
+  const input = qa03bInput ?? publicInput;
   if (!input || (publicInput && !isCurrentPublicDiagnosticEngineIdentityV1(publicInput.engineIdentity))) return failure(409, "Este resultado pertenece a otra versión. Inicia un diagnóstico nuevo para solicitar el informe.");
 
   const emailDigest = await digestOpaqueToken(input.email);
@@ -160,7 +160,11 @@ export async function action({ context, request }: ActionFunctionArgs) {
     return failure(503, "No pudimos guardar la solicitud. Tus respuestas anónimas siguen disponibles en este navegador.");
   }
 
-  deliverDiagnosticVerificationEmail({ requestId, challengeId: challenge.id, recipient: input.email, token, origin: new URL(request.url).origin, now: now.getTime() });
+  try {
+    await deliverDiagnosticVerificationEmail({ requestId, challengeId: challenge.id, recipient: input.email, token, origin: import.meta.env.DEV ? new URL(request.url).origin : env.APP_URL, purpose: "verification", now: now.getTime() }, env);
+  } catch {
+    // Keep the response generic; the saved request can use the rate-limited resend flow.
+  }
   const summaryVersion = qa03bInput ? "anonymous-diagnostic-summary-v1" : (summary as ReturnType<typeof toAnonymousDiagnosticSummaryV1>).version;
   return Response.json({ requestId, status: "verification_pending", expiresAt: expiresAt.toISOString(), summaryVersion, ...(qa03bInput ? { summary } : {}) }, { status: 202, headers });
 }

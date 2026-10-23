@@ -30,7 +30,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> => typeof va
 const sessionId = () => globalThis.crypto?.randomUUID?.() ?? `candidate-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 const tabId = () => globalThis.crypto?.randomUUID?.() ?? `tab-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-export function CandidateDiagnosticFlow({ publicMode = false, devMethodologyHref }: { readonly publicMode?: boolean; readonly devMethodologyHref?: string }) {
+export function CandidateDiagnosticFlow({ publicMode = false, reportRequestEnabled = true, devMethodologyHref }: { readonly publicMode?: boolean; readonly reportRequestEnabled?: boolean; readonly devMethodologyHref?: string }) {
   const store = useMemo(() => new CandidateSessionStoreV3(), []);
   const replayFetcher = useFetcher();
   const replaySessionRef = useRef<CandidateSessionV3 | null>(null);
@@ -191,7 +191,7 @@ export function CandidateDiagnosticFlow({ publicMode = false, devMethodologyHref
      if (session.status === "completed" || session.status === "completing") void replayOnWorker(session);
      else setView("flow");
    }} onRestart={requestReset} title={writeUnavailable ? "No podemos acceder al almacenamiento local" : "No pudimos preparar el resumen verificado"} />;
-  else if (view === "result" && workerSummary && session) content = <CandidateDiagnosticResult publicMode={publicMode} methodologyHref={devMethodologyHref} summary={workerSummary} onEdit={() => { setDraft({ key: "", value: undefined }); setWorkerSummary(null); setPendingRequestId(null); void commit(goBackCandidateV3(session, ownerId, Date.now()), "flow"); }} onRequestReport={() => setView("identify")} />;
+  else if (view === "result" && workerSummary && session) content = <CandidateDiagnosticResult publicMode={publicMode} reportRequestEnabled={reportRequestEnabled} methodologyHref={devMethodologyHref} summary={workerSummary} onEdit={() => { setDraft({ key: "", value: undefined }); setWorkerSummary(null); setPendingRequestId(null); void commit(goBackCandidateV3(session, ownerId, Date.now()), "flow"); }} onRequestReport={() => setView("identify")} />;
   else if (view === "identify" && session && workerSummary) content = <IdentifiedDiagnosticRequestForm
     source={{
       payload: {

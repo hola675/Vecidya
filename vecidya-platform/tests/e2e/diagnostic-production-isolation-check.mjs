@@ -26,9 +26,6 @@ const bundleFiles = bundleRoots.flatMap((root) => {
 
 const forbiddenBundleMarkers = [
   "api-diagnostic-funnel-analytics",
-  "api-diagnostic-report-requests",
-  "api-diagnostic-report-request-resend",
-  "api-diagnostic-email-verify",
   "/__dev/diagnostico/",
   "qa-funnel@example.invalid",
   "other@example.invalid",
@@ -53,14 +50,9 @@ assert.equal(publicDiagnostic.status, 200, "el diagnóstico público permanece d
 const requestId = randomUUID();
 const devOnlyPaths = [
   "/api/diagnostic/funnel-analytics",
-  "/api/diagnostic/report-requests",
-  "/api/diagnostic/email/verify",
-  "/api/diagnostic/report-requests/00000000-0000-4000-8000-000000000000/resend",
   `/__dev/diagnostico/lifecycle/fixture/${requestId}`,
   "/__dev/diagnostico/lifecycle/purge-expired",
   `/__dev/diagnostico/buzon/${requestId}`,
-  "/diagnostico/verificar",
-  `/diagnostico/informe/${requestId}`,
 ];
 
 for (const path of devOnlyPaths) {
@@ -71,4 +63,22 @@ for (const path of devOnlyPaths) {
   assert.ok(!body.includes("inspect_funnel_aggregate"), `${path} no filtra metadata de fixture`);
 }
 
-console.log(`PASS production Worker: ${devOnlyPaths.length} rutas dev-only devuelven 404; el informe detallado no se entrega anónimamente`);
+console.log(`PASS production Worker: ${devOnlyPaths.length} rutas auxiliares dev-only devuelven 404`);
+
+const gatedRequests = [
+  { path: "/api/diagnostic/report-requests", method: "POST", body: "{}" },
+  { path: "/api/diagnostic/email/verify", method: "POST", body: "{}" },
+  { path: `/api/diagnostic/report-requests/${requestId}/resend`, method: "POST" },
+  { path: "/diagnostico/verificar", method: "GET" },
+  { path: `/diagnostico/informe/${requestId}`, method: "GET" },
+];
+for (const entry of gatedRequests) {
+  const response = await fetch(new URL(entry.path, baseUrl), {
+    method: entry.method,
+    headers: { Origin: new URL(baseUrl).origin, ...(entry.body ? { "Content-Type": "application/json" } : {}) },
+    ...(entry.body ? { body: entry.body } : {}),
+    redirect: "manual",
+  });
+  assert.equal(response.status, 404, `${entry.path} está registrado pero desactivado por DIAGNOSTIC_REPORT_FUNNEL_ENABLED=false`);
+}
+console.log(`PASS production Worker: ${gatedRequests.length} endpoints/páginas identificadas permanecen cerrados por configuración`);

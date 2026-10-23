@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { cloudflareContext } from "../../server/cloudflare-context";
+import { isIdentifiedReportJourneyAvailable } from "../features/diagnostic/identified-report-availability.server";
+import type { Route } from "./+types/dev-diagnostic-verify-email";
 
 type VerificationState =
   | { readonly kind: "loading" }
@@ -10,6 +13,12 @@ type VerificationState =
 type RecoveryState = "idle" | "sending" | "sent" | "failed";
 
 export const meta = () => [{ title: "Verificar acceso al diagnóstico" }, { name: "robots", content: "noindex, nofollow, noarchive" }];
+
+export function loader({ context }: Route.LoaderArgs) {
+  const { env } = context.get(cloudflareContext);
+  if (!isIdentifiedReportJourneyAvailable(env)) throw new Response("Not Found", { status: 404 });
+  return null;
+}
 
 export default function VerifyDiagnosticEmail() {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -66,7 +75,7 @@ export default function VerifyDiagnosticEmail() {
   return (
     <main className="df-page df-identification-page">
       <section aria-labelledby="df-verify-title" className="df-identification">
-        <p className="df-identification__local-note" role="note">Entorno local de prueba. Usa datos sintéticos; no se envían correos reales.</p>
+        {import.meta.env.DEV ? <p className="df-identification__local-note" role="note">Entorno local de prueba. Usa datos sintéticos; no se envían correos reales.</p> : null}
         <h1 id="df-verify-title" ref={titleRef} tabIndex={-1}>Confirma el acceso a tu diagnóstico</h1>
         {state.kind === "loading" ? <p aria-live="polite">Preparando la verificación…</p> : null}
         {state.kind === "ready" || state.kind === "submitting" ? <>
