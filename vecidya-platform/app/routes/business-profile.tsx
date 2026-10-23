@@ -7,9 +7,9 @@ import { businessProfileSlugMaxLength, serviceModeLabels, slugifyBusinessName } 
 import {
   getBusinessProfileForOrganization,
   hasActiveLicenseForOrganizationOwner,
-  publishBusinessProfileForOrganization,
   saveBusinessProfileForOrganization,
 } from "../../db/queries/business-profile.server";
+import { readConsistentBusinessDraft, publishBusinessPublicationForOrganization } from "../../db/queries/business-publication.server";
 import {
   listBusinessHoursForOrganization,
   replaceBusinessHoursForOrganization,
@@ -53,14 +53,16 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     getClientWorkspaceContext(env, request),
   ]);
   const database = createDatabase(env.DB);
-  const [profile, hours] = await Promise.all([
-    getBusinessProfileForOrganization(database, organization.id),
-    listBusinessHoursForOrganization(database, organization.id),
-  ]);
+  const { data: { profile, hours }, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
+    const [profile, hours] = await Promise.all([
+      getBusinessProfileForOrganization(database, organization.id),
+      listBusinessHoursForOrganization(database, organization.id),
+    ]);
+    return { profile, hours };
+  });
   const governance = profile ? await getBusinessProfileGovernance(database, profile.id) : null;
   const canPublish = await hasActiveLicenseForOrganizationOwner(database, organization.id);
-
-  return { completion: getBusinessProfileCompletion(profile), governance, membership, profile, hours, canPublish, ...shell, activeOrganization: organization };
+  return { completion: getBusinessProfileCompletion(profile), governance, membership, profile, hours, canPublish, draftRevision, ...shell, activeOrganization: organization };
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
@@ -70,12 +72,13 @@ export async function action({ context, request }: Route.ActionArgs) {
   const database = createDatabase(env.DB);
   const formData = await request.formData();
   const intent = formData.get("intent");
+  const expectedRevision = Number(formData.get("draftRevision"));
 
   try {
     if (intent === "save-hours") {
       const entries = parseBusinessHoursForm(formData);
-      const hours = await replaceBusinessHoursForOrganization(database, organization.id, entries);
-      return { kind: "hours" as const, hours, success: "Horarios guardados." };
+      const hours = await replaceBusinessHoursForOrganization(database, organization.id, entries, expectedRevision);
+      return { kind: "hours" as const, hours, draftRevision: expectedRevision + 1, success: "Horarios guardados." };
     }
 
     const input = parseBusinessProfileForm(formData);
@@ -96,14 +99,18 @@ export async function action({ context, request }: Route.ActionArgs) {
       }
     }
 
-    const profile = await saveBusinessProfileForOrganization(database, organization.id, input);
+    const profile = await saveBusinessProfileForOrganization(database, organization.id, input, expectedRevision);
+    if (!profile) throw new Error("No se pudo guardar el perfil.");
 
     if (intent === "publish") {
-      const publishedProfile = await publishBusinessProfileForOrganization(database, organization.id);
+      await publishBusinessPublicationForOrganization(database, organization.id, expectedRevision + 1);
+      const publishedProfile = await getBusinessProfileForOrganization(database, organization.id);
+      if (!publishedProfile) throw new Error("El perfil desapareció durante la publicación.");
       return {
         kind: "profile" as const,
         completion: getBusinessProfileCompletion(publishedProfile),
         profile: publishedProfile,
+        draftRevision: expectedRevision + 1,
         success: "Perfil publicado.",
       };
     }
@@ -112,12 +119,13 @@ export async function action({ context, request }: Route.ActionArgs) {
       kind: "profile" as const,
       completion: getBusinessProfileCompletion(profile),
       profile,
+      draftRevision: expectedRevision + 1,
       success: profile.status === "published" ? "Perfil actualizado." : "Perfil guardado como borrador.",
     };
   } catch (error) {
-    if (error instanceof Response && error.status === 400) {
+    if (error instanceof Response && (error.status === 400 || error.status === 409)) {
       const message = await error.text();
-      return { kind: intent === "save-hours" ? ("hours" as const) : ("profile" as const), error: message };
+      return { kind: intent === "save-hours" ? ("hours" as const) : ("profile" as const), error: message, status: error.status };
     }
     throw error;
   }
@@ -171,7 +179,7 @@ function getHoursPreview(formData: FormData): BusinessHoursEntry[] {
 }
 
 export default function BusinessProfilePage() {
-  const { completion: loaderCompletion, governance, hours: loaderHours, membership, profile: loaderProfile, workspaceUser, organizations, isPlatformAdmin, activeOrganization, canPublish } = useLoaderData<typeof loader>();
+  const { completion: loaderCompletion, governance, hours: loaderHours, membership, profile: loaderProfile, workspaceUser, organizations, isPlatformAdmin, activeOrganization, canPublish, draftRevision } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const profileActionData = actionData?.kind === "profile" ? actionData : undefined;
@@ -179,9 +187,11 @@ export default function BusinessProfilePage() {
   const profile = profileActionData?.profile ?? loaderProfile;
   const completion = profileActionData?.completion ?? loaderCompletion;
   const hours = hoursActionData?.hours ?? loaderHours;
+  const hasDraftConflict = profileActionData?.status === 409 || hoursActionData?.status === 409;
   const hoursByDay = new Map(hours.map((entry) => [entry.dayOfWeek, entry]));
   const canEdit = membership.role === "owner" || membership.role === "admin";
   const isSaving = navigation.state === "submitting";
+  const [formDraftRevision, setFormDraftRevision] = useState(draftRevision);
   const slugInputRef = useRef<HTMLInputElement>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewProfile, setPreviewProfile] = useState(() => getProfilePreview(profile, governance));
@@ -190,6 +200,15 @@ export default function BusinessProfilePage() {
   // action): una vez persistido es la URL pública, y renombrar el negocio no debe moverla.
   const suggestsSlug = !profile;
   const slugTouchedRef = useRef(false);
+
+  useEffect(() => {
+    const savedRevision = profileActionData?.success
+      ? profileActionData.draftRevision
+      : hoursActionData?.success
+        ? hoursActionData.draftRevision
+        : null;
+    if (savedRevision !== null && savedRevision !== undefined) setFormDraftRevision(savedRevision);
+  }, [hoursActionData, profileActionData]);
 
   useEffect(() => {
     setPreviewProfile(getProfilePreview(profile, governance));
@@ -234,7 +253,8 @@ export default function BusinessProfilePage() {
         </Alert>
       ) : null}
 
-      {profileActionData?.error ? <Alert>{profileActionData.error}</Alert> : null}
+      {hasDraftConflict ? <><Alert>El borrador cambió mientras editabas. Tus campos no se guardaron y no podrás guardar con esta revisión. Recarga para ver la versión más reciente y continuar.</Alert><div className="business-profile-actions"><Button onClick={() => window.location.reload()} tone="secondary" type="button">Recargar para continuar</Button></div></> : null}
+      {profileActionData?.error && profileActionData.status !== 409 ? <Alert>{profileActionData.error}</Alert> : null}
       {profileActionData?.success ? <p className="success-message" role="status">{profileActionData.success}</p> : null}
 
       <Card aria-labelledby="profile-status-title" className="business-profile-status">
@@ -272,7 +292,8 @@ export default function BusinessProfilePage() {
 
       <Card className="business-profile-card">
         {canEdit ? (
-          <Form className="business-profile-form" method="post" onChange={updateProfilePreview}>
+          <Form className="business-profile-form" method="post" onChange={updateProfilePreview} onSubmit={(event) => { if (hasDraftConflict) event.preventDefault(); }}>
+            <input name="draftRevision" type="hidden" value={formDraftRevision} />
             <fieldset disabled={isSaving}>
               <legend>Identidad del negocio</legend>
               <div className="form-grid">
@@ -331,11 +352,11 @@ export default function BusinessProfilePage() {
 
             <fieldset disabled={isSaving} className="business-profile-form__submit">
               <div className="business-profile-actions">
-                <Button name="intent" type="submit" value="save">
+                <Button disabled={hasDraftConflict} name="intent" type="submit" value="save">
                   {isSaving ? "Guardando…" : "Guardar"}
                 </Button>
                 {profile?.status !== "published" && canPublish ? (
-                  <Button name="intent" tone="secondary" type="submit" value="publish">
+                  <Button disabled={hasDraftConflict} name="intent" tone="secondary" type="submit" value="publish">
                     Publicar perfil
                   </Button>
                 ) : null}
@@ -355,10 +376,11 @@ export default function BusinessProfilePage() {
           <h2>¿Cuándo atiendes?</h2>
           <p className="form-help">Marca "Cerrado" o deja ambas horas vacías para un día sin definir. Los horarios son los que tu negocio publica; Vecidya no verifica huso horario ni excepciones.</p>
 
-          {hoursActionData?.error ? <Alert>{hoursActionData.error}</Alert> : null}
+          {hoursActionData?.error && hoursActionData.status !== 409 ? <Alert>{hoursActionData.error}</Alert> : null}
           {hoursActionData?.success ? <p className="success-message" role="status">{hoursActionData.success}</p> : null}
 
-          <Form className="business-hours-form" method="post" onChange={updateHoursPreview}>
+          <Form className="business-hours-form" method="post" onChange={updateHoursPreview} onSubmit={(event) => { if (hasDraftConflict) event.preventDefault(); }}>
+            <input name="draftRevision" type="hidden" value={formDraftRevision} />
             <div className="business-hours-grid">
               {daysOfWeek.map((day) => {
                 const entry = hoursByDay.get(day);
@@ -380,7 +402,7 @@ export default function BusinessProfilePage() {
               })}
             </div>
             <div className="business-profile-actions">
-              <Button disabled={isSaving} name="intent" type="submit" value="save-hours">
+              <Button disabled={isSaving || hasDraftConflict} name="intent" type="submit" value="save-hours">
                 {isSaving ? "Guardando…" : "Guardar horarios"}
               </Button>
             </div>

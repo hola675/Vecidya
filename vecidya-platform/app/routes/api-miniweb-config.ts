@@ -2,9 +2,10 @@ import { createDatabase } from "../../db/client.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
 import { getBusinessProfileGovernance } from "../../db/queries/platform-governance.server";
+import { readConsistentBusinessDraft, publishBusinessPublicationForOrganization } from "../../db/queries/business-publication.server";
+import { hasActiveLicenseForOrganizationOwner } from "../../db/queries/business-profile.server";
 import {
   getMiniWebConfigurationForOrganization,
-  publishMiniWebConfigurationForOrganization,
   saveMiniWebConfigurationForOrganization,
 } from "../../db/queries/miniweb.server";
 import { MAX_MINIWEB_CONFIGURATION_BYTES, validateMiniWebDraft } from "../features/miniweb/registry";
@@ -33,12 +34,15 @@ async function getOrganizationContext(context: Route.LoaderArgs["context"], requ
 export async function loader({ context, params, request }: Route.LoaderArgs) {
   const { env, organization, database } = await getOrganizationContext(context, request, params.organizationId);
   const membership = await requireOrganizationPermission(env, request, organization.id, "business-profile:read");
-  const [profile, hours] = await Promise.all([
-    getBusinessProfileForOrganization(database, organization.id),
-    listBusinessHoursForOrganization(database, organization.id),
-  ]);
+  const { data: { profile, hours, configuration }, draftRevision } = await readConsistentBusinessDraft(database, organization.id, async () => {
+    const [profile, hours] = await Promise.all([
+      getBusinessProfileForOrganization(database, organization.id),
+      listBusinessHoursForOrganization(database, organization.id),
+    ]);
+    const configuration = await getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
+    return { profile, hours, configuration };
+  });
   const governance = profile ? await getBusinessProfileGovernance(database, profile.id) : null;
-  const configuration = await getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
 
   return Response.json({
     hasPersistedConfiguration: configuration.hasPersistedConfiguration,
@@ -47,6 +51,7 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
     profile: toMiniWebPublicProfile(profile, governance?.verificationStatus ?? "unverified"),
     hours: hours.map(({ dayOfWeek, isClosed, opensAt, closesAt }) => ({ dayOfWeek, isClosed, opensAt, closesAt })),
     role: membership.role,
+    draftRevision,
   });
 }
 
@@ -67,12 +72,14 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   } catch {
     return badRequest("El cuerpo JSON no es válido.");
   }
-  if (!isRecord(body) || Object.keys(body).some((key) => !["intent", "configuration"].includes(key))) {
+  if (!isRecord(body) || Object.keys(body).some((key) => !["intent", "configuration", "draftRevision"].includes(key))) {
     return badRequest("La solicitud MiniWeb tiene campos no permitidos.");
   }
 
   const intent = body.intent;
   if (intent !== "save" && intent !== "publish") return badRequest("La operación MiniWeb no es válida.");
+  const expectedRevision = body.draftRevision;
+  if (!Number.isInteger(expectedRevision) || Number(expectedRevision) < 0) return Response.json({ error: "La versión del borrador no es válida. Recarga la página." }, { status: 409 });
   await requireOrganizationPermission(env, request, organization.id, intent === "publish" ? "business-profile:publish" : "business-profile:update");
 
   const [profile, hours] = await Promise.all([
@@ -82,12 +89,15 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   try {
     if (intent === "save") {
       const configuration = validateMiniWebDraft(body.configuration);
-      const saved = await saveMiniWebConfigurationForOrganization(database, organization.id, profile, hours, configuration);
-      return Response.json({ ok: true, configuration: saved });
+      const saved = await saveMiniWebConfigurationForOrganization(database, organization.id, profile, hours, configuration, undefined, Number(expectedRevision));
+      return Response.json({ ok: true, configuration: saved.configuration, draftRevision: saved.draftRevision });
     }
-    const published = await publishMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
-    return Response.json({ ok: true, configuration: published });
+    if (!await hasActiveLicenseForOrganizationOwner(database, organization.id)) return Response.json({ error: "Necesitas una licencia Vecidya activa para publicar en Vecindario." }, { status: 400 });
+    const publication = await publishBusinessPublicationForOrganization(database, organization.id, Number(expectedRevision));
+    const published = await getMiniWebConfigurationForOrganization(database, organization.id, profile, hours);
+    return Response.json({ ok: true, configuration: published.draftConfiguration, draftRevision: publication.state.draftRevision });
   } catch (error) {
+    if (error instanceof Response && (error.status === 400 || error.status === 409)) return Response.json({ error: await error.text() }, { status: error.status });
     if (error instanceof TypeError) return badRequest(error.message);
     throw error;
   }

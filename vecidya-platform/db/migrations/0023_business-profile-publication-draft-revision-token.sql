@@ -1,0 +1,1 @@
+ALTER TABLE `business_profile_publication` ADD `draft_write_token` text;

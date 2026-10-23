@@ -99,8 +99,14 @@ La migración `0020_platform-admin-training.sql` agrega `organization_training_a
 
 La asignación general se implementa; no hay asignación individual ni transferencia de owner. El progreso propio usa historial separado; el progreso corregido por platform admin escribe historial y `platform_audit_log`. La retención global de auditoría y la certificación de carreras siguen pendientes.
 
+## APP-CLIENTE-00-PUBLISH-001 — snapshot público (2026-10-23)
 
-Última reconciliación: **2026-10-16 (FUNNEL-01D.1-R, local).** `0018` agrega `diagnostic_funnel_aggregate`; `0019` mueve la marca de primera apertura de grant a solicitud y conserva la fecha mínima histórica. La cadena `0000`–`0019` se aplicó a D1 temporal aislada `C:\Users\Admin\AppData\Local\Temp\kilo\vecidya-funnel-01d1-r2-d1`, que terminó con cero solicitudes, grants y agregados. La D1 compartida/remota no se migró. `0011`–`0013` siguen siendo historia DIAG-V3-08, no el almacén nuevo.
+`0022_business-profile-publication-snapshot.sql` agrega `business_profile_publication`, una fila por organización con revisión draft, versión publicada, slug publicado único, versión de schema, snapshot JSON y timestamp. `0023_business-profile-publication-draft-revision-token.sql` agrega `draft_write_token` para asociar mutaciones de perfil, horarios y MiniWeb al CAS que incrementó la revisión. La tabla tiene FK a `organization` con `ON DELETE CASCADE`; no se hace backfill global. Los perfiles legacy se materializan al primer cambio/publicación de esa organización.
+
+El snapshot de versión 1 contiene un DTO allowlisted de perfil, horarios y configuración MiniWeb. Guardar incrementa revisión y modifica el draft en el mismo batch nativo D1; publicación incrementa versión pública y revisión, escribe el snapshot y actualiza el estado/configuración pública/auditoría con comprobaciones condicionales. Los loaders de draft cercan datos con revisión antes/después y reintentan hasta tres veces; sin estabilidad responden `409`. Una inicialización legacy puede completar condicionalmente una fila vacía solo en su revisión inicial. Una fila de publicación existente sin snapshot válido falla cerrada para perfil, directorio y sitemap; sin fila de publicación, el contenido legacy continúa disponible hasta que una mutación materialice el snapshot antes de cambiar el draft. Una revisión obsoleta o carrera pierde el token y recibe `409`. Las migraciones `0000–0023` se aplicaron desde cero a una D1 efímera local para esta certificación. No se aplicaron migraciones a ninguna D1 compartida o remota.
+
+
+Última reconciliación: **2026-10-23 (APP-CLIENTE-00-PUBLISH-001-R1, local).** La cadena `0000`–`0023` se aplicó en D1 efímera aislada desde cero; `0022`/`0023` siguen siendo las migraciones de snapshot público versionado y control de revisión. R1 no cambia schema ni genera migraciones. D1 compartida y remotas no se migraron. Producción permanece documentada con `0000`–`0010`; consultar `ENVIRONMENTS.md` para límites y evidencia de producción.
 
 ## APP-MINI-02A — configuración modular
 

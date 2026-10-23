@@ -33,9 +33,11 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
     throw new Response("Perfil no encontrado", { status: 404 });
   }
 
-  const rawHours = await listBusinessHoursForOrganization(database, profile.organizationId);
+  const rawHours = profile.publicationSnapshot?.hours ?? await listBusinessHoursForOrganization(database, profile.organizationId);
   const hours = rawHours.map(({ dayOfWeek, isClosed, opensAt, closesAt }) => ({ dayOfWeek, isClosed, opensAt, closesAt }));
-  const miniweb = await getMiniWebConfigurationForOrganization(database, profile.organizationId, profile, hours);
+  const miniweb = profile.publicationSnapshot
+    ? { publishedConfiguration: profile.publicationSnapshot.configuration }
+    : await getMiniWebConfigurationForOrganization(database, profile.organizationId, profile, hours);
   const publicProfile = toMiniWebPublicProfile(profile, profile.verificationStatus);
   if (!publicProfile) throw new Response("Perfil no encontrado", { status: 404 });
   const renderableModules = getRenderableMiniWebModules(miniweb.publishedConfiguration, publicProfile, hours);
