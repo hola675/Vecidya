@@ -10,9 +10,9 @@ El package local también informa `0.6.1`, pero coincidencia de versión no demu
 
 # Entornos
 
-## DIAG-QA-03B-RELEASE-CLOSE — preflight autorizado, bloqueado por autenticación (2026-10-23)
+## DIAG-QA-03B-RELEASE-CLOSE — preflight remoto read-only (2026-10-23)
 
-El usuario autorizó consultas read-only de D1/Worker en `vecidya-staging` y `vecidya-prod`. `wrangler whoami` respondió que Wrangler no está autenticado y Cloudflare MCP no está disponible en las herramientas activas, por lo que no se leyó ledger/esquema/bookmark ni SHA del Worker. No se ejecutaron migraciones, escrituras, deploy ni HTTP público en esta fecha. Estado desplegado permanece **DOC histórico**, sin verificación actual. Código local QA-03B integrado todavía no es publicación; ver `DATABASE.md` para desbloquear el preflight. Funnel y switches de purga continúan cerrados.
+El usuario autorizó consultas read-only y autenticó Wrangler. Corte `2026-10-23T20:07Z`, cuenta Soporte `8a13de3ea584f9055f78565b9860c125`: staging `vecidya-staging` (ID `d4af6ebc-97c5-42f6-ad3a-51551021e591`) tiene ledger `0000–0009`, bookmark `000000a2-00000000-0000510d-11214e7e452494055c9de3bae86eaa70`, Worker `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454` desplegado 2026-09-23; producción `vecidya-prod` (ID `8edc3f04-258e-4c29-9f33-76fec3d25042`) tiene ledger `0000–0010`, bookmark `000004f3-00000000-0000510d-aeb269208862ec0e0e67cafeedacec28`, Worker `8bf2c1c4-d6cb-47ca-ae74-01de28392d67` desplegado 2026-10-11. El código necesita `0000–0023`; ninguna escritura remota se hizo. El GET anónimo a `/` y `/diagnostico` falló con HTTP `000` por `CRYPT_E_REVOCATION_OFFLINE` de Schannel; no cuenta como verificación de publicación. Se conservan flags cerrados en configuración, sin afirmar que los valores desplegados fueron leídos. Matriz completa y razón del NO-GO en `DATABASE.md`.
 
 ## DIAG-PRIVACY-PURGE-01 — automatización preparada, switches cerrados (2026-10-22)
 

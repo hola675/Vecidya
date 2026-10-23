@@ -5,7 +5,7 @@
 - Se actualiza el E2E ACT-04 para validar recorrido inicial por teclado y ausencia de overflow en 320/390/768/1366 px; el comentario de `diagnostic.tsx` refleja session schema/key 6 y replay v4.
 - Se corrigen harnesses E2E desfasados: MiniWeb conserva atributos de cookie y Admin Global comprueba snapshot `business_profile_publication`, prepara perfil/licencia y envía el token CAS de revisión actual. Admin Global y MiniWeb pasan; no cambió la política del producto.
 - Certificación local: D1 `0000–0023` y upgrade sintético `0010→0023`; unitarias 1655/1655, correo fake 12/12, QA-03B, ACT-04, purga, aislamiento, Admin Global, MiniWeb y licencias PASS. El editor de perfil con vista previa privada tiene un overflow a 768 px encontrado por una suite ajena al diagnóstico y queda documentado como follow-up. Detalle en `TESTING.md`.
-- Lectura de D1/Worker en staging y producción autorizada por el usuario, pero no ejecutada: falta autenticación Wrangler y no hay Cloudflare MCP disponible. Sin escrituras remotas, migración, deploy, activación de flags ni HTTP pública fechada.
+- Preflight D1/Worker remoto read-only tras OAuth: staging `0000–0009`, producción `0000–0010`; se registraron bookmarks, tablas y versiones activas en `DATABASE.md`. No se ejecutaron escrituras, migraciones ni deploy. GET anónimo terminó HTTP 000 por `CRYPT_E_REVOCATION_OFFLINE`; publicación no verificada.
 
 ## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-POST-MERGE-P2
 

@@ -2,7 +2,16 @@
 
 ## DIAG-D1-RELEASE-01 — auditoría y runbook de D1 (2026-10-23)
 
-**Resultado: NO-GO para cualquier escritura D1 remota; CODE + TEST local.** El usuario autorizó lectura de staging y producción, pero no se pudo ejecutar: Wrangler no está autenticado y Cloudflare MCP no está disponible. El último estado documentado para `vecidya-prod` es `0000–0010`, pero no demuestra el ledger actual. Nunca se infiere el estado remoto desde los documentos.
+**Resultado: preflight remoto read-only RAN 2026-10-23T20:07Z; NO-GO para escritura D1 o publicación.** Wrangler OAuth quedó autenticado. Los recursos configurados existen en la cuenta Soporte `8a13de3ea584f9055f78565b9860c125`; consultas bajo la otra cuenta no los encontraron. Se consultaron ledger, tablas, info de D1, bookmarks y estado de Worker. Cada query D1 devolvió `rows_written=0`, `changed_db=false`; no se ejecutaron migraciones ni deploy.
+
+| Entorno | Binding / D1 | Ledger remoto | Tablas de aplicación observadas | Bookmark más reciente | Worker activo |
+| --- | --- | --- | ---: | --- | --- |
+| Staging | `DB` / `vecidya-staging` (`d4af6ebc-97c5-42f6-ad3a-51551021e591`) | `0000–0009`; pendientes `0010–0023` | 16 | `000000a2-00000000-0000510d-11214e7e452494055c9de3bae86eaa70` | `vecidya-platform-staging`, versión `c7f7ee8b-e528-42d5-840c-ad7b4c9a9454`, 2026-09-23T17:25Z |
+| Producción | `DB` / `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`) | `0000–0010`; pendientes `0011–0023` | 22 | `000004f3-00000000-0000510d-aeb269208862ec0e0e67cafeedacec28` | `vecidya-platform`, versión `8bf2c1c4-d6cb-47ca-ae74-01de28392d67`, 2026-10-11T03:39Z |
+
+El conteo excluye `d1_migrations` y el objeto interno `_cf_KV`. Producción contiene las tablas de licencias introducidas en 0010; staging todavía no. Staging tampoco contiene el conjunto de tablas incorporadas en 0011–0021. No se leyeron filas de negocio, PII, correos, informes, tokens ni valores de secretos. `wrangler.jsonc` fija funnel y dos switches de purga en `false` y no programa Cron en staging, pero no se leyeron los valores efectivos del Worker desplegado. Wrangler advirtió que el binding raíz `ratelimits` no se hereda a staging.
+
+**Gates que mantienen NO-GO:** ambos ledgers están por debajo de `0023`; los Workers activos son antiguos; antes de aplicar 0019 debe probarse que ningún Worker activo o en vuelo consulta `diagnostic_report_access.first_opened_at` (columna retirada por 0019); los switches remotos efectivos no se verificaron; y el GET público anónimo devolvió HTTP `000` por `CRYPT_E_REVOCATION_OFFLINE` de Windows Schannel. No se desactivó la validación TLS ni se acepta esta respuesta como evidencia HTTP. No hay estado de publicación certificado.
 
 ### Matriz de migraciones versionadas
 
@@ -38,10 +47,10 @@ Ledger observado y cadena exacta esperada deben contrastarse como dos evidencias
 
 | Gate | Staging | Producción |
 | --- | --- | --- |
-| Identidad y preflight | Confirmar explícitamente cuenta, binding/ID, entorno, versión del D1 storage, SHA de Worker desplegado y ledger real; inspeccionar esquema/índices/filas solo con autorización de lectura. | Repetir el mismo preflight para el objetivo explícito. La evidencia de staging no se extrapola. |
+| Identidad y preflight | Confirmados: cuenta Soporte, `DB=vecidya-staging`, ID y Worker arriba; ledger `0000–0009`; bookmark arriba. | Confirmados: cuenta Soporte, `DB=vecidya-prod`, ID y Worker arriba; ledger `0000–0010`; bookmark arriba. Evidencia independiente de staging. |
 | Compatibilidad | Confirmar que el Worker activo no consulta `diagnostic_report_access.first_opened_at`; probar la versión nueva en local con flags cerrados. Staging conserva `EMAIL_PROVIDER=fake`, flags funnel/purga `false` y no tiene Cron. | Abortar si no se identifica el Worker activo o si lee la columna retirada en 0019. Mantener el Worker anterior durante el cambio solo si esa compatibilidad está demostrada; Wrangler advierte que D1 puede no estar disponible durante cada aplicación. |
 | Backup | Capturar y guardar el bookmark inmediato de Time Travel; comprobar `version: production`. Preparar además export/copia fuera de la base si la política de recuperación lo exige. | Repetir antes de operar. Registrar persona operadora, hora UTC, ID del target, bookmark y destino de copia sin incluir PII en el PR. |
-| Aplicación | Solo tras autorización separada: usar `DB --remote --env staging`, verificando el target `vecidya-staging`; aplicar únicamente las migraciones realmente pendientes tras inspección. | La base sin `--env` corresponde a `vecidya-prod`; no usar `--env production`. Escrituras requieren aprobación explícita separada y ventana acordada. |
+| Aplicación | Pendientes según ledger `0010–0023`. No ejecutar aún: resolver compatibilidad Worker/0019 y obtener autorización explícita de escritura. Target Wrangler: `DB --remote --env staging`. | Pendientes `0011–0023`. No ejecutar aún: staging y su preflight no sustituyen aprobación explícita de producción; acordar además ventana/rollback. Target Wrangler: `DB --remote` (no existe `--env production`). |
 | Postflight | Comprobar ledger/schema/índices/FK/conteos y módulos MiniWeb/Auth/licencias/Admin/Diagnóstico con flag cerrado y correo fake. Confirmar que staging sigue sin Cron. | Comprobar ledger/schema/FK/conteos, health, rutas previas y gates false. Verificar que cron `scheduled()` con gates cerrados no borra. No abrir gates en este checkpoint. |
 
 **Abortar** ante target ambiguo, ledger/esquema distinto, filas huérfanas, backup/bookmark no verificable, Worker que dependa de columna retirada, error en cualquier migración, checks de postflight fallidos, o migración no prevista. Wrangler revierte la sentencia fallida, pero migraciones anteriores exitosas pueden seguir aplicadas: registrar el ledger parcial y no repetir a ciegas.
@@ -52,9 +61,9 @@ Ledger observado y cadena exacta esperada deben contrastarse como dos evidencias
 
 ### Autorizaciones pendientes exactas
 
-1. **Lectura remota autorizada, pendiente por autenticación:** inspeccionar D1 staging y producción, versión/ledger/schema/conteos no sensibles, bookmark y SHA del Worker. El bloqueo actual es falta de sesión Wrangler/MCP; esta autorización no permite escribir.
-2. Aprobación separada para aplicar 0011–0021 en **staging remoto**, solo tras preflight exacto y backup/bookmark.
-3. Aprobación separada para aplicar en **producción**, después de staging, con target y ventana identificados; no se deriva de aprobar staging.
+1. **Lectura remota autorizada y completada** el 2026-10-23T20:07Z; no permite escribir. Falta resolver compatibilidad de Worker con 0019 y obtener smoke HTTP verificable con TLS válido.
+2. Aprobación separada para aplicar 0010–0023 en **staging remoto**, solo tras preflight exacto, backup/bookmark inmediato, plan de compatibilidad del Worker y ventana.
+3. Aprobación separada para aplicar 0011–0023 en **producción**, después de staging, con target y ventana identificados; no se deriva de aprobar staging.
 4. Autorización separada de despliegue si el release la necesita. Ninguna de las anteriores habilita funnel, Cron, correo real o flags.
 5. Para abrir el funnel/purga: aprobación de privacidad/retención, excepciones y backlog, seguida de autorización operativa explícita para cada switch y entorno.
 
