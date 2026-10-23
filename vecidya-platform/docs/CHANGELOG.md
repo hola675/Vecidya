@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001 (certificación local)
+
+- Se integra como base PR #39 por `475880bdbdc20922c92177478efaef793168ee15` y se implementa un snapshot público versionado con perfil, horarios y composición MiniWeb. Los cambios se guardan como borrador hasta publicar; revisión CAS/token protege escrituras concurrentes y la publicación actualiza la versión pública en un batch D1.
+- Se agregan migraciones `0022` y `0023`; los perfiles legacy se materializan al escribir, sin backfill global. El público usa una sola versión coherente y un snapshot corrupto falla cerrado.
+- Verificación local: migraciones `0000–0023` en D1 aislada, E2E MiniWeb 37/37, unitarias 1651/1651, typecheck, build y diff-check PASS. Sin deploy, D1 remota ni HTTP público fechado. APP-MINI-02B espera la integración de este checkpoint y deberá ampliar el snapshot para ofertas/FAQ.
+
 ## 2026-10-22 — PLATFORM-ADMIN-GLOBAL (certificación focal y concurrencia)
 
 - Se corrigen carreras de reenvío contra aceptación, revocación y cambio de estado, que podían reabrir un lifecycle ya activo o registrar auditorías sin una transición aplicada. Los writes y sus auditorías ahora dependen del compare-and-set que ganó en D1; cambios de rol también exigen el rol anterior observado.

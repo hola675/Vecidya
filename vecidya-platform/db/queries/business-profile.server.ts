@@ -1,8 +1,9 @@
-import { and, asc, eq, getTableColumns, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
+import { and, asc, eq, getTableColumns, isNull, ne, or, sql } from "drizzle-orm";
 
 import type { Database } from "../client.server";
-import { businessProfile, businessProfileGovernance, member, billingAccount, organizationLicense, platformOrganizationLifecycle } from "../schema";
+import { businessProfile, businessProfileGovernance, businessProfilePublication, member, billingAccount, organizationLicense, platformOrganizationLifecycle } from "../schema";
 import { getBusinessProfilePublicationIssues } from "../business-profile-rules";
+import { commitBusinessDraftMutation, ensureLegacyBusinessPublicationSnapshot, parseBusinessPublicationSnapshot } from "./business-publication.server";
 
 const notSuspended = or(
   isNull(businessProfileGovernance.id),
@@ -66,15 +67,18 @@ export async function getBusinessProfileForOrganization(
 }
 
 export async function getPublishedBusinessProfileBySlug(database: Database, slug: string) {
-  const [profile] = await database
+  const [row] = await database
     .select({
       ...getTableColumns(businessProfile),
       verificationStatus: businessProfileGovernance.verificationStatus,
+      snapshotJson: businessProfilePublication.snapshotJson,
+      snapshotSchemaVersion: businessProfilePublication.snapshotSchemaVersion,
     })
     .from(businessProfile)
     .leftJoin(businessProfileGovernance, eq(businessProfileGovernance.businessProfileId, businessProfile.id))
+    .leftJoin(businessProfilePublication, eq(businessProfilePublication.organizationId, businessProfile.organizationId))
     .where(and(
-      eq(businessProfile.slug, slug),
+      or(eq(businessProfile.slug, slug), eq(businessProfilePublication.publishedSlug, slug)),
       eq(businessProfile.status, "published"),
       notSuspended,
       organizationNotSuspended,
@@ -82,69 +86,63 @@ export async function getPublishedBusinessProfileBySlug(database: Database, slug
     ))
     .limit(1);
 
-  if (!profile) return null;
-  return { ...profile, verificationStatus: profile.verificationStatus ?? "unverified" };
+  if (!row) return null;
+  const snapshot = parseBusinessPublicationSnapshot(row.snapshotJson, row.snapshotSchemaVersion);
+  if ((row.snapshotJson !== null || row.snapshotSchemaVersion !== null) && !snapshot) return null;
+  if (snapshot && snapshot.profile.slug !== slug) return null;
+  return {
+    ...row,
+    ...(snapshot?.profile ?? {}),
+    verificationStatus: row.verificationStatus ?? "unverified",
+    publicationSnapshot: snapshot,
+  };
 }
 
 export type PublishedBusinessProfileFilters = { q?: string; category?: string; city?: string };
 
-function escapeLikePattern(value: string) {
-  return value.replace(/[\\%_]/g, "\\$&");
-}
-
 export async function listPublishedBusinessProfiles(database: Database, filters: PublishedBusinessProfileFilters = {}) {
-  const search = filters.q ? escapeLikePattern(filters.q) : undefined;
-
-  return database
+  const rows = await database
     .select({
-      slug: businessProfile.slug,
-      displayName: businessProfile.displayName,
-      shortDescription: businessProfile.shortDescription,
-      category: businessProfile.category,
-      city: businessProfile.city,
-      country: businessProfile.country,
-      logoUrl: businessProfile.logoUrl,
+      ...getTableColumns(businessProfile),
+      snapshotJson: businessProfilePublication.snapshotJson,
+      snapshotSchemaVersion: businessProfilePublication.snapshotSchemaVersion,
     })
     .from(businessProfile)
     .leftJoin(businessProfileGovernance, eq(businessProfileGovernance.businessProfileId, businessProfile.id))
+    .leftJoin(businessProfilePublication, eq(businessProfilePublication.organizationId, businessProfile.organizationId))
     .where(and(
       eq(businessProfile.status, "published"),
       notSuspended,
       organizationNotSuspended,
       hasActiveOwnerLicense,
-      search ? sql`${businessProfile.displayName} LIKE ${`%${search}%`} ESCAPE '\\'` : undefined,
-      filters.category ? eq(businessProfile.category, filters.category) : undefined,
-      filters.city ? eq(businessProfile.city, filters.city) : undefined,
     ))
     .orderBy(asc(businessProfile.displayName), asc(businessProfile.slug));
+  const search = filters.q ? filters.q.toLocaleLowerCase() : undefined;
+  return rows.flatMap((row) => {
+    const snapshot = parseBusinessPublicationSnapshot(row.snapshotJson, row.snapshotSchemaVersion);
+    if ((row.snapshotJson !== null || row.snapshotSchemaVersion !== null) && !snapshot) return [];
+    const profile = snapshot?.profile ?? row;
+    if (filters.category && profile.category !== filters.category) return [];
+    if (filters.city && profile.city !== filters.city) return [];
+    if (search && !profile.displayName.toLocaleLowerCase().includes(search)) return [];
+    return [{
+      slug: profile.slug,
+      displayName: profile.displayName,
+      shortDescription: profile.shortDescription,
+      category: profile.category,
+      city: profile.city,
+      country: profile.country,
+      logoUrl: profile.logoUrl,
+    }];
+  }).sort((left, right) => left.displayName.localeCompare(right.displayName) || left.slug.localeCompare(right.slug));
 }
 
 export async function getPublishedBusinessProfileFilterOptions(database: Database) {
-  const [categories, cities] = await Promise.all([
-    database.selectDistinct({ value: businessProfile.category }).from(businessProfile).leftJoin(businessProfileGovernance, eq(businessProfileGovernance.businessProfileId, businessProfile.id)).where(and(eq(businessProfile.status, "published"), notSuspended, organizationNotSuspended, hasActiveOwnerLicense, isNotNull(businessProfile.category), ne(businessProfile.category, ""))).orderBy(asc(businessProfile.category)),
-    database.selectDistinct({ value: businessProfile.city }).from(businessProfile).leftJoin(businessProfileGovernance, eq(businessProfileGovernance.businessProfileId, businessProfile.id)).where(and(eq(businessProfile.status, "published"), notSuspended, organizationNotSuspended, hasActiveOwnerLicense, isNotNull(businessProfile.city), ne(businessProfile.city, ""))).orderBy(asc(businessProfile.city)),
-  ]);
-  return { categories: categories.map(({ value }) => value).filter((value): value is string => value !== null), cities: cities.map(({ value }) => value).filter((value): value is string => value !== null) };
-}
-
-export async function publishBusinessProfileForOrganization(
-  database: Database,
-  organizationId: string,
-) {
-  const currentProfile = await getBusinessProfileForOrganization(database, organizationId);
-  if (!currentProfile) return null;
-
-  const issues = getBusinessProfilePublicationIssues(currentProfile);
-  if (issues.length) {
-    throw new Response(`Completa estos campos antes de publicar: ${issues.join(", ")}.`, { status: 400 });
-  }
-
-  const [profile] = await database
-    .update(businessProfile)
-    .set({ status: "published" })
-    .where(eq(businessProfile.organizationId, organizationId))
-    .returning();
-  return profile ?? null;
+  const profiles = await listPublishedBusinessProfiles(database);
+  return {
+    categories: [...new Set(profiles.map(({ category }) => category).filter((value): value is string => Boolean(value)))].sort(),
+    cities: [...new Set(profiles.map(({ city }) => city).filter((value): value is string => Boolean(value)))].sort(),
+  };
 }
 
 async function assertBusinessProfileSlugAvailable(
@@ -163,16 +161,26 @@ async function assertBusinessProfileSlugAvailable(
   if (existing) {
     throw new Response("El slug ya está en uso por otro perfil publicado o borrador.", { status: 400 });
   }
+  const publishedSlug = await database.query.businessProfilePublication.findFirst({
+    where: and(
+      eq(businessProfilePublication.publishedSlug, slug),
+      ne(businessProfilePublication.organizationId, organizationId),
+    ),
+    columns: { organizationId: true },
+  });
+  if (publishedSlug) throw new Response("El slug ya está reservado por otro perfil publicado.", { status: 400 });
 }
 
 export async function saveBusinessProfileForOrganization(
   database: Database,
   organizationId: string,
   profile: BusinessProfileInput,
+  expectedRevision: number,
 ) {
   await assertBusinessProfileSlugAvailable(database, organizationId, profile.slug);
 
   const existing = await getBusinessProfileForOrganization(database, organizationId);
+  await ensureLegacyBusinessPublicationSnapshot(database, organizationId);
 
   if (existing?.status === "published") {
     const issues = getBusinessProfilePublicationIssues(profile);
@@ -181,18 +189,24 @@ export async function saveBusinessProfileForOrganization(
     }
   }
 
-  if (existing) {
-    const [updated] = await database
-      .update(businessProfile)
-      .set(profile)
-      .where(eq(businessProfile.organizationId, organizationId))
-      .returning();
-    return updated;
-  }
-
-  const [created] = await database
-    .insert(businessProfile)
-    .values({ id: crypto.randomUUID(), organizationId, ...profile, status: "draft" })
-    .returning();
-  return created;
+  const fieldColumns: Record<keyof BusinessProfileInput, string> = {
+    displayName: "display_name", slug: "slug", shortDescription: "short_description", description: "description",
+    category: "category", city: "city", country: "country", phone: "phone", publicEmail: "public_email",
+    websiteUrl: "website_url", logoUrl: "logo_url", whatsapp: "whatsapp", instagramUrl: "instagram_url",
+    facebookUrl: "facebook_url", linkedinUrl: "linkedin_url", serviceMode: "service_mode", serviceArea: "service_area",
+  };
+  const fields = Object.keys(fieldColumns) as (keyof BusinessProfileInput)[];
+  const columns = fields.map((key) => fieldColumns[key]);
+  const values = fields.map((key) => profile[key]);
+  const profileId = crypto.randomUUID();
+  const now = Date.now();
+  await commitBusinessDraftMutation(database, organizationId, expectedRevision, (revision, token) => [existing
+    ? database.$client.prepare(`UPDATE business_profile SET ${columns.map((column) => `${column} = ?`).join(", ")}
+        WHERE organization_id = ? AND EXISTS (SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?)`)
+      .bind(...values, organizationId, organizationId, revision, token)
+    : database.$client.prepare(`INSERT INTO business_profile (id, organization_id, ${columns.join(", ")}, status, created_at, updated_at)
+        SELECT ?, ?, ${columns.map(() => "?").join(", ")}, 'draft', ?, ?
+        WHERE EXISTS (SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?)`)
+      .bind(profileId, organizationId, ...values, now, now, organizationId, revision, token)]);
+  return getBusinessProfileForOrganization(database, organizationId);
 }

@@ -22,7 +22,7 @@ El Diagnóstico mantiene exclusivamente `diagnostic-dev-inbox.server.ts` para ve
 
 ## PLATFORM-ADMIN-GLOBAL — contrato aprobado e implementación local (2026-10-22)
 
-**Estado al 2026-10-22:** implementación local en `feat/app-mini-platform-admin-global`; no certificada ni publicada. El usuario aprobó la invitación propia descrita aquí. La UI interna permite alta de organización, reenvío/revocación de invitación, suspensión/reactivación de organizaciones con ciclo vigente, cambios de rol `admin|member`, edición JSON de configuración MiniWeb y publicación explícita, además de capacitación. Staff conserva lectura. `closed`, transferencia/eliminación de owner y cambio de roles owner siguen deshabilitados.
+**Estado actualizado al 2026-10-23:** el PR #39 se integró en `origin/main` por `475880bdbdc20922c92177478efaef793168ee15`. La certificación local y el gate de correo real están en `STATUS.md`/`TESTING.md`; el correo real sigue diferido al release y no se declara verificado. El usuario aprobó la invitación propia descrita aquí. La UI interna permite alta de organización, reenvío/revocación de invitación, suspensión/reactivación de organizaciones con ciclo vigente, cambios de rol `admin|member`, edición JSON de configuración MiniWeb y publicación explícita, además de capacitación. Staff conserva lectura. `closed`, transferencia/eliminación de owner y cambio de roles owner siguen deshabilitados.
 
 **Onboarding propio aprobado:** Better Auth `createInvitation` exige membership del actor, así que el platform admin no se hace pasar por owner. `platform_owner_invitation` guarda digest SHA-256 de un token aleatorio, correo normalizado, expiración de siete días, estado y un identificador de consumo. La aceptación usa D1 `batch` con sentencias condicionales para consumir una sola vez, insertar la membership owner, activar el ciclo y auditar; exige sesión, correo idéntico y verificado. El token no se registra. El correo pasa por el adaptador transaccional actual y el panel distingue proveedor aceptado, simulación y envío no confirmado. La ruta de alta prepara token e invitación en la misma URL protegida; no crea contraseña para el destinatario.
 
@@ -121,7 +121,7 @@ Los tokens de invitación de owner se proponen como extensión acotada de la tab
 | Capacitación contenido retirado | Slug histórico queda como unavailable; no reemplazo de contenido ni autoría duplicada |
 | Publicación accidental | Separar write/publish; solo acción explícita, consentimiento operativo y guards estado publicado/suspendido existentes |
 
-Pendientes de cierre: certificación de seguridad/concurrencia del alta y aceptación, E2E focal, control de cambios de rol en runtime, revisión del editor JSON administrativo de MiniWeb y política de retención. La asignación usa slug editorial existente; las correcciones internas requieren motivo y quedan en historial/auditoría. `closed`, transferencia/eliminación de owner y auditoría de lecturas no se implementan. No iniciar APP-MINI-02B hasta integrar y cerrar PLATFORM-ADMIN-GLOBAL.
+La asignación usa slug editorial existente; las correcciones internas requieren motivo y quedan en historial/auditoría. `closed`, transferencia/eliminación de owner y auditoría de lecturas no se implementan. La certificación de correo real es un gate separado de release. APP-CLIENTE-00-PUBLISH-001 establece la frontera común de publicación antes de APP-MINI-02B.
 
 
 ## APP-MINI-00 — contrato de aplicación cliente y minisitio (2026-10-12)
@@ -210,8 +210,9 @@ mantiene los guards de publicado/no suspendido, slug y canonical/SEO. Los
 renderers no copian datos de `business_profile`, `business_hours` ni
 `business_profile_governance`. El módulo `location` usa contexto existente;
 `organization_service` sigue reservado a servicios Vecidya contratados.
-Un snapshot publicado corrupto o de versión inválida falla cerrado a `hero`;
-solo el estado explícito sin snapshot usa el default virtual legacy.
+El snapshot estructural inválido falla cerrado a `hero`; en el snapshot
+completo de publicación el parser inválido oculta el perfil público. Solo la
+ausencia explícita de un snapshot completo conserva la lectura virtual legacy.
 Categoría, oferta comercial (`business_offering`, requerida para 02B) y servicio
 Vecidya son conceptos distintos. Para 02E se deben poder proyectar categoría,
 especialidades/tags, ubicación/área/modalidad, ofertas públicas y módulos
@@ -232,29 +233,26 @@ Las tablas temporales se retiraron tras las pruebas; el ledger local aún report
 0016/0017 pendientes, por lo que `migrations apply` debe reconciliar la cadena
 antes de otro uso de D1 local.
 
-**Límite de publicación que 02B debe resolver:** el snapshot de 02A separa la
-configuración de módulos, no versiona el contenido de `business_profile` ni los
-futuros contenidos estructurados. El comportamiento de edición/publicación de
-esos datos sigue siendo el existente; antes de añadir ofertas/FAQ en 02B se debe
-decidir si el MiniWeb necesita un snapshot público completo que permita editar
-sin exposición parcial. No presentar el snapshot estructural de 02A como una
-solución completa de publicación de contenido ni crear historial de revisiones
-sin necesidad demostrada.
+**APP-CLIENTE-00-PUBLISH-001 (2026-10-23):** `business_profile_publication`
+mantiene revisión del borrador, versión pública, slug publicado, versión del
+schema y un snapshot JSON allowlisted con perfil, horarios y configuración
+MiniWeb. `/vecindario/:slug`, listados y filtros leen esa misma versión; los
+cambios de perfil, horarios y composición quedan como borrador hasta publicar.
+La publicación valida licencia y campos requeridos, incrementa versión/revisión
+y actualiza estado público y auditoría en un batch D1 atómico. Un CAS por
+revisión y token aleatorio de escritura hace que los guardados concurrentes
+queden ligados al cambio que ganó, incluidos los inserts/borrados asociados.
+El editor MiniWeb, el formulario de perfil y sus API usan revisión esperada y
+responden conflicto `409` si el borrador cambió.
 
-**Consecuencia observada en APP-CLIENTE-00:** `CODE` confirma que guardar un
-perfil cuyo estado ya es `published` actualiza la misma fila preservando ese
-estado; el loader público consume los datos actuales. El E2E local prueba por
-separado que el draft estructural no altera el snapshot hasta `publish` y que
-los módulos desactivados no se renderizan, pero no incluye una aserción de
-regresión específica que edite un campo del perfil ya publicado y lo vuelva a
-leer anónimamente. Por ello el comportamiento del código implica exposición
-inmediata de los datos editados bajo la composición estructural publicada
-anterior, y queda pendiente cubrirlo explícitamente. Las dos acciones no forman
-una transacción ni una versión atómica del sitio entero. Antes de APP-MINI-02B,
-especificar y probar una única frontera pública coherente para contenido y
-composición, incluyendo preview, concurrencia, rollback/versionado si es
-necesario y comportamiento de perfiles legacy. Esta recomendación no autoriza
-cambiar el modelo en APP-CLIENTE-00.
+Los perfiles legacy se materializan al guardar o publicar, sin backfill masivo;
+la lectura pública con snapshot ausente conserva su ruta legacy y un snapshot
+presente inválido falla cerrado. Las operaciones tenant conservan sesión,
+membership, permiso y organización explícita; publicación interna conserva su
+auditoría. E2E local cubre draft frente a publicación, perfil/horarios juntos,
+revisión obsoleta, aislamiento, licencia y snapshot corrupto. Este contrato
+cubre el contenido actual de perfil/horarios/MiniWeb; las ofertas y FAQ de 02B
+deberán incorporarse explícitamente al mismo mecanismo si se publican allí.
 
 APP-MINI-03 debe exponer estados/derechos reales sin pagos automáticos.
 GHL-BARRIO-01 es independiente y no empieza sin cuenta, permisos/scopes reales

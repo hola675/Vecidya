@@ -1,9 +1,10 @@
 import { and, asc, eq } from "drizzle-orm";
 
 import type { Database } from "../client.server";
-import { miniWebModule, miniWebSite, platformAuditLog } from "../schema";
+import { miniWebModule, miniWebSite } from "../schema";
 import type { BusinessHoursEntry } from "./business-hours.server";
 import { getBusinessProfileForOrganization } from "./business-profile.server";
+import { commitBusinessDraftMutation, ensureLegacyBusinessPublicationSnapshot, getBusinessDraftRevision, publishBusinessPublicationForOrganization } from "./business-publication.server";
 import {
   buildSafeMiniWebConfiguration,
   buildVirtualMiniWebConfiguration,
@@ -99,8 +100,10 @@ export async function saveMiniWebConfigurationForOrganization(
   hours: readonly BusinessHoursEntry[],
   draftInput: unknown,
   audit?: { actorUserId: string },
+  expectedRevision?: number,
 ) {
   const configuration = validateMiniWebDraft(draftInput);
+  await ensureLegacyBusinessPublicationSnapshot(database, organizationId);
   let site = await database.query.miniWebSite.findFirst({
     where: eq(miniWebSite.organizationId, organizationId),
   });
@@ -125,34 +128,28 @@ export async function saveMiniWebConfigurationForOrganization(
   }
 
   const now = new Date();
-  const statements = [
-    database.update(miniWebSite).set({
-      templateKey: configuration.templateKey,
-      templateVersion: configuration.templateVersion,
-      layoutVariant: configuration.layoutVariant,
-      updatedAt: now,
-    }).where(and(eq(miniWebSite.id, site.id), eq(miniWebSite.organizationId, organizationId))),
-    database.delete(miniWebModule).where(eq(miniWebModule.miniWebSiteId, site.id)),
-    database.insert(miniWebModule).values(configuration.modules.map((module) => ({
-      id: crypto.randomUUID(),
-      miniWebSiteId: site.id,
-      moduleType: module.type,
-      moduleVersion: module.moduleVersion,
-      enabled: module.enabled,
-      sortOrder: module.sortOrder,
-      layoutVariant: module.layoutVariant,
-      settingsJson: null,
-      createdAt: now,
-      updatedAt: now,
-    }))),
-  ] as const;
-  if (audit) {
-    await database.batch([...statements, database.insert(platformAuditLog).values({
-      id: crypto.randomUUID(), actorUserId: audit.actorUserId, action: "organization.miniweb.save", entityType: "miniweb_site", entityId: site.id, organizationId,
-      previousValue: null, newValue: JSON.stringify({ templateKey: configuration.templateKey, modules: configuration.modules.map(({ type, enabled, sortOrder }) => ({ type, enabled, sortOrder })) }), metadata: null, createdAt: now,
-    })]);
-  } else await database.batch(statements);
-  return configuration;
+  const currentRevision = expectedRevision ?? await getBusinessDraftRevision(database, organizationId);
+  const statements = (nextRevision: number, token: string) => [
+    database.$client.prepare(`UPDATE miniweb_site SET template_key = ?, template_version = ?, layout_variant = ?, updated_at = ?
+      WHERE id = ? AND organization_id = ? AND EXISTS (SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?)`)
+      .bind(configuration.templateKey, configuration.templateVersion, configuration.layoutVariant, now.getTime(), site.id, organizationId, organizationId, nextRevision, token),
+    database.$client.prepare(`DELETE FROM miniweb_module WHERE miniweb_site_id = ? AND EXISTS (
+      SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?
+    )`).bind(site.id, organizationId, nextRevision, token),
+    database.$client.prepare(`INSERT INTO miniweb_module
+      (id, miniweb_site_id, module_type, module_version, enabled, sort_order, layout_variant, settings_json, created_at, updated_at)
+      ${configuration.modules.map(() => "SELECT ?, ?, ?, ?, ?, ?, ?, NULL, ?, ? WHERE EXISTS (SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?)").join(" UNION ALL ")}`)
+      .bind(...configuration.modules.flatMap((module) => [crypto.randomUUID(), site.id, module.type, module.moduleVersion, module.enabled ? 1 : 0, module.sortOrder, module.layoutVariant, now.getTime(), now.getTime(), organizationId, nextRevision, token])),
+    ...(audit ? [database.$client.prepare(`INSERT INTO platform_audit_log
+      (id, actor_user_id, action, entity_type, entity_id, organization_id, previous_value, new_value, metadata, created_at)
+      SELECT ?, ?, ?, ?, ?, ?, NULL, ?, NULL, ?
+      WHERE EXISTS (SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?)`).bind(
+        crypto.randomUUID(), audit.actorUserId, "organization.miniweb.save", "miniweb_site", site.id, organizationId,
+        JSON.stringify({ templateKey: configuration.templateKey, modules: configuration.modules.map(({ type, enabled, sortOrder }) => ({ type, enabled, sortOrder })) }), now.getTime(), organizationId, nextRevision, token,
+      )] : []),
+  ];
+  const state = await commitBusinessDraftMutation(database, organizationId, currentRevision, statements);
+  return { configuration, draftRevision: state.draftRevision };
 }
 
 export async function publishMiniWebConfigurationForOrganization(
@@ -162,22 +159,7 @@ export async function publishMiniWebConfigurationForOrganization(
   hours: readonly BusinessHoursEntry[],
   audit?: { actorUserId: string },
 ) {
-  let state = await getMiniWebConfigurationForOrganization(database, organizationId, profile, hours);
-  if (!state.site) {
-    await saveMiniWebConfigurationForOrganization(database, organizationId, profile, hours, state.draftConfiguration);
-    state = await getMiniWebConfigurationForOrganization(database, organizationId, profile, hours);
-  }
-  if (!state.site) throw new Error("No se pudo inicializar la configuración MiniWeb para publicar.");
-
-  const publishedConfigurationJson = serializeMiniWebConfiguration(state.draftConfiguration);
-  const now = new Date();
-  const update = database.update(miniWebSite)
-    .set({ publishedConfigurationJson, updatedAt: now })
-    .where(and(eq(miniWebSite.id, state.site.id), eq(miniWebSite.organizationId, organizationId)));
-  if (audit) await database.batch([update, database.insert(platformAuditLog).values({
-    id: crypto.randomUUID(), actorUserId: audit.actorUserId, action: "organization.miniweb.publish", entityType: "miniweb_site", entityId: state.site.id, organizationId,
-    previousValue: null, newValue: JSON.stringify({ templateKey: state.draftConfiguration.templateKey, modules: state.draftConfiguration.modules.map(({ type, enabled, sortOrder }) => ({ type, enabled, sortOrder })) }), metadata: null, createdAt: now,
-  })]);
-  else await update;
-  return state.draftConfiguration;
+  const revision = await getBusinessDraftRevision(database, organizationId);
+  await publishBusinessPublicationForOrganization(database, organizationId, revision, audit);
+  return (await getMiniWebConfigurationForOrganization(database, organizationId, profile, hours)).draftConfiguration;
 }

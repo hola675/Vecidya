@@ -22,7 +22,8 @@ function executeD1(sql) {
   const file = join(directory, "step.sql");
   writeFileSync(file, sql, "utf8");
   const wranglerCli = fileURLToPath(import.meta.resolve("wrangler"));
-  const result = spawnSync(process.execPath, [wranglerCli, "d1", "execute", "DB", "--local", "--json", "--file", file], { cwd: process.cwd(), encoding: "utf8", windowsHide: true });
+  const persistArgs = process.env.VECIDYA_E2E_PERSIST_TO ? ["--persist-to", process.env.VECIDYA_E2E_PERSIST_TO] : [];
+  const result = spawnSync(process.execPath, [wranglerCli, "d1", "execute", "DB", "--local", ...persistArgs, "--json", "--file", file], { cwd: process.cwd(), encoding: "utf8", windowsHide: true });
   rmSync(directory, { recursive: true, force: true });
   harness(result.status === 0, `D1 local falló: ${result.stderr}`);
   return JSON.parse(result.stdout).flatMap((statement) => statement.results ?? []);
@@ -43,6 +44,7 @@ async function d1(sql) {
 
 class SessionClient {
   #cookies = new Map();
+  #draftRevisions = new Map();
   async fetch(path, options = {}) {
     const headers = new Headers(options.headers);
     headers.set("origin", baseUrl);
@@ -56,7 +58,19 @@ class SessionClient {
     return response;
   }
   json(path, body, method = "POST", extraHeaders = {}) {
-    return this.fetch(path, { method, headers: { "content-type": "application/json", ...extraHeaders }, body: method === "GET" ? undefined : JSON.stringify(body) });
+    const isMiniWeb = path.includes("/miniweb-config");
+    const payload = isMiniWeb && body && body.draftRevision === undefined
+      ? { ...body, draftRevision: this.#draftRevisions.get(path) ?? 0 }
+      : body;
+    return this.fetch(path, { method, headers: { "content-type": "application/json", ...extraHeaders }, body: method === "GET" ? undefined : JSON.stringify(payload) }).then(async (response) => {
+      if (isMiniWeb) {
+        try {
+          const result = await response.clone().json();
+          if (Number.isInteger(result.draftRevision)) this.#draftRevisions.set(path, result.draftRevision);
+        } catch {}
+      }
+      return response;
+    });
   }
   cookies() {
     return [...this.#cookies.entries()].map(([name, value]) => ({ name, value }));
@@ -159,7 +173,14 @@ try {
   check((await ownerA.client.json(pathB, { intent: "save", configuration: initial.draftConfiguration })).status === 403, "la organización A no puede escribir la configuración de B");
 
   const invalidTemplate = { ...initial.draftConfiguration, templateKey: "custom-html" };
-  check((await ownerA.client.json(pathA, { intent: "save", configuration: invalidTemplate })).status === 400, "una plantilla arbitraria se rechaza server-side");
+  let invalidTemplateResponse = await ownerA.client.json(pathA, { intent: "save", configuration: invalidTemplate });
+  let invalidTemplateResponseBody = await invalidTemplateResponse.clone().text();
+  if (invalidTemplateResponse.status >= 500 && invalidTemplateResponseBody.includes("Network connection lost")) {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    invalidTemplateResponse = await ownerA.client.json(pathA, { intent: "save", configuration: invalidTemplate });
+    invalidTemplateResponseBody = await invalidTemplateResponse.clone().text();
+  }
+  check(invalidTemplateResponse.status === 400, `una plantilla arbitraria se rechaza server-side (${invalidTemplateResponse.status}: ${invalidTemplateResponseBody.slice(0, 160)})`);
   const invalidModule = {
     ...initial.draftConfiguration,
     modules: [{ type: "products", moduleVersion: 1, enabled: true, sortOrder: 0, layoutVariant: "standard", settings: null }],
@@ -175,10 +196,36 @@ try {
   check((await memberA.client.json(pathA, null, "GET")).status === 200, "member conserva acceso de lectura a la configuración");
   check((await memberA.client.json(pathA, { intent: "save", configuration: draft })).status === 403, "member read-only no puede modificar la configuración");
   check((await ownerA.client.json(pathA, { intent: "save", configuration: draft })).status === 200, "owner puede guardar la configuración draft");
+  const profilePathA = `/api/organizations/${organizationA}/business-profile`;
+  const profileRead = await ownerA.client.json(profilePathA, null, "GET");
+  const profileState = await profileRead.json();
+  const makeProfileForm = (revision, displayName) => {
+    const form = new FormData();
+    for (const key of ["displayName", "slug", "shortDescription", "description", "category", "city", "country", "phone", "publicEmail", "websiteUrl", "logoUrl", "whatsapp", "instagramUrl", "facebookUrl", "linkedinUrl", "serviceMode", "serviceArea"]) {
+      const value = key === "displayName" ? displayName : profileState.profile[key];
+      form.set(key, value ?? "");
+    }
+    form.set("draftRevision", String(revision));
+    return form;
+  };
+  const staleRevision = profileState.draftRevision;
+  const draftName = `Nombre draft ${suffix}`;
+  const profileSave = await ownerA.client.fetch(profilePathA, { method: "POST", body: makeProfileForm(staleRevision, draftName) });
+  check(profileSave.status === 200, `owner puede guardar perfil como borrador (${profileSave.status})`);
+  const staleWrite = await adminA.client.fetch(profilePathA, { method: "POST", body: makeProfileForm(staleRevision, `Nombre stale ${suffix}`) });
+  check(staleWrite.status === 409, "un segundo editor con revisión obsoleta recibe conflicto y no sobrescribe el borrador");
+  const hoursForm = new FormData();
+  hoursForm.set("intent", "save-hours");
+  hoursForm.set("draftRevision", String(staleRevision + 1));
+  hoursForm.set("hours_1_opens", "09:00");
+  hoursForm.set("hours_1_closes", "17:00");
+  const hoursSave = await ownerA.client.fetch("/app/business-profile", { method: "POST", body: hoursForm });
+  check(hoursSave.status === 200, `owner puede guardar horarios como borrador (${hoursSave.status})`);
   const publicBeforePublishResponse = await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`);
   const publicBeforePublish = await publicBeforePublishResponse.text();
   console.log(JSON.stringify({ miniwebPublicBeforePublish: { status: publicBeforePublishResponse.status, url: publicBeforePublishResponse.url, titlePresent: publicBeforePublish.includes(`MiniWeb público A ${suffix}`), descriptionPresent: publicBeforePublish.includes("Descripción A"), emailPresent: publicBeforePublish.includes(`a-${suffix}@example.invalid`), bodyExcerpt: publicBeforePublish.slice(0, 350) } }));
-  check(publicBeforePublish.includes("Descripción A") && publicBeforePublish.includes(`a-${suffix}@example.invalid`), "guardar un draft no altera un MiniWeb ya publicado");
+  check(publicBeforePublish.includes(`MiniWeb público A ${suffix}`) && !publicBeforePublish.includes(draftName), "editar nombre, perfil y MiniWeb conserva la versión pública previa hasta publicar");
+  await adminA.client.json(pathA, null, "GET");
   check((await adminA.client.json(pathA, { intent: "publish" })).status === 200, "admin puede publicar explícitamente la configuración");
 
   const published = await (await ownerA.client.json(pathA, null, "GET")).json();
@@ -190,13 +237,16 @@ try {
 
   const publicAResponse = await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`);
   const publicA = await publicAResponse.text();
+  const snapshotRows = await d1(`SELECT snapshot_json FROM business_profile_publication WHERE organization_id = '${organizationA}';`);
+  const fullSnapshot = JSON.parse(snapshotRows[0].snapshot_json);
   console.log(JSON.stringify({ miniwebPublicAfterPublish: { status: publicAResponse.status, url: publicAResponse.url, titlePresent: publicA.includes(`MiniWeb público A ${suffix}`), bodyExcerpt: publicA.slice(0, 350) } }));
   const publicB = await (await ownerB.client.fetch(`/vecindario/${profileSlug("legacy-b")}`)).text();
-  check(publicA.includes(`MiniWeb público A ${suffix}`), "la página publicada A conserva su slug estable");
+  check(publicA.includes(draftName), "la publicación cambia el perfil y la composición en una sola versión pública");
+  check(fullSnapshot.profile.displayName === draftName && fullSnapshot.hours.some((entry) => entry.dayOfWeek === 1 && entry.opensAt === "09:00") && fullSnapshot.configuration.modules.some((module) => module.type === "hero"), "una versión publicada contiene perfil, horarios y configuración juntos");
   check(!publicA.includes("Descripción A") && !publicA.includes(`a-${suffix}@example.invalid`) && !publicA.includes("Contacto directo"), "los módulos desactivados no aparecen en el sitio público");
-  await d1(`UPDATE miniweb_site SET published_configuration_json = 'not-json' WHERE organization_id = '${organizationA}';`);
-  const corruptedSnapshotPublic = await (await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`)).text();
-  check(corruptedSnapshotPublic.includes(`MiniWeb público A ${suffix}`) && !corruptedSnapshotPublic.includes("Descripción A") && !corruptedSnapshotPublic.includes(`a-${suffix}@example.invalid`), "un snapshot publicado inválido falla cerrado a hero y no reactiva contenido");
+  await d1(`UPDATE business_profile_publication SET snapshot_json = 'not-json' WHERE organization_id = '${organizationA}';`);
+  const corruptedSnapshotResponse = await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`);
+  check(corruptedSnapshotResponse.status === 404, "un snapshot publicado inválido falla cerrado sin mostrar datos inconsistentes");
   check((await ownerA.client.json(pathA, { intent: "publish" })).status === 200, "se puede restaurar explícitamente un snapshot válido desde el draft");
   check(publicB.includes(`MiniWeb legacy B ${suffix}`) && publicB.includes("Descripción B"), "un perfil publicado legacy sin miniweb_site se renderiza con defaults virtuales");
   check(new RegExp(`href=["']https://vecidya\\.com/vecindario/${profileSlug("legacy-b")}(["']|/)`).test(publicB), "el canonical actual de Vecindario se conserva");

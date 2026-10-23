@@ -1,5 +1,11 @@
 # Pruebas
 
+## APP-CLIENTE-00-PUBLISH-001 — certificación local (2026-10-23)
+
+**RAN PASS en Worker + D1 aislada.** Migraciones `0000–0023` aplicadas desde cero. `tests/e2e/miniweb-core-check.mjs`: **37/37**, incluido guardado de perfil/horarios/MiniWeb como draft, rechazo `409` de revisión obsoleta, lectura pública estable antes de publicar y snapshot conjunto después, gate de licencia, aislamiento cross-tenant y cierre `404` al corromper el snapshot canónico. El harness limpió las organizaciones/usuarios de prueba.
+
+`pnpm run test:unit`: **1651/1651**; `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. La cadena de migraciones se validó en la D1 temporal local. El build advierte que faltan secretos Gmail no usados por esta prueba. No se usó correo real, D1 compartida/remota, deploy o HTTP público fechado. No incluye certificación de oferta/FAQ de APP-MINI-02B.
+
 ## PLATFORM-ADMIN-GLOBAL — certificación focal local (2026-10-22)
 
 **RAN PASS en Worker + D1 efímera:** `pnpm run test:e2e:platform-admin-global` aplicó `0000–0021` desde cero y cubrió correo incorrecto; aceptación concurrente con reenvío y también reenvío/revocación exitosos; invitación reutilizada/expirada/revocada; `platform_admin`, `staff`, `owner` y `member`; suspensión/reactivación y acceso de API; una auditoría por transición; cambio concurrente de rol con historial consistente; asignación de Aprende idempotente, corrección motivada y rechazo cross-tenant; MiniWeb guardar/publicar explícito y rechazo a `staff`. La extensión HTTP verificó perfil publicado con licencia activa `200 → 404 → 200` a través de suspender/reactivar; desaparición y recuperación en Vecindario, categoría y ciudad; bloqueo tenant `403 → 200`; contenido, licencia y membresías preservados; organización B visible sin cambios; borrador, gobernanza suspendida, licencia ausente y licencia suspendida devuelven `404`.
