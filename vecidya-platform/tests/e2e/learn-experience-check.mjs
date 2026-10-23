@@ -108,6 +108,17 @@ async function runViewport(width, height) {
     await page.locator(".learn-discovery__chip").filter({ hasText: "Todas" }).click();
     await page.waitForFunction(() => document.querySelectorAll(".learn-guide-list > li").length === 38);
     assert(await page.locator(".learn-guide-list > li").count() === 38, `${label} quitar el filtro no recuperó todas las guías.`);
+
+    await page.goto(new URL("/aprende?q=analitica&tema=Tecnología+explicada", baseUrl).toString(), { waitUntil: "domcontentloaded" });
+    const activeSearch = new URL(page.url()).search;
+    assert(await page.locator(".learn-guide-list > li").count() === 1, `${label} la URL combinada de búsqueda y tema no conserva su resultado.`);
+    for (const [linkName, expectedHash] of [["Seguir un itinerario", "#itinerarios"], ["Explorar temas", "#temas"]]) {
+      await page.locator(".learn-atlas__jump").getByRole("link", { name: linkName }).click();
+      const destination = new URL(page.url());
+      assert(destination.search === activeSearch && destination.hash === expectedHash, `${label} el salto «${linkName}» perdió los filtros activos.`);
+      assert(await page.locator(".learn-guide-list > li").count() === 1, `${label} el salto «${linkName}» restableció el catálogo filtrado.`);
+    }
+    await page.goto(new URL("/aprende", baseUrl).toString(), { waitUntil: "domcontentloaded" });
   }
 
   const articleUrl = new URL((await articleLink.getAttribute("href")), baseUrl).toString();
