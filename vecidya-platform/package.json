@@ -12,6 +12,7 @@
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "test:e2e": "node tests/e2e/run-local-e2e.mjs",
+    "test:e2e:platform-admin-global": "node tests/e2e/platform-admin-global-certification-check.mjs",
     "test:e2e:diagnostic-act03": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/diagnostic-v3-candidate-certification-check.mjs",
     "test:e2e:diagnostic-act04": "node tests/e2e/diagnostic-act-04-check.mjs",
     "test:e2e:diagnostic-act031": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/diagnostic-v3-candidate-session-hardening-check.mjs && node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/diagnostic-v3-candidate-pdf-samples.mjs",

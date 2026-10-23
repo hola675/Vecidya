@@ -59,22 +59,23 @@ export async function replacePlatformOwnerInvitation(database: Database, input: 
   const rawToken = randomToken();
   const digest = await digestToken(rawToken);
   const expiresAt = new Date(now.getTime() + OWNER_INVITATION_TTL_DAYS * 24 * 60 * 60 * 1000);
-  const nextInvitation = database.insert(platformOwnerInvitation).values({
-      id: invitationId, organizationId: input.organizationId, email: lifecycle.intendedOwnerEmail,
-      tokenDigest: digest, status: "pending", expiresAt, createdBy: input.actorUserId,
-      acceptedBy: null, acceptedAt: null, acceptanceId: null, createdAt: now,
-    });
-  const updateLifecycle = database.update(platformOrganizationLifecycle).set({ status: "owner_invited", updatedBy: input.actorUserId, updatedAt: now })
-      .where(eq(platformOrganizationLifecycle.organizationId, input.organizationId));
-  const audit = database.insert(platformAuditLog).values({
-      id: crypto.randomUUID(), actorUserId: input.actorUserId, action: "organization.owner_invitation.replace",
-      entityType: "organization", entityId: input.organizationId, organizationId: input.organizationId,
-      previousValue: previous ? "invited" : lifecycle.status, newValue: "owner_invited",
-      metadata: JSON.stringify({ invitationId }), createdAt: now,
-    });
-  const revoke = previous ? database.update(platformOwnerInvitation).set({ status: "revoked" }).where(eq(platformOwnerInvitation.id, previous.id)) : null;
-  if (revoke) await database.batch([revoke, nextInvitation, updateLifecycle, audit]);
-  else await database.batch([nextInvitation, updateLifecycle, audit]);
+  const statements = [];
+  if (previous) statements.push(database.$client.prepare(
+    "UPDATE platform_owner_invitation SET status = 'revoked' WHERE id = ? AND status = 'pending' AND EXISTS (SELECT 1 FROM platform_organization_lifecycle WHERE organization_id = ? AND status IN ('pending_owner', 'owner_invited'))",
+  ).bind(previous.id, input.organizationId));
+  statements.push(database.$client.prepare(
+    "INSERT INTO platform_owner_invitation (id, organization_id, email, token_digest, status, expires_at, created_by, accepted_by, accepted_at, acceptance_id, created_at) SELECT ?, organization_id, intended_owner_email, ?, 'pending', ?, ?, NULL, NULL, NULL, ? FROM platform_organization_lifecycle WHERE organization_id = ? AND status IN ('pending_owner', 'owner_invited') AND NOT EXISTS (SELECT 1 FROM platform_owner_invitation WHERE organization_id = ? AND status = 'pending')",
+  ).bind(invitationId, digest, expiresAt.getTime(), input.actorUserId, now.getTime(), input.organizationId, input.organizationId));
+  statements.push(database.$client.prepare(
+    "UPDATE platform_organization_lifecycle SET status = 'owner_invited', updated_by = ?, updated_at = ? WHERE organization_id = ? AND status IN ('pending_owner', 'owner_invited') AND EXISTS (SELECT 1 FROM platform_owner_invitation WHERE id = ? AND status = 'pending')",
+  ).bind(input.actorUserId, now.getTime(), input.organizationId, invitationId));
+  statements.push(database.$client.prepare(
+    "INSERT INTO platform_audit_log (id, actor_user_id, action, entity_type, entity_id, organization_id, previous_value, new_value, metadata, created_at) SELECT ?, ?, 'organization.owner_invitation.replace', 'organization', ?, ?, ?, 'owner_invited', ?, ? WHERE changes() = 1",
+  ).bind(crypto.randomUUID(), input.actorUserId, input.organizationId, input.organizationId, previous ? "invited" : lifecycle.status, JSON.stringify({ invitationId }), now.getTime()));
+  const results = await database.$client.batch(statements);
+  const [created] = await database.select({ id: platformOwnerInvitation.id }).from(platformOwnerInvitation)
+    .where(and(eq(platformOwnerInvitation.id, invitationId), eq(platformOwnerInvitation.status, "pending"))).limit(1);
+  if (!created || results.at(-2)?.meta.changes !== 1) throw new Response("La invitación cambió mientras se procesaba; vuelve a intentarlo", { status: 409 });
   return { invitationId, organizationId: input.organizationId, ownerEmail: lifecycle.intendedOwnerEmail, rawToken, expiresAt };
 }
 
@@ -85,15 +86,12 @@ export async function revokePlatformOwnerInvitation(database: Database, input: {
     .where(eq(platformOrganizationLifecycle.organizationId, input.organizationId)).limit(1);
   if (!invitation || !lifecycle || lifecycle.status !== "owner_invited") throw new Response("No hay invitación pendiente", { status: 409 });
   const now = new Date();
-  await database.batch([
-    database.update(platformOwnerInvitation).set({ status: "revoked" }).where(and(eq(platformOwnerInvitation.id, invitation.id), eq(platformOwnerInvitation.status, "pending"))),
-    database.update(platformOrganizationLifecycle).set({ status: "pending_owner", updatedBy: input.actorUserId, updatedAt: now }).where(and(eq(platformOrganizationLifecycle.organizationId, input.organizationId), eq(platformOrganizationLifecycle.status, "owner_invited"))),
-    database.insert(platformAuditLog).values({
-      id: crypto.randomUUID(), actorUserId: input.actorUserId, action: "organization.owner_invitation.revoke",
-      entityType: "organization", entityId: input.organizationId, organizationId: input.organizationId,
-      previousValue: "owner_invited", newValue: "pending_owner", metadata: JSON.stringify({ invitationId: invitation.id }), createdAt: now,
-    }),
+  const results = await database.$client.batch([
+    database.$client.prepare("UPDATE platform_owner_invitation SET status = 'revoked' WHERE id = ? AND status = 'pending' AND EXISTS (SELECT 1 FROM platform_organization_lifecycle WHERE organization_id = ? AND status = 'owner_invited')").bind(invitation.id, input.organizationId),
+    database.$client.prepare("UPDATE platform_organization_lifecycle SET status = 'pending_owner', updated_by = ?, updated_at = ? WHERE organization_id = ? AND status = 'owner_invited' AND EXISTS (SELECT 1 FROM platform_owner_invitation WHERE id = ? AND status = 'revoked')").bind(input.actorUserId, now.getTime(), input.organizationId, invitation.id),
+    database.$client.prepare("INSERT INTO platform_audit_log (id, actor_user_id, action, entity_type, entity_id, organization_id, previous_value, new_value, metadata, created_at) SELECT ?, ?, 'organization.owner_invitation.revoke', 'organization', ?, ?, 'owner_invited', 'pending_owner', ?, ? WHERE changes() = 1").bind(crypto.randomUUID(), input.actorUserId, input.organizationId, input.organizationId, JSON.stringify({ invitationId: invitation.id }), now.getTime()),
   ]);
+  if (results[1]?.meta.changes !== 1) throw new Response("La invitación cambió mientras se procesaba; vuelve a intentarlo", { status: 409 });
 }
 
 export async function getPlatformOwnerInvitation(database: Database, invitationId: string) {
@@ -174,13 +172,9 @@ export async function setPlatformOrganizationStatus(database: Database, input: {
   if (input.status === "active" && !lifecycle.ownerUserId) throw new Response("La organización necesita un propietario aceptado antes de activarse", { status: 409 });
   if (lifecycle.status === input.status) return;
   const now = new Date();
-  await database.batch([
-    database.update(platformOrganizationLifecycle).set({ status: input.status, updatedBy: input.actorUserId, updatedAt: now })
-      .where(and(eq(platformOrganizationLifecycle.organizationId, input.organizationId), eq(platformOrganizationLifecycle.status, lifecycle.status))),
-    database.insert(platformAuditLog).values({
-      id: crypto.randomUUID(), actorUserId: input.actorUserId, action: `organization.${input.status}`,
-      entityType: "organization", entityId: input.organizationId, organizationId: input.organizationId,
-      previousValue: lifecycle.status, newValue: input.status, metadata: null, createdAt: now,
-    }),
+  const results = await database.$client.batch([
+    database.$client.prepare("UPDATE platform_organization_lifecycle SET status = ?, updated_by = ?, updated_at = ? WHERE organization_id = ? AND status = ? AND status IN ('active', 'suspended') AND (? != 'active' OR owner_user_id IS NOT NULL)").bind(input.status, input.actorUserId, now.getTime(), input.organizationId, lifecycle.status, input.status),
+    database.$client.prepare("INSERT INTO platform_audit_log (id, actor_user_id, action, entity_type, entity_id, organization_id, previous_value, new_value, metadata, created_at) SELECT ?, ?, ?, 'organization', ?, ?, ?, ?, NULL, ? WHERE changes() = 1").bind(crypto.randomUUID(), input.actorUserId, `organization.${input.status}`, input.organizationId, input.organizationId, lifecycle.status, input.status, now.getTime()),
   ]);
+  if (results[0]?.meta.changes !== 1) throw new Response("El estado cambió mientras se procesaba; vuelve a intentarlo", { status: 409 });
 }

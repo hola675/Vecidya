@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-22 — PLATFORM-ADMIN-GLOBAL (certificación focal y concurrencia)
+
+- Se corrigen carreras de reenvío contra aceptación, revocación y cambio de estado, que podían reabrir un lifecycle ya activo o registrar auditorías sin una transición aplicada. Los writes y sus auditorías ahora dependen del compare-and-set que ganó en D1; cambios de rol también exigen el rol anterior observado.
+- Se añade `test:e2e:platform-admin-global`: Worker local y D1 efímera desde migración limpia, con casos de invitación, matriz de acceso, ciclo suspensión/reactivación, capacitación, MiniWeb y auditoría. Verificó la limpieza de la D1 temporal; 1645 unitarias, typecheck, build y diff-check PASS.
+- Certificación focal local; sigue abierta la verificación de perfil público suspendido/reactivado y correo/verificación real. Sin D1 compartida/remota, envío real, merge ni deploy. Ver `TESTING.md` y deuda `PLATFORM-ADMIN-GLOBAL-INCOMPLETE`.
+
 ## 2026-10-22 — PLATFORM-ADMIN-GLOBAL (implementación local, sin publicar)
 
 - Guard de lectura para `platform_member` activo; `staff` puede consultar organizaciones y detalles, mientras que las demás áreas internas siguen reservadas a `platform_admin`.

@@ -1,5 +1,13 @@
 # Pruebas
 
+## PLATFORM-ADMIN-GLOBAL — certificación focal local (2026-10-22)
+
+**RAN PASS en Worker + D1 efímera:** `pnpm run test:e2e:platform-admin-global` aplicó `0000–0021` desde cero y cubrió correo incorrecto; aceptación concurrente con reenvío y también reenvío/revocación exitosos; invitación reutilizada/expirada/revocada; `platform_admin`, `staff`, `owner` y `member`; suspensión/reactivación y acceso de API; una auditoría por transición; cambio concurrente de rol con historial consistente; asignación de Aprende idempotente, corrección motivada y rechazo cross-tenant; MiniWeb guardar/publicar explícito y rechazo a `staff`. La salida confirmó 403/404 donde corresponde, owner único tras aceptar, ciclo D1/API coherente, auditorías de lifecycle, invitación, capacitación y MiniWeb.
+
+El harness creó una D1 local bajo `persist-to` único, aplicó migraciones, generó identidades/datos sintéticos, apagó el Worker y verificó que el directorio temporal se eliminara. El correo fue simulado y `email_verified` se preparó directamente en D1; no se probó entrega/verificación real ni la ficha pública con licencia activa. No se usó D1 compartida/remota.
+
+`pnpm run test:unit` pasó 1645/1645; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. Esta evidencia es certificación focal local, no cierre completo del checkpoint: falta recorrer el perfil público publicado al suspender/reactivar y comprobar el flujo de correo/verificación en un proveedor real antes de afirmar esos comportamientos.
+
 ## PLATFORM-ADMIN-GLOBAL — implementación local (2026-10-22)
 
 `pnpm run typecheck`, `pnpm run build`, `git diff --check` y aplicación de migraciones `0000–0021` a D1 local aislada PASS. No se ejecutaron suites automatizadas ni E2E. Pendiente certificar registro/invitación, doble aceptación/reenvío concurrente, guards de tenant al suspender/reactivar, permisos de roles y operaciones MiniWeb con auditoría. No usar pruebas remotas ni correo real en este checkpoint.

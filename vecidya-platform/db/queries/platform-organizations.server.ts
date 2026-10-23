@@ -1,7 +1,7 @@
 import { and, asc, count, eq, ne } from "drizzle-orm";
 
 import type { Database } from "../client.server";
-import { businessProfile, integrationConnection, member, organization, organizationService, platformAuditLog, platformOrganizationLifecycle, serviceCatalog, user } from "../schema";
+import { businessProfile, integrationConnection, member, organization, organizationService, platformOrganizationLifecycle, serviceCatalog, user } from "../schema";
 
 export async function updatePlatformTeamRole(database: Database, input: { organizationId: string; memberId: string; role: "admin" | "member"; actorUserId: string }) {
   const [target] = await database.select({ id: member.id, role: member.role, userId: member.userId }).from(member)
@@ -9,10 +9,11 @@ export async function updatePlatformTeamRole(database: Database, input: { organi
   if (!target) throw new Response("Solo se pueden cambiar roles de miembros admin/member existentes", { status: 404 });
   if (target.role === input.role) return;
   const now = new Date();
-  await database.batch([
-    database.update(member).set({ role: input.role }).where(and(eq(member.id, input.memberId), eq(member.organizationId, input.organizationId), ne(member.role, "owner"))),
-    database.insert(platformAuditLog).values({ id: crypto.randomUUID(), actorUserId: input.actorUserId, action: "organization.team_role.update", entityType: "member", entityId: input.memberId, organizationId: input.organizationId, previousValue: target.role, newValue: input.role, metadata: JSON.stringify({ targetUserId: target.userId }), createdAt: now }),
+  const results = await database.$client.batch([
+    database.$client.prepare("UPDATE member SET role = ? WHERE id = ? AND organization_id = ? AND role = ? AND role != 'owner'").bind(input.role, input.memberId, input.organizationId, target.role),
+    database.$client.prepare("INSERT INTO platform_audit_log (id, actor_user_id, action, entity_type, entity_id, organization_id, previous_value, new_value, metadata, created_at) SELECT ?, ?, 'organization.team_role.update', 'member', ?, ?, ?, ?, ?, ? WHERE changes() = 1").bind(crypto.randomUUID(), input.actorUserId, input.memberId, input.organizationId, target.role, input.role, JSON.stringify({ targetUserId: target.userId }), now.getTime()),
   ]);
+  if (results[0]?.meta.changes !== 1) throw new Response("El rol cambió mientras se procesaba; vuelve a intentarlo", { status: 409 });
 }
 
 export async function listPlatformOrganizations(database: Database) {
