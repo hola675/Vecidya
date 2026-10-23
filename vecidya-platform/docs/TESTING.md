@@ -1,5 +1,19 @@
 # Pruebas
 
+## DIAG-QA-03B-RELEASE-CLOSE — certificación local (2026-10-23)
+
+Sobre `origin/main@03a0158` en el worktree `feat/diagnostic-qa03b-release-close`: `pnpm run test:unit` **1655/1655 PASS**, `pnpm run test:email` **12/12 PASS** con fake, `pnpm run typecheck` y `pnpm run build` PASS. Wrangler local aplicó `0000–0023`; la actualización sintética de D1 `0010→0023` verificó datos/seeds/backfill, snapshot de publicación, token CAS, integridad SQLite y claves foráneas: PASS. No se usó `--remote`.
+
+E2E QA-03B: seis recorridos, reanudación/concurrencia e informe HTML identificado PASS en Worker local. ACT-04 **3/3 PASS** en Worker Wrangler local de configuración productiva; resumen allowlisted y claves V3 preservadas, respuestas/sesiones incompatibles rechazadas, informe identificado cerrado y rutas dev-only 404. Se añadió interacción de inicio/selección/continuación por teclado y comprobación de overflow a 320, 390, 768 y 1366 px: ninguna desborda. Esto no reemplaza una auditoría manual WCAG/axe.
+
+`diagnostic-purge-scheduled-check.mjs` PASS en D1 temporal con switches habilitados únicamente para el proceso de prueba; verifica límite 100, vigentes preservados, concurrencia, rollback atómico y recuperación. Aislamiento productivo local PASS: bundle sin módulos/fixtures de desarrollo, rutas auxiliares 404 y páginas/APIs identificadas 404 con los flags cerrados. MiniWeb dedicado `miniweb-core-check.mjs` **64/64 PASS**, viewport 1366/768/390/360 sin overflow y fixtures limpias.
+
+Harnesses reconciliados con el código actual: MiniWeb preserva atributos Set-Cookie al transferir sesiones a Playwright; Admin Global consulta snapshot vigente en `business_profile_publication` (migraciones `0022/0023`), crea fixture sintético con perfil/licencia activa y envía el `draftRevision` CAS vigente. El primer intento quedó bloqueado por estas expectativas obsoletas; la reejecución corregida pasó, incluidos auth/roles, invitaciones/concurrencia, lifecycle, licencias, training y MiniWeb con auditoría.
+
+`licenses-experience-check.mjs` PASS: hero, productos/precios, comparador, CTAs, metadata, foco de teclado y responsive 1366/768/390/360. `business-profile-experience-check.mjs` encontró overflow horizontal a 768 px en el editor con vista previa privada; se registra como deuda MiniWeb fuera del alcance diagnóstico y no se modificó UI en este checkpoint.
+
+No se consultó D1 remota/Worker publicado, pese a autorización read-only, por falta de sesión Wrangler y de Cloudflare MCP. Sin deploy, migraciones remotas, Gmail real, HTTP público fechado ni activación de funnel/purga.
+
 ## APP-CLIENTE-00-PUBLISH-001-R2 — revisión Codex y certificación integrada (2026-10-23)
 
 Se atendieron las dos observaciones P2 nuevas reportadas para el HEAD `575cde5` del PR #42. Perfil y horarios conservan en estado local la revisión que acompaña a sus valores iniciales; después de `409`, ambos formularios bloquean el guardado hasta recargar los datos y la revisión juntos. Un guardado exitoso avanza a su revisión exacta. La condición de publicación se calcula desde el snapshot completo (perfil/contacto, horarios y configuración). Sin perfil no se habilita publicar. `miniweb-editor.tsx` informa cambios pendientes del contenido completo.

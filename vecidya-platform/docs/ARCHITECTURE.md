@@ -273,6 +273,12 @@ ni automatizaciones CRM.
 
 ## VECIDYA-LEGACY-00 — inventario y consolidación (2026-10-12)
 
+### Reconciliación de runtime (2026-10-23)
+
+ACT-04 está integrado en `main`; `/diagnostico` sirve QA-03B con replay de Worker. Contrato vigente: bank `reviewed-evidence-v7`, answer schema `qbv2-answers-v5`, session schema/key 6, replay `qa03b-worker-replay-v4`. El endpoint anónimo conserva la proyección/entrada V3 para rollback y `diagnostico-informe.tsx` sigue sin registrarse. Este inventario es histórico (baseline `50026d0`) y debe revalidarse antes de una retirada; ya no describe dos motores públicos ni un cutover pendiente.
+
+**Conservar durante el release y la ventana de rollback:** claves/sesiones V3 históricas, adaptador V3 del endpoint, pruebas de rollback, módulos base compartidos por QA-03B, source de informe aún protegido por tests y migraciones. Después del deploy y cierre explícito de rollback, abrir un checkpoint de limpieza: re-scan de imports, rutas, bundle, Worker manifest, scripts y tests; borrar solo candidatos sin consumidores. Las rutas `__dev` siguen dev-only y no equivalen al runtime público.
+
 **Resultado: `LEGACY_INVENTORY_READY`; auditoría, no limpieza.** Baseline real `50026d00c59269554500a4f2552fe7385e35ec7f` (`50026d0`, `main` = `origin/main`). El árbol local también tenía cambios y archivos nuevos sin commit; se preservan y no forman parte del inventario. Sin cambios funcionales, D1, migraciones, configuración o secretos; QA-03B, RESULT-UX-02 y FUNNEL-01B no se reabren. ACT-04 no se ejecuta.
 
 ### Grafo observado
@@ -346,7 +352,7 @@ Potencial condicional por decisión de identidad: si se conserva ACT raíz, la r
 
 ### Arquitectura objetivo y orden futuro
 
-Un runtime público, una identidad de resultado versionada, un adaptador de resultado/metodología/informe y una estrategia explícita de almacenamiento; conservar implementaciones previas sólo como caracterización/evidencia cuando proceda. Mientras no se autorice ACT-04, mantener V3 público por FUNNEL-01B y las dos candidatas aisladas. No migrar ni reinterpretar la key pública schema 2.
+Un runtime público QA-03B y una identidad de resultado versionada ya están integrados, con adaptador V3 de rollback temporal. El gate siguiente es preflight remoto autenticado y, mediante autorizaciones separadas, deploy seguido de HTTP anónimo fechado. No migrar ni reinterpretar claves/sesiones históricas. La retirada legacy requiere ventana de rollback cerrada y un nuevo barrido ejecutable de consumidores; no se autoriza por este inventario.
 
 1. QA-03B es la identidad destino elegida; autorizar explícitamente el checkpoint ACT-04/cutover por separado.
 2. Implementar replay server-authoritative QA-03B y probar resultado único summary/report. La revisión PDF `PDF_OWNER_REVIEW` es manual/no bloqueante; no se requiere PAC/Acrobat/NVDA ni se declara conformidad PDF/UA.

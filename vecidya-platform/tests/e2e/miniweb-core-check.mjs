@@ -48,12 +48,22 @@ class SessionClient {
   async fetch(path, options = {}) {
     const headers = new Headers(options.headers);
     headers.set("origin", baseUrl);
-    if (this.#cookies.size) headers.set("cookie", [...this.#cookies.entries()].map(([name, value]) => `${name}=${value}`).join("; "));
+    if (this.#cookies.size) headers.set("cookie", [...this.#cookies.values()].map(({ name, value }) => `${name}=${value}`).join("; "));
     const response = await fetch(new URL(path, baseUrl), { ...options, headers, redirect: "manual" });
     for (const setCookie of response.headers.getSetCookie()) {
-      const [pair] = setCookie.split(";", 1);
+      const [pair, ...attributes] = setCookie.split(";").map((attribute) => attribute.trim());
       const [name, ...value] = pair.split("=");
-      this.#cookies.set(name, value.join("="));
+      const cookie = { name, value: value.join("=") };
+      for (const attribute of attributes) {
+        const [attributeName, attributeValue] = attribute.split("=", 2);
+        if (attributeName.toLowerCase() === "path") cookie.path = attributeValue;
+        if (attributeName.toLowerCase() === "secure") cookie.secure = true;
+        if (attributeName.toLowerCase() === "httponly") cookie.httpOnly = true;
+        if (attributeName.toLowerCase() === "samesite" && ["strict", "lax", "none"].includes(attributeValue?.toLowerCase())) {
+          cookie.sameSite = attributeValue[0].toUpperCase() + attributeValue.slice(1).toLowerCase();
+        }
+      }
+      this.#cookies.set(name, cookie);
     }
     return response;
   }
@@ -73,7 +83,7 @@ class SessionClient {
     });
   }
   cookies() {
-    return [...this.#cookies.entries()].map(([name, value]) => ({ name, value }));
+    return [...this.#cookies.values()];
   }
 }
 
@@ -356,7 +366,16 @@ try {
   await page.getByText("Horarios guardados.").waitFor();
 
   const platformContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
-  await platformContext.addCookies(adminA.client.cookies().map(({ name, value }) => ({ name, value, url: baseUrl })));
+  const cookieDomain = new URL(baseUrl).hostname;
+  await platformContext.addCookies(adminA.client.cookies().map(({ name, value, path, secure, httpOnly, sameSite }) => ({
+    name,
+    value,
+    domain: cookieDomain,
+    path: path ?? "/",
+    ...(secure ? { secure: true } : {}),
+    ...(httpOnly ? { httpOnly: true } : {}),
+    ...(sameSite ? { sameSite } : {}),
+  })));
   const platformPage = await platformContext.newPage();
   const internalMiniwebResponse = await platformPage.goto(new URL(`/app/internal/organizations/${organizationA}/miniweb`, baseUrl).toString(), { waitUntil: "networkidle" });
   check(internalMiniwebResponse?.status() === 200, "la administración interna abre MiniWeb con sesión platform_admin activa");

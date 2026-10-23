@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-23 — DIAG-QA-03B-RELEASE-CLOSE (certificación local, no publicado)
+
+- Se actualiza el E2E ACT-04 para validar recorrido inicial por teclado y ausencia de overflow en 320/390/768/1366 px; el comentario de `diagnostic.tsx` refleja session schema/key 6 y replay v4.
+- Se corrigen harnesses E2E desfasados: MiniWeb conserva atributos de cookie y Admin Global comprueba snapshot `business_profile_publication`, prepara perfil/licencia y envía el token CAS de revisión actual. Admin Global y MiniWeb pasan; no cambió la política del producto.
+- Certificación local: D1 `0000–0023` y upgrade sintético `0010→0023`; unitarias 1655/1655, correo fake 12/12, QA-03B, ACT-04, purga, aislamiento, Admin Global, MiniWeb y licencias PASS. El editor de perfil con vista previa privada tiene un overflow a 768 px encontrado por una suite ajena al diagnóstico y queda documentado como follow-up. Detalle en `TESTING.md`.
+- Lectura de D1/Worker en staging y producción autorizada por el usuario, pero no ejecutada: falta autenticación Wrangler y no hay Cloudflare MCP disponible. Sin escrituras remotas, migración, deploy, activación de flags ni HTTP pública fechada.
+
 ## 2026-10-23 — APP-CLIENTE-00-PUBLISH-001-R2 (integración local del PR #42)
 
 - Después de `409`, perfil y horarios mantienen la revisión asociada a los valores abiertos y bloquean ambos guardados hasta recargar; un guardado exitoso adopta la revisión exacta que produjo.

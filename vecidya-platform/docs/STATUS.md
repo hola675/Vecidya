@@ -7,11 +7,19 @@
 Evidencia sobre `2a1ddae`: `test:unit` 1655/1655, `typecheck`, `build` y `git diff --check` PASS; `miniweb-core-check.mjs` 64/64 en Worker/D1 local efímera. E2E incluye dos editores de perfil/horarios y la administración interna: los conflictos mantienen la revisión original; una edición solo de teléfono, descripción y horarios habilita publicar sin alterar MiniWeb; tras publicar, la acción queda deshabilitada. D1 `0000–0023`, cero fixtures y directorios efímeros retirados. Sin D1 remota, Gmail real, deploy ni HTTP público fechado.
 
 APP-MINI-02B permanece pendiente de integrar este PR; ampliar el snapshot con ofertas/FAQ sigue fuera de este checkpoint. **`REAL_EMAIL_NOT_VERIFIED` permanece diferido al release autorizado.**
+
+## DIAG-QA-03B-RELEASE-CLOSE — cierre local y preflight pendiente (2026-10-23)
+
+**Estado integrado, no publicado.** `/diagnostico` usa QA-03B: bank `reviewed-evidence-v7`, answer schema `qbv2-answers-v5`, session schema/key 6 y replay `qa03b-worker-replay-v4`. El resumen público deriva del replay Worker; el endpoint mantiene compatibilidad V3 para rollback. No se migran sesiones V3 históricas. ACT-04 está integrado; el funnel de informe identificado y los dos switches de purga siguen `false`.
+
+**Verificación local en `feat/diagnostic-qa03b-release-close`, base `origin/main@03a0158`:** unitarias 1655/1655; email fake 12/12; typecheck/build PASS; D1 `0000–0023` y upgrade sintético `0010→0023` PASS; ACT-04 3/3 con teclado y viewports 320/390/768/1366; QA-03B seis recorridos más reanudación/concurrencia/informe HTML PASS; purga D1 efímera e aislamiento productivo local PASS; MiniWeb 64/64, Admin Global y licencias PASS. Una suite separada encontró overflow MiniWeb a 768 px; consta en `TESTING.md`. Sin datos remotos, Gmail real, deploy ni HTTP pública fechada.
+
+**Bloqueo remoto exacto:** el usuario autorizó lectura de staging y producción. No hay Cloudflare MCP disponible y `wrangler whoami` informa sesión no autenticada; no se consultaron ledgers, esquema, bookmark ni Worker. No se intentó ninguna escritura remota. Autenticar Wrangler/MCP y completar el preflight read-only.
 ## DIAG-D1-RELEASE-01 — certificación local y plan D1 (2026-10-23)
 
-**PASS TÉCNICO LOCAL; NO-GO para D1 remota / publicación.** Desde `origin/main@cc48311` (PR #41 integrado) se inspeccionaron migraciones `0011–0021`, módulos y snapshots/journal; la secuencia global no puede saltarse `0017` MiniWeb ni `0020–0021` de administración. D1 limpia `0000–0021` y upgrade sintético incremental `0010→0021` pasan con integridad/FK limpias, filas sintéticas de Auth/organización/perfil/licencia intactas, seeds `0010` conservados y backfill 0019 correcto. Unitarias `1652/1652`, email fake `12/12`, QA-03B E2E, MiniWeb `33/33`, Admin Global E2E, typecheck y build PASS; evidencia en `TESTING.md` y matriz/runbook en `DATABASE.md`.
+**PASS TÉCNICO LOCAL; NO-GO para D1 remota / publicación.** Certificación ampliada: cadena limpia `0000–0023` y upgrade sintético `0010→0023`; integridad/FK, datos representativos, seeds `0010`, backfill `0019` y snapshots/token CAS `0022–0023` verificados. Esta evidencia posterior amplía la certificación inicial `0000–0021`; véase `TESTING.md` y matriz/runbook en `DATABASE.md`.
 
-**No se accedió a D1 remota ni al Worker publicado.** El último ledger documentado `0000–0010` no se toma como estado actual; no hay SHA desplegado confirmado. El E2E aislado `platform-licensing-check.mjs` está desfasado con el signup actualmente invitación-only y aborta antes de sus asserts (403); licencia de perfil está cubierta en Admin Global E2E y cálculo en unitarias. Quedan gates de lectura/preflight autorizados, staging primero, backup/bookmark, comprobación del Worker y aprobación separada antes de cualquier escritura remota. Ningún deploy, correo real, activación de funnel/purga ni restore.
+**No se accedió a D1 remota ni al Worker publicado.** El ledger `0000–0010` es solo DOC, no estado actual. El usuario autorizó lectura de staging y producción, pero Wrangler no está autenticado y el MCP de Cloudflare no está disponible. Completar lectura/preflight cuando exista sesión; ninguna escritura remota, deploy, correo real, activación de funnel/purga ni restore.
 
 ## DIAG-PRIVACY-PURGE-01 — purga automática lista técnicamente; sin habilitar (2026-10-22)
 
@@ -39,7 +47,7 @@ Verificación final incluye `PlatformFooter` (copyright y versión compartidos) 
 
 ## ACT-04 — cutover QA-03B local (2026-10-22)
 
-**CODE + TEST en rama `feat/diagnostic-act-04-20261022`; NO PUBLICADO.** `/diagnostico` y `/diagnostico/metodologia` usan el motor QA-03B, con replay autoritativo en Worker y resumen anónimo allowlisted. La sesión QA-03B conserva key/schema 3; un sobre QA-03B con identidad/sesión V3 o ACT se rechaza y las claves V3 históricas no se migran ni alteran. El endpoint conserva además el contrato exacto de respuestas V3 anterior para hacer posible el rollback. Las rutas de informe identificado y correo siguen cerradas en producción. Ensayo local restauró temporalmente los dos adaptadores públicos V3 y pasó el flujo anterior 6/6. Sin migración nueva, despliegue ni HTTP público fechado.
+**Corte inicial (histórico; actualizado por fixes posteriores de PR #38).** `/diagnostico` y `/diagnostico/metodologia` usan QA-03B, con replay autoritativo en Worker y resumen anónimo allowlisted. La sesión vigente usa schema/key 6 y replay v4, no schema 3. Sobres incompatibles se rechazan; las claves V3 históricas no se migran ni alteran. El endpoint conserva contrato V3 para rollback. Informe identificado y correo siguen cerrados. Ensayo local de rollback V3 PASS; sin deploy ni HTTP público fechado.
 
 ## DIAG-CLOSE-03 — replay QA-03B en Worker local (2026-10-21)
 
