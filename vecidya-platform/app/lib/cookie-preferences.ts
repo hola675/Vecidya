@@ -10,7 +10,7 @@ export function parseCookiePreferences(raw: string | null): CookiePreferences | 
     const value: unknown = JSON.parse(raw);
     if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
     const record = value as Record<string, unknown>;
-    if (record.version !== 2 || record.necessary !== true || typeof record.analytics !== "boolean" || typeof record.marketing !== "boolean" || typeof record.savedAt !== "string" || !Number.isFinite(Date.parse(record.savedAt))) return null;
+    if (record.version !== 2 || record.necessary !== true || typeof record.analytics !== "boolean" || typeof record.marketing !== "boolean" || typeof record.savedAt !== "string" || !Number.isFinite(Date.parse(record.savedAt)) || Date.parse(record.savedAt) > Date.now() + 60_000) return null;
     return { version: 2, necessary: true, analytics: record.analytics, marketing: record.marketing, savedAt: record.savedAt };
   } catch { return null; }
 }
