@@ -22,6 +22,10 @@ Typecheck/build/diff-check PASS. Worker local: artículo y guías relacionadas r
 
 Regresiones focales: unitarias `neighborhood.test.ts` **3/3 PASS**; `miniweb-core-check.mjs` **112/112 PASS** en Worker local/D1 aislada `0000–0027`, fixtures limpias; búsqueda de borradores omitida y navegación a Publicar compensada bajo la cabecera fija. Índice sin overflow a 320/390/768/1366 px. Typecheck, build y diff-check PASS. Worker y `.dev.vars` sintético eliminados. La D1 temporal quedó solo con esquema y ledger hasta `0027`; sin D1 remota, correo real, deploy ni HTTP pública fechada.
 
+## UX-PREMIUM-01B — Vecindario y ficha MiniWeb (2026-10-24)
+
+Implementación local en `feat/app-mini-ux-02c-directory-profiles`: la ficha pública de `/vecindario/:slug` añade retorno contextual al Vecindario, jerarquía visual al hero y módulos de contenido, y un cierre visual hacia el directorio. El estilo queda limitado a la vista pública; preview del editor, snapshot publicado y filtros de datos permanecen sin cambios. Typecheck, build y diff-check PASS. Worker local bloqueado antes de registrar fixtures por tabla ausente `platform_owner_invitation`; sin revisión responsive renderizada ni prueba de perfil. PR pendiente. No publicado.
+
 ## UX-PREMIUM-01A — Inicio, primera fase del plan visual (2026-10-24)
 
 Integrada en `origin/main@530235d`. El CTA principal del hero `/` dirige al Diagnóstico; Vecindario queda como acción secundaria y el brillo decorativo se oculta a tecnologías asistivas. Typecheck, build y diff-check PASS. Worker Cloudflare local con D1 efímera `0000–0027`: GET `/` 200; árbol accesible y captura de escritorio confirman orden y jerarquía. Sin publicación.

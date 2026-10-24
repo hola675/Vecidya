@@ -92,6 +92,11 @@ export default function PublicBusinessProfilePage() {
     <PublicLayout>
       <main className="public-page public-business-profile">
         <JsonLd data={localBusinessSchema} />
+        <nav aria-label="Ruta de navegación" className="public-business-profile__breadcrumb">
+          <Link to="/vecindario">Vecindario</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{profile.displayName}</span>
+        </nav>
         <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} offerings={offerings} faqs={faqs} media={media} />
 
         <section aria-labelledby="business-neighborhood-title" className="public-business-neighborhood">
