@@ -2,26 +2,55 @@
 
 ## 2026-10-24 — DIAG-MOTOR-01 — banco de evidencia y selección adaptativa (solo local)
 
-- QA-03B añade preguntas directas para estimación, registro y revisión de resultados, más una pregunta sencilla de recuperación cuando se desconoce la tasa de conversión. Las respuestas distinguen `established`, `partial`, `missing`, `unknown` y `not_applicable`; registrar resultados no calcula una tasa.
-- La elegibilidad de presencia/oferta atiende contexto físico y evidencia de ficha existente. El planificador aprovecha reserva restante para contexto central y desbloqueos dentro del hard-cap de 24; P03/P10 completan sin bloqueo espurio por presupuesto. Identidades de banco, planificador, sesión y replay avanzan a v8/v4/schema 7/replay v5; el banco raíz/legacy no cambia.
-- Evidencia local: 1666/1666 unitarias, typecheck, build, diff-check y ACT-04 Worker 3/3 PASS. El E2E de desarrollo de informe QA-03B expiró esperando `domcontentloaded`; suites unitarias de replay/resumen/informe sí pasan. No se modificó scoring, confianza, índice global, fórmulas comerciales, esquema, datos remotos, versión publicada o despliegue. Ver `TESTING.md` y `STATUS.md`.
+- QA-03B añade preguntas directas para estimación, registro y revisión de resultados, más una pregunta de recuperación cuando se desconoce la tasa de conversión. Registrar resultados no calcula una tasa.
+- La elegibilidad de presencia/oferta atiende contexto físico y evidencia de ficha existente. El planificador aprovecha reserva restante para contexto central y desbloqueos dentro del hard-cap de 24; P03/P10 completan sin bloqueo espurio por presupuesto. Banco, planificador, sesión y replay se versionan; el banco histórico/raíz no cambia.
+- Evidencia local en la base reconciliada con `origin/main@e6444c1`: 1668/1668 unitarias, typecheck, build, diff-check y ACT-04 Worker 3/3 PASS. El E2E de desarrollo de informe QA-03B expiró esperando `domcontentloaded`; suites unitarias de replay/resumen/informe pasan. Sin cambios de scoring, esquema, datos remotos, versión publicada o despliegue. Ver `TESTING.md` y `STATUS.md`.
+
+## 2026-10-24 — UX-PREMIUM-02B (refinamiento de Servicios)
+
+- Se conserva el recorrido y la retícula bento de PR #65, y se añaden accesos directos a cada familia. Las fichas separan promesa, audiencia, trabajo y alcance habitual, priorizan el detalle y eliminan contenido redundante y el CTA genérico duplicado.
+- No cambian catálogo, precios, licencias ni contacto. Typecheck, build y `git diff --check` PASS; inspección visual local en escritorio y móvil. Sin suites E2E, publicación o deploy.
+
+## 2026-10-24 — UX-PREMIUM-02E — catálogo de licencias
+
+- Se redistribuye la información comercial junto al encabezado de comparación y se refuerza en las tres tarjetas el acceso primario a detalles y la consulta secundaria. Los datos de oferta y destinos permanecen iguales.
+- Typecheck, build, diff-check y ruta local `/licencias` HTTP 200 PASS; se conserva la política de no afirmar publicación sin HTTP pública fechada.
+
+## 2026-10-24 — UX-PREMIUM-02A — orientación y catálogo de Servicios
+
+- `/servicios` incorpora una ruta visual de tres pasos hacia Diagnóstico, las siete familias y la consulta; las siete tarjetas usan una retícula bento responsive y conservan sus enlaces a fichas y consultas contextuales.
+- Typecheck/build PASS; Worker local HTTP 200; Playwright confirmó catálogo, recorrido y ausencia de overflow en 360/390/768/1024/1366 px, más las siete fichas de servicio en 360/1024 px. El reset de spans responsive corrige el P2 de Codex; `services-catalog-layout-check.mjs` pasa en 1366/768/390 px. El E2E comercial general agotó 30 s esperando `networkidle` en `/licencias`; planes/addons siguen pendientes. PR #65 integrado en `origin/main@c70057f`, sin publicación; detalles y deuda en `STATUS.md` y `ROADMAP.md`.
+
+## 2026-10-24 — APP-MINI-02E (búsqueda y filtros del Vecindario; integrado en PR #69)
+
+## 2026-10-24 — UX-PREMIUM-01C — páginas hijas de Aprende
+
+- La plantilla compartida de artículos incorpora portada editorial con ilustración completa, breadcrumb de regreso al catálogo, rail de lectura con índice y enlace a todas las guías, y mejor jerarquía para las guías relacionadas. Se mantienen contenido, metadata, CTA y destinos existentes.
+- Typecheck, build, diff-check y revisión local responsive a seis anchos PASS. El E2E de Aprende quedó incompleto por HTTP 500 local en `/sitemap.xml`; no se certifica sitemap ni publicación pública.
 
 ## 2026-10-24 — APP-MINI-02E (búsqueda y filtros del Vecindario; en progreso)
 
 - `/vecindario` amplía búsqueda y filtros con modalidad, área de servicio, servicios/productos y módulos MiniWeb con contenido renderizable. Las fichas muestran ofertas activas y secciones públicas derivadas solo del snapshot; las especialidades se infieren de categoría/ofertas existentes para evitar duplicar una taxonomía.
 - El test Worker verifica el aislamiento de borradores, ofertas inactivas y módulos desactivados, filtros de contenido publicado y responsive a 320/390/768/1366. Se corrige también el P2 de anclas del editor con margen bajo la cabecera sticky.
-- Evidencia local: 112/112 E2E, 3/3 unitarias focales, typecheck, build y diff-check PASS; D1 aislada `0000–0027`, fixtures en cero. PR #64 se integró en `main@820f529`; este checkpoint permanece local, sin HTTP pública, D1 remota o deploy.
+- Evidencia local: 112/112 E2E, 3/3 unitarias focales, typecheck, build y diff-check PASS; D1 aislada `0000–0027`, fixtures en cero. PR #69 se integró en `main@2a58dc0`; sin HTTP pública, D1 remota o deploy.
 
 ## 2026-10-24 — APP-MINI-02D (editor MiniWeb guiado; PR #64 integrado)
+
+## 2026-10-24 — UX-PREMIUM-02B — navegación y diseño de fichas comerciales
+
+- Las 17 fichas comerciales mantienen regreso al catálogo y consulta contextual; suman 32 enlaces directos a ofertas relacionadas con sus dependencias o límites documentados. La ficha de Desarrollo Empresarial enlaza al Diagnóstico si aún se están definiendo prioridades.
+- El hero y las fichas relacionadas adoptan una jerarquía visual más clara, con tarjetas de contraste y reflow a una columna en móvil. Typecheck, build y diff-check PASS; Worker local comprobó las 17 rutas y destinos internos a 360/1024 px, sin overflow; revisión visual de escritorio PASS. Sin integración o publicación.
+
+## 2026-10-24 — APP-MINI-02D (editor MiniWeb guiado; PR pendiente)
 
 - `/app/miniweb` organiza el editor en cinco destinos accesibles: Diseño, Secciones, Contenido, Vista previa y Publicar. La publicación y guardado quedan agrupados en su destino, y la UI declara que `Esencial` es la única plantilla disponible.
 - El comportamiento conserva borrador, CAS y snapshot. En código `961c46d`, MiniWeb E2E 105/105, unitarias 1659/1659, typecheck, build y diff-check PASS en Worker/D1 local aislados. PR #64 se integró en `main@820f529`. Su observación P2 de scroll bajo cabecera sticky se corrigió y probó en APP-MINI-02E. Sin D1 remota, R2 real ni deploy.
 
 ## 2026-10-24 — QA-03B — corpus de 60 variantes y reporte final HTML
 
-- Se incorporan fixtures sintéticos con tres niveles de conocimiento para cada uno de los 20 perfiles, validación del banco y replay pregunta por pregunta en el pipeline candidato vigente. El nivel informado señala los supuestos cualitativos y el mapeo de herramientas; no usa autoevaluaciones digitales/IA como evidencia.
-- Evidencia local: 3/3 pruebas focales PASS; 60/60 índices globales pendientes, 57 con dimensiones aplicables sin resolver, 58 terminaciones `no_useful_questions`, 2 `budget_blocked`, 0 hard-cap y 0 lecturas de medición/optimización. Sin cambio de scoring, banco productivo ni despliegue.
-- Informe interactivo y dataset JSON completos en artefactos locales de la sesión. No se generó PDF. Alcance y deuda en `TESTING.md`, `PROJECT_STATE.md`, `ROADMAP.md` y `STATUS.md`.
+- QA-03C: se corrige la matriz P20; miles de leads mensuales no acreditan captación fiable y la respuesta queda `unknown`. Se explicita procedencia desconocida por fuente, además de supuestos e interpretaciones.
+- Evidencia QA-03C local: suites focales profile 4/4 y canonical 16/16 PASS. 60 casos/950 respuestas; 60 índices globales pendientes; 57 con áreas aplicables sin resolver; 58 `no_useful_questions`, 2 `budget_blocked`, sin hard-cap; 25 scores dimensionales (24 readiness, 1 discovery, 0 measurement), todos una observación directa (23 confianza media, 2 baja por incertidumbre). El informe representa 30/30 prioridades visibles y presenta matriz de procedencia/evidencia; equivalencia JSON-presentación-HTML validada. No se cambió motor, fórmula, umbrales, calibración ni banco productivo.
+- Informe HTML y JSON regenerados en `C:\Users\Admin\.codex\visualizations\2026\10\24\qa03c`. No PDF, D1, Gmail, HTTP remoto, deploy o merge. La deuda de cobertura permanece abierta y la certificación completa requiere typecheck/build, E2E y responsive documentados en `TESTING.md`.
 
 ## 2026-10-23 — APP-MINI-02B — certificación de ofertas y FAQ
 

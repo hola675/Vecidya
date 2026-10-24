@@ -135,6 +135,32 @@ test("R7-A: commercial outcome coverage — null, Cuadra, Barrio are reachable f
   assert.ok(!licenses.has("ciudad"), "Ciudad must never be reachable from diagnostic context alone, without clarification");
 });
 
+test("QA-03C: canonical sufficiency battery distinguishes unknown, N/A, uncertainty, sector context, and justified abstention", () => {
+  const unknown = runFullChain(CANONICAL_CASES_V3.find((item) => item.id === "C16")!);
+  assert.ok(unknown.result.scoring.dimensions.some((dimension) => dimension.applicability === "insufficient_context"));
+  assert.equal(unknown.result.commercial.licenseFit.recommendedLicense, null);
+
+  const nA = runFullChain({
+    id: "QA03C-NA",
+    description: "Business with no historical recurring interaction: Relationship is not applicable by the approved applicability rule.",
+    answerScript: { q2_entity: "business", q2_monetization: "services", q2_delivery: ["other"], q2_sector: "professional_services", q2_operational_status: "operating", q2_has_customers: "no", q2_goal: "explain", q2_customer_reach: "local", q2_customer_buyer: "b2c" },
+  });
+  assert.ok(nA.result.scoring.dimensions.some((dimension) => dimension.applicability === "not_applicable"));
+  assert.ok(nA.result.scoring.dimensions.some((dimension) => dimension.applicability === "applicable"));
+
+  const uncertain = runFullChain(CANONICAL_CASES_V3.find((item) => item.id === "C20")!);
+  assert.ok(uncertain.result.semanticFacts.facts.some((fact) => fact.type === "contradiction" && fact.semanticCode === "declared_friction_not_observed"));
+
+  const advanced = runFullChain(CANONICAL_CASES_V3.find((item) => item.id === "C02")!);
+  assert.ok(advanced.result.scoring.dimensions.some((dimension) => dimension.score !== null));
+
+  const nontraditional = runFullChain(CANONICAL_CASES_V3.find((item) => item.id === "C23")!);
+  assert.ok(nontraditional.result.scoring.dimensions.some((dimension) => dimension.id === "digital_readiness" && dimension.score !== null));
+
+  const noCommercialNeed = runFullChain(CANONICAL_CASES_V3.find((item) => item.id === "C11")!);
+  assert.equal(noCommercialNeed.result.commercial.licenseFit.recommendedLicense, null);
+});
+
 test("R7-A: Ciudad canonical case — explicit clarification, with the complete diagnostic byte-identical before/after", () => {
   const caseDef = CANONICAL_CASES_V3.find((c) => c.id === "C09")!;
   const { route } = runFullChain(caseDef);
