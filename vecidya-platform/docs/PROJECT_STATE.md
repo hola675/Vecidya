@@ -1,6 +1,10 @@
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
-`APP-MINI-REDESIGN-01` continúa localmente sobre `origin/main@5e26614` (PR #52 integrado). App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.
+`APP-MINI-REDESIGN-01` está integrado en `origin/main@3e6b9b1` mediante PR #53; no está publicado. App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.
+
+## DIAG-VISUAL-ASSETS-01 — plan de assets y lectura gráfica
+
+PR #55 integrado en main mediante `ab8a02ed62cef15ee78eac69c99009ef8bba47db`. El plan de `ROADMAP.md` mejora el resumen QA-03B y el informe completo con visualización común de ocho dimensiones y assets auditados, preservando puntuaciones, cobertura, confianza, privacidad, accesibilidad y PDF. El contrato anónimo actual no expone dimensiones; toda extensión propuesta debe ser agregada, allowlisted y versionada. No se implementó ni se publicó.
 
 ## UI-PILOT-01 — estado local de Aprende (2026-10-23)
 
@@ -8,11 +12,11 @@ El piloto visual de `/aprende` está implementado en `feat/aprende-ui-pilot-01`,
 
 ## ADMIN-LICENSE-UX-001 — integrado en main (2026-10-24)
 
-PR #54 se integró mediante `c91a3dbac5fbb23625ec516f99eb2a74fd8d6729`. La interfaz `/app/internal/licenses` presenta la jerarquía cliente → negocios; cada negocio tiene su licencia y el espacio de trabajo conserva el significado técnico. Las escrituras mantienen `organization:license:update` y auditoría. Sin cambio de esquema ni despliegue.
+PR #54 se integró mediante `c91a3dbac5fbb23625ec516f99eb2a74fd8d6729`; PR #55 se integró después en `ab8a02ed62cef15ee78eac69c99009ef8bba47db`. La interfaz `/app/internal/licenses` presenta la jerarquía cliente → negocios; cada negocio tiene su licencia y el espacio de trabajo conserva el significado técnico. Las escrituras mantienen `organization:license:update` y auditoría. Sin cambio de esquema ni despliegue.
 
 ## Estado vigente — APP-MINI-02C y publicación QA-03B (2026-10-24)
 
-PR #42 se integró mediante `4d6107730e98e1dda4c333c9c565e40645213ff8`; PR #45 corrigió los dos P2 post-merge y se integró mediante `85ba1e021316bbeb7d0b431e3be2523f038c7faa`. PR #49 integró APP-MINI-02B en `origin/main@6d25b3e`: ofertas/FAQ tenant-scoped, edición en `/app/miniweb`, módulos públicos, snapshot v2 y migración `0024`; validación funcional aún pendiente. PR #51 integró APP-MINI-02C por `e4fed1f85733e5a2ac89c86a1c4fced1655c5b21`: migraciones `0025–0027`, carga/retiro tenant-scoped con CAS, snapshot v3, E2E MiniWeb 90/90 en `45cf0bd` y cadena local `0000–0027`. PR #54 se integró después en `c91a3db`. En esta rama QA-03B, unitarias 1655/1655, E2E local, typecheck y build pasan; R2/buckets no provisionados, migración remota 0027 pendiente y no hay deploy de esta fuente. `REAL_EMAIL_NOT_VERIFIED` continúa diferido al release autorizado.
+PR #42 se integró mediante `4d6107730e98e1dda4c333c9c565e40645213ff8`; PR #45 corrigió los dos P2 post-merge y se integró mediante `85ba1e021316bbeb7d0b431e3be2523f038c7faa`. PR #49 integró APP-MINI-02B en `origin/main@6d25b3e`: ofertas/FAQ tenant-scoped, edición en `/app/miniweb`, módulos públicos, snapshot v2 y migración `0024`; validación funcional aún pendiente. PR #51 integró APP-MINI-02C por `e4fed1f85733e5a2ac89c86a1c4fced1655c5b21`: migraciones `0025–0027`, carga/retiro tenant-scoped con CAS, snapshot v3, E2E MiniWeb 90/90 en `45cf0bd` y cadena local `0000–0027`. PR #54 (`c91a3db`) y PR #55 (`ab8a02e`) también están integrados. En esta rama QA-03B, unitarias 1655/1655, E2E local, typecheck y build pasan; R2/buckets no provisionados, migración remota 0027 pendiente y no hay deploy de esta fuente. `REAL_EMAIL_NOT_VERIFIED` continúa diferido al release autorizado.
 
 ## Estado vigente — QA-03B 0.7.0 desplegado; 0.7.1 candidata pendiente de R2 (2026-10-24)
 

@@ -10,7 +10,7 @@
 ## 2026-10-23 — 0.7.0 — Diagnóstico QA-03B publicado y activado en producción
 
 - Se aplicaron las migraciones D1 `0011–0023` a staging y producción; ledger sin pendientes. Bookmarks pre-migración y límites de validación remota constan en `ENVIRONMENTS.md`.
-- Se desplegó el Worker completo de la versión 0.7.0 en la rama de release disponible entonces. Los workers activos no incluyen las integraciones posteriores #49–#54; la fuente actual `origin/main@c91a3db` está pendiente de promoción. Staging `39ffd6e1-4d20-4c39-9338-653b41340085`; producción `517126e4-a3cd-4309-8501-5a49d57cd15f`.
+- Se desplegó el Worker completo de la versión 0.7.0 en la rama de release disponible entonces. Los workers activos no incluyen las integraciones posteriores #49–#55; la fuente actual `origin/main@ab8a02e` está pendiente de promoción. Staging `39ffd6e1-4d20-4c39-9338-653b41340085`; producción `517126e4-a3cd-4309-8501-5a49d57cd15f`.
 - Se eleva la versión de aplicación `0.6.1` → `0.7.0` y se corrige el formulario de informe para indicar que los datos vencidos se eliminan automáticamente en lotes diarios.
 - HTTP anónimo TLS a las `2026-10-24T00:12:23Z` confirmó páginas públicas 200 y footer `0.7.0`; `/app` y `/app/internal` redirigen a login sin sesión. No se verificó funcionalidad autenticada.
 - Por autorización expresa del usuario, producción activa funnel Gmail y ambos switches de purga; staging mantiene los tres flags cerrados. Los conteos agregados de backlog fueron cero, `changed_db=false`. La política desplegada retiene informes 30 días y challenges 24 horas, con aprobación legal confirmada por el usuario. No se envió correo de prueba; entrega Gmail no certificada. Se conserva adaptador V3/sesiones históricas para rollback. D1 API rechazó PRAGMA remoto; no se afirma integridad/FK remota.
@@ -35,11 +35,19 @@
 ## 2026-10-23 — APP-MINI-REDESIGN-01 (rediseño local)
 ## 2026-10-23 — APP-MINI-REDESIGN-01 (seguimiento sobre latest main)
 
+- El seguimiento visual se integró después en `main` mediante PR #53 (`origin/main@3e6b9b1`); permanece sin deploy ni publicación.
+
 - Se dio una jerarquía visual más clara al dashboard de Mi Vecidya y al resumen interno, conservando sus consultas, indicadores reales y copy operativo.
 - App y Admin presentan drawer hasta 980 px. E2E con Worker/D1 aislados PASS: ambos abren, navegan y cierran a 390/768/980 px; rutas sin overflow a 320/390/768/980/1366 px. Typecheck/build PASS.
-- Se añadieron acciones «Imprimir o guardar» para los resúmenes anónimo e identificado y reglas print para excluir controles y el hueco de layout que generaba una hoja vacía. El E2E de PDF quedó incompleto por timeout del Worker/Vite local; no se declara PDF validado. Sin D1 remota, deploy, cambio de versión ni publicación. Deuda `DIAG-IDENTIFIED-PRINT-001` y límites en `STATUS.md`/`TESTING.md`.
+- Se añadieron acciones «Imprimir o guardar» para los resúmenes anónimo e identificado y reglas print que ocultan controles y buscan corregir el hueco de layout que generaba una hoja vacía. El E2E de PDF quedó incompleto por timeout del Worker/Vite local; no se declara PDF validado. Sin D1 remota, deploy, cambio de versión ni publicación. Deuda `DIAG-IDENTIFIED-PRINT-001` y límites en `STATUS.md`/`TESTING.md`.
 - Certificación adicional de Admin Global: controles de perfiles/licencias, suspensión/reactivación, permisos tenant y capacitación pasaron en D1 efímera, eliminada al terminar. El Worker se desconectó con `ECONNRESET` en MiniWeb luego de guardar el borrador; esa parte no se certifica. Harness alineado a snapshot v3; repetir el recorrido completo. Evidencia y deuda en `TESTING.md`/`STATUS.md`.
 - Detalle de evidencia y deuda residual en `STATUS.md` y `TESTING.md`.
+
+## 2026-10-23 — DIAG-VISUAL-ASSETS-01 (plan + D1 local)
+
+- Se creó D1 local persistente y aislada en `.wrangler/diagnostic-visual-assets-01-db`; las migraciones `0000–0026` (27 en el ledger) aplicaron desde cero. Se insertaron solo los dos metadatos canónicos de plataforma; SQLite `integrity_check=ok`, `foreign_key_check` vacío y tablas de usuarios/organizaciones/diagnósticos sin fixtures. Worker local `GET /__health/db` respondió 200. E2E App/Admin PASS con su D1 sintética efímera, eliminada al terminar. No se leyó ni alteró una D1 compartida o remota.
+- `ROADMAP.md` ahora contiene el plan para actualizar resumen, ocho ejes, assets de estado/dimensión e informe completo sin cambiar resultados ni abrir gates. El plan está documentado; no hay assets ni cambios de UI implementados en este checkpoint.
+
 
 ## 2026-10-23 — APP-MINI-02B (implementación local sin certificar)
 
