@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-24 — QA-03B — corpus de 60 variantes y reporte final HTML
+
+- Se incorporan fixtures sintéticos con tres niveles de conocimiento para cada uno de los 20 perfiles, validación del banco y replay pregunta por pregunta en el pipeline candidato vigente. El nivel informado señala los supuestos cualitativos y el mapeo de herramientas; no usa autoevaluaciones digitales/IA como evidencia.
+- Evidencia local: 3/3 pruebas focales PASS; 60/60 índices globales pendientes, 57 con dimensiones aplicables sin resolver, 58 terminaciones `no_useful_questions`, 2 `budget_blocked`, 0 hard-cap y 0 lecturas de medición/optimización. Sin cambio de scoring, banco productivo ni despliegue.
+- Informe interactivo y dataset JSON completos en artefactos locales de la sesión. No se generó PDF. Alcance y deuda en `TESTING.md`, `PROJECT_STATE.md`, `ROADMAP.md` y `STATUS.md`.
+
 ## 2026-10-23 — APP-MINI-02B — certificación de ofertas y FAQ
 
 - Se amplía `miniweb-core-check.mjs` para probar ofertas/FAQ tenant-scoped, validación, escritura CAS, aislamiento, borrador frente a HTTP anónimo, publicación y elementos activos/inactivos. El recorrido identificó contenido inactivo dentro del payload de hidratación público aunque la UI lo ocultaba; el loader ahora solo entrega ofertas y preguntas activas a visitantes anónimos.
