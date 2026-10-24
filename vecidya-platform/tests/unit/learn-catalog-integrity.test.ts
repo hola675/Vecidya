@@ -56,7 +56,7 @@ test("Todos los itinerarios enlazan a artículos reales sin duplicados internos"
   }
 });
 
-test("Las seis guías especializadas permanecen conectadas y en revisión editorial", () => {
+test("Las seis guías especializadas aprobadas mantienen sus enlaces y fuentes", () => {
   for (const [originSlug, newSlug] of splitPairs) {
     const origin = getLearnArticle(originSlug);
     const specialized = getLearnArticle(newSlug);
@@ -64,7 +64,7 @@ test("Las seis guías especializadas permanecen conectadas y en revisión editor
     assert.ok(specialized, `Falta guía especializada ${newSlug}`);
     assert.ok(specialized.relatedSlugs?.includes(originSlug), `Falta enlace de vuelta desde ${newSlug}`);
     assert.ok(origin.relatedSlugs?.includes(newSlug) || origin.sections.some((section) => JSON.stringify(section).includes(newSlug)), `Falta referencia hacia ${newSlug}`);
-    assert.equal(specialized.editorialDraft, true, `No publicar sin aprobar ${newSlug}`);
+    assert.equal(specialized.editorialDraft, false, `La aprobación editorial debe mantenerse en ${newSlug}`);
     assert.ok(specialized.sections.some((section) => section.blocks?.some((block) => block.type === "sources")), `Faltan fuentes en ${newSlug}`);
   }
 });
