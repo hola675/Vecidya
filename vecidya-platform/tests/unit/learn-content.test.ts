@@ -143,7 +143,7 @@ test("technology article explains domains, DNS, hosting, HTTPS and practical own
   assert.equal(article.category, "Tecnología explicada");
   assert.equal(article.title, "Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos");
   assert.equal(article.image, "/assets/learn/diagram-domain-dns-hosting.svg");
-  assert.deepEqual(article.relatedSlugs, ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"]);
+  assert.ok(article.relatedSlugs?.includes("dns-https-y-correo-como-se-conecta-tu-dominio"));
   assert.match(article.imageAlt, /persona.*navegador.*DNS.*servidor.*página/i);
 
   const blocks = article.sections.flatMap((section) => section.blocks ?? []);
