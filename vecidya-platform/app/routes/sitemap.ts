@@ -22,7 +22,13 @@ function urlEntry(location: string) {
 
 export async function loader({ context }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  const profiles = await listPublishedBusinessProfiles(createDatabase(env.DB));
+  // Las páginas estáticas deben seguir siendo indexables aunque falle la consulta de perfiles.
+  let profiles: Awaited<ReturnType<typeof listPublishedBusinessProfiles>> = [];
+  try {
+    profiles = await listPublishedBusinessProfiles(createDatabase(env.DB));
+  } catch (error) {
+    console.error("No se pudieron consultar los perfiles publicados para el sitemap.", error);
+  }
   const staticPaths = [
     "/",
     "/licencias",
@@ -36,6 +42,7 @@ export async function loader({ context }: Route.LoaderArgs) {
     "/aprende",
     "/privacidad",
     "/terminos",
+    "/informacion-legal",
   ];
   const detailPaths = [...LICENSE_OFFERS, ...ADDON_OFFERS, ...SERVICE_OFFERS].map((offer) => offer.detailPath);
   const profilePaths = profiles.map((profile) => `/vecindario/${profile.slug}`);
