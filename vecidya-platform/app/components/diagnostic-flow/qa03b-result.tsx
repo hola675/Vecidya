@@ -41,6 +41,7 @@ export function CandidateDiagnosticResult({ summary, onEdit, onRequestReport, pu
       </section> : null}
       {summary.limitations.length ? <p className="dr-note">{summary.limitations.join(" · ")}</p> : null}
       <nav aria-label="Acciones del resumen" className="dr-candidate-actions">
+        {publicMode ? <button className="button button--secondary" onClick={() => window.print()} type="button">Imprimir o guardar resumen</button> : null}
         {(!publicMode || reportRequestEnabled) ? <button className="button button--primary" onClick={onRequestReport} type="button">Solicitar informe completo</button> : null}
         <button className="button button--secondary" onClick={onEdit} type="button">Editar respuestas</button>
         <Link className="button button--secondary" to={methodologyHref}>Consultar metodología</Link>

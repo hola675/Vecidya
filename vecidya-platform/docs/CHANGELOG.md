@@ -10,10 +10,26 @@
 ## 2026-10-23 — 0.7.0 — Diagnóstico QA-03B publicado y activado en producción
 
 - Se aplicaron las migraciones D1 `0011–0023` a staging y producción; ledger sin pendientes. Bookmarks pre-migración y límites de validación remota constan en `ENVIRONMENTS.md`.
-- Se desplegó el Worker completo de la versión 0.7.0 en la rama de release disponible entonces. Los workers activos no incluyen las integraciones posteriores #49/#50; la fuente actual `origin/main@69531b3` está pendiente de promoción. Staging `39ffd6e1-4d20-4c39-9338-653b41340085`; producción `517126e4-a3cd-4309-8501-5a49d57cd15f`.
+- Se desplegó el Worker completo de la versión 0.7.0 en la rama de release disponible entonces. Los workers activos no incluyen las integraciones posteriores #49–#51; la fuente actual `origin/main@e4fed1f` está pendiente de promoción. Staging `39ffd6e1-4d20-4c39-9338-653b41340085`; producción `517126e4-a3cd-4309-8501-5a49d57cd15f`.
 - Se eleva la versión de aplicación `0.6.1` → `0.7.0` y se corrige el formulario de informe para indicar que los datos vencidos se eliminan automáticamente en lotes diarios.
 - HTTP anónimo TLS a las `2026-10-24T00:12:23Z` confirmó páginas públicas 200 y footer `0.7.0`; `/app` y `/app/internal` redirigen a login sin sesión. No se verificó funcionalidad autenticada.
 - Por autorización expresa del usuario, producción activa funnel Gmail y ambos switches de purga; staging mantiene los tres flags cerrados. Los conteos agregados de backlog fueron cero, `changed_db=false`. La política desplegada retiene informes 30 días y challenges 24 horas, con aprobación legal confirmada por el usuario. No se envió correo de prueba; entrega Gmail no certificada. Se conserva adaptador V3/sesiones históricas para rollback. D1 API rechazó PRAGMA remoto; no se afirma integridad/FK remota.
+## 2026-10-23 — APP-MINI-02C (medios MiniWeb, certificación local; PR #51)
+
+- El editor permite retirar una portada o medio de galería del siguiente snapshot, usando CAS de revisión. La portada nueva se puede subir después de retirar la anterior.
+- La retirada es lógica: los metadatos/objeto se conservan para la publicación vigente hasta republicar, y siguen contando en cuota. No hay recolección de objetos.
+- Migración `0027_business-media-draft-removal.sql`; cadena local `0000–0027`. E2E Worker 90/90, unitarias 1655/1655, typecheck, build y diff-check PASS. Fixture cleanup comprobado; quedó persistencia local Wrangler bajo `.codex/tmp` con logs/capturas y base efímera, sin Worker de esta fase activo. Sin D1 remota, buckets R2 provisionados ni deploy.
+
+- Seguimiento de integración: PR #51 se actualizó sobre `origin/main@3e6b9b1`; MiniWeb E2E 90/90 y typecheck/build/diff-check PASS en `45cf0bd`. Unitarias 1655/1655 corresponden al corte previo de este checkpoint y no se repitieron sobre el merge más reciente. Persistencia Wrangler local efímera sigue presente, con fixtures limpios y Worker detenido.
+
+## 2026-10-23 — APP-MINI-REDESIGN-01 (rediseño local)
+## 2026-10-23 — APP-MINI-REDESIGN-01 (seguimiento sobre latest main)
+
+- Se dio una jerarquía visual más clara al dashboard de Mi Vecidya y al resumen interno, conservando sus consultas, indicadores reales y copy operativo.
+- App y Admin presentan drawer hasta 980 px. E2E con Worker/D1 aislados PASS: ambos abren, navegan y cierran a 390/768/980 px; rutas sin overflow a 320/390/768/980/1366 px. Typecheck/build PASS.
+- Se añadieron acciones «Imprimir o guardar» para los resúmenes anónimo e identificado y reglas print para excluir controles y el hueco de layout que generaba una hoja vacía. El E2E de PDF quedó incompleto por timeout del Worker/Vite local; no se declara PDF validado. Sin D1 remota, deploy, cambio de versión ni publicación. Deuda `DIAG-IDENTIFIED-PRINT-001` y límites en `STATUS.md`/`TESTING.md`.
+- Certificación adicional de Admin Global: controles de perfiles/licencias, suspensión/reactivación, permisos tenant y capacitación pasaron en D1 efímera, eliminada al terminar. El Worker se desconectó con `ECONNRESET` en MiniWeb luego de guardar el borrador; esa parte no se certifica. Harness alineado a snapshot v3; repetir el recorrido completo. Evidencia y deuda en `TESTING.md`/`STATUS.md`.
+- Detalle de evidencia y deuda residual en `STATUS.md` y `TESTING.md`.
 
 ## 2026-10-23 — APP-MINI-02B (implementación local sin certificar)
 

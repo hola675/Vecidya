@@ -105,6 +105,13 @@ try {
     assert.ok(!replayWire.includes("reportJson"));
     assert.ok(!replayWire.includes("fullName") && !replayWire.includes("email"));
     await page.getByRole("heading", { name: "Tu resumen del diagnóstico" }).waitFor();
+    if (name === "open-no-clients") {
+      const printSummary = page.getByRole("button", { name: "Imprimir o guardar resumen" });
+      await printSummary.waitFor({ state: "visible" });
+      await page.emulateMedia({ media: "print" });
+      assert.equal(await page.locator(".dr-candidate-actions").evaluate(element => getComputedStyle(element).display), "none", "las acciones no se imprimen en el resumen anónimo");
+      await page.emulateMedia({ media: "screen" });
+    }
     const saved = await page.evaluate(k => JSON.parse(localStorage.getItem(k)), key);
     assert.equal(saved.schemaVersion, 6); assert.equal(saved.status, "completed"); assert.ok(saved.completedAt);
     assert.equal(saved.engineIdentity.engine, "diag-v3-candidate-operation-history-v3");
@@ -204,6 +211,21 @@ try {
       await page.getByRole("link", { name: "Abrir informe", exact: true }).click();
       await page.waitForURL(`**${reportPath}`, { waitUntil: "domcontentloaded" });
       await page.locator('.rp[data-ready="true"]').waitFor().catch(async (error) => { throw new Error(`informe no renderizado: url=${page.url()}; main=${await page.locator("main").innerText()}; cause=${error.message}`); });
+      const printReport = page.getByRole("button", { name: "Imprimir o guardar PDF" });
+      await printReport.waitFor({ state: "visible" });
+      const reportPages = await page.locator(".rp").getAttribute("data-pages");
+      assert.ok(Number(reportPages) > 0, "el informe comunica su número de páginas");
+      await page.emulateMedia({ media: "print" });
+      assert.equal(await page.locator(".df-identified-report__nav").evaluate(element => getComputedStyle(element).display), "none", "la navegación y revocaciones no se imprimen");
+      assert.equal(await page.locator(".df-identified-report__print").evaluateAll(elements => elements[0] ? getComputedStyle(elements[0]).display : null), "none", "el botón de impresión no se imprime");
+      const printPdf = await page.pdf({ preferCSSPageSize: true, printBackground: true });
+      const renderedPages = (Buffer.from(printPdf).toString("latin1").match(/\/Type\s*\/Page\b/gu) ?? []).length;
+      assert.equal(renderedPages, Number(reportPages), `el PDF contiene solo las ${reportPages} páginas del informe, sin hojas en blanco`);
+      if (process.env.VISUAL_OUTPUT_DIRECTORY) {
+        mkdirSync(process.env.VISUAL_OUTPUT_DIRECTORY, { recursive: true });
+        writeFileSync(`${process.env.VISUAL_OUTPUT_DIRECTORY}/diagnostic-identified-full-report.pdf`, printPdf);
+      }
+      await page.emulateMedia({ media: "screen" });
       assert.equal(await page.getByText("© 2026 Vecidya", { exact: true }).count(), 1, "informe incluye el footer compartido");
       assert.equal(await page.locator(`.platform-footer [aria-label="Versión pública ${platformVersion}"]`).count(), 1, "informe incluye la versión pública");
       const reportViewport = page.viewportSize();
@@ -282,4 +304,4 @@ try {
     await cleanupPage.close();
   } finally { await browser.close(); }
 }
-console.log("QA-03B Worker local: 6 rutas + reanudación, concurrencia y un informe HTML identificado verificado PASS; sin pruebas ni cambios del generador PDF.");
+console.log("QA-03B Worker local: 6 rutas + reanudación, concurrencia, resumen anónimo imprimible e informe identificado/PDF sin páginas vacías verificados PASS.");

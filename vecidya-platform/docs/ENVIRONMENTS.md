@@ -353,7 +353,7 @@ Con la configuración OAuth completa, el envío Gmail queda listo para validaci�
 
 ## Recursos no habilitados
 
-- **R2 (actualización 2026-10-23, rama local APP-MINI-02C)**: `wrangler.jsonc` declara el binding `BUSINESS_MEDIA` con nombres separados para prod (`vecidya-business-media-prod`) y staging (`vecidya-business-media-staging`). No se crearon ni verificaron esos buckets en Cloudflare, no se desplegó el binding y no se subieron objetos remotos. La configuración de código no cambia la evidencia HTTP ni el estado operativo de la cuenta. El logo del perfil continúa como URL de texto; la portada dedicada está pendiente.
+- **R2 (actualización 2026-10-23, rama local APP-MINI-02C)**: `wrangler.jsonc` declara el binding `BUSINESS_MEDIA` con nombres separados para prod (`vecidya-business-media-prod`) y staging (`vecidya-business-media-staging`). No se crearon ni verificaron esos buckets en Cloudflare, no se desplegó el binding y no se subieron objetos remotos. La configuración de código no cambia la evidencia HTTP ni el estado operativo de la cuenta. Las bajas de medios conservan objeto y metadatos para servir el snapshot publicado previo; no hay recolección de objetos huérfanos. El logo del perfil continúa como URL de texto; la portada dedicada está pendiente.
 - **Durable Objects, Queues, Workflows**: existen los directorios `worker/durable-objects`, `worker/queues`, `worker/workflows` sin contenido; no hay bindings.
 - **Correo del dominio**: el MX de `vecidya.com` apunta a Google `DOC`; no se modificó.
 - **Cloudflare Pages** `vecidya` (`vecidya.pages.dev`): existía según la auditoría 10A `DOC`; no forma parte de este repositorio.

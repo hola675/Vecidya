@@ -1,10 +1,14 @@
+## App cliente e interna — revisión visual focal (2026-10-23)
+
+`APP-MINI-REDESIGN-01` continúa localmente sobre `origin/main@5e26614` (PR #52 integrado). App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.
+
 ## UI-PILOT-01 — estado local de Aprende (2026-10-23)
 
 El piloto visual de `/aprende` está implementado en `feat/aprende-ui-pilot-01`, actualizado sobre `origin/main@85ba1e0`, con búsqueda en el primer bloque, ilustración original de rutas y contenido/conteos editoriales conservados (38 guías, 27 borradores, 7 itinerarios, 6 temas). La búsqueda con query enlaza a resultados; las tarjetas relacionadas y CTA/cuerpo de artículos no exceden 320 px. El E2E enfocado, typecheck y build pasan en Worker local. Es código local no publicado; no modifica identidad, datos ni el flujo de Diagnóstico. La evidencia vigente está en `STATUS.md` y `TESTING.md`.
 
 ## Estado vigente — APP-MINI-02C y publicación QA-03B (2026-10-24)
 
-PR #42 se integró mediante `4d6107730e98e1dda4c333c9c565e40645213ff8`; PR #45 corrigió dos P2 post-merge. PR #49 añadió ofertas/FAQ y PR #50 integró APP-MINI-02C en `origin/main@69531b3`: metadatos `0025–0026`, binding R2, carga autenticada con CAS, snapshot v3 y medios publicados; no hay E2E funcional de MiniWeb en este corte. Las migraciones remotas `0000–0026` están aplicadas en staging/producción, pero R2 y ambos buckets siguen pendientes; los Workers activos anteceden #49/#50 y aún no publican esa fuente.
+PR #42 se integró mediante `4d6107730e98e1dda4c333c9c565e40645213ff8`; PR #45 corrigió los dos P2 post-merge y se integró mediante `85ba1e021316bbeb7d0b431e3be2523f038c7faa`. PR #49 integró APP-MINI-02B en `origin/main@6d25b3e`: ofertas/FAQ tenant-scoped, edición en `/app/miniweb`, módulos públicos, snapshot v2 y migración `0024`; validación funcional aún pendiente. PR #51 integró APP-MINI-02C por merge commit `e4fed1f85733e5a2ac89c86a1c4fced1655c5b21`: migraciones `0025–0027`, carga/retiro tenant-scoped con CAS, snapshot v3, E2E MiniWeb 90/90 en `45cf0bd` y cadena local `0000–0027`. En la rama PR #56 integrada con #51, unitarias 1655/1655, typecheck y build pasan; R2/buckets no provisionados, migración remota 0027 pendiente y no hay deploy de esta fuente. `REAL_EMAIL_NOT_VERIFIED` continúa diferido al release autorizado.
 
 ## Estado vigente — QA-03B 0.7.0 desplegado; 0.7.1 candidata pendiente de R2 (2026-10-24)
 
