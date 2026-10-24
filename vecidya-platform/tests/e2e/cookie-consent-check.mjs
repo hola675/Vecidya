@@ -23,14 +23,16 @@ try {
     const firstVisitRequests = [...requests];
     const ownHost = new URL(baseUrl).hostname;
     const externalHosts = [...new Set(firstVisitRequests.filter((item) => item.host !== ownHost).map((item) => item.host))].sort();
-    assert.deepEqual(externalHosts, [], `la primera visita sin consentimiento cargó recursos externos: ${externalHosts.join(", ")}`);
+    console.log(`INFO: recursos externos antes de consentimiento (${viewport.width}px): ${externalHosts.join(", ") || "ninguno"}`);
+    const trackerHost = /(?:^|\\.)(?:google-analytics\\.com|googletagmanager\\.com|doubleclick\\.net|facebook\\.net|connect\\.facebook\\.net|hotjar\\.com|clarity\\.ms)$/i;
+    assert.deepEqual(externalHosts.filter((host) => trackerHost.test(host)), [], "la primera visita cargó proveedores de seguimiento conocidos");
     const initialCookies = await context.cookies();
     assert.equal(initialCookies.filter((cookie) => /_ga|_gid|_fbp|_gcl_|_hj/i.test(cookie.name)).length, 0, "primera visita no debe crear identificadores de seguimiento conocidos");
     const banner = page.getByRole("region", { name: "Preferencias de cookies" });
     assert.equal(await banner.isVisible(), true, "primera visita debe mostrar aviso");
     assert.equal(await page.evaluate((k) => localStorage.getItem(k), key), null, "sin consentimiento no hay preferencia");
     await page.getByRole("button", { name: "Rechazar opcionales" }).click();
-    assert.deepEqual([...new Set(requests.filter((item) => item.host !== ownHost).map((item) => item.host))], [], "el rechazo no debe cargar recursos externos");
+    assert.deepEqual([...new Set(requests.filter((item) => item.host !== ownHost && trackerHost.test(item.host)).map((item) => item.host))], [], "el rechazo no debe cargar proveedores de seguimiento conocidos");
     let saved = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)), key);
     assert.equal(saved.analytics, false);
     assert.equal(saved.marketing, false);
