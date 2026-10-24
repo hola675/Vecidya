@@ -8,8 +8,8 @@ assertLocalBaseUrl();
 const route = new URL("/diagnostico", baseUrl).toString();
 const base = new URL(baseUrl);
 const { version: platformVersion } = JSON.parse(readFileSync(resolve("package.json"), "utf8"));
-const key = "vecidya.diagnostic.v3.candidate.session.6";
-const oldKeys = ["vecidya.diagnostic.v3.session.2", "vecidya.diagnostic.v3.candidate.session.1", "vecidya.diagnostic.v3.candidate.session.2", "vecidya.diagnostic.v3.candidate.session.3", "vecidya.diagnostic.v3.candidate.session.4", "vecidya.diagnostic.v3.candidate.session.5"];
+const key = "vecidya.diagnostic.v3.candidate.session.7";
+const oldKeys = ["vecidya.diagnostic.v3.session.2", "vecidya.diagnostic.v3.candidate.session.1", "vecidya.diagnostic.v3.candidate.session.2", "vecidya.diagnostic.v3.candidate.session.3", "vecidya.diagnostic.v3.candidate.session.4", "vecidya.diagnostic.v3.candidate.session.5", "vecidya.diagnostic.v3.candidate.session.6"];
 const artifacts = "tmp/diag-v3-qa-03b/browser";
 const fixtureRequestIds = [];
 mkdirSync(artifacts, { recursive: true });
@@ -131,11 +131,11 @@ try {
       await page.emulateMedia({ media: "screen" });
     }
     const saved = await page.evaluate(k => JSON.parse(localStorage.getItem(k)), key);
-    assert.equal(saved.schemaVersion, 6); assert.equal(saved.status, "completed"); assert.ok(saved.completedAt);
-    assert.equal(saved.engineIdentity.engine, "diag-v3-candidate-operation-history-v3");
+    assert.equal(saved.schemaVersion, 7); assert.equal(saved.status, "completed"); assert.ok(saved.completedAt);
+    assert.equal(saved.engineIdentity.engine, "diag-v3-candidate-operation-history-v4");
     assert.ok(Array.isArray(saved.replayTranscript));
     if (name === "open-no-clients") {
-      const envelope = { replayVersion: "qa03b-worker-replay-v4", engineIdentity: saved.engineIdentity, answerSchema: "qbv2-answers-v5", questionBank: saved.questionBankIdentity, sessionSchema: 6, sessionKey: key, session: saved };
+      const envelope = { replayVersion: "qa03b-worker-replay-v5", engineIdentity: saved.engineIdentity, answerSchema: "qbv2-answers-v6", questionBank: saved.questionBankIdentity, sessionSchema: 7, sessionKey: key, session: saved };
       const negative = [
         { case: "V3", body: { ...envelope, engineIdentity: { ...saved.engineIdentity, engine: "diag-v3-public" } } },
         { case: "ACT", body: { ...envelope, questionBank: "reviewed-evidence-v3", answerSchema: "qbv2-answers-v2" } },
@@ -195,8 +195,8 @@ try {
       assert.equal(Object.hasOwn(requestPayload, "report"), false, "POST anónimo no filtra el informe");
       const submitted = reportRequestResponse.request().postDataJSON();
       assert.equal(submitted.engineIdentity.engine, saved.engineIdentity.engine);
-      assert.equal(submitted.answerSchema, "qbv2-answers-v5");
-      assert.equal(submitted.sessionSchema, 6);
+      assert.equal(submitted.answerSchema, "qbv2-answers-v6");
+      assert.equal(submitted.sessionSchema, 7);
       assert.equal(submitted.sessionKey, key);
       assert.equal(submitted.anonymousSummary.diagnosticIdentity.engine, saved.engineIdentity.engine);
       assert.equal(Object.hasOwn(submitted, "answers"), false);
@@ -237,20 +237,20 @@ try {
       assert.equal(lifecycleState.counts.activeAccess, 1);
       assert.equal(lifecycleState.counts.verifiedRequests, 1);
       assert.equal(lifecycleState.snapshot.engineIdentity, JSON.stringify(requestPayload.summary.diagnosticIdentity));
-      assert.equal(lifecycleState.snapshot.reportVersion, "1.0");
-      assert.equal(lifecycleState.snapshot.methodologyVersion, "3.0");
+      assert.equal(lifecycleState.snapshot.reportVersion, "1.1");
+      assert.equal(lifecycleState.snapshot.methodologyVersion, "3.1");
       await page.getByRole("link", { name: "Abrir informe", exact: true }).click();
       await page.waitForURL(`**${reportPath}`, { waitUntil: "domcontentloaded" });
       await page.locator('.rp[data-ready="true"]').waitFor().catch(async (error) => { throw new Error(`informe no renderizado: url=${page.url()}; main=${await page.locator("main").innerText()}; cause=${error.message}`); });
       const printReport = page.getByRole("button", { name: "Imprimir o guardar PDF" });
       await printReport.waitFor({ state: "visible" });
       const reportDocument = page.locator(".rp-doc");
-      assert.equal(await reportDocument.getByRole("heading", { name: "Qué hacer ahora" }).count(), 1, "el informe presenta la acción principal en un bloque único");
+      assert.equal(await reportDocument.getByRole("heading", { name: "Qué conviene revisar" }).count(), 1, "el informe sin evidencia directa evita inventar una acción correctiva");
       assert.equal(await reportDocument.getByRole("heading", { name: "Plan de acción recomendado" }).count(), 0, "no repite la acción en un plan separado");
-      const primaryAction = await reportDocument.locator("[data-primary-action]").innerText();
       const reportText = await reportDocument.innerText();
-      assert.ok(!reportText.includes("Lo primero es confirmar"), "la explicación del estado general no vuelve a formular la acción");
-      assert.equal(reportText.split(primaryAction.replace(/^Siguiente paso\.\s*/u, "")).length - 1, 1, "la recomendación principal aparece una sola vez");
+      assert.equal(await reportDocument.locator("[data-primary-action]").count(), 0, "no presenta una prioridad sin evidencia directa");
+      assert.doesNotMatch(reportText, /Estado de la evidencia|Cómo comprobar el resultado/u, "no etiqueta ni verifica recomendaciones que no existen");
+      assert.doesNotMatch(reportText, /\bq2_[a-z0-9_]+\b|sourceQuestionIds/u, "las respuestas se muestran sin claves internas");
       assert.equal(reportText.split("En esta evaluación hay lectura para 0 de 3 dimensiones observables con oportunidad de evaluación (0 %); este porcentaje no representa todas las áreas del negocio.").length - 1, 1, "la nota de cobertura aparece una sola vez");
       const reportPages = await page.locator(".rp").getAttribute("data-pages");
       assert.ok(Number(reportPages) > 0, "el informe comunica su número de páginas");
@@ -285,7 +285,7 @@ try {
       await page.emulateMedia({ media: "screen" });
       assert.equal(await page.locator(".rp-business").innerText(), "Proyecto QA03B Local");
       assert.equal(await page.locator(".rp-technical").count(), 0, "el informe del cliente no expone claves internas del motor");
-      assert.equal(lifecycleState.snapshot.methodologyVersion, "3.0");
+      assert.equal(lifecycleState.snapshot.methodologyVersion, "3.1");
     }
     if (name === "open-no-clients") await page.goto(route, { waitUntil: "domcontentloaded" });
     else await page.reload({ waitUntil: "domcontentloaded" });
@@ -321,7 +321,7 @@ try {
   await resumePage.getByRole("button", { name: "Continuar diagnóstico" }).click();
   await resumePage.locator(".df-option__input").first().waitFor();
   const resumed = await resumePage.evaluate(k => JSON.parse(localStorage.getItem(k)), key);
-  assert.deepEqual(resumed.answers, beforeReload.answers); assert.equal(resumed.engineIdentity.questionBank, "reviewed-evidence-v7");
+  assert.deepEqual(resumed.answers, beforeReload.answers); assert.equal(resumed.engineIdentity.questionBank, "reviewed-evidence-v8");
   results.push({ id: "reload-resume", status: "PASS", schemaVersion: resumed.schemaVersion }); await resumeContext.close();
   const context = await browser.newContext(); const first = await context.newPage();
   await first.goto(route, { waitUntil: "domcontentloaded" }); await startDiagnosis(first);
