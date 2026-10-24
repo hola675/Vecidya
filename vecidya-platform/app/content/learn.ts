@@ -221,6 +221,11 @@ export const learnArticles: LearnArticle[] = [
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos y prioridades digitales; no instala asistentes ni activa herramientas de IA." },
     sections: [
       {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué puede hacer una inteligencia artificial por un negocio?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
+      {
         heading: "Qué es la inteligencia artificial en un negocio",
         paragraphs: [
           "Inteligencia artificial, o IA, es un nombre amplio para sistemas de software que procesan información y producen resultados como clasificaciones, predicciones, recomendaciones o contenido. El grado de automatización cambia según la herramienta: que un producto use IA no significa que pueda actuar sin una persona.",
@@ -391,6 +396,11 @@ export const learnArticles: LearnArticle[] = [
     imageAlt: "Tres canales digitales —sitio web, perfil de empresa y redes sociales— muestran de forma coherente una oferta, una zona de atención y opciones de contacto",
     cta: { label: "Conocer el Diagnóstico", to: "/diagnostico", copy: "Si quieres ordenar prioridades, el Diagnóstico de presencia digital puede servir como punto de partida; no promete visibilidad, clientes ni resultados comerciales." },
     sections: [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Antes de hacer publicidad, organiza tu presencia digital», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         heading: "Qué significa tener presencia digital",
         paragraphs: [
@@ -675,6 +685,11 @@ export const learnArticles: LearnArticle[] = [
     cta: { label: "Consultar servicios", to: "/servicios", copy: "La implementación de una automatización personalizada puede formar parte de un servicio profesional; su alcance debe confirmarse previamente." },
     sections: [
       {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Automatizaciones: ahorrar tiempo sin complicar tu negocio», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
+      {
         heading: "Qué significa automatizar una tarea",
         paragraphs: [
           "Una automatización es una instrucción configurada para que un sistema realice uno o más pasos cuando detecta un evento y se cumplen unas condiciones. Por ejemplo, al recibir una entrega registrada, añadir una tarea de revisión a una lista compartida. La persona define la regla; el sistema ejecuta el paso previsto.",
@@ -885,6 +900,11 @@ export const learnArticles: LearnArticle[] = [
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico puede ayudarte a priorizar necesidades digitales; no registra dominios ni administra DNS o alojamiento." },
     sections: [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         heading: "Dominio, hosting y sitio web: tres piezas distintas",
         paragraphs: [
@@ -1116,6 +1136,11 @@ export const learnArticles: LearnArticle[] = [
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no certifica ni audita la seguridad de un sitio web." },
     sections: [
       {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «HTTPS y certificados TLS: qué protegen y qué no», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
+      {
         heading: "HTTP y HTTPS: la diferencia es la protección del trayecto",
         paragraphs: [
           "HTTP permite que un navegador solicite páginas a un servidor. HTTPS es ese intercambio protegido por TLS: los datos viajan cifrados y el navegador comprueba que el certificado corresponda al dominio solicitado.",
@@ -1216,6 +1241,11 @@ export const learnArticles: LearnArticle[] = [
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital", "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a ordenar prioridades digitales; no recopila ni evalúa las métricas de analítica de tu sitio." },
     sections: [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Analítica web básica: qué debes medir en tu negocio», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         heading: "Qué es la analítica web",
         paragraphs: [
@@ -1330,6 +1360,11 @@ export const learnArticles: LearnArticle[] = [
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos y capacidades; no conecta cuentas ni sincroniza registros entre plataformas." },
     sections: [
       {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Cómo conectar herramientas digitales sin complicar tu negocio», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
+      {
         heading: "Qué significa integrar dos herramientas",
         paragraphs: [
           "Integrar herramientas es intercambiar datos o coordinar tareas. Por ejemplo, al recibir una solicitud de cotización, el negocio puede añadir los datos necesarios a una lista de pendientes y avisar a quien responde.",
@@ -1435,6 +1470,11 @@ export const learnArticles: LearnArticle[] = [
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no gestiona ni verifica Perfiles de Empresa de Google." },
     sections: [
       {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Tu Perfil de Empresa en Google: qué completar y mantener actualizado», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
+      {
         heading: "Qué es y quién puede utilizar un perfil",
         paragraphs: [
           "El Perfil de Empresa es una ficha para negocios elegibles en Google Search y Maps. Puede mostrar nombre, ubicación o zona, horarios, contacto y novedades.",
@@ -1523,6 +1563,11 @@ export const learnArticles: LearnArticle[] = [
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos; no es un CRM ni recibe o conserva consultas de clientes." },
     sections: [
       {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Cómo organizar mensajes, llamadas y formularios sin perder consultas», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
+      {
         heading: "Usa un registro común sin importar el canal",
         paragraphs: [
           "Elige un lugar autorizado donde el equipo compruebe qué pidió la persona y si ya tiene respuesta. No hace falta copiar toda la conversación: basta el contexto útil y su referencia original.",
@@ -1605,6 +1650,11 @@ export const learnArticles: LearnArticle[] = [
     relatedSlugs: ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos; no genera ni aprueba respuestas o publicaciones con IA." },
     sections: [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Cómo utilizar IA para preparar respuestas y publicaciones sin perder el control», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         heading: "Pide un borrador con una instrucción clara",
         paragraphs: [
@@ -1695,13 +1745,18 @@ export const learnArticles: LearnArticle[] = [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
       "dominio-hosting-sitio-web-como-funcionan"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Revisar mi situación",
       "to": "/diagnostico",
       "copy": "Puedes analizar tu punto de partida antes de contratar herramientas."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Quiero llevar mi negocio a internet: ¿por dónde empiezo?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -1875,13 +1930,18 @@ export const learnArticles: LearnArticle[] = [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
       "dominio-hosting-sitio-web-como-funcionan"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Conocer los primeros pasos",
       "to": "/aprende",
       "copy": "Puedes seguir con otras guías básicas antes de invertir en tecnología."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué equipo e internet necesitas para trabajar en digital?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -2055,13 +2115,18 @@ export const learnArticles: LearnArticle[] = [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
       "como-proteger-cuentas-contrasenas-estafas-negocio"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Seguir aprendiendo",
       "to": "/aprende",
       "copy": "Puedes continuar con seguridad y organización de archivos."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo usar el correo de tu negocio sin perder mensajes?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -2235,13 +2300,18 @@ export const learnArticles: LearnArticle[] = [
       "correo-para-mi-negocio-como-usarlo-sin-perder-mensajes",
       "como-hacer-copias-de-seguridad-de-tu-negocio"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Ver más guías básicas",
       "to": "/aprende",
       "copy": "Proteger una cuenta también es una habilidad digital que se aprende."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo evitar que te roben una cuenta o te engañen por mensaje?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -2415,13 +2485,18 @@ export const learnArticles: LearnArticle[] = [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
       "como-proteger-cuentas-contrasenas-estafas-negocio"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Ver otras guías prácticas",
       "to": "/aprende",
       "copy": "Puedes seguir con el uso seguro de otras herramientas cotidianas."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Si se rompe tu teléfono, ¿cómo recuperas los archivos del negocio?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -2595,13 +2670,18 @@ export const learnArticles: LearnArticle[] = [
       "organizar-consultas-mensajes-llamadas-formularios",
       "como-hacer-copias-de-seguridad-de-tu-negocio"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Seguir con otras herramientas",
       "to": "/aprende",
       "copy": "Puedes explorar guías sobre datos, comunicación y organización."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Para qué sirve una hoja de cálculo en un negocio pequeño?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -2776,13 +2856,18 @@ export const learnArticles: LearnArticle[] = [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
       "dominio-hosting-sitio-web-como-funcionan"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Revisar mi presencia digital",
       "to": "/diagnostico",
       "copy": "Puedes revisar qué necesita tu negocio antes de crear más canales."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Redes sociales o página web? Cómo elegir sin gastar de más», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -2956,13 +3041,18 @@ export const learnArticles: LearnArticle[] = [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
       "redes-sociales-o-pagina-web-que-necesita-tu-negocio"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Consultar sobre mi negocio",
       "to": "/contacto",
       "copy": "Si buscas comunicar mejor tu trabajo, podemos conversar sobre tu necesidad."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué vendes exactamente? Explícalo para que te entiendan», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -3136,13 +3226,18 @@ export const learnArticles: LearnArticle[] = [
       "organizar-consultas-mensajes-llamadas-formularios",
       "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Conversar con Vecidya",
       "to": "/contacto",
       "copy": "Si necesitas ordenar las consultas de tu negocio, podemos conversar sobre el punto de partida."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Te escribieron por tu negocio: cómo responder sin sonar a robot», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -3316,13 +3411,18 @@ export const learnArticles: LearnArticle[] = [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
       "como-explicar-lo-que-vendes-para-que-te-entiendan"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Leer otras guías de Aprende",
       "to": "/aprende",
       "copy": "Puedes mejorar tu presencia con prácticas sencillas y verificables."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué publicar de tu negocio si no eres diseñador?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -3496,13 +3596,18 @@ export const learnArticles: LearnArticle[] = [
       "hojas-de-calculo-para-organizar-un-negocio-pequeno",
       "como-responder-la-primera-consulta-de-un-cliente"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Explorar soluciones para mi negocio",
       "to": "/servicios",
       "copy": "Puedes revisar servicios según tu necesidad; no todos requieren una tienda en línea."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo empezar a recibir pedidos por internet sin complicarte?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -3676,13 +3781,18 @@ export const learnArticles: LearnArticle[] = [
       "organizar-consultas-mensajes-llamadas-formularios",
       "como-proteger-cuentas-contrasenas-estafas-negocio"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Leer sobre protección digital",
       "to": "/aprende",
       "copy": "Puedes seguir aprendiendo antes de decidir qué datos guardar."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué datos deberías pedir a un cliente y cuáles no?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -3856,13 +3966,18 @@ export const learnArticles: LearnArticle[] = [
       "perfil-empresa-google-completar-y-mantener-actualizado",
       "datos-de-clientes-que-puedes-pedir-y-como-protegerlos"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Seguir aprendiendo",
       "to": "/aprende",
       "copy": "Una buena reputación se construye cumpliendo y atendiendo, no inventando testimonios."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo pedir opiniones reales sin comprar reseñas?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [

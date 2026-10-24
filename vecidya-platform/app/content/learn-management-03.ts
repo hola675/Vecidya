@@ -15,7 +15,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-presupuesto-digital.svg",
     "imageAlt": "Tres tarjetas amplias representan la cuota del servicio, el tiempo de trabajo y una revisión del presupuesto total.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
       "como-saber-si-una-mejora-tecnologica-funciona-en-tu-empresa"
@@ -26,6 +26,11 @@ export const learnManagement03Articles: LearnArticle[] = [
       "copy": "Primero identifica qué necesita cambiar en el trabajo; después será más fácil comparar presupuestos."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cuánto cuesta de verdad digitalizar un proceso? Prepara un presupuesto sencillo», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La suscripción barata que terminó costando más",
         "paragraphs": [
@@ -217,7 +222,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-compras-proveedores.svg",
     "imageAlt": "Tres tarjetas muestran una solicitud, una aprobación y una recepción comprobada.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo",
       "quien-puede-ver-cambiar-y-publicar-en-tu-empresa"
@@ -228,6 +233,11 @@ export const learnManagement03Articles: LearnArticle[] = [
       "copy": "Si las compras y tareas se duplican, empieza por revisar dónde falta un responsable o una decisión clara."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Quién pidió, aprobó y recibió? Ordena las compras y los proveedores», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "El pedido que nadie recuerda haber autorizado",
         "paragraphs": [
@@ -418,7 +428,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-continuidad-digital.svg",
     "imageAlt": "Tres tarjetas representan una interrupción, un modo alternativo de trabajo y la recuperación comprobada.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "como-hacer-copias-de-seguridad-de-tu-negocio",
       "como-proteger-cuentas-contrasenas-estafas-negocio"
@@ -429,6 +439,11 @@ export const learnManagement03Articles: LearnArticle[] = [
       "copy": "La prevención empieza por saber qué procesos y servicios son esenciales para trabajar."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué pasa si se cae internet o un sistema? Prepara un plan para seguir trabajando», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "Cuando una pantalla deja de responder",
         "paragraphs": [
@@ -616,7 +631,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-gobierno-ia.svg",
     "imageAlt": "Tres tarjetas muestran una propuesta de IA, una revisión de una persona y una decisión controlada.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "preparar-respuestas-publicaciones-ia-sin-perder-control",
       "que-puede-hacer-una-inteligencia-artificial-por-un-negocio"
@@ -627,6 +642,11 @@ export const learnManagement03Articles: LearnArticle[] = [
       "copy": "Podemos ayudarte a identificar usos proporcionados, controles y límites antes de incorporar IA a tu operación."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Quién revisa lo que hace la IA? Úsala en tu empresa sin perder el control», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "Una respuesta convincente también puede ser incorrecta",
         "paragraphs": [
@@ -822,7 +842,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-evaluar-mejora.svg",
     "imageAlt": "Tres tarjetas muestran la situación inicial, una prueba limitada y una decisión basada en lo aprendido.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "analitica-web-que-medir-en-tu-negocio",
       "como-preparar-presupuesto-para-herramientas-digitales"
@@ -833,6 +853,11 @@ export const learnManagement03Articles: LearnArticle[] = [
       "copy": "Un diagnóstico inicial puede ayudarte a identificar qué problemas conviene observar primero."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿La nueva herramienta realmente ayuda? Aprende a medir una mejora digital», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "Usar una aplicación no significa que el trabajo mejoró",
         "paragraphs": [
