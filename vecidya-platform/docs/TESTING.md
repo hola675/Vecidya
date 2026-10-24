@@ -11,6 +11,12 @@
 - Revisión visual en viewport estrecho: las notas de decisión se apilan bajo el título y se leen sin desbordamiento visible; la acción a detalles ocupa el ancho de tarjeta y la consulta queda secundaria.
 - No se ejecutó `commercial-details-check.mjs`; en la corrida registrada en `UX-PREMIUM-02A`, el runner expiró esperando `networkidle` en `/licencias`. No se afirma E2E integral ni revisión WCAG/axe. Sin D1 remota, deploy o petición HTTP pública fechada.
 
+## UX-PREMIUM-01C — detalle de guías Aprende (2026-10-24)
+
+Typecheck, build y `git diff --check`: PASS. Worker Cloudflare local: artículo seleccionado y sus dos guías relacionadas responden HTTP 200. Inspección de viewport con Edge/Playwright en 320/360/390/768/1024/1366 px: sin overflow horizontal, un H1, breadcrumb e índice de 13 secciones; los enlaces relacionados resuelven a rutas existentes.
+
+`BASE_URL=http://127.0.0.1:5178 pnpm exec node tests/e2e/learn-experience-check.mjs`: **no completó**; se detuvo al verificar que el sitemap incluya `/aprende/dominio-hosting-sitio-web-como-funcionan`. En este Worker la ruta `/sitemap.xml` respondió HTTP 500, por lo que no se declara PASS del E2E ni del sitemap. La ruta de detalle de esa guía responde con metadata index/follow; la falla corresponde al sitemap local y queda pendiente diagnosticar con un runtime/D1 local correctamente migrado. No se alteró la política de sitemap. No se accedió a D1 remota ni se desplegó.
+
 ## DIAG-QA03B-PROFILE-KNOWLEDGE-01 — 60 variantes y reporte HTML (2026-10-24)
 
 **QA-03C — RAN local:** se corrigió la matriz sintética: P20 conserva captación como `unknown` porque volumen no prueba fiabilidad. `unknownByDesignQuestionIds` distingue incógnitas justificadas de interpretaciones y supuestos. Suite QA-03B profile **4/4 PASS** tras añadir la equivalencia de contrato presentación/informe y regresiones focales P03, P10 y P18; canonical candidates **16/16 PASS** con una batería adicional de suficiencia que reutiliza reglas aprobadas y no fija calibración numérica. Unitarias de diagnóstico completas: **1520/1520 PASS**; typecheck y build PASS.

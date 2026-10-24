@@ -10,6 +10,12 @@ En `feat/app-mini-ux-04-licencias`, sobre `origin/main@c70057f`, `/licencias` ah
 
 `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. Wrangler Worker local respondió HTTP 200 en `/licencias`; el HTML conserva un H1 y enlaza a las fichas Cuadra, Barrio y Ciudad. La revisión visual local confirma las notas apiladas en viewport estrecho y acciones legibles en las tarjetas. No se ejecutó el E2E comercial integral; su antecedente en `TESTING.md` quedó bloqueado por `networkidle`. Sin cambio de datos, D1, publicación ni deploy.
 
+## UX-PREMIUM-01C — páginas hijas de Aprende (2026-10-24)
+
+En `feat/aprende-guide-detail`, sobre `origin/main@2a58dc0`, se mejoró la plantilla compartida de guía individual: jerarquía editorial con imagen completa, navegación de regreso a Aprende, índice de secciones persistente en escritorio y enlaces a guías relacionadas existentes. Se conserva el contenido y el estado editorial de cada guía.
+
+Typecheck/build/diff-check PASS. Worker local: artículo y guías relacionadas responden 200; revisión responsive en 320/360/390/768/1024/1366 px sin overflow. `learn-experience-check.mjs` quedó bloqueado en la aserción de sitemap: `/sitemap.xml` responde 500 en este Worker, por lo que no se certifica esa comprobación ni el E2E completo. Sin cambio de sitemap, datos, D1 remota, deploy o HTTP pública fechada.
+
 ## APP-MINI-02E — Vecindario como índice de contenido publicado (2026-10-24)
 
 **Integrado por PR #69 en `origin/main@2a58dc0`.** `/vecindario` busca en nombre, categoría, ciudad/país, área de servicio y texto de ofertas publicadas; filtra por categoría, ciudad, área, modalidad, tipo de oferta y módulos MiniWeb renderizables. Las fichas presentan modalidad, área, ofertas activas y secciones públicas. Los términos de especialidad se derivan de categoría y ofertas existentes; no se crea una taxonomía duplicada ni se indexan borradores. No requiere migración; la búsqueda usa solo el snapshot público v3 y omite ofertas inactivas o con módulo desactivado.

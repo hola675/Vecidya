@@ -6,6 +6,12 @@ Checkpoint local `feat/app-mini-ux-03-services`, iniciado en `origin/main@ac2c8e
 
 `feat/app-mini-ux-04-licencias` refina `/licencias`: notas sobre precios, niveles y diferencias quedan agrupadas en tarjetas junto al encabezado; cada licencia ofrece un CTA primario a su ficha y consulta secundaria. Se preservan el contenido de origen, las rutas, los precios y el esquema. Typecheck, build, diff-check y GET del Worker local (200; tres fichas enlazadas) PASS. La revisión visual estrecha muestra notas apiladas. No se completó el E2E comercial integral; no está publicado.
 
+## UX-PREMIUM-01C — detalle editorial de Aprende (2026-10-24)
+
+`feat/aprende-guide-detail` mejora la ruta común de las guías individuales: hero editorial con la ilustración sin recorte, breadcrumb a `/aprende`, rail de lectura con índice de secciones y acceso al catálogo completo, y tarjetas relacionadas con destinos existentes. Se conservan artículos, metadata, estado editorial y enlaces CTA.
+
+Typecheck y build PASS; Worker local confirmó 200 para la guía seleccionada y dos relacionadas. Una medición del DOM en 320/360/390/768/1024/1366 px dio cero overflow. El E2E `learn-experience-check.mjs` no completó: la petición local a `/sitemap.xml` respondió 500 y falló la aserción que esperaba la URL publicada. No se declara E2E completo, publicación ni validación pública. Ver detalle en `STATUS.md` y `TESTING.md`.
+
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
 `APP-MINI-REDESIGN-01` está integrado en `origin/main@3e6b9b1` mediante PR #53; no está publicado. App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.
