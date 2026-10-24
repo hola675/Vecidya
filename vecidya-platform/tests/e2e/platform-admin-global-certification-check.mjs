@@ -223,6 +223,17 @@ INSERT INTO platform_owner_invitation (id,organization_id,email,token_digest,sta
   await workerReady(baseUrl);
   if (![302, 303].includes(reactivate.status) || reactivatedOrganizationApi.status !== 200 || lifecycleAudit.length !== 2 || lifecycleAudit.some((entry) => Number(entry.count) !== 1)) throw new Error(`La reactivación no restauró el acceso/API y su auditoría; HTTP=${reactivate.status}/${reactivatedOrganizationApi.status}, audit=${JSON.stringify(lifecycleAudit)}.`);
 
+  const licensesPage = await admin.request("/app/internal/licenses");
+  const licensesHtml = await licensesPage.text();
+  if (licensesPage.status !== 200 || !licensesHtml.includes("Un cliente puede tener uno o varios negocios") || !licensesHtml.includes('aria-label="Buscar cliente o negocio"') || !licensesHtml.includes("Asignar licencia a este negocio")) throw new Error(`La pantalla de licencias no explica la relación cliente/negocio o no presenta una acción clara: HTTP=${licensesPage.status}.`);
+  const assignedLicense = await admin.request("/app/internal/licenses", { organizationId: stateOrg, intent: "assign", planCode: "cuadra", initialStatus: "pending" });
+  const assignedLicenseState = query(`SELECT l.status,l.plan_code,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(stateOrg)} AND a.action='organization_license.assign') AS audit_count FROM organization_license l WHERE l.organization_id=${sqlLiteral(stateOrg)} ORDER BY l.created_at DESC LIMIT 1;`)[0];
+  if (![302, 303].includes(assignedLicense.status) || assignedLicenseState?.status !== "pending" || assignedLicenseState.plan_code !== "cuadra" || Number(assignedLicenseState.audit_count) !== 1) throw new Error(`La pantalla no asignó una licencia pendiente auditada: HTTP=${assignedLicense.status}, state=${JSON.stringify(assignedLicenseState)}.`);
+  await workerReady(baseUrl);
+  const activateLicense = await admin.request("/app/internal/licenses", { organizationId: stateOrg, intent: "reactivate" });
+  const activeLicenseState = query(`SELECT status,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(stateOrg)} AND a.action='organization_license.active') AS audit_count FROM organization_license WHERE organization_id=${sqlLiteral(stateOrg)} ORDER BY created_at DESC LIMIT 1;`)[0];
+  if (![302, 303].includes(activateLicense.status) || activeLicenseState?.status !== "active" || Number(activeLicenseState.audit_count) !== 1) throw new Error(`La activación de licencia no quedó auditada: HTTP=${activateLicense.status}, state=${JSON.stringify(activeLicenseState)}.`);
+
   const publicOrgA = randomUUID();
   const publicOrgB = randomUUID();
   const draftOrg = randomUUID();

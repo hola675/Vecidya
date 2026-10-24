@@ -1,5 +1,9 @@
 # Pruebas
 
+## ADMIN-LICENSE-UX-001 — asignación por cliente y negocio (2026-10-23)
+
+La vista `/app/internal/licenses` agrupa negocios bajo el cliente responsable y deja la organización como término técnico “espacio de trabajo”. Para esta versión, cada espacio contiene un perfil de negocio único; la licencia se asocia a ese espacio y se muestra como licencia del negocio. Sobre `feat/platform-admin-license-ux` actualizado con `origin/main@3e6b9b1`, `platform-admin-global-certification-check.mjs` **PASS** con Worker/D1 efímeros; verificó el copy cliente→negocios, acciones de licencia/auditoría, invitaciones, concurrencia, roles, ciclo de vida, capacitación, MiniWeb y eliminación verificada de la D1. `app-dashboard-redesign-check.mjs` **PASS** con Edge local en `/app` y `/app/internal`, 320/390/768/980/1366 px, drawers abren/cierran y D1 aislada eliminada. `typecheck`, `build` y `git diff --check` **PASS** en el corte actual. Suite unitaria completa no repetida. Sin D1 remota ni deploy.
+
 ## APP-MINI-REDESIGN-01 — dashboards cliente e interno (2026-10-23)
 
 `pnpm run test:e2e:app-dashboard-redesign` **PASS** en Worker Wrangler local con D1 aislada. El arnés aplica `0000–0026`, crea una cuenta/organización sintética, eleva solo su fixture a `platform_admin` activo y valida `/app` y `/app/internal`; termina el Worker, elimina la D1 efímera y comprueba su ausencia. No escribe en la D1 compartida ni remota.

@@ -39,7 +39,7 @@ export default function InternalBusinesses() {
 
   return <AdminShell active="businesses" workspaceUser={workspaceUser}>
     <main className="admin-content">
-      <div className="page-heading"><div><p className="eyebrow">NEGOCIOS</p><h1>Business Profiles</h1><p>Consulta global read-only de los perfiles comerciales existentes.</p></div><Badge tone="neutral">{profiles.length} en total</Badge></div>
+      <div className="page-heading"><div><p className="eyebrow">NEGOCIOS</p><h1>Negocios y perfiles públicos</h1><p>El perfil es la ficha pública del negocio; el cliente responsable administra uno o varios negocios. Cada uno tiene su licencia. Para asignarla, abre «Licencias de negocios».</p></div><Badge tone="neutral">{profiles.length} negocios</Badge><Link className="button button--primary" to="/app/internal/licenses">Licencias de negocios</Link></div>
 
       {profiles.length ? (
         <>
@@ -63,7 +63,7 @@ export default function InternalBusinesses() {
           {filtered.length ? (
             <div className="admin-table-wrap">
               <table className="admin-table">
-                <thead><tr><th>Negocio</th><th>Organización</th><th>Categoría / ubicación</th><th>Estado</th><th>Completitud</th><th>Servicios</th><th className="admin-table__action">Acción</th></tr></thead>
+                <thead><tr><th>Negocio</th><th>Espacio de trabajo</th><th>Categoría / ubicación</th><th>Estado</th><th>Completitud</th><th>Servicios</th><th className="admin-table__action">Acción</th></tr></thead>
                 <tbody>
                   {filtered.map((profile) => {
                     const completion = getBusinessProfileCompletion(profile);

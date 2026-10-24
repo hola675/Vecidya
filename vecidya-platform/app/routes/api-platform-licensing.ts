@@ -9,7 +9,7 @@ import {
   reassignOrganizationLicenseBillingAccount,
   setOrganizationLicenseStatus,
 } from "../../db/queries/licensing.server";
-import { requirePlatformAdmin } from "../../server/platform-authorization.server";
+import { requirePlatformAdmin, requirePlatformAdminAction } from "../../server/platform-authorization.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 
 import type { Route } from "./+types/api-platform-licensing";
@@ -37,7 +37,7 @@ function errorResponse(error: unknown) {
 
 export async function action({ context, params, request }: Route.ActionArgs) {
   const { env } = context.get(cloudflareContext);
-  const admin = await requirePlatformAdmin(env, request);
+  const admin = await requirePlatformAdminAction(env, request, "organization:license:update");
   const database = createDatabase(env.DB);
   const organizationId = params.organizationId;
 
