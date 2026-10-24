@@ -120,7 +120,7 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
             </p>
             <p className="learn-discovery__note">Explora las guías por tema o busca una duda específica. No necesitas registrarte.</p>
             <p className="learn-discovery__note">Encuentra respuestas sencillas, ejemplos cotidianos y pasos que puedes aplicar sin aprender palabras complicadas.</p>
-            <p className="learn-editorial-note">Los materiales nuevos siguen identificados como borradores hasta su revisión editorial.</p>
+            {articles.some((article) => article.editorialDraft) && <p className="learn-editorial-note">Las guías en revisión editorial se identifican de forma visible.</p>}
           </div>
           {articles.length === 0 ? (
             <div className="learn-discovery__empty">
