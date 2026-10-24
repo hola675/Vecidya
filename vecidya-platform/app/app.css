@@ -4436,6 +4436,19 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .admin-dashboard-hero p:last-child { max-width:39rem; margin:0; color:#d8e6fb; line-height:1.55; }
 .admin-dashboard-hero img { position:relative; z-index:1; display:block; width:100%; max-height:11rem; object-fit:contain; filter:drop-shadow(0 .8rem 1rem rgb(0 0 0 / 15%)); }
 .admin-overview-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
+.admin-client-group { margin-top: 1.5rem; }
+.admin-client-group__heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: .8rem; border-bottom: 1px solid var(--line, #dce4ed); padding: 0 0 .8rem; }
+.admin-client-group__heading h2 { margin: .2rem 0; font-size: 1.2rem; }
+.admin-client-group__heading p { margin: .2rem 0; color: var(--muted, #526174); }
+.admin-client-group details { margin-top: .7rem; color: var(--muted, #526174); font-size: .88rem; }
+.admin-client-group details summary { cursor: pointer; font-weight: 700; }
+.admin-client-group details p { overflow-wrap: anywhere; }
+.admin-license-form,
+.admin-license-actions { display:grid; gap:.75rem; margin-top:1rem; }
+.admin-license-form label { display:grid; gap:.35rem; font-weight:700; }
+.admin-license-form select { min-width:0; width:100%; }
+.admin-license-form .button,
+.admin-license-actions .button { justify-self:start; }
 .admin-overview-card { position:relative; grid-template-columns:auto minmax(0,1fr); align-content:start; align-items:center; gap:.4rem 1rem; min-height:13rem; border-color:#e4eaf2; border-radius:1rem; padding:1.35rem; transition:transform 180ms ease,border-color 180ms ease,box-shadow 180ms ease; }
 .admin-overview-card:hover { border-color:rgb(21 95 197 / 25%); box-shadow:0 1rem 2.2rem rgb(20 43 74 / 8%); transform:translateY(-3px); }
 .admin-overview-card__icon { display:grid; width:2.8rem; height:2.8rem; grid-row:span 2; place-items:center; border-radius:.9rem; color:var(--blue); background:#eaf2ff; }

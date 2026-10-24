@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-10-23 — ADMIN-LICENSE-UX-001 — jerarquía cliente y negocios
+
+- La pantalla de licencias agrupa negocios por cliente responsable; cada negocio tiene su propia licencia. Se aclara que el perfil público y el espacio de trabajo son dos facetas de un mismo negocio.
+- Se usa “espacio de trabajo” para la estructura técnica interna y “negocio” para lo que el operador administra. Se actualizan inicio, menú, directorio y pruebas E2E. Sin cambio de datos ni migración.
+
+## 2026-10-23 — ADMIN-LICENSE-UX-001 (panel interno de licencias)
+
+- Se añadió `/app/internal/licenses`, con asignación, cambio de plan, suspensión y reactivación por organización. La vista separa workspace, perfil comercial y licencia, y aclara que suspender conserva organización y datos.
+- Las mutaciones exigen `organization:license:update` en el control plane y conservan auditoría. E2E Admin Global y dashboard redesign, typecheck, build y diff-check PASS con Worker/D1 local en `e86fc03`, actualizado con `origin/main@5e26614`. PR pendiente; sin D1 remota ni deploy. Suite unitaria no repetida.
+
 ## 2026-10-23 — APP-MINI-02C (medios MiniWeb, certificación local; PR #51)
 
 - El editor permite retirar una portada o medio de galería del siguiente snapshot, usando CAS de revisión. La portada nueva se puede subir después de retirar la anterior.

@@ -12,14 +12,15 @@ const navigation: { label: string; to: string; active: string; icon: IconName }[
   { label: "Diagnóstico", to: "/app/internal/diagnostic-analytics", active: "diagnostic", icon: "spark" },
   { label: "Interesados", to: "/app/internal/diagnostic-leads", active: "leads", icon: "user" },
   { label: "Servicios", to: "/app/internal/services", active: "services", icon: "spark" },
-  { label: "Organizaciones", to: "/app/internal/organizations", active: "organizations", icon: "organizations" },
+  { label: "Espacios de trabajo", to: "/app/internal/organizations", active: "organizations", icon: "organizations" },
+  { label: "Licencias", to: "/app/internal/licenses", active: "licenses", icon: "audit" },
   { label: "Negocios", to: "/app/internal/businesses", active: "businesses", icon: "building" },
   { label: "Integraciones", to: "/app/internal/integrations", active: "integrations", icon: "integrations" },
   { label: "Auditoría", to: "/app/internal/audit", active: "audit", icon: "audit" },
 ];
 
 type AdminShellProps = {
-  active: "home" | "diagnostic" | "leads" | "services" | "organizations" | "businesses" | "integrations" | "audit";
+  active: "home" | "diagnostic" | "leads" | "services" | "organizations" | "licenses" | "businesses" | "integrations" | "audit";
   children: ReactNode;
   workspaceUser?: { name: string; email: string };
   platformRole?: "staff" | "platform_admin";

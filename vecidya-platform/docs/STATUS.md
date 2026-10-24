@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## ADMIN-LICENSE-UX-001 — licencias por cliente y negocio (2026-10-23)
+
+**En validación local en `feat/platform-admin-license-ux`, actualizado con `origin/main@3e6b9b1`; PR #54 abierto.** `/app/internal/licenses` agrupa espacios de trabajo por cliente responsable y muestra cada negocio como unidad con licencia propia. El copy explica que el perfil público y el espacio operativo son dos vistas del mismo negocio. Asignar/cambiar/suspender/reactivar sigue protegido por `organization:license:update` y servicios auditados. La interfaz usa “espacio de trabajo” para la estructura técnica interna y “negocio” para la entidad que administra el operador. Sin D1 remota ni deploy.
+
 ## APP-MINI-REDESIGN-01 — Mi Vecidya y Administración (2026-10-23)
 
 **Integrada en `origin/main@3e6b9b1` mediante PR #53; no publicada.** Se pulieron los dashboards `/app` y `/app/internal` y se alinearon ambos drawers al breakpoint 980 px. Al abrirlos se puede navegar y cada uno se cierra al elegir destino; `requirePlatformAdmin` y el contexto de organización se conservan. El menú de administración también se corrigió en tablet. Se añadieron controles «Imprimir o guardar» al resumen anónimo y al informe identificado; las reglas de impresión ocultan acciones y reorganizan la página para corregir el salto en blanco observado. La salida PDF corregida sigue sin validación RAN (`DIAG-IDENTIFIED-PRINT-001`). Sin cambios de guards, consultas, permisos, licencias, esquema, publicación o integraciones.
