@@ -86,3 +86,23 @@ test("Las guías especializadas conservan sus temas pedagógicos esenciales", ()
     for (const topic of topics) assert.match(content, topic, `Tema ausente en ${slug}: ${topic}`);
   }
 });
+
+test("Las bibliografías de presencia y DNS mantienen su alcance especializado", () => {
+  const presence = getLearnArticle("como-mantener-actualizada-y-confiable-tu-presencia-digital");
+  const dns = getLearnArticle("dns-https-y-correo-como-se-conecta-tu-dominio");
+  assert.ok(presence && dns, "Faltan guías especializadas");
+  const sources = (article: typeof presence) => {
+    assert.ok(article);
+    return article.sections.flatMap((section) =>
+      (section.blocks ?? []).flatMap((block) => block.type === "sources" ? block.items : []));
+  };
+  const presenceSources = sources(presence);
+  const dnsSources = sources(dns);
+  assert.ok(presenceSources.some((source) => source.url.includes("w3.org/WAI")), "Falta fuente de accesibilidad");
+  assert.ok(presenceSources.some((source) => source.url.includes("support.google.com/business")), "Falta fuente de perfil comercial");
+  assert.ok(!presenceSources.some((source) => /adspolicy|facebook.com\/business\/help|analytics/.test(source.url)), "Fuentes publicitarias ajenas al mantenimiento");
+  assert.ok(dnsSources.some((source) => source.url.includes("rfc1035")), "Falta referencia técnica de registros DNS");
+  assert.ok(dnsSources.some((source) => source.url.includes("Transport_Layer_Security")), "Falta referencia TLS");
+  assert.ok(!dnsSources.some((source) => /renewal|registration-process|lookup.icann/.test(source.url)), "Fuentes registrales ajenas a DNS");
+  assert.match(dns.sections.map((section) => section.paragraphs.join(" ")).join(" "), /SPF, DKIM ni DMARC/, "Falta delimitar alcance de autenticación de correo");
+});
