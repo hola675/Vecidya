@@ -2,11 +2,18 @@
 
 ## 2026-10-23 — APP-MINI-REDESIGN-01 (seguimiento sobre latest main)
 
+- El seguimiento visual se integró después en `main` mediante PR #53 (`origin/main@3e6b9b1`); permanece sin deploy ni publicación.
+
 - Se dio una jerarquía visual más clara al dashboard de Mi Vecidya y al resumen interno, conservando sus consultas, indicadores reales y copy operativo.
 - App y Admin presentan drawer hasta 980 px. E2E con Worker/D1 aislados PASS: ambos abren, navegan y cierran a 390/768/980 px; rutas sin overflow a 320/390/768/980/1366 px. Typecheck/build PASS.
-- Se añadieron acciones «Imprimir o guardar» para los resúmenes anónimo e identificado y reglas print para excluir controles y el hueco de layout que generaba una hoja vacía. El E2E de PDF quedó incompleto por timeout del Worker/Vite local; no se declara PDF validado. Sin D1 remota, deploy, cambio de versión ni publicación. Deuda `DIAG-IDENTIFIED-PRINT-001` y límites en `STATUS.md`/`TESTING.md`.
+- Se añadieron acciones «Imprimir o guardar» para los resúmenes anónimo e identificado y reglas print que ocultan controles y buscan corregir el hueco de layout que generaba una hoja vacía. El E2E de PDF quedó incompleto por timeout del Worker/Vite local; no se declara PDF validado. Sin D1 remota, deploy, cambio de versión ni publicación. Deuda `DIAG-IDENTIFIED-PRINT-001` y límites en `STATUS.md`/`TESTING.md`.
 - Certificación adicional de Admin Global: controles de perfiles/licencias, suspensión/reactivación, permisos tenant y capacitación pasaron en D1 efímera, eliminada al terminar. El Worker se desconectó con `ECONNRESET` en MiniWeb luego de guardar el borrador; esa parte no se certifica. Harness alineado a snapshot v3; repetir el recorrido completo. Evidencia y deuda en `TESTING.md`/`STATUS.md`.
 - Detalle de evidencia y deuda residual en `STATUS.md` y `TESTING.md`.
+
+## 2026-10-23 — DIAG-VISUAL-ASSETS-01 (plan + D1 local)
+
+- Se creó D1 local persistente y aislada en `.wrangler/diagnostic-visual-assets-01-db`; las migraciones `0000–0026` (27 en el ledger) aplicaron desde cero. Se insertaron solo los dos metadatos canónicos de plataforma; SQLite `integrity_check=ok`, `foreign_key_check` vacío y tablas de usuarios/organizaciones/diagnósticos sin fixtures. Worker local `GET /__health/db` respondió 200. E2E App/Admin PASS con su D1 sintética efímera, eliminada al terminar. No se leyó ni alteró una D1 compartida o remota.
+- `ROADMAP.md` ahora contiene el plan para actualizar resumen, ocho ejes, assets de estado/dimensión e informe completo sin cambiar resultados ni abrir gates. El plan está documentado; no hay assets ni cambios de UI implementados en este checkpoint.
 
 
 ## 2026-10-23 — APP-MINI-02B (implementación local sin certificar)

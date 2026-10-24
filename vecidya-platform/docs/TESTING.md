@@ -1,5 +1,9 @@
 # Pruebas
 
+## DIAG-VISUAL-ASSETS-01 — base local para pruebas (2026-10-23)
+
+En el worktree limpio sobre `origin/main@3e6b9b1`, `pnpm wrangler d1 migrations apply DB --local --persist-to .wrangler/diagnostic-visual-assets-01-db` aplicó desde cero `0000–0026`. El ledger `d1_migrations` tiene 27/27, última ID 27; el catálogo incluye tablas de sesión/resultado/reporte de Diagnóstico y de organizaciones/perfiles de App/Admin. Se ejecutó el seed canónico de `platform_meta` (`schema_version=1`, `platform_name=Vecidya`), sin datos comerciales. SQLite local: `PRAGMA integrity_check=ok`, `foreign_key_check` vacío; cero filas en `user`, `organization`, `diagnostic_session` y `diagnostic_result`. El proxy de D1 rechazó `PRAGMA` con `SQLITE_AUTH`, por lo que la integridad se comprobó directamente sobre el archivo SQLite local con `node:sqlite` en modo read-only. El Worker Wrangler local unido a esta D1 respondió `GET /__health/db` **200** (`status=ok`). Como verificación de App/Admin, `pnpm run test:e2e:app-dashboard-redesign` pasó en su propia D1 sintética efímera: ambas rutas/drawers y breakpoints PASS; el arnés eliminó esa D1 y verificó su ausencia. No se accedió a D1 compartida/remota.
+
 ## APP-MINI-REDESIGN-01 — dashboards cliente e interno (2026-10-23)
 
 `pnpm run test:e2e:app-dashboard-redesign` **PASS** en Worker Wrangler local con D1 aislada. El arnés aplica `0000–0026`, crea una cuenta/organización sintética, eleva solo su fixture a `platform_admin` activo y valida `/app` y `/app/internal`; termina el Worker, elimina la D1 efímera y comprueba su ausencia. No escribe en la D1 compartida ni remota.

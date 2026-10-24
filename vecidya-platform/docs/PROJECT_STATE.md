@@ -1,6 +1,10 @@
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
-`APP-MINI-REDESIGN-01` continúa localmente sobre `origin/main@5e26614` (PR #52 integrado). App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.
+`APP-MINI-REDESIGN-01` está integrado en `origin/main@3e6b9b1` mediante PR #53; no está publicado. App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.
+
+## DIAG-VISUAL-ASSETS-01 — plan de assets y lectura gráfica
+
+Plan exclusivamente documental en `ROADMAP.md`: mejorar el resumen QA-03B y el informe completo con una visualización común de las ocho dimensiones, assets existentes auditados y nuevos solo si hay brechas, preservando puntuaciones, cobertura, confianza, privacidad, accesibilidad y PDF. El contrato anónimo actual no expone dimensiones; toda extensión propuesta debe ser agregada, allowlisted y versionada. No se implementó ni se publicó.
 
 ## UI-PILOT-01 — estado local de Aprende (2026-10-23)
 
