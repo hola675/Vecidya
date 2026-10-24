@@ -57,6 +57,7 @@ function Dimension({ dimension }: { dimension: ReportDimension }) {
 
 /** El informe como secuencia de bloques, en el orden canónico de lectura (que es también el orden del PDF etiquetado). */
 function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
+  const isCandidateReport = "candidateCommercial" in report;
   const presence = report.overallPresence;
   const blocks: Block[] = [];
   const primaryPriority = report.priorities.find((priority) => priority.rank === 1) ?? null;
@@ -66,6 +67,7 @@ function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
   const primaryActionArea = firstRecommendation?.area ?? firstActionPathStep?.area ?? primaryPriority?.area ?? report.primaryConstraint.title;
   const primaryActionWhy = primaryPriority?.why ?? firstRecommendation?.whyItMatters ?? report.primaryConstraint.text;
   const primaryActionStep = firstRecommendation?.step ?? firstActionPathStep?.step ?? primaryPriority?.rank ?? null;
+  const primaryRecommendation = report.recommendations.find((item) => item.step === primaryActionStep) ?? null;
   const additionalRecommendations = report.recommendations.filter((item) => item.step !== primaryActionStep);
   const uniqueDimensionNotes = report.dimensionNotes.filter((note) => note !== presence.coverage);
   const presenceExplanation = presence.state === "insufficient" ? null : presence.explanation;
@@ -131,6 +133,9 @@ function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
         {primaryActionArea ? <h3 className="rp-h3">{primaryActionArea}</h3> : null}
         {primaryAction ? <p className="rp-action-focus__action" data-primary-action="true"><span className="rp-label">Siguiente paso.</span> {primaryAction}</p> : <p>{report.primaryConstraint.text}</p>}
         {primaryActionWhy && primaryActionWhy !== primaryAction ? <p className="rp-muted">{primaryActionWhy}</p> : null}
+        {isCandidateReport && primaryRecommendation?.verificationStatus ? <p className="rp-meta"><span className="rp-label">Estado de la evidencia:</span> {primaryRecommendation.verificationStatus}</p> : null}
+        {isCandidateReport && primaryRecommendation?.howToVerify ? <p className="rp-meta"><span className="rp-label">Cómo comprobar el resultado:</span> {primaryRecommendation.howToVerify}</p> : null}
+        {isCandidateReport && primaryRecommendation ? <div className="rp-evidence"><span className="rp-label">Respuestas que respaldan esta recomendación:</span>{primaryRecommendation.evidence?.length ? <List items={primaryRecommendation.evidence.map((item) => `${item.question} ${item.answer}`)} /> : <p>No hay respuestas directas registradas para confirmarla; revisa el paso indicado antes de actuar.</p>}</div> : null}
       </div>
     ),
   });
@@ -186,6 +191,9 @@ function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
             <div><dt>Qué mejorar</dt><dd>{item.whatToImprove}</dd></div>
             <div><dt>Por qué importa</dt><dd>{item.whyItMatters}</dd></div>
             <div><dt>Resultado esperado</dt><dd>{item.expectedOutcome}</dd></div>
+            {isCandidateReport && item.verificationStatus ? <div><dt>Estado de la evidencia</dt><dd>{item.verificationStatus}</dd></div> : null}
+            {isCandidateReport && item.howToVerify ? <div><dt>Cómo comprobar el resultado</dt><dd>{item.howToVerify}</dd></div> : null}
+            {isCandidateReport ? <div><dt>Respuestas que respaldan esta recomendación</dt><dd>{item.evidence?.length ? <List items={item.evidence.map((entry) => `${entry.question} ${entry.answer}`)} /> : "No hay respuestas directas registradas para confirmarla; revisa el paso indicado antes de actuar."}</dd></div> : null}
             {item.conditions?.length ? <div><dt>Condiciones necesarias</dt><dd><List items={item.conditions} /></dd></div> : null}
             {item.solution ? <div><dt>Tipo de solución</dt><dd>{item.solution.label}: {item.solution.description}</dd></div> : null}
           </dl>
