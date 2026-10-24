@@ -711,3 +711,6 @@ Rama de diagnóstico `feat/diagnostic-funnel-01d1`, PR #6 draft con conflictos r
 ## 01D.3 — actualización de gestión interna (2026-10-17)
 
 Se incorporó un resumen administrativo de cuatro métricas sobre solicitudes vigentes en D1: total, correos verificados, verificaciones pendientes y solicitudes verificadas con permiso comercial vigente (`c9b5db2`). La consulta excluye solicitudes expiradas y no considera autorizado a quien no haya verificado el correo o haya revocado el consentimiento. El listado mantiene búsqueda y filtros server-side, paginación y acceso exclusivo a `platform_admin`. No se ha integrado GHL. Las cifras son calculadas en lectura, sin nuevas tablas ni migraciones. Pruebas, revisión de rendimiento y certificación siguen pendientes por decisión de aplazarlas.
+## UX-PREMIUM-05A — tabla operativa de Integraciones (2026-10-24)
+
+En `feat/app-mini-ux-05-admin-state`, `/app/internal/integrations` presenta tabla compacta, búsqueda y filtro por estado, con recuento reactivo. El loader conserva `requirePlatformAdmin` y el query `organizationId`; el acceso sigue siendo de solo lectura. Typecheck/build PASS. Falta ejecutar un recorrido autenticado visual y revisar la tabla en móvil/teclado. Sin cambios a datos, permisos, proveedores ni audit log.
