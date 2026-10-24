@@ -17,6 +17,13 @@
 
 ## 2026-10-24 — APP-MINI-02E (búsqueda y filtros del Vecindario; integrado en PR #69)
 
+## 2026-10-24 — UX-PREMIUM-01C — páginas hijas de Aprende
+
+- La plantilla compartida de artículos incorpora portada editorial con ilustración completa, breadcrumb de regreso al catálogo, rail de lectura con índice y enlace a todas las guías, y mejor jerarquía para las guías relacionadas. Se mantienen contenido, metadata, CTA y destinos existentes.
+- Typecheck, build, diff-check y revisión local responsive a seis anchos PASS. El E2E de Aprende quedó incompleto por HTTP 500 local en `/sitemap.xml`; no se certifica sitemap ni publicación pública.
+
+## 2026-10-24 — APP-MINI-02E (búsqueda y filtros del Vecindario; en progreso)
+
 - `/vecindario` amplía búsqueda y filtros con modalidad, área de servicio, servicios/productos y módulos MiniWeb con contenido renderizable. Las fichas muestran ofertas activas y secciones públicas derivadas solo del snapshot; las especialidades se infieren de categoría/ofertas existentes para evitar duplicar una taxonomía.
 - El test Worker verifica el aislamiento de borradores, ofertas inactivas y módulos desactivados, filtros de contenido publicado y responsive a 320/390/768/1366. Se corrige también el P2 de anclas del editor con margen bajo la cabecera sticky.
 - Evidencia local: 112/112 E2E, 3/3 unitarias focales, typecheck, build y diff-check PASS; D1 aislada `0000–0027`, fixtures en cero. PR #69 se integró en `main@2a58dc0`; sin HTTP pública, D1 remota o deploy.
