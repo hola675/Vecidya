@@ -306,8 +306,8 @@ try {
   };
   const contentSave = await ownerA.client.json(pathA, { intent: "save", configuration: contentConfiguration, offerings: draftOfferings, faqs: draftFaqs, draftRevision: miniwebAfterDraft.draftRevision });
   check(contentSave.status === 200, `ofertas, FAQ y configuración se guardan en una sola revisión CAS (${contentSave.status})`);
-  const savedContent = await (await ownerA.client.json(pathA, null, "GET")).json();
-  check(savedContent.offerings.map((item) => item.title).join(",") === draftOfferings.map((item) => item.title).join(",") && savedContent.faqs.map((item) => item.question).join(",") === draftFaqs.map((item) => item.question).join(","), "la lectura JSON devuelve ofertas y FAQ del mismo borrador");
+  const savedOfferingsContent = await (await ownerA.client.json(pathA, null, "GET")).json();
+  check(savedOfferingsContent.offerings.map((item) => item.title).join(",") === draftOfferings.map((item) => item.title).join(",") && savedOfferingsContent.faqs.map((item) => item.question).join(",") === draftFaqs.map((item) => item.question).join(","), "la lectura JSON devuelve ofertas y FAQ del mismo borrador");
   check((await ownerA.client.json(pathB, { intent: "save", configuration: contentConfiguration, offerings: draftOfferings, faqs: draftFaqs })).status === 403, "la escritura de ofertas y FAQ respeta el aislamiento entre organizaciones");
   const invalidOfferings = draftOfferings.map((item, index) => ({ ...item, sortOrder: index === 1 ? 0 : item.sortOrder }));
   let invalidContentResponse = await ownerA.client.json(pathA, { intent: "save", configuration: contentConfiguration, offerings: invalidOfferings, faqs: draftFaqs });
@@ -318,7 +318,7 @@ try {
     invalidContentBody = await invalidContentResponse.clone().text();
   }
   check(invalidContentResponse.status === 400, `el servidor rechaza contenido con orden duplicado (${invalidContentResponse.status}: ${invalidContentBody.slice(0, 120)})`);
-  const staleContentSave = await ownerA.client.json(pathA, { intent: "save", configuration: contentConfiguration, offerings: [], faqs: [], draftRevision: savedContent.draftRevision - 1 });
+  const staleContentSave = await ownerA.client.json(pathA, { intent: "save", configuration: contentConfiguration, offerings: [], faqs: [], draftRevision: savedOfferingsContent.draftRevision - 1 });
   check(staleContentSave.status === 409, "un guardado de contenido con revisión obsoleta devuelve 409");
   const contentAfterConflict = await (await ownerA.client.json(pathA, null, "GET")).json();
   check(contentAfterConflict.offerings.length === draftOfferings.length && contentAfterConflict.faqs.length === draftFaqs.length, "el 409 no modifica ofertas ni FAQ del ganador");
