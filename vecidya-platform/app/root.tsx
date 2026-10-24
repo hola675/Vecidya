@@ -25,6 +25,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta content="#f7f9fc" name="theme-color" />
         <link href="/brand/vecidya-icon-3d.png" rel="icon" type="image/png" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "WebSite", name: "Vecidya", url: "https://vecidya.com/", inLanguage: "es", description: "Comunidad digital para ordenar presencia, aprendizaje y próximos pasos.", publisher: { "@type": "Organization", name: "Vecidya", url: "https://vecidya.com/" } }).replace(/</g, "\\u003c") }} />
         <Meta />
         <Links />
       </head>
