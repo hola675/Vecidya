@@ -31,7 +31,9 @@ test("10B single-select renderer: one h1, fieldset/legend, radio cards in canoni
   const presented = presentedFor("q2_entity");
   const html = render({ presented });
   assert.equal((html.match(/<h1/g) ?? []).length, 1);
-  assert.match(html, /<fieldset[^>]*><legend[^>]*>.*<h1[^>]*tabindex="-1"[^>]*>¿Qué describe mejor lo que vas a diagnosticar\?<\/h1>/);
+  assert.match(html, /<h1[^>]*id="df-question-title-q2_entity"[^>]*tabindex="-1"[^>]*>¿Qué describe mejor lo que vas a diagnosticar\?<\/h1>/);
+  assert.match(html, /<fieldset[^>]*aria-labelledby="df-question-title-q2_entity"[^>]*>/);
+  assert.match(html, /<fieldset[^>]*aria-describedby="df-hint-q2_entity"[^>]*>/);
   const values = [...html.matchAll(/type="radio" name="q2_entity" value="([^"]+)"/g)].map((match) => match[1]);
   assert.deepEqual(values, QUESTION_BANK_V2.find((question) => question.id === "q2_entity")!.options.map((option) => option.value), "canonical order");
   assert.equal((html.match(/is-selected/g) ?? []).length, 0, "no option looks preferred before choosing");

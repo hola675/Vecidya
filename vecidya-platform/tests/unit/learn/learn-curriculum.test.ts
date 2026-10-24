@@ -6,9 +6,9 @@ import { join } from "node:path";
 import { learnArticles, learnCategories, learnPathways } from "../../../app/content/learn.ts";
 
 test("Aprende conserva once guías originales y amplía el catálogo con operaciones y gestión", () => {
-  assert.equal(learnArticles.length, 38);
-  assert.equal(new Set(learnArticles.map((article) => article.slug)).size, 38);
-  assert.equal(learnArticles.filter((article) => article.editorialDraft).length, 27);
+  assert.equal(learnArticles.length, 44);
+  assert.equal(new Set(learnArticles.map((article) => article.slug)).size, learnArticles.length);
+  assert.equal(learnArticles.filter((article) => article.editorialDraft).length, 33);
   assert.equal(learnArticles.filter((article) => !article.editorialDraft).length, 11);
   for (const slug of [
     "como-organizar-tareas-y-responsables-en-tu-equipo",
@@ -51,7 +51,7 @@ test("nuevas guías conservan contexto, pasos, preguntas y fuentes oficiales", (
 
 test("itinerarios apuntan únicamente a artículos reales y tienen pasos útiles", () => {
   const slugs = new Set(learnArticles.map((article) => article.slug));
-  assert.equal(learnPathways.length, 7);
+  assert.equal(learnPathways.length, 8);
   assert(learnPathways.some((path) => path.title === "Trabaja mejor cada día" && path.slugs.length === 5));
   for (const path of learnPathways) {
     assert(path.title && path.description && path.slugs.length >= 3);
