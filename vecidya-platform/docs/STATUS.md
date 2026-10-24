@@ -2,7 +2,7 @@
 
 ## DIAG-MOTOR-04 — calibración por cuatro rangos y variedad de la matriz (2026-10-24)
 
-Trabajo local en `feat/diagnostic-motor-04-calibration`, dependiente de DIAG-MOTOR-03. La propuesta candidata v4 conserva el umbral de tres áreas y 60% de cobertura aplicable, la media con pesos iguales y las reglas de evidencia/confianza. Añade rangos inclusivos 0–25, 26–50, 51–75 y 76–100, pero sigue inactiva y no cambia el Worker, el resumen anónimo ni la versión pública. Las 60 variantes conservan su tamaño; los objetivos añadidos son supuestos sintéticos etiquetados. Las rutas sin evidencia suficiente siguen sin porcentaje. Validación y estado de PR se registran en `TESTING.md`; no desplegado ni publicado.
+PR #86 en borrador hacia `main`, apilado sobre DIAG-MOTOR-03. La propuesta candidata v4 conserva el umbral de tres áreas y 60% de cobertura aplicable, la media con pesos iguales y las reglas de evidencia/confianza. Añade rangos inclusivos 0–25, 26–50, 51–75 y 76–100, pero sigue inactiva y no cambia el Worker, el resumen anónimo ni la versión pública. Las 60 variantes conservan su tamaño; los objetivos añadidos son supuestos sintéticos etiquetados. Las rutas sin evidencia suficiente siguen sin porcentaje. Validación y dependencias en `TESTING.md`; no desplegado ni publicado.
 
 ## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
 
