@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
+
+**Implementada en local en `feat/app-mini-ux-03-services`, iniciada en `origin/main@ac2c8e8` y reconciliada con `origin/main@c70057f`.** `/servicios` combina el recorrido de tres pasos y la retícula bento integrados en PR #65 con accesos directos a cada familia; reorganiza las tarjetas para separar promesa, audiencia y alcance, y elimina el beneficio redundante y el CTA final duplicado. Contenido, precios, catálogo y rutas permanecen iguales. Typecheck/build/diff-check PASS; inspección visual manual en escritorio y 390 px. Sin suites E2E en este checkpoint, D1 remota, publicación ni deploy.
+
 ## APP-MINI-02E — Vecindario como índice de contenido publicado (2026-10-24)
 
 **Integrado por PR #69 en `origin/main@2a58dc0`.** `/vecindario` busca en nombre, categoría, ciudad/país, área de servicio y texto de ofertas publicadas; filtra por categoría, ciudad, área, modalidad, tipo de oferta y módulos MiniWeb renderizables. Las fichas presentan modalidad, área, ofertas activas y secciones públicas. Los términos de especialidad se derivan de categoría y ofertas existentes; no se crea una taxonomía duplicada ni se indexan borradores. No requiere migración; la búsqueda usa solo el snapshot público v3 y omite ofertas inactivas o con módulo desactivado.
@@ -12,7 +16,7 @@ Integrada en `origin/main@530235d`. El CTA principal del hero `/` dirige al Diag
 
 ## UX-PREMIUM-02A — recorrido y composición del catálogo de Servicios (2026-10-24)
 
-**PR #65 en actualización, sin integrar ni publicar.** `/servicios` ofrece una secuencia de orientación con enlaces a Diagnóstico, catálogo de siete familias y consulta; las tarjetas conservan la retícula bento 2/3/2 en escritorio. Corregido el P2 de especificidad: en tablet/móvil las siete familias ya usan columnas uniformes. Typecheck y build PASS; la regresión `services-catalog-layout-check.mjs` PASS en Worker local a 1366/768/390 px, con spans de escritorio preservados, ancho uniforme móvil y sin overflow. `commercial-details-check.mjs` no concluyó porque esperó `networkidle` en `/licencias`; planes/addons y flujo comercial completo pendientes. Teclado/foco y axe siguen pendientes; no se declara conformidad WCAG.
+**Integrado por PR #65 en `origin/main@c70057f`, sin publicación.** `/servicios` ofrece una secuencia de orientación con enlaces a Diagnóstico, catálogo de siete familias y consulta; las tarjetas conservan la retícula bento 2/3/2 en escritorio. Corregido el P2 de especificidad: en tablet/móvil las siete familias usan columnas uniformes. Typecheck/build PASS; `services-catalog-layout-check.mjs` PASS en Worker local a 1366/768/390 px, con spans de escritorio, anchos uniformes en móvil y sin overflow. `commercial-details-check.mjs` no concluyó porque esperó `networkidle` en `/licencias`; planes/addons y flujo comercial completo pendientes. Teclado/foco y axe siguen pendientes; no se declara conformidad WCAG.
 
 ## ADMIN-LICENSE-UX-001 — licencias por cliente y negocio (2026-10-23)
 

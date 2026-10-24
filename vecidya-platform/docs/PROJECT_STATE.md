@@ -1,3 +1,7 @@
+## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
+
+Checkpoint local `feat/app-mini-ux-03-services`, iniciado en `origin/main@ac2c8e8` e integrado con `origin/main@c70057f`. `/servicios` conserva el recorrido y la retícula de PR #65, agrega anclas para las siete familias y tarjetas con jerarquía de promesa, audiencia, trabajo y alcance habitual. Cada tarjeta prioriza la ficha detallada y mantiene consulta contextual; el beneficio repetido por resumen/promesa y el CTA genérico final se retiraron. El catálogo comercial sigue como fuente de verdad; sin cambios de precio, contrato, rutas o datos. Typecheck/build/diff-check PASS; inspección manual local a 1521 y 390 px, sin overflow horizontal móvil. No se ejecutaron suites E2E ni D1 remota/deploy; pendiente revisión completa de teclado/lector, contraste y zoom.
+
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
 `APP-MINI-REDESIGN-01` está integrado en `origin/main@3e6b9b1` mediante PR #53; no está publicado. App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.
@@ -14,7 +18,7 @@ El piloto visual de `/aprende` está implementado en `feat/aprende-ui-pilot-01`,
 
 PR #54 se integró mediante `c91a3dbac5fbb23625ec516f99eb2a74fd8d6729`; PR #55 se integró después en `ab8a02ed62cef15ee78eac69c99009ef8bba47db`. La interfaz `/app/internal/licenses` presenta la jerarquía cliente → negocios; cada negocio tiene su licencia y el espacio de trabajo conserva el significado técnico. Las escrituras mantienen `organization:license:update` y auditoría. Sin cambio de esquema ni despliegue.
 
-## Estado vigente — APP-MINI-02E integrado, UX-PREMIUM-02A en PR #65, gate R2 y publicación QA-03B (2026-10-24)
+## Estado vigente — APP-MINI-02E integrado, UX-PREMIUM-02A integrado/02B local, gate R2 y publicación QA-03B (2026-10-24)
 
 PR #69 integró APP-MINI-02E en `main@2a58dc0` (HEAD consultado de `origin/main`). PR #64 integró 02D en `820f529`; PR #42/#45 permanecen integrados; #49/#60/#61 cubren 02B; #51 integró 02C. La cadena remota de D1 permanece documentada en `0000–0026`; la API de Cloudflare devolvió HTTP 403/10042 y exige habilitar R2 desde Dashboard. No se crearon buckets, no se modificó D1 remota ni hubo deploy.
 
@@ -22,7 +26,7 @@ PR #69 integró APP-MINI-02E en `main@2a58dc0` (HEAD consultado de `origin/main`
 
 **APP-MINI-02E, integrado por PR #69 en `main@2a58dc0`:** el directorio filtra categoría, ciudad/área, modalidad, tipo de oferta y módulos renderizables; busca categoría, texto publicado y ofertas activas; las tarjetas presentan ubicación/modalidad/ofertas/módulos. Evidencia local: unitarias focales 3/3, MiniWeb Worker E2E 112/112, typecheck/build/diff-check PASS; fixtures en cero y migraciones locales efímeras `0000–0027`. Sin nueva migración, D1 remota ni deploy. `REAL_EMAIL_NOT_VERIFIED` sigue diferido al release autorizado.
 
-**UX-PREMIUM-02A, PR #65 en revisión:** el P2 del reset responsive de la retícula se corrige con selectores de igual especificidad y prueba E2E dedicada; Worker local confirma grid uniforme en 768/390 px. Typecheck/build pasan; el E2E comercial global conserva un fallo ajeno de fixture publicada legacy, por lo que no se declara certificado como recorrido integral.
+**UX-PREMIUM-02A, integrado por PR #65 en `origin/main@c70057f`:** el P2 del reset responsive de la retícula se corrige con selectores de igual especificidad y prueba E2E dedicada; Worker local confirma grid uniforme en 768/390 px. Typecheck/build pasan. El recorrido comercial integral sigue sin certificación; la ejecución registrada de `commercial-details-check.mjs` venció esperando `networkidle` en `/licencias`.
 
 ## DIAG-QA03B-PROFILE-COVERAGE-01 — evaluación sintética de cobertura (2026-10-23; solo local)
 

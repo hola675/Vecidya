@@ -1,9 +1,14 @@
 # Changelog
 
+## 2026-10-24 — UX-PREMIUM-02B (refinamiento de Servicios)
+
+- Se conserva el recorrido y la retícula bento de PR #65, y se añaden accesos directos a cada familia. Las fichas separan promesa, audiencia, trabajo y alcance habitual, priorizan el detalle y eliminan contenido redundante y el CTA genérico duplicado.
+- No cambian catálogo, precios, licencias ni contacto. Typecheck, build y `git diff --check` PASS; inspección visual local en escritorio y móvil. Sin suites E2E, publicación o deploy.
+
 ## 2026-10-24 — UX-PREMIUM-02A — orientación y catálogo de Servicios
 
 - `/servicios` incorpora una ruta visual de tres pasos hacia Diagnóstico, las siete familias y la consulta; las siete tarjetas usan una retícula bento responsive y conservan sus enlaces a fichas y consultas contextuales.
-- Typecheck/build PASS; Worker local HTTP 200; Playwright confirmó catálogo, recorrido y ausencia de overflow en 360/390/768/1024/1366 px, más las siete fichas de servicio en 360/1024 px. El reset de spans responsive corrige el P2 de Codex; `services-catalog-layout-check.mjs` pasa en 1366/768/390 px. El E2E comercial general agotó 30 s esperando `networkidle` en `/licencias`; planes/addons siguen pendientes. PR #65 en revisión, sin publicación; detalles y deuda en `STATUS.md` y `ROADMAP.md`.
+- Typecheck/build PASS; Worker local HTTP 200; Playwright confirmó catálogo, recorrido y ausencia de overflow en 360/390/768/1024/1366 px, más las siete fichas de servicio en 360/1024 px. El reset de spans responsive corrige el P2 de Codex; `services-catalog-layout-check.mjs` pasa en 1366/768/390 px. El E2E comercial general agotó 30 s esperando `networkidle` en `/licencias`; planes/addons siguen pendientes. PR #65 integrado en `origin/main@c70057f`, sin publicación; detalles y deuda en `STATUS.md` y `ROADMAP.md`.
 
 ## 2026-10-24 — APP-MINI-02E (búsqueda y filtros del Vecindario; integrado en PR #69)
 
