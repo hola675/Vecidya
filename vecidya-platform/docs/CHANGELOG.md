@@ -1,11 +1,22 @@
 # Changelog
 
-## 2026-10-24 — DIAG-VISUAL-ASSETS-01 — ocho áreas y lectura gráfica (local)
+## 2026-10-24 — DIAG-VISUAL-ASSETS-01 — resumen gráfico e informe sin repeticiones (local)
 
 - QA-03B emite el resumen anónimo v2 con ocho dimensiones estrictamente allowlisted, scores copiados del mismo replay que construye el informe y valores sin lectura expresados como «Sin lectura».
-- El resumen incorpora ocho tarjetas responsive con assets WebP existentes, valores de texto y barras decorativas; reduced motion apaga animación. Se mejoró la jerarquía/superficie del informe y la impresión conserva tres páginas A4 sin controles de privacidad.
-- Validación local: suite unitaria 1655/1655; typecheck/build; seis recorridos E2E con reanudación/concurrencia/PDF y ACT-04 3/3. Sin tablas/migraciones, deploy, correo real, HTTP pública ni cambios publicados. PR pendiente de integración; aceptación manual de accesibilidad sigue abierta.
+- El resumen incorpora ocho tarjetas responsive con assets WebP existentes, valores de texto y barras decorativas; reduced motion apaga animación. El informe reúne diagnóstico y acción prioritaria en un solo bloque, elimina el plan duplicado, reserva recomendaciones posteriores para acciones adicionales y retira del PDF las claves internas de trazabilidad (metodología e informe quedan identificados en portada).
+- Validación local: 1659/1659 pruebas unitarias, typecheck, build, E2E QA-03B y 11/11 pruebas focales del informe PASS. El PDF final queda en dos páginas A4, sin el anexo técnico interno; la primera acción y la nota de cobertura aparecen una vez. Sin tablas/migraciones, deploy, correo real, HTTP pública ni cambios publicados. PR #62 abierto; aceptación manual de accesibilidad sigue abierta.
 
+## 2026-10-24 — QA-03B — corpus de 60 variantes y reporte final HTML
+
+- Se incorporan fixtures sintéticos con tres niveles de conocimiento para cada uno de los 20 perfiles, validación del banco y replay pregunta por pregunta en el pipeline candidato vigente. El nivel informado señala los supuestos cualitativos y el mapeo de herramientas; no usa autoevaluaciones digitales/IA como evidencia.
+- Evidencia local: 3/3 pruebas focales PASS; 60/60 índices globales pendientes, 57 con dimensiones aplicables sin resolver, 58 terminaciones `no_useful_questions`, 2 `budget_blocked`, 0 hard-cap y 0 lecturas de medición/optimización. Sin cambio de scoring, banco productivo ni despliegue.
+- Informe interactivo y dataset JSON completos en artefactos locales de la sesión. No se generó PDF. Alcance y deuda en `TESTING.md`, `PROJECT_STATE.md`, `ROADMAP.md` y `STATUS.md`.
+
+## 2026-10-23 — APP-MINI-02B — certificación de ofertas y FAQ
+
+- Se amplía `miniweb-core-check.mjs` para probar ofertas/FAQ tenant-scoped, validación, escritura CAS, aislamiento, borrador frente a HTTP anónimo, publicación y elementos activos/inactivos. El recorrido identificó contenido inactivo dentro del payload de hidratación público aunque la UI lo ocultaba; el loader ahora solo entrega ofertas y preguntas activas a visitantes anónimos.
+- Se añade regresión de compatibilidad para snapshots v1/v2: v1 no hereda ofertas/FAQ ni enciende módulos nuevos; v2 conserva ofertas y FAQ y no inventa medios. Sin cambios de schema o migraciones.
+- Evidencia sobre base `origin/main@6b5fd55`: SHA probado `e219a647ebf57b3ba4f7a83d50d70344b327c341`; MiniWeb E2E `103/103`, suite unitaria `1658/1658`, typecheck, build y diff-check PASS. El HEAD de entrega `194acb2` solo actualiza documentación. D1 local aislada `0000–0027`, fixtures verificadas en cero; persistencia retenida en `.wrangler/app-mini-02b-functional-cert`. Sin D1 remota, deploy ni HTTP público fechado; PR #60 abierto.
 ## 2026-10-24 — corrección de persistencia MiniWeb y fixture visual local
 
 - D1 local limitaba el número de variables por sentencia al guardar módulos, ofertas y FAQ juntos. Se redujeron los lotes atómicos a dos filas, conservando el guard CAS/autorizado por organización, y se añadió regresión E2E para nueve módulos, cuatro ofertas y cuatro FAQ.

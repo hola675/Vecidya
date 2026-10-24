@@ -288,10 +288,45 @@ try {
   const miniwebAfterDraft = await (await ownerA.client.json(pathA, null, "GET")).json();
   check(profileAfterDraft.draftRevision === staleRevision + 2 && miniwebAfterDraft.draftRevision === profileAfterDraft.draftRevision, "lecturas JSON de perfil y MiniWeb devuelven la revisión vigente tras guardar perfil y horarios");
   check(miniwebAfterDraft.profile.displayName === draftName && miniwebAfterDraft.hours.some((entry) => entry.dayOfWeek === 1 && entry.opensAt === "09:00"), "el endpoint JSON de MiniWeb entrega perfil y horarios del borrador junto con esa revisión");
+  const draftOfferings = [
+    { kind: "service", title: `Consulta activa ${suffix}`, description: "Atención inicial", priceLabel: "Desde $20", sortOrder: 0, isActive: true },
+    { kind: "product", title: `Producto activo ${suffix}`, description: "Producto de muestra", priceLabel: null, sortOrder: 1, isActive: true },
+    { kind: "service", title: `Servicio pausado ${suffix}`, description: "No debe aparecer", priceLabel: null, sortOrder: 2, isActive: false },
+  ];
+  const draftFaqs = [
+    { question: `Pregunta activa ${suffix}`, answer: "Respuesta publicada", sortOrder: 0, isActive: true },
+    { question: `Pregunta pausada ${suffix}`, answer: "No debe aparecer", sortOrder: 1, isActive: false },
+  ];
+  const contentConfiguration = {
+    ...miniwebAfterDraft.draftConfiguration,
+    modules: miniwebAfterDraft.draftConfiguration.modules.map((module) => ({
+      ...module,
+      enabled: ["hero", "services", "products", "faq"].includes(module.type),
+    })),
+  };
+  const contentSave = await ownerA.client.json(pathA, { intent: "save", configuration: contentConfiguration, offerings: draftOfferings, faqs: draftFaqs, draftRevision: miniwebAfterDraft.draftRevision });
+  check(contentSave.status === 200, `ofertas, FAQ y configuración se guardan en una sola revisión CAS (${contentSave.status})`);
+  const savedOfferingsContent = await (await ownerA.client.json(pathA, null, "GET")).json();
+  check(savedOfferingsContent.offerings.map((item) => item.title).join(",") === draftOfferings.map((item) => item.title).join(",") && savedOfferingsContent.faqs.map((item) => item.question).join(",") === draftFaqs.map((item) => item.question).join(","), "la lectura JSON devuelve ofertas y FAQ del mismo borrador");
+  check((await ownerA.client.json(pathB, { intent: "save", configuration: contentConfiguration, offerings: draftOfferings, faqs: draftFaqs })).status === 403, "la escritura de ofertas y FAQ respeta el aislamiento entre organizaciones");
+  const invalidOfferings = draftOfferings.map((item, index) => ({ ...item, sortOrder: index === 1 ? 0 : item.sortOrder }));
+  let invalidContentResponse = await ownerA.client.json(pathA, { intent: "save", configuration: contentConfiguration, offerings: invalidOfferings, faqs: draftFaqs });
+  let invalidContentBody = await invalidContentResponse.clone().text();
+  if (invalidContentResponse.status >= 500 && invalidContentBody.includes("Network connection lost")) {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    invalidContentResponse = await ownerA.client.json(pathA, { intent: "save", configuration: contentConfiguration, offerings: invalidOfferings, faqs: draftFaqs });
+    invalidContentBody = await invalidContentResponse.clone().text();
+  }
+  check(invalidContentResponse.status === 400, `el servidor rechaza contenido con orden duplicado (${invalidContentResponse.status}: ${invalidContentBody.slice(0, 120)})`);
+  const staleContentSave = await ownerA.client.json(pathA, { intent: "save", configuration: contentConfiguration, offerings: [], faqs: [], draftRevision: savedOfferingsContent.draftRevision - 1 });
+  check(staleContentSave.status === 409, "un guardado de contenido con revisión obsoleta devuelve 409");
+  const contentAfterConflict = await (await ownerA.client.json(pathA, null, "GET")).json();
+  check(contentAfterConflict.offerings.length === draftOfferings.length && contentAfterConflict.faqs.length === draftFaqs.length, "el 409 no modifica ofertas ni FAQ del ganador");
   const publicBeforePublishResponse = await fetch(new URL(`/vecindario/${profileSlug("public-a")}`, baseUrl));
   const publicBeforePublish = await publicBeforePublishResponse.text();
   console.log(JSON.stringify({ miniwebPublicBeforePublish: { status: publicBeforePublishResponse.status, url: publicBeforePublishResponse.url, titlePresent: publicBeforePublish.includes(`MiniWeb público A ${suffix}`), descriptionPresent: publicBeforePublish.includes("Descripción A"), emailPresent: publicBeforePublish.includes(`a-${suffix}@example.invalid`), bodyExcerpt: publicBeforePublish.slice(0, 350) } }));
   check(publicBeforePublish.includes(`MiniWeb público A ${suffix}`) && !publicBeforePublish.includes(draftName), "editar nombre, perfil y MiniWeb conserva la versión pública previa hasta publicar");
+  check(!publicBeforePublish.includes(`Consulta activa ${suffix}`) && !publicBeforePublish.includes(`Pregunta activa ${suffix}`), "ofertas y FAQ del borrador no son visibles por HTTP anónimo antes de publicar");
   await adminA.client.json(pathA, null, "GET");
   check((await adminA.client.json(pathA, { intent: "publish" })).status === 200, "admin puede publicar explícitamente la configuración enriquecida");
 
@@ -310,6 +345,11 @@ try {
   const publicB = await (await ownerB.client.fetch(`/vecindario/${profileSlug("legacy-b")}`)).text();
   check(publicA.includes(draftName), "la publicación cambia el perfil y la composición en una sola versión pública");
   check(fullSnapshot.profile.displayName === draftName && fullSnapshot.hours.some((entry) => entry.dayOfWeek === 1 && entry.opensAt === "09:00") && fullSnapshot.configuration.modules.some((module) => module.type === "hero"), "una versión publicada contiene perfil, horarios y configuración juntos");
+  check(fullSnapshot.offerings.some((item) => item.title === `Consulta activa ${suffix}`) && fullSnapshot.faqs.some((item) => item.question === `Pregunta activa ${suffix}`), "el snapshot público incorpora ofertas y FAQ al publicar");
+  check(publicA.includes(`Consulta activa ${suffix}`), "la página pública presenta las ofertas de servicio activas");
+  check(publicA.includes(`Producto activo ${suffix}`), "la página pública presenta las ofertas de producto activas");
+  check(publicA.includes(`Pregunta activa ${suffix}`), "la página pública presenta las preguntas frecuentes activas");
+  check(!publicA.includes(`Servicio pausado ${suffix}`) && !publicA.includes(`Pregunta pausada ${suffix}`), "la página pública omite ofertas y FAQ inactivas");
   check(!publicA.includes("Descripción A") && !publicA.includes(`a-${suffix}@example.invalid`) && !publicA.includes("Contacto directo"), "los módulos desactivados no aparecen en el sitio público");
 
   const mediaInitialState = await (await ownerA.client.json(pathA, null, "GET")).json();

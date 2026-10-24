@@ -40,8 +40,8 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
     : await getMiniWebConfigurationForOrganization(database, profile.organizationId, profile, hours);
   const publicProfile = toMiniWebPublicProfile(profile, profile.verificationStatus);
   if (!publicProfile) throw new Response("Perfil no encontrado", { status: 404 });
-  const offerings = profile.publicationSnapshot?.offerings ?? [];
-  const faqs = profile.publicationSnapshot?.faqs ?? [];
+  const offerings = (profile.publicationSnapshot?.offerings ?? []).filter((item) => item.isActive);
+  const faqs = (profile.publicationSnapshot?.faqs ?? []).filter((item) => item.isActive);
   const media = (profile.publicationSnapshot?.media ?? []).map((asset) => ({ ...asset, publicUrl: `/media/business/${encodeURIComponent(profile.slug)}/${encodeURIComponent(asset.id)}`, sizeBytes: 0, createdAt: new Date(0) }));
   const renderableModules = getRenderableMiniWebModules(miniweb.publishedConfiguration, publicProfile, hours, offerings, faqs, media);
   const publicModel = restrictMiniWebPublicModel(publicProfile, hours, renderableModules.map((module) => module.type));
