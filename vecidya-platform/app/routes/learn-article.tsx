@@ -9,7 +9,16 @@ import type { Route } from "./+types/learn-article";
 export function loader({ params }: Route.LoaderArgs) {
   const article = params.slug ? getLearnArticle(params.slug) : undefined;
   if (!article) throw new Response("Artículo no encontrado", { status: 404 });
-  return { article };
+  const readingText = [
+    article.title, article.intro, ...article.enPocasPalabras,
+    ...article.sections.flatMap((section) => [
+      section.heading, ...section.paragraphs, ...(section.bullets ?? []),
+      ...(section.blocks ?? []).map((block) => JSON.stringify(block)),
+    ]),
+  ].join(" ");
+  const words = readingText.trim().split(/\s+/u).filter(Boolean).length;
+  const readingMinutes = Math.max(1, Math.ceil(words / 200));
+  return { article, readingMinutes };
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
@@ -20,6 +29,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
     { property: "og:type", content: "article" },
     ...(!article.editorialDraft ? [{ property: "article:author", content: "Yoan Ortiz" }] : []),
     { property: "article:section", content: article.category },
+    { property: "og:image:alt", content: article.imageAlt },
   ];
 }
 
@@ -71,7 +81,7 @@ function renderLearnBlock(block: LearnBlock, key: string) {
 }
 
 export default function LearnArticle({ loaderData }: Route.ComponentProps) {
-  const { article } = loaderData;
+  const { article, readingMinutes } = loaderData;
   const related = article.relatedSlugs
     ? article.relatedSlugs.flatMap((slug) => {
       const candidate = getLearnArticle(slug);
@@ -93,6 +103,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
               <p className="eyebrow">GUÍA PRÁCTICA · {article.category}</p>
               <h1>{article.title}</h1>
               <p className="learn-article-intro">{article.intro}</p>
+              <p className="learn-article-byline">Lectura aproximada: {readingMinutes} {readingMinutes === 1 ? "minuto" : "minutos"}</p>
               {article.editorialDraft ? (
                 <p className="learn-article-byline"><strong>Borrador educativo de Aprende Vecidya</strong> · contenido asistido por IA, pendiente de revisión editorial y autoría</p>
               ) : (
@@ -122,6 +133,21 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
                   {section.blocks?.map((block, blockIndex) => renderLearnBlock(block, `${section.heading}-${blockIndex}`))}
                 </section>
               ))}
+              <p><a href="#contenido">Volver al inicio del contenido ↑</a></p>
+              <section className="learn-article-review" aria-labelledby="learn-review-title">
+                <h2 id="learn-review-title">Comprueba lo aprendido</h2>
+                <p>Antes de continuar, responde con tus propias palabras y abre cada pista para comprobarlo.</p>
+                <ol>
+                  {article.enPocasPalabras.map((point, index) => (
+                    <li key={point}>
+                      <details>
+                        <summary>{index === 0 ? "¿Cuál es la idea principal?" : index === 1 ? "¿Qué puedes aplicar?" : "¿Qué precaución debes recordar?"}</summary>
+                        <p>{point}</p>
+                      </details>
+                    </li>
+                  ))}
+                </ol>
+              </section>
               <aside className="learn-article-cta">
                 <p className="eyebrow">RELACIONADO CON VECIDYA</p>
                 <h2>{article.cta.copy}</h2>
