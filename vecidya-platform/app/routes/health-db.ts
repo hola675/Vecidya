@@ -17,6 +17,6 @@ export async function loader({ context }: Route.LoaderArgs) {
   return Response.json({
     status: "ok",
     database: "d1",
-    environment: "LOCAL",
+    environment: env.APP_ENV ?? "unknown",
   });
 }
