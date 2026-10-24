@@ -1,5 +1,11 @@
 # Pruebas
 
+## UX-PREMIUM-06B — drawer accesible en cliente/Admin (2026-10-24)
+
+`node tests/e2e/app-dashboard-redesign-check.mjs`: **PASS** en Worker local con D1 aislada, migraciones aplicadas por el harness y limpieza verificada. `/app` y `/app/internal` sin overflow a 320/390/768/980/1366 px; menús abren/navegan/cierran a 390/768/980 px. A 390 px se comprueban `aria-expanded`, estado cerrado `inert` + `aria-hidden`, rol de diálogo modal, foco inicial, ciclo Tab/Shift+Tab, cierre con Escape y retorno de foco al trigger. La fixture temporal se eliminó y su ausencia se verificó.
+
+`pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. El build mantiene advertencias existentes por secretos locales Auth/Gmail opcionales ausentes y dos imports dinámicos inefectivos. No se leyó ni cambió `.env`/`.dev.vars`; no D1 remota, deploy ni HTTP pública. El E2E no prueba lector de pantalla, y el alcance no incluye todas las páginas cliente/Admin ni axe/WCAG integral.
+
 ## DIAG-VISUAL-ACCESSIBILITY-03B — semántica del cuestionario (2026-10-24)
 
 En `feat/diagnostic-accessibility-03b`, el H1 de pregunta se separó de `<legend>` y el `<fieldset>` ahora obtiene su nombre accesible desde el H1 mediante `aria-labelledby`. La jerarquía visible no cambió. Inspección manual en QA-03B local: el árbol expone el H1 y un grupo con el mismo nombre; Tab enfoca el primer checkbox, su indicador de foco es visible, Space lo activa y el estado queda marcado. No se avanzó el recorrido ni se usaron datos de negocio.

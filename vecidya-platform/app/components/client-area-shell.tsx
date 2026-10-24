@@ -5,6 +5,7 @@ import { authClient } from "../lib/auth-client";
 import { Button, Icon, type IconName } from "./ui";
 import { PlatformFooter } from "./platform-footer";
 import { publicAssets } from "../assets/public-assets";
+import { useResponsiveNavigationDrawer } from "../hooks/use-responsive-navigation-drawer";
 
 type NavLink = { id: string; label: string; to: string; icon: IconName };
 type NavGroup = { label: string | null; links: NavLink[] };
@@ -40,8 +41,9 @@ type ClientAreaShellProps = {
 export function ClientAreaShell({ active, children, workspaceUser, organizations, activeOrganization, isPlatformAdmin = false }: ClientAreaShellProps) {
   const navigate = useNavigate();
   const { revalidate } = useRevalidator();
-  const [navigationOpen, setNavigationOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const { closeNavigation, isMobileNavigation, menuButtonRef, navigationOpen, navigationRef, setNavigationOpen } =
+    useResponsiveNavigationDrawer({ breakpoint: 980, firstItemSelector: "#app-navigation a" });
   const hasOrganization = organizations.length > 0;
   const visibleGroups = hasOrganization ? groups : groups.filter((group) => group.label === null || group.label === "CUENTA");
 
@@ -62,8 +64,24 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
 
   return (
     <div className="app-shell">
-      <a className="skip-link" href="#client-page-content">Saltar al contenido</a>
-      <aside className="app-sidebar" data-open={navigationOpen}>
+      <a
+        aria-hidden={isMobileNavigation && navigationOpen ? true : undefined}
+        className="skip-link"
+        href="#client-page-content"
+        inert={isMobileNavigation && navigationOpen}
+        tabIndex={isMobileNavigation && navigationOpen ? -1 : undefined}
+      >Saltar al contenido</a>
+      <aside
+        aria-hidden={isMobileNavigation && !navigationOpen ? true : undefined}
+        aria-label={isMobileNavigation && navigationOpen ? "Navegación principal" : undefined}
+        aria-modal={isMobileNavigation && navigationOpen ? true : undefined}
+        className="app-sidebar"
+        data-open={navigationOpen}
+        inert={isMobileNavigation && !navigationOpen}
+        ref={navigationRef}
+        role={isMobileNavigation && navigationOpen ? "dialog" : undefined}
+        tabIndex={isMobileNavigation && navigationOpen ? -1 : undefined}
+      >
         <Link className="brand" to="/app" onClick={() => setNavigationOpen(false)}>
           <span className="brand-symbol-frame" aria-hidden="true">
             <img alt="" className="brand-symbol" height="512" src={publicAssets.brand.symbol3d} width="512" />
@@ -101,8 +119,9 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
           </div>
         </div>
       </aside>
+      {isMobileNavigation && navigationOpen ? <button aria-label="Cerrar navegación principal" className="app-sidebar-backdrop" onClick={() => closeNavigation(true)} type="button" /> : null}
 
-      <div className="app-frame">
+      <div className="app-frame" inert={isMobileNavigation && navigationOpen}>
         <header className="app-header">
           <Button
             aria-controls="app-navigation"
@@ -110,6 +129,7 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
             aria-label={navigationOpen ? "Cerrar navegación principal" : "Abrir navegación principal"}
             className="mobile-menu"
             onClick={() => setNavigationOpen((open) => !open)}
+            ref={menuButtonRef}
             tone="ghost"
           >
             <Icon name="menu" />

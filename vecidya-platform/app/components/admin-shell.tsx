@@ -6,6 +6,7 @@ import { authClient } from "../lib/auth-client";
 import { Button, Icon, type IconName } from "./ui";
 import { PlatformFooter } from "./platform-footer";
 import { publicAssets } from "../assets/public-assets";
+import { useResponsiveNavigationDrawer } from "../hooks/use-responsive-navigation-drawer";
 
 const navigation: { label: string; to: string; active: string; icon: IconName }[] = [
   { label: "Resumen", to: "/app/internal", active: "home", icon: "home" },
@@ -28,8 +29,9 @@ type AdminShellProps = {
 
 export function AdminShell({ active, children, workspaceUser, platformRole = "platform_admin" }: AdminShellProps) {
   const navigate = useNavigate();
-  const [navigationOpen, setNavigationOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const { closeNavigation, isMobileNavigation, menuButtonRef, navigationOpen, navigationRef, setNavigationOpen } =
+    useResponsiveNavigationDrawer({ breakpoint: 980, firstItemSelector: "#admin-navigation a" });
 
   async function handleSignOut(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -40,8 +42,24 @@ export function AdminShell({ active, children, workspaceUser, platformRole = "pl
 
   return (
     <div className="admin-shell">
-      <a className="skip-link" href="#internal-page-content">Saltar al contenido administrativo</a>
-      <aside className="admin-sidebar" data-open={navigationOpen}>
+      <a
+        aria-hidden={isMobileNavigation && navigationOpen ? true : undefined}
+        className="skip-link"
+        href="#internal-page-content"
+        inert={isMobileNavigation && navigationOpen}
+        tabIndex={isMobileNavigation && navigationOpen ? -1 : undefined}
+      >Saltar al contenido administrativo</a>
+      <aside
+        aria-hidden={isMobileNavigation && !navigationOpen ? true : undefined}
+        aria-label={isMobileNavigation && navigationOpen ? "Navegación administrativa" : undefined}
+        aria-modal={isMobileNavigation && navigationOpen ? true : undefined}
+        className="admin-sidebar"
+        data-open={navigationOpen}
+        inert={isMobileNavigation && !navigationOpen}
+        ref={navigationRef}
+        role={isMobileNavigation && navigationOpen ? "dialog" : undefined}
+        tabIndex={isMobileNavigation && navigationOpen ? -1 : undefined}
+      >
         <Link className="admin-brand" to="/app/internal">
           <span className="brand-symbol-frame" aria-hidden="true">
             <img alt="" className="brand-symbol" height="512" src={publicAssets.brand.symbol3d} width="512" />
@@ -72,8 +90,8 @@ export function AdminShell({ active, children, workspaceUser, platformRole = "pl
           </Form>
         </div>
       </aside>
-      {navigationOpen ? <button aria-label="Cerrar navegación administrativa" className="admin-sidebar-backdrop" onClick={() => setNavigationOpen(false)} type="button" /> : null}
-      <div className="admin-frame">
+      {isMobileNavigation && navigationOpen ? <button aria-label="Cerrar navegación administrativa" className="admin-sidebar-backdrop" onClick={() => closeNavigation(true)} type="button" /> : null}
+      <div className="admin-frame" inert={isMobileNavigation && navigationOpen}>
         <header className="admin-header">
           <Button
             aria-controls="admin-navigation"
@@ -81,6 +99,7 @@ export function AdminShell({ active, children, workspaceUser, platformRole = "pl
             aria-label={navigationOpen ? "Cerrar navegación administrativa" : "Abrir navegación administrativa"}
             className="admin-mobile-menu"
             onClick={() => setNavigationOpen((open) => !open)}
+            ref={menuButtonRef}
             tone="ghost"
           >
             <Icon name="menu" />
