@@ -256,7 +256,17 @@ try {
   };
   check((await memberA.client.json(pathA, null, "GET")).status === 200, "member conserva acceso de lectura a la configuración");
   check((await memberA.client.json(pathA, { intent: "save", configuration: draft })).status === 403, "member read-only no puede modificar la configuración");
-  check((await ownerA.client.json(pathA, { intent: "save", configuration: draft })).status === 200, "owner puede guardar la configuración draft");
+  const qaOfferings = [
+    { kind: "service", title: `QA servicio 1 ${suffix}`, description: "Contenido sintético de prueba.", priceLabel: null, sortOrder: 0, isActive: true },
+    { kind: "service", title: `QA servicio 2 ${suffix}`, description: "Contenido sintético de prueba.", priceLabel: null, sortOrder: 1, isActive: true },
+    { kind: "product", title: `QA producto 3 ${suffix}`, description: "Contenido sintético de prueba.", priceLabel: null, sortOrder: 2, isActive: true },
+    { kind: "product", title: `QA producto 4 ${suffix}`, description: "Contenido sintético de prueba.", priceLabel: null, sortOrder: 3, isActive: true },
+  ];
+  const qaFaqs = [0, 1, 2, 3].map((index) => ({ question: `Pregunta QA ${index + 1} ${suffix}`, answer: "Respuesta sintética de prueba.", sortOrder: index, isActive: true }));
+  const saveWithContent = await ownerA.client.json(pathA, { intent: "save", configuration: draft, offerings: qaOfferings, faqs: qaFaqs });
+  check(saveWithContent.status === 200, `owner puede guardar configuración, cuatro ofertas y cuatro FAQ en una escritura (${saveWithContent.status})`);
+  const savedContent = await (await ownerA.client.json(pathA, null, "GET")).json();
+  check(savedContent.offerings.length === 4 && savedContent.faqs.length === 4 && savedContent.draftConfiguration.modules.length === 9, "la lectura consistente conserva todos los módulos y el contenido de la ficha enriquecida");
   const profilePathA = `/api/organizations/${organizationA}/business-profile`;
   const profileRead = await ownerA.client.json(profilePathA, null, "GET");
   const profileState = await profileRead.json();
@@ -283,7 +293,7 @@ try {
   console.log(JSON.stringify({ miniwebPublicBeforePublish: { status: publicBeforePublishResponse.status, url: publicBeforePublishResponse.url, titlePresent: publicBeforePublish.includes(`MiniWeb público A ${suffix}`), descriptionPresent: publicBeforePublish.includes("Descripción A"), emailPresent: publicBeforePublish.includes(`a-${suffix}@example.invalid`), bodyExcerpt: publicBeforePublish.slice(0, 350) } }));
   check(publicBeforePublish.includes(`MiniWeb público A ${suffix}`) && !publicBeforePublish.includes(draftName), "editar nombre, perfil y MiniWeb conserva la versión pública previa hasta publicar");
   await adminA.client.json(pathA, null, "GET");
-  check((await adminA.client.json(pathA, { intent: "publish" })).status === 200, "admin puede publicar explícitamente la configuración");
+  check((await adminA.client.json(pathA, { intent: "publish" })).status === 200, "admin puede publicar explícitamente la configuración enriquecida");
 
   const published = await (await ownerA.client.json(pathA, null, "GET")).json();
   check(published.hasPersistedConfiguration === true, "la configuración se persiste al guardar");
