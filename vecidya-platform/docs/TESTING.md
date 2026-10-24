@@ -1,5 +1,11 @@
 # Pruebas
 
+## UX-PREMIUM-02H — responsive del índice Vecindario (2026-10-24)
+
+`pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Wrangler Worker local: GET `/vecindario` → HTTP 200; el DOM conserva un H1, el buscador, filtros de categoría/ciudad, el estado vacío y sus rutas reales. Inspección visual a 640 px reprodujo el solapamiento original antes del ajuste; después confirma que el titular y la descripción quedan despejados y que la ilustración ocupa el espacio inferior reservado.
+
+No se repitió `miniweb-core-check.mjs` en este checkpoint porque el cambio solo afecta el fondo responsive; su última certificación fue 112/112 en `origin/main` con overflow comprobado a 320/390/768/1366 px. No se declara auditoría axe/WCAG completa ni revisión manual de todos los anchos. Sin D1 remota, deploy o HTTP pública fechada.
+
 ## UX-PREMIUM-02B — página pública Servicios (2026-10-24)
 
 `pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS** en `feat/app-mini-ux-03-services`, iniciada en `origin/main@ac2c8e8` y reconciliada con `origin/main@c70057f`. No se ejecutaron suites unitarias ni E2E en este checkpoint. La inspección visual manual confirma la jerarquía/retícula a 1521 px y 390 px sin overflow móvil. La revisión completa de teclado, lector de pantalla, contraste y zoom queda pendiente; no se afirma certificación responsive/accesible integral. Sin D1 remota, HTTP pública ni deploy.

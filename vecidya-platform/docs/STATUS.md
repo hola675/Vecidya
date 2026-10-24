@@ -1,5 +1,13 @@
 # Estado de implementación
 
+## UX-PREMIUM-02H — responsive del hero del Vecindario (2026-10-24)
+
+En `feat/app-mini-ux-02h-vecindario-index`, el arte del hero del índice `/vecindario` se reubica bajo el texto hasta 760 px y reserva espacio propio para evitar que cubra el titular o la descripción. No se cambian filtros, contenido, perfiles publicados ni enlaces. El Worker local responde 200; revisión visual de escritorio estrecho a 640 px confirma que título y descripción quedan libres. Typecheck, build y diff-check PASS. No se ejecutó E2E en este checkpoint ni auditoría axe/WCAG; sin deploy o HTTP pública.
+
+## UX-PREMIUM-01B — Vecindario y ficha MiniWeb (2026-10-24)
+
+Integrado por PR #68 en `origin/main@15d5190`. La ficha pública `/vecindario/:slug` tiene retorno contextual, jerarquía visual de hero/módulos y cierre al directorio. Typecheck/build/diff-check pasaron; el E2E MiniWeb quedó bloqueado antes de sus fixtures por tabla local `platform_owner_invitation` ausente. No se certificó revisión responsive renderizada; sin publicación.
+
 ## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
 
 **Implementada en local en `feat/app-mini-ux-03-services`, iniciada en `origin/main@ac2c8e8` y reconciliada con `origin/main@c70057f`.** `/servicios` combina el recorrido de tres pasos y la retícula bento integrados en PR #65 con accesos directos a cada familia; reorganiza las tarjetas para separar promesa, audiencia y alcance, y elimina el beneficio redundante y el CTA final duplicado. Contenido, precios, catálogo y rutas permanecen iguales. Typecheck/build/diff-check PASS; inspección visual manual en escritorio y 390 px. Sin suites E2E en este checkpoint, D1 remota, publicación ni deploy.
@@ -27,10 +35,6 @@ En `feat/app-mini-ux-05-addons`, sobre `origin/main@c70057f`, `/addons` presenta
 **Integrado por PR #69 en `origin/main@2a58dc0`.** `/vecindario` busca en nombre, categoría, ciudad/país, área de servicio y texto de ofertas publicadas; filtra por categoría, ciudad, área, modalidad, tipo de oferta y módulos MiniWeb renderizables. Las fichas presentan modalidad, área, ofertas activas y secciones públicas. Los términos de especialidad se derivan de categoría y ofertas existentes; no se crea una taxonomía duplicada ni se indexan borradores. No requiere migración; la búsqueda usa solo el snapshot público v3 y omite ofertas inactivas o con módulo desactivado.
 
 Regresiones focales: unitarias `neighborhood.test.ts` **3/3 PASS**; `miniweb-core-check.mjs` **112/112 PASS** en Worker local/D1 aislada `0000–0027`, fixtures limpias; búsqueda de borradores omitida y navegación a Publicar compensada bajo la cabecera fija. Índice sin overflow a 320/390/768/1366 px. Typecheck, build y diff-check PASS. Worker y `.dev.vars` sintético eliminados. La D1 temporal quedó solo con esquema y ledger hasta `0027`; sin D1 remota, correo real, deploy ni HTTP pública fechada.
-
-## UX-PREMIUM-01B — Vecindario y ficha MiniWeb (2026-10-24)
-
-Implementación local en `feat/app-mini-ux-02c-directory-profiles`: la ficha pública de `/vecindario/:slug` añade retorno contextual al Vecindario, jerarquía visual al hero y módulos de contenido, y un cierre visual hacia el directorio. El estilo queda limitado a la vista pública; preview del editor, snapshot publicado y filtros de datos permanecen sin cambios. Revisión encontró selectores del hero/grid incompatibles con el DOM real; se corrigieron para apuntar al wrapper `.miniweb-template__module--hero` y al grid directo. Typecheck, build y diff-check PASS tras la corrección. El Worker local sigue bloqueado antes de registrar fixtures por tabla ausente `platform_owner_invitation`; no se declara revisión responsive renderizada ni prueba de perfil. No publicado.
 
 ## UX-PREMIUM-01A — Inicio, primera fase del plan visual (2026-10-24)
 

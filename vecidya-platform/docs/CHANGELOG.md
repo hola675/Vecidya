@@ -40,10 +40,15 @@
 - Las 17 fichas comerciales mantienen regreso al catálogo y consulta contextual; suman 32 enlaces directos a ofertas relacionadas con sus dependencias o límites documentados. La ficha de Desarrollo Empresarial enlaza al Diagnóstico si aún se están definiendo prioridades.
 - El hero y las fichas relacionadas adoptan una jerarquía visual más clara, con tarjetas de contraste y reflow a una columna en móvil. Typecheck, build y diff-check PASS; Worker local comprobó las 17 rutas y destinos internos a 360/1024 px, sin overflow; revisión visual de escritorio PASS. Sin integración o publicación.
 
+## 2026-10-24 — UX-PREMIUM-02H (responsive del hero del Vecindario)
+
+- Reubica la ilustración del hero `/vecindario` en el reflow de hasta 760 px y reserva el espacio debajo del texto, evitando el solapamiento reproducido a 640 px.
+- Mantiene intactos perfiles publicados, filtros, consultas y enlaces. Typecheck/build/diff-check PASS; Worker local 200 y revisión visual a 640 px PASS. Sin auditoría axe/WCAG, deploy o HTTP pública.
+
 ## 2026-10-24 — UX-PREMIUM-01B (ficha pública de Vecindario)
 
 - `/vecindario/:slug` incorpora breadcrumb de retorno, hero con identidad y contenido más destacados, módulos activos presentados como secciones editoriales y un cierre visual que devuelve al directorio. El alcance de estilos queda dentro de la página pública y conserva la vista previa del editor.
-- La carga sigue usando únicamente el perfil/snapshot público, medios publicados, ofertas y preguntas activas; no se añaden datos ni links comerciales inferidos. Se corrigieron los selectores del hero/grid para coincidir con el DOM real. Typecheck/build/diff-check PASS; el E2E MiniWeb no pasó del alta fixture por ausencia de `platform_owner_invitation` en la D1 local. Sin publicación.
+- La carga sigue usando únicamente el perfil/snapshot público, medios publicados, ofertas y preguntas activas; no se añaden datos ni links comerciales inferidos. Se corrigieron los selectores del hero/grid para coincidir con el DOM real. Typecheck/build/diff-check PASS; el E2E MiniWeb no pasó del alta fixture por ausencia de `platform_owner_invitation` en la D1 local. PR #68 integrado; sin publicación.
 
 ## 2026-10-24 — APP-MINI-02D (editor MiniWeb guiado; PR pendiente)
 

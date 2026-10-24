@@ -18,9 +18,13 @@ La rama `feat/diagnostic-visual-assets-01-ui` integra `origin/main@7267628` (PR 
 
 En móvil el estado general y el panorama de áreas se apilan; desde desktop las ocho tarjetas usan dos columnas. Se aplican sombras/bordes moderados, movimiento de barras desactivado con `prefers-reduced-motion` y estilos específicos de impresión. El informe muestra el hallazgo y acción primaria en secciones distintas; la acción aparece una sola vez, las recomendaciones finales incluyen solo pasos posteriores, la nota de cobertura aparece una vez y el anexo de claves internas no se imprime. Suite unitaria 1659/1659, typecheck/build, Worker E2E QA-03B y revisión visual del PDF A4 de dos páginas: PASS. Pendiente: aceptación manual de teclado/foco, lector de pantalla, contraste y zoom 200 %. Sin D1 remota, Gmail real, deploy, HTTP público, publicación ni PDF/UA.
 
-## UX-PREMIUM-01B — Vecindario y ficha MiniWeb (2026-10-24)
+## UX-PREMIUM-02H — responsive del hero del Vecindario (2026-10-24)
 
-En `feat/app-mini-ux-02c-directory-profiles`, `/vecindario/:slug` gana breadcrumb de retorno, hero editorial y mayor jerarquía para módulos publicados, más un cierre al directorio. Los datos continúan procediendo del snapshot público y la configuración MiniWeb; la preview privada del editor no recibe estilos nuevos. Se corrigieron los selectores CSS del hero/grid para que coincidan con el DOM de `DefaultMiniWebTemplate`. Typecheck, build y diff-check PASS tras la corrección. El E2E MiniWeb quedó bloqueado antes de los casos del perfil porque la D1 local `0000–0027` no tiene `platform_owner_invitation`; no hay evidencia de runtime visual ni respuesta responsive en este corte. Sin deploy.
+La ilustración del hero de `/vecindario` se reubica bajo el texto en pantallas de hasta 760 px y se reserva espacio inferior para que no se superponga al título ni a la descripción. No cambia el contenido ni las consultas. La captura en ancho intermedio de 640 px reprodujo el solapamiento antes del cambio; Worker local 200 y captura posterior confirman título y descripción despejados. Typecheck/build/diff-check PASS. No se ejecutó E2E en este checkpoint; sin deploy ni HTTP pública.
+
+## UX-PREMIUM-01B — Vecindario y ficha MiniWeb (2026-10-24; PR #68 integrado)
+
+En `feat/app-mini-ux-02c-directory-profiles`, `/vecindario/:slug` gana breadcrumb de retorno, hero editorial y mayor jerarquía para módulos publicados, más un cierre al directorio. Los datos continúan procediendo del snapshot público y la configuración MiniWeb; la preview privada del editor no recibe estilos nuevos. Se corrigieron los selectores CSS del hero/grid para que coincidan con el DOM de `DefaultMiniWebTemplate`. Typecheck, build y diff-check PASS tras la corrección. Integrado por PR #68 en `origin/main@15d5190`. El E2E MiniWeb quedó bloqueado antes de los casos del perfil porque la D1 local `0000–0027` no tiene `platform_owner_invitation`; no hay evidencia de runtime visual ni respuesta responsive en ese corte. Sin deploy.
 
 ## DIAG-QA-03B-ENGINE-REFINEMENT-02 — candidato local (2026-10-23)
 
