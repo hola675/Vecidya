@@ -72,6 +72,7 @@ export default function Licenses() {
             </div>
             <div className="licenses-decision-notes">
               <p className="licenses-price-note">Precios públicos en USD. La activación se coordina por contacto; no hay compra automática.</p>
+              <p className="licenses-price-note">Antes de contratar, confirma por escrito la periodicidad, renovación, cancelación, alcance y posibles costes de terceros. <Link to="/informacion-legal">Información legal y comercial</Link>.</p>
               <p className="licenses-price-note">Cuadra funciona de forma independiente y no requiere CRM. Barrio incorpora el CRM para un proceso comercial principal; Ciudad coordina procesos relacionados.</p>
               <p className="licenses-price-note">De Cuadra a Barrio: USD 20/mes más para captar y dar seguimiento. De Barrio a Ciudad: USD 30/mes más para coordinar varios procesos. No necesitas subir de nivel si tu licencia actual ya resuelve el trabajo.</p>
             </div>
