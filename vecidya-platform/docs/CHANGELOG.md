@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-24 — UX-PREMIUM-01B (página Servicios)
+
+- `/servicios` incorpora navegación por anclas entre sus siete familias y tarjetas más claras para quién es el servicio, qué aborda y qué alcance suele incluir.
+- Se reduce contenido redundante y se deja una acción principal de detalle por tarjeta, con consulta contextual secundaria. No cambian el catálogo, los precios ni el flujo de contacto.
+- Typecheck, build y `git diff --check` PASS. Checkpoint local; sin E2E, publicación ni deploy.
+
 ## 2026-10-24 — APP-MINI-02E (búsqueda y filtros del Vecindario; en progreso)
 
 - `/vecindario` amplía búsqueda y filtros con modalidad, área de servicio, servicios/productos y módulos MiniWeb con contenido renderizable. Las fichas muestran ofertas activas y secciones públicas derivadas solo del snapshot; las especialidades se infieren de categoría/ofertas existentes para evitar duplicar una taxonomía.

@@ -1,5 +1,9 @@
 # Pruebas
 
+## UX-PREMIUM-01B — página pública Servicios (2026-10-24)
+
+`pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS** en `feat/app-mini-ux-03-services`, basada en `origin/main@ac2c8e8`. No se ejecutaron suites de prueba ni E2E. La revisión visual manual completa en navegador y la validación accesible por viewport quedan pendientes; no se afirma certificación responsive integral. Sin Worker runtime, D1 remota, HTTP pública ni deploy en este checkpoint.
+
 ## DIAG-QA03B-PROFILE-KNOWLEDGE-01 — 60 variantes y reporte HTML (2026-10-24)
 
 **QA-03C — RAN local:** se corrigió la matriz sintética: P20 conserva captación como `unknown` porque volumen no prueba fiabilidad. `unknownByDesignQuestionIds` distingue incógnitas justificadas de interpretaciones y supuestos. Suite QA-03B profile **4/4 PASS** tras añadir la equivalencia de contrato presentación/informe y regresiones focales P03, P10 y P18; canonical candidates **16/16 PASS** con una batería adicional de suficiencia que reutiliza reglas aprobadas y no fija calibración numérica. Unitarias de diagnóstico completas: **1520/1520 PASS**; typecheck y build PASS.

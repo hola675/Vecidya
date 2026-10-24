@@ -1,3 +1,7 @@
+## UX-PREMIUM-01B — página pública de Servicios (2026-10-24)
+
+Checkpoint local `feat/app-mini-ux-03-services` desde `origin/main@ac2c8e8`. `/servicios` ofrece anclas de exploración para las siete familias y tarjetas con jerarquía de promesa, audiencia, trabajo y alcance habitual; cada una prioriza ver el alcance detallado y conserva consulta contextual. Se elimina el beneficio ya desarrollado por resumen/promesa y el CTA genérico de cierre, que repetía las acciones del hero. El catálogo comercial sigue siendo la fuente de verdad; sin cambios de precio, contrato, rutas o datos. Typecheck/build/diff-check PASS. Sin pruebas de navegador, D1 remota ni deploy; pendiente revisión visual manual completa.
+
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
 `APP-MINI-REDESIGN-01` está integrado en `origin/main@3e6b9b1` mediante PR #53; no está publicado. App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.

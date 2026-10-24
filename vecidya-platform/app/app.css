@@ -3074,7 +3074,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 /* UX-001B.5 — services experience */
 .services-experience-page { display:grid; gap:clamp(3rem,7vw,6rem); padding-block:clamp(2rem,6vw,5rem); }
 .services-experience-hero { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(16rem,.75fr); gap:clamp(2rem,7vw,6rem); align-items:center; min-height:30rem; padding:clamp(2rem,6vw,5rem); overflow:hidden; border:1px solid rgb(21 95 197 / 18%); border-radius:var(--radius-lg); background:radial-gradient(circle at 86% 18%, rgb(255 107 11 / 17%), transparent 11rem), linear-gradient(135deg,#f4f8ff 0%,#fff 65%); }
-.services-experience-hero h1 { max-width:10ch; margin:.55rem 0 1rem; font-size:clamp(2.8rem,6vw,5.2rem); letter-spacing:-.07em; line-height:.94; text-wrap:balance; }
+.services-experience-hero h1 { max-width:14ch; margin:.55rem 0 1rem; font-size:clamp(2.8rem,5.3vw,4.6rem); letter-spacing:-.07em; line-height:.98; text-wrap:balance; }
 .services-experience-hero > div > p:not(.eyebrow) { max-width:38rem; margin:0; color:var(--muted); font-size:clamp(1.05rem,2vw,1.25rem); line-height:1.6; }
 .services-experience-hero .public-actions { margin-top:1.75rem; }
 .services-experience-hero__note { display:grid; gap:.85rem; align-content:center; min-height:15rem; border:1px solid rgb(21 95 197 / 18%); border-radius:var(--radius-md); padding:clamp(1.4rem,4vw,2.25rem); color:#eff5ff; background:linear-gradient(155deg,var(--blue),var(--blue-dark)); box-shadow:0 1.2rem 2.5rem rgb(16 76 157 / 18%); }
@@ -3084,25 +3084,33 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .services-section-heading { display:grid; gap:.6rem; }
 .services-section-heading h2 { max-width:20ch; margin:0; font-size:clamp(2rem,4vw,3.4rem); letter-spacing:-.055em; line-height:1; text-wrap:balance; }
 .services-needs,.services-core,.services-process { display:grid; gap:1.5rem; }
+.services-needs { padding:clamp(1.35rem,3vw,2rem); border:1px solid var(--line); border-radius:var(--radius-lg); background:linear-gradient(135deg,#f5f9ff 0%,#fff 58%,#fff8f2 100%); }
+.services-needs-heading h2 { font-size:clamp(1.8rem,3.2vw,2.65rem); }
 .services-needs-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.75rem; margin-top:.75rem; }
-.services-need { display:grid; gap:.55rem; min-height:8.5rem; align-content:space-between; border:1px solid var(--line); border-radius:var(--radius-md); padding:1.15rem; color:var(--ink); text-decoration:none; background:#fff; box-shadow:0 .8rem 2rem rgb(20 43 74 / 5%); transition:border-color 160ms ease,box-shadow 160ms ease,transform 160ms ease; }
-.services-need:hover,.services-need:focus-visible { border-color:rgb(21 95 197 / 55%); box-shadow:0 1rem 2rem rgb(20 43 74 / 10%); transform:translateY(-.15rem); }
-.services-need span:first-child { color:var(--blue); font-size:.72rem; font-weight:900; letter-spacing:.1em; }
-.services-need strong { font-size:1.15rem; }
-.services-need span:last-child { color:var(--orange); font-size:1.2rem; font-weight:900; }
+.services-need { display:grid; gap:.7rem; min-height:9rem; align-content:space-between; border:1px solid rgb(21 95 197 / 15%); border-radius:var(--radius-md); padding:1.1rem; color:var(--ink); text-decoration:none; background:rgb(255 255 255 / 88%); box-shadow:0 .45rem 1.25rem rgb(20 43 74 / 5%); transition:border-color 180ms ease,box-shadow 180ms ease,transform 180ms ease; }
+.services-need:hover,.services-need:focus-visible { border-color:rgb(21 95 197 / 55%); box-shadow:0 .8rem 1.6rem rgb(20 43 74 / 10%); transform:translateY(-.15rem); }
+.services-need:focus-visible { outline:3px solid var(--orange); outline-offset:3px; }
+.services-need > span:first-child { color:var(--blue); font-size:.68rem; font-weight:900; letter-spacing:.09em; }
+.services-need strong { max-width:18ch; font-size:1.05rem; line-height:1.2; }
+.services-need .services-need__action { display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:.82rem; font-weight:750; }
+.services-need__action span { color:var(--orange); font-size:1.1rem; }
 .services-needs-note { margin:0; color:var(--muted); font-size:.92rem; }
 .services-core-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
-.services-core-card { display:grid; gap:1rem; scroll-margin-top:1.5rem; border:1px solid var(--line); border-radius:var(--radius-md); padding:clamp(1.35rem,3vw,2rem); background:linear-gradient(180deg,#fff,#fbfdff); box-shadow:0 .8rem 2rem rgb(20 43 74 / 5%); }
-.services-core-card:nth-child(2n) { background:linear-gradient(180deg,#fff,#fff8f3); }
+.services-core-card { display:grid; align-content:start; gap:1rem; scroll-margin-top:6rem; border:1px solid var(--line); border-radius:var(--radius-md); padding:clamp(1.25rem,2.5vw,1.8rem); background:#fff; box-shadow:0 .5rem 1.5rem rgb(20 43 74 / 5%); }
+.services-core-card:nth-child(3n + 2) { background:linear-gradient(155deg,#fff,#fffaf6); }
 .services-core-card__top { display:flex; align-items:center; gap:.8rem; }
-.services-core-card__top .eyebrow { margin:0; }
-.services-core-card h3 { margin:0; font-size:clamp(1.6rem,3vw,2.25rem); letter-spacing:-.045em; }
+.services-core-card__top .catalog-card__image--feature { flex:0 0 auto; width:5rem; height:4.5rem; object-fit:contain; }
+.services-core-card__identity { min-width:0; }
+.services-core-card__identity .eyebrow { margin:0 0 .35rem; }
+.services-core-card h3 { margin:0; font-size:clamp(1.4rem,2.5vw,2rem); letter-spacing:-.045em; line-height:1.08; text-wrap:balance; }
+.services-core-card__promise { margin:0; border-left:3px solid var(--orange); padding:.6rem .8rem; color:var(--blue-dark); background:linear-gradient(90deg,rgb(255 107 11 / 8%),transparent); font-weight:750; line-height:1.4; }
 .services-core-card__problem,.services-core-card__result,.services-core-card__support { display:grid; gap:.45rem; }
 .services-core-card__problem,.services-core-card__result { border-top:1px solid var(--line); padding-top:.9rem; }
 .services-core-card__problem span,.services-core-card__result span,.services-core-card__support > span { color:var(--blue); font-size:.72rem; font-weight:900; letter-spacing:.1em; }
 .services-core-card__problem p,.services-core-card__result p { margin:0; color:var(--muted); line-height:1.55; }
 .services-core-card__result p { color:var(--ink); font-weight:700; }
 .services-core-card__support ul { display:grid; gap:.35rem; margin:0; padding:0 0 0 1.1rem; color:var(--muted); line-height:1.45; }
+.services-core-card .commercial-catalog__actions { align-items:center; margin-top:.25rem; }
 .services-core-card__cta { justify-self:start; margin-top:.25rem; }
 .services-secondary { display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1fr) auto; align-items:end; gap:1.5rem; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:2rem 0; }
 .services-secondary h2 { margin:.45rem 0 0; font-size:clamp(1.5rem,3vw,2.2rem); letter-spacing:-.045em; }
@@ -3126,7 +3134,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width:820px) {
   .services-experience-page { gap:3.5rem; }
   .services-experience-hero { grid-template-columns:1fr; min-height:auto; padding:clamp(1.35rem,7vw,2.25rem); }
-  .services-experience-hero h1 { font-size:clamp(2.65rem,11vw,4rem); }
+  .services-experience-hero h1 { max-width:14ch; font-size:clamp(2.45rem,10vw,3.8rem); }
   .services-experience-hero .public-actions { display:grid; }
   .services-experience-hero .public-actions .button { width:100%; }
   .services-needs-grid,.services-core-grid,.services-process-list,.public-v2-commercial-boundary__grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
@@ -3134,8 +3142,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .services-secondary .text-link { white-space:normal; }
 }
 @media (max-width:520px) {
+  .services-needs { padding:1rem; }
   .services-needs-grid,.services-core-grid,.services-process-list,.public-v2-commercial-boundary__grid { grid-template-columns:1fr; }
   .services-need { min-height:6.5rem; }
+  .services-core-card__top .catalog-card__image--feature { width:4.25rem; height:3.75rem; }
+  .services-core-card .commercial-catalog__actions { align-items:flex-start; flex-direction:column; }
 }
 
 /* UX-002.4 — services commercial model */

@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## UX-PREMIUM-01B — página pública de Servicios (2026-10-24)
+
+**Implementada en local en `feat/app-mini-ux-03-services`, basada en `origin/main@ac2c8e8`.** `/servicios` agrega accesos directos por familia, reorganiza las tarjetas para separar perfil adecuado, alcance y entregables, conserva enlaces a detalle/consulta y elimina la línea de beneficio redundante y el CTA final duplicado. Contenido, precios, catálogo y rutas existentes se mantienen. Typecheck, build y `git diff --check` PASS; sin pruebas E2E, D1 remota, publicación ni deploy.
+
 ## APP-MINI-02E — Vecindario como índice de contenido publicado (2026-10-24)
 
 **En progreso en `feat/app-mini-02e-vecindario`, desde `origin/main@820f529`.** `/vecindario` busca en nombre, categoría, ciudad/país, área de servicio y texto de ofertas publicadas; filtra por categoría, ciudad, área, modalidad, tipo de oferta y módulos MiniWeb renderizables. Las fichas presentan modalidad, área, ofertas activas y secciones públicas. Los términos de especialidad se derivan de categoría y ofertas existentes; no se crea una taxonomía duplicada ni se indexan borradores. No requiere migración; la búsqueda usa solo el snapshot público v3 y omite ofertas inactivas o con módulo desactivado.
