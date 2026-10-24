@@ -6,8 +6,11 @@ const catalogFiles = ["learn.ts", "learn-business-operations.ts", "learn-operati
 const sourceFiles = await Promise.all(catalogFiles.map(async (name) => readFile(new URL("../app/content/" + name, import.meta.url), "utf8")));
 const urls = [...new Set(sourceFiles.flatMap((source) => [...source.matchAll(/url:\s*"(https:\/\/[^"]+)"/g)].map((match) => match[1])))];
 const timeoutMs = 12000;
-const results = [];
-for (const url of urls) {
+const concurrency = 5;
+const results = new Array(urls.length);
+let cursor = 0;
+
+async function checkUrl(url) {
   const entry = { url, status: "unverified", httpStatus: null, finalUrl: null, detail: "" };
   try {
     const response = await fetch(url, { method: "HEAD", redirect: "follow", signal: AbortSignal.timeout(timeoutMs), headers: { "User-Agent": "Vecidya-Aula-LinkAudit/1.0" } });
@@ -24,9 +27,16 @@ for (const url of urls) {
     entry.status = "needs_review";
     entry.detail = error instanceof Error ? error.message : String(error);
   }
-  results.push(entry);
   process.stdout.write(entry.status + " " + (entry.httpStatus ?? "-") + " " + url + "\n");
+  return entry;
 }
+
+await Promise.all(Array.from({ length: Math.min(concurrency, urls.length) }, async () => {
+  while (cursor < urls.length) {
+    const index = cursor++;
+    results[index] = await checkUrl(urls[index]);
+  }
+}));
 const report = { checkedAt: new Date().toISOString(), scope: "URL bibliográficas de los cuatro módulos de Aprende", uniqueUrls: urls.length, results };
 await writeFile(process.env.LEARN_LINK_REPORT ?? "learn-link-audit.json", JSON.stringify(report, null, 2) + "\n");
 const review = results.filter((entry) => entry.status === "needs_review").length;
