@@ -1,10 +1,10 @@
 # Changelog
 
-## 2026-10-23 — APP-MINI-02C (gestión de medios en borrador)
+## 2026-10-23 — APP-MINI-02C (medios MiniWeb, certificación local; PR #51)
 
 - El editor permite retirar una portada o medio de galería del siguiente snapshot, usando CAS de revisión. La portada nueva se puede subir después de retirar la anterior.
-- La retirada es lógica: los metadatos/objeto se conservan para la publicación vigente hasta republicar, y siguen contando en cuota. No hay recolección de objetos ni prueba funcional certificada.
-- Migración `0027_business-media-draft-removal.sql`; la cadena `0000–0027` se aplicó en D1 local efímera. Typecheck, build y diff-check PASS; no se ejecutaron pruebas unitarias/E2E. Sin D1 remota, buckets R2 provisionados ni deploy.
+- La retirada es lógica: los metadatos/objeto se conservan para la publicación vigente hasta republicar, y siguen contando en cuota. No hay recolección de objetos.
+- Migración `0027_business-media-draft-removal.sql`; cadena local `0000–0027`. E2E Worker 90/90, unitarias 1655/1655, typecheck, build y diff-check PASS. Fixture cleanup comprobado; quedó persistencia local Wrangler bajo `.codex/tmp` con logs/capturas y base efímera, sin Worker de esta fase activo. Sin D1 remota, buckets R2 provisionados ni deploy.
 
 ## 2026-10-23 — APP-MINI-02B (implementación local sin certificar)
 

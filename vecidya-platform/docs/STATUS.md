@@ -22,6 +22,10 @@ Los dos P2 están corregidos por `774d162`, integrado mediante PR #45 en `origin
 
 **Límites de alcance:** no inventario transaccional, pagos, reservas, leads, oportunidades ni CRM. `REAL_EMAIL_NOT_VERIFIED` permanece diferido al release autorizado.
 
+## APP-MINI-02C — medios MiniWeb (2026-10-23)
+
+**RAN local en `feat/app-mini-02c-media`: E2E Worker MiniWeb 90/90 PASS**, incluidos upload/retiro, revisión CAS, aislamiento de publicación, publicación explícita y concurrencia; fixtures eliminados y verificados. Los cuatro viewports 1366/768/390/360 no tienen overflow. `test:unit`, `typecheck`, `build` y `git diff --check` se ejecutan en este checkpoint; resultados finales en `TESTING.md`. Cadena local D1 `0000–0027` aplicada en D1 efímera. PR #51 abierto; no fusionado. Sin D1 remota ni deploy. Los buckets R2 reales no están provisionados; no se certifica operación con R2 real ni publicación HTTP.
+
 ## DIAG-QA-03B-RELEASE-CLOSE — cierre local y preflight pendiente (2026-10-23)
 
 **Estado integrado, no publicado.** `/diagnostico` usa QA-03B: bank `reviewed-evidence-v7`, answer schema `qbv2-answers-v5`, session schema/key 6 y replay `qa03b-worker-replay-v4`. El resumen público deriva del replay Worker; el endpoint mantiene compatibilidad V3 para rollback. No se migran sesiones V3 históricas. ACT-04 está integrado; el funnel de informe identificado y los dos switches de purga siguen `false`.

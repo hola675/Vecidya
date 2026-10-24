@@ -41,18 +41,20 @@ export function buildMiniWebContentReplacementStatements(
       .bind(organizationId, organizationId, revision, token),
   ];
 
-  if (offerings.length) {
+  for (let start = 0; start < offerings.length; start += 4) {
+    const chunk = offerings.slice(start, start + 4);
     statements.push(database.$client.prepare(`INSERT INTO business_offering
       (id, organization_id, kind, title, description, price_label, sort_order, is_active, created_at, updated_at)
-      ${offerings.map(() => `SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${authorized}`).join(" UNION ALL ")}`)
-      .bind(...offerings.flatMap((item) => [crypto.randomUUID(), organizationId, item.kind, item.title, item.description, item.priceLabel, item.sortOrder, item.isActive ? 1 : 0, Date.now(), Date.now(), organizationId, revision, token])));
+      ${chunk.map(() => `SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${authorized}`).join(" UNION ALL ")}`)
+      .bind(...chunk.flatMap((item) => [crypto.randomUUID(), organizationId, item.kind, item.title, item.description, item.priceLabel, item.sortOrder, item.isActive ? 1 : 0, Date.now(), Date.now(), organizationId, revision, token])));
   }
 
-  if (faqs.length) {
+  for (let start = 0; start < faqs.length; start += 4) {
+    const chunk = faqs.slice(start, start + 4);
     statements.push(database.$client.prepare(`INSERT INTO business_faq
       (id, organization_id, question, answer, sort_order, is_active, created_at, updated_at)
-      ${faqs.map(() => `SELECT ?, ?, ?, ?, ?, ?, ?, ? WHERE ${authorized}`).join(" UNION ALL ")}`)
-      .bind(...faqs.flatMap((item) => [crypto.randomUUID(), organizationId, item.question, item.answer, item.sortOrder, item.isActive ? 1 : 0, Date.now(), Date.now(), organizationId, revision, token])));
+      ${chunk.map(() => `SELECT ?, ?, ?, ?, ?, ?, ?, ? WHERE ${authorized}`).join(" UNION ALL ")}`)
+      .bind(...chunk.flatMap((item) => [crypto.randomUUID(), organizationId, item.question, item.answer, item.sortOrder, item.isActive ? 1 : 0, Date.now(), Date.now(), organizationId, revision, token])));
   }
   return statements;
 }
