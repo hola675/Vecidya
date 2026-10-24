@@ -1,5 +1,11 @@
 # Pruebas
 
+## DIAG-QA-03B-ENGINE-REFINEMENT-02 — matriz de 20 casos (2026-10-23)
+
+`qa03b-engine-refinement.test.ts`: la pregunta de medición produce evidencia directa solo para `consistent`, `partial` y `none`; `unknown`/`not_enough_activity` no generan nota, y no se pregunta para actividad en pausa, preparación o estado desconocido. El test recorre 20 escenarios con un turno por pregunta, falla si falta una respuesta escrita o una pregunta se repite, calcula resultado/presentación/informe por caso y comprueba los límites del índice y las prioridades sustentadas. Resultado focal: **4/4 PASS**; QA-03B Worker/replay e informe identificado: **16/16 PASS**; unitarias completas: **1659/1659 PASS**; `pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS**.
+
+Artefactos temporales de inspección visual fuera del repositorio: `C:\Users\Admin\.codex\visualizations\2026\10\23\01a169ea-0953-7db1-9cca-175a0e3fcce9\qa03b-20-casos.html` y `informe-validacion-qa03b-20-casos.pdf`. La metodología candidata y ambos artefactos declaran v3.1. La matriz dio 5 BIEN, 7 REGULAR y 8 pendientes; 12 índices calculados, 8 puntuaciones directas de medición y entre 8–19 preguntas por recorrido. Todos los datos son sintéticos. El PDF tiene 41 páginas, renderizado/revisado visualmente; la vista HTML interactiva carga, filtra y despliega respuestas localmente sin errores de consola. Esto no prueba correo/PDF de descarga por el Worker, publicación, comportamiento real ni métricas reales.
+
 ## APP-MINI-REDESIGN-01 — dashboards cliente e interno (2026-10-23)
 
 `pnpm run test:e2e:app-dashboard-redesign` **PASS** en Worker Wrangler local con D1 aislada. El arnés aplica `0000–0026`, crea una cuenta/organización sintética, eleva solo su fixture a `platform_admin` activo y valida `/app` y `/app/internal`; termina el Worker, elimina la D1 efímera y comprueba su ausencia. No escribe en la D1 compartida ni remota.

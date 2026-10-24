@@ -513,6 +513,10 @@ La compatibilidad con QA-03B se conserva mediante su `diagnosticIdentity` comple
 
 ## DIAG-V3-QA-03B — contrato candidato certificado (2026-10-11)
 
+### Sucesor candidate-only propuesto en DIAG-QA-03B-ENGINE-REFINEMENT-02 (2026-10-23)
+
+En la rama local `feat/diagnostic-qa03b-engine-02`, el banco QA-03B suma una fuente directa para `measurement_optimization`: auto-reporte de cómo se anotan y revisan resultados en actividad operativa reciente. La falta de actividad suficiente y la incertidumbre se mapean a no aplicable/incertidumbre, nunca a una nota débil. El score sigue siendo auto-reportado; no verifica analítica, tracking, volumen real ni causalidad. Banco v8/answer schema v6/session 7/replay v5/metodología 3.1 invalidan la lectura de identidad antigua sin migrar sesiones. Las salidas de prioridad/acción requieren evidencia directa puntuada. Estas identidades están solo en la rama candidata; `main` y el runtime desplegado permanecen v7/v5/session 6/replay v4 hasta revisión, merge autorizado, deploy autorizado y HTTP anónima fechada.
+
 **`CONTRACT_CERTIFIED` en entorno local; `GATE_B_PARTIAL` se conserva y la candidata sigue inactiva en producción.** QA-03A/QA-03A.1 y el ajuste aprobado `D2_ELIGIBILITY_APPROVED` están incorporados en una ruta aislada de desarrollo. No cambian rutas públicas, historial de sesiones, migraciones, versión publicada, R3/R8, O4/O6 ni el generador PDF. La identidad nueva usa banco `reviewed-evidence-v4`, respuestas `qbv2-answers-v3`, contexto/pipeline `diag-v3-candidate-operation-history-v1`, R4 `r4-applicability-operation-history-v1` y sesión schema/key 3. La sesión nueva no lee, migra ni elimina valores schema 2.
 
 ### Elegibilidad D2 y separación de roles

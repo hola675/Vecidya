@@ -9,7 +9,7 @@ import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
 import type { AnswersV2 } from "../qbv2-rules";
 import type { RouteBudgetV1 } from "../qbv2-planner";
 
-export const CANDIDATE_OBSERVABILITY_MODEL_IDENTITY_V3 = "diag-v3-candidate-context-observability-v1" as const;
+export const CANDIDATE_OBSERVABILITY_MODEL_IDENTITY_V3 = "diag-v3-candidate-context-observability-v2" as const;
 export type CandidateObservabilityReasonV3 =
   | "not_applicable"
   | "context_unresolved"
@@ -33,7 +33,7 @@ export type CandidateDimensionObservabilityV3 = {
   readonly reason: CandidateObservabilityReasonV3;
 };
 
-/** Bank-wide H0 baseline: dimensions with no DIRECT source anywhere in the reviewed R3 bank (currently Measurement). */
+/** Bank-wide H0 baseline: dimensions with no DIRECT source anywhere in the reviewed R3 bank. */
 export const CANDIDATE_UNOBSERVABLE_DIMENSIONS_V3: ReadonlySet<DigitalDimensionId> = new Set(
   DIGITAL_DIMENSION_IDS.filter((id) => CANDIDATE_SEMANTIC_EVIDENCE_CATALOG_V3.directQuestionIds(id).length === 0),
 );

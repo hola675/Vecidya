@@ -1,3 +1,7 @@
+## DIAG-QA-03B-ENGINE-REFINEMENT-02 — candidato local (2026-10-23)
+
+En `feat/diagnostic-qa03b-engine-02` se prepara un successor candidate-only sobre la base QA-03B vigente: pregunta directa de medición reciente solo para operación, identidades bank v8/answers v6/session 7/replay v5/metodología 3.1 y regla de salida que exige puntuación con evidencia directa para afirmar prioridades/acciones. Los 20 recorridos sintéticos dieron 5 BIEN, 7 REGULAR y 8 pendientes (12 índices; 8 puntuaciones directas de medición; 8–19 preguntas por recorrido). Unitarias 1659/1659, typecheck, build y diff-check pasan. No confundir esta rama con el runtime desplegado: no hay PR, deploy, HTTP anónimo fechada, D1 remota, correo real ni publicación.
+
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
 `APP-MINI-REDESIGN-01` continúa localmente sobre `origin/main@5e26614` (PR #52 integrado). App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.

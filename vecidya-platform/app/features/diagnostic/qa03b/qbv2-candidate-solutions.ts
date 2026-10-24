@@ -47,8 +47,8 @@ export function matchCandidateSolutionV3(recommendation: DiagnosticRecommendatio
     ({ recommendationId: recommendation.id, solution: solution ? pick(solution) : null, alternatives: alternatives.map(pick), exclusions });
   const exclusionsForType = (rule: ExclusionRule) => SOLUTION_IDS.filter((id) => SOLUTION_CATALOG[id].types.includes(recommendation.type)).map((id) => ({ solutionId: id, rule }));
 
-  // Candidate verify boundary: evidence is insufficient (or, for Measurement, structurally absent from the
-  // candidate bank). No preliminary concrete intervention — only an audit trail of what remains excluded
+  // Candidate verify boundary: evidence is insufficient. No preliminary concrete intervention — only an
+  // audit trail of what remains excluded
   // until the underlying capability/problem is actually confirmed.
   if (recommendation.mode === "verify") return result(null, [], exclusionsForType("verify_before_intervention"));
 
@@ -115,9 +115,9 @@ export function matchCandidateSolutionV3(recommendation: DiagnosticRecommendatio
     }
 
     case "measurement":
-      // Live Measurement recommendations are always `verify` (the candidate bank has zero direct sources,
-      // so the dimension can never be scored) and are already intercepted above. This branch only serves
-      // prelaunch `prepare`, where defining a measurement plan does not claim any current capability.
+      // Live recommendations can now be evidence-backed by the QA-03B direct self-report. They remain
+      // verification-only when evidence is insufficient; prelaunch may prepare a measurement plan without
+      // claiming a current operating capability.
       return live ? result(null, [], [{ solutionId: "measurement_tracking", rule: "analytics_requires_activity" }]) : result("measurement_plan");
 
     case "readiness":

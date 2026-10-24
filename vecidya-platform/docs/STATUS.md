@@ -1,5 +1,11 @@
 # Estado de implementación
 
+## DIAG-QA-03B-ENGINE-REFINEMENT-02 — medición directa y salida sustentada (2026-10-23)
+
+**Implementación candidata local en `feat/diagnostic-qa03b-engine-02`; no publicada.** El banco candidato QA-03B agrega una pregunta comprensible sobre revisión de resultados recientes, aplicable solo a actividad operativa. Respuestas desconocidas o sin actividad suficiente no puntúan. Se versionan banco v8, respuestas v6, sesión schema/key 7, replay v5 y metodología 3.1; la rama histórica compartida permanece intacta. La presentación oculta prioridades/acciones sin evidencia directa puntuada y usa etiquetas en lenguaje claro.
+
+La matriz reproducible de 20 escenarios recorrió entre 8 y 19 preguntas, una por turno: 5 BIEN, 7 REGULAR y 8 pendientes sin índice general; 12 índices calculados y 8 mediciones puntuadas. Son respuestas sintéticas, no resultados de clientes ni producción. `pnpm run test:unit` **1659/1659 PASS**; QA-03B/replay focales, typecheck, build y diff-check PASS. HTML/PDF fueron revisados visualmente y las etiquetas/acciones comparadas con las presentaciones. PR pendiente. Sin migraciones, correos reales, escrituras remotas, despliegue, merge ni publicación fechada.
+
 ## APP-MINI-REDESIGN-01 — Mi Vecidya y Administración (2026-10-23)
 
 **Continuación local sobre `origin/main@5e26614` (PR #52 integrado); PR de seguimiento pendiente, no publicado.** Se pulieron los dashboards `/app` y `/app/internal` y se alinearon ambos drawers al breakpoint 980 px. Al abrirlos se puede navegar y cada uno se cierra al elegir destino; `requirePlatformAdmin` y el contexto de organización se conservan. El menú de administración también se corrigió en tablet. Se añadieron controles «Imprimir o guardar» al resumen anónimo y al informe identificado; la impresión oculta acciones y reorganiza la página para eliminar el salto en blanco observado en el PDF recibido. Sin cambios de guards, consultas, permisos, licencias, esquema, publicación o integraciones.

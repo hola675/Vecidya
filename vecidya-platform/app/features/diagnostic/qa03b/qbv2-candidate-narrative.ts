@@ -28,7 +28,7 @@ export type CandidateNarrativeAndOverallV3 = CandidateInterpretationCoreV3 & {
 };
 
 function hasCandidateObservability(index: DigitalPresenceStatus["index"]): index is CandidateDigitalPresenceIndexV3 {
-  return Reflect.get(index, "observabilityModel") === "diag-v3-candidate-context-observability-v1"
+  return Reflect.get(index, "observabilityModel") === "diag-v3-candidate-context-observability-v2"
     && Array.isArray(Reflect.get(index, "dimensionObservability"))
     && Number.isInteger(Reflect.get(index, "coverageDenominator"))
     && Array.isArray(Reflect.get(index, "observableApplicableDimensions"))

@@ -122,7 +122,7 @@ const historicalInteractionQuestions = new Set([
 const currentProcessQuestions = new Set([
   "q2_process_systemization", "q2_service_response_speed", "q2_service_quote_followup",
   "q2_operations_handoffs", "q2_operations_information_base", "q2_followup_general_process",
-  "q2_b2b_pipeline", "q2_b2b_status_visibility", "q2_creator_audience_ownership",
+  "q2_b2b_pipeline", "q2_b2b_status_visibility", "q2_creator_audience_ownership", "q2_measurement_practice",
 ]);
 
 function evolve(question: QuestionDefinitionV2): QuestionDefinitionV2 {
@@ -185,5 +185,29 @@ export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefiniti
       { value: "not_needed", label: "No necesito herramientas digitales para estas tareas.", kind: "not_applicable", exclusive: true },
       { value: "unknown", label: "No estoy seguro de cuáles herramientas usamos.", kind: "unknown", exclusive: true },
     ],
+  },
+  {
+    id: "q2_measurement_practice", version: 1, module: "operations", type: "single", routingRole: "adaptive",
+    prompt: "En los últimos 3 meses, ¿cómo revisaste los resultados de tu actividad para decidir qué mejorar?",
+    hint: "Piensa en consultas, compras o pedidos, citas, personas atendidas, participantes, beneficiarios o aportes. No es necesario usar una herramienta digital.",
+    purpose: ["diagnostic"], priority: "high", appliesWhen: operating,
+    options: [
+      { value: "consistent", label: "Registramos resultados con cierta frecuencia y los revisamos para decidir ajustes." },
+      { value: "partial", label: "Anotamos algunos datos, pero los revisamos sin regularidad o no los usamos para decidir." },
+      { value: "none", label: "No registramos ni revisamos resultados de forma regular." },
+      { value: "not_enough_activity", label: "Todavía no hubo suficiente actividad reciente para evaluarlo.", kind: "not_applicable" },
+      { value: "unknown", label: "No lo sé o no tengo esa información.", kind: "unknown" },
+    ],
+    evidenceMigration: "migrated",
+    evidenceV3: {
+      questionId: "q2_measurement_practice",
+      questionVersion: 1,
+      dimensions: [{
+        dimension: "measurement_optimization", directness: "direct", answers: {
+          consistent: "established", partial: "partial", none: "weak",
+          not_enough_activity: "not_applicable", unknown: "uncertainty",
+        },
+      }],
+    },
   },
 ];

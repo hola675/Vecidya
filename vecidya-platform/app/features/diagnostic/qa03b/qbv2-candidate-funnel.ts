@@ -64,7 +64,7 @@ export function buildAnonymousDiagnosticSummaryV1(
 
   return {
     contractVersion: "anonymous-diagnostic-summary-v1",
-    overallStatus: view.overall.publicLabel ?? view.overall.label,
+    overallStatus: view.overall.label,
     score: view.overall.score,
     confidence: view.overall.confidence,
     coverage: view.overall.coverage,
