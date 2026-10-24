@@ -26,6 +26,14 @@
 
 **Checkpoint UX-PREMIUM-02E — catálogo de licencias (2026-10-24; rama `feat/app-mini-ux-04-licencias`):** `/licencias` organiza las notas de precio/alcance junto al encabezado y prioriza los enlaces a las fichas detalladas sobre la consulta comercial secundaria. Contenido, precios y condiciones se conservan. Typecheck, build, diff-check y GET Worker local (200) PASS; revisión visual estrecha confirma el reflow de las notas. El E2E comercial integral no se ejecutó en este checkpoint. No publicado.
 
+**Checkpoints:** UX-PREMIUM-01A cubrió el hero y CTA principal de Inicio. Cada grupo de rutas de las fases 2–6 se trabaja en checkpoints propios desde `origin/main`, incluyendo revisión de las páginas índice, sus rutas hijas, enlaces internos, responsive y estilo visual. No se altera scoring, contratos, esquema, autorización, licencias, precios, GHL, datos de negocio, rutas de publicación ni configuración remota. El gate de publicación R2 documentado arriba continúa independiente de este plan.
+
+**Estado (UX-PREMIUM-01A, 2026-10-24):** integrado en `origin/main@530235d`: el CTA principal del hero de Inicio lleva al Diagnóstico, Vecindario queda como acción secundaria y el adorno se oculta a tecnologías asistivas. Typecheck, build y diff-check PASS; Worker local y revisión visual de escritorio PASS. No se declara accesibilidad integral.
+
+**Checkpoint UX-PREMIUM-02A — catálogo de Servicios:** PR #65 abierto, sin integrar. Añade un recorrido de tres pasos y retícula bento al índice `/servicios`; evidencia y deuda registradas en esa rama, no incluidas en el `origin/main` usado para los checkpoints siguientes.
+
+**Checkpoint UX-PREMIUM-02B — páginas de detalle y enlaces relacionados (2026-10-24, trabajo local):** para las 17 fichas compartidas de licencias, complementos y servicios, se mantienen el breadcrumb de regreso, la consulta contextual y el contenido de alcance; se sustituyen cruces genéricos por 32 enlaces a fichas relacionadas, elegidos desde dependencias y límites del catálogo. La ficha de Desarrollo Empresarial dirige al Diagnóstico, sin sugerir una compra recurrente. Añade una jerarquía editorial con hero en degradado, panel de condiciones y tarjetas relacionadas con énfasis visual, adaptadas a móvil. Typecheck, build y diff-check PASS. Worker local: 17/17 rutas con HTTP 200, H1 único, retorno a catálogo, CTA y destinos relacionados válidos; 360/1024 px sin overflow; inspección visual de escritorio PASS. Build advirtió secretos locales Auth/Gmail ausentes y dos avisos preexistentes de imports dinámicos; no se leyeron secretos. Sin deploy ni HTTP público fechado. No certifica axe/WCAG integral. El inventario de relaciones no crea productos, precios ni claims.
+
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)
