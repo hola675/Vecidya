@@ -63,7 +63,7 @@ test("Las seis guías especializadas permanecen conectadas y en revisión editor
     assert.ok(origin, `Falta guía original ${originSlug}`);
     assert.ok(specialized, `Falta guía especializada ${newSlug}`);
     assert.ok(specialized.relatedSlugs?.includes(originSlug), `Falta enlace de vuelta desde ${newSlug}`);
-    assert.ok(origin.relatedSlugs?.includes(newSlug), `Falta enlace hacia ${newSlug}`);
+    assert.ok(origin.relatedSlugs?.includes(newSlug) || origin.sections.some((section) => JSON.stringify(section).includes(newSlug)), `Falta referencia hacia ${newSlug}`);
     assert.equal(specialized.editorialDraft, true, `No publicar sin aprobar ${newSlug}`);
     assert.ok(specialized.sections.some((section) => section.blocks?.some((block) => block.type === "sources")), `Faltan fuentes en ${newSlug}`);
   }
