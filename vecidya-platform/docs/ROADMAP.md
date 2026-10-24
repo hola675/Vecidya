@@ -115,9 +115,9 @@ Una corrida local del pipeline actual sobre 20 perfiles hipotéticos (316 respue
 
 #### DIAG-VISUAL-ASSETS-01 — aceptación manual restante
 
-La implementación del contrato anónimo v2, ocho áreas gráficas, reutilización de ilustraciones y ajuste de impresión está en la rama local `feat/diagnostic-visual-assets-01-ui`; los detalles y pruebas se registran en `STATUS.md` y `TESTING.md`. Esta fase aún no se considera cerrada mientras el PR no se integre y falte la aceptación manual.
+La implementación del contrato anónimo v2, ocho áreas gráficas, reutilización de ilustraciones y ajuste de impresión se integró por PR #62 en `origin/main@612775a`; los detalles y pruebas se registran en `STATUS.md` y `TESTING.md`. El bloque visual está implementado; la aceptación manual sigue incompleta.
 
-**Pendiente:** revisar foco/teclado en el resumen y la ruta de informe, lectura con lector de pantalla, contraste y zoom 200 % en 320/360/390/768/1024/1366 px; registrar cualquier corrección en el mismo checkpoint antes del merge. El PDF local de dos páginas A4 y su conteo ya pasaron E2E; esto no equivale a PDF/UA.
+**Revisado en `feat/diagnostic-accessibility-03b`:** teclado/foco en la primera pregunta del candidato QA-03B y reflow sin overflow a 320/390/512 px. **Pendiente:** teclado/foco en el resumen e informe, lectura con lector de pantalla, medición de contraste y zoom real al 200 % en 320/360/390/768/1024/1366 px. El PDF local de dos páginas A4 y su conteo ya pasaron E2E; esto no equivale a PDF/UA.
 
 **Fuera de este remanente:** abrir/cambiar los flags del funnel, Gmail o purga; modificar D1, scoring, sesiones, metodología o copy legal; usar datos reales; publicar o desplegar. No eliminar claves históricas ni reinterpretar sesiones completadas.
 

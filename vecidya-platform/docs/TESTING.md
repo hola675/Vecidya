@@ -1,5 +1,11 @@
 # Pruebas
 
+## DIAG-VISUAL-ACCESSIBILITY-03B — semántica del cuestionario (2026-10-24)
+
+En `feat/diagnostic-accessibility-03b`, el H1 de pregunta se separó de `<legend>` y el `<fieldset>` ahora obtiene su nombre accesible desde el H1 mediante `aria-labelledby`. La jerarquía visible no cambió. Inspección manual en QA-03B local: el árbol expone el H1 y un grupo con el mismo nombre; Tab enfoca el primer checkbox, su indicador de foco es visible, Space lo activa y el estado queda marcado. No se avanzó el recorrido ni se usaron datos de negocio.
+
+Reflow observado sin overflow horizontal a 320/390 px y 512 px (ancho equivalente para una aproximación a zoom 200 %, no zoom real). `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Build conserva avisos locales por secretos opcionales Auth/Gmail ausentes y dos imports dinámicos inefectivos. No se hizo prueba con lector de pantalla, medición de contraste ni revisión del resumen/informe; no equivale a auditoría WCAG.
+
 ## UX-PREMIUM-02B — página pública Servicios (2026-10-24)
 
 `pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS** en `feat/app-mini-ux-03-services`, iniciada en `origin/main@ac2c8e8` y reconciliada con `origin/main@c70057f`. No se ejecutaron suites unitarias ni E2E en este checkpoint. La inspección visual manual confirma la jerarquía/retícula a 1521 px y 390 px sin overflow móvil. La revisión completa de teclado, lector de pantalla, contraste y zoom queda pendiente; no se afirma certificación responsive/accesible integral. Sin D1 remota, HTTP pública ni deploy.
