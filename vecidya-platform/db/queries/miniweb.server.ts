@@ -140,8 +140,8 @@ export async function saveMiniWebConfigurationForOrganization(
     database.$client.prepare(`DELETE FROM miniweb_module WHERE miniweb_site_id = ? AND EXISTS (
       SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?
     )`).bind(site.id, organizationId, nextRevision, token),
-    ...Array.from({ length: Math.ceil(configuration.modules.length / 4) }, (_, chunkIndex) => {
-      const modules = configuration.modules.slice(chunkIndex * 4, chunkIndex * 4 + 4);
+    ...Array.from({ length: Math.ceil(configuration.modules.length / 2) }, (_, chunkIndex) => {
+      const modules = configuration.modules.slice(chunkIndex * 2, chunkIndex * 2 + 2);
       return database.$client.prepare(`INSERT INTO miniweb_module
         (id, miniweb_site_id, module_type, module_version, enabled, sort_order, layout_variant, settings_json, created_at, updated_at)
         ${modules.map(() => "SELECT ?, ?, ?, ?, ?, ?, ?, NULL, ?, ? WHERE EXISTS (SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?)").join(" UNION ALL ")}`)
