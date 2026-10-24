@@ -41,6 +41,7 @@ export async function loader({ context }: Route.LoaderArgs) {
     "/sobre-nosotros",
     "/aprende",
     "/privacidad",
+    "/cookies",
     "/terminos",
     "/informacion-legal",
   ];
