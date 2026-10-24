@@ -82,8 +82,7 @@ export function AnonymousSummaryScreen({
             : "La solicitud del informe no está habilitada en este entorno."}
         </p>
         <div>
-          <button aria-describedby="df-anon-download-note" className="button button--secondary" disabled type="button">Descargar resumen</button>
-          <p className="df-anon-summary__download-note" id="df-anon-download-note">La descarga todavía no está disponible.</p>
+          <button className="button button--secondary" onClick={() => window.print()} type="button">Imprimir o guardar resumen</button>
         </div>
         <button className="button button--ghost" onClick={onRestart} type="button">Empezar otro diagnóstico</button>
       </div>
