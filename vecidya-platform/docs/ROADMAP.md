@@ -36,6 +36,8 @@
 
 **Estado (UX-PREMIUM-01C, 2026-10-24):** se completó localmente el siguiente checkpoint de Aprende sobre `origin/main@2a58dc0`: plantilla de guía individual con hero editorial, imagen completa, breadcrumb y navegación lateral a secciones/índice, más enlaces a otras guías existentes. Typecheck, build y diff-check PASS; Worker local y seis anchos sin overflow. El E2E se detuvo en sitemap: `/sitemap.xml` devolvió 500 en el entorno local; ese contrato queda sin certificar. Sin deploy ni HTTP pública fechada.
 
+**Estado (UX-PREMIUM-01B, 2026-10-24):** `/vecindario/:slug` incorpora breadcrumb de retorno al índice, jerarquía editorial del hero y tarjetas para contenido MiniWeb activo, con enlace de cierre al Vecindario. Typecheck, build y diff-check PASS. El recorrido MiniWeb en Worker se detuvo antes de las pruebas de perfil: la D1 local `0000–0027` carece de `platform_owner_invitation`; revisión visual responsive pendiente. PR pendiente. No publicado.
+
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)

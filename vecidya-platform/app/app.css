@@ -5641,6 +5641,56 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .public-business-neighborhood h2 { margin: 0; font-size: clamp(1.2rem, 2.4vw, 1.6rem); }
 .public-business-neighborhood p { margin: 0.35rem 0 0; color: var(--muted); line-height: 1.55; }
 
+/* UX-PREMIUM-01B: la ficha pública se distingue como destino editorial dentro del Vecindario. */
+.public-page.public-business-profile > .public-business-profile__breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.public-page.public-business-profile > .public-business-profile__breadcrumb a { color: var(--blue); font-weight: 700; text-underline-offset: 0.2em; }
+.public-page.public-business-profile > .public-business-profile__breadcrumb a:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; border-radius: 0.15rem; }
+.public-page.public-business-profile > .miniweb-template__module--hero > .public-business-profile__header {
+  position: relative;
+  overflow: hidden;
+  grid-template-columns: minmax(8rem, 0.4fr) minmax(0, 1.6fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  border: 1px solid rgb(21 95 197 / 12%);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.5rem, 5vw, 4rem);
+  background: radial-gradient(ellipse at 95% 0%, rgb(21 95 197 / 10%), transparent 40%), linear-gradient(135deg, #fff 0%, #f5f9ff 100%);
+  box-shadow: 0 1.5rem 4rem rgb(18 48 84 / 8%);
+}
+.public-page.public-business-profile > .miniweb-template__module--hero > .public-business-profile__header .public-business-profile__identity { min-height: 10rem; }
+.public-page.public-business-profile > .miniweb-template__module--hero > .public-business-profile__header .public-business-profile__monogram,
+.public-page.public-business-profile > .miniweb-template__module--hero > .public-business-profile__header .public-business-profile__identity img { border-radius: 1.5rem; box-shadow: 0 1rem 2.5rem rgb(18 48 84 / 12%); }
+.public-page.public-business-profile > .miniweb-template__module--hero > .public-business-profile__header .public-business-profile__summary { max-width: 44rem; margin-top: 1rem; font-size: clamp(1.05rem, 1.6vw, 1.25rem); line-height: 1.6; }
+.public-page.public-business-profile > .public-business-profile__grid { align-items: start; gap: clamp(1rem, 2.2vw, 1.75rem); margin-top: clamp(1rem, 2.5vw, 1.75rem); }
+.public-page.public-business-profile > .public-business-profile__grid > .miniweb-template__module { min-width: 0; }
+.public-page.public-business-profile > .public-business-profile__grid .public-v2-card,
+.public-page.public-business-profile > .public-business-profile__grid .miniweb-content-list,
+.public-page.public-business-profile > .public-business-profile__grid .miniweb-faq,
+.public-page.public-business-profile > .public-business-profile__grid .miniweb-gallery {
+  height: 100%;
+  border: 1px solid rgb(18 48 84 / 9%);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.15rem, 2.4vw, 1.75rem);
+  background: #fff;
+  box-shadow: 0 0.75rem 2.25rem rgb(18 48 84 / 5%);
+}
+.public-page.public-business-profile > .public-business-profile__grid :is(.miniweb-content-list__item, .miniweb-faq__item) { border-color: rgb(18 48 84 / 10%); }
+.public-page.public-business-profile > .public-business-neighborhood {
+  margin-top: clamp(2rem, 5vw, 4rem);
+  border: 1px solid rgb(21 95 197 / 12%);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: linear-gradient(110deg, #f3f8ff, #fff 70%);
+}
+.public-page.public-business-profile > .public-business-neighborhood h2 { max-width: 36rem; }
+
 @media (max-width: 820px) {
   .business-profile-heading-actions { justify-content: flex-start; }
   .public-business-profile__grid,
@@ -5649,6 +5699,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .business-profile-preview__site .public-business-profile__grid--single { grid-template-columns: 1fr; }
   .business-profile-preview__site .public-business-profile__header { grid-template-columns: 1fr; }
   .public-business-profile__identity { min-height: 8rem; }
+  .public-page.public-business-profile > .miniweb-template__module--hero > .public-business-profile__header { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
 }
 
 @media (max-width: 520px) {
@@ -5664,6 +5715,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .public-business-profile__hero-actions .button,
   .public-business-neighborhood .button { width: 100%; }
   .public-business-neighborhood { align-items: stretch; }
+  .public-page.public-business-profile > .miniweb-template__module--hero > .public-business-profile__header { padding: 1.25rem; }
+  .public-page.public-business-profile > .miniweb-template__module--hero > .public-business-profile__header .public-business-profile__identity { min-height: 6rem; }
 }
 
 /* VEC-APRENDE-02: bloques editoriales del piloto, aislados de otras páginas. */
