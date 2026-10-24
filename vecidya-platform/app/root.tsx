@@ -11,6 +11,7 @@ import {
 import type { Route } from "./+types/root";
 import { PublicLayout } from "./components/public-layout";
 import "./app.css";
+import "./styles/cookie-consent.css";
 import "./styles/vecidya-polish.css";
 
 export function meta() {
