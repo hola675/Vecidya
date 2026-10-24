@@ -65,6 +65,7 @@ export default [
   route("app/internal/diagnostic-analytics", "routes/internal-diagnostic-analytics.tsx"),
   route("app/internal", "routes/internal.tsx"),
   route("app/internal/organizations", "routes/internal-organizations.tsx"),
+  route("app/internal/licenses", "routes/internal-licenses.tsx"),
   route("app/internal/organizations/new", "routes/internal-organization-create.tsx"),
   route("app/internal/organizations/:organizationId", "routes/internal-organization-detail.tsx"),
   route("app/internal/organizations/:organizationId/training", "routes/internal-organization-training.tsx"),

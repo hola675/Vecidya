@@ -1,5 +1,9 @@
 # Pruebas
 
+## ADMIN-LICENSE-UX-001 — asignación y estados de licencia (2026-10-23)
+
+La nueva vista `/app/internal/licenses` permite administrar la licencia asociada a una organización y clarifica la diferencia con el perfil comercial. `platform-admin-global-certification-check.mjs` **PASS en Worker y D1 local efímera**; verificó render de conceptos, asignación Cuadra pendiente con una auditoría, activación con una auditoría, además de invitaciones/concurrencia, roles, lifecycle, capacitación, MiniWeb y limpieza de D1. `pnpm run typecheck`, `pnpm run build` y `git diff --check` **PASS**. La suite unitaria completa no se repitió para este checkpoint. Wrangler avisó que faltan secretos de Gmail requeridos para correo real; el harness usó proveedor fake. Sin D1 remota ni deploy.
+
 ## APP-MINI-02B — ofertas y FAQ (2026-10-23; integrado, validación funcional pendiente)
 
 PR #49 quedó integrado en `origin/main@6d25b3e`; Codex revisó `3dff014` y reportó revisión completada sin hallazgos. `pnpm run typecheck`, `pnpm run build` y `git diff --check` constan PASS en PR #49. En APP-MINI-02C, `pnpm wrangler d1 migrations apply DB --local --persist-to <directorio-efímero>` aplicó desde cero `0000–0024`; el directorio efímero se eliminó. No se ejecutaron pruebas unitarias ni E2E de APP-MINI-02B en este checkpoint.

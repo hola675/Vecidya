@@ -85,6 +85,14 @@ export default function InternalHome() {
           <MetricCard className="admin-stat-card" icon="integrations" label="Integraciones registradas" value={counts.integrations} />
         </div>
 
+        <section className="card admin-attention" aria-labelledby="workspace-profile-title">
+          <p className="eyebrow">ORGANIZACIÓN Y NEGOCIO</p>
+          <h2 id="workspace-profile-title">Dos conceptos, dos tareas</h2>
+          <p><strong>Organización</strong> es el espacio de trabajo: propietario, equipo, permisos y servicios. Aquí se asigna la licencia.</p>
+          <p><strong>Perfil de negocio</strong> es la ficha comercial que puede aparecer en Vecindario. Es parte del espacio y no tiene una licencia separada.</p>
+          <Link className="button button--primary" to="/app/internal/licenses">Asignar o revisar licencias</Link>
+        </section>
+
         <section aria-labelledby="admin-attention-title" className="card admin-attention">
           <p className="eyebrow">REQUIERE ATENCIÓN</p>
           <h2 id="admin-attention-title">Qué mirar primero</h2>
@@ -134,6 +142,12 @@ export default function InternalHome() {
             <p className="eyebrow">ASIGNACIONES</p><h2>Servicios</h2>
             <p>Consulta y actualiza los estados de servicios asociados a cada organización.</p>
             <Link className="text-link" to="/app/internal/services">Abrir servicios <span aria-hidden="true">→</span></Link>
+          </section>
+          <section className="card admin-overview-card">
+            <span className="admin-overview-card__icon admin-overview-card__icon--violet" aria-hidden="true"><Icon name="audit" /></span>
+            <p className="eyebrow">ACCESO A PRODUCTOS</p><h2>Licencias</h2>
+            <p>Asigna Cuadra, Barrio o Ciudad a una organización y revisa su estado.</p>
+            <Link className="text-link" to="/app/internal/licenses">Administrar licencias <span aria-hidden="true">→</span></Link>
           </section>
           <section className="card admin-overview-card">
             <span className="admin-overview-card__icon admin-overview-card__icon--orange" aria-hidden="true"><Icon name="organizations" /></span>

@@ -223,6 +223,17 @@ INSERT INTO platform_owner_invitation (id,organization_id,email,token_digest,sta
   await workerReady(baseUrl);
   if (![302, 303].includes(reactivate.status) || reactivatedOrganizationApi.status !== 200 || lifecycleAudit.length !== 2 || lifecycleAudit.some((entry) => Number(entry.count) !== 1)) throw new Error(`La reactivación no restauró el acceso/API y su auditoría; HTTP=${reactivate.status}/${reactivatedOrganizationApi.status}, audit=${JSON.stringify(lifecycleAudit)}.`);
 
+  const licensesPage = await admin.request("/app/internal/licenses");
+  const licensesHtml = await licensesPage.text();
+  if (licensesPage.status !== 200 || !licensesHtml.includes("Organización y negocio son cosas distintas") || !licensesHtml.includes("Asignar licencia") || !licensesHtml.includes("Estado concurrente")) throw new Error(`La pantalla de licencias no explica los conceptos o no presenta la organización asignable: HTTP=${licensesPage.status}.`);
+  const assignedLicense = await admin.request("/app/internal/licenses", { organizationId: stateOrg, intent: "assign", planCode: "cuadra", initialStatus: "pending" });
+  const assignedLicenseState = query(`SELECT l.status,l.plan_code,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(stateOrg)} AND a.action='organization_license.assign') AS audit_count FROM organization_license l WHERE l.organization_id=${sqlLiteral(stateOrg)} ORDER BY l.created_at DESC LIMIT 1;`)[0];
+  if (![302, 303].includes(assignedLicense.status) || assignedLicenseState?.status !== "pending" || assignedLicenseState.plan_code !== "cuadra" || Number(assignedLicenseState.audit_count) !== 1) throw new Error(`La pantalla no asignó una licencia pendiente auditada: HTTP=${assignedLicense.status}, state=${JSON.stringify(assignedLicenseState)}.`);
+  await workerReady(baseUrl);
+  const activateLicense = await admin.request("/app/internal/licenses", { organizationId: stateOrg, intent: "reactivate" });
+  const activeLicenseState = query(`SELECT status,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(stateOrg)} AND a.action='organization_license.active') AS audit_count FROM organization_license WHERE organization_id=${sqlLiteral(stateOrg)} ORDER BY created_at DESC LIMIT 1;`)[0];
+  if (![302, 303].includes(activateLicense.status) || activeLicenseState?.status !== "active" || Number(activeLicenseState.audit_count) !== 1) throw new Error(`La activación de licencia no quedó auditada: HTTP=${activateLicense.status}, state=${JSON.stringify(activeLicenseState)}.`);
+
   const publicOrgA = randomUUID();
   const publicOrgB = randomUUID();
   const draftOrg = randomUUID();
@@ -337,7 +348,7 @@ INSERT INTO business_profile (id,organization_id,display_name,slug,short_descrip
   const publishedMiniWeb = await admin.request(miniwebPath, { intent: "publish", draftRevision: String(miniwebDraftRevision) });
   const staffMiniWeb = await staff.request(miniwebPath, { intent: "save", configuration: JSON.stringify(configuration) });
   const miniwebState = query(`SELECT snapshot_json,snapshot_schema_version FROM business_profile_publication WHERE organization_id=${sqlLiteral(orgId)};`)[0];
-  const publishedSnapshot = miniwebState?.snapshot_schema_version === 1 && miniwebState.snapshot_json ? JSON.parse(miniwebState.snapshot_json) : null;
+  const publishedSnapshot = miniwebState?.snapshot_schema_version >= 1 && miniwebState.snapshot_json ? JSON.parse(miniwebState.snapshot_json) : null;
   const miniwebAudit = query(`SELECT action FROM platform_audit_log WHERE organization_id=${sqlLiteral(orgId)} AND action IN ('organization.miniweb.save','organization.miniweb.publish') ORDER BY created_at,rowid;`);
   await workerReady(baseUrl);
   if (savedMiniWeb.status !== 303 || publishedMiniWeb.status !== 303 || staffMiniWeb.status !== 403 || publishedSnapshot?.configuration?.templateKey !== configuration.templateKey || miniwebAudit.length !== 2 || miniwebAudit[0].action !== "organization.miniweb.save" || miniwebAudit[1].action !== "organization.miniweb.publish") throw new Error(`MiniWeb no pasó autorización/publicación/auditoría: save=${savedMiniWeb.status}, publish=${publishedMiniWeb.status}, staff=${staffMiniWeb.status}, snapshot=${publishedSnapshot?.configuration?.templateKey ?? "ausente"}, audit=${miniwebAudit.map(({ action }) => action).join(",")}.`);

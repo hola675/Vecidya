@@ -39,7 +39,7 @@ export default function InternalBusinesses() {
 
   return <AdminShell active="businesses" workspaceUser={workspaceUser}>
     <main className="admin-content">
-      <div className="page-heading"><div><p className="eyebrow">NEGOCIOS</p><h1>Business Profiles</h1><p>Consulta global read-only de los perfiles comerciales existentes.</p></div><Badge tone="neutral">{profiles.length} en total</Badge></div>
+      <div className="page-heading"><div><p className="eyebrow">PERFILES PÚBLICOS</p><h1>Perfiles de negocio</h1><p>Esta lista muestra fichas comerciales asociadas a organizaciones. No son espacios de trabajo ni cuentas de licencia.</p></div><Badge tone="neutral">{profiles.length} en total</Badge><Link className="button button--primary" to="/app/internal/licenses">Administrar licencias</Link></div>
 
       {profiles.length ? (
         <>

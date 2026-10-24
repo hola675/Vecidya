@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## ADMIN-LICENSE-UX-001 — separación organización/perfil y licencias (2026-10-23)
+
+**PASS local en `feat/platform-admin-license-ux`; PR abierto.** `/app/internal/licenses` asigna/cambia/suspende/reactiva licencias por organización y muestra owner/perfil por separado; la página explica que suspender no elimina los datos. Escrituras protegidas por acción `organization:license:update` y servicios auditados. E2E Admin Global PASS, typecheck/build/diff-check PASS. Sin D1 remota, deploy ni fusión; suite unitaria no ejecutada para este cambio.
+
 ## UI-PILOT-01 — Aprende, búsqueda temprana y responsive local (2026-10-23)
 
 **Implementado en `main` mediante PR #47 (2026-10-23); no publicado.** `/aprende` presenta búsqueda en el hero, atlas SVG original, conteos derivados del catálogo, enlaces a itinerarios y temas, y conserva los 38 artículos, 27 marcas `editorialDraft`, 7 itinerarios, 6 temas, filtros GET, metadata y copys existentes. La búsqueda llega a `#guias`; el campo se apila en 320 px. Se corrigieron desbordamientos reproducidos en tarjetas relacionadas y CTA/cuerpo de artículos a 320 px. El ajuste de `body` a 320 px se limita a la ruta de listado Aprende.

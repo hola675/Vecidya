@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-23 — ADMIN-LICENSE-UX-001 (panel interno de licencias)
+
+- Se añadió `/app/internal/licenses`, con asignación, cambio de plan, suspensión y reactivación por organización. La vista separa workspace, perfil comercial y licencia, y aclara que suspender conserva organización y datos.
+- Las mutaciones exigen `organization:license:update` en el control plane y conservan auditoría. E2E Admin Global, typecheck, build y diff-check PASS con Worker/D1 local. Sin fusión, D1 remota ni deploy; suite unitaria no repetida.
+
 ## 2026-10-23 — APP-MINI-02B (implementación local sin certificar)
 
 - Se añadieron ofertas del negocio tipo servicio/producto y FAQ editables por organización en Mi MiniWeb. El contenido se guarda con la configuración bajo una revisión CAS y se incorpora al snapshot público versión 2. Snapshots v1 continúan leyéndose sin contenido nuevo ni filtración desde borradores.

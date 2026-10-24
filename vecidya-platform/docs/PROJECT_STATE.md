@@ -2,6 +2,10 @@
 
 El piloto visual de `/aprende` está implementado en `feat/aprende-ui-pilot-01`, actualizado sobre `origin/main@85ba1e0`, con búsqueda en el primer bloque, ilustración original de rutas y contenido/conteos editoriales conservados (38 guías, 27 borradores, 7 itinerarios, 6 temas). La búsqueda con query enlaza a resultados; las tarjetas relacionadas y CTA/cuerpo de artículos no exceden 320 px. El E2E enfocado, typecheck y build pasan en Worker local. Es código local no publicado; no modifica identidad, datos ni el flujo de Diagnóstico. La evidencia vigente está en `STATUS.md` y `TESTING.md`.
 
+## ADMIN-LICENSE-UX-001 — checkpoint local (2026-10-23)
+
+La interfaz `/app/internal/licenses` reúne la asignación/cambio/suspensión/reactivación por organización y explica la diferencia entre workspace, perfil comercial y licencia. Las escrituras usan el guard `organization:license:update` y los servicios con auditoría. Rama `feat/platform-admin-license-ux`, sin merge ni deploy; consultar `TESTING.md` para evidencia del E2E y límites locales.
+
 ## Estado vigente — APP-CLIENTE-00-PUBLISH-001-R2 (2026-10-23)
 
 PR #42 se integró mediante `4d6107730e98e1dda4c333c9c565e40645213ff8`; PR #45 corrigió los dos P2 post-merge y se integró mediante `85ba1e021316bbeb7d0b431e3be2523f038c7faa`. PR #49 integró APP-MINI-02B en `origin/main@6d25b3e`: ofertas/FAQ tenant-scoped, edición en `/app/miniweb`, módulos públicos, snapshot v2 y migración `0024`; Codex revisó `3dff014` sin hallazgos. La validación funcional de 02B sigue pendiente; no hay evidencia de deploy ni de D1 remota modificada. APP-MINI-02C está parcial en `feat/app-mini-02c`: metadatos `0025–0026`, binding R2 declarado pero buckets no provisionados, carga tenant-scoped con CAS, snapshot v3 compatible con versiones previas y entrega pública de portada/galería solo para medios incluidos en snapshot. Typecheck/build y cadena local `0000–0026` pasan; pruebas funcionales y reemplazo/eliminación quedan pendientes. Sin D1 remota ni deploy. `REAL_EMAIL_NOT_VERIFIED` continúa diferido al release autorizado.
