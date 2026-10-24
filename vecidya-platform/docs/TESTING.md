@@ -1,5 +1,20 @@
 # Pruebas
 
+## DIAG-QA-03B — revisión de contenido del informe y matriz sintética (2026-10-24)
+
+**RAN:** inspección visual del PDF `Informe completo del diagnóstico.pdf` aportado por el usuario: cuatro páginas físicas aunque el pie declara tres; la página 2 está casi vacía; los controles de revocación/eliminación aparecen en la impresión; el documento está en Letter aunque la hoja de informe declara A4. El contenido limita correctamente el alcance a dimensiones observables, marca confianza media y observación insuficiente, conserva como pendiente lo que no está respaldado y declara que no es auditoría ni garantía. Sin respuestas originales ni sesión asociada no es posible recalcular ni certificar los porcentajes 75/25 del PDF; no se consultaron datos personales en D1 remota.
+
+| Caso hipotético sintético | Preguntas | Estado resumido | Evidencia observada | Lectura/acción segura |
+| --- | ---: | --- | --- | --- |
+| Negocio abierto sin clientes | 12 | Lectura general pendiente | 0/3 dimensiones observables; score global nulo | Aclarar oferta antes de concluir presencia digital |
+| Operación en pausa con historial | 8 | En pausa | No aplica score actual | Confirmar reactivación antes de recomendar captación |
+| Financiación institucional | 14 | Lectura general pendiente | 0/3 observables con respuestas desconocidas | Pedir evidencia; no presentar desconocidos como fallas |
+| Educación vía terceros | 12 | Lectura general pendiente | 0/2 observables con respuestas desconocidas | Validar canal y titularidad antes de recomendar |
+| Atención física con citas remotas | 17 | Lectura general pendiente | 0/4 observables | Separar disponibilidad remota de presencia física |
+| Comercio híbrido con checkout | 16 | Lectura general pendiente | 2/4 observables (50%); dimensiones observadas 75/75; sin score global | Mantener claridad de oferta como prioridad; no inferir calidad total |
+
+Los seis casos son fixtures creados para explorar respuestas desconocidas y límites del motor; no representan clientes ni un corpus de calibración. El replay anónimo sintético en producción devolvió 200 y `anonymous-diagnostic-summary-v1`; no solicitó informe, no envió Gmail ni accedió a perfiles. El PDF generado localmente para el fixture reporta tres hojas A4 y oculta controles de privacidad en impresión. **QA local:** los seis recorridos, reanudación, concurrencia entre pestañas y generación/impresión del informe PASS tras corregir el arnés para usar una sesión parcialmente respondida. `tests/unit/diagnostic/*.test.ts`: **1515/1515 PASS**. `pnpm run typecheck`, `pnpm run build` y `pnpm run cf-typegen` PASS; build conserva avisos por secretos Auth/Gmail ausentes y dynamic imports inefectivos. `pnpm run test:unit` completo sigue fallando en `tests/unit/miniweb/registry.test.ts:138` (fixture espera lista antigua de módulos tras PR #49/#50); este fallo no ejecuta ni cubre el Diagnóstico. Sin auditoría WCAG integral ni correo real.
+
 ## DIAG-QA-03B-RELEASE-CLOSE — publicación y activación remotas (2026-10-23)
 
 - Local, antes de los merges MiniWeb #49/#50: `pnpm run test:unit` **1655/1655 PASS**; typecheck/build PASS; `diagnostic-d1-release-check.mjs` PASS desde 0010 hasta 0023; QA-03B E2E seis recorridos con reanudación/concurrencia/informe HTML PASS; ACT-04 **3/3 PASS** en Worker local con viewports 320/390/768/1366. Para el HEAD integrado actual se repitieron typecheck y build PASS; no se ejecutaron unitarias/E2E en este cierre.

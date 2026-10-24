@@ -1,9 +1,16 @@
 # Changelog
 
+## 2026-10-24 — 0.7.1 candidata — corrección de impresión del informe QA-03B
+
+- Los controles de privacidad y mensajes de estado dejan de aparecer en la impresión del informe identificado; el E2E compara hojas PDF con páginas visibles y ahora inspecciona el árbol PDF sin depender de Poppler.
+- La revisión visual del PDF aportado encontró cuatro páginas físicas frente a tres declaradas, una hoja casi vacía y controles de revocación/eliminación impresos. El render local sintético sale en tres hojas A4 sin controles. El PDF del usuario no fue alterado ni se afirma corregido en producción.
+- Casos sintéticos: 6 escenarios con respuestas desconocidas; producción anónima: replay de 12 respuestas HTTP 200 y contrato allowlisted, sin solicitud de informe ni correo. No se recalcularon porcentajes del documento sin sesión/respuestas originales.
+- QA E2E local completo y 1515/1515 unitarias del Diagnóstico PASS; `cf-typegen`, typecheck, build y diff-check PASS. El runner unitario total conserva un fallo externo al Diagnóstico: `tests/unit/miniweb/registry.test.ts:138`, expectativa anterior a #49/#50. Sin auditoría WCAG integral ni Gmail real. Commit/PR y deploy de 0.7.1 pendientes; R2 sigue bloqueando promoción.
+
 ## 2026-10-23 — 0.7.0 — Diagnóstico QA-03B publicado y activado en producción
 
 - Se aplicaron las migraciones D1 `0011–0023` a staging y producción; ledger sin pendientes. Bookmarks pre-migración y límites de validación remota constan en `ENVIRONMENTS.md`.
-- Se desplegó el Worker completo (web pública, `/app`, `/app/internal`, API y assets) sobre `origin/main@69531b3`, que incluye los cambios integrados de MiniWeb. Staging `39ffd6e1-4d20-4c39-9338-653b41340085`; producción `517126e4-a3cd-4309-8501-5a49d57cd15f`.
+- Se desplegó el Worker completo de la versión 0.7.0 en la rama de release disponible entonces. Los workers activos no incluyen las integraciones posteriores #49/#50; la fuente actual `origin/main@69531b3` está pendiente de promoción. Staging `39ffd6e1-4d20-4c39-9338-653b41340085`; producción `517126e4-a3cd-4309-8501-5a49d57cd15f`.
 - Se eleva la versión de aplicación `0.6.1` → `0.7.0` y se corrige el formulario de informe para indicar que los datos vencidos se eliminan automáticamente en lotes diarios.
 - HTTP anónimo TLS a las `2026-10-24T00:12:23Z` confirmó páginas públicas 200 y footer `0.7.0`; `/app` y `/app/internal` redirigen a login sin sesión. No se verificó funcionalidad autenticada.
 - Por autorización expresa del usuario, producción activa funnel Gmail y ambos switches de purga; staging mantiene los tres flags cerrados. Los conteos agregados de backlog fueron cero, `changed_db=false`. La política desplegada retiene informes 30 días y challenges 24 horas, con aprobación legal confirmada por el usuario. No se envió correo de prueba; entrega Gmail no certificada. Se conserva adaptador V3/sesiones históricas para rollback. D1 API rechazó PRAGMA remoto; no se afirma integridad/FK remota.
