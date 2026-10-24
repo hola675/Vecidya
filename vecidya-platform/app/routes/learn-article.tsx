@@ -20,6 +20,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
     { property: "og:type", content: "article" },
     ...(!article.editorialDraft ? [{ property: "article:author", content: "Yoan Ortiz" }] : []),
     { property: "article:section", content: article.category },
+    { property: "og:image:alt", content: article.imageAlt },
   ];
 }
 
