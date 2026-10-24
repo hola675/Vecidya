@@ -124,7 +124,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
               </nav>
               <Link className="learn-article-rail-link" to="/aprende">Explorar todas las guías <span aria-hidden="true">→</span></Link>
             </div>
-            <div className="learn-article-body">
+            <div id="contenido" className="learn-article-body">
               {article.sections.map((section, index) => (
                 <section id={`section-${index + 1}`} key={section.heading}>
                   <h2>{section.heading}</h2>
