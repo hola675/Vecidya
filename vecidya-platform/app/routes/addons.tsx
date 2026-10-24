@@ -61,9 +61,15 @@ export default function Addons() {
         </section>
 
         <section aria-labelledby="addons-list-title" className="addons-list">
-          <div className="addons-section-heading">
-            <p className="eyebrow">SIETE COMPLEMENTOS V1</p>
-            <h2 id="addons-list-title">Una capacidad por necesidad.</h2>
+          <div className="addons-section-heading addons-section-heading--catalog">
+            <div>
+              <p className="eyebrow">SIETE COMPLEMENTOS V1</p>
+              <h2 id="addons-list-title">Una capacidad por necesidad.</h2>
+            </div>
+            <aside aria-label="Costes de uso y consumo externo" className="addons-price-note">
+              <strong>Costes de uso</strong>
+              <p>Algunos canales y proveedores cobran según mensajes, llamadas, IA, envíos o APIs. Se muestran aparte del precio Vecidya y se cotizan con un margen bruto objetivo del 20 % sobre los costes directos verificados.</p>
+            </aside>
           </div>
           <div className="addons-grid">
             {addons.map((addon) => (
@@ -76,14 +82,13 @@ export default function Addons() {
                   <p className="addon-card__benefit"><strong>Ventaja:</strong> {addon.benefit}</p>
                   <p className="addon-card__price">{addon.price}</p>
                   {addon.dependency ? <p className="addon-card__dependency">{addon.dependency}</p> : null}
-                  <div className="commercial-catalog__actions">
-                    <Link className="text-link" to={addon.detailPath}>Ver detalles de {addon.name} <span aria-hidden="true">→</span></Link>
-                    <Link className="text-link" to={`/contacto?interes=complemento-${addon.id}`}>Consultar este complemento <span aria-hidden="true">→</span></Link>
+                  <div className="addon-card__actions">
+                    <Link className="button button--primary" to={addon.detailPath}>Ver detalles de {addon.name} <span aria-hidden="true">→</span></Link>
+                    <Link className="button button--secondary" to={`/contacto?interes=complemento-${addon.id}`}>Consultar este complemento</Link>
                   </div>
                 </article>
             ))}
           </div>
-          <div className="addons-price-note"><strong>Costes de uso</strong><p>Algunos canales y proveedores cobran según mensajes, llamadas, IA, envíos o APIs. Se muestran aparte del precio Vecidya y se cotizan con un margen bruto objetivo del 20 % sobre los costes directos verificados.</p></div>
         </section>
 
         <CommercialBoundary current="addon" />
