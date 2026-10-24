@@ -29,7 +29,7 @@ export function loader({ request }: Route.LoaderArgs) {
     .filter((article) => {
       if (category && article.category !== category) return false;
       if (!needle) return true;
-      const summary = [article.title, article.intro, article.excerpt, article.category, ...article.sections.map((section) => section.heading)].join(" ");
+      const summary = [article.title, article.intro, article.excerpt, article.category, ...article.enPocasPalabras, ...article.sections.flatMap((section) => [section.heading, ...section.paragraphs, ...(section.bullets ?? []), ...((section.blocks ?? []).flatMap((block) => Object.values(block).flatMap((value) => typeof value === "string" ? [value] : Array.isArray(value) ? value.map((item) => typeof item === "string" ? item : JSON.stringify(item)) : [])))])].join(" ");
       return searchable(summary).includes(needle);
     })
     .map(({ slug, title, excerpt, image, category: articleCategory, editorialDraft }) => ({
@@ -76,7 +76,7 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
           <form className="learn-discovery__form learn-atlas__form" method="get" action="/aprende#guias" role="search">
             <label htmlFor="learn-guide-search">Buscar en las guías</label>
             <div className="learn-discovery__search">
-              <input id="learn-guide-search" type="search" name="q" maxLength={100} defaultValue={search} placeholder="Ej. SEO, consultas, IA o hosting" />
+              <input id="learn-guide-search" type="search" name="q" maxLength={100} defaultValue={search} placeholder="Ej. proteger contraseñas o responder consultas" />
               {category && <input type="hidden" name="tema" value={category} />}
               <button className="button button--primary" type="submit">Buscar</button>
             </div>
