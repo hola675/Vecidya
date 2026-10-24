@@ -1,0 +1,1 @@
+ALTER TABLE `business_media_asset` ADD `is_active` integer DEFAULT true NOT NULL;

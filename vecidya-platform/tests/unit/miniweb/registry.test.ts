@@ -7,6 +7,7 @@ import {
   MINIWEB_TEMPLATE_REGISTRY,
   buildVirtualMiniWebConfiguration,
   buildSafeMiniWebConfiguration,
+  ensureAvailableMiniWebModules,
   parseMiniWebConfigurationJson,
   serializeMiniWebConfiguration,
   sortMiniWebModules,
@@ -31,9 +32,9 @@ test("el registro limita disponibilidad a módulos derivables de los datos actua
     .map((module) => module.type)
     .sort();
 
-  assert.deepEqual(available, ["about", "contact", "hero", "hours", "location"]);
-  assert.equal(MINIWEB_MODULE_REGISTRY.services.availability, "planned");
-  assert.equal(MINIWEB_MODULE_REGISTRY.gallery.availability, "planned");
+  assert.deepEqual(available, ["about", "contact", "faq", "gallery", "hero", "hours", "location", "products", "services"]);
+  assert.equal(MINIWEB_MODULE_REGISTRY.articles.availability, "planned");
+  assert.equal(MINIWEB_MODULE_REGISTRY.team.availability, "planned");
 });
 
 test("la configuración rechaza plantilla y módulos no disponibles o no registrados", () => {
@@ -97,10 +98,10 @@ test("el perfil legacy obtiene configuración virtual derivada de datos y sin fi
   }, []);
 
   assert.equal(config.templateKey, DEFAULT_MINIWEB_TEMPLATE_KEY);
-  assert.deepEqual(config.modules.map(({ type }) => type), ["hero", "about", "contact", "location", "hours"]);
+  assert.deepEqual(config.modules.map(({ type }) => type), ["hero", "about", "contact", "location", "hours", "services", "gallery", "products", "faq"]);
   assert.deepEqual(
     Object.fromEntries(config.modules.map(({ type, enabled }) => [type, enabled])),
-    { hero: true, about: false, contact: true, location: true, hours: false },
+    { hero: true, about: false, contact: true, location: true, hours: false, services: false, gallery: false, products: false, faq: false },
   );
 });
 
@@ -140,7 +141,7 @@ test("el snapshot publicado solo serializa contratos válidos y falla cerrado si
     templateKey: DEFAULT_MINIWEB_TEMPLATE_KEY,
     templateVersion: 1,
     layoutVariant: "standard",
-    modules: config.modules,
+    modules: ensureAvailableMiniWebModules(validateMiniWebDraft(config)).modules,
   });
   assert.equal(parseMiniWebConfigurationJson('{"templateKey":"arbitrary","modules":[]}'), null);
   assert.equal(parseMiniWebConfigurationJson("not-json"), null);

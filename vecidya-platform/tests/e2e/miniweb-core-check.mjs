@@ -119,6 +119,17 @@ async function setActive(identity, organizationId) {
 }
 
 const pathFor = (organizationId) => `/api/organizations/${organizationId}/miniweb-config`;
+const mediaPathFor = (organizationId, assetId) => `/api/organizations/${organizationId}/business-media/${assetId}`;
+const publicMediaPathFor = (slug, assetId) => `/media/business/${slug}/${assetId}`;
+const pngFixture = Uint8Array.from(Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jSh0AAAAASUVORK5CYII=", "base64"));
+async function uploadPng(identity, organizationId, purpose, draftRevision, altText = `Imagen de prueba ${purpose}`) {
+  const form = new FormData();
+  form.set("file", new File([pngFixture], `${purpose}.png`, { type: "image/png" }));
+  form.set("altText", altText);
+  form.set("purpose", purpose);
+  form.set("draftRevision", String(draftRevision));
+  return identity.client.fetch(`/api/organizations/${organizationId}/business-media`, { method: "POST", body: form });
+}
 const post = (body) => ({ method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
 const profileSlug = (key) => `miniweb-${key}-${suffix}`;
 const profileId = () => crypto.randomUUID();
@@ -210,7 +221,7 @@ try {
     ownerB.client.fetch(profilePathB, { method: "POST", body: makeProfileForm(legacyBProfile.profile, legacyBProfile.draftRevision, `Borrador B2 ${suffix}`) }),
   ]);
   check(concurrentInitializers.map(({ status }) => status).sort().join(",") === "200,409", "dos inicializaciones/guardados legacy simultáneos producen un solo escritor ganador");
-  const legacyBState = (await d1(`SELECT published_version, snapshot_json FROM business_profile_publication WHERE organization_id = '${organizationB}';`))[0];
+  const legacyBState = (await d1(`SELECT published_version, snapshot_schema_version, snapshot_json FROM business_profile_publication WHERE organization_id = '${organizationB}';`))[0];
   const legacyBSnapshot = JSON.parse(legacyBState.snapshot_json);
   check(Number(legacyBState.published_version) === 1 && legacyBSnapshot.profile.displayName === `MiniWeb legacy B ${suffix}`, "las dos inicializaciones conservan una única versión pública legacy coherente");
   const legacyBAnonymous = await fetch(new URL(`/vecindario/${profileSlug("legacy-b")}`, baseUrl));
@@ -220,7 +231,7 @@ try {
   const incompleteLegacyAnonymous = await fetch(new URL(`/vecindario/${profileSlug("legacy-b")}`, baseUrl));
   check(incompleteLegacyAnonymous.status === 404, "un estado de publicación existente sin snapshot válido falla cerrado para visitantes anónimos");
   const escapedLegacySnapshot = legacyBState.snapshot_json.replaceAll("'", "''");
-  await d1(`UPDATE business_profile_publication SET snapshot_schema_version = 1, snapshot_json = '${escapedLegacySnapshot}' WHERE organization_id = '${organizationB}';`);
+  await d1(`UPDATE business_profile_publication SET snapshot_schema_version = ${Number(legacyBState.snapshot_schema_version)}, snapshot_json = '${escapedLegacySnapshot}' WHERE organization_id = '${organizationB}';`);
 
   const invalidTemplate = { ...initial.draftConfiguration, templateKey: "custom-html" };
   let invalidTemplateResponse = await ownerA.client.json(pathA, { intent: "save", configuration: invalidTemplate });
@@ -290,6 +301,67 @@ try {
   check(publicA.includes(draftName), "la publicación cambia el perfil y la composición en una sola versión pública");
   check(fullSnapshot.profile.displayName === draftName && fullSnapshot.hours.some((entry) => entry.dayOfWeek === 1 && entry.opensAt === "09:00") && fullSnapshot.configuration.modules.some((module) => module.type === "hero"), "una versión publicada contiene perfil, horarios y configuración juntos");
   check(!publicA.includes("Descripción A") && !publicA.includes(`a-${suffix}@example.invalid`) && !publicA.includes("Contacto directo"), "los módulos desactivados no aparecen en el sitio público");
+
+  const mediaInitialState = await (await ownerA.client.json(pathA, null, "GET")).json();
+  const mediaCountBeforeStaleUpload = Number((await d1(`SELECT COUNT(*) AS count FROM business_media_asset WHERE organization_id = '${organizationA}';`))[0]?.count ?? 0);
+  const staleMediaUpload = await uploadPng(ownerA, organizationA, "gallery", mediaInitialState.draftRevision - 1, `Carga obsoleta ${suffix}`);
+  check(staleMediaUpload.status === 409, "una carga de medio con revisión obsoleta recibe 409");
+  check(Number((await d1(`SELECT COUNT(*) AS count FROM business_media_asset WHERE organization_id = '${organizationA}';`))[0]?.count ?? 0) === mediaCountBeforeStaleUpload, "el 409 de carga obsoleta no deja metadatos de medio");
+
+  const concurrentMediaRevision = (await (await ownerA.client.json(pathA, null, "GET")).json()).draftRevision;
+  const competingUploads = await Promise.all([
+    uploadPng(ownerA, organizationA, "gallery", concurrentMediaRevision, `Galería ganadora A ${suffix}`),
+    uploadPng(ownerA, organizationA, "gallery", concurrentMediaRevision, `Galería ganadora B ${suffix}`),
+  ]);
+  check(competingUploads.map(({ status }) => status).sort((a, b) => a - b).join(",") === "201,409", "dos cargas simultáneas con la misma revisión dejan un único ganador");
+  const winningGalleryResponse = competingUploads.find(({ status }) => status === 201);
+  const winningGallery = await winningGalleryResponse.json();
+  const coverRevision = (await (await ownerA.client.json(pathA, null, "GET")).json()).draftRevision;
+  const coverUpload = await uploadPng(ownerA, organizationA, "cover", coverRevision, `Portada inicial ${suffix}`);
+  check(coverUpload.status === 201, "owner puede subir una portada en el borrador");
+  const initialCover = await coverUpload.json();
+  const initialGallery = winningGallery.asset;
+  check((await ownerA.client.fetch(mediaPathFor(organizationB, initialCover.asset.id))).status === 403, "la previsualización privada no permite leer un medio de otra organización");
+  check((await memberA.client.fetch(mediaPathFor(organizationA, initialCover.asset.id))).status === 200, "member con permiso de lectura puede previsualizar medios privados del tenant");
+  const memberRemovalAttempt = await memberA.client.fetch(mediaPathFor(organizationA, initialCover.asset.id), {
+    method: "DELETE", headers: { "content-type": "application/json" }, body: JSON.stringify({ draftRevision: coverRevision + 1 }),
+  });
+  check(memberRemovalAttempt.status === 403, "member read-only no puede retirar medios del borrador");
+  const beforeMediaPublish = await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), initialCover.asset.id), baseUrl));
+  check(beforeMediaPublish.status === 404, "un medio del borrador no es visible por HTTP anónimo antes de publicar");
+
+  await ownerA.client.json(pathA, null, "GET");
+  const publishInitialMedia = await ownerA.client.json(pathA, { intent: "publish" });
+  check(publishInitialMedia.status === 200, "owner puede publicar el snapshot con medios");
+  const publishedCoverResponse = await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), initialCover.asset.id), baseUrl));
+  const publishedGalleryResponse = await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), initialGallery.id), baseUrl));
+  check(publishedCoverResponse.status === 200 && publishedCoverResponse.headers.get("content-type") === "image/png", "la portada se entrega anónimamente tras publicar");
+  check(publishedGalleryResponse.status === 200, "la galería se entrega anónimamente solo cuando está en el snapshot publicado");
+
+  const beforeStaleRemoval = (await (await ownerA.client.json(pathA, null, "GET")).json()).draftRevision;
+  const staleRemoval = await ownerA.client.fetch(mediaPathFor(organizationA, initialCover.asset.id), {
+    method: "DELETE", headers: { "content-type": "application/json" }, body: JSON.stringify({ draftRevision: beforeStaleRemoval - 1 }),
+  });
+  check(staleRemoval.status === 409, "retirar un medio con revisión obsoleta devuelve 409");
+  check(Number((await d1(`SELECT is_active FROM business_media_asset WHERE id = '${initialCover.asset.id}';`))[0]?.is_active) === 1, "el 409 de retirada no cambia el medio activo");
+
+  const removalRevision = (await (await ownerA.client.json(pathA, null, "GET")).json()).draftRevision;
+  const removeCover = await ownerA.client.fetch(mediaPathFor(organizationA, initialCover.asset.id), {
+    method: "DELETE", headers: { "content-type": "application/json" }, body: JSON.stringify({ draftRevision: removalRevision }),
+  });
+  check(removeCover.status === 200, "owner puede retirar la portada del próximo borrador publicado");
+  check((await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), initialCover.asset.id), baseUrl))).status === 200, "retirar portada no rompe la versión pública vigente antes de republicar");
+  const replacementRevision = (await (await ownerA.client.json(pathA, null, "GET")).json()).draftRevision;
+  const replacementUpload = await uploadPng(ownerA, organizationA, "cover", replacementRevision, `Portada reemplazada ${suffix}`);
+  check(replacementUpload.status === 201, "se puede subir una portada nueva después de retirar la anterior");
+  const replacementCover = await replacementUpload.json();
+  check((await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), replacementCover.asset.id), baseUrl))).status === 404, "la portada de reemplazo permanece privada hasta republicar");
+  await ownerA.client.json(pathA, null, "GET");
+  const republishMedia = await ownerA.client.json(pathA, { intent: "publish" });
+  check(republishMedia.status === 200, "la republicación incorpora el borrador de medios actualizado");
+  check((await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), initialCover.asset.id), baseUrl))).status === 404, "la portada retirada deja de servirse tras republicar");
+  check((await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), replacementCover.asset.id), baseUrl))).status === 200, "la portada de reemplazo se sirve tras republicar");
+
   await d1(`UPDATE business_profile_publication SET snapshot_json = 'not-json' WHERE organization_id = '${organizationA}';`);
   const corruptedSnapshotResponse = await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`);
   check(corruptedSnapshotResponse.status === 404, "un snapshot publicado inválido falla cerrado sin mostrar datos inconsistentes");
@@ -404,6 +476,7 @@ try {
 
   const editorResponse = await page.goto(new URL("/app/miniweb", baseUrl).toString(), { waitUntil: "networkidle" });
   check(editorResponse?.status() === 200, "el editor privado Mi MiniWeb responde para el owner");
+  check(await page.getByRole("button", { name: "Retirar del borrador" }).count() === 2, "el editor presenta acciones de retirada para portada y galería activas");
   check(await page.locator(".miniweb-editor__publication-state").getByText("Hay cambios guardados que todavía no se han publicado.").count() === 1, "el estado de MiniWeb identifica cambios de perfil/horarios aunque el diseño siga igual");
   const ownerBContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
   const ownerBPage = await ownerBContext.newPage();
@@ -439,16 +512,10 @@ try {
   await platformContext.close();
   check(await page.getByRole("heading", { name: "Mi MiniWeb", level: 1 }).count() === 1, "el editor presenta el punto de entrada Mi MiniWeb");
   check(await page.getByRole("checkbox", { name: "Desactivar Presentación" }).isDisabled(), "la sección hero requerida no se puede apagar");
-  check(await page.getByText("Galería", { exact: true }).count() === 0 && await page.getByText("Productos", { exact: true }).count() === 0, "el editor no ofrece módulos todavía no disponibles");
-  const renderedModuleLabels = await page.locator(".miniweb-module-list__item strong").allTextContents();
-  const renderedModuleOrder = renderedModuleLabels.map((label) => ({
-    "Presentación": "hero",
-    "Acerca del negocio": "about",
-    "Contacto": "contact",
-    "Horarios": "hours",
-    "Ubicación y modalidad": "location",
-  })[label]);
-  check(renderedModuleOrder.join(",") === published.draftConfiguration.modules.map((module) => module.type).join(","), "la lista de secciones visualiza el orden configurado");
+  check(await page.locator('.miniweb-module-list__item[data-module-type="gallery"]').count() === 1 && await page.locator('.miniweb-module-list__item[data-module-type="products"]').count() === 1, "el editor ofrece Galería y Productos ya implementados");
+  const renderedModuleOrder = await page.locator(".miniweb-module-list__item").evaluateAll((elements) => elements.map((element) => element.getAttribute("data-module-type")));
+  const availableModuleOrder = published.draftConfiguration.modules.filter((module) => ["hero", "about", "contact", "hours", "services", "gallery", "location", "products", "faq"].includes(module.type)).map((module) => module.type);
+  check(renderedModuleOrder.join(",") === availableModuleOrder.join(","), "la lista de secciones visualiza el orden de los módulos disponibles");
   const viewportResults = [];
   const captureDirectory = process.env.MINIWEB_CAPTURE_DIR ?? join(process.cwd(), ".playwright-mcp");
   mkdirSync(captureDirectory, { recursive: true });
