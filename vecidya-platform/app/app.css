@@ -5593,8 +5593,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 /* APP-MINI-02A: panel mínimo del motor modular, separado del formulario de información. */
 .miniweb-editor__header { align-items: flex-start; gap: 1rem; }
 .miniweb-editor__header .button { flex: 0 0 auto; }
+.miniweb-editor__steps { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 0 0 1rem; }
+.miniweb-editor__steps a { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.45rem 0.75rem; color: var(--ink); background: var(--surface); font-weight: 700; text-decoration: none; }
+.miniweb-editor__steps a:hover { border-color: var(--blue); }
+.miniweb-editor__steps a:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.miniweb-editor__steps a span { display: grid; width: 1.5rem; height: 1.5rem; place-items: center; border-radius: 50%; color: #fff; background: var(--blue); font-size: 0.8rem; }
 .miniweb-editor__layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); align-items: start; gap: 1.25rem; }
 .miniweb-editor__controls { display: grid; gap: 1rem; min-width: 0; }
+.miniweb-editor__review { display: grid; align-content: start; gap: 1rem; min-width: 0; }
+.miniweb-editor :is(#miniweb-design, #miniweb-sections, #miniweb-content, #miniweb-preview, #miniweb-publish) { scroll-margin-top: 1.5rem; }
 .miniweb-editor__section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .miniweb-editor__section-heading h2 { margin: 0; }
 .miniweb-editor__section-heading .eyebrow { margin: 0 0 0.3rem; }
@@ -5616,6 +5623,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .miniweb-editor__message--success { color: var(--success); }
 .miniweb-editor__message--error { color: #b3261e; }
 .miniweb-editor__preview-card { min-width: 0; }
+.miniweb-editor__publish-card { min-width: 0; }
 .miniweb-editor__preview { margin-top: 1rem; border: 1px solid var(--line); border-radius: var(--radius-md); padding: clamp(0.65rem, 2vw, 1rem); background: var(--canvas); }
 .miniweb-editor__preview .public-page { margin: 0; padding: 0; }
 .miniweb-editor__preview .public-business-profile__header { grid-template-columns: minmax(6rem, 0.55fr) minmax(0, 1.45fr); gap: 0.85rem; padding: 1rem; }

@@ -64,6 +64,12 @@ RAN sobre `feat/app-mini-02c-media@45cf0bd`, con `origin/main@3e6b9b1`: `node te
 
 Límite restante: bindings de R2 están declarados, pero los buckets reales no están provisionados y esta prueba no certifica lectura/escritura contra R2 real. La publicación se probó contra Worker local y snapshot; no hubo petición HTTP al dominio público. Sin D1 compartida/remota ni deploy.
 
+## APP-MINI-02D — editor MiniWeb guiado (2026-10-24)
+
+El editor privado `/app/miniweb` añade navegación por anclas accesibles a Diseño, Secciones, Contenido, Vista previa y Publicar; la sección de publicación contiene guardar borrador, publicar y el mensaje único de resultado. El paso Diseño identifica `Esencial` como única plantilla disponible y no activa familias planeadas. La lógica de edición, CAS, datos y snapshot se conserva.
+
+`pnpm exec node tests/e2e/miniweb-core-check.mjs`: **105/105 PASS** en Worker Wrangler local con D1 efímera, migraciones `0000–0027`. Incluye existencia y destino de los cinco pasos, publicación, carga/retiro de medios, CAS, aislamiento y HTTP anónimo antes/después de publicar; fixture reportada limpia. Responsive 1366/768/390/360 sin overflow. `pnpm run test:unit`: **1658/1658 PASS**; `pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS**. Se usó `BETTER_AUTH_SECRET` sintético y proveedor de correo fake locales; se retiraron `.dev.vars`/copia de build y D1 temporal. Sin R2 real, D1 remota, correo real, deploy o HTTP pública fechada.
+
 ## UI-PILOT-01 — Aprende visual y responsive (2026-10-23)
 
 **RAN en Worker local de Wrangler (`wrangler dev --local`) con D1 aislada y migraciones `0000–0023`.** `BASE_URL=http://127.0.0.1:4175 pnpm exec node tests/e2e/learn-experience-check.mjs`: **PASS**; `/sitemap.xml` respondió 200 e incluyó el artículo publicado de dominio. Verifica 38 guías/27 borradores, 7 itinerarios, 6 temas, filtros y búsquedas con/sin resultados, recuperación, submit anclado a `#guias` con resultados visibles, preservación simultánea de `q`/`tema` al saltar a itinerarios y temas, campo/botón apilados a 320 px, once rutas de artículos, CTAs, metadata, sitemap, foco visible de teclado, `prefers-reduced-motion` y ausencia de overflow en 320/360/390/768/1024/1366 px. Capturas antes/después a 320/390/1366 px están fuera del repositorio en el directorio de visualizaciones de esta sesión.
