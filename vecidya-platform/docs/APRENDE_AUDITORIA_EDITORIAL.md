@@ -52,3 +52,17 @@ Inventario estático: las seis guías tienen bloque de fuentes, pero la presenci
 - DNS, HTTPS y correo: bibliografía reducida de ocho a cuatro fuentes (RFC 1034, RFC 1035, RFC 3596 y MDN TLS). Retiradas las referencias de ICANN sobre contratación y renovación, que pertenecen a la guía de proveedores.
 - Se corrigió el párrafo «Fuentes y alcance» de DNS, que todavía describía fuentes ICANN ya eliminadas. Se delimita expresamente que el artículo **no** enseña a configurar SPF, DKIM ni DMARC.
 - Queda pendiente verificar por HTTP las fuentes y evaluar su suficiencia artículo por artículo. Esta limpieza **no** constituye aprobación editorial ni validación de enlaces.
+
+## Decisión editorial del responsable (2026-10-24)
+
+El responsable del proyecto aprobó expresamente los contenidos de las seis guías especializadas. Se actualizó `editorialDraft: false` en cada una de ellas en el commit `7bebe41`. El catálogo queda sin marcas explícitas de borrador editorial.
+
+**Alcance de la aprobación:** contenido educativo de las seis guías. **No** certifica accesibilidad, exactitud HTTP de todas las fuentes externas, SEO, revisión visual móvil, ni autoriza fusión o despliegue. Estas tareas permanecen en el checklist técnico y de publicación de APRENDE-QA-04.
+
+### Siguiente checkpoint: APRENDE-QA-04
+
+1. Validar en CI la aprobación editorial y que las guías aprobadas sean accesibles en catálogo y rutas de artículo.
+2. Verificar enlaces externos (respuesta, redirección y destino real) y actualizar los que hayan cambiado.
+3. Ejecutar revisión visual en escritorio y móvil, navegación por teclado y accesibilidad.
+4. Completar SEO, metadatos de lectura y controles de calidad editorial.
+5. Reconciliar PR con `main`, solicitar revisión y preparar publicación solo tras autorización explícita.
