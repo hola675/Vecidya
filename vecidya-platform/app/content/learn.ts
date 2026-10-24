@@ -57,7 +57,17 @@ export const learnArticles: LearnArticle[] = [
     image: "/assets/learn/diagram-crm.svg",
     imageAlt: "Una consulta se registra con contexto y puede continuar, retomarse después o cerrarse, según lo que ocurra",
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no es un CRM ni crea una base de contactos." },
+    editorialDraft: false,
     sections: [
+      {
+        heading: "Qué podrás hacer al terminar",
+        paragraphs: ["Identificarás qué información mínima necesitas para seguir una consulta, distinguirás entre una lista sencilla y un CRM, y podrás elegir una primera mejora sin comprar una herramienta por impulso."],
+        blocks: [{ type: "steps", label: "Ejercicio de dos minutos", items: [
+          { title: "Recuerda una consulta pendiente", detail: "Sin escribir datos personales, piensa qué información te faltó para responderla." },
+          { title: "Formula la próxima acción", detail: "Completa mentalmente: «La persona necesita…, el siguiente paso es… y lo revisará…»." },
+          { title: "Elige el soporte más sencillo", detail: "Decide si una lista controlada basta o si necesitas coordinar a varias personas y canales." },
+        ] }],
+      },
       {
         heading: "Qué significa CRM en el trabajo diario",
         paragraphs: [
@@ -200,6 +210,86 @@ export const learnArticles: LearnArticle[] = [
     ],
   },
   {
+    slug: "como-probar-un-asistente-de-ia-con-supervision-humana",
+    category: "Inteligencia Artificial",
+    title: "Cómo probar un asistente de IA con supervisión humana",
+    intro: "Aprende a preparar información confiable, detectar respuestas incorrectas y evaluar una prueba limitada.",
+    excerpt: "Aprende a preparar información confiable, detectar respuestas incorrectas y evaluar una prueba limitada.",
+    enPocasPalabras: ["Usa información revisada y evita compartir datos sensibles.","Comprueba respuestas inventadas y errores con una persona responsable.","Evalúa una prueba pequeña antes de ampliar su uso."],
+    image: "/assets/learn/diagram-ai.svg",
+    imageAlt: "Ilustración conceptual del tema de esta guía",
+    relatedSlugs: ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio"],
+    editorialDraft: true,
+    cta: { label: "Revisar mis necesidades", to: "/diagnostico", copy: "Identifica primero el problema y comprueba qué necesitas antes de contratar herramientas." },
+    sections: [
+      { heading: "Objetivo y práctica", paragraphs: ["Al terminar podrás identificar los riesgos y decisiones de este proceso y explicar qué comprobar antes de actuar.", "Ejercicio: describe un caso de tu negocio sin datos personales, elige una comprobación y define cuándo revisarás el resultado."] },
+      {
+        heading: "Cómo preparar información confiable para un asistente",
+        paragraphs: ["El resultado no mejora por cargar más documentos sin orden. Empieza con una fuente pequeña, vigente y con una persona responsable de mantenerla."],
+        blocks: [{ type: "steps", label: "Pasos para preparar una fuente de respuestas", items: [
+          { title: "Delimita el uso", detail: "Especifica qué preguntas debe atender y qué debe rechazar o transferir. Empieza por una tarea de bajo riesgo." },
+          { title: "Elige una fuente autorizada", detail: "Usa información que el negocio pueda confirmar —por ejemplo, horarios y servicios— y asigna quién la mantiene actualizada." },
+          { title: "Escribe respuestas y excepciones", detail: "Separa hechos confirmados, condiciones y preguntas que requieren revisión. Incluye qué hacer si una respuesta no está en la fuente." },
+          { title: "Quita lo que no necesita", detail: "No cargues historiales completos de clientes, credenciales ni datos sensibles solo porque la herramienta permita hacerlo." },
+          { title: "Prueba preguntas conocidas y difíciles", detail: "Incluye preguntas claras, ambiguas, fuera de alcance y con información contradictoria. Comprueba que no invente y que transfiera cuando corresponde." },
+        ] }],
+      },
+      {
+        heading: "Errores, respuestas inventadas e información desactualizada",
+        paragraphs: ["Los modelos generativos pueden producir una afirmación falsa con tono seguro, completar vacíos con suposiciones o combinar datos de forma incorrecta. También pueden repetir material viejo si la fuente no se mantiene."],
+        blocks: [{ type: "callout", tone: "caution", title: "La fluidez no demuestra que sea cierto", text: "Una respuesta bien redactada no es una fuente de verificación. Contrasta nombres, fechas, precios, condiciones y cualquier afirmación concreta con el material vigente del negocio antes de usarla." }, { type: "list", items: [
+          "Pide al sistema que reconozca cuando no encuentra respuesta, en lugar de completar el vacío.",
+          "Verifica citas, enlaces, cálculos y resúmenes contra la fuente original.",
+          "Mantén una persona responsable de corregir las respuestas y retirar información vencida.",
+          "Registra los errores y las transferencias para decidir si el alcance debe cambiarse o detenerse.",
+        ] }],
+      },
+      {
+        heading: "Protección de datos y manejo prudente de información",
+        paragraphs: ["Antes de introducir datos en una herramienta, averigua qué servicio los procesa, qué condiciones se aplican y quién puede acceder a ellos. La respuesta depende del proveedor, del producto, de la configuración y de la jurisdicción; no existe una garantía universal por el simple hecho de usar IA."],
+        blocks: [{ type: "list", items: [
+          "Envía la mínima información necesaria para la tarea; elimina nombres y datos identificables cuando no hagan falta.",
+          "No ingreses contraseñas, datos financieros, información de salud ni conversaciones privadas sin autorización y evaluación previa.",
+          "Revisa las condiciones del proveedor sobre uso de entradas, almacenamiento, retención, acceso, exportación y eliminación.",
+          "Define quién puede usar la herramienta, qué puede compartir y cómo reportará un incidente o resultado inadecuado.",
+          "Consulta las obligaciones de privacidad y tratamiento de datos aplicables a tu país y a tu caso concreto.",
+        ] }, { type: "callout", tone: "caution", title: "No asumas que una conversación es privada por defecto", text: "La guía del ICO citada abajo pertenece al Reino Unido y advierte que su orientación está en revisión. Sirve como referencia, no sustituye las normas ni la asesoría de tu jurisdicción." }],
+      },
+      {
+        heading: "Cómo diseñar una prueba piloto pequeña y medible",
+        paragraphs: ["Una prueba sirve para averiguar si una tarea concreta mejora con esa herramienta en esas condiciones. No demuestra que la IA funcione para todo el negocio ni anticipa resultados de otros casos."],
+        blocks: [{ type: "steps", label: "Pasos para probar IA de forma controlada", items: [
+          { title: "Escoge una tarea frecuente y de bajo riesgo", detail: "Describe el trabajo actual y quién lo realiza. Si el proceso no está claro, ordénalo primero sin IA." },
+          { title: "Anota un punto de comparación", detail: "Registra cómo se resuelve hoy la tarea, cuánto trabajo requiere y qué errores o demoras quieres observar. No supongas que la herramienta reducirá esos valores." },
+          { title: "Establece límites antes de probar", detail: "Define fuente autorizada, datos permitidos, casos que debe transferir, quién revisará y qué condiciones obligan a detener la prueba." },
+          { title: "Prueba con casos de ensayo", detail: "Usa ejemplos sintéticos o anonimizados que cubran preguntas frecuentes, ambigüedades, casos fuera de alcance y datos faltantes." },
+          { title: "Supervisa una prueba acotada", detail: "Mantén revisión humana, registra correcciones y vigila el uso de datos. El periodo y el tamaño de la muestra deben corresponder al riesgo y la capacidad del negocio." },
+          { title: "Decide con evidencia", detail: "Compara lo observado con los criterios que fijaste. Continúa, ajusta o detén el piloto; no extiendas el resultado más allá de los casos probados." },
+        ] }],
+      },
+      {
+        heading: "Cómo evaluar resultados sin atribuir beneficios no comprobados",
+        paragraphs: ["Mide solo aspectos relacionados con la tarea y compara datos equivalentes antes y durante el piloto. Los indicadores no son promesas ni se deben interpretar fuera de su muestra."],
+        blocks: [{ type: "list", items: [
+          "Calidad: cuántas respuestas revisadas coinciden con la fuente aprobada y cuántas contienen información sin respaldo.",
+          "Seguridad del flujo: si reconoce preguntas fuera de alcance y transfiere a una persona cuando debe hacerlo.",
+          "Trabajo del equipo: tiempo real de revisión y corrección frente al proceso manual comparable.",
+          "Operación: fallos, quejas, costos observados y esfuerzo para mantener actualizada la fuente.",
+          "Privacidad: qué datos se ingresaron, si respetaron la regla acordada y si hubo incidentes o accesos indebidos.",
+        ] }, { type: "paragraph", text: "Guarda la muestra, el periodo, los criterios y las limitaciones de la prueba. Si no hay evidencia suficiente o los errores superan el límite que fijó el negocio, ajusta o detén el piloto en vez de presentar una mejora como comprobada." }],
+      },
+      { heading: "Resumen para aplicar", paragraphs: ["Usa información revisada y evita compartir datos sensibles.","Comprueba respuestas inventadas y errores con una persona responsable.","Evalúa una prueba pequeña antes de ampliar su uso."] },
+      {
+        heading: "Fuentes y alcance",
+        paragraphs: ["Los marcos y guías siguientes ayudan a identificar riesgos y preguntas para una prueba. No son garantías de resultados ni reemplazan requisitos legales locales."],
+        blocks: [{ type: "sources", items: [
+          { label: "NIST AI Risk Management Framework (AI RMF 1.0)", url: "https://www.nist.gov/itl/ai-risk-management-framework", scope: "Marco voluntario del NIST de Estados Unidos para gestionar riesgos durante el diseño, uso y evaluación de sistemas de IA. La página oficial indica que la versión 1.0 está en revisión." },
+          { label: "NIST AI 600-1: Generative Artificial Intelligence Profile", url: "https://doi.org/10.6028/NIST.AI.600-1", scope: "Perfil del NIST que describe riesgos de IA generativa como confabulación, privacidad y configuración de la relación entre personas y sistemas." },
+          { label: "Guidance on AI and data protection", url: "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/", scope: "Orientación del ICO del Reino Unido sobre IA y protección de datos. La propia página advierte que su guía está en revisión; no define obligaciones para otros países." },
+        ] }],
+      },    ],
+  },
+  {
     slug: "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
     category: "Inteligencia Artificial",
     title: "¿Qué puede hacer una inteligencia artificial por un negocio?",
@@ -209,7 +299,14 @@ export const learnArticles: LearnArticle[] = [
     image: "/assets/learn/diagram-ai.svg",
     imageAlt: "Una consulta se convierte en un borrador de IA que una persona revisa antes de responder o transferir",
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos y prioridades digitales; no instala asistentes ni activa herramientas de IA." },
+    relatedSlugs: ["como-probar-un-asistente-de-ia-con-supervision-humana"],
     sections: [
+      { heading: "Continúa con la guía especializada", paragraphs: ["Para profundizar sin mezclar varios temas, consulta «Cómo probar un asistente de IA con supervisión humana». Esta guía mantiene la explicación inicial y la otra reúne los controles y decisiones más avanzados."] },
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué puede hacer una inteligencia artificial por un negocio?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         heading: "Qué es la inteligencia artificial en un negocio",
         paragraphs: [
@@ -270,61 +367,6 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
-        heading: "Cómo preparar información confiable para un asistente",
-        paragraphs: ["El resultado no mejora por cargar más documentos sin orden. Empieza con una fuente pequeña, vigente y con una persona responsable de mantenerla."],
-        blocks: [{ type: "steps", label: "Pasos para preparar una fuente de respuestas", items: [
-          { title: "Delimita el uso", detail: "Especifica qué preguntas debe atender y qué debe rechazar o transferir. Empieza por una tarea de bajo riesgo." },
-          { title: "Elige una fuente autorizada", detail: "Usa información que el negocio pueda confirmar —por ejemplo, horarios y servicios— y asigna quién la mantiene actualizada." },
-          { title: "Escribe respuestas y excepciones", detail: "Separa hechos confirmados, condiciones y preguntas que requieren revisión. Incluye qué hacer si una respuesta no está en la fuente." },
-          { title: "Quita lo que no necesita", detail: "No cargues historiales completos de clientes, credenciales ni datos sensibles solo porque la herramienta permita hacerlo." },
-          { title: "Prueba preguntas conocidas y difíciles", detail: "Incluye preguntas claras, ambiguas, fuera de alcance y con información contradictoria. Comprueba que no invente y que transfiera cuando corresponde." },
-        ] }],
-      },
-      {
-        heading: "Errores, respuestas inventadas e información desactualizada",
-        paragraphs: ["Los modelos generativos pueden producir una afirmación falsa con tono seguro, completar vacíos con suposiciones o combinar datos de forma incorrecta. También pueden repetir material viejo si la fuente no se mantiene."],
-        blocks: [{ type: "callout", tone: "caution", title: "La fluidez no demuestra que sea cierto", text: "Una respuesta bien redactada no es una fuente de verificación. Contrasta nombres, fechas, precios, condiciones y cualquier afirmación concreta con el material vigente del negocio antes de usarla." }, { type: "list", items: [
-          "Pide al sistema que reconozca cuando no encuentra respuesta, en lugar de completar el vacío.",
-          "Verifica citas, enlaces, cálculos y resúmenes contra la fuente original.",
-          "Mantén una persona responsable de corregir las respuestas y retirar información vencida.",
-          "Registra los errores y las transferencias para decidir si el alcance debe cambiarse o detenerse.",
-        ] }],
-      },
-      {
-        heading: "Protección de datos y manejo prudente de información",
-        paragraphs: ["Antes de introducir datos en una herramienta, averigua qué servicio los procesa, qué condiciones se aplican y quién puede acceder a ellos. La respuesta depende del proveedor, del producto, de la configuración y de la jurisdicción; no existe una garantía universal por el simple hecho de usar IA."],
-        blocks: [{ type: "list", items: [
-          "Envía la mínima información necesaria para la tarea; elimina nombres y datos identificables cuando no hagan falta.",
-          "No ingreses contraseñas, datos financieros, información de salud ni conversaciones privadas sin autorización y evaluación previa.",
-          "Revisa las condiciones del proveedor sobre uso de entradas, almacenamiento, retención, acceso, exportación y eliminación.",
-          "Define quién puede usar la herramienta, qué puede compartir y cómo reportará un incidente o resultado inadecuado.",
-          "Consulta las obligaciones de privacidad y tratamiento de datos aplicables a tu país y a tu caso concreto.",
-        ] }, { type: "callout", tone: "caution", title: "No asumas que una conversación es privada por defecto", text: "La guía del ICO citada abajo pertenece al Reino Unido y advierte que su orientación está en revisión. Sirve como referencia, no sustituye las normas ni la asesoría de tu jurisdicción." }],
-      },
-      {
-        heading: "Cómo diseñar una prueba piloto pequeña y medible",
-        paragraphs: ["Una prueba sirve para averiguar si una tarea concreta mejora con esa herramienta en esas condiciones. No demuestra que la IA funcione para todo el negocio ni anticipa resultados de otros casos."],
-        blocks: [{ type: "steps", label: "Pasos para probar IA de forma controlada", items: [
-          { title: "Escoge una tarea frecuente y de bajo riesgo", detail: "Describe el trabajo actual y quién lo realiza. Si el proceso no está claro, ordénalo primero sin IA." },
-          { title: "Anota un punto de comparación", detail: "Registra cómo se resuelve hoy la tarea, cuánto trabajo requiere y qué errores o demoras quieres observar. No supongas que la herramienta reducirá esos valores." },
-          { title: "Establece límites antes de probar", detail: "Define fuente autorizada, datos permitidos, casos que debe transferir, quién revisará y qué condiciones obligan a detener la prueba." },
-          { title: "Prueba con casos de ensayo", detail: "Usa ejemplos sintéticos o anonimizados que cubran preguntas frecuentes, ambigüedades, casos fuera de alcance y datos faltantes." },
-          { title: "Supervisa una prueba acotada", detail: "Mantén revisión humana, registra correcciones y vigila el uso de datos. El periodo y el tamaño de la muestra deben corresponder al riesgo y la capacidad del negocio." },
-          { title: "Decide con evidencia", detail: "Compara lo observado con los criterios que fijaste. Continúa, ajusta o detén el piloto; no extiendas el resultado más allá de los casos probados." },
-        ] }],
-      },
-      {
-        heading: "Cómo evaluar resultados sin atribuir beneficios no comprobados",
-        paragraphs: ["Mide solo aspectos relacionados con la tarea y compara datos equivalentes antes y durante el piloto. Los indicadores no son promesas ni se deben interpretar fuera de su muestra."],
-        blocks: [{ type: "list", items: [
-          "Calidad: cuántas respuestas revisadas coinciden con la fuente aprobada y cuántas contienen información sin respaldo.",
-          "Seguridad del flujo: si reconoce preguntas fuera de alcance y transfiere a una persona cuando debe hacerlo.",
-          "Trabajo del equipo: tiempo real de revisión y corrección frente al proceso manual comparable.",
-          "Operación: fallos, quejas, costos observados y esfuerzo para mantener actualizada la fuente.",
-          "Privacidad: qué datos se ingresaron, si respetaron la regla acordada y si hubo incidentes o accesos indebidos.",
-        ] }, { type: "paragraph", text: "Guarda la muestra, el periodo, los criterios y las limitaciones de la prueba. Si no hay evidencia suficiente o los errores superan el límite que fijó el negocio, ajusta o detén el piloto en vez de presentar una mejora como comprobada." }],
-      },
-      {
         heading: "Cuándo no conviene implementar IA",
         paragraphs: ["No usar IA también puede ser la decisión correcta. Una hoja de cálculo, una plantilla de respuesta o una regla automática pueden resolver el problema de forma más sencilla."],
         blocks: [{ type: "list", items: [
@@ -371,136 +413,21 @@ export const learnArticles: LearnArticle[] = [
     ],
   },
   {
-    slug: "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+    slug: "publicidad-digital-como-preparar-una-primera-campana",
     category: "Negocios digitales",
-    title: "Antes de hacer publicidad, organiza tu presencia digital",
-    intro: "Antes de pagar anuncios, hazte una pregunta: si alguien llega hoy a tu perfil, ¿entiende qué haces y cómo contactarte? Empieza por ordenar esa información.",
-    excerpt: "Revisa tus datos, canales y contacto antes de decidir si vale la pena invertir en publicidad.",
-    enPocasPalabras: ["Antes de pagar anuncios, explica claramente qué ofreces.","Comprueba horarios, canales y datos en todos tus perfiles.","La publicidad no arregla una página confusa o difícil de contactar."],
+    title: "Publicidad digital: cuándo anunciarte y cómo preparar una primera campaña",
+    intro: "Una campaña no arregla una oferta confusa. Aprende a decidir si conviene anunciarte, preparar el destino y revisar resultados sin promesas de ventas.",
+    excerpt: "Distingue alcance orgánico y pagado, prepara anuncios y mide señales útiles antes de ampliar el presupuesto.",
+    enPocasPalabras: ["Los anuncios distribuyen un mensaje, pero no garantizan ventas.", "Comprueba el destino, el presupuesto y la capacidad de respuesta antes de lanzar.", "Haz una prueba limitada y revisa resultados sin confundir visitas con clientes."],
     image: "/assets/learn/diagram-presence-digital.svg",
-    imageAlt: "Tres canales digitales —sitio web, perfil de empresa y redes sociales— muestran de forma coherente una oferta, una zona de atención y opciones de contacto",
-    cta: { label: "Conocer el Diagnóstico", to: "/diagnostico", copy: "Si quieres ordenar prioridades, el Diagnóstico de presencia digital puede servir como punto de partida; no promete visibilidad, clientes ni resultados comerciales." },
+    imageAlt: "Canales digitales conectados para informar y recibir consultas",
+    relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital", "analitica-web-que-medir-en-tu-negocio"],
+    editorialDraft: true,
+    cta: { label: "Revisar mi presencia digital", to: "/diagnostico", copy: "Ordena primero la información y los canales de tu negocio antes de invertir." },
     sections: [
       {
-        heading: "Qué significa tener presencia digital",
-        paragraphs: [
-          "La presencia digital reúne los lugares y la información mediante los que una persona puede reconocer un negocio, entender qué hace y encontrar cómo comunicarse. Puede incluir un sitio web, un perfil en un directorio o buscador, páginas de redes sociales, mapas, una tienda en línea y contenido que el propio negocio publica.",
-          "No es un único perfil ni una campaña. Es el conjunto de información que controlas o mantienes en distintos canales y la experiencia que encuentra alguien al pasar de uno a otro. No tienes que estar en todas las plataformas: el punto de partida depende de cómo compran, consultan o reciben atención tus clientes y de quién podrá mantener cada canal actualizado.",
-        ],
-        blocks: [{ type: "definitions", items: [
-          { term: "Presencia digital", definition: "Los canales, datos y contenidos donde el negocio se presenta y ofrece formas de conocerlo o contactarlo." },
-          { term: "Visibilidad", definition: "La posibilidad de que una persona encuentre o vea información del negocio en un canal, búsqueda, recomendación o contenido. Depende de muchos factores; estar presente no asegura aparecer en un lugar específico." },
-          { term: "Reputación", definition: "Las impresiones y señales que otras personas forman a partir de su experiencia, información disponible y comunicación del negocio. No se puede fabricar con testimonios o reseñas inventados." },
-          { term: "Publicidad", definition: "Distribución pagada de un mensaje a través de una plataforma o medio, con presupuesto, segmentación y configuración determinados." },
-        ] }, { type: "callout", tone: "tip", title: "Son conceptos relacionados, no equivalentes", text: "Abrir un perfil crea un punto de presencia, no garantiza visibilidad. Tener alcance no demuestra confianza. Una campaña compra distribución según su configuración, no una venta ni una posición orgánica." }],
-      },
-      {
-        heading: "Antes de elegir canales: define tu negocio con claridad",
-        paragraphs: ["Primero describe la actividad en palabras que una persona ajena al negocio pueda entender. Esa definición ayuda a mantener coherencia en el sitio, los perfiles y cualquier anuncio, y permite detectar promesas que el negocio no puede cumplir."],
-        blocks: [{ type: "steps", label: "Cuatro decisiones para aclarar tu oferta", items: [
-          { title: "Qué ofreces", detail: "Nombra productos o servicios concretos, qué incluyen y qué no. Separa lo disponible ahora de lo que podrías ofrecer más adelante. Si el precio depende de una evaluación, explica cómo pedirla sin publicar una tarifa ficticia." },
-          { title: "A quién atiendes", detail: "Describe a las personas o negocios para quienes la oferta es adecuada y qué necesidad resuelve. Evita afirmar que atiendes a todo el mundo si hay límites reales de capacidad, especialidad o elegibilidad." },
-          { title: "Dónde y cómo prestas el servicio", detail: "Indica si atiendes en un local, visitas zonas concretas, haces entregas, trabajas en línea o combinas modalidades. No publiques una dirección de atención si no recibes clientes allí." },
-          { title: "Cuál es el siguiente paso", detail: "Elige una acción realista: llamar, escribir, pedir una cotización, reservar o visitar. Explica qué información conviene compartir y en qué plazo habitual responderá el equipo, solo si puede sostenerlo." },
-        ] }],
-      },
-      {
-        heading: "Organiza la información comercial básica",
-        paragraphs: ["Reúne una fuente de referencia breve para que quien atiende, actualiza perfiles o prepara una página use los mismos datos. No hace falta redactar un plan de marketing: basta con acordar lo que debe ser correcto antes de publicarlo."],
-        blocks: [{ type: "list", items: [
-          "Nombre público del negocio y una descripción sencilla de su actividad.",
-          "Productos o servicios disponibles, alcance, condiciones relevantes y cómo pedir información adicional.",
-          "Tipo de cliente y necesidad atendida, sin promesas universales ni atributos no comprobados.",
-          "Dirección pública si corresponde, área real de servicio y modalidades de atención.",
-          "Horarios habituales, horarios especiales y fechas en las que el negocio estará cerrado.",
-          "Canales de contacto que sí funcionan, quién los revisa y cuándo suele responder.",
-          "Fotos propias y actuales, con permiso cuando aparezcan personas, propiedades o contenido de terceros.",
-          "Una persona responsable de confirmar cambios y retirar información vencida.",
-        ] }],
-      },
-      {
-        heading: "Qué canales convienen según el negocio",
-        paragraphs: ["Elige pocos canales que correspondan a la forma en que las personas buscan y compran tu oferta. Un negocio de atención por cita puede priorizar información local y reservas; una tienda puede necesitar catálogo, disponibilidad y compra; un servicio a domicilio debe aclarar su cobertura; una actividad de recomendación puede mantener una página social activa. Son ejemplos, no una receta universal."],
-        blocks: [{ type: "list", items: [
-          "Empieza por el lugar que tus clientes usan para informarse o contactarte y que alguien del equipo pueda atender con regularidad.",
-          "Para una operación local, un perfil de empresa en un servicio de mapas o búsqueda puede presentar datos del local o del área atendida si la plataforma y el tipo de actividad son elegibles.",
-          "Una red social tiene sentido cuando el formato ayuda a mostrar productos, procesos, novedades o responder preguntas y el negocio puede mantener esa actividad.",
-          "Un sitio web puede reunir información que controlas —servicios, cobertura, condiciones, preguntas y contacto—, pero no es requisito universal para vender ni reemplaza la atención o una oferta clara.",
-          "Si solo necesitas compartir un horario y un teléfono vigentes, comenzar con un perfil correcto puede ser más proporcionado que encargar un proyecto web completo.",
-        ] }, { type: "callout", tone: "caution", title: "No abras canales que nadie va a mantener", text: "Un perfil desactualizado o un mensaje sin atender puede crear confusión. Es mejor una presencia sencilla y consistente que muchas cuentas activas solo en apariencia." }],
-      },
-      {
-        heading: "Sitio web, perfil de empresa y redes sociales",
-        paragraphs: ["Cada canal cumple una función distinta; pueden complementarse, pero ninguno es obligatorio para todos los negocios ni garantiza por sí solo que te encuentren."],
-        blocks: [{ type: "definitions", items: [
-          { term: "Sitio web", definition: "Un conjunto de páginas bajo un dominio que el negocio puede organizar para explicar su propuesta, presentar información detallada y facilitar una acción. Requiere mantenimiento, seguridad y actualizaciones; publicar una web no implica posicionamiento ni tráfico." },
-          { term: "Perfil de empresa", definition: "Una ficha administrada dentro de una plataforma —por ejemplo, un servicio de búsqueda o mapas— con datos como nombre, categoría, ubicación o área, horario, teléfono, web y servicios compatibles. Su disponibilidad y campos dependen de las reglas de la plataforma, la elegibilidad y la verificación." },
-          { term: "Red social", definition: "Una cuenta o página dentro de una plataforma social para publicar contenido y comunicarse allí. El negocio depende de las funciones, normas y distribución de esa plataforma y debe revisar sus mensajes y datos con regularidad." },
-        ] }, { type: "paragraph", text: "La página web está bajo mayor control editorial del negocio, aunque depende del proveedor de alojamiento y del mantenimiento. El perfil vive dentro de un servicio ajeno con reglas propias. Las redes facilitan publicar y conversar en su entorno, pero no sustituyen una fuente de información estable. Escoge según el objetivo operativo y la capacidad de mantener cada espacio." }],
-      },
-      {
-        heading: "Mantén los mismos datos en todos los canales",
-        paragraphs: ["Compara los puntos donde el público puede encontrar información: nombre comercial, descripción, servicios disponibles, ubicación o cobertura, horarios, precios o condiciones cuando se publiquen y formas de contacto. La información no tiene que estar redactada palabra por palabra igual, pero sí ser compatible y actual."],
-        blocks: [{ type: "steps", label: "Revisión de coherencia entre canales", items: [
-          { title: "Haz una lista de tus espacios públicos", detail: "Incluye el sitio, el perfil de empresa, las redes sociales, directorios relevantes y enlaces que siguen apareciendo en materiales impresos o mensajes." },
-          { title: "Compara datos que pueden causar una visita o una consulta equivocada", detail: "Revisa nombre, teléfono, enlace, horario, dirección, zona atendida, servicios y condiciones. Corrige primero lo que podría hacer perder una llamada, una cita o un desplazamiento." },
-          { title: "Comprueba que cada afirmación siga vigente", detail: "Quita servicios que ya no se ofrecen, promociones vencidas, precios desactualizados y fotos que ya no representan el lugar o el producto." },
-          { title: "Define cómo se actualizarán los cambios", detail: "Asigna una persona y un procedimiento para modificar los canales cuando cambien horarios, cobertura, personal, servicios o formas de contacto." },
-        ] }],
-      },
-      {
-        heading: "Facilita que te encuentren y se comuniquen",
-        paragraphs: ["Una persona debe poder reconocer rápidamente que llegó al negocio correcto, entender si atiende su necesidad y elegir una forma de contacto que funcione. Prueba la ruta completa como visitante, no solo como administrador de la cuenta."],
-        blocks: [{ type: "list", items: [
-          "Usa el nombre público correcto y una descripción concreta, sin llenar perfiles de palabras clave o servicios no prestados.",
-          "Escribe enlaces completos y comprueba que abran el destino correcto, sobre todo el botón de llamada, reserva, mapa, mensaje o solicitud de cotización.",
-          "Revisa los canales desde un teléfono, con la sesión cerrada y una conexión móvil; confirma que el texto se lea y los controles se puedan usar.",
-          "Si recibes consultas por teléfono, mensajería o formulario, confirma que el equipo pueda recibirlas y que alguien sepa quién debe contestar.",
-          "Explica qué sucede después del contacto: qué datos básicos pedirás, quién responderá y si hace falta reservar o acudir al local.",
-        ] }, { type: "callout", tone: "tip", title: "La acción debe describir lo que ocurrirá", text: "Un botón «Solicitar una cotización» debe llevar a un medio que realmente permita pedirla. Evita botones que parecen activos, enlaces rotos y formularios que no confirman el envío." }],
-      },
-      {
-        heading: "Confianza sin reseñas o testimonios inventados",
-        paragraphs: ["La confianza no se construye simulando aprobación. Preséntate con claridad y utiliza únicamente información que puedas respaldar. No escribas reseñas ficticias, no atribuyas frases a clientes que no las dieron ni uses estrellas o cifras sin una fuente verificable."],
-        blocks: [{ type: "list", items: [
-          "Muestra quién presta el servicio y cómo contactar al negocio, dentro de lo que sea pertinente y seguro publicar.",
-          "Explica con precisión qué incluye un servicio, sus condiciones conocidas, límites, cobertura y pasos para solicitarlo.",
-          "Usa fotografías propias, actuales y representativas; pide autorización para publicar imágenes identificables y respeta derechos de terceros.",
-          "Si compartes comentarios o casos reales, confirma que sean auténticos, pertinentes, autorizados y presentados sin alterar su sentido. Identifica patrocinios o incentivos cuando corresponda según la normativa aplicable.",
-          "Atiende dudas y reclamaciones con respeto. No prometas resultados, certificaciones o garantías que no puedas demostrar.",
-          "Si aún no tienes reseñas, no es necesario inventarlas: ofrece información verificable y deja que cada cliente decida si desea compartir su experiencia en los espacios permitidos.",
-        ] }],
-      },
-      {
-        heading: "Accesibilidad, privacidad y seguridad básicas",
-        paragraphs: ["Una presencia útil debe poder consultarse y utilizarse en distintos dispositivos y por personas con distintas necesidades. La lista siguiente recoge comprobaciones iniciales inspiradas en las pautas W3C; no es una auditoría formal ni una certificación WCAG 2.2 AA."],
-        blocks: [{ type: "list", items: [
-          "Comprueba que el texto tenga tamaño legible, contraste suficiente y no dependa solo del color para indicar una acción o estado.",
-          "Usa títulos descriptivos, nombres comprensibles para enlaces y botones, texto alternativo útil para imágenes informativas y subtítulos cuando el video contenga información hablada relevante.",
-          "Prueba teclado y móvil: que los controles puedan enfocarse, no queden tapados y funcionen sin gestos difíciles; evita páginas que obliguen a desplazarse horizontalmente para leer texto normal.",
-          "Publica solo los datos personales necesarios para atender. No expongas documentos internos, listas de clientes, números privados ni información sensible en páginas o imágenes.",
-          "Usa conexiones seguras cuando se envíen datos, protege las cuentas con contraseñas únicas y autenticación disponible, limita permisos y elimina accesos que ya no se necesiten.",
-          "Antes de instalar analítica, píxeles o formularios, identifica qué datos recogen, qué proveedor los procesa, cuánto tiempo se guardan y qué avisos, opciones o base legal requiere tu jurisdicción.",
-        ] }, { type: "callout", tone: "caution", title: "Las reglas legales dependen del caso", text: "Las políticas de anuncios de Google o Meta son reglas de sus plataformas; no sustituyen la legislación sobre privacidad, cookies, accesibilidad, promociones o comunicaciones comerciales de tu país." }],
-      },
-      {
-        heading: "Ejemplo hipotético: un taller local que considera anunciarse",
-        paragraphs: ["Este caso es hipotético. No presenta resultados de ventas, estadísticas ni una configuración real de anuncios."],
-        blocks: [{ type: "example", title: "El taller de bicicletas Rueda Clara", hypothetical: true,
-          context: "El taller publica ocasionalmente en redes sociales, recibe consultas por mensajes y teléfono y está pensando pagar una campaña para atraer más solicitudes de reparación.",
-          problem: "Al revisar los canales, algunas publicaciones dicen que atiende con cita, el perfil antiguo muestra un horario distinto y no queda claro si hace reparaciones a domicilio. Un enlace de contacto abre una cuenta que ya no revisan. Si llegaran más visitas, las personas podrían no saber si el taller les sirve o cómo obtener respuesta.",
-          approach: "Antes de comprar alcance, el equipo reúne la información que puede confirmar, corrige los canales principales y prueba el recorrido de consulta desde un teléfono. No supone que una página web o una campaña sean obligatorias: primero resuelve la contradicción y el contacto fallido.",
-          actions: [
-            "Información mínima: servicios de reparación que realmente acepta, tipos de bicicleta que atiende, si trabaja con cita, dirección del local y si ofrece o no visitas a domicilio.",
-            "Público y zona: definir a quién puede atender y el área práctica que cubre, sin anunciarse en lugares donde no presta servicio.",
-            "Canales: elegir el perfil local y una red social que sí mantienen; valorar una página sencilla solo si necesitan explicar servicios, condiciones o reservas que no caben bien en esos perfiles.",
-            "Actualización: corregir horarios, teléfono, descripción y enlaces en los espacios que usan; retirar o actualizar el perfil viejo y las publicaciones que prometen servicios no confirmados.",
-            "Prueba: abrir cada enlace desde un teléfono sin sesión iniciada, llamar o enviar una consulta de prueba y comprobar quién recibe el mensaje y quién se hace cargo de responder.",
-            "Responsabilidad: acordar una persona y un horario realista para revisar llamadas y mensajes, y qué hará cuando una consulta no corresponda al servicio.",
-            "Decisión: si la información es coherente, la acción de contacto funciona y el taller puede atender solicitudes adicionales, puede considerar una prueba pequeña con objetivo, duración, zona, presupuesto y criterio de pausa definidos. Si todavía hay enlaces rotos o falta capacidad de respuesta, conviene seguir corrigiendo antes de pagar por más visitas.",
-          ],
-          lesson: "El caso no demuestra que los anuncios vayan a generar clientes. Muestra que primero se puede corregir una base operativa, y después decidir con cautela si medir una campaña responde a una necesidad concreta.",
-        }],
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar podrás diferenciar la presencia orgánica de la publicidad pagada y describir una prueba pequeña con presupuesto y objetivo definidos.", "Ejercicio: redacta una hipótesis de campaña, una acción esperada y una señal para evaluarla. No publiques anuncios hasta comprobar que puedes responder las consultas."],
       },
       {
         heading: "Presencia orgánica y publicidad pagada",
@@ -581,6 +508,199 @@ export const learnArticles: LearnArticle[] = [
         ] }],
       },
       {
+        heading: "Fuentes oficiales y alcance",
+        paragraphs: ["Las fuentes siguientes se consultaron para preparar esta guía. Las recomendaciones editoriales y de organización son prácticas generales; los requisitos de plataforma se identifican como políticas y no deben confundirse con asesoría legal. Las reglas cambian y pueden variar por sector, formato o país: comprueba las versiones vigentes antes de actuar."],
+        blocks: [{ type: "sources", items: [
+          { label: "SEO Starter Guide — Google Search Central", url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide", scope: "Recomendaciones de Google Search sobre contenido útil, rastreo, títulos, enlaces e imágenes. La guía dice explícitamente que no hay una fórmula que garantice el primer puesto ni que toda recomendación aplique a todo sitio." },
+          { label: "Edit your Business Profile — Google Business Profile Help", url: "https://support.google.com/business/answer/3039617", scope: "Ayuda oficial para editar información como nombre, dirección o área de servicio, horarios, teléfono, web, descripción y servicios. Disponibilidad, elegibilidad, verificación y revisión pueden variar." },
+          { label: "Destination requirements — Google Ads Policies", url: "https://support.google.com/adspolicy/answer/6368661", scope: "Política de Google Ads sobre destinos funcionales, accesibles, coherentes y fáciles de usar. Es una condición de la plataforma, no una garantía de aprobación ni un requisito legal universal." },
+          { label: "How to choose the right ad objective in Meta Ads Manager", url: "https://www.facebook.com/business/help/1438417719786914", scope: "Ayuda oficial de Meta que relaciona objetivos de campaña con metas como awareness, tráfico, leads o ventas. Describe opciones de configuración; no certifica el resultado que logrará una campaña." },
+          { label: "About Meta Advertising Standards", url: "https://www.facebook.com/business/help/488043719226449", scope: "Centro de ayuda de Meta para sus estándares publicitarios y políticas relacionadas. Las normas de la plataforma pueden cambiar y no sustituyen el marco legal aplicable." },
+          { label: "WCAG 2.2 Quick Reference — W3C WAI", url: "https://www.w3.org/WAI/WCAG22/quickref/", scope: "Referencia rápida del W3C para consultar criterios WCAG 2.2 y técnicas. Esta guía no ha sido objeto de una evaluación completa y no declara conformidad ni certificación WCAG 2.2 AA." },
+          { label: "Tutorial: Set up a key event — Google Analytics Help", url: "https://support.google.com/analytics/answer/12966437", scope: "Ejemplo técnico oficial de Google para registrar un evento clave en Analytics. Una configuración de medición no prueba por sí misma causalidad comercial; evalúa datos, consentimiento y obligaciones antes de implementarla." },
+          { label: "Privacy controls in Google Analytics — Google Analytics Help", url: "https://support.google.com/analytics/answer/9019185", scope: "Controles específicos del producto para configurar recopilación, retención y funciones publicitarias en Analytics. La página orienta sobre opciones técnicas, no decide qué base legal aplica a tu caso." },
+        ] }],
+      },
+      {
+        heading: "Ponlo en práctica",
+        paragraphs: ["Escribe el objetivo de la campaña, comprueba que el enlace funciona desde un teléfono, limita el presupuesto y define cuándo revisarás resultados. Si no puedes atender las consultas, mejora primero tu presencia digital."],
+      },
+    ],
+  },
+  {
+    slug: "como-mantener-actualizada-y-confiable-tu-presencia-digital",
+    category: "Negocios digitales",
+    title: "Cómo mantener actualizada y confiable tu presencia digital",
+    intro: "Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.",
+    excerpt: "Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.",
+    enPocasPalabras: ["Comprueba que horarios, servicios y contacto coincidan entre canales.","No inventes reseñas ni afirmaciones para ganar confianza.","Revisa accesibilidad, privacidad y seguridad antes de ampliar tu presencia."],
+    image: "/assets/learn/diagram-presence-digital.svg",
+    imageAlt: "Esquema educativo de servicios y canales digitales",
+    relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
+    editorialDraft: true,
+    cta: { label: "Revisar mi situación", to: "/diagnostico", copy: "Comprueba qué necesita tu negocio antes de contratar o publicar." },
+    sections: [
+      { heading: "Qué aprenderás", paragraphs: ["Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.", "Ejercicio: elige un canal o servicio que ya utilizas, identifica qué debes comprobar y anota quién se encargará de revisarlo."] },
+      {
+        heading: "Mantén los mismos datos en todos los canales",
+        paragraphs: ["Compara los puntos donde el público puede encontrar información: nombre comercial, descripción, servicios disponibles, ubicación o cobertura, horarios, precios o condiciones cuando se publiquen y formas de contacto. La información no tiene que estar redactada palabra por palabra igual, pero sí ser compatible y actual."],
+        blocks: [{ type: "steps", label: "Revisión de coherencia entre canales", items: [
+          { title: "Haz una lista de tus espacios públicos", detail: "Incluye el sitio, el perfil de empresa, las redes sociales, directorios relevantes y enlaces que siguen apareciendo en materiales impresos o mensajes." },
+          { title: "Compara datos que pueden causar una visita o una consulta equivocada", detail: "Revisa nombre, teléfono, enlace, horario, dirección, zona atendida, servicios y condiciones. Corrige primero lo que podría hacer perder una llamada, una cita o un desplazamiento." },
+          { title: "Comprueba que cada afirmación siga vigente", detail: "Quita servicios que ya no se ofrecen, promociones vencidas, precios desactualizados y fotos que ya no representan el lugar o el producto." },
+          { title: "Define cómo se actualizarán los cambios", detail: "Asigna una persona y un procedimiento para modificar los canales cuando cambien horarios, cobertura, personal, servicios o formas de contacto." },
+        ] }],
+      },
+      {
+        heading: "Facilita que te encuentren y se comuniquen",
+        paragraphs: ["Una persona debe poder reconocer rápidamente que llegó al negocio correcto, entender si atiende su necesidad y elegir una forma de contacto que funcione. Prueba la ruta completa como visitante, no solo como administrador de la cuenta."],
+        blocks: [{ type: "list", items: [
+          "Usa el nombre público correcto y una descripción concreta, sin llenar perfiles de palabras clave o servicios no prestados.",
+          "Escribe enlaces completos y comprueba que abran el destino correcto, sobre todo el botón de llamada, reserva, mapa, mensaje o solicitud de cotización.",
+          "Revisa los canales desde un teléfono, con la sesión cerrada y una conexión móvil; confirma que el texto se lea y los controles se puedan usar.",
+          "Si recibes consultas por teléfono, mensajería o formulario, confirma que el equipo pueda recibirlas y que alguien sepa quién debe contestar.",
+          "Explica qué sucede después del contacto: qué datos básicos pedirás, quién responderá y si hace falta reservar o acudir al local.",
+        ] }, { type: "callout", tone: "tip", title: "La acción debe describir lo que ocurrirá", text: "Un botón «Solicitar una cotización» debe llevar a un medio que realmente permita pedirla. Evita botones que parecen activos, enlaces rotos y formularios que no confirman el envío." }],
+      },
+      {
+        heading: "Confianza sin reseñas o testimonios inventados",
+        paragraphs: ["La confianza no se construye simulando aprobación. Preséntate con claridad y utiliza únicamente información que puedas respaldar. No escribas reseñas ficticias, no atribuyas frases a clientes que no las dieron ni uses estrellas o cifras sin una fuente verificable."],
+        blocks: [{ type: "list", items: [
+          "Muestra quién presta el servicio y cómo contactar al negocio, dentro de lo que sea pertinente y seguro publicar.",
+          "Explica con precisión qué incluye un servicio, sus condiciones conocidas, límites, cobertura y pasos para solicitarlo.",
+          "Usa fotografías propias, actuales y representativas; pide autorización para publicar imágenes identificables y respeta derechos de terceros.",
+          "Si compartes comentarios o casos reales, confirma que sean auténticos, pertinentes, autorizados y presentados sin alterar su sentido. Identifica patrocinios o incentivos cuando corresponda según la normativa aplicable.",
+          "Atiende dudas y reclamaciones con respeto. No prometas resultados, certificaciones o garantías que no puedas demostrar.",
+          "Si aún no tienes reseñas, no es necesario inventarlas: ofrece información verificable y deja que cada cliente decida si desea compartir su experiencia en los espacios permitidos.",
+        ] }],
+      },
+      {
+        heading: "Accesibilidad, privacidad y seguridad básicas",
+        paragraphs: ["Una presencia útil debe poder consultarse y utilizarse en distintos dispositivos y por personas con distintas necesidades. La lista siguiente recoge comprobaciones iniciales inspiradas en las pautas W3C; no es una auditoría formal ni una certificación WCAG 2.2 AA."],
+        blocks: [{ type: "list", items: [
+          "Comprueba que el texto tenga tamaño legible, contraste suficiente y no dependa solo del color para indicar una acción o estado.",
+          "Usa títulos descriptivos, nombres comprensibles para enlaces y botones, texto alternativo útil para imágenes informativas y subtítulos cuando el video contenga información hablada relevante.",
+          "Prueba teclado y móvil: que los controles puedan enfocarse, no queden tapados y funcionen sin gestos difíciles; evita páginas que obliguen a desplazarse horizontalmente para leer texto normal.",
+          "Publica solo los datos personales necesarios para atender. No expongas documentos internos, listas de clientes, números privados ni información sensible en páginas o imágenes.",
+          "Usa conexiones seguras cuando se envíen datos, protege las cuentas con contraseñas únicas y autenticación disponible, limita permisos y elimina accesos que ya no se necesiten.",
+          "Antes de instalar analítica, píxeles o formularios, identifica qué datos recogen, qué proveedor los procesa, cuánto tiempo se guardan y qué avisos, opciones o base legal requiere tu jurisdicción.",
+        ] }, { type: "callout", tone: "caution", title: "Las reglas legales dependen del caso", text: "Las políticas de anuncios de Google o Meta son reglas de sus plataformas; no sustituyen la legislación sobre privacidad, cookies, accesibilidad, promociones o comunicaciones comerciales de tu país." }],
+      },
+      { heading: "Lista de comprobación", paragraphs: ["Comprueba que horarios, servicios y contacto coincidan entre canales.","No inventes reseñas ni afirmaciones para ganar confianza.","Revisa accesibilidad, privacidad y seguridad antes de ampliar tu presencia."] },
+      {
+        heading: "Fuentes y alcance",
+        paragraphs: ["Las fuentes siguientes se consultaron para preparar esta guía. Las recomendaciones editoriales y de organización son prácticas generales; los requisitos de plataforma se identifican como políticas y no deben confundirse con asesoría legal. Las reglas cambian y pueden variar por sector, formato o país: comprueba las versiones vigentes antes de actuar."],
+        blocks: [{ type: "sources", items: [
+          { label: "SEO Starter Guide — Google Search Central", url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide", scope: "Recomendaciones de Google Search sobre contenido útil, rastreo, títulos, enlaces e imágenes. La guía dice explícitamente que no hay una fórmula que garantice el primer puesto ni que toda recomendación aplique a todo sitio." },
+          { label: "Edit your Business Profile — Google Business Profile Help", url: "https://support.google.com/business/answer/3039617", scope: "Ayuda oficial para editar información como nombre, dirección o área de servicio, horarios, teléfono, web, descripción y servicios. Disponibilidad, elegibilidad, verificación y revisión pueden variar." },
+          { label: "Destination requirements — Google Ads Policies", url: "https://support.google.com/adspolicy/answer/6368661", scope: "Política de Google Ads sobre destinos funcionales, accesibles, coherentes y fáciles de usar. Es una condición de la plataforma, no una garantía de aprobación ni un requisito legal universal." },
+          { label: "How to choose the right ad objective in Meta Ads Manager", url: "https://www.facebook.com/business/help/1438417719786914", scope: "Ayuda oficial de Meta que relaciona objetivos de campaña con metas como awareness, tráfico, leads o ventas. Describe opciones de configuración; no certifica el resultado que logrará una campaña." },
+          { label: "About Meta Advertising Standards", url: "https://www.facebook.com/business/help/488043719226449", scope: "Centro de ayuda de Meta para sus estándares publicitarios y políticas relacionadas. Las normas de la plataforma pueden cambiar y no sustituyen el marco legal aplicable." },
+          { label: "WCAG 2.2 Quick Reference — W3C WAI", url: "https://www.w3.org/WAI/WCAG22/quickref/", scope: "Referencia rápida del W3C para consultar criterios WCAG 2.2 y técnicas. Esta guía no ha sido objeto de una evaluación completa y no declara conformidad ni certificación WCAG 2.2 AA." },
+          { label: "Tutorial: Set up a key event — Google Analytics Help", url: "https://support.google.com/analytics/answer/12966437", scope: "Ejemplo técnico oficial de Google para registrar un evento clave en Analytics. Una configuración de medición no prueba por sí misma causalidad comercial; evalúa datos, consentimiento y obligaciones antes de implementarla." },
+          { label: "Privacy controls in Google Analytics — Google Analytics Help", url: "https://support.google.com/analytics/answer/9019185", scope: "Controles específicos del producto para configurar recopilación, retención y funciones publicitarias en Analytics. La página orienta sobre opciones técnicas, no decide qué base legal aplica a tu caso." },
+        ] }],
+      },    ],
+  },
+  {
+    slug: "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+    category: "Negocios digitales",
+    title: "Antes de hacer publicidad, organiza tu presencia digital",
+    intro: "Antes de pagar anuncios, hazte una pregunta: si alguien llega hoy a tu perfil, ¿entiende qué haces y cómo contactarte? Empieza por ordenar esa información.",
+    excerpt: "Revisa tus datos, canales y contacto antes de decidir si vale la pena invertir en publicidad.",
+    enPocasPalabras: ["Antes de pagar anuncios, explica claramente qué ofreces.","Comprueba horarios, canales y datos en todos tus perfiles.","La publicidad no arregla una página confusa o difícil de contactar."],
+    image: "/assets/learn/diagram-presence-digital.svg",
+    imageAlt: "Tres canales digitales —sitio web, perfil de empresa y redes sociales— muestran de forma coherente una oferta, una zona de atención y opciones de contacto",
+    cta: { label: "Conocer el Diagnóstico", to: "/diagnostico", copy: "Si quieres ordenar prioridades, el Diagnóstico de presencia digital puede servir como punto de partida; no promete visibilidad, clientes ni resultados comerciales." },
+    relatedSlugs: ["publicidad-digital-como-preparar-una-primera-campana", "como-mantener-actualizada-y-confiable-tu-presencia-digital"],
+    sections: [
+      { heading: "Guía complementaria", paragraphs: ["Para ampliar este tema sin mezclar conceptos, continúa con «Cómo mantener actualizada y confiable tu presencia digital»." ] },
+      {
+        heading: "¿Y si necesitas preparar anuncios?",
+        paragraphs: ["La preparación de campañas, presupuestos y medición de publicidad pagada se explica por separado en la guía «Publicidad digital: cuándo anunciarte y cómo preparar una primera campaña». Primero comprueba que tus canales y datos de contacto funcionan."],
+      },
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Antes de hacer publicidad, organiza tu presencia digital», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
+      {
+        heading: "Qué significa tener presencia digital",
+        paragraphs: [
+          "La presencia digital reúne los lugares y la información mediante los que una persona puede reconocer un negocio, entender qué hace y encontrar cómo comunicarse. Puede incluir un sitio web, un perfil en un directorio o buscador, páginas de redes sociales, mapas, una tienda en línea y contenido que el propio negocio publica.",
+          "No es un único perfil ni una campaña. Es el conjunto de información que controlas o mantienes en distintos canales y la experiencia que encuentra alguien al pasar de uno a otro. No tienes que estar en todas las plataformas: el punto de partida depende de cómo compran, consultan o reciben atención tus clientes y de quién podrá mantener cada canal actualizado.",
+        ],
+        blocks: [{ type: "definitions", items: [
+          { term: "Presencia digital", definition: "Los canales, datos y contenidos donde el negocio se presenta y ofrece formas de conocerlo o contactarlo." },
+          { term: "Visibilidad", definition: "La posibilidad de que una persona encuentre o vea información del negocio en un canal, búsqueda, recomendación o contenido. Depende de muchos factores; estar presente no asegura aparecer en un lugar específico." },
+          { term: "Reputación", definition: "Las impresiones y señales que otras personas forman a partir de su experiencia, información disponible y comunicación del negocio. No se puede fabricar con testimonios o reseñas inventados." },
+          { term: "Publicidad", definition: "Distribución pagada de un mensaje a través de una plataforma o medio, con presupuesto, segmentación y configuración determinados." },
+        ] }, { type: "callout", tone: "tip", title: "Son conceptos relacionados, no equivalentes", text: "Abrir un perfil crea un punto de presencia, no garantiza visibilidad. Tener alcance no demuestra confianza. Una campaña compra distribución según su configuración, no una venta ni una posición orgánica." }],
+      },
+      {
+        heading: "Antes de elegir canales: define tu negocio con claridad",
+        paragraphs: ["Primero describe la actividad en palabras que una persona ajena al negocio pueda entender. Esa definición ayuda a mantener coherencia en el sitio, los perfiles y cualquier anuncio, y permite detectar promesas que el negocio no puede cumplir."],
+        blocks: [{ type: "steps", label: "Cuatro decisiones para aclarar tu oferta", items: [
+          { title: "Qué ofreces", detail: "Nombra productos o servicios concretos, qué incluyen y qué no. Separa lo disponible ahora de lo que podrías ofrecer más adelante. Si el precio depende de una evaluación, explica cómo pedirla sin publicar una tarifa ficticia." },
+          { title: "A quién atiendes", detail: "Describe a las personas o negocios para quienes la oferta es adecuada y qué necesidad resuelve. Evita afirmar que atiendes a todo el mundo si hay límites reales de capacidad, especialidad o elegibilidad." },
+          { title: "Dónde y cómo prestas el servicio", detail: "Indica si atiendes en un local, visitas zonas concretas, haces entregas, trabajas en línea o combinas modalidades. No publiques una dirección de atención si no recibes clientes allí." },
+          { title: "Cuál es el siguiente paso", detail: "Elige una acción realista: llamar, escribir, pedir una cotización, reservar o visitar. Explica qué información conviene compartir y en qué plazo habitual responderá el equipo, solo si puede sostenerlo." },
+        ] }],
+      },
+      {
+        heading: "Organiza la información comercial básica",
+        paragraphs: ["Reúne una fuente de referencia breve para que quien atiende, actualiza perfiles o prepara una página use los mismos datos. No hace falta redactar un plan de marketing: basta con acordar lo que debe ser correcto antes de publicarlo."],
+        blocks: [{ type: "list", items: [
+          "Nombre público del negocio y una descripción sencilla de su actividad.",
+          "Productos o servicios disponibles, alcance, condiciones relevantes y cómo pedir información adicional.",
+          "Tipo de cliente y necesidad atendida, sin promesas universales ni atributos no comprobados.",
+          "Dirección pública si corresponde, área real de servicio y modalidades de atención.",
+          "Horarios habituales, horarios especiales y fechas en las que el negocio estará cerrado.",
+          "Canales de contacto que sí funcionan, quién los revisa y cuándo suele responder.",
+          "Fotos propias y actuales, con permiso cuando aparezcan personas, propiedades o contenido de terceros.",
+          "Una persona responsable de confirmar cambios y retirar información vencida.",
+        ] }],
+      },
+      {
+        heading: "Qué canales convienen según el negocio",
+        paragraphs: ["Elige pocos canales que correspondan a la forma en que las personas buscan y compran tu oferta. Un negocio de atención por cita puede priorizar información local y reservas; una tienda puede necesitar catálogo, disponibilidad y compra; un servicio a domicilio debe aclarar su cobertura; una actividad de recomendación puede mantener una página social activa. Son ejemplos, no una receta universal."],
+        blocks: [{ type: "list", items: [
+          "Empieza por el lugar que tus clientes usan para informarse o contactarte y que alguien del equipo pueda atender con regularidad.",
+          "Para una operación local, un perfil de empresa en un servicio de mapas o búsqueda puede presentar datos del local o del área atendida si la plataforma y el tipo de actividad son elegibles.",
+          "Una red social tiene sentido cuando el formato ayuda a mostrar productos, procesos, novedades o responder preguntas y el negocio puede mantener esa actividad.",
+          "Un sitio web puede reunir información que controlas —servicios, cobertura, condiciones, preguntas y contacto—, pero no es requisito universal para vender ni reemplaza la atención o una oferta clara.",
+          "Si solo necesitas compartir un horario y un teléfono vigentes, comenzar con un perfil correcto puede ser más proporcionado que encargar un proyecto web completo.",
+        ] }, { type: "callout", tone: "caution", title: "No abras canales que nadie va a mantener", text: "Un perfil desactualizado o un mensaje sin atender puede crear confusión. Es mejor una presencia sencilla y consistente que muchas cuentas activas solo en apariencia." }],
+      },
+      {
+        heading: "Sitio web, perfil de empresa y redes sociales",
+        paragraphs: ["Cada canal cumple una función distinta; pueden complementarse, pero ninguno es obligatorio para todos los negocios ni garantiza por sí solo que te encuentren."],
+        blocks: [{ type: "definitions", items: [
+          { term: "Sitio web", definition: "Un conjunto de páginas bajo un dominio que el negocio puede organizar para explicar su propuesta, presentar información detallada y facilitar una acción. Requiere mantenimiento, seguridad y actualizaciones; publicar una web no implica posicionamiento ni tráfico." },
+          { term: "Perfil de empresa", definition: "Una ficha administrada dentro de una plataforma —por ejemplo, un servicio de búsqueda o mapas— con datos como nombre, categoría, ubicación o área, horario, teléfono, web y servicios compatibles. Su disponibilidad y campos dependen de las reglas de la plataforma, la elegibilidad y la verificación." },
+          { term: "Red social", definition: "Una cuenta o página dentro de una plataforma social para publicar contenido y comunicarse allí. El negocio depende de las funciones, normas y distribución de esa plataforma y debe revisar sus mensajes y datos con regularidad." },
+        ] }, { type: "paragraph", text: "La página web está bajo mayor control editorial del negocio, aunque depende del proveedor de alojamiento y del mantenimiento. El perfil vive dentro de un servicio ajeno con reglas propias. Las redes facilitan publicar y conversar en su entorno, pero no sustituyen una fuente de información estable. Escoge según el objetivo operativo y la capacidad de mantener cada espacio." }],
+      },
+      {
+        heading: "Ejemplo hipotético: un taller local que considera anunciarse",
+        paragraphs: ["Este caso es hipotético. No presenta resultados de ventas, estadísticas ni una configuración real de anuncios."],
+        blocks: [{ type: "example", title: "El taller de bicicletas Rueda Clara", hypothetical: true,
+          context: "El taller publica ocasionalmente en redes sociales, recibe consultas por mensajes y teléfono y está pensando pagar una campaña para atraer más solicitudes de reparación.",
+          problem: "Al revisar los canales, algunas publicaciones dicen que atiende con cita, el perfil antiguo muestra un horario distinto y no queda claro si hace reparaciones a domicilio. Un enlace de contacto abre una cuenta que ya no revisan. Si llegaran más visitas, las personas podrían no saber si el taller les sirve o cómo obtener respuesta.",
+          approach: "Antes de comprar alcance, el equipo reúne la información que puede confirmar, corrige los canales principales y prueba el recorrido de consulta desde un teléfono. No supone que una página web o una campaña sean obligatorias: primero resuelve la contradicción y el contacto fallido.",
+          actions: [
+            "Información mínima: servicios de reparación que realmente acepta, tipos de bicicleta que atiende, si trabaja con cita, dirección del local y si ofrece o no visitas a domicilio.",
+            "Público y zona: definir a quién puede atender y el área práctica que cubre, sin anunciarse en lugares donde no presta servicio.",
+            "Canales: elegir el perfil local y una red social que sí mantienen; valorar una página sencilla solo si necesitan explicar servicios, condiciones o reservas que no caben bien en esos perfiles.",
+            "Actualización: corregir horarios, teléfono, descripción y enlaces en los espacios que usan; retirar o actualizar el perfil viejo y las publicaciones que prometen servicios no confirmados.",
+            "Prueba: abrir cada enlace desde un teléfono sin sesión iniciada, llamar o enviar una consulta de prueba y comprobar quién recibe el mensaje y quién se hace cargo de responder.",
+            "Responsabilidad: acordar una persona y un horario realista para revisar llamadas y mensajes, y qué hará cuando una consulta no corresponda al servicio.",
+            "Decisión: si la información es coherente, la acción de contacto funciona y el taller puede atender solicitudes adicionales, puede considerar una prueba pequeña con objetivo, duración, zona, presupuesto y criterio de pausa definidos. Si todavía hay enlaces rotos o falta capacidad de respuesta, conviene seguir corrigiendo antes de pagar por más visitas.",
+          ],
+          lesson: "El caso no demuestra que los anuncios vayan a generar clientes. Muestra que primero se puede corregir una base operativa, y después decidir con cautela si medir una campaña responde a una necesidad concreta.",
+        }],
+      },
+      {
         heading: "Cómo se relaciona esta guía con Vecidya",
         paragraphs: ["Los conceptos anteriores aplican a cualquier negocio. En el producto Vecidya, el Diagnóstico de presencia digital ayuda a revisar información y prioridades; no publica anuncios ni garantiza alcance. MiniWeb organiza en un formato público los datos de perfil disponibles para el negocio, y Vecindario permite explorar perfiles públicos de negocios. Que una función exista en la plataforma no significa que toda licencia incluya el mismo alcance o que un perfil esté publicado: la disponibilidad depende del catálogo vigente, la configuración y los datos que el negocio mantenga."],
         blocks: [{ type: "list", items: [
@@ -654,6 +774,89 @@ export const learnArticles: LearnArticle[] = [
     ],
   },
   {
+    slug: "como-probar-y-supervisar-automatizaciones-sin-perder-datos",
+    category: "Automatización",
+    title: "Cómo probar y supervisar automatizaciones sin perder datos",
+    intro: "Una automatización útil también necesita controles para duplicados, fallos, privacidad y supervisión humana.",
+    excerpt: "Una automatización útil también necesita controles para duplicados, fallos, privacidad y supervisión humana.",
+    enPocasPalabras: ["Prueba los casos normales y los errores antes de activar.","Define quién interviene cuando el proceso falla.","Conserva una forma segura de detener y revisar la automatización."],
+    image: "/assets/learn/diagram-automation.svg",
+    imageAlt: "Ilustración conceptual del tema de esta guía",
+    relatedSlugs: ["automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio"],
+    editorialDraft: true,
+    cta: { label: "Revisar mis necesidades", to: "/diagnostico", copy: "Identifica primero el problema y comprueba qué necesitas antes de contratar herramientas." },
+    sections: [
+      { heading: "Objetivo y práctica", paragraphs: ["Al terminar podrás identificar los riesgos y decisiones de este proceso y explicar qué comprobar antes de actuar.", "Ejercicio: describe un caso de tu negocio sin datos personales, elige una comprobación y define cuándo revisarás el resultado."] },
+      {
+        heading: "Errores, duplicados y reintentos",
+        paragraphs: ["Una automatización puede activarse dos veces, recibir un dato incompleto, no encontrar el registro esperado o fallar al ejecutar una acción. El flujo debe poder distinguir entre «no se ejecutó» y «se ejecutó, pero no llegó la confirmación». Repetir sin comprobar puede crear dos avisos o dos pedidos."],
+        blocks: [{ type: "definitions", items: [
+          { term: "Duplicado", definition: "Dos registros o acciones representan el mismo hecho o tarea, por ejemplo dos avisos abiertos de reposición para una misma variedad y evento." },
+          { term: "Reintento", definition: "Una nueva tentativa tras un fallo. Solo es segura cuando se ha comprobado qué ocurrió en el intento anterior o existe una protección contra repetir el mismo efecto." },
+          { term: "Registro de ejecución", definition: "Una constancia mínima de cuándo se evaluó la regla, qué resultado tuvo y si la acción se confirmó o requiere revisión. Debe tener acceso y retención proporcionados." },
+        ] }, { type: "list", items: [
+          "Identifica de forma estable el evento o la tarea para detectar que ya fue procesado, cuando la herramienta lo permita.",
+          "Antes de reintentar, comprueba si el efecto ya ocurrió. No repitas automáticamente acciones externas —como enviar un mensaje o realizar un cargo— solo porque la confirmación tardó.",
+          "Limita los reintentos y registra el resultado. Si persiste el error, pausa esa rama y asigna una revisión en vez de repetir sin límite.",
+          "Avisa a una persona cuando falte información, el resultado sea contradictorio o no puedas confirmar si una acción se completó.",
+        ] }],
+      },
+      {
+        heading: "Cuándo necesita intervenir una persona",
+        paragraphs: ["La intervención humana no es solo un último recurso. Puede ser una condición deliberada antes de una acción con consecuencias, la forma de resolver datos dudosos o el control de calidad de una regla nueva."],
+        blocks: [{ type: "list", items: [
+          "La regla no reconoce el caso, la fuente está desactualizada o dos datos se contradicen.",
+          "La acción afecta dinero, seguridad, derechos, información sensible o una relación importante con otra persona.",
+          "Alguien pide hablar con una persona, cuestiona un mensaje o comunica una situación urgente.",
+          "El sistema informa un error, no confirma la acción o detecta un duplicado.",
+          "Una persona responsable revisa muestras y registros durante el piloto, incluso cuando las ejecuciones habituales parecen correctas.",
+        ] }, { type: "callout", tone: "caution", title: "Asigna una persona dueña", text: "Antes de activar la regla, acuerda quién recibe excepciones, con qué frecuencia revisa el registro y quién tiene permiso para pausarla. Sin esa responsabilidad, un aviso puede terminar en una bandeja que nadie atiende." }],
+      },
+      {
+        heading: "Protege la información y las preferencias de contacto",
+        paragraphs: ["Un flujo operativo interno puede necesitar pocos datos. No copies nombres, teléfonos, mensajes o información sensible si basta un identificador de producto o una tarea asignada. Consulta qué datos conserva cada herramienta, quién accede, cómo se exportan o eliminan y durante cuánto tiempo."],
+        blocks: [{ type: "list", items: [
+          "Recoge y transmite solo la información necesaria; limita permisos a las personas que mantienen o ejecutan el proceso.",
+          "Protege las cuentas y revisa medidas de acceso, registros, conservación, exportación y eliminación ofrecidas por las herramientas involucradas.",
+          "Si el flujo contacta a clientes, usa solo el canal, propósito y frecuencia permitidos. Un dato de contacto o una compra previa no equivalen por sí solos a autorización para mensajes promocionales.",
+          "Respeta bajas, preferencias y restricciones del canal. Mantén una lista de exclusión donde corresponda y evita que una automatización reintroduzca a quien pidió no recibir comunicaciones.",
+          "Verifica normas de privacidad y comunicaciones comerciales de tu jurisdicción. Esta guía es educativa y no reemplaza asesoría legal.",
+        ] }, { type: "callout", tone: "caution", title: "Empieza con avisos internos", text: "Un aviso al equipo suele tener menos consecuencias que contactar automáticamente a una persona externa. Si vas a enviar mensajes, revisa consentimiento o base aplicable, identidad, contenido, horarios, frecuencia y mecanismo de baja antes de la prueba real." }],
+      },
+      {
+        heading: "Prueba antes de usarla en el trabajo real",
+        paragraphs: ["Una prueba controlada comprueba si la regla responde como se espera en casos normales y excepcionales. Hazla con registros ficticios o anonimizados y, cuando sea posible, en un entorno separado que no envíe comunicaciones ni ejecute compras."],
+        blocks: [{ type: "steps", label: "Lista de prueba antes de activar", items: [
+          { title: "Prepara casos que deben continuar", detail: "Usa un evento válido con todas las condiciones satisfechas y comprueba que se produzca una sola acción asignada correctamente." },
+          { title: "Prepara casos que deben detenerse", detail: "Prueba una cantidad positiva, un producto inactivo, un dato vacío o inválido y una tarea ya abierta. Confirma que no aparezca una acción improcedente." },
+          { title: "Fuerza un fallo recuperable", detail: "Comprueba qué muestra la herramienta cuando no puede leer el dato o completar la acción. La excepción debe quedar visible para alguien responsable." },
+          { title: "Prueba doble evento y confirmación tardía", detail: "Envía el mismo caso dos veces y simula una respuesta demorada. Verifica que no se duplique el efecto ni se reintente a ciegas." },
+          { title: "Compara resultado con el proceso manual", detail: "Una persona verifica la salida esperada, el responsable, los permisos y los registros. No conectes el flujo a clientes ni a operaciones irreversibles durante esta etapa." },
+          { title: "Activa gradualmente y vigila", detail: "Si las pruebas salen bien, empieza con un alcance pequeño, conserva una alternativa manual y define quién revisará ejecuciones y excepciones durante el periodo acordado." },
+        ] }],
+      },
+      {
+        heading: "Mide si aporta valor y conserva una forma de detenerla",
+        paragraphs: ["Antes de probar, apunta cómo funciona hoy el mismo proceso y qué cambio sería útil. Compara periodos y casos equivalentes; considera también el tiempo de revisión, mantenimiento, errores y coste de herramientas. Una diferencia observada en una muestra no garantiza que se repita en todos los casos."],
+        blocks: [{ type: "list", items: [
+          "Operación: eventos detectados, acciones completadas y casos que requirieron intervención manual.",
+          "Calidad: acciones incorrectas, tareas duplicadas, datos faltantes y tiempo hasta identificar el problema.",
+          "Trabajo total: configuración, revisión, corrección y mantenimiento frente a los pasos manuales que permanecen.",
+          "Impacto y coste: incidentes, quejas, uso de proveedores y esfuerzo de quien responde por el flujo.",
+        ] }, { type: "paragraph", text: "Define de antemano una persona con permiso para pausar el flujo, cómo avisará al equipo y qué procedimiento manual lo sustituirá. Para revertir efectos, conserva una manera de localizar tareas o registros generados y deshacerlos solo cuando hacerlo sea seguro. Un mensaje enviado o una compra procesada no siempre se puede retirar: en esos casos, prepara una corrección y una respuesta humana." }, { type: "callout", tone: "tip", title: "Pausar también es un resultado válido", text: "Detén la automatización si aparecen errores repetidos, acciones duplicadas, datos expuestos, destinatarios incorrectos o excepciones sin atender. Investiga, corrige y repite las pruebas antes de reactivarla." }],
+      },
+      { heading: "Resumen para aplicar", paragraphs: ["Prueba los casos normales y los errores antes de activar.","Define quién interviene cuando el proceso falla.","Conserva una forma segura de detener y revisar la automatización."] },
+      {
+        heading: "Fuentes y alcance",
+        paragraphs: ["Estas referencias apoyan la gestión de privacidad, seguridad y comunicaciones. Cada una corresponde a un marco o jurisdicción concreta y no determina por sí sola las obligaciones de tu negocio."],
+        blocks: [{ type: "sources", items: [
+          { label: "NIST Privacy Framework", url: "https://www.nist.gov/privacy-framework", scope: "Marco voluntario del NIST de Estados Unidos para identificar y gestionar riesgos de privacidad. Útil como guía de preguntas; no es una ley universal." },
+          { label: "NIST Cybersecurity Framework (CSF) 2.0", url: "https://www.nist.gov/cyberframework", scope: "Marco del NIST para gestionar riesgos de ciberseguridad. Sus prácticas pueden orientar controles de acceso y supervisión, pero no sustituyen requisitos locales." },
+          { label: "Electronic mail marketing", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/electronic-mail-marketing/", scope: "Orientación de la autoridad ICO del Reino Unido sobre marketing por correo electrónico y preferencias. Se refiere al marco británico; verifica las reglas de tu jurisdicción y canal." },
+        ] }],
+      },    ],
+  },
+  {
     slug: "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio",
     category: "Automatización",
     title: "Automatizaciones: ahorrar tiempo sin complicar tu negocio",
@@ -663,7 +866,14 @@ export const learnArticles: LearnArticle[] = [
     image: "/assets/learn/diagram-automation.svg",
     imageAlt: "Flujo de automatización: un evento se evalúa mediante una condición y puede ejecutar una acción o pasar a revisión humana si no se cumple",
     cta: { label: "Consultar servicios", to: "/servicios", copy: "La implementación de una automatización personalizada puede formar parte de un servicio profesional; su alcance debe confirmarse previamente." },
+    relatedSlugs: ["como-probar-y-supervisar-automatizaciones-sin-perder-datos"],
     sections: [
+      { heading: "Continúa con la guía especializada", paragraphs: ["Para profundizar sin mezclar varios temas, consulta «Cómo probar y supervisar automatizaciones sin perder datos». Esta guía mantiene la explicación inicial y la otra reúne los controles y decisiones más avanzados."] },
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Automatizaciones: ahorrar tiempo sin complicar tu negocio», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         heading: "Qué significa automatizar una tarea",
         paragraphs: [
@@ -740,64 +950,6 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
-        heading: "Errores, duplicados y reintentos",
-        paragraphs: ["Una automatización puede activarse dos veces, recibir un dato incompleto, no encontrar el registro esperado o fallar al ejecutar una acción. El flujo debe poder distinguir entre «no se ejecutó» y «se ejecutó, pero no llegó la confirmación». Repetir sin comprobar puede crear dos avisos o dos pedidos."],
-        blocks: [{ type: "definitions", items: [
-          { term: "Duplicado", definition: "Dos registros o acciones representan el mismo hecho o tarea, por ejemplo dos avisos abiertos de reposición para una misma variedad y evento." },
-          { term: "Reintento", definition: "Una nueva tentativa tras un fallo. Solo es segura cuando se ha comprobado qué ocurrió en el intento anterior o existe una protección contra repetir el mismo efecto." },
-          { term: "Registro de ejecución", definition: "Una constancia mínima de cuándo se evaluó la regla, qué resultado tuvo y si la acción se confirmó o requiere revisión. Debe tener acceso y retención proporcionados." },
-        ] }, { type: "list", items: [
-          "Identifica de forma estable el evento o la tarea para detectar que ya fue procesado, cuando la herramienta lo permita.",
-          "Antes de reintentar, comprueba si el efecto ya ocurrió. No repitas automáticamente acciones externas —como enviar un mensaje o realizar un cargo— solo porque la confirmación tardó.",
-          "Limita los reintentos y registra el resultado. Si persiste el error, pausa esa rama y asigna una revisión en vez de repetir sin límite.",
-          "Avisa a una persona cuando falte información, el resultado sea contradictorio o no puedas confirmar si una acción se completó.",
-        ] }],
-      },
-      {
-        heading: "Cuándo necesita intervenir una persona",
-        paragraphs: ["La intervención humana no es solo un último recurso. Puede ser una condición deliberada antes de una acción con consecuencias, la forma de resolver datos dudosos o el control de calidad de una regla nueva."],
-        blocks: [{ type: "list", items: [
-          "La regla no reconoce el caso, la fuente está desactualizada o dos datos se contradicen.",
-          "La acción afecta dinero, seguridad, derechos, información sensible o una relación importante con otra persona.",
-          "Alguien pide hablar con una persona, cuestiona un mensaje o comunica una situación urgente.",
-          "El sistema informa un error, no confirma la acción o detecta un duplicado.",
-          "Una persona responsable revisa muestras y registros durante el piloto, incluso cuando las ejecuciones habituales parecen correctas.",
-        ] }, { type: "callout", tone: "caution", title: "Asigna una persona dueña", text: "Antes de activar la regla, acuerda quién recibe excepciones, con qué frecuencia revisa el registro y quién tiene permiso para pausarla. Sin esa responsabilidad, un aviso puede terminar en una bandeja que nadie atiende." }],
-      },
-      {
-        heading: "Protege la información y las preferencias de contacto",
-        paragraphs: ["Un flujo operativo interno puede necesitar pocos datos. No copies nombres, teléfonos, mensajes o información sensible si basta un identificador de producto o una tarea asignada. Consulta qué datos conserva cada herramienta, quién accede, cómo se exportan o eliminan y durante cuánto tiempo."],
-        blocks: [{ type: "list", items: [
-          "Recoge y transmite solo la información necesaria; limita permisos a las personas que mantienen o ejecutan el proceso.",
-          "Protege las cuentas y revisa medidas de acceso, registros, conservación, exportación y eliminación ofrecidas por las herramientas involucradas.",
-          "Si el flujo contacta a clientes, usa solo el canal, propósito y frecuencia permitidos. Un dato de contacto o una compra previa no equivalen por sí solos a autorización para mensajes promocionales.",
-          "Respeta bajas, preferencias y restricciones del canal. Mantén una lista de exclusión donde corresponda y evita que una automatización reintroduzca a quien pidió no recibir comunicaciones.",
-          "Verifica normas de privacidad y comunicaciones comerciales de tu jurisdicción. Esta guía es educativa y no reemplaza asesoría legal.",
-        ] }, { type: "callout", tone: "caution", title: "Empieza con avisos internos", text: "Un aviso al equipo suele tener menos consecuencias que contactar automáticamente a una persona externa. Si vas a enviar mensajes, revisa consentimiento o base aplicable, identidad, contenido, horarios, frecuencia y mecanismo de baja antes de la prueba real." }],
-      },
-      {
-        heading: "Prueba antes de usarla en el trabajo real",
-        paragraphs: ["Una prueba controlada comprueba si la regla responde como se espera en casos normales y excepcionales. Hazla con registros ficticios o anonimizados y, cuando sea posible, en un entorno separado que no envíe comunicaciones ni ejecute compras."],
-        blocks: [{ type: "steps", label: "Lista de prueba antes de activar", items: [
-          { title: "Prepara casos que deben continuar", detail: "Usa un evento válido con todas las condiciones satisfechas y comprueba que se produzca una sola acción asignada correctamente." },
-          { title: "Prepara casos que deben detenerse", detail: "Prueba una cantidad positiva, un producto inactivo, un dato vacío o inválido y una tarea ya abierta. Confirma que no aparezca una acción improcedente." },
-          { title: "Fuerza un fallo recuperable", detail: "Comprueba qué muestra la herramienta cuando no puede leer el dato o completar la acción. La excepción debe quedar visible para alguien responsable." },
-          { title: "Prueba doble evento y confirmación tardía", detail: "Envía el mismo caso dos veces y simula una respuesta demorada. Verifica que no se duplique el efecto ni se reintente a ciegas." },
-          { title: "Compara resultado con el proceso manual", detail: "Una persona verifica la salida esperada, el responsable, los permisos y los registros. No conectes el flujo a clientes ni a operaciones irreversibles durante esta etapa." },
-          { title: "Activa gradualmente y vigila", detail: "Si las pruebas salen bien, empieza con un alcance pequeño, conserva una alternativa manual y define quién revisará ejecuciones y excepciones durante el periodo acordado." },
-        ] }],
-      },
-      {
-        heading: "Mide si aporta valor y conserva una forma de detenerla",
-        paragraphs: ["Antes de probar, apunta cómo funciona hoy el mismo proceso y qué cambio sería útil. Compara periodos y casos equivalentes; considera también el tiempo de revisión, mantenimiento, errores y coste de herramientas. Una diferencia observada en una muestra no garantiza que se repita en todos los casos."],
-        blocks: [{ type: "list", items: [
-          "Operación: eventos detectados, acciones completadas y casos que requirieron intervención manual.",
-          "Calidad: acciones incorrectas, tareas duplicadas, datos faltantes y tiempo hasta identificar el problema.",
-          "Trabajo total: configuración, revisión, corrección y mantenimiento frente a los pasos manuales que permanecen.",
-          "Impacto y coste: incidentes, quejas, uso de proveedores y esfuerzo de quien responde por el flujo.",
-        ] }, { type: "paragraph", text: "Define de antemano una persona con permiso para pausar el flujo, cómo avisará al equipo y qué procedimiento manual lo sustituirá. Para revertir efectos, conserva una manera de localizar tareas o registros generados y deshacerlos solo cuando hacerlo sea seguro. Un mensaje enviado o una compra procesada no siempre se puede retirar: en esos casos, prepara una corrección y una respuesta humana." }, { type: "callout", tone: "tip", title: "Pausar también es un resultado válido", text: "Detén la automatización si aparecen errores repetidos, acciones duplicadas, datos expuestos, destinatarios incorrectos o excepciones sin atender. Investiga, corrige y repite las pruebas antes de reactivarla." }],
-      },
-      {
         heading: "Un ejemplo comercial breve: recordatorio acordado",
         paragraphs: ["Este segundo ejemplo es hipotético y sirve para distinguir una automatización operativa de una comercial. No implica que el flujo esté configurado o activado en Vecidya."],
         blocks: [{ type: "example", title: "Recordar una cotización solicitada", hypothetical: true,
@@ -864,115 +1016,19 @@ export const learnArticles: LearnArticle[] = [
     ],
   },
   {
-    slug: "dominio-hosting-sitio-web-como-funcionan",
+    slug: "como-elegir-y-cambiar-proveedor-de-dominio-y-hosting",
     category: "Tecnología explicada",
-    title: "Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos",
-    intro: "Una persona escribe la dirección de tu negocio y aparece tu página. ¿Cómo sucede eso? Te explicamos el dominio, el alojamiento y la conexión entre ambos sin enredos.",
-    excerpt: "Entiende las piezas de una web y qué accesos conviene conservar a tu nombre.",
-    enPocasPalabras: ["El dominio es la dirección que escriben las personas; el sitio es lo que ven.","El alojamiento guarda la web y el DNS conecta la dirección con el servidor.","Conserva el acceso y las fechas de renovación de cada servicio."],
+    title: "Cómo elegir o cambiar proveedor de dominio y hosting sin perder el control",
+    intro: "Antes de contratar, renovar o migrar tu web, comprueba titularidad, acceso, costos y una salida segura.",
+    excerpt: "Antes de contratar, renovar o migrar tu web, comprueba titularidad, acceso, costos y una salida segura.",
+    enPocasPalabras: ["Comprueba quién administra el dominio y dónde están los accesos.","Compara el costo completo y las condiciones de renovación.","Planifica cualquier cambio con copia y verificación del servicio."],
     image: "/assets/learn/diagram-domain-dns-hosting.svg",
-    imageAlt: "Recorrido de una persona al escribir una dirección: el navegador puede consultar DNS si no tiene una respuesta vigente en caché, conecta con el servidor web y recibe la página solicitada.",
-    relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
-    cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico puede ayudarte a priorizar necesidades digitales; no registra dominios ni administra DNS o alojamiento." },
+    imageAlt: "Ilustración conceptual del tema de esta guía",
+    relatedSlugs: ["dominio-hosting-sitio-web-como-funcionan"],
+    editorialDraft: true,
+    cta: { label: "Revisar mis necesidades", to: "/diagnostico", copy: "Identifica primero el problema y comprueba qué necesitas antes de contratar herramientas." },
     sections: [
-      {
-        heading: "Dominio, hosting y sitio web: tres piezas distintas",
-        paragraphs: [
-          "Un dominio es un nombre fácil de recordar que se usa dentro de una dirección web, como el nombre que aparece después de https://. El hosting —o alojamiento web— es un servicio que mantiene un servidor disponible para entregar los archivos o la aplicación del sitio. El sitio web es el contenido y el software que las personas ven y utilizan.",
-          "Una analogía útil: el dominio se parece a una dirección, el DNS a una guía que ayuda a ubicar un destino y el hosting a un local donde funciona el negocio. La comparación tiene límites: Internet no consulta una libreta central única, una dirección no es una propiedad física y los servicios pueden cambiarse o contratarse por separado.",
-        ],
-        blocks: [{ type: "definitions", items: [
-          { term: "Nombre de dominio", definition: "Un nombre legible, compuesto por etiquetas y una extensión —por ejemplo, un nombre terminado en .com— que permite identificar una ubicación dentro del sistema de nombres de Internet. No contiene por sí mismo la página web." },
-          { term: "Registro de dominio", definition: "El servicio y el acuerdo por los que un registrador tramita y mantiene el derecho de uso de un nombre durante un periodo renovable, sujeto a sus condiciones y a las reglas de la extensión. No es una compra perpetua del nombre." },
-          { term: "Titular o registrante", definition: "La persona u organización que figura como responsable contractual de la registración. Según ICANN, el registrante gestiona la configuración del dominio a través de su registrador." },
-          { term: "Hosting o alojamiento", definition: "Un servicio que ejecuta o almacena los componentes de un sitio en uno o más servidores y los entrega cuando reciben solicitudes. La capacidad, las copias de seguridad y el soporte dependen del plan y del proveedor." },
-          { term: "Servidor web", definition: "El software y la infraestructura que reciben solicitudes HTTP/HTTPS para un sitio y envían respuestas, como una página o un archivo. El servidor puede ser administrado por el proveedor de hosting." },
-          { term: "Sitio web", definition: "El conjunto de páginas, archivos y funciones que el servidor entrega para una dirección. Un sitio puede existir en una dirección temporal del proveedor antes de conectar un dominio propio." },
-          { term: "DNS", definition: "El Sistema de Nombres de Dominio responde consultas sobre nombres, por ejemplo qué dirección de red corresponde a un host. DNS encuentra información de ubicación; no guarda ni entrega por sí mismo el contenido de la página." },
-          { term: "Registrador", definition: "La empresa con la que se registra y administra un dominio. El operador de registro mantiene los datos de una extensión; un revendedor puede ofrecer la registración junto con otros servicios." },
-        ] }],
-      },
-      {
-        heading: "Del nombre que escribes a la página que ves",
-        paragraphs: [
-          "La imagen muestra el recorrido simplificado de una visita. Si escribes una dirección como https://negocio.example/horarios, el navegador separa el nombre del host de la ruta solicitada. Antes de preguntar por DNS, puede revisar respuestas guardadas por el propio navegador, el sistema operativo o el resolver de la red.",
-          "Si no encuentra una respuesta vigente, el navegador usa un resolver DNS. Ese resolver puede responder desde su propia caché o consultar otros servidores DNS hasta obtener la información autoritativa. Con una dirección de red, el navegador establece una conexión con el servidor; si la dirección usa HTTPS, negocia TLS y solicita la página. El servidor responde con el contenido y el navegador lo presenta.",
-          "La flecha punteada de retorno en el diagrama representa la dirección que DNS devuelve al navegador. Después, el navegador hace una solicitud distinta al servidor web; DNS no transporta el contenido de la página.",
-          "No se hace necesariamente una consulta DNS nueva en cada visita ni por cada imagen o archivo: las respuestas pueden conservarse mientras su tiempo de vida (TTL) siga vigente, y el navegador puede reutilizar una conexión. DNS ayuda a localizar el servidor; la solicitud al servidor es la que pide la página.",
-        ],
-        blocks: [{ type: "callout", tone: "tip", title: "DNS localiza; el servidor entrega", text: "Si una persona entra a una página y luego abre otra sección del mismo sitio, el navegador normalmente puede seguir usando la resolución guardada o la conexión existente. Una consulta nueva puede ser necesaria cuando no hay una respuesta vigente, pero no es un paso obligatorio para cada solicitud web." }],
-      },
-      {
-        heading: "Qué significa registrar un dominio",
-        paragraphs: [
-          "Para registrar un nombre, normalmente se elige una extensión, se comprueba disponibilidad y se solicita la registración a un registrador o a un revendedor. Para muchas extensiones genéricas existen acuerdos y políticas de ICANN; las extensiones de país pueden tener reglas propias. Comprueba siempre las condiciones de la extensión y del registrador concreto.",
-          "El registrador atiende la relación de servicio con el titular. El operador de registro mantiene los datos de los nombres de una extensión y publica la delegación DNS. Un revendedor puede vender el dominio como parte de un paquete. La página de ICANN explica estos papeles para el proceso que describe; no convierte a ICANN en la empresa que vende o administra tu dominio.",
-          "El registro y el hosting son servicios distintos. Pagar un dominio te permite mantener ese nombre registrado durante el periodo acordado; no garantiza que ya exista un sitio, que tengas correo profesional ni que el proveedor aloje tus archivos. Algunas empresas los incluyen en un paquete, pero conviene revisar qué parte es opcional y cómo se renueva.",
-        ],
-        blocks: [{ type: "callout", tone: "caution", title: "Un dominio no se compra para siempre", text: "La registración tiene una vigencia y debe renovarse según el contrato y las reglas de la extensión. Si se vence, el nombre puede dejar de funcionar y, después de los periodos aplicables, quedar disponible para que otra persona lo registre." }],
-      },
-      {
-        heading: "DNS: cómo se conecta el nombre con el alojamiento",
-        paragraphs: [
-          "La zona DNS de un dominio contiene registros que indican qué resolver o servidor debe responder por cada tipo de consulta. El dominio puede registrarse con una empresa, delegar DNS en otra y alojar el sitio en una tercera. Cambiar una de estas relaciones no mueve automáticamente las otras.",
-          "Cuando un proveedor dice «conecta tu dominio», puede pedir que cambies los servidores de nombres (NS) para que su servicio DNS responda por el dominio, o que conserves los NS actuales y agregues registros específicos. Sigue los valores que indique el proveedor que aloja el sitio; los nombres y pantallas exactos dependen de cada servicio.",
-        ],
-        blocks: [{ type: "definitions", items: [
-          { term: "A y AAAA", definition: "Registros que asocian un nombre de host con una dirección IPv4 (A) o IPv6 (AAAA), según la configuración indicada por el alojamiento." },
-          { term: "CNAME", definition: "Un alias que hace que un nombre consulte otro nombre, en lugar de guardar directamente una dirección IP. Sus usos permitidos dependen de las reglas de DNS y del proveedor." },
-          { term: "NS", definition: "Indica qué servidores de nombres son autoritativos para una zona DNS. Cambiar los NS delega la administración de los registros a otro servicio DNS; no traslada los archivos del sitio." },
-          { term: "MX", definition: "Indica a qué servidores se debe dirigir el correo entrante para un dominio. Es distinto de los registros que hacen que una página web se cargue." },
-          { term: "TXT", definition: "Permite publicar texto asociado a un nombre. Puede usarse para verificar un servicio o publicar políticas de correo; conserva los valores que tus servicios activos necesitan." },
-        ] }],
-      },
-      {
-        heading: "Hosting: dónde funciona la web",
-        paragraphs: [
-          "El alojamiento web proporciona infraestructura y, según el servicio, herramientas para publicar el sitio. Puede encargarse de parte del mantenimiento del servidor o dejar más tareas a quien lo administra. No hay un paquete universal: revisa qué incluye el plan y qué debes mantener tú.",
-          "Un mismo sitio puede cambiar de alojamiento sin cambiar de dominio. Para que las visitas lleguen al nuevo servidor, normalmente se prepara y prueba el sitio, se configura el nuevo servicio y luego se actualizan los registros DNS correspondientes. El plazo para que la nueva respuesta se vea en todas las redes depende de los TTL, cachés y configuración; no es una garantía de un número fijo de minutos.",
-        ],
-        blocks: [{ type: "list", items: [
-          "Pregunta quién actualiza el software del servidor y qué soporte está incluido.",
-          "Comprueba si hay copias de seguridad, cuánto tiempo se conservan y cómo puedes restaurarlas.",
-          "Aclara cómo exportar los archivos y datos del sitio si cambias de proveedor.",
-          "Verifica si el plan incluye un certificado TLS y si cubre todos los nombres que usarás.",
-        ] }],
-      },
-      {
-        heading: "HTTPS y el certificado TLS",
-        paragraphs: [
-          "HTTPS es HTTP transportado sobre TLS. TLS protege la comunicación entre el navegador y el servidor: cifra los datos durante el tránsito y permite comprobar que el servidor presenta un certificado válido para el nombre solicitado. El proveedor de alojamiento puede automatizar parte de la emisión y renovación del certificado, o puede pedir configuración adicional.",
-          "Ver HTTPS en la dirección no prueba que la empresa sea legítima, que el contenido sea correcto, que el sitio esté libre de software malicioso ni que una compra sea conveniente. Protege la conexión con el dominio comprobado; no sustituye revisar quién opera el sitio, cómo usa tus datos y qué ofrece.",
-        ],
-        blocks: [{ type: "callout", tone: "tip", title: "Comprueba la dirección completa", text: "Después de publicar, verifica que la variante con https:// carga sin una advertencia del navegador, que los nombres que necesitas —con o sin www— apuntan al sitio esperado y que la versión segura se usa también en los enlaces y recursos de la página." }],
-      },
-      {
-        heading: "Correo profesional y hosting web no son lo mismo",
-        paragraphs: [
-          "El hosting web entrega páginas y funciones de un sitio. El correo profesional proporciona buzones y servicios para enviar o recibir mensajes con tu dominio. Se pueden contratar con la misma empresa o con proveedores distintos; pagar uno no implica necesariamente tener el otro.",
-          "El correo usa su propia configuración DNS. Los registros MX dirigen el correo entrante; otros registros, como TXT, pueden ayudar a publicar políticas de autenticación o verificar el servicio. Si cambias los servidores DNS o la zona, conserva los registros que el proveedor de correo necesita. Si solo cambias el registro de la web, el correo puede seguir funcionando siempre que sus registros continúen correctos.",
-        ],
-        blocks: [{ type: "callout", tone: "caution", title: "No borres los registros del correo al conectar la web", text: "Antes de sustituir una zona DNS o cambiar los NS, guarda una copia de los registros actuales y confirma cuáles corresponden al correo. Una página puede cargar correctamente mientras el correo deja de recibir mensajes." }],
-      },
-      {
-        heading: "Ejemplo práctico: una profesional publica su primera página",
-        paragraphs: ["Este caso es hipotético y educativo. No representa un negocio real, una configuración activa de Vecidya ni una recomendación de compra a un proveedor."],
-        blocks: [{ type: "example", title: "Una profesional de reparación de bicicletas organiza su presencia web", hypothetical: true,
-          context: "Una profesional independiente quiere publicar una página sencilla con los servicios que ofrece, su zona de atención y una forma clara de contacto.",
-          problem: "No sabe si debe pagar un dominio, un hosting y un correo por separado, quién debe controlar las cuentas ni qué conservar si más adelante cambia de proveedor.",
-          approach: "Primero define el objetivo de la página y compara un servicio gestionado que publique el sitio con una dirección propia del proveedor frente a contratar un dominio y alojamiento por separado. Revisa el alcance y las condiciones antes de elegir; no presupone precios ni un resultado comercial.",
-          actions: [
-            "Elige un nombre corto y fácil de comunicar; comprueba su disponibilidad con un registrador y verifica que el nombre y la extensión sean adecuados para el negocio.",
-            "Registra el dominio a nombre de la persona o entidad que debe conservar su control. Usa una dirección de correo que el negocio controle para los avisos y recuperación de la cuenta.",
-            "Decide dónde se alojará el sitio. Pregunta qué incluye el servicio: publicación, soporte, copias, certificado TLS, exportación y renovación. El registro del dominio no crea el sitio ni contrata automáticamente el alojamiento.",
-            "Sigue la guía técnica del proveedor para conectar el dominio: delega DNS o actualiza los registros indicados. Antes, guarda los valores actuales y conserva MX/TXT si ya existe correo con ese dominio.",
-            "Verifica HTTPS en el nombre elegido, prueba la página en un teléfono y en una computadora, revisa enlaces, formulario y datos de contacto, y comprueba que la dirección cargue el contenido esperado.",
-            "Guarda en un lugar seguro quién es el registrante, el registrador, el proveedor DNS, el alojamiento y el correo; conserva accesos individuales, recuperación, instrucciones, comprobantes y fechas de renovación. No compartas una contraseña común con quien te ayuda.",
-            "Si la página deja de funcionar, revisa primero la fecha del dominio, el estado del hosting, los NS y registros DNS, la vigencia TLS y si hubo un cambio reciente. Anota el mensaje de error y contacta al proveedor correspondiente sin borrar la zona ni cancelar otro servicio a ciegas.",
-          ],
-          lesson: "La presencia web funciona con servicios que se coordinan, pero no son inseparables. Saber quién mantiene cada pieza, cómo se renueva y cómo salir del servicio evita que una sola cuenta perdida deje al negocio sin página, dominio o correo.",
-        }],
-      },
+      { heading: "Objetivo y práctica", paragraphs: ["Al terminar podrás identificar los riesgos y decisiones de este proceso y explicar qué comprobar antes de actuar.", "Ejercicio: describe un caso de tu negocio sin datos personales, elige una comprobación y define cuándo revisarás el resultado."] },
       {
         heading: "Qué ocurre si cambias de proveedor",
         paragraphs: [
@@ -1062,6 +1118,172 @@ export const learnArticles: LearnArticle[] = [
           { title: "Actualiza responsabilidades", detail: "Deja el acceso bajo control del negocio y proporciona permisos individuales a quienes apoyen el mantenimiento." },
         ] }],
       },
+      { heading: "Resumen para aplicar", paragraphs: ["Comprueba quién administra el dominio y dónde están los accesos.","Compara el costo completo y las condiciones de renovación.","Planifica cualquier cambio con copia y verificación del servicio."] },
+      {
+        heading: "Fuentes y alcance",
+        paragraphs: ["Estas referencias oficiales respaldan los conceptos generales. ICANN describe políticas y procesos que dependen de la extensión y del contrato; los RFC del IETF son estándares técnicos, y MDN explica el uso web de TLS."],
+        blocks: [{ type: "sources", items: [
+          { label: "Information for Domain Name Registrants — ICANN", url: "https://www.icann.org/registrants", scope: "Define al registrante, explica que gestiona el dominio a través del registrador e incluye ICANN Lookup. Consultado el 17 de octubre de 2026; las políticas aplicables dependen de la extensión." },
+          { label: "ICANN Lookup — herramienta de búsqueda de datos de registro", url: "https://lookup.icann.org/en", scope: "Permite consultar información de registro de dominios genéricos y ayuda a identificar al registrador; no identifica necesariamente el hosting ni a quien accede a la cuenta. Consultado el 17 de octubre de 2026." },
+          { label: "The Domain Name Registration Process — ICANN", url: "https://www.icann.org/resources/pages/domain-name-registration-process-2023-11-02-en", scope: "Describe registrantes, registradores, operadores de registro y revendedores, y señala que tarifas, transferencias y renovaciones dependen de los acuerdos. Consultado el 17 de octubre de 2026." },
+          { label: "Domain Name Renewals and Expiration FAQs — ICANN", url: "https://www.icann.org/resources/pages/domain-name-renewal-expiration-faqs-2018-12-07-en", scope: "Recomienda comprobar vencimiento, condiciones de renovación, contactos y tarifas; describe periodos que pueden aplicar a dominios vencidos. Consultado el 17 de octubre de 2026." },
+          { label: "RFC 1034: Domain Names — Concepts and Facilities", url: "https://datatracker.ietf.org/doc/html/rfc1034", scope: "Estándar del IETF que describe resolvers, servidores de nombres, datos autoritativos y caché/TTL en DNS. Consultado el 17 de octubre de 2026." },
+          { label: "RFC 1035: Domain Names — Implementation and Specification", url: "https://datatracker.ietf.org/doc/html/rfc1035", scope: "Especifica registros como A, NS, CNAME y MX. No es una guía de configuración para un proveedor concreto. Consultado el 17 de octubre de 2026." },
+          { label: "RFC 3596: DNS Extensions to Support IP Version 6", url: "https://datatracker.ietf.org/doc/html/rfc3596", scope: "Define la extensión de DNS para consultas y registros de direcciones IPv6 (AAAA). Consultado el 17 de octubre de 2026." },
+          { label: "Transport Layer Security (TLS) — MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Transport_Layer_Security", scope: "Explica cómo TLS protege conexiones HTTP y cómo el certificado participa en la autenticación del servidor. Consultado el 17 de octubre de 2026." },
+        ] }],
+      },
+    ],
+  },
+  {
+    slug: "dns-https-y-correo-como-se-conecta-tu-dominio",
+    category: "Negocios digitales",
+    title: "DNS, HTTPS y correo: cómo se conecta tu dominio",
+    intro: "Distingue los registros DNS, el alojamiento, el certificado HTTPS y el correo profesional sin confundir sus funciones.",
+    excerpt: "Distingue los registros DNS, el alojamiento, el certificado HTTPS y el correo profesional sin confundir sus funciones.",
+    enPocasPalabras: ["El DNS ayuda a localizar servicios asociados a un dominio.","HTTPS protege la conexión, pero no garantiza que el negocio sea legítimo.","El correo y la web pueden usar proveedores y configuraciones diferentes."],
+    image: "/assets/learn/diagram-domain-dns-hosting.svg",
+    imageAlt: "Esquema educativo de servicios y canales digitales",
+    relatedSlugs: ["dominio-hosting-sitio-web-como-funcionan"],
+    editorialDraft: true,
+    cta: { label: "Revisar mi situación", to: "/diagnostico", copy: "Comprueba qué necesita tu negocio antes de contratar o publicar." },
+    sections: [
+      { heading: "Qué aprenderás", paragraphs: ["Distingue los registros DNS, el alojamiento, el certificado HTTPS y el correo profesional sin confundir sus funciones.", "Ejercicio: elige un canal o servicio que ya utilizas, identifica qué debes comprobar y anota quién se encargará de revisarlo."] },
+      {
+        heading: "DNS: cómo se conecta el nombre con el alojamiento",
+        paragraphs: [
+          "La zona DNS de un dominio contiene registros que indican qué resolver o servidor debe responder por cada tipo de consulta. El dominio puede registrarse con una empresa, delegar DNS en otra y alojar el sitio en una tercera. Cambiar una de estas relaciones no mueve automáticamente las otras.",
+          "Cuando un proveedor dice «conecta tu dominio», puede pedir que cambies los servidores de nombres (NS) para que su servicio DNS responda por el dominio, o que conserves los NS actuales y agregues registros específicos. Sigue los valores que indique el proveedor que aloja el sitio; los nombres y pantallas exactos dependen de cada servicio.",
+        ],
+        blocks: [{ type: "definitions", items: [
+          { term: "A y AAAA", definition: "Registros que asocian un nombre de host con una dirección IPv4 (A) o IPv6 (AAAA), según la configuración indicada por el alojamiento." },
+          { term: "CNAME", definition: "Un alias que hace que un nombre consulte otro nombre, en lugar de guardar directamente una dirección IP. Sus usos permitidos dependen de las reglas de DNS y del proveedor." },
+          { term: "NS", definition: "Indica qué servidores de nombres son autoritativos para una zona DNS. Cambiar los NS delega la administración de los registros a otro servicio DNS; no traslada los archivos del sitio." },
+          { term: "MX", definition: "Indica a qué servidores se debe dirigir el correo entrante para un dominio. Es distinto de los registros que hacen que una página web se cargue." },
+          { term: "TXT", definition: "Permite publicar texto asociado a un nombre. Puede usarse para verificar un servicio o publicar políticas de correo; conserva los valores que tus servicios activos necesitan." },
+        ] }],
+      },
+      {
+        heading: "Hosting: dónde funciona la web",
+        paragraphs: [
+          "El alojamiento web proporciona infraestructura y, según el servicio, herramientas para publicar el sitio. Puede encargarse de parte del mantenimiento del servidor o dejar más tareas a quien lo administra. No hay un paquete universal: revisa qué incluye el plan y qué debes mantener tú.",
+          "Un mismo sitio puede cambiar de alojamiento sin cambiar de dominio. Para que las visitas lleguen al nuevo servidor, normalmente se prepara y prueba el sitio, se configura el nuevo servicio y luego se actualizan los registros DNS correspondientes. El plazo para que la nueva respuesta se vea en todas las redes depende de los TTL, cachés y configuración; no es una garantía de un número fijo de minutos.",
+        ],
+        blocks: [{ type: "list", items: [
+          "Pregunta quién actualiza el software del servidor y qué soporte está incluido.",
+          "Comprueba si hay copias de seguridad, cuánto tiempo se conservan y cómo puedes restaurarlas.",
+          "Aclara cómo exportar los archivos y datos del sitio si cambias de proveedor.",
+          "Verifica si el plan incluye un certificado TLS y si cubre todos los nombres que usarás.",
+        ] }],
+      },
+      {
+        heading: "HTTPS y el certificado TLS",
+        paragraphs: [
+          "HTTPS es HTTP transportado sobre TLS. TLS protege la comunicación entre el navegador y el servidor: cifra los datos durante el tránsito y permite comprobar que el servidor presenta un certificado válido para el nombre solicitado. El proveedor de alojamiento puede automatizar parte de la emisión y renovación del certificado, o puede pedir configuración adicional.",
+          "Ver HTTPS en la dirección no prueba que la empresa sea legítima, que el contenido sea correcto, que el sitio esté libre de software malicioso ni que una compra sea conveniente. Protege la conexión con el dominio comprobado; no sustituye revisar quién opera el sitio, cómo usa tus datos y qué ofrece.",
+        ],
+        blocks: [{ type: "callout", tone: "tip", title: "Comprueba la dirección completa", text: "Después de publicar, verifica que la variante con https:// carga sin una advertencia del navegador, que los nombres que necesitas —con o sin www— apuntan al sitio esperado y que la versión segura se usa también en los enlaces y recursos de la página." }],
+      },
+      {
+        heading: "Correo profesional y hosting web no son lo mismo",
+        paragraphs: [
+          "El hosting web entrega páginas y funciones de un sitio. El correo profesional proporciona buzones y servicios para enviar o recibir mensajes con tu dominio. Se pueden contratar con la misma empresa o con proveedores distintos; pagar uno no implica necesariamente tener el otro.",
+          "El correo usa su propia configuración DNS. Los registros MX dirigen el correo entrante; otros registros, como TXT, pueden ayudar a publicar políticas de autenticación o verificar el servicio. Si cambias los servidores DNS o la zona, conserva los registros que el proveedor de correo necesita. Si solo cambias el registro de la web, el correo puede seguir funcionando siempre que sus registros continúen correctos.",
+        ],
+        blocks: [{ type: "callout", tone: "caution", title: "No borres los registros del correo al conectar la web", text: "Antes de sustituir una zona DNS o cambiar los NS, guarda una copia de los registros actuales y confirma cuáles corresponden al correo. Una página puede cargar correctamente mientras el correo deja de recibir mensajes." }],
+      },
+      { heading: "Lista de comprobación", paragraphs: ["El DNS ayuda a localizar servicios asociados a un dominio.","HTTPS protege la conexión, pero no garantiza que el negocio sea legítimo.","El correo y la web pueden usar proveedores y configuraciones diferentes."] },
+      {
+        heading: "Fuentes y alcance",
+        paragraphs: ["Estas referencias oficiales respaldan los conceptos generales. ICANN describe políticas y procesos que dependen de la extensión y del contrato; los RFC del IETF son estándares técnicos, y MDN explica el uso web de TLS."],
+        blocks: [{ type: "sources", items: [
+          { label: "Information for Domain Name Registrants — ICANN", url: "https://www.icann.org/registrants", scope: "Define al registrante, explica que gestiona el dominio a través del registrador e incluye ICANN Lookup. Consultado el 17 de octubre de 2026; las políticas aplicables dependen de la extensión." },
+          { label: "ICANN Lookup — herramienta de búsqueda de datos de registro", url: "https://lookup.icann.org/en", scope: "Permite consultar información de registro de dominios genéricos y ayuda a identificar al registrador; no identifica necesariamente el hosting ni a quien accede a la cuenta. Consultado el 17 de octubre de 2026." },
+          { label: "The Domain Name Registration Process — ICANN", url: "https://www.icann.org/resources/pages/domain-name-registration-process-2023-11-02-en", scope: "Describe registrantes, registradores, operadores de registro y revendedores, y señala que tarifas, transferencias y renovaciones dependen de los acuerdos. Consultado el 17 de octubre de 2026." },
+          { label: "Domain Name Renewals and Expiration FAQs — ICANN", url: "https://www.icann.org/resources/pages/domain-name-renewal-expiration-faqs-2018-12-07-en", scope: "Recomienda comprobar vencimiento, condiciones de renovación, contactos y tarifas; describe periodos que pueden aplicar a dominios vencidos. Consultado el 17 de octubre de 2026." },
+          { label: "RFC 1034: Domain Names — Concepts and Facilities", url: "https://datatracker.ietf.org/doc/html/rfc1034", scope: "Estándar del IETF que describe resolvers, servidores de nombres, datos autoritativos y caché/TTL en DNS. Consultado el 17 de octubre de 2026." },
+          { label: "RFC 1035: Domain Names — Implementation and Specification", url: "https://datatracker.ietf.org/doc/html/rfc1035", scope: "Especifica registros como A, NS, CNAME y MX. No es una guía de configuración para un proveedor concreto. Consultado el 17 de octubre de 2026." },
+          { label: "RFC 3596: DNS Extensions to Support IP Version 6", url: "https://datatracker.ietf.org/doc/html/rfc3596", scope: "Define la extensión de DNS para consultas y registros de direcciones IPv6 (AAAA). Consultado el 17 de octubre de 2026." },
+          { label: "Transport Layer Security (TLS) — MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Transport_Layer_Security", scope: "Explica cómo TLS protege conexiones HTTP y cómo el certificado participa en la autenticación del servidor. Consultado el 17 de octubre de 2026." },
+        ] }],
+      },
+    ],
+  },
+  {
+    slug: "dominio-hosting-sitio-web-como-funcionan",
+    category: "Tecnología explicada",
+    title: "Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos",
+    intro: "Una persona escribe la dirección de tu negocio y aparece tu página. ¿Cómo sucede eso? Te explicamos el dominio, el alojamiento y la conexión entre ambos sin enredos.",
+    excerpt: "Entiende las piezas de una web y qué accesos conviene conservar a tu nombre.",
+    enPocasPalabras: ["El dominio es la dirección que escriben las personas; el sitio es lo que ven.","El alojamiento guarda la web y el DNS conecta la dirección con el servidor.","Conserva el acceso y las fechas de renovación de cada servicio."],
+    image: "/assets/learn/diagram-domain-dns-hosting.svg",
+    imageAlt: "Recorrido de una persona al escribir una dirección: el navegador puede consultar DNS si no tiene una respuesta vigente en caché, conecta con el servidor web y recibe la página solicitada.",
+    relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital", "dns-https-y-correo-como-se-conecta-tu-dominio"],
+    cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico puede ayudarte a priorizar necesidades digitales; no registra dominios ni administra DNS o alojamiento." },
+    relatedSlugs: ["como-elegir-y-cambiar-proveedor-de-dominio-y-hosting"],
+    sections: [
+      { heading: "Guía complementaria", paragraphs: ["Para ampliar este tema sin mezclar conceptos, continúa con «DNS, HTTPS y correo: cómo se conecta tu dominio»." ] },
+      { heading: "Continúa con la guía especializada", paragraphs: ["Para profundizar sin mezclar varios temas, consulta «Cómo elegir o cambiar proveedor de dominio y hosting sin perder el control». Esta guía mantiene la explicación inicial y la otra reúne los controles y decisiones más avanzados."] },
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
+      {
+        heading: "Dominio, hosting y sitio web: tres piezas distintas",
+        paragraphs: [
+          "Un dominio es un nombre fácil de recordar que se usa dentro de una dirección web, como el nombre que aparece después de https://. El hosting —o alojamiento web— es un servicio que mantiene un servidor disponible para entregar los archivos o la aplicación del sitio. El sitio web es el contenido y el software que las personas ven y utilizan.",
+          "Una analogía útil: el dominio se parece a una dirección, el DNS a una guía que ayuda a ubicar un destino y el hosting a un local donde funciona el negocio. La comparación tiene límites: Internet no consulta una libreta central única, una dirección no es una propiedad física y los servicios pueden cambiarse o contratarse por separado.",
+        ],
+        blocks: [{ type: "definitions", items: [
+          { term: "Nombre de dominio", definition: "Un nombre legible, compuesto por etiquetas y una extensión —por ejemplo, un nombre terminado en .com— que permite identificar una ubicación dentro del sistema de nombres de Internet. No contiene por sí mismo la página web." },
+          { term: "Registro de dominio", definition: "El servicio y el acuerdo por los que un registrador tramita y mantiene el derecho de uso de un nombre durante un periodo renovable, sujeto a sus condiciones y a las reglas de la extensión. No es una compra perpetua del nombre." },
+          { term: "Titular o registrante", definition: "La persona u organización que figura como responsable contractual de la registración. Según ICANN, el registrante gestiona la configuración del dominio a través de su registrador." },
+          { term: "Hosting o alojamiento", definition: "Un servicio que ejecuta o almacena los componentes de un sitio en uno o más servidores y los entrega cuando reciben solicitudes. La capacidad, las copias de seguridad y el soporte dependen del plan y del proveedor." },
+          { term: "Servidor web", definition: "El software y la infraestructura que reciben solicitudes HTTP/HTTPS para un sitio y envían respuestas, como una página o un archivo. El servidor puede ser administrado por el proveedor de hosting." },
+          { term: "Sitio web", definition: "El conjunto de páginas, archivos y funciones que el servidor entrega para una dirección. Un sitio puede existir en una dirección temporal del proveedor antes de conectar un dominio propio." },
+          { term: "DNS", definition: "El Sistema de Nombres de Dominio responde consultas sobre nombres, por ejemplo qué dirección de red corresponde a un host. DNS encuentra información de ubicación; no guarda ni entrega por sí mismo el contenido de la página." },
+          { term: "Registrador", definition: "La empresa con la que se registra y administra un dominio. El operador de registro mantiene los datos de una extensión; un revendedor puede ofrecer la registración junto con otros servicios." },
+        ] }],
+      },
+      {
+        heading: "Del nombre que escribes a la página que ves",
+        paragraphs: [
+          "La imagen muestra el recorrido simplificado de una visita. Si escribes una dirección como https://negocio.example/horarios, el navegador separa el nombre del host de la ruta solicitada. Antes de preguntar por DNS, puede revisar respuestas guardadas por el propio navegador, el sistema operativo o el resolver de la red.",
+          "Si no encuentra una respuesta vigente, el navegador usa un resolver DNS. Ese resolver puede responder desde su propia caché o consultar otros servidores DNS hasta obtener la información autoritativa. Con una dirección de red, el navegador establece una conexión con el servidor; si la dirección usa HTTPS, negocia TLS y solicita la página. El servidor responde con el contenido y el navegador lo presenta.",
+          "La flecha punteada de retorno en el diagrama representa la dirección que DNS devuelve al navegador. Después, el navegador hace una solicitud distinta al servidor web; DNS no transporta el contenido de la página.",
+          "No se hace necesariamente una consulta DNS nueva en cada visita ni por cada imagen o archivo: las respuestas pueden conservarse mientras su tiempo de vida (TTL) siga vigente, y el navegador puede reutilizar una conexión. DNS ayuda a localizar el servidor; la solicitud al servidor es la que pide la página.",
+        ],
+        blocks: [{ type: "callout", tone: "tip", title: "DNS localiza; el servidor entrega", text: "Si una persona entra a una página y luego abre otra sección del mismo sitio, el navegador normalmente puede seguir usando la resolución guardada o la conexión existente. Una consulta nueva puede ser necesaria cuando no hay una respuesta vigente, pero no es un paso obligatorio para cada solicitud web." }],
+      },
+      {
+        heading: "Qué significa registrar un dominio",
+        paragraphs: [
+          "Para registrar un nombre, normalmente se elige una extensión, se comprueba disponibilidad y se solicita la registración a un registrador o a un revendedor. Para muchas extensiones genéricas existen acuerdos y políticas de ICANN; las extensiones de país pueden tener reglas propias. Comprueba siempre las condiciones de la extensión y del registrador concreto.",
+          "El registrador atiende la relación de servicio con el titular. El operador de registro mantiene los datos de los nombres de una extensión y publica la delegación DNS. Un revendedor puede vender el dominio como parte de un paquete. La página de ICANN explica estos papeles para el proceso que describe; no convierte a ICANN en la empresa que vende o administra tu dominio.",
+          "El registro y el hosting son servicios distintos. Pagar un dominio te permite mantener ese nombre registrado durante el periodo acordado; no garantiza que ya exista un sitio, que tengas correo profesional ni que el proveedor aloje tus archivos. Algunas empresas los incluyen en un paquete, pero conviene revisar qué parte es opcional y cómo se renueva.",
+        ],
+        blocks: [{ type: "callout", tone: "caution", title: "Un dominio no se compra para siempre", text: "La registración tiene una vigencia y debe renovarse según el contrato y las reglas de la extensión. Si se vence, el nombre puede dejar de funcionar y, después de los periodos aplicables, quedar disponible para que otra persona lo registre." }],
+      },
+      {
+        heading: "Ejemplo práctico: una profesional publica su primera página",
+        paragraphs: ["Este caso es hipotético y educativo. No representa un negocio real, una configuración activa de Vecidya ni una recomendación de compra a un proveedor."],
+        blocks: [{ type: "example", title: "Una profesional de reparación de bicicletas organiza su presencia web", hypothetical: true,
+          context: "Una profesional independiente quiere publicar una página sencilla con los servicios que ofrece, su zona de atención y una forma clara de contacto.",
+          problem: "No sabe si debe pagar un dominio, un hosting y un correo por separado, quién debe controlar las cuentas ni qué conservar si más adelante cambia de proveedor.",
+          approach: "Primero define el objetivo de la página y compara un servicio gestionado que publique el sitio con una dirección propia del proveedor frente a contratar un dominio y alojamiento por separado. Revisa el alcance y las condiciones antes de elegir; no presupone precios ni un resultado comercial.",
+          actions: [
+            "Elige un nombre corto y fácil de comunicar; comprueba su disponibilidad con un registrador y verifica que el nombre y la extensión sean adecuados para el negocio.",
+            "Registra el dominio a nombre de la persona o entidad que debe conservar su control. Usa una dirección de correo que el negocio controle para los avisos y recuperación de la cuenta.",
+            "Decide dónde se alojará el sitio. Pregunta qué incluye el servicio: publicación, soporte, copias, certificado TLS, exportación y renovación. El registro del dominio no crea el sitio ni contrata automáticamente el alojamiento.",
+            "Sigue la guía técnica del proveedor para conectar el dominio: delega DNS o actualiza los registros indicados. Antes, guarda los valores actuales y conserva MX/TXT si ya existe correo con ese dominio.",
+            "Verifica HTTPS en el nombre elegido, prueba la página en un teléfono y en una computadora, revisa enlaces, formulario y datos de contacto, y comprueba que la dirección cargue el contenido esperado.",
+            "Guarda en un lugar seguro quién es el registrante, el registrador, el proveedor DNS, el alojamiento y el correo; conserva accesos individuales, recuperación, instrucciones, comprobantes y fechas de renovación. No compartas una contraseña común con quien te ayuda.",
+            "Si la página deja de funcionar, revisa primero la fecha del dominio, el estado del hosting, los NS y registros DNS, la vigencia TLS y si hubo un cambio reciente. Anota el mensaje de error y contacta al proveedor correspondiente sin borrar la zona ni cancelar otro servicio a ciegas.",
+          ],
+          lesson: "La presencia web funciona con servicios que se coordinan, pero no son inseparables. Saber quién mantiene cada pieza, cómo se renueva y cómo salir del servicio evita que una sola cuenta perdida deje al negocio sin página, dominio o correo.",
+        }],
+      },
       {
         heading: "Preguntas frecuentes",
         paragraphs: [],
@@ -1105,6 +1327,11 @@ export const learnArticles: LearnArticle[] = [
     relatedSlugs: ["dominio-hosting-sitio-web-como-funcionan", "antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no certifica ni audita la seguridad de un sitio web." },
     sections: [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «HTTPS y certificados TLS: qué protegen y qué no», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         heading: "HTTP y HTTPS: la diferencia es la protección del trayecto",
         paragraphs: [
@@ -1206,6 +1433,11 @@ export const learnArticles: LearnArticle[] = [
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital", "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a ordenar prioridades digitales; no recopila ni evalúa las métricas de analítica de tu sitio." },
     sections: [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Analítica web básica: qué debes medir en tu negocio», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         heading: "Qué es la analítica web",
         paragraphs: [
@@ -1320,6 +1552,11 @@ export const learnArticles: LearnArticle[] = [
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos y capacidades; no conecta cuentas ni sincroniza registros entre plataformas." },
     sections: [
       {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Cómo conectar herramientas digitales sin complicar tu negocio», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
+      {
         heading: "Qué significa integrar dos herramientas",
         paragraphs: [
           "Integrar herramientas es intercambiar datos o coordinar tareas. Por ejemplo, al recibir una solicitud de cotización, el negocio puede añadir los datos necesarios a una lista de pendientes y avisar a quien responde.",
@@ -1425,6 +1662,11 @@ export const learnArticles: LearnArticle[] = [
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no gestiona ni verifica Perfiles de Empresa de Google." },
     sections: [
       {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Tu Perfil de Empresa en Google: qué completar y mantener actualizado», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
+      {
         heading: "Qué es y quién puede utilizar un perfil",
         paragraphs: [
           "El Perfil de Empresa es una ficha para negocios elegibles en Google Search y Maps. Puede mostrar nombre, ubicación o zona, horarios, contacto y novedades.",
@@ -1513,6 +1755,11 @@ export const learnArticles: LearnArticle[] = [
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos; no es un CRM ni recibe o conserva consultas de clientes." },
     sections: [
       {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Cómo organizar mensajes, llamadas y formularios sin perder consultas», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
+      {
         heading: "Usa un registro común sin importar el canal",
         paragraphs: [
           "Elige un lugar autorizado donde el equipo compruebe qué pidió la persona y si ya tiene respuesta. No hace falta copiar toda la conversación: basta el contexto útil y su referencia original.",
@@ -1595,6 +1842,11 @@ export const learnArticles: LearnArticle[] = [
     relatedSlugs: ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos; no genera ni aprueba respuestas o publicaciones con IA." },
     sections: [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Cómo utilizar IA para preparar respuestas y publicaciones sin perder el control», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         heading: "Pide un borrador con una instrucción clara",
         paragraphs: [
@@ -1685,13 +1937,18 @@ export const learnArticles: LearnArticle[] = [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
       "dominio-hosting-sitio-web-como-funcionan"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Revisar mi situación",
       "to": "/diagnostico",
       "copy": "Puedes analizar tu punto de partida antes de contratar herramientas."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Quiero llevar mi negocio a internet: ¿por dónde empiezo?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -1865,13 +2122,18 @@ export const learnArticles: LearnArticle[] = [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
       "dominio-hosting-sitio-web-como-funcionan"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Conocer los primeros pasos",
       "to": "/aprende",
       "copy": "Puedes seguir con otras guías básicas antes de invertir en tecnología."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué equipo e internet necesitas para trabajar en digital?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -2045,13 +2307,18 @@ export const learnArticles: LearnArticle[] = [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
       "como-proteger-cuentas-contrasenas-estafas-negocio"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Seguir aprendiendo",
       "to": "/aprende",
       "copy": "Puedes continuar con seguridad y organización de archivos."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo usar el correo de tu negocio sin perder mensajes?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -2225,13 +2492,18 @@ export const learnArticles: LearnArticle[] = [
       "correo-para-mi-negocio-como-usarlo-sin-perder-mensajes",
       "como-hacer-copias-de-seguridad-de-tu-negocio"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Ver más guías básicas",
       "to": "/aprende",
       "copy": "Proteger una cuenta también es una habilidad digital que se aprende."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo evitar que te roben una cuenta o te engañen por mensaje?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -2405,13 +2677,18 @@ export const learnArticles: LearnArticle[] = [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
       "como-proteger-cuentas-contrasenas-estafas-negocio"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Ver otras guías prácticas",
       "to": "/aprende",
       "copy": "Puedes seguir con el uso seguro de otras herramientas cotidianas."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Si se rompe tu teléfono, ¿cómo recuperas los archivos del negocio?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -2585,13 +2862,18 @@ export const learnArticles: LearnArticle[] = [
       "organizar-consultas-mensajes-llamadas-formularios",
       "como-hacer-copias-de-seguridad-de-tu-negocio"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Seguir con otras herramientas",
       "to": "/aprende",
       "copy": "Puedes explorar guías sobre datos, comunicación y organización."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Para qué sirve una hoja de cálculo en un negocio pequeño?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -2766,13 +3048,18 @@ export const learnArticles: LearnArticle[] = [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
       "dominio-hosting-sitio-web-como-funcionan"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Revisar mi presencia digital",
       "to": "/diagnostico",
       "copy": "Puedes revisar qué necesita tu negocio antes de crear más canales."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Redes sociales o página web? Cómo elegir sin gastar de más», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -2946,13 +3233,18 @@ export const learnArticles: LearnArticle[] = [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
       "redes-sociales-o-pagina-web-que-necesita-tu-negocio"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Consultar sobre mi negocio",
       "to": "/contacto",
       "copy": "Si buscas comunicar mejor tu trabajo, podemos conversar sobre tu necesidad."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué vendes exactamente? Explícalo para que te entiendan», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -3126,13 +3418,18 @@ export const learnArticles: LearnArticle[] = [
       "organizar-consultas-mensajes-llamadas-formularios",
       "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Conversar con Vecidya",
       "to": "/contacto",
       "copy": "Si necesitas ordenar las consultas de tu negocio, podemos conversar sobre el punto de partida."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «Te escribieron por tu negocio: cómo responder sin sonar a robot», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -3306,13 +3603,18 @@ export const learnArticles: LearnArticle[] = [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
       "como-explicar-lo-que-vendes-para-que-te-entiendan"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Leer otras guías de Aprende",
       "to": "/aprende",
       "copy": "Puedes mejorar tu presencia con prácticas sencillas y verificables."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué publicar de tu negocio si no eres diseñador?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -3486,13 +3788,18 @@ export const learnArticles: LearnArticle[] = [
       "hojas-de-calculo-para-organizar-un-negocio-pequeno",
       "como-responder-la-primera-consulta-de-un-cliente"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Explorar soluciones para mi negocio",
       "to": "/servicios",
       "copy": "Puedes revisar servicios según tu necesidad; no todos requieren una tienda en línea."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo empezar a recibir pedidos por internet sin complicarte?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -3666,13 +3973,18 @@ export const learnArticles: LearnArticle[] = [
       "organizar-consultas-mensajes-llamadas-formularios",
       "como-proteger-cuentas-contrasenas-estafas-negocio"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Leer sobre protección digital",
       "to": "/aprende",
       "copy": "Puedes seguir aprendiendo antes de decidir qué datos guardar."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué datos deberías pedir a un cliente y cuáles no?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
@@ -3846,13 +4158,18 @@ export const learnArticles: LearnArticle[] = [
       "perfil-empresa-google-completar-y-mantener-actualizado",
       "datos-de-clientes-que-puedes-pedir-y-como-protegerlos"
     ],
-    "editorialDraft": true,
+    "editorialDraft": false,
     "cta": {
       "label": "Seguir aprendiendo",
       "to": "/aprende",
       "copy": "Una buena reputación se construye cumpliendo y atendiendo, no inventando testimonios."
     },
     "sections": [
+      {
+        heading: "Qué aprenderás y cómo practicarlo",
+        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo pedir opiniones reales sin comprar reseñas?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
+        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+      },
       {
         "heading": "La pregunta detrás del problema",
         "paragraphs": [
