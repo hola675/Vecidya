@@ -38,5 +38,7 @@ jobs:
         run: pnpm typecheck
       - name: Build
         run: pnpm build
+      - name: Diagnostic and Aprende regression
+        run: node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/diagnostic-flow-ui.test.ts tests/unit/learn/learn-curriculum.test.ts
       - name: Unit regression
         run: pnpm test:unit
