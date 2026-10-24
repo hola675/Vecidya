@@ -18,6 +18,7 @@ export const PUBLIC_NAVIGATION_LINKS = {
   unete: { to: "/unete", label: "Únete a Vecidya" },
   privacidad: { to: "/privacidad", label: "Privacidad y datos" },
   terminos: { to: "/terminos", label: "Condiciones de uso" },
+  informacionLegal: { to: "/informacion-legal", label: "Información legal y comercial" },
   acceder: { to: "/login", label: "Acceder" },
 } as const;
 
@@ -48,6 +49,7 @@ export const PUBLIC_MOBILE_LINKS = [
   navigation.contacto,
   navigation.privacidad,
   navigation.terminos,
+  navigation.informacionLegal,
   navigation.acceder,
   navigation.unete,
 ] as const;
@@ -71,6 +73,6 @@ export const PUBLIC_FOOTER_GROUPS = [
   {
     id: "legal",
     title: "Información legal",
-    links: [navigation.privacidad, navigation.terminos],
+    links: [navigation.privacidad, navigation.terminos, navigation.informacionLegal],
   },
 ] as const;
