@@ -13,6 +13,8 @@ export type Qa03bProfileKnowledgeVariant = {
   readonly modeledAssumptionQuestionIds: readonly string[];
   /** Fields conservatively mapped from the supplied profile description. */
   readonly interpretedSourceQuestionIds: readonly string[];
+  /** Inputs kept unknown because the profile description does not establish them. */
+  readonly unknownByDesignQuestionIds: readonly string[];
   readonly note: string;
 };
 
@@ -68,11 +70,9 @@ const toolsByProfile: Record<string, readonly string[]> = {
   P20: ["customer_followup", "other"],
 };
 
-// Only P20 states a recurring, quantified inflow of new leads (thousands per
-// month). Other channel inventories alone do not prove reliable acquisition.
-const informedDiscoveryAnswer: Record<string, AnswersV2["q2_discovery_reliable_reach"]> = {
-  P20: "reliable",
-};
+// The profiles describe channels and, for P20, volume. They do not establish
+// repeatability or reliability, so acquisition quality stays unknown.
+const informedDiscoveryAnswer: Partial<Record<string, AnswersV2["q2_discovery_reliable_reach"]>> = {};
 
 // The original sparse profiles explicitly describe these current frictions.
 // This is a conservative interpretation of their wording, not an engine score.
@@ -109,6 +109,7 @@ function makeVariant(
   answerScript: AnswersV2,
   modeledAssumptionQuestionIds: readonly string[],
   interpretedSourceQuestionIds: readonly string[],
+  unknownByDesignQuestionIds: readonly string[] = [],
 ): Qa03bProfileKnowledgeVariant {
   return {
     id: `${profileId}-${knowledgeLevel}`,
@@ -117,6 +118,7 @@ function makeVariant(
     answerScript,
     modeledAssumptionQuestionIds,
     interpretedSourceQuestionIds,
+    unknownByDesignQuestionIds,
     note: knowledgeLevel === "informado"
       ? "Incluye aclaraciones cualitativas sintéticas sobre prioridad y proceso; no inventa métricas ni las trata como datos originales."
       : knowledgeLevel === "parcial"
@@ -142,8 +144,8 @@ export const QA03B_PROFILE_KNOWLEDGE_VARIANTS: readonly Qa03bProfileKnowledgeVar
   const unknownAnswers: AnswersV2 = { ...sourceAnswers, ...knowledgeUnknowns };
 
   return [
-    makeVariant(profile.id, "informado", informedAnswers, ["q2_goal", "q2_process_systemization"], ["q2_digital_tools_in_use", ...(discoveryAnswer ? ["q2_discovery_reliable_reach"] : [])]),
-    makeVariant(profile.id, "parcial", partialAnswers, [], partialFriction[profile.id] ? ["q2_friction"] : []),
-    makeVariant(profile.id, "desconocedor", unknownAnswers, [], []),
+    makeVariant(profile.id, "informado", informedAnswers, ["q2_goal", "q2_process_systemization"], ["q2_digital_tools_in_use"], ["q2_discovery_reliable_reach"]),
+    makeVariant(profile.id, "parcial", partialAnswers, [], partialFriction[profile.id] ? ["q2_friction"] : [], ["q2_discovery_reliable_reach", "q2_process_systemization"]),
+    makeVariant(profile.id, "desconocedor", unknownAnswers, [], [], ["q2_goal", "q2_friction", "q2_discovery_reliable_reach", "q2_process_systemization", "q2_digital_tools_in_use"]),
   ];
 });

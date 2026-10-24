@@ -5,6 +5,7 @@ import { runCandidateDiagnosticPipelineV3 } from "../../../app/features/diagnost
 import { DIGITAL_DIMENSION_IDS } from "../../../app/features/diagnostic/qbv2-dimensions";
 import { QA03B_PROFILE_CASES, qa03bProfileAnswerScript } from "./qa03b-profile-case-matrix";
 import { QA03B_KNOWLEDGE_LEVELS, QA03B_PROFILE_KNOWLEDGE_VARIANTS } from "./qa03b-profile-knowledge-variants";
+import { buildCandidateDiagnosticReportV1, buildCandidateResultPresentationV3 } from "../../../app/components/diagnostic-flow/qa03b-presentation";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 
 const bank = new Map(REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.map((question) => [question.id, question]));
@@ -79,6 +80,14 @@ test("las autoevaluaciones de IA/digital no se confunden con dimensiones calibra
   assert.equal(REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.some((question) => question.evidenceV3?.dimensions.some((dimension) => dimension.dimension === "measurement_optimization" && dimension.directness === "direct")), false);
 });
 
+test("QA-03C: el contrato de informe conserva las prioridades semánticas de la presentación", () => {
+  const selected = QA03B_PROFILE_KNOWLEDGE_VARIANTS.find(({ id }) => id === "P01-informado")!;
+  const completed = runScript(selected.id, selected.answerScript);
+  const presentation = buildCandidateResultPresentationV3(completed.result);
+  const report = buildCandidateDiagnosticReportV1(completed.result, new Date("2026-10-24T16:00:00.000Z"), new Date("2026-10-24T16:00:00.000Z"));
+  assert.deepEqual(report.priorities.map(({ rank, area, statement, why, certaintyLabel }) => ({ rank, slot: presentation.priorities.find((item) => item.rank === rank)?.slot, area, statement, why, certainty: certaintyLabel })), presentation.priorities);
+});
+
 test("60 variantes por nivel de conocimiento recorren el motor sin reutilizar autoevaluaciones como respuestas", () => {
   assert.equal(QA03B_KNOWLEDGE_LEVELS.length, 3);
   assert.equal(QA03B_PROFILE_KNOWLEDGE_VARIANTS.length, 60);
@@ -93,15 +102,45 @@ test("60 variantes por nivel de conocimiento recorren el motor sin reutilizar au
         const selected = typeof answer === "string" ? [answer] : answer;
         assert.ok(selected.length > 0 && selected.every((value) => definition.options.some((option) => option.value === value)), `${variant.id}: invalid authored response for ${questionId}`);
       }
+      assert.equal(variant.unknownByDesignQuestionIds.includes("q2_discovery_reliable_reach"), true);
       assert.deepEqual(variant.modeledAssumptionQuestionIds.includes("q2_goal"), variant.knowledgeLevel === "informado");
       assert.equal(variant.modeledAssumptionQuestionIds.includes("q2_process_systemization"), variant.knowledgeLevel === "informado");
       assert.equal("digitalSelfRating" in variant.answerScript || "aiSelfRating" in variant.answerScript, false);
     }
   }
+  const p20Informed = QA03B_PROFILE_KNOWLEDGE_VARIANTS.find(({ id }) => id === "P20-informado");
+  assert.ok(p20Informed);
+  assert.equal(p20Informed.answerScript.q2_discovery_reliable_reach, "unknown", "el volumen de leads no demuestra fiabilidad de captación");
+  assert.equal(p20Informed.modeledAssumptionQuestionIds.includes("q2_discovery_reliable_reach"), false);
   const completed = QA03B_PROFILE_KNOWLEDGE_VARIANTS.map((variant) => ({ variant, ...runScript(variant.id, variant.answerScript) }));
   assert.ok(completed.every(({ asked }) => asked.length > 0 && new Set(asked.map(({ questionId }) => questionId)).size === asked.length));
   assert.deepEqual(completed.filter(({ result }) => result.plan.completion.hardCapReached).map(({ variant }) => variant.id), []);
   assert.ok(completed.every(({ answers }) => answers.q2_operational_status === "operating" && answers.q2_has_customers === "yes"));
   assert.ok(completed.every(({ result }) => result.overall.index.displayScore === null));
   assert.ok(completed.every(({ result }) => ["no_useful_questions", "budget_blocked"].includes(result.plan.evidenceSufficiency.terminalReason ?? "")));
+  const completedById = new Map(completed.map(({ variant, result }) => [variant.id, result]));
+  for (const profileId of ["P03", "P10"]) {
+    const informed = completedById.get(`${profileId}-informado`)!;
+    assert.equal(informed.plan.evidenceSufficiency.terminalReason, "budget_blocked");
+    assert.equal(informed.plan.evidenceSufficiency.usefulQuestionIds.includes("q2_digital_tools_in_use"), true);
+    assert.equal(informed.plan.trace.find((entry) => entry.questionId === "q2_digital_tools_in_use")?.skipReason, "base_budget");
+    for (const level of ["parcial", "desconocedor"] as const) {
+      const result = completedById.get(`${profileId}-${level}`)!;
+      assert.equal(result.plan.evidenceSufficiency.terminalReason, "no_useful_questions");
+      assert.equal(result.plan.evidenceSufficiency.sufficient, false);
+      assert.ok(result.plan.evidenceSufficiency.unresolvedApplicableDimensions.length > 0);
+      assert.equal(result.plan.evidenceSufficiency.usefulQuestionsRemaining, false);
+    }
+  }
+  for (const level of QA03B_KNOWLEDGE_LEVELS) {
+    const p18 = completedById.get(`P18-${level}`)!;
+    if (level === "informado") {
+      assert.deepEqual(p18.plan.evidenceSufficiency.applicableDimensions, ["digital_readiness"]);
+      assert.equal(p18.scoring.dimensions.find((dimension) => dimension.id === "digital_readiness")?.confidence.level, "medium");
+    } else {
+      assert.deepEqual(p18.plan.evidenceSufficiency.applicableDimensions, []);
+      assert.equal(p18.plan.evidenceSufficiency.insufficientContextDimensions.length, 8);
+      assert.deepEqual(p18.plan.evidenceSufficiency.notApplicableDimensions, []);
+    }
+  }
 });
