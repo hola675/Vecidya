@@ -122,21 +122,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
                   {section.blocks?.map((block, blockIndex) => renderLearnBlock(block, `${section.heading}-${blockIndex}`))}
                 </section>
               ))}
-              <section className="learn-article-review" aria-labelledby="learn-review-title">
-                <h2 id="learn-review-title">Comprueba lo aprendido</h2>
-                <p>Intenta responder con tus propias palabras antes de abrir cada pista.</p>
-                <ol>
-                  {article.enPocasPalabras.map((point, index) => (
-                    <li key={point}>
-                      <details>
-                        <summary>{index === 0 ? "¿Cuál es la idea principal?" : index === 1 ? "¿Qué puedes aplicar?" : "¿Qué precaución debes recordar?"}</summary>
-                        <p>{point}</p>
-                      </details>
-                    </li>
-                  ))}
-                </ol>
-              </section>
-              <aside className="learn-article-cta">
+              <section className="learn-article-review" aria-labelledby="learn-review-title">\n                <h2 id="learn-review-title">Comprueba lo aprendido</h2>\n                <p>Antes de continuar, intenta responder estas preguntas con tus propias palabras. Después, abre cada pista para contrastar tu respuesta.</p>\n                <ol>{article.enPocasPalabras.map((point, index) => (\n                  <li key={point}>\n                    <details>\n                      <summary>{index === 0 ? "¿Cuál es la idea principal que debes recordar?" : index === 1 ? "¿Qué acción podrías aplicar en tu situación?" : "¿Qué precaución o criterio deberías considerar antes de actuar?"}</summary>\n                      <p>{point}</p>\n                    </details>\n                  </li>\n                ))}</ol>\n              </section>\n              <aside className="learn-article-cta">
                 <p className="eyebrow">RELACIONADO CON VECIDYA</p>
                 <h2>{article.cta.copy}</h2>
                 <Link className="button button--primary" to={article.cta.to}>{article.cta.label}</Link>
