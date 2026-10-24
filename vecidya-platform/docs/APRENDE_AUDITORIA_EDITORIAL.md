@@ -89,3 +89,18 @@ La cantidad de URL únicas deberá calcularse mediante el verificador automatiza
 3. Clasificar `2xx` como accesible técnicamente, `3xx` como redirección a revisar y `4xx/5xx`, timeout o bloqueo como incidencias que necesitan revisión humana. No confundir bloqueo anti-bot con enlace roto.
 4. Comprobar manualmente que el documento de destino respalda el contenido citado y que su política o estándar continúa vigente.
 5. Corregir únicamente referencias verificadas como erróneas y conservar evidencia fechada antes de cerrar E3.
+
+## Avance de implementación técnica (2026-10-24)
+
+- Se incorporó `scripts/audit-learn-links.mjs` para los cuatro módulos de contenidos, con comprobaciones concurrentes limitadas, timeout, registro de redirecciones y salida JSON. El workflow manual `.github/workflows/aprende-links-audit.yml` conserva el reporte como artefacto. **No confundir el éxito del workflow de calidad con la ejecución de este workflow manual**.
+- Se añadió tiempo de lectura aproximado por artículo, calculado a partir de su texto (referencia de 200 palabras/minuto), y enlace de retorno al inicio del contenido. La estimación no constituye una medición de comportamiento real.
+- Las pruebas de compilación y tipos deben comprobarse sobre el SHA final, no sobre ejecuciones anteriores.
+
+### Puertas de salida para publicación
+
+- [ ] Descargar y revisar el JSON de la auditoría HTTP ejecutada; resolver enlaces realmente rotos y documentar bloqueos anti-bot.
+- [ ] Probar navegación completa en escritorio y móvil: búsqueda, filtros, itinerarios, índice, FAQ, CTA y enlaces relacionados.
+- [ ] Revisar teclado, foco visible, contraste, ampliación 200 %, imágenes y lectores de pantalla.
+- [ ] Verificar canonical, robots, Open Graph, enlaces internos y el renderizado de todas las rutas.
+- [ ] Ejecutar pruebas, typecheck y build sobre el SHA definitivo y reconciliar la rama con `main`.
+- [ ] Obtener aprobación visual final y autorización explícita antes de fusionar o desplegar.
