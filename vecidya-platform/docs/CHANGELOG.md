@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-23 — APP-MINI-02B — certificación de ofertas y FAQ
+
+- Se amplía `miniweb-core-check.mjs` para probar ofertas/FAQ tenant-scoped, validación, escritura CAS, aislamiento, borrador frente a HTTP anónimo, publicación y elementos activos/inactivos. El recorrido identificó contenido inactivo dentro del payload de hidratación público aunque la UI lo ocultaba; el loader ahora solo entrega ofertas y preguntas activas a visitantes anónimos.
+- Se añade regresión de compatibilidad para snapshots v1/v2: v1 no hereda ofertas/FAQ ni enciende módulos nuevos; v2 conserva ofertas y FAQ y no inventa medios. Sin cambios de schema o migraciones.
+- Evidencia de este checkpoint: MiniWeb E2E `102/102`, suite unitaria `1656/1656`, typecheck, build y diff-check PASS. D1 local aislada `0000–0027`, fixtures limpiadas; persistencia retenida en `.wrangler/app-mini-02b-functional-cert` tras bloquearse su eliminación recursiva. Sin D1 remota, deploy ni HTTP público fechado; entrega en PR pendiente.
+
 ## 2026-10-24 — 0.7.1 candidata — corrección de impresión del informe QA-03B
 
 - Los controles de privacidad y mensajes de estado dejan de aparecer en la impresión del informe identificado; el E2E compara hojas PDF con páginas visibles y ahora inspecciona el árbol PDF sin depender de Poppler.

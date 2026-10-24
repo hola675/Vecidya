@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { isBusinessPublicationCurrent, readConsistentBusinessDraftState, type BusinessPublicationSnapshot } from "../../../db/queries/business-publication.server";
+import { isBusinessPublicationCurrent, parseBusinessPublicationSnapshot, readConsistentBusinessDraftState, type BusinessPublicationSnapshot } from "../../../db/queries/business-publication.server";
 import { buildSafeMiniWebConfiguration } from "../../../app/features/miniweb/registry";
 
 test("reintenta una lectura si otro editor cambia el borrador durante el loader", async () => {
@@ -88,4 +88,26 @@ test("la publicación vigente compara perfil, contacto, horarios y configuració
   assert.equal(isBusinessPublicationCurrent(1, snapshot, { ...structuredClone(snapshot), hours: [{ ...hours[0], closesAt: "18:00" }] }), false, "un cambio solo de horario deja pendiente la publicación");
   assert.equal(isBusinessPublicationCurrent(1, snapshot, { ...structuredClone(snapshot), configuration: { ...configuration, modules: configuration.modules.map((module, index) => index === 0 ? { ...module, enabled: !module.enabled } : module) } }), false, "un cambio de diseño también deja pendiente la publicación");
   assert.equal(isBusinessPublicationCurrent(1, snapshot, null), false, "un snapshot ausente falla cerrado");
+});
+
+test("los snapshots MiniWeb v1 y v2 conservan la compatibilidad de ofertas, FAQ y módulos", () => {
+  const profile = { slug: "taller-central", displayName: "Taller Central" };
+  const hours = [{ dayOfWeek: 1, isClosed: false, opensAt: "09:00", closesAt: "17:00" }];
+  const configuration = buildSafeMiniWebConfiguration();
+  const versionOne = parseBusinessPublicationSnapshot(JSON.stringify({ schemaVersion: 1, profile, hours, configuration }), 1);
+  assert.ok(versionOne);
+  assert.equal(versionOne.schemaVersion, 3, "el lector adapta snapshots antiguos al contrato vigente");
+  assert.deepEqual(versionOne.offerings, [], "v1 no recupera contenido de negocio desde el borrador");
+  assert.deepEqual(versionOne.faqs, [], "v1 no recupera FAQ desde el borrador");
+  for (const type of ["services", "products", "faq"]) {
+    assert.equal(versionOne.configuration.modules.find((module) => module.type === type)?.enabled, false, `${type} empieza apagado para v1`);
+  }
+
+  const offerings = [{ kind: "service", title: "Consulta", description: "Atención", priceLabel: null, sortOrder: 0, isActive: true }];
+  const faqs = [{ question: "¿Cómo se agenda?", answer: "Por teléfono.", sortOrder: 0, isActive: true }];
+  const versionTwo = parseBusinessPublicationSnapshot(JSON.stringify({ schemaVersion: 2, profile, hours, configuration, offerings, faqs }), 2);
+  assert.ok(versionTwo);
+  assert.deepEqual(versionTwo.offerings, offerings, "v2 preserva las ofertas publicadas");
+  assert.deepEqual(versionTwo.faqs, faqs, "v2 preserva las FAQ publicadas");
+  assert.deepEqual(versionTwo.media, [], "v2 no inventa medios en el snapshot");
 });
