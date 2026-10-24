@@ -231,7 +231,7 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
   }
   const commercial = result.commercial;
   return {
-    engineIdentity: result.engineIdentity,
+    engineIdentity: result.engineIdentity as typeof CANDIDATE_RESULT_IDENTITY_V3,
     profileLabel: PROFILE_DISPLAY[result.narrative.profile],
     lifecycleLabel: result.scoring.context.operationalStatus.status === "resolved" ? ({ preparing: "En preparación", operating: "Disponible actualmente", paused: "En pausa" }[result.scoring.context.operationalStatus.value]) : "Estado actual sin resolver",
     lifecycle: result.narrative.lifecycle,

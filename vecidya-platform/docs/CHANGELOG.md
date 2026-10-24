@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-24 — DIAG-MOTOR-04 — rangos globales y variabilidad (solo local)
+
+- Se propone v4 con cuatro rangos inclusivos iguales: 0–25, 26–50, 51–75 y 76–100. Conserva umbral de tres áreas, cobertura aplicable del 60%, pesos iguales y confianza; V2 activo y Worker permanecen sin cambios.
+- Se conservan las 60 rutas. La variabilidad de guiones crece de 49 a 59 patrones al etiquetar objetivos sintéticos en variantes informado/parcial. No se crean respuestas de capacidad para forzar índices: las rutas continúan sin porcentaje cuando no reúnen evidencia suficiente.
+- Validaciones y límites en `TESTING.md` → DIAG-MOTOR-04. No migraciones, activación, merge, deploy ni publicación.
+
 ## 2026-10-24 — DIAG-MOTOR-03 — recomendaciones trazables (solo local)
 
 - El informe candidato QA-03B identifica las respuestas fuente con etiquetas legibles, distingue evidencia observada de verificación pendiente y propone una forma cualitativa de comprobar el resultado. La acción principal ahora conserva esos datos en el bloque de foco; las recomendaciones secundarias hacen lo mismo.

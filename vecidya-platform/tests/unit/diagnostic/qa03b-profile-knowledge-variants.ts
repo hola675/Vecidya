@@ -19,9 +19,9 @@ export type Qa03bProfileKnowledgeVariant = {
 };
 
 // The supplied profiles do not record an owner's stated improvement goal or
-// consistency rating for recurring processes. Informed variants add explicit,
-// qualitative respondent statements to exercise those routes. They are test
-// assumptions, not source facts or expected diagnostic outcomes.
+// consistency rating for recurring processes. Informed/partial variants add
+// explicit qualitative goal statements; informed also models process consistency.
+// These are test assumptions, not source facts or expected diagnostic outcomes.
 const informedExtensions: Record<string, Pick<AnswersV2, "q2_goal" | "q2_process_systemization">> = {
   P01: { q2_goal: "stop_losing", q2_process_systemization: "partial" },
   P02: { q2_goal: "automate", q2_process_systemization: "partial" },
@@ -82,6 +82,15 @@ const partialFriction: Record<string, AnswersV2["q2_friction"]> = {
   P14: "operations",
 };
 
+// Synthetic clarification of the owner's stated objective. Goals do not score a capability and are
+// labeled as assumptions so they cannot be mistaken for facts from the source profiles.
+const partialGoals: Record<string, NonNullable<AnswersV2["q2_goal"]>> = {
+  P01: "stop_losing", P02: "organize", P03: "stop_losing", P04: "stop_losing", P05: "be_found",
+  P06: "organize", P07: "measure", P08: "be_found", P09: "automate", P10: "stop_losing",
+  P11: "organize", P12: "stop_losing", P13: "automate", P14: "organize", P15: "automate",
+  P16: "stop_losing", P17: "organize", P18: "measure", P19: "automate", P20: "stop_losing",
+};
+
 const knowledgeUnknowns: AnswersV2 = {
   q2_goal: "unsure",
   q2_friction: "unsure",
@@ -122,7 +131,7 @@ function makeVariant(
     note: knowledgeLevel === "informado"
       ? "Incluye aclaraciones cualitativas sintéticas sobre prioridad y proceso; no inventa métricas ni las trata como datos originales."
       : knowledgeLevel === "parcial"
-        ? "Parte de la matriz original; añade fricción solo donde la descripción la expresa con claridad y mantiene desconocidas las métricas no descritas."
+        ? "Añade un objetivo declarado sintético, conserva fricción solo donde el perfil la expresa claramente y mantiene desconocidas las capacidades no descritas."
         : "Conserva anclas del perfil, pero simula desconocimiento de desempeño, medición y consistencia; no convierte la falta de conocimiento en una respuesta negativa.",
   };
 }
@@ -139,13 +148,14 @@ export const QA03B_PROFILE_KNOWLEDGE_VARIANTS: readonly Qa03bProfileKnowledgeVar
   };
   const partialAnswers: AnswersV2 = {
     ...sourceAnswers,
+    q2_goal: partialGoals[profile.id],
     ...(partialFriction[profile.id] ? { q2_friction: partialFriction[profile.id] } : {}),
   };
   const unknownAnswers: AnswersV2 = { ...sourceAnswers, ...knowledgeUnknowns };
 
   return [
     makeVariant(profile.id, "informado", informedAnswers, ["q2_goal", "q2_process_systemization"], ["q2_digital_tools_in_use"], ["q2_discovery_reliable_reach"]),
-    makeVariant(profile.id, "parcial", partialAnswers, [], partialFriction[profile.id] ? ["q2_friction"] : [], ["q2_discovery_reliable_reach", "q2_process_systemization"]),
+    makeVariant(profile.id, "parcial", partialAnswers, ["q2_goal", ...(partialFriction[profile.id] ? ["q2_friction"] : [])], [], ["q2_discovery_reliable_reach", "q2_process_systemization"]),
     makeVariant(profile.id, "desconocedor", unknownAnswers, [], [], ["q2_goal", "q2_friction", "q2_discovery_reliable_reach", "q2_process_systemization", "q2_digital_tools_in_use"]),
   ];
 });

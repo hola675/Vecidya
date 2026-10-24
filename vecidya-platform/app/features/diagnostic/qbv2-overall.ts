@@ -35,7 +35,7 @@ export const OVERALL_INDEX_MODEL = {
  * DIAG-V3-R8-A seam: the overall numeric model a caller applies. Every function below defaults to
  * `OVERALL_INDEX_MODEL`, so legacy callers are unchanged; the candidate path passes its isolated calibration.
  */
-export type OverallBands = { readonly developingFrom: number; readonly solidFrom: number };
+export type OverallBands = { readonly developingFrom: number; readonly solidFrom: number; readonly verySolidFrom?: number };
 export type OverallIndexModel = {
   readonly minScoredDimensions: number;
   readonly minCoverage: number;
@@ -218,7 +218,10 @@ export function displayScoreFor(rawScore: number): number {
 
 export function displayScoreForBands(rawScore: number, bands: OverallBands): number {
   const rounded = Math.round(rawScore);
-  return bandForBands(rounded, bands) === bandForBands(rawScore, bands) ? rounded : Math.floor(rawScore);
+  const classify = (score: number) => bands.verySolidFrom !== undefined && score >= bands.verySolidFrom
+    ? "very_solid"
+    : bandForBands(score, bands);
+  return classify(rounded) === classify(rawScore) ? rounded : Math.floor(rawScore);
 }
 
 /**

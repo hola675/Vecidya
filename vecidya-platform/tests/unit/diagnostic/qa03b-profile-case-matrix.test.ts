@@ -117,7 +117,7 @@ test("60 variantes por nivel de conocimiento recorren el motor sin reutilizar au
         assert.ok(selected.length > 0 && selected.every((value) => definition.options.some((option) => option.value === value)), `${variant.id}: invalid authored response for ${questionId}`);
       }
       assert.equal(variant.unknownByDesignQuestionIds.includes("q2_discovery_reliable_reach"), true);
-      assert.deepEqual(variant.modeledAssumptionQuestionIds.includes("q2_goal"), variant.knowledgeLevel === "informado");
+      assert.deepEqual(variant.modeledAssumptionQuestionIds.includes("q2_goal"), variant.knowledgeLevel !== "desconocedor");
       assert.equal(variant.modeledAssumptionQuestionIds.includes("q2_process_systemization"), variant.knowledgeLevel === "informado");
       assert.equal("digitalSelfRating" in variant.answerScript || "aiSelfRating" in variant.answerScript, false);
     }
@@ -140,10 +140,10 @@ test("60 variantes por nivel de conocimiento recorren el motor sin reutilizar au
     assert.equal(informed.plan.trace.find((entry) => entry.questionId === "q2_digital_tools_in_use")?.skipReason, "base_budget");
     for (const level of ["parcial", "desconocedor"] as const) {
       const result = completedById.get(`${profileId}-${level}`)!;
-      assert.equal(result.plan.evidenceSufficiency.terminalReason, "no_useful_questions");
+      assert.equal(result.plan.evidenceSufficiency.terminalReason, level === "parcial" ? "budget_blocked" : "no_useful_questions");
       assert.equal(result.plan.evidenceSufficiency.sufficient, false);
       assert.ok(result.plan.evidenceSufficiency.unresolvedApplicableDimensions.length > 0);
-      assert.equal(result.plan.evidenceSufficiency.usefulQuestionsRemaining, false);
+      assert.equal(result.plan.evidenceSufficiency.usefulQuestionsRemaining, level === "parcial");
     }
   }
   for (const level of QA03B_KNOWLEDGE_LEVELS) {

@@ -13,8 +13,14 @@ import type { SeverityBands } from "./qbv2-priorities";
  * Static, immutable and deterministic; private (not barrel-exported) and not a runtime diagnostic version.
  * Every adopted numeric set is versioned and kept: v1 (R8-A baseline) stays reproducible after v2 (R8-B).
  */
-export type CandidateCalibrationIdentityV3 = "diag-v3-candidate-calibration-v1" | "diag-v3-candidate-calibration-v2" | "diag-v3-candidate-calibration-v3";
-export type CandidateCalibrationVersionV3 = 1 | 2 | 3;
+export type CandidateCalibrationIdentityV3 = "diag-v3-candidate-calibration-v1" | "diag-v3-candidate-calibration-v2" | "diag-v3-candidate-calibration-v3" | "diag-v3-candidate-calibration-v4";
+export type CandidateCalibrationVersionV3 = 1 | 2 | 3 | 4;
+export type CandidateScoreRangeV4 = {
+  readonly id: "initial" | "developing" | "functional" | "strong";
+  readonly label: string;
+  readonly minimum: number;
+  readonly maximum: number;
+};
 
 /**
  * R3 neutral states never contribute. This numeric/null partition is frozen at the type level: candidate
@@ -32,7 +38,20 @@ export type CandidateCalibrationV3 = {
   readonly dimensionConfidence: DimensionConfidenceModel;
   readonly severity: SeverityBands;
   readonly overall: OverallIndexModel;
+  readonly scoreRanges?: readonly CandidateScoreRangeV4[];
 };
+
+export const CANDIDATE_SCORE_RANGES_V4: readonly CandidateScoreRangeV4[] = deepFreeze([
+  { id: "initial", label: "Base inicial", minimum: 0, maximum: 25 },
+  { id: "developing", label: "En desarrollo", minimum: 26, maximum: 50 },
+  { id: "functional", label: "Funcional", minimum: 51, maximum: 75 },
+  { id: "strong", label: "Sólida", minimum: 76, maximum: 100 },
+]);
+
+export function classifyCandidateScoreRangeV4(score: number | null, ranges: readonly CandidateScoreRangeV4[] = CANDIDATE_SCORE_RANGES_V4): CandidateScoreRangeV4["id"] | null {
+  if (score === null || !Number.isInteger(score) || score < 0 || score > 100) return null;
+  return ranges.find((range) => score >= range.minimum && score <= range.maximum)?.id ?? null;
+}
 
 function deepFreeze<T>(value: T): T {
   if (value !== null && typeof value === "object") {
@@ -107,6 +126,28 @@ export const CANDIDATE_CALIBRATION_REPRESENTATIVE_V3: CandidateCalibrationV3 = d
     bands: { developingFrom: 41, solidFrom: 71 },
     confidence: { mediumCoverage: 0.5, highCoverage: 0.75, share: 0.5 },
   },
+});
+
+/**
+ * v4 — DIAG-MOTOR-04 proposal. Keeps the v3 representativeness gate (three direct readings and 60% of applicable
+ * dimensions), equal dimension weighting, contributions and confidence. The only numerical presentation change is
+ * four adjacent integer ranges whose boundaries match the displayed percentage. It remains isolated until review.
+ */
+export const CANDIDATE_CALIBRATION_QUARTILES_V4: CandidateCalibrationV3 = deepFreeze({
+  identity: "diag-v3-candidate-calibration-v4",
+  version: 4,
+  capabilityContribution: { strong: 1, established: 0.75, partial: 0.5, weak: 0.25, dependency: 0.25, missing: 0, constraint: null, uncertainty: null, not_applicable: null },
+  scoring: { directWeight: 1, supportingWeight: 0.5, supportingCapRatio: 0.5 },
+  dimensionConfidence: { supportingWeight: 0.5, mediumAt: 1, highAt: 2 },
+  severity: { materialBelow: 50, moderateBelow: 75 },
+  overall: {
+    minScoredDimensions: 3,
+    minCoverage: 0.6,
+    coverageBasis: "applicable_dimensions",
+    bands: { developingFrom: 26, solidFrom: 51, verySolidFrom: 76 },
+    confidence: { mediumCoverage: 0.5, highCoverage: 0.75, share: 0.5 },
+  },
+  scoreRanges: CANDIDATE_SCORE_RANGES_V4,
 });
 
 /** The calibration the candidate chain uses by default (current: v2). */

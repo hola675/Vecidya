@@ -110,6 +110,8 @@ Una corrida local del pipeline actual sobre 20 perfiles hipotéticos (316 respue
 
 **DIAG-MOTOR-03 — integración candidata local:** la presentación/informe identificado muestra respuestas fuente legibles, estado de evidencia y una comprobación cualitativa por recomendación; si falta evidencia directa, lo declara antes de pedir acción. La recomendación comercial queda sustentada por las reglas candidatas existentes y se presenta separada de la confianza diagnóstica. El informe sube a `diagnostic-report-v1.1`; el contrato anónimo de 12 claves, Worker y motor público no cambian. Se ejecutó matriz adicional de 14 escenarios sintéticos junto a las 60 variantes ya existentes. Detalle de límites y validaciones en `TESTING.md` → DIAG-MOTOR-03.
 
+**DIAG-MOTOR-04 — propuesta local:** calibración de presentación en cuatro rangos iguales sobre las mismas 60 variantes. No se activa hasta revisión metodológica; las rutas desconocidas mantienen abstención y los objetivos sintéticos no sirven como evidencia de capacidad. Ver `TESTING.md` → DIAG-MOTOR-04.
+
 **Pendiente antes de activar o afirmar validez:**
 
 1. Trazar por dimensión aplicabilidad → señales contestadas → evidencia faltante → candidatos de seguimiento; explicar terminales mientras quede cobertura útil, o documentar por qué no existe pregunta segura. La evaluación sintética de cobertura sigue registrando dimensiones aplicables sin resolver y no autoriza ocultarlas.

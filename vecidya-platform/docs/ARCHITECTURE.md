@@ -1,5 +1,9 @@
 # Arquitectura de Vecidya
 
+## DIAG-MOTOR-04 — presentación de cuatro rangos candidatos (2026-10-24; local)
+
+La calibración candidata `diag-v3-candidate-calibration-v4` conserva las puntuaciones por dimensión, pesos, confianza y puerta de representatividad v3 (al menos tres dimensiones puntuadas y 60% de cobertura aplicable). Solo cambia la clasificación de presentación a cuatro intervalos enteros inclusivos: 0–25, 26–50, 51–75 y 76–100. El índice sin suficiencia permanece `null`. La opción de calibración se inyecta únicamente en el pipeline candidato para replay de QA; la identidad predeterminada v2, el runtime Worker, la allowlist anónima y los informes existentes permanecen sin cambio. V4 no está activada ni revisada metodológicamente. La matriz sintética sigue en 60 rutas; los objetivos cualitativos añadidos están identificados como supuestos, no como hechos ni evidencia puntuable.
+
 ## DIAG-MOTOR-03 — evidencia de recomendaciones QA-03B (2026-10-24; local)
 
 El replay Worker sigue reconstruyendo una sola salida versionada para presentación, informe privado y resumen anónimo. La presentación e informe QA-03B enlazan recomendaciones únicamente a preguntas fuente activas y sus etiquetas de respuesta del banco revisado; los identificadores de pregunta no se exponen. Cada recomendación presenta estado de verificación y un paso cualitativo para comprobar su resultado. Si no hay respuestas directas, el informe lo dice y pide confirmar antes de actuar. Esta proyección no recalcula puntuaciones ni altera la selección comercial.
