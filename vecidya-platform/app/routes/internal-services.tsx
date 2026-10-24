@@ -1,4 +1,5 @@
 import { Form, useActionData, useLoaderData, useNavigation } from "react-router";
+import { useMemo, useState } from "react";
 import { and, asc, eq } from "drizzle-orm";
 
 import { createDatabase } from "../../db/client.server";
@@ -12,6 +13,7 @@ import type { Route } from "./+types/internal-services";
 const serviceStatuses = ["pending", "active", "suspended", "ended"] as const;
 type ServiceStatus = (typeof serviceStatuses)[number];
 const serviceStatusLabels: Record<ServiceStatus, string> = { pending: "Pendiente", active: "Activo", suspended: "Suspendido", ended: "Finalizado" };
+type AssignmentFilter = "all" | "unassigned" | ServiceStatus;
 
 function isServiceStatus(value: FormDataEntryValue | null): value is ServiceStatus {
   return typeof value === "string" && serviceStatuses.includes(value as ServiceStatus);
@@ -91,6 +93,23 @@ export default function InternalServices() {
   const orderedOrganizations = selectedOrganizationId
     ? [...organizations].sort((left, right) => Number(right.id === selectedOrganizationId) - Number(left.id === selectedOrganizationId))
     : organizations;
+  const [search, setSearch] = useState("");
+  const [assignmentFilter, setAssignmentFilter] = useState<AssignmentFilter>("all");
+  const serviceRows = useMemo(() => {
+    const assignmentByKey = new Map(assignments.map((assignment) => [`${assignment.organizationId}:${assignment.serviceId}`, assignment]));
+    const query = search.trim().toLocaleLowerCase();
+    return orderedOrganizations.flatMap((organization) => catalog.map((service) => {
+      const assignment = assignmentByKey.get(`${organization.id}:${service.id}`);
+      return { organization, service, assignment };
+    })).filter(({ organization, service, assignment }) => {
+      if (assignmentFilter === "unassigned" && assignment) return false;
+      if (assignmentFilter !== "all" && assignmentFilter !== "unassigned" && assignment?.status !== assignmentFilter) return false;
+      if (!query) return true;
+      const statusLabel = assignment ? serviceStatusLabels[assignment.status] : "sin asignación sin asignar";
+      return [organization.name, organization.slug, service.name, service.description, statusLabel]
+        .some((value) => value?.toLocaleLowerCase().includes(query));
+    });
+  }, [assignments, assignmentFilter, catalog, orderedOrganizations, search]);
 
   return (
     <AdminShell active="services" workspaceUser={workspaceUser}>
@@ -107,23 +126,41 @@ export default function InternalServices() {
       {actionData?.error ? <p className="alert" role="alert">{actionData.error}</p> : null}
       {selectedOrganizationId ? <p className="admin-selected-context" role="status">Organización seleccionada: <strong>{organizations.find((item) => item.id === selectedOrganizationId)?.name ?? "no encontrada"}</strong></p> : null}
 
-      {organizations.length === 0 ? <section className="empty-state card"><div><h2>No hay organizaciones</h2><p>Las asignaciones aparecerán cuando exista una organización.</p></div></section> : orderedOrganizations.map((item) => {
-        const assigned = assignments.filter((assignment) => assignment.organizationId === item.id);
-        const isSelected = selectedOrganizationId === item.id;
-        return <section className={`card admin-organization-service-card${isSelected ? " is-selected" : ""}`} key={item.id}>
-          <div className="admin-service-card__heading"><div><p className="eyebrow">ORGANIZACIÓN</p><h2>{item.name}</h2><p>{item.slug}</p></div>{isSelected ? <span className="admin-selected-badge">Seleccionada</span> : null}</div>
-          {catalog.map((service) => {
-            const assignment = assigned.find((value) => value.serviceId === service.id);
-            return <Form key={service.id} method="post" className="organization-form admin-service-assignment-form">
-              <input name="organizationId" type="hidden" value={item.id} />
-              <input name="serviceId" type="hidden" value={service.id} />
-              <div><strong>{service.name}</strong><small>{service.description ?? "Servicio Vecidya"}</small></div>
-              <label>Estado<select aria-label={`Estado de ${service.name} para ${item.name}`} defaultValue={assignment?.status ?? "pending"} name="status">{serviceStatuses.map((status) => <option key={status} value={status}>{serviceStatusLabels[status]}</option>)}</select></label>
-              <button className="button button--secondary" disabled={isSaving} type="submit">{isSaving ? "Guardando…" : assignment ? "Guardar estado" : "Asignar"}</button>
-            </Form>;
-          })}
-        </section>;
-      })}
+      {organizations.length === 0 ? <section className="empty-state card"><div><h2>No hay organizaciones</h2><p>Las asignaciones aparecerán cuando exista una organización.</p></div></section> : catalog.length === 0 ? <section className="empty-state card"><div><h2>No hay servicios disponibles</h2><p>Los servicios activos del catálogo aparecerán aquí para su asignación.</p></div></section> : <>
+        <div className="admin-toolbar">
+          <label className="admin-search"><input aria-label="Buscar asignaciones" onChange={(event) => setSearch(event.target.value)} placeholder="Buscar organización, servicio o estado…" type="search" value={search} /></label>
+          <label className="admin-filter">Asignación
+            <select onChange={(event) => setAssignmentFilter(event.target.value as AssignmentFilter)} value={assignmentFilter}>
+              <option value="all">Todas</option>
+              <option value="unassigned">Sin asignar</option>
+              {serviceStatuses.map((status) => <option key={status} value={status}>{serviceStatusLabels[status]}</option>)}
+            </select>
+          </label>
+          <p className="admin-result-count" aria-live="polite">{serviceRows.length} de {organizations.length * catalog.length} asignaciones posibles</p>
+        </div>
+        {serviceRows.length ? <>
+          <p className="admin-service-table-scroll-hint" id="admin-service-table-scroll-hint">En pantallas pequeñas, desplaza la tabla horizontalmente para ver las acciones.</p>
+          <div aria-describedby="admin-service-table-scroll-hint" aria-label="Asignaciones de servicios" className="admin-table-wrap admin-service-table-wrap" role="region" tabIndex={0}>
+            <table className="admin-table admin-service-table">
+              <thead><tr><th>Organización</th><th>Servicio</th><th>Estado actual</th><th>Actualizar estado</th><th className="admin-table__action">Acción</th></tr></thead>
+              <tbody>{serviceRows.map(({ organization: targetOrganization, service, assignment }) => {
+                const formId = `service-assignment-${targetOrganization.id}-${service.id}`;
+                return <tr className={targetOrganization.id === selectedOrganizationId ? "is-selected" : undefined} key={`${targetOrganization.id}:${service.id}`}>
+                  <td><strong>{targetOrganization.name}</strong><span className="admin-table__meta">{targetOrganization.slug}{targetOrganization.id === selectedOrganizationId ? " · Seleccionada" : ""}</span></td>
+                  <td><strong>{service.name}</strong><span className="admin-table__meta">{service.description ?? "Servicio Vecidya"}</span></td>
+                  <td>{assignment ? <span className={`badge badge--${assignment.status === "active" ? "success" : assignment.status === "suspended" ? "danger" : "neutral"}`}>{serviceStatusLabels[assignment.status]}</span> : <span className="badge badge--neutral">Sin asignar</span>}</td>
+                  <td><label><span className="sr-only">Estado de {service.name} para {targetOrganization.name}</span><select defaultValue={assignment?.status ?? "pending"} form={formId} name="status">{serviceStatuses.map((status) => <option key={status} value={status}>{serviceStatusLabels[status]}</option>)}</select></label></td>
+                  <td className="admin-table__action"><Form id={formId} method="post" className="admin-service-table__submit">
+                    <input name="organizationId" type="hidden" value={targetOrganization.id} />
+                    <input name="serviceId" type="hidden" value={service.id} />
+                    <button className="button button--secondary" disabled={isSaving} type="submit">{isSaving ? "Guardando…" : assignment ? "Guardar estado" : "Asignar"}</button>
+                  </Form></td>
+                </tr>;
+              })}</tbody>
+            </table>
+          </div>
+        </> : <section className="admin-filter-empty card"><p className="eyebrow">SIN COINCIDENCIAS</p><h2>No hay asignaciones con estos criterios</h2><p>Ajusta la búsqueda o selecciona otro estado.</p></section>}
+      </>}
     </main>
     </AdminShell>
   );

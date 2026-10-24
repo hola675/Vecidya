@@ -223,6 +223,21 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
 
   const template = MINIWEB_TEMPLATE_REGISTRY[configuration.templateKey];
   const profile = data.profile ?? emptyPreviewProfile();
+  const publicStatusLabel = data.profileStatus === "suspended"
+    ? "Suspendido"
+    : data.profileStatus === "published" ? "Publicado" : "Aún sin publicar";
+  const publicStatusDescription = data.profileStatus === "suspended"
+    ? "El perfil del negocio está suspendido y no aparece en público."
+    : data.profileStatus === "published" ? "El perfil del negocio está publicado." : "El perfil del negocio todavía es un borrador.";
+  const configurationStatusLabel = data.hasPersistedConfiguration
+    ? "La configuración tiene cambios guardados."
+    : "La configuración usa los valores iniciales.";
+  const editorStatusLabel = isDirty ? "Hay cambios sin guardar" : "Sin cambios pendientes de guardar";
+  const publicationStatusLabel = data.profileStatus !== "published"
+    ? "No hay una versión pública activa."
+    : data.publicationIsCurrent
+      ? "El perfil, los horarios y la configuración coinciden con la publicación."
+      : "Hay cambios guardados que todavía no se han publicado.";
 
   return (
     <ClientAreaShell
@@ -390,9 +405,24 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               <MiniWebRenderer configuration={configuration} hours={data.hours} offerings={offerings} faqs={faqs} media={media} preview profile={profile} />
               </div>
             ) : <div className="miniweb-editor__empty-preview">Completa primero la información de tu negocio para generar una vista previa.</div> : null}
-            <p className="miniweb-editor__publication-state">
-              {data.profileStatus === "suspended" ? "El perfil del negocio está suspendido y no aparece en público." : data.profileStatus === "published" ? "El perfil del negocio está publicado." : "El perfil del negocio todavía es un borrador."} {data.hasPersistedConfiguration ? "La configuración tiene cambios guardados." : "La configuración usa los valores iniciales."} {data.publicationIsCurrent ? "El perfil, los horarios y la configuración coinciden con la publicación." : "Hay cambios guardados que todavía no se han publicado."}
-            </p>
+            <div className="miniweb-editor__publication-state">
+              <dl className="miniweb-editor__publication-grid">
+                <div>
+                  <dt>Estado público</dt>
+                  <dd className="miniweb-editor__publication-public">
+                    <span className={`badge ${data.profileStatus === "published" ? "badge--success" : data.profileStatus === "suspended" ? "badge--danger" : "badge--neutral"}`}>{publicStatusLabel}</span>
+                    <span>{publicStatusDescription}</span>
+                  </dd>
+                </div>
+                <div><dt>Configuración</dt><dd>{configurationStatusLabel}</dd></div>
+                <div><dt>Edición actual</dt><dd>{editorStatusLabel}</dd></div>
+                <div>
+                  <dt>Versión pública</dt>
+                  <dd>{publicationStatusLabel}</dd>
+                </div>
+              </dl>
+              {isDirty ? <p className="miniweb-editor__publication-note">Los cambios sin guardar solo aparecen en esta vista previa privada.</p> : null}
+            </div>
           </Card>
           <Card aria-labelledby="miniweb-publish-title" className="miniweb-editor__publish-card" id="miniweb-publish">
             <div className="miniweb-editor__section-heading">
