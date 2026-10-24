@@ -2,7 +2,7 @@
 
 ## ADMIN-LICENSE-UX-001 — separación organización/perfil y licencias (2026-10-23)
 
-**PASS local en `feat/platform-admin-license-ux`; PR abierto.** `/app/internal/licenses` asigna/cambia/suspende/reactiva licencias por organización y muestra owner/perfil por separado; la página explica que suspender no elimina los datos. Escrituras protegidas por acción `organization:license:update` y servicios auditados. E2E Admin Global PASS, typecheck/build/diff-check PASS. Sin D1 remota, deploy ni fusión; suite unitaria no ejecutada para este cambio.
+**PASS local en `feat/platform-admin-license-ux@e86fc03`, actualizado con `origin/main@5e26614`; PR pendiente.** `/app/internal/licenses` asigna/cambia/suspende/reactiva licencias por organización y muestra owner/perfil por separado; la página explica que suspender no elimina los datos. Escrituras protegidas por acción `organization:license:update` y servicios auditados. E2E Admin Global y dashboard redesign PASS; typecheck/build/diff-check PASS. Sin D1 remota ni deploy; suite unitaria no ejecutada para este cambio.
 
 ## APP-MINI-REDESIGN-01 — Mi Vecidya y Administración (2026-10-23)
 

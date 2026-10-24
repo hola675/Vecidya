@@ -3,7 +3,7 @@
 ## 2026-10-23 — ADMIN-LICENSE-UX-001 (panel interno de licencias)
 
 - Se añadió `/app/internal/licenses`, con asignación, cambio de plan, suspensión y reactivación por organización. La vista separa workspace, perfil comercial y licencia, y aclara que suspender conserva organización y datos.
-- Las mutaciones exigen `organization:license:update` en el control plane y conservan auditoría. E2E Admin Global, typecheck, build y diff-check PASS con Worker/D1 local. Sin fusión, D1 remota ni deploy; suite unitaria no repetida.
+- Las mutaciones exigen `organization:license:update` en el control plane y conservan auditoría. E2E Admin Global y dashboard redesign, typecheck, build y diff-check PASS con Worker/D1 local en `e86fc03`, actualizado con `origin/main@5e26614`. PR pendiente; sin D1 remota ni deploy. Suite unitaria no repetida.
 
 ## 2026-10-23 — APP-MINI-REDESIGN-01 (rediseño local)
 
