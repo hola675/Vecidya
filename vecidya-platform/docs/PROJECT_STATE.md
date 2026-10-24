@@ -1,3 +1,7 @@
+## App cliente e interna — revisión visual focal (2026-10-23)
+
+`APP-MINI-REDESIGN-01` ajusta localmente `/app` y `/app/internal`: el shell de Administración incorpora un cajón de navegación móvil y ambos dashboards tienen jerarquía visual renovada. E2E Playwright en Worker/D1 aislados: rutas y menú a 320/390/768/1366 px sin overflow; typecheck/build PASS. Los guards y datos siguen iguales. No publicado. Falta audit de teclado/foco/axe y cubrir el resto de rutas; evidencia y límites en `STATUS.md`/`TESTING.md`.
+
 ## UI-PILOT-01 — estado local de Aprende (2026-10-23)
 
 El piloto visual de `/aprende` está implementado en `feat/aprende-ui-pilot-01`, actualizado sobre `origin/main@85ba1e0`, con búsqueda en el primer bloque, ilustración original de rutas y contenido/conteos editoriales conservados (38 guías, 27 borradores, 7 itinerarios, 6 temas). La búsqueda con query enlaza a resultados; las tarjetas relacionadas y CTA/cuerpo de artículos no exceden 320 px. El E2E enfocado, typecheck y build pasan en Worker local. Es código local no publicado; no modifica identidad, datos ni el flujo de Diagnóstico. La evidencia vigente está en `STATUS.md` y `TESTING.md`.

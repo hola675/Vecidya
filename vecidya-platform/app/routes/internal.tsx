@@ -69,7 +69,7 @@ export default function InternalHome() {
 
   return (
     <AdminShell active="home" workspaceUser={workspaceUser}>
-      <main className="admin-main admin-dashboard">
+      <main className="admin-main admin-dashboard admin-dashboard--redesign">
         <div className="page-heading">
           <div>
             <p className="eyebrow">CENTRO DE OPERACIONES</p>
