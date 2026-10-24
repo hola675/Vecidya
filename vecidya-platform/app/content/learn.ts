@@ -1218,9 +1218,8 @@ export const learnArticles: LearnArticle[] = [
     enPocasPalabras: ["El dominio es la dirección que escriben las personas; el sitio es lo que ven.","El alojamiento guarda la web y el DNS conecta la dirección con el servidor.","Conserva el acceso y las fechas de renovación de cada servicio."],
     image: "/assets/learn/diagram-domain-dns-hosting.svg",
     imageAlt: "Recorrido de una persona al escribir una dirección: el navegador puede consultar DNS si no tiene una respuesta vigente en caché, conecta con el servidor web y recibe la página solicitada.",
-    relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital", "dns-https-y-correo-como-se-conecta-tu-dominio"],
+    relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital", "dns-https-y-correo-como-se-conecta-tu-dominio", "como-elegir-y-cambiar-proveedor-de-dominio-y-hosting"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico puede ayudarte a priorizar necesidades digitales; no registra dominios ni administra DNS o alojamiento." },
-    relatedSlugs: ["como-elegir-y-cambiar-proveedor-de-dominio-y-hosting"],
     sections: [
       { heading: "Guía complementaria", paragraphs: ["Para ampliar este tema sin mezclar conceptos, continúa con «DNS, HTTPS y correo: cómo se conecta tu dominio»." ] },
       { heading: "Continúa con la guía especializada", paragraphs: ["Para profundizar sin mezclar varios temas, consulta «Cómo elegir o cambiar proveedor de dominio y hosting sin perder el control». Esta guía mantiene la explicación inicial y la otra reúne los controles y decisiones más avanzados."] },
