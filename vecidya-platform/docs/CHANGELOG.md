@@ -4,7 +4,7 @@
 
 - Se amplía `miniweb-core-check.mjs` para probar ofertas/FAQ tenant-scoped, validación, escritura CAS, aislamiento, borrador frente a HTTP anónimo, publicación y elementos activos/inactivos. El recorrido identificó contenido inactivo dentro del payload de hidratación público aunque la UI lo ocultaba; el loader ahora solo entrega ofertas y preguntas activas a visitantes anónimos.
 - Se añade regresión de compatibilidad para snapshots v1/v2: v1 no hereda ofertas/FAQ ni enciende módulos nuevos; v2 conserva ofertas y FAQ y no inventa medios. Sin cambios de schema o migraciones.
-- Evidencia de este checkpoint sobre base `origin/main@b931f72`: MiniWeb E2E `103/103`, suite unitaria `1656/1656`, typecheck, build y diff-check PASS. D1 local aislada `0000–0027`, fixtures verificadas en cero; persistencia retenida en `.wrangler/app-mini-02b-functional-cert`. Sin D1 remota, deploy ni HTTP público fechado; entrega en PR pendiente.
+- Evidencia de este checkpoint sobre base `origin/main@6b5fd55`: MiniWeb E2E `103/103`, suite unitaria `1658/1658`, typecheck, build y diff-check PASS. D1 local aislada `0000–0027`, fixtures verificadas en cero; persistencia retenida en `.wrangler/app-mini-02b-functional-cert`. Sin D1 remota, deploy ni HTTP público fechado; PR #60 abierto.
 ## 2026-10-24 — corrección de persistencia MiniWeb y fixture visual local
 
 - D1 local limitaba el número de variables por sentencia al guardar módulos, ofertas y FAQ juntos. Se redujeron los lotes atómicos a dos filas, conservando el guard CAS/autorizado por organización, y se añadió regresión E2E para nueve módulos, cuatro ofertas y cuatro FAQ.
