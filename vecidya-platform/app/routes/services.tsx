@@ -60,13 +60,38 @@ export default function Services() {
           </aside>
         </section>
 
+        <section className="services-process" aria-labelledby="services-process-title">
+          <div className="services-section-heading">
+            <p className="eyebrow">UN RECORRIDO CLARO</p>
+            <h2 id="services-process-title">De la necesidad al siguiente paso.</h2>
+            <p>Explora lo que quieres resolver, revisa el alcance y conversa sobre la opción que tenga sentido.</p>
+          </div>
+          <ol className="services-process-list">
+            <li>
+              <strong>Ubica tu punto de partida</strong>
+              <span>El Diagnóstico te ayuda a entender qué conviene atender primero.</span>
+              <Link className="services-process-list__link" to="/diagnostico">Hacer el Diagnóstico <span aria-hidden="true">→</span></Link>
+            </li>
+            <li>
+              <strong>Explora las familias</strong>
+              <span>Compara las siete áreas de trabajo y abre los detalles de las que se relacionen con tu necesidad.</span>
+              <a className="services-process-list__link" href="#services-core-title">Ver las siete familias <span aria-hidden="true">↓</span></a>
+            </li>
+            <li>
+              <strong>Conversa sobre el alcance</strong>
+              <span>Los servicios se cotizan según el trabajo acordado; no necesitas elegir una licencia por defecto.</span>
+              <Link className="services-process-list__link" to="/contacto">Consultar un servicio <span aria-hidden="true">→</span></Link>
+            </li>
+          </ol>
+        </section>
+
         <section className="services-core" aria-labelledby="services-core-title">
           <div className="services-section-heading">
             <p className="eyebrow">SIETE FAMILIAS</p>
             <h2 id="services-core-title">Del problema concreto a un siguiente paso claro.</h2>
             <p>Son trabajos profesionales con alcance y entrega acordados; no todos requieren licencia. Las funciones estándar incluidas en Barrio o Ciudad no se cobran nuevamente como servicio.</p>
           </div>
-          <div className="services-core-grid">
+          <div className="services-core-grid services-core-grid--bento">
             {services.map((service) => (
               <article className="services-core-card" id={service.id} key={service.id}>
                 <div className="services-core-card__top">
