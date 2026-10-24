@@ -242,20 +242,28 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
           <Link className="button button--secondary" to="/app/business-profile">Editar información del negocio</Link>
         </header>
 
+        <nav aria-label="Pasos para preparar tu MiniWeb" className="miniweb-editor__steps">
+          <a href="#miniweb-design"><span>1</span> Diseño</a>
+          <a href="#miniweb-sections"><span>2</span> Secciones</a>
+          <a href="#miniweb-content"><span>3</span> Contenido</a>
+          <a href="#miniweb-preview"><span>4</span> Vista previa</a>
+          <a href="#miniweb-publish"><span>5</span> Publicar</a>
+        </nav>
+
         <div className="miniweb-editor__layout">
           <div className="miniweb-editor__controls">
-            <Card aria-labelledby="miniweb-template-title" className="miniweb-editor__template">
+            <Card aria-labelledby="miniweb-template-title" className="miniweb-editor__template" id="miniweb-design">
               <div className="miniweb-editor__section-heading">
-                <div><p className="eyebrow">PLANTILLA ACTUAL</p><h2 id="miniweb-template-title">{template.name}</h2></div>
+                <div><p className="eyebrow">1 · DISEÑO</p><h2 id="miniweb-template-title">{template.name}</h2></div>
                 <span className="badge">v{template.version}</span>
               </div>
               <p>{template.description}</p>
-              <p className="miniweb-editor__note">Las otras familias están reservadas hasta que sus plantillas estén implementadas.</p>
+              <p className="miniweb-editor__note">Esta es la plantilla disponible actualmente. Las demás opciones aparecerán cuando estén listas; no se cambiará tu diseño sin que lo elijas.</p>
             </Card>
 
-            <Card aria-labelledby="miniweb-sections-title" className="miniweb-editor__sections-card">
+            <Card aria-labelledby="miniweb-sections-title" className="miniweb-editor__sections-card" id="miniweb-sections">
               <div className="miniweb-editor__section-heading">
-                <div><p className="eyebrow">ESTRUCTURA</p><h2 id="miniweb-sections-title">Secciones</h2></div>
+                <div><p className="eyebrow">2 · ESTRUCTURA</p><h2 id="miniweb-sections-title">Secciones</h2></div>
                 <span className="miniweb-editor__count">{configuration.modules.filter((module) => module.enabled).length} activas</span>
               </div>
               <p className="miniweb-editor__note">Cada sección utiliza datos existentes. Si no tiene contenido útil, no se muestra al público.</p>
@@ -292,17 +300,12 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 })}
               </ol>
               {!data.canEdit ? <p className="miniweb-editor__note">Tu acceso permite consultar la configuración, no modificarla.</p> : null}
-              <div className="miniweb-editor__actions">
-                <Button disabled={!data.canEdit || busy || !isDirty} onClick={handleSave} tone="secondary">{busy ? "Guardando…" : "Guardar borrador"}</Button>
-                <Button disabled={!data.canPublish || busy} onClick={handlePublish}>{busy ? "Procesando…" : "Publicar configuración"}</Button>
-              </div>
-              {message ? <p className={`alert miniweb-editor__message miniweb-editor__message--${message.kind}`} role={message.kind === "error" ? "alert" : "status"}>{message.text}</p> : null}
               <p className="miniweb-editor__note">El perfil, los horarios, las ofertas, las preguntas frecuentes y esta estructura se publican juntos.</p>
             </Card>
 
-            <Card aria-labelledby="miniweb-offerings-title" className="miniweb-content-editor">
+            <Card aria-labelledby="miniweb-offerings-title" className="miniweb-content-editor" id="miniweb-content">
               <div className="miniweb-editor__section-heading">
-                <div><p className="eyebrow">CONTENIDO DEL NEGOCIO</p><h2 id="miniweb-offerings-title">Servicios y productos</h2></div>
+                <div><p className="eyebrow">3 · CONTENIDO DEL NEGOCIO</p><h2 id="miniweb-offerings-title">Servicios y productos</h2></div>
                 <span className="miniweb-editor__count">{offerings.length}/{MAX_BUSINESS_OFFERINGS}</span>
               </div>
               <p className="miniweb-editor__note">Añade solo información confirmada por tu negocio. El texto de precio es opcional y no procesa pagos ni pedidos.</p>
@@ -375,9 +378,10 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
             </Card>
           </div>
 
-          <Card aria-labelledby="miniweb-preview-title" className="miniweb-editor__preview-card">
+          <div className="miniweb-editor__review">
+          <Card aria-labelledby="miniweb-preview-title" className="miniweb-editor__preview-card" id="miniweb-preview">
             <div className="miniweb-editor__section-heading">
-              <div><p className="eyebrow">SOLO PARA TI</p><h2 id="miniweb-preview-title">Vista previa privada</h2></div>
+              <div><p className="eyebrow">4 · SOLO PARA TI</p><h2 id="miniweb-preview-title">Vista previa privada</h2></div>
               <Button aria-expanded={previewVisible} onClick={() => setPreviewVisible((visible) => !visible)} tone="ghost">{previewVisible ? "Ocultar" : "Mostrar"}</Button>
             </div>
             <p className="miniweb-editor__note">El borrador se previsualiza aquí; no se guarda ni publica automáticamente.</p>
@@ -390,6 +394,20 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               {data.profileStatus === "suspended" ? "El perfil del negocio está suspendido y no aparece en público." : data.profileStatus === "published" ? "El perfil del negocio está publicado." : "El perfil del negocio todavía es un borrador."} {data.hasPersistedConfiguration ? "La configuración tiene cambios guardados." : "La configuración usa los valores iniciales."} {data.publicationIsCurrent ? "El perfil, los horarios y la configuración coinciden con la publicación." : "Hay cambios guardados que todavía no se han publicado."}
             </p>
           </Card>
+          <Card aria-labelledby="miniweb-publish-title" className="miniweb-editor__publish-card" id="miniweb-publish">
+            <div className="miniweb-editor__section-heading">
+              <div><p className="eyebrow">5 · ÚLTIMO PASO</p><h2 id="miniweb-publish-title">Guardar y publicar</h2></div>
+            </div>
+            <p>Guardar conserva tus cambios como borrador. Publicar actualiza juntos el perfil, horarios, secciones, contenido y medios aprobados.</p>
+            <p className="miniweb-editor__note">La vista pública no cambia hasta que elijas publicar. Revisa el resultado anterior antes de confirmar.</p>
+            <div className="miniweb-editor__actions">
+              <Button disabled={!data.canEdit || busy || !isDirty} onClick={handleSave} tone="secondary">{busy ? "Guardando…" : "Guardar borrador"}</Button>
+              <Button disabled={!data.canPublish || busy} onClick={handlePublish}>{busy ? "Procesando…" : "Publicar configuración"}</Button>
+            </div>
+            {message ? <p className={`alert miniweb-editor__message miniweb-editor__message--${message.kind}`} role={message.kind === "error" ? "alert" : "status"}>{message.text}</p> : null}
+            {!data.canPublish ? <p className="miniweb-editor__note">Tu acceso permite consultar la MiniWeb, no guardar ni publicar cambios.</p> : null}
+          </Card>
+          </div>
         </div>
       </main>
     </ClientAreaShell>

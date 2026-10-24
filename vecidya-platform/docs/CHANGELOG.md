@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-24 — APP-MINI-02D (editor MiniWeb guiado; PR pendiente)
+
+- `/app/miniweb` organiza el editor en cinco destinos accesibles: Diseño, Secciones, Contenido, Vista previa y Publicar. La publicación y guardado quedan agrupados en su destino, y la UI declara que `Esencial` es la única plantilla disponible.
+- El comportamiento conserva borrador, CAS y snapshot. En código `961c46d`, MiniWeb E2E 105/105, unitarias 1659/1659, typecheck, build y diff-check PASS en Worker/D1 local aislados. Fixtures en cero; la D1 local schema-only permanece en `%TEMP%\vecidya-app-mini-02d-editor-e2e` porque el comando de limpieza fue bloqueado. Sin D1 remota, R2 real ni deploy.
+
 ## 2026-10-24 — QA-03B — corpus de 60 variantes y reporte final HTML
 
 - QA-03C: se corrige la matriz P20; miles de leads mensuales no acreditan captación fiable y la respuesta queda `unknown`. Se explicita procedencia desconocida por fuente, además de supuestos e interpretaciones.
