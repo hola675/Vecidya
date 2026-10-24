@@ -23,6 +23,7 @@ export default [
   route("que-debes-saber", "routes/knowledge-legacy.tsx"),
   route("privacidad", "routes/privacy.tsx"),
   route("terminos", "routes/terms.tsx"),
+  route("informacion-legal", "routes/legal-information.tsx"),
   route("favicon.ico", "routes/favicon.ts"),
   route("robots.txt", "routes/robots.ts"),
   route("sitemap.xml", "routes/sitemap.ts"),
