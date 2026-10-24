@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.3 — mantenimiento de accesibilidad móvil (código integrado; sin publicar)
+
+- En Mi Vecidya y administración, los menús responsive comparten control del foco: diálogo modal al abrir, fondo inerte, navegación con Tab/Shift+Tab, cierre con Escape y retorno del foco al disparador. Cambios funcionales integrados en PR #100 (merge `736a3f7`).
+- Se amplió la prueba E2E del dashboard para verificar estos comportamientos en diferentes anchos de pantalla. CI de integración de PR #100: `40106394655` PASS.
+- Este incremento PATCH no representa la publicación de los cambios del motor de Diagnóstico QA-03B ni certifica una nueva versión en producción. Producción documentada anteriormente: 0.7.0; pendiente de verificación HTTP fechada.
+
 ## 2026-10-24 — DIAG-MOTOR-04 — motor integrado con rangos globales (sin publicar)
 
 - QA-03B adopta la calibración v4 en `/diagnostico` y en el replay del Worker. El recorrido presenta cuatro rangos inclusivos iguales (0–25, 26–50, 51–75, 76–100), conserva tres áreas/60% de cobertura y no calcula índice cuando falta evidencia.
