@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-24 — UX-PREMIUM-02A — orientación y catálogo de Servicios
+
+- `/servicios` incorpora una ruta visual de tres pasos hacia Diagnóstico, las siete familias y la consulta; las siete tarjetas usan una retícula bento responsive y conservan sus enlaces a fichas y consultas contextuales.
+- Typecheck/build PASS; Worker local HTTP 200; Playwright confirmó catálogo, recorrido y ausencia de overflow en 360/390/768/1024/1366 px, más las siete fichas de servicio en 360/1024 px. El E2E comercial general agotó 30 s esperando `networkidle` en `/licencias`; planes/addons siguen pendientes. Cambio local, sin integración ni publicación; detalles y deuda en `STATUS.md` y `ROADMAP.md`.
+
 ## 2026-10-24 — QA-03B — corpus de 60 variantes y reporte final HTML
 
 - Se incorporan fixtures sintéticos con tres niveles de conocimiento para cada uno de los 20 perfiles, validación del banco y replay pregunta por pregunta en el pipeline candidato vigente. El nivel informado señala los supuestos cualitativos y el mapeo de herramientas; no usa autoevaluaciones digitales/IA como evidencia.

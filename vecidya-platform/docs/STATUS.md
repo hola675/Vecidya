@@ -2,7 +2,11 @@
 
 ## UX-PREMIUM-01A — Inicio, primera fase del plan visual (2026-10-24)
 
-En `feat/app-mini-ux-01`, desde `origin/main` actualizado, el CTA principal del hero `/` dirige al Diagnóstico, de acuerdo con el recorrido de producto; el Vecindario queda como acción secundaria. El brillo decorativo se marca como oculto a tecnologías asistivas. Typecheck, build y diff-check PASS. Worker Cloudflare local con D1 efímera migrada `0000–0027`: GET `/` 200; árbol accesible y captura de escritorio confirman el nuevo orden/jerarquía. Build reportó secretos locales opcionales de Auth/Gmail ausentes y dos advertencias de dynamic import preexistentes; no se leyeron secretos. No se revisaron otros viewports ni se certifica accesibilidad integral. No se declara publicado. El plan con las fases 0–6 está en `ROADMAP.md`; solo 01A está implementada.
+Integrada en `origin/main@530235d`. El CTA principal del hero `/` dirige al Diagnóstico; Vecindario queda como acción secundaria y el brillo decorativo se oculta a tecnologías asistivas. Typecheck, build y diff-check PASS. Worker Cloudflare local con D1 efímera `0000–0027`: GET `/` 200; árbol accesible y captura de escritorio confirman orden y jerarquía. Sin publicación.
+
+## UX-PREMIUM-02A — recorrido y composición del catálogo de Servicios (2026-10-24)
+
+**Trabajo local en `feat/app-mini-ux-02`, sin integrar ni publicar.** `/servicios` ahora ofrece una secuencia de orientación con enlaces a Diagnóstico, catálogo de siete familias y consulta; las tarjetas usan una retícula bento de 2/3/2 en escritorio que pasa a grilla uniforme en pantallas menores. Se conservan fichas y copy existentes, sin inventar precios, resultados o capacidades. Typecheck, build y diff-check PASS. Worker local HTTP 200; Playwright comprobó 3 pasos, 7 tarjetas, enlaces y cero overflow en 360/390/768/1024/1366 px; las siete fichas de servicios pasaron checks HTTP/H1/inclusiones-exclusiones/overflow en 360/1024 px; inspección visual de escritorio PASS. `commercial-details-check.mjs` no concluyó porque esperó 30 s `networkidle` en `/licencias`, así que planes/addons y el flujo comercial completo quedan pendientes. Pendientes: teclado/foco y axe. No es declaración de conformidad WCAG.
 
 ## ADMIN-LICENSE-UX-001 — licencias por cliente y negocio (2026-10-23)
 
