@@ -1,8 +1,14 @@
 # Estado de implementación
 
+## DIAG-MOTOR-04 — activación QA-03B por rangos (2026-10-24)
+
+**Integrada en `main@62822ee` mediante PR #97; CI 40105749133 en verde. Sin deploy ni publicación.** QA-03B y el replay del Worker usan calibración v4, cuatro rangos inclusivos (0–25, 26–50, 51–75, 76–100), mínimo de tres áreas y 60% de cobertura aplicable. La sesión usa schema/key 8, replay v6, metodología 3.2 e informe 1.2, con compatibilidad 1.0/1.1; el resumen anónimo conserva 12 claves. Las 60 rutas sintéticas siguen absteniéndose del índice por evidencia insuficiente. Consistencia técnica no acredita validez predictiva ni calibración empírica.
+
 ## UX-PREMIUM-06A — accesibilidad pública por muestra (2026-10-24)
 
-**Integrada en la rama de activación QA-03B `feat/diagnostic-motor-04-calibration`, basada en `origin/main@59dd6ee`; sin deploy ni publicación.** El recorrido `/diagnostico` y el replay autoritativo del Worker usan calibración v4: mínimo de tres áreas, 60% de cobertura aplicable, media con pesos iguales y reglas de evidencia/confianza; rangos inclusivos 0–25, 26–50, 51–75 y 76–100 junto al porcentaje. Sesión schema/key 8, replay v6, metodología 3.2 e informe 1.2; se aceptan informes 1.0/1.1 y se conserva el resumen anónimo de 12 claves. Las 60 rutas sintéticas se mantienen y siguen absteniéndose del índice por evidencia insuficiente. La consistencia automatizada no acredita validez predictiva ni calibración empírica. PR de activación pendiente; sin deploy ni publicación fechada.
+**Implementación local en `feat/app-mini-ux-06-public-a11y`, iniciada desde `origin/main@9543038`; sin deploy ni publicación.** AccessLint CLI 0.21.0 / Chromium 156 ejecutó 94 reglas por URL, sin reglas omitidas, en 13 rutas representativas: `/`, `/servicios`, `/licencias`, `/addons`, `/aprende`, `/vecindario`, `/diagnostico`, `/contacto`, `/login`, `/licencias/cuadra`, `/addons/whatsapp-business`, `/servicios/presencia-digital` y una guía de Aprende. Los hallazgos automatizados (landmarks complementarios anidados, contraste, nombre accesible y scroll de comparación sin teclado) se corrigieron en esta rama; las 13 rutas terminaron con 0 violaciones en los escaneos finales.
+
+La revisión manual comprobó navegación por teclado en el menú desktop y móvil, foco visible, desplazamiento horizontal del comparador con flecha derecha y alternativa compacta sin overflow a 320 px. Typecheck, build y diff-check PASS. **Límite:** muestra de rutas, no auditoría WCAG completa ni conformidad; lector de pantalla, zoom real al 200 % y el resto de rutas siguen pendientes. Sin cambios de datos/permisos y sin HTTP público fechado.
 
 ## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
 
