@@ -32,7 +32,7 @@ Los dos P2 están corregidos por `774d162`, integrado mediante PR #45 en `origin
 
 ## APP-MINI-02C — medios MiniWeb (2026-10-23)
 
-**RAN local en `feat/app-mini-02c-media`: E2E Worker MiniWeb 90/90 PASS**, incluidos upload/retiro, revisión CAS, aislamiento de publicación, publicación explícita y concurrencia; fixtures eliminados y verificados. Los cuatro viewports 1366/768/390/360 no tienen overflow. `test:unit`, `typecheck`, `build` y `git diff --check` se ejecutan en este checkpoint; resultados finales en `TESTING.md`. Cadena local D1 `0000–0027` aplicada en D1 efímera. PR #51 abierto; no fusionado. Sin D1 remota ni deploy. Los buckets R2 reales no están provisionados; no se certifica operación con R2 real ni publicación HTTP.
+**RAN local en `feat/app-mini-02c-media@c211ce2`, actualizado con `origin/main@5e26614`: E2E Worker MiniWeb 90/90 PASS**, incluidos upload/retiro, revisión CAS, aislamiento de publicación, publicación explícita y concurrencia; fixtures eliminados y verificados. Los cuatro viewports 1366/768/390/360 no tienen overflow. `test:unit` 1655/1655, typecheck, build y diff-check PASS. Cadena local D1 `0000–0027` aplicada en D1 aislada. PR #51 abierto; no fusionado. Sin D1 remota ni deploy. Los buckets R2 reales no están provisionados; no se certifica operación con R2 real ni publicación HTTP.
 
 ## DIAG-QA-03B-RELEASE-CLOSE — cierre local y preflight pendiente (2026-10-23)
 
