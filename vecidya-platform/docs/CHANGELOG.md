@@ -3,7 +3,18 @@
 ## 2026-10-24 — UX-PREMIUM-02A — orientación y catálogo de Servicios
 
 - `/servicios` incorpora una ruta visual de tres pasos hacia Diagnóstico, las siete familias y la consulta; las siete tarjetas usan una retícula bento responsive y conservan sus enlaces a fichas y consultas contextuales.
-- Typecheck/build PASS; Worker local HTTP 200; Playwright confirmó catálogo, recorrido y ausencia de overflow en 360/390/768/1024/1366 px, más las siete fichas de servicio en 360/1024 px. El E2E comercial general agotó 30 s esperando `networkidle` en `/licencias`; planes/addons siguen pendientes. Cambio local, sin integración ni publicación; detalles y deuda en `STATUS.md` y `ROADMAP.md`.
+- Typecheck/build PASS; Worker local HTTP 200; Playwright confirmó catálogo, recorrido y ausencia de overflow en 360/390/768/1024/1366 px, más las siete fichas de servicio en 360/1024 px. El reset de spans responsive corrige el P2 de Codex; `services-catalog-layout-check.mjs` pasa en 1366/768/390 px. El E2E comercial general agotó 30 s esperando `networkidle` en `/licencias`; planes/addons siguen pendientes. PR #65 en revisión, sin publicación; detalles y deuda en `STATUS.md` y `ROADMAP.md`.
+
+## 2026-10-24 — APP-MINI-02E (búsqueda y filtros del Vecindario; integrado en PR #69)
+
+- `/vecindario` amplía búsqueda y filtros con modalidad, área de servicio, servicios/productos y módulos MiniWeb con contenido renderizable. Las fichas muestran ofertas activas y secciones públicas derivadas solo del snapshot; las especialidades se infieren de categoría/ofertas existentes para evitar duplicar una taxonomía.
+- El test Worker verifica el aislamiento de borradores, ofertas inactivas y módulos desactivados, filtros de contenido publicado y responsive a 320/390/768/1366. Se corrige también el P2 de anclas del editor con margen bajo la cabecera sticky.
+- Evidencia local: 112/112 E2E, 3/3 unitarias focales, typecheck, build y diff-check PASS; D1 aislada `0000–0027`, fixtures en cero. PR #69 se integró en `main@2a58dc0`; sin HTTP pública, D1 remota o deploy.
+
+## 2026-10-24 — APP-MINI-02D (editor MiniWeb guiado; PR #64 integrado)
+
+- `/app/miniweb` organiza el editor en cinco destinos accesibles: Diseño, Secciones, Contenido, Vista previa y Publicar. La publicación y guardado quedan agrupados en su destino, y la UI declara que `Esencial` es la única plantilla disponible.
+- El comportamiento conserva borrador, CAS y snapshot. En código `961c46d`, MiniWeb E2E 105/105, unitarias 1659/1659, typecheck, build y diff-check PASS en Worker/D1 local aislados. PR #64 se integró en `main@820f529`. Su observación P2 de scroll bajo cabecera sticky se corrigió y probó en APP-MINI-02E. Sin D1 remota, R2 real ni deploy.
 
 ## 2026-10-24 — QA-03B — corpus de 60 variantes y reporte final HTML
 

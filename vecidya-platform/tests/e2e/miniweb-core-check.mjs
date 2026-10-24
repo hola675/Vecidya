@@ -187,9 +187,9 @@ try {
   check(initial.draftConfiguration.templateKey === "vecidya-default", "la configuración virtual usa la plantilla actual");
   check((await d1(`SELECT id FROM miniweb_site WHERE organization_id = '${organizationA}';`)).length === 0, "GET no persiste filas vacías");
 
-  await d1(`INSERT INTO business_profile (id, organization_id, display_name, slug, short_description, description, category, city, country, phone, public_email, status, created_at, updated_at) VALUES
-    ('${profileId()}', '${organizationA}', 'MiniWeb público A ${suffix}', '${profileSlug("public-a")}', 'Resumen A', 'Descripción A', 'Servicios', 'Bogotá', 'Colombia', '+573001112233', 'a-${suffix}@example.invalid', 'published', ${Date.now()}, ${Date.now()}),
-    ('${profileId()}', '${organizationB}', 'MiniWeb legacy B ${suffix}', '${profileSlug("legacy-b")}', 'Resumen B', 'Descripción B', 'Servicios', 'Cali', 'Colombia', '+573004445566', 'b-${suffix}@example.invalid', 'published', ${Date.now()}, ${Date.now()});`);
+  await d1(`INSERT INTO business_profile (id, organization_id, display_name, slug, short_description, description, category, city, country, phone, public_email, service_mode, service_area, status, created_at, updated_at) VALUES
+    ('${profileId()}', '${organizationA}', 'MiniWeb público A ${suffix}', '${profileSlug("public-a")}', 'Resumen A', 'Descripción A', 'Servicios', 'Bogotá', 'Colombia', '+573001112233', 'a-${suffix}@example.invalid', 'hybrid', 'Bogotá y alrededores', 'published', ${Date.now()}, ${Date.now()}),
+    ('${profileId()}', '${organizationB}', 'MiniWeb legacy B ${suffix}', '${profileSlug("legacy-b")}', 'Resumen B', 'Descripción B', 'Servicios', 'Cali', 'Colombia', '+573004445566', 'b-${suffix}@example.invalid', NULL, NULL, 'published', ${Date.now()}, ${Date.now()});`);
 
   check((await ownerA.client.json(pathB, null, "GET")).status === 403, "la organización A no puede leer la configuración de B");
   check((await ownerA.client.json(pathB, { intent: "save", configuration: initial.draftConfiguration })).status === 403, "la organización A no puede escribir la configuración de B");
@@ -327,6 +327,8 @@ try {
   console.log(JSON.stringify({ miniwebPublicBeforePublish: { status: publicBeforePublishResponse.status, url: publicBeforePublishResponse.url, titlePresent: publicBeforePublish.includes(`MiniWeb público A ${suffix}`), descriptionPresent: publicBeforePublish.includes("Descripción A"), emailPresent: publicBeforePublish.includes(`a-${suffix}@example.invalid`), bodyExcerpt: publicBeforePublish.slice(0, 350) } }));
   check(publicBeforePublish.includes(`MiniWeb público A ${suffix}`) && !publicBeforePublish.includes(draftName), "editar nombre, perfil y MiniWeb conserva la versión pública previa hasta publicar");
   check(!publicBeforePublish.includes(`Consulta activa ${suffix}`) && !publicBeforePublish.includes(`Pregunta activa ${suffix}`), "ofertas y FAQ del borrador no son visibles por HTTP anónimo antes de publicar");
+  const directoryBeforePublish = await (await fetch(new URL(`/vecindario?q=${encodeURIComponent(`Consulta activa ${suffix}`)}`, baseUrl))).text();
+  check(directoryBeforePublish.includes("Sin coincidencias") && !directoryBeforePublish.includes(`href=\"/vecindario/${profileSlug("public-a")}\"`), "la búsqueda del Vecindario no indexa ofertas ni cambios del borrador antes de publicar");
   await adminA.client.json(pathA, null, "GET");
   check((await adminA.client.json(pathA, { intent: "publish" })).status === 200, "admin puede publicar explícitamente la configuración enriquecida");
 
@@ -351,6 +353,15 @@ try {
   check(publicA.includes(`Pregunta activa ${suffix}`), "la página pública presenta las preguntas frecuentes activas");
   check(!publicA.includes(`Servicio pausado ${suffix}`) && !publicA.includes(`Pregunta pausada ${suffix}`), "la página pública omite ofertas y FAQ inactivas");
   check(!publicA.includes("Descripción A") && !publicA.includes(`a-${suffix}@example.invalid`) && !publicA.includes("Contacto directo"), "los módulos desactivados no aparecen en el sitio público");
+  const directoryByOffering = await (await fetch(new URL(`/vecindario?q=${encodeURIComponent(`Consulta activa ${suffix}`)}`, baseUrl))).text();
+  const directoryByProduct = await (await fetch(new URL("/vecindario?offering=product", baseUrl))).text();
+  const directoryByModule = await (await fetch(new URL("/vecindario?module=products", baseUrl))).text();
+  const directoryByModeAndArea = await (await fetch(new URL("/vecindario?serviceMode=hybrid&serviceArea=Bogot%C3%A1+y+alrededores", baseUrl))).text();
+  const publicCardHref = `href=\"/vecindario/${profileSlug("public-a")}\"`;
+  check(directoryByOffering.includes(publicCardHref) && directoryByOffering.includes(draftName), "el Vecindario permite encontrar el servicio publicado por su nombre");
+  check(directoryByProduct.includes(publicCardHref) && directoryByProduct.includes(`Producto activo ${suffix}`) && !directoryByProduct.includes(`Servicio pausado ${suffix}`), "el filtro de productos usa solo ofertas activas del snapshot publicado");
+  check(directoryByModule.includes(publicCardHref) && !directoryByModule.includes("MiniWeb legacy B"), "el filtro de sección solo incluye módulos renderizables en snapshots públicos");
+  check(directoryByModeAndArea.includes(publicCardHref) && !directoryByModeAndArea.includes("MiniWeb legacy B"), "el Vecindario filtra por modalidad y área de servicio publicadas");
 
   const mediaInitialState = await (await ownerA.client.json(pathA, null, "GET")).json();
   const mediaCountBeforeStaleUpload = Number((await d1(`SELECT COUNT(*) AS count FROM business_media_asset WHERE organization_id = '${organizationA}';`))[0]?.count ?? 0);
@@ -526,6 +537,25 @@ try {
 
   const editorResponse = await page.goto(new URL("/app/miniweb", baseUrl).toString(), { waitUntil: "networkidle" });
   check(editorResponse?.status() === 200, "el editor privado Mi MiniWeb responde para el owner");
+  const editorSteps = page.locator(".miniweb-editor__steps a");
+  const editorStepTargets = await editorSteps.evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  const editorStepsResolve = await editorSteps.evaluateAll((links) => links.every((link) => {
+    const target = link.getAttribute("href");
+    return Boolean(target && document.getElementById(target.slice(1)));
+  }));
+  check(editorStepTargets.join(",") === "#miniweb-design,#miniweb-sections,#miniweb-content,#miniweb-preview,#miniweb-publish" && editorStepsResolve, "el editor enlaza Diseño, Secciones, Contenido, Vista previa y Publicar con sus áreas reales");
+  await page.getByRole("link", { name: "5 Publicar" }).click();
+  check(new URL(page.url()).hash === "#miniweb-publish", "el paso Publicar lleva a la sección final del editor");
+  await page.waitForFunction(() => {
+    const target = document.querySelector("#miniweb-publish");
+    const header = document.querySelector(".app-header");
+    return Boolean(target && header && target.getBoundingClientRect().top >= header.getBoundingClientRect().bottom + 8);
+  });
+  check(await page.evaluate(() => {
+    const target = document.querySelector("#miniweb-publish");
+    const header = document.querySelector(".app-header");
+    return Boolean(target && header && target.getBoundingClientRect().top >= header.getBoundingClientRect().bottom + 8);
+  }), "el destino Publicar queda visible bajo la cabecera fija al navegar");
   check(await page.getByRole("button", { name: "Retirar del borrador" }).count() === 2, "el editor presenta acciones de retirada para portada y galería activas");
   check(await page.locator(".miniweb-editor__publication-state").getByText("Hay cambios guardados que todavía no se han publicado.").count() === 1, "el estado de MiniWeb identifica cambios de perfil/horarios aunque el diseño siga igual");
   const ownerBContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
@@ -577,6 +607,14 @@ try {
   }
   check(viewportResults.every(({ overflow }) => !overflow), "el editor no tiene overflow a 1366/768/390/360");
   console.log(JSON.stringify({ viewports: viewportResults }, null, 2));
+  await page.goto(new URL("/vecindario", baseUrl).toString(), { waitUntil: "networkidle" });
+  const directoryViewportResults = [];
+  for (const width of [1366, 768, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    directoryViewportResults.push({ width, overflow: await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth) });
+  }
+  check(directoryViewportResults.every(({ overflow }) => !overflow), "el índice del Vecindario y sus filtros no desbordan a 1366/768/390/320");
+  console.log(JSON.stringify({ directoryViewports: directoryViewportResults }, null, 2));
   await page.goto(new URL(`/vecindario/${profileSlug("public-a")}`, baseUrl).toString(), { waitUntil: "networkidle" });
   for (const width of [1366, 390]) {
     await page.setViewportSize({ width, height: 900 });

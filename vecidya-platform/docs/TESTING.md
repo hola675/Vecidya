@@ -72,6 +72,22 @@ RAN sobre `feat/app-mini-02c-media@45cf0bd`, con `origin/main@3e6b9b1`: `node te
 
 Límite restante: bindings de R2 están declarados, pero los buckets reales no están provisionados y esta prueba no certifica lectura/escritura contra R2 real. La publicación se probó contra Worker local y snapshot; no hubo petición HTTP al dominio público. Sin D1 compartida/remota ni deploy.
 
+## APP-MINI-02D — editor MiniWeb guiado (2026-10-24)
+
+El editor privado `/app/miniweb` añade navegación por anclas accesibles a Diseño, Secciones, Contenido, Vista previa y Publicar; la sección de publicación contiene guardar borrador, publicar y el mensaje único de resultado. El paso Diseño identifica `Esencial` como única plantilla disponible y no activa familias planeadas. La lógica de edición, CAS, datos y snapshot se conserva.
+
+La certificación sobre código `961c46d`, actualizado con `origin/main@7267628`, dio `pnpm exec node tests/e2e/miniweb-core-check.mjs` **105/105 PASS** en Worker local y D1 aislada `0000–0027`; incluye navegación a los cinco destinos, publicación, carga/retiro de medios, CAS, aislamiento, HTTP anónimo antes/después de publicar y responsive 1366/768/390/360 sin overflow. `pnpm run test:unit` **1659/1659**, typecheck, build y diff-check PASS. PR #64 integró el checkpoint en `main@820f529`. El P2 de anclas sticky se reprodujo y corrigió en el checkpoint siguiente; prueba Worker de posición visible aprobada. No se usó D1 remota, R2 real, correo real, deploy o HTTP pública fechada.
+
+## APP-MINI-02E — índice y búsqueda del Vecindario (2026-10-24)
+
+`pnpm exec node tests/e2e/miniweb-core-check.mjs`: **112/112 PASS** en Wrangler Worker local y D1 persistente temporal aislada con migraciones `0000–0027`. El E2E verifica que la consulta anónima no encuentre ofertas antes de publicar; tras publicación permite buscar por título de oferta y filtrar por producto/servicio, módulo renderizable, modalidad y área. Ofertas inactivas y borradores no aparecen; anclas del editor quedan visibles debajo de la cabecera. Editor 1366/768/390/360 e índice 1366/768/390/320 sin overflow. `fixturesCleaned:true`; consulta local confirmó cero usuarios, organizaciones y perfiles; ledger hasta `0027`. `pnpm run typecheck`, `pnpm run build`, `git diff --check` PASS; `tests/unit/miniweb/neighborhood.test.ts` **3/3 PASS**. PR #69 integró 02E en `main@2a58dc0`; sin D1 remota ni deploy.
+
+El Worker se detuvo y se eliminaron `.dev.vars` sintético y la copia del build. La D1 temporal queda solo con esquema/ledger porque la protección del entorno rechazó el borrado recursivo; no toca D1 compartida ni remota. Sin migración nueva, bucket R2 real, correo, deploy o HTTP pública fechada. La búsqueda de especialidades usa categoría y ofertas publicadas existentes; no existe campo dedicado de tags ni se creó uno.
+
+## UX-PREMIUM-02A — retícula responsive de Servicios (2026-10-24)
+
+`services-catalog-layout-check.mjs`: PASS en Worker local a 1366/768/390 px. Confirma siete tarjetas, composición bento 2/3/2 de escritorio, reset de spans a columnas uniformes en móvil y ausencia de overflow. `pnpm run typecheck` y `pnpm run build` PASS. El E2E comercial global anterior sigue sin certificar planes/addons: `commercial-details-check.mjs` esperó `networkidle` en `/licencias` y agotó 30 s. Un E2E general heredado de experiencia A falla además antes del bloque de Servicios porque su fixture de perfil legacy sin snapshot recibe 404 en `/vecindario/vecidya`; no invalida la prueba focal del layout.
+
 ## UI-PILOT-01 — Aprende visual y responsive (2026-10-23)
 
 **RAN en Worker local de Wrangler (`wrangler dev --local`) con D1 aislada y migraciones `0000–0023`.** `BASE_URL=http://127.0.0.1:4175 pnpm exec node tests/e2e/learn-experience-check.mjs`: **PASS**; `/sitemap.xml` respondió 200 e incluyó el artículo publicado de dominio. Verifica 38 guías/27 borradores, 7 itinerarios, 6 temas, filtros y búsquedas con/sin resultados, recuperación, submit anclado a `#guias` con resultados visibles, preservación simultánea de `q`/`tema` al saltar a itinerarios y temas, campo/botón apilados a 320 px, once rutas de artículos, CTAs, metadata, sitemap, foco visible de teclado, `prefers-reduced-motion` y ausencia de overflow en 320/360/390/768/1024/1366 px. Capturas antes/después a 320/390/1366 px están fuera del repositorio en el directorio de visualizaciones de esta sesión.
