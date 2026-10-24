@@ -711,3 +711,6 @@ Rama de diagnóstico `feat/diagnostic-funnel-01d1`, PR #6 draft con conflictos r
 ## 01D.3 — actualización de gestión interna (2026-10-17)
 
 Se incorporó un resumen administrativo de cuatro métricas sobre solicitudes vigentes en D1: total, correos verificados, verificaciones pendientes y solicitudes verificadas con permiso comercial vigente (`c9b5db2`). La consulta excluye solicitudes expiradas y no considera autorizado a quien no haya verificado el correo o haya revocado el consentimiento. El listado mantiene búsqueda y filtros server-side, paginación y acceso exclusivo a `platform_admin`. No se ha integrado GHL. Las cifras son calculadas en lectura, sin nuevas tablas ni migraciones. Pruebas, revisión de rendimiento y certificación siguen pendientes por decisión de aplazarlas.
+## UX-PREMIUM-05B — actividad de Auditoría (2026-10-24)
+
+En `feat/app-mini-ux-05-audit-list`, la ruta de Auditoría presenta los registros existentes en tabla con búsqueda y filtro por acción; el límite de 200 eventos queda visible. Actor, organización/perfil y transición conservan los valores entregados por la consulta vigente. Typecheck/build PASS. No se ejecutó sesión administrativa visual ni E2E; responsive/teclado quedan por verificar. No se añaden eventos ni se cambia la autorización.
