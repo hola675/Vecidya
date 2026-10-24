@@ -4,6 +4,9 @@ import type { Database } from "../client.server";
 import { businessProfile, businessProfileGovernance, businessProfilePublication, member, billingAccount, organizationLicense, platformOrganizationLifecycle } from "../schema";
 import { getBusinessProfilePublicationIssues } from "../business-profile-rules";
 import { commitBusinessDraftMutation, ensureLegacyBusinessPublicationSnapshot, parseBusinessPublicationSnapshot } from "./business-publication.server";
+import { getRenderableMiniWebModules } from "../../app/features/miniweb/render";
+import { MINIWEB_MODULE_REGISTRY } from "../../app/features/miniweb/registry";
+import { getVisibleNeighborhoodOfferings, matchesNeighborhoodFilters, type NeighborhoodFilters, type NeighborhoodOfferingKind, type NeighborhoodProfile } from "../../app/features/miniweb/neighborhood";
 
 const notSuspended = or(
   isNull(businessProfileGovernance.id),
@@ -100,7 +103,39 @@ export async function getPublishedBusinessProfileBySlug(database: Database, slug
   };
 }
 
-export type PublishedBusinessProfileFilters = { q?: string; category?: string; city?: string };
+export type PublishedBusinessProfileFilters = NeighborhoodFilters;
+
+function toNeighborhoodProfile(profile: BusinessProfileInput, snapshot: ReturnType<typeof parseBusinessPublicationSnapshot>): NeighborhoodProfile {
+  const activeOfferings = snapshot?.offerings.filter((offering) => offering.isActive) ?? [];
+  const miniwebProfile = snapshot?.profile ?? profile;
+  const modules = snapshot
+    ? getRenderableMiniWebModules(
+      snapshot.configuration,
+      miniwebProfile,
+      snapshot.hours,
+      activeOfferings,
+      snapshot.faqs,
+      snapshot.media.map((asset) => ({
+        ...asset,
+        publicUrl: "",
+        sizeBytes: 0,
+        createdAt: new Date(0),
+      })),
+    ).map(({ type }) => type)
+    : [];
+  const offerings = getVisibleNeighborhoodOfferings(snapshot?.offerings ?? [], modules);
+  return {
+    displayName: miniwebProfile.displayName,
+    shortDescription: miniwebProfile.shortDescription,
+    category: miniwebProfile.category,
+    city: miniwebProfile.city,
+    country: miniwebProfile.country,
+    serviceArea: miniwebProfile.serviceArea,
+    serviceMode: miniwebProfile.serviceMode,
+    offerings: offerings.map(({ kind, title, description }) => ({ kind, title, description })),
+    modules,
+  };
+}
 
 export async function listPublishedBusinessProfiles(database: Database, filters: PublishedBusinessProfileFilters = {}) {
   const rows = await database
@@ -120,15 +155,15 @@ export async function listPublishedBusinessProfiles(database: Database, filters:
       hasActiveOwnerLicense,
     ))
     .orderBy(asc(businessProfile.displayName), asc(businessProfile.slug));
-  const search = filters.q ? filters.q.toLocaleLowerCase() : undefined;
   return rows.flatMap((row) => {
     const snapshot = parseBusinessPublicationSnapshot(row.snapshotJson, row.snapshotSchemaVersion);
     if (row.publicationStateId && !snapshot) return [];
     if ((row.snapshotJson !== null || row.snapshotSchemaVersion !== null) && !snapshot) return [];
     const profile = snapshot?.profile ?? row;
-    if (filters.category && profile.category !== filters.category) return [];
-    if (filters.city && profile.city !== filters.city) return [];
-    if (search && !profile.displayName.toLocaleLowerCase().includes(search)) return [];
+    const neighborhoodProfile = toNeighborhoodProfile(profile, snapshot);
+    if (!matchesNeighborhoodFilters(neighborhoodProfile, filters)) return [];
+    const mode = neighborhoodProfile.serviceMode;
+    const moduleLabels = neighborhoodProfile.modules.map((type) => MINIWEB_MODULE_REGISTRY[type].label);
     return [{
       slug: profile.slug,
       displayName: profile.displayName,
@@ -137,6 +172,11 @@ export async function listPublishedBusinessProfiles(database: Database, filters:
       city: profile.city,
       country: profile.country,
       logoUrl: profile.logoUrl,
+      serviceArea: profile.serviceArea,
+      serviceMode: mode,
+      offerings: neighborhoodProfile.offerings.map(({ kind, title }) => ({ kind, title })),
+      modules: neighborhoodProfile.modules,
+      moduleLabels,
     }];
   }).sort((left, right) => left.displayName.localeCompare(right.displayName) || left.slug.localeCompare(right.slug));
 }
@@ -146,6 +186,12 @@ export async function getPublishedBusinessProfileFilterOptions(database: Databas
   return {
     categories: [...new Set(profiles.map(({ category }) => category).filter((value): value is string => Boolean(value)))].sort(),
     cities: [...new Set(profiles.map(({ city }) => city).filter((value): value is string => Boolean(value)))].sort(),
+    serviceAreas: [...new Set(profiles.map(({ serviceArea }) => serviceArea).filter((value): value is string => Boolean(value)))].sort(),
+    serviceModes: [...new Set(profiles.map(({ serviceMode }) => serviceMode).filter((value): value is string => Boolean(value)))].sort(),
+    offeringKinds: [...new Set(profiles.flatMap(({ offerings }) => offerings.map(({ kind }) => kind)))].sort() as NeighborhoodOfferingKind[],
+    modules: [...new Set(profiles.flatMap(({ modules }) => modules))]
+      .map((type) => ({ type, label: MINIWEB_MODULE_REGISTRY[type].label }))
+      .sort((left, right) => left.label.localeCompare(right.label)),
   };
 }
 
