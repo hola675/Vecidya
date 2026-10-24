@@ -20,7 +20,7 @@ test("R5-A candidate planner uses candidate bank, R3 utility, and R4 applicabili
   assert.deepEqual(buildCandidateQuestionPlanV3({ answers: JSON.parse(JSON.stringify(active)) }).selectedQuestionIds, plan.selectedQuestionIds);
 });
 
-test("Measurement can remain applicable with no candidate evidence source and no legacy chase", () => {
+test("measurement mappings stay candidate-only and require operational context before selection", () => {
   const plan = buildCandidateQuestionPlanV3({ answers: { ...active, q2_goal: "measure" } });
   const measurement = scoreCandidateContextualDimensionsV3({ answers: { ...active, q2_goal: "measure" } }).dimensions.find((d) => d.id === "measurement_optimization")!;
   assert.equal(measurement.applicability, "applicable");
