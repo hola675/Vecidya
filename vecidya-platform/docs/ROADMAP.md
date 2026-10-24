@@ -22,6 +22,10 @@
 
 **Checkpoint UX-PREMIUM-02B — refinamiento de Servicios (2026-10-24):** se mantiene el recorrido y la retícula 02A, con accesos directos por familia y tarjetas menos redundantes; cada una diferencia para quién, trabajo y alcance, con la ficha detallada como acción principal. Checkpoint local, no publicado; ver evidencia en `STATUS.md` y `TESTING.md`. Las rutas públicas restantes de la fase 2 siguen separadas y pendientes.
 
+**Checkpoint UX-PREMIUM-02A — Servicios (2026-10-24, PR #65 integrado en `main@c70057f`):** el recorrido enlaza Diagnóstico → siete familias → consulta, con retícula bento 2/3/2 en escritorio. El P2 de especificidad en tablet/móvil se corrigió y `services-catalog-layout-check.mjs` pasó en Worker local a 1366/768/390 px: bento de escritorio conservado, siete tarjetas uniformes a 768/390 y cero overflow. Typecheck/build PASS. Sin deploy ni HTTP público fechado. Se requiere revisión de teclado/foco/axe para certificar accesibilidad integral.
+
+**Checkpoint UX-PREMIUM-02E — catálogo de licencias (2026-10-24; rama `feat/app-mini-ux-04-licencias`):** `/licencias` organiza las notas de precio/alcance junto al encabezado y prioriza los enlaces a las fichas detalladas sobre la consulta comercial secundaria. Contenido, precios y condiciones se conservan. Typecheck, build, diff-check y GET Worker local (200) PASS; revisión visual estrecha confirma el reflow de las notas. El E2E comercial integral no se ejecutó en este checkpoint. No publicado.
+
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)

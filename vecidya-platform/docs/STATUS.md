@@ -4,6 +4,12 @@
 
 **Implementada en local en `feat/app-mini-ux-03-services`, iniciada en `origin/main@ac2c8e8` y reconciliada con `origin/main@c70057f`.** `/servicios` combina el recorrido de tres pasos y la retícula bento integrados en PR #65 con accesos directos a cada familia; reorganiza las tarjetas para separar promesa, audiencia y alcance, y elimina el beneficio redundante y el CTA final duplicado. Contenido, precios, catálogo y rutas permanecen iguales. Typecheck/build/diff-check PASS; inspección visual manual en escritorio y 390 px. Sin suites E2E en este checkpoint, D1 remota, publicación ni deploy.
 
+## UX-PREMIUM-02E — catálogo público de licencias (2026-10-24)
+
+En `feat/app-mini-ux-04-licencias`, sobre `origin/main@c70057f`, `/licencias` ahora presenta la información de comparación y alcance en un bloque adyacente al título para aprovechar la composición de escritorio; se apila en tablet/móvil. Las tarjetas priorizan la navegación a sus fichas detalladas y mantienen la consulta como acción secundaria. No se cambiaron precio, activación, promesas ni condiciones del catálogo.
+
+`pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. Wrangler Worker local respondió HTTP 200 en `/licencias`; el HTML conserva un H1 y enlaza a las fichas Cuadra, Barrio y Ciudad. La revisión visual local confirma las notas apiladas en viewport estrecho y acciones legibles en las tarjetas. No se ejecutó el E2E comercial integral; su antecedente en `TESTING.md` quedó bloqueado por `networkidle`. Sin cambio de datos, D1, publicación ni deploy.
+
 ## APP-MINI-02E — Vecindario como índice de contenido publicado (2026-10-24)
 
 **Integrado por PR #69 en `origin/main@2a58dc0`.** `/vecindario` busca en nombre, categoría, ciudad/país, área de servicio y texto de ofertas publicadas; filtra por categoría, ciudad, área, modalidad, tipo de oferta y módulos MiniWeb renderizables. Las fichas presentan modalidad, área, ofertas activas y secciones públicas. Los términos de especialidad se derivan de categoría y ofertas existentes; no se crea una taxonomía duplicada ni se indexan borradores. No requiere migración; la búsqueda usa solo el snapshot público v3 y omite ofertas inactivas o con módulo desactivado.
