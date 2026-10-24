@@ -1,5 +1,6 @@
 import {
   CANDIDATE_METHODOLOGY_LIMITATIONS_V3,
+  CANDIDATE_METHODOLOGY_IDENTITY_V3,
   CANDIDATE_METHODOLOGY_REPORT_NOTES_V3,
 } from "./qa03b-methodology-content";
 import { REPORT_TITLE, REPORT_VERSION } from "../diagnostic-report/report-model";
@@ -8,7 +9,7 @@ import {
   areaItems, CERTAINTY_DISPLAY, CONFIDENCE_DISPLAY, dimensionDisplay, dimensionLabelOf, LIFECYCLE_DISPLAY, PROFILE_DISPLAY,
   riskItems, strengthItems, uncertaintyGroups,
 } from "../diagnostic-result/presentation";
-import { METHODOLOGY_SOURCES, METHODOLOGY_VERSION } from "../../features/diagnostic/qbv2-methodology";
+import { METHODOLOGY_SOURCES } from "../../features/diagnostic/qbv2-methodology";
 import { CANDIDATE_RESULT_IDENTITY_V3, type CandidatePipelineResultV3 } from "../../features/diagnostic/qa03b/qbv2-candidate-pipeline";
 
 export type CandidateResultPresentationV3 = {
@@ -88,6 +89,18 @@ const COMMERCIAL_SIGNAL_DISPLAY: Readonly<Record<string, string>> = {
   single_process_or_multiple_coordinated_processes: "Alcance de los procesos comerciales todavía por confirmar",
 };
 
+const OVERALL_BAND_DISPLAY: Readonly<Record<NonNullable<CandidatePipelineResultV3["overall"]["publicLabel"]>, string>> = {
+  BIEN: "Base favorable en las áreas observadas",
+  REGULAR: "Áreas que conviene reforzar",
+  MAL: "Varias áreas requieren atención",
+};
+
+function dimensionsWithDirectScore(result: CandidatePipelineResultV3): ReadonlySet<CandidatePipelineResultV3["scoring"]["dimensions"][number]["id"]> {
+  return new Set(result.scoring.dimensions
+    .filter((dimension) => dimension.score !== null && dimension.evidence.some((evidence) => evidence.directness === "direct" && evidence.contribution !== null))
+    .map((dimension) => dimension.id));
+}
+
 function recommendationConditions(result: CandidatePipelineResultV3, recommendationId: string): string[] {
   const recommendation = result.recommendations.items.find((item) => item.id === recommendationId);
   if (!recommendation) throw new Error(`La recomendación ${recommendationId} no está en el resultado candidato.`);
@@ -114,6 +127,12 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
       : result.overall.caveat?.reason === "material_constraint"
         ? "El estado general no reemplaza las prioridades: existe una restricción material identificada por el motor."
         : null;
+  const scoredDirectDimensions = dimensionsWithDirectScore(result);
+  const hasScoredPrimary = result.narrative.priorities.some((item) => item.rank === 1 && scoredDirectDimensions.has(item.dimension));
+  const supportedPriorities = hasScoredPrimary
+    ? result.narrative.priorities.filter((item) => scoredDirectDimensions.has(item.dimension))
+    : [];
+  const supportedPriorityDimensions = new Set(supportedPriorities.map((item) => item.dimension));
   const dimensions = result.narrative.dimensions.map((dimension) => {
     const observation = observability.get(dimension.dimension);
     if (!observation) throw new Error(`Falta la información de evaluación para ${dimension.dimension}.`);
@@ -139,10 +158,11 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
       includedInCoverage: index.observableApplicableDimensions.includes(dimension.dimension),
     };
   });
-  const recommendations = result.recommendations.items.map((item, index) => {
+  const recommendations = result.recommendations.items.flatMap((item, index) => {
+    if (!supportedPriorityDimensions.has(item.dimension)) return [];
     const solution = result.solutions[index];
     if (!solution || solution.recommendationId !== item.id) throw new Error("Las soluciones candidatas no corresponden, en orden, a las recomendaciones del motor.");
-    return {
+    return [{
       rank: item.rank,
       title: item.title,
       area: dimensionLabelOf(result.narrative, item.dimension) ?? item.dimension,
@@ -153,13 +173,20 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
       certainty: CERTAINTY_DISPLAY[item.certainty],
       conditions: recommendationConditions(result, item.id),
       solution: solution.solution ? { label: solution.solution.label, description: solution.solution.description } : null,
-    };
+    }];
   });
   const executiveSummary = result.narrative.executiveSummary.map((item) => item.text);
   if (index.scoredDimensions.length === 0) {
-    executiveSummary[0] = "No hay información suficiente para confirmar fortalezas o dificultades.";
+    const status = result.scoring.context.operationalStatus;
+    executiveSummary[0] = status.status === "resolved" && status.value === "paused"
+      ? "La actividad está en pausa; no hay evidencia observable suficiente para calcular un índice general."
+      : status.status === "resolved" && status.value === "preparing"
+        ? "La actividad está en preparación; aún no hay evidencia suficiente para calcular un índice general."
+        : status.status === "unresolved"
+          ? "Falta confirmar el estado actual; no hay evidencia suficiente para calcular un índice general."
+          : "No hay información suficiente para confirmar fortalezas o dificultades.";
   } else if (result.overall.publicLabel === "BIEN") {
-    const focus = result.narrative.priorities[0]?.dimension;
+    const focus = supportedPriorities[0]?.dimension;
     const focusLabel = focus ? dimensionLabelOf(result.narrative, focus) : null;
     executiveSummary[0] = `El estado general es BIEN en las áreas observables evaluadas${focusLabel ? `; el foco concreto de mejora es ${focusLabel.toLocaleLowerCase("es")}` : ""}.`;
   }
@@ -170,7 +197,7 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
     lifecycleLabel: result.scoring.context.operationalStatus.status === "resolved" ? ({ preparing: "En preparación", operating: "Disponible actualmente", paused: "En pausa" }[result.scoring.context.operationalStatus.value]) : "Estado actual sin resolver",
     lifecycle: result.narrative.lifecycle,
     overall: {
-      label: result.overall.label,
+      label: result.overall.publicLabel ? OVERALL_BAND_DISPLAY[result.overall.publicLabel] : result.overall.label,
       publicLabel: result.overall.publicLabel,
       score: index.displayScore,
       confidence: CONFIDENCE_DISPLAY[result.overall.confidence.level].label,
@@ -186,7 +213,7 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
     risks: riskItems(result.narrative).map((item) => ({ label: item.label, text: item.block.text })),
     contradictions: result.narrative.contradictions.map((item) => item.text),
     uncertainties: uncertaintyGroups(result.narrative).map((group) => ({ title: group.title, items: group.items.map((item) => item.text) })),
-    priorities: result.narrative.priorities.map((item) => ({
+    priorities: supportedPriorities.map((item) => ({
       rank: item.rank, slot: item.slot, area: dimensionLabelOf(result.narrative, item.dimension) ?? item.dimension,
       statement: item.statement.text, why: item.why.text, certainty: CERTAINTY_DISPLAY[item.certainty],
     })),
@@ -213,11 +240,12 @@ export function buildCandidateDiagnosticReportV1(result: CandidatePipelineResult
   const narrative = result.narrative;
   const constraint = narrative.primaryConstraint;
   const primaryDimension = constraint ? narrative.dimensions.find((item) => item.dimension === constraint.dimension) : undefined;
+  const hasSupportedPrimary = view.priorities.some((item) => item.rank === 1);
   const contextualDimensions = view.dimensions.map((dimension) => ({ ...dimension, context: dimension.context }));
   const methodText = CANDIDATE_METHODOLOGY_REPORT_NOTES_V3;
   return {
     reportVersion: REPORT_VERSION,
-    methodologyVersion: METHODOLOGY_VERSION,
+    methodologyVersion: CANDIDATE_METHODOLOGY_IDENTITY_V3.replace("diagnostic-methodology-", ""),
     generatedAt: isoDate(generatedAt),
     generatedLabel: longDate(generatedAt),
     completedAt: isoDate(completedAt),
@@ -231,8 +259,8 @@ export function buildCandidateDiagnosticReportV1(result: CandidatePipelineResult
     },
     overallPresence: {
       state: result.overall.state,
-      publicLabel: result.overall.publicLabel,
-      label: result.overall.label,
+      publicLabel: view.overall.publicLabel,
+      label: view.overall.label,
       percent: result.overall.index.displayScore === null ? null : `${result.overall.index.displayScore}%`,
       explanation: result.overall.explanation.text,
       confidence: { label: view.overall.confidence, steps: CONFIDENCE_DISPLAY[result.overall.confidence.level].steps },
@@ -243,8 +271,10 @@ export function buildCandidateDiagnosticReportV1(result: CandidatePipelineResult
       lead: view.executiveSummary.slice(1),
       currentState: view.currentState,
     },
-    primaryConstraint: constraint && primaryDimension
-      ? { kicker: constraint.certainty === "unknown" ? "Conviene confirmar primero" : "Atención prioritaria", title: primaryDimension.label, text: constraint.text, certaintyLabel: CERTAINTY_DISPLAY[constraint.certainty], confidenceLabel: CONFIDENCE_DISPLAY[primaryDimension.confidence].label }
+    primaryConstraint: constraint && primaryDimension && hasSupportedPrimary
+      ? { kicker: "Atención prioritaria", title: primaryDimension.label, text: constraint.text, certaintyLabel: CERTAINTY_DISPLAY[constraint.certainty], confidenceLabel: CONFIDENCE_DISPLAY[primaryDimension.confidence].label }
+      : constraint && primaryDimension
+        ? { kicker: "Información por confirmar", title: "Lectura pendiente", text: constraint.text, certaintyLabel: "Por confirmar", confidenceLabel: CONFIDENCE_DISPLAY[primaryDimension.confidence].label }
       : view.dimensions.filter((item) => item.score !== null).length === 0
         ? { kicker: "Lectura pendiente", title: "Información insuficiente", text: "No hay información suficiente para confirmar fortalezas o dificultades.", certaintyLabel: null, confidenceLabel: null }
         : { kicker: "Lectura del resultado", title: "No hay una restricción principal confirmada", text: narrative.nextFocus.text, certaintyLabel: null, confidenceLabel: null },
@@ -267,7 +297,7 @@ export function buildCandidateDiagnosticReportV1(result: CandidatePipelineResult
       solution: item.solution, conditions: item.conditions,
     })),
     methodologySummary: {
-      version: METHODOLOGY_VERSION,
+      version: CANDIDATE_METHODOLOGY_IDENTITY_V3.replace("diagnostic-methodology-", ""),
       notes: methodText,
       sourcesNote: "Las fuentes citadas informan por qué importan las áreas digitales; no validan estadísticamente la fórmula ni predicen resultados empresariales.",
       formulaDistinction: "Esta metodología candidata está pendiente de auditoría independiente.",
