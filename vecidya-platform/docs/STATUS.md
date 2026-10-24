@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## ADMIN-LICENSE-UX-001 — licencias por cliente y negocio (2026-10-23)
+
+**Integrado en `main` por PR #54 (`c91a3db`).** `/app/internal/licenses` agrupa espacios de trabajo por cliente responsable y muestra cada negocio como unidad con licencia propia. El copy explica que el perfil público y el espacio operativo son dos vistas del mismo negocio. Asignar/cambiar/suspender/reactivar sigue protegido por `organization:license:update` y servicios auditados. La interfaz usa “espacio de trabajo” para la estructura técnica interna y “negocio” para la entidad que administra el operador. Sin D1 remota ni deploy.
+
 ## APP-MINI-REDESIGN-01 — Mi Vecidya y Administración (2026-10-23)
 
 **Continuación local sobre `origin/main@5e26614` (PR #52 integrado); PR de seguimiento pendiente, no publicado.** Se pulieron los dashboards `/app` y `/app/internal` y se alinearon ambos drawers al breakpoint 980 px. Al abrirlos se puede navegar y cada uno se cierra al elegir destino; `requirePlatformAdmin` y el contexto de organización se conservan. El menú de administración también se corrigió en tablet. Se añadieron controles «Imprimir o guardar» al resumen anónimo y al informe identificado; la impresión oculta acciones y reorganiza la página para eliminar el salto en blanco observado en el PDF recibido. Sin cambios de guards, consultas, permisos, licencias, esquema, publicación o integraciones.
@@ -40,7 +44,7 @@ PR #51 quedó integrado en main mediante `e4fed1f85733e5a2ac89c86a1c4fced1655c5b
 
 ## DIAG-QA-03B-RELEASE-CLOSE — 0.7.1 candidata; publicación pendiente de R2 (2026-10-24)
 
-**Estado desplegado:** staging y producción continúan sirviendo `0.7.0`, Worker de producción `517126e4-a3cd-4309-8501-5a49d57cd15f`; esa versión antecede los PR #49–#51 y no contiene el código MiniWeb de `origin/main@e4fed1f`. GET anónimos fechados el 2026-10-24T01:32Z confirmaron `/`, `/diagnostico` y `/diagnostico/metodologia` → `200`, footer `© 2026 Vecidya`, y `/__dev/diagnostico/qa03b` → `404` en ambos entornos. Un recorrido sintético anónimo en producción completó 12 respuestas y recibió HTTP 200 con contrato `anonymous-diagnostic-summary-v1`; no pidió informe ni envió correo. Funnel/Gmail y purga están habilitados en producción; staging permanece cerrado y sin Cron.
+**Estado desplegado:** staging y producción continúan sirviendo `0.7.0`, Worker de producción `517126e4-a3cd-4309-8501-5a49d57cd15f`; esa versión antecede los PR #49–#51 y no contiene el código MiniWeb de `origin/main@c91a3db`. GET anónimos fechados el 2026-10-24T01:32Z confirmaron `/`, `/diagnostico` y `/diagnostico/metodologia` → `200`, footer `© 2026 Vecidya`, y `/__dev/diagnostico/qa03b` → `404` en ambos entornos. Un recorrido sintético anónimo en producción completó 12 respuestas y recibió HTTP 200 con contrato `anonymous-diagnostic-summary-v1`; no pidió informe ni envió correo. Funnel/Gmail y purga están habilitados en producción; staging permanece cerrado y sin Cron.
 
 **Esquema remoto:** staging y producción tienen las migraciones `0000–0026`; el postflight Wrangler del 2026-10-24 confirmó «No migrations to apply» en ambos. Bookmarks pre-`0024–0026` e IDs permanecen en `ENVIRONMENTS.md`. Las migraciones son aditivas y no se escribieron filas de prueba.
 

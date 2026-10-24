@@ -5,15 +5,25 @@
 - Los controles de privacidad y mensajes de estado dejan de aparecer en la impresión del informe identificado; el E2E compara hojas PDF con páginas visibles y ahora inspecciona el árbol PDF sin depender de Poppler.
 - La revisión visual del PDF aportado encontró cuatro páginas físicas frente a tres declaradas, una hoja casi vacía y controles de revocación/eliminación impresos. El render local sintético sale en tres hojas A4 sin controles. El PDF del usuario no fue alterado ni se afirma corregido en producción.
 - Casos sintéticos: 6 escenarios con respuestas desconocidas; producción anónima: replay de 12 respuestas HTTP 200 y contrato allowlisted, sin solicitud de informe ni correo. No se recalcularon porcentajes del documento sin sesión/respuestas originales.
-- QA E2E local completo y 1515/1515 unitarias del Diagnóstico PASS; `cf-typegen`, typecheck, build y diff-check PASS. El runner unitario total conserva un fallo externo al Diagnóstico: `tests/unit/miniweb/registry.test.ts:138`, expectativa anterior a #49/#50. Sin auditoría WCAG integral ni Gmail real. Commit/PR y deploy de 0.7.1 pendientes; R2 sigue bloqueando promoción.
+- QA E2E local completo y 1515/1515 unitarias del Diagnóstico PASS; `cf-typegen`, typecheck, build y diff-check PASS. El primer runner unitario total falló en `tests/unit/miniweb/registry.test.ts:138` porque la expectativa no incluía los módulos de #49/#50; después de integrar #51 se alineó el fixture y la suite completa pasó 1655/1655 en PR #56. Sin auditoría WCAG integral ni Gmail real. Commit/PR y deploy de 0.7.1 pendientes; R2 sigue bloqueando promoción.
 
 ## 2026-10-23 — 0.7.0 — Diagnóstico QA-03B publicado y activado en producción
 
 - Se aplicaron las migraciones D1 `0011–0023` a staging y producción; ledger sin pendientes. Bookmarks pre-migración y límites de validación remota constan en `ENVIRONMENTS.md`.
-- Se desplegó el Worker completo de la versión 0.7.0 en la rama de release disponible entonces. Los workers activos no incluyen las integraciones posteriores #49–#51; la fuente actual `origin/main@e4fed1f` está pendiente de promoción. Staging `39ffd6e1-4d20-4c39-9338-653b41340085`; producción `517126e4-a3cd-4309-8501-5a49d57cd15f`.
+- Se desplegó el Worker completo de la versión 0.7.0 en la rama de release disponible entonces. Los workers activos no incluyen las integraciones posteriores #49–#54; la fuente actual `origin/main@c91a3db` está pendiente de promoción. Staging `39ffd6e1-4d20-4c39-9338-653b41340085`; producción `517126e4-a3cd-4309-8501-5a49d57cd15f`.
 - Se eleva la versión de aplicación `0.6.1` → `0.7.0` y se corrige el formulario de informe para indicar que los datos vencidos se eliminan automáticamente en lotes diarios.
 - HTTP anónimo TLS a las `2026-10-24T00:12:23Z` confirmó páginas públicas 200 y footer `0.7.0`; `/app` y `/app/internal` redirigen a login sin sesión. No se verificó funcionalidad autenticada.
 - Por autorización expresa del usuario, producción activa funnel Gmail y ambos switches de purga; staging mantiene los tres flags cerrados. Los conteos agregados de backlog fueron cero, `changed_db=false`. La política desplegada retiene informes 30 días y challenges 24 horas, con aprobación legal confirmada por el usuario. No se envió correo de prueba; entrega Gmail no certificada. Se conserva adaptador V3/sesiones históricas para rollback. D1 API rechazó PRAGMA remoto; no se afirma integridad/FK remota.
+## 2026-10-23 — ADMIN-LICENSE-UX-001 — jerarquía cliente y negocios
+
+- La pantalla de licencias agrupa negocios por cliente responsable; cada negocio tiene su propia licencia. Se aclara que el perfil público y el espacio de trabajo son dos facetas de un mismo negocio.
+- Se usa “espacio de trabajo” para la estructura técnica interna y “negocio” para lo que el operador administra. Se actualizan inicio, menú, directorio y pruebas E2E. Sin cambio de datos ni migración.
+
+## 2026-10-23 — ADMIN-LICENSE-UX-001 (panel interno de licencias)
+
+- Se añadió `/app/internal/licenses`, con asignación, cambio de plan, suspensión y reactivación por organización. La vista separa workspace, perfil comercial y licencia, y aclara que suspender conserva organización y datos.
+- Las mutaciones exigen `organization:license:update` en el control plane y conservan auditoría. E2E Admin Global y dashboard redesign, typecheck, build y diff-check PASS con Worker/D1 local en `e86fc03`, actualizado con `origin/main@5e26614`. PR pendiente; sin D1 remota ni deploy. Suite unitaria no repetida.
+
 ## 2026-10-23 — APP-MINI-02C (medios MiniWeb, certificación local; PR #51)
 
 - El editor permite retirar una portada o medio de galería del siguiente snapshot, usando CAS de revisión. La portada nueva se puede subir después de retirar la anterior.

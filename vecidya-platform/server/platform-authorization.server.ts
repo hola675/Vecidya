@@ -7,7 +7,7 @@ import { requireSession } from "./auth/session.server";
 
 export const platformAdminActions = [
   "training:assign", "training:progress:correct", "organization:create",
-  "organization:lifecycle:update", "team:role:update", "miniweb:save", "miniweb:publish",
+  "organization:lifecycle:update", "organization:license:update", "team:role:update", "miniweb:save", "miniweb:publish",
 ] as const;
 export type PlatformAdminAction = (typeof platformAdminActions)[number];
 

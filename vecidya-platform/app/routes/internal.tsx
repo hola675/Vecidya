@@ -79,11 +79,18 @@ export default function InternalHome() {
         </div>
 
         <div className="admin-stat-grid" aria-label="Resumen de plataforma">
-          <MetricCard className="admin-stat-card" icon="organizations" label="Organizaciones" value={counts.organizations} />
+          <MetricCard className="admin-stat-card" icon="organizations" label="Espacios de trabajo" value={counts.organizations} />
           <MetricCard className="admin-stat-card" icon="building" label="Perfiles de negocio" value={counts.profiles} />
           <MetricCard className="admin-stat-card" icon="spark" label="Servicios asignados" value={counts.servicesAssigned} />
           <MetricCard className="admin-stat-card" icon="integrations" label="Integraciones registradas" value={counts.integrations} />
         </div>
+
+        <section className="card admin-attention" aria-labelledby="workspace-profile-title">
+          <p className="eyebrow">CLIENTE → NEGOCIO(S)</p>
+          <h2 id="workspace-profile-title">Un cliente puede administrar varios negocios</h2>
+          <p>El <strong>cliente</strong> es la cuenta responsable. Cada <strong>negocio</strong> tiene su propia licencia y su ficha pública. Por dentro, los datos de cada negocio viven en un espacio de trabajo con sus miembros, permisos y servicios; no necesitas separar esos conceptos para asignar licencias.</p>
+          <Link className="button button--primary" to="/app/internal/licenses">Administrar licencias por cliente y negocio</Link>
+        </section>
 
         <section aria-labelledby="admin-attention-title" className="card admin-attention">
           <p className="eyebrow">REQUIERE ATENCIÓN</p>
@@ -103,7 +110,7 @@ export default function InternalHome() {
           description="Las tareas dependen de los permisos de administración de plataforma. Consultar no equivale a publicar, contratar ni modificar datos de una organización."
           steps={[
             { title: "Revisa los pendientes", description: "Comprueba los elementos que necesitan revisión antes de actuar.", to: "/app/internal/businesses", action: "Ver perfiles de negocio" },
-            { title: "Consulta las organizaciones", description: "Inspecciona datos y estados dentro del área interna autorizada.", to: "/app/internal/organizations", action: "Abrir organizaciones" },
+            { title: "Consulta espacios de trabajo", description: "Inspecciona miembros, permisos y servicios del negocio dentro del área interna autorizada.", to: "/app/internal/organizations", action: "Abrir espacios de trabajo" },
             { title: "Verifica la trazabilidad", description: "Revisa las acciones registradas y su fecha antes de continuar.", to: "/app/internal/audit", action: "Ver auditoría" },
           ]}
         />
@@ -136,10 +143,16 @@ export default function InternalHome() {
             <Link className="text-link" to="/app/internal/services">Abrir servicios <span aria-hidden="true">→</span></Link>
           </section>
           <section className="card admin-overview-card">
+            <span className="admin-overview-card__icon admin-overview-card__icon--violet" aria-hidden="true"><Icon name="audit" /></span>
+            <p className="eyebrow">ACCESO A PRODUCTOS</p><h2>Licencias</h2>
+            <p>Asigna Cuadra, Barrio o Ciudad a cada negocio y revisa su estado.</p>
+            <Link className="text-link" to="/app/internal/licenses">Administrar licencias <span aria-hidden="true">→</span></Link>
+          </section>
+          <section className="card admin-overview-card">
             <span className="admin-overview-card__icon admin-overview-card__icon--orange" aria-hidden="true"><Icon name="organizations" /></span>
-            <p className="eyebrow">ESPACIOS DE TRABAJO</p><h2>Organizaciones</h2>
-            <p>Consulta propietarios, miembros, perfiles, servicios e integraciones por organización.</p>
-            <Link className="text-link" to="/app/internal/organizations">Ver organizaciones <span aria-hidden="true">→</span></Link>
+            <p className="eyebrow">DATOS INTERNOS DEL NEGOCIO</p><h2>Espacios de trabajo</h2>
+            <p>Consulta quién administra cada negocio, sus miembros, permisos, servicios e integraciones.</p>
+            <Link className="text-link" to="/app/internal/organizations">Ver espacios de trabajo <span aria-hidden="true">→</span></Link>
           </section>
           <section className="card admin-overview-card">
             <span className="admin-overview-card__icon admin-overview-card__icon--green" aria-hidden="true"><Icon name="building" /></span>
