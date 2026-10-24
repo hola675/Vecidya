@@ -1,5 +1,13 @@
 # Pruebas
 
+## DIAG-QA03B-PROFILE-KNOWLEDGE-01 — 60 variantes y reporte HTML (2026-10-24)
+
+**RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-profile-case-matrix.test.ts` — **3/3 PASS**, incluyendo 20 casos base y 60 variantes (20 perfiles × informado/parcial/desconocedor), cada pregunta validada contra el banco actual y sin hard-cap de 30. Los 60 índices globales permanecen pendientes; 57 recorridos tienen dimensiones aplicables no resueltas; 58 terminan `no_useful_questions` y 2 `budget_blocked`; se observaron 26 puntuaciones dimensionales aisladas y 0 de medición/optimización.
+
+Por nivel: informado 316 respuestas/20 índices pendientes/19 con áreas sin resolver/2 bloqueados por presupuesto/21 puntuaciones dimensionales; parcial 321/20/19/0/5; desconocedor 313/20/19/0/0. Estos cambios reflejan cómo se respondieron los fixtures y las rutas del motor, no una mejora de desempeño empresarial. Los dos bloqueos por presupuesto no alcanzan el hard-cap; sí dejan el recorrido incompleto.
+
+El informe HTML y JSON completos se generaron fuera del repositorio en los artefactos de la sesión (`qa03b-60-variantes-informe-final.html` y `qa03b-60-variantes.json`). No se generó PDF. El nivel informado incorpora prioridades/proceso cualitativos como supuestos sintéticos identificados; el resto conserva desconocimiento salvo mapeos conservadores desde la descripción. Ninguna autoevaluación de digital/IA se utiliza como respuesta. Resultado de laboratorio sintético, no calibración, exactitud predictiva ni prueba de producción. Cambios de banco, selector y scoring quedan fuera de este corte, según ROADMAP.
+
 ## DIAG-QA03B-PROFILE-COVERAGE-01 — veinte recorridos sintéticos (2026-10-23)
 
 **RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-profile-case-matrix.test.ts` — **2/2 PASS** sobre QA-03B vigente (banco `reviewed-evidence-v7`, respuestas v5, metodología 3.0). Los 20 perfiles pasan por el planificador real con respuesta explícita a cada pregunta elegida, una por turno; 14–18 preguntas por caso, 316 respuestas acumuladas y sin hard-cap. Fixtures únicamente sintéticos; las autoevaluaciones 0–5 de la fuente no entran en el motor.
