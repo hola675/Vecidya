@@ -2,7 +2,7 @@
 
 ## DIAG-MOTOR-01 — banco evaluativo y selección adaptativa (2026-10-24)
 
-**RAN local en `origin/main@e6444c1` + DIAG-MOTOR-01:** `pnpm run test:unit` — **1668/1668 PASS**; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. El build conserva los avisos locales de secretos opcionales ausentes y dos imports dinámicos agrupados con imports estáticos; no se leyeron ni configuraron secretos.
+**RAN local en `origin/main@612775a` + DIAG-MOTOR-01:** `pnpm run test:unit` — **1668/1668 PASS**; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. El build conserva los avisos locales de secretos opcionales ausentes y dos imports dinámicos agrupados con imports estáticos; no se leyeron ni configuraron secretos.
 
 `qa03b-motor-01.test.ts` prueba tres fuentes directas y versionadas de medición/seguimiento, recuperación alternativa tras desconocer la tasa (registrar resultados no se trata como tasa), elegibilidad para negocios físicos, claridad de oferta tras confirmar una ficha y fricción de citas solo ante fuga demostrada. La matriz de 20 perfiles y sus 60 variantes termina sin hard-cap; los 20 perfiles base generan 7 puntuaciones dimensionales frente a 3 de la línea base previa, y todos mantienen índice global pendiente. P03/P10 completan sus rutas sin `budget_blocked`. Fixtures sintéticos, sin exactitud empírica; no se alteraron fórmulas ni calibración.
 
@@ -25,6 +25,16 @@ Typecheck, build y `git diff --check`: PASS. Worker Cloudflare local: artículo 
 
 `BASE_URL=http://127.0.0.1:5178 pnpm exec node tests/e2e/learn-experience-check.mjs`: **no completó**; se detuvo al verificar que el sitemap incluya `/aprende/dominio-hosting-sitio-web-como-funcionan`. En este Worker la ruta `/sitemap.xml` respondió HTTP 500, por lo que no se declara PASS del E2E ni del sitemap. La ruta de detalle de esa guía responde con metadata index/follow; la falla corresponde al sitemap local y queda pendiente diagnosticar con un runtime/D1 local correctamente migrado. No se alteró la política de sitemap. No se accedió a D1 remota ni se desplegó.
 
+
+## DIAG-VISUAL-ASSETS-01 — contrato v2, UI gráfica y PDF (2026-10-24; local)
+
+**RAN en worktree `feat/diagnostic-visual-assets-01-ui`, integrado con `origin/main@7267628`.** `pnpm run test:unit`: **1659/1659 PASS**; `pnpm run typecheck` y `pnpm run build`: **PASS**. La prueba focal `diagnostic-report.test.ts`: **11/11 PASS**, con orden editorial, deduplicación de acción y cobertura.
+
+`pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-funnel.test.ts tests/unit/diagnostic/qa03b-worker-replay.test.ts tests/unit/diagnostic/identified-report-contracts.test.ts`: **17/17 PASS**; cubre ocho áreas, scores idénticos al informe, `null`, allowlist estricta y rechazo de evidencia/keys extra. Las tres certificaciones ACT-root permitieron explícitamente la nueva vista pública QA-03B; sus pruebas focales: **3/3 PASS**.
+
+`tests/e2e/diagnostic-v3-qa03b-check.mjs` **PASS** en Cloudflare Vite Worker local (`http://127.0.0.1:5174`) y D1 local con migraciones `0000–0027`: seis perfiles sintéticos, reanudación, conflicto de pestañas, ocho imágenes decodificadas, layout sin superposición/overflow, reduced motion, solicitud identificada en buzón fake y PDF. El E2E comprueba que la primera acción y la nota de cobertura no se repitan y que el informe cliente omita las claves internas. Viewports sintéticos 390/1366 px, sin overflow; `diagnostic-act-04-check.mjs` **3/3 PASS** en el bundle Worker local con las tres compuertas de informe/purga cerradas por `wrangler dev --local --var`, y sin rutas dev.
+
+El PDF `tmp/diag-v3-qa03b/browser/open-no-clients-identified-report.pdf` se generó y se revisó renderizado página por página: `pdfinfo` reporta **2 páginas A4**; el E2E compara las hojas PDF contra `.rp[data-pages]` y confirma que navegación/acciones de privacidad no se imprimen. La acción principal aparece en un único bloque “Qué hacer ahora”; se eliminaron el plan redundante, la primera recomendación duplicada y el anexo de claves internas. La explicación de cobertura aparece una vez. No se afirma PDF/UA. Sigue pendiente una revisión manual de teclado/foco, lector de pantalla, contraste y zoom 200 %. No hubo D1 remota, datos de negocio reales, Gmail, deploy ni HTTP pública.
 ## DIAG-QA03B-PROFILE-KNOWLEDGE-01 — 60 variantes y reporte HTML (2026-10-24)
 
 **QA-03C — RAN local:** se corrigió la matriz sintética: P20 conserva captación como `unknown` porque volumen no prueba fiabilidad. `unknownByDesignQuestionIds` distingue incógnitas justificadas de interpretaciones y supuestos. Suite QA-03B profile **4/4 PASS** tras añadir la equivalencia de contrato presentación/informe y regresiones focales P03, P10 y P18; canonical candidates **16/16 PASS** con una batería adicional de suficiencia que reutiliza reglas aprobadas y no fija calibración numérica. Unitarias de diagnóstico completas: **1520/1520 PASS**; typecheck y build PASS.

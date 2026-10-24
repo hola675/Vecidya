@@ -66,7 +66,7 @@ export async function action({ context, request }: ActionFunctionArgs) {
   let reportJson: string;
   let summary: unknown;
   if (qa03bInput) {
-    const { replayQa03bSessionV1, buildQa03bReplayProjectionsV1 } = await import("../features/diagnostic/qa03b/worker-replay.server");
+    const { replayQa03bSessionV1, buildQa03bReplayProjectionsV2 } = await import("../features/diagnostic/qa03b/worker-replay.server");
     const replay = replayQa03bSessionV1({
       replayVersion: qa03bInput.replayVersion,
       engineIdentity: qa03bInput.engineIdentity,
@@ -77,7 +77,7 @@ export async function action({ context, request }: ActionFunctionArgs) {
       session: qa03bInput.session,
     }, now.getTime());
     if (!replay.ok) return failure(422, "La sesión QA-03B no corresponde a una ruta vigente y completa. Inicia o reanuda el diagnóstico.");
-    const projections = buildQa03bReplayProjectionsV1(replay, qa03bInput.businessName, now);
+    const projections = buildQa03bReplayProjectionsV2(replay, qa03bInput.businessName, now);
     if (JSON.stringify(projections.summary) !== JSON.stringify(qa03bInput.anonymousSummary)) return failure(409, "El resumen cambió respecto a la sesión. Vuelve al diagnóstico para actualizarlo.");
     engineIdentity = JSON.stringify(replay.result.engineIdentity);
     reportVersion = projections.report.reportVersion;
@@ -165,6 +165,6 @@ export async function action({ context, request }: ActionFunctionArgs) {
   } catch {
     // Keep the response generic; the saved request can use the rate-limited resend flow.
   }
-  const summaryVersion = qa03bInput ? "anonymous-diagnostic-summary-v1" : (summary as ReturnType<typeof toAnonymousDiagnosticSummaryV1>).version;
+  const summaryVersion = qa03bInput ? "anonymous-diagnostic-summary-v2" : (summary as ReturnType<typeof toAnonymousDiagnosticSummaryV1>).version;
   return Response.json({ requestId, status: "verification_pending", expiresAt: expiresAt.toISOString(), summaryVersion, ...(qa03bInput ? { summary } : {}) }, { status: 202, headers });
 }

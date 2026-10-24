@@ -222,6 +222,7 @@ test("R8-FINAL: legacy runtime stays frozen and ACT-root candidate modules remai
     // QA-03B está activo en la superficie pública; su módulo de scoring sigue bajo qa03b/.
     "components/diagnostic-flow/qa03b-diagnostic-flow.tsx",
     "components/diagnostic-flow/qa03b-result.tsx",
+    "components/diagnostic-flow/diagnostic-area-overview.tsx",
     "components/diagnostic-flow/qa03b-presentation.ts",
     "routes/dev-diagnostic-qa03b.tsx",
     "routes/dev-diagnostic-qa03b-methodology.tsx",

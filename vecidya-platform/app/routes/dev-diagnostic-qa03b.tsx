@@ -4,7 +4,7 @@ import { CandidateDiagnosticFlow } from "../components/diagnostic-flow/qa03b-dia
 import { PublicLayout } from "../components/public-layout";
 import { readRequestBodyLimited, RequestBodyTooLargeError } from "../features/diagnostic/bounded-request-body.server";
 import { allowRateLimitedRequest } from "../features/diagnostic/diagnostic-rate-limit.server";
-import { buildQa03bReplayProjectionsV1, replayQa03bSessionV1 } from "../features/diagnostic/qa03b/worker-replay.server";
+import { buildQa03bReplayProjectionsV2, replayQa03bSessionV1 } from "../features/diagnostic/qa03b/worker-replay.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import type { ActionFunctionArgs } from "react-router";
 
@@ -38,7 +38,7 @@ export async function action({ context, request }: ActionFunctionArgs) {
 
   const replay = replayQa03bSessionV1(payload);
   if (!replay.ok) return failure(replay.reason === "identity" || replay.reason === "schema" || replay.reason === "bank" ? 409 : 422, "La sesión no corresponde a una ruta QA-03B completa y vigente.");
-  const summary = buildQa03bReplayProjectionsV1(replay, null, new Date(replay.completedAt)).summary;
+  const summary = buildQa03bReplayProjectionsV2(replay, null, new Date(replay.completedAt)).summary;
   return Response.json({ summary }, { headers: responseHeaders });
 }
 

@@ -2,40 +2,44 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
-  buildAnonymousDiagnosticSummaryV1,
-  buildAnonymousSummaryReportV1,
+  buildAnonymousDiagnosticSummaryV2,
+  buildAnonymousSummaryReportV2,
+  isAnonymousDiagnosticSummaryV2,
   DIAGNOSTIC_FUNNEL_ANALYTICS_EVENTS_V1,
   DIAGNOSTIC_FUNNEL_STATES_V1,
   validateFunnelIdentificationV1,
 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-funnel.ts";
 import { buildCandidateFunnelPreviewV1 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-funnel-preview.ts";
 
-test("FUNNEL-01A: resumen anónimo proyecta una allowlist y conserva ausencia de score", () => {
+test("DIAG-VISUAL-ASSETS-01: resumen anónimo proyecta ocho áreas allowlisted y conserva ausencia de score", () => {
   const result = buildCandidateFunnelPreviewV1("insufficient-evidence");
-  const summary = buildAnonymousDiagnosticSummaryV1(result);
+  const summary = buildAnonymousDiagnosticSummaryV2(result);
 
   assert.deepEqual(Object.keys(summary), [
     "contractVersion", "overallStatus", "score", "confidence", "coverage", "executiveSummary",
-    "primaryOpportunity", "firstRecommendedAction", "limitations", "methodologyVersion", "diagnosticIdentity",
+    "primaryOpportunity", "firstRecommendedAction", "limitations", "methodologyVersion", "diagnosticIdentity", "dimensions",
   ]);
-  assert.equal(summary.contractVersion, "anonymous-diagnostic-summary-v1");
+  assert.equal(summary.contractVersion, "anonymous-diagnostic-summary-v2");
   assert.equal(summary.score, null, "sin evidencia suficiente no se inventa un porcentaje");
   assert.equal(summary.overallStatus, "Lectura general pendiente");
   assert.match(summary.executiveSummary, /No hay información suficiente/);
   assert.equal(summary.methodologyVersion, result.engineIdentity.methodology);
   assert.equal(summary.diagnosticIdentity, result.engineIdentity);
-  assert.equal("dimensions" in summary, false);
+  assert.equal(summary.dimensions.length, 8);
+  assert.ok(summary.dimensions.every(({ score }) => score === null), "las áreas sin lectura siguen vacías, nunca 0 %");
+  assert.deepEqual(summary.dimensions.map(({ score }) => score), result.narrative.dimensions.map(({ score }) => score));
+  assert.equal(isAnonymousDiagnosticSummaryV2(summary), true);
   assert.equal("commercial" in summary, false);
   assert.equal("risks" in summary, false);
   assert.equal("email" in summary, false);
 
-  assert.deepEqual(buildAnonymousSummaryReportV1(summary), {
-    contractVersion: "anonymous-summary-report-v1",
+  assert.deepEqual(buildAnonymousSummaryReportV2(summary), {
+    contractVersion: "anonymous-summary-report-v2",
     summary,
   });
 });
 
-test("FUNNEL-01A: el resumen copia score, foco, acción y provisionalidad desde la presentación", () => {
+test("DIAG-VISUAL-ASSETS-01: los porcentajes y estados por área se copian sin recalcular", () => {
   const base = buildCandidateFunnelPreviewV1("contextual-focus");
   const source = {
     ...base,
@@ -47,13 +51,21 @@ test("FUNNEL-01A: el resumen copia score, foco, acción y provisionalidad desde 
       index: { ...base.overall.index, displayScore: 62 },
     },
   };
-  const summary = buildAnonymousDiagnosticSummaryV1(source);
+  const summary = buildAnonymousDiagnosticSummaryV2(source);
 
   assert.equal(summary.score, 62, "el mapper transfiere el valor; no ejecuta scoring");
   assert.equal(summary.overallStatus, "REGULAR");
   assert.equal(summary.primaryOpportunity, base.narrative.priorities[0]?.statement.text ?? null);
   assert.equal(summary.firstRecommendedAction?.title ?? null, base.recommendations.items[0]?.title ?? null);
   assert.ok(summary.limitations.some((item) => /provisional/i.test(item)));
+  assert.deepEqual(summary.dimensions.map(({ score, statusLabel, preliminary }) => ({ score, statusLabel, preliminary })), source.narrative.dimensions.map((dimension) => ({
+    score: dimension.score,
+    statusLabel: dimension.statusLabel.charAt(0).toLocaleUpperCase("es") + dimension.statusLabel.slice(1),
+    preliminary: dimension.score !== null && dimension.confidence === "low",
+  })));
+  assert.equal(isAnonymousDiagnosticSummaryV2({ ...summary, dimensions: summary.dimensions.slice(0, 7) }), false);
+  assert.equal(isAnonymousDiagnosticSummaryV2({ ...summary, dimensions: summary.dimensions.map((item, index) => index ? item : { ...item, score: 101 }) }), false);
+  assert.equal(isAnonymousDiagnosticSummaryV2({ ...summary, dimensions: summary.dimensions.map((item, index) => index ? item : { ...item, evidence: "respuesta" }) }), false);
 });
 
 test("FUNNEL-01A: la identificación permite persona independiente, teléfono vacío y preferencias separadas", () => {

@@ -94,7 +94,9 @@ try {
   assert.match(rawReplay.headers()["cache-control"], /no-store/i);
   const rawSummaryResponse = await rawReplay.json();
   assert.deepEqual(Object.keys(rawSummaryResponse), ["summary"], "el Worker devuelve solo la proyección allowlisted");
-  assert.equal(rawSummaryResponse.summary.contractVersion, "anonymous-diagnostic-summary-v1");
+  assert.equal(rawSummaryResponse.summary.contractVersion, "anonymous-diagnostic-summary-v2");
+  assert.equal(rawSummaryResponse.summary.dimensions.length, 8);
+  assert.equal(rawSummaryResponse.summary.dimensions.every(dimension => Object.keys(dimension).length === 5), true);
   assert.equal(rawSummaryResponse.summary.diagnosticIdentity.engine, requests[0].engineIdentity.engine);
   assert.equal(await page.getByRole("button", { name: "Solicitar informe completo" }).count(), 0);
   assert.equal(await page.getByText(/diag-v3-candidate|candidata de prueba/i).count(), 0, "la interfaz pública no expone la identidad ni etiquetas internas de la candidata");

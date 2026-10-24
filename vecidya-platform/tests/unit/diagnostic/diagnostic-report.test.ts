@@ -149,15 +149,23 @@ test("12 file name: sanitized, dated, without inventing a business name", () => 
   assert.ok(long.length <= "diagnostico-vecidya-".length + 40 + "-2026-10-01.pdf".length && /^[a-z0-9-]+\.pdf$/.test(long), long);
 });
 
-test("12 rendered report: one h1, canonical section order, real text, no internal IDs or empty values", () => {
+test("12 rendered report: one h1, concise reading order, real text, no duplicated first action or internal IDs", () => {
   for (const { id } of goldens) {
     const html = render(id);
     const text = textOf(html);
+    const candidateReport = golden(id).report;
     assert.equal((html.match(/<h1[ >]/g) ?? []).length, 1, `${id}: one h1`);
     assert.ok(text.includes("Diagnóstico de Presencia Digital") && text.includes(`Metodología ${METHODOLOGY_VERSION}`) || text.includes(`Metodología ${METHODOLOGY_VERSION}`), id);
-    const order = ["Estado Actual:", "Lo que encontró el diagnóstico", "Lo que más importa ahora", "Plan de acción recomendado", "Las ocho áreas del diagnóstico", "Recomendaciones", "Tu configuración Vecidya", "Cómo se evaluó", "Metodología y fuentes", "Lo que el diagnóstico no puede afirmar"];
+    const focusHeading = candidateReport.recommendations.some((item) => item.step === 1) || candidateReport.actionPath.steps.some((step) => step.step === 1) || candidateReport.priorities.some((priority) => priority.rank === 1) ? "Qué hacer ahora" : "Qué conviene revisar";
+    const order = ["Estado Actual:", "Lo que encontró el diagnóstico", focusHeading, "Las ocho áreas del diagnóstico", "Tu configuración Vecidya", "Cómo se evaluó", "Metodología y fuentes", "Lo que el diagnóstico no puede afirmar"];
     const positions = order.map((heading) => text.indexOf(heading));
     assert.ok(positions.every((position, index) => position >= 0 && (index === 0 || position > positions[index - 1]!)), `${id}: section order ${JSON.stringify(positions)}`);
+    assert.ok(!text.includes("Lo que más importa ahora") && !text.includes("Por dónde empezar") && !text.includes("Plan de acción recomendado"), `${id}: no repeats the primary action in separate sections`);
+    if (candidateReport.overallPresence.state === "insufficient") assert.ok(!text.includes("Lo primero es confirmar"), `${id}: the overall status does not repeat the action`);
+    const firstActionTitle = candidateReport.recommendations.find((item) => item.step === 1)?.title;
+    if (firstActionTitle) assert.equal(text.split(firstActionTitle).length - 1, 1, `${id}: first recommendation appears once`);
+    if (candidateReport.dimensionNotes.includes(candidateReport.overallPresence.coverage)) assert.equal(text.split(candidateReport.overallPresence.coverage).length - 1, 1, `${id}: coverage explanation appears once`);
+    if (candidateReport.recommendations.some((item) => item.step > 1)) assert.ok(text.includes("Siguientes recomendaciones"), `${id}: later recommendations remain available`);
     assert.ok(!/\bq2_|\bnull\b|undefined|\[object Object\]|\bNaN\b|priority:\d|constraint:|recommendation:\d|evidence_gap|_constraint\b/.test(text), `${id}: internal or empty values`);
     assert.ok(!/session|sessionId|sourceFactIds/.test(html), `${id}: no session or provenance IDs`);
     for (const dimension of golden(id).report.dimensions) assert.ok(text.includes(dimension.label), `${id}: ${dimension.label}`);

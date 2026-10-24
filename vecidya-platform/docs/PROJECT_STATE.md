@@ -1,6 +1,6 @@
 ## DIAG-MOTOR-01 — banco QA-03B y selección adaptativa (2026-10-24)
 
-Checkpoint local en `feat/diagnostic-motor-01`, iniciado desde `origin/main@2a58dc0` y reconciliado con `origin/main@e6444c1`. El banco QA-03B v8 añade tres preguntas directas sobre medición/seguimiento y una recuperación al desconocer la tasa; la respuesta evalúa registro, no calcula conversión. La elegibilidad de presencia/oferta usa contexto vigente y evidencia de ficha existente. El planificador permite contexto central y desbloqueos en reserva sin superar 24 preguntas; P03/P10 ya no quedan `budget_blocked`. Identidades de banco, planificador, sesión y replay avanzan a v8/v4/schema 7/replay v5. No se tocó el banco raíz ni el scoring/calibración; sin migraciones, D1 remota, publicación ni deploy. Evidencia y límite del E2E amplio en `TESTING.md` → DIAG-MOTOR-01; la deuda de suficiencia/representatividad continúa abierta para DIAG-MOTOR-02.
+Checkpoint local en `feat/diagnostic-motor-01`, iniciado desde `origin/main@2a58dc0` y reconciliado con `origin/main@612775a`. El banco QA-03B v8 añade tres preguntas directas sobre medición/seguimiento y una recuperación al desconocer la tasa; la respuesta evalúa registro, no calcula conversión. La elegibilidad de presencia/oferta usa contexto vigente y evidencia de ficha existente. El planificador permite contexto central y desbloqueos en reserva sin superar 24 preguntas; P03/P10 ya no quedan `budget_blocked`. Identidades de banco, planificador, sesión y replay avanzan a v8/v4/schema 7/replay v5. No se tocó el banco raíz ni el scoring/calibración; sin migraciones, D1 remota, publicación ni deploy. Evidencia y límite del E2E amplio en `TESTING.md` → DIAG-MOTOR-01; la deuda de suficiencia/representatividad continúa abierta para DIAG-MOTOR-02.
 
 ## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
 
@@ -16,13 +16,19 @@ Checkpoint local `feat/app-mini-ux-03-services`, iniciado en `origin/main@ac2c8e
 
 Typecheck y build PASS; Worker local confirmó 200 para la guía seleccionada y dos relacionadas. Una medición del DOM en 320/360/390/768/1024/1366 px dio cero overflow. El E2E `learn-experience-check.mjs` no completó: la petición local a `/sitemap.xml` respondió 500 y falló la aserción que esperaba la URL publicada. No se declara E2E completo, publicación ni validación pública. Ver detalle en `STATUS.md` y `TESTING.md`.
 
+## DIAG-VISUAL-ASSETS-01 — implementación local vigente (2026-10-24)
+
+La rama `feat/diagnostic-visual-assets-01-ui` integra `origin/main@7267628` (PR #58 y PR #61); PR #62 está abierto, sin merge ni publicación. QA-03B deriva `anonymous-diagnostic-summary-v2` desde el replay Worker y expone exactamente ocho áreas con campos allowlisted: etiqueta, score nullable, estado, indicador preliminar e ilustración local aprobada. El componente presenta valor textual y barra secundaria; «Sin lectura» no se representa como 0. El informe detallado comparte la misma fuente versionada de scores. Se reutilizan assets existentes; no hay tablas ni migraciones nuevas.
+
+En móvil el estado general y el panorama de áreas se apilan; desde desktop las ocho tarjetas usan dos columnas. Se aplican sombras/bordes moderados, movimiento de barras desactivado con `prefers-reduced-motion` y estilos específicos de impresión. El informe muestra el hallazgo y acción primaria en secciones distintas; la acción aparece una sola vez, las recomendaciones finales incluyen solo pasos posteriores, la nota de cobertura aparece una vez y el anexo de claves internas no se imprime. Suite unitaria 1659/1659, typecheck/build, Worker E2E QA-03B y revisión visual del PDF A4 de dos páginas: PASS. Pendiente: aceptación manual de teclado/foco, lector de pantalla, contraste y zoom 200 %. Sin D1 remota, Gmail real, deploy, HTTP público, publicación ni PDF/UA.
+
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
 `APP-MINI-REDESIGN-01` está integrado en `origin/main@3e6b9b1` mediante PR #53; no está publicado. App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.
 
-## DIAG-VISUAL-ASSETS-01 — plan de assets y lectura gráfica
+## DIAG-VISUAL-ASSETS-01 — origen del checkpoint
 
-PR #55 integrado en main mediante `ab8a02ed62cef15ee78eac69c99009ef8bba47db`. El plan de `ROADMAP.md` mejora el resumen QA-03B y el informe completo con visualización común de ocho dimensiones y assets auditados, preservando puntuaciones, cobertura, confianza, privacidad, accesibilidad y PDF. El contrato anónimo actual no expone dimensiones; toda extensión propuesta debe ser agregada, allowlisted y versionada. No se implementó ni se publicó.
+PR #55 integró el plan en `main` mediante `ab8a02ed62cef15ee78eac69c99009ef8bba47db`. Su implementación y estado vigente se describen en la sección superior y la evidencia ejecutada en `TESTING.md`; el registro de PR #55 es histórico.
 
 ## UI-PILOT-01 — estado local de Aprende (2026-10-23)
 

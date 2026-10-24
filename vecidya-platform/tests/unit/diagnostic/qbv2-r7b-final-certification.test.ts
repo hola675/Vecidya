@@ -161,6 +161,7 @@ test("R7-B-FINAL: the ACT-root candidate stays isolated — no barrel export, no
     // QA-03B ahora es el motor público; sus contratos internos conservan el submódulo aislado.
     "components/diagnostic-flow/qa03b-diagnostic-flow.tsx",
     "components/diagnostic-flow/qa03b-result.tsx",
+    "components/diagnostic-flow/diagnostic-area-overview.tsx",
     "components/diagnostic-flow/qa03b-presentation.ts",
     "routes/dev-diagnostic-qa03b.tsx",
     "routes/dev-diagnostic-qa03b-methodology.tsx",
