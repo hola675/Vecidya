@@ -125,6 +125,7 @@ export default function IdentifiedDiagnosticReport() {
     <main className="rp-page df-identified-report">
       <nav className="df-identified-report__nav" aria-label="Navegación del diagnóstico">
         <a className="text-link" href="/diagnostico">Volver a mi diagnóstico</a>
+        <button className="button button--secondary df-identified-report__print" onClick={() => window.print()} type="button">Imprimir o guardar PDF</button>
         <label><input type="checkbox" checked={revokeCommercial} onChange={(event) => setRevokeCommercial(event.target.checked)} /> Revocar contacto comercial</label>
         <label><input type="checkbox" checked={revokeResearch} onChange={(event) => setRevokeResearch(event.target.checked)} /> Revocar uso para investigación</label>
         <button className="df-link-button" disabled={busy || (!revokeCommercial && !revokeResearch)} onClick={() => void submitRevocation()} type="button">Guardar revocaciones</button>

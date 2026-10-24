@@ -131,7 +131,9 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
   await waitForWorker(baseUrl, worker);
 
   phase = "browser login and client dashboard";
-  browser = await chromium.launch(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE } : {});
+  const edgePath = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe";
+  const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(edgePath) ? edgePath : undefined);
+  browser = await chromium.launch(executablePath ? { executablePath } : {});
   const page = await browser.newPage({ viewport: { width: 1366, height: 900 } });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -155,14 +157,18 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
     await page.screenshot({ path: join(screenshotDirectory, "vecidya-app-dashboard-desktop.png"), fullPage: true });
   }
 
-  await page.setViewportSize({ width: 390, height: 844 });
-  const clientMenu = page.locator('button[aria-controls="app-navigation"]');
-  await clientMenu.click();
-  if (await clientMenu.getAttribute("aria-expanded") !== "true") throw new Error("El menú cliente no anunció estado abierto.");
-  await assertNoOverflow(page, "390px /app con navegación abierta");
-  await page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name: "Mi negocio" }).click();
-  await page.waitForURL("**/app/business-profile");
-  if (await page.locator('button[aria-controls="app-navigation"]').getAttribute("aria-expanded") !== "false") throw new Error("El menú cliente no se cerró tras navegar.");
+  for (const width of [390, 768, 980]) {
+    await page.setViewportSize({ width, height: 844 });
+    const clientMenu = page.locator('button[aria-controls="app-navigation"]');
+    await clientMenu.waitFor({ state: "visible" });
+    await clientMenu.click();
+    if (await clientMenu.getAttribute("aria-expanded") !== "true") throw new Error(`El menú cliente no anunció estado abierto a ${width}px.`);
+    await assertNoOverflow(page, `${width}px /app con navegación abierta`);
+    await page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name: "Mi negocio" }).click();
+    await page.waitForURL("**/app/business-profile");
+    if (await page.locator('button[aria-controls="app-navigation"]').getAttribute("aria-expanded") !== "false") throw new Error(`El menú cliente no se cerró tras navegar a ${width}px.`);
+    await page.goto(new URL("/app", baseUrl).toString(), { waitUntil: "networkidle" });
+  }
   await page.goto(new URL("/app", baseUrl).toString(), { waitUntil: "networkidle" });
   if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, "vecidya-app-dashboard-mobile.png"), fullPage: true });
 
@@ -176,19 +182,23 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
   await page.setViewportSize({ width: 1366, height: 900 });
   if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, "vecidya-internal-dashboard-desktop.png"), fullPage: true });
 
-  await page.setViewportSize({ width: 390, height: 844 });
-  const adminMenu = page.locator('button[aria-controls="admin-navigation"]');
-  await adminMenu.click();
-  if (await adminMenu.getAttribute("aria-expanded") !== "true") throw new Error("El menú interno no anunció estado abierto.");
-  await assertNoOverflow(page, "390px /app/internal con navegación abierta");
-  await page.getByRole("navigation", { name: "Navegación administrativa" }).getByRole("link", { name: "Servicios" }).click();
-  await page.waitForURL("**/app/internal/services");
-  if (await page.locator('button[aria-controls="admin-navigation"]').getAttribute("aria-expanded") !== "false") throw new Error("El menú interno no se cerró tras navegar.");
+  for (const width of [390, 768, 980]) {
+    await page.setViewportSize({ width, height: 844 });
+    const adminMenu = page.locator('button[aria-controls="admin-navigation"]');
+    await adminMenu.waitFor({ state: "visible" });
+    await adminMenu.click();
+    if (await adminMenu.getAttribute("aria-expanded") !== "true") throw new Error(`El menú interno no anunció estado abierto a ${width}px.`);
+    await assertNoOverflow(page, `${width}px /app/internal con navegación abierta`);
+    await page.getByRole("navigation", { name: "Navegación administrativa" }).getByRole("link", { name: "Servicios" }).click();
+    await page.waitForURL("**/app/internal/services");
+    if (await page.locator('button[aria-controls="admin-navigation"]').getAttribute("aria-expanded") !== "false") throw new Error(`El menú interno no se cerró tras navegar a ${width}px.`);
+    await page.goto(new URL("/app/internal", baseUrl).toString(), { waitUntil: "networkidle" });
+  }
   await page.goto(new URL("/app/internal", baseUrl).toString(), { waitUntil: "networkidle" });
   if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, "vecidya-internal-dashboard-mobile.png"), fullPage: true });
   if (errors.length) throw new Error(`Errores de navegador: ${errors.join(" | ")}`);
 
-  console.log(JSON.stringify({ result: "PASS", routes: ["/app", "/app/internal"], widths: [320, 390, 768, 1366], clientDrawer: "opens and closes on route navigation", internalDrawer: "opens and closes on route navigation", screenshots: screenshotDirectory ?? "not requested" }, null, 2));
+  console.log(JSON.stringify({ result: "PASS", routes: ["/app", "/app/internal"], widths: [320, 390, 768, 980, 1366], clientDrawer: "opens and closes on route navigation at 390/768/980px", internalDrawer: "opens and closes on route navigation at 390/768/980px", screenshots: screenshotDirectory ?? "not requested" }, null, 2));
 } catch (error) {
   throw new Error(`Fase: ${phase}\n${error instanceof Error ? error.stack ?? error.message : String(error)}\nWorker output:\n${worker?.output ?? "(not started)"}`, { cause: error });
 } finally {
