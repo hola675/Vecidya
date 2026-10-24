@@ -106,13 +106,13 @@ export default function Privacy() {
           <div className="legal-highlight__intro">
             <p className="eyebrow">DIAGNÓSTICO VECIDYA</p>
             <h2 id="privacy-diagnostic-title">Explora tu situación sin crear una cuenta.</h2>
-            <p>El diagnóstico público está pensado para orientarte y no exige registro, nombre, correo ni teléfono.</p>
+            <p>Puedes iniciar el diagnóstico público sin crear una cuenta. Algunas funciones adicionales, cuando estén habilitadas, pueden solicitar datos de contacto y deben explicar su finalidad antes del envío.</p>
             <Link className="button button--secondary" to="/diagnostico">Conocer el diagnóstico</Link>
           </div>
           <div className="legal-highlight__steps">
-            <div><strong>Mientras avanzas</strong><p>Tus respuestas se guardan en este navegador para que puedas continuar si recargas la página. Se eliminan tras 14 días sin actividad o antes si empiezas de nuevo.</p></div>
-            <div><strong>Al terminar</strong><p>Las respuestas se envían temporalmente al servidor para calcular el resumen anónimo; no se guardan allí ni quedan vinculadas a una identidad. En el entorno público no recogemos métricas de uso del diagnóstico. La descarga del resumen y el acceso al informe completo todavía no están disponibles en este flujo.</p></div>
-            <div><strong>Si cambias de dispositivo</strong><p>Para continuar desde otro navegador o dispositivo tendrás que empezar de nuevo.</p></div>
+            <div><strong>Mientras avanzas</strong><p>El diagnóstico puede guardar el progreso en el almacenamiento de este navegador para permitirte continuar. Su duración y eliminación dependen de la versión del flujo; evita compartir dispositivos si las respuestas son privadas.</p></div>
+            <div><strong>Al terminar</strong><p>Para generar el resumen, las respuestas se transmiten al servidor y se procesan. La ruta de resumen anónimo revisada no contiene una operación explícita de persistencia de respuestas; esto no descarta registros técnicos, controles de seguridad ni otros flujos de informes identificados, que deben verificarse por separado.</p></div>
+            <div><strong>Si cambias de dispositivo</strong><p>El progreso guardado localmente no se sincroniza automáticamente entre dispositivos.</p></div>
           </div>
         </section>
 
