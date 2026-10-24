@@ -13,6 +13,7 @@ La aplicación `vecidya-platform` agrupa la web pública, la aplicación de clie
 - Suite de Diagnóstico: se actualizó la aserción de accesibilidad para comprobar el encabezado externo asociado mediante `aria-labelledby` y la ayuda mediante `aria-describedby` (PR #93).
 - Aprende: las pruebas de integridad reflejan 44 artículos y 8 itinerarios; se separó el número de artículos del estado editorial (PR #93 y #94).
 - Certificación de integración: GitHub Actions valida typecheck, build, pruebas focales de Diagnóstico/Aprende y suite unitaria completa en PR y push a `main` (PR #95).
+- Diagnóstico QA-03B: el PR de activación DIAG-MOTOR-04 añade cuatro rangos del índice global y versiona sesión/replay/informe, conservando la suficiencia mínima y la abstención cuando falta evidencia. La suite sintética demuestra consistencia, no validez empírica ni calibración humana.
 
 ### Evidencia
 
@@ -24,7 +25,7 @@ La aplicación `vecidya-platform` agrupa la web pública, la aplicación de clie
 
 1. Obtener CI verde en el commit final de la candidata de versión.
 2. Validar las rutas representativas de web, aplicación de clientes/MiniWeb y administración con pruebas E2E y responsive.
-3. Para habilitar el informe identificado de Diagnóstico: resolver las aprobaciones de privacidad/retención, pruebas de correo real autorizadas y aceptación de informe HTML. No activar calibración V4 por este incremento.
+3. Para habilitar el informe identificado de Diagnóstico: resolver las aprobaciones de privacidad/retención, pruebas de correo real autorizadas y aceptación de informe HTML. La calibración V4 queda incluida en la candidata de código; su validez empírica y aceptación humana siguen pendientes.
 4. Desplegar solo con autorización y comprobar HTTP anónimo, autenticación, aislamiento de organizaciones y rollback.
 5. Registrar fecha, SHA, entorno y evidencia de publicación antes de declarar `0.7.2` en producción.
 

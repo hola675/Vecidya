@@ -1,5 +1,9 @@
 # Arquitectura de Vecidya
 
+## DIAG-MOTOR-04 — calibración QA-03B de cuatro rangos (2026-10-24; rama sin publicar)
+
+La calibración `diag-v3-candidate-calibration-v4` está adoptada por el recorrido QA-03B `/diagnostico` y el replay autoritativo del Worker. Conserva puntuaciones dimensionales, pesos, confianza y puerta de representatividad (al menos tres dimensiones puntuadas y 60% de cobertura aplicable); presenta cuatro rangos enteros inclusivos: 0–25, 26–50, 51–75 y 76–100. El índice insuficiente sigue siendo `null`. El resumen anónimo v2 mantiene su allowlist de 12 claves y expone la etiqueta general existente con el rango; el informe identificado pasa a v1.2 y sigue aceptando 1.0/1.1. La identidad del motor, sesión y replay usan pipeline v5, sesión schema/key 8 y replay v6. La selección de rangos es determinista, no validación empírica. La matriz sintética conserva 60 rutas; sus objetivos añadidos son supuestos, no hechos puntuables. El Worker público de producción aún no sirve este cambio; ver `ENVIRONMENTS.md`.
+
 ## DIAG-VISUAL-ASSETS-01 — proyección gráfica QA-03B (2026-10-24; local)
 
 El flujo activo `/diagnostico` usa `CandidateDiagnosticFlow` y el replay QA-03B server-side. El resumen público acepta el contrato anterior sólo en el runtime legacy V3 independiente; QA-03B ahora serializa `anonymous-diagnostic-summary-v2`. Su `dimensions` contiene ocho entradas en orden canónico, con exactamente `label`, `score` (`number | null`), `statusLabel`, `preliminary` e `illustration`. El validador rechaza claves adicionales, orden/conteo incorrecto, valores fuera de rango e ilustraciones que no estén en `DIMENSION_ILLUSTRATION_BY_KEY`.

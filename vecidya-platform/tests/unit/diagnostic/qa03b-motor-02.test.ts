@@ -103,7 +103,7 @@ test("DIAG-MOTOR-02 representative coverage exposes applicable gaps and observab
 test("DIAG-MOTOR-02 proposal changes only index representativeness and leaves v2 and legacy frozen", () => {
   assert.equal(CANDIDATE_CALIBRATION_R8B_V2.overall.minScoredDimensions, 3);
   assert.equal(CANDIDATE_CALIBRATION_R8B_V2.overall.minCoverage, 1 / 3);
-  assert.equal(CANDIDATE_CALIBRATION_V3, CANDIDATE_CALIBRATION_R8B_V2, "the proposed threshold is not active before methodological review");
+  assert.equal(CANDIDATE_CALIBRATION_V3, CANDIDATE_CALIBRATION_R8B_V2, "the historical v3 facade remains reproducible for prior certification cases");
   assert.equal(CANDIDATE_CALIBRATION_REPRESENTATIVE_V3.version, 3);
   assert.deepEqual(CANDIDATE_CALIBRATION_REPRESENTATIVE_V3.scoring, CANDIDATE_CALIBRATION_R8B_V2.scoring);
   assert.deepEqual(CANDIDATE_CALIBRATION_REPRESENTATIVE_V3.dimensionConfidence, CANDIDATE_CALIBRATION_R8B_V2.dimensionConfidence);

@@ -36,8 +36,13 @@ test("DIAG-MOTOR-03 identified recommendations show answer-level evidence and pr
   const report = buildCandidateDiagnosticReportV1(result, new Date("2026-10-24T12:00:00.000Z"), new Date("2026-10-24T12:00:00.000Z"));
   const summary = buildAnonymousDiagnosticSummaryV2(result);
 
-  assert.equal(report.reportVersion, "1.1");
-  assert.equal(report.candidateEngineIdentity.report, "diagnostic-report-v1.1");
+  assert.notEqual(result.overall.index.displayScore, null, "el caso con evidencia suficiente mantiene su porcentaje calculado");
+  assert.ok(view.overall.rangeLabel, "el porcentaje calculado recibe el rango correspondiente");
+  assert.equal(summary.overallStatus, view.overall.rangeLabel, "el resumen anónimo presenta el rango visible junto al porcentaje");
+  if (view.overall.rangeLabel === "Funcional") assert.doesNotMatch(summary.executiveSummary, /estado general es BIEN/i, "el resumen evita el rótulo anterior para el rango Funcional");
+  assert.equal(report.reportVersion, "1.2");
+  assert.equal(report.candidateEngineIdentity.report, "diagnostic-report-v1.2");
+  assert.equal(report.overallPresence.rangeLabel, view.overall.rangeLabel);
   assert.ok(view.recommendations.length > 0, JSON.stringify({ priorities: result.narrative.priorities, scoring: result.scoring.dimensions.filter((item) => item.score !== null).map((item) => [item.id, item.score, item.confidence.level]), recommendations: result.recommendations.items.map((item) => [item.dimension, item.sourceQuestionIds]) }));
   assert.ok(view.recommendations.every((recommendation) => recommendation.evidence.length > 0));
   assert.ok(view.recommendations.every((recommendation) => recommendation.evidence.some((item) => item.question.length > 0 && item.answer.length > 0)), JSON.stringify(view.recommendations));
@@ -46,6 +51,7 @@ test("DIAG-MOTOR-03 identified recommendations show answer-level evidence and pr
   assert.deepEqual(report.recommendations.map(({ title, evidence, verificationStatus, howToVerify }) => ({ title, evidence, verificationStatus, howToVerify })), view.recommendations.map(({ title, evidence, verificationStatus, howToVerify }) => ({ title, evidence, verificationStatus, howToVerify })));
   const html = renderToStaticMarkup(createElement(DiagnosticReport, { report, paper: CANONICAL_REPORT_PAPER }));
   assert.match(html, /Respuestas que respaldan esta recomendación/);
+  if (view.overall.rangeLabel) assert.ok(html.includes(view.overall.rangeLabel), "el informe muestra el rango asociado al porcentaje");
   assert.match(html, /Cómo comprobar el resultado/);
   assert.ok(view.recommendations.flatMap((item) => item.evidence).every(({ answer }) => html.includes(answer)));
   assert.doesNotMatch(html, /q2_[a-z0-9_]+|sourceQuestionIds|recommendationEvidence/);

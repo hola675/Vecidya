@@ -129,9 +129,9 @@ export const CANDIDATE_CALIBRATION_REPRESENTATIVE_V3: CandidateCalibrationV3 = d
 });
 
 /**
- * v4 — DIAG-MOTOR-04 proposal. Keeps the v3 representativeness gate (three direct readings and 60% of applicable
- * dimensions), equal dimension weighting, contributions and confidence. The only numerical presentation change is
- * four adjacent integer ranges whose boundaries match the displayed percentage. It remains isolated until review.
+ * v4 — DIAG-MOTOR-04 adopted QA-03B calibration. Keeps the representativeness gate (three direct readings and 60% of
+ * applicable dimensions), equal dimension weighting, contributions and confidence. It adds four adjacent integer
+ * ranges whose boundaries match the displayed percentage; this deterministic choice is not empirical validation.
  */
 export const CANDIDATE_CALIBRATION_QUARTILES_V4: CandidateCalibrationV3 = deepFreeze({
   identity: "diag-v3-candidate-calibration-v4",
@@ -150,10 +150,13 @@ export const CANDIDATE_CALIBRATION_QUARTILES_V4: CandidateCalibrationV3 = deepFr
   scoreRanges: CANDIDATE_SCORE_RANGES_V4,
 });
 
-/** The calibration the candidate chain uses by default (current: v2). */
+/** Frozen R8 default retained for historical calibration experiments and lower-level compatibility. */
 export const CANDIDATE_CALIBRATION_V3: CandidateCalibrationV3 = CANDIDATE_CALIBRATION_R8B_V2;
 export const CANDIDATE_CALIBRATION_IDENTITY_V3 = CANDIDATE_CALIBRATION_V3.identity;
 export const CANDIDATE_CALIBRATION_VERSION_V3 = CANDIDATE_CALIBRATION_V3.version;
+
+/** Calibration used by the active QA-03B browser journey and authoritative Worker replay. */
+export const CANDIDATE_CALIBRATION_ACTIVE_V4: CandidateCalibrationV3 = CANDIDATE_CALIBRATION_QUARTILES_V4;
 
 /** The dimension-level slice the shared scoring core consumes. */
 export function candidateDimensionCalibrationV3(calibration: CandidateCalibrationV3): DimensionCalibration {

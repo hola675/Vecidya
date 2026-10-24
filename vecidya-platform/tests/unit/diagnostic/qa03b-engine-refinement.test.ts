@@ -94,7 +94,7 @@ test("QA-03B does not report a declared goal as the primary opportunity without 
 });
 
 test("QA-03B 20 authored journeys complete one question at a time and render consistent full reports", () => {
-  assert.equal(CANDIDATE_METHODOLOGY_IDENTITY_V3, "diagnostic-methodology-3.1");
+  assert.equal(CANDIDATE_METHODOLOGY_IDENTITY_V3, "diagnostic-methodology-3.2");
   assert.equal(QA03B_AUTHORED_CASES.length, 20);
   const ids = new Set<string>();
   const measurementStates = new Set<string>();
@@ -110,8 +110,8 @@ test("QA-03B 20 authored journeys complete one question at a time and render con
     assert.ok(route.asked.length >= 5 && route.asked.length <= 30, `${item.id}: ${route.asked.length} questions`);
     assert.ok(route.plan.nextQuestionId === undefined, `${item.id}: terminal route`);
     assert.equal(report.identity.lifecycleLabel, view.lifecycleLabel, `${item.id}: report lifecycle`);
-    assert.equal(report.methodologyVersion, "3.1", `${item.id}: report methodology version`);
-    assert.equal(report.methodologySummary.version, "3.1", `${item.id}: methodology summary version`);
+    assert.equal(report.methodologyVersion, "3.2", `${item.id}: report methodology version`);
+    assert.equal(report.methodologySummary.version, "3.2", `${item.id}: methodology summary version`);
     assert.equal(report.overallPresence.publicLabel, view.overall.publicLabel, `${item.id}: machine overall label`);
     assert.equal(report.overallPresence.label, view.overall.label, `${item.id}: display overall label`);
     if (report.primaryConstraint?.kicker === "Atención prioritaria") {

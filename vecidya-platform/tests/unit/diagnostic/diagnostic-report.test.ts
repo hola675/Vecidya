@@ -38,12 +38,13 @@ test("12 report versions: report 1.0, methodology 1.0, distinct from the applica
   assert.equal(REPORT_MAX_PAGE_COUNT, 4, "real ceiling for an exceptional case that needs the typography floor");
 });
 
-test("QA-03B candidate report v1.1 and frozen report v1.0 are both valid stored report versions", () => {
+test("QA-03B candidate report v1.2 preserves stored report v1.1 and frozen report v1.0", () => {
   assert.equal(REPORT_VERSION, "1.0");
-  assert.equal(CANDIDATE_REPORT_VERSION, "1.1");
+  assert.equal(CANDIDATE_REPORT_VERSION, "1.2");
   assert.equal(isSupportedDiagnosticReportVersion("1.0"), true);
   assert.equal(isSupportedDiagnosticReportVersion("1.1"), true);
-  assert.equal(isSupportedDiagnosticReportVersion("1.2"), false);
+  assert.equal(isSupportedDiagnosticReportVersion("1.2"), true);
+  assert.equal(isSupportedDiagnosticReportVersion("1.3"), false);
   assert.equal(isSupportedDiagnosticReportVersion(null), false);
 });
 

@@ -1,4 +1,4 @@
-export const CANDIDATE_METHODOLOGY_IDENTITY_V3 = "diagnostic-methodology-3.1" as const;
+export const CANDIDATE_METHODOLOGY_IDENTITY_V3 = "diagnostic-methodology-3.2" as const;
 
 export const CANDIDATE_METHODOLOGY_SECTIONS_V3 = [
   {
@@ -22,12 +22,14 @@ export const CANDIDATE_METHODOLOGY_SECTIONS_V3 = [
   {
     id: "score",
     title: "Qué significa la puntuación",
-    summary: "Cuando hay evidencia suficiente, el porcentaje general resume las dimensiones con lectura mediante el modelo certificado. MAL, REGULAR y BIEN nombran bandas de ese índice; no miden el valor del negocio ni garantizan resultados.",
+    summary: "Cuando hay evidencia suficiente, el porcentaje general resume las dimensiones con lectura mediante una media de pesos iguales. Cuatro rangos descriptivos agrupan el resultado; no miden el valor del negocio ni garantizan resultados.",
     points: [
       "El porcentaje, la confianza, las prioridades y la cobertura son lecturas distintas. La confianza no multiplica ni modifica la puntuación.",
+      "Los rangos son Base inicial (0–25), En desarrollo (26–50), Funcional (51–75) y Sólida (76–100), usando el entero visible; una lectura sin índice suficiente no recibe rango.",
+      "La cobertura mínima para el índice es tres áreas puntuadas y 60% de las áreas aplicables. Las áreas no observadas no cuentan como cero.",
       "Cuando varias respuestas directas observan una misma área, la puntuación resume sus aportes mediante una media normalizada y conserva las diferencias respaldadas entre respuestas.",
       "Antes del lanzamiento, o cuando no se alcanza el mínimo de evidencia, el índice y la banda no existen: la interfaz los deja sin porcentaje y explica por qué.",
-      "En la versión 3.1, la medición de actividad operativa se basa en cómo la persona declara que registra y revisa resultados recientes; no verifica analítica, tráfico, ventas ni causalidad externa.",
+      "La medición de actividad operativa se basa en cómo la persona declara que registra y revisa resultados recientes; no verifica analítica, tráfico, ventas ni causalidad externa.",
       "No tener actividad reciente suficiente o no conocer la respuesta no cuenta como evidencia negativa ni recibe puntuación.",
     ],
   },

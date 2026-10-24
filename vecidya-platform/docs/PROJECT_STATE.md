@@ -715,3 +715,10 @@ Rama de diagnóstico `feat/diagnostic-funnel-01d1`, PR #6 draft con conflictos r
 ## 01D.3 — actualización de gestión interna (2026-10-17)
 
 Se incorporó un resumen administrativo de cuatro métricas sobre solicitudes vigentes en D1: total, correos verificados, verificaciones pendientes y solicitudes verificadas con permiso comercial vigente (`c9b5db2`). La consulta excluye solicitudes expiradas y no considera autorizado a quien no haya verificado el correo o haya revocado el consentimiento. El listado mantiene búsqueda y filtros server-side, paginación y acceso exclusivo a `platform_admin`. No se ha integrado GHL. Las cifras son calculadas en lectura, sin nuevas tablas ni migraciones. Pruebas, revisión de rendimiento y certificación siguen pendientes por decisión de aplazarlas.
+## DIAG-MOTOR-03 — evidencia y comprobación de recomendaciones (2026-10-24)
+
+En el corte DIAG-MOTOR-03, la vista QA-03B y el informe enlazan preguntas fuente, respuestas activas, estado de evidencia y comprobación cualitativa. El informe candidato usa v1.1; V1 y el pipeline histórico conservan 1.0. La allowlist anónima conserva 12 campos. La suite sintética de 14 escenarios no demuestra validez externa. El cierre vigente y la identidad activada en el branch se registran en DIAG-MOTOR-04 y `TESTING.md`.
+
+## DIAG-MOTOR-04 — activación QA-03B y rangos globales (2026-10-24; sin publicar)
+
+QA-03B usa calibración v4 en la ruta `/diagnostico` y replay del Worker. Conserva los mecanismos de puntuación y suficiencia de DIAG-MOTOR-02 y presenta cuatro rangos inclusivos 0–25, 26–50, 51–75 y 76–100. Sesión schema/key 8, replay v6, metodología 3.2 e informe 1.2 versionan el cambio; reportes 1.0/1.1 siguen soportados. El resumen anónimo conserva su contrato de 12 claves. Las 60 variantes (20 perfiles × tres niveles) continúan sin índice por falta de evidencia mínima; un fixture completo sí muestra porcentaje y rango coincidentes en resumen e informe. Esto verifica consistencia interna, no calibración empírica, validez predictiva ni producción. Sin migración, deploy o publicación; evidencia y límites en `TESTING.md` → DIAG-MOTOR-04.

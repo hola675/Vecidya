@@ -15,10 +15,11 @@ import {
 
 /** Versión de la estructura del informe; independiente de la metodología y de la aplicación. */
 export const REPORT_VERSION = "1.0" as const;
-/** QA-03B candidate report adds answer-level provenance and an explicit verification check. */
-export const CANDIDATE_REPORT_VERSION = "1.1" as const;
-export function isSupportedDiagnosticReportVersion(value: unknown): value is typeof REPORT_VERSION | typeof CANDIDATE_REPORT_VERSION {
-  return value === REPORT_VERSION || value === CANDIDATE_REPORT_VERSION;
+/** QA-03B v1.1 adds answer provenance; v1.2 adds the calibrated global score range. */
+export const CANDIDATE_REPORT_VERSION = "1.2" as const;
+export const PREVIOUS_CANDIDATE_REPORT_VERSION = "1.1" as const;
+export function isSupportedDiagnosticReportVersion(value: unknown): value is typeof REPORT_VERSION | typeof PREVIOUS_CANDIDATE_REPORT_VERSION | typeof CANDIDATE_REPORT_VERSION {
+  return value === REPORT_VERSION || value === PREVIOUS_CANDIDATE_REPORT_VERSION || value === CANDIDATE_REPORT_VERSION;
 }
 /** Objetivo editorial: todo el contenido en tres hojas. Un caso excepcional puede usar una cuarta antes que sacrificar legibilidad (ver `REPORT_MAX_PAGE_COUNT` y el piso tipográfico en `diagnostic-report.tsx`). */
 export const REPORT_PAGE_COUNT = 3 as const;
@@ -80,6 +81,8 @@ export type DiagnosticReportV1 = {
     readonly state: OverallStatusKind;
     readonly publicLabel: "MAL" | "REGULAR" | "BIEN" | null;
     readonly label: string;
+    /** Calibrated descriptive band; absent in legacy reports. */
+    readonly rangeLabel?: string | null;
     readonly percent: string | null;
     readonly explanation: string;
     readonly confidence: { readonly label: string; readonly steps: 1 | 2 | 3 };
@@ -120,7 +123,7 @@ export type DiagnosticReportV1 = {
 export type DiagnosticReportContentV1 = Omit<DiagnosticReportV1, "commercialRecommendation" | "vecidyaHelp">;
 
 export type CandidateDiagnosticReportV1 = Omit<DiagnosticReportContentV1, "dimensions" | "identity" | "reportVersion"> & {
-  readonly reportVersion: typeof REPORT_VERSION | typeof CANDIDATE_REPORT_VERSION;
+  readonly reportVersion: typeof REPORT_VERSION | typeof PREVIOUS_CANDIDATE_REPORT_VERSION | typeof CANDIDATE_REPORT_VERSION;
   /** Momento real en que terminó el cuestionario; distinto de cuándo se generó este informe. */
   readonly completedAt: string;
   readonly completedLabel: string;
