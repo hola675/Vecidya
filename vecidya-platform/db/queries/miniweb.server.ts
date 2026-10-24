@@ -140,10 +140,13 @@ export async function saveMiniWebConfigurationForOrganization(
     database.$client.prepare(`DELETE FROM miniweb_module WHERE miniweb_site_id = ? AND EXISTS (
       SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?
     )`).bind(site.id, organizationId, nextRevision, token),
-    database.$client.prepare(`INSERT INTO miniweb_module
-      (id, miniweb_site_id, module_type, module_version, enabled, sort_order, layout_variant, settings_json, created_at, updated_at)
-      ${configuration.modules.map(() => "SELECT ?, ?, ?, ?, ?, ?, ?, NULL, ?, ? WHERE EXISTS (SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?)").join(" UNION ALL ")}`)
-      .bind(...configuration.modules.flatMap((module) => [crypto.randomUUID(), site.id, module.type, module.moduleVersion, module.enabled ? 1 : 0, module.sortOrder, module.layoutVariant, now.getTime(), now.getTime(), organizationId, nextRevision, token])),
+    ...Array.from({ length: Math.ceil(configuration.modules.length / 4) }, (_, chunkIndex) => {
+      const modules = configuration.modules.slice(chunkIndex * 4, chunkIndex * 4 + 4);
+      return database.$client.prepare(`INSERT INTO miniweb_module
+        (id, miniweb_site_id, module_type, module_version, enabled, sort_order, layout_variant, settings_json, created_at, updated_at)
+        ${modules.map(() => "SELECT ?, ?, ?, ?, ?, ?, ?, NULL, ?, ? WHERE EXISTS (SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?)").join(" UNION ALL ")}`)
+        .bind(...modules.flatMap((module) => [crypto.randomUUID(), site.id, module.type, module.moduleVersion, module.enabled ? 1 : 0, module.sortOrder, module.layoutVariant, now.getTime(), now.getTime(), organizationId, nextRevision, token]));
+    }),
     ...(audit ? [database.$client.prepare(`INSERT INTO platform_audit_log
       (id, actor_user_id, action, entity_type, entity_id, organization_id, previous_value, new_value, metadata, created_at)
       SELECT ?, ?, ?, ?, ?, ?, NULL, ?, NULL, ?
