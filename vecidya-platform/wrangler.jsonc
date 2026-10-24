@@ -1,118 +1,134 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "vecidya-platform",
-  "compatibility_date": "2026-08-13",
-  "main": "./workers/app.ts",
-  "assets": {
-    "directory": "./build/client"
-  },
-  "workers_dev": true,
-  "ratelimits": [
-    {
-      "name": "DIAGNOSTIC_PUBLIC_RATE_LIMITER",
-      "namespace_id": "612349101",
-      "simple": { "limit": 12, "period": 60 }
-    },
-    {
-      "name": "DIAGNOSTIC_IDENTIFICATION_RATE_LIMITER",
-      "namespace_id": "612349102",
-      "simple": { "limit": 6, "period": 60 }
-    }
-  ],
-  "routes": [
-    {
-      "pattern": "vecidya.com/*",
-      "zone_name": "vecidya.com"
-    },
-    {
-      "pattern": "www.vecidya.com/*",
-      "zone_name": "vecidya.com"
-    }
-  ],
-  "secrets": {
-    "required": [
-      "BETTER_AUTH_SECRET",
-      "GMAIL_OAUTH_CLIENT_ID",
-      "GMAIL_OAUTH_CLIENT_SECRET",
-      "GMAIL_OAUTH_REFRESH_TOKEN"
-    ]
-  },
-  "vars": {
-    "APP_URL": "https://vecidya.com",
-    "BETTER_AUTH_URL": "https://vecidya.com",
-    "APP_ENV": "production",
-    "EMAIL_PROVIDER": "gmail",
-    "EMAIL_FROM": "hola@vecidya.com",
-    "EMAIL_REPLY_TO": "hola@vecidya.com",
-    "DIAGNOSTIC_REPORT_FUNNEL_ENABLED": "true",
-    "DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED": "true",
-    "DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED": "true"
-  },
-  "triggers": {
-    "crons": ["17 3 * * *"]
-  },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "vecidya-prod",
-      "database_id": "8edc3f04-258e-4c29-9f33-76fec3d25042",
-      "migrations_dir": "db/migrations"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "BUSINESS_MEDIA",
-      "bucket_name": "vecidya-business-media-prod"
-    }
-  ],
-  "env": {
-    "staging": {
-      "name": "vecidya-platform-staging",
-      "workers_dev": true,
-      "routes": [],
-      "ratelimits": [
-        {
-          "name": "DIAGNOSTIC_PUBLIC_RATE_LIMITER",
-          "namespace_id": "612349201",
-          "simple": { "limit": 12, "period": 60 }
-        },
-        {
-          "name": "DIAGNOSTIC_IDENTIFICATION_RATE_LIMITER",
-          "namespace_id": "612349202",
-          "simple": { "limit": 6, "period": 60 }
-        }
-      ],
-      "vars": {
-        "APP_ENV": "staging",
-        "APP_URL": "",
-        "BETTER_AUTH_URL": "",
-        "EMAIL_PROVIDER": "fake",
-        "EMAIL_FROM": "hola@vecidya.com",
-        "EMAIL_REPLY_TO": "hola@vecidya.com",
-        "DIAGNOSTIC_REPORT_FUNNEL_ENABLED": "false",
-        "DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED": "false",
-        "DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED": "false"
-      },
-      "triggers": {
-        "crons": []
-      },
-      "secrets": {
-        "required": ["BETTER_AUTH_SECRET"]
-      },
-      "d1_databases": [
-        {
-          "binding": "DB",
-          "database_name": "vecidya-staging",
-          "database_id": "d4af6ebc-97c5-42f6-ad3a-51551021e591",
-          "migrations_dir": "db/migrations"
-        }
-      ],
-      "r2_buckets": [
-        {
-          "binding": "BUSINESS_MEDIA",
-          "bucket_name": "vecidya-business-media-staging"
-        }
-      ]
-    }
-  }
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "vecidya-platform",
+	"compatibility_date": "2026-08-13",
+	"main": "./workers/app.ts",
+	"assets": {
+		"directory": "./build/client"
+	},
+	"workers_dev": true,
+	"ratelimits": [
+		{
+			"name": "DIAGNOSTIC_PUBLIC_RATE_LIMITER",
+			"namespace_id": "612349101",
+			"simple": {
+				"limit": 12,
+				"period": 60
+			}
+		},
+		{
+			"name": "DIAGNOSTIC_IDENTIFICATION_RATE_LIMITER",
+			"namespace_id": "612349102",
+			"simple": {
+				"limit": 6,
+				"period": 60
+			}
+		}
+	],
+	"routes": [
+		{
+			"pattern": "vecidya.com/*",
+			"zone_name": "vecidya.com"
+		},
+		{
+			"pattern": "www.vecidya.com/*",
+			"zone_name": "vecidya.com"
+		}
+	],
+	"secrets": {
+		"required": [
+			"BETTER_AUTH_SECRET",
+			"GMAIL_OAUTH_CLIENT_ID",
+			"GMAIL_OAUTH_CLIENT_SECRET",
+			"GMAIL_OAUTH_REFRESH_TOKEN"
+		]
+	},
+	"vars": {
+		"APP_URL": "https://vecidya.com",
+		"BETTER_AUTH_URL": "https://vecidya.com",
+		"APP_ENV": "production",
+		"EMAIL_PROVIDER": "gmail",
+		"EMAIL_FROM": "hola@vecidya.com",
+		"EMAIL_REPLY_TO": "hola@vecidya.com",
+		"DIAGNOSTIC_REPORT_FUNNEL_ENABLED": "true",
+		"DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED": "true",
+		"DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED": "true"
+	},
+	"triggers": {
+		"crons": [
+			"17 3 * * *"
+		]
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "vecidya-prod",
+			"database_id": "8edc3f04-258e-4c29-9f33-76fec3d25042",
+			"migrations_dir": "db/migrations"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "BUSINESS_MEDIA",
+			"bucket_name": "vecidya-business-media-prod"
+		}
+	],
+	"env": {
+		"staging": {
+			"name": "vecidya-platform-staging",
+			"workers_dev": true,
+			"routes": [],
+			"ratelimits": [
+				{
+					"name": "DIAGNOSTIC_PUBLIC_RATE_LIMITER",
+					"namespace_id": "612349201",
+					"simple": {
+						"limit": 12,
+						"period": 60
+					}
+				},
+				{
+					"name": "DIAGNOSTIC_IDENTIFICATION_RATE_LIMITER",
+					"namespace_id": "612349202",
+					"simple": {
+						"limit": 6,
+						"period": 60
+					}
+				}
+			],
+			"vars": {
+				"APP_ENV": "staging",
+				"APP_URL": "",
+				"BETTER_AUTH_URL": "",
+				"EMAIL_PROVIDER": "fake",
+				"EMAIL_FROM": "hola@vecidya.com",
+				"EMAIL_REPLY_TO": "hola@vecidya.com",
+				"DIAGNOSTIC_REPORT_FUNNEL_ENABLED": "false",
+				"DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED": "false",
+				"DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED": "false"
+			},
+			"triggers": {
+				"crons": []
+			},
+			"secrets": {
+				"required": [
+					"BETTER_AUTH_SECRET"
+				]
+			},
+			"d1_databases": [
+				{
+					"binding": "DB",
+					"database_name": "vecidya-staging",
+					"database_id": "d4af6ebc-97c5-42f6-ad3a-51551021e591",
+					"migrations_dir": "db/migrations"
+				}
+			],
+			"r2_buckets": [
+				{
+					"binding": "BUSINESS_MEDIA",
+					"bucket_name": "vecidya-business-media-staging"
+				}
+			]
+		}
+	}
 }
