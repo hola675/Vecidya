@@ -24,7 +24,7 @@ Regresiones focales: unitarias `neighborhood.test.ts` **3/3 PASS**; `miniweb-cor
 
 ## UX-PREMIUM-01B — Vecindario y ficha MiniWeb (2026-10-24)
 
-Implementación local en `feat/app-mini-ux-02c-directory-profiles`: la ficha pública de `/vecindario/:slug` añade retorno contextual al Vecindario, jerarquía visual al hero y módulos de contenido, y un cierre visual hacia el directorio. El estilo queda limitado a la vista pública; preview del editor, snapshot publicado y filtros de datos permanecen sin cambios. Typecheck, build y diff-check PASS. Worker local bloqueado antes de registrar fixtures por tabla ausente `platform_owner_invitation`; sin revisión responsive renderizada ni prueba de perfil. PR pendiente. No publicado.
+Implementación local en `feat/app-mini-ux-02c-directory-profiles`: la ficha pública de `/vecindario/:slug` añade retorno contextual al Vecindario, jerarquía visual al hero y módulos de contenido, y un cierre visual hacia el directorio. El estilo queda limitado a la vista pública; preview del editor, snapshot publicado y filtros de datos permanecen sin cambios. Revisión encontró selectores del hero/grid incompatibles con el DOM real; se corrigieron para apuntar al wrapper `.miniweb-template__module--hero` y al grid directo. Typecheck, build y diff-check PASS tras la corrección. El Worker local sigue bloqueado antes de registrar fixtures por tabla ausente `platform_owner_invitation`; no se declara revisión responsive renderizada ni prueba de perfil. No publicado.
 
 ## UX-PREMIUM-01A — Inicio, primera fase del plan visual (2026-10-24)
 

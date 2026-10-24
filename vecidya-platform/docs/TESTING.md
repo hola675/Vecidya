@@ -30,7 +30,7 @@ El PDF `tmp/diag-v3-qa03b/browser/open-no-clients-identified-report.pdf` se gene
 
 ## UX-PREMIUM-01B — perfil público MiniWeb (2026-10-24)
 
-`pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS**. `node tests/e2e/miniweb-core-check.mjs` no alcanzó sus aserciones: tras aplicar localmente `0000–0027`, el alta del primer usuario de prueba devolvió HTTP 500 por ausencia de `platform_owner_invitation` en la D1 conectada al Worker. Antes de migrar, la DB local vacía también impidió iniciar el loader del perfil. No hay certificación Worker ni visual para este cambio. Sin D1 remota ni deploy.
+`pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS**. La revisión del DOM mostró que los selectores del hero/grid no coincidían con la estructura de `DefaultMiniWebTemplate`; apuntan ahora al wrapper hero y al grid directo. `node tests/e2e/miniweb-core-check.mjs` no alcanzó sus aserciones: tras aplicar localmente `0000–0027`, el alta del primer usuario de prueba devolvió HTTP 500 por ausencia de `platform_owner_invitation` en la D1 conectada al Worker. Antes de migrar, la DB local vacía también impidió iniciar el loader del perfil. No hay certificación Worker ni visual para este cambio. Sin D1 remota ni deploy.
 
 ## DIAG-QA03B-PROFILE-KNOWLEDGE-01 — 60 variantes y reporte HTML (2026-10-24)
 

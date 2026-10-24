@@ -20,7 +20,7 @@ En móvil el estado general y el panorama de áreas se apilan; desde desktop las
 
 ## UX-PREMIUM-01B — Vecindario y ficha MiniWeb (2026-10-24)
 
-En `feat/app-mini-ux-02c-directory-profiles`, `/vecindario/:slug` gana breadcrumb de retorno, hero editorial y mayor jerarquía para módulos publicados, más un cierre al directorio. Los datos continúan procediendo del snapshot público y la configuración MiniWeb; la preview privada del editor no recibe estilos nuevos. Typecheck, build y diff-check PASS. El E2E MiniWeb quedó bloqueado antes de los casos del perfil porque la D1 local `0000–0027` no tiene `platform_owner_invitation`; no hay evidencia de runtime visual ni respuesta responsive en este corte. Sin deploy.
+En `feat/app-mini-ux-02c-directory-profiles`, `/vecindario/:slug` gana breadcrumb de retorno, hero editorial y mayor jerarquía para módulos publicados, más un cierre al directorio. Los datos continúan procediendo del snapshot público y la configuración MiniWeb; la preview privada del editor no recibe estilos nuevos. Se corrigieron los selectores CSS del hero/grid para que coincidan con el DOM de `DefaultMiniWebTemplate`. Typecheck, build y diff-check PASS tras la corrección. El E2E MiniWeb quedó bloqueado antes de los casos del perfil porque la D1 local `0000–0027` no tiene `platform_owner_invitation`; no hay evidencia de runtime visual ni respuesta responsive en este corte. Sin deploy.
 
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
