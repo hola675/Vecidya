@@ -1,3 +1,23 @@
+## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
+
+**Objetivo:** adaptar las referencias premium entregadas por el usuario a una experiencia coherente de Vecidya, preservando contenido, datos, permisos, funcionamiento móvil y límites comerciales. Las referencias guían composición e interacción; no se copian marcas, textos, layouts exactos ni assets. Este trabajo no incluye publicación ni despliegue.
+
+**Principios:** usar la identidad y componentes vigentes antes de añadir variantes; diferenciar la expresividad de la web pública de la claridad operativa de Mi Vecidya y Admin; mostrar solo datos y capacidades comprobables; WCAG 2.2 AA, teclado, foco visible, objetivos táctiles, zoom y `prefers-reduced-motion`; no incorporar WebGL donde perjudique carga o accesibilidad.
+
+| Fase | Alcance | Gate de salida |
+| --- | --- | --- |
+| 0. Inventario y dirección | Rutas, componentes, estado de implementación, capturas escritorio/móvil y mapa referencia→patrón→pantalla; reutilizar activos vigentes | Alcance de pantalla y dirección aprobados; no se duplican assets ni capacidades |
+| 1. Web pública — Inicio | Jerarquía del hero y CTA al Diagnóstico, entrada al Vecindario y composición responsive propia | Worker local; CTA/rutas reales, vista en 320/390/768/1024/1366, navegación por teclado y reduced motion |
+| 2. Web pública — servicios, planes, Aprende, Vecindario y MiniWeb | Vercel/Assemble/Gusto, Mintlify y catálogo visual aplicados por página, una ruta/segmento por checkpoint | Contenido y enlaces existentes; sin datos comerciales ficticios; móvil, accesibilidad y rendimiento revisados |
+| 3. Diagnóstico e informe | Continuar desde `DIAG-VISUAL-ASSETS-01`; Typeform para interacción y narrativa, gráfica accesible basada exactamente en contrato vigente | Scores sin recálculo, `null`/cobertura/confianza legibles, privacidad intacta, PDF revisado |
+| 4. Mi Vecidya y editor MiniWeb | Linear para shell y estados; Framer para edición contextual por secciones, coordinado con `APP-MINI-02D` | Draft/publicado distinguibles; preview y guards existentes preservados; experiencia móvil y teclado revisados |
+| 5. Vecidya Admin | Vercel/Supabase Studio como referencias visuales para tablas, filtros, inspector y actividad | Datos existentes solamente; organización objetivo, permisos y auditoría preservados en toda acción |
+| 6. Acabado y certificación | Microinteracciones, profundidad y assets puntuales; revisión de consistencia entre superficies | `typecheck`, `build`, diff-check, validación Worker local y revisión visual/accesible por viewport; deuda restante anotada en STATUS |
+
+**Checkpoint inicial UX-PREMIUM-01A:** fase 0 se registra aquí; iniciar fase 1 con Inicio, limitando el primer cambio al hero y la ruta principal. Las demás fases requieren checkpoints propios basados en `origin/main` y actualización de este roadmap con evidencia. No se altera scoring, contratos, esquema, autorización, licencias, precios, GHL, datos de negocio, rutas de publicación ni configuración remota. El siguiente gate de publicación de producto sigue siendo el bloque R2 documentado arriba y no queda reemplazado por este plan.
+
+**Estado (UX-PREMIUM-01A, 2026-10-24):** fase 1A implementada localmente: el CTA principal del hero de Inicio ahora lleva al Diagnóstico y explorar Vecindario queda como acción secundaria; el adorno sin contenido se excluye del árbol accesible. Typecheck, build y diff-check PASS. Worker Cloudflare local con D1 efímera en `0000–0027`: GET `/` devuelve 200, el árbol accesible refleja el orden del CTA y la captura de escritorio confirma la jerarquía visual. No se revisaron otros viewports ni se certifica accesibilidad integral. Fases 2–6 son plan futuro y no están implementadas ni certificadas por esta entrada.
+
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)

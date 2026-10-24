@@ -48,22 +48,22 @@ export default function Home() {
       <main>
         <JsonLd data={organizationSchema} />
 
-        <section aria-labelledby="home-hero-title" className="public-home-hero">
-        <div className="public-home-hero__copy">
-          <p className="eyebrow">VECINDARIO DIGITAL</p>
-          <h1 id="home-hero-title">Haz clara tu presencia.</h1>
-          <p>Entiende dónde estás y decide qué ordenar primero.</p>
-          <div className="public-actions">
-            <Link className="button button--primary" to="/vecindario">Explorar el Vecindario</Link>
-            <Link className="button button--secondary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
-          </div>
-        </div>
-        <div className="home-hero-visual">
-          <div className="home-hero-visual__glow" />
-          <img alt="Aplicación móvil de Vecidya mostrando descubrimiento de negocios locales" decoding="async" height={1086} src={publicAssets.illustrations.mobileLocalDiscovery} width={1448} />
-          <span className="home-hero-visual__pin" aria-hidden="true"><span>V</span></span>
-        </div>
-      </section>
+          <section aria-labelledby="home-hero-title" className="public-home-hero">
+            <div className="public-home-hero__copy">
+              <p className="eyebrow">VECINDARIO DIGITAL</p>
+              <h1 id="home-hero-title">Haz clara tu presencia.</h1>
+              <p>Entiende dónde estás y decide qué ordenar primero.</p>
+              <div className="public-actions">
+                <Link className="button button--primary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
+                <Link className="button button--secondary" to="/vecindario">Explorar el Vecindario</Link>
+              </div>
+            </div>
+            <div className="home-hero-visual">
+              <div aria-hidden="true" className="home-hero-visual__glow" />
+              <img alt="Aplicación móvil de Vecidya mostrando descubrimiento de negocios locales" decoding="async" height={1086} src={publicAssets.illustrations.mobileLocalDiscovery} width={1448} />
+              <span className="home-hero-visual__pin" aria-hidden="true"><span>V</span></span>
+            </div>
+          </section>
 
       <JourneyGuide
         area="public"
@@ -162,7 +162,7 @@ export default function Home() {
         tone="dark"
       >
         <p>Una decisión clara empieza por una presencia que se entiende.</p>
-        </CTASection>
+      </CTASection>
       </main>
     </PublicLayout>
   );
