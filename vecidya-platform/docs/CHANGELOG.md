@@ -13,9 +13,9 @@
 
 ## 2026-10-24 — QA-03B — corpus de 60 variantes y reporte final HTML
 
-- Se incorporan fixtures sintéticos con tres niveles de conocimiento para cada uno de los 20 perfiles, validación del banco y replay pregunta por pregunta en el pipeline candidato vigente. El nivel informado señala los supuestos cualitativos y el mapeo de herramientas; no usa autoevaluaciones digitales/IA como evidencia.
-- Evidencia local: 3/3 pruebas focales PASS; 60/60 índices globales pendientes, 57 con dimensiones aplicables sin resolver, 58 terminaciones `no_useful_questions`, 2 `budget_blocked`, 0 hard-cap y 0 lecturas de medición/optimización. Sin cambio de scoring, banco productivo ni despliegue.
-- Informe interactivo y dataset JSON completos en artefactos locales de la sesión. No se generó PDF. Alcance y deuda en `TESTING.md`, `PROJECT_STATE.md`, `ROADMAP.md` y `STATUS.md`.
+- QA-03C: se corrige la matriz P20; miles de leads mensuales no acreditan captación fiable y la respuesta queda `unknown`. Se explicita procedencia desconocida por fuente, además de supuestos e interpretaciones.
+- Evidencia QA-03C local: suites focales profile 4/4 y canonical 16/16 PASS. 60 casos/950 respuestas; 60 índices globales pendientes; 57 con áreas aplicables sin resolver; 58 `no_useful_questions`, 2 `budget_blocked`, sin hard-cap; 25 scores dimensionales (24 readiness, 1 discovery, 0 measurement), todos una observación directa (23 confianza media, 2 baja por incertidumbre). El informe representa 30/30 prioridades visibles y presenta matriz de procedencia/evidencia; equivalencia JSON-presentación-HTML validada. No se cambió motor, fórmula, umbrales, calibración ni banco productivo.
+- Informe HTML y JSON regenerados en `C:\Users\Admin\.codex\visualizations\2026\10\24\qa03c`. No PDF, D1, Gmail, HTTP remoto, deploy o merge. La deuda de cobertura permanece abierta y la certificación completa requiere typecheck/build, E2E y responsive documentados en `TESTING.md`.
 
 ## 2026-10-23 — APP-MINI-02B — certificación de ofertas y FAQ
 
