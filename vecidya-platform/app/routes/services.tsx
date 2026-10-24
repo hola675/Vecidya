@@ -53,11 +53,11 @@ export default function Services() {
               <Link className="button button--secondary" to="/contacto">{PUBLIC_ACTION_LABELS.contact}</Link>
             </div>
           </div>
-          <aside className="services-experience-hero__note" aria-label="Cómo se relacionan las soluciones">
+          <div className="services-experience-hero__note">
             <span className="services-experience-hero__mark" aria-hidden="true">→</span>
             <p className="eyebrow">DE LA IDEA AL SISTEMA</p>
             <strong>Primero entendemos lo que ya existe. Después decidimos qué construir.</strong>
-          </aside>
+          </div>
         </section>
 
         <section className="services-process" aria-labelledby="services-process-title">

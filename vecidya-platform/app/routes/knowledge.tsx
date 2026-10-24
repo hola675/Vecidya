@@ -189,7 +189,7 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
           <ul className="learn-topic-list">
             {topics.map((topic) => (
               <li key={topic.name}>
-                <Link to={learnHref(topic.name, search)} aria-label={"Ver " + topic.count + " " + (topic.count === 1 ? "guía" : "guías") + " de " + topic.name}>
+                <Link to={learnHref(topic.name, search)}>
                   <span className="learn-topic-list__name">{topic.name}</span>
                   <span className="learn-topic-list__description">{topic.description}</span>
                   <span className="learn-topic-list__count">Ver {topic.count} {topic.count === 1 ? "guía" : "guías"}</span>

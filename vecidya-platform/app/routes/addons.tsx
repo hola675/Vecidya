@@ -51,13 +51,13 @@ export default function Addons() {
               <Link className="button button--secondary" to="/licencias">{PUBLIC_ACTION_LABELS.licenses}</Link>
             </div>
           </div>
-          <aside aria-label="Cómo funciona un complemento" className="addons-hero__formula">
+          <div className="addons-hero__formula">
             <div><span>BASE</span><strong>Licencia Vecidya</strong></div>
             <div aria-hidden="true" className="addons-hero__operator">+</div>
             <div><span>CAPACIDAD</span><strong>Complemento específico</strong></div>
             <div aria-hidden="true" className="addons-hero__operator">↓</div>
             <div className="addons-hero__result"><span>RESULTADO</span><strong>Una nueva capacidad para tu momento.</strong></div>
-          </aside>
+          </div>
         </section>
 
         <section aria-labelledby="addons-list-title" className="addons-list">
@@ -66,10 +66,10 @@ export default function Addons() {
               <p className="eyebrow">SIETE COMPLEMENTOS V1</p>
               <h2 id="addons-list-title">Una capacidad por necesidad.</h2>
             </div>
-            <aside aria-label="Costes de uso y consumo externo" className="addons-price-note">
+            <div className="addons-price-note">
               <strong>Costes de uso</strong>
               <p>Algunos canales y proveedores cobran según mensajes, llamadas, IA, envíos o APIs. Se muestran aparte del precio Vecidya y se cotizan con un margen bruto objetivo del 20 % sobre los costes directos verificados.</p>
-            </aside>
+            </div>
           </div>
           <div className="addons-grid">
             {addons.map((addon) => (

@@ -38,7 +38,7 @@ body { min-width: 320px; min-height: 100vh; margin: 0; }
 button, input, select, textarea { font: inherit; }
 button, select { cursor: pointer; }
 button:disabled, select:disabled { cursor: not-allowed; opacity: 0.62; }
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid rgb(255 107 11 / 42%); outline-offset: 3px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
 .skip-link { position: fixed; z-index: 20; top: 0.7rem; left: 0.7rem; transform: translateY(-150%); border-radius: 0.5rem; padding: 0.65rem 0.8rem; color: #fff; background: var(--ink); text-decoration: none; }.skip-link:focus-visible { transform: translateY(0); }
 .platform-footer { display: flex; align-items: center; justify-content: space-between; gap: .75rem 1.5rem; border-top: 1px solid var(--line); padding: 1rem clamp(1rem, 4vw, 3rem); color: var(--muted); font-size: var(--text-label); }
 .platform-footer--public { flex-wrap: wrap; margin-top: 1.5rem; background: #fff; }
@@ -732,9 +732,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 .licenses-compare-table-wrap {
   overflow-x: auto;
+  overscroll-behavior-inline: contain;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: #fff;
+}
+.licenses-compare-table-wrap:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
 }
 
 .licenses-compare-table {
@@ -1091,7 +1096,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .addons-choice__grid span,
 .addon-card__problem > span,
 .addon-card__solution > span {
-  color: #ffb27a;
+  color: #ffddc2;
   font-size: .7rem;
   font-weight: 800;
   letter-spacing: .12em;
@@ -3679,7 +3684,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .learn-atlas__jump { grid-column:1 / -1; grid-row:3; }
 .learn-atlas__jump a { color:#fff; font-size:1rem; font-weight:700; text-underline-offset:.2em; }
 .learn-atlas__jump a:hover { color:#ffb27a; }
-.learn-atlas__jump a:focus-visible { outline:3px solid var(--orange); outline-offset:4px; }
+.learn-atlas__jump a:focus-visible { outline:3px solid #ffe0c2; outline-offset:4px; }
 .learn-resources { display:grid; gap:1.25rem; scroll-margin-top:1rem; }
 .learn-resources__title { max-width:40ch; margin:0; color:var(--ink); font-size:clamp(1.8rem,3.5vw,2.8rem); letter-spacing:-.045em; line-height:1.06; text-wrap:balance; }
 .learn-resources__heading { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(14rem,.7fr); gap:1.5rem; align-items:end; }
@@ -3744,7 +3749,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .learn-topic-list__description { color:var(--muted); font-size:1rem; line-height:1.45; }
 .learn-topic-list__count { color:var(--blue); font-size:.95rem; font-weight:800; white-space:nowrap; }
 .learn-why { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.9fr); gap:clamp(1.5rem,5vw,4rem); align-items:center; padding:clamp(1.5rem,4vw,3rem); color:#fff; background:var(--blue); }
-.learn-why .learn-section-kicker { color:#ffcfaa; }
+.learn-why .learn-section-kicker { color:#ffe0c2; }
 .learn-why h2 { max-width:18ch; margin:0; color:#fff; font-size:clamp(1.8rem,3.8vw,2.8rem); letter-spacing:-.045em; line-height:1.05; }
 .learn-why ul { display:grid; gap:.75rem; margin:0; padding-left:1.2rem; }
 .learn-why li { padding:.15rem 0; color:#fff; font-size:1.05rem; line-height:1.45; }
@@ -4508,7 +4513,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .df-identification__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
 .df-identification__fields label { display: grid; gap: 0.4rem; color: var(--ink); font-weight: 650; }
 .df-identification__fields input { width: 100%; min-height: 2.9rem; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.65rem 0.75rem; background: #fff; color: var(--ink); font: inherit; }
-.df-identification__fields input:focus-visible, .df-identification__check input:focus-visible { outline: 3px solid color-mix(in srgb, var(--blue) 35%, transparent); outline-offset: 2px; }
+.df-identification__fields input:focus-visible, .df-identification__check input:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 .df-identification__optional { color: var(--muted); font-size: 0.82rem; font-weight: 450; }
 .df-identification__permissions { display: grid; gap: 0.85rem; margin: 0; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; }
 .df-identification__permissions legend { padding: 0 0.35rem; color: var(--ink); font-weight: 700; }
@@ -5056,7 +5061,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .df-screen__lead { margin: 0; max-width: 60ch; color: var(--ink); font-size: 1.0625rem; line-height: 1.6; }
 .df-screen__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; }
 .df-screen__aside { margin: 0; color: var(--muted); font-size: var(--text-meta); }
-.df-screen__aside a { color: var(--blue); }
+.df-screen__aside a { color: var(--blue); text-decoration: underline; text-underline-offset: .18em; }
 .df-start__points { display: grid; gap: 0.6rem; max-width: 60ch; margin: 0.25rem 0 0; padding: 0; list-style: none; }
 .df-start__points li { position: relative; padding-left: 1.5rem; line-height: 1.55; }
 .df-start__points li::before { position: absolute; top: 0.6em; left: 0.2rem; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--blue); content: ""; }
