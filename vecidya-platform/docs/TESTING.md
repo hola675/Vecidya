@@ -2,7 +2,7 @@
 
 ## DIAG-MOTOR-01 — banco evaluativo y selección adaptativa (2026-10-24)
 
-**RAN local en `origin/main@612775a` + DIAG-MOTOR-01:** `pnpm run test:unit` — **1668/1668 PASS**; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. El build conserva los avisos locales de secretos opcionales ausentes y dos imports dinámicos agrupados con imports estáticos; no se leyeron ni configuraron secretos.
+**RAN local en `origin/main@15d5190` + DIAG-MOTOR-01:** `pnpm run test:unit` — **1668/1668 PASS**; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. El build conserva los avisos locales de secretos opcionales ausentes y dos imports dinámicos agrupados con imports estáticos; no se leyeron ni configuraron secretos.
 
 `qa03b-motor-01.test.ts` prueba tres fuentes directas y versionadas de medición/seguimiento, recuperación alternativa tras desconocer la tasa (registrar resultados no se trata como tasa), elegibilidad para negocios físicos, claridad de oferta tras confirmar una ficha y fricción de citas solo ante fuga demostrada. La matriz de 20 perfiles y sus 60 variantes termina sin hard-cap; los 20 perfiles base generan 7 puntuaciones dimensionales frente a 3 de la línea base previa, y todos mantienen índice global pendiente. P03/P10 completan sus rutas sin `budget_blocked`. Fixtures sintéticos, sin exactitud empírica; no se alteraron fórmulas ni calibración.
 
