@@ -6,6 +6,8 @@
 - La retirada es lógica: los metadatos/objeto se conservan para la publicación vigente hasta republicar, y siguen contando en cuota. No hay recolección de objetos.
 - Migración `0027_business-media-draft-removal.sql`; cadena local `0000–0027`. E2E Worker 90/90, unitarias 1655/1655, typecheck, build y diff-check PASS. Fixture cleanup comprobado; quedó persistencia local Wrangler bajo `.codex/tmp` con logs/capturas y base efímera, sin Worker de esta fase activo. Sin D1 remota, buckets R2 provisionados ni deploy.
 
+- Seguimiento de integración: PR #51 se actualizó sobre `origin/main@3e6b9b1`; MiniWeb E2E 90/90 y typecheck/build/diff-check PASS en `45cf0bd`. Unitarias 1655/1655 corresponden al corte previo de este checkpoint y no se repitieron sobre el merge más reciente. Persistencia Wrangler local efímera sigue presente, con fixtures limpios y Worker detenido.
+
 ## 2026-10-23 — APP-MINI-REDESIGN-01 (rediseño local)
 ## 2026-10-23 — APP-MINI-REDESIGN-01 (seguimiento sobre latest main)
 
