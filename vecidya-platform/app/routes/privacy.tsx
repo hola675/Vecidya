@@ -10,6 +10,7 @@ const sections = [
   { id: "informacion", label: "Qué información" },
   { id: "diagnostico", label: "Tu diagnóstico" },
   { id: "control", label: "Tus derechos" },
+  { id: "alcance", label: "Alcance y terceros" },
   { id: "contacto-legal", label: "Consultas" },
 ] as const;
 
@@ -130,6 +131,18 @@ export default function Privacy() {
           <div className="legal-inline-note">
             <strong>¿Durante cuánto tiempo?</strong>
             <p>El plazo depende del tipo de información y de las obligaciones asociadas. Si necesitas saber qué se conserva sobre ti o solicitar su eliminación, escríbenos. No compartas contraseñas ni enlaces de acceso al hacerlo.</p>
+          </div>
+        </section>
+
+        <section aria-labelledby="privacy-scope-title" className="legal-section" id="alcance">
+          <div className="legal-section__heading">
+            <p className="eyebrow">ALCANCE DE ESTA INFORMACIÓN</p>
+            <h2 id="privacy-scope-title">Canales externos y detalles por verificar.</h2>
+            <p>El tratamiento de información puede variar según el servicio que utilices. Esta explicación general no sustituye la información específica que corresponda a cada contratación o integración.</p>
+          </div>
+          <div className="legal-duo">
+            <article className="legal-duo__panel"><h3>Servicios de terceros</h3><p>Si utilizas enlaces a WhatsApp, correo electrónico u otras plataformas externas, revisa también sus políticas. Las integraciones contratadas pueden requerir información adicional sobre proveedores, transferencias y responsabilidades.</p></article>
+            <article className="legal-duo__panel legal-duo__panel--soft"><h3>Información pendiente de completar</h3><p>La identificación jurídica del responsable, los plazos de conservación por categoría, la relación de proveedores y las tecnologías de seguimiento deben confirmarse antes de publicar afirmaciones definitivas sobre ellos.</p><Link className="text-link" to="/informacion-legal">Información legal y comercial</Link></article>
           </div>
         </section>
 
