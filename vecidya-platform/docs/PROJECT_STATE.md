@@ -1,3 +1,7 @@
+## UX-PREMIUM-02E — jerarquía del catálogo de licencias (2026-10-24)
+
+`feat/app-mini-ux-04-licencias` refina `/licencias`: notas sobre precios, niveles y diferencias quedan agrupadas en tarjetas junto al encabezado; cada licencia ofrece un CTA primario a su ficha y consulta secundaria. Se preservan el contenido de origen, las rutas, los precios y el esquema. Typecheck, build, diff-check y GET del Worker local (200; tres fichas enlazadas) PASS. La revisión visual estrecha muestra notas apiladas. No se completó el E2E comercial integral; no está publicado.
+
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
 `APP-MINI-REDESIGN-01` está integrado en `origin/main@3e6b9b1` mediante PR #53; no está publicado. App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.

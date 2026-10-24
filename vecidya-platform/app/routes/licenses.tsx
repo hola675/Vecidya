@@ -65,12 +65,16 @@ export default function Licenses() {
         </section>
 
         <section aria-labelledby="licenses-levels-title" className="licenses-levels">
-          <div className="licenses-section-heading">
-            <p className="eyebrow">TRES MOMENTOS</p>
-            <h2 id="licenses-levels-title">Tres productos. Una decisión clara.</h2>
-            <p className="licenses-price-note">Precios públicos en USD. La activación se coordina por contacto; no hay compra automática.</p>
-            <p className="licenses-price-note">Cuadra funciona de forma independiente y no requiere CRM. Barrio incorpora el CRM para un proceso comercial principal; Ciudad coordina procesos relacionados.</p>
-            <p className="licenses-price-note">De Cuadra a Barrio: USD 20/mes más para captar y dar seguimiento. De Barrio a Ciudad: USD 30/mes más para coordinar varios procesos. No necesitas subir de nivel si tu licencia actual ya resuelve el trabajo.</p>
+          <div className="licenses-section-heading licenses-section-heading--decision">
+            <div>
+              <p className="eyebrow">TRES MOMENTOS</p>
+              <h2 id="licenses-levels-title">Tres productos. Una decisión clara.</h2>
+            </div>
+            <aside aria-label="Información para comparar las licencias" className="licenses-decision-notes">
+              <p className="licenses-price-note">Precios públicos en USD. La activación se coordina por contacto; no hay compra automática.</p>
+              <p className="licenses-price-note">Cuadra funciona de forma independiente y no requiere CRM. Barrio incorpora el CRM para un proceso comercial principal; Ciudad coordina procesos relacionados.</p>
+              <p className="licenses-price-note">De Cuadra a Barrio: USD 20/mes más para captar y dar seguimiento. De Barrio a Ciudad: USD 30/mes más para coordinar varios procesos. No necesitas subir de nivel si tu licencia actual ya resuelve el trabajo.</p>
+            </aside>
           </div>
           <div className="licenses-grid">
             {licenses.map((license, index) => (
@@ -91,9 +95,9 @@ export default function Licenses() {
                   <ul>{license.includes.map((item) => <li key={item}><span aria-hidden="true">✓</span>{item}</li>)}</ul>
                 </div>
                 <p className="license-card__activation">Puesta en marcha ${license.activationUsd} una vez</p>
-                <div className="commercial-catalog__actions">
-                  <Link className="text-link" to={license.detailPath}>Ver detalles de {license.name} <span aria-hidden="true">→</span></Link>
-                  <Link className="license-card__availability" to={`/contacto?interes=${license.id}`}>Empezar con {license.name} <span aria-hidden="true">→</span></Link>
+                <div className="license-card__actions">
+                  <Link className="button button--primary" to={license.detailPath}>Ver detalles de {license.name} <span aria-hidden="true">→</span></Link>
+                  <Link className="button button--secondary license-card__availability" to={`/contacto?interes=${license.id}`}>Consultar {license.name}</Link>
                 </div>
               </article>
             ))}

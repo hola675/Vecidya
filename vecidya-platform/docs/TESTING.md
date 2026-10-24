@@ -1,5 +1,12 @@
 # Pruebas
 
+## UX-PREMIUM-02E — catálogo de licencias (2026-10-24)
+
+- `pnpm run typecheck`: PASS; `pnpm run build`: PASS; `git diff --check`: PASS.
+- Wrangler Worker local: GET `/licencias` → HTTP 200, título y H1 esperados; los tres CTAs de detalle conservan `/licencias/cuadra`, `/licencias/barrio` y `/licencias/ciudad`.
+- Revisión visual en viewport estrecho: las notas de decisión se apilan bajo el título y se leen sin desbordamiento visible; la acción a detalles ocupa el ancho de tarjeta y la consulta queda secundaria.
+- No se ejecutó `commercial-details-check.mjs`; en la corrida registrada en `UX-PREMIUM-02A`, el runner expiró esperando `networkidle` en `/licencias`. No se afirma E2E integral ni revisión WCAG/axe. Sin D1 remota, deploy o petición HTTP pública fechada.
+
 ## DIAG-QA03B-PROFILE-KNOWLEDGE-01 — 60 variantes y reporte HTML (2026-10-24)
 
 **QA-03C — RAN local:** se corrigió la matriz sintética: P20 conserva captación como `unknown` porque volumen no prueba fiabilidad. `unknownByDesignQuestionIds` distingue incógnitas justificadas de interpretaciones y supuestos. Suite QA-03B profile **4/4 PASS** tras añadir la equivalencia de contrato presentación/informe y regresiones focales P03, P10 y P18; canonical candidates **16/16 PASS** con una batería adicional de suficiencia que reutiliza reglas aprobadas y no fija calibración numérica. Unitarias de diagnóstico completas: **1520/1520 PASS**; typecheck y build PASS.

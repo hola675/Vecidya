@@ -540,6 +540,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   gap: .6rem;
 }
 
+.licenses-section-heading--decision {
+  grid-template-columns: minmax(15rem, .75fr) minmax(0, 1.25fr);
+  align-items: start;
+  gap: clamp(1.25rem, 4vw, 3rem);
+}
+
+.licenses-decision-notes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .75rem;
+}
+
 .licenses-section-heading h2 {
   margin: .1rem 0 0;
 }
@@ -683,6 +695,29 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   color:var(--muted);
   font-size:var(--text-meta);
   line-height:1.55;
+}
+
+.licenses-decision-notes .licenses-price-note {
+  max-width: none;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--orange);
+  border-radius: .8rem;
+  padding: .85rem;
+  background: linear-gradient(145deg, #fff, #fffaf6);
+}
+
+.license-card__actions {
+  display: grid;
+  gap: .65rem;
+  margin-top: .25rem;
+}
+
+.license-card__actions .button {
+  width: 100%;
+  justify-content: center;
+  min-width: 0;
+  text-align: center;
 }
 
 .licenses-comparison {
@@ -866,8 +901,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 820px) {
   .licenses-hero,
   .licenses-definition,
-  .licenses-addons {
+  .licenses-addons,
+  .licenses-section-heading--decision {
     grid-template-columns: 1fr;
+  }
+
+  .licenses-decision-notes {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
   }
 
   .licenses-hero {
@@ -909,6 +949,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   }
 
   .licenses-definition dl {
+    grid-template-columns: 1fr;
+  }
+
+  .licenses-decision-notes {
     grid-template-columns: 1fr;
   }
 
