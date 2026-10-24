@@ -57,7 +57,17 @@ export const learnArticles: LearnArticle[] = [
     image: "/assets/learn/diagram-crm.svg",
     imageAlt: "Una consulta se registra con contexto y puede continuar, retomarse después o cerrarse, según lo que ocurra",
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no es un CRM ni crea una base de contactos." },
+    editorialDraft: false,
     sections: [
+      {
+        heading: "Qué podrás hacer al terminar",
+        paragraphs: ["Identificarás qué información mínima necesitas para seguir una consulta, distinguirás entre una lista sencilla y un CRM, y podrás elegir una primera mejora sin comprar una herramienta por impulso."],
+        blocks: [{ type: "steps", label: "Ejercicio de dos minutos", items: [
+          { title: "Recuerda una consulta pendiente", detail: "Sin escribir datos personales, piensa qué información te faltó para responderla." },
+          { title: "Formula la próxima acción", detail: "Completa mentalmente: «La persona necesita…, el siguiente paso es… y lo revisará…»." },
+          { title: "Elige el soporte más sencillo", detail: "Decide si una lista controlada basta o si necesitas coordinar a varias personas y canales." },
+        ] }],
+      },
       {
         heading: "Qué significa CRM en el trabajo diario",
         paragraphs: [
