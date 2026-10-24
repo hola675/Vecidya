@@ -90,11 +90,9 @@ export function QuestionStep({ presented, progress, value, error, reviewing, can
     <div className="df-step">
       <FlowProgress progress={progress} />
       <form className="df-question" key={question.id} noValidate onSubmit={submit}>
-        <fieldset aria-describedby={describedBy} className="df-question__fieldset">
-          <legend className="df-question__legend">
-            {kicker ? <span className="df-question__kicker">{kicker}</span> : null}
-            <h1 className="df-question__title" ref={headingRef} tabIndex={-1}>{question.prompt}</h1>
-          </legend>
+        {kicker ? <p className="df-question__kicker">{kicker}</p> : null}
+        <h1 className="df-question__title" id={`df-question-title-${question.id}`} ref={headingRef} tabIndex={-1}>{question.prompt}</h1>
+        <fieldset aria-describedby={describedBy} aria-labelledby={`df-question-title-${question.id}`} className="df-question__fieldset">
           {reviewing ? <p className="df-question__review">Estás revisando una respuesta anterior. Si la cambias, ajustaremos las preguntas siguientes.</p> : null}
           {question.hint ? <p className="df-question__hint" id={`df-hint-${question.id}`}>{question.hint}</p> : null}
           {multi ? <p className="df-question__multi" id={`df-multi-${question.id}`}>Puedes elegir varias opciones.</p> : null}

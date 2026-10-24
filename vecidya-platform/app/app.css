@@ -5053,8 +5053,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .df-step { display: grid; gap: clamp(1.25rem, 4vw, 2rem); }
 .df-question { display: grid; gap: 1.1rem; min-width: 0; }
 .df-question__fieldset { display: grid; gap: 0.85rem; min-width: 0; margin: 0; border: 0; padding: 0; }
-.df-question__legend { display: grid; gap: 0.5rem; margin-bottom: 0.35rem; padding: 0; }
-.df-question__kicker { width: fit-content; border-radius: 99px; padding: 0.2rem 0.65rem; color: var(--blue-dark); background: #eef4ff; font-size: var(--text-label); font-weight: 800; }
+.df-question__kicker { width: fit-content; margin: 0; border-radius: 99px; padding: 0.2rem 0.65rem; color: var(--blue-dark); background: #eef4ff; font-size: var(--text-label); font-weight: 800; }
 .df-question__title { margin: 0; font-size: clamp(1.4rem, 4.2vw, 1.95rem); font-weight: 800; letter-spacing: -0.025em; line-height: 1.2; text-wrap: balance; overflow-wrap: break-word; }
 .df-question__title:focus { outline: none; }
 .df-question__hint, .df-question__multi { margin: 0; max-width: 60ch; color: var(--muted); line-height: 1.5; }
