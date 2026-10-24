@@ -106,12 +106,12 @@ export default function Privacy() {
           <div className="legal-highlight__intro">
             <p className="eyebrow">DIAGNÓSTICO VECIDYA</p>
             <h2 id="privacy-diagnostic-title">Explora tu situación sin crear una cuenta.</h2>
-            <p>Puedes iniciar el diagnóstico público sin crear una cuenta. Algunas funciones adicionales, cuando estén habilitadas, pueden solicitar datos de contacto y deben explicar su finalidad antes del envío.</p>
+            <p>El diagnóstico público no exige registro, nombre, correo ni teléfono para obtener el resumen anónimo. Si se habilita la solicitud de un informe identificado, se explicará su finalidad antes de enviar datos de contacto.</p>
             <Link className="button button--secondary" to="/diagnostico">Conocer el diagnóstico</Link>
           </div>
           <div className="legal-highlight__steps">
-            <div><strong>Mientras avanzas</strong><p>El diagnóstico puede guardar el progreso en el almacenamiento de este navegador para permitirte continuar. Su duración y eliminación dependen de la versión del flujo; evita compartir dispositivos si las respuestas son privadas.</p></div>
-            <div><strong>Al terminar</strong><p>Para generar el resumen, las respuestas se transmiten al servidor y se procesan. La ruta de resumen anónimo revisada no contiene una operación explícita de persistencia de respuestas; esto no descarta registros técnicos, controles de seguridad ni otros flujos de informes identificados, que deben verificarse por separado.</p></div>
+            <div><strong>Mientras avanzas</strong><p>Tus respuestas se guardan en este navegador para que puedas continuar si recargas la página. La sesión QA-03B tiene una vigencia de 14 días desde la última actividad; puedes eliminarla antes si empiezas de nuevo. Evita usar dispositivos compartidos.</p></div>
+            <div><strong>Al terminar</strong><p>Las respuestas se envían temporalmente al servidor para calcular el resumen anónimo. La ruta pública revisada no persiste explícitamente el contenido de las respuestas en la base de datos; esto no excluye registros técnicos del servicio ni otros flujos identificados. La analítica de embudo disponible en desarrollo no está habilitada como endpoint público de producción.</p></div>
             <div><strong>Si cambias de dispositivo</strong><p>El progreso guardado localmente no se sincroniza automáticamente entre dispositivos.</p></div>
           </div>
         </section>
