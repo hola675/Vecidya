@@ -83,26 +83,35 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
     <PublicLayout>
       <main className="public-page learn-article-page">
         <article>
-          <header className="learn-article-header">
-            <Link className="text-link" to="/aprende">← Volver a Aprende</Link>
-            <p className="eyebrow">{article.category}</p>
-            <h1>{article.title}</h1>
-            <p className="learn-article-intro">{article.intro}</p>
-            {article.editorialDraft ? (
-              <p className="learn-article-byline"><strong>Borrador educativo de Aprende Vecidya</strong> · contenido asistido por IA, pendiente de revisión editorial y autoría</p>
-            ) : (
-              <p className="learn-article-byline">Por <strong>Yoan Ortiz</strong> · Aprende Vecidya</p>
-            )}
-            <aside className="learn-article-quick" aria-label="Resumen sencillo de la guía">
-              <h2>En pocas palabras</h2>
-              <ul>{article.enPocasPalabras.map((point) => <li key={point}>{point}</li>)}</ul>
-            </aside>
-          </header>
-          <img className="learn-article-image" src={article.image} alt={article.imageAlt} width={900} height={360} />
+          <div className="learn-article-feature">
+            <header className="learn-article-header">
+              <nav aria-label="Ruta de navegación" className="learn-article-breadcrumb">
+                <Link to="/aprende">Aprende</Link>
+                <span aria-hidden="true">/</span>
+                <span>{article.category}</span>
+              </nav>
+              <p className="eyebrow">GUÍA PRÁCTICA · {article.category}</p>
+              <h1>{article.title}</h1>
+              <p className="learn-article-intro">{article.intro}</p>
+              {article.editorialDraft ? (
+                <p className="learn-article-byline"><strong>Borrador educativo de Aprende Vecidya</strong> · contenido asistido por IA, pendiente de revisión editorial y autoría</p>
+              ) : (
+                <p className="learn-article-byline">Por <strong>Yoan Ortiz</strong> · Aprende Vecidya</p>
+              )}
+              <aside className="learn-article-quick" aria-label="Resumen sencillo de la guía">
+                <h2>En pocas palabras</h2>
+                <ul>{article.enPocasPalabras.map((point) => <li key={point}>{point}</li>)}</ul>
+              </aside>
+            </header>
+            <img className="learn-article-image" src={article.image} alt={article.imageAlt} width={900} height={360} />
+          </div>
           <div className="learn-article-layout">
-            <aside className="learn-article-toc" aria-label="Índice del artículo">
-              <strong>En esta guía</strong>
-              <ol>{article.sections.map((section, index) => <li key={section.heading}><a href={`#section-${index + 1}`}>{section.heading}</a></li>)}</ol>
+            <aside className="learn-article-rail">
+              <nav className="learn-article-toc" aria-label="Índice del artículo">
+                <strong>En esta guía</strong>
+                <ol>{article.sections.map((section, index) => <li key={section.heading}><a href={`#section-${index + 1}`}>{section.heading}</a></li>)}</ol>
+              </nav>
+              <Link className="learn-article-rail-link" to="/aprende">Explorar todas las guías <span aria-hidden="true">→</span></Link>
             </aside>
             <div className="learn-article-body">
               {article.sections.map((section, index) => (

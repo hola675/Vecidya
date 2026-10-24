@@ -18,6 +18,8 @@
 
 **Estado (UX-PREMIUM-01A, 2026-10-24):** fase 1A implementada localmente: el CTA principal del hero de Inicio ahora lleva al Diagnóstico y explorar Vecindario queda como acción secundaria; el adorno sin contenido se excluye del árbol accesible. Typecheck, build y diff-check PASS. Worker Cloudflare local con D1 efímera en `0000–0027`: GET `/` devuelve 200, el árbol accesible refleja el orden del CTA y la captura de escritorio confirma la jerarquía visual. No se revisaron otros viewports ni se certifica accesibilidad integral. Fases 2–6 son plan futuro y no están implementadas ni certificadas por esta entrada.
 
+**Estado (UX-PREMIUM-01C, 2026-10-24):** se completó localmente el siguiente checkpoint de Aprende sobre `origin/main@2a58dc0`: plantilla de guía individual con hero editorial, imagen completa, breadcrumb y navegación lateral a secciones/índice, más enlaces a otras guías existentes. Typecheck, build y diff-check PASS; Worker local y seis anchos sin overflow. El E2E se detuvo en sitemap: `/sitemap.xml` devolvió 500 en el entorno local; ese contrato queda sin certificar. Sin deploy ni HTTP pública fechada.
+
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)

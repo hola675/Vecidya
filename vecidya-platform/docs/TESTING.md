@@ -1,5 +1,11 @@
 # Pruebas
 
+## UX-PREMIUM-01C — detalle de guías Aprende (2026-10-24)
+
+Typecheck, build y `git diff --check`: PASS. Worker Cloudflare local: artículo seleccionado y sus dos guías relacionadas responden HTTP 200. Inspección de viewport con Edge/Playwright en 320/360/390/768/1024/1366 px: sin overflow horizontal, un H1, breadcrumb e índice de 13 secciones; los enlaces relacionados resuelven a rutas existentes.
+
+`BASE_URL=http://127.0.0.1:5178 pnpm exec node tests/e2e/learn-experience-check.mjs`: **no completó**; se detuvo al verificar que el sitemap incluya `/aprende/dominio-hosting-sitio-web-como-funcionan`. En este Worker la ruta `/sitemap.xml` respondió HTTP 500, por lo que no se declara PASS del E2E ni del sitemap. La ruta de detalle de esa guía responde con metadata index/follow; la falla corresponde al sitemap local y queda pendiente diagnosticar con un runtime/D1 local correctamente migrado. No se alteró la política de sitemap. No se accedió a D1 remota ni se desplegó.
+
 ## DIAG-QA03B-PROFILE-KNOWLEDGE-01 — 60 variantes y reporte HTML (2026-10-24)
 
 **RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-profile-case-matrix.test.ts` — **3/3 PASS**, incluyendo 20 casos base y 60 variantes (20 perfiles × informado/parcial/desconocedor), cada pregunta validada contra el banco actual y sin hard-cap de 30. Los 60 índices globales permanecen pendientes; 57 recorridos tienen dimensiones aplicables no resueltas; 58 terminan `no_useful_questions` y 2 `budget_blocked`; se observaron 26 puntuaciones dimensionales aisladas y 0 de medición/optimización.

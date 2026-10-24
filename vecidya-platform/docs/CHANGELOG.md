@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-24 — UX-PREMIUM-01C — páginas hijas de Aprende
+
+- La plantilla compartida de artículos incorpora portada editorial con ilustración completa, breadcrumb de regreso al catálogo, rail de lectura con índice y enlace a todas las guías, y mejor jerarquía para las guías relacionadas. Se mantienen contenido, metadata, CTA y destinos existentes.
+- Typecheck, build, diff-check y revisión local responsive a seis anchos PASS. El E2E de Aprende quedó incompleto por HTTP 500 local en `/sitemap.xml`; no se certifica sitemap ni publicación pública.
+
 ## 2026-10-24 — APP-MINI-02E (búsqueda y filtros del Vecindario; en progreso)
 
 - `/vecindario` amplía búsqueda y filtros con modalidad, área de servicio, servicios/productos y módulos MiniWeb con contenido renderizable. Las fichas muestran ofertas activas y secciones públicas derivadas solo del snapshot; las especialidades se infieren de categoría/ofertas existentes para evitar duplicar una taxonomía.

@@ -5900,3 +5900,25 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   border-radius: 0.5rem;
   object-fit: cover;
 }
+
+/* UX-PREMIUM-01C: portada editorial y navegación clara en cada guía. */
+.learn-article-feature { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(18rem,.9fr); align-items:stretch; gap:clamp(1rem,3vw,2.5rem); overflow:hidden; border:1px solid rgb(21 95 197 / 12%); border-radius:var(--radius-lg); padding:clamp(1.25rem,4vw,3.5rem); background:radial-gradient(ellipse at 0% 0%,rgb(21 95 197 / 9%),transparent 45%),linear-gradient(135deg,#fff 0%,#f5f9ff 100%); box-shadow:0 1.4rem 3.5rem rgb(18 48 84 / 7%); }
+.learn-article-header { max-width:50rem; display:grid; align-content:start; gap:.8rem; }
+.learn-article-breadcrumb { display:flex; align-items:center; flex-wrap:wrap; gap:.5rem; margin:0 0 1.1rem; color:var(--muted); font-size:.92rem; }
+.learn-article-breadcrumb a { color:var(--blue); font-weight:700; text-underline-offset:.2em; }
+.learn-article-breadcrumb a:focus-visible,.learn-article-rail-link:focus-visible,.learn-related-card:focus-visible { outline:3px solid var(--orange); outline-offset:3px; }
+.learn-article-image { align-self:stretch; width:100%; min-width:0; min-height:18rem; max-height:38rem; border-radius:calc(var(--radius-lg) - .35rem); object-fit:contain; background:#f4f8ff; box-shadow:0 1rem 2.5rem rgb(18 48 84 / 14%); }
+.learn-article-layout { max-width:70rem; }
+.learn-article-rail { position:sticky; top:1.5rem; align-self:start; display:grid; gap:1.1rem; max-height:calc(100vh - 3rem); overflow-y:auto; overscroll-behavior:contain; }
+.learn-article-toc { position:static; max-height:none; overflow:visible; }
+.learn-article-toc a:hover,.learn-article-toc a:focus-visible { color:var(--blue); text-decoration:underline; text-underline-offset:.2em; }
+.learn-article-rail-link { display:flex; align-items:center; justify-content:space-between; gap:.75rem; border:1px solid rgb(21 95 197 / 12%); border-radius:var(--radius-sm); padding:.85rem 1rem; color:var(--blue); font-size:.9rem; font-weight:700; line-height:1.4; text-decoration:none; background:#f4f8ff; }
+.learn-article-rail-link:hover { border-color:rgb(21 95 197 / 35%); background:#eaf3ff; }
+.learn-related-card { transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease; }
+.learn-related-card:hover { transform:translateY(-2px); border-color:rgb(21 95 197 / 28%); box-shadow:0 .8rem 1.8rem rgb(18 48 84 / 8%); }
+@media (max-width:820px) {
+  .learn-article-feature { grid-template-columns:minmax(0,1fr); }
+  .learn-article-image { min-height:0; max-height:28rem; aspect-ratio:16 / 9; }
+  .learn-article-rail { position:static; max-height:none; overflow:visible; }
+}
+@media (prefers-reduced-motion:reduce) { .learn-related-card { transition:none; } }
