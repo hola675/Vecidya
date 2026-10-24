@@ -6,9 +6,17 @@ La nueva vista `/app/internal/licenses` permite administrar la licencia asociada
 
 ## APP-MINI-REDESIGN-01 — dashboards cliente e interno (2026-10-23)
 
-`pnpm run test:e2e:app-dashboard-redesign` **PASS** en Worker Wrangler local con D1 aislada. El arnés aplica `0000–0024`, crea una cuenta/organización sintética, eleva solamente su fila de fixture a `platform_admin` activo y valida el acceso real a `/app/internal`; termina el Worker, elimina la D1 efímera y comprueba su ausencia. No escribe en la D1 compartida ni remota.
+`pnpm run test:e2e:app-dashboard-redesign` **PASS** en Worker Wrangler local con D1 aislada. El arnés aplica `0000–0026`, crea una cuenta/organización sintética, eleva solo su fixture a `platform_admin` activo y valida `/app` y `/app/internal`; termina el Worker, elimina la D1 efímera y comprueba su ausencia. No escribe en la D1 compartida ni remota.
 
-Playwright inicia sesión y verifica `/app` y `/app/internal` a 320/390/768/1366 px, ancho de documento sin overflow, menú cliente e interno abierto sin overflow y cierre de ambos al navegar. Capturas de escritorio/móvil se guardaron fuera del repo en `C:\Users\Admin\.codex\visualizations\2026\10\23\01a169b4-8323-7853-b6f4-27558cc6650f`. `pnpm run typecheck` y `pnpm run build`: **PASS**. Build conserva avisos existentes de secretos opcionales ausentes y dynamic imports ineficaces. No se corrieron unitarias, axe, lector de pantalla, teclado completo ni zoom 200 %; esto no es certificación WCAG ni de todas las rutas de App/Admin. Sin publicación, deploy, cambio de versión, schema o acceso remoto.
+Playwright verifica ambas rutas sin overflow a 320/390/768/980/1366 px. Los dos drawers abren, permiten navegación y se cierran al cambiar de ruta a 390/768/980 px. `pnpm run typecheck` y `pnpm run build`: **PASS**; build muestra avisos existentes de secretos opcionales ausentes y dynamic imports ineficaces. No se corrieron unitarias, axe, lector de pantalla, teclado completo ni zoom 200 %; no es certificación WCAG ni de todas las rutas.
+
+La certificación complementaria `platform-admin-global-certification-check.mjs` fue **parcial**: en D1 temporal pasaron perfiles/listados/filtros, guards de borrador/gobernanza/licencia, suspensión/reactivación, aislamiento tenant, membresías y capacitación. El arnés verificó la eliminación de la D1. El Worker local devolvió `ECONNRESET` al continuar con MiniWeb, después de guardar el borrador; publicación, auditoría MiniWeb y casos posteriores no tienen PASS. Se actualizó el harness para esperar snapshot v3 según el código vigente. Repetir la certificación completa con Worker estable; no se tocó D1 compartida/remota.
+
+## DIAG-IDENTIFIED-PRINT-001 — impresión de resumen e informe (2026-10-23)
+
+El PDF entregado se revisó visualmente: las acciones de revocación/eliminación entraban en la hoja y había una página vacía. Se añadieron botones de impresión en los dos resúmenes y estilos print para ocultar acciones, desplegar la cobertura anónima y retirar el espacio del contenedor del informe.
+
+`diagnostic-v3-qa03b-check.mjs` se amplió para comprobar el resumen anónimo, ocultar controles en impresión y comparar las hojas de `page.pdf` con `.rp[data-pages]`. Una ejecución alcanzó el informe identificado y confirmó el botón en pantalla; falló al leerlo después de ocultarlo en media print, ya corregido en el harness. La reejecución terminó con timeout al cargar `/diagnostico` desde el Worker/Vite local. **El PDF corregido y la igualdad de páginas no tienen PASS; pendiente repetir el E2E en un Worker local estable.** No hubo correo real, D1 remota, publicación ni activación del funnel.
 
 ## APP-MINI-02B — ofertas y FAQ (2026-10-23; integrado, validación funcional pendiente)
 

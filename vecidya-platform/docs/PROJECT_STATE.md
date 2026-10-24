@@ -1,6 +1,6 @@
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
-`APP-MINI-REDESIGN-01` ajusta localmente `/app` y `/app/internal`: el shell de Administración incorpora un cajón de navegación móvil y ambos dashboards tienen jerarquía visual renovada. E2E Playwright en Worker/D1 aislados: rutas y menú a 320/390/768/1366 px sin overflow; typecheck/build PASS. Los guards y datos siguen iguales. No publicado. Falta audit de teclado/foco/axe y cubrir el resto de rutas; evidencia y límites en `STATUS.md`/`TESTING.md`.
+`APP-MINI-REDESIGN-01` continúa localmente sobre `origin/main@5e26614` (PR #52 integrado). App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.
 
 ## UI-PILOT-01 — estado local de Aprende (2026-10-23)
 

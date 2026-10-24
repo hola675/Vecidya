@@ -5210,12 +5210,26 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   html:has(.rp), body:has(.rp) { background: #fff; }
   .rp-page { min-height: 0; padding: 0; background: #fff; }
   .df-identified-report + .platform-footer { display: none !important; }
+  .df-identified-report { display: block; margin: 0; padding: 0; }
+  .df-identified-report__nav, .df-identified-report > [role="status"], .df-identified-report > [role="alert"] { display: none !important; }
   .rp-toolbar, .rp-sheet--measure { display: none; }
-  .rp { display: block; }
+  .rp { display: block; margin: 0; }
   .rp-sheet { box-shadow: none; }
   .rp--candidate .rp-sheet:not(.rp-sheet--measure) { width: var(--rp-w); height: var(--rp-h); overflow: hidden; padding: 11mm 12mm 9mm; }
   .rp--candidate .rp-sheet:not(.rp-sheet--measure) .rp-sheet__body { flex: 1; min-height: 0; overflow: hidden; }
   .rp p { orphans: 2; widows: 2; }
+}
+
+@media print {
+  .df-page:has(.df-anon-summary) { width: 100%; margin: 0; padding: 0; }
+  .df-anon-summary { max-width: none; gap: 1rem; }
+  .df-anon-summary__actions { display: none !important; }
+  .dr-candidate-actions { display: none !important; }
+  .dr-result { gap: 1rem; }
+  .dr-candidate-overall, .dr-section { break-inside: avoid; }
+  .df-anon-summary__coverage { break-inside: avoid; }
+  .df-anon-summary__coverage:not([open]) > :not(summary) { display: block; }
+  .df-anon-summary__coverage summary { list-style: none; }
 }
 
 /* DIAG-V3-RESULT-UX-01: resumen primero, ocho áreas compactas y detalle progresivo. */
@@ -5760,7 +5774,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .admin-dashboard--redesign .admin-attention h2 { margin: .4rem 0 .7rem; font-size: 1.3rem; letter-spacing: -.03em; }
 .admin-dashboard--redesign .admin-overview-card { border-radius: .95rem; }
 .admin-sidebar-backdrop { display: none; }
-@media (max-width: 760px) {
+@media (max-width: 980px) {
   .app-home > .page-heading h1,
   .admin-dashboard--redesign > .page-heading h1 { font-size: clamp(1.85rem,8vw,2.5rem); }
   .app-home .app-primary-action { gap: 1rem; }
@@ -5779,6 +5793,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .admin-header__note { font-size: .78rem; }
   .admin-header > .admin-header__back-link { grid-column: 1/-1; grid-row: 2; width: 100%; }
   .admin-dashboard--redesign .admin-stat-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .app-shell { display: block; }
+  .app-sidebar { display: none; position: fixed; z-index: 5; inset: 0 auto 0 0; width: min(19rem,calc(100vw - 3.5rem)); height: 100dvh; overflow-y: auto; box-shadow: 1rem 0 2rem rgb(7 29 58 / 25%); }
+  .app-sidebar[data-open="true"] { display: flex; }
+  .app-header { justify-content: space-between; padding-inline: 1rem; }
+  .mobile-menu { display: inline-flex; }
+  .organization-switcher { min-width: 0; flex: 1; }
+  .user-menu__label { display: none; }
 }
 @media (max-width: 400px) {
   .app-home .app-state-grid { grid-template-columns: 1fr; }
