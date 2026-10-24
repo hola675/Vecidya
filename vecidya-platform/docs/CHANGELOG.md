@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-23 — ADMIN-LICENSE-UX-001 — jerarquía cliente y negocios
+
+- La pantalla de licencias agrupa negocios por cliente responsable; cada negocio tiene su propia licencia. Se aclara que el perfil público y el espacio de trabajo son dos facetas de un mismo negocio.
+- Se usa “espacio de trabajo” para la estructura técnica interna y “negocio” para lo que el operador administra. Se actualizan inicio, menú, directorio y pruebas E2E. Sin cambio de datos ni migración.
+
 ## 2026-10-23 — ADMIN-LICENSE-UX-001 (panel interno de licencias)
 
 - Se añadió `/app/internal/licenses`, con asignación, cambio de plan, suspensión y reactivación por organización. La vista separa workspace, perfil comercial y licencia, y aclara que suspender conserva organización y datos.

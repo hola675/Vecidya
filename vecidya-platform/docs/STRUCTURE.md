@@ -152,12 +152,12 @@ D:\Proyectos\Vecidya            (raíz Git)
 | --- | --- | --- | --- | --- | --- |
 | `/app/internal` | `internal.tsx` | tarjetas | — | `admin-shell` | sí |
 | `/app/internal/services` | `internal-services.tsx` | orgs, catálogo, asignaciones | upsert de estado (sin auditoría) | `psa` (stale) | sí |
-| `/app/internal/organizations` | `internal-organizations.tsx` | organizaciones | — | `admin-orgs` (stale) | sí |
+| `/app/internal/organizations` | `internal-organizations.tsx` | espacios de trabajo (organizaciones internas) | — | `admin-orgs` (stale) | sí |
 | `/app/internal/organizations/new` | `internal-organization-create.tsx` | alta con invitación owner | `organization:create` | crea org/lifecycle/invitación/audit y envía una vez | local |
 | `/app/internal/organizations/:organizationId` | `internal-organization-detail.tsx` | detalle | `requirePlatformReadAccess` | organizaciones para staff y admin | local |
 | `/app/internal/organizations/:organizationId/miniweb` | `internal-organization-miniweb.tsx` | configuración JSON MiniWeb | `miniweb:save` / `miniweb:publish` | guardar draft y publicación explícita auditados | local |
 | `/app/internal/organizations/:organizationId/training` | `internal-organization-training.tsx` | artículos y avance de capacitación | `requirePlatformAdmin` en loader/action | asigna contenido Aprende y corrige progreso con motivo | local |
-| `/app/internal/licenses` | `internal-licenses.tsx` | licencias por organización | `requirePlatformAdmin`; acción `organization:license:update` | asignar/cambiar/suspender/reactivar; auditoría del control plane | local |
+| `/app/internal/licenses` | `internal-licenses.tsx` | licencias por negocio, agrupadas por cliente | `requirePlatformAdmin`; acción `organization:license:update` | asignar/cambiar/suspender/reactivar; auditoría del control plane | local |
 | `/app/owner-invitations/:invitationId` | `platform-owner-invitation.tsx` | aceptación owner | sesión, digest, email verificado y consumo único | membership + lifecycle + audit en batch | local |
 | `/app/internal/businesses` | `internal-businesses.tsx` | perfiles | — | `admin-bp` | sí |
 | `/app/internal/businesses/:businessProfileId` | `internal-business-profile-detail.tsx` | detalle + gobierno + auditoría | verificar/retirar/suspender/reactivar (`0009`) | `admin-bp`, `d1` | sí (sin acciones de gobierno) |

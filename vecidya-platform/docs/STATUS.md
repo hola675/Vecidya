@@ -1,8 +1,8 @@
 # Estado de implementación
 
-## ADMIN-LICENSE-UX-001 — separación organización/perfil y licencias (2026-10-23)
+## ADMIN-LICENSE-UX-001 — licencias por cliente y negocio (2026-10-23)
 
-**PASS local en `feat/platform-admin-license-ux@e86fc03`, actualizado con `origin/main@5e26614`; PR pendiente.** `/app/internal/licenses` asigna/cambia/suspende/reactiva licencias por organización y muestra owner/perfil por separado; la página explica que suspender no elimina los datos. Escrituras protegidas por acción `organization:license:update` y servicios auditados. E2E Admin Global y dashboard redesign PASS; typecheck/build/diff-check PASS. Sin D1 remota ni deploy; suite unitaria no ejecutada para este cambio.
+**En validación local en `feat/platform-admin-license-ux`, actualizado con `origin/main@3e6b9b1`; PR #54 abierto.** `/app/internal/licenses` agrupa espacios de trabajo por cliente responsable y muestra cada negocio como unidad con licencia propia. El copy explica que el perfil público y el espacio operativo son dos vistas del mismo negocio. Asignar/cambiar/suspender/reactivar sigue protegido por `organization:license:update` y servicios auditados. La interfaz usa “espacio de trabajo” para la estructura técnica interna y “negocio” para la entidad que administra el operador. Sin D1 remota ni deploy.
 
 ## APP-MINI-REDESIGN-01 — Mi Vecidya y Administración (2026-10-23)
 

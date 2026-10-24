@@ -8,7 +8,7 @@ El piloto visual de `/aprende` está implementado en `feat/aprende-ui-pilot-01`,
 
 ## ADMIN-LICENSE-UX-001 — checkpoint local (2026-10-23)
 
-La interfaz `/app/internal/licenses` reúne la asignación/cambio/suspensión/reactivación por organización y explica la diferencia entre workspace, perfil comercial y licencia. Las escrituras usan el guard `organization:license:update` y los servicios con auditoría. Checkpoint local `feat/platform-admin-license-ux@e86fc03`, actualizado con `origin/main@5e26614`; consultar `TESTING.md` para evidencia del E2E y límites locales. PR pendiente; no desplegado.
+La interfaz `/app/internal/licenses` presenta la jerarquía cliente → negocios y agrupa por cuenta responsable. Cada negocio tiene licencia propia; perfil público y espacio de trabajo son sus facetas pública y operativa. “Organización” queda como concepto interno y se rotula “espacio de trabajo” en la interfaz. Las escrituras usan `organization:license:update` y servicios auditados. Código actualizado con `origin/main@3e6b9b1`; rama `feat/platform-admin-license-ux`, PR #54 abierto; validación actual en `TESTING.md`. No desplegado.
 
 ## Estado vigente — APP-CLIENTE-00-PUBLISH-001-R2 (2026-10-23)
 

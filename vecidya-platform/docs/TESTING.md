@@ -1,8 +1,8 @@
 # Pruebas
 
-## ADMIN-LICENSE-UX-001 — asignación y estados de licencia (2026-10-23)
+## ADMIN-LICENSE-UX-001 — asignación por cliente y negocio (2026-10-23)
 
-La nueva vista `/app/internal/licenses` permite administrar la licencia asociada a una organización y clarifica la diferencia con el perfil comercial. Sobre `feat/platform-admin-license-ux@e86fc03` (incluye `origin/main@5e26614`), `platform-admin-global-certification-check.mjs` **PASS en Worker y D1 local efímera**; verificó render de conceptos, asignación Cuadra pendiente con una auditoría, activación con una auditoría, además de invitaciones/concurrencia, roles, lifecycle, capacitación, MiniWeb y eliminación verificada de la D1 aislada. `pnpm run test:e2e:app-dashboard-redesign` **PASS** con Edge local: `/app` y `/app/internal`, menú móvil en 320/390/768/1366 px, apertura/cierre al navegar, D1 aislada eliminada y ausencia verificada. `pnpm run typecheck`, `pnpm run build` y `git diff --check` **PASS**. La suite unitaria completa no se repitió para este checkpoint. Wrangler avisó que faltan secretos de Gmail requeridos para correo real; el harness usó proveedor fake. Sin D1 remota ni deploy.
+La vista `/app/internal/licenses` agrupa negocios bajo el cliente responsable y deja la organización como término técnico “espacio de trabajo”. Para esta versión, cada espacio contiene un perfil de negocio único; la licencia se asocia a ese espacio y se muestra como licencia del negocio. Sobre `feat/platform-admin-license-ux` actualizado con `origin/main@3e6b9b1`, `platform-admin-global-certification-check.mjs` **PASS** con Worker/D1 efímeros; verificó el copy cliente→negocios, acciones de licencia/auditoría, invitaciones, concurrencia, roles, ciclo de vida, capacitación, MiniWeb y eliminación verificada de la D1. `app-dashboard-redesign-check.mjs` **PASS** con Edge local en `/app` y `/app/internal`, 320/390/768/980/1366 px, drawers abren/cierran y D1 aislada eliminada. `typecheck`, `build` y `git diff --check` **PASS** en el corte actual. Suite unitaria completa no repetida. Sin D1 remota ni deploy.
 
 ## APP-MINI-REDESIGN-01 — dashboards cliente e interno (2026-10-23)
 

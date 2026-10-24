@@ -11,7 +11,7 @@ import { requirePlatformReadAccess } from "../../server/platform-authorization.s
 
 import type { Route } from "./+types/internal-organizations";
 
-export function meta({}: Route.MetaArgs) { return [{ title: "Organizaciones | Administración Vecidya" }]; }
+export function meta({}: Route.MetaArgs) { return [{ title: "Espacios de trabajo | Administración Vecidya" }]; }
 
 type ProfileFilter = "all" | "published" | "draft" | "none";
 
@@ -50,7 +50,7 @@ export default function InternalOrganizations() {
     <AdminShell active="organizations" workspaceUser={workspaceUser} platformRole={platformRole}>
       <main className="admin-main">
         <Link className="back-link" to="/app/internal">← Volver a administración</Link>
-        <div className="page-heading"><div><p className="eyebrow">ORGANIZACIONES</p><h1>Organizaciones Vecidya</h1><p>Consulta el estado general de los espacios que administra Vecidya.</p></div><Badge tone="neutral">{organizations.length} en total</Badge>{platformRole === "platform_admin" ? <Link className="button button--primary" to="/app/internal/organizations/new">Crear organización</Link> : null}</div>
+        <div className="page-heading"><div><p className="eyebrow">ESPACIOS DE TRABAJO</p><h1>Datos internos de los negocios</h1><p>Cada fila muestra el espacio donde se gestionan miembros, permisos y servicios de un negocio. Para administrar licencias, usa «Licencias de negocios».</p></div><Badge tone="neutral">{organizations.length} espacios</Badge>{platformRole === "platform_admin" ? <Link className="button button--primary" to="/app/internal/organizations/new">Crear espacio de trabajo</Link> : null}</div>
 
         {organizations.length ? (
           <>
@@ -58,9 +58,9 @@ export default function InternalOrganizations() {
               <label className="admin-search">
                 <Icon name="eye" />
                 <input
-                  aria-label="Buscar organizaciones"
+                  aria-label="Buscar negocios o clientes"
                   onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Buscar por nombre, slug o propietario…"
+                  placeholder="Buscar por negocio, cliente o slug…"
                   type="search"
                   value={search}
                 />
@@ -81,7 +81,7 @@ export default function InternalOrganizations() {
               <div className="admin-table-wrap">
                 <table className="admin-table">
                   <thead>
-                    <tr><th>Organización</th><th>Owner</th><th>Estado</th><th>Miembros</th><th>Perfil</th><th>Servicios</th><th>Integraciones</th><th className="admin-table__action">Acción</th></tr>
+                    <tr><th>Espacio de trabajo</th><th>Cliente responsable</th><th>Estado</th><th>Miembros</th><th>Perfil</th><th>Servicios</th><th>Integraciones</th><th className="admin-table__action">Acción</th></tr>
                   </thead>
                   <tbody>
                     {filtered.map((item) => (
