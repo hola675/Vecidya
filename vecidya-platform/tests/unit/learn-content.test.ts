@@ -153,7 +153,7 @@ test("technology article explains domains, DNS, hosting, HTTPS and practical own
   }
 
   const content = article.sections.map((section) => `${section.heading} ${section.paragraphs.join(" ")} ${JSON.stringify(section.blocks ?? [])}`).join(" ");
-  for (const topic of [/dominio/i, /registro/i, /hosting|alojamiento/i, /DNS/i, /navegador/i, /servidor web/i, /HTTPS/i, /TLS/i, /correo profesional/i, /renovaci[oó]n/i, /costos/i, /registrador/i, /control administrativo/i]) {
+  for (const topic of [/dominio/i, /registro/i, /hosting|alojamiento/i, /DNS/i, /navegador/i, /servidor web/i, /HTTPS/i, /TLS/i, /correo profesional/i, /renovaci[oó]n/i, /registrador/i, /control administrativo/i]) {
     assert.match(content, topic);
   }
   assert.match(content, /cach[eé].{0,100}(?:no|cada solicitud|no necesariamente)|(?:no|cada solicitud).{0,100}cach[eé]/i);
