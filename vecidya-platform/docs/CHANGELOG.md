@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-24 — corrección de persistencia MiniWeb y fixture visual local
+
+- D1 local limitaba el número de variables por sentencia al guardar módulos, ofertas y FAQ juntos. Se redujeron los lotes atómicos a dos filas, conservando el guard CAS/autorizado por organización, y se añadió regresión E2E para nueve módulos, cuatro ofertas y cuatro FAQ.
+- El E2E MiniWeb pasó **91/91** en Worker/D1 local temporal. La D1 persistente de diseño conserva 20 usuarios/10 organizaciones y ahora tiene contenido sintético variado, planes del catálogo vigente y snapshots publicados consistentes; no se añadieron medios ni precios de venta ficticios.
+- Typecheck y build PASS. Sin cambios remotos, provisionamiento R2 ni deploy. Evidencia detallada en `TESTING.md` → DIAG-VISUAL-ASSETS-01.
+
 ## 2026-10-24 — 0.7.1 candidata — corrección de impresión del informe QA-03B
 
 - Los controles de privacidad y mensajes de estado dejan de aparecer en la impresión del informe identificado; el E2E compara hojas PDF con páginas visibles y ahora inspecciona el árbol PDF sin depender de Poppler.
