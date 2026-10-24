@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-24 — UX-PREMIUM-02B — navegación y diseño de fichas comerciales
+
+- Las 17 fichas comerciales mantienen regreso al catálogo y consulta contextual; suman 32 enlaces directos a ofertas relacionadas con sus dependencias o límites documentados. La ficha de Desarrollo Empresarial enlaza al Diagnóstico si aún se están definiendo prioridades.
+- El hero y las fichas relacionadas adoptan una jerarquía visual más clara, con tarjetas de contraste y reflow a una columna en móvil. Typecheck, build y diff-check PASS; Worker local comprobó las 17 rutas y destinos internos a 360/1024 px, sin overflow; revisión visual de escritorio PASS. Sin integración o publicación.
+
 ## 2026-10-24 — APP-MINI-02D (editor MiniWeb guiado; PR pendiente)
 
 - `/app/miniweb` organiza el editor en cinco destinos accesibles: Diseño, Secciones, Contenido, Vista previa y Publicar. La publicación y guardado quedan agrupados en su destino, y la UI declara que `Esencial` es la única plantilla disponible.

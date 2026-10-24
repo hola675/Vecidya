@@ -2,7 +2,11 @@
 
 ## UX-PREMIUM-01A — Inicio, primera fase del plan visual (2026-10-24)
 
-En `feat/app-mini-ux-01`, desde `origin/main` actualizado, el CTA principal del hero `/` dirige al Diagnóstico, de acuerdo con el recorrido de producto; el Vecindario queda como acción secundaria. El brillo decorativo se marca como oculto a tecnologías asistivas. Typecheck, build y diff-check PASS. Worker Cloudflare local con D1 efímera migrada `0000–0027`: GET `/` 200; árbol accesible y captura de escritorio confirman el nuevo orden/jerarquía. Build reportó secretos locales opcionales de Auth/Gmail ausentes y dos advertencias de dynamic import preexistentes; no se leyeron secretos. No se revisaron otros viewports ni se certifica accesibilidad integral. No se declara publicado. El plan con las fases 0–6 está en `ROADMAP.md`; solo 01A está implementada.
+Integrada en `origin/main@530235d`. El CTA principal del hero `/` dirige al Diagnóstico; Vecindario queda como acción secundaria y el brillo decorativo se oculta a tecnologías asistivas. Typecheck, build y diff-check PASS. Worker Cloudflare local con D1 efímera `0000–0027`: GET `/` 200; árbol accesible y captura de escritorio confirman orden y jerarquía. Sin publicación.
+
+## UX-PREMIUM-02B — fichas comerciales y enlaces relacionados (2026-10-24)
+
+**Trabajo local en `feat/app-mini-ux-02b-details`, sin integrar ni publicar.** Las 17 fichas hijas mantienen el enlace de regreso a `/licencias`, `/addons` o `/servicios`, el CTA contextual de consulta y sus contenidos. Ahora muestran hasta dos fichas relacionadas seleccionadas según dependencias y límites ya descritos en el catálogo (32 enlaces de detalle en total); Desarrollo Empresarial remite al Diagnóstico en vez de empujar una licencia. El estilo visual refuerza el hero, el panel de condiciones y una tarjeta relacionada protagonista, con adaptación a una columna en móvil. `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. Worker local: las 17 rutas responden 200; H1, breadcrumb, CTA, relación y destino interno comprobados a 360 y 1024 px, sin overflow. Revisión visual de escritorio PASS. Build reportó secretos locales opcionales de Auth/Gmail ausentes y dos advertencias preexistentes de imports dinámicos; no se leyeron secretos. No hay rutas ni datos comerciales nuevos; no es auditoría WCAG. El índice bento de UX-PREMIUM-02A sigue en PR #65 y no se incluye en este checkpoint independiente basado en `origin/main`.
 
 ## ADMIN-LICENSE-UX-001 — licencias por cliente y negocio (2026-10-23)
 
