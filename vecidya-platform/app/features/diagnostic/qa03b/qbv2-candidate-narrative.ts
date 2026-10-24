@@ -1,6 +1,6 @@
 // Orquestador aislado QA-03B; el original certificado permanece reproducible.
 import { buildCandidateInterpretationCoreV3, type CandidateInterpretationCoreV3 } from "./qbv2-candidate-interpretation";
-import { computeCandidateDigitalPresenceIndexV3, type CandidateDigitalPresenceIndexV3 } from "./qbv2-candidate-overall";
+import { computeCandidateDigitalPresenceIndexV3, computeRepresentativeCandidateDigitalPresenceIndexV3, type CandidateDigitalPresenceIndexV3 } from "./qbv2-candidate-overall";
 import { buildDiagnosticNarrative, type DiagnosticNarrative } from "./qbv2-candidate-narrative-builder";
 import { buildDigitalPresenceStatus, computeOverallConfidence, type DigitalPresenceStatus } from "../qbv2-overall";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
@@ -61,7 +61,9 @@ export function buildCandidateNarrativeAndOverallV3(input: CandidateNarrativeAnd
     semanticFacts: core.semanticFacts,
     narrative,
     // R8-A: index minimums/display, overall confidence and public bands all come from the candidate calibration.
-    computeIndex: (scoring, options) => computeCandidateDigitalPresenceIndexV3(scoring, options, calibration.overall, core.activeAnswers),
+    computeIndex: (scoring, options) => calibration.overall.coverageBasis === "applicable_dimensions"
+      ? computeRepresentativeCandidateDigitalPresenceIndexV3(scoring, calibration, options, core.activeAnswers)
+      : computeCandidateDigitalPresenceIndexV3(scoring, options, calibration.overall, core.activeAnswers),
     computeConfidence: (scoring, index) => computeOverallConfidence(scoring, index, calibration.overall),
     bands: calibration.overall.bands,
   });
