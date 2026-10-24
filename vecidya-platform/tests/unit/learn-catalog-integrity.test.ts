@@ -68,3 +68,21 @@ test("Las seis guías especializadas permanecen conectadas y en revisión editor
     assert.ok(specialized.sections.some((section) => section.blocks?.some((block) => block.type === "sources")), `Faltan fuentes en ${newSlug}`);
   }
 });
+
+test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
+  const requirements = [
+    ["publicidad-digital-como-preparar-una-primera-campana", [/Google Ads|Meta Ads/i, /página de destino/i, /indicadores/i]],
+    ["como-elegir-y-cambiar-proveedor-de-dominio-y-hosting", [/control administrativo/i, /costos/i, /renovar|renovación/i]],
+    ["como-probar-y-supervisar-automatizaciones-sin-perder-datos", [/duplicados/i, /reintentos/i, /persona/i]],
+    ["como-probar-un-asistente-de-ia-con-supervision-humana", [/respuestas inventadas/i, /datos/i, /prueba piloto/i]],
+    ["como-mantener-actualizada-y-confiable-tu-presencia-digital", [/canales/i, /reseñas|testimonios/i, /accesibilidad/i]],
+    ["dns-https-y-correo-como-se-conecta-tu-dominio", [/DNS/i, /HTTPS/i, /correo/i]],
+  ] as const;
+  for (const [slug, topics] of requirements) {
+    const article = getLearnArticle(slug);
+    assert.ok(article, `Falta guía especializada: ${slug}`);
+    const content = article.sections.map(({ heading, paragraphs, blocks }) =>
+      [heading, ...paragraphs, JSON.stringify(blocks ?? [])].join(" ")).join(" ");
+    for (const topic of topics) assert.match(content, topic, `Tema ausente en ${slug}: ${topic}`);
+  }
+});
