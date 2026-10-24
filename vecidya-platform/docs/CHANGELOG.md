@@ -1,9 +1,11 @@
 # Changelog
 
-## 2026-10-23 — APP-MINI-REDESIGN-01 (rediseño local)
+## 2026-10-23 — APP-MINI-REDESIGN-01 (seguimiento sobre latest main)
 
 - Se dio una jerarquía visual más clara al dashboard de Mi Vecidya y al resumen interno, conservando sus consultas, indicadores reales y copy operativo.
-- Administración ahora presenta un drawer móvil compacto con estado accesible, cierre al navegar y overlay. El pase local cubre ambas rutas y drawer a 320/390/768/1366 px; no encontró overflow. Worker y D1 fueron efímeros. Typecheck/build/diff-check PASS; sin D1 remota, deploy, cambio de versión ni publicación. No es auditoría WCAG completa.
+- App y Admin presentan drawer hasta 980 px. E2E con Worker/D1 aislados PASS: ambos abren, navegan y cierran a 390/768/980 px; rutas sin overflow a 320/390/768/980/1366 px. Typecheck/build PASS.
+- Se añadieron acciones «Imprimir o guardar» para los resúmenes anónimo e identificado y reglas print para excluir controles y el hueco de layout que generaba una hoja vacía. El E2E de PDF quedó incompleto por timeout del Worker/Vite local; no se declara PDF validado. Sin D1 remota, deploy, cambio de versión ni publicación. Deuda `DIAG-IDENTIFIED-PRINT-001` y límites en `STATUS.md`/`TESTING.md`.
+- Certificación adicional de Admin Global: controles de perfiles/licencias, suspensión/reactivación, permisos tenant y capacitación pasaron en D1 efímera, eliminada al terminar. El Worker se desconectó con `ECONNRESET` en MiniWeb luego de guardar el borrador; esa parte no se certifica. Harness alineado a snapshot v3; repetir el recorrido completo. Evidencia y deuda en `TESTING.md`/`STATUS.md`.
 - Detalle de evidencia y deuda residual en `STATUS.md` y `TESTING.md`.
 
 
