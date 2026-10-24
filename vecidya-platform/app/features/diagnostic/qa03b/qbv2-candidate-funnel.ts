@@ -3,6 +3,7 @@ import {
   buildCandidateResultPresentationV3,
   type CandidateResultPresentationV3,
 } from "../../../components/diagnostic-flow/qa03b-presentation";
+import { DIMENSION_ILLUSTRATION_BY_KEY } from "../../../components/diagnostic-result/presentation";
 import {
   CANDIDATE_RESULT_IDENTITY_V3,
   isCandidateResultIdentityV3,
@@ -25,8 +26,16 @@ export const DIAGNOSTIC_FUNNEL_STATES_V1 = [
 
 export type DiagnosticFunnelStateV1 = (typeof DIAGNOSTIC_FUNNEL_STATES_V1)[number];
 
-export type AnonymousDiagnosticSummaryV1 = {
-  readonly contractVersion: "anonymous-diagnostic-summary-v1";
+export type AnonymousDiagnosticSummaryDimensionV2 = {
+  readonly label: string;
+  readonly score: number | null;
+  readonly statusLabel: string;
+  readonly preliminary: boolean;
+  readonly illustration: string;
+};
+
+export type AnonymousDiagnosticSummaryV2 = {
+  readonly contractVersion: "anonymous-diagnostic-summary-v2";
   readonly overallStatus: string;
   readonly score: number | null;
   readonly confidence: string;
@@ -37,33 +46,41 @@ export type AnonymousDiagnosticSummaryV1 = {
   readonly limitations: readonly string[];
   readonly methodologyVersion: string;
   readonly diagnosticIdentity: typeof CANDIDATE_RESULT_IDENTITY_V3;
+  readonly dimensions: readonly AnonymousDiagnosticSummaryDimensionV2[];
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
+const allowedDimensionIllustrations = new Set(Object.values(DIMENSION_ILLUSTRATION_BY_KEY));
 
-export function isAnonymousDiagnosticSummaryV1(value: unknown): value is AnonymousDiagnosticSummaryV1 {
-  if (!isRecord(value) || Object.keys(value).length !== 11) return false;
-  if (value.contractVersion !== "anonymous-diagnostic-summary-v1" || typeof value.overallStatus !== "string" || typeof value.confidence !== "string" || typeof value.coverage !== "string" || typeof value.executiveSummary !== "string") return false;
+export function isAnonymousDiagnosticSummaryV2(value: unknown): value is AnonymousDiagnosticSummaryV2 {
+  if (!isRecord(value) || Object.keys(value).length !== 12) return false;
+  if (value.contractVersion !== "anonymous-diagnostic-summary-v2" || typeof value.overallStatus !== "string" || typeof value.confidence !== "string" || typeof value.coverage !== "string" || typeof value.executiveSummary !== "string") return false;
   if (!(value.score === null || (typeof value.score === "number" && Number.isFinite(value.score) && value.score >= 0 && value.score <= 100))) return false;
   if (!(value.primaryOpportunity === null || typeof value.primaryOpportunity === "string")) return false;
   if (!(value.firstRecommendedAction === null || (isRecord(value.firstRecommendedAction) && Object.keys(value.firstRecommendedAction).length === 2 && typeof value.firstRecommendedAction.title === "string" && typeof value.firstRecommendedAction.explanation === "string"))) return false;
-  if (!Array.isArray(value.limitations) || !value.limitations.every((item) => typeof item === "string") || typeof value.methodologyVersion !== "string") return false;
+  if (!Array.isArray(value.limitations) || !value.limitations.every((item) => typeof item === "string") || typeof value.methodologyVersion !== "string" || !Array.isArray(value.dimensions) || value.dimensions.length !== 8) return false;
   if (!isCandidateResultIdentityV3(value.diagnosticIdentity) || value.methodologyVersion !== value.diagnosticIdentity.methodology) return false;
-  const allowed = ["contractVersion", "overallStatus", "score", "confidence", "coverage", "executiveSummary", "primaryOpportunity", "firstRecommendedAction", "limitations", "methodologyVersion", "diagnosticIdentity"];
-  return Object.keys(value).every((key) => allowed.includes(key));
+  const allowed = ["contractVersion", "overallStatus", "score", "confidence", "coverage", "executiveSummary", "primaryOpportunity", "firstRecommendedAction", "limitations", "methodologyVersion", "diagnosticIdentity", "dimensions"];
+  if (!Object.keys(value).every((key) => allowed.includes(key))) return false;
+  return value.dimensions.every((dimension) => isRecord(dimension) && Object.keys(dimension).length === 5 &&
+    typeof dimension.label === "string" && dimension.label.length > 0 && dimension.label.length <= 100 &&
+    (dimension.score === null || (typeof dimension.score === "number" && Number.isFinite(dimension.score) && dimension.score >= 0 && dimension.score <= 100)) &&
+    typeof dimension.statusLabel === "string" && dimension.statusLabel.length > 0 && dimension.statusLabel.length <= 120 &&
+    typeof dimension.preliminary === "boolean" && !(dimension.score === null && dimension.preliminary) &&
+    typeof dimension.illustration === "string" && allowedDimensionIllustrations.has(dimension.illustration));
 }
 
 /** Allowlistada desde la presentación certificada; no reconstruye scoring ni recomendaciones. */
-export function buildAnonymousDiagnosticSummaryV1(
+export function buildAnonymousDiagnosticSummaryV2(
   result: CandidatePipelineResultV3,
-): AnonymousDiagnosticSummaryV1 {
+): AnonymousDiagnosticSummaryV2 {
   const view: CandidateResultPresentationV3 = buildCandidateResultPresentationV3(result);
   const executiveSummary = view.executiveSummary[0];
   if (!executiveSummary) throw new Error("El diagnóstico candidato no contiene una interpretación ejecutiva.");
   const firstAction = view.recommendations[0];
 
   return {
-    contractVersion: "anonymous-diagnostic-summary-v1",
+    contractVersion: "anonymous-diagnostic-summary-v2",
     overallStatus: view.overall.publicLabel ?? view.overall.label,
     score: view.overall.score,
     confidence: view.overall.confidence,
@@ -76,19 +93,26 @@ export function buildAnonymousDiagnosticSummaryV1(
     limitations: [view.overall.coverage, ...(view.overall.warning ? [view.overall.warning] : [])],
     methodologyVersion: result.engineIdentity.methodology,
     diagnosticIdentity: result.engineIdentity,
+    dimensions: view.dimensions.map((dimension) => ({
+      label: dimension.label,
+      score: dimension.score,
+      statusLabel: dimension.statusLabel,
+      preliminary: dimension.preliminary,
+      illustration: dimension.icon,
+    })),
   };
 }
 
 /** Contrato documental separado: no contiene identificación ni acceso al informe completo. */
-export type AnonymousSummaryReportV1 = {
-  readonly contractVersion: "anonymous-summary-report-v1";
-  readonly summary: AnonymousDiagnosticSummaryV1;
+export type AnonymousSummaryReportV2 = {
+  readonly contractVersion: "anonymous-summary-report-v2";
+  readonly summary: AnonymousDiagnosticSummaryV2;
 };
 
-export function buildAnonymousSummaryReportV1(
-  summary: AnonymousDiagnosticSummaryV1,
-): AnonymousSummaryReportV1 {
-  return { contractVersion: "anonymous-summary-report-v1", summary };
+export function buildAnonymousSummaryReportV2(
+  summary: AnonymousDiagnosticSummaryV2,
+): AnonymousSummaryReportV2 {
+  return { contractVersion: "anonymous-summary-report-v2", summary };
 }
 
 export type FunnelIdentificationInputV1 = {

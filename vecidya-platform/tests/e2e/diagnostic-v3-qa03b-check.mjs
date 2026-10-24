@@ -50,13 +50,18 @@ async function answer(page, answers) {
   return id;
 }
 async function startDiagnosis(page) {
-  await page.waitForLoadState("networkidle");
+  await page.locator("#df-start-title").waitFor();
   const previousCandidateSession = await page.evaluate(storageKey => localStorage.getItem(storageKey), key);
   if (previousCandidateSession) {
     await page.evaluate(storageKey => localStorage.removeItem(storageKey), key);
     await page.reload({ waitUntil: "domcontentloaded" });
-    await page.waitForLoadState("networkidle");
+    await page.locator("#df-start-title").waitFor();
   }
+  await page.waitForFunction(() => {
+    const button = [...document.querySelectorAll("button")].find((element) => element.textContent?.trim() === "Empezar diagnóstico");
+    const propsKey = button && Object.keys(button).find((key) => key.startsWith("__reactProps$"));
+    return Boolean(propsKey && typeof button?.[propsKey]?.onClick === "function");
+  });
   await page.locator("#df-start-title").waitFor();
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   await page.waitForFunction(storageKey => localStorage.getItem(storageKey) !== null, key, { timeout: 10000 });
@@ -100,12 +105,25 @@ try {
     assert.equal(replayResponse.status(), 200, "Worker local reproduce QA-03B");
     assert.ok(replayResponse.headers()["content-type"]?.includes("text/x-script"), "React Router serializa la acción fetcher, no expone un JSON endpoint");
     const replayWire = await replayResponse.text();
-    assert.ok(replayWire.includes("anonymous-diagnostic-summary-v1"));
+    assert.ok(replayWire.includes("anonymous-diagnostic-summary-v2"));
     assert.ok(!replayWire.includes("q2_delivery"));
     assert.ok(!replayWire.includes("reportJson"));
     assert.ok(!replayWire.includes("fullName") && !replayWire.includes("email"));
     await page.getByRole("heading", { name: "Tu resumen del diagnóstico" }).waitFor();
+    assert.equal(await page.locator(".dr-area-overview__item").count(), 8, `${name}: el resumen presenta las ocho áreas`);
+    assert.equal(await page.locator(".dr-area-overview__item img").count(), 8, `${name}: usa una ilustración local por área`);
+    const illustrationsLoaded = await page.locator(".dr-area-overview__item img").evaluateAll(async (images) => {
+      return Promise.all(images.map(async (image) => { image.loading = "eager"; await image.decode(); return image.naturalWidth > 0; }));
+    });
+    assert.deepEqual(illustrationsLoaded, Array(8).fill(true), `${name}: las ocho ilustraciones locales cargan correctamente`);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    const animatedBars = page.locator(".dr-area-overview__bar-fill");
+    if (await animatedBars.count()) {
+      assert.equal(await animatedBars.first().evaluate((element) => getComputedStyle(element).animationDuration), "0s", "reduced motion desactiva el movimiento de entrada");
+    }
+    await page.emulateMedia({ reducedMotion: "no-preference" });
     if (name === "open-no-clients") {
+      assert.equal(await page.locator(".dr-area-overview__item").filter({ hasText: "Sin lectura" }).count(), 8, "las áreas sin evidencia se expresan como Sin lectura, no como 0 %");
       const printSummary = page.getByRole("button", { name: "Imprimir o guardar resumen" });
       await printSummary.waitFor({ state: "visible" });
       await page.emulateMedia({ media: "print" });
@@ -141,6 +159,18 @@ try {
     if (name === "education-third-party") assert.ok(order.includes("q2_buyer_recipient_relation"));
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     assert.equal(overflow, false, `${name} sin overflow`);
+    const synthesisLayout = await page.evaluate(() => ({
+      viewportWidth: window.innerWidth,
+      overviewWidth: document.querySelector(".dr-area-overview")?.getBoundingClientRect().width ?? 0,
+      synthesisDisplay: getComputedStyle(document.querySelector(".dr-candidate-synthesis")).display,
+      overallBottom: document.querySelector(".dr-candidate-overall")?.getBoundingClientRect().bottom ?? 0,
+      overviewTop: document.querySelector(".dr-area-overview")?.getBoundingClientRect().top ?? 0,
+      overviewBottom: document.querySelector(".dr-area-overview")?.getBoundingClientRect().bottom ?? 0,
+      nextSectionTop: document.querySelector(".dr-area-overview")?.parentElement?.nextElementSibling?.getBoundingClientRect().top ?? 0,
+    }));
+    if (mobile) assert.ok(synthesisLayout.overviewWidth >= 280, `${name}: resumen de áreas legible en móvil (${JSON.stringify(synthesisLayout)})`);
+    assert.ok(synthesisLayout.overviewTop >= synthesisLayout.overallBottom - 1, `${name}: las áreas siguen al estado general (${JSON.stringify(synthesisLayout)})`);
+    assert.ok(synthesisLayout.nextSectionTop >= synthesisLayout.overviewBottom - 1, `${name}: la sección siguiente no se superpone al resumen (${JSON.stringify(synthesisLayout)})`);
     await page.screenshot({ path: `${artifacts}/${name}.png`, fullPage: true });
     if (name === "open-no-clients") {
       await page.getByRole("button", { name: "Solicitar informe completo" }).click();
@@ -159,7 +189,8 @@ try {
       assert.equal(reportRequestResponse.status(), 202, "replay identificado guardado solo en D1 local");
       const requestPayload = await reportRequestResponse.json();
       assert.equal(requestPayload.status, "verification_pending");
-      assert.equal(requestPayload.summary.contractVersion, "anonymous-diagnostic-summary-v1");
+      assert.equal(requestPayload.summary.contractVersion, "anonymous-diagnostic-summary-v2");
+      assert.equal(requestPayload.summary.dimensions.length, 8, "la solicitud de informe conserva la misma proyección de ocho áreas");
       assert.equal(requestPayload.summary.diagnosticIdentity.engine, saved.engineIdentity.engine);
       assert.equal(Object.hasOwn(requestPayload, "report"), false, "POST anónimo no filtra el informe");
       const submitted = reportRequestResponse.request().postDataJSON();
@@ -213,6 +244,14 @@ try {
       await page.locator('.rp[data-ready="true"]').waitFor().catch(async (error) => { throw new Error(`informe no renderizado: url=${page.url()}; main=${await page.locator("main").innerText()}; cause=${error.message}`); });
       const printReport = page.getByRole("button", { name: "Imprimir o guardar PDF" });
       await printReport.waitFor({ state: "visible" });
+      const reportDocument = page.locator(".rp-doc");
+      assert.equal(await reportDocument.getByRole("heading", { name: "Qué hacer ahora" }).count(), 1, "el informe presenta la acción principal en un bloque único");
+      assert.equal(await reportDocument.getByRole("heading", { name: "Plan de acción recomendado" }).count(), 0, "no repite la acción en un plan separado");
+      const primaryAction = await reportDocument.locator("[data-primary-action]").innerText();
+      const reportText = await reportDocument.innerText();
+      assert.ok(!reportText.includes("Lo primero es confirmar"), "la explicación del estado general no vuelve a formular la acción");
+      assert.equal(reportText.split(primaryAction.replace(/^Siguiente paso\.\s*/u, "")).length - 1, 1, "la recomendación principal aparece una sola vez");
+      assert.equal(reportText.split("En esta evaluación hay lectura para 0 de 3 dimensiones observables con oportunidad de evaluación (0 %); este porcentaje no representa todas las áreas del negocio.").length - 1, 1, "la nota de cobertura aparece una sola vez");
       const reportPages = await page.locator(".rp").getAttribute("data-pages");
       assert.ok(Number(reportPages) > 0, "el informe comunica su número de páginas");
       await page.emulateMedia({ media: "print" });
@@ -245,7 +284,7 @@ try {
       assert.equal(pdfPages, visibleSheets, "el PDF no añade hojas vacías frente a las hojas paginadas del informe");
       await page.emulateMedia({ media: "screen" });
       assert.equal(await page.locator(".rp-business").innerText(), "Proyecto QA03B Local");
-      assert.ok((await page.locator(".rp-technical").innerText()).includes("diag-v3-candidate-operation-history-v3"));
+      assert.equal(await page.locator(".rp-technical").count(), 0, "el informe del cliente no expone claves internas del motor");
       assert.equal(lifecycleState.snapshot.methodologyVersion, "3.0");
     }
     if (name === "open-no-clients") await page.goto(route, { waitUntil: "domcontentloaded" });
@@ -290,6 +329,11 @@ try {
   const partialAnswers = { [firstQuestionId]: AUTHORED_JOURNEYS[0].answers[firstQuestionId] };
   await answer(first, partialAnswers);
   const second = await context.newPage(); await second.goto(route, { waitUntil: "domcontentloaded" });
+  await second.waitForFunction(() => {
+    const button = [...document.querySelectorAll("button")].find((element) => element.textContent?.trim() === "Continuar diagnóstico");
+    const propsKey = button && Object.keys(button).find((key) => key.startsWith("__reactProps$"));
+    return Boolean(propsKey && typeof button?.[propsKey]?.onClick === "function");
+  });
   await second.getByRole("button", { name: "Continuar diagnóstico" }).click();
   await second.getByRole("button", { name: "Continuar", exact: true }).click();
   await first.getByRole("heading", { name: "Esta sesión se está editando en otra pestaña" }).waitFor();

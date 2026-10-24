@@ -40,6 +40,12 @@
 - `/app/miniweb` organiza el editor en cinco destinos accesibles: Diseño, Secciones, Contenido, Vista previa y Publicar. La publicación y guardado quedan agrupados en su destino, y la UI declara que `Esencial` es la única plantilla disponible.
 - El comportamiento conserva borrador, CAS y snapshot. En código `961c46d`, MiniWeb E2E 105/105, unitarias 1659/1659, typecheck, build y diff-check PASS en Worker/D1 local aislados. PR #64 se integró en `main@820f529`. Su observación P2 de scroll bajo cabecera sticky se corrigió y probó en APP-MINI-02E. Sin D1 remota, R2 real ni deploy.
 
+## 2026-10-24 — DIAG-VISUAL-ASSETS-01 — resumen gráfico e informe sin repeticiones (local)
+
+- QA-03B emite el resumen anónimo v2 con ocho dimensiones estrictamente allowlisted, scores copiados del mismo replay que construye el informe y valores sin lectura expresados como «Sin lectura».
+- El resumen incorpora ocho tarjetas responsive con assets WebP existentes, valores de texto y barras decorativas; reduced motion apaga animación. El informe reúne diagnóstico y acción prioritaria en un solo bloque, elimina el plan duplicado, reserva recomendaciones posteriores para acciones adicionales y retira del PDF las claves internas de trazabilidad (metodología e informe quedan identificados en portada).
+- Validación local: 1659/1659 pruebas unitarias, typecheck, build, E2E QA-03B y 11/11 pruebas focales del informe PASS. El PDF final queda en dos páginas A4, sin el anexo técnico interno; la primera acción y la nota de cobertura aparecen una vez. Sin tablas/migraciones, deploy, correo real, HTTP pública ni cambios publicados. PR #62 abierto; aceptación manual de accesibilidad sigue abierta.
+
 ## 2026-10-24 — QA-03B — corpus de 60 variantes y reporte final HTML
 
 - QA-03C: se corrige la matriz P20; miles de leads mensuales no acreditan captación fiable y la respuesta queda `unknown`. Se explicita procedencia desconocida por fuente, además de supuestos e interpretaciones.
