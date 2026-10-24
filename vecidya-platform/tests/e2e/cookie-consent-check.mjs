@@ -36,6 +36,7 @@ try {
     assert.equal(await page.getByLabel("Analítica opcional").count(), 0, "revocación reabre sin selección previa");
     await page.getByRole("button", { name: "Configurar" }).click();
     assert.equal(await page.getByLabel("Analítica opcional").isChecked(), false);
+    assert.equal(await page.getByLabel("Marketing opcional").isChecked(), false);
     await second.close();
     await context.close();
   }
