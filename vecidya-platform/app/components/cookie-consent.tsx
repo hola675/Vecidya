@@ -13,13 +13,25 @@ export function CookieConsent() {
   const [analytics, setAnalytics] = useState(false);
   const [marketing, setMarketing] = useState(false);
   useEffect(() => {
-    const value = readCookiePreferences(localStorage);
+    const value = readCookiePreferences(window.localStorage);
     if (value) { setPreferences(value); setAnalytics(value.analytics); setMarketing(value.marketing); }
     setReady(true);
   }, []);
+  useEffect(() => {
+    const synchronize = (event: StorageEvent) => {
+      if (event.key !== COOKIE_PREFERENCES_KEY && event.key !== null) return;
+      const value = readCookiePreferences(window.localStorage);
+      setPreferences(value);
+      setAnalytics(value?.analytics ?? false);
+      setMarketing(value?.marketing ?? false);
+      if (!value) { setOpen(true); setConfigure(false); }
+    };
+    window.addEventListener("storage", synchronize);
+    return () => window.removeEventListener("storage", synchronize);
+  }, []);
   const choose = (a: boolean, m: boolean) => {
     const next = createCookiePreferences(a, m);
-    try { localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(next)); } catch { /* Sin persistencia, las opciones se aplican a esta sesión de UI. */ }
+    try { window.localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(next)); } catch { /* Sin persistencia, la decisión se aplica solo en esta pestaña. */ }
     setPreferences(next);
     setAnalytics(a);
     setMarketing(m);
