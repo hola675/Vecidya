@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-24 — UX-PREMIUM-02G — índice de Aprende
+
+- Se compacta el bloque de descubrimiento del catálogo y se agrupan las notas de ayuda y el estado editorial; búsqueda, filtros, artículos, rutas e itinerarios quedan intactos.
+- Typecheck, build y E2E `learn-experience-check.mjs` pasan en Worker local con D1 aislada; responsive funcional verificado de 1366 a 320 px. Sin publicación.
+
 ## 2026-10-24 — UX-PREMIUM-02B (refinamiento de Servicios)
 
 - Se conserva el recorrido y la retícula bento de PR #65, y se añaden accesos directos a cada familia. Las fichas separan promesa, audiencia, trabajo y alcance habitual, priorizan el detalle y eliminan contenido redundante y el CTA genérico duplicado.

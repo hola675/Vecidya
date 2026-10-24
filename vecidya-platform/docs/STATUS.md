@@ -1,5 +1,11 @@
 # Estado de implementación
 
+## UX-PREMIUM-02G — índice público de Aprende (2026-10-24)
+
+En `feat/aprende-ux-01-index`, `/aprende` ordena los filtros, el conteo de resultados y las notas editoriales en un panel más compacto; se conserva la búsqueda, el filtrado por tema, el contenido, los itinerarios y todos los enlaces a guías.
+
+`pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. `learn-experience-check.mjs` PASS en Worker Wrangler local con D1 aislada y migraciones `0000–0027`; cubre catálogo, filtros, borradores, búsquedas, 11 guías, categorías, autoría, CTAs, metadata, sitemap, foco de teclado y responsive 1366/1024/768/390/360/320. La prueba ahora verifica el rail real de lectura y espera la decodificación de imágenes. Revisión visual de escritorio PASS; no se ejecutó auditoría axe/WCAG completa, no se certifica visualmente cada viewport. Sin D1 remota, deploy ni HTTP pública fechada.
+
 ## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
 
 **Implementada en local en `feat/app-mini-ux-03-services`, iniciada en `origin/main@ac2c8e8` y reconciliada con `origin/main@c70057f`.** `/servicios` combina el recorrido de tres pasos y la retícula bento integrados en PR #65 con accesos directos a cada familia; reorganiza las tarjetas para separar promesa, audiencia y alcance, y elimina el beneficio redundante y el CTA final duplicado. Contenido, precios, catálogo y rutas permanecen iguales. Typecheck/build/diff-check PASS; inspección visual manual en escritorio y 390 px. Sin suites E2E en este checkpoint, D1 remota, publicación ni deploy.

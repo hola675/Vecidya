@@ -31,6 +31,17 @@ async function assertNoOverflow(page, label) {
   assert(overflow.root.documentScrollWidth <= overflow.root.clientWidth + 1 && overflow.root.bodyScrollWidth <= overflow.root.clientWidth + 1 && overflow.elements.length === 0, `${label} tiene overflow horizontal: ${JSON.stringify(overflow)}`);
 }
 
+async function imageLoaded(image) {
+  return image.evaluate(async (element) => {
+    try {
+      await element.decode();
+      return element.naturalWidth > 0;
+    } catch {
+      return false;
+    }
+  });
+}
+
 async function runViewport(width, height) {
   const browser = await chromium.launch(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {});
   const page = await browser.newPage({ viewport: { width, height } });
@@ -145,7 +156,7 @@ async function runViewport(width, height) {
   assert(await page.getByRole("heading", { name: "Fuentes y orientación adicional" }).isVisible(), `${label} la guía CRM no presenta sus referencias.`);
   const crmImage = page.locator(".learn-article-image");
   assert((await crmImage.getAttribute("alt"))?.trim().length > 0, `${label} la ilustración de CRM no tiene texto alternativo.`);
-  assert(await crmImage.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó el diagrama de CRM.`);
+  assert(await imageLoaded(crmImage), `${label} no cargó el diagrama de CRM.`);
   assert(await page.getByRole("link", { name: "NIST Privacy Framework" }).isVisible(), `${label} la referencia de privacidad no es accesible como enlace.`);
   assert(await page.locator(".learn-block--steps ol").count() > 0, `${label} la guía CRM no renderizó pasos numerados.`);
   assert(await page.locator(".learn-block--definitions dl").count() > 0, `${label} la guía CRM no renderizó definiciones semánticas.`);
@@ -308,16 +319,23 @@ async function runViewport(width, height) {
   ]) assert(await page.locator("h2").filter({ hasText: heading }).isVisible(), `${label} falta la sección «${heading}».`);
   const presenceImage = page.locator(".learn-article-image");
   assert((await presenceImage.getAttribute("alt"))?.includes("sitio web"), `${label} la ilustración de Presencia no describe sus canales.`);
-  assert(await presenceImage.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó diagram-presence-digital.svg.`);
+  assert(await imageLoaded(presenceImage), `${label} no cargó diagram-presence-digital.svg.`);
   assert(await page.locator(".learn-block--example").count() === 1, `${label} el ejemplo de Presencia no se renderizó como un caso hipotético.`);
   assert(await page.locator(".learn-block--steps ol").count() >= 3, `${label} faltan pasos prácticos para organizar y evaluar.`);
   assert(await page.locator(".learn-block--faq details").count() >= 10, `${label} faltan respuestas frecuentes de Presencia y Vecidya.`);
   assert(await page.locator(".learn-block--sources a").count() >= 7, `${label} faltan fuentes oficiales enlazadas.`);
-  const tocViewport = await page.locator(".learn-article-toc").evaluate((toc) => ({ height: toc.getBoundingClientRect().height, maxHeight: getComputedStyle(toc).maxHeight, overflowY: getComputedStyle(toc).overflowY }));
+  const articleRail = await page.locator(".learn-article-rail").evaluate((rail) => ({
+    height: rail.getBoundingClientRect().height,
+    maxHeight: getComputedStyle(rail).maxHeight,
+    overflowY: getComputedStyle(rail).overflowY,
+    scrollHeight: rail.scrollHeight,
+    clientHeight: rail.clientHeight,
+    position: getComputedStyle(rail).position,
+  }));
   if (page.viewportSize().width > 820) {
-    assert(tocViewport.overflowY === "auto" && tocViewport.height < page.viewportSize().height, `${label} el índice extenso de Presencia debe poder desplazarse dentro del viewport.`);
+    assert(articleRail.overflowY === "auto" && articleRail.position === "sticky" && articleRail.height < page.viewportSize().height && articleRail.scrollHeight > articleRail.clientHeight, `${label} el rail de lectura extenso de Presencia debe poder desplazarse dentro del viewport.`);
   } else {
-    assert(tocViewport.maxHeight === "none" && tocViewport.overflowY === "visible", `${label} el índice móvil no debe crear un contenedor anidado desplazable.`);
+    assert(articleRail.maxHeight === "none" && articleRail.overflowY === "visible" && articleRail.position === "static", `${label} el rail móvil no debe crear un contenedor anidado desplazable.`);
   }
   assert(await page.getByRole("link", { name: "Conocer el Diagnóstico" }).getAttribute("href") === "/diagnostico", `${label} el CTA contextual de Presencia no enlaza al Diagnóstico.`);
   const checklistHeading = page.getByRole("heading", { name: "Checklist para revisar tu presencia digital" });

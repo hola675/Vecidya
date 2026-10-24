@@ -118,9 +118,11 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
               {articles.length === 1 ? "1 guía encontrada" : articles.length + " guías encontradas"} de {total}
               {category ? " · " + category : ""}{search ? " · Búsqueda: «" + search + "»" : ""}
             </p>
-            <p className="learn-discovery__note">Explora las guías por tema o busca una duda específica. No necesitas registrarte.</p>
-            <p className="learn-discovery__note">Encuentra respuestas sencillas, ejemplos cotidianos y pasos que puedes aplicar sin aprender palabras complicadas.</p>
-            <p className="learn-editorial-note">Los materiales nuevos siguen identificados como borradores hasta su revisión editorial.</p>
+            <div className="learn-discovery__support">
+              <p className="learn-discovery__note">Explora las guías por tema o busca una duda específica. No necesitas registrarte.</p>
+              <p className="learn-discovery__note">Encuentra respuestas sencillas, ejemplos cotidianos y pasos que puedes aplicar sin aprender palabras complicadas.</p>
+              <p className="learn-editorial-note"><strong>Estado editorial</strong><span>Los materiales nuevos siguen identificados como borradores hasta su revisión editorial.</span></p>
+            </div>
           </div>
           {articles.length === 0 ? (
             <div className="learn-discovery__empty">

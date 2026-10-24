@@ -1,5 +1,12 @@
 # Pruebas
 
+## UX-PREMIUM-02G — índice público de Aprende (2026-10-24)
+
+- `pnpm run typecheck`: PASS; `pnpm run build`: PASS; `git diff --check`: PASS.
+- Wrangler Worker local con D1 local y migraciones `0000–0027`: `BASE_URL=http://127.0.0.1:5192 pnpm exec node tests/e2e/learn-experience-check.mjs` — PASS. Cubre índice, filtros/búsqueda, borradores, enlaces de 11 guías, navegación interna, autoría, CTAs, metadata y sitemap en 1366/1024/768/390/360/320 px; confirma foco visible y ausencia de overflow.
+- El E2E se alineó con la implementación vigente: el desplazamiento de escritorio corresponde al rail completo `.learn-article-rail`; las ilustraciones se verifican después de `decode()` para evitar carreras al cargar imágenes.
+- Revisión visual de escritorio PASS. No se ejecutó auditoría axe/WCAG completa ni revisión visual manual de todos los tamaños. Migraciones solo en D1 local; sin D1 remota, deploy ni HTTP pública fechada.
+
 ## UX-PREMIUM-02B — página pública Servicios (2026-10-24)
 
 `pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS** en `feat/app-mini-ux-03-services`, iniciada en `origin/main@ac2c8e8` y reconciliada con `origin/main@c70057f`. No se ejecutaron suites unitarias ni E2E en este checkpoint. La inspección visual manual confirma la jerarquía/retícula a 1521 px y 390 px sin overflow móvil. La revisión completa de teclado, lector de pantalla, contraste y zoom queda pendiente; no se afirma certificación responsive/accesible integral. Sin D1 remota, HTTP pública ni deploy.

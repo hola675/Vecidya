@@ -1,3 +1,7 @@
+## UX-PREMIUM-02G — índice público de Aprende (2026-10-24)
+
+`feat/aprende-ux-01-index` compacta el panel de filtros/conteo del catálogo `/aprende` y distingue el estado editorial de los materiales en revisión. Se preservan los contenidos, itinerarios, búsquedas, filtros y rutas a guías. Typecheck/build/diff-check PASS; `learn-experience-check.mjs` PASS contra Worker local/D1 aislada `0000–0027` en 1366/1024/768/390/360/320, incluido sitemap y foco. Revisión visual de escritorio PASS. No hay auditoría axe/WCAG completa, deploy o HTTP pública fechada.
+
 ## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
 
 Checkpoint local `feat/app-mini-ux-03-services`, iniciado en `origin/main@ac2c8e8` e integrado con `origin/main@c70057f`. `/servicios` conserva el recorrido y la retícula de PR #65, agrega anclas para las siete familias y tarjetas con jerarquía de promesa, audiencia, trabajo y alcance habitual. Cada tarjeta prioriza la ficha detallada y mantiene consulta contextual; el beneficio repetido por resumen/promesa y el CTA genérico final se retiraron. El catálogo comercial sigue como fuente de verdad; sin cambios de precio, contrato, rutas o datos. Typecheck/build/diff-check PASS; inspección manual local a 1521 y 390 px, sin overflow horizontal móvil. No se ejecutaron suites E2E ni D1 remota/deploy; pendiente revisión completa de teclado/lector, contraste y zoom.
