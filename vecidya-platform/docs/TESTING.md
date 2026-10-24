@@ -1,8 +1,8 @@
 # Pruebas
 
-## UX-PREMIUM-01B — página pública Servicios (2026-10-24)
+## UX-PREMIUM-02B — página pública Servicios (2026-10-24)
 
-`pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS** en `feat/app-mini-ux-03-services`, basada en `origin/main@ac2c8e8`. No se ejecutaron suites de prueba ni E2E. La revisión visual manual completa en navegador y la validación accesible por viewport quedan pendientes; no se afirma certificación responsive integral. Sin Worker runtime, D1 remota, HTTP pública ni deploy en este checkpoint.
+`pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS** en `feat/app-mini-ux-03-services`, iniciada en `origin/main@ac2c8e8` y reconciliada con `origin/main@c70057f`. No se ejecutaron suites unitarias ni E2E en este checkpoint. La inspección visual manual confirma la jerarquía/retícula a 1521 px y 390 px sin overflow móvil. La revisión completa de teclado, lector de pantalla, contraste y zoom queda pendiente; no se afirma certificación responsive/accesible integral. Sin D1 remota, HTTP pública ni deploy.
 
 ## DIAG-QA03B-PROFILE-KNOWLEDGE-01 — 60 variantes y reporte HTML (2026-10-24)
 
@@ -86,9 +86,13 @@ La certificación sobre código `961c46d`, actualizado con `origin/main@7267628`
 
 ## APP-MINI-02E — índice y búsqueda del Vecindario (2026-10-24)
 
-`pnpm exec node tests/e2e/miniweb-core-check.mjs`: **112/112 PASS** en Wrangler Worker local y D1 persistente temporal aislada con migraciones `0000–0027`. El E2E verifica que la consulta anónima no encuentre ofertas antes de publicar; tras publicación permite buscar por título de oferta y filtrar por producto/servicio, módulo renderizable, modalidad y área. Ofertas inactivas y borradores no aparecen; anclas del editor quedan visibles debajo de la cabecera. Editor 1366/768/390/360 e índice 1366/768/390/320 sin overflow. `fixturesCleaned:true`; consulta local confirmó cero usuarios, organizaciones y perfiles; ledger hasta `0027`. `pnpm run typecheck`, `pnpm run build`, `git diff --check` PASS; `tests/unit/miniweb/neighborhood.test.ts` **3/3 PASS**.
+`pnpm exec node tests/e2e/miniweb-core-check.mjs`: **112/112 PASS** en Wrangler Worker local y D1 persistente temporal aislada con migraciones `0000–0027`. El E2E verifica que la consulta anónima no encuentre ofertas antes de publicar; tras publicación permite buscar por título de oferta y filtrar por producto/servicio, módulo renderizable, modalidad y área. Ofertas inactivas y borradores no aparecen; anclas del editor quedan visibles debajo de la cabecera. Editor 1366/768/390/360 e índice 1366/768/390/320 sin overflow. `fixturesCleaned:true`; consulta local confirmó cero usuarios, organizaciones y perfiles; ledger hasta `0027`. `pnpm run typecheck`, `pnpm run build`, `git diff --check` PASS; `tests/unit/miniweb/neighborhood.test.ts` **3/3 PASS**. PR #69 integró 02E en `main@2a58dc0`; sin D1 remota ni deploy.
 
 El Worker se detuvo y se eliminaron `.dev.vars` sintético y la copia del build. La D1 temporal queda solo con esquema/ledger porque la protección del entorno rechazó el borrado recursivo; no toca D1 compartida ni remota. Sin migración nueva, bucket R2 real, correo, deploy o HTTP pública fechada. La búsqueda de especialidades usa categoría y ofertas publicadas existentes; no existe campo dedicado de tags ni se creó uno.
+
+## UX-PREMIUM-02A — retícula responsive de Servicios (2026-10-24)
+
+`services-catalog-layout-check.mjs`: PASS en Worker local a 1366/768/390 px. Confirma siete tarjetas, composición bento 2/3/2 de escritorio, reset de spans a columnas uniformes en móvil y ausencia de overflow. `pnpm run typecheck` y `pnpm run build` PASS. El E2E comercial global anterior sigue sin certificar planes/addons: `commercial-details-check.mjs` esperó `networkidle` en `/licencias` y agotó 30 s. Un E2E general heredado de experiencia A falla además antes del bloque de Servicios porque su fixture de perfil legacy sin snapshot recibe 404 en `/vecindario/vecidya`; no invalida la prueba focal del layout.
 
 ## UI-PILOT-01 — Aprende visual y responsive (2026-10-23)
 
