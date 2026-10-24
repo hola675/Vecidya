@@ -43,7 +43,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   const database = createDatabase(env.DB);
   const usedBytes = await getBusinessMediaStorageBytes(database, organization.id);
   if (usedBytes + file.size > MAX_BUSINESS_MEDIA_STORAGE_BYTES) return Response.json({ error: "La organización alcanzó su límite de almacenamiento de medios." }, { status: 413 });
-  if (purpose === "cover" && await database.query.businessMediaAsset.findFirst({ where: (table, { and, eq }) => and(eq(table.organizationId, organization.id), eq(table.purpose, "cover")) })) {
+  if (purpose === "cover" && await database.query.businessMediaAsset.findFirst({ where: (table, { and, eq }) => and(eq(table.organizationId, organization.id), eq(table.purpose, "cover"), eq(table.isActive, true)) })) {
     return Response.json({ error: "Ya existe una portada. Retírala antes de seleccionar otra." }, { status: 409 });
   }
 
@@ -57,8 +57,11 @@ export async function action({ context, params, request }: Route.ActionArgs) {
     customMetadata: { organizationId: organization.id, assetId: id },
   });
   try {
-    await commitBusinessDraftMutation(database, organization.id, expectedRevision, () => [database.$client.prepare(`INSERT INTO business_media_asset (id, organization_id, object_key, purpose, media_type, content_type, size_bytes, alt_text, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-      .bind(id, organization.id, objectKey, purpose, file.type.startsWith("image/") ? "image" : "video", file.type, file.size, altText.trim(), now.getTime())]);
+    await commitBusinessDraftMutation(database, organization.id, expectedRevision, (revision, token) => [database.$client.prepare(`INSERT INTO business_media_asset (id, organization_id, object_key, purpose, media_type, content_type, size_bytes, alt_text, created_at)
+      SELECT ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE EXISTS (
+        SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?
+      )`)
+      .bind(id, organization.id, objectKey, purpose, file.type.startsWith("image/") ? "image" : "video", file.type, file.size, altText.trim(), now.getTime(), organization.id, revision, token)]);
   } catch (error) {
     await env.BUSINESS_MEDIA.delete(objectKey);
     if (error instanceof Response && error.status === 409) return Response.json({ error: await error.text() }, { status: 409 });

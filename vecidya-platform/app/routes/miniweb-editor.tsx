@@ -90,6 +90,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const [faqs, setFaqs] = useState(data.faqs);
   const [media, setMedia] = useState(data.media);
   const [uploading, setUploading] = useState(false);
+  const [removingMediaId, setRemovingMediaId] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(true);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
@@ -196,6 +197,27 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
       setMessage({ kind: "error", text: error instanceof Error ? error.message : "No se pudo subir el archivo." });
     } finally {
       setUploading(false);
+    }
+  }
+
+  async function handleRemoveMedia(asset: BusinessMediaAsset) {
+    setRemovingMediaId(asset.id);
+    setMessage(null);
+    try {
+      const response = await fetch(`/api/organizations/${encodeURIComponent(data.activeOrganization.id)}/business-media/${encodeURIComponent(asset.id)}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ draftRevision }),
+      });
+      const result = await response.json() as { error?: string; draftRevision?: number };
+      if (!response.ok || typeof result.draftRevision !== "number") throw new Error(result.error ?? "No se pudo retirar el medio.");
+      setMedia((current) => current.filter((item) => item.id !== asset.id));
+      setDraftRevision(result.draftRevision);
+      setMessage({ kind: "success", text: "Medio retirado del borrador. La publicación actual no cambia hasta publicar de nuevo." });
+    } catch (error) {
+      setMessage({ kind: "error", text: error instanceof Error ? error.message : "No se pudo retirar el medio." });
+    } finally {
+      setRemovingMediaId(null);
     }
   }
 
@@ -348,7 +370,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 </label>
                 <Button disabled={!data.canEdit || uploading || busy} type="submit" tone="secondary">{uploading ? "Subiendo…" : "Subir medio"}</Button>
               </form>
-              {media.length ? <ul className="miniweb-media-list">{media.map((asset) => <li key={asset.id}>{asset.mediaType === "image" ? <img alt="" height="72" loading="lazy" src={asset.publicUrl} width="96" /> : <span aria-hidden="true">▶</span>}<span>{asset.purpose === "cover" ? "Portada" : "Galería"}: {asset.altText}</span><span>{Math.ceil(asset.sizeBytes / 1024)} KB</span></li>)}</ul> : <p className="miniweb-editor__note">Todavía no has subido medios.</p>}
+              {media.length ? <ul className="miniweb-media-list">{media.map((asset) => <li key={asset.id}>{asset.mediaType === "image" ? <img alt="" height="72" loading="lazy" src={asset.publicUrl} width="96" /> : <span aria-hidden="true">▶</span>}<span>{asset.purpose === "cover" ? "Portada" : "Galería"}: {asset.altText}</span><span>{Math.ceil(asset.sizeBytes / 1024)} KB</span><Button disabled={!data.canEdit || busy || uploading || removingMediaId !== null} onClick={() => void handleRemoveMedia(asset)} tone="secondary">{removingMediaId === asset.id ? "Retirando…" : "Retirar del borrador"}</Button></li>)}</ul> : <p className="miniweb-editor__note">Todavía no has subido medios.</p>}
               <p className="miniweb-editor__note">Activa la sección «Galería» y publica para incluir los medios actuales en el snapshot público. Los archivos nuevos aún no se muestran a visitantes.</p>
             </Card>
           </div>
