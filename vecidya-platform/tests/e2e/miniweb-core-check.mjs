@@ -526,6 +526,15 @@ try {
 
   const editorResponse = await page.goto(new URL("/app/miniweb", baseUrl).toString(), { waitUntil: "networkidle" });
   check(editorResponse?.status() === 200, "el editor privado Mi MiniWeb responde para el owner");
+  const editorSteps = page.locator(".miniweb-editor__steps a");
+  const editorStepTargets = await editorSteps.evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  const editorStepsResolve = await editorSteps.evaluateAll((links) => links.every((link) => {
+    const target = link.getAttribute("href");
+    return Boolean(target && document.getElementById(target.slice(1)));
+  }));
+  check(editorStepTargets.join(",") === "#miniweb-design,#miniweb-sections,#miniweb-content,#miniweb-preview,#miniweb-publish" && editorStepsResolve, "el editor enlaza Diseño, Secciones, Contenido, Vista previa y Publicar con sus áreas reales");
+  await page.getByRole("link", { name: "5 Publicar" }).click();
+  check(new URL(page.url()).hash === "#miniweb-publish", "el paso Publicar lleva a la sección final del editor");
   check(await page.getByRole("button", { name: "Retirar del borrador" }).count() === 2, "el editor presenta acciones de retirada para portada y galería activas");
   check(await page.locator(".miniweb-editor__publication-state").getByText("Hay cambios guardados que todavía no se han publicado.").count() === 1, "el estado de MiniWeb identifica cambios de perfil/horarios aunque el diseño siga igual");
   const ownerBContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
