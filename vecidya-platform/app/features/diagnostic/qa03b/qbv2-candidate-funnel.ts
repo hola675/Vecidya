@@ -92,7 +92,7 @@ export function buildAnonymousDiagnosticSummaryV2(
       : null,
     limitations: [view.overall.coverage, ...(view.overall.warning ? [view.overall.warning] : [])],
     methodologyVersion: result.engineIdentity.methodology,
-    diagnosticIdentity: result.engineIdentity,
+    diagnosticIdentity: result.engineIdentity as typeof CANDIDATE_RESULT_IDENTITY_V3,
     dimensions: view.dimensions.map((dimension) => ({
       label: dimension.label,
       score: dimension.score,
