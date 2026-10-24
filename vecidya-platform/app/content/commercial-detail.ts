@@ -381,3 +381,33 @@ export function getCommercialOffer(kind: CommercialKind, id: string) {
 export function commercialOffers(kind: CommercialKind): readonly CommercialOffer[] {
   return kind === "license" ? LICENSE_OFFERS : kind === "addon" ? ADDON_OFFERS : SERVICE_OFFERS;
 }
+
+type CommercialOfferReference = { kind: CommercialKind; id: string };
+
+/** Relaciones editoriales basadas en dependencias y límites descritos por las propias ofertas. */
+const RELATED_COMMERCIAL_OFFER_REFERENCES: Readonly<Record<string, readonly CommercialOfferReference[]>> = {
+  "license:cuadra": [{ kind: "service", id: "formalizacion" }, { kind: "service", id: "estructuracion" }],
+  "license:barrio": [{ kind: "addon", id: "whatsapp-business" }, { kind: "service", id: "visibilidad" }],
+  "license:ciudad": [{ kind: "addon", id: "connections-integrations" }, { kind: "service", id: "automatizacion" }],
+  "addon:whatsapp-business": [{ kind: "license", id: "barrio" }, { kind: "addon", id: "conversational-ai" }],
+  "addon:telephony-sms": [{ kind: "license", id: "barrio" }, { kind: "addon", id: "voice-ai" }],
+  "addon:reputation-reviews": [{ kind: "addon", id: "campaigns-diffusion" }, { kind: "license", id: "barrio" }],
+  "addon:campaigns-diffusion": [{ kind: "service", id: "presencia-digital" }, { kind: "addon", id: "reputation-reviews" }],
+  "addon:conversational-ai": [{ kind: "service", id: "inteligencia-artificial" }, { kind: "addon", id: "whatsapp-business" }],
+  "addon:voice-ai": [{ kind: "service", id: "inteligencia-artificial" }, { kind: "addon", id: "telephony-sms" }],
+  "addon:connections-integrations": [{ kind: "service", id: "automatizacion" }, { kind: "license", id: "ciudad" }],
+  "service:estructuracion": [{ kind: "service", id: "formalizacion" }, { kind: "service", id: "presencia-digital" }],
+  "service:formalizacion": [{ kind: "license", id: "cuadra" }, { kind: "service", id: "estructuracion" }],
+  "service:presencia-digital": [{ kind: "addon", id: "campaigns-diffusion" }, { kind: "service", id: "visibilidad" }],
+  "service:visibilidad": [{ kind: "license", id: "barrio" }, { kind: "license", id: "ciudad" }],
+  "service:automatizacion": [{ kind: "addon", id: "connections-integrations" }, { kind: "license", id: "ciudad" }],
+  "service:inteligencia-artificial": [{ kind: "addon", id: "conversational-ai" }, { kind: "service", id: "automatizacion" }],
+};
+
+export function relatedCommercialOffers(offer: Pick<CommercialOffer, "kind" | "id">): CommercialOffer[] {
+  const references = RELATED_COMMERCIAL_OFFER_REFERENCES[`${offer.kind}:${offer.id}`] ?? [];
+  return references.flatMap(({ kind, id }) => {
+    const related = getCommercialOffer(kind, id);
+    return related && related.id !== offer.id ? [related] : [];
+  });
+}

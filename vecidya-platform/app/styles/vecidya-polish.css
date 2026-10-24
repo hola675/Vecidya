@@ -505,10 +505,17 @@
   text-underline-offset: .2em;
 }
 .commercial-detail__hero {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.6fr) minmax(15rem, .8fr);
   gap: clamp(1.25rem, 4vw, 3.25rem);
   align-items: start;
+  overflow: hidden;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid #d6e2ef;
+  border-radius: 1.5rem;
+  background: radial-gradient(circle at 87% 5%,rgba(255,185,133,.27),transparent 20rem),linear-gradient(135deg,#f5f9ff 0%,#fff 62%,#fffaf6 100%);
+  box-shadow: 0 18px 45px rgba(22,53,89,.07);
 }
 .commercial-detail__hero > div { min-width: 0; }
 .commercial-detail__hero h1 {
@@ -530,7 +537,8 @@
   padding: clamp(1.1rem, 3vw, 2rem);
   border: 1px solid #c6d8ed;
   border-radius: 1.25rem;
-  background: #f5f9ff;
+  background: rgba(255,255,255,.88);
+  box-shadow: 0 10px 28px rgba(22,53,89,.07);
 }
 .commercial-detail__price > strong {
   font-size: clamp(1.45rem, 3.5vw, 2.25rem);
@@ -584,6 +592,37 @@
   font-weight: 700;
   text-decoration: underline;
 }
+.commercial-detail__related-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+.commercial-detail__related-card {
+  display: grid;
+  align-content: start;
+  gap: .6rem;
+  min-width: 0;
+  padding: 1.25rem;
+  border: 1px solid #d6e2ef;
+  border-radius: .9rem;
+  box-shadow: 0 10px 24px rgba(22,53,89,.06);
+  background: linear-gradient(145deg,#f5f9ff,#fff);
+}
+.commercial-detail__related-card > :is(.eyebrow,h3,p) { margin: 0; }
+.commercial-detail__related-card > .eyebrow { color: #245b91; }
+.commercial-detail__related-card > p:not(.eyebrow) { color: #43566c; }
+.commercial-detail__related-card a { margin-top: .25rem; }
+.commercial-detail__related-card:first-child {
+  border-color: #164b8f;
+  background: linear-gradient(145deg,#1c5aaa,#123f79);
+  color: #fff;
+}
+.commercial-detail__related-card:first-child > .eyebrow { color: #ffd1b0; }
+.commercial-detail__related-card:first-child > h3 { color: #fff; }
+.commercial-detail__related-card:first-child > p:not(.eyebrow) { color: #e8f1fc; }
+.commercial-detail__related-card:first-child a { color: #fff; }
+.commercial-detail__diagnostic-link { margin-top: 1rem; }
 .commercial-detail__closing {
   display: grid;
   gap: 1.2rem;
@@ -597,6 +636,7 @@
   .commercial-detail__columns,
   .commercial-detail__module-grid,
   .commercial-detail__decision { grid-template-columns: minmax(0,1fr); }
+  .commercial-detail__related-grid { grid-template-columns: minmax(0,1fr); }
   .commercial-detail__price { max-width: none; }
 }
 

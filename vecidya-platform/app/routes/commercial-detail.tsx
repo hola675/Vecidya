@@ -1,6 +1,6 @@
 import { Link, useLoaderData } from "react-router";
 import { PublicLayout, publicMeta } from "../components/public-layout";
-import { getCommercialOffer, LICENSE_OFFERS } from "../content/commercial-detail";
+import { getCommercialOffer, LICENSE_OFFERS, relatedCommercialOffers } from "../content/commercial-detail";
 
 import type { CommercialKind, CommercialOffer } from "../content/commercial-detail";
 
@@ -40,6 +40,7 @@ function BulletGroup({ title, values }: { title: string; values: readonly string
 export default function CommercialDetail() {
   const { offer } = useLoaderData<typeof loader>();
   const modules = offer.kind === "license" ? LICENSE_OFFERS.find((candidate) => candidate.id === offer.id)?.standardModules : undefined;
+  const relatedOffers = relatedCommercialOffers(offer);
   return (
     <PublicLayout>
       <main className="public-page commercial-detail-page">
@@ -143,13 +144,28 @@ export default function CommercialDetail() {
         </section>
 
         <section className="commercial-detail__related" aria-labelledby="commercial-related-title">
-          <h2 id="commercial-related-title">Diferencia entre las ofertas</h2>
-          <p><strong>Licencia:</strong> tu sistema base de uso recurrente. <strong>Complemento:</strong> una capacidad adicional contratada aparte. <strong>Servicio:</strong> trabajo profesional con alcance definido. Los consumos de proveedores se muestran por separado.</p>
-          <div className="commercial-detail__related-links">
-            <Link to="/licencias">Comparar licencias</Link>
-            <Link to="/addons">Ver complementos</Link>
-            <Link to="/servicios">Ver servicios profesionales</Link>
-          </div>
+          <p className="eyebrow">SIGUE EXPLORANDO</p>
+          <h2 id="commercial-related-title">Opciones conectadas con esta necesidad.</h2>
+          <p>Estas fichas comparten una función o dependencia descrita en el catálogo. Revisa su alcance para decidir si aporta algo a tu situación.</p>
+          {relatedOffers.length > 0 ? (
+            <div className="commercial-detail__related-grid">
+              {relatedOffers.map((related) => (
+                <article className="commercial-detail__related-card" key={`${related.kind}:${related.id}`}>
+                  <p className="eyebrow">{groupNames[related.kind]}</p>
+                  <h3>{related.title}</h3>
+                  <p>{related.summary}</p>
+                  <Link className="text-link" to={related.detailPath}>Ver detalles de {related.title} <span aria-hidden="true">→</span></Link>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="commercial-detail__diagnostic-link">Si aún estás definiendo prioridades, <Link to="/diagnostico">haz el Diagnóstico</Link> antes de contratar una solución recurrente.</p>
+          )}
+          <nav className="commercial-detail__related-links" aria-label="Otros catálogos">
+            {offer.kind !== "license" ? <Link to="/licencias">Comparar licencias</Link> : null}
+            {offer.kind !== "addon" ? <Link to="/addons">Ver complementos</Link> : null}
+            {offer.kind !== "service" ? <Link to="/servicios">Ver servicios profesionales</Link> : null}
+          </nav>
         </section>
 
         <div className="commercial-detail__closing">
