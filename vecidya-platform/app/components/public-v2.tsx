@@ -3,6 +3,9 @@ import { Link } from "react-router";
 import { publicAssets } from "../assets/public-assets";
 import { COMMERCIAL_BOUNDARY_COPY, COMMERCIAL_EXTERNAL_COSTS, PUBLIC_ACTION_LABELS, type CommercialBoundaryKind } from "../content/public-copy";
 import { buildDiagnosticPath, type ProfileId } from "../features/diagnostic";
+import { serviceModeLabels } from "../../db/business-profile-rules";
+import type { NeighborhoodFilters, NeighborhoodOfferingKind } from "../features/miniweb/neighborhood";
+import type { MiniWebModuleType } from "../features/miniweb/registry";
 import type { ReactNode } from "react";
 
 export {
@@ -27,6 +30,10 @@ type BusinessCardProfile = {
   city: string | null;
   country: string | null;
   logoUrl: string | null;
+  serviceArea: string | null;
+  serviceMode: string | null;
+  offerings: { kind: NeighborhoodOfferingKind; title: string }[];
+  moduleLabels: string[];
 };
 
 export function JsonLd({ data }: { data: Record<string, unknown> }) {
@@ -217,6 +224,7 @@ export function AssetVisual({
 
 export function BusinessCardV2({ profile }: { profile: BusinessCardProfile }) {
   const location = [profile.city, profile.country].filter(Boolean).join(", ");
+  const tags = profile.offerings.slice(0, 3);
 
   return (
     <article className="public-v2-business-card">
@@ -231,7 +239,11 @@ export function BusinessCardV2({ profile }: { profile: BusinessCardProfile }) {
         <p className="eyebrow">{profile.category ?? "NEGOCIO LOCAL"}</p>
         <h2><Link to={`/vecindario/${profile.slug}`}>{profile.displayName}</Link></h2>
         {location ? <p className="public-v2-business-card__location">{location}</p> : null}
+        {profile.serviceArea ? <p className="public-v2-business-card__location">Atiende: {profile.serviceArea}</p> : null}
+        {profile.serviceMode && profile.serviceMode in serviceModeLabels ? <p className="public-v2-business-card__location">{serviceModeLabels[profile.serviceMode]}</p> : null}
         {profile.shortDescription ? <p>{profile.shortDescription}</p> : null}
+        {tags.length ? <ul aria-label="Servicios y productos publicados" className="directory-card-offerings">{tags.map(({ kind, title }) => <li key={`${kind}:${title}`}>{title}</li>)}</ul> : null}
+        {profile.moduleLabels.length ? <p className="directory-card-modules">Secciones: {profile.moduleLabels.join(" · ")}</p> : null}
         <Link className="directory-card__link" to={`/vecindario/${profile.slug}`}>Ver perfil<span aria-hidden="true"> →</span></Link>
       </div>
     </article>
@@ -242,18 +254,30 @@ export function SearchFilters({
   filters,
   categories,
   cities,
+  serviceAreas,
+  serviceModes,
+  offeringKinds,
+  modules,
 }: {
-  filters: { q?: string; category?: string; city?: string };
+  filters: NeighborhoodFilters;
   categories: string[];
   cities: string[];
+  serviceAreas: string[];
+  serviceModes: string[];
+  offeringKinds: NeighborhoodOfferingKind[];
+  modules: { type: MiniWebModuleType; label: string }[];
 }) {
-  const hasFilters = Boolean(filters.q || filters.category || filters.city);
+  const hasFilters = Boolean(filters.q || filters.category || filters.city || filters.serviceArea || filters.serviceMode || filters.offering || filters.module);
 
   return (
     <form className="directory-filters public-v2-search-filters" method="get">
-      <label className="directory-search-field"><span>Buscar por nombre</span><span className="directory-search-input"><svg aria-hidden="true" className="directory-search-icon" fill="none" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" strokeWidth="1.8" /><path d="m16 16 5 5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" /></svg><input defaultValue={filters.q} name="q" placeholder="Ej. Vecidya" type="search" /></span></label>
+      <label className="directory-search-field"><span>Buscar nombre, categoría u oferta</span><span className="directory-search-input"><svg aria-hidden="true" className="directory-search-icon" fill="none" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" strokeWidth="1.8" /><path d="m16 16 5 5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" /></svg><input defaultValue={filters.q} name="q" placeholder="Ej. diseño, asesoría, Bogotá" type="search" /></span></label>
       <label>Categoría<select defaultValue={filters.category ?? ""} name="category"><option value="">Todas</option>{categories.map((category) => <option key={category} value={category}>{category}</option>)}</select></label>
       <label>Ciudad<select defaultValue={filters.city ?? ""} name="city"><option value="">Todas</option>{cities.map((city) => <option key={city} value={city}>{city}</option>)}</select></label>
+      {serviceAreas.length ? <label>Área de servicio<select defaultValue={filters.serviceArea ?? ""} name="serviceArea"><option value="">Todas</option>{serviceAreas.map((area) => <option key={area} value={area}>{area}</option>)}</select></label> : null}
+      {serviceModes.length ? <label>Modalidad<select defaultValue={filters.serviceMode ?? ""} name="serviceMode"><option value="">Todas</option>{serviceModes.map((mode) => <option key={mode} value={mode}>{serviceModeLabels[mode] ?? mode}</option>)}</select></label> : null}
+      {offeringKinds.length ? <label>Ofrece<select defaultValue={filters.offering ?? ""} name="offering"><option value="">Todo</option>{offeringKinds.map((kind) => <option key={kind} value={kind}>{kind === "service" ? "Servicios" : "Productos"}</option>)}</select></label> : null}
+      {modules.length ? <label>Sección visible<select defaultValue={filters.module ?? ""} name="module"><option value="">Cualquiera</option>{modules.map(({ type, label }) => <option key={type} value={type}>{label}</option>)}</select></label> : null}
       <button className="button button--primary" type="submit">Buscar</button>
       {hasFilters ? <Link className="button button--secondary" to="/vecindario">Limpiar</Link> : null}
     </form>

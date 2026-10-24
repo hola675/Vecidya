@@ -1,9 +1,15 @@
 # Changelog
 
-## 2026-10-24 — APP-MINI-02D (editor MiniWeb guiado; PR pendiente)
+## 2026-10-24 — APP-MINI-02E (búsqueda y filtros del Vecindario; en progreso)
+
+- `/vecindario` amplía búsqueda y filtros con modalidad, área de servicio, servicios/productos y módulos MiniWeb con contenido renderizable. Las fichas muestran ofertas activas y secciones públicas derivadas solo del snapshot; las especialidades se infieren de categoría/ofertas existentes para evitar duplicar una taxonomía.
+- El test Worker verifica el aislamiento de borradores, ofertas inactivas y módulos desactivados, filtros de contenido publicado y responsive a 320/390/768/1366. Se corrige también el P2 de anclas del editor con margen bajo la cabecera sticky.
+- Evidencia local: 112/112 E2E, 3/3 unitarias focales, typecheck, build y diff-check PASS; D1 aislada `0000–0027`, fixtures en cero. PR #64 se integró en `main@820f529`; este checkpoint permanece local, sin HTTP pública, D1 remota o deploy.
+
+## 2026-10-24 — APP-MINI-02D (editor MiniWeb guiado; PR #64 integrado)
 
 - `/app/miniweb` organiza el editor en cinco destinos accesibles: Diseño, Secciones, Contenido, Vista previa y Publicar. La publicación y guardado quedan agrupados en su destino, y la UI declara que `Esencial` es la única plantilla disponible.
-- El comportamiento conserva borrador, CAS y snapshot. En código `961c46d`, MiniWeb E2E 105/105, unitarias 1659/1659, typecheck, build y diff-check PASS en Worker/D1 local aislados. Fixtures en cero; la D1 local schema-only permanece en `%TEMP%\vecidya-app-mini-02d-editor-e2e` porque el comando de limpieza fue bloqueado. Sin D1 remota, R2 real ni deploy.
+- El comportamiento conserva borrador, CAS y snapshot. En código `961c46d`, MiniWeb E2E 105/105, unitarias 1659/1659, typecheck, build y diff-check PASS en Worker/D1 local aislados. PR #64 se integró en `main@820f529`. Su observación P2 de scroll bajo cabecera sticky se corrigió y probó en APP-MINI-02E. Sin D1 remota, R2 real ni deploy.
 
 ## 2026-10-24 — QA-03B — corpus de 60 variantes y reporte final HTML
 
