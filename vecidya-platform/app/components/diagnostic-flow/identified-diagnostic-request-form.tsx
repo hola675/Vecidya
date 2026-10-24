@@ -100,7 +100,7 @@ export function IdentifiedDiagnosticRequestForm({
           </label>
         </fieldset>
 
-        <p className="df-identification__retention">La solicitud y el informe se conservan hasta {IDENTIFIED_REPORT_RETENTION_DAYS} días. El enlace de verificación vence a las 24 horas. Puedes eliminar la solicitud antes desde el informe; la aprobación de estos plazos y la eliminación automática de datos vencidos siguen siendo requisitos para habilitar el servicio.</p>
+        <p className="df-identification__retention">La solicitud y el informe se conservan hasta {IDENTIFIED_REPORT_RETENTION_DAYS} días. El enlace de verificación vence a las 24 horas. Puedes eliminar la solicitud antes desde el informe; los datos vencidos se eliminan automáticamente en lotes diarios.</p>
         {state.kind === "error" ? <p className="df-identification__error" role="alert">{state.message}</p> : null}
         <div className="df-identification__actions">
           <button className="button button--primary" disabled={state.kind === "submitting" || !serviceAcknowledged} type="submit">{state.kind === "submitting" ? "Preparando solicitud…" : "Solicitar acceso al informe"}</button>

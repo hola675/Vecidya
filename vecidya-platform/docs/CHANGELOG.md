@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-23 — 0.7.0 — Diagnóstico QA-03B publicado y activado en producción
+
+- Se aplicaron las migraciones D1 `0011–0023` a staging y producción; ledger sin pendientes. Bookmarks pre-migración y límites de validación remota constan en `ENVIRONMENTS.md`.
+- Se desplegó el Worker completo (web pública, `/app`, `/app/internal`, API y assets) sobre `origin/main@69531b3`, que incluye los cambios integrados de MiniWeb. Staging `39ffd6e1-4d20-4c39-9338-653b41340085`; producción `517126e4-a3cd-4309-8501-5a49d57cd15f`.
+- Se eleva la versión de aplicación `0.6.1` → `0.7.0` y se corrige el formulario de informe para indicar que los datos vencidos se eliminan automáticamente en lotes diarios.
+- HTTP anónimo TLS a las `2026-10-24T00:12:23Z` confirmó páginas públicas 200 y footer `0.7.0`; `/app` y `/app/internal` redirigen a login sin sesión. No se verificó funcionalidad autenticada.
+- Por autorización expresa del usuario, producción activa funnel Gmail y ambos switches de purga; staging mantiene los tres flags cerrados. Los conteos agregados de backlog fueron cero, `changed_db=false`. La política desplegada retiene informes 30 días y challenges 24 horas, con aprobación legal confirmada por el usuario. No se envió correo de prueba; entrega Gmail no certificada. Se conserva adaptador V3/sesiones históricas para rollback. D1 API rechazó PRAGMA remoto; no se afirma integridad/FK remota.
+
 ## 2026-10-23 — APP-MINI-02B (implementación local sin certificar)
 
 - Se añadieron ofertas del negocio tipo servicio/producto y FAQ editables por organización en Mi MiniWeb. El contenido se guarda con la configuración bajo una revisión CAS y se incorpora al snapshot público versión 2. Snapshots v1 continúan leyéndose sin contenido nuevo ni filtración desde borradores.

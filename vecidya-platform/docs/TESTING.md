@@ -1,5 +1,13 @@
 # Pruebas
 
+## DIAG-QA-03B-RELEASE-CLOSE — publicación y activación remotas (2026-10-23)
+
+- Local, antes de los merges MiniWeb #49/#50: `pnpm run test:unit` **1655/1655 PASS**; typecheck/build PASS; `diagnostic-d1-release-check.mjs` PASS desde 0010 hasta 0023; QA-03B E2E seis recorridos con reanudación/concurrencia/informe HTML PASS; ACT-04 **3/3 PASS** en Worker local con viewports 320/390/768/1366. Para el HEAD integrado actual se repitieron typecheck y build PASS; no se ejecutaron unitarias/E2E en este cierre.
+- Remoto: migraciones `0011–0023` aplicadas y ledger sin pendientes en staging y producción. Producción usa D1 `vecidya-prod`, Gmail, tres flags activos y Cron `17 3 * * *`; staging usa su D1, proveedor fake, flags cerrados y sin Cron.
+- HTTP anónimo TLS a las `2026-10-24T00:12:23Z`, ambos entornos: `/`, `/diagnostico`, `/diagnostico/metodologia` → `200`, footer `0.7.0`; `/login` → `200`; `/app` y `/app/internal` → `302 /login`; ruta dev-only → `404`. POST `{}` al resumen anónimo → `400` validación. POST `{}` a solicitudes de informe → `400` producción (abierto, sin escritura) y `404` staging (cerrado). No es replay válido ni acceso autenticado.
+- Producción: Worker Version ID `517126e4-a3cd-4309-8501-5a49d57cd15f`, creado `2026-10-23T23:57:02.882Z`; staging `39ffd6e1-4d20-4c39-9338-653b41340085`. Bookmarks/configuración en `ENVIRONMENTS.md`.
+- Los seis conteos de backlog preactivación fueron cero; consultas solo lectura (`changed_db=false`). El usuario confirmó aprobación legal y autorizó funnel/Gmail y purga productiva; primera ejecución Cron posterior: `2026-10-24T03:17Z`. No se envió Gmail real ni se verificó flujo autenticado. D1 API denegó `PRAGMA integrity_check`/`foreign_key_check` (`SQLITE_AUTH`); integridad/FK solo certificadas en D1 local. No hubo restore.
+
 ## APP-MINI-02B — ofertas y FAQ (2026-10-23; integrado, validación funcional pendiente)
 
 PR #49 quedó integrado en `origin/main@6d25b3e`; Codex revisó `3dff014` y reportó revisión completada sin hallazgos. `pnpm run typecheck`, `pnpm run build` y `git diff --check` constan PASS en PR #49. En APP-MINI-02C, `pnpm wrangler d1 migrations apply DB --local --persist-to <directorio-efímero>` aplicó desde cero `0000–0024`; el directorio efímero se eliminó. No se ejecutaron pruebas unitarias ni E2E de APP-MINI-02B en este checkpoint.

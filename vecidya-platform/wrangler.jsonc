@@ -44,9 +44,9 @@
     "EMAIL_PROVIDER": "gmail",
     "EMAIL_FROM": "hola@vecidya.com",
     "EMAIL_REPLY_TO": "hola@vecidya.com",
-    "DIAGNOSTIC_REPORT_FUNNEL_ENABLED": "false",
-    "DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED": "false",
-    "DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED": "false"
+    "DIAGNOSTIC_REPORT_FUNNEL_ENABLED": "true",
+    "DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED": "true",
+    "DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED": "true"
   },
   "triggers": {
     "crons": ["17 3 * * *"]
@@ -69,6 +69,19 @@
     "staging": {
       "name": "vecidya-platform-staging",
       "workers_dev": true,
+      "routes": [],
+      "ratelimits": [
+        {
+          "name": "DIAGNOSTIC_PUBLIC_RATE_LIMITER",
+          "namespace_id": "612349201",
+          "simple": { "limit": 12, "period": 60 }
+        },
+        {
+          "name": "DIAGNOSTIC_IDENTIFICATION_RATE_LIMITER",
+          "namespace_id": "612349202",
+          "simple": { "limit": 6, "period": 60 }
+        }
+      ],
       "vars": {
         "APP_ENV": "staging",
         "APP_URL": "",

@@ -40,19 +40,19 @@ La primera extensión de operaciones cubre **organización de tareas**, **movimi
 Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos borradores educativos (hechos, lenguaje sin jerga, fuentes, ejemplos hipotéticos, imágenes móviles y autoría), ejecutar los gates de `TESTING.md`, y retirar `editorialDraft` solo de guías aprobadas individualmente. La eliminación del estado de borrador modifica exposición/indexación y no debe hacerse sin revisión editorial explícita. Realizar seguimiento de temas por sector o jurisdicción (normas de pagos/consentimiento, costos y herramientas regionales) solo con evidencia y contexto; no inventar leyes generales. No es un permiso de publicar o desplegar.
 
 
-**Estado actual reconciliado al 2026-10-23:** el código integrado en `origin/main@03a0158` sirve `/diagnostico` y `/diagnostico/metodologia` con QA-03B y replay autoritativo en Worker. Contrato activo: banco `reviewed-evidence-v7`, respuestas `qbv2-answers-v5`, sesión schema/key 6 y replay `qa03b-worker-replay-v4`. El endpoint anónimo conserva el adaptador V3 para rollback y las sesiones V3 históricas no se migran. ACT-04 está integrado (PR #42); no está publicado. Informe identificado/correo y purga siguen cerrados por flags; sin autorización legal de retención ni HTTP anónimo fechado no hay certificación de publicación.
+**Estado actual reconciliado al 2026-10-23:** QA-03B `0.7.0` está desplegado en staging y producción; HTTP anónimo confirma páginas públicas y guards de `/app` y `/app/internal`. D1 de ambos entornos llega a `0023`. Contrato activo: banco `reviewed-evidence-v7`, respuestas `qbv2-answers-v5`, sesión schema/key 6 y replay `qa03b-worker-replay-v4`. El endpoint anónimo conserva el adaptador V3 para rollback y las sesiones V3 históricas no se migran. Por autorización explícita, producción tiene activo el funnel Gmail y la purga diaria; staging conserva todos esos flags cerrados. La aprobación legal de retención fue confirmada por el usuario. Gmail está configurado, pero no se ha verificado una entrega real de extremo a extremo.
 
-**Objetivo restante:** cerrar preflight remoto de D1 y Worker, obtener evidencias HTTP anónimas tras un deploy autorizado, mantener desactivados funnel y purga hasta sus aprobaciones específicas y, después de una ventana de rollback acordada, abrir un checkpoint independiente para volver a escanear y retirar solo código legacy sin consumidores. Este checkpoint no realiza escrituras remotas, deploy, merge ni limpieza legacy.
+**Siguiente trabajo:** verificar en un checkpoint autorizado la entrega Gmail de extremo a extremo y observar el primer ciclo programado de purga. Tras la ventana de rollback acordada, abrir un checkpoint independiente para volver a escanear consumidores y retirar únicamente código legacy sin uso demostrado. La compatibilidad V3 y las sesiones históricas permanecen mientras sean necesarias para rollback; la carpeta `legacy/` no está presente en este checkout y no se elimina material desde aquí.
 
 | Fase | Trabajo | Gate de salida |
 | --- | --- | --- |
 | D0 Inventario | Inventario inicial realizado; actualizar consumidores/rutas tras release antes de borrar | Re-scan con imports, rutas, tests, manifiesto Worker y ventanas de rollback |
 | D1 Contrato único | Contratos QA-03B y adaptador de rollback integrados | Schema/key 6, bank v7, answer v5, replay v4; tests locales PASS |
 | D2 Preguntas y respuestas | Banco revisado e integrado | QA-03B contenido A/B/C; preservar sesiones previas sin migración |
-| D3 Motor y resultados | QA-03B conectado a ruta y replay Worker | ACT-04 E2E y regresión local PASS; falta deploy/HTTP para publicación |
-| D4 Embudo | Resumen anónimo listo; flujo identificado implementado con compuertas | Funnel flag sigue `false`; correo real y retención sin aceptación/autorización |
-| D5 Cutover controlado | Cutover de código integrado, rollback V3 compatible | No publicado. Deploy autorizado, HTTP anónimo fechado y ventana rollback pendientes; limpieza legacy fuera de este gate |
-| D6 Operación | Purga automatizada implementada y probada localmente | Ambos switches `false`; staging sin Cron; aprobación de privacidad, D1 remota y deploy pendientes |
+| D3 Motor y resultados | QA-03B conectado a ruta y replay Worker | ACT-04 E2E y regresión local PASS; publicado y HTTP verificado en staging/producción |
+| D4 Embudo | Resumen anónimo y flujo identificado implementados | Funnel abierto en producción; staging cerrado. Falta evidencia de entrega Gmail real |
+| D5 Cutover controlado | Cutover de código integrado, rollback V3 compatible | Deploy y HTTP verificados en ambos entornos; la ventana de rollback sigue antes de retirar consumidores legacy |
+| D6 Operación | Purga automatizada implementada, probada localmente y habilitada en producción | Flags activos en producción con Cron diario; staging cerrado y sin Cron. Observar primer ciclo programado |
 
 **Reglas:** no borrar `db/migrations`, no eliminar claves históricas ni adaptar sesiones completadas sin versionado; no activar correo real, sincronización GHL o D1 remota sin autorización. El roadmap histórico anterior se conserva como evidencia, incluso donde indique gates bloqueados.
 
@@ -73,13 +73,13 @@ Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos bo
 
 **DIAG-CLOSE-03 (2026-10-21):** replay QA server-only y resumen allowlisted ensayados en ruta dev-only; informe HTML identificado deriva del mismo resultado validado por Worker y requiere correo/grant. ACT-04 aún debe autorizar y probar el cambio atómico de rutas públicas, aislamiento de sesiones y rollback: no se ha hecho cutover ni deploy. El flujo identificado actual no descarga PDF; `PDF_OWNER_REVIEW` sigue manual y no bloqueante. FUNNEL-01D.2/01D.3 no se dan por completados.
 
-**DIAG-FUNNEL-PROD-01 (2026-10-22; integrado en PR #40, merge `f10ea8a`):** QA-03B enlazado al informe identificado, replay, correo, verificación, grants, recovery y derechos; flag del funnel cerrado en production/staging.
+**DIAG-FUNNEL-PROD-01 (2026-10-22; integrado en PR #40, merge `f10ea8a`; activado en producción el 2026-10-23):** QA-03B enlazado al informe identificado, replay, correo, verificación, grants, recovery y derechos. Funnel activo en producción y cerrado en staging; entrega real Gmail pendiente de verificación.
 
-**DIAG-PRIVACY-PURGE-01 (PR #41 integrado; CODE + TEST local):** Cron diario y purga por lotes acotados; switches en `false` en producción/staging y staging no tiene Cron. Retención legal/operativa sigue pendiente; 30 d/24 h son provisionales.
+**DIAG-PRIVACY-PURGE-01 (PR #41 integrado; activado en producción el 2026-10-23):** Cron diario y purga por lotes acotados; switches activos en producción y cerrados en staging (sin Cron). El usuario confirmó aprobación legal para 30 d/24 h. Primera ejecución posterior al deploy: `2026-10-24T03:17Z`.
 
-**DIAG-D1-RELEASE-01 (2026-10-23): PASS TÉCNICO local; NO-GO remoto.** Certificada localmente la cadena limpia y el upgrade sintético desde `0010`; matriz, preflight, staging, rollback y gates están en `DATABASE.md`. El ledger remoto y Worker desplegado siguen sin verificarse y no se consultaron. Requiere autorización específica incluso para lectura.
+**DIAG-D1-RELEASE-01 (2026-10-23):** migraciones `0011–0023` aplicadas en D1 de staging y producción; ledger sin pendientes. Certificación local y límites del postflight remoto en `DATABASE.md`.
 
-**Siguientes dependencias:** el usuario autorizó lectura remota de staging y producción, pero Wrangler no tiene sesión autenticada y el MCP de Cloudflare no está disponible en este entorno. Completar autenticación e inspección read-only; no aplicar migraciones. Cualquier escritura D1, deploy, activación del funnel/purga y ventana de rollback requiere los gates separados de `DATABASE.md`/`ENVIRONMENTS.md`. DIAG-MAIL-ACCEPTANCE-01 requiere destinatario/entorno autorizados; aviso/retención requiere aprobación de privacidad; decisión PDF permanece pendiente. No se habilita ni despliega en este checkpoint.
+**Siguientes dependencias:** completar verificación de entrega Gmail de extremo a extremo y observar el primer ciclo de purga. La decisión sobre PDF sigue pendiente. Mantener compatibilidad V3 y sesiones históricas durante la ventana de rollback; retirar código legacy únicamente tras escaneo nuevo de consumidores y checkpoint separado.
 
 **ACT-04 (2026-10-22):** PR #37 integrado en `main@3b67d20` tras autorización; cutover de `/diagnostico` y metodología a QA-03B con replay server-authoritative, compatibilidad estricta y rollback dev-only. Integrado, no publicado. El gate de informe identificado/correo real sigue cerrado; no se tocó D1 remota ni se publica automáticamente.
 

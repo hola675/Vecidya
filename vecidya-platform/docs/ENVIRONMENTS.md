@@ -10,9 +10,21 @@ El package local también informa `0.6.1`, pero coincidencia de versión no demu
 
 # Entornos
 
-## DIAG-QA-03B-RELEASE-CLOSE — preflight autorizado, bloqueado por autenticación (2026-10-23)
+## DIAG-QA-03B-RELEASE-CLOSE — publicación verificada en staging y producción (2026-10-23)
 
-El usuario autorizó consultas read-only de D1/Worker en `vecidya-staging` y `vecidya-prod`. `wrangler whoami` respondió que Wrangler no está autenticado y Cloudflare MCP no está disponible en las herramientas activas, por lo que no se leyó ledger/esquema/bookmark ni SHA del Worker. No se ejecutaron migraciones, escrituras, deploy ni HTTP público en esta fecha. Estado desplegado permanece **DOC histórico**, sin verificación actual. Código local QA-03B integrado todavía no es publicación; ver `DATABASE.md` para desbloquear el preflight. Funnel y switches de purga continúan cerrados.
+**Producción desplegada y verificada por HTTP anónimo con TLS el 2026-10-24T00:12:23Z.** Worker `vecidya-platform`, versión activa `517126e4-a3cd-4309-8501-5a49d57cd15f`, creada `2026-10-23T23:57:02.882Z`, aplicación `0.7.0`. D1 `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`), ledger `0000–0023`. Bookmark pre-migración: `000004fa-00000000-0000510d-a945f042e05ed43f11830da120bb1448`. Wrangler confirmó `DB=vecidya-prod`, `APP_ENV=production`, rate limiters (12 y 6 solicitudes/60 s), Gmail, funnel y ambos flags de purga `true`, rutas de producción y Cron `17 3 * * *`.
+
+**Staging:** Worker `vecidya-platform-staging`, versión activa `39ffd6e1-4d20-4c39-9338-653b41340085`, URL `https://vecidya-platform-staging.soporte-8a1.workers.dev`; D1 `vecidya-staging` (`d4af6ebc-97c5-42f6-ad3a-51551021e591`), ledger `0000–0023`. Bookmark pre-migración: `000000a1-00000002-0000510d-f5d5c5e4fa7f1e433ac3bbd27f3d728d`. Configuración efectiva `APP_ENV=staging`, email fake, rate limiters con namespaces separados, flags de funnel/purga `false`, `routes=[]` y sin Cron.
+
+**HTTP anónimo fechado, ambos entornos: 2026-10-24T00:12:23Z.** `/`, `/diagnostico` y `/diagnostico/metodologia` → `200`, con versión `0.7.0` y `© 2026 Vecidya`; `/login` → `200`; `/app` y `/app/internal` → `302 /login` sin sesión; `/__dev/diagnostico/v3` → `404`. POST `{}` a `/api/diagnostic/anonymous-summary` → `400` con error de validación esperado. POST `{}` a `/api/diagnostic/report-requests` → `400` de validación en producción (ruta abierta; no se creó solicitud) y `404` en staging (flag cerrado). Estos requests no representan replay válido, acceso autenticado ni envío de correo. Las migraciones `0011–0023` se ejecutaron antes del deploy en ambos objetivos y `migrations list` terminó sin pendientes.
+
+El primer deploy staging reportó conflicto al intentar heredar las rutas de producción; se corrigió la configuración explícita `env.staging.routes=[]` y el deploy posterior completó sin transferir rutas de zona a staging. El primer build de producción usó incorrectamente `CLOUDFLARE_ENV=production`, que no existe como entorno nombrado; se reconstruyó con la configuración base y el dry run confirmó `vecidya-prod` antes de publicar. La consulta remota de `PRAGMA integrity_check`/`foreign_key_check` fue denegada por D1 API (`SQLITE_AUTH`); no se afirma integridad remota a partir de ello. No hubo restore.
+
+**Activación autorizada:** el usuario confirmó aprobación legal de la política configurada (solicitud/informe 30 días, challenge 24 horas) y autorizó abrir funnel/Gmail y purga en producción. Los seis conteos agregados de backlog previos a la activación fueron cero (`expired_access`, `expired_snapshots`, challenges vencidos sin acceso, intents huérfanos comerciales/investigación y requests vencidos sin hijos); consultas de solo lectura, `changed_db=false`, cero filas escritas. Cron diario está activo desde el deploy; primera ejecución programada posterior: `2026-10-24T03:17Z`. Staging mantiene correo fake y los tres flags `false`, sin Cron. No se envió correo real; la entrega Gmail extremo a extremo sigue sin comprobar. No se consultaron correos, sesiones personales ni informes.
+
+## DIAG-QA-03B-RELEASE-CLOSE — preflight previo al login (histórico, 2026-10-23)
+
+El preflight inicial encontró Wrangler sin login y se completó tras la autenticación interactiva del usuario. El estado posterior y la evidencia de deploy/HTTP vigente están arriba; esta entrada conserva solo el registro de ese intento inicial fallido.
 
 ## DIAG-PRIVACY-PURGE-01 — automatización preparada, switches cerrados (2026-10-22)
 
