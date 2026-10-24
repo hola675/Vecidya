@@ -18,6 +18,8 @@
 
 **Estado (UX-PREMIUM-01A, 2026-10-24):** fase 1A implementada localmente: el CTA principal del hero de Inicio ahora lleva al Diagnóstico y explorar Vecindario queda como acción secundaria; el adorno sin contenido se excluye del árbol accesible. Typecheck, build y diff-check PASS. Worker Cloudflare local con D1 efímera en `0000–0027`: GET `/` devuelve 200, el árbol accesible refleja el orden del CTA y la captura de escritorio confirma la jerarquía visual. No se revisaron otros viewports ni se certifica accesibilidad integral. Fases 2–6 son plan futuro y no están implementadas ni certificadas por esta entrada.
 
+**Estado (UX-PREMIUM-01B, 2026-10-24):** `/vecindario/:slug` incorpora breadcrumb de retorno al índice, jerarquía editorial del hero y tarjetas para contenido MiniWeb activo, con enlace de cierre al Vecindario. Typecheck, build y diff-check PASS. El recorrido MiniWeb en Worker se detuvo antes de las pruebas de perfil: la D1 local `0000–0027` carece de `platform_owner_invitation`; revisión visual responsive pendiente. PR pendiente. No publicado.
+
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)

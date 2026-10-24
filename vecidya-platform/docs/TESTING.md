@@ -1,5 +1,9 @@
 # Pruebas
 
+## UX-PREMIUM-01B — perfil público MiniWeb (2026-10-24)
+
+`pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS**. `node tests/e2e/miniweb-core-check.mjs` no alcanzó sus aserciones: tras aplicar localmente `0000–0027`, el alta del primer usuario de prueba devolvió HTTP 500 por ausencia de `platform_owner_invitation` en la D1 conectada al Worker. Antes de migrar, la DB local vacía también impidió iniciar el loader del perfil. No hay certificación Worker ni visual para este cambio. Sin D1 remota ni deploy.
+
 ## DIAG-QA03B-PROFILE-KNOWLEDGE-01 — 60 variantes y reporte HTML (2026-10-24)
 
 **RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-profile-case-matrix.test.ts` — **3/3 PASS**, incluyendo 20 casos base y 60 variantes (20 perfiles × informado/parcial/desconocedor), cada pregunta validada contra el banco actual y sin hard-cap de 30. Los 60 índices globales permanecen pendientes; 57 recorridos tienen dimensiones aplicables no resueltas; 58 terminan `no_useful_questions` y 2 `budget_blocked`; se observaron 26 puntuaciones dimensionales aisladas y 0 de medición/optimización.

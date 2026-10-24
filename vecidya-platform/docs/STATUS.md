@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## UX-PREMIUM-01B — Vecindario y ficha MiniWeb (2026-10-24)
+
+Implementación local en `feat/app-mini-ux-02c-directory-profiles`: la ficha pública de `/vecindario/:slug` añade retorno contextual al Vecindario, jerarquía visual al hero y módulos de contenido, y un cierre visual hacia el directorio. El estilo queda limitado a la vista pública; preview del editor, snapshot publicado y filtros de datos permanecen sin cambios. Typecheck, build y diff-check PASS. Worker local bloqueado antes de registrar fixtures por tabla ausente `platform_owner_invitation`; sin revisión responsive renderizada ni prueba de perfil. PR pendiente. No publicado.
+
 ## UX-PREMIUM-01A — Inicio, primera fase del plan visual (2026-10-24)
 
 En `feat/app-mini-ux-01`, desde `origin/main` actualizado, el CTA principal del hero `/` dirige al Diagnóstico, de acuerdo con el recorrido de producto; el Vecindario queda como acción secundaria. El brillo decorativo se marca como oculto a tecnologías asistivas. Typecheck, build y diff-check PASS. Worker Cloudflare local con D1 efímera migrada `0000–0027`: GET `/` 200; árbol accesible y captura de escritorio confirman el nuevo orden/jerarquía. Build reportó secretos locales opcionales de Auth/Gmail ausentes y dos advertencias de dynamic import preexistentes; no se leyeron secretos. No se revisaron otros viewports ni se certifica accesibilidad integral. No se declara publicado. El plan con las fases 0–6 está en `ROADMAP.md`; solo 01A está implementada.

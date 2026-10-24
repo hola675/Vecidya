@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-24 — UX-PREMIUM-01B (ficha pública de Vecindario)
+
+- `/vecindario/:slug` incorpora breadcrumb de retorno, hero con identidad y contenido más destacados, módulos activos presentados como secciones editoriales y un cierre visual que devuelve al directorio. El alcance de estilos queda dentro de la página pública y conserva la vista previa del editor.
+- La carga sigue usando únicamente el perfil/snapshot público, medios publicados, ofertas y preguntas activas; no se añaden datos ni links comerciales inferidos. Typecheck/build/diff-check PASS; el E2E MiniWeb no pasó del alta fixture por ausencia de `platform_owner_invitation` en la D1 local. Sin publicación.
+
 ## 2026-10-24 — APP-MINI-02D (editor MiniWeb guiado; PR pendiente)
 
 - `/app/miniweb` organiza el editor en cinco destinos accesibles: Diseño, Secciones, Contenido, Vista previa y Publicar. La publicación y guardado quedan agrupados en su destino, y la UI declara que `Esencial` es la única plantilla disponible.

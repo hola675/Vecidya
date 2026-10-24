@@ -1,3 +1,7 @@
+## UX-PREMIUM-01B — Vecindario y ficha MiniWeb (2026-10-24)
+
+En `feat/app-mini-ux-02c-directory-profiles`, `/vecindario/:slug` gana breadcrumb de retorno, hero editorial y mayor jerarquía para módulos publicados, más un cierre al directorio. Los datos continúan procediendo del snapshot público y la configuración MiniWeb; la preview privada del editor no recibe estilos nuevos. Typecheck, build y diff-check PASS. El E2E MiniWeb quedó bloqueado antes de los casos del perfil porque la D1 local `0000–0027` no tiene `platform_owner_invitation`; no hay evidencia de runtime visual ni respuesta responsive en este corte. Sin deploy.
+
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
 `APP-MINI-REDESIGN-01` está integrado en `origin/main@3e6b9b1` mediante PR #53; no está publicado. App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.
