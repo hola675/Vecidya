@@ -1,5 +1,11 @@
 # Arquitectura de Vecidya
 
+## DIAG-MOTOR-03 — evidencia de recomendaciones QA-03B (2026-10-24; local)
+
+El replay Worker sigue reconstruyendo una sola salida versionada para presentación, informe privado y resumen anónimo. La presentación e informe QA-03B enlazan recomendaciones únicamente a preguntas fuente activas y sus etiquetas de respuesta del banco revisado; los identificadores de pregunta no se exponen. Cada recomendación presenta estado de verificación y un paso cualitativo para comprobar su resultado. Si no hay respuestas directas, el informe lo dice y pide confirmar antes de actuar. Esta proyección no recalcula puntuaciones ni altera la selección comercial.
+
+El informe candidato pasa a `diagnostic-report-v1.1` por estos campos; el informe V1 y la identidad del pipeline candidato V3 histórico permanecen en `1.0`. El resumen anónimo conserva su esquema/allowlist de 12 claves y no recibe evidencia de respuestas ni recomendaciones. Los criterios de verificación son guías operativas cualitativas, no métricas prometidas ni auditoría automática. QA-03B candidato sigue sin activación en Worker público; ver `STATUS.md`, `ROADMAP.md` y `TESTING.md`.
+
 ## DIAG-VISUAL-ASSETS-01 — proyección gráfica QA-03B (2026-10-24; local)
 
 El flujo activo `/diagnostico` usa `CandidateDiagnosticFlow` y el replay QA-03B server-side. El resumen público acepta el contrato anterior sólo en el runtime legacy V3 independiente; QA-03B ahora serializa `anonymous-diagnostic-summary-v2`. Su `dimensions` contiene ocho entradas en orden canónico, con exactamente `label`, `score` (`number | null`), `statusLabel`, `preliminary` e `illustration`. El validador rechaza claves adicionales, orden/conteo incorrecto, valores fuera de rango e ilustraciones que no estén en `DIMENSION_ILLUSTRATION_BY_KEY`.

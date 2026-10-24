@@ -3,7 +3,7 @@ import {
   CANDIDATE_METHODOLOGY_IDENTITY_V3,
   CANDIDATE_METHODOLOGY_REPORT_NOTES_V3,
 } from "./qa03b-methodology-content";
-import { REPORT_TITLE, REPORT_VERSION } from "../diagnostic-report/report-model";
+import { CANDIDATE_REPORT_VERSION, REPORT_TITLE } from "../diagnostic-report/report-model";
 import type { CandidateDiagnosticReportV1, ReportDimension } from "../diagnostic-report/report-model";
 import {
   areaItems, CERTAINTY_DISPLAY, CONFIDENCE_DISPLAY, dimensionDisplay, dimensionLabelOf, LIFECYCLE_DISPLAY, PROFILE_DISPLAY,
@@ -11,6 +11,8 @@ import {
 } from "../diagnostic-result/presentation";
 import { METHODOLOGY_SOURCES } from "../../features/diagnostic/qbv2-methodology";
 import { CANDIDATE_RESULT_IDENTITY_V3, type CandidatePipelineResultV3 } from "../../features/diagnostic/qa03b/qbv2-candidate-pipeline";
+import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "../../features/diagnostic/qa03b/bank";
+import { renderQuestionV2 } from "../../features/diagnostic/qa03b/copy";
 
 export type CandidateResultPresentationV3 = {
   readonly engineIdentity: typeof CANDIDATE_RESULT_IDENTITY_V3;
@@ -45,6 +47,9 @@ export type CandidateResultPresentationV3 = {
     readonly whyItMatters: string;
     readonly expectedOutcome: string;
     readonly certainty: string;
+    readonly verificationStatus: string;
+    readonly howToVerify: string;
+    readonly evidence: readonly { readonly question: string; readonly answer: string }[];
     readonly conditions: readonly string[];
     readonly solution: { readonly label: string; readonly description: string } | null;
   }[];
@@ -83,6 +88,22 @@ const LICENSE_CERTAINTY: Readonly<Record<CandidatePipelineResultV3["commercial"]
 const RECOMMENDATION_MODE: Readonly<Record<CandidatePipelineResultV3["recommendations"]["items"][number]["mode"], string>> = {
   improve: "Mejorar", verify: "Confirmar primero", prepare: "Preparar antes del lanzamiento", reduce_dependency: "Reducir una dependencia",
 };
+const RECOMMENDATION_VERIFICATION: Readonly<Record<CandidatePipelineResultV3["recommendations"]["items"][number]["mode"], string>> = {
+  improve: "Brecha observada",
+  verify: "Pendiente de confirmar",
+  prepare: "Por definir antes del lanzamiento",
+  reduce_dependency: "Dependencia observada",
+};
+const RECOMMENDATION_CHECK: Readonly<Record<CandidatePipelineResultV3["recommendations"]["items"][number]["type"], string>> = {
+  clarity: "Pide a alguien que no conozca tu oferta que explique qué ofreces y cuál sería el siguiente paso.",
+  foundation: "Comprueba desde fuera que la información esencial esté actualizada y que el canal de contacto funcione.",
+  discovery: "Registra de qué vías llegan las consultas y revisa qué pasó con cada una al cierre del periodo.",
+  trust: "Verifica que las señales de confianza que muestras sean reales, vigentes y estén autorizadas.",
+  conversion: "Prueba el recorrido desde el primer contacto hasta la compra o la cita y anota dónde se detiene.",
+  follow_up: "En la próxima revisión, comprueba si cada contacto relevante tiene una persona responsable y un siguiente paso registrados.",
+  measurement: "En el siguiente ciclo, comprueba que registras el resultado de cada oportunidad y lo revisas para decidir; no deduzcas una tasa si falta su periodo o denominador.",
+  readiness: "Pide a quien realiza el trabajo que encuentre la información vigente y complete el siguiente paso sin ayuda.",
+};
 
 const COMMERCIAL_SIGNAL_DISPLAY: Readonly<Record<string, string>> = {
   operational_commercial_evidence: "Necesidad comercial todavía no confirmada",
@@ -110,6 +131,21 @@ function recommendationConditions(result: CandidatePipelineResultV3, recommendat
     return prerequisite
       ? `Antes, completa «${prerequisite.title}».`
       : `Condición pendiente en ${area}.`;
+  });
+}
+
+function recommendationEvidence(result: CandidatePipelineResultV3, recommendationId: string): { question: string; answer: string }[] {
+  const recommendation = result.recommendations.items.find((item) => item.id === recommendationId);
+  if (!recommendation) throw new Error(`La recomendación ${recommendationId} no está en el resultado candidato.`);
+  const questions = new Map(REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.map((question) => [question.id, question]));
+  return recommendation.sourceQuestionIds.flatMap((questionId) => {
+    const question = questions.get(questionId);
+    const answer = result.activeAnswers[questionId];
+    if (!question || answer === undefined) return [];
+    const rendered = renderQuestionV2(question, { context: result.scoring.context, answers: result.activeAnswers });
+    const values = Array.isArray(answer) ? answer : [answer];
+    const answerLabels = values.map((value) => rendered.options.find((option) => option.value === value)?.label).filter((label): label is string => Boolean(label));
+    return answerLabels.length > 0 ? [{ question: rendered.prompt, answer: answerLabels.join("; ") }] : [];
   });
 }
 
@@ -171,6 +207,9 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
       whyItMatters: item.whyItMatters,
       expectedOutcome: item.expectedOutcome,
       certainty: CERTAINTY_DISPLAY[item.certainty],
+      verificationStatus: RECOMMENDATION_VERIFICATION[item.mode],
+      howToVerify: RECOMMENDATION_CHECK[item.type],
+      evidence: recommendationEvidence(result, item.id),
       conditions: recommendationConditions(result, item.id),
       solution: solution.solution ? { label: solution.solution.label, description: solution.solution.description } : null,
     }];
@@ -244,7 +283,7 @@ export function buildCandidateDiagnosticReportV1(result: CandidatePipelineResult
   const contextualDimensions = view.dimensions.map((dimension) => ({ ...dimension, context: dimension.context }));
   const methodText = CANDIDATE_METHODOLOGY_REPORT_NOTES_V3;
   return {
-    reportVersion: REPORT_VERSION,
+    reportVersion: CANDIDATE_REPORT_VERSION,
     methodologyVersion: CANDIDATE_METHODOLOGY_IDENTITY_V3.replace("diagnostic-methodology-", ""),
     generatedAt: isoDate(generatedAt),
     generatedLabel: longDate(generatedAt),
@@ -294,7 +333,7 @@ export function buildCandidateDiagnosticReportV1(result: CandidatePipelineResult
     recommendations: view.recommendations.map((item) => ({
       step: item.rank, title: item.title, area: item.area,
       tag: item.mode, whatToImprove: item.whatToImprove, whyItMatters: item.whyItMatters, expectedOutcome: item.expectedOutcome,
-      solution: item.solution, conditions: item.conditions,
+      solution: item.solution, conditions: item.conditions, evidence: item.evidence, verificationStatus: item.verificationStatus, howToVerify: item.howToVerify,
     })),
     methodologySummary: {
       version: CANDIDATE_METHODOLOGY_IDENTITY_V3.replace("diagnostic-methodology-", ""),

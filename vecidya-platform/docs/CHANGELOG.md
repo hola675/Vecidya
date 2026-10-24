@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-24 — DIAG-MOTOR-03 — recomendaciones trazables (solo local)
+
+- El informe candidato QA-03B identifica las respuestas fuente con etiquetas legibles, distingue evidencia observada de verificación pendiente y propone una forma cualitativa de comprobar el resultado. La acción principal ahora conserva esos datos en el bloque de foco; las recomendaciones secundarias hacen lo mismo.
+- Sin respuestas directas, el informe explica que falta confirmación. Los IDs técnicos y las respuestas siguen fuera del resumen anónimo; su allowlist de 12 claves no cambia. V1/identidad candidata histórica conserva versión 1.0 y la nueva proyección QA-03B usa `diagnostic-report-v1.1`.
+- 14 escenarios sintéticos adicionales comprueban evidencias, desconocimiento, contradicciones y salidas comerciales. No implica calibración validada ni activación del Worker. Evidencia final en `TESTING.md`; sin merge, deploy ni publicación.
+
 ## 2026-10-24 — DIAG-MOTOR-02 — candidata de representatividad (solo local)
 
 - Se añade `diag-v3-candidate-calibration-v3`, con umbral propuesto de 60% de dimensiones aplicables y al menos tres puntuaciones. Conserva contribuciones, pesos, confianza, media, bandas y reglas V2; separa cobertura aplicable y observable.

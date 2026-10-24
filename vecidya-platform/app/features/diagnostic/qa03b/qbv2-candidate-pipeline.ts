@@ -33,7 +33,7 @@ export const CANDIDATE_RESULT_IDENTITY_V3 = Object.freeze({
   recommendations: "candidate-recommendations-r6+operation-history-v1",
   commercial: CANDIDATE_COMMERCIAL_IDENTITY_V3,
   methodology: "diagnostic-methodology-3.1",
-  report: "diagnostic-report-v1.0",
+  report: "diagnostic-report-v1.1",
 } as const);
 
 export type CandidatePipelineOptionsV3 = {

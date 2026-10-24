@@ -3,7 +3,7 @@ import { useState } from "react";
 import { readRequestBodyLimited, RequestBodyTooLargeError } from "../features/diagnostic/bounded-request-body.server";
 
 import { deleteAuthorizedIdentifiedReport, getAuthorizedReport, recordDetailedReportFirstOpen, revokeDiagnosticOptionalIntents } from "../../db/queries/diagnostic-identification.server";
-import { REPORT_VERSION, type DiagnosticReportDocumentV1 } from "../components/diagnostic-report/report-model";
+import { isSupportedDiagnosticReportVersion, type DiagnosticReportDocumentV1 } from "../components/diagnostic-report/report-model";
 import { DiagnosticReport } from "../components/diagnostic-report/diagnostic-report";
 import { PlatformFooter } from "../components/platform-footer";
 import { readCookie, digestOpaqueToken, constantTimeEqual } from "../features/diagnostic/report-access-crypto.server";
@@ -30,7 +30,7 @@ export async function loader({ context, params, request }: LoaderFunctionArgs) {
   const token = readCookie(request, "diagnostic_report_access");
   if (!token) throw notFound();
   const row = await getAuthorizedReport(env.DB, await digestOpaqueToken(token), params.requestId, new Date());
-  if (!row || row.snapshot.reportVersion !== REPORT_VERSION || row.request.reportVersion !== row.snapshot.reportVersion || row.request.methodologyVersion !== row.snapshot.methodologyVersion || row.request.engineIdentity !== row.snapshot.engineIdentity) throw notFound();
+  if (!row || !isSupportedDiagnosticReportVersion(row.snapshot.reportVersion) || row.request.reportVersion !== row.snapshot.reportVersion || row.request.methodologyVersion !== row.snapshot.methodologyVersion || row.request.engineIdentity !== row.snapshot.engineIdentity) throw notFound();
   if (!constantTimeEqual(await digestOpaqueToken(row.snapshot.reportJson), row.snapshot.reportSha256)) throw notFound();
   let storedIdentity: unknown;
   let report: unknown;
@@ -49,7 +49,7 @@ export async function loader({ context, params, request }: LoaderFunctionArgs) {
       && JSON.stringify(storedIdentity) === JSON.stringify(CANDIDATE_RESULT_IDENTITY_V3)
       && isCandidateResultIdentityV3(report.candidateEngineIdentity)
       && JSON.stringify(report.candidateEngineIdentity) === JSON.stringify(CANDIDATE_RESULT_IDENTITY_V3)
-      && report.methodologyVersion === METHODOLOGY_VERSION;
+      && report.methodologyVersion === CANDIDATE_RESULT_IDENTITY_V3.methodology.replace(/^diagnostic-methodology-/u, "");
   }
   if (!publicReport && !candidateReport) throw notFound();
   try { await recordDetailedReportFirstOpen(env.DB, row.access.id, params.requestId, new Date()); }
