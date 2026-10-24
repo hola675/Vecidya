@@ -26,6 +26,10 @@ En `feat/app-mini-ux-02c-directory-profiles`, `/vecindario/:slug` gana breadcrum
 
 Integrado por PR #57 en `main`. El motor QA-03B candidate-only agrega una pregunta directa de medición reciente solo para operación, identidades bank v8/answers v6/session 7/replay v5/metodología 3.1 y una regla que exige puntuación con evidencia directa para afirmar prioridades/acciones. Se añadió el tema narrativo de `q2_measurement_practice` y una regresión que comprueba su presencia en la presentación para respuestas puntuadas; el resumen anónimo conserva la etiqueta legible del estado. Los 20 recorridos sintéticos dieron 5 BIEN, 7 REGULAR y 8 pendientes (12 índices; 8 puntuaciones directas de medición; 8–19 preguntas por recorrido). Typecheck, build y pruebas focales PASS. No confundir esta integración con el runtime desplegado: sin deploy, HTTP anónimo fechada, D1 remota, correo real ni publicación.
 
+## UX-PREMIUM-02F — composición del catálogo de complementos (2026-10-24)
+
+`feat/app-mini-ux-05-addons` refina `/addons`: acerca los costes de uso a la decisión, establece navegación prioritaria hacia cada ficha detallada y alinea las acciones en siete tarjetas. Se conservan la fuente comercial, requisitos, precios, beneficios y enlaces. Typecheck/build/diff-check PASS; Worker local confirma HTTP 200 en el índice y sus siete páginas hijas. Revisión visual de escritorio PASS; sin deploy ni HTTP pública fechada.
+
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
 `APP-MINI-REDESIGN-01` está integrado en `origin/main@3e6b9b1` mediante PR #53; no está publicado. App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.

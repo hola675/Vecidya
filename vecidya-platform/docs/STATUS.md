@@ -16,6 +16,12 @@ En `feat/aprende-guide-detail`, sobre `origin/main@2a58dc0`, se mejoró la plant
 
 Typecheck/build/diff-check PASS. Worker local: artículo y guías relacionadas responden 200; revisión responsive en 320/360/390/768/1024/1366 px sin overflow. `learn-experience-check.mjs` quedó bloqueado en la aserción de sitemap: `/sitemap.xml` responde 500 en este Worker, por lo que no se certifica esa comprobación ni el E2E completo. Sin cambio de sitemap, datos, D1 remota, deploy o HTTP pública fechada.
 
+## UX-PREMIUM-02F — catálogo público de complementos (2026-10-24)
+
+En `feat/app-mini-ux-05-addons`, sobre `origin/main@c70057f`, `/addons` presenta el aviso de costes externos junto al encabezado del catálogo y prioriza las fichas de detalle sobre la consulta. Las siete fichas se mantienen en una cuadrícula de tres columnas con la última centrada; sus acciones quedan alineadas y apiladas. Se preservan precios, dependencias, beneficios, costes variables y destinos de contacto/detalle.
+
+`pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. En Wrangler Worker local `/addons` responde 200, conserva un H1 y siete ofertas; las siete rutas hijas responden 200. La revisión visual de escritorio confirmó el aviso anticipado, botones de acción y tarjeta final centrada. No se desplegó ni se hizo petición HTTP pública.
+
 ## APP-MINI-02E — Vecindario como índice de contenido publicado (2026-10-24)
 
 **Integrado por PR #69 en `origin/main@2a58dc0`.** `/vecindario` busca en nombre, categoría, ciudad/país, área de servicio y texto de ofertas publicadas; filtra por categoría, ciudad, área, modalidad, tipo de oferta y módulos MiniWeb renderizables. Las fichas presentan modalidad, área, ofertas activas y secciones públicas. Los términos de especialidad se derivan de categoría y ofertas existentes; no se crea una taxonomía duplicada ni se indexan borradores. No requiere migración; la búsqueda usa solo el snapshot público v3 y omite ofertas inactivas o con módulo desactivado.

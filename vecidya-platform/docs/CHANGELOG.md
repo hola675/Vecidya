@@ -10,6 +10,11 @@
 - Se redistribuye la información comercial junto al encabezado de comparación y se refuerza en las tres tarjetas el acceso primario a detalles y la consulta secundaria. Los datos de oferta y destinos permanecen iguales.
 - Typecheck, build, diff-check y ruta local `/licencias` HTTP 200 PASS; se conserva la política de no afirmar publicación sin HTTP pública fechada.
 
+## 2026-10-24 — UX-PREMIUM-02F — catálogo de complementos
+
+- El aviso de costes de uso se presenta antes de las ofertas; cada tarjeta prioriza su ficha de detalle, deja la consulta como acción secundaria y alinea las acciones. La última tarjeta se centra en la cuadrícula.
+- Typecheck, build, diff-check y comprobaciones HTTP en Worker local pasan para el índice y sus siete fichas. Sin cambios de oferta, D1 remota, deploy o HTTP pública.
+
 ## 2026-10-24 — UX-PREMIUM-02A — orientación y catálogo de Servicios
 
 - `/servicios` incorpora una ruta visual de tres pasos hacia Diagnóstico, las siete familias y la consulta; las siete tarjetas usan una retícula bento responsive y conservan sus enlaces a fichas y consultas contextuales.
