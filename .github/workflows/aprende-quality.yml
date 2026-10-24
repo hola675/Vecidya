@@ -1,0 +1,42 @@
+name: Aprende quality
+
+on:
+  pull_request:
+    paths:
+      - "vecidya-platform/app/content/learn*.ts"
+      - "vecidya-platform/app/routes/knowledge.tsx"
+      - "vecidya-platform/app/routes/learn-article.tsx"
+      - "vecidya-platform/tests/unit/learn*.test.ts"
+      - "vecidya-platform/package.json"
+      - "vecidya-platform/pnpm-lock.yaml"
+      - ".github/workflows/aprende-quality.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: vecidya-platform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: vecidya-platform/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Build
+        run: pnpm build
+      - name: Learn integrity tests
+        run: node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/learn-catalog-integrity.test.ts tests/unit/learn-content.test.ts
