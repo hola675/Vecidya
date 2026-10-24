@@ -161,8 +161,28 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
     await page.setViewportSize({ width, height: 844 });
     const clientMenu = page.locator('button[aria-controls="app-navigation"]');
     await clientMenu.waitFor({ state: "visible" });
+    if (width === 390) {
+      const closedClientSidebar = page.locator(".app-sidebar");
+      await page.waitForFunction(() => document.querySelector(".app-sidebar")?.hasAttribute("inert"));
+      if (await closedClientSidebar.getAttribute("aria-hidden") !== "true" || await closedClientSidebar.getAttribute("inert") === null) throw new Error("El menú cliente cerrado sigue expuesto o tabulable.");
+    }
     await clientMenu.click();
     if (await clientMenu.getAttribute("aria-expanded") !== "true") throw new Error(`El menú cliente no anunció estado abierto a ${width}px.`);
+    if (width === 390) {
+      const focusedNavigationItem = await page.evaluate(() => document.activeElement?.textContent?.trim());
+      if (focusedNavigationItem !== "Inicio") throw new Error(`El menú cliente no movió el foco a su primera opción: ${focusedNavigationItem ?? "sin foco"}.`);
+      if (await page.getByRole("dialog", { name: "Navegación principal" }).getAttribute("aria-modal") !== "true") throw new Error("El menú cliente abierto no se expuso como diálogo modal.");
+      await page.keyboard.press("Shift+Tab");
+      await page.keyboard.press("Shift+Tab");
+      if (!await page.evaluate(() => document.activeElement?.textContent?.includes("Explorar el Vecindario"))) throw new Error("Shift+Tab no quedó contenido al final del menú cliente.");
+      await page.keyboard.press("Tab");
+      if (!await page.evaluate(() => document.activeElement?.classList.contains("brand"))) throw new Error("Tab no volvió al inicio del menú cliente.");
+      await page.keyboard.press("Escape");
+      if (await clientMenu.getAttribute("aria-expanded") !== "false") throw new Error("Escape no cerró la navegación cliente.");
+      await page.waitForFunction(() => document.activeElement === document.querySelector('button[aria-controls="app-navigation"]'));
+      if (!await clientMenu.evaluate((element) => element === document.activeElement)) throw new Error("El foco no volvió al botón al cerrar la navegación cliente.");
+      await clientMenu.click();
+    }
     await assertNoOverflow(page, `${width}px /app con navegación abierta`);
     await page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name: "Mi negocio" }).click();
     await page.waitForURL("**/app/business-profile");
@@ -186,8 +206,28 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
     await page.setViewportSize({ width, height: 844 });
     const adminMenu = page.locator('button[aria-controls="admin-navigation"]');
     await adminMenu.waitFor({ state: "visible" });
+    if (width === 390) {
+      const closedAdminSidebar = page.locator(".admin-sidebar");
+      await page.waitForFunction(() => document.querySelector(".admin-sidebar")?.hasAttribute("inert"));
+      if (await closedAdminSidebar.getAttribute("aria-hidden") !== "true" || await closedAdminSidebar.getAttribute("inert") === null) throw new Error("El menú interno cerrado sigue expuesto o tabulable.");
+    }
     await adminMenu.click();
     if (await adminMenu.getAttribute("aria-expanded") !== "true") throw new Error(`El menú interno no anunció estado abierto a ${width}px.`);
+    if (width === 390) {
+      const focusedNavigationItem = await page.evaluate(() => document.activeElement?.textContent?.trim());
+      if (focusedNavigationItem !== "Resumen") throw new Error(`El menú interno no movió el foco a su primera opción: ${focusedNavigationItem ?? "sin foco"}.`);
+      if (await page.getByRole("dialog", { name: "Navegación administrativa" }).getAttribute("aria-modal") !== "true") throw new Error("El menú interno abierto no se expuso como diálogo modal.");
+      await page.keyboard.press("Shift+Tab");
+      await page.keyboard.press("Shift+Tab");
+      if (!await page.evaluate(() => document.activeElement?.textContent?.includes("Cerrar sesión"))) throw new Error("Shift+Tab no quedó contenido al final del menú interno.");
+      await page.keyboard.press("Tab");
+      if (!await page.evaluate(() => document.activeElement?.classList.contains("admin-brand"))) throw new Error("Tab no volvió al inicio del menú interno.");
+      await page.keyboard.press("Escape");
+      if (await adminMenu.getAttribute("aria-expanded") !== "false") throw new Error("Escape no cerró la navegación interna.");
+      await page.waitForFunction(() => document.activeElement === document.querySelector('button[aria-controls="admin-navigation"]'));
+      if (!await adminMenu.evaluate((element) => element === document.activeElement)) throw new Error("El foco no volvió al botón al cerrar la navegación interna.");
+      await adminMenu.click();
+    }
     await assertNoOverflow(page, `${width}px /app/internal con navegación abierta`);
     await page.getByRole("navigation", { name: "Navegación administrativa" }).getByRole("link", { name: "Servicios" }).click();
     await page.waitForURL("**/app/internal/services");

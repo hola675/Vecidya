@@ -6051,6 +6051,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .admin-dashboard--redesign .admin-attention h2 { margin: .4rem 0 .7rem; font-size: 1.3rem; letter-spacing: -.03em; }
 .admin-dashboard--redesign .admin-overview-card { border-radius: .95rem; }
 .admin-sidebar-backdrop { display: none; }
+.app-sidebar-backdrop { display: none; }
 @media (max-width: 980px) {
   .app-home > .page-heading h1,
   .admin-dashboard--redesign > .page-heading h1 { font-size: clamp(1.85rem,8vw,2.5rem); }
@@ -6062,6 +6063,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .admin-sidebar { display: flex; position: fixed; z-index: 12; inset: 0 auto 0 0; width: min(19rem,calc(100vw - 3.25rem)); height: 100dvh; overflow-y: auto; gap: 1.25rem; padding: 1.1rem; box-shadow: 1rem 0 2rem rgb(7 29 58 / 25%); transform: translateX(-105%); visibility: hidden; transition: transform 180ms ease,visibility 180ms ease; }
   .admin-sidebar[data-open="true"] { transform: translateX(0); visibility: visible; }
   .admin-sidebar-backdrop { display: block; position: fixed; z-index: 11; inset: 0; width: 100%; height: 100%; border: 0; background: rgb(7 22 43 / 55%); }
+  .app-sidebar-backdrop { display: block; position: fixed; z-index: 4; inset: 0; width: 100%; height: 100%; border: 0; background: rgb(7 22 43 / 55%); }
   .admin-navigation { display: grid; }
   .admin-header { grid-template-columns: auto minmax(0,1fr); align-items: center; gap: .5rem .75rem; padding: .75rem 1rem; }
   .admin-mobile-menu { display: inline-flex; grid-column: 1; grid-row: 1; width: 2.75rem; min-width: 2.75rem; min-height: 2.75rem; justify-content: center; border: 1px solid #dfe7f1; border-radius: .75rem; }
