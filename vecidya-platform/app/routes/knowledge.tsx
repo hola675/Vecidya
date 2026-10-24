@@ -29,7 +29,7 @@ export function loader({ request }: Route.LoaderArgs) {
     .filter((article) => {
       if (category && article.category !== category) return false;
       if (!needle) return true;
-      const summary = [article.title, article.intro, article.excerpt, article.category, ...article.enPocasPalabras, ...article.sections.flatMap((section) => [section.heading, ...section.paragraphs, ...(section.bullets ?? []), ...((section.blocks ?? []).flatMap((block) => Object.values(block).flatMap((value) => typeof value === "string" ? [value] : Array.isArray(value) ? value.map((item) => typeof item === "string" ? item : JSON.stringify(item)) : [])))])].join(" ");
+      const summary = [article.title, article.intro, article.excerpt, article.category, ...article.sections.map((section) => section.heading)].join(" ");
       return searchable(summary).includes(needle);
     })
     .map(({ slug, title, excerpt, image, category: articleCategory, editorialDraft }) => ({
@@ -76,7 +76,7 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
           <form className="learn-discovery__form learn-atlas__form" method="get" action="/aprende#guias" role="search">
             <label htmlFor="learn-guide-search">Buscar en las guías</label>
             <div className="learn-discovery__search">
-              <input id="learn-guide-search" type="search" name="q" maxLength={100} defaultValue={search} placeholder="Ej. proteger contraseñas o responder consultas" />
+              <input id="learn-guide-search" type="search" name="q" maxLength={100} defaultValue={search} placeholder="Ej. SEO, consultas, IA o hosting" />
               {category && <input type="hidden" name="tema" value={category} />}
               <button className="button button--primary" type="submit">Buscar</button>
             </div>
@@ -118,9 +118,11 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
               {articles.length === 1 ? "1 guía encontrada" : articles.length + " guías encontradas"} de {total}
               {category ? " · " + category : ""}{search ? " · Búsqueda: «" + search + "»" : ""}
             </p>
-            <p className="learn-discovery__note">Explora las guías por tema o busca una duda específica. No necesitas registrarte.</p>
-            <p className="learn-discovery__note">Encuentra respuestas sencillas, ejemplos cotidianos y pasos que puedes aplicar sin aprender palabras complicadas.</p>
-            {articles.some((article) => article.editorialDraft) && <p className="learn-editorial-note">Las guías en revisión editorial se identifican de forma visible.</p>}
+            <div className="learn-discovery__support">
+              <p className="learn-discovery__note">Explora las guías por tema o busca una duda específica. No necesitas registrarte.</p>
+              <p className="learn-discovery__note">Encuentra respuestas sencillas, ejemplos cotidianos y pasos que puedes aplicar sin aprender palabras complicadas.</p>
+              <p className="learn-editorial-note"><strong>Estado editorial</strong><span>Los materiales nuevos siguen identificados como borradores hasta su revisión editorial.</span></p>
+            </div>
           </div>
           {articles.length === 0 ? (
             <div className="learn-discovery__empty">

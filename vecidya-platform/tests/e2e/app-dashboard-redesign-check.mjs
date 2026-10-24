@@ -147,7 +147,7 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
   await page.getByRole("heading", { name: /Buenos días|Buenas tardes|Buenas noches/ }).waitFor();
   await page.getByRole("heading", { name: "Organización activa: Vecidya local demo" }).waitFor();
 
-  for (const width of [320, 390, 768, 1366]) {
+  for (const width of [320, 390, 768, 980, 1366]) {
     await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
     await assertNoOverflow(page, `${width}px /app`);
   }
@@ -193,6 +193,68 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
     await page.waitForURL("**/app/internal/services");
     if (await page.locator('button[aria-controls="admin-navigation"]').getAttribute("aria-expanded") !== "false") throw new Error(`El menú interno no se cerró tras navegar a ${width}px.`);
     await page.goto(new URL("/app/internal", baseUrl).toString(), { waitUntil: "networkidle" });
+  }
+  phase = "internal services table and assignment controls";
+  await page.goto(new URL(`/app/internal/services?organizationId=${organizationId}`, baseUrl).toString(), { waitUntil: "networkidle" });
+  await page.getByRole("heading", { name: "Servicios por organización" }).waitFor();
+  const serviceRows = page.locator(".admin-service-table tbody tr");
+  if (await serviceRows.count() !== 3) throw new Error(`Se esperaban tres servicios de catálogo para el espacio de prueba; se recibieron ${await serviceRows.count()}.`);
+  if (await page.getByRole("region", { name: "Asignaciones de servicios" }).getAttribute("tabindex") !== "0") throw new Error("La tabla no permite acceder por teclado a su desplazamiento horizontal.");
+  for (const width of [320, 390, 768, 1366]) {
+    await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
+    const dimensions = await page.locator(".admin-service-table-wrap").evaluate((element) => ({
+      wrapper: element.clientWidth,
+      table: element.scrollWidth,
+      document: document.documentElement.scrollWidth,
+      viewport: document.documentElement.clientWidth,
+      body: document.body.scrollWidth,
+      pageStyles: [document.querySelector(".admin-shell"), document.querySelector(".admin-frame"), document.querySelector("#internal-page-content"), document.querySelector(".admin-main"), document.querySelector(".admin-table-wrap")].map((node) => node && ({
+        selector: node.id || node.className,
+        width: Math.round(node.getBoundingClientRect().width),
+        scrollWidth: node.scrollWidth,
+        minWidth: getComputedStyle(node).minWidth,
+        widthStyle: getComputedStyle(node).width,
+      })),
+      offenders: [...document.body.querySelectorAll("*")].filter((node) => !node.closest(".admin-table-wrap") && node.scrollWidth > node.clientWidth + 1).map((node) => ({
+        tag: node.tagName,
+        className: typeof node.className === "string" ? node.className : "",
+        right: Math.round(node.getBoundingClientRect().right),
+        width: Math.round(node.getBoundingClientRect().width),
+      })).filter((node) => node.right > document.documentElement.clientWidth + 1).slice(0, 8),
+    }));
+    if (screenshotDirectory && width === 320) await page.screenshot({ path: join(screenshotDirectory, "vecidya-admin-services-overflow-debug.png"), fullPage: true });
+    if (dimensions.wrapper > dimensions.viewport + 1 || dimensions.document > dimensions.viewport + 1 || (width < 1000 && dimensions.table <= dimensions.wrapper)) {
+      throw new Error(`La tabla de servicios no se adapta/contiene correctamente a ${width}px: ${JSON.stringify(dimensions)}.`);
+    }
+    if (width === 1366 && dimensions.table > dimensions.wrapper + 1) {
+      throw new Error(`La tabla de servicios requiere scroll horizontal innecesario en escritorio: ${JSON.stringify(dimensions)}.`);
+    }
+  }
+  await page.setViewportSize({ width: 1366, height: 900 });
+  if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, "vecidya-admin-services-desktop.png"), fullPage: true });
+  await page.getByLabel("Buscar asignaciones").fill("Presencia digital");
+  if (await serviceRows.count() !== 1) throw new Error("La búsqueda de servicios no redujo la tabla a la coincidencia esperada.");
+  await page.getByLabel("Asignación").selectOption("unassigned");
+  if (await serviceRows.count() !== 1) throw new Error("El filtro de asignaciones no conserva la fila sin asignación buscada.");
+  await page.getByLabel("Asignación").selectOption("active");
+  if (await serviceRows.count() !== 0) throw new Error("El filtro de estado mostró como activa una fila todavía sin asignar.");
+  await page.getByLabel("Asignación").selectOption("all");
+  const presenceRow = serviceRows.filter({ hasText: "Presencia digital" });
+  await presenceRow.locator('select[name="status"]').selectOption("active");
+  await presenceRow.getByRole("button", { name: "Asignar" }).click();
+  await page.getByText(/Presencia digital: estado actualizado a Activo\./).waitFor();
+  const persistedAssignment = query(`SELECT status FROM organization_service WHERE organization_id=${sqlLiteral(organizationId)} AND service_id='service-presence';`)[0];
+  const savedStatus = await presenceRow.locator("td").nth(2).innerText();
+  const savedSelectValue = await presenceRow.locator('select[name="status"]').inputValue();
+  if (persistedAssignment?.status !== "active") throw new Error(`El servidor no persistió el estado seleccionado: ${JSON.stringify(persistedAssignment ?? null)}.`);
+  if (!savedStatus.includes("Activo")) throw new Error(`La lista no actualizó el estado tras guardar (persistido: ${persistedAssignment.status}; mostrado: ${savedStatus}; selector: ${savedSelectValue}).`);
+  await page.getByLabel("Asignación").selectOption("active");
+  if (await serviceRows.count() !== 1) throw new Error(`El estado seleccionado no se guardó en la asignación objetivo (resultado: ${await serviceRows.count()}, estado visible: ${savedStatus}, selector: ${savedSelectValue}).`);
+  if (screenshotDirectory) {
+    await page.getByLabel("Buscar asignaciones").fill("");
+    await page.getByLabel("Asignación").selectOption("all");
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.screenshot({ path: join(screenshotDirectory, "vecidya-admin-services-mobile.png"), fullPage: true });
   }
   await page.goto(new URL("/app/internal", baseUrl).toString(), { waitUntil: "networkidle" });
   if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, "vecidya-internal-dashboard-mobile.png"), fullPage: true });
