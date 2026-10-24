@@ -17,7 +17,13 @@ export type Qa03bProfileCase = {
   readonly answerScript: AnswersV2;
 };
 
-const unknown: AnswersV2 = { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_digital_tools_in_use: ["unknown"] };
+const unknown: AnswersV2 = {
+  ...AUTHORED_UNKNOWN_CAPABILITIES,
+  q2_digital_tools_in_use: ["unknown"],
+  q2_measurement_rate_estimate: "unknown",
+  q2_measurement_result_recording: "unknown",
+  q2_measurement_review_cycle: "unknown",
+};
 const common: AnswersV2 = {
   ...unknown,
   q2_entity: "business",
@@ -53,7 +59,7 @@ export const QA03B_PROFILE_CASES: readonly Qa03bProfileCase[] = [
   { id: "P20", business: "Concesionario de automóviles", digitalSelfRating: 4, aiSelfRating: 3, profileSummary: "50 personas; miles de leads; CRM, anuncios, SMS, teléfono, correo, chat y marketplaces; integración incompleta y chatbots.", gapCodes: ["AI_MATURITY", "LEAD_IDENTITY_AND_ATTRIBUTION", "OMNICHANNEL_HANDOFF", "CONVERSION_AND_INVENTORY_OUTCOMES"], answerScript: { ...common, q2_other_staff: "yes", q2_monetization: "goods", q2_delivery: ["physical_location", "appointments"], q2_sector: "automotive", q2_customer_reach: "unknown", q2_customer_buyer: "unknown", q2_operations_information_base: "somewhat_scattered", q2_presence_digital_base: "unknown" } },
 ];
 
-/** Full answer script: every unspecified capability is answered explicitly as unknown. */
+/** Full answer script: every unspecified capability, including new measurement probes, is explicitly unknown. */
 export function qa03bProfileAnswerScript(profile: Qa03bProfileCase): AnswersV2 {
   return profile.answerScript;
 }

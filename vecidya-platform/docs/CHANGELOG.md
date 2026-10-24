@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-24 — DIAG-MOTOR-01 — banco de evidencia y selección adaptativa (solo local)
+
+- QA-03B añade preguntas directas para estimación, registro y revisión de resultados, más una pregunta sencilla de recuperación cuando se desconoce la tasa de conversión. Las respuestas distinguen `established`, `partial`, `missing`, `unknown` y `not_applicable`; registrar resultados no calcula una tasa.
+- La elegibilidad de presencia/oferta atiende contexto físico y evidencia de ficha existente. El planificador aprovecha reserva restante para contexto central y desbloqueos dentro del hard-cap de 24; P03/P10 completan sin bloqueo espurio por presupuesto. Identidades de banco, planificador, sesión y replay avanzan a v8/v4/schema 7/replay v5; el banco raíz/legacy no cambia.
+- Evidencia local: 1666/1666 unitarias, typecheck, build, diff-check y ACT-04 Worker 3/3 PASS. El E2E de desarrollo de informe QA-03B expiró esperando `domcontentloaded`; suites unitarias de replay/resumen/informe sí pasan. No se modificó scoring, confianza, índice global, fórmulas comerciales, esquema, datos remotos, versión publicada o despliegue. Ver `TESTING.md` y `STATUS.md`.
+
 ## 2026-10-24 — APP-MINI-02E (búsqueda y filtros del Vecindario; en progreso)
 
 - `/vecindario` amplía búsqueda y filtros con modalidad, área de servicio, servicios/productos y módulos MiniWeb con contenido renderizable. Las fichas muestran ofertas activas y secciones públicas derivadas solo del snapshot; las especialidades se infieren de categoría/ofertas existentes para evitar duplicar una taxonomía.

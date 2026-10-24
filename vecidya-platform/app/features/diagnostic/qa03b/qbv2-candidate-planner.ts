@@ -12,7 +12,7 @@ import type { DigitalDimensionId } from "../qbv2-dimensions";
 import { FRICTION_RELEVANCE, GOAL_RELEVANCE } from "../qbv2-priorities";
 import { DEFAULT_ROUTE_BUDGET_V1, ROUTE_BANDS, ROUTE_HARD_CAP, type RouteBudgetV1, type QuestionSelectionReason } from "../qbv2-planner";
 
-export const CANDIDATE_PLANNER_IDENTITY_V3 = "reviewed-evidence-v7+r3+r4-operation-history+candidate-planner-v3" as const;
+export const CANDIDATE_PLANNER_IDENTITY_V3 = "reviewed-evidence-v8+r3+r4-operation-history+candidate-planner-v4" as const;
 export const CANDIDATE_ROUTE_HARD_CAP_V3 = ROUTE_HARD_CAP;
 export type CandidateEvidenceSufficiencyV3 = {
   readonly applicableDimensions: readonly DigitalDimensionId[];
@@ -208,14 +208,16 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
     if (selected.length >= baseSlots) break;
     add(id);
   }
-  // The existing material reserve is used only by certified direct/supporting sources for an applicable dimension.
+  // Preserve reserved capacity for evidence, but allow an irreducible core context question to use it when
+  // the answer is still needed to interpret applicability or unlock a relevant diagnostic branch.
   for (const id of usefulIds) {
     if (selected.length >= remaining) break;
     if (selected.includes(id)) continue;
     const question = questionById.get(id)!;
     const source = semanticSources(question);
     const evidenceTail = source.direct.some((dimension) => open.has(dimension)) || source.supporting.some((dimension) => observedDirect.has(dimension)) || prospectiveUtilityById.get(id);
-    if (evidenceTail) add(id);
+    const requiredContextTail = contextUseful.includes(id) && (question.routingRole === "core" || unlocks.has(id));
+    if (evidenceTail || requiredContextTail) add(id);
   }
   const unresolvedApplicableDimensions = [...open].sort();
   const lowDirectEvidenceDimensions = dimensions.filter((d) => d.applicability === "applicable" && d.confidence.direct <= 1).map((d) => d.id);

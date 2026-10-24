@@ -74,18 +74,20 @@ Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos bo
 | D5 Cutover controlado | Cutover de código integrado, rollback V3 compatible | Deploy y HTTP verificados en ambos entornos; la ventana de rollback sigue antes de retirar consumidores legacy |
 | D6 Operación | Purga automatizada implementada, probada localmente y habilitada en producción | Flags activos en producción con Cron diario; staging cerrado y sin Cron. Observar primer ciclo programado |
 
-#### DIAG-QA03B-PROFILE-COVERAGE-01 — cobertura de evidencia y preguntas (replay ampliado; motor sin cambios)
+#### DIAG-QA03B-PROFILE-COVERAGE-01 — cobertura de evidencia y preguntas (actualizado por DIAG-MOTOR-01)
 
 Una corrida local del pipeline actual sobre 20 perfiles hipotéticos (316 respuestas; 14–18 preguntas por perfil) dejó el índice general pendiente en 20/20. En 19/20 rutas el planificador llegó a `no_useful_questions` con dimensiones aplicables pendientes. Solo tres porcentajes dimensionales aislados aparecieron, con una observación directa y confianza media; la dimensión `measurement_optimization` no tiene pregunta directa en el banco inspeccionado. IA y ciberseguridad no son dimensiones QA-03B existentes. Esto es evidencia de cobertura sintética, no exactitud o calibración del diagnóstico.
 
-**Trabajo candidato para un checkpoint autorizado:**
+**DIAG-MOTOR-01 — implementación local en curso:** el banco QA-03B añade tres fuentes directas sobre medición/seguimiento y una recuperación cuando se desconoce la tasa de conversión. La elegibilidad de presencia se apoya en actividad vigente y evidencia existente; el selector puede usar la reserva restante para contexto central/unlock sin superar 24 preguntas. La matriz original de 60 recorridos se conserva como regresión; estos casos sintéticos no son empresas reales ni autorizan conclusiones de score. Se versionan banco, planificador, sesión y replay; el banco V3 raíz permanece sin cambios. Evidencia final local y limitaciones en `TESTING.md` → DIAG-MOTOR-01. No publicado.
+
+**Trabajo candidato para los siguientes checkpoints:**
 
 1. Trazar por dimensión aplicabilidad → señales contestadas → evidencia faltante → candidatos de seguimiento; explicar terminales mientras quede cobertura útil, o documentar por qué no existe pregunta segura.
 2. Diseñar preguntas observables sobre fuente, periodo, denominador y ejemplos para atribución, conversión, retención, integraciones y resultados; separar “desconocido”, “no aplica” y “no existe”. Extender taxonomía sectorial solo cuando cambie los flujos evaluables (manufactura, mayorista, construcción, logística), nunca como score sectorial.
 3. Definir IA y seguridad como módulos optativos independientes: uso y datos, revisión humana, errores/costos/valor frente a baseline, accesos, MFA y recuperación. La revisión legal, regulatoria y de seguridad debe ser contextual, no presentarse como auditoría ni asesoría legal.
 4. Validar comprensión, carga y sesgo con entrevistas y corpus real consentido; reservar holdout y criterios expertos antes de proponer puntuación o calibración. No mezclar autoevaluaciones 0–5 con escalas QA-03B ni cambiar umbrales en este bloque.
 
-**Actualización 2026-10-24 — replay ampliado local:** se añadieron 60 recorridos (20 perfiles × informado/parcial/desconocedor). Los 60 scores generales permanecen nulos; 57 recorridos conservan dimensiones aplicables sin resolver, 58 terminan `no_useful_questions`, dos llegan a `budget_blocked`, ninguno llega al hard-cap; hay 26 puntuaciones dimensionales aisladas y ninguna de medición/optimización. Ver `TESTING.md` y el HTML/JSON adjunto a la sesión. La corrida confirma que variar el conocimiento mejora el guion de prueba, pero no acredita cobertura ni exactitud. El objetivo de mejora permanece pendiente: trazar candidatos/evidencia faltante, añadir medición observable y revisar contexto sectorial, presupuesto y semántica de terminación. En este corte no se alteran motor, banco productivo, scores, despliegues ni migraciones.
+**Actualización 2026-10-24 — línea base previa a DIAG-MOTOR-01:** el replay de 60 recorridos (20 perfiles × informado/parcial/desconocedor) dejó todos los índices globales pendientes y sin puntuaciones de medición/optimización. Las mediciones posteriores a DIAG-MOTOR-01 deben compararse con esa línea base bajo las mismas respuestas, sin presentar los supuestos de los fixtures como hechos. El checkpoint no cambia fórmulas de scoring/calibración ni produce publicación o migración.
 
 #### DIAG-VISUAL-ASSETS-01 — resumen gráfico, interacción e informe (PLAN; sin implementación)
 

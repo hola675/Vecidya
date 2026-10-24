@@ -52,7 +52,7 @@ test("FUNNEL-01A: el resumen copia score, foco, acción y provisionalidad desde 
   assert.equal(summary.score, 62, "el mapper transfiere el valor; no ejecuta scoring");
   assert.equal(summary.overallStatus, "REGULAR");
   assert.equal(summary.primaryOpportunity, base.narrative.priorities[0]?.statement.text ?? null);
-  assert.equal(summary.firstRecommendedAction?.title, base.recommendations.items[0]?.title ?? null);
+  assert.equal(summary.firstRecommendedAction?.title ?? null, base.recommendations.items[0]?.title ?? null);
   assert.ok(summary.limitations.some((item) => /provisional/i.test(item)));
 });
 

@@ -1,3 +1,7 @@
+## DIAG-MOTOR-01 — banco QA-03B y selección adaptativa (2026-10-24)
+
+Checkpoint local en `feat/diagnostic-motor-01`, iniciado desde `origin/main@2a58dc0`. El banco QA-03B v8 añade tres preguntas directas sobre registro, revisión y seguimiento de resultados; una pregunta de recuperación tras desconocer la tasa distingue capacidad de registro y no calcula una tasa. La pregunta base de presencia y la claridad de oferta usan elegibilidad contextual QA-03B más amplia. El planificador usa la reserva hasta el límite de 24 para contexto central/desbloqueos; los casos P03 y P10 ya no quedan `budget_blocked`. Se versionaron las identidades de banco, planificador, sesión y replay. No se cambió el banco raíz ni el scoring/calibración; no hay migraciones, HTTP pública ni deploy. Evidencia y limitaciones en `TESTING.md` → DIAG-MOTOR-01; `DIAG-QA03B-PROFILE-COVERAGE-001` continúa abierta para DIAG-MOTOR-02.
+
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
 `APP-MINI-REDESIGN-01` está integrado en `origin/main@3e6b9b1` mediante PR #53; no está publicado. App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.

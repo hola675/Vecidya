@@ -11,9 +11,9 @@ import { buildCandidateRecommendationsAndSolutionsV3 as recommend } from "../../
 import { buildCandidateNarrativeAndOverallV3 as narrate } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-narrative";
 import { AUTHORED_UNKNOWN_CAPABILITIES as base } from "./qa03b-fixtures";
 
-test("QA-03B: 21 migradas y 17 pendientes preservan versiones y lecturas R3", () => {
-  assert.equal(BANK.length, 41);
-  for (const status of ["migrated", "pending"]) assert.equal(BANK.filter(q => q.evidenceMigration === status).length, status === "migrated" ? 21 : 17);
+test("QA-03B: 24 migradas, 17 pendientes y 3 contextuales preservan lecturas R3", () => {
+  assert.equal(BANK.length, 44);
+  for (const status of ["migrated", "pending"]) assert.equal(BANK.filter(q => q.evidenceMigration === status).length, status === "migrated" ? 24 : 17);
   for (const old of OLD.filter(q => q.evidenceMigration === "migrated")) {
     const q = BANK.find(q => q.id === old.id)!;
     assert.equal(q.version, old.version); assert.deepEqual(q.options, old.options); assert.deepEqual(q.evidenceV3, old.evidenceV3);

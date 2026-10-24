@@ -1,6 +1,7 @@
 import type { QuestionDefinitionV2 } from "../qbv2-contract";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as historicalBank } from "../qbv2-reviewed-evidence";
-import { andV2, answeredV2, eqV2, inV2, orV2 } from "../qbv2-rules";
+import { andV2, answeredV2, contextIn, eqV2, inV2, orV2 } from "../qbv2-rules";
+import type { MigratedAnswerStateV3 } from "../qbv2-evidence-v3";
 
 const operating = eqV2("q2_operational_status", "operating");
 const history = eqV2("q2_has_customers", "yes");
@@ -110,6 +111,12 @@ const replacement: Readonly<Record<string, Partial<QuestionDefinitionV2>>> = {
     options: [...historicalBank.find(q => q.id === "q2_monetization")!.options,
       { value: "no_revenue_yet", label: "Todavía no genera ingresos o aportes por esta actividad.", kind: "none" }],
   },
+  q2_presence_digital_base: {
+    appliesWhen: contextIn("activity", ["active", "prelaunch"]),
+  },
+  q2_presence_offer_clarity: {
+    materialAppliesWhen: andV2(contextIn("activity", ["active", "prelaunch"]), inV2("q2_presence_digital_base", ["reliable_presence", "partial_presence"])),
+  },
 };
 
 // La elegibilidad cambia por contrato de banco, sin cambiar el significado/version/mapping de fuentes R3.
@@ -142,6 +149,54 @@ function evolve(question: QuestionDefinitionV2): QuestionDefinitionV2 {
 
 export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefinitionV2[] = [
   ...historicalBank.map(evolve),
+  {
+    id: "q2_measurement_rate_estimate", version: 1, module: "measurement", type: "single", routingRole: "adaptive",
+    prompt: "¿Puedes estimar qué parte de las consultas o pedidos termina en una compra o contratación?",
+    hint: "No hace falta calcularlo ahora. Responde según la información que normalmente tienes disponible.",
+    purpose: ["diagnostic"], priority: "high", appliesWhen: andV2(operating, history),
+    evidenceMigration: "migrated",
+    evidenceV3: { questionId: "q2_measurement_rate_estimate", questionVersion: 1, dimensions: [{ dimension: "measurement_optimization", directness: "direct", answers: {
+      can_estimate: "established", rough_estimate: "partial", no_method: "missing", unknown: "uncertainty", no_opportunities: "not_applicable",
+    } satisfies Record<"can_estimate" | "rough_estimate" | "no_method" | "unknown" | "no_opportunities", MigratedAnswerStateV3> }] },
+    options: [
+      { value: "can_estimate", label: "Sí, normalmente puedo estimarlo con registros." },
+      { value: "rough_estimate", label: "Tengo una idea aproximada, pero no un registro consistente." },
+      { value: "no_method", label: "No tenemos una forma de estimarlo." },
+      { value: "unknown", label: "No lo sé o no tengo información suficiente.", kind: "unknown" },
+      { value: "no_opportunities", label: "Todavía no recibimos consultas o pedidos de ese tipo.", kind: "not_applicable" },
+    ],
+  },
+  {
+    id: "q2_measurement_result_recording", version: 1, module: "measurement", type: "single", routingRole: "adaptive",
+    prompt: "Aunque no conozcas el porcentaje, ¿registras si cada consulta o pedido terminó en una compra o contratación?",
+    hint: "Esta pregunta evalúa si se sigue el desenlace; no calcula una tasa de conversión.",
+    purpose: ["diagnostic"], priority: "high",
+    appliesWhen: andV2(operating, history, eqV2("q2_measurement_rate_estimate", "unknown")), evidenceMigration: "migrated",
+    evidenceV3: { questionId: "q2_measurement_result_recording", questionVersion: 1, dimensions: [{ dimension: "measurement_optimization", directness: "direct", answers: {
+      consistent: "established", sometimes: "partial", not_tracked: "missing", unknown: "uncertainty",
+    } satisfies Record<"consistent" | "sometimes" | "not_tracked" | "unknown", MigratedAnswerStateV3> }] },
+    options: [
+      { value: "consistent", label: "Sí, casi siempre queda registrado." },
+      { value: "sometimes", label: "A veces lo registramos, pero no de manera constante." },
+      { value: "not_tracked", label: "No llevamos ese seguimiento." },
+      { value: "unknown", label: "No sé si se registra de forma consistente.", kind: "unknown" },
+    ],
+  },
+  {
+    id: "q2_measurement_review_cycle", version: 1, module: "measurement", type: "single", routingRole: "adaptive",
+    prompt: "¿Revisas con cierta frecuencia los resultados de tu actividad para decidir qué conviene cambiar?",
+    hint: "Piensa en una revisión real de consultas, ventas, reservas, clientes u operaciones; no en las herramientas disponibles.",
+    purpose: ["diagnostic"], priority: "normal", appliesWhen: andV2(operating, history), evidenceMigration: "migrated",
+    evidenceV3: { questionId: "q2_measurement_review_cycle", questionVersion: 1, dimensions: [{ dimension: "measurement_optimization", directness: "direct", answers: {
+      regular_decisions: "established", occasional_review: "partial", no_review: "missing", unknown: "uncertainty",
+    } satisfies Record<"regular_decisions" | "occasional_review" | "no_review" | "unknown", MigratedAnswerStateV3> }] },
+    options: [
+      { value: "regular_decisions", label: "Sí, los reviso regularmente y uso lo que veo para decidir." },
+      { value: "occasional_review", label: "Los reviso ocasionalmente, pero no siempre cambian mis decisiones." },
+      { value: "no_review", label: "No suelo revisar resultados para tomar decisiones." },
+      { value: "unknown", label: "No estoy seguro.", kind: "unknown" },
+    ],
+  },
   {
     id: "q2_operational_status", version: 1, module: "core", type: "single", routingRole: "core",
     prompt: "¿Cuál describe mejor el estado actual de tu actividad?",

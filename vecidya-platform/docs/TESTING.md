@@ -1,5 +1,13 @@
 # Pruebas
 
+## DIAG-MOTOR-01 — banco evaluativo y selección adaptativa (2026-10-24)
+
+**RAN local:** `pnpm run test:unit` — **1666/1666 PASS**; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. La build conserva los avisos locales de secretos opcionales ausentes y de dos imports dinámicos que se agrupan con imports estáticos. No se leyeron ni configuraron secretos.
+
+`qa03b-motor-01.test.ts` verifica tres fuentes directas y versionadas de medición/seguimiento, la recuperación alternativa tras desconocer la tasa (el registro de resultados no se trata como tasa), la elegibilidad para negocios físicos, la claridad de oferta tras confirmar una ficha y la pregunta de fricción de citas solo ante fuga demostrada. La matriz de 20 perfiles y sus 60 variantes termina sin hard-cap; los 20 perfiles base generan 7 puntuaciones dimensionales frente a 3 de la línea base anterior y siguen con índice global pendiente. P03/P10 completan la ruta sin `budget_blocked`. Fixtures sintéticos, sin exactitud empírica; no se alteraron fórmulas ni calibración.
+
+`diagnostic-act-04-check.mjs`: **3/3 PASS** sobre Worker Wrangler local con build y flag del funnel cerrado: replay de 10 respuestas, resumen allowlisted, sesiones incompatibles rechazadas y viewports 320/390/768/1366 sin overflow. El E2E complementario `diagnostic-v3-qa03b-check.mjs` se intentó en runtime de desarrollo para cubrir rutas internas del informe; Chromium agotó 30 s esperando `domcontentloaded` antes de sus aserciones, por lo que ese recorrido amplio no se declara certificado en este checkpoint. La regresión unitaria Worker/replay/resumen/informe pasa dentro de la suite total. Sin migración, remoto, deploy o HTTP pública.
+
 ## DIAG-QA03B-PROFILE-KNOWLEDGE-01 — 60 variantes y reporte HTML (2026-10-24)
 
 **RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-profile-case-matrix.test.ts` — **3/3 PASS**, incluyendo 20 casos base y 60 variantes (20 perfiles × informado/parcial/desconocedor), cada pregunta validada contra el banco actual y sin hard-cap de 30. Los 60 índices globales permanecen pendientes; 57 recorridos tienen dimensiones aplicables no resueltas; 58 terminan `no_useful_questions` y 2 `budget_blocked`; se observaron 26 puntuaciones dimensionales aisladas y 0 de medición/optimización.
