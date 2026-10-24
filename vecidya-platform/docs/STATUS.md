@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## UX-PREMIUM-04 — estados del editor MiniWeb (2026-10-24)
+
+En `feat/app-mini-ux-04-editor-status`, sobre `origin/main@9543038`, el resumen bajo la vista previa distingue estado público, configuración guardada, cambios locales del editor y sincronización de la versión publicada. El indicador público diferencia visualmente publicado, borrador y suspendido; se aclara que los cambios sin guardar solo se ven en la preview privada. E2E MiniWeb local **112/112 PASS**, fixtures limpios; typecheck, build y diff-check PASS. No cambia persistencia, guards, permisos ni publicación. El viewport móvil del E2E sigue validado por sus aserciones automatizadas; queda pendiente la inspección visual manual y una comprobación de teclado/lector de pantalla para este panel. Sin deploy ni HTTP pública fechada.
+
 ## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
 
 **Implementada en local en `feat/app-mini-ux-03-services`, iniciada en `origin/main@ac2c8e8` y reconciliada con `origin/main@c70057f`.** `/servicios` combina el recorrido de tres pasos y la retícula bento integrados en PR #65 con accesos directos a cada familia; reorganiza las tarjetas para separar promesa, audiencia y alcance, y elimina el beneficio redundante y el CTA final duplicado. Contenido, precios, catálogo y rutas permanecen iguales. Typecheck/build/diff-check PASS; inspección visual manual en escritorio y 390 px. Sin suites E2E en este checkpoint, D1 remota, publicación ni deploy.

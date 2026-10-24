@@ -711,3 +711,7 @@ Rama de diagnóstico `feat/diagnostic-funnel-01d1`, PR #6 draft con conflictos r
 ## 01D.3 — actualización de gestión interna (2026-10-17)
 
 Se incorporó un resumen administrativo de cuatro métricas sobre solicitudes vigentes en D1: total, correos verificados, verificaciones pendientes y solicitudes verificadas con permiso comercial vigente (`c9b5db2`). La consulta excluye solicitudes expiradas y no considera autorizado a quien no haya verificado el correo o haya revocado el consentimiento. El listado mantiene búsqueda y filtros server-side, paginación y acceso exclusivo a `platform_admin`. No se ha integrado GHL. Las cifras son calculadas en lectura, sin nuevas tablas ni migraciones. Pruebas, revisión de rendimiento y certificación siguen pendientes por decisión de aplazarlas.
+
+## UX-PREMIUM-04 — estados del editor MiniWeb (2026-10-24)
+
+En `feat/app-mini-ux-04-editor-status`, basada en `origin/main@9543038`, la tarjeta de estado bajo la preview separa cuatro conceptos: publicación pública, persistencia de la configuración, estado de edición actual y sincronización de publicación. Cambios sin guardar se identifican como privados de la preview. Worker E2E MiniWeb **112/112 PASS** con fixtures limpiados; typecheck/build PASS. Se preservan los flujos existentes y no se modifican datos, autorización ni publicación. Inspección visual manual y evaluación de teclado/tecnologías asistivas pendientes. Sin migración o deploy.

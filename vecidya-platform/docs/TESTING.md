@@ -1,5 +1,9 @@
 # Pruebas
 
+## UX-PREMIUM-04 — estados del editor MiniWeb (2026-10-24)
+
+En el Worker Cloudflare local con D1 aislada y migraciones `0000–0027`, `pnpm exec node tests/e2e/miniweb-core-check.mjs`: **112/112 PASS**, `fixturesCleaned: true`. El recorrido conserva las comprobaciones de permisos, borrador/publicación, suspensión y layout responsive incorporadas al E2E. `pnpm run typecheck` y `pnpm run build`: **PASS**; build informa secretos opcionales de Auth/Gmail ausentes y avisos de imports dinámicos, sin bloquear compilación. La inspección visual manual del panel y teclado/lector de pantalla queda pendiente; no se afirma certificación de accesibilidad. Sin D1 remota, correo real ni deploy.
+
 ## UX-PREMIUM-02B — página pública Servicios (2026-10-24)
 
 `pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS** en `feat/app-mini-ux-03-services`, iniciada en `origin/main@ac2c8e8` y reconciliada con `origin/main@c70057f`. No se ejecutaron suites unitarias ni E2E en este checkpoint. La inspección visual manual confirma la jerarquía/retícula a 1521 px y 390 px sin overflow móvil. La revisión completa de teclado, lector de pantalla, contraste y zoom queda pendiente; no se afirma certificación responsive/accesible integral. Sin D1 remota, HTTP pública ni deploy.

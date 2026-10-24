@@ -5859,7 +5859,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .miniweb-editor__preview .public-business-profile__grid { gap: 0.75rem; }
 .miniweb-editor__preview .miniweb-template__sections { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); }
 .miniweb-editor__empty-preview { margin-top: 1rem; border: 1px dashed var(--line); border-radius: var(--radius-md); padding: 1.5rem; color: var(--muted); text-align: center; }
-.miniweb-editor__publication-state { margin: 1rem 0 0; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
+.miniweb-editor__publication-state { margin: 1rem 0 0; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; color: var(--ink); background: var(--canvas); }
+.miniweb-editor__publication-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; margin: 0; }
+.miniweb-editor__publication-grid > div { display: grid; align-content: start; gap: 0.4rem; min-width: 0; }
+.miniweb-editor__publication-grid dt { color: var(--muted); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.035em; text-transform: uppercase; }
+.miniweb-editor__publication-grid dd { margin: 0; font-size: 0.9rem; font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; }
+.miniweb-editor__publication-public { display: grid; justify-items: start; gap: 0.4rem; }
+.miniweb-editor__publication-note { margin: 0.85rem 0 0; border-top: 1px solid var(--line); padding-top: 0.75rem; color: var(--muted); font-size: 0.85rem; line-height: 1.45; }
 .miniweb-content-editor { display: grid; gap: 0.9rem; min-width: 0; }
 .miniweb-content-editor__item { display: grid; gap: 0.8rem; min-width: 0; margin: 0; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; }
 .miniweb-content-editor__item legend { padding: 0 0.3rem; font-weight: 700; }
@@ -5891,6 +5897,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 640px) {
   .miniweb-editor__header { align-items: stretch; }
   .miniweb-editor__header .button { width: 100%; }
+  .miniweb-editor__publication-grid { grid-template-columns: minmax(0, 1fr); gap: 0.7rem; }
   .miniweb-module-list__item { grid-template-columns: minmax(0, 1fr) auto; gap: 0.6rem; }
   .miniweb-module-list__copy { grid-column: 1 / -1; }
   .miniweb-module-toggle { justify-self: start; display: flex; align-items: center; gap: 0.5rem; }
