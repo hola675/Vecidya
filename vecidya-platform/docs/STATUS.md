@@ -1,5 +1,11 @@
 # Estado de implementación
 
+## UX-PREMIUM-06A — accesibilidad pública por muestra (2026-10-24)
+
+**Implementación local en `feat/app-mini-ux-06-public-a11y`, iniciada desde `origin/main@9543038`; sin deploy ni publicación.** AccessLint CLI 0.21.0 / Chromium 156 ejecutó 94 reglas por URL, sin reglas omitidas, en 13 rutas representativas: `/`, `/servicios`, `/licencias`, `/addons`, `/aprende`, `/vecindario`, `/diagnostico`, `/contacto`, `/login`, `/licencias/cuadra`, `/addons/whatsapp-business`, `/servicios/presencia-digital` y una guía de Aprende. Los hallazgos automatizados (landmarks complementarios anidados, contraste, nombre accesible y scroll de comparación sin teclado) se corrigieron en esta rama; las 13 rutas terminaron con 0 violaciones en los escaneos finales.
+
+La revisión manual comprobó navegación por teclado en el menú desktop y móvil, foco visible, desplazamiento horizontal del comparador con flecha derecha y alternativa compacta sin overflow a 320 px. Typecheck, build y diff-check PASS. **Límite:** muestra de rutas, no auditoría WCAG completa ni conformidad; lector de pantalla, zoom real al 200 % y el resto de rutas siguen pendientes. Sin cambios de datos/permisos y sin HTTP público fechado.
+
 ## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
 
 **Implementada en local en `feat/app-mini-ux-03-services`, iniciada en `origin/main@ac2c8e8` y reconciliada con `origin/main@c70057f`.** `/servicios` combina el recorrido de tres pasos y la retícula bento integrados en PR #65 con accesos directos a cada familia; reorganiza las tarjetas para separar promesa, audiencia y alcance, y elimina el beneficio redundante y el CTA final duplicado. Contenido, precios, catálogo y rutas permanecen iguales. Typecheck/build/diff-check PASS; inspección visual manual en escritorio y 390 px. Sin suites E2E en este checkpoint, D1 remota, publicación ni deploy.
@@ -587,7 +593,7 @@ Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organizac
 | 3B.1 Directorio, 3B.2 Búsqueda/filtros | PASS TÉCNICO | PARTIAL | `q`/categoría protegidos; ciudad y estado vacío solo en script `.ps1` obsoleto |
 | 4A Servicios cliente | PASS TÉCNICO | PASS | `services-experience` pasa |
 | 4B Servicios (admin), 4C Portal, 5A Integraciones | PASS TÉCNICO | PARTIAL | Prueba única usa nombre D1 obsoleto; no ejecutable |
-| 6A/6B Contenido y pulido público | PASS TÉCNICO | PARTIAL | Overflow/meta de 6 rutas; sitemap/robots/a11y sin pruebas |
+| 6A/6B Contenido y pulido público | PASS TÉCNICO | PARTIAL | UX-PREMIUM-06A: muestra de 13 rutas, 94 reglas por URL, 0 violaciones finales; lector/zoom/sitemap/robots y rutas restantes pendientes |
 | 7A Cuenta | PASS TÉCNICO | PASS | `account-personal-settings` pasa |
 | 7B.1 Miembros y roles | PASS TÉCNICO | PASS | Protegida por `authz` y `team-ui`; `members` solo pasa con calentamiento (`TEST-D1-RESET-001`) |
 | 7B.2 Invitaciones | EN PROGRESO / BLOQUEADA | PASS | Flujo funcional (INVITE-001, LIVE `0.5.3`) y UI (INVITE-UI-001, `0.5.4` local) |

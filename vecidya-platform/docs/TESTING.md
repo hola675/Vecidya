@@ -5,6 +5,11 @@
 En `feat/diagnostic-accessibility-03b`, el H1 de pregunta se separó de `<legend>` y el `<fieldset>` ahora obtiene su nombre accesible desde el H1 mediante `aria-labelledby`. La jerarquía visible no cambió. Inspección manual en QA-03B local: el árbol expone el H1 y un grupo con el mismo nombre; Tab enfoca el primer checkbox, su indicador de foco es visible, Space lo activa y el estado queda marcado. No se avanzó el recorrido ni se usaron datos de negocio.
 
 Reflow observado sin overflow horizontal a 320/390 px y 512 px (ancho equivalente para una aproximación a zoom 200 %, no zoom real). `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Build conserva avisos locales por secretos opcionales Auth/Gmail ausentes y dos imports dinámicos inefectivos. No se hizo prueba con lector de pantalla, medición de contraste ni revisión del resumen/informe; no equivale a auditoría WCAG.
+## UX-PREMIUM-06A — muestra de accesibilidad pública (2026-10-24)
+
+AccessLint CLI 0.21.0 con Chromium 156, 94 reglas por URL y cero reglas omitidas, se ejecutó sobre `/`, `/servicios`, `/licencias`, `/addons`, `/aprende`, `/vecindario`, `/diagnostico`, `/contacto`, `/login`, `/licencias/cuadra`, `/addons/whatsapp-business`, `/servicios/presencia-digital` y `/aprende/dominio-hosting-sitio-web-como-funcionan`. Los hallazgos iniciales de landmarks complementarios anidados, contraste, nombre accesible y teclado para la tabla se corrigieron; escaneos finales por rutas afectadas terminaron con cero violaciones.
+
+La inspección Playwright local comprobó abrir/navegar el menú con Enter/Tab en escritorio y móvil, foco visible y desplazamiento horizontal del comparador con flecha derecha; a 320 px se usa alternativa compacta sin overflow. Typecheck, build y `git diff --check`: PASS. Worker y D1 únicamente locales, con migraciones `0000–0027`; no se accedió a D1 remota. Esta es una muestra de rutas, no certificación WCAG ni auditoría de todas las pantallas: lector de pantalla, zoom real 200 %, sitemap/robots y rutas no incluidas quedan `NOT RUN`. No deploy ni HTTP pública fechada.
 
 ## UX-PREMIUM-02B — página pública Servicios (2026-10-24)
 

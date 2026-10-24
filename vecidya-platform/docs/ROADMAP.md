@@ -40,6 +40,8 @@
 
 **Checkpoint UX-PREMIUM-02F — catálogo de complementos (2026-10-24, rama `feat/app-mini-ux-05-addons`):** `/addons` adelanta la advertencia de coste variable al encabezado, da prioridad visual a cada ficha detallada con consulta secundaria y alinea las acciones de las siete ofertas; conserva destinos y contenido comercial. Typecheck/build/diff-check PASS; Worker local confirmó HTTP 200 en el índice y siete fichas hijas, más revisión visual de escritorio. Sin revisión responsive móvil certificada, auditoría de accesibilidad, deploy o HTTP público fechado. Las demás fases/páginas de 2–6 siguen pendientes.
 
+**Checkpoint UX-PREMIUM-06A — accesibilidad pública (2026-10-24, rama `feat/app-mini-ux-06-public-a11y`):** una muestra de 13 rutas públicas pasó 94 reglas AccessLint por URL, sin reglas omitidas y con cero violaciones en los escaneos finales tras corregir landmarks, contraste, nombres accesibles y acceso por teclado al comparador. Se verificaron menús desktop/móvil, foco y tabla desplazable en Worker local; typecheck/build/diff-check PASS. No es certificación WCAG ni auditoría completa: quedan lector de pantalla, zoom real al 200 %, sitemap/robots y otras rutas; no publicado.
+
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)

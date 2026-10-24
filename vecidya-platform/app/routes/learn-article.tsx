@@ -55,11 +55,11 @@ function renderLearnBlock(block: LearnBlock, key: string) {
         <p><strong>Qué muestra:</strong> {block.lesson}</p>
       </section>;
     case "callout":
-      return <aside className={`learn-block learn-block--callout learn-block--${block.tone}`} key={key}>
+      return <div className={`learn-block learn-block--callout learn-block--${block.tone}`} key={key}>
         <p className="learn-block__eyebrow">{block.tone === "tip" ? "Consejo" : "Precaución"}</p>
         <h3>{block.title}</h3>
         <p>{block.text}</p>
-      </aside>;
+      </div>;
     case "faq":
       return <div className="learn-block learn-block--faq" key={key}>{block.items.map((item) => <details key={item.question}>
         <summary>{item.question}</summary>
@@ -71,10 +71,10 @@ function renderLearnBlock(block: LearnBlock, key: string) {
         <p>{item.scope}</p>
       </li>)}</ul>;
     case "summary":
-      return <aside className="learn-block learn-block--summary" key={key}>
+      return <div className="learn-block learn-block--summary" key={key}>
         <h3>Qué puedes hacer ahora</h3>
         <ul>{block.items.map((item) => <li key={item}>{item}</li>)}</ul>
-      </aside>;
+      </div>;
     default:
       return null;
   }
@@ -109,21 +109,21 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
               ) : (
                 <p className="learn-article-byline">Por <strong>Yoan Ortiz</strong> · Aprende Vecidya</p>
               )}
-              <aside className="learn-article-quick" aria-label="Resumen sencillo de la guía">
+              <div className="learn-article-quick">
                 <h2>En pocas palabras</h2>
                 <ul>{article.enPocasPalabras.map((point) => <li key={point}>{point}</li>)}</ul>
-              </aside>
+              </div>
             </header>
             <img className="learn-article-image" src={article.image} alt={article.imageAlt} width={900} height={360} />
           </div>
           <div className="learn-article-layout">
-            <aside className="learn-article-rail">
+            <div className="learn-article-rail">
               <nav className="learn-article-toc" aria-label="Índice del artículo">
                 <strong>En esta guía</strong>
                 <ol>{article.sections.map((section, index) => <li key={section.heading}><a href={`#section-${index + 1}`}>{section.heading}</a></li>)}</ol>
               </nav>
               <Link className="learn-article-rail-link" to="/aprende">Explorar todas las guías <span aria-hidden="true">→</span></Link>
-            </aside>
+            </div>
             <div className="learn-article-body">
               {article.sections.map((section, index) => (
                 <section id={`section-${index + 1}`} key={section.heading}>
@@ -148,11 +148,11 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
                   ))}
                 </ol>
               </section>
-              <aside className="learn-article-cta">
+              <div className="learn-article-cta">
                 <p className="eyebrow">RELACIONADO CON VECIDYA</p>
                 <h2>{article.cta.copy}</h2>
                 <Link className="button button--primary" to={article.cta.to}>{article.cta.label}</Link>
-              </aside>
+              </div>
             </div>
           </div>
         </article>

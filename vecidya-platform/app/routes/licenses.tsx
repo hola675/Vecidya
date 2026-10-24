@@ -55,13 +55,13 @@ export default function Licenses() {
               <Link className="button button--secondary" to="/servicios">{PUBLIC_ACTION_LABELS.services}</Link>
             </div>
           </div>
-          <aside aria-label="Evolución de las licencias" className="licenses-hero__path">
+          <div className="licenses-hero__path">
             <div className="licenses-hero__path-item"><span>01</span><strong>Organizar</strong><small>Cuadra</small></div>
             <div aria-hidden="true" className="licenses-hero__path-line" />
             <div className="licenses-hero__path-item"><span>02</span><strong>Seguir</strong><small>Barrio</small></div>
             <div aria-hidden="true" className="licenses-hero__path-line" />
             <div className="licenses-hero__path-item"><span>03</span><strong>Escalar</strong><small>Ciudad</small></div>
-          </aside>
+          </div>
         </section>
 
         <section aria-labelledby="licenses-levels-title" className="licenses-levels">
@@ -70,11 +70,11 @@ export default function Licenses() {
               <p className="eyebrow">TRES MOMENTOS</p>
               <h2 id="licenses-levels-title">Tres productos. Una decisión clara.</h2>
             </div>
-            <aside aria-label="Información para comparar las licencias" className="licenses-decision-notes">
+            <div className="licenses-decision-notes">
               <p className="licenses-price-note">Precios públicos en USD. La activación se coordina por contacto; no hay compra automática.</p>
               <p className="licenses-price-note">Cuadra funciona de forma independiente y no requiere CRM. Barrio incorpora el CRM para un proceso comercial principal; Ciudad coordina procesos relacionados.</p>
               <p className="licenses-price-note">De Cuadra a Barrio: USD 20/mes más para captar y dar seguimiento. De Barrio a Ciudad: USD 30/mes más para coordinar varios procesos. No necesitas subir de nivel si tu licencia actual ya resuelve el trabajo.</p>
-            </aside>
+            </div>
           </div>
           <div className="licenses-grid">
             {licenses.map((license, index) => (
@@ -109,7 +109,7 @@ export default function Licenses() {
             <p className="eyebrow">A SIMPLE VISTA</p>
             <h2 id="licenses-compare-title">Compara las capacidades de cada licencia.</h2>
           </div>
-          <div className="licenses-compare-table-wrap">
+          <div aria-label="Comparación de capacidades entre Cuadra, Barrio y Ciudad" className="licenses-compare-table-wrap" role="region" tabIndex={0}>
             <table className="licenses-compare-table">
               <caption className="sr-only">Comparación de capacidades entre Cuadra, Barrio y Ciudad</caption>
               <thead><tr><th scope="col">Capacidad</th>{licenses.map((license) => <th scope="col" key={license.id}>{license.name}</th>)}</tr></thead>
