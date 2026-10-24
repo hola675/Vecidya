@@ -5218,7 +5218,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .rp-page { min-height: 0; padding: 0; background: #fff; }
   .df-identified-report + .platform-footer { display: none !important; }
   .df-identified-report { display: block; margin: 0; padding: 0; }
-  .df-identified-report__nav, .df-identified-report > [role="status"], .df-identified-report > [role="alert"] { display: none !important; }
+  .df-identified-report__nav, .df-identified-report__print, .df-identified-report > [role="status"], .df-identified-report > [role="alert"] { display: none !important; }
   .rp-toolbar, .rp-sheet--measure { display: none; }
   .rp { display: block; margin: 0; }
   .rp-sheet { box-shadow: none; }

@@ -46,7 +46,7 @@ async function answer(page, answers) {
     if (!(await input.isChecked())) await input.click();
   }
   await page.getByRole("button", { name: "Continuar", exact: true }).click();
-  await page.waitForFunction(old => document.querySelector(".df-option__input")?.getAttribute("name") !== old || !!document.querySelector("#candidate-ready-title"), id);
+  await page.waitForFunction(old => { const next = document.querySelector(".df-option__input"); return (next !== null && next.getAttribute("name") !== old) || !!document.querySelector("#candidate-ready-title"); }, id);
   return id;
 }
 async function startDiagnosis(page) {
@@ -88,7 +88,7 @@ try {
         const selected = await page.locator(".df-option__input:checked").evaluateAll(inputs => inputs.map(input => input.value));
         assert.deepEqual([...selected].sort(), [...fixture.answers[id]].sort());
         await page.getByRole("button", { name: "Continuar", exact: true }).click();
-        await page.waitForFunction(old => document.querySelector(".df-option__input")?.getAttribute("name") !== old || !!document.querySelector("#candidate-ready-title"), id);
+        await page.waitForFunction(old => { const next = document.querySelector(".df-option__input"); return (next !== null && next.getAttribute("name") !== old) || !!document.querySelector("#candidate-ready-title"); }, id);
       }
     }
     await page.locator("#candidate-ready-title").waitFor();
@@ -129,7 +129,7 @@ try {
       ];
       for (const invalid of negative) {
         const response = await page.evaluate(async (body) => {
-          const result = await fetch(`${location.pathname}.data`, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(body) });
+          const result = await fetch("/api/diagnostic/anonymous-summary", { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(body) });
           return { status: result.status, body: await result.text() };
         }, invalid.body);
         assert.ok(response.status >= 400 && response.status < 500, `Worker rechaza ${invalid.case}: ${response.status}`);
@@ -146,8 +146,9 @@ try {
       await page.getByRole("button", { name: "Solicitar informe completo" }).click();
       await page.getByRole("heading", { name: "Solicita tu diagnóstico completo" }).waitFor();
       const retentionNotice = await page.locator(".df-identification__retention").innerText();
-      assert.match(retentionNotice, /la aprobación de estos plazos y la eliminación automática de datos vencidos siguen siendo requisitos/u);
-      assert.doesNotMatch(retentionNotice, /se eliminarán automáticamente/u);
+      assert.match(retentionNotice, /se conservan hasta 30 días/u);
+      assert.match(retentionNotice, /vence a las 24 horas/u);
+      assert.match(retentionNotice, /se eliminan automáticamente en lotes diarios/u);
       await page.getByLabel(/Tu nombre/).fill("QA03B Worker Sintético");
       await page.getByLabel(/Negocio o proyecto/).fill("Proyecto QA03B Local");
       await page.getByLabel(/Correo electrónico/).fill("qa-funnel@example.invalid");
@@ -234,6 +235,14 @@ try {
       await page.setViewportSize(reportViewport);
       await page.emulateMedia({ media: "print" });
       assert.equal(await page.locator(".platform-footer").evaluate((footer) => getComputedStyle(footer).display), "none", "footer no altera la paginación de impresión");
+      assert.equal(await page.locator(".df-identified-report__nav").evaluate((nav) => getComputedStyle(nav).display), "none", "acciones de privacidad no aparecen en el PDF");
+      const reportPdfPath = `${artifacts}/${name}-identified-report.pdf`;
+      await page.pdf({ path: reportPdfPath, preferCSSPageSize: true });
+      const pdfSource = readFileSync(reportPdfPath, "latin1");
+      const pdfPages = Number(pdfSource.match(/\/Type\s*\/Pages\b[\s\S]{0,256}?\/Count\s+(\d+)/)?.[1]);
+      assert.ok(Number.isFinite(pdfPages), "PDF contiene árbol de páginas legible");
+      const visibleSheets = await page.locator(".rp-sheet:not(.rp-sheet--measure)").count();
+      assert.equal(pdfPages, visibleSheets, "el PDF no añade hojas vacías frente a las hojas paginadas del informe");
       await page.emulateMedia({ media: "screen" });
       assert.equal(await page.locator(".rp-business").innerText(), "Proyecto QA03B Local");
       assert.ok((await page.locator(".rp-technical").innerText()).includes("diag-v3-candidate-operation-history-v3"));
@@ -277,7 +286,9 @@ try {
   results.push({ id: "reload-resume", status: "PASS", schemaVersion: resumed.schemaVersion }); await resumeContext.close();
   const context = await browser.newContext(); const first = await context.newPage();
   await first.goto(route, { waitUntil: "domcontentloaded" }); await startDiagnosis(first);
-  await answer(first, AUTHORED_JOURNEYS[0].answers);
+  const firstQuestionId = await first.locator(".df-option__input").first().getAttribute("name");
+  const partialAnswers = { [firstQuestionId]: AUTHORED_JOURNEYS[0].answers[firstQuestionId] };
+  await answer(first, partialAnswers);
   const second = await context.newPage(); await second.goto(route, { waitUntil: "domcontentloaded" });
   await second.getByRole("button", { name: "Continuar diagnóstico" }).click();
   await second.getByRole("button", { name: "Continuar", exact: true }).click();
