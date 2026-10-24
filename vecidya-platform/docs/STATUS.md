@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## UX-PREMIUM-01A — Inicio, primera fase del plan visual (2026-10-24)
+
+En `feat/app-mini-ux-01`, desde `origin/main` actualizado, el CTA principal del hero `/` dirige al Diagnóstico, de acuerdo con el recorrido de producto; el Vecindario queda como acción secundaria. El brillo decorativo se marca como oculto a tecnologías asistivas. Typecheck, build y diff-check PASS. Worker Cloudflare local con D1 efímera migrada `0000–0027`: GET `/` 200; árbol accesible y captura de escritorio confirman el nuevo orden/jerarquía. Build reportó secretos locales opcionales de Auth/Gmail ausentes y dos advertencias de dynamic import preexistentes; no se leyeron secretos. No se revisaron otros viewports ni se certifica accesibilidad integral. No se declara publicado. El plan con las fases 0–6 está en `ROADMAP.md`; solo 01A está implementada.
+
 ## ADMIN-LICENSE-UX-001 — licencias por cliente y negocio (2026-10-23)
 
 **Integrado en `main` por PR #54 (`c91a3db`); PR #55 de documentación también está integrado por `ab8a02e`.** `/app/internal/licenses` agrupa espacios de trabajo por cliente responsable y muestra cada negocio como unidad con licencia propia. El copy explica que el perfil público y el espacio operativo son dos vistas del mismo negocio. Asignar/cambiar/suspender/reactivar sigue protegido por `organization:license:update` y servicios auditados. La interfaz usa “espacio de trabajo” para la estructura técnica interna y “negocio” para la entidad que administra el operador. Sin D1 remota ni deploy.
