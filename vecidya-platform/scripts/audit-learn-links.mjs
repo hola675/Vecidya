@@ -2,8 +2,9 @@
 // Auditoría de enlaces bibliográficos de Aprende. No modifica contenidos ni publica cambios.
 import { readFile, writeFile } from "node:fs/promises";
 
-const source = await readFile(new URL("../app/content/learn.ts", import.meta.url), "utf8");
-const urls = [...new Set([...source.matchAll(/url:\s*"(https:\/\/[^"]+)"/g)].map((match) => match[1]))];
+const catalogFiles = ["learn.ts", "learn-business-operations.ts", "learn-operations-02.ts", "learn-management-03.ts"];
+const sourceFiles = await Promise.all(catalogFiles.map(async (name) => readFile(new URL("../app/content/" + name, import.meta.url), "utf8")));
+const urls = [...new Set(sourceFiles.flatMap((source) => [...source.matchAll(/url:\s*"(https:\/\/[^"]+)"/g)].map((match) => match[1])))];
 const timeoutMs = 12000;
 const results = [];
 for (const url of urls) {
@@ -26,7 +27,7 @@ for (const url of urls) {
   results.push(entry);
   process.stdout.write(entry.status + " " + (entry.httpStatus ?? "-") + " " + url + "\n");
 }
-const report = { checkedAt: new Date().toISOString(), scope: "URL bibliográficas de learn.ts", uniqueUrls: urls.length, results };
+const report = { checkedAt: new Date().toISOString(), scope: "URL bibliográficas de los cuatro módulos de Aprende", uniqueUrls: urls.length, results };
 await writeFile(process.env.LEARN_LINK_REPORT ?? "learn-link-audit.json", JSON.stringify(report, null, 2) + "\n");
 const review = results.filter((entry) => entry.status === "needs_review").length;
 process.stdout.write("URL únicas: " + urls.length + "; requieren revisión: " + review + "\n");
