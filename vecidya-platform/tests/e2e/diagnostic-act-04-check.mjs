@@ -8,7 +8,7 @@ const edgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(edgePath) ? edgePath : undefined);
 const route = new URL("/diagnostico", baseUrl).toString();
 const apiPath = "/api/diagnostic/anonymous-summary";
-const qa03bKey = "vecidya.diagnostic.v3.candidate.session.7";
+const qa03bKey = "vecidya.diagnostic.v3.candidate.session.8";
 const legacyKey = "vecidya.diagnostic.v3.session.2";
 const legacyValue = "legacy-session-preserved-byte-for-byte";
 const browser = await chromium.launch({ headless: true, ...(executablePath ? { executablePath } : {}) });
@@ -81,8 +81,8 @@ try {
   }
   assert.equal(requests.length, 1, "un solo replay público");
   assert.deepEqual(Object.keys(requests[0]).sort(), ["answerSchema", "engineIdentity", "questionBank", "replayVersion", "session", "sessionKey", "sessionSchema"].sort());
-  assert.equal(requests[0].engineIdentity.engine, "diag-v3-candidate-operation-history-v4");
-  assert.equal(requests[0].sessionSchema, 7);
+  assert.equal(requests[0].engineIdentity.engine, "diag-v3-candidate-global-quartiles-v5");
+  assert.equal(requests[0].sessionSchema, 8);
   assert.ok(!("score" in requests[0]) && !("email" in requests[0]), "el navegador no envía un resultado ni identificación");
   assert.equal(responses.length, 1);
   assert.equal(responses[0].status, 200);
@@ -104,14 +104,14 @@ try {
   assert.equal(await page.getByText("Este resumen es anónimo. La solicitud del informe completo no está disponible en este momento.").count(), 1);
   assert.equal(await page.evaluate((key) => localStorage.getItem(key), legacyKey), legacyValue, "la sesión V3 preexistente no se reescribe");
   const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? "null"), qa03bKey);
-  assert.equal(saved.schemaVersion, 7);
+  assert.equal(saved.schemaVersion, 8);
   assert.equal(saved.status, "completed");
   pass(`Worker local valida QA-03B y genera resumen anónimo para ${answered.length} respuestas; viewport ${JSON.stringify(viewportResults)}`);
 
   await page.getByRole("link", { name: "Consultar metodología" }).click();
   await page.waitForURL("**/diagnostico/metodologia");
   await page.getByRole("heading", { name: "Cómo funciona el diagnóstico de Vecidya" }).waitFor();
-  assert.equal(await page.getByText(/todavía no está activo en producción|motor candidato/i).count(), 0);
+  assert.ok((await page.locator("body").innerText()).includes("Base inicial (0–25)"), "la metodología pública explica los rangos activos");
   assert.doesNotMatch(await page.title(), /QA-03B|candidate|candidata|diag-v3/i);
   assert.doesNotMatch((await page.locator('meta[name="description"]').getAttribute("content")) ?? "", /QA-03B|candidate|candidata|diag-v3/i);
   assert.doesNotMatch(await page.locator("body").innerText(), /QA-03B|candidate|candidata|diag-v3/i);
@@ -123,7 +123,7 @@ try {
   ]) {
     const rejected = await page.request.post(new URL(apiPath, baseUrl).toString(), {
       headers: { Origin: new URL(baseUrl).origin },
-      data: { replayVersion: "qa03b-worker-replay-v5", engineIdentity: { version: 1, ...identity }, answerSchema: identity.answerSchema, questionBank: identity.questionBank, sessionSchema: identity.sessionSchema, sessionKey: identity.sessionKey, session: {} },
+      data: { replayVersion: "qa03b-worker-replay-v6", engineIdentity: { version: 1, ...identity }, answerSchema: identity.answerSchema, questionBank: identity.questionBank, sessionSchema: identity.sessionSchema, sessionKey: identity.sessionKey, session: {} },
     });
     assert.equal(rejected.status(), 409, `el endpoint rechaza la identidad ${identity.engine}`);
     assert.match(rejected.headers()["cache-control"], /no-store/i);

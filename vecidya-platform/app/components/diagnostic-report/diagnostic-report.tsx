@@ -98,7 +98,7 @@ function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
           <div>
             <h2 className="rp-presence__kicker">Estado Actual:</h2>
             {presence.percent ? <p className="rp-presence__value">{presence.percent}</p> : null}
-            {presence.publicLabel ? <p className="rp-presence__code">{presence.publicLabel}</p> : null}
+            {presence.rangeLabel ? <p className="rp-presence__code">{presence.rangeLabel}</p> : presence.publicLabel ? <p className="rp-presence__code">{presence.publicLabel}</p> : null}
             {!presence.percent ? <p className="rp-presence__label">{presence.label}</p> : null}
           </div>
         </div>

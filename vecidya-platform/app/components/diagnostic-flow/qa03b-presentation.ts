@@ -21,6 +21,7 @@ export type CandidateResultPresentationV3 = {
   readonly lifecycle: CandidatePipelineResultV3["narrative"]["lifecycle"];
   readonly overall: {
     readonly label: string;
+    readonly rangeLabel: string | null;
     readonly publicLabel: "MAL" | "REGULAR" | "BIEN" | null;
     readonly score: number | null;
     readonly confidence: string;
@@ -224,10 +225,10 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
         : status.status === "unresolved"
           ? "Falta confirmar el estado actual; no hay evidencia suficiente para calcular un índice general."
           : "No hay información suficiente para confirmar fortalezas o dificultades.";
-  } else if (result.overall.publicLabel === "BIEN") {
+  } else if (result.overall.scoreRange?.id === "strong") {
     const focus = supportedPriorities[0]?.dimension;
     const focusLabel = focus ? dimensionLabelOf(result.narrative, focus) : null;
-    executiveSummary[0] = `El estado general es BIEN en las áreas observables evaluadas${focusLabel ? `; el foco concreto de mejora es ${focusLabel.toLocaleLowerCase("es")}` : ""}.`;
+    executiveSummary[0] = `El estado general es sólido en las áreas observables evaluadas${focusLabel ? `; el foco concreto de mejora es ${focusLabel.toLocaleLowerCase("es")}` : ""}.`;
   }
   const commercial = result.commercial;
   return {
@@ -236,7 +237,8 @@ export function buildCandidateResultPresentationV3(result: CandidatePipelineResu
     lifecycleLabel: result.scoring.context.operationalStatus.status === "resolved" ? ({ preparing: "En preparación", operating: "Disponible actualmente", paused: "En pausa" }[result.scoring.context.operationalStatus.value]) : "Estado actual sin resolver",
     lifecycle: result.narrative.lifecycle,
     overall: {
-      label: result.overall.publicLabel ? OVERALL_BAND_DISPLAY[result.overall.publicLabel] : result.overall.label,
+      label: result.overall.scoreRange?.label ?? (result.overall.publicLabel ? OVERALL_BAND_DISPLAY[result.overall.publicLabel] : result.overall.label),
+      rangeLabel: result.overall.scoreRange?.label ?? null,
       publicLabel: result.overall.publicLabel,
       score: index.displayScore,
       confidence: CONFIDENCE_DISPLAY[result.overall.confidence.level].label,
@@ -300,6 +302,7 @@ export function buildCandidateDiagnosticReportV1(result: CandidatePipelineResult
       state: result.overall.state,
       publicLabel: view.overall.publicLabel,
       label: view.overall.label,
+      rangeLabel: view.overall.rangeLabel,
       percent: result.overall.index.displayScore === null ? null : `${result.overall.index.displayScore}%`,
       explanation: result.overall.explanation.text,
       confidence: { label: view.overall.confidence, steps: CONFIDENCE_DISPLAY[result.overall.confidence.level].steps },

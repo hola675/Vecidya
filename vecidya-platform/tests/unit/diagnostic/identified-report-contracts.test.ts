@@ -74,7 +74,7 @@ test("identified QA-03B request accepts only its exact session, answer and summa
     ].map(([label, illustration]) => ({ label, score: null, statusLabel: "Sin lectura", preliminary: false, illustration })),
   };
   const qaRequest = () => ({
-    replayVersion: "qa03b-worker-replay-v5",
+    replayVersion: "qa03b-worker-replay-v6",
     engineIdentity: CANDIDATE_RESULT_IDENTITY_V3,
     answerSchema: ANSWER_SCHEMA_ID,
     questionBank: QUESTION_BANK_ID,

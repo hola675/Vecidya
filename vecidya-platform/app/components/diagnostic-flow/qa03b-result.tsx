@@ -23,7 +23,7 @@ export function CandidateDiagnosticResult({ summary, onEdit, onRequestReport, pu
           <div className="dr-presence__main">
             <div className="dr-presence__reading">
               <h2 className="dr-presence__kicker" id="candidate-overall-title">Estado general</h2>
-              {summary.score === null ? <p className="dr-presence__value dr-presence__value--none">{summary.overallStatus}</p> : <p className="dr-presence__value">{summary.score}%</p>}
+              {summary.score === null ? <p className="dr-presence__value dr-presence__value--none">{summary.overallStatus}</p> : <><p className="dr-presence__value">{summary.score}%</p><p className="dr-presence__code">{summary.overallStatus}</p></>}
             </div>
           </div>
           <p className="dr-presence__text">{summary.executiveSummary}</p>
