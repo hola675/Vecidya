@@ -22,6 +22,7 @@ export default [
   route("aprende/:slug", "routes/learn-article.tsx"),
   route("que-debes-saber", "routes/knowledge-legacy.tsx"),
   route("privacidad", "routes/privacy.tsx"),
+  route("cookies", "routes/cookies.tsx"),
   route("terminos", "routes/terms.tsx"),
   route("informacion-legal", "routes/legal-information.tsx"),
   route("favicon.ico", "routes/favicon.ts"),
