@@ -219,7 +219,7 @@ export const learnArticles: LearnArticle[] = [
     image: "/assets/learn/diagram-ai.svg",
     imageAlt: "Ilustración conceptual del tema de esta guía",
     relatedSlugs: ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio"],
-    editorialDraft: true,
+    editorialDraft: false,
     cta: { label: "Revisar mis necesidades", to: "/diagnostico", copy: "Identifica primero el problema y comprueba qué necesitas antes de contratar herramientas." },
     sections: [
       { heading: "Objetivo y práctica", paragraphs: ["Al terminar podrás identificar los riesgos y decisiones de este proceso y explicar qué comprobar antes de actuar.", "Ejercicio: describe un caso de tu negocio sin datos personales, elige una comprobación y define cuándo revisarás el resultado."] },
@@ -422,7 +422,7 @@ export const learnArticles: LearnArticle[] = [
     image: "/assets/learn/diagram-presence-digital.svg",
     imageAlt: "Canales digitales conectados para informar y recibir consultas",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital", "analitica-web-que-medir-en-tu-negocio"],
-    editorialDraft: true,
+    editorialDraft: false,
     cta: { label: "Revisar mi presencia digital", to: "/diagnostico", copy: "Ordena primero la información y los canales de tu negocio antes de invertir." },
     sections: [
       {
@@ -537,7 +537,7 @@ export const learnArticles: LearnArticle[] = [
     image: "/assets/learn/diagram-presence-digital.svg",
     imageAlt: "Esquema educativo de servicios y canales digitales",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
-    editorialDraft: true,
+    editorialDraft: false,
     cta: { label: "Revisar mi situación", to: "/diagnostico", copy: "Comprueba qué necesita tu negocio antes de contratar o publicar." },
     sections: [
       { heading: "Qué aprenderás", paragraphs: ["Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.", "Ejercicio: elige un canal o servicio que ya utilizas, identifica qué debes comprobar y anota quién se encargará de revisarlo."] },
@@ -778,7 +778,7 @@ export const learnArticles: LearnArticle[] = [
     image: "/assets/learn/diagram-automation.svg",
     imageAlt: "Ilustración conceptual del tema de esta guía",
     relatedSlugs: ["automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio"],
-    editorialDraft: true,
+    editorialDraft: false,
     cta: { label: "Revisar mis necesidades", to: "/diagnostico", copy: "Identifica primero el problema y comprueba qué necesitas antes de contratar herramientas." },
     sections: [
       { heading: "Objetivo y práctica", paragraphs: ["Al terminar podrás identificar los riesgos y decisiones de este proceso y explicar qué comprobar antes de actuar.", "Ejercicio: describe un caso de tu negocio sin datos personales, elige una comprobación y define cuándo revisarás el resultado."] },
@@ -1020,7 +1020,7 @@ export const learnArticles: LearnArticle[] = [
     image: "/assets/learn/diagram-domain-dns-hosting.svg",
     imageAlt: "Ilustración conceptual del tema de esta guía",
     relatedSlugs: ["dominio-hosting-sitio-web-como-funcionan"],
-    editorialDraft: true,
+    editorialDraft: false,
     cta: { label: "Revisar mis necesidades", to: "/diagnostico", copy: "Identifica primero el problema y comprueba qué necesitas antes de contratar herramientas." },
     sections: [
       { heading: "Objetivo y práctica", paragraphs: ["Al terminar podrás identificar los riesgos y decisiones de este proceso y explicar qué comprobar antes de actuar.", "Ejercicio: describe un caso de tu negocio sin datos personales, elige una comprobación y define cuándo revisarás el resultado."] },
@@ -1140,7 +1140,7 @@ export const learnArticles: LearnArticle[] = [
     image: "/assets/learn/diagram-domain-dns-hosting.svg",
     imageAlt: "Esquema educativo de servicios y canales digitales",
     relatedSlugs: ["dominio-hosting-sitio-web-como-funcionan"],
-    editorialDraft: true,
+    editorialDraft: false,
     cta: { label: "Revisar mi situación", to: "/diagnostico", copy: "Comprueba qué necesita tu negocio antes de contratar o publicar." },
     sections: [
       { heading: "Qué aprenderás", paragraphs: ["Distingue los registros DNS, el alojamiento, el certificado HTTPS y el correo profesional sin confundir sus funciones.", "Ejercicio: elige un canal o servicio que ya utilizas, identifica qué debes comprobar y anota quién se encargará de revisarlo."] },
