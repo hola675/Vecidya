@@ -15,7 +15,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-integrations.svg",
     "imageAlt": "Diagrama de distintas herramientas conectadas que ilustra la coordinación de información entre áreas.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "conectar-herramientas-digitales-sin-complicar-tu-negocio",
       "hojas-de-calculo-para-organizar-un-negocio-pequeno"
@@ -26,11 +26,6 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
       "copy": "Antes de incorporar sistemas nuevos, identifica qué parte de la organización necesita más claridad."
     },
     "sections": [
-      {
-        heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Tienes varias sedes o negocios? Organízalos sin duplicar trabajo», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
-      },
       {
         "heading": "La señal de que necesitas ordenar el trabajo",
         "paragraphs": [
@@ -203,7 +198,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-crm.svg",
     "imageAlt": "Diagrama ilustrativo de información y responsabilidades que deben mantenerse organizadas.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "como-proteger-cuentas-contrasenas-estafas-negocio",
       "datos-de-clientes-que-puedes-pedir-y-como-protegerlos"
@@ -214,11 +209,6 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
       "copy": "Puedes empezar revisando cómo se trabaja hoy y qué controles serían proporcionales a tu organización."
     },
     "sections": [
-      {
-        heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Quién puede ver, cambiar o publicar? Pon orden en los accesos», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
-      },
       {
         "heading": "Compartir una contraseña no es trabajar en equipo",
         "paragraphs": [
@@ -404,7 +394,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-integrations.svg",
     "imageAlt": "Ilustración de herramientas conectadas para explicar por qué conviene evitar aplicaciones duplicadas.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "conectar-herramientas-digitales-sin-complicar-tu-negocio",
       "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo"
@@ -415,11 +405,6 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
       "copy": "Primero conviene saber qué necesidad real debería resolver una herramienta."
     },
     "sections": [
-      {
-        heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Tu empresa usa demasiadas aplicaciones? Elige las que sí ayudan», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
-      },
       {
         "heading": "Más programas no significan una empresa más organizada",
         "paragraphs": [
@@ -601,7 +586,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-analytics.svg",
     "imageAlt": "Gráfico de indicadores de un negocio para ilustrar la comparación de resultados entre áreas.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "analitica-web-que-medir-en-tu-negocio",
       "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo"
@@ -612,11 +597,6 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
       "copy": "Una buena decisión empieza por saber qué datos tienes y qué aún debes comprobar."
     },
     "sections": [
-      {
-        heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué sede está funcionando mejor? Aprende a comparar sin confundirte», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
-      },
       {
         "heading": "Una cifra suelta puede contar una historia equivocada",
         "paragraphs": [

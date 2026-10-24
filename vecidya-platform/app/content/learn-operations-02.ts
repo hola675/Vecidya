@@ -15,7 +15,7 @@ export const learnOperations02Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-tareas-equipo.svg",
     "imageAlt": "Tres tarjetas grandes muestran un trabajo sencillo: definir una tarea, nombrar responsable y comprobar el resultado.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo",
       "quien-puede-ver-cambiar-y-publicar-en-tu-empresa"
@@ -26,11 +26,6 @@ export const learnOperations02Articles: LearnArticle[] = [
       "copy": "Si el trabajo se enreda entre personas o sedes, empieza por identificar qué proceso necesita orden."
     },
     "sections": [
-      {
-        heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Quién se encarga de qué? Organiza las tareas sin perseguir a tu equipo», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
-      },
       {
         "heading": "La tarea que todos creían terminada",
         "paragraphs": [
@@ -228,7 +223,7 @@ export const learnOperations02Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-inventario.svg",
     "imageAlt": "Tres pasos grandes para controlar existencias: recibir productos, registrar los movimientos y comprobar lo que queda.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "hojas-de-calculo-para-organizar-un-negocio-pequeno",
       "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo"
@@ -239,11 +234,6 @@ export const learnOperations02Articles: LearnArticle[] = [
       "copy": "Antes de invertir en inventario digital, revisa cómo entran, salen y se comprueban los productos hoy."
     },
     "sections": [
-      {
-        heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cuántos productos te quedan? Controla el inventario sin perderte en números», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
-      },
       {
         "heading": "El producto que aparece en la lista, pero no en el estante",
         "paragraphs": [
@@ -447,7 +437,7 @@ export const learnOperations02Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-capacitacion.svg",
     "imageAlt": "Tres momentos de una capacitación práctica: mostrar una tarea, practicar con ayuda y repetirla en el trabajo.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "quien-puede-ver-cambiar-y-publicar-en-tu-empresa",
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones"
@@ -458,11 +448,6 @@ export const learnOperations02Articles: LearnArticle[] = [
       "copy": "La transformación digital también depende de personas, tareas claras y apoyo continuo."
     },
     "sections": [
-      {
-        heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Tu equipo evita una herramienta nueva? Enséñala sin complicar el trabajo», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
-      },
       {
         "heading": "El problema no siempre es que el personal «se resista»",
         "paragraphs": [
@@ -669,7 +654,7 @@ export const learnOperations02Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-erp.svg",
     "imageAlt": "Tres áreas de la empresa —compras, almacén y administración— comparten información para coordinar el trabajo.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
       "conectar-herramientas-digitales-sin-complicar-tu-negocio"
@@ -680,11 +665,6 @@ export const learnOperations02Articles: LearnArticle[] = [
       "copy": "Entiende primero cómo están funcionando tus procesos y qué problema hay que resolver."
     },
     "sections": [
-      {
-        heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué es un ERP y cuándo necesita uno tu empresa?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
-      },
       {
         "heading": "La misma información escrita tres veces",
         "paragraphs": [
@@ -896,7 +876,7 @@ export const learnOperations02Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-proyecto-digital.svg",
     "imageAlt": "Un proyecto digital avanza en tres etapas: elegir problema, probar con un equipo y decidir qué ajustar.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
       "como-capacitar-al-equipo-en-herramientas-digitales"
@@ -907,11 +887,6 @@ export const learnOperations02Articles: LearnArticle[] = [
       "copy": "Antes de invertir o cambiar herramientas, conviene aclarar qué problema estás tratando de resolver."
     },
     "sections": [
-      {
-        heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Quieres mejorar un proceso digital? Empieza con una prueba pequeña», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
-      },
       {
         "heading": "El anuncio que entusiasma a la dirección y preocupa al equipo",
         "paragraphs": [
