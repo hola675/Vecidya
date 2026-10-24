@@ -1,6 +1,7 @@
 // Orquestador aislado QA-03B; el original certificado permanece reproducible.
 import { CANDIDATE_COMMERCIAL_IDENTITY_V3, buildCandidateCommercialBoundaryV3, type CandidateCommercialBoundaryV3 } from "./qbv2-candidate-commercial";
-import { CANDIDATE_CALIBRATION_IDENTITY_V3, CANDIDATE_CALIBRATION_VERSION_V3 } from "../qbv2-candidate-calibration";
+import { CANDIDATE_CALIBRATION_IDENTITY_V3, CANDIDATE_CALIBRATION_VERSION_V3, CANDIDATE_CALIBRATION_V3, classifyCandidateScoreRangeV4 } from "../qbv2-candidate-calibration";
+import type { CandidateCalibrationV3 } from "../qbv2-candidate-calibration";
 import { CANDIDATE_OBSERVABILITY_MODEL_IDENTITY_V3 } from "./qbv2-candidate-overall";
 import type { CandidateDigitalPresenceIndexV3 } from "./qbv2-candidate-overall";
 import { CANDIDATE_PLANNER_IDENTITY_V3, buildCandidateQuestionPlanV3, type CandidateQuestionPlanV3 } from "./qbv2-candidate-planner";
@@ -33,18 +34,20 @@ export const CANDIDATE_RESULT_IDENTITY_V3 = Object.freeze({
   recommendations: "candidate-recommendations-r6+operation-history-v1",
   commercial: CANDIDATE_COMMERCIAL_IDENTITY_V3,
   methodology: "diagnostic-methodology-3.1",
-  report: "diagnostic-report-v1.0",
+  report: "diagnostic-report-v1.1",
 } as const);
 
 export type CandidatePipelineOptionsV3 = {
   readonly currentLicense?: CommercialLicense;
   readonly clarificationAnswer?: CommercialClarificationAnswer;
+  /** Explicit calibration override for isolated, versioned QA evaluation. */
+  readonly calibration?: CandidateCalibrationV3;
 };
 
 export type CandidatePipelineResultV3 = Omit<CandidateCommercialBoundaryV3, "overall"> & {
   /** Candidate observability augments, but does not alter, the shared base index contract. */
-  readonly overall: Omit<DigitalPresenceStatus, "index"> & { readonly index: CandidateDigitalPresenceIndexV3 };
-  readonly engineIdentity: typeof CANDIDATE_RESULT_IDENTITY_V3;
+  readonly overall: Omit<DigitalPresenceStatus, "index"> & { readonly index: CandidateDigitalPresenceIndexV3; readonly scoreRange?: CandidateCalibrationV3["scoreRanges"] extends readonly (infer T)[] ? T | null : null };
+  readonly engineIdentity: typeof CANDIDATE_RESULT_IDENTITY_V3 | (Omit<typeof CANDIDATE_RESULT_IDENTITY_V3, "calibration" | "calibrationVersion" | "overall" | "report"> & { readonly calibration: CandidateCalibrationV3["identity"]; readonly calibrationVersion: CandidateCalibrationV3["version"]; readonly overall: CandidateCalibrationV3["identity"]; readonly report: string });
   readonly plan: CandidateQuestionPlanV3;
 };
 
@@ -58,11 +61,20 @@ export function isCandidateResultIdentityV3(value: unknown): value is typeof CAN
 
 /** Canonical complete candidate result pipeline. Does not activate or import the public runtime. */
 export function runCandidateDiagnosticPipelineV3(answers: AnswersV2, options: CandidatePipelineOptionsV3 = {}): CandidatePipelineResultV3 {
+  const calibration = options.calibration ?? CANDIDATE_CALIBRATION_V3;
   const plan = buildCandidateQuestionPlanV3({ answers });
   const result = buildCandidateCommercialBoundaryV3({
     answers: plan.activeAnswers,
     currentLicense: options.currentLicense,
     clarificationAnswer: options.clarificationAnswer,
+    calibration,
   });
-  return { ...result, engineIdentity: CANDIDATE_RESULT_IDENTITY_V3, plan };
+  if (calibration.identity === CANDIDATE_CALIBRATION_IDENTITY_V3) return { ...result, engineIdentity: CANDIDATE_RESULT_IDENTITY_V3, plan };
+  const engineIdentity = Object.freeze({ ...CANDIDATE_RESULT_IDENTITY_V3,
+    calibration: calibration.identity, calibrationVersion: calibration.version, overall: calibration.identity,
+    report: CANDIDATE_RESULT_IDENTITY_V3.report,
+  });
+  const score = result.overall.index.displayScore;
+  const range = calibration.scoreRanges ? classifyCandidateScoreRangeV4(score) : null;
+  return { ...result, overall: { ...result.overall, scoreRange: range ? calibration.scoreRanges!.find((item) => item.id === range) ?? null : null }, engineIdentity, plan } as CandidatePipelineResultV3;
 }
