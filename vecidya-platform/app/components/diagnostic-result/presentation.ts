@@ -71,7 +71,7 @@ export type DimensionDisplay = {
   readonly evidenceLead: string;
 };
 
-const DIMENSION_ICON: Readonly<Record<DimensionInterpretation["dimension"], string>> = {
+export const DIMENSION_ILLUSTRATION_BY_KEY: Readonly<Record<DimensionInterpretation["dimension"], string>> = {
   clarity_positioning: publicAssets.illustrations.dimensionClarity,
   digital_foundation: publicAssets.illustrations.dimensionFoundation,
   discovery: publicAssets.illustrations.dimensionDiscovery,
@@ -86,7 +86,7 @@ export function dimensionDisplay(dimension: DimensionInterpretation): DimensionD
   const scored = SCORED_STATUSES.has(dimension.status) && dimension.score !== null;
   return {
     dimension,
-    icon: DIMENSION_ICON[dimension.dimension],
+    icon: DIMENSION_ILLUSTRATION_BY_KEY[dimension.dimension],
     statusLabel: capitalize(dimension.statusLabel),
     percent: scored ? `${dimension.score}%` : null,
     confidence: scored ? CONFIDENCE_DISPLAY[dimension.confidence] : null,

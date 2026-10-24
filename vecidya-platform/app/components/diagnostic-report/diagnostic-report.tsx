@@ -31,22 +31,6 @@ function List({ items }: { items: readonly ReactNode[] }) {
 
 const Labelled = ({ label, text }: { label: string; text: string }) => <><span className="rp-label">{label}.</span> {text}</>;
 const h2 = (key: string, text: string): Block => ({ key: `h2:${key}`, keepWithNext: true, node: <h2 className="rp-h2">{text}</h2> });
-const candidateIdentityLabel = (key: string) => {
-  const labels: Readonly<Record<string, string>> = {
-    engine: "Motor",
-    questionBank: "Banco de preguntas",
-    planner: "Planificador",
-    evidence: "Modelo de evidencia",
-    applicability: "Aplicabilidad R4",
-    calibration: "Calibración",
-    siblingAggregation: "Agregación de áreas O4",
-    observability: "Observabilidad O6",
-    methodology: "Metodología",
-    report: "Informe",
-  };
-  return labels[key] ?? key;
-};
-
 function Dimension({ dimension }: { dimension: ReportDimension }) {
   return (
     <div className={`rp-dim rp-dim--${modifier(dimension.status)}`}>
@@ -75,6 +59,16 @@ function Dimension({ dimension }: { dimension: ReportDimension }) {
 function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
   const presence = report.overallPresence;
   const blocks: Block[] = [];
+  const primaryPriority = report.priorities.find((priority) => priority.rank === 1) ?? null;
+  const firstRecommendation = report.recommendations.find((item) => item.step === 1) ?? null;
+  const firstActionPathStep = report.actionPath.steps.find((step) => step.step === 1) ?? null;
+  const primaryAction = firstRecommendation?.title ?? firstActionPathStep?.title ?? primaryPriority?.statement ?? null;
+  const primaryActionArea = firstRecommendation?.area ?? firstActionPathStep?.area ?? primaryPriority?.area ?? report.primaryConstraint.title;
+  const primaryActionWhy = primaryPriority?.why ?? firstRecommendation?.whyItMatters ?? report.primaryConstraint.text;
+  const primaryActionStep = firstRecommendation?.step ?? firstActionPathStep?.step ?? primaryPriority?.rank ?? null;
+  const additionalRecommendations = report.recommendations.filter((item) => item.step !== primaryActionStep);
+  const uniqueDimensionNotes = report.dimensionNotes.filter((note) => note !== presence.coverage);
+  const presenceExplanation = presence.state === "insufficient" ? null : presence.explanation;
   blocks.push({
     key: "cover",
     node: (
@@ -107,7 +101,7 @@ function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
           </div>
         </div>
         <div className="rp-presence__side">
-          <p>{presence.explanation}</p>
+          {presenceExplanation ? <p>{presenceExplanation}</p> : null}
           <p className="rp-presence__meta">
             {presence.percent ? <ConfidenceIndicator confidence={presence.confidence} label={`Confianza general: ${presence.confidence.label}`} /> : null}
             <span>{presence.coverage}</span>
@@ -122,54 +116,22 @@ function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
     key: "summary",
     node: (
       <div className="rp-stack">
-        {report.executiveSummary.headline ? <p className="rp-headline">{report.executiveSummary.headline}</p> : null}
-        {report.executiveSummary.lead.map((text) => <p key={text}>{text}</p>)}
+        {presence.state !== "insufficient" && report.executiveSummary.headline ? <p className="rp-headline">{report.executiveSummary.headline}</p> : null}
         <p className="rp-state"><span className="rp-label">Dónde estás hoy.</span> {report.executiveSummary.currentState}</p>
       </div>
     ),
   });
 
-  blocks.push(h2("focus", "Lo que más importa ahora"));
+  blocks.push(h2("focus", primaryAction ? "Qué hacer ahora" : "Qué conviene revisar"));
   blocks.push({
     key: "constraint",
     node: (
-      <div className="rp-constraint">
-        <p className="rp-kicker">{report.primaryConstraint.kicker}</p>
-        <h3 className="rp-h3">{report.primaryConstraint.title}</h3>
-        <p>{report.primaryConstraint.text}</p>
-        {report.primaryConstraint.certaintyLabel ? <p className="rp-meta">{[report.primaryConstraint.certaintyLabel, report.primaryConstraint.confidenceLabel].filter(Boolean).join(" · ")}</p> : null}
+      <div className="rp-action-focus">
+        <p className="rp-kicker">{[report.primaryConstraint.certaintyLabel, report.primaryConstraint.confidenceLabel].filter(Boolean).join(" · ") || report.primaryConstraint.kicker}</p>
+        {primaryActionArea ? <h3 className="rp-h3">{primaryActionArea}</h3> : null}
+        {primaryAction ? <p className="rp-action-focus__action" data-primary-action="true"><span className="rp-label">Siguiente paso.</span> {primaryAction}</p> : <p>{report.primaryConstraint.text}</p>}
+        {primaryActionWhy && primaryActionWhy !== primaryAction ? <p className="rp-muted">{primaryActionWhy}</p> : null}
       </div>
-    ),
-  });
-  if (report.priorities.length > 0) {
-    blocks.push({ key: "h3:priorities", keepWithNext: true, node: <h3 className="rp-h3">Por dónde empezar</h3> });
-    for (const priority of report.priorities) {
-      blocks.push({
-        key: `priority:${priority.rank}`,
-        node: (
-          <div className="rp-priority">
-            <p className="rp-kicker">{priority.slotLabel}{priority.area ? ` · ${priority.area}` : ""} · {priority.certaintyLabel}</p>
-            <p className="rp-priority__statement">{priority.statement}</p>
-            <p className="rp-muted">{priority.why}</p>
-          </div>
-        ),
-      });
-    }
-  }
-  if (report.nextFocus) blocks.push({ key: "next-focus", node: <p className="rp-muted">{report.nextFocus}</p> });
-
-  blocks.push(h2("plan", "Plan de acción recomendado"));
-  blocks.push({
-    key: "plan",
-    node: report.actionPath.emptyNote ? <p>{report.actionPath.emptyNote}</p> : (
-      <ol className="rp-steps">
-        {report.actionPath.steps.map((step) => (
-          <li key={step.step}>
-            <span className="rp-label">{step.title}</span>
-            <span className="rp-meta"> · {[step.tag, step.area, step.after.length > 0 ? `Después del paso ${step.after.join(" y ")}` : null].filter(Boolean).join(" · ")}</span>
-          </li>
-        ))}
-      </ol>
     ),
   });
 
@@ -206,15 +168,14 @@ function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
   }
 
   blocks.push(h2("dimensions", "Las ocho áreas del diagnóstico"));
-  if (report.dimensionNotes.length > 0) blocks.push({ key: "dimension-notes", keepWithNext: true, node: <div className="rp-stack">{report.dimensionNotes.map((note) => <p className="rp-muted" key={note}>{note}</p>)}</div> });
+  if (uniqueDimensionNotes.length > 0) blocks.push({ key: "dimension-notes", keepWithNext: true, node: <div className="rp-stack">{uniqueDimensionNotes.map((note) => <p className="rp-muted" key={note}>{note}</p>)}</div> });
   // Dos áreas por fila, en el orden canónico (1-2, 3-4…): cada fila es un bloque que no se parte.
   for (let index = 0; index < report.dimensions.length; index += 2) {
     blocks.push({ key: `dimensions:${index}`, node: <div className="rp-dims">{report.dimensions.slice(index, index + 2).map((dimension) => <Dimension dimension={dimension} key={dimension.key} />)}</div> });
   }
 
-  blocks.push(h2("recommendations", "Recomendaciones"));
-  if (report.recommendations.length === 0) blocks.push({ key: "recommendations-empty", node: <p>{report.actionPath.emptyNote}</p> });
-  for (const item of report.recommendations) {
+  if (additionalRecommendations.length > 0) blocks.push(h2("recommendations", "Siguientes recomendaciones"));
+  for (const item of additionalRecommendations) {
     blocks.push({
       key: `recommendation:${item.step}`,
       node: (
@@ -275,12 +236,6 @@ function reportBlocks(report: DiagnosticReportDocumentV1): readonly Block[] {
       </div>
     ),
   });
-  if ("candidateEngineIdentity" in report) {
-    blocks.push({
-      key: "candidate-technical-appendix",
-      node: <section className="rp-technical"><h2 className="rp-h2">Anexo técnico: trazabilidad de la versión</h2><dl>{Object.entries(report.candidateEngineIdentity).map(([key, value]) => <div key={key}><dt>{candidateIdentityLabel(key)}</dt><dd><code>{String(value)}</code></dd></div>)}</dl></section>,
-    });
-  }
   blocks.push({
     key: "info",
     node: (

@@ -8,7 +8,7 @@ import { constantTimeEqual, createOpaqueToken, digestOpaqueToken, readCookie, re
 import { COMMERCIAL_CONTACT_NOTICE_VERSION, DIAGNOSTIC_RESEARCH_NOTICE_VERSION, REPORT_SERVICE_NOTICE_VERSION } from "../../../app/features/diagnostic/identified-report-constants.ts";
 import { ANSWER_SCHEMA_ID, QUESTION_BANK_ID, SESSION_KEY, SESSION_SCHEMA } from "../../../app/features/diagnostic/qa03b/contract.ts";
 import { CANDIDATE_RESULT_IDENTITY_V3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-pipeline.ts";
-import type { AnonymousDiagnosticSummaryV1 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-funnel.ts";
+import type { AnonymousDiagnosticSummaryV2 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-funnel.ts";
 
 const validRequest = () => ({
   engineIdentity: PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1,
@@ -50,8 +50,8 @@ test("identified report request stores each optional purpose only with its own v
 test("identified QA-03B request accepts only its exact session, answer and summary contracts", async () => {
   const module = await import("../../../app/features/diagnostic/qa03b/identified-report-request.server.ts");
   assert.equal(typeof module.validateQa03bDiagnosticReportRequest, "function", "the identified boundary needs an explicit QA-03B contract");
-  const summary: AnonymousDiagnosticSummaryV1 = {
-    contractVersion: "anonymous-diagnostic-summary-v1",
+  const summary: AnonymousDiagnosticSummaryV2 = {
+    contractVersion: "anonymous-diagnostic-summary-v2",
     overallStatus: "Información insuficiente",
     score: null,
     confidence: "Sin score",
@@ -62,6 +62,16 @@ test("identified QA-03B request accepts only its exact session, answer and summa
     limitations: ["Lectura parcial"],
     methodologyVersion: CANDIDATE_RESULT_IDENTITY_V3.methodology,
     diagnosticIdentity: CANDIDATE_RESULT_IDENTITY_V3,
+    dimensions: [
+      ["Claridad", "/assets/selected/illustrations/dimensions/clarity.webp"],
+      ["Base digital", "/assets/selected/illustrations/dimensions/foundation.webp"],
+      ["Descubrimiento", "/assets/selected/illustrations/dimensions/discovery.webp"],
+      ["Confianza", "/assets/selected/illustrations/dimensions/trust.webp"],
+      ["Conversión", "/assets/selected/illustrations/dimensions/conversion.webp"],
+      ["Relación", "/assets/selected/illustrations/dimensions/relationship.webp"],
+      ["Medición", "/assets/selected/illustrations/dimensions/measurement.webp"],
+      ["Operación", "/assets/selected/illustrations/dimensions/operations.webp"],
+    ].map(([label, illustration]) => ({ label, score: null, statusLabel: "Sin lectura", preliminary: false, illustration })),
   };
   const qaRequest = () => ({
     replayVersion: "qa03b-worker-replay-v4",

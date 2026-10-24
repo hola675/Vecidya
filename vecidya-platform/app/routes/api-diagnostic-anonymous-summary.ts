@@ -2,7 +2,7 @@ import { readRequestBodyLimited, RequestBodyTooLargeError } from "../features/di
 import { allowRateLimitedRequest } from "../features/diagnostic/diagnostic-rate-limit.server";
 import { toAnonymousDiagnosticSummaryV1 } from "../features/diagnostic/anonymous-summary.server";
 import { PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1, replayPublicDiagnosticV3 } from "../features/diagnostic/public-diagnostic-replay.server";
-import { replayQa03bSessionV1, buildQa03bReplayProjectionsV1 } from "../features/diagnostic/qa03b/worker-replay.server";
+import { replayQa03bSessionV1, buildQa03bReplayProjectionsV2 } from "../features/diagnostic/qa03b/worker-replay.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 
 import type { Route } from "./+types/api-diagnostic-anonymous-summary";
@@ -74,7 +74,7 @@ export async function action({ context, request }: Route.ActionArgs) {
       if (replay.reason === "incomplete") return failure(422, "No pudimos preparar una lectura fiable con estas respuestas.");
       return failure(400, "La ruta de respuestas no cumple el contrato vigente.");
     }
-    responseBody = { summary: buildQa03bReplayProjectionsV1(replay, null, new Date(replay.completedAt)).summary };
+    responseBody = { summary: buildQa03bReplayProjectionsV2(replay, null, new Date(replay.completedAt)).summary };
   } else {
     return failure(400, "Las respuestas no tienen un formato válido.");
   }
