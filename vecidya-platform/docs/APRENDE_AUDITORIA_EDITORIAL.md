@@ -25,3 +25,23 @@ Mover secciones a otra guía no equivale a una revisión editorial. Hay que comp
 ## Verificación antes de fusionar
 
 Ejecutar desde `vecidya-platform` los scripts reales definidos en `package.json`, incluyendo typecheck, build y pruebas pertinentes. No fusionar ni desplegar mientras el PR permanezca en borrador.
+
+## Revisión de pertinencia de fuentes por guía especializada (2026-10-24)
+
+Inventario estático: las seis guías tienen bloque de fuentes, pero la presencia de una URL no confirma que el contenido esté actualizado, que la página responda ni que respalde todas las afirmaciones. Estado editorial: **pendiente de aprobación**.
+
+| Guía | Fuentes registradas | Observación de revisión |
+| --- | ---: | --- |
+| Prueba de asistente de IA | 3 | NIST AI RMF, perfil de IA generativa e ICO: enfoque pertinente para riesgos y privacidad; comprobar alcance normativo por jurisdicción. |
+| Primera campaña publicitaria | 8 | Google, Meta, W3C y Analytics: pertinentes para publicidad, destino y medición; distinguir políticas de plataforma y recomendaciones. |
+| Presencia digital confiable | 8 | Reutiliza íntegramente las ocho fuentes de publicidad. **Revisar y reducir** las referencias a políticas de anuncios y medición que no sustentan directamente mantenimiento, reputación y coherencia de canales. |
+| Supervisión de automatizaciones | 3 | NIST e ICO: pertinencia general; la fuente sobre marketing electrónico solo aplica cuando el flujo envía comunicaciones. |
+| Elegir o cambiar proveedor | 8 | ICANN, RFC y MDN: mezcla documentación de registro con referencias técnicas; priorizar ICANN y comprobar que RFC/TLS apoyen afirmaciones concretas. |
+| DNS, HTTPS y correo | 8 | Reutiliza íntegramente las ocho fuentes de proveedor. **Revisar y reducir** las referencias a tarifas, renovación y transferencias; comprobar cobertura específica de correo (MX/SPF/DKIM/DMARC) si se explican. |
+
+### Hallazgos y acciones editoriales
+
+1. **E1 — Duplicación de bibliografía:** dos pares de guías tienen exactamente las mismas listas de fuentes pese a tener objetivos distintos (publicidad/presencia; proveedor/DNS). Separar por pertinencia, conservando solo referencias que respaldan el texto de cada guía.
+2. **E2 — Cobertura de correo:** revisar si la guía DNS/correo explica registros de autenticación; cuando los mencione, aportar fuentes oficiales pertinentes y distinguir configuración del dominio, servicio de correo y políticas de entrega.
+3. **E3 — Verificación externa:** comprobar accesibilidad HTTP, redirecciones, fechas y cambios de políticas. **No ejecutada** en esta revisión; no afirmar que los enlaces están vivos.
+4. **E4 — Aprobación:** mantener las seis marcas `editorialDraft: true` hasta verificar exactitud, pertinencia, lectura móvil y fuentes individuales.
