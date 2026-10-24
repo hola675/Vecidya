@@ -107,7 +107,7 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
           <Button
             aria-controls="app-navigation"
             aria-expanded={navigationOpen}
-            aria-label="Abrir navegación"
+            aria-label={navigationOpen ? "Cerrar navegación principal" : "Abrir navegación principal"}
             className="mobile-menu"
             onClick={() => setNavigationOpen((open) => !open)}
             tone="ghost"

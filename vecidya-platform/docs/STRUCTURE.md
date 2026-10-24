@@ -2,6 +2,8 @@
 
 ## UX-COHERENCE-03 — componentes compartidos (2026-10-19)
 
+Actualización APP-MINI-REDESIGN-01 (2026-10-23): `app/routes/app.tsx` y `app/routes/internal.tsx` conservan loaders y guardas; `client-area-shell.tsx` e `admin-shell.tsx` incorporan estados de drawer móvil y cierre al navegar. CSS de home/admin está scoped; no se agregan rutas ni tokens globales. E2E local valida las dos rutas y drawers en 320/390/768/1366 px. La revisión WCAG/axe completa queda pendiente.
+
 | Ruta / módulo | Uso nuevo | Límite |
 | --- | --- | --- |
 | `app/components/experience-system.tsx` | Guía, métrica, progreso, comparación por barras | Solo presentación; sin acceso a datos ni autorización |

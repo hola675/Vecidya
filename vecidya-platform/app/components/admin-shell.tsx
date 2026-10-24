@@ -28,6 +28,7 @@ type AdminShellProps = {
 
 export function AdminShell({ active, children, workspaceUser, platformRole = "platform_admin" }: AdminShellProps) {
   const navigate = useNavigate();
+  const [navigationOpen, setNavigationOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSignOut(event: React.FormEvent<HTMLFormElement>) {
@@ -40,16 +41,16 @@ export function AdminShell({ active, children, workspaceUser, platformRole = "pl
   return (
     <div className="admin-shell">
       <a className="skip-link" href="#internal-page-content">Saltar al contenido administrativo</a>
-      <aside className="admin-sidebar">
+      <aside className="admin-sidebar" data-open={navigationOpen}>
         <Link className="admin-brand" to="/app/internal">
           <span className="brand-symbol-frame" aria-hidden="true">
             <img alt="" className="brand-symbol" height="512" src={publicAssets.brand.symbol3d} width="512" />
           </span>
           <span><strong>Vecidya</strong><small>Operaciones de plataforma</small></span>
         </Link>
-        <nav aria-label="Navegación administrativa" className="admin-navigation">
+        <nav aria-label="Navegación administrativa" className="admin-navigation" id="admin-navigation">
           {navigation.filter((item) => platformRole === "platform_admin" || item.active === "organizations").map((item) => (
-            <Link aria-current={active === item.active ? "page" : undefined} className={active === item.active ? "is-active" : ""} key={item.to} to={item.to}>
+            <Link aria-current={active === item.active ? "page" : undefined} className={active === item.active ? "is-active" : ""} key={item.to} to={item.to} onClick={() => setNavigationOpen(false)}>
               <Icon name={item.icon} />
               {item.label}
             </Link>
@@ -71,10 +72,21 @@ export function AdminShell({ active, children, workspaceUser, platformRole = "pl
           </Form>
         </div>
       </aside>
+      {navigationOpen ? <button aria-label="Cerrar navegación administrativa" className="admin-sidebar-backdrop" onClick={() => setNavigationOpen(false)} type="button" /> : null}
       <div className="admin-frame">
         <header className="admin-header">
+          <Button
+            aria-controls="admin-navigation"
+            aria-expanded={navigationOpen}
+            aria-label={navigationOpen ? "Cerrar navegación administrativa" : "Abrir navegación administrativa"}
+            className="admin-mobile-menu"
+            onClick={() => setNavigationOpen((open) => !open)}
+            tone="ghost"
+          >
+            <Icon name="menu" />
+          </Button>
           <div><p className="eyebrow">ADMINISTRACIÓN DE VECIDYA</p><p className="admin-header__note">Estás administrando la plataforma, no una organización cliente.</p></div>
-          <Link className="button button--secondary" to="/app">Volver a Mi Vecidya</Link>
+          <Link className="button button--secondary admin-header__back-link" to="/app">Volver a Mi Vecidya</Link>
         </header>
         <div id="internal-page-content" tabIndex={-1}>{children}</div>
         <PlatformFooter area="admin" />
