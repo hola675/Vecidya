@@ -38,6 +38,8 @@
 
 **Estado (UX-PREMIUM-01B, 2026-10-24):** `/vecindario/:slug` incorpora breadcrumb de retorno al índice, jerarquía editorial del hero y tarjetas para contenido MiniWeb activo, con enlace de cierre al Vecindario. Typecheck, build y diff-check PASS. El recorrido MiniWeb en Worker se detuvo antes de las pruebas de perfil: la D1 local `0000–0027` carece de `platform_owner_invitation`; revisión visual responsive pendiente. PR pendiente. No publicado.
 
+**Checkpoint UX-PREMIUM-02F — catálogo de complementos (2026-10-24, rama `feat/app-mini-ux-05-addons`):** `/addons` adelanta la advertencia de coste variable al encabezado, da prioridad visual a cada ficha detallada con consulta secundaria y alinea las acciones de las siete ofertas; conserva destinos y contenido comercial. Typecheck/build/diff-check PASS; Worker local confirmó HTTP 200 en el índice y siete fichas hijas, más revisión visual de escritorio. Sin revisión responsive móvil certificada, auditoría de accesibilidad, deploy o HTTP público fechado. Las demás fases/páginas de 2–6 siguen pendientes.
+
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)

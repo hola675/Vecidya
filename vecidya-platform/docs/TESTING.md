@@ -32,6 +32,13 @@ El PDF `tmp/diag-v3-qa03b/browser/open-no-clients-identified-report.pdf` se gene
 
 `pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS**. La revisión del DOM mostró que los selectores del hero/grid no coincidían con la estructura de `DefaultMiniWebTemplate`; apuntan ahora al wrapper hero y al grid directo. `node tests/e2e/miniweb-core-check.mjs` no alcanzó sus aserciones: tras aplicar localmente `0000–0027`, el alta del primer usuario de prueba devolvió HTTP 500 por ausencia de `platform_owner_invitation` en la D1 conectada al Worker. Antes de migrar, la DB local vacía también impidió iniciar el loader del perfil. No hay certificación Worker ni visual para este cambio. Sin D1 remota ni deploy.
 
+## UX-PREMIUM-02F — catálogo público de complementos (2026-10-24)
+
+- `pnpm run typecheck`: PASS; `pnpm run build`: PASS; `git diff --check`: PASS.
+- Wrangler Worker local: `/addons` → HTTP 200, título esperado, un H1 y siete tarjetas. Las siete fichas hijas (`/addons/whatsapp-business`, `telephony-sms`, `reputation-reviews`, `campaigns-diffusion`, `conversational-ai`, `voice-ai` y `connections-integrations`) responden HTTP 200.
+- Revisión visual de escritorio: aviso de costes externos antes de la cuadrícula, CTA primario a los detalles, consulta secundaria, botones alineados y última tarjeta centrada. No es una auditoría WCAG/axe ni certifica anchos móviles.
+- No se ejecutó el E2E comercial integral. Sin D1 remota, deploy o petición HTTP pública fechada.
+
 ## DIAG-QA03B-PROFILE-KNOWLEDGE-01 — 60 variantes y reporte HTML (2026-10-24)
 
 **QA-03C — RAN local:** se corrigió la matriz sintética: P20 conserva captación como `unknown` porque volumen no prueba fiabilidad. `unknownByDesignQuestionIds` distingue incógnitas justificadas de interpretaciones y supuestos. Suite QA-03B profile **4/4 PASS** tras añadir la equivalencia de contrato presentación/informe y regresiones focales P03, P10 y P18; canonical candidates **16/16 PASS** con una batería adicional de suficiencia que reutiliza reglas aprobadas y no fija calibración numérica. Unitarias de diagnóstico completas: **1520/1520 PASS**; typecheck y build PASS.
