@@ -44,7 +44,7 @@ Inventario estático: las seis guías tienen bloque de fuentes, pero la presenci
 1. **E1 — Duplicación de bibliografía:** dos pares de guías tienen exactamente las mismas listas de fuentes pese a tener objetivos distintos (publicidad/presencia; proveedor/DNS). Separar por pertinencia, conservando solo referencias que respaldan el texto de cada guía.
 2. **E2 — Cobertura de correo:** revisar si la guía DNS/correo explica registros de autenticación; cuando los mencione, aportar fuentes oficiales pertinentes y distinguir configuración del dominio, servicio de correo y políticas de entrega.
 3. **E3 — Verificación externa:** comprobar accesibilidad HTTP, redirecciones, fechas y cambios de políticas. **No ejecutada** en esta revisión; no afirmar que los enlaces están vivos.
-4. **E4 — Aprobación:** mantener las seis marcas `editorialDraft: true` hasta verificar exactitud, pertinencia, lectura móvil y fuentes individuales.
+4. **E4 — Aprobación (resuelta por decisión del responsable):** las seis marcas cambiaron a `editorialDraft: false` tras aprobación explícita. La verificación HTTP, la lectura móvil y la certificación técnica continúan pendientes y no quedan automáticamente aprobadas.
 
 ## Ajuste de fuentes aplicado (2026-10-24)
 
@@ -66,3 +66,26 @@ El responsable del proyecto aprobó expresamente los contenidos de las seis guí
 3. Ejecutar revisión visual en escritorio y móvil, navegación por teclado y accesibilidad.
 4. Completar SEO, metadatos de lectura y controles de calidad editorial.
 5. Reconciliar PR con `main`, solicitar revisión y preparar publicación solo tras autorización explícita.
+
+## Inventario de enlaces externos de las seis guías (2026-10-24)
+
+Se identificaron **29 referencias bibliográficas** (algunas repetidas entre artículos). Este inventario es estático, extraído del contenido del repositorio; **no demuestra respuesta HTTP 200 ni vigencia de las políticas**.
+
+| Guía especializada | Referencias |
+| --- | ---: |
+| Primera campaña de publicidad | 8 |
+| Proveedor de dominio y hosting | 8 |
+| Supervisión de automatizaciones | 3 |
+| Asistente de IA supervisado | 3 |
+| Presencia digital confiable | 3 |
+| DNS, HTTPS y correo | 4 |
+
+La cantidad de URL únicas deberá calcularse mediante el verificador automatizado, sin suponer que todos los destinos son accesibles.
+
+### Protocolo de verificación HTTP pendiente
+
+1. Extraer de `learn.ts` todas las URL de bloques `sources`, deduplicar y asociar cada URL a sus guías.
+2. Ejecutar comprobaciones HTTPS con timeout, redirecciones limitadas y agente identificable; registrar URL original, URL final, código y fecha. Ante HEAD rechazado, intentar GET con límite de descarga.
+3. Clasificar `2xx` como accesible técnicamente, `3xx` como redirección a revisar y `4xx/5xx`, timeout o bloqueo como incidencias que necesitan revisión humana. No confundir bloqueo anti-bot con enlace roto.
+4. Comprobar manualmente que el documento de destino respalda el contenido citado y que su política o estándar continúa vigente.
+5. Corregir únicamente referencias verificadas como erróneas y conservar evidencia fechada antes de cerrar E3.
