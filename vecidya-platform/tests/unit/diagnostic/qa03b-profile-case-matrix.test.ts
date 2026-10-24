@@ -4,6 +4,7 @@ import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "../../../app/features/
 import { runCandidateDiagnosticPipelineV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-pipeline";
 import { DIGITAL_DIMENSION_IDS } from "../../../app/features/diagnostic/qbv2-dimensions";
 import { QA03B_PROFILE_CASES, qa03bProfileAnswerScript } from "./qa03b-profile-case-matrix";
+import { QA03B_KNOWLEDGE_LEVELS, QA03B_PROFILE_KNOWLEDGE_VARIANTS } from "./qa03b-profile-knowledge-variants";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 
 const bank = new Map(REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.map((question) => [question.id, question]));
@@ -26,6 +27,25 @@ function runProfile(profile: (typeof QA03B_PROFILE_CASES)[number]) {
     asked.push({ questionId, answer });
   }
   assert.fail(`${profile.id}: route did not reach a terminal state within 30 questions`);
+}
+
+function runScript(id: string, script: AnswersV2) {
+  let answers: AnswersV2 = {};
+  const asked: { questionId: string; answer: string | readonly string[] }[] = [];
+  for (let turn = 0; turn < 30; turn += 1) {
+    const result = runCandidateDiagnosticPipelineV3(answers);
+    const questionId = result.plan.nextQuestionId;
+    if (!questionId) return { result, answers: result.plan.activeAnswers, asked };
+    const answer = script[questionId];
+    assert.notEqual(answer, undefined, `${id}: no authored answer for selected ${questionId}`);
+    const definition = bank.get(questionId);
+    assert.ok(definition, `${id}: planner selected a question outside the reviewed QA-03B bank`);
+    const selected = typeof answer === "string" ? [answer] : answer;
+    assert.ok(selected.length > 0 && selected.every((value) => definition.options.some((option) => option.value === value)), `${id}: invalid authored response for ${questionId}`);
+    answers = { ...result.plan.activeAnswers, [questionId]: answer };
+    asked.push({ questionId, answer });
+  }
+  assert.fail(`${id}: route did not reach a terminal state within 30 questions`);
 }
 
 test("20 perfiles sintéticos recorren QA-03B con respuestas explícitas y una pregunta por turno", () => {
@@ -57,4 +77,31 @@ test("las autoevaluaciones de IA/digital no se confunden con dimensiones calibra
   assert.equal(DIGITAL_DIMENSION_IDS.includes("cybersecurity" as never), false);
   assert.equal(REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.some((question) => /^q2_ai(?:_|$)/i.test(question.id) || question.prompt.toLowerCase().includes("inteligencia artificial")), false);
   assert.equal(REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.some((question) => question.evidenceV3?.dimensions.some((dimension) => dimension.dimension === "measurement_optimization" && dimension.directness === "direct")), false);
+});
+
+test("60 variantes por nivel de conocimiento recorren el motor sin reutilizar autoevaluaciones como respuestas", () => {
+  assert.equal(QA03B_KNOWLEDGE_LEVELS.length, 3);
+  assert.equal(QA03B_PROFILE_KNOWLEDGE_VARIANTS.length, 60);
+  assert.equal(new Set(QA03B_PROFILE_KNOWLEDGE_VARIANTS.map(({ id }) => id)).size, 60);
+  for (const profile of QA03B_PROFILE_CASES) {
+    const variants = QA03B_PROFILE_KNOWLEDGE_VARIANTS.filter(({ profileId }) => profileId === profile.id);
+    assert.deepEqual(variants.map(({ knowledgeLevel }) => knowledgeLevel).sort(), [...QA03B_KNOWLEDGE_LEVELS].sort());
+    for (const variant of variants) {
+      for (const [questionId, answer] of Object.entries(variant.answerScript)) {
+        const definition = bank.get(questionId);
+        assert.ok(definition, `${variant.id}: answer script references unknown question ${questionId}`);
+        const selected = typeof answer === "string" ? [answer] : answer;
+        assert.ok(selected.length > 0 && selected.every((value) => definition.options.some((option) => option.value === value)), `${variant.id}: invalid authored response for ${questionId}`);
+      }
+      assert.deepEqual(variant.modeledAssumptionQuestionIds.includes("q2_goal"), variant.knowledgeLevel === "informado");
+      assert.equal(variant.modeledAssumptionQuestionIds.includes("q2_process_systemization"), variant.knowledgeLevel === "informado");
+      assert.equal("digitalSelfRating" in variant.answerScript || "aiSelfRating" in variant.answerScript, false);
+    }
+  }
+  const completed = QA03B_PROFILE_KNOWLEDGE_VARIANTS.map((variant) => ({ variant, ...runScript(variant.id, variant.answerScript) }));
+  assert.ok(completed.every(({ asked }) => asked.length > 0 && new Set(asked.map(({ questionId }) => questionId)).size === asked.length));
+  assert.deepEqual(completed.filter(({ result }) => result.plan.completion.hardCapReached).map(({ variant }) => variant.id), []);
+  assert.ok(completed.every(({ answers }) => answers.q2_operational_status === "operating" && answers.q2_has_customers === "yes"));
+  assert.ok(completed.every(({ result }) => result.overall.index.displayScore === null));
+  assert.ok(completed.every(({ result }) => ["no_useful_questions", "budget_blocked"].includes(result.plan.evidenceSufficiency.terminalReason ?? "")));
 });
