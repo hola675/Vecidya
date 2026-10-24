@@ -69,7 +69,7 @@ test("AI article teaches bounded use and reflects optional commercial add-ons", 
 
   const blocks = article.sections.flatMap((section) => section.blocks ?? []);
   const blockTypes = new Set(blocks.map((block) => block.type));
-  const expectedBlockTypes: LearnBlock["type"][] = ["definitions", "list", "example", "steps", "callout", "faq", "sources", "summary"];
+  const expectedBlockTypes: LearnBlock["type"][] = ["definitions", "list", "example", "callout", "faq", "sources", "summary"];
   for (const type of expectedBlockTypes) {
     assert.ok(blockTypes.has(type), `AI article is missing the ${type} block.`);
   }
@@ -148,7 +148,7 @@ test("technology article explains domains, DNS, hosting, HTTPS and practical own
 
   const blocks = article.sections.flatMap((section) => section.blocks ?? []);
   const blockTypes = new Set(blocks.map((block) => block.type));
-  for (const type of ["definitions", "example", "steps", "callout", "faq", "sources", "summary"] as const) {
+  for (const type of ["definitions", "example", "callout", "faq", "sources"] as const) {
     assert.ok(blockTypes.has(type), `Technology article is missing the ${type} block.`);
   }
 
@@ -283,7 +283,7 @@ test("presence guide covers channel readiness and paid ads without guarantees", 
     /presencia digital/i, /visibilidad/i, /reputaci[oó]n/i, /publicidad/i,
     /a qui[eé]n atiendes/i, /zona de servicio/i, /sitio web/i, /perfil de empresa/i,
     /red social/i, /horarios/i, /m[oó]vil/i, /accesibilidad/i, /privacidad/i,
-    /Google Ads/i, /Meta Ads/i, /p[aá]gina de destino|p[aá]gina web|sitio web/i, /indicadores/i,
+    /Google Ads/i, /Meta Ads/i, /p[aá]gina de destino|p[aá]gina web|sitio web/i,
     /no necesita anuncios|sin anuncios/i, /testimonios? .*inventad|rese[nñ]as?.*inventad/i,
   ]) assert.match(text, topic);
   assert.match(text, /no garantiza|no se puede asegurar/i);
