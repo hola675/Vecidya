@@ -22,3 +22,9 @@ test("preferencias antiguas, corruptas o incompletas no autorizan seguimiento", 
   }
   assert.equal(canUseOptionalCookies("analytics", { getItem: () => { throw Error("blocked"); } }), false);
 });
+
+test("un consentimiento fechado en el futuro no habilita categorías opcionales", () => {
+  const future = JSON.stringify(createCookiePreferences(true, true, new Date("2099-01-01T00:00:00.000Z")));
+  assert.equal(parseCookiePreferences(future), null);
+  assert.equal(canUseOptionalCookies("analytics", { getItem: () => future }), false);
+});
