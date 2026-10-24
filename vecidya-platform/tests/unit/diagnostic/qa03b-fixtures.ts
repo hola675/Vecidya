@@ -20,6 +20,9 @@ export const AUTHORED_UNKNOWN_CAPABILITIES: AnswersV2 = {
   q2_followup_general_process: "unknown", q2_operations_information_base: "unknown",
   q2_presence_digital_base: "unknown", q2_presence_offer_clarity: "unknown",
   q2_measurement_practice: "unknown",
+  q2_measurement_rate_estimate: "unknown",
+  q2_measurement_result_recording: "unknown",
+  q2_measurement_review_cycle: "unknown",
 };
 export const AUTHORED_JOURNEYS = [
   { id: "operating-project", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_entity: "project", q2_customer_buyer: "b2c" } },
