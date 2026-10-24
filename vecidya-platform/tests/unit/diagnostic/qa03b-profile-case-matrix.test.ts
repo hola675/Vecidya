@@ -3,6 +3,8 @@ import test from "node:test";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "../../../app/features/diagnostic/qa03b/bank";
 import { runCandidateDiagnosticPipelineV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-pipeline";
 import { DIGITAL_DIMENSION_IDS } from "../../../app/features/diagnostic/qbv2-dimensions";
+import { CANDIDATE_CALIBRATION_REPRESENTATIVE_V3 } from "../../../app/features/diagnostic/qbv2-candidate-calibration";
+import { computeRepresentativeCandidateDigitalPresenceIndexV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-overall";
 import { QA03B_PROFILE_CASES, qa03bProfileAnswerScript } from "./qa03b-profile-case-matrix";
 import { QA03B_KNOWLEDGE_LEVELS, QA03B_PROFILE_KNOWLEDGE_VARIANTS } from "./qa03b-profile-knowledge-variants";
 import { buildCandidateDiagnosticReportV1, buildCandidateResultPresentationV3 } from "../../../app/components/diagnostic-flow/qa03b-presentation";
@@ -66,6 +68,16 @@ test("20 perfiles sintéticos recorren QA-03B con respuestas explícitas y una p
     JSON.stringify(completed.filter(({ result }) => !result.plan.completion.ready || result.plan.completion.hardCapReached).map(({ profile, result }) => ({ id: profile.id, ready: result.plan.completion.ready, hardCapReached: result.plan.completion.hardCapReached, terminalReason: result.plan.completion.terminalReason, routeLength: result.plan.routeLength, useful: result.plan.evidenceSufficiency.usefulQuestionIds, trace: result.plan.trace.filter((entry) => entry.skipReason).map(({ questionId, skipReason }) => [questionId, skipReason]) }))));
   assert.ok(completed.every(({ answers }) => answers.q2_operational_status === "operating" && answers.q2_has_customers === "yes"));
   assert.ok(completed.every(({ result }) => result.overall.index.displayScore === null));
+  const representativeResults = completed.map(({ profile, result, answers }) => ({
+    id: profile.id,
+    index: computeRepresentativeCandidateDigitalPresenceIndexV3(
+      result.scoring,
+      CANDIDATE_CALIBRATION_REPRESENTATIVE_V3,
+      { prelaunch: result.narrative.lifecycle === "prelaunch" },
+      answers,
+    ),
+  }));
+  assert.deepEqual(representativeResults.filter(({ index }) => index.displayScore !== null), [], "the more conservative candidate also abstains across the sparse 60-variant baseline");
   assert.equal(completed.reduce((count, { result }) => count + result.scoring.dimensions.filter((dimension) => dimension.score !== null).length, 0), 7,
     JSON.stringify(completed.flatMap(({ profile, result }) => result.scoring.dimensions.filter((dimension) => dimension.score !== null).map(({ id, score, confidence }) => ({ profile: profile.id, dimension: id, score, confidence: confidence.level })))));
   assert.ok(completed.every(({ result }) => result.scoring.dimensions.every((dimension) => dimension.score === null || dimension.state == null)));

@@ -4,6 +4,7 @@ import type { DiagnosticScoringView } from "../qbv2-diagnostic-view";
 import { computeDigitalPresenceIndex, displayScoreForBands, type DigitalPresenceIndex, type OverallIndexModel } from "../qbv2-overall";
 import { CANDIDATE_SEMANTIC_EVIDENCE_CATALOG_V3 } from "./qbv2-candidate-interpretation";
 import { CANDIDATE_CALIBRATION_V3 } from "../qbv2-candidate-calibration";
+import type { CandidateCalibrationV3 } from "../qbv2-candidate-calibration";
 import { buildCandidateQuestionPlanV3 } from "./qbv2-candidate-planner";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
 import type { AnswersV2 } from "../qbv2-rules";
@@ -45,6 +46,12 @@ export type CandidateDigitalPresenceIndexV3 = DigitalPresenceIndex & {
   readonly observableApplicableDimensions: readonly DigitalDimensionId[];
   readonly coverageDenominator: number;
   readonly dimensionObservability: readonly CandidateDimensionObservabilityV3[];
+};
+
+export type RepresentativeCandidateDigitalPresenceIndexV3 = CandidateDigitalPresenceIndexV3 & {
+  readonly coverageBasis: "applicable_dimensions";
+  readonly applicableCoverage: number;
+  readonly observableCoverage: number;
 };
 
 const round2 = (value: number) => Math.round(value * 100) / 100;
@@ -112,4 +119,39 @@ export function computeCandidateDigitalPresenceIndexV3(scoring: DiagnosticScorin
   const byId = new Map(scoring.dimensions.map((item) => [item.id, item]));
   const rawScore = sufficient ? base.scoredDimensions.reduce((total, id) => total + byId.get(id)!.score!, 0) / base.scoredDimensions.length : null;
   return { ...base, rawScore, displayScore: rawScore === null ? null : displayScoreForBands(rawScore, model.bands), coverage, sufficient, unobservableApplicableDimensions, observableApplicableDimensions, coverageDenominator: observableApplicable, dimensionObservability, observabilityModel: CANDIDATE_OBSERVABILITY_MODEL_IDENTITY_V3 };
+}
+
+/** Evaluate a versioned representativeness proposal without changing the active v2 index or its result contract. */
+export function computeRepresentativeCandidateDigitalPresenceIndexV3(
+  scoring: DiagnosticScoringView,
+  calibration: CandidateCalibrationV3,
+  options: { readonly prelaunch?: boolean } = {},
+  answers: AnswersV2 = {},
+  budget?: RouteBudgetV1,
+): RepresentativeCandidateDigitalPresenceIndexV3 {
+  if (calibration.overall.coverageBasis !== "applicable_dimensions") {
+    throw new Error("The representative index requires an applicable-dimensions coverage model.");
+  }
+  const observable = computeCandidateDigitalPresenceIndexV3(scoring, options, calibration.overall, answers, budget);
+  const applicableCoverage = observable.applicable === 0 ? 0 : round2(observable.assessed / observable.applicable);
+  const observableCoverage = observable.coverage;
+  const sufficient = !options.prelaunch
+    && observable.assessed >= calibration.overall.minScoredDimensions
+    && observable.applicable > 0
+    && observable.assessed / observable.applicable >= calibration.overall.minCoverage;
+  const byId = new Map(scoring.dimensions.map((item) => [item.id, item]));
+  const rawScore = sufficient
+    ? observable.scoredDimensions.reduce((total, id) => total + byId.get(id)!.score!, 0) / observable.scoredDimensions.length
+    : null;
+  return {
+    ...observable,
+    rawScore,
+    displayScore: rawScore === null ? null : displayScoreForBands(rawScore, calibration.overall.bands),
+    coverage: applicableCoverage,
+    sufficient,
+    coverageDenominator: observable.applicable,
+    coverageBasis: "applicable_dimensions",
+    applicableCoverage,
+    observableCoverage,
+  };
 }

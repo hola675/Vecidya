@@ -39,6 +39,8 @@ export type OverallBands = { readonly developingFrom: number; readonly solidFrom
 export type OverallIndexModel = {
   readonly minScoredDimensions: number;
   readonly minCoverage: number;
+  /** Candidate-only basis for declaring a global result representative; omitted means historical observable coverage. */
+  readonly coverageBasis?: "observable_dimensions" | "applicable_dimensions";
   readonly bands: OverallBands;
   readonly confidence: { readonly mediumCoverage: number; readonly highCoverage: number; readonly share: number };
 };

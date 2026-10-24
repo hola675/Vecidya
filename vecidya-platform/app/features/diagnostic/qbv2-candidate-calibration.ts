@@ -13,8 +13,8 @@ import type { SeverityBands } from "./qbv2-priorities";
  * Static, immutable and deterministic; private (not barrel-exported) and not a runtime diagnostic version.
  * Every adopted numeric set is versioned and kept: v1 (R8-A baseline) stays reproducible after v2 (R8-B).
  */
-export type CandidateCalibrationIdentityV3 = "diag-v3-candidate-calibration-v1" | "diag-v3-candidate-calibration-v2";
-export type CandidateCalibrationVersionV3 = 1 | 2;
+export type CandidateCalibrationIdentityV3 = "diag-v3-candidate-calibration-v1" | "diag-v3-candidate-calibration-v2" | "diag-v3-candidate-calibration-v3";
+export type CandidateCalibrationVersionV3 = 1 | 2 | 3;
 
 /**
  * R3 neutral states never contribute. This numeric/null partition is frozen at the type level: candidate
@@ -81,6 +81,29 @@ export const CANDIDATE_CALIBRATION_R8B_V2: CandidateCalibrationV3 = deepFreeze({
   overall: {
     minScoredDimensions: 3,
     minCoverage: 1 / 3,
+    bands: { developingFrom: 41, solidFrom: 71 },
+    confidence: { mediumCoverage: 0.5, highCoverage: 0.75, share: 0.5 },
+  },
+});
+
+/**
+ * v3 — DIAG-MOTOR-02 proposal, not adopted by the active pipeline. It keeps the certified contribution,
+ * dimension-confidence, equal-mean, band, and overall-confidence rules. It raises the global-index coverage floor
+ * to 60% of ALL applicable dimensions (at least three readings), so an applicable gap cannot disappear from the
+ * displayed coverage denominator. It is evaluated beside v2 on the reviewed corpus; methodology review is required
+ * before changing CANDIDATE_CALIBRATION_V3 or the Worker result contract.
+ */
+export const CANDIDATE_CALIBRATION_REPRESENTATIVE_V3: CandidateCalibrationV3 = deepFreeze({
+  identity: "diag-v3-candidate-calibration-v3",
+  version: 3,
+  capabilityContribution: { strong: 1, established: 0.75, partial: 0.5, weak: 0.25, dependency: 0.25, missing: 0, constraint: null, uncertainty: null, not_applicable: null },
+  scoring: { directWeight: 1, supportingWeight: 0.5, supportingCapRatio: 0.5 },
+  dimensionConfidence: { supportingWeight: 0.5, mediumAt: 1, highAt: 2 },
+  severity: { materialBelow: 50, moderateBelow: 75 },
+  overall: {
+    minScoredDimensions: 3,
+    minCoverage: 0.6,
+    coverageBasis: "applicable_dimensions",
     bands: { developingFrom: 41, solidFrom: 71 },
     confidence: { mediumCoverage: 0.5, highCoverage: 0.75, share: 0.5 },
   },

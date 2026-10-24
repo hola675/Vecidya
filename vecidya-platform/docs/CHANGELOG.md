@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-24 — DIAG-MOTOR-02 — candidata de representatividad (solo local)
+
+- Se añade `diag-v3-candidate-calibration-v3`, con umbral propuesto de 60% de dimensiones aplicables y al menos tres puntuaciones. Conserva contribuciones, pesos, confianza, media, bandas y reglas V2; separa cobertura aplicable y observable.
+- El índice candidato v2 sigue activo. V3 es opt-in para comparación metodológica y no cambia el contrato Worker, el resumen ni los resultados públicos.
+- La propuesta produce índice en un fixture completo (8/8), y se abstiene con 4/7 puntuadas donde v2 sí emitía índice; en 60 variantes existentes también se abstiene. `test:unit` 1676/1676, typecheck, build y diff-check PASS. Sin cambio de puntuación dimensional, migraciones, deploy o publicación. Evidencia y límites en `TESTING.md`.
+
 ## 2026-10-24 — DIAG-MOTOR-01 — banco de evidencia y selección adaptativa (solo local)
 
 - QA-03B añade preguntas directas para estimación, registro y revisión de resultados, más una pregunta de recuperación cuando se desconoce la tasa de conversión. Registrar resultados no calcula una tasa.
