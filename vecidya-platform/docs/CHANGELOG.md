@@ -4,7 +4,7 @@
 
 - QA-03B adopta la calibración v4 en `/diagnostico` y en el replay del Worker. El recorrido presenta cuatro rangos inclusivos iguales (0–25, 26–50, 51–75, 76–100), conserva tres áreas/60% de cobertura y no calcula índice cuando falta evidencia.
 - Se conservan 60 rutas y 59 patrones de respuesta. Se versionan pipeline, sesión y replay; el resumen anónimo mantiene 12 claves y el informe pasa a 1.2 con compatibilidad para 1.0/1.1.
-- Pruebas sintéticas acreditan comportamiento determinista, no validez empírica. Sin migraciones. PR nuevo de activación pendiente; R2 aún no provisionado, sin deploy ni publicación fechada. Validaciones y límites en `TESTING.md` → DIAG-MOTOR-04.
+- Pruebas sintéticas acreditan comportamiento determinista, no validez empírica. Sin migraciones. Integrada en PR #97, merge `62822ee`. R2 aún no provisionado; producción sigue en 0.7.0 y no hay HTTP pública fechada para este código. Validaciones y límites en `TESTING.md` → DIAG-MOTOR-04.
 
 ## 2026-10-24 — UX-PREMIUM-02B (refinamiento de Servicios)
 

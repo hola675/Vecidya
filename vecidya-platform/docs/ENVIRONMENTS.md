@@ -10,11 +10,11 @@ El package local también informa `0.6.1`, pero coincidencia de versión no demu
 
 # Entornos
 
-## Estado remoto vigente — 0.7.0 desplegado; 0.7.1 y MiniWeb pendientes de R2 (2026-10-24)
+## Estado remoto vigente — producción 0.7.0; código 0.7.2 integrado, pendiente de publicación y R2 (2026-10-24)
 
 **HTTP anónimo con TLS, 2026-10-24T01:32Z:** producción y staging sirvieron `/`, `/diagnostico` y `/diagnostico/metodologia` con `200`, versión `0.7.0` y `© 2026 Vecidya`; `/__dev/diagnostico/qa03b` devolvió `404` en ambos. En producción, un recorrido sintético anónimo de 12 respuestas obtuvo HTTP 200 del replay y el contrato `anonymous-diagnostic-summary-v1`; no pidió informe ni envió correo. No es prueba autenticada ni valida datos de clientes.
 
-**Código pendiente:** `origin/main@7267628` integra PR #49–#55 y #60–#61. La última comprobación HTTP fechada (01:32Z del 2026-10-24, anterior a estos merges) encontró Workers `0.7.0`; no se realizó otra comprobación pública en este checkpoint. La candidata local `0.7.1` corrige la impresión del informe; no se ha desplegado. Una consulta Cloudflare API de solo lectura el 2026-10-24 devolvió HTTP 403/código 10042: R2 debe habilitarse desde el Dashboard. Los buckets privados `vecidya-business-media-staging`/`vecidya-business-media-prod` siguen pendientes; no se crearon recursos remotos.
+**Código integrado:** `origin/main@62822ee` incluye la candidata 0.7.2 y PR #97 (QA-03B calibration v4); CI del PR terminó en verde. La última comprobación HTTP anónima fechada (2026-10-24T01:32Z, previa a estos merges) encontró Workers `0.7.0`; no se ha vuelto a comprobar el dominio tras el merge. El código 0.7.2 no está desplegado ni publicado. El cambio QA-03B no añade migraciones; el ledger remoto continúa documentado en `0000–0026`. Una consulta Cloudflare API de solo lectura el 2026-10-24 devolvió HTTP 403/código 10042: R2 debe habilitarse desde el Dashboard. Los buckets privados `vecidya-business-media-staging`/`vecidya-business-media-prod` siguen pendientes; no se crearon recursos remotos.
 
 **D1:** las bases `vecidya-staging` (`d4af6ebc-97c5-42f6-ad3a-51551021e591`) y `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`) tienen ledger `0000–0026`. Bookmarks tomados antes de `0024–0026`: staging `000000af-00000000-0000510e-ef3472f2d4370dd4d05ccd9d9a11e936`; producción `0000050b-00000000-0000510e-866b9f270eb93a419fd594630537ccb3`. Wrangler `migrations list` confirmó «No migrations to apply» para ambos el 2026-10-24. No se escribieron fixtures remotas ni se ejecutó restore.
 

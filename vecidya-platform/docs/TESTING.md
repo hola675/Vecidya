@@ -1,5 +1,14 @@
 # Pruebas
 
+## DIAG-MOTOR-04 — activación QA-03B y rangos globales (2026-10-24)
+
+**Pruebas focalizadas locales:** 11 archivos de diagnóstico e informe, **59/59 PASS**. Se verifican los límites 0–25/26–50/51–75/76–100, cobertura mínima y abstención, las 60 rutas sintéticas, trazabilidad, privacidad, replay Worker, resumen e informe v1.2. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS.
+
+**E2E locales ya certificados en este checkpoint:** ACT-04 Worker Wrangler 3/3; el recorrido QA-03B en Cloudflare Vite Worker terminó PASS con D1 temporal aislada y migraciones locales `0000–0027`, seis rutas sintéticas, edición/reanudación, concurrencia, resumen anónimo, verificación local del informe identificado y PDF sin páginas vacías. No se usaron D1 remota, correo real o publicación.
+
+**CI del PR #97:** run `40105749133` terminó `success`; typecheck, build, regresión focal Diagnóstico/Aprende y regresión unitaria completa PASS en el SHA `2b6a45d4be745f342ca8e5e168bfb0b1b454d522`. PR #97 integrado en `main@62822ee`. Sin migración ni deploy; R2 sigue pendiente. Los fixtures sintéticos no prueban calibración empírica, validez predictiva ni aceptación humana.
+
+
 ## DIAG-VISUAL-ACCESSIBILITY-03B — semántica del cuestionario (2026-10-24)
 
 En `feat/diagnostic-accessibility-03b`, el H1 de pregunta se separó de `<legend>` y el `<fieldset>` ahora obtiene su nombre accesible desde el H1 mediante `aria-labelledby`. La jerarquía visible no cambió. Inspección manual en QA-03B local: el árbol expone el H1 y un grupo con el mismo nombre; Tab enfoca el primer checkbox, su indicador de foco es visible, Space lo activa y el estado queda marcado. No se avanzó el recorrido ni se usaron datos de negocio.
