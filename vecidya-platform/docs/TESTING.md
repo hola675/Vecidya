@@ -2,7 +2,7 @@
 
 ## DIAG-MOTOR-01 — banco evaluativo y selección adaptativa (2026-10-24)
 
-**RAN local en `origin/main@15d5190` + DIAG-MOTOR-01:** `pnpm run test:unit` — **1668/1668 PASS**; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. El build conserva los avisos locales de secretos opcionales ausentes y dos imports dinámicos agrupados con imports estáticos; no se leyeron ni configuraron secretos.
+**RAN local en `origin/main@ba4a6a8` + DIAG-MOTOR-01:** `pnpm run test:unit` — pendiente de repetición tras reconciliar el contrato QA-03B actualizado; typecheck/build también se repetirán. La validación previa sobre `origin/main@612775a` reportó 1668/1668 unitarias y ACT-04 Worker E2E 3/3 PASS. El E2E de desarrollo del informe QA-03B expiró esperando `domcontentloaded`.
 
 `qa03b-motor-01.test.ts` prueba tres fuentes directas y versionadas de medición/seguimiento, recuperación alternativa tras desconocer la tasa (registrar resultados no se trata como tasa), elegibilidad para negocios físicos, claridad de oferta tras confirmar una ficha y fricción de citas solo ante fuga demostrada. La matriz de 20 perfiles y sus 60 variantes termina sin hard-cap; los 20 perfiles base generan 7 puntuaciones dimensionales frente a 3 de la línea base previa, y todos mantienen índice global pendiente. P03/P10 completan sus rutas sin `budget_blocked`. Fixtures sintéticos, sin exactitud empírica; no se alteraron fórmulas ni calibración.
 
@@ -86,6 +86,12 @@ La rama `feat/diagnostic-visual-assets-01` se sincronizó por fast-forward con `
 ## ADMIN-LICENSE-UX-001 — asignación por cliente y negocio (2026-10-23)
 
 La vista `/app/internal/licenses` agrupa negocios bajo el cliente responsable y deja la organización como término técnico “espacio de trabajo”. Para esta versión, cada espacio contiene un perfil de negocio único; la licencia se asocia a ese espacio y se muestra como licencia del negocio. Sobre `feat/platform-admin-license-ux` actualizado con `origin/main@3e6b9b1`, `platform-admin-global-certification-check.mjs` **PASS** con Worker/D1 efímeros; verificó el copy cliente→negocios, acciones de licencia/auditoría, invitaciones, concurrencia, roles, ciclo de vida, capacitación, MiniWeb y eliminación verificada de la D1. `app-dashboard-redesign-check.mjs` **PASS** con Edge local en `/app` y `/app/internal`, 320/390/768/980/1366 px, drawers abren/cierran y D1 aislada eliminada. `typecheck`, `build` y `git diff --check` **PASS** en el corte actual. Suite unitaria completa no repetida. Sin D1 remota ni deploy.
+
+## DIAG-QA-03B-ENGINE-REFINEMENT-02 — matriz de 20 casos (2026-10-23)
+
+`qa03b-engine-refinement.test.ts`: la pregunta de medición produce evidencia directa solo para `consistent`, `partial` y `none`; `unknown`/`not_enough_activity` no generan nota, y no se pregunta para actividad en pausa, preparación o estado desconocido. Incluye regresión para el tema narrativo de medición: las respuestas puntuadas conservan el tópico en la presentación y no generan una frase vacía. El contrato del resumen conserva la etiqueta legible `overall.label` y no expone el código `publicLabel`. El test recorre 20 escenarios con un turno por pregunta, calcula resultado/presentación/informe por caso y comprueba límites del índice y prioridades sustentadas. En la reconciliación actual: 15/15 pruebas focales, `pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS**. La validación previa registró las unitarias completas 1659/1659 y QA-03B Worker/replay/informe identificado 16/16 PASS.
+
+Artefactos temporales de inspección visual fuera del repositorio: `C:\Users\Admin\.codex\visualizations\2026\10\23\01a169ea-0953-7db1-9cca-175a0e3fcce9\qa03b-20-casos.html` y `informe-validacion-qa03b-20-casos.pdf`. La metodología candidata y ambos artefactos declaran v3.1. La matriz dio 5 BIEN, 7 REGULAR y 8 pendientes; 12 índices calculados, 8 puntuaciones directas de medición y entre 8–19 preguntas por recorrido. Todos los datos son sintéticos. El PDF tiene 41 páginas, renderizado/revisado visualmente; la vista HTML interactiva carga, filtra y despliega respuestas localmente sin errores de consola. Esto no prueba correo/PDF de descarga por el Worker, publicación, comportamiento real ni métricas reales.
 
 ## APP-MINI-REDESIGN-01 — dashboards cliente e interno (2026-10-23)
 

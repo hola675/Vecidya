@@ -22,7 +22,7 @@ export const CANDIDATE_RESULT_IDENTITY_V3 = Object.freeze({
   answerSchema: ANSWER_SCHEMA_ID,
   context: CONTEXT_ID,
   planner: CANDIDATE_PLANNER_IDENTITY_V3,
-  evidence: "r3-evidence-v3",
+  evidence: "r3-evidence-v4",
   applicability: APPLICABILITY_ID,
   scoring: SCORING_ID,
   calibration: CANDIDATE_CALIBRATION_IDENTITY_V3,
@@ -32,7 +32,7 @@ export const CANDIDATE_RESULT_IDENTITY_V3 = Object.freeze({
   overall: CANDIDATE_CALIBRATION_IDENTITY_V3,
   recommendations: "candidate-recommendations-r6+operation-history-v1",
   commercial: CANDIDATE_COMMERCIAL_IDENTITY_V3,
-  methodology: "diagnostic-methodology-3.0",
+  methodology: "diagnostic-methodology-3.1",
   report: "diagnostic-report-v1.0",
 } as const);
 

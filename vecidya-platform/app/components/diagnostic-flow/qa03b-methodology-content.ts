@@ -1,4 +1,4 @@
-export const CANDIDATE_METHODOLOGY_IDENTITY_V3 = "diagnostic-methodology-3.0" as const;
+export const CANDIDATE_METHODOLOGY_IDENTITY_V3 = "diagnostic-methodology-3.1" as const;
 
 export const CANDIDATE_METHODOLOGY_SECTIONS_V3 = [
   {
@@ -27,6 +27,8 @@ export const CANDIDATE_METHODOLOGY_SECTIONS_V3 = [
       "El porcentaje, la confianza, las prioridades y la cobertura son lecturas distintas. La confianza no multiplica ni modifica la puntuación.",
       "Cuando varias respuestas directas observan una misma área, la puntuación resume sus aportes mediante una media normalizada y conserva las diferencias respaldadas entre respuestas.",
       "Antes del lanzamiento, o cuando no se alcanza el mínimo de evidencia, el índice y la banda no existen: la interfaz los deja sin porcentaje y explica por qué.",
+      "En la versión 3.1, la medición de actividad operativa se basa en cómo la persona declara que registra y revisa resultados recientes; no verifica analítica, tráfico, ventas ni causalidad externa.",
+      "No tener actividad reciente suficiente o no conocer la respuesta no cuenta como evidencia negativa ni recibe puntuación.",
     ],
   },
   {
@@ -72,6 +74,7 @@ export const CANDIDATE_METHODOLOGY_SECTIONS_V3 = [
     summary: "Las pruebas deterministas del código y sus contratos verifican reproducibilidad y consistencia interna; no prueban validez predictiva con resultados empresariales reales.",
     points: [
       "La evaluación depende de las respuestas y no inspecciona perfiles, sitios, cuentas ni datos externos por su cuenta.",
+      "La pregunta de medición es un autorreporte; no confirma si una herramienta está instalada, si los datos están completos o si las decisiones produjeron mejoras.",
       "El recorrido puede dejar incertidumbres, áreas sin evidencia y dimensiones no observables. Conviene confirmar esos límites antes de tomar decisiones.",
     ],
   },

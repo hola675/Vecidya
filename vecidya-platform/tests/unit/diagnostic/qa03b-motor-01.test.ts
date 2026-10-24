@@ -15,7 +15,7 @@ test("QA-03B measurement probes are versioned, direct, and distinguish unknown f
   const sources = bank.filter((question) => question.evidenceMigration === "migrated"
     && question.evidenceV3?.dimensions.some((item) => item.dimension === "measurement_optimization" && item.directness === "direct"));
   assert.deepEqual(sources.map((question) => question.id).sort(), [
-    "q2_measurement_rate_estimate", "q2_measurement_result_recording", "q2_measurement_review_cycle",
+    "q2_measurement_practice", "q2_measurement_rate_estimate", "q2_measurement_result_recording", "q2_measurement_review_cycle",
   ]);
   const estimate = sources.find((question) => question.id === "q2_measurement_rate_estimate")!;
   assert.equal(estimate.version, 1);

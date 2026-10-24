@@ -1,6 +1,6 @@
 ## DIAG-MOTOR-01 — banco QA-03B y selección adaptativa (2026-10-24)
 
-Checkpoint local en `feat/diagnostic-motor-01`, iniciado desde `origin/main@2a58dc0` y reconciliado con `origin/main@15d5190`. El banco QA-03B v8 añade tres preguntas directas sobre medición/seguimiento y una recuperación al desconocer la tasa; la respuesta evalúa registro, no calcula conversión. La elegibilidad de presencia/oferta usa contexto vigente y evidencia de ficha existente. El planificador permite contexto central y desbloqueos en reserva sin superar 24 preguntas; P03/P10 ya no quedan `budget_blocked`. Identidades de banco, planificador, sesión y replay avanzan a v8/v4/schema 7/replay v5. No se tocó el banco raíz ni el scoring/calibración; sin migraciones, D1 remota, publicación ni deploy. Evidencia y límite del E2E amplio en `TESTING.md` → DIAG-MOTOR-01; la deuda de suficiencia/representatividad continúa abierta para DIAG-MOTOR-02.
+Checkpoint local en `feat/diagnostic-motor-01`, iniciado desde `origin/main@2a58dc0` y reconciliado con `origin/main@ba4a6a8`. El banco QA-03B v8 añade tres preguntas directas sobre medición/seguimiento y una recuperación al desconocer la tasa; la respuesta evalúa registro, no calcula conversión. La elegibilidad de presencia/oferta usa contexto vigente y evidencia de ficha existente. El planificador permite contexto central y desbloqueos en reserva sin superar 24 preguntas; P03/P10 ya no quedan `budget_blocked`. Identidades combinadas vigentes: banco v8, respuestas v6, scoring v4, planificador v4, sesión/key 7 y replay v5. DIAG-MOTOR-01 no cambia la fórmula ni calibración; sin migraciones, D1 remota, publicación ni deploy. Evidencia y límite del E2E amplio en `TESTING.md` → DIAG-MOTOR-01; la deuda de suficiencia/representatividad continúa abierta para DIAG-MOTOR-02.
 
 ## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
 
@@ -25,6 +25,10 @@ En móvil el estado general y el panorama de áreas se apilan; desde desktop las
 ## UX-PREMIUM-01B — Vecindario y ficha MiniWeb (2026-10-24)
 
 En `feat/app-mini-ux-02c-directory-profiles`, `/vecindario/:slug` gana breadcrumb de retorno, hero editorial y mayor jerarquía para módulos publicados, más un cierre al directorio. Los datos continúan procediendo del snapshot público y la configuración MiniWeb; la preview privada del editor no recibe estilos nuevos. Se corrigieron los selectores CSS del hero/grid para que coincidan con el DOM de `DefaultMiniWebTemplate`. Typecheck, build y diff-check PASS tras la corrección. El E2E MiniWeb quedó bloqueado antes de los casos del perfil porque la D1 local `0000–0027` no tiene `platform_owner_invitation`; no hay evidencia de runtime visual ni respuesta responsive en este corte. Sin deploy.
+
+## DIAG-QA-03B-ENGINE-REFINEMENT-02 — candidato local (2026-10-23)
+
+Integrado por PR #57 en `main`. El motor QA-03B candidate-only agrega una pregunta directa de medición reciente solo para operación, identidades bank v8/answers v6/session 7/replay v5/metodología 3.1 y una regla que exige puntuación con evidencia directa para afirmar prioridades/acciones. Se añadió el tema narrativo de `q2_measurement_practice` y una regresión que comprueba su presencia en la presentación para respuestas puntuadas; el resumen anónimo conserva la etiqueta legible del estado. Los 20 recorridos sintéticos dieron 5 BIEN, 7 REGULAR y 8 pendientes (12 índices; 8 puntuaciones directas de medición; 8–19 preguntas por recorrido). Typecheck, build y pruebas focales PASS. No confundir esta integración con el runtime desplegado: sin deploy, HTTP anónimo fechada, D1 remota, correo real ni publicación.
 
 ## App cliente e interna — revisión visual focal (2026-10-23)
 

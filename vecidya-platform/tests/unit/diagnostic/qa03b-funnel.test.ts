@@ -10,6 +10,7 @@ import {
   validateFunnelIdentificationV1,
 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-funnel.ts";
 import { buildCandidateFunnelPreviewV1 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-funnel-preview.ts";
+import { buildCandidateResultPresentationV3 } from "../../../app/components/diagnostic-flow/qa03b-presentation.ts";
 
 test("DIAG-VISUAL-ASSETS-01: resumen anónimo proyecta ocho áreas allowlisted y conserva ausencia de score", () => {
   const result = buildCandidateFunnelPreviewV1("insufficient-evidence");
@@ -52,11 +53,12 @@ test("DIAG-VISUAL-ASSETS-01: los porcentajes y estados por área se copian sin r
     },
   };
   const summary = buildAnonymousDiagnosticSummaryV2(source);
+  const presentation = buildCandidateResultPresentationV3(source);
 
   assert.equal(summary.score, 62, "el mapper transfiere el valor; no ejecuta scoring");
-  assert.equal(summary.overallStatus, "REGULAR");
-  assert.equal(summary.primaryOpportunity, base.narrative.priorities[0]?.statement.text ?? null);
-  assert.equal(summary.firstRecommendedAction?.title ?? null, base.recommendations.items[0]?.title ?? null);
+  assert.equal(summary.overallStatus, "Áreas que conviene reforzar");
+  assert.equal(summary.primaryOpportunity, presentation.priorities[0]?.statement ?? null);
+  assert.equal(summary.firstRecommendedAction?.title ?? null, presentation.recommendations[0]?.title ?? null);
   assert.ok(summary.limitations.some((item) => /provisional/i.test(item)));
   assert.deepEqual(summary.dimensions.map(({ score, statusLabel, preliminary }) => ({ score, statusLabel, preliminary })), source.narrative.dimensions.map((dimension) => ({
     score: dimension.score,

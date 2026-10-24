@@ -317,7 +317,8 @@ export function buildDiagnosticNarrative(input: NarrativeInput): DiagnosticNarra
 
   // Estado actual: la mejor base observada frente a lo que más necesita trabajo.
   const topStrength = strengthFacts.find((fact) => fact.certainty === "confirmed") ?? strengthFacts[0];
-  const needsWork = primaryConstraint?.dimension ?? facts.find((fact) => fact.type === "weakness" || fact.type === "partial")?.dimension;
+  const needsWork = (primaryConstraint?.certainty === "unknown" ? undefined : primaryConstraint?.dimension)
+    ?? facts.find((fact) => fact.type === "weakness" || fact.type === "partial")?.dimension;
   const currentState = (() => {
     if (context.operationalStatus.status === "unresolved") return block({ id: "current_state", kind: "current_state", text: "El estado actual de tu actividad sigue sin resolver. Las capacidades observadas no confirman por sí solas que esté operando.", certainty: "unknown", sourceContext: ["operationalStatus"] });
     if (context.operationalStatus.status === "resolved" && context.operationalStatus.value === "paused") return block({ id: "current_state", kind: "current_state", text: "Tu actividad está temporalmente en pausa. Este resultado revisa las capacidades observables; la experiencia histórica no demuestra operación actual.", certainty: "confirmed", sourceContext: ["operationalStatus"], sourceQuestionIds: ["q2_operational_status"] });

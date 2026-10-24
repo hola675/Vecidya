@@ -47,7 +47,7 @@ export type SemanticFactType = (typeof SEMANTIC_FACT_TYPES)[number];
 export type FactCertainty = "confirmed" | "likely" | "signal";
 /**
  * `insufficient_evidence`: a direct question was observable here but no reading resulted.
- * `unobservable_in_context`: the bank has no direct question for this context (a bank-scope limit, not a weakness).
+ * `unobservable_in_context`: the bank has no direct question for this specific context (a bank-scope limit, not a weakness).
  * `legitimate_uncertainty`: unobservable because the capability cannot exist yet (pre-launch idea).
  */
 export type EvidenceGapKind = "insufficient_evidence" | "unobservable_in_context" | "legitimate_uncertainty" | "declared_friction_unconfirmed" | "not_applicable";

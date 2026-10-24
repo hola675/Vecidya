@@ -18,6 +18,7 @@ import { CANDIDATE_CALIBRATION_V3, type CandidateCalibrationV3 } from "../qbv2-c
 const CANDIDATE_QUESTION_TOPICS_V3: Readonly<Record<string, string>> = {
   q2_discovery_reliable_reach: "la constancia para llegar a personas nuevas interesadas",
   q2_process_systemization: "la forma de manejar las tareas que se repiten",
+  q2_measurement_practice: "la forma de registrar y revisar los resultados",
 };
 
 export type CandidateNarrativeAndOverallInputV3 = { readonly answers: AnswersV2; readonly calibration?: CandidateCalibrationV3 };
@@ -28,7 +29,7 @@ export type CandidateNarrativeAndOverallV3 = CandidateInterpretationCoreV3 & {
 };
 
 function hasCandidateObservability(index: DigitalPresenceStatus["index"]): index is CandidateDigitalPresenceIndexV3 {
-  return Reflect.get(index, "observabilityModel") === "diag-v3-candidate-context-observability-v1"
+  return Reflect.get(index, "observabilityModel") === "diag-v3-candidate-context-observability-v2"
     && Array.isArray(Reflect.get(index, "dimensionObservability"))
     && Number.isInteger(Reflect.get(index, "coverageDenominator"))
     && Array.isArray(Reflect.get(index, "observableApplicableDimensions"))

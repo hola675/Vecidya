@@ -1,9 +1,9 @@
 /** Identidad del banco QA-03B activo; mantiene separado y legible el banco histórico V3. */
 export const QUESTION_BANK_ID = "reviewed-evidence-v8" as const;
-export const ANSWER_SCHEMA_ID = "qbv2-answers-v5" as const;
+export const ANSWER_SCHEMA_ID = "qbv2-answers-v6" as const;
 export const CONTEXT_ID = "diag-v3-context-operation-history-v4" as const;
 export const APPLICABILITY_ID = "r4-applicability-operation-history-v3" as const;
-export const SCORING_ID = "r3-evidence-v3+r4-applicability-operation-history-v3" as const;
+export const SCORING_ID = "r3-evidence-v4+r4-applicability-operation-history-v3" as const;
 export const PLANNER_ID = "reviewed-evidence-v8+r3+r4-operation-history+candidate-planner-v4" as const;
 export const PIPELINE_ID = "diag-v3-candidate-operation-history-v4" as const;
 export const SESSION_SCHEMA = 7 as const;

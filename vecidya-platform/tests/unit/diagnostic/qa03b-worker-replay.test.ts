@@ -102,7 +102,7 @@ function envelope(session: CandidateSessionV3) {
   };
 }
 
-test("QA-03B v6 keeps earlier storage keys intact and records an ordered replay history", () => {
+test("QA-03B v8 keeps earlier storage keys intact and records an ordered replay history", () => {
   const session = completeSession();
   const replayHistory = (session as CandidateSessionV3 & { readonly replayTranscript?: readonly { readonly questionId: string; readonly mode: string }[] }).replayTranscript;
 

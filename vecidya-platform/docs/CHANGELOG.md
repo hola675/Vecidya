@@ -4,7 +4,7 @@
 
 - QA-03B añade preguntas directas para estimación, registro y revisión de resultados, más una pregunta de recuperación cuando se desconoce la tasa de conversión. Registrar resultados no calcula una tasa.
 - La elegibilidad de presencia/oferta atiende contexto físico y evidencia de ficha existente. El planificador aprovecha reserva restante para contexto central y desbloqueos dentro del hard-cap de 24; P03/P10 completan sin bloqueo espurio por presupuesto. Banco, planificador, sesión y replay se versionan; el banco histórico/raíz no cambia.
-- Evidencia local en la base reconciliada con `origin/main@15d5190`: 1668/1668 unitarias, typecheck, build y diff-check PASS; ACT-04 Worker E2E 3/3 PASS en la validación previa sobre `origin/main@612775a`. El E2E de desarrollo de informe QA-03B expiró esperando `domcontentloaded`; suites unitarias de replay/resumen/informe pasan. Sin cambios de scoring, esquema, datos remotos, versión publicada o despliegue. Ver `TESTING.md` y `STATUS.md`.
+- Evidencia de DIAG-MOTOR-01 en `origin/main@ba4a6a8` se repite tras reconciliar el contrato QA-03B actualizado. La validación previa sobre `origin/main@612775a` reportó 1668/1668 unitarias, typecheck, build, diff-check y ACT-04 Worker E2E 3/3 PASS. El E2E de desarrollo del informe QA-03B expiró esperando `domcontentloaded`; suites unitarias de replay/resumen/informe pasan. Sin D1 remota, versión publicada o despliegue. Ver `TESTING.md` y `STATUS.md`.
 
 ## 2026-10-24 — UX-PREMIUM-02B (refinamiento de Servicios)
 
@@ -97,6 +97,13 @@
 
 - Se añadió `/app/internal/licenses`, con asignación, cambio de plan, suspensión y reactivación por organización. La vista separa workspace, perfil comercial y licencia, y aclara que suspender conserva organización y datos.
 - Las mutaciones exigen `organization:license:update` en el control plane y conservan auditoría. E2E Admin Global y dashboard redesign, typecheck, build y diff-check PASS con Worker/D1 local en `e86fc03`, actualizado con `origin/main@5e26614`. PR pendiente; sin D1 remota ni deploy. Suite unitaria no repetida.
+
+## 2026-10-23 — DIAG-QA-03B-ENGINE-REFINEMENT-02 (candidato local)
+
+- Se agregó una pregunta directa y no técnica para revisar resultados recientes, limitada a actividad operativa; falta de muestra e incertidumbre permanecen neutrales.
+- Se impide presentar una prioridad/recomendación como confirmada sin evidencia directa puntuada y se muestran estados globales con lenguaje legible.
+- Se amplían las identidades candidate-only a bank v8, answers v6, session 7, replay v5 y metodología 3.1; se agrega una matriz interactiva, pregunta por pregunta, de 20 escenarios sintéticos y se genera un informe de revisión de 41 páginas.
+- Resultado sintético: 5 BIEN, 7 REGULAR, 8 pendientes; 12 índices calculados, 8 mediciones con puntuación. QA-03B focal 4/4, replay/informe 16/16 y suite completa 1659/1659; typecheck, build y diff-check PASS. PR #57 integrado. Se añadió el tema narrativo faltante de `q2_measurement_practice` y una prueba de regresión focal PASS. Sin D1 remota, correo, deploy ni publicación.
 
 ## 2026-10-23 — APP-MINI-02C (medios MiniWeb, certificación local; PR #51)
 
