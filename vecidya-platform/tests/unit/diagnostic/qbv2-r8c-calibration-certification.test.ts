@@ -22,10 +22,10 @@ import {
 } from "../../../app/features/diagnostic/contracts";
 
 /**
- * DIAG-V3-R8-C certification gate. R8-C retained every value it owns, so the current calibration stays v2: no
- * artificial v3 identity, v1 and v2 stay reproducible, R8-B parameters are untouched, the legacy runtime and
- * its public helpers are frozen, the candidate stays private, the calibration-contingent assertions are
- * registered and R8-O3/O4/O6 are triaged. The evidence for the decision lives in
+ * DIAG-V3-R8-C certification gate. R8-C retained every value it owns, so v2 stays active and reproducible.
+ * DIAG-MOTOR-02 adds a separate, inactive representativeness proposal v3; it does not alter R8-owned scoring,
+ * confidence, bands, legacy runtime or public helpers. R8-O4/O6 remain gated from activation pending review.
+ * The evidence for the R8-C decision lives in
  * `qbv2-r8c-overall-calibration.test.ts`.
  */
 
@@ -33,10 +33,10 @@ const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf
 const values = ({ identity: _i, version: _v, ...rest }: CandidateCalibrationV3) => JSON.parse(JSON.stringify(rest));
 const deepFrozen = (value: unknown): boolean => value === null || typeof value !== "object" || (Object.isFrozen(value) && Object.values(value).every(deepFrozen));
 
-test("R8-C-CERT: the current calibration remains v2 — no artificial v3; v1 and v2 stay immutable and reproducible", () => {
+test("R8-C-CERT: v2 remains active; v1 and v2 stay immutable, while the DIAG-MOTOR-02 proposal remains separate", () => {
   assert.equal(CANDIDATE_CALIBRATION_V3, CANDIDATE_CALIBRATION_R8B_V2);
   assert.deepEqual([CANDIDATE_CALIBRATION_IDENTITY_V3, CANDIDATE_CALIBRATION_VERSION_V3], ["diag-v3-candidate-calibration-v2", 2]);
-  assert.doesNotMatch(read("../../../app/features/diagnostic/qbv2-candidate-calibration.ts"), /diag-v3-candidate-calibration-v3/, "no version without a change (§40)");
+  assert.match(read("../../../app/features/diagnostic/qbv2-candidate-calibration.ts"), /diag-v3-candidate-calibration-v3/, "the separately reviewed proposal has an explicit version");
   assert.ok(deepFrozen(CANDIDATE_CALIBRATION_BASELINE_V1) && deepFrozen(CANDIDATE_CALIBRATION_R8B_V2));
   assert.deepEqual(values(CANDIDATE_CALIBRATION_BASELINE_V1), values(sharedReferenceCalibrationV3()), "v1 still reproduces the shared reference");
   assert.deepEqual(buildR8HandoffV3().calibration, { identity: "diag-v3-candidate-calibration-v2", version: 2 });

@@ -3,6 +3,8 @@ import test from "node:test";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "../../../app/features/diagnostic/qa03b/bank";
 import { runCandidateDiagnosticPipelineV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-pipeline";
 import { DIGITAL_DIMENSION_IDS } from "../../../app/features/diagnostic/qbv2-dimensions";
+import { CANDIDATE_CALIBRATION_REPRESENTATIVE_V3 } from "../../../app/features/diagnostic/qbv2-candidate-calibration";
+import { computeRepresentativeCandidateDigitalPresenceIndexV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-overall";
 import { QA03B_PROFILE_CASES, qa03bProfileAnswerScript } from "./qa03b-profile-case-matrix";
 import { QA03B_KNOWLEDGE_LEVELS, QA03B_PROFILE_KNOWLEDGE_VARIANTS } from "./qa03b-profile-knowledge-variants";
 import { buildCandidateDiagnosticReportV1, buildCandidateResultPresentationV3 } from "../../../app/components/diagnostic-flow/qa03b-presentation";
@@ -62,10 +64,22 @@ test("20 perfiles sintéticos recorren QA-03B con respuestas explícitas y una p
   }
   const completed = QA03B_PROFILE_CASES.map((profile) => ({ profile, ...runProfile(profile) }));
   assert.ok(completed.every(({ asked }) => asked.length > 0 && new Set(asked.map((item) => item.questionId)).size === asked.length));
-  assert.ok(completed.every(({ result }) => result.plan.completion.ready && !result.plan.completion.hardCapReached));
+  assert.ok(completed.every(({ result }) => result.plan.completion.ready && !result.plan.completion.hardCapReached),
+    JSON.stringify(completed.filter(({ result }) => !result.plan.completion.ready || result.plan.completion.hardCapReached).map(({ profile, result }) => ({ id: profile.id, ready: result.plan.completion.ready, hardCapReached: result.plan.completion.hardCapReached, terminalReason: result.plan.completion.terminalReason, routeLength: result.plan.routeLength, useful: result.plan.evidenceSufficiency.usefulQuestionIds, trace: result.plan.trace.filter((entry) => entry.skipReason).map(({ questionId, skipReason }) => [questionId, skipReason]) }))));
   assert.ok(completed.every(({ answers }) => answers.q2_operational_status === "operating" && answers.q2_has_customers === "yes"));
   assert.ok(completed.every(({ result }) => result.overall.index.displayScore === null));
-  assert.equal(completed.reduce((count, { result }) => count + result.scoring.dimensions.filter((dimension) => dimension.score !== null).length, 0), 3);
+  const representativeResults = completed.map(({ profile, result, answers }) => ({
+    id: profile.id,
+    index: computeRepresentativeCandidateDigitalPresenceIndexV3(
+      result.scoring,
+      CANDIDATE_CALIBRATION_REPRESENTATIVE_V3,
+      { prelaunch: result.narrative.lifecycle === "prelaunch" },
+      answers,
+    ),
+  }));
+  assert.deepEqual(representativeResults.filter(({ index }) => index.displayScore !== null), [], "the more conservative candidate also abstains across the sparse 60-variant baseline");
+  assert.equal(completed.reduce((count, { result }) => count + result.scoring.dimensions.filter((dimension) => dimension.score !== null).length, 0), 7,
+    JSON.stringify(completed.flatMap(({ profile, result }) => result.scoring.dimensions.filter((dimension) => dimension.score !== null).map(({ id, score, confidence }) => ({ profile: profile.id, dimension: id, score, confidence: confidence.level })))));
   assert.ok(completed.every(({ result }) => result.scoring.dimensions.every((dimension) => dimension.score === null || dimension.state == null)));
   assert.equal(completed.filter(({ result }) => result.plan.evidenceSufficiency.unresolvedApplicableDimensions.length > 0).length, 19);
   assert.ok(completed.every(({ result }) => result.plan.evidenceSufficiency.terminalReason === "no_useful_questions"));
@@ -77,7 +91,7 @@ test("las autoevaluaciones de IA/digital no se confunden con dimensiones calibra
   assert.equal(DIGITAL_DIMENSION_IDS.includes("ai_maturity" as never), false);
   assert.equal(DIGITAL_DIMENSION_IDS.includes("cybersecurity" as never), false);
   assert.equal(REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.some((question) => /^q2_ai(?:_|$)/i.test(question.id) || question.prompt.toLowerCase().includes("inteligencia artificial")), false);
-  assert.equal(REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.some((question) => question.evidenceV3?.dimensions.some((dimension) => dimension.dimension === "measurement_optimization" && dimension.directness === "direct")), false);
+  assert.equal(REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.some((question) => question.evidenceV3?.dimensions.some((dimension) => dimension.dimension === "measurement_optimization" && dimension.directness === "direct")), true);
 });
 
 test("QA-03C: el contrato de informe conserva las prioridades semánticas de la presentación", () => {
@@ -103,7 +117,7 @@ test("60 variantes por nivel de conocimiento recorren el motor sin reutilizar au
         assert.ok(selected.length > 0 && selected.every((value) => definition.options.some((option) => option.value === value)), `${variant.id}: invalid authored response for ${questionId}`);
       }
       assert.equal(variant.unknownByDesignQuestionIds.includes("q2_discovery_reliable_reach"), true);
-      assert.deepEqual(variant.modeledAssumptionQuestionIds.includes("q2_goal"), variant.knowledgeLevel === "informado");
+      assert.deepEqual(variant.modeledAssumptionQuestionIds.includes("q2_goal"), variant.knowledgeLevel !== "desconocedor");
       assert.equal(variant.modeledAssumptionQuestionIds.includes("q2_process_systemization"), variant.knowledgeLevel === "informado");
       assert.equal("digitalSelfRating" in variant.answerScript || "aiSelfRating" in variant.answerScript, false);
     }
@@ -126,10 +140,10 @@ test("60 variantes por nivel de conocimiento recorren el motor sin reutilizar au
     assert.equal(informed.plan.trace.find((entry) => entry.questionId === "q2_digital_tools_in_use")?.skipReason, "base_budget");
     for (const level of ["parcial", "desconocedor"] as const) {
       const result = completedById.get(`${profileId}-${level}`)!;
-      assert.equal(result.plan.evidenceSufficiency.terminalReason, "no_useful_questions");
+      assert.equal(result.plan.evidenceSufficiency.terminalReason, level === "parcial" ? "budget_blocked" : "no_useful_questions");
       assert.equal(result.plan.evidenceSufficiency.sufficient, false);
       assert.ok(result.plan.evidenceSufficiency.unresolvedApplicableDimensions.length > 0);
-      assert.equal(result.plan.evidenceSufficiency.usefulQuestionsRemaining, false);
+      assert.equal(result.plan.evidenceSufficiency.usefulQuestionsRemaining, level === "parcial");
     }
   }
   for (const level of QA03B_KNOWLEDGE_LEVELS) {

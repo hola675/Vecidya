@@ -15,6 +15,11 @@ import {
 
 /** Versión de la estructura del informe; independiente de la metodología y de la aplicación. */
 export const REPORT_VERSION = "1.0" as const;
+/** QA-03B candidate report adds answer-level provenance and an explicit verification check. */
+export const CANDIDATE_REPORT_VERSION = "1.1" as const;
+export function isSupportedDiagnosticReportVersion(value: unknown): value is typeof REPORT_VERSION | typeof CANDIDATE_REPORT_VERSION {
+  return value === REPORT_VERSION || value === CANDIDATE_REPORT_VERSION;
+}
 /** Objetivo editorial: todo el contenido en tres hojas. Un caso excepcional puede usar una cuarta antes que sacrificar legibilidad (ver `REPORT_MAX_PAGE_COUNT` y el piso tipográfico en `diagnostic-report.tsx`). */
 export const REPORT_PAGE_COUNT = 3 as const;
 /** Techo real: una cuarta hoja solo cuando el contenido no cabe en tres ni en el piso tipográfico mínimo. Nunca una quinta. */
@@ -96,6 +101,9 @@ export type DiagnosticReportV1 = {
   readonly recommendations: readonly {
     readonly step: number; readonly title: string; readonly area: string | null; readonly tag: string;
     readonly whatToImprove: string; readonly whyItMatters: string; readonly expectedOutcome: string;
+    readonly evidence?: readonly { readonly question: string; readonly answer: string }[];
+    readonly verificationStatus?: string;
+    readonly howToVerify?: string;
     readonly conditions?: readonly string[];
     readonly solution: { readonly label: string; readonly description: string } | null;
   }[];
@@ -111,7 +119,8 @@ export type DiagnosticReportV1 = {
 /** Contenido que comparten el informe legacy y la adaptación candidate-only. */
 export type DiagnosticReportContentV1 = Omit<DiagnosticReportV1, "commercialRecommendation" | "vecidyaHelp">;
 
-export type CandidateDiagnosticReportV1 = Omit<DiagnosticReportContentV1, "dimensions" | "identity"> & {
+export type CandidateDiagnosticReportV1 = Omit<DiagnosticReportContentV1, "dimensions" | "identity" | "reportVersion"> & {
+  readonly reportVersion: typeof REPORT_VERSION | typeof CANDIDATE_REPORT_VERSION;
   /** Momento real en que terminó el cuestionario; distinto de cuándo se generó este informe. */
   readonly completedAt: string;
   readonly completedLabel: string;

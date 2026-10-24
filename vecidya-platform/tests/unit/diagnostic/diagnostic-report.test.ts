@@ -4,7 +4,7 @@ import { test } from "node:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { buildDiagnosticReport, CANONICAL_REPORT_PAPER, DiagnosticReport, REPORT_MAX_PAGE_COUNT, REPORT_PAGE_COUNT, REPORT_PATH, REPORT_VERSION, reportFileName } from "../../../app/components/diagnostic-report/index.ts";
+import { buildDiagnosticReport, CANONICAL_REPORT_PAPER, CANDIDATE_REPORT_VERSION, DiagnosticReport, isSupportedDiagnosticReportVersion, REPORT_MAX_PAGE_COUNT, REPORT_PAGE_COUNT, REPORT_PATH, REPORT_VERSION, reportFileName } from "../../../app/components/diagnostic-report/index.ts";
 import { packBlocks, REPORT_DENSITY_LEVELS } from "../../../app/components/diagnostic-report/diagnostic-report.tsx";
 import { COMMERCIAL_ROLE_DISPLAY, PRIORITY_SLOT_DISPLAY } from "../../../app/components/diagnostic-result/index.ts";
 import { DIGITAL_DIMENSION_IDS, GOLDEN_PERSONAS, runDiagnosticPipelineV3, runGoldenPersonaPipeline, type AnswersV2 } from "../../../app/features/diagnostic/index.ts";
@@ -36,6 +36,15 @@ test("12 report versions: report 1.0, methodology 1.0, distinct from the applica
   assert.equal(CANONICAL_REPORT_PAPER, "a4");
   assert.equal(REPORT_PAGE_COUNT, 3, "editorial target");
   assert.equal(REPORT_MAX_PAGE_COUNT, 4, "real ceiling for an exceptional case that needs the typography floor");
+});
+
+test("QA-03B candidate report v1.1 and frozen report v1.0 are both valid stored report versions", () => {
+  assert.equal(REPORT_VERSION, "1.0");
+  assert.equal(CANDIDATE_REPORT_VERSION, "1.1");
+  assert.equal(isSupportedDiagnosticReportVersion("1.0"), true);
+  assert.equal(isSupportedDiagnosticReportVersion("1.1"), true);
+  assert.equal(isSupportedDiagnosticReportVersion("1.2"), false);
+  assert.equal(isSupportedDiagnosticReportVersion(null), false);
 });
 
 test("12 typography floor: the fitter never selects a body size below 8.5pt, and the preset list is exactly the approved one", () => {

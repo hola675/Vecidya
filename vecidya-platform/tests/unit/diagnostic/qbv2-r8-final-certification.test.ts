@@ -11,6 +11,7 @@ import {
   CANDIDATE_CALIBRATION_BASELINE_V1,
   CANDIDATE_CALIBRATION_IDENTITY_V3,
   CANDIDATE_CALIBRATION_R8B_V2,
+  CANDIDATE_CALIBRATION_REPRESENTATIVE_V3,
   CANDIDATE_CALIBRATION_V3,
   CANDIDATE_CALIBRATION_VERSION_V3,
   type CandidateCalibrationV3,
@@ -60,7 +61,7 @@ function plannerInput(answers: AnswersV2, calibration: CandidateCalibrationV3): 
   return Object.assign({ answers }, { calibration }) as CandidateQuestionPlannerInputV3;
 }
 
-test("R8-FINAL: v1/v2 identity, version, every frozen value and immutability are exact", () => {
+test("R8-FINAL: v1/v2 stay frozen and the DIAG-MOTOR-02 v3 proposal is isolated", () => {
   assert.deepEqual([CANDIDATE_CALIBRATION_BASELINE_V1.identity, CANDIDATE_CALIBRATION_BASELINE_V1.version], ["diag-v3-candidate-calibration-v1", 1]);
   assert.deepEqual([CANDIDATE_CALIBRATION_R8B_V2.identity, CANDIDATE_CALIBRATION_R8B_V2.version], ["diag-v3-candidate-calibration-v2", 2]);
   assert.equal(CANDIDATE_CALIBRATION_V3, CANDIDATE_CALIBRATION_R8B_V2);
@@ -79,8 +80,13 @@ test("R8-FINAL: v1/v2 identity, version, every frozen value and immutability are
     severity: { materialBelow: 50, moderateBelow: 75 },
     overall: { minScoredDimensions: 3, minCoverage: 1 / 3, bands: { developingFrom: 41, solidFrom: 71 }, confidence: { mediumCoverage: 0.5, highCoverage: 0.75, share: 0.5 } },
   });
-  assert.ok(deepFrozen(CANDIDATE_CALIBRATION_BASELINE_V1) && deepFrozen(CANDIDATE_CALIBRATION_R8B_V2));
-  assert.doesNotMatch(read("../../../app/features/diagnostic/qbv2-candidate-calibration.ts"), /diag-v3-candidate-calibration-v3/);
+  assert.deepEqual([CANDIDATE_CALIBRATION_REPRESENTATIVE_V3.identity, CANDIDATE_CALIBRATION_REPRESENTATIVE_V3.version], ["diag-v3-candidate-calibration-v3", 3]);
+  assert.deepEqual(CANDIDATE_CALIBRATION_REPRESENTATIVE_V3.overall, {
+    minScoredDimensions: 3, minCoverage: 0.6, coverageBasis: "applicable_dimensions",
+    bands: { developingFrom: 41, solidFrom: 71 }, confidence: { mediumCoverage: 0.5, highCoverage: 0.75, share: 0.5 },
+  });
+  assert.ok(deepFrozen(CANDIDATE_CALIBRATION_BASELINE_V1) && deepFrozen(CANDIDATE_CALIBRATION_R8B_V2) && deepFrozen(CANDIDATE_CALIBRATION_REPRESENTATIVE_V3));
+  assert.match(read("../../../app/features/diagnostic/qbv2-candidate-calibration.ts"), /diag-v3-candidate-calibration-v3/);
 });
 
 test("R8-FINAL: R3→R8 integrated outputs stay reproducible and v1→v2 changes no score or commercial outcome", () => {

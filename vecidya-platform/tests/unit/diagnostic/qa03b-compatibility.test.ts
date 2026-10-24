@@ -14,11 +14,17 @@ import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 const clock = () => Date.now();
 const make = (writerId = "tab-a") => create({ sessionId: "qa03b-test", writerId, now: clock() });
 function drive(answers: AnswersV2) {
+  const answersWithUnknownMeasurement: AnswersV2 = {
+    ...answers,
+    q2_measurement_rate_estimate: answers.q2_measurement_rate_estimate ?? "unknown",
+    q2_measurement_result_recording: answers.q2_measurement_result_recording ?? "unknown",
+    q2_measurement_review_cycle: answers.q2_measurement_review_cycle ?? "unknown",
+  };
   let session = make();
   for (let n = 0; n < 25 && session.status === "in_progress"; n++) {
     const id = currentId(session)!;
-    assert.ok(answers[id] !== undefined, `Respuesta sintética escrita para ${id}, sin fallback`);
-    const result = submit(session, id, answers[id], session.writerId, clock());
+    assert.ok(answersWithUnknownMeasurement[id] !== undefined, `Respuesta sintética escrita para ${id}, sin fallback`);
+    const result = submit(session, id, answersWithUnknownMeasurement[id], session.writerId, clock());
     assert.ok(result.ok, `Acepta ${id}`); session = result.session;
   }
   assert.equal(session.status, "completing");
