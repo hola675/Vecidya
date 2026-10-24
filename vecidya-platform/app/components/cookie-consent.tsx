@@ -33,7 +33,7 @@ export function CookieConsent() {
   const choose = (a: boolean, m: boolean) => {
     const next = createCookiePreferences(a, m);
     try { window.localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(next)); setStorageUnavailable(false); }
-    catch { setStorageUnavailable(true); }
+    catch { setStorageUnavailable(true); setPreferences(null); setAnalytics(false); setMarketing(false); setOpen(true); return; }
     setPreferences(next);
     setAnalytics(a);
     setMarketing(m);
@@ -44,7 +44,7 @@ export function CookieConsent() {
   if (!ready) return null;
   return (
     <>
-      {storageUnavailable && <p role="status">No pudimos guardar tu elección en este navegador. Las preferencias opcionales no se conservarán al recargar.</p>}
+      {storageUnavailable && <p role="status">No pudimos guardar tu elección en este navegador. Las categorías opcionales permanecerán desactivadas hasta que sea posible guardar una decisión.</p>}
       <button className="cookie-preferences-trigger" type="button" onClick={() => { setOpen(true); setConfigure(true); }}>Preferencias de cookies</button>
       {(!preferences || open) && (
         <section aria-label="Preferencias de cookies" className="cookie-consent" role="region">
