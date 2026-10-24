@@ -4036,6 +4036,9 @@ export const learnPathways = [
       "redes-sociales-o-pagina-web-que-necesita-tu-negocio",
       "fotos-y-publicaciones-utiles-sin-ser-disenador",
       "perfil-empresa-google-completar-y-mantener-actualizado",
+      "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+      "como-mantener-actualizada-y-confiable-tu-presencia-digital",
+      "publicidad-digital-como-preparar-una-primera-campana",
     ],
   },
   {
@@ -4057,6 +4060,8 @@ export const learnPathways = [
       "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio",
       "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
       "conectar-herramientas-digitales-sin-complicar-tu-negocio",
+      "como-probar-y-supervisar-automatizaciones-sin-perder-datos",
+      "como-probar-un-asistente-de-ia-con-supervision-humana",
     ],
   },
   {
@@ -4089,6 +4094,16 @@ export const learnPathways = [
       "que-hacer-si-falla-internet-o-el-sistema-de-tu-negocio",
       "como-usar-inteligencia-artificial-en-una-empresa-con-supervision",
       "como-saber-si-una-mejora-tecnologica-funciona-en-tu-empresa",
+    ],
+  },
+  {
+    title: "Entiende y administra tu sitio web",
+    description: "Primero distingue las piezas de una web; después aprende sobre DNS, correo, proveedores y renovaciones.",
+    slugs: [
+      "dominio-hosting-sitio-web-como-funcionan",
+      "dns-https-y-correo-como-se-conecta-tu-dominio",
+      "https-certificados-tls-que-protegen-y-que-no",
+      "como-elegir-y-cambiar-proveedor-de-dominio-y-hosting",
     ],
   },
 ] as const;
