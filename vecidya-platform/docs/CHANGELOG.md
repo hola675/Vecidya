@@ -4,7 +4,7 @@
 
 - QA-03B añade preguntas directas para estimación, registro y revisión de resultados, más una pregunta de recuperación cuando se desconoce la tasa de conversión. Registrar resultados no calcula una tasa.
 - La elegibilidad de presencia/oferta atiende contexto físico y evidencia de ficha existente. El planificador aprovecha reserva restante para contexto central y desbloqueos dentro del hard-cap de 24; P03/P10 completan sin bloqueo espurio por presupuesto. Banco, planificador, sesión y replay se versionan; el banco histórico/raíz no cambia.
-- Evidencia de DIAG-MOTOR-01 en `origin/main@ba4a6a8` se repite tras reconciliar el contrato QA-03B actualizado. La validación previa sobre `origin/main@612775a` reportó 1668/1668 unitarias, typecheck, build, diff-check y ACT-04 Worker E2E 3/3 PASS. El E2E de desarrollo del informe QA-03B expiró esperando `domcontentloaded`; suites unitarias de replay/resumen/informe pasan. Sin D1 remota, versión publicada o despliegue. Ver `TESTING.md` y `STATUS.md`.
+- Evidencia de DIAG-MOTOR-01: 1673/1673 unitarias sobre la base `origin/main@ba4a6a8`; typecheck, build, ACT-04 Worker E2E 3/3 y diff-check PASS sobre `origin/main@9543038`. El E2E de desarrollo del informe QA-03B agotó el tiempo esperando `domcontentloaded`; suites unitarias de replay/resumen/informe pasan. Sin D1 remota, versión publicada o despliegue. Ver `TESTING.md` y `STATUS.md`.
 
 ## 2026-10-24 — UX-PREMIUM-02B (refinamiento de Servicios)
 
