@@ -1,0 +1,29 @@
+name: Aprende external links audit
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: vecidya-platform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check external sources
+        run: node scripts/audit-learn-links.mjs
+      - name: Upload dated audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aprende-link-audit
+          path: vecidya-platform/learn-link-audit.json
+          if-no-files-found: warn
