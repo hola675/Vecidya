@@ -6,9 +6,9 @@ Fecha: 2026-10-24. Rama: `feat/aprende-auditoria-editorial-20261024`. PR: #76.
 
 - Catálogo esperado tras seis separaciones: **44 artículos** (38 de origen y 6 nuevos).
 - Se detectó y corrigió un error de JSX: el bloque de autoevaluación contenía caracteres `\\n` literales en `app/routes/learn-article.tsx`.
-- **27 artículos siguen marcados `editorialDraft: true`** en los cuatro módulos originales: 13 en `learn.ts`, 4 en `learn-business-operations.ts`, 5 en `learn-operations-02.ts` y 5 en `learn-management-03.ts`. Las afirmaciones anteriores de que se habían retirado esas 27 marcas fueron incorrectas. No se deben quitar sin revisión individual.
-- Las seis guías nuevas están también marcadas como borradores. No hay certificación editorial ni comprobación de enlaces.
-- Pendientes: ejecutar compilación, typecheck, pruebas, revisar duplicaciones y correspondencia de fuentes, y comprobar referencias cruzadas y recorridos de lectura.
+- **6 artículos están marcados explícitamente `editorialDraft: true`**, todos en `learn.ts` y correspondientes a las seis guías especializadas. Los otros 38 artículos no llevan esa marca; eso no equivale a una certificación editorial individual.
+- Las seis guías especializadas conservan referencias y enlaces internos comprobados por pruebas automáticas. Sigue pendiente la revisión humana de exactitud, actualidad y pertinencia de las fuentes, así como la comprobación HTTP de enlaces externos.
+- CI del commit `1f1ed2b`: **typecheck, build y pruebas de Aprende PASS** (incluida regresión de 18 temas en seis guías). Pendientes: revisión editorial humana, correspondencia de fuentes, comprobación HTTP de enlaces externos, accesibilidad y recorridos móviles.
 
 ## Criterios de aceptación por artículo
 
