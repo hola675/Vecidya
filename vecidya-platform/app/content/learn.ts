@@ -1190,7 +1190,7 @@ export const learnArticles: LearnArticle[] = [
       { heading: "Lista de comprobación", paragraphs: ["El DNS ayuda a localizar servicios asociados a un dominio.","HTTPS protege la conexión, pero no garantiza que el negocio sea legítimo.","El correo y la web pueden usar proveedores y configuraciones diferentes."] },
       {
         heading: "Fuentes y alcance",
-        paragraphs: ["Estas referencias oficiales respaldan los conceptos generales. ICANN describe políticas y procesos que dependen de la extensión y del contrato; los RFC del IETF son estándares técnicos, y MDN explica el uso web de TLS."],
+        paragraphs: ["Estas referencias técnicas explican DNS y TLS. Los RFC del IETF describen registros y resolución de nombres; MDN explica TLS en la web. Esta guía introduce el correo a nivel de MX y TXT, pero no enseña a configurar SPF, DKIM ni DMARC: para esos mecanismos deben consultarse las instrucciones vigentes del proveedor de correo antes de cambiar registros."],
         blocks: [{ type: "sources", items: [
           { label: "RFC 1034: Domain Names — Concepts and Facilities", url: "https://datatracker.ietf.org/doc/html/rfc1034", scope: "Estándar del IETF que describe resolvers, servidores de nombres, datos autoritativos y caché/TTL en DNS. Consultado el 17 de octubre de 2026." },
           { label: "RFC 1035: Domain Names — Implementation and Specification", url: "https://datatracker.ietf.org/doc/html/rfc1035", scope: "Especifica registros como A, NS, CNAME y MX. No es una guía de configuración para un proveedor concreto. Consultado el 17 de octubre de 2026." },
