@@ -54,6 +54,19 @@ Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos bo
 | D5 Cutover controlado | Cutover de código integrado, rollback V3 compatible | Deploy y HTTP verificados en ambos entornos; la ventana de rollback sigue antes de retirar consumidores legacy |
 | D6 Operación | Purga automatizada implementada, probada localmente y habilitada en producción | Flags activos en producción con Cron diario; staging cerrado y sin Cron. Observar primer ciclo programado |
 
+#### DIAG-QA03B-PROFILE-COVERAGE-01 — cobertura de evidencia y preguntas (PROPUESTO; no implementado)
+
+Una corrida local del pipeline actual sobre 20 perfiles hipotéticos (316 respuestas; 14–18 preguntas por perfil) dejó el índice general pendiente en 20/20. En 19/20 rutas el planificador llegó a `no_useful_questions` con dimensiones aplicables pendientes. Solo tres porcentajes dimensionales aislados aparecieron, con una observación directa y confianza media; la dimensión `measurement_optimization` no tiene pregunta directa en el banco inspeccionado. IA y ciberseguridad no son dimensiones QA-03B existentes. Esto es evidencia de cobertura sintética, no exactitud o calibración del diagnóstico.
+
+**Trabajo candidato para un checkpoint autorizado:**
+
+1. Trazar por dimensión aplicabilidad → señales contestadas → evidencia faltante → candidatos de seguimiento; explicar terminales mientras quede cobertura útil, o documentar por qué no existe pregunta segura.
+2. Diseñar preguntas observables sobre fuente, periodo, denominador y ejemplos para atribución, conversión, retención, integraciones y resultados; separar “desconocido”, “no aplica” y “no existe”. Extender taxonomía sectorial solo cuando cambie los flujos evaluables (manufactura, mayorista, construcción, logística), nunca como score sectorial.
+3. Definir IA y seguridad como módulos optativos independientes: uso y datos, revisión humana, errores/costos/valor frente a baseline, accesos, MFA y recuperación. La revisión legal, regulatoria y de seguridad debe ser contextual, no presentarse como auditoría ni asesoría legal.
+4. Validar comprensión, carga y sesgo con entrevistas y corpus real consentido; reservar holdout y criterios expertos antes de proponer puntuación o calibración. No mezclar autoevaluaciones 0–5 con escalas QA-03B ni cambiar umbrales en este bloque.
+
+Evidencia en `TESTING.md`; sin cambio de motor, banco productivo, score general, despliegue ni migración en este checkpoint.
+
 #### DIAG-VISUAL-ASSETS-01 — resumen gráfico, interacción e informe (PLAN; sin implementación)
 
 **Objetivo:** dar una lectura visual coherente al resumen de Diagnóstico y al informe completo usando sus resultados reales, sin alterar scoring, confianza, cobertura, prioridades, recomendaciones ni el banco. El resultado mantiene su carácter de informe claro, no tablero comercial.

@@ -1,5 +1,11 @@
 # Pruebas
 
+## DIAG-QA03B-PROFILE-COVERAGE-01 — veinte recorridos sintéticos (2026-10-23)
+
+**RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-profile-case-matrix.test.ts` — **2/2 PASS** sobre QA-03B vigente (banco `reviewed-evidence-v7`, respuestas v5, metodología 3.0). Los 20 perfiles pasan por el planificador real con respuesta explícita a cada pregunta elegida, una por turno; 14–18 preguntas por caso, 316 respuestas acumuladas y sin hard-cap. Fixtures únicamente sintéticos; las autoevaluaciones 0–5 de la fuente no entran en el motor.
+
+**Resultado:** 20/20 índices globales quedan pendientes; tres porcentajes dimensionales aislados (inmobiliaria: relación recurrente 25 y readiness 50; construcción: readiness 25), cada uno con confianza media y una observación directa, sin estado/banda. En 19/20 el plan termina `no_useful_questions` dejando entre 1 y 6 dimensiones aplicables sin resolver; SaaS B2B es el único con cero áreas aplicables. `measurement_optimization` no obtiene lectura: el banco inspeccionado carece de preguntas directas mapeadas a esa dimensión. IA y ciberseguridad no son dimensiones QA-03B actuales. La ejecución completa, preguntas/respuestas y salida por caso están en los artefactos visuales de la sesión (HTML/PDF/JSON), fuera del repositorio. Esta matriz prueba cobertura/consistencia del recorrido, no exactitud predictiva, calibración humana ni rendimiento del producto publicado. Sin HTTP, D1 remota, correo, deploy ni cambios de producto.
+
 ## DIAG-QA-03B — revisión de contenido del informe y matriz sintética (2026-10-24)
 
 **RAN:** inspección visual del PDF `Informe completo del diagnóstico.pdf` aportado por el usuario: cuatro páginas físicas aunque el pie declara tres; la página 2 está casi vacía; los controles de revocación/eliminación aparecen en la impresión; el documento está en Letter aunque la hoja de informe declara A4. El contenido limita correctamente el alcance a dimensiones observables, marca confianza media y observación insuficiente, conserva como pendiente lo que no está respaldado y declara que no es auditoría ni garantía. Sin respuestas originales ni sesión asociada no es posible recalcular ni certificar los porcentajes 75/25 del PDF; no se consultaron datos personales en D1 remota.
