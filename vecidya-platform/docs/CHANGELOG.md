@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-23 — APP-MINI-02B — certificación de ofertas y FAQ
+
+- Se amplía `miniweb-core-check.mjs` para probar ofertas/FAQ tenant-scoped, validación, escritura CAS, aislamiento, borrador frente a HTTP anónimo, publicación y elementos activos/inactivos. El recorrido identificó contenido inactivo dentro del payload de hidratación público aunque la UI lo ocultaba; el loader ahora solo entrega ofertas y preguntas activas a visitantes anónimos.
+- Se añade regresión de compatibilidad para snapshots v1/v2: v1 no hereda ofertas/FAQ ni enciende módulos nuevos; v2 conserva ofertas y FAQ y no inventa medios. Sin cambios de schema o migraciones.
+- Evidencia sobre base `origin/main@6b5fd55`: SHA probado `e219a647ebf57b3ba4f7a83d50d70344b327c341`; MiniWeb E2E `103/103`, suite unitaria `1658/1658`, typecheck, build y diff-check PASS. El HEAD de entrega `194acb2` solo actualiza documentación. D1 local aislada `0000–0027`, fixtures verificadas en cero; persistencia retenida en `.wrangler/app-mini-02b-functional-cert`. Sin D1 remota, deploy ni HTTP público fechado; PR #60 abierto.
 ## 2026-10-24 — corrección de persistencia MiniWeb y fixture visual local
 
 - D1 local limitaba el número de variables por sentencia al guardar módulos, ofertas y FAQ juntos. Se redujeron los lotes atómicos a dos filas, conservando el guard CAS/autorizado por organización, y se añadió regresión E2E para nueve módulos, cuatro ofertas y cuatro FAQ.
