@@ -45,3 +45,10 @@ Inventario estático: las seis guías tienen bloque de fuentes, pero la presenci
 2. **E2 — Cobertura de correo:** revisar si la guía DNS/correo explica registros de autenticación; cuando los mencione, aportar fuentes oficiales pertinentes y distinguir configuración del dominio, servicio de correo y políticas de entrega.
 3. **E3 — Verificación externa:** comprobar accesibilidad HTTP, redirecciones, fechas y cambios de políticas. **No ejecutada** en esta revisión; no afirmar que los enlaces están vivos.
 4. **E4 — Aprobación:** mantener las seis marcas `editorialDraft: true` hasta verificar exactitud, pertinencia, lectura móvil y fuentes individuales.
+
+## Ajuste de fuentes aplicado (2026-10-24)
+
+- Presencia digital confiable: bibliografía reducida de ocho a tres fuentes (Google Search Central, Google Business Profile y W3C WAI). Retiradas las fuentes de anuncios y Analytics no centrales al objetivo.
+- DNS, HTTPS y correo: bibliografía reducida de ocho a cuatro fuentes (RFC 1034, RFC 1035, RFC 3596 y MDN TLS). Retiradas las referencias de ICANN sobre contratación y renovación, que pertenecen a la guía de proveedores.
+- Se corrigió el párrafo «Fuentes y alcance» de DNS, que todavía describía fuentes ICANN ya eliminadas. Se delimita expresamente que el artículo **no** enseña a configurar SPF, DKIM ni DMARC.
+- Queda pendiente verificar por HTTP las fuentes y evaluar su suficiencia artículo por artículo. Esta limpieza **no** constituye aprobación editorial ni validación de enlaces.
