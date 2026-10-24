@@ -6172,3 +6172,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .learn-article-rail { position:static; max-height:none; overflow:visible; }
 }
 @media (prefers-reduced-motion:reduce) { .learn-related-card { transition:none; } }
+
+/* Reconciliación de estilos administrativos de PR #83 y #85. */
+.admin-audit-table { min-width: 62rem; }
+.admin-audit-table time { white-space: nowrap; }
+.admin-audit-table__change { overflow-wrap: anywhere; }
+.admin-service-table { min-width: 60rem; }
+.admin-service-table tbody tr.is-selected td { background: #f0f5ff; }
+.admin-service-table td > label { display: block; min-width: 10rem; }
+.admin-service-table select { width: 100%; border: 1px solid var(--line); border-radius: .6rem; padding: .5rem .6rem; color: var(--ink); background: #fff; font: inherit; }
+.admin-service-table__submit { display: flex; justify-content: flex-end; }
+.admin-service-table-scroll-hint { margin: 0 0 .55rem; color: var(--muted); font-size: .82rem; }
+.admin-service-table-wrap:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+@media (min-width: 981px) { .admin-service-table-scroll-hint { display: none; } }
