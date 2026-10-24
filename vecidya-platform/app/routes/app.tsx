@@ -109,7 +109,7 @@ export default function AppPage() {
 
   return (
     <ClientAreaShell active="home" workspaceUser={workspaceUser} organizations={organizations} activeOrganization={activeOrganization} isPlatformAdmin={isPlatformAdmin}>
-    <main className="app-main" id="client-page-content">
+    <main className="app-main app-home" id="client-page-content">
       <div className="page-heading">
         <div>
           <p className="eyebrow">MI VECIDYA</p>

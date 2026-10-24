@@ -6,6 +6,12 @@
 - La retirada es lógica: los metadatos/objeto se conservan para la publicación vigente hasta republicar, y siguen contando en cuota. No hay recolección de objetos.
 - Migración `0027_business-media-draft-removal.sql`; cadena local `0000–0027`. E2E Worker 90/90, unitarias 1655/1655, typecheck, build y diff-check PASS. Fixture cleanup comprobado; quedó persistencia local Wrangler bajo `.codex/tmp` con logs/capturas y base efímera, sin Worker de esta fase activo. Sin D1 remota, buckets R2 provisionados ni deploy.
 
+## 2026-10-23 — APP-MINI-REDESIGN-01 (rediseño local)
+
+- Se dio una jerarquía visual más clara al dashboard de Mi Vecidya y al resumen interno, conservando sus consultas, indicadores reales y copy operativo.
+- Administración ahora presenta un drawer móvil compacto con estado accesible, cierre al navegar y overlay. El pase local cubre ambas rutas y drawer a 320/390/768/1366 px; no encontró overflow. Worker y D1 fueron efímeros. Typecheck/build/diff-check PASS; sin D1 remota, deploy, cambio de versión ni publicación. No es auditoría WCAG completa.
+- Detalle de evidencia y deuda residual en `STATUS.md` y `TESTING.md`.
+
 ## 2026-10-23 — APP-MINI-02B (implementación local sin certificar)
 
 - Se añadieron ofertas del negocio tipo servicio/producto y FAQ editables por organización en Mi MiniWeb. El contenido se guarda con la configuración bajo una revisión CAS y se incorpora al snapshot público versión 2. Snapshots v1 continúan leyéndose sin contenido nuevo ni filtración desde borradores.
