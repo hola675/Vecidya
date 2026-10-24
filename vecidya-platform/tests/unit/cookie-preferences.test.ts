@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { COOKIE_PREFERENCES_KEY, canUseOptionalCookies, createCookiePreferences, parseCookiePreferences, readCookiePreferences } from "../../app/lib/cookie-preferences";
+import { COOKIE_PREFERENCES_KEY, canUseOptionalCookies, createCookiePreferences, parseCookiePreferences, readCookiePreferences } from "../../app/lib/cookie-preferences.ts";
 
 const date = new Date("2026-10-24T12:00:00.000Z");
 test("sin decisión las categorías opcionales permanecen desactivadas", () => {
