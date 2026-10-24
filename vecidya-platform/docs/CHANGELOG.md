@@ -92,6 +92,13 @@
 - Se añadió `/app/internal/licenses`, con asignación, cambio de plan, suspensión y reactivación por organización. La vista separa workspace, perfil comercial y licencia, y aclara que suspender conserva organización y datos.
 - Las mutaciones exigen `organization:license:update` en el control plane y conservan auditoría. E2E Admin Global y dashboard redesign, typecheck, build y diff-check PASS con Worker/D1 local en `e86fc03`, actualizado con `origin/main@5e26614`. PR pendiente; sin D1 remota ni deploy. Suite unitaria no repetida.
 
+## 2026-10-23 — DIAG-QA-03B-ENGINE-REFINEMENT-02 (candidato local)
+
+- Se agregó una pregunta directa y no técnica para revisar resultados recientes, limitada a actividad operativa; falta de muestra e incertidumbre permanecen neutrales.
+- Se impide presentar una prioridad/recomendación como confirmada sin evidencia directa puntuada y se muestran estados globales con lenguaje legible.
+- Se amplían las identidades candidate-only a bank v8, answers v6, session 7, replay v5 y metodología 3.1; se agrega una matriz interactiva, pregunta por pregunta, de 20 escenarios sintéticos y se genera un informe de revisión de 41 páginas.
+- Resultado sintético: 5 BIEN, 7 REGULAR, 8 pendientes; 12 índices calculados, 8 mediciones con puntuación. QA-03B focal 4/4, replay/informe 16/16 y suite completa 1659/1659; typecheck, build y diff-check PASS. PR #57 integrado. Se añadió el tema narrativo faltante de `q2_measurement_practice` y una prueba de regresión focal PASS. Sin D1 remota, correo, deploy ni publicación.
+
 ## 2026-10-23 — APP-MINI-02C (medios MiniWeb, certificación local; PR #51)
 
 - El editor permite retirar una portada o medio de galería del siguiente snapshot, usando CAS de revisión. La portada nueva se puede subir después de retirar la anterior.
