@@ -14,7 +14,7 @@ Typecheck y build PASS; Worker local confirmó 200 para la guía seleccionada y 
 
 ## DIAG-VISUAL-ASSETS-01 — implementación local vigente (2026-10-24)
 
-La rama `feat/diagnostic-visual-assets-01-ui` integra `origin/main@7267628` (PR #58 y PR #61); PR #62 está abierto, sin merge ni publicación. QA-03B deriva `anonymous-diagnostic-summary-v2` desde el replay Worker y expone exactamente ocho áreas con campos allowlisted: etiqueta, score nullable, estado, indicador preliminar e ilustración local aprobada. El componente presenta valor textual y barra secundaria; «Sin lectura» no se representa como 0. El informe detallado comparte la misma fuente versionada de scores. Se reutilizan assets existentes; no hay tablas ni migraciones nuevas.
+PR #62 está integrado en `origin/main@612775a`; el cambio no está publicado. QA-03B deriva `anonymous-diagnostic-summary-v2` desde el replay Worker y expone exactamente ocho áreas con campos allowlisted: etiqueta, score nullable, estado, indicador preliminar e ilustración local aprobada. El componente presenta valor textual y barra secundaria; «Sin lectura» no se representa como 0. El informe detallado comparte la misma fuente versionada de scores. Se reutilizan assets existentes; no hay tablas ni migraciones nuevas.
 
 En móvil el estado general y el panorama de áreas se apilan; desde desktop las ocho tarjetas usan dos columnas. Se aplican sombras/bordes moderados, movimiento de barras desactivado con `prefers-reduced-motion` y estilos específicos de impresión. El informe muestra el hallazgo y acción primaria en secciones distintas; la acción aparece una sola vez, las recomendaciones finales incluyen solo pasos posteriores, la nota de cobertura aparece una vez y el anexo de claves internas no se imprime. Suite unitaria 1659/1659, typecheck/build, Worker E2E QA-03B y revisión visual del PDF A4 de dos páginas: PASS. Pendiente: aceptación manual de teclado/foco, lector de pantalla, contraste y zoom 200 %. Sin D1 remota, Gmail real, deploy, HTTP público, publicación ni PDF/UA.
 
@@ -36,7 +36,7 @@ Integrado por PR #57 en `main`. El motor QA-03B candidate-only agrega una pregun
 
 ## DIAG-VISUAL-ASSETS-01 — origen del checkpoint
 
-PR #55 integró el plan en `main` mediante `ab8a02ed62cef15ee78eac69c99009ef8bba47db`. Su implementación y estado vigente se describen en la sección superior y la evidencia ejecutada en `TESTING.md`; el registro de PR #55 es histórico.
+PR #55 integró el plan en `main` mediante `ab8a02ed62cef15ee78eac69c99009ef8bba47db`; PR #62 integró la implementación en `origin/main@612775a`. La evidencia ejecutada está en `TESTING.md`; aceptación manual de accesibilidad pendiente.
 
 ## UI-PILOT-01 — estado local de Aprende (2026-10-23)
 
