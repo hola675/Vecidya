@@ -1,5 +1,15 @@
 # Pruebas
 
+## DIAG-VISUAL-ASSETS-01 — contrato v2, UI gráfica y PDF (2026-10-24; local)
+
+**RAN en worktree `feat/diagnostic-visual-assets-01-ui`, base `origin/main@b931f72`.** `pnpm run test:unit`: **1655/1655 PASS**. `pnpm run typecheck` y `pnpm run build`: **PASS**; build mantiene avisos existentes por secretos Auth/Gmail ausentes y dynamic imports inefectivos. `git diff --check`: **PASS**.
+
+`pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-funnel.test.ts tests/unit/diagnostic/qa03b-worker-replay.test.ts tests/unit/diagnostic/identified-report-contracts.test.ts`: **17/17 PASS**; cubre ocho áreas, scores idénticos al informe, `null`, allowlist estricta y rechazo de evidencia/keys extra. Las tres certificaciones ACT-root permitieron explícitamente la nueva vista pública QA-03B; sus pruebas focales: **3/3 PASS**.
+
+`tests/e2e/diagnostic-v3-qa03b-check.mjs` **PASS** en Cloudflare Vite Worker local y D1 local con migraciones `0000–0027`: seis perfiles sintéticos, reanudación, conflicto de pestañas, ocho imágenes decodificadas, layout sin superposición/overflow, reduced motion, solicitud identificada en buzón fake y PDF. Viewports sintéticos 390/1366 px, sin overflow; `diagnostic-act-04-check.mjs` **3/3 PASS** en el bundle Worker local con las tres compuertas de informe/purga cerradas por `wrangler dev --local --var`, y sin rutas dev.
+
+El PDF del fixture se generó y se revisó renderizado: `pdfinfo` reporta **3 páginas A4**; el E2E compara las hojas PDF contra `.rp[data-pages]` y confirma que navegación/acciones de privacidad no se imprimen. No se afirma PDF/UA. Sigue pendiente una revisión manual de teclado/foco, lector de pantalla, contraste y zoom 200 %. No hubo D1 remota, datos de negocio reales, Gmail, deploy ni HTTP pública.
+
 ## DIAG-QA-03B — revisión de contenido del informe y matriz sintética (2026-10-24)
 
 **RAN:** inspección visual del PDF `Informe completo del diagnóstico.pdf` aportado por el usuario: cuatro páginas físicas aunque el pie declara tres; la página 2 está casi vacía; los controles de revocación/eliminación aparecen en la impresión; el documento está en Letter aunque la hoja de informe declara A4. El contenido limita correctamente el alcance a dimensiones observables, marca confianza media y observación insuficiente, conserva como pendiente lo que no está respaldado y declara que no es auditoría ni garantía. Sin respuestas originales ni sesión asociada no es posible recalcular ni certificar los porcentajes 75/25 del PDF; no se consultaron datos personales en D1 remota.

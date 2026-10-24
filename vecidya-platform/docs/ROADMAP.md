@@ -54,31 +54,13 @@ Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos bo
 | D5 Cutover controlado | Cutover de código integrado, rollback V3 compatible | Deploy y HTTP verificados en ambos entornos; la ventana de rollback sigue antes de retirar consumidores legacy |
 | D6 Operación | Purga automatizada implementada, probada localmente y habilitada en producción | Flags activos en producción con Cron diario; staging cerrado y sin Cron. Observar primer ciclo programado |
 
-#### DIAG-VISUAL-ASSETS-01 — resumen gráfico, interacción e informe (PLAN; sin implementación)
+#### DIAG-VISUAL-ASSETS-01 — aceptación manual restante
 
-**Objetivo:** dar una lectura visual coherente al resumen de Diagnóstico y al informe completo usando sus resultados reales, sin alterar scoring, confianza, cobertura, prioridades, recomendaciones ni el banco. El resultado mantiene su carácter de informe claro, no tablero comercial.
+La implementación del contrato anónimo v2, ocho áreas gráficas, reutilización de ilustraciones y ajuste de impresión está en la rama local `feat/diagnostic-visual-assets-01-ui`; los detalles y pruebas se registran en `STATUS.md` y `TESTING.md`. Esta fase aún no se considera cerrada mientras el PR no se integre y falte la aceptación manual.
 
-**Base observada:** la ruta pública actual usa el contrato `AnonymousDiagnosticSummaryV1` (v1: estado/score general, confianza, cobertura, narrativa y primera oportunidad/acción; no contiene el vector de ocho áreas). La vista candidata construye presentación e informe detallados desde `CandidatePipelineResultV3`; el informe tipado ya incluye porcentaje o `null`, estado, confianza e interpretación por dimensión. El resultado legado y el informe comparten los mapeos de `diagnostic-result/presentation.ts`. Ya existen ocho ilustraciones por dimensión, tres ilustraciones de estado y sus iconos en `public/assets/selected/`; revisar calidad, legibilidad y consistencia antes de crear duplicados.
+**Pendiente:** revisar foco/teclado en el resumen y la ruta de informe, lectura con lector de pantalla, contraste y zoom 200 % en 320/360/390/768/1024/1366 px; registrar cualquier corrección en el mismo checkpoint antes del merge. El PDF local de tres páginas A4 y su conteo ya pasaron E2E; esto no equivale a PDF/UA.
 
-**Decisiones de presentación previstas:**
-
-- Mantener separados índice general, porcentaje de cada área, confianza y cobertura; reutilizar los valores presentados por el resultado, nunca recalcularlos en JSX ni en el gráfico.
-- Representar las ocho áreas como ejes identificados con nombre y porcentaje textual. Favorecer barras comparables en móvil y papel; evaluar el radar como alternativa solo si las áreas sin lectura quedan como huecos explícitos y la geometría no las presenta como cero.
-- Un score `null`, área no aplicable o área no observable se presenta como «Sin lectura» con explicación contextual; nunca como 0 %. Mostrar estado y confianza por separado del número.
-- Los gráficos son SVG/CSS derivados de datos; los assets raster/vectoriales ilustran estado, dimensión o metodología y no contienen porcentajes. Ofrecer el mismo contenido como lista/tabla accesible, teclado, lector de pantalla y texto alternativo.
-- Respetar los límites de privacidad: el resumen anónimo solo recibe una allowlist agregada y versionada de valores mínimos por dimensión; no incluir respuestas, datos de identificación, evidencia textual sensible ni claves internas. Sin tablas ni migraciones D1 previstas.
-
-**Secuencia y gates de implementación:**
-
-1. **Auditoría visual y de assets:** capturar el flujo activo (preguntas, resumen, metodología y puertas de informe), el modelo detallado y PDF actual; probar los assets existentes a tamaños móvil, desktop y papel; documentar solo huecos reales. Gate: dirección de arte y plan de assets aprobados; nada duplicado sin causa.
-2. **Contrato y visualización:** versionar una extensión agregada del resumen anónimo solo si el QA-03B puede derivar de forma fiel sus ocho ejes; presentar los mismos valores mediante un componente visual y una lista accesible. Gate: pruebas de igualdad exacta contra los scores de dominio, orden canónico, `null`, no aplicable, confianza/cobertura separadas, validación estricta del contrato anterior y nuevo.
-3. **Interacción y assets:** reutilizar las ocho ilustraciones de dimensiones y estados tras revisión; generar o dibujar solo assets faltantes con brief aprobado, WebP/SVG optimizados, variantes responsive, alt decorativo/semántico correcto y `prefers-reduced-motion`. Hacer progresiva la lectura por dimensión, con controles operables por teclado y foco restaurado.
-4. **Resumen e informe completo:** integrar la visualización en la experiencia pública detrás de sus gates existentes y en el informe completo identificado/candidato sin abrir correo, funnel o rutas dev. Compartir el modelo de presentación por superficie sin mezclar identidades de motor ni revelar detalles privados en el resumen. Conservar en PDF objetivo de tres páginas, máximo cuatro y piso tipográfico de 8,5 pt.
-5. **Certificación:** fixtures golden anonimizados por perfiles/etapas y combinaciones de dimensiones completas, parciales y sin observación; unitarias para datos/contrato y E2E Worker local; QA manual teclado/lector de pantalla, contraste, zoom 200 %, reduced motion y tamaños 320/360/390/768/1024/1366; inspección de impresión A4/Carta, conteo real de páginas y revisión del PDF. Axe complementa, no sustituye, revisión manual. No declarar PDF/UA sin PAC/Acrobat y NVDA.
-
-**Fuera de este bloque:** activar QA-03B, abrir flags del informe/correo/purga, habilitar rutas privadas, cambiar D1, migrar respuestas/sesiones, calibrar motores, modificar la metodología/copy legal, publicar, desplegar o usar datos de negocios reales. El plan no cierra las deudas `DIAG-IDENTIFIED-PRINT-001`, `LEGAL-PRIV-001` ni el gate de release. Aprobaciones técnicas y de privacidad preceden a cualquier cutover.
-
-**Reglas:** no borrar `db/migrations`, no eliminar claves históricas ni adaptar sesiones completadas sin versionado; no activar correo real, sincronización GHL o D1 remota sin autorización. El roadmap histórico anterior se conserva como evidencia, incluso donde indique gates bloqueados.
+**Fuera de este remanente:** abrir/cambiar los flags del funnel, Gmail o purga; modificar D1, scoring, sesiones, metodología o copy legal; usar datos reales; publicar o desplegar. No eliminar claves históricas ni reinterpretar sesiones completadas.
 
 #### Criterios de revisión del banco (consolidados desde la auditoría 2026-10-18)
 

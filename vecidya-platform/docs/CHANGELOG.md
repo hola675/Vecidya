@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-24 — DIAG-VISUAL-ASSETS-01 — ocho áreas y lectura gráfica (local)
+
+- QA-03B emite el resumen anónimo v2 con ocho dimensiones estrictamente allowlisted, scores copiados del mismo replay que construye el informe y valores sin lectura expresados como «Sin lectura».
+- El resumen incorpora ocho tarjetas responsive con assets WebP existentes, valores de texto y barras decorativas; reduced motion apaga animación. Se mejoró la jerarquía/superficie del informe y la impresión conserva tres páginas A4 sin controles de privacidad.
+- Validación local: suite unitaria 1655/1655; typecheck/build; seis recorridos E2E con reanudación/concurrencia/PDF y ACT-04 3/3. Sin tablas/migraciones, deploy, correo real, HTTP pública ni cambios publicados. PR pendiente de integración; aceptación manual de accesibilidad sigue abierta.
+
 ## 2026-10-24 — corrección de persistencia MiniWeb y fixture visual local
 
 - D1 local limitaba el número de variables por sentencia al guardar módulos, ofertas y FAQ juntos. Se redujeron los lotes atómicos a dos filas, conservando el guard CAS/autorizado por organización, y se añadió regresión E2E para nueve módulos, cuatro ofertas y cuatro FAQ.

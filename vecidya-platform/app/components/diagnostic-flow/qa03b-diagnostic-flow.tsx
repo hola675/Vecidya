@@ -19,7 +19,7 @@ import {
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "../../features/diagnostic/qa03b/bank";
 import { renderQuestionV2 } from "../../features/diagnostic/qa03b/copy";
 import { buildCandidateQuestionPlanV3 } from "../../features/diagnostic/qa03b/qbv2-candidate-planner";
-import { isAnonymousDiagnosticSummaryV1, type AnonymousDiagnosticSummaryV1 } from "../../features/diagnostic/qa03b/qbv2-candidate-funnel";
+import { isAnonymousDiagnosticSummaryV2, type AnonymousDiagnosticSummaryV2 } from "../../features/diagnostic/qa03b/qbv2-candidate-funnel";
 import { ANSWER_SCHEMA_ID, WORKER_REPLAY_VERSION } from "../../features/diagnostic/qa03b/contract";
 import type { ProgressV3, PresentedQuestionV3 } from "../../features/diagnostic/qbv2-session";
 
@@ -42,7 +42,7 @@ export function CandidateDiagnosticFlow({ publicMode = false, reportRequestEnabl
   const [error, setError] = useState<string | null>(null);
   const [writeUnavailable, setWriteUnavailable] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
-  const [workerSummary, setWorkerSummary] = useState<AnonymousDiagnosticSummaryV1 | null>(null);
+  const [workerSummary, setWorkerSummary] = useState<AnonymousDiagnosticSummaryV2 | null>(null);
   const [pendingRequestId, setPendingRequestId] = useState<string | null>(null);
   const savingRef = useRef(false);
 
@@ -82,7 +82,7 @@ export function CandidateDiagnosticFlow({ publicMode = false, reportRequestEnabl
     if (replayFetcher.state !== "idle" || !completed) return;
     replaySessionRef.current = null;
     const payload: unknown = replayFetcher.data;
-    if (!isRecord(payload) || Object.keys(payload).length !== 1 || !isAnonymousDiagnosticSummaryV1(payload.summary) || JSON.stringify(payload.summary.diagnosticIdentity) !== JSON.stringify(completed.engineIdentity)) {
+    if (!isRecord(payload) || Object.keys(payload).length !== 1 || !isAnonymousDiagnosticSummaryV2(payload.summary) || JSON.stringify(payload.summary.diagnosticIdentity) !== JSON.stringify(completed.engineIdentity)) {
       setError(publicMode ? "No pudimos validar esta sesión. Revisa tus respuestas o inicia un diagnóstico nuevo." : "El Worker no pudo validar la ruta QA-03B. Revisa o reinicia la sesión antes de solicitar el informe.");
       setView("error");
       return;
@@ -204,7 +204,7 @@ export function CandidateDiagnosticFlow({ publicMode = false, reportRequestEnabl
         session,
         anonymousSummary: workerSummary,
       },
-      validateResponse: (value) => isRecord(value) && typeof value.requestId === "string" && value.summaryVersion === workerSummary.contractVersion && isAnonymousDiagnosticSummaryV1(value.summary) && JSON.stringify(value.summary) === JSON.stringify(workerSummary),
+      validateResponse: (value) => isRecord(value) && typeof value.requestId === "string" && value.summaryVersion === workerSummary.contractVersion && isAnonymousDiagnosticSummaryV2(value.summary) && JSON.stringify(value.summary) === JSON.stringify(workerSummary),
     }}
     onCancel={() => setView("result")}
     onSubmitted={(requestId) => { setPendingRequestId(requestId); setView("verification-pending"); }}

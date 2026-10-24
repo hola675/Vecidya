@@ -1,6 +1,6 @@
 import { buildCandidateDiagnosticReportV1 } from "../../../components/diagnostic-flow/qa03b-presentation";
 import type { CandidateDiagnosticReportV1 } from "../../../components/diagnostic-report/report-model";
-import { buildAnonymousDiagnosticSummaryV1, type AnonymousDiagnosticSummaryV1 } from "./qbv2-candidate-funnel";
+import { buildAnonymousDiagnosticSummaryV2, type AnonymousDiagnosticSummaryV2 } from "./qbv2-candidate-funnel";
 import { CANDIDATE_RESULT_IDENTITY_V3, isCandidateResultIdentityV3, type CandidatePipelineResultV3 } from "./qbv2-candidate-pipeline";
 import { CANDIDATE_ROUTE_HARD_CAP_V3 } from "./qbv2-candidate-planner";
 import {
@@ -34,7 +34,7 @@ export type Qa03bWorkerReplayV1 =
   | { readonly ok: false; readonly reason: Qa03bWorkerReplayFailureV1 };
 
 export type Qa03bReplayProjectionsV1 = {
-  readonly summary: AnonymousDiagnosticSummaryV1;
+  readonly summary: AnonymousDiagnosticSummaryV2;
   readonly report: CandidateDiagnosticReportV1;
 };
 
@@ -97,13 +97,13 @@ export function replayQa03bSessionV1(input: unknown, now = Date.now()): Qa03bWor
   return { ok: true, session: completed.session, result: completed.result, completedAt: now };
 }
 
-export function buildQa03bReplayProjectionsV1(
+export function buildQa03bReplayProjectionsV2(
   replay: Extract<Qa03bWorkerReplayV1, { readonly ok: true }>,
   businessName: string | null,
   generatedAt: Date,
 ): Qa03bReplayProjectionsV1 {
   return {
-    summary: buildAnonymousDiagnosticSummaryV1(replay.result),
+    summary: buildAnonymousDiagnosticSummaryV2(replay.result),
     report: buildCandidateDiagnosticReportV1(replay.result, new Date(replay.completedAt), generatedAt, businessName),
   };
 }

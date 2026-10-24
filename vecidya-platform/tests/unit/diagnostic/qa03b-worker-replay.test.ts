@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { buildCandidateDiagnosticReportV1 } from "../../../app/components/diagnostic-flow/qa03b-presentation.ts";
-import { buildAnonymousDiagnosticSummaryV1 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-funnel.ts";
+import { buildAnonymousDiagnosticSummaryV2 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-funnel.ts";
 import { CANDIDATE_RESULT_IDENTITY_V3 as ACT_IDENTITY_V3 } from "../../../app/features/diagnostic/qbv2-candidate-pipeline.ts";
 import { PUBLIC_DIAGNOSTIC_ENGINE_IDENTITY_V1 } from "../../../app/features/diagnostic/public-diagnostic-replay.server.ts";
 import {
@@ -157,7 +157,7 @@ async function replayApi() {
 }
 
 test("QA-03B Worker replay reconstruye la ruta y comparte resultado versionado entre resumen e informe", async () => {
-  const { replayQa03bSessionV1, buildQa03bReplayProjectionsV1 } = await replayApi();
+  const { replayQa03bSessionV1, buildQa03bReplayProjectionsV2 } = await replayApi();
   const session = completeSession();
   const replay = replayQa03bSessionV1(envelope(session), NOW + 200);
   assert.equal(replay.ok, true);
@@ -168,12 +168,13 @@ test("QA-03B Worker replay reconstruye la ruta y comparte resultado versionado e
   assert.deepEqual(replay.result.engineIdentity, CANDIDATE_RESULT_IDENTITY_V3);
   assert.deepEqual(replay.session.answeredQuestionIds, session.answeredQuestionIds);
 
-  const projections = buildQa03bReplayProjectionsV1(replay, "Proyecto verificado", new Date(NOW + 300));
+  const projections = buildQa03bReplayProjectionsV2(replay, "Proyecto verificado", new Date(NOW + 300));
   const anonymousReport = buildCandidateDiagnosticReportV1(replay.result, new Date(NOW + 200), new Date(NOW + 300));
-  assert.deepEqual(projections.summary, buildAnonymousDiagnosticSummaryV1(replay.result));
+  assert.deepEqual(projections.summary, buildAnonymousDiagnosticSummaryV2(replay.result));
   const summaryContract = await import("../../../app/features/diagnostic/qa03b/qbv2-candidate-funnel.ts");
-  assert.equal(summaryContract.isAnonymousDiagnosticSummaryV1(projections.summary), true);
-  assert.equal(summaryContract.isAnonymousDiagnosticSummaryV1({ ...projections.summary, answers: replay.session.answers }), false);
+  assert.equal(summaryContract.isAnonymousDiagnosticSummaryV2(projections.summary), true);
+  assert.equal(summaryContract.isAnonymousDiagnosticSummaryV2({ ...projections.summary, answers: replay.session.answers }), false);
+  assert.deepEqual(projections.summary.dimensions.map(({ score }) => score), projections.report.dimensions.map(({ score }) => score));
   assert.deepEqual(projections.report, buildCandidateDiagnosticReportV1(replay.result, new Date(NOW + 200), new Date(NOW + 300), "Proyecto verificado"));
   assert.deepEqual({ ...projections.report, identity: { ...projections.report.identity, businessName: null } }, anonymousReport, "identificar el informe solo personaliza el nombre; no altera el resultado ni sus recomendaciones");
   assert.deepEqual(projections.summary.diagnosticIdentity, projections.report.candidateEngineIdentity);
@@ -184,7 +185,7 @@ test("QA-03B Worker replay reconstruye la ruta y comparte resultado versionado e
   assert.equal(Object.hasOwn(projections.report, "session"), false);
   assert.deepEqual(Object.keys(projections.summary), [
     "contractVersion", "overallStatus", "score", "confidence", "coverage", "executiveSummary",
-    "primaryOpportunity", "firstRecommendedAction", "limitations", "methodologyVersion", "diagnosticIdentity",
+    "primaryOpportunity", "firstRecommendedAction", "limitations", "methodologyVersion", "diagnosticIdentity", "dimensions",
   ]);
   assert.equal(Object.hasOwn(projections.summary, "answers"), false);
   assert.equal(JSON.stringify(projections.summary).includes("q2_sector"), false);

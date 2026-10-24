@@ -4,7 +4,7 @@ import { isRouteErrorResponse, Link, useRouteError, type MetaFunction } from "re
 import { PublicLayout } from "../components/public-layout";
 import funnelStylesUrl from "../components/diagnostic-flow/qa03b-funnel.css?url";
 import {
-  buildAnonymousDiagnosticSummaryV1,
+  buildAnonymousDiagnosticSummaryV2,
   DIAGNOSTIC_FUNNEL_STATES_V1,
   validateFunnelIdentificationV1,
   type DiagnosticFunnelStateV1,
@@ -46,7 +46,7 @@ function FunnelPrototype() {
   const [message, setMessage] = useState("");
   const stateHeading = useRef<HTMLHeadingElement>(null);
   const result = buildCandidateFunnelPreviewV1(sample);
-  const summary = buildAnonymousDiagnosticSummaryV1(result);
+  const summary = buildAnonymousDiagnosticSummaryV2(result);
   const formVisible = state === "IDENTIFICATION_REQUIRED";
 
   useEffect(() => {

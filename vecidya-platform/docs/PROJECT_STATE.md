@@ -1,10 +1,16 @@
+## DIAG-VISUAL-ASSETS-01 — implementación local vigente (2026-10-24)
+
+La rama `feat/diagnostic-visual-assets-01-ui` parte de `origin/main@b931f72` (PR #58 ya integrado); sus cambios están locales y aún no publicados. El runtime público QA-03B deriva `anonymous-diagnostic-summary-v2` desde el replay Worker y expone exactamente ocho áreas con campos allowlisted: etiqueta, score nullable, estado, indicador preliminar e ilustración local aprobada. El componente presenta valor textual y barra secundaria; «Sin lectura» no se representa como 0. El informe detallado comparte la misma fuente versionada de scores. Se reutilizan assets existentes, con carga optimizada; no hay tablas ni migraciones nuevas.
+
+En móvil el estado general y el panorama de áreas se apilan; desde desktop las ocho tarjetas usan dos columnas. Se aplican sombras/bordes moderados, movimiento de barras desactivado con `prefers-reduced-motion` y estilos específicos de impresión. Se verificaron seis perfiles sintéticos QA-03B, reanudación, conflicto entre pestañas, solicitud local de informe y PDF de tres páginas A4; ACT-04 pasa con flags cerrados en Wrangler local. Suite unitaria 1655/1655, typecheck, build y `git diff --check` PASS. Pendiente: aceptación manual de teclado/foco, lector de pantalla, contraste y zoom 200 %. Sin D1 remota, Gmail real, deploy, HTTP público, publicación ni PDF/UA.
+
 ## App cliente e interna — revisión visual focal (2026-10-23)
 
 `APP-MINI-REDESIGN-01` está integrado en `origin/main@3e6b9b1` mediante PR #53; no está publicado. App y Admin ofrecen drawers hasta 980 px; E2E Worker/D1 aislados pasa ambos menús a 390/768/980 px y reflow sin overflow a 320/390/768/980/1366 px. Typecheck/build pasan. El resumen anónimo y el informe identificado tienen acciones de impresión y CSS print; la salida PDF corregida sigue sin validación RAN por timeout del Worker/Vite, registrada como `DIAG-IDENTIFIED-PRINT-001`. Sin publicación; teclado/foco/axe y revisión de las demás rutas siguen pendientes.
 
-## DIAG-VISUAL-ASSETS-01 — plan de assets y lectura gráfica
+## DIAG-VISUAL-ASSETS-01 — origen del checkpoint
 
-PR #55 integrado en main mediante `ab8a02ed62cef15ee78eac69c99009ef8bba47db`. El plan de `ROADMAP.md` mejora el resumen QA-03B y el informe completo con visualización común de ocho dimensiones y assets auditados, preservando puntuaciones, cobertura, confianza, privacidad, accesibilidad y PDF. El contrato anónimo actual no expone dimensiones; toda extensión propuesta debe ser agregada, allowlisted y versionada. No se implementó ni se publicó.
+PR #55 integró el plan en `main` mediante `ab8a02ed62cef15ee78eac69c99009ef8bba47db`. Su implementación y estado vigente se describen en la sección superior y la evidencia ejecutada en `TESTING.md`; el registro de PR #55 es histórico.
 
 ## UI-PILOT-01 — estado local de Aprende (2026-10-23)
 
