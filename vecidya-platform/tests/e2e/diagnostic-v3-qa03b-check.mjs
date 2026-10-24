@@ -244,6 +244,14 @@ try {
       await page.locator('.rp[data-ready="true"]').waitFor().catch(async (error) => { throw new Error(`informe no renderizado: url=${page.url()}; main=${await page.locator("main").innerText()}; cause=${error.message}`); });
       const printReport = page.getByRole("button", { name: "Imprimir o guardar PDF" });
       await printReport.waitFor({ state: "visible" });
+      const reportDocument = page.locator(".rp-doc");
+      assert.equal(await reportDocument.getByRole("heading", { name: "Qué hacer ahora" }).count(), 1, "el informe presenta la acción principal en un bloque único");
+      assert.equal(await reportDocument.getByRole("heading", { name: "Plan de acción recomendado" }).count(), 0, "no repite la acción en un plan separado");
+      const primaryAction = await reportDocument.locator("[data-primary-action]").innerText();
+      const reportText = await reportDocument.innerText();
+      assert.ok(!reportText.includes("Lo primero es confirmar"), "la explicación del estado general no vuelve a formular la acción");
+      assert.equal(reportText.split(primaryAction.replace(/^Siguiente paso\.\s*/u, "")).length - 1, 1, "la recomendación principal aparece una sola vez");
+      assert.equal(reportText.split("En esta evaluación hay lectura para 0 de 3 dimensiones observables con oportunidad de evaluación (0 %); este porcentaje no representa todas las áreas del negocio.").length - 1, 1, "la nota de cobertura aparece una sola vez");
       const reportPages = await page.locator(".rp").getAttribute("data-pages");
       assert.ok(Number(reportPages) > 0, "el informe comunica su número de páginas");
       await page.emulateMedia({ media: "print" });
@@ -276,7 +284,7 @@ try {
       assert.equal(pdfPages, visibleSheets, "el PDF no añade hojas vacías frente a las hojas paginadas del informe");
       await page.emulateMedia({ media: "screen" });
       assert.equal(await page.locator(".rp-business").innerText(), "Proyecto QA03B Local");
-      assert.ok((await page.locator(".rp-technical").innerText()).includes("diag-v3-candidate-operation-history-v3"));
+      assert.equal(await page.locator(".rp-technical").count(), 0, "el informe del cliente no expone claves internas del motor");
       assert.equal(lifecycleState.snapshot.methodologyVersion, "3.0");
     }
     if (name === "open-no-clients") await page.goto(route, { waitUntil: "domcontentloaded" });
