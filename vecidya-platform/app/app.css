@@ -6383,3 +6383,52 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (prefers-reduced-motion: reduce) {
   .miniweb-editor { scroll-behavior: auto; }
 }
+
+/* MiniWeb: edicion por tipo de contenido sin perder valores entre paneles. */
+.miniweb-editor__content-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  margin: 0 0 1rem;
+  padding: .55rem;
+  border: 1px solid #dfe7f0;
+  border-radius: .95rem;
+  background: #f5f8fc;
+}
+.miniweb-editor__content-nav button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  min-height: 2.75rem;
+  padding: .65rem .9rem;
+  border: 1px solid transparent;
+  border-radius: .65rem;
+  color: #3c516f;
+  background: transparent;
+  font: inherit;
+  font-size: .87rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.miniweb-editor__content-nav button span {
+  display: inline-grid;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 .3rem;
+  place-items: center;
+  border-radius: 999px;
+  background: #e7edf6;
+  font-size: .75rem;
+}
+.miniweb-editor__content-nav button[aria-pressed="true"] {
+  background: #fff;
+  border-color: #c5d6f0;
+  color: #17458e;
+  box-shadow: 0 3px 12px rgb(23 69 142 / 7%);
+}
+.miniweb-editor__content-nav button:focus-visible { outline: 3px solid #2457c5; outline-offset: 2px; }
+@media (max-width: 700px) {
+  .miniweb-editor__content-nav { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-inline: contain; }
+  .miniweb-editor__content-nav button { flex: 0 0 auto; }
+}
