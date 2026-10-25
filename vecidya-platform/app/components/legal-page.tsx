@@ -24,6 +24,7 @@ export function LegalPageIntro({
           <nav aria-label="Explorar información legal" className="legal-switcher">
             <Link aria-current={kind === "privacy" ? "page" : undefined} to="/privacidad">Privacidad y datos</Link>
             <Link aria-current={kind === "terms" ? "page" : undefined} to="/terminos">Condiciones de uso</Link>
+            <Link to="/informacion-legal">Información legal y comercial</Link>
           </nav>
         </div>
         <aside className="legal-hero__aside" aria-label="Nuestro compromiso de comunicación">

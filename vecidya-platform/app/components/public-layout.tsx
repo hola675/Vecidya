@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { publicAssets } from "../assets/public-assets";
 import { publicSiteUrl } from "../lib/public-seo";
 import { PlatformFooter } from "./platform-footer";
+import { CookieConsent } from "./cookie-consent";
 import { PUBLIC_FOOTER_GROUPS, PUBLIC_HEADER_PRIMARY_LINKS, PUBLIC_HEADER_SOLUTIONS_LINKS, PUBLIC_MOBILE_LINKS, PUBLIC_NAVIGATION_LINKS } from "./public-navigation";
 
 export const commercialWhatsAppUrl = "https://wa.me/573244321864";
@@ -119,6 +120,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           ))}
         </nav>
         <PlatformFooter area="public" />
+        <CookieConsent />
       </footer>
     </div>
   );

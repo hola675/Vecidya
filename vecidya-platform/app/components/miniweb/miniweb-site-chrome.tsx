@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { CookieConsent } from "../cookie-consent";
 
 import type { MiniWebModuleType } from "../../features/miniweb/registry";
 import type { MiniWebPublicProfile } from "../../features/miniweb/public-model";
@@ -64,6 +65,7 @@ export function MiniWebSiteFooter({ profile, preview = false }: ChromeProps) {
         )}
       </nav>
       <p className="miniweb-standalone__credit">Creado con Vecidya</p>
+      {!preview ? <CookieConsent /> : null}
     </footer>
   );
 }

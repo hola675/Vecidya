@@ -10,7 +10,7 @@ import type { Route } from "./+types/about";
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
     "Sobre nosotros",
-    "Conoce a las personas, el propósito y la forma de trabajar detrás de Vecidya.",
+    "Conoce la misión, el equipo y el acompañamiento de Vecidya para impulsar la presencia digital y el uso responsable de las TIC.",
     "/sobre-nosotros",
   );
 }
@@ -22,8 +22,8 @@ export default function About() {
         <section className="about-experience-hero" aria-labelledby="about-title">
           <div>
             <p className="eyebrow">SOBRE VECIDYA</p>
-            <h1 id="about-title">Construimos claridad digital para negocios reales.</h1>
-            <p>Vecidya nace para ayudar a que los negocios locales tengan una presencia más clara, organizada y conectada.</p>
+            <h1 id="about-title">Acompañamos el desarrollo digital de negocios y organizaciones.</h1>
+            <p>Impulsamos la presencia digital y el aprovechamiento responsable de las Tecnologías de la Información y las Comunicaciones (TIC) en negocios y organizaciones.</p>
             <div className="public-actions">
               <a className="button button--primary" href="#por-que">Conoce cómo ayudamos</a>
               <Link className="button button--secondary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
@@ -41,11 +41,24 @@ export default function About() {
         <section className="about-origin" id="por-que" aria-labelledby="about-origin-title">
           <div className="about-section-heading">
             <p className="eyebrow">POR QUÉ NACE VECIDYA</p>
-            <h2 id="about-origin-title">La claridad no debería ser un lujo para un negocio pequeño.</h2>
+            <h2 id="about-origin-title">La tecnología debe ser una oportunidad de desarrollo, no una barrera.</h2>
           </div>
           <div className="about-origin__copy">
-            <p>Muchos negocios tienen información dispersa, una presencia digital incompleta o herramientas que no están conectadas entre sí.</p>
-            <p>Vecidya nace para ayudar a organizar esa base y convertirla en una presencia más clara: fácil de entender para las personas y más útil para quienes la construyen.</p>
+            <p>Muchos negocios y organizaciones necesitan fortalecer su presencia digital, organizar su información y comprender cómo aprovechar las herramientas tecnológicas disponibles.</p>
+            <p>Vecidya busca acompañar ese proceso con orientación, aprendizaje y soluciones prácticas, fomentando un uso consciente, seguro y útil de las TIC.</p>
+          </div>
+        </section>
+
+        <section className="about-practice" aria-labelledby="about-mission-title">
+          <div className="about-section-heading">
+            <p className="eyebrow">NUESTRA MISIÓN</p>
+            <h2 id="about-mission-title">Aprender, adoptar y aprovechar la tecnología con propósito.</h2>
+            <p>Acompañamos a negocios, emprendedores y organizaciones en el desarrollo de su presencia digital y en el uso de las TIC para fortalecer sus capacidades y contribuir a su desarrollo económico, social y organizacional.</p>
+          </div>
+          <div className="about-practice-grid">
+            <article><span>01</span><h3>Presencia digital</h3><p>Construir una identidad clara, información útil y canales accesibles para conectar con las personas.</p></article>
+            <article><span>02</span><h3>Educación y cultura digital</h3><p>Fomentar el conocimiento y el uso responsable, seguro y estratégico de las TIC.</p></article>
+            <article><span>03</span><h3>Desarrollo organizacional</h3><p>Promover herramientas y procesos digitales que respondan a necesidades reales.</p></article>
           </div>
         </section>
 
@@ -99,6 +112,17 @@ export default function About() {
             <li>Información organizada</li>
             <li>Conexiones útiles</li>
           </ul>
+        </section>
+
+        <section className="about-origin" aria-labelledby="about-identity-title">
+          <div className="about-section-heading">
+            <p className="eyebrow">NUESTRA IDENTIDAD</p>
+            <h2 id="about-identity-title">Vecidya, una identidad digital con propósito.</h2>
+          </div>
+          <div className="about-origin__copy">
+            <p>Vecidya es el nombre con el que presentamos nuestra plataforma y comunidad de acompañamiento digital dirigida a negocios, profesionales y organizaciones de habla hispana.</p>
+            <p>Los datos de identificación jurídica y registral están pendientes de confirmación. Para consultas comerciales y legales, visita nuestra <Link to="/informacion-legal">información legal y comercial</Link>.</p>
+          </div>
         </section>
 
         <CTASection

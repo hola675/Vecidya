@@ -48,20 +48,15 @@ test("el mailto de contacto del diagnóstico no afirma nada sobre guardar o no g
   for (const pattern of RETIRED_CLAIMS) assert.doesNotMatch(source, pattern, pattern.source);
 });
 
-test("privacy.tsx sigue siendo explícito en que no se exige registro, nombre, correo ni teléfono", () => {
+test("privacy.tsx informa del resumen anónimo sin exigir identificación", () => {
   const source = read("app/routes/privacy.tsx");
   assert.match(source, /no exige registro, nombre, correo ni tel[eé]fono/i);
-});
-
-test("privacy.tsx describe con exactitud el guardado local y cálculo transitorio del resumen", () => {
-  const source = read("app/routes/privacy.tsx");
-  assert.match(source, /respuestas se guardan en este navegador/i, "answers remain in the browser during the session");
-  assert.match(source, /se env[ií]an temporalmente al servidor para calcular el resumen an[oó]nimo/i, "transient Worker calculation is disclosed");
-  assert.match(source, /no se guardan all[ií]/i, "Worker does not persist the anonymous payload");
-  assert.match(source, /14 d[ií]as/i, "matches DIAGNOSTIC_SESSION_V3_TTL_MS");
-  assert.match(source, /empiezas de nuevo/i, "no cross-device recovery: honest about the real limitation");
-  assert.match(source, /no recogemos m[eé]tricas de uso del diagn[oó]stico/i, "no analytics collected today");
-  assert.match(source, /descarga del resumen y el acceso al informe completo todav[ií]a no est[aá]n disponibles/i, "future report/download are not presented as active");
+  assert.match(source, /14 d[ií]as/i);
+  assert.match(source, /respuestas se guardan en este navegador/i);
+  assert.match(source, /se env[ií]an temporalmente al servidor para calcular el resumen an[oó]nimo/i);
+  assert.match(source, /no persiste expl[ií]citamente/i);
+  assert.match(source, /registros t[eé]cnicos/i);
+  assert.match(source, /anal[ií]tica de embudo disponible en desarrollo/i);
 });
 
 test("la copy pública del diagnóstico menciona el guardado local sin abrumar la pantalla de inicio", () => {

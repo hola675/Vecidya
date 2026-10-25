@@ -10,6 +10,7 @@ const sections = [
   { id: "informacion", label: "Qué información" },
   { id: "diagnostico", label: "Tu diagnóstico" },
   { id: "control", label: "Tus derechos" },
+  { id: "alcance", label: "Alcance y terceros" },
   { id: "contacto-legal", label: "Consultas" },
 ] as const;
 
@@ -105,13 +106,13 @@ export default function Privacy() {
           <div className="legal-highlight__intro">
             <p className="eyebrow">DIAGNÓSTICO VECIDYA</p>
             <h2 id="privacy-diagnostic-title">Explora tu situación sin crear una cuenta.</h2>
-            <p>El diagnóstico público está pensado para orientarte y no exige registro, nombre, correo ni teléfono.</p>
+            <p>El diagnóstico público no exige registro, nombre, correo ni teléfono para obtener el resumen anónimo. Si se habilita la solicitud de un informe identificado, se explicará su finalidad antes de enviar datos de contacto.</p>
             <Link className="button button--secondary" to="/diagnostico">Conocer el diagnóstico</Link>
           </div>
           <div className="legal-highlight__steps">
-            <div><strong>Mientras avanzas</strong><p>Tus respuestas se guardan en este navegador para que puedas continuar si recargas la página. Se eliminan tras 14 días sin actividad o antes si empiezas de nuevo.</p></div>
-            <div><strong>Al terminar</strong><p>Las respuestas se envían temporalmente al servidor para calcular el resumen anónimo; no se guardan allí ni quedan vinculadas a una identidad. En el entorno público no recogemos métricas de uso del diagnóstico. La descarga del resumen y el acceso al informe completo todavía no están disponibles en este flujo.</p></div>
-            <div><strong>Si cambias de dispositivo</strong><p>Para continuar desde otro navegador o dispositivo tendrás que empezar de nuevo.</p></div>
+            <div><strong>Mientras avanzas</strong><p>Tus respuestas se guardan en este navegador para que puedas continuar si recargas la página. La sesión QA-03B se conserva en este navegador hasta 14 días sin actividad; puedes eliminarla antes si empiezas de nuevo. Evita usar dispositivos compartidos.</p></div>
+            <div><strong>Al terminar</strong><p>Las respuestas se envían temporalmente al servidor para calcular el resumen anónimo. La ruta pública revisada no persiste explícitamente el contenido de las respuestas en la base de datos; esto no excluye registros técnicos del servicio ni otros flujos identificados. La analítica de embudo disponible en desarrollo no está habilitada como endpoint público de producción.</p></div>
+            <div><strong>Si cambias de dispositivo</strong><p>El progreso guardado localmente no se sincroniza automáticamente entre dispositivos. La recuperación del progreso entre dispositivos y la descarga directa del resumen no están disponibles en este flujo.</p></div>
           </div>
         </section>
 
@@ -130,6 +131,18 @@ export default function Privacy() {
           <div className="legal-inline-note">
             <strong>¿Durante cuánto tiempo?</strong>
             <p>El plazo depende del tipo de información y de las obligaciones asociadas. Si necesitas saber qué se conserva sobre ti o solicitar su eliminación, escríbenos. No compartas contraseñas ni enlaces de acceso al hacerlo.</p>
+          </div>
+        </section>
+
+        <section aria-labelledby="privacy-scope-title" className="legal-section" id="alcance">
+          <div className="legal-section__heading">
+            <p className="eyebrow">ALCANCE DE ESTA INFORMACIÓN</p>
+            <h2 id="privacy-scope-title">Canales externos y detalles por verificar.</h2>
+            <p>El tratamiento de información puede variar según el servicio que utilices. Esta explicación general no sustituye la información específica que corresponda a cada contratación o integración.</p>
+          </div>
+          <div className="legal-duo">
+            <article className="legal-duo__panel"><h3>Servicios de terceros</h3><p>Si utilizas enlaces a WhatsApp, correo electrónico u otras plataformas externas, revisa también sus políticas. Las integraciones contratadas pueden requerir información adicional sobre proveedores, transferencias y responsabilidades.</p></article>
+            <article className="legal-duo__panel legal-duo__panel--soft"><h3>Información pendiente de completar</h3><p>La identificación jurídica del responsable, los plazos de conservación por categoría, la relación de proveedores y las tecnologías de seguimiento deben confirmarse antes de publicar afirmaciones definitivas sobre ellos.</p><Link className="text-link" to="/informacion-legal">Información legal y comercial</Link></article>
           </div>
         </section>
 

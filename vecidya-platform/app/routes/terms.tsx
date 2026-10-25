@@ -11,6 +11,7 @@ const sections = [
   { id: "orientacion", label: "Diagnóstico y servicios" },
   { id: "responsabilidad", label: "Buenas prácticas" },
   { id: "consultas", label: "Preguntas frecuentes" },
+  { id: "contratacion", label: "Contratación" },
   { id: "contacto-legal", label: "Contacto" },
 ] as const;
 
@@ -138,6 +139,18 @@ export default function Terms() {
           <div className="legal-inline-note">
             <strong>Sobre estos términos</strong>
             <p>Esta página explica las pautas generales de uso del sitio. No sustituye los acuerdos particulares que correspondan a una licencia, servicio o contratación específica, ni limita los derechos que te reconozca la normativa aplicable.</p>
+          </div>
+        </section>
+
+        <section aria-labelledby="terms-contract-title" className="legal-section" id="contratacion">
+          <div className="legal-section__heading">
+            <p className="eyebrow">CONDICIONES COMERCIALES</p>
+            <h2 id="terms-contract-title">Lo que debe quedar claro antes de contratar.</h2>
+            <p>La información pública de una licencia no reemplaza la confirmación de las condiciones particulares aplicables al servicio contratado.</p>
+          </div>
+          <div className="legal-duo">
+            <article className="legal-duo__panel"><h3>Alcance y precio</h3><p>Confirma por escrito qué incluye la licencia o servicio, los importes y moneda, la puesta en marcha, los impuestos aplicables y cualquier coste de plataformas externas.</p></article>
+            <article className="legal-duo__panel legal-duo__panel--soft"><h3>Duración y finalización</h3><p>Solicita las condiciones de facturación, renovación, cancelación, cambios de plan y tratamiento de los datos al finalizar el servicio. No se establece aquí un plazo universal de permanencia o devolución.</p><Link className="text-link" to="/informacion-legal">Consultar información legal y comercial</Link></article>
           </div>
         </section>
 

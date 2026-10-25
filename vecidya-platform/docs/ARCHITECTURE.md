@@ -1,5 +1,14 @@
 # Arquitectura de Vecidya
 
+## Transparencia pública y consentimiento local de cookies (PR #102)
+
+`CookieConsent` se monta en el footer del `PublicLayout` y de la MiniWeb pública, pero no en la vista previa autenticada. Usa `cookie-preferences.ts` como contrato v2 en `localStorage`, con tres categorías: necesaria=true (funciones de sesión y seguridad), analítica opcional y marketing opcional. La ausencia, corrupción, versión antigua, fecha futura o indisponibilidad del almacenamiento **no habilita** categorías opcionales. La elección puede ajustarse y se comunica entre pestañas mediante el evento `storage` y dentro de la misma pestaña mediante un evento personalizado.
+
+**Frontera de seguridad:** el panel no carga etiquetas de marketing ni cambia las cookies de autenticación. El contrato `canUseOptionalCookies(category, storage)` debe consultarse por cualquier integración optativa antes de cargar sus recursos; una revocación requiere detener envíos futuros y aplicar la limpieza que corresponda. Este checkpoint no certifica un inventario global de tecnologías de seguimiento.
+
+Las rutas `/cookies` y `/informacion-legal` exponen el estado de información disponible sin atribuir una razón social, identificación fiscal o sede no verificada. `robots.txt` mantiene excluidas las rutas de autenticación y `sitemap.xml` incluye ambas rutas públicas, con resultado estático degradado y TTL abreviado si falla el acceso a D1. Publicar textos legales definitivos está sujeto a confirmación del titular y revisión de requisitos locales; no se sustituyen acuerdos comerciales específicos.
+
+
 ## MiniWeb — experiencia guiada y frontera editorial (UX-MINIWEB-20261024)
 
 La MiniWeb pública `/vecindario/:slug` presenta cabecera y pie del negocio mediante `MiniWebSiteHeader`/`MiniWebSiteFooter` y utiliza `MiniWebRenderer` con la lista de módulos verdaderamente renderizables; no reutiliza cabecera de marketing general. La vista previa privada utiliza ese mismo marco, pero sustituye los enlaces accionables por rótulos, y solo entonces acepta URLs de medios autenticados. `resolveBusinessLogoUrl` limita protocolos y rutas de imagen aceptadas.
