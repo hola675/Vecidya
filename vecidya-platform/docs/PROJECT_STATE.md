@@ -382,6 +382,7 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 - `/contacto` mantiene `mailto:hola@vecidya.com` y el WhatsApp directo (`wa.me`), explica qué enviar, qué esperar, enlaza `/privacidad` e invita a seguir el canal oficial de WhatsApp de Vecidya (`whatsapp.com/channel/…`, difusión). No muestra teléfono, chat, booking, grupo comunitario ni formulario persistente. El pie público enlaza «WhatsApp Vecidya» (directo) y «Canal de WhatsApp», y el JSON-LD `Organization` de la Home declara el canal en `sameAs`.
 
 ### Aprende (`knowledge.tsx`, `learn-article.tsx`)
+- APRENDE-EDITORIAL-04C (rama dependiente) refina comprensión sobre el catálogo de 47 guías: jerga prioritaria explicada, aperturas no genéricas, alt descriptivos, extractos diferenciados y cierres orientados a acción. Los nuevos contratos editoriales están versionados; integración/publicación siguen sujetas a CI y a la cadena 04A→04B→04C.
 
 - `/aprende` es la ruta canónica y `/que-debes-saber` conserva su alias. El catálogo vigente en `main` ya superó el estado histórico de cinco guías; APRENDE-EDITORIAL-04A trabaja sobre esa biblioteca real sin reabrir arquitectura legacy.
 - En la rama 04A, Aprende contiene **46 guías, 9 itinerarios y 6 categorías**. Dos guías nuevas de «Tecnología explicada» amplían la audiencia a vida digital y negocio: priorización («el que mucho abarca, poco aprieta») y uso consciente («domina la tecnología»). Ambas siguen en revisión editorial.
