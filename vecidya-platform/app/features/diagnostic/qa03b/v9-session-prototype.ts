@@ -221,8 +221,13 @@ export function editClassificationV9Prototype(
   if (session.replayTranscript.length >= QA03B_V9_REPLAY_LIMIT) return { ok: false, reason: "history_limit" };
   const applied = applyClassificationInteractionV9(session.answers, selection);
   if (!applied.ok) return { ok: false, reason: "invalid" };
+  const ids = ["q2_sector", ...(applied.event.nicheQuestionId ? [applied.event.nicheQuestionId] : [])];
   const next = touch(session, writerId, now, {
     answers: applied.answers,
+    answeredQuestionIds: [
+      ...session.answeredQuestionIds.filter((id) => id !== "q2_sector" && !id.startsWith("q2_niche_")),
+      ...ids,
+    ],
     replayTranscript: [...session.replayTranscript, { kind: "classification", classification: applied.event, mode: "edit" }],
     // Editing never refunds or consumes an additional visible interaction.
     interactionCount: session.interactionCount,
