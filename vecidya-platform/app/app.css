@@ -6620,3 +6620,65 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .miniweb-standalone__navigation { justify-content: flex-start; gap: .4rem 1rem; }
   .miniweb-standalone .public-business-profile__header { padding: clamp(1.1rem, 4vw, 1.75rem); }
 }
+
+
+/* MiniWeb: tarjetas plegables para evitar formularios largos simultáneos. */
+.miniweb-content-editor__entry {
+  margin: .65rem 0;
+  border: 1px solid #dfe6f0;
+  border-radius: .9rem;
+  overflow: clip;
+  background: #fff;
+  box-shadow: 0 5px 18px rgb(25 55 89 / 3%);
+}
+.miniweb-content-editor__entry-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 4rem;
+  gap: 1rem;
+  padding: .9rem 1rem;
+  border: 0;
+  color: #243d5e;
+  background: #fff;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.miniweb-content-editor__entry-toggle:hover { background: #f7faff; }
+.miniweb-content-editor__entry-toggle > span:first-child { display: grid; gap: .28rem; min-width: 0; }
+.miniweb-content-editor__entry-toggle strong { font-weight: 750; overflow-wrap: anywhere; }
+.miniweb-content-editor__entry-toggle small { color: #63758b; font-size: .77rem; line-height: 1.35; }
+.miniweb-content-editor__entry-toggle:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid #2457c5;
+  outline-offset: -3px;
+}
+.miniweb-content-editor__chevron {
+  width: .65rem;
+  height: .65rem;
+  flex: 0 0 auto;
+  border-right: 2px solid #456487;
+  border-bottom: 2px solid #456487;
+  transform: rotate(45deg);
+}
+.miniweb-content-editor__entry-toggle[aria-expanded="true"] {
+  color: #17458e;
+  background: #f5f8fe;
+}
+.miniweb-content-editor__entry-toggle[aria-expanded="true"] .miniweb-content-editor__chevron {
+  transform: rotate(225deg);
+}
+.miniweb-content-editor__entry .miniweb-content-editor__item {
+  margin: 0;
+  border: 0;
+  border-top: 1px solid #e6edf6;
+  border-radius: 0;
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .miniweb-content-editor__entry-toggle,
+  .miniweb-content-editor__chevron { transition: background-color .18s ease, transform .18s ease; }
+}
