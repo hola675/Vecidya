@@ -5,14 +5,14 @@ import { join } from "node:path";
 
 import { learnArticles, learnCategories, learnPathways } from "../../../app/content/learn.ts";
 
-test("Aprende conserva once guías originales y amplía el catálogo con operaciones y gestión", () => {
+test("Aprende conserva el catálogo y registra la revisión editorial de Operaciones", () => {
   assert.equal(learnArticles.length, 48);
   assert.equal(new Set(learnArticles.map((article) => article.slug)).size, learnArticles.length);
   const drafts = learnArticles.filter((article) => article.editorialDraft);
   const reviewed = learnArticles.filter((article) => !article.editorialDraft);
   assert.equal(drafts.length + reviewed.length, learnArticles.length);
-  assert(drafts.length >= 14, "Se conservan los borradores educativos del catálogo ampliado");
-  assert(reviewed.length >= 11, "Se conservan al menos las once guías originales revisadas");
+  assert.equal(drafts.length, 13, "Solo deben quedar en borrador las trece guías todavía no aprobadas en esta rama");
+  assert.equal(reviewed.length, 35, "Cinco guías de Operaciones se incorporan a las ya revisadas");
   for (const slug of [
     "como-organizar-tareas-y-responsables-en-tu-equipo",
     "como-controlar-inventario-sin-perder-productos-ni-datos",
@@ -21,7 +21,8 @@ test("Aprende conserva once guías originales y amplía el catálogo con operaci
     "como-empezar-proyecto-digital-sin-detener-negocio",
   ]) {
     const article = learnArticles.find((candidate) => candidate.slug === slug);
-    assert(article?.editorialDraft, `Guía operativa ausente o publicada prematuramente: ${slug}`);
+    assert.ok(article, `Guía operativa ausente: ${slug}`);
+    assert.equal(article.editorialDraft, false, `La guía operativa debe conservar su aprobación editorial: ${slug}`);
     assert.equal(article.sections.length, 9, `La guía operativa debe ofrecer nueve secciones: ${slug}`);
   }
 });
