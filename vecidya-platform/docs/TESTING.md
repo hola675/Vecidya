@@ -1,5 +1,11 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-04E — revisión de Operaciones (2026-10-25)
+
+**TEST versionado / RAN pendiente.** Se fija el catálogo en 48 guías con **35 revisadas / 13 borradores**. Las cinco guías de `learn-operations-02.ts` deben conservar `editorialDraft: false`, nueve secciones, ejemplo hipotético, FAQ, cierre accionable y al menos dos fuentes HTTPS. Los contratos comprueban además la referencia de inventario de business.gov.au, la definición de ERP y la fuente oficial de Microsoft Learn, y la guía de beta de GOV.UK para el piloto digital.
+
+Gate: `Aprende quality` con typecheck, build e integridad Aprende PASS sobre el HEAD final. Sin Main integration mientras este checkpoint permanezca paralelo y apilado sobre 04B.
+
 ## APRENDE-EDITORIAL-04B — separación selección/migración de proveedor (2026-10-25)
 
 **TEST versionado / RAN pendiente en HEAD final.** El contrato de catálogo espera **47 guías** y mantiene 9 itinerarios. La prueba nueva exige que la guía histórica de proveedor siga aprobada y enfocada en elegir/renovar, mientras la migración nueva permanece en revisión y contiene DNS, correo, cancelación segura y comprobaciones. Ambas deben enlazarse entre sí. Las pruebas históricas de Presencia, Automatizaciones, Dominio/hosting, CRM e IA permanecen como contrato de contenido durante su reducción. Un guard adicional protege seis guías madre (CRM, IA, Presencia, primera campaña, Automatizaciones y Dominio/hosting) contra regresión editorial: máximo 10 secciones y 1800 palabras serializadas por guía.
