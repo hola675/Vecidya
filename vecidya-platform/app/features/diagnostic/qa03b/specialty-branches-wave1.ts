@@ -91,6 +91,7 @@ export const QA03B_SPECIALTY_BRANCH_QUESTIONS_V1: readonly QuestionDefinitionV2[
     appliesWhen: andV2(
       activeHistory,
       inV2("q2_niche_food_hospitality", ["restaurant", "cafe", "food_truck"]),
+      eqV2("q2_goal", "explain"),
       inV2("q2_presence_digital_base", ["reliable_presence", "partial_presence"]),
     ),
     options: [
@@ -130,6 +131,7 @@ export const QA03B_SPECIALTY_BRANCH_QUESTIONS_V1: readonly QuestionDefinitionV2[
     appliesWhen: andV2(
       activeHistory,
       eqV2("q2_niche_b2b_services", "marketing_agency"),
+      eqV2("q2_goal", "explain"),
       inV2("q2_customer_buyer", ["b2b", "mixed"]),
       inV2("q2_presence_digital_base", ["reliable_presence", "partial_presence"]),
     ),
