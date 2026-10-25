@@ -290,11 +290,21 @@ export default function BusinessProfilePage() {
 
       <PublicBusinessProfilePreview hidden={!previewOpen} hours={previewHours} profile={previewProfile} />
 
+      <nav aria-label="Secciones para configurar tu negocio" className="miniweb-editor__steps">
+        <a href="#business-profile-identity"><span>1</span> Identidad</a>
+        <a href="#business-profile-description"><span>2</span> Presentación</a>
+        <a href="#business-profile-contact"><span>3</span> Contacto</a>
+        <a href="#business-profile-social"><span>4</span> Redes</a>
+        <a href="#business-profile-operations"><span>5</span> Atención</a>
+        <a href="#business-profile-hours"><span>6</span> Horarios</a>
+      </nav>
+      <p className="form-help">Avanza por las secciones en orden o elige la que necesitas. Guarda los cambios del perfil antes de editar los horarios: se guardan por separado.</p>
+
       <Card className="business-profile-card">
         {canEdit ? (
           <Form className="business-profile-form" method="post" onChange={updateProfilePreview} onSubmit={(event) => { if (hasDraftConflict) event.preventDefault(); }}>
             <input name="draftRevision" type="hidden" value={formDraftRevision} />
-            <fieldset disabled={isSaving}>
+            <fieldset disabled={isSaving} id="business-profile-identity">
               <legend>Identidad del negocio</legend>
               <div className="form-grid">
                 <label>Nombre visible<input defaultValue={value(profile?.displayName)} name="displayName" onChange={(event) => { if (suggestsSlug && !slugTouchedRef.current && slugInputRef.current) slugInputRef.current.value = slugifyBusinessName(event.currentTarget.value); }} required maxLength={120} /></label>
@@ -304,7 +314,7 @@ export default function BusinessProfilePage() {
               </div>
             </fieldset>
 
-            <fieldset disabled={isSaving}>
+            <fieldset disabled={isSaving} id="business-profile-description">
               <legend>Presentación</legend>
               <div className="form-grid">
                 <label className="form-grid__full">Descripción breve<textarea defaultValue={value(profile?.shortDescription)} name="shortDescription" maxLength={280} rows={3} /></label>
@@ -312,7 +322,7 @@ export default function BusinessProfilePage() {
               </div>
             </fieldset>
 
-            <fieldset disabled={isSaving}>
+            <fieldset disabled={isSaving} id="business-profile-contact">
               <legend>Ubicación y contacto</legend>
               <div className="form-grid">
                 <label>Ciudad<input defaultValue={value(profile?.city)} name="city" maxLength={120} /></label>
@@ -324,7 +334,7 @@ export default function BusinessProfilePage() {
               </div>
             </fieldset>
 
-            <fieldset disabled={isSaving} className="business-profile-form__contact">
+            <fieldset disabled={isSaving} className="business-profile-form__contact" id="business-profile-social">
               <legend>Redes y WhatsApp</legend>
               <div className="form-grid">
                 <label>WhatsApp<input defaultValue={value(profile?.whatsapp)} name="whatsapp" placeholder="+573244321864" maxLength={20} /></label>
@@ -335,7 +345,7 @@ export default function BusinessProfilePage() {
               <p className="form-help">Todos estos campos son opcionales; déjalos vacíos si tu negocio no los usa.</p>
             </fieldset>
 
-            <fieldset disabled={isSaving} className="business-profile-form__operations">
+            <fieldset disabled={isSaving} className="business-profile-form__operations" id="business-profile-operations">
               <legend>Cómo y dónde atiendes</legend>
               <div className="form-grid">
                 <label>Modalidad de atención
@@ -371,7 +381,7 @@ export default function BusinessProfilePage() {
       </Card>
 
       {canEdit ? (
-        <Card className="business-profile-card business-profile-hours">
+        <Card className="business-profile-card business-profile-hours" id="business-profile-hours">
           <p className="eyebrow">HORARIOS</p>
           <h2>¿Cuándo atiendes?</h2>
           <p className="form-help">Marca "Cerrado" o deja ambas horas vacías para un día sin definir. Los horarios son los que tu negocio publica; Vecidya no verifica huso horario ni excepciones.</p>
