@@ -8,6 +8,9 @@ import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diag
 import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
 import { validateQuestionCopyV2 } from "../../../app/features/diagnostic/qa03b/copy";
 import { validateEvidenceMigrationsV3 } from "../../../app/features/diagnostic/qbv2-evidence-v3";
+import { validateCandidateAnswerV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-session";
+import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
+import { QA03B_SPECIALTY_PERSONAS, authoredSpecialtyAnswers } from "./qa03b-specialty-journeys";
 
 const common = {
   q2_entity: "business",
@@ -114,4 +117,72 @@ test("utility-first asks niche only when it can unlock one of the real specialty
   }, bank, "utility_first");
   assert.ok(after.eligibleQuestionIds.includes("q2_specialty_software_activation"));
   assert.ok(after.evidenceSufficiency.usefulEvidenceQuestionIds.includes("q2_specialty_software_activation"));
+});
+
+
+function walkImpact(profileId: string, routeBank: typeof bank) {
+  const persona = QA03B_SPECIALTY_PERSONAS.find((item) => item.id === profileId);
+  assert.ok(persona, profileId);
+  const authored = authoredSpecialtyAnswers(persona);
+  const byId = new Map(routeBank.map((q) => [q.id, q]));
+  let answers: AnswersV2 = {};
+  const asked: string[] = [];
+  for (let turn = 0; turn <= 24; turn++) {
+    const plan = buildCandidateQuestionPlanFromBankV3({ answers }, routeBank, "utility_first");
+    answers = plan.activeAnswers;
+    if (!plan.nextQuestionId) {
+      const score = scoreCandidateContextualDimensionsV3({ answers }, routeBank);
+      return {
+        asked,
+        terminal: plan.evidenceSufficiency.terminalReason,
+        unresolved: plan.evidenceSufficiency.unresolvedApplicableDimensions,
+        insufficient: plan.evidenceSufficiency.insufficientContextDimensions,
+        evidence: score.dimensions.flatMap((d) => d.evidence.map((e) => ({
+          dimension: d.id, questionId: e.questionId, state: e.state,
+        }))),
+      };
+    }
+    assert.ok(turn < 24, `${profileId}: route exceeded 24`);
+    const id = plan.nextQuestionId;
+    const question = byId.get(id);
+    assert.ok(question, id);
+    let value: string | readonly string[] | undefined = authored[id];
+    if (value === undefined) {
+      const neutral = question.options.find((option) => option.kind === "unknown");
+      assert.ok(neutral, `${profileId}: no authored or unknown answer for ${id}`);
+      value = question.type === "multi" ? [neutral.value] : neutral.value;
+    }
+    assert.ok(validateCandidateAnswerV3(question, value), `${profileId}: invalid ${id}`);
+    answers = { ...answers, [id]: value };
+    asked.push(id);
+  }
+  throw new Error(`${profileId}: non-terminating route`);
+}
+
+test("specialty pilot measures its actual cost and evidence delta against the 74-question bank", () => {
+  const pilotIds = new Set(pilot.map((q) => q.id));
+  const withoutPilot = bank.filter((q) => !pilotIds.has(q.id));
+  assert.equal(withoutPilot.length, 74);
+
+  for (const profile of ["software-saas-activo", "marketplace-activo", "impuestos", "seguros"]) {
+    const before = walkImpact(profile, withoutPilot);
+    const after = walkImpact(profile, bank);
+    assert.ok(before.asked.length <= 24 && after.asked.length <= 24, profile);
+    assert.ok(after.asked.filter((id) => pilotIds.has(id)).length <= 1, profile);
+
+    const newEvidence = after.evidence.filter((item) =>
+      pilotIds.has(item.questionId) && !before.evidence.some((old) =>
+        old.questionId === item.questionId && old.state === item.state));
+    console.log(`QA03B_SPECIALTY_IMPACT ${JSON.stringify({
+      profile,
+      before: { count: before.asked.length, terminal: before.terminal,
+        evidence: before.evidence.length, unresolved: before.unresolved, insufficient: before.insufficient },
+      after: { count: after.asked.length, terminal: after.terminal,
+        evidence: after.evidence.length, unresolved: after.unresolved, insufficient: after.insufficient },
+      specialtyAsked: after.asked.filter((id) => pilotIds.has(id)),
+      addedQuestions: after.asked.filter((id) => !before.asked.includes(id)),
+      removedQuestions: before.asked.filter((id) => !after.asked.includes(id)),
+      newEvidence,
+    })}`);
+  }
 });
