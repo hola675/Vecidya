@@ -60,7 +60,7 @@ export function CookieConsent() {
   return (
     <>
       {storageUnavailable && <p role="status">No pudimos acceder al almacenamiento de este navegador. Las categorías opcionales permanecerán desactivadas hasta que puedas guardar una decisión.</p>}
-      <button aria-controls="cookie-consent-panel" aria-expanded={!preferences || open} className="cookie-preferences-trigger" type="button" onClick={() => { setOpen(true); setConfigure(true); }}>Preferencias de cookies</button>
+      <button aria-controls={!preferences || open ? "cookie-consent-panel" : undefined} aria-expanded={!preferences || open} className="cookie-preferences-trigger" type="button" onClick={() => { setOpen(true); setConfigure(true); }}>Preferencias de cookies</button>
       {(!preferences || open) && (
         <section aria-label="Preferencias de cookies" className="cookie-consent" id="cookie-consent-panel" role="region">
           <div className="cookie-consent__content">
