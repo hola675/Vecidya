@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as publicBank } from "../../../app/features/diagnostic/qa03b/bank";
-import { QA03B_RECOVERY_PILOT_V1, QA03B_SPECIALTY_CANDIDATE_BANK_V1, QA03B_SPECIALTY_SELECTORS_V1 } from "../../../app/features/diagnostic/qa03b/specialty-candidate-bank";
+import { QA03B_CANDIDATE_SECTOR_V4, QA03B_RECOVERY_PILOT_V1, QA03B_SPECIALTY_CANDIDATE_BANK_V1, QA03B_SPECIALTY_SELECTORS_V1 } from "../../../app/features/diagnostic/qa03b/specialty-candidate-bank";
 import { resolveEligibleQuestionsV2 } from "../../../app/features/diagnostic/qa03b/engine";
 import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-planner";
 import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
@@ -25,11 +25,21 @@ const active = {
 
 test("specialty bank is isolated from the public 45 and preserves their contracts", () => {
   assert.equal(publicBank.length, 45);
-  assert.equal(QA03B_SPECIALTY_SELECTORS_V1.length, 7);
+  assert.equal(QA03B_SPECIALTY_SELECTORS_V1.length, 8);
   assert.equal(QA03B_RECOVERY_PILOT_V1.length, 6);
-  assert.equal(candidate.length, 58);
+  assert.equal(candidate.length, 59);
   assert.equal(new Set(candidate.map((question) => question.id)).size, candidate.length);
-  assert.deepEqual(candidate.slice(0, publicBank.length), publicBank);
+  for (const question of publicBank) {
+    const proposed = candidate.find((item) => item.id === question.id);
+    assert.ok(proposed, question.id);
+    if (question.id === "q2_sector") {
+      assert.equal(question.version, 3);
+      assert.equal(proposed.version, 4);
+      assert.deepEqual(proposed.options.slice(0, -6), question.options.slice(0, -2));
+    } else {
+      assert.deepEqual(proposed, question, question.id);
+    }
+  }
   assert.deepEqual(validateEvidenceMigrationsV3(candidate), []);
   assert.deepEqual(validateQuestionCopyV2(candidate), []);
 });
@@ -52,6 +62,17 @@ test("specialty selectors have exact sector routing, known niche values and neut
       sector,
     );
   }
+});
+
+test("proposed sector v4 exposes missing taxonomy families without altering live v3", () => {
+  const values = QA03B_CANDIDATE_SECTOR_V4.options.map((item) => item.value);
+  for (const sector of ["ecommerce", "creator", "b2b_services", "nonprofit_community"]) {
+    assert.ok(values.includes(sector), sector);
+    const result = resolveEligibleQuestionsV2({ ...active, q2_sector: sector }, candidate);
+    assert.equal(result.context.nicheGroup.status, "resolved", sector);
+    assert.equal(result.context.nicheGroup.status === "resolved" && result.context.nicheGroup.value, sector);
+  }
+  assert.equal(publicBank.find((question) => question.id === "q2_sector")?.version, 3);
 });
 
 test("declared niche resolves only on explicit, eligible selection", () => {
