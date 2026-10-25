@@ -1,5 +1,14 @@
 # Estado de implementación
 
+## UX-MINIWEB-20261024 — integración de experiencia guiada (PR #105)
+
+**GIT/CODE:** la rama `audit/app-internal-ux-foundation-20261024` incluye el editor de cinco pasos (Diseño, Secciones, Contenido, Vista previa y Publicar), estados de completitud y CTA, tarjetas de servicios/productos y FAQ plegables, biblioteca visual compatible con APP-MINI-02F, previsualización de cabecera/pie y diseño público de negocio independiente. También incluye compactación del sidebar de `/app` y reorganización inicial de la administración. El PR #105 propone su integración en `main`.
+
+**RAN en GitHub Actions:** PR #105, run `40151659894` sobre `d5a8e92977ed0cb372ca49839a732be20166e03f`: `typecheck`, `build`, regresión focal Diagnóstico/Aprende **16/16 PASS** y unitarias **1696/1696 PASS**. No acredita E2E de esta nueva UI ni la compatibilidad visual manual. La migración `0028` procede del PR #103 ya integrado en `main`; NO se aplicó a D1 remota. 
+
+**Open Debt:** E2E de MiniWeb actualizado a los botones y paneles del nuevo editor, no ejecutado contra esta rama; falta revisión visual/accesible en 360/390/768/1024/1366/1920 px, prevención de pérdidas de edición durante uploads/409, snapshot v4 con D1 aislada, y aceptación. No se afirma deploy ni HTTP anónimo fechado de este checkpoint.
+
+
 ## Corte de estado y versiones — 2026-10-24
 
 **HTTP anónimo RAN 2026-10-25T01:08Z (2026-10-24, hora local):** producción (`https://vecidya.com`) responde `200` en `/`, `/diagnostico` y `/diagnostico/metodologia`; las tres páginas muestran `0.7.3` y `© 2026 Vecidya`. Staging (`https://vecidya-platform-staging.soporte-8a1.workers.dev`) responde `200` en las mismas rutas y muestra `0.7.0`. Esto actualiza el corte HTTP anterior. La versión del footer no identifica por sí sola el SHA desplegado ni acredita que todas las funciones del código integrado estén activas.
