@@ -55,7 +55,7 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
     return () => query.removeEventListener("change", update);
   }, []);
   const { closeNavigation, isMobileNavigation, menuButtonRef, navigationOpen, navigationRef, setNavigationOpen } =
-    useResponsiveNavigationDrawer({ breakpoint: 979, firstItemSelector: "#app-navigation a" });
+    useResponsiveNavigationDrawer({ breakpoint: 979, firstItemSelector: "#app-navigation a", enabled: isSupportedViewport !== false || allowNarrowViewport });
   const hasOrganization = organizations.length > 0;
   const visibleGroups = hasOrganization ? groups : groups.filter((group) => group.label === null || group.label === "CUENTA");
 

@@ -59,7 +59,8 @@ async function captureRoute(page, area, route, width, role) {
   const viewportHeight = viewportHeightFor(width);
   await page.setViewportSize({ width, height: viewportHeight });
   await page.setViewportSize({ width, height: viewportHeight });
-  await page.goto(new URL(route, baseUrl).toString(), { waitUntil: "domcontentloaded", timeout: 15000 });
+  const response = await page.goto(new URL(route, baseUrl).toString(), { waitUntil: "domcontentloaded", timeout: 15000 });
+  const status = response?.status() ?? null;
   await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => undefined);
   await page.waitForTimeout(250);
   await stabilize(page);
@@ -87,7 +88,7 @@ async function captureRoute(page, area, route, width, role) {
   const file = `${area}-${route.replace(/^\//, "root").replaceAll("/", "-") || "root"}-${width}.png`;
   const fullPage = keyRoutes.has(route) || route.startsWith("/vecindario/");
   await page.screenshot({ path: join(outputDirectory, file), fullPage: false });
-  results.push({ area, route, role, width, height: viewportHeight, orientation: viewportHeight > width ? "portrait" : "landscape", status: 200, finalUrl: page.url(), screenshot: file, failure: null, ...layout });
+  results.push({ area, route, role, width, height: viewportHeight, orientation: viewportHeight > width ? "portrait" : "landscape", status, finalUrl: page.url(), screenshot: file, failure: status !== null && status >= 400 ? `HTTP ${status}` : null, ...layout });
   return results.at(-1);
 }
 

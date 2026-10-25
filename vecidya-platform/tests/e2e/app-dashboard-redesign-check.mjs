@@ -82,6 +82,7 @@ async function stopWorker(child) {
 }
 
 async function assertNoOverflow(page, label) {
+  await page.waitForTimeout(220);
   const result = await page.evaluate(() => ({
     viewport: document.documentElement.clientWidth,
     document: document.documentElement.scrollWidth,
@@ -194,6 +195,13 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
     if (await page.locator('button[aria-controls="app-navigation"]').getAttribute("aria-expanded") !== "false") throw new Error(`El menú cliente no se cerró tras navegar a ${width}px.`);
     await page.goto(new URL("/app", baseUrl).toString(), { waitUntil: "networkidle" });
   }
+  await page.setViewportSize({ width: 820, height: 900 });
+  await page.locator('button[aria-controls="app-navigation"]').click();
+  await page.waitForFunction(() => document.body.style.overflow === "hidden");
+  await page.setViewportSize({ width: 760, height: 900 });
+  await page.getByTestId("unsupported-device-notice").waitFor();
+  await page.waitForFunction(() => document.body.style.overflow !== "hidden");
+  if (await page.getByTestId("unsupported-device-notice").getByRole("button", { name: "Continuar en esta ventana" }).count() !== 1) throw new Error("El aviso cliente no quedó accesible al reducir el ancho con la navegación abierta.");
   for (const width of [320, 360, 390, 430]) {
     const mobileContext = await browser.newContext({ viewport: { width, height: 844 }, serviceWorkers: "block" });
     const mobilePage = await mobileContext.newPage();
@@ -279,6 +287,13 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
     if (await adminDesktopPage.locator('button[aria-controls="admin-navigation"]').getAttribute("aria-expanded") !== "false") throw new Error(`El menú interno no se cerró tras navegar a ${width}px.`);
     await adminDesktopPage.goto(new URL("/app/internal", baseUrl).toString(), { waitUntil: "networkidle" });
   }
+  await adminDesktopPage.setViewportSize({ width: 820, height: 900 });
+  await adminDesktopPage.locator('button[aria-controls="admin-navigation"]').click();
+  await adminDesktopPage.waitForFunction(() => document.body.style.overflow === "hidden");
+  await adminDesktopPage.setViewportSize({ width: 760, height: 900 });
+  await adminDesktopPage.getByTestId("unsupported-device-notice").waitFor();
+  await adminDesktopPage.waitForFunction(() => document.body.style.overflow !== "hidden");
+  if (await adminDesktopPage.getByTestId("unsupported-device-notice").getByRole("button", { name: "Continuar en esta ventana" }).count() !== 1) throw new Error("El aviso administrativo no quedó accesible al reducir el ancho con la navegación abierta.");
   await adminDesktopContext.close();
   for (const width of [320, 360, 390, 430]) {
     const adminContext = await browser.newContext({ viewport: { width, height: 844 }, serviceWorkers: "block" });

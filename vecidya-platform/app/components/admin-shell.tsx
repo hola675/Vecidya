@@ -41,7 +41,7 @@ export function AdminShell({ active, children, workspaceUser, platformRole = "pl
     return () => query.removeEventListener("change", update);
   }, []);
   const { closeNavigation, isMobileNavigation, menuButtonRef, navigationOpen, navigationRef, setNavigationOpen } =
-    useResponsiveNavigationDrawer({ breakpoint: 979, firstItemSelector: "#admin-navigation a" });
+    useResponsiveNavigationDrawer({ breakpoint: 979, firstItemSelector: "#admin-navigation a", enabled: isSupportedViewport !== false || allowNarrowViewport });
 
   async function handleSignOut(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

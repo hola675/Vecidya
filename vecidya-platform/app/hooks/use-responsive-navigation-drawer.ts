@@ -3,11 +3,13 @@ import { useEffect, useRef, useState } from "react";
 type ResponsiveNavigationDrawerOptions = {
   breakpoint: number;
   firstItemSelector: string;
+  enabled?: boolean;
 };
 
-export function useResponsiveNavigationDrawer({ breakpoint, firstItemSelector }: ResponsiveNavigationDrawerOptions) {
+export function useResponsiveNavigationDrawer({ breakpoint, firstItemSelector, enabled = true }: ResponsiveNavigationDrawerOptions) {
   const [isMobileNavigation, setIsMobileNavigation] = useState(false);
   const [navigationOpen, setNavigationOpen] = useState(false);
+  const isNavigationOpen = navigationOpen && enabled;
   const navigationRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const wasNavigationOpen = useRef(false);
@@ -28,7 +30,7 @@ export function useResponsiveNavigationDrawer({ breakpoint, firstItemSelector }:
       wasNavigationOpen.current = false;
       return;
     }
-    if (!navigationOpen) {
+    if (!isNavigationOpen) {
       if (wasNavigationOpen.current) requestAnimationFrame(() => menuButtonRef.current?.focus());
       wasNavigationOpen.current = false;
       return;
@@ -76,12 +78,12 @@ export function useResponsiveNavigationDrawer({ breakpoint, firstItemSelector }:
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = previousOverflow;
     };
-  }, [firstItemSelector, isMobileNavigation, navigationOpen]);
+  }, [firstItemSelector, isMobileNavigation, isNavigationOpen]);
 
   const closeNavigation = (restoreFocus = false) => {
     setNavigationOpen(false);
     if (restoreFocus) wasNavigationOpen.current = true;
   };
 
-  return { closeNavigation, isMobileNavigation, menuButtonRef, navigationOpen, navigationRef, setNavigationOpen };
+  return { closeNavigation, isMobileNavigation, menuButtonRef, navigationOpen: isNavigationOpen, navigationRef, setNavigationOpen };
 }
