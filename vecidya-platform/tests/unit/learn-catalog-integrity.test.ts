@@ -105,6 +105,24 @@ test("Las seis guías especializadas aprobadas mantienen sus enlaces y fuentes",
   }
 });
 
+test("Las guías madre revisadas no vuelven a convertirse en monolitos", () => {
+  const focusedSlugs = [
+    "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
+    "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
+    "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+    "publicidad-digital-como-preparar-una-primera-campana",
+    "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio",
+    "dominio-hosting-sitio-web-como-funcionan",
+  ];
+  for (const slug of focusedSlugs) {
+    const article = getLearnArticle(slug);
+    assert.ok(article, `Falta guía madre: ${slug}`);
+    const words = JSON.stringify(article).replace(/https?:\\/\\/[^"\\s]+/g, " ").split(/\\s+/u).filter(Boolean).length;
+    assert.ok(words <= 1800, `La guía madre ${slug} volvió a crecer demasiado: ${words} palabras serializadas`);
+    assert.ok(article.sections.length <= 10, `La guía madre ${slug} volvió a acumular demasiadas secciones`);
+  }
+});
+
 test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
   const requirements = [
     ["publicidad-digital-como-preparar-una-primera-campana", [/Google Ads|Meta Ads/i, /página de destino/i, /indicadores/i]],
