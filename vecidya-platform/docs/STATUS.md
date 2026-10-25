@@ -1,5 +1,14 @@
 # Estado de implementación
 
+## LEGAL-TRANSPARENCY-102 — transparencia, cookies y condiciones (PR #102, 2026-10-24)
+
+**CODE:** la rama de PR #102 incorpora `/informacion-legal` y `/cookies`, enlaces en navegación/footer, textos de privacidad y contratación actualizados, preferencia local de cookies opcionales v2 (necesarias siempre, analítica y marketing desactivados sin consentimiento, selección granular, revocación y sincronización entre pestañas). Las preferencias también están accesibles desde las MiniWeb públicas; la vista previa privada no presenta consentimiento. Se evita afirmar domicilio u otra identidad legal no verificada. El sitemap conserva rutas estáticas aunque D1 no esté disponible y reduce su TTL en degradación.
+
+**EVIDENCIA Y LÍMITE:** pruebas unitarias de preferencias y un E2E Playwright de cookies están versionados; este último requiere ejecución en Worker local autorizado antes de certificar compatibilidad real. Un consentimiento guardado **no instala una barrera automática frente a scripts**: cualquier integración opcional futura debe consultar el consentimiento *antes* de emitir requests y reaccionar a su revocación. El flujo QA-03B conserva progresos locales hasta 14 días sin actividad; el texto ya no promete ausencia absoluta de registros técnicos. La identificación jurídica, fiscal y domicilio del responsable, los terceros efectivos, retenciones y condiciones específicas de contratación siguen pendientes de comprobación.
+
+**Open Debt:** inventario completo de cookies, `Set-Cookie`, scripts, almacenamiento y terceros; revisión legal humana; accesibilidad y E2E real a 390/1366 px, almacenamiento denegado y varias pestañas; fuente de datos de la identificación legal. No confundir merge de código con aprobación jurídica ni despliegue.
+
+
 ## UX-MINIWEB-20261024 — integración de experiencia guiada (PR #105)
 
 **GIT/CODE:** la rama `audit/app-internal-ux-foundation-20261024` incluye el editor de cinco pasos (Diseño, Secciones, Contenido, Vista previa y Publicar), estados de completitud y CTA, tarjetas de servicios/productos y FAQ plegables, biblioteca visual compatible con APP-MINI-02F, previsualización de cabecera/pie y diseño público de negocio independiente. También incluye compactación del sidebar de `/app` y reorganización inicial de la administración. El PR #105 propone su integración en `main`.
