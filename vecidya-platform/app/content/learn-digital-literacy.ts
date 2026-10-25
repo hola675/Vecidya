@@ -372,8 +372,8 @@ export const learnDigitalLiteracyArticles: LearnArticle[] = [
                 detail: "Evita reutilizar la misma contraseña en servicios importantes. Un gestor de contraseñas puede ayudarte a mantener credenciales únicas.",
               },
               {
-                title: "Activa autenticación multifactor cuando esté disponible",
-                detail: "Añade una comprobación adicional al inicio de sesión. Guarda los métodos de recuperación de forma segura.",
+                title: "Activa una segunda comprobación de acceso",
+                detail: "Cuando el servicio la ofrezca, usa autenticación multifactor: además de la contraseña, pide otra comprobación. Guarda los métodos de recuperación de forma segura.",
               },
               {
                 title: "Desconfía de la urgencia inesperada",
