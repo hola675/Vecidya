@@ -47,7 +47,7 @@ export type CandidateQuestionPlanV3 = {
 export type CandidateQuestionPlannerInputV3 = { readonly answers: AnswersV2; readonly budget?: RouteBudgetV1 };
 
 const DEFAULT_BUDGET: RouteBudgetV1 = DEFAULT_ROUTE_BUDGET_V1;
-const CONTEXT_CORE = new Set<ContextFieldRef>(["entity", "businessModel", "archetype", "activity", "primaryGoal", "primaryFriction", "customerReach", "customerBuyer"]);
+const CONTEXT_CORE = new Set<ContextFieldRef>(["entity", "businessModel", "archetype", "activity", "primaryGoal", "primaryFriction", "customerReach", "customerBuyer", "niche"]);
 const R4_CONTEXT_FIELDS: Partial<Record<DigitalDimensionId, ReadonlySet<ContextFieldRef>>> = {
   discovery: new Set(["activity", "businessModel", "archetype", "customerBuyer"]),
   conversion_access: new Set(["businessModel", "archetype", "customerBuyer"]),
@@ -91,7 +91,7 @@ function canProspectivelyResolveApplicability(question: QuestionDefinitionV2, di
     if (option.kind !== undefined && option.kind !== "value") return false;
     const hypothetical = { ...activeAnswers, [question.id]: question.type === "multi" ? [option.value] : option.value };
     const resolvedAnswers = resolveEligibleQuestionsV2(hypothetical, bank).activeAnswers;
-    return scoreCandidateContextualDimensionsV3({ answers: resolvedAnswers }).dimensions.find((d) => d.id === dimension)?.applicability === "applicable";
+    return scoreCandidateContextualDimensionsV3({ answers: resolvedAnswers }, bank).dimensions.find((d) => d.id === dimension)?.applicability === "applicable";
   });
 }
 
@@ -102,7 +102,7 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
   const normalizedBudget: RouteBudgetV1 = { ...budget, hardMax, targetMax: Math.min(hardMax, budget.targetMax), targetMin: Math.min(hardMax, budget.targetMin), materialEvidenceReserve: Math.min(hardMax - 1, Math.max(0, budget.materialEvidenceReserve ?? 0)) };
   const resolution = resolveEligibleQuestionsV2(answers, bank);
   const activeAnswers = resolution.activeAnswers;
-  const scoring = scoreCandidateContextualDimensionsV3({ answers: activeAnswers });
+  const scoring = scoreCandidateContextualDimensionsV3({ answers: activeAnswers }, bank);
   const dimensions = scoring.dimensions;
   const open = new Set(dimensions.filter((d) => d.applicability === "applicable" && d.score === null).map((d) => d.id));
   const applicable = new Set(dimensions.filter((d) => d.applicability === "applicable").map((d) => d.id));
