@@ -197,7 +197,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
       "Revisa permisos cuando alguien cambia de función, sale del equipo o se incorpora a otra sede."
     ],
     "image": "/assets/learn/diagram-crm.svg",
-    "imageAlt": "Diagrama ilustrativo de información y responsabilidades que deben mantenerse organizadas.",
+    "imageAlt": "Una consulta se registra con contexto y puede continuar, retomarse después o cerrarse según quién tenga responsabilidad sobre el siguiente paso.",
     "editorialDraft": true,
     "relatedSlugs": [
       "como-proteger-cuentas-contrasenas-estafas-negocio",
