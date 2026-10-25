@@ -4,8 +4,14 @@
 
 - Se añadió captura integral Playwright y reporte HTML local con filtros por ruta/viewport y comparación antes/después. Baselines disponibles: páginas legales antes de #102 y paneles antes de #105. `/cookies` y `/informacion-legal` se etiquetan como rutas nuevas; el editor MiniWeb guiado no tiene captura histórica equivalente.
 - Se corrigió el overflow real del H1 de `/cookies` a 320 px, causado por el ancho mínimo intrínseco del grid y una palabra larga. Revisión final a 320/390/1366 px: HTTP 200 sin overflow.
-- Typecheck/build y 1699 unitarias PASS; E2E de consentimiento PASS; E2E de dashboard PASS; MiniWeb E2E **123/123 PASS** en Worker local, fixtures limpias y ocho anchos. Captura integral: 100 pantallas, 0 fallos HTTP, 0 requests externos, 0 errores de consola públicos/internos. Las mediciones 711 px en tabla interna durante captura rápida se identifican como timing; la tabla conserva su propio desplazamiento y el E2E verifica el shell responsive.
+- Con pnpm 11.21.0, React Router 8.5.0 y Wrangler 4.152.0: typecheck/build y 1699 unitarias PASS; E2E de consentimiento PASS; E2E de dashboard PASS; MiniWeb E2E **123/123 PASS** en Worker local, fixtures limpias y ocho anchos. Captura integral: 100 pantallas, 0 fallos HTTP, 0 requests externos, 0 errores de consola pública y 1 aviso de `__manifest` cancelado durante navegación de la captura. Las dos mediciones 711 px en tabla interna durante captura rápida se identifican como timing; la tabla conserva su propio desplazamiento y el E2E verifica el shell responsive.
 - Demo local sintético persistente: 10 negocios/perfiles, 8 licencias, 1 snapshot publicado, 11 objetos de medio en R2 simulado (4 públicos y 7 borradores privados). D1/R2 solo locales; sin datos reales, correo externo, deploy ni publicación productiva. AccessLint no está disponible; revisión responsive Playwright no equivale a auditoría WCAG.
+
+## 2026-10-24 — mantenimiento compatible de dependencias y URLs (checkpoint local)
+
+- Actualiza dependencias directas dentro de los rangos semver y regenera `pnpm-lock.yaml`: React Router 8.5.0, React 19.3.1, Drizzle ORM 0.45.4, Cloudflare Vite plugin 1.65.0, Vite 8.3.5 y Wrangler 4.152.0, entre otras. Se conservan los pins exactos de Better Auth, PDFKit parcheado, Playwright y Arimo.
+- Fija pnpm 11.21.0 con `devEngines.packageManager`, alineado con el harness del repositorio. Las URLs públicas y el registry oficial se verificaron; no se requirió cambio de configuración.
+- Instalación congelada, typecheck, build y smoke del Worker local PASS. No se desplegó, no se modificaron datos remotos y no se retiró el adaptador V3 de rollback.
 
 ## 2026-10-24 — LEGAL-TRANSPARENCY-102 — rutas legales y preferencias (PR #102, sin deploy)
 
