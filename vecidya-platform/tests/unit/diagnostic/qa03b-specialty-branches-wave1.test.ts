@@ -11,6 +11,9 @@ import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diag
 import { validateEvidenceMigrationsV3 } from "../../../app/features/diagnostic/qbv2-evidence-v3";
 import { validateQuestionCopyV2 } from "../../../app/features/diagnostic/qa03b/copy";
 import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
+import { validateCandidateAnswerV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-session";
+import type { QuestionDefinitionV2 } from "../../../app/features/diagnostic/qbv2-contract";
+import { AUTHORED_UNKNOWN_CAPABILITIES } from "./qa03b-fixtures";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 
 const dentistBase: AnswersV2 = {
@@ -151,3 +154,108 @@ test("specialized answers produce evidence only from the specialized question, n
     assert.ok(scored.dimensions.every((d) => d.evidence.every((e) => !e.questionId.startsWith("q2_niche_"))), questionId);
   }
 });
+
+function walkSpecialty(
+  bank: readonly QuestionDefinitionV2[],
+  authored: AnswersV2,
+) {
+  const byId = new Map(bank.map((q) => [q.id, q]));
+  let answers: AnswersV2 = {};
+  const asked: string[] = [];
+  for (let turn = 0; turn <= 24; turn++) {
+    const plan = buildCandidateQuestionPlanFromBankV3({ answers }, bank, "utility_first");
+    answers = plan.activeAnswers;
+    if (!plan.nextQuestionId) {
+      const score = scoreCandidateContextualDimensionsV3({ answers }, bank);
+      return {
+        asked,
+        terminal: plan.evidenceSufficiency.terminalReason,
+        ready: plan.completion.ready,
+        evidence: score.dimensions.reduce((sum, d) => sum + d.evidence.length, 0),
+        unresolved: plan.evidenceSufficiency.unresolvedApplicableDimensions.length,
+        insufficient: plan.evidenceSufficiency.insufficientContextDimensions.length,
+      };
+    }
+    assert.ok(turn < 24, "specialty route exceeded 24 questions");
+    const question = byId.get(plan.nextQuestionId);
+    assert.ok(question, plan.nextQuestionId);
+    let value = authored[question.id];
+    if (value === undefined) {
+      const neutral = question.options.find((option) => option.kind === "unknown");
+      assert.ok(neutral, `no authored or unknown answer for ${question.id}`);
+      value = question.type === "multi" ? [neutral.value] : neutral.value;
+    }
+    assert.ok(validateCandidateAnswerV3(question, value), `invalid answer for ${question.id}`);
+    assert.ok(!asked.includes(question.id), `repeated ${question.id}`);
+    asked.push(question.id);
+    answers = { ...answers, [question.id]: value };
+  }
+  throw new Error("specialty route did not terminate");
+}
+
+test("full specialty journeys measure the real selector cost against the 74-question utility bank", () => {
+  const cases: readonly { id: string; answers: AnswersV2; specialized: string; generic: string }[] = [
+    {
+      id: "dental-followup",
+      answers: {
+        ...AUTHORED_UNKNOWN_CAPABILITIES,
+        q2_entity: "business", q2_operational_status: "operating", q2_has_customers: "yes",
+        q2_other_staff: "yes", q2_monetization: "services", q2_sector: "health_wellness",
+        q2_delivery: ["physical_location", "appointments"], q2_customer_buyer: "b2c",
+        q2_customer_reach: "local", q2_goal: "stop_losing", q2_friction: "follow_up",
+        q2_niche_health_wellness: "dentist", q2_appointments_rebooking: "unknown",
+        q2_dental_care_continuation: "unknown",
+      },
+      specialized: "q2_dental_care_continuation",
+      generic: "q2_appointments_rebooking",
+    },
+    {
+      id: "restaurant-clarity",
+      answers: {
+        ...AUTHORED_UNKNOWN_CAPABILITIES,
+        q2_entity: "business", q2_operational_status: "operating", q2_has_customers: "yes",
+        q2_other_staff: "yes", q2_monetization: "goods", q2_sector: "food_hospitality",
+        q2_delivery: ["onsite"], q2_customer_buyer: "b2c", q2_customer_reach: "local",
+        q2_goal: "explain", q2_friction: "conversion", q2_presence_digital_base: "reliable_presence",
+        q2_niche_food_hospitality: "restaurant", q2_presence_offer_clarity: "unknown",
+        q2_food_menu_visibility: "unknown",
+      },
+      specialized: "q2_food_menu_visibility",
+      generic: "q2_presence_offer_clarity",
+    },
+    {
+      id: "agency-clarity",
+      answers: {
+        ...AUTHORED_UNKNOWN_CAPABILITIES,
+        q2_entity: "business", q2_operational_status: "operating", q2_has_customers: "yes",
+        q2_other_staff: "yes", q2_monetization: "services", q2_sector: "b2b_services",
+        q2_delivery: ["remote_service"], q2_customer_buyer: "b2b", q2_customer_reach: "regional",
+        q2_goal: "explain", q2_friction: "conversion", q2_presence_digital_base: "reliable_presence",
+        q2_niche_b2b_services: "marketing_agency", q2_presence_offer_clarity: "unknown",
+        q2_marketing_agency_scope_clarity: "unknown",
+      },
+      specialized: "q2_marketing_agency_scope_clarity",
+      generic: "q2_presence_offer_clarity",
+    },
+  ];
+
+  for (const scenario of cases) {
+    const before = walkSpecialty(bank74, scenario.answers);
+    const after = walkSpecialty(bank77, scenario.answers);
+    assert.ok(before.asked.length <= 24 && after.asked.length <= 24, scenario.id);
+    assert.ok(after.asked.includes(scenario.specialized), scenario.id);
+    assert.ok(!after.asked.includes(scenario.generic), scenario.id);
+    assert.ok(before.asked.includes(scenario.generic), `${scenario.id}: baseline must use generic equivalent`);
+    assert.ok(after.evidence >= before.evidence, `${scenario.id}: specialized route cannot lose mapped evidence`);
+    assert.ok(after.unresolved <= before.unresolved, `${scenario.id}: cannot create more unresolved applicable dimensions`);
+    assert.ok(after.insufficient <= before.insufficient, `${scenario.id}: cannot create more insufficient context`);
+    console.log(`QA03B_SPECIALTY_AB ${JSON.stringify({
+      profile: scenario.id,
+      bank74: { count: before.asked.length, evidence: before.evidence, terminal: before.terminal },
+      bank77: { count: after.asked.length, evidence: after.evidence, terminal: after.terminal },
+      added: after.asked.filter((id) => !before.asked.includes(id)),
+      removed: before.asked.filter((id) => !after.asked.includes(id)),
+    })}`);
+  }
+});
+
