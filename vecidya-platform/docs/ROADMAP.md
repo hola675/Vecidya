@@ -59,6 +59,16 @@
 
 **Siguiente checkpoint 04D:** revisión uno por uno de progresión pedagógica y evidencia: detectar saltos de dificultad, fuentes que hayan quedado demasiado generales o antiguas, y ejemplos que todavía necesiten una segunda situación cotidiana. No crear nuevas guías salvo que aparezca un objetivo educativo distinto.
 
+### APRENDE-EDITORIAL-04D — progresión y evidencia (2026-10-25)
+
+**Implementado en rama dependiente, pendiente de CI final.** Cierra tres guías huérfanas de itinerario y la única guía sin relaciones editoriales. El mapa pasa a cubrir 47/47 guías sin cambiar los 9 itinerarios. La evidencia mínima queda fijada en ≥2 fuentes HTTPS distintas por guía; el catálogo actual suma 145.
+
+La verificación externa actualiza cuatro familias de referencias: Google Analytics (evento clave vs conversión publicitaria), OpenAI prompting/Data Controls, ITU Global Connectivity Report 2025 y SBA financiera. Se eliminan los destinos legacy detectados y se agregan pruebas que impiden reintroducirlos.
+
+**Gate 04D:** 47/47 guías dentro de itinerarios, ≥1 `relatedSlug` válido por guía, ≥2 fuentes HTTPS distintas, terminología de Analytics actual y destinos renovados; `Aprende quality` PASS.
+
+**Siguiente checkpoint 04E:** revisión de precisión y profundidad de ejemplos/fuentes por grupo temático, empezando por seguridad, privacidad y comunicaciones donde una recomendación puede depender más de jurisdicción o proveedor. Conservar lenguaje educativo y evitar convertir la biblioteca en asesoría legal o configuración específica no verificada.
+
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)
