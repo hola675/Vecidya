@@ -6432,3 +6432,33 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .miniweb-editor__content-nav { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-inline: contain; }
   .miniweb-editor__content-nav button { flex: 0 0 auto; }
 }
+
+/* MiniWeb: lista de verificación y ayudas de publicación. */
+.miniweb-editor__checklist {
+  display: grid;
+  gap: .55rem;
+  margin: 1.1rem 0;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid #dce6f2;
+  border-radius: .9rem;
+  background: #f8fafe;
+}
+.miniweb-editor__checklist h3 { margin: 0; font-size: 1.02rem; }
+.miniweb-editor__checklist p { margin: 0; line-height: 1.5; }
+.miniweb-editor__checklist-warning {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .7rem;
+  padding: .7rem .8rem;
+  border: 1px solid #f2ddb7;
+  border-radius: .65rem;
+  color: #79501e;
+  background: #fffaf0;
+}
+.miniweb-editor__checklist-warning .button { flex-shrink: 0; }
+@media (max-width: 600px) {
+  .miniweb-editor__checklist { padding: .85rem; }
+  .miniweb-editor__checklist-warning { align-items: stretch; }
+}
