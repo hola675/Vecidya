@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-25 — APRENDE-EDITORIAL-04E — cinco guías de Operaciones revisadas
+
+- Revisión editorial individual de tareas/responsables, inventario, capacitación digital, ERP y proyectos piloto.
+- Se validan fuentes institucionales vigentes y se corrigen dos precisiones: ERP = planificación de recursos empresariales; NIST se referencia como SP 1300/CSF 2.0.
+- Las cinco guías dejan `editorialDraft` tras la revisión; el catálogo queda en 48 guías, 35 revisadas y 13 borradores.
+- Sin cambios de DB, Auth, Diagnóstico, MiniWeb, GHL, precios o producción. Rama paralela a 04C/04D; requiere reconciliación posterior.
+
 ## 2026-10-25 — APRENDE-EDITORIAL-04B — proveedor sin monolito (PR dependiente pendiente)
 
 - Separa dos decisiones que estaban mezcladas: elegir/renovar proveedor y ejecutar una migración.
