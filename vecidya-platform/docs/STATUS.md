@@ -12,6 +12,12 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 **RAN en GitHub Actions:** sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`, workflow `Aprende quality` run `40242263335` PASS (typecheck, build e integridad Aprende) y `Main integration quality` run `40242263275` PASS: typecheck, build, regresión Diagnóstico/Aprende y **1721/1721 unitarias**. La revisión estática de los 12 archivos modificados quedó sin marcadores de conflicto ni whitespace final. Fuentes nuevas verificadas contra OCDE 2026, NIST CSF 2.0, CISA y W3C. No cambia DB, Auth, Diagnóstico, MiniWeb, GHL, licencias, precios ni producción.
 
+## APRENDE-EDITORIAL-04B — separar selección y migración de proveedor (2026-10-25)
+
+**CODE/TEST versionado en `feat/aprende-editorial-04b`, dependiente de 04A; sin merge ni deploy.** La guía histórica de proveedor se concentra en elegir/renovar: servicios incluidos, control administrativo, recuperación, renovación, costo total y salida. La migración técnica deja de compartir el mismo objetivo educativo y pasa a la nueva guía `como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo`, marcada `editorialDraft: true`.
+
+El catálogo pasa de **46 a 47 guías** y conserva **9 itinerarios**. «Entiende y administra tu sitio web» añade la nueva migración después de la guía de selección. Pruebas actualizadas verifican enlaces recíprocos, estado editorial y separación semántica. CI/typecheck/build pendientes de observar sobre el HEAD final de este checkpoint.
+
 ## DIAG-VISUAL-03 — refinamiento del resultado y entrada QA-03B (2026-10-25)
 
 **CODE/TEST local, rama `feat/diag-visual-03`:** la entrada del cuestionario usa el fondo ilustrado existente con overlay claro; pregunta y resultado mantienen foco visible tras navegación programática; opciones seleccionadas muestran texto reforzado; las ocho áreas conservan una columna legible, ilustraciones de 48 px, puntuación textual exacta y ausencia de barra para `null`. La marca «Lectura preliminar» aclara su alcance, la cobertura duplicada se omite y los límites adicionales quedan bajo una sección nombrada. No se recalculan puntuaciones ni se modifican datos, contrato o rutas.
