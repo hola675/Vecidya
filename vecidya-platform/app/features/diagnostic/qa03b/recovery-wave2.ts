@@ -146,7 +146,7 @@ export const QA03B_RECOVERY_WAVE2_QUESTIONS: readonly QuestionDefinitionV2[] = [
   // solely from the operational archetype.
   {
     ...find(LOTE_D_QUESTIONS_V2, "q2_b2b_qualification"),
-    prompt: "Cuando una empresa se interesa por tus servicios, ¿tienes criterios para saber si podría contratarte?",
+    prompt: "Cuando una empresa pide información, ¿tienes criterios para saber si podría comprar o contratar lo que ofreces?",
     hint: "Por ejemplo: necesidad real, presupuesto, plazos o capacidad para decidir. No basta con que alguien pida información.",
     appliesWhen: b2b,
     evidenceMigration: "migrated",
