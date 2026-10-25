@@ -36,9 +36,10 @@ type ClientAreaShellProps = {
   organizations: WorkspaceOrganization[];
   activeOrganization: { id: string; name: string } | null;
   isPlatformAdmin?: boolean;
+  organizationSwitchLocked?: boolean;
 };
 
-export function ClientAreaShell({ active, children, workspaceUser, organizations, activeOrganization, isPlatformAdmin = false }: ClientAreaShellProps) {
+export function ClientAreaShell({ active, children, workspaceUser, organizations, activeOrganization, isPlatformAdmin = false, organizationSwitchLocked = false }: ClientAreaShellProps) {
   const navigate = useNavigate();
   const { revalidate } = useRevalidator();
   const [submitting, setSubmitting] = useState(false);
@@ -49,7 +50,7 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
   const visibleGroups = hasOrganization ? groups : groups.filter((group) => group.label === null || group.label === "CUENTA");
 
   async function handleSetActiveOrganization(organizationId: string) {
-    if (!organizationId || organizationId === activeOrganization?.id) return;
+    if (organizationSwitchLocked || !organizationId || organizationId === activeOrganization?.id) return;
     setSubmitting(true);
     setOrganizationError(null);
     try {
@@ -149,10 +150,11 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
           {hasOrganization ? (
             <div className="organization-switcher">
               <label htmlFor="organization-switcher">Negocio activo</label>
+              {organizationSwitchLocked ? <span className="organization-switcher__locked" id="organization-switcher-locked">Guarda tus cambios antes de cambiar de negocio.</span> : null}
               <select
-                aria-describedby={organizationError ? "organization-switcher-error" : undefined}
+                aria-describedby={[organizationError ? "organization-switcher-error" : null, organizationSwitchLocked ? "organization-switcher-locked" : null].filter(Boolean).join(" ") || undefined}
                 aria-invalid={organizationError ? true : undefined}
-                disabled={submitting}
+                disabled={submitting || organizationSwitchLocked}
                 id="organization-switcher"
                 onChange={(event) => handleSetActiveOrganization(event.currentTarget.value)}
                 value={activeOrganization?.id ?? ""}
