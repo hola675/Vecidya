@@ -22,6 +22,7 @@ const SELECTOR_GROUPS = [
   "automotive",
   "food_hospitality",
   "technology_software",
+  "b2b_services",
 ] as const;
 
 export const QA03B_SPECIALTY_SELECTORS_V1: readonly QuestionDefinitionV2[] = SELECTOR_GROUPS.map((group): QuestionDefinitionV2 => {
@@ -145,8 +146,31 @@ export const QA03B_RECOVERY_PILOT_V1: readonly QuestionDefinitionV2[] = [
   },
 ];
 
+/** The sector expansion is v4 ONLY in the isolated candidate bank. Public v3 is untouched. */
+export const QA03B_CANDIDATE_SECTOR_V4: QuestionDefinitionV2 = (() => {
+  const original = REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.find((q) => q.id === "q2_sector");
+  if (!original) throw new Error("QA-03B sector classification missing");
+  return {
+    ...original,
+    version: 4,
+    options: [
+      ...original.options,
+      ...([
+        ["ecommerce", "Comercio electrónico y tiendas online"],
+        ["creator", "Creadores de contenido y proyectos basados en audiencia"],
+        ["b2b_services", "Servicios especializados para empresas y organizaciones"],
+        ["nonprofit_community", "Organizaciones sin fines de lucro y proyectos comunitarios"],
+      ] as const).map(([value, label]) => ({
+        value, label,
+        produces: [{ kind: "nicheGroup" as const, value, provenance: "explicit_declaration" as const }],
+      })),
+    ],
+  };
+})();
+
 export const QA03B_SPECIALTY_CANDIDATE_BANK_V1: readonly QuestionDefinitionV2[] = [
-  ...REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3,
+  ...REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.map((question) =>
+    question.id === "q2_sector" ? QA03B_CANDIDATE_SECTOR_V4 : question),
   ...QA03B_SPECIALTY_SELECTORS_V1,
   ...QA03B_RECOVERY_PILOT_V1,
 ];
