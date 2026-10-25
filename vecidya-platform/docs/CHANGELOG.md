@@ -1,11 +1,12 @@
 # Changelog
 
-## 0.8.0 — release candidate para promoción de cambios integrados (2026-10-25)
+## 0.8.0 — producción (2026-10-25)
 
 - Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.
-- Sube la versión de la aplicación `0.7.3` → `0.8.0` por el alcance funcional acumulado. El código candidato parte de `origin/main@233c3c4`.
-- Preflight remoto de solo lectura confirmó Worker activo `5eb7d15a-554a-484a-be26-3f4f02cc3615`, buckets R2 de producción/staging existentes y D1 de producción hasta `0027`; queda pendiente aplicar `0028` antes del deploy. Todavía no publicado ni verificado por HTTP para esta versión.
-- Typecheck y build PASS. Pruebas automatizadas omitidas a petición del usuario. La publicación queda pendiente de integración, migración `0028`, deploy y GET anónimo fechado.
+- Sube la versión de la aplicación `0.7.3` → `0.8.0` por el alcance funcional acumulado. El release desplegado es `main@0152eab6fad5e68336d66d69cbc1597a1f720111`.
+- PR #116 se integró en `main@0152eab6fad5e68336d66d69cbc1597a1f720111`. Se aplicó `0028_miniweb-offering-image.sql` en D1 producción, luego se desplegó `vecidya-platform` con Version ID `320eefe0-343c-431f-987f-cf9b92df0c8e` (2026-10-25T18:38:07Z). El ledger quedó en `0000–0028`.
+- HTTP anónimo TLS RAN 2026-10-25T18:38:23Z: `/`, `/cookies`, `/informacion-legal` y `/diagnostico` → `200`; todas muestran `0.8.0` y `© 2026 Vecidya`.
+- Typecheck, build y `git diff --check` PASS. Pruebas automatizadas omitidas a petición del usuario.
 
 ## 2026-10-25 — DIAG-VISUAL-03 — refinamiento visual del cuestionario y resumen
 
