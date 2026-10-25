@@ -1500,105 +1500,140 @@ export const learnArticles: LearnArticle[] = [
     slug: "https-certificados-tls-que-protegen-y-que-no",
     category: "Tecnología explicada",
     title: "HTTPS y certificados TLS: qué protegen y qué no",
-    intro: "Ves un candado junto a la dirección de una página. ¿Eso quiere decir que la tienda es confiable? No necesariamente. Aprende qué protege la conexión y qué no.",
-    excerpt: "Descubre qué significa HTTPS, qué hacer ante una advertencia y cómo revisar una web.",
-    enPocasPalabras: ["HTTPS protege la comunicación entre tu navegador y una página.","Un candado no garantiza que el vendedor sea de confianza.","Revisa cualquier aviso de seguridad antes de introducir datos."],
+    intro: "Ves un candado junto a la dirección de una página. ¿Eso quiere decir que la tienda es confiable? No necesariamente. Aprende qué protege la conexión y qué hacer si aparece una advertencia.",
+    excerpt: "Entiende HTTPS sin tecnicismos: qué protege, qué no demuestra y qué revisar en una web de negocio.",
+    enPocasPalabras: [
+      "HTTPS protege la comunicación entre tu navegador y una página.",
+      "Un candado no garantiza que el vendedor, la oferta o el contenido sean confiables.",
+      "Si aparece una advertencia de seguridad, no la ignores: revisa la dirección y corrige la causa.",
+    ],
     image: "/assets/learn/diagram-domain-dns-hosting.svg",
-    imageAlt: "Una persona navega por una conexión HTTPS hacia un servidor web; TLS protege el trayecto, pero no verifica la honestidad del negocio.",
-    relatedSlugs: ["dominio-hosting-sitio-web-como-funcionan", "antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
-    cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no certifica ni audita la seguridad de un sitio web." },
+    imageAlt: "Una conexión segura protege el trayecto entre un navegador y un sitio web, pero no demuestra la honestidad del negocio.",
+    relatedSlugs: [
+      "dns-https-y-correo-como-se-conecta-tu-dominio",
+      "dominio-hosting-sitio-web-como-funcionan",
+      "como-proteger-cuentas-contrasenas-estafas-negocio",
+    ],
+    cta: {
+      label: "Revisar mi punto de partida digital",
+      to: "/diagnostico",
+      copy: "El Diagnóstico ayuda a revisar capacidades digitales; no certifica ni audita la seguridad de un sitio web.",
+    },
     sections: [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «HTTPS y certificados TLS: qué protegen y qué no», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
-      },
-      {
-        heading: "HTTP y HTTPS: la diferencia es la protección del trayecto",
+        heading: "Qué significa HTTPS en palabras sencillas",
         paragraphs: [
-          "HTTP permite que un navegador solicite páginas a un servidor. HTTPS es ese intercambio protegido por TLS: los datos viajan cifrados y el navegador comprueba que el certificado corresponda al dominio solicitado.",
-          "El cifrado dificulta que alguien en la red lea o modifique los datos durante el tránsito. No protege lo que ocurre en el dispositivo o el servidor; tampoco corrige contraseñas inseguras, una aplicación vulnerable ni el uso indebido de la información recibida.",
+          "Cuando visitas una página, tu navegador y el servidor intercambian información. HTTPS protege ese trayecto mediante TLS: cifra la comunicación y ayuda al navegador a comprobar que está hablando con el dominio que aparece en la dirección.",
+          "Esa protección es importante cuando envías un formulario, inicias sesión o haces una compra. Pero solo cubre la conexión. No garantiza qué hará el sitio con los datos después de recibirlos.",
         ],
-        blocks: [{ type: "definitions", items: [
-          { term: "HTTP", definition: "Protocolo de comunicación usado para solicitar y entregar páginas y otros recursos web." },
-          { term: "HTTPS", definition: "HTTP protegido mediante TLS; ofrece cifrado de la conexión y autenticación del servidor para el nombre web visitado." },
-          { term: "TLS", definition: "Protocolo que negocia parámetros de seguridad y cifra los datos transmitidos entre dos extremos. Es el sucesor de SSL, nombre antiguo que todavía aparece en algunas conversaciones." },
-          { term: "Certificado TLS", definition: "Credencial digital que vincula un nombre web con una clave pública y contiene información de validez y emisor. El navegador verifica su cadena de confianza, vigencia y correspondencia con el nombre solicitado." },
-        ] }],
-      },
-      {
-        heading: "Qué demuestra —y qué no— el certificado",
-        paragraphs: [
-          "El certificado permite validar la conexión con el dominio que aparece en la dirección; no comprueba la identidad legal de su dueño ni la calidad de sus productos. Una página fraudulenta también puede tener HTTPS en su propio dominio.",
-          "Revisa el nombre completo —puede incluir letras o una extensión engañosa— y confirma que llegaste desde una fuente conocida. Antes de pagar, comprueba la empresa y sus condiciones. No ignores avisos del navegador.",
-        ],
-        blocks: [{ type: "callout", tone: "caution", title: "El candado protege la conexión, no garantiza confianza", text: "No uses HTTPS como prueba de que una oferta, empresa, descarga o formulario sea legítimo. La seguridad también depende del sitio, sus sistemas, sus prácticas y de lo que tú decides compartir." }],
-      },
-      {
-        heading: "Avisos y errores frecuentes que puedes reconocer",
-        paragraphs: ["Si aparece un aviso de conexión privada o certificado, detente: no introduzcas datos ni desactives la protección. El visitante no puede confirmar la causa sin revisar la configuración."],
-        blocks: [{ type: "list", items: [
-          "Certificado vencido: el servidor no lo renovó a tiempo.",
-          "El nombre no coincide: el certificado cubre otro dominio, por ejemplo la versión con www, pero no la dirección abierta.",
-          "Configuración incompleta: puede faltar un certificado intermedio o variar entre servidores.",
-          "Reloj del dispositivo incorrecto: la fecha equivocada puede hacer que un certificado vigente parezca vencido o aún no válido.",
-          "Contenido mixto: una página HTTPS carga algún recurso —como una imagen o un script— por HTTP. El navegador puede bloquearlo o advertir que la página no está completamente protegida.",
-          "Interferencia de red: una red pública o un filtro pueden interrumpir la conexión. No aceptes excepciones si no conoces la causa.",
-        ] }],
-      },
-      {
-        heading: "Ejemplo hipotético: una clínica local recibe un aviso",
-        paragraphs: ["Caso hipotético con fines educativos; no describe una empresa ni un incidente real."],
-        blocks: [{ type: "example", title: "La web abre con una advertencia de seguridad", hypothetical: true,
-          context: "Una clínica cambia de proveedor para publicar horarios y recibir solicitudes de cita.",
-          problem: "Visitantes ven una advertencia de certificado o un recurso marcado como inseguro.",
-          approach: "La responsable no pide a pacientes que ignoren el aviso; contacta a quien administra la web para revisar el certificado y los enlaces.",
-          actions: [
-            "Anota el dominio, el texto del aviso y la dirección afectada; no incluyas datos de pacientes en capturas.",
-            "Pide revisar vigencia, nombre cubierto, renovación, cadena de certificados y recursos HTTP.",
-            "Al corregirlo, vuelve a probar enlaces y formulario desde otro navegador y otra red.",
+        blocks: [{
+          type: "definitions",
+          items: [
+            { term: "HTTPS", definition: "La forma protegida de comunicar una página web con tu navegador." },
+            { term: "TLS", definition: "La tecnología que cifra la conexión y permite comprobar el certificado presentado por el servidor." },
+            { term: "Certificado", definition: "Credencial digital que ayuda al navegador a verificar que la conexión corresponde al nombre web que solicitaste." },
           ],
-          lesson: "No normalizar el aviso evita que visitantes compartan datos en una conexión que el navegador no valida. La causa se corrige en el sitio, no cambiando una opción del visitante.",
         }],
       },
       {
-        heading: "Qué comprobar en la web de tu negocio",
-        paragraphs: ["Revisa la configuración periódicamente y después de cambiar dominio o proveedor. HTTPS es solo una parte del mantenimiento de seguridad."],
-        blocks: [{ type: "steps", label: "Comprobaciones básicas de HTTPS", items: [
-          { title: "Prueba las direcciones publicadas", detail: "Comprueba dominio con y sin www; todas deben abrir el sitio correcto sin avisos." },
-          { title: "Confirma certificado y renovación", detail: "Pregunta qué nombres cubre, quién renueva y cómo se detecta un fallo. Nunca compartas claves privadas." },
-          { title: "Revisa recursos y recorridos", detail: "Verifica que imágenes, formularios y páginas importantes carguen con HTTPS desde teléfono y computadora." },
-          { title: "Mantén otros controles", detail: "Actualiza el sitio, limita accesos, usa autenticación multifactor y conserva copias probadas." },
-        ] }, { type: "callout", tone: "tip", title: "Una prueba rápida no es una auditoría", text: "Ver la página y consultar la fecha del certificado detecta algunos fallos visibles. No sustituye una revisión técnica de la aplicación, el servidor, las cuentas, los pagos y el tratamiento de datos." }],
+        heading: "El candado no significa «este negocio es confiable»",
+        paragraphs: [
+          "Una página fraudulenta también puede usar HTTPS en su propio dominio. El certificado ayuda a comprobar con qué dominio te conectaste; no revisa la identidad comercial, la calidad de un producto ni si una oferta es verdadera.",
+          "Antes de compartir datos o pagar, mira la dirección completa y comprueba por otros medios quién está detrás del sitio. Un nombre parecido al original puede seguir teniendo un certificado válido para ese nombre distinto.",
+        ],
+        blocks: [{
+          type: "callout",
+          tone: "caution",
+          title: "Protege la conexión, no la intención",
+          text: "HTTPS dificulta que terceros lean o modifiquen lo que viaja entre tu navegador y el sitio. No convierte una página desconocida en legítima.",
+        }],
+      },
+      {
+        heading: "Qué hacer si aparece una advertencia",
+        paragraphs: [
+          "Si el navegador avisa que la conexión no es privada o que existe un problema con el certificado, no introduzcas contraseñas, datos personales ni información de pago hasta aclararlo.",
+          "La causa puede ser una renovación pendiente, un nombre mal configurado, una fecha incorrecta en el dispositivo u otro problema técnico. Como visitante, no necesitas adivinar cuál: lo prudente es detenerte y confirmar la dirección.",
+        ],
+        blocks: [{
+          type: "list",
+          items: [
+            "No pulses una opción para continuar solo porque tienes prisa.",
+            "Comprueba que escribiste la dirección correcta y que no llegaste desde un enlace extraño.",
+            "Si administras la web, anota el texto del aviso y pide revisar certificado, dominio y renovación.",
+            "Después de corregirlo, prueba de nuevo desde otro navegador o dispositivo.",
+          ],
+        }],
+      },
+      {
+        heading: "Ejemplo: una clínica cambia de proveedor",
+        paragraphs: ["Caso hipotético para ver cómo actuar sin convertir al visitante en técnico."],
+        blocks: [{
+          type: "example",
+          title: "La web abre con una advertencia de seguridad",
+          hypothetical: true,
+          context: "Una clínica cambia la plataforma donde publica horarios y recibe solicitudes de cita.",
+          problem: "Algunas personas ven una advertencia del navegador al abrir la página.",
+          approach: "La clínica no pide a nadie que ignore el aviso. La persona responsable contacta al proveedor y revisa la configuración antes de volver a pedir que se use el formulario.",
+          actions: [
+            "Anotar la dirección afectada y el mensaje de error sin incluir datos de pacientes.",
+            "Comprobar que el certificado cubre el dominio usado y que la renovación está activa.",
+            "Revisar que las páginas y recursos importantes carguen también mediante HTTPS.",
+            "Probar el recorrido completo desde otro dispositivo antes de dar el problema por resuelto.",
+          ],
+          lesson: "La corrección se hace en el sitio. Pedir a visitantes que ignoren una advertencia traslada el riesgo a la persona equivocada.",
+        }],
+      },
+      {
+        heading: "Qué revisar en la web de tu negocio",
+        paragraphs: [
+          "No necesitas inspeccionar todos los detalles del protocolo. Lo útil es saber quién mantiene el certificado, cómo se renueva y qué comprobar después de un cambio de dominio o proveedor.",
+        ],
+        blocks: [{
+          type: "steps",
+          label: "Comprobación básica",
+          items: [
+            { title: "Abre la dirección que publicas", detail: "Comprueba que el dominio esperado carga con HTTPS y sin advertencias." },
+            { title: "Prueba las variantes que usas", detail: "Si publicas direcciones con y sin www, confirma que ambas llegan al sitio correcto." },
+            { title: "Prueba formularios y páginas importantes", detail: "Comprueba desde teléfono y computadora los recorridos que usan tus clientes." },
+            { title: "Aclara la renovación", detail: "Anota qué proveedor la gestiona y quién recibe avisos si algo falla." },
+            { title: "Mantén otros controles", detail: "Actualizaciones, accesos limitados, autenticación multifactor y copias siguen siendo necesarios aunque HTTPS funcione." },
+          ],
+        }],
       },
       {
         heading: "Preguntas frecuentes",
         paragraphs: [],
-        blocks: [{ type: "faq", items: [
-          { question: "¿Un sitio HTTPS es necesariamente confiable?", answer: "No. TLS protege el trayecto y valida el dominio, no la honestidad del negocio ni la seguridad integral del sitio." },
-          { question: "¿Qué hago si aparece un aviso de conexión?", answer: "No introduzcas datos ni continúes a la fuerza. Confirma la dirección y, si administras el sitio, pide revisar el certificado." },
-          { question: "¿El candado protege mi formulario?", answer: "Protege la transmisión; el sitio también debe procesar y conservar los datos de forma segura." },
-        ] }],
+        blocks: [{
+          type: "faq",
+          items: [
+            { question: "¿Un sitio con HTTPS es necesariamente confiable?", answer: "No. HTTPS protege la conexión con el dominio; no verifica la honestidad del negocio ni la calidad del contenido." },
+            { question: "¿Qué hago si aparece una advertencia?", answer: "No introduzcas datos ni continúes a la fuerza. Comprueba la dirección y, si administras el sitio, corrige la configuración." },
+            { question: "¿HTTPS protege los datos guardados por la empresa?", answer: "Protege el trayecto. La forma en que el sitio almacena, usa y elimina los datos requiere controles adicionales." },
+            { question: "¿Tengo que comprar siempre un certificado aparte?", answer: "No. Muchos servicios lo incluyen o lo gestionan automáticamente. Comprueba qué cubre tu proveedor y cómo funciona la renovación." },
+          ],
+        }],
       },
       {
-        heading: "Fuentes oficiales y alcance",
-        paragraphs: ["Estas fuentes explican el funcionamiento del protocolo y las advertencias del navegador. Una verificación visible de certificado no equivale a una evaluación de seguridad integral."],
-        blocks: [{ type: "sources", items: [
-          { label: "Transport Layer Security (TLS) — MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Transport_Layer_Security", scope: "Explicación técnica de HTTPS, TLS, certificados y autenticación del servidor." },
-          { label: "Mixed content — MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content", scope: "Describe recursos HTTP incluidos en páginas HTTPS y cómo pueden afectar la seguridad." },
-          { label: "Warning about invalid TLS certificates — Chrome Help", url: "https://support.google.com/chrome/answer/6098869", scope: "Ayuda oficial para entender avisos de conexión y certificado en Chrome; la interfaz puede variar según versión." },
-          { label: "RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3", url: "https://datatracker.ietf.org/doc/html/rfc8446", scope: "Estándar técnico del IETF para TLS 1.3; no es una guía de configuración específica de hosting." },
-        ] }],
-      },
-      {
-        heading: "Qué puedes hacer ahora",
-        paragraphs: [],
-        blocks: [{ type: "summary", items: [
-          "Comprueba que la dirección completa sea la esperada y no ignores avisos del navegador.",
-          "Recuerda: TLS protege el trayecto y valida el dominio, no la confiabilidad comercial del sitio.",
-          "Si administras una web, revisa certificados, renovación, variantes del dominio y recursos HTTP.",
-          "Combina HTTPS con mantenimiento, accesos controlados, copias y un manejo prudente de datos.",
-        ] }],
+        heading: "Fuentes y siguiente paso",
+        paragraphs: [
+          "Estas fuentes explican TLS y los avisos de seguridad. Son referencias técnicas y de navegador; no sustituyen una auditoría de seguridad completa.",
+        ],
+        blocks: [{
+          type: "sources",
+          items: [
+            { label: "Transport Layer Security (TLS) — MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Transport_Layer_Security", scope: "Explica HTTPS, TLS, certificados y autenticación del servidor en la web." },
+            { label: "Mixed content — MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content", scope: "Describe qué ocurre cuando una página HTTPS intenta cargar recursos mediante HTTP." },
+            { label: "Warning about invalid TLS certificates — Chrome Help", url: "https://support.google.com/chrome/answer/6098869", scope: "Ayuda oficial sobre avisos de conexión y certificado en Chrome; la interfaz puede variar." },
+            { label: "RFC 8446 — TLS 1.3", url: "https://datatracker.ietf.org/doc/html/rfc8446", scope: "Estándar técnico del IETF para TLS 1.3; no es una guía de configuración de un proveedor concreto." },
+          ],
+        }, {
+          type: "summary",
+          items: [
+            "Comprueba la dirección completa y no ignores avisos del navegador.",
+            "Recuerda que HTTPS protege la conexión, no garantiza la confiabilidad del negocio.",
+            "Si administras una web, documenta quién mantiene el certificado y cómo se renueva.",
+          ],
+        }],
       },
     ],
   },
