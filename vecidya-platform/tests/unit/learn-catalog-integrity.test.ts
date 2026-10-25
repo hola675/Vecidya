@@ -14,7 +14,7 @@ const splitPairs = [
 
 test("Aprende conserva slugs únicos, categorías y campos esenciales", () => {
   const slugs = learnArticles.map((article) => article.slug);
-  assert.equal(slugs.length, 47, "APRENDE-EDITORIAL-04B debe conservar las 46 guías y separar la migración de proveedor.");
+  assert.equal(slugs.length, 48, "APRENDE-EDITORIAL-04B debe conservar las 46 guías y separar migración y correo profesional.");
   assert.equal(new Set(slugs).size, slugs.length, "Hay slugs duplicados.");
   const categories = new Set(learnCategories.map(({ name }) => name));
   for (const article of learnArticles) {
@@ -141,6 +141,18 @@ test("Las guías especializadas conservan sus temas pedagógicos esenciales", ()
   }
 });
 
+test("La guía DNS queda como mapa y deriva el detalle de correo a una guía propia", () => {
+  const dns = getLearnArticle("dns-https-y-correo-como-se-conecta-tu-dominio");
+  const email = getLearnArticle("correo-profesional-dominio-registros-mx-txt");
+  assert.ok(dns && email);
+  assert.ok(dns.relatedSlugs?.includes(email.slug));
+  assert.ok(email.relatedSlugs?.includes(dns.slug));
+  assert(dns.sections.length <= 8, "El mapa DNS no debe volver a crecer como manual técnico");
+  const dnsText = JSON.stringify(dns);
+  assert.match(dnsText, /mapa|piezas|separado|por separado/i);
+  assert.match(JSON.stringify(email), /proveedor|MX|TXT|SPF|DKIM|DMARC/i);
+});
+
 test("Las bibliografías de presencia y DNS mantienen su alcance especializado", () => {
   const presence = getLearnArticle("como-mantener-actualizada-y-confiable-tu-presencia-digital");
   const dns = getLearnArticle("dns-https-y-correo-como-se-conecta-tu-dominio");
@@ -158,5 +170,11 @@ test("Las bibliografías de presencia y DNS mantienen su alcance especializado",
   assert.ok(dnsSources.some((source) => source.url.includes("rfc1035")), "Falta referencia técnica de registros DNS");
   assert.ok(dnsSources.some((source) => source.url.includes("Transport_Layer_Security")), "Falta referencia TLS");
   assert.ok(!dnsSources.some((source) => /renewal|registration-process|lookup.icann/.test(source.url)), "Fuentes registrales ajenas a DNS");
-  assert.match(dns.sections.map((section) => section.paragraphs.join(" ")).join(" "), /SPF, DKIM ni DMARC/, "Falta delimitar alcance de autenticación de correo");
+  const email = getLearnArticle("correo-profesional-dominio-registros-mx-txt");
+  assert.ok(email?.editorialDraft, "La guía separada de correo debe seguir en revisión editorial");
+  const emailSources = sources(email);
+  assert.ok(emailSources.some((source) => source.url.includes("rfc7208")), "Falta referencia SPF");
+  assert.ok(emailSources.some((source) => source.url.includes("rfc6376")), "Falta referencia DKIM");
+  assert.ok(emailSources.some((source) => source.url.includes("rfc9989")), "Falta referencia DMARC vigente");
+  assert.match(JSON.stringify(email), /MX|TXT|SPF|DKIM|DMARC/, "La guía de correo debe explicar sus mecanismos principales");
 });
