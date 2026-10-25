@@ -1112,7 +1112,7 @@ export const learnArticles: LearnArticle[] = [
           type: "steps",
           label: "Lista breve para comparar proveedores",
           items: [
-            { title: "Aclara qué incluye", detail: "Pregunta por dominio, DNS, alojamiento, correo, certificado TLS, copias y soporte. No des por hecho que vienen juntos." },
+            { title: "Aclara qué incluye", detail: "Pregunta por dominio, DNS, alojamiento, correo, certificado de seguridad de la web (TLS), copias y soporte. No des por hecho que vienen juntos." },
             { title: "Lee la renovación", detail: "Comprueba precio del siguiente periodo, moneda, impuestos, renovación automática y condiciones si el dominio vence." },
             { title: "Confirma quién será el registrante", detail: "Verifica qué persona o entidad queda vinculada al registro y qué correo recibe los avisos importantes." },
             { title: "Pregunta cómo salir", detail: "Averigua cómo exportar la web y los datos, transferir el dominio, cancelar el servicio y descargar comprobantes." },
@@ -1621,7 +1621,7 @@ export const learnArticles: LearnArticle[] = [
         paragraphs: ["Una métrica describe lo que una herramienta registró; no explica por qué ocurrió ni representa necesariamente a todo el público."],
         blocks: [{ type: "list", items: [
           "Pocas observaciones: una o dos solicitudes cambian mucho la tasa. Muestra también el volumen.",
-          "Atribución incierta: llegar desde una red social antes de comprar no demuestra que esa publicación causó la compra.",
+          "Origen incierto (atribución): llegar desde una red social antes de comprar no demuestra que esa publicación causó la compra.",
           "Cambios simultáneos: campañas, temporada y errores pueden coincidir. Anota qué cambió antes de atribuir un efecto.",
           "Registro incompleto: bloqueadores o fallos impiden observar algunas acciones. Un evento ausente no prueba que nadie actuó.",
           "Definiciones distintas: herramientas agrupan sesiones y usuarios de manera diferente. Compara tendencias con la misma configuración.",
