@@ -113,6 +113,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const [removingMediaId, setRemovingMediaId] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(true);
   const [activeTab, setActiveTab] = useState<"design" | "sections" | "content" | "preview" | "publish">("design");
+  const [contentTab, setContentTab] = useState<"offerings" | "faq" | "media">("offerings");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
   const isDirty = JSON.stringify(configuration) !== JSON.stringify(data.draftConfiguration)
@@ -128,6 +129,11 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   ] as const;
   const stepIndex = steps.findIndex((step) => step.key === activeTab);
   const currentStep = steps[stepIndex];
+  function goToContent(type: MiniWebModuleType) {
+    setContentTab(type === "faq" ? "faq" : type === "gallery" ? "media" : "offerings");
+    goToStep(2);
+  }
+
   function goToStep(index: number) {
     const step = steps[index];
     if (!step) return;
@@ -374,7 +380,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                         <p className="miniweb-module-list__source">{guidance.source}</p>
                         {!ready ? <p className="miniweb-module-list__help">{guidance.missing}</p> : null}
                         {!ready && guidance.destination === "business" ? <Link className="miniweb-module-list__action" to="/app/business-profile">Completar en Mi negocio</Link> : null}
-                        {!ready && guidance.destination === "content" ? <button className="miniweb-module-list__action" onClick={() => goToStep(2)} type="button">Completar contenido</button> : null}
+                        {!ready && guidance.destination === "content" ? <button className="miniweb-module-list__action" onClick={() => goToContent(type)} type="button">Completar contenido</button> : null}
                       </div>
                       <label className="miniweb-module-toggle">
                         <span>{module.enabled ? "Activa" : "Inactiva"}</span>
@@ -401,6 +407,22 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
 
             </div>
             <div hidden={activeTab !== "content"}>
+              <nav aria-label="Apartados del contenido MiniWeb" className="miniweb-editor__content-nav">
+                {([
+                  ["offerings", "Servicios y productos", offerings.length],
+                  ["faq", "Preguntas frecuentes", faqs.length],
+                  ["media", "Galería y portada", media.length],
+                ] as const).map(([key, label, count]) => (
+                  <button
+                    aria-pressed={contentTab === key}
+                    className={contentTab === key ? "miniweb-editor__content-nav--active" : ""}
+                    key={key}
+                    onClick={() => setContentTab(key)}
+                    type="button"
+                  >{label} <span>{count}</span></button>
+                ))}
+              </nav>
+              <div hidden={contentTab !== "offerings"}>
             <Card aria-labelledby="miniweb-offerings-title" className="miniweb-content-editor" id="miniweb-content">
               <div className="miniweb-editor__section-heading">
                 <div><p className="eyebrow">3 · CONTENIDO DEL NEGOCIO</p><h2 id="miniweb-offerings-title">Servicios y productos</h2></div>
@@ -430,7 +452,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               ))}
               <Button disabled={!data.canEdit || busy || offerings.length >= MAX_BUSINESS_OFFERINGS} onClick={() => setOfferings((current) => [...current, { kind: "service", title: "", description: "", priceLabel: null, sortOrder: current.length, isActive: true }])} tone="secondary">Añadir servicio o producto</Button>
             </Card>
-
+              </div>
+              <div hidden={contentTab !== "faq"}>
             <Card aria-labelledby="miniweb-faq-title" className="miniweb-content-editor">
               <div className="miniweb-editor__section-heading">
                 <div><p className="eyebrow">AYUDA PARA TUS VISITANTES</p><h2 id="miniweb-faq-title">Preguntas frecuentes</h2></div>
@@ -451,7 +474,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               ))}
               <Button disabled={!data.canEdit || busy || faqs.length >= MAX_BUSINESS_FAQ_ITEMS} onClick={() => setFaqs((current) => [...current, { question: "", answer: "", sortOrder: current.length, isActive: true }])} tone="secondary">Añadir pregunta</Button>
             </Card>
-
+              </div>
+              <div hidden={contentTab !== "media"}>
             <Card aria-labelledby="miniweb-media-title" className="miniweb-content-editor">
               <div className="miniweb-editor__section-heading">
                 <div><p className="eyebrow">MEDIOS DEL NEGOCIO</p><h2 id="miniweb-media-title">Imágenes y videos</h2></div>
@@ -472,8 +496,9 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 <Button disabled={!data.canEdit || uploading || busy} type="submit" tone="secondary">{uploading ? "Subiendo…" : "Subir medio"}</Button>
               </form>
               {media.length ? <ul className="miniweb-media-list">{media.map((asset) => <li key={asset.id}>{asset.mediaType === "image" ? <img alt="" height="72" loading="lazy" src={asset.publicUrl} width="96" /> : <span aria-hidden="true">▶</span>}<span>{asset.purpose === "cover" ? "Portada" : "Galería"}: {asset.altText}</span><span>{Math.ceil(asset.sizeBytes / 1024)} KB</span><Button disabled={!data.canEdit || busy || uploading || removingMediaId !== null} onClick={() => void handleRemoveMedia(asset)} tone="secondary">{removingMediaId === asset.id ? "Retirando…" : "Retirar del borrador"}</Button></li>)}</ul> : <p className="miniweb-editor__note">Todavía no has subido medios.</p>}
-              <p className="miniweb-editor__note">Activa la sección «Galería» y publica para incluir los medios actuales en el snapshot público. Los archivos nuevos aún no se muestran a visitantes.</p>
+              <p className="miniweb-editor__note">Activa Galería en Secciones y publica para mostrar sus archivos. La imagen de portada se configura por separado.</p>
             </Card>
+              </div>
             </div>
           </div>
 
