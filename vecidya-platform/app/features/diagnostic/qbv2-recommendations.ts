@@ -1,7 +1,7 @@
 import type { ContextualConfidenceLevel } from "./qbv2-contextual-scoring";
 import type { DigitalDimensionId } from "./qbv2-coverage";
 import type { DiagnosticScoringView } from "./qbv2-diagnostic-view";
-import { DIMENSION_RESULT_CONCEPT, type ResultCertainty } from "./qbv2-language";
+import type { ResultCertainty } from "./qbv2-language";
 import type { DiagnosticNarrative, NarrativePriority } from "./qbv2-narrative";
 import { DIMENSION_NARRATIVE } from "./qbv2-narrative-phrases";
 import { DIMENSION_DEPENDENCIES, SEVERITY_BANDS, type ConstraintKind, type ConstraintPriorityResult, type ConstraintSeverity, type PriorityCertainty, type PriorityReasonCode, type SeverityBands } from "./qbv2-priorities";
