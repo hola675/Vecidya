@@ -6,7 +6,7 @@ import { QA03B_SPECIALTY_CANDIDATE_BANK_V1 as candidateBank } from "../../../app
 import { buildCandidateQuestionPlanFromBankV3, type CandidateShadowSelectionPolicyV1 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-planner";
 import { validateCandidateAnswerV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-session";
 import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
-import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
+import { eqV2, type AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import { QA03B_SPECIALTY_PERSONAS, authoredSpecialtyAnswers, declaredSpecialtyContextAnswers } from "./qa03b-specialty-journeys";
 
 const byId = new Map(candidateBank.map((question) => [question.id, question]));
@@ -88,20 +88,41 @@ test("shadow policy does not treat passive tool inventory as evidence when it un
   assert.ok(!shadow.evidenceSufficiency.usefulEvidenceQuestionIds.includes("q2_digital_tools_in_use"));
 });
 
-test("utility-first gives sector-specific niche real opportunity without fabricating diagnosis evidence", () => {
+test("utility-first keeps a niche eligible but does not force it without proven downstream value", () => {
   const answers: AnswersV2 = { q2_entity: "business", q2_operational_status: "operating",
     q2_has_customers: "yes", q2_monetization: "services", q2_sector: "health_wellness",
     q2_delivery: ["appointments", "physical_location"], q2_customer_buyer: "b2c",
     q2_goal: "stop_losing", q2_friction: "follow_up" };
   const plan = buildCandidateQuestionPlanFromBankV3({ answers }, candidateBank, "utility_first");
   assert.ok(plan.eligibleQuestionIds.includes("q2_niche_health_wellness"));
-  assert.ok(plan.evidenceSufficiency.usefulContextQuestionIds.includes("q2_niche_health_wellness"));
-  assert.ok(plan.selectedQuestionIds.includes("q2_niche_health_wellness"));
+  assert.ok(!plan.evidenceSufficiency.usefulContextQuestionIds.includes("q2_niche_health_wellness"));
+  assert.ok(!plan.selectedQuestionIds.includes("q2_niche_health_wellness"));
   assert.ok(plan.selectedQuestionIds.every((id) => plan.eligibleQuestionIds.includes(id)));
   const scored = scoreCandidateContextualDimensionsV3({ answers: {
     ...answers, q2_niche_health_wellness: "dentist",
   } }, candidateBank);
   assert.ok(scored.dimensions.every((d) => d.evidence.every((e) => !e.questionId.startsWith("q2_niche_"))));
+});
+
+test("utility-first promotes niche when an actual dentist-only evidence question is unlocked", () => {
+  const gated = candidateBank.map((q) => q.id === "q2_appointments_booking_friction"
+    ? { ...q, appliesWhen: eqV2("q2_niche_health_wellness", "dentist"), materialAppliesWhen: undefined }
+    : q);
+  const answers: AnswersV2 = {
+    q2_entity: "business", q2_operational_status: "operating", q2_has_customers: "yes",
+    q2_monetization: "services", q2_sector: "health_wellness",
+    q2_delivery: ["physical_location", "appointments"], q2_customer_buyer: "b2c",
+    q2_goal: "stop_losing", q2_friction: "conversion",
+  };
+  const proposed = buildCandidateQuestionPlanFromBankV3({ answers }, gated, "utility_first");
+  assert.ok(proposed.eligibleQuestionIds.includes("q2_niche_health_wellness"));
+  assert.ok(proposed.evidenceSufficiency.usefulContextQuestionIds.includes("q2_niche_health_wellness"));
+  assert.ok(proposed.selectedQuestionIds.includes("q2_niche_health_wellness"));
+  assert.ok(!proposed.eligibleQuestionIds.includes("q2_appointments_booking_friction"));
+  const after = buildCandidateQuestionPlanFromBankV3({
+    answers: { ...answers, q2_niche_health_wellness: "dentist" },
+  }, gated, "utility_first");
+  assert.ok(after.eligibleQuestionIds.includes("q2_appointments_booking_friction"));
 });
 
 test("eight A/B journeys compare question count, outcome, evidence and niche coverage without changing public plan", () => {
