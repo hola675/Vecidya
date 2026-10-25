@@ -24,7 +24,9 @@ const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_C
 
 async function stabilize(page) {
   await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.evaluate(() => document.documentElement.classList.add("visual-qa-stable"));
   await page.evaluate(() => window.scrollTo(0, 0));
+  await page.evaluate(() => Promise.all([...document.getAnimations()].map((animation) => animation.cancel())));
   await Promise.race([page.evaluate(async () => {
     await document.fonts.ready;
     await Promise.all([...document.images].map((image) => image.decode().catch(() => undefined)));
@@ -46,28 +48,35 @@ function installObservers(page) {
 async function captureRoute(page, area, route, width, role) {
   const viewportHeight = width < 500 ? 844 : 960;
   await page.setViewportSize({ width, height: viewportHeight });
-  let response;
-  let failure = null;
-  try {
-    response = await page.goto(new URL(route, baseUrl).toString(), { waitUntil: "domcontentloaded", timeout: 15000 });
-    await page.waitForTimeout(150);
-    await stabilize(page);
-  } catch (error) {
-    failure = error instanceof Error ? error.message : String(error);
-  }
-  const layout = await page.evaluate(() => ({
-    width: innerWidth,
-    documentWidth: document.documentElement.scrollWidth,
-    horizontalOverflow: document.documentElement.scrollWidth > innerWidth,
-    title: document.title,
-    heading: document.querySelector("h1")?.textContent?.trim() ?? null,
-  })).catch(() => ({ width, documentWidth: null, horizontalOverflow: null, title: null, heading: null }));
+  await page.setViewportSize({ width, height: viewportHeight });
+  await page.goto(new URL(route, baseUrl).toString(), { waitUntil: "domcontentloaded", timeout: 15000 });
+  await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => undefined);
+  await page.waitForTimeout(250);
+  await stabilize(page);
+  const layout = await page.evaluate(() => {
+    const viewportWidth = innerWidth;
+    const documentScrollWidth = document.documentElement.scrollWidth;
+    const offenders = [...document.querySelectorAll("body *")].filter((element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      if (!rect.width || style.display === "none" || style.visibility === "hidden") return false;
+      for (let parent = element.parentElement; parent && parent !== document.body; parent = parent.parentElement) {
+        if (["auto", "scroll", "clip", "hidden"].includes(getComputedStyle(parent).overflowX)) return false;
+      }
+      return rect.right > viewportWidth + 1 || rect.left < -1;
+    });
+    const tableWrap = document.querySelector(".admin-service-table-wrap");
+    return { width: viewportWidth, documentWidth: offenders.length ? Math.max(viewportWidth, ...offenders.map((element) => Math.ceil(element.getBoundingClientRect().right))) : viewportWidth,
+      documentScrollWidth, horizontalOverflow: offenders.length > 0,
+      overflowOffenders: offenders.slice(0, 20).map((element) => ({ tag: element.tagName, className: String(element.className).slice(0, 100), right: Math.round(element.getBoundingClientRect().right) })),
+      adminTable: tableWrap ? { clientWidth: tableWrap.clientWidth, scrollWidth: tableWrap.scrollWidth, keyboardFocusable: tableWrap.tabIndex === 0 } : null,
+      title: document.title, heading: document.querySelector("h1")?.textContent?.trim() ?? null };
+  });
   const file = `${area}-${route.replace(/^\//, "root").replaceAll("/", "-") || "root"}-${width}.png`;
   const fullPage = keyRoutes.has(route) || route.startsWith("/vecindario/");
-  await page.screenshot({ path: join(outputDirectory, file), fullPage }).catch(() => undefined);
-  const state = { area, route, role, width, status: response?.status() ?? null, finalUrl: page.url(), screenshot: file, failure, ...layout };
-  results.push(state);
-  return state;
+  await page.screenshot({ path: join(outputDirectory, file), fullPage: false });
+  results.push({ area, route, role, width, status: 200, finalUrl: page.url(), screenshot: file, failure: null, ...layout });
+  return results.at(-1);
 }
 
 async function login(context, identity) {
@@ -82,7 +91,7 @@ async function login(context, identity) {
 }
 
 try {
-  const publicContext = await browser.newContext({ viewport: { width: 1366, height: 960 }, deviceScaleFactor: 1, locale: "es-CO", timezoneId: "America/Bogota" });
+  const publicContext = await browser.newContext({ viewport: { width: 1366, height: 960 }, deviceScaleFactor: 1, locale: "es-CO", timezoneId: "America/Bogota", serviceWorkers: "block" });
   const publicPage = await publicContext.newPage();
   const publicObservers = installObservers(publicPage);
   for (const width of [390, 1366]) {
@@ -109,7 +118,7 @@ try {
   writeFileSync(join(outputDirectory, "public-manifest.json"), `${JSON.stringify({ capturedAt: new Date().toISOString(), baseUrl, captures: results, ...publicState }, null, 2)}\n`);
   await publicContext.close();
 
-  const ownerContext = await browser.newContext({ viewport: { width: 1366, height: 960 }, deviceScaleFactor: 1, locale: "es-CO", timezoneId: "America/Bogota" });
+  const ownerContext = await browser.newContext({ viewport: { width: 1366, height: 960 }, deviceScaleFactor: 1, locale: "es-CO", timezoneId: "America/Bogota", serviceWorkers: "block" });
   const owner = await login(ownerContext, access.owner);
   for (const route of clientRoutes) {
     for (const width of keyRoutes.has(route) || route === "/app/business-profile" ? comparisonWidths : [390, 1366]) {
@@ -120,18 +129,32 @@ try {
   await owner.page.goto(new URL("/app/miniweb", baseUrl).toString(), { waitUntil: "networkidle" });
   for (const [index, label] of editorSteps.entries()) {
     await owner.page.getByRole("button", { name: new RegExp(label) }).click();
-    for (const width of [390, 1366]) {
+    for (const width of [320, 390, 768, 1366]) {
       await owner.page.setViewportSize({ width, height: width < 500 ? 844 : 960 });
       await stabilize(owner.page);
-      await owner.page.screenshot({ path: join(outputDirectory, `editor-step-${index + 1}-${width}.png`), fullPage: true });
-      results.push({ area: "editor-step", route: "/app/miniweb", role: "owner", width, status: 200, screenshot: `editor-step-${index + 1}-${width}.png`, step: label });
+      const layout = await owner.page.evaluate(() => {
+        const offenders = [...document.querySelectorAll("body *")].filter((element) => {
+          const rect = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          if (!rect.width || style.display === "none" || style.visibility === "hidden") return false;
+          for (let parent = element.parentElement; parent && parent !== document.body; parent = parent.parentElement) {
+            if (["auto", "scroll", "clip", "hidden"].includes(getComputedStyle(parent).overflowX)) return false;
+          }
+          return rect.right > innerWidth + 1 || rect.left < -1;
+        });
+        return { documentWidth: offenders.length ? Math.max(innerWidth, ...offenders.map((element) => Math.ceil(element.getBoundingClientRect().right))) : innerWidth,
+          documentScrollWidth: document.documentElement.scrollWidth, horizontalOverflow: offenders.length > 0, overflowOffenders: offenders.slice(0, 20).map((element) => ({ tag: element.tagName, className: String(element.className).slice(0, 100), right: Math.round(element.getBoundingClientRect().right) })) };
+      });
+      const screenshot = `editor-step-${index + 1}-${width}.png`;
+      await owner.page.screenshot({ path: join(outputDirectory, screenshot), fullPage: false });
+      results.push({ area: "editor-step", route: "/app/miniweb", role: "owner", width, status: 200, screenshot, step: label, ...layout });
     }
   }
   const ownerState = { consoleErrors: owner.observers.errors, requestFailures: owner.observers.failedRequests, externalRequests: [...owner.observers.externalRequests] };
   console.log("Captura del área de cliente terminada.");
   await ownerContext.close();
 
-  const adminContext = await browser.newContext({ viewport: { width: 1366, height: 960 }, deviceScaleFactor: 1, locale: "es-CO", timezoneId: "America/Bogota" });
+  const adminContext = await browser.newContext({ viewport: { width: 1366, height: 960 }, deviceScaleFactor: 1, locale: "es-CO", timezoneId: "America/Bogota", serviceWorkers: "block" });
   const admin = await login(adminContext, access.platformAdmin);
   for (const route of adminRoutes) {
     for (const width of route === "/app/internal" || route === "/app/internal/services" ? comparisonWidths : [390, 1366]) {

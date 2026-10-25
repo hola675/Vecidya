@@ -4,6 +4,10 @@
 
 Las direcciones de producción, `www` y staging respondieron correctamente en GET anónimo fechado (ver `ENVIRONMENTS.md`); el registry npm oficial también respondió y sirvió metadata de Vite `8.3.5`. No se cambió configuración de URL, no hubo deploy ni acceso/escritura a D1 o R2 remotas. No se retiró el adaptador/V3 legacy de Diagnóstico: la ventana de rollback sigue abierta según `ROADMAP.md`, y no existe una carpeta `legacy/` en este checkout.
 
+## VISUAL-QA-20261025 — paquete de revisión actualizado
+
+Tras una revisión independiente se corrigió el ancho intrínseco del contenido del paso 3 MiniWeb, se recapturaron 110 estados con ancho físico igual al viewport y se comprobó que el panel interno de servicios tiene tabla desplazable dentro de su región accesible. El selector HTML abarca rutas, estados, cinco pasos y baselines disponibles; las comparaciones solo se dibujan con dimensiones compatibles. Capturas y baselines WebP lossless se verificaron píxel a píxel; `errors/` separa la imagen residual de conexión rechazada. `evidence.json` conserva hash, comandos, conteos locales D1, inventario/probes R2, permisos, fixtures y solicitudes. Todo permanece local, ignorado por Git, sin deploy ni servicios remotos.
+
 ## Corte vigente de código y publicación (2026-10-24)
 
 `origin/main@ae7a768` integra PR #103 y `package.json` declara `0.7.3`. HTTP anónimo RAN 2026-10-25T01:08Z: producción muestra `0.7.3` en `/`, `/diagnostico` y `/diagnostico/metodologia`; staging muestra `0.7.0` en esas rutas. La igualdad de versión no demuestra qué SHA está desplegado. No hubo replay funcional ni consulta D1/R2 en ese corte; no se infiere que todas las capacidades de `main` estén desplegadas.

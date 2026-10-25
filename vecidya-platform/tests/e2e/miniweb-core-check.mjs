@@ -636,6 +636,7 @@ try {
   const availableModuleOrder = published.draftConfiguration.modules.filter((module) => ["hero", "about", "contact", "hours", "services", "gallery", "location", "products", "faq"].includes(module.type)).map((module) => module.type);
   check(renderedModuleOrder.join(",") === availableModuleOrder.join(","), "la lista de secciones visualiza el orden de los módulos disponibles");
   const viewportResults = [];
+  const stepViewportResults = [];
   const captureDirectory = process.env.MINIWEB_CAPTURE_DIR ?? join(process.cwd(), ".playwright-mcp");
   mkdirSync(captureDirectory, { recursive: true });
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -645,9 +646,13 @@ try {
       await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
       await page.evaluate(() => window.scrollTo(0, 0));
       await stabilizePage(page);
+      const dimensions = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
+      stepViewportResults.push({ step: index + 1, width, ...dimensions, overflow: dimensions.document > dimensions.viewport + 1 });
       await page.screenshot({ fullPage: true, path: join(captureDirectory, `app-mini-editor-step-${index + 1}-${width}.png`) });
     }
   }
+  check(stepViewportResults.every(({ overflow }) => !overflow), "los cinco pasos del editor no desbordan en 390 y 1366 px");
+  console.log(JSON.stringify({ editorSteps: stepViewportResults }, null, 2));
   await page.getByRole("button", { name: "2 Secciones" }).click();
   for (const width of auditWidths) {
     await page.setViewportSize({ width, height: 900 });

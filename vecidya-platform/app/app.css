@@ -6328,6 +6328,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .miniweb-editor__layout { grid-template-columns: minmax(0, 1fr); }
 .miniweb-editor__controls,
 .miniweb-editor__review { width: 100%; min-width: 0; }
+.miniweb-editor__controls { grid-template-columns: minmax(0, 1fr); }
+.miniweb-editor__controls > div:not([hidden]) { width: 100%; min-width: 0; }
 .miniweb-editor__controls > div:not([hidden]),
 .miniweb-editor__review > div:not([hidden]) { width: 100%; }
 .miniweb-editor__header { gap: .75rem; }
@@ -6392,6 +6394,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .miniweb-editor__content-nav {
   display: flex;
   flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
   gap: .55rem;
   margin: 0 0 1rem;
   padding: .55rem;
@@ -6584,7 +6588,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   grid-template-columns: minmax(0, 1fr);
 }
 @media (max-width: 640px) {
-  .miniweb-editor__content-nav { flex-wrap: nowrap; overflow-x: auto; }
+  .miniweb-editor__content-nav { flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; }
   .miniweb-editor__empty-state { padding: 1rem; }
   .miniweb-content-editor__item { padding: .85rem; }
   .miniweb-editor__preview-stage { padding: .5rem; }
