@@ -117,7 +117,7 @@ test("Las guías madre revisadas no vuelven a convertirse en monolitos", () => {
   for (const slug of focusedSlugs) {
     const article = getLearnArticle(slug);
     assert.ok(article, `Falta guía madre: ${slug}`);
-    const words = JSON.stringify(article).replace(/https?:\\/\\/[^"\\s]+/g, " ").split(/\\s+/u).filter(Boolean).length;
+    const words = JSON.stringify(article).replace(/https?:\/\/[^"\s]+/g, " ").split(/\s+/u).filter(Boolean).length;
     assert.ok(words <= 1800, `La guía madre ${slug} volvió a crecer demasiado: ${words} palabras serializadas`);
     assert.ok(article.sections.length <= 10, `La guía madre ${slug} volvió a acumular demasiadas secciones`);
   }
