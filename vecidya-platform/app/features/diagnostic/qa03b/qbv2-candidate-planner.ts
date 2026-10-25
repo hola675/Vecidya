@@ -197,7 +197,10 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
         if (triggered.has(id)) return 100;
         if (q.routingRole === "core") return 95;
         if (unlocks.has(id)) return 85;
-        if (id.startsWith("q2_niche_") && q.options.filter((option) => option.produces?.some((p) => p.kind === "niche")).length > 1) return 78;
+        // Niche metadata is useful for personalization, but may not displace
+        // direct evidence merely because it has many choices. The earlier
+        // unlocks check is the only justification for promoting it above
+        // a directly relevant unanswered diagnostic dimension.
         const source = semanticSources(q);
         const relevant = [...source.direct].some((dimension) => priorities.includes(dimension));
         if (relevant && source.direct.some((dimension) => open.has(dimension))) return 74;
