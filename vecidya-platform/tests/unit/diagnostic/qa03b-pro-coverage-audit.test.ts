@@ -33,7 +33,9 @@ test("DIAG-PRO-01: 60 recorridos producen una auditoría trazable de cobertura s
     assert.ok(unresolved.every((dimension) => unscored.includes(dimension)), `${variant.id}: unresolved applicable dimension unexpectedly scored`);
     assert.ok(blocked.every((entry) => !entry.selected), `${variant.id}: blocked question marked selected`);
     assert.ok(pending.every((entry) => !entry.selected), `${variant.id}: pending evidence marked selected`);
-    assert.equal(plan.completion.ready, true, `${variant.id}: route did not terminate`);
+    assert.equal(plan.nextQuestionId, undefined, `${variant.id}: route still offers a question`);
+    assert.ok(["no_useful_questions", "budget_blocked"].includes(plan.evidenceSufficiency.terminalReason ?? ""), `${variant.id}: unexpected terminal reason`);
+    assert.equal(plan.completion.ready, plan.evidenceSufficiency.terminalReason !== "budget_blocked", `${variant.id}: readiness disagrees with blocked status`);
     if (plan.evidenceSufficiency.terminalReason === "budget_blocked") {
       assert.ok(plan.evidenceSufficiency.usefulQuestionsRemaining, `${variant.id}: budget block without useful question`);
       assert.ok(blocked.length > 0, `${variant.id}: budget block without traced blocker`);
