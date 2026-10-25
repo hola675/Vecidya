@@ -76,6 +76,7 @@ export const QA03B_RECOVERY_WAVE2_QUESTIONS: readonly QuestionDefinitionV2[] = [
     // v2: two neutral options are added; do not remap historical v1 answers
     // without an explicit future session-migration decision.
     version: 2,
+    scoringReadiness: { ...find(LOTE_C_QUESTIONS_V2, "q2_ecommerce_cart_followup").scoringReadiness!, allowsUnknown: true, allowsNotApplicable: true },
     prompt: "Cuando alguien abandona una compra y tienes permiso para contactarlo, ¿sueles enviarle un recordatorio?",
     hint: "Cuenta solo comunicaciones permitidas. Ver un carrito abandonado no significa conocer a su dueño.",
     appliesWhen: andV2(ecommerce, eqV2("q2_ecommerce_cart_visibility", "yes")),
@@ -109,6 +110,7 @@ export const QA03B_RECOVERY_WAVE2_QUESTIONS: readonly QuestionDefinitionV2[] = [
   {
     ...find(LOTE_C_QUESTIONS_V2, "q2_hospitality_flow_type"),
     version: 2,
+    scoringReadiness: { ...find(LOTE_C_QUESTIONS_V2, "q2_hospitality_flow_type").scoringReadiness!, allowsUnknown: true },
     prompt: "¿Cómo llegan o solicitan atención habitualmente las personas en tu restaurante o negocio de hospedaje?",
     hint: "Piensa en reservas, visitas sin reserva y pedidos anticipados. Elige la modalidad predominante.",
     appliesWhen: hospitality,
@@ -121,6 +123,7 @@ export const QA03B_RECOVERY_WAVE2_QUESTIONS: readonly QuestionDefinitionV2[] = [
   {
     ...find(LOTE_C_QUESTIONS_V2, "q2_hospitality_reservation_noshow"),
     version: 2,
+    scoringReadiness: { ...find(LOTE_C_QUESTIONS_V2, "q2_hospitality_reservation_noshow").scoringReadiness!, allowsUnknown: true },
     prompt: "Cuando alguien reserva una mesa o alojamiento, ¿con qué frecuencia no se presenta?",
     hint: "Responde solo sobre reservas reales. No cuentes consultas sin reserva ni citas de servicios profesionales.",
     appliesWhen: andV2(hospitality, inV2("q2_hospitality_flow_type", ["reservation", "mixed"])),
@@ -175,6 +178,7 @@ export const QA03B_RECOVERY_WAVE2_QUESTIONS: readonly QuestionDefinitionV2[] = [
   {
     ...find(LOTE_B_QUESTIONS_V2, "q2_local_repeat_customers"),
     version: 2,
+    scoringReadiness: { ...find(LOTE_B_QUESTIONS_V2, "q2_local_repeat_customers").scoringReadiness!, allowsNotApplicable: true },
     prompt: "Entre las personas que ya compraron o visitaron tu negocio, ¿con qué frecuencia vuelven?",
     hint: "Cuenta a quienes regresan realmente. Si lo que ofreces normalmente se compra una sola vez, indícalo.",
     appliesWhen: andV2(activeWithHistory, archetypeIncludesAny(["local", "retail", "hospitality"])),
