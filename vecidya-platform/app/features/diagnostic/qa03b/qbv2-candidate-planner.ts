@@ -136,13 +136,19 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
     if (parentSources.direct.length > 0 && !parentSources.direct.some((dimension) => applicable.has(dimension)) && parentFields.length === 0) continue;
     for (const option of question.options) {
       const hypothetical = { ...activeAnswers, [question.id]: question.type === "multi" ? [option.value] : option.value };
-      const after = new Set(resolveEligibleQuestionsV2(hypothetical, bank).eligibleQuestionIds);
+      const afterResolution = resolveEligibleQuestionsV2(hypothetical, bank);
+      const after = new Set(afterResolution.eligibleQuestionIds);
       for (const child of bank) {
         if (activeAnswers[child.id] !== undefined || eligible.has(child.id) || !after.has(child.id)) continue;
         const childSources = semanticSources(child);
         const childFields = producedFields(child);
+        const childCanResolveInsufficientContext = childSources.direct.some((dimension) =>
+          insufficientContext.has(dimension)
+          && canProspectivelyResolveApplicability(child, dimension, afterResolution.activeAnswers, bank));
         const unlocksUsefulChild = child.evidenceMigration === "migrated"
-          ? childSources.direct.some((dimension) => open.has(dimension)) || childSources.supporting.some((dimension) => observedDirect.has(dimension))
+          ? childSources.direct.some((dimension) => open.has(dimension))
+            || childSources.supporting.some((dimension) => observedDirect.has(dimension))
+            || childCanResolveInsufficientContext
           : child.routingRole !== "deepening" && childFields.some((field) => unresolvedFields.has(field));
         if (unlocksUsefulChild) unlocks.add(question.id);
       }
