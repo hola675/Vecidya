@@ -2,9 +2,9 @@
 
 ## APRENDE-EDITORIAL-04A — criterio digital y contrato de ejemplos (2026-10-25)
 
-**TEST versionado / RAN pendiente en el HEAD del PR.** Las pruebas de catálogo y currículo se actualizan de 44 a **46 guías** y de 8 a **9 itinerarios**. Se añade un contrato transversal: cada guía debe contener al menos un bloque `example` explícitamente hipotético, con situación, problema, enfoque, pasos aplicables y aprendizaje suficientemente explicados. También se comprueban los dos nuevos slugs fundacionales, su categoría «Tecnología explicada», su estado de borrador y su relación recíproca.
+**RAN en GitHub Actions sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`:** `Aprende quality` run `40242263335` PASS con instalación, typecheck, build y `Learn integrity tests`; `Main integration quality` run `40242263275` PASS con typecheck, build, regresión focal Diagnóstico/Aprende y suite unitaria completa **1721/1721 PASS, 0 fail**. Las pruebas de catálogo y currículo validan **46 guías** y **9 itinerarios**. El contrato transversal exige al menos un bloque `example` explícitamente hipotético por guía, con situación, problema, enfoque, pasos aplicables y aprendizaje suficientemente explicados; también verifica los dos nuevos slugs fundacionales, su categoría «Tecnología explicada», su estado de borrador y su relación recíproca.
 
-El gate antes de integrar es: pruebas unitarias focales de Aprende, `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS sobre el HEAD candidato. Este registro no atribuye PASS antes de observar CI o una ejecución equivalente. Sin D1 remota, navegador productivo ni deploy.
+La comprobación estática de los 12 archivos cambiados no encontró marcadores de conflicto ni whitespace final. Sin D1 remota, navegador productivo, E2E visual nuevo ni deploy.
 
 ## DIAG-VISUAL-03 — resultado y entrada QA-03B (2026-10-25)
 
