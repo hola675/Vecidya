@@ -1,13 +1,13 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { chromium } from "playwright";
+import { demoBaseUrl as baseUrl, launchVisualQaBrowser } from "./visual-qa-demo-config.mjs";
 
-const baseUrl = process.env.BASE_URL ?? "http://127.0.0.1:5180";
-if (!/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(baseUrl)) throw new Error(`Capturas locales solamente; URL rechazada: ${baseUrl}`);
 const access = JSON.parse(readFileSync(".wrangler/visual-qa-demo/demo-access.json", "utf8"));
 const outputDirectory = process.env.VISUAL_OUTPUT_DIRECTORY ?? ".playwright-mcp/visual-qa/current";
-const widths = [320, 360, 390, 768, 980, 1024, 1366, 1920];
-const comparisonWidths = [320, 390, 1366, 1920];
+const publicWidths = [320, 390, 1366];
+const phoneWidths = [320, 360, 390, 430];
+const privateWidths = [768, 820, 980, 1024, 1366, 1440, 1920];
+const viewportHeightFor = (width) => ({ 320: 844, 360: 844, 390: 844, 430: 932, 768: 1024, 820: 1180, 980: 1100, 1024: 768, 1366: 900, 1440: 900, 1920: 1080 })[width] ?? 960;
 const keyRoutes = new Set(["/", "/vecindario", "/privacidad", "/terminos", "/cookies", "/informacion-legal", "/app", "/app/miniweb", "/app/internal", "/app/internal/services"]);
 const publicRoutes = [
   "/", "/sobre-nosotros", "/vecindario", "/licencias", "/addons", "/servicios", "/unete", "/contacto",
@@ -20,7 +20,7 @@ const results = [];
 mkdirSync(outputDirectory, { recursive: true });
 const health = await fetch(new URL("/api/auth/ok", baseUrl));
 if (!health.ok) throw new Error(`El Worker local no está listo: ${health.status}`);
-const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe" });
+const browser = await launchVisualQaBrowser();
 
 async function stabilize(page) {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -46,7 +46,7 @@ function installObservers(page) {
 }
 
 async function captureRoute(page, area, route, width, role) {
-  const viewportHeight = width < 500 ? 844 : 960;
+  const viewportHeight = viewportHeightFor(width);
   await page.setViewportSize({ width, height: viewportHeight });
   await page.setViewportSize({ width, height: viewportHeight });
   await page.goto(new URL(route, baseUrl).toString(), { waitUntil: "domcontentloaded", timeout: 15000 });
@@ -70,12 +70,14 @@ async function captureRoute(page, area, route, width, role) {
       documentScrollWidth, horizontalOverflow: offenders.length > 0,
       overflowOffenders: offenders.slice(0, 20).map((element) => ({ tag: element.tagName, className: String(element.className).slice(0, 100), right: Math.round(element.getBoundingClientRect().right) })),
       adminTable: tableWrap ? { clientWidth: tableWrap.clientWidth, scrollWidth: tableWrap.scrollWidth, keyboardFocusable: tableWrap.tabIndex === 0 } : null,
-      title: document.title, heading: document.querySelector("h1")?.textContent?.trim() ?? null };
+      title: document.title, heading: document.querySelector("h1")?.textContent?.trim() ?? null,
+      compatibilityNotice: Boolean(document.querySelector('[data-testid="unsupported-device-notice"]')),
+      privateWorkspaceVisible: Boolean(document.querySelector(".app-sidebar, .admin-sidebar, .app-header, .admin-header")) };
   });
   const file = `${area}-${route.replace(/^\//, "root").replaceAll("/", "-") || "root"}-${width}.png`;
   const fullPage = keyRoutes.has(route) || route.startsWith("/vecindario/");
   await page.screenshot({ path: join(outputDirectory, file), fullPage: false });
-  results.push({ area, route, role, width, status: 200, finalUrl: page.url(), screenshot: file, failure: null, ...layout });
+  results.push({ area, route, role, width, height: viewportHeight, orientation: viewportHeight > width ? "portrait" : "landscape", status: 200, finalUrl: page.url(), screenshot: file, failure: null, ...layout });
   return results.at(-1);
 }
 
@@ -95,7 +97,7 @@ try {
   const publicPage = await publicContext.newPage();
   const publicObservers = installObservers(publicPage);
   for (const width of [390, 1366]) {
-    await publicPage.setViewportSize({ width, height: width < 500 ? 844 : 960 });
+      await publicPage.setViewportSize({ width, height: viewportHeightFor(width) });
     await publicPage.goto(new URL("/", baseUrl).toString(), { waitUntil: "domcontentloaded" });
     await stabilize(publicPage);
     const file = `cookie-consent-initial-${width}.png`;
@@ -108,12 +110,12 @@ try {
     await consentPanel.waitFor({ state: "hidden" });
   }
   for (const route of publicRoutes) {
-    const selectedWidths = keyRoutes.has(route) ? comparisonWidths : [390, 1366];
+    const selectedWidths = keyRoutes.has(route) ? publicWidths : [390, 1366];
     for (const width of selectedWidths) await captureRoute(publicPage, "public", route, width, "anonymous");
   }
   const demoPath = new URL(access.organizations[0].publicUrl).pathname;
-  for (const width of comparisonWidths) await captureRoute(publicPage, "miniweb-public", demoPath, width, "anonymous");
-  console.log(`Captura pública terminada (${publicRoutes.length + widths.length} pantallas).`);
+  for (const width of publicWidths) await captureRoute(publicPage, "miniweb-public", demoPath, width, "anonymous");
+  console.log(`Captura pública terminada (${publicRoutes.length} rutas; anchos ${publicWidths.join(", ")}).`);
   const publicState = { cookieConsent: "rechazo de opcionales; necesario únicamente", consoleErrors: publicObservers.errors, requestFailures: publicObservers.failedRequests, externalRequests: [...publicObservers.externalRequests] };
   writeFileSync(join(outputDirectory, "public-manifest.json"), `${JSON.stringify({ capturedAt: new Date().toISOString(), baseUrl, captures: results, ...publicState }, null, 2)}\n`);
   await publicContext.close();
@@ -121,16 +123,17 @@ try {
   const ownerContext = await browser.newContext({ viewport: { width: 1366, height: 960 }, deviceScaleFactor: 1, locale: "es-CO", timezoneId: "America/Bogota", serviceWorkers: "block" });
   const owner = await login(ownerContext, access.owner);
   for (const route of clientRoutes) {
-    for (const width of keyRoutes.has(route) || route === "/app/business-profile" ? comparisonWidths : [390, 1366]) {
+    for (const width of privateWidths) {
       await captureRoute(owner.page, "client", route, width, "owner");
     }
   }
+  for (const width of phoneWidths) await captureRoute(owner.page, "compatibility-client", "/app", width, "owner");
   const editorSteps = ["1 Diseño", "2 Secciones", "3 Contenido", "4 Vista previa", "5 Publicar"];
   await owner.page.goto(new URL("/app/miniweb", baseUrl).toString(), { waitUntil: "networkidle" });
   for (const [index, label] of editorSteps.entries()) {
     await owner.page.getByRole("button", { name: new RegExp(label) }).click();
-    for (const width of [320, 390, 768, 1366]) {
-      await owner.page.setViewportSize({ width, height: width < 500 ? 844 : 960 });
+    for (const width of privateWidths) {
+      await owner.page.setViewportSize({ width, height: viewportHeightFor(width) });
       await stabilize(owner.page);
       const layout = await owner.page.evaluate(() => {
         const offenders = [...document.querySelectorAll("body *")].filter((element) => {
@@ -157,15 +160,16 @@ try {
   const adminContext = await browser.newContext({ viewport: { width: 1366, height: 960 }, deviceScaleFactor: 1, locale: "es-CO", timezoneId: "America/Bogota", serviceWorkers: "block" });
   const admin = await login(adminContext, access.platformAdmin);
   for (const route of adminRoutes) {
-    for (const width of route === "/app/internal" || route === "/app/internal/services" ? comparisonWidths : [390, 1366]) {
+    for (const width of privateWidths) {
       await captureRoute(admin.page, "internal", route, width, "platform_admin");
     }
   }
+  for (const width of phoneWidths) await captureRoute(admin.page, "compatibility-admin", "/app/internal", width, "platform_admin");
   const adminState = { consoleErrors: admin.observers.errors, requestFailures: admin.observers.failedRequests, externalRequests: [...admin.observers.externalRequests] };
   console.log("Captura interna terminada.");
   await adminContext.close();
 
-  const manifest = { capturedAt: new Date().toISOString(), baseUrl, viewportWidths: widths, public: publicState, owner: ownerState, admin: adminState, captures: results };
+  const manifest = { capturedAt: new Date().toISOString(), baseUrl, configuredWidths: { public: publicWidths, privateWorkspace: privateWidths, phoneCompatibility: phoneWidths }, executedWidths: [...new Set(results.map(({ width }) => width))].sort((a, b) => a - b), public: publicState, owner: ownerState, admin: adminState, captures: results };
   writeFileSync(join(outputDirectory, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
   console.log(JSON.stringify({ captures: results.length, overflowCount: results.filter((result) => result.horizontalOverflow).length, httpFailures: results.filter((result) => result.status && result.status >= 400).map(({ route, status }) => ({ route, status })), publicErrors: publicState.consoleErrors.length, ownerErrors: ownerState.consoleErrors.length, adminErrors: adminState.consoleErrors.length, externalRequests: new Set([...publicState.externalRequests, ...ownerState.externalRequests, ...adminState.externalRequests]).size, outputDirectory }, null, 2));
 } finally {

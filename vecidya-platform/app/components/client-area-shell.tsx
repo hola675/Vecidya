@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Form, Link, useNavigate, useRevalidator } from "react-router";
 
 import { authClient } from "../lib/auth-client";
@@ -6,6 +6,7 @@ import { Button, Icon, type IconName } from "./ui";
 import { PlatformFooter } from "./platform-footer";
 import { publicAssets } from "../assets/public-assets";
 import { useResponsiveNavigationDrawer } from "../hooks/use-responsive-navigation-drawer";
+import { UnsupportedDeviceNotice } from "./unsupported-device-notice";
 
 type NavLink = { id: string; label: string; to: string; icon: IconName };
 type NavGroup = { label: string | null; links: NavLink[] };
@@ -44,8 +45,17 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
   const { revalidate } = useRevalidator();
   const [submitting, setSubmitting] = useState(false);
   const [organizationError, setOrganizationError] = useState<string | null>(null);
+  const [isSupportedViewport, setIsSupportedViewport] = useState<boolean | null>(null);
+  const [allowNarrowViewport, setAllowNarrowViewport] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 768px)");
+    const update = () => setIsSupportedViewport(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
   const { closeNavigation, isMobileNavigation, menuButtonRef, navigationOpen, navigationRef, setNavigationOpen } =
-    useResponsiveNavigationDrawer({ breakpoint: 980, firstItemSelector: "#app-navigation a" });
+    useResponsiveNavigationDrawer({ breakpoint: 979, firstItemSelector: "#app-navigation a" });
   const hasOrganization = organizations.length > 0;
   const visibleGroups = hasOrganization ? groups : groups.filter((group) => group.label === null || group.label === "CUENTA");
 
@@ -74,6 +84,7 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
     navigate("/login");
   }
 
+  if (isSupportedViewport === false && !allowNarrowViewport) return <UnsupportedDeviceNotice area="client" onContinue={() => setAllowNarrowViewport(true)} />;
   return (
     <div className="app-shell">
       <a

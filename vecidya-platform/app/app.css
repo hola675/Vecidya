@@ -65,6 +65,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .eyebrow { margin: 0; color: var(--orange); font-size: var(--text-label); font-weight: 800; letter-spacing: 0.13em; text-transform: uppercase; }
 
 .app-shell { display: grid; min-height: 100vh; grid-template-columns: 17rem minmax(0, 1fr); background: var(--canvas); }
+.unsupported-device { display: grid; min-height: 100vh; place-items: center; padding: clamp(1rem, 5vw, 3rem); background: radial-gradient(ellipse at top, #e8f1ff 0, var(--canvas) 62%); }
+.unsupported-device__card { width: min(100%, 40rem); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(1.5rem, 6vw, 3rem); background: var(--surface); box-shadow: var(--shadow); }
+.unsupported-device__brand { display: block; width: 4rem; height: 4rem; margin-bottom: 1.25rem; object-fit: contain; }
+.unsupported-device__card h1 { max-width: 17ch; margin: .65rem 0; font-size: clamp(1.8rem, 7vw, 2.6rem); line-height: 1.08; letter-spacing: -.04em; }
+.unsupported-device__card > p:not(.eyebrow) { color: var(--muted); line-height: 1.65; }
+.unsupported-device__actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.4rem; }
+.unsupported-device__hint { margin-bottom: 0; font-size: .88rem; }
 .app-sidebar { display: flex; position: sticky; top: 0; height: 100vh; flex-direction: column; gap: 2.5rem; border-right: 1px solid #204c8d; padding: 1.75rem 1.2rem; color: #eff5ff; background: linear-gradient(180deg, #164b94 0%, #0d326c 100%); }
 .brand { display: inline-flex; align-items: center; gap: 0.45rem; width: fit-content; color: #fff; text-decoration: none; }
 .brand strong { display: block; font-size: 1.5rem; letter-spacing: -0.07em; line-height: 0.95; }
@@ -6056,7 +6063,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .admin-dashboard--redesign .admin-overview-card { border-radius: .95rem; }
 .admin-sidebar-backdrop { display: none; }
 .app-sidebar-backdrop { display: none; }
-@media (max-width: 980px) {
+@media (max-width: 979px) {
   .app-home > .page-heading h1,
   .admin-dashboard--redesign > .page-heading h1 { font-size: clamp(1.85rem,8vw,2.5rem); }
   .app-home .app-primary-action { gap: 1rem; }
@@ -6195,7 +6202,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .admin-service-table__submit { display: flex; justify-content: flex-end; }
 .admin-service-table-scroll-hint { margin: 0 0 .55rem; color: var(--muted); font-size: .82rem; }
 .admin-service-table-wrap:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
-@media (min-width: 981px) { .admin-service-table-scroll-hint { display: none; } }
+@media (min-width: 980px) { .admin-service-table-scroll-hint { display: none; } }
 
 
 /* MiniWeb del cliente: identidad independiente del portal Vecidya. */
@@ -6299,7 +6306,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 540px) { .miniweb-editor__guide { padding: 1rem; } .miniweb-editor__guide-navigation > * { flex: 1; } }
 
 /* App: navegación lateral compacta y fija en escritorio; contenido con ancho util. */
-@media (min-width: 981px) {
+@media (min-width: 980px) {
   .app-shell { grid-template-columns: 13.75rem minmax(0, 1fr); }
   .app-sidebar {
     position: sticky;

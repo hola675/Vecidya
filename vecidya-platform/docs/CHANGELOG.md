@@ -1,14 +1,11 @@
 # Changelog
 
-## 2026-10-25 — VISUAL-QA-20261025 — auditoría visual local
+## 2026-10-25 — VISUAL-QA-20261025 — cierre de revisión local
 
-- Revisión independiente incorporada: paso 3 del editor MiniWeb ya no amplía el documento (pasos 1–5 medidos en 320/390/768/1366 px); administración de servicios se captura tras estabilizar y conserva la tabla en scroll interno accesible. Se distingue scroll confinado de overflow de página.
-- Se amplía el selector del comparador para ruta/estado/paso/viewport, dashboard y editor; solo compara/superpone cuando baseline y captura tienen iguales dimensiones, y etiqueta pantallas nuevas. Captura residual `ERR_CONNECTION_REFUSED` segregada en errores con causa.
-- El ZIP contiene 110 capturas current en WebP lossless con igualdad píxel a píxel contra PNG, baselines WebP y `evidence.json` con SHA, D1/R2 local, medios privados 404, permisos, fixtures, requests y comandos. El peso de imágenes actuales se reduce de 18.6 MB PNG a ~11.7 MB WebP sin pérdida visual.
-- Se añadió captura integral Playwright y reporte HTML local con filtros por ruta/viewport y comparación antes/después. Baselines disponibles: páginas legales antes de #102 y paneles antes de #105. `/cookies` y `/informacion-legal` se etiquetan como rutas nuevas; el editor MiniWeb guiado no tiene captura histórica equivalente.
-- Se corrigió el overflow real del H1 de `/cookies` a 320 px, causado por el ancho mínimo intrínseco del grid y una palabra larga. Revisión final a 320/390/1366 px: HTTP 200 sin overflow.
-- Con pnpm 11.21.0, React Router 8.5.0 y Wrangler 4.152.0: typecheck/build y 1699 unitarias PASS; E2E de consentimiento PASS; E2E de dashboard PASS; MiniWeb E2E **123/123 PASS** en Worker local, fixtures limpias y ocho anchos. Captura integral: 100 pantallas, 0 fallos HTTP, 0 requests externos, 0 errores de consola pública y 1 aviso de `__manifest` cancelado durante navegación de la captura. Las dos mediciones 711 px en tabla interna durante captura rápida se identifican como timing; la tabla conserva su propio desplazamiento y el E2E verifica el shell responsive.
-- Demo local sintético persistente: 10 negocios/perfiles, 8 licencias, 1 snapshot publicado, 11 objetos de medio en R2 simulado (4 públicos y 7 borradores privados). D1/R2 solo locales; sin datos reales, correo externo, deploy ni publicación productiva. AccessLint no está disponible; revisión responsive Playwright no equivale a auditoría WCAG.
+- Se mejoraron runner/config de captura para alinear el puerto demo (5180 configurable), validar Worker/almacén local antes de sembrar y seleccionar Edge disponible o Chromium Playwright. Se añadió un runner MiniWeb con persistencia D1/R2 local aislada y teardown verificado.
+- Se añadió aviso para workspace privado en ancho estrecho y se cambió el breakpoint del drawer. Este checkpoint compila, pero el E2E dashboard falló cuatro veces esperando el aviso en teléfono; no se certifica compatibilidad móvil privada. La causa requiere depuración en otra corrida.
+- `pnpm run test:e2e:miniweb-isolated`: **125/125 PASS**, cinco pasos del editor y Vecindario en matrices de ancho, sin incidencias de imagen/request observadas y cero filas de prueba al terminar. `typecheck`/`build` PASS; las unitarias del checkpoint dieron 1699/1699 PASS después del último ajuste del gate.
+- Entrega local ignorada por Git: 51 capturas MiniWeb WebP lossless verificadas píxel a píxel, más 110 pantallas/manifiestos de captura previa segregados como antecedentes; informe HTML y resumen aislado sin credenciales. La captura integral final quedó sin ejecutar porque el demo no estaba activo en 127.0.0.1:5180. No D1/R2 remotos ni deploy. Chromium administrado Playwright no pudo descargarse por timeout CDN; la selección se probó y las capturas locales previas usan Edge.
 
 ## 2026-10-24 — mantenimiento compatible de dependencias y URLs (checkpoint local)
 

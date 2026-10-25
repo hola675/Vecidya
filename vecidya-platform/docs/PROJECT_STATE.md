@@ -4,9 +4,9 @@
 
 Las direcciones de producción, `www` y staging respondieron correctamente en GET anónimo fechado (ver `ENVIRONMENTS.md`); el registry npm oficial también respondió y sirvió metadata de Vite `8.3.5`. No se cambió configuración de URL, no hubo deploy ni acceso/escritura a D1 o R2 remotas. No se retiró el adaptador/V3 legacy de Diagnóstico: la ventana de rollback sigue abierta según `ROADMAP.md`, y no existe una carpeta `legacy/` en este checkout.
 
-## VISUAL-QA-20261025 — paquete de revisión actualizado
+## VISUAL-QA-20261025 — corte vigente de auditoría (2026-10-25)
 
-Tras una revisión independiente se corrigió el ancho intrínseco del contenido del paso 3 MiniWeb, se recapturaron 110 estados con ancho físico igual al viewport y se comprobó que el panel interno de servicios tiene tabla desplazable dentro de su región accesible. El selector HTML abarca rutas, estados, cinco pasos y baselines disponibles; las comparaciones solo se dibujan con dimensiones compatibles. Capturas y baselines WebP lossless se verificaron píxel a píxel; `errors/` separa la imagen residual de conexión rechazada. `evidence.json` conserva hash, comandos, conteos locales D1, inventario/probes R2, permisos, fixtures y solicitudes. Todo permanece local, ignorado por Git, sin deploy ni servicios remotos.
+En este checkpoint, typecheck y build pasan tras el último cambio; las unitarias dieron 1699/1699 PASS después del último ajuste del gate. El E2E aislado MiniWeb terminó 125/125 PASS a las 14:38 UTC, imágenes/requests sin incidencias, fixtures limpiadas y D1 efímera con cinco conteos en cero; 51 capturas se optimizaron WebP lossless con igualdad píxel a píxel verificada. El E2E de dashboard no está certificado: cuatro corridas fallaron esperando aviso privado móvil. La captura integral final no corrió porque el demo local 5180 estaba apagado. Informe y 161 capturas (110 del manifiesto de corrida previa, claramente rotuladas; 51 MiniWeb de esta corrida) están bajo `.playwright-mcp/visual-qa/entrega-auditoria-20261025/`. Sin remoto, deploy ni envío real. Detalle y límites en `STATUS.md` y `TESTING.md`.
 
 ## Corte vigente de código y publicación (2026-10-24)
 

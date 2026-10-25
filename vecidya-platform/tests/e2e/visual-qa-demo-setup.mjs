@@ -4,10 +4,10 @@ import { setDefaultAutoSelectFamilyAttemptTimeout } from "node:net";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { assertLocalBaseUrl, baseUrl } from "./test-safety.mjs";
+import { assertDemoWorkerReady, demoBaseUrl as baseUrl } from "./visual-qa-demo-config.mjs";
 
 setDefaultAutoSelectFamilyAttemptTimeout(5_000);
-assertLocalBaseUrl();
+await assertDemoWorkerReady();
 
 const root = join(process.cwd(), ".wrangler", "visual-qa-demo");
 const output = join(root, "demo-access.json");
@@ -26,18 +26,7 @@ function runD1(sql) {
 
 async function d1(sql) {
   const result = runD1(sql);
-  let lastError;
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    try {
-      const health = await fetch(new URL("/api/auth/ok", baseUrl));
-      if (health.ok) return result;
-      lastError = new Error(`HTTP ${health.status}`);
-    } catch (error) {
-      lastError = error;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 250));
-  }
-  throw new Error(`El Worker local no respondió tras preparar D1: ${lastError instanceof Error ? lastError.message : String(lastError)}`);
+  return result;
 }
 
 class LocalSession {

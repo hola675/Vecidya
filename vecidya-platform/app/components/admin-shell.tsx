@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Link, useNavigate } from "react-router";
 
 import { authClient } from "../lib/auth-client";
@@ -7,6 +7,7 @@ import { Button, Icon, type IconName } from "./ui";
 import { PlatformFooter } from "./platform-footer";
 import { publicAssets } from "../assets/public-assets";
 import { useResponsiveNavigationDrawer } from "../hooks/use-responsive-navigation-drawer";
+import { UnsupportedDeviceNotice } from "./unsupported-device-notice";
 
 const navigation: { label: string; to: string; active: string; icon: IconName; group: string }[] = [
   { label: "Resumen", to: "/app/internal", active: "home", icon: "home", group: "VISIÓN GENERAL" },
@@ -30,8 +31,17 @@ type AdminShellProps = {
 export function AdminShell({ active, children, workspaceUser, platformRole = "platform_admin" }: AdminShellProps) {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
+  const [isSupportedViewport, setIsSupportedViewport] = useState<boolean | null>(null);
+  const [allowNarrowViewport, setAllowNarrowViewport] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 768px)");
+    const update = () => setIsSupportedViewport(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
   const { closeNavigation, isMobileNavigation, menuButtonRef, navigationOpen, navigationRef, setNavigationOpen } =
-    useResponsiveNavigationDrawer({ breakpoint: 980, firstItemSelector: "#admin-navigation a" });
+    useResponsiveNavigationDrawer({ breakpoint: 979, firstItemSelector: "#admin-navigation a" });
 
   async function handleSignOut(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -40,6 +50,7 @@ export function AdminShell({ active, children, workspaceUser, platformRole = "pl
     navigate("/login");
   }
 
+  if (isSupportedViewport === false && !allowNarrowViewport) return <UnsupportedDeviceNotice area="admin" onContinue={() => setAllowNarrowViewport(true)} />;
   return (
     <div className="admin-shell">
       <a

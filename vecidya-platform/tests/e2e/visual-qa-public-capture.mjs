@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { chromium } from "playwright";
+import { launchVisualQaBrowser } from "./visual-qa-browser.mjs";
 
 const baseUrl = process.env.BASE_URL ?? "http://127.0.0.1:5181";
 if (!/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(baseUrl)) throw new Error(`Capturas locales solamente; URL rechazada: ${baseUrl}`);
@@ -10,7 +10,7 @@ const outputDirectory = process.env.VISUAL_OUTPUT_DIRECTORY ?? ".playwright-mcp/
 mkdirSync(outputDirectory, { recursive: true });
 const health = await fetch(new URL("/api/auth/ok", baseUrl)).catch(() => null);
 if (!health?.ok) throw new Error(`El Worker local no está disponible en ${baseUrl}`);
-const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe" });
+const browser = await launchVisualQaBrowser();
 const page = await browser.newPage({ deviceScaleFactor: 1, locale: "es-CO", timezoneId: "America/Bogota" });
 await page.emulateMedia({ reducedMotion: "reduce" });
 const captures = [];

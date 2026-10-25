@@ -1,19 +1,22 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { setDefaultAutoSelectFamilyAttemptTimeout } from "node:net";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 
 import { baseUrl, assertLocalBaseUrl } from "./test-safety.mjs";
-import { chromium } from "playwright";
+import { launchVisualQaBrowser } from "./visual-qa-browser.mjs";
 
 setDefaultAutoSelectFamilyAttemptTimeout(5_000);
 assertLocalBaseUrl();
 
 const suffix = process.env.VISUAL_QA_FIXTURE_ID ?? Date.now().toString();
-const auditWidths = [320, 360, 390, 768, 980, 1024, 1366, 1920];
+const privateAuditWidths = [768, 820, 980, 1024, 1366, 1440, 1920];
+const publicAuditWidths = [320, 360, 390, 430, 768, 980, 1024, 1366, 1920];
 const checks = [];
+const visualImageIssues = [];
+const visualRequestFailures = [];
 class HarnessError extends Error {}
 const harness = (condition, message) => { if (!condition) throw new HarnessError(`HARNESS: ${message}`); };
 const check = (condition, label) => checks.push({ ok: Boolean(condition), label });
@@ -31,10 +34,20 @@ function executeD1(sql) {
 }
 
 async function stabilizePage(page) {
-  await page.evaluate(async () => {
+  const images = await page.evaluate(async () => {
     await document.fonts.ready;
-    await Promise.all([...document.images].map((image) => image.decode().catch(() => undefined)));
-  });
+    const elements = [...document.images];
+    for (const image of elements) image.loading = "eager";
+    return Promise.all(elements.map((image) => new Promise((resolve) => {
+      const result = (event) => resolve({ src: image.currentSrc || image.src, loaded: event === "load" || (image.complete && image.naturalWidth > 0), naturalWidth: image.naturalWidth, event });
+      if (image.complete) { result(image.naturalWidth > 0 ? "load" : "error"); return; }
+      image.addEventListener("load", () => result("load"), { once: true });
+      image.addEventListener("error", () => result("error"), { once: true });
+      setTimeout(() => result("timeout"), 5000);
+    })));
+  }).catch((error) => [{ src: page.url(), loaded: false, event: error instanceof Error ? error.message : String(error) }]);
+  const failedImages = images.filter(({ loaded }) => !loaded);
+  if (failedImages.length) visualImageIssues.push({ url: page.url(), images: failedImages });
   await page.waitForTimeout(100);
 }
 
@@ -142,8 +155,6 @@ async function uploadPng(identity, organizationId, purpose, draftRevision, altTe
 const post = (body) => ({ method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
 const profileSlug = (key) => `miniweb-${key}-${suffix}`;
 const profileId = () => crypto.randomUUID();
-const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
-const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
 const createdUserIds = [];
 const createdOrganizationIds = [];
 let fixturesCleaned = false;
@@ -483,9 +494,10 @@ try {
   check(suspendedEditor.includes("El perfil del negocio está suspendido y no aparece en público."), "el editor no representa un perfil suspendido como publicado");
   await setActive(ownerB, organizationB);
 
-  browser = await chromium.launch(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {});
+  browser = await launchVisualQaBrowser();
   const browserContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
   const page = await browserContext.newPage();
+  page.on("requestfailed", (request) => visualRequestFailures.push({ url: request.url(), failure: request.failure()?.errorText ?? "failed" }));
   await page.goto(new URL("/login", baseUrl).toString(), { waitUntil: "networkidle" });
   await page.getByLabel("Correo electrónico").fill(ownerA.email);
   await page.getByLabel("Contraseña").fill(ownerA.password);
@@ -642,7 +654,7 @@ try {
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const [index, label] of ["Diseño", "Secciones", "Contenido", "Vista previa", "Publicar"].entries()) {
     await page.getByRole("button", { name: new RegExp(`${index + 1} ${label}`) }).click();
-    for (const width of [1366, 390]) {
+    for (const width of privateAuditWidths) {
       await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
       await page.evaluate(() => window.scrollTo(0, 0));
       await stabilizePage(page);
@@ -651,10 +663,10 @@ try {
       await page.screenshot({ fullPage: true, path: join(captureDirectory, `app-mini-editor-step-${index + 1}-${width}.png`) });
     }
   }
-  check(stepViewportResults.every(({ overflow }) => !overflow), "los cinco pasos del editor no desbordan en 390 y 1366 px");
+  check(stepViewportResults.every(({ overflow }) => !overflow), `los cinco pasos del editor no desbordan en ${privateAuditWidths.join("/ ")} px`);
   console.log(JSON.stringify({ editorSteps: stepViewportResults }, null, 2));
   await page.getByRole("button", { name: "2 Secciones" }).click();
-  for (const width of auditWidths) {
+  for (const width of privateAuditWidths) {
     await page.setViewportSize({ width, height: 900 });
     await page.evaluate(() => window.scrollTo(0, 0));
     await stabilizePage(page);
@@ -662,23 +674,24 @@ try {
     viewportResults.push({ width, overflow });
     await page.screenshot({ fullPage: true, path: join(captureDirectory, `app-mini-02a-editor-${width}.png`) });
   }
-  check(viewportResults.every(({ overflow }) => !overflow), `el editor no tiene overflow a ${auditWidths.join("/")} px`);
+  check(viewportResults.every(({ overflow }) => !overflow), `el editor no tiene overflow a ${privateAuditWidths.join("/")} px`);
   console.log(JSON.stringify({ viewports: viewportResults }, null, 2));
   await page.goto(new URL("/vecindario", baseUrl).toString(), { waitUntil: "networkidle" });
   const directoryViewportResults = [];
-  for (const width of auditWidths) {
+  for (const width of publicAuditWidths) {
     await page.setViewportSize({ width, height: 900 });
     directoryViewportResults.push({ width, overflow: await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth) });
   }
-  check(directoryViewportResults.every(({ overflow }) => !overflow), `el índice del Vecindario y sus filtros no desbordan a ${auditWidths.join("/")} px`);
+  check(directoryViewportResults.every(({ overflow }) => !overflow), `el índice del Vecindario y sus filtros no desbordan a ${publicAuditWidths.join("/")} px`);
   console.log(JSON.stringify({ directoryViewports: directoryViewportResults }, null, 2));
   await page.goto(new URL(`/vecindario/${profileSlug("public-a")}`, baseUrl).toString(), { waitUntil: "networkidle" });
-  for (const width of auditWidths) {
+  for (const width of publicAuditWidths) {
     await page.setViewportSize({ width, height: 900 });
     await page.evaluate(() => window.scrollTo(0, 0));
     await stabilizePage(page);
     await page.screenshot({ fullPage: true, path: join(captureDirectory, `app-mini-02a-public-${width}.png`) });
   }
+  check(visualImageIssues.length === 0, `todas las imágenes de las capturas MiniWeb terminaron de cargar (${visualImageIssues.length} viewport(s) con incidencias)`);
 } catch (error) {
   harnessFailure = error;
 }
@@ -709,7 +722,9 @@ try {
 }
 
 const failed = checks.filter((result) => !result.ok);
-console.log(JSON.stringify({ checks: checks.length, passed: checks.length - failed.length, failed: failed.map((result) => result.label), fixturesCleaned, harness: harnessFailure?.message ?? null }, null, 2));
+const summary = { checks: checks.length, passed: checks.length - failed.length, failed: failed.map((result) => result.label), fixturesCleaned, harness: harnessFailure?.message ?? null, visualImageIssues, visualRequestFailures };
+console.log(JSON.stringify(summary, null, 2));
+if (process.env.MINIWEB_SUMMARY_PATH) writeFileSync(process.env.MINIWEB_SUMMARY_PATH, `${JSON.stringify(summary, null, 2)}\n`);
 if (harnessFailure || failed.length) {
   process.exitCode = 1;
 } else {

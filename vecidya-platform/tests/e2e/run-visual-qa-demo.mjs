@@ -2,10 +2,9 @@ import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { setDefaultAutoSelectFamilyAttemptTimeout } from "node:net";
 import { fileURLToPath } from "node:url";
+import { demoPort as port, demoBaseUrl as baseUrl } from "./visual-qa-demo-config.mjs";
 
 setDefaultAutoSelectFamilyAttemptTimeout(5_000);
-const port = Number(process.env.VISUAL_QA_DEMO_PORT ?? 5180);
-const baseUrl = `http://127.0.0.1:${port}`;
 const wrangler = fileURLToPath(import.meta.resolve("wrangler"));
 const child = spawn(process.execPath, [
   wrangler, "dev", "--local", "--persist-to", ".wrangler/visual-qa-demo",

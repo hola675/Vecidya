@@ -14,7 +14,8 @@ const wranglerCli = resolve(projectDirectory, "node_modules/wrangler/bin/wrangle
 const persistenceName = `.wrangler/app-dashboard-redesign-${process.pid}-${Date.now()}`;
 const persistence = resolve(projectDirectory, persistenceName);
 const screenshotDirectory = process.env.VISUAL_OUTPUT_DIRECTORY;
-const auditWidths = [320, 360, 390, 768, 980, 1024, 1366, 1920];
+const auditWidths = [768, 820, 980, 1024, 1366, 1440, 1920];
+const viewportHeightFor = (width) => ({ 768: 1024, 820: 1180, 979: 1100, 980: 1100, 1024: 768, 1366: 900, 1440: 900, 1920: 1080 })[width] ?? 900;
 if (!existsSync(resolve(projectDirectory, ".wrangler")) || !existsSync(wranglerCli)) throw new Error("Falta Wrangler local o su carpeta de persistencia aislada.");
 
 function runWrangler(args, timeout = 600_000) {
@@ -149,7 +150,7 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
   await page.getByRole("heading", { name: "Organización activa: Vecidya local demo" }).waitFor();
 
   for (const width of auditWidths) {
-    await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
+    await page.setViewportSize({ width, height: viewportHeightFor(width) });
     await assertNoOverflow(page, `${width}px /app`);
     if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, `vecidya-app-dashboard-${width}.png`), fullPage: true });
   }
@@ -159,18 +160,18 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
     await page.screenshot({ path: join(screenshotDirectory, "vecidya-app-dashboard-desktop.png"), fullPage: true });
   }
 
-  for (const width of [390, 768, 980]) {
-    await page.setViewportSize({ width, height: 844 });
+  for (const width of [768, 820, 979]) {
+    await page.setViewportSize({ width, height: viewportHeightFor(width) });
     const clientMenu = page.locator('button[aria-controls="app-navigation"]');
     await clientMenu.waitFor({ state: "visible" });
-    if (width === 390) {
+    if (width === 768) {
       const closedClientSidebar = page.locator(".app-sidebar");
       await page.waitForFunction(() => document.querySelector(".app-sidebar")?.hasAttribute("inert"));
       if (await closedClientSidebar.getAttribute("aria-hidden") !== "true" || await closedClientSidebar.getAttribute("inert") === null) throw new Error("El menú cliente cerrado sigue expuesto o tabulable.");
     }
     await clientMenu.click();
     if (await clientMenu.getAttribute("aria-expanded") !== "true") throw new Error(`El menú cliente no anunció estado abierto a ${width}px.`);
-    if (width === 390) {
+    if (width === 768) {
       const focusedNavigationItem = await page.evaluate(() => document.activeElement?.textContent?.trim());
       if (focusedNavigationItem !== "Inicio") throw new Error(`El menú cliente no movió el foco a su primera opción: ${focusedNavigationItem ?? "sin foco"}.`);
       if (await page.getByRole("dialog", { name: "Navegación principal" }).getAttribute("aria-modal") !== "true") throw new Error("El menú cliente abierto no se expuso como diálogo modal.");
@@ -191,6 +192,32 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
     if (await page.locator('button[aria-controls="app-navigation"]').getAttribute("aria-expanded") !== "false") throw new Error(`El menú cliente no se cerró tras navegar a ${width}px.`);
     await page.goto(new URL("/app", baseUrl).toString(), { waitUntil: "networkidle" });
   }
+  const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
+  const mobilePage = await mobileContext.newPage();
+  mobilePage.on("pageerror", (error) => errors.push(error.message));
+  await mobilePage.goto(new URL("/login", baseUrl).toString(), { waitUntil: "networkidle" });
+  await mobilePage.getByLabel(/Correo electrónico/i).fill(email);
+  await mobilePage.getByLabel(/Contraseña/i).fill(password);
+  await mobilePage.getByRole("button", { name: "Entrar" }).click();
+  await mobilePage.waitForURL("**/app");
+  for (const width of [320, 360, 390, 430]) {
+    await mobilePage.setViewportSize({ width, height: 844 });
+    const notice = mobilePage.getByTestId("unsupported-device-notice");
+    await notice.waitFor({ state: "visible" });
+    if (await mobilePage.locator(".app-sidebar, .app-header, #client-page-content").count()) throw new Error(`El workspace cliente se renderizó en un teléfono de ${width}px.`);
+    const outsideFocusable = await mobilePage.locator('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])').evaluateAll((nodes) => nodes.filter((node) => !node.closest('[data-testid="unsupported-device-notice"]')).length);
+    if (outsideFocusable) throw new Error(`Hay ${outsideFocusable} controles privados accesibles fuera del aviso a ${width}px.`);
+    await notice.getByRole("button", { name: "Continuar en esta ventana" }).click();
+    await mobilePage.getByRole("heading", { name: /Buenos días|Buenas tardes|Buenas noches/ }).waitFor();
+    if (width < 430) await mobilePage.setViewportSize({ width: 768, height: 900 });
+  }
+  await mobileContext.close();
+  const loginContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const loginPage = await loginContext.newPage();
+  await loginPage.goto(new URL("/login", baseUrl).toString(), { waitUntil: "networkidle" });
+  await loginPage.getByLabel(/Correo electrónico/i).waitFor();
+  if (await loginPage.getByTestId("unsupported-device-notice").count()) throw new Error("El aviso de compatibilidad ocultó la pantalla pública de login.");
+  await loginContext.close();
   await page.goto(new URL("/app", baseUrl).toString(), { waitUntil: "networkidle" });
   await page.setViewportSize({ width: 390, height: 844 });
   if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, "vecidya-app-dashboard-mobile.png"), fullPage: true });
@@ -199,25 +226,25 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
   await page.goto(new URL("/app/internal", baseUrl).toString(), { waitUntil: "networkidle" });
   await page.getByRole("heading", { name: "Administración de Vecidya" }).waitFor();
   for (const width of auditWidths) {
-    await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
+    await page.setViewportSize({ width, height: viewportHeightFor(width) });
     await assertNoOverflow(page, `${width}px /app/internal`);
     if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, `vecidya-internal-dashboard-${width}.png`), fullPage: true });
   }
   await page.setViewportSize({ width: 1366, height: 900 });
   if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, "vecidya-internal-dashboard-desktop.png"), fullPage: true });
 
-  for (const width of [390, 768, 980]) {
-    await page.setViewportSize({ width, height: 844 });
+  for (const width of [768, 820, 979]) {
+    await page.setViewportSize({ width, height: viewportHeightFor(width) });
     const adminMenu = page.locator('button[aria-controls="admin-navigation"]');
     await adminMenu.waitFor({ state: "visible" });
-    if (width === 390) {
+    if (width === 768) {
       const closedAdminSidebar = page.locator(".admin-sidebar");
       await page.waitForFunction(() => document.querySelector(".admin-sidebar")?.hasAttribute("inert"));
       if (await closedAdminSidebar.getAttribute("aria-hidden") !== "true" || await closedAdminSidebar.getAttribute("inert") === null) throw new Error("El menú interno cerrado sigue expuesto o tabulable.");
     }
     await adminMenu.click();
     if (await adminMenu.getAttribute("aria-expanded") !== "true") throw new Error(`El menú interno no anunció estado abierto a ${width}px.`);
-    if (width === 390) {
+    if (width === 768) {
       const focusedNavigationItem = await page.evaluate(() => document.activeElement?.textContent?.trim());
       if (focusedNavigationItem !== "Resumen") throw new Error(`El menú interno no movió el foco a su primera opción: ${focusedNavigationItem ?? "sin foco"}.`);
       if (await page.getByRole("dialog", { name: "Navegación administrativa" }).getAttribute("aria-modal") !== "true") throw new Error("El menú interno abierto no se expuso como diálogo modal.");
@@ -237,6 +264,17 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
     await page.waitForURL("**/app/internal/services");
     if (await page.locator('button[aria-controls="admin-navigation"]').getAttribute("aria-expanded") !== "false") throw new Error(`El menú interno no se cerró tras navegar a ${width}px.`);
     await page.goto(new URL("/app/internal", baseUrl).toString(), { waitUntil: "networkidle" });
+  }
+  for (const width of [320, 360, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    const notice = page.getByTestId("unsupported-device-notice");
+    await notice.waitFor();
+    if (await page.locator(".admin-sidebar, .admin-header, #internal-page-content").count()) throw new Error(`El workspace administrativo se renderizó en un teléfono de ${width}px.`);
+    const outsideFocusable = await page.locator('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])').evaluateAll((nodes) => nodes.filter((node) => !node.closest('[data-testid="unsupported-device-notice"]')).length);
+    if (outsideFocusable) throw new Error(`Hay ${outsideFocusable} controles privados accesibles fuera del aviso admin a ${width}px.`);
+    await notice.getByRole("button", { name: "Continuar en esta ventana" }).click();
+    await page.getByRole("heading", { name: "Administración de Vecidya" }).waitFor();
+    await page.setViewportSize({ width: 768, height: 900 });
   }
   phase = "internal services table and assignment controls";
   await page.goto(new URL(`/app/internal/services?organizationId=${organizationId}`, baseUrl).toString(), { waitUntil: "networkidle" });
