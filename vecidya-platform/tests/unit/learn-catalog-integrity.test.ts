@@ -138,6 +138,13 @@ test("La jerga técnica prioritaria se explica donde aparece", () => {
   assert.match(JSON.stringify(control), /autenticaci[oó]n multifactor.{0,120}adem[aá]s de la contrase[nñ]a/i);
   assert.match(JSON.stringify(migration), /MX.{0,80}dirigir los mensajes/i);
   assert.match(JSON.stringify(migration), /TXT.{0,80}verificaciones y pol[ií]ticas/i);
+  assert.match(JSON.stringify(migration), /conexi[oó]n segura \(HTTPS\)/i);
+
+  const provider = getLearnArticle("como-elegir-y-cambiar-proveedor-de-dominio-y-hosting");
+  const analytics = getLearnArticle("analitica-web-que-medir-en-tu-negocio");
+  assert.ok(provider && analytics);
+  assert.match(JSON.stringify(provider), /certificado de seguridad de la web \(TLS\)/i);
+  assert.match(JSON.stringify(analytics), /Origen incierto \(atribuci[oó]n\)/i);
 
   const dnsDefinitions = dns.sections.flatMap((section) =>
     (section.blocks ?? []).flatMap((block) => block.type === "definitions" ? block.items : []));
