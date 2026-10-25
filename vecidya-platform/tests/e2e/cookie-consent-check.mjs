@@ -24,7 +24,10 @@ try {
     const ownHost = new URL(baseUrl).hostname;
     const externalHosts = [...new Set(firstVisitRequests.filter((item) => item.host !== ownHost).map((item) => item.host))].sort();
     console.log(`INFO: recursos externos antes de consentimiento (${viewport.width}px): ${externalHosts.join(", ") || "ninguno"}`);
-    const trackerHost = /(?:^|\\.)(?:google-analytics\\.com|googletagmanager\\.com|doubleclick\\.net|facebook\\.net|connect\\.facebook\\.net|hotjar\\.com|clarity\\.ms)$/i;
+    const trackerHost = /(?:^|\.)(?:google-analytics\.com|googletagmanager\.com|doubleclick\.net|facebook\.net|connect\.facebook\.net|hotjar\.com|clarity\.ms)$/i;
+    assert.equal(trackerHost.test("www.google-analytics.com"), true, "el detector debe identificar dominios de medición conocidos");
+    assert.equal(trackerHost.test("connect.facebook.net"), true, "el detector debe identificar dominios de publicidad conocidos");
+    assert.equal(trackerHost.test("misitio.example"), false, "el detector no debe bloquear dominios ajenos por coincidencia parcial");
     assert.deepEqual(externalHosts.filter((host) => trackerHost.test(host)), [], "la primera visita cargó proveedores de seguimiento conocidos");
     const initialCookies = await context.cookies();
     assert.equal(initialCookies.filter((cookie) => /_ga|_gid|_fbp|_gcl_|_hj/i.test(cookie.name)).length, 0, "primera visita no debe crear identificadores de seguimiento conocidos");
