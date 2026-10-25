@@ -27,7 +27,7 @@ const labels: Record<MiniWebModuleType, string> = {
  * más Contacto (si existe), siempre con un destino anclado en la plantilla.
  */
 export function buildMiniWebPublicNavigation(visibleModules: readonly MiniWebModuleType[]): MiniWebNavigationItem[] {
-  const types = visibleModules.filter((type) => type !== "hero" && type !== "contact").slice(0, 3);
+  const types: MiniWebModuleType[] = visibleModules.filter((type) => type !== "hero" && type !== "contact").slice(0, 3);
   if (visibleModules.includes("contact")) types.push("contact");
   return [...new Set(types)].map((type) => ({
     type,
