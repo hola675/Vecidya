@@ -38,7 +38,7 @@ test("QA-03B measurement question is direct, understandable, and routed only for
   const question = REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.find((item) => item.id === "q2_measurement_practice");
   assert.ok(question, "the bank needs a direct measurement question");
   assert.match(question.prompt, /resultados/i);
-  assert.match(question.hint ?? "", /no es necesario usar una herramienta/i);
+  assert.match(question.hint ?? "", /no es necesario usar (?:una herramienta|herramientas digitales)/i);
   assert.deepEqual(question.evidenceV3?.dimensions, [{
     dimension: "measurement_optimization",
     directness: "direct",
