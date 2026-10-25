@@ -174,6 +174,16 @@ test("La introducción y el extracto cumplen funciones distintas", () => {
   }
 });
 
+test("El resumen final no repite literalmente En pocas palabras", () => {
+  for (const article of learnArticles) {
+    const summaries = article.sections.flatMap((section) =>
+      (section.blocks ?? []).flatMap((block) => block.type === "summary" ? [block.items] : []));
+    for (const summary of summaries) {
+      assert.notDeepEqual(summary, [...article.enPocasPalabras], `Resumen duplicado en ${article.slug}`);
+    }
+  }
+});
+
 test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
   const requirements = [
     ["publicidad-digital-como-preparar-una-primera-campana", [/Google Ads|Meta Ads/i, /página de destino/i, /indicadores/i]],
