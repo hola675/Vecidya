@@ -211,7 +211,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   function validateEditableContent() {
     if (offerings.some((item) => !item.title.trim() || !item.description.trim())) {
       setMessage({ kind: "error", text: "Hay servicios o productos sin título o descripción. Complétalos antes de guardar." });
-      setContentTab("services");
+      setContentTab(offerings.find((item) => !item.title.trim() || !item.description.trim())?.kind === "product" ? "products" : "services");
       setActiveTab("content");
       return false;
     }
@@ -580,10 +580,16 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               <div><p className="eyebrow">4 · SOLO PARA TI</p><h2 id="miniweb-preview-title">Vista previa privada</h2></div>
               <Button aria-expanded={previewVisible} onClick={() => setPreviewVisible((visible) => !visible)} tone="ghost">{previewVisible ? "Ocultar" : "Mostrar"}</Button>
             </div>
-            <p className="miniweb-editor__note">El borrador se previsualiza aquí; no se guarda ni publica automáticamente.</p>
+            <p className="miniweb-editor__note">Visualiza los cambios del borrador antes de guardarlos o publicarlos. La simulación móvil no sustituye la revisión en un teléfono real.</p>
+            <div aria-label="Tamaño de la vista previa" className="miniweb-editor__device-switch">
+              <button aria-pressed={previewDevice === "desktop"} onClick={() => setPreviewDevice("desktop")} type="button">Escritorio</button>
+              <button aria-pressed={previewDevice === "mobile"} onClick={() => setPreviewDevice("mobile")} type="button">Móvil</button>
+            </div>
             {previewVisible && activeTab === "preview" ? data.profile ? (
-              <div className="miniweb-editor__preview">
-              <MiniWebRenderer configuration={configuration} hours={data.hours} offerings={offerings} faqs={faqs} media={media} preview profile={profile} />
+              <div aria-label={previewDevice === "mobile" ? "Vista previa estrecha" : "Vista previa amplia"} className="miniweb-editor__preview-stage" data-device={previewDevice} role="region">
+                <div className="miniweb-editor__preview">
+                  <MiniWebRenderer configuration={configuration} hours={data.hours} offerings={offerings} faqs={faqs} media={media} preview profile={profile} />
+                </div>
               </div>
             ) : <div className="miniweb-editor__empty-preview">Completa primero la información de tu negocio para generar una vista previa.</div> : null}
             <div className="miniweb-editor__publication-state">
