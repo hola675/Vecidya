@@ -360,6 +360,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
       active="miniweb"
       activeOrganization={data.activeOrganization}
       isPlatformAdmin={data.isPlatformAdmin}
+      organizationSwitchLocked={isDirty || busy || uploading || removingMediaId !== null}
       organizations={data.organizations}
       workspaceUser={data.workspaceUser}
     >
