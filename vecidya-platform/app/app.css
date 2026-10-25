@@ -6285,3 +6285,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .miniweb-editor__tabs button { flex: 0 0 auto; }
   .miniweb-editor__tab-actions [role="status"] { flex-basis: 100%; }
 }
+
+/* MiniWeb: guia contextual de configuracion. */
+.miniweb-editor__guide { margin: 1rem 0; padding: 1.25rem 1.4rem; border: 1px solid #d9e5f5; border-radius: 1rem; background: linear-gradient(135deg, #f8fbff, #eef4ff); }
+.miniweb-editor__guide .eyebrow { margin: 0 0 .4rem; color: #2457c5; }
+.miniweb-editor__guide h2 { margin: 0 0 .35rem; font-size: clamp(1.1rem, 2vw, 1.4rem); }
+.miniweb-editor__guide p:not(.eyebrow) { margin: 0; color: #44546a; }
+.miniweb-editor__guide-navigation { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }
+@media (max-width: 540px) { .miniweb-editor__guide { padding: 1rem; } .miniweb-editor__guide-navigation > * { flex: 1; } }
