@@ -94,7 +94,12 @@ export function PublicBusinessHeader({
   const location = [profile.city, profile.country].filter(Boolean).join(", ");
   const actions = getContactActions(profile);
   const primaryAction = showContactActions ? actions[0] : undefined;
-  const imageUrl = safeWebUrl(profile.logoUrl) ?? (profile.logoUrl?.startsWith("/media/business/") ? profile.logoUrl : null);
+  // Los logos públicos publicados usan /media/business, mientras que el editor
+  // autenticado usa temporalmente /api/organizations para previsualizar el borrador.
+  const logoPath = profile.logoUrl ?? "";
+  const isPublishedLogo = /^\/media\/business\/[^/?#]+\/[^/?#]+$/.test(logoPath);
+  const isPrivatePreviewLogo = preview && /^\/api\/organizations\/[^/?#]+\/business-media\/[^/?#]+$/.test(logoPath);
+  const imageUrl = safeWebUrl(profile.logoUrl) ?? ((isPublishedLogo || isPrivatePreviewLogo) ? logoPath : null);
   const initial = profile.displayName.trim().slice(0, 1).toLocaleUpperCase();
 
   return (
