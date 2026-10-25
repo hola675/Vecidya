@@ -5,6 +5,7 @@ import { LOTE_C_QUESTIONS_V2 } from "../qbv2-lote-c";
 import { LOTE_D_QUESTIONS_V2 } from "../qbv2-lote-d";
 import { LOTE_F_QUESTIONS_V2 } from "../qbv2-lote-f";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
+import { QA03B_RECOVERY_WAVE2_QUESTIONS } from "./recovery-wave2";
 
 /**
  * MIGRATION CANDIDATE ONLY — not imported by the public flow, the scorer or the
@@ -174,6 +175,7 @@ export const QA03B_SPECIALTY_CANDIDATE_BANK_V1: readonly QuestionDefinitionV2[] 
     question.id === "q2_sector" ? QA03B_CANDIDATE_SECTOR_V4 : question),
   ...QA03B_SPECIALTY_SELECTORS_V1,
   ...QA03B_RECOVERY_PILOT_V1,
+  ...QA03B_RECOVERY_WAVE2_QUESTIONS,
 ];
 
 if (new Set(QA03B_SPECIALTY_CANDIDATE_BANK_V1.map((question) => question.id)).size
