@@ -3,6 +3,7 @@ import { learnOperations02Articles } from "./learn-operations-02";
 import { learnManagement03Articles } from "./learn-management-03";
 import { learnDigitalLiteracyArticles } from "./learn-digital-literacy";
 import { learnTechnical04BArticles } from "./learn-technical-04b";
+import { learnEmail04BArticles } from "./learn-email-04b";
 
 export type LearnBlock =
   | { type: "paragraph"; text: string }
@@ -1224,89 +1225,142 @@ export const learnArticles: LearnArticle[] = [
   {
     slug: "dns-https-y-correo-como-se-conecta-tu-dominio",
     category: "Negocios digitales",
-    title: "DNS, HTTPS y correo: cómo se conecta tu dominio",
-    intro: "Distingue los registros DNS, el alojamiento, el certificado HTTPS y el correo profesional sin confundir sus funciones.",
-    excerpt: "Distingue los registros DNS, el alojamiento, el certificado HTTPS y el correo profesional sin confundir sus funciones.",
-    enPocasPalabras: ["El DNS ayuda a localizar servicios asociados a un dominio.","HTTPS protege la conexión, pero no garantiza que el negocio sea legítimo.","El correo y la web pueden usar proveedores y configuraciones diferentes."],
+    title: "DNS, HTTPS y correo: cómo se conectan las piezas de tu dominio",
+    intro: "Tu dominio puede apuntar a una web, proteger la conexión con HTTPS y recibir correo mediante servicios distintos. Esta guía te ayuda a ver el mapa sin convertirte en administrador de sistemas.",
+    excerpt: "Entiende qué conecta DNS, qué protege HTTPS y por qué el correo puede seguir otro camino aunque use el mismo dominio.",
+    enPocasPalabras: [
+      "DNS indica dónde encontrar los servicios asociados a tu dominio.",
+      "HTTPS protege la conexión con la web; no demuestra por sí solo que el negocio sea confiable.",
+      "Web y correo pueden usar proveedores y registros diferentes, así que conviene comprobarlos por separado.",
+    ],
     image: "/assets/learn/diagram-domain-dns-hosting.svg",
-    imageAlt: "Esquema educativo de servicios y canales digitales",
-    relatedSlugs: ["dominio-hosting-sitio-web-como-funcionan"],
+    imageAlt: "Esquema de un dominio que conecta por separado una página web segura y un servicio de correo.",
+    relatedSlugs: [
+      "dominio-hosting-sitio-web-como-funcionan",
+      "https-certificados-tls-que-protegen-y-que-no",
+      "correo-profesional-dominio-registros-mx-txt",
+    ],
     editorialDraft: false,
-    cta: { label: "Revisar mi situación", to: "/diagnostico", copy: "Comprueba qué necesita tu negocio antes de contratar o publicar." },
+    cta: {
+      label: "Revisar mi situación",
+      to: "/diagnostico",
+      copy: "Comprueba qué servicio necesitas entender o corregir antes de cambiar configuraciones.",
+    },
     sections: [
-      { heading: "Qué aprenderás", paragraphs: ["Distingue los registros DNS, el alojamiento, el certificado HTTPS y el correo profesional sin confundir sus funciones.", "Ejercicio: elige un canal o servicio que ya utilizas, identifica qué debes comprobar y anota quién se encargará de revisarlo."] },
       {
-        heading: "DNS: cómo se conecta el nombre con el alojamiento",
+        heading: "Piensa en el dominio como una dirección con varias rutas",
         paragraphs: [
-          "La zona DNS de un dominio contiene registros que indican qué resolver o servidor debe responder por cada tipo de consulta. El dominio puede registrarse con una empresa, delegar DNS en otra y alojar el sitio en una tercera. Cambiar una de estas relaciones no mueve automáticamente las otras.",
-          "Cuando un proveedor dice «conecta tu dominio», puede pedir que cambies los servidores de nombres (NS) para que su servicio DNS responda por el dominio, o que conserves los NS actuales y agregues registros específicos. Sigue los valores que indique el proveedor que aloja el sitio; los nombres y pantallas exactos dependen de cada servicio.",
+          "Registrar un dominio no crea por sí solo una web ni un buzón. El dominio es el nombre; DNS publica indicaciones para que otros sistemas sepan dónde encontrar distintos servicios asociados a ese nombre.",
+          "Una misma organización puede registrar el dominio con una empresa, alojar la web con otra y usar un proveedor de correo distinto. Eso es normal: lo importante es saber quién administra cada pieza.",
         ],
-        blocks: [{ type: "definitions", items: [
-          { term: "A y AAAA", definition: "Registros que asocian un nombre de host con una dirección IPv4 (A) o IPv6 (AAAA), según la configuración indicada por el alojamiento." },
-          { term: "CNAME", definition: "Un alias que hace que un nombre consulte otro nombre, en lugar de guardar directamente una dirección IP. Sus usos permitidos dependen de las reglas de DNS y del proveedor." },
-          { term: "NS", definition: "Indica qué servidores de nombres son autoritativos para una zona DNS. Cambiar los NS delega la administración de los registros a otro servicio DNS; no traslada los archivos del sitio." },
-          { term: "MX", definition: "Indica a qué servidores se debe dirigir el correo entrante para un dominio. Es distinto de los registros que hacen que una página web se cargue." },
-          { term: "TXT", definition: "Permite publicar texto asociado a un nombre. Puede usarse para verificar un servicio o publicar políticas de correo; conserva los valores que tus servicios activos necesitan." },
-        ] }],
-      },
-      {
-        heading: "Hosting: dónde funciona la web",
-        paragraphs: [
-          "El alojamiento web proporciona infraestructura y, según el servicio, herramientas para publicar el sitio. Puede encargarse de parte del mantenimiento del servidor o dejar más tareas a quien lo administra. No hay un paquete universal: revisa qué incluye el plan y qué debes mantener tú.",
-          "Un mismo sitio puede cambiar de alojamiento sin cambiar de dominio. Para que las visitas lleguen al nuevo servidor, normalmente se prepara y prueba el sitio, se configura el nuevo servicio y luego se actualizan los registros DNS correspondientes. El plazo para que la nueva respuesta se vea en todas las redes depende de los TTL, cachés y configuración; no es una garantía de un número fijo de minutos.",
-        ],
-        blocks: [{ type: "list", items: [
-          "Pregunta quién actualiza el software del servidor y qué soporte está incluido.",
-          "Comprueba si hay copias de seguridad, cuánto tiempo se conservan y cómo puedes restaurarlas.",
-          "Aclara cómo exportar los archivos y datos del sitio si cambias de proveedor.",
-          "Verifica si el plan incluye un certificado TLS y si cubre todos los nombres que usarás.",
-        ] }],
-      },
-      {
-        heading: "HTTPS y el certificado TLS",
-        paragraphs: [
-          "HTTPS es HTTP transportado sobre TLS. TLS protege la comunicación entre el navegador y el servidor: cifra los datos durante el tránsito y permite comprobar que el servidor presenta un certificado válido para el nombre solicitado. El proveedor de alojamiento puede automatizar parte de la emisión y renovación del certificado, o puede pedir configuración adicional.",
-          "Ver HTTPS en la dirección no prueba que la empresa sea legítima, que el contenido sea correcto, que el sitio esté libre de software malicioso ni que una compra sea conveniente. Protege la conexión con el dominio comprobado; no sustituye revisar quién opera el sitio, cómo usa tus datos y qué ofrece.",
-        ],
-        blocks: [{ type: "callout", tone: "tip", title: "Comprueba la dirección completa", text: "Después de publicar, verifica que la variante con https:// carga sin una advertencia del navegador, que los nombres que necesitas —con o sin www— apuntan al sitio esperado y que la versión segura se usa también en los enlaces y recursos de la página." }],
-      },
-      {
-        heading: "Correo profesional y hosting web no son lo mismo",
-        paragraphs: [
-          "El hosting web entrega páginas y funciones de un sitio. El correo profesional proporciona buzones y servicios para enviar o recibir mensajes con tu dominio. Se pueden contratar con la misma empresa o con proveedores distintos; pagar uno no implica necesariamente tener el otro.",
-          "El correo usa su propia configuración DNS. Los registros MX dirigen el correo entrante; otros registros, como TXT, pueden ayudar a publicar políticas de autenticación o verificar el servicio. Si cambias los servidores DNS o la zona, conserva los registros que el proveedor de correo necesita. Si solo cambias el registro de la web, el correo puede seguir funcionando siempre que sus registros continúen correctos.",
-        ],
-        blocks: [{ type: "callout", tone: "caution", title: "No borres los registros del correo al conectar la web", text: "Antes de sustituir una zona DNS o cambiar los NS, guarda una copia de los registros actuales y confirma cuáles corresponden al correo. Una página puede cargar correctamente mientras el correo deja de recibir mensajes." }],
-      },
-      {
-        heading: "Ejemplo: la web funciona, pero el correo deja de recibir",
-        paragraphs: ["Caso hipotético para entender por qué cambiar DNS exige revisar más de un servicio."],
         blocks: [{
-          type: "example",
-          title: "Una tienda conecta su dominio a una nueva web",
-          hypothetical: true,
-          context: "Una tienda cambia de plataforma web. Para conectar el dominio, alguien sustituye la configuración DNS completa sin copiar los registros anteriores.",
-          problem: "La nueva página abre correctamente, pero horas después el negocio descubre que no está recibiendo correo en sus direcciones habituales.",
-          approach: "El equipo compara la zona anterior con la nueva, identifica los registros que necesita el proveedor de correo y restaura únicamente los valores confirmados por ese servicio.",
-          actions: [
-            "Revisar qué cambió en los servidores de nombres y en los registros A, AAAA, CNAME, MX y TXT.",
-            "Consultar las instrucciones vigentes del proveedor de correo en vez de adivinar valores.",
-            "Probar por separado la web, la recepción y el envío de correo después de corregir la zona.",
-            "Guardar una copia de la configuración estable y documentar quién administra DNS, web y correo.",
+          type: "definitions",
+          items: [
+            { term: "DNS", definition: "Sistema que publica información para localizar servicios asociados a un nombre de dominio." },
+            { term: "Web", definition: "El sitio se publica en un alojamiento o plataforma y suele utilizar registros como A, AAAA o CNAME para conectarse al dominio." },
+            { term: "Correo", definition: "Los buzones utilizan su propia configuración; los registros MX indican dónde debe recibirse el correo del dominio." },
+            { term: "HTTPS", definition: "Versión segura de la conexión web mediante TLS. Protege los datos en tránsito entre navegador y servidor." },
           ],
-          lesson: "Que la página cargue no demuestra que todos los servicios del dominio estén bien. Web y correo dependen de registros diferentes que deben comprobarse por separado.",
         }],
       },
-      { heading: "Lista de comprobación", paragraphs: ["El DNS ayuda a localizar servicios asociados a un dominio.","HTTPS protege la conexión, pero no garantiza que el negocio sea legítimo.","El correo y la web pueden usar proveedores y configuraciones diferentes."] },
+      {
+        heading: "Qué ocurre cuando escribes la dirección de una web",
+        paragraphs: [
+          "El navegador consulta DNS para averiguar a qué servicio debe dirigirse. Los registros concretos dependen de cómo haya configurado el proveedor la página.",
+          "No necesitas memorizar A, AAAA, CNAME o NS para usar un dominio. Sí conviene guardar la configuración que funciona y seguir las instrucciones del proveedor cuando conectes o cambies una web.",
+        ],
+        blocks: [{
+          type: "callout",
+          tone: "tip",
+          title: "Cambiar DNS no mueve la web",
+          text: "Modificar una indicación de DNS puede hacer que las visitas lleguen a otro servicio, pero no copia archivos, contenido ni bases de datos.",
+        }],
+      },
+      {
+        heading: "Qué aporta HTTPS",
+        paragraphs: [
+          "HTTPS usa TLS para proteger la comunicación entre el navegador y el servidor y para comprobar que el certificado presentado corresponde al nombre solicitado.",
+          "El candado no demuestra que una empresa sea legítima, que una oferta sea verdadera ni que el sitio esté libre de riesgos. Para entender certificados, advertencias y límites de HTTPS, continúa con la guía específica relacionada.",
+        ],
+        blocks: [{
+          type: "callout",
+          tone: "caution",
+          title: "No ignores una advertencia del navegador",
+          text: "Si el navegador indica un problema de certificado, corrige la configuración del sitio. No pidas a visitantes que desactiven la advertencia o compartan datos de todos modos.",
+        }],
+      },
+      {
+        heading: "Por qué el correo puede fallar aunque la web funcione",
+        paragraphs: [
+          "La página y el correo pueden compartir el mismo dominio y, aun así, depender de registros y proveedores diferentes. Una web puede abrir correctamente mientras los mensajes dejan de llegar.",
+          "El correo utiliza registros como MX y TXT y puede incorporar mecanismos como SPF, DKIM y DMARC. Esta guía solo presenta el mapa; la guía especializada explica qué hace cada uno y cómo cambiar su configuración con menos riesgo.",
+        ],
+        blocks: [{
+          type: "callout",
+          tone: "tip",
+          title: "Separa las comprobaciones",
+          text: "Después de cambiar DNS, prueba la web y el correo por separado. Que una de las dos cosas funcione no confirma la otra.",
+        }],
+      },
+      {
+        heading: "Ejemplo: una página nueva deja el correo fuera del mapa",
+        paragraphs: ["Caso hipotético para entender por qué conviene conservar los registros que todavía utiliza otro servicio."],
+        blocks: [{
+          type: "example",
+          title: "Una tienda conecta su dominio a una nueva plataforma",
+          hypothetical: true,
+          context: "La tienda publica una web nueva, pero mantiene sus buzones con el proveedor que ya utilizaba.",
+          problem: "Al conectar la web se reemplaza toda la zona DNS y desaparecen los registros del correo. La página abre, pero los mensajes dejan de entrar.",
+          approach: "El equipo recupera la configuración anterior, identifica qué registros pertenecen a la web y cuáles al correo y aplica únicamente los cambios confirmados por cada proveedor.",
+          actions: [
+            "Guardar una copia de la zona DNS antes de modificarla.",
+            "Identificar qué registros necesita la web y cuáles mantiene el proveedor de correo.",
+            "Cambiar solo los valores necesarios y conservar los demás hasta entender su función.",
+            "Probar la página, el envío y la recepción de correo después del cambio.",
+          ],
+          lesson: "Un dominio conecta varios servicios. Cambiar uno sin revisar los demás puede romper algo que parecía no estar relacionado.",
+        }],
+      },
+      {
+        heading: "Qué revisar antes de cambiar algo",
+        paragraphs: [],
+        blocks: [{
+          type: "steps",
+          label: "Mapa mínimo de tu dominio",
+          items: [
+            { title: "Quién registra el dominio", detail: "Anota la cuenta que controla la renovación y la recuperación del nombre." },
+            { title: "Quién administra DNS", detail: "Comprueba dónde se editan los registros y guarda una copia antes de modificarla." },
+            { title: "Dónde está la web", detail: "Identifica la plataforma o alojamiento que publica el sitio." },
+            { title: "Dónde está el correo", detail: "Confirma el proveedor de buzones y qué registros necesita." },
+            { title: "Quién puede recuperar cada cuenta", detail: "Evita depender de una cuenta personal de alguien que ya no participa en el negocio." },
+          ],
+        }],
+      },
+      {
+        heading: "Qué puedes hacer ahora",
+        paragraphs: [],
+        blocks: [{
+          type: "summary",
+          items: [
+            "Dibuja por separado dominio, DNS, web y correo y anota quién controla cada pieza.",
+            "Usa la guía específica de HTTPS si el problema es el certificado o la conexión segura.",
+            "Usa la guía de correo profesional antes de cambiar MX, TXT, SPF, DKIM o DMARC.",
+          ],
+        }],
+      },
       {
         heading: "Fuentes y alcance",
-        paragraphs: ["Estas referencias técnicas explican DNS y TLS. Los RFC del IETF describen registros y resolución de nombres; MDN explica TLS en la web. Esta guía introduce el correo a nivel de MX y TXT, pero no enseña a configurar SPF, DKIM ni DMARC: para esos mecanismos deben consultarse las instrucciones vigentes del proveedor de correo antes de cambiar registros."],
-        blocks: [{ type: "sources", items: [
-          { label: "RFC 1034: Domain Names — Concepts and Facilities", url: "https://datatracker.ietf.org/doc/html/rfc1034", scope: "Estándar del IETF que describe resolvers, servidores de nombres, datos autoritativos y caché/TTL en DNS. Consultado el 17 de octubre de 2026." },
-          { label: "RFC 1035: Domain Names — Implementation and Specification", url: "https://datatracker.ietf.org/doc/html/rfc1035", scope: "Especifica registros como A, NS, CNAME y MX. No es una guía de configuración para un proveedor concreto. Consultado el 17 de octubre de 2026." },
-          { label: "RFC 3596: DNS Extensions to Support IP Version 6", url: "https://datatracker.ietf.org/doc/html/rfc3596", scope: "Define la extensión de DNS para consultas y registros de direcciones IPv6 (AAAA). Consultado el 17 de octubre de 2026." },
-          { label: "Transport Layer Security (TLS) — MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Transport_Layer_Security", scope: "Explica cómo TLS protege conexiones HTTP y cómo el certificado participa en la autenticación del servidor. Consultado el 17 de octubre de 2026." },
-        ] }],
+        paragraphs: [
+          "Esta guía es un mapa conceptual. No proporciona valores de configuración para proveedores concretos. Los RFC del IETF explican DNS y MDN resume el papel de TLS en la web. La guía de correo relacionada trata SPF, DKIM y DMARC, pero sus valores deben obtenerse del proveedor que realmente utilices.",
+        ],
+        blocks: [{
+          type: "sources",
+          items: [
+            { label: "RFC 1034 — Domain Names: Concepts and Facilities", url: "https://datatracker.ietf.org/doc/html/rfc1034", scope: "Describe los conceptos fundamentales de resolución de nombres, servidores DNS y caché." },
+            { label: "RFC 1035 — Domain Names: Implementation and Specification", url: "https://datatracker.ietf.org/doc/html/rfc1035", scope: "Especifica registros DNS como A, NS, CNAME y MX. Es una referencia técnica, no una guía de proveedor." },
+            { label: "Transport Layer Security (TLS) — MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Transport_Layer_Security", scope: "Explica cómo TLS protege conexiones web y el papel del certificado del servidor." },
+          ],
+        }],
       },
     ],
   },
@@ -4457,6 +4511,7 @@ export const learnArticles: LearnArticle[] = [
 
   ...learnDigitalLiteracyArticles,
   ...learnTechnical04BArticles,
+  ...learnEmail04BArticles,
   ...learnBusinessOperationsArticles,
   ...learnOperations02Articles,
   ...learnManagement03Articles,
@@ -4560,6 +4615,7 @@ export const learnPathways = [
     slugs: [
       "dominio-hosting-sitio-web-como-funcionan",
       "dns-https-y-correo-como-se-conecta-tu-dominio",
+      "correo-profesional-dominio-registros-mx-txt",
       "https-certificados-tls-que-protegen-y-que-no",
       "como-elegir-y-cambiar-proveedor-de-dominio-y-hosting",
       "como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo",
