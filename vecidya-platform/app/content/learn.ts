@@ -62,6 +62,7 @@ export const learnArticles: LearnArticle[] = [
     ],
     image: "/assets/learn/diagram-crm.svg",
     imageAlt: "Una consulta se registra con contexto y puede continuar, retomarse después o cerrarse, según lo que ocurra",
+    relatedSlugs: ["organizar-consultas-mensajes-llamadas-formularios", "como-responder-la-primera-consulta-de-un-cliente"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no es un CRM ni crea una base de contactos." },
     editorialDraft: false,
     sections: [
