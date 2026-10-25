@@ -96,7 +96,7 @@ test("los snapshots MiniWeb v1 y v2 conservan la compatibilidad de ofertas, FAQ 
   const configuration = buildSafeMiniWebConfiguration();
   const versionOne = parseBusinessPublicationSnapshot(JSON.stringify({ schemaVersion: 1, profile, hours, configuration }), 1);
   assert.ok(versionOne);
-  assert.equal(versionOne.schemaVersion, 3, "el lector adapta snapshots antiguos al contrato vigente");
+  assert.equal(versionOne.schemaVersion, 4, "el lector adapta snapshots antiguos al contrato vigente");
   assert.deepEqual(versionOne.offerings, [], "v1 no recupera contenido de negocio desde el borrador");
   assert.deepEqual(versionOne.faqs, [], "v1 no recupera FAQ desde el borrador");
   for (const type of ["services", "products", "faq"]) {
@@ -107,7 +107,43 @@ test("los snapshots MiniWeb v1 y v2 conservan la compatibilidad de ofertas, FAQ 
   const faqs = [{ question: "¿Cómo se agenda?", answer: "Por teléfono.", sortOrder: 0, isActive: true }];
   const versionTwo = parseBusinessPublicationSnapshot(JSON.stringify({ schemaVersion: 2, profile, hours, configuration, offerings, faqs }), 2);
   assert.ok(versionTwo);
-  assert.deepEqual(versionTwo.offerings, offerings, "v2 preserva las ofertas publicadas");
+  assert.deepEqual(versionTwo.offerings, [{ ...offerings[0], imageAssetId: null }], "v2 preserva ofertas y no inventa vínculos a imágenes");
   assert.deepEqual(versionTwo.faqs, faqs, "v2 preserva las FAQ publicadas");
   assert.deepEqual(versionTwo.media, [], "v2 no inventa medios en el snapshot");
+  const versionThree = parseBusinessPublicationSnapshot(JSON.stringify({
+    schemaVersion: 3, profile, hours, configuration, offerings, faqs,
+    media: [{ id: "gallery-1", mediaType: "image", purpose: "gallery", contentType: "image/png", altText: "Foto" }],
+  }), 3);
+  assert.ok(versionThree);
+  assert.equal(versionThree.media[0]?.id, "gallery-1", "v3 conserva medios existentes sin declarar branding v4");
+  assert.deepEqual(versionThree.branding, { logoAssetId: null, iconAssetId: null });
+});
+
+test("snapshot v4 permite imagen y marca solo si los IDs están en medios publicados del snapshot", () => {
+  const media = [
+    { id: "logo-1", mediaType: "image", purpose: "logo", contentType: "image/png", altText: "Logo" },
+    { id: "icon-1", mediaType: "image", purpose: "icon", contentType: "image/webp", altText: "Icono" },
+    { id: "offer-1", mediaType: "image", purpose: "gallery", contentType: "image/jpeg", altText: "Servicio" },
+    { id: "movie-1", mediaType: "video", purpose: "gallery", contentType: "video/mp4", altText: "Video" },
+    { id: "movie-logo", mediaType: "video", purpose: "logo", contentType: "video/mp4", altText: "Video mal clasificado" },
+  ];
+  const snapshot = parseBusinessPublicationSnapshot(JSON.stringify({
+    schemaVersion: 4,
+    profile: { slug: "taller-central", displayName: "Taller Central" },
+    hours: [],
+    configuration: buildSafeMiniWebConfiguration(),
+    offerings: [
+      { kind: "service", title: "Servicio con foto", description: "Descripción", priceLabel: null, imageAssetId: "offer-1", sortOrder: 0, isActive: true },
+      { kind: "product", title: "Referencia externa inválida", description: "Descripción", priceLabel: null, imageAssetId: "otro-tenant", sortOrder: 1, isActive: true },
+      { kind: "product", title: "Un video no es foto", description: "Descripción", priceLabel: null, imageAssetId: "movie-1", sortOrder: 2, isActive: true },
+    ],
+    faqs: [],
+    media,
+    branding: { logoAssetId: "movie-logo", iconAssetId: "icon-1" },
+  }), 4);
+  assert.ok(snapshot);
+  assert.equal(snapshot.offerings[0].imageAssetId, "offer-1");
+  assert.equal(snapshot.offerings[1].imageAssetId, null);
+  assert.equal(snapshot.offerings[2].imageAssetId, null);
+  assert.deepEqual(snapshot.branding, { logoAssetId: null, iconAssetId: "icon-1" });
 });

@@ -2284,9 +2284,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   width: min(8rem, 45vw);
   height: min(8rem, 45vw);
   border-radius: 1.6rem;
-  object-fit: cover;
+  object-fit: contain;
+  background: #fff;
   box-shadow: 0 1rem 2rem rgb(20 43 74 / 12%);
 }
+
+.public-business-profile__icon { display: inline-block; width: 3rem; height: 3rem; margin-inline-start: 0.75rem; border-radius: 0.7rem; object-fit: cover; vertical-align: middle; }
 
 .public-business-profile__fallback {
   width: 6.5rem;
@@ -5904,6 +5907,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .miniweb-content-editor__toggle input { width: 1.1rem; height: 1.1rem; accent-color: var(--blue); }
 .miniweb-content-list__items { display: grid; gap: 0.75rem; }
 .miniweb-content-list__item { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; }
+.miniweb-content-list__item > img { display: block; width: 100%; max-height: 16rem; margin-block-end: 0.75rem; border-radius: var(--radius-sm); object-fit: cover; }
 .miniweb-content-list__item h3 { margin: 0; }
 .miniweb-content-list__item p { margin: 0.5rem 0 0; line-height: 1.55; }
 .miniweb-content-list__item .miniweb-content-list__price { font-weight: 700; }

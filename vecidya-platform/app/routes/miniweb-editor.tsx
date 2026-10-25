@@ -86,7 +86,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const { revalidate } = useRevalidator();
   const [configuration, setConfiguration] = useState(data.draftConfiguration);
   const [draftRevision, setDraftRevision] = useState(data.draftRevision);
-  const [offerings, setOfferings] = useState(data.offerings);
+  const [offerings, setOfferings] = useState<BusinessOffering[]>(data.offerings);
   const [faqs, setFaqs] = useState(data.faqs);
   const [media, setMedia] = useState(data.media);
   const [uploading, setUploading] = useState(false);
@@ -96,7 +96,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const [message, setMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
   const isDirty = JSON.stringify(configuration) !== JSON.stringify(data.draftConfiguration)
     || JSON.stringify(offerings) !== JSON.stringify(data.offerings)
-    || JSON.stringify(faqs) !== JSON.stringify(data.faqs);
+    || JSON.stringify(faqs) !== JSON.stringify(data.faqs)
+    || JSON.stringify(media.map(({ id, purpose }) => ({ id, purpose }))) !== JSON.stringify(data.media.map(({ id, purpose }) => ({ id, purpose })));
   const orderedModules = [...configuration.modules].sort((left, right) => left.sortOrder - right.sortOrder || left.type.localeCompare(right.type));
 
   useEffect(() => setConfiguration(data.draftConfiguration), [data.draftConfiguration]);
@@ -212,6 +213,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
       const result = await response.json() as { error?: string; draftRevision?: number };
       if (!response.ok || typeof result.draftRevision !== "number") throw new Error(result.error ?? "No se pudo retirar el medio.");
       setMedia((current) => current.filter((item) => item.id !== asset.id));
+      setOfferings((current) => current.map((item) => item.imageAssetId === asset.id ? { ...item, imageAssetId: null } : item));
       setDraftRevision(result.draftRevision);
       setMessage({ kind: "success", text: "Medio retirado del borrador. La publicación actual no cambia hasta publicar de nuevo." });
     } catch (error) {
@@ -338,6 +340,11 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                   <label>Descripción
                     <textarea maxLength={600} onChange={(event) => updateOffering(index, { description: event.currentTarget.value })} required rows={3} value={item.description} />
                   </label>
+                  <label>Imagen de esta oferta
+                    <select onChange={(event) => updateOffering(index, { imageAssetId: event.currentTarget.value || null })} value={item.imageAssetId ?? ""}>
+                      <option value="">Sin imagen</option>{media.filter((asset) => asset.mediaType === "image" && asset.purpose === "gallery").map((asset) => <option key={asset.id} value={asset.id}>{asset.altText}</option>)}
+                    </select>
+                  </label>
                   <label>Texto de precio (opcional)
                     <input maxLength={80} onChange={(event) => updateOffering(index, { priceLabel: event.currentTarget.value || null })} value={item.priceLabel ?? ""} />
                   </label>
@@ -345,7 +352,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                   <Button onClick={() => setOfferings((current) => current.filter((_, position) => position !== index).map((entry, sortOrder) => ({ ...entry, sortOrder })))} tone="secondary">Quitar oferta</Button>
                 </fieldset>
               ))}
-              <Button disabled={!data.canEdit || busy || offerings.length >= MAX_BUSINESS_OFFERINGS} onClick={() => setOfferings((current) => [...current, { kind: "service", title: "", description: "", priceLabel: null, sortOrder: current.length, isActive: true }])} tone="secondary">Añadir servicio o producto</Button>
+              <Button disabled={!data.canEdit || busy || offerings.length >= MAX_BUSINESS_OFFERINGS} onClick={() => setOfferings((current) => [...current, { kind: "service", title: "", description: "", priceLabel: null, imageAssetId: null, sortOrder: current.length, isActive: true }])} tone="secondary">Añadir servicio o producto</Button>
             </Card>
 
             <Card aria-labelledby="miniweb-faq-title" className="miniweb-content-editor">
@@ -377,8 +384,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               <p className="miniweb-editor__note">Sube imágenes JPEG, PNG o WebP, o videos MP4 o WebM de hasta 32 MB. Los medios se almacenan en privado y pasan a la página pública únicamente al publicar el snapshot.</p>
               <form className="miniweb-content-editor__item" onSubmit={handleMediaUpload}>
                 <input name="draftRevision" type="hidden" value={draftRevision} />
-                <label>Uso
-                  <select disabled={!data.canEdit || uploading || busy} name="purpose" defaultValue="gallery"><option value="gallery">Galería</option><option value="cover">Portada (una imagen)</option></select>
+              <label>Uso
+                  <select disabled={!data.canEdit || uploading || busy} name="purpose" defaultValue="gallery"><option value="gallery">Galería</option><option value="cover">Portada (una imagen)</option><option value="logo">Logo del negocio (marca)</option><option value="icon">Icono del negocio (avatar)</option></select>
                 </label>
                 <label>Archivo
                   <input accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" disabled={!data.canEdit || uploading || busy} name="file" required type="file" />
@@ -386,9 +393,10 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 <label>Texto alternativo o descripción breve
                   <input disabled={!data.canEdit || uploading || busy} maxLength={180} name="altText" required />
                 </label>
+                <p className="miniweb-editor__note">Logo: identifica la marca; icono: símbolo cuadrado para acompañar el nombre; portada: imagen principal. Para sustituir uno, retira el anterior del borrador primero.</p>
                 <Button disabled={!data.canEdit || uploading || busy} type="submit" tone="secondary">{uploading ? "Subiendo…" : "Subir medio"}</Button>
               </form>
-              {media.length ? <ul className="miniweb-media-list">{media.map((asset) => <li key={asset.id}>{asset.mediaType === "image" ? <img alt="" height="72" loading="lazy" src={asset.publicUrl} width="96" /> : <span aria-hidden="true">▶</span>}<span>{asset.purpose === "cover" ? "Portada" : "Galería"}: {asset.altText}</span><span>{Math.ceil(asset.sizeBytes / 1024)} KB</span><Button disabled={!data.canEdit || busy || uploading || removingMediaId !== null} onClick={() => void handleRemoveMedia(asset)} tone="secondary">{removingMediaId === asset.id ? "Retirando…" : "Retirar del borrador"}</Button></li>)}</ul> : <p className="miniweb-editor__note">Todavía no has subido medios.</p>}
+              {media.length ? <ul className="miniweb-media-list">{media.map((asset) => <li key={asset.id}>{asset.mediaType === "image" ? <img alt="" height="72" loading="lazy" src={asset.publicUrl} width="96" /> : <span aria-hidden="true">▶</span>}<span>{asset.purpose === "cover" ? "Portada" : asset.purpose === "logo" ? "Logo del negocio" : asset.purpose === "icon" ? "Icono del negocio" : "Galería"}: {asset.altText}</span><span>{Math.ceil(asset.sizeBytes / 1024)} KB</span><Button disabled={!data.canEdit || busy || uploading || removingMediaId !== null} onClick={() => void handleRemoveMedia(asset)} tone="secondary">{removingMediaId === asset.id ? "Retirando…" : "Retirar del borrador"}</Button></li>)}</ul> : <p className="miniweb-editor__note">Todavía no has subido medios.</p>}
               <p className="miniweb-editor__note">Activa la sección «Galería» y publica para incluir los medios actuales en el snapshot público. Los archivos nuevos aún no se muestran a visitantes.</p>
             </Card>
           </div>
@@ -402,7 +410,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
             <p className="miniweb-editor__note">El borrador se previsualiza aquí; no se guarda ni publica automáticamente.</p>
             {previewVisible ? data.profile ? (
               <div className="miniweb-editor__preview">
-              <MiniWebRenderer configuration={configuration} hours={data.hours} offerings={offerings} faqs={faqs} media={media} preview profile={profile} />
+              <MiniWebRenderer configuration={configuration} hours={data.hours} offerings={offerings} faqs={faqs} media={media} preview profile={data.profile ? { ...data.profile, logoUrl: media.find((asset) => asset.purpose === "logo")?.publicUrl ?? data.profile.logoUrl } : profile} />
               </div>
             ) : <div className="miniweb-editor__empty-preview">Completa primero la información de tu negocio para generar una vista previa.</div> : null}
             <div className="miniweb-editor__publication-state">

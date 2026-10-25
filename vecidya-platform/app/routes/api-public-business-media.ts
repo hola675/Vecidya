@@ -12,7 +12,11 @@ export async function loader({ context, params }: Route.LoaderArgs) {
   const profile = await getPublishedBusinessProfileBySlug(database, params.slug);
   if (!profile?.publicationSnapshot) throw new Response("Archivo no encontrado", { status: 404 });
   const snapshot = await getBusinessPublicationSnapshotForOrganization(database, profile.organizationId);
-  if (!snapshot.snapshot || !snapshot.snapshot.media?.some((asset) => asset.id === params.assetId)) {
+  const publishedMediaIds = new Set(snapshot.snapshot?.media.map((asset) => asset.id) ?? []);
+  for (const offering of snapshot.snapshot?.offerings ?? []) {
+    if (offering.isActive && offering.imageAssetId) publishedMediaIds.add(offering.imageAssetId);
+  }
+  if (!snapshot.snapshot || !publishedMediaIds.has(params.assetId)) {
     throw new Response("Archivo no encontrado", { status: 404 });
   }
   const asset = await getBusinessMediaForPublicDelivery(database, profile.organizationId, params.assetId);
