@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { learnArticles, learnCategories, learnPathways } from "../../../app/content/learn.ts";
 
 test("Aprende conserva once guías originales y amplía el catálogo con operaciones y gestión", () => {
-  assert.equal(learnArticles.length, 47);
+  assert.equal(learnArticles.length, 48);
   assert.equal(new Set(learnArticles.map((article) => article.slug)).size, learnArticles.length);
   const drafts = learnArticles.filter((article) => article.editorialDraft);
   const reviewed = learnArticles.filter((article) => !article.editorialDraft);
