@@ -3,6 +3,7 @@ export type BusinessOffering = {
   title: string;
   description: string;
   priceLabel: string | null;
+  imageAssetId?: string | null;
   sortOrder: number;
   isActive: boolean;
 };
@@ -44,7 +45,7 @@ export function validateBusinessOfferings(value: unknown): BusinessOffering[] {
   }
   const orders = new Set<number>();
   return value.map((item) => {
-    if (!isRecord(item) || Object.keys(item).some((key) => !["kind", "title", "description", "priceLabel", "sortOrder", "isActive"].includes(key))) {
+    if (!isRecord(item) || Object.keys(item).some((key) => !["kind", "title", "description", "priceLabel", "imageAssetId", "sortOrder", "isActive"].includes(key))) {
       throw new TypeError("Una oferta tiene campos no permitidos.");
     }
     if (item.kind !== "service" && item.kind !== "product") throw new TypeError("El tipo de oferta no es válido.");
@@ -58,6 +59,7 @@ export function validateBusinessOfferings(value: unknown): BusinessOffering[] {
       title: text(item.title, 120, "El título")!,
       description: text(item.description, 600, "La descripción")!,
       priceLabel: text(item.priceLabel ?? "", 80, "El texto de precio", false),
+      imageAssetId: item.imageAssetId === null || item.imageAssetId === undefined ? null : text(item.imageAssetId, 64, "La imagen de la oferta"),
       sortOrder,
       isActive: item.isActive,
     };

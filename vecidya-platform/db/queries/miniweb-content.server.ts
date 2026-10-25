@@ -18,8 +18,8 @@ export async function getMiniWebContentForOrganization(database: Database, organ
     }),
   ]);
   return {
-    offerings: offerings.map(({ kind, title, description, priceLabel, sortOrder, isActive }) => ({
-      kind: kind as BusinessOffering["kind"], title, description, priceLabel, sortOrder, isActive,
+    offerings: offerings.map(({ kind, title, description, priceLabel, imageAssetId, sortOrder, isActive }) => ({
+      kind: kind as BusinessOffering["kind"], title, description, priceLabel, imageAssetId, sortOrder, isActive,
     })),
     faqs: faqs.map(({ question, answer, sortOrder, isActive }) => ({ question, answer, sortOrder, isActive })),
   };
@@ -44,9 +44,9 @@ export function buildMiniWebContentReplacementStatements(
   for (let start = 0; start < offerings.length; start += 2) {
     const chunk = offerings.slice(start, start + 2);
     statements.push(database.$client.prepare(`INSERT INTO business_offering
-      (id, organization_id, kind, title, description, price_label, sort_order, is_active, created_at, updated_at)
-      ${chunk.map(() => `SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${authorized}`).join(" UNION ALL ")}`)
-      .bind(...chunk.flatMap((item) => [crypto.randomUUID(), organizationId, item.kind, item.title, item.description, item.priceLabel, item.sortOrder, item.isActive ? 1 : 0, Date.now(), Date.now(), organizationId, revision, token])));
+      (id, organization_id, kind, title, description, price_label, image_asset_id, sort_order, is_active, created_at, updated_at)
+      ${chunk.map(() => `SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${authorized}`).join(" UNION ALL ")}`)
+      .bind(...chunk.flatMap((item) => [crypto.randomUUID(), organizationId, item.kind, item.title, item.description, item.priceLabel, item.imageAssetId, item.sortOrder, item.isActive ? 1 : 0, Date.now(), Date.now(), organizationId, revision, token])));
   }
 
   for (let start = 0; start < faqs.length; start += 2) {

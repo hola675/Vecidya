@@ -11,7 +11,7 @@ import { listBusinessMediaForOrganization, type BusinessMediaAsset } from "./bus
 import { ensureAvailableMiniWebModules, type MiniWebConfiguration } from "../../app/features/miniweb/registry";
 import { validateBusinessFaqItems, validateBusinessOfferings, type BusinessFaqItem, type BusinessOffering } from "../../app/features/miniweb/content";
 
-export const BUSINESS_PUBLICATION_SCHEMA_VERSION = 3;
+export const BUSINESS_PUBLICATION_SCHEMA_VERSION = 4;
 type BatchItem = ReturnType<Database["$client"]["prepare"]>;
 
 export type BusinessPublicationSnapshot = {
@@ -22,6 +22,7 @@ export type BusinessPublicationSnapshot = {
   offerings: BusinessOffering[];
   faqs: BusinessFaqItem[];
   media: Pick<BusinessMediaAsset, "id" | "mediaType" | "purpose" | "contentType" | "altText">[];
+  branding: { logoAssetId: string | null; iconAssetId: string | null };
 };
 
 export function serializeBusinessPublicationSnapshot(snapshot: BusinessPublicationSnapshot) {
@@ -29,31 +30,47 @@ export function serializeBusinessPublicationSnapshot(snapshot: BusinessPublicati
 }
 
 export function parseBusinessPublicationSnapshot(value: string | null, schemaVersion: number | null): BusinessPublicationSnapshot | null {
-  if (!value || (schemaVersion !== 1 && schemaVersion !== 2 && schemaVersion !== BUSINESS_PUBLICATION_SCHEMA_VERSION)) return null;
+  if (!value || (schemaVersion !== 1 && schemaVersion !== 2 && schemaVersion !== 3 && schemaVersion !== BUSINESS_PUBLICATION_SCHEMA_VERSION)) return null;
   try {
     const parsed: unknown = JSON.parse(value);
     if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
     const isLegacySnapshot = Number(schemaVersion) === 1;
-    const hasMediaSnapshot = Number(schemaVersion) === BUSINESS_PUBLICATION_SCHEMA_VERSION;
+    const snapshotVersion = Number(schemaVersion);
+    const hasMediaSnapshot = snapshotVersion >= 3;
+    const hasBrandingSnapshot = snapshotVersion >= BUSINESS_PUBLICATION_SCHEMA_VERSION;
     const snapshot = parsed as Partial<BusinessPublicationSnapshot>;
     if (snapshot.schemaVersion !== schemaVersion
       || !snapshot.profile || typeof snapshot.profile !== "object"
       || !Array.isArray(snapshot.hours)
       || !snapshot.configuration || typeof snapshot.configuration !== "object") return null;
-    const offerings = validateBusinessOfferings(isLegacySnapshot ? [] : snapshot.offerings);
+    const offerings = validateBusinessOfferings(isLegacySnapshot ? [] : snapshot.offerings).map((item) => ({
+      ...item,
+      imageAssetId: snapshotVersion >= BUSINESS_PUBLICATION_SCHEMA_VERSION ? item.imageAssetId : null,
+    }));
     const faqs = validateBusinessFaqItems(isLegacySnapshot ? [] : snapshot.faqs);
+    const media = !hasMediaSnapshot ? [] : Array.isArray(snapshot.media) ? snapshot.media.filter((asset) =>
+      typeof asset?.id === "string" && (asset.mediaType === "image" || asset.mediaType === "video")
+      && (asset.purpose === "cover" || asset.purpose === "gallery" || (snapshotVersion >= 4 && (asset.purpose === "logo" || asset.purpose === "icon")))
+      && ["image/jpeg", "image/png", "image/webp", "video/mp4", "video/webm"].includes(asset.contentType)
+      && typeof asset.altText === "string",
+    ).map(({ id, mediaType, purpose, contentType, altText }) => ({ id, mediaType, purpose, contentType, altText })) : [];
+    const mediaById = new Map(media.map((asset) => [asset.id, asset]));
     return {
       ...snapshot,
       schemaVersion: BUSINESS_PUBLICATION_SCHEMA_VERSION,
       configuration: ensureAvailableMiniWebModules(snapshot.configuration),
-      offerings,
+      offerings: offerings.map((item) => ({
+        ...item,
+        imageAssetId: item.imageAssetId && mediaById.get(item.imageAssetId)?.mediaType === "image" ? item.imageAssetId : null,
+      })),
       faqs,
-      media: !hasMediaSnapshot ? [] : Array.isArray(snapshot.media) ? snapshot.media.filter((asset) =>
-        typeof asset?.id === "string" && (asset.mediaType === "image" || asset.mediaType === "video")
-        && (asset.purpose === "cover" || asset.purpose === "gallery")
-        && ["image/jpeg", "image/png", "image/webp", "video/mp4", "video/webm"].includes(asset.contentType)
-        && typeof asset.altText === "string",
-      ).map(({ id, mediaType, purpose, contentType, altText }) => ({ id, mediaType, purpose, contentType, altText })) : [],
+      media,
+      branding: hasBrandingSnapshot && snapshot.branding && typeof snapshot.branding === "object"
+        ? {
+          logoAssetId: typeof snapshot.branding.logoAssetId === "string" && mediaById.get(snapshot.branding.logoAssetId)?.mediaType === "image" && mediaById.get(snapshot.branding.logoAssetId)?.purpose === "logo" ? snapshot.branding.logoAssetId : null,
+          iconAssetId: typeof snapshot.branding.iconAssetId === "string" && mediaById.get(snapshot.branding.iconAssetId)?.mediaType === "image" && mediaById.get(snapshot.branding.iconAssetId)?.purpose === "icon" ? snapshot.branding.iconAssetId : null,
+        }
+        : { logoAssetId: null, iconAssetId: null },
     } as BusinessPublicationSnapshot;
   } catch {
     return null;
@@ -68,6 +85,9 @@ export function createBusinessPublicationSnapshot(
   faqs: BusinessFaqItem[] = [],
   media: BusinessMediaAsset[] = [],
 ): BusinessPublicationSnapshot {
+  const validImageIds = new Set(media.filter((asset) => asset.mediaType === "image").map((asset) => asset.id));
+  const logoAssetId = media.find((asset) => asset.purpose === "logo" && validImageIds.has(asset.id))?.id ?? null;
+  const iconAssetId = media.find((asset) => asset.purpose === "icon" && validImageIds.has(asset.id))?.id ?? null;
   return {
     schemaVersion: BUSINESS_PUBLICATION_SCHEMA_VERSION,
     profile: {
@@ -91,9 +111,10 @@ export function createBusinessPublicationSnapshot(
     },
     hours,
     configuration,
-    offerings,
+    offerings: offerings.map((item) => ({ ...item, imageAssetId: item.imageAssetId && validImageIds.has(item.imageAssetId) ? item.imageAssetId : null })),
     faqs,
     media: media.map(({ id, mediaType, purpose, contentType, altText }) => ({ id, mediaType, purpose, contentType, altText })),
+    branding: { logoAssetId, iconAssetId },
   };
 }
 
@@ -167,7 +188,8 @@ export async function ensureLegacyBusinessPublicationSnapshot(database: Database
     getMiniWebConfigurationForOrganization(database, organizationId, profile, hours),
     getMiniWebContentForOrganization(database, organizationId),
   ]);
-  const snapshot = createBusinessPublicationSnapshot(profile, hours, miniweb.publishedConfiguration, content.offerings, content.faqs);
+  const media = await listBusinessMediaForOrganization(database, organizationId);
+  const snapshot = createBusinessPublicationSnapshot(profile, hours, miniweb.publishedConfiguration, content.offerings, content.faqs, media);
   const serialized = serializeBusinessPublicationSnapshot(snapshot);
   const now = Date.now();
   if (!state) {

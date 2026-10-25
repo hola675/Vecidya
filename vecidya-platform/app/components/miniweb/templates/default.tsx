@@ -17,13 +17,13 @@ type ModuleProps = { profile: PublicBusinessProfile; hours: BusinessHoursEntry[]
 type ModuleRenderer = (props: ModuleProps) => ReactNode;
 
 const moduleRenderers: Partial<Record<MiniWebModuleConfig["type"], ModuleRenderer>> = {
-  hero: ({ profile, preview, contactEnabled, media }) => <HeroModule profile={profile} preview={preview} contactEnabled={contactEnabled} cover={media.find((asset) => asset.purpose === "cover" && asset.mediaType === "image")} />,
+  hero: ({ profile, preview, contactEnabled, media }) => <HeroModule profile={profile} preview={preview} contactEnabled={contactEnabled} iconUrl={media.find((asset) => asset.purpose === "icon")?.publicUrl} cover={media.find((asset) => asset.purpose === "cover" && asset.mediaType === "image")} />,
   about: ({ profile }) => <AboutModule profile={profile} />,
   contact: ({ profile, preview }) => <ContactModule profile={profile} preview={preview} />,
   hours: ({ hours }) => <HoursModule hours={hours} />,
   location: ({ profile }) => <LocationModule profile={profile} />,
-  services: ({ offerings }) => <OfferingsModule offerings={offerings} kind="service" />,
-  products: ({ offerings }) => <OfferingsModule offerings={offerings} kind="product" />,
+  services: ({ offerings, media }) => <OfferingsModule offerings={offerings} kind="service" media={media} />,
+  products: ({ offerings, media }) => <OfferingsModule offerings={offerings} kind="product" media={media} />,
   faq: ({ faqs }) => <FaqModule items={faqs} />,
   gallery: ({ media }) => <section aria-labelledby="miniweb-gallery-title" className="miniweb-gallery"><h2 id="miniweb-gallery-title">Galería</h2><div className="miniweb-gallery__grid">{media.filter((asset) => asset.purpose === "gallery").map((asset) => asset.mediaType === "image" ? <figure key={asset.id}><img src={asset.publicUrl} alt={asset.altText} loading="lazy" /></figure> : <figure key={asset.id}><video controls preload="metadata" aria-label={asset.altText}><source src={asset.publicUrl} type={asset.contentType} /></video><figcaption>{asset.altText}</figcaption></figure>)}</div></section>,
 };

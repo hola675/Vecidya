@@ -263,7 +263,21 @@ try {
     { kind: "product", title: `QA producto 4 ${suffix}`, description: "Contenido sintético de prueba.", priceLabel: null, sortOrder: 3, isActive: true },
   ];
   const qaFaqs = [0, 1, 2, 3].map((index) => ({ question: `Pregunta QA ${index + 1} ${suffix}`, answer: "Respuesta sintética de prueba.", sortOrder: index, isActive: true }));
-  const saveWithContent = await ownerA.client.json(pathA, { intent: "save", configuration: draft, offerings: qaOfferings, faqs: qaFaqs });
+  let mediaRevision = (await (await ownerA.client.json(pathA, null, "GET")).json()).draftRevision;
+  const galleryUploadResponse = await uploadPng(ownerA, organizationA, "gallery", mediaRevision, "Foto del servicio");
+  check(galleryUploadResponse.status === 201, `el owner puede guardar una foto de galería (${galleryUploadResponse.status})`);
+  const galleryUpload = await galleryUploadResponse.json();
+  mediaRevision = galleryUpload.draftRevision;
+  qaOfferings[0].imageAssetId = galleryUpload.asset.id;
+  const logoUploadResponse = await uploadPng(ownerA, organizationA, "logo", mediaRevision, "Marca del negocio");
+  check(logoUploadResponse.status === 201, `el owner puede cargar el logo como medio de marca (${logoUploadResponse.status})`);
+  mediaRevision = (await logoUploadResponse.json()).draftRevision;
+  const iconUploadResponse = await uploadPng(ownerA, organizationA, "icon", mediaRevision, "Icono compacto");
+  check(iconUploadResponse.status === 201, `el owner puede cargar el icono separado del logo (${iconUploadResponse.status})`);
+  mediaRevision = (await iconUploadResponse.json()).draftRevision;
+  const invalidOfferImage = await ownerA.client.json(pathA, { intent: "save", configuration: draft, offerings: [{ ...qaOfferings[0], imageAssetId: crypto.randomUUID() }], faqs: qaFaqs, draftRevision: mediaRevision });
+  check(invalidOfferImage.status === 400, "el editor rechaza referencias a imágenes que no pertenecen a los medios activos del negocio");
+  const saveWithContent = await ownerA.client.json(pathA, { intent: "save", configuration: draft, offerings: qaOfferings, faqs: qaFaqs, draftRevision: mediaRevision });
   check(saveWithContent.status === 200, `owner puede guardar configuración, cuatro ofertas y cuatro FAQ en una escritura (${saveWithContent.status})`);
   const savedContent = await (await ownerA.client.json(pathA, null, "GET")).json();
   check(savedContent.offerings.length === 4 && savedContent.faqs.length === 4 && savedContent.draftConfiguration.modules.length === 9, "la lectura consistente conserva todos los módulos y el contenido de la ficha enriquecida");
@@ -289,7 +303,7 @@ try {
   check(profileAfterDraft.draftRevision === staleRevision + 2 && miniwebAfterDraft.draftRevision === profileAfterDraft.draftRevision, "lecturas JSON de perfil y MiniWeb devuelven la revisión vigente tras guardar perfil y horarios");
   check(miniwebAfterDraft.profile.displayName === draftName && miniwebAfterDraft.hours.some((entry) => entry.dayOfWeek === 1 && entry.opensAt === "09:00"), "el endpoint JSON de MiniWeb entrega perfil y horarios del borrador junto con esa revisión");
   const draftOfferings = [
-    { kind: "service", title: `Consulta activa ${suffix}`, description: "Atención inicial", priceLabel: "Desde $20", sortOrder: 0, isActive: true },
+    { kind: "service", title: `Consulta activa ${suffix}`, description: "Atención inicial", priceLabel: "Desde $20", imageAssetId: galleryUpload.asset.id, sortOrder: 0, isActive: true },
     { kind: "product", title: `Producto activo ${suffix}`, description: "Producto de muestra", priceLabel: null, sortOrder: 1, isActive: true },
     { kind: "service", title: `Servicio pausado ${suffix}`, description: "No debe aparecer", priceLabel: null, sortOrder: 2, isActive: false },
   ];
@@ -326,6 +340,7 @@ try {
   const publicBeforePublish = await publicBeforePublishResponse.text();
   console.log(JSON.stringify({ miniwebPublicBeforePublish: { status: publicBeforePublishResponse.status, url: publicBeforePublishResponse.url, titlePresent: publicBeforePublish.includes(`MiniWeb público A ${suffix}`), descriptionPresent: publicBeforePublish.includes("Descripción A"), emailPresent: publicBeforePublish.includes(`a-${suffix}@example.invalid`), bodyExcerpt: publicBeforePublish.slice(0, 350) } }));
   check(publicBeforePublish.includes(`MiniWeb público A ${suffix}`) && !publicBeforePublish.includes(draftName), "editar nombre, perfil y MiniWeb conserva la versión pública previa hasta publicar");
+  check((await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), galleryUpload.asset.id), baseUrl))).status === 404, "una imagen de galería del borrador no se entrega por HTTP anónimo antes de publicar");
   check(!publicBeforePublish.includes(`Consulta activa ${suffix}`) && !publicBeforePublish.includes(`Pregunta activa ${suffix}`), "ofertas y FAQ del borrador no son visibles por HTTP anónimo antes de publicar");
   const directoryBeforePublish = await (await fetch(new URL(`/vecindario?q=${encodeURIComponent(`Consulta activa ${suffix}`)}`, baseUrl))).text();
   check(directoryBeforePublish.includes("Sin coincidencias") && !directoryBeforePublish.includes(`href=\"/vecindario/${profileSlug("public-a")}\"`), "la búsqueda del Vecindario no indexa ofertas ni cambios del borrador antes de publicar");
@@ -343,6 +358,9 @@ try {
   const publicA = await publicAResponse.text();
   const snapshotRows = await d1(`SELECT snapshot_json FROM business_profile_publication WHERE organization_id = '${organizationA}';`);
   const fullSnapshot = JSON.parse(snapshotRows[0].snapshot_json);
+  check(fullSnapshot.schemaVersion === 4 && fullSnapshot.branding.logoAssetId && fullSnapshot.branding.iconAssetId && fullSnapshot.offerings[0].imageAssetId === galleryUpload.asset.id, "la publicación reúne logo, icono e imagen asociada a la oferta en snapshot v4");
+  check((await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), galleryUpload.asset.id), baseUrl))).status === 200, "la imagen asociada a la oferta queda accesible anónimamente solo después de publicar");
+  check((await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), fullSnapshot.branding.logoAssetId), baseUrl))).status === 200 && (await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), fullSnapshot.branding.iconAssetId), baseUrl))).status === 200, "logo e icono se publican juntos desde el snapshot vigente");
   console.log(JSON.stringify({ miniwebPublicAfterPublish: { status: publicAResponse.status, url: publicAResponse.url, titlePresent: publicA.includes(`MiniWeb público A ${suffix}`), bodyExcerpt: publicA.slice(0, 350) } }));
   const publicB = await (await ownerB.client.fetch(`/vecindario/${profileSlug("legacy-b")}`)).text();
   check(publicA.includes(draftName), "la publicación cambia el perfil y la composición en una sola versión pública");
@@ -556,7 +574,7 @@ try {
     const header = document.querySelector(".app-header");
     return Boolean(target && header && target.getBoundingClientRect().top >= header.getBoundingClientRect().bottom + 8);
   }), "el destino Publicar queda visible bajo la cabecera fija al navegar");
-  check(await page.getByRole("button", { name: "Retirar del borrador" }).count() === 2, "el editor presenta acciones de retirada para portada y galería activas");
+  check(await page.getByRole("button", { name: "Retirar del borrador" }).count() === 5, "el editor permite retirar galería, logo, icono y portada del borrador");
   check(await page.locator(".miniweb-editor__publication-state").getByText("Hay cambios guardados que todavía no se han publicado.").count() === 1, "el estado de MiniWeb identifica cambios de perfil/horarios aunque el diseño siga igual");
   const ownerBContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
   const ownerBPage = await ownerBContext.newPage();

@@ -1,5 +1,9 @@
 # Pruebas
 
+## APP-MINI-02F — marca e imágenes de contenido (2026-10-24)
+
+Typecheck/build PASS; suite unitaria completa **1689/1689 PASS**, incluyendo lectura legacy v1–v3, normalización segura de vínculos y referencias de marca válidas en v4. D1 local efímera aplicó `0000–0028`; Worker Wrangler local HTTP 200. Primera ejecución de `miniweb-core-check.mjs`: 119/120 por conteo heredado de botones; tras actualizar la aserción, repetición **120/120 PASS**, `fixturesCleaned: true`. La cobertura comprueba 404 anónimo de media de draft, entrega tras publicación, inclusión conjunta de logo/icono/imagen de oferta, rechazo de ID de imagen no activa/perteneciente, y reflow sin overflow del editor (1366/768/390/360) y directorio (1366/768/390/320). Sin D1 remota, bucket R2 real, deploy ni HTTP pública fechada.
+
 ## DIAG-MOTOR-04 — activación QA-03B y rangos globales (2026-10-24)
 
 **Pruebas focalizadas locales:** 11 archivos de diagnóstico e informe, **59/59 PASS**. Se verifican los límites 0–25/26–50/51–75/76–100, cobertura mínima y abstención, las 60 rutas sintéticas, trazabilidad, privacidad, replay Worker, resumen e informe v1.2. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS.

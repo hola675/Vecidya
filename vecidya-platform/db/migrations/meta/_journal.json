@@ -197,6 +197,13 @@
       "when": 1792796882921,
       "tag": "0027_business-media-draft-removal",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "6",
+      "when": 1792863984055,
+      "tag": "0028_miniweb-offering-image",
+      "breakpoints": true
     }
   ]
 }
