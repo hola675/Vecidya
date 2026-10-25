@@ -1,7 +1,7 @@
 import type { BusinessFaqItem } from "../../../features/miniweb/content";
 
 export function FaqModule({ items }: { items: readonly BusinessFaqItem[] }) {
-  const visibleItems = items.filter((item) => item.isActive);
+  const visibleItems = items.filter((item) => item.isActive && item.question.trim() && item.answer.trim());
   if (!visibleItems.length) return null;
   return (
     <section aria-label="Preguntas frecuentes" className="miniweb-faq">
