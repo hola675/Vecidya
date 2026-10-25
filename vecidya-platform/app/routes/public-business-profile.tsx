@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from "react-router";
+import { useLoaderData } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
 import { getPublishedBusinessProfileBySlug } from "../../db/queries/business-profile.server";
@@ -12,7 +12,7 @@ import { MiniWebRenderer } from "../components/miniweb/miniweb-renderer";
 import { getRenderableMiniWebModules } from "../features/miniweb/render";
 import { restrictMiniWebPublicModel, toMiniWebPublicProfile } from "../features/miniweb/public-model";
 
-import { buildMiniWebPublicNavigation } from "../features/miniweb/navigation";
+import { MiniWebSiteFooter, MiniWebSiteHeader } from "../components/miniweb/miniweb-site-chrome";
 import type { Route } from "./+types/public-business-profile";
 
 const schemaOrgDayNames: Record<number, string> = {
@@ -59,7 +59,6 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export default function PublicBusinessProfilePage() {
   const { profile, hours, configuration, offerings, faqs, media, visibleModuleTypes } = useLoaderData<typeof loader>();
-  const primaryNavigation = buildMiniWebPublicNavigation(visibleModuleTypes);
   const sameAs = [profile.websiteUrl, profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].filter(
     (url): url is string => Boolean(url),
   );
@@ -95,40 +94,14 @@ export default function PublicBusinessProfilePage() {
   return (
     <div className="public-site miniweb-standalone">
       <a className="skip-link" href="#miniweb-main">Saltar al contenido</a>
-      <header className="miniweb-standalone__header">
-        <Link className="miniweb-standalone__brand" to={"/vecindario/" + profile.slug}>
-          {profile.logoUrl ? <img alt="" height={40} src={profile.logoUrl} width={40} /> : null}
-          <span>{profile.displayName}</span>
-        </Link>
-        <nav aria-label="Navegación del negocio" className="miniweb-standalone__navigation">
-          <a href="#miniweb-main">Inicio</a>
-          {primaryNavigation.map((item) => <a href={item.href} key={item.type}>{item.label}</a>)}
-        </nav>
-      </header>
+      <MiniWebSiteHeader profile={profile} visibleModules={visibleModuleTypes} />
       <main className="public-page public-business-profile" id="miniweb-main">
         <JsonLd data={localBusinessSchema} />
         <div id="miniweb-sections">
           <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} offerings={offerings} faqs={faqs} media={media} />
         </div>
-        <section aria-labelledby="business-neighborhood-title" className="public-business-neighborhood">
-          <div>
-            <h2 id="business-neighborhood-title">Descubre más en el Vecindario</h2>
-            <p>Explora otros negocios de la comunidad cuando quieras.</p>
-          </div>
-          <Link className="button button--secondary" to="/vecindario">Volver al Vecindario</Link>
-        </section>
       </main>
-      <footer className="miniweb-standalone__footer">
-        <div>
-          <strong>{profile.displayName}</strong>
-          <p>{[profile.city, profile.country].filter(Boolean).join(", ") || "Página pública del negocio"}</p>
-        </div>
-        <nav aria-label="Enlaces de regreso">
-          <Link to="/vecindario">Volver al Vecindario</Link>
-          <Link to="/">Conocer Vecidya</Link>
-        </nav>
-        <p className="miniweb-standalone__credit">Creado con Vecidya</p>
-      </footer>
+      <MiniWebSiteFooter profile={profile} />
     </div>
   );
 }
