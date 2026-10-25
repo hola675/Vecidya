@@ -14,7 +14,7 @@ const splitPairs = [
 
 test("Aprende conserva slugs únicos, categorías y campos esenciales", () => {
   const slugs = learnArticles.map((article) => article.slug);
-  assert.equal(slugs.length, 46, "APRENDE-EDITORIAL-04A debe conservar las 44 guías y añadir las dos fundacionales.");
+  assert.equal(slugs.length, 47, "APRENDE-EDITORIAL-04B debe conservar las 46 guías y separar la migración de proveedor.");
   assert.equal(new Set(slugs).size, slugs.length, "Hay slugs duplicados.");
   const categories = new Set(learnCategories.map(({ name }) => name));
   for (const article of learnArticles) {
@@ -65,6 +65,20 @@ test("Cada guía incluye al menos un ejemplo hipotético comprensible y accionab
       assert.ok(example.actions.every((action) => action.trim().split(/\s+/u).length >= 4), `Paso poco explicativo en ${article.slug}`);
     }
   }
+});
+
+test("La selección y la migración de proveedor quedan como decisiones separadas", () => {
+  const choosing = getLearnArticle("como-elegir-y-cambiar-proveedor-de-dominio-y-hosting");
+  const migration = getLearnArticle("como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo");
+  assert.ok(choosing && migration);
+  assert.equal(choosing.editorialDraft, false, "La guía histórica conserva su aprobación editorial");
+  assert.equal(migration.editorialDraft, true, "La guía nueva permanece en revisión");
+  assert.match(choosing.title, /elegir proveedor/i);
+  assert.match(migration.title, /cambiar de proveedor/i);
+  assert.ok(choosing.relatedSlugs?.includes(migration.slug));
+  assert.ok(migration.relatedSlugs?.includes(choosing.slug));
+  assert.match(JSON.stringify(choosing), /renovaci[oó]n|costo|control administrativo/i);
+  assert.match(JSON.stringify(migration), /DNS|correo|cancelar|comprobar/i);
 });
 
 test("Todos los itinerarios enlazan a artículos reales sin duplicados internos", () => {
