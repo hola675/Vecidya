@@ -15,7 +15,7 @@ export const learnTechnical04BArticles: LearnArticle[] = [
     ],
     image: "/assets/learn/diagram-domain-dns-hosting.svg",
     imageAlt: "Esquema de un dominio conectado a DNS, sitio web y correo durante un cambio de proveedor.",
-    editorialDraft: true,
+    editorialDraft: false,
     relatedSlugs: [
       "como-elegir-y-cambiar-proveedor-de-dominio-y-hosting",
       "dominio-hosting-sitio-web-como-funcionan",
