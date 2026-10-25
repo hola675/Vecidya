@@ -124,7 +124,7 @@ export const QA03B_RECOVERY_PILOT_V1: readonly QuestionDefinitionV2[] = [
   },
   {
     ...find(LOTE_D_QUESTIONS_V2, "q2_nonprofit_support_type"),
-    appliesWhen: nonprofitContext,
+    appliesWhen: andV2(eqV2("q2_operational_status", "operating"), nonprofitContext),
     evidenceMigration: "pending",
     evidenceV3: undefined,
   },
