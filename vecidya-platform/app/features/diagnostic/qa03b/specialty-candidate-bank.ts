@@ -154,7 +154,7 @@ export const QA03B_CANDIDATE_SECTOR_V4: QuestionDefinitionV2 = (() => {
     ...original,
     version: 4,
     options: [
-      ...original.options,
+      ...original.options.filter((option) => option.value !== "other" && option.value !== "unknown"),
       ...([
         ["ecommerce", "Comercio electrónico y tiendas online"],
         ["creator", "Creadores de contenido y proyectos basados en audiencia"],
@@ -164,6 +164,7 @@ export const QA03B_CANDIDATE_SECTOR_V4: QuestionDefinitionV2 = (() => {
         value, label,
         produces: [{ kind: "nicheGroup" as const, value, provenance: "explicit_declaration" as const }],
       })),
+      ...original.options.filter((option) => option.value === "other" || option.value === "unknown"),
     ],
   };
 })();
