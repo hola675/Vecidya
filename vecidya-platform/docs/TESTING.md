@@ -6,6 +6,12 @@
 
 **RAN:** `Aprende quality` run `40243511349` sobre `619f25ad2ebbaf0f76e2655975fb6a424f8598fe` PASS: instalación, typecheck, build e integridad Aprende. El PR #123 tiene base `feat/aprende-editorial-04a`, por lo que GitHub no ejecutó `Main integration quality` en este checkpoint dependiente; ese gate queda requerido cuando 04B se retargete a `main` o se integre la cadena. Sin D1 remota, E2E visual ni deploy.
 
+## APRENDE-EDITORIAL-04B — separación semántica de guías técnicas (2026-10-25)
+
+**TEST versionado / nuevo HEAD pendiente de CI.** El catálogo esperado pasa a **48 guías** y 9 itinerarios. El contrato comprueba que el mapa `dns-https-y-correo-como-se-conecta-tu-dominio` derive el detalle hacia `correo-profesional-dominio-registros-mx-txt`, que ambas guías se relacionen, que el mapa no vuelva a crecer por encima de 8 secciones y que la guía nueva conserve fuentes específicas para SPF (RFC 7208), DKIM (RFC 6376) y DMARC vigente (RFC 9989).
+
+La guía nueva sigue `editorialDraft: true`. No se considera certificado este nuevo HEAD hasta que `Aprende quality` vuelva a completar typecheck, build e integridad. PR #123 continúa apilado sobre 04A; el gate general contra `main` corresponderá al retarget o integración final.
+
 ## APRENDE-EDITORIAL-04A — criterio digital y contrato de ejemplos (2026-10-25)
 
 **RAN en GitHub Actions sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`:** `Aprende quality` run `40242263335` PASS con instalación, typecheck, build y `Learn integrity tests`; `Main integration quality` run `40242263275` PASS con typecheck, build, regresión focal Diagnóstico/Aprende y suite unitaria completa **1721/1721 PASS, 0 fail**. Las pruebas de catálogo y currículo validan **46 guías** y **9 itinerarios**. El contrato transversal exige al menos un bloque `example` explícitamente hipotético por guía, con situación, problema, enfoque, pasos aplicables y aprendizaje suficientemente explicados; también verifica los dos nuevos slugs fundacionales, su categoría «Tecnología explicada», su estado de borrador y su relación recíproca.
