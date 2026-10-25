@@ -1,5 +1,11 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-04B — separación selección/migración de proveedor (2026-10-25)
+
+**TEST versionado / RAN pendiente en HEAD final.** El contrato de catálogo espera **47 guías** y mantiene 9 itinerarios. La prueba nueva exige que la guía histórica de proveedor siga aprobada y enfocada en elegir/renovar, mientras la migración nueva permanece en revisión y contiene DNS, correo, cancelación segura y comprobaciones. Ambas deben enlazarse entre sí.
+
+Gate: `Aprende quality` y `Main integration quality` PASS sobre el HEAD final; sin D1 remota, E2E visual ni deploy.
+
 ## APRENDE-EDITORIAL-04A — criterio digital y contrato de ejemplos (2026-10-25)
 
 **RAN en GitHub Actions sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`:** `Aprende quality` run `40242263335` PASS con instalación, typecheck, build y `Learn integrity tests`; `Main integration quality` run `40242263275` PASS con typecheck, build, regresión focal Diagnóstico/Aprende y suite unitaria completa **1721/1721 PASS, 0 fail**. Las pruebas de catálogo y currículo validan **46 guías** y **9 itinerarios**. El contrato transversal exige al menos un bloque `example` explícitamente hipotético por guía, con situación, problema, enfoque, pasos aplicables y aprendizaje suficientemente explicados; también verifica los dos nuevos slugs fundacionales, su categoría «Tecnología explicada», su estado de borrador y su relación recíproca.
