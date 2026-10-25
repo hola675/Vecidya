@@ -2180,10 +2180,10 @@ export const learnArticles: LearnArticle[] = [
           {
             "type": "summary",
             "items": [
-              "Digitalizar no es comprar aplicaciones: es trabajar mejor con ayuda de ellas.",
-              "Elige un problema real antes de decidir qué herramienta necesitas.",
-              "Empieza con una mejora pequeña que puedas mantener."
-            ]
+          "Elige hoy una fricción concreta que te haga perder tiempo, información o claridad.",
+          "Prueba una sola mejora pequeña con las herramientas que ya tienes antes de comprar otra.",
+          "Revisa después qué cambió y decide si mantener, ajustar o abandonar esa solución.",
+        ]
           }
         ]
       },
@@ -2365,10 +2365,10 @@ export const learnArticles: LearnArticle[] = [
           {
             "type": "summary",
             "items": [
-              "Empieza con el dispositivo que permite hacer bien tu trabajo.",
-              "Una conexión confiable importa más que tener muchos programas.",
-              "Protege el equipo y prepara una alternativa cuando se vaya internet."
-            ]
+          "Relaciona cada tarea importante con el dispositivo y la conexión mínimos que necesita.",
+          "Comprueba batería, actualizaciones, espacio y acceso antes de asumir que necesitas equipo nuevo.",
+          "Escribe una alternativa para la tarea esencial si internet o el dispositivo dejan de funcionar.",
+        ]
           }
         ]
       },
@@ -2550,10 +2550,10 @@ export const learnArticles: LearnArticle[] = [
           {
             "type": "summary",
             "items": [
-              "Usa un correo que controles para las cuentas importantes del negocio.",
-              "Escribe asuntos claros y guarda los documentos donde puedas encontrarlos.",
-              "No compartas contraseñas: da acceso a cada persona cuando el servicio lo permita."
-            ]
+          "Identifica qué cuenta del negocio debe recibir avisos y recuperaciones importantes.",
+          "Usa asuntos y carpetas que permitan encontrar la conversación y el documento vigente.",
+          "Revisa accesos y métodos de recuperación para que una salida del equipo no bloquee el correo.",
+        ]
           }
         ]
       },
@@ -2735,10 +2735,10 @@ export const learnArticles: LearnArticle[] = [
           {
             "type": "summary",
             "items": [
-              "No reutilices contraseñas; considera un gestor de contraseñas confiable.",
-              "Activa la verificación en dos pasos en las cuentas importantes.",
-              "Si un mensaje te mete prisa, verifica por el canal oficial antes de actuar."
-            ]
+          "Cambia primero las contraseñas reutilizadas de las cuentas que permiten recuperar las demás.",
+          "Activa una segunda comprobación de acceso y guarda los métodos de recuperación.",
+          "Practica verificar avisos urgentes desde la aplicación o dirección oficial, no desde el enlace recibido.",
+        ]
           }
         ]
       },
@@ -2920,10 +2920,10 @@ export const learnArticles: LearnArticle[] = [
           {
             "type": "summary",
             "items": [
-              "Organiza los documentos antes de copiarlos para encontrarlos después.",
-              "Mantén una copia protegida que no dependa del mismo teléfono.",
-              "Prueba a recuperar un archivo: una copia que nunca se comprobó podría fallar."
-            ]
+          "Elige los archivos que no podrías reconstruir con facilidad y confirma dónde está el original.",
+          "Crea una copia separada y protegida con una frecuencia que puedas mantener.",
+          "Restaura un archivo de prueba para comprobar que la copia realmente sirve.",
+        ]
           }
         ]
       },
@@ -3105,10 +3105,10 @@ export const learnArticles: LearnArticle[] = [
           {
             "type": "summary",
             "items": [
-              "Cada fila representa un registro; cada columna guarda un dato concreto.",
-              "Empieza con pocas columnas que realmente usarás.",
-              "Una tabla ordenada ayuda a revisar pendientes, pero no sustituye una contabilidad profesional cuando hace falta."
-            ]
+          "Elige un solo proceso sencillo para organizar, como pedidos, citas o pendientes.",
+          "Define qué representa cada fila y conserva solo las columnas que el equipo utilizará.",
+          "Acordad quién actualiza la tabla y cuándo se revisan registros incompletos o vencidos.",
+        ]
           }
         ]
       },
@@ -3291,10 +3291,10 @@ export const learnArticles: LearnArticle[] = [
           {
             "type": "summary",
             "items": [
-              "Las redes ayudan a conversar; una página web reúne datos que deben encontrarse fácilmente.",
-              "No necesitas un sitio enorme: explica qué haces, dónde atiendes y cómo contactarte.",
-              "Escoge canales que puedas mantener, no los que estén de moda."
-            ]
+          "Asigna una función a cada canal que ya mantienes: descubrir, explicar, contactar o comprar.",
+          "Pausa o corrige los canales que no puedes actualizar antes de abrir otros.",
+          "Prueba como visitante si la información principal y el contacto se encuentran con facilidad.",
+        ]
           }
         ]
       },
@@ -3476,10 +3476,10 @@ export const learnArticles: LearnArticle[] = [
           {
             "type": "summary",
             "items": [
-              "Di qué haces, para quién y cómo pueden preguntarte.",
-              "Cambia palabras vagas por ejemplos reales de tu trabajo.",
-              "Pide a alguien que no te conozca que te diga qué entendió."
-            ]
+          "Reescribe tu descripción usando qué haces, para quién y qué problema ayudas a resolver.",
+          "Añade un ejemplo concreto que sustituya una frase vaga o un adjetivo sin evidencia.",
+          "Pide a alguien que no conozca el negocio que te diga qué entendió y cuál sería el siguiente paso.",
+        ]
           }
         ]
       },
@@ -3661,10 +3661,10 @@ export const learnArticles: LearnArticle[] = [
           {
             "type": "summary",
             "items": [
-              "Saluda y responde primero lo que realmente sabes.",
-              "Si faltan datos, pregunta solo lo necesario para orientar.",
-              "Termina con un paso claro y respeta si la persona no continúa."
-            ]
+          "Prepara una estructura flexible: saludo, respuesta conocida, pregunta necesaria y siguiente paso.",
+          "Evita pedir información que no necesitas para orientar esa consulta.",
+          "Cuando quede algo pendiente, registra quién debe responder y qué se acordó.",
+        ]
           }
         ]
       },
@@ -3846,10 +3846,10 @@ export const learnArticles: LearnArticle[] = [
           {
             "type": "summary",
             "items": [
-              "Publica información que resuelva una duda, no solo contenido para llenar el perfil.",
-              "Usa fotos reales con buena luz y permiso cuando corresponda.",
-              "Incluye un texto claro: qué muestras, para quién sirve y qué se puede hacer después."
-            ]
+          "Elige una duda real de tus clientes y decide qué imagen ayudaría a responderla.",
+          "Usa una foto propia o autorizada que muestre el producto, servicio o contexto con claridad.",
+          "Escribe un texto breve que explique qué se ve y qué puede hacer la persona después.",
+        ]
           }
         ]
       },
@@ -4031,10 +4031,10 @@ export const learnArticles: LearnArticle[] = [
           {
             "type": "summary",
             "items": [
-              "Aclara el producto, el precio confirmado, la entrega y las condiciones antes de cobrar.",
-              "Utiliza servicios de pago confiables y verifica sus costos y requisitos.",
-              "Lleva un registro de pedidos y explica cómo resolver cambios o problemas."
-            ]
+          "Dibuja el recorrido desde la consulta hasta la confirmación del pedido y detecta dónde podría perderse información.",
+          "Confirma producto, total, disponibilidad y entrega antes de solicitar el pago.",
+          "Conserva un registro del pedido y del comprobante suficiente para resolver cambios o incidencias.",
+        ]
           }
         ]
       },
@@ -4216,10 +4216,10 @@ export const learnArticles: LearnArticle[] = [
           {
             "type": "summary",
             "items": [
-              "Pide solo lo necesario para atender la solicitud concreta.",
-              "Aclara para qué usarás los datos y quién podrá verlos.",
-              "Responder una consulta no equivale a aceptar publicidad ni campañas."
-            ]
+          "Revisa un formulario o conversación real y elimina campos que no tengan una finalidad clara.",
+          "Explica para qué se usará la información y limita quién puede acceder a ella.",
+          "Separa la atención de una consulta de cualquier permiso adicional para publicidad o campañas.",
+        ]
           }
         ]
       },
@@ -4401,10 +4401,10 @@ export const learnArticles: LearnArticle[] = [
           {
             "type": "summary",
             "items": [
-              "Pide opiniones auténticas sin exigir que sean positivas.",
-              "No publiques reseñas inventadas, ni siquiera si una IA las redacta.",
-              "Responde las críticas con calma, sin revelar información privada."
-            ]
+          "Pide la opinión después de una experiencia real y usa una invitación neutral.",
+          "No condiciones premios, descuentos o ventajas a que la valoración sea positiva.",
+          "Responde las críticas sin revelar datos privados y lleva el problema operativo al canal adecuado.",
+        ]
           }
         ]
       },
