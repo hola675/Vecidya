@@ -192,100 +192,137 @@ export const learnArticles: LearnArticle[] = [
     slug: "como-probar-un-asistente-de-ia-con-supervision-humana",
     category: "Inteligencia Artificial",
     title: "Cómo probar un asistente de IA con supervisión humana",
-    intro: "Aprende a preparar información confiable, detectar respuestas incorrectas y evaluar una prueba limitada.",
-    excerpt: "Aprende a preparar información confiable, detectar respuestas incorrectas y evaluar una prueba limitada.",
-    enPocasPalabras: ["Usa información revisada y evita compartir datos sensibles.","Comprueba respuestas inventadas y errores con una persona responsable.","Evalúa una prueba pequeña antes de ampliar su uso."],
+    intro: "Aprende a preparar una fuente confiable, detectar respuestas inventadas y probar un asistente con límites claros antes de usarlo con personas reales.",
+    excerpt: "Una guía para probar IA en pequeño, revisar errores y decidir cuándo debe intervenir una persona.",
+    enPocasPalabras: [
+      "Empieza con una tarea pequeña y una fuente de información revisada.",
+      "Comprueba respuestas inventadas, datos sensibles y preguntas fuera de alcance.",
+      "Mantén revisión humana y detén la prueba si los errores superan lo aceptable.",
+    ],
     image: "/assets/learn/diagram-ai.svg",
-    imageAlt: "Ilustración conceptual del tema de esta guía",
+    imageAlt: "Un asistente de IA responde desde una fuente revisada y deriva los casos dudosos a una persona.",
     relatedSlugs: ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio"],
     editorialDraft: false,
-    cta: { label: "Revisar mis necesidades", to: "/diagnostico", copy: "Identifica primero el problema y comprueba qué necesitas antes de contratar herramientas." },
+    cta: {
+      label: "Revisar mis necesidades",
+      to: "/diagnostico",
+      copy: "Identifica primero el problema y comprueba qué necesitas antes de contratar herramientas.",
+    },
     sections: [
-      { heading: "Objetivo y práctica", paragraphs: ["Al terminar podrás identificar los riesgos y decisiones de este proceso y explicar qué comprobar antes de actuar.", "Ejercicio: describe un caso de tu negocio sin datos personales, elige una comprobación y define cuándo revisarás el resultado."] },
       {
-        heading: "Cómo preparar información confiable para un asistente",
-        paragraphs: ["El resultado no mejora por cargar más documentos sin orden. Empieza con una fuente pequeña, vigente y con una persona responsable de mantenerla."],
-        blocks: [{ type: "steps", label: "Pasos para preparar una fuente de respuestas", items: [
-          { title: "Delimita el uso", detail: "Especifica qué preguntas debe atender y qué debe rechazar o transferir. Empieza por una tarea de bajo riesgo." },
-          { title: "Elige una fuente autorizada", detail: "Usa información que el negocio pueda confirmar —por ejemplo, horarios y servicios— y asigna quién la mantiene actualizada." },
-          { title: "Escribe respuestas y excepciones", detail: "Separa hechos confirmados, condiciones y preguntas que requieren revisión. Incluye qué hacer si una respuesta no está en la fuente." },
-          { title: "Quita lo que no necesita", detail: "No cargues historiales completos de clientes, credenciales ni datos sensibles solo porque la herramienta permita hacerlo." },
-          { title: "Prueba preguntas conocidas y difíciles", detail: "Incluye preguntas claras, ambiguas, fuera de alcance y con información contradictoria. Comprueba que no invente y que transfiera cuando corresponde." },
-        ] }],
-      },
-      {
-        heading: "Errores, respuestas inventadas e información desactualizada",
-        paragraphs: ["Los modelos generativos pueden producir una afirmación falsa con tono seguro, completar vacíos con suposiciones o combinar datos de forma incorrecta. También pueden repetir material viejo si la fuente no se mantiene."],
-        blocks: [{ type: "callout", tone: "caution", title: "La fluidez no demuestra que sea cierto", text: "Una respuesta bien redactada no es una fuente de verificación. Contrasta nombres, fechas, precios, condiciones y cualquier afirmación concreta con el material vigente del negocio antes de usarla." }, { type: "list", items: [
-          "Pide al sistema que reconozca cuando no encuentra respuesta, en lugar de completar el vacío.",
-          "Verifica citas, enlaces, cálculos y resúmenes contra la fuente original.",
-          "Mantén una persona responsable de corregir las respuestas y retirar información vencida.",
-          "Registra los errores y las transferencias para decidir si el alcance debe cambiarse o detenerse.",
-        ] }],
-      },
-      {
-        heading: "Protección de datos y manejo prudente de información",
-        paragraphs: ["Antes de introducir datos en una herramienta, averigua qué servicio los procesa, qué condiciones se aplican y quién puede acceder a ellos. La respuesta depende del proveedor, del producto, de la configuración y de la jurisdicción; no existe una garantía universal por el simple hecho de usar IA."],
-        blocks: [{ type: "list", items: [
-          "Envía la mínima información necesaria para la tarea; elimina nombres y datos identificables cuando no hagan falta.",
-          "No ingreses contraseñas, datos financieros, información de salud ni conversaciones privadas sin autorización y evaluación previa.",
-          "Revisa las condiciones del proveedor sobre uso de entradas, almacenamiento, retención, acceso, exportación y eliminación.",
-          "Define quién puede usar la herramienta, qué puede compartir y cómo reportará un incidente o resultado inadecuado.",
-          "Consulta las obligaciones de privacidad y tratamiento de datos aplicables a tu país y a tu caso concreto.",
-        ] }, { type: "callout", tone: "caution", title: "No asumas que una conversación es privada por defecto", text: "La guía del ICO citada abajo pertenece al Reino Unido y advierte que su orientación está en revisión. Sirve como referencia, no sustituye las normas ni la asesoría de tu jurisdicción." }],
-      },
-      {
-        heading: "Cómo diseñar una prueba piloto pequeña y medible",
-        paragraphs: ["Una prueba sirve para averiguar si una tarea concreta mejora con esa herramienta en esas condiciones. No demuestra que la IA funcione para todo el negocio ni anticipa resultados de otros casos."],
-        blocks: [{ type: "steps", label: "Pasos para probar IA de forma controlada", items: [
-          { title: "Escoge una tarea frecuente y de bajo riesgo", detail: "Describe el trabajo actual y quién lo realiza. Si el proceso no está claro, ordénalo primero sin IA." },
-          { title: "Anota un punto de comparación", detail: "Registra cómo se resuelve hoy la tarea, cuánto trabajo requiere y qué errores o demoras quieres observar. No supongas que la herramienta reducirá esos valores." },
-          { title: "Establece límites antes de probar", detail: "Define fuente autorizada, datos permitidos, casos que debe transferir, quién revisará y qué condiciones obligan a detener la prueba." },
-          { title: "Prueba con casos de ensayo", detail: "Usa ejemplos sintéticos o anonimizados que cubran preguntas frecuentes, ambigüedades, casos fuera de alcance y datos faltantes." },
-          { title: "Supervisa una prueba acotada", detail: "Mantén revisión humana, registra correcciones y vigila el uso de datos. El periodo y el tamaño de la muestra deben corresponder al riesgo y la capacidad del negocio." },
-          { title: "Decide con evidencia", detail: "Compara lo observado con los criterios que fijaste. Continúa, ajusta o detén el piloto; no extiendas el resultado más allá de los casos probados." },
-        ] }],
-      },
-      {
-        heading: "Cómo evaluar resultados sin atribuir beneficios no comprobados",
-        paragraphs: ["Mide solo aspectos relacionados con la tarea y compara datos equivalentes antes y durante el piloto. Los indicadores no son promesas ni se deben interpretar fuera de su muestra."],
-        blocks: [{ type: "list", items: [
-          "Calidad: cuántas respuestas revisadas coinciden con la fuente aprobada y cuántas contienen información sin respaldo.",
-          "Seguridad del flujo: si reconoce preguntas fuera de alcance y transfiere a una persona cuando debe hacerlo.",
-          "Trabajo del equipo: tiempo real de revisión y corrección frente al proceso manual comparable.",
-          "Operación: fallos, quejas, costos observados y esfuerzo para mantener actualizada la fuente.",
-          "Privacidad: qué datos se ingresaron, si respetaron la regla acordada y si hubo incidentes o accesos indebidos.",
-        ] }, { type: "paragraph", text: "Guarda la muestra, el periodo, los criterios y las limitaciones de la prueba. Si no hay evidencia suficiente o los errores superan el límite que fijó el negocio, ajusta o detén el piloto en vez de presentar una mejora como comprobada." }],
-      },
-      {
-        heading: "Ejemplo: probar antes de atender a personas reales",
-        paragraphs: ["Caso hipotético para convertir los límites de una prueba de IA en decisiones fáciles de comprobar."],
+        heading: "Empieza por una tarea pequeña",
+        paragraphs: [
+          "Un asistente de IA no necesita empezar atendiendo todo. Elige una tarea de bajo riesgo, como responder preguntas sobre horario, ubicación o servicios que el negocio ya puede confirmar.",
+          "Si el proceso actual es confuso, ordénalo primero. La IA puede acelerar una respuesta, pero no corrige una fuente desactualizada ni una regla que nadie entiende.",
+        ],
         blocks: [{
-          type: "example",
-          title: "Una academia prueba un asistente para preguntas frecuentes",
-          hypothetical: true,
-          context: "Una academia recibe muchas preguntas sobre horarios, ubicación y cómo solicitar información de los cursos.",
-          problem: "El equipo quiere responder más rápido, pero teme que el asistente invente precios, plazas disponibles o condiciones que cambian según el curso.",
-          approach: "Preparan una fuente corta con información pública revisada y prueban el asistente solo con preguntas de ensayo. Los precios, disponibilidad y decisiones de matrícula siguen en manos del equipo.",
-          actions: [
-            "Escribir diez preguntas frecuentes y sus respuestas confirmadas, con una persona responsable de mantenerlas.",
-            "Añadir preguntas ambiguas y fuera de alcance para comprobar que el asistente reconoce cuándo no sabe responder.",
-            "Revisar cada respuesta de la prueba y registrar los errores antes de permitir cualquier uso con personas reales.",
-            "Detener o reducir el alcance si aparecen respuestas inventadas, datos que no deberían compartirse o errores repetidos.",
-          ],
-          lesson: "Una prueba útil no intenta demostrar que la IA sirve para todo. Comprueba una tarea pequeña, sus límites y la capacidad del equipo para supervisarla.",
+          type: "callout",
+          tone: "tip",
+          title: "Prueba una pregunta concreta",
+          text: "Define qué preguntas puede responder, qué información puede usar y en qué casos debe pasar la conversación a una persona.",
         }],
       },
-      { heading: "Resumen para aplicar", paragraphs: ["Usa información revisada y evita compartir datos sensibles.","Comprueba respuestas inventadas y errores con una persona responsable.","Evalúa una prueba pequeña antes de ampliar su uso."] },
+      {
+        heading: "Prepara una fuente que puedas revisar",
+        paragraphs: [
+          "No cargues documentos por cantidad. Empieza con información vigente y con una persona responsable de mantenerla.",
+        ],
+        blocks: [{
+          type: "steps",
+          label: "Preparación básica",
+          items: [
+            { title: "Delimita el alcance", detail: "Escribe qué temas puede responder y cuáles quedan fuera." },
+            { title: "Elige la fuente", detail: "Usa información confirmada, como horarios, servicios y condiciones públicas." },
+            { title: "Quita datos innecesarios", detail: "No incluyas historiales completos, credenciales ni información sensible si la tarea no los necesita." },
+            { title: "Añade excepciones", detail: "Indica qué debe hacer cuando falta una respuesta o los datos se contradicen." },
+          ],
+        }],
+      },
+      {
+        heading: "Una respuesta segura no siempre es correcta",
+        paragraphs: [
+          "Los modelos generativos pueden redactar con seguridad una afirmación falsa, completar vacíos con suposiciones o repetir información antigua. Esa posibilidad suele llamarse respuesta inventada o confabulación.",
+          "La revisión debe centrarse en hechos que importan: nombres, fechas, precios, disponibilidad, condiciones y cualquier compromiso con una persona.",
+        ],
+        blocks: [{
+          type: "list",
+          items: [
+            "Comprueba la respuesta contra la fuente original.",
+            "Prueba preguntas ambiguas, fuera de alcance y con datos incompletos.",
+            "Registra qué errores se repiten y qué preguntas terminan en revisión humana.",
+            "No permitas que el asistente confirme algo que la fuente no puede demostrar.",
+          ],
+        }],
+      },
+      {
+        heading: "Ejemplo: una academia prueba antes de atender a personas reales",
+        paragraphs: ["Caso hipotético para convertir una prueba de IA en pasos fáciles de comprobar."],
+        blocks: [{
+          type: "example",
+          title: "Preguntas frecuentes con límites visibles",
+          hypothetical: true,
+          context: "Una academia recibe preguntas sobre horarios, ubicación y cómo solicitar información de los cursos.",
+          problem: "El equipo teme que el asistente invente precios, plazas disponibles o condiciones que cambian según el curso.",
+          approach: "Prepara una fuente corta con información pública revisada y prueba el asistente únicamente con preguntas de ensayo.",
+          actions: [
+            "Escribir preguntas frecuentes y respuestas confirmadas.",
+            "Añadir preguntas que no pueda resolver para comprobar que las transfiere.",
+            "Revisar cada respuesta y registrar los errores antes de usarlo con personas reales.",
+            "Detener o reducir el alcance si aparecen respuestas inventadas o datos que no deberían compartirse.",
+          ],
+          lesson: "Una prueba útil no demuestra que la IA sirve para todo. Comprueba una tarea, sus límites y la capacidad del equipo para supervisarla.",
+        }],
+      },
+      {
+        heading: "Protege los datos y define quién revisa",
+        paragraphs: [
+          "Antes de introducir datos, revisa qué servicio los procesa, quién puede acceder y qué condiciones de almacenamiento o retención aplica. La respuesta depende del proveedor y de la jurisdicción.",
+        ],
+        blocks: [{
+          type: "list",
+          items: [
+            "Usa la mínima información necesaria y elimina datos identificables cuando no hagan falta.",
+            "No introduzcas contraseñas ni información sensible sin una razón y evaluación claras.",
+            "Define quién revisa errores, actualiza la fuente y puede detener la prueba.",
+            "Consulta las obligaciones de privacidad aplicables a tu caso; esta guía no sustituye asesoría legal.",
+          ],
+        }, {
+          type: "callout",
+          tone: "caution",
+          title: "No asumas privacidad por defecto",
+          text: "Revisa las condiciones del producto y la configuración concreta antes de introducir información de clientes o del negocio.",
+        }],
+      },
+      {
+        heading: "Cómo decidir si el piloto continúa",
+        paragraphs: [
+          "Una prueba piloto sirve para aprender sobre una tarea concreta. Compara lo observado con la forma de trabajar anterior y con los límites que fijaste antes de empezar.",
+        ],
+        blocks: [{
+          type: "summary",
+          items: [
+            "Calidad: revisa cuántas respuestas coinciden con la fuente y cuántas necesitan corrección.",
+            "Límites: comprueba si reconoce preguntas fuera de alcance y las deriva correctamente.",
+            "Trabajo real: cuenta también el tiempo de revisión, mantenimiento y corrección.",
+            "Decisión: continúa, ajusta o detén la prueba según la evidencia; no amplíes solo porque algunas respuestas salieron bien.",
+          ],
+        }],
+      },
       {
         heading: "Fuentes y alcance",
-        paragraphs: ["Los marcos y guías siguientes ayudan a identificar riesgos y preguntas para una prueba. No son garantías de resultados ni reemplazan requisitos legales locales."],
-        blocks: [{ type: "sources", items: [
-          { label: "NIST AI Risk Management Framework (AI RMF 1.0)", url: "https://www.nist.gov/itl/ai-risk-management-framework", scope: "Marco voluntario del NIST de Estados Unidos para gestionar riesgos durante el diseño, uso y evaluación de sistemas de IA. La página oficial indica que la versión 1.0 está en revisión." },
-          { label: "NIST AI 600-1: Generative Artificial Intelligence Profile", url: "https://doi.org/10.6028/NIST.AI.600-1", scope: "Perfil del NIST que describe riesgos de IA generativa como confabulación, privacidad y configuración de la relación entre personas y sistemas." },
-          { label: "Guidance on AI and data protection", url: "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/", scope: "Orientación del ICO del Reino Unido sobre IA y protección de datos. La propia página advierte que su guía está en revisión; no define obligaciones para otros países." },
-        ] }],
-      },    ],
+        paragraphs: [
+          "Estas referencias ayudan a identificar riesgos y controles de una prueba de IA. No garantizan resultados ni sustituyen requisitos legales locales.",
+        ],
+        blocks: [{
+          type: "sources",
+          items: [
+            { label: "NIST AI Risk Management Framework (AI RMF 1.0)", url: "https://www.nist.gov/itl/ai-risk-management-framework", scope: "Marco voluntario para gestionar riesgos durante el diseño, uso y evaluación de sistemas de IA." },
+            { label: "NIST AI 600-1: Generative Artificial Intelligence Profile", url: "https://doi.org/10.6028/NIST.AI.600-1", scope: "Describe riesgos de IA generativa como confabulación, privacidad y relación entre personas y sistemas." },
+            { label: "ICO — Guidance on AI and data protection", url: "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/", scope: "Orientación del Reino Unido sobre IA y protección de datos; comprueba las reglas aplicables en tu jurisdicción." },
+          ],
+        }],
+      },
+    ],
   },
   {
     slug: "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
