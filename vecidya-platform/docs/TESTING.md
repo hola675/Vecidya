@@ -2,9 +2,9 @@
 
 ## APRENDE-EDITORIAL-04E — revisión de Operaciones (2026-10-25)
 
-**TEST versionado / RAN pendiente.** Se fija el catálogo en 48 guías con **35 revisadas / 13 borradores**. Las cinco guías de `learn-operations-02.ts` deben conservar `editorialDraft: false`, nueve secciones, ejemplo hipotético, FAQ, cierre accionable y al menos dos fuentes HTTPS. Los contratos comprueban además la referencia de inventario de business.gov.au, la definición de ERP y la fuente oficial de Microsoft Learn, y la guía de beta de GOV.UK para el piloto digital.
+**RAN en GitHub Actions:** `Aprende quality` run `40246857214` PASS: typecheck, build e integridad Aprende. Se fija el catálogo en 48 guías con **35 revisadas / 13 borradores**. Las cinco guías de `learn-operations-02.ts` deben conservar `editorialDraft: false`, nueve secciones, ejemplo hipotético, FAQ, cierre accionable y al menos dos fuentes HTTPS. Los contratos comprueban además la referencia de inventario de business.gov.au, la definición de ERP y la fuente oficial de Microsoft Learn, y la guía de beta de GOV.UK para el piloto digital.
 
-Gate: `Aprende quality` con typecheck, build e integridad Aprende PASS sobre el HEAD final. Sin Main integration mientras este checkpoint permanezca paralelo y apilado sobre 04B.
+Sin Main integration mientras este checkpoint permanezca paralelo y apilado sobre 04B; el gate general corresponderá a la reconciliación final.
 
 ## APRENDE-EDITORIAL-04B — separación selección/migración de proveedor (2026-10-25)
 
