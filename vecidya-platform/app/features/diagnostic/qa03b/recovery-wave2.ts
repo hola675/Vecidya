@@ -213,6 +213,9 @@ export const QA03B_RECOVERY_WAVE2_QUESTIONS: readonly QuestionDefinitionV2[] = [
     prompt: "¿Con qué frecuencia revisas tus asuntos pendientes para comprobar si alguno necesita respuesta o seguimiento?",
     hint: "Piensa en revisiones reales de clientes, pedidos o tareas, no en recordar un asunto por casualidad.",
     appliesWhen: followup,
+    // QBV2 had a broad material-only bypass; it must not override the QA-03B
+    // active + declared-goal/friction gate through OR eligibility.
+    materialAppliesWhen: undefined,
     evidenceMigration: "migrated",
     evidenceV3: evidence("q2_followup_status_visibility", 1, "relationship_recurrence", "direct", {
       regularly: "established", only_when_remember: "partial", rarely: "weak", unknown: "uncertainty",
