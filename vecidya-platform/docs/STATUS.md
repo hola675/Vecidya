@@ -12,6 +12,14 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 **RAN en GitHub Actions:** sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`, workflow `Aprende quality` run `40242263335` PASS (typecheck, build e integridad Aprende) y `Main integration quality` run `40242263275` PASS: typecheck, build, regresión Diagnóstico/Aprende y **1721/1721 unitarias**. La revisión estática de los 12 archivos modificados quedó sin marcadores de conflicto ni whitespace final. Fuentes nuevas verificadas contra OCDE 2026, NIST CSF 2.0, CISA y W3C. No cambia DB, Auth, Diagnóstico, MiniWeb, GHL, licencias, precios ni producción.
 
+## APRENDE-EDITORIAL-04F — revisión de migración y correo profesional (2026-10-25)
+
+**CODE/TEST versionado en `feat/aprende-editorial-04f-technical-review`, apilado sobre 04E; sin merge ni deploy.** Se revisaron individualmente los dos borradores técnicos creados en 04B: migración de proveedor y correo profesional. Se comprobaron límites, ejemplos, secuencia de cambio, recuperación de control y fuentes vigentes de ICANN, MDN e IETF. La guía de correo conserva RFC 9989 como especificación DMARC vigente y no prescribe valores de proveedor.
+
+Ambas guías pasan de `editorialDraft: true` a `false` después de la revisión. El catálogo queda en **48 guías: 37 revisadas y 11 borradores**. Se añaden contratos para preservar la aprobación y las referencias primarias de ICANN, DNS, TLS, SPF, DKIM y DMARC.
+
+**Gate pendiente:** `Aprende quality` debe pasar sobre el HEAD final. Esta rama no modifica ni fuerza los PR #125/#126 basados en una cadena editorial anterior.
+
 ## APRENDE-EDITORIAL-04E — revisión humana de Operaciones (2026-10-25)
 
 **CODE/TEST versionado en `feat/aprende-editorial-04e-operations-review`, basado en el HEAD certificado de 04B; sin merge ni deploy.** Se revisaron individualmente las cinco guías de `learn-operations-02.ts`: tareas y responsables, inventario, capacitación digital, ERP y piloto de mejora digital. Se verificaron estructura, ejemplos hipotéticos, FAQ, cierres, límites legales/contables y fuentes institucionales vigentes. Se precisa ERP como «planificación de recursos empresariales» y NIST se identifica como SP 1300/CSF 2.0.
