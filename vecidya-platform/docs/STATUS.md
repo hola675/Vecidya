@@ -18,7 +18,7 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 Ambas guías pasan de `editorialDraft: true` a `false` después de la revisión. El catálogo queda en **48 guías: 37 revisadas y 11 borradores**. Se añaden contratos para preservar la aprobación y las referencias primarias de ICANN, DNS, TLS, SPF, DKIM y DMARC.
 
-**Gate pendiente:** `Aprende quality` debe pasar sobre el HEAD final. Esta rama no modifica ni fuerza los PR #125/#126 basados en una cadena editorial anterior.
+**RAN en GitHub Actions:** `Aprende quality` run `40247108403` PASS: typecheck, build e integridad Aprende. Esta rama no modifica ni fuerza los PR #125/#126 basados en una cadena editorial anterior.
 
 ## APRENDE-EDITORIAL-04E — revisión humana de Operaciones (2026-10-25)
 
