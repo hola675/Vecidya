@@ -42,6 +42,7 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
   const navigate = useNavigate();
   const { revalidate } = useRevalidator();
   const [submitting, setSubmitting] = useState(false);
+  const [organizationError, setOrganizationError] = useState<string | null>(null);
   const { closeNavigation, isMobileNavigation, menuButtonRef, navigationOpen, navigationRef, setNavigationOpen } =
     useResponsiveNavigationDrawer({ breakpoint: 980, firstItemSelector: "#app-navigation a" });
   const hasOrganization = organizations.length > 0;
@@ -50,9 +51,19 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
   async function handleSetActiveOrganization(organizationId: string) {
     if (!organizationId || organizationId === activeOrganization?.id) return;
     setSubmitting(true);
-    await authClient.organization.setActive({ organizationId });
-    setSubmitting(false);
-    revalidate();
+    setOrganizationError(null);
+    try {
+      const result = await authClient.organization.setActive({ organizationId });
+      if (result.error) {
+        setOrganizationError(result.error.message ?? "No se pudo cambiar de negocio. Inténtalo de nuevo.");
+        return;
+      }
+      revalidate();
+    } catch {
+      setOrganizationError("No se pudo cambiar de negocio. Comprueba tu conexión e inténtalo de nuevo.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   async function handleSignOut(event: React.FormEvent<HTMLFormElement>) {
@@ -137,18 +148,21 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
 
           {hasOrganization ? (
             <div className="organization-switcher">
-              <label htmlFor="organization-switcher">Organización</label>
+              <label htmlFor="organization-switcher">Negocio activo</label>
               <select
+                aria-describedby={organizationError ? "organization-switcher-error" : undefined}
+                aria-invalid={organizationError ? true : undefined}
                 disabled={submitting}
                 id="organization-switcher"
                 onChange={(event) => handleSetActiveOrganization(event.currentTarget.value)}
                 value={activeOrganization?.id ?? ""}
               >
-                <option value="" disabled>Selecciona una organización</option>
+                <option value="" disabled>Selecciona un negocio</option>
                 {organizations.map((organization) => (
                   <option key={organization.id} value={organization.id}>{organization.name}</option>
                 ))}
               </select>
+              {organizationError ? <p id="organization-switcher-error" role="alert">{organizationError}</p> : null}
             </div>
           ) : <span />}
 
