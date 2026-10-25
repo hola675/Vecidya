@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { learnArticles, learnCategories, learnPathways } from "../../../app/content/learn.ts";
 
 test("Aprende conserva once guías originales y amplía el catálogo con operaciones y gestión", () => {
-  assert.equal(learnArticles.length, 44);
+  assert.equal(learnArticles.length, 46);
   assert.equal(new Set(learnArticles.map((article) => article.slug)).size, learnArticles.length);
   const drafts = learnArticles.filter((article) => article.editorialDraft);
   const reviewed = learnArticles.filter((article) => !article.editorialDraft);
@@ -24,6 +24,19 @@ test("Aprende conserva once guías originales y amplía el catálogo con operaci
     assert(article?.editorialDraft, `Guía operativa ausente o publicada prematuramente: ${slug}`);
     assert.equal(article.sections.length, 9, `La guía operativa debe ofrecer nueve secciones: ${slug}`);
   }
+});
+
+test("las guías fundacionales de criterio digital quedan en revisión y conectadas entre sí", () => {
+  const priorities = learnArticles.find((article) => article.slug === "el-que-mucho-abarca-poco-aprieta-prioridades-digitales");
+  const control = learnArticles.find((article) => article.slug === "domina-la-tecnologia-sin-que-te-domine");
+  assert(priorities?.editorialDraft, "La guía de prioridades debe permanecer en revisión hasta aprobación");
+  assert(control?.editorialDraft, "La guía de control digital debe permanecer en revisión hasta aprobación");
+  assert.equal(priorities.category, "Tecnología explicada");
+  assert.equal(control.category, "Tecnología explicada");
+  assert(priorities.relatedSlugs?.includes(control.slug));
+  assert(control.relatedSlugs?.includes(priorities.slug));
+  assert.match(JSON.stringify(priorities), /mucho abarca|prioridad|herramienta/i);
+  assert.match(JSON.stringify(control), /control|decisi[oó]n|tecnolog[ií]a/i);
 });
 
 test("cada guía responde una pregunta, resume tres ideas y conserva fuentes", () => {
@@ -54,8 +67,9 @@ test("nuevas guías conservan contexto, pasos, preguntas y fuentes oficiales", (
 
 test("itinerarios apuntan únicamente a artículos reales y tienen pasos útiles", () => {
   const slugs = new Set(learnArticles.map((article) => article.slug));
-  assert.equal(learnPathways.length, 8);
+  assert.equal(learnPathways.length, 9);
   assert(learnPathways.some((path) => path.title === "Trabaja mejor cada día" && path.slugs.length === 5));
+  assert(learnPathways.some((path) => path.title === "Usa la tecnología con criterio" && path.slugs.includes("domina-la-tecnologia-sin-que-te-domine")));
   for (const path of learnPathways) {
     assert(path.title && path.description && path.slugs.length >= 3);
     assert.equal(new Set(path.slugs).size, path.slugs.length, `Duplicado en ${path.title}`);
