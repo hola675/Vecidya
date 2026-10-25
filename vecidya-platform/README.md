@@ -7,8 +7,8 @@ Aplicación full-stack de Vecidya sobre React Router (SSR) y Cloudflare Workers.
 - TypeScript de extremo a extremo; React 19, React Router 8 (SSR), Vite 8, Tailwind CSS 4.
 - Cloudflare Workers como runtime; entry point `workers/app.ts`.
 - D1 + Drizzle ORM (`db/`) para datos relacionales.
-- Better Auth 1.6 (email + contraseña, plugin Organization) para identidad, sesiones y tenancy.
-- **No implementados:** R2, Durable Objects, Queues, Workflows, pagos, integración con GHL (solo existe metadata genérica de conexión).
+- Better Auth 1.7.5 (email + contraseña, plugin Organization) para identidad, sesiones y tenancy.
+- R2 tiene rutas, binding y migraciones para medios en el código, pero la cuenta/buckets remotos no están verificados como provisionados ni operativos. Durable Objects, Queues, Workflows, pagos e integración con GHL no están implementados (solo existe metadata genérica de conexión para integraciones).
 
 El estado exacto de cada capacidad está en [docs/STATUS.md](docs/STATUS.md) y [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md); este README no lo repite.
 
