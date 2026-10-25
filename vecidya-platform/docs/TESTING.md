@@ -1,5 +1,13 @@
 # Pruebas
 
+## DEP-REFRESH-20261024 — actualización compatible de dependencias (2026-10-24)
+
+**RAN:** Node `26.12.1`, pnpm `11.21.0`, registry `https://registry.npmjs.org/`. `pnpm update` actualizó las versiones dentro de los rangos semver existentes; `pnpm install --frozen-lockfile` completó con `Done` y aplicó el patch PDFKit `0.20.2`. `pnpm run typecheck` y `pnpm run build`: **PASS**. El build conserva avisos por secretos opcionales ausentes y imports dinámicos inefectivos; no impidieron compilar.
+
+**Worker Cloudflare local:** D1 local efímera, migraciones `0000–0028` aplicadas a `DB`; GET `/`, `/login`, `/robots.txt` y `/sitemap.xml` → **HTTP 200**. Una primera petición a `/` antes de aplicar migraciones respondió 500 por ausencia de `business_profile`; tras aplicar las migraciones completas volvió a 200. No se tocó D1 remota ni se desplegó.
+
+**Instalación reproducible:** `pnpm install --frozen-lockfile` volvió a finalizar después de fijar pnpm mediante `devEngines.packageManager` (`11.21.0`); el lockfile registra el mismo pin. `git diff --check`: PASS. No se ejecutaron suites de pruebas.
+
 ## LEGAL-TRANSPARENCY-102 — regresiones y límites del PR #102
 
 **TEST en repositorio:** `tests/unit/cookie-preferences.test.ts` comprueba rechazo por defecto, selección granular, persistencia, versión/timestamp inválidos y fallo del almacenamiento; `tests/unit/diagnostic/privacy-copy.test.ts` conserva el contrato anónimo de QA-03B sin promesas de funciones retiradas. `tests/e2e/cookie-consent-check.mjs` comprueba primera visita sin decisiones, ausencia de hosts de tracking conocidos, rechazo, aceptación granular, rehidratación, cambio entre pestañas y viewport 1366/390. El detector de hosts se corrigió para usar puntos literales y añadió pruebas de autocomprobación; **E2E todavía no ejecutado para esta revisión**.

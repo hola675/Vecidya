@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-24 — mantenimiento compatible de dependencias y URLs (checkpoint local)
+
+- Actualiza dependencias directas dentro de los rangos semver y regenera `pnpm-lock.yaml`: React Router 8.5.0, React 19.3.1, Drizzle ORM 0.45.4, Cloudflare Vite plugin 1.65.0, Vite 8.3.5 y Wrangler 4.152.0, entre otras. Se conservan los pins exactos de Better Auth, PDFKit parcheado, Playwright y Arimo.
+- Fija pnpm 11.21.0 con `devEngines.packageManager`, alineado con el harness del repositorio. Las URLs públicas y el registry oficial se verificaron; no se requirió cambio de configuración.
+- Instalación congelada, typecheck, build y smoke del Worker local PASS. No se desplegó, no se modificaron datos remotos y no se retiró el adaptador V3 de rollback.
+
 ## 2026-10-24 — LEGAL-TRANSPARENCY-102 — rutas legales y preferencias (PR #102, sin deploy)
 
 - Se preparan `/cookies` y `/informacion-legal`, enlaces públicos, ajustes de privacidad y aclaraciones comerciales sin inventar identificación jurídica/fiscal.
