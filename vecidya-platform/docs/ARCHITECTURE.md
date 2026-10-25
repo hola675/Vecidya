@@ -1,5 +1,14 @@
 # Arquitectura de Vecidya
 
+## MiniWeb — experiencia guiada y frontera editorial (UX-MINIWEB-20261024)
+
+La MiniWeb pública `/vecindario/:slug` presenta cabecera y pie del negocio mediante `MiniWebSiteHeader`/`MiniWebSiteFooter` y utiliza `MiniWebRenderer` con la lista de módulos verdaderamente renderizables; no reutiliza cabecera de marketing general. La vista previa privada utiliza ese mismo marco, pero sustituye los enlaces accionables por rótulos, y solo entonces acepta URLs de medios autenticados. `resolveBusinessLogoUrl` limita protocolos y rutas de imagen aceptadas.
+
+En `/app/miniweb`, una configuración de cinco pasos organiza el borrador versionado sin duplicar los datos maestros de `/app/business-profile`. Las secciones derivan su estado de `hasMiniWebModuleContent`; formularios plegables mantienen el estado hasta guardar; `useBlocker` advierte sobre cambios al navegar y el cambio de organización queda suspendido mientras hay edición no guardada. La vista pública se actualiza solo mediante publicación explícita del snapshot.
+
+APP-MINI-02F conserva un único contrato de medios por organización: `gallery` (imagen o vídeo), `cover`, `logo` e `icon` (solo imagen), más `BusinessOffering.imageAssetId` para productos y servicios. La API valida el archivo, su firma, permiso, pertenencia y revisión; el snapshot de publicación v4 hace visibles únicamente sus medios/referencias. Migración `0028`. Artículos, equipo, certificaciones, testimonios, temas personalizados y tipografías editables siguen fuera de alcance, sin anticipar persistencia.
+
+
 ## DIAG-MOTOR-04 — calibración QA-03B de cuatro rangos (2026-10-24; rama sin publicar)
 
 La calibración `diag-v3-candidate-calibration-v4` está adoptada por el recorrido QA-03B `/diagnostico` y el replay autoritativo del Worker. Conserva puntuaciones dimensionales, pesos, confianza y puerta de representatividad (al menos tres dimensiones puntuadas y 60% de cobertura aplicable); presenta cuatro rangos enteros inclusivos: 0–25, 26–50, 51–75 y 76–100. El índice insuficiente sigue siendo `null`. El resumen anónimo v2 mantiene su allowlist de 12 claves y expone la etiqueta general existente con el rango; el informe identificado pasa a v1.2 y sigue aceptando 1.0/1.1. La identidad del motor, sesión y replay usan pipeline v5, sesión schema/key 8 y replay v6. La selección de rangos es determinista, no validación empírica. La matriz sintética conserva 60 rutas; sus objetivos añadidos son supuestos, no hechos puntuables. El Worker público de producción aún no sirve este cambio; ver `ENVIRONMENTS.md`.

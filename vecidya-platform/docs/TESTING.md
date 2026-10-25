@@ -1,5 +1,14 @@
 # Pruebas
 
+## UX-MINIWEB-20261024 — integración de PR #105 (2026-10-24)
+
+**RAN (CI sobre `d5a8e92977ed0cb372ca49839a732be20166e03f`):** run `40151659894`, `pnpm typecheck` PASS, `pnpm build` PASS, regresiones focales de Diagnóstico/Aprende **16/16 PASS** y `pnpm test:unit` **1696/1696 PASS**, sin errores. Este run se ejecutó en la integración temporal del PR con `main`, no es una prueba de despliegue.
+
+**TEST añadido:** `tests/unit/miniweb/site-chrome.test.ts` valida rutas de logotipos públicas y privadas de previsualización y el marco visual sin enlaces externos activos; `navigation.test.ts` cubre destinos existentes y no duplicados; `render.test.ts` verifica contenido incompleto, medios de galería y portada. **TEST modificado pero NO RAN:** `tests/e2e/miniweb-core-check.mjs` ahora emplea pestañas de botón del editor, biblioteca con cuatro destinos y el marco visual de vista previa. No se declara E2E PASS para este rediseño. La E2E de APP-MINI-02F (120/120 PASS) acreditó el *editor anterior* en su propio checkpoint, no la presente revisión.
+
+**Pendiente de certificación:** ejecutar E2E con D1 local efímera migrada hasta `0028`, subida/retirada de medios y validación de referencias, guardar/publicar, concurrencia `409`, selección de organización, navegación con contenido sucio, captura visual y teclado en 360/390/768/1024/1366/1920 px. Sin D1/R2 remotas, staging, deploy ni HTTP pública de este cambio.
+
+
 ## APP-MINI-02F — marca e imágenes de contenido (2026-10-24)
 
 Typecheck/build PASS; suite unitaria completa **1689/1689 PASS**, incluyendo lectura legacy v1–v3, normalización segura de vínculos y referencias de marca válidas en v4. D1 local efímera aplicó `0000–0028`; Worker Wrangler local HTTP 200. Primera ejecución de `miniweb-core-check.mjs`: 119/120 por conteo heredado de botones; tras actualizar la aserción, repetición **120/120 PASS**, `fixturesCleaned: true`. La cobertura comprueba 404 anónimo de media de draft, entrega tras publicación, inclusión conjunta de logo/icono/imagen de oferta, rechazo de ID de imagen no activa/perteneciente, y reflow sin overflow del editor (1366/768/390/360) y directorio (1366/768/390/320). Sin D1 remota, bucket R2 real, deploy ni HTTP pública fechada.
