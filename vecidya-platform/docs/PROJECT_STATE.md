@@ -1,3 +1,9 @@
+## Corte vigente — dependencias y URLs (2026-10-24 local / 2026-10-25 UTC)
+
+`origin/main@952f06e` incluye PR #105 y #106; esta rama actualiza dependencias compatibles y fija pnpm `11.21.0` con `devEngines.packageManager`. La aplicación sigue en `0.7.3`; el lockfile y la instalación congelada usan React Router `8.5.0`, React `19.3.1`, Drizzle ORM `0.45.4`, Cloudflare Vite plugin `1.65.0`, Vite `8.3.5` y Wrangler `4.152.0`. Typecheck, build y Worker local con D1 `0000–0028` pasaron.
+
+Las direcciones de producción, `www` y staging respondieron correctamente en GET anónimo fechado (ver `ENVIRONMENTS.md`); el registry npm oficial también respondió y sirvió metadata de Vite `8.3.5`. No se cambió configuración de URL, no hubo deploy ni acceso/escritura a D1 o R2 remotas. No se retiró el adaptador/V3 legacy de Diagnóstico: la ventana de rollback sigue abierta según `ROADMAP.md`, y no existe una carpeta `legacy/` en este checkout.
+
 ## Corte vigente de código y publicación (2026-10-24)
 
 `origin/main@ae7a768` integra PR #103 y `package.json` declara `0.7.3`. HTTP anónimo RAN 2026-10-25T01:08Z: producción muestra `0.7.3` en `/`, `/diagnostico` y `/diagnostico/metodologia`; staging muestra `0.7.0` en esas rutas. La igualdad de versión no demuestra qué SHA está desplegado. No hubo replay funcional ni consulta D1/R2 en ese corte; no se infiere que todas las capacidades de `main` estén desplegadas.

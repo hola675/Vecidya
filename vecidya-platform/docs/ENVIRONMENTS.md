@@ -1,3 +1,11 @@
+# Dependencias y direcciones verificadas (corte 2026-10-24)
+
+**RAN local, Node `26.12.1`, pnpm `11.21.0`, registry `https://registry.npmjs.org/`:** se actualizaron las dependencias directas dentro de sus rangos y se instaló el lockfile con `pnpm install --frozen-lockfile`. El manifiesto fija pnpm 11.21.0 mediante `devEngines.packageManager`; el lockfile fue regenerado con pnpm 11.21.0. La versión de la aplicación permanece `0.7.3`.
+
+Versiones directas actualizadas: React Router `8.5.0`, React/React DOM `19.3.1`, Drizzle ORM `0.45.4`, Cloudflare Vite plugin `1.65.0`, Vite `8.3.5`, Wrangler `4.152.0` y tipos Node `26.6.5`. Better Auth `1.7.5`, PDFKit `0.20.2` (con patch), Playwright `1.63.0` y Arimo `5.3.0` siguen fijadas en versiones exactas. Typecheck/build y smoke local finalizaron PASS (detalle en `TESTING.md`).
+
+**HTTP anónimo RAN 2026-10-25 02:32–02:33 UTC:** `https://vecidya.com/` → 200; `https://www.vecidya.com/` → 301 a `https://vecidya.com/`; `https://vecidya-platform-staging.soporte-8a1.workers.dev/` → 200. Registry `https://registry.npmjs.org/vite/latest` → 200, Vite `8.3.5` y tarball HTTPS del registry oficial. Las direcciones configuradas son correctas y no requirieron cambios; el origen de producción y la URL dedicada de staging permanecen sin cambios. No hubo deploy, escritura remota ni migración remota.
+
 ## Verificación anónima de Mi Vecidya (2026-10-19)
 
 **HTTP RAN 2026-10-19T22:25Z**, solo GET anónimo, sin datos ni sesión: `/` respondió 200 y el footer sirvió `Versión pública 0.6.1` + `© 2026 Vecidya`; `/app`, `/app/business-profile` y `/app/internal` redirigieron a `/login`; `/app/miniweb` y `/app/crm` respondieron 404; `/licencias` y `/vecindario/vecidya` respondieron 200. No se siguieron redirecciones con sesión ni se modificó producción. Esto demuestra que las rutas MiniWeb/CRM del código local actual no están presentes en la superficie pública observada en esa fecha; no comprueba acceso autenticado ni cambios de datos públicos.

@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## DEP-REFRESH-20261024 — dependencias y destinos
+
+**RAN local:** pnpm `11.21.0` fijado en `devEngines.packageManager`; instalación congelada PASS y actualización dentro de rangos semver. Typecheck, build y smoke Worker local (D1 `0000–0028`) PASS. React Router `8.5.0`, React `19.3.1`, Drizzle ORM `0.45.4`, Cloudflare Vite plugin `1.65.0`, Vite `8.3.5`, Wrangler `4.152.0`. HTTP anónimo actual: producción 200, `www` 301 al dominio canónico, staging `workers.dev` 200; registry npm 200. Sin deploy ni acceso a recursos remotos. No se modifica el estado del release `0.7.3` observado.
+
 ## LEGAL-TRANSPARENCY-102 — transparencia, cookies y condiciones (PR #102, 2026-10-24)
 
 **GIT/RAN:** PR #102 fusionado en `main@da3aa1e4ff41`; CI PR `40153002177` y CI de `main` `40153128582` finalizaron PASS (typecheck, build, regresiones focales y 1699 unitarias). **CODE:** el cambio incorpora `/informacion-legal` y `/cookies`, enlaces en navegación/footer, textos de privacidad y contratación actualizados, preferencia local de cookies opcionales v2 (necesarias siempre, analítica y marketing desactivados sin consentimiento, selección granular, revocación y sincronización entre pestañas). Las preferencias también están accesibles desde las MiniWeb públicas; la vista previa privada no presenta consentimiento. Se evita afirmar domicilio u otra identidad legal no verificada. El sitemap conserva rutas estáticas aunque D1 no esté disponible y reduce su TTL en degradación.
@@ -11,7 +15,7 @@
 
 ## UX-MINIWEB-20261024 — integración de experiencia guiada (PR #105)
 
-**GIT/CODE:** la rama `audit/app-internal-ux-foundation-20261024` incluye el editor de cinco pasos (Diseño, Secciones, Contenido, Vista previa y Publicar), estados de completitud y CTA, tarjetas de servicios/productos y FAQ plegables, biblioteca visual compatible con APP-MINI-02F, previsualización de cabecera/pie y diseño público de negocio independiente. También incluye compactación del sidebar de `/app` y reorganización inicial de la administración. El PR #105 propone su integración en `main`.
+**GIT/CODE:** PR #105 fue integrado en `origin/main@f1b8ad3` y permanece en la base actual `origin/main@952f06e`. Incluye el editor de cinco pasos (Diseño, Secciones, Contenido, Vista previa y Publicar), estados de completitud y CTA, tarjetas de servicios/productos y FAQ plegables, biblioteca visual compatible con APP-MINI-02F, previsualización de cabecera/pie y diseño público de negocio independiente. También incluye compactación del sidebar de `/app` y reorganización inicial de la administración.
 
 **RAN en GitHub Actions:** PR #105, run `40151659894` sobre `d5a8e92977ed0cb372ca49839a732be20166e03f`: `typecheck`, `build`, regresión focal Diagnóstico/Aprende **16/16 PASS** y unitarias **1696/1696 PASS**. No acredita E2E de esta nueva UI ni la compatibilidad visual manual. La migración `0028` procede del PR #103 ya integrado en `main`; NO se aplicó a D1 remota. 
 
