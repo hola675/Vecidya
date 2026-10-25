@@ -4,6 +4,10 @@
 
 **RAN local:** pnpm `11.21.0` fijado en `devEngines.packageManager`; instalación congelada PASS y actualización dentro de rangos semver. Typecheck, build y smoke Worker local (D1 `0000–0028`) PASS. React Router `8.5.0`, React `19.3.1`, Drizzle ORM `0.45.4`, Cloudflare Vite plugin `1.65.0`, Vite `8.3.5`, Wrangler `4.152.0`. HTTP anónimo actual: producción 200, `www` 301 al dominio canónico, staging `workers.dev` 200; registry npm 200. Sin deploy ni acceso a recursos remotos. No se modifica el estado del release `0.7.3` observado.
 
+## DIAG-PRO-19 — auditoría responsive del resumen anónimo (2026-10-25)
+
+**PASS TÉCNICO local:** el E2E Playwright recorre un perfil sintético y valida seis anchos (320/375/390/768/1024/1366 px), sin overflow horizontal, controles pequeños, elementos fuera de viewport, falta de H1 ni errores de página no capturados. Revisión visual de seis capturas PASS. Para el perfil limpio se añadió al E2E la elección de rechazar categorías opcionales; se espera también la carga de imágenes antes de capturar. Runtime Worker y D1 solo locales; se aplicaron migraciones `0016–0028`. Capturas PNG y WebP lossless locales, ignoradas por Git. No acredita el informe identificado, PDF, otras variantes, auditoría WCAG ni publicación.
+
 ## LEGAL-TRANSPARENCY-102 — transparencia, cookies y condiciones (PR #102, 2026-10-24)
 
 **GIT/RAN:** PR #102 fusionado en `main@da3aa1e4ff41`; CI PR `40153002177` y CI de `main` `40153128582` finalizaron PASS (typecheck, build, regresiones focales y 1699 unitarias). **CODE:** el cambio incorpora `/informacion-legal` y `/cookies`, enlaces en navegación/footer, textos de privacidad y contratación actualizados, preferencia local de cookies opcionales v2 (necesarias siempre, analítica y marketing desactivados sin consentimiento, selección granular, revocación y sincronización entre pestañas). Las preferencias también están accesibles desde las MiniWeb públicas; la vista previa privada no presenta consentimiento. Se evita afirmar domicilio u otra identidad legal no verificada. El sitemap conserva rutas estáticas aunque D1 no esté disponible y reduce su TTL en degradación.

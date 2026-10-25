@@ -8,6 +8,14 @@
 
 **Instalación reproducible:** `pnpm install --frozen-lockfile` volvió a finalizar después de fijar pnpm mediante `devEngines.packageManager` (`11.21.0`); el lockfile registra el mismo pin. `git diff --check`: PASS. No se ejecutaron suites de pruebas.
 
+## DIAG-PRO-19 — resumen anónimo responsive (2026-10-25)
+
+**RAN local:** `node tests/e2e/diagnostic-pro-19-responsive-check.mjs` PASS con un recorrido sintético en 320, 375, 390, 768, 1024 y 1366 px. No detectó overflow horizontal, elementos fuera del viewport, falta de H1 ni controles menores de 44×36 px; no hubo errores no capturados de página. La captura espera que carguen las imágenes diferidas. En contexto nuevo, el E2E elige «Rechazar opcionales» antes de empezar para despejar el aviso de cookies sin habilitar almacenamiento opcional.
+
+**Preparación local:** Node `26.12.1`, pnpm `11.21.0`, Wrangler `4.152.0`. Tras aplicar a D1 local las migraciones pendientes `0016–0028` y reiniciar el Worker, el E2E pasó. Vite escucha por defecto en `::1` en este entorno; para que Playwright resuelva `localhost`, se inició con `pnpm run dev -- --host 127.0.0.1`. No se usaron recursos remotos. Typecheck y `git diff --check`: PASS.
+
+Las seis capturas PNG y sus conversiones WebP lossless están en `test-results/diag-pro-19/` (artefactos locales ignorados por Git); la conversión reduce su tamaño entre 31,5 % y 34,5 %. Revisión visual manual de los seis anchos: layout legible, iconos cargados y controles visibles, sin desbordamientos. Alcance: resumen anónimo y un único recorrido sintético; no certifica otras variantes, informe identificado, PDF, accesibilidad completa ni dispositivos reales.
+
 ## LEGAL-TRANSPARENCY-102 — regresiones y límites del PR #102
 
 **TEST en repositorio:** `tests/unit/cookie-preferences.test.ts` comprueba rechazo por defecto, selección granular, persistencia, versión/timestamp inválidos y fallo del almacenamiento; `tests/unit/diagnostic/privacy-copy.test.ts` conserva el contrato anónimo de QA-03B sin promesas de funciones retiradas. `tests/e2e/cookie-consent-check.mjs` comprueba primera visita sin decisiones, ausencia de hosts de tracking conocidos, rechazo, aceptación granular, rehidratación, cambio entre pestañas y viewport 1366/390. El detector de hosts se corrigió para usar puntos literales y añadió pruebas de autocomprobación; **E2E todavía no ejecutado para esta revisión**.
