@@ -2,6 +2,7 @@ import type { QuestionDefinitionV2 } from "../qbv2-contract";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as historicalBank } from "../qbv2-reviewed-evidence";
 import { andV2, answeredV2, contextIn, eqV2, inV2, orV2 } from "../qbv2-rules";
 import type { MigratedAnswerStateV3 } from "../qbv2-evidence-v3";
+import { applyQA03BEditorialCopy } from "./editorial-copy";
 
 const operating = eqV2("q2_operational_status", "operating");
 const history = eqV2("q2_has_customers", "yes");
@@ -265,4 +266,4 @@ export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefiniti
       }],
     },
   },
-];
+].map(applyQA03BEditorialCopy);
