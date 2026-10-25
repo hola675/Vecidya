@@ -1,0 +1,169 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import {
+  applyClassificationInteractionV9,
+  buildCandidateQuestionPlanV9Prototype,
+  countVisibleInteractionsV9,
+  replayClassificationInteractionsV9,
+  type ClassificationInteractionEventV9,
+} from "../../../app/features/diagnostic/qa03b/v9-classification-bundle";
+import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
+import {
+  buildCandidateQuestionPlanFromBankV3,
+  buildCandidateQuestionPlanV3,
+} from "../../../app/features/diagnostic/qa03b/qbv2-candidate-planner";
+import { QUESTION_BANK_ID, SESSION_SCHEMA, SESSION_KEY } from "../../../app/features/diagnostic/qa03b/contract";
+import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
+
+const restaurantContext: AnswersV2 = {
+  q2_entity: "business",
+  q2_operational_status: "operating",
+  q2_has_customers: "yes",
+  q2_monetization: "goods",
+  q2_delivery: ["onsite"],
+  q2_customer_buyer: "b2c",
+  q2_customer_reach: "local",
+  q2_goal: "explain",
+  q2_friction: "conversion",
+  q2_presence_digital_base: "reliable_presence",
+};
+
+test("V9 classification bundle stores sector and specialty as explicit answers but one visible interaction", () => {
+  const result = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality",
+    niche: "restaurant",
+  });
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+
+  assert.equal(result.answers.q2_sector, "food_hospitality");
+  assert.equal(result.answers.q2_niche_food_hospitality, "restaurant");
+  assert.equal(result.event.sectorQuestionId, "q2_sector");
+  assert.equal(result.event.nicheQuestionId, "q2_niche_food_hospitality");
+  assert.equal(
+    countVisibleInteractionsV9(result.answers, [result.event]),
+    Object.keys(result.answers).length - 1,
+  );
+
+  const candidate = buildCandidateQuestionPlanV9Prototype(result.answers, [result.event]);
+  assert.equal(candidate.visibleInteractionCount, Object.keys(candidate.activeAnswers).length - 1);
+  assert.ok(candidate.plan.routeLength <= 24);
+});
+
+test("sectors with a specialty selector require a concrete, other or unknown specialty in the same interaction", () => {
+  const missing = applyClassificationInteractionV9(restaurantContext, { sector: "food_hospitality" });
+  assert.deepEqual(missing, { ok: false, reason: "niche_required_for_sector" });
+
+  const other = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality",
+    niche: "other",
+  });
+  assert.equal(other.ok, true);
+  if (other.ok) assert.equal(other.answers.q2_niche_food_hospitality, "other");
+
+  const unknown = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality",
+    niche: "unknown",
+  });
+  assert.equal(unknown.ok, true);
+  if (unknown.ok) assert.equal(unknown.answers.q2_niche_food_hospitality, "unknown");
+});
+
+test("V9 rejects cross-sector and nonexistent specialty values instead of inferring a niche", () => {
+  assert.deepEqual(
+    applyClassificationInteractionV9(restaurantContext, {
+      sector: "food_hospitality",
+      niche: "dentist",
+    }),
+    { ok: false, reason: "invalid_niche" },
+  );
+  assert.deepEqual(
+    applyClassificationInteractionV9(restaurantContext, {
+      sector: "__not_a_sector__",
+    }),
+    { ok: false, reason: "invalid_sector" },
+  );
+  assert.deepEqual(
+    applyClassificationInteractionV9(restaurantContext, {
+      sector: "legal",
+      niche: "restaurant",
+    }),
+    { ok: false, reason: "niche_not_available_for_sector" },
+  );
+});
+
+test("editing sector atomically removes old niche and stale specialty answers", () => {
+  const existing: AnswersV2 = {
+    ...restaurantContext,
+    q2_sector: "food_hospitality",
+    q2_niche_food_hospitality: "restaurant",
+    q2_food_menu_visibility: "unclear",
+  };
+  const changed = applyClassificationInteractionV9(existing, {
+    sector: "b2b_services",
+    niche: "marketing_agency",
+  });
+  assert.equal(changed.ok, true);
+  if (!changed.ok) return;
+
+  assert.equal(changed.answers.q2_sector, "b2b_services");
+  assert.equal(changed.answers.q2_niche_b2b_services, "marketing_agency");
+  assert.equal(changed.answers.q2_niche_food_hospitality, undefined);
+  assert.equal(changed.answers.q2_food_menu_visibility, undefined);
+  assert.equal(changed.answers.q2_marketing_agency_scope_clarity, undefined);
+});
+
+test("classification event replay is deterministic and fails closed on tampered companion IDs", () => {
+  const first = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality",
+    niche: "restaurant",
+  });
+  assert.equal(first.ok, true);
+  if (!first.ok) return;
+
+  const second = applyClassificationInteractionV9(first.answers, {
+    sector: "b2b_services",
+    niche: "marketing_agency",
+  });
+  assert.equal(second.ok, true);
+  if (!second.ok) return;
+
+  const events: readonly ClassificationInteractionEventV9[] = [first.event, second.event];
+  assert.deepEqual(replayClassificationInteractionsV9(restaurantContext, events), second.answers);
+
+  const tampered: ClassificationInteractionEventV9 = {
+    ...second.event,
+    nicheQuestionId: "q2_niche_food_hospitality",
+  };
+  assert.equal(replayClassificationInteractionsV9(restaurantContext, [first.event, tampered]), null);
+});
+
+test("interaction budgeting can recover one visible slot while the public V8 planner ignores the seam", () => {
+  const bundled = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality",
+    niche: "restaurant",
+  });
+  assert.equal(bundled.ok, true);
+  if (!bundled.ok) return;
+
+  const raw = buildCandidateQuestionPlanFromBankV3(
+    { answers: bundled.answers },
+    QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2,
+    "utility_first",
+  );
+  const v9 = buildCandidateQuestionPlanV9Prototype(bundled.answers, [bundled.event]);
+  assert.equal(v9.visibleInteractionCount, Object.keys(v9.activeAnswers).length - 1);
+  assert.ok(v9.plan.routeLength <= raw.routeLength);
+  assert.ok(v9.plan.routeLength <= 24);
+
+  const publicDefault = buildCandidateQuestionPlanV3({ answers: restaurantContext });
+  const publicSpoofed = buildCandidateQuestionPlanV3({
+    answers: restaurantContext,
+    answeredInteractionCount: 0,
+  });
+  assert.deepEqual(publicSpoofed, publicDefault);
+  assert.equal(QUESTION_BANK_ID, "reviewed-evidence-v8");
+  assert.equal(SESSION_SCHEMA, 8);
+  assert.equal(SESSION_KEY, "vecidya.diagnostic.v3.candidate.session.8");
+});
