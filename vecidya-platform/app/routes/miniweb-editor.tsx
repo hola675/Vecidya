@@ -305,6 +305,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
       setMedia((current) => [...current, { ...result.asset!, createdAt: new Date(result.asset!.createdAt), publicUrl: `/api/organizations/${encodeURIComponent(data.activeOrganization.id)}/business-media/${encodeURIComponent(result.asset!.id)}` }]);
       if (typeof result.draftRevision === "number") setDraftRevision(result.draftRevision);
       form.reset();
+      await revalidate();
       setMessage({ kind: "success", text: "Medio guardado como borrador. Solo será visible después de publicar la MiniWeb." });
     } catch (error) {
       setMessage({ kind: "error", text: error instanceof Error ? error.message : "No se pudo subir el archivo." });
@@ -327,6 +328,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
       setMedia((current) => current.filter((item) => item.id !== asset.id));
       setOfferings((current) => current.map((item) => item.imageAssetId === asset.id ? { ...item, imageAssetId: null } : item));
       setDraftRevision(result.draftRevision);
+      await revalidate();
       setMessage({ kind: "success", text: "Medio retirado del borrador. La publicación actual no cambia hasta publicar de nuevo." });
     } catch (error) {
       setMessage({ kind: "error", text: error instanceof Error ? error.message : "No se pudo retirar el medio." });
