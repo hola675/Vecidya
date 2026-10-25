@@ -44,7 +44,12 @@ export type CandidateQuestionPlanV3 = {
   readonly trace: readonly CandidatePlannerTraceV3[];
   readonly routingIterations: number;
 };
-export type CandidateQuestionPlannerInputV3 = { readonly answers: AnswersV2; readonly budget?: RouteBudgetV1 };
+export type CandidateQuestionPlannerInputV3 = {
+  readonly answers: AnswersV2;
+  readonly budget?: RouteBudgetV1;
+  /** V9 prototype seam: visible interaction count may be lower than answer-key count for an atomic classification bundle. */
+  readonly answeredInteractionCount?: number;
+};
 /** Shadow-only experiment: never used by the public session or Worker. */
 export type CandidateShadowSelectionPolicyV1 = "baseline" | "utility_first";
 
@@ -112,8 +117,10 @@ function canProspectivelyResolveApplicability(question: QuestionDefinitionV2, di
 
 /** Candidate-only planner. Every invocation reconstructs the plan from raw answers. */
 /** @internal Test seam for equivalent bank-order determinism; production entry always supplies the frozen bank. */
-export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT_BUDGET }: CandidateQuestionPlannerInputV3, bank: readonly QuestionDefinitionV2[], policy: CandidateShadowSelectionPolicyV1 = "baseline"): CandidateQuestionPlanV3 {
-  const hardMax = Math.min(CANDIDATE_ROUTE_HARD_CAP_V3, Math.max(1, budget.hardMax, Object.keys(answers).length));
+export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT_BUDGET, answeredInteractionCount }: CandidateQuestionPlannerInputV3, bank: readonly QuestionDefinitionV2[], policy: CandidateShadowSelectionPolicyV1 = "baseline"): CandidateQuestionPlanV3 {
+  const rawAnswerCount = Object.keys(answers).length;
+  const interactionCount = Math.min(rawAnswerCount, Math.max(0, answeredInteractionCount ?? rawAnswerCount));
+  const hardMax = Math.min(CANDIDATE_ROUTE_HARD_CAP_V3, Math.max(1, budget.hardMax, interactionCount));
   const normalizedBudget: RouteBudgetV1 = { ...budget, hardMax, targetMax: Math.min(hardMax, budget.targetMax), targetMin: Math.min(hardMax, budget.targetMin), materialEvidenceReserve: Math.min(hardMax - 1, Math.max(0, budget.materialEvidenceReserve ?? 0)) };
   const resolution = resolveEligibleQuestionsV2(answers, bank);
   const activeAnswers = resolution.activeAnswers;
@@ -233,7 +240,7 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
     }
     return rr[rb] - rr[ra] || utility(b) - utility(a) || (qb.priority === "critical" ? 1 : 0) - (qa.priority === "critical" ? 1 : 0) || a.localeCompare(b);
   });
-  const alreadyAsked = Object.keys(activeAnswers).length;
+  const alreadyAsked = Math.min(Object.keys(activeAnswers).length, interactionCount);
   const remaining = Math.max(0, normalizedBudget.hardMax - alreadyAsked);
   const baseCeiling = Math.min(normalizedBudget.targetMax, normalizedBudget.hardMax - (normalizedBudget.materialEvidenceReserve ?? 0), ROUTE_BANDS.base);
   const baseSlots = Math.max(0, baseCeiling - alreadyAsked);
@@ -269,7 +276,7 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
   const lowDirectEvidenceDimensions = dimensions.filter((d) => d.applicability === "applicable" && d.confidence.direct <= 1).map((d) => d.id);
   const insufficientContextDimensions = dimensions.filter((d) => d.applicability === "insufficient_context").map((d) => d.id);
   const sufficient = unresolvedApplicableDimensions.length === 0 && insufficientContextDimensions.length === 0 && contradictions.every((c) => c.status !== "pending" || !c.confirmationQuestionId || !eligible.has(c.confirmationQuestionId));
-  const hardCapReached = Object.keys(activeAnswers).length >= normalizedBudget.hardMax;
+  const hardCapReached = alreadyAsked >= normalizedBudget.hardMax;
   const usefulUnselected = usefulIds.filter((id) => !selected.includes(id));
   const budgetBlocked = !hardCapReached && selected.length === 0 && usefulUnselected.length > 0;
   const terminalReason = selected.length > 0 || (hardCapReached && usefulIds.length > 0) ? "useful_questions_remaining" as const : budgetBlocked ? "budget_blocked" as const : "no_useful_questions" as const;
@@ -289,7 +296,7 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
   return {
     plannerIdentity: CANDIDATE_PLANNER_IDENTITY_V3, activeAnswers, context: resolution.context,
     contextResolution: Object.fromEntries(CONTEXT_FIELD_REFS.map((f) => [f, resolved(resolution.context, f) ? "resolved" : "unresolved"])) as Record<ContextFieldRef, "resolved" | "unresolved">,
-    eligibleQuestionIds: resolution.eligibleQuestionIds, selectedQuestionIds: selected, nextQuestionId: selected[0], routeLength: Object.keys(activeAnswers).length + selected.length,
+    eligibleQuestionIds: resolution.eligibleQuestionIds, selectedQuestionIds: selected, nextQuestionId: selected[0], routeLength: alreadyAsked + selected.length,
     budget: normalizedBudget, completion: { ready: hardCapReached || (selected.length === 0 && !budgetBlocked), hardCapReached, terminalReason: sufficiency.terminalReason }, evidenceSufficiency: sufficiency,
     trace: selectedTrace.map((entry) => ({ ...entry, selected: selected.includes(entry.questionId), ...(eligible.has(entry.questionId) && !selected.includes(entry.questionId) && !entry.skipReason ? { skipReason: hardCapReached ? "hard_cap" as const : "not_useful" as const } : {}) })), routingIterations: resolution.iterations,
   };
