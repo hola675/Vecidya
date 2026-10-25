@@ -113,9 +113,13 @@ export function countVisibleInteractionsV9(
 export function buildCandidateQuestionPlanV9Prototype(
   answers: AnswersV2,
   classificationEvents: readonly ClassificationInteractionEventV9[],
+  historicalInteractionCount?: number,
 ): { readonly plan: CandidateQuestionPlanV3; readonly visibleInteractionCount: number; readonly activeAnswers: AnswersV2 } {
   const activeAnswers = resolveEligibleQuestionsV2(answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2).activeAnswers;
-  const visibleInteractionCount = countVisibleInteractionsV9(activeAnswers, classificationEvents);
+  const visibleInteractionCount = Math.max(
+    countVisibleInteractionsV9(activeAnswers, classificationEvents),
+    Math.max(0, historicalInteractionCount ?? 0),
+  );
   const plan = buildCandidateQuestionPlanFromBankV3(
     { answers: activeAnswers, answeredInteractionCount: visibleInteractionCount },
     QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2,
