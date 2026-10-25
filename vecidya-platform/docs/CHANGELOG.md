@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-25 — APRENDE-EDITORIAL-04D — progresión y fuentes vigentes (PR dependiente pendiente)
+
+- Integra las tres guías huérfanas en itinerarios y añade relaciones al único artículo que dependía del fallback genérico de «Sigue aprendiendo».
+- Establece evidencia mínima de dos fuentes HTTPS distintas por guía; el catálogo actual suma 145 referencias.
+- Actualiza terminología y fuentes oficiales: Google Analytics diferencia eventos clave/conversiones publicitarias; OpenAI prompting/Data Controls usan destinos vigentes; ITU pasa a la portada estable del informe 2025 y SBA abandona el dominio legacy.
+- Añade contratos para evitar guías fuera de itinerarios, sin relaciones, con evidencia insuficiente o con los destinos obsoletos retirados. Sin cambios de DB, Auth, Diagnóstico, MiniWeb, GHL, precios o producción.
+
 ## 2026-10-25 — APRENDE-EDITORIAL-04C — lenguaje y comprensión (PR dependiente pendiente)
 
 - Revisa las 47 guías para traducir jerga prioritaria al lenguaje cotidiano sin añadir definiciones redundantes.
