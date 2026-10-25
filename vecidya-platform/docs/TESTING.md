@@ -1,5 +1,13 @@
 # Pruebas
 
+## DIAG-VISUAL-03 — resultado y entrada QA-03B (2026-10-25)
+
+`pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-visual-03-summary.test.ts tests/unit/diagnostic/qa03b-pro-rendered-summary.test.ts tests/unit/diagnostic/qa03b-funnel.test.ts tests/unit/diagnostic/qa03b-worker-replay.test.ts tests/unit/diagnostic/identified-report-contracts.test.ts`: **20/20 PASS**. Se verifican valor general/área 0, puntuación 37, ausencia de score como «Sin lectura» sin barra, estado preliminar, No evaluado/No aplica, y omisión de oportunidad/acción opcionales.
+
+`BASE_URL=http://127.0.0.1:5173 pnpm exec node tests/e2e/diagnostic-v3-qa03b-check.mjs`: **6/6 recorridos sintéticos PASS** en Worker Cloudflare y D1 locales migradas `0000–0028`; comprueba navegación, reanudación, conflicto, replay Worker, ocho ilustraciones decodificadas, layout sin overflow, reduced motion, resumen imprimible e informe identificado/PDF. La aserción de reduced motion admite serialización computada de hasta 10 µs (Edge expresa el objetivo CSS cero como `1e-05s`). Las capturas del runner quedan como artefactos locales ignorados en `tmp/diag-v3-qa-03b/browser`.
+
+`diagnostic-pro-19-responsive-check.mjs` **NO PASS en este corte**: el runner espera un estado vacío borrando una clave V3 histórica, pero QA-03B activa usa `vecidya.diagnostic.v3.candidate.session.8`; reaparece el diálogo de reanudación y no hay `.df-option__input`. No se declara certificación responsive multi-viewport desde ese runner. Contraste de tonos principales de texto medido sobre blanco: mínimo 4.97:1. Sin lector de pantalla, zoom real 200 %, validación de PDF/UA, D1 remota ni publicación.
+
 ## DEP-REFRESH-20261024 — actualización compatible de dependencias (2026-10-24)
 
 **RAN:** Node `26.12.1`, pnpm `11.21.0`, registry `https://registry.npmjs.org/`. `pnpm update` actualizó las versiones dentro de los rangos semver existentes; `pnpm install --frozen-lockfile` completó con `Done` y aplicó el patch PDFKit `0.20.2`. `pnpm run typecheck` y `pnpm run build`: **PASS**. El build conserva avisos por secretos opcionales ausentes y imports dinámicos inefectivos; no impidieron compilar.
