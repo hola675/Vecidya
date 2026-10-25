@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-25 — APRENDE-EDITORIAL-04F — migración y correo profesional revisados
+
+- Revisión editorial individual de las dos guías técnicas nuevas de 04B.
+- Se validan ICANN, MDN e IETF; correo mantiene RFC 9989 para DMARC vigente y evita valores específicos de proveedor.
+- Ambas guías dejan `editorialDraft`; catálogo: 48 guías, 37 revisadas y 11 borradores.
+- Sin cambios de DB, Auth, Diagnóstico, MiniWeb, GHL, precios o producción.
+
 ## 2026-10-25 — APRENDE-EDITORIAL-04E — cinco guías de Operaciones revisadas
 
 - Revisión editorial individual de tareas/responsables, inventario, capacitación digital, ERP y proyectos piloto.
