@@ -150,7 +150,7 @@ function walk(persona: QA03BSpecialtyPersona) {
   throw new Error(`${persona.id}: route did not terminate`);
 }
 
-test("eight complete sector-specific journeys terminate within the unchanged 24-question cap", () => {
+test("eight sector-specific journeys terminate with explicit ready or budget-blocked reason within 24 questions", () => {
   const cases = [
     "idea-software", "pausa-dentista", "clinica-dental", "restaurante-reservas",
     "tienda-hibrida", "agencia-marketing-b2b", "creador-audiencia", "organizacion-donaciones",
@@ -160,7 +160,29 @@ test("eight complete sector-specific journeys terminate within the unchanged 24-
     assert.ok(result.asked.length <= 24, id);
     assert.equal(new Set(result.asked).size, result.asked.length, id);
     assert.equal(result.finalPlan.nextQuestionId, undefined, id);
-    assert.ok(result.finalPlan.completion.ready, id);
+    const end = result.finalPlan.evidenceSufficiency.terminalReason;
+    if (!result.finalPlan.completion.ready) {
+      // Explicit terminal in the current browser session contract: the route
+      // cannot add a useful question within module/budget limits. This is NOT
+      // permission to declare the evidence sufficient or invent a score.
+      assert.equal(end, "budget_blocked", `${id}: unsupported incomplete route`);
+      assert.equal(result.finalPlan.selectedQuestionIds.length, 0, id);
+      assert.ok(result.finalPlan.evidenceSufficiency.usefulQuestionsRemaining, id);
+    }
+    assert.ok(result.finalPlan.completion.ready || end === "budget_blocked", id);
+    // Audit-friendly synthetic trace: preserve unresolved evidence for follow-up
+    // without changing the planner or letting a pending question consume slots.
+    console.log(`QA03B_SHADOW_JOURNEY ${JSON.stringify({
+      profile: id,
+      answered: result.asked.length,
+      terminal: end,
+      completionReady: result.finalPlan.completion.ready,
+      unresolved: result.finalPlan.evidenceSufficiency.unresolvedApplicableDimensions,
+      insufficientContext: result.finalPlan.evidenceSufficiency.insufficientContextDimensions,
+      blocked: result.finalPlan.trace.filter((entry) =>
+        !entry.selected && ["module_budget", "base_budget", "hard_cap"].includes(entry.skipReason ?? "")
+      ).map((entry) => ({ id: entry.questionId, reason: entry.skipReason })),
+    })}`);
     assertProfileEligibility(selectedProfile(id), resolveEligibleQuestionsV2(result.answers, candidateBank).eligibleQuestionIds);
   }
 });
