@@ -4,7 +4,7 @@
 
 **TEST versionado / RAN pendiente en HEAD final.** Nuevos contratos: las 47 guías deben aparecer en al menos un itinerario, cada guía debe declarar al menos una continuación relacionada y mantener al menos dos fuentes HTTPS distintas. Se verifican además la terminología actual de Analytics (evento clave / conversión publicitaria) y los destinos renovados de OpenAI, ITU y SBA, rechazando los patrones legacy retirados.
 
-Auditoría estática: **47 artículos, 47 cubiertos por itinerarios, 145 fuentes, 0 incidencias** en cobertura, duplicados de fuente, relaciones o destinos obsoletos detectados. Gate pendiente: `Aprende quality` sobre el HEAD final. Sin D1 remota, E2E visual ni deploy.
+Auditoría estática: **47 artículos, 47 cubiertos por itinerarios, 145 fuentes, 0 incidencias** en cobertura, duplicados de fuente, relaciones o destinos obsoletos detectados. **RAN:** `Aprende quality` run `40245041140` sobre `f69f0c7bf66331858ea22299150ee4f1148de68e` PASS: typecheck, build e integridad Aprende. El PR #126 tiene base 04C y no dispara el gate general dirigido a `main`; ese gate queda requerido al integrar la cadena. Sin D1 remota, E2E visual ni deploy.
 
 ## APRENDE-EDITORIAL-04C — comprensión y redundancia editorial (2026-10-25)
 
