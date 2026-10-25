@@ -104,3 +104,13 @@ test("la guía de secciones y el renderizador rechazan contenido activo pero inc
   assert.deepEqual(getRenderableMiniWebModules(config, profile, [], [blankOffering], [blankFaq], []).map((module) => module.type), ["hero"]);
   assert.deepEqual(getRenderableMiniWebModules(config, profile, [], [completeOffering], [completeFaq], []).map((module) => module.type), ["hero", "services", "faq"]);
 });
+
+test("la portada no sustituye la galería y los productos requieren información completa", () => {
+  const cover = { id: "cover-1", mediaType: "image" as const, purpose: "cover" as const, contentType: "image/webp", altText: "Portada", publicUrl: "/cover.webp" };
+  const gallery = { ...cover, id: "gallery-1", purpose: "gallery" as const };
+  assert.equal(hasMiniWebModuleContent("gallery", profile, [], [], [], [cover]), false);
+  assert.equal(hasMiniWebModuleContent("gallery", profile, [], [], [], [cover, gallery]), true);
+  const incompleteProduct = { kind: "product" as const, isActive: true, title: "Producto", description: "  ", priceLabel: null, sortOrder: 0 };
+  assert.equal(hasMiniWebModuleContent("products", profile, [], [incompleteProduct], [], []), false);
+  assert.equal(hasMiniWebModuleContent("products", profile, [], [{ ...incompleteProduct, description: "Descripción" }], [], []), true);
+});
