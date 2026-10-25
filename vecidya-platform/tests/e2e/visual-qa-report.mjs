@@ -3,7 +3,7 @@ import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 const root = ".playwright-mcp/visual-qa";
 const current = JSON.parse(readFileSync(`${root}/current/manifest.json`, "utf8"));
 const beforeLegal = JSON.parse(readFileSync(`${root}/before-legal/public-manifest.json`, "utf8"));
-const beforeDashboardFiles = readdirSync(`${root}/before-miniweb/dashboard`).filter((file) => file.endsWith(".png"));
+const beforeDashboardFiles = readdirSync(`${root}/before-miniweb/dashboard`).filter((file) => file.endsWith(".png") && !file.includes("overflow-debug"));
 const routes = [...new Set(current.captures.map(({ route }) => route))];
 const widths = current.viewportWidths;
 const routeOptions = routes.map((route) => `<option>${route}</option>`).join("");
