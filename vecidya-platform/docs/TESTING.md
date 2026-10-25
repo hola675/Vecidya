@@ -1,5 +1,14 @@
 # Pruebas
 
+## LEGAL-TRANSPARENCY-102 — regresiones y límites del PR #102
+
+**TEST en repositorio:** `tests/unit/cookie-preferences.test.ts` comprueba rechazo por defecto, selección granular, persistencia, versión/timestamp inválidos y fallo del almacenamiento; `tests/unit/diagnostic/privacy-copy.test.ts` conserva el contrato anónimo de QA-03B sin promesas de funciones retiradas. `tests/e2e/cookie-consent-check.mjs` comprueba primera visita sin decisiones, ausencia de hosts de tracking conocidos, rechazo, aceptación granular, rehidratación, cambio entre pestañas y viewport 1366/390. El detector de hosts se corrigió para usar puntos literales y añadió pruebas de autocomprobación; **E2E todavía no ejecutado para esta revisión**.
+
+**CI del PR:** consultar el run asociado al último SHA del PR #102; no atribuir resultados de otras ramas. La corrida `40144649252` sobre `b9bfb9e` falló 1690/1691 en `legal-pages.test.ts` porque la nueva copy no conservaba dos afirmaciones verificadas del flujo (vigencia de 14 días sin actividad y limitaciones de recuperación). Se corrigieron ambas, manteniendo el texto más preciso de QA-03B. Pendiente el run completo del corte final de integración.
+
+**Gates adicionales no ejecutados:** E2E local real del banner sobre Worker Cloudflare con D1 aislada, almacenamiento bloqueado, lector de pantalla, inventario `Set-Cookie`/scripts/terceros, revisión legal de datos corporativos y cláusulas contractuales. La auditoría estática no acredita cumplimiento integral de normativa ni publicación de este cambio.
+
+
 ## UX-MINIWEB-20261024 — integración de PR #105 (2026-10-24)
 
 **RAN (CI sobre `d5a8e92977ed0cb372ca49839a732be20166e03f`):** run `40151659894`, `pnpm typecheck` PASS, `pnpm build` PASS, regresiones focales de Diagnóstico/Aprende **16/16 PASS** y `pnpm test:unit` **1696/1696 PASS**, sin errores. Este run se ejecutó en la integración temporal del PR con `main`, no es una prueba de despliegue.
