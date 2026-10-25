@@ -5,7 +5,7 @@
 - Separa dos decisiones que estaban mezcladas: elegir/renovar proveedor y ejecutar una migración.
 - La guía histórica conserva su URL y aprobación editorial, pero reduce el alcance a comparación, control, renovación y salida; una guía nueva en borrador cubre inventario, DNS, web, correo, pruebas y cancelación segura.
 - Se condensan seis guías madre para eliminar introducciones y detalle duplicado: Presencia 3291→1420, Automatizaciones 2707→1146, Dominio/hosting 2413→1179, primera campaña 2346→1120, CRM 2142→1075 e IA general 1743→982 palabras, manteniendo ejemplos, conceptos y fuentes esenciales.
-- Se añade un guard de pruebas para impedir que esas seis guías vuelvan a crecer por encima de 10 secciones o 1800 palabras serializadas.
+- Se añade un guard de pruebas para impedir que las seis guías madre vuelvan a crecer por encima de 10 secciones/1800 palabras serializadas y otro para las guías especializadas simplificadas (8 secciones/1500 palabras). HTTPS/TLS baja 1331→1128 palabras, Analítica 1346→984, supervisión de automatizaciones 1578→968, piloto IA 1407→904 y correo profesional 1528→1070.
 - Se separa además el correo profesional del mapa general DNS/HTTPS/correo: el mapa queda introductorio y una guía nueva explica MX, TXT, SPF, DKIM y DMARC con RFC 9989 vigente. El catálogo queda en 48 guías y 9 itinerarios. Sin cambios de DB, Auth, Diagnóstico, MiniWeb, GHL, precios o producción.
 
 ## 2026-10-25 — APRENDE-EDITORIAL-04A — criterio digital y claridad pedagógica (PR pendiente)
