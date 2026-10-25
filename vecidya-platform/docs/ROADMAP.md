@@ -48,7 +48,7 @@
 
 **Gate 04A:** 46 slugs únicos; 9 itinerarios válidos; todas las guías con ejemplo hipotético estructurado y accionable; nuevas fuentes institucionales verificadas; búsqueda de `/aprende` sobre contenido interno; typecheck/build/diff-check y suites focales PASS en el HEAD candidato. Las dos guías nuevas deben permanecer en borrador hasta revisión editorial explícita.
 
-**Siguiente checkpoint 04B, no iniciado:** lectura semántica uno por uno de los 46 artículos para simplificar ejemplos, analogías y términos todavía demasiado técnicos, manteniendo hechos, fuentes, slugs y enlaces. Separar un artículo solo cuando contenga objetivos educativos distintos; no ampliar el catálogo por volumen mientras existan guías pendientes de revisión.
+**Checkpoint 04B iniciado:** auditoría semántica de las 46 guías de 04A detectó cinco piezas de 2.200–3.300 palabras. La primera separación justificada es proveedor: elegir/renovar y migrar son objetivos distintos. La guía histórica conserva su slug y se enfoca en selección; una guía nueva explica la migración paso a paso, dejando el catálogo en 47 guías. Las guías madre de presencia, automatización y dominio/hosting no se dividirán por volumen mientras ya existan piezas especializadas: se simplificarán y enlazarán en pases posteriores para evitar duplicados.
 
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
