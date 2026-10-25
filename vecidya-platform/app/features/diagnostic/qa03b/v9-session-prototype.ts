@@ -11,6 +11,7 @@ import {
 } from "./v9-classification-bundle";
 
 export const QA03B_V9_SESSION_SCHEMA = 9 as const;
+export const QA03B_V9_ANSWER_SCHEMA_ID = "qbv2-answers-v7-specialty-interactions" as const;
 export const QA03B_V9_SESSION_KEY = "vecidya.diagnostic.v3.candidate.session.9" as const;
 export const QA03B_V9_QUESTION_BANK_ID = "qa03b-specialty-branches-v9-candidate-77" as const;
 export const QA03B_V9_ENGINE_ID = "qa03b-v9-utility-first-interactions-v1" as const;
