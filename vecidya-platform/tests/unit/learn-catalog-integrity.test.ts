@@ -161,6 +161,13 @@ test("Las aperturas educativas no reutilizan la plantilla genérica anterior", (
   }
 });
 
+test("Los textos alternativos explican la imagen y evitan etiquetas genéricas", () => {
+  for (const article of learnArticles) {
+    assert.ok(article.imageAlt.trim().split(/\s+/u).length >= 7, `Texto alternativo demasiado breve: ${article.slug}`);
+    assert.doesNotMatch(article.imageAlt, /ilustraci[oó]n conceptual|esquema educativo|tema de esta gu[ií]a|diagrama ilustrativo/i, article.slug);
+  }
+});
+
 test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
   const requirements = [
     ["publicidad-digital-como-preparar-una-primera-campana", [/Google Ads|Meta Ads/i, /página de destino/i, /indicadores/i]],
