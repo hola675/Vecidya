@@ -195,7 +195,7 @@ export const learnArticles: LearnArticle[] = [
     excerpt: "Aprende a preparar información confiable, detectar respuestas incorrectas y evaluar una prueba limitada.",
     enPocasPalabras: ["Usa información revisada y evita compartir datos sensibles.","Comprueba respuestas inventadas y errores con una persona responsable.","Evalúa una prueba pequeña antes de ampliar su uso."],
     image: "/assets/learn/diagram-ai.svg",
-    imageAlt: "Ilustración conceptual del tema de esta guía",
+    imageAlt: "Una consulta produce un borrador de IA que una persona contrasta con una fuente aprobada antes de responder o transferir.",
     relatedSlugs: ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio"],
     editorialDraft: false,
     cta: { label: "Revisar mis necesidades", to: "/diagnostico", copy: "Identifica primero el problema y comprueba qué necesitas antes de contratar herramientas." },
@@ -569,7 +569,7 @@ export const learnArticles: LearnArticle[] = [
     excerpt: "Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.",
     enPocasPalabras: ["Comprueba que horarios, servicios y contacto coincidan entre canales.","No inventes reseñas ni afirmaciones para ganar confianza.","Revisa accesibilidad, privacidad y seguridad antes de ampliar tu presencia."],
     image: "/assets/learn/diagram-presence-digital.svg",
-    imageAlt: "Esquema educativo de servicios y canales digitales",
+    imageAlt: "Sitio web, perfil de empresa y red social muestran de forma coherente la oferta, la zona de atención y el contacto.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
     editorialDraft: false,
     cta: { label: "Revisar mi situación", to: "/diagnostico", copy: "Comprueba qué necesita tu negocio antes de contratar o publicar." },
@@ -812,7 +812,7 @@ export const learnArticles: LearnArticle[] = [
     excerpt: "Una automatización útil también necesita controles para duplicados, fallos, privacidad y supervisión humana.",
     enPocasPalabras: ["Prueba los casos normales y los errores antes de activar.","Define quién interviene cuando el proceso falla.","Conserva una forma segura de detener y revisar la automatización."],
     image: "/assets/learn/diagram-automation.svg",
-    imageAlt: "Ilustración conceptual del tema de esta guía",
+    imageAlt: "Un evento pasa por una condición; la acción se ejecuta si corresponde y los datos dudosos o errores van a revisión humana.",
     relatedSlugs: ["automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio"],
     editorialDraft: false,
     cta: { label: "Revisar mis necesidades", to: "/diagnostico", copy: "Identifica primero el problema y comprueba qué necesitas antes de contratar herramientas." },
@@ -1229,7 +1229,7 @@ export const learnArticles: LearnArticle[] = [
     excerpt: "Distingue los registros DNS, el alojamiento, el certificado HTTPS y el correo profesional sin confundir sus funciones.",
     enPocasPalabras: ["El DNS ayuda a localizar servicios asociados a un dominio.","HTTPS protege la conexión, pero no garantiza que el negocio sea legítimo.","El correo y la web pueden usar proveedores y configuraciones diferentes."],
     image: "/assets/learn/diagram-domain-dns-hosting.svg",
-    imageAlt: "Esquema educativo de servicios y canales digitales",
+    imageAlt: "Un navegador consulta DNS cuando lo necesita, obtiene la dirección del servidor y después solicita la página web.",
     relatedSlugs: ["dominio-hosting-sitio-web-como-funcionan"],
     editorialDraft: false,
     cta: { label: "Revisar mi situación", to: "/diagnostico", copy: "Comprueba qué necesita tu negocio antes de contratar o publicar." },
@@ -2062,7 +2062,7 @@ export const learnArticles: LearnArticle[] = [
       "Empieza con una mejora pequeña que puedas mantener."
     ],
     "image": "/assets/learn/diagram-como-empezar.svg",
-    "imageAlt": "Problema real; Prueba pequeña; Mejora útil",
+    "imageAlt": "Tres tarjetas muestran una secuencia: ordenar el trabajo, elegir una tarea y comprobar si la mejora funciona.",
     "relatedSlugs": [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
       "dominio-hosting-sitio-web-como-funcionan"
@@ -2247,7 +2247,7 @@ export const learnArticles: LearnArticle[] = [
       "Protege el equipo y prepara una alternativa cuando se vaya internet."
     ],
     "image": "/assets/learn/diagram-que-necesita.svg",
-    "imageAlt": "Tu tarea; Equipo suficiente; Plan alternativo",
+    "imageAlt": "Tres tarjetas muestran una secuencia: definir la tarea, usar equipo suficiente y preparar una alternativa si falla la conexión.",
     "relatedSlugs": [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
       "dominio-hosting-sitio-web-como-funcionan"
@@ -2432,7 +2432,7 @@ export const learnArticles: LearnArticle[] = [
       "No compartas contraseñas: da acceso a cada persona cuando el servicio lo permita."
     ],
     "image": "/assets/learn/diagram-correo-para.svg",
-    "imageAlt": "Cuenta propia; Mensajes claros; Acceso seguro",
+    "imageAlt": "Tres tarjetas muestran una secuencia: recibir el mensaje, conservar su contexto y responder con claridad.",
     "relatedSlugs": [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
       "como-proteger-cuentas-contrasenas-estafas-negocio"
@@ -2617,7 +2617,7 @@ export const learnArticles: LearnArticle[] = [
       "Si un mensaje te mete prisa, verifica por el canal oficial antes de actuar."
     ],
     "image": "/assets/learn/diagram-como-proteger.svg",
-    "imageAlt": "Contraseña única; Verificación adicional; Comprobar antes",
+    "imageAlt": "Tres tarjetas muestran una secuencia: usar una clave diferente, añadir un segundo control y verificar avisos sospechosos.",
     "relatedSlugs": [
       "correo-para-mi-negocio-como-usarlo-sin-perder-mensajes",
       "como-hacer-copias-de-seguridad-de-tu-negocio"
@@ -2802,7 +2802,7 @@ export const learnArticles: LearnArticle[] = [
       "Prueba a recuperar un archivo: una copia que nunca se comprobó podría fallar."
     ],
     "image": "/assets/learn/diagram-como-hacer.svg",
-    "imageAlt": "Organizar; Guardar copia; Probar recuperación",
+    "imageAlt": "Tres tarjetas muestran una secuencia: organizar archivos, guardar otra copia y probar que la recuperación funciona.",
     "relatedSlugs": [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
       "como-proteger-cuentas-contrasenas-estafas-negocio"
@@ -2987,7 +2987,7 @@ export const learnArticles: LearnArticle[] = [
       "Una tabla ordenada ayuda a revisar pendientes, pero no sustituye una contabilidad profesional cuando hace falta."
     ],
     "image": "/assets/learn/diagram-hojas-de.svg",
-    "imageAlt": "Filas; Columnas; Revisión semanal",
+    "imageAlt": "Tres tarjetas muestran una secuencia: registrar datos, revisar pendientes y mantener la tabla actualizada.",
     "relatedSlugs": [
       "organizar-consultas-mensajes-llamadas-formularios",
       "como-hacer-copias-de-seguridad-de-tu-negocio"
@@ -3173,7 +3173,7 @@ export const learnArticles: LearnArticle[] = [
       "Escoge canales que puedas mantener, no los que estén de moda."
     ],
     "image": "/assets/learn/diagram-redes-sociales.svg",
-    "imageAlt": "Redes; Web sencilla; Información clara",
+    "imageAlt": "Tres tarjetas muestran una secuencia: mostrar novedades, reunir información estable y facilitar una forma de contacto.",
     "relatedSlugs": [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
       "dominio-hosting-sitio-web-como-funcionan"
@@ -3358,7 +3358,7 @@ export const learnArticles: LearnArticle[] = [
       "Pide a alguien que no te conozca que te diga qué entendió."
     ],
     "image": "/assets/learn/diagram-como-explicar.svg",
-    "imageAlt": "Servicio; Público; Siguiente paso",
+    "imageAlt": "Tres tarjetas muestran una secuencia: decir qué haces, explicar para quién y ofrecer un siguiente paso.",
     "relatedSlugs": [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
       "redes-sociales-o-pagina-web-que-necesita-tu-negocio"
@@ -3543,7 +3543,7 @@ export const learnArticles: LearnArticle[] = [
       "Termina con un paso claro y respeta si la persona no continúa."
     ],
     "image": "/assets/learn/diagram-como-responder.svg",
-    "imageAlt": "Escuchar; Responder; Acordar",
+    "imageAlt": "Tres tarjetas muestran una secuencia: escuchar la consulta, responder con claridad y acordar qué ocurrirá después.",
     "relatedSlugs": [
       "organizar-consultas-mensajes-llamadas-formularios",
       "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"
@@ -3728,7 +3728,7 @@ export const learnArticles: LearnArticle[] = [
       "Incluye un texto claro: qué muestras, para quién sirve y qué se puede hacer después."
     ],
     "image": "/assets/learn/diagram-fotos-y.svg",
-    "imageAlt": "Pregunta real; Foto clara; Mensaje útil",
+    "imageAlt": "Tres tarjetas muestran una secuencia: enseñar algo real, explicar el servicio y ofrecer una forma de contacto.",
     "relatedSlugs": [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
       "como-explicar-lo-que-vendes-para-que-te-entiendan"
@@ -3913,7 +3913,7 @@ export const learnArticles: LearnArticle[] = [
       "Lleva un registro de pedidos y explica cómo resolver cambios o problemas."
     ],
     "image": "/assets/learn/diagram-como-vender.svg",
-    "imageAlt": "Pedido claro; Cobro seguro; Entrega real",
+    "imageAlt": "Tres tarjetas muestran una secuencia: confirmar el pedido, cobrar con cuidado y cumplir la entrega acordada.",
     "relatedSlugs": [
       "hojas-de-calculo-para-organizar-un-negocio-pequeno",
       "como-responder-la-primera-consulta-de-un-cliente"
@@ -4098,7 +4098,7 @@ export const learnArticles: LearnArticle[] = [
       "Responder una consulta no equivale a aceptar publicidad ni campañas."
     ],
     "image": "/assets/learn/diagram-datos-de.svg",
-    "imageAlt": "Dato necesario; Uso claro; Acceso limitado",
+    "imageAlt": "Tres tarjetas muestran una secuencia: pedir lo mínimo, explicar para qué se usa y proteger los datos.",
     "relatedSlugs": [
       "organizar-consultas-mensajes-llamadas-formularios",
       "como-proteger-cuentas-contrasenas-estafas-negocio"
@@ -4283,7 +4283,7 @@ export const learnArticles: LearnArticle[] = [
       "Responde las críticas con calma, sin revelar información privada."
     ],
     "image": "/assets/learn/diagram-como-pedir.svg",
-    "imageAlt": "Opinión real; Respuesta respetuosa; Confianza",
+    "imageAlt": "Tres tarjetas muestran una secuencia: invitar a opinar, aceptar críticas y usar lo aprendido para mejorar.",
     "relatedSlugs": [
       "perfil-empresa-google-completar-y-mantener-actualizado",
       "datos-de-clientes-que-puedes-pedir-y-como-protegerlos"
