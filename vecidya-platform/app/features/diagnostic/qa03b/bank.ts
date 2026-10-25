@@ -148,7 +148,7 @@ function evolve(question: QuestionDefinitionV2): QuestionDefinitionV2 {
   return next;
 }
 
-export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefinitionV2[] = [
+const QA03B_BASE_QUESTIONS: readonly QuestionDefinitionV2[] = [
   ...historicalBank.map(evolve),
   {
     id: "q2_measurement_rate_estimate", version: 1, module: "measurement", type: "single", routingRole: "adaptive",
@@ -266,4 +266,7 @@ export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefiniti
       }],
     },
   },
-].map(applyQA03BEditorialCopy);
+];
+
+export const REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3: readonly QuestionDefinitionV2[] =
+  QA03B_BASE_QUESTIONS.map(applyQA03BEditorialCopy);
