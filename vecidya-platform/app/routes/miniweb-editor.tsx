@@ -19,9 +19,29 @@ import { Button, Card } from "../components/ui";
 import { ClientAreaShell } from "../components/client-area-shell";
 import { MINIWEB_MODULE_REGISTRY, MINIWEB_TEMPLATE_REGISTRY, type MiniWebConfiguration, type MiniWebModuleType } from "../features/miniweb/registry";
 import { getMiniWebPublicationState, toMiniWebPublicProfile } from "../features/miniweb/public-model";
+import { hasMiniWebModuleContent } from "../features/miniweb/render";
 import { MAX_BUSINESS_FAQ_ITEMS, MAX_BUSINESS_OFFERINGS, type BusinessFaqItem, type BusinessOffering } from "../features/miniweb/content";
 
 import type { Route } from "./+types/miniweb-editor";
+
+type ModuleEditingDestination = "business" | "content" | null;
+
+const moduleEditingGuide: Record<MiniWebModuleType, { source: string; missing: string; destination: ModuleEditingDestination }> = {
+  hero: { source: "Mi negocio · identidad", missing: "Añade un nombre público para tu negocio.", destination: "business" },
+  about: { source: "Mi negocio · descripción", missing: "Completa la descripción detallada de tu negocio.", destination: "business" },
+  contact: { source: "Mi negocio · contacto", missing: "Añade al menos un canal de contacto público válido.", destination: "business" },
+  hours: { source: "Mi negocio · horarios", missing: "Configura los horarios de atención, incluso si algún día está cerrado.", destination: "business" },
+  services: { source: "MiniWeb · servicios", missing: "Añade y activa un servicio con título y descripción.", destination: "content" },
+  gallery: { source: "MiniWeb · archivos", missing: "Sube al menos una imagen o un vídeo con el uso Galería.", destination: "content" },
+  location: { source: "Mi negocio · ubicación", missing: "Indica la ciudad, el país, la categoría o la modalidad de atención.", destination: "business" },
+  products: { source: "MiniWeb · productos", missing: "Añade y activa un producto con título y descripción.", destination: "content" },
+  faq: { source: "MiniWeb · preguntas", missing: "Añade y activa una pregunta con su respuesta.", destination: "content" },
+  articles: { source: "Funcionalidad futura", missing: "Los artículos todavía no están disponibles.", destination: null },
+  team: { source: "Funcionalidad futura", missing: "Los perfiles de equipo todavía no están disponibles.", destination: null },
+  certifications: { source: "Funcionalidad futura", missing: "Las certificaciones todavía no están disponibles.", destination: null },
+  testimonials: { source: "Funcionalidad futura", missing: "Los testimonios todavía no están disponibles.", destination: null },
+};
+
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -240,6 +260,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
 
   const template = MINIWEB_TEMPLATE_REGISTRY[configuration.templateKey];
   const profile = data.profile ?? emptyPreviewProfile();
+  const readyModuleCount = orderedModules.filter((module) => module.enabled && hasMiniWebModuleContent(module.type, profile, data.hours, offerings, faqs, media)).length;
+  const enabledModuleCount = orderedModules.filter((module) => module.enabled).length;
   const publicStatusLabel = data.profileStatus === "suspended"
     ? "Suspendido"
     : data.profileStatus === "published" ? "Publicado" : "Aún sin publicar";
@@ -328,7 +350,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
             <Card aria-labelledby="miniweb-sections-title" className="miniweb-editor__sections-card" id="miniweb-sections">
               <div className="miniweb-editor__section-heading">
                 <div><p className="eyebrow">2 · ESTRUCTURA</p><h2 id="miniweb-sections-title">Secciones</h2></div>
-                <span className="miniweb-editor__count">{configuration.modules.filter((module) => module.enabled).length} activas</span>
+                <span className="miniweb-editor__count">{readyModuleCount} listas de {enabledModuleCount} activas</span>
               </div>
               <p className="miniweb-editor__note">Activa solo lo que necesitas. Una sección sin información suficiente no aparece en la página pública.</p>
               <p className="miniweb-editor__note">Los datos generales se actualizan en <Link to="/app/business-profile">Mi negocio</Link>; los servicios, productos, preguntas y medios se completan en el paso Contenido.</p>
@@ -336,14 +358,23 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 {orderedModules.map((module, position) => {
                   const type = module.type;
                   const definition = MINIWEB_MODULE_REGISTRY[type];
+                  const ready = hasMiniWebModuleContent(type, profile, data.hours, offerings, faqs, media);
+                  const guidance = moduleEditingGuide[type];
                   return (
                     <li className="miniweb-module-list__item" data-module-type={type} key={type}>
                       <div className="miniweb-module-list__copy">
                         <div className="miniweb-module-list__title">
                           <strong>{definition.label}</strong>
                           {definition.required ? <span className="badge">Requerida</span> : null}
+                          <span className={`miniweb-module-status miniweb-module-status--${module.enabled ? ready ? "ready" : "missing" : "off"}`}>
+                            {module.enabled ? ready ? "Lista para mostrar" : "Falta contenido" : ready ? "Disponible" : "Inactiva"}
+                          </span>
                         </div>
                         <p>{definition.description}</p>
+                        <p className="miniweb-module-list__source">{guidance.source}</p>
+                        {!ready ? <p className="miniweb-module-list__help">{guidance.missing}</p> : null}
+                        {!ready && guidance.destination === "business" ? <Link className="miniweb-module-list__action" to="/app/business-profile">Completar en Mi negocio</Link> : null}
+                        {!ready && guidance.destination === "content" ? <button className="miniweb-module-list__action" onClick={() => goToStep(2)} type="button">Completar contenido</button> : null}
                       </div>
                       <label className="miniweb-module-toggle">
                         <span>{module.enabled ? "Activa" : "Inactiva"}</span>
