@@ -12,6 +12,14 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 **RAN en GitHub Actions:** sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`, workflow `Aprende quality` run `40242263335` PASS (typecheck, build e integridad Aprende) y `Main integration quality` run `40242263275` PASS: typecheck, build, regresión Diagnóstico/Aprende y **1721/1721 unitarias**. La revisión estática de los 12 archivos modificados quedó sin marcadores de conflicto ni whitespace final. Fuentes nuevas verificadas contra OCDE 2026, NIST CSF 2.0, CISA y W3C. No cambia DB, Auth, Diagnóstico, MiniWeb, GHL, licencias, precios ni producción.
 
+## APRENDE-EDITORIAL-04D — progresión y evidencia (2026-10-25)
+
+**CODE/TEST versionado en `feat/aprende-editorial-04d`, dependiente de 04C; sin merge ni deploy.** Se revisa la progresión del catálogo y la vigencia de referencias. Las 47 guías quedan cubiertas por los 9 itinerarios: CRM y organización de consultas se incorporan a «Atiende, vende y genera confianza», y borradores con IA a «Mejora sin complicarte». La guía de CRM, única sin `relatedSlugs`, queda conectada a organización de consultas y primera respuesta; ya no depende del fallback genérico de la interfaz.
+
+La auditoría de evidencia registra **145 fuentes** y exige al menos dos URLs HTTPS distintas por guía. Se actualizan referencias verificadas: Google Analytics adopta la terminología actual «evento clave» y diferencia «conversión» para medición de campañas; OpenAI prompting pasa a `developers.openai.com` y Data Controls al artículo vigente de ChatGPT; ITU usa la portada estable de Global Connectivity Report 2025; SBA deja el dominio `legacy.sba.gov` por su página vigente de gestión empresarial. Los scopes conservan los límites de proveedor/jurisdicción.
+
+**Auditoría estática 04D:** 47 artículos, 47 cubiertos por itinerarios, 145 fuentes, todas las guías con ≥2 fuentes distintas y ≥1 continuación relacionada, cero destinos obsoletos de los patrones retirados y terminología de Analytics reconciliada. Se añaden contratos unitarios para cobertura de itinerarios, fuentes mínimas, relaciones editoriales y referencias renovadas. CI pendiente sobre HEAD final.
+
 ## APRENDE-EDITORIAL-04C — lenguaje comprensible y función editorial (2026-10-25)
 
 **CODE/TEST versionado en `feat/aprende-editorial-04c`, dependiente de 04B; sin merge ni deploy.** Se auditan las **47 guías** después de la desmonolitización. El pase corrige jerga que aparecía sin traducción suficiente —tokens, conversión, analítica, autenticación multifactor, MX/TXT, TLS/HTTPS y atribución— sin añadir glosarios donde el término ya estaba explicado por contexto.
