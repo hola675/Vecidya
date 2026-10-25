@@ -91,3 +91,46 @@ Rama: `audit/app-internal-ux-foundation-20261024`.
 No se han agregado colores, tipografía, constructor libre, variantes persistidas ni plantillas nuevas. El contrato de configuración v1 exige migración/versionado antes de incorporar esas capacidades. Tampoco se han habilitado Artículos, Equipo, Certificaciones ni Testimonios.
 
 **Decisión de entrega:** mantener en rama aislada; no fusionar `main`, no desplegar ni declarar QA certificada hasta ejecutar matriz completa.
+
+
+## Integración APP-MINI-02F y reconciliación con main (2026-10-24)
+
+**Origen verificado:** PR #103 `APP-MINI-02F: medios visuales para MiniWeb`, fusionado en `main` como `ae7a768f38258a96d389fccdd5469187064e48cd`.
+
+**Integración histórica:** commit merge `457026d9920567030849b92bf0362452e8602157` con dos padres (rama UX + main). Se incorporaron 24 archivos no conflictivos del árbol de main, incluidas migraciones, API, esquema, consultas, pruebas y documentación. Se resolvieron manualmente cuatro archivos con cambios concurrentes: `app/app.css`, `app/components/miniweb/templates/default.tsx`, `app/routes/miniweb-editor.tsx` y `app/routes/public-business-profile.tsx`. Un segundo merge `2d3c708910b43dc6a00cea5b97b4f48cba63fd25` incorporó exclusivamente seis documentos actualizados por PR #104 (estado de runtime).
+
+### Contratos de medios integrados
+
+| Función | Fuente y persistencia | Aplicación de UX |
+|---|---|---|
+| Galería | `business_media_asset.purpose=gallery`; foto o vídeo | Biblioteca de archivos; se activa en Secciones |
+| Portada | `purpose=cover`; imagen única | Paso Diseño y biblioteca visual; portada del hero |
+| Logo MiniWeb | `purpose=logo`; imagen única | Sobrescribe visualmente el logo de Mi negocio solo en la MiniWeb publicada; no modifica datos maestros |
+| Icono MiniWeb | `purpose=icon`; imagen única | Símbolo complementario del hero |
+| Imagen de oferta | `business_offering.image_asset_id`; imagen perteneciente a la organización | Selector opcional y vista del archivo en Servicios/Productos |
+| Snapshot | `BUSINESS_PUBLICATION_SCHEMA_VERSION=4` y branding `logoAssetId/iconAssetId` | Mantiene separación borrador/publicación |
+| Migración | `0028_miniweb-offering-image.sql`, `0028_snapshot.json` y journal | **Obligatorio aplicar en entorno de prueba antes de ejecutar E2E** |
+
+La API valida autorización, formato, firma de archivo, límite, propósito, unicidad de logo/icono/portada y propiedad de los IDs usados como imagen de oferta. La entrega pública de archivos solo usa medios incluidos o referenciados en el snapshot publicado. La eliminación de un medio usado por una oferta también retira la referencia del borrador local. Después de subir o retirar medios, el editor revalida el estado de publicación sin pisar el formulario local.
+
+### Pulido posterior a la integración
+
+- El marco visual público de cabecera y pie se comparte con Vista previa (`miniweb-site-chrome.tsx`). Los enlaces de Vista previa no son accionables.
+- Se eliminó la promoción de otros negocios en la propia MiniWeb, manteniendo retorno discreto a Vecindario en el footer.
+- `resolveBusinessLogoUrl` permite imágenes públicas publicadas y únicamente durante previsualización las URLs privadas autenticadas de esta función, rechazando protocolos no HTTP(S) en URLs absolutas.
+- Renderización de ofertas y FAQ incompletas filtra los elementos vacíos, igual que el criterio de preparación de sus módulos.
+- Se adaptaron las expectativas del E2E `miniweb-core-check.mjs` al editor con pestañas de botón y a los cuatro tipos de medio, en lugar de conservar aserciones de enlaces-ancla del editor antiguo.
+- Nuevas pruebas unitarias de marco, navegación pública, imágenes y logos; **añadidas, pendientes de ejecutar**.
+
+### Criterios de salida pendientes
+
+La presencia de una rama sincronizada y la revisión estática no significan que las funcionalidades estén certificadas. Antes de fusionar o desplegar:
+
+1. Aplicar migraciones hasta 0028 en D1 efímera/autorizada y verificar snapshot v4 y compatibilidad v1-v3.
+2. Ejecutar `pnpm typecheck`, `pnpm build` y pruebas unitarias.
+3. Ejecutar MiniWeb E2E tanto en editor (guardar/cambiar de paso/bloqueo de navegación) como en publicación anónima y aislamiento entre organizaciones.
+4. Revisar manualmente escritorio y móvil reales: 360/390/768/1024/1366/1920 px, teclado, foco, errores 409, imagen privada de preview y comportamiento de logos.
+5. Revisar contraste, tamaño de controles, memoria de cambios y pruebas de retirada de un medio asignado a una oferta.
+6. Conservar PR/merge hacia main y deploy bloqueados hasta aceptación y evidencia reproducible.
+
+No se han añadido esquemas persistentes de colores, fuentes, plantillas de pago ni bloques planificados sin contrato/versionado. No se ha actualizado el código de Diagnóstico ni Aprende.
