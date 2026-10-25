@@ -6192,3 +6192,81 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .admin-service-table-scroll-hint { margin: 0 0 .55rem; color: var(--muted); font-size: .82rem; }
 .admin-service-table-wrap:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 @media (min-width: 981px) { .admin-service-table-scroll-hint { display: none; } }
+
+
+/* MiniWeb del cliente: identidad independiente del portal Vecidya. */
+.miniweb-standalone {
+  --miniweb-ink: #18263b;
+  --miniweb-accent: #2457c5;
+  --miniweb-surface: #f5f7fb;
+  min-height: 100vh;
+  background: var(--miniweb-surface);
+  color: var(--miniweb-ink);
+}
+.miniweb-standalone__header,
+.miniweb-standalone__footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.15rem max(1.25rem, calc((100vw - 1160px) / 2));
+}
+.miniweb-standalone__header {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f1;
+}
+.miniweb-standalone__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .8rem;
+  min-width: 0;
+  color: var(--miniweb-ink);
+  font-size: 1.08rem;
+  font-weight: 750;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.miniweb-standalone__brand img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: .7rem;
+}
+.miniweb-standalone__navigation,
+.miniweb-standalone__footer nav {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+.miniweb-standalone__navigation a,
+.miniweb-standalone__footer a {
+  color: var(--miniweb-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.miniweb-standalone a:focus-visible {
+  outline: 3px solid var(--miniweb-accent);
+  outline-offset: 4px;
+  border-radius: .25rem;
+}
+.miniweb-standalone__footer {
+  flex-wrap: wrap;
+  background: #fff;
+  border-top: 1px solid #e2e8f1;
+  align-items: flex-start;
+}
+.miniweb-standalone__footer strong { font-size: 1.08rem; }
+.miniweb-standalone__footer p { margin: .35rem 0 0; }
+.miniweb-standalone__credit { color: #66758a; font-size: .8rem; }
+@media (max-width: 700px) {
+  .miniweb-standalone__header,
+  .miniweb-standalone__footer { padding: 1rem 1.15rem; }
+  .miniweb-standalone__header { flex-wrap: wrap; }
+  .miniweb-standalone__navigation { width: 100%; justify-content: space-between; gap: .75rem; }
+  .miniweb-standalone__footer { flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .miniweb-standalone * { scroll-behavior: auto !important; }
+}
