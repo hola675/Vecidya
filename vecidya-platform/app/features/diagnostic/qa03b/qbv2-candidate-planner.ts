@@ -45,6 +45,8 @@ export type CandidateQuestionPlanV3 = {
   readonly routingIterations: number;
 };
 export type CandidateQuestionPlannerInputV3 = { readonly answers: AnswersV2; readonly budget?: RouteBudgetV1 };
+/** Shadow-only experiment: never used by the public session or Worker. */
+export type CandidateShadowSelectionPolicyV1 = "baseline" | "utility_first";
 
 const DEFAULT_BUDGET: RouteBudgetV1 = DEFAULT_ROUTE_BUDGET_V1;
 const CONTEXT_CORE = new Set<ContextFieldRef>(["entity", "businessModel", "archetype", "activity", "primaryGoal", "primaryFriction", "customerReach", "customerBuyer", "niche"]);
@@ -97,7 +99,7 @@ function canProspectivelyResolveApplicability(question: QuestionDefinitionV2, di
 
 /** Candidate-only planner. Every invocation reconstructs the plan from raw answers. */
 /** @internal Test seam for equivalent bank-order determinism; production entry always supplies the frozen bank. */
-export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT_BUDGET }: CandidateQuestionPlannerInputV3, bank: readonly QuestionDefinitionV2[]): CandidateQuestionPlanV3 {
+export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT_BUDGET }: CandidateQuestionPlannerInputV3, bank: readonly QuestionDefinitionV2[], policy: CandidateShadowSelectionPolicyV1 = "baseline"): CandidateQuestionPlanV3 {
   const hardMax = Math.min(CANDIDATE_ROUTE_HARD_CAP_V3, Math.max(1, budget.hardMax, Object.keys(answers).length));
   const normalizedBudget: RouteBudgetV1 = { ...budget, hardMax, targetMax: Math.min(hardMax, budget.targetMax), targetMin: Math.min(hardMax, budget.targetMin), materialEvidenceReserve: Math.min(hardMax - 1, Math.max(0, budget.materialEvidenceReserve ?? 0)) };
   const resolution = resolveEligibleQuestionsV2(answers, bank);
@@ -153,7 +155,9 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
     const neededContext = new Set<ContextFieldRef>([...CONTEXT_CORE].filter((f) => unresolvedFields.has(f)));
     const goal = resolution.context.primaryGoal.status === "resolved" ? resolution.context.primaryGoal.value : undefined;
     const friction = resolution.context.primaryFriction.status === "resolved" ? resolution.context.primaryFriction.value : undefined;
-    const digitalToolsRelevant = q.id === "q2_digital_tools_in_use" && (["organize", "automate", "stop_losing", "measure"].includes(goal ?? "") || ["operations", "follow_up"].includes(friction ?? ""));
+    // Inventory alone is not diagnostic evidence. In shadow utility-first mode,
+    // the tools question is useful only when it really unlocks context or a child.
+    const digitalToolsRelevant = policy === "baseline" && q.id === "q2_digital_tools_in_use" && (["organize", "automate", "stop_losing", "measure"].includes(goal ?? "") || ["operations", "follow_up"].includes(friction ?? ""));
     for (const dimension of dimensions.filter((d) => d.applicability === "insufficient_context")) {
       for (const field of R4_CONTEXT_FIELDS[dimension.id] ?? []) if (unresolvedFields.has(field)) neededContext.add(field);
     }
@@ -185,6 +189,27 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
       const source = semanticSources(questionById.get(id)!);
       return Math.max(0, ...[...source.direct, ...source.supporting].map((dimension) => priorities.includes(dimension) ? priorities.length - priorities.indexOf(dimension) : 0));
     };
+    if (policy === "utility_first") {
+      // Immutable core anchors and contradiction checks precede optional content.
+      // A sector-matched niche with real choices is consulted before generic
+      // descriptive context; it is never evidence of a digital capability.
+      const shadowRank = (q: QuestionDefinitionV2, id: string, reason: QuestionSelectionReason) => {
+        if (triggered.has(id)) return 100;
+        if (q.routingRole === "core") return 95;
+        if (unlocks.has(id)) return 85;
+        if (id.startsWith("q2_niche_") && q.options.filter((option) => option.produces?.some((p) => p.kind === "niche")).length > 1) return 78;
+        const source = semanticSources(q);
+        const relevant = [...source.direct].some((dimension) => priorities.includes(dimension));
+        if (relevant && source.direct.some((dimension) => open.has(dimension))) return 74;
+        if (reason === "required_context") return 70;
+        if (source.direct.some((dimension) => open.has(dimension))) return 60;
+        if (reason === "prospective_evidence") return 50;
+        if (source.supporting.some((dimension) => observedDirect.has(dimension))) return 30;
+        return 10;
+      };
+      return shadowRank(qb, b, rb) - shadowRank(qa, a, ra) || utility(b) - utility(a)
+        || (qb.priority === "critical" ? 1 : 0) - (qa.priority === "critical" ? 1 : 0) || a.localeCompare(b);
+    }
     return rr[rb] - rr[ra] || utility(b) - utility(a) || (qb.priority === "critical" ? 1 : 0) - (qa.priority === "critical" ? 1 : 0) || a.localeCompare(b);
   });
   const alreadyAsked = Object.keys(activeAnswers).length;
