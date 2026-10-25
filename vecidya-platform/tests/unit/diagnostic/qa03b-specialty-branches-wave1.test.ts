@@ -73,10 +73,10 @@ test("dentist niche substitutes dental continuation for generic rebooking", () =
   const before = resolveEligibleQuestionsV2(dentistBase, bank77);
   assert.ok(before.eligibleQuestionIds.includes("q2_niche_health_wellness"));
   assert.ok(!before.eligibleQuestionIds.includes("q2_dental_care_continuation"));
-  assert.ok(!before.eligibleQuestionIds.includes("q2_appointments_rebooking"));
+  assert.ok(before.eligibleQuestionIds.includes("q2_appointments_rebooking"));
 
   const prePlan = buildCandidateQuestionPlanFromBankV3({ answers: dentistBase }, bank77, "utility_first");
-  assert.ok(prePlan.selectedQuestionIds.includes("q2_niche_health_wellness"));
+  assert.ok(!prePlan.selectedQuestionIds.includes("q2_niche_health_wellness"));
 
   const dentist = { ...dentistBase, q2_niche_health_wellness: "dentist" };
   const resolved = resolveEligibleQuestionsV2(dentist, bank77);
@@ -98,9 +98,9 @@ test("restaurant niche replaces generic offer clarity with menu visibility when 
   const before = resolveEligibleQuestionsV2(restaurantBase, bank77);
   assert.ok(before.eligibleQuestionIds.includes("q2_niche_food_hospitality"));
   assert.ok(!before.eligibleQuestionIds.includes("q2_food_menu_visibility"));
-  assert.ok(!before.eligibleQuestionIds.includes("q2_presence_offer_clarity"));
+  assert.ok(before.eligibleQuestionIds.includes("q2_presence_offer_clarity"));
   const prePlan = buildCandidateQuestionPlanFromBankV3({ answers: restaurantBase }, bank77, "utility_first");
-  assert.ok(prePlan.selectedQuestionIds.includes("q2_niche_food_hospitality"));
+  assert.ok(!prePlan.selectedQuestionIds.includes("q2_niche_food_hospitality"));
 
   const restaurant = { ...restaurantBase, q2_niche_food_hospitality: "restaurant" };
   const resolved = resolveEligibleQuestionsV2(restaurant, bank77);
@@ -120,9 +120,9 @@ test("marketing-agency niche replaces generic offer clarity with scope clarity f
   const before = resolveEligibleQuestionsV2(agencyBase, bank77);
   assert.ok(before.eligibleQuestionIds.includes("q2_niche_b2b_services"));
   assert.ok(!before.eligibleQuestionIds.includes("q2_marketing_agency_scope_clarity"));
-  assert.ok(!before.eligibleQuestionIds.includes("q2_presence_offer_clarity"));
+  assert.ok(before.eligibleQuestionIds.includes("q2_presence_offer_clarity"));
   const prePlan = buildCandidateQuestionPlanFromBankV3({ answers: agencyBase }, bank77, "utility_first");
-  assert.ok(prePlan.selectedQuestionIds.includes("q2_niche_b2b_services"));
+  assert.ok(!prePlan.selectedQuestionIds.includes("q2_niche_b2b_services"));
 
   const agency = { ...agencyBase, q2_niche_b2b_services: "marketing_agency" };
   const resolved = resolveEligibleQuestionsV2(agency, bank77);
@@ -193,7 +193,7 @@ function walkSpecialty(
   throw new Error("specialty route did not terminate");
 }
 
-test("full specialty journeys measure the real selector cost against the 74-question utility bank", () => {
+test("full anonymous journeys keep zero selector cost when specialty evidence is semantically equivalent", () => {
   const cases: readonly { id: string; answers: AnswersV2; specialized: string; generic: string }[] = [
     {
       id: "dental-followup",
@@ -243,12 +243,13 @@ test("full specialty journeys measure the real selector cost against the 74-ques
     const before = walkSpecialty(bank74, scenario.answers);
     const after = walkSpecialty(bank77, scenario.answers);
     assert.ok(before.asked.length <= 24 && after.asked.length <= 24, scenario.id);
-    assert.ok(after.asked.includes(scenario.specialized), scenario.id);
-    assert.ok(!after.asked.includes(scenario.generic), scenario.id);
-    assert.ok(before.asked.includes(scenario.generic), `${scenario.id}: baseline must use generic equivalent`);
-    assert.ok(after.evidence >= before.evidence, `${scenario.id}: specialized route cannot lose mapped evidence`);
-    assert.ok(after.unresolved <= before.unresolved, `${scenario.id}: cannot create more unresolved applicable dimensions`);
-    assert.ok(after.insufficient <= before.insufficient, `${scenario.id}: cannot create more insufficient context`);
+    // Starting anonymously, equivalent specialty copy is not worth an extra selector.
+    assert.ok(!after.asked.includes(scenario.specialized), scenario.id);
+    assert.ok(after.asked.includes(scenario.generic), scenario.id);
+    assert.equal(after.asked.length, before.asked.length, `${scenario.id}: equivalent specialization must cost zero extra questions`);
+    assert.equal(after.evidence, before.evidence, `${scenario.id}: evidence is unchanged without a known niche`);
+    assert.equal(after.unresolved, before.unresolved, `${scenario.id}: unresolved dimensions are unchanged`);
+    assert.equal(after.insufficient, before.insufficient, `${scenario.id}: insufficient context is unchanged`);
     console.log(`QA03B_SPECIALTY_AB ${JSON.stringify({
       profile: scenario.id,
       bank74: { count: before.asked.length, evidence: before.evidence, terminal: before.terminal },
