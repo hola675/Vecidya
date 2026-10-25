@@ -14,7 +14,7 @@ const splitPairs = [
 
 test("Aprende conserva slugs únicos, categorías y campos esenciales", () => {
   const slugs = learnArticles.map((article) => article.slug);
-  assert.equal(slugs.length, 44, "La reorganización debe conservar los 44 artículos esperados.");
+  assert.equal(slugs.length, 46, "APRENDE-EDITORIAL-04A debe conservar las 44 guías y añadir las dos fundacionales.");
   assert.equal(new Set(slugs).size, slugs.length, "Hay slugs duplicados.");
   const categories = new Set(learnCategories.map(({ name }) => name));
   for (const article of learnArticles) {
@@ -41,6 +41,28 @@ test("Aprende conserva slugs únicos, categorías y campos esenciales", () => {
     for (const related of article.relatedSlugs ?? []) {
       assert.notEqual(related, article.slug, `Referencia circular directa en ${article.slug}`);
       assert.ok(getLearnArticle(related), `Referencia inexistente ${article.slug} → ${related}`);
+    }
+  }
+});
+
+test("Cada guía incluye al menos un ejemplo hipotético comprensible y accionable", () => {
+  for (const article of learnArticles) {
+    const examples = article.sections.flatMap((section) =>
+      (section.blocks ?? []).filter((block) => block.type === "example"));
+    assert.ok(examples.length >= 1, `Falta ejemplo estructurado en ${article.slug}`);
+    for (const example of examples) {
+      assert.equal(example.type, "example");
+      assert.equal(example.hypothetical, true, `Ejemplo no identificado como hipotético en ${article.slug}`);
+      for (const [label, value] of [
+        ["situación", example.context],
+        ["problema", example.problem],
+        ["enfoque", example.approach],
+        ["aprendizaje", example.lesson],
+      ] as const) {
+        assert.ok(value.trim().split(/\s+/u).length >= 5, `${label} demasiado breve en ${article.slug}`);
+      }
+      assert.ok(example.actions.length >= 2, `Faltan pasos aplicables en ${article.slug}`);
+      assert.ok(example.actions.every((action) => action.trim().split(/\s+/u).length >= 4), `Paso poco explicativo en ${article.slug}`);
     }
   }
 });
