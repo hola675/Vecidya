@@ -8,7 +8,7 @@ import { resolveEligibleQuestionsV2 } from "../../../app/features/diagnostic/qa0
 import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-planner";
 import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
 import { validateEvidenceMigrationsV3 } from "../../../app/features/diagnostic/qbv2-evidence-v3";
-import { validateQuestionCopyV2 } from "../../../app/features/diagnostic/qa03b/copy";
+import { renderQuestionV2, validateQuestionCopyV2 } from "../../../app/features/diagnostic/qa03b/copy";
 import { QA03B_AUTHORED_CASES } from "./qa03b-case-matrix";
 
 const base = {
@@ -142,6 +142,22 @@ test("operational responsibility and follow-up remain separate questions", () =>
   assert.ok(!resolveEligibleQuestionsV2(ops, candidate).eligibleQuestionIds.includes("q2_followup_status_visibility"));
   assert.ok(resolveEligibleQuestionsV2(followup, candidate).eligibleQuestionIds.includes("q2_followup_status_visibility"));
   assert.ok(!resolveEligibleQuestionsV2(followup, candidate).eligibleQuestionIds.includes("q2_operations_process_ownership"));
+});
+
+test("visible measurement wording respects nonprofit and health context without inventing clinical status", () => {
+  const question = find("q2_measurement_source_confidence");
+  const org = { ...base, q2_entity: "organization", q2_monetization: "mission", q2_sector: "nonprofit_community", q2_delivery: ["physical_location"], q2_goal: "measure" };
+  const nonprofitContext = resolveEligibleQuestionsV2(org, candidate).context;
+  const nonprofit = renderQuestionV2(question, { context: nonprofitContext, answers: org });
+  assert.match(nonprofit.prompt, /organización/);
+  assert.doesNotMatch(nonprofit.prompt, /cliente|paciente/i);
+
+  const health = { ...base, q2_entity: "individual", q2_sector: "health_wellness", q2_delivery: ["appointments"], q2_monetization: "services", q2_goal: "measure" };
+  const healthContext = resolveEligibleQuestionsV2(health, candidate).context;
+  const resolved = renderQuestionV2(question, { context: healthContext, answers: health });
+  assert.match(resolved.prompt, /persona solicita atención/);
+  assert.doesNotMatch(resolved.prompt, /paciente/i);
+  assert.deepEqual(resolved.options.map((o) => o.value), question.options.map((o) => o.value));
 });
 
 test("all 20 authored journeys keep exact baseline score/evidence when no new question is answered", () => {
