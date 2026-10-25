@@ -85,6 +85,19 @@ function semanticSources(question: QuestionDefinitionV2): { direct: DigitalDimen
   if (question.evidenceMigration !== "migrated" || !question.evidenceV3) return { direct: [], supporting: [] };
   return { direct: question.evidenceV3.dimensions.filter((d) => d.directness === "direct").map((d) => d.dimension), supporting: question.evidenceV3.dimensions.filter((d) => d.directness === "supporting").map((d) => d.dimension) };
 }
+
+function evidenceSemanticSignature(question: QuestionDefinitionV2): string | undefined {
+  if (question.evidenceMigration !== "migrated" || !question.evidenceV3) return undefined;
+  return JSON.stringify(
+    [...question.evidenceV3.dimensions]
+      .map((reading) => ({
+        dimension: reading.dimension,
+        directness: reading.directness,
+        answers: Object.entries(reading.answers).sort(([a], [b]) => a.localeCompare(b)),
+      }))
+      .sort((a, b) => a.dimension.localeCompare(b.dimension) || a.directness.localeCompare(b.directness)),
+  );
+}
 /** A migrated direct source can resolve an `insufficient_context` dimension through the existing R4
  * `observed_dimension_evidence` contract. This proves that prospectively by simulation (never syntactically)
  * and only on substantive answers: `not_applicable` must stay neutral, and `unknown` must never justify asking. */
@@ -141,8 +154,12 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
         if (activeAnswers[child.id] !== undefined || eligible.has(child.id) || !after.has(child.id)) continue;
         const childSources = semanticSources(child);
         const childFields = producedFields(child);
+        const childSignature = evidenceSemanticSignature(child);
+        const equivalentAlreadyEligible = policy === "utility_first" && question.id.startsWith("q2_niche_") && childSignature !== undefined
+          && bank.some((peer) => peer.id !== child.id && activeAnswers[peer.id] === undefined && eligible.has(peer.id)
+            && evidenceSemanticSignature(peer) === childSignature);
         const unlocksUsefulChild = child.evidenceMigration === "migrated"
-          ? childSources.direct.some((dimension) => open.has(dimension)) || childSources.supporting.some((dimension) => observedDirect.has(dimension))
+          ? !equivalentAlreadyEligible && (childSources.direct.some((dimension) => open.has(dimension)) || childSources.supporting.some((dimension) => observedDirect.has(dimension)))
           : child.routingRole !== "deepening" && childFields.some((field) => unresolvedFields.has(field));
         if (unlocksUsefulChild) unlocks.add(question.id);
       }
