@@ -4507,6 +4507,8 @@ export const learnPathways = [
     description: "Responde bien, organiza pedidos y protege la confianza de tus clientes.",
     slugs: [
       "como-responder-la-primera-consulta-de-un-cliente",
+      "organizar-consultas-mensajes-llamadas-formularios",
+      "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
       "hojas-de-calculo-para-organizar-un-negocio-pequeno",
       "como-vender-por-internet-sin-perder-el-control-pedidos-pagos",
       "datos-de-clientes-que-puedes-pedir-y-como-protegerlos",
@@ -4520,6 +4522,7 @@ export const learnPathways = [
       "analitica-web-que-medir-en-tu-negocio",
       "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio",
       "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
+      "preparar-respuestas-publicaciones-ia-sin-perder-control",
       "conectar-herramientas-digitales-sin-complicar-tu-negocio",
       "como-probar-y-supervisar-automatizaciones-sin-perder-datos",
       "como-probar-un-asistente-de-ia-con-supervision-humana",
