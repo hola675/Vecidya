@@ -304,5 +304,9 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
 
 /** Production candidate entry point: the reviewed R3 evidence bank is fixed and cannot be caller-selected. */
 export function buildCandidateQuestionPlanV3(input: CandidateQuestionPlannerInputV3): CandidateQuestionPlanV3 {
-  return buildCandidateQuestionPlanFromBankV3(input, REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3);
+  // Public V8 path deliberately ignores the V9-only interaction-count seam.
+  return buildCandidateQuestionPlanFromBankV3(
+    { answers: input.answers, ...(input.budget === undefined ? {} : { budget: input.budget }) },
+    REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3,
+  );
 }
