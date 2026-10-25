@@ -27,7 +27,7 @@ test("specialty bank is isolated from the public 45 and preserves their contract
   assert.equal(publicBank.length, 45);
   assert.equal(QA03B_SPECIALTY_SELECTORS_V1.length, 8);
   assert.equal(QA03B_RECOVERY_PILOT_V1.length, 6);
-  assert.equal(candidate.length, 59);
+  assert.equal(candidate.length, 74);
   assert.equal(new Set(candidate.map((question) => question.id)).size, candidate.length);
   for (const question of publicBank) {
     const proposed = candidate.find((item) => item.id === question.id);
