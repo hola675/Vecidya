@@ -99,6 +99,22 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
     || JSON.stringify(offerings) !== JSON.stringify(data.offerings)
     || JSON.stringify(faqs) !== JSON.stringify(data.faqs);
   const orderedModules = [...configuration.modules].sort((left, right) => left.sortOrder - right.sortOrder || left.type.localeCompare(right.type));
+  const steps = [
+    { key: "design", title: "Diseño", help: "Comprueba la plantilla y la identidad de tu negocio." },
+    { key: "sections", title: "Secciones", help: "Elige qué mostrar y en qué orden." },
+    { key: "content", title: "Contenido", help: "Completa servicios, productos, preguntas y galería." },
+    { key: "preview", title: "Vista previa", help: "Revisa el resultado antes de publicarlo." },
+    { key: "publish", title: "Publicar", help: "Guarda y confirma la versión visible para visitantes." },
+  ] as const;
+  const stepIndex = steps.findIndex((step) => step.key === activeTab);
+  const currentStep = steps[stepIndex];
+  function goToStep(index: number) {
+    const step = steps[index];
+    if (!step) return;
+    setActiveTab(step.key);
+    document.getElementById("miniweb-step-guide")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
 
   useEffect(() => setConfiguration(data.draftConfiguration), [data.draftConfiguration]);
 
@@ -280,6 +296,15 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
         </nav>
         <p className="miniweb-editor__note">Configura un apartado a la vez. Los cambios de los demás apartados se conservan mientras editas. Guarda el borrador antes de salir.</p>
         {message ? <p className={`alert miniweb-editor__message miniweb-editor__message--${message.kind}`} role={message.kind === "error" ? "alert" : "status"}>{message.text}</p> : null}
+        <section aria-labelledby="miniweb-step-title" className="miniweb-editor__guide" id="miniweb-step-guide">
+          <p className="eyebrow">PASO {stepIndex + 1} DE {steps.length}</p>
+          <h2 id="miniweb-step-title">{currentStep.title}</h2>
+          <p>{currentStep.help}</p>
+          <div className="miniweb-editor__guide-navigation">
+            <Button disabled={stepIndex === 0} onClick={() => goToStep(stepIndex - 1)} tone="ghost">Paso anterior</Button>
+            <Button disabled={stepIndex === steps.length - 1} onClick={() => goToStep(stepIndex + 1)} tone="secondary">Siguiente paso</Button>
+          </div>
+        </section>
         <div className="miniweb-editor__tab-actions">
           <span role="status">{editorStatusLabel}</span>
           <Button disabled={!data.canEdit || busy || !isDirty} onClick={handleSave} tone="secondary">{busy ? "Guardando…" : "Guardar borrador"}</Button>
@@ -306,7 +331,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 <span className="miniweb-editor__count">{configuration.modules.filter((module) => module.enabled).length} activas</span>
               </div>
               <p className="miniweb-editor__note">Activa solo lo que necesitas. Una sección sin información suficiente no aparece en la página pública.</p>
-              <p className="miniweb-editor__note">Los datos generales se actualizan en <Link to="/app/negocio">Mi negocio</Link>; los servicios, productos, preguntas y medios se completan en el paso Contenido.</p>
+              <p className="miniweb-editor__note">Los datos generales se actualizan en <Link to="/app/business-profile">Mi negocio</Link>; los servicios, productos, preguntas y medios se completan en el paso Contenido.</p>
               <ol className="miniweb-module-list">
                 {orderedModules.map((module, position) => {
                   const type = module.type;
