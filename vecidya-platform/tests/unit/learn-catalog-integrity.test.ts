@@ -123,6 +123,24 @@ test("Las guías madre revisadas no vuelven a convertirse en monolitos", () => {
   }
 });
 
+test("Las guías especializadas simplificadas conservan un tamaño pedagógico acotado", () => {
+  const focusedSlugs = [
+    "dns-https-y-correo-como-se-conecta-tu-dominio",
+    "https-certificados-tls-que-protegen-y-que-no",
+    "analitica-web-que-medir-en-tu-negocio",
+    "como-probar-y-supervisar-automatizaciones-sin-perder-datos",
+    "como-probar-un-asistente-de-ia-con-supervision-humana",
+    "correo-profesional-dominio-registros-mx-txt",
+  ];
+  for (const slug of focusedSlugs) {
+    const article = getLearnArticle(slug);
+    assert.ok(article, `Falta guía especializada: ${slug}`);
+    const words = JSON.stringify(article).replace(/https?:\/\/[^"\s]+/g, " ").split(/\s+/u).filter(Boolean).length;
+    assert.ok(words <= 1500, `La guía especializada ${slug} volvió a crecer demasiado: ${words} palabras serializadas`);
+    assert.ok(article.sections.length <= 8, `La guía especializada ${slug} volvió a acumular demasiadas secciones`);
+  }
+});
+
 test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
   const requirements = [
     ["publicidad-digital-como-preparar-una-primera-campana", [/Google Ads|Meta Ads/i, /página de destino/i, /indicadores/i]],
