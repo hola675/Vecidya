@@ -44,6 +44,8 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   const offerings = (profile.publicationSnapshot?.offerings ?? []).filter((item) => item.isActive);
   const faqs = (profile.publicationSnapshot?.faqs ?? []).filter((item) => item.isActive);
   const media = (profile.publicationSnapshot?.media ?? []).map((asset) => ({ ...asset, publicUrl: `/media/business/${encodeURIComponent(profile.slug)}/${encodeURIComponent(asset.id)}`, sizeBytes: 0, createdAt: new Date(0) }));
+  const publishedLogo = media.find((asset) => asset.id === profile.publicationSnapshot?.branding.logoAssetId);
+  if (publishedLogo) publicProfile.logoUrl = publishedLogo.publicUrl;
   const renderableModules = getRenderableMiniWebModules(miniweb.publishedConfiguration, publicProfile, hours, offerings, faqs, media);
   const publicModel = restrictMiniWebPublicModel(publicProfile, hours, renderableModules.map((module) => module.type));
 
