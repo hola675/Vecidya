@@ -477,6 +477,32 @@ export const QA03B_SPECIALTY_PERSONAS: readonly QA03BSpecialtyPersona[] = [
     "niche": null,
     "goal": "explain",
     "friction": "unsure"
+  },
+  {
+    "id": "software-saas-activo",
+    "entity": "business",
+    "status": "operating",
+    "sector": "technology_software",
+    "monetization": "recurring",
+    "delivery": ["remote_service"],
+    "buyer": "b2b",
+    "history": "yes",
+    "niche": "software_startup",
+    "goal": "measure",
+    "friction": "conversion"
+  },
+  {
+    "id": "marketplace-activo",
+    "entity": "business",
+    "status": "operating",
+    "sector": "technology_software",
+    "monetization": "commission",
+    "delivery": ["online_checkout"],
+    "buyer": "mixed",
+    "history": "yes",
+    "niche": "two_sided_marketplace",
+    "goal": "measure",
+    "friction": "conversion"
   }
 ] as const;
 
@@ -518,6 +544,10 @@ export function authoredSpecialtyAnswers(persona: QA03BSpecialtyPersona): Answer
     q2_hospitality_peak_capacity: "unknown",
     q2_local_repeat_customers: "unknown",
     q2_service_area_clarity: "unknown",
+    q2_specialty_software_activation: persona.id === "software-saas-activo" ? "partially_tracked" : "unknown",
+    q2_specialty_marketplace_balance: persona.id === "marketplace-activo" ? "sometimes_clear" : "unknown",
+    q2_specialty_tax_return_cycle: persona.id === "impuestos" ? "systematic" : "unknown",
+    q2_specialty_insurance_renewal: persona.id === "seguros" ? "partial" : "unknown",
   };
   if (persona.niche !== null) {
     answers[`q2_niche_${persona.sector}`] = persona.niche;
