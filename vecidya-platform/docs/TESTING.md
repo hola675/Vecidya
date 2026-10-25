@@ -1,5 +1,11 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-04F — revisión de guías técnicas nuevas (2026-10-25)
+
+**TEST versionado / RAN pendiente.** El catálogo esperado se mantiene en 48 guías y pasa a **37 revisadas / 11 borradores**. Los contratos exigen `editorialDraft: false` para migración de proveedor y correo profesional; además preservan fuentes ICANN/MDN/RFC 1034/1035 para migración y RFC 1035/7208/6376/9989 para correo.
+
+Gate: typecheck, build e integridad Aprende mediante `Aprende quality` sobre el HEAD final.
+
 ## APRENDE-EDITORIAL-04E — revisión de Operaciones (2026-10-25)
 
 **RAN en GitHub Actions:** `Aprende quality` run `40246857214` PASS: typecheck, build e integridad Aprende. Se fija el catálogo en 48 guías con **35 revisadas / 13 borradores**. Las cinco guías de `learn-operations-02.ts` deben conservar `editorialDraft: false`, nueve secciones, ejemplo hipotético, FAQ, cierre accionable y al menos dos fuentes HTTPS. Los contratos comprueban además la referencia de inventario de business.gov.au, la definición de ERP y la fuente oficial de Microsoft Learn, y la guía de beta de GOV.UK para el piloto digital.
