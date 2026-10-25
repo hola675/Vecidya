@@ -25,7 +25,7 @@ Una pregunta `pending` no se vuelve automáticamente valiosa para el planificado
 
 ## 3. Experimento de clasificación por nicho (PR actual)
 
-El banco candidato exporta **7** preguntas condicionales `q2_niche_<grupo>` de `qa03b/specialty-candidate-bank.ts`:
+El banco candidato exporta **8** preguntas condicionales `q2_niche_<grupo>` de `qa03b/specialty-candidate-bank.ts`:
 - health_wellness — dentista, medicina general, psiquiatría, medspa
 - beauty_personal_care — peluquería, barbería, estética de mascotas móvil
 - financial_tax_insurance — preparación de impuestos, seguros
@@ -33,10 +33,11 @@ El banco candidato exporta **7** preguntas condicionales `q2_niche_<grupo>` de `
 - automotive — taller mecánico, detallado móvil
 - food_hospitality — restaurante, cafetería, food truck
 - technology_software — startup de software, mercado de dos lados
+- b2b_services — agencia de marketing, distribución mayorista
 
 Cada selector aparece solo con `q2_sector=<grupo>`, usa exclusivamente valores existentes de `NICHE_REGISTRY`, produce `kind: "niche"` solo para una elección explícita, y ofrece «Otra especialidad» y «Todavía no lo sé» sin inventar el nicho ni fabricar datos. No se exige especialización en los grupos con un solo ejemplo; tampoco se inventan nombres no registrados.
 
-Deuda de cobertura deliberada: `q2_sector` no contempla como opciones específicas `ecommerce`, `creator`, `b2b_services` ni `nonprofit_community`, aunque existen en `NICHE_GROUP_REGISTRY`. Corregir ese desfase requiere revisar sus opciones, versión semántica, copias, pruebas y política de sesiones; **no alterar silenciosamente q2_sector/v3**.
+El banco **candidato aislado** propone `q2_sector/v4` con cuatro categorías que faltan en la pregunta pública: `ecommerce`, `creator`, `b2b_services` y `nonprofit_community`. La nueva versión mantiene las opciones existentes, coloca «Otra/No sé» al final y habilita la octava familia especializada (`b2b_services`). **QA-03B público conserva q2_sector/v3**, para no invalidar sesiones; la activación de v4 requiere política de migración, replay y una decisión de cutover explícita.
 
 ## 4. Primera migración de evidencia candidata — implementada sin activar
 
