@@ -147,7 +147,13 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
     const step = steps[index];
     if (!step) return;
     setActiveTab(step.key);
-    document.getElementById("miniweb-step-guide")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.requestAnimationFrame(() => {
+      document.getElementById("miniweb-step-title")?.focus({ preventScroll: true });
+      document.getElementById("miniweb-step-guide")?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        block: "start",
+      });
+    });
   }
 
 
@@ -216,14 +222,14 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
       const invalidIndex = offerings.findIndex((item) => !item.title.trim() || !item.description.trim());
       setContentTab(offerings[invalidIndex]?.kind === "product" ? "products" : "services");
       setExpandedOfferingIndex(invalidIndex);
-      setActiveTab("content");
+      goToStep(2);
       return false;
     }
     if (faqs.some((item) => !item.question.trim() || !item.answer.trim())) {
       setMessage({ kind: "error", text: "Hay preguntas frecuentes incompletas. Completa cada pregunta y su respuesta antes de guardar." });
       setContentTab("faq");
       setExpandedFaqIndex(faqs.findIndex((item) => !item.question.trim() || !item.answer.trim()));
-      setActiveTab("content");
+      goToStep(2);
       return false;
     }
     return true;
@@ -369,7 +375,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               aria-pressed={activeTab === key}
               className={activeTab === key ? "miniweb-editor__tab--active" : ""}
               key={key}
-              onClick={() => setActiveTab(key)}
+              onClick={() => goToStep(steps.findIndex((step) => step.key === key))}
               type="button"
             >
               <span>{number}</span> {label}
@@ -380,7 +386,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
         {message ? <p className={`alert miniweb-editor__message miniweb-editor__message--${message.kind}`} role={message.kind === "error" ? "alert" : "status"}>{message.text}</p> : null}
         <section aria-labelledby="miniweb-step-title" className="miniweb-editor__guide" id="miniweb-step-guide">
           <p className="eyebrow">PASO {stepIndex + 1} DE {steps.length}</p>
-          <h2 id="miniweb-step-title">{currentStep.title}</h2>
+          <h2 id="miniweb-step-title" tabIndex={-1}>{currentStep.title}</h2>
           <p>{currentStep.help}</p>
           <div className="miniweb-editor__guide-navigation">
             <Button disabled={stepIndex === 0} onClick={() => goToStep(stepIndex - 1)} tone="ghost">Paso anterior</Button>
@@ -390,7 +396,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
         <div className="miniweb-editor__tab-actions">
           <span role="status">{editorStatusLabel}</span>
           <Button disabled={!data.canEdit || busy || !isDirty} onClick={handleSave} tone="secondary">{busy ? "Guardando…" : "Guardar borrador"}</Button>
-          <Button onClick={() => setActiveTab("preview")} tone="ghost">Revisar vista previa</Button>
+          <Button onClick={() => goToStep(3)} tone="ghost">Revisar vista previa</Button>
         </div>
 
         <div className="miniweb-editor__layout">
