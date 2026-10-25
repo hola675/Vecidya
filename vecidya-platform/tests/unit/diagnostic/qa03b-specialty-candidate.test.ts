@@ -146,4 +146,6 @@ test("nonprofit donation question unlocks only after a donation-based support an
   assert.ok(donations.eligibleQuestionIds.includes("q2_nonprofit_donation_clarity"));
   const grants = resolveEligibleQuestionsV2({ ...org, q2_nonprofit_support_type: "grants" }, candidate);
   assert.ok(!grants.eligibleQuestionIds.includes("q2_nonprofit_donation_clarity"));
+  const preparing = resolveEligibleQuestionsV2({ ...org, q2_operational_status: "preparing" }, candidate);
+  assert.ok(!preparing.eligibleQuestionIds.includes("q2_nonprofit_support_type"), "preparation must not imply current funding");
 });
