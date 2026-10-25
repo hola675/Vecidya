@@ -9,6 +9,7 @@ import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diag
 import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
 import { validateEvidenceMigrationsV3 } from "../../../app/features/diagnostic/qbv2-evidence-v3";
 import { validateQuestionCopyV2 } from "../../../app/features/diagnostic/qa03b/copy";
+import { QA03B_AUTHORED_CASES } from "./qa03b-case-matrix";
 
 const base = {
   q2_entity: "business",
@@ -141,6 +142,16 @@ test("operational responsibility and follow-up remain separate questions", () =>
   assert.ok(!resolveEligibleQuestionsV2(ops, candidate).eligibleQuestionIds.includes("q2_followup_status_visibility"));
   assert.ok(resolveEligibleQuestionsV2(followup, candidate).eligibleQuestionIds.includes("q2_followup_status_visibility"));
   assert.ok(!resolveEligibleQuestionsV2(followup, candidate).eligibleQuestionIds.includes("q2_operations_process_ownership"));
+});
+
+test("all 20 authored journeys keep exact baseline score/evidence when no new question is answered", () => {
+  assert.equal(QA03B_AUTHORED_CASES.length, 20);
+  for (const journey of QA03B_AUTHORED_CASES) {
+    const before = scoreCandidateContextualDimensionsV3({ answers: journey.answers });
+    const after = scoreCandidateContextualDimensionsV3({ answers: journey.answers }, candidate);
+    assert.deepEqual(after.activeAnswers, before.activeAnswers, journey.id);
+    assert.deepEqual(after.dimensions, before.dimensions, journey.id);
+  }
 });
 
 test("new measurement observation is direct while cart visibility is supporting only", () => {
