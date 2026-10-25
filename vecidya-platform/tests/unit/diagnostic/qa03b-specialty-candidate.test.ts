@@ -44,6 +44,36 @@ test("specialty bank is isolated from the public 45 and preserves their contract
   assert.deepEqual(validateQuestionCopyV2(candidate), []);
 });
 
+test("existing answers keep their scored dimensions under candidate bank", () => {
+  const cases = [
+    active,
+    { ...active, q2_sector: "automotive", q2_delivery: ["physical_location"], q2_goal: "measure" },
+    { ...active, q2_entity: "project", q2_operational_status: "preparing", q2_has_customers: "no", q2_delivery: ["remote_service"] },
+    { ...active, q2_entity: "organization", q2_sector: "community_social", q2_monetization: "mission", q2_customer_buyer: "no_direct_purchase" },
+  ] as const;
+  for (const answers of cases) {
+    const baseline = scoreCandidateContextualDimensionsV3({ answers });
+    const proposed = scoreCandidateContextualDimensionsV3({ answers }, candidate);
+    assert.deepEqual(proposed.dimensions, baseline.dimensions, JSON.stringify(answers));
+    assert.deepEqual(proposed.activeAnswers, baseline.activeAnswers, JSON.stringify(answers));
+  }
+});
+
+test("niche hint does not invent a multi-provider appointments archetype", () => {
+  const answers = {
+    ...active,
+    q2_sector: "health_wellness",
+    q2_niche_health_wellness: "dentist",
+    q2_entity: "individual",
+    q2_other_staff: "no",
+    q2_delivery: ["remote_service"],
+  };
+  const context = resolveEligibleQuestionsV2(answers, candidate).context;
+  assert.equal(context.niche.status, "resolved");
+  assert.equal(context.archetype.status, "unresolved");
+  assert.ok(!context.archetypeComponents.includes("appointments"));
+});
+
 test("specialty selectors have exact sector routing, known niche values and neutral fallbacks", () => {
   for (const question of QA03B_SPECIALTY_SELECTORS_V1) {
     const sector = question.id.replace("q2_niche_", "");
