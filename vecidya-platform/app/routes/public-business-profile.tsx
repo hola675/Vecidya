@@ -6,7 +6,7 @@ import { listBusinessHoursForOrganization } from "../../db/queries/business-hour
 import { getMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { publicSiteUrl } from "../lib/public-seo";
-import { PublicLayout, publicMeta } from "../components/public-layout";
+import { publicMeta } from "../components/public-layout";
 import { JsonLd } from "../components/public-v2";
 import { MiniWebRenderer } from "../components/miniweb/miniweb-renderer";
 import { getRenderableMiniWebModules } from "../features/miniweb/render";
@@ -89,24 +89,48 @@ export default function PublicBusinessProfilePage() {
   };
 
   return (
-    <PublicLayout>
-      <main className="public-page public-business-profile">
+    <div className="public-site miniweb-standalone">
+      <a className="skip-link" href="#miniweb-main">Saltar al contenido</a>
+      <header className="miniweb-standalone__header">
+        <Link className="miniweb-standalone__brand" to={"/vecindario/" + profile.slug}>
+          {profile.logoUrl ? <img alt="" height={40} src={profile.logoUrl} width={40} /> : null}
+          <span>{profile.displayName}</span>
+        </Link>
+        <nav aria-label="Navegación del negocio" className="miniweb-standalone__navigation">
+          <a href="#miniweb-main">Inicio</a>
+          <a href="#miniweb-sections">Explorar</a>
+          <a href="#miniweb-contacto">Vecindario</a>
+        </nav>
+      </header>
+      <main className="public-page public-business-profile" id="miniweb-main">
         <JsonLd data={localBusinessSchema} />
         <nav aria-label="Ruta de navegación" className="public-business-profile__breadcrumb">
           <Link to="/vecindario">Vecindario</Link>
           <span aria-hidden="true">/</span>
           <span aria-current="page">{profile.displayName}</span>
         </nav>
-        <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} offerings={offerings} faqs={faqs} media={media} />
-
-        <section aria-labelledby="business-neighborhood-title" className="public-business-neighborhood">
+        <div id="miniweb-sections">
+          <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} offerings={offerings} faqs={faqs} media={media} />
+        </div>
+        <section aria-labelledby="business-neighborhood-title" className="public-business-neighborhood" id="miniweb-contacto">
           <div>
-            <h2 id="business-neighborhood-title">Explora más negocios del Vecindario</h2>
-            <p>Conoce otros perfiles locales y encuentra opciones para lo que necesitas.</p>
+            <h2 id="business-neighborhood-title">Descubre más en el Vecindario</h2>
+            <p>Explora otros negocios de la comunidad cuando quieras.</p>
           </div>
           <Link className="button button--secondary" to="/vecindario">Volver al Vecindario</Link>
         </section>
       </main>
-    </PublicLayout>
+      <footer className="miniweb-standalone__footer">
+        <div>
+          <strong>{profile.displayName}</strong>
+          <p>{[profile.city, profile.country].filter(Boolean).join(", ") || "Página oficial del negocio en Vecindario"}</p>
+        </div>
+        <nav aria-label="Enlaces de regreso">
+          <Link to="/vecindario">Volver al Vecindario</Link>
+          <Link to="/">Conocer Vecidya</Link>
+        </nav>
+        <p className="miniweb-standalone__credit">Creado con Vecidya</p>
+      </footer>
+    </div>
   );
 }
