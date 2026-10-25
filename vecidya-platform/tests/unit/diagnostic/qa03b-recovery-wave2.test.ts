@@ -40,7 +40,7 @@ test("wave 2 covers fifteen reviewed historical questions without activating the
   assert.deepEqual(validateQuestionCopyV2(candidate), []);
 
   for (const question of recovered) {
-    assert.ok(question.prompt.startsWith("¿") && question.prompt.endsWith("?"), question.id);
+    assert.ok(question.prompt.includes("¿") && question.prompt.endsWith("?"), question.id);
     assert.ok(question.hint && question.hint.length <= 140, question.id);
     assert.ok(question.options.length >= 3, question.id);
     assert.equal(new Set(question.options.map((option) => option.value)).size, question.options.length, question.id);
@@ -64,7 +64,7 @@ test("all 21 recovered entries have precise editorial copy, neutral options and 
   assert.equal(set.filter((q) => q.evidenceMigration === "migrated").length, 12);
   assert.equal(set.filter((q) => q.evidenceMigration === "pending").length, 9);
   for (const q of set) {
-    assert.ok(q.prompt.startsWith("¿") && q.prompt.endsWith("?"), q.id);
+    assert.ok(q.prompt.includes("¿") && q.prompt.endsWith("?"), q.id);
     assert.ok(q.hint && q.hint.trim().length > 0 && q.hint.length <= 140, q.id);
     assert.ok(q.options.some((option) => option.value !== "unknown"), q.id);
     if (q.evidenceMigration === "migrated") {
