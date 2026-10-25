@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-24 — LEGAL-TRANSPARENCY-102 — rutas legales y preferencias (PR #102, sin deploy)
+
+- Se preparan `/cookies` y `/informacion-legal`, enlaces públicos, ajustes de privacidad y aclaraciones comerciales sin inventar identificación jurídica/fiscal.
+- Preferencias de cookies locales v2, rechazo por defecto, selección granular y sincronización entre pestañas; se protege el acceso a `localStorage` cuando el navegador lo bloquea. Control accesible también desde MiniWeb pública.
+- `sitemap.xml` añade rutas estáticas legales y reduce el cacheo ante indisponibilidad de D1; `robots.txt` amplía exclusiones de autenticación.
+- Se ajusta la copy QA-03B para mantener vigencia local de 14 días sin actividad, ausencia de recuperación entre dispositivos y límites de trazabilidad técnica; se evita atribuir a Vecidya una ciudad corporativa no confirmada.
+- Pruebas unitarias y E2E de consentimiento añadidas; la comprobación final de PR debe constar en `TESTING.md`. La integración no implica aprobación jurídica, deploy, ni cambios remotos.
+
+
 ## 2026-10-24 — APP-MINI-02F — logo, icono e imágenes por oferta (integrado en código)
 
 - Se incorporan usos separados para logo, icono compacto, portada y galería. Servicios/productos pueden referenciar una imagen del negocio desde el editor de contenido.
