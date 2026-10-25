@@ -576,8 +576,15 @@ try {
     const header = document.querySelector(".app-header");
     return Boolean(guide && header && guide.getBoundingClientRect().top >= header.getBoundingClientRect().bottom);
   }), "la guía del paso activo queda visible bajo la cabecera fija");
+  await page.getByRole("button", { name: "3 Contenido" }).click();
+  await page.getByRole("button", { name: /Galería y portada/ }).click();
+  const mediaPurposeValues = await page.locator(".miniweb-content-editor select[name='purpose'] option").evaluateAll((options) => options.map((option) => option.value));
+  check(mediaPurposeValues.join(",") === "gallery,cover,logo,icon", "el editor integrado expone galería, portada, logo e icono");
   check(await page.getByRole("button", { name: "Retirar del borrador" }).count() === 5, "el editor permite retirar galería, logo, icono y portada del borrador");
+  await page.getByRole("button", { name: "4 Vista previa" }).click();
+  check(await page.locator(".miniweb-editor__preview .miniweb-standalone__header").isVisible(), "el preview muestra la cabecera real de MiniWeb");
   check(await page.locator(".miniweb-editor__publication-state").getByText("Hay cambios guardados que todavía no se han publicado.").count() === 1, "el estado de MiniWeb identifica cambios de perfil/horarios aunque el diseño siga igual");
+  await page.getByRole("button", { name: "5 Publicar" }).click();
   const ownerBContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
   const ownerBPage = await ownerBContext.newPage();
   await ownerBPage.goto(new URL("/login", baseUrl).toString(), { waitUntil: "networkidle" });
