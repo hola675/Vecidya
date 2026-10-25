@@ -577,7 +577,7 @@ try {
     return Boolean(guide && header && guide.getBoundingClientRect().top >= header.getBoundingClientRect().bottom);
   }), "la guía del paso activo queda visible bajo la cabecera fija");
   await page.getByRole("button", { name: "3 Contenido" }).click();
-  await page.getByRole("button", { name: /Galería y portada/ }).click();
+  await page.getByRole("button", { name: /Archivos e identidad/ }).click();
   const mediaPurposeValues = await page.locator(".miniweb-content-editor select[name='purpose'] option").evaluateAll((options) => options.map((option) => option.value));
   check(mediaPurposeValues.join(",") === "gallery,cover,logo,icon", "el editor integrado expone galería, portada, logo e icono");
   check(await page.getByRole("button", { name: "Retirar del borrador" }).count() === 5, "el editor permite retirar galería, logo, icono y portada del borrador");
