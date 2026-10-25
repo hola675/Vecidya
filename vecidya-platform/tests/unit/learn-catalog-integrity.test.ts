@@ -152,6 +152,15 @@ test("La jerga técnica prioritaria se explica donde aparece", () => {
   assert.ok(dnsDefinitions.some(({ term, definition }) => /HTTPS.*TLS|TLS.*HTTPS/i.test(term) && /cifrar|conexi[oó]n/i.test(definition)));
 });
 
+test("Las aperturas educativas no reutilizan la plantilla genérica anterior", () => {
+  for (const article of learnArticles) {
+    const text = JSON.stringify(article);
+    assert.doesNotMatch(text, /Al terminar, podr[aá]s explicar con tus palabras/i, article.slug);
+    assert.doesNotMatch(text, /Ejercicio breve: identifica un problema real/i, article.slug);
+    assert.doesNotMatch(text, /Explica la idea central a alguien sin utilizar tecnicismos/i, article.slug);
+  }
+});
+
 test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
   const requirements = [
     ["publicidad-digital-como-preparar-una-primera-campana", [/Google Ads|Meta Ads/i, /página de destino/i, /indicadores/i]],
