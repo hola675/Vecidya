@@ -46,5 +46,5 @@ test("la previsualización conserva el encabezado y footer del negocio sin enlac
   assert.match(html, /Contacto/);
   assert.match(html, /Creado con Vecidya/);
   assert.match(html, /\/api\/organizations\/abc\/business-media\/imagen-1/);
-  assert.doesNotMatch(html, /<a\\b/);
+  assert.doesNotMatch(html, /<a\b/);
 });
