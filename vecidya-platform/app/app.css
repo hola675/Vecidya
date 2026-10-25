@@ -6462,3 +6462,129 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .miniweb-editor__checklist { padding: .85rem; }
   .miniweb-editor__checklist-warning { align-items: stretch; }
 }
+
+
+/* MiniWeb: formularios de contenido y estados vacíos, con jerarquía compacta. */
+.miniweb-editor__empty-state {
+  margin: .85rem 0;
+  padding: clamp(1.05rem, 2.2vw, 1.5rem);
+  border: 1px dashed #b8cbea;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #f8fbff 0%, #f0f5ff 100%);
+}
+.miniweb-editor__empty-state strong {
+  display: block;
+  color: #17365d;
+  font-size: 1.04rem;
+}
+.miniweb-editor__empty-state p {
+  max-width: 52rem;
+  margin: .5rem 0 0;
+  color: #536783;
+  line-height: 1.6;
+}
+.miniweb-editor__content-nav { position: relative; }
+.miniweb-content-editor__item {
+  margin: .8rem 0 1rem;
+  border: 1px solid #e1e8f1;
+  border-radius: .95rem;
+  background: #fff;
+  box-shadow: 0 6px 20px rgb(17 52 94 / 3%);
+}
+.miniweb-content-editor__item legend {
+  max-width: min(90%, 42rem);
+  overflow-wrap: anywhere;
+  color: #203c61;
+  font-size: .9rem;
+}
+.miniweb-content-editor__item :is(input:not([type="checkbox"]), textarea, select):focus-visible {
+  outline: 3px solid #8eb0ed;
+  outline-offset: 1px;
+  border-color: #2457c5;
+}
+.miniweb-content-editor__item input::placeholder,
+.miniweb-content-editor__item textarea::placeholder { color: #7a8799; }
+.miniweb-content-editor__item textarea { resize: vertical; }
+.miniweb-content-editor__toggle { min-height: 2.75rem; }
+/* La comparación visual usa el mismo renderizador y datos del borrador. */
+.miniweb-editor__device-switch {
+  display: inline-flex;
+  gap: .3rem;
+  margin-top: .65rem;
+  padding: .3rem;
+  border: 1px solid #dce5f2;
+  border-radius: .8rem;
+  background: #f2f5fa;
+}
+.miniweb-editor__device-switch button {
+  min-height: 2.65rem;
+  padding: .55rem 1rem;
+  border: 1px solid transparent;
+  border-radius: .6rem;
+  background: transparent;
+  color: #415774;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.miniweb-editor__device-switch button[aria-pressed="true"] {
+  border-color: #c6d6ed;
+  background: #fff;
+  color: #17458e;
+  box-shadow: 0 2px 8px rgb(22 59 106 / 8%);
+}
+.miniweb-editor__device-switch button:focus-visible {
+  outline: 3px solid #2457c5;
+  outline-offset: 2px;
+}
+.miniweb-editor__preview-stage {
+  display: grid;
+  justify-items: stretch;
+  min-width: 0;
+  margin-top: 1rem;
+  border: 1px solid #dfe7f1;
+  border-radius: 1rem;
+  padding: clamp(.5rem, 2vw, 1.4rem);
+  background: #edf1f7;
+  overflow: auto;
+}
+.miniweb-editor__preview-stage .miniweb-editor__preview {
+  width: 100%;
+  margin: 0;
+  min-width: 0;
+  background: #fff;
+}
+.miniweb-editor__preview-stage[data-device="mobile"] {
+  justify-items: center;
+  padding: clamp(.5rem, 2vw, 1.5rem);
+}
+.miniweb-editor__preview-stage[data-device="mobile"] .miniweb-editor__preview {
+  width: min(100%, 390px);
+  border-radius: 1.25rem;
+  padding: .7rem;
+  box-shadow: 0 15px 38px rgb(10 27 60 / 13%);
+}
+.miniweb-editor__preview-stage[data-device="mobile"] .miniweb-template__sections,
+.miniweb-editor__preview-stage[data-device="mobile"] .public-business-profile__grid,
+.miniweb-editor__preview-stage[data-device="mobile"] .public-business-profile__header {
+  grid-template-columns: minmax(0, 1fr);
+}
+.miniweb-editor__preview-stage[data-device="mobile"] .public-business-profile__header {
+  gap: .7rem;
+  padding: .85rem;
+}
+.miniweb-editor__preview-stage[data-device="mobile"] .public-business-profile__header h1 {
+  font-size: clamp(1.35rem, 6vw, 1.8rem);
+}
+.miniweb-editor__preview-stage[data-device="mobile"] .miniweb-gallery__grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (max-width: 640px) {
+  .miniweb-editor__content-nav { flex-wrap: nowrap; overflow-x: auto; }
+  .miniweb-editor__empty-state { padding: 1rem; }
+  .miniweb-content-editor__item { padding: .85rem; }
+  .miniweb-editor__preview-stage { padding: .5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .miniweb-editor__device-switch button { transition: none; }
+}
