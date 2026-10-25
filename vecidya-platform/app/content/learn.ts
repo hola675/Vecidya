@@ -1,6 +1,7 @@
 import { learnBusinessOperationsArticles } from "./learn-business-operations";
 import { learnOperations02Articles } from "./learn-operations-02";
 import { learnManagement03Articles } from "./learn-management-03";
+import { learnDigitalLiteracyArticles } from "./learn-digital-literacy";
 
 export type LearnBlock =
   | { type: "paragraph"; text: string }
@@ -278,6 +279,25 @@ export const learnArticles: LearnArticle[] = [
           "Privacidad: qué datos se ingresaron, si respetaron la regla acordada y si hubo incidentes o accesos indebidos.",
         ] }, { type: "paragraph", text: "Guarda la muestra, el periodo, los criterios y las limitaciones de la prueba. Si no hay evidencia suficiente o los errores superan el límite que fijó el negocio, ajusta o detén el piloto en vez de presentar una mejora como comprobada." }],
       },
+      {
+        heading: "Ejemplo: probar antes de atender a personas reales",
+        paragraphs: ["Caso hipotético para convertir los límites de una prueba de IA en decisiones fáciles de comprobar."],
+        blocks: [{
+          type: "example",
+          title: "Una academia prueba un asistente para preguntas frecuentes",
+          hypothetical: true,
+          context: "Una academia recibe muchas preguntas sobre horarios, ubicación y cómo solicitar información de los cursos.",
+          problem: "El equipo quiere responder más rápido, pero teme que el asistente invente precios, plazas disponibles o condiciones que cambian según el curso.",
+          approach: "Preparan una fuente corta con información pública revisada y prueban el asistente solo con preguntas de ensayo. Los precios, disponibilidad y decisiones de matrícula siguen en manos del equipo.",
+          actions: [
+            "Escribir diez preguntas frecuentes y sus respuestas confirmadas, con una persona responsable de mantenerlas.",
+            "Añadir preguntas ambiguas y fuera de alcance para comprobar que el asistente reconoce cuándo no sabe responder.",
+            "Revisar cada respuesta de la prueba y registrar los errores antes de permitir cualquier uso con personas reales.",
+            "Detener o reducir el alcance si aparecen respuestas inventadas, datos que no deberían compartirse o errores repetidos.",
+          ],
+          lesson: "Una prueba útil no intenta demostrar que la IA sirve para todo. Comprueba una tarea pequeña, sus límites y la capacidad del equipo para supervisarla.",
+        }],
+      },
       { heading: "Resumen para aplicar", paragraphs: ["Usa información revisada y evita compartir datos sensibles.","Comprueba respuestas inventadas y errores con una persona responsable.","Evalúa una prueba pequeña antes de ampliar su uso."] },
       {
         heading: "Fuentes y alcance",
@@ -508,6 +528,25 @@ export const learnArticles: LearnArticle[] = [
         ] }],
       },
       {
+        heading: "Ejemplo: una campaña pequeña con una pregunta concreta",
+        paragraphs: ["Caso hipotético. Las cifras y resultados no representan una promesa comercial ni una campaña real."],
+        blocks: [{
+          type: "example",
+          title: "Una librería local quiere promocionar un club de lectura",
+          hypothetical: true,
+          context: "La librería ya publica el horario y recibe consultas por un canal que revisa cada día. Quiere saber si una campaña limitada puede generar solicitudes de información sobre un nuevo club de lectura.",
+          problem: "Si anuncia simplemente «visítanos» y mide solo clics, no sabrá si las personas entendieron la actividad ni si el equipo pudo responder las consultas.",
+          approach: "Define una sola actividad, un periodo y un presupuesto de prueba. El anuncio lleva a una página donde se explican fecha, lugar, condiciones y una forma de preguntar sin prometer cupos que todavía no estén confirmados.",
+          actions: [
+            "Comprobar que la página y el contacto funcionan desde un teléfono antes de activar el anuncio.",
+            "Definir qué contará como señal útil, por ejemplo una consulta sobre el club que el equipo pueda identificar sin recopilar datos innecesarios.",
+            "Registrar el gasto y revisar las consultas atendidas, además de impresiones o clics.",
+            "Pausar la prueba si la información cambia, el canal deja de atenderse o aparecen errores que impiden completar el contacto.",
+          ],
+          lesson: "La campaña sirve para observar una hipótesis limitada. Más clics no demuestran por sí solos ventas, rentabilidad ni que debas aumentar el presupuesto.",
+        }],
+      },
+      {
         heading: "Fuentes oficiales y alcance",
         paragraphs: ["Las fuentes siguientes se consultaron para preparar esta guía. Las recomendaciones editoriales y de organización son prácticas generales; los requisitos de plataforma se identifican como políticas y no deben confundirse con asesoría legal. Las reglas cambian y pueden variar por sector, formato o país: comprueba las versiones vigentes antes de actuar."],
         blocks: [{ type: "sources", items: [
@@ -585,6 +624,25 @@ export const learnArticles: LearnArticle[] = [
           "Usa conexiones seguras cuando se envíen datos, protege las cuentas con contraseñas únicas y autenticación disponible, limita permisos y elimina accesos que ya no se necesiten.",
           "Antes de instalar analítica, píxeles o formularios, identifica qué datos recogen, qué proveedor los procesa, cuánto tiempo se guardan y qué avisos, opciones o base legal requiere tu jurisdicción.",
         ] }, { type: "callout", tone: "caution", title: "Las reglas legales dependen del caso", text: "Las políticas de anuncios de Google o Meta son reglas de sus plataformas; no sustituyen la legislación sobre privacidad, cookies, accesibilidad, promociones o comunicaciones comerciales de tu país." }],
+      },
+      {
+        heading: "Ejemplo: corregir una información antes de abrir otro canal",
+        paragraphs: ["Caso hipotético para mostrar una revisión sencilla de presencia digital."],
+        blocks: [{
+          type: "example",
+          title: "Un taller cambia su horario de los sábados",
+          hypothetical: true,
+          context: "Un taller de reparación reduce su horario de los sábados. Su sitio web muestra el nuevo horario, pero una red social y una ficha pública conservan el anterior.",
+          problem: "Una persona puede desplazarse cuando el taller ya está cerrado y encontrar información distinta según el canal que consulte.",
+          approach: "El responsable identifica los canales que el taller mantiene de verdad, corrige primero los datos esenciales y anota dónde debe revisar el horario cuando vuelva a cambiar.",
+          actions: [
+            "Comparar nombre, teléfono, dirección o zona de servicio y horario en los canales activos.",
+            "Actualizar el horario incorrecto y comprobar cada cambio como lo vería un visitante.",
+            "Retirar o corregir enlaces a cuentas que el negocio ya no atiende.",
+            "Asignar quién revisará estos datos cuando cambien horarios, servicios o formas de contacto.",
+          ],
+          lesson: "La confianza empieza por información coherente y mantenida. Abrir otro canal no corrige los datos antiguos de los que ya existen.",
+        }],
       },
       { heading: "Lista de comprobación", paragraphs: ["Comprueba que horarios, servicios y contacto coincidan entre canales.","No inventes reseñas ni afirmaciones para ganar confianza.","Revisa accesibilidad, privacidad y seguridad antes de ampliar tu presencia."] },
       {
@@ -839,6 +897,25 @@ export const learnArticles: LearnArticle[] = [
           "Trabajo total: configuración, revisión, corrección y mantenimiento frente a los pasos manuales que permanecen.",
           "Impacto y coste: incidentes, quejas, uso de proveedores y esfuerzo de quien responde por el flujo.",
         ] }, { type: "paragraph", text: "Define de antemano una persona con permiso para pausar el flujo, cómo avisará al equipo y qué procedimiento manual lo sustituirá. Para revertir efectos, conserva una manera de localizar tareas o registros generados y deshacerlos solo cuando hacerlo sea seguro. Un mensaje enviado o una compra procesada no siempre se puede retirar: en esos casos, prepara una corrección y una respuesta humana." }, { type: "callout", tone: "tip", title: "Pausar también es un resultado válido", text: "Detén la automatización si aparecen errores repetidos, acciones duplicadas, datos expuestos, destinatarios incorrectos o excepciones sin atender. Investiga, corrige y repite las pruebas antes de reactivarla." }],
+      },
+      {
+        heading: "Ejemplo: detectar un recordatorio duplicado antes de automatizar más",
+        paragraphs: ["Caso hipotético para practicar supervisión, reintentos y salida manual."],
+        blocks: [{
+          type: "example",
+          title: "Una consulta genera dos recordatorios",
+          hypothetical: true,
+          context: "Un negocio crea una regla interna para avisar al equipo cuando una solicitud lleva un día sin respuesta.",
+          problem: "Si el sistema reintenta después de un fallo, podría crear dos tareas para la misma consulta y dos personas terminarían trabajando sobre el mismo pendiente.",
+          approach: "Antes de ampliar el flujo, el equipo prueba qué ocurre cuando el mismo evento llega dos veces y define una referencia única para reconocer la consulta ya registrada.",
+          actions: [
+            "Crear casos de ensayo con un evento normal, un evento repetido y un dato incompleto.",
+            "Comprobar que el segundo evento no crea otra tarea cuando ya existe una abierta para la misma referencia.",
+            "Registrar qué ocurrió y permitir que una persona resuelva manualmente los casos dudosos.",
+            "Mantener un interruptor o procedimiento para detener la regla sin perder la lista de pendientes existente.",
+          ],
+          lesson: "Supervisar una automatización significa comprobar también duplicados, errores y recuperación, no solo el caso perfecto.",
+        }],
       },
       { heading: "Resumen para aplicar", paragraphs: ["Prueba los casos normales y los errores antes de activar.","Define quién interviene cuando el proceso falla.","Conserva una forma segura de detener y revisar la automatización."] },
       {
@@ -1113,6 +1190,25 @@ export const learnArticles: LearnArticle[] = [
           { title: "Actualiza responsabilidades", detail: "Deja el acceso bajo control del negocio y proporciona permisos individuales a quienes apoyen el mantenimiento." },
         ] }],
       },
+      {
+        heading: "Ejemplo: cambiar de proveedor sin perder el dominio",
+        paragraphs: ["Caso hipotético. Los pasos exactos dependen del registrador, alojamiento y servicios que utilice cada negocio."],
+        blocks: [{
+          type: "example",
+          title: "Una pastelería descubre que el dominio está en una cuenta antigua",
+          hypothetical: true,
+          context: "La pastelería quiere cambiar el alojamiento de su web. El sitio lo preparó un colaborador hace años y los avisos de renovación del dominio llegan a una cuenta que casi nadie revisa.",
+          problem: "Cancelar el servicio anterior sin saber quién controla el dominio, el DNS y el correo podría dejar fuera de servicio la web o los mensajes del negocio.",
+          approach: "Antes de mover nada, la responsable identifica el registrador, recupera un acceso controlado por el negocio, documenta la zona DNS y separa qué proveedor mantiene cada servicio.",
+          actions: [
+            "Confirmar quién es el registrador, qué cuenta recibe los avisos y cuándo vence el dominio.",
+            "Guardar una copia de los registros DNS e identificar cuáles usa la web y cuáles necesita el correo.",
+            "Preparar y probar el nuevo alojamiento antes de cancelar el anterior.",
+            "Cambiar únicamente los registros necesarios y comprobar web y correo antes de cerrar el servicio viejo.",
+          ],
+          lesson: "Cambiar de proveedor es más seguro cuando primero recuperas el control y entiendes las dependencias. El dominio, la web, el DNS y el correo pueden estar en servicios distintos.",
+        }],
+      },
       { heading: "Resumen para aplicar", paragraphs: ["Comprueba quién administra el dominio y dónde están los accesos.","Compara el costo completo y las condiciones de renovación.","Planifica cualquier cambio con copia y verificación del servicio."] },
       {
         heading: "Fuentes y alcance",
@@ -1186,6 +1282,25 @@ export const learnArticles: LearnArticle[] = [
           "El correo usa su propia configuración DNS. Los registros MX dirigen el correo entrante; otros registros, como TXT, pueden ayudar a publicar políticas de autenticación o verificar el servicio. Si cambias los servidores DNS o la zona, conserva los registros que el proveedor de correo necesita. Si solo cambias el registro de la web, el correo puede seguir funcionando siempre que sus registros continúen correctos.",
         ],
         blocks: [{ type: "callout", tone: "caution", title: "No borres los registros del correo al conectar la web", text: "Antes de sustituir una zona DNS o cambiar los NS, guarda una copia de los registros actuales y confirma cuáles corresponden al correo. Una página puede cargar correctamente mientras el correo deja de recibir mensajes." }],
+      },
+      {
+        heading: "Ejemplo: la web funciona, pero el correo deja de recibir",
+        paragraphs: ["Caso hipotético para entender por qué cambiar DNS exige revisar más de un servicio."],
+        blocks: [{
+          type: "example",
+          title: "Una tienda conecta su dominio a una nueva web",
+          hypothetical: true,
+          context: "Una tienda cambia de plataforma web. Para conectar el dominio, alguien sustituye la configuración DNS completa sin copiar los registros anteriores.",
+          problem: "La nueva página abre correctamente, pero horas después el negocio descubre que no está recibiendo correo en sus direcciones habituales.",
+          approach: "El equipo compara la zona anterior con la nueva, identifica los registros que necesita el proveedor de correo y restaura únicamente los valores confirmados por ese servicio.",
+          actions: [
+            "Revisar qué cambió en los servidores de nombres y en los registros A, AAAA, CNAME, MX y TXT.",
+            "Consultar las instrucciones vigentes del proveedor de correo en vez de adivinar valores.",
+            "Probar por separado la web, la recepción y el envío de correo después de corregir la zona.",
+            "Guardar una copia de la configuración estable y documentar quién administra DNS, web y correo.",
+          ],
+          lesson: "Que la página cargue no demuestra que todos los servicios del dominio estén bien. Web y correo dependen de registros diferentes que deben comprobarse por separado.",
+        }],
       },
       { heading: "Lista de comprobación", paragraphs: ["El DNS ayuda a localizar servicios asociados a un dominio.","HTTPS protege la conexión, pero no garantiza que el negocio sea legítimo.","El correo y la web pueden usar proveedores y configuraciones diferentes."] },
       {
@@ -1694,6 +1809,7 @@ export const learnArticles: LearnArticle[] = [
           actions: [
             "Corrige la categoría, el teléfono, el horario y los servicios; añade fotos autorizadas.",
             "Al cambiar el horario especial, actualízalo y revisa la ficha como visitante.",
+            "Comprueba desde otro dispositivo que el teléfono, el enlace y el horario coinciden con lo que el negocio atiende realmente.",
           ],
           lesson: "La ficha comunica información que el negocio puede verificar; mantenerla ordenada no permite prometer una posición en Google ni un aumento de clientela.",
         }],
@@ -4317,6 +4433,7 @@ export const learnArticles: LearnArticle[] = [
     ]
   },
 
+  ...learnDigitalLiteracyArticles,
   ...learnBusinessOperationsArticles,
   ...learnOperations02Articles,
   ...learnManagement03Articles,
@@ -4333,6 +4450,17 @@ export const learnPathways = [
       "correo-para-mi-negocio-como-usarlo-sin-perder-mensajes",
       "como-proteger-cuentas-contrasenas-estafas-negocio",
       "como-hacer-copias-de-seguridad-de-tu-negocio",
+    ],
+  },
+  {
+    title: "Usa la tecnología con criterio",
+    description: "Comprende primero, prioriza lo importante y conserva el control de tus herramientas y decisiones.",
+    slugs: [
+      "el-que-mucho-abarca-poco-aprieta-prioridades-digitales",
+      "domina-la-tecnologia-sin-que-te-domine",
+      "como-proteger-cuentas-contrasenas-estafas-negocio",
+      "como-hacer-copias-de-seguridad-de-tu-negocio",
+      "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
     ],
   },
   {
