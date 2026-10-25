@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useLoaderData, useRevalidator } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { Link, useBlocker, useLoaderData, useRevalidator } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
@@ -114,6 +114,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
     faqs: data.faqs,
   });
   const [media, setMedia] = useState(data.media);
+  const leaveDialogRef = useRef<HTMLDialogElement>(null);
   const [uploading, setUploading] = useState(false);
   const [removingMediaId, setRemovingMediaId] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(true);
@@ -128,6 +129,9 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const isDirty = JSON.stringify(configuration) !== JSON.stringify(savedDraft.configuration)
     || JSON.stringify(offerings) !== JSON.stringify(savedDraft.offerings)
     || JSON.stringify(faqs) !== JSON.stringify(savedDraft.faqs);
+  const blocker = useBlocker(({ currentLocation, nextLocation }) =>
+    isDirty && currentLocation.pathname !== nextLocation.pathname,
+  );
   const orderedModules = [...configuration.modules].sort((left, right) => left.sortOrder - right.sortOrder || left.type.localeCompare(right.type));
   const steps = [
     { key: "design", title: "Diseño", help: "Comprueba la plantilla y la identidad de tu negocio." },
@@ -159,6 +163,13 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
 
   // El cambio de organización remonta el editor mediante su key.
   // Una revalidación o subida de archivos no debe sobrescribir los campos locales.
+  useEffect(() => {
+    const dialog = leaveDialogRef.current;
+    if (!dialog) return;
+    if (blocker.state === "blocked" && !dialog.open) dialog.showModal();
+    if (blocker.state !== "blocked" && dialog.open) dialog.close();
+  }, [blocker.state]);
+
   useEffect(() => {
     if (!isDirty) return;
     const preventAccidentalExit = (event: BeforeUnloadEvent) => {
@@ -691,6 +702,24 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
           </div>
         </div>
       </main>
+      <dialog
+        aria-describedby="miniweb-leave-description"
+        aria-labelledby="miniweb-leave-title"
+        className="miniweb-editor__leave-dialog"
+        onCancel={(event) => {
+          event.preventDefault();
+          if (blocker.state === "blocked") blocker.reset();
+        }}
+        ref={leaveDialogRef}
+      >
+        <p className="eyebrow">CAMBIOS SIN GUARDAR</p>
+        <h2 id="miniweb-leave-title">¿Quieres salir de Mi MiniWeb?</h2>
+        <p id="miniweb-leave-description">Has modificado contenido que todavía no está guardado. Si sales ahora, perderás esos cambios locales.</p>
+        <div className="miniweb-editor__leave-dialog-actions">
+          <Button onClick={() => { if (blocker.state === "blocked") blocker.reset(); }} tone="secondary">Seguir editando</Button>
+          <Button onClick={() => { if (blocker.state === "blocked") blocker.proceed(); }}>Salir sin guardar</Button>
+        </div>
+      </dialog>
     </ClientAreaShell>
   );
 }
