@@ -72,7 +72,7 @@ test("La selección y la migración de proveedor quedan como decisiones separada
   const migration = getLearnArticle("como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo");
   assert.ok(choosing && migration);
   assert.equal(choosing.editorialDraft, false, "La guía histórica conserva su aprobación editorial");
-  assert.equal(migration.editorialDraft, true, "La guía nueva permanece en revisión");
+  assert.equal(migration.editorialDraft, false, "La guía de migración debe conservar su aprobación editorial");
   assert.match(choosing.title, /elegir proveedor/i);
   assert.match(migration.title, /cambiar de proveedor/i);
   assert.ok(choosing.relatedSlugs?.includes(migration.slug));
@@ -111,6 +111,25 @@ test("Las cinco guías de Operaciones aprobadas conservan fuentes y límites edi
 
   const project = getLearnArticle("como-empezar-proyecto-digital-sin-detener-negocio");
   assert.match(JSON.stringify(project), /service-manual\/agile-delivery\/how-the-beta-phase-works/);
+});
+
+test("Las dos guías técnicas nuevas conservan la aprobación y sus fuentes primarias", () => {
+  const migration = getLearnArticle("como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo");
+  const email = getLearnArticle("correo-profesional-dominio-registros-mx-txt");
+  assert.ok(migration && email);
+  assert.equal(migration.editorialDraft, false);
+  assert.equal(email.editorialDraft, false);
+
+  const migrationText = JSON.stringify(migration);
+  for (const expected of [/icann\.org\/registrants/, /domain-name-registration-process/, /rfc1034/, /rfc1035/, /Transport_Layer_Security/]) {
+    assert.match(migrationText, expected);
+  }
+
+  const emailText = JSON.stringify(email);
+  for (const expected of [/rfc1035/, /rfc7208/, /rfc6376/, /rfc9989/]) {
+    assert.match(emailText, expected);
+  }
+  assert.match(emailText, /MX|TXT|SPF|DKIM|DMARC/);
 });
 
 test("Todos los itinerarios enlazan a artículos reales sin duplicados internos", () => {
@@ -221,7 +240,7 @@ test("Las bibliografías de presencia y DNS mantienen su alcance especializado",
   assert.ok(dnsSources.some((source) => source.url.includes("Transport_Layer_Security")), "Falta referencia TLS");
   assert.ok(!dnsSources.some((source) => /renewal|registration-process|lookup.icann/.test(source.url)), "Fuentes registrales ajenas a DNS");
   const email = getLearnArticle("correo-profesional-dominio-registros-mx-txt");
-  assert.ok(email?.editorialDraft, "La guía separada de correo debe seguir en revisión editorial");
+  assert.equal(email?.editorialDraft, false, "La guía separada de correo debe conservar su aprobación editorial");
   const emailSources = sources(email);
   assert.ok(emailSources.some((source) => source.url.includes("rfc7208")), "Falta referencia SPF");
   assert.ok(emailSources.some((source) => source.url.includes("rfc6376")), "Falta referencia DKIM");
