@@ -132,7 +132,7 @@ export const QA03B_RECOVERY_WAVE2_QUESTIONS: readonly QuestionDefinitionV2[] = [
   },
   {
     ...find(LOTE_C_QUESTIONS_V2, "q2_hospitality_peak_capacity"),
-    prompt: "En tus horas o días de mayor demanda, ¿con qué frecuencia debes rechazar clientes o hacerles esperar demasiado?",
+    prompt: "En los momentos de mayor demanda, ¿con qué frecuencia rechazas clientes o los haces esperar mucho por falta de capacidad?",
     hint: "Piensa en limitaciones de personal, espacio o tiempo. Tener mucha demanda no implica un problema digital.",
     appliesWhen: hospitality,
     evidenceMigration: "pending",
@@ -153,7 +153,7 @@ export const QA03B_RECOVERY_WAVE2_QUESTIONS: readonly QuestionDefinitionV2[] = [
   },
   {
     ...find(LOTE_D_QUESTIONS_V2, "q2_creator_channel_concentration"),
-    prompt: "¿Qué parte de tu audiencia activa depende de una sola red social o plataforma?",
+    prompt: "¿Hasta qué punto se concentra tu audiencia activa en una sola red social o plataforma?",
     hint: "Piensa en dónde están las personas que realmente siguen tu contenido, no solo en cuántos perfiles tienes.",
     appliesWhen: creator,
     evidenceMigration: "pending",
@@ -175,7 +175,7 @@ export const QA03B_RECOVERY_WAVE2_QUESTIONS: readonly QuestionDefinitionV2[] = [
   {
     ...find(LOTE_B_QUESTIONS_V2, "q2_local_repeat_customers"),
     version: 2,
-    prompt: "Entre las personas que ya compraron o visitaron tu negocio, ¿es habitual que algunas vuelvan?",
+    prompt: "Entre las personas que ya compraron o visitaron tu negocio, ¿con qué frecuencia vuelven?",
     hint: "Cuenta a quienes regresan realmente. Si lo que ofreces normalmente se compra una sola vez, indícalo.",
     appliesWhen: andV2(activeWithHistory, archetypeIncludesAny(["local", "retail", "hospitality"])),
     options: [...find(LOTE_B_QUESTIONS_V2, "q2_local_repeat_customers").options, {
@@ -186,7 +186,7 @@ export const QA03B_RECOVERY_WAVE2_QUESTIONS: readonly QuestionDefinitionV2[] = [
   },
   {
     ...find(LOTE_B_QUESTIONS_V2, "q2_service_area_clarity"),
-    prompt: "¿Tienes definida la zona hasta la que puedes desplazarte para prestar tus servicios?",
+    prompt: "¿Tienes definida la zona hasta la que te conviene desplazarte para prestar tus servicios?",
     hint: "Piensa en la distancia y las condiciones de desplazamiento, no en dónde vive todo tu público.",
     appliesWhen: andV2(inV2("q2_operational_status", ["operating", "preparing"]), archetypeIncludes("local_service")),
     evidenceMigration: "pending",
