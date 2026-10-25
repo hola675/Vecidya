@@ -206,6 +206,17 @@ test("Las fuentes renovadas usan destinos vigentes y terminología actual", () =
   assert.match(JSON.stringify(budget), /sba\.gov\/counseling\/manage-your-business/);
 });
 
+test("Cada guía conserva al menos dos fuentes HTTPS distintas", () => {
+  for (const article of learnArticles) {
+    const sources = article.sections.flatMap((section) =>
+      (section.blocks ?? []).flatMap((block) => block.type === "sources" ? block.items : []));
+    assert.ok(sources.length >= 2, `Faltan fuentes suficientes en ${article.slug}`);
+    const urls = sources.map(({ url }) => url);
+    assert.equal(new Set(urls).size, urls.length, `Fuente duplicada en ${article.slug}`);
+    assert.ok(urls.every((url) => /^https:\/\//i.test(url)), `Fuente no HTTPS en ${article.slug}`);
+  }
+});
+
 test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
   const requirements = [
     ["publicidad-digital-como-preparar-una-primera-campana", [/Google Ads|Meta Ads/i, /página de destino/i, /indicadores/i]],
