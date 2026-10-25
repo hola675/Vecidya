@@ -119,6 +119,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const [previewVisible, setPreviewVisible] = useState(true);
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
   const [mediaPurpose, setMediaPurpose] = useState<"gallery" | "cover">("gallery");
+  const [expandedOfferingIndex, setExpandedOfferingIndex] = useState<number | null>(null);
+  const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<"design" | "sections" | "content" | "preview" | "publish">("design");
   const [contentTab, setContentTab] = useState<"services" | "products" | "faq" | "media">("services");
   const [busy, setBusy] = useState(false);
@@ -211,13 +213,16 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   function validateEditableContent() {
     if (offerings.some((item) => !item.title.trim() || !item.description.trim())) {
       setMessage({ kind: "error", text: "Hay servicios o productos sin título o descripción. Complétalos antes de guardar." });
-      setContentTab(offerings.find((item) => !item.title.trim() || !item.description.trim())?.kind === "product" ? "products" : "services");
+      const invalidIndex = offerings.findIndex((item) => !item.title.trim() || !item.description.trim());
+      setContentTab(offerings[invalidIndex]?.kind === "product" ? "products" : "services");
+      setExpandedOfferingIndex(invalidIndex);
       setActiveTab("content");
       return false;
     }
     if (faqs.some((item) => !item.question.trim() || !item.answer.trim())) {
       setMessage({ kind: "error", text: "Hay preguntas frecuentes incompletas. Completa cada pregunta y su respuesta antes de guardar." });
       setContentTab("faq");
+      setExpandedFaqIndex(faqs.findIndex((item) => !item.question.trim() || !item.answer.trim()));
       setActiveTab("content");
       return false;
     }
@@ -486,7 +491,19 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 </div>
               ) : null}
               {offerings.map((item, index) => item.kind === (contentTab === "services" ? "service" : "product") ? (
-                <fieldset className="miniweb-content-editor__item" key={`offering-${index}`} disabled={!data.canEdit || busy}>
+                <div className="miniweb-content-editor__entry" key={`offering-${index}`}>
+                  <button
+                    aria-controls={`miniweb-offering-fields-${index}`}
+                    aria-expanded={expandedOfferingIndex === index}
+                    className="miniweb-content-editor__entry-toggle"
+                    onClick={() => setExpandedOfferingIndex((current) => current === index ? null : index)}
+                    type="button"
+                  >
+                    <span><strong>{item.title.trim() || (item.kind === "service" ? "Servicio sin título" : "Producto sin título")}</strong>
+                    <small>{item.isActive ? "Visible al publicar" : "Oculto"} · {item.description.trim() ? "Con descripción" : "Falta descripción"}</small></span>
+                    <span aria-hidden="true" className="miniweb-content-editor__chevron" />
+                  </button>
+                <fieldset className="miniweb-content-editor__item" disabled={!data.canEdit || busy} hidden={expandedOfferingIndex !== index} id={`miniweb-offering-fields-${index}`}>
                   <legend>{item.kind === "service" ? "Servicio" : "Producto"} · {item.title.trim() || "Sin título"}</legend>
                   <label>Tipo
                     <select aria-label={`Tipo de oferta ${index + 1}`} onChange={(event) => updateOffering(index, { kind: event.currentTarget.value as BusinessOffering["kind"] })} value={item.kind}>
@@ -503,10 +520,11 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                     <input maxLength={80} onChange={(event) => updateOffering(index, { priceLabel: event.currentTarget.value || null })} placeholder="Ej.: Consultar precio" value={item.priceLabel ?? ""} />
                   </label>
                   <label className="miniweb-content-editor__toggle"><input checked={item.isActive} onChange={(event) => updateOffering(index, { isActive: event.currentTarget.checked })} type="checkbox" /> Mostrar cuando se publique</label>
-                  <Button onClick={() => setOfferings((current) => current.filter((_, position) => position !== index).map((entry, sortOrder) => ({ ...entry, sortOrder })))} tone="secondary">Quitar {item.kind === "service" ? "servicio" : "producto"}</Button>
+                  <Button onClick={() => { setExpandedOfferingIndex(null); setOfferings((current) => current.filter((_, position) => position !== index).map((entry, sortOrder) => ({ ...entry, sortOrder }))); }} tone="secondary">Quitar {item.kind === "service" ? "servicio" : "producto"}</Button>
                 </fieldset>
+                </div>
               ) : null)}
-              <Button disabled={!data.canEdit || busy || offerings.length >= MAX_BUSINESS_OFFERINGS} onClick={() => setOfferings((current) => [...current, { kind: contentTab === "services" ? "service" : "product", title: "", description: "", priceLabel: null, sortOrder: current.length, isActive: true }])} tone="secondary">Añadir {contentTab === "services" ? "servicio" : "producto"}</Button>
+              <Button disabled={!data.canEdit || busy || offerings.length >= MAX_BUSINESS_OFFERINGS} onClick={() => { setExpandedOfferingIndex(offerings.length); setOfferings((current) => [...current, { kind: contentTab === "services" ? "service" : "product", title: "", description: "", priceLabel: null, sortOrder: current.length, isActive: true }]); }} tone="secondary">Añadir {contentTab === "services" ? "servicio" : "producto"}</Button>
               {offerings.length >= MAX_BUSINESS_OFFERINGS ? <p className="miniweb-editor__note" role="status">Has alcanzado el máximo compartido de {MAX_BUSINESS_OFFERINGS} servicios y productos.</p> : null}
             </Card>
               </div>
@@ -523,7 +541,19 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 </div>
               ) : null}
               {faqs.map((item, index) => (
-                <fieldset className="miniweb-content-editor__item" key={`faq-${index}`} disabled={!data.canEdit || busy}>
+                <div className="miniweb-content-editor__entry" key={`faq-${index}`}>
+                  <button
+                    aria-controls={`miniweb-faq-fields-${index}`}
+                    aria-expanded={expandedFaqIndex === index}
+                    className="miniweb-content-editor__entry-toggle"
+                    onClick={() => setExpandedFaqIndex((current) => current === index ? null : index)}
+                    type="button"
+                  >
+                    <span><strong>{item.question.trim() || "Pregunta sin título"}</strong>
+                    <small>{item.isActive ? "Visible al publicar" : "Oculta"} · {item.answer.trim() ? "Con respuesta" : "Falta respuesta"}</small></span>
+                    <span aria-hidden="true" className="miniweb-content-editor__chevron" />
+                  </button>
+                <fieldset className="miniweb-content-editor__item" disabled={!data.canEdit || busy} hidden={expandedFaqIndex !== index} id={`miniweb-faq-fields-${index}`}>
                   <legend>Pregunta {index + 1}</legend>
                   <label>Pregunta
                     <input maxLength={240} onChange={(event) => updateFaq(index, { question: event.currentTarget.value })} placeholder="Escribe una pregunta frecuente" required value={item.question} />
@@ -532,10 +562,11 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                     <textarea maxLength={1200} onChange={(event) => updateFaq(index, { answer: event.currentTarget.value })} placeholder="Responde con información comprobada de tu negocio." required rows={4} value={item.answer} />
                   </label>
                   <label className="miniweb-content-editor__toggle"><input checked={item.isActive} onChange={(event) => updateFaq(index, { isActive: event.currentTarget.checked })} type="checkbox" /> Mostrar cuando se publique</label>
-                  <Button onClick={() => setFaqs((current) => current.filter((_, position) => position !== index).map((entry, sortOrder) => ({ ...entry, sortOrder })))} tone="secondary">Quitar pregunta</Button>
+                  <Button onClick={() => { setExpandedFaqIndex(null); setFaqs((current) => current.filter((_, position) => position !== index).map((entry, sortOrder) => ({ ...entry, sortOrder }))); }} tone="secondary">Quitar pregunta</Button>
                 </fieldset>
+                </div>
               ))}
-              <Button disabled={!data.canEdit || busy || faqs.length >= MAX_BUSINESS_FAQ_ITEMS} onClick={() => setFaqs((current) => [...current, { question: "", answer: "", sortOrder: current.length, isActive: true }])} tone="secondary">Añadir pregunta</Button>
+              <Button disabled={!data.canEdit || busy || faqs.length >= MAX_BUSINESS_FAQ_ITEMS} onClick={() => { setExpandedFaqIndex(faqs.length); setFaqs((current) => [...current, { question: "", answer: "", sortOrder: current.length, isActive: true }]); }} tone="secondary">Añadir pregunta</Button>
               {faqs.length >= MAX_BUSINESS_FAQ_ITEMS ? <p role="status" className="miniweb-editor__note">Has alcanzado el máximo de {MAX_BUSINESS_FAQ_ITEMS} preguntas.</p> : null}
             </Card>
               </div>
