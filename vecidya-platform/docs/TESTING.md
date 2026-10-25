@@ -1,5 +1,11 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-04D — progresión, fuentes y vigencia (2026-10-25)
+
+**TEST versionado / RAN pendiente en HEAD final.** Nuevos contratos: las 47 guías deben aparecer en al menos un itinerario, cada guía debe declarar al menos una continuación relacionada y mantener al menos dos fuentes HTTPS distintas. Se verifican además la terminología actual de Analytics (evento clave / conversión publicitaria) y los destinos renovados de OpenAI, ITU y SBA, rechazando los patrones legacy retirados.
+
+Auditoría estática: **47 artículos, 47 cubiertos por itinerarios, 145 fuentes, 0 incidencias** en cobertura, duplicados de fuente, relaciones o destinos obsoletos detectados. Gate pendiente: `Aprende quality` sobre el HEAD final. Sin D1 remota, E2E visual ni deploy.
+
 ## APRENDE-EDITORIAL-04C — comprensión y redundancia editorial (2026-10-25)
 
 **TEST versionado / RAN pendiente en HEAD final.** El catálogo conserva **47 guías y 9 itinerarios**. Los contratos nuevos comprueban: términos técnicos prioritarios explicados en contexto; ausencia de las tres frases de plantilla educativa anteriores; textos alternativos descriptivos de al menos siete palabras y sin etiquetas genéricas; `intro !== excerpt`; y ningún bloque `summary` idéntico a `enPocasPalabras`.
