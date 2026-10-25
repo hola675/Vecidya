@@ -110,9 +110,9 @@ export default function Privacy() {
             <Link className="button button--secondary" to="/diagnostico">Conocer el diagnóstico</Link>
           </div>
           <div className="legal-highlight__steps">
-            <div><strong>Mientras avanzas</strong><p>Tus respuestas se guardan en este navegador para que puedas continuar si recargas la página. La sesión QA-03B tiene una vigencia de 14 días desde la última actividad; puedes eliminarla antes si empiezas de nuevo. Evita usar dispositivos compartidos.</p></div>
+            <div><strong>Mientras avanzas</strong><p>Tus respuestas se guardan en este navegador para que puedas continuar si recargas la página. La sesión QA-03B se conserva en este navegador hasta 14 días sin actividad; puedes eliminarla antes si empiezas de nuevo. Evita usar dispositivos compartidos.</p></div>
             <div><strong>Al terminar</strong><p>Las respuestas se envían temporalmente al servidor para calcular el resumen anónimo. La ruta pública revisada no persiste explícitamente el contenido de las respuestas en la base de datos; esto no excluye registros técnicos del servicio ni otros flujos identificados. La analítica de embudo disponible en desarrollo no está habilitada como endpoint público de producción.</p></div>
-            <div><strong>Si cambias de dispositivo</strong><p>El progreso guardado localmente no se sincroniza automáticamente entre dispositivos.</p></div>
+            <div><strong>Si cambias de dispositivo</strong><p>El progreso guardado localmente no se sincroniza automáticamente entre dispositivos. La recuperación del progreso entre dispositivos y la descarga directa del resumen no están disponibles en este flujo.</p></div>
           </div>
         </section>
 
