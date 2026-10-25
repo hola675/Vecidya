@@ -138,6 +138,19 @@ test("marketing-agency niche replaces generic offer clarity with scope clarity f
   assert.equal(specialized.selectedQuestionIds.length, generic.selectedQuestionIds.length);
 });
 
+test("already answered generic evidence prevents a late specialty selector from duplicating the observation", () => {
+  const cases: readonly [AnswersV2, string][] = [
+    [{ ...dentistBase, q2_appointments_rebooking: "unknown" }, "q2_niche_health_wellness"],
+    [{ ...restaurantBase, q2_presence_offer_clarity: "unknown" }, "q2_niche_food_hospitality"],
+    [{ ...agencyBase, q2_presence_offer_clarity: "unknown" }, "q2_niche_b2b_services"],
+  ];
+  for (const [answers, selector] of cases) {
+    const plan = buildCandidateQuestionPlanFromBankV3({ answers }, bank77, "utility_first");
+    assert.ok(!plan.selectedQuestionIds.includes(selector), selector);
+    assert.ok(!plan.evidenceSufficiency.usefulContextQuestionIds.includes(selector), selector);
+  }
+});
+
 test("specialized answers produce evidence only from the specialized question, never from the niche selector", () => {
   const cases: readonly [AnswersV2, string, string][] = [
     [{ ...dentistBase, q2_niche_health_wellness: "dentist", q2_dental_care_continuation: "reactive" },
