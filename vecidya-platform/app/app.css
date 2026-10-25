@@ -6693,7 +6693,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   flex: 0 1 auto;
 }
 .miniweb-editor__guide { scroll-margin-top: 5.2rem; }
-.miniweb-editor__guide h2:focus { outline: none; }
+.miniweb-editor__guide h2:focus-visible { outline: 3px solid #2457c5; outline-offset: 4px; border-radius: .25rem; }
 .miniweb-editor__header-actions a { text-align: center; }
 @media (max-width: 600px) {
   .miniweb-editor__header-actions { width: 100%; }
