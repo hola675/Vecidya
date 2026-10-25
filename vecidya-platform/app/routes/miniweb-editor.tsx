@@ -305,7 +305,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 <div><p className="eyebrow">2 · ESTRUCTURA</p><h2 id="miniweb-sections-title">Secciones</h2></div>
                 <span className="miniweb-editor__count">{configuration.modules.filter((module) => module.enabled).length} activas</span>
               </div>
-              <p className="miniweb-editor__note">Cada sección utiliza datos existentes. Si no tiene contenido útil, no se muestra al público.</p>
+              <p className="miniweb-editor__note">Activa solo lo que necesitas. Una sección sin información suficiente no aparece en la página pública.</p>
+              <p className="miniweb-editor__note">Los datos generales se actualizan en <Link to="/app/negocio">Mi negocio</Link>; los servicios, productos, preguntas y medios se completan en el paso Contenido.</p>
               <ol className="miniweb-module-list">
                 {orderedModules.map((module, position) => {
                   const type = module.type;
