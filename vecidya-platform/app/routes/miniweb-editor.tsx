@@ -14,12 +14,13 @@ import { requireOrganization } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { MiniWebRenderer } from "../components/miniweb/miniweb-renderer";
+import { MiniWebSiteFooter, MiniWebSiteHeader } from "../components/miniweb/miniweb-site-chrome";
 import type { PublicBusinessProfile } from "../components/public-business-profile-view";
 import { Button, Card } from "../components/ui";
 import { ClientAreaShell } from "../components/client-area-shell";
 import { MINIWEB_MODULE_REGISTRY, MINIWEB_TEMPLATE_REGISTRY, type MiniWebConfiguration, type MiniWebModuleType } from "../features/miniweb/registry";
 import { getMiniWebPublicationState, toMiniWebPublicProfile } from "../features/miniweb/public-model";
-import { hasMiniWebModuleContent } from "../features/miniweb/render";
+import { getRenderableMiniWebModules, hasMiniWebModuleContent } from "../features/miniweb/render";
 import { MAX_BUSINESS_FAQ_ITEMS, MAX_BUSINESS_OFFERINGS, type BusinessFaqItem, type BusinessOffering } from "../features/miniweb/content";
 
 import type { Route } from "./+types/miniweb-editor";
@@ -336,6 +337,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
 
   const template = MINIWEB_TEMPLATE_REGISTRY[configuration.templateKey];
   const profile = data.profile ?? emptyPreviewProfile();
+  const previewProfile = { ...profile, logoUrl: media.find((asset) => asset.purpose === "logo")?.publicUrl ?? profile.logoUrl };
+  const previewModuleTypes = getRenderableMiniWebModules(configuration, previewProfile, data.hours, offerings, faqs, media).map((module) => module.type);
   const readyModuleCount = orderedModules.filter((module) => module.enabled && hasMiniWebModuleContent(module.type, profile, data.hours, offerings, faqs, media)).length;
   const enabledModuleCount = orderedModules.filter((module) => module.enabled).length;
   const incompleteOfferings = offerings.filter((item) => !item.title.trim() || !item.description.trim()).length;
@@ -686,8 +689,12 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
             </div>
             {previewVisible && activeTab === "preview" ? data.profile ? (
               <div aria-label={previewDevice === "mobile" ? "Vista previa estrecha" : "Vista previa amplia"} className="miniweb-editor__preview-stage" data-device={previewDevice} role="region">
-                <div className="miniweb-editor__preview">
-                  <MiniWebRenderer configuration={configuration} hours={data.hours} offerings={offerings} faqs={faqs} media={media} preview profile={{ ...profile, logoUrl: media.find((asset) => asset.purpose === "logo")?.publicUrl ?? profile.logoUrl }} />
+                <div className="miniweb-editor__preview miniweb-standalone">
+                  <MiniWebSiteHeader profile={previewProfile} visibleModules={previewModuleTypes} preview />
+                  <div className="miniweb-editor__preview-body">
+                    <MiniWebRenderer configuration={configuration} hours={data.hours} offerings={offerings} faqs={faqs} media={media} preview profile={previewProfile} />
+                  </div>
+                  <MiniWebSiteFooter profile={previewProfile} preview />
                 </div>
               </div>
             ) : <div className="miniweb-editor__empty-preview">Completa primero la información de tu negocio para generar una vista previa.</div> : null}
