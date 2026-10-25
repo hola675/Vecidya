@@ -168,6 +168,12 @@ test("Los textos alternativos explican la imagen y evitan etiquetas genéricas",
   }
 });
 
+test("La introducción y el extracto cumplen funciones distintas", () => {
+  for (const article of learnArticles) {
+    assert.notEqual(article.intro.trim(), article.excerpt.trim(), `Intro y extracto duplicados: ${article.slug}`);
+  }
+});
+
 test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
   const requirements = [
     ["publicidad-digital-como-preparar-una-primera-campana", [/Google Ads|Meta Ads/i, /página de destino/i, /indicadores/i]],
