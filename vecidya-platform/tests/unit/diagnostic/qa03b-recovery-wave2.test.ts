@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as production } from "../../../app/features/diagnostic/qa03b/bank";
-import { QA03B_SPECIALTY_CANDIDATE_BANK_V1 as candidate } from "../../../app/features/diagnostic/qa03b/specialty-candidate-bank";
+import { QA03B_RECOVERY_PILOT_V1 as pilot, QA03B_SPECIALTY_CANDIDATE_BANK_V1 as candidate } from "../../../app/features/diagnostic/qa03b/specialty-candidate-bank";
 import { QA03B_RECOVERY_WAVE2_QUESTIONS as recovered } from "../../../app/features/diagnostic/qa03b/recovery-wave2";
 import { resolveEligibleQuestionsV2 } from "../../../app/features/diagnostic/qa03b/engine";
 import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-planner";
@@ -53,6 +53,28 @@ test("wave 2 covers fifteen reviewed historical questions without activating the
     ["q2_local_repeat_customers", 2],
   ]);
   for (const question of recovered) assert.equal(question.version, changedContracts.get(question.id) ?? 1, question.id);
+});
+
+test("all 21 recovered entries have precise editorial copy, neutral options and justified evidence", () => {
+  assert.equal(pilot.length, 6);
+  const set = [...pilot, ...recovered];
+  assert.equal(set.length, 21);
+  assert.equal(new Set(set.map((q) => q.id)).size, 21);
+  assert.equal(set.filter((q) => q.evidenceMigration === "migrated").length, 12);
+  assert.equal(set.filter((q) => q.evidenceMigration === "pending").length, 9);
+  for (const q of set) {
+    assert.ok(q.prompt.startsWith("¿") && q.prompt.endsWith("?"), q.id);
+    assert.ok(q.hint && q.hint.trim().length > 0 && q.hint.length <= 140, q.id);
+    assert.ok(q.options.some((option) => option.value !== "unknown"), q.id);
+    if (q.evidenceMigration === "migrated") {
+      assert.ok(q.evidenceV3, q.id);
+      for (const reading of q.evidenceV3!.dimensions) {
+        assert.deepEqual(Object.keys(reading.answers).sort(), q.options.map((option) => option.value).sort(), q.id);
+      }
+    } else {
+      assert.equal(q.evidenceV3, undefined, q.id);
+    }
+  }
 });
 
 test("cart visibility does not imply permission to contact abandoned-cart visitors", () => {
@@ -125,7 +147,7 @@ test("new measurement observation is direct while cart visibility is supporting 
   assert.equal(find("q2_ecommerce_cart_visibility").evidenceV3?.dimensions[0]?.directness, "supporting");
   assert.equal(find("q2_measurement_source_confidence").evidenceV3?.dimensions[0]?.directness, "direct");
   const plan = buildCandidateQuestionPlanFromBankV3({
-    answers: { ...base, q2_goal: "measure", q2_friction: "measurement" },
+    answers: { ...base, q2_goal: "measure" },
   }, candidate);
   assert.ok(plan.budget.hardMax <= 24);
   assert.ok(plan.selectedQuestionIds.length <= plan.budget.hardMax);
