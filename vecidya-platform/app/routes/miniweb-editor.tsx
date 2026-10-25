@@ -516,7 +516,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                   ["services", "Servicios", offerings.filter((item) => item.kind === "service").length],
                   ["products", "Productos", offerings.filter((item) => item.kind === "product").length],
                   ["faq", "Preguntas frecuentes", faqs.length],
-                  ["media", "Galería y portada", media.length],
+                  ["media", "Archivos e identidad", media.length],
                 ] as const).map(([key, label, count]) => (
                   <button
                     aria-pressed={contentTab === key}
@@ -641,10 +641,10 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               <div hidden={contentTab !== "media"}>
             <Card aria-labelledby="miniweb-media-title" className="miniweb-content-editor">
               <div className="miniweb-editor__section-heading">
-                <div><p className="eyebrow">MEDIOS DEL NEGOCIO</p><h2 id="miniweb-media-title">Imágenes y videos</h2></div>
+                <div><p className="eyebrow">BIBLIOTECA VISUAL</p><h2 id="miniweb-media-title">Identidad, galería y portada</h2></div>
                 <span className="miniweb-editor__count">{media.length} archivos</span>
               </div>
-              <p className="miniweb-editor__note">Sube imágenes JPEG, PNG o WebP, o videos MP4 o WebM de hasta 32 MB. Los medios se almacenan en privado y pasan a la página pública únicamente al publicar el snapshot.</p>
+              <p className="miniweb-editor__note">Organiza los recursos del negocio sin duplicar Mi negocio: logo e icono propios de MiniWeb, portada y fotografías o vídeos para Galería. Formatos admitidos: JPEG, PNG, WebP, MP4 y WebM, hasta 32 MB por archivo. Solo se mostrarán al publicar.</p>
               <form className="miniweb-content-editor__item" onSubmit={handleMediaUpload}>
                 <input name="draftRevision" type="hidden" value={draftRevision} />
                 <label>Destino del archivo
@@ -671,7 +671,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               </form>
               {!media.length ? <div className="miniweb-editor__empty-state"><strong>Tus imágenes cuentan la historia del negocio</strong><p>Añade una portada y, si quieres, más fotografías o vídeos para la galería. Puedes revisarlos antes de publicar.</p></div> : null}
               {media.length ? <ul className="miniweb-media-list">{media.map((asset) => <li key={asset.id}>{asset.mediaType === "image" ? <img alt="" height="72" loading="lazy" src={asset.publicUrl} width="96" /> : <span aria-hidden="true">▶</span>}<span>{asset.purpose === "cover" ? "Portada" : asset.purpose === "logo" ? "Logo" : asset.purpose === "icon" ? "Icono" : "Galería"}: {asset.altText}</span><span>{Math.ceil(asset.sizeBytes / 1024)} KB</span><Button disabled={!data.canEdit || busy || uploading || removingMediaId !== null} onClick={() => void handleRemoveMedia(asset)} tone="secondary">{removingMediaId === asset.id ? "Retirando…" : "Retirar del borrador"}</Button></li>)}</ul> : null}
-              <p className="miniweb-editor__note">Activa Galería en Secciones y publica para mostrar sus archivos. La imagen de portada se configura por separado.</p>
+              <p className="miniweb-editor__note">El logo, el icono y la portada se usan en la presentación. La galería solo se ve cuando está activada en Secciones. Las imágenes vinculadas a servicios o productos se muestran en esas tarjetas aunque Galería esté desactivada.</p>
             </Card>
               </div>
             </div>
