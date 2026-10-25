@@ -18,6 +18,8 @@ try {
   await page.goto(new URL("/diagnostico", baseUrl).toString(), { waitUntil: "domcontentloaded" });
   await page.evaluate(() => localStorage.removeItem("vecidya.diagnostic.v3.candidate.session.8"));
   await page.reload({ waitUntil: "domcontentloaded" });
+  // A fresh browser context has no cookie preference; choose necessary-only before starting.
+  await page.getByRole("button", { name: "Rechazar opcionales", exact: true }).click();
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   for (let turn = 0; turn < 30; turn++) {
     if (await page.locator(".df-ready").count()) break;
@@ -31,6 +33,14 @@ try {
   assert.equal(await page.locator(".df-ready").count(), 1, "diagnostic did not finish");
   await page.getByRole("button", { name: "Ver mi resumen" }).click();
   await page.getByRole("heading", { name: "Tu resumen del diagnóstico" }).waitFor();
+  const contentHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+  for (let y = 0; y < contentHeight; y += 700) {
+    await page.evaluate((scrollY) => window.scrollTo(0, scrollY), y);
+    await page.waitForTimeout(75);
+  }
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForFunction(() => [...document.images].every((image) => image.complete && image.naturalWidth > 0));
+  await page.evaluate(async () => Promise.all([...document.images].map((image) => image.decode().catch(() => {}))));
   for (const width of [320, 375, 390, 768, 1024, 1366]) {
     await page.setViewportSize({ width, height: 900 });
     await page.screenshot({ path: join(output, `summary-${width}.png`), fullPage: true });

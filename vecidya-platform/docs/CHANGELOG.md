@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-25 — DIAG-PRO-19 — auditoría responsive del resumen anónimo
+
+- El E2E responsive elige el rechazo de cookies opcionales en un contexto limpio y espera la carga de imágenes diferidas antes de guardar capturas.
+- La comprobación Playwright y la revisión visual local pasaron en 320/375/390/768/1024/1366 px. No se modificó la interfaz ni el motor; no se probó el informe identificado ni el PDF.
+- Se generaron capturas PNG y WebP lossless como artefactos locales ignorados por Git. Worker y D1 locales; sin acceso remoto ni despliegue.
+
 ## 2026-10-24 — mantenimiento compatible de dependencias y URLs (checkpoint local)
 
 - Actualiza dependencias directas dentro de los rangos semver y regenera `pnpm-lock.yaml`: React Router 8.5.0, React 19.3.1, Drizzle ORM 0.45.4, Cloudflare Vite plugin 1.65.0, Vite 8.3.5 y Wrangler 4.152.0, entre otras. Se conservan los pins exactos de Better Auth, PDFKit parcheado, Playwright y Arimo.
