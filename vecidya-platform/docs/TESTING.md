@@ -1,5 +1,11 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-04C — comprensión y redundancia editorial (2026-10-25)
+
+**TEST versionado / RAN pendiente en HEAD final.** El catálogo conserva **47 guías y 9 itinerarios**. Los contratos nuevos comprueban: términos técnicos prioritarios explicados en contexto; ausencia de las tres frases de plantilla educativa anteriores; textos alternativos descriptivos de al menos siete palabras y sin etiquetas genéricas; `intro !== excerpt`; y ningún bloque `summary` idéntico a `enPocasPalabras`.
+
+Una auditoría estática sobre los seis archivos de contenido obtuvo **47/47 slugs únicos y 0 incidencias** en esos contratos, además de al menos un ejemplo por guía. Gate pendiente: `Aprende quality` con typecheck, build e integridad Aprende sobre el HEAD final. Sin D1 remota, E2E visual ni deploy.
+
 ## APRENDE-EDITORIAL-04B — separación selección/migración de proveedor (2026-10-25)
 
 **TEST versionado / RAN pendiente en HEAD final.** El contrato de catálogo espera **47 guías** y mantiene 9 itinerarios. La prueba nueva exige que la guía histórica de proveedor siga aprobada y enfocada en elegir/renovar, mientras la migración nueva permanece en revisión y contiene DNS, correo, cancelación segura y comprobaciones. Ambas deben enlazarse entre sí. Las pruebas históricas de Presencia, Automatizaciones, Dominio/hosting, CRM e IA permanecen como contrato de contenido durante su reducción. Un guard adicional protege seis guías madre (CRM, IA, Presencia, primera campaña, Automatizaciones y Dominio/hosting) contra regresión editorial: máximo 10 secciones y 1800 palabras serializadas por guía.
