@@ -131,6 +131,10 @@ test("eight A/B journeys compare question count, outcome, evidence and niche cov
   const pairs = profiles.map((id) => ({ id, baseline: walk(id, "baseline"), shadow: walk(id, "utility_first") }));
   for (const { id, baseline, shadow } of pairs) {
     assert.ok(baseline.asked.length <= 24 && shadow.asked.length <= 24, id);
+    assert.ok(shadow.asked.length <= baseline.asked.length, `${id}: shadow must not lengthen a certified journey`);
+    assert.ok(shadow.scoredEvidence >= baseline.scoredEvidence, `${id}: no loss of mapped evidence`);
+    assert.ok(shadow.unresolved <= baseline.unresolved, `${id}: no extra unresolved applicable dimensions`);
+    assert.ok(shadow.insufficient <= baseline.insufficient, `${id}: no extra insufficient-context dimensions`);
     assert.ok(shadow.nicheAnswered <= 1, id);
     // Score neutral/unknown answers as uncertainty, never manufacture direct evidence.
     assert.ok(shadow.scoredEvidence >= 0 && shadow.scoredEvidence <= shadow.asked.length * 8, id);
