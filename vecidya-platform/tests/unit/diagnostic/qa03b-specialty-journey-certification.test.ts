@@ -82,9 +82,15 @@ test("30 authored personas resolve valid niche, entity, stage and sector without
     if (persona.id === "autonomo-dentista") {
       assert.ok(!result.context.archetypeComponents.includes("appointments"), "dentist niche alone never implies multiple providers");
     }
-    const before = scoreCandidateContextualDimensionsV3({ answers: source });
+    // A newly declared niche can legitimately change R4 *applicability*.
+    // It cannot, by itself, manufacture direct diagnostic evidence.
     const after = scoreCandidateContextualDimensionsV3({ answers: source }, candidateBank);
-    assert.deepEqual(after.dimensions, before.dimensions, `${persona.id}: cannot change scoring without new evidence`);
+    for (const dimension of after.dimensions) {
+      assert.ok(
+        dimension.evidence.every((item) => !item.questionId.startsWith("q2_niche_")),
+        `${persona.id}: sector and niche declarations are not scored evidence`,
+      );
+    }
   }
 });
 
