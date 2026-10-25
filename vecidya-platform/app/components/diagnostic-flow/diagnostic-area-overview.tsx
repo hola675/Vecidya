@@ -20,6 +20,7 @@ export function DiagnosticAreaOverview({ dimensions }: {
             <div className="dr-area-overview__copy">
               <h3>{dimension.label}</h3>
               <p>{dimension.statusLabel}</p>
+              {dimension.preliminary ? <span className="dr-area-overview__preliminary">Lectura preliminar</span> : null}
             </div>
             <strong className={dimension.score === null ? "dr-area-overview__value dr-area-overview__value--empty" : "dr-area-overview__value"}>
               {dimension.score === null ? "Sin lectura" : `${dimension.score}%`}
