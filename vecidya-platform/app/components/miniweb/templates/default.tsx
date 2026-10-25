@@ -46,7 +46,7 @@ export function DefaultMiniWebTemplate({ configuration, modules, profile, hours,
     const renderer = moduleRenderers[module.type];
     if (!renderer) return null;
     return (
-      <div className={`miniweb-template__module miniweb-template__module--${module.type}`} data-miniweb-module={module.type} key={module.type}>
+      <div className={`miniweb-template__module miniweb-template__module--${module.type}`} data-miniweb-module={module.type} id={`miniweb-section-${module.type}`} key={module.type}>
       {renderer({ profile, hours, offerings, faqs, media, preview, contactEnabled })}
       </div>
     );
