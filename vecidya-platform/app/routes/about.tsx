@@ -10,7 +10,7 @@ import type { Route } from "./+types/about";
 export function meta(_: Route.MetaArgs) {
   return publicMeta(
     "Sobre nosotros",
-    "Conoce la misión, el equipo y el acompañamiento de Vecidya desde Medellín, Colombia, para el desarrollo digital y el uso responsable de las TIC.",
+    "Conoce la misión, el equipo y el acompañamiento de Vecidya para impulsar la presencia digital y el uso responsable de las TIC.",
     "/sobre-nosotros",
   );
 }
@@ -23,7 +23,7 @@ export default function About() {
           <div>
             <p className="eyebrow">SOBRE VECIDYA</p>
             <h1 id="about-title">Acompañamos el desarrollo digital de negocios y organizaciones.</h1>
-            <p>Desde Medellín, Colombia, impulsamos la presencia digital y el aprovechamiento responsable de las Tecnologías de la Información y las Comunicaciones (TIC) para el desarrollo económico, social y organizacional.</p>
+            <p>Impulsamos la presencia digital y el aprovechamiento responsable de las Tecnologías de la Información y las Comunicaciones (TIC) en negocios y organizaciones.</p>
             <div className="public-actions">
               <a className="button button--primary" href="#por-que">Conoce cómo ayudamos</a>
               <Link className="button button--secondary" to="/diagnostico">{PUBLIC_ACTION_LABELS.diagnostic}</Link>
@@ -117,10 +117,10 @@ export default function About() {
         <section className="about-origin" aria-labelledby="about-identity-title">
           <div className="about-section-heading">
             <p className="eyebrow">NUESTRA IDENTIDAD</p>
-            <h2 id="about-identity-title">Vecidya, desde Medellín, Colombia.</h2>
+            <h2 id="about-identity-title">Vecidya, una identidad digital con propósito.</h2>
           </div>
           <div className="about-origin__copy">
-            <p>Vecidya es el nombre con el que presentamos nuestra plataforma y comunidad de acompañamiento digital. Nuestro punto de referencia es Medellín, Antioquia, Colombia.</p>
+            <p>Vecidya es el nombre con el que presentamos nuestra plataforma y comunidad de acompañamiento digital dirigida a negocios, profesionales y organizaciones de habla hispana.</p>
             <p>Los datos de identificación jurídica y registral están pendientes de confirmación. Para consultas comerciales y legales, visita nuestra <Link to="/informacion-legal">información legal y comercial</Link>.</p>
           </div>
         </section>
