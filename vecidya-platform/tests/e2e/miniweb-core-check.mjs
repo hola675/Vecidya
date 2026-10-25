@@ -11,7 +11,8 @@ import { chromium } from "playwright";
 setDefaultAutoSelectFamilyAttemptTimeout(5_000);
 assertLocalBaseUrl();
 
-const suffix = Date.now().toString();
+const suffix = process.env.VISUAL_QA_FIXTURE_ID ?? Date.now().toString();
+const auditWidths = [320, 360, 390, 768, 980, 1024, 1366, 1920];
 const checks = [];
 class HarnessError extends Error {}
 const harness = (condition, message) => { if (!condition) throw new HarnessError(`HARNESS: ${message}`); };
@@ -27,6 +28,14 @@ function executeD1(sql) {
   rmSync(directory, { recursive: true, force: true });
   harness(result.status === 0, `D1 local falló (status=${result.status ?? "sin salida"}; error=${result.error?.message ?? "ninguno"}): ${result.stderr || result.stdout || "sin detalle del subproceso"}`);
   return JSON.parse(result.stdout).flatMap((statement) => statement.results ?? []);
+}
+
+async function stabilizePage(page) {
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await Promise.all([...document.images].map((image) => image.decode().catch(() => undefined)));
+  });
+  await page.waitForTimeout(100);
 }
 
 async function d1(sql) {
@@ -137,6 +146,7 @@ const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\ms
 const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
 const createdUserIds = [];
 const createdOrganizationIds = [];
+let fixturesCleaned = false;
 const fixtureInviterId = crypto.randomUUID();
 const fixtureOrganizationId = crypto.randomUUID();
 const fixturePriceId = crypto.randomUUID();
@@ -628,25 +638,40 @@ try {
   const viewportResults = [];
   const captureDirectory = process.env.MINIWEB_CAPTURE_DIR ?? join(process.cwd(), ".playwright-mcp");
   mkdirSync(captureDirectory, { recursive: true });
-  for (const width of [1366, 768, 390, 360]) {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  for (const [index, label] of ["Diseño", "Secciones", "Contenido", "Vista previa", "Publicar"].entries()) {
+    await page.getByRole("button", { name: new RegExp(`${index + 1} ${label}`) }).click();
+    for (const width of [1366, 390]) {
+      await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await stabilizePage(page);
+      await page.screenshot({ fullPage: true, path: join(captureDirectory, `app-mini-editor-step-${index + 1}-${width}.png`) });
+    }
+  }
+  await page.getByRole("button", { name: "2 Secciones" }).click();
+  for (const width of auditWidths) {
     await page.setViewportSize({ width, height: 900 });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await stabilizePage(page);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     viewportResults.push({ width, overflow });
     await page.screenshot({ fullPage: true, path: join(captureDirectory, `app-mini-02a-editor-${width}.png`) });
   }
-  check(viewportResults.every(({ overflow }) => !overflow), "el editor no tiene overflow a 1366/768/390/360");
+  check(viewportResults.every(({ overflow }) => !overflow), `el editor no tiene overflow a ${auditWidths.join("/")} px`);
   console.log(JSON.stringify({ viewports: viewportResults }, null, 2));
   await page.goto(new URL("/vecindario", baseUrl).toString(), { waitUntil: "networkidle" });
   const directoryViewportResults = [];
-  for (const width of [1366, 768, 390, 320]) {
+  for (const width of auditWidths) {
     await page.setViewportSize({ width, height: 900 });
     directoryViewportResults.push({ width, overflow: await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth) });
   }
-  check(directoryViewportResults.every(({ overflow }) => !overflow), "el índice del Vecindario y sus filtros no desbordan a 1366/768/390/320");
+  check(directoryViewportResults.every(({ overflow }) => !overflow), `el índice del Vecindario y sus filtros no desbordan a ${auditWidths.join("/")} px`);
   console.log(JSON.stringify({ directoryViewports: directoryViewportResults }, null, 2));
   await page.goto(new URL(`/vecindario/${profileSlug("public-a")}`, baseUrl).toString(), { waitUntil: "networkidle" });
-  for (const width of [1366, 390]) {
+  for (const width of auditWidths) {
     await page.setViewportSize({ width, height: 900 });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await stabilizePage(page);
     await page.screenshot({ fullPage: true, path: join(captureDirectory, `app-mini-02a-public-${width}.png`) });
   }
 } catch (error) {
@@ -665,12 +690,21 @@ try {
   // Retirar primero las licencias y la cuenta de facturación de prueba para respetar las FK.
   await d1(`DELETE FROM organization_license WHERE billing_account_id IN (SELECT id FROM billing_account WHERE owner_user_id IN (SELECT id FROM user WHERE email IN ('miniweb-owner-a-${suffix}@vecidya.test', 'miniweb-owner-b-${suffix}@vecidya.test'))); DELETE FROM billing_account WHERE owner_user_id IN (SELECT id FROM user WHERE email IN ('miniweb-owner-a-${suffix}@vecidya.test', 'miniweb-owner-b-${suffix}@vecidya.test')); DELETE FROM license_price WHERE id IN ('${priceAId}', '${fixturePriceId}');`);
   if (deletes.length) await d1(`${deletes.join(";\n")};`);
+  const remaining = await d1(`SELECT
+    (SELECT COUNT(*) FROM user WHERE id IN (${createdUserIds.map((id) => `'${id}'`).join(",")})) AS users,
+    (SELECT COUNT(*) FROM organization WHERE id IN (${createdOrganizationIds.map((id) => `'${id}'`).join(",")})) AS organizations,
+    (SELECT COUNT(*) FROM business_media_asset WHERE organization_id IN (${createdOrganizationIds.map((id) => `'${id}'`).join(",")})) AS media_assets,
+    (SELECT COUNT(*) FROM business_profile_publication WHERE organization_id IN (${createdOrganizationIds.map((id) => `'${id}'`).join(",")})) AS publications,
+    (SELECT COUNT(*) FROM billing_account WHERE owner_user_id IN (${createdUserIds.map((id) => `'${id}'`).join(",")})) AS billing_accounts;`);
+  const cleanupCounts = remaining[0] ?? {};
+  fixturesCleaned = Object.values(cleanupCounts).every((count) => Number(count) === 0);
+  if (!fixturesCleaned) throw new HarnessError(`HARNESS: quedaron fixtures después de limpiar: ${JSON.stringify(cleanupCounts)}`);
 } catch (error) {
   harnessFailure ??= new HarnessError(`HARNESS: no se pudieron limpiar las fixtures de prueba: ${error instanceof Error ? error.message : String(error)}`);
 }
 
 const failed = checks.filter((result) => !result.ok);
-console.log(JSON.stringify({ checks: checks.length, passed: checks.length - failed.length, failed: failed.map((result) => result.label), fixturesCleaned: createdOrganizationIds.length > 0 || createdUserIds.length > 0, harness: harnessFailure?.message ?? null }, null, 2));
+console.log(JSON.stringify({ checks: checks.length, passed: checks.length - failed.length, failed: failed.map((result) => result.label), fixturesCleaned, harness: harnessFailure?.message ?? null }, null, 2));
 if (harnessFailure || failed.length) {
   process.exitCode = 1;
 } else {

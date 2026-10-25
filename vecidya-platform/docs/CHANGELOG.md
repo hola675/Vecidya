@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-25 — VISUAL-QA-20261025 — auditoría visual local
+
+- Se añadió captura integral Playwright y reporte HTML local con filtros por ruta/viewport y comparación antes/después. Baselines disponibles: páginas legales antes de #102 y paneles antes de #105. `/cookies` y `/informacion-legal` se etiquetan como rutas nuevas; el editor MiniWeb guiado no tiene captura histórica equivalente.
+- Se corrigió el overflow real del H1 de `/cookies` a 320 px, causado por el ancho mínimo intrínseco del grid y una palabra larga. Revisión final a 320/390/1366 px: HTTP 200 sin overflow.
+- Typecheck/build y 1699 unitarias PASS; E2E de consentimiento PASS; E2E de dashboard PASS; MiniWeb E2E **123/123 PASS** en Worker local, fixtures limpias y ocho anchos. Captura integral: 100 pantallas, 0 fallos HTTP, 0 requests externos, 0 errores de consola públicos/internos. Las mediciones 711 px en tabla interna durante captura rápida se identifican como timing; la tabla conserva su propio desplazamiento y el E2E verifica el shell responsive.
+- Demo local sintético persistente: 10 negocios/perfiles, 8 licencias, 1 snapshot publicado, 11 objetos de medio en R2 simulado (4 públicos y 7 borradores privados). D1/R2 solo locales; sin datos reales, correo externo, deploy ni publicación productiva. AccessLint no está disponible; revisión responsive Playwright no equivale a auditoría WCAG.
+
 ## 2026-10-24 — LEGAL-TRANSPARENCY-102 — rutas legales y preferencias (PR #102, sin deploy)
 
 - Se preparan `/cookies` y `/informacion-legal`, enlaces públicos, ajustes de privacidad y aclaraciones comerciales sin inventar identificación jurídica/fiscal.

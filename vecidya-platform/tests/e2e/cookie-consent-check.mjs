@@ -43,6 +43,8 @@ try {
     assert.equal(await banner.count(), 0, "rechazo persistente no vuelve a abrir banner");
     await page.getByRole("button", { name: "Preferencias de cookies" }).click();
     await page.getByLabel("Analítica opcional").check();
+    await page.getByLabel("Marketing opcional").check();
+    await page.getByLabel("Marketing opcional").uncheck();
     await page.getByRole("button", { name: "Guardar selección" }).click();
     saved = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)), key);
     assert.equal(saved.analytics, true);
@@ -55,8 +57,29 @@ try {
     await page.getByRole("button", { name: "Configurar" }).click();
     assert.equal(await page.getByLabel("Analítica opcional").isChecked(), false);
     assert.equal(await page.getByLabel("Marketing opcional").isChecked(), false);
+    await page.getByLabel("Marketing opcional").check();
+    await page.getByRole("button", { name: "Guardar selección" }).click();
+    saved = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)), key);
+    assert.equal(saved.analytics, false);
+    assert.equal(saved.marketing, true);
+    await page.getByRole("button", { name: "Preferencias de cookies" }).click();
+    await page.getByRole("button", { name: "Aceptar todas" }).click();
+    saved = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)), key);
+    assert.equal(saved.analytics, true);
+    assert.equal(saved.marketing, true);
     await second.close();
     await context.close();
   }
-  console.log("PASS: consentimiento inicial, rechazo, granularidad, persistencia, revocación entre pestañas y móvil.");
+  const blockedContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const blockedPage = await blockedContext.newPage();
+  await blockedPage.addInitScript(() => {
+    Storage.prototype.setItem = function () { throw new DOMException("Blocked by local visual QA", "SecurityError"); };
+  });
+  await visit(blockedPage);
+  assert.equal(await blockedPage.getByRole("region", { name: "Preferencias de cookies" }).isVisible(), true, "almacenamiento bloqueado conserva el panel de elección");
+  await blockedPage.getByRole("button", { name: "Aceptar todas" }).click();
+  assert.equal(await blockedPage.getByRole("status").filter({ hasText: "No pudimos acceder al almacenamiento" }).isVisible(), true, "el error de almacenamiento se comunica sin habilitar preferencias");
+  assert.equal(await blockedPage.getByRole("region", { name: "Preferencias de cookies" }).isVisible(), true, "sin persistencia las categorías opcionales siguen pendientes");
+  await blockedContext.close();
+  console.log("PASS: consentimiento inicial, rechazo, granularidad, aceptación, persistencia, revocación entre pestañas, almacenamiento bloqueado y móvil.");
 } finally { await browser.close(); }

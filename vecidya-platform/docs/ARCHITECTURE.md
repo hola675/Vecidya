@@ -1,5 +1,11 @@
 # Arquitectura de Vecidya
 
+## Auditoría UI/UX local y demo sintético (VISUAL-QA-20261025)
+
+Los scripts `tests/e2e/visual-qa-*` crean un Worker local con `.wrangler/visual-qa-demo` como almacenamiento persistente para D1 y el bucket R2 simulado de medios. El dataset tiene diez organizaciones sintéticas; los registros de propietario y miembro se crean/invitan por flujos de auth, y la prueba de administración usa una membresía de plataforma local activa, no impersonación. La carga de medios pasa por la API autenticada y el R2 local. Solo una organización tiene snapshot público v4 publicado. Los otros siete medios de galería permanecen en borradores y la lectura pública anónima responde 404 para esos objetos. Las capturas/manifest y el reporte HTML se mantienen en `.playwright-mcp/visual-qa/`, ignorado por Git.
+
+El E2E de MiniWeb ejecuta usuarios/organizaciones de fixture separados y los limpia al concluir (`fixturesCleaned: true`); el demo persistente permanece disponible para revisión local. No se copian credenciales al código o documentación; `demo-access.json` contiene credenciales falsas locales y permanece ignorado. Este harness no usa D1/R2 remotos, datos de negocios reales, proveedores externos ni publication automática de perfiles demo.
+
 ## Transparencia pública y consentimiento local de cookies (PR #102)
 
 `CookieConsent` se monta en el footer del `PublicLayout` y de la MiniWeb pública, pero no en la vista previa autenticada. Usa `cookie-preferences.ts` como contrato v2 en `localStorage`, con tres categorías: necesaria=true (funciones de sesión y seguridad), analítica opcional y marketing opcional. La ausencia, corrupción, versión antigua, fecha futura o indisponibilidad del almacenamiento **no habilita** categorías opcionales. La elección puede ajustarse y se comunica entre pestañas mediante el evento `storage` y dentro de la misma pestaña mediante un evento personalizado.

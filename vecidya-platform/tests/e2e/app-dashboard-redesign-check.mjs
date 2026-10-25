@@ -14,6 +14,7 @@ const wranglerCli = resolve(projectDirectory, "node_modules/wrangler/bin/wrangle
 const persistenceName = `.wrangler/app-dashboard-redesign-${process.pid}-${Date.now()}`;
 const persistence = resolve(projectDirectory, persistenceName);
 const screenshotDirectory = process.env.VISUAL_OUTPUT_DIRECTORY;
+const auditWidths = [320, 360, 390, 768, 980, 1024, 1366, 1920];
 if (!existsSync(resolve(projectDirectory, ".wrangler")) || !existsSync(wranglerCli)) throw new Error("Falta Wrangler local o su carpeta de persistencia aislada.");
 
 function runWrangler(args, timeout = 600_000) {
@@ -143,13 +144,14 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
   await page.getByLabel(/Contraseña/i).fill(password);
   await page.getByRole("button", { name: "Entrar" }).click();
   await page.waitForURL("**/app");
-  await page.getByLabel("Organización").selectOption(organizationId);
+  await page.getByLabel("Negocio activo").selectOption(organizationId);
   await page.getByRole("heading", { name: /Buenos días|Buenas tardes|Buenas noches/ }).waitFor();
   await page.getByRole("heading", { name: "Organización activa: Vecidya local demo" }).waitFor();
 
-  for (const width of [320, 390, 768, 980, 1366]) {
+  for (const width of auditWidths) {
     await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
     await assertNoOverflow(page, `${width}px /app`);
+    if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, `vecidya-app-dashboard-${width}.png`), fullPage: true });
   }
   await page.setViewportSize({ width: 1366, height: 900 });
   if (screenshotDirectory) {
@@ -190,14 +192,16 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
     await page.goto(new URL("/app", baseUrl).toString(), { waitUntil: "networkidle" });
   }
   await page.goto(new URL("/app", baseUrl).toString(), { waitUntil: "networkidle" });
+  await page.setViewportSize({ width: 390, height: 844 });
   if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, "vecidya-app-dashboard-mobile.png"), fullPage: true });
 
   phase = "internal dashboard and mobile navigation";
   await page.goto(new URL("/app/internal", baseUrl).toString(), { waitUntil: "networkidle" });
   await page.getByRole("heading", { name: "Administración de Vecidya" }).waitFor();
-  for (const width of [320, 390, 768, 1366]) {
+  for (const width of auditWidths) {
     await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
     await assertNoOverflow(page, `${width}px /app/internal`);
+    if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, `vecidya-internal-dashboard-${width}.png`), fullPage: true });
   }
   await page.setViewportSize({ width: 1366, height: 900 });
   if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, "vecidya-internal-dashboard-desktop.png"), fullPage: true });
@@ -240,7 +244,7 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
   const serviceRows = page.locator(".admin-service-table tbody tr");
   if (await serviceRows.count() !== 3) throw new Error(`Se esperaban tres servicios de catálogo para el espacio de prueba; se recibieron ${await serviceRows.count()}.`);
   if (await page.getByRole("region", { name: "Asignaciones de servicios" }).getAttribute("tabindex") !== "0") throw new Error("La tabla no permite acceder por teclado a su desplazamiento horizontal.");
-  for (const width of [320, 390, 768, 1366]) {
+  for (const width of auditWidths) {
     await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
     const dimensions = await page.locator(".admin-service-table-wrap").evaluate((element) => ({
       wrapper: element.clientWidth,
@@ -297,10 +301,11 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
     await page.screenshot({ path: join(screenshotDirectory, "vecidya-admin-services-mobile.png"), fullPage: true });
   }
   await page.goto(new URL("/app/internal", baseUrl).toString(), { waitUntil: "networkidle" });
+  await page.setViewportSize({ width: 390, height: 844 });
   if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, "vecidya-internal-dashboard-mobile.png"), fullPage: true });
   if (errors.length) throw new Error(`Errores de navegador: ${errors.join(" | ")}`);
 
-  console.log(JSON.stringify({ result: "PASS", routes: ["/app", "/app/internal"], widths: [320, 390, 768, 980, 1366], clientDrawer: "opens and closes on route navigation at 390/768/980px", internalDrawer: "opens and closes on route navigation at 390/768/980px", screenshots: screenshotDirectory ?? "not requested" }, null, 2));
+  console.log(JSON.stringify({ result: "PASS", routes: ["/app", "/app/internal", "/app/internal/services"], widths: auditWidths, clientDrawer: "opens and closes on route navigation at 390/768/980px", internalDrawer: "opens and closes on route navigation at 390/768/980px", screenshots: screenshotDirectory ?? "not requested" }, null, 2));
 } catch (error) {
   throw new Error(`Fase: ${phase}\n${error instanceof Error ? error.stack ?? error.message : String(error)}\nWorker output:\n${worker?.output ?? "(not started)"}`, { cause: error });
 } finally {
