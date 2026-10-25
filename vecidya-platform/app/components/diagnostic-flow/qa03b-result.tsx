@@ -43,7 +43,7 @@ export function CandidateDiagnosticResult({ summary, onEdit, onRequestReport, pu
         <h3>{summary.firstRecommendedAction.title}</h3>
         <p>{summary.firstRecommendedAction.explanation}</p>
       </section> : null}
-      {summary.limitations.length ? <p className="dr-note">{summary.limitations.join(" · ")}</p> : null}
+      {summary.limitations.some((limitation) => limitation !== summary.coverage) ? <aside aria-label="Alcance de esta lectura" className="dr-candidate-limitations"><h2>Alcance de esta lectura</h2><p>{summary.limitations.filter((limitation) => limitation !== summary.coverage).join(" · ")}</p></aside> : null}
       <nav aria-label="Acciones del resumen" className="dr-candidate-actions">
         {publicMode ? <button className="button button--secondary" onClick={() => window.print()} type="button">Imprimir o guardar resumen</button> : null}
         {(!publicMode || reportRequestEnabled) ? <button className="button button--primary" onClick={onRequestReport} type="button">Solicitar informe completo</button> : null}

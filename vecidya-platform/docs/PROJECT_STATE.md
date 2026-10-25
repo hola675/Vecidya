@@ -1,4 +1,8 @@
-## Corte vigente — dependencias y URLs (2026-10-24 local / 2026-10-25 UTC)
+## Corte vigente — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
+
+En `feat/diag-visual-03`, QA-03B presenta la lectura general y ocho áreas en un flujo visual de una columna; entrada, foco, estados preliminares y ausencia de score tienen tratamiento explícito. Las unitarias focales (20/20), E2E QA-03B local (6/6), typecheck y build constan como PASS en `TESTING.md`. No se modifican scoring ni contratos y no hay despliegue. El runner responsive DIAG-PRO-19 está obsoleto respecto a la clave activa y no se cuenta como evidencia multi-viewport; zoom real 200 % y lector de pantalla siguen pendientes.
+
+## Corte de dependencias y URLs (2026-10-24 local / 2026-10-25 UTC)
 
 `origin/main@952f06e` incluye PR #105 y #106; esta rama actualiza dependencias compatibles y fija pnpm `11.21.0` con `devEngines.packageManager`. La aplicación sigue en `0.7.3`; el lockfile y la instalación congelada usan React Router `8.5.0`, React `19.3.1`, Drizzle ORM `0.45.4`, Cloudflare Vite plugin `1.65.0`, Vite `8.3.5` y Wrangler `4.152.0`. Typecheck, build y Worker local con D1 `0000–0028` pasaron.
 
