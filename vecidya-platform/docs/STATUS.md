@@ -18,7 +18,7 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 La auditoría de evidencia registra **145 fuentes** y exige al menos dos URLs HTTPS distintas por guía. Se actualizan referencias verificadas: Google Analytics adopta la terminología actual «evento clave» y diferencia «conversión» para medición de campañas; OpenAI prompting pasa a `developers.openai.com` y Data Controls al artículo vigente de ChatGPT; ITU usa la portada estable de Global Connectivity Report 2025; SBA deja el dominio `legacy.sba.gov` por su página vigente de gestión empresarial. Los scopes conservan los límites de proveedor/jurisdicción.
 
-**Auditoría estática 04D:** 47 artículos, 47 cubiertos por itinerarios, 145 fuentes, todas las guías con ≥2 fuentes distintas y ≥1 continuación relacionada, cero destinos obsoletos de los patrones retirados y terminología de Analytics reconciliada. Se añaden contratos unitarios para cobertura de itinerarios, fuentes mínimas, relaciones editoriales y referencias renovadas. CI pendiente sobre HEAD final.
+**Auditoría estática 04D:** 47 artículos, 47 cubiertos por itinerarios, 145 fuentes, todas las guías con ≥2 fuentes distintas y ≥1 continuación relacionada, cero destinos obsoletos de los patrones retirados y terminología de Analytics reconciliada. Se añaden contratos unitarios para cobertura de itinerarios, fuentes mínimas, relaciones editoriales y referencias renovadas. **RAN en GitHub Actions:** `Aprende quality` run `40245041140` sobre `f69f0c7bf66331858ea22299150ee4f1148de68e` PASS: typecheck, build e integridad Aprende. El PR #126 es dependiente de 04C; el gate general dirigido a `main` queda para la integración final de la cadena.
 
 ## APRENDE-EDITORIAL-04C — lenguaje comprensible y función editorial (2026-10-25)
 
