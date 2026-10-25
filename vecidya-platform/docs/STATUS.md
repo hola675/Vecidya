@@ -4,6 +4,14 @@
 
 **GIT/CONFIG/HTTP:** PR #116 integrado en `main@0152eab6fad5e68336d66d69cbc1597a1f720111`; D1 producción migrada a `0000–0028`; Worker `vecidya-platform` desplegado con Version ID `320eefe0-343c-431f-987f-cf9b92df0c8e`. GET anónimo TLS 2026-10-25T18:38:23Z a `/`, `/cookies`, `/informacion-legal` y `/diagnostico`: todas `200`, versión `0.8.0`, `© 2026 Vecidya`. Typecheck/build/diff-check PASS; pruebas automatizadas omitidas por solicitud del usuario. Evidencia detallada en [ENVIRONMENTS.md](ENVIRONMENTS.md).
 
+## APRENDE-EDITORIAL-04A — criterio digital y ejemplos comprensibles (2026-10-25)
+
+**CODE/TEST versionado en `feat/aprende-editorial-04a`; sin merge, deploy ni publicación atribuida a este checkpoint.** Aprende amplía el catálogo de 44 a **46 guías** y de 8 a **9 itinerarios**. Se añaden dos guías fundacionales en «Tecnología explicada»: prioridades digitales a partir de «el que mucho abarca, poco aprieta» y uso consciente bajo «domina la tecnología; no dejes que la tecnología te domine». Ambas permanecen `editorialDraft: true` hasta revisión humana.
+
+La portada expresa el método **Comprende → Prioriza → Decide**, amplía el lenguaje a vida digital y negocio, y la búsqueda consulta también resúmenes, párrafos y bloques internos. La plantilla de ejemplo sustituye etiquetas técnicas por «Qué está pasando», «Qué se complica», «Una forma sencilla de actuar», «Pasos» y «Qué aprender de este ejemplo». Las seis guías especializadas que no tenían bloque `example` reciben un caso hipotético completo; se conserva el estado editorial existente de las demás guías.
+
+**Gate:** pruebas unitarias de catálogo/currículo actualizadas a 46/9 y contrato nuevo que exige al menos un ejemplo hipotético accionable por guía. Ejecución CI, typecheck, build y diff-check pendientes de este corte documental; no se afirma PASS hasta disponer de evidencia del HEAD del PR. Fuentes nuevas verificadas contra OCDE 2026, NIST CSF 2.0, CISA y W3C. No cambia DB, Auth, Diagnóstico, MiniWeb, GHL, licencias, precios ni producción.
+
 ## DIAG-VISUAL-03 — refinamiento del resultado y entrada QA-03B (2026-10-25)
 
 **CODE/TEST local, rama `feat/diag-visual-03`:** la entrada del cuestionario usa el fondo ilustrado existente con overlay claro; pregunta y resultado mantienen foco visible tras navegación programática; opciones seleccionadas muestran texto reforzado; las ocho áreas conservan una columna legible, ilustraciones de 48 px, puntuación textual exacta y ausencia de barra para `null`. La marca «Lectura preliminar» aclara su alcance, la cobertura duplicada se omite y los límites adicionales quedan bajo una sección nombrada. No se recalculan puntuaciones ni se modifican datos, contrato o rutas.
