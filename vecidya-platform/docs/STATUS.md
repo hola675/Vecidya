@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## PROD-RELEASE-0.8.0 — publicado (2026-10-25)
+
+**GIT/CONFIG/HTTP:** PR #116 integrado en `main@0152eab6fad5e68336d66d69cbc1597a1f720111`; D1 producción migrada a `0000–0028`; Worker `vecidya-platform` desplegado con Version ID `320eefe0-343c-431f-987f-cf9b92df0c8e`. GET anónimo TLS 2026-10-25T18:38:23Z a `/`, `/cookies`, `/informacion-legal` y `/diagnostico`: todas `200`, versión `0.8.0`, `© 2026 Vecidya`. Typecheck/build/diff-check PASS; pruebas automatizadas omitidas por solicitud del usuario. Evidencia detallada en [ENVIRONMENTS.md](ENVIRONMENTS.md).
+
 ## DIAG-VISUAL-03 — refinamiento del resultado y entrada QA-03B (2026-10-25)
 
 **CODE/TEST local, rama `feat/diag-visual-03`:** la entrada del cuestionario usa el fondo ilustrado existente con overlay claro; pregunta y resultado mantienen foco visible tras navegación programática; opciones seleccionadas muestran texto reforzado; las ocho áreas conservan una columna legible, ilustraciones de 48 px, puntuación textual exacta y ausencia de barra para `null`. La marca «Lectura preliminar» aclara su alcance, la cobertura duplicada se omite y los límites adicionales quedan bajo una sección nombrada. No se recalculan puntuaciones ni se modifican datos, contrato o rutas.
@@ -10,7 +14,7 @@
 
 ## DEP-REFRESH-20261024 — dependencias y destinos
 
-**RAN local:** pnpm `11.21.0` fijado en `devEngines.packageManager`; instalación congelada PASS y actualización dentro de rangos semver. Typecheck, build y smoke Worker local (D1 `0000–0028`) PASS. React Router `8.5.0`, React `19.3.1`, Drizzle ORM `0.45.4`, Cloudflare Vite plugin `1.65.0`, Vite `8.3.5`, Wrangler `4.152.0`. HTTP anónimo actual: producción 200, `www` 301 al dominio canónico, staging `workers.dev` 200; registry npm 200. Sin deploy ni acceso a recursos remotos. No se modifica el estado del release `0.7.3` observado.
+**RAN local:** pnpm `11.21.0` fijado en `devEngines.packageManager`; instalación congelada PASS y actualización dentro de rangos semver. Typecheck, build y smoke Worker local (D1 `0000–0028`) PASS. React Router `8.5.0`, React `19.3.1`, Drizzle ORM `0.45.4`, Cloudflare Vite plugin `1.65.0`, Vite `8.3.5`, Wrangler `4.152.0`. HTTP anónimo de ese checkpoint: producción 200, `www` 301 al dominio canónico, staging `workers.dev` 200; registry npm 200. No desplegó en su propio alcance; el release posterior `0.8.0` publicado queda registrado arriba y en `ENVIRONMENTS.md`.
 
 ## DIAG-PRO-19 — auditoría responsive del resumen anónimo (2026-10-25)
 

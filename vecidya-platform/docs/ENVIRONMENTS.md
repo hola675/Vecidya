@@ -4,9 +4,9 @@
 
 Versiones directas actualizadas: React Router `8.5.0`, React/React DOM `19.3.1`, Drizzle ORM `0.45.4`, Cloudflare Vite plugin `1.65.0`, Vite `8.3.5`, Wrangler `4.152.0` y tipos Node `26.6.5`. Better Auth `1.7.5`, PDFKit `0.20.2` (con patch), Playwright `1.63.0` y Arimo `5.3.0` siguen fijadas en versiones exactas. Typecheck/build y smoke local finalizaron PASS (detalle en `TESTING.md`).
 
-**HTTP anónimo con TLS, RAN 2026-10-25 02:32–02:33 UTC:** `https://vecidya.com/` → 200; `https://www.vecidya.com/` → 301 al dominio canónico; staging → 200. La última versión de aplicación vista antes de este release fue `0.7.3`.
+**HTTP anónimo con TLS, RAN 2026-10-25T18:38:23Z:** producción `/`, `/cookies`, `/informacion-legal` y `/diagnostico` → `200`; todas muestran versión `0.8.0` y `© 2026 Vecidya`. La última comprobación previa, 2026-10-25 02:32–02:33 UTC, vio `0.7.3`.
 
-**Cloudflare API de solo lectura, RAN 2026-10-25:** Worker `vecidya-platform`, Version ID activo `5eb7d15a-554a-484a-be26-3f4f02cc3615`, deployment creado `2026-10-24T17:01:25.881888Z`. El ledger de producción (`vecidya-prod`, `8edc3f04-258e-4c29-9f33-76fec3d25042`) contiene `0000–0027`; `0028_miniweb-offering-image.sql` queda pendiente. Existen los buckets `vecidya-business-media-prod` y `vecidya-business-media-staging`. Las lecturas D1 reportaron `changed_db=false`, `rows_written=0`. No se accedió a filas de usuarios ni a objetos R2.
+**Cloudflare API y deploy, RAN 2026-10-25:** Worker `vecidya-platform`, Version ID activo `320eefe0-343c-431f-987f-cf9b92df0c8e`, deployment creado `2026-10-25T18:38:07.538599Z`. Se aplicó `0028_miniweb-offering-image.sql` a `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`); ledger actual `0000–0028`. Existen los buckets `vecidya-business-media-prod` y `vecidya-business-media-staging`. Lecturas posteriores de D1 reportaron `changed_db=false`, `rows_written=0`. No se accedió a filas de usuarios ni a objetos R2.
 
 ## Verificación anónima de Mi Vecidya (2026-10-19)
 
@@ -20,13 +20,13 @@ El package local también informa `0.6.1`, pero coincidencia de versión no demu
 
 # Entornos
 
-## Estado remoto vigente — versión activa 0.7.3 (2026-10-25)
+## Estado remoto vigente — producción 0.8.0 / staging 0.7.0 (2026-10-25)
 
-**HTTP anónimo con TLS, 2026-10-25T01:08Z (2026-10-24, hora local):** producción (`https://vecidya.com`) sirvió `/`, `/diagnostico` y `/diagnostico/metodologia` con `200`, footer `0.7.3` y `© 2026 Vecidya`. Staging (`https://vecidya-platform-staging.soporte-8a1.workers.dev`) sirvió las mismas rutas con `200`, footer `0.7.0` y `© 2026 Vecidya`. Esta consulta GET no obtuvo SHA ni Version ID del Worker y no probó un replay; no acredita por sí sola que la función QA-03B más reciente esté en producción. No se accedió a sesión, D1, Gmail ni R2.
+**HTTP anónimo con TLS, RAN 2026-10-25T18:38:23Z:** producción (`https://vecidya.com`) sirvió `/`, `/cookies`, `/informacion-legal` y `/diagnostico` con `200`, footer `0.8.0` y `© 2026 Vecidya`. La verificación anterior, 2026-10-25T01:08Z, observó `0.7.3`. No se accedió a sesión ni a Gmail.
 
-**Código integrado antes del release:** `origin/main@233c3c4`, versión de aplicación `0.7.3` y pnpm `11.21.0`. Cloudflare confirma el deployment activo y el estado del ledger y de R2 descritos arriba. `0028` debe aplicarse antes de publicar el código que referencia `business_offering.image_asset_id`.
+**Código integrado:** `main@0152eab6fad5e68336d66d69cbc1597a1f720111`, versión de aplicación `0.8.0` y pnpm `11.21.0`. Cloudflare confirma el deployment activo y el ledger `0000–0028` descritos arriba. El Worker usa D1 `vecidya-prod`, R2 `vecidya-business-media-prod`, Gmail, rate limiters (12 y 6 solicitudes/60 s), flags de funnel/purga activos, rutas `vecidya.com/*` y `www.vecidya.com/*` y Cron `17 3 * * *`.
 
-**D1:** staging `d4af6ebc-97c5-42f6-ad3a-51551021e591`; producción `8edc3f04-258e-4c29-9f33-76fec3d25042`. Ledger productivo actual comprobado: `0000–0027`; la migración `0028` queda autorizada para este release y pendiente de ejecución. No se escribieron fixtures ni se ejecutó restore.
+**D1:** staging `d4af6ebc-97c5-42f6-ad3a-51551021e591`; producción `8edc3f04-258e-4c29-9f33-76fec3d25042`. El ledger productivo quedó en `0000–0028` tras aplicar `0028` el 2026-10-25. No se escribieron fixtures ni se ejecutó restore.
 
 ## DIAG-QA-03B-RELEASE-CLOSE — despliegue previo de 0.7.0 (2026-10-23)
 
