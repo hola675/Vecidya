@@ -229,7 +229,7 @@ export const QA03B_RECOVERY_WAVE2_QUESTIONS: readonly QuestionDefinitionV2[] = [
     }),
     variants: [
       { target: { terminology: ["nonprofit"] }, prompt: "Cuando alguien empieza a participar o apoyar tu organización, ¿sabes cómo la conoció?" },
-      { target: { terminology: ["clinical"] }, prompt: "Cuando llega un paciente nuevo, ¿sabes cómo conoció tu consulta?" },
+      { target: { nicheGroup: "health_wellness" }, prompt: "Cuando una persona solicita atención, ¿sabes cómo conoció tu servicio?" },
     ],
   },
 ];
