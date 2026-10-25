@@ -284,12 +284,18 @@ export function parseCandidateSessionV9Prototype(raw: string): CandidateSessionV
       typeof parsed.startedAt !== "number" || typeof parsed.updatedAt !== "number" ||
       typeof parsed.revision !== "number" || typeof parsed.interactionCount !== "number" ||
       !Number.isInteger(parsed.interactionCount) || parsed.interactionCount < 0 ||
+      parsed.interactionCount > CANDIDATE_ROUTE_HARD_CAP_V3 ||
       !isRecord(parsed.answers) || !Array.isArray(parsed.answeredQuestionIds) ||
       !Array.isArray(parsed.queue) || !Array.isArray(parsed.replayTranscript)
     ) return null;
     if (!["in_progress", "completing", "completed"].includes(String(parsed.status))) return null;
     if (!(parsed.terminalReason === null || ["no_useful_questions", "budget_blocked", "hard_cap"].includes(String(parsed.terminalReason)))) return null;
     if (!(parsed.completedAt === null || typeof parsed.completedAt === "number")) return null;
+
+    if (!parsed.answeredQuestionIds.every((id) => typeof id === "string") || new Set(parsed.answeredQuestionIds).size !== parsed.answeredQuestionIds.length) return null;
+    const answerIds = Object.keys(parsed.answers);
+    if (answerIds.length !== parsed.answeredQuestionIds.length || !answerIds.every((id) => parsed.answeredQuestionIds.includes(id))) return null;
+    if (!parsed.queue.every((id) => typeof id === "string" && byId.has(id) && parsed.answers[id] === undefined) || new Set(parsed.queue).size !== parsed.queue.length) return null;
 
     const replayed = replayCandidateTranscriptV9(parsed.replayTranscript as CandidateReplayEventV9[]);
     if (!replayed || replayed.interactionCount !== parsed.interactionCount) return null;
