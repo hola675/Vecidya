@@ -6588,3 +6588,35 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (prefers-reduced-motion: reduce) {
   .miniweb-editor__device-switch button { transition: none; }
 }
+
+
+/* MiniWeb pública: menos espacio redundante y protagonismo de la identidad del negocio. */
+.miniweb-standalone > .public-page.public-business-profile {
+  width: min(calc(100% - 2.5rem), 76rem);
+  margin-inline: auto;
+  padding: clamp(1.25rem, 3vw, 2.5rem) 0;
+  gap: clamp(1rem, 3vw, 2rem);
+}
+.miniweb-standalone #miniweb-sections > .public-page {
+  padding: 0;
+  min-height: 0;
+}
+.miniweb-standalone .public-business-profile__header {
+  background: radial-gradient(circle at 100% 0%, rgb(36 87 197 / 8%), transparent 42%),
+              linear-gradient(135deg, #fff 0%, #f6f9fe 100%);
+  box-shadow: 0 18px 52px rgb(18 52 92 / 5%);
+}
+.miniweb-standalone .public-business-profile__header h1 { overflow-wrap: anywhere; }
+.miniweb-standalone .miniweb-template__module { scroll-margin-top: 1.5rem; }
+.miniweb-standalone__navigation a { padding: .4rem 0; text-underline-offset: .25rem; }
+.miniweb-standalone__navigation a:hover,
+.miniweb-standalone__footer a:hover { text-decoration: underline; }
+.miniweb-standalone__credit { width: 100%; margin-top: .25rem; }
+@media (max-width: 700px) {
+  .miniweb-standalone > .public-page.public-business-profile {
+    width: min(calc(100% - 2rem), 76rem);
+    padding: 1rem 0 1.65rem;
+  }
+  .miniweb-standalone__navigation { justify-content: flex-start; gap: .4rem 1rem; }
+  .miniweb-standalone .public-business-profile__header { padding: clamp(1.1rem, 4vw, 1.75rem); }
+}
