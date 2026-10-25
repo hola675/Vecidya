@@ -32,8 +32,8 @@ const find = (id: string) => {
 test("wave 2 covers fifteen reviewed historical questions without activating the public bank", () => {
   assert.equal(production.length, 45);
   assert.equal(recovered.length, 15);
-  assert.equal(candidate.length, 74);
-  assert.equal(new Set(candidate.map((q) => q.id)).size, 74);
+  assert.equal(candidate.length, 78);
+  assert.equal(new Set(candidate.map((q) => q.id)).size, 78);
   assert.equal(recovered.filter((q) => q.evidenceMigration === "migrated").length, 7);
   assert.equal(recovered.filter((q) => q.evidenceMigration === "pending").length, 8);
   assert.deepEqual(validateEvidenceMigrationsV3(candidate), []);
