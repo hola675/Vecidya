@@ -866,7 +866,7 @@ export const learnArticles: LearnArticle[] = [
       {
         heading: "Primero prueba la regla, no la confianza",
         paragraphs: [
-          "Una automatización puede funcionar muchas veces y fallar justo cuando recibe un dato incompleto o un evento repetido. Por eso no basta con comprobar el caso perfecto.",
+          "Una automatización puede funcionar muchas veces y fallar justo cuando recibe un dato incompleto, un evento repetido o varios reintentos. Por eso no basta con comprobar el caso perfecto.",
           "Antes de usarla con clientes, dinero o información importante, prepara casos de ensayo y define qué resultado esperas observar.",
         ],
         blocks: [{
