@@ -6270,3 +6270,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (prefers-reduced-motion: reduce) {
   .miniweb-standalone * { scroll-behavior: auto !important; }
 }
+
+/* MiniWeb editor: pasos de configuracion y controles compactos. */
+.miniweb-editor [hidden] { display: none !important; }
+.miniweb-editor__tabs { display: flex; flex-wrap: wrap; gap: .6rem; }
+.miniweb-editor__tabs button { display: inline-flex; align-items: center; gap: .5rem; padding: .7rem .9rem; border: 1px solid #d5deeb; border-radius: .75rem; background: #fff; color: #34435c; font: inherit; font-weight: 650; cursor: pointer; }
+.miniweb-editor__tabs button:hover { border-color: #6485c8; }
+.miniweb-editor__tabs button.miniweb-editor__tab--active { border-color: #2457c5; background: #edf3ff; color: #173c8b; }
+.miniweb-editor__tabs button:focus-visible { outline: 3px solid #2457c5; outline-offset: 3px; }
+.miniweb-editor__tab-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .9rem 1rem; border: 1px solid #e0e6ef; border-radius: .85rem; background: #fff; }
+.miniweb-editor__tab-actions [role="status"] { margin-right: auto; font-size: .85rem; color: #475569; }
+@media (max-width: 700px) {
+  .miniweb-editor__tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: .5rem; }
+  .miniweb-editor__tabs button { flex: 0 0 auto; }
+  .miniweb-editor__tab-actions [role="status"] { flex-basis: 100%; }
+}
