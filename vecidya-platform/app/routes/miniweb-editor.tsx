@@ -92,6 +92,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const [uploading, setUploading] = useState(false);
   const [removingMediaId, setRemovingMediaId] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(true);
+  const [activeTab, setActiveTab] = useState<"design" | "sections" | "content" | "preview" | "publish">("design");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
   const isDirty = JSON.stringify(configuration) !== JSON.stringify(data.draftConfiguration)
@@ -257,16 +258,37 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
           <Link className="button button--secondary" to="/app/business-profile">Editar información del negocio</Link>
         </header>
 
-        <nav aria-label="Pasos para preparar tu MiniWeb" className="miniweb-editor__steps">
-          <a href="#miniweb-design"><span>1</span> Diseño</a>
-          <a href="#miniweb-sections"><span>2</span> Secciones</a>
-          <a href="#miniweb-content"><span>3</span> Contenido</a>
-          <a href="#miniweb-preview"><span>4</span> Vista previa</a>
-          <a href="#miniweb-publish"><span>5</span> Publicar</a>
+        <nav aria-label="Pasos para preparar tu MiniWeb" className="miniweb-editor__steps miniweb-editor__tabs">
+          {([
+            ["design", "1", "Diseño"],
+            ["sections", "2", "Secciones"],
+            ["content", "3", "Contenido"],
+            ["preview", "4", "Vista previa"],
+            ["publish", "5", "Publicar"],
+          ] as const).map(([key, number, label]) => (
+            <button
+              aria-current={activeTab === key ? "step" : undefined}
+              aria-pressed={activeTab === key}
+              className={activeTab === key ? "miniweb-editor__tab--active" : ""}
+              key={key}
+              onClick={() => setActiveTab(key)}
+              type="button"
+            >
+              <span>{number}</span> {label}
+            </button>
+          ))}
         </nav>
+        <p className="miniweb-editor__note">Configura un apartado a la vez. Los cambios de los demás apartados se conservan mientras editas. Guarda el borrador antes de salir.</p>
+        {message ? <p className={`alert miniweb-editor__message miniweb-editor__message--${message.kind}`} role={message.kind === "error" ? "alert" : "status"}>{message.text}</p> : null}
+        <div className="miniweb-editor__tab-actions">
+          <span role="status">{editorStatusLabel}</span>
+          <Button disabled={!data.canEdit || busy || !isDirty} onClick={handleSave} tone="secondary">{busy ? "Guardando…" : "Guardar borrador"}</Button>
+          <Button onClick={() => setActiveTab("preview")} tone="ghost">Revisar vista previa</Button>
+        </div>
 
         <div className="miniweb-editor__layout">
           <div className="miniweb-editor__controls">
+            <div hidden={activeTab !== "design"}>
             <Card aria-labelledby="miniweb-template-title" className="miniweb-editor__template" id="miniweb-design">
               <div className="miniweb-editor__section-heading">
                 <div><p className="eyebrow">1 · DISEÑO</p><h2 id="miniweb-template-title">{template.name}</h2></div>
@@ -276,6 +298,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               <p className="miniweb-editor__note">Esta es la plantilla disponible actualmente. Las demás opciones aparecerán cuando estén listas; no se cambiará tu diseño sin que lo elijas.</p>
             </Card>
 
+            </div>
+            <div hidden={activeTab !== "sections"}>
             <Card aria-labelledby="miniweb-sections-title" className="miniweb-editor__sections-card" id="miniweb-sections">
               <div className="miniweb-editor__section-heading">
                 <div><p className="eyebrow">2 · ESTRUCTURA</p><h2 id="miniweb-sections-title">Secciones</h2></div>
@@ -318,6 +342,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               <p className="miniweb-editor__note">El perfil, los horarios, las ofertas, las preguntas frecuentes y esta estructura se publican juntos.</p>
             </Card>
 
+            </div>
+            <div hidden={activeTab !== "content"}>
             <Card aria-labelledby="miniweb-offerings-title" className="miniweb-content-editor" id="miniweb-content">
               <div className="miniweb-editor__section-heading">
                 <div><p className="eyebrow">3 · CONTENIDO DEL NEGOCIO</p><h2 id="miniweb-offerings-title">Servicios y productos</h2></div>
@@ -391,9 +417,11 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               {media.length ? <ul className="miniweb-media-list">{media.map((asset) => <li key={asset.id}>{asset.mediaType === "image" ? <img alt="" height="72" loading="lazy" src={asset.publicUrl} width="96" /> : <span aria-hidden="true">▶</span>}<span>{asset.purpose === "cover" ? "Portada" : "Galería"}: {asset.altText}</span><span>{Math.ceil(asset.sizeBytes / 1024)} KB</span><Button disabled={!data.canEdit || busy || uploading || removingMediaId !== null} onClick={() => void handleRemoveMedia(asset)} tone="secondary">{removingMediaId === asset.id ? "Retirando…" : "Retirar del borrador"}</Button></li>)}</ul> : <p className="miniweb-editor__note">Todavía no has subido medios.</p>}
               <p className="miniweb-editor__note">Activa la sección «Galería» y publica para incluir los medios actuales en el snapshot público. Los archivos nuevos aún no se muestran a visitantes.</p>
             </Card>
+            </div>
           </div>
 
           <div className="miniweb-editor__review">
+          <div hidden={activeTab !== "preview"}>
           <Card aria-labelledby="miniweb-preview-title" className="miniweb-editor__preview-card" id="miniweb-preview">
             <div className="miniweb-editor__section-heading">
               <div><p className="eyebrow">4 · SOLO PARA TI</p><h2 id="miniweb-preview-title">Vista previa privada</h2></div>
@@ -424,6 +452,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               {isDirty ? <p className="miniweb-editor__publication-note">Los cambios sin guardar solo aparecen en esta vista previa privada.</p> : null}
             </div>
           </Card>
+          </div>
+          <div hidden={activeTab !== "publish"}>
           <Card aria-labelledby="miniweb-publish-title" className="miniweb-editor__publish-card" id="miniweb-publish">
             <div className="miniweb-editor__section-heading">
               <div><p className="eyebrow">5 · ÚLTIMO PASO</p><h2 id="miniweb-publish-title">Guardar y publicar</h2></div>
@@ -434,9 +464,9 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               <Button disabled={!data.canEdit || busy || !isDirty} onClick={handleSave} tone="secondary">{busy ? "Guardando…" : "Guardar borrador"}</Button>
               <Button disabled={!data.canPublish || busy} onClick={handlePublish}>{busy ? "Procesando…" : "Publicar configuración"}</Button>
             </div>
-            {message ? <p className={`alert miniweb-editor__message miniweb-editor__message--${message.kind}`} role={message.kind === "error" ? "alert" : "status"}>{message.text}</p> : null}
             {!data.canPublish ? <p className="miniweb-editor__note">Tu acceso permite consultar la MiniWeb, no guardar ni publicar cambios.</p> : null}
           </Card>
+          </div>
           </div>
         </div>
       </main>
