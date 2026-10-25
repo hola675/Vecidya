@@ -55,9 +55,12 @@ test("DIAG-PRO-02: compare paired knowledge levels without assuming a score is a
     assert.ok(informed && partial && unknown);
     comparisons.push({
       profile,
-      informed: { questions: informed.route.length, scored: informed.scored, direct: informed.direct, unresolved: informed.unresolved, terminal: informed.terminal, overall: informed.overall },
-      partial: { questions: partial.route.length, scored: partial.scored, direct: partial.direct, unresolved: partial.unresolved, terminal: partial.terminal, overall: partial.overall },
-      unknown: { questions: unknown.route.length, scored: unknown.scored, direct: unknown.direct, unresolved: unknown.unresolved, terminal: unknown.terminal, overall: unknown.overall },
+      informed: { questions: informed.route.length, route: informed.route, scored: informed.scored, direct: informed.direct, unresolved: informed.unresolved, terminal: informed.terminal, overall: informed.overall },
+      partial: { questions: partial.route.length, route: partial.route, scored: partial.scored, direct: partial.direct, unresolved: partial.unresolved, terminal: partial.terminal, overall: partial.overall },
+      unknown: { questions: unknown.route.length, route: unknown.route, scored: unknown.scored, direct: unknown.direct, unresolved: unknown.unresolved, terminal: unknown.terminal, overall: unknown.overall },
+      sameRouteInformedPartial: JSON.stringify(informed.route) === JSON.stringify(partial.route),
+      sameRoutePartialUnknown: JSON.stringify(partial.route) === JSON.stringify(unknown.route),
+      sameRouteInformedUnknown: JSON.stringify(informed.route) === JSON.stringify(unknown.route),
       identicalRoutes: JSON.stringify(informed.route) === JSON.stringify(partial.route) && JSON.stringify(partial.route) === JSON.stringify(unknown.route),
       identicalScoredDimensions: JSON.stringify(informed.scored) === JSON.stringify(partial.scored) && JSON.stringify(partial.scored) === JSON.stringify(unknown.scored),
     });
@@ -65,6 +68,9 @@ test("DIAG-PRO-02: compare paired knowledge levels without assuming a score is a
   const totals = {
     profiles: comparisons.length,
     identicalRoutes: comparisons.filter((row) => row.identicalRoutes).length,
+    sameRouteInformedPartial: comparisons.filter((row) => row.sameRouteInformedPartial).length,
+    sameRoutePartialUnknown: comparisons.filter((row) => row.sameRoutePartialUnknown).length,
+    sameRouteInformedUnknown: comparisons.filter((row) => row.sameRouteInformedUnknown).length,
     identicalScoredDimensions: comparisons.filter((row) => row.identicalScoredDimensions).length,
     informedScoredDimensions: outcomes.filter((row) => row.knowledge === "informado").reduce((sum, row) => sum + row.scored.length, 0),
     unknownScoredDimensions: outcomes.filter((row) => row.knowledge === "desconocedor").reduce((sum, row) => sum + row.scored.length, 0),
