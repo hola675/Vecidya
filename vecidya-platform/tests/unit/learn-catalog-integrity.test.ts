@@ -217,6 +217,12 @@ test("Cada guía conserva al menos dos fuentes HTTPS distintas", () => {
   }
 });
 
+test("Ninguna guía queda fuera de los itinerarios de aprendizaje", () => {
+  const routed = new Set(learnPathways.flatMap((pathway) => [...pathway.slugs]));
+  const orphan = learnArticles.map(({ slug }) => slug).filter((slug) => !routed.has(slug));
+  assert.deepEqual(orphan, [], `Guías fuera de itinerarios: ${orphan.join(", ")}`);
+});
+
 test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
   const requirements = [
     ["publicidad-digital-como-preparar-una-primera-campana", [/Google Ads|Meta Ads/i, /página de destino/i, /indicadores/i]],
