@@ -54,6 +54,10 @@
 
 **En curso:** 48 guías y 9 itinerarios. Selección/migración de proveedor y mapa DNS/correo profesional ya están separados por objetivo educativo. Mantener slugs históricos cuando funcionen como puerta de entrada; los detalles nuevos quedan en borrador hasta revisión editorial.
 
+### APRENDE-EDITORIAL-04E — revisión de borradores de Operaciones (2026-10-25)
+
+**En revisión técnica:** cinco guías de Operaciones fueron auditadas una por una y promovidas tras verificar fuentes, lenguaje, ejemplos y límites. Quedan 13 borradores en el catálogo de 48 guías. Este checkpoint se mantiene separado de 04C/04D porque esas ramas parten de un HEAD anterior de 04B; la reconciliación deberá preservar ambos conjuntos de cambios sin force-push destructivo.
+
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)
