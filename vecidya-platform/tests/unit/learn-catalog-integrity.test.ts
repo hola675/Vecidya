@@ -223,6 +223,12 @@ test("Ninguna guía queda fuera de los itinerarios de aprendizaje", () => {
   assert.deepEqual(orphan, [], `Guías fuera de itinerarios: ${orphan.join(", ")}`);
 });
 
+test("Cada guía ofrece al menos una continuación editorial relacionada", () => {
+  for (const article of learnArticles) {
+    assert.ok((article.relatedSlugs ?? []).length >= 1, `Falta continuación relacionada en ${article.slug}`);
+  }
+});
+
 test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
   const requirements = [
     ["publicidad-digital-como-preparar-una-primera-campana", [/Google Ads|Meta Ads/i, /página de destino/i, /indicadores/i]],
