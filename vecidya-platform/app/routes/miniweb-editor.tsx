@@ -109,7 +109,11 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const [draftRevision, setDraftRevision] = useState(data.draftRevision);
   const [offerings, setOfferings] = useState<BusinessOffering[]>(data.offerings);
   const [faqs, setFaqs] = useState(data.faqs);
-  const [savedDraft, setSavedDraft] = useState({
+  const [savedDraft, setSavedDraft] = useState<{
+    configuration: MiniWebConfiguration;
+    offerings: BusinessOffering[];
+    faqs: BusinessFaqItem[];
+  }>({
     configuration: data.draftConfiguration,
     offerings: data.offerings,
     faqs: data.faqs,
