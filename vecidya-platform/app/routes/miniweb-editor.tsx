@@ -118,7 +118,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const [removingMediaId, setRemovingMediaId] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(true);
   const [activeTab, setActiveTab] = useState<"design" | "sections" | "content" | "preview" | "publish">("design");
-  const [contentTab, setContentTab] = useState<"offerings" | "faq" | "media">("offerings");
+  const [contentTab, setContentTab] = useState<"services" | "products" | "faq" | "media">("services");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
   const isDirty = JSON.stringify(configuration) !== JSON.stringify(savedDraft.configuration)
@@ -135,7 +135,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const stepIndex = steps.findIndex((step) => step.key === activeTab);
   const currentStep = steps[stepIndex];
   function goToContent(type: MiniWebModuleType) {
-    setContentTab(type === "faq" ? "faq" : type === "gallery" ? "media" : "offerings");
+    setContentTab(type === "faq" ? "faq" : type === "gallery" ? "media" : type === "products" ? "products" : "services");
     goToStep(2);
   }
 
@@ -209,7 +209,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   function validateEditableContent() {
     if (offerings.some((item) => !item.title.trim() || !item.description.trim())) {
       setMessage({ kind: "error", text: "Hay servicios o productos sin título o descripción. Complétalos antes de guardar." });
-      setContentTab("offerings");
+      setContentTab("services");
       setActiveTab("content");
       return false;
     }
@@ -449,7 +449,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
             <div hidden={activeTab !== "content"}>
               <nav aria-label="Apartados del contenido MiniWeb" className="miniweb-editor__content-nav">
                 {([
-                  ["offerings", "Servicios y productos", offerings.length],
+                  ["services", "Servicios", offerings.filter((item) => item.kind === "service").length],
+                  ["products", "Productos", offerings.filter((item) => item.kind === "product").length],
                   ["faq", "Preguntas frecuentes", faqs.length],
                   ["media", "Galería y portada", media.length],
                 ] as const).map(([key, label, count]) => (
@@ -462,35 +463,42 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                   >{label} <span>{count}</span></button>
                 ))}
               </nav>
-              <div hidden={contentTab !== "offerings"}>
+              <div hidden={contentTab !== "services" && contentTab !== "products"}>
             <Card aria-labelledby="miniweb-offerings-title" className="miniweb-content-editor" id="miniweb-content">
               <div className="miniweb-editor__section-heading">
-                <div><p className="eyebrow">3 · CONTENIDO DEL NEGOCIO</p><h2 id="miniweb-offerings-title">Servicios y productos</h2></div>
-                <span className="miniweb-editor__count">{offerings.length}/{MAX_BUSINESS_OFFERINGS}</span>
+                <div><p className="eyebrow">3 · CONTENIDO DEL NEGOCIO</p><h2 id="miniweb-offerings-title">{contentTab === "services" ? "Servicios" : "Productos"}</h2></div>
+                <span className="miniweb-editor__count">{offerings.length}/{MAX_BUSINESS_OFFERINGS} entre ambos</span>
               </div>
-              <p className="miniweb-editor__note">Añade solo información confirmada por tu negocio. El texto de precio es opcional y no procesa pagos ni pedidos.</p>
-              {offerings.map((item, index) => (
+              <p className="miniweb-editor__note">Añade información real y clara. Los precios son opcionales; esta MiniWeb no procesa compras ni pagos.</p>
+              {!offerings.some((item) => item.kind === (contentTab === "services" ? "service" : "product")) ? (
+                <div className="miniweb-editor__empty-state">
+                  <strong>{contentTab === "services" ? "Presenta lo que haces" : "Presenta lo que ofreces"}</strong>
+                  <p>{contentTab === "services" ? "Describe los servicios que puede solicitar un cliente, con sus principales beneficios." : "Añade los productos que deseas enseñar. No se habilitará un carrito ni pagos."}</p>
+                </div>
+              ) : null}
+              {offerings.map((item, index) => item.kind === (contentTab === "services" ? "service" : "product") ? (
                 <fieldset className="miniweb-content-editor__item" key={`offering-${index}`} disabled={!data.canEdit || busy}>
-                  <legend>{item.kind === "service" ? "Servicio" : "Producto"} {index + 1}</legend>
+                  <legend>{item.kind === "service" ? "Servicio" : "Producto"} · {item.title.trim() || "Sin título"}</legend>
                   <label>Tipo
                     <select aria-label={`Tipo de oferta ${index + 1}`} onChange={(event) => updateOffering(index, { kind: event.currentTarget.value as BusinessOffering["kind"] })} value={item.kind}>
                       <option value="service">Servicio</option><option value="product">Producto</option>
                     </select>
                   </label>
                   <label>Título
-                    <input maxLength={120} onChange={(event) => updateOffering(index, { title: event.currentTarget.value })} required value={item.title} />
+                    <input maxLength={120} onChange={(event) => updateOffering(index, { title: event.currentTarget.value })} placeholder={item.kind === "service" ? "Nombre del servicio" : "Nombre del producto"} required value={item.title} />
                   </label>
                   <label>Descripción
-                    <textarea maxLength={600} onChange={(event) => updateOffering(index, { description: event.currentTarget.value })} required rows={3} value={item.description} />
+                    <textarea maxLength={600} onChange={(event) => updateOffering(index, { description: event.currentTarget.value })} placeholder="Explica qué incluye y a quién va dirigido." required rows={3} value={item.description} />
                   </label>
                   <label>Texto de precio (opcional)
-                    <input maxLength={80} onChange={(event) => updateOffering(index, { priceLabel: event.currentTarget.value || null })} value={item.priceLabel ?? ""} />
+                    <input maxLength={80} onChange={(event) => updateOffering(index, { priceLabel: event.currentTarget.value || null })} placeholder="Ej.: Consultar precio" value={item.priceLabel ?? ""} />
                   </label>
                   <label className="miniweb-content-editor__toggle"><input checked={item.isActive} onChange={(event) => updateOffering(index, { isActive: event.currentTarget.checked })} type="checkbox" /> Mostrar cuando se publique</label>
-                  <Button onClick={() => setOfferings((current) => current.filter((_, position) => position !== index).map((entry, sortOrder) => ({ ...entry, sortOrder })))} tone="secondary">Quitar oferta</Button>
+                  <Button onClick={() => setOfferings((current) => current.filter((_, position) => position !== index).map((entry, sortOrder) => ({ ...entry, sortOrder })))} tone="secondary">Quitar {item.kind === "service" ? "servicio" : "producto"}</Button>
                 </fieldset>
-              ))}
-              <Button disabled={!data.canEdit || busy || offerings.length >= MAX_BUSINESS_OFFERINGS} onClick={() => setOfferings((current) => [...current, { kind: "service", title: "", description: "", priceLabel: null, sortOrder: current.length, isActive: true }])} tone="secondary">Añadir servicio o producto</Button>
+              ) : null)}
+              <Button disabled={!data.canEdit || busy || offerings.length >= MAX_BUSINESS_OFFERINGS} onClick={() => setOfferings((current) => [...current, { kind: contentTab === "services" ? "service" : "product", title: "", description: "", priceLabel: null, sortOrder: current.length, isActive: true }])} tone="secondary">Añadir {contentTab === "services" ? "servicio" : "producto"}</Button>
+              {offerings.length >= MAX_BUSINESS_OFFERINGS ? <p className="miniweb-editor__note" role="status">Has alcanzado el máximo compartido de {MAX_BUSINESS_OFFERINGS} servicios y productos.</p> : null}
             </Card>
               </div>
               <div hidden={contentTab !== "faq"}>
@@ -499,20 +507,27 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 <div><p className="eyebrow">AYUDA PARA TUS VISITANTES</p><h2 id="miniweb-faq-title">Preguntas frecuentes</h2></div>
                 <span className="miniweb-editor__count">{faqs.length}/{MAX_BUSINESS_FAQ_ITEMS}</span>
               </div>
+              {faqs.length === 0 ? (
+                <div className="miniweb-editor__empty-state">
+                  <strong>Resuelve las dudas antes de que te contacten</strong>
+                  <p>Añade preguntas que realmente recibes, por ejemplo sobre reservas, disponibilidad o atención.</p>
+                </div>
+              ) : null}
               {faqs.map((item, index) => (
                 <fieldset className="miniweb-content-editor__item" key={`faq-${index}`} disabled={!data.canEdit || busy}>
                   <legend>Pregunta {index + 1}</legend>
                   <label>Pregunta
-                    <input maxLength={240} onChange={(event) => updateFaq(index, { question: event.currentTarget.value })} required value={item.question} />
+                    <input maxLength={240} onChange={(event) => updateFaq(index, { question: event.currentTarget.value })} placeholder="Escribe una pregunta frecuente" required value={item.question} />
                   </label>
                   <label>Respuesta
-                    <textarea maxLength={1200} onChange={(event) => updateFaq(index, { answer: event.currentTarget.value })} required rows={4} value={item.answer} />
+                    <textarea maxLength={1200} onChange={(event) => updateFaq(index, { answer: event.currentTarget.value })} placeholder="Responde con información comprobada de tu negocio." required rows={4} value={item.answer} />
                   </label>
                   <label className="miniweb-content-editor__toggle"><input checked={item.isActive} onChange={(event) => updateFaq(index, { isActive: event.currentTarget.checked })} type="checkbox" /> Mostrar cuando se publique</label>
                   <Button onClick={() => setFaqs((current) => current.filter((_, position) => position !== index).map((entry, sortOrder) => ({ ...entry, sortOrder })))} tone="secondary">Quitar pregunta</Button>
                 </fieldset>
               ))}
               <Button disabled={!data.canEdit || busy || faqs.length >= MAX_BUSINESS_FAQ_ITEMS} onClick={() => setFaqs((current) => [...current, { question: "", answer: "", sortOrder: current.length, isActive: true }])} tone="secondary">Añadir pregunta</Button>
+              {faqs.length >= MAX_BUSINESS_FAQ_ITEMS ? <p role="status" className="miniweb-editor__note">Has alcanzado el máximo de {MAX_BUSINESS_FAQ_ITEMS} preguntas.</p> : null}
             </Card>
               </div>
               <div hidden={contentTab !== "media"}>
@@ -594,7 +609,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               {incompleteOfferings + incompleteFaqs > 0 ? (
                 <div className="miniweb-editor__checklist-warning" role="status">
                   <p>Hay {incompleteOfferings + incompleteFaqs} elementos incompletos que impiden guardar.</p>
-                  <Button onClick={() => { setContentTab(incompleteOfferings ? "offerings" : "faq"); goToStep(2); }} tone="ghost">Completar contenido</Button>
+                  <Button onClick={() => { setContentTab(incompleteOfferings ? "services" : "faq"); goToStep(2); }} tone="ghost">Completar contenido</Button>
                 </div>
               ) : <p>Los servicios, productos y preguntas no tienen campos obligatorios vacíos.</p>}
               <p className="miniweb-editor__note">{isDirty ? "Hay cambios locales sin guardar. Publicar intentará guardarlos primero." : "No tienes cambios de contenido pendientes de guardar en este editor."}</p>
