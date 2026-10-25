@@ -10,7 +10,7 @@
 
 La portada expresa el método **Comprende → Prioriza → Decide**, amplía el lenguaje a vida digital y negocio, y la búsqueda consulta también resúmenes, párrafos y bloques internos. La plantilla de ejemplo sustituye etiquetas técnicas por «Qué está pasando», «Qué se complica», «Una forma sencilla de actuar», «Pasos» y «Qué aprender de este ejemplo». Las seis guías especializadas que no tenían bloque `example` reciben un caso hipotético completo; se conserva el estado editorial existente de las demás guías.
 
-**Gate:** pruebas unitarias de catálogo/currículo actualizadas a 46/9 y contrato nuevo que exige al menos un ejemplo hipotético accionable por guía. Ejecución CI, typecheck, build y diff-check pendientes de este corte documental; no se afirma PASS hasta disponer de evidencia del HEAD del PR. Fuentes nuevas verificadas contra OCDE 2026, NIST CSF 2.0, CISA y W3C. No cambia DB, Auth, Diagnóstico, MiniWeb, GHL, licencias, precios ni producción.
+**RAN en GitHub Actions:** sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`, workflow `Aprende quality` run `40242263335` PASS (typecheck, build e integridad Aprende) y `Main integration quality` run `40242263275` PASS: typecheck, build, regresión Diagnóstico/Aprende y **1721/1721 unitarias**. La revisión estática de los 12 archivos modificados quedó sin marcadores de conflicto ni whitespace final. Fuentes nuevas verificadas contra OCDE 2026, NIST CSF 2.0, CISA y W3C. No cambia DB, Auth, Diagnóstico, MiniWeb, GHL, licencias, precios ni producción.
 
 ## DIAG-VISUAL-03 — refinamiento del resultado y entrada QA-03B (2026-10-25)
 
