@@ -81,6 +81,38 @@ test("La selección y la migración de proveedor quedan como decisiones separada
   assert.match(JSON.stringify(migration), /DNS|correo|cancelar|comprobar/i);
 });
 
+test("Las cinco guías de Operaciones aprobadas conservan fuentes y límites editoriales", () => {
+  const approved = [
+    "como-organizar-tareas-y-responsables-en-tu-equipo",
+    "como-controlar-inventario-sin-perder-productos-ni-datos",
+    "como-capacitar-al-equipo-en-herramientas-digitales",
+    "cuando-necesita-tu-empresa-un-sistema-erp",
+    "como-empezar-proyecto-digital-sin-detener-negocio",
+  ];
+  for (const slug of approved) {
+    const article = getLearnArticle(slug);
+    assert.ok(article, `Falta guía revisada: ${slug}`);
+    assert.equal(article.editorialDraft, false, `La aprobación editorial debe conservarse: ${slug}`);
+    const blocks = article.sections.flatMap((section) => section.blocks ?? []);
+    const sources = blocks.flatMap((block) => block.type === "sources" ? block.items : []);
+    assert.ok(sources.length >= 2, `Fuentes insuficientes en ${slug}`);
+    assert.ok(sources.every((source) => source.url.startsWith("https://")), `Fuente no HTTPS en ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "example"), `Falta ejemplo en ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "faq"), `Falta FAQ en ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "summary"), `Falta cierre accionable en ${slug}`);
+  }
+
+  const inventory = getLearnArticle("como-controlar-inventario-sin-perder-productos-ni-datos");
+  assert.match(JSON.stringify(inventory), /business\.gov\.au\/products-and-services\/inventory-management\/manage-your-inventory/);
+
+  const erp = getLearnArticle("cuando-necesita-tu-empresa-un-sistema-erp");
+  assert.match(JSON.stringify(erp), /planificaci[oó]n de recursos empresariales/i);
+  assert.match(JSON.stringify(erp), /learn\.microsoft\.com\/en-us\/training\/modules\/dynamics-365-introduction/);
+
+  const project = getLearnArticle("como-empezar-proyecto-digital-sin-detener-negocio");
+  assert.match(JSON.stringify(project), /service-manual\/agile-delivery\/how-the-beta-phase-works/);
+});
+
 test("Todos los itinerarios enlazan a artículos reales sin duplicados internos", () => {
   const titles = new Set<string>();
   for (const pathway of learnPathways) {
