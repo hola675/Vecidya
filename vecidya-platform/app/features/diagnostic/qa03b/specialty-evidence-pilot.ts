@@ -1,6 +1,6 @@
-import type { QuestionDefinitionV2, QuestionEvidenceV3, QuestionVersionV2 } from "../qbv2-contract";
+import type { QuestionDefinitionV2, QuestionVersionV2 } from "../qbv2-contract";
 import { andV2, eqV2 } from "../qbv2-rules";
-import type { MigratedAnswerStateV3 } from "../qbv2-evidence-v3";
+import type { MigratedAnswerStateV3, QuestionEvidenceV3 } from "../qbv2-evidence-v3";
 
 /**
  * Candidate-only niche evidence pilot.
@@ -91,7 +91,7 @@ export const QA03B_SPECIALTY_EVIDENCE_PILOT_V1: readonly QuestionDefinitionV2[] 
     priority: "normal",
     evidenceMigration: "migrated",
     appliesWhen: andV2(operatingWithHistory, eqV2("q2_niche_financial_tax_insurance", "tax_preparation")),
-    scoringReadiness: { allowsUnknown: true, allowsNotApplicable: true },
+    scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: true },
     evidenceV3: evidence("q2_specialty_tax_return_cycle", "relationship_recurrence", {
       systematic: "established",
       partial: "partial",
@@ -119,7 +119,7 @@ export const QA03B_SPECIALTY_EVIDENCE_PILOT_V1: readonly QuestionDefinitionV2[] 
     priority: "normal",
     evidenceMigration: "migrated",
     appliesWhen: andV2(operatingWithHistory, eqV2("q2_niche_financial_tax_insurance", "insurance_agency")),
-    scoringReadiness: { allowsUnknown: true, allowsNotApplicable: true },
+    scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: true },
     evidenceV3: evidence("q2_specialty_insurance_renewal", "relationship_recurrence", {
       systematic: "established",
       partial: "partial",
