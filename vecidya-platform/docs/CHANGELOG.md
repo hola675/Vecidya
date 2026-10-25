@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-25 — APRENDE-EDITORIAL-04C — lenguaje y comprensión (PR dependiente pendiente)
+
+- Revisa las 47 guías para traducir jerga prioritaria al lenguaje cotidiano sin añadir definiciones redundantes.
+- Sustituye aperturas/editoriales repetidas en 19 guías por objetivos, prácticas y autoevaluaciones específicas del tema.
+- Mejora 18 textos alternativos a partir de los títulos/descripciones reales de los SVG; corrige 4 extractos duplicados y convierte 13 resúmenes repetidos en acciones concretas.
+- Añade contratos unitarios para impedir la reaparición de plantilla genérica, alt débiles, intro/extracto idénticos y cierres duplicados. Sin cambios de DB, Auth, Diagnóstico, MiniWeb, GHL, precios o producción.
+
 ## 2026-10-25 — APRENDE-EDITORIAL-04B — proveedor sin monolito (PR dependiente pendiente)
 
 - Separa dos decisiones que estaban mezcladas: elegir/renovar proveedor y ejecutar una migración.
