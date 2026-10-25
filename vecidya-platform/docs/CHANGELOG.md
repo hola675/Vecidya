@@ -4,6 +4,7 @@
 
 - Separa dos decisiones que estaban mezcladas: elegir/renovar proveedor y ejecutar una migración.
 - La guía histórica conserva su URL y aprobación editorial, pero reduce el alcance a comparación, control, renovación y salida; una guía nueva en borrador cubre inventario, DNS, web, correo, pruebas y cancelación segura.
+- Las guías madre de Presencia, Automatizaciones y Dominio/hosting se condensan para eliminar introducciones y detalle duplicado: aproximadamente 3291→1420, 2707→1146 y 2413→1179 palabras, manteniendo ejemplos, conceptos y fuentes esenciales.
 - El catálogo queda en 47 guías y 9 itinerarios. Sin cambios de DB, Auth, Diagnóstico, MiniWeb, GHL, precios o producción.
 
 ## 2026-10-25 — APRENDE-EDITORIAL-04A — criterio digital y claridad pedagógica (PR pendiente)
