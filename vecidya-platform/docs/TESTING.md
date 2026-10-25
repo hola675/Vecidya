@@ -2,9 +2,9 @@
 
 ## APRENDE-EDITORIAL-04F — revisión de guías técnicas nuevas (2026-10-25)
 
-**TEST versionado / RAN pendiente.** El catálogo esperado se mantiene en 48 guías y pasa a **37 revisadas / 11 borradores**. Los contratos exigen `editorialDraft: false` para migración de proveedor y correo profesional; además preservan fuentes ICANN/MDN/RFC 1034/1035 para migración y RFC 1035/7208/6376/9989 para correo.
+**RAN en GitHub Actions:** `Aprende quality` run `40247108403` PASS: typecheck, build e integridad Aprende. El catálogo esperado se mantiene en 48 guías y pasa a **37 revisadas / 11 borradores**. Los contratos exigen `editorialDraft: false` para migración de proveedor y correo profesional; además preservan fuentes ICANN/MDN/RFC 1034/1035 para migración y RFC 1035/7208/6376/9989 para correo.
 
-Gate: typecheck, build e integridad Aprende mediante `Aprende quality` sobre el HEAD final.
+El gate específico de Aprende queda certificado en el run indicado; la integración general se reserva para la reconciliación final.
 
 ## APRENDE-EDITORIAL-04E — revisión de Operaciones (2026-10-25)
 
