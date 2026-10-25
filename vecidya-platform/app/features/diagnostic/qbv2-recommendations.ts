@@ -120,13 +120,25 @@ const PREPARE: Readonly<Record<RecommendationType, (copy: Copy) => string>> = {
 
 const EXPECTED_OUTCOME: Readonly<Record<RecommendationType, (copy: Copy) => string>> = {
   clarity: ({ offer }) => `Que se entienda más rápido ${offer}.`,
-  foundation: () => "Información esencial siempre disponible y un punto de contacto propio y confiable.",
+  foundation: () => "Información esencial más accesible y una vía de contacto claramente identificada.",
   discovery: () => "Más formas de que te encuentren, con menos dependencia de una sola vía.",
   trust: () => "Más confianza en el momento de decidir.",
   conversion: () => "Menos interés que se queda sin avanzar.",
   follow_up: () => "Menos contactos que se quedan sin respuesta o sin siguiente paso.",
   measurement: () => "Visibilidad sobre qué funciona, para decidir con datos.",
   readiness: () => "Menos trabajo manual repetido y menos información dispersa.",
+};
+
+/** Comprobaciones observables: no presuponen que exista un problema. */
+const VERIFY_ACTION: Readonly<Record<RecommendationType, string>> = {
+  clarity: "Revisar la información publicada en los canales del negocio y confirmar si explica qué ofrece, a quién y cómo contactar.",
+  foundation: "Revisar los canales digitales activos y comprobar si muestran información actualizada y una vía de contacto funcional.",
+  discovery: "Consultar con quien atiende las consultas cómo llegan los nuevos clientes y revisar los registros disponibles por canal.",
+  trust: "Revisar las reseñas, referencias y testimonios disponibles para comprobar qué señales de confianza pueden verificarse.",
+  conversion: "Revisar con quien atiende las solicitudes cómo se pasa de una consulta a una reserva o compra, y comprobar los registros disponibles.",
+  follow_up: "Revisar con la persona responsable las consultas recientes, sus respuestas y los contactos que aún necesitan seguimiento.",
+  measurement: "Comprobar qué registros existen sobre consultas, su procedencia y resultados antes de decidir qué indicadores mejorar.",
+  readiness: "Revisar con el equipo dónde se registran las tareas, quién las gestiona y cómo se consultan las solicitudes pendientes.",
 };
 
 const copyFor = (profile: TerminologyProfileId): Copy => {
@@ -148,7 +160,7 @@ export function buildDiagnosticRecommendations(input: RecommendationInput): Diag
     const type = DIMENSION_RECOMMENDATION_TYPE[priority.dimension];
     const mode: RecommendationMode = constraint.kind === "evidence_gap" ? (narrative.lifecycle === "prelaunch" ? "prepare" : "verify")
       : constraint.kind === "dependency_risk" ? "reduce_dependency" : narrative.lifecycle === "prelaunch" ? "prepare" : "improve";
-    const whatToImprove = mode === "verify" ? `Confirmar ${DIMENSION_RESULT_CONCEPT[priority.dimension]} con información concreta antes de invertir en cambios.`
+    const whatToImprove = mode === "verify" ? VERIFY_ACTION[type]
       : mode === "prepare" ? PREPARE[type](copy)
         : mode === "reduce_dependency" ? `Reducir la dependencia de un solo canal o persona en ${DIMENSION_NARRATIVE[priority.dimension].topic}.`
           : WHAT_TO_IMPROVE[type](copy);
@@ -169,7 +181,7 @@ export function buildDiagnosticRecommendations(input: RecommendationInput): Diag
 
     return {
       id: recommendationIdFor(priority.rank), rank: priority.rank, slot: priority.slot, type, mode, dimension: priority.dimension,
-      title: capitalize(priority.focus), whatToImprove, whyItMatters: priority.why.text,
+      title: capitalize(priority.focus), whatToImprove, whyItMatters: priority.why.text.trim() === reading.text.trim() ? "Esta información ayuda a determinar qué acción conviene priorizar." : priority.why.text,
       evidence: { text: reading.text, sourceFactIds: reading.sourceFactIds, sourceQuestionIds: reading.sourceQuestionIds },
       evidenceTopics: dimension.evidence.map((item) => item.topic),
       targetDimensions: [priority.dimension, ...constraint.dependency.blocks.filter((id) => id !== priority.dimension)],
