@@ -1,4 +1,6 @@
 import { createDatabase } from "../../db/client.server";
+import { and, eq } from "drizzle-orm";
+import { businessMediaAsset } from "../../db/schema";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
 import { getBusinessProfileGovernance } from "../../db/queries/platform-governance.server";
@@ -99,6 +101,13 @@ export async function action({ context, params, request }: Route.ActionArgs) {
       const content = body.offerings === undefined && body.faqs === undefined
         ? undefined
         : { offerings: validateBusinessOfferings(body.offerings), faqs: validateBusinessFaqItems(body.faqs) };
+      if (content) {
+        const referencedIds = content.offerings.map((item) => item.imageAssetId).filter((id): id is string => id !== null);
+        const availableIds = await database.select({ id: businessMediaAsset.id }).from(businessMediaAsset)
+          .where(and(eq(businessMediaAsset.organizationId, organization.id), eq(businessMediaAsset.isActive, true), eq(businessMediaAsset.mediaType, "image")));
+        const available = new Set(availableIds.map(({ id }) => id));
+        if (referencedIds.some((id) => !available.has(id))) return badRequest("Cada imagen debe pertenecer a los medios activos de esta organización.");
+      }
       const saved = await saveMiniWebConfigurationForOrganization(database, organization.id, profile, hours, configuration, undefined, Number(expectedRevision), content);
       return Response.json({ ok: true, configuration: saved.configuration, draftRevision: saved.draftRevision, ...(content ?? {}) });
     }

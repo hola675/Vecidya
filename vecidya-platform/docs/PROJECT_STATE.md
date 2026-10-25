@@ -1,3 +1,7 @@
+## APP-MINI-02F — media de marca e imágenes del contenido (2026-10-24)
+
+Checkpoint local iniciado desde `origin/main@845c0e0`. El editor MiniWeb distingue logo del negocio (marca), icono compacto, portada y galería; permite asignar imágenes del negocio a ofertas de servicio/producto. Todas las referencias siguen tenant-scoped y se incorporan al snapshot unificado v4 únicamente mediante publicación explícita. Migración `0028` local. Typecheck/build y unitarias 1689/1689 PASS. E2E Worker `miniweb-core-check.mjs` 120/120 PASS con D1 efímera `0000–0028`; fixtures limpias y preview/directorio sin overflow en 1366/768/390/360 y 1366/768/390/320. No se modificó D1 remota ni se desplegó; provisión R2 sigue abierta.
+
 ## UX-PREMIUM-06A — accesibilidad pública por muestra (2026-10-24)
 
 En la rama local `feat/app-mini-ux-06-public-a11y` se corrigieron problemas encontrados por AccessLint en 13 rutas públicas representativas: landmarks complementarios anidados, contraste inferior al umbral automatizado, nombres accesibles que ocultaban texto visible y tabla de comparación sin teclado. Escaneos finales con AccessLint 0.21.0 / Chromium 156, 94 reglas por ruta y ninguna omitida: cero violaciones en las 13 rutas. Se verificaron por teclado menús desktop/móvil y desplazamiento del comparador; a 320 px se presenta el formato compacto sin overflow. Typecheck/build/diff-check PASS. Es una muestra, no certificación WCAG: falta lector de pantalla, zoom 200 % y revisión de rutas no cubiertas. No hay deploy ni HTTP pública fechada.

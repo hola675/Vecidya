@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## APP-MINI-02F — marca e imágenes por oferta (2026-10-24)
+
+**Implementación local en `feat/app-mini-02f-media-content`, iniciada desde `origin/main@845c0e0`; sin integración, D1 remota ni deploy.** El editor acepta logo, icono, portada y galería; relaciona imágenes activas de la biblioteca del mismo negocio con cada servicio/producto. Logo (marca) e icono (símbolo compacto) se mantienen separados. El snapshot v4 guarda referencias y la ruta anónima solo sirve assets del snapshot publicado; `0028` añade `business_offering.image_asset_id`. Lectura de snapshots v1–v3 compatible. Typecheck/build PASS; unitarias **1689/1689 PASS**; `miniweb-core-check.mjs` **120/120 PASS**, fixtures limpias; D1 local efímera `0000–0028`. Viewports editor/Vecindario sin overflow (1366/768/390/360 y 1366/768/390/320). R2 remoto sigue pendiente de provisión; no hubo cambios remotos.
+
 ## DIAG-MOTOR-04 — activación QA-03B por rangos (2026-10-24)
 
 **Integrada en `main@62822ee` mediante PR #97; CI 40105749133 en verde. Sin deploy ni publicación.** QA-03B y el replay del Worker usan calibración v4, cuatro rangos inclusivos (0–25, 26–50, 51–75, 76–100), mínimo de tres áreas y 60% de cobertura aplicable. La sesión usa schema/key 8, replay v6, metodología 3.2 e informe 1.2, con compatibilidad 1.0/1.1; el resumen anónimo conserva 12 claves. Las 60 rutas sintéticas siguen absteniéndose del índice por evidencia insuficiente. Consistencia técnica no acredita validez predictiva ni calibración empírica.

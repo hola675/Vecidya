@@ -1,0 +1,1 @@
+ALTER TABLE `business_offering` ADD `image_asset_id` text;

@@ -31,20 +31,21 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   const file = form.get("file");
   const altText = form.get("altText");
   const purpose = form.get("purpose");
+  const purposeValue = String(purpose);
   const expectedRevision = Number(form.get("draftRevision"));
-  if (!(file instanceof File) || typeof altText !== "string" || !altText.trim() || altText.trim().length > 180 || (purpose !== "cover" && purpose !== "gallery") || !Number.isInteger(expectedRevision) || expectedRevision < 0) {
+  if (!(file instanceof File) || typeof altText !== "string" || !altText.trim() || altText.trim().length > 180 || !["cover", "gallery", "logo", "icon"].includes(purposeValue) || !Number.isInteger(expectedRevision) || expectedRevision < 0) {
     return Response.json({ error: "Selecciona un archivo, proporciona texto alternativo y conserva una revisión de borrador válida." }, { status: 400 });
   }
   if (!file.size || file.size > MAX_BUSINESS_MEDIA_BYTES || !allowedContentTypes.has(file.type)) {
     return Response.json({ error: "Solo se aceptan imágenes JPEG, PNG o WebP y videos MP4 o WebM de hasta 32 MB." }, { status: 415 });
   }
-  if (purpose === "cover" && !file.type.startsWith("image/")) return Response.json({ error: "La portada debe ser una imagen." }, { status: 415 });
+  if (purposeValue !== "gallery" && !file.type.startsWith("image/")) return Response.json({ error: "La portada, el logo y el icono deben ser imágenes." }, { status: 415 });
 
   const database = createDatabase(env.DB);
   const usedBytes = await getBusinessMediaStorageBytes(database, organization.id);
   if (usedBytes + file.size > MAX_BUSINESS_MEDIA_STORAGE_BYTES) return Response.json({ error: "La organización alcanzó su límite de almacenamiento de medios." }, { status: 413 });
-  if (purpose === "cover" && await database.query.businessMediaAsset.findFirst({ where: (table, { and, eq }) => and(eq(table.organizationId, organization.id), eq(table.purpose, "cover"), eq(table.isActive, true)) })) {
-    return Response.json({ error: "Ya existe una portada. Retírala antes de seleccionar otra." }, { status: 409 });
+  if (purposeValue !== "gallery" && await database.query.businessMediaAsset.findFirst({ where: (table, { and, eq }) => and(eq(table.organizationId, organization.id), eq(table.purpose, purposeValue), eq(table.isActive, true)) })) {
+    return Response.json({ error: `Ya existe ${purposeValue === "cover" ? "una portada" : purposeValue === "logo" ? "un logo" : "un icono"}. Retíralo antes de seleccionar otro.` }, { status: 409 });
   }
 
   const body = new Uint8Array(await file.arrayBuffer());
@@ -61,11 +62,11 @@ export async function action({ context, params, request }: Route.ActionArgs) {
       SELECT ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE EXISTS (
         SELECT 1 FROM business_profile_publication WHERE organization_id = ? AND draft_revision = ? AND draft_write_token = ?
       )`)
-      .bind(id, organization.id, objectKey, purpose, file.type.startsWith("image/") ? "image" : "video", file.type, file.size, altText.trim(), now.getTime(), organization.id, revision, token)]);
+      .bind(id, organization.id, objectKey, purposeValue, file.type.startsWith("image/") ? "image" : "video", file.type, file.size, altText.trim(), now.getTime(), organization.id, revision, token)]);
   } catch (error) {
     await env.BUSINESS_MEDIA.delete(objectKey);
     if (error instanceof Response && error.status === 409) return Response.json({ error: await error.text() }, { status: 409 });
     throw error;
   }
-  return Response.json({ ok: true, draftRevision: expectedRevision + 1, asset: { id, purpose, mediaType: file.type.startsWith("image/") ? "image" : "video", contentType: file.type, sizeBytes: file.size, altText: altText.trim(), createdAt: now } }, { status: 201 });
+  return Response.json({ ok: true, draftRevision: expectedRevision + 1, asset: { id, purpose: purposeValue, mediaType: file.type.startsWith("image/") ? "image" : "video", contentType: file.type, sizeBytes: file.size, altText: altText.trim(), createdAt: now } }, { status: 201 });
 }

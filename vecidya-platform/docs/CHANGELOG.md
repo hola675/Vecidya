@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-24 — APP-MINI-02F — logo, icono e imágenes por oferta (local)
+
+- Se incorporan usos separados para logo, icono compacto, portada y galería. Servicios/productos pueden referenciar una imagen del negocio desde el editor de contenido.
+- La publicación conserva todo en el snapshot unificado v4; el endpoint público entrega referencias solo después de publicar. Los snapshots v1–v3 continúan legibles y las referencias legacy se normalizan sin inventar imágenes.
+- Migración `0028` agrega la referencia opcional de imagen a la oferta. Certificación y límites en `STATUS.md` y `TESTING.md`. Sin D1 remota ni deploy.
+
 ## 0.7.3 — mantenimiento de accesibilidad móvil (código integrado; sin publicar)
 
 - En Mi Vecidya y administración, los menús responsive comparten control del foco: diálogo modal al abrir, fondo inerte, navegación con Tab/Shift+Tab, cierre con Escape y retorno del foco al disparador. Cambios funcionales integrados en PR #100 (merge `736a3f7`).

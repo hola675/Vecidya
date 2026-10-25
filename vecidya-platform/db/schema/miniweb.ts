@@ -63,6 +63,7 @@ export const businessOffering = sqliteTable(
     title: text("title").notNull(),
     description: text("description").notNull(),
     priceLabel: text("price_label"),
+    imageAssetId: text("image_asset_id"),
     sortOrder: integer("sort_order").notNull(),
     isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
     createdAt: integer("created_at", { mode: "timestamp_ms" })

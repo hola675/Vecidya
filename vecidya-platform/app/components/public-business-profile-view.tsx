@@ -84,15 +84,17 @@ export function PublicBusinessHeader({
   profile,
   preview = false,
   showContactActions = true,
+  iconUrl,
 }: {
   profile: PublicBusinessProfile;
   preview?: boolean;
   showContactActions?: boolean;
+  iconUrl?: string;
 }) {
   const location = [profile.city, profile.country].filter(Boolean).join(", ");
   const actions = getContactActions(profile);
   const primaryAction = showContactActions ? actions[0] : undefined;
-  const imageUrl = safeWebUrl(profile.logoUrl);
+  const imageUrl = safeWebUrl(profile.logoUrl) ?? (profile.logoUrl?.startsWith("/media/business/") ? profile.logoUrl : null);
   const initial = profile.displayName.trim().slice(0, 1).toLocaleUpperCase();
 
   return (
@@ -106,6 +108,7 @@ export function PublicBusinessHeader({
       </div>
       <div className="public-business-profile__intro">
         <h1 id="public-business-title">{profile.displayName}</h1>
+        {iconUrl ? <img alt="" className="public-business-profile__icon" decoding="async" height={48} src={iconUrl} width={48} /> : null}
         {profile.verificationStatus === "verified" ? (
           <p className="public-business-profile__verified"><span aria-hidden="true">✓</span> Perfil verificado por Vecidya</p>
         ) : null}
