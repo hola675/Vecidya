@@ -108,7 +108,7 @@ export const learnTechnical04BArticles: LearnArticle[] = [
           type: "steps",
           label: "Comprobación posterior",
           items: [
-            { title: "Abre el dominio con HTTPS", detail: "Confirma que carga el sitio esperado y que el navegador no muestra una advertencia de certificado." },
+            { title: "Abre el dominio con una conexión segura (HTTPS)", detail: "Confirma que carga el sitio esperado y que el navegador no muestra una advertencia sobre el certificado de seguridad." },
             { title: "Prueba páginas y formularios", detail: "Revisa las rutas importantes y confirma que las solicitudes llegan al lugar correcto." },
             { title: "Prueba el correo", detail: "Envía y recibe mensajes de prueba desde una cuenta externa si el correo forma parte del dominio." },
             { title: "Revisa DNS", detail: "Comprueba que los registros vigentes coinciden con las instrucciones de los proveedores que realmente usas." },
