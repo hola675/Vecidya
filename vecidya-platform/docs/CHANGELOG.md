@@ -1,11 +1,24 @@
 # Changelog
 
-## 2026-10-25 — VISUAL-QA-20261025 — cierre de revisión local
+## 2026-10-25 — VISUAL-QA-20261025 — cierre PR #108
+
+- Se corrigió el preflight del demo para verificar el ledger D1 aplicado; `fileURLToPath` vuelve portable el runner aislado y dashboard. Captura restaura viewport compatible antes del editor, y “Continuar” queda aislado en contextos por ancho. El aviso conserva el footer de App/Admin con versión.
+- Dashboard: el estado `allowNarrowViewport` queda aislado por contextos para que “Continuar” no contamine tamaños posteriores. La captura integral expuso además React #418 en `/app`: el saludo por hora local podía diferir entre SSR y navegador; se sustituyó por texto estable. Corrida final: cero errores de consola cliente/admin, y aviso presente a 320/360/390/430 con DOM/hidratación, viewport, query, footer y red registrados.
+- MiniWeb aislado **125/125 PASS**, fixtures limpias y D1 efímera eliminada. Captura real bajo D1/R2 local con ficha ficticia fotográfica WebP de cafetería, logo/portada/galería, 2 servicios y 1 producto; consentimiento MiniWeb fotografiado pendiente/rechazado. La revisión de capturas detectó falta de margen interno en el editor; contenedor/cabecera ahora aprovechan el ancho con legibilidad a 768/820 y cero overflow en pasos Contenido/Vista previa.
+- `typecheck`, `build`, unitarias **1717/1717**, preflight, dashboard, captura integral (187/187) y MiniWeb aislado (125/125) PASS. Capturas comprimidas a WebP lossless con igualdad RGBA píxel a píxel; ZIP e informe corresponden sólo a esta corrida. Sin remoto, deploy o merge. Se combinó este historial con DIAG-PRO-19 al sincronizar `origin/main@0e337d03daae`.
+
+## 2026-10-25 — VISUAL-QA-20261025 — corrida inicial histórica
 
 - Se mejoraron runner/config de captura para alinear el puerto demo (5180 configurable), validar Worker/almacén local antes de sembrar y seleccionar Edge disponible o Chromium Playwright. Se añadió un runner MiniWeb con persistencia D1/R2 local aislada y teardown verificado.
 - Se añadió aviso para workspace privado en ancho estrecho y se cambió el breakpoint del drawer. Este checkpoint compila, pero el E2E dashboard falló cuatro veces esperando el aviso en teléfono; no se certifica compatibilidad móvil privada. La causa requiere depuración en otra corrida.
 - `pnpm run test:e2e:miniweb-isolated`: **125/125 PASS**, cinco pasos del editor y Vecindario en matrices de ancho, sin incidencias de imagen/request observadas y cero filas de prueba al terminar. `typecheck`/`build` PASS; las unitarias del checkpoint dieron 1699/1699 PASS después del último ajuste del gate.
 - Entrega local ignorada por Git: 51 capturas MiniWeb WebP lossless verificadas píxel a píxel, más 110 pantallas/manifiestos de captura previa segregados como antecedentes; informe HTML y resumen aislado sin credenciales. La captura integral final quedó sin ejecutar porque el demo no estaba activo en 127.0.0.1:5180. No D1/R2 remotos ni deploy. Chromium administrado Playwright no pudo descargarse por timeout CDN; la selección se probó y las capturas locales previas usan Edge.
+
+## 2026-10-25 — DIAG-PRO-19 — auditoría responsive del resumen anónimo
+
+- El E2E responsive elige el rechazo de cookies opcionales en un contexto limpio y espera la carga de imágenes diferidas antes de guardar capturas.
+- La comprobación Playwright y la revisión visual local pasaron en 320/375/390/768/1024/1366 px. No se modificó la interfaz ni el motor; no se probó el informe identificado ni el PDF.
+- Se generaron capturas PNG y WebP lossless como artefactos locales ignorados por Git. Worker y D1 locales; sin acceso remoto ni despliegue.
 
 ## 2026-10-24 — mantenimiento compatible de dependencias y URLs (checkpoint local)
 

@@ -1,11 +1,14 @@
 import { Link } from "react-router";
 
 import { publicAssets } from "../assets/public-assets";
+import { PlatformFooter } from "./platform-footer";
 
 /** Presentation-only compatibility gate for private workspaces on narrow viewports. */
 export function UnsupportedDeviceNotice({ area, onContinue }: { area: "client" | "admin"; onContinue: () => void }) {
+  const footerArea = area === "admin" ? "admin" : "app";
   return (
-    <main aria-labelledby="unsupported-device-title" className="unsupported-device" data-testid="unsupported-device-notice">
+    <div className="unsupported-device-shell" data-testid="unsupported-device-notice">
+      <main aria-labelledby="unsupported-device-title" className="unsupported-device">
       <section className="unsupported-device__card">
         <img alt="" className="unsupported-device__brand" height="512" src={publicAssets.brand.symbol3d} width="512" />
         <p className="eyebrow">Vecidya · espacio privado</p>
@@ -17,6 +20,8 @@ export function UnsupportedDeviceNotice({ area, onContinue }: { area: "client" |
         </div>
         <p className="unsupported-device__hint">Si estás usando zoom, puedes continuar y desplazarte por el espacio de trabajo.</p>
       </section>
-    </main>
+      </main>
+      <PlatformFooter area={footerArea} />
+    </div>
   );
 }

@@ -28,7 +28,11 @@ export async function assertDemoWorkerReady() {
   const wrangler = fileURLToPath(import.meta.resolve("wrangler"));
   const persistTo = join(cwd(), ".wrangler", "visual-qa-demo");
   const migrations = spawnSync(process.execPath, [wrangler, "d1", "migrations", "list", "DB", "--local", "--persist-to", persistTo], { cwd: cwd(), encoding: "utf8", windowsHide: true });
-  if (migrations.status !== 0 || !migrations.stdout.includes("0028")) {
-    throw new Error(`No se pudo verificar el almacén D1 local esperado (.wrangler/visual-qa-demo, migración 0028); no se modificaron fixtures. ${migrations.stderr || migrations.stdout}`);
-  }
+  if (migrations.status !== 0) throw new Error(`No se pudo inspeccionar el ledger D1 local; no se modificaron fixtures. ${migrations.stderr || migrations.stdout}`);
+  const appliedLedger = spawnSync(process.execPath, [wrangler, "d1", "execute", "DB", "--local", "--persist-to", persistTo, "--json", "--command", "SELECT name FROM d1_migrations ORDER BY name;"], { cwd: cwd(), encoding: "utf8", windowsHide: true });
+  if (appliedLedger.status !== 0) throw new Error(`No se pudo leer el ledger de migraciones aplicadas; no se modificaron fixtures. ${appliedLedger.stderr || appliedLedger.stdout}`);
+  let appliedNames;
+  try { appliedNames = JSON.parse(appliedLedger.stdout).flatMap((statement) => statement.results ?? []).map((row) => row.name); }
+  catch { throw new Error(`El ledger de migraciones aplicadas devolvió datos ilegibles; no se modificaron fixtures. ${appliedLedger.stdout}`); }
+  if (!appliedNames.includes("0028_miniweb-offering-image.sql")) throw new Error(`El almacén D1 local no tiene aplicada la migración de MiniWeb. Aplicadas: ${appliedNames.join(", ") || "ninguna"}; pendientes detectadas: ${migrations.stdout}`);
 }

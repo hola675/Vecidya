@@ -36,13 +36,23 @@ async function stabilize(page) {
 
 function installObservers(page) {
   const errors = [];
+  const navigationConsoleMessages = [];
   const failedRequests = [];
+  const abortedRequests = [];
   const externalRequests = new Set();
-  page.on("pageerror", (error) => errors.push(error.message));
-  page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
-  page.on("requestfailed", (request) => failedRequests.push(`${request.method()} ${request.url()}: ${request.failure()?.errorText ?? "failed"}`));
+  page.on("pageerror", (error) => errors.push({ url: page.url(), message: error.message }));
+  page.on("console", (message) => {
+    if (message.type() !== "error") return;
+    if (message.text().includes("Failed to fetch manifest patches")) navigationConsoleMessages.push(message.text());
+    else errors.push({ url: page.url(), message: message.text() });
+  });
+  page.on("requestfailed", (request) => {
+    const failure = `${request.method()} ${request.url()}: ${request.failure()?.errorText ?? "failed"}`;
+    if (request.failure()?.errorText === "net::ERR_ABORTED") abortedRequests.push(failure);
+    else failedRequests.push(failure);
+  });
   page.on("request", (request) => { if (new URL(request.url()).hostname !== new URL(baseUrl).hostname) externalRequests.add(request.url()); });
-  return { errors, failedRequests, externalRequests };
+  return { errors, navigationConsoleMessages, failedRequests, abortedRequests, externalRequests };
 }
 
 async function captureRoute(page, area, route, width, role) {
@@ -89,6 +99,7 @@ async function login(context, identity) {
   await page.getByLabel(/Contraseña/i).fill(identity.password);
   await page.getByRole("button", { name: "Entrar" }).click();
   await page.waitForURL(/\/app(?:$|\/)/, { timeout: 15000 });
+  await page.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => undefined);
   return { page, observers };
 }
 
@@ -114,9 +125,20 @@ try {
     for (const width of selectedWidths) await captureRoute(publicPage, "public", route, width, "anonymous");
   }
   const demoPath = new URL(access.organizations[0].publicUrl).pathname;
+  const undecidedMiniwebContext = await browser.newContext({ viewport: { width: 1366, height: 900 }, deviceScaleFactor: 1, locale: "es-CO", timezoneId: "America/Bogota", serviceWorkers: "block" });
+  const undecidedMiniweb = await undecidedMiniwebContext.newPage();
+  await undecidedMiniweb.goto(new URL(demoPath, baseUrl).toString(), { waitUntil: "networkidle" });
+  await stabilize(undecidedMiniweb);
+  const undecidedMiniwebConsent = undecidedMiniweb.getByRole("region", { name: "Preferencias de cookies" });
+  await undecidedMiniwebConsent.waitFor({ state: "visible" });
+  await undecidedMiniweb.screenshot({ path: join(outputDirectory, "miniweb-public-cookie-pending-1366.png"), fullPage: false });
+  results.push({ area: "miniweb-public", route: demoPath, role: "anonymous", width: 1366, height: 900, status: 200, screenshot: "miniweb-public-cookie-pending-1366.png", cookieState: "pending" });
+  await undecidedMiniwebContext.close();
   for (const width of publicWidths) await captureRoute(publicPage, "miniweb-public", demoPath, width, "anonymous");
+  const rejectedMiniwebCapture = results.filter((result) => result.area === "miniweb-public");
+  rejectedMiniwebCapture.forEach((result) => { if (!result.cookieState) result.cookieState = "optional-cookies-rejected"; });
   console.log(`Captura pública terminada (${publicRoutes.length} rutas; anchos ${publicWidths.join(", ")}).`);
-  const publicState = { cookieConsent: "rechazo de opcionales; necesario únicamente", consoleErrors: publicObservers.errors, requestFailures: publicObservers.failedRequests, externalRequests: [...publicObservers.externalRequests] };
+  const publicState = { cookieConsent: "rechazo de opcionales; necesario únicamente", consoleErrors: publicObservers.errors, navigationConsoleMessages: publicObservers.navigationConsoleMessages, requestFailures: publicObservers.failedRequests, navigationAborts: publicObservers.abortedRequests, externalRequests: [...publicObservers.externalRequests] };
   writeFileSync(join(outputDirectory, "public-manifest.json"), `${JSON.stringify({ capturedAt: new Date().toISOString(), baseUrl, captures: results, ...publicState }, null, 2)}\n`);
   await publicContext.close();
 
@@ -129,7 +151,9 @@ try {
   }
   for (const width of phoneWidths) await captureRoute(owner.page, "compatibility-client", "/app", width, "owner");
   const editorSteps = ["1 Diseño", "2 Secciones", "3 Contenido", "4 Vista previa", "5 Publicar"];
+  await owner.page.setViewportSize({ width: 1366, height: viewportHeightFor(1366) });
   await owner.page.goto(new URL("/app/miniweb", baseUrl).toString(), { waitUntil: "networkidle" });
+  await owner.page.getByRole("button", { name: /1 Diseño/ }).waitFor({ timeout: 15000 });
   for (const [index, label] of editorSteps.entries()) {
     await owner.page.getByRole("button", { name: new RegExp(label) }).click();
     for (const width of privateWidths) {
@@ -153,7 +177,7 @@ try {
       results.push({ area: "editor-step", route: "/app/miniweb", role: "owner", width, status: 200, screenshot, step: label, ...layout });
     }
   }
-  const ownerState = { consoleErrors: owner.observers.errors, requestFailures: owner.observers.failedRequests, externalRequests: [...owner.observers.externalRequests] };
+  const ownerState = { consoleErrors: owner.observers.errors, navigationConsoleMessages: owner.observers.navigationConsoleMessages, requestFailures: owner.observers.failedRequests, navigationAborts: owner.observers.abortedRequests, externalRequests: [...owner.observers.externalRequests] };
   console.log("Captura del área de cliente terminada.");
   await ownerContext.close();
 
@@ -165,7 +189,7 @@ try {
     }
   }
   for (const width of phoneWidths) await captureRoute(admin.page, "compatibility-admin", "/app/internal", width, "platform_admin");
-  const adminState = { consoleErrors: admin.observers.errors, requestFailures: admin.observers.failedRequests, externalRequests: [...admin.observers.externalRequests] };
+  const adminState = { consoleErrors: admin.observers.errors, navigationConsoleMessages: admin.observers.navigationConsoleMessages, requestFailures: admin.observers.failedRequests, navigationAborts: admin.observers.abortedRequests, externalRequests: [...admin.observers.externalRequests] };
   console.log("Captura interna terminada.");
   await adminContext.close();
 

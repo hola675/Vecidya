@@ -74,7 +74,7 @@ await d1(`INSERT INTO user (id, name, email, email_verified, created_at, updated
 
 const owner = await signUp(`visual-qa-owner-${suffix}@vecidya.test`, "TEST LOCAL — Propietario demo");
 console.log("Registro por invitación local completado.");
-const first = await owner.client.json("/api/auth/organization/create", { name: "TEST LOCAL — Restaurante", slug: `visual-qa-restaurante-${suffix}` });
+const first = await owner.client.json("/api/auth/organization/create", { name: "TEST LOCAL — Café Jardín de la Esquina", slug: `visual-qa-restaurante-${suffix}` });
 if (first.status !== 200) throw new Error(`Crear primera organización: ${first.status} ${(await first.text()).slice(0, 250)}`);
 const firstOrg = (await first.json()).id;
 console.log("Organización inicial creada por la ruta de autenticación.");
@@ -85,7 +85,7 @@ await d1(`INSERT INTO billing_account (id, owner_user_id, kind, created_at, upda
 await d1(`INSERT INTO organization_license (id, organization_id, billing_account_id, plan_code, price_id, status, started_at, activated_at, created_at, updated_at) VALUES ('${crypto.randomUUID()}', '${firstOrg}', '${billingId}', 'cuadra', '${priceId}', 'active', ${now}, ${now}, ${now}, ${now});`);
 
 const profiles = [
-  { key: "restaurante", name: "TEST LOCAL — Restaurante La Esquina", category: "Restaurante", city: "Bogotá", description: "Una ficha sintética para revisar horarios, ubicación, servicios y galería.", media: true, status: "published" },
+  { key: "restaurante", name: "TEST LOCAL — Café Jardín de la Esquina", category: "Cafetería de especialidad", city: "Bogotá", description: "Café de origen, panadería artesanal y un espacio tranquilo para encontrarse en el barrio. Esta ficha ficticia sirve para revisar cómo se presentan la historia, los servicios, los productos y las fotografías del negocio.", media: true, status: "published" },
   { key: "barberia", name: "TEST LOCAL — Barbería Norte", category: "Barbería", city: "Medellín", description: "Perfil de demostración con servicios y contacto.", status: "draft" },
   { key: "tienda", name: "TEST LOCAL — Tienda de Barrio", category: "Comercio minorista", city: "Cali", description: "Productos sintéticos sin precios ni oferta comercial.", status: "draft" },
   { key: "consultoria", name: "TEST LOCAL — Consultoría Profesional", category: "Consultoría", city: "Bogotá", description: "Ficha de prueba para una actividad profesional.", status: "draft" },
@@ -111,7 +111,10 @@ for (const [index, org] of organizations.entries()) {
   sqlStatements.push(`INSERT INTO business_profile_governance (id, business_profile_id, verification_status, platform_status, created_at, updated_at) VALUES ('${crypto.randomUUID()}', '${profileId}', 'unverified', '${org.key === "comunidad" ? "suspended" : "active"}', ${timestamp}, ${timestamp});`);
   if (index < 8) {
     for (let day = 0; day < 7; day += 1) sqlStatements.push(`INSERT INTO business_hours (id, organization_id, day_of_week, opens_at, closes_at, is_closed, created_at, updated_at) VALUES ('${crypto.randomUUID()}', '${org.id}', ${day}, ${day === 0 ? "NULL" : "'09:00'"}, ${day === 0 ? "NULL" : "'18:00'"}, ${day === 0 ? 1 : 0}, ${timestamp}, ${timestamp});`);
-    for (let item = 0; item < 3; item += 1) sqlStatements.push(`INSERT INTO business_offering (id, organization_id, kind, title, description, price_label, sort_order, is_active, created_at, updated_at) VALUES ('${crypto.randomUUID()}', '${org.id}', '${item === 2 ? "product" : "service"}', 'TEST LOCAL — ${org.category} ${item + 1}', 'Descripción sintética para evaluación visual.', NULL, ${item}, 1, ${timestamp}, ${timestamp});`);
+    const sampleOfferings = org.key === "restaurante"
+      ? [{ kind: "service", title: "Café preparado al momento", description: "Espresso, filtrados y bebidas con leche preparados con granos de pequeños productores colombianos.", price: "Desde $8.000" }, { kind: "service", title: "Desayuno de temporada", description: "Pan de masa madre, fruta fresca y café para comenzar el día sin afán.", price: "Desde $18.000" }, { kind: "product", title: "Bolsa de café de origen", description: "Café en grano de fincas familiares, tostado en lotes pequeños para conservar sus notas dulces.", price: "$38.000" }]
+      : Array.from({ length: 3 }, (_, item) => ({ kind: item === 2 ? "product" : "service", title: `TEST LOCAL — ${org.category} ${item + 1}`, description: "Contenido sintético para evaluación visual local.", price: null }));
+    for (const [item, offering] of sampleOfferings.entries()) sqlStatements.push(`INSERT INTO business_offering (id, organization_id, kind, title, description, price_label, sort_order, is_active, created_at, updated_at) VALUES ('${crypto.randomUUID()}', '${org.id}', '${offering.kind}', '${offering.title.replaceAll("'", "''")}', '${offering.description.replaceAll("'", "''")}', ${offering.price ? `'${offering.price}'` : "NULL"}, ${item}, 1, ${timestamp}, ${timestamp});`);
     sqlStatements.push(`INSERT INTO business_faq (id, organization_id, question, answer, sort_order, is_active, created_at, updated_at) VALUES ('${crypto.randomUUID()}', '${org.id}', 'TEST LOCAL — ¿Cómo funciona el servicio?', 'Esta respuesta solo existe en la base local de demostración.', 0, 1, ${timestamp}, ${timestamp});`);
   }
 }
@@ -136,7 +139,7 @@ for (const [fileName, purpose, altText] of [["cafe.webp", "cover", "TEST LOCAL �
   revision = result.draftRevision;
   media.push(result.asset);
 }
-await d1(`UPDATE business_offering SET image_asset_id = '${media[3].id}' WHERE organization_id = '${firstOrg}' AND sort_order = 0;`);
+await d1(`UPDATE business_offering SET image_asset_id = '${media[3].id}' WHERE organization_id = '${firstOrg}' AND sort_order = 0; UPDATE business_offering SET image_asset_id = '${media[0].id}' WHERE organization_id = '${firstOrg}' AND sort_order = 1; UPDATE business_offering SET image_asset_id = '${media[3].id}' WHERE organization_id = '${firstOrg}' AND sort_order = 2;`);
 const publish = await owner.client.json(`/api/organizations/${firstOrg}/miniweb-config`, { intent: "publish", draftRevision: revision });
 if (publish.status !== 200) throw new Error(`Publicación explícita local: ${publish.status} ${(await publish.text()).slice(0, 250)}`);
 

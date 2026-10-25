@@ -6,7 +6,7 @@ import { join, resolve } from "node:path";
 import { randomBytes } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
-const project = resolve(new URL("../..", import.meta.url).pathname.replace(/^\//, "").replaceAll("/", "\\"));
+const project = fileURLToPath(new URL("../..", import.meta.url));
 const persistTo = mkdtempSync(join(project, ".wrangler", "visual-qa-miniweb-"));
 const evidenceDir = process.env.VISUAL_OUTPUT_DIRECTORY ?? ".playwright-mcp/visual-qa/miniweb-isolated";
 const wrangler = fileURLToPath(import.meta.resolve("wrangler"));

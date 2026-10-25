@@ -1,12 +1,18 @@
+## Corte vigente — cierre visual MiniWeb (2026-10-25 local)
+
+Rama `feat/app-mini-visual-qa-20261025`, PR #108, sincronizada con `origin/main@0e337d03daae`. Typecheck/build, unitarias **1717/1717**, E2E dashboard y E2E MiniWeb aislado **125/125** PASS. El dashboard privado ofrece aviso por debajo de 768 px; el E2E confirma aviso a 320/360/390/430 y workspace íntegro desde 768. El estado “Continuar” se reinicia entre contextos de ancho.
+
+La ficha ficticia de cafetería con logo, portada y galería fotográfica WebP, dos servicios y un producto se preparó en D1/R2 locales; publicación sólo local. E2E de MiniWeb limpia sus fixtures y elimina su D1 efímera, verificando conteos en cero y permisos de medios. Capturas actuales en `.playwright-mcp/visual-qa/miniweb-final-certified/`; el paquete de esta corrida contiene 187 imágenes WebP lossless con igualdad RGBA exacta, manifiestos y datos de prueba actuales, sin historial ni credenciales. Se dio margen y jerarquía responsive al editor Contenido/Vista previa a 768/820. React #418 en `/app` se reprodujo y se corrigió eliminando la diferencia de hora entre SSR y navegador; captura confirmatoria sin errores. Sin deploy, D1/R2 remoto ni envío de correo. Evidencia y límites en `STATUS.md` y `TESTING.md`.
+
 ## Corte vigente — dependencias y URLs (2026-10-24 local / 2026-10-25 UTC)
 
 `origin/main@952f06e` incluye PR #105 y #106; esta rama actualiza dependencias compatibles y fija pnpm `11.21.0` con `devEngines.packageManager`. La aplicación sigue en `0.7.3`; el lockfile y la instalación congelada usan React Router `8.5.0`, React `19.3.1`, Drizzle ORM `0.45.4`, Cloudflare Vite plugin `1.65.0`, Vite `8.3.5` y Wrangler `4.152.0`. Typecheck, build y Worker local con D1 `0000–0028` pasaron.
 
 Las direcciones de producción, `www` y staging respondieron correctamente en GET anónimo fechado (ver `ENVIRONMENTS.md`); el registry npm oficial también respondió y sirvió metadata de Vite `8.3.5`. No se cambió configuración de URL, no hubo deploy ni acceso/escritura a D1 o R2 remotas. No se retiró el adaptador/V3 legacy de Diagnóstico: la ventana de rollback sigue abierta según `ROADMAP.md`, y no existe una carpeta `legacy/` en este checkout.
 
-## VISUAL-QA-20261025 — corte vigente de auditoría (2026-10-25)
+## VISUAL-QA-20261025 — corrida previa (histórica)
 
-En este checkpoint, typecheck y build pasan tras el último cambio; las unitarias dieron 1699/1699 PASS después del último ajuste del gate. El E2E aislado MiniWeb terminó 125/125 PASS a las 14:38 UTC, imágenes/requests sin incidencias, fixtures limpiadas y D1 efímera con cinco conteos en cero; 51 capturas se optimizaron WebP lossless con igualdad píxel a píxel verificada. El E2E de dashboard no está certificado: cuatro corridas fallaron esperando aviso privado móvil. La captura integral final no corrió porque el demo local 5180 estaba apagado. Informe y 161 capturas (110 del manifiesto de corrida previa, claramente rotuladas; 51 MiniWeb de esta corrida) están bajo `.playwright-mcp/visual-qa/entrega-auditoria-20261025/`. Sin remoto, deploy ni envío real. Detalle y límites en `STATUS.md` y `TESTING.md`.
+La corrida inicial dejó 1699 unitarias PASS, 125 MiniWeb PASS y dashboard móvil aún sin diagnóstico. Fue superada por el corte vigente de cierre visual descrito arriba; sus capturas/manifiestos no se mezclan con la entrega actual.
 
 ## Corte vigente de código y publicación (2026-10-24)
 

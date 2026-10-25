@@ -102,8 +102,7 @@ export default function AppPage() {
     navigate("/app", { replace: true });
   }
 
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Buenos días" : hour < 19 ? "Buenas tardes" : "Buenas noches";
+  const greeting = "Hola";
   const firstName = workspaceUser.name.split(" ")[0];
   const primaryAction = activeOrganization ? getPrimaryAction(businessProfile, businessProfileCompletion) : null;
 

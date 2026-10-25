@@ -66,6 +66,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 .app-shell { display: grid; min-height: 100vh; grid-template-columns: 17rem minmax(0, 1fr); background: var(--canvas); }
 .unsupported-device { display: grid; min-height: 100vh; place-items: center; padding: clamp(1rem, 5vw, 3rem); background: radial-gradient(ellipse at top, #e8f1ff 0, var(--canvas) 62%); }
+.unsupported-device-shell { display: flex; min-height: 100vh; flex-direction: column; }
+.unsupported-device-shell > .platform-footer { margin-top: 0; }
 .unsupported-device__card { width: min(100%, 40rem); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(1.5rem, 6vw, 3rem); background: var(--surface); box-shadow: var(--shadow); }
 .unsupported-device__brand { display: block; width: 4rem; height: 4rem; margin-bottom: 1.25rem; object-fit: contain; }
 .unsupported-device__card h1 { max-width: 17ch; margin: .65rem 0; font-size: clamp(1.8rem, 7vw, 2.6rem); line-height: 1.08; letter-spacing: -.04em; }
@@ -5856,7 +5858,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .learn-article-body .learn-block--summary ul { display: grid; gap: 0.55rem; margin: 0.65rem 0 0; padding-left: 1.2rem; }
 
 /* APP-MINI-02A: panel mínimo del motor modular, separado del formulario de información. */
-.miniweb-editor__header { align-items: flex-start; gap: 1rem; }
+.client-page.miniweb-editor { width: 100%; max-width: 82rem; box-sizing: border-box; margin-inline: auto; padding: clamp(1.25rem, 3vw, 2rem); }
+.miniweb-editor__header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1.25rem; margin: 0 0 1.25rem; }
+.miniweb-editor__header > div:first-child { min-width: 0; }
+.miniweb-editor__header h1 { margin: 0.25rem 0 0.5rem; font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1.12; letter-spacing: -0.04em; }
+.miniweb-editor__header > div:first-child > p:last-child { margin: 0; color: var(--muted); line-height: 1.5; }
+.miniweb-editor__header-actions { justify-content: flex-end; }
 .miniweb-editor__header .button { flex: 0 0 auto; }
 .miniweb-editor__steps { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 0 0 1rem; }
 .miniweb-editor__steps a { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.45rem 0.75rem; color: var(--ink); background: var(--surface); font-weight: 700; text-decoration: none; }
@@ -6595,6 +6602,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   grid-template-columns: minmax(0, 1fr);
 }
 @media (max-width: 640px) {
+  .client-page.miniweb-editor { padding: 1rem; }
+  .miniweb-editor__header { flex-direction: column; }
+  .miniweb-editor__header-actions { justify-content: flex-start; }
   .miniweb-editor__content-nav { flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; }
   .miniweb-editor__empty-state { padding: 1rem; }
   .miniweb-content-editor__item { padding: .85rem; }
