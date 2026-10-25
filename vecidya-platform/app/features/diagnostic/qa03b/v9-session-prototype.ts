@@ -292,12 +292,18 @@ export function parseCandidateSessionV9Prototype(raw: string): CandidateSessionV
     if (!(parsed.terminalReason === null || ["no_useful_questions", "budget_blocked", "hard_cap"].includes(String(parsed.terminalReason)))) return null;
     if (!(parsed.completedAt === null || typeof parsed.completedAt === "number")) return null;
 
-    if (!parsed.answeredQuestionIds.every((id) => typeof id === "string") || new Set(parsed.answeredQuestionIds).size !== parsed.answeredQuestionIds.length) return null;
-    const answerIds = Object.keys(parsed.answers);
-    if (answerIds.length !== parsed.answeredQuestionIds.length || !answerIds.every((id) => parsed.answeredQuestionIds.includes(id))) return null;
-    if (!parsed.queue.every((id) => typeof id === "string" && byId.has(id) && parsed.answers[id] === undefined) || new Set(parsed.queue).size !== parsed.queue.length) return null;
+    const parsedAnswers = parsed.answers as Record<string, unknown>;
+    const parsedAnsweredQuestionIds = parsed.answeredQuestionIds as unknown[];
+    const parsedQueue = parsed.queue as unknown[];
+    const parsedTranscript = parsed.replayTranscript as unknown[];
 
-    const replayed = replayCandidateTranscriptV9(parsed.replayTranscript as CandidateReplayEventV9[]);
+    if (!parsedAnsweredQuestionIds.every((id) => typeof id === "string") || new Set(parsedAnsweredQuestionIds).size !== parsedAnsweredQuestionIds.length) return null;
+    const answeredQuestionIds = parsedAnsweredQuestionIds as string[];
+    const answerIds = Object.keys(parsedAnswers);
+    if (answerIds.length !== answeredQuestionIds.length || !answerIds.every((id) => answeredQuestionIds.includes(id))) return null;
+    if (!parsedQueue.every((id) => typeof id === "string" && byId.has(id) && parsedAnswers[id] === undefined) || new Set(parsedQueue).size !== parsedQueue.length) return null;
+
+    const replayed = replayCandidateTranscriptV9(parsedTranscript as CandidateReplayEventV9[]);
     if (!replayed || replayed.interactionCount !== parsed.interactionCount) return null;
     if (JSON.stringify(replayed.answers) !== JSON.stringify(parsed.answers)) return null;
 
