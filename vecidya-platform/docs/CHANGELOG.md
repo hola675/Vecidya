@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-25 — APRENDE-EDITORIAL-04B — proveedor sin monolito (PR dependiente pendiente)
+
+- Separa dos decisiones que estaban mezcladas: elegir/renovar proveedor y ejecutar una migración.
+- La guía histórica conserva su URL y aprobación editorial, pero reduce el alcance a comparación, control, renovación y salida; una guía nueva en borrador cubre inventario, DNS, web, correo, pruebas y cancelación segura.
+- El catálogo queda en 47 guías y 9 itinerarios. Sin cambios de DB, Auth, Diagnóstico, MiniWeb, GHL, precios o producción.
+
 ## 2026-10-25 — APRENDE-EDITORIAL-04A — criterio digital y claridad pedagógica (PR pendiente)
 
 - Amplía Aprende de 44 a 46 guías y de 8 a 9 itinerarios sin crear categorías nuevas. Las dos guías fundacionales cubren priorización digital y uso consciente de tecnología para personas y negocios; permanecen en revisión editorial.
