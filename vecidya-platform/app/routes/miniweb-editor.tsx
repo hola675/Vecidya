@@ -117,6 +117,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const [uploading, setUploading] = useState(false);
   const [removingMediaId, setRemovingMediaId] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(true);
+  const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
+  const [mediaPurpose, setMediaPurpose] = useState<"gallery" | "cover">("gallery");
   const [activeTab, setActiveTab] = useState<"design" | "sections" | "content" | "preview" | "publish">("design");
   const [contentTab, setContentTab] = useState<"services" | "products" | "faq" | "media">("services");
   const [busy, setBusy] = useState(false);
@@ -258,6 +260,14 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
     const fileInput = form.elements.namedItem("file");
     const altInput = form.elements.namedItem("altText");
     if (!(fileInput instanceof HTMLInputElement) || !fileInput.files?.[0] || !(altInput instanceof HTMLInputElement)) return;
+    if (mediaPurpose === "cover" && !fileInput.files[0].type.startsWith("image/")) {
+      setMessage({ kind: "error", text: "La portada debe ser una imagen JPEG, PNG o WebP. Los vídeos se pueden subir a Galería." });
+      return;
+    }
+    if (mediaPurpose === "cover" && media.some((asset) => asset.purpose === "cover")) {
+      setMessage({ kind: "error", text: "Ya hay una portada. Retírala del borrador antes de subir otra." });
+      return;
+    }
     setUploading(true);
     setMessage(null);
     try {
@@ -265,8 +275,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
       body.set("file", fileInput.files[0]);
       body.set("altText", altInput.value);
       body.set("draftRevision", String(draftRevision));
-      const purposeInput = form.elements.namedItem("purpose");
-      if (purposeInput instanceof HTMLSelectElement) body.set("purpose", purposeInput.value);
+      body.set("purpose", mediaPurpose);
       const response = await fetch(`/api/organizations/${encodeURIComponent(data.activeOrganization.id)}/business-media`, { method: "POST", body });
       const result = await response.json() as { error?: string; asset?: BusinessMediaAsset; draftRevision?: number };
       if (!response.ok || !result.asset) throw new Error(result.error ?? "No se pudo subir el archivo.");
@@ -539,18 +548,25 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               <p className="miniweb-editor__note">Sube imágenes JPEG, PNG o WebP, o videos MP4 o WebM de hasta 32 MB. Los medios se almacenan en privado y pasan a la página pública únicamente al publicar el snapshot.</p>
               <form className="miniweb-content-editor__item" onSubmit={handleMediaUpload}>
                 <input name="draftRevision" type="hidden" value={draftRevision} />
-                <label>Uso
-                  <select disabled={!data.canEdit || uploading || busy} name="purpose" defaultValue="gallery"><option value="gallery">Galería</option><option value="cover">Portada (una imagen)</option></select>
+                <label>Destino del archivo
+                  <select disabled={!data.canEdit || uploading || busy} name="purpose" onChange={(event) => setMediaPurpose(event.currentTarget.value as "gallery" | "cover")} value={mediaPurpose}>
+                    <option value="gallery">Galería · fotos o vídeos</option>
+                    <option value="cover">Portada · solo imagen</option>
+                  </select>
                 </label>
+                <p className="miniweb-editor__note">{mediaPurpose === "cover"
+                  ? "La portada aparece en la presentación principal. Solo puede haber una imagen de portada activa."
+                  : "La galería reúne imágenes y vídeos y solo se muestra cuando su sección está activada."}</p>
                 <label>Archivo
-                  <input accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" disabled={!data.canEdit || uploading || busy} name="file" required type="file" />
+                  <input accept={mediaPurpose === "cover" ? "image/jpeg,image/png,image/webp" : "image/jpeg,image/png,image/webp,video/mp4,video/webm"} disabled={!data.canEdit || uploading || busy} key={mediaPurpose} name="file" required type="file" />
                 </label>
                 <label>Texto alternativo o descripción breve
                   <input disabled={!data.canEdit || uploading || busy} maxLength={180} name="altText" required />
                 </label>
                 <Button disabled={!data.canEdit || uploading || busy} type="submit" tone="secondary">{uploading ? "Subiendo…" : "Subir medio"}</Button>
               </form>
-              {media.length ? <ul className="miniweb-media-list">{media.map((asset) => <li key={asset.id}>{asset.mediaType === "image" ? <img alt="" height="72" loading="lazy" src={asset.publicUrl} width="96" /> : <span aria-hidden="true">▶</span>}<span>{asset.purpose === "cover" ? "Portada" : "Galería"}: {asset.altText}</span><span>{Math.ceil(asset.sizeBytes / 1024)} KB</span><Button disabled={!data.canEdit || busy || uploading || removingMediaId !== null} onClick={() => void handleRemoveMedia(asset)} tone="secondary">{removingMediaId === asset.id ? "Retirando…" : "Retirar del borrador"}</Button></li>)}</ul> : <p className="miniweb-editor__note">Todavía no has subido medios.</p>}
+              {!media.length ? <div className="miniweb-editor__empty-state"><strong>Tus imágenes cuentan la historia del negocio</strong><p>Añade una portada y, si quieres, más fotografías o vídeos para la galería. Puedes revisarlos antes de publicar.</p></div> : null}
+              {media.length ? <ul className="miniweb-media-list">{media.map((asset) => <li key={asset.id}>{asset.mediaType === "image" ? <img alt="" height="72" loading="lazy" src={asset.publicUrl} width="96" /> : <span aria-hidden="true">▶</span>}<span>{asset.purpose === "cover" ? "Portada" : "Galería"}: {asset.altText}</span><span>{Math.ceil(asset.sizeBytes / 1024)} KB</span><Button disabled={!data.canEdit || busy || uploading || removingMediaId !== null} onClick={() => void handleRemoveMedia(asset)} tone="secondary">{removingMediaId === asset.id ? "Retirando…" : "Retirar del borrador"}</Button></li>)}</ul> : null}
               <p className="miniweb-editor__note">Activa Galería en Secciones y publica para mostrar sus archivos. La imagen de portada se configura por separado.</p>
             </Card>
               </div>
