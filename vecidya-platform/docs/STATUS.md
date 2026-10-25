@@ -18,7 +18,7 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 Las cinco guías pasan de `editorialDraft: true` a `false` únicamente después de esta revisión. El catálogo mantiene **48 guías**; quedan **13 borradores** y **35 guías revisadas** en esta rama. Las fuentes verificadas incluyen business.gov.au para inventario, OCDE 2025, NIST SP 1300, GOV.UK Service Manual y Microsoft Learn; su uso conserva el alcance declarado y no convierte documentación de proveedor en recomendación de compra.
 
-**Gate pendiente:** `Aprende quality` debe pasar sobre el HEAD final antes de certificar este checkpoint. Esta rama es paralela a los PR #125/#126, que parten de un 04B anterior; no los sobrescribe ni los fuerza.
+**RAN en GitHub Actions:** `Aprende quality` run `40246857214` PASS: typecheck, build e integridad Aprende. Esta rama es paralela a los PR #125/#126, que parten de un 04B anterior; no los sobrescribe ni los fuerza.
 
 ## APRENDE-EDITORIAL-04B — separar selección y migración de proveedor (2026-10-25)
 
