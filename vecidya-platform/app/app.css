@@ -6682,3 +6682,20 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .miniweb-content-editor__entry-toggle,
   .miniweb-content-editor__chevron { transition: background-color .18s ease, transform .18s ease; }
 }
+
+
+/* MiniWeb: acceso a la web publicada y foco correcto al cambiar de paso. */
+.miniweb-editor__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem;
+  flex: 0 1 auto;
+}
+.miniweb-editor__guide { scroll-margin-top: 5.2rem; }
+.miniweb-editor__guide h2:focus { outline: none; }
+.miniweb-editor__header-actions a { text-align: center; }
+@media (max-width: 600px) {
+  .miniweb-editor__header-actions { width: 100%; }
+  .miniweb-editor__header-actions .button { flex: 1 1 11rem; }
+}
