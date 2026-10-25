@@ -2284,7 +2284,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   width: min(8rem, 45vw);
   height: min(8rem, 45vw);
   border-radius: 1.6rem;
-  object-fit: cover;
+  object-fit: contain;
+  background: #fff;
   box-shadow: 0 1rem 2rem rgb(20 43 74 / 12%);
 }
 
@@ -5904,6 +5905,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .miniweb-content-editor__toggle input { width: 1.1rem; height: 1.1rem; accent-color: var(--blue); }
 .miniweb-content-list__items { display: grid; gap: 0.75rem; }
 .miniweb-content-list__item { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1rem; }
+.miniweb-content-list__item > img { display: block; width: 100%; max-height: 16rem; margin-block-end: 0.75rem; border-radius: var(--radius-sm); object-fit: cover; }
 .miniweb-content-list__item h3 { margin: 0; }
 .miniweb-content-list__item p { margin: 0.5rem 0 0; line-height: 1.55; }
 .miniweb-content-list__item .miniweb-content-list__price { font-weight: 700; }
@@ -6733,3 +6735,46 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   line-height: 1.35;
 }
 .organization-switcher select:disabled { cursor: not-allowed; opacity: .7; }
+
+/* MiniWeb: medios visuales de APP-MINI-02F integrados en el editor premium. */
+.public-business-profile__icon {
+  display: inline-block;
+  width: 3rem;
+  height: 3rem;
+  margin-inline-start: .75rem;
+  border-radius: .7rem;
+  object-fit: contain;
+  background: #fff;
+  vertical-align: middle;
+}
+.miniweb-editor__brand-assets { display: grid; gap: .65rem; margin: 1.2rem 0; }
+.miniweb-editor__brand-asset {
+  display: grid;
+  grid-template-columns: 4.2rem minmax(0, 1fr) auto;
+  gap: .9rem;
+  align-items: center;
+  padding: .85rem;
+  border: 1px solid #dfe7f1;
+  border-radius: .9rem;
+  background: #f9fbff;
+}
+.miniweb-editor__brand-asset img, .miniweb-editor__brand-placeholder {
+  display: grid;
+  place-items: center;
+  width: 4.2rem;
+  height: 4.2rem;
+  border-radius: .75rem;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid #dfe7f1;
+}
+.miniweb-editor__brand-placeholder { color: #617fa7; font-size: 1.5rem; font-weight: 700; }
+.miniweb-editor__brand-asset strong { color: #213d5c; font-size: .94rem; }
+.miniweb-editor__brand-asset p { margin: .25rem 0; font-size: .82rem; line-height: 1.5; color: #526783; }
+.miniweb-editor__brand-status { color: #2457c5; font-size: .75rem; font-weight: 700; }
+.miniweb-content-editor__image-preview { display: block; max-width: 18rem; width: 100%; max-height: 13rem; border-radius: .75rem; object-fit: contain; background: #f6f8fc; }
+@media (max-width: 650px) {
+  .miniweb-editor__brand-asset { grid-template-columns: 3.6rem minmax(0, 1fr); }
+  .miniweb-editor__brand-asset img, .miniweb-editor__brand-placeholder { width: 3.6rem; height: 3.6rem; }
+  .miniweb-editor__brand-asset .button { grid-column: 1 / -1; }
+}
