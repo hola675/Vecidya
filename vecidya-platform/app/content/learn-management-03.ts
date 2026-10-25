@@ -184,9 +184,9 @@ export const learnManagement03Articles: LearnArticle[] = [
             "type": "sources",
             "items": [
               {
-                "label": "SBA — Administre las finanzas de su empresa",
-                "url": "https://legacy.sba.gov/es/guia-de-negocios/administre-su-empresa/administre-sus-finanzas",
-                "scope": "Explica cómo registrar gastos e ingresos y pensar en costos y flujo de efectivo. Es orientación general de EE. UU., no asesoría contable o tributaria para todos los países."
+                "label": "SBA — Manage your business / Manage your finances",
+                "url": "https://www.sba.gov/counseling/manage-your-business/",
+                "scope": "La página vigente de SBA incluye orientación sobre registro financiero, costos y análisis costo-beneficio. Es material de EE. UU., no asesoría contable o tributaria para otros países."
               },
               {
                 "label": "OCDE — Digitalización de pequeñas y medianas empresas",
@@ -386,7 +386,7 @@ export const learnManagement03Articles: LearnArticle[] = [
             "items": [
               {
                 "label": "SBA — Administre las finanzas de su empresa",
-                "url": "https://legacy.sba.gov/es/guia-de-negocios/administre-su-empresa/administre-sus-finanzas",
+                "url": "https://www.sba.gov/counseling/manage-your-business/",
                 "scope": "Explica cómo registrar gastos e ingresos y pensar en costos y flujo de efectivo. Es orientación general de EE. UU., no asesoría contable o tributaria para todos los países."
               },
               {
