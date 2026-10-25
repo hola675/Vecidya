@@ -12,6 +12,14 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 **RAN en GitHub Actions:** sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`, workflow `Aprende quality` run `40242263335` PASS (typecheck, build e integridad Aprende) y `Main integration quality` run `40242263275` PASS: typecheck, build, regresión Diagnóstico/Aprende y **1721/1721 unitarias**. La revisión estática de los 12 archivos modificados quedó sin marcadores de conflicto ni whitespace final. Fuentes nuevas verificadas contra OCDE 2026, NIST CSF 2.0, CISA y W3C. No cambia DB, Auth, Diagnóstico, MiniWeb, GHL, licencias, precios ni producción.
 
+## APRENDE-EDITORIAL-04C — lenguaje comprensible y función editorial (2026-10-25)
+
+**CODE/TEST versionado en `feat/aprende-editorial-04c`, dependiente de 04B; sin merge ni deploy.** Se auditan las **47 guías** después de la desmonolitización. El pase corrige jerga que aparecía sin traducción suficiente —tokens, conversión, analítica, autenticación multifactor, MX/TXT, TLS/HTTPS y atribución— sin añadir glosarios donde el término ya estaba explicado por contexto.
+
+Se eliminan tres patrones de contenido de plantilla en **19 guías**: objetivo genérico, ejercicio repetido y autoevaluación idéntica; cada apertura queda ligada a la competencia real del artículo. Se reemplazan **18 textos alternativos** débiles usando el contenido real de los SVG (`<title>`/`<desc>`), se corrigen **4** pares intro/extracto idénticos y **13** resúmenes finales que copiaban literalmente «En pocas palabras», convirtiéndolos en acciones de cierre.
+
+**Auditoría estática:** 47 artículos, 47 slugs únicos y cero incidencias para los contratos revisados: ejemplo práctico presente, intro ≠ excerpt, alt descriptivo de al menos siete palabras, ausencia de la plantilla educativa antigua y resumen final distinto de `enPocasPalabras`. Se añaden pruebas unitarias para esos contratos. CI/typecheck/build pendientes de observar sobre el HEAD final de 04C.
+
 ## APRENDE-EDITORIAL-04B — separar selección y migración de proveedor (2026-10-25)
 
 **CODE/TEST versionado en `feat/aprende-editorial-04b`, dependiente de 04A; sin merge ni deploy.** La guía histórica de proveedor se concentra en elegir/renovar: servicios incluidos, control administrativo, recuperación, renovación, costo total y salida. La migración técnica deja de compartir el mismo objetivo educativo y pasa a la nueva guía `como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo`, marcada `editorialDraft: true`.
