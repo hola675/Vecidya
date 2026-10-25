@@ -1,10 +1,12 @@
-# Dependencias y direcciones verificadas (corte 2026-10-24)
+# Entornos y release de producción (corte 2026-10-25)
 
-**RAN local, Node `26.12.1`, pnpm `11.21.0`, registry `https://registry.npmjs.org/`:** se actualizaron las dependencias directas dentro de sus rangos y se instaló el lockfile con `pnpm install --frozen-lockfile`. El manifiesto fija pnpm 11.21.0 mediante `devEngines.packageManager`; el lockfile fue regenerado con pnpm 11.21.0. La versión de la aplicación permanece `0.7.3`.
+**RAN local, Node `26.12.1`, pnpm `11.21.0`, registry `https://registry.npmjs.org/`:** se actualizaron las dependencias directas dentro de sus rangos y se instaló el lockfile con `pnpm install --frozen-lockfile`. El manifiesto fija pnpm 11.21.0 mediante `devEngines.packageManager`; el lockfile fue regenerado con pnpm 11.21.0. Para este release, el manifiesto sube la aplicación de `0.7.3` a `0.8.0`.
 
 Versiones directas actualizadas: React Router `8.5.0`, React/React DOM `19.3.1`, Drizzle ORM `0.45.4`, Cloudflare Vite plugin `1.65.0`, Vite `8.3.5`, Wrangler `4.152.0` y tipos Node `26.6.5`. Better Auth `1.7.5`, PDFKit `0.20.2` (con patch), Playwright `1.63.0` y Arimo `5.3.0` siguen fijadas en versiones exactas. Typecheck/build y smoke local finalizaron PASS (detalle en `TESTING.md`).
 
-**HTTP anónimo RAN 2026-10-25 02:32–02:33 UTC:** `https://vecidya.com/` → 200; `https://www.vecidya.com/` → 301 a `https://vecidya.com/`; `https://vecidya-platform-staging.soporte-8a1.workers.dev/` → 200. Registry `https://registry.npmjs.org/vite/latest` → 200, Vite `8.3.5` y tarball HTTPS del registry oficial. Las direcciones configuradas son correctas y no requirieron cambios; el origen de producción y la URL dedicada de staging permanecen sin cambios. No hubo deploy, escritura remota ni migración remota.
+**HTTP anónimo con TLS, RAN 2026-10-25 02:32–02:33 UTC:** `https://vecidya.com/` → 200; `https://www.vecidya.com/` → 301 al dominio canónico; staging → 200. La última versión de aplicación vista antes de este release fue `0.7.3`.
+
+**Cloudflare API de solo lectura, RAN 2026-10-25:** Worker `vecidya-platform`, Version ID activo `5eb7d15a-554a-484a-be26-3f4f02cc3615`, deployment creado `2026-10-24T17:01:25.881888Z`. El ledger de producción (`vecidya-prod`, `8edc3f04-258e-4c29-9f33-76fec3d25042`) contiene `0000–0027`; `0028_miniweb-offering-image.sql` queda pendiente. Existen los buckets `vecidya-business-media-prod` y `vecidya-business-media-staging`. Las lecturas D1 reportaron `changed_db=false`, `rows_written=0`. No se accedió a filas de usuarios ni a objetos R2.
 
 ## Verificación anónima de Mi Vecidya (2026-10-19)
 
@@ -18,13 +20,13 @@ El package local también informa `0.6.1`, pero coincidencia de versión no demu
 
 # Entornos
 
-## Estado remoto vigente — versiones observadas 0.7.3 / 0.7.0 (2026-10-24)
+## Estado remoto vigente — versión activa 0.7.3 (2026-10-25)
 
 **HTTP anónimo con TLS, 2026-10-25T01:08Z (2026-10-24, hora local):** producción (`https://vecidya.com`) sirvió `/`, `/diagnostico` y `/diagnostico/metodologia` con `200`, footer `0.7.3` y `© 2026 Vecidya`. Staging (`https://vecidya-platform-staging.soporte-8a1.workers.dev`) sirvió las mismas rutas con `200`, footer `0.7.0` y `© 2026 Vecidya`. Esta consulta GET no obtuvo SHA ni Version ID del Worker y no probó un replay; no acredita por sí sola que la función QA-03B más reciente esté en producción. No se accedió a sesión, D1, Gmail ni R2.
 
-**Código integrado:** `origin/main@ae7a768` incluye PR #103 y `package.json` declara aplicación `0.7.3` / pnpm `12.15.0`. La igualdad entre la versión del footer de producción y la del paquete no identifica el SHA desplegado. Una petición API de Cloudflare del 2026-10-24 documentó HTTP 403/código 10042 para R2; no se ha repetido ni verificado la provisión de buckets. La última verificación documentada de D1 remota encontró `0000–0026` el 2026-10-24, antes de integrar las migraciones `0027` y `0028`; el ledger remoto actual queda **sin confirmar**. No se aplicaron migraciones remotas en este corte.
+**Código integrado antes del release:** `origin/main@233c3c4`, versión de aplicación `0.7.3` y pnpm `11.21.0`. Cloudflare confirma el deployment activo y el estado del ledger y de R2 descritos arriba. `0028` debe aplicarse antes de publicar el código que referencia `business_offering.image_asset_id`.
 
-**D1:** los identificadores documentados siguen siendo staging `d4af6ebc-97c5-42f6-ad3a-51551021e591` y producción `8edc3f04-258e-4c29-9f33-76fec3d25042`. El último ledger y bookmarks consultados el 2026-10-24 están registrados abajo y solo acreditan el estado de ese momento (`0000–0026`). El código actual contiene `0027` y `0028`; no se verificaron de nuevo las bases. No se escribieron fixtures remotas ni se ejecutó restore en este corte.
+**D1:** staging `d4af6ebc-97c5-42f6-ad3a-51551021e591`; producción `8edc3f04-258e-4c29-9f33-76fec3d25042`. Ledger productivo actual comprobado: `0000–0027`; la migración `0028` queda autorizada para este release y pendiente de ejecución. No se escribieron fixtures ni se ejecutó restore.
 
 ## DIAG-QA-03B-RELEASE-CLOSE — despliegue previo de 0.7.0 (2026-10-23)
 
