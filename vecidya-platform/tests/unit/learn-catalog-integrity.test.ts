@@ -123,6 +123,28 @@ test("Las guías madre revisadas no vuelven a convertirse en monolitos", () => {
   }
 });
 
+test("La jerga técnica prioritaria se explica donde aparece", () => {
+  const ai = getLearnArticle("que-puede-hacer-una-inteligencia-artificial-por-un-negocio");
+  const campaign = getLearnArticle("publicidad-digital-como-preparar-una-primera-campana");
+  const presence = getLearnArticle("como-mantener-actualizada-y-confiable-tu-presencia-digital");
+  const dns = getLearnArticle("dns-https-y-correo-como-se-conecta-tu-dominio");
+  const control = getLearnArticle("domina-la-tecnologia-sin-que-te-domine");
+  const migration = getLearnArticle("como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo");
+  assert.ok(ai && campaign && presence && dns && control && migration);
+
+  assert.match(JSON.stringify(ai), /tokens \(unidades de texto procesado\)/i);
+  assert.match(JSON.stringify(campaign), /conversi[oó]n.{0,80}acci[oó]n marcada como importante/i);
+  assert.match(JSON.stringify(presence), /herramientas de medici[oó]n \(anal[ií]tica\)/i);
+  assert.match(JSON.stringify(control), /autenticaci[oó]n multifactor.{0,120}adem[aá]s de la contrase[nñ]a/i);
+  assert.match(JSON.stringify(migration), /MX.{0,80}dirigir los mensajes/i);
+  assert.match(JSON.stringify(migration), /TXT.{0,80}verificaciones y pol[ií]ticas/i);
+
+  const dnsDefinitions = dns.sections.flatMap((section) =>
+    (section.blocks ?? []).flatMap((block) => block.type === "definitions" ? block.items : []));
+  assert.ok(dnsDefinitions.some(({ term, definition }) => /hosting|alojamiento/i.test(term) && /publica la web|funciona/i.test(definition)));
+  assert.ok(dnsDefinitions.some(({ term, definition }) => /HTTPS.*TLS|TLS.*HTTPS/i.test(term) && /cifrar|conexi[oó]n/i.test(definition)));
+});
+
 test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
   const requirements = [
     ["publicidad-digital-como-preparar-una-primera-campana", [/Google Ads|Meta Ads/i, /página de destino/i, /indicadores/i]],
