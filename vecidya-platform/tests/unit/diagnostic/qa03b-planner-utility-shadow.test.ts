@@ -125,9 +125,10 @@ test("utility-first promotes niche when an actual dentist-only evidence question
   assert.ok(after.eligibleQuestionIds.includes("q2_appointments_booking_friction"));
 });
 
-test("eight A/B journeys compare question count, outcome, evidence and niche coverage without changing public plan", () => {
+test("twelve A/B journeys compare question count, outcome, evidence and niche coverage without changing public plan", () => {
   const profiles = ["idea-software", "pausa-dentista", "clinica-dental", "restaurante-reservas",
-    "tienda-hibrida", "agencia-marketing-b2b", "creador-audiencia", "organizacion-donaciones"];
+    "tienda-hibrida", "agencia-marketing-b2b", "creador-audiencia", "organizacion-donaciones",
+    "software-saas-activo", "marketplace-activo", "impuestos", "seguros"];
   const pairs = profiles.map((id) => ({ id, baseline: walk(id, "baseline"), shadow: walk(id, "utility_first") }));
   for (const { id, baseline, shadow } of pairs) {
     assert.ok(baseline.asked.length <= 24 && shadow.asked.length <= 24, id);
