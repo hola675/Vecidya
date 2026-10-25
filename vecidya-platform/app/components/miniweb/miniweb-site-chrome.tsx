@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import type { MiniWebModuleType } from "../../features/miniweb/registry";
 import type { MiniWebPublicProfile } from "../../features/miniweb/public-model";
 import { buildMiniWebPublicNavigation } from "../../features/miniweb/navigation";
+import { resolveBusinessLogoUrl } from "../public-business-profile-view";
 
 type ChromeProps = {
   profile: MiniWebPublicProfile;
@@ -16,9 +17,10 @@ export function MiniWebSiteHeader({
 }: ChromeProps & { visibleModules: readonly MiniWebModuleType[] }) {
   const navigation = buildMiniWebPublicNavigation(visibleModules);
   const name = profile.displayName.trim() || "Tu negocio";
+  const logoUrl = resolveBusinessLogoUrl(profile.logoUrl, preview);
   const brand = (
     <>
-      {profile.logoUrl ? <img alt="" height={40} src={profile.logoUrl} width={40} /> : null}
+      {logoUrl ? <img alt="" height={40} src={logoUrl} width={40} /> : null}
       <span>{name}</span>
     </>
   );
