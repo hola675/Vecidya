@@ -29,7 +29,7 @@ export type ClassificationInteractionEventV9 = {
 
 export type ClassificationApplyResultV9 =
   | { readonly ok: true; readonly answers: AnswersV2; readonly event: ClassificationInteractionEventV9 }
-  | { readonly ok: false; readonly reason: "invalid_sector" | "invalid_niche" | "niche_not_available_for_sector" };
+  | { readonly ok: false; readonly reason: "invalid_sector" | "invalid_niche" | "niche_required_for_sector" | "niche_not_available_for_sector" };
 
 const sectorValues = new Set(QA03B_CANDIDATE_SECTOR_V4.options.map((option) => option.value));
 const selectorBySector = new Map(
@@ -43,6 +43,7 @@ export function applyClassificationInteractionV9(
   if (!sectorValues.has(selection.sector)) return { ok: false, reason: "invalid_sector" };
 
   const selector = selectorBySector.get(selection.sector);
+  if (selector && selection.niche === undefined) return { ok: false, reason: "niche_required_for_sector" };
   if (selection.niche !== undefined) {
     if (!selector) return { ok: false, reason: "niche_not_available_for_sector" };
     const allowed = selector.options.some((option) => option.value === selection.niche);
