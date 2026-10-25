@@ -6778,3 +6778,34 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .miniweb-editor__brand-asset img, .miniweb-editor__brand-placeholder { width: 3.6rem; height: 3.6rem; }
   .miniweb-editor__brand-asset .button { grid-column: 1 / -1; }
 }
+
+
+/* MiniWeb: el preview reutiliza el marco real del sitio, sin ocupar toda la altura de pantalla. */
+.miniweb-editor__preview.miniweb-standalone { min-height: 0; overflow: clip; background: #fff; }
+.miniweb-editor__preview .miniweb-standalone__header,
+.miniweb-editor__preview .miniweb-standalone__footer {
+  width: 100%;
+  padding: .9rem clamp(.8rem, 2.5vw, 1.5rem);
+  gap: .8rem;
+}
+.miniweb-editor__preview .miniweb-standalone__navigation { gap: .4rem .85rem; }
+.miniweb-editor__preview .miniweb-standalone__navigation span,
+.miniweb-editor__preview .miniweb-standalone__footer nav span {
+  font-size: .82rem;
+  font-weight: 650;
+  color: #4d6788;
+}
+.miniweb-editor__preview .miniweb-standalone__brand { font-size: 1rem; }
+.miniweb-editor__preview .miniweb-standalone__brand img { width: 2rem; height: 2rem; }
+.miniweb-editor__preview-body { padding: clamp(.75rem, 2vw, 1.2rem); }
+.miniweb-editor__preview-stage[data-device="mobile"] .miniweb-standalone__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.miniweb-editor__preview-stage[data-device="mobile"] .miniweb-standalone__navigation { width: 100%; justify-content: flex-start; }
+.miniweb-editor__preview-stage[data-device="mobile"] .miniweb-standalone__footer { display: grid; gap: .65rem; }
+.miniweb-editor__preview-stage[data-device="mobile"] .miniweb-editor__preview-body { padding: .75rem .55rem; }
+@media (max-width: 700px) {
+  .miniweb-standalone__navigation a,
+  .miniweb-standalone__navigation span { min-height: 2.75rem; display: inline-flex; align-items: center; }
+}
