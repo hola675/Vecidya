@@ -156,7 +156,8 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
         const childFields = producedFields(child);
         const childSignature = evidenceSemanticSignature(child);
         const equivalentAlreadyEligible = policy === "utility_first" && question.id.startsWith("q2_niche_") && childSignature !== undefined
-          && bank.some((peer) => peer.id !== child.id && activeAnswers[peer.id] === undefined && eligible.has(peer.id)
+          && bank.some((peer) => peer.id !== child.id
+            && (activeAnswers[peer.id] !== undefined || eligible.has(peer.id))
             && evidenceSemanticSignature(peer) === childSignature);
         const unlocksUsefulChild = child.evidenceMigration === "migrated"
           ? !equivalentAlreadyEligible && (childSources.direct.some((dimension) => open.has(dimension)) || childSources.supporting.some((dimension) => observedDirect.has(dimension)))
