@@ -1458,8 +1458,8 @@ export const learnArticles: LearnArticle[] = [
     sections: [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «HTTPS y certificados TLS: qué protegen y qué no», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, sabrás qué protege HTTPS, qué papel cumple un certificado TLS y por qué una conexión segura no demuestra que una empresa o un contenido sean confiables.", "Práctica: piensa en una web que uses. Separa dos preguntas: «¿la conexión está protegida?» y «¿confío en quien opera este sitio?». Explica por qué no son la misma comprobación."],
+        blocks: [{ type: "callout", tone: "tip", title: "Comprueba la diferencia", text: "Si puedes explicar qué protege la conexión y qué debes verificar por separado sobre el sitio, ya entendiste la idea principal." }],
       },
       {
         heading: "HTTP y HTTPS: la diferencia es la protección del trayecto",
@@ -1564,8 +1564,8 @@ export const learnArticles: LearnArticle[] = [
     sections: [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «Analítica web básica: qué debes medir en tu negocio», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás distinguir visitas, interacciones y conversiones, y elegir una métrica porque ayuda a tomar una decisión, no porque el número parezca importante.", "Práctica: elige una pregunta real de tu negocio —por ejemplo, si el formulario funciona— y escribe un solo indicador que te ayudaría a responderla junto con una limitación de ese dato."],
+        blocks: [{ type: "callout", tone: "tip", title: "Un número necesita una pregunta", text: "Si no puedes decir qué decisión cambiaría después de mirar una métrica, quizá todavía no necesitas medirla." }],
       },
       {
         heading: "Qué es la analítica web",
@@ -1682,8 +1682,8 @@ export const learnArticles: LearnArticle[] = [
     sections: [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «Cómo conectar herramientas digitales sin complicar tu negocio», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás describir qué dato debe pasar de una herramienta a otra, cuál mantiene la versión correcta y qué debería ocurrir si la conexión falla.", "Práctica: dibuja dos cajas para dos herramientas que ya uses. Escribe una sola información que tendría sentido compartir, quién la puede cambiar y cómo detectarías un duplicado."],
+        blocks: [{ type: "callout", tone: "tip", title: "Conecta una necesidad, no aplicaciones por costumbre", text: "Si no puedes nombrar qué dato se mueve, para qué y quién corrige un error, todavía falta definir el proceso antes de integrarlo." }],
       },
       {
         heading: "Qué significa integrar dos herramientas",
@@ -1792,8 +1792,8 @@ export const learnArticles: LearnArticle[] = [
     sections: [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «Tu Perfil de Empresa en Google: qué completar y mantener actualizado», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, sabrás qué información de un Perfil de Empresa conviene mantener al día y cómo comprobar la ficha como la ve una persona que busca tu negocio.", "Práctica: anota nombre, horario, teléfono, ubicación o zona y servicio principal. Marca cuál podría estar desactualizado y quién debería confirmarlo antes de publicarlo."],
+        blocks: [{ type: "callout", tone: "tip", title: "Míralo como visitante", text: "La ficha debe ayudar a una persona a encontrar información real. Comprueba datos y enlaces desde fuera de la cuenta de administración." }],
       },
       {
         heading: "Qué es y quién puede utilizar un perfil",
@@ -1886,8 +1886,8 @@ export const learnArticles: LearnArticle[] = [
     sections: [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «Cómo organizar mensajes, llamadas y formularios sin perder consultas», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás reunir consultas de varios canales sin perder el mensaje original, asignar responsable y dejar visible cuál es el siguiente paso.", "Práctica: toma una consulta ficticia y registra solo cinco datos: canal, motivo, estado, responsable y próxima acción. Comprueba si otra persona entendería qué falta hacer."],
+        blocks: [{ type: "callout", tone: "tip", title: "El registro debe permitir continuar", text: "Si otra persona puede abrir el caso y saber qué ocurrió y qué sigue sin buscar en cinco lugares, el método está cumpliendo su función." }],
       },
       {
         heading: "Usa un registro común sin importar el canal",
@@ -1974,8 +1974,8 @@ export const learnArticles: LearnArticle[] = [
     sections: [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «Cómo utilizar IA para preparar respuestas y publicaciones sin perder el control», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás pedir a una IA un borrador usando datos confirmados, detectar información inventada y decidir qué debe revisar una persona antes de publicar o responder.", "Práctica: escribe una instrucción para preparar un aviso de horario usando solo dos datos confirmados. Añade una regla explícita: si falta información, debe señalarlo en vez de inventarla."],
+        blocks: [{ type: "callout", tone: "tip", title: "Un borrador no es una aprobación", text: "La prueba está completa cuando puedes identificar qué parte produjo la IA y qué datos confirmó una persona antes de usar el texto." }],
       },
       {
         heading: "Pide un borrador con una instrucción clara",
@@ -2076,8 +2076,8 @@ export const learnArticles: LearnArticle[] = [
     "sections": [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «Quiero llevar mi negocio a internet: ¿por dónde empiezo?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás elegir una primera mejora digital a partir de un problema real del negocio y evitar empezar comprando herramientas que todavía no necesitas.", "Práctica: escribe una tarea que hoy te hace perder tiempo o información. Propón la mejora más pequeña que podrías probar con lo que ya tienes."],
+        blocks: [{ type: "callout", tone: "tip", title: "Empieza por una fricción concreta", text: "«Quiero digitalizarme» es demasiado amplio. «Quiero dejar de perder solicitudes de cita» ya permite pensar en una mejora comprobable." }],
       },
       {
         "heading": "La pregunta detrás del problema",
@@ -2261,8 +2261,8 @@ export const learnArticles: LearnArticle[] = [
     "sections": [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué equipo e internet necesitas para trabajar en digital?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás relacionar una tarea digital con el equipo, la conexión y el plan alternativo que realmente necesita, sin asumir que debes comprar lo más potente.", "Práctica: elige una tarea —responder mensajes, cobrar, editar documentos o hacer videollamadas— y anota qué dispositivo, conexión y alternativa mínima necesita."],
+        blocks: [{ type: "callout", tone: "tip", title: "Compra para la tarea", text: "El equipo adecuado es el que sostiene tu trabajo con fiabilidad. Más potencia o más aplicaciones no son una mejora si no resuelven una necesidad concreta." }],
       },
       {
         "heading": "La pregunta detrás del problema",
@@ -2446,8 +2446,8 @@ export const learnArticles: LearnArticle[] = [
     "sections": [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo usar el correo de tu negocio sin perder mensajes?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás organizar el correo para encontrar conversaciones importantes, distinguir la versión vigente de un documento y dejar pendientes visibles.", "Práctica: imagina tres correos sobre una misma compra. Decide qué asunto usarías, dónde guardarías el documento vigente y cómo marcarías que todavía falta responder."],
+        blocks: [{ type: "callout", tone: "tip", title: "El correo debe conservar contexto", text: "Si puedes encontrar la conversación correcta y saber qué falta hacer sin abrir decenas de mensajes, tu organización está ayudando." }],
       },
       {
         "heading": "La pregunta detrás del problema",
@@ -2631,8 +2631,8 @@ export const learnArticles: LearnArticle[] = [
     "sections": [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo evitar que te roben una cuenta o te engañen por mensaje?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás reconocer señales comunes de suplantación, proteger cuentas importantes y verificar un aviso urgente sin entregar tu contraseña o un código de acceso.", "Práctica: imagina que recibes «tu cuenta se cerrará hoy». Escribe qué comprobarías desde la aplicación o sitio oficial antes de pulsar el enlace del mensaje."],
+        blocks: [{ type: "callout", tone: "tip", title: "La urgencia no demuestra autenticidad", text: "Una petición inesperada de contraseña o código merece verificación por un canal conocido, aunque el mensaje parezca venir de una empresa real." }],
       },
       {
         "heading": "La pregunta detrás del problema",
@@ -2816,8 +2816,8 @@ export const learnArticles: LearnArticle[] = [
     "sections": [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «Si se rompe tu teléfono, ¿cómo recuperas los archivos del negocio?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás decidir qué archivos no puedes permitirte perder, crear una copia separada y comprobar que realmente sabes recuperarla.", "Práctica: elige un archivo importante. Anota dónde está el original, dónde estaría la copia y qué pasos seguirías para recuperarlo si el dispositivo principal dejara de funcionar."],
+        blocks: [{ type: "callout", tone: "tip", title: "Una copia sirve si puedes recuperarla", text: "Guardar archivos en otro lugar es solo la mitad del trabajo. Prueba periódicamente que la copia existe, se abre y contiene la versión que necesitas." }],
       },
       {
         "heading": "La pregunta detrás del problema",
@@ -3001,8 +3001,8 @@ export const learnArticles: LearnArticle[] = [
     "sections": [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Para qué sirve una hoja de cálculo en un negocio pequeño?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás decidir cuándo una hoja de cálculo basta para organizar un proceso sencillo y cómo estructurarla para que otra persona pueda mantenerla.", "Práctica: piensa en pedidos, citas o inventario. Define qué representa cada fila, qué cuatro columnas necesitas y quién actualizará el estado."],
+        blocks: [{ type: "callout", tone: "tip", title: "Una tabla necesita una regla de uso", text: "La hoja no organiza el negocio por sí sola. Debe estar claro qué se registra, quién lo actualiza y cuál es la versión vigente." }],
       },
       {
         "heading": "La pregunta detrás del problema",
@@ -3187,8 +3187,8 @@ export const learnArticles: LearnArticle[] = [
     "sections": [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Redes sociales o página web? Cómo elegir sin gastar de más», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás decidir qué función cumple una red social, una página web o una ficha de negocio y elegir solo los canales que puedas mantener.", "Práctica: escribe tres necesidades —que te descubran, que entiendan tus servicios y que te contacten— y asigna a cada una el canal que hoy podría cumplirla mejor."],
+        blocks: [{ type: "callout", tone: "tip", title: "Cada canal debe tener un trabajo", text: "Si no puedes explicar para qué mantienes un canal y quién lo actualiza, abrirlo puede añadir trabajo sin mejorar la experiencia de tus clientes." }],
       },
       {
         "heading": "La pregunta detrás del problema",
@@ -3372,8 +3372,8 @@ export const learnArticles: LearnArticle[] = [
     "sections": [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué vendes exactamente? Explícalo para que te entiendan», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás explicar en una frase qué haces, para quién y cuál es el siguiente paso sin esconder la oferta detrás de eslóganes vagos.", "Práctica: completa «Ayudo a ___ a resolver ___ mediante ___». Después añade qué debe hacer la persona si quiere preguntar o comprar."],
+        blocks: [{ type: "callout", tone: "tip", title: "La claridad vence al adjetivo", text: "Si alguien que no conoce tu negocio puede decir qué ofreces y para quién después de leer una frase, la explicación está haciendo su trabajo." }],
       },
       {
         "heading": "La pregunta detrás del problema",
@@ -3557,8 +3557,8 @@ export const learnArticles: LearnArticle[] = [
     "sections": [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «Te escribieron por tu negocio: cómo responder sin sonar a robot», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás responder una primera consulta con lo que sabes, pedir solo la información que falta y cerrar con un siguiente paso claro.", "Práctica: responde a «¿cuánto cuesta?» sin inventar un precio. Incluye una respuesta útil, una pregunta necesaria y qué ocurrirá después."],
+        blocks: [{ type: "callout", tone: "tip", title: "No necesitas fingir certeza", text: "Una respuesta útil puede reconocer lo que todavía no sabes. Pedir el dato correcto es mejor que prometer un precio o plazo sin información suficiente." }],
       },
       {
         "heading": "La pregunta detrás del problema",
@@ -3742,8 +3742,8 @@ export const learnArticles: LearnArticle[] = [
     "sections": [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué publicar de tu negocio si no eres diseñador?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás preparar una publicación sencilla donde la imagen muestre algo real y el texto explique qué está viendo la persona y qué puede hacer después.", "Práctica: elige un servicio o producto real. Describe qué foto ayudaría a entenderlo, una frase concreta para acompañarla y una llamada a la acción proporcionada."],
+        blocks: [{ type: "callout", tone: "tip", title: "La imagen debe aportar información", text: "Una foto útil muestra el trabajo, producto o contexto. El texto debe completar lo que la imagen no explica, no sustituirlo por adjetivos vacíos." }],
       },
       {
         "heading": "La pregunta detrás del problema",
@@ -3927,8 +3927,8 @@ export const learnArticles: LearnArticle[] = [
     "sections": [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo empezar a recibir pedidos por internet sin complicarte?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás describir un pedido desde la consulta hasta la confirmación del pago y dejar claros disponibilidad, total, entrega y comprobante.", "Práctica: simula un pedido sencillo. Escribe qué debes confirmar antes del pago, cómo comprobarías que se recibió y qué información conservarías para cumplirlo."],
+        blocks: [{ type: "callout", tone: "tip", title: "Cobrar es una parte del pedido", text: "Antes de pedir un pago, confirma qué compra la persona, cuánto cuesta en total, qué disponibilidad existe y qué ocurrirá después." }],
       },
       {
         "heading": "La pregunta detrás del problema",
@@ -4112,8 +4112,8 @@ export const learnArticles: LearnArticle[] = [
     "sections": [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué datos deberías pedir a un cliente y cuáles no?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás revisar un formulario o conversación y distinguir los datos necesarios para atender la solicitud de los que estás pidiendo sin una finalidad clara.", "Práctica: imagina un formulario para preguntar por una clase. Tacha cualquier campo que no necesites para entender la consulta y responderla."],
+        blocks: [{ type: "callout", tone: "tip", title: "Menos datos también puede ser mejor servicio", text: "Pedir solo lo necesario reduce trabajo, exposición y dudas para la persona. Cada dato debería tener una razón comprensible." }],
       },
       {
         "heading": "La pregunta detrás del problema",
@@ -4297,8 +4297,8 @@ export const learnArticles: LearnArticle[] = [
     "sections": [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo pedir opiniones reales sin comprar reseñas?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
+        paragraphs: ["Al terminar, podrás pedir una opinión sin presionar por una valoración positiva y responder una crítica sin revelar información privada ni discutir públicamente.", "Práctica: redacta una solicitud neutral de reseña y una respuesta breve a una crítica por demora. Evita premios condicionados, datos del cliente y afirmaciones defensivas."],
+        blocks: [{ type: "callout", tone: "tip", title: "Pide experiencia, no una puntuación", text: "Una solicitud honesta invita a contar lo ocurrido. No debe exigir una valoración positiva ni convertir un incentivo en pago por una opinión favorable." }],
       },
       {
         "heading": "La pregunta detrás del problema",
