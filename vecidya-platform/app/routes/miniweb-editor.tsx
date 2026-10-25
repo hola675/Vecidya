@@ -108,6 +108,11 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const [draftRevision, setDraftRevision] = useState(data.draftRevision);
   const [offerings, setOfferings] = useState(data.offerings);
   const [faqs, setFaqs] = useState(data.faqs);
+  const [savedDraft, setSavedDraft] = useState({
+    configuration: data.draftConfiguration,
+    offerings: data.offerings,
+    faqs: data.faqs,
+  });
   const [media, setMedia] = useState(data.media);
   const [uploading, setUploading] = useState(false);
   const [removingMediaId, setRemovingMediaId] = useState<string | null>(null);
@@ -116,9 +121,9 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const [contentTab, setContentTab] = useState<"offerings" | "faq" | "media">("offerings");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ kind: "success" | "error"; text: string } | null>(null);
-  const isDirty = JSON.stringify(configuration) !== JSON.stringify(data.draftConfiguration)
-    || JSON.stringify(offerings) !== JSON.stringify(data.offerings)
-    || JSON.stringify(faqs) !== JSON.stringify(data.faqs);
+  const isDirty = JSON.stringify(configuration) !== JSON.stringify(savedDraft.configuration)
+    || JSON.stringify(offerings) !== JSON.stringify(savedDraft.offerings)
+    || JSON.stringify(faqs) !== JSON.stringify(savedDraft.faqs);
   const orderedModules = [...configuration.modules].sort((left, right) => left.sortOrder - right.sortOrder || left.type.localeCompare(right.type));
   const steps = [
     { key: "design", title: "Diseño", help: "Comprueba la plantilla y la identidad de tu negocio." },
@@ -142,8 +147,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   }
 
 
-  useEffect(() => setConfiguration(data.draftConfiguration), [data.draftConfiguration]);
-
+  // El cambio de organización remonta el editor mediante su key.
+  // Una revalidación o subida de archivos no debe sobrescribir los campos locales.
   useEffect(() => {
     if (!isDirty) return;
     const preventAccidentalExit = (event: BeforeUnloadEvent) => {
@@ -191,6 +196,11 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
     setConfiguration(result.configuration);
     if (result.offerings) setOfferings(result.offerings);
     if (result.faqs) setFaqs(result.faqs);
+    setSavedDraft({
+      configuration: result.configuration,
+      offerings: result.offerings ?? offerings,
+      faqs: result.faqs ?? faqs,
+    });
     if (typeof result.draftRevision === "number") setDraftRevision(result.draftRevision);
     await revalidate();
     return result.draftRevision ?? expectedRevision;
