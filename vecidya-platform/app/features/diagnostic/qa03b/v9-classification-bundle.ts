@@ -53,7 +53,7 @@ export function applyClassificationInteractionV9(
   }
 
   // Changing sector is authoritative: remove every previous specialty answer.
-  const next: AnswersV2 = Object.fromEntries(
+  const next: Record<string, string | readonly string[]> = Object.fromEntries(
     Object.entries(currentAnswers).filter(([id]) => !id.startsWith("q2_niche_")),
   );
   next.q2_sector = selection.sector;
