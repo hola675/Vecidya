@@ -12,7 +12,19 @@ import { MiniWebRenderer } from "../components/miniweb/miniweb-renderer";
 import { getRenderableMiniWebModules } from "../features/miniweb/render";
 import { restrictMiniWebPublicModel, toMiniWebPublicProfile } from "../features/miniweb/public-model";
 
+import type { MiniWebModuleType } from "../features/miniweb/registry";
 import type { Route } from "./+types/public-business-profile";
+
+const navigationLabels: Partial<Record<MiniWebModuleType, string>> = {
+  about: "Quiénes somos",
+  services: "Servicios",
+  products: "Productos",
+  gallery: "Galería",
+  contact: "Contacto",
+  location: "Ubicación",
+  hours: "Horarios",
+  faq: "Preguntas",
+};
 
 const schemaOrgDayNames: Record<number, string> = {
   1: "Monday",
@@ -46,7 +58,7 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   const renderableModules = getRenderableMiniWebModules(miniweb.publishedConfiguration, publicProfile, hours, offerings, faqs, media);
   const publicModel = restrictMiniWebPublicModel(publicProfile, hours, renderableModules.map((module) => module.type));
 
-  return { ...publicModel, configuration: miniweb.publishedConfiguration, offerings, faqs, media };
+  return { ...publicModel, configuration: miniweb.publishedConfiguration, offerings, faqs, media, visibleModuleTypes: renderableModules.map((module) => module.type) };
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
@@ -55,7 +67,9 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export default function PublicBusinessProfilePage() {
-  const { profile, hours, configuration, offerings, faqs, media } = useLoaderData<typeof loader>();
+  const { profile, hours, configuration, offerings, faqs, media, visibleModuleTypes } = useLoaderData<typeof loader>();
+  const primaryNavigation = visibleModuleTypes.filter((type) => type !== "hero" && type !== "contact").slice(0, 3);
+  if (visibleModuleTypes.includes("contact")) primaryNavigation.push("contact");
   const sameAs = [profile.websiteUrl, profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].filter(
     (url): url is string => Boolean(url),
   );
@@ -98,21 +112,15 @@ export default function PublicBusinessProfilePage() {
         </Link>
         <nav aria-label="Navegación del negocio" className="miniweb-standalone__navigation">
           <a href="#miniweb-main">Inicio</a>
-          <a href="#miniweb-sections">Explorar</a>
-          <a href="#miniweb-contacto">Vecindario</a>
+          {primaryNavigation.map((type) => <a href={`#miniweb-section-${type}`} key={type}>{navigationLabels[type]}</a>)}
         </nav>
       </header>
       <main className="public-page public-business-profile" id="miniweb-main">
         <JsonLd data={localBusinessSchema} />
-        <nav aria-label="Ruta de navegación" className="public-business-profile__breadcrumb">
-          <Link to="/vecindario">Vecindario</Link>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page">{profile.displayName}</span>
-        </nav>
         <div id="miniweb-sections">
           <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} offerings={offerings} faqs={faqs} media={media} />
         </div>
-        <section aria-labelledby="business-neighborhood-title" className="public-business-neighborhood" id="miniweb-contacto">
+        <section aria-labelledby="business-neighborhood-title" className="public-business-neighborhood">
           <div>
             <h2 id="business-neighborhood-title">Descubre más en el Vecindario</h2>
             <p>Explora otros negocios de la comunidad cuando quieras.</p>
