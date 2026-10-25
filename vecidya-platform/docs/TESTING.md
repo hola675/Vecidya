@@ -1,5 +1,11 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-04A — criterio digital y contrato de ejemplos (2026-10-25)
+
+**TEST versionado / RAN pendiente en el HEAD del PR.** Las pruebas de catálogo y currículo se actualizan de 44 a **46 guías** y de 8 a **9 itinerarios**. Se añade un contrato transversal: cada guía debe contener al menos un bloque `example` explícitamente hipotético, con situación, problema, enfoque, pasos aplicables y aprendizaje suficientemente explicados. También se comprueban los dos nuevos slugs fundacionales, su categoría «Tecnología explicada», su estado de borrador y su relación recíproca.
+
+El gate antes de integrar es: pruebas unitarias focales de Aprende, `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS sobre el HEAD candidato. Este registro no atribuye PASS antes de observar CI o una ejecución equivalente. Sin D1 remota, navegador productivo ni deploy.
+
 ## DIAG-VISUAL-03 — resultado y entrada QA-03B (2026-10-25)
 
 `pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-visual-03-summary.test.ts tests/unit/diagnostic/qa03b-pro-rendered-summary.test.ts tests/unit/diagnostic/qa03b-funnel.test.ts tests/unit/diagnostic/qa03b-worker-replay.test.ts tests/unit/diagnostic/identified-report-contracts.test.ts`: **20/20 PASS**. Se verifican valor general/área 0, puntuación 37, ausencia de score como «Sin lectura» sin barra, estado preliminar, No evaluado/No aplica, y omisión de oportunidad/acción opcionales.
