@@ -162,7 +162,7 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
       for (const field of R4_CONTEXT_FIELDS[dimension.id] ?? []) if (unresolvedFields.has(field)) neededContext.add(field);
     }
     const unlocksCandidateBranch = unlocks.has(q.id);
-    const contextUtility = q.routingRole !== "deepening" && eligible.has(q.id) && (digitalToolsRelevant || fields.some((f) => neededContext.has(f)) || ["q2_has_customers", "q2_operational_status", "q2_buyer_recipient_relation"].includes(q.id) || unlocksCandidateBranch || triggered.has(q.id));
+    const contextUtility = (policy !== "utility_first" || !q.id.startsWith("q2_niche_") || unlocksCandidateBranch) && q.routingRole !== "deepening" && eligible.has(q.id) && (digitalToolsRelevant || fields.some((f) => neededContext.has(f)) || ["q2_has_customers", "q2_operational_status", "q2_buyer_recipient_relation"].includes(q.id) || unlocksCandidateBranch || triggered.has(q.id));
     const directUtility = eligible.has(q.id) && sources.direct.some((d) => open.has(d));
     // Supporting observations may refine an already scored direct dimension, never close a null score.
     const supportingUtility = eligible.has(q.id) && sources.supporting.some((d) => observedDirect.has(d) && dimensions.find((item) => item.id === d)?.score !== null);
