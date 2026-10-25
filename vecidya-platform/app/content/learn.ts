@@ -533,7 +533,7 @@ export const learnArticles: LearnArticle[] = [
           items: [
             { question: "¿Cuánto presupuesto necesito?", answer: "No hay una cifra universal. Define un límite que puedas asumir como prueba y revisa las condiciones de la plataforma y de tu mercado." },
             { question: "¿Qué plataforma es mejor?", answer: "Depende de dónde esté tu público, qué acción buscas y qué formatos puedes mantener. No elijas solo porque otra empresa use esa plataforma." },
-            { question: "¿Una conversión —una acción marcada como importante— equivale a una venta?", answer: "No siempre. Depende de cómo esté configurada la medición y de qué evento se esté contando." },
+            { question: "¿Una conversión publicitaria registrada equivale a una venta?", answer: "No siempre. Una conversión es una acción importante configurada para medir una campaña; puede ser una consulta, una reserva u otro evento, no necesariamente una venta." },
             { question: "¿Debo aumentar presupuesto si hay muchos clics?", answer: "No automáticamente. Revisa consultas, capacidad de atención, resultados confirmados y coste antes de ampliar." },
           ],
         }],
@@ -1558,13 +1558,13 @@ export const learnArticles: LearnArticle[] = [
     excerpt: "Aprende a distinguir visitas de consultas y a revisar datos sin sacar conclusiones apresuradas.",
     enPocasPalabras: ["Una visita no es una consulta ni una venta.","Elige una acción útil y comprueba si tu página facilita realizarla.","Mide lo necesario y evita conclusiones basadas en pocos datos."],
     image: "/assets/learn/diagram-analytics.svg",
-    imageAlt: "Diagrama que muestra cómo una parte de las visitas realiza interacciones y una parte de esas interacciones completa una conversión definida por el negocio.",
+    imageAlt: "Diagrama que muestra cómo una parte de las visitas realiza interacciones y una parte de esas interacciones completa una acción importante o evento clave.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital", "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a ordenar prioridades digitales; no recopila ni evalúa las métricas de analítica de tu sitio." },
     sections: [
       {
         heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás distinguir visitas, interacciones y conversiones, y elegir una métrica porque ayuda a tomar una decisión, no porque el número parezca importante.", "Práctica: elige una pregunta real de tu negocio —por ejemplo, si el formulario funciona— y escribe un solo indicador que te ayudaría a responderla junto con una limitación de ese dato."],
+        paragraphs: ["Al terminar, podrás distinguir visitas, interacciones y eventos clave, y entender cuándo una plataforma usa la palabra conversión para medir campañas publicitarias.", "Práctica: elige una pregunta real de tu negocio —por ejemplo, si el formulario funciona— y escribe un solo indicador que te ayudaría a responderla junto con una limitación de ese dato."],
         blocks: [{ type: "callout", tone: "tip", title: "Un número necesita una pregunta", text: "Si no puedes decir qué decisión cambiaría después de mirar una métrica, quizá todavía no necesitas medirla." }],
       },
       {
@@ -1576,13 +1576,13 @@ export const learnArticles: LearnArticle[] = [
         blocks: [{ type: "definitions", items: [
           { term: "Visita o sesión", definition: "Una agrupación de actividad de un navegador o usuario durante un periodo definido por la herramienta. No siempre equivale a una persona ni se cuenta igual entre productos." },
           { term: "Interacción", definition: "Una acción observada dentro del sitio, como abrir una página, pulsar un botón, reproducir un video o iniciar un formulario. El evento depende de cómo se configuró la medición." },
-          { term: "Conversión", definition: "Una acción que el negocio decide considerar un resultado relevante, como completar una reserva o enviar una solicitud válida. No significa necesariamente una venta." },
-          { term: "Tasa de conversión", definition: "La proporción de una base elegida —por ejemplo, sesiones— que completa la conversión definida en el mismo periodo y bajo reglas coherentes." },
+          { term: "Evento clave", definition: "En Google Analytics, un evento que mide una acción especialmente importante para el negocio. Una reserva completada o una solicitud válida pueden marcarse como eventos clave según la configuración." },
+          { term: "Conversión publicitaria", definition: "En el uso actual de Google Analytics y Google Ads, una acción importante utilizada para medir el rendimiento de campañas. Puede crearse a partir de un evento clave y no significa necesariamente una venta." },
         ] }],
       },
       {
-        heading: "Visitas, interacciones y conversiones no son lo mismo",
-        paragraphs: ["En la web de una peluquería, una visita puede abrir la página de reservas; una interacción, pulsar «elegir horario»; una conversión, completar una reserva válida. Son pasos distintos, no sinónimos."],
+        heading: "Visitas, interacciones y eventos clave no son lo mismo",
+        paragraphs: ["En la web de una peluquería, una visita puede abrir la página de reservas; una interacción, pulsar «elegir horario»; y completar una reserva válida puede marcarse como evento clave. Si esa acción se usa para medir una campaña publicitaria, la plataforma puede tratarla además como conversión."],
         blocks: [{ type: "list", items: [
           "Una persona puede generar varias visitas; vistas no equivale a personas únicas.",
           "Un clic no demuestra que el formulario terminara o que la solicitud llegara.",
@@ -1651,7 +1651,8 @@ export const learnArticles: LearnArticle[] = [
         paragraphs: ["Las definiciones dependen de cada producto de analítica. Estas referencias oficiales ayudan a comprobar qué mide una herramienta y qué consideraciones de datos y privacidad publica su proveedor."],
         blocks: [{ type: "sources", items: [
           { label: "About events — Google Analytics Help", url: "https://support.google.com/analytics/answer/9322688", scope: "Explica eventos de Google Analytics y ejemplos de interacciones; el modelo y la configuración de la propiedad determinan qué se registra." },
-          { label: "About conversions — Google Analytics Help", url: "https://support.google.com/analytics/answer/9267568", scope: "Describe cómo se marcan eventos importantes como conversiones en Google Analytics; no define por sí mismo qué resultado comercial debe importar a cada negocio." },
+          { label: "About key events — Google Analytics Help", url: "https://support.google.com/analytics/answer/9267568", scope: "Explica la terminología actual de Google Analytics: un evento clave mide una acción especialmente importante para el negocio." },
+          { label: "Key events and conversions — Google Analytics Help", url: "https://support.google.com/analytics/answer/13965727", scope: "Distingue eventos clave de conversiones: las conversiones se usan para medir y optimizar campañas publicitarias a partir de acciones importantes." },
           { label: "Google Analytics policies", url: "https://support.google.com/analytics/answer/6004245", scope: "Políticas publicadas por Google Analytics, incluidas restricciones sobre información de identificación personal. Comprueba la versión vigente y tus obligaciones locales." },
           { label: "Cookies and similar technologies — ICO", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/cookies-and-similar-technologies/", scope: "Orientación de la autoridad británica sobre cookies bajo PECR; consulta las reglas de la jurisdicción donde operas y donde se encuentran tus visitantes." },
         ] }],
@@ -2044,8 +2045,8 @@ export const learnArticles: LearnArticle[] = [
         paragraphs: ["Los controles dependen del proveedor; revisa los del servicio que utilices."],
         blocks: [{ type: "sources", items: [
           { label: "NIST AI 600-1: Generative Artificial Intelligence Profile", url: "https://doi.org/10.6028/NIST.AI.600-1", scope: "Marco del NIST de Estados Unidos que identifica riesgos de IA generativa, como información inexacta, privacidad y supervisión; no es una ley universal." },
-          { label: "Prompt engineering — OpenAI API Guide", url: "https://platform.openai.com/docs/guides/prompt-engineering", scope: "Ejemplo de documentación de un proveedor sobre cómo estructurar instrucciones; funciones y recomendaciones pueden variar entre modelos y servicios." },
-          { label: "Data Controls FAQ — OpenAI Help Center", url: "https://help.openai.com/en/articles/7730893-data-controls-faq", scope: "Describe controles de datos en productos de OpenAI; revisa los controles y términos del proveedor específico que utilizas." },
+          { label: "Prompt engineering — OpenAI API Guide", url: "https://developers.openai.com/api/docs/guides/prompt-engineering", scope: "Documentación oficial actual de OpenAI sobre cómo estructurar instrucciones y evaluar prompts; las recomendaciones pueden variar entre modelos y servicios." },
+          { label: "Data controls in ChatGPT — OpenAI Help Center", url: "https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt", scope: "Describe los controles de datos disponibles en ChatGPT. Otros productos, espacios de trabajo o proveedores pueden tener controles y condiciones diferentes." },
         ] }],
       },
     ],
@@ -2221,7 +2222,7 @@ export const learnArticles: LearnArticle[] = [
             "items": [
               {
                 "label": "Competencias digitales — Unión Internacional de Telecomunicaciones",
-                "url": "https://www.itu.int/itu-d/reports/statistics/2025/11/17/gcr-2025-chapter-5/",
+                "url": "https://www.itu.int/itu-d/reports/statistics/global-connectivity-report-2025/",
                 "scope": "Explica áreas de habilidades que van más allá de saber abrir aplicaciones."
               },
               {
@@ -2406,7 +2407,7 @@ export const learnArticles: LearnArticle[] = [
             "items": [
               {
                 "label": "Competencias digitales — UIT",
-                "url": "https://www.itu.int/itu-d/reports/statistics/2025/11/17/gcr-2025-chapter-5/",
+                "url": "https://www.itu.int/itu-d/reports/statistics/global-connectivity-report-2025/",
                 "scope": "Explica por qué usar internet no implica dominar todas las habilidades digitales."
               },
               {
