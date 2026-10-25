@@ -8,9 +8,9 @@
 
 ## APRENDE-EDITORIAL-04B — separación semántica de guías técnicas (2026-10-25)
 
-**TEST versionado / nuevo HEAD pendiente de CI.** El catálogo esperado pasa a **48 guías** y 9 itinerarios. El contrato comprueba que el mapa `dns-https-y-correo-como-se-conecta-tu-dominio` derive el detalle hacia `correo-profesional-dominio-registros-mx-txt`, que ambas guías se relacionen, que el mapa no vuelva a crecer por encima de 8 secciones y que la guía nueva conserve fuentes específicas para SPF (RFC 7208), DKIM (RFC 6376) y DMARC vigente (RFC 9989).
+**RAN en GitHub Actions:** `Aprende quality` run `40246463847` sobre `7a6c044c5ddee8e94a146cbd1febc3c9e29ab76c` PASS: typecheck, build e integridad Aprende. El catálogo esperado queda en **48 guías** y 9 itinerarios. El contrato comprueba que el mapa `dns-https-y-correo-como-se-conecta-tu-dominio` derive el detalle hacia `correo-profesional-dominio-registros-mx-txt`, que ambas guías se relacionen, que el mapa no vuelva a crecer por encima de 8 secciones y que la guía nueva conserve fuentes específicas para SPF (RFC 7208), DKIM (RFC 6376) y DMARC vigente (RFC 9989).
 
-La guía nueva sigue `editorialDraft: true`. No se considera certificado este nuevo HEAD hasta que `Aprende quality` vuelva a completar typecheck, build e integridad. PR #123 continúa apilado sobre 04A; el gate general contra `main` corresponderá al retarget o integración final.
+La guía nueva sigue `editorialDraft: true`. El guard de densidad cubre DNS/mapa, HTTPS, analítica, supervisión de automatizaciones, piloto de IA y correo profesional con máximo 8 secciones y 1500 palabras serializadas. PR #123 continúa apilado sobre 04A; el gate general contra `main` corresponderá al retarget o integración final.
 
 ## APRENDE-EDITORIAL-04A — criterio digital y contrato de ejemplos (2026-10-25)
 
