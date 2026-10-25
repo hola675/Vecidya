@@ -8,6 +8,7 @@ import {
 } from "../../../app/features/miniweb/registry.ts";
 import {
   getRenderableMiniWebModules,
+  hasMiniWebModuleContent,
 } from "../../../app/features/miniweb/render.ts";
 
 const profile: MiniWebProfileSource = {
@@ -84,4 +85,22 @@ test("el resumen breve del hero no crea una sección Acerca duplicada sin descri
   ] });
 
   assert.deepEqual(getRenderableMiniWebModules(config, { ...profile, description: null }, []).map((module) => module.type), ["hero"]);
+});
+
+test("la guía de secciones y el renderizador rechazan contenido activo pero incompleto", () => {
+  const blankOffering = { kind: "service" as const, isActive: true, title: "", description: "Servicio", priceLabel: null, sortOrder: 0 };
+  const completeOffering = { ...blankOffering, title: "Consulta" };
+  const blankFaq = { question: "¿Dónde?", answer: "   ", isActive: true, sortOrder: 0 };
+  const completeFaq = { ...blankFaq, answer: "En nuestra oficina." };
+  assert.equal(hasMiniWebModuleContent("services", profile, [], [blankOffering], [], []), false);
+  assert.equal(hasMiniWebModuleContent("services", profile, [], [completeOffering], [], []), true);
+  assert.equal(hasMiniWebModuleContent("faq", profile, [], [], [blankFaq], []), false);
+  assert.equal(hasMiniWebModuleContent("faq", profile, [], [], [completeFaq], []), true);
+  const config = configuration({ modules: [
+    { type: "hero", moduleVersion: 1, enabled: true, sortOrder: 0, layoutVariant: "standard", settings: null },
+    { type: "services", moduleVersion: 1, enabled: true, sortOrder: 1, layoutVariant: "standard", settings: null },
+    { type: "faq", moduleVersion: 1, enabled: true, sortOrder: 2, layoutVariant: "standard", settings: null },
+  ] });
+  assert.deepEqual(getRenderableMiniWebModules(config, profile, [], [blankOffering], [blankFaq], []).map((module) => module.type), ["hero"]);
+  assert.deepEqual(getRenderableMiniWebModules(config, profile, [], [completeOffering], [completeFaq], []).map((module) => module.type), ["hero", "services", "faq"]);
 });
