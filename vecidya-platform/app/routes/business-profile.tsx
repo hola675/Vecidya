@@ -45,6 +45,15 @@ const serviceModeOptions = [
 
 const daysOfWeek = [1, 2, 3, 4, 5, 6, 7] as const;
 
+const profileSteps = [
+  { id: "business-profile-identity", label: "Identidad" },
+  { id: "business-profile-description", label: "Presentación" },
+  { id: "business-profile-contact", label: "Contacto" },
+  { id: "business-profile-social", label: "Redes" },
+  { id: "business-profile-operations", label: "Atención" },
+  { id: "business-profile-hours", label: "Horarios" },
+] as const;
+
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   const organization = await requireOrganization(env, request);
@@ -194,6 +203,7 @@ export default function BusinessProfilePage() {
   const [formDraftRevision, setFormDraftRevision] = useState(draftRevision);
   const slugInputRef = useRef<HTMLInputElement>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
   const [previewProfile, setPreviewProfile] = useState(() => getProfilePreview(profile, governance));
   const [previewHours, setPreviewHours] = useState<BusinessHoursEntry[]>(hours);
   // El slug solo se sugiere mientras el perfil no se ha guardado nunca (`profile` viene del loader o de la
@@ -214,6 +224,17 @@ export default function BusinessProfilePage() {
     setPreviewProfile(getProfilePreview(profile, governance));
     setPreviewHours(hours);
   }, [governance, hours, profile]);
+
+  function goToProfileStep(index: number) {
+    const step = profileSteps[index];
+    if (!step) return;
+    setActiveStep(index);
+    const target = document.getElementById(step.id);
+    if (!target) return;
+    target.scrollIntoView({ behavior: "auto", block: "start" });
+    target.setAttribute("tabindex", "-1");
+    target.focus({ preventScroll: true });
+  }
 
   function updateProfilePreview(event: React.FormEvent<HTMLFormElement>) {
     setPreviewProfile(getProfilePreview(profile, governance, new FormData(event.currentTarget)));
@@ -290,11 +311,40 @@ export default function BusinessProfilePage() {
 
       <PublicBusinessProfilePreview hidden={!previewOpen} hours={previewHours} profile={previewProfile} />
 
+      <nav aria-label="Pasos para configurar tu negocio" className="miniweb-editor__steps">
+        {profileSteps.map((step, index) => (
+          <a
+            aria-current={activeStep === index ? "step" : undefined}
+            href={`#${step.id}`}
+            key={step.id}
+            onClick={() => setActiveStep(index)}
+          >
+            <span>{index + 1}</span> {step.label}
+          </a>
+        ))}
+      </nav>
+      <div className="business-profile-actions" aria-label="Navegar entre pasos de configuración">
+        <Button
+          disabled={activeStep === 0}
+          onClick={() => goToProfileStep(activeStep - 1)}
+          tone="secondary"
+          type="button"
+        >Paso anterior</Button>
+        <p className="form-help" role="status">Paso {activeStep + 1} de {profileSteps.length}: {profileSteps[activeStep].label}</p>
+        <Button
+          disabled={activeStep === profileSteps.length - 1}
+          onClick={() => goToProfileStep(activeStep + 1)}
+          tone="secondary"
+          type="button"
+        >Siguiente paso</Button>
+      </div>
+      <p className="form-help">Los pasos son accesos a secciones del mismo formulario: tus campos permanecen disponibles y se guardan juntos. Los horarios tienen un guardado independiente.</p>
+
       <Card className="business-profile-card">
         {canEdit ? (
           <Form className="business-profile-form" method="post" onChange={updateProfilePreview} onSubmit={(event) => { if (hasDraftConflict) event.preventDefault(); }}>
             <input name="draftRevision" type="hidden" value={formDraftRevision} />
-            <fieldset disabled={isSaving}>
+            <fieldset disabled={isSaving} id="business-profile-identity">
               <legend>Identidad del negocio</legend>
               <div className="form-grid">
                 <label>Nombre visible<input defaultValue={value(profile?.displayName)} name="displayName" onChange={(event) => { if (suggestsSlug && !slugTouchedRef.current && slugInputRef.current) slugInputRef.current.value = slugifyBusinessName(event.currentTarget.value); }} required maxLength={120} /></label>
@@ -304,7 +354,7 @@ export default function BusinessProfilePage() {
               </div>
             </fieldset>
 
-            <fieldset disabled={isSaving}>
+            <fieldset disabled={isSaving} id="business-profile-description">
               <legend>Presentación</legend>
               <div className="form-grid">
                 <label className="form-grid__full">Descripción breve<textarea defaultValue={value(profile?.shortDescription)} name="shortDescription" maxLength={280} rows={3} /></label>
@@ -312,7 +362,7 @@ export default function BusinessProfilePage() {
               </div>
             </fieldset>
 
-            <fieldset disabled={isSaving}>
+            <fieldset disabled={isSaving} id="business-profile-contact">
               <legend>Ubicación y contacto</legend>
               <div className="form-grid">
                 <label>Ciudad<input defaultValue={value(profile?.city)} name="city" maxLength={120} /></label>
@@ -324,7 +374,7 @@ export default function BusinessProfilePage() {
               </div>
             </fieldset>
 
-            <fieldset disabled={isSaving} className="business-profile-form__contact">
+            <fieldset disabled={isSaving} className="business-profile-form__contact" id="business-profile-social">
               <legend>Redes y WhatsApp</legend>
               <div className="form-grid">
                 <label>WhatsApp<input defaultValue={value(profile?.whatsapp)} name="whatsapp" placeholder="+573244321864" maxLength={20} /></label>
@@ -335,7 +385,7 @@ export default function BusinessProfilePage() {
               <p className="form-help">Todos estos campos son opcionales; déjalos vacíos si tu negocio no los usa.</p>
             </fieldset>
 
-            <fieldset disabled={isSaving} className="business-profile-form__operations">
+            <fieldset disabled={isSaving} className="business-profile-form__operations" id="business-profile-operations">
               <legend>Cómo y dónde atiendes</legend>
               <div className="form-grid">
                 <label>Modalidad de atención
@@ -371,7 +421,7 @@ export default function BusinessProfilePage() {
       </Card>
 
       {canEdit ? (
-        <Card className="business-profile-card business-profile-hours">
+        <Card className="business-profile-card business-profile-hours" id="business-profile-hours">
           <p className="eyebrow">HORARIOS</p>
           <h2>¿Cuándo atiendes?</h2>
           <p className="form-help">Marca "Cerrado" o deja ambas horas vacías para un día sin definir. Los horarios son los que tu negocio publica; Vecidya no verifica huso horario ni excepciones.</p>

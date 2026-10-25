@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from "react-router";
+import { useLoaderData } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
 import { getPublishedBusinessProfileBySlug } from "../../db/queries/business-profile.server";
@@ -6,12 +6,13 @@ import { listBusinessHoursForOrganization } from "../../db/queries/business-hour
 import { getMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { publicSiteUrl } from "../lib/public-seo";
-import { PublicLayout, publicMeta } from "../components/public-layout";
+import { publicMeta } from "../components/public-layout";
 import { JsonLd } from "../components/public-v2";
 import { MiniWebRenderer } from "../components/miniweb/miniweb-renderer";
 import { getRenderableMiniWebModules } from "../features/miniweb/render";
 import { restrictMiniWebPublicModel, toMiniWebPublicProfile } from "../features/miniweb/public-model";
 
+import { MiniWebSiteFooter, MiniWebSiteHeader } from "../components/miniweb/miniweb-site-chrome";
 import type { Route } from "./+types/public-business-profile";
 
 const schemaOrgDayNames: Record<number, string> = {
@@ -43,10 +44,12 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   const offerings = (profile.publicationSnapshot?.offerings ?? []).filter((item) => item.isActive);
   const faqs = (profile.publicationSnapshot?.faqs ?? []).filter((item) => item.isActive);
   const media = (profile.publicationSnapshot?.media ?? []).map((asset) => ({ ...asset, publicUrl: `/media/business/${encodeURIComponent(profile.slug)}/${encodeURIComponent(asset.id)}`, sizeBytes: 0, createdAt: new Date(0) }));
+  const publishedLogo = media.find((asset) => asset.id === profile.publicationSnapshot?.branding.logoAssetId);
+  if (publishedLogo) publicProfile.logoUrl = publishedLogo.publicUrl;
   const renderableModules = getRenderableMiniWebModules(miniweb.publishedConfiguration, publicProfile, hours, offerings, faqs, media);
   const publicModel = restrictMiniWebPublicModel(publicProfile, hours, renderableModules.map((module) => module.type));
 
-  return { ...publicModel, configuration: miniweb.publishedConfiguration, offerings, faqs, media };
+  return { ...publicModel, configuration: miniweb.publishedConfiguration, offerings, faqs, media, visibleModuleTypes: renderableModules.map((module) => module.type) };
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
@@ -55,7 +58,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export default function PublicBusinessProfilePage() {
-  const { profile, hours, configuration, offerings, faqs, media } = useLoaderData<typeof loader>();
+  const { profile, hours, configuration, offerings, faqs, media, visibleModuleTypes } = useLoaderData<typeof loader>();
   const sameAs = [profile.websiteUrl, profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].filter(
     (url): url is string => Boolean(url),
   );
@@ -89,24 +92,16 @@ export default function PublicBusinessProfilePage() {
   };
 
   return (
-    <PublicLayout>
-      <main className="public-page public-business-profile">
+    <div className="public-site miniweb-standalone">
+      <a className="skip-link" href="#miniweb-main">Saltar al contenido</a>
+      <MiniWebSiteHeader profile={profile} visibleModules={visibleModuleTypes} />
+      <main className="public-page public-business-profile" id="miniweb-main">
         <JsonLd data={localBusinessSchema} />
-        <nav aria-label="Ruta de navegación" className="public-business-profile__breadcrumb">
-          <Link to="/vecindario">Vecindario</Link>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page">{profile.displayName}</span>
-        </nav>
-        <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} offerings={offerings} faqs={faqs} media={media} />
-
-        <section aria-labelledby="business-neighborhood-title" className="public-business-neighborhood">
-          <div>
-            <h2 id="business-neighborhood-title">Explora más negocios del Vecindario</h2>
-            <p>Conoce otros perfiles locales y encuentra opciones para lo que necesitas.</p>
-          </div>
-          <Link className="button button--secondary" to="/vecindario">Volver al Vecindario</Link>
-        </section>
+        <div id="miniweb-sections">
+          <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} offerings={offerings} faqs={faqs} media={media} />
+        </div>
       </main>
-    </PublicLayout>
+      <MiniWebSiteFooter profile={profile} />
+    </div>
   );
 }

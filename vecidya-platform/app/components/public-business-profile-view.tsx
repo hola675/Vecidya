@@ -21,6 +21,15 @@ function safeWebUrl(value: string | null) {
   }
 }
 
+/** Acepta logos remotos HTTP(S), medios publicados del negocio y, solo
+ * durante la previsualización, el archivo privado del usuario autenticado. */
+export function resolveBusinessLogoUrl(value: string | null, preview = false): string | null {
+  const logoPath = value ?? "";
+  const isPublishedLogo = /^\/media\/business\/[^/?#]+\/[^/?#]+$/.test(logoPath);
+  const isPrivatePreviewLogo = preview && /^\/api\/organizations\/[^/?#]+\/business-media\/[^/?#]+$/.test(logoPath);
+  return safeWebUrl(value) ?? ((isPublishedLogo || isPrivatePreviewLogo) ? logoPath : null);
+}
+
 function safePhoneHref(value: string | null) {
   if (!value) return null;
   const number = value.trim().replace(/[\s().-]/g, "");
@@ -84,15 +93,17 @@ export function PublicBusinessHeader({
   profile,
   preview = false,
   showContactActions = true,
+  iconUrl,
 }: {
   profile: PublicBusinessProfile;
   preview?: boolean;
   showContactActions?: boolean;
+  iconUrl?: string;
 }) {
   const location = [profile.city, profile.country].filter(Boolean).join(", ");
   const actions = getContactActions(profile);
   const primaryAction = showContactActions ? actions[0] : undefined;
-  const imageUrl = safeWebUrl(profile.logoUrl);
+  const imageUrl = resolveBusinessLogoUrl(profile.logoUrl, preview);
   const initial = profile.displayName.trim().slice(0, 1).toLocaleUpperCase();
 
   return (
@@ -106,6 +117,7 @@ export function PublicBusinessHeader({
       </div>
       <div className="public-business-profile__intro">
         <h1 id="public-business-title">{profile.displayName}</h1>
+        {iconUrl ? <img alt="" className="public-business-profile__icon" decoding="async" height={48} src={iconUrl} width={48} /> : null}
         {profile.verificationStatus === "verified" ? (
           <p className="public-business-profile__verified"><span aria-hidden="true">✓</span> Perfil verificado por Vecidya</p>
         ) : null}

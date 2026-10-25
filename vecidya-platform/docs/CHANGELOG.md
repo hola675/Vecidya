@@ -1,16 +1,22 @@
 # Changelog
 
-## 0.7.3 — mantenimiento de accesibilidad móvil (código integrado; sin publicar)
+## 2026-10-24 — APP-MINI-02F — logo, icono e imágenes por oferta (integrado en código)
+
+- Se incorporan usos separados para logo, icono compacto, portada y galería. Servicios/productos pueden referenciar una imagen del negocio desde el editor de contenido.
+- La publicación conserva todo en el snapshot unificado v4; el endpoint público entrega referencias solo después de publicar. Los snapshots v1–v3 continúan legibles y las referencias legacy se normalizan sin inventar imágenes.
+- PR #103 integra la capacidad en `origin/main@ae7a768`; migración `0028` agrega la referencia opcional de imagen a la oferta. El checkpoint tuvo unitarias 1689/1689, E2E 120/120, typecheck/build PASS. La lectura pública actual muestra producción `0.7.3`, pero no se obtuvo el SHA desplegado y no se afirma que PR #103 esté publicado. D1 remota y R2 no se revalidaron. Certificación y límites en `STATUS.md` y `TESTING.md`.
+
+## 0.7.3 — mantenimiento de accesibilidad móvil (versión observada en producción)
 
 - En Mi Vecidya y administración, los menús responsive comparten control del foco: diálogo modal al abrir, fondo inerte, navegación con Tab/Shift+Tab, cierre con Escape y retorno del foco al disparador. Cambios funcionales integrados en PR #100 (merge `736a3f7`).
 - Se amplió la prueba E2E del dashboard para verificar estos comportamientos en diferentes anchos de pantalla. CI de integración de PR #100: `40106394655` PASS.
-- Este incremento PATCH no representa la publicación de los cambios del motor de Diagnóstico QA-03B ni certifica una nueva versión en producción. Producción documentada anteriormente: 0.7.0; pendiente de verificación HTTP fechada.
+- HTTP anónimo con TLS, RAN 2026-10-25T01:08Z: producción muestra el footer `0.7.3` en `/`, `/diagnostico` y `/diagnostico/metodologia`; staging aún muestra `0.7.0` en las mismas rutas. Esto confirma el texto de versión servido en producción, pero no identifica SHA/Version ID ni certifica por sí solo que el Worker contenga íntegramente PR #100 o la calibración QA-03B más reciente. No hubo replay funcional en esta comprobación.
 
-## 2026-10-24 — DIAG-MOTOR-04 — motor integrado con rangos globales (sin publicar)
+## 2026-10-24 — DIAG-MOTOR-04 — motor integrado con rangos globales
 
 - QA-03B adopta la calibración v4 en `/diagnostico` y en el replay del Worker. El recorrido presenta cuatro rangos inclusivos iguales (0–25, 26–50, 51–75, 76–100), conserva tres áreas/60% de cobertura y no calcula índice cuando falta evidencia.
 - Se conservan 60 rutas y 59 patrones de respuesta. Se versionan pipeline, sesión y replay; el resumen anónimo mantiene 12 claves y el informe pasa a 1.2 con compatibilidad para 1.0/1.1.
-- Pruebas sintéticas acreditan comportamiento determinista, no validez empírica. Sin migraciones. Integrada en PR #97, merge `62822ee`. R2 aún no provisionado; producción sigue en 0.7.0 y no hay HTTP pública fechada para este código. Validaciones y límites en `TESTING.md` → DIAG-MOTOR-04.
+- Pruebas sintéticas acreditan comportamiento determinista, no validez empírica. Sin migraciones. Integrada en PR #97, merge `62822ee`. HTTP anónimo del 2026-10-25T01:08Z muestra producción `0.7.3` y staging `0.7.0`; no se obtuvo SHA/Version ID ni se ejecutó replay, así que no confirma que la calibración v4 esté activa en esos Workers. R2 y el ledger D1 remoto no se revalidaron. Validaciones y límites en `TESTING.md` → DIAG-MOTOR-04.
 
 ## 2026-10-24 — UX-PREMIUM-02B (refinamiento de Servicios)
 

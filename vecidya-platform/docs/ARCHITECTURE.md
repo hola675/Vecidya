@@ -1,5 +1,14 @@
 # Arquitectura de Vecidya
 
+## MiniWeb — experiencia guiada y frontera editorial (UX-MINIWEB-20261024)
+
+La MiniWeb pública `/vecindario/:slug` presenta cabecera y pie del negocio mediante `MiniWebSiteHeader`/`MiniWebSiteFooter` y utiliza `MiniWebRenderer` con la lista de módulos verdaderamente renderizables; no reutiliza cabecera de marketing general. La vista previa privada utiliza ese mismo marco, pero sustituye los enlaces accionables por rótulos, y solo entonces acepta URLs de medios autenticados. `resolveBusinessLogoUrl` limita protocolos y rutas de imagen aceptadas.
+
+En `/app/miniweb`, una configuración de cinco pasos organiza el borrador versionado sin duplicar los datos maestros de `/app/business-profile`. Las secciones derivan su estado de `hasMiniWebModuleContent`; formularios plegables mantienen el estado hasta guardar; `useBlocker` advierte sobre cambios al navegar y el cambio de organización queda suspendido mientras hay edición no guardada. La vista pública se actualiza solo mediante publicación explícita del snapshot.
+
+APP-MINI-02F conserva un único contrato de medios por organización: `gallery` (imagen o vídeo), `cover`, `logo` e `icon` (solo imagen), más `BusinessOffering.imageAssetId` para productos y servicios. La API valida el archivo, su firma, permiso, pertenencia y revisión; el snapshot de publicación v4 hace visibles únicamente sus medios/referencias. Migración `0028`. Artículos, equipo, certificaciones, testimonios, temas personalizados y tipografías editables siguen fuera de alcance, sin anticipar persistencia.
+
+
 ## DIAG-MOTOR-04 — calibración QA-03B de cuatro rangos (2026-10-24; rama sin publicar)
 
 La calibración `diag-v3-candidate-calibration-v4` está adoptada por el recorrido QA-03B `/diagnostico` y el replay autoritativo del Worker. Conserva puntuaciones dimensionales, pesos, confianza y puerta de representatividad (al menos tres dimensiones puntuadas y 60% de cobertura aplicable); presenta cuatro rangos enteros inclusivos: 0–25, 26–50, 51–75 y 76–100. El índice insuficiente sigue siendo `null`. El resumen anónimo v2 mantiene su allowlist de 12 claves y expone la etiqueta general existente con el rango; el informe identificado pasa a v1.2 y sigue aceptando 1.0/1.1. La identidad del motor, sesión y replay usan pipeline v5, sesión schema/key 8 y replay v6. La selección de rangos es determinista, no validación empírica. La matriz sintética conserva 60 rutas; sus objetivos añadidos son supuestos, no hechos puntuables. El Worker público de producción aún no sirve este cambio; ver `ENVIRONMENTS.md`.
@@ -17,6 +26,12 @@ La composición visual conserva orden general→áreas, muestra dos columnas de 
 Las ofertas de un negocio se modelan separadas del catálogo de servicios de Vecidya: `business_offering` guarda servicios o productos escritos por la organización, y `business_faq` guarda sus preguntas/respuestas. Ambas tablas filtran por organización, se guardan junto con la configuración MiniWeb mediante una sola revisión CAS y no crean pedidos, pagos, reservas ni CRM.
 
 El snapshot público pasa a versión 2 e incluye perfil, horarios, configuración, ofertas y FAQ. Snapshots v1 se leen con ofertas/FAQ vacías y módulos nuevos desactivados; no se toma contenido de borrador para completar una publicación histórica. La UI permite editar y previsualizar antes de guardar/publicar; el renderer anónimo solo recibe el snapshot publicado y muestra elementos activos de módulos habilitados. `services`, `products` y `faq` están disponibles en `vecidya-default`. Implementación local sin certificación funcional aún; ver `STATUS.md`, `DATABASE.md` y `TESTING.md`.
+
+## APP-MINI-02F — medios de marca e imágenes de contenido (2026-10-24; checkpoint local)
+
+La biblioteca tenant-scoped de medios admite propósitos distintos: `logo` identifica la marca, `icon` es el símbolo compacto, `cover` es la imagen principal y `gallery` reúne fotos complementarias. Logo e icono son recursos diferentes; ambos son imágenes y se cargan por la misma API privada, con CAS, allowlist y límite existentes. Cada oferta de servicio/producto puede referenciar una imagen activa de la misma organización; el servidor rechaza IDs que no pertenezcan a sus medios de imagen activos. Retirar un asset limpia las referencias del draft del editor, mientras que una publicación previa conserva sus referencias hasta volver a publicar.
+
+El snapshot v4 añade IDs allowlisted de logo/icono y los vínculos de imágenes de oferta, preservando lectura de snapshots v1–v3 sin extraer valores del draft. `0028` agrega `image_asset_id` a `business_offering`. La ruta pública entrega un objeto solo si el ID figura en medios publicados o en una oferta activa del snapshot vigente; assets nuevos y referencias de draft siguen privados hasta publicar el conjunto completo. El editor previsualiza los medios en draft y ofrece selección explícita de imagen por oferta. Esto no hace disponible R2 en entornos remotos ni reemplaza la URL legacy del logo hasta una publicación con logo de asset.
 
 ## UX-COHERENCE-03 — sistema de experiencia de las tres superficies (2026-10-19; pendiente de QA)
 

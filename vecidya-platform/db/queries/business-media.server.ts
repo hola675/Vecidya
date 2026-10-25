@@ -7,7 +7,7 @@ export const MAX_BUSINESS_MEDIA_BYTES = 32 * 1024 * 1024;
 export const MAX_BUSINESS_MEDIA_STORAGE_BYTES = 100 * 1024 * 1024;
 
 export type BusinessMediaType = "image" | "video";
-export type BusinessMediaPurpose = "cover" | "gallery";
+export type BusinessMediaPurpose = "cover" | "gallery" | "logo" | "icon";
 export type BusinessMediaAsset = {
   id: string;
   mediaType: BusinessMediaType;
