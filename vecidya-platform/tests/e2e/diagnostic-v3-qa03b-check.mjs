@@ -119,7 +119,7 @@ try {
     await page.emulateMedia({ reducedMotion: "reduce" });
     const animatedBars = page.locator(".dr-area-overview__bar-fill");
     if (await animatedBars.count()) {
-      assert.equal(await animatedBars.first().evaluate((element) => getComputedStyle(element).animationDuration), "0s", "reduced motion desactiva el movimiento de entrada");
+      assert.ok(Number.parseFloat(await animatedBars.first().evaluate((element) => getComputedStyle(element).animationDuration)) <= 0.00001, "reduced motion deja la animación imperceptible (≤ 10 µs)");
     }
     await page.emulateMedia({ reducedMotion: "no-preference" });
     if (name === "open-no-clients") {

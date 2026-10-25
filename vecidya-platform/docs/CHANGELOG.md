@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.8.0 — producción (2026-10-25)
+
+- Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.
+- Sube la versión de la aplicación `0.7.3` → `0.8.0` por el alcance funcional acumulado. El release desplegado es `main@0152eab6fad5e68336d66d69cbc1597a1f720111`.
+- PR #116 se integró en `main@0152eab6fad5e68336d66d69cbc1597a1f720111`. Se aplicó `0028_miniweb-offering-image.sql` en D1 producción, luego se desplegó `vecidya-platform` con Version ID `320eefe0-343c-431f-987f-cf9b92df0c8e` (2026-10-25T18:38:07Z). El ledger quedó en `0000–0028`.
+- HTTP anónimo TLS RAN 2026-10-25T18:38:23Z: `/`, `/cookies`, `/informacion-legal` y `/diagnostico` → `200`; todas muestran `0.8.0` y `© 2026 Vecidya`.
+- Typecheck, build y `git diff --check` PASS. Pruebas automatizadas omitidas a petición del usuario.
+
+## 2026-10-25 — DIAG-VISUAL-03 — refinamiento visual del cuestionario y resumen
+
+- Se mejora la jerarquía del inicio QA-03B y el foco de títulos al cambiar de pregunta/resultado; las opciones seleccionadas ganan énfasis legible sin cambiar el control nativo.
+- El resumen coloca el estado general antes de las ocho áreas, amplía las ilustraciones a 48 px y mantiene la lista en una columna para conservar nombres, estados y orden narrativo. «Lectura preliminar», «Sin lectura» y el alcance de cobertura se expresan sin convertir ausencias en cero ni repetir la misma limitación.
+- Las pruebas sintéticas cubren cero, null, estados preliminares y campos opcionales. E2E Worker local QA-03B 6/6; unitarias focales 20/20. No se modifican scoring, rutas, datos, D1 ni versión; no se despliega ni se afirma publicación.
+
 ## 2026-10-25 — DIAG-PRO-19 — auditoría responsive del resumen anónimo
 
 - El E2E responsive elige el rechazo de cookies opcionales en un contexto limpio y espera la carga de imágenes diferidas antes de guardar capturas.

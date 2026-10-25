@@ -9,7 +9,7 @@
 | 0. Inventario y dirección | Rutas, componentes, estado de implementación, capturas escritorio/móvil y mapa referencia→patrón→pantalla; reutilizar activos vigentes | Alcance de pantalla y dirección aprobados; no se duplican assets ni capacidades |
 | 1. Web pública — Inicio | Jerarquía del hero y CTA al Diagnóstico, entrada al Vecindario y composición responsive propia | Worker local; CTA/rutas reales, vista en 320/390/768/1024/1366, navegación por teclado y reduced motion |
 | 2. Web pública — servicios, planes, Aprende, Vecindario y MiniWeb | Vercel/Assemble/Gusto, Mintlify y catálogo visual aplicados por página, una ruta/segmento por checkpoint | Contenido y enlaces existentes; sin datos comerciales ficticios; móvil, accesibilidad y rendimiento revisados |
-| 3. Diagnóstico e informe | Continuar desde `DIAG-VISUAL-ASSETS-01`; Typeform para interacción y narrativa, gráfica accesible basada exactamente en contrato vigente | Scores sin recálculo, `null`/cobertura/confianza legibles, privacidad intacta, PDF revisado |
+| 3. Diagnóstico e informe | Continuar desde `DIAG-VISUAL-ASSETS-01` y DIAG-VISUAL-03; interacción y narrativa claras, gráfica fiel al contrato vigente | Scores sin recálculo, `null`/cobertura/confianza legibles, privacidad intacta, PDF revisado |
 | 4. Mi Vecidya y editor MiniWeb | Linear para shell y estados; Framer para edición contextual por secciones, coordinado con `APP-MINI-02D` | Draft/publicado distinguibles; preview y guards existentes preservados; experiencia móvil y teclado revisados |
 | 5. Vecidya Admin | Vercel/Supabase Studio como referencias visuales para tablas, filtros, inspector y actividad | Datos existentes solamente; organización objetivo, permisos y auditoría preservados en toda acción |
 | 6. Acabado y certificación | Microinteracciones, profundidad y assets puntuales; revisión de consistencia entre superficies | `typecheck`, `build`, diff-check, validación Worker local y revisión visual/accesible por viewport; deuda restante anotada en STATUS |
@@ -119,6 +119,8 @@ La implementación del contrato anónimo v2, ocho áreas gráficas, reutilizaci�
 **Revisado en `feat/diagnostic-accessibility-03b`:** teclado/foco en la primera pregunta del candidato QA-03B y reflow sin overflow a 320/390/512 px. **Pendiente:** teclado/foco en el resumen e informe, lectura con lector de pantalla, medición de contraste y zoom real al 200 % en 320/360/390/768/1024/1366 px. El PDF local de dos páginas A4 y su conteo ya pasaron E2E; esto no equivale a PDF/UA.
 
 **Fuera de este remanente:** abrir/cambiar los flags del funnel, Gmail o purga; modificar D1, scoring, sesiones, metodología o copy legal; usar datos reales; publicar o desplegar. No eliminar claves históricas ni reinterpretar sesiones completadas.
+
+**DIAG-VISUAL-03 (2026-10-25, en curso):** se refinan entrada, foco, selección y resumen QA-03B sin modificar el contrato. Pruebas unitarias focales 20/20 y Worker QA-03B local 6/6 PASS; contraste de texto principal medido mínimo 4.97:1. La matriz DIAG-PRO-19 no se acredita: su fixture aún limpia una clave histórica V3 y cae en reanudación. Ver alcance y deuda restante en `STATUS.md` y `TESTING.md`. El pase manual de resumen, zoom real y lector de pantalla continúa pendiente; no publicar ni desplegar.
 
 #### Criterios de revisión del banco (consolidados desde la auditoría 2026-10-18)
 
