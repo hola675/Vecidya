@@ -120,6 +120,209 @@ La implementación del contrato anónimo v2, ocho áreas gráficas, reutilizaci�
 
 **Fuera de este remanente:** abrir/cambiar los flags del funnel, Gmail o purga; modificar D1, scoring, sesiones, metodología o copy legal; usar datos reales; publicar o desplegar. No eliminar claves históricas ni reinterpretar sesiones completadas.
 
+#### DIAG-VISUAL-02 — dirección de arte y especificación de QA-03B (propuesta; no implementada)
+
+**Base y estrategia.** DIAG-VISUAL-01 está en el PR #111, que a la fecha de esta propuesta sigue abierto en borrador y no integrado; se trató como hipótesis de investigación, no como estado aprobado de main. PR #110 sí se integró en origin/main@0e337d03: audita un resumen anónimo y un recorrido sintético responsive, pero no certifica accesibilidad completa ni rediseña la interfaz. Este checkpoint parte de ese origin/main recién actualizado; los hallazgos de DIAG-VISUAL-01 se contrastaron contra código, CSS, assets y pruebas de main. El entregable queda consolidado aquí, en el único documento canónico que posee el roadmap futuro; no se crea un Markdown nuevo por fase.
+
+La especificación no implementa cambios visuales, componentes, CSS ni assets y no altera motor, metodología, sesión, scoring, privacidad, acceso al informe o datos. La inspección visual cubrió archivos originales en tamaño completo; las conclusiones de escala se contrastan con las dimensiones declaradas por el layout y con la evidencia local publicada para DIAG-PRO-19. No se ejecutó un navegador nuevo en este checkpoint, así que la propuesta no declara nuevas capturas ni aceptación visual de la interfaz renderizada.
+
+**Resumen ejecutivo.** QA-03B ya cuenta con jerarquía legible, controles nativos, progreso por cuatro etapas, estados de carga/error, resumen con valores textuales, ocho ilustraciones WebP temáticas, diseño responsive y estilos de impresión. Cambios prioritarios: (1) ampliar las ilustraciones dimensionales, hoy a 32 px en móvil y 42.4 px en escritorio; (2) explicitar “preliminar” por dimensión usando el booleano ya permitido, no depender de la trama; (3) retirar de la ilustración de base digital los logos de servicios de terceros y alinear su paleta; (4) simplificar el resumen en una sola jerarquía editorial; y (5) retirar la animación de 520 ms de las barras de resultados o, si el prototipo demuestra una ventaja, limitarla al estado final, una sola vez y sin animar el número. No hacen falta anillos, dashboard, nuevas bibliotecas de gráficos ni ocho ilustraciones nuevas.
+
+### A. Auditoría comparativa de assets existentes
+
+La ruta activa es app/routes/diagnostic.tsx → CandidateDiagnosticFlow → CandidateDiagnosticResult → DiagnosticAreaOverview. El único conjunto raster consumido por las ocho áreas del resumen público es public/assets/selected/illustrations/dimensions/*.webp, mapeado desde app/components/diagnostic-result/presentation.ts y registrado en app/assets/public-assets.ts. Los ocho archivos son WebP cuadrados de 512×512; total 108,352 bytes (≈105.8 KiB). Sus cuadros miden 2 rem (32 px) en móvil, 2.65 rem (42.4 px) en escritorio y 2 rem en impresión; etiquetas, estados y scores son HTML. Las imágenes usan alt vacío; la barra es aria-hidden.
+
+La inspección visual de los ocho originales a tamaño completo encontró una familia reconocible: objetos 3D brillantes, fondo circular blanco, sombra suave y temas identificables. El layout actual los dibuja a 32 px en móvil y 42.4 px en escritorio; la legibilidad de cada archivo a esos tamaños **no está verificada visualmente** en esta investigación. Por ello, el aumento a 48/56 px es una hipótesis de diseño y queda sujeto a capturas renderizadas y prueba de lectura; tampoco se certifica aún que detalles como estrellas o nodos sean distinguibles en uso. No se justifica sustituir el conjunto completo.
+
+| ID / etiqueta QA-03B | Archivo y datos | Uso y relación con el resultado | Decisión comparativa |
+| --- | --- | --- | --- |
+| clarity_positioning · Claridad de la oferta | dimensions/clarity.webp · 512×512 · 15,590 B | Tarjeta/documento y brújula; orientación de la oferta, no score. Texto aporta etiqueta y estado. | **Conservar.** Motivo inmediato y coherente con 3D. Aumentar el cuadro en tarjetas y no recortar el círculo. |
+| digital_foundation · Base digital | dimensions/foundation.webp · 512×512 · 16,910 B | Laptop/navegador conectada a globo, WhatsApp, Instagram y LinkedIn. | **Mejorar.** Sustituir logos de terceros por pictogramas genéricos de web, conversación y canal; quitar magenta/verde discordante. Composición temática se entiende. |
+| discovery · Cómo te encuentran | dimensions/discovery.webp · 512×512 · 14,314 B | Lupa sobre mapa con pin; identifica descubrimiento, no ubicación real ni cobertura geográfica. | **Conservar.** Mantener mapa como metáfora; nunca representar datos del negocio. |
+| trust_reputation · Confianza visible | dimensions/trust.webp · 512×512 · 11,256 B | Escudo/check y tarjeta de valoración con estrellas. | **Conservar.** Las estrellas son metáfora, no calificación QA-03B. |
+| conversion_access · Del interés a la acción | dimensions/conversion.webp · 512×512 · 13,772 B | Embudo, flecha y check. | **Conservar.** Silueta directa; no codificar éxito con el verde del check. |
+| relationship_recurrence · Seguimiento y relación | dimensions/relationship.webp · 512×512 · 13,400 B | Burbujas, corazón y flechas de ciclo. | **Conservar.** Distinto y comprensible; corazón no es evaluación emocional. |
+| measurement_optimization · Medición | dimensions/measurement.webp · 512×512 · 11,148 B | Gráfico y línea ascendente. | **Conservar.** Dibujo sin datos; toda cifra sigue en DOM. Evitar que ascenso decorativo sugiera resultado favorable. |
+| digital_readiness · Base de trabajo | dimensions/operations.webp · 512×512 · 11,962 B | Engranaje, lista y check. | **Conservar.** Representa procesos/herramientas; check no significa evaluado. |
+
+**Ficha visual y de contenido por dimensión.** Los ocho assets conservados no reciben prompt de regeneración: producir reemplazos sin un problema observado en render sería duplicar activos y ensanchar el alcance. La composición por fila define el tema permitido si una futura revisión los hace necesarios; solo Base digital tiene una propuesta concreta de reemplazo en F. Cada archivo permanece decorativo (`alt=""`); el equivalente accesible es siempre etiqueta pública + `statusLabel` + score exacto solo si es numérico + “Lectura preliminar” cuando `preliminary` sea true. La barra es decorativa y no reemplaza esos textos. Todas las miniaturas permanecen estáticas: nada de animar objeto, giro, pulso o estrellas; el único movimiento posible es la barra común descrita en G.
+
+| Dimensión | Composición específica que se conserva / límite para una futura revisión | Estado de producción | Equivalente accesible y movimiento |
+| --- | --- | --- | --- |
+| Claridad de la oferta | Brújula delante de tarjeta/documento; orientación simple, sin texto ni gráfico de score. Si se reilustra, aguja y borde gruesos, sin microtexto. | Conservar `clarity.webp`; sin prompt nuevo. | “Claridad de la oferta”, status/valor recibidos y preliminar textual; imagen estática, decorativa. |
+| Base digital | Navegador genérico, equipo y nodos conectados; eliminar toda marca externa y color ajeno a la paleta. | Mejorar con el brief único F; no generar en este checkpoint. | “Base digital”, status/valor recibidos y preliminar textual; imagen estática, decorativa. |
+| Cómo te encuentran | Lupa sobre mapa esquemático sin localidad ni trayecto real; evitar lectura de rastreo o cobertura geográfica. | Conservar `discovery.webp`; sin prompt nuevo. | “Cómo te encuentran”, status/valor recibidos y preliminar textual; imagen estática, decorativa. |
+| Confianza visible | Escudo/check y tarjeta de reseña como metáfora; eliminar estrellas contables si una revisión induce a leer calificación. | Conservar `trust.webp`; sin prompt nuevo. | “Confianza visible”, status/valor recibidos y preliminar textual; imagen estática, decorativa; estrellas no son dato. |
+| Del interés a la acción | Embudo y flecha entre pasos; check solo como forma, nunca verde de logro ni semáforo. | Conservar `conversion.webp`; sin prompt nuevo. | “Del interés a la acción”, status/valor recibidos y preliminar textual; imagen estática, decorativa. |
+| Seguimiento y relación | Burbujas y ciclo abstractos; sin nombre, mensaje o persona; el corazón no representa evaluación afectiva. | Conservar `relationship.webp`; sin prompt nuevo. | “Seguimiento y relación”, status/valor recibidos y preliminar textual; imagen estática, decorativa. |
+| Medición | Gráfico abstracto sin ejes, marcas, cifra ni subida favorable; no debe parecer un segundo indicador. | Conservar `measurement.webp`; sin prompt nuevo. | “Medición”, status/valor recibidos y preliminar textual; imagen estática, decorativa. |
+| Base de trabajo | Engranaje con lista vacía/simbólica; check decorativo, no respuesta registrada ni requisito completado. | Conservar `operations.webp`; sin prompt nuevo. | “Base de trabajo”, status/valor recibidos y preliminar textual; imagen estática, decorativa. |
+
+Los tres illustrations/diagnostic-status-low.webp (720×490, 60,326 B), diagnostic-status-developing.webp (600×490, 58,224 B) y diagnostic-status-solid.webp (730×490, 75,042 B) se usan en resultado V3, no en qa03b-result.tsx. **Conservar fuera de QA-03B; no conectarlos por parecido visual.** Colorean low rojo/rosa, developing amarillo y solid verde; el contrato actual no tiene correspondencia que autorice importarlos. brand-symbol-3d.webp (1254×1254, 138,070 B) y brand-symbol-primary.webp (1254×1254, 25,634 B) no son ilustraciones de dimensión; el símbolo 3D aparece en otra pantalla V1 a 56 px y es pesado para ese tamaño. QA-03B no usa ninguno actualmente. Preferir símbolo primario en un futuro punto de marca si se verifica proporción/alpha.
+
+Los fondos bg-hero-soft-map-wave.webp (1672×941, 39,582 B), bg-network-route-pins.webp (1672×941, 38,956 B), bg-section-map-wave-dark.webp (1672×941, 48,752 B) y bg-soft-map-orange-blue.webp (1672×941, 26,028 B) existen en el registro pero no los consume QA-03B. La comparación encontró que bg-hero-soft-map-wave deja espacio central claro, símbolo V/pin tenue y rutas/pines abajo; **complementar bienvenida solo con ese fondo existente** si el prototipo confirma contraste y recorte en 320/375/1366. No añadir un segundo mapa ni usar el fondo oscuro detrás de texto.
+
+### B. Dirección de arte
+
+Se compararon tres rutas. (1) “Atlas de trayectorias locales”: líneas/nodos abstractos, tarjetas editoriales y el símbolo ubicación/conexión de Vecidya; expresa el propósito sin implicar que el diagnóstico conoce una geografía o red comercial real. (2) Vidrio líquido y reflejos: llamativo, pero añade capas, brillos y contraste incierto; UI-UX Pro Max lo recomienda para chrome de Apple, no para un cuestionario web. (3) Formulario plano de datos: sobrio y rápido, pero pierde vínculo entre etapas/dimensiones. Se elige **Atlas de trayectorias locales** con estructura sencilla primero; mapa, profundidad y 3D solo como acentos. Se descarta “scroll storytelling” porque el cuestionario es flujo adaptativo, no capítulos. No copiar competidores ni usar personas, mascotas o marcas de terceros.
+
+| Rol visual | Especificación (tokens existentes como base; contraste pendiente de medir) |
+| --- | --- |
+| Fondo | --canvas #f7f9fc exterior; blanco --surface para respuesta/contenido. Sin vidrio translúcido detrás de texto. |
+| Texto | --ink #142b4a; --muted #617188 solo si supera contraste. Etiquetas completas. |
+| Tipografía | Reusar --font-sans (Arial, Helvetica, sans-serif); cuerpo 16 px heredado, --text-meta 14 px y --text-label 13 px. Mantener jerarquía H1 fluida actual; no cargar una fuente remota para dar apariencia “premium”. |
+| Estructura | --line #e1e8f1; borde fino, no tarjetas para todo. Sombras pequeñas/localizadas; quitar dobles sombras donde paneles se apilan. |
+| Superficies | Mantener radius-sm 12 px, radius-md 20 px, radius-lg 28 px; sombra de panel solo para foco principal, no por defecto en cada fila. |
+| Acento | --blue #155fc5 y --blue-dark #104c9d para interacción/datos; --orange #bf4700 y fondo #fff0e5 para hitos/CTA, nunca polaridad de resultado. |
+| Motivo | Rutas esquemáticas de una línea y nodos SVG/CSS decorativos; no equivalen a preguntas, clientes, negocios, respuestas o cobertura. Ocultos a tecnología asistiva. |
+| Material | Miniaturas 3D actuales; interfaz circundante mate y plana. Sin blur translúcido, brillo constante, ruido o sombras flotantes en cada tarjeta. |
+| Composición | Una columna en ancho menor a 48rem y ancho de lectura limitado desktop. Bienvenida y resultado tienen un foco visual cada uno. Ocho áreas en lista (1 col hasta 47.99rem; 2 col desde 48rem), orden semántico intacto. |
+| Espaciado | Reusar escala rem/clamp; retícula 4/8 px equivalente sin alturas fijas que corten respuesta/etiqueta. Más espacio entre secciones que dentro de tarjetas. |
+
+No se sustituye globalmente el sistema de marca ni se altera CSS en este checkpoint. Medir pares de texto (WCAG AA: 4.5:1 texto normal y 3:1 texto grande) y señales de control/gráficos necesarias (3:1 junto a colores adyacentes). WCAG 2.5.8 AA define objetivos de al menos 24×24 CSS px sujeto a excepciones; este diseño apunta a 44×44 px para controles importantes. Los tokens no equivalen a medición.
+
+### C. Diseño del recorrido
+
+| Punto | Actual comprobado | Propuesta visual / asset | Motion e interacción | Móvil, accesibilidad y aceptación | Complejidad |
+| --- | --- | --- | --- | --- | --- |
+| 1. Bienvenida | StartScreen textual; sin imagen propia del flujo. | Título, límite existente y CTA. Probar fondo bg-hero-soft-map-wave; símbolo primario solo si hace falta. | Estática; CTA inmediata. | A 320 px CTA visible sin scroll forzado; contenido intacto sin imagen/CSS; fondo con contraste suficiente. | Baja |
+| 2. Inicio | FlowProgress usa cuatro etapas reales. | Mantener etapas; current se reconoce por texto + forma/tono, sin total estimado. | Cambio tras acción confirmada; color 200 ms si no oculta. | aria-current=\"step\" y etiqueta son fuente accesible; conteo/orden igual al reanudar. | Baja |
+| 3. Pregunta | Una pregunta; H1 recibe foco al cambiar id; usa fieldset. | Pregunta primero, ayuda opcional después; etapa separada. | df-enter actual: opacity/translateY 6 px, 180 ms ease-out; preservar si no retrasa foco/lectura. | Texto largo y zoom 200% sin recorte en 320; foco sigue en paso activo. | Baja |
+| 4. Opciones | Radio/checkbox nativo dentro de label; selected con marca/borde. | Tarjetas completas y neutrales antes de elegir; borde+marca+fondo al seleccionar. | Selección 140 ms actual; sin rebote/escala/espera. | Operable con teclado; objetivo táctil ≥44×44 px como objetivo interno, por encima del mínimo AA de 24×24 px sujeto a excepciones; estado no depende del color. | Baja |
+| 5. Selección/error | Input y marca; validación role=alert. | Instrucción de multi-select del contrato; error junto al grupo. | Feedback actual 140 ms; respuesta inmediata para teclado. | Error/help vinculados, nombres accesibles, outline/contraste medidos. | Baja |
+| 6. Progreso | Cuatro segmentos done/current y etiqueta; no predice preguntas. | Ruta de etapas discreta; actual lleno, hechos marcados y etapa escrita. | Color 200 ms solo al cambiar estado real. | Con reduce: final inmediato; texto coincide con aria-current. | Baja |
+| 7. Transición | .df-question: opacity + translateY(6px), 180 ms ease-out bajo no-preference. | Mantener breve, una dirección en adelante/atrás, sin redibujar shell. | 180 ms; cubic-bezier(0.23,1,0.32,1); transform/opacity. | Controles/foco disponibles desde primer frame; reduce quita desplazamiento. | Baja |
+| 8. Atrás/siguiente | Selección persiste en el paso; acciones al pie. | Footer consistente, avance primario, atrás secundario y nombrado. | Sin entrada animada por tecla; volver conserva respuesta. | En 320 px acciones visibles/tocables; foco no queda bajo footer sticky. | Baja |
+| 9. Guardado/recuperación | Persistencia/reanudación y estados busy/live/error presentes. | Confirmación textual junto a progreso; reanudar y reiniciar distinguibles. | Indicador solo mientras operación pendiente; no porcentaje simulado. | Anuncio único sin robar foco; lento/rechazado no pierde sesión. | Media |
+| 10. Error/conflicto | Alert, reset confirm e instrucciones de conflicto/replay. | Mensaje, siguiente acción y cancelación claras; no solo rojo. | Sin movimiento necesario; respuesta inmediata. | Mensaje anunciado, foco apropiado; reset/reload conservados. | Media |
+| 11. Preparación | Vista preparing aria-busy; replay/Worker antes de resultado. | Mensaje en el shell; sin cifra/cuenta atrás estimada. | Actividad solo mientras espera. | Lector entiende busy/fin; animación no habilita informe. | Baja |
+| 12. Finalización | Ready y resultado tras replay/identidad válidos. | Confirmación sobria y transición al H1; sin celebración/clasificación. | df-enter 180 ms o final inmediato con reduce. | Foco en H1 de resumen; completion no se confunde con score. | Baja |
+
+**Impacto esperado por pantalla** (hipótesis cualitativa; validar con recorrido sintético antes de aceptar):
+
+| Punto | Cambio esperado en la experiencia |
+| --- | --- |
+| 1. Bienvenida | Aclarar qué ofrece el diagnóstico y llevar al inicio sin distracción visual. |
+| 2. Inicio | Dar orientación por etapas sin anticipar una cantidad fija de preguntas. |
+| 3. Pregunta | Hacer que la pregunta sea el primer elemento de lectura y mantener el contexto de etapa. |
+| 4. Opciones | Facilitar comparación y selección completa con ratón, toque o teclado. |
+| 5. Selección/error | Confirmar lo seleccionado y permitir corregir un error sin buscar el mensaje. |
+| 6. Progreso | Reducir desorientación mostrando avance real, sin sugerir porcentaje de cuestionario. |
+| 7. Transición | Conservar continuidad entre preguntas con un movimiento breve que no compita con lectura. |
+| 8. Atrás/siguiente | Hacer predecibles las acciones y conservar respuesta al revisar un paso anterior. |
+| 9. Guardado/recuperación | Comunicar que la sesión se conserva y qué hacer si guardar o reanudar falla. |
+| 10. Error/conflicto | Explicar el problema y ofrecer una salida recuperable sin depender del color. |
+| 11. Preparación | Indicar espera real mientras ocurre replay, sin prometer duración ni progreso ficticio. |
+| 12. Finalización | Confirmar que el resultado está listo y separar esa confirmación del score. |
+
+En todas las pantallas, disabled conserva texto legible y no se comunica solo con opacidad; hover no se requiere para operar; cambio visual tiene equivalente DOM; ninguna animación retarda validación, teclado, continuar ni resultado.
+
+### D. Arquitectura visual del resumen anónimo
+
+La frontera vigente es AnonymousDiagnosticSummaryV2 (app/features/diagnostic/qa03b/qbv2-candidate-funnel.ts): overallStatus, score:number|null, confidence, coverage, executiveSummary, primaryOpportunity:string|null, firstRecommendedAction|null, limitations:string[], identidad/metodología y ocho dimensiones con label, score:number|null, statusLabel, preliminary:boolean e illustration. El endpoint valida el contrato; replay/Worker es autoridad; CandidateDiagnosticResult solo presenta. No agregar campos, derivar scores, convertir cadenas en escalas, leer respuesta/evidencia interna ni cambiar guards del informe.
+
+**Orden de lectura propuesto, una composición y no dashboard:**
+
+1. Título “Tu resumen del diagnóstico” y contexto anónimo existente.
+2. Un bloque inicial con overallStatus, porcentaje global exacto solo cuando score tiene número y executiveSummary como explicación prioritaria.
+3. Confianza y cobertura en texto secundario cercano a la síntesis; no convertir strings en gauges ni asumir escala.
+4. Un bloque “Panorama de las ocho áreas”, ocho tarjetas en orden del contrato; tema ilustrado, etiqueta, statusLabel, porcentaje exacto solo si viene numérico, preliminar en texto.
+5. “Oportunidad principal” y “Primer paso recomendado” solo si cada campo existe; conservar título/explicación.
+6. Limitaciones con copy recibido, sin ocultarlas detrás de icono ni abreviarlas a insignia.
+7. Acciones disponibles: imprimir/guardar resumen, editar, metodología y solicitud de informe solo si el gate actual lo permite. La jerarquía visual puede enfatizar impresión en modo público, sin modificar el gate del informe ni agregar PDF.
+
+Móvil usa una columna y score/etiqueta sin competir con el encabezado; desktop limita ancho de lectura y usa dos columnas solo en las ocho tarjetas. Evitar mini-gráficos repetidos, cuatro paneles de estado en el hero y scroll lateral. La impresión oculta acciones/decoración/movimiento y conserva textos, orden y valores.
+
+### E. Visualización y matriz de las ocho dimensiones
+
+Se compararon barra lineal, anillo, waffle/segmentos e ilustración como indicador. **Solución elegida: barra lineal HTML/CSS con etiqueta, estado y valor textual adyacentes; ilustración aparte representa solo el tema.** La barra usa score ya recibido en rango validado 0–100; el número textual es la presentación primaria y persiste aunque CSS falle. No añadir una biblioteca de gráficos. Un anillo ocupa espacio, dificulta diferencias pequeñas y puede parecer completion; waffle introduce discretización; la ilustración carece de semántica cuantitativa. Dibujar fill solo con score disponible; null no produce barra de cero ni anillo vacío.
+
+| ID / etiqueta pública | Metáfora, asset y decisión | Con score | Sin score / preliminar | Móvil / desktop y brief |
+| --- | --- | --- | --- | --- |
+| clarity_positioning · Claridad de la oferta | Tarjeta + brújula; clarity.webp; conservar. | Número exacto + barra azul neutral; icono no cambia con nivel. | statusLabel; “Sin lectura” si score nulo; “Lectura preliminar” si booleano true. | Propuesta 48 px móvil / 56 px desktop; etiqueta/status/valor son alternativa accesible. No generar sustituto sin evidencia. |
+| digital_foundation · Base digital | Navegador + nodos genéricos; foundation.webp; mejorar. | Barra/valor independientes de logos. | Neutral; preliminary textual, nunca infiere fallo. | 48/56 px. Brief de revisión: sitio genérico, dispositivo y 3 nodos abstractos, sin logos, letras ni marca externa. |
+| discovery · Cómo te encuentran | Lupa + pin abstracto; discovery.webp; conservar. | Resultado separado del pin. | Status exacto, sin escala; no implica rastreo de ubicación. | 48/56 px; si cambia, mantener lupa/pin ficticio sin localidad ni ruta real. |
+| trust_reputation · Confianza visible | Escudo + reseña; trust.webp; conservar. | Valor fuera de estrellas ilustradas. | Sin estrellas de cinco; status exacto/preliminar textual. | 48/56 px; no introducir estrellas contables que compitan con el dato. |
+| conversion_access · Del interés a la acción | Embudo y paso/check; conversion.webp; conservar. | Barra/valor separados; check no significa resultado favorable. | Neutral, no implica fracaso. | 48/56 px; futuro vector sin éxito verde codificado. |
+| relationship_recurrence · Seguimiento y relación | Mensajes/ciclo; relationship.webp; conservar. | Barra/valor separado. | uncertainty/not_assessed/not_applicable según texto del contrato; nunca “mala relación”. | 48/56 px; futuro sin personas ni mensajes legibles. |
+| measurement_optimization · Medición | Gráfico/línea; measurement.webp; conservar. | Gráfico ilustrado no expresa datos; número/barra DOM sí. | No mostrar ejes/tendencia de dato inexistente. | 48/56 px; futuro sin ejes marcados, cifras ni progreso ascendente. |
+| digital_readiness · Base de trabajo | Engranaje/lista; operations.webp; conservar. | Barra/valor usan score recibido; check no cambia. | Neutral, no parece error. | 48/56 px; futuro sin casillas que parezcan respuestas reales. |
+
+**Matriz de estados del contrato** (los campos del Worker no se reinterpretan):
+
+| Dato recibido | Presentación | Prohibición |
+| --- | --- | --- |
+| score numérico, incluido 0 si Worker lo envía | Número exacto + barra proporcional; status/texto recibidos. | Redondear, recalcular, cambiar nivel o inferir por color/ilustración. |
+| score null | statusLabel y cobertura/limitación recibidos; texto “Sin lectura”; sin fill. | Cambiar null a 0, barra de apariencia cuantitativa, porcentaje global inventado o “reprobado”. |
+| preliminary true (guard actual prohíbe score null + preliminary) | Badge/texto “Lectura preliminar · evidencia limitada” asociado a esa tarjeta y estado; trama solo como apoyo si es legible. | Inferir score bajo o alterar statusLabel. |
+| uncertain / “Sin información suficiente” | Tratamiento neutral, label exacto, sin zona roja/barra de falla. | Interpretar incertidumbre como weak/bajo desempeño. |
+| not_assessed / “No evaluado” | Texto neutral sin indicador cuantitativo. | Confundir no evaluado con error o insuficiencia. |
+| not_applicable / “No aplica” | Etiqueta neutral; imagen no adquiere check de logro/fallo. | Convertir en cero o recalcular cobertura desde UI. |
+| Oportunidad/acción/limitación ausente | Omitir la sección opcional, sin placeholder vacío. | Generar recomendación/evidencia desde ilustración/color. |
+
+Estados reales: strong → sólido; positive_signal → señales positivas; partial → parcial; weak → necesita refuerzo; uncertain → sin información suficiente; not_assessed → no evaluado; not_applicable → no aplica. La capa pública entrega copy, no códigos internos. confidence y coverage son strings del resumen vigente, no necesariamente magnitudes numéricas comparables.
+
+### F. Catálogo de producción de assets
+
+No se requiere ilustración nueva por dimensión, indicador raster ni múltiples variantes por pantalla. Se reutiliza el fondo de marca candidato a bienvenida después de revisar recorte. El único activo candidato a producción es una revisión de foundation.webp. El brief es especificación, no autorización para generar/publicar.
+
+| Campo | DIAG02-DIM-FOUNDATION-01 |
+| --- | --- |
+| Archivo / destino / componente | vecidya-platform/public/assets/selected/illustrations/dimensions/foundation-v2.webp; tarjeta “Base digital” en DiagnosticAreaOverview; registrar y remapear digital_foundation solo tras aprobación. Mantener el original hasta validar referencias/rollback. |
+| Propósito / concepto | Representar canales digitales propios, sin sugerir integración, asociación, endorsement ni datos de plataforma externa. La imagen identifica tema, nunca estado de resultado. |
+| Composición / perspectiva | Canvas 1:1, ventana genérica de sitio responsive al centro y exactamente 3 nodos abstractos alrededor unidos por una ruta simple; ángulo 3/4 suave; zona segura del 12%; silueta reconocible a 32 px. Una composición, sin variantes de estado. |
+| Arte / materiales / luz | 3D premium de polímero esmaltado mate y vidrio satinado limitado, formas redondeadas, relieve corto y sombras difusas. Luz superior izquierda y rebote blanco. Sin reflejo metálico duro, glow, ruido o microdetalle. |
+| Colores / fondo / alpha | Azul de marca, blanco y un acento naranja. Exterior transparente para conservar marco CSS; verificar alpha/halo sobre blanco/canvas. Sin rojo/verde de evaluación. |
+| Resolución / formato / peso | Master 1024×1024; entrega 512×512 WebP con alpha, objetivo ≤20 KiB sin pérdida visible a 32–56 CSS px. Considerar AVIF solo tras medir ventaja y fallback. Sin texto/números/logos. |
+| Responsive / accesibilidad | Intrinsic width/height, object-fit contain, sin recorte variante no probado. Decorativa alt vacío junto a label/status en HTML. Nunca comunica selección. |
+| Prompt completo | “Genera una ilustración 3D premium cuadrada para la dimensión Base digital de Vecidya, sistema visual de negocios locales. En el centro, una ventana genérica de sitio web en laptop fina vista en perspectiva tres cuartos; alrededor, exactamente tres nodos geométricos abstractos conectados por una ruta azul continua que representan presencia digital propia. Acabado de polímero esmaltado mate, vidrio satinado muy discreto, formas redondeadas, relieve corto, luz difusa superior izquierda y sombra suave. Paleta azul profundo/cobalto y blanco, un acento naranja; exterior transparente, zona segura 12%. La silueta debe reconocerse a 32 px y conservar la familia visual de miniaturas existentes. No dibujar texto, letras, números, porcentajes, nombres de servicios, logos/iconos de WhatsApp, Instagram o LinkedIn, marcas comerciales, personas, manos, mascotas, geografía real, score, estrellas, check de aprobación ni semáforo. Una sola variante temática, sin cambios según rendimiento.” |
+| Aceptación / rechazo | Aceptar si representa web/canales sin marcas a 32/48/56 px, no parece score, alpha limpio, ≤20 KiB, metadata/licencia registrable. Rechazar si nodos parecen logos, cambia con resultado, pierde silueta pequeña o excede peso sin diferencia visible. |
+| Dependencias / prioridad | Revisión de prototipo aprobada, registry y prueba visual/lazy; P2 después de jerarquía y accesibilidad; no bloquea composición inicial. |
+
+### G. Sistema de motion
+
+El flujo ya tiene entrada df-enter opacity/translateY, 6 px / 180 ms; transición de etapa 200 ms; selección 140 ms; barras con keyframe 520 ms. Barras son instantáneas con prefers-reduced-motion: reduce y al imprimir. Motion es señal secundaria, no cálculo nuevo. No añadir GSAP, Rive, Lottie ni biblioteca JS.
+
+| Evento / frecuencia | Propósito y elemento | Duración / curva / propiedades | Activación / reduced motion | Riesgo y aceptación |
+| --- | --- | --- | --- | --- |
+| Pregunta nueva / atrás (ocasional) | Continuidad espacial en .df-question. | Mantener 180 ms, transform translateY(6px) + opacity; cubic-bezier(0.23,1,0.32,1). | Solo al cambiar id. Reduce: estado final sin desplazamiento. | No animar layout; foco/controles disponibles desde primer frame. |
+| Selección (varias por sesión) | Feedback en tarjeta/mark. | Actual 140 ms border-color/background-color/box-shadow; sin transform de layout ni transition: all. | Estado real de input, igual teclado/puntero. Reduce: instantáneo. | No depender de color; check/borde/DOM comunican selected. |
+| Etapa de progreso (al avanzar) | Estado confirmado. | Color 200 ms actual; ningún width interpolado ni porcentaje de cuestionario. | Tras respuesta validada. Reduce: final inmediato. | Texto coincide con aria-current; no inventar total adaptativo. |
+| Guardado/recuperación | Operación en curso. | Indicador CSS simple, sin loop si basta etiqueta; spinner solo mientras busy. | Solicitud/store pending y anuncio textual. Reduce: estático con texto. | Se apaga en éxito/error; no parece hang ni simula avance. |
+| Preparación/replay (una vez) | Indicar validación/preparación Worker. | Sin barra estimada/cuenta atrás; conservar texto/indicador actual. | Mientras replay real. Reduce: estático. | No prometer tiempo; no habilitar informe desde animación. |
+| Entrada del resumen (una vez) | No animar ocho tarjetas; contenido aparece completo. | Sin stagger ni desplazamiento de texto/scores. | Tras replay validado. | Movimiento puede afectar lectura rápida; orden/texto igual en reduce/print. |
+| Barra porcentual (una vez) | Default: estado final estático; número llega ya calculado. | Retirar keyframe actual 520 ms. Solo si prueba de comprensión lo justifica: máximo 180 ms ease-out, transform scaleX, nunca el texto. | Solo score no null. Reduce/print estado final sin movimiento. | Animación prolongada parece cálculo; texto correcto desde primer frame, fill final igual a score, sin flash de falsa escala. |
+| Hover / active | Feedback de affordance. | Sin movimiento espacial; active opcional 100–160 ms ease-out. | Gate hover con (hover:hover) and (pointer:fine). | Evitar hover pegajoso en touch; teclado visible; hover nunca requisito. |
+
+La skill de revisión recomienda UI <300 ms y transform/opacity cuando se anima. WCAG 2.3.3 “Animation from Interactions” es AAA, no criterio AA; este proyecto conserva reduced motion como requisito de diseño propio y contrasta AA de foco/estado por separado.
+
+### H. Arquitectura, producción, validación e implementación
+
+**Integración futura, sin mover lógica:** CandidateDiagnosticFlow conserva estados, persistencia y replay; FlowProgress y QuestionStep conservan interacción; CandidateDiagnosticResult coordina resultado; DiagnosticAreaOverview conserva lista y puede extraer fila presentacional si elimina repetición; publicAssets sigue siendo el registry. Componentes sugeridos solo si implementación lo justifica: DiagnosticSummaryHero, DiagnosticDimensionCard y DiagnosticSummaryActions. Props reciben AnonymousDiagnosticSummaryV2 o slice allowlisted; ilustración no recibe respuesta, evidencia ni clave privada. Worker conserva autoridad y gate del informe.
+
+Activos complejos: WebP actual; aceptar AVIF mediante picture con fallback y ahorro medido. Iconos de interfaz en SVG/CSS; números/texto en DOM. Todas las imágenes declaran width/height y proporción; lazy solo bajo primer viewport, eager/fetch priority solo para LCP si hay imagen en bienvenida. Medir bytes/CLS en browser, no convertir por moda. Render sin animación conserva contenido. Print oculta CTAs no imprimibles, sombras y motion, pero preserva valores/estado en escala de grises.
+
+**Plan de trabajo futuro, separado por gates; no iniciado por este documento:**
+
+| Fase | Dependencia y trabajo | Gate de salida |
+| --- | --- | --- |
+| 0. Dirección | Revisar propuesta; aprobar tono y brief foundation-v2; baseline 320, 390, 1366 px. | Aprobación escrita, capturas/perfiles sintéticos; sin cambio de motor. |
+| 1. Shell/welcome | Jerarquía/espaciado con variables actuales; probar fondo existente; no generar hero hasta comparar. | Capturas antes/después, sin overflow/CLS, CTA/navegación operables. |
+| 2. Preguntas/estados | Tarjetas, feedback/foco, errores, persistencia, reanudación y atrás/adelante. | Teclado, estado, error/recovery y persistencia cubiertos; sin total ficticio. |
+| 3. Assets | Ampliar área visual si retícula lo admite; reemplazar solo foundation tras aprobar brief. | 8 IDs/labels intactos; derechos/metadata/fallback; revisión a 32/48/56 px y peso aceptado. |
+| 4. Resumen | Componer status, síntesis, confianza/cobertura/límites, dimensiones y opcionales presentes. | Fixtures con score global number/null, dimensión number/0/null, preliminary, incertidumbre/no evaluado/no aplica, recomendación presente/ausente; valor exacto y privacidad intactos. |
+| 5. Print/a11y/performance | Reduced motion, contraste/foco/zoom/SR, impresión y carga. | Worker/flujo local, 320/375/390/768/1024/1366 px, teclado, lector, zoom 200%, print/grises, imágenes/CLS; STATUS.md/TESTING.md solo con evidencia RAN en ese checkpoint. |
+
+**Matriz de validación futura.** Fixtures sintéticos y D1 local vacía, sin datos personales. Cubrir cada ancho anterior; bienvenida, pregunta larga, selected, atrás, guardado, error/conflicto, resumen y print; overflow, rects, desplazamiento por carga/CLS, peso; zoom 200%/reflow, contraste real de texto y estado, keyboard-only, lector de pantalla, reduced motion antes de cargar, print color/grayscale. Ver score 0 válido/null, cada estado y preliminary, las ocho ilustraciones, opcionales presentes/ausentes y gates del informe. Capturas ayudan a comparar, no certifican semántica/WCAG.
+
+**Riesgos:** ampliar imágenes puede alargar filas y mover acciones; fondo puede competir con texto o parecer geografía; estados V3 podrían implicar polaridad no mapeada; animar barra puede parecer cálculo; nueva proyección podría exponer campos fuera del allowlist; mover CTA podría saltarse gate del informe; copy largo puede envolver en móvil/print. Mitigar con PRs pequeños, presentación sin interpretación de datos, assets decorativos, fixtures y revisión de gates intactos.
+
+**Cobertura existente:** DIAG-PRO-17 recorre 12 variantes y registra flags, pero no aserta visualmente hallazgos. DIAG-PRO-18 valida SSR/gates en 12 variantes, no browser/CSS responsive. DIAG-PRO-19 y PR #110 cubren un flujo sintético, 320/375/390/768/1024/1366 px, H1, overflow, viewport y tamaño de controles; la revisión de seis capturas no equivale a lector, contraste medido, zoom, todas las formas de score ni PDF/UA. No se reejecutaron esas pruebas en DIAG-VISUAL-02; este checkpoint solo cambia documentación.
+
+**Fuentes para implementación:** WCAG 2.2 AA [contraste de texto](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum), [contraste no textual](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast), [tamaño mínimo de objetivo](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum); WCAG [animación desde interacciones 2.3.3 (AAA)](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions); web.dev [formatos de imagen](https://web.dev/articles/choose-the-right-image-format), [imágenes responsive](https://web.dev/learn/design/responsive-images), [CLS](https://web.dev/articles/optimize-cls) y [animaciones CSS](https://web.dev/articles/animations-guide). Son criterios futuros, no certifican la interfaz actual.
+
+**Decisiones pendientes de aprobación:** dirección “Atlas de trayectorias locales”; aumento de ilustraciones; reemplazo foundation.webp según brief; fondo existente en bienvenida; quitar animación 520 ms; priorizar tarjeta general sobre marcador circular. Ninguna se implementa en este PR documental.
+
 #### Criterios de revisión del banco (consolidados desde la auditoría 2026-10-18)
 
 1. Mantener IDs/versiones estables y valores de opción semánticamente inequívocos; `unknown`, `unsure` y respuestas excluyentes no deben permitir selecciones contradictorias.
