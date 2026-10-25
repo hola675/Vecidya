@@ -4,7 +4,7 @@
 
 **TEST versionado / RAN pendiente en HEAD final.** El contrato de catálogo espera **47 guías** y mantiene 9 itinerarios. La prueba nueva exige que la guía histórica de proveedor siga aprobada y enfocada en elegir/renovar, mientras la migración nueva permanece en revisión y contiene DNS, correo, cancelación segura y comprobaciones. Ambas deben enlazarse entre sí. Las pruebas históricas de Presencia, Automatizaciones, Dominio/hosting, CRM e IA permanecen como contrato de contenido durante su reducción. Un guard adicional protege seis guías madre (CRM, IA, Presencia, primera campaña, Automatizaciones y Dominio/hosting) contra regresión editorial: máximo 10 secciones y 1800 palabras serializadas por guía.
 
-Gate: `Aprende quality` y `Main integration quality` PASS sobre el HEAD final; sin D1 remota, E2E visual ni deploy.
+**RAN:** `Aprende quality` run `40243511349` sobre `619f25ad2ebbaf0f76e2655975fb6a424f8598fe` PASS: instalación, typecheck, build e integridad Aprende. El PR #123 tiene base `feat/aprende-editorial-04a`, por lo que GitHub no ejecutó `Main integration quality` en este checkpoint dependiente; ese gate queda requerido cuando 04B se retargete a `main` o se integre la cadena. Sin D1 remota, E2E visual ni deploy.
 
 ## APRENDE-EDITORIAL-04A — criterio digital y contrato de ejemplos (2026-10-25)
 
