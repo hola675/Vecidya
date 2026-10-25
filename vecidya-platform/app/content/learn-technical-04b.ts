@@ -55,7 +55,7 @@ export const learnTechnical04BArticles: LearnArticle[] = [
             { title: "Identifica el registrador", detail: "Comprueba quién administra el contrato del dominio, qué cuenta tiene acceso y quién recibe los avisos de renovación." },
             { title: "Identifica dónde está el DNS", detail: "Anota qué servidores de nombres están activos y guarda una copia de los registros existentes antes de modificarlos." },
             { title: "Identifica dónde está la web", detail: "Localiza archivos, base de datos y configuraciones necesarias para publicar el sitio en otro alojamiento." },
-            { title: "Identifica el correo", detail: "Comprueba qué proveedor mantiene los buzones y qué registros MX o TXT necesita. No supongas que pertenecen al hosting de la web." },
+            { title: "Identifica el correo", detail: "Comprueba qué proveedor mantiene los buzones y qué registros del correo necesita, por ejemplo MX para dirigir los mensajes o TXT para verificaciones y políticas. No supongas que pertenecen al hosting de la web." },
             { title: "Anota qué no puedes interrumpir", detail: "Por ejemplo, recepción de pedidos, formularios, correo del negocio o una página que deba seguir disponible durante el cambio." },
           ],
         }],
