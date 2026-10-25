@@ -12,19 +12,8 @@ import { MiniWebRenderer } from "../components/miniweb/miniweb-renderer";
 import { getRenderableMiniWebModules } from "../features/miniweb/render";
 import { restrictMiniWebPublicModel, toMiniWebPublicProfile } from "../features/miniweb/public-model";
 
-import type { MiniWebModuleType } from "../features/miniweb/registry";
+import { buildMiniWebPublicNavigation } from "../features/miniweb/navigation";
 import type { Route } from "./+types/public-business-profile";
-
-const navigationLabels: Partial<Record<MiniWebModuleType, string>> = {
-  about: "Quiénes somos",
-  services: "Servicios",
-  products: "Productos",
-  gallery: "Galería",
-  contact: "Contacto",
-  location: "Ubicación",
-  hours: "Horarios",
-  faq: "Preguntas",
-};
 
 const schemaOrgDayNames: Record<number, string> = {
   1: "Monday",
@@ -68,8 +57,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export default function PublicBusinessProfilePage() {
   const { profile, hours, configuration, offerings, faqs, media, visibleModuleTypes } = useLoaderData<typeof loader>();
-  const primaryNavigation = visibleModuleTypes.filter((type) => type !== "hero" && type !== "contact").slice(0, 3);
-  if (visibleModuleTypes.includes("contact")) primaryNavigation.push("contact");
+  const primaryNavigation = buildMiniWebPublicNavigation(visibleModuleTypes);
   const sameAs = [profile.websiteUrl, profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].filter(
     (url): url is string => Boolean(url),
   );
@@ -112,7 +100,7 @@ export default function PublicBusinessProfilePage() {
         </Link>
         <nav aria-label="Navegación del negocio" className="miniweb-standalone__navigation">
           <a href="#miniweb-main">Inicio</a>
-          {primaryNavigation.map((type) => <a href={`#miniweb-section-${type}`} key={type}>{navigationLabels[type]}</a>)}
+          {primaryNavigation.map((item) => <a href={item.href} key={item.type}>{item.label}</a>)}
         </nav>
       </header>
       <main className="public-page public-business-profile" id="miniweb-main">
@@ -131,7 +119,7 @@ export default function PublicBusinessProfilePage() {
       <footer className="miniweb-standalone__footer">
         <div>
           <strong>{profile.displayName}</strong>
-          <p>{[profile.city, profile.country].filter(Boolean).join(", ") || "Página oficial del negocio en Vecindario"}</p>
+          <p>{[profile.city, profile.country].filter(Boolean).join(", ") || "Página pública del negocio"}</p>
         </div>
         <nav aria-label="Enlaces de regreso">
           <Link to="/vecindario">Volver al Vecindario</Link>
