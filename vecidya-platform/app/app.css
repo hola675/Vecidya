@@ -6699,3 +6699,25 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .miniweb-editor__header-actions { width: 100%; }
   .miniweb-editor__header-actions .button { flex: 1 1 11rem; }
 }
+
+
+/* MiniWeb: protección de navegación interna con diálogo modal accesible. */
+.miniweb-editor__leave-dialog {
+  width: min(calc(100% - 2rem), 29rem);
+  max-height: min(86dvh, 35rem);
+  margin: auto;
+  padding: clamp(1.15rem, 3vw, 1.75rem);
+  border: 1px solid #d8e1ef;
+  border-radius: 1.1rem;
+  color: #253951;
+  background: #fff;
+  box-shadow: 0 25px 85px rgb(8 25 54 / 20%);
+}
+.miniweb-editor__leave-dialog::backdrop { background: rgb(13 31 55 / 56%); backdrop-filter: blur(3px); }
+.miniweb-editor__leave-dialog h2 { margin: .3rem 0 .6rem; font-size: clamp(1.2rem, 3vw, 1.5rem); }
+.miniweb-editor__leave-dialog > p:not(.eyebrow) { color: #536783; line-height: 1.6; }
+.miniweb-editor__leave-dialog-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .65rem; margin-top: 1.15rem; }
+.miniweb-editor__leave-dialog-actions > * { flex: 1 1 11rem; }
+@media (prefers-reduced-motion: reduce) {
+  .miniweb-editor__leave-dialog::backdrop { backdrop-filter: none; }
+}
