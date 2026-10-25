@@ -58,7 +58,7 @@ Estos seis ID preservan las opciones originales del banco viejo; las puertas `ap
 
 Primer lote implementado (6): `q2_startup_problem_clarity`, `q2_startup_validation_evidence`, `q2_startup_offer_readiness`, `q2_ecommerce_checkout_friction`, `q2_nonprofit_support_type`, `q2_nonprofit_donation_clarity`.
 
-Segundo lote pendiente de análisis de evidencias y opcionalidad (15):
+Segundo lote de **15 definiciones implementadas solo en el banco candidato** y auditadas editorialmente (7 con evidencia R3 y 8 pendientes de evidencia/solo contexto; ver [auditoría de las 21 recuperadas](QA03B_AUDITORIA_EDITORIAL_RECUPERACION.md)):
 - `q2_startup_demand_signal` — declaraciones de interés, pruebas, compromisos; no equiparar interés con venta
 - `q2_ecommerce_cart_visibility` — capacidad limitada de observar abandono; no equivale por sí sola a medición madura
 - `q2_ecommerce_cart_followup` — revisar permiso y si realmente se puede identificar/contactar
@@ -82,6 +82,14 @@ Segundo lote pendiente de análisis de evidencias y opcionalidad (15):
 ### P3 — 8 no prioritarias en su estado histórico
 
 `q2_local_foot_traffic`, `q2_service_repeat_referral`, `q2_retail_promotions`, `q2_creator_content_consistency`, `q2_creator_monetization_model`, `q2_measurement_outcome_tracking`, `q2_measurement_decision_review`, `q2_conversion_interest_to_action`. Motivos: señal digital débil, mezcla de conceptos o duplicidad con QA-03B.
+
+### Estado de integración (candidata, no pública)
+
+- Catálogo público QA-03B: **45** preguntas (sin cambios en este lote).
+- Banco candidato total: **74** preguntas = 45 públicas + 8 selectores de especialidad + 6 recuperadas lote 1 + 15 recuperadas lote 2.
+- El contrato `q2_sector/v4` y cuatro preguntas con nuevas opciones están **aislados** y exigen decisión de identidad/migración antes del corte.
+- La revisión editorial de las 21 preguntas recuperadas, incluidos textos de ayuda, alternativas neutralizadas y justificación de evidencia, se documenta por ID en [QA03B_AUDITORIA_EDITORIAL_RECUPERACION.md](QA03B_AUDITORIA_EDITORIAL_RECUPERACION.md).
+- No confundir `evidenceMigration: pending` con una respuesta necesariamente inútil: la pregunta puede conservarse para futuro diseño, pero no se introduce por fuerza en una sesión.
 
 ## 6. Política de migración y aceptación
 
