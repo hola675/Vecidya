@@ -14,18 +14,33 @@ export function CookieConsent() {
   const [analytics, setAnalytics] = useState(false);
   const [marketing, setMarketing] = useState(false);
   useEffect(() => {
-    const value = readCookiePreferences(window.localStorage);
-    if (value) { setPreferences(value); setAnalytics(value.analytics); setMarketing(value.marketing); }
+    // localStorage puede lanzar SecurityError incluso al acceder a la propiedad.
+    try {
+      const value = readCookiePreferences(window.localStorage);
+      if (value) { setPreferences(value); setAnalytics(value.analytics); setMarketing(value.marketing); }
+    } catch {
+      setStorageUnavailable(true);
+    }
     setReady(true);
   }, []);
   useEffect(() => {
     const synchronize = (event: StorageEvent) => {
       if (event.key !== COOKIE_PREFERENCES_KEY && event.key !== null) return;
-      const value = readCookiePreferences(window.localStorage);
-      setPreferences(value);
-      setAnalytics(value?.analytics ?? false);
-      setMarketing(value?.marketing ?? false);
-      if (!value) { setOpen(true); setConfigure(false); }
+      try {
+        const value = readCookiePreferences(window.localStorage);
+        setStorageUnavailable(false);
+        setPreferences(value);
+        setAnalytics(value?.analytics ?? false);
+        setMarketing(value?.marketing ?? false);
+        if (!value) { setOpen(true); setConfigure(false); }
+      } catch {
+        setStorageUnavailable(true);
+        setPreferences(null);
+        setAnalytics(false);
+        setMarketing(false);
+        setOpen(true);
+        setConfigure(false);
+      }
     };
     window.addEventListener("storage", synchronize);
     return () => window.removeEventListener("storage", synchronize);
@@ -44,10 +59,10 @@ export function CookieConsent() {
   if (!ready) return null;
   return (
     <>
-      {storageUnavailable && <p role="status">No pudimos guardar tu elección en este navegador. Las categorías opcionales permanecerán desactivadas hasta que sea posible guardar una decisión.</p>}
-      <button className="cookie-preferences-trigger" type="button" onClick={() => { setOpen(true); setConfigure(true); }}>Preferencias de cookies</button>
+      {storageUnavailable && <p role="status">No pudimos acceder al almacenamiento de este navegador. Las categorías opcionales permanecerán desactivadas hasta que puedas guardar una decisión.</p>}
+      <button aria-controls="cookie-consent-panel" aria-expanded={!preferences || open} className="cookie-preferences-trigger" type="button" onClick={() => { setOpen(true); setConfigure(true); }}>Preferencias de cookies</button>
       {(!preferences || open) && (
-        <section aria-label="Preferencias de cookies" className="cookie-consent" role="region">
+        <section aria-label="Preferencias de cookies" className="cookie-consent" id="cookie-consent-panel" role="region">
           <div className="cookie-consent__content">
             <strong>Tu privacidad, tus decisiones</strong>
             <p>Utilizamos almacenamiento necesario para el funcionamiento del sitio. Las categorías opcionales requieren tu elección. Puedes cambiarla cuando quieras. <Link to="/cookies">Consultar la política de cookies</Link>.</p>
