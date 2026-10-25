@@ -144,6 +144,16 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
 
   useEffect(() => setConfiguration(data.draftConfiguration), [data.draftConfiguration]);
 
+  useEffect(() => {
+    if (!isDirty) return;
+    const preventAccidentalExit = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", preventAccidentalExit);
+    return () => window.removeEventListener("beforeunload", preventAccidentalExit);
+  }, [isDirty]);
+
   function setEnabled(type: MiniWebModuleType, enabled: boolean) {
     setConfiguration((current) => ({
       ...current,
@@ -186,7 +196,24 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
     return result.draftRevision ?? expectedRevision;
   }
 
+  function validateEditableContent() {
+    if (offerings.some((item) => !item.title.trim() || !item.description.trim())) {
+      setMessage({ kind: "error", text: "Hay servicios o productos sin título o descripción. Complétalos antes de guardar." });
+      setContentTab("offerings");
+      setActiveTab("content");
+      return false;
+    }
+    if (faqs.some((item) => !item.question.trim() || !item.answer.trim())) {
+      setMessage({ kind: "error", text: "Hay preguntas frecuentes incompletas. Completa cada pregunta y su respuesta antes de guardar." });
+      setContentTab("faq");
+      setActiveTab("content");
+      return false;
+    }
+    return true;
+  }
+
   async function handleSave() {
+    if (!validateEditableContent()) return;
     setBusy(true);
     setMessage(null);
     try {
@@ -200,6 +227,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   }
 
   async function handlePublish() {
+    if (!validateEditableContent()) return;
     setBusy(true);
     setMessage(null);
     try {
@@ -268,6 +296,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const profile = data.profile ?? emptyPreviewProfile();
   const readyModuleCount = orderedModules.filter((module) => module.enabled && hasMiniWebModuleContent(module.type, profile, data.hours, offerings, faqs, media)).length;
   const enabledModuleCount = orderedModules.filter((module) => module.enabled).length;
+  const incompleteOfferings = offerings.filter((item) => !item.title.trim() || !item.description.trim()).length;
+  const incompleteFaqs = faqs.filter((item) => !item.question.trim() || !item.answer.trim()).length;
   const publicStatusLabel = data.profileStatus === "suspended"
     ? "Suspendido"
     : data.profileStatus === "published" ? "Publicado" : "Aún sin publicar";
@@ -542,6 +572,23 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
             </div>
             <p>Guardar conserva tus cambios como borrador. Publicar actualiza juntos el perfil, horarios, secciones, contenido y medios aprobados.</p>
             <p className="miniweb-editor__note">La vista pública no cambia hasta que elijas publicar. Revisa el resultado anterior antes de confirmar.</p>
+            <section aria-label="Comprobación de la MiniWeb" className="miniweb-editor__checklist">
+              <h3>Comprobación antes de publicar</h3>
+              <p><strong>{readyModuleCount} de {enabledModuleCount}</strong> secciones activas tienen contenido para mostrarse.</p>
+              {readyModuleCount < enabledModuleCount ? (
+                <div className="miniweb-editor__checklist-warning">
+                  <p>{enabledModuleCount - readyModuleCount} secciones activas no aparecerán hasta completar sus datos.</p>
+                  <Button onClick={() => goToStep(1)} tone="ghost">Revisar secciones</Button>
+                </div>
+              ) : <p>Las secciones activas cuentan con contenido visible.</p>}
+              {incompleteOfferings + incompleteFaqs > 0 ? (
+                <div className="miniweb-editor__checklist-warning" role="status">
+                  <p>Hay {incompleteOfferings + incompleteFaqs} elementos incompletos que impiden guardar.</p>
+                  <Button onClick={() => { setContentTab(incompleteOfferings ? "offerings" : "faq"); goToStep(2); }} tone="ghost">Completar contenido</Button>
+                </div>
+              ) : <p>Los servicios, productos y preguntas no tienen campos obligatorios vacíos.</p>}
+              <p className="miniweb-editor__note">{isDirty ? "Hay cambios locales sin guardar. Publicar intentará guardarlos primero." : "No tienes cambios de contenido pendientes de guardar en este editor."}</p>
+            </section>
             <div className="miniweb-editor__actions">
               <Button disabled={!data.canEdit || busy || !isDirty} onClick={handleSave} tone="secondary">{busy ? "Guardando…" : "Guardar borrador"}</Button>
               <Button disabled={!data.canPublish || busy} onClick={handlePublish}>{busy ? "Procesando…" : "Publicar configuración"}</Button>
