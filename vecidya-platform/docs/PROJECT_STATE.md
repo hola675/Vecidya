@@ -1,6 +1,6 @@
-## Corte vigente — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
+## Corte vigente — interfaz DIAG-VISUAL-03B y URLs (2026-10-25)
 
-En `feat/diag-visual-03`, QA-03B presenta la lectura general y ocho áreas en un flujo visual de una columna; entrada, foco, estados preliminares y ausencia de score tienen tratamiento explícito. Las unitarias focales (20/20), E2E QA-03B local (6/6), typecheck y build constan como PASS en `TESTING.md`. No se modifican scoring ni contratos y no hay despliegue. El runner responsive DIAG-PRO-19 está obsoleto respecto a la clave activa y no se cuenta como evidencia multi-viewport; zoom real 200 % y lector de pantalla siguen pendientes.
+PR #113 integra DIAG-VISUAL-03 en `origin/main@233c3c4`; esta rama se basa en `origin/main@10f15f1`. Se completó la matriz DIAG-PRO-19 a seis anchos y 50 unitarias focales. La impresión reveló etiquetas comprimidas; el ajuste CSS y su aserción están pendientes de verificación tras actualización. El Worker local no inició por ausencia del binario workerd. E2E Worker, zoom real 200 % y Narrador siguen pendientes. No hay deploy para este checkpoint. Detalle/evidencia: `STATUS.md` y `TESTING.md`.
 
 ## Corte de dependencias y URLs (2026-10-24 local / 2026-10-25 UTC)
 

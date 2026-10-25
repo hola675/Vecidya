@@ -5225,7 +5225,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media screen { .rp .rp-dim { border: 1px solid #dce5f0; border-radius: 0.75em; padding: 0.7em 0.8em; background: linear-gradient(145deg, #fff 0%, #f8fbff 100%); box-shadow: 0 3px 11px rgb(24 55 91 / 6%), inset 0 1px 0 #fff; } }
 @media print {
   .dr-area-overview, .dr-candidate-overall { break-inside: avoid; }
-  .dr-candidate-synthesis { display: grid; grid-template-columns: minmax(12rem, 0.78fr) minmax(0, 1.22fr); align-items: start; gap: 0.6rem; }
+  .dr-candidate-synthesis { display: flex; flex-direction: column; align-items: stretch; gap: 0.6rem; }
   .dr-area-overview { padding: 0.75rem; box-shadow: none; }
   .dr-area-overview__list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.3rem; }
   .dr-area-overview__item { grid-template-columns: 2rem minmax(0, 1fr) auto; gap: 0.2rem 0.4rem; border-radius: 0.4rem; padding: 0.35rem; box-shadow: none; }

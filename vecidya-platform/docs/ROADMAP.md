@@ -120,7 +120,7 @@ La implementación del contrato anónimo v2, ocho áreas gráficas, reutilizaci�
 
 **Fuera de este remanente:** abrir/cambiar los flags del funnel, Gmail o purga; modificar D1, scoring, sesiones, metodología o copy legal; usar datos reales; publicar o desplegar. No eliminar claves históricas ni reinterpretar sesiones completadas.
 
-**DIAG-VISUAL-03 (2026-10-25, en curso):** se refinan entrada, foco, selección y resumen QA-03B sin modificar el contrato. Pruebas unitarias focales 20/20 y Worker QA-03B local 6/6 PASS; contraste de texto principal medido mínimo 4.97:1. La matriz DIAG-PRO-19 no se acredita: su fixture aún limpia una clave histórica V3 y cae en reanudación. Ver alcance y deuda restante en `STATUS.md` y `TESTING.md`. El pase manual de resumen, zoom real y lector de pantalla continúa pendiente; no publicar ni desplegar.
+**DIAG-VISUAL-03B (2026-10-25, rama de estabilización):** matriz responsive DIAG-PRO-19 completó seis anchos; unitarias focales 50/50 PASS; typecheck/build PASS con la regla CSS final. Se detectó reflow deficiente de impresión y se añadió ajuste CSS con aserción, pero falta su pase visual en el Worker actualizado por ausencia del binario local workerd. El Worker E2E, zoom real 200 % y Narrador permanecen sin aprobar; véase `STATUS.md` y `TESTING.md`. No publicar ni desplegar. Esos gates siguen abiertos.
 
 #### Criterios de revisión del banco (consolidados desde la auditoría 2026-10-18)
 

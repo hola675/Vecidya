@@ -7,6 +7,11 @@
 - PR #116 se integró en `main@0152eab6fad5e68336d66d69cbc1597a1f720111`. Se aplicó `0028_miniweb-offering-image.sql` en D1 producción, luego se desplegó `vecidya-platform` con Version ID `320eefe0-343c-431f-987f-cf9b92df0c8e` (2026-10-25T18:38:07Z). El ledger quedó en `0000–0028`.
 - HTTP anónimo TLS RAN 2026-10-25T18:38:23Z: `/`, `/cookies`, `/informacion-legal` y `/diagnostico` → `200`; todas muestran `0.8.0` y `© 2026 Vecidya`.
 - Typecheck, build y `git diff --check` PASS. Pruebas automatizadas omitidas a petición del usuario.
+## 2026-10-25 — DIAG-VISUAL-03B — estabilización visual de QA-03B
+
+- El runner responsive usa contexto aislado y sincroniza con el estado de bienvenida; su matriz anónima pasa en seis anchos.
+- Se detecta texto comprimido en la impresión; se añade una regla CSS de flujo vertical y una aserción E2E, pendientes de verificar porque el Worker local no inició en la última corrida. No se generan assets ni se modifican motor, cálculo, contratos, permisos o gates.
+- La matriz responsive completó seis anchos. E2E Worker, reflow final, zoom real y lector de pantalla permanecen pendientes según `STATUS.md` y `TESTING.md`. No publicado ni desplegado en este checkpoint.
 
 ## 2026-10-25 — DIAG-VISUAL-03 — refinamiento visual del cuestionario y resumen
 
