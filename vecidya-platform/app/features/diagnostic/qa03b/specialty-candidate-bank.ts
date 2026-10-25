@@ -75,6 +75,8 @@ const nonprofitContext = orV2(eqV2("q2_entity", "organization"), eqV2("q2_moneti
 export const QA03B_RECOVERY_PILOT_V1: readonly QuestionDefinitionV2[] = [
   {
     ...find(LOTE_F_QUESTIONS_V2, "q2_startup_problem_clarity"),
+    prompt: "¿Puedes explicar qué necesidad concreta resolvería tu proyecto y a qué personas ayudaría?",
+    hint: "No necesitas tener una web ni una empresa creada. Importa reconocer el problema real y a quién afecta.",
     appliesWhen: startup,
     evidenceMigration: "migrated",
     evidenceV3: {
@@ -90,6 +92,8 @@ export const QA03B_RECOVERY_PILOT_V1: readonly QuestionDefinitionV2[] = [
   },
   {
     ...find(LOTE_F_QUESTIONS_V2, "q2_startup_validation_evidence"),
+    prompt: "¿Qué has comprobado con personas reales acerca del problema que quieres resolver?",
+    hint: "Cuenta conversaciones y pruebas con personas interesadas, no solo opiniones tuyas ni intención de comprar.",
     appliesWhen: startup,
     evidenceMigration: "migrated",
     evidenceV3: {
@@ -102,6 +106,8 @@ export const QA03B_RECOVERY_PILOT_V1: readonly QuestionDefinitionV2[] = [
   },
   {
     ...find(LOTE_F_QUESTIONS_V2, "q2_startup_offer_readiness"),
+    prompt: "¿Qué tan definida está la oferta que podrías presentar y poner a prueba ahora?",
+    hint: "Puede ser un servicio, producto o prueba piloto; no necesitas web, marca ni registro legal para definirla.",
     appliesWhen: startup,
     evidenceMigration: "migrated",
     evidenceV3: {
@@ -114,6 +120,8 @@ export const QA03B_RECOVERY_PILOT_V1: readonly QuestionDefinitionV2[] = [
   },
   {
     ...find(LOTE_C_QUESTIONS_V2, "q2_ecommerce_checkout_friction"),
+    prompt: "En tu tienda online, ¿con qué frecuencia las personas empiezan una compra, pero no terminan de pagar?",
+    hint: "Piensa en quienes inician la compra y no la completan, no en quienes solo miran productos.",
     appliesWhen: ecommerceOperating,
     evidenceMigration: "migrated",
     evidenceV3: {
@@ -125,12 +133,16 @@ export const QA03B_RECOVERY_PILOT_V1: readonly QuestionDefinitionV2[] = [
   },
   {
     ...find(LOTE_D_QUESTIONS_V2, "q2_nonprofit_support_type"),
+    prompt: "¿De qué manera se financia o recibe apoyo principalmente tu organización?",
+    hint: "Elige la vía que más aporta hoy o una combinación si varias son importantes. No cuentes apoyos solo previstos.",
     appliesWhen: andV2(eqV2("q2_operational_status", "operating"), nonprofitContext),
     evidenceMigration: "pending",
     evidenceV3: undefined,
   },
   {
     ...find(LOTE_D_QUESTIONS_V2, "q2_nonprofit_donation_clarity"),
+    prompt: "Si alguien quiere donar a tu organización, ¿encuentra fácilmente cómo hacerlo?",
+    hint: "Piensa en alguien que no conoce a tu equipo: ¿puede ver los pasos para donar sin pedirte instrucciones?",
     appliesWhen: andV2(
       eqV2("q2_operational_status", "operating"),
       nonprofitContext,
