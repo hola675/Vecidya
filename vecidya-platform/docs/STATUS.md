@@ -1,5 +1,13 @@
 # Estado de implementación
 
+## DIAG-VISUAL-03 — refinamiento del resultado y entrada QA-03B (2026-10-25)
+
+**CODE/TEST local, rama `feat/diag-visual-03`:** la entrada del cuestionario usa el fondo ilustrado existente con overlay claro; pregunta y resultado mantienen foco visible tras navegación programática; opciones seleccionadas muestran texto reforzado; las ocho áreas conservan una columna legible, ilustraciones de 48 px, puntuación textual exacta y ausencia de barra para `null`. La marca «Lectura preliminar» aclara su alcance, la cobertura duplicada se omite y los límites adicionales quedan bajo una sección nombrada. No se recalculan puntuaciones ni se modifican datos, contrato o rutas.
+
+**RAN:** cinco grupos de pruebas diagnósticas focales, 20/20 PASS; E2E Worker QA-03B local, 6/6 recorridos sintéticos PASS, con ocho ilustraciones, reduced motion, resumen imprimible sin acciones y PDF del informe identificado comprobados. Contraste calculado para los tonos principales de texto sobre blanco: 4.97:1–14.25:1. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. No es certificación WCAG.
+
+**Open Debt:** el runner responsive DIAG-PRO-19 arranca en un estado de reanudación debido a que limpia una clave V3 histórica y no la clave activa QA-03B; no se declara su matriz multi-viewport como PASS de este checkpoint. Persisten por revisar con capturas del resumen sintético los estados 0/preliminar/null, la pantalla transitoria «preparando» (0 ms), lector de pantalla y zoom real al 200 %. Comparación visual aislada a cuatro tamaños de ilustración no completada; se conservaron los assets vigentes. Sin D1 remota, deploy o HTTP pública fechada.
+
 ## DEP-REFRESH-20261024 — dependencias y destinos
 
 **RAN local:** pnpm `11.21.0` fijado en `devEngines.packageManager`; instalación congelada PASS y actualización dentro de rangos semver. Typecheck, build y smoke Worker local (D1 `0000–0028`) PASS. React Router `8.5.0`, React `19.3.1`, Drizzle ORM `0.45.4`, Cloudflare Vite plugin `1.65.0`, Vite `8.3.5`, Wrangler `4.152.0`. HTTP anónimo actual: producción 200, `www` 301 al dominio canónico, staging `workers.dev` 200; registry npm 200. Sin deploy ni acceso a recursos remotos. No se modifica el estado del release `0.7.3` observado.
