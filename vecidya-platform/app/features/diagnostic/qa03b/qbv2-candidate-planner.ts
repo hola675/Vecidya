@@ -119,7 +119,10 @@ function canProspectivelyResolveApplicability(question: QuestionDefinitionV2, di
 /** @internal Test seam for equivalent bank-order determinism; production entry always supplies the frozen bank. */
 export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT_BUDGET, answeredInteractionCount }: CandidateQuestionPlannerInputV3, bank: readonly QuestionDefinitionV2[], policy: CandidateShadowSelectionPolicyV1 = "baseline"): CandidateQuestionPlanV3 {
   const rawAnswerCount = Object.keys(answers).length;
-  const interactionCount = Math.min(rawAnswerCount, Math.max(0, answeredInteractionCount ?? rawAnswerCount));
+  const interactionCount = Math.min(
+    CANDIDATE_ROUTE_HARD_CAP_V3,
+    Math.max(0, answeredInteractionCount ?? rawAnswerCount),
+  );
   const hardMax = Math.min(CANDIDATE_ROUTE_HARD_CAP_V3, Math.max(1, budget.hardMax, interactionCount));
   const normalizedBudget: RouteBudgetV1 = { ...budget, hardMax, targetMax: Math.min(hardMax, budget.targetMax), targetMin: Math.min(hardMax, budget.targetMin), materialEvidenceReserve: Math.min(hardMax - 1, Math.max(0, budget.materialEvidenceReserve ?? 0)) };
   const resolution = resolveEligibleQuestionsV2(answers, bank);
@@ -240,7 +243,7 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
     }
     return rr[rb] - rr[ra] || utility(b) - utility(a) || (qb.priority === "critical" ? 1 : 0) - (qa.priority === "critical" ? 1 : 0) || a.localeCompare(b);
   });
-  const alreadyAsked = Math.min(Object.keys(activeAnswers).length, interactionCount);
+  const alreadyAsked = interactionCount;
   const remaining = Math.max(0, normalizedBudget.hardMax - alreadyAsked);
   const baseCeiling = Math.min(normalizedBudget.targetMax, normalizedBudget.hardMax - (normalizedBudget.materialEvidenceReserve ?? 0), ROUTE_BANDS.base);
   const baseSlots = Math.max(0, baseCeiling - alreadyAsked);
