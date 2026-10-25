@@ -8,16 +8,16 @@ import { PlatformFooter } from "./platform-footer";
 import { publicAssets } from "../assets/public-assets";
 import { useResponsiveNavigationDrawer } from "../hooks/use-responsive-navigation-drawer";
 
-const navigation: { label: string; to: string; active: string; icon: IconName }[] = [
-  { label: "Resumen", to: "/app/internal", active: "home", icon: "home" },
-  { label: "Diagnóstico", to: "/app/internal/diagnostic-analytics", active: "diagnostic", icon: "spark" },
-  { label: "Interesados", to: "/app/internal/diagnostic-leads", active: "leads", icon: "user" },
-  { label: "Servicios", to: "/app/internal/services", active: "services", icon: "spark" },
-  { label: "Espacios de trabajo", to: "/app/internal/organizations", active: "organizations", icon: "organizations" },
-  { label: "Licencias", to: "/app/internal/licenses", active: "licenses", icon: "audit" },
-  { label: "Negocios", to: "/app/internal/businesses", active: "businesses", icon: "building" },
-  { label: "Integraciones", to: "/app/internal/integrations", active: "integrations", icon: "integrations" },
-  { label: "Auditoría", to: "/app/internal/audit", active: "audit", icon: "audit" },
+const navigation: { label: string; to: string; active: string; icon: IconName; group: string }[] = [
+  { label: "Resumen", to: "/app/internal", active: "home", icon: "home", group: "VISIÓN GENERAL" },
+  { label: "Diagnóstico", to: "/app/internal/diagnostic-analytics", active: "diagnostic", icon: "spark", group: "VISIÓN GENERAL" },
+  { label: "Interesados", to: "/app/internal/diagnostic-leads", active: "leads", icon: "user", group: "VISIÓN GENERAL" },
+  { label: "Servicios", to: "/app/internal/services", active: "services", icon: "spark", group: "GESTIÓN DE PLATAFORMA" },
+  { label: "Espacios de trabajo", to: "/app/internal/organizations", active: "organizations", icon: "organizations", group: "GESTIÓN DE PLATAFORMA" },
+  { label: "Licencias", to: "/app/internal/licenses", active: "licenses", icon: "audit", group: "GESTIÓN DE PLATAFORMA" },
+  { label: "Negocios", to: "/app/internal/businesses", active: "businesses", icon: "building", group: "GESTIÓN DE PLATAFORMA" },
+  { label: "Integraciones", to: "/app/internal/integrations", active: "integrations", icon: "integrations", group: "GESTIÓN DE PLATAFORMA" },
+  { label: "Auditoría", to: "/app/internal/audit", active: "audit", icon: "audit", group: "CONTROL Y TRAZABILIDAD" },
 ];
 
 type AdminShellProps = {
@@ -67,12 +67,21 @@ export function AdminShell({ active, children, workspaceUser, platformRole = "pl
           <span><strong>Vecidya</strong><small>Operaciones de plataforma</small></span>
         </Link>
         <nav aria-label="Navegación administrativa" className="admin-navigation" id="admin-navigation">
-          {navigation.filter((item) => platformRole === "platform_admin" || item.active === "organizations").map((item) => (
-            <Link aria-current={active === item.active ? "page" : undefined} className={active === item.active ? "is-active" : ""} key={item.to} to={item.to} onClick={() => setNavigationOpen(false)}>
-              <Icon name={item.icon} />
-              {item.label}
-            </Link>
-          ))}
+          {["VISIÓN GENERAL", "GESTIÓN DE PLATAFORMA", "CONTROL Y TRAZABILIDAD"].map((group) => {
+            const links = navigation.filter((item) => item.group === group && (platformRole === "platform_admin" || item.active === "organizations"));
+            if (!links.length) return null;
+            return (
+              <div className="app-navigation__group" key={group}>
+                <p className="app-navigation__group-label">{group}</p>
+                {links.map((item) => (
+                  <Link aria-current={active === item.active ? "page" : undefined} className={active === item.active ? "is-active" : ""} key={item.to} to={item.to} onClick={() => setNavigationOpen(false)}>
+                    <Icon name={item.icon} />
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            );
+          })}
         </nav>
         <div className="admin-sidebar__footer">
           {workspaceUser ? (
