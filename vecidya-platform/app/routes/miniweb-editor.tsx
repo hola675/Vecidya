@@ -359,7 +359,12 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
             <h1>Mi MiniWeb</h1>
             <p>Organiza las secciones que presentan tu negocio en Vecindario.</p>
           </div>
-          <Link className="button button--secondary" to="/app/business-profile">Editar información del negocio</Link>
+          <div className="miniweb-editor__header-actions">
+            <Link className="button button--secondary" to="/app/business-profile">Editar Mi negocio</Link>
+            {data.profileStatus === "published" && data.profile?.slug ? (
+              <Link className="button button--secondary" rel="noopener noreferrer" target="_blank" to={`/vecindario/${data.profile.slug}`}>Ver MiniWeb pública</Link>
+            ) : null}
+          </div>
         </header>
 
         <nav aria-label="Pasos para preparar tu MiniWeb" className="miniweb-editor__steps miniweb-editor__tabs">
@@ -656,6 +661,9 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
             </div>
             <p>Guardar conserva tus cambios como borrador. Publicar actualiza juntos el perfil, horarios, secciones, contenido y medios aprobados.</p>
             <p className="miniweb-editor__note">La vista pública no cambia hasta que elijas publicar. Revisa el resultado anterior antes de confirmar.</p>
+            {data.profileStatus === "published" && data.profile?.slug ? (
+              <p className="miniweb-editor__note">Tu versión actual sigue visible en <Link rel="noopener noreferrer" target="_blank" to={`/vecindario/${data.profile.slug}`}>la página pública del negocio</Link> mientras editas el borrador.</p>
+            ) : null}
             <section aria-label="Comprobación de la MiniWeb" className="miniweb-editor__checklist">
               <h3>Comprobación antes de publicar</h3>
               <p><strong>{readyModuleCount} de {enabledModuleCount}</strong> secciones activas tienen contenido para mostrarse.</p>
