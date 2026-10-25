@@ -50,6 +50,15 @@
 
 **Checkpoint 04B implementado, pendiente de CI final:** la auditoría semántica separa proveedor (elegir/renovar vs migrar) y deja 47 guías. Se reducen seis guías madre que habían acumulado detalle ya cubierto por especializadas: Presencia 3291→1420, Automatizaciones 2707→1146, Dominio/hosting 2413→1179, primera campaña 2346→1120, CRM 2142→1075 e IA general 1743→982 palabras. Un guard unitario limita esas seis piezas a ≤10 secciones y ≤1800 palabras serializadas. **Siguiente checkpoint 04C:** recorrer las 47 guías por jerga y comprensión (término → explicación cotidiana → ejemplo), sin separar por longitud salvo que existan objetivos educativos realmente distintos.
 
+
+### APRENDE-EDITORIAL-04C — comprensión antes que jerga (2026-10-25)
+
+**Implementado en rama dependiente, pendiente de CI final.** Recorre las 47 guías tras 04B y corrige términos técnicos sin explicación suficiente, 19 aperturas educativas repetidas, 18 textos alternativos débiles, 4 pares intro/extracto duplicados y 13 cierres que repetían «En pocas palabras». Los contratos nuevos evitan que regresen esos patrones.
+
+**Gate 04C:** 47 slugs únicos; ejemplo estructurado por guía; intro y extracto distintos; imagen alternativa descriptiva; ausencia de la plantilla «Al terminar podrás explicar… / Ejercicio breve… / Autoevaluación»; cierre distinto de `enPocasPalabras`; términos técnicos prioritarios acompañados por explicación cotidiana; `Aprende quality` PASS.
+
+**Siguiente checkpoint 04D:** revisión uno por uno de progresión pedagógica y evidencia: detectar saltos de dificultad, fuentes que hayan quedado demasiado generales o antiguas, y ejemplos que todavía necesiten una segunda situación cotidiana. No crear nuevas guías salvo que aparezca un objetivo educativo distinto.
+
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)
