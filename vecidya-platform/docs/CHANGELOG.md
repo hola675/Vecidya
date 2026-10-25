@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.0 — release candidate para promoción de cambios integrados (2026-10-25)
+
+- Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.
+- Sube la versión de la aplicación `0.7.3` → `0.8.0` por el alcance funcional acumulado. El código candidato parte de `origin/main@233c3c4`.
+- Preflight remoto de solo lectura confirmó Worker activo `5eb7d15a-554a-484a-be26-3f4f02cc3615`, buckets R2 de producción/staging existentes y D1 de producción hasta `0027`; queda pendiente aplicar `0028` antes del deploy. Todavía no publicado ni verificado por HTTP para esta versión.
+- Typecheck y build PASS. Pruebas automatizadas omitidas a petición del usuario. La publicación queda pendiente de integración, migración `0028`, deploy y GET anónimo fechado.
+
 ## 2026-10-25 — DIAG-VISUAL-03 — refinamiento visual del cuestionario y resumen
 
 - Se mejora la jerarquía del inicio QA-03B y el foco de títulos al cambiar de pregunta/resultado; las opciones seleccionadas ganan énfasis legible sin cambiar el control nativo.
