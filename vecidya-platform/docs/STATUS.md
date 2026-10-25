@@ -18,7 +18,7 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 Se eliminan tres patrones de contenido de plantilla en **19 guías**: objetivo genérico, ejercicio repetido y autoevaluación idéntica; cada apertura queda ligada a la competencia real del artículo. Se reemplazan **18 textos alternativos** débiles usando el contenido real de los SVG (`<title>`/`<desc>`), se corrigen **4** pares intro/extracto idénticos y **13** resúmenes finales que copiaban literalmente «En pocas palabras», convirtiéndolos en acciones de cierre.
 
-**Auditoría estática:** 47 artículos, 47 slugs únicos y cero incidencias para los contratos revisados: ejemplo práctico presente, intro ≠ excerpt, alt descriptivo de al menos siete palabras, ausencia de la plantilla educativa antigua y resumen final distinto de `enPocasPalabras`. Se añaden pruebas unitarias para esos contratos. CI/typecheck/build pendientes de observar sobre el HEAD final de 04C.
+**Auditoría estática:** 47 artículos, 47 slugs únicos y cero incidencias para los contratos revisados: ejemplo práctico presente, intro ≠ excerpt, alt descriptivo de al menos siete palabras, ausencia de la plantilla educativa antigua y resumen final distinto de `enPocasPalabras`. Se añaden pruebas unitarias para esos contratos. **RAN en GitHub Actions:** `Aprende quality` run `40244439741` sobre `9a93580d50ec3cc4726af48136bbfbb811738ab9` PASS: typecheck, build e integridad Aprende. El PR #125 es dependiente de 04B; el gate general de integración debe ejecutarse cuando la cadena se retargete a `main`.
 
 ## APRENDE-EDITORIAL-04B — separar selección y migración de proveedor (2026-10-25)
 
