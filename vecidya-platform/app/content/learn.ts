@@ -387,7 +387,7 @@ export const learnArticles: LearnArticle[] = [
             { question: "¿La IA puede responder a clientes sin revisión?", answer: "Depende del riesgo y del alcance. Empieza con límites estrictos y una fuente autorizada; una persona debe revisar las decisiones o compromisos importantes." },
             { question: "¿Puedo copiar conversaciones de clientes para entrenar un asistente?", answer: "No por defecto. Revisa autorización, privacidad y condiciones del proveedor; empieza con datos anonimizados o sintéticos cuando sea posible." },
             { question: "¿Qué opciones de inteligencia artificial ofrece Vecidya?", answer: "IA Conversacional e IA de Voz son complementos opcionales para Barrio o Ciudad; no se activan por defecto. Apoyan respuestas, clasificación inicial o atención por voz." },
-            { question: "¿Cómo se cobra el consumo de IA?", answer: "El cargo mensual va separado del consumo del proveedor: tokens y, para voz, minutos/telefonía. Se acuerdan alcance, límites de uso y supervisión." },
+            { question: "¿Cómo se cobra el consumo de IA?", answer: "El cargo mensual va separado del consumo del proveedor: tokens (unidades de texto procesado) y, para voz, minutos/telefonía. Se acuerdan alcance, límites de uso y supervisión." },
           ],
         }],
       },
@@ -533,7 +533,7 @@ export const learnArticles: LearnArticle[] = [
           items: [
             { question: "¿Cuánto presupuesto necesito?", answer: "No hay una cifra universal. Define un límite que puedas asumir como prueba y revisa las condiciones de la plataforma y de tu mercado." },
             { question: "¿Qué plataforma es mejor?", answer: "Depende de dónde esté tu público, qué acción buscas y qué formatos puedes mantener. No elijas solo porque otra empresa use esa plataforma." },
-            { question: "¿Una conversión registrada equivale a una venta?", answer: "No siempre. Depende de cómo esté configurada la medición y de qué evento se esté contando." },
+            { question: "¿Una conversión —una acción marcada como importante— equivale a una venta?", answer: "No siempre. Depende de cómo esté configurada la medición y de qué evento se esté contando." },
             { question: "¿Debo aumentar presupuesto si hay muchos clics?", answer: "No automáticamente. Revisa consultas, capacidad de atención, resultados confirmados y coste antes de ampliar." },
           ],
         }],
@@ -617,7 +617,7 @@ export const learnArticles: LearnArticle[] = [
           "Prueba teclado y móvil: que los controles puedan enfocarse, no queden tapados y funcionen sin gestos difíciles; evita páginas que obliguen a desplazarse horizontalmente para leer texto normal.",
           "Publica solo los datos personales necesarios para atender. No expongas documentos internos, listas de clientes, números privados ni información sensible en páginas o imágenes.",
           "Usa conexiones seguras cuando se envíen datos, protege las cuentas con contraseñas únicas y autenticación disponible, limita permisos y elimina accesos que ya no se necesiten.",
-          "Antes de instalar analítica, píxeles o formularios, identifica qué datos recogen, qué proveedor los procesa, cuánto tiempo se guardan y qué avisos, opciones o base legal requiere tu jurisdicción.",
+          "Antes de instalar herramientas de medición (analítica), píxeles de seguimiento o formularios, identifica qué datos recogen, qué proveedor los procesa, cuánto tiempo se guardan y qué avisos, opciones o base legal requiere tu jurisdicción.",
         ] }, { type: "callout", tone: "caution", title: "Las reglas legales dependen del caso", text: "Las políticas de anuncios de Google o Meta son reglas de sus plataformas; no sustituyen la legislación sobre privacidad, cookies, accesibilidad, promociones o comunicaciones comerciales de tu país." }],
       },
       {
@@ -1247,6 +1247,8 @@ export const learnArticles: LearnArticle[] = [
           { term: "NS", definition: "Indica qué servidores de nombres son autoritativos para una zona DNS. Cambiar los NS delega la administración de los registros a otro servicio DNS; no traslada los archivos del sitio." },
           { term: "MX", definition: "Indica a qué servidores se debe dirigir el correo entrante para un dominio. Es distinto de los registros que hacen que una página web se cargue." },
           { term: "TXT", definition: "Permite publicar texto asociado a un nombre. Puede usarse para verificar un servicio o publicar políticas de correo; conserva los valores que tus servicios activos necesitan." },
+          { term: "Hosting o alojamiento", definition: "Servicio donde funciona y se publica la web; puede ser distinto del proveedor que administra el DNS." },
+          { term: "HTTPS y TLS", definition: "HTTPS es la conexión web protegida mediante TLS. Ayuda a cifrar la comunicación y a comprobar el servidor para el nombre usado; no certifica que el negocio o su contenido sean confiables." },
         ] }],
       },
       {
