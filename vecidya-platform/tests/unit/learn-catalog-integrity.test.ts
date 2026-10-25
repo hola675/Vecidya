@@ -133,7 +133,7 @@ test("La jerga técnica prioritaria se explica donde aparece", () => {
   assert.ok(ai && campaign && presence && dns && control && migration);
 
   assert.match(JSON.stringify(ai), /tokens \(unidades de texto procesado\)/i);
-  assert.match(JSON.stringify(campaign), /conversi[oó]n.{0,80}acci[oó]n marcada como importante/i);
+  assert.match(JSON.stringify(campaign), /conversi[oó]n publicitaria.{0,140}acci[oó]n importante.{0,100}campa[nñ]a/i);
   assert.match(JSON.stringify(presence), /herramientas de medici[oó]n \(anal[ií]tica\)/i);
   assert.match(JSON.stringify(control), /autenticaci[oó]n multifactor.{0,120}adem[aá]s de la contrase[nñ]a/i);
   assert.match(JSON.stringify(migration), /MX.{0,80}dirigir los mensajes/i);
@@ -182,6 +182,28 @@ test("El resumen final no repite literalmente En pocas palabras", () => {
       assert.notDeepEqual(summary, [...article.enPocasPalabras], `Resumen duplicado en ${article.slug}`);
     }
   }
+});
+
+test("Las fuentes renovadas usan destinos vigentes y terminología actual", () => {
+  const analytics = getLearnArticle("analitica-web-que-medir-en-tu-negocio");
+  const aiDrafts = getLearnArticle("preparar-respuestas-publicaciones-ia-sin-perder-control");
+  const start = getLearnArticle("como-empezar-a-digitalizar-un-negocio-desde-cero");
+  const budget = getLearnArticle("como-preparar-presupuesto-para-herramientas-digitales");
+  assert.ok(analytics && aiDrafts && start && budget);
+
+  const analyticsText = JSON.stringify(analytics);
+  assert.match(analyticsText, /Evento clave/i);
+  assert.match(analyticsText, /Conversi[oó]n publicitaria/i);
+  assert.match(analyticsText, /answer\/13965727/);
+
+  const aiSources = JSON.stringify(aiDrafts);
+  assert.match(aiSources, /developers\.openai\.com\/api\/docs\/guides\/prompt-engineering/);
+  assert.match(aiSources, /7730893-data-controls-in-chatgpt/);
+  assert.doesNotMatch(aiSources, /platform\.openai\.com\/docs\/guides\/prompt-engineering|data-controls-faq/);
+
+  assert.match(JSON.stringify(start), /global-connectivity-report-2025/);
+  assert.doesNotMatch(JSON.stringify(budget), /legacy\.sba\.gov/);
+  assert.match(JSON.stringify(budget), /sba\.gov\/counseling\/manage-your-business/);
 });
 
 test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
