@@ -69,7 +69,7 @@ export const QA03B_EDITORIAL_COPY = {
     }
   },
   "q2_goal": {
-    "prompt": "Si pudieras mejorar una sola cosa de tu negocio o proyecto ahora mismo, ¿cuál elegirías?",
+    "prompt": "¿Qué te gustaría mejorar primero en tu negocio, trabajo, organización o proyecto?",
     "hint": "Elige tu prioridad principal, aunque también haya otras áreas que necesiten mejoras."
   },
   "q2_friction": {
@@ -80,7 +80,7 @@ export const QA03B_EDITORIAL_COPY = {
     }
   },
   "q2_regularity": {
-    "prompt": "En los últimos meses, ¿con qué regularidad has tenido clientes, ventas, citas o pedidos?",
+    "prompt": "En los últimos meses, ¿con qué regularidad has tenido clientes, ventas, citas, pedidos o personas atendidas?",
     "hint": "Piensa en el comportamiento habitual, no solo en una semana especialmente buena o mala."
   },
   "q2_demand_trend": {
@@ -124,7 +124,7 @@ export const QA03B_EDITORIAL_COPY = {
     "hint": "Considera teléfono, WhatsApp, dirección y horarios, solo cuando correspondan a tu negocio."
   },
   "q2_reputation_flow": {
-    "prompt": "¿Las personas que buscan tu negocio pueden encontrar reseñas, opiniones o testimonios de clientes anteriores?",
+    "prompt": "¿Quien busca lo que ofreces puede encontrar reseñas, opiniones o testimonios de personas con experiencia contigo?",
     "hint": "Incluye reseñas de Google, testimonios públicos y opiniones en tu web u otros lugares visibles."
   },
   "q2_service_response_speed": {
@@ -215,7 +215,7 @@ export const QA03B_EDITORIAL_COPY = {
     "hint": "Piensa en revisiones reales que ayudan a tomar decisiones, no solo en disponer de herramientas o datos."
   },
   "q2_measurement_practice": {
-    "prompt": "En los últimos tres meses, ¿cómo has registrado y revisado los resultados de tu negocio, trabajo u organización?",
+    "prompt": "En los últimos tres meses, ¿cómo has registrado y revisado resultados para decidir qué mejorar?",
     "hint": "Piensa en consultas, ventas, citas, personas atendidas o aportes. No es necesario usar herramientas digitales."
   }
 } as const satisfies Readonly<Record<string, EditorialCopy>>;
