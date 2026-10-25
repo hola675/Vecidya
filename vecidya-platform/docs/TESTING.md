@@ -4,7 +4,7 @@
 
 **TEST versionado / RAN pendiente en HEAD final.** El catálogo conserva **47 guías y 9 itinerarios**. Los contratos nuevos comprueban: términos técnicos prioritarios explicados en contexto; ausencia de las tres frases de plantilla educativa anteriores; textos alternativos descriptivos de al menos siete palabras y sin etiquetas genéricas; `intro !== excerpt`; y ningún bloque `summary` idéntico a `enPocasPalabras`.
 
-Una auditoría estática sobre los seis archivos de contenido obtuvo **47/47 slugs únicos y 0 incidencias** en esos contratos, además de al menos un ejemplo por guía. Gate pendiente: `Aprende quality` con typecheck, build e integridad Aprende sobre el HEAD final. Sin D1 remota, E2E visual ni deploy.
+Una auditoría estática sobre los seis archivos de contenido obtuvo **47/47 slugs únicos y 0 incidencias** en esos contratos, además de al menos un ejemplo por guía. **RAN:** `Aprende quality` run `40244439741` sobre `9a93580d50ec3cc4726af48136bbfbb811738ab9` PASS: typecheck, build e integridad Aprende. El PR #125 tiene base 04B y no dispara el gate general dirigido a `main`; ese gate queda requerido al integrar la cadena. Sin D1 remota, E2E visual ni deploy.
 
 ## APRENDE-EDITORIAL-04B — separación selección/migración de proveedor (2026-10-25)
 
