@@ -1,4 +1,4 @@
-import type { QuestionDefinitionV2 } from "../qbv2-contract";
+import type { QuestionDefinitionV2, QuestionEvidenceV3, QuestionVersionV2 } from "../qbv2-contract";
 import { andV2, eqV2 } from "../qbv2-rules";
 import type { MigratedAnswerStateV3 } from "../qbv2-evidence-v3";
 
@@ -18,9 +18,9 @@ const evidence = (
   questionId: string,
   dimension: "measurement_optimization" | "relationship_recurrence",
   answers: Readonly<Record<string, MigratedAnswerStateV3>>,
-) => ({
+) : QuestionEvidenceV3 => ({
   questionId,
-  questionVersion: 1,
+  questionVersion: 1 as QuestionVersionV2,
   dimensions: [{ dimension, directness: "direct" as const, answers }],
 });
 
@@ -33,11 +33,11 @@ export const QA03B_SPECIALTY_EVIDENCE_PILOT_V1: readonly QuestionDefinitionV2[] 
     routingRole: "adaptive",
     prompt: "Cuando una persona empieza a usar o probar tu software, ¿puedes saber si completa la acción principal que demuestra que obtuvo valor?",
     hint: "Piensa en una acción observable dentro del producto. Si tu proceso no incluye uso o prueba antes de contratar, marca que no aplica.",
-    purpose: ["evidence"],
+    purpose: ["diagnostic"],
     priority: "normal",
     evidenceMigration: "migrated",
     appliesWhen: andV2(operatingWithHistory, eqV2("q2_niche_technology_software", "software_startup")),
-    scoringReadiness: { allowsUnknown: true, allowsNotApplicable: true },
+    scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: true },
     evidenceV3: evidence("q2_specialty_software_activation", "measurement_optimization", {
       clearly_tracked: "established",
       partially_tracked: "partial",
@@ -61,11 +61,11 @@ export const QA03B_SPECIALTY_EVIDENCE_PILOT_V1: readonly QuestionDefinitionV2[] 
     routingRole: "adaptive",
     prompt: "Cuando una operación no se concreta en tu mercado de dos lados, ¿puedes saber si faltó oferta, demanda o una buena coincidencia entre ambas?",
     hint: "Busca una causa observable en cada lado del mercado; no basta con saber que la operación no ocurrió.",
-    purpose: ["evidence"],
+    purpose: ["diagnostic"],
     priority: "normal",
     evidenceMigration: "migrated",
     appliesWhen: andV2(operatingWithHistory, eqV2("q2_niche_technology_software", "two_sided_marketplace")),
-    scoringReadiness: { allowsUnknown: true },
+    scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: false },
     evidenceV3: evidence("q2_specialty_marketplace_balance", "measurement_optimization", {
       usually_clear: "established",
       sometimes_clear: "partial",
@@ -87,7 +87,7 @@ export const QA03B_SPECIALTY_EVIDENCE_PILOT_V1: readonly QuestionDefinitionV2[] 
     routingRole: "adaptive",
     prompt: "Antes de la próxima temporada o vencimiento fiscal, ¿tienes una forma de volver a contactar a clientes anteriores con tiempo?",
     hint: "Piensa en un proceso previsto antes de la fecha importante, no en esperar a que el cliente vuelva por su cuenta.",
-    purpose: ["evidence"],
+    purpose: ["diagnostic"],
     priority: "normal",
     evidenceMigration: "migrated",
     appliesWhen: andV2(operatingWithHistory, eqV2("q2_niche_financial_tax_insurance", "tax_preparation")),
@@ -115,7 +115,7 @@ export const QA03B_SPECIALTY_EVIDENCE_PILOT_V1: readonly QuestionDefinitionV2[] 
     routingRole: "adaptive",
     prompt: "Antes de que una póliza venza o deba revisarse, ¿puedes identificar a quién contactar y hacerlo a tiempo?",
     hint: "Evalúa si detectas próximas renovaciones y actúas antes del vencimiento, no solo cuando el cliente te escribe.",
-    purpose: ["evidence"],
+    purpose: ["diagnostic"],
     priority: "normal",
     evidenceMigration: "migrated",
     appliesWhen: andV2(operatingWithHistory, eqV2("q2_niche_financial_tax_insurance", "insurance_agency")),
