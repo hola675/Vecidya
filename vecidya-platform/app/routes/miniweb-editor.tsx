@@ -8,7 +8,7 @@ import { getBusinessProfileGovernance } from "../../db/queries/platform-governan
 import { createBusinessPublicationSnapshot, getBusinessPublicationSnapshotForOrganization, isBusinessPublicationCurrent, readConsistentBusinessDraft } from "../../db/queries/business-publication.server";
 import { getMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
 import { getMiniWebContentForOrganization } from "../../db/queries/miniweb-content.server";
-import { listBusinessMediaForOrganization, type BusinessMediaAsset } from "../../db/queries/business-media.server";
+import { listBusinessMediaForOrganization, type BusinessMediaAsset, type BusinessMediaPurpose } from "../../db/queries/business-media.server";
 import { requireOrganizationPermission } from "../../server/auth/authorization.server";
 import { requireOrganization } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
@@ -106,7 +106,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const { revalidate } = useRevalidator();
   const [configuration, setConfiguration] = useState(data.draftConfiguration);
   const [draftRevision, setDraftRevision] = useState(data.draftRevision);
-  const [offerings, setOfferings] = useState(data.offerings);
+  const [offerings, setOfferings] = useState<BusinessOffering[]>(data.offerings);
   const [faqs, setFaqs] = useState(data.faqs);
   const [savedDraft, setSavedDraft] = useState({
     configuration: data.draftConfiguration,
@@ -119,7 +119,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const [removingMediaId, setRemovingMediaId] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(true);
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
-  const [mediaPurpose, setMediaPurpose] = useState<"gallery" | "cover">("gallery");
+  const [mediaPurpose, setMediaPurpose] = useState<BusinessMediaPurpose>("gallery");
   const [expandedOfferingIndex, setExpandedOfferingIndex] = useState<number | null>(null);
   const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<"design" | "sections" | "content" | "preview" | "publish">("design");
@@ -282,12 +282,12 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
     const fileInput = form.elements.namedItem("file");
     const altInput = form.elements.namedItem("altText");
     if (!(fileInput instanceof HTMLInputElement) || !fileInput.files?.[0] || !(altInput instanceof HTMLInputElement)) return;
-    if (mediaPurpose === "cover" && !fileInput.files[0].type.startsWith("image/")) {
-      setMessage({ kind: "error", text: "La portada debe ser una imagen JPEG, PNG o WebP. Los vídeos se pueden subir a Galería." });
+    if (mediaPurpose !== "gallery" && !fileInput.files[0].type.startsWith("image/")) {
+      setMessage({ kind: "error", text: "Portada, logo e icono solo admiten imágenes JPEG, PNG o WebP. Los vídeos se pueden subir a Galería." });
       return;
     }
-    if (mediaPurpose === "cover" && media.some((asset) => asset.purpose === "cover")) {
-      setMessage({ kind: "error", text: "Ya hay una portada. Retírala del borrador antes de subir otra." });
+    if (mediaPurpose !== "gallery" && media.some((asset) => asset.purpose === mediaPurpose)) {
+      setMessage({ kind: "error", text: "Ya existe un archivo de este tipo. Retíralo del borrador antes de subir otro." });
       return;
     }
     setUploading(true);
@@ -324,6 +324,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
       const result = await response.json() as { error?: string; draftRevision?: number };
       if (!response.ok || typeof result.draftRevision !== "number") throw new Error(result.error ?? "No se pudo retirar el medio.");
       setMedia((current) => current.filter((item) => item.id !== asset.id));
+      setOfferings((current) => current.map((item) => item.imageAssetId === asset.id ? { ...item, imageAssetId: null } : item));
       setDraftRevision(result.draftRevision);
       setMessage({ kind: "success", text: "Medio retirado del borrador. La publicación actual no cambia hasta publicar de nuevo." });
     } catch (error) {
@@ -426,6 +427,27 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               </div>
               <p>{template.description}</p>
               <p className="miniweb-editor__note">Esta es la plantilla disponible actualmente. Las demás opciones aparecerán cuando estén listas; no se cambiará tu diseño sin que lo elijas.</p>
+              <div className="miniweb-editor__brand-assets" aria-label="Identidad visual de tu MiniWeb">
+                {([
+                  ["logo", "Logo de la MiniWeb", "Identifica tu marca. Si no añades uno aquí, se conserva el logotipo de Mi negocio."],
+                  ["icon", "Icono de la MiniWeb", "Símbolo cuadrado complementario para reconocer el negocio."],
+                  ["cover", "Imagen de portada", "Fotografía que acompaña la presentación principal."],
+                ] as const).map(([purpose, label, description]) => {
+                  const image = media.find((asset) => asset.purpose === purpose && asset.mediaType === "image");
+                  return (
+                    <div className="miniweb-editor__brand-asset" key={purpose}>
+                      {image ? <img alt={image.altText} decoding="async" loading="lazy" src={image.publicUrl} /> : <span aria-hidden="true" className="miniweb-editor__brand-placeholder">+</span>}
+                      <div>
+                        <strong>{label}</strong>
+                        <p>{description}</p>
+                        <span className="miniweb-editor__brand-status">{image ? "Imagen seleccionada" : purpose === "logo" ? "Se usa la identidad de Mi negocio" : "Sin imagen adicional"}</span>
+                      </div>
+                      <Button onClick={() => { setMediaPurpose(purpose); setContentTab("media"); goToStep(2); }} tone="secondary">{image ? "Gestionar" : "Añadir"}</Button>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="miniweb-editor__note">Las imágenes de marca de esta MiniWeb no modifican los datos maestros de Mi negocio. Guardar los archivos no los publica automáticamente.</p>
             </Card>
 
             </div>
@@ -539,6 +561,24 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                   <label>Descripción
                     <textarea maxLength={600} onChange={(event) => updateOffering(index, { description: event.currentTarget.value })} placeholder="Explica qué incluye y a quién va dirigido." required rows={3} value={item.description} />
                   </label>
+                  <label>Imagen del {item.kind === "service" ? "servicio" : "producto"} (opcional)
+                    <select
+                      disabled={!data.canEdit || busy}
+                      onChange={(event) => updateOffering(index, { imageAssetId: event.currentTarget.value || null })}
+                      value={item.imageAssetId ?? ""}
+                    >
+                      <option value="">Sin imagen</option>
+                      {media.filter((asset) => asset.mediaType === "image" && asset.purpose === "gallery").map((asset) => (
+                        <option key={asset.id} value={asset.id}>{asset.altText}</option>
+                      ))}
+                    </select>
+                  </label>
+                  {item.imageAssetId && media.some((asset) => asset.id === item.imageAssetId && asset.mediaType === "image")
+                    ? <img alt={media.find((asset) => asset.id === item.imageAssetId)?.altText ?? ""} className="miniweb-content-editor__image-preview" loading="lazy" src={media.find((asset) => asset.id === item.imageAssetId)?.publicUrl} />
+                    : null}
+                  {!media.some((asset) => asset.mediaType === "image" && asset.purpose === "gallery") ? (
+                    <p className="miniweb-editor__note">Sube primero una fotografía en Galería para asociarla a esta oferta. <button className="miniweb-module-list__action" onClick={() => { setMediaPurpose("gallery"); setContentTab("media"); }} type="button">Abrir galería</button></p>
+                  ) : null}
                   <label>Texto de precio (opcional)
                     <input maxLength={80} onChange={(event) => updateOffering(index, { priceLabel: event.currentTarget.value || null })} placeholder="Ej.: Consultar precio" value={item.priceLabel ?? ""} />
                   </label>
@@ -547,7 +587,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 </fieldset>
                 </div>
               ) : null)}
-              <Button disabled={!data.canEdit || busy || offerings.length >= MAX_BUSINESS_OFFERINGS} onClick={() => { setExpandedOfferingIndex(offerings.length); setOfferings((current) => [...current, { kind: contentTab === "services" ? "service" : "product", title: "", description: "", priceLabel: null, sortOrder: current.length, isActive: true }]); }} tone="secondary">Añadir {contentTab === "services" ? "servicio" : "producto"}</Button>
+              <Button disabled={!data.canEdit || busy || offerings.length >= MAX_BUSINESS_OFFERINGS} onClick={() => { setExpandedOfferingIndex(offerings.length); setOfferings((current) => [...current, { kind: contentTab === "services" ? "service" : "product", title: "", description: "", priceLabel: null, imageAssetId: null, sortOrder: current.length, isActive: true }]); }} tone="secondary">Añadir {contentTab === "services" ? "servicio" : "producto"}</Button>
               {offerings.length >= MAX_BUSINESS_OFFERINGS ? <p className="miniweb-editor__note" role="status">Has alcanzado el máximo compartido de {MAX_BUSINESS_OFFERINGS} servicios y productos.</p> : null}
             </Card>
               </div>
@@ -603,16 +643,21 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
               <form className="miniweb-content-editor__item" onSubmit={handleMediaUpload}>
                 <input name="draftRevision" type="hidden" value={draftRevision} />
                 <label>Destino del archivo
-                  <select disabled={!data.canEdit || uploading || busy} name="purpose" onChange={(event) => setMediaPurpose(event.currentTarget.value as "gallery" | "cover")} value={mediaPurpose}>
+                  <select disabled={!data.canEdit || uploading || busy} name="purpose" onChange={(event) => setMediaPurpose(event.currentTarget.value as BusinessMediaPurpose)} value={mediaPurpose}>
                     <option value="gallery">Galería · fotos o vídeos</option>
                     <option value="cover">Portada · solo imagen</option>
+                    <option value="logo">Logo de MiniWeb · solo imagen</option>
+                    <option value="icon">Icono de MiniWeb · solo imagen</option>
                   </select>
                 </label>
-                <p className="miniweb-editor__note">{mediaPurpose === "cover"
-                  ? "La portada aparece en la presentación principal. Solo puede haber una imagen de portada activa."
-                  : "La galería reúne imágenes y vídeos y solo se muestra cuando su sección está activada."}</p>
+                <p className="miniweb-editor__note">{
+                  mediaPurpose === "gallery" ? "La galería admite imágenes o vídeos; solo se muestra si activas esa sección." :
+                  mediaPurpose === "cover" ? "La portada es una sola imagen en la presentación principal." :
+                  mediaPurpose === "logo" ? "El logo de MiniWeb sustituye visualmente al logo de Mi negocio únicamente en esta página pública." :
+                  "El icono es una imagen cuadrada que acompaña el título del negocio."
+                } Para sustituir una imagen de marca, retira primero la anterior.</p>
                 <label>Archivo
-                  <input accept={mediaPurpose === "cover" ? "image/jpeg,image/png,image/webp" : "image/jpeg,image/png,image/webp,video/mp4,video/webm"} disabled={!data.canEdit || uploading || busy} key={mediaPurpose} name="file" required type="file" />
+                  <input accept={mediaPurpose === "gallery" ? "image/jpeg,image/png,image/webp,video/mp4,video/webm" : "image/jpeg,image/png,image/webp"} disabled={!data.canEdit || uploading || busy} key={mediaPurpose} name="file" required type="file" />
                 </label>
                 <label>Texto alternativo o descripción breve
                   <input disabled={!data.canEdit || uploading || busy} maxLength={180} name="altText" required />
@@ -620,7 +665,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 <Button disabled={!data.canEdit || uploading || busy} type="submit" tone="secondary">{uploading ? "Subiendo…" : "Subir medio"}</Button>
               </form>
               {!media.length ? <div className="miniweb-editor__empty-state"><strong>Tus imágenes cuentan la historia del negocio</strong><p>Añade una portada y, si quieres, más fotografías o vídeos para la galería. Puedes revisarlos antes de publicar.</p></div> : null}
-              {media.length ? <ul className="miniweb-media-list">{media.map((asset) => <li key={asset.id}>{asset.mediaType === "image" ? <img alt="" height="72" loading="lazy" src={asset.publicUrl} width="96" /> : <span aria-hidden="true">▶</span>}<span>{asset.purpose === "cover" ? "Portada" : "Galería"}: {asset.altText}</span><span>{Math.ceil(asset.sizeBytes / 1024)} KB</span><Button disabled={!data.canEdit || busy || uploading || removingMediaId !== null} onClick={() => void handleRemoveMedia(asset)} tone="secondary">{removingMediaId === asset.id ? "Retirando…" : "Retirar del borrador"}</Button></li>)}</ul> : null}
+              {media.length ? <ul className="miniweb-media-list">{media.map((asset) => <li key={asset.id}>{asset.mediaType === "image" ? <img alt="" height="72" loading="lazy" src={asset.publicUrl} width="96" /> : <span aria-hidden="true">▶</span>}<span>{asset.purpose === "cover" ? "Portada" : asset.purpose === "logo" ? "Logo" : asset.purpose === "icon" ? "Icono" : "Galería"}: {asset.altText}</span><span>{Math.ceil(asset.sizeBytes / 1024)} KB</span><Button disabled={!data.canEdit || busy || uploading || removingMediaId !== null} onClick={() => void handleRemoveMedia(asset)} tone="secondary">{removingMediaId === asset.id ? "Retirando…" : "Retirar del borrador"}</Button></li>)}</ul> : null}
               <p className="miniweb-editor__note">Activa Galería en Secciones y publica para mostrar sus archivos. La imagen de portada se configura por separado.</p>
             </Card>
               </div>
@@ -642,7 +687,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
             {previewVisible && activeTab === "preview" ? data.profile ? (
               <div aria-label={previewDevice === "mobile" ? "Vista previa estrecha" : "Vista previa amplia"} className="miniweb-editor__preview-stage" data-device={previewDevice} role="region">
                 <div className="miniweb-editor__preview">
-                  <MiniWebRenderer configuration={configuration} hours={data.hours} offerings={offerings} faqs={faqs} media={media} preview profile={profile} />
+                  <MiniWebRenderer configuration={configuration} hours={data.hours} offerings={offerings} faqs={faqs} media={media} preview profile={{ ...profile, logoUrl: media.find((asset) => asset.purpose === "logo")?.publicUrl ?? profile.logoUrl }} />
                 </div>
               </div>
             ) : <div className="miniweb-editor__empty-preview">Completa primero la información de tu negocio para generar una vista previa.</div> : null}
