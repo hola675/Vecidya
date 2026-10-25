@@ -1,5 +1,5 @@
 import type { QuestionDefinitionV2 } from "../qbv2-contract";
-import { andV2, answeredV2, archetypeIncludes, eqV2, inV2, notEqV2, notV2, orV2 } from "../qbv2-rules";
+import { andV2, archetypeIncludes, eqV2, inV2, notEqV2, notV2, orV2 } from "../qbv2-rules";
 import { QA03B_SPECIALTY_CANDIDATE_BANK_V1 } from "./specialty-candidate-bank";
 
 /**
@@ -13,27 +13,13 @@ const activeHistory = andV2(
   eqV2("q2_has_customers", "yes"),
 );
 
-const healthGenericGate = orV2(
-  notV2(eqV2("q2_sector", "health_wellness")),
-  andV2(
-    eqV2("q2_sector", "health_wellness"),
-    answeredV2("q2_niche_health_wellness"),
-    notEqV2("q2_niche_health_wellness", "dentist"),
-  ),
-);
+// If niche is still unknown, keep the generic observation available.
+const healthGenericGate = notEqV2("q2_niche_health_wellness", "dentist");
 
-const offerGenericGate = orV2(
-  notV2(inV2("q2_sector", ["food_hospitality", "b2b_services"])),
-  andV2(
-    eqV2("q2_sector", "food_hospitality"),
-    answeredV2("q2_niche_food_hospitality"),
-    notV2(inV2("q2_niche_food_hospitality", ["restaurant", "cafe", "food_truck"])),
-  ),
-  andV2(
-    eqV2("q2_sector", "b2b_services"),
-    answeredV2("q2_niche_b2b_services"),
-    notEqV2("q2_niche_b2b_services", "marketing_agency"),
-  ),
+// Generic clarity stays available until a known specialty can replace it.
+const offerGenericGate = andV2(
+  notV2(inV2("q2_niche_food_hospitality", ["restaurant", "cafe", "food_truck"])),
+  notEqV2("q2_niche_b2b_services", "marketing_agency"),
 );
 
 export const QA03B_SPECIALTY_BRANCH_QUESTIONS_V1: readonly QuestionDefinitionV2[] = [
