@@ -6721,3 +6721,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (prefers-reduced-motion: reduce) {
   .miniweb-editor__leave-dialog::backdrop { backdrop-filter: none; }
 }
+
+
+/* La selección de negocio se protege durante ediciones locales no guardadas. */
+.organization-switcher__locked {
+  display: block;
+  max-width: 19rem;
+  color: #996121;
+  font-size: .72rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.organization-switcher select:disabled { cursor: not-allowed; opacity: .7; }
