@@ -383,11 +383,11 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 
 ### Aprende (`knowledge.tsx`, `learn-article.tsx`)
 
-- UX-001B.9 establece `/aprende` como ruta canónica y mantiene `/que-debes-saber` como alias. La página diferencia aprendizaje de Servicios y Diagnóstico: explica cómo entender y mejorar la presencia digital.
-- UX-002.6 mantiene `/aprende` como centro de conocimiento estático con cinco categorías y cinco artículos enlazados desde el índice. Los cuatro originales son CRM, IA, Automatización y Presencia Digital; VEC-APRENDE-04/05 modernizó los dos últimos sin cambiar sus slugs, canonical, categoría ni autoría.
-- VEC-APRENDE-06A llena «Tecnología explicada» con una guía de dominio/hosting, ejemplo hipotético y ocho fuentes primarias. Usa los bloques editoriales existentes, un SVG con descripción accesible y lectura relacionada a la guía de Presencia Digital.
-- Los artículos mantienen índice accesible, CTA contextual, metadata canonical/Open Graph y presencia en sitemap. La publicación sigue pendiente; el contenido no promete resultados, no usa CMS y no añade persistencia editorial. El byline sigue el renderer actual (Yoan Ortiz), sin modelo de autor nuevo.
-- El contenido se mantiene deliberadamente sin CMS, autores dinámicos, fechas editoriales inventadas, comentarios, newsletter, buscador avanzado o cursos.
+- `/aprende` es la ruta canónica y `/que-debes-saber` conserva su alias. El catálogo vigente en `main` ya superó el estado histórico de cinco guías; APRENDE-EDITORIAL-04A trabaja sobre esa biblioteca real sin reabrir arquitectura legacy.
+- En la rama 04A, Aprende contiene **46 guías, 9 itinerarios y 6 categorías**. Dos guías nuevas de «Tecnología explicada» amplían la audiencia a vida digital y negocio: priorización («el que mucho abarca, poco aprieta») y uso consciente («domina la tecnología»). Ambas siguen en revisión editorial.
+- La experiencia propone **Comprende → Prioriza → Decide**. La búsqueda cubre título, resumen y contenido interno; la plantilla de ejemplos explica situación, problema, forma sencilla de actuar, pasos y aprendizaje. El contrato unitario exige al menos un ejemplo hipotético accionable por guía.
+- Los artículos mantienen índice accesible, CTA contextual, metadata canonical/Open Graph, relaciones y fuentes. El contenido no usa CMS ni persistencia editorial y no atribuye a Vecidya funciones CRM de GHL.
+- El siguiente pase 04B debe revisar semánticamente las 46 guías una por una, simplificar jerga y separar contenidos solo cuando un artículo abarque objetivos educativos distintos. No retirar `editorialDraft` sin revisión explícita.
 
 ### Legal & Trust (`privacy.tsx`, `public-layout.tsx`)
 
