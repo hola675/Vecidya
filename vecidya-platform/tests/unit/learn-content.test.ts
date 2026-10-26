@@ -274,10 +274,10 @@ test("pre-ad guide is a focused readiness gate and links to specialized guides",
   const blocks = article.sections.flatMap((section) => section.blocks ?? []);
   const blockTypes = new Set(blocks.map((block) => block.type));
   for (const type of ["definitions", "example", "steps", "callout", "list", "faq", "sources", "summary"] as const) {
-    assert.ok(blockTypes.has(type), \`Presence readiness guide is missing the \${type} block.\`);
+    assert.ok(blockTypes.has(type), "Presence readiness guide is missing the " + type + " block.");
   }
 
-  const text = article.sections.map((section) => \`\${section.heading} \${section.paragraphs.join(" ")} \${JSON.stringify(section.blocks ?? [])}\`).join(" ");
+  const text = article.sections.map((section) => section.heading + " " + section.paragraphs.join(" ") + " " + JSON.stringify(section.blocks ?? [])).join(" ");
   for (const topic of [
     /presencia digital/i, /visibilidad/i, /publicidad/i, /a qui[eé]n atiendes/i,
     /zona de servicio/i, /horarios/i, /m[oó]vil/i, /p[aá]gina de destino|p[aá]gina web|sitio web/i,
@@ -305,12 +305,12 @@ test("pre-ad guide is a focused readiness gate and links to specialized guides",
     "perfil-empresa-google-completar-y-mantener-actualizado",
     "redes-sociales-o-pagina-web-que-necesita-tu-negocio",
     "analitica-web-que-medir-en-tu-negocio"
-  ]) assert.ok(article.relatedSlugs?.includes(slug), \`Missing related guide \${slug}.\`);
+  ]) assert.ok(article.relatedSlugs?.includes(slug), "Missing related guide " + slug + ".");
 
   const sources = blocks.find((block) => block.type === "sources");
   assert.ok(sources?.type === "sources");
   for (const source of ["Google Search Central", "Google Business Profile", "Google Ads", "W3C"]) {
-    assert.ok(sources.items.some(({ label }) => label.includes(source)), \`Missing relevant source \${source}.\`);
+    assert.ok(sources.items.some(({ label }) => label.includes(source)), "Missing relevant source " + source + ".");
   }
 });
 
