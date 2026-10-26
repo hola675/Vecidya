@@ -39,6 +39,11 @@
 - Admin Auditoría ahora presenta etiquetas para `organization.miniweb.save` y `organization.miniweb.publish`. El E2E guarda/publica desde Chromium y confirma que el filtro MiniWeb encuentra ambos registros, junto con las aserciones de snapshot y D1 del flujo.
 - Matriz y deuda de auditoría reconciliadas. La corrida Worker/D1 con Playwright se repite después del cambio; sin D1 remota, GHL ni deploy.
 
+### Continuación de PR #139 — conflicto CAS de MiniWeb (2026-10-26)
+
+- La action Admin convierte el `409` de revisión obsoleta en un mensaje recuperable en pantalla y mantiene intacta la respuesta de error del backend para otros fallos.
+- Playwright envía una revisión antigua y confirma la alerta, que la revisión D1 no cambia y que no se agrega auditoría por la operación rechazada; luego vuelve a cargar y publica normalmente. Typecheck, build y E2E Worker/D1 PASS.
+
 ## 0.8.0 — producción (2026-10-25)
 
 - Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.

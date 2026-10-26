@@ -347,6 +347,11 @@ try {
   await savedMiniwebAction;
   const miniwebDraftState = executeD1(`SELECT p.draft_revision,s.template_key,(SELECT count(*) FROM miniweb_module m WHERE m.miniweb_site_id=s.id AND m.module_type='hero' AND m.enabled=1) AS hero_count,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(identities["owner-b"].organizationId)} AND a.action='organization.miniweb.save') AS audit_count FROM business_profile_publication p JOIN miniweb_site s ON s.organization_id=p.organization_id WHERE p.organization_id=${sqlLiteral(identities["owner-b"].organizationId)};`)[0];
   assert(Number(miniwebDraftState?.draft_revision) === miniwebRevisionBefore + 1 && miniwebDraftState.template_key === miniwebConfiguration.templateKey && Number(miniwebDraftState.hero_count) === 1 && Number(miniwebDraftState.audit_count) === 1, "Guardar borrador MiniWeb desde UI no persistió la revisión/configuración ni una auditoría.");
+  await page.locator('input[name="draftRevision"]').first().evaluate((input, staleRevision) => { input.value = staleRevision; }, String(miniwebRevisionBefore));
+  await page.getByRole("button", { name: "Guardar borrador" }).click();
+  await page.getByRole("alert").getByText("El borrador cambió desde que lo abriste. Recarga la página antes de guardar.").waitFor();
+  const staleMiniwebState = executeD1(`SELECT p.draft_revision,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=p.organization_id AND a.action='organization.miniweb.save') AS audit_count FROM business_profile_publication p WHERE p.organization_id=${sqlLiteral(identities["owner-b"].organizationId)};`)[0];
+  assert(Number(staleMiniwebState?.draft_revision) === miniwebRevisionBefore + 1 && Number(staleMiniwebState.audit_count) === 1, "El conflicto CAS de MiniWeb alteró la revisión o creó una auditoría de escritura rechazada.");
   await page.goto(`${baseUrl}${miniwebPath}`);
   const publishedMiniwebAction = page.waitForResponse((response) => response.url().startsWith(`${baseUrl}${miniwebPath}.data`) && response.request().method() === "POST" && response.status() === 202);
   await page.getByRole("button", { name: "Publicar MiniWeb" }).click();

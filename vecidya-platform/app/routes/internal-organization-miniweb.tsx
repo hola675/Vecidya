@@ -1,4 +1,4 @@
-import { Form, Link, redirect, useLoaderData } from "react-router";
+import { Form, Link, redirect, useActionData, useLoaderData } from "react-router";
 import { createDatabase } from "../../db/client.server";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
@@ -52,24 +52,30 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   if (!organization) throw new Response("Organización no encontrada", { status: 404 });
   const [profile, hours] = await Promise.all([getBusinessProfileForOrganization(database, organization.id), listBusinessHoursForOrganization(database, organization.id)]);
   const expectedRevision = Number(form.get("draftRevision"));
-  if (intent === "save") {
-    let configuration: unknown;
-    try { configuration = JSON.parse(String(form.get("configuration") ?? "")); }
-    catch { throw new Response("El borrador debe contener JSON válido", { status: 400 }); }
-    await saveMiniWebConfigurationForOrganization(database, organization.id, profile, hours, configuration, { actorUserId: actor.userId }, expectedRevision);
-  } else if (intent === "publish") {
-    if (!await hasActiveLicenseForOrganizationOwner(database, organization.id)) throw new Response("La organización requiere una licencia activa para publicar.", { status: 400 });
-    await publishBusinessPublicationForOrganization(database, organization.id, expectedRevision, { actorUserId: actor.userId });
-  } else throw new Response("Acción inválida", { status: 400 });
+  try {
+    if (intent === "save") {
+      let configuration: unknown;
+      try { configuration = JSON.parse(String(form.get("configuration") ?? "")); }
+      catch { throw new Response("El borrador debe contener JSON válido", { status: 400 }); }
+      await saveMiniWebConfigurationForOrganization(database, organization.id, profile, hours, configuration, { actorUserId: actor.userId }, expectedRevision);
+    } else if (intent === "publish") {
+      if (!await hasActiveLicenseForOrganizationOwner(database, organization.id)) throw new Response("La organización requiere una licencia activa para publicar.", { status: 400 });
+      await publishBusinessPublicationForOrganization(database, organization.id, expectedRevision, { actorUserId: actor.userId });
+    } else throw new Response("Acción inválida", { status: 400 });
+  } catch (error) {
+    if (error instanceof Response && error.status === 409) return { error: await error.text() };
+    throw error;
+  }
   return redirect(`/app/internal/organizations/${organization.id}/miniweb`);
 }
 
 export default function InternalOrganizationMiniWeb() {
   const { organization, configuration, draftRevision, hasProfile, published, workspaceUser } = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
   return <AdminShell active="organizations" workspaceUser={workspaceUser}><main className="admin-main">
     <Link className="back-link" to={`/app/internal/organizations/${organization.id}`}>← Volver a {organization.name}</Link>
     <div className="page-heading"><div><p className="eyebrow">MINIWEB</p><h1>Configuración de {organization.name}</h1><p>Las acciones se registran en la auditoría de la organización.</p></div></div>
-    <Card><h2>Borrador de configuración</h2><Form method="post" className="form-stack"><input name="draftRevision" type="hidden" value={draftRevision} /><textarea aria-label="Configuración JSON" name="configuration" defaultValue={JSON.stringify(configuration, null, 2)} rows={24} spellCheck={false} /><Button type="submit" name="intent" value="save" tone="secondary">Guardar borrador</Button></Form>
+    <Card><h2>Borrador de configuración</h2>{actionData?.error ? <p className="alert alert--error" role="alert">{actionData.error}</p> : null}<Form method="post" className="form-stack"><input name="draftRevision" type="hidden" value={draftRevision} /><textarea aria-label="Configuración JSON" name="configuration" defaultValue={JSON.stringify(configuration, null, 2)} rows={24} spellCheck={false} /><Button type="submit" name="intent" value="save" tone="secondary">Guardar borrador</Button></Form>
       <Form method="post"><input name="draftRevision" type="hidden" value={draftRevision} /><Button type="submit" name="intent" value="publish" disabled={!hasProfile || published}>Publicar MiniWeb</Button></Form>
       <p>{!hasProfile ? "Completa el perfil antes de publicar." : published ? "El perfil, los horarios y la configuración coinciden con la versión publicada." : "Hay cambios de borrador pendientes de publicación."}</p>
     </Card>
