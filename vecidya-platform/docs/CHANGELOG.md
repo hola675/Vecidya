@@ -1,5 +1,11 @@
 # Changelog
 
+### Continuación de PR #139 — auditoría de integraciones y estado vacío (2026-10-26)
+
+- La pantalla de auditoría ahora comunica un estado vacío aplicable a todas las áreas administrativas, no solo a perfiles. El E2E confirma que el alta de integración aparece con etiqueta legible y clave técnica trazable.
+- El E2E reveló una carrera al filtrar auditoría de capacitación: la aserción leía antes de que React renderizara las dos coincidencias. El runner ahora espera ambas filas y sus etiquetas antes de comprobarlas.
+- Verificación: Worker/D1 E2E PASS, typecheck/build, `node --check` y diff-check PASS. La paginación de auditoría y el recorrido visual de todas las etiquetas siguen pendientes; no se declara la pantalla completamente certificada.
+
 ### Continuación de PR #139 — autorización explícita de mutaciones Admin (2026-10-26)
 
 - Gobierno de perfiles, cambios de servicios y altas de integraciones ahora exigen acciones explícitas de la allowlist de `platform_admin`; la lectura mantiene su control de acceso previo. El E2E intenta mutar como staff activo y como administrador de plataforma inactivo: ambos reciben 403, sin cambios en filas ni auditoría D1.

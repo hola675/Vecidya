@@ -84,7 +84,7 @@ export default function InternalAudit() {
             </div> : <section className="admin-filter-empty card"><p className="eyebrow">SIN COINCIDENCIAS</p><h2>No hay registros con estos criterios</h2><p>Ajusta la búsqueda o selecciona otra acción.</p></section>}
           </>
         ) : (
-          <section className="empty-state card"><img alt="" height="320" src={publicAssets.illustrations.adminEmptySearch} width="320" /><div><p className="eyebrow">SIN ACTIVIDAD</p><h2>Todavía no hay acciones administrativas registradas</h2><p>Las verificaciones y suspensiones de Business Profiles aparecerán aquí.</p></div></section>
+          <section className="empty-state card"><img alt="" height="320" src={publicAssets.illustrations.adminEmptySearch} width="320" /><div><p className="eyebrow">SIN ACTIVIDAD</p><h2>Todavía no hay acciones administrativas registradas</h2><p>Los cambios de organizaciones, perfiles, servicios, integraciones, licencias y capacitación aparecerán aquí cuando se realicen.</p></div></section>
         )}
       </main>
     </AdminShell>

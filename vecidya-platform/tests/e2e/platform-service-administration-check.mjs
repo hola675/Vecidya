@@ -412,6 +412,11 @@ try {
   const trainingAuditSearch = page.getByRole("searchbox", { name: "Buscar en auditoría" });
   await trainingAuditSearch.fill("capacitación");
   const trainingAuditRows = page.locator("tbody tr");
+  await page.waitForFunction(() => {
+    const rows = [...document.querySelectorAll("tbody tr")];
+    const text = rows.map((row) => row.textContent ?? "").join(" ");
+    return rows.length === 2 && text.includes("Asignó capacitación a la organización") && text.includes("Corrigió el progreso de capacitación");
+  });
   const trainingAuditText = (await trainingAuditRows.allInnerTexts()).join("\n");
   assert(await trainingAuditRows.count() === 2 && trainingAuditText.includes("Asignó capacitación a la organización") && trainingAuditText.includes("Corrigió el progreso de capacitación"), `El historial de Admin no etiquetó ni filtró los eventos de capacitación: ${trainingAuditText}.`);
 
@@ -481,6 +486,8 @@ await assertStatus(identities.platform.client, integrationsB, 201, integrationPo
 await assertStatus(identities.platform.client, integrationsB, 409, integrationPost(`external-a-${suffix}`));
 await assertStatus(identities.platform.client, integrationsA, 400, integrationPost(`invalid-status-${suffix}`, "unknown"));
 await assertStatus(identities.platform.client, integrationsA, 400, integrationPost(`secret-metadata-${suffix}`, "active", '{"apiKey":"forbidden"}'));
+const integrationsAuditHtml = await (await assertStatus(identities.platform.client, "/app/internal/audit", 200)).text();
+assert(integrationsAuditHtml.includes("Registró una integración") && integrationsAuditHtml.includes("organization_integration.create"), "La auditoría de Admin no presentó una etiqueta comprensible para el alta de integración.");
 
 const tenantAConnections = await (await assertStatus(identities["owner-a"].client, tenantIntegrationsA, 200)).json();
 const tenantBConnections = await (await assertStatus(identities["owner-b"].client, tenantIntegrationsB, 200)).json();
