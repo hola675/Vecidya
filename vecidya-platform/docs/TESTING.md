@@ -2,7 +2,7 @@
 
 ## APRENDE-EDITORIAL-04I — catálogo sin borradores (2026-10-25)
 
-**TEST versionado / RAN pendiente.** El contrato editorial exige **48 guías revisadas / 0 borradores**. Las dos guías fundacionales deben conservar aprobación, relación recíproca y fuentes OCDE 2026, NIST CSF 2.0, CISA Secure Our World y W3C WAI.
+**RAN en GitHub Actions:** `Aprende quality` run `40247742516` PASS: typecheck, build e integridad Aprende. El contrato editorial exige **48 guías revisadas / 0 borradores**. Las dos guías fundacionales deben conservar aprobación, relación recíproca y fuentes OCDE 2026, NIST CSF 2.0, CISA Secure Our World y W3C WAI.
 
 ## APRENDE-EDITORIAL-04H — Gestión revisada (2026-10-25)
 
