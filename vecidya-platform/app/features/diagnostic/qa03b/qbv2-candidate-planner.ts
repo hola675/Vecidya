@@ -28,7 +28,7 @@ export type CandidateEvidenceSufficiencyV3 = {
   readonly sufficient: boolean;
   readonly terminalReason: "no_useful_questions" | "useful_questions_remaining" | "budget_blocked";
 };
-export type CandidatePlannerTraceV3 = { readonly questionId: string; readonly reason: QuestionSelectionReason; readonly selected: boolean; readonly evidenceDimensions: readonly DigitalDimensionId[]; readonly supportingDimensions: readonly DigitalDimensionId[]; readonly skipReason?: "ineligible" | "pending_evidence" | "not_useful" | "hard_cap" | "module_budget" | "base_budget" };
+export type CandidatePlannerTraceV3 = { readonly questionId: string; readonly reason: QuestionSelectionReason; readonly selected: boolean; readonly evidenceDimensions: readonly DigitalDimensionId[]; readonly supportingDimensions: readonly DigitalDimensionId[]; readonly skipReason?: "ineligible" | "pending_evidence" | "not_useful" | "hard_cap" | "module_budget" | "base_budget" | "replaced_by_specialty" };
 export type CandidateQuestionPlanV3 = {
   readonly plannerIdentity: typeof CANDIDATE_PLANNER_IDENTITY_V3;
   readonly activeAnswers: AnswersV2;
@@ -125,10 +125,32 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
   const eligible = new Set(resolution.eligibleQuestionIds);
   const prospectiveUtilityById = new Map<string, boolean>();
   const unlocks = new Set<string>();
+
+  // In an active insurance agency with a real renewal branch, the specialty
+  // question replaces the generic "review pending tasks" observation when it
+  // can produce substantive renewal evidence. If the specialty answer is
+  // unknown/not-applicable, the generic question remains available as fallback.
+  // This substitution is shadow-only and must not change baseline/public routes.
+  const renewalQuestion = questionById.get("q2_specialty_insurance_renewal");
+  const renewalAnswer = activeAnswers["q2_specialty_insurance_renewal"];
+  const renewalHasSubstantiveAnswer = typeof renewalAnswer === "string"
+    && renewalAnswer !== "unknown" && renewalAnswer !== "not_applicable";
+  const renewalCanResolveOpenDimension = renewalQuestion !== undefined
+    && eligible.has("q2_specialty_insurance_renewal")
+    && semanticSources(renewalQuestion).direct.some((dimension) => open.has(dimension));
+  const specialtyReplacementIds = new Set<string>(
+    policy === "utility_first"
+      && activeAnswers["q2_niche_financial_tax_insurance"] === "insurance_agency"
+      && (renewalHasSubstantiveAnswer || (renewalAnswer === undefined && renewalCanResolveOpenDimension))
+      ? ["q2_followup_status_visibility"]
+      : [],
+  );
+
   // A prerequisite is useful only when one of its real answers activates an otherwise unavailable,
   // useful candidate child. A syntactic reference alone is not a routing benefit.
   for (const question of bank) {
     if (activeAnswers[question.id] !== undefined || !eligible.has(question.id)) continue;
+    if (specialtyReplacementIds.has(question.id)) continue;
     const parentSources = semanticSources(question);
     const parentFields = producedFields(question);
     // Do not collect an out-of-scope direct observation merely to unlock a different question.
@@ -159,6 +181,17 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
     if (activeAnswers[q.id] !== undefined) continue;
     const sources = semanticSources(q);
     const fields = producedFields(q);
+    if (specialtyReplacementIds.has(q.id)) {
+      trace.push({
+        questionId: q.id,
+        reason: rankReason(q, unresolvedFields, unlocks, false, false, false),
+        selected: false,
+        evidenceDimensions: sources.direct,
+        supportingDimensions: sources.supporting,
+        skipReason: "replaced_by_specialty",
+      });
+      continue;
+    }
     const neededContext = new Set<ContextFieldRef>([...CONTEXT_CORE].filter((f) => unresolvedFields.has(f)));
     const goal = resolution.context.primaryGoal.status === "resolved" ? resolution.context.primaryGoal.value : undefined;
     const friction = resolution.context.primaryFriction.status === "resolved" ? resolution.context.primaryFriction.value : undefined;
