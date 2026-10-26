@@ -167,6 +167,13 @@ try {
       await activePage.locator(".learn-guide-list > li").first().waitFor();
       assert.equal(await activePage.locator(".learn-guide-list > li").count(), 30, "No se recuperó el catálogo después de limpiar la búsqueda.");
       await activePage.locator(".learn-discovery__chip").filter({ hasText: "CRM y clientes" }).click();
+      // React Router updates the loader asynchronously; wait for the committed
+      // category and its actual result count before inspecting rendered links.
+      await activePage.locator('.learn-discovery__chip[aria-current="page"]').filter({ hasText: "CRM y clientes" }).waitFor({ state: "visible" });
+      await activePage.waitForFunction(() => {
+        const count = document.querySelectorAll(".learn-guide-list > li").length;
+        return count > 0 && count < 30;
+      });
       const filtered = await visibleLinks(activePage).evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
       assert(filtered.length > 0 && filtered.length < 30, "El filtro de categoría no funciona.");
       assertAllVisibleLinksPublished(filtered, "filtro CRM");
