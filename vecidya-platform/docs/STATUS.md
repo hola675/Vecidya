@@ -1,8 +1,8 @@
 # Estado de implementación
 
-## RELEASE-0.8.2 — candidato pendiente de publicar (2026-10-26)
+## RELEASE-0.8.2 — publicado (2026-10-26)
 
-Base `main@c4a7e8ec`: PR #147 aprobó 18 guías; el catálogo contiene 48 guías publicables. PR #139 añade auditoría funcional de Admin y `0029` para garantizar una sola licencia no cancelada por organización. La versión candidata es `0.8.2`; producción sigue en `0.8.1` hasta terminar merge, migración, deploy y HTTP anónimo. **D1 producción (RAN, lectura):** ledger `0000–0028`, 0 licencias no canceladas y 0 organizaciones duplicadas; `0029` pendiente. La auditoría Admin sigue parcial según la deuda P2/P3 detallada abajo.
+PR #139 integrado en `main@c03c3bab`; producción publica `0.8.2` (Worker Version ID `d9042b45-7c24-4da6-991c-38533c1f2f95`). Migración `0029` aplicada a D1 producción; índice único parcial confirmado. GET anónimo posterior al deploy cargó `/` y `/aprende`, con footer `0.8.2`; Aprende muestra 48 guías y 9 itinerarios. Staging no se modificó. La auditoría Admin conserva deuda P2/P3 según el detalle siguiente.
 
 ## PROD-RELEASE-0.8.1 — publicado (2026-10-26)
 
