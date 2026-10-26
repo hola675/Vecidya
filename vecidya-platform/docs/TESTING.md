@@ -1,5 +1,9 @@
 # Pruebas
 
+## SECTOR-UX-03 — mejoras de selección (2026-10-26; rama, no publicada)
+
+**TESTS/CI del selector:** `tests/unit/business-sector-picker.test.ts` comprueba render SSR, pregunta de negocio/emprendimiento y conservación de valor legacy; `tests/unit/business-sectors.test.ts` prueba sugerencias por oficio y ausencia de inferencia (dentista, finca, taller mecánico, abogado, tienda online, restaurante). Ejecutar suite, typecheck/build y E2E real del formulario antes de integrar; no confundir CI con aceptación visual en navegador.
+
 ## SECTOR-TAXONOMY-02 — nueva taxonomía y elección en perfil (2026-10-26)
 
 **CODE/TEST, todavía no RAN:** `tests/unit/business-sectors.test.ts` protege el recuento (15 familias + Otra), unicidad de ID/etiqueta, ejemplos, cobertura de los 20 sectores NAICS 2022 como referencias, separación sector/canal/comprador y preservación de categoría legacy. `tests/unit/diagnostic/qa03b-v9-general-sector-question.test.ts` comprueba que la pregunta candidata usa exactamente los sectores publicados, distingue `unknown` y no introduce evidencia ni modifica el banco V8. Deben ejecutarse `pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/business-sectors.test.ts tests/unit/miniweb/neighborhood.test.ts`, `pnpm run typecheck`, `pnpm run build`, `pnpm run test:unit` y el E2E de perfil/Vecindario con categorías preexistentes en snapshots. CI pendiente. La codificación actual en `business_profile.category` guarda la etiqueta exacta y no requiere migración D1. No declarar QA de campo ni compatibilidad de V9 sin pruebas de integración adicionales.

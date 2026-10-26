@@ -1,5 +1,9 @@
 # Estructura del código
 
+## SECTOR-UX-03 — mejoras de selección (2026-10-26; rama, no publicada)
+
+**SECTOR-UX-03:** `app/components/business-sector-picker.tsx` reemplaza el `<select>` fijo de `app/routes/business-profile.tsx`, usando `searchBusinessSectors` de `app/content/business-sectors.ts`; el formulario conserva `name="category"` mediante campo oculto controlado y la categoría previa si no es canónica. CSS acotado a `.business-sector-picker` en `app/styles/vecidya-polish.css`. No se usa algoritmo heurístico para guardar una categoría; solo elección expresa.
+
 ## SECTOR-TAXONOMY-02 — clasificación compartida (2026-10-26, rama)
 
 `app/content/business-sectors.ts`: catálogo V1 de quince sectores generales y salida «Otra actividad», 16 etiquetas canónicas, IDs permanentes y comparación orientativa con NAICS 2022. `/app/business-profile` consume ese catálogo en un `<select name="category">` y conserva como opción la categoría anterior no canónica. `business_profile.category` mantiene su tipo `text` de siempre: se almacena la etiqueta pública seleccionada, no el ID. `/vecindario` y `app/features/miniweb/neighborhood.ts` mantienen búsqueda y filtro exactos de categorías de perfiles publicados; el nuevo sector aparece automáticamente cuando su etiqueta sea publicada mediante snapshot de MiniWeb. Sin rutas nuevas, sin modificación de DB o D1, sin mapping heurístico y sin despliegue. `qa03b/v9-general-sector-question.ts` proyecta el mismo catálogo en una pregunta candidata de 16 sectores + «No sé», sin scoring ni ruta activa. QA-03B V9 requiere una migración posterior del motor/contrato, no se activa en este checkpoint.

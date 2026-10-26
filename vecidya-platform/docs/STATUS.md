@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## SECTOR-UX-03 — mejoras de selección (2026-10-26; rama, no publicada)
+
+**CODE/GIT — selector de negocio/emprendimiento, no publicado:** el campo de categoría de `/app/business-profile` ahora muestra la pregunta «¿A qué se dedica principalmente tu negocio o emprendimiento?» con búsqueda explícita por sinónimos, máximo siete sugerencias visibles, opción de abrir las 16 categorías, opción «Otra actividad» y conservación de etiquetas legacy; la elección se refleja en la previsualización y se envía como texto canónico existente, sin alterar D1. No hay clasificación automática ni cambios en V8.
+
 ## SECTOR-TAXONOMY-02 — categorías transversales Vecindario/Diagnóstico (2026-10-26, rama independiente)
 
 **CODE/GIT (NO RAN):** se definió `app/content/business-sectors.ts` con 15 familias generales + «Otra actividad», IDs estables internos, etiquetas españolas y referencias de cobertura a los 20 sectores NAICS 2022. No se declara equivalencia oficial NAICS/ISIC ni clasificación estadística. Es una taxonomía de producto orientada a selección humana de actividad principal; comercio electrónico es canal, B2B/B2C es comprador y forma jurídica no decide sector. El perfil `/app/business-profile` ahora propone estas 16 opciones en el campo de categoría principal. El campo persistido `business_profile.category` sigue siendo texto y guarda la **etiqueta exacta**, no el ID; se conserva la opción anterior de perfiles legacy sin recodificación automática. Vecindario sigue filtrando solo categorías publicadas reales: las etiquetas nuevas aparecerán al publicarse perfiles que las hayan elegido. No se cambiaron API, esquema, snapshot, D1 remota ni indexación de perfiles antiguos.
