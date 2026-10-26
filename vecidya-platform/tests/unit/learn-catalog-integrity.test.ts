@@ -132,6 +132,32 @@ test("Las dos guías técnicas nuevas conservan la aprobación y sus fuentes pri
   assert.match(emailText, /MX|TXT|SPF|DKIM|DMARC/);
 });
 
+test("Las cuatro guías de coordinación empresarial conservan aprobación y alcance", () => {
+  const approved = [
+    "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo",
+    "quien-puede-ver-cambiar-y-publicar-en-tu-empresa",
+    "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
+    "como-comparar-resultados-de-sedes-sin-mezclar-las-cifras",
+  ];
+  for (const slug of approved) {
+    const article = getLearnArticle(slug);
+    assert.ok(article, `Falta guía empresarial revisada: ${slug}`);
+    assert.equal(article.editorialDraft, false, `Debe conservar aprobación editorial: ${slug}`);
+    const blocks = article.sections.flatMap((section) => section.blocks ?? []);
+    const sources = blocks.flatMap((block) => block.type === "sources" ? block.items : []);
+    assert.ok(sources.length >= 2, `Fuentes insuficientes: ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "example"), `Falta ejemplo: ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "faq"), `Falta FAQ: ${slug}`);
+  }
+
+  const comparison = getLearnArticle("como-comparar-resultados-de-sedes-sin-mezclar-las-cifras");
+  assert.match(JSON.stringify(comparison), /digitalisation-2026/);
+  assert.match(JSON.stringify(comparison), /10 o más personas ocupadas/);
+
+  const access = getLearnArticle("quien-puede-ver-cambiar-y-publicar-en-tu-empresa");
+  assert.match(JSON.stringify(access), /csrc\.nist\.gov\/pubs\/sp\/1300\/final/);
+});
+
 test("Todos los itinerarios enlazan a artículos reales sin duplicados internos", () => {
   const titles = new Set<string>();
   for (const pathway of learnPathways) {
