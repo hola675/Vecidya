@@ -180,6 +180,7 @@ test("V9 Worker core result deliberately contains no commercial, report or perso
   assert.equal(Object.hasOwn(replay.core, "commercial"), false);
   assert.equal(Object.hasOwn(replay.core, "report"), false);
   assert.equal(Object.hasOwn(replay.core, "email"), false);
-  assert.doesNotMatch(serialized, /@|businessName|responsibleName/);
+  assert.doesNotMatch(serialized, /"email"|"businessName"|"responsibleName"/);
+  assert.match(serialized, /q2_food_menu_visibility@v1/, "versioned evidence IDs are legitimate and are not personal data");
   assert.equal(replay.core.identity.resultScope, "diagnostic-core-only-v1");
 });
