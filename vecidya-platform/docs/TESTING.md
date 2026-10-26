@@ -1,5 +1,9 @@
 # Pruebas
 
+## APP-MINI-02B — horarios, identidad y retículas (2026-10-26)
+
+`business-profile-experience-check.mjs` protege valores de horario tras rechazo, navegación por foco, guardado y ausencia del campo URL heredado del logo. Ejecución solo contra Worker Cloudflare local y D1 local: **PASS**. `miniweb-core-check.mjs`: **134/134 PASS**; protege logo/portada publicados en el marco, editor y su cabecera, Vecindario y layout responsive sin overflow, y ausencia de exposición prematura de medios. Fixtures limpiadas. Typecheck, build y `git diff --check`: PASS. Sin pruebas contra producción.
+
 ## Vecidya Admin — VECIDYA-ADMIN-FUNCTIONAL-AUDIT (2026-10-25)
 
 | Ruta / componente | Control y evidencia de código | Estado de esta auditoría | Defecto / reparación | Verificación |

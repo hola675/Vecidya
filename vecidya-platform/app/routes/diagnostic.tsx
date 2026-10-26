@@ -8,8 +8,8 @@ import { isIdentifiedReportJourneyAvailable } from "../features/diagnostic/ident
 import type { Route } from "./+types/diagnostic";
 
 /**
- * ACT-04 — cuestionario adaptativo QA-03B. Mantiene sesiones V3 históricas en su clave anterior;
- * las nuevas sesiones usan schema/key 7 y replay v5; el Worker reconstruye el resumen anónimo.
+ * ACT-04 — cuestionario adaptativo QA-03B. Mantiene sesiones históricas en sus claves anteriores;
+ * las nuevas sesiones usan el contrato de banco v8, schema/key 8 y replay v6.
  */
 
 export function meta(_: Route.MetaArgs) {

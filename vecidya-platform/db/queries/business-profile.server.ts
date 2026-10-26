@@ -164,6 +164,8 @@ export async function listPublishedBusinessProfiles(database: Database, filters:
     if (!matchesNeighborhoodFilters(neighborhoodProfile, filters)) return [];
     const mode = neighborhoodProfile.serviceMode;
     const moduleLabels = neighborhoodProfile.modules.map((type) => MINIWEB_MODULE_REGISTRY[type].label);
+    const publishedLogo = snapshot?.branding.logoAssetId;
+    const publishedCover = snapshot?.media.find((asset) => asset.purpose === "cover" && asset.mediaType === "image");
     return [{
       slug: profile.slug,
       displayName: profile.displayName,
@@ -171,7 +173,8 @@ export async function listPublishedBusinessProfiles(database: Database, filters:
       category: profile.category,
       city: profile.city,
       country: profile.country,
-      logoUrl: profile.logoUrl,
+      logoUrl: publishedLogo ? `/media/business/${encodeURIComponent(profile.slug)}/${encodeURIComponent(publishedLogo)}` : null,
+      coverUrl: publishedCover ? `/media/business/${encodeURIComponent(profile.slug)}/${encodeURIComponent(publishedCover.id)}` : null,
       serviceArea: profile.serviceArea,
       serviceMode: mode,
       offerings: neighborhoodProfile.offerings.map(({ kind, title }) => ({ kind, title })),

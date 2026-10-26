@@ -4,6 +4,8 @@ La certificación pública integrada verifica rutas, navegación por teclado y v
 
 ## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
 
+**APP-MINI-02B (2026-10-26):** corrección focal del perfil MiniWeb y tarjetas Vecindario guiada por las capturas del usuario. Logo administrado en medios de MiniWeb; tarjeta toma logo/portada publicados; secciones organizadas en retícula común. Candidato local; resultado de E2E, PR e integración se registra en `STATUS.md`.
+
 **Objetivo:** adaptar las referencias premium entregadas por el usuario a una experiencia coherente de Vecidya, preservando contenido, datos, permisos, funcionamiento móvil y límites comerciales. Las referencias guían composición e interacción; no se copian marcas, textos, layouts exactos ni assets. Este trabajo no incluye publicación ni despliegue.
 
 **Principios:** usar la identidad y componentes vigentes antes de añadir variantes; diferenciar la expresividad de la web pública de la claridad operativa de Mi Vecidya y Admin; mostrar solo datos y capacidades comprobables; WCAG 2.2 AA, teclado, foco visible, objetivos táctiles, zoom y `prefers-reduced-motion`; no incorporar WebGL donde perjudique carga o accesibilidad.

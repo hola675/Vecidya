@@ -271,7 +271,8 @@ try {
   qaOfferings[0].imageAssetId = galleryUpload.asset.id;
   const logoUploadResponse = await uploadPng(ownerA, organizationA, "logo", mediaRevision, "Marca del negocio");
   check(logoUploadResponse.status === 201, `el owner puede cargar el logo como medio de marca (${logoUploadResponse.status})`);
-  mediaRevision = (await logoUploadResponse.json()).draftRevision;
+  const logoUpload = await logoUploadResponse.json();
+  mediaRevision = logoUpload.draftRevision;
   const iconUploadResponse = await uploadPng(ownerA, organizationA, "icon", mediaRevision, "Icono compacto");
   check(iconUploadResponse.status === 201, `el owner puede cargar el icono separado del logo (${iconUploadResponse.status})`);
   mediaRevision = (await iconUploadResponse.json()).draftRevision;
@@ -416,7 +417,6 @@ try {
   const publishedGalleryResponse = await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), initialGallery.id), baseUrl));
   check(publishedCoverResponse.status === 200 && publishedCoverResponse.headers.get("content-type") === "image/png", "la portada se entrega anónimamente tras publicar");
   check(publishedGalleryResponse.status === 200, "la galería se entrega anónimamente solo cuando está en el snapshot publicado");
-
   const beforeStaleRemoval = (await (await ownerA.client.json(pathA, null, "GET")).json()).draftRevision;
   const staleRemoval = await ownerA.client.fetch(mediaPathFor(organizationA, initialCover.asset.id), {
     method: "DELETE", headers: { "content-type": "application/json" }, body: JSON.stringify({ draftRevision: beforeStaleRemoval - 1 }),
@@ -440,6 +440,13 @@ try {
   check(republishMedia.status === 200, "la republicación incorpora el borrador de medios actualizado");
   check((await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), initialCover.asset.id), baseUrl))).status === 404, "la portada retirada deja de servirse tras republicar");
   check((await fetch(new URL(publicMediaPathFor(profileSlug("public-a"), replacementCover.asset.id), baseUrl))).status === 200, "la portada de reemplazo se sirve tras republicar");
+  const publishedProfileWithCover = await (await fetch(new URL(`/vecindario/${profileSlug("public-a")}`, baseUrl))).text();
+  const logoFrameStart = publishedProfileWithCover.indexOf('class="public-business-profile__identity public-business-profile__identity--cover"');
+  const coverIndex = publishedProfileWithCover.indexOf('class="miniweb-cover"', logoFrameStart);
+  const logoIndex = publishedProfileWithCover.indexOf(`src="${publicMediaPathFor(profileSlug("public-a"), logoUpload.asset.id)}"`, logoFrameStart);
+  const introIndex = publishedProfileWithCover.indexOf('class="public-business-profile__intro"', logoFrameStart);
+  check(logoFrameStart >= 0 && coverIndex > logoFrameStart && logoIndex > coverIndex && introIndex > logoIndex, "la portada publicada queda dentro y detrás del logo en el marco de identidad");
+  check(logoIndex > coverIndex && logoIndex < introIndex, "el logo publicado en Archivos e identidad aparece sobre la portada");
 
   await d1(`UPDATE business_profile_publication SET snapshot_json = 'not-json' WHERE organization_id = '${organizationA}';`);
   const corruptedSnapshotResponse = await ownerA.client.fetch(`/vecindario/${profileSlug("public-a")}`);
@@ -583,6 +590,7 @@ try {
   check(await page.getByRole("button", { name: "Retirar del borrador" }).count() === 5, "el editor permite retirar galería, logo, icono y portada del borrador");
   await page.getByRole("button", { name: "4 Vista previa" }).click();
   check(await page.locator(".miniweb-editor__preview .miniweb-standalone__header").isVisible(), "el preview muestra la cabecera real de MiniWeb");
+  check(await page.locator(".miniweb-editor__preview .miniweb-standalone__header img").count() === 1, "la cabecera de vista previa usa el logo cargado desde Archivos e identidad");
   check(await page.locator(".miniweb-editor__publication-state").getByText("Hay cambios guardados que todavía no se han publicado.").count() === 1, "el estado de MiniWeb identifica cambios de perfil/horarios aunque el diseño siga igual");
   await page.getByRole("button", { name: "5 Publicar" }).click();
   const ownerBContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
@@ -644,9 +652,51 @@ try {
   }
   check(directoryViewportResults.every(({ overflow }) => !overflow), "el índice del Vecindario y sus filtros no desbordan a 1366/768/390/320");
   console.log(JSON.stringify({ directoryViewports: directoryViewportResults }, null, 2));
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await page.goto(new URL(`/vecindario?q=${encodeURIComponent(draftName)}`, baseUrl).toString(), { waitUntil: "networkidle" });
+  const singleCardLayout = await page.locator(".public-v2-business-card").evaluate((card) => {
+    const rect = card.getBoundingClientRect();
+    return { count: document.querySelectorAll(".public-v2-business-card").length, left: rect.left, width: rect.width, viewport: window.innerWidth };
+  });
+  check(singleCardLayout.count === 1 && Math.abs(singleCardLayout.left + singleCardLayout.width / 2 - singleCardLayout.viewport / 2) < 2,
+    `una sola tarjeta del Vecindario queda centrada (${JSON.stringify(singleCardLayout)})`);
+  await page.goto(new URL("/vecindario", baseUrl).toString(), { waitUntil: "networkidle" });
+  const rowCardHeights = await page.locator(".directory-grid-v2 > li").evaluateAll((items) => {
+    const rows = new Map();
+    for (const item of items) {
+      const rect = item.querySelector(".public-v2-business-card").getBoundingClientRect();
+      const key = Math.round(rect.top);
+      rows.set(key, [...(rows.get(key) ?? []), rect.height]);
+    }
+    return [...rows.values()].map((heights) => Math.max(...heights) - Math.min(...heights));
+  });
+  check(rowCardHeights.every((difference) => difference < 1), `las tarjetas de cada fila mantienen altura uniforme (${JSON.stringify(rowCardHeights)})`);
   await page.goto(new URL(`/vecindario/${profileSlug("public-a")}`, baseUrl).toString(), { waitUntil: "networkidle" });
   for (const width of [1366, 390]) {
     await page.setViewportSize({ width, height: 900 });
+    const identityFrame = page.locator(".public-business-profile__identity--cover");
+    const coverLayout = await identityFrame.evaluate((frame) => {
+      const cover = frame.querySelector(".miniweb-cover");
+      const logo = frame.querySelector('img[alt^="Logo de"]');
+      const coverRect = cover?.getBoundingClientRect();
+      return {
+        frameWidth: frame.clientWidth,
+        frameHeight: frame.clientHeight,
+        coverWidth: coverRect?.width ?? 0,
+        coverHeight: coverRect?.height ?? 0,
+        coverFit: cover ? getComputedStyle(cover).backgroundSize : "missing",
+        coverStack: cover ? getComputedStyle(cover).zIndex : "missing",
+        logoStack: logo ? getComputedStyle(logo).zIndex : "missing",
+        coverAccessible: cover?.getAttribute("role") === "img" && Boolean(cover.getAttribute("aria-label")),
+        logoPresent: Boolean(logo),
+      };
+    });
+    check(coverLayout.frameWidth > 0 && Math.abs(coverLayout.coverWidth - coverLayout.frameWidth) < 1 && Math.abs(coverLayout.coverHeight - coverLayout.frameHeight) < 1,
+      `la portada publicada llena el marco de identidad a ${width}px (${JSON.stringify(coverLayout)})`);
+    check(coverLayout.coverFit === "cover" && Number(coverLayout.coverStack) < Number(coverLayout.logoStack) && coverLayout.logoPresent,
+      `el logo queda delante de la portada a ${width}px`);
+    check(coverLayout.coverAccessible && await page.locator(".public-business-profile__icon").isVisible(),
+      `portada accesible e icono del negocio visible a ${width}px`);
     await page.screenshot({ fullPage: true, path: join(captureDirectory, `app-mini-02a-public-${width}.png`) });
   }
 } catch (error) {

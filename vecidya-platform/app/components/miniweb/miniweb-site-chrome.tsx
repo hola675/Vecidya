@@ -15,13 +15,14 @@ export function MiniWebSiteHeader({
   profile,
   visibleModules,
   preview = false,
-}: ChromeProps & { visibleModules: readonly MiniWebModuleType[] }) {
+  logoUrl,
+}: ChromeProps & { visibleModules: readonly MiniWebModuleType[]; logoUrl?: string | null }) {
   const navigation = buildMiniWebPublicNavigation(visibleModules);
   const name = profile.displayName.trim() || "Tu negocio";
-  const logoUrl = resolveBusinessLogoUrl(profile.logoUrl, preview);
+  const resolvedLogoUrl = resolveBusinessLogoUrl(logoUrl ?? profile.logoUrl, preview);
   const brand = (
     <>
-      {logoUrl ? <img alt="" height={40} src={logoUrl} width={40} /> : null}
+      {resolvedLogoUrl ? <img alt="" height={40} src={resolvedLogoUrl} width={40} /> : null}
       <span>{name}</span>
     </>
   );

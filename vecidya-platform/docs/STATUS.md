@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## APP-MINI-02B — horarios, identidad MiniWeb y consistencia visual (2026-10-26)
+
+**Checkpoint en verificación desde `main@072cd4f2`:** `/app/business-profile` conserva entradas de horario cuando la validación responde 400/409, sincroniza foco/indicador de paso y ya no presenta el logo como URL heredada; el logo se administra desde Archivos e identidad de Mi MiniWeb. El logo publicado y la portada del snapshot alimentan el encabezado, identidad y tarjeta del Vecindario; la portada queda detrás del logo dentro de su marco. La tarjeta del Vecindario centra un resultado, alinea áreas de texto/acción y la página MiniWeb organiza las secciones en una retícula 2 columnas / 1 móvil. Sin schema, migraciones remotas, permisos nuevos o pruebas contra producción. E2E horarios y MiniWeb PASS; MiniWeb comprobó 134/134 aserciones, incluido editor, publicación, tarjetas y layout responsive. Typecheck/build PASS; `git diff --check` se corrigió retirando un salto vacío final y se debe repetir. PR, CI, deploy y GET anónimo postdeploy pendientes.
+
 ## RELEASE-0.8.2 — publicado (2026-10-26)
 
 PR #139 integrado en `main@c03c3bab`; producción publica `0.8.2` (Worker Version ID `d9042b45-7c24-4da6-991c-38533c1f2f95`). Migración `0029` aplicada a D1 producción; índice único parcial confirmado. GET anónimo posterior al deploy cargó `/` y `/aprende`, con footer `0.8.2`; Aprende muestra 48 guías y 9 itinerarios. Staging no se modificó. La auditoría Admin conserva deuda P2/P3 según el detalle siguiente.
@@ -91,6 +95,8 @@ Los registros por checkpoint anteriores describían ramas y estados candidatos. 
 ## DIAG-MOTOR-04 — activación QA-03B por rangos (2026-10-24)
 
 **Integrada por PR #97 en `origin/main@62822ee`; CI 40105749133 en verde.** QA-03B y el replay del Worker usan calibración v4, cuatro rangos inclusivos (0–25, 26–50, 51–75, 76–100), mínimo de tres áreas y 60% de cobertura aplicable. La sesión usa schema/key 8, replay v6, metodología 3.2 e informe 1.2, con compatibilidad 1.0/1.1; el resumen anónimo conserva 12 claves. El HTTP anónimo actual muestra `0.7.3` en producción y `0.7.0` en staging; no se verificó el SHA del Worker ni se hizo replay funcional en este corte, así que la publicación de esta calibración no se afirma. Las 60 rutas sintéticas siguen absteniéndose del índice por evidencia insuficiente. Consistencia técnica no acredita validez predictiva ni calibración empírica.
+
+**Reconciliación posterior:** el release `0.8.2` desplegado (`main@c03c3bab`, ver `ENVIRONMENTS.md`) incluye la ruta pública QA-03B y el contrato/banco `reviewed-evidence-v8`; esto se confirma en el código de ese commit. No se ejecutó recorrido del cuestionario ni petición a `/diagnostico` en producción. QA-03B construye el banco v8 a partir del conjunto revisado histórico, aplica cambios selectivos de copy/aplicabilidad y añade nuevas preguntas de medición; no representa un reemplazo textual de todas las preguntas. Preguntas antiguas que no estaban en el conjunto de cambios siguen apareciendo intencionalmente. El comentario de `app/routes/diagnostic.tsx` que decía schema 7/replay 5 quedó corregido al contrato efectivo 8/v6.
 
 ## UX-PREMIUM-06A — accesibilidad pública por muestra (2026-10-24)
 

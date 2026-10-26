@@ -30,6 +30,7 @@ type BusinessCardProfile = {
   city: string | null;
   country: string | null;
   logoUrl: string | null;
+  coverUrl: string | null;
   serviceArea: string | null;
   serviceMode: string | null;
   offerings: { kind: NeighborhoodOfferingKind; title: string }[];
@@ -228,7 +229,7 @@ export function BusinessCardV2({ profile }: { profile: BusinessCardProfile }) {
 
   return (
     <article className="public-v2-business-card">
-      <div className="public-v2-business-card__identity">
+      <div className="public-v2-business-card__identity" style={profile.coverUrl ? { backgroundImage: `linear-gradient(rgb(255 255 255 / 44%), rgb(255 255 255 / 44%)), url(${JSON.stringify(profile.coverUrl)})` } : undefined}>
         {profile.logoUrl ? (
           <img alt={`Logo de ${profile.displayName}`} height={160} loading="lazy" src={profile.logoUrl} width={160} />
         ) : (
@@ -238,11 +239,15 @@ export function BusinessCardV2({ profile }: { profile: BusinessCardProfile }) {
       <div className="public-v2-business-card__content">
         <p className="eyebrow">{profile.category ?? "NEGOCIO LOCAL"}</p>
         <h2><Link to={`/vecindario/${profile.slug}`}>{profile.displayName}</Link></h2>
-        {location ? <p className="public-v2-business-card__location">{location}</p> : null}
-        {profile.serviceArea ? <p className="public-v2-business-card__location">Atiende: {profile.serviceArea}</p> : null}
-        {profile.serviceMode && profile.serviceMode in serviceModeLabels ? <p className="public-v2-business-card__location">{serviceModeLabels[profile.serviceMode]}</p> : null}
-        {profile.shortDescription ? <p>{profile.shortDescription}</p> : null}
-        {tags.length ? <ul aria-label="Servicios y productos publicados" className="directory-card-offerings">{tags.map(({ kind, title }) => <li key={`${kind}:${title}`}>{title}</li>)}</ul> : null}
+        <div className="public-v2-business-card__facts">
+          {location ? <p className="public-v2-business-card__location">{location}</p> : null}
+          {profile.serviceArea ? <p className="public-v2-business-card__location">Atiende: {profile.serviceArea}</p> : null}
+          {profile.serviceMode && profile.serviceMode in serviceModeLabels ? <p className="public-v2-business-card__location">{serviceModeLabels[profile.serviceMode]}</p> : null}
+        </div>
+        <p className="public-v2-business-card__summary">{profile.shortDescription}</p>
+        <ul aria-label="Servicios y productos publicados" className="directory-card-offerings">
+          {tags.map(({ kind, title }) => <li key={`${kind}:${title}`}>{title}</li>)}
+        </ul>
         {profile.moduleLabels.length ? <p className="directory-card-modules">Secciones: {profile.moduleLabels.join(" · ")}</p> : null}
         <Link className="directory-card__link" to={`/vecindario/${profile.slug}`}>Ver perfil<span aria-hidden="true"> →</span></Link>
       </div>

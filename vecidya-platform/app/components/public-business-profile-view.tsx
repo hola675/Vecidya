@@ -94,11 +94,13 @@ export function PublicBusinessHeader({
   preview = false,
   showContactActions = true,
   iconUrl,
+  cover,
 }: {
   profile: PublicBusinessProfile;
   preview?: boolean;
   showContactActions?: boolean;
   iconUrl?: string;
+  cover?: { publicUrl: string; altText: string };
 }) {
   const location = [profile.city, profile.country].filter(Boolean).join(", ");
   const actions = getContactActions(profile);
@@ -108,7 +110,8 @@ export function PublicBusinessHeader({
 
   return (
     <section aria-labelledby="public-business-title" className="public-business-profile__header">
-      <div className="public-business-profile__identity">
+      <div className={`public-business-profile__identity${cover ? " public-business-profile__identity--cover" : ""}`}>
+        {cover ? <div aria-label={cover.altText} className="miniweb-cover" role="img" style={{ backgroundImage: `url(${JSON.stringify(cover.publicUrl)})` }} /> : null}
         {imageUrl ? (
           <img alt={`Logo de ${profile.displayName}`} decoding="async" height={256} src={imageUrl} width={256} />
         ) : (

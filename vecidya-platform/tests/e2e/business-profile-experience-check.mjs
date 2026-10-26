@@ -218,6 +218,7 @@ const profileA = await expectStatus(client.fetch("/app/business-profile"), 200, 
 const profileAHtml = await profileA.text();
 assert(profileAHtml.includes(`Negocio A ${suffix}`), "Al volver a A no se mostró el perfil A.");
 assert(!profileAHtml.includes(`Negocio B ${suffix}`), "El perfil B se filtró en la organización A.");
+assert(!profileAHtml.includes("URL del logo") && !/name="logoUrl"/.test(profileAHtml), "el logo ya no se captura como URL heredada en los datos del negocio");
 
 const browser = await chromium.launch(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {});
 try {

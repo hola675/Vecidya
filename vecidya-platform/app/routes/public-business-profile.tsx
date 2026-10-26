@@ -45,11 +45,12 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   const faqs = (profile.publicationSnapshot?.faqs ?? []).filter((item) => item.isActive);
   const media = (profile.publicationSnapshot?.media ?? []).map((asset) => ({ ...asset, publicUrl: `/media/business/${encodeURIComponent(profile.slug)}/${encodeURIComponent(asset.id)}`, sizeBytes: 0, createdAt: new Date(0) }));
   const publishedLogo = media.find((asset) => asset.id === profile.publicationSnapshot?.branding.logoAssetId);
-  if (publishedLogo) publicProfile.logoUrl = publishedLogo.publicUrl;
+  publicProfile.logoUrl = publishedLogo?.publicUrl ?? null;
+  const publishedCover = media.find((asset) => asset.id === profile.publicationSnapshot?.media.find((item) => item.purpose === "cover" && item.mediaType === "image")?.id);
   const renderableModules = getRenderableMiniWebModules(miniweb.publishedConfiguration, publicProfile, hours, offerings, faqs, media);
   const publicModel = restrictMiniWebPublicModel(publicProfile, hours, renderableModules.map((module) => module.type));
 
-  return { ...publicModel, configuration: miniweb.publishedConfiguration, offerings, faqs, media, visibleModuleTypes: renderableModules.map((module) => module.type) };
+  return { ...publicModel, configuration: miniweb.publishedConfiguration, offerings, faqs, media, logoUrl: publishedLogo?.publicUrl ?? null, cover: publishedCover ? { publicUrl: publishedCover.publicUrl, altText: publishedCover.altText } : null, visibleModuleTypes: renderableModules.map((module) => module.type) };
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
@@ -58,7 +59,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export default function PublicBusinessProfilePage() {
-  const { profile, hours, configuration, offerings, faqs, media, visibleModuleTypes } = useLoaderData<typeof loader>();
+  const { profile, hours, configuration, offerings, faqs, media, logoUrl, cover, visibleModuleTypes } = useLoaderData<typeof loader>();
   const sameAs = [profile.websiteUrl, profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].filter(
     (url): url is string => Boolean(url),
   );
@@ -94,11 +95,11 @@ export default function PublicBusinessProfilePage() {
   return (
     <div className="public-site miniweb-standalone">
       <a className="skip-link" href="#miniweb-main">Saltar al contenido</a>
-      <MiniWebSiteHeader profile={profile} visibleModules={visibleModuleTypes} />
+      <MiniWebSiteHeader logoUrl={logoUrl} profile={profile} visibleModules={visibleModuleTypes} />
       <main className="public-page public-business-profile" id="miniweb-main">
         <JsonLd data={localBusinessSchema} />
         <div id="miniweb-sections">
-          <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} offerings={offerings} faqs={faqs} media={media} />
+          <MiniWebRenderer configuration={configuration} profile={profile} hours={hours} offerings={offerings} faqs={faqs} media={media} heroCover={cover ?? undefined} />
         </div>
       </main>
       <MiniWebSiteFooter profile={profile} />

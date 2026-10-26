@@ -1,5 +1,7 @@
 # Estructura del código
 
+**APP-MINI-02B (candidato local):** `app/routes/business-profile.tsx` mantiene el formulario de perfil sin campo URL de logo; `app/routes/miniweb-editor.tsx` administra el logo en Archivos e identidad. `app/routes/public-business-profile.tsx`, `app/components/miniweb/miniweb-renderer.tsx` y `db/queries/business-profile.server.ts` resuelven medios desde el snapshot publicado para cabecera, identidad y tarjeta Vecindario. Sin rutas nuevas ni cambios a guardas.
+
 ## UX-COHERENCE-03 — componentes compartidos (2026-10-19)
 
 Actualización APP-MINI-REDESIGN-01 (2026-10-23): `app/routes/app.tsx` y `app/routes/internal.tsx` conservan loaders y guardas; `client-area-shell.tsx` e `admin-shell.tsx` incorporan estados de drawer móvil y cierre al navegar. CSS de home/admin está scoped; no se agregan rutas ni tokens globales. E2E local valida las dos rutas y drawers en 320/390/768/1366 px. La revisión WCAG/axe completa queda pendiente.
