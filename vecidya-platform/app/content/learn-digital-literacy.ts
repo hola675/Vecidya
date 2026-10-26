@@ -19,7 +19,7 @@ export const learnDigitalLiteracyArticles: LearnArticle[] = [
     ],
     image: "/assets/learn/diagram-como-empezar.svg",
     imageAlt: "Tres pasos sencillos representan comprender un problema, elegir una prioridad y comprobar el resultado antes de añadir más tecnología.",
-    editorialDraft: true,
+    editorialDraft: false,
     relatedSlugs: [
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
@@ -253,7 +253,7 @@ export const learnDigitalLiteracyArticles: LearnArticle[] = [
     ],
     image: "/assets/learn/diagram-como-proteger.svg",
     imageAlt: "Una persona mantiene el control de sus cuentas, decisiones y copias mientras utiliza distintas herramientas digitales.",
-    editorialDraft: true,
+    editorialDraft: false,
     relatedSlugs: [
       "el-que-mucho-abarca-poco-aprieta-prioridades-digitales",
       "como-proteger-cuentas-contrasenas-estafas-negocio",
@@ -472,7 +472,7 @@ export const learnDigitalLiteracyArticles: LearnArticle[] = [
               {
                 label: "CISA — Secure Our World resources",
                 url: "https://www.cisa.gov/resources-tools/resources/secure-our-world-cybersecurity-awareness-month-resources",
-                scope: "Recursos de la agencia estadounidense CISA para individuos, familias y pequeñas empresas sobre phishing, contraseñas, autenticación multifactor y actualizaciones. Algunas páginas relacionadas pueden figurar como contenido archivado.",
+                scope: "Recursos activos de CISA para individuos, familias y pequeñas y medianas empresas sobre phishing, contraseñas, autenticación multifactor, actualizaciones y otras prácticas de seguridad digital.",
               },
               {
                 label: "NIST — Cybersecurity Framework 2.0",
