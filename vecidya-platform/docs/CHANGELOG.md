@@ -24,6 +24,11 @@
 - El recorrido reveló que `internal-organization-miniweb.tsx` devolvía `Response.redirect` crudo tras mutar. El servidor persistía la operación, pero React Router no resolvía correctamente la navegación; se cambió al helper `redirect` y el flujo vuelve a la vista con confirmación de publicado.
 - `pnpm run test:unit` (1719/1719), `pnpm run typecheck`, `pnpm run build`, `git diff --check` y `platform-service-administration-check.mjs` PASS en Worker/D1 efímeros. No datos productivos, migración remota, GHL, correo real ni deploy. La auditoría sigue parcial; ver deuda actualizada en `STATUS.md`, `TESTING.md` y `ROADMAP.md`.
 
+### Continuación de PR #139 — estados de licencia desde Admin (2026-10-26)
+
+- Chromium suspende y reactiva la licencia desde `/app/internal/licenses`; D1 verifica los estados `suspended`/`active` y un evento de auditoría por transición. El E2E completo `platform-service-administration-check.mjs` pasa con Worker y D1 aislados; no se usa información productiva.
+- Actualizados la matriz de rutas, la deuda de `ADMIN-FUNCTIONAL-AUDIT-001` y los gates pendientes. No hubo cambios de lógica/licencia, schema, migración, GHL ni deploy. La cobertura aún no prueba el conflicto obsoleto en su estado UI.
+
 ## 0.8.0 — producción (2026-10-25)
 
 - Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.

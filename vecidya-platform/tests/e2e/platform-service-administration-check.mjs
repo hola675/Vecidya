@@ -413,6 +413,18 @@ try {
   const changedLicenseState = executeD1(`SELECT id,plan_code,status,(SELECT count(*) FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled') AS current_count,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.change_plan') AS audit_count FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled';`)[0];
   currentLicenseId = changedLicenseState?.id;
   assert(changedLicenseState?.plan_code === "barrio" && changedLicenseState.status === "active" && Number(changedLicenseState.current_count) === 1 && Number(changedLicenseState.audit_count) === 1, "El cambio de plan desde UI no persistió exactamente una licencia y auditoría.");
+  const licensePathUi = `${baseUrl}/app/internal/licenses`;
+  const suspendAction = licensePage.waitForResponse((response) => response.url().startsWith(`${licensePathUi}.data`) && response.request().method() === "POST" && response.status() === 202);
+  await licensePage.getByRole("button", { name: "Suspender licencia" }).click();
+  await suspendAction;
+  const suspendedLicenseState = executeD1(`SELECT status,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.suspended') AS audit_count FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled';`)[0];
+  assert(suspendedLicenseState?.status === "suspended" && Number(suspendedLicenseState.audit_count) === 1, "Suspender licencia desde UI no persistió el estado y su auditoría.");
+  await licensePage.goto(licensePathUi);
+  const reactivateAction = licensePage.waitForResponse((response) => response.url().startsWith(`${licensePathUi}.data`) && response.request().method() === "POST" && response.status() === 202);
+  await licensePage.getByRole("button", { name: "Activar licencia" }).click();
+  await reactivateAction;
+  const reactivatedLicenseState = executeD1(`SELECT status,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.active') AS audit_count FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled';`)[0];
+  assert(reactivatedLicenseState?.status === "active" && Number(reactivatedLicenseState.audit_count) === 1, "Reactivar licencia desde UI no persistió el estado y su auditoría.");
   assert(licenseErrors.length === 0, `La UI de licencias produjo errores: ${licenseErrors.join("; ")}`);
 } finally {
   await licenseBrowser.close();
