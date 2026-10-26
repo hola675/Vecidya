@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-25 — APRENDE-EDITORIAL-04J — consolidación 48/48
+
+- Consolida las mejoras de lenguaje, itinerarios y fuentes de #125/#126 sobre el catálogo actual, sin fusionar sus ramas antiguas.
+- Las 48 guías quedan revisadas, cubiertas por 9 itinerarios y enlazadas editorialmente; 0 borradores.
+- Se eliminan aperturas de plantilla, se refuerzan cierres accionables y se actualizan OpenAI, ITU, SBA y terminología de Google Analytics.
+- Nuevos contratos evitan regresiones de jerga, alt, fuentes, rutas educativas y duplicación editorial. Sin deploy.
+
 ## 2026-10-25 — APRENDE-EDITORIAL-04I — catálogo editorial 48/48 revisado
 
 - Se aprueban las dos guías fundacionales de alfabetización digital tras verificar OCDE 2026, NIST CSF 2.0, CISA y W3C.
