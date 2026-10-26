@@ -180,6 +180,8 @@ executeD1(`
     ('${crypto.randomUUID()}', '${identities["owner-b"].organizationId}', '${identities.platform.userId}', 'owner', ${now});
   INSERT INTO business_profile (id, organization_id, display_name, slug, status, created_at, updated_at) VALUES
     ('${businessProfileId}', '${identities["owner-a"].organizationId}', 'Portal A ${suffix}', 'portal-a-${suffix}', 'published', ${now}, ${now});
+  INSERT INTO business_profile_governance (id, business_profile_id, verification_status, platform_status, created_at, updated_at) VALUES
+    (${sqlLiteral(crypto.randomUUID())}, ${sqlLiteral(businessProfileId)}, 'unverified', 'active', ${now}, ${now});
   INSERT INTO platform_organization_lifecycle (organization_id, status, intended_owner_email, owner_user_id, created_by, updated_by, created_at, updated_at) VALUES ${lifecycleRows};
 `);
 const bootstrapPriceNow = Date.now();
@@ -275,6 +277,72 @@ try {
   assert(await page.getByRole("button", { name: "Abrir navegación administrativa" }).getAttribute("aria-expanded") === "false", "La navegación móvil no cerró el drawer tras cambiar de ruta.");
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), "Admin presenta overflow horizontal a 390 px.");
 
+  await page.setViewportSize({ width: 1366, height: 900 });
+  let cancelNextGovernanceDialog = true;
+  page.on("dialog", (dialog) => {
+    if (cancelNextGovernanceDialog) {
+      cancelNextGovernanceDialog = false;
+      return dialog.dismiss();
+    }
+    return dialog.accept();
+  });
+  await page.goto(`${baseUrl}/app/internal/businesses/${businessProfileId}`);
+  await page.getByRole("button", { name: "Suspender", exact: true }).click();
+  const cancelledSuspension = executeD1(`SELECT g.platform_status,(SELECT count(*) FROM platform_audit_log a WHERE a.entity_id=${sqlLiteral(businessProfileId)}) AS audit_count FROM business_profile_governance g WHERE g.business_profile_id=${sqlLiteral(businessProfileId)};`)[0];
+  assert(cancelledSuspension?.platform_status === "active" && Number(cancelledSuspension.audit_count) === 0, "Cancelar la confirmación de suspensión mutó el estado o dejó auditoría.");
+  await page.goto(`${baseUrl}/app/internal/businesses/${businessProfileId}`);
+  await page.getByRole("heading", { name: `Portal A ${suffix}` }).waitFor();
+  const governanceStates = [
+    { action: "verify", button: "Verificar", verification: "verified", platform: "active" },
+    { action: "unverify", button: "Retirar verificación", verification: "unverified", platform: "active" },
+    { action: "suspend", button: "Suspender", verification: "unverified", platform: "suspended" },
+    { action: "reactivate", button: "Reactivar", verification: "unverified", platform: "active" },
+  ];
+  const concurrentContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
+  await concurrentContext.addCookies(identities.platform.client.browserCookies());
+  const concurrentPages = await Promise.all([concurrentContext.newPage(), concurrentContext.newPage()]);
+  await Promise.all(concurrentPages.map(async (concurrentPage) => {
+    await concurrentPage.goto(`${baseUrl}/app/internal/businesses/${businessProfileId}`, { waitUntil: "domcontentloaded" });
+    await concurrentPage.getByRole("button", { name: "Suspender", exact: true }).waitFor({ state: "visible" });
+  }));
+  const concurrentExpectedVersions = await Promise.all(concurrentPages.map(async (concurrentPage) => {
+    const input = concurrentPage.locator("form").filter({ has: concurrentPage.getByRole("button", { name: "Suspender", exact: true }) }).locator('input[name="expectedUpdatedAt"]');
+    assert(await input.count() === 1, `El formulario de suspensión no incluyó la versión de concurrencia: URL=${concurrentPage.url()}`);
+    return input.inputValue();
+  }));
+  assert(concurrentExpectedVersions[0] === concurrentExpectedVersions[1], `Las pestañas cargaron versiones distintas: ${JSON.stringify(concurrentExpectedVersions)}`);
+  concurrentPages.forEach((concurrentPage) => concurrentPage.on("dialog", (dialog) => dialog.accept()));
+  const concurrentSuspensions = await Promise.all(concurrentPages.map(async (concurrentPage) => {
+    const requestPromise = concurrentPage.waitForRequest((request) => request.url().includes(`/app/internal/businesses/${businessProfileId}.data`) && request.method() === "POST");
+    const responsePromise = concurrentPage.waitForResponse((response) => response.url().includes(`/app/internal/businesses/${businessProfileId}.data`) && response.request().method() === "POST");
+    await concurrentPage.getByRole("button", { name: "Suspender", exact: true }).click();
+    const [request, response] = await Promise.all([requestPromise, responsePromise]);
+    return { request, response };
+  }));
+  const concurrentResponseBodies = await Promise.all(concurrentSuspensions.map(async ({ request, response }) => ({ status: response.status(), postData: request.postData(), body: (await response.text()).slice(0, 500) })));
+  const concurrentGovernanceState = executeD1(`SELECT g.platform_status,(SELECT count(*) FROM platform_audit_log a WHERE a.entity_id=${sqlLiteral(businessProfileId)} AND a.action='business_profile.suspend') AS suspend_audit_count FROM business_profile_governance g WHERE g.business_profile_id=${sqlLiteral(businessProfileId)};`)[0];
+  assert(concurrentGovernanceState?.platform_status === "suspended" && Number(concurrentGovernanceState.suspend_audit_count) === 1, `La carrera CAS dejó estado/auditoría inesperados: ${JSON.stringify(concurrentGovernanceState)}; versiones=${JSON.stringify(concurrentExpectedVersions)}; respuestas=${JSON.stringify(concurrentResponseBodies)}`);
+  const concurrentUiResults = await Promise.all(concurrentPages.map(async (concurrentPage) => {
+    await concurrentPage.waitForFunction(() => document.querySelector('[role="status"]')?.textContent?.includes("Perfil suspendido.") || document.querySelector('[role="alert"]')?.textContent?.includes("El estado del perfil cambió"));
+    const success = await concurrentPage.getByRole("status").getByText("Perfil suspendido.").isVisible().catch(() => false);
+    const conflict = await concurrentPage.getByRole("alert").getByText("El estado del perfil cambió durante la operación. Recarga la página e inténtalo de nuevo.").isVisible().catch(() => false);
+    return { success, conflict };
+  }));
+  assert(concurrentUiResults.filter((result) => result.success).length === 1 && concurrentUiResults.filter((result) => result.conflict).length === 1, `Las dos pestañas no mostraron un ganador y un conflicto: ${JSON.stringify(concurrentUiResults)}; respuestas=${JSON.stringify(concurrentResponseBodies)}`);
+  await concurrentContext.close();
+  await page.goto(`${baseUrl}/app/internal/businesses/${businessProfileId}`);
+  await page.getByRole("button", { name: "Reactivar", exact: true }).click();
+  await page.getByRole("status").getByText("Perfil reactivado.").waitFor();
+  const postConcurrencyState = executeD1(`SELECT g.platform_status,(SELECT count(*) FROM platform_audit_log a WHERE a.entity_id=${sqlLiteral(businessProfileId)}) AS audit_count FROM business_profile_governance g WHERE g.business_profile_id=${sqlLiteral(businessProfileId)};`)[0];
+  assert(postConcurrencyState?.platform_status === "active" && Number(postConcurrencyState.audit_count) === 2, `La prueba de concurrencia no restableció el perfil para las transiciones secuenciales: ${JSON.stringify(postConcurrencyState)}`);
+  for (const [index, state] of governanceStates.entries()) {
+    await page.getByRole("button", { name: state.button, exact: true }).click();
+    await page.getByRole("status").getByText({ verify: "Perfil verificado.", unverify: "Verificación retirada.", suspend: "Perfil suspendido.", reactivate: "Perfil reactivado." }[state.action]).waitFor();
+    const governanceState = executeD1(`SELECT g.verification_status,g.platform_status,(SELECT count(*) FROM platform_audit_log a WHERE a.entity_id=${sqlLiteral(businessProfileId)} AND a.action=${sqlLiteral(`business_profile.${state.action}`)}) AS action_audit_count,(SELECT count(*) FROM platform_audit_log a WHERE a.entity_id=${sqlLiteral(businessProfileId)}) AS total_audit_count FROM business_profile_governance g WHERE g.business_profile_id=${sqlLiteral(businessProfileId)};`)[0];
+    const expectedActionAuditCount = state.action === "suspend" || state.action === "reactivate" ? 2 : 1;
+    assert(governanceState?.verification_status === state.verification && governanceState.platform_status === state.platform && Number(governanceState.action_audit_count) === expectedActionAuditCount && Number(governanceState.total_audit_count) === index + 3, `Acción de gobierno ${state.action} no persistió estado y auditoría exactamente una vez por ejecución: ${JSON.stringify({ actual: governanceState, expected: state, total: index + 3, actionAuditCount: expectedActionAuditCount })}`);
+  }
+
   await page.goto(`${baseUrl}/app/internal/organizations`);
   const organizationSearch = page.getByRole("searchbox", { name: "Buscar negocios o clientes" });
   await organizationSearch.fill(`Organización owner-a ${suffix}`);
@@ -331,6 +399,12 @@ try {
   const createdOrganizationId = new URL(page.url()).pathname.split("/").at(-1);
   const createdInvitationState = executeD1(`SELECT l.status,i.status AS invitation_status,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=l.organization_id AND a.action='organization.create_owner_invitation') AS audit_count FROM platform_organization_lifecycle l JOIN platform_owner_invitation i ON i.organization_id=l.organization_id WHERE l.organization_id=${sqlLiteral(createdOrganizationId)};`)[0];
   assert(createdInvitationState?.status === "owner_invited" && createdInvitationState.invitation_status === "pending" && Number(createdInvitationState.audit_count) === 1, "Crear organización UI no persistió invitación y auditoría.");
+  const initialOwnerInvitation = executeD1(`SELECT id,token_digest,expires_at FROM platform_owner_invitation WHERE organization_id=${sqlLiteral(createdOrganizationId)} AND status='pending';`)[0];
+  await page.getByRole("button", { name: "Reenviar invitación" }).click();
+  await page.waitForURL(`**/app/internal/organizations/${createdOrganizationId}?delivery=simulated`);
+  await page.getByRole("status").getByText("El correo quedó simulado por el proveedor local.").waitFor();
+  const resentOwnerInvitation = executeD1(`SELECT id,token_digest,expires_at,(SELECT count(*) FROM platform_owner_invitation WHERE organization_id=${sqlLiteral(createdOrganizationId)} AND status='pending') AS pending_count,(SELECT count(*) FROM platform_owner_invitation WHERE organization_id=${sqlLiteral(createdOrganizationId)} AND status='revoked') AS revoked_count,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(createdOrganizationId)} AND action='organization.owner_invitation.replace') AS audit_count FROM platform_owner_invitation WHERE organization_id=${sqlLiteral(createdOrganizationId)} AND status='pending';`)[0];
+  assert(resentOwnerInvitation?.id !== initialOwnerInvitation?.id && resentOwnerInvitation?.token_digest !== initialOwnerInvitation?.token_digest && Number(resentOwnerInvitation?.expires_at) > Number(initialOwnerInvitation?.expires_at) && Number(resentOwnerInvitation?.pending_count) === 1 && Number(resentOwnerInvitation?.revoked_count) === 1 && Number(resentOwnerInvitation?.audit_count) === 1, "Reenviar invitación no rotó token/expiración, dejó más de una pendiente o no auditó el reemplazo.");
   await page.getByRole("button", { name: "Revocar invitación" }).click();
   await page.getByRole("heading", { name: "pending_owner" }).waitFor();
   const revokedInvitationState = executeD1(`SELECT l.status,i.status AS invitation_status,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=l.organization_id AND a.action='organization.owner_invitation.revoke') AS audit_count FROM platform_organization_lifecycle l JOIN platform_owner_invitation i ON i.organization_id=l.organization_id WHERE l.organization_id=${sqlLiteral(createdOrganizationId)};`)[0];
@@ -451,15 +525,18 @@ try {
   currentLicenseId = changedLicenseState?.id;
   assert(changedLicenseState?.plan_code === "barrio" && changedLicenseState.status === "active" && Number(changedLicenseState.current_count) === 1 && Number(changedLicenseState.audit_count) === 1, "El cambio de plan desde UI no persistió exactamente una licencia y auditoría.");
   const licensePathUi = `${baseUrl}/app/internal/licenses`;
-  const suspendAction = licensePage.waitForResponse((response) => response.url().startsWith(`${licensePathUi}.data`) && response.request().method() === "POST" && response.status() === 202);
+  await changeForm.locator('select[name="planCode"]').selectOption("cuadra");
+  await changeForm.locator('input[name="currentLicenseId"]').evaluate((input) => { input.value = "stale-license-reference"; });
+  await changeForm.getByRole("button", { name: "Cambiar plan" }).click();
+  await licensePage.getByRole("alert").getByText("La licencia cambió en otra operación. Recarga la página y vuelve a intentarlo.").waitFor();
+  const rejectedPlanState = executeD1(`SELECT id,plan_code,status,(SELECT count(*) FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled') AS current_count,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.change_plan') AS audit_count FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled';`)[0];
+  assert(rejectedPlanState?.id === currentLicenseId && rejectedPlanState.plan_code === "barrio" && rejectedPlanState.status === "active" && Number(rejectedPlanState.current_count) === 1 && Number(rejectedPlanState.audit_count) === 1, "El conflicto UI de cambio de plan alteró la licencia o dejó una auditoría de mutación rechazada.");
   await licensePage.getByRole("button", { name: "Suspender licencia" }).click();
-  await suspendAction;
+  await licensePage.getByRole("status").getByText("Licencia actualizada y acción registrada en auditoría.").waitFor();
   const suspendedLicenseState = executeD1(`SELECT status,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.suspended') AS audit_count FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled';`)[0];
   assert(suspendedLicenseState?.status === "suspended" && Number(suspendedLicenseState.audit_count) === 1, "Suspender licencia desde UI no persistió el estado y su auditoría.");
-  await licensePage.goto(licensePathUi);
-  const reactivateAction = licensePage.waitForResponse((response) => response.url().startsWith(`${licensePathUi}.data`) && response.request().method() === "POST" && response.status() === 202);
   await licensePage.getByRole("button", { name: "Activar licencia" }).click();
-  await reactivateAction;
+  await licensePage.getByRole("status").getByText("Licencia actualizada y acción registrada en auditoría.").waitFor();
   const reactivatedLicenseState = executeD1(`SELECT status,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.active') AS audit_count FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled';`)[0];
   assert(reactivatedLicenseState?.status === "active" && Number(reactivatedLicenseState.audit_count) === 1, "Reactivar licencia desde UI no persistió el estado y su auditoría.");
   assert(licenseErrors.length === 0, `La UI de licencias produjo errores: ${licenseErrors.join("; ")}`);

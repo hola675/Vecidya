@@ -44,6 +44,21 @@
 - La action Admin convierte el `409` de revisión obsoleta en un mensaje recuperable en pantalla y mantiene intacta la respuesta de error del backend para otros fallos.
 - Playwright envía una revisión antigua y confirma la alerta, que la revisión D1 no cambia y que no se agrega auditoría por la operación rechazada; luego vuelve a cargar y publica normalmente. Typecheck, build y E2E Worker/D1 PASS.
 
+### Continuación de PR #139 — conflicto de cambio de plan de licencia (2026-10-26)
+
+- Playwright envía un identificador de licencia obsoleto desde la pantalla Admin y confirma el mensaje recuperable de conflicto. D1 conserva la misma licencia activa, el plan previo y el conteo de auditoría, sin registrar la mutación rechazada.
+- El recorrido completo Worker/D1 local aislada pasa; no se cambia lógica comercial ni esquema en este corte. Confirmaciones accesibles y otros errores siguen pendientes.
+
+### Continuación de PR #139 — feedback de reenvío de invitación (2026-10-26)
+
+- La pantalla de organización comunica si el proveedor aceptó el correo, si fue simulado localmente o si el resultado quedó sin confirmar; un error de envío no se presenta como éxito.
+- Playwright con proveedor fake confirma la entrega simulada y en D1 verifica rotación del digest/expiración, una invitación pendiente y auditoría `organization.owner_invitation.replace`. Typecheck, build y Worker E2E local PASS; no se contactó un proveedor real.
+
+### Continuación de PR #139 — gobierno de perfiles desde Admin (2026-10-26)
+
+- El E2E verifica desde Chromium, en D1 aislada, las transiciones verificar/retirar/suspender/reactivar y dos formularios con una misma revisión: una suspensión y su auditoría, más un conflicto visible en la otra pestaña. Cancelar la confirmación no escribe; los estados posteriores y sus auditorías también se comprueban.
+- La acción compara la versión enviada desde el formulario con la fila vigente y aplica compare-and-set; los reintentos de una transición ya aplicada no agregan auditoría. Los conflictos muestran un error recuperable y el éxito se expone como región viva accesible. Typecheck, build y Worker E2E PASS.
+
 ## 0.8.0 — producción (2026-10-25)
 
 - Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.

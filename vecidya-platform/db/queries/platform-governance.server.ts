@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 import type { Database } from "../client.server";
 import { businessProfileGovernance, businessProfile, organization, platformAuditLog, user } from "../schema";
@@ -23,6 +23,13 @@ const defaultGovernance = {
   suspendedBy: null as string | null,
 };
 
+export class PlatformGovernanceConflict extends Error {
+  constructor() {
+    super("El estado del perfil cambió durante la operación. Recarga la página e inténtalo de nuevo.");
+    this.name = "PlatformGovernanceConflict";
+  }
+}
+
 export async function getBusinessProfileGovernance(database: Database, businessProfileId: string) {
   const row = await database.query.businessProfileGovernance.findFirst({
     where: eq(businessProfileGovernance.businessProfileId, businessProfileId),
@@ -36,11 +43,15 @@ export async function applyGovernanceAction(
   organizationId: string,
   actorUserId: string,
   action: GovernanceAction,
+  expectedUpdatedAt: number | null,
 ) {
   const existing = await database.query.businessProfileGovernance.findFirst({
     where: eq(businessProfileGovernance.businessProfileId, businessProfileId),
   });
-  const now = new Date();
+  if ((existing?.updatedAt.getTime() ?? null) !== expectedUpdatedAt) throw new PlatformGovernanceConflict();
+  // D1 stores these timestamps at millisecond precision. Ensure a successful
+  // write always advances the CAS token, even when two requests share a tick.
+  const now = new Date(Math.max(Date.now(), (existing?.updatedAt.getTime() ?? 0) + 1));
   const isVerificationAction = action === "verify" || action === "unverify";
   const previousValue = existing
     ? (isVerificationAction ? existing.verificationStatus : existing.platformStatus)
@@ -55,35 +66,29 @@ export async function applyGovernanceAction(
         : { platformStatus: "active" as const, suspendedAt: null, suspendedBy: null };
   const newValue = isVerificationAction ? patch.verificationStatus : patch.platformStatus;
 
-  const governanceWrite = existing
-    ? database
-      .update(businessProfileGovernance)
-      .set({ ...patch, updatedAt: now })
-      .where(eq(businessProfileGovernance.id, existing.id))
-    : database.insert(businessProfileGovernance).values({
-      id: crypto.randomUUID(),
-      businessProfileId,
-      verificationStatus: defaultGovernance.verificationStatus,
-      platformStatus: defaultGovernance.platformStatus,
-      ...patch,
-      createdAt: now,
-      updatedAt: now,
-    });
+  // A retried form can arrive after an earlier request already applied the
+  // same transition. Treat that as a stale action instead of writing a second
+  // identical state and duplicate audit event.
+  if (previousValue === newValue) throw new PlatformGovernanceConflict();
 
-  const auditInsert = database.insert(platformAuditLog).values({
-    id: crypto.randomUUID(),
-    actorUserId,
-    action: `business_profile.${action}`,
-    entityType: "business_profile",
-    entityId: businessProfileId,
-    organizationId,
-    previousValue,
-    newValue,
-    metadata: null,
-    createdAt: now,
-  });
+  const governanceId = existing?.id ?? crypto.randomUUID();
+  const auditId = crypto.randomUUID();
+  const statements = existing
+    ? [
+      database.$client.prepare(`UPDATE business_profile_governance SET ${isVerificationAction ? "verification_status" : "platform_status"} = ?, ${isVerificationAction ? "verified_at" : "suspended_at"} = ?, ${isVerificationAction ? "verified_by" : "suspended_by"} = ?, updated_at = ? WHERE id = ? AND ${isVerificationAction ? "verification_status" : "platform_status"} = ? AND updated_at = ? AND ${isVerificationAction ? "verification_status" : "platform_status"} <> ?`)
+        .bind(newValue, isVerificationAction ? (action === "verify" ? now.getTime() : null) : (action === "suspend" ? now.getTime() : null), isVerificationAction ? (action === "verify" ? actorUserId : null) : (action === "suspend" ? actorUserId : null), now.getTime(), governanceId, previousValue, existing!.updatedAt.getTime(), newValue),
+      database.$client.prepare("INSERT INTO platform_audit_log (id,actor_user_id,action,entity_type,entity_id,organization_id,previous_value,new_value,metadata,created_at) SELECT ?,? ,?,'business_profile',?,?,?,?,NULL,? WHERE changes()=1")
+        .bind(auditId, actorUserId, `business_profile.${action}`, businessProfileId, organizationId, previousValue, newValue, now.getTime()),
+    ]
+    : [
+      database.$client.prepare("INSERT INTO business_profile_governance (id,business_profile_id,verification_status,verified_at,verified_by,platform_status,suspended_at,suspended_by,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?) ON CONFLICT(business_profile_id) DO NOTHING")
+        .bind(governanceId, businessProfileId, patch.verificationStatus ?? defaultGovernance.verificationStatus, patch.verifiedAt?.getTime() ?? null, patch.verifiedBy ?? null, patch.platformStatus ?? defaultGovernance.platformStatus, patch.suspendedAt?.getTime() ?? null, patch.suspendedBy ?? null, now.getTime(), now.getTime()),
+      database.$client.prepare("INSERT INTO platform_audit_log (id,actor_user_id,action,entity_type,entity_id,organization_id,previous_value,new_value,metadata,created_at) SELECT ?,? ,?,'business_profile',?,?,?,?,NULL,? WHERE changes()=1")
+        .bind(auditId, actorUserId, `business_profile.${action}`, businessProfileId, organizationId, previousValue, newValue, now.getTime()),
+    ];
 
-  await database.batch([governanceWrite, auditInsert]);
+  const results = await database.$client.batch(statements);
+  if (results[0]?.meta.changes !== 1) throw new PlatformGovernanceConflict();
 }
 
 export async function listPlatformAuditLog(database: Database, options: { limit?: number; entityId?: string } = {}) {

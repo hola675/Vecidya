@@ -34,6 +34,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   const form = await request.formData();
   const database = createDatabase(env.DB);
   const intent = String(form.get("intent") ?? "");
+  let delivery: "provider_accepted" | "simulated" | "unconfirmed" | undefined;
   if (intent === "suspend" || intent === "activate") {
     const actor = await requirePlatformAdminAction(env, request, "organization:lifecycle:update");
     await setPlatformOrganizationStatus(database, { organizationId: params.organizationId, actorUserId: actor.userId, status: intent === "suspend" ? "suspended" : "active" });
@@ -43,8 +44,13 @@ export async function action({ context, params, request }: Route.ActionArgs) {
     const invite = await replacePlatformOwnerInvitation(database, { organizationId: params.organizationId, actorUserId: actor.userId });
     const organization = await database.query.organization.findFirst({ where: (table, { eq: equals }) => equals(table.id, params.organizationId) });
     if (!organization) throw new Response("Organización no encontrada", { status: 404 });
-    try { await sendPlatformOwnerInvitation({ invitationId: invite.invitationId, token: invite.rawToken, email: invite.ownerEmail, organizationName: organization.name }, env); }
-    catch { console.error("PLATFORM_OWNER_INVITATION_DELIVERY_UNCONFIRMED", { invitationId: invite.invitationId }); }
+    try {
+      const sent = await sendPlatformOwnerInvitation({ invitationId: invite.invitationId, token: invite.rawToken, email: invite.ownerEmail, organizationName: organization.name }, env);
+      delivery = sent.provider === "fake" ? "simulated" : "provider_accepted";
+    } catch {
+      delivery = "unconfirmed";
+      console.error("PLATFORM_OWNER_INVITATION_DELIVERY_UNCONFIRMED", { invitationId: invite.invitationId });
+    }
   } else if (intent === "revoke") {
     const actor = await requirePlatformAdminAction(env, request, "organization:create");
     await revokePlatformOwnerInvitation(database, { organizationId: params.organizationId, actorUserId: actor.userId });
@@ -57,7 +63,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   } else {
     throw new Response("Acción inválida", { status: 400 });
   }
-  return redirect(`/app/internal/organizations/${params.organizationId}`);
+  return redirect(`/app/internal/organizations/${params.organizationId}${delivery ? `?delivery=${delivery}` : ""}`);
 }
 
 const serviceStatus = { active: "Activo", pending: "Pendiente", suspended: "Suspendido", ended: "Finalizado" } as const;
