@@ -18,7 +18,7 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 Las cinco guías pasan a `editorialDraft: false`. El catálogo queda en **48 guías: 46 revisadas y 2 borradores**. Los contratos preservan fuentes actuales de SBA, Ready.gov, CISA, NIST, GOV.UK y OCDE, junto con los límites fiscales, legales y de causalidad expresados en los textos.
 
-**Gate pendiente:** `Aprende quality` sobre el HEAD final.
+**RAN en GitHub Actions:** `Aprende quality` run `40247532519` PASS: typecheck, build e integridad Aprende.
 
 ## APRENDE-EDITORIAL-04G — revisión de coordinación empresarial (2026-10-25)
 
