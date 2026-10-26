@@ -146,3 +146,48 @@ export function businessCategoryOptions(currentCategory: string | null | undefin
     legacy: current && !getBusinessSectorByLabel(current) ? current : null,
   };
 }
+
+/** Pistas de búsqueda; sugerir NO asigna una categoría automáticamente. */
+export const BUSINESS_SECTOR_SEARCH_ALIASES: Readonly<Record<BusinessSectorId, readonly string[]>> = {
+  agro_nature: ["finca", "granja", "campesino", "cultivo", "agricultura", "ganaderia", "pesca", "veterinaria agropecuaria"],
+  industry_energy: ["industria", "fabrica", "manufactura", "produccion", "carpinteria industrial", "mineria", "electricidad", "energia"],
+  commerce: ["tienda", "comercio", "venta", "venta online", "venta por internet", "ecommerce", "ferreteria", "supermercado"],
+  food: ["restaurante", "cafeteria", "comida", "panaderia", "catering", "bar", "pasteleria", "cocinero"],
+  tourism: ["hotel", "hostal", "hospedaje", "casa de huespedes", "viajes", "agencia de viajes", "turismo"],
+  construction_property: ["construccion", "albanil", "constructor", "inmobiliaria", "alquiler de vivienda", "reforma"],
+  transport_logistics: ["transportista", "taxi", "camion", "mensajeria", "reparto", "mudanza", "logistica"],
+  tech_communications: ["software", "programador", "desarrollador", "informatica", "soporte tecnico", "telecomunicaciones", "aplicaciones"],
+  health_wellness: ["medico", "dentista", "odontologia", "clinica", "psicologo", "fisioterapia", "salud"],
+  education: ["profesor", "maestro", "academia", "clases particulares", "escuela", "formacion", "tutor"],
+  finance_insurance: ["contador", "contabilidad", "impuestos", "taxes", "seguros", "asesor financiero"],
+  legal_professional: ["abogado", "asesoria legal", "bufete", "juridico", "consultoria", "agencia de marketing", "marketing", "servicios profesionales"],
+  personal_maintenance: ["peluqueria", "barberia", "estetica", "taller mecanico", "mecanico", "limpieza", "plomero", "electricista", "reparacion"],
+  culture_sport: ["artista", "fotografo", "musica", "deporte", "gimnasio", "eventos", "entretenimiento", "creador de contenido"],
+  community_public: ["ong", "asociacion", "organizacion comunitaria", "institucion publica", "social", "comunidad"],
+  other: ["otra", "otro", "no encuentro"],
+};
+
+export function normalizeBusinessSectorSearch(text: string): string {
+  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es").trim().replace(/\s+/g, " ");
+}
+
+/** Devuelve sugerencias ordenadas, nunca un sector decidido por software. */
+export function searchBusinessSectors(text: string, limit = 7) {
+  const q = normalizeBusinessSectorSearch(text);
+  if (!q) return [];
+  return BUSINESS_SECTORS
+    .map((sector) => {
+      const id = sector.id as BusinessSectorId;
+      const label = normalizeBusinessSectorSearch(sector.label);
+      const aliases = BUSINESS_SECTOR_SEARCH_ALIASES[id].map(normalizeBusinessSectorSearch);
+      const examples = sector.examples.map(normalizeBusinessSectorSearch);
+      const score = label === q ? 4 : label.includes(q) ? 3
+        : aliases.some((alias) => alias === q || alias.startsWith(q)) ? 2
+          : [...aliases, ...examples].some((phrase) => phrase.includes(q)) ? 1 : 0;
+      return { sector, score };
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score || a.sector.label.localeCompare(b.sector.label, "es"))
+    .slice(0, Math.max(0, limit))
+    .map(({ sector }) => sector);
+}

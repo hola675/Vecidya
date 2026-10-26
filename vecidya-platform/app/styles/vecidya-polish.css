@@ -740,3 +740,17 @@
 .services-core-card__benefit strong {
   color: #163957;
 }
+
+/* SECTOR-UX-03 — selector buscable de categoría principal, compatible con formulario legacy. */
+.business-sector-picker { display: grid; gap: .7rem; min-width: 0; }
+.business-sector-picker__question { font-weight: 700; color: #193959; }
+.business-sector-picker__selected { display: flex; flex-wrap: wrap; gap: .65rem; align-items: center; padding: .8rem 1rem; border: 1px solid #bed8ca; background: #f0faf4; border-radius: .8rem; }
+.business-sector-picker__selected strong { color: #174f3a; }
+.business-sector-picker__selected span { color: #526a58; font-size: .88rem; }
+.business-sector-picker__search { width: 100%; min-height: 2.8rem; border: 1px solid #b7cce4; border-radius: .75rem; padding: .65rem .9rem; background: #fff; color: #18334d; }
+.business-sector-picker__search:focus-visible, .business-sector-picker__option:focus-visible { outline: 3px solid #256bd1; outline-offset: 2px; }
+.business-sector-picker__options { display: grid; gap: .4rem; max-height: 18rem; overflow-y: auto; }
+.business-sector-picker__option { text-align: left; padding: .7rem .85rem; border: 1px solid #d4e1ef; border-radius: .65rem; background: #fff; color: #193959; cursor: pointer; font: inherit; }
+.business-sector-picker__option:hover, .business-sector-picker__option.is-selected { background: #ecf5ff; border-color: #6f99c7; }
+.business-sector-picker__actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+.business-sector-picker__actions .button { min-height: 2.6rem; }

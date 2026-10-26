@@ -72,3 +72,17 @@ test("Vecindario filtra por la misma etiqueta sectorial y conserva los filtros l
   assert.equal(matchesNeighborhoodFilters({ ...base, category: "Alimentos y bebidas" }, { category: "Alimentos y bebidas" }), true);
   assert.equal(matchesNeighborhoodFilters(base, { q: "agrícola" }), true);
 });
+
+test("buscador por oficios y términos habituales, con tildes y sin clasificación automática", async () => {
+  const { searchBusinessSectors } = await import("../../app/content/business-sectors.ts");
+  assert.equal(searchBusinessSectors("dentista")[0]?.id, "health_wellness");
+  assert.equal(searchBusinessSectors("FINCA")[0]?.id, "agro_nature");
+  assert.equal(searchBusinessSectors("taller mecánico")[0]?.id, "personal_maintenance");
+  assert.equal(searchBusinessSectors("abogado")[0]?.id, "legal_professional");
+  assert.equal(searchBusinessSectors("Tienda online")[0]?.id, "commerce");
+  assert.equal(searchBusinessSectors("restaurante")[0]?.id, "food");
+  assert.deepEqual(searchBusinessSectors(""), []);
+  assert.deepEqual(searchBusinessSectors("xyz-no-existe"), []);
+  assert.ok(searchBusinessSectors("a").length <= 7);
+  assert.deepEqual(searchBusinessSectors("a", 0), []);
+});
