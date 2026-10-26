@@ -1,5 +1,9 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-04G — coordinación empresarial revisada (2026-10-25)
+
+**TEST versionado / RAN pendiente.** El catálogo queda en 48 guías con **41 revisadas / 7 borradores**. Las cuatro guías de `learn-business-operations.ts` deben conservar aprobación, ejemplo y FAQ; la comparación entre sedes mantiene la fuente Eurostat 2026 y explicita que la encuesta empresarial cubre organizaciones con 10 o más personas ocupadas.
+
 ## APRENDE-EDITORIAL-04F — revisión de guías técnicas nuevas (2026-10-25)
 
 **RAN en GitHub Actions:** `Aprende quality` run `40247108403` PASS: typecheck, build e integridad Aprende. El catálogo esperado se mantiene en 48 guías y pasa a **37 revisadas / 11 borradores**. Los contratos exigen `editorialDraft: false` para migración de proveedor y correo profesional; además preservan fuentes ICANN/MDN/RFC 1034/1035 para migración y RFC 1035/7208/6376/9989 para correo.
