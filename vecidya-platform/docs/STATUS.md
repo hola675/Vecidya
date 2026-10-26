@@ -12,6 +12,14 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 **RAN en GitHub Actions:** sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`, workflow `Aprende quality` run `40242263335` PASS (typecheck, build e integridad Aprende) y `Main integration quality` run `40242263275` PASS: typecheck, build, regresión Diagnóstico/Aprende y **1721/1721 unitarias**. La revisión estática de los 12 archivos modificados quedó sin marcadores de conflicto ni whitespace final. Fuentes nuevas verificadas contra OCDE 2026, NIST CSF 2.0, CISA y W3C. No cambia DB, Auth, Diagnóstico, MiniWeb, GHL, licencias, precios ni producción.
 
+## APRENDE-EDITORIAL-04J — consolidación editorial 48/48 (2026-10-25)
+
+**CODE/TEST versionado en `feat/aprende-editorial-04j-consolidation`, apilado sobre 04I; sin merge ni deploy.** Consolida sobre el catálogo actual las mejoras útiles de los PR #125/#126 sin arrastrar su base antigua de 47 guías. Las 17 aperturas repetitivas fueron sustituidas por entradas específicas; las 48 guías quedan cubiertas por los 9 itinerarios y todas mantienen al menos una continuación relacionada.
+
+La auditoría transversal queda en **48 guías revisadas, 0 borradores, 9 itinerarios, 6 categorías**, sin URLs legacy detectadas, sin intro/extracto duplicados, sin alt genéricos, sin fuentes repetidas dentro de una guía y con al menos dos fuentes HTTPS distintas por artículo. Se actualizan OpenAI, ITU y la terminología de Google Analytics a «evento clave» / «conversión publicitaria», y se explican en contexto tokens, MFA, MX/TXT, HTTPS/TLS y atribución.
+
+**RAN en GitHub Actions:** `Aprende quality` run `40248368767` PASS: typecheck, build e integridad Aprende. Queda pendiente únicamente el gate general contra `main` mediante un PR de integración; no se afirma publicación.
+
 ## APRENDE-EDITORIAL-04I — cierre de guías fundacionales (2026-10-25)
 
 **CODE/TEST versionado en `feat/aprende-editorial-04i-foundations-review`, apilado sobre 04H; sin merge ni deploy.** Se revisan las dos guías fundacionales de alfabetización digital: priorización («El que mucho abarca…») y uso consciente («Domina la tecnología…»). Se verifican OCDE 2026, NIST CSF 2.0, CISA Secure Our World y W3C WAI; se actualiza el alcance de CISA como recurso activo.
