@@ -189,9 +189,8 @@ export async function changeOrganizationLicensePlan(database: Database, input: {
 }) {
   const now = input.now ?? new Date();
   const current = await getOrganizationLicense(database, input.organizationId);
-  if (!current || current.status !== "active") {
-    throw new LicensingError("Organization has no active license to change");
-  }
+  if (!current) throw new LicensingError("Organization has no license to change");
+  if (current.status !== "active") throw new LicensingConflictError("Organization license changed concurrently; reload and retry");
   if (current.id !== input.expectedLicenseId) {
     throw new LicensingConflictError("Organization license changed concurrently; reload and retry");
   }
