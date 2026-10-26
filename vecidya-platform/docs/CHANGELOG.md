@@ -1,11 +1,11 @@
 # Changelog
 
-## 0.8.3 — candidato APP-MINI-02B (2026-10-26)
+## 0.8.3 — producción (2026-10-26)
 
 - Se preservan los valores de horarios tras un error de validación y se mantiene sincronizado el foco/indicador de navegación.
 - El logo se gestiona solo desde Archivos e identidad de Mi MiniWeb. La publicación usa el mismo logo en MiniWeb y Vecindario; la portada llena su marco detrás del logo.
 - Se reorganiza el perfil MiniWeb en una retícula responsive y se alinean las tarjetas del Vecindario; no se añaden datos de negocio ficticios.
-- Verificación y publicación pendientes. No se ejecutarán pruebas contra producción; el cierre de publicación requiere solo comprobación anónima HTTP de lectura tras deploy, conforme a GOVERNANCE.
+- Integrado por PR #153 en `main@ede3f187`; Worker `vecidya-platform` Version ID `a9ee55c5-f346-49a2-8f74-b8c6e45db36a`, al 100 % desde `2026-10-26T20:43:15Z`. GET anónimo de solo lectura a `/` respondió 200 y mostró `0.8.3` + `© 2026 Vecidya` a las `20:43:33Z`. E2E local MiniWeb 134/134, horarios, typecheck, build y diff-check PASS. Sin tests contra producción ni migraciones/cambios D1 remotos.
 
 ## 0.8.2 — producción (2026-10-26)
 

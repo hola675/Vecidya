@@ -1,4 +1,12 @@
-# Entornos y release de producción 0.8.2 (2026-10-26)
+# Entornos y release de producción 0.8.3 (2026-10-26)
+
+## Release de producción 0.8.3 — publicado (2026-10-26)
+
+PR #153 integrado en `main@ede3f187fc06e6b89f84c9f37830db4bcdfd415d`; `package.json` establece `0.8.3`. Wrangler 4.152.0 desplegó el Worker `vecidya-platform` en la cuenta Soporte `8a13de3ea584f9055f78565b9860c125`.
+
+**Deploy RAN 2026-10-26T20:43:15Z:** deployment `8b41fccc-1269-4aa5-b115-4b632926ef29`, Version ID `a9ee55c5-f346-49a2-8f74-b8c6e45db36a`, 100 %. Rutas `vecidya.com/*` y `www.vecidya.com/*`, Worker route y Cron productivo preservados. El dry run confirmó `DB=vecidya-prod`, R2 `vecidya-business-media-prod`, APP_ENV production, Gmail y flags actuales. No se aplicaron migraciones ni se consultaron/modificaron filas de D1 en este release.
+
+**HTTP anónimo de solo lectura, RAN 2026-10-26T20:43:33Z:** `GET https://vecidya.com/` → 200; el HTML incluye `0.8.3` y `© 2026 Vecidya`. Esta comprobación confirma publicación del Worker; no se visitó `/diagnostico`, no se probaron rutas de producto en producción y no se usó sesión.
 
 ## Release de producción 0.8.2 — publicado (2026-10-26)
 
