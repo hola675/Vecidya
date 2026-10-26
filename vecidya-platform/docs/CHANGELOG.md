@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-25 — APRENDE-EDITORIAL-04G — coordinación empresarial revisada
+
+- Se aprueban cuatro guías sobre sedes, permisos, herramientas y comparación de resultados.
+- Eurostat 2026 queda delimitado a empresas con 10 o más personas ocupadas; NIST se nombra como SP 1300 cuando corresponde.
+- Catálogo: 48 guías, 41 revisadas y 7 borradores. Sin cambios de producto o producción.
+
 ## 2026-10-25 — APRENDE-EDITORIAL-04F — migración y correo profesional revisados
 
 - Revisión editorial individual de las dos guías técnicas nuevas de 04B.
