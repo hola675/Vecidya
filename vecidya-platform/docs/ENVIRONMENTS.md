@@ -1,6 +1,8 @@
-# Entornos y release de producción (corte 2026-10-25)
+# Entornos y release de producción (candidato 0.8.1; 2026-10-26)
 
-**RAN local, Node `26.12.1`, pnpm `11.21.0`, registry `https://registry.npmjs.org/`:** se actualizaron las dependencias directas dentro de sus rangos y se instaló el lockfile con `pnpm install --frozen-lockfile`. El manifiesto fija pnpm 11.21.0 mediante `devEngines.packageManager`; el lockfile fue regenerado con pnpm 11.21.0. Para este release, el manifiesto sube la aplicación de `0.7.3` a `0.8.0`.
+**Candidato de release 0.8.1:** el manifiesto incrementa la versión desde la publicada `0.8.0`. El código integrado candidato es `main@cafe8537ced7cac2f822212f5415224425aebc03` más el commit versionado pendiente de integrar. El alcance añade contenido/guardas de Aprende y QA Playwright local; no altera Wrangler, schema ni migraciones. La producción sigue siendo `0.8.0` hasta deploy y comprobación HTTP anónima fechada. El usuario autorizó el despliegue directo a producción para este release, sin paso previo por staging. No se requiere operación D1 por este diff.
+
+**Base de dependencias local del release previo, Node `26.12.1`, pnpm `11.21.0`, registry `https://registry.npmjs.org/`:** instalación congelada con pnpm `11.21.0`; el lockfile no cambia para 0.8.1.
 
 Versiones directas actualizadas: React Router `8.5.0`, React/React DOM `19.3.1`, Drizzle ORM `0.45.4`, Cloudflare Vite plugin `1.65.0`, Vite `8.3.5`, Wrangler `4.152.0` y tipos Node `26.6.5`. Better Auth `1.7.5`, PDFKit `0.20.2` (con patch), Playwright `1.63.0` y Arimo `5.3.0` siguen fijadas en versiones exactas. Typecheck/build y smoke local finalizaron PASS (detalle en `TESTING.md`).
 

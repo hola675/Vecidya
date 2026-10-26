@@ -1,11 +1,18 @@
 # Changelog
 
-## 2026-10-26 — APRENDE-PUBLIC-QA-01 — E2E público y barrera editorial (candidato en PR)
+## 0.8.1 — candidato de producción (2026-10-26)
+
+- Actualiza Aprende con el catálogo editorial reconciliado de 48 guías y nueve itinerarios, conservando 18 borradores protegidos; mejora precisión semántica, claridad y relaciones entre guías.
+- Consolida la frontera pública editorial: catálogo, rutas individuales, itinerarios y sitemap excluyen borradores; añade certificación Playwright local para 30 guías públicas y 18 borradores, con evidencia de 320/390/768/1366 px.
+- No introduce migraciones D1, cambios de configuración Worker, Diagnóstico, MiniWeb, GHL ni precios. La D1 productiva observada permanece en `0000–0028`.
+- Release candidate desde `main@cafe8537ced7cac2f822212f5415224425aebc03`; CI y revisión visual de capturas completadas. Aún no es publicado: falta merge del checkpoint de versión, deploy autorizado y HTTP anónimo fechado.
+
+## 2026-10-26 — APRENDE-PUBLIC-QA-01 — E2E público y barrera editorial (PR #143 integrado)
 
 - Se añade un QA específico de Aprende con Playwright en localhost, capturas y reporte reproducibles, pruebas de listado, búsqueda, filtros, itinerarios, lectura, sitemap y acceso directo a borradores.
 - El QA usa el catálogo real: 48 guías, 30 no-borradores, 18 borradores y nueve itinerarios editoriales; no transforma ninguna guía en aprobada.
 - El sitemap consume el helper de publicación compartido; el runner E2E local deja de ejecutar el antiguo test con expectativas obsoletas.
-- Nuevo workflow Aprende public QA sin secretos ni despliegue, con artefacto de evidencias. Estado en Actions del HEAD correspondiente; aún no autoriza merge ni publicación.
+- Nuevo workflow Aprende public QA sin secretos ni despliegue, con artefacto de evidencias. Los tres workflows requeridos pasaron en PR #143; no implica publicación de producción.
 
 
 ## 2026-10-25 — APRENDE-EDITORIAL-FINAL-02 — preservar borradores pendientes

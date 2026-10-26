@@ -1,4 +1,8 @@
-## Corte vigente — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
+## Corte vigente — candidato de producción 0.8.1 (2026-10-26)
+
+`origin/main@cafe8537` integra PR #141 (revalidación R2) y PR #143 (QA público de Aprende). Producción permanece en `0.8.0` hasta deploy; el release candidate eleva `package.json` a `0.8.1`. Contenido y guardas de Aprende preservan 18 borradores; nueva prueba Playwright verifica 30 páginas públicas, 18 rutas bloqueadas, sitemap y viewports. CI PASS; sin migraciones D1 ni cambios Cloudflare. El usuario autorizó deploy directo a producción tras completar typecheck/build y la PR de versión. Publicación pendiente de evidencia HTTP anónima fechada.
+
+## Corte histórico — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
 
 ## APRENDE-EDITORIAL-04B — estado de revisión editorial
 
