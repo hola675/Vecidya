@@ -5,6 +5,7 @@
 - Restaura `editorialDraft: true` para 14 guías que ya eran borradores en `main` y para las cuatro guías nuevas de 04A/04B.
 - Cambia los contratos de integridad para exigir 48 guías auditadas, 18 borradores y 30 artículos con estado previo no-borrador; la revisión no sustituye la aprobación explícita.
 - Corrige el guard de Gestión que detectó la regresión en la integración final. Sin cambios de contenido comercial, DB, Auth, Diagnóstico, MiniWeb, GHL ni producción.
+- CI sobre el HEAD de código `322850f`: Aprende quality #123 PASS; Main integration quality #189 PASS; 1740/1740 unitarias.
 
 ## 2026-10-25 — APRENDE-EDITORIAL-04J — consolidación 48/48
 

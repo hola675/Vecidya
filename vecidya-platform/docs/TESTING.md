@@ -4,7 +4,7 @@
 
 El run `40248565700` falló con **1739/1740** pruebas: `learn-management-03.test.ts` esperaba `editorialDraft: true` para las cinco guías de Gestión, pero el candidato final las había marcado como aprobadas. La causa era un cambio de estado editorial no autorizado, no un defecto del guard. Se restaura `editorialDraft: true` para 18 guías y se actualizan los contratos para exigir **18 borradores / 30 no marcadas como borrador**. La aprobación de contenido, el merge y el deploy son decisiones separadas.
 
-**Gate del nuevo HEAD:** `Aprende quality` (typecheck, build, integridad editorial) y `Main integration quality` (typecheck, build, regresión Diagnóstico/Aprende y unitarias completas). Los resultados de este nuevo HEAD se registrarán cuando terminen los workflows; no se reutiliza evidencia de un SHA anterior.
+**RAN en GitHub Actions sobre el HEAD de código `322850f`:** `Aprende quality` run `40254782673` PASS (typecheck, build e integridad Aprende); `Main integration quality` run `40254782671` PASS (typecheck, build, regresión Diagnóstico/Aprende y **1740/1740 unitarias, 0 fallos**). El commit posterior de documentación no cambia código ni contenido.
 
 ## APRENDE-EDITORIAL-04J — consolidación transversal (2026-10-25)
 

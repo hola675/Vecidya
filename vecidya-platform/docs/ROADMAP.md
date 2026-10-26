@@ -1,6 +1,6 @@
 ## APRENDE-EDITORIAL-FINAL-02 — preservar la frontera de aprobación (2026-10-25)
 
-**Activo en `feat/aprende-editorial-final` / PR #138; sin merge ni deploy.** El catálogo se ha auditado en 48 guías y 9 itinerarios, pero la auditoría no autoriza a quitar estados de borrador. La integración candidata debe conservar **18 borradores** (14 existentes en `main` + cuatro guías nuevas de 04A/04B) y 30 guías con estado previo no-borrador. No se marcará un artículo como aprobado ni se publicará sin autorización explícita. Gate: CI de Aprende y Main integration en el HEAD final, revisión del diff y actualización de la documentación antes de solicitar integración.
+**Activo en `feat/aprende-editorial-final` / PR #138; sin merge ni deploy.** El catálogo se ha auditado en 48 guías y 9 itinerarios, pero la auditoría no autoriza a quitar estados de borrador. La integración candidata debe conservar **18 borradores** (14 existentes en `main` + cuatro guías nuevas de 04A/04B) y 30 guías con estado previo no-borrador. No se marcará un artículo como aprobado ni se publicará sin autorización explícita. Gate técnico superado en `322850f`: `Aprende quality` run `40254782673` y `Main integration quality` run `40254782671` PASS; 1740/1740 unitarias. Quedan la aprobación explícita de las guías en borrador y la decisión del usuario sobre merge/deploy.
 
 ## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
 
