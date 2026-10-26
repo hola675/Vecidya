@@ -233,7 +233,7 @@ test("retained specialty pilots measure cost and evidence delta against the 74-q
   for (const profile of ["impuestos", "seguros", "taller-mecanico-presupuestos"]) {
     const before = walkImpact(profile, withoutPilot);
     const after = walkImpact(profile, bank);
-    if (profile === "seguros") console.log(`QA03B_INSURANCE_REPLACEMENT ${JSON.stringify({
+    console.log(`QA03B_SPECIALTY_IMPACT ${JSON.stringify({
       before: { asked: before.asked, evidence: before.evidence },
       after: { asked: after.asked, evidence: after.evidence },
     })}`);
@@ -245,6 +245,15 @@ test("retained specialty pilots measure cost and evidence delta against the 74-q
       assert.ok(after.asked.includes("q2_reputation_flow"), "specialty evidence must not displace reputation");
       assert.ok(!after.asked.includes("q2_followup_status_visibility"), "generic pending-task review is replaced by renewal evidence");
       assert.ok(after.asked.length <= before.asked.length + 1, "only the explicit niche selector may add route cost");
+    }
+    if (profile === "taller-mecanico-presupuestos") {
+      assert.ok(before.asked.includes("q2_followup_status_visibility"));
+      assert.ok(after.asked.includes("q2_niche_automotive"));
+      assert.ok(after.asked.includes("q2_specialty_auto_repair_estimate_followup"));
+      assert.ok(after.asked.includes("q2_reputation_flow"), "specialty evidence must preserve reputation");
+      assert.ok(!after.asked.includes("q2_followup_status_visibility"), "estimate follow-up replaces generic pending-task review");
+      assert.ok(!after.asked.includes("q2_service_quote_followup"), "local-shop niche does not activate local_service quote logic");
+      assert.ok(after.asked.length <= before.asked.length + 1, "the specialty branch should add only the niche selector net of substitution");
     }
 
     const newEvidence = after.evidence.filter((item) =>
