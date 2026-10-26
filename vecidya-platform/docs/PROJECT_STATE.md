@@ -1,5 +1,12 @@
 ## Corte vigente — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
 
+## APRENDE-EDITORIAL-04B — estado de revisión editorial
+
+La rama del PR #121 contiene una revisión semántica de las 46 guías. El detalle de cada dictamen y los cambios se documenta en docs/APRENDE_EDITORIAL_AUDIT_04B.md. Los cambios acotan CRM, mantenimiento de presencia, DNS/web/correo y reglas de IA empresarial; además personalizan encabezados repetidos y mejoran enlaces relacionados.
+
+El catálogo conserva 46 guías, seis categorías y nueve itinerarios. No se cambió editorialDraft: los artículos que estaban en borrador siguen sin aprobar. La integración, los checks del nuevo HEAD y la revisión editorial humana siguen siendo gates separados; no hay autorización de merge ni deploy derivada de este checkpoint.
+
+
 En `feat/diag-visual-03`, QA-03B presenta la lectura general y ocho áreas en un flujo visual de una columna; entrada, foco, estados preliminares y ausencia de score tienen tratamiento explícito. Las unitarias focales (20/20), E2E QA-03B local (6/6), typecheck y build constan como PASS en `TESTING.md`. No se modifican scoring ni contratos y no hay despliegue. El runner responsive DIAG-PRO-19 está obsoleto respecto a la clave activa y no se cuenta como evidencia multi-viewport; zoom real 200 % y lector de pantalla siguen pendientes.
 
 ## Corte de dependencias y URLs (2026-10-24 local / 2026-10-25 UTC)
