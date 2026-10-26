@@ -179,6 +179,11 @@ executeD1(`
   INSERT INTO business_profile (id, organization_id, display_name, slug, status, created_at, updated_at) VALUES
     ('${businessProfileId}', '${identities["owner-a"].organizationId}', 'Portal A ${suffix}', 'portal-a-${suffix}', 'published', ${now}, ${now});
 `);
+const bootstrapPriceNow = Date.now();
+executeD1(`INSERT OR IGNORE INTO license_price (id, plan_code, currency, amount_cents, billing_interval, effective_from, status, created_at, updated_at) VALUES
+  ('audit-price-cuadra', 'cuadra', 'USD', 1000, 'monthly', ${bootstrapPriceNow}, 'active', ${bootstrapPriceNow}, ${bootstrapPriceNow}),
+  ('audit-price-barrio', 'barrio', 'USD', 2000, 'monthly', ${bootstrapPriceNow}, 'active', ${bootstrapPriceNow}, ${bootstrapPriceNow}),
+  ('audit-price-ciudad', 'ciudad', 'USD', 3000, 'monthly', ${bootstrapPriceNow}, 'active', ${bootstrapPriceNow}, ${bootstrapPriceNow});`);
 
 const apiA = `/api/platform/organizations/${identities["owner-a"].organizationId}/services`;
 const apiB = `/api/platform/organizations/${identities["owner-b"].organizationId}/services`;
@@ -298,6 +303,7 @@ const dashboardB = await (await assertStatus(identities.platform.client, "/app",
 assert(!dashboardB.includes(`Portal A ${suffix}`), "El dashboard conservó el perfil de la organización A después del cambio.");
 
 const licensePath = `/api/platform/organizations/${identities["owner-a"].organizationId}/license`;
+let currentLicenseId;
 const concurrentAssignments = await Promise.all([
   identities.platform.client.json(licensePath, { operation: "assign", ownerUserId: identities["owner-a"].userId, planCode: "cuadra", activate: true }),
   identities.platform.client.json(licensePath, { operation: "assign", ownerUserId: identities["owner-a"].userId, planCode: "cuadra", activate: true }),
@@ -309,14 +315,40 @@ const assignmentCount = executeD1(`SELECT count(*) AS count FROM organization_li
 const assignmentAuditCount = executeD1(`SELECT count(*) AS count FROM platform_audit_log WHERE organization_id = ${sqlLiteral(identities["owner-a"].organizationId)} AND action = 'organization_license.assign';`)[0]?.count;
 assert(Number(assignmentCount) === 1 && Number(assignmentAuditCount) === 1 && activeLicense.license?.status === "active", "La asignación concurrente dejó filas vigentes o auditoría duplicada/incompleta.");
 
+const licenseBrowser = await chromium.launch({ headless: true, executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe" });
+try {
+  const licensePage = await licenseBrowser.newPage({ viewport: { width: 1366, height: 900 } });
+  const licenseErrors = [];
+  licensePage.on("pageerror", (error) => licenseErrors.push(error.message));
+  await licensePage.context().addCookies(identities.platform.client.browserCookies());
+  const licenseUi = await licensePage.goto(`${baseUrl}/app/internal/licenses`);
+  assert(licenseUi?.status() === 200, "La UI de licencias no cargó para el administrador activo.");
+  const search = licensePage.getByRole("searchbox", { name: "Buscar cliente o negocio" });
+  await search.fill(`Portal A ${suffix}`);
+  const businessCard = licensePage.locator(".admin-detail-card").filter({ hasText: `Portal A ${suffix}` });
+  assert(await businessCard.count() === 1, "El filtro no redujo la tabla de licencias al negocio sintético.");
+  const changeForm = businessCard.locator("form").filter({ has: licensePage.locator('input[name="intent"][value="change-plan"]') });
+  assert(await changeForm.count() === 1, "La licencia activa no mostró el formulario de cambio de plan.");
+  await changeForm.locator('select[name="planCode"]').selectOption("barrio");
+  await changeForm.getByRole("button", { name: "Cambiar plan" }).click();
+  await licensePage.waitForURL("**/app/internal/licenses?updated=1");
+  await licensePage.getByRole("status").getByText("Licencia actualizada y acción registrada en auditoría.").waitFor();
+  const changedLicenseState = executeD1(`SELECT id,plan_code,status,(SELECT count(*) FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled') AS current_count,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.change_plan') AS audit_count FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled';`)[0];
+  currentLicenseId = changedLicenseState?.id;
+  assert(changedLicenseState?.plan_code === "barrio" && changedLicenseState.status === "active" && Number(changedLicenseState.current_count) === 1 && Number(changedLicenseState.audit_count) === 1, "El cambio de plan desde UI no persistió exactamente una licencia y auditoría.");
+  assert(licenseErrors.length === 0, `La UI de licencias produjo errores: ${licenseErrors.join("; ")}`);
+} finally {
+  await licenseBrowser.close();
+}
+
 const concurrentPlanChanges = await Promise.all([
-  identities.platform.client.json(licensePath, { operation: "change-plan", currentLicenseId: activeLicense.license.id, planCode: "barrio" }),
-  identities.platform.client.json(licensePath, { operation: "change-plan", currentLicenseId: activeLicense.license.id, planCode: "ciudad" }),
+  identities.platform.client.json(licensePath, { operation: "change-plan", currentLicenseId, planCode: "cuadra" }),
+  identities.platform.client.json(licensePath, { operation: "change-plan", currentLicenseId, planCode: "ciudad" }),
 ]);
 const planStatuses = concurrentPlanChanges.map(({ status }) => status);
 assert(planStatuses.filter((status) => status === 200).length === 1 && planStatuses.filter((status) => status === 409).length === 1, `Los cambios simultáneos de plan no rechazaron la mutación obsoleta: ${planStatuses.join(", ")} ${await Promise.all(concurrentPlanChanges.map((response) => response.clone().text()))}.`);
-const planState = executeD1(`SELECT count(*) AS current_count FROM organization_license WHERE organization_id = ${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled'; SELECT count(*) AS audit_count FROM platform_audit_log WHERE organization_id = ${sqlLiteral(identities["owner-a"].organizationId)} AND action = 'organization_license.change_plan';`);
-assert(Number(planState[0]?.current_count) === 1 && Number(planState[1]?.audit_count) === 1, "Cambio de plan simultáneo rompió unicidad o atomicidad de auditoría.");
+const planState = executeD1(`SELECT count(*) AS current_count FROM organization_license WHERE organization_id = ${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled'; SELECT count(*) AS audit_count FROM platform_audit_log WHERE organization_id = ${sqlLiteral(identities["owner-a"].organizationId)} AND action = 'organization_license.change_plan'; SELECT count(*) AS cancelled_count FROM organization_license WHERE organization_id = ${sqlLiteral(identities["owner-a"].organizationId)} AND status = 'cancelled';`);
+assert(Number(planState[0]?.current_count) === 1 && Number(planState[1]?.audit_count) === 2 && Number(planState[2]?.cancelled_count) === 2, `Cambios UI y simultáneo rompieron unicidad o auditoría: ${JSON.stringify(planState)}.`);
 console.log("PASS: servicios/integraciones y licencias (concurrencia y auditoría) verificados contra el Worker y D1 locales aislados.");
 } finally {
   if (worker && worker.exitCode === null) {

@@ -171,27 +171,21 @@ export async function changeOrganizationLicensePlan(database: Database, input: {
   if (!price) throw new LicensingError(`No active price for plan ${input.newPlanCode}`);
 
   const newId = crypto.randomUUID();
+  let results;
   try {
-    await database.batch([
-      database.update(organizationLicense).set({ status: "cancelled", endsAt: now, updatedAt: now }).where(eq(organizationLicense.id, current.id)),
-      database.insert(organizationLicense).values({
-      id: newId,
-      organizationId: input.organizationId,
-      billingAccountId: current.billingAccountId,
-      planCode: input.newPlanCode,
-      priceId: price.id,
-      status: "active",
-      startedAt: now,
-      activatedAt: now,
-      createdAt: now,
-      updatedAt: now,
-      }),
-      database.insert(platformAuditLog).values(auditEntry(input.actorUserId, "organization_license.change_plan", newId, input.organizationId, current.planCode, input.newPlanCode)),
+    results = await database.$client.batch([
+      database.$client.prepare("UPDATE organization_license SET status = 'cancelled', ends_at = ?, updated_at = ? WHERE id = ? AND organization_id = ? AND plan_code = ? AND status = 'active'")
+        .bind(now.getTime(), now.getTime(), current.id, input.organizationId, current.planCode),
+      database.$client.prepare("INSERT INTO organization_license (id, organization_id, billing_account_id, plan_code, price_id, status, started_at, activated_at, created_at, updated_at) SELECT ?, ?, ?, ?, ?, 'active', ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM organization_license WHERE id = ? AND organization_id = ? AND status = 'cancelled' AND ends_at = ?)")
+        .bind(newId, input.organizationId, current.billingAccountId, input.newPlanCode, price.id, now.getTime(), now.getTime(), now.getTime(), now.getTime(), current.id, input.organizationId, now.getTime()),
+      database.$client.prepare("INSERT INTO platform_audit_log (id, actor_user_id, action, entity_type, entity_id, organization_id, previous_value, new_value, metadata, created_at) SELECT ?, ?, 'organization_license.change_plan', 'organization_license', ?, ?, ?, ?, NULL, ? WHERE EXISTS (SELECT 1 FROM organization_license WHERE id = ? AND plan_code = ? AND status = 'active')")
+        .bind(crypto.randomUUID(), input.actorUserId, newId, input.organizationId, current.planCode, input.newPlanCode, now.getTime(), newId, input.newPlanCode),
     ]);
   } catch (error) {
     if (isUniqueConstraintError(error)) throw new LicensingConflictError("Organization license changed concurrently; reload and retry");
     throw error;
   }
+  if (results[0]?.meta.changes !== 1) throw new LicensingConflictError("Organization license changed concurrently; reload and retry");
 
   return { id: newId, billingAccountId: current.billingAccountId, planCode: input.newPlanCode, status: "active" as const };
 }
