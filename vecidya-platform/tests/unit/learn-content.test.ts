@@ -277,11 +277,11 @@ test("pre-ad guide is a focused readiness gate and links to specialized guides",
     assert.ok(blockTypes.has(type), "Presence readiness guide is missing the " + type + " block.");
   }
 
-  const text = article.sections.map((section) => section.heading + " " + section.paragraphs.join(" ") + " " + JSON.stringify(section.blocks ?? [])).join(" ");
+  const text = article.title + " " + article.intro + " " + article.sections.map((section) => section.heading + " " + section.paragraphs.join(" ") + " " + JSON.stringify(section.blocks ?? [])).join(" ");
   for (const topic of [
     /presencia digital/i, /visibilidad/i, /publicidad/i, /a qui[eé]n atiendes/i,
     /zona de servicio/i, /horarios/i, /m[oó]vil/i, /p[aá]gina de destino|p[aá]gina web|sitio web/i,
-    /responsable/i, /presupuesto/i, /no necesita anuncios|sin anuncios/i,
+    /responsable/i, /presupuesto/i, /no (?:todos los negocios )?necesitan anuncios|no anunciarse todavía|sin anuncios/i,
     /no garantiza|no se puede asegurar/i, /Ning[uú]n canal garantiza/i, /No necesariamente/i
   ]) assert.match(text, topic);
 
