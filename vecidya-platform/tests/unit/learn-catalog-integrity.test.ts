@@ -158,6 +158,37 @@ test("Las cuatro guías de coordinación empresarial conservan aprobación y alc
   assert.match(JSON.stringify(access), /csrc\.nist\.gov\/pubs\/sp\/1300\/final/);
 });
 
+test("Las cinco guías de Gestión conservan aprobación, fuentes y límites", () => {
+  const approved = [
+    "como-preparar-presupuesto-para-herramientas-digitales",
+    "como-ordenar-compras-proveedores-y-aprobaciones-en-una-empresa",
+    "que-hacer-si-falla-internet-o-el-sistema-de-tu-negocio",
+    "como-usar-inteligencia-artificial-en-una-empresa-con-supervision",
+    "como-saber-si-una-mejora-tecnologica-funciona-en-tu-empresa",
+  ];
+  for (const slug of approved) {
+    const article = getLearnArticle(slug);
+    assert.ok(article, `Falta guía de Gestión revisada: ${slug}`);
+    assert.equal(article.editorialDraft, false, `Debe conservar aprobación editorial: ${slug}`);
+    const blocks = article.sections.flatMap((section) => section.blocks ?? []);
+    const sources = blocks.flatMap((block) => block.type === "sources" ? block.items : []);
+    assert.ok(sources.length >= 2, `Fuentes insuficientes: ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "example"), `Falta ejemplo: ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "faq"), `Falta FAQ: ${slug}`);
+  }
+
+  const budget = getLearnArticle("como-preparar-presupuesto-para-herramientas-digitales");
+  assert.match(JSON.stringify(budget), /sba\.gov\/counseling\/manage-your-business/);
+  assert.doesNotMatch(JSON.stringify(budget), /legacy\.sba\.gov/);
+
+  const ai = getLearnArticle("como-usar-inteligencia-artificial-en-una-empresa-con-supervision");
+  assert.match(JSON.stringify(ai), /AI RMF 1\.0 continúa publicado, aunque NIST indica que está en revisión en 2026/);
+
+  const continuity = getLearnArticle("que-hacer-si-falla-internet-o-el-sistema-de-tu-negocio");
+  assert.match(JSON.stringify(continuity), /ready\.gov\/business\/emergency-plans/);
+  assert.match(JSON.stringify(continuity), /cisa\.gov\/small-and-medium-sized-business-resources/);
+});
+
 test("Todos los itinerarios enlazan a artículos reales sin duplicados internos", () => {
   const titles = new Set<string>();
   for (const pathway of learnPathways) {
