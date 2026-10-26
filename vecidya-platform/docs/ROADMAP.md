@@ -1,15 +1,8 @@
-## APRENDE-EDITORIAL-FINAL-02 — preservar la frontera de aprobación (2026-10-25)
+## APRENDE-PUBLIC-QA-01-A11Y — auditoría integral pendiente
 
-**PR #138 se integró en `origin/main@4dcc27f` (corte registrado 2026-10-26).** El checkpoint actual `APRENDE-EDITORIAL-APPROVAL-01` revisa y aprueba las 18 guías que mantenían estado de borrador, deja 48 aprobadas/0 borradores y actualiza las pruebas y la certificación pública. La aprobación de contenido no equivale a merge ni despliegue. Ver estado y gates vigentes en `STATUS.md` y `TESTING.md`.
+La certificación pública integrada verifica rutas, navegación por teclado y viewports seleccionados, pero no sustituye una auditoría WCAG integral ni pruebas con lector de pantalla. Definir y ejecutar ese alcance antes de declarar accesibilidad completa; registrar resultados y remediación en los documentos canónicos. No cambiar estados editoriales ni publicar contenido como parte de esta deuda.
 
 ## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
-
-## APRENDE-EDITORIAL-04B — revisión semántica de las 46 guías (integrada)
-
-**PR #121 y consolidación editorial integrados en `main`.** Se registran los dictámenes por guía en docs/APRENDE_EDITORIAL_AUDIT_04B.md. El trabajo reduce solapamientos en CRM, preparación publicitaria, mantenimiento de presencia y DNS; diferencia la política de IA empresarial de la prueba de asistentes; personaliza encabezados de trece guías introductorias y añade una relación hacia el artículo de presupuesto.
-
-Gate histórico: catálogo de 46 slugs únicos y nueve itinerarios intactos; ejemplos estructurados, enlaces y fuentes válidos. El siguiente checkpoint APRENDE-EDITORIAL-APPROVAL-01 completa la aprobación editorial del catálogo final de 48 artículos.
-
 
 **Objetivo:** adaptar las referencias premium entregadas por el usuario a una experiencia coherente de Vecidya, preservando contenido, datos, permisos, funcionamiento móvil y límites comerciales. Las referencias guían composición e interacción; no se copian marcas, textos, layouts exactos ni assets. Este trabajo no incluye publicación ni despliegue.
 
@@ -53,30 +46,6 @@ Gate histórico: catálogo de 46 slugs únicos y nueve itinerarios intactos; eje
 
 **Checkpoint UX-PREMIUM-06A — accesibilidad pública (2026-10-24, rama `feat/app-mini-ux-06-public-a11y`):** una muestra de 13 rutas públicas pasó 94 reglas AccessLint por URL, sin reglas omitidas y con cero violaciones en los escaneos finales tras corregir landmarks, contraste, nombres accesibles y acceso por teclado al comparador. Se verificaron menús desktop/móvil, foco y tabla desplazable en Worker local; typecheck/build/diff-check PASS. No es certificación WCAG ni auditoría completa: quedan lector de pantalla, zoom real al 200 %, sitemap/robots y otras rutas; no publicado.
 
-### APRENDE-EDITORIAL-04A — alfabetización digital y claridad pedagógica (2026-10-25)
-
-**En implementación en `feat/aprende-editorial-04a`, sin autorización de merge o deploy.** Objetivo: extender Aprende desde educación empresarial hacia alfabetización digital útil para personas y negocios sin diluir las seis categorías existentes. El método editorial queda expresado como **Comprende → Prioriza → Decide**, con dos guías fundacionales nuevas y un noveno itinerario «Usa la tecnología con criterio».
-
-**Gate 04A:** 46 slugs únicos; 9 itinerarios válidos; todas las guías con ejemplo hipotético estructurado y accionable; nuevas fuentes institucionales verificadas; búsqueda de `/aprende` sobre contenido interno; typecheck/build/diff-check y suites focales PASS en el HEAD candidato. Las dos guías nuevas deben permanecer en borrador hasta revisión editorial explícita.
-
-**Checkpoint 04B implementado, pendiente de CI final:** la auditoría semántica separa proveedor (elegir/renovar vs migrar) y deja 47 guías. Se reducen seis guías madre que habían acumulado detalle ya cubierto por especializadas: Presencia 3291→1420, Automatizaciones 2707→1146, Dominio/hosting 2413→1179, primera campaña 2346→1120, CRM 2142→1075 e IA general 1743→982 palabras. Un guard unitario limita esas seis piezas a ≤10 secciones y ≤1800 palabras serializadas. **Siguiente checkpoint 04C:** recorrer las 47 guías por jerga y comprensión (término → explicación cotidiana → ejemplo), sin separar por longitud salvo que existan objetivos educativos realmente distintos.
-
-### APRENDE-EDITORIAL-04B — separación semántica de guías técnicas (integrada)
-
-El catálogo integrado tiene 48 guías y 9 itinerarios. Selección/migración de proveedor y mapa DNS/correo profesional están separados por objetivo educativo. APRENDE-EDITORIAL-APPROVAL-01 completó la revisión de las nuevas guías.
-
-### APRENDE-EDITORIAL-04E — revisión de Operaciones (2026-10-25; histórica)
-
-Cinco guías de Operaciones se auditaron individualmente y se promovieron tras verificar fuentes, lenguaje, ejemplos y límites. La secuencia histórica desembocó en el catálogo integrado actual; el estado vigente se registra en APRENDE-EDITORIAL-APPROVAL-01.
-
-### APRENDE-EDITORIAL-04I — revisión de las guías fundacionales (2026-10-25; histórica)
-
-La revisión de esta cadena aprobó contenido en ramas dependientes. El estado integrado posterior restauró 18 indicadores de borrador hasta que el usuario otorgó la aprobación explícita registrada en APRENDE-EDITORIAL-APPROVAL-01.
-
-### APRENDE-EDITORIAL-04J — consolidación final de contenido (2026-10-25; histórica)
-
-La rama candidata consolidó mejoras de lenguaje, fuentes, cobertura total de itinerarios y relaciones editoriales. Su estado 48/0 no se integró entonces: PR #138 restauró los borradores hasta la aprobación explícita posterior de APRENDE-EDITORIAL-APPROVAL-01.
-
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)
@@ -86,10 +55,12 @@ La rama candidata consolidó mejoras de lenguaje, fuentes, cobertura total de it
 
 ### APRENDE-GESTIÓN-03 — educación para decidir, supervisar y mejorar (2026-10-20)
 
-**Contenido incorporado y revisión editorial completada en APRENDE-EDITORIAL-APPROVAL-01.** Presupuestos y costos de herramientas, compras, continuidad, supervisión de IA y evaluación de mejoras permanecen como guías educativas; no implementan CRM/ERP transaccionales, nuevos pagos ni obligaciones legales universales.
+**Implementado como borrador, no certificado ni publicado:** presupuestos y costos reales de herramientas, solicitudes y aprobaciones de compra, continuidad si falla internet o un sistema, límites y supervisión de IA, evaluación de un proyecto digital. El nuevo camino «Dirige y mejora con criterio» usa casos hipotéticos y pasos proporcionales para negocios pequeños, empresas con equipos y grupos con varias sedes. Reconciliado con APRENDE-OPERACIONES-02 ya fusionado en main: 38 artículos (11 originales + 27 borradores) y 7 itinerarios en esta rama. Sin CRM/ERP transaccionales, nuevos pagos, cambios de DB ni obligaciones legales universales.
+
+**Siguiente gate:** revisión editorial de cada borrador por una persona autorizada, fuentes institucionales actuales, integridad/certificación técnica, accesibilidad visual y verificación de enlaces. No retirar `editorialDraft`, no integrar PR ni publicar por inferencia.
 
 
-La primera extensión de operaciones cubre **organización de tareas**, **movimientos y comprobación de inventario**, **capacitación práctica del personal**, **introducción a ERP frente a CRM** y **proyectos digitales piloto con seguimiento y reversión**. Se integra en el sexto itinerario «Trabaja mejor cada día». Las guías recibieron aprobación editorial en APRENDE-EDITORIAL-APPROVAL-01. Las fuentes, ejemplos y CTA son orientativos, sin ventas garantizadas.
+La primera extensión de operaciones cubre **organización de tareas**, **movimientos y comprobación de inventario**, **capacitación práctica del personal**, **introducción a ERP frente a CRM** y **proyectos digitales piloto con seguimiento y reversión**. Se integra en el sexto itinerario «Trabaja mejor cada día» con cinco guías en estado `editorialDraft: true`. Las fuentes, ejemplos y CTA son orientativos, sin ventas garantizadas; certificación de código, revisión editorial humana y publicación continúan pendientes.
 
 **Brechas aún abiertas — no implementadas:** aprobaciones complejas y compras/proveedores, gestión financiera y presupuestos, continuidad entre sedes, formación especializada y accesibilidad de capacitación, dirección con indicadores consistentes, incidentes de seguridad, gobierno de IA y normas sectoriales por país. Evitar convertir una biblioteca educativa en ERP/CRM o herramientas transaccionales.
 
@@ -97,7 +68,7 @@ La primera extensión de operaciones cubre **organización de tareas**, **movimi
 
 **Audiencia transversal:** negocios pequeños, empresas con departamentos, organizaciones con sedes, grupos con varias marcas o entidades; también profesionales y organizaciones sin fines de lucro cuando las recomendaciones sean aplicables. El aprendizaje se adapta a la complejidad de la tarea, permisos, equipo y datos, sin asumir que todos parten de cero ni que todos necesitan contratar software.
 
-La ruta de coordinación de sedes y negocios, permisos y responsables, selección de herramientas y comparación responsable de indicadores está integrada y aprobada mediante APRENDE-EDITORIAL-APPROVAL-01.
+**Ruta incorporada como borrador en rama dependiente:** coordinación de sedes y negocios, permisos y responsables, selección de herramientas y comparación responsable de indicadores. Antes de incorporarla definitivamente se requiere revisión editorial/fuentes y certificación técnica sin interferir con `feat/aprende-editorial-02`.
 
 **Brechas para futuros checkpoints, NO IMPLEMENTADAS:**
 - Operaciones y productividad: documentos compartidos, aprobaciones, tareas, compras, inventario, proyectos y continuidad entre sedes; cuándo hace falta un ERP y cuándo no.
@@ -112,16 +83,16 @@ La ruta de coordinación de sedes y negocios, permisos y responsables, selecció
 
 ## CONSOLIDACIÓN-DIAG-2026-10-18 — roadmap de unificación (propuesto, sin cutover)
 
-### APRENDE — gate editorial de la biblioteca (completado en PR candidato)
+### APRENDE — seguimiento editorial
 
-Se revisaron y aprobaron las 18 guías pendientes, con evidencia en `STATUS.md` y `TESTING.md`. El catálogo se expone con 48 guías y 9 itinerarios en el PR candidato. Publicación/despliegue y HTTP público mantienen sus gates separados; contenido futuro requiere revisión individual antes de retirar `editorialDraft`.
+El catálogo integrado contiene 48 guías públicas; la producción publicada en 0.8.1 aún conserva 18 borradores hasta el siguiente release. Las guías nuevas deben permanecer en borrador hasta aprobación editorial individual, porque cambiar `editorialDraft` modifica exposición e indexación. El seguimiento de temas por sector o jurisdicción requiere fuentes y contexto vigentes.
 
 
-**Estado reconciliado al 2026-10-26; HTTP RAN 2026-10-25T18:38Z:** producción sirvió `0.8.0`; staging `0.7.0` según corte HTTP anterior. `origin/main@4dcc27f` integra PR #138. Cloudflare API 2026-10-26 confirma buckets R2 de staging y producción; Worker staging aún no tiene el binding R2, producción sí. La última verificación de ledger D1 documentada sigue en `0000–0026` (2026-10-24); no se consultó D1 en este corte. No hubo deploy ni escritura remota; entrega Gmail y ciclo de purga no se revalidaron.
+**Estado al corte del 2026-10-26:** el catálogo editorial se integró por PR #138 y se publicó como 0.8.1 en PR #144; producción y la evidencia HTTP fechada constan en `ENVIRONMENTS.md`. Cloudflare API 2026-10-26 confirma buckets R2 de staging y producción; Worker staging aún no tiene el binding R2, producción sí. La última verificación de ledger D1 documentada sigue en `0000–0026` (2026-10-24); no se consultó D1 en este corte. Entrega Gmail y ciclo de purga no se revalidaron.
 
 **Estado actual reconciliado al 2026-10-23:** el código integrado en `origin/main@03a0158` sirve `/diagnostico` y `/diagnostico/metodologia` con QA-03B y replay autoritativo en Worker. Contrato de `main`: banco `reviewed-evidence-v7`, respuestas `qbv2-answers-v5`, sesión schema/key 6 y replay `qa03b-worker-replay-v4`. El endpoint anónimo conserva el adaptador V3 para rollback y las sesiones V3 históricas no se migran. ACT-04 está integrado (PR #42); no está publicado. **Checkpoint local successor `feat/diagnostic-qa03b-engine-02`:** pregunta de medición directa, salida con evidencia directa y matriz de 20 casos; contrato candidato v8/v6/session 7/replay v5/metodología 3.1. Unitarias 1659/1659, typecheck, build y diff-check PASS; PR pendiente. Este checkpoint no cambia por sí solo lo publicado ni autoriza activación/despliegue. Informe identificado/correo y purga siguen cerrados por flags; sin autorización legal de retención ni HTTP anónimo fechado no hay certificación de publicación.
 
-**Estado de Diagnóstico al corte HTTP 2026-10-25T18:38Z / Cloudflare API 2026-10-26:** producción mostró versión `0.8.0`; Cloudflare confirma Worker prod Version ID `320eefe0-343c-431f-987f-cf9b92df0c8e`, staging `39ffd6e1-4d20-4c39-9338-653b41340085`. R2 está habilitado y ambos buckets existen, aunque falta el binding staging. No se ejecutó replay ni se consultó ledger D1 en esta verificación; la evidencia de ledger `0000–0026` del 2026-10-24 no se actualiza por inferencia. V3 y sus sesiones históricas deben conservarse durante la ventana de rollback. Funnel/purga están configurados como activos en producción e inactivos en staging; entrega Gmail y ejecución posterior de purga no se revalidaron aquí.
+**Estado de Diagnóstico al corte de Cloudflare API 2026-10-26:** producción está en 0.8.1 (HTTP fechado en `ENVIRONMENTS.md`); Cloudflare confirma Worker prod Version ID `320eefe0-343c-431f-987f-cf9b92df0c8e`, staging `39ffd6e1-4d20-4c39-9338-653b41340085`. R2 está habilitado y ambos buckets existen, aunque falta el binding staging. No se ejecutó replay ni se consultó ledger D1 en esta verificación; la evidencia de ledger `0000–0026` del 2026-10-24 no se actualiza por inferencia. V3 y sus sesiones históricas deben conservarse durante la ventana de rollback. Funnel/purga están configurados como activos en producción e inactivos en staging; entrega Gmail y ejecución posterior de purga no se revalidaron aquí.
 
 **Release directo 0.8.1 completado (2026-10-26):** PR #144 integrado y desplegado en producción con autorización explícita del usuario. Version ID `9497bda3-dc65-4a8d-a976-cfb89925da5d`; GET anónimo fechado confirma 0.8.1, las rutas de Aprende y la barrera de borradores. No se aplicaron migraciones ni se envió correo. Staging permanece en `0.7.0`; su Worker aún no tiene binding R2 efectivo y requiere un checkpoint de release separado antes de usarlo para validar MiniWeb. Mantener V3 para rollback durante la ventana acordada; después abrir un checkpoint separado para escanear consumidores y retirar solo código legacy sin uso demostrado. La carpeta `legacy/` no existe en este checkout.
 

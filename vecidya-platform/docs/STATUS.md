@@ -6,9 +6,9 @@ PR #144 integrado en `main@c8d52c8`; versión `0.8.1`. Typecheck/build, unitaria
 
 ## APRENDE-EDITORIAL-APPROVAL-01 — aprobación de las 18 guías (2026-10-26)
 
-**CODE/TEST en checkpoint local reconciliado con `main@d5e522a0`, aún sin PR:** se revisaron individualmente las 18 guías retenidas y se aprobaron; catálogo con 48 aprobadas, 0 borradores, 9 itinerarios y 6 categorías. Criterios: objetivo/alcance, claridad, ejemplos hipotéticos, pasos, FAQ, resumen, imagen/alt, enlaces relacionados y fuentes con alcance declarado.
+**CODE/TEST en PR #147, reconciliado con `origin/main@040f2fff`, aún sin merge:** se revisaron individualmente las 18 guías retenidas y se aprobaron; la candidata contiene 48 aprobadas, 0 borradores, 9 itinerarios y 6 categorías. Criterios: objetivo/alcance, claridad, ejemplos hipotéticos, pasos, FAQ, resumen, imagen/alt, enlaces relacionados y fuentes con alcance declarado. Producción sigue en 0.8.1 con 30 guías públicas y 18 borradores hasta un futuro release.
 
-**RAN local:** 51/51 focales, typecheck/build, QA 7 checks y revisión visual PASS. La suite unitaria completa se detuvo antes de terminar; CI pendiente. La auditoría de fuentes identificó 73 URL, 16 respuestas 404 automatizadas y 12 bloqueos/no concluyentes. Se corroboró el DOI NIST oficial pese al falso 404 y se sustituyó la referencia CISA archivada por la vigente. El resto de los 404 del catálogo queda como deuda en `TESTING.md`. No desplegado; el HTTP del release 0.8.1 no certifica el estado 48/0.
+**RAN local:** 51/51 focales, typecheck/build, QA 7 checks y revisión visual PASS. En el HEAD original `e70a6a9`, CI de calidad y typecheck/build/unitarias finalizaron PASS; Playwright sigue en curso durante la instalación de Chromium. La auditoría de fuentes identificó 73 URL, 16 respuestas 404 automatizadas y 12 bloqueos/no concluyentes. Se corroboró el DOI NIST oficial pese al falso 404 y se sustituyó la referencia CISA archivada por la vigente. El resto de los 404 del catálogo queda como deuda en `TESTING.md`. No desplegado; el HTTP del release 0.8.1 no certifica el estado 48/0.
 
 ## APRENDE-PUBLIC-QA-01 — control de experiencia pública (2026-10-26)
 
@@ -17,13 +17,11 @@ PR #144 integrado en `main@c8d52c8`; versión `0.8.1`. Typecheck/build, unitaria
 **RAN:** `Aprende quality` run `40348781678`, `Aprende public QA` run `40348781683` y `Main integration quality` run `40348781704`: PASS sobre PR #143; las cinco capturas se revisaron sin problemas visuales evidentes en los viewports probados. HTTP anónimo TLS 2026-10-26T15:48Z confirmó una guía pública 200, borrador 404 y sitemap que excluye borradores; deuda de publicación HTTP resuelta. **Open Debt — APRENDE-PUBLIC-QA-01-A11Y:** no sustituye auditoría integral WCAG ni lector de pantalla. Sin cambios de aprobación editorial, DB, autenticación, GHL o Diagnóstico.
 
 
-## APRENDE-EDITORIAL-04B — auditoría semántica de 46 guías (2026-10-25; PR #121)
+## APRENDE-EDITORIAL-04B — integración reconciliada (2026-10-26)
 
-**Implementación editorial en la rama feat/aprende-editorial-04a; no fusionada ni desplegada.** Se revisaron el objetivo pedagógico, el alcance, los ejemplos, los solapamientos y los enlaces de las 46 guías. El registro artículo por artículo está en docs/APRENDE_EDITORIAL_AUDIT_04B.md.
+**GIT/CODE: integrado por PR #138 en `main@4dcc27f0`; publicado posteriormente como parte de 0.8.1 en PR #144.** El contenido de selección/migración de proveedor y el resto de cambios útiles de la cadena editorial quedaron integrados. La auditoría editorial no aprobó por sí misma borradores: el catálogo final contiene 48 guías, 18 borradores preservados, 30 guías no marcadas como borrador, 9 itinerarios y 6 categorías. El commit `e2f8cfd` de PR #123 es ancestro de `main` mediante esa integración.
 
-Cambios centrales: guía de CRM enfocada en decidir cuándo usarlo y sin afirmaciones no verificadas sobre retención de datos de un CRM de Vecidya; guía previa a publicidad reducida a una lista de preparación; guía de mantenimiento de presencia centrada en datos correctos y comprobación de enlaces; guía DNS centrada en web/correo con referencia breve a HTTPS; guía de IA empresarial centrada en reglas, datos permitidos, responsables y escalamiento; encabezados personalizados en trece guías introductorias y enlace a presupuesto desde selección de herramientas.
-
-Se conservan 46 slugs, seis categorías, nueve itinerarios y los estados editoriales previos. Las guías que estaban en borrador permanecen en borrador. Los checks 04A solo certifican su SHA original; la validación de 04B debe consultarse en GitHub Actions para el HEAD que contiene estos cambios. Sin cambios de base de datos, autenticación, Diagnóstico, MiniWeb, GHL, licencias, precios, ni despliegue.
+Los PR #125/#126 se consolidaron dentro de #138; la secuencia de revisión #130–#137 se cerró sin merge individual después de que la reconciliación final preservara los estados editoriales. PR #143 certificó el recorrido público y #144 publicó la versión 0.8.1; evidencia HTTP fechada en [ENVIRONMENTS.md](ENVIRONMENTS.md). La deuda pendiente es una auditoría WCAG/lector de pantalla completa, registrada en [TESTING.md](TESTING.md).
 
 
 ## PROD-RELEASE-0.8.0 — publicado (2026-10-25)
@@ -32,73 +30,15 @@ Se conservan 46 slugs, seis categorías, nueve itinerarios y los estados editori
 
 ## APRENDE-EDITORIAL-04A — criterio digital y ejemplos comprensibles (2026-10-25)
 
-**CODE/TEST versionado en `feat/aprende-editorial-04a`; sin merge, deploy ni publicación atribuida a este checkpoint.** Aprende amplía el catálogo de 44 a **46 guías** y de 8 a **9 itinerarios**. Se añaden dos guías fundacionales en «Tecnología explicada»: prioridades digitales a partir de «el que mucho abarca, poco aprieta» y uso consciente bajo «domina la tecnología; no dejes que la tecnología te domine». Ambas permanecen `editorialDraft: true` hasta revisión humana.
+**Historial de checkpoint; contenido integrado por PR #138 y publicado en 0.8.1 por PR #144.** Aprende amplía el catálogo de 44 a **48 guías** y de 8 a **9 itinerarios** en la cadena 04A/04B. Las dos guías fundacionales permanecen como borradores protegidos, junto con los demás borradores sin aprobación explícita.
 
 La portada expresa el método **Comprende → Prioriza → Decide**, amplía el lenguaje a vida digital y negocio, y la búsqueda consulta también resúmenes, párrafos y bloques internos. La plantilla de ejemplo sustituye etiquetas técnicas por «Qué está pasando», «Qué se complica», «Una forma sencilla de actuar», «Pasos» y «Qué aprender de este ejemplo». Las seis guías especializadas que no tenían bloque `example` reciben un caso hipotético completo; se conserva el estado editorial existente de las demás guías.
 
 **RAN en GitHub Actions:** sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`, workflow `Aprende quality` run `40242263335` PASS (typecheck, build e integridad Aprende) y `Main integration quality` run `40242263275` PASS: typecheck, build, regresión Diagnóstico/Aprende y **1721/1721 unitarias**. La revisión estática de los 12 archivos modificados quedó sin marcadores de conflicto ni whitespace final. Fuentes nuevas verificadas contra OCDE 2026, NIST CSF 2.0, CISA y W3C. No cambia DB, Auth, Diagnóstico, MiniWeb, GHL, licencias, precios ni producción.
 
-## APRENDE-EDITORIAL-FINAL-02 — preservar borradores pendientes de aprobación (2026-10-25)
+## Cadena editorial APRENDE-EDITORIAL-04A–04J — reconciliada (2026-10-26)
 
-**Estado actual de la candidata de integración `feat/aprende-editorial-final`; PR #138 abierto, sin merge ni deploy.** La integración 04J había convertido 18 guías a `editorialDraft: false` sin aprobación explícita del usuario. La primera regresión general (run `40248565700`) detectó correctamente el conflicto en `learn-management-03.test.ts`; no se debe silenciar ese guard.
-
-Se restaura el contrato editorial: **48 guías auditadas, 18 en borrador y 30 no marcadas como borrador**, con 9 itinerarios y 6 categorías. Se preservan las 14 banderas de borrador existentes en `main` y las cuatro guías nuevas de 04A/04B (prioridades digitales, uso consciente de tecnología, migración de proveedor y correo profesional). La revisión editorial no equivale a autorización para publicar; solo se conservan los estados previamente aprobados o legados. RAN en el HEAD de código `322850f`: `Aprende quality` run `40254782673` PASS; `Main integration quality` run `40254782671` PASS con typecheck, build, regresión Diagnóstico/Aprende y **1740/1740 unitarias**. El PR sigue abierto, sin merge ni deploy.
-
-## APRENDE-EDITORIAL-04J — consolidación editorial 48/48 (2026-10-25)
-
-**CODE/TEST versionado en `feat/aprende-editorial-04j-consolidation`, apilado sobre 04I; sin merge ni deploy.** Consolida sobre el catálogo actual las mejoras útiles de los PR #125/#126 sin arrastrar su base antigua de 47 guías. Las 17 aperturas repetitivas fueron sustituidas por entradas específicas; las 48 guías quedan cubiertas por los 9 itinerarios y todas mantienen al menos una continuación relacionada.
-
-La auditoría transversal queda en **48 guías revisadas, 0 borradores, 9 itinerarios, 6 categorías**, sin URLs legacy detectadas, sin intro/extracto duplicados, sin alt genéricos, sin fuentes repetidas dentro de una guía y con al menos dos fuentes HTTPS distintas por artículo. Se actualizan OpenAI, ITU y la terminología de Google Analytics a «evento clave» / «conversión publicitaria», y se explican en contexto tokens, MFA, MX/TXT, HTTPS/TLS y atribución.
-
-**RAN en GitHub Actions:** `Aprende quality` run `40248368767` PASS: typecheck, build e integridad Aprende. Queda pendiente únicamente el gate general contra `main` mediante un PR de integración; no se afirma publicación.
-
-## APRENDE-EDITORIAL-04I — cierre de guías fundacionales (2026-10-25)
-
-**CODE/TEST versionado en `feat/aprende-editorial-04i-foundations-review`, apilado sobre 04H; sin merge ni deploy.** Se revisan las dos guías fundacionales de alfabetización digital: priorización («El que mucho abarca…») y uso consciente («Domina la tecnología…»). Se verifican OCDE 2026, NIST CSF 2.0, CISA Secure Our World y W3C WAI; se actualiza el alcance de CISA como recurso activo.
-
-Ambas guías pasan a `editorialDraft: false`. El catálogo queda en **48 guías revisadas y 0 borradores**. Los tests exigen que el catálogo completo permanezca sin borradores y preservan fuentes/relaciones de las dos guías fundacionales.
-
-**RAN en GitHub Actions:** `Aprende quality` run `40247742516` PASS: typecheck, build e integridad Aprende. La auditoría transversal posterior continúa antes de declarar integración final.
-
-## APRENDE-EDITORIAL-04H — revisión de Gestión (2026-10-25)
-
-**CODE/TEST versionado en `feat/aprende-editorial-04h-management-review`, apilado sobre 04G; sin merge ni deploy.** Se revisaron presupuesto digital, compras/proveedores, continuidad, gobierno de IA y evaluación de mejoras. Se sustituyen referencias `legacy.sba.gov` por la página vigente de SBA y se documenta que NIST mantiene AI RMF 1.0 publicado pero en revisión durante 2026.
-
-Las cinco guías pasan a `editorialDraft: false`. El catálogo queda en **48 guías: 46 revisadas y 2 borradores**. Los contratos preservan fuentes actuales de SBA, Ready.gov, CISA, NIST, GOV.UK y OCDE, junto con los límites fiscales, legales y de causalidad expresados en los textos.
-
-**RAN en GitHub Actions:** `Aprende quality` run `40247532519` PASS: typecheck, build e integridad Aprende.
-
-## APRENDE-EDITORIAL-04G — revisión de coordinación empresarial (2026-10-25)
-
-**CODE/TEST versionado en `feat/aprende-editorial-04g-business-operations-review`, apilado sobre 04F; sin merge ni deploy.** Se revisaron las cuatro guías de coordinación empresarial: varias sedes/negocios, permisos, selección de herramientas y comparación de resultados. Eurostat 2026 se delimita a empresas con 10 o más personas ocupadas y NIST se identifica como SP 1300 cuando corresponde.
-
-Las cuatro guías pasan a `editorialDraft: false`. El catálogo queda en **48 guías: 41 revisadas y 7 borradores**. Los tests protegen aprobación, fuentes, ejemplos y el alcance de Eurostat.
-
-**RAN en GitHub Actions:** `Aprende quality` run `40247312756` PASS: typecheck, build e integridad Aprende.
-
-## APRENDE-EDITORIAL-04F — revisión de migración y correo profesional (2026-10-25)
-
-**CODE/TEST versionado en `feat/aprende-editorial-04f-technical-review`, apilado sobre 04E; sin merge ni deploy.** Se revisaron individualmente los dos borradores técnicos creados en 04B: migración de proveedor y correo profesional. Se comprobaron límites, ejemplos, secuencia de cambio, recuperación de control y fuentes vigentes de ICANN, MDN e IETF. La guía de correo conserva RFC 9989 como especificación DMARC vigente y no prescribe valores de proveedor.
-
-Ambas guías pasan de `editorialDraft: true` a `false` después de la revisión. El catálogo queda en **48 guías: 37 revisadas y 11 borradores**. Se añaden contratos para preservar la aprobación y las referencias primarias de ICANN, DNS, TLS, SPF, DKIM y DMARC.
-
-**RAN en GitHub Actions:** `Aprende quality` run `40247108403` PASS: typecheck, build e integridad Aprende. Esta rama no modifica ni fuerza los PR #125/#126 basados en una cadena editorial anterior.
-
-## APRENDE-EDITORIAL-04E — revisión humana de Operaciones (2026-10-25)
-
-**CODE/TEST versionado en `feat/aprende-editorial-04e-operations-review`, basado en el HEAD certificado de 04B; sin merge ni deploy.** Se revisaron individualmente las cinco guías de `learn-operations-02.ts`: tareas y responsables, inventario, capacitación digital, ERP y piloto de mejora digital. Se verificaron estructura, ejemplos hipotéticos, FAQ, cierres, límites legales/contables y fuentes institucionales vigentes. Se precisa ERP como «planificación de recursos empresariales» y NIST se identifica como SP 1300/CSF 2.0.
-
-Las cinco guías pasan de `editorialDraft: true` a `false` únicamente después de esta revisión. El catálogo mantiene **48 guías**; quedan **13 borradores** y **35 guías revisadas** en esta rama. Las fuentes verificadas incluyen business.gov.au para inventario, OCDE 2025, NIST SP 1300, GOV.UK Service Manual y Microsoft Learn; su uso conserva el alcance declarado y no convierte documentación de proveedor en recomendación de compra.
-
-**RAN en GitHub Actions:** `Aprende quality` run `40246857214` PASS: typecheck, build e integridad Aprende. Esta rama es paralela a los PR #125/#126, que parten de un 04B anterior; no los sobrescribe ni los fuerza.
-
-## APRENDE-EDITORIAL-04B — separar selección y migración de proveedor (2026-10-25)
-
-**CODE/TEST versionado en `feat/aprende-editorial-04b`, dependiente de 04A; sin merge ni deploy.** La guía histórica de proveedor se concentra en elegir/renovar: servicios incluidos, control administrativo, recuperación, renovación, costo total y salida. La migración técnica deja de compartir el mismo objetivo educativo y pasa a la nueva guía `como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo`, marcada `editorialDraft: true`.
-
-El catálogo pasa de **46 a 48 guías** y conserva **9 itinerarios**. «Entiende y administra tu sitio web» separa ahora cuatro decisiones: mapa general de dominio/DNS/HTTPS/correo, correo profesional y autenticación, elección/renovación de proveedor y migración. La guía histórica `dns-https-y-correo-como-se-conecta-tu-dominio` se reduce a mapa conceptual y deriva el detalle a `https-certificados-tls-que-protegen-y-que-no` y al nuevo borrador `correo-profesional-dominio-registros-mx-txt`. La guía de correo usa RFC 1035, RFC 7208, RFC 6376 y **RFC 9989 (DMARC, mayo de 2026)**; no prescribe valores de proveedor.
-
-El mismo pase reduce seis guías madre que duplicaban detalle ya cubierto por artículos especializados: Presencia **3291→1420 palabras**, Automatizaciones **2707→1146**, Dominio/hosting **2413→1179**, primera campaña **2346→1120**, CRM **2142→1075** e IA general **1743→982**, según conteo editorial del contenido tipado. Se preservan slugs, ejemplos, fuentes y conceptos protegidos por pruebas. Se añade además un guard unitario para que estas seis guías no vuelvan a superar 10 secciones ni un tamaño serializado equivalente a 1800 palabras. El pase de simplificación adicional reduce también: HTTPS/TLS **1331→1128 palabras**, Analítica web **1346→984**, supervisión de automatizaciones **1578→968** y piloto de asistente IA **1407→904**. La guía nueva de correo se recortó de **1528→1070** después de separar el objetivo. Se añade un guard para que estas seis guías especializadas no superen 8 secciones ni 1500 palabras serializadas. **RAN en GitHub Actions:** `Aprende quality` run `40246463847` sobre `7a6c044c5ddee8e94a146cbd1febc3c9e29ab76c` PASS: typecheck, build e integridad Aprende. No hay Main integration quality mientras el PR #123 permanezca dirigido a la rama dependiente 04A.
+Los registros por checkpoint anteriores describían ramas y estados candidatos. La reconciliación final se integró en PR #138 (`main@4dcc27f0`), que preservó 18 borradores; la versión 0.8.1 publicada en PR #144 conserva 48 guías, 30 públicas y 9 itinerarios. PR #125/#126 se consolidaron; PR #123 quedó incluido; PR #130–#137 cerraron sin merge individual. La certificación pública está en APRENDE-PUBLIC-QA-01 arriba. La propuesta visual no aprobada de PR #112 se aparcó cerrándola sin merge; puede retomarse al aprobar dirección y brief.
 
 ## DIAG-VISUAL-03 — refinamiento del resultado y entrada QA-03B (2026-10-25)
 
