@@ -63,7 +63,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
       await publishBusinessPublicationForOrganization(database, organization.id, expectedRevision, { actorUserId: actor.userId });
     } else throw new Response("Acción inválida", { status: 400 });
   } catch (error) {
-    if (error instanceof Response && error.status === 409) return { error: await error.text() };
+    if (error instanceof Response && error.status === 409) return { error: await error.text(), submittedRevision: expectedRevision };
     throw error;
   }
   return redirect(`/app/internal/organizations/${organization.id}/miniweb`);
@@ -72,11 +72,12 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 export default function InternalOrganizationMiniWeb() {
   const { organization, configuration, draftRevision, hasProfile, published, workspaceUser } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
+  const formDraftRevision = actionData?.error ? actionData.submittedRevision : draftRevision;
   return <AdminShell active="organizations" workspaceUser={workspaceUser}><main className="admin-main">
     <Link className="back-link" to={`/app/internal/organizations/${organization.id}`}>← Volver a {organization.name}</Link>
     <div className="page-heading"><div><p className="eyebrow">MINIWEB</p><h1>Configuración de {organization.name}</h1><p>Las acciones se registran en la auditoría de la organización.</p></div></div>
-    <Card><h2>Borrador de configuración</h2>{actionData?.error ? <p className="alert alert--error" role="alert">{actionData.error}</p> : null}<Form method="post" className="form-stack"><input name="draftRevision" type="hidden" value={draftRevision} /><textarea aria-label="Configuración JSON" name="configuration" defaultValue={JSON.stringify(configuration, null, 2)} rows={24} spellCheck={false} /><Button type="submit" name="intent" value="save" tone="secondary">Guardar borrador</Button></Form>
-      <Form method="post"><input name="draftRevision" type="hidden" value={draftRevision} /><Button type="submit" name="intent" value="publish" disabled={!hasProfile || published}>Publicar MiniWeb</Button></Form>
+    <Card><h2>Borrador de configuración</h2>{actionData?.error ? <p className="alert alert--error" role="alert">{actionData.error}</p> : null}<Form method="post" className="form-stack"><input name="draftRevision" type="hidden" value={formDraftRevision} /><textarea aria-label="Configuración JSON" name="configuration" defaultValue={JSON.stringify(configuration, null, 2)} rows={24} spellCheck={false} /><Button type="submit" name="intent" value="save" tone="secondary">Guardar borrador</Button></Form>
+      <Form method="post"><input name="draftRevision" type="hidden" value={formDraftRevision} /><Button type="submit" name="intent" value="publish" disabled={!hasProfile || published}>Publicar MiniWeb</Button></Form>
       <p>{!hasProfile ? "Completa el perfil antes de publicar." : published ? "El perfil, los horarios y la configuración coinciden con la versión publicada." : "Hay cambios de borrador pendientes de publicación."}</p>
     </Card>
   </main></AdminShell>;

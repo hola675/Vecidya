@@ -4,6 +4,7 @@
 
 - Reúne los cambios integrados en `main` después del deployment 0.8.1 —aprobación editorial de las 18 guías de Aprende (48 publicables)— y los cambios propuestos en PR #139: auditoría funcional Admin, autorización explícita, control de concurrencia y unicidad de licencia por organización.
 - Las mutaciones de plataforma verifican una matriz explícita rol→acción (`platform_admin` tiene las acciones de la lista vigente; `staff` no tiene acciones de escritura). Suspender/reactivar licencia ahora usa ID y estado esperados en un CAS; las filas canceladas no se reactivan y conflictos no añaden auditoría.
+- Un conflicto CAS de MiniWeb conserva la revisión asociada al texto que sigue abierto en el formulario, por lo que un segundo intento continúa bloqueado hasta recargar y reconciliar el borrador; el E2E comprueba que no se sobrescribe la revisión ganadora. El navegador E2E Admin acepta Chromium de Playwright o `PLAYWRIGHT_CHROMIUM_EXECUTABLE`.
 - Añade la migración aditiva `0029_organization-license-single-current.sql`. El ledger productivo se verificó en `0000–0028`; el preflight confirmó cero licencias vigentes y cero grupos duplicados. La migración aún no se aplicó y el deploy aún no se ejecutó.
 - Versión de aplicación `0.8.1` → `0.8.2` (patch pre-1.0: cambios compatibles y correcciones/invariantes; sin ruptura de contrato). Este candidato se publicará solo después del merge autorizado, gates y despliegue. Typecheck/build y Worker/D1 E2E PASS tras las correcciones; faltan merge, migración remota, deploy y HTTP anónimo fechado. Ver `ENVIRONMENTS.md`.
 

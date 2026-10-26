@@ -18,6 +18,8 @@ if (!existsSync(wranglerCli)) throw new Error("Falta Wrangler local para prepara
 const persistenceName = `.wrangler/platform-service-audit-${process.pid}-${suffix}`;
 const persistence = resolve(projectDirectory, persistenceName);
 const secret = randomBytes(32).toString("hex");
+const localEdgePath = "C:/Program Files/Microsoft/Edge/Application/msedge.exe";
+const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
 let worker;
 
 async function getFreePort() {
@@ -282,7 +284,7 @@ const staffDetailHtml = await (await assertStatus(identities.normal.client, orga
 assert(!staffDetailHtml.includes("Suspender organización") && !staffDetailHtml.includes("Guardar rol") && !staffDetailHtml.includes("Administrar capacitación") && !staffDetailHtml.includes("Administrar MiniWeb"), "La UI de staff expuso mutaciones de plataforma.");
 await assertStatus(new SessionClient(), "/app/internal", 302);
 await assertStatus(identities.inactive.client, "/app/internal", 403);
-const browser = await chromium.launch({ headless: true, executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe" });
+const browser = await chromium.launch({ headless: true, ...(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {}) });
 try {
   const page = await browser.newPage({ viewport: { width: 1366, height: 900 } });
   const pageErrors = [];
@@ -455,6 +457,12 @@ try {
   await page.locator('input[name="draftRevision"]').first().evaluate((input, staleRevision) => { input.value = staleRevision; }, String(miniwebRevisionBefore));
   await page.getByRole("button", { name: "Guardar borrador" }).click();
   await page.getByRole("alert").getByText("El borrador cambió desde que lo abriste. Recarga la página antes de guardar.").waitFor();
+  assert(await page.locator('input[name="draftRevision"]').first().inputValue() === String(miniwebRevisionBefore), "El formulario sustituyó la revisión asociada al contenido obsoleto tras el conflicto CAS.");
+  const staleRetryAction = page.waitForResponse((response) => response.url().startsWith(`${baseUrl}${miniwebPath}.data`) && response.request().method() === "POST");
+  await page.getByRole("button", { name: "Guardar borrador" }).click();
+  await staleRetryAction;
+  await page.getByRole("alert").getByText("El borrador cambió desde que lo abriste. Recarga la página antes de guardar.").waitFor();
+  assert(await page.locator('input[name="draftRevision"]').first().inputValue() === String(miniwebRevisionBefore), "Un segundo intento conservó una revisión nueva para contenido obsoleto.");
   const staleMiniwebState = executeD1(`SELECT p.draft_revision,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=p.organization_id AND a.action='organization.miniweb.save') AS audit_count FROM business_profile_publication p WHERE p.organization_id=${sqlLiteral(identities["owner-b"].organizationId)};`)[0];
   assert(Number(staleMiniwebState?.draft_revision) === miniwebRevisionBefore + 1 && Number(staleMiniwebState.audit_count) === 1, "El conflicto CAS de MiniWeb alteró la revisión o creó una auditoría de escritura rechazada.");
   await page.goto(`${baseUrl}${miniwebPath}`);
@@ -536,7 +544,7 @@ const assignmentCount = executeD1(`SELECT count(*) AS count FROM organization_li
 const assignmentAuditCount = executeD1(`SELECT count(*) AS count FROM platform_audit_log WHERE organization_id = ${sqlLiteral(identities["owner-a"].organizationId)} AND action = 'organization_license.assign';`)[0]?.count;
 assert(Number(assignmentCount) === 1 && Number(assignmentAuditCount) === 1 && activeLicense.license?.status === "active", "La asignación concurrente dejó filas vigentes o auditoría duplicada/incompleta.");
 
-const licenseBrowser = await chromium.launch({ headless: true, executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe" });
+const licenseBrowser = await chromium.launch({ headless: true, ...(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {}) });
 try {
   const licensePage = await licenseBrowser.newPage({ viewport: { width: 1366, height: 900 } });
   const licenseErrors = [];
