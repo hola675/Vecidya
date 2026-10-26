@@ -63,6 +63,7 @@ export const learnArticles: LearnArticle[] = [
     ],
     image: "/assets/learn/diagram-crm.svg",
     imageAlt: "Una consulta se registra con contexto y puede continuar, retomarse después o cerrarse, según lo que ocurra",
+    relatedSlugs: ["organizar-consultas-mensajes-llamadas-formularios", "como-responder-la-primera-consulta-de-un-cliente"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no es un CRM ni crea una base de contactos." },
     editorialDraft: false,
     sections: [
@@ -425,7 +426,7 @@ export const learnArticles: LearnArticle[] = [
             { question: "¿La IA puede responder a clientes sin revisión?", answer: "Depende del riesgo y del alcance. Empieza con límites estrictos y una fuente autorizada; una persona debe revisar las decisiones o compromisos importantes." },
             { question: "¿Puedo copiar conversaciones de clientes para entrenar un asistente?", answer: "No por defecto. Revisa autorización, privacidad y condiciones del proveedor; empieza con datos anonimizados o sintéticos cuando sea posible." },
             { question: "¿Qué opciones de inteligencia artificial ofrece Vecidya?", answer: "IA Conversacional e IA de Voz son complementos opcionales para Barrio o Ciudad; no se activan por defecto. Apoyan respuestas, clasificación inicial o atención por voz." },
-            { question: "¿Cómo se cobra el consumo de IA?", answer: "El cargo mensual va separado del consumo del proveedor: tokens y, para voz, minutos/telefonía. Se acuerdan alcance, límites de uso y supervisión." },
+            { question: "¿Cómo se cobra el consumo de IA?", answer: "El cargo mensual va separado del consumo del proveedor: tokens (unidades de texto procesado) y, para voz, minutos/telefonía. Se acuerdan alcance, límites de uso y supervisión." },
           ],
         }],
       },
@@ -571,7 +572,7 @@ export const learnArticles: LearnArticle[] = [
           items: [
             { question: "¿Cuánto presupuesto necesito?", answer: "No hay una cifra universal. Define un límite que puedas asumir como prueba y revisa las condiciones de la plataforma y de tu mercado." },
             { question: "¿Qué plataforma es mejor?", answer: "Depende de dónde esté tu público, qué acción buscas y qué formatos puedes mantener. No elijas solo porque otra empresa use esa plataforma." },
-            { question: "¿Una conversión registrada equivale a una venta?", answer: "No siempre. Depende de cómo esté configurada la medición y de qué evento se esté contando." },
+            { question: "¿Una conversión publicitaria registrada equivale a una venta?", answer: "No siempre. Una conversión publicitaria es una acción importante configurada para medir una campaña; puede ser una consulta, una reserva u otro evento, no necesariamente una venta." },
             { question: "¿Debo aumentar presupuesto si hay muchos clics?", answer: "No automáticamente. Revisa consultas, capacidad de atención, resultados confirmados y coste antes de ampliar." },
           ],
         }],
@@ -604,10 +605,10 @@ export const learnArticles: LearnArticle[] = [
     category: "Negocios digitales",
     title: "Cómo mantener actualizada y confiable tu presencia digital",
     intro: "Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.",
-    excerpt: "Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.",
+    excerpt: "Crea una rutina para mantener horarios, contacto, reseñas, accesibilidad y seguridad coherentes en los canales que sí atiendes.",
     enPocasPalabras: ["Comprueba que horarios, servicios y contacto coincidan entre canales.","No inventes reseñas ni afirmaciones para ganar confianza.","Revisa accesibilidad, privacidad y seguridad antes de ampliar tu presencia."],
     image: "/assets/learn/diagram-presence-digital.svg",
-    imageAlt: "Esquema educativo de servicios y canales digitales",
+    imageAlt: "Sitio web, perfil de empresa y red social muestran de forma coherente la oferta, la zona de atención y el contacto.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
     editorialDraft: false,
     cta: { label: "Revisar mi situación", to: "/diagnostico", copy: "Comprueba qué necesita tu negocio antes de contratar o publicar." },
@@ -655,7 +656,7 @@ export const learnArticles: LearnArticle[] = [
           "Prueba teclado y móvil: que los controles puedan enfocarse, no queden tapados y funcionen sin gestos difíciles; evita páginas que obliguen a desplazarse horizontalmente para leer texto normal.",
           "Publica solo los datos personales necesarios para atender. No expongas documentos internos, listas de clientes, números privados ni información sensible en páginas o imágenes.",
           "Usa conexiones seguras cuando se envíen datos, protege las cuentas con contraseñas únicas y autenticación disponible, limita permisos y elimina accesos que ya no se necesiten.",
-          "Antes de instalar analítica, píxeles o formularios, identifica qué datos recogen, qué proveedor los procesa, cuánto tiempo se guardan y qué avisos, opciones o base legal requiere tu jurisdicción.",
+          "Antes de instalar herramientas de medición (analítica), píxeles de seguimiento o formularios, identifica qué datos recogen, qué proveedor los procesa, cuánto tiempo se guardan y qué avisos, opciones o base legal requiere tu jurisdicción.",
         ] }, { type: "callout", tone: "caution", title: "Las reglas legales dependen del caso", text: "Las políticas de anuncios de Google o Meta son reglas de sus plataformas; no sustituyen la legislación sobre privacidad, cookies, accesibilidad, promociones o comunicaciones comerciales de tu país." }],
       },
       {
@@ -1185,7 +1186,7 @@ export const learnArticles: LearnArticle[] = [
           type: "steps",
           label: "Lista breve para comparar proveedores",
           items: [
-            { title: "Aclara qué incluye", detail: "Pregunta por dominio, DNS, alojamiento, correo, certificado TLS, copias y soporte. No des por hecho que vienen juntos." },
+            { title: "Aclara qué incluye", detail: "Pregunta por dominio, DNS, alojamiento, correo, certificado de seguridad de la web (TLS), copias y soporte. No des por hecho que vienen juntos." },
             { title: "Lee la renovación", detail: "Comprueba precio del siguiente periodo, moneda, impuestos, renovación automática y condiciones si el dominio vence." },
             { title: "Confirma quién será el registrante", detail: "Verifica qué persona o entidad queda vinculada al registro y qué correo recibe los avisos importantes." },
             { title: "Pregunta cómo salir", detail: "Averigua cómo exportar la web y los datos, transferir el dominio, cancelar el servicio y descargar comprobantes." },
@@ -4687,6 +4688,8 @@ export const learnPathways = [
     title: "Atiende, vende y genera confianza",
     description: "Responde bien, organiza pedidos y protege la confianza de tus clientes.",
     slugs: [
+      "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
+      "organizar-consultas-mensajes-llamadas-formularios",
       "como-responder-la-primera-consulta-de-un-cliente",
       "hojas-de-calculo-para-organizar-un-negocio-pequeno",
       "como-vender-por-internet-sin-perder-el-control-pedidos-pagos",
@@ -4704,6 +4707,7 @@ export const learnPathways = [
       "conectar-herramientas-digitales-sin-complicar-tu-negocio",
       "como-probar-y-supervisar-automatizaciones-sin-perder-datos",
       "como-probar-un-asistente-de-ia-con-supervision-humana",
+      "preparar-respuestas-publicaciones-ia-sin-perder-control",
     ],
   },
   {
