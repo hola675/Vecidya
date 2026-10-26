@@ -149,6 +149,28 @@ function walkImpact(profileId: string, routeBank: typeof bank) {
   throw new Error(`${profileId}: non-terminating route`);
 }
 
+test("insurance renewal replaces generic pending-task review only in utility-first, with neutral fallback", () => {
+  const insurance = {
+    ...common, q2_sector: "financial_tax_insurance", q2_monetization: "services",
+    q2_delivery: ["remote_service"], q2_customer_buyer: "mixed",
+    q2_goal: "stop_losing", q2_friction: "follow_up",
+    q2_niche_financial_tax_insurance: "insurance_agency",
+  };
+  const baseline = buildCandidateQuestionPlanFromBankV3({ answers: insurance }, bank, "baseline");
+  const utility = buildCandidateQuestionPlanFromBankV3({ answers: insurance }, bank, "utility_first");
+  assert.ok(baseline.selectedQuestionIds.includes("q2_followup_status_visibility"));
+  assert.ok(utility.eligibleQuestionIds.includes("q2_specialty_insurance_renewal"));
+  assert.ok(utility.selectedQuestionIds.includes("q2_specialty_insurance_renewal"));
+  assert.ok(!utility.selectedQuestionIds.includes("q2_followup_status_visibility"));
+  assert.equal(utility.trace.find((item) => item.questionId === "q2_followup_status_visibility")?.skipReason, "replaced_by_specialty");
+
+  const neutral = buildCandidateQuestionPlanFromBankV3({
+    answers: { ...insurance, q2_specialty_insurance_renewal: "unknown" },
+  }, bank, "utility_first");
+  assert.ok(neutral.eligibleQuestionIds.includes("q2_followup_status_visibility"));
+  assert.notEqual(neutral.trace.find((item) => item.questionId === "q2_followup_status_visibility")?.skipReason, "replaced_by_specialty");
+});
+
 test("retained specialty pilots measure cost and evidence delta against the 74-question bank", () => {
   const pilotIds = new Set(pilot.map((q) => q.id));
   const withoutPilot = bank.filter((q) => !pilotIds.has(q.id));
@@ -159,11 +181,21 @@ test("retained specialty pilots measure cost and evidence delta against the 74-q
     const after = walkImpact(profile, bank);
     assert.ok(before.asked.length <= 24 && after.asked.length <= 24, profile);
     assert.equal(after.asked.filter((id) => pilotIds.has(id)).length, 1, profile);
+    if (profile === "seguros") {
+      assert.ok(before.asked.includes("q2_followup_status_visibility"));
+      assert.ok(before.asked.includes("q2_reputation_flow"));
+      assert.ok(after.asked.includes("q2_reputation_flow"), "specialty evidence must not displace reputation");
+      assert.ok(!after.asked.includes("q2_followup_status_visibility"), "generic pending-task review is replaced by renewal evidence");
+      assert.ok(after.asked.length <= before.asked.length + 1, "only the explicit niche selector may add route cost");
+    }
 
     const newEvidence = after.evidence.filter((item) =>
       pilotIds.has(item.questionId) && !before.evidence.some((old) =>
         old.questionId === item.questionId && old.state === item.state));
     assert.equal(newEvidence.length, 1, profile);
+    if (profile === "seguros") {
+      assert.ok(after.evidence.length > before.evidence.length, "keep existing reputation evidence and add renewal evidence");
+    }
     assert.ok(
       after.unresolved.length < before.unresolved.length,
       `${profile}: retained specialty must resolve at least one previously open dimension`,
