@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useLoaderData } from "react-router";
 
 import { listPlatformAuditLog } from "../../db/queries/platform-governance.server";
+import { platformAuditActionLabels } from "../lib/platform-audit-labels";
 import { createDatabase } from "../../db/client.server";
 import { AdminShell } from "../components/admin-shell";
 import { Badge, Icon } from "../components/ui";
@@ -10,13 +11,7 @@ import { cloudflareContext } from "../../server/cloudflare-context";
 import { requirePlatformAdmin } from "../../server/platform-authorization.server";
 import type { Route } from "./+types/internal-audit";
 
-const auditActionLabels: Record<string, string> = {
-  "business_profile.verify": "Verificó el perfil",
-  "business_profile.unverify": "Retiró la verificación",
-  "business_profile.suspend": "Suspendió el perfil",
-  "business_profile.reactivate": "Reactivó el perfil",
-};
-type AuditActionFilter = "all" | keyof typeof auditActionLabels;
+type AuditActionFilter = "all" | string;
 
 function formatTimestamp(date: Date) {
   return new Date(date).toLocaleString("es-CO", { dateStyle: "medium", timeStyle: "short" });
@@ -43,7 +38,7 @@ export default function InternalAudit() {
       if (actionFilter !== "all" && entry.action !== actionFilter) return false;
       if (!query) return true;
       return [
-        auditActionLabels[entry.action] ?? entry.action,
+        platformAuditActionLabels[entry.action] ?? entry.action,
         entry.actorName,
         entry.actorEmail,
         entry.businessProfileDisplayName,
@@ -59,7 +54,7 @@ export default function InternalAudit() {
     <AdminShell active="audit" workspaceUser={workspaceUser}>
       <main className="admin-content">
         <div className="page-heading">
-          <div><p className="eyebrow">GOBIERNO</p><h1>Auditoría</h1><p>Acciones administrativas sensibles ejecutadas sobre Business Profiles: quién, qué, sobre qué perfil y cuándo. Se muestran hasta 200 registros recientes.</p></div>
+          <div><p className="eyebrow">GOBIERNO</p><h1>Auditoría</h1><p>Acciones administrativas registradas en Vecidya: actor, organización, cambio y fecha. Se muestran hasta 200 registros recientes; las acciones no instrumentadas se identifican con su clave técnica.</p></div>
           <Badge tone="neutral">{activity.length} registros recientes</Badge>
         </div>
 
@@ -70,7 +65,7 @@ export default function InternalAudit() {
               <label className="admin-filter">Acción
                 <select onChange={(event) => setActionFilter(event.target.value as AuditActionFilter)} value={actionFilter}>
                   <option value="all">Todas</option>
-                  {Object.entries(auditActionLabels).map(([action, label]) => <option key={action} value={action}>{label}</option>)}
+                  {[...new Set(activity.map((entry) => entry.action))].sort().map((action) => <option key={action} value={action}>{platformAuditActionLabels[action] ?? action}</option>)}
                 </select>
               </label>
               <p className="admin-result-count" aria-live="polite">{filteredActivity.length} de {activity.length} registros</p>
@@ -80,8 +75,8 @@ export default function InternalAudit() {
                 <thead><tr><th>Fecha</th><th>Acción</th><th>Organización / perfil</th><th>Actor</th><th>Cambio</th></tr></thead>
                 <tbody>{filteredActivity.map((entry) => <tr key={entry.id}>
                   <td><time dateTime={entry.createdAt.toISOString()}>{formatTimestamp(entry.createdAt)}</time></td>
-                  <td><strong>{auditActionLabels[entry.action] ?? entry.action}</strong></td>
-                  <td><strong>{entry.organizationName ?? "Organización no disponible"}</strong><span className="admin-table__meta">{entry.businessProfileDisplayName ?? entry.entityId}{entry.businessProfileSlug ? <> · <Link to={`/app/internal/businesses/${entry.entityId}`}>Ver perfil</Link></> : null}</span></td>
+                  <td><strong>{platformAuditActionLabels[entry.action] ?? entry.action}</strong><span className="admin-table__meta">{entry.action}</span></td>
+                  <td><strong>{entry.organizationName ?? "Organización no disponible"}</strong><span className="admin-table__meta">{entry.businessProfileDisplayName ?? `${entry.entityType}: ${entry.entityId}`}{entry.businessProfileSlug ? <> · <Link to={`/app/internal/businesses/${entry.entityId}`}>Ver perfil</Link></> : null}</span></td>
                   <td>{entry.actorName ?? entry.actorEmail ?? "Actor desconocido"}{entry.actorName && entry.actorEmail ? <span className="admin-table__meta">{entry.actorEmail}</span> : null}</td>
                   <td><span className="admin-audit-table__change">{entry.previousValue ?? "—"} → {entry.newValue ?? "—"}</span></td>
                 </tr>)}</tbody>

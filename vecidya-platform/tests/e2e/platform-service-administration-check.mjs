@@ -134,7 +134,15 @@ const jsonPost = (serviceId, status) => ({
 await assertStatus(identities.platform.client, apiA, 200);
 await assertStatus(identities.platform.client, apiB, 200);
 await assertStatus(identities.platform.client, apiA, 201, jsonPost("service-crm", "pending"));
-await assertStatus(identities.platform.client, apiA, 200, jsonPost("service-crm", "active"));
+const serviceActivated = await (await assertStatus(identities.platform.client, apiA, 200, jsonPost("service-crm", "active"))).json();
+assert(serviceActivated.activatedAt && serviceActivated.endedAt === null, "Activar servicio no escribió activated_at ni limpió ended_at.");
+const serviceAudit = await (await identities.platform.client.fetch("/app/internal/audit")).text();
+assert(serviceAudit.includes("Asignó un servicio") && serviceAudit.includes("Actualizó un servicio") && serviceAudit.includes("organization_service"), "La auditoría no mostró las mutaciones de servicios.");
+const endedAt = Date.now();
+const serviceEnded = await (await assertStatus(identities.platform.client, apiA, 200, jsonPost("service-crm", "ended"))).json();
+assert(serviceEnded.endedAt && serviceEnded.activatedAt === serviceActivated.activatedAt, "Finalizar servicio no escribió ended_at o perdió la fecha de activación histórica.");
+const serviceReactivated = await (await assertStatus(identities.platform.client, apiA, 200, jsonPost("service-crm", "active"))).json();
+assert(Date.parse(serviceReactivated.activatedAt) >= endedAt && serviceReactivated.endedAt === null, "Reactivar servicio no actualizó sus timestamps.");
 await assertStatus(identities.platform.client, apiB, 201, jsonPost("service-marketing", "pending"));
 await assertStatus(identities.platform.client, apiB, 200, jsonPost("service-marketing", "active"));
 const servicesAdminA = await (await assertStatus(identities.platform.client, `/app/internal/services?organizationId=${identities["owner-a"].organizationId}`, 200)).text();
@@ -147,6 +155,7 @@ await assertStatus(identities.platform.client, integrationsA, 200);
 await assertStatus(identities.platform.client, integrationsB, 200);
 await assertStatus(identities.platform.client, integrationsA, 201, integrationPost(`external-a-${suffix}`));
 await assertStatus(identities.platform.client, integrationsB, 201, integrationPost(`external-b-${suffix}`, "pending"));
+await assertStatus(identities.platform.client, integrationsB, 409, integrationPost(`external-a-${suffix}`));
 await assertStatus(identities.platform.client, integrationsA, 400, integrationPost(`invalid-status-${suffix}`, "unknown"));
 await assertStatus(identities.platform.client, integrationsA, 400, integrationPost(`secret-metadata-${suffix}`, "active", '{"apiKey":"forbidden"}'));
 

@@ -7,6 +7,7 @@ import { listPlatformOrganizations } from "../../db/queries/platform-organizatio
 import { listPlatformBusinessProfiles } from "../../db/queries/platform-business-profiles.server";
 import { listPlatformIntegrations } from "../../db/queries/platform-integrations.server";
 import { listPlatformAuditLog } from "../../db/queries/platform-governance.server";
+import { platformAuditActionLabels } from "../lib/platform-audit-labels";
 import { AdminShell } from "../components/admin-shell";
 import { Icon } from "../components/ui";
 import { ComparisonBars, JourneyGuide, MetricCard } from "../components/experience-system";
@@ -18,13 +19,6 @@ import type { Route } from "./+types/internal";
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Administración de Vecidya | Vecidya" }];
 }
-
-const auditActionLabels: Record<string, string> = {
-  "business_profile.verify": "Verificó el perfil",
-  "business_profile.unverify": "Retiró la verificación",
-  "business_profile.suspend": "Suspendió el perfil",
-  "business_profile.reactivate": "Reactivó el perfil",
-};
 
 function formatTimestamp(date: Date) {
   return new Date(date).toLocaleString("es-CO", { dateStyle: "medium", timeStyle: "short" });
@@ -182,7 +176,7 @@ export default function InternalHome() {
             <ul className="admin-audit-list admin-audit-list--compact">
               {recentActivity.map((entry) => (
                 <li key={entry.id}>
-                  <span>{auditActionLabels[entry.action] ?? entry.action} · {entry.businessProfileDisplayName ?? entry.entityId}</span>
+                  <span>{platformAuditActionLabels[entry.action] ?? entry.action} · {entry.businessProfileDisplayName ?? `${entry.entityType}: ${entry.entityId}`}</span>
                   <span className="admin-audit-list__meta">{entry.actorName ?? entry.actorEmail ?? "Actor desconocido"} · {formatTimestamp(entry.createdAt)}</span>
                 </li>
               ))}
