@@ -58,6 +58,10 @@
 
 **En revisión técnica:** cinco guías de Operaciones fueron auditadas una por una y promovidas tras verificar fuentes, lenguaje, ejemplos y límites. Quedan 13 borradores en el catálogo de 48 guías. Este checkpoint se mantiene separado de 04C/04D porque esas ramas parten de un HEAD anterior de 04B; la reconciliación deberá preservar ambos conjuntos de cambios sin force-push destructivo.
 
+### APRENDE-EDITORIAL-04I — cierre editorial del catálogo (2026-10-25)
+
+**Checkpoint en certificación:** la cadena 04E→04I revisó los 18 borradores que permanecían sobre el HEAD final de 04B. Estado candidato: **48/48 guías revisadas, 0 borradores**. Antes de integrar se requiere CI del HEAD, auditoría transversal de fuentes/rutas/relaciones y reconciliación no destructiva con los PR #125/#126, que contienen mejoras de lenguaje/fuentes sobre una base anterior.
+
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)
