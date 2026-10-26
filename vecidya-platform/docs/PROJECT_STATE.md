@@ -758,6 +758,6 @@ QA-03B usa calibración v4 en el código de `/diagnostico` y el replay del Worke
 ## Release de producción 0.8.2 (2026-10-26)
 
 PR #139 integrado y migración `0029` aplicada; versión `0.8.2` desplegada al 100 % con GET anónimo posterior al deploy. El release incorpora QA-03B integrado en `/diagnostico`, cuyo estado de publicación específico no se certifica por esta nota. Version ID, HTTP y estado de staging: `ENVIRONMENTS.md`.
-## Candidato — APP-MINI-02B (2026-10-26)
+## APP-MINI-02B — publicado en 0.8.3 (2026-10-26)
 
-Sobre `main@072cd4f2`, se corrigen validación y navegación de horarios, se administra el logo solo en Archivos e identidad de Mi MiniWeb, y la portada se presenta detrás del logo dentro de su marco. MiniWeb y Vecindario comparten los medios del snapshot publicado. Se refinan las retículas de MiniWeb y las tarjetas del Vecindario para mantener una composición equilibrada en móvil y escritorio. Versión candidata `0.8.3`; no integrada ni publicada.
+PR #153 integrado en `main@ede3f187` y desplegado a producción como `0.8.3` (Worker Version ID `a9ee55c5-f346-49a2-8f74-b8c6e45db36a`, deployment al 100 %). Se corrigen validación y navegación de horarios, se administra el logo solo en Archivos e identidad de Mi MiniWeb, y la portada aparece detrás del logo dentro de su marco. MiniWeb y Vecindario comparten los medios del snapshot publicado; las secciones y tarjetas tienen una composición responsive más uniforme. E2E MiniWeb 134/134, E2E horarios, typecheck/build/diff-check PASS. GET anónimo de solo lectura en `/` confirmó HTTP 200, versión 0.8.3 y © 2026 Vecidya a las 20:43:33Z. No se probaron rutas de producción ni se cambió D1 remota. Evidencia: `ENVIRONMENTS.md`.
