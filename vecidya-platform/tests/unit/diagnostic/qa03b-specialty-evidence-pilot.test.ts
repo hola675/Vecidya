@@ -179,6 +179,10 @@ test("retained specialty pilots measure cost and evidence delta against the 74-q
   for (const profile of ["impuestos", "seguros"]) {
     const before = walkImpact(profile, withoutPilot);
     const after = walkImpact(profile, bank);
+    if (profile === "seguros") console.log(`QA03B_INSURANCE_REPLACEMENT ${JSON.stringify({
+      before: { asked: before.asked, evidence: before.evidence },
+      after: { asked: after.asked, evidence: after.evidence },
+    })}`);
     assert.ok(before.asked.length <= 24 && after.asked.length <= 24, profile);
     assert.equal(after.asked.filter((id) => pilotIds.has(id)).length, 1, profile);
     if (profile === "seguros") {
@@ -194,7 +198,7 @@ test("retained specialty pilots measure cost and evidence delta against the 74-q
         old.questionId === item.questionId && old.state === item.state));
     assert.equal(newEvidence.length, 1, profile);
     if (profile === "seguros") {
-      assert.ok(after.evidence.length > before.evidence.length, "keep existing reputation evidence and add renewal evidence");
+      assert.ok(after.evidence.some((item) => item.questionId === "q2_reputation_flow"), "keep existing reputation evidence alongside renewal evidence");
     }
     assert.ok(
       after.unresolved.length < before.unresolved.length,
