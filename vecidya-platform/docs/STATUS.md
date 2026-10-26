@@ -12,6 +12,14 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 **RAN en GitHub Actions:** sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`, workflow `Aprende quality` run `40242263335` PASS (typecheck, build e integridad Aprende) y `Main integration quality` run `40242263275` PASS: typecheck, build, regresión Diagnóstico/Aprende y **1721/1721 unitarias**. La revisión estática de los 12 archivos modificados quedó sin marcadores de conflicto ni whitespace final. Fuentes nuevas verificadas contra OCDE 2026, NIST CSF 2.0, CISA y W3C. No cambia DB, Auth, Diagnóstico, MiniWeb, GHL, licencias, precios ni producción.
 
+## APRENDE-EDITORIAL-04G — revisión de coordinación empresarial (2026-10-25)
+
+**CODE/TEST versionado en `feat/aprende-editorial-04g-business-operations-review`, apilado sobre 04F; sin merge ni deploy.** Se revisaron las cuatro guías de coordinación empresarial: varias sedes/negocios, permisos, selección de herramientas y comparación de resultados. Eurostat 2026 se delimita a empresas con 10 o más personas ocupadas y NIST se identifica como SP 1300 cuando corresponde.
+
+Las cuatro guías pasan a `editorialDraft: false`. El catálogo queda en **48 guías: 41 revisadas y 7 borradores**. Los tests protegen aprobación, fuentes, ejemplos y el alcance de Eurostat.
+
+**Gate pendiente:** `Aprende quality` sobre el HEAD final.
+
 ## APRENDE-EDITORIAL-04F — revisión de migración y correo profesional (2026-10-25)
 
 **CODE/TEST versionado en `feat/aprende-editorial-04f-technical-review`, apilado sobre 04E; sin merge ni deploy.** Se revisaron individualmente los dos borradores técnicos creados en 04B: migración de proveedor y correo profesional. Se comprobaron límites, ejemplos, secuencia de cambio, recuperación de control y fuentes vigentes de ICANN, MDN e IETF. La guía de correo conserva RFC 9989 como especificación DMARC vigente y no prescribe valores de proveedor.
