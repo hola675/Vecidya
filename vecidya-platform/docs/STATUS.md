@@ -18,7 +18,7 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 Ambas guías pasan a `editorialDraft: false`. El catálogo queda en **48 guías revisadas y 0 borradores**. Los tests exigen que el catálogo completo permanezca sin borradores y preservan fuentes/relaciones de las dos guías fundacionales.
 
-**Gate pendiente:** `Aprende quality` sobre el HEAD final, seguido por auditoría transversal del catálogo completo antes de declarar cierre editorial integral.
+**RAN en GitHub Actions:** `Aprende quality` run `40247742516` PASS: typecheck, build e integridad Aprende. La auditoría transversal posterior continúa antes de declarar integración final.
 
 ## APRENDE-EDITORIAL-04H — revisión de Gestión (2026-10-25)
 
