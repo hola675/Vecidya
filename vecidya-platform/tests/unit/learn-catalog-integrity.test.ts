@@ -274,6 +274,105 @@ test("Las guías especializadas simplificadas conservan un tamaño pedagógico a
   }
 });
 
+test("La consolidación editorial mantiene lenguaje comprensible", () => {
+  const ai = getLearnArticle("que-puede-hacer-una-inteligencia-artificial-por-un-negocio");
+  const campaign = getLearnArticle("publicidad-digital-como-preparar-una-primera-campana");
+  const presence = getLearnArticle("como-mantener-actualizada-y-confiable-tu-presencia-digital");
+  const control = getLearnArticle("domina-la-tecnologia-sin-que-te-domine");
+  const migration = getLearnArticle("como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo");
+  const provider = getLearnArticle("como-elegir-y-cambiar-proveedor-de-dominio-y-hosting");
+  const analytics = getLearnArticle("analitica-web-que-medir-en-tu-negocio");
+  assert.ok(ai && campaign && presence && control && migration && provider && analytics);
+
+  assert.match(JSON.stringify(ai), /tokens \(unidades de texto procesado\)/i);
+  assert.match(JSON.stringify(campaign), /conversi[oó]n publicitaria.{0,180}acci[oó]n importante.{0,120}campa[nñ]a/i);
+  assert.match(JSON.stringify(presence), /herramientas de medici[oó]n \(anal[ií]tica\)/i);
+  assert.match(JSON.stringify(control), /autenticaci[oó]n multifactor.{0,140}adem[aá]s de la contrase[nñ]a/i);
+  assert.match(JSON.stringify(migration), /MX.{0,100}dirigir los mensajes/i);
+  assert.match(JSON.stringify(migration), /TXT.{0,100}verificaciones y pol[ií]ticas/i);
+  assert.match(JSON.stringify(migration), /conexi[oó]n segura \(HTTPS\)/i);
+  assert.match(JSON.stringify(provider), /certificado de seguridad de la web \(TLS\)/i);
+  assert.match(JSON.stringify(analytics), /Origen incierto \(atribuci[oó]n\)/i);
+});
+
+test("Las aperturas educativas no reutilizan la plantilla genérica anterior", () => {
+  for (const article of learnArticles) {
+    const text = JSON.stringify(article);
+    assert.doesNotMatch(text, /Al terminar, podr[aá]s explicar con tus palabras/i, article.slug);
+    assert.doesNotMatch(text, /Ejercicio breve: identifica un problema real/i, article.slug);
+    assert.doesNotMatch(text, /Explica la idea central a alguien sin utilizar tecnicismos/i, article.slug);
+  }
+});
+
+test("Los textos alternativos explican la imagen y evitan etiquetas genéricas", () => {
+  for (const article of learnArticles) {
+    assert.ok(article.imageAlt.trim().split(/\s+/u).length >= 7, `Texto alternativo demasiado breve: ${article.slug}`);
+    assert.doesNotMatch(article.imageAlt, /ilustraci[oó]n conceptual|esquema educativo|tema de esta gu[ií]a|diagrama ilustrativo/i, article.slug);
+  }
+});
+
+test("La introducción y el extracto cumplen funciones distintas", () => {
+  for (const article of learnArticles) {
+    assert.notEqual(article.intro.trim(), article.excerpt.trim(), `Intro y extracto duplicados: ${article.slug}`);
+  }
+});
+
+test("El resumen final no repite literalmente En pocas palabras", () => {
+  for (const article of learnArticles) {
+    const summaries = article.sections.flatMap((section) =>
+      (section.blocks ?? []).flatMap((block) => block.type === "summary" ? [block.items] : []));
+    for (const summary of summaries) {
+      assert.notDeepEqual(summary, [...article.enPocasPalabras], `Resumen duplicado en ${article.slug}`);
+    }
+  }
+});
+
+test("Las fuentes renovadas usan destinos vigentes y terminología actual", () => {
+  const analytics = getLearnArticle("analitica-web-que-medir-en-tu-negocio");
+  const aiDrafts = getLearnArticle("preparar-respuestas-publicaciones-ia-sin-perder-control");
+  const start = getLearnArticle("como-empezar-a-digitalizar-un-negocio-desde-cero");
+  const budget = getLearnArticle("como-preparar-presupuesto-para-herramientas-digitales");
+  assert.ok(analytics && aiDrafts && start && budget);
+
+  const analyticsText = JSON.stringify(analytics);
+  assert.match(analyticsText, /Evento clave/i);
+  assert.match(analyticsText, /Conversi[oó]n publicitaria/i);
+  assert.match(analyticsText, /answer\/13965727/);
+
+  const aiSources = JSON.stringify(aiDrafts);
+  assert.match(aiSources, /developers\.openai\.com\/api\/docs\/guides\/prompt-engineering/);
+  assert.match(aiSources, /7730893-data-controls-in-chatgpt/);
+  assert.doesNotMatch(aiSources, /platform\.openai\.com\/docs\/guides\/prompt-engineering|data-controls-faq/);
+
+  assert.match(JSON.stringify(start), /global-connectivity-report-2025/);
+  assert.doesNotMatch(JSON.stringify(budget), /legacy\.sba\.gov/);
+  assert.match(JSON.stringify(budget), /sba\.gov\/counseling\/manage-your-business/);
+});
+
+test("Cada guía conserva al menos dos fuentes HTTPS distintas", () => {
+  for (const article of learnArticles) {
+    const sources = article.sections.flatMap((section) =>
+      (section.blocks ?? []).flatMap((block) => block.type === "sources" ? block.items : []));
+    assert.ok(sources.length >= 2, `Faltan fuentes suficientes en ${article.slug}`);
+    const urls = sources.map(({ url }) => url);
+    assert.equal(new Set(urls).size, urls.length, `Fuente duplicada en ${article.slug}`);
+    assert.ok(urls.every((url) => /^https:\/\//i.test(url)), `Fuente no HTTPS en ${article.slug}`);
+  }
+});
+
+test("Ninguna guía queda fuera de los itinerarios de aprendizaje", () => {
+  const routed = new Set(learnPathways.flatMap((pathway) => [...pathway.slugs]));
+  const orphan = learnArticles.map(({ slug }) => slug).filter((slug) => !routed.has(slug));
+  assert.deepEqual(orphan, [], `Guías fuera de itinerarios: ${orphan.join(", ")}`);
+});
+
+test("Cada guía ofrece al menos una continuación editorial relacionada", () => {
+  for (const article of learnArticles) {
+    assert.ok((article.relatedSlugs ?? []).length >= 1, `Falta continuación relacionada en ${article.slug}`);
+    for (const related of article.relatedSlugs ?? []) assert.ok(getLearnArticle(related), `Relacionado inexistente: ${article.slug} → ${related}`);
+  }
+});
+
 test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
   const requirements = [
     ["publicidad-digital-como-preparar-una-primera-campana", [/Google Ads|Meta Ads/i, /página de destino/i, /indicadores/i]],
