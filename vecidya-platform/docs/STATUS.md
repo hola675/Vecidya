@@ -1,10 +1,14 @@
 # Estado de implementación
 
+## PROD-RELEASE-0.8.1 — candidato autorizado a producción (2026-10-26)
+
+Código integrado hasta `main@cafe8537`; versión candidata `0.8.1`. Se incluyen las mejoras editoriales de Aprende y la protección de borradores, más la certificación Playwright incorporada por PR #143. CI PASS y capturas revisadas. Sin migraciones D1 ni cambios de bindings/configuración Worker. El usuario autorizó el deploy directo a producción tras aumentar la versión; aún no se declara publicado. Gate actual: typecheck/build de la versión candidata, PR de release integrado, deploy y HTTP anónimo fechado.
+
 ## APRENDE-PUBLIC-QA-01 — control de experiencia pública (2026-10-26)
 
-**CODE/TEST — PR candidato, no desplegado:** se incorporan Playwright y workflow de certificación anónima en localhost, centrados en 30 guías públicas y 18 borradores protegidos del catálogo de 48. Verifica rutas individuales, sitemap/robots, búsqueda, filtros, itinerarios, imágenes, navegación y 320/390/768/1366 px. El sitemap usa la selección central getPublicLearnArticles; el test E2E obsoleto (38 guías, siete itinerarios y borradores públicos) deja de ser el ejecutor por defecto. Ver TESTING.md para comando, criterios de aceptación y evidencia de screenshots.
+**CODE/TEST — integrado en `main@cafe8537`, sin deploy:** Playwright y workflow de certificación anónima en localhost cubren 30 guías públicas y 18 borradores protegidos del catálogo de 48. Verifica rutas individuales, sitemap/robots, búsqueda, filtros, itinerarios, imágenes, navegación y 320/390/768/1366 px. El sitemap usa la selección central `getPublicLearnArticles`; el E2E anterior con expectativas obsoletas deja de ejecutarse por defecto. Ver `TESTING.md` para comando y evidencia.
 
-**RAN:** pendiente de los GitHub Actions del HEAD final. **Open Debt — APRENDE-PUBLIC-QA-01-VISUAL:** las capturas deben inspeccionarse humanamente; Playwright no sustituye auditoría WCAG, lector de pantalla ni confirmación de producción. **Open Debt — APRENDE-PUBLIC-QA-01-HTTP:** no hay deploy ni verificación anónima fechada en vecidya.com de este checkpoint. Sin cambios de aprobación editorial, DB, autenticación, GHL o Diagnóstico.
+**RAN:** `Aprende quality` run `40348781678`, `Aprende public QA` run `40348781683` y `Main integration quality` run `40348781704`: PASS sobre el HEAD de PR #143; las cinco capturas se revisaron y no muestran problemas visuales evidentes en los viewports probados. **Open Debt — APRENDE-PUBLIC-QA-01-A11Y:** no sustituye auditoría integral WCAG ni lector de pantalla. **Open Debt — APRENDE-PUBLIC-QA-01-HTTP:** falta deploy y GET anónimo fechado en `vecidya.com`. Sin cambios de aprobación editorial, DB, autenticación, GHL o Diagnóstico.
 
 
 ## APRENDE-EDITORIAL-04B — auditoría semántica de 46 guías (2026-10-25; PR #121)
