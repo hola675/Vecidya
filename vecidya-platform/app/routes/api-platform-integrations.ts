@@ -4,12 +4,12 @@ import { integrationConnection, organization, platformAuditLog } from "../../db/
 import { and, eq } from "drizzle-orm";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { parseIntegrationConnection } from "../../server/integration-connection-validation.server";
-import { requirePlatformAdmin } from "../../server/platform-authorization.server";
+import { requirePlatformAdmin, requirePlatformAdminAction } from "../../server/platform-authorization.server";
 import type { Route } from "./+types/api-platform-integrations";
 export async function loader({ context, params, request }: Route.LoaderArgs) { const { env } = context.get(cloudflareContext); await requirePlatformAdmin(env, request); return Response.json(await listIntegrationConnections(createDatabase(env.DB), params.organizationId)); }
 export async function action({ context, params, request }: Route.ActionArgs) {
   const { env } = context.get(cloudflareContext);
-  const actor = await requirePlatformAdmin(env, request);
+  const actor = await requirePlatformAdminAction(env, request, "organization:integration:create");
   let body: unknown;
   try { body = await request.json(); } catch { throw new Response("JSON inválido", { status: 400 }); }
   const database = createDatabase(env.DB);

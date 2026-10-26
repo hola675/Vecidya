@@ -15,7 +15,7 @@ import { createDatabase } from "../../db/client.server";
 import { AdminShell } from "../components/admin-shell";
 import { Alert, Badge } from "../components/ui";
 import { cloudflareContext } from "../../server/cloudflare-context";
-import { requirePlatformAdmin } from "../../server/platform-authorization.server";
+import { requirePlatformAdmin, requirePlatformAdminAction } from "../../server/platform-authorization.server";
 import type { Route } from "./+types/internal-business-profile-detail";
 
 const governanceActionMessages: Record<GovernanceAction, string> = {
@@ -56,7 +56,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export async function action({ context, params, request }: Route.ActionArgs) {
   const { env } = context.get(cloudflareContext);
-  const access = await requirePlatformAdmin(env, request);
+  const access = await requirePlatformAdminAction(env, request, "business_profile:governance");
   const database = createDatabase(env.DB);
   const businessProfileId = params.businessProfileId ?? "";
   const detail = await getPlatformBusinessProfileDetail(database, businessProfileId);

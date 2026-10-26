@@ -4,7 +4,7 @@ import { createDatabase } from "../../db/client.server";
 import { organizationService, serviceCatalog } from "../../db/schema";
 import { PlatformServiceAssignmentConflict, savePlatformServiceAssignment } from "../../db/queries/platform-services.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
-import { requirePlatformAdmin } from "../../server/platform-authorization.server";
+import { requirePlatformAdmin, requirePlatformAdminAction } from "../../server/platform-authorization.server";
 
 import type { Route } from "./+types/api-platform-services";
 
@@ -37,7 +37,7 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
 
 export async function action({ context, params, request }: Route.ActionArgs) {
   const { env } = context.get(cloudflareContext);
-  const access = await requirePlatformAdmin(env, request);
+  const access = await requirePlatformAdminAction(env, request, "organization:service:update");
 
   let body: { serviceId?: unknown; status?: unknown };
   try {

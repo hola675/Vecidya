@@ -1,5 +1,11 @@
 # Changelog
 
+### Continuación de PR #139 — autorización explícita de mutaciones Admin (2026-10-26)
+
+- Gobierno de perfiles, cambios de servicios y altas de integraciones ahora exigen acciones explícitas de la allowlist de `platform_admin`; la lectura mantiene su control de acceso previo. El E2E intenta mutar como staff activo y como administrador de plataforma inactivo: ambos reciben 403, sin cambios en filas ni auditoría D1.
+- Typecheck, build y E2E completo Worker/D1 local PASS. La suite unitaria 1719/1719 corresponde al corte anterior y no se repitió en este cambio. Sin cambio de esquema, migración remota, datos reales, GHL ni deploy.
+- La allowlist expresa capacidades del control plane, pero actualmente todos los `platform_admin` comparten las acciones. La separación por rol sigue pendiente de decisión; PR #139 permanece draft.
+
 ## 2026-10-25 — VECIDYA-ADMIN-FUNCTIONAL-AUDIT (checkpoint parcial, PR #139)
 
 - La administración de servicios registra asignaciones/cambios con el actor, organización, valores anteriores/nuevos y timestamps de activación/finalización en el mismo batch. UI y API comparten la query de escritura; colisiones concurrentes de la asignación única producen un conflicto controlado.

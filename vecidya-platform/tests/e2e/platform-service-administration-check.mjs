@@ -210,6 +210,22 @@ const jsonPost = (serviceId, status) => ({
   headers: { "content-type": "application/json" },
   body: JSON.stringify({ serviceId, status }),
 });
+const deniedPlatformMutationState = () => executeD1(`SELECT
+  (SELECT count(*) FROM organization_service WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND service_id='service-crm') AS service_count,
+  (SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND entity_type='organization_service') AS service_audit_count,
+  (SELECT count(*) FROM integration_connection WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND external_id=${sqlLiteral(`denied-${suffix}`)}) AS integration_count,
+  (SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_integration.create' AND metadata LIKE ${sqlLiteral(`%denied-${suffix}%`)}) AS integration_audit_count;`)[0];
+const deniedMutationStateBefore = deniedPlatformMutationState();
+for (const identityKey of ["normal", "inactive"]) {
+  await assertStatus(identities[identityKey].client, apiA, 403, jsonPost("service-crm", "suspended"));
+  await assertStatus(identities[identityKey].client, integrationsA, 403, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ provider: "test-provider", externalId: `denied-${suffix}`, status: "active", metadata: "{\"region\":\"local\"}" }),
+  });
+}
+const deniedMutationStateAfter = deniedPlatformMutationState();
+assert(JSON.stringify(deniedMutationStateBefore) === JSON.stringify(deniedMutationStateAfter), `Una mutación de servicio/integración denegada alteró D1 o auditoría: antes=${JSON.stringify(deniedMutationStateBefore)} después=${JSON.stringify(deniedMutationStateAfter)}`);
 
 await assertStatus(identities.platform.client, apiA, 200);
 await assertStatus(identities.platform.client, apiB, 200);
@@ -247,6 +263,16 @@ const internalRoutes = [
 ];
 for (const route of internalRoutes) await assertStatus(identities.platform.client, route, 200);
 await assertStatus(identities.normal.client, `/app/internal/organizations/${identities["owner-b"].organizationId}/miniweb`, 403);
+for (const identityKey of ["normal", "inactive"]) {
+  const forbiddenGovernance = await identities[identityKey].client.fetch(`/app/internal/businesses/${businessProfileId}`, {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ action: "suspend", expectedUpdatedAt: String(now) }),
+  });
+  assert(forbiddenGovernance.status === 403, `El actor ${identityKey} pudo enviar una mutación de gobierno (${forbiddenGovernance.status}).`);
+}
+const deniedGovernanceState = executeD1(`SELECT g.verification_status,g.platform_status,(SELECT count(*) FROM platform_audit_log a WHERE a.entity_id=${sqlLiteral(businessProfileId)}) AS audit_count FROM business_profile_governance g WHERE g.business_profile_id=${sqlLiteral(businessProfileId)};`)[0];
+assert(deniedGovernanceState?.verification_status === "unverified" && deniedGovernanceState.platform_status === "active" && Number(deniedGovernanceState.audit_count) === 0, `Una mutación denegada de gobierno alteró estado o auditoría: ${JSON.stringify(deniedGovernanceState)}`);
 const organizationsHtml = await (await assertStatus(identities.platform.client, "/app/internal/organizations", 200)).text();
 assert(organizationsHtml.includes('aria-label="Buscar negocios o clientes"') && organizationsHtml.includes("Publicado") && organizationsHtml.includes("Sin perfil"), "El listado no presentó búsqueda y estados de perfil del fixture.");
 const organizationDetailLink = `/app/internal/organizations/${identities["owner-a"].organizationId}`;
