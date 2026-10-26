@@ -57,11 +57,11 @@ const assertProfileEligibility = (persona: QA03BSpecialtyPersona, eligible: read
   assert.ok(applicableSelectors.every((id) => id === `q2_niche_${persona.sector}`), persona.id);
 };
 
-test("32 authored personas resolve valid niche, entity, stage and sector without inferring capabilities", () => {
-  assert.equal(QA03B_SPECIALTY_PERSONAS.length, 32);
-  assert.equal(new Set(QA03B_SPECIALTY_PERSONAS.map((p) => p.id)).size, 32);
+test("33 authored personas resolve valid niche, entity, stage and sector without inferring capabilities", () => {
+  assert.equal(QA03B_SPECIALTY_PERSONAS.length, 33);
+  assert.equal(new Set(QA03B_SPECIALTY_PERSONAS.map((p) => p.id)).size, 33);
   assert.equal(productionBank.length, 45);
-  assert.equal(candidateBank.length, 76);
+  assert.equal(candidateBank.length, 77);
 
   for (const persona of QA03B_SPECIALTY_PERSONAS) {
     const source = declaredSpecialtyContextAnswers(persona);
@@ -94,7 +94,7 @@ test("32 authored personas resolve valid niche, entity, stage and sector without
   }
 });
 
-test("32 persona snapshots preserve route limits, deterministic decisions and sector-specific selection", () => {
+test("33 persona snapshots preserve route limits, deterministic decisions and sector-specific selection", () => {
   for (const persona of QA03B_SPECIALTY_PERSONAS) {
     const input = { answers: declaredSpecialtyContextAnswers(persona) };
     const first = buildCandidateQuestionPlanFromBankV3(input, candidateBank);
