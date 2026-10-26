@@ -1,4 +1,10 @@
-## Corte vigente — producción 0.8.2 (2026-10-26)
+## Código integrado y checkpoint Admin local (2026-10-26)
+
+`origin/main@b80385da24e61947ba02ade6cec138649a6e075b` integra PR #155: cancelación manual inmediata de licencias, reactivación auditada de la misma fila restaurando el estado previo e historial por negocio. No requiere migración y no está desplegado; producción continúa en `0.8.3` (evidencia HTTP fechada en `ENVIRONMENTS.md`).
+
+Sobre ese SHA, `fix/admin-audit-pagination` implementa filtros server-side por texto/acción en URL y paginación de 50 eventos con orden fecha/ID estable en `/app/internal/audit`. E2E Worker/D1/Chrome, typecheck, build, `node --check` y diff-check PASS localmente. El checkpoint sigue local y sin deploy; el siguiente gap del plan Admin es paginar/ordenar Organizaciones y conservar sus filtros en URL.
+
+## Corte histórico — producción 0.8.2 (2026-10-26)
 
 `origin/main@c03c3bab7610a327db9926cd7aee0275a3dbb8a7` integra PR #139. Producción `0.8.2`, Worker Version ID `d9042b45-7c24-4da6-991c-38533c1f2f95` (deployment `805dbb77-e90a-4dc8-a40f-efa1deb3111a`, 2026-10-26T17:26:21Z). D1 prod registra migración `0029`; el índice único parcial existe. Aprende ofrece 48 guías, 9 itinerarios y 6 temas. GET anónimo posterior al deploy cargó `/` y `/aprende`; ambas páginas muestran el footer `0.8.2`. Typecheck/build, E2E local y checks CI PASS. Staging no se modificó.
 
