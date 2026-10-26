@@ -4,7 +4,7 @@
 
 - Revisión editorial individual de las 18 guías retenidas; se comprobaron claridad, estructura, ejemplos, pasos, fuentes, imágenes/alt y navegación.
 - Las 18 banderas `editorialDraft` pasan a `false`: catálogo de 48 guías aprobadas y 9 itinerarios completos.
-- Checkpoint local reconciliado con `main@d5e522a0`; CI pendiente. Sin merge ni deploy.
+- PR #147 integrado en `main@367b03ec3a3cb80081cc8d1717ed22d85670ea85`. Los tres workflows CI del HEAD previo de integración `3350bed9` terminaron PASS. Sin deploy; producción permanece en 0.8.1 hasta un release posterior.
 
 
 ## 0.8.1 — producción (2026-10-26)
