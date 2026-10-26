@@ -11,8 +11,8 @@ test("Aprende conserva el catálogo y registra la revisión editorial de Operaci
   const drafts = learnArticles.filter((article) => article.editorialDraft);
   const reviewed = learnArticles.filter((article) => !article.editorialDraft);
   assert.equal(drafts.length + reviewed.length, learnArticles.length);
-  assert.equal(drafts.length, 2, "Solo deben quedar en borrador las dos guías fundacionales todavía no aprobadas");
-  assert.equal(reviewed.length, 46, "Las cinco guías de Gestión se incorporan al catálogo revisado");
+  assert.equal(drafts.length, 0, "El catálogo editorial revisado no debe conservar borradores");
+  assert.equal(reviewed.length, 48, "Las 48 guías deben constar como revisadas");
   for (const slug of [
     "como-organizar-tareas-y-responsables-en-tu-equipo",
     "como-controlar-inventario-sin-perder-productos-ni-datos",
@@ -27,11 +27,11 @@ test("Aprende conserva el catálogo y registra la revisión editorial de Operaci
   }
 });
 
-test("las guías fundacionales de criterio digital quedan en revisión y conectadas entre sí", () => {
+test("las guías fundacionales de criterio digital quedan aprobadas y conectadas entre sí", () => {
   const priorities = learnArticles.find((article) => article.slug === "el-que-mucho-abarca-poco-aprieta-prioridades-digitales");
   const control = learnArticles.find((article) => article.slug === "domina-la-tecnologia-sin-que-te-domine");
-  assert(priorities?.editorialDraft, "La guía de prioridades debe permanecer en revisión hasta aprobación");
-  assert(control?.editorialDraft, "La guía de control digital debe permanecer en revisión hasta aprobación");
+  assert.equal(priorities?.editorialDraft, false, "La guía de prioridades debe conservar su aprobación editorial");
+  assert.equal(control?.editorialDraft, false, "La guía de control digital debe conservar su aprobación editorial");
   assert.equal(priorities.category, "Tecnología explicada");
   assert.equal(control.category, "Tecnología explicada");
   assert(priorities.relatedSlugs?.includes(control.slug));
