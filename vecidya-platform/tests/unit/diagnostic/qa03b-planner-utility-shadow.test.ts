@@ -61,7 +61,7 @@ function walk(id: string, policy: CandidateShadowSelectionPolicyV1) {
 
 test("utility-first remains shadow-only: production entry and default candidate mode are unchanged", () => {
   assert.equal(productionBank.length, 45);
-  assert.equal(candidateBank.length, 78);
+  assert.equal(candidateBank.length, 76);
   for (const persona of QA03B_SPECIALTY_PERSONAS) {
     const input = { answers: declaredSpecialtyContextAnswers(persona) };
     const defaultPlan = buildCandidateQuestionPlanFromBankV3(input, candidateBank);
