@@ -1,3 +1,7 @@
+## Limpieza operativa de producción (2026-10-25)
+
+D1 producción quedó preparada para iniciar uso con un único usuario de plataforma con rol `platform_admin` activo y su cuenta de autenticación. Se vaciaron las 15 organizaciones, datos de negocio/MiniWeb/diagnóstico, cuentas adicionales, sesiones y auditoría; las 38 sesiones fueron revocadas. R2 de producción quedó sin objetos. Schema, migraciones `0000–0028`, catálogo de servicios, precios, tiers y metadata de plataforma permanecen. Staging y Worker no cambiaron. Evidencia postflight y bookmark de D1: `DATABASE.md` / `ENVIRONMENTS.md`.
+
 ## Corte vigente — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
 
 En `feat/diag-visual-03`, QA-03B presenta la lectura general y ocho áreas en un flujo visual de una columna; entrada, foco, estados preliminares y ausencia de score tienen tratamiento explícito. Las unitarias focales (20/20), E2E QA-03B local (6/6), typecheck y build constan como PASS en `TESTING.md`. No se modifican scoring ni contratos y no hay despliegue. El runner responsive DIAG-PRO-19 está obsoleto respecto a la clave activa y no se cuenta como evidencia multi-viewport; zoom real 200 % y lector de pantalla siguen pendientes.

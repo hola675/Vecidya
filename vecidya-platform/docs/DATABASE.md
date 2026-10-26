@@ -1,5 +1,13 @@
 # Base de datos
 
+## PROD-DATA-CLEANUP-20261025 — limpieza de datos de producción
+
+**RAN Cloudflare API, 2026-10-25:** por autorización explícita del usuario, la purga se ejecutó directamente porque el Admin interno no ofrece borrado de organizaciones. D1 `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`) conservó solo el registro de usuario con rol `platform_admin` activo, su cuenta de autenticación y los catálogos/configuración del sistema. Se eliminaron **239 filas** en una transacción D1 de 40 sentencias: las 15 organizaciones, membresías, los otros 20 usuarios y sus cuentas, las 38 sesiones (incluidas 17 del admin; debe iniciar sesión de nuevo), licencias/cuentas de facturación, perfiles y datos MiniWeb, las 12 filas de auditoría existentes, datos de diagnóstico y demás relaciones de negocio. La purga no escribió un evento en `platform_audit_log`, que quedó vacío; el registro operativo está aquí, en `ENVIRONMENTS.md` y `CHANGELOG.md`. No se cambió schema ni ledger: `0000–0028` permanece, junto con precios, tiers, catálogo de servicios y metadata de plataforma.
+
+**Postflight `RAN`:** 1 usuario; 1 `platform_admin` activo; 1 cuenta de autenticación; 0 cuentas de autenticación huérfanas; 0 organizaciones, membresías, sesiones, filas de auditoría o datos de negocio/diagnóstico. Los conteos de catálogo/configuración y migraciones se mantuvieron en 3 `license_price`, 4 `portfolio_pricing_tier`, 3 `service_catalog`, 3 `platform_meta` y 29 `d1_migrations`. No se pudo ejecutar `PRAGMA foreign_key_check` mediante el API D1 remoto (`SQLITE_AUTH` según antecedentes); las consultas postflight confirmaron cero cuentas de autenticación huérfanas, no una certificación general de FK.
+
+**Recuperación:** bookmark Time Travel previo `000005a4-00000000-0000510f-7516e0432aeb77810875f9a82079b24c`. Restaurar desde él sobrescribiría escrituras posteriores y requiere autorización específica; no se ejecutó restore. No se creó export SQL local.
+
 ## DIAG-D1-RELEASE-01 / APP-MINI-02C — ledger remoto vigente (2026-10-24)
 
 **Resultado: `0000–0026` aplicadas en staging y producción.** Tras registrar bookmarks Time Travel previos, el 2026-10-24 se aplicaron las migraciones remotas `0024–0026`; el postflight Wrangler devolvió «No migrations to apply» para ambos D1 (`vecidya-staging`, `vecidya-prod`). Los bookmarks previos e IDs están en `ENVIRONMENTS.md`. El postflight SQL anterior de producción confirmó QA-03B con `changed_db=false` y cero filas escritas; `PRAGMA integrity_check`/`foreign_key_check` remotos siguen bloqueados por D1 API (`SQLITE_AUTH`), por lo que no se afirma esa validación remota. El Worker desplegado sigue en `0.7.0`; los cambios de #49/#50 no se publican hasta habilitar R2 y completar el deploy.

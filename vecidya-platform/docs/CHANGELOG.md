@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-25 — limpieza de datos de producción
+
+- Con autorización explícita, se vaciaron por transacción los datos de usuarios salvo un `platform_admin` activo y su cuenta de autenticación; se eliminaron 15 organizaciones y sus negocios, MiniWeb, datos diagnósticos, auditoría y las 38 sesiones. El admin debe volver a autenticarse.
+- Se eliminaron 10 objetos del bucket R2 `vecidya-business-media-prod`. No se tocó staging, schema, migraciones, catálogos/configuración del sistema ni Worker; no hubo deploy.
+- D1 postflight dejó una cuenta de admin, cero organizaciones/sesiones/datos de negocio y cero cuentas auth huérfanas. R2 postflight: cero objetos. La D1 conserva el bookmark anterior indicado en `DATABASE.md`; R2 no tiene copia recuperable.
+
 ## 0.8.0 — producción (2026-10-25)
 
 - Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.

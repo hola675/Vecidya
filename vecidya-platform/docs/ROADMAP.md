@@ -1,3 +1,9 @@
+## PLATFORM-ADMIN-DATA-OPERATIONS-01 — desactivación y eliminación auditadas (2026-10-25)
+
+**Objetivo:** habilitar en Admin interno operaciones por organización para desactivar, archivar o eliminar recursos con trazabilidad, y retirar también sus metadatos y objetos R2 asociados. La purga excepcional de producción del 2026-10-25 se registró en `ENVIRONMENTS.md`; el flujo de producto sigue pendiente.
+
+**Gates:** definir retención y alcance de baja frente a borrado definitivo; previsualizar target y conteos sin PII; exigir sesión, membresía de plataforma activa, permiso por acción y organización explícita; aplicar dependencias D1 de manera atómica e idempotente; auditar actor/acción/target sin borrar la evidencia; eliminar solo las claves R2 vinculadas al target tras validar referencias; probar contra D1/R2 efímeras, typecheck/build y regresiones del Admin. No desplegar ni operar en remoto como parte de este bloque sin autorización específica.
+
 ## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
 
 **Objetivo:** adaptar las referencias premium entregadas por el usuario a una experiencia coherente de Vecidya, preservando contenido, datos, permisos, funcionamiento móvil y límites comerciales. Las referencias guían composición e interacción; no se copian marcas, textos, layouts exactos ni assets. Este trabajo no incluye publicación ni despliegue.

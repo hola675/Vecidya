@@ -6,7 +6,13 @@ Versiones directas actualizadas: React Router `8.5.0`, React/React DOM `19.3.1`,
 
 **HTTP anónimo con TLS, RAN 2026-10-25T18:38:23Z:** producción `/`, `/cookies`, `/informacion-legal` y `/diagnostico` → `200`; todas muestran versión `0.8.0` y `© 2026 Vecidya`. La última comprobación previa, 2026-10-25 02:32–02:33 UTC, vio `0.7.3`.
 
-**Cloudflare API y deploy, RAN 2026-10-25:** Worker `vecidya-platform`, Version ID activo `320eefe0-343c-431f-987f-cf9b92df0c8e`, deployment creado `2026-10-25T18:38:07.538599Z`. Se aplicó `0028_miniweb-offering-image.sql` a `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`); ledger actual `0000–0028`. Existen los buckets `vecidya-business-media-prod` y `vecidya-business-media-staging`. Lecturas posteriores de D1 reportaron `changed_db=false`, `rows_written=0`. No se accedió a filas de usuarios ni a objetos R2.
+**Cloudflare API y deploy, RAN 2026-10-25:** Worker `vecidya-platform`, Version ID activo `320eefe0-343c-431f-987f-cf9b92df0c8e`, deployment creado `2026-10-25T18:38:07.538599Z`. Se aplicó `0028_miniweb-offering-image.sql` a `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`); ledger actual `0000–0028`. Existen los buckets `vecidya-business-media-prod` y `vecidya-business-media-staging`. En el corte del deploy, las lecturas de D1 reportaron `changed_db=false`, `rows_written=0`; no se accedió entonces a filas de usuarios ni a objetos R2.
+
+## PROD-DATA-CLEANUP-20261025 — contenido reiniciado
+
+**RAN Cloudflare API, 2026-10-25:** tras autorización explícita del usuario, se ejecutó una purga operativa directa fuera del Admin interno, que no ofrece borrado de organizaciones. La D1 de producción se limpió en una transacción. Quedaron un usuario con `platform_admin` activo y su cuenta de autenticación; sus 17 sesiones se borraron junto con todas las demás sesiones, por lo que debe volver a iniciar sesión. Se eliminaron las 15 organizaciones, 20 usuarios adicionales, datos de negocios/MiniWeb/diagnóstico y las 12 filas previas de auditoría de plataforma. La purga no dejó evento en `platform_audit_log`; este registro documental conserva el alcance y la evidencia. Se conservaron schema, ledger `0000–0028`, precios, tiers, catálogo de servicios y metadata necesaria de plataforma. No se tocó staging ni se desplegó el Worker.
+
+En R2 se eliminaron los **10 objetos** del bucket `vecidya-business-media-prod` (3.987.158 bytes); verificación posterior: 0 objetos, 0 bytes. R2 no comparte la recuperación Time Travel de D1. Bookmark D1 previo: `000005a4-00000000-0000510f-7516e0432aeb77810875f9a82079b24c`; no se ejecutó restore ni export. Ver detalles de tablas y postflight en `DATABASE.md`.
 
 ## Verificación anónima de Mi Vecidya (2026-10-19)
 
