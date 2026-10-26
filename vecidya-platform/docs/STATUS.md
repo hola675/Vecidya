@@ -12,6 +12,14 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 **RAN en GitHub Actions:** sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`, workflow `Aprende quality` run `40242263335` PASS (typecheck, build e integridad Aprende) y `Main integration quality` run `40242263275` PASS: typecheck, build, regresión Diagnóstico/Aprende y **1721/1721 unitarias**. La revisión estática de los 12 archivos modificados quedó sin marcadores de conflicto ni whitespace final. Fuentes nuevas verificadas contra OCDE 2026, NIST CSF 2.0, CISA y W3C. No cambia DB, Auth, Diagnóstico, MiniWeb, GHL, licencias, precios ni producción.
 
+## APRENDE-EDITORIAL-04I — cierre de guías fundacionales (2026-10-25)
+
+**CODE/TEST versionado en `feat/aprende-editorial-04i-foundations-review`, apilado sobre 04H; sin merge ni deploy.** Se revisan las dos guías fundacionales de alfabetización digital: priorización («El que mucho abarca…») y uso consciente («Domina la tecnología…»). Se verifican OCDE 2026, NIST CSF 2.0, CISA Secure Our World y W3C WAI; se actualiza el alcance de CISA como recurso activo.
+
+Ambas guías pasan a `editorialDraft: false`. El catálogo queda en **48 guías revisadas y 0 borradores**. Los tests exigen que el catálogo completo permanezca sin borradores y preservan fuentes/relaciones de las dos guías fundacionales.
+
+**Gate pendiente:** `Aprende quality` sobre el HEAD final, seguido por auditoría transversal del catálogo completo antes de declarar cierre editorial integral.
+
 ## APRENDE-EDITORIAL-04H — revisión de Gestión (2026-10-25)
 
 **CODE/TEST versionado en `feat/aprende-editorial-04h-management-review`, apilado sobre 04G; sin merge ni deploy.** Se revisaron presupuesto digital, compras/proveedores, continuidad, gobierno de IA y evaluación de mejoras. Se sustituyen referencias `legacy.sba.gov` por la página vigente de SBA y se documenta que NIST mantiene AI RMF 1.0 publicado pero en revisión durante 2026.
