@@ -11,6 +11,7 @@ import {
   createCandidateSessionV9Prototype,
   currentCandidateQuestionIdV9,
   editClassificationV9Prototype,
+  editCandidateAnswerV9Prototype,
   parseCandidateSessionV9Prototype,
   replayCandidateTranscriptV9,
   submitCandidateAnswerV9Prototype,
@@ -204,4 +205,33 @@ test("V8 and V9 parsers reject each other's sessions", () => {
   const v9 = createCandidateSessionV9Prototype({ sessionId: "v9", writerId: "test", now: 20_000 });
   assert.equal(parseCandidateSessionV9Prototype(JSON.stringify(v8)), null);
   assert.equal(parseCandidateSessionV3(JSON.stringify(v9), 20_000), null);
+});
+
+test("V9 recompone la cola tras cada respuesta y edición, sin mantener preguntas antiguas innecesarias", () => {
+  let session = createCandidateSessionV9Prototype({ sessionId: "v9-replan", writerId: "test", now: 30_000 });
+  const verify = (current: CandidateSessionV9Prototype) => {
+    const events = current.replayTranscript.flatMap((event) => event.kind === "classification" ? [event.classification] : []);
+    const expected = buildCandidateQuestionPlanV9Prototype(current.answers, events, current.interactionCount);
+    assert.deepEqual(current.queue, expected.plan.selectedQuestionIds.filter((id) =>
+      expected.plan.eligibleQuestionIds.includes(id) && current.answers[id] === undefined));
+    assert.ok(current.queue.length <= 24 - current.interactionCount);
+  };
+  verify(session);
+  session = advanceToSector(session, 31_000);
+  verify(session);
+  const selected = submitClassificationV9Prototype(session, { sector: "food_hospitality", niche: "restaurant" }, "test", 32_000);
+  assert.equal(selected.ok, true);
+  if (!selected.ok) return;
+  session = selected.session;
+  verify(session);
+
+  for (const [id, value] of [["q2_goal", "measure"], ["q2_friction", "operations"]] as const) {
+    if (session.answers[id] === undefined) continue;
+    const updated = editCandidateAnswerV9Prototype(session, id, value, "test", 33_000);
+    assert.equal(updated.ok, true, id);
+    if (updated.ok) {
+      session = updated.session;
+      verify(session);
+    }
+  }
 });

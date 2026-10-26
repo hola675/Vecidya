@@ -76,10 +76,12 @@ function replanV9(session: CandidateSessionV9Prototype): CandidateSessionV9Proto
   const answers = planned.activeAnswers;
   const eligible = new Set(planned.plan.eligibleQuestionIds);
   const answeredQuestionIds = session.answeredQuestionIds.filter((id) => answers[id] !== undefined);
-  let queue = session.queue.filter((id) => eligible.has(id) && answers[id] === undefined);
-  if (queue.length === 0 && session.interactionCount < CANDIDATE_ROUTE_HARD_CAP_V3) {
-    queue = [...planned.plan.selectedQuestionIds];
-  }
+  // Recalcular la cola después de CADA respuesta/edición: una pregunta que
+  // antes era útil puede dejar de serlo sin perder elegibilidad técnica.
+  // Conservar la cola antigua obliga a contestar preguntas innecesarias.
+  const queue = planned.plan.selectedQuestionIds.filter(
+    (id) => eligible.has(id) && answers[id] === undefined,
+  );
   const terminalReason: CandidateTerminalReasonV9 | null =
     planned.plan.completion.hardCapReached && queue.length === 0
       ? "hard_cap"
