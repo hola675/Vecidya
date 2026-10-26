@@ -2,6 +2,7 @@ import { Link } from "react-router";
 
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { learnArticles, learnCategories, learnPathways } from "../content/learn";
+import { getPublicLearnPathways } from "../content/learn-publication";
 import { getPublicLearnArticles } from "../content/learn-publication";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 import { publicListingRobots } from "../lib/public-seo";
@@ -61,11 +62,13 @@ export function loader({ request }: Route.LoaderArgs) {
     ...topic,
     count: publicArticles.filter((article) => article.category === topic.name).length,
   }));
-  const pathways = learnPathways.map((path) => ({
-    title: path.title, description: path.description,
-    guides: path.slugs.flatMap((slug) => {
+  const pathways = getPublicLearnPathways(learnPathways, publicArticles).map((path) => ({
+    title: path.title,
+    description: path.description,
+    guides: path.slugs.map((slug) => {
       const guide = publicArticles.find((article) => article.slug === slug);
-      return guide ? [{ slug: guide.slug, title: guide.title, editorialDraft: false }] : [];
+      if (!guide) throw new Error("Guía pública del itinerario no encontrada: " + slug);
+      return { slug: guide.slug, title: guide.title, editorialDraft: false };
     }),
   }));
   return { articles, topics, pathways, search, category, total: publicArticles.length };
