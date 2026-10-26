@@ -3,7 +3,7 @@
 ## 2026-10-25 — APRENDE-EDITORIAL-04B — revisión semántica de Aprende (PR #121)
 
 - Revisión artículo por artículo del catálogo de 46 guías, con registro editorial en APRENDE_EDITORIAL_AUDIT_04B.md.
-- Se acotan las guías de CRM, mantenimiento de presencia y DNS/web/correo; se elimina de la guía CRM una afirmación específica de retención/exportación que no estaba respaldada por una integración verificada.
+- Se acotan las guías de CRM, preparación antes de publicidad, mantenimiento de presencia y DNS/web/correo; se elimina de la guía CRM una afirmación específica de retención/exportación que no estaba respaldada por una integración verificada.
 - Se diferencia la guía de IA empresarial hacia reglas, datos permitidos, responsables, aprobación y escalamiento, separada de la guía de piloto de asistentes.
 - Se personalizan los encabezados de trece guías introductorias y se conecta la selección de herramientas con el artículo de presupuesto.
 - Se conservan los 46 slugs, seis categorías, nueve itinerarios y los estados editoriales existentes. Sin DB, migraciones, cambios de GHL, fusión ni despliegue.

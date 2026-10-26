@@ -19,7 +19,7 @@ No se modificó el número de categorías ni de itinerarios. Tampoco se cambió 
 | 03 | ¿Qué puede hacer una inteligencia artificial por un negocio? | **Conservar.** Funciona como introducción a posibles tareas y límites. Las guías de piloto, uso de IA para contenido y reglas de equipo desarrollan las decisiones especializadas. |
 | 04 | Publicidad digital: cuándo anunciarte y cómo preparar una primera campaña | **Conservar.** Se centra en preparar y evaluar una campaña; no sustituye la revisión previa de presencia digital. No se prometen ventas ni resultados garantizados. |
 | 05 | Cómo mantener actualizada la información de tu negocio en internet | **Ajustada.** Se limita a mantener correctos los datos, definir responsables, comprobar enlaces y probar la experiencia como visitante. Reseñas y seguridad se enlazan a guías específicas en lugar de desarrollar miniguías dentro de este artículo. |
-| 06 | Antes de hacer publicidad, organiza tu presencia digital | **Conservar.** Su propósito es decidir si la presencia está preparada antes de invertir; la guía de campañas explica el paso posterior. |
+| 06 | Antes de hacer publicidad, organiza tu presencia digital | **Ajustada.** Se reduce a una lista de preparación: oferta, público, destino, contacto, capacidad de respuesta y presupuesto. La selección de canales, el Perfil de Empresa, las reseñas y la analítica se enlazan a guías propias. |
 | 07 | Cómo probar y supervisar automatizaciones sin perder datos | **Conservar.** Mantiene el foco en errores, duplicados, reintentos, intervención humana y cómo detener una automatización. |
 | 08 | Automatizaciones: ahorrar tiempo sin complicar tu negocio | **Conservar.** Introduce qué es automatizar y cómo escoger una tarea repetitiva; las pruebas y controles de fallo permanecen en la guía especializada. |
 | 09 | Cómo elegir o cambiar proveedor de dominio y hosting sin perder el control | **Conservar.** Su objetivo es titularidad, renovación, costos y migración segura; no se mezcla con la explicación básica de DNS. |
@@ -64,7 +64,7 @@ No se modificó el número de categorías ni de itinerarios. Tampoco se cambió 
 ## Cambios implementados en esta revisión
 
 - Se redujo la guía de CRM a su pregunta central y se eliminó una afirmación de producto que no estaba respaldada por la integración actual de GHL.
-- Se acotó la guía de presencia a datos públicos, responsables y comprobación de enlaces; los temas de reseñas y seguridad conservan sus guías propias.
+- Se acotaron dos guías de presencia: la preparación antes de anunciarse ahora es una lista de salida, mientras la guía de mantenimiento se concentra en datos públicos, responsables y comprobación de enlaces. Los temas de reseñas y seguridad conservan sus guías propias.
 - Se acotó la guía DNS a web/correo y registros, manteniendo un contexto breve de HTTPS y la referencia técnica correspondiente.
 - Se reorientó la guía de IA para empresas hacia reglas, datos, responsables y escalamiento, para distinguirla de una prueba de asistente.
 - Se personalizaron los encabezados de trece guías introductorias con plantilla repetida.

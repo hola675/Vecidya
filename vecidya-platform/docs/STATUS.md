@@ -4,7 +4,7 @@
 
 **Implementación editorial en la rama feat/aprende-editorial-04a; no fusionada ni desplegada.** Se revisaron el objetivo pedagógico, el alcance, los ejemplos, los solapamientos y los enlaces de las 46 guías. El registro artículo por artículo está en docs/APRENDE_EDITORIAL_AUDIT_04B.md.
 
-Cambios centrales: guía de CRM enfocada en decidir cuándo usarlo y sin afirmaciones no verificadas sobre retención de datos de un CRM de Vecidya; guía de presencia centrada en mantener datos correctos y comprobar enlaces; guía DNS centrada en web/correo con referencia breve a HTTPS; guía de IA empresarial centrada en reglas, datos permitidos, responsables y escalamiento; encabezados personalizados en trece guías introductorias y enlace a presupuesto desde selección de herramientas.
+Cambios centrales: guía de CRM enfocada en decidir cuándo usarlo y sin afirmaciones no verificadas sobre retención de datos de un CRM de Vecidya; guía previa a publicidad reducida a una lista de preparación; guía de mantenimiento de presencia centrada en datos correctos y comprobación de enlaces; guía DNS centrada en web/correo con referencia breve a HTTPS; guía de IA empresarial centrada en reglas, datos permitidos, responsables y escalamiento; encabezados personalizados en trece guías introductorias y enlace a presupuesto desde selección de herramientas.
 
 Se conservan 46 slugs, seis categorías, nueve itinerarios y los estados editoriales previos. Las guías que estaban en borrador permanecen en borrador. Los checks 04A solo certifican su SHA original; la validación de 04B debe consultarse en GitHub Actions para el HEAD que contiene estos cambios. Sin cambios de base de datos, autenticación, Diagnóstico, MiniWeb, GHL, licencias, precios, ni despliegue.
 

@@ -2,7 +2,7 @@
 
 ## APRENDE-EDITORIAL-04B — criterios de auditoría semántica
 
-La suite de integridad se actualiza para reflejar el alcance más preciso de las guías de presencia y DNS. Se añaden contratos para evitar promesas no verificadas de almacenamiento/exportación de un CRM de Vecidya, para conservar la separación entre las guías de DNS y presencia, y para exigir que la guía de IA empresarial cubra datos, responsables y escalamiento sin sustituir la guía de piloto.
+La suite de integridad se actualiza para reflejar el alcance más preciso de la guía de preparación publicitaria, mantenimiento de presencia y DNS. Se añaden contratos para evitar promesas no verificadas de almacenamiento/exportación de un CRM de Vecidya, para conservar la separación entre las guías de DNS y presencia, y para exigir que la guía de IA empresarial cubra datos, responsables y escalamiento sin sustituir la guía de piloto.
 
 La validación que cierra este checkpoint es la de GitHub Actions asociada al HEAD actual de la rama del PR #121. Los PASS de APRENDE-EDITORIAL-04A sobre su SHA previo no certifican por sí solos estas modificaciones. No se ejecutan E2E visuales, pruebas de datos remotos ni deploy como parte de esta auditoría editorial.
 

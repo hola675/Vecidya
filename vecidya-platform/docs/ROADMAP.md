@@ -2,7 +2,7 @@
 
 ## APRENDE-EDITORIAL-04B — revisión semántica de las 46 guías
 
-**Implementado en la rama del PR #121; pendiente de aceptación y CI del nuevo HEAD.** Se registran los dictámenes por guía en docs/APRENDE_EDITORIAL_AUDIT_04B.md. El trabajo reduce solapamientos en CRM, presencia digital y DNS; diferencia la política de IA empresarial de la prueba de asistentes; personaliza encabezados de trece guías introductorias y añade una relación hacia el artículo de presupuesto.
+**Implementado en la rama del PR #121; CI se verifica en Actions del HEAD actual y la aceptación editorial sigue pendiente.** Se registran los dictámenes por guía en docs/APRENDE_EDITORIAL_AUDIT_04B.md. El trabajo reduce solapamientos en CRM, preparación publicitaria, mantenimiento de presencia y DNS; diferencia la política de IA empresarial de la prueba de asistentes; personaliza encabezados de trece guías introductorias y añade una relación hacia el artículo de presupuesto.
 
 Gate de salida: catálogo de 46 slugs únicos y nueve itinerarios intactos; ejemplos estructurados, enlaces y fuentes válidos; estados editoriales conservados; suites de Aprende y regresión principal PASS sobre el SHA actual. No fusionar ni desplegar como parte de este checkpoint.
 

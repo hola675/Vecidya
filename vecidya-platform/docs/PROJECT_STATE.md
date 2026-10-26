@@ -2,7 +2,7 @@
 
 ## APRENDE-EDITORIAL-04B — estado de revisión editorial
 
-La rama del PR #121 contiene una revisión semántica de las 46 guías. El detalle de cada dictamen y los cambios se documenta en docs/APRENDE_EDITORIAL_AUDIT_04B.md. Los cambios acotan CRM, mantenimiento de presencia, DNS/web/correo y reglas de IA empresarial; además personalizan encabezados repetidos y mejoran enlaces relacionados.
+La rama del PR #121 contiene una revisión semántica de las 46 guías. El detalle de cada dictamen y los cambios se documenta en docs/APRENDE_EDITORIAL_AUDIT_04B.md. Los cambios acotan CRM, preparación antes de publicidad, mantenimiento de presencia, DNS/web/correo y reglas de IA empresarial; además personalizan encabezados repetidos y mejoran enlaces relacionados.
 
 El catálogo conserva 46 guías, seis categorías y nueve itinerarios. No se cambió editorialDraft: los artículos que estaban en borrador siguen sin aprobar. La integración, los checks del nuevo HEAD y la revisión editorial humana siguen siendo gates separados; no hay autorización de merge ni deploy derivada de este checkpoint.
 
