@@ -4,6 +4,7 @@
 
 - Propuesta de 15 familias sectoriales más «Otra actividad» basada en cobertura de actividades económicas y lenguaje para negocios locales; catálogo en `app/content/business-sectors.ts`.
 - Editor de perfil Vecindario: nueva selección finita de categoría principal, con valor legacy explícito y sin reclasificación silenciosa, persistida en la columna de texto existente.
+- Pregunta candidata `q2_sector_general` para V9 desde el mismo catálogo, sin integrar todavía el cuestionario, score, sesiones o Worker.
 - Contratos públicos V8, banco candidato V9, precios, ofertas, D1 y rutas públicas conservados sin cambios en este checkpoint. Validación pendiente; no publicado.
 
 ## 0.8.3 — producción (2026-10-26)
