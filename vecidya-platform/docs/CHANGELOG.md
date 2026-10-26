@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-26 — APRENDE-EDITORIAL-APPROVAL-01 — aprobación de las 18 guías
+
+- Revisión editorial individual de las 18 guías retenidas; se comprobaron claridad, estructura, ejemplos, pasos, fuentes, imágenes/alt y navegación.
+- Las 18 banderas `editorialDraft` pasan a `false`: catálogo de 48 guías aprobadas y 9 itinerarios completos.
+- Checkpoint local reconciliado con `main@d5e522a0`; CI pendiente. Sin merge ni deploy.
+
+
 ## 0.8.1 — producción (2026-10-26)
 
 - Actualiza Aprende con el catálogo editorial reconciliado de 48 guías y nueve itinerarios, conservando 18 borradores protegidos; mejora precisión semántica, claridad y relaciones entre guías.

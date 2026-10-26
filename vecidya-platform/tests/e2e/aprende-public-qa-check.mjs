@@ -7,7 +7,7 @@ import { getPublicLearnArticles, getPublicLearnPathways } from "../../app/conten
 import { assertLocalBaseUrl, baseUrl } from "./test-safety.mjs";
 
 // APRENDE-PUBLIC-QA-01 runs only against a loopback dev server. It does not
-// create accounts, mutate D1, approve editorial drafts or access production.
+// create accounts, mutate D1, change editorial approval or access production.
 assertLocalBaseUrl();
 
 const output = join(process.cwd(), "test-results", "aprende-public-qa");
@@ -30,13 +30,13 @@ const publicSlugs = new Set(publicArticles.map((article) => article.slug));
 const draftSlugs = new Set(drafts.map((article) => article.slug));
 
 assert.equal(learnArticles.length, 48, "El catálogo editorial cambió: revisar el contrato de publicación.");
-assert.equal(publicArticles.length, 30, "El número de guías públicas cambió: requiere aprobación editorial explícita.");
-assert.equal(drafts.length, 18, "Se modificaron los 18 borradores protegidos.");
+assert.equal(publicArticles.length, 48, "Las 48 guías aprobadas deben estar disponibles.");
+assert.equal(drafts.length, 0, "El catálogo debe tener los 48 artículos aprobados.");
 assert.equal(learnCategories.length, 6);
 assert.equal(learnPathways.length, 9);
 assert.equal(new Set(learnArticles.map((item) => item.slug)).size, 48);
 const publicPaths = getPublicLearnPathways(learnPathways, learnArticles);
-assert(publicPaths.length > 0 && publicPaths.length < learnPathways.length);
+assert.equal(publicPaths.length, 9, "Los nueve itinerarios aprobados deben estar visibles.");
 for (const pathway of publicPaths) {
   assert(pathway.slugs.length >= 3, "Itinerario público demasiado corto: " + pathway.title);
   for (const slug of pathway.slugs) assert(publicSlugs.has(slug) && !draftSlugs.has(slug));
@@ -46,7 +46,7 @@ for (const article of learnArticles) {
   assert(existsSync(join(process.cwd(), "public", article.image.slice(1))), "Imagen inexistente: " + article.image);
 }
 results.catalog = { articles: learnArticles.length, public: publicArticles.length, drafts: drafts.length, categories: learnCategories.length, editorialPathways: learnPathways.length, visiblePathways: publicPaths.length };
-check("Catálogo, imágenes, 18 borradores y nueve itinerarios editoriales");
+check("Catálogo aprobado, imágenes y nueve itinerarios editoriales");
 
 async function get(path) {
   const res = await fetch(new URL(path, baseUrl), { redirect: "manual", headers: { "user-agent": "Vecidya-Aprende-Public-QA/1" } });
@@ -82,14 +82,18 @@ function assertAllVisibleLinksPublished(links, context) {
   }
 }
 
-const browser = await chromium.launch({ headless: true });
+const systemChromium = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE
+  ?? (process.platform === "win32" && existsSync("C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe")
+    ? "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+    : undefined);
+const browser = await chromium.launch({ headless: true, ...(systemChromium ? { executablePath: systemChromium } : {}) });
 let activePage;
 try {
   const listing = await get("/aprende");
   assert.equal(listing.status, 200, "El listado de Aprende no responde 200.");
   noDraftLinks(listing.body, "SSR del listado");
   assert(listing.body.includes("https://vecidya.com/aprende"), "Canonical del listado no encontrada.");
-  check("SSR público sin enlaces a borradores");
+  check("SSR público del catálogo aprobado sin artículos retenidos");
 
   const sitemap = await get("/sitemap.xml");
   assert.equal(sitemap.status, 200, "No se pudo consultar el sitemap local.");
@@ -105,7 +109,7 @@ try {
   const robots = await get("/robots.txt");
   assert.equal(robots.status, 200);
   assert(robots.body.includes("Sitemap: https://vecidya.com/sitemap.xml"));
-  check("Sitemap/robots: 30 guías públicas y 0 borradores");
+  check("Sitemap/robots: 48 guías públicas y 0 borradores");
 
   for (const article of publicArticles) {
     const response = await get("/aprende/" + article.slug);
@@ -114,13 +118,7 @@ try {
     noDraftLinks(response.body, "Detalle " + article.slug);
     results.checkedPublishedSlugs.push(article.slug);
   }
-  for (const article of drafts) {
-    const response = await get("/aprende/" + article.slug);
-    assert.equal(response.status, 404, "Borrador accesible por URL pública: " + article.slug);
-    assert(!response.body.includes(article.intro), "HTML de 404 incluye contenido privado del borrador: " + article.slug);
-    results.checkedDraftSlugs.push(article.slug);
-  }
-  check("HTTP: 30 artículos públicos 200 y 18 borradores 404");
+  check("HTTP: 48 artículos aprobados responden 200; no quedan borradores");
 
   for (const width of [320, 390, 768, 1366]) {
     activePage = await browser.newPage({ viewport: { width, height: 900 }, deviceScaleFactor: 1 });
@@ -129,7 +127,7 @@ try {
     await activePage.goto(new URL("/aprende", baseUrl).toString(), { waitUntil: "domcontentloaded" });
     await activePage.locator(".learn-guide-list > li").first().waitFor();
     assert.equal(await activePage.locator("main h1").count(), 1, width + "px: H1 duplicado.");
-    assert.equal(await activePage.locator(".learn-guide-list > li").count(), 30, width + "px: deben verse 30 guías.");
+    assert.equal(await activePage.locator(".learn-guide-list > li").count(), 48, width + "px: deben verse 48 guías.");
     assert.equal(await activePage.locator(".learn-topic-list > li").count(), 6, width + "px: temas incorrectos.");
     assert.equal(await activePage.locator(".learn-path-list > li").count(), publicPaths.length, width + "px: itinerarios públicos incorrectos.");
     assert.equal(await activePage.locator(".learn-guide__topic span").count(), 0, width + "px: muestra badges editoriales inaccesibles.");
@@ -165,17 +163,17 @@ try {
       assert.equal(await activePage.locator(".learn-guide-list > li").count(), 0);
       await activePage.getByRole("link", { name: "Ver todas las guías" }).click();
       await activePage.locator(".learn-guide-list > li").first().waitFor();
-      assert.equal(await activePage.locator(".learn-guide-list > li").count(), 30, "No se recuperó el catálogo después de limpiar la búsqueda.");
+      assert.equal(await activePage.locator(".learn-guide-list > li").count(), 48, "No se recuperó el catálogo después de limpiar la búsqueda.");
       await activePage.locator(".learn-discovery__chip").filter({ hasText: "CRM y clientes" }).click();
       // React Router updates the loader asynchronously; wait for the committed
       // category and its actual result count before inspecting rendered links.
       await activePage.locator('.learn-discovery__chip[aria-current="page"]').filter({ hasText: "CRM y clientes" }).waitFor({ state: "visible" });
       await activePage.waitForFunction(() => {
         const count = document.querySelectorAll(".learn-guide-list > li").length;
-        return count > 0 && count < 30;
+        return count > 0 && count < 48;
       });
       const filtered = await visibleLinks(activePage).evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
-      assert(filtered.length > 0 && filtered.length < 30, "El filtro de categoría no funciona.");
+      assert(filtered.length > 0 && filtered.length < 48, "El filtro de categoría no funciona.");
       assertAllVisibleLinksPublished(filtered, "filtro CRM");
       await activePage.locator(".learn-path-list summary").first().click();
       assert(await activePage.locator(".learn-path-list details").first().getAttribute("open") !== null, "No se expande itinerario.");
@@ -183,7 +181,7 @@ try {
     }
 
     if (width === 390 || width === 1366) {
-      const sample = publicArticles.find((article) => article.slug === "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo") ?? publicArticles[0];
+      const sample = publicArticles.find((article) => article.slug === "correo-profesional-dominio-registros-mx-txt") ?? publicArticles[0];
       await activePage.goto(new URL("/aprende/" + sample.slug, baseUrl).toString(), { waitUntil: "domcontentloaded" });
       assert.equal(await activePage.locator("main h1").textContent(), sample.title);
       assert.equal(await activePage.locator('link[rel="canonical"]').getAttribute("href"), "https://vecidya.com/aprende/" + sample.slug);

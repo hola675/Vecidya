@@ -6,14 +6,14 @@ import { test } from "node:test";
 import { learnArticles, learnPathways } from "../../../app/content/learn.ts";
 import { learnManagement03Articles } from "../../../app/content/learn-management-03.ts";
 
-test("Gestión 03 incorpora cinco borradores bien enlazados y sin atribución", () => {
+test("Gestión 03 incorpora cinco guías aprobadas bien enlazadas y sin atribución", () => {
   assert.equal(learnManagement03Articles.length, 5);
   const allSlugs = new Set(learnArticles.map((article) => article.slug));
   const localSlugs = learnManagement03Articles.map((article) => article.slug);
   assert.equal(new Set(localSlugs).size, 5);
   for (const article of learnManagement03Articles) {
     assert(allSlugs.has(article.slug), `No está en catálogo: ${article.slug}`);
-    assert.equal(article.editorialDraft, true, `La guía de Gestión debe permanecer en borrador hasta aprobación explícita: ${article.slug}`);
+    assert.equal(article.editorialDraft, false, `La guía de Gestión aprobada debe estar visible: ${article.slug}`);
     assert.equal(article.enPocasPalabras.length, 3);
     assert(article.sections.length >= 7);
     assert(article.imageAlt.length > 25);

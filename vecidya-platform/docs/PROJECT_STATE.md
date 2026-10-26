@@ -4,9 +4,13 @@
 
 ## Corte histórico — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
 
-## APRENDE — catálogo editorial actual (2026-10-26)
+## APRENDE — aprobación editorial de las 18 guías finales (PR #147 abierto)
 
-**GIT/CODE: integrado mediante PR #138; publicado como parte de 0.8.1 por PR #144.** El catálogo contiene 48 guías, 18 borradores protegidos, 30 guías no marcadas como borrador, 9 itinerarios y 6 categorías. Se mantienen los estados editoriales preexistentes; la revisión no equivale a aprobación. PR #123 y la cadena útil 04A/04B están incluidos en #138. El contenido público y los borradores se verificaron con PR #143 y HTTP anónimo fechado; ver [STATUS.md](STATUS.md), [TESTING.md](TESTING.md) y [ENVIRONMENTS.md](ENVIRONMENTS.md).
+El catálogo tipado contiene 48 guías, seis categorías y nueve itinerarios. Se revisaron individualmente y aprobaron las 18 guías que estaban marcadas como borrador; quedan 48 con estado público aprobado y 0 borradores. La revisión cubre alcance y solapamientos, claridad, estructura, ejemplos hipotéticos, pasos, FAQ, resúmenes, imágenes/alt, relaciones y fuentes con alcance explícito. Ver el dictamen histórico de las 46 guías en `docs/APRENDE_EDITORIAL_AUDIT_04B.md` y el checkpoint presente en `STATUS.md`.
+
+La suite unitaria y el QA público ahora exigen 48 artículos públicos, nueve itinerarios y preservan el bloqueo de un borrador sintético como regresión. PR #147 contiene este cambio y sigue sin integrarse ni desplegarse. `editorialDraft` continúa siendo la frontera para nuevas guías que requieran revisión.
+
+La nota APRENDE-EDITORIAL-FINAL-02 en el snapshot histórico de abajo describe el corte 2026-10-25 y queda superada por esta aprobación editorial en PR #147; hasta integrar y publicar el cambio, producción conserva el estado de 30 guías públicas y 18 borradores.
 
 
 En `feat/diag-visual-03`, QA-03B presenta la lectura general y ocho áreas en un flujo visual de una columna; entrada, foco, estados preliminares y ausencia de score tienen tratamiento explícito. Las unitarias focales (20/20), E2E QA-03B local (6/6), typecheck y build constan como PASS en `TESTING.md`. No se modifican scoring ni contratos y no hay despliegue. El runner responsive DIAG-PRO-19 está obsoleto respecto a la clave activa y no se cuenta como evidencia multi-viewport; zoom real 200 % y lector de pantalla siguen pendientes.
@@ -393,12 +397,12 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 ### Aprende (`knowledge.tsx`, `learn-article.tsx`)
 
 - `/aprende` es la ruta canónica y `/que-debes-saber` conserva el alias legado.
-- Estado integrado de Aprende: **48 guías, 18 borradores preservados, 30 no marcadas como borrador, 9 itinerarios y 6 categorías**. Se mantienen los estados editoriales preexistentes; la revisión no equivale a aprobación. El método visible es **Comprende → Prioriza → Decide** y la búsqueda cubre título, resumen y contenido interno.
-- PR #138 integró la reconciliación en `main@4dcc27f0`; PR #143 certificó publicación pública y PR #144 desplegó 0.8.1. Los checks y evidencia HTTP fechada constan en `STATUS.md`, `TESTING.md` y `ENVIRONMENTS.md`.
+- Estado histórico de APRENDE-EDITORIAL-FINAL-02 (2026-10-25): **48 guías auditadas, 18 borradores y 30 no marcadas como borrador**, 9 itinerarios y 6 categorías. En ese checkpoint se conservaron las banderas por falta de autorización expresa. El estado fue superado por APRENDE-EDITORIAL-APPROVAL-01 arriba.
+- CI del HEAD `322850f` pasó `Aprende quality` #123, `Main integration quality` #189 y 1740/1740 unitarias; PR #138 se integró posteriormente en `main@4dcc27f`. Esta evidencia es histórica y no certifica el nuevo contrato 48/0.
 - Todas las guías tienen ejemplo hipotético estructurado, al menos dos fuentes HTTPS distintas, una continuación editorial relacionada y pertenencia a uno o más itinerarios. Se mantienen límites explícitos para afirmaciones comerciales, legales, privacidad, seguridad e IA.
 - Las guías madre densas se redujeron y selección/migración de proveedor, mapa DNS/correo y correo profesional se separaron cuando tenían objetivos educativos distintos. HTTPS, analítica, supervisión de automatizaciones y piloto de IA se simplificaron sin crear URLs innecesarias.
 - La consolidación recupera las mejoras útiles de #125/#126: sin aperturas genéricas, alt descriptivos, intro y extracto diferenciados, cierres no copiados, fuentes OpenAI/ITU/SBA vigentes y terminología Analytics actual.
-- El contenido sigue estático y tipado; no añade CMS, persistencia editorial, perfiles de aprendizaje ni funciones CRM de GHL. La integración y certificación de `main` están documentadas en PR #138/#143/#144 y en `TESTING.md`.
+- El contenido sigue estático y tipado; no añade CMS, persistencia editorial, perfiles de aprendizaje ni funciones CRM de GHL. El checkpoint actual de aprobación y sus gates se registran arriba y en `STATUS.md`/`TESTING.md`.
 
 ### Legal & Trust (`privacy.tsx`, `public-layout.tsx`)
 

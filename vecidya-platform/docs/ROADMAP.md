@@ -85,7 +85,7 @@ La primera extensión de operaciones cubre **organización de tareas**, **movimi
 
 ### APRENDE — seguimiento editorial
 
-La biblioteca pública conserva 18 borradores por decisión editorial. Revisar y retirar `editorialDraft` solo en guías aprobadas individualmente; el cambio de estado modifica exposición e indexación y requiere revisión explícita. El seguimiento de temas por sector o jurisdicción requiere fuentes y contexto vigentes.
+El catálogo integrado contiene 48 guías públicas; la producción publicada en 0.8.1 aún conserva 18 borradores hasta el siguiente release. Las guías nuevas deben permanecer en borrador hasta aprobación editorial individual, porque cambiar `editorialDraft` modifica exposición e indexación. El seguimiento de temas por sector o jurisdicción requiere fuentes y contexto vigentes.
 
 
 **Estado al corte del 2026-10-26:** el catálogo editorial se integró por PR #138 y se publicó como 0.8.1 en PR #144; producción y la evidencia HTTP fechada constan en `ENVIRONMENTS.md`. Cloudflare API 2026-10-26 confirma buckets R2 de staging y producción; Worker staging aún no tiene el binding R2, producción sí. La última verificación de ledger D1 documentada sigue en `0000–0026` (2026-10-24); no se consultó D1 en este corte. Entrega Gmail y ciclo de purga no se revalidaron.

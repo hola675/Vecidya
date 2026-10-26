@@ -15,7 +15,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-integrations.svg",
     "imageAlt": "Diagrama de distintas herramientas conectadas que ilustra la coordinación de información entre áreas.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "conectar-herramientas-digitales-sin-complicar-tu-negocio",
       "hojas-de-calculo-para-organizar-un-negocio-pequeno"
@@ -198,7 +198,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-crm.svg",
     "imageAlt": "Una consulta se registra con contexto y pasa a la persona que tiene permiso y responsabilidad para completar el siguiente paso.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "como-proteger-cuentas-contrasenas-estafas-negocio",
       "datos-de-clientes-que-puedes-pedir-y-como-protegerlos"
@@ -394,7 +394,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-integrations.svg",
     "imageAlt": "Ilustración de herramientas conectadas para explicar por qué conviene evitar aplicaciones duplicadas.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "conectar-herramientas-digitales-sin-complicar-tu-negocio",
       "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo",
@@ -587,7 +587,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-analytics.svg",
     "imageAlt": "Gráfico de indicadores de un negocio para ilustrar la comparación de resultados entre áreas.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "analitica-web-que-medir-en-tu-negocio",
       "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo"
