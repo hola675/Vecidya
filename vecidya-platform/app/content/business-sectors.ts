@@ -151,7 +151,7 @@ export function businessCategoryOptions(currentCategory: string | null | undefin
 export const BUSINESS_SECTOR_SEARCH_ALIASES: Readonly<Record<BusinessSectorId, readonly string[]>> = {
   agro_nature: ["finca", "granja", "campesino", "cultivo", "agricultura", "ganaderia", "pesca", "veterinaria agropecuaria"],
   industry_energy: ["industria", "fabrica", "manufactura", "produccion", "carpinteria industrial", "mineria", "electricidad", "energia"],
-  commerce: ["tienda", "comercio", "venta", "venta online", "venta por internet", "ecommerce", "ferreteria", "supermercado"],
+  commerce: ["tienda", "comercio", "venta", "tienda online", "tienda en linea", "venta online", "venta por internet", "ecommerce", "ferreteria", "supermercado"],
   food: ["restaurante", "cafeteria", "comida", "panaderia", "catering", "bar", "pasteleria", "cocinero"],
   tourism: ["hotel", "hostal", "hospedaje", "casa de huespedes", "viajes", "agencia de viajes", "turismo"],
   construction_property: ["construccion", "albanil", "constructor", "inmobiliaria", "alquiler de vivienda", "reforma"],
