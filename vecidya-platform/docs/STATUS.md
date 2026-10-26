@@ -1,5 +1,14 @@
 # Estado de implementación
 
+## APRENDE-EDITORIAL-04B — auditoría semántica de 46 guías (2026-10-25; PR #121)
+
+**Implementación editorial en la rama feat/aprende-editorial-04a; no fusionada ni desplegada.** Se revisaron el objetivo pedagógico, el alcance, los ejemplos, los solapamientos y los enlaces de las 46 guías. El registro artículo por artículo está en docs/APRENDE_EDITORIAL_AUDIT_04B.md.
+
+Cambios centrales: guía de CRM enfocada en decidir cuándo usarlo y sin afirmaciones no verificadas sobre retención de datos de un CRM de Vecidya; guía de presencia centrada en mantener datos correctos y comprobar enlaces; guía DNS centrada en web/correo con referencia breve a HTTPS; guía de IA empresarial centrada en reglas, datos permitidos, responsables y escalamiento; encabezados personalizados en trece guías introductorias y enlace a presupuesto desde selección de herramientas.
+
+Se conservan 46 slugs, seis categorías, nueve itinerarios y los estados editoriales previos. Las guías que estaban en borrador permanecen en borrador. Los checks 04A solo certifican su SHA original; la validación de 04B debe consultarse en GitHub Actions para el HEAD que contiene estos cambios. Sin cambios de base de datos, autenticación, Diagnóstico, MiniWeb, GHL, licencias, precios, ni despliegue.
+
+
 ## PROD-RELEASE-0.8.0 — publicado (2026-10-25)
 
 **GIT/CONFIG/HTTP:** PR #116 integrado en `main@0152eab6fad5e68336d66d69cbc1597a1f720111`; D1 producción migrada a `0000–0028`; Worker `vecidya-platform` desplegado con Version ID `320eefe0-343c-431f-987f-cf9b92df0c8e`. GET anónimo TLS 2026-10-25T18:38:23Z a `/`, `/cookies`, `/informacion-legal` y `/diagnostico`: todas `200`, versión `0.8.0`, `© 2026 Vecidya`. Typecheck/build/diff-check PASS; pruebas automatizadas omitidas por solicitud del usuario. Evidencia detallada en [ENVIRONMENTS.md](ENVIRONMENTS.md).
