@@ -1,5 +1,9 @@
 # Base de datos
 
+## PROD-RELEASE-0.8.1 — sin cambios D1 (2026-10-26)
+
+El release directo de `0.8.1` no contiene migraciones ni realizó lecturas/escrituras remotas D1. La última verificación documentada de producción, `2026-10-25`, registró ledger `0000–0028`; este release no lo altera. No se infiere una nueva verificación del ledger a partir del deploy de Worker.
+
 ## DIAG-D1-RELEASE-01 / APP-MINI-02C — ledger remoto vigente (última verificación 2026-10-24)
 
 **Resultado: `0000–0026` aplicadas en staging y producción.** Tras registrar bookmarks Time Travel previos, el 2026-10-24 se aplicaron las migraciones remotas `0024–0026`; el postflight Wrangler devolvió «No migrations to apply» para ambos D1 (`vecidya-staging`, `vecidya-prod`). Los bookmarks previos e IDs están en `ENVIRONMENTS.md`. El postflight SQL anterior de producción confirmó QA-03B con `changed_db=false` y cero filas escritas; `PRAGMA integrity_check`/`foreign_key_check` remotos siguen bloqueados por D1 API (`SQLITE_AUTH`), por lo que no se afirma esa validación remota. El Worker desplegado sigue en `0.7.0`; los cambios de #49/#50 no se publican hasta habilitar R2 y completar el deploy.

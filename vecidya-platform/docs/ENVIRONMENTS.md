@@ -1,6 +1,6 @@
-# Entornos y release de producción (candidato 0.8.1; 2026-10-26)
+# Entornos y release de producción 0.8.1 (2026-10-26)
 
-**Candidato de release 0.8.1:** el manifiesto incrementa la versión desde la publicada `0.8.0`. El código integrado candidato es `main@cafe8537ced7cac2f822212f5415224425aebc03` más el commit versionado pendiente de integrar. El alcance añade contenido/guardas de Aprende y QA Playwright local; no altera Wrangler, schema ni migraciones. La producción sigue siendo `0.8.0` hasta deploy y comprobación HTTP anónima fechada. El usuario autorizó el despliegue directo a producción para este release, sin paso previo por staging. No se requiere operación D1 por este diff.
+**Release publicado 0.8.1:** PR #144 integrado en `main@c8d52c8f947892e43859e72c2263fb032a07d05e`; `package.json` incrementa `0.8.0` → `0.8.1`. Deploy directo autorizado por el usuario y completado el `2026-10-26T15:48:05Z`; Worker `vecidya-platform`, deployment `cd59d948-11ad-41a1-a697-734e130360b5`, Version ID activo `9497bda3-dc65-4a8d-a976-cfb89925da5d` al 100 %. No cambia `wrangler.jsonc`, bindings, secrets ni schema; no se ejecutaron migraciones y D1 producción permanece en ledger `0000–0028`. Staging no se desplegó en este release, de acuerdo con la autorización directa a producción.
 
 **Base de dependencias local del release previo, Node `26.12.1`, pnpm `11.21.0`, registry `https://registry.npmjs.org/`:** instalación congelada con pnpm `11.21.0`; el lockfile no cambia para 0.8.1.
 
@@ -24,7 +24,11 @@ El package local también informa `0.6.1`, pero coincidencia de versión no demu
 
 # Entornos
 
-## Estado remoto vigente — producción 0.8.0 / staging 0.7.0 (2026-10-25)
+## Estado remoto vigente — producción 0.8.1 / staging 0.7.0 (2026-10-26)
+
+**HTTP anónimo con TLS, RAN 2026-10-26T15:48Z:** producción (`https://vecidya.com`) `/`, `/aprende`, una guía publicada, `sitemap.xml` y `robots.txt` → `200`; una guía editorial en borrador → `404`. La portada muestra versión `0.8.1` y `© 2026 Vecidya`. Sitemap contiene la guía publicada y excluye el borrador. No se accedió a sesión, correo ni datos privados.
+
+**Código y Worker:** PR #144 integrado en `main@c8d52c8f947892e43859e72c2263fb032a07d05e`; `vecidya-platform` Version ID `9497bda3-dc65-4a8d-a976-cfb89925da5d`, deployment `cd59d948-11ad-41a1-a697-734e130360b5` creado `2026-10-26T15:48:05.376673Z`. Wrangler `--dry-run` confirmó target `DB=vecidya-prod`, `BUSINESS_MEDIA=vecidya-business-media-prod`, APP_ENV production, rutas de zona y flags vigentes. Sin migraciones; D1 productiva `0000–0028`. Se mantienen configuración productiva previa, correo Gmail y Cron diario sin cambios.
 
 **HTTP anónimo con TLS, RAN 2026-10-25T18:38:23Z:** producción (`https://vecidya.com`) sirvió `/`, `/cookies`, `/informacion-legal` y `/diagnostico` con `200`, footer `0.8.0` y `© 2026 Vecidya`. La verificación anterior, 2026-10-25T01:08Z, observó `0.7.3`. No se accedió a sesión ni a Gmail.
 

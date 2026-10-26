@@ -1,11 +1,13 @@
 # Changelog
 
-## 0.8.1 — candidato de producción (2026-10-26)
+## 0.8.1 — producción (2026-10-26)
 
 - Actualiza Aprende con el catálogo editorial reconciliado de 48 guías y nueve itinerarios, conservando 18 borradores protegidos; mejora precisión semántica, claridad y relaciones entre guías.
 - Consolida la frontera pública editorial: catálogo, rutas individuales, itinerarios y sitemap excluyen borradores; añade certificación Playwright local para 30 guías públicas y 18 borradores, con evidencia de 320/390/768/1366 px.
 - No introduce migraciones D1, cambios de configuración Worker, Diagnóstico, MiniWeb, GHL ni precios. La D1 productiva observada permanece en `0000–0028`.
-- Release candidate desde `main@cafe8537ced7cac2f822212f5415224425aebc03`; CI y revisión visual de capturas completadas. Aún no es publicado: falta merge del checkpoint de versión, deploy autorizado y HTTP anónimo fechado.
+- PR #144 integrado en `main@c8d52c8f947892e43859e72c2263fb032a07d05e`; versión `package.json` `0.8.1`. Typecheck/build locales y tres workflows CI PASS; las cinco capturas del QA se revisaron.
+- Worker `vecidya-platform` desplegado el `2026-10-26T15:48:05Z`, Version ID `9497bda3-dc65-4a8d-a976-cfb89925da5d`. No hubo migraciones D1; ledger productivo permanece `0000–0028`.
+- HTTP anónimo TLS RAN 2026-10-26T15:48Z: `/`, `/aprende`, guía pública, `sitemap.xml` y `robots.txt` → 200; borrador → 404; versión `0.8.1` y footer `© 2026 Vecidya`. Sitemap incluye la guía pública y excluye el borrador.
 
 ## 2026-10-26 — APRENDE-PUBLIC-QA-01 — E2E público y barrera editorial (PR #143 integrado)
 
