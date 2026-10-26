@@ -11,8 +11,8 @@ test("Aprende conserva el catálogo y registra la revisión editorial de Operaci
   const drafts = learnArticles.filter((article) => article.editorialDraft);
   const reviewed = learnArticles.filter((article) => !article.editorialDraft);
   assert.equal(drafts.length + reviewed.length, learnArticles.length);
-  assert.equal(drafts.length, 11, "Solo deben quedar en borrador las once guías todavía no aprobadas en esta rama");
-  assert.equal(reviewed.length, 37, "Operaciones y las dos guías técnicas nuevas ya deben constar como revisadas");
+  assert.equal(drafts.length, 7, "Solo deben quedar en borrador las siete guías todavía no aprobadas en esta rama");
+  assert.equal(reviewed.length, 41, "Operaciones, guías técnicas y coordinación empresarial ya deben constar como revisadas");
   for (const slug of [
     "como-organizar-tareas-y-responsables-en-tu-equipo",
     "como-controlar-inventario-sin-perder-productos-ni-datos",
