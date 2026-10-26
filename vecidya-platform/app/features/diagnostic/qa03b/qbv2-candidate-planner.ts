@@ -44,17 +44,10 @@ export type CandidateQuestionPlanV3 = {
   readonly trace: readonly CandidatePlannerTraceV3[];
   readonly routingIterations: number;
 };
-export type CandidateQuestionPlannerInputV3 = {
-  readonly answers: AnswersV2;
-  readonly budget?: RouteBudgetV1;
-  /** V9 prototype seam: visible interaction count may be lower than answer-key count for an atomic classification bundle. */
-  readonly answeredInteractionCount?: number;
-};
-/** Shadow-only experiment: never used by the public session or Worker. */
-export type CandidateShadowSelectionPolicyV1 = "baseline" | "utility_first";
+export type CandidateQuestionPlannerInputV3 = { readonly answers: AnswersV2; readonly budget?: RouteBudgetV1 };
 
 const DEFAULT_BUDGET: RouteBudgetV1 = DEFAULT_ROUTE_BUDGET_V1;
-const CONTEXT_CORE = new Set<ContextFieldRef>(["entity", "businessModel", "archetype", "activity", "primaryGoal", "primaryFriction", "customerReach", "customerBuyer", "niche"]);
+const CONTEXT_CORE = new Set<ContextFieldRef>(["entity", "businessModel", "archetype", "activity", "primaryGoal", "primaryFriction", "customerReach", "customerBuyer"]);
 const R4_CONTEXT_FIELDS: Partial<Record<DigitalDimensionId, ReadonlySet<ContextFieldRef>>> = {
   discovery: new Set(["activity", "businessModel", "archetype", "customerBuyer"]),
   conversion_access: new Set(["businessModel", "archetype", "customerBuyer"]),
@@ -90,19 +83,6 @@ function semanticSources(question: QuestionDefinitionV2): { direct: DigitalDimen
   if (question.evidenceMigration !== "migrated" || !question.evidenceV3) return { direct: [], supporting: [] };
   return { direct: question.evidenceV3.dimensions.filter((d) => d.directness === "direct").map((d) => d.dimension), supporting: question.evidenceV3.dimensions.filter((d) => d.directness === "supporting").map((d) => d.dimension) };
 }
-
-function evidenceSemanticSignature(question: QuestionDefinitionV2): string | undefined {
-  if (question.evidenceMigration !== "migrated" || !question.evidenceV3) return undefined;
-  return JSON.stringify(
-    [...question.evidenceV3.dimensions]
-      .map((reading) => ({
-        dimension: reading.dimension,
-        directness: reading.directness,
-        answers: Object.entries(reading.answers).sort(([a], [b]) => a.localeCompare(b)),
-      }))
-      .sort((a, b) => a.dimension.localeCompare(b.dimension) || a.directness.localeCompare(b.directness)),
-  );
-}
 /** A migrated direct source can resolve an `insufficient_context` dimension through the existing R4
  * `observed_dimension_evidence` contract. This proves that prospectively by simulation (never syntactically)
  * and only on substantive answers: `not_applicable` must stay neutral, and `unknown` must never justify asking. */
@@ -111,23 +91,18 @@ function canProspectivelyResolveApplicability(question: QuestionDefinitionV2, di
     if (option.kind !== undefined && option.kind !== "value") return false;
     const hypothetical = { ...activeAnswers, [question.id]: question.type === "multi" ? [option.value] : option.value };
     const resolvedAnswers = resolveEligibleQuestionsV2(hypothetical, bank).activeAnswers;
-    return scoreCandidateContextualDimensionsV3({ answers: resolvedAnswers }, bank).dimensions.find((d) => d.id === dimension)?.applicability === "applicable";
+    return scoreCandidateContextualDimensionsV3({ answers: resolvedAnswers }).dimensions.find((d) => d.id === dimension)?.applicability === "applicable";
   });
 }
 
 /** Candidate-only planner. Every invocation reconstructs the plan from raw answers. */
 /** @internal Test seam for equivalent bank-order determinism; production entry always supplies the frozen bank. */
-export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT_BUDGET, answeredInteractionCount }: CandidateQuestionPlannerInputV3, bank: readonly QuestionDefinitionV2[], policy: CandidateShadowSelectionPolicyV1 = "baseline"): CandidateQuestionPlanV3 {
-  const rawAnswerCount = Object.keys(answers).length;
-  const interactionCount = Math.min(
-    CANDIDATE_ROUTE_HARD_CAP_V3,
-    Math.max(0, answeredInteractionCount ?? rawAnswerCount),
-  );
-  const hardMax = Math.min(CANDIDATE_ROUTE_HARD_CAP_V3, Math.max(1, budget.hardMax, interactionCount));
+export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT_BUDGET }: CandidateQuestionPlannerInputV3, bank: readonly QuestionDefinitionV2[]): CandidateQuestionPlanV3 {
+  const hardMax = Math.min(CANDIDATE_ROUTE_HARD_CAP_V3, Math.max(1, budget.hardMax, Object.keys(answers).length));
   const normalizedBudget: RouteBudgetV1 = { ...budget, hardMax, targetMax: Math.min(hardMax, budget.targetMax), targetMin: Math.min(hardMax, budget.targetMin), materialEvidenceReserve: Math.min(hardMax - 1, Math.max(0, budget.materialEvidenceReserve ?? 0)) };
   const resolution = resolveEligibleQuestionsV2(answers, bank);
   const activeAnswers = resolution.activeAnswers;
-  const scoring = scoreCandidateContextualDimensionsV3({ answers: activeAnswers }, bank);
+  const scoring = scoreCandidateContextualDimensionsV3({ answers: activeAnswers });
   const dimensions = scoring.dimensions;
   const open = new Set(dimensions.filter((d) => d.applicability === "applicable" && d.score === null).map((d) => d.id));
   const applicable = new Set(dimensions.filter((d) => d.applicability === "applicable").map((d) => d.id));
@@ -164,13 +139,8 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
         if (activeAnswers[child.id] !== undefined || eligible.has(child.id) || !after.has(child.id)) continue;
         const childSources = semanticSources(child);
         const childFields = producedFields(child);
-        const childSignature = evidenceSemanticSignature(child);
-        const equivalentAlreadyEligible = policy === "utility_first" && question.id.startsWith("q2_niche_") && childSignature !== undefined
-          && bank.some((peer) => peer.id !== child.id
-            && (activeAnswers[peer.id] !== undefined || eligible.has(peer.id))
-            && evidenceSemanticSignature(peer) === childSignature);
         const unlocksUsefulChild = child.evidenceMigration === "migrated"
-          ? !equivalentAlreadyEligible && (childSources.direct.some((dimension) => open.has(dimension)) || childSources.supporting.some((dimension) => observedDirect.has(dimension)))
+          ? childSources.direct.some((dimension) => open.has(dimension)) || childSources.supporting.some((dimension) => observedDirect.has(dimension))
           : child.routingRole !== "deepening" && childFields.some((field) => unresolvedFields.has(field));
         if (unlocksUsefulChild) unlocks.add(question.id);
       }
@@ -183,14 +153,12 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
     const neededContext = new Set<ContextFieldRef>([...CONTEXT_CORE].filter((f) => unresolvedFields.has(f)));
     const goal = resolution.context.primaryGoal.status === "resolved" ? resolution.context.primaryGoal.value : undefined;
     const friction = resolution.context.primaryFriction.status === "resolved" ? resolution.context.primaryFriction.value : undefined;
-    // Inventory alone is not diagnostic evidence. In shadow utility-first mode,
-    // the tools question is useful only when it really unlocks context or a child.
-    const digitalToolsRelevant = policy === "baseline" && q.id === "q2_digital_tools_in_use" && (["organize", "automate", "stop_losing", "measure"].includes(goal ?? "") || ["operations", "follow_up"].includes(friction ?? ""));
+    const digitalToolsRelevant = q.id === "q2_digital_tools_in_use" && (["organize", "automate", "stop_losing", "measure"].includes(goal ?? "") || ["operations", "follow_up"].includes(friction ?? ""));
     for (const dimension of dimensions.filter((d) => d.applicability === "insufficient_context")) {
       for (const field of R4_CONTEXT_FIELDS[dimension.id] ?? []) if (unresolvedFields.has(field)) neededContext.add(field);
     }
     const unlocksCandidateBranch = unlocks.has(q.id);
-    const contextUtility = (policy !== "utility_first" || !q.id.startsWith("q2_niche_") || unlocksCandidateBranch) && q.routingRole !== "deepening" && eligible.has(q.id) && (digitalToolsRelevant || fields.some((f) => neededContext.has(f)) || ["q2_has_customers", "q2_operational_status", "q2_buyer_recipient_relation"].includes(q.id) || unlocksCandidateBranch || triggered.has(q.id));
+    const contextUtility = q.routingRole !== "deepening" && eligible.has(q.id) && (digitalToolsRelevant || fields.some((f) => neededContext.has(f)) || ["q2_has_customers", "q2_operational_status", "q2_buyer_recipient_relation"].includes(q.id) || unlocksCandidateBranch || triggered.has(q.id));
     const directUtility = eligible.has(q.id) && sources.direct.some((d) => open.has(d));
     // Supporting observations may refine an already scored direct dimension, never close a null score.
     const supportingUtility = eligible.has(q.id) && sources.supporting.some((d) => observedDirect.has(d) && dimensions.find((item) => item.id === d)?.score !== null);
@@ -217,33 +185,9 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
       const source = semanticSources(questionById.get(id)!);
       return Math.max(0, ...[...source.direct, ...source.supporting].map((dimension) => priorities.includes(dimension) ? priorities.length - priorities.indexOf(dimension) : 0));
     };
-    if (policy === "utility_first") {
-      // Immutable core anchors and contradiction checks precede optional content.
-      // A sector-matched niche with real choices is consulted before generic
-      // descriptive context; it is never evidence of a digital capability.
-      const shadowRank = (q: QuestionDefinitionV2, id: string, reason: QuestionSelectionReason) => {
-        if (triggered.has(id)) return 100;
-        if (q.routingRole === "core") return 95;
-        if (unlocks.has(id)) return 85;
-        // Niche metadata is useful for personalization, but may not displace
-        // direct evidence merely because it has many choices. The earlier
-        // unlocks check is the only justification for promoting it above
-        // a directly relevant unanswered diagnostic dimension.
-        const source = semanticSources(q);
-        const relevant = [...source.direct].some((dimension) => priorities.includes(dimension));
-        if (relevant && source.direct.some((dimension) => open.has(dimension))) return 74;
-        if (reason === "required_context") return 70;
-        if (source.direct.some((dimension) => open.has(dimension))) return 60;
-        if (reason === "prospective_evidence") return 50;
-        if (source.supporting.some((dimension) => observedDirect.has(dimension))) return 30;
-        return 10;
-      };
-      return shadowRank(qb, b, rb) - shadowRank(qa, a, ra) || utility(b) - utility(a)
-        || (qb.priority === "critical" ? 1 : 0) - (qa.priority === "critical" ? 1 : 0) || a.localeCompare(b);
-    }
     return rr[rb] - rr[ra] || utility(b) - utility(a) || (qb.priority === "critical" ? 1 : 0) - (qa.priority === "critical" ? 1 : 0) || a.localeCompare(b);
   });
-  const alreadyAsked = interactionCount;
+  const alreadyAsked = Object.keys(activeAnswers).length;
   const remaining = Math.max(0, normalizedBudget.hardMax - alreadyAsked);
   const baseCeiling = Math.min(normalizedBudget.targetMax, normalizedBudget.hardMax - (normalizedBudget.materialEvidenceReserve ?? 0), ROUTE_BANDS.base);
   const baseSlots = Math.max(0, baseCeiling - alreadyAsked);
@@ -279,7 +223,7 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
   const lowDirectEvidenceDimensions = dimensions.filter((d) => d.applicability === "applicable" && d.confidence.direct <= 1).map((d) => d.id);
   const insufficientContextDimensions = dimensions.filter((d) => d.applicability === "insufficient_context").map((d) => d.id);
   const sufficient = unresolvedApplicableDimensions.length === 0 && insufficientContextDimensions.length === 0 && contradictions.every((c) => c.status !== "pending" || !c.confirmationQuestionId || !eligible.has(c.confirmationQuestionId));
-  const hardCapReached = alreadyAsked >= normalizedBudget.hardMax;
+  const hardCapReached = Object.keys(activeAnswers).length >= normalizedBudget.hardMax;
   const usefulUnselected = usefulIds.filter((id) => !selected.includes(id));
   const budgetBlocked = !hardCapReached && selected.length === 0 && usefulUnselected.length > 0;
   const terminalReason = selected.length > 0 || (hardCapReached && usefulIds.length > 0) ? "useful_questions_remaining" as const : budgetBlocked ? "budget_blocked" as const : "no_useful_questions" as const;
@@ -299,7 +243,7 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
   return {
     plannerIdentity: CANDIDATE_PLANNER_IDENTITY_V3, activeAnswers, context: resolution.context,
     contextResolution: Object.fromEntries(CONTEXT_FIELD_REFS.map((f) => [f, resolved(resolution.context, f) ? "resolved" : "unresolved"])) as Record<ContextFieldRef, "resolved" | "unresolved">,
-    eligibleQuestionIds: resolution.eligibleQuestionIds, selectedQuestionIds: selected, nextQuestionId: selected[0], routeLength: alreadyAsked + selected.length,
+    eligibleQuestionIds: resolution.eligibleQuestionIds, selectedQuestionIds: selected, nextQuestionId: selected[0], routeLength: Object.keys(activeAnswers).length + selected.length,
     budget: normalizedBudget, completion: { ready: hardCapReached || (selected.length === 0 && !budgetBlocked), hardCapReached, terminalReason: sufficiency.terminalReason }, evidenceSufficiency: sufficiency,
     trace: selectedTrace.map((entry) => ({ ...entry, selected: selected.includes(entry.questionId), ...(eligible.has(entry.questionId) && !selected.includes(entry.questionId) && !entry.skipReason ? { skipReason: hardCapReached ? "hard_cap" as const : "not_useful" as const } : {}) })), routingIterations: resolution.iterations,
   };
@@ -307,9 +251,5 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
 
 /** Production candidate entry point: the reviewed R3 evidence bank is fixed and cannot be caller-selected. */
 export function buildCandidateQuestionPlanV3(input: CandidateQuestionPlannerInputV3): CandidateQuestionPlanV3 {
-  // Public V8 path deliberately ignores the V9-only interaction-count seam.
-  return buildCandidateQuestionPlanFromBankV3(
-    { answers: input.answers, ...(input.budget === undefined ? {} : { budget: input.budget }) },
-    REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3,
-  );
+  return buildCandidateQuestionPlanFromBankV3(input, REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3);
 }

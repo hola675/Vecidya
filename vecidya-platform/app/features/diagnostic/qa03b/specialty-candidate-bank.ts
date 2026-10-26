@@ -5,6 +5,11 @@ import { LOTE_C_QUESTIONS_V2 } from "../qbv2-lote-c";
 import { LOTE_D_QUESTIONS_V2 } from "../qbv2-lote-d";
 import { LOTE_F_QUESTIONS_V2 } from "../qbv2-lote-f";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
+import { applyQA03BEditorialCopy } from "./editorial-copy";
+
+/** El contenido editorial candidato V9 no altera el contrato ni los textos públicos V8. */
+export const QA03B_EDITORIAL_BASE_QUESTIONS_V9: readonly QuestionDefinitionV2[] =
+  REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.map(applyQA03BEditorialCopy);
 import { QA03B_RECOVERY_WAVE2_QUESTIONS } from "./recovery-wave2";
 
 /**
@@ -161,7 +166,7 @@ export const QA03B_RECOVERY_PILOT_V1: readonly QuestionDefinitionV2[] = [
 
 /** The sector expansion is v4 ONLY in the isolated candidate bank. Public v3 is untouched. */
 export const QA03B_CANDIDATE_SECTOR_V4: QuestionDefinitionV2 = (() => {
-  const original = REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.find((q) => q.id === "q2_sector");
+  const original = QA03B_EDITORIAL_BASE_QUESTIONS_V9.find((q) => q.id === "q2_sector");
   if (!original) throw new Error("QA-03B sector classification missing");
   return {
     ...original,
@@ -183,7 +188,7 @@ export const QA03B_CANDIDATE_SECTOR_V4: QuestionDefinitionV2 = (() => {
 })();
 
 export const QA03B_SPECIALTY_CANDIDATE_BANK_V1: readonly QuestionDefinitionV2[] = [
-  ...REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.map((question) =>
+  ...QA03B_EDITORIAL_BASE_QUESTIONS_V9.map((question) =>
     question.id === "q2_sector" ? QA03B_CANDIDATE_SECTOR_V4 : question),
   ...QA03B_SPECIALTY_SELECTORS_V1,
   ...QA03B_RECOVERY_PILOT_V1,

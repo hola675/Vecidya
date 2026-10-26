@@ -89,10 +89,9 @@ function toApplicabilityEvidence(evidence: readonly ContextualEvidence[]): reado
  */
 export function scoreCandidateContextualDimensionsV3(
   input: CandidateContextualScoringInputV3,
-  // Test-only seam for candidate banks. Production callers always use the default.
-  bank: readonly QuestionDefinitionV2[] = REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3,
 ): CandidateContextualScoringResultV3 {
   const calibration = input.calibration ?? CANDIDATE_CALIBRATION_V3;
+  const bank = REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3;
   const resolution = resolveEligibleQuestionsV2(input.answers, bank);
   const derived = deriveContextualEvidence(resolution.activeAnswers, bank);
   const evidence = validateActiveCandidateEvidenceV3(derived, resolution.activeAnswers, bank)

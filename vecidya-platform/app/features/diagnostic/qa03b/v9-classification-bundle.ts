@@ -1,7 +1,7 @@
 import type { AnswersV2 } from "../qbv2-rules";
 import { NICHE_REGISTRY } from "../taxonomy";
 import { resolveEligibleQuestionsV2 } from "./engine";
-import { buildCandidateQuestionPlanFromBankV3, type CandidateQuestionPlanV3 } from "./qbv2-candidate-planner";
+import { buildCandidateQuestionPlanFromBankV3, type CandidateQuestionPlanV3 } from "./v9-candidate-planner";
 import { QA03B_CANDIDATE_SECTOR_V4, QA03B_SPECIALTY_SELECTORS_V1 } from "./specialty-candidate-bank";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "./specialty-branches-wave1";
 

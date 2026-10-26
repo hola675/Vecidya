@@ -1,4 +1,4 @@
-import { scoreCandidateContextualDimensionsV3 } from "./qbv2-candidate-scoring";
+import { scoreCandidateContextualDimensionsV3 } from "./v9-candidate-scoring";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "./specialty-branches-wave1";
 import {
   QA03B_V9_ANSWER_SCHEMA_ID,

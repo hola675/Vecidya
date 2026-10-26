@@ -104,6 +104,7 @@ export default [
     route("__dev/diagnostico/v3", "routes/dev-diagnostic-v3.tsx"),
     route("__dev/diagnostico/candidate", "routes/dev-diagnostic-candidate.tsx"),
     route("__dev/diagnostico/qa03b", "routes/dev-diagnostic-qa03b.tsx"),
+    route("__dev/diagnostico/qa03b/v9", "routes/dev-diagnostic-qa03b-v9.tsx"),
     route("__dev/diagnostico/qa03b/metodologia", "routes/dev-diagnostic-qa03b-methodology.tsx"),
     route("__dev/diagnostico/qa03b/informe", "routes/dev-diagnostic-qa03b-report.tsx"),
     route("__dev/diagnostico/qa03b/embudo", "routes/dev-diagnostic-qa03b-funnel.tsx"),
