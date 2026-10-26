@@ -24,7 +24,7 @@ const evidence = (
   dimensions: [{ dimension, directness: "direct" as const, answers }],
 });
 
-export const QA03B_SPECIALTY_EVIDENCE_PILOT_V1: readonly QuestionDefinitionV2[] = [
+export const QA03B_SPECIALTY_EVIDENCE_EXPERIMENTS_V1: readonly QuestionDefinitionV2[] = [
   {
     id: "q2_specialty_software_activation",
     version: 1,
@@ -137,6 +137,21 @@ export const QA03B_SPECIALTY_EVIDENCE_PILOT_V1: readonly QuestionDefinitionV2[] 
   },
 ];
 
-if (new Set(QA03B_SPECIALTY_EVIDENCE_PILOT_V1.map((q) => q.id)).size !== QA03B_SPECIALTY_EVIDENCE_PILOT_V1.length) {
-  throw new Error("QA-03B specialty evidence pilot has duplicate IDs");
+export const QA03B_REJECTED_SPECIALTY_EVIDENCE_IDS_V1 = [
+  "q2_specialty_software_activation",
+  "q2_specialty_marketplace_balance",
+] as const;
+
+const rejected = new Set<string>(QA03B_REJECTED_SPECIALTY_EVIDENCE_IDS_V1);
+
+/**
+ * Only experiments that demonstrated a useful evidence delta remain in the
+ * candidate bank. Rejected definitions stay above for auditability and future
+ * redesign, but cannot consume a route.
+ */
+export const QA03B_SPECIALTY_EVIDENCE_PILOT_V1: readonly QuestionDefinitionV2[] =
+  QA03B_SPECIALTY_EVIDENCE_EXPERIMENTS_V1.filter((q) => !rejected.has(q.id));
+
+if (new Set(QA03B_SPECIALTY_EVIDENCE_EXPERIMENTS_V1.map((q) => q.id)).size !== QA03B_SPECIALTY_EVIDENCE_EXPERIMENTS_V1.length) {
+  throw new Error("QA-03B specialty evidence experiments have duplicate IDs");
 }
