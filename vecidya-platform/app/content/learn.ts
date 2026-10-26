@@ -815,172 +815,267 @@ export const learnArticles: LearnArticle[] = [
     slug: "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
     category: "Negocios digitales",
     title: "Antes de hacer publicidad, organiza tu presencia digital",
-    intro: "Antes de pagar anuncios, hazte una pregunta: si alguien llega hoy a tu perfil, ¿entiende qué haces y cómo contactarte? Empieza por ordenar esa información.",
-    excerpt: "Revisa tus datos, canales y contacto antes de decidir si vale la pena invertir en publicidad.",
-    enPocasPalabras: ["Antes de pagar anuncios, explica claramente qué ofreces.","Comprueba horarios, canales y datos en todos tus perfiles.","La publicidad no arregla una página confusa o difícil de contactar."],
+    intro: "Antes de pagar anuncios, comprueba que la oferta se entiende, la información es correcta y puedes atender las consultas que lleguen. Esta guía es una lista de preparación, no un manual para configurar campañas.",
+    excerpt: "Una comprobación breve para decidir si tu negocio está listo para probar publicidad pagada o si conviene corregir algo primero.",
+    enPocasPalabras: [
+      "Define a quién atiendes, qué ofreces y qué acción quieres que haga la persona.",
+      "Comprueba la página de destino, los datos públicos y la forma de contacto desde un teléfono.",
+      "Si no puedes atender las consultas o no sabes qué medir, corrige la base antes de gastar."
+    ],
     image: "/assets/learn/diagram-presence-digital.svg",
-    imageAlt: "Tres canales digitales —sitio web, perfil de empresa y redes sociales— muestran de forma coherente una oferta, una zona de atención y opciones de contacto",
-    cta: { label: "Conocer el Diagnóstico", to: "/diagnostico", copy: "Si quieres ordenar prioridades, el Diagnóstico de presencia digital puede servir como punto de partida; no promete visibilidad, clientes ni resultados comerciales." },
-    relatedSlugs: ["publicidad-digital-como-preparar-una-primera-campana", "como-mantener-actualizada-y-confiable-tu-presencia-digital"],
+    imageAlt: "Lista de preparación que conecta una oferta clara, información correcta, contacto y capacidad de respuesta antes de invertir en anuncios.",
+    relatedSlugs: [
+      "publicidad-digital-como-preparar-una-primera-campana",
+      "como-mantener-actualizada-y-confiable-tu-presencia-digital",
+      "perfil-empresa-google-completar-y-mantener-actualizado",
+      "redes-sociales-o-pagina-web-que-necesita-tu-negocio",
+      "analitica-web-que-medir-en-tu-negocio",
+      "como-responder-la-primera-consulta-de-un-cliente",
+      "como-pedir-resenas-reales-y-responder-criticas"
+    ],
+    cta: {
+      label: "Revisar mi punto de partida",
+      to: "/diagnostico",
+      copy: "Usa esta lista para identificar qué necesitas corregir antes de invertir en anuncios."
+    },
+    editorialDraft: false,
     sections: [
-      { heading: "Guía complementaria", paragraphs: ["Para ampliar este tema sin mezclar conceptos, continúa con «Cómo mantener actualizada y confiable tu presencia digital»." ] },
       {
-        heading: "¿Y si necesitas preparar anuncios?",
-        paragraphs: ["La preparación de campañas, presupuestos y medición de publicidad pagada se explica por separado en la guía «Publicidad digital: cuándo anunciarte y cómo preparar una primera campaña». Primero comprueba que tus canales y datos de contacto funcionan."],
-      },
-      {
-        heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «Antes de hacer publicidad, organiza tu presencia digital», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
-      },
-      {
-        heading: "Qué significa tener presencia digital",
+        heading: "La pregunta antes de pagar",
         paragraphs: [
-          "La presencia digital reúne los lugares y la información mediante los que una persona puede reconocer un negocio, entender qué hace y encontrar cómo comunicarse. Puede incluir un sitio web, un perfil en un directorio o buscador, páginas de redes sociales, mapas, una tienda en línea y contenido que el propio negocio publica.",
-          "No es un único perfil ni una campaña. Es el conjunto de información que controlas o mantienes en distintos canales y la experiencia que encuentra alguien al pasar de uno a otro. No tienes que estar en todas las plataformas: el punto de partida depende de cómo compran, consultan o reciben atención tus clientes y de quién podrá mantener cada canal actualizado.",
+          "La publicidad puede dar más visibilidad a una oferta, pero también puede amplificar una información confusa o un proceso de contacto que no funciona. Antes de pagar, describe qué quieres conseguir y qué debería hacer la persona después de ver el anuncio.",
+          "No necesitas dominar todas las plataformas para tomar esta decisión. Necesitas saber qué ofreces, a quién puedes atender, en qué zona y cómo responderás si alguien muestra interés."
         ],
-        blocks: [{ type: "definitions", items: [
-          { term: "Presencia digital", definition: "Los canales, datos y contenidos donde el negocio se presenta y ofrece formas de conocerlo o contactarlo." },
-          { term: "Visibilidad", definition: "La posibilidad de que una persona encuentre o vea información del negocio en un canal, búsqueda, recomendación o contenido. Depende de muchos factores; estar presente no asegura aparecer en un lugar específico." },
-          { term: "Reputación", definition: "Las impresiones y señales que otras personas forman a partir de su experiencia, información disponible y comunicación del negocio. No se puede fabricar con testimonios o reseñas inventados." },
-          { term: "Publicidad", definition: "Distribución pagada de un mensaje a través de una plataforma o medio, con presupuesto, segmentación y configuración determinados." },
-        ] }, { type: "callout", tone: "tip", title: "Son conceptos relacionados, no equivalentes", text: "Abrir un perfil crea un punto de presencia, no garantiza visibilidad. Tener alcance no demuestra confianza. Una campaña compra distribución según su configuración, no una venta ni una posición orgánica." }],
+        blocks: [
+          {
+            type: "definitions",
+            items: [
+              {
+                term: "Objetivo",
+                definition: "El resultado que quieres observar, por ejemplo recibir solicitudes de presupuesto o consultas sobre un servicio concreto."
+              },
+              {
+                term: "Oferta",
+                definition: "El producto o servicio que propones, con sus condiciones reales y los límites que el negocio puede cumplir."
+              },
+              {
+                term: "Página de destino",
+                definition: "El sitio al que llega una persona después de pulsar un anuncio. Debe explicar la oferta y permitir la acción prometida."
+              },
+              {
+                term: "Capacidad de respuesta",
+                definition: "El tiempo, las personas y el proceso disponibles para atender las consultas sin prometer más de lo que puedes cumplir."
+              }
+            ]
+          }
+        ]
       },
       {
-        heading: "Antes de elegir canales: define tu negocio con claridad",
-        paragraphs: ["Primero describe la actividad en palabras que una persona ajena al negocio pueda entender. Esa definición ayuda a mantener coherencia en el sitio, los perfiles y cualquier anuncio, y permite detectar promesas que el negocio no puede cumplir."],
-        blocks: [{ type: "steps", label: "Cuatro decisiones para aclarar tu oferta", items: [
-          { title: "Qué ofreces", detail: "Nombra productos o servicios concretos, qué incluyen y qué no. Separa lo disponible ahora de lo que podrías ofrecer más adelante. Si el precio depende de una evaluación, explica cómo pedirla sin publicar una tarifa ficticia." },
-          { title: "A quién atiendes", detail: "Describe a las personas o negocios para quienes la oferta es adecuada y qué necesidad resuelve. Evita afirmar que atiendes a todo el mundo si hay límites reales de capacidad, especialidad o elegibilidad." },
-          { title: "Dónde y cómo prestas el servicio", detail: "Indica si atiendes en un local, visitas zonas concretas, haces entregas, trabajas en línea o combinas modalidades. No publiques una dirección de atención si no recibes clientes allí." },
-          { title: "Cuál es el siguiente paso", detail: "Elige una acción realista: llamar, escribir, pedir una cotización, reservar o visitar. Explica qué información conviene compartir y en qué plazo habitual responderá el equipo, solo si puede sostenerlo." },
-        ] }],
+        heading: "Confirma a quién atiendes y qué ofreces",
+        paragraphs: [
+          "Una frase concreta ayuda más que un anuncio que intenta atraer a todo el mundo. Define qué necesidad resuelves, qué tipo de persona puede beneficiarse y en qué zona o condiciones puedes prestar el servicio."
+        ],
+        blocks: [
+          {
+            type: "list",
+            items: [
+              "Explica el servicio o producto con palabras que una persona ajena al negocio pueda entender.",
+              "Define a quién atiendes y qué solicitudes no puedes aceptar.",
+              "Aclara la zona de servicio, los horarios y cualquier condición importante.",
+              "Comprueba que el mensaje coincide con la información pública y con lo que el equipo puede cumplir."
+            ]
+          }
+        ]
       },
       {
-        heading: "Organiza la información comercial básica",
-        paragraphs: ["Reúne una fuente de referencia breve para que quien atiende, actualiza perfiles o prepara una página use los mismos datos. No hace falta redactar un plan de marketing: basta con acordar lo que debe ser correcto antes de publicarlo."],
-        blocks: [{ type: "list", items: [
-          "Nombre público del negocio y una descripción sencilla de su actividad.",
-          "Productos o servicios disponibles, alcance, condiciones relevantes y cómo pedir información adicional.",
-          "Tipo de cliente y necesidad atendida, sin promesas universales ni atributos no comprobados.",
-          "Dirección pública si corresponde, área real de servicio y modalidades de atención.",
-          "Horarios habituales, horarios especiales y fechas en las que el negocio estará cerrado.",
-          "Canales de contacto que sí funcionan, quién los revisa y cuándo suele responder.",
-          "Fotos propias y actuales, con permiso cuando aparezcan personas, propiedades o contenido de terceros.",
-          "Una persona responsable de confirmar cambios y retirar información vencida.",
-        ] }],
+        heading: "Comprueba el recorrido hasta el contacto",
+        paragraphs: [
+          "El anuncio no termina en el clic. La persona necesita entender qué sigue y poder completar la acción desde el dispositivo que utiliza."
+        ],
+        blocks: [
+          {
+            type: "steps",
+            label: "Cinco pruebas antes de invertir",
+            items: [
+              {
+                title: "Abre el destino desde un teléfono",
+                detail: "Comprueba que el contenido carga, se lee sin ampliar continuamente y muestra la oferta principal."
+              },
+              {
+                title: "Prueba la acción principal",
+                detail: "Pulsa llamar, enviar mensaje, pedir presupuesto o solicitar información y confirma que el destino es correcto."
+              },
+              {
+                title: "Comprueba los datos públicos",
+                detail: "Revisa nombre, horarios, zona de servicio, teléfono y enlaces para evitar contradicciones entre canales."
+              },
+              {
+                title: "Verifica la recepción",
+                detail: "Envía una consulta de prueba autorizada y confirma que llega al canal que alguien revisa."
+              },
+              {
+                title: "Anota una referencia inicial",
+                detail: "Registra cómo funciona hoy el proceso y qué dato te ayudaría a saber si la prueba merece continuar."
+              }
+            ]
+          }
+        ]
       },
       {
-        heading: "Qué canales convienen según el negocio",
-        paragraphs: ["Elige pocos canales que correspondan a la forma en que las personas buscan y compran tu oferta. Un negocio de atención por cita puede priorizar información local y reservas; una tienda puede necesitar catálogo, disponibilidad y compra; un servicio a domicilio debe aclarar su cobertura; una actividad de recomendación puede mantener una página social activa. Son ejemplos, no una receta universal."],
-        blocks: [{ type: "list", items: [
-          "Empieza por el lugar que tus clientes usan para informarse o contactarte y que alguien del equipo pueda atender con regularidad.",
-          "Para una operación local, un perfil de empresa en un servicio de mapas o búsqueda puede presentar datos del local o del área atendida si la plataforma y el tipo de actividad son elegibles.",
-          "Una red social tiene sentido cuando el formato ayuda a mostrar productos, procesos, novedades o responder preguntas y el negocio puede mantener esa actividad.",
-          "Un sitio web puede reunir información que controlas —servicios, cobertura, condiciones, preguntas y contacto—, pero no es requisito universal para vender ni reemplaza la atención o una oferta clara.",
-          "Si solo necesitas compartir un horario y un teléfono vigentes, comenzar con un perfil correcto puede ser más proporcionado que encargar un proyecto web completo.",
-        ] }, { type: "callout", tone: "caution", title: "No abras canales que nadie va a mantener", text: "Un perfil desactualizado o un mensaje sin atender puede crear confusión. Es mejor una presencia sencilla y consistente que muchas cuentas activas solo en apariencia." }],
+        heading: "Asegúrate de poder responder",
+        paragraphs: [
+          "Más consultas no siempre son mejores si nadie puede atenderlas. Antes de invertir, acuerda quién revisará los mensajes, en qué horario y qué hará cuando la pregunta no se pueda resolver de inmediato."
+        ],
+        blocks: [
+          {
+            type: "callout",
+            tone: "caution",
+            title: "No anuncies una promesa que no puedes cumplir",
+            text: "Si no hay capacidad para responder, el horario está desactualizado o el servicio no está disponible en la zona anunciada, corrige primero esa barrera."
+          },
+          {
+            type: "list",
+            items: [
+              "Asigna una persona responsable de revisar las consultas.",
+              "Prepara una respuesta inicial honesta y un modo de escalar las preguntas difíciles.",
+              "Define un presupuesto que puedas permitirte probar sin comprometer los gastos esenciales.",
+              "Asegúrate de que el equipo pueda cumplir las condiciones anunciadas."
+            ]
+          }
+        ]
       },
       {
-        heading: "Sitio web, perfil de empresa y redes sociales",
-        paragraphs: ["Cada canal cumple una función distinta; pueden complementarse, pero ninguno es obligatorio para todos los negocios ni garantiza por sí solo que te encuentren."],
-        blocks: [{ type: "definitions", items: [
-          { term: "Sitio web", definition: "Un conjunto de páginas bajo un dominio que el negocio puede organizar para explicar su propuesta, presentar información detallada y facilitar una acción. Requiere mantenimiento, seguridad y actualizaciones; publicar una web no implica posicionamiento ni tráfico." },
-          { term: "Perfil de empresa", definition: "Una ficha administrada dentro de una plataforma —por ejemplo, un servicio de búsqueda o mapas— con datos como nombre, categoría, ubicación o área, horario, teléfono, web y servicios compatibles. Su disponibilidad y campos dependen de las reglas de la plataforma, la elegibilidad y la verificación." },
-          { term: "Red social", definition: "Una cuenta o página dentro de una plataforma social para publicar contenido y comunicarse allí. El negocio depende de las funciones, normas y distribución de esa plataforma y debe revisar sus mensajes y datos con regularidad." },
-        ] }, { type: "paragraph", text: "La página web está bajo mayor control editorial del negocio, aunque depende del proveedor de alojamiento y del mantenimiento. El perfil vive dentro de un servicio ajeno con reglas propias. Las redes facilitan publicar y conversar en su entorno, pero no sustituyen una fuente de información estable. Escoge según el objetivo operativo y la capacidad de mantener cada espacio." }],
+        heading: "Ejemplo hipotético: un taller revisa su preparación",
+        paragraphs: [
+          "Este escenario es inventado y no representa una campaña real ni resultados de ventas."
+        ],
+        blocks: [
+          {
+            type: "example",
+            title: "El taller quiere promocionar reparaciones a domicilio",
+            hypothetical: true,
+            context: "Un taller quiere invertir un presupuesto pequeño para recibir consultas sobre reparaciones a domicilio.",
+            problem: "La información está incompleta y contradice el horario de una ficha pública; además, el enlace de contacto lleva a una cuenta que ya nadie revisa.",
+            approach: "Antes de lanzar la campaña, la persona responsable confirma la zona atendida, corrige los datos y prueba el contacto desde un teléfono.",
+            actions: [
+              "Aclarar qué reparaciones se ofrecen y en qué zona se pueden realizar.",
+              "Corregir el horario y el enlace en los canales activos.",
+              "Comprobar que una consulta de prueba llega al canal correcto.",
+              "Anotar el presupuesto máximo, el objetivo y la fecha para revisar lo ocurrido."
+            ],
+            lesson: "La preparación no garantiza que la campaña funcione; evita gastar en una oferta confusa o en un recorrido que no permite contactar al negocio."
+          }
+        ]
       },
       {
-        heading: "Ejemplo hipotético: un taller local que considera anunciarse",
-        paragraphs: ["Este caso es hipotético. No presenta resultados de ventas, estadísticas ni una configuración real de anuncios."],
-        blocks: [{ type: "example", title: "El taller de bicicletas Rueda Clara", hypothetical: true,
-          context: "El taller publica ocasionalmente en redes sociales, recibe consultas por mensajes y teléfono y está pensando pagar una campaña para atraer más solicitudes de reparación.",
-          problem: "Al revisar los canales, algunas publicaciones dicen que atiende con cita, el perfil antiguo muestra un horario distinto y no queda claro si hace reparaciones a domicilio. Un enlace de contacto abre una cuenta que ya no revisan. Si llegaran más visitas, las personas podrían no saber si el taller les sirve o cómo obtener respuesta.",
-          approach: "Antes de comprar alcance, el equipo reúne la información que puede confirmar, corrige los canales principales y prueba el recorrido de consulta desde un teléfono. No supone que una página web o una campaña sean obligatorias: primero resuelve la contradicción y el contacto fallido.",
-          actions: [
-            "Información mínima: servicios de reparación que realmente acepta, tipos de bicicleta que atiende, si trabaja con cita, dirección del local y si ofrece o no visitas a domicilio.",
-            "Público y zona: definir a quién puede atender y el área práctica que cubre, sin anunciarse en lugares donde no presta servicio.",
-            "Canales: elegir el perfil local y una red social que sí mantienen; valorar una página sencilla solo si necesitan explicar servicios, condiciones o reservas que no caben bien en esos perfiles.",
-            "Actualización: corregir horarios, teléfono, descripción y enlaces en los espacios que usan; retirar o actualizar el perfil viejo y las publicaciones que prometen servicios no confirmados.",
-            "Prueba: abrir cada enlace desde un teléfono sin sesión iniciada, llamar o enviar una consulta de prueba y comprobar quién recibe el mensaje y quién se hace cargo de responder.",
-            "Responsabilidad: acordar una persona y un horario realista para revisar llamadas y mensajes, y qué hará cuando una consulta no corresponda al servicio.",
-            "Decisión: si la información es coherente, la acción de contacto funciona y el taller puede atender solicitudes adicionales, puede considerar una prueba pequeña con objetivo, duración, zona, presupuesto y criterio de pausa definidos. Si todavía hay enlaces rotos o falta capacidad de respuesta, conviene seguir corrigiendo antes de pagar por más visitas.",
-          ],
-          lesson: "El caso no demuestra que los anuncios vayan a generar clientes. Muestra que primero se puede corregir una base operativa, y después decidir con cautela si medir una campaña responde a una necesidad concreta.",
-        }],
+        heading: "Checklist antes de invertir",
+        paragraphs: [
+          "Marca cada punto como listo, necesita corrección o no aplica. No sumes puntos ni conviertas la lista en una puntuación: sirve para detectar barreras, no para certificar que una campaña tendrá éxito."
+        ],
+        blocks: [
+          {
+            type: "list",
+            items: [
+              "¿Está claro a quién atiendes y en qué zona de servicio?",
+              "¿La oferta, las condiciones y los horarios son correctos?",
+              "¿La página de destino explica el servicio y funciona en móvil?",
+              "¿El contacto y el formulario llevan al canal que alguien revisa?",
+              "¿Hay una persona responsable de responder y resolver excepciones?",
+              "¿El presupuesto es limitado y asumible para el negocio?",
+              "¿Tienes un objetivo y una referencia inicial para comparar después?"
+            ]
+          }
+        ]
       },
       {
-        heading: "Cómo se relaciona esta guía con Vecidya",
-        paragraphs: ["Los conceptos anteriores aplican a cualquier negocio. En el producto Vecidya, el Diagnóstico de presencia digital ayuda a revisar información y prioridades; no publica anuncios ni garantiza alcance. MiniWeb organiza en un formato público los datos de perfil disponibles para el negocio, y Vecindario permite explorar perfiles públicos de negocios. Que una función exista en la plataforma no significa que toda licencia incluya el mismo alcance o que un perfil esté publicado: la disponibilidad depende del catálogo vigente, la configuración y los datos que el negocio mantenga."],
-        blocks: [{ type: "list", items: [
-          "Consulta el catálogo de Vecidya para distinguir licencias, capacidades, servicios profesionales y costes de uso; un servicio de web o publicidad puede contratarse de forma independiente según su alcance y condiciones.",
-          "Un diagnóstico puede ayudarte a ordenar preguntas y prioridades, pero no reemplaza la comprobación de la oferta, enlaces, políticas, privacidad o capacidad real de atender.",
-          "Antes de contratar apoyo, acuerda entregables, quién será propietario de cuentas y contenidos, presupuesto de medios, accesos, medición y criterios de cierre.",
-          "Una página, perfil o servicio de presencia digital no garantiza posición en buscadores, nuevos clientes ni ventas.",
-        ] }, { type: "faq", items: [
-          { question: "¿MiniWeb o Vecindario garantizan que me encuentren más personas?", answer: "No. MiniWeb y Vecindario ayudan a presentar información pública del negocio según las capacidades, configuración y datos disponibles. La visibilidad depende también de la plataforma, la consulta, la competencia y otros factores; no se garantizan impresiones, clientes ni ventas." },
-          { question: "¿El Diagnóstico crea o administra mis campañas?", answer: "No. El Diagnóstico de presencia digital ayuda a revisar capacidades y prioridades; no equivale a configurar ni gestionar campañas publicitarias." },
-          { question: "¿Qué licencia necesito para anunciarme?", answer: "La necesidad depende de los servicios y capacidades contratados, no de una regla general de publicidad. Revisa el catálogo vigente y acuerda el alcance del trabajo con quien prestará el servicio." },
-        ] }],
-      },
-      {
-        heading: "Checklist para revisar tu presencia digital",
-        paragraphs: ["Marca cada punto como «listo», «necesita corrección» o «no aplica» según el negocio. No sumes puntos ni conviertas la lista en una puntuación: sirve para ordenar acciones y no sustituye el Diagnóstico oficial de Vecidya."],
-        blocks: [{ type: "list", items: [
-          "□ Nombre e identidad: el nombre público es correcto y las fotos o marcas que usas están autorizadas.",
-          "□ Oferta y público: se entiende qué productos o servicios ofreces, para quién y con qué condiciones principales.",
-          "□ Ubicación o zona de servicio: la dirección se muestra solo si atiendes allí; la cobertura describe zonas que realmente puedes atender.",
-          "□ Horarios: las horas habituales, cambios temporales y cierres están actualizados donde el público consulta.",
-          "□ Contacto: teléfono, mensajería, formulario, reservas y enlaces funcionan desde un teléfono.",
-          "□ Descripción de servicios o productos: está completa, es comprensible y no promete algo no disponible.",
-          "□ Coherencia: nombre, horario, servicio, ubicación, condiciones y enlaces no se contradicen entre plataformas.",
-          "□ Experiencia móvil: el texto se lee, la página abre y la acción principal puede completarse sin pasos inesperados.",
-          "□ Accesibilidad básica: títulos claros, enlaces descriptivos, teclado, contraste y alternativas de imágenes se revisan; esto no acredita conformidad WCAG.",
-          "□ Privacidad y seguridad: publicas solo datos necesarios, proteges cuentas, revisas permisos y conoces qué miden formularios o herramientas instaladas.",
-          "□ Responsable: alguien sabe quién recibe las consultas, cuándo las revisa y qué hacer con una excepción.",
-          "□ Medición proporcional: observas una o pocas acciones útiles sin instalar herramientas o recopilar más datos de los necesarios.",
-        ] }, { type: "callout", tone: "tip", title: "Qué corregir primero", text: "Empieza por bloqueos que podrían desviar o perder a una persona: enlace roto, teléfono incorrecto, horario contradictorio, oferta que no se entiende o consulta que nadie atiende. Después prioriza lo demás según tu objetivo y capacidad." }],
+        heading: "Cuándo conviene esperar",
+        paragraphs: [
+          "No anunciarse todavía también es una decisión válida. Si la oferta cambia cada día, los datos públicos se contradicen, no puedes atender la demanda o no sabes qué pregunta quieres responder con la prueba, invierte primero tiempo en ordenar la base."
+        ],
+        blocks: [
+          {
+            type: "callout",
+            tone: "tip",
+            title: "No todos los negocios necesitan anuncios ahora",
+            text: "Puedes empezar por corregir horarios, explicar mejor un servicio, comprobar un enlace o mejorar la respuesta a consultas. Ningún canal garantiza ventas y ninguna campaña compensa por sí sola un proceso que no funciona."
+          }
+        ]
       },
       {
         heading: "Preguntas frecuentes",
         paragraphs: [],
-        blocks: [{ type: "faq", items: [
-          { question: "¿Necesito una página web para vender?", answer: "No necesariamente. El canal adecuado depende de tu oferta, tus clientes y cómo operas. Un perfil o una forma directa de contacto puede ser suficiente para ciertos negocios; una web es útil cuando necesitas organizar información o acciones que otros canales no cubren bien." },
-          { question: "¿Sin anuncios nadie puede encontrar mi negocio?", answer: "No. Las personas también pueden llegar por búsqueda orgánica, perfiles, recomendaciones, redes, comunidad, señalización y otros medios. Ningún canal garantiza que te encuentren; elige y mantén los que tengan sentido para tu actividad." },
-          { question: "¿La publicidad aumenta las ventas?", answer: "No se puede asegurar. La campaña distribuye un mensaje bajo ciertas condiciones; las ventas dependen de la oferta, el público, el momento, la experiencia, la atención y otros factores. Evalúa con una prueba acotada si tienes una pregunta concreta." },
-          { question: "¿Qué hago si todavía no tengo reseñas?", answer: "No las inventes ni compres testimonios. Presenta información verificable sobre el negocio, usa imágenes propias autorizadas y permite que las experiencias reales se compartan voluntariamente conforme a las políticas y reglas aplicables." },
-          { question: "¿Debo abrir una cuenta en cada red social?", answer: "No. Prioriza los espacios que tu público utiliza y que alguien puede mantener y atender. Revisa también las condiciones y funciones actuales de cada plataforma." },
-          { question: "¿Cuánto debo invertir en una primera campaña?", answer: "No hay una cifra universal. Define el límite según el presupuesto que puedas asumir, el coste total, el periodo, el objetivo y la capacidad para atender la demanda. No uses fondos necesarios para obligaciones esenciales como presupuesto de aprendizaje." },
-          { question: "¿Puedo medir campañas sin instalar analítica?", answer: "A veces sí: puedes registrar consultas recibidas, preguntar de forma neutral cómo conocieron el negocio o usar reportes básicos de la plataforma. Cada método tiene límites; recoge solo lo necesario y revisa requisitos de privacidad antes de instalar herramientas." },
-          { question: "¿Qué diferencia hay entre reglas de anuncios y obligaciones legales?", answer: "Las políticas de Google o Meta condicionan el uso de sus servicios y la revisión de anuncios. Las obligaciones legales dependen de tu país, sector, datos y actividad; cumplir la política de una plataforma no demuestra por sí solo cumplimiento legal." },
-        ] }],
+        blocks: [
+          {
+            type: "faq",
+            items: [
+              {
+                question: "¿Necesito una página web para anunciarme?",
+                answer: "No necesariamente. Necesitas un destino adecuado para la acción prometida. Puede ser una página, un perfil o un formulario, siempre que la información sea correcta y el contacto funcione."
+              },
+              {
+                question: "¿MiniWeb o Vecindario garantizan que me encuentren más personas?",
+                answer: "No. Son partes de la presencia digital de Vecidya; no garantizan visibilidad, consultas ni ventas."
+              },
+              {
+                question: "¿El Diagnóstico crea o administra mis campañas?",
+                answer: "No. El Diagnóstico revisa aspectos de presencia digital y ofrece orientación; no configura ni administra campañas publicitarias."
+              },
+              {
+                question: "¿Cuándo puedo probar una campaña?",
+                answer: "Cuando la oferta y el destino sean claros, puedas atender las consultas y tengas un objetivo, un presupuesto limitado y una forma de revisar los resultados."
+              }
+            ]
+          }
+        ]
       },
       {
-        heading: "Fuentes oficiales y alcance",
-        paragraphs: ["Las fuentes siguientes se consultaron para preparar esta guía. Las recomendaciones editoriales y de organización son prácticas generales; los requisitos de plataforma se identifican como políticas y no deben confundirse con asesoría legal. Las reglas cambian y pueden variar por sector, formato o país: comprueba las versiones vigentes antes de actuar."],
-        blocks: [{ type: "sources", items: [
-          { label: "SEO Starter Guide — Google Search Central", url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide", scope: "Recomendaciones de Google Search sobre contenido útil, rastreo, títulos, enlaces e imágenes. La guía dice explícitamente que no hay una fórmula que garantice el primer puesto ni que toda recomendación aplique a todo sitio." },
-          { label: "Edit your Business Profile — Google Business Profile Help", url: "https://support.google.com/business/answer/3039617", scope: "Ayuda oficial para editar información como nombre, dirección o área de servicio, horarios, teléfono, web, descripción y servicios. Disponibilidad, elegibilidad, verificación y revisión pueden variar." },
-          { label: "Destination requirements — Google Ads Policies", url: "https://support.google.com/adspolicy/answer/6368661", scope: "Política de Google Ads sobre destinos funcionales, accesibles, coherentes y fáciles de usar. Es una condición de la plataforma, no una garantía de aprobación ni un requisito legal universal." },
-          { label: "How to choose the right ad objective in Meta Ads Manager", url: "https://www.facebook.com/business/help/1438417719786914", scope: "Ayuda oficial de Meta que relaciona objetivos de campaña con metas como awareness, tráfico, leads o ventas. Describe opciones de configuración; no certifica el resultado que logrará una campaña." },
-          { label: "About Meta Advertising Standards", url: "https://www.facebook.com/business/help/488043719226449", scope: "Centro de ayuda de Meta para sus estándares publicitarios y políticas relacionadas. Las normas de la plataforma pueden cambiar y no sustituyen el marco legal aplicable." },
-          { label: "WCAG 2.2 Quick Reference — W3C WAI", url: "https://www.w3.org/WAI/WCAG22/quickref/", scope: "Referencia rápida del W3C para consultar criterios WCAG 2.2 y técnicas. Esta guía no ha sido objeto de una evaluación completa y no declara conformidad ni certificación WCAG 2.2 AA." },
-          { label: "Tutorial: Set up a key event — Google Analytics Help", url: "https://support.google.com/analytics/answer/12966437", scope: "Ejemplo técnico oficial de Google para registrar un evento clave en Analytics. Una configuración de medición no prueba por sí misma causalidad comercial; evalúa datos, consentimiento y obligaciones antes de implementarla." },
-          { label: "Privacy controls in Google Analytics — Google Analytics Help", url: "https://support.google.com/analytics/answer/9019185", scope: "Controles específicos del producto para configurar recopilación, retención y funciones publicitarias en Analytics. La página orienta sobre opciones técnicas, no decide qué base legal aplica a tu caso." },
-        ] }],
+        heading: "Fuentes y alcance",
+        paragraphs: [
+          "Estas fuentes sirven para comprobar la información pública, la claridad del destino y la facilidad de comprensión. La preparación descrita aquí es una lista editorial, no una garantía de rendimiento ni una configuración de anuncios."
+        ],
+        blocks: [
+          {
+            type: "sources",
+            items: [
+              {
+                label: "Google Search Central — SEO Starter Guide",
+                url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
+                scope: "Recomendaciones para presentar información y enlaces comprensibles; no garantiza tráfico ni resultados comerciales."
+              },
+              {
+                label: "Google Business Profile Help — Edit your Business Profile",
+                url: "https://support.google.com/business/answer/3039617",
+                scope: "Ayuda oficial para mantener correctos los datos públicos del negocio; elegibilidad y opciones disponibles pueden variar."
+              },
+              {
+                label: "Google Ads Help — About landing page experience",
+                url: "https://support.google.com/google-ads/answer/2404197",
+                scope: "Explica la experiencia de la página de destino en Google Ads; no garantiza la aprobación ni el rendimiento de una campaña."
+              },
+              {
+                label: "W3C WAI — Writing for Web Accessibility",
+                url: "https://www.w3.org/WAI/tips/writing/",
+                scope: "Consejos para estructurar el contenido y escribir instrucciones claras; no certifica la accesibilidad de un sitio."
+              }
+            ]
+          }
+        ]
       },
       {
         heading: "Qué hacer ahora",
         paragraphs: [],
-        blocks: [{ type: "summary", items: [
-          "Escribe en una frase qué ofreces, a quién atiendes y dónde prestas el servicio.",
-          "Actualiza los datos comerciales y el canal principal que ya usas; comprueba sus enlaces desde móvil.",
-          "Corrige primero información contradictoria, contacto roto y consultas sin responsable.",
-          "Elige un indicador proporcional al objetivo y conserva sus límites y periodo de observación.",
-          "Invierte en anuncios solo si hay una hipótesis concreta, un destino listo, capacidad de atender y presupuesto acotado; si no, sigue mejorando la base sin anuncios.",
-        ] }],
-      },
-    ],
+        blocks: [
+          {
+            type: "summary",
+            items: [
+              "Aclara la oferta, el público y la zona antes de elegir una plataforma publicitaria.",
+              "Prueba el destino y el contacto desde un teléfono y confirma quién atenderá las consultas.",
+              "Si la base está lista, prepara una prueba limitada; si no, corrige primero lo que impide atender bien."
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     slug: "como-probar-y-supervisar-automatizaciones-sin-perder-datos",

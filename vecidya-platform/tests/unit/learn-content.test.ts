@@ -263,7 +263,7 @@ test("06C separates follow-up from marketing permission and gives two safe reusa
   assert.match(JSON.stringify(ai), /datos sensibles/i);
 });
 
-test("presence guide covers channel readiness and paid ads without guarantees", () => {
+test("pre-ad guide is a focused readiness gate and links to specialized guides", () => {
   const article = getLearnArticle(presenceSlug);
   assert.ok(article);
   assert.equal(article.category, "Negocios digitales");
@@ -274,39 +274,43 @@ test("presence guide covers channel readiness and paid ads without guarantees", 
   const blocks = article.sections.flatMap((section) => section.blocks ?? []);
   const blockTypes = new Set(blocks.map((block) => block.type));
   for (const type of ["definitions", "example", "steps", "callout", "list", "faq", "sources", "summary"] as const) {
-    assert.ok(blockTypes.has(type), `Presence guide is missing the ${type} block.`);
+    assert.ok(blockTypes.has(type), \`Presence readiness guide is missing the \${type} block.\`);
   }
 
-  const text = article.sections.map((section) => `${section.heading} ${section.paragraphs.join(" ")} ${JSON.stringify(section.blocks ?? [])}`).join(" ");
+  const text = article.sections.map((section) => \`\${section.heading} \${section.paragraphs.join(" ")} \${JSON.stringify(section.blocks ?? [])}\`).join(" ");
   for (const topic of [
-    /presencia digital/i, /visibilidad/i, /reputaci[oó]n/i, /publicidad/i,
-    /a qui[eé]n atiendes/i, /zona de servicio/i, /sitio web/i, /perfil de empresa/i,
-    /red social/i, /horarios/i, /m[oó]vil/i, /accesibilidad/i, /privacidad/i,
-    /Google Ads/i, /Meta Ads/i, /p[aá]gina de destino|p[aá]gina web|sitio web/i,
-    /no necesita anuncios|sin anuncios/i, /testimonios? .*inventad|rese[nñ]as?.*inventad/i,
+    /presencia digital/i, /visibilidad/i, /publicidad/i, /a qui[eé]n atiendes/i,
+    /zona de servicio/i, /horarios/i, /m[oó]vil/i, /p[aá]gina de destino|p[aá]gina web|sitio web/i,
+    /responsable/i, /presupuesto/i, /no necesita anuncios|sin anuncios/i,
+    /no garantiza|no se puede asegurar/i, /Ning[uú]n canal garantiza/i, /No necesariamente/i
   ]) assert.match(text, topic);
-  assert.match(text, /no garantiza|no se puede asegurar/i);
-  assert.match(text, /ning[uú]n canal garantiza/i);
-  assert.match(text, /No necesariamente/i);
 
   const example = blocks.find((block) => block.type === "example");
   assert.ok(example?.type === "example" && example.hypothetical);
   assert.match(JSON.stringify(example), /incomplet|contradicci[oó]n|contradict/i);
-  assert.match(JSON.stringify(example), /qui[eé]n|responsable/i);
-  assert.match(JSON.stringify(example), /presupuesto|campaña/i);
+  assert.match(JSON.stringify(example), /responsable/i);
+  assert.match(JSON.stringify(example), /presupuesto|campa[nñ]a/i);
 
-  const checklistSection = article.sections.find((section) => section.heading === "Checklist para revisar tu presencia digital");
+  const checklistSection = article.sections.find((section) => section.heading === "Checklist antes de invertir");
   const checklist = checklistSection?.blocks?.find((block) => block.type === "list");
   assert.ok(checklist?.type === "list");
   const checklistText = checklist.items.join(" ");
-  for (const topic of [/nombre/i, /p[uú]blico/i, /ubicaci[oó]n|zona/i, /horarios/i, /contacto/i, /servicios/i, /coherencia/i, /m[oó]vil/i, /accesibilidad/i, /privacidad/i, /responsable/i, /medici[oó]n/i]) {
+  for (const topic of [/a qui[eé]n/i, /zona/i, /oferta/i, /horarios/i, /contacto/i, /m[oó]vil/i, /responsable/i, /presupuesto/i, /objetivo/i]) {
     assert.match(checklistText, topic);
   }
 
+  for (const slug of [
+    "publicidad-digital-como-preparar-una-primera-campana",
+    "como-mantener-actualizada-y-confiable-tu-presencia-digital",
+    "perfil-empresa-google-completar-y-mantener-actualizado",
+    "redes-sociales-o-pagina-web-que-necesita-tu-negocio",
+    "analitica-web-que-medir-en-tu-negocio"
+  ]) assert.ok(article.relatedSlugs?.includes(slug), \`Missing related guide \${slug}.\`);
+
   const sources = blocks.find((block) => block.type === "sources");
   assert.ok(sources?.type === "sources");
-  for (const source of ["Google Search Central", "Google Business Profile", "Google Ads", "Meta", "W3C", "Analytics"]) {
-    assert.ok(sources.items.some(({ label }) => label.includes(source)), `Missing official ${source} source.`);
+  for (const source of ["Google Search Central", "Google Business Profile", "Google Ads", "W3C"]) {
+    assert.ok(sources.items.some(({ label }) => label.includes(source)), \`Missing relevant source \${source}.\`);
   }
 });
 
