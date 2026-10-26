@@ -1,7 +1,7 @@
 # QA-03B — Fase 5: piloto de evidencia realmente específica por nicho
 
 **Estado:** experimento aislado; no está conectado al banco público, sesiones V8 ni Worker.  
-**Certificación observada:** GitHub Actions run `40247421320`, suite **1.759/1.759**, 0 fallos; typecheck, build y regresión Diagnóstico/Aprende PASS.  
+**Certificación observada:** [GitHub Actions run `40254444782`](https://github.com/hola675/Vecidya/actions/runs/40254444782), commit `5157a27e03aff6a967c8b7f0d5c1340ce94669c3`: suite **1.760/1.760**, 0 fallos; typecheck, build y regresión Diagnóstico/Aprende PASS.  
 **Banco público:** 45 preguntas.  
 **Banco candidato tras esta fase:** **76 preguntas** = 74 de la fase anterior + 2 especializadas retenidas.
 
@@ -22,7 +22,7 @@ Una especialidad no merece una pregunta solo por describir mejor al negocio. Deb
 | Startup de software — observar si la persona alcanza la acción principal de uso | `measurement_optimization` | El selector de nicho añadía 1 pregunta, la pregunta específica no llegaba a seleccionarse y no aparecía evidencia nueva | **RECHAZADO del banco** |
 | Mercado de dos lados — distinguir si una operación falla por un lado, el otro o el emparejamiento | `measurement_optimization` | No apareció evidencia específica; el selector ocupó presupuesto y desplazó `q2_reputation_flow` en el escenario probado | **RECHAZADO del banco** |
 | Preparación de impuestos — contacto anticipado antes de la siguiente temporada/vencimiento | `relationship_recurrence` | 21 → 23 preguntas; 9 → 10 evidencias; `relationship_recurrence` deja de estar sin score | **RETENIDO candidato** |
-| Agencia de seguros — identificar y contactar renovaciones antes del vencimiento | `relationship_recurrence` | 23 → 24 preguntas; se incorpora evidencia específica y se resuelve `relationship_recurrence`; `q2_reputation_flow` sale por presupuesto | **RETENIDO con deuda de optimización** |
+| Agencia de seguros — identificar y contactar renovaciones antes del vencimiento | `relationship_recurrence` | 23 → 24 preguntas; `q2_followup_status_visibility` se sustituye por la pregunta de renovación; `q2_reputation_flow` se conserva; `relationship_recurrence` deja de estar abierta | **RETENIDO candidato; alcanza 24** |
 
 Las dos definiciones rechazadas se conservan en `QA03B_SPECIALTY_EVIDENCE_EXPERIMENTS_V1` para trazabilidad, pero sus IDs están en `QA03B_REJECTED_SPECIALTY_EVIDENCE_IDS_V1` y **no forman parte de `QA03B_SPECIALTY_CANDIDATE_BANK_V1`**.
 
@@ -75,10 +75,11 @@ Esto es una condición contractual: **ninguna mejora experimental puede cambiar 
 - Coste: selector de nicho + pregunta especializada.
 
 ### Seguros
-- Sin piloto: 23 preguntas, 12 evidencias, 6 dimensiones aplicables sin score.
-- Con piloto: 24 preguntas, 12 evidencias, 5 dimensiones aplicables sin score.
-- Ganancia: `relationship_recurrence` deja de estar abierta.
-- Trade-off: entra selector + evidencia de renovación y sale `q2_reputation_flow`; se alcanza hard cap.
+- Sin piloto: 23 preguntas, 12 registros de evidencia, 6 dimensiones aplicables sin score.
+- Con piloto: 24 preguntas, 12 registros de evidencia, 5 dimensiones aplicables sin score.
+- Ganancia: `relationship_recurrence` deja de estar abierta; la observación genérica de seguimiento pasa de `uncertainty` a evidencia específica de renovación en estado `partial`.
+- Sustitución verificada: se añade el selector de nicho y la pregunta de renovación; sale `q2_followup_status_visibility` y se conserva `q2_reputation_flow`. El conteo total de evidencias permanece igual porque una fuente R3 sustituye a otra, pero mejora la especificidad del dato y se cierra una dimensión.
+- El recorrido termina con motivo `no_useful_questions` y llega a 24 preguntas; esto no equivale a diagnóstico completo: quedan cinco dimensiones aplicables sin score y dos con contexto insuficiente.
 
 Los conteos proceden de perfiles sintéticos con respuestas explícitas; **no son métricas de usuarios reales**.
 
@@ -89,13 +90,13 @@ La siguiente fase no debe crear más preguntas al azar. Debe:
 1. Buscar en qué nichos existe un proceso verdaderamente distinto y una dimensión hoy abierta.
 2. Para cada candidato, medir primero la ruta genérica y diseñar la pregunta solo si existe un hueco.
 3. Intentar que la evidencia especializada **sustituya** una observación genérica de menor utilidad antes de usar slots adicionales.
-4. Atacar primero la deuda de seguros: evitar llegar a 24 o demostrar que el cambio de pregunta ofrece mayor valor que la observación desplazada.
+4. Seguros ya no desplaza reputación: la pregunta especializada sustituye el seguimiento genérico. Mantener pendiente la optimización del presupuesto de 24 preguntas y comprobar si puede reducirse el coste del selector sin mezclar dos preguntas en una.
 5. Mantener software y marketplace fuera hasta rediseñar una observación que sí pueda ser seleccionada y demostrar beneficio.
 6. Mantener el corte V9 bloqueado hasta E2E/Worker, compatibilidad de sesiones y pruebas con usuarios.
 
 ## 7. Estado de aceptación
 
 **Aceptado como experimento candidato:** impuestos.  
-**Aceptado con deuda explícita:** seguros.  
+**Aceptado con límite explícito:** seguros (24 preguntas, cinco dimensiones aplicables sin score y dos con contexto insuficiente).  
 **Rechazados del banco candidato:** software y marketplace.  
 **Producción:** sin cambios.
