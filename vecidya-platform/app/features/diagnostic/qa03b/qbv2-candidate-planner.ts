@@ -55,6 +55,20 @@ const R4_CONTEXT_FIELDS: Partial<Record<DigitalDimensionId, ReadonlySet<ContextF
   conversion_access: new Set(["businessModel", "archetype", "customerBuyer"]),
   relationship_recurrence: new Set(["activity", "businessModel", "archetype", "customerBuyer"]),
 };
+const SPECIALTY_REPLACEMENTS_V1 = [
+  {
+    nicheQuestionId: "q2_niche_financial_tax_insurance",
+    nicheValue: "insurance_agency",
+    specialtyQuestionId: "q2_specialty_insurance_renewal",
+    genericQuestionId: "q2_followup_status_visibility",
+  },
+  {
+    nicheQuestionId: "q2_niche_automotive",
+    nicheValue: "auto_repair",
+    specialtyQuestionId: "q2_specialty_auto_repair_estimate_followup",
+    genericQuestionId: "q2_followup_status_visibility",
+  },
+] as const;
 const resolved = (context: ResolvedDomainContext, field: ContextFieldRef): boolean => (field === "customerReach" ? context.customerModel.reach : field === "customerBuyer" ? context.customerModel.buyer : context[field]).status === "resolved";
 function producedFields(question: QuestionDefinitionV2): ContextFieldRef[] {
   const fields: Partial<Record<string, ContextFieldRef[]>> = { q2_entity: ["entity"], q2_has_customers: ["growthStage"], q2_operational_status: ["activity"], q2_delivery: ["archetype"], q2_customer_buyer: ["customerBuyer"] };
@@ -126,25 +140,26 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
   const prospectiveUtilityById = new Map<string, boolean>();
   const unlocks = new Set<string>();
 
-  // In an active insurance agency with a real renewal branch, the specialty
-  // question replaces the generic "review pending tasks" observation when it
-  // can produce substantive renewal evidence. If the specialty answer is
-  // unknown/not-applicable, the generic question remains available as fallback.
-  // This substitution is shadow-only and must not change baseline/public routes.
-  const renewalQuestion = questionById.get("q2_specialty_insurance_renewal");
-  const renewalAnswer = activeAnswers["q2_specialty_insurance_renewal"];
-  const renewalHasSubstantiveAnswer = typeof renewalAnswer === "string"
-    && renewalAnswer !== "unknown" && renewalAnswer !== "not_applicable";
-  const renewalCanResolveOpenDimension = renewalQuestion !== undefined
-    && eligible.has("q2_specialty_insurance_renewal")
-    && semanticSources(renewalQuestion).direct.some((dimension) => open.has(dimension));
-  const specialtyReplacementIds = new Set<string>(
-    policy === "utility_first"
-      && activeAnswers["q2_niche_financial_tax_insurance"] === "insurance_agency"
-      && (renewalHasSubstantiveAnswer || (renewalAnswer === undefined && renewalCanResolveOpenDimension))
-      ? ["q2_followup_status_visibility"]
-      : [],
-  );
+  // A specialty question may replace a generic follow-up observation only when
+  // its explicit niche is selected and it can resolve an open direct-evidence
+  // dimension. Unknown/not-applicable answers keep the generic question as fallback.
+  // This table is candidate-only: baseline/public routing is unchanged.
+  const specialtyReplacementIds = new Set<string>();
+  if (policy === "utility_first") {
+    for (const replacement of SPECIALTY_REPLACEMENTS_V1) {
+      if (activeAnswers[replacement.nicheQuestionId] !== replacement.nicheValue) continue;
+      const specialtyQuestion = questionById.get(replacement.specialtyQuestionId);
+      if (!specialtyQuestion || !eligible.has(replacement.specialtyQuestionId)) continue;
+      const specialtyAnswer = activeAnswers[replacement.specialtyQuestionId];
+      const hasSubstantiveAnswer = typeof specialtyAnswer === "string"
+        && specialtyAnswer !== "unknown" && specialtyAnswer !== "not_applicable";
+      const canResolveOpenDimension = specialtyAnswer === undefined
+        && semanticSources(specialtyQuestion).direct.some((dimension) => open.has(dimension));
+      if (hasSubstantiveAnswer || canResolveOpenDimension) {
+        specialtyReplacementIds.add(replacement.genericQuestionId);
+      }
+    }
+  }
 
   // A prerequisite is useful only when one of its real answers activates an otherwise unavailable,
   // useful candidate child. A syntactic reference alone is not a routing benefit.
