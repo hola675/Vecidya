@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.2 — candidato de release (2026-10-26; publicación pendiente)
+
+- Reúne los cambios integrados en `main` después del deployment 0.8.1 —aprobación editorial de las 18 guías de Aprende (48 publicables)— y los cambios propuestos en PR #139: auditoría funcional Admin, autorización explícita, control de concurrencia y unicidad de licencia por organización.
+- Las mutaciones de plataforma verifican una matriz explícita rol→acción (`platform_admin` tiene las acciones de la lista vigente; `staff` no tiene acciones de escritura). Suspender/reactivar licencia ahora usa ID y estado esperados en un CAS; las filas canceladas no se reactivan y conflictos no añaden auditoría.
+- Añade la migración aditiva `0029_organization-license-single-current.sql`. El ledger productivo se verificó en `0000–0028`; el preflight confirmó cero licencias vigentes y cero grupos duplicados. La migración aún no se aplicó y el deploy aún no se ejecutó.
+- Versión de aplicación `0.8.1` → `0.8.2` (patch pre-1.0: cambios compatibles y correcciones/invariantes; sin ruptura de contrato). Este candidato se publicará solo después del merge autorizado, gates y despliegue. Typecheck/build y Worker/D1 E2E PASS tras las correcciones; faltan merge, migración remota, deploy y HTTP anónimo fechado. Ver `ENVIRONMENTS.md`.
+
 ### Continuación de PR #139 — auditoría de integraciones y estado vacío (2026-10-26)
 
 - La pantalla de auditoría ahora comunica un estado vacío aplicable a todas las áreas administrativas, no solo a perfiles. El E2E confirma que el alta de integración aparece con etiqueta legible y clave técnica trazable.
@@ -10,7 +17,7 @@
 
 - Gobierno de perfiles, cambios de servicios y altas de integraciones ahora exigen acciones explícitas de la allowlist de `platform_admin`; la lectura mantiene su control de acceso previo. El E2E intenta mutar como staff activo y como administrador de plataforma inactivo: ambos reciben 403, sin cambios en filas ni auditoría D1.
 - Typecheck, build y E2E completo Worker/D1 local PASS. La suite unitaria 1719/1719 corresponde al corte anterior y no se repitió en este cambio. Sin cambio de esquema, migración remota, datos reales, GHL ni deploy.
-- La allowlist expresa capacidades del control plane, pero actualmente todos los `platform_admin` comparten las acciones. La separación por rol sigue pendiente de decisión; PR #139 permanece draft.
+- La matriz expresa permisos por rol; actualmente todos los `platform_admin` comparten el grant completo y `staff` no recibe acciones de escritura. Separar capacidades entre distintos administradores sigue pendiente de decisión.
 
 ## 2026-10-25 — VECIDYA-ADMIN-FUNCTIONAL-AUDIT (checkpoint parcial, PR #139)
 
@@ -70,6 +77,66 @@
 
 - El E2E verifica desde Chromium, en D1 aislada, las transiciones verificar/retirar/suspender/reactivar y dos formularios con una misma revisión: una suspensión y su auditoría, más un conflicto visible en la otra pestaña. Cancelar la confirmación no escribe; los estados posteriores y sus auditorías también se comprueban.
 - La acción compara la versión enviada desde el formulario con la fila vigente y aplica compare-and-set; los reintentos de una transición ya aplicada no agregan auditoría. Los conflictos muestran un error recuperable y el éxito se expone como región viva accesible. Typecheck, build y Worker E2E PASS.
+
+## 2026-10-26 — APRENDE-EDITORIAL-APPROVAL-01 — aprobación de las 18 guías
+
+- Revisión editorial individual de las 18 guías retenidas; se comprobaron claridad, estructura, ejemplos, pasos, fuentes, imágenes/alt y navegación.
+- Las 18 banderas `editorialDraft` pasan a `false`: catálogo de 48 guías aprobadas y 9 itinerarios completos.
+- PR #147 integrado en `main@367b03ec3a3cb80081cc8d1717ed22d85670ea85`. Los tres workflows CI del HEAD previo de integración `3350bed9` terminaron PASS. Sin deploy; producción permanece en 0.8.1 hasta un release posterior.
+
+
+## 0.8.1 — producción (2026-10-26)
+
+- Actualiza Aprende con el catálogo editorial reconciliado de 48 guías y nueve itinerarios, conservando 18 borradores protegidos; mejora precisión semántica, claridad y relaciones entre guías.
+- Consolida la frontera pública editorial: catálogo, rutas individuales, itinerarios y sitemap excluyen borradores; añade certificación Playwright local para 30 guías públicas y 18 borradores, con evidencia de 320/390/768/1366 px.
+- No introduce migraciones D1, cambios de configuración Worker, Diagnóstico, MiniWeb, GHL ni precios. La D1 productiva observada permanece en `0000–0028`.
+- PR #144 integrado en `main@c8d52c8f947892e43859e72c2263fb032a07d05e`; versión `package.json` `0.8.1`. Typecheck/build locales y tres workflows CI PASS; las cinco capturas del QA se revisaron.
+- Worker `vecidya-platform` desplegado el `2026-10-26T15:48:05Z`, Version ID `9497bda3-dc65-4a8d-a976-cfb89925da5d`. No hubo migraciones D1; ledger productivo permanece `0000–0028`.
+- HTTP anónimo TLS RAN 2026-10-26T15:48Z: `/`, `/aprende`, guía pública, `sitemap.xml` y `robots.txt` → 200; borrador → 404; versión `0.8.1` y footer `© 2026 Vecidya`. Sitemap incluye la guía pública y excluye el borrador.
+
+## 2026-10-26 — APRENDE-PUBLIC-QA-01 — E2E público y barrera editorial (PR #143 integrado)
+
+- Se añade un QA específico de Aprende con Playwright en localhost, capturas y reporte reproducibles, pruebas de listado, búsqueda, filtros, itinerarios, lectura, sitemap y acceso directo a borradores.
+- El QA usa el catálogo real: 48 guías, 30 no-borradores, 18 borradores y nueve itinerarios editoriales; no transforma ninguna guía en aprobada.
+- El sitemap consume el helper de publicación compartido; el runner E2E local deja de ejecutar el antiguo test con expectativas obsoletas.
+- Nuevo workflow Aprende public QA sin secretos ni despliegue, con artefacto de evidencias. Los tres workflows requeridos pasaron en PR #143; no implica publicación de producción.
+
+
+## 2026-10-25 — APRENDE-EDITORIAL-FINAL-02 — preservar borradores pendientes
+
+- Restaura `editorialDraft: true` para 14 guías que ya eran borradores en `main` y para las cuatro guías nuevas de 04A/04B.
+- Cambia los contratos de integridad para exigir 48 guías auditadas, 18 borradores y 30 artículos con estado previo no-borrador; la revisión no sustituye la aprobación explícita.
+- Corrige el guard de Gestión que detectó la regresión en la integración final. Sin cambios de contenido comercial, DB, Auth, Diagnóstico, MiniWeb, GHL ni producción.
+- CI sobre el HEAD de código `322850f`: Aprende quality #123 PASS; Main integration quality #189 PASS; 1740/1740 unitarias.
+
+## 2026-10-25 — APRENDE-EDITORIAL-04E–04J — candidatas no integradas individualmente
+
+- Las ramas 04E–04J registraron iteraciones y pruebas candidatas del catálogo, con conteos temporales de borradores que no describen el producto integrado.
+- La reconciliación final se integró por PR #138 preservando 18 borradores; su versión pública y certificada se registra en 0.8.1 y APRENDE-PUBLIC-QA-01 arriba.
+- No se atribuye publicación independiente a los PR cerrados de la cadena.
+
+## 2026-10-25 — APRENDE-EDITORIAL-04B — proveedor sin monolito (integrado por PR #138)
+
+- Separa dos decisiones que estaban mezcladas: elegir/renovar proveedor y ejecutar una migración.
+- La guía histórica conserva su URL y aprobación editorial, pero reduce el alcance a comparación, control, renovación y salida; una guía nueva en borrador cubre inventario, DNS, web, correo, pruebas y cancelación segura.
+- Se condensan seis guías madre para eliminar introducciones y detalle duplicado: Presencia 3291→1420, Automatizaciones 2707→1146, Dominio/hosting 2413→1179, primera campaña 2346→1120, CRM 2142→1075 e IA general 1743→982 palabras, manteniendo ejemplos, conceptos y fuentes esenciales.
+- Se añade un guard de pruebas para impedir que las seis guías madre vuelvan a crecer por encima de 10 secciones/1800 palabras serializadas y otro para las guías especializadas simplificadas (8 secciones/1500 palabras). HTTPS/TLS baja 1331→1128 palabras, Analítica 1346→984, supervisión de automatizaciones 1578→968, piloto IA 1407→904 y correo profesional 1528→1070.
+- Se separa además el correo profesional del mapa general DNS/HTTPS/correo: el mapa queda introductorio y una guía nueva explica MX, TXT, SPF, DKIM y DMARC con RFC 9989 vigente. El catálogo queda en 48 guías y 9 itinerarios. Sin cambios de DB, Auth, Diagnóstico, MiniWeb, GHL, precios o producción.
+
+## 2026-10-25 — APRENDE-EDITORIAL-04B — revisión semántica de Aprende (PR #121)
+
+- Revisión artículo por artículo del catálogo de 46 guías, con registro editorial en APRENDE_EDITORIAL_AUDIT_04B.md.
+- Se acotan las guías de CRM, preparación antes de publicidad, mantenimiento de presencia y DNS/web/correo; se elimina de la guía CRM una afirmación específica de retención/exportación que no estaba respaldada por una integración verificada.
+- Se diferencia la guía de IA empresarial hacia reglas, datos permitidos, responsables, aprobación y escalamiento, separada de la guía de piloto de asistentes.
+- Se personalizan los encabezados de trece guías introductorias y se conecta la selección de herramientas con el artículo de presupuesto.
+- Se conservan los 46 slugs, seis categorías, nueve itinerarios y los estados editoriales existentes. Sin DB, migraciones, cambios de GHL, fusión ni despliegue.
+
+
+## 2026-10-25 — APRENDE-EDITORIAL-04A — criterio digital y claridad pedagógica (integrado por PR #138)
+
+- Amplía Aprende de 44 a 46 guías y de 8 a 9 itinerarios sin crear categorías nuevas. Las dos guías fundacionales cubren priorización digital y uso consciente de tecnología para personas y negocios; permanecen en revisión editorial.
+- Introduce el método «Comprende → Prioriza → Decide» en la portada, mejora la búsqueda sobre el contenido completo y hace más humanas las etiquetas de todos los ejemplos.
+- Completa con ejemplos hipotéticos las seis guías especializadas que carecían del bloque estructurado y añade un contrato unitario que evita futuras guías sin caso práctico. Sin cambios de datos, autenticación, Diagnóstico, MiniWeb, GHL, precios o despliegue.
 
 ## 0.8.0 — producción (2026-10-25)
 

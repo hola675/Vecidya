@@ -92,7 +92,7 @@ La cantidad de URL únicas deberá calcularse mediante el verificador automatiza
 
 ## Avance de implementación técnica (2026-10-24)
 
-- Se incorporó `scripts/audit-learn-links.mjs` para los cuatro módulos de contenidos, con comprobaciones concurrentes limitadas, timeout, registro de redirecciones y salida JSON. El workflow manual `.github/workflows/aprende-links-audit.yml` conserva el reporte como artefacto. **No confundir el éxito del workflow de calidad con la ejecución de este workflow manual**.
+- Se incorporó `scripts/audit-learn-links.mjs` para los siete módulos de contenidos, con comprobaciones concurrentes limitadas, timeout, registro de redirecciones y salida JSON. Un `404` automatizado requiere corroboración: algunos proveedores y DOI oficiales pueden bloquear `HEAD`/`GET` desde el entorno; verificar con la página institucional y navegador. El workflow manual `.github/workflows/aprende-links-audit.yml` conserva el reporte como artefacto. **No confundir el éxito del workflow de calidad con la ejecución de este workflow manual**.
 - Se añadió tiempo de lectura aproximado por artículo, calculado a partir de su texto (referencia de 200 palabras/minuto), y enlace de retorno al inicio del contenido. La estimación no constituye una medición de comportamiento real.
 - Las pruebas de compilación y tipos deben comprobarse sobre el SHA final, no sobre ejecuciones anteriores.
 

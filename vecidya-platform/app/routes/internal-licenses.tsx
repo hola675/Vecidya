@@ -68,8 +68,12 @@ export async function action({ context, request }: Route.ActionArgs) {
       if (!currentLicenseId) return { error: "Recarga la página para confirmar la licencia actual antes de cambiar el plan." };
       await changeOrganizationLicensePlan(database, { organizationId, expectedLicenseId: currentLicenseId, newPlanCode: planCode, actorUserId: actor.userId });
     } else if (intent === "suspend" || intent === "reactivate") {
+      const currentLicenseId = String(form.get("currentLicenseId") ?? "");
+      if (!currentLicenseId) return { error: "Recarga la página para confirmar la licencia actual antes de cambiar su estado." };
       await setOrganizationLicenseStatus(database, {
         organizationId,
+        expectedLicenseId: currentLicenseId,
+        expectedStatus: intent === "suspend" ? "active" : "suspended",
         status: intent === "suspend" ? "suspended" : "active",
         actorUserId: actor.userId,
       });
@@ -154,8 +158,8 @@ export default function InternalLicenses() {
             ) : <div className="admin-license-actions">
               {license.status === "active" ? <>
                 <Form className="admin-license-form" method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="change-plan" /><label>Cambiar plan<select name="planCode" required defaultValue={availablePlans.find(({ code }) => code !== license.planCode)?.code ?? license.planCode}>{availablePlans.filter(({ code }) => code !== license.planCode).map(({ code, price: currentPrice }) => <option key={code} value={code}>{planNames[code]} · {currentPrice!.currency} {(currentPrice!.amountCents / 100).toFixed(2)} / mes</option>)}</select></label><button className="button button--secondary" disabled={!availablePlans.some(({ code }) => code !== license.planCode)} type="submit">Cambiar plan</button></Form>
-                <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="intent" type="hidden" value="suspend" /><button className="button button--secondary" type="submit">Suspender licencia</button></Form>
-              </> : <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="intent" type="hidden" value="reactivate" /><button className="button button--primary" type="submit">Activar licencia</button></Form>}
+                <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="suspend" /><button className="button button--secondary" type="submit">Suspender licencia</button></Form>
+              </> : <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="reactivate" /><button className="button button--primary" type="submit">Activar licencia</button></Form>}
             </div>}
           </section>
         ))}

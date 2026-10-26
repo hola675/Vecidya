@@ -23,6 +23,90 @@
 
 **RAN adicional (2026-10-26):** tras hacer determinista la espera del filtro de capacitación, el E2E Worker/D1 completo vuelve a **PASS**. Typecheck, build, `node --check` y diff-check **PASS**; se añadió una aserción para la etiqueta de alta de integración y se corrigió el copy del estado vacío. Las limitaciones de paginación y revisión visual completa de etiquetas permanecen abiertas.
 
+**RAN de revisión pre-release (2026-10-26):** typecheck, build y `node tests/e2e/platform-service-administration-check.mjs` **PASS** en el árbol reconciliado con `main@c4a7e8ec`. La matriz rol→acción mantiene a `staff` sin escritura. El nuevo CAS de suspensión/reactivación exige la licencia observada y estado esperado; el E2E obtiene 409 al reenviar una licencia cancelada/obsoleta y verifica que no cambia la licencia vigente ni se agrega auditoría. D1 es local y efímera; ledger `0000–0029`. Build conserva avisos conocidos de imports dinámicos y sourcemap.
+
+## APRENDE-EDITORIAL-APPROVAL-01 — validación integrada de catálogo (PR #147)
+
+La revisión aprobó las 18 guías previamente en borrador: objetivo/alcance, claridad, resumen, estructura, ejemplo hipotético, definiciones/pasos/FAQ, imagen/alt, enlaces relacionados y fuentes con alcance declarado. Unitarias focales: 51/51 PASS; typecheck/build y Playwright local: PASS. En el HEAD sincronizado `3350bed9`, integrado en `main@367b03ec`, `Aprende quality` run `40360164171`, `Aprende public QA` run `40360164331` y `Main integration quality` run `40360164020` terminaron PASS; el último incluye typecheck, build, regresión Diagnóstico/Aprende y suite unitaria completa. El workflow público usó Chromium y subió el artefacto de capturas/reporte.
+
+**Fuentes — RAN local 2026-10-26:** `node scripts/audit-learn-links.mjs` inspeccionó 73 URL de siete módulos: 16 respuestas 404 automatizadas y 12 no concluyentes (403/timeout); el resto respondió 200 o redirección. El DOI NIST AI 600-1 dio falso 404 automatizado aunque NIST publica registro y PDF. Se reemplazó una URL archivada de CISA en una de las guías aprobadas por la página vigente de recursos para pequeñas y medianas empresas. Las demás referencias 404 pertenecen a artículos preexistentes y requieren un checkpoint posterior de saneamiento. Los 403/timeouts no se clasifican como rotos sin corroboración.
+
+## APRENDE-PUBLIC-QA-01 — certificación pública no destructiva (2026-10-26; PR #143 integrado)
+
+**CODE/TEST; RAN en PR #143 sobre `e2f580b`:** el script `tests/e2e/aprende-public-qa-check.mjs` importa el catálogo real (48 guías: 30 no-borradores y 18 borradores) y verifica contra un servidor local exclusivo (`http://127.0.0.1:5173`; rechaza destinos remotos). Consultó 30 slugs públicos esperando HTTP 200 y 18 borradores esperando HTTP 404; contrastó sitemap y robots.txt; comprobó que listados, búsqueda, itinerarios y relacionados no expongan borradores. Capturó listado/artículo; verificó navegación por teclado, imágenes, enlaces HTTPS, canonical, H1, índice, categorías y ausencia de overflow en 320/390/768/1366 px. Los tres workflows `Aprende quality` (run `40348781678`), `Aprende public QA` (run `40348781683`) y `Main integration quality` (run `40348781704`) finalizaron PASS. Revisión visual de sus cinco capturas completada; no es una certificación WCAG completa.
+
+**Release PR #144, mismo código y versión `0.8.1`:** `Aprende quality` run `40350734486`, `Main integration quality` run `40350734475` (typecheck, build, regresiones y unitarias) y `Aprende public QA` run `40350734808`: PASS. El gate de publicación se completó con GET anónimo a producción después del deploy; evidencia en `ENVIRONMENTS.md`.
+
+**Cómo ejecutar en local:** desde vecidya-platform/, instalar dependencias con pnpm install; tener Chromium instalado con pnpm exec playwright install chromium; levantar un servidor con pnpm dev --host 127.0.0.1 --port 5173, y en otra consola ejecutar BASE_URL=http://127.0.0.1:5173 pnpm test:e2e:aprende-public (en PowerShell establecer BASE_URL como variable de entorno antes del comando). Produce test-results/aprende-public-qa/report.json y capturas *.png. En CI, .github/workflows/aprende-public-qa.yml instala dependencias y Chromium, inicia servidor local, ejecuta la prueba y publica un artefacto de evidencia por 14 días con report.json, capturas y server.log. El ejecutor completo tests/e2e/run-local-e2e.mjs utiliza esta prueba en sustitución de learn-experience-check.mjs, cuya expectativa de 38 guías / 7 itinerarios / borradores visibles quedó obsoleta.
+
+**Condición de cierre:** los tres workflows anteriores pasaron en el mismo HEAD; las capturas fueron revisadas y no presentan problemas visuales evidentes. No certifica WCAG integral. El cambio ya está integrado mediante PR #143 y publicado por PR #144; la verificación HTTP anónima fechada consta en `ENVIRONMENTS.md`.
+
+**Exclusiones:** sin aprobación editorial, cambios en banderas editorialDraft, credenciales, D1/R2, despliegue, GHL ni cambios de motor del Diagnóstico. El chequeo independiente de fuentes HTTPS remotas sigue en el workflow manual Aprende external links audit.
+
+
+## APRENDE-EDITORIAL-FINAL-02 — aprobación explícita y regresión general (2026-10-25)
+
+El run `40248565700` falló con **1739/1740** pruebas: `learn-management-03.test.ts` esperaba `editorialDraft: true` para las cinco guías de Gestión, pero el candidato final las había marcado como aprobadas. La causa era un cambio de estado editorial no autorizado, no un defecto del guard. Se restaura `editorialDraft: true` para 18 guías y se actualizan los contratos para exigir **18 borradores / 30 no marcadas como borrador**. La aprobación de contenido, el merge y el deploy son decisiones separadas.
+
+**RAN en GitHub Actions sobre el HEAD de código `322850f`:** `Aprende quality` run `40254782673` PASS (typecheck, build e integridad Aprende); `Main integration quality` run `40254782671` PASS (typecheck, build, regresión Diagnóstico/Aprende y **1740/1740 unitarias, 0 fallos**). El commit posterior de documentación no cambia código ni contenido.
+
+**Reconciliación:** PR #138 integró este contrato en `main` preservando 18 borradores; PR #143 certificó la superficie pública y sus tres workflows PASS; PR #144 publicó 0.8.1 con verificación HTTP fechada. Las secciones 04E–04J que siguen registran ejecuciones históricas de ramas candidatas y no representan el estado editorial integrado.
+
+## APRENDE-EDITORIAL-04J — consolidación transversal (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40248368767` PASS: typecheck, build e integridad Aprende. Contratos: 48/48 guías revisadas; 0 borradores; cobertura total de itinerarios; al menos una relación editorial y dos fuentes HTTPS distintas por guía; sin plantilla genérica antigua; alt descriptivos; intro ≠ extracto; summaries no duplicados; fuentes OpenAI/ITU/SBA vigentes; terminología Analytics actual; jerga prioritaria explicada en contexto.
+
+**Pendiente de integración:** ejecutar `Main integration quality` sobre un PR contra `main` para acreditar regresión Diagnóstico/Aprende y suite unitaria completa sobre el conjunto final.
+
+## APRENDE-EDITORIAL-04I — catálogo sin borradores (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40247742516` PASS: typecheck, build e integridad Aprende. El contrato editorial exige **48 guías revisadas / 0 borradores**. Las dos guías fundacionales deben conservar aprobación, relación recíproca y fuentes OCDE 2026, NIST CSF 2.0, CISA Secure Our World y W3C WAI.
+
+## APRENDE-EDITORIAL-04H — Gestión revisada (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40247532519` PASS: typecheck, build e integridad Aprende. El catálogo se mantiene en 48 guías y pasa a **46 revisadas / 2 borradores**. Los contratos exigen aprobación de las cinco guías de Gestión, ausencia de `legacy.sba.gov`, referencia SBA vigente, nota de revisión de AI RMF 1.0, y fuentes Ready.gov/CISA para continuidad.
+
+## APRENDE-EDITORIAL-04G — coordinación empresarial revisada (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40247312756` PASS: typecheck, build e integridad Aprende. El catálogo queda en 48 guías con **41 revisadas / 7 borradores**. Las cuatro guías de `learn-business-operations.ts` deben conservar aprobación, ejemplo y FAQ; la comparación entre sedes mantiene la fuente Eurostat 2026 y explicita que la encuesta empresarial cubre organizaciones con 10 o más personas ocupadas.
+
+## APRENDE-EDITORIAL-04F — revisión de guías técnicas nuevas (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40247108403` PASS: typecheck, build e integridad Aprende. El catálogo esperado se mantiene en 48 guías y pasa a **37 revisadas / 11 borradores**. Los contratos exigen `editorialDraft: false` para migración de proveedor y correo profesional; además preservan fuentes ICANN/MDN/RFC 1034/1035 para migración y RFC 1035/7208/6376/9989 para correo.
+
+El gate específico de Aprende queda certificado en el run indicado; la integración general se reserva para la reconciliación final.
+
+## APRENDE-EDITORIAL-04E — revisión de Operaciones (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40246857214` PASS: typecheck, build e integridad Aprende. Se fija el catálogo en 48 guías con **35 revisadas / 13 borradores**. Las cinco guías de `learn-operations-02.ts` deben conservar `editorialDraft: false`, nueve secciones, ejemplo hipotético, FAQ, cierre accionable y al menos dos fuentes HTTPS. Los contratos comprueban además la referencia de inventario de business.gov.au, la definición de ERP y la fuente oficial de Microsoft Learn, y la guía de beta de GOV.UK para el piloto digital.
+
+Sin Main integration mientras este checkpoint permanezca paralelo y apilado sobre 04B; el gate general corresponderá a la reconciliación final.
+
+## APRENDE-EDITORIAL-04B — separación selección/migración de proveedor (2026-10-25)
+
+**TEST versionado / RAN pendiente en HEAD final.** El contrato de catálogo espera **47 guías** y mantiene 9 itinerarios. La prueba nueva exige que la guía histórica de proveedor siga aprobada y enfocada en elegir/renovar, mientras la migración nueva permanece en revisión y contiene DNS, correo, cancelación segura y comprobaciones. Ambas deben enlazarse entre sí. Las pruebas históricas de Presencia, Automatizaciones, Dominio/hosting, CRM e IA permanecen como contrato de contenido durante su reducción. Un guard adicional protege seis guías madre (CRM, IA, Presencia, primera campaña, Automatizaciones y Dominio/hosting) contra regresión editorial: máximo 10 secciones y 1800 palabras serializadas por guía.
+
+**RAN:** `Aprende quality` run `40243511349` sobre `619f25ad2ebbaf0f76e2655975fb6a424f8598fe` PASS: instalación, typecheck, build e integridad Aprende. El PR #123 se integró dentro de #138; los checks de integración final se ejecutaron en los HEADs indicados arriba y en PR #143/#144. Sin D1 remota ni deploy en el alcance de este checkpoint histórico.
+
+## APRENDE-EDITORIAL-04B — separación semántica de guías técnicas (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40246463847` sobre `7a6c044c5ddee8e94a146cbd1febc3c9e29ab76c` PASS: typecheck, build e integridad Aprende. El catálogo esperado queda en **48 guías** y 9 itinerarios. El contrato comprueba que el mapa `dns-https-y-correo-como-se-conecta-tu-dominio` derive el detalle hacia `correo-profesional-dominio-registros-mx-txt`, que ambas guías se relacionen, que el mapa no vuelva a crecer por encima de 8 secciones y que la guía nueva conserve fuentes específicas para SPF (RFC 7208), DKIM (RFC 6376) y DMARC vigente (RFC 9989).
+
+La guía nueva sigue `editorialDraft: true`. El guard de densidad cubre DNS/mapa, HTTPS, analítica, supervisión de automatizaciones, piloto de IA y correo profesional con máximo 8 secciones y 1500 palabras serializadas. PR #123, con el contenido correspondiente, quedó integrado por PR #138; esta ejecución describe solo la evidencia de su checkpoint histórico.
+
+## APRENDE-EDITORIAL-04B — criterios de auditoría semántica
+
+La suite de integridad se actualiza para reflejar el alcance más preciso de la guía de preparación publicitaria, mantenimiento de presencia y DNS. Se añaden contratos para evitar promesas no verificadas de almacenamiento/exportación de un CRM de Vecidya, para conservar la separación entre las guías de DNS y presencia, y para exigir que la guía de IA empresarial cubra datos, responsables y escalamiento sin sustituir la guía de piloto.
+
+La validación que cierra este checkpoint es la de GitHub Actions asociada al HEAD actual de la rama del PR #121. Los PASS de APRENDE-EDITORIAL-04A sobre su SHA previo no certifican por sí solos estas modificaciones. No se ejecutan E2E visuales, pruebas de datos remotos ni deploy como parte de esta auditoría editorial.
+
+
+## APRENDE-EDITORIAL-04A — criterio digital y contrato de ejemplos (2026-10-25)
+
+**RAN en GitHub Actions sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`:** `Aprende quality` run `40242263335` PASS con instalación, typecheck, build y `Learn integrity tests`; `Main integration quality` run `40242263275` PASS con typecheck, build, regresión focal Diagnóstico/Aprende y suite unitaria completa **1721/1721 PASS, 0 fail**. Las pruebas de catálogo y currículo validan **46 guías** y **9 itinerarios**. El contrato transversal exige al menos un bloque `example` explícitamente hipotético por guía, con situación, problema, enfoque, pasos aplicables y aprendizaje suficientemente explicados; también verifica los dos nuevos slugs fundacionales, su categoría «Tecnología explicada», su estado de borrador y su relación recíproca.
+
+La comprobación estática de los 12 archivos cambiados no encontró marcadores de conflicto ni whitespace final. Sin D1 remota, navegador productivo, E2E visual nuevo ni deploy.
+
 ## DIAG-VISUAL-03 — resultado y entrada QA-03B (2026-10-25)
 
 `pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-visual-03-summary.test.ts tests/unit/diagnostic/qa03b-pro-rendered-summary.test.ts tests/unit/diagnostic/qa03b-funnel.test.ts tests/unit/diagnostic/qa03b-worker-replay.test.ts tests/unit/diagnostic/identified-report-contracts.test.ts`: **20/20 PASS**. Se verifican valor general/área 0, puntuación 37, ausencia de score como «Sin lectura» sin barra, estado preliminar, No evaluado/No aplica, y omisión de oportunidad/acción opcionales.

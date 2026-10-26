@@ -7,6 +7,7 @@ on:
       - "vecidya-platform/app/routes/knowledge.tsx"
       - "vecidya-platform/app/routes/learn-article.tsx"
       - "vecidya-platform/tests/unit/learn*.test.ts"
+      - "vecidya-platform/tests/unit/learn/**/*.test.ts"
       - "vecidya-platform/package.json"
       - "vecidya-platform/pnpm-lock.yaml"
       - ".github/workflows/aprende-quality.yml"

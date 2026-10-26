@@ -30,7 +30,7 @@ const scripts = [
   "diagnostic-v3-report-check.mjs",
   "join-contact-experience-check.mjs",
   "about-experience-check.mjs",
-  "learn-experience-check.mjs",
+  "aprende-public-qa-check.mjs",
   "public-navigation-a11y-check.mjs",
   "public-commercial-journeys-check.mjs",
   "commercial-details-check.mjs",
@@ -46,7 +46,10 @@ const scripts = [
 
 for (const script of scripts) {
   console.log(`\n=== E2E local: ${script} ===`);
-  const result = spawnSync(process.execPath, [`tests/e2e/${script}`], {
+  const args = script === "aprende-public-qa-check.mjs"
+    ? ["--experimental-strip-types", "--import", "./tests/unit/register-ts.mjs", `tests/e2e/${script}`]
+    : [`tests/e2e/${script}`];
+  const result = spawnSync(process.execPath, args, {
     cwd: process.cwd(),
     env: { ...process.env, BASE_URL: baseUrl },
     stdio: "inherit",

@@ -1,12 +1,20 @@
-# Entornos y release de producción (corte 2026-10-25)
+# Entornos y release de producción 0.8.1 (2026-10-26)
 
-**RAN local, Node `26.12.1`, pnpm `11.21.0`, registry `https://registry.npmjs.org/`:** se actualizaron las dependencias directas dentro de sus rangos y se instaló el lockfile con `pnpm install --frozen-lockfile`. El manifiesto fija pnpm 11.21.0 mediante `devEngines.packageManager`; el lockfile fue regenerado con pnpm 11.21.0. Para este release, el manifiesto sube la aplicación de `0.7.3` a `0.8.0`.
+## Candidato de producción 0.8.2 — pendiente (2026-10-26)
+
+Base `main@c4a7e8ec`; PR #147 aprueba 18 guías y PR #139 añade administración auditada y migración `0029`. Versión candidata `0.8.2`. Producción permanece en `0.8.1` hasta merge, migración, deploy y comprobación HTTP anónima fechada. Preflight de `vecidya-prod`: ledger `0000–0028`, cero licencias no canceladas y cero grupos duplicados; bookmark previo registrado en `DATABASE.md`. Migración y deploy pendientes. Staging no está incluido en el alcance directo a producción.
+
+**Release publicado 0.8.1:** PR #144 integrado en `main@c8d52c8f947892e43859e72c2263fb032a07d05e`; `package.json` incrementa `0.8.0` → `0.8.1`. Deploy directo autorizado por el usuario y completado el `2026-10-26T15:48:05Z`; Worker `vecidya-platform`, deployment `cd59d948-11ad-41a1-a697-734e130360b5`, Version ID activo `9497bda3-dc65-4a8d-a976-cfb89925da5d` al 100 %. No cambia `wrangler.jsonc`, bindings, secrets ni schema; no se ejecutaron migraciones y D1 producción permanece en ledger `0000–0028`. Staging no se desplegó en este release, de acuerdo con la autorización directa a producción.
+
+**Base de dependencias local del release previo, Node `26.12.1`, pnpm `11.21.0`, registry `https://registry.npmjs.org/`:** instalación congelada con pnpm `11.21.0`; el lockfile no cambia para 0.8.1.
 
 Versiones directas actualizadas: React Router `8.5.0`, React/React DOM `19.3.1`, Drizzle ORM `0.45.4`, Cloudflare Vite plugin `1.65.0`, Vite `8.3.5`, Wrangler `4.152.0` y tipos Node `26.6.5`. Better Auth `1.7.5`, PDFKit `0.20.2` (con patch), Playwright `1.63.0` y Arimo `5.3.0` siguen fijadas en versiones exactas. Typecheck/build y smoke local finalizaron PASS (detalle en `TESTING.md`).
 
 **HTTP anónimo con TLS, RAN 2026-10-25T18:38:23Z:** producción `/`, `/cookies`, `/informacion-legal` y `/diagnostico` → `200`; todas muestran versión `0.8.0` y `© 2026 Vecidya`. La última comprobación previa, 2026-10-25 02:32–02:33 UTC, vio `0.7.3`.
 
 **Cloudflare API y deploy, RAN 2026-10-25:** Worker `vecidya-platform`, Version ID activo `320eefe0-343c-431f-987f-cf9b92df0c8e`, deployment creado `2026-10-25T18:38:07.538599Z`. Se aplicó `0028_miniweb-offering-image.sql` a `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`); ledger actual `0000–0028`. Existen los buckets `vecidya-business-media-prod` y `vecidya-business-media-staging`. Lecturas posteriores de D1 reportaron `changed_db=false`, `rows_written=0`. No se accedió a filas de usuarios ni a objetos R2.
+
+**Revalidación de recursos Cloudflare API, solo lectura, RAN 2026-10-26:** cuenta Soporte `8a13de3ea584f9055f78565b9860c125`; bucket staging `vecidya-business-media-staging` (región `ENAM`) y producción `vecidya-business-media-prod` (región `WEUR`) responden `200` al detalle de bucket. Esto confirma que R2 está habilitado y que ambos buckets existen; no se listaron ni leyeron objetos, y la lectura de metadatos no certifica política de acceso privado. El Worker activo de staging sigue en Version ID `39ffd6e1-4d20-4c39-9338-653b41340085` (deployment del `2026-10-24T00:02:52Z`) y su configuración efectiva no incluye `BUSINESS_MEDIA`; producción mantiene `BUSINESS_MEDIA → vecidya-business-media-prod`, Version ID `320eefe0-343c-431f-987f-cf9b92df0c8e`. Staging conserva `EMAIL_PROVIDER=fake`, funnel/purga `false` y sin Cron; producción conserva Gmail, funnel/purga `true` y Cron `17 3 * * *`. El ledger remoto no se consultó en esta revalidación; no se infiere que staging o producción tengan `0027–0028` aplicadas. Sin cambios remotos en este checkpoint.
 
 ## Verificación anónima de Mi Vecidya (2026-10-19)
 
@@ -20,7 +28,11 @@ El package local también informa `0.6.1`, pero coincidencia de versión no demu
 
 # Entornos
 
-## Estado remoto vigente — producción 0.8.0 / staging 0.7.0 (2026-10-25)
+## Estado remoto vigente — producción 0.8.1 / staging 0.7.0 (2026-10-26)
+
+**HTTP anónimo con TLS, RAN 2026-10-26T15:48Z:** producción (`https://vecidya.com`) `/`, `/aprende`, una guía publicada, `sitemap.xml` y `robots.txt` → `200`; una guía editorial en borrador → `404`. La portada muestra versión `0.8.1` y `© 2026 Vecidya`. Sitemap contiene la guía publicada y excluye el borrador. No se accedió a sesión, correo ni datos privados.
+
+**Código y Worker:** PR #144 integrado en `main@c8d52c8f947892e43859e72c2263fb032a07d05e`; `vecidya-platform` Version ID `9497bda3-dc65-4a8d-a976-cfb89925da5d`, deployment `cd59d948-11ad-41a1-a697-734e130360b5` creado `2026-10-26T15:48:05.376673Z`. Wrangler `--dry-run` confirmó target `DB=vecidya-prod`, `BUSINESS_MEDIA=vecidya-business-media-prod`, APP_ENV production, rutas de zona y flags vigentes. Sin migraciones; D1 productiva `0000–0028`. Se mantienen configuración productiva previa, correo Gmail y Cron diario sin cambios.
 
 **HTTP anónimo con TLS, RAN 2026-10-25T18:38:23Z:** producción (`https://vecidya.com`) sirvió `/`, `/cookies`, `/informacion-legal` y `/diagnostico` con `200`, footer `0.8.0` y `© 2026 Vecidya`. La verificación anterior, 2026-10-25T01:08Z, observó `0.7.3`. No se accedió a sesión ni a Gmail.
 
@@ -32,7 +44,7 @@ El package local también informa `0.6.1`, pero coincidencia de versión no demu
 
 **Producción desplegada el 2026-10-23 y verificada por HTTP anónimo con TLS el 2026-10-24T00:12:23Z.** Worker `vecidya-platform`, versión activa `517126e4-a3cd-4309-8501-5a49d57cd15f`, creada `2026-10-23T23:57:02.882Z`, aplicación `0.7.0`. D1 `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`), ledger `0000–0026` tras las migraciones posteriores. Bookmark pre-`0011–0023`: `000004fa-00000000-0000510d-a945f042e05ed43f11830da120bb1448`. Wrangler confirmó `DB=vecidya-prod`, `APP_ENV=production`, rate limiters (12 y 6 solicitudes/60 s), Gmail, funnel y ambos flags de purga `true`, rutas de producción y Cron `17 3 * * *`.
 
-**Staging:** Worker `vecidya-platform-staging`, versión activa `39ffd6e1-4d20-4c39-9338-653b41340085`, URL `https://vecidya-platform-staging.soporte-8a1.workers.dev`; D1 `vecidya-staging` (`d4af6ebc-97c5-42f6-ad3a-51551021e591`), ledger `0000–0026`. Bookmark pre-`0011–0023`: `000000a1-00000002-0000510d-f5d5c5e4fa7f1e433ac3bbd27f3d728d`. Configuración efectiva del Worker activo `APP_ENV=staging`, email fake, rate limiters con namespaces separados, flags de funnel/purga `false`, `routes=[]` y sin Cron.
+**Staging (revalidación Cloudflare API 2026-10-26):** Worker `vecidya-platform-staging`, versión activa `39ffd6e1-4d20-4c39-9338-653b41340085`, URL `https://vecidya-platform-staging.soporte-8a1.workers.dev`; D1 `vecidya-staging` (`d4af6ebc-97c5-42f6-ad3a-51551021e591`). La configuración efectiva observada mantiene `APP_ENV=staging`, email fake, rate limiters con namespaces separados, flags de funnel/purga `false`, `routes=[]` y sin Cron, pero **aún no incluye binding R2 `BUSINESS_MEDIA`** aunque el bucket staging ya existe. El ledger `0000–0026` corresponde a la última verificación documental del 2026-10-24 y está pendiente de nueva consulta autorizada; no se confirmó migración posterior. Bookmark pre-`0011–0023`: `000000a1-00000002-0000510d-f5d5c5e4fa7f1e433ac3bbd27f3d728d`.
 
 **HTTP anónimo fechado, ambos entornos: 2026-10-24T00:12:23Z.** `/`, `/diagnostico` y `/diagnostico/metodologia` → `200`, versión `0.7.0`; `/login` → `200`; `/app` y `/app/internal` → `302 /login` sin sesión; `/__dev/diagnostico/v3` → `404`. POST `{}` al resumen → `400` por validación; POST `{}` a `report-requests` → `400` en producción (sin crear solicitud) y `404` en staging (flag cerrado). No son replay válido, acceso autenticado ni verificación de email. Las migraciones `0011–0023` precedieron al deploy; `0024–0026` se aplicaron después, sin redeploy todavía.
 
@@ -363,7 +375,7 @@ Con la configuración OAuth completa, el envío Gmail queda listo para validaci�
 
 ## Recursos no habilitados
 
-- **R2 (actualización 2026-10-24, APP-MINI-02C)**: `wrangler.jsonc` declara el binding `BUSINESS_MEDIA` con nombres separados para prod (`vecidya-business-media-prod`) y staging (`vecidya-business-media-staging`). La consulta API de buckets devolvió HTTP 403/código 10042 e indicó habilitar R2 desde Dashboard; no se crearon ni verificaron buckets, no se desplegó el binding ni se subieron objetos remotos. La configuración de código no cambia la evidencia HTTP ni el estado operativo de la cuenta. Las bajas de medios conservan objeto y metadatos para servir el snapshot publicado previo; no hay recolección de objetos huérfanos. El logo del perfil continúa como URL de texto; la portada dedicada está pendiente.
+- **R2 (revalidación 2026-10-26, APP-MINI-02C)**: `wrangler.jsonc` declara `BUSINESS_MEDIA` en prod y staging. La Cloudflare API ya devuelve HTTP 200 para ambos buckets (`vecidya-business-media-prod`, `WEUR`; `vecidya-business-media-staging`, `ENAM`). Producción tiene el binding remoto; Worker staging aún no lo refleja. No se verificó control privado por objetos/política ni se accedió a objetos; falta deploy autorizado de staging y validación runtime antes de declarar funcional el acceso remoto. Las bajas conservan objeto y metadatos para servir el snapshot publicado previo; no hay recolección de objetos huérfanos. El logo del perfil continúa como URL de texto; la portada dedicada está pendiente.
 - **Durable Objects, Queues, Workflows**: existen los directorios `worker/durable-objects`, `worker/queues`, `worker/workflows` sin contenido; no hay bindings.
 - **Correo del dominio**: el MX de `vecidya.com` apunta a Google `DOC`; no se modificó.
 - **Cloudflare Pages** `vecidya` (`vecidya.pages.dev`): existía según la auditoría 10A `DOC`; no forma parte de este repositorio.

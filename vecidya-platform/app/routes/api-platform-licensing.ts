@@ -80,9 +80,12 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   }
 
   if (body.operation === "suspend" || body.operation === "reactivate") {
+    if (typeof body.currentLicenseId !== "string" || !body.currentLicenseId) return Response.json({ error: "currentLicenseId is required" }, { status: 400 });
     try {
       const result = await setOrganizationLicenseStatus(database, {
         organizationId,
+        expectedLicenseId: body.currentLicenseId,
+        expectedStatus: body.operation === "suspend" ? "active" : "suspended",
         status: body.operation === "suspend" ? "suspended" : "active",
         actorUserId: admin.userId,
       });

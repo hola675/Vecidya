@@ -192,20 +192,26 @@ export async function changeOrganizationLicensePlan(database: Database, input: {
 
 export async function setOrganizationLicenseStatus(database: Database, input: {
   organizationId: string;
-  status: "suspended" | "active" | "cancelled";
+  expectedLicenseId: string;
+  expectedStatus: "active" | "suspended";
+  status: "suspended" | "active";
   actorUserId: string;
   now?: Date;
 }) {
   const now = input.now ?? new Date();
-  const current = await getOrganizationLicense(database, input.organizationId);
-  if (!current) throw new LicensingError("Organization has no license");
+  const validTransition = (input.expectedStatus === "active" && input.status === "suspended") ||
+    (input.expectedStatus === "suspended" && input.status === "active");
+  if (!validTransition) throw new LicensingError("Only active licenses can be suspended and only suspended licenses can be reactivated");
 
-  await database.batch([
-    database.update(organizationLicense).set({ status: input.status, ...(input.status === "cancelled" ? { endsAt: now } : {}), updatedAt: now }).where(eq(organizationLicense.id, current.id)),
-    database.insert(platformAuditLog).values(auditEntry(input.actorUserId, `organization_license.${input.status}`, current.id, input.organizationId, current.status, input.status)),
+  const results = await database.$client.batch([
+    database.$client.prepare("UPDATE organization_license SET status = ?, ends_at = CASE WHEN ? = 'active' THEN NULL ELSE ends_at END, updated_at = ? WHERE id = ? AND organization_id = ? AND status = ?")
+      .bind(input.status, input.status, now.getTime(), input.expectedLicenseId, input.organizationId, input.expectedStatus),
+    database.$client.prepare("INSERT INTO platform_audit_log (id, actor_user_id, action, entity_type, entity_id, organization_id, previous_value, new_value, metadata, created_at) SELECT ?, ?, ?, 'organization_license', ?, ?, ?, ?, NULL, ? WHERE changes() = 1")
+      .bind(crypto.randomUUID(), input.actorUserId, `organization_license.${input.status}`, input.expectedLicenseId, input.organizationId, input.expectedStatus, input.status, now.getTime()),
   ]);
+  if (results[0]?.meta.changes !== 1) throw new LicensingConflictError("Organization license changed concurrently; reload and retry");
 
-  return { id: current.id, status: input.status };
+  return { id: input.expectedLicenseId, status: input.status };
 }
 
 // «Una organización cambia de billing_account únicamente por operación autorizada» (§15): esta es

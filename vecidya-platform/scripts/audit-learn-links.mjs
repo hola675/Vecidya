@@ -2,9 +2,17 @@
 // Auditoría de enlaces bibliográficos de Aprende. No modifica contenidos ni publica cambios.
 import { readFile, writeFile } from "node:fs/promises";
 
-const catalogFiles = ["learn.ts", "learn-business-operations.ts", "learn-operations-02.ts", "learn-management-03.ts"];
+const catalogFiles = [
+  "learn.ts",
+  "learn-business-operations.ts",
+  "learn-operations-02.ts",
+  "learn-management-03.ts",
+  "learn-digital-literacy.ts",
+  "learn-technical-04b.ts",
+  "learn-email-04b.ts",
+];
 const sourceFiles = await Promise.all(catalogFiles.map(async (name) => readFile(new URL("../app/content/" + name, import.meta.url), "utf8")));
-const urls = [...new Set(sourceFiles.flatMap((source) => [...source.matchAll(/url:\s*"(https:\/\/[^"]+)"/g)].map((match) => match[1])))];
+const urls = [...new Set(sourceFiles.flatMap((source) => [...source.matchAll(/"?url"?\s*:\s*"(https:\/\/[^""]+)"/g)].map((match) => match[1])))];
 const timeoutMs = 12000;
 const concurrency = 5;
 const results = new Array(urls.length);
@@ -21,7 +29,7 @@ async function checkUrl(url) {
     }
     entry.httpStatus = final.status;
     entry.finalUrl = final.url;
-    entry.status = final.ok ? (final.url === url ? "reachable" : "redirected") : "needs_review";
+    entry.status = final.ok ? (final.url === url ? "reachable" : "redirected") : (final.status === 404 ? "not_found" : "needs_review");
     if (!final.ok) entry.detail = "HTTP " + final.status + " (podría ser bloqueo anti-bot)";
   } catch (error) {
     entry.status = "needs_review";
@@ -37,8 +45,9 @@ await Promise.all(Array.from({ length: Math.min(concurrency, urls.length) }, asy
     results[index] = await checkUrl(urls[index]);
   }
 }));
-const report = { checkedAt: new Date().toISOString(), scope: "URL bibliográficas de los cuatro módulos de Aprende", uniqueUrls: urls.length, results };
+const report = { checkedAt: new Date().toISOString(), scope: "URL bibliográficas de los siete módulos del catálogo de Aprende", uniqueUrls: urls.length, results };
 await writeFile(process.env.LEARN_LINK_REPORT ?? "learn-link-audit.json", JSON.stringify(report, null, 2) + "\n");
+const notFound = results.filter((entry) => entry.status === "not_found").length;
 const review = results.filter((entry) => entry.status === "needs_review").length;
-process.stdout.write("URL únicas: " + urls.length + "; requieren revisión: " + review + "\n");
+process.stdout.write("URL únicas: " + urls.length + "; 404 para revisión: " + notFound + "; bloqueo/red no concluyente: " + review + "\n");
 // Una fuente no accesible desde CI requiere revisión, no bloquea despliegue automáticamente.

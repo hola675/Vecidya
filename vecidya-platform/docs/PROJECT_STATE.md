@@ -1,4 +1,17 @@
-## Corte vigente — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
+## Corte vigente — producción 0.8.1 (2026-10-26)
+
+`origin/main@c8d52c8` integra PR #141 (revalidación R2), #143 (QA público de Aprende) y #144 (release). Producción `0.8.1`, Worker Version ID `9497bda3-dc65-4a8d-a976-cfb89925da5d`. Aprende preserva 18 borradores y sirve 30 guías; HTTP anónimo TLS confirma rutas, sitemap y footer. CI/typecheck/build PASS. Sin migraciones D1 ni cambios Cloudflare; ledger D1 permanece `0000–0028`. Staging sigue en `0.7.0` y no se desplegó en este release directo.
+
+## Corte histórico — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
+
+## APRENDE — aprobación editorial de las 18 guías finales (PR #147 integrado)
+
+El catálogo tipado contiene 48 guías, seis categorías y nueve itinerarios. Se revisaron individualmente y aprobaron las 18 guías que estaban marcadas como borrador; quedan 48 con estado público aprobado y 0 borradores. La revisión cubre alcance y solapamientos, claridad, estructura, ejemplos hipotéticos, pasos, FAQ, resúmenes, imágenes/alt, relaciones y fuentes con alcance explícito. Ver el dictamen histórico de las 46 guías en `docs/APRENDE_EDITORIAL_AUDIT_04B.md` y el checkpoint presente en `STATUS.md`.
+
+La suite unitaria y el QA público ahora exigen 48 artículos públicos, nueve itinerarios y preservan el bloqueo de un borrador sintético como regresión. PR #147 integró este cambio en `main@367b03ec3a3cb80081cc8d1717ed22d85670ea85`; los tres workflows CI sobre su HEAD sincronizado `3350bed9` pasaron. El código está integrado, pero no desplegado. `editorialDraft` continúa siendo la frontera para nuevas guías que requieran revisión.
+
+La nota APRENDE-EDITORIAL-FINAL-02 en el snapshot histórico de abajo describe el corte 2026-10-25 y queda superada por esta aprobación editorial integrada mediante PR #147. Producción conserva el estado publicado en 0.8.1: 30 guías públicas y 18 borradores, hasta un release posterior.
+
 
 En `feat/diag-visual-03`, QA-03B presenta la lectura general y ocho áreas en un flujo visual de una columna; entrada, foco, estados preliminares y ausencia de score tienen tratamiento explícito. Las unitarias focales (20/20), E2E QA-03B local (6/6), typecheck y build constan como PASS en `TESTING.md`. No se modifican scoring ni contratos y no hay despliegue. El runner responsive DIAG-PRO-19 está obsoleto respecto a la clave activa y no se cuenta como evidencia multi-viewport; zoom real 200 % y lector de pantalla siguen pendientes.
 
@@ -383,11 +396,13 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 
 ### Aprende (`knowledge.tsx`, `learn-article.tsx`)
 
-- UX-001B.9 establece `/aprende` como ruta canónica y mantiene `/que-debes-saber` como alias. La página diferencia aprendizaje de Servicios y Diagnóstico: explica cómo entender y mejorar la presencia digital.
-- UX-002.6 mantiene `/aprende` como centro de conocimiento estático con cinco categorías y cinco artículos enlazados desde el índice. Los cuatro originales son CRM, IA, Automatización y Presencia Digital; VEC-APRENDE-04/05 modernizó los dos últimos sin cambiar sus slugs, canonical, categoría ni autoría.
-- VEC-APRENDE-06A llena «Tecnología explicada» con una guía de dominio/hosting, ejemplo hipotético y ocho fuentes primarias. Usa los bloques editoriales existentes, un SVG con descripción accesible y lectura relacionada a la guía de Presencia Digital.
-- Los artículos mantienen índice accesible, CTA contextual, metadata canonical/Open Graph y presencia en sitemap. La publicación sigue pendiente; el contenido no promete resultados, no usa CMS y no añade persistencia editorial. El byline sigue el renderer actual (Yoan Ortiz), sin modelo de autor nuevo.
-- El contenido se mantiene deliberadamente sin CMS, autores dinámicos, fechas editoriales inventadas, comentarios, newsletter, buscador avanzado o cursos.
+- `/aprende` es la ruta canónica y `/que-debes-saber` conserva el alias legado.
+- Estado histórico de APRENDE-EDITORIAL-FINAL-02 (2026-10-25): **48 guías auditadas, 18 borradores y 30 no marcadas como borrador**, 9 itinerarios y 6 categorías. En ese checkpoint se conservaron las banderas por falta de autorización expresa. El estado fue superado por APRENDE-EDITORIAL-APPROVAL-01 arriba.
+- CI del HEAD `322850f` pasó `Aprende quality` #123, `Main integration quality` #189 y 1740/1740 unitarias; PR #138 se integró posteriormente en `main@4dcc27f`. Esta evidencia es histórica y no certifica el nuevo contrato 48/0.
+- Todas las guías tienen ejemplo hipotético estructurado, al menos dos fuentes HTTPS distintas, una continuación editorial relacionada y pertenencia a uno o más itinerarios. Se mantienen límites explícitos para afirmaciones comerciales, legales, privacidad, seguridad e IA.
+- Las guías madre densas se redujeron y selección/migración de proveedor, mapa DNS/correo y correo profesional se separaron cuando tenían objetivos educativos distintos. HTTPS, analítica, supervisión de automatizaciones y piloto de IA se simplificaron sin crear URLs innecesarias.
+- La consolidación recupera las mejoras útiles de #125/#126: sin aperturas genéricas, alt descriptivos, intro y extracto diferenciados, cierres no copiados, fuentes OpenAI/ITU/SBA vigentes y terminología Analytics actual.
+- El contenido sigue estático y tipado; no añade CMS, persistencia editorial, perfiles de aprendizaje ni funciones CRM de GHL. El checkpoint actual de aprobación y sus gates se registran arriba y en `STATUS.md`/`TESTING.md`.
 
 ### Legal & Trust (`privacy.tsx`, `public-layout.tsx`)
 
@@ -740,3 +755,6 @@ En el corte DIAG-MOTOR-03, la vista QA-03B y el informe enlazan preguntas fuente
 ## DIAG-MOTOR-04 — activación QA-03B y rangos globales (2026-10-24; integrada, publicación no confirmada)
 
 QA-03B usa calibración v4 en el código de `/diagnostico` y el replay del Worker. Conserva los mecanismos de puntuación y suficiencia de DIAG-MOTOR-02 y presenta cuatro rangos inclusivos 0–25, 26–50, 51–75 y 76–100. Sesión schema/key 8, replay v6, metodología 3.2 e informe 1.2 versionan el cambio; reportes 1.0/1.1 siguen soportados. El resumen anónimo conserva su contrato de 12 claves. Las 60 variantes (20 perfiles × tres niveles) continúan sin índice por falta de evidencia mínima; un fixture completo sí muestra porcentaje y rango coincidentes en resumen e informe. Esto verifica consistencia interna, no calibración empírica ni validez predictiva. Integrada por PR #97 en `origin/main@62822ee`; el HTTP actual muestra producción `0.7.3`, pero sin SHA ni replay funcional no confirma que esta calibración esté activa allí. Evidencia técnica y límites en `TESTING.md` → DIAG-MOTOR-04.
+## Candidato de release 0.8.2 — pendiente de producción (2026-10-26)
+
+La base `main@c4a7e8ec` incluye PR #147 (48 guías aprobadas, 0 borradores en catálogo) y conciliación documental #148/#149 desde el deployment productivo 0.8.1. PR #139 agrega auditoría funcional Admin y migración `0029`; el candidato incrementa la aplicación a `0.8.2`. Producción permanece en 0.8.1 hasta completar gates, migración remota, deploy y GET anónimo fechado. Preflight D1: ledger `0000–0028`, cero licencias no canceladas y cero duplicados por organización; la migración aún no está aplicada. Staging no forma parte de este release directo a producción.

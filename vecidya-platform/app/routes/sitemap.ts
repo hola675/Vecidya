@@ -2,6 +2,7 @@ import { createDatabase } from "../../db/client.server";
 import { listPublishedBusinessProfiles } from "../../db/queries/business-profile.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { learnArticles } from "../content/learn";
+import { getPublicLearnArticles } from "../content/learn-publication";
 import { LICENSE_OFFERS, ADDON_OFFERS, SERVICE_OFFERS } from "../content/commercial-detail";
 import { publicSiteUrl } from "../lib/public-seo";
 
@@ -49,7 +50,7 @@ export async function loader({ context }: Route.LoaderArgs) {
   ];
   const detailPaths = [...LICENSE_OFFERS, ...ADDON_OFFERS, ...SERVICE_OFFERS].map((offer) => offer.detailPath);
   const profilePaths = profiles.map((profile) => `/vecindario/${profile.slug}`);
-  const articlePaths = learnArticles.filter((article) => !article.editorialDraft).map((article) => `/aprende/${article.slug}`);
+  const articlePaths = getPublicLearnArticles(learnArticles).map((article) => `/aprende/${article.slug}`);
   const entries = [...new Set([...staticPaths, ...detailPaths, ...articlePaths, ...profilePaths])].map((path) => urlEntry(publicSiteUrl(path)));
   const body = [
     '<?xml version="1.0" encoding="UTF-8"?>',

@@ -11,6 +11,14 @@ export const platformAdminActions = [
   "business_profile:governance", "organization:service:update", "organization:integration:create",
 ] as const;
 export type PlatformAdminAction = (typeof platformAdminActions)[number];
+type PlatformMemberRole = typeof platformMember.$inferSelect.role;
+
+// A platform role grants an explicit set of control-plane permissions. Keep this mapping
+// separate from the action allowlist so new role values or actions are denied by default.
+const actionsByPlatformRole: Record<PlatformMemberRole, readonly PlatformAdminAction[]> = {
+  staff: [],
+  platform_admin: platformAdminActions,
+};
 
 export async function requirePlatformAdmin(env: AuthEnvironment, request: Request) {
   const session = await requireSession(env, request);
@@ -39,5 +47,8 @@ export async function requirePlatformReadAccess(env: AuthEnvironment, request: R
 export async function requirePlatformAdminAction(env: AuthEnvironment, request: Request, action: PlatformAdminAction) {
   if (!platformAdminActions.includes(action)) throw new Response("Platform action is not permitted", { status: 403 });
   const access = await requirePlatformAdmin(env, request);
+  if (!actionsByPlatformRole[access.role].includes(action)) {
+    throw new Response("Platform action permission is required", { status: 403 });
+  }
   return { ...access, action };
 }

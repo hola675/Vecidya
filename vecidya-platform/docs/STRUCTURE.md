@@ -89,7 +89,7 @@ D:\Proyectos\Vecidya            (raíz Git)
     ├── worker/                 durable-objects/, queues/, workflows/ vacíos
     ├── public/                 assets/selected/** + assets/catalog/** (PNG comerciales y estados diagnósticos) y brand/vecidya-app-icon.png
     ├── tests/e2e/              33 `.mjs` + 4 `.ps1` (ver TESTING.md); tests/unit/ (7 suites del Diagnóstico + 2 archivos de personas + 1 suite de slug de Business Profile + 2 hooks de resolución TS); integration/ vacío
-    ├── docs/                   14 archivos Markdown tras consolidar los seis informes de fase; 12 pertenecen al inventario canónico de GOVERNANCE.md y 2 son anexos preexistentes (CRM_PORTAL_01 y VECIDYA-UI-UX)
+    ├── docs/                   15 archivos Markdown tras consolidar los seis informes de fase; 12 pertenecen al inventario canónico de GOVERNANCE.md y 3 son anexos (CRM_PORTAL_01, VECIDYA-UI-UX y APRENDE_EDITORIAL_AUDIT_04B.md)
     ├── wrangler.jsonc, drizzle.config.ts, react-router.config.ts, vite.config.ts,
     │   tsconfig*.json, better-auth.config.ts, worker-configuration.d.ts (generado)
     └── vecidya-platform.zip    snapshot binario obsoleto versionado (deuda REPO-HYGIENE-001)
@@ -118,7 +118,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/diagnostico/verificar` | `dev-diagnostic-verify-email.tsx` | token del fragmento, confirmación explícita, grant/cookie; gate del flag; `PlatformFooter` en página y ErrorBoundary | No | desarrollo fake; Gmail fuera de DEV si el gate se habilita | `diagnostic-v3-qa03b-check.mjs`, isolation check | no, flag false |
 | `/diagnostico/informe/:requestId` | `dev-diagnostic-identified-report.tsx` | cookie opaca + grant/snapshot D1; DELETE/PATCH same-origin; `PlatformFooter` en página y ErrorBoundary, oculto al imprimir | No | HTML identificado bajo gate; sin exportación PDF | `diagnostic-v3-qa03b-check.mjs`, isolation check | no, flag false |
 | `/sobre-nosotros` | `about.tsx` | estático + WebP humanos | — | funcional | `about` | sí |
-| `/aprende` | `knowledge.tsx` | estático | — | funcional local; catálogo editorial de 6 categorías y 38 artículos (27 marcados como borrador); pendiente revisión individual y validación de publicación | `learn`, `commercial-review` | sí local; deploy pendiente |
+| `/aprende` | `knowledge.tsx` | estático | — | APRENDE-EDITORIAL-FINAL-02 candidato: 6 categorías, 48 guías auditadas, 18 borradores pendientes de aprobación explícita, 9 itinerarios; Comprende → Prioriza → Decide; búsqueda de contenido completo | `learn`, `commercial-review` | Aprende quality #123 y Main integration quality #189 PASS; sin merge/deploy |
 | `/aprende/:slug` | `learn-article.tsx` | estático | — | funcional local / release ready; artículo, índice, CTA y metadata | `learn`, `commercial-review` | sí local; deploy pendiente |
 | `/que-debes-saber` | `knowledge-legacy.tsx` | alias estático | — | funcional; canonical `/aprende` | ninguno | sí |
 | `/privacidad` | `privacy.tsx` | estático | — | funcional; datos, límites y contacto claros | `legal-trust` | sí |
