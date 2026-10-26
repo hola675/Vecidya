@@ -1,8 +1,8 @@
 # Base de datos
 
-## Preflight productivo para PR #139 / release 0.8.2 (2026-10-26)
+## Migración productiva 0029 — release 0.8.2 (2026-10-26)
 
-**RAN, solo lectura:** D1 `vecidya-prod` (ID `8edc3f04-258e-4c29-9f33-76fec3d25042`) tiene ledger `0000–0028`; la única pendiente en este candidato es `0029_organization-license-single-current.sql`. Conteos previos: 0 licencias `status <> 'cancelled'`, 0 grupos duplicados por organización y 0 filas canceladas históricas. Bookmark Time Travel observado antes de cualquier cambio: `000005d6-00000000-00005110-e126be1931ae402266769c42a3897da5`. Sin escrituras. `0029` crea un índice único parcial aditivo; rollback específico: `DROP INDEX IF EXISTS organization_license_one_current_unique`. No restaurar el bookmark salvo emergencia evaluada, ya que restaurar reemplaza escrituras posteriores. **Estado:** preflight completado, migración remota pendiente.
+**RAN:** antes de aplicar, D1 `vecidya-prod` (ID `8edc3f04-258e-4c29-9f33-76fec3d25042`) tenía ledger `0000–0028`, 0 licencias `status <> 'cancelled'` y 0 grupos duplicados por organización. Bookmark Time Travel previo: `000005d6-00000000-00005110-e126be1931ae402266769c42a3897da5`. El 2026-10-26T17:24Z se aplicó mediante Wrangler remoto únicamente `0029_organization-license-single-current.sql`; consulta posterior confirma el ledger y el índice parcial `organization_license_one_current_unique`. Staging no se modificó. Rollback específico del índice: `DROP INDEX IF EXISTS organization_license_one_current_unique`. No restaurar el bookmark salvo emergencia evaluada, ya que reemplazaría escrituras posteriores.
 
 ## PROD-RELEASE-0.8.1 — sin cambios D1 (2026-10-26)
 

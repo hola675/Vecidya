@@ -1,12 +1,12 @@
 # Changelog
 
-## 0.8.2 — candidato de release (2026-10-26; publicación pendiente)
+## 0.8.2 — producción (2026-10-26)
 
-- Reúne los cambios integrados en `main` después del deployment 0.8.1 —aprobación editorial de las 18 guías de Aprende (48 publicables)— y los cambios propuestos en PR #139: auditoría funcional Admin, autorización explícita, control de concurrencia y unicidad de licencia por organización.
+- Reúne los cambios integrados en `main` después del deployment 0.8.1 —aprobación editorial de las 18 guías de Aprende (48 publicables)— y PR #139: auditoría funcional Admin, autorización explícita, control de concurrencia y unicidad de licencia por organización. PR #139 integrado en `main@c03c3bab7610a327db9926cd7aee0275a3dbb8a7`.
 - Las mutaciones de plataforma verifican una matriz explícita rol→acción (`platform_admin` tiene las acciones de la lista vigente; `staff` no tiene acciones de escritura). Suspender/reactivar licencia ahora usa ID y estado esperados en un CAS; las filas canceladas no se reactivan y conflictos no añaden auditoría.
 - Un conflicto CAS de MiniWeb conserva la revisión asociada al texto que sigue abierto en el formulario, por lo que un segundo intento continúa bloqueado hasta recargar y reconciliar el borrador; el E2E comprueba que no se sobrescribe la revisión ganadora. El navegador E2E Admin acepta Chromium de Playwright o `PLAYWRIGHT_CHROMIUM_EXECUTABLE`.
-- Añade la migración aditiva `0029_organization-license-single-current.sql`. El ledger productivo se verificó en `0000–0028`; el preflight confirmó cero licencias vigentes y cero grupos duplicados. La migración aún no se aplicó y el deploy aún no se ejecutó.
-- Versión de aplicación `0.8.1` → `0.8.2` (patch pre-1.0: cambios compatibles y correcciones/invariantes; sin ruptura de contrato). Este candidato se publicará solo después del merge autorizado, gates y despliegue. Typecheck/build y Worker/D1 E2E PASS tras las correcciones; faltan merge, migración remota, deploy y HTTP anónimo fechado. Ver `ENVIRONMENTS.md`.
+- Añade la migración aditiva `0029_organization-license-single-current.sql`, aplicada a D1 producción el `2026-10-26T17:24:32Z` luego de verificar ledger `0000–0028`, cero licencias vigentes y cero duplicados. El deploy 0.8.2 quedó activo el `2026-10-26T17:26:21Z`, Worker Version ID `d9042b45-7c24-4da6-991c-38533c1f2f95`.
+- Versión de aplicación `0.8.1` → `0.8.2` (patch pre-1.0: cambios compatibles y correcciones/invariantes; sin ruptura de contrato). Typecheck/build, Worker/D1 E2E y checks CI de calidad, Playwright y Typecheck/build PASS. HTTP anónimo posterior cargó `/` y `/aprende` con footer `0.8.2`; evidencia en `ENVIRONMENTS.md`.
 
 ### Continuación de PR #139 — auditoría de integraciones y estado vacío (2026-10-26)
 

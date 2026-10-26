@@ -1,8 +1,14 @@
-# Entornos y release de producción 0.8.1 (2026-10-26)
+# Entornos y release de producción 0.8.2 (2026-10-26)
 
-## Candidato de producción 0.8.2 — pendiente (2026-10-26)
+## Release de producción 0.8.2 — publicado (2026-10-26)
 
-Base `main@c4a7e8ec`; PR #147 aprueba 18 guías y PR #139 añade administración auditada y migración `0029`. Versión candidata `0.8.2`. Producción permanece en `0.8.1` hasta merge, migración, deploy y comprobación HTTP anónima fechada. Preflight de `vecidya-prod`: ledger `0000–0028`, cero licencias no canceladas y cero grupos duplicados; bookmark previo registrado en `DATABASE.md`. Migración y deploy pendientes. Staging no está incluido en el alcance directo a producción.
+PR #139 integrado en `main@c03c3bab7610a327db9926cd7aee0275a3dbb8a7`; `package.json` establece `0.8.2`. El release incorpora los controles administrativos auditados de #139 y la aprobación editorial de #147 (48 guías, 9 itinerarios). Typecheck/build, E2E local y los checks CI de calidad, Playwright y Typecheck/build pasaron antes del merge.
+
+**Migración D1 remota RAN 2026-10-26T17:24:32Z:** se aplicó solo `0029_organization-license-single-current.sql` a `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`); el índice `organization_license_one_current_unique` existe y el ledger registra la migración. Preflight previo: 0 licencias no canceladas y 0 organizaciones duplicadas. Staging no se modificó.
+
+**Deploy RAN 2026-10-26T17:26:21Z:** Worker `vecidya-platform`, deployment `805dbb77-e90a-4dc8-a40f-efa1deb3111a`, Version ID `d9042b45-7c24-4da6-991c-38533c1f2f95` al 100 %, rutas `vecidya.com/*` y `www.vecidya.com/*`. Configuración confirmada: `DB=vecidya-prod`, bucket R2 de producción, Gmail, flags productivos y Cron `17 3 * * *`.
+
+**HTTP anónimo, RAN 2026-10-26 después del deploy:** navegador sin sesión cargó `/` y `/aprende`; los pies públicos muestran `Versión pública 0.8.2` y `© 2026 Vecidya`. `/aprende` presenta 48 guías, 9 itinerarios y 6 temas. Validación de lectura; sin cambios en staging.
 
 **Release publicado 0.8.1:** PR #144 integrado en `main@c8d52c8f947892e43859e72c2263fb032a07d05e`; `package.json` incrementa `0.8.0` → `0.8.1`. Deploy directo autorizado por el usuario y completado el `2026-10-26T15:48:05Z`; Worker `vecidya-platform`, deployment `cd59d948-11ad-41a1-a697-734e130360b5`, Version ID activo `9497bda3-dc65-4a8d-a976-cfb89925da5d` al 100 %. No cambia `wrangler.jsonc`, bindings, secrets ni schema; no se ejecutaron migraciones y D1 producción permanece en ledger `0000–0028`. Staging no se desplegó en este release, de acuerdo con la autorización directa a producción.
 
