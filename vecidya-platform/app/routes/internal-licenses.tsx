@@ -3,9 +3,9 @@ import { Form, Link, redirect, useActionData, useLoaderData } from "react-router
 import { eq } from "drizzle-orm";
 
 import { createDatabase } from "../../db/client.server";
-import { getCurrentLicensePrice, getOrganizationLicense, planCodes, assignOrganizationLicense, changeOrganizationLicensePlan, setOrganizationLicenseStatus, LicensingConflictError, LicensingError, isPlanCode } from "../../db/queries/licensing.server";
+import { getCurrentLicensePrice, getOrganizationLicense, planCodes, assignOrganizationLicense, changeOrganizationLicensePlan, setOrganizationLicenseStatus, reassignOrganizationLicenseBillingAccount, LicensingConflictError, LicensingError, isPlanCode } from "../../db/queries/licensing.server";
 import { listPlatformOrganizations } from "../../db/queries/platform-organizations.server";
-import { licensePrice } from "../../db/schema";
+import { billingAccount, licensePrice, user } from "../../db/schema";
 import type { PlanCode } from "../../db/pricing/calculator";
 import { AdminShell } from "../components/admin-shell";
 import { Badge, Icon } from "../components/ui";
@@ -24,16 +24,18 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const access = await requirePlatformAdmin(env, request);
   const database = createDatabase(env.DB);
   const organizations = await listPlatformOrganizations(database);
+  const users = await database.select({ id: user.id, name: user.name, email: user.email }).from(user).orderBy(user.name);
   const now = new Date();
   const [plans, rows] = await Promise.all([
     Promise.all(planCodes.map(async (code) => ({ code, price: await getCurrentLicensePrice(database, code, now) }))),
     Promise.all(organizations.map(async (organization) => {
       const license = await getOrganizationLicense(database, organization.id);
       const price = license ? await database.query.licensePrice.findFirst({ where: eq(licensePrice.id, license.priceId) }) : null;
-      return { organization, license, price };
+      const billing = license ? await database.query.billingAccount.findFirst({ where: eq(billingAccount.id, license.billingAccountId) }) : null;
+      return { organization, license, price, billingOwnerUserId: billing?.ownerUserId ?? null };
     })),
   ]);
-  return { rows, plans, updated: new URL(request.url).searchParams.get("updated") === "1", workspaceUser: access.workspaceUser };
+  return { rows, plans, users, updated: new URL(request.url).searchParams.get("updated") === "1", workspaceUser: access.workspaceUser };
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
@@ -51,12 +53,13 @@ export async function action({ context, request }: Route.ActionArgs) {
     if (intent === "assign") {
       const planCode = String(form.get("planCode") ?? "");
       const initialStatus = String(form.get("initialStatus") ?? "pending");
-      if (!organization.owner || !isPlanCode(planCode) || (initialStatus !== "pending" && initialStatus !== "active")) {
+      const ownerUserId = String(form.get("ownerUserId") ?? "");
+      if (!ownerUserId || !isPlanCode(planCode) || (initialStatus !== "pending" && initialStatus !== "active")) {
         return { error: "Selecciona un propietario registrado, un plan disponible y un estado válido." };
       }
       await assignOrganizationLicense(database, {
         organizationId,
-        ownerUserId: organization.owner.id,
+        ownerUserId,
         planCode,
         actorUserId: actor.userId,
         activate: initialStatus === "active",
@@ -77,6 +80,12 @@ export async function action({ context, request }: Route.ActionArgs) {
         status: intent === "suspend" ? "suspended" : "active",
         actorUserId: actor.userId,
       });
+    } else if (intent === "transfer-billing-account") {
+      const newOwnerUserId = String(form.get("newOwnerUserId") ?? "");
+      const expectedLicenseId = String(form.get("currentLicenseId") ?? "");
+      const expectedBillingAccountId = String(form.get("expectedBillingAccountId") ?? "");
+      if (!newOwnerUserId || !expectedLicenseId || !expectedBillingAccountId) return { error: "Recarga la página para confirmar la licencia y su titular actuales." };
+      await reassignOrganizationLicenseBillingAccount(database, { organizationId, newOwnerUserId, expectedLicenseId, expectedBillingAccountId, actorUserId: actor.userId });
     } else {
       throw new Response("Acción inválida", { status: 400 });
     }
@@ -89,7 +98,7 @@ export async function action({ context, request }: Route.ActionArgs) {
 }
 
 export default function InternalLicenses() {
-  const { rows, plans, updated, workspaceUser } = useLoaderData<typeof loader>();
+  const { rows, plans, users, updated, workspaceUser } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const [search, setSearch] = useState("");
   const availablePlans = plans.filter(({ price }) => price !== null);
@@ -133,7 +142,7 @@ export default function InternalLicenses() {
       {filteredClients.map(([clientKey, client]) => <section className="admin-client-group" key={clientKey} aria-label={`Negocios de ${client.name}`}>
         <header className="admin-client-group__heading"><div><p className="eyebrow">CLIENTE</p><h2>{client.name}</h2>{client.email ? <p>{client.email}</p> : null}</div><Badge tone="neutral">{client.rows.length} {client.rows.length === 1 ? "negocio" : "negocios"}</Badge></header>
         <div className="admin-overview-grid">
-        {client.rows.map(({ organization, license, price }) => (
+        {client.rows.map((row) => { const { organization, license, price } = row; return (
           <section className="card admin-detail-card" key={organization.id}>
             <p className="eyebrow">NEGOCIO</p>
             <h2>{organization.profile?.displayName ?? organization.name}</h2>
@@ -143,8 +152,9 @@ export default function InternalLicenses() {
             <Link className="text-link" to={`/app/internal/organizations/${organization.id}`}>Ver espacio de trabajo →</Link>
 
             {!license || license.status === "cancelled" ? (
-              organization.owner && availablePlans.length ? <Form className="admin-license-form" method="post">
+              availablePlans.length && users.length ? <Form className="admin-license-form" method="post">
                 <input name="organizationId" type="hidden" value={organization.id} /><input name="intent" type="hidden" value="assign" />
+                <label>Titular de facturación<select name="ownerUserId" required defaultValue={organization.owner?.id ?? ""}><option value="" disabled>Selecciona una persona</option>{users.map((person) => <option key={person.id} value={person.id}>{person.name} · {person.email}</option>)}</select></label>
                 <label>Plan
                   <select name="planCode" required defaultValue={availablePlans[0].code}>
                     {availablePlans.map(({ code, price: currentPrice }) => <option key={code} value={code}>{planNames[code]} · {currentPrice!.currency} {(currentPrice!.amountCents / 100).toFixed(2)} / mes</option>)}
@@ -153,16 +163,17 @@ export default function InternalLicenses() {
                 <label>Estado inicial
                   <select name="initialStatus" defaultValue="pending"><option value="pending">Pendiente · todavía no habilita capacidades</option><option value="active">Activa · habilita capacidades</option></select>
                 </label>
-                <button className="button button--primary" type="submit">Asignar licencia a este negocio</button>
-              </Form> : <p>No se puede asignar hasta que haya un propietario registrado y un precio vigente.</p>
+                <button className="button button--primary" onClick={(event) => { if (!window.confirm("¿Asignar esta licencia y registrar la acción en auditoría?")) event.preventDefault(); }} type="submit">Asignar licencia a este negocio</button>
+              </Form> : <p>No hay usuarios registrados o precios vigentes para asignar una licencia.</p>
             ) : <div className="admin-license-actions">
               {license.status === "active" ? <>
-                <Form className="admin-license-form" method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="change-plan" /><label>Cambiar plan<select name="planCode" required defaultValue={availablePlans.find(({ code }) => code !== license.planCode)?.code ?? license.planCode}>{availablePlans.filter(({ code }) => code !== license.planCode).map(({ code, price: currentPrice }) => <option key={code} value={code}>{planNames[code]} · {currentPrice!.currency} {(currentPrice!.amountCents / 100).toFixed(2)} / mes</option>)}</select></label><button className="button button--secondary" disabled={!availablePlans.some(({ code }) => code !== license.planCode)} type="submit">Cambiar plan</button></Form>
-                <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="suspend" /><button className="button button--secondary" type="submit">Suspender licencia</button></Form>
-              </> : <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="reactivate" /><button className="button button--primary" type="submit">Activar licencia</button></Form>}
+                <Form className="admin-license-form" method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="change-plan" /><label>Cambiar plan<select name="planCode" required defaultValue={availablePlans.find(({ code }) => code !== license.planCode)?.code ?? license.planCode}>{availablePlans.filter(({ code }) => code !== license.planCode).map(({ code, price: currentPrice }) => <option key={code} value={code}>{planNames[code]} · {currentPrice!.currency} {(currentPrice!.amountCents / 100).toFixed(2)} / mes</option>)}</select></label><button className="button button--secondary" disabled={!availablePlans.some(({ code }) => code !== license.planCode)} onClick={(event) => { if (!window.confirm("¿Cambiar el plan de esta licencia? La acción quedará registrada en auditoría.")) event.preventDefault(); }} type="submit">Cambiar plan</button></Form>
+                <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="suspend" /><button className="button button--secondary" onClick={(event) => { if (!window.confirm("¿Suspender esta licencia? El negocio y sus datos se conservarán.")) event.preventDefault(); }} type="submit">Suspender licencia</button></Form>
+              </> : <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="reactivate" /><button className="button button--primary" onClick={(event) => { if (!window.confirm("¿Reactivar esta licencia?")) event.preventDefault(); }} type="submit">Activar licencia</button></Form>}
+              <Form className="admin-license-form" method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="expectedBillingAccountId" type="hidden" value={license.billingAccountId} /><input name="intent" type="hidden" value="transfer-billing-account" /><p>Titular de facturación: {users.find((person) => person.id === row.billingOwnerUserId)?.name ?? "No disponible"}</p><label>Transferir a<select name="newOwnerUserId" required defaultValue={row.billingOwnerUserId ?? ""}><option value="" disabled>Selecciona una persona</option>{users.map((person) => <option key={person.id} value={person.id}>{person.name} · {person.email}</option>)}</select></label><button className="button button--secondary" onClick={(event) => { if (!window.confirm("¿Transferir la facturación de este negocio? La transferencia quedará registrada en auditoría.")) event.preventDefault(); }} type="submit">Transferir facturación</button></Form>
             </div>}
           </section>
-        ))}
+        ); })}
         </div>
       </section>)}
       {filteredClients.length === 0 ? <section className="empty-state card"><div><p className="eyebrow">SIN RESULTADOS</p><h2>No encontramos ese cliente o negocio</h2><p>Prueba con otro nombre o correo.</p></div></section> : null}
