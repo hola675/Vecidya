@@ -1,13 +1,19 @@
+import { and, eq } from "drizzle-orm";
+
 import { createDatabase } from "../../db/client.server";
+import { organizationLicense } from "../../db/schema";
 import {
   LicensingError,
   LicensingConflictError,
+  LicensingNotFoundError,
   assignOrganizationLicense,
+  cancelOrganizationLicense,
   changeOrganizationLicensePlan,
   getBillingAccountPricing,
   getOrganizationLicense,
   isPlanCode,
   reassignOrganizationLicenseBillingAccount,
+  reactivateCancelledOrganizationLicense,
   setOrganizationLicenseStatus,
 } from "../../db/queries/licensing.server";
 import { requirePlatformAdmin, requirePlatformAdminAction } from "../../server/platform-authorization.server";
@@ -16,8 +22,8 @@ import { cloudflareContext } from "../../server/cloudflare-context";
 import type { Route } from "./+types/api-platform-licensing";
 
 // LICENSE-STRATEGY-001. Solo `platform_admin`: no existe todavía checkout ni cobro automático, así
-// que asignar, cambiar de plan, suspender/reactivar y transferir de billing_account son operaciones
-// controladas y auditadas (ver db/queries/licensing.server.ts), no autoservicio.
+// que asignar, cambiar de plan, suspender/reactivar/cancelar y transferir de billing_account son
+// operaciones controladas y auditadas (ver db/queries/licensing.server.ts), no autoservicio.
 export async function loader({ context, params, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   await requirePlatformAdmin(env, request);
@@ -32,6 +38,7 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
 }
 
 function errorResponse(error: unknown) {
+  if (error instanceof LicensingNotFoundError) return Response.json({ error: error.message }, { status: 404 });
   if (error instanceof LicensingConflictError) return Response.json({ error: error.message }, { status: 409 });
   if (error instanceof LicensingError) return Response.json({ error: error.message }, { status: 400 });
   throw error;
@@ -79,9 +86,27 @@ export async function action({ context, params, request }: Route.ActionArgs) {
     }
   }
 
+  if (body.operation === "cancel") {
+    if (typeof body.currentLicenseId !== "string" || !body.currentLicenseId) return Response.json({ error: "currentLicenseId is required" }, { status: 400 });
+    try {
+      const result = await cancelOrganizationLicense(database, { organizationId, expectedLicenseId: body.currentLicenseId, actorUserId: admin.userId });
+      return Response.json(result);
+    } catch (error) {
+      return errorResponse(error);
+    }
+  }
+
   if (body.operation === "suspend" || body.operation === "reactivate") {
     if (typeof body.currentLicenseId !== "string" || !body.currentLicenseId) return Response.json({ error: "currentLicenseId is required" }, { status: 400 });
     try {
+      if (body.operation === "reactivate") {
+        const current = await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.id, body.currentLicenseId), eq(organizationLicense.organizationId, organizationId)) });
+        if (!current) return Response.json({ error: "Organization license not found" }, { status: 404 });
+        if (current.status === "cancelled") {
+          return Response.json(await reactivateCancelledOrganizationLicense(database, { organizationId, expectedLicenseId: body.currentLicenseId, actorUserId: admin.userId }));
+        }
+        if (current.status !== "suspended") throw new LicensingConflictError("Only suspended or manually cancelled licenses can be reactivated");
+      }
       const result = await setOrganizationLicenseStatus(database, {
         organizationId,
         expectedLicenseId: body.currentLicenseId,
