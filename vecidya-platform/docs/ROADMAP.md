@@ -1,14 +1,14 @@
 ## APRENDE-EDITORIAL-FINAL-02 — preservar la frontera de aprobación (2026-10-25)
 
-**Activo en `feat/aprende-editorial-final` / PR #138; sin merge ni deploy.** El catálogo se ha auditado en 48 guías y 9 itinerarios, pero la auditoría no autoriza a quitar estados de borrador. La integración candidata debe conservar **18 borradores** (14 existentes en `main` + cuatro guías nuevas de 04A/04B) y 30 guías con estado previo no-borrador. No se marcará un artículo como aprobado ni se publicará sin autorización explícita. Gate técnico superado en `322850f`: `Aprende quality` run `40254782673` y `Main integration quality` run `40254782671` PASS; 1740/1740 unitarias. Quedan la aprobación explícita de las guías en borrador y la decisión del usuario sobre merge/deploy.
+**PR #138 se integró en `origin/main@4dcc27f` (corte registrado 2026-10-26).** El checkpoint actual `APRENDE-EDITORIAL-APPROVAL-01` revisa y aprueba las 18 guías que mantenían estado de borrador, deja 48 aprobadas/0 borradores y actualiza las pruebas y la certificación pública. La aprobación de contenido no equivale a merge ni despliegue. Ver estado y gates vigentes en `STATUS.md` y `TESTING.md`.
 
 ## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
 
-## APRENDE-EDITORIAL-04B — revisión semántica de las 46 guías
+## APRENDE-EDITORIAL-04B — revisión semántica de las 46 guías (integrada)
 
-**Implementado en la rama del PR #121; CI se verifica en Actions del HEAD actual y la aceptación editorial sigue pendiente.** Se registran los dictámenes por guía en docs/APRENDE_EDITORIAL_AUDIT_04B.md. El trabajo reduce solapamientos en CRM, preparación publicitaria, mantenimiento de presencia y DNS; diferencia la política de IA empresarial de la prueba de asistentes; personaliza encabezados de trece guías introductorias y añade una relación hacia el artículo de presupuesto.
+**PR #121 y consolidación editorial integrados en `main`.** Se registran los dictámenes por guía en docs/APRENDE_EDITORIAL_AUDIT_04B.md. El trabajo reduce solapamientos en CRM, preparación publicitaria, mantenimiento de presencia y DNS; diferencia la política de IA empresarial de la prueba de asistentes; personaliza encabezados de trece guías introductorias y añade una relación hacia el artículo de presupuesto.
 
-Gate de salida: catálogo de 46 slugs únicos y nueve itinerarios intactos; ejemplos estructurados, enlaces y fuentes válidos; estados editoriales conservados; suites de Aprende y regresión principal PASS sobre el SHA actual. No fusionar ni desplegar como parte de este checkpoint.
+Gate histórico: catálogo de 46 slugs únicos y nueve itinerarios intactos; ejemplos estructurados, enlaces y fuentes válidos. El siguiente checkpoint APRENDE-EDITORIAL-APPROVAL-01 completa la aprobación editorial del catálogo final de 48 artículos.
 
 
 **Objetivo:** adaptar las referencias premium entregadas por el usuario a una experiencia coherente de Vecidya, preservando contenido, datos, permisos, funcionamiento móvil y límites comerciales. Las referencias guían composición e interacción; no se copian marcas, textos, layouts exactos ni assets. Este trabajo no incluye publicación ni despliegue.
@@ -61,21 +61,21 @@ Gate de salida: catálogo de 46 slugs únicos y nueve itinerarios intactos; ejem
 
 **Checkpoint 04B implementado, pendiente de CI final:** la auditoría semántica separa proveedor (elegir/renovar vs migrar) y deja 47 guías. Se reducen seis guías madre que habían acumulado detalle ya cubierto por especializadas: Presencia 3291→1420, Automatizaciones 2707→1146, Dominio/hosting 2413→1179, primera campaña 2346→1120, CRM 2142→1075 e IA general 1743→982 palabras. Un guard unitario limita esas seis piezas a ≤10 secciones y ≤1800 palabras serializadas. **Siguiente checkpoint 04C:** recorrer las 47 guías por jerga y comprensión (término → explicación cotidiana → ejemplo), sin separar por longitud salvo que existan objetivos educativos realmente distintos.
 
-### APRENDE-EDITORIAL-04B — separación semántica de guías técnicas
+### APRENDE-EDITORIAL-04B — separación semántica de guías técnicas (integrada)
 
-**En curso:** 48 guías y 9 itinerarios. Selección/migración de proveedor y mapa DNS/correo profesional ya están separados por objetivo educativo. Mantener slugs históricos cuando funcionen como puerta de entrada; los detalles nuevos quedan en borrador hasta revisión editorial.
+El catálogo integrado tiene 48 guías y 9 itinerarios. Selección/migración de proveedor y mapa DNS/correo profesional están separados por objetivo educativo. APRENDE-EDITORIAL-APPROVAL-01 completó la revisión de las nuevas guías.
 
-### APRENDE-EDITORIAL-04E — revisión de borradores de Operaciones (2026-10-25)
+### APRENDE-EDITORIAL-04E — revisión de Operaciones (2026-10-25; histórica)
 
-**En revisión técnica:** cinco guías de Operaciones fueron auditadas una por una y promovidas tras verificar fuentes, lenguaje, ejemplos y límites. Quedan 13 borradores en el catálogo de 48 guías. Este checkpoint se mantiene separado de 04C/04D porque esas ramas parten de un HEAD anterior de 04B; la reconciliación deberá preservar ambos conjuntos de cambios sin force-push destructivo.
+Cinco guías de Operaciones se auditaron individualmente y se promovieron tras verificar fuentes, lenguaje, ejemplos y límites. La secuencia histórica desembocó en el catálogo integrado actual; el estado vigente se registra en APRENDE-EDITORIAL-APPROVAL-01.
 
-### APRENDE-EDITORIAL-04I — cierre editorial del catálogo (2026-10-25)
+### APRENDE-EDITORIAL-04I — revisión de las guías fundacionales (2026-10-25; histórica)
 
-**Checkpoint en certificación:** la cadena 04E→04I revisó los 18 borradores que permanecían sobre el HEAD final de 04B. Estado candidato: **48/48 guías revisadas, 0 borradores**. Antes de integrar se requiere CI del HEAD, auditoría transversal de fuentes/rutas/relaciones y reconciliación no destructiva con los PR #125/#126, que contienen mejoras de lenguaje/fuentes sobre una base anterior.
+La revisión de esta cadena aprobó contenido en ramas dependientes. El estado integrado posterior restauró 18 indicadores de borrador hasta que el usuario otorgó la aprobación explícita registrada en APRENDE-EDITORIAL-APPROVAL-01.
 
-### APRENDE-EDITORIAL-04J — consolidación final de contenido (2026-10-25)
+### APRENDE-EDITORIAL-04J — consolidación final de contenido (2026-10-25; histórica)
 
-**Candidato editorial completo:** 48 guías revisadas, 0 borradores, 9 itinerarios y 6 categorías. La deuda de 04C/04D se reconcilió de forma no destructiva: lenguaje específico, fuentes vigentes, cobertura total de itinerarios y relaciones editoriales. `Aprende quality` PASS; falta el PR de integración contra `main` y su gate general. No autoriza deploy.
+La rama candidata consolidó mejoras de lenguaje, fuentes, cobertura total de itinerarios y relaciones editoriales. Su estado 48/0 no se integró entonces: PR #138 restauró los borradores hasta la aprobación explícita posterior de APRENDE-EDITORIAL-APPROVAL-01.
 
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
@@ -86,12 +86,10 @@ Gate de salida: catálogo de 46 slugs únicos y nueve itinerarios intactos; ejem
 
 ### APRENDE-GESTIÓN-03 — educación para decidir, supervisar y mejorar (2026-10-20)
 
-**Implementado como borrador, no certificado ni publicado:** presupuestos y costos reales de herramientas, solicitudes y aprobaciones de compra, continuidad si falla internet o un sistema, límites y supervisión de IA, evaluación de un proyecto digital. El nuevo camino «Dirige y mejora con criterio» usa casos hipotéticos y pasos proporcionales para negocios pequeños, empresas con equipos y grupos con varias sedes. Reconciliado con APRENDE-OPERACIONES-02 ya fusionado en main: 38 artículos (11 originales + 27 borradores) y 7 itinerarios en esta rama. Sin CRM/ERP transaccionales, nuevos pagos, cambios de DB ni obligaciones legales universales.
-
-**Siguiente gate:** revisión editorial de cada borrador por una persona autorizada, fuentes institucionales actuales, integridad/certificación técnica, accesibilidad visual y verificación de enlaces. No retirar `editorialDraft`, no integrar PR ni publicar por inferencia.
+**Contenido incorporado y revisión editorial completada en APRENDE-EDITORIAL-APPROVAL-01.** Presupuestos y costos de herramientas, compras, continuidad, supervisión de IA y evaluación de mejoras permanecen como guías educativas; no implementan CRM/ERP transaccionales, nuevos pagos ni obligaciones legales universales.
 
 
-La primera extensión de operaciones cubre **organización de tareas**, **movimientos y comprobación de inventario**, **capacitación práctica del personal**, **introducción a ERP frente a CRM** y **proyectos digitales piloto con seguimiento y reversión**. Se integra en el sexto itinerario «Trabaja mejor cada día» con cinco guías en estado `editorialDraft: true`. Las fuentes, ejemplos y CTA son orientativos, sin ventas garantizadas; certificación de código, revisión editorial humana y publicación continúan pendientes.
+La primera extensión de operaciones cubre **organización de tareas**, **movimientos y comprobación de inventario**, **capacitación práctica del personal**, **introducción a ERP frente a CRM** y **proyectos digitales piloto con seguimiento y reversión**. Se integra en el sexto itinerario «Trabaja mejor cada día». Las guías recibieron aprobación editorial en APRENDE-EDITORIAL-APPROVAL-01. Las fuentes, ejemplos y CTA son orientativos, sin ventas garantizadas.
 
 **Brechas aún abiertas — no implementadas:** aprobaciones complejas y compras/proveedores, gestión financiera y presupuestos, continuidad entre sedes, formación especializada y accesibilidad de capacitación, dirección con indicadores consistentes, incidentes de seguridad, gobierno de IA y normas sectoriales por país. Evitar convertir una biblioteca educativa en ERP/CRM o herramientas transaccionales.
 
@@ -99,7 +97,7 @@ La primera extensión de operaciones cubre **organización de tareas**, **movimi
 
 **Audiencia transversal:** negocios pequeños, empresas con departamentos, organizaciones con sedes, grupos con varias marcas o entidades; también profesionales y organizaciones sin fines de lucro cuando las recomendaciones sean aplicables. El aprendizaje se adapta a la complejidad de la tarea, permisos, equipo y datos, sin asumir que todos parten de cero ni que todos necesitan contratar software.
 
-**Ruta incorporada como borrador en rama dependiente:** coordinación de sedes y negocios, permisos y responsables, selección de herramientas y comparación responsable de indicadores. Antes de incorporarla definitivamente se requiere revisión editorial/fuentes y certificación técnica sin interferir con `feat/aprende-editorial-02`.
+La ruta de coordinación de sedes y negocios, permisos y responsables, selección de herramientas y comparación responsable de indicadores está integrada y aprobada mediante APRENDE-EDITORIAL-APPROVAL-01.
 
 **Brechas para futuros checkpoints, NO IMPLEMENTADAS:**
 - Operaciones y productividad: documentos compartidos, aprobaciones, tareas, compras, inventario, proyectos y continuidad entre sedes; cuándo hace falta un ERP y cuándo no.
@@ -114,9 +112,9 @@ La primera extensión de operaciones cubre **organización de tareas**, **movimi
 
 ## CONSOLIDACIÓN-DIAG-2026-10-18 — roadmap de unificación (propuesto, sin cutover)
 
-### APRENDE — próxima certificación editorial de la biblioteca
+### APRENDE — gate editorial de la biblioteca (completado en PR candidato)
 
-Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos borradores educativos (hechos, lenguaje sin jerga, fuentes, ejemplos hipotéticos, imágenes móviles y autoría), ejecutar los gates de `TESTING.md`, y retirar `editorialDraft` solo de guías aprobadas individualmente. La eliminación del estado de borrador modifica exposición/indexación y no debe hacerse sin revisión editorial explícita. Realizar seguimiento de temas por sector o jurisdicción (normas de pagos/consentimiento, costos y herramientas regionales) solo con evidencia y contexto; no inventar leyes generales. No es un permiso de publicar o desplegar.
+Se revisaron y aprobaron las 18 guías pendientes, con evidencia en `STATUS.md` y `TESTING.md`. El catálogo se expone con 48 guías y 9 itinerarios en el PR candidato. Publicación/despliegue y HTTP público mantienen sus gates separados; contenido futuro requiere revisión individual antes de retirar `editorialDraft`.
 
 
 **Estado reconciliado al 2026-10-26; HTTP RAN 2026-10-25T18:38Z:** producción sirvió `0.8.0`; staging `0.7.0` según corte HTTP anterior. `origin/main@4dcc27f` integra PR #138. Cloudflare API 2026-10-26 confirma buckets R2 de staging y producción; Worker staging aún no tiene el binding R2, producción sí. La última verificación de ledger D1 documentada sigue en `0000–0026` (2026-10-24); no se consultó D1 en este corte. No hubo deploy ni escritura remota; entrega Gmail y ciclo de purga no se revalidaron.

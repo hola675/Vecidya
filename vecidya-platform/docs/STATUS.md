@@ -4,6 +4,12 @@
 
 PR #144 integrado en `main@c8d52c8`; versión `0.8.1`. Typecheck/build, unitarias de integración y tres workflows del release PASS; capturas revisadas. Deploy productivo `2026-10-26T15:48:05Z`, Version ID `9497bda3-dc65-4a8d-a976-cfb89925da5d`. HTTP anónimo TLS 2026-10-26T15:48Z confirma versión/footer, Aprende, página pública 200, borrador 404 y sitemap sin borradores. Sin migraciones D1 ni cambios de bindings/configuración Worker. Producción publicada; staging no se desplegó en este release.
 
+## APRENDE-EDITORIAL-APPROVAL-01 — aprobación de las 18 guías (2026-10-26)
+
+**CODE/TEST en checkpoint local reconciliado con `main@d5e522a0`, aún sin PR:** se revisaron individualmente las 18 guías retenidas y se aprobaron; catálogo con 48 aprobadas, 0 borradores, 9 itinerarios y 6 categorías. Criterios: objetivo/alcance, claridad, ejemplos hipotéticos, pasos, FAQ, resumen, imagen/alt, enlaces relacionados y fuentes con alcance declarado.
+
+**RAN local:** 51/51 focales, typecheck/build, QA 7 checks y revisión visual PASS. La suite unitaria completa se detuvo antes de terminar; CI pendiente. La auditoría de fuentes identificó 73 URL, 16 respuestas 404 automatizadas y 12 bloqueos/no concluyentes. Se corroboró el DOI NIST oficial pese al falso 404 y se sustituyó la referencia CISA archivada por la vigente. El resto de los 404 del catálogo queda como deuda en `TESTING.md`. No desplegado; el HTTP del release 0.8.1 no certifica el estado 48/0.
+
 ## APRENDE-PUBLIC-QA-01 — control de experiencia pública (2026-10-26)
 
 **CODE/TEST — integrado en `main@c8d52c8`, publicado como 0.8.1:** Playwright y workflow de certificación anónima en localhost cubren 30 guías públicas y 18 borradores protegidos del catálogo de 48. Verifica rutas individuales, sitemap/robots, búsqueda, filtros, itinerarios, imágenes, navegación y 320/390/768/1366 px. El sitemap usa la selección central `getPublicLearnArticles`; el E2E anterior con expectativas obsoletas deja de ejecutarse por defecto. Ver `TESTING.md` para comando y evidencia.

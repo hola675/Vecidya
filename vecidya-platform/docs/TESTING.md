@@ -1,5 +1,11 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-APPROVAL-01 — revisión de catálogo (checkpoint local)
+
+La revisión aprobó las 18 guías previamente en borrador: objetivo/alcance, claridad, resumen, estructura, ejemplo hipotético, definiciones/pasos/FAQ, imagen/alt, enlaces relacionados y fuentes con alcance declarado. Unitarias focales: 51/51 PASS; typecheck/build y Playwright local: PASS; la regresión completa no finalizó y queda para CI.
+
+**Fuentes — RAN local 2026-10-26:** `node scripts/audit-learn-links.mjs` inspeccionó 73 URL de siete módulos: 16 respuestas 404 automatizadas y 12 no concluyentes (403/timeout); el resto respondió 200 o redirección. El DOI NIST AI 600-1 dio falso 404 automatizado aunque NIST publica registro y PDF. Se reemplazó una URL archivada de CISA en una de las guías aprobadas por la página vigente de recursos para pequeñas y medianas empresas. Las demás referencias 404 pertenecen a artículos preexistentes y requieren un checkpoint posterior de saneamiento. Los 403/timeouts no se clasifican como rotos sin corroboración.
+
 ## APRENDE-PUBLIC-QA-01 — certificación pública no destructiva (2026-10-26; PR #143 integrado)
 
 **CODE/TEST; RAN en PR #143 sobre `e2f580b`:** el script `tests/e2e/aprende-public-qa-check.mjs` importa el catálogo real (48 guías: 30 no-borradores y 18 borradores) y verifica contra un servidor local exclusivo (`http://127.0.0.1:5173`; rechaza destinos remotos). Consultó 30 slugs públicos esperando HTTP 200 y 18 borradores esperando HTTP 404; contrastó sitemap y robots.txt; comprobó que listados, búsqueda, itinerarios y relacionados no expongan borradores. Capturó listado/artículo; verificó navegación por teclado, imágenes, enlaces HTTPS, canonical, H1, índice, categorías y ausencia de overflow en 320/390/768/1366 px. Los tres workflows `Aprende quality` (run `40348781678`), `Aprende public QA` (run `40348781683`) y `Main integration quality` (run `40348781704`) finalizaron PASS. Revisión visual de sus cinco capturas completada; no es una certificación WCAG completa.

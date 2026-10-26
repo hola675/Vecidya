@@ -15,7 +15,7 @@ export const learnOperations02Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-tareas-equipo.svg",
     "imageAlt": "Tres tarjetas grandes muestran un trabajo sencillo: definir una tarea, nombrar responsable y comprobar el resultado.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo",
       "quien-puede-ver-cambiar-y-publicar-en-tu-empresa"
@@ -223,7 +223,7 @@ export const learnOperations02Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-inventario.svg",
     "imageAlt": "Tres pasos grandes para controlar existencias: recibir productos, registrar los movimientos y comprobar lo que queda.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "hojas-de-calculo-para-organizar-un-negocio-pequeno",
       "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo"
@@ -437,7 +437,7 @@ export const learnOperations02Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-capacitacion.svg",
     "imageAlt": "Tres momentos de una capacitación práctica: mostrar una tarea, practicar con ayuda y repetirla en el trabajo.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "quien-puede-ver-cambiar-y-publicar-en-tu-empresa",
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones"
@@ -654,7 +654,7 @@ export const learnOperations02Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-erp.svg",
     "imageAlt": "Tres áreas de la empresa —compras, almacén y administración— comparten información para coordinar el trabajo.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
       "conectar-herramientas-digitales-sin-complicar-tu-negocio"
@@ -876,7 +876,7 @@ export const learnOperations02Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-proyecto-digital.svg",
     "imageAlt": "Un proyecto digital avanza en tres etapas: elegir problema, probar con un equipo y decidir qué ajustar.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
       "como-capacitar-al-equipo-en-herramientas-digitales"

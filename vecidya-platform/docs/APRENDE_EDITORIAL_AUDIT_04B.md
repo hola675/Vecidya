@@ -10,6 +10,8 @@ La regla editorial es **un objetivo de aprendizaje principal por guía**. Una gu
 
 No se modificó el número de categorías ni de itinerarios. Tampoco se cambió el valor de editorialDraft de ninguna guía: las guías que ya estaban en borrador siguen en borrador, incluidas las dos guías fundacionales de criterio digital. La auditoría no equivale a aprobación editorial humana ni autoriza la publicación o el despliegue.
 
+**Actualización 2026-10-26:** los dictámenes «conservar como borrador» de esta tabla describen el estado de esa revisión inicial, no el estado actual. En APRENDE-EDITORIAL-APPROVAL-01 se revisaron posteriormente las 18 guías que seguían marcadas y se aprobaron individualmente; el catálogo actual queda en 48 aprobadas y 0 borradores. La evidencia ejecutable vigente está en `STATUS.md` y `TESTING.md`.
+
 ## Registro artículo por artículo
 
 | # | Guía | Dictamen 04B |
