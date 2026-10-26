@@ -34,6 +34,11 @@
 - La UI de capacitación confirma asignación y corrección de progreso. El E2E de navegador comprueba el vínculo de contenido, estado, historial, motivo y auditoría en D1 local; la pantalla Auditoría filtra ambos eventos con etiquetas comprensibles.
 - Se añadieron etiquetas para `training.assign` y `training.progress.correct`. `typecheck`, `build` y `platform-service-administration-check.mjs` PASS; siguen pendientes errores de formulario/concurrencia de progreso y paginación de auditoría. Sin DB remota, datos reales ni deploy.
 
+### Continuación de PR #139 — auditoría visible de MiniWeb (2026-10-26)
+
+- Admin Auditoría ahora presenta etiquetas para `organization.miniweb.save` y `organization.miniweb.publish`. El E2E guarda/publica desde Chromium y confirma que el filtro MiniWeb encuentra ambos registros, junto con las aserciones de snapshot y D1 del flujo.
+- Matriz y deuda de auditoría reconciliadas. La corrida Worker/D1 con Playwright se repite después del cambio; sin D1 remota, GHL ni deploy.
+
 ## 0.8.0 — producción (2026-10-25)
 
 - Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.

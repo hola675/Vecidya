@@ -14,7 +14,7 @@
 | `/app/internal/businesses`, `/:profileId` | Buscar/filtrar y gobierno auditado | GET 200 ambas | Falta recorrer todas las transiciones y confirmaciones UI | HTTP PASS; gobierno histórico |
 | `/app/internal/services` + API | Alta/edición/finalización, permisos, audit y timestamps | CRUD y reactivación PASS | Query común UI/API; aislamiento y permisos comprobados | E2E local aislado PASS |
 | `/app/internal/integrations` + API | Alta, unicidad, validación metadata y lectura tenant | Alta 201; duplicado 409; metadata sensible rechazada; aislamiento comprobado | No se agregan update/delete no definidos por catálogo | E2E local aislado PASS |
-| `/app/internal/audit` | Búsqueda/filtro, últimas 200, labels | GET 200; filtro «capacitación» muestra etiquetas de asignación/corrección; servicio visible | Sin cursor/paginación; etiquetas de MiniWeb pendientes | E2E UI + D1 local aislada PASS |
+| `/app/internal/audit` | Búsqueda/filtro, últimas 200, labels | GET 200; filtros «capacitación» y «MiniWeb» muestran etiquetas de asignación/corrección/save/publish; servicio visible | Sin cursor/paginación; no se recorrieron todas las etiquetas restantes | E2E UI + D1 local aislada PASS |
 | `/app/internal/diagnostic-leads` | Filtros/página 25, datos mínimos, no-store | GET 200 | PII/retención no reauditorizadas | HTTP PASS; sin fixture de leads |
 | `/app/internal/diagnostic-analytics` | Periodo 7/30/90, agregados, no-store | GET 200 | Estado vacío/fechas/filtros interactivos no cubiertos | HTTP PASS |
 

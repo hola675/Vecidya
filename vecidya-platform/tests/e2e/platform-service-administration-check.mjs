@@ -357,6 +357,12 @@ try {
   assert(miniwebPublishChecks.every(Boolean), `Publicar MiniWeb desde UI no confirmó snapshot, estado del perfil y auditoría persistidos: ${JSON.stringify({ checks: miniwebPublishChecks, state: miniwebPublishedState, snapshot: miniwebSnapshot })}.`);
   await page.goto(`${baseUrl}${miniwebPath}`);
   await page.getByText("El perfil, los horarios y la configuración coinciden con la versión publicada.").waitFor();
+  await page.goto(`${baseUrl}/app/internal/audit`);
+  const miniwebAuditSearch = page.getByRole("searchbox", { name: "Buscar en auditoría" });
+  await miniwebAuditSearch.fill("MiniWeb");
+  const miniwebAuditRows = page.locator("tbody tr");
+  const miniwebAuditText = (await miniwebAuditRows.allInnerTexts()).join("\n");
+  assert(await miniwebAuditRows.count() === 2 && miniwebAuditText.includes("Guardó el borrador de MiniWeb") && miniwebAuditText.includes("Publicó la MiniWeb"), `El historial de Admin no etiquetó ni filtró las acciones MiniWeb: ${miniwebAuditText}.`);
   assert(pageErrors.length === 0, `El navegador reportó errores de página: ${pageErrors.join("; ")}`);
 } finally {
   await browser.close();

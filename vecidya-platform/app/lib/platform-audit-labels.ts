@@ -10,6 +10,8 @@ export const platformAuditActionLabels: Record<string, string> = {
   "organization.active": "Reactivó la organización",
   "organization.suspended": "Suspendió la organización",
   "organization.team_role.update": "Actualizó un rol de miembro",
+  "organization.miniweb.save": "Guardó el borrador de MiniWeb",
+  "organization.miniweb.publish": "Publicó la MiniWeb",
   "organization_license.assign": "Asignó una licencia",
   "organization_license.change_plan": "Cambió el plan de licencia",
   "organization_license.suspended": "Suspendió una licencia",
