@@ -1,5 +1,9 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-04H — Gestión revisada (2026-10-25)
+
+**TEST versionado / RAN pendiente.** El catálogo se mantiene en 48 guías y pasa a **46 revisadas / 2 borradores**. Los contratos exigen aprobación de las cinco guías de Gestión, ausencia de `legacy.sba.gov`, referencia SBA vigente, nota de revisión de AI RMF 1.0, y fuentes Ready.gov/CISA para continuidad.
+
 ## APRENDE-EDITORIAL-04G — coordinación empresarial revisada (2026-10-25)
 
 **RAN en GitHub Actions:** `Aprende quality` run `40247312756` PASS: typecheck, build e integridad Aprende. El catálogo queda en 48 guías con **41 revisadas / 7 borradores**. Las cuatro guías de `learn-business-operations.ts` deben conservar aprobación, ejemplo y FAQ; la comparación entre sedes mantiene la fuente Eurostat 2026 y explicita que la encuesta empresarial cubre organizaciones con 10 o más personas ocupadas.
