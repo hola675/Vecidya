@@ -54,9 +54,8 @@ export const licensePrice = sqliteTable(
 );
 
 // 1 organización = 1 negocio = 1 licencia. Un cambio de plan (upgrade/downgrade) no muta esta fila:
-// cancela la vigente y crea una nueva, para conservar historial y grandfathering. Por eso no hay
-// restricción "una sola fila activa"  a nivel de base de datos; es un invariante de aplicación,
-// igual que el resto de enums de este schema, y lo protegen las pruebas de `db/queries/licensing`.
+// cancela la vigente y crea una nueva, para conservar historial y grandfathering. La base impone
+// una sola fila no cancelada por organización; la cancelada permanece como historial.
 export const organizationLicense = sqliteTable(
   "organization_license",
   {
@@ -78,6 +77,7 @@ export const organizationLicense = sqliteTable(
       .notNull(),
   },
   (table) => [
+    uniqueIndex("organization_license_one_current_unique").on(table.organizationId).where(sql`${table.status} <> 'cancelled'`),
     index("organization_license_organization_idx").on(table.organizationId),
     index("organization_license_billing_account_idx").on(table.billingAccountId),
   ],

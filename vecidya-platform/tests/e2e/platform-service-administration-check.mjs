@@ -1,26 +1,56 @@
-import { spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { spawn, spawnSync } from "node:child_process";
+import { createServer } from "node:net";
+import { randomBytes } from "node:crypto";
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { once } from "node:events";
+import { chromium } from "playwright";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 
-import { baseUrl, assertLocalBaseUrl } from "./test-safety.mjs";
-assertLocalBaseUrl();
+import { assertLocalBaseUrl } from "./test-safety.mjs";
+let baseUrl;
+let bootstrapUserId;
+let bootstrapOrganizationId;
 const suffix = Date.now().toString();
+const projectDirectory = process.cwd();
+const wranglerCli = resolve(projectDirectory, "node_modules/wrangler/bin/wrangler.js");
+if (!existsSync(wranglerCli)) throw new Error("Falta Wrangler local para preparar el fixture de invitación.");
+const persistenceName = `.wrangler/platform-service-audit-${process.pid}-${suffix}`;
+const persistence = resolve(projectDirectory, persistenceName);
+const secret = randomBytes(32).toString("hex");
+let worker;
+
+async function getFreePort() {
+  const server = createServer();
+  server.listen(0, "127.0.0.1");
+  await once(server, "listening");
+  const address = server.address();
+  await new Promise((resolveClose, reject) => server.close((error) => error ? reject(error) : resolveClose()));
+  if (!address || typeof address === "string") throw new Error("No se pudo reservar un puerto local.");
+  return address.port;
+}
 
 function executeD1(sql) {
   const temporaryDirectory = mkdtempSync(join(tmpdir(), "vecidya-4b-"));
   const sqlFile = join(temporaryDirectory, "setup.sql");
   writeFileSync(sqlFile, sql, "utf8");
-  const result = spawnSync(
-    process.env.ComSpec ?? "cmd.exe",
-    ["/d", "/c", `pnpm.cmd wrangler d1 execute DB --local --file ${sqlFile}`],
-    { cwd: process.cwd(), encoding: "utf8" },
-  );
-  rmSync(temporaryDirectory, { recursive: true, force: true });
-  if (result.status !== 0) throw new Error(`D1 local falló: ${result.stderr}`);
+  let result;
+  try {
+    result = spawnSync(process.execPath, [wranglerCli, "d1", "execute", "DB", "--local", "--persist-to", persistenceName, "--json", "--file", sqlFile], { cwd: projectDirectory, encoding: "utf8" });
+  } finally {
+    rmSync(temporaryDirectory, { recursive: true, force: true });
+  }
+  if (result.status !== 0) throw new Error(`D1 local falló: ${result.stdout}\n${result.stderr}`);
   const output = result.stdout;
-  return JSON.parse(output.slice(output.indexOf("[")))[0].results;
+  return JSON.parse(output.slice(output.indexOf("["))).flatMap((entry) => entry.results ?? []);
 }
+
+function applyLocalMigrations() {
+  const result = spawnSync(process.execPath, [wranglerCli, "d1", "migrations", "apply", "DB", "--local", "--persist-to", persistenceName], { cwd: projectDirectory, encoding: "utf8", timeout: 600_000, maxBuffer: 8 * 1024 * 1024 });
+  if (result.status !== 0) throw new Error(`No se pudieron aplicar las migraciones locales: ${result.stdout}\n${result.stderr}`);
+}
+
+function sqlLiteral(value) { return `'${String(value).replaceAll("'", "''")}'`; }
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -54,12 +84,16 @@ class SessionClient {
     return response;
   }
 
-  async json(path, body) {
+  async json(path, body, additionalHeaders = {}) {
     return this.fetch(path, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", ...additionalHeaders },
       body: JSON.stringify(body),
     });
+  }
+
+  browserCookies() {
+    return [...this.#cookies].map(([name, value]) => ({ name, value, domain: new URL(baseUrl).hostname, path: "/", httpOnly: true, secure: false, sameSite: "Lax" }));
   }
 }
 
@@ -67,11 +101,14 @@ async function createIdentity(key) {
   const client = new SessionClient();
   const email = `phase-4b-${key}-${suffix}@vecidya.test`;
   const slug = `phase-4b-${key}-${suffix}`;
+  const invitationId = crypto.randomUUID();
+  executeD1(`INSERT INTO invitation (id, organization_id, email, role, status, expires_at, created_at, inviter_id)
+    VALUES (${sqlLiteral(invitationId)}, ${sqlLiteral(bootstrapOrganizationId)}, ${sqlLiteral(email)}, 'member', 'pending', ${Date.now() + 3_600_000}, ${Date.now()}, ${sqlLiteral(bootstrapUserId)});`);
   const signUp = await client.json("/api/auth/sign-up/email", {
     name: `4B ${key} ${suffix}`,
     email,
     password: `test-only-password-${suffix}`,
-  });
+  }, { "X-Vecidya-Invitation": invitationId });
   if (signUp.status !== 200) {
     throw new Error(`No se pudo registrar ${key}: ${signUp.status} ${await signUp.text()}`);
   }
@@ -95,6 +132,15 @@ async function createIdentity(key) {
   return { client, email, organizationId, userId };
 }
 
+async function workerReady(baseUrl) {
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    try { if ((await fetch(`${baseUrl}/api/auth/ok`, { signal: AbortSignal.timeout(1000) })).status === 200) return; }
+    catch {}
+    await new Promise((resolveWait) => setTimeout(resolveWait, 200));
+  }
+  throw new Error("El Worker local no respondió contra la D1 aislada.");
+}
+
 async function assertStatus(client, path, expected, options) {
   const response = await client.fetch(path, options);
   assert(response.status === expected, `${path} devolvió ${response.status}; se esperaba ${expected}.`);
@@ -102,10 +148,25 @@ async function assertStatus(client, path, expected, options) {
 }
 
 const identities = {};
+try {
+const port = await getFreePort();
+baseUrl = `http://127.0.0.1:${port}`;
+assertLocalBaseUrl(baseUrl);
+worker = spawn(process.execPath, [wranglerCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", String(port), "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", `APP_URL:${baseUrl}`, "--var", `BETTER_AUTH_URL:${baseUrl}`, "--show-interactive-dev-session=false", "--log-level", "error"], { cwd: projectDirectory, env: { ...process.env, BETTER_AUTH_SECRET: secret }, stdio: "ignore" });
+await workerReady(baseUrl);
+applyLocalMigrations();
+bootstrapUserId = crypto.randomUUID();
+bootstrapOrganizationId = crypto.randomUUID();
+const bootstrapNow = Date.now();
+executeD1(`INSERT INTO user (id, name, email, email_verified, created_at, updated_at)
+  VALUES (${sqlLiteral(bootstrapUserId)}, '4B fixture inviter', ${sqlLiteral(`phase-4b-bootstrap-${suffix}@vecidya.test`)}, 1, ${bootstrapNow}, ${bootstrapNow});
+  INSERT INTO organization (id, name, slug, created_at)
+  VALUES (${sqlLiteral(bootstrapOrganizationId)}, '4B fixture inviter', ${sqlLiteral(`phase-4b-bootstrap-${suffix}`)}, ${bootstrapNow});`);
 for (const key of ["platform", "inactive", "owner-a", "owner-b", "admin", "member", "normal"]) {
   identities[key] = await createIdentity(key);
 }
 const now = Date.now();
+const businessProfileId = crypto.randomUUID();
 executeD1(`
   INSERT INTO platform_member (id, user_id, role, status, created_at, updated_at) VALUES
     ('${crypto.randomUUID()}', '${identities.platform.userId}', 'platform_admin', 'active', ${now}, ${now}),
@@ -116,7 +177,7 @@ executeD1(`
     ('${crypto.randomUUID()}', '${identities["owner-a"].organizationId}', '${identities.platform.userId}', 'owner', ${now}),
     ('${crypto.randomUUID()}', '${identities["owner-b"].organizationId}', '${identities.platform.userId}', 'owner', ${now});
   INSERT INTO business_profile (id, organization_id, display_name, slug, status, created_at, updated_at) VALUES
-    ('${crypto.randomUUID()}', '${identities["owner-a"].organizationId}', 'Portal A ${suffix}', 'portal-a-${suffix}', 'published', ${now}, ${now});
+    ('${businessProfileId}', '${identities["owner-a"].organizationId}', 'Portal A ${suffix}', 'portal-a-${suffix}', 'published', ${now}, ${now});
 `);
 
 const apiA = `/api/platform/organizations/${identities["owner-a"].organizationId}/services`;
@@ -149,6 +210,49 @@ const servicesAdminA = await (await assertStatus(identities.platform.client, `/a
 assert(servicesAdminA.includes(`Organización owner-a ${suffix}`) && servicesAdminA.includes("Seleccionada") && servicesAdminA.includes("Activo"), "La pantalla interna no mostró la organización seleccionada ni estados humanizados.");
 const organizationDetailA = await (await assertStatus(identities.platform.client, `/app/internal/organizations/${identities["owner-a"].organizationId}`, 200)).text();
 assert(organizationDetailA.includes(`/app/internal/services?organizationId=${identities["owner-a"].organizationId}`) && organizationDetailA.includes("CRM"), "El detalle de organización no enlazó a su administración de servicios.");
+const internalRoutes = [
+  "/app/internal",
+  "/app/internal/services",
+  "/app/internal/organizations",
+  "/app/internal/organizations/new",
+  `/app/internal/organizations/${identities["owner-a"].organizationId}`,
+  `/app/internal/organizations/${identities["owner-a"].organizationId}/training`,
+  `/app/internal/organizations/${identities["owner-a"].organizationId}/miniweb`,
+  "/app/internal/licenses",
+  "/app/internal/businesses",
+  `/app/internal/businesses/${businessProfileId}`,
+  "/app/internal/integrations",
+  "/app/internal/audit",
+  "/app/internal/diagnostic-leads",
+  "/app/internal/diagnostic-analytics",
+];
+for (const route of internalRoutes) await assertStatus(identities.platform.client, route, 200);
+await assertStatus(new SessionClient(), "/app/internal", 302);
+await assertStatus(identities.inactive.client, "/app/internal", 403);
+const browser = await chromium.launch({ headless: true, executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe" });
+try {
+  const page = await browser.newPage({ viewport: { width: 1366, height: 900 } });
+  const pageErrors = [];
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+  await page.context().addCookies(identities.platform.client.browserCookies());
+  const desktop = await page.goto(`${baseUrl}/app/internal/services`);
+  assert(desktop?.status() === 200 && await page.getByRole("heading", { name: "Servicios por organización" }).count() === 1, "El navegador no pudo renderizar Servicios en escritorio.");
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), "Admin presenta overflow horizontal en escritorio.");
+  await page.setViewportSize({ width: 390, height: 844 });
+  const menuButton = page.getByRole("button", { name: "Abrir navegación administrativa" });
+  assert(await menuButton.isVisible(), "El menú administrativo móvil no está visible a 390 px.");
+  await menuButton.focus();
+  await page.keyboard.press("Enter");
+  assert(await page.getByRole("dialog", { name: "Navegación administrativa" }).isVisible(), "El drawer móvil no expuso un diálogo accesible.");
+  await page.getByRole("link", { name: "Auditoría" }).click();
+  await page.waitForURL("**/app/internal/audit");
+  await page.getByRole("button", { name: "Abrir navegación administrativa" }).waitFor({ state: "visible" });
+  assert(await page.getByRole("button", { name: "Abrir navegación administrativa" }).getAttribute("aria-expanded") === "false", "La navegación móvil no cerró el drawer tras cambiar de ruta.");
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), "Admin presenta overflow horizontal a 390 px.");
+  assert(pageErrors.length === 0, `El navegador reportó errores de página: ${pageErrors.join("; ")}`);
+} finally {
+  await browser.close();
+}
 
 const integrationPost = (externalId, status = "active", metadata = '{"region":"local"}') => ({ method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ provider: "test-provider", externalId, status, metadata }) });
 await assertStatus(identities.platform.client, integrationsA, 200);
@@ -178,7 +282,9 @@ for (const key of ["owner-a", "admin", "member"]) {
 const ownerAServices = await (await assertStatus(identities["owner-a"].client, "/app/services", 200)).text();
 assert(ownerAServices.includes("CRM") && ownerAServices.includes("active"), "El portal de la organización A no mostró CRM activo.");
 const ownerBServices = await (await assertStatus(identities["owner-b"].client, "/app/services", 200)).text();
-assert(!ownerBServices.includes("CRM"), "El portal de la organización B mostró el CRM de A.");
+const ownerBMain = ownerBServices.match(/<main\b[^>]*\bid="client-page-content"[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? "";
+const ownerBServiceList = ownerBMain.match(/<div\b[^>]*\baria-label="Servicios de la organización"[^>]*>([\s\S]*)$/)?.[1] ?? "";
+assert(!ownerBServiceList.includes("CRM"), "El portal de la organización B mostró el CRM de A en sus servicios.");
 
 const activatePlatformOrganization = async (organizationId) => {
   const response = await identities.platform.client.json("/api/auth/organization/set-active", { organizationId });
@@ -189,6 +295,35 @@ const dashboardA = await (await assertStatus(identities.platform.client, "/app",
 assert(dashboardA.includes(`Portal A ${suffix}`) && dashboardA.includes("CRM") && dashboardA.includes("active"), "El dashboard no mostró los datos reales de la organización A.");
 await activatePlatformOrganization(identities["owner-b"].organizationId);
 const dashboardB = await (await assertStatus(identities.platform.client, "/app", 200)).text();
-assert(!dashboardB.includes(`Portal A ${suffix}`) && !dashboardB.includes("CRM"), "El dashboard conservó datos de la organización A después del cambio.");
+assert(!dashboardB.includes(`Portal A ${suffix}`), "El dashboard conservó el perfil de la organización A después del cambio.");
 
-console.log("PASS: matriz 4B de autorización, aislamiento y cambio de organización del portal verificados contra el Worker local.");
+const licensePath = `/api/platform/organizations/${identities["owner-a"].organizationId}/license`;
+const concurrentAssignments = await Promise.all([
+  identities.platform.client.json(licensePath, { operation: "assign", ownerUserId: identities["owner-a"].userId, planCode: "cuadra", activate: true }),
+  identities.platform.client.json(licensePath, { operation: "assign", ownerUserId: identities["owner-a"].userId, planCode: "cuadra", activate: true }),
+]);
+const assignmentStatuses = concurrentAssignments.map(({ status }) => status).sort((a, b) => a - b);
+assert(assignmentStatuses[0] === 201 && assignmentStatuses[1] === 409, `Asignación simultánea produjo ${assignmentStatuses.join(", ")}; se esperaba un éxito y un conflicto 409.`);
+const activeLicense = await (await identities.platform.client.fetch(licensePath)).json();
+const assignmentCount = executeD1(`SELECT count(*) AS count FROM organization_license WHERE organization_id = ${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled';`)[0]?.count;
+const assignmentAuditCount = executeD1(`SELECT count(*) AS count FROM platform_audit_log WHERE organization_id = ${sqlLiteral(identities["owner-a"].organizationId)} AND action = 'organization_license.assign';`)[0]?.count;
+assert(Number(assignmentCount) === 1 && Number(assignmentAuditCount) === 1 && activeLicense.license?.status === "active", "La asignación concurrente dejó filas vigentes o auditoría duplicada/incompleta.");
+
+const concurrentPlanChanges = await Promise.all([
+  identities.platform.client.json(licensePath, { operation: "change-plan", currentLicenseId: activeLicense.license.id, planCode: "barrio" }),
+  identities.platform.client.json(licensePath, { operation: "change-plan", currentLicenseId: activeLicense.license.id, planCode: "ciudad" }),
+]);
+const planStatuses = concurrentPlanChanges.map(({ status }) => status);
+assert(planStatuses.filter((status) => status === 200).length === 1 && planStatuses.filter((status) => status === 409).length === 1, `Los cambios simultáneos de plan no rechazaron la mutación obsoleta: ${planStatuses.join(", ")} ${await Promise.all(concurrentPlanChanges.map((response) => response.clone().text()))}.`);
+const planState = executeD1(`SELECT count(*) AS current_count FROM organization_license WHERE organization_id = ${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled'; SELECT count(*) AS audit_count FROM platform_audit_log WHERE organization_id = ${sqlLiteral(identities["owner-a"].organizationId)} AND action = 'organization_license.change_plan';`);
+assert(Number(planState[0]?.current_count) === 1 && Number(planState[1]?.audit_count) === 1, "Cambio de plan simultáneo rompió unicidad o atomicidad de auditoría.");
+console.log("PASS: servicios/integraciones y licencias (concurrencia y auditoría) verificados contra el Worker y D1 locales aislados.");
+} finally {
+  if (worker && worker.exitCode === null) {
+    const exited = once(worker, "exit");
+    worker.kill("SIGINT");
+    await Promise.race([exited, new Promise((resolveWait) => setTimeout(resolveWait, 5000))]);
+  }
+  rmSync(persistence, { recursive: true, force: true, maxRetries: 5, retryDelay: 250 });
+  if (existsSync(persistence)) throw new Error(`No se pudo limpiar la D1 aislada ${persistenceName}.`);
+}

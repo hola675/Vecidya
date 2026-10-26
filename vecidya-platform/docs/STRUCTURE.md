@@ -151,8 +151,8 @@ D:\Proyectos\Vecidya            (raíz Git)
 | Ruta | Archivo | Datos | Mutaciones | E2E | Pub. |
 | --- | --- | --- | --- | --- | --- |
 | `/app/internal` | `internal.tsx` | tarjetas | — | `admin-shell` | sí |
-| `/app/internal/services` | `internal-services.tsx` | orgs, catálogo, asignaciones | upsert de estado (sin auditoría) | `psa` (stale) | sí |
-| `/app/internal/organizations` | `internal-organizations.tsx` | espacios de trabajo (organizaciones internas) | — | `admin-orgs` (stale) | sí |
+| `/app/internal/services` | `internal-services.tsx` | orgs, catálogo, asignaciones | asigna/actualiza estado, fechas y audit batch | `platform-service-administration-check.mjs` | sí (local comprobado) |
+| `/app/internal/organizations` | `internal-organizations.tsx` | espacios de trabajo (organizaciones internas) | — | `platform-service-administration-check.mjs` | sí (local comprobado) |
 | `/app/internal/organizations/new` | `internal-organization-create.tsx` | alta con invitación owner | `organization:create` | crea org/lifecycle/invitación/audit y envía una vez | local |
 | `/app/internal/organizations/:organizationId` | `internal-organization-detail.tsx` | detalle | `requirePlatformReadAccess` | organizaciones para staff y admin | local |
 | `/app/internal/organizations/:organizationId/miniweb` | `internal-organization-miniweb.tsx` | configuración JSON MiniWeb | `miniweb:save` / `miniweb:publish` | guardar draft y publicación explícita auditados | local |
@@ -162,7 +162,9 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/app/internal/businesses` | `internal-businesses.tsx` | perfiles | — | `admin-bp` | sí |
 | `/app/internal/businesses/:businessProfileId` | `internal-business-profile-detail.tsx` | detalle + gobierno + auditoría | verificar/retirar/suspender/reactivar (`0009`) | `admin-bp`, `d1` | sí (sin acciones de gobierno) |
 | `/app/internal/integrations` | `internal-integrations.tsx` | conexiones | — | `admin-int` (stale) | sí |
-| `/app/internal/audit` | `internal-audit.tsx` | `platform_audit_log` (últimas 200) | — | `d1` | **no** (404 público) |
+| `/app/internal/audit` | `internal-audit.tsx` | `platform_audit_log` (últimas 200) | — | `platform-service-administration-check.mjs` | sí (local comprobado) |
+
+**Certificación funcional Admin (PR #139, local):** `platform-service-administration-check.mjs` carga las 14 rutas internas con una identidad sintética `platform_admin`, y comprueba anónimo `302`, plataforma inactiva `403`, cambios de servicio/auditoría, integración duplicada `409`, aislamiento tenant y concurrencia de licencias. Chromium cubre shell Servicios/Auditoría a 1366 y 390 px. No certifica aún cada mutación UI, lector de pantalla/axe, zoom 200 %, fallos de red ni versión/esquema remoto. Ver matriz por ruta en `TESTING.md` y deuda en `STATUS.md`.
 
 ### API (15)
 
@@ -182,9 +184,9 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `…/business-media` y `…/business-media/:assetId` | `api-organization-business-media*.ts` | POST, GET, DELETE | organización activa, membership y `business-profile:read/update`; CAS para incorporar/retirar medios | privado salvo que el ID esté en el snapshot publicado; asset y referencia siempre de la misma organización | `miniweb-core-check.mjs` | R2 local simulado; bucket remoto sin provisión |
 | `/media/business/:slug/:assetId` | `api-public-business-media.ts` | GET anónimo | perfil publicado + asset incluido en medios u oferta activa del snapshot vigente | la URL de draft devuelve 404; publicación explícita habilita entrega | `miniweb-core-check.mjs` | local; sin HTTP pública ni deploy |
 | `…/integrations` | `api-organization-integrations.ts` | GET | solo membresía (cualquier rol, incluye `metadata`) | funcional | `authz` (403 sin membresía), `psa` | sí |
-| `/api/platform/organizations/:id/services` | `api-platform-services.ts` | GET, POST | `requirePlatformAdmin` | funcional; org inexistente → 500 FK | `psa`, `authz` (403 para owner/admin/member de la organización) | sí |
-| `/api/platform/organizations/:id/integrations` | `api-platform-integrations.ts` | GET, POST | `requirePlatformAdmin` | funcional; duplicado → 500 | `psa` (stale) | sí |
-| `/api/platform/organizations/:id/license` | `api-platform-licensing.ts` | GET, POST | lectura `requirePlatformAdmin`; escritura `organization:license:update` | funcional; sin checkout, sin cobro automático (LICENSE-STRATEGY-001) | `platform-licensing` | no (solo local; `0010` sin aplicar a remoto) |
+| `/api/platform/organizations/:id/services` | `api-platform-services.ts` | GET, POST | `requirePlatformAdmin` | audit + timestamps en batch; org inexistente aún puede producir error FK | `platform-service-administration-check.mjs`, `authz` | sí |
+| `/api/platform/organizations/:id/integrations` | `api-platform-integrations.ts` | GET, POST | `requirePlatformAdmin` | duplicado global devuelve `409`; insert + audit batch | `platform-service-administration-check.mjs` | sí |
+| `/api/platform/organizations/:id/license` | `api-platform-licensing.ts` | GET, POST | lectura `requirePlatformAdmin`; escritura `organization:license:update` | parcial unique D1; cambios de plan CAS por `currentLicenseId`; sin checkout/renovación automática | `platform-service-administration-check.mjs`; `platform-licensing-check.mjs` | migración `0029` solo local |
 | `/api/platform/organizations/:id/training` | `api-platform-training.ts` | GET, POST | `requirePlatformAdmin`; target organización explícito | asignación y corrección auditada de progreso | en curso | local |
 | `/api/organizations/:id/training` | `api-organization-training.ts` | GET, POST | `requireOrganizationPermission(..., organization:read)`; solo usuario de membership | lectura y auto-reporte propios; sin userId aceptado del cliente | en curso | local |
 

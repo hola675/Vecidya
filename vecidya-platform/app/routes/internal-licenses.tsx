@@ -3,7 +3,7 @@ import { Form, Link, redirect, useActionData, useLoaderData } from "react-router
 import { eq } from "drizzle-orm";
 
 import { createDatabase } from "../../db/client.server";
-import { getCurrentLicensePrice, getOrganizationLicense, planCodes, assignOrganizationLicense, changeOrganizationLicensePlan, setOrganizationLicenseStatus, LicensingError, isPlanCode } from "../../db/queries/licensing.server";
+import { getCurrentLicensePrice, getOrganizationLicense, planCodes, assignOrganizationLicense, changeOrganizationLicensePlan, setOrganizationLicenseStatus, LicensingConflictError, LicensingError, isPlanCode } from "../../db/queries/licensing.server";
 import { listPlatformOrganizations } from "../../db/queries/platform-organizations.server";
 import { licensePrice } from "../../db/schema";
 import type { PlanCode } from "../../db/pricing/calculator";
@@ -64,7 +64,9 @@ export async function action({ context, request }: Route.ActionArgs) {
     } else if (intent === "change-plan") {
       const planCode = String(form.get("planCode") ?? "");
       if (!isPlanCode(planCode)) return { error: "Selecciona un plan válido." };
-      await changeOrganizationLicensePlan(database, { organizationId, newPlanCode: planCode, actorUserId: actor.userId });
+      const currentLicenseId = String(form.get("currentLicenseId") ?? "");
+      if (!currentLicenseId) return { error: "Recarga la página para confirmar la licencia actual antes de cambiar el plan." };
+      await changeOrganizationLicensePlan(database, { organizationId, expectedLicenseId: currentLicenseId, newPlanCode: planCode, actorUserId: actor.userId });
     } else if (intent === "suspend" || intent === "reactivate") {
       await setOrganizationLicenseStatus(database, {
         organizationId,
@@ -75,6 +77,7 @@ export async function action({ context, request }: Route.ActionArgs) {
       throw new Response("Acción inválida", { status: 400 });
     }
   } catch (error) {
+    if (error instanceof LicensingConflictError) return { error: "La licencia cambió en otra operación. Recarga la página y vuelve a intentarlo." };
     if (error instanceof LicensingError) return { error: error.message };
     throw error;
   }
@@ -150,7 +153,7 @@ export default function InternalLicenses() {
               </Form> : <p>No se puede asignar hasta que haya un propietario registrado y un precio vigente.</p>
             ) : <div className="admin-license-actions">
               {license.status === "active" ? <>
-                <Form className="admin-license-form" method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="intent" type="hidden" value="change-plan" /><label>Cambiar plan<select name="planCode" required defaultValue={availablePlans.find(({ code }) => code !== license.planCode)?.code ?? license.planCode}>{availablePlans.filter(({ code }) => code !== license.planCode).map(({ code, price: currentPrice }) => <option key={code} value={code}>{planNames[code]} · {currentPrice!.currency} {(currentPrice!.amountCents / 100).toFixed(2)} / mes</option>)}</select></label><button className="button button--secondary" disabled={!availablePlans.some(({ code }) => code !== license.planCode)} type="submit">Cambiar plan</button></Form>
+                <Form className="admin-license-form" method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="change-plan" /><label>Cambiar plan<select name="planCode" required defaultValue={availablePlans.find(({ code }) => code !== license.planCode)?.code ?? license.planCode}>{availablePlans.filter(({ code }) => code !== license.planCode).map(({ code, price: currentPrice }) => <option key={code} value={code}>{planNames[code]} · {currentPrice!.currency} {(currentPrice!.amountCents / 100).toFixed(2)} / mes</option>)}</select></label><button className="button button--secondary" disabled={!availablePlans.some(({ code }) => code !== license.planCode)} type="submit">Cambiar plan</button></Form>
                 <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="intent" type="hidden" value="suspend" /><button className="button button--secondary" type="submit">Suspender licencia</button></Form>
               </> : <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="intent" type="hidden" value="reactivate" /><button className="button button--primary" type="submit">Activar licencia</button></Form>}
             </div>}

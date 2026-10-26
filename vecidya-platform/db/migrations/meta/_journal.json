@@ -204,6 +204,13 @@
       "when": 1792863984055,
       "tag": "0028_miniweb-offering-image",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "6",
+      "when": 1792981400440,
+      "tag": "0029_organization-license-single-current",
+      "breakpoints": true
     }
   ]
 }

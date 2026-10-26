@@ -6,6 +6,13 @@
 - La creación de integraciones responde `409` ante el índice único global duplicado y audita la inserción junto con la conexión. La pantalla de auditoría incluye etiquetas/filtros para acciones de control plane conocidas y muestra la clave técnica si no tiene etiqueta.
 - Typecheck/build y diff-check PASS; D1 local `0000–0028`. El E2E focal se detiene antes de las acciones porque su registro sintético no provee la invitación obligatoria. No se ejecutaron unitarias ni navegador; licencia duplicada por concurrencia y otros gaps administrativos quedan abiertos en `STATUS.md`/`TESTING.md`. Sin migración, datos remotos, GHL ni deploy.
 
+### Continuación de PR #139 — evidencia E2E y licencia única
+
+- El fixture de `platform-service-administration-check.mjs` crea invitaciones sintéticas dirigidas al correo, usa `X-Vecidya-Invitation` y conserva el guard. El E2E ahora ejecuta Worker+D1 efímeros `0000–0029`; PASS para las 14 rutas, permisos, servicios, auditoría/timestamps, duplicados de integración `409`, metadata no permitida, aislamiento tenant y unicidad/auditoría de licencias concurrentes.
+- Chromium local comprobó Admin Servicios/Auditoría en 1366×900 y 390×844, navegación por Enter, cierre del drawer, ausencia de overflow y errores JS. No equivale a axe/WCAG ni a un recorrido de todas las acciones UI.
+- `0029_organization-license-single-current.sql` añade la garantía de D1; cambios de plan exigen el ID observado y las asignaciones duplicadas responden `409`. Pendiente validar roll-out y datos remotos, que no se consultaron ni modificaron; la misión prohíbe aplicar la migración. Expiración/renovación automática no existen en el modelo.
+- Estado actualizado y deuda P1–P3 en `STATUS.md`, alcance/evidencia en `TESTING.md`, contrato/migración en `DATABASE.md` y matriz de rutas en `STRUCTURE.md`. Auditoría sigue parcial; PR #139 permanece draft hasta terminar checks críticos y resolver el gate de migración.
+
 ## 0.8.0 — producción (2026-10-25)
 
 - Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.
