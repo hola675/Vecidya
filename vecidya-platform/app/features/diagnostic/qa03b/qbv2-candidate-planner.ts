@@ -142,9 +142,10 @@ export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT
         if (activeAnswers[child.id] !== undefined || eligible.has(child.id) || !after.has(child.id)) continue;
         const childSources = semanticSources(child);
         const childFields = producedFields(child);
-        const childCanResolveInsufficientContext = childSources.direct.some((dimension) =>
-          insufficientContext.has(dimension)
-          && canProspectivelyResolveApplicability(child, dimension, afterResolution.activeAnswers, bank));
+        const childCanResolveInsufficientContext = policy === "utility_first"
+          && childSources.direct.some((dimension) =>
+            insufficientContext.has(dimension)
+            && canProspectivelyResolveApplicability(child, dimension, afterResolution.activeAnswers, bank));
         const unlocksUsefulChild = child.evidenceMigration === "migrated"
           ? childSources.direct.some((dimension) => open.has(dimension))
             || childSources.supporting.some((dimension) => observedDirect.has(dimension))
