@@ -1,5 +1,12 @@
 # Estado de implementación
 
+## APRENDE-PUBLIC-QA-01 — control de experiencia pública (2026-10-26)
+
+**CODE/TEST — PR candidato, no desplegado:** se incorporan Playwright y workflow de certificación anónima en localhost, centrados en 30 guías públicas y 18 borradores protegidos del catálogo de 48. Verifica rutas individuales, sitemap/robots, búsqueda, filtros, itinerarios, imágenes, navegación y 320/390/768/1366 px. El sitemap usa la selección central getPublicLearnArticles; el test E2E obsoleto (38 guías, siete itinerarios y borradores públicos) deja de ser el ejecutor por defecto. Ver TESTING.md para comando, criterios de aceptación y evidencia de screenshots.
+
+**RAN:** pendiente de los GitHub Actions del HEAD final. **Open Debt — APRENDE-PUBLIC-QA-01-VISUAL:** las capturas deben inspeccionarse humanamente; Playwright no sustituye auditoría WCAG, lector de pantalla ni confirmación de producción. **Open Debt — APRENDE-PUBLIC-QA-01-HTTP:** no hay deploy ni verificación anónima fechada en vecidya.com de este checkpoint. Sin cambios de aprobación editorial, DB, autenticación, GHL o Diagnóstico.
+
+
 ## APRENDE-EDITORIAL-04B — auditoría semántica de 46 guías (2026-10-25; PR #121)
 
 **Implementación editorial en la rama feat/aprende-editorial-04a; no fusionada ni desplegada.** Se revisaron el objetivo pedagógico, el alcance, los ejemplos, los solapamientos y los enlaces de las 46 guías. El registro artículo por artículo está en docs/APRENDE_EDITORIAL_AUDIT_04B.md.

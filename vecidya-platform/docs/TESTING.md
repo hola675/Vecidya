@@ -1,5 +1,16 @@
 # Pruebas
 
+## APRENDE-PUBLIC-QA-01 — certificación pública no destructiva (2026-10-26; PR en preparación)
+
+**CODE/TEST:** se añade el script tests/e2e/aprende-public-qa-check.mjs, que importa el catálogo real (48 guías: 30 no-borradores y 18 borradores) y ejecuta verificaciones contra un servidor local exclusivo (http://127.0.0.1:5173; rechaza destinos remotos). Consulta 30 slugs públicos esperando HTTP 200 y 18 slugs de borrador esperando HTTP 404; contrasta el sitemap y robots.txt; comprueba que los listados, la búsqueda, los itinerarios y los relacionados no expongan borradores. La prueba recoge capturas del listado y un artículo, verifica navegación por teclado, imágenes, enlaces HTTPS, canonical, H1, índice de secciones, categorías y ausencia de overflow a 320/390/768/1366 px.
+
+**Cómo ejecutar en local:** desde vecidya-platform/, instalar dependencias con pnpm install; tener Chromium instalado con pnpm exec playwright install chromium; levantar un servidor con pnpm dev --host 127.0.0.1 --port 5173, y en otra consola ejecutar BASE_URL=http://127.0.0.1:5173 pnpm test:e2e:aprende-public (en PowerShell establecer BASE_URL como variable de entorno antes del comando). Produce test-results/aprende-public-qa/report.json y capturas *.png. En CI, .github/workflows/aprende-public-qa.yml instala dependencias y Chromium, inicia servidor local, ejecuta la prueba y publica un artefacto de evidencia por 14 días con report.json, capturas y server.log. El ejecutor completo tests/e2e/run-local-e2e.mjs utiliza esta prueba en sustitución de learn-experience-check.mjs, cuya expectativa de 38 guías / 7 itinerarios / borradores visibles quedó obsoleta.
+
+**Condición de cierre:** RAN del nuevo workflow Playwright y de main-integration-quality y aprende-quality en el mismo HEAD, verificación de las capturas por una persona y revisión Codex sin observaciones abiertas. Los screenshots son evidencia para revisión humana, no certifican solos calidad estética ni WCAG integral. **Estado: RAN pendiente hasta comprobar Actions del HEAD final;** no afirmar publicado sin HTTP anónimo fechado sobre producción.
+
+**Exclusiones:** sin aprobación editorial, cambios en banderas editorialDraft, credenciales, D1/R2, despliegue, GHL ni cambios de motor del Diagnóstico. El chequeo independiente de fuentes HTTPS remotas sigue en el workflow manual Aprende external links audit.
+
+
 ## APRENDE-EDITORIAL-FINAL-02 — aprobación explícita y regresión general (2026-10-25)
 
 El run `40248565700` falló con **1739/1740** pruebas: `learn-management-03.test.ts` esperaba `editorialDraft: true` para las cinco guías de Gestión, pero el candidato final las había marcado como aprobadas. La causa era un cambio de estado editorial no autorizado, no un defecto del guard. Se restaura `editorialDraft: true` para 18 guías y se actualizan los contratos para exigir **18 borradores / 30 no marcadas como borrador**. La aprobación de contenido, el merge y el deploy son decisiones separadas.

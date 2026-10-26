@@ -1,0 +1,88 @@
+name: Aprende public QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/aprende-public-qa.yml"
+      - "vecidya-platform/tests/e2e/aprende-public-qa-check.mjs"
+      - "vecidya-platform/tests/e2e/run-local-e2e.mjs"
+      - "vecidya-platform/tests/e2e/test-safety.mjs"
+      - "vecidya-platform/app/content/learn*.ts"
+      - "vecidya-platform/app/routes/knowledge.tsx"
+      - "vecidya-platform/app/routes/learn-article.tsx"
+      - "vecidya-platform/app/routes/sitemap.ts"
+      - "vecidya-platform/app/routes/robots.ts"
+      - "vecidya-platform/app/styles/**"
+      - "vecidya-platform/app/app.css"
+      - "vecidya-platform/package.json"
+      - "vecidya-platform/pnpm-lock.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser:
+    name: Playwright desktop/mobile + publication guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: vecidya-platform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: vecidya-platform/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Chromium and runtime libraries
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Run loopback-only Aprende QA
+        env:
+          BASE_URL: http://127.0.0.1:5173
+          APP_ENV: test
+          EMAIL_PROVIDER: fake
+        run: |
+          set -euo pipefail
+          mkdir -p test-results/aprende-public-qa
+          pnpm dev --host 127.0.0.1 --port 5173 > test-results/aprende-public-qa/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          ready=0
+          for attempt in $(seq 1 120); do
+            if curl --silent --show-error --fail "$BASE_URL/aprende" >/dev/null 2>&1; then
+              ready=1
+              break
+            fi
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              echo "Development server terminated before readiness."
+              tail -n 100 test-results/aprende-public-qa/server.log
+              exit 1
+            fi
+            sleep 2
+          done
+          if [ "$ready" -ne 1 ]; then
+            echo "Development server did not become ready."
+            tail -n 100 test-results/aprende-public-qa/server.log
+            exit 1
+          fi
+          node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/aprende-public-qa-check.mjs
+      - name: Upload screenshots, report and local server log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aprende-public-qa-evidence
+          path: vecidya-platform/test-results/aprende-public-qa/
+          if-no-files-found: warn
+          retention-days: 14

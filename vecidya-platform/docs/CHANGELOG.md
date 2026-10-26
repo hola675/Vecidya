@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-26 — APRENDE-PUBLIC-QA-01 — E2E público y barrera editorial (candidato en PR)
+
+- Se añade un QA específico de Aprende con Playwright en localhost, capturas y reporte reproducibles, pruebas de listado, búsqueda, filtros, itinerarios, lectura, sitemap y acceso directo a borradores.
+- El QA usa el catálogo real: 48 guías, 30 no-borradores, 18 borradores y nueve itinerarios editoriales; no transforma ninguna guía en aprobada.
+- El sitemap consume el helper de publicación compartido; el runner E2E local deja de ejecutar el antiguo test con expectativas obsoletas.
+- Nuevo workflow Aprende public QA sin secretos ni despliegue, con artefacto de evidencias. Estado en Actions del HEAD correspondiente; aún no autoriza merge ni publicación.
+
+
 ## 2026-10-25 — APRENDE-EDITORIAL-FINAL-02 — preservar borradores pendientes
 
 - Restaura `editorialDraft: true` para 14 guías que ya eran borradores en `main` y para las cuatro guías nuevas de 04A/04B.
