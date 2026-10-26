@@ -25,7 +25,8 @@ export function loader({ request }: Route.LoaderArgs) {
   const requestedCategory = params.get("tema");
   const category = learnCategories.find((topic) => topic.name === requestedCategory)?.name ?? null;
   const needle = searchable(search);
-  const articles = learnArticles
+  const publicArticles = learnArticles.filter((article) => !article.editorialDraft);
+  const articles = publicArticles
     .filter((article) => {
       if (category && article.category !== category) return false;
       if (!needle) return true;
@@ -57,17 +58,16 @@ export function loader({ request }: Route.LoaderArgs) {
     }));
   const topics = learnCategories.map((topic) => ({
     ...topic,
-    count: learnArticles.filter((article) => article.category === topic.name).length,
+    count: publicArticles.filter((article) => article.category === topic.name).length,
   }));
   const pathways = learnPathways.map((path) => ({
     title: path.title, description: path.description,
-    guides: path.slugs.map((slug) => {
-      const guide = learnArticles.find((article) => article.slug === slug);
-      if (!guide) throw new Error("Guía del itinerario no encontrada: " + slug);
-      return { slug: guide.slug, title: guide.title, editorialDraft: guide.editorialDraft ?? false };
+    guides: path.slugs.flatMap((slug) => {
+      const guide = publicArticles.find((article) => article.slug === slug);
+      return guide ? [{ slug: guide.slug, title: guide.title, editorialDraft: false }] : [];
     }),
   }));
-  return { articles, topics, pathways, search, category, total: learnArticles.length };
+  return { articles, topics, pathways, search, category, total: publicArticles.length };
 }
 
 export function meta({ location }: Route.MetaArgs) {
