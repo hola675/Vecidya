@@ -1976,7 +1976,7 @@ Evidencia DIAG-002C (RAN 2026-09-23): `pnpm run test:unit` **75/75 PASS** (5 nue
 - `pnpm run typecheck` es `react-router typegen && tsc -b` desde TYPECHECK-001 y cubre `app/`, `server/`, `workers/`, `db/` y los archivos de configuración raíz. Antes, `tsc` sin `-b` no comprobaba ningún archivo: toda evidencia «typecheck PASS» anterior a `d0235d8` solo acredita `typegen`. `tests/` sigue fuera de `tsc` (`TEST-TSC-UNIT-001`).
 - Son **solo Windows** (`cmd.exe /d /c pnpm.cmd wrangler d1 execute … --local`).
 - Desde DIAG-V3-09, `tests/unit/ts-resolve-hooks.mjs` también resuelve `./modulo` → `./modulo.tsx` y compila los `.tsx` con `transformWithOxc` de Vite (dependencia directa) y el runtime JSX automático, para probar componentes con `react-dom/server` sin dependencias nuevas.
-- Los scripts Playwright usan Microsoft Edge si existe, luego `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, luego Chromium empaquetado (requiere `playwright install`).
+- Los scripts Playwright priorizan `PLAYWRIGHT_CHROMIUM_EXECUTABLE`; si no está definido, usan Microsoft Edge cuando existe en Windows y, en los demás casos, el Chromium administrado por Playwright (requiere `playwright install`).
 
 ## Cómo ejecutar (solo local)
 
