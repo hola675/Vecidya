@@ -100,8 +100,11 @@ test("auto-repair estimate follow-up fills the local-shop gap without activating
   };
   const active = resolveEligibleQuestionsV2(repair, bank);
   assert.ok(active.eligibleQuestionIds.includes("q2_specialty_auto_repair_estimate_followup"));
-  assert.ok(!active.eligibleQuestionIds.includes("q2_service_quote_followup"),
-    "the generic quote question remains scoped to local_service + quote-practice");
+  const withQuotePractice = resolveEligibleQuestionsV2({
+    ...repair, q2_service_quote_practice: "yes",
+  }, bank);
+  assert.ok(!withQuotePractice.eligibleQuestionIds.includes("q2_service_quote_followup"),
+    "even with quote practice declared, a local auto-repair shop does not satisfy the local_service gate");
 
   const mobile = resolveEligibleQuestionsV2({
     ...repair, q2_delivery: ["travels"], q2_niche_automotive: "mobile_detailing",
