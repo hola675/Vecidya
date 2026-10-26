@@ -1,6 +1,8 @@
 # Estructura del código
 
-**APP-MINI-02B (candidato local):** `app/routes/business-profile.tsx` mantiene el formulario de perfil sin campo URL de logo; `app/routes/miniweb-editor.tsx` administra el logo en Archivos e identidad. `app/routes/public-business-profile.tsx`, `app/components/miniweb/miniweb-renderer.tsx` y `db/queries/business-profile.server.ts` resuelven medios desde el snapshot publicado para cabecera, identidad y tarjeta Vecindario. Sin rutas nuevas ni cambios a guardas.
+**APP-MINI-02B (integrado en 0.8.3):** `app/routes/business-profile.tsx` mantiene el formulario de perfil sin campo URL de logo; `app/routes/miniweb-editor.tsx` administra el logo en Archivos e identidad. `app/routes/public-business-profile.tsx`, `app/components/miniweb/miniweb-renderer.tsx` y `db/queries/business-profile.server.ts` resuelven medios desde el snapshot publicado para cabecera, identidad y tarjeta Vecindario. Sin rutas nuevas ni cambios a guardas.
+
+**APP-MINI-02C (candidato 0.8.4):** `DefaultMiniWebTemplate` presenta las secciones en flujo vertical uniforme, en el orden persistido; la cabecera muestra la portada como imagen dentro del marco y el logo por encima, sin repetir el icono junto al título. La vista previa comparte la plantilla pública y los controles ↑/↓ de Secciones.
 
 ## UX-COHERENCE-03 — componentes compartidos (2026-10-19)
 
