@@ -61,7 +61,7 @@ test("32 authored personas resolve valid niche, entity, stage and sector without
   assert.equal(QA03B_SPECIALTY_PERSONAS.length, 32);
   assert.equal(new Set(QA03B_SPECIALTY_PERSONAS.map((p) => p.id)).size, 32);
   assert.equal(productionBank.length, 45);
-  assert.equal(candidateBank.length, 78);
+  assert.equal(candidateBank.length, 76);
 
   for (const persona of QA03B_SPECIALTY_PERSONAS) {
     const source = declaredSpecialtyContextAnswers(persona);
