@@ -67,7 +67,7 @@ test("V9 classification enables one Continue after sector plus specialty are exp
     onSubmit: noop,
     onBack: noop,
   }));
-  assert.match(html, /value="restaurant" checked=""/);
+  assert.match(html, /id="df-v9-specialty-restaurant"[^>]*checked=""[^>]*value="restaurant"/);
   assert.doesNotMatch(html, /aria-disabled="true"/);
   assert.doesNotMatch(html, /disabled=""/);
   assert.equal((html.match(/>Continuar</g) ?? []).length, 1);
