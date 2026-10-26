@@ -61,7 +61,7 @@ function walk(id: string, policy: CandidateShadowSelectionPolicyV1) {
 
 test("utility-first remains shadow-only: production entry and default candidate mode are unchanged", () => {
   assert.equal(productionBank.length, 45);
-  assert.equal(candidateBank.length, 76);
+  assert.equal(candidateBank.length, 77);
   for (const persona of QA03B_SPECIALTY_PERSONAS) {
     const input = { answers: declaredSpecialtyContextAnswers(persona) };
     const defaultPlan = buildCandidateQuestionPlanFromBankV3(input, candidateBank);
@@ -125,10 +125,10 @@ test("utility-first promotes niche when an actual dentist-only evidence question
   assert.ok(after.eligibleQuestionIds.includes("q2_appointments_booking_friction"));
 });
 
-test("twelve A/B journeys compare question count, outcome, evidence and niche coverage without changing public plan", () => {
+test("thirteen A/B journeys compare question count, outcome, evidence and niche coverage without changing public plan", () => {
   const profiles = ["idea-software", "pausa-dentista", "clinica-dental", "restaurante-reservas",
     "tienda-hibrida", "agencia-marketing-b2b", "creador-audiencia", "organizacion-donaciones",
-    "software-saas-activo", "marketplace-activo", "impuestos", "seguros"];
+    "software-saas-activo", "marketplace-activo", "impuestos", "seguros", "taller-mecanico-presupuestos"];
   const pairs = profiles.map((id) => ({ id, baseline: walk(id, "baseline"), shadow: walk(id, "utility_first") }));
   for (const { id, baseline, shadow } of pairs) {
     assert.ok(baseline.asked.length <= 24 && shadow.asked.length <= 24, id);
