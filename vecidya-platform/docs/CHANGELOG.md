@@ -13,6 +13,11 @@
 - `0029_organization-license-single-current.sql` añade la garantía de D1; cambios de plan exigen el ID observado y las asignaciones duplicadas responden `409`. Pendiente validar roll-out y datos remotos, que no se consultaron ni modificaron; la misión prohíbe aplicar la migración. Expiración/renovación automática no existen en el modelo.
 - Estado actualizado y deuda P1–P3 en `STATUS.md`, alcance/evidencia en `TESTING.md`, contrato/migración en `DATABASE.md` y matriz de rutas en `STRUCTURE.md`. Auditoría sigue parcial; PR #139 permanece draft hasta terminar checks críticos y resolver el gate de migración.
 
+### Continuación de PR #139 — mutaciones UI de organizaciones (2026-10-26)
+
+- Playwright en Worker/D1 efímeros recorre búsqueda → detalle, suspensión/reactivación de organización, cambio de rol member→admin, creación de organización con entrega fake confirmada y revocación de invitación. Se comprueba estado persistido y auditoría de cada operación; staff conserva UI de solo lectura.
+- E2E completo `platform-service-administration-check.mjs` PASS tras ampliar los fixtures; `node --check` y `git diff --check` PASS. Sin correo real, datos productivos, DB remota o deploy. La matriz de `TESTING.md`, estado/deuda de `STATUS.md` y gate futuro de `ROADMAP.md` se reconciliaron; quedan fuera del PASS las mutaciones de training, MiniWeb, negocios y el resto de estados/errores UI.
+
 ## 0.8.0 — producción (2026-10-25)
 
 - Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.

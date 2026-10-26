@@ -152,7 +152,7 @@ try {
 const port = await getFreePort();
 baseUrl = `http://127.0.0.1:${port}`;
 assertLocalBaseUrl(baseUrl);
-worker = spawn(process.execPath, [wranglerCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", String(port), "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", `APP_URL:${baseUrl}`, "--var", `BETTER_AUTH_URL:${baseUrl}`, "--show-interactive-dev-session=false", "--log-level", "error"], { cwd: projectDirectory, env: { ...process.env, BETTER_AUTH_SECRET: secret }, stdio: "ignore" });
+worker = spawn(process.execPath, [wranglerCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", String(port), "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", "EMAIL_FROM:admin-audit@vecidya.test", "--var", `APP_URL:${baseUrl}`, "--var", `BETTER_AUTH_URL:${baseUrl}`, "--show-interactive-dev-session=false", "--log-level", "error"], { cwd: projectDirectory, env: { ...process.env, BETTER_AUTH_SECRET: secret }, stdio: "ignore" });
 await workerReady(baseUrl);
 applyLocalMigrations();
 bootstrapUserId = crypto.randomUUID();
@@ -264,6 +264,41 @@ try {
   await page.getByRole("button", { name: "Abrir navegación administrativa" }).waitFor({ state: "visible" });
   assert(await page.getByRole("button", { name: "Abrir navegación administrativa" }).getAttribute("aria-expanded") === "false", "La navegación móvil no cerró el drawer tras cambiar de ruta.");
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), "Admin presenta overflow horizontal a 390 px.");
+
+  await page.goto(`${baseUrl}/app/internal/organizations`);
+  const organizationSearch = page.getByRole("searchbox", { name: "Buscar negocios o clientes" });
+  await organizationSearch.fill(`Organización owner-a ${suffix}`);
+  const organizationRow = page.locator("tr").filter({ hasText: `Organización owner-a ${suffix}` });
+  assert(await organizationRow.count() === 1, "La búsqueda UI no redujo la lista al espacio de trabajo esperado.");
+  await organizationRow.getByRole("link", { name: "Ver" }).click();
+  await page.waitForURL(`**/app/internal/organizations/${identities["owner-a"].organizationId}`);
+  await page.getByRole("button", { name: "Suspender organización" }).click();
+  await page.getByRole("heading", { name: "suspended" }).waitFor();
+  await page.getByRole("button", { name: "Reactivar organización" }).click();
+  await page.getByRole("heading", { name: "active" }).waitFor();
+  const memberRow = page.locator(".admin-detail-list li").filter({ hasText: identities.member.email });
+  await memberRow.getByRole("combobox").selectOption("admin");
+  await memberRow.getByRole("button", { name: "Guardar rol" }).click();
+  await page.waitForURL(`**/app/internal/organizations/${identities["owner-a"].organizationId}`);
+  const roleState = executeD1(`SELECT m.role,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization.team_role.update' AND entity_id=m.id) AS audit_count FROM member m WHERE m.organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND m.user_id=${sqlLiteral(identities.member.userId)};`)[0];
+  const lifecycleState = executeD1(`SELECT status,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization.suspended') AS suspend_audit,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization.active') AS active_audit FROM platform_organization_lifecycle WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)};`)[0];
+  assert(roleState?.role === "admin" && Number(roleState.audit_count) === 1, "El cambio de rol desde UI no persistió ni dejó una sola auditoría.");
+  assert(lifecycleState?.status === "active" && Number(lifecycleState.suspend_audit) === 1 && Number(lifecycleState.active_audit) === 1, "Suspender/reactivar desde UI no dejó el estado final y las auditorías esperadas.");
+
+  await page.goto(`${baseUrl}/app/internal/organizations/new`);
+  await page.getByLabel("Nombre").fill(`Admin UI ${suffix}`);
+  await page.getByLabel("Slug").fill(`admin-ui-${suffix}`);
+  await page.getByLabel("Correo del propietario").fill(`invited-admin-ui-${suffix}@vecidya.test`);
+  await page.getByRole("button", { name: "Crear y enviar invitación" }).click();
+  await page.waitForURL(/\/app\/internal\/organizations\/[0-9a-f-]+\?created=1&delivery=simulated$/);
+  await page.getByRole("status").getByText("El correo quedó simulado por el proveedor local.").waitFor();
+  const createdOrganizationId = new URL(page.url()).pathname.split("/").at(-1);
+  const createdInvitationState = executeD1(`SELECT l.status,i.status AS invitation_status,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=l.organization_id AND a.action='organization.create_owner_invitation') AS audit_count FROM platform_organization_lifecycle l JOIN platform_owner_invitation i ON i.organization_id=l.organization_id WHERE l.organization_id=${sqlLiteral(createdOrganizationId)};`)[0];
+  assert(createdInvitationState?.status === "owner_invited" && createdInvitationState.invitation_status === "pending" && Number(createdInvitationState.audit_count) === 1, "Crear organización UI no persistió invitación y auditoría.");
+  await page.getByRole("button", { name: "Revocar invitación" }).click();
+  await page.getByRole("heading", { name: "pending_owner" }).waitFor();
+  const revokedInvitationState = executeD1(`SELECT l.status,i.status AS invitation_status,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=l.organization_id AND a.action='organization.owner_invitation.revoke') AS audit_count FROM platform_organization_lifecycle l JOIN platform_owner_invitation i ON i.organization_id=l.organization_id WHERE l.organization_id=${sqlLiteral(createdOrganizationId)};`)[0];
+  assert(revokedInvitationState?.status === "pending_owner" && revokedInvitationState.invitation_status === "revoked" && Number(revokedInvitationState.audit_count) === 1, "Revocar invitación UI no actualizó lifecycle, token ni auditoría.");
   assert(pageErrors.length === 0, `El navegador reportó errores de página: ${pageErrors.join("; ")}`);
 } finally {
   await browser.close();
