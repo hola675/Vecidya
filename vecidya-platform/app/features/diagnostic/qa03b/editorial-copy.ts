@@ -31,8 +31,8 @@ export const QA03B_EDITORIAL_COPY = {
     "hint": "Indica si ya está disponible, todavía lo preparas o está en pausa, aunque hayas atendido personas antes."
   },
   "q2_sector": {
-    "prompt": "¿A qué se dedica principalmente tu negocio, trabajo, organización o proyecto?",
-    "hint": "Si ofreces varias cosas, elige el sector que mejor represente lo que haces o planeas hacer.",
+    "prompt": "¿A qué se dedica principalmente tu negocio o emprendimiento?",
+    "hint": "Elige el sector de tu negocio o del emprendimiento que preparas. Vender por internet no es, por sí solo, un sector.",
     "variantPrompts": {
       "0": "¿A qué se dedica principalmente tu organización?"
     }

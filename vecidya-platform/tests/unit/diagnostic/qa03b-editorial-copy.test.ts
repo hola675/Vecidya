@@ -79,3 +79,10 @@ test("V9 editorial text cannot replace the public V8 question bank", () => {
   }
   assert.ok(revised > 0, "Editorial review should be present only in V9");
 });
+
+test("la categoría V9 se pregunta sobre negocio o emprendimiento, nunca sobre una actividad ambigua", () => {
+  const q = bank.find((candidate) => candidate.id === "q2_sector");
+  assert.ok(q);
+  assert.equal(q.prompt, "¿A qué se dedica principalmente tu negocio o emprendimiento?");
+  assert.doesNotMatch(q.prompt, /tu actividad/i);
+});

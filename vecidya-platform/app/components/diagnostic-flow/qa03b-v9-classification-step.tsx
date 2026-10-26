@@ -1,4 +1,4 @@
-import { useEffect, useRef, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import {
   QA03B_CANDIDATE_SECTOR_V4,
@@ -43,10 +43,41 @@ export function classificationSelectionReadyV9(value: ClassificationDraftV9): bo
   return selector ? !!value.niche && selector.options.some((option) => option.value === value.niche) : value.niche === undefined;
 }
 
+/**
+ * Filtro editorial local de la taxonomía HISTÓRICA del prototipo V9.
+ * La nueva taxonomía compartida requiere migración expresa del replay antes
+ * de reemplazar q2_sector. Es una sugerencia, nunca una respuesta inferida.
+ */
+const SEARCH_HINTS_V9: Readonly<Record<string, readonly string[]>> = {
+  food_hospitality: ["restaurante", "cafeteria", "comida", "hotel", "alojamiento"],
+  health_wellness: ["dentista", "clinica", "medico", "fisioterapia"],
+  home_services: ["limpieza", "plomero", "electricista", "mantenimiento"],
+  automotive: ["taller", "mecanico", "automovil", "auto"],
+  retail: ["tienda", "ferreteria", "comercio"],
+  ecommerce: ["tienda online", "tienda en linea", "venta por internet", "ecommerce"],
+  legal: ["abogado", "bufete", "juridico"],
+  technology_software: ["software", "programacion", "informatica"],
+  b2b_services: ["agencia marketing", "consultoria", "empresa"],
+  education_coaching: ["profesor", "academia", "curso", "escuela"],
+};
+const normalizeSectorSearchV9 = (text: string) =>
+  text.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLocaleLowerCase("es").trim().replace(/\\s+/g, " ");
+
+export function searchV9LegacySectors(query: string) {
+  const normalized = normalizeSectorSearchV9(query);
+  if (!normalized) return [];
+  return QA03B_CANDIDATE_SECTOR_V4.options
+    .filter((option) => {
+      const candidates = [option.label, ...(SEARCH_HINTS_V9[option.value] ?? [])];
+      return candidates.some((label) => normalizeSectorSearchV9(label).includes(normalized));
+    })
+    .slice(0, 7);
+}
+
 export function classificationPromptV9(entityType: string | undefined): string {
   return entityType === "organization"
     ? "¿A qué se dedica principalmente tu organización?"
-    : "¿A qué se dedica principalmente tu negocio, trabajo o proyecto?";
+    : "¿A qué se dedica principalmente tu negocio o emprendimiento?";
 }
 
 /**
@@ -68,8 +99,20 @@ export function Qa03bV9ClassificationStep({
   onBack,
 }: ClassificationStepV9Props) {
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const [sectorQuery, setSectorQuery] = useState("");
+  const [showAllSectors, setShowAllSectors] = useState(false);
   const specialty = specialtySelectorForSectorV9(value.sector);
   const ready = classificationSelectionReadyV9(value);
+  const visibleSectors = sectorQuery.trim()
+    ? searchV9LegacySectors(sectorQuery)
+    : showAllSectors
+      ? QA03B_CANDIDATE_SECTOR_V4.options
+      : QA03B_CANDIDATE_SECTOR_V4.options.filter((option) => option.value === value.sector);
+  const chooseSector = (sector: string) => {
+    onChange({ sector });
+    setSectorQuery("");
+    setShowAllSectors(false);
+  };
 
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: false });
@@ -94,7 +137,7 @@ export function Qa03bV9ClassificationStep({
     <div className="df-step df-v9-classification">
       <FlowProgress progress={progress} />
       <form className="df-question" noValidate onSubmit={submit}>
-        <p className="df-question__kicker">Sobre tu actividad</p>
+        <p className="df-question__kicker">Sobre tu negocio o emprendimiento</p>
         <h1
           className="df-question__title"
           id="df-v9-classification-title"
@@ -106,7 +149,7 @@ export function Qa03bV9ClassificationStep({
 
         {reviewing ? (
           <p className="df-question__review">
-            Estás revisando tu actividad. Si cambias el sector o la especialidad, ajustaremos las preguntas siguientes.
+            Estás revisando tu negocio o emprendimiento. Si cambias el sector o la especialidad, ajustaremos las preguntas siguientes.
           </p>
         ) : null}
 
@@ -116,10 +159,38 @@ export function Qa03bV9ClassificationStep({
           className="df-question__fieldset df-v9-classification__sector"
         >
           <p className="df-question__hint" id="df-v9-sector-hint">
-            Elige la actividad que mejor representa lo que haces hoy o, si estás preparando el proyecto, lo que planeas hacer.
+            Busca lo que hace tu negocio o lo que ofrecerá tu emprendimiento. La búsqueda solo sugiere; tú eliges el sector.
           </p>
-          <div className="df-options df-options--single">
-            {QA03B_CANDIDATE_SECTOR_V4.options.map((option) => {
+          <label htmlFor="df-v9-sector-search">Buscar por tipo de negocio o emprendimiento</label>
+          <input
+            id="df-v9-sector-search"
+            aria-controls="df-v9-sector-options"
+            aria-describedby="df-v9-sector-hint"
+            autoComplete="off"
+            type="search"
+            value={sectorQuery}
+            placeholder="Ej. dentista, taller, restaurante..."
+            onChange={(event) => { setSectorQuery(event.currentTarget.value); setShowAllSectors(false); }}
+          />
+          <div className="df-v9-classification__browse">
+            <button
+              type="button"
+              className="button button--secondary"
+              aria-controls="df-v9-sector-options"
+              aria-expanded={showAllSectors}
+              onClick={() => { setShowAllSectors(!showAllSectors); setSectorQuery(""); }}
+            >{showAllSectors ? "Ocultar categorías" : "Ver todas las categorías"}</button>
+            <button type="button" className="button button--secondary" onClick={() => chooseSector("other")}>Otro tipo de negocio</button>
+            <button type="button" className="button button--secondary" onClick={() => chooseSector("unknown")}>Todavía no lo tengo claro</button>
+          </div>
+          {sectorQuery.trim() && visibleSectors.length === 0 ? (
+            <p className="df-question__hint">No encontramos una categoría exacta. Puedes ver todas o elegir otro tipo de negocio.</p>
+          ) : null}
+          {value.sector && !sectorQuery && !showAllSectors ? (
+            <p className="df-question__hint" role="status">Sector elegido: {QA03B_CANDIDATE_SECTOR_V4.options.find((option) => option.value === value.sector)?.label}</p>
+          ) : null}
+          <div className="df-options df-options--single" id="df-v9-sector-options">
+            {visibleSectors.map((option) => {
               const inputId = `df-v9-sector-${option.value}`;
               const checked = value.sector === option.value;
               return (
@@ -129,7 +200,7 @@ export function Qa03bV9ClassificationStep({
                     className="df-option__input"
                     id={inputId}
                     name="q2_sector"
-                    onChange={() => onChange({ sector: option.value })}
+                    onChange={() => chooseSector(option.value)}
                     type="radio"
                     value={option.value}
                   />
@@ -147,7 +218,7 @@ export function Qa03bV9ClassificationStep({
             className="df-question__fieldset df-v9-classification__specialty"
           >
             <legend className="df-v9-classification__legend">
-              ¿Qué especialidad se acerca más a tu actividad?
+              ¿Cuál es la especialidad de tu negocio o emprendimiento?
             </legend>
             <p className="df-question__hint" id="df-v9-specialty-hint">
               Esto nos permite adaptar las preguntas sin asumir cómo funciona tu negocio. Si ninguna encaja, elige «Otra especialidad».
