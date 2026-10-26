@@ -13,8 +13,8 @@ import {
 export const QA03B_V9_SESSION_SCHEMA = 9 as const;
 export const QA03B_V9_ANSWER_SCHEMA_ID = "qbv2-answers-v7-specialty-interactions" as const;
 export const QA03B_V9_SESSION_KEY = "vecidya.diagnostic.v3.candidate.session.9" as const;
-export const QA03B_V9_QUESTION_BANK_ID = "qa03b-specialty-branches-v9-candidate-77" as const;
-export const QA03B_V9_ENGINE_ID = "qa03b-v9-utility-first-interactions-v1" as const;
+export const QA03B_V9_QUESTION_BANK_ID = "qa03b-specialty-branches-v9-candidate-77-rev2" as const;
+export const QA03B_V9_ENGINE_ID = "qa03b-v9-utility-first-interactions-v2" as const;
 export const QA03B_V9_REPLAY_VERSION = "qa03b-worker-replay-v7-candidate" as const;
 export const QA03B_V9_REPLAY_LIMIT = CANDIDATE_ROUTE_HARD_CAP_V3 * 16;
 
