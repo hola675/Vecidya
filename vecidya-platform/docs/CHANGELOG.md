@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-25 — APRENDE-EDITORIAL-04H — Gestión revisada
+
+- Se aprueban cinco guías de Gestión: presupuesto, compras, continuidad, IA supervisada y evaluación de mejoras.
+- Se elimina `legacy.sba.gov` en favor de la página vigente de SBA y se aclara la revisión 2026 de NIST AI RMF 1.0.
+- Catálogo: 48 guías, 46 revisadas y 2 borradores. Sin cambios de producto o producción.
+
 ## 2026-10-25 — APRENDE-EDITORIAL-04G — coordinación empresarial revisada
 
 - Se aprueban cuatro guías sobre sedes, permisos, herramientas y comparación de resultados.
