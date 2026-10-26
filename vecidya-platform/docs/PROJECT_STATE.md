@@ -4,13 +4,13 @@
 
 ## Corte histórico — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
 
-## APRENDE — aprobación editorial de las 18 guías finales (PR #147 abierto)
+## APRENDE — aprobación editorial de las 18 guías finales (PR #147 integrado)
 
 El catálogo tipado contiene 48 guías, seis categorías y nueve itinerarios. Se revisaron individualmente y aprobaron las 18 guías que estaban marcadas como borrador; quedan 48 con estado público aprobado y 0 borradores. La revisión cubre alcance y solapamientos, claridad, estructura, ejemplos hipotéticos, pasos, FAQ, resúmenes, imágenes/alt, relaciones y fuentes con alcance explícito. Ver el dictamen histórico de las 46 guías en `docs/APRENDE_EDITORIAL_AUDIT_04B.md` y el checkpoint presente en `STATUS.md`.
 
-La suite unitaria y el QA público ahora exigen 48 artículos públicos, nueve itinerarios y preservan el bloqueo de un borrador sintético como regresión. PR #147 contiene este cambio, está sincronizado con `origin/main@040f2fff` y tiene los tres workflows CI PASS en `3350bed9`; sigue sin integrarse ni desplegarse. `editorialDraft` continúa siendo la frontera para nuevas guías que requieran revisión.
+La suite unitaria y el QA público ahora exigen 48 artículos públicos, nueve itinerarios y preservan el bloqueo de un borrador sintético como regresión. PR #147 integró este cambio en `main@367b03ec3a3cb80081cc8d1717ed22d85670ea85`; los tres workflows CI sobre su HEAD sincronizado `3350bed9` pasaron. El código está integrado, pero no desplegado. `editorialDraft` continúa siendo la frontera para nuevas guías que requieran revisión.
 
-La nota APRENDE-EDITORIAL-FINAL-02 en el snapshot histórico de abajo describe el corte 2026-10-25 y queda superada por esta aprobación editorial en PR #147; hasta integrar y publicar el cambio, producción conserva el estado de 30 guías públicas y 18 borradores.
+La nota APRENDE-EDITORIAL-FINAL-02 en el snapshot histórico de abajo describe el corte 2026-10-25 y queda superada por esta aprobación editorial integrada mediante PR #147. Producción conserva el estado publicado en 0.8.1: 30 guías públicas y 18 borradores, hasta un release posterior.
 
 
 En `feat/diag-visual-03`, QA-03B presenta la lectura general y ocho áreas en un flujo visual de una columna; entrada, foco, estados preliminares y ausencia de score tienen tratamiento explícito. Las unitarias focales (20/20), E2E QA-03B local (6/6), typecheck y build constan como PASS en `TESTING.md`. No se modifican scoring ni contratos y no hay despliegue. El runner responsive DIAG-PRO-19 está obsoleto respecto a la clave activa y no se cuenta como evidencia multi-viewport; zoom real 200 % y lector de pantalla siguen pendientes.
