@@ -15,7 +15,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-presupuesto-digital.svg",
     "imageAlt": "Tres tarjetas amplias representan la cuota del servicio, el tiempo de trabajo y una revisión del presupuesto total.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
       "como-saber-si-una-mejora-tecnologica-funciona-en-tu-empresa"
@@ -184,9 +184,9 @@ export const learnManagement03Articles: LearnArticle[] = [
             "type": "sources",
             "items": [
               {
-                "label": "SBA — Administre las finanzas de su empresa",
-                "url": "https://legacy.sba.gov/es/guia-de-negocios/administre-su-empresa/administre-sus-finanzas",
-                "scope": "Explica cómo registrar gastos e ingresos y pensar en costos y flujo de efectivo. Es orientación general de EE. UU., no asesoría contable o tributaria para todos los países."
+                "label": "SBA — Manage your business: manage your finances",
+                "url": "https://www.sba.gov/counseling/manage-your-business/",
+                "scope": "La página actual de SBA incluye orientación sobre registro financiero, costos y análisis costo-beneficio. Es orientación general de EE. UU., no asesoría contable o tributaria para otros países."
               },
               {
                 "label": "OCDE — Digitalización de pequeñas y medianas empresas",
@@ -217,7 +217,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-compras-proveedores.svg",
     "imageAlt": "Tres tarjetas muestran una solicitud, una aprobación y una recepción comprobada.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo",
       "quien-puede-ver-cambiar-y-publicar-en-tu-empresa"
@@ -385,9 +385,9 @@ export const learnManagement03Articles: LearnArticle[] = [
             "type": "sources",
             "items": [
               {
-                "label": "SBA — Administre las finanzas de su empresa",
-                "url": "https://legacy.sba.gov/es/guia-de-negocios/administre-su-empresa/administre-sus-finanzas",
-                "scope": "Explica cómo registrar gastos e ingresos y pensar en costos y flujo de efectivo. Es orientación general de EE. UU., no asesoría contable o tributaria para todos los países."
+                "label": "SBA — Manage your business: manage your finances",
+                "url": "https://www.sba.gov/counseling/manage-your-business/",
+                "scope": "La página actual de SBA incluye orientación sobre registro financiero, costos y análisis costo-beneficio. Es orientación general de EE. UU., no asesoría contable o tributaria para otros países."
               },
               {
                 "label": "OCDE — Digitalización de pequeñas y medianas empresas",
@@ -418,7 +418,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-continuidad-digital.svg",
     "imageAlt": "Tres tarjetas representan una interrupción, un modo alternativo de trabajo y la recuperación comprobada.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "como-hacer-copias-de-seguridad-de-tu-negocio",
       "como-proteger-cuentas-contrasenas-estafas-negocio"
@@ -616,7 +616,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-gobierno-ia.svg",
     "imageAlt": "Tres tarjetas muestran una propuesta de IA, una revisión de una persona y una decisión controlada.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "preparar-respuestas-publicaciones-ia-sin-perder-control",
       "que-puede-hacer-una-inteligencia-artificial-por-un-negocio"
@@ -791,7 +791,7 @@ export const learnManagement03Articles: LearnArticle[] = [
               {
                 "label": "NIST — Marco de gestión de riesgos de inteligencia artificial",
                 "url": "https://www.nist.gov/itl/ai-risk-management-framework",
-                "scope": "Marco voluntario para reconocer, evaluar y gestionar riesgos de IA. No es una certificación ni garantiza que una herramienta sea segura."
+                "scope": "Marco voluntario para reconocer, evaluar y gestionar riesgos de IA. AI RMF 1.0 continúa publicado, aunque NIST indica que está en revisión en 2026; no es una certificación ni garantiza que una herramienta sea segura."
               },
               {
                 "label": "NIST — Perfil para inteligencia artificial generativa",
@@ -822,7 +822,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-evaluar-mejora.svg",
     "imageAlt": "Tres tarjetas muestran la situación inicial, una prueba limitada y una decisión basada en lo aprendido.",
-    "editorialDraft": true,
+    "editorialDraft": false,
     "relatedSlugs": [
       "analitica-web-que-medir-en-tu-negocio",
       "como-preparar-presupuesto-para-herramientas-digitales"
