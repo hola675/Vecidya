@@ -12,7 +12,7 @@ const templateRenderers = {
   [DEFAULT_MINIWEB_TEMPLATE_KEY]: DefaultMiniWebTemplate,
 };
 
-export function MiniWebRenderer({ configuration, profile, hours, offerings = [], faqs = [], media = [], preview = false }: {
+export function MiniWebRenderer({ configuration, profile, hours, offerings = [], faqs = [], media = [], preview = false, heroCover }: {
   configuration: MiniWebConfiguration;
   profile: MiniWebPublicProfile;
   hours: BusinessHoursEntry[];
@@ -20,7 +20,13 @@ export function MiniWebRenderer({ configuration, profile, hours, offerings = [],
   faqs?: BusinessFaqItem[];
   media?: MiniWebMediaAsset[];
   preview?: boolean;
+  heroCover?: { publicUrl: string; altText: string };
 }) {
+  const identityMedia = media.filter((asset) => asset.mediaType === "image");
+  const renderedProfile = {
+    ...profile,
+  logoUrl: identityMedia.find((asset) => asset.purpose === "logo")?.publicUrl ?? (preview ? profile.logoUrl : null),
+  };
   const available = MINIWEB_TEMPLATE_REGISTRY[configuration.templateKey]?.availability === "available";
   const templateKey = available ? configuration.templateKey : DEFAULT_MINIWEB_TEMPLATE_KEY;
   const safeConfiguration = available ? configuration : {
@@ -28,8 +34,9 @@ export function MiniWebRenderer({ configuration, profile, hours, offerings = [],
     templateKey,
     templateVersion: MINIWEB_TEMPLATE_REGISTRY[templateKey].version,
   };
-  const modules = getRenderableMiniWebModules(safeConfiguration, profile, hours, offerings, faqs, media);
+  const modules = getRenderableMiniWebModules(safeConfiguration, renderedProfile, hours, offerings, faqs, media);
   const Template = templateRenderers[templateKey as keyof typeof templateRenderers];
 
-  return <Template configuration={safeConfiguration} modules={modules} profile={profile} hours={hours} offerings={offerings} faqs={faqs} media={media} preview={preview} />;
+  const templateMedia = heroCover ? [...media.filter((asset) => asset.purpose !== "cover"), { id: "published-cover", mediaType: "image" as const, purpose: "cover" as const, contentType: "image/webp", altText: heroCover.altText, publicUrl: heroCover.publicUrl }] : media;
+  return <Template configuration={safeConfiguration} modules={modules} profile={renderedProfile} hours={hours} offerings={offerings} faqs={faqs} media={templateMedia} preview={preview} />;
 }

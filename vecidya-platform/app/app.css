@@ -1583,8 +1583,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .directory-page-v2 .directory-hero h1 { max-width: 14ch; }
 .directory-page-v2--compact { padding-bottom:clamp(2rem,5vw,3.5rem); }
 .directory-page-v2--compact .directory-results-heading { margin-top:1.5rem; }
-.directory-page-v2--compact .directory-grid-v2 { grid-template-columns:repeat(2,minmax(0,26rem)); justify-content:center; }
-.directory-page-v2--compact .directory-grid-v2 > li:only-child { grid-column:1/-1; width:min(100%,32rem); justify-self:center; }
+.directory-page-v2--compact .directory-grid-v2 { grid-template-columns:minmax(0,36rem); justify-content:center; }
+.directory-page-v2--compact .directory-grid-v2 > li:only-child { grid-column:auto; width:100%; justify-self:stretch; }
 .directory-search-field { min-width: 0; }
 .directory-search-field > span:first-child { display: block; }
 .directory-search-input { display: flex; position: relative; align-items: center; }
@@ -1594,10 +1594,30 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .directory-active-filters > strong { align-self:center; margin-right:.25rem; color:var(--ink); font-size:var(--text-label); }
 .directory-active-filters span { border: 1px solid #b8c9df; border-radius: 999px; padding: .4rem .7rem; color: var(--blue); background: #eef4ff; font-size: .82rem; font-weight: 700; }
 .directory-grid-v2 > li { min-width: 0; }
+.directory-grid-v2 > li { display:grid; }
 .directory-card-offerings { display:flex; flex-wrap:wrap; gap:.4rem; margin:0; padding:0; list-style:none; }
 .directory-card-offerings li { border:1px solid #c8d7eb; border-radius:999px; padding:.3rem .55rem; color:#174b87; background:#f0f5fc; font-size:.78rem; font-weight:700; }
+.directory-card-offerings__empty { color:var(--muted) !important; background:#f7f9fc !important; }
 .public-v2-business-card .directory-card-modules { margin:0; color:var(--muted); font-size:.78rem; line-height:1.4; }
 .public-v2-business-card__content > p:not(.eyebrow):not(.public-v2-business-card__location) { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.public-v2-business-card__facts { display:grid; align-content:start; gap:.25rem; min-height:4.1rem; }
+.public-v2-business-card__summary { display:-webkit-box; overflow:hidden; min-height:4.5rem; margin:0; color:var(--muted); line-height:1.5; -webkit-box-orient:vertical; -webkit-line-clamp:3; }
+.public-v2-business-card__content { grid-template-rows:auto auto auto auto minmax(4.5rem,1fr) auto auto auto; height:100%; }
+.public-v2-business-card__content > .directory-card__link { align-self:end; }
+.public-v2-business-card__identity { background-position:center; background-repeat:no-repeat; background-size:cover; }
+
+.public-business-profile__identity--cover { position:relative; isolation:isolate; overflow:hidden; background:transparent; }
+.public-business-profile__identity--cover::before { position:absolute; z-index:1; inset:0; border-radius:inherit; background:rgb(255 255 255 / 36%); content:""; pointer-events:none; }
+.public-business-profile__identity--cover > .miniweb-cover { position:absolute; z-index:0; inset:0; width:auto; height:auto; max-width:none; max-height:none; margin:0; border-radius:0; background-position:center; background-repeat:no-repeat; background-size:cover; }
+.public-business-profile__identity--cover > :not(.miniweb-cover) { position:relative; z-index:2; }
+.public-page.public-business-profile > .miniweb-template__module--hero > .public-business-profile__header .public-business-profile__identity--cover > .miniweb-cover { position:absolute; inset:0; z-index:0; width:auto; height:auto; max-width:none; max-height:none; margin:0; border-radius:0; background-position:center; background-repeat:no-repeat; background-size:cover; box-shadow:none; }
+
+.public-page.public-business-profile > .miniweb-template__sections { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; gap:1.25rem; }
+.public-page.public-business-profile > .miniweb-template__sections > .miniweb-template__module--gallery,
+.public-page.public-business-profile > .miniweb-template__sections > .miniweb-template__module--hours,
+.public-page.public-business-profile > .miniweb-template__sections > .miniweb-template__module--faq { grid-column:1/-1; }
+.public-page.public-business-profile > .miniweb-template__sections > .miniweb-template__module { grid-column:auto; width:100%; min-width:0; margin:0; }
+@media(max-width:760px) { .public-page.public-business-profile > .miniweb-template__sections { grid-template-columns:minmax(0,1fr); gap:1rem; } .public-page.public-business-profile > .miniweb-template__sections > .miniweb-template__module { grid-column:1/-1; } }
 
 @media (max-width: 760px) {
   .directory-page-v2 > .directory-hero { margin-top: 1rem; }

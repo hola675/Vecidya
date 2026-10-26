@@ -134,7 +134,10 @@ export async function action({ context, request }: Route.ActionArgs) {
   } catch (error) {
     if (error instanceof Response && (error.status === 400 || error.status === 409)) {
       const message = await error.text();
-      return { kind: intent === "save-hours" ? ("hours" as const) : ("profile" as const), error: message, status: error.status };
+      if (intent === "save-hours") {
+        return { kind: "hours" as const, hoursDraft: readHoursFormDraft(formData), error: message, status: error.status };
+      }
+      return { kind: "profile" as const, error: message, status: error.status };
     }
     throw error;
   }
@@ -162,7 +165,7 @@ function getProfilePreview(
     category: previewText(formData, "category", profile?.category),
     city: previewText(formData, "city", profile?.city),
     country: previewText(formData, "country", profile?.country),
-    logoUrl: previewText(formData, "logoUrl", profile?.logoUrl),
+    logoUrl: null,
     description: previewText(formData, "description", profile?.description),
     phone: previewText(formData, "phone", profile?.phone),
     publicEmail: previewText(formData, "publicEmail", profile?.publicEmail),
@@ -184,6 +187,20 @@ function getHoursPreview(formData: FormData): BusinessHoursEntry[] {
     const closesAt = previewText(formData, `hours_${day}_closes`, null);
     if (!isClosed && (!opensAt || !closesAt)) return [];
     return [{ dayOfWeek: day, isClosed, opensAt: isClosed ? null : opensAt, closesAt: isClosed ? null : closesAt }];
+  });
+}
+
+function readHoursFormDraft(formData: FormData): BusinessHoursEntry[] {
+  return daysOfWeek.map((dayOfWeek) => {
+    const isClosed = formData.get(`hours_${dayOfWeek}_closed`) === "on";
+    const opensAt = formData.get(`hours_${dayOfWeek}_opens`);
+    const closesAt = formData.get(`hours_${dayOfWeek}_closes`);
+    return {
+      dayOfWeek,
+      isClosed,
+      opensAt: isClosed || typeof opensAt !== "string" || !opensAt ? null : opensAt,
+      closesAt: isClosed || typeof closesAt !== "string" || !closesAt ? null : closesAt,
+    };
   });
 }
 
@@ -370,7 +387,6 @@ export default function BusinessProfilePage() {
                 <label>Teléfono público<input autoComplete="tel" defaultValue={value(profile?.phone)} name="phone" type="tel" maxLength={50} /></label>
                 <label>Email de contacto<input autoComplete="email" defaultValue={value(profile?.publicEmail)} name="publicEmail" type="email" maxLength={254} /></label>
                 <label>Sitio web<input autoComplete="url" defaultValue={value(profile?.websiteUrl)} name="websiteUrl" type="url" maxLength={2048} /></label>
-                <label>URL del logo<input defaultValue={value(profile?.logoUrl)} name="logoUrl" type="url" maxLength={2048} /></label>
               </div>
             </fieldset>
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.3 — candidato APP-MINI-02B (2026-10-26)
+
+- Se preservan los valores de horarios tras un error de validación y se mantiene sincronizado el foco/indicador de navegación.
+- El logo se gestiona solo desde Archivos e identidad de Mi MiniWeb. La publicación usa el mismo logo en MiniWeb y Vecindario; la portada llena su marco detrás del logo.
+- Se reorganiza el perfil MiniWeb en una retícula responsive y se alinean las tarjetas del Vecindario; no se añaden datos de negocio ficticios.
+- Verificación y publicación pendientes. No se ejecutarán pruebas contra producción; el cierre de publicación requiere solo comprobación anónima HTTP de lectura tras deploy, conforme a GOVERNANCE.
+
 ## 0.8.2 — producción (2026-10-26)
 
 - Reúne los cambios integrados en `main` después del deployment 0.8.1 —aprobación editorial de las 18 guías de Aprende (48 publicables)— y PR #139: auditoría funcional Admin, autorización explícita, control de concurrencia y unicidad de licencia por organización. PR #139 integrado en `main@c03c3bab7610a327db9926cd7aee0275a3dbb8a7`.
