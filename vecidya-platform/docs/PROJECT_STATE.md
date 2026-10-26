@@ -81,6 +81,10 @@ El piloto visual de `/aprende` está implementado en `feat/aprende-ui-pilot-01`,
 
 PR #54 se integró mediante `c91a3dbac5fbb23625ec516f99eb2a74fd8d6729`; PR #55 se integró después en `ab8a02ed62cef15ee78eac69c99009ef8bba47db`. La interfaz `/app/internal/licenses` presenta la jerarquía cliente → negocios; cada negocio tiene su licencia y el espacio de trabajo conserva el significado técnico. Las escrituras mantienen `organization:license:update` y auditoría. Sin cambio de esquema ni despliegue.
 
+## LICENSE-CANCEL-HISTORY-001 — estado local (2026-10-26)
+
+Sobre `origin/main@072cd4f`, Admin permite cancelación inmediata y reactivación de la misma licencia con su `id`; una reactivación por cancelación administrativa restaura el estado anterior. La cronología por negocio lee `platform_audit_log` con actor, fecha y valores legibles. La regla comercial queda manual, sin vencimiento, renovación automática ni cobro. Implementación local validada con typecheck/build y Worker/D1/Chromium; no requiere migración, D1 remota ni deploy. Ver `STATUS.md` y `TESTING.md`.
+
 ## Estado vigente — APP-MINI-02E integrado, UX-PREMIUM-02A integrado/02B local, gate R2 y publicación QA-03B (2026-10-24)
 
 PR #69 integró APP-MINI-02E en `main@2a58dc0` (HEAD consultado de `origin/main`). PR #64 integró 02D en `820f529`; PR #42/#45 permanecen integrados; #49/#60/#61 cubren 02B; #51 integró 02C. La cadena remota de D1 permanece documentada en `0000–0026`; la API de Cloudflare devolvió HTTP 403/10042 y exige habilitar R2 desde Dashboard. No se crearon buckets, no se modificó D1 remota ni hubo deploy.

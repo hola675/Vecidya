@@ -352,6 +352,43 @@ grandfathering de precio. Ver [TESTING.md](TESTING.md).
 renovación automática, checkout, cobro ni scheduler de licencias. La vigencia comercial por ciclo
 queda fuera de implementación hasta una decisión compatible con el catálogo y facturación.
 
+### Decisión y contrato aprobado — cancelación manual e historial (2026-10-26)
+
+Decisiones del usuario: las licencias son manuales, sin renovación automática ni vencimiento; cancelar
+es inmediato; una licencia cancelada puede reactivarse en la misma fila conservando su `id`; al
+reactivarla debe recuperar el estado previo (`pending`, `active` o `suspended`). El historial requerido
+es una cronología auditada con fecha, actor y valores anterior/nuevo. La cancelación no representa
+reembolso ni movimiento de dinero.
+
+Sin agregar endpoint, el `POST /api/platform/organizations/{organizationId}/license` protegido por
+sesión `platform_admin` activa y `organization:license:update` aceptará `operation: "cancel"` con
+`currentLicenseId`; cancela inmediatamente la licencia vigente y audita el estado anterior →
+`cancelled` en la misma operación CAS. El cuerpo inválido o campos requeridos ausentes responden
+`400`; sin sesión se conserva el comportamiento del guard existente; rol/plataforma sin autorización
+responden `403`; organización/licencia objetivo inexistente responde `404`; cambios obsoletos o
+transiciones no permitidas responden `409`; errores inesperados conservan el manejo `500` existente.
+El éxito responde `200` con `{ id, status }`.
+
+`operation: "reactivate"` conserva el formato existente y admite la licencia suspendida (a activa) o
+cancelada por esta operación (al estado guardado en el evento de cancelación). Cambios obsoletos o
+transiciones no permitidas responden `409`; una licencia cancelada por cambio de plan no es
+reactivable mediante este flujo. El identificador no cambia y no se crea una nueva fila. Cancelar y
+reactivar actualizan `organization_license` y su evento de auditoría en un batch D1 atómico; CAS usa
+ID de licencia, organización y estado observado.
+
+La pantalla `/app/internal/licenses` presentará los eventos `organization_license.*` de cada negocio
+en orden cronológico, con fecha, nombre del actor, acción y valores legibles anterior/nuevo. Incluirá
+asignación, cambio de plan, cambio de estado, cancelación y transferencia. No se propone una migración:
+la auditoría existente (`platform_audit_log`) será la fuente de la cronología; la cancelación añadirá
+el evento `organization_license.cancelled` (`previous_value` = estado previo, `new_value` =
+`cancelled`). La vista queda bajo las mismas guardas de Admin; valores técnicos sin etiqueta conocida
+se mostrarán de forma segura con su nombre de acción.
+
+Implementado localmente sin migración: cancelación inmediata con CAS y auditoría; reactivación de la
+misma fila solo cuando el evento demuestra cancelación administrativa, restaurando el estado previo;
+cronología completa por negocio con actor/fecha/valores. Sin proveedor de cobro, vencimiento ni
+renovación automática. E2E del Worker/D1 local y navegador PASS; ver `TESTING.md`.
+
 ## Migraciones
 
 `_journal.json` tiene entradas consecutivas `0000`–`0029`, incluidos los checkpoints concurrentes `0016` Diagnóstico y `0017` MiniWeb. Drizzle generó `0029` y su snapshot a partir del schema; el ledger de D1 del checkpoint se aplicó solo en local.

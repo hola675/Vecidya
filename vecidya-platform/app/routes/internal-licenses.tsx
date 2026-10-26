@@ -3,7 +3,7 @@ import { Form, Link, redirect, useActionData, useLoaderData } from "react-router
 import { eq } from "drizzle-orm";
 
 import { createDatabase } from "../../db/client.server";
-import { getCurrentLicensePrice, getOrganizationLicense, planCodes, assignOrganizationLicense, changeOrganizationLicensePlan, setOrganizationLicenseStatus, reassignOrganizationLicenseBillingAccount, LicensingConflictError, LicensingError, isPlanCode } from "../../db/queries/licensing.server";
+import { getCurrentLicensePrice, getOrganizationLicense, getOrganizationLicenseAuditHistory, planCodes, assignOrganizationLicense, cancelOrganizationLicense, changeOrganizationLicensePlan, setOrganizationLicenseStatus, reassignOrganizationLicenseBillingAccount, reactivateCancelledOrganizationLicense, LicensingConflictError, LicensingError, isPlanCode } from "../../db/queries/licensing.server";
 import { listPlatformOrganizations } from "../../db/queries/platform-organizations.server";
 import { billingAccount, licensePrice, user } from "../../db/schema";
 import type { PlanCode } from "../../db/pricing/calculator";
@@ -11,6 +11,7 @@ import { AdminShell } from "../components/admin-shell";
 import { Badge, Icon } from "../components/ui";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { requirePlatformAdmin, requirePlatformAdminAction } from "../../server/platform-authorization.server";
+import { platformAuditActionLabels } from "../lib/platform-audit-labels";
 
 import type { Route } from "./+types/internal-licenses";
 
@@ -25,17 +26,19 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const database = createDatabase(env.DB);
   const organizations = await listPlatformOrganizations(database);
   const users = await database.select({ id: user.id, name: user.name, email: user.email }).from(user).orderBy(user.name);
+  const billingAccounts = await database.select({ id: billingAccount.id, ownerUserId: billingAccount.ownerUserId }).from(billingAccount);
   const now = new Date();
   const [plans, rows] = await Promise.all([
     Promise.all(planCodes.map(async (code) => ({ code, price: await getCurrentLicensePrice(database, code, now) }))),
     Promise.all(organizations.map(async (organization) => {
-      const license = await getOrganizationLicense(database, organization.id);
+      const [license, history] = await Promise.all([getOrganizationLicense(database, organization.id), getOrganizationLicenseAuditHistory(database, organization.id)]);
       const price = license ? await database.query.licensePrice.findFirst({ where: eq(licensePrice.id, license.priceId) }) : null;
       const billing = license ? await database.query.billingAccount.findFirst({ where: eq(billingAccount.id, license.billingAccountId) }) : null;
-      return { organization, license, price, billingOwnerUserId: billing?.ownerUserId ?? null };
+      const canReactivate = Boolean(license?.status === "cancelled" && license.endsAt && history.some((event) => event.action === "organization_license.cancelled" && event.entityId === license.id && event.createdAt.getTime() === license.endsAt!.getTime()));
+      return { organization, license, price, billingOwnerUserId: billing?.ownerUserId ?? null, history, canReactivate };
     })),
   ]);
-  return { rows, plans, users, updated: new URL(request.url).searchParams.get("updated") === "1", workspaceUser: access.workspaceUser };
+  return { rows, plans, users, billingAccounts, updated: new URL(request.url).searchParams.get("updated") === "1", workspaceUser: access.workspaceUser };
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
@@ -70,16 +73,31 @@ export async function action({ context, request }: Route.ActionArgs) {
       const currentLicenseId = String(form.get("currentLicenseId") ?? "");
       if (!currentLicenseId) return { error: "Recarga la página para confirmar la licencia actual antes de cambiar el plan." };
       await changeOrganizationLicensePlan(database, { organizationId, expectedLicenseId: currentLicenseId, newPlanCode: planCode, actorUserId: actor.userId });
-    } else if (intent === "suspend" || intent === "reactivate") {
+    } else if (intent === "suspend") {
       const currentLicenseId = String(form.get("currentLicenseId") ?? "");
       if (!currentLicenseId) return { error: "Recarga la página para confirmar la licencia actual antes de cambiar su estado." };
       await setOrganizationLicenseStatus(database, {
         organizationId,
         expectedLicenseId: currentLicenseId,
-        expectedStatus: intent === "suspend" ? "active" : "suspended",
-        status: intent === "suspend" ? "suspended" : "active",
+        expectedStatus: "active",
+        status: "suspended",
         actorUserId: actor.userId,
       });
+    } else if (intent === "cancel") {
+      const currentLicenseId = String(form.get("currentLicenseId") ?? "");
+      if (!currentLicenseId) return { error: "Recarga la página para confirmar la licencia actual antes de cancelarla." };
+      await cancelOrganizationLicense(database, { organizationId, expectedLicenseId: currentLicenseId, actorUserId: actor.userId });
+    } else if (intent === "reactivate") {
+      const currentLicenseId = String(form.get("currentLicenseId") ?? "");
+      if (!currentLicenseId) return { error: "Recarga la página para confirmar la licencia actual antes de reactivarla." };
+      const current = await getOrganizationLicense(database, organizationId);
+      if (!current || current.id !== currentLicenseId) throw new LicensingConflictError("La licencia cambió en otra operación; recarga la página y vuelve a intentarlo.");
+      if (current.status === "cancelled") {
+        await reactivateCancelledOrganizationLicense(database, { organizationId, expectedLicenseId: currentLicenseId, actorUserId: actor.userId });
+      } else {
+        const expectedStatus = current.status === "pending" ? "pending" : "suspended";
+        await setOrganizationLicenseStatus(database, { organizationId, expectedLicenseId: currentLicenseId, expectedStatus, status: "active", actorUserId: actor.userId });
+      }
     } else if (intent === "transfer-billing-account") {
       const newOwnerUserId = String(form.get("newOwnerUserId") ?? "");
       const expectedLicenseId = String(form.get("currentLicenseId") ?? "");
@@ -98,7 +116,7 @@ export async function action({ context, request }: Route.ActionArgs) {
 }
 
 export default function InternalLicenses() {
-  const { rows, plans, users, updated, workspaceUser } = useLoaderData<typeof loader>();
+  const { rows, plans, users, billingAccounts, updated, workspaceUser } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const [search, setSearch] = useState("");
   const availablePlans = plans.filter(({ price }) => price !== null);
@@ -151,6 +169,7 @@ export default function InternalLicenses() {
             <p><strong>Licencia:</strong> {license ? <><Badge tone={license.status === "active" ? "success" : license.status === "suspended" ? "danger" : "neutral"}>{statusNames[license.status] ?? license.status}</Badge> {planNames[license.planCode]} · {price ? `${price.currency} ${(price.amountCents / 100).toFixed(2)} / mes` : "precio histórico"}</> : "Sin asignar"}</p>
             <Link className="text-link" to={`/app/internal/organizations/${organization.id}`}>Ver espacio de trabajo →</Link>
 
+            {license?.status === "cancelled" && row.canReactivate ? <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="reactivate" /><button className="button button--primary" onClick={(event) => { if (!window.confirm("¿Reactivar esta licencia y restaurar el estado que tenía antes de cancelarla?")) event.preventDefault(); }} type="submit">Reactivar licencia anterior</button></Form> : null}
             {!license || license.status === "cancelled" ? (
               availablePlans.length && users.length ? <Form className="admin-license-form" method="post">
                 <input name="organizationId" type="hidden" value={organization.id} /><input name="intent" type="hidden" value="assign" />
@@ -169,9 +188,24 @@ export default function InternalLicenses() {
               {license.status === "active" ? <>
                 <Form className="admin-license-form" method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="change-plan" /><label>Cambiar plan<select name="planCode" required defaultValue={availablePlans.find(({ code }) => code !== license.planCode)?.code ?? license.planCode}>{availablePlans.filter(({ code }) => code !== license.planCode).map(({ code, price: currentPrice }) => <option key={code} value={code}>{planNames[code]} · {currentPrice!.currency} {(currentPrice!.amountCents / 100).toFixed(2)} / mes</option>)}</select></label><button className="button button--secondary" disabled={!availablePlans.some(({ code }) => code !== license.planCode)} onClick={(event) => { if (!window.confirm("¿Cambiar el plan de esta licencia? La acción quedará registrada en auditoría.")) event.preventDefault(); }} type="submit">Cambiar plan</button></Form>
                 <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="suspend" /><button className="button button--secondary" onClick={(event) => { if (!window.confirm("¿Suspender esta licencia? El negocio y sus datos se conservarán.")) event.preventDefault(); }} type="submit">Suspender licencia</button></Form>
-              </> : <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="reactivate" /><button className="button button--primary" onClick={(event) => { if (!window.confirm("¿Reactivar esta licencia?")) event.preventDefault(); }} type="submit">Activar licencia</button></Form>}
+              </> : <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="reactivate" /><button className="button button--primary" onClick={(event) => { if (!window.confirm("¿Activar o reactivar esta licencia y registrar la acción?")) event.preventDefault(); }} type="submit">{license.status === "pending" ? "Activar licencia pendiente" : "Reactivar licencia"}</button></Form>}
+              <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="cancel" /><button className="button button--secondary" onClick={(event) => { if (!window.confirm("La cancelación es inmediata y desactiva las capacidades de esta licencia. ¿Continuar?")) event.preventDefault(); }} type="submit">Cancelar licencia</button></Form>
               <Form className="admin-license-form" method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="expectedBillingAccountId" type="hidden" value={license.billingAccountId} /><input name="intent" type="hidden" value="transfer-billing-account" /><p>Titular de facturación: {users.find((person) => person.id === row.billingOwnerUserId)?.name ?? "No disponible"}</p><label>Transferir a<select name="newOwnerUserId" required defaultValue={row.billingOwnerUserId ?? ""}><option value="" disabled>Selecciona una persona</option>{users.map((person) => <option key={person.id} value={person.id}>{person.name} · {person.email}</option>)}</select></label><button className="button button--secondary" onClick={(event) => { if (!window.confirm("¿Transferir la facturación de este negocio? La transferencia quedará registrada en auditoría.")) event.preventDefault(); }} type="submit">Transferir facturación</button></Form>
             </div>}
+            <details className="admin-license-history"><summary>Historial auditado ({row.history.length} {row.history.length === 1 ? "evento" : "eventos"})</summary>
+              {row.history.length ? <ol>{row.history.map((event) => {
+                const billingValue = (value: string | null) => {
+                  if (!value) return "—";
+                  const account = billingAccounts.find((item) => item.id === value);
+                  if (account) {
+                    const accountOwner = users.find((person) => person.id === account.ownerUserId);
+                    return accountOwner ? `${accountOwner.name} · ${accountOwner.email}` : value;
+                  }
+                  return statusNames[value] ?? planNames[value as PlanCode] ?? value;
+                };
+                return <li key={event.id}><time dateTime={event.createdAt.toISOString()}>{new Intl.DateTimeFormat("es", { dateStyle: "medium", timeStyle: "short" }).format(event.createdAt)}</time> · <strong>{platformAuditActionLabels[event.action] ?? event.action}</strong> · {event.actorName} ({event.actorEmail}) · {billingValue(event.previousValue)} → {billingValue(event.newValue)}</li>;
+              })}</ol> : <p>Aún no hay acciones de licencia registradas.</p>}
+            </details>
           </section>
         ); })}
         </div>

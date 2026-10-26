@@ -629,7 +629,18 @@ try {
   await licensePage.getByRole("status").getByText("Licencia actualizada y acción registrada en auditoría.").waitFor();
   const suspendedLicenseState = executeD1(`SELECT status,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.suspended') AS audit_count FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled';`)[0];
   assert(suspendedLicenseState?.status === "suspended" && Number(suspendedLicenseState.audit_count) === 1, "Suspender licencia desde UI no persistió el estado y su auditoría.");
-  await licensePage.getByRole("button", { name: "Activar licencia" }).click();
+  await licensePage.getByRole("button", { name: "Cancelar licencia" }).click();
+  await licensePage.getByRole("status").getByText("Licencia actualizada y acción registrada en auditoría.").waitFor();
+  const cancelledLicenseState = executeD1(`SELECT id,status,ends_at,(SELECT previous_value FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND entity_id='${currentLicenseId}' AND action='organization_license.cancelled' ORDER BY created_at DESC LIMIT 1) AS previous_status,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND entity_id='${currentLicenseId}' AND action='organization_license.cancelled') AS audit_count FROM organization_license WHERE id='${currentLicenseId}';`)[0];
+  assert(cancelledLicenseState?.id === currentLicenseId && cancelledLicenseState.status === "cancelled" && Number(cancelledLicenseState.ends_at) > 0 && cancelledLicenseState.previous_status === "suspended" && Number(cancelledLicenseState.audit_count) === 1, "Cancelar licencia desde UI no conservó ID, estado previo y auditoría inmediata.");
+  await licensePage.getByRole("button", { name: "Reactivar licencia anterior" }).click();
+  await licensePage.getByRole("status").getByText("Licencia actualizada y acción registrada en auditoría.").waitFor();
+  const restoredLicenseState = executeD1(`SELECT id,status,ends_at,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND entity_id='${currentLicenseId}' AND action='organization_license.suspended' AND previous_value='cancelled') AS restored_audit_count FROM organization_license WHERE id='${currentLicenseId}';`)[0];
+  assert(restoredLicenseState?.id === currentLicenseId && restoredLicenseState.status === "suspended" && restoredLicenseState.ends_at === null && Number(restoredLicenseState.restored_audit_count) === 1, "Reactivar desde cancelación no restauró el estado suspendido ni conservó el ID.");
+  const licenseHistory = licensePage.locator(".admin-license-history");
+  await licenseHistory.locator("summary").click();
+  assert((await licenseHistory.innerText()).includes("Canceló una licencia"), "El historial UI no mostró la cancelación auditada.");
+  await licensePage.getByRole("button", { name: "Reactivar licencia" }).click();
   await licensePage.getByRole("status").getByText("Licencia actualizada y acción registrada en auditoría.").waitFor();
   const reactivatedLicenseState = executeD1(`SELECT status,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.active') AS audit_count FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled';`)[0];
   assert(reactivatedLicenseState?.status === "active" && Number(reactivatedLicenseState.audit_count) === 1, "Reactivar licencia desde UI no persistió el estado y su auditoría.");
@@ -637,6 +648,18 @@ try {
 } finally {
   await licenseBrowser.close();
 }
+
+const concurrentCancellations = await Promise.all([
+  identities.platform.client.json(licensePath, { operation: "cancel", currentLicenseId }),
+  identities.platform.client.json(licensePath, { operation: "cancel", currentLicenseId }),
+]);
+const cancellationStatuses = concurrentCancellations.map(({ status }) => status).sort((a, b) => a - b);
+assert(cancellationStatuses[0] === 200 && cancellationStatuses[1] === 409, `Cancelaciones concurrentes produjeron ${cancellationStatuses.join(", ")}; se esperaba un ganador y un conflicto.`);
+const apiCancelledState = executeD1(`SELECT id,status,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND entity_id='${currentLicenseId}' AND action='organization_license.cancelled') AS audit_count FROM organization_license WHERE id='${currentLicenseId}';`)[0];
+assert(apiCancelledState?.id === currentLicenseId && apiCancelledState.status === "cancelled" && Number(apiCancelledState.audit_count) === 2, "La cancelación CAS desde API cambió el ID o creó auditoría duplicada.");
+const apiReactivation = await identities.platform.client.json(licensePath, { operation: "reactivate", currentLicenseId });
+const apiReactivationBody = await apiReactivation.clone().json();
+assert(apiReactivation.status === 200 && apiReactivationBody.status === "active", `La API no restauró la licencia a activa: ${apiReactivation.status} ${JSON.stringify(apiReactivationBody)}.`);
 
 const concurrentPlanChanges = await Promise.all([
   identities.platform.client.json(licensePath, { operation: "change-plan", currentLicenseId, planCode: "cuadra" }),
@@ -650,7 +673,26 @@ const staleSuspend = await identities.platform.client.json(licensePath, { operat
 const staleReactivate = await identities.platform.client.json(licensePath, { operation: "reactivate", currentLicenseId });
 assert(staleSuspend.status === 409 && staleReactivate.status === 409, `Acciones de estado sobre la licencia cancelada/obsoleta no dieron 409: ${staleSuspend.status}, ${staleReactivate.status}.`);
 const afterStaleLicenseActions = executeD1(`SELECT (SELECT status FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled') AS current_status,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.suspended') AS suspend_audit_count,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.active') AS active_audit_count;`)[0];
-assert(afterStaleLicenseActions?.current_status === "active" && Number(afterStaleLicenseActions.suspend_audit_count) === 1 && Number(afterStaleLicenseActions.active_audit_count) === 1, `Las acciones obsoletas cambiaron licencia o auditoría: ${JSON.stringify(afterStaleLicenseActions)}.`);
+assert(afterStaleLicenseActions?.current_status === "active" && Number(afterStaleLicenseActions.suspend_audit_count) === 2 && Number(afterStaleLicenseActions.active_audit_count) === 2, `Las acciones obsoletas cambiaron licencia o auditoría: ${JSON.stringify(afterStaleLicenseActions)}.`);
+const pendingTestLicenseId = executeD1(`SELECT id FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status='active' ORDER BY created_at DESC LIMIT 1;`)[0]?.id;
+assert(typeof pendingTestLicenseId === "string" && pendingTestLicenseId.length > 0, "No se encontró la licencia vigente para la prueba de estado pendiente.");
+executeD1(`UPDATE organization_license SET status='pending', activated_at=NULL WHERE id=${sqlLiteral(pendingTestLicenseId)} AND status='active';`);
+const pendingCancellation = await identities.platform.client.json(licensePath, { operation: "cancel", currentLicenseId: pendingTestLicenseId });
+const pendingRestoration = await identities.platform.client.json(licensePath, { operation: "reactivate", currentLicenseId: pendingTestLicenseId });
+const pendingRestorationBody = await pendingRestoration.clone().json();
+const pendingState = executeD1(`SELECT id,status,ends_at,(SELECT previous_value FROM platform_audit_log WHERE entity_id=${sqlLiteral(pendingTestLicenseId)} AND organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.cancelled' ORDER BY created_at DESC LIMIT 1) AS previous_status FROM organization_license WHERE id=${sqlLiteral(pendingTestLicenseId)};`)[0];
+assert(pendingCancellation.status === 200 && pendingRestoration.status === 200 && pendingRestorationBody.status === "pending" && pendingState?.id === pendingTestLicenseId && pendingState.status === "pending" && pendingState.ends_at === null && pendingState.previous_status === "pending", `Cancelar/reactivar una licencia pendiente no restauró el estado sin cambiar su ID: cancel=${pendingCancellation.status}, reactivate=${pendingRestoration.status}/${JSON.stringify(pendingRestorationBody)}, row=${JSON.stringify(pendingState)}.`);
+const pendingPlan = executeD1(`SELECT plan_code FROM organization_license WHERE id=${sqlLiteral(pendingTestLicenseId)};`)[0]?.plan_code;
+const racingPlanCode = pendingPlan === "cuadra" ? "barrio" : "cuadra";
+executeD1(`UPDATE organization_license SET status='active', activated_at=${Date.now()} WHERE id=${sqlLiteral(pendingTestLicenseId)} AND status='pending';`);
+const cancelVsPlanChange = await Promise.all([
+  identities.platform.client.json(licensePath, { operation: "cancel", currentLicenseId: pendingTestLicenseId }),
+  identities.platform.client.json(licensePath, { operation: "change-plan", currentLicenseId: pendingTestLicenseId, planCode: racingPlanCode }),
+]);
+const cancelVsPlanStatuses = cancelVsPlanChange.map(({ status }) => status).sort((a, b) => a - b);
+assert(cancelVsPlanStatuses[0] === 200 && cancelVsPlanStatuses[1] === 409, `Cancelar y cambiar plan sobre la misma versión produjeron ${cancelVsPlanStatuses.join(", ")}; se esperaba un ganador CAS.`);
+const currentAfterCancelPlanRace = Number(executeD1(`SELECT count(*) AS count FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled';`)[0]?.count);
+assert(currentAfterCancelPlanRace <= 1, "La carrera entre cancelar y cambiar el plan dejó más de una licencia vigente.");
 console.log("PASS: servicios/integraciones y licencias (concurrencia y auditoría) verificados contra el Worker y D1 locales aislados.");
 } finally {
   if (worker && worker.exitCode === null) {
