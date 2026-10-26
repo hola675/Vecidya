@@ -1,4 +1,4 @@
-import { Form, Link, useActionData, useLoaderData, useNavigation } from "react-router";
+import { data, Form, Link, useActionData, useLoaderData, useNavigation } from "react-router";
 
 import { getPlatformBusinessProfileDetail } from "../../db/queries/platform-business-profiles.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
@@ -8,13 +8,14 @@ import {
   applyGovernanceAction,
   isGovernanceAction,
   listPlatformAuditLog,
+  PlatformGovernanceConflict,
   type GovernanceAction,
 } from "../../db/queries/platform-governance.server";
 import { createDatabase } from "../../db/client.server";
 import { AdminShell } from "../components/admin-shell";
 import { Alert, Badge } from "../components/ui";
 import { cloudflareContext } from "../../server/cloudflare-context";
-import { requirePlatformAdmin } from "../../server/platform-authorization.server";
+import { requirePlatformAdmin, requirePlatformAdminAction } from "../../server/platform-authorization.server";
 import type { Route } from "./+types/internal-business-profile-detail";
 
 const governanceActionMessages: Record<GovernanceAction, string> = {
@@ -55,7 +56,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export async function action({ context, params, request }: Route.ActionArgs) {
   const { env } = context.get(cloudflareContext);
-  const access = await requirePlatformAdmin(env, request);
+  const access = await requirePlatformAdminAction(env, request, "business_profile:governance");
   const database = createDatabase(env.DB);
   const businessProfileId = params.businessProfileId ?? "";
   const detail = await getPlatformBusinessProfileDetail(database, businessProfileId);
@@ -63,11 +64,21 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 
   const formData = await request.formData();
   const requestedAction = formData.get("action");
+  const expectedUpdatedAtValue = formData.get("expectedUpdatedAt");
+  const expectedUpdatedAt = expectedUpdatedAtValue === "" ? null : Number(expectedUpdatedAtValue);
+  if (typeof expectedUpdatedAtValue !== "string" || (expectedUpdatedAt !== null && !Number.isSafeInteger(expectedUpdatedAt))) {
+    return data({ error: "La vista quedó desactualizada. Recarga la página e inténtalo de nuevo." }, { status: 409 });
+  }
   if (!isGovernanceAction(requestedAction)) {
     return { error: "Acción administrativa no reconocida." };
   }
 
-  await applyGovernanceAction(database, businessProfileId, detail.profile.organizationId, access.userId, requestedAction);
+  try {
+    await applyGovernanceAction(database, businessProfileId, detail.profile.organizationId, access.userId, requestedAction, expectedUpdatedAt);
+  } catch (error) {
+    if (error instanceof PlatformGovernanceConflict) return data({ error: error.message }, { status: 409 });
+    throw error;
+  }
   return { success: governanceActionMessages[requestedAction] };
 }
 
@@ -104,8 +115,8 @@ export default function InternalBusinessProfileDetail() {
           </div>
         </div>
 
-        {actionData?.error ? <Alert>{actionData.error}</Alert> : null}
-        {actionData?.success ? <p className="success-message" role="status">{actionData.success}</p> : null}
+        {actionData && "error" in actionData ? <Alert>{actionData.error}</Alert> : null}
+        {actionData && "success" in actionData ? <p className="success-message" role="status" aria-live="polite">{actionData.success}</p> : null}
 
         <div className="admin-business-detail-grid">
           <section className="card"><p className="eyebrow">ESTADO DE PUBLICACIÓN</p><h2>{completion.percentage}% completo</h2>{completion.issues.length ? <><p>Campos pendientes:</p><ul className="admin-pending-list">{completion.issues.map((issue) => <li key={issue}>{issue}</li>)}</ul></> : <p>El perfil cumple los campos requeridos para publicar.</p>}{profile.status === "published" && !isSuspended ? <Link className="button button--secondary" to={`/vecindario/${profile.slug}`}>Ver página pública</Link> : null}</section>
@@ -140,14 +151,14 @@ export default function InternalBusinessProfileDetail() {
           <p className="form-help">"Verificado" significa únicamente que Vecidya revisó administrativamente este perfil bajo el proceso interno vigente; no es una garantía, certificación legal ni recomendación comercial.</p>
           <div className="admin-governance-actions">
             {isVerified ? (
-              <Form method="post"><input name="action" type="hidden" value="unverify" /><button className="button button--secondary" disabled={isSaving} type="submit">Retirar verificación</button></Form>
+              <Form method="post"><input name="action" type="hidden" value="unverify" /><input name="expectedUpdatedAt" type="hidden" value={profile.governanceUpdatedAt?.getTime() ?? ""} /><button className="button button--secondary" disabled={isSaving} type="submit">Retirar verificación</button></Form>
             ) : (
-              <Form method="post"><input name="action" type="hidden" value="verify" /><button className="button button--secondary" disabled={isSaving} type="submit">Verificar</button></Form>
+              <Form method="post"><input name="action" type="hidden" value="verify" /><input name="expectedUpdatedAt" type="hidden" value={profile.governanceUpdatedAt?.getTime() ?? ""} /><button className="button button--secondary" disabled={isSaving} type="submit">Verificar</button></Form>
             )}
             {isSuspended ? (
-              <Form method="post" onSubmit={confirmReactivate}><input name="action" type="hidden" value="reactivate" /><button className="button button--primary" disabled={isSaving} type="submit">Reactivar</button></Form>
+              <Form method="post" onSubmit={confirmReactivate}><input name="action" type="hidden" value="reactivate" /><input name="expectedUpdatedAt" type="hidden" value={profile.governanceUpdatedAt?.getTime() ?? ""} /><button className="button button--primary" disabled={isSaving} type="submit">Reactivar</button></Form>
             ) : (
-              <Form method="post" onSubmit={confirmSuspend}><input name="action" type="hidden" value="suspend" /><button className="button button--danger" disabled={isSaving} type="submit">Suspender</button></Form>
+              <Form method="post" onSubmit={confirmSuspend}><input name="action" type="hidden" value="suspend" /><input name="expectedUpdatedAt" type="hidden" value={profile.governanceUpdatedAt?.getTime() ?? ""} /><button className="button button--danger" disabled={isSaving} type="submit">Suspender</button></Form>
             )}
           </div>
         </section>

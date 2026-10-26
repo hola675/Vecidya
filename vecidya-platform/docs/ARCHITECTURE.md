@@ -1581,7 +1581,7 @@ Cloudflare D1 (producción: vecidya-prod; staging: vecidya-staging)
 - Las operaciones tenant-scoped requieren un permiso de la matriz propia, salvo lecturas que solo exigen membresía (`GET /api/organizations/:id`, `…/integrations`, `/app`, `/app/services`).
 - Un ID de recurso recibido del cliente (miembro, invitación) debe pertenecer a la organización verificada; si no existe o es de otra organización, la respuesta es el mismo 403.
 - `activeOrganizationId` solo selecciona contexto: no concede autorización. Una organización activa sin membresía (stale o ajena) responde 403.
-- La administración interna usa `platform_member` (rol `platform_admin` y estado `active`); no deriva autoridad de `member.role`. `staff` existe en el schema pero no otorga ninguna capacidad.
+- La administración interna usa `platform_member` (rol `platform_admin` y estado `active`); no deriva autoridad de `member.role`. `staff` existe en el schema pero no otorga ninguna capacidad. Las escrituras además declaran una acción en `platformAdminActions` y pasan por `requirePlatformAdminAction`; esta allowlist limita las operaciones reconocidas, pero todos los `platform_admin` activos comparten actualmente esas acciones. La diferenciación de capacidades por persona/rol sigue pendiente de decisión.
 - Un owner/admin/member de organización no obtiene privilegios de plataforma por ese rol.
 
 ### Helpers de autorización
@@ -1596,6 +1596,7 @@ Cloudflare D1 (producción: vecidya-prod; staging: vecidya-staging)
 | `requireOrganizationMemberTarget` | el miembro indicado pertenece a la organización (se usa después del permiso) | 403 |
 | `requireOrganizationInvitationTarget` | la invitación indicada pertenece a la organización (se usa después del permiso) | 403 |
 | `requirePlatformAdmin` | fila `platform_member` activa con rol `platform_admin` | 403 |
+| `requirePlatformAdminAction` | acción en `platformAdminActions` + sesión y `platform_member` activo `platform_admin` | 403 |
 
 `requireRole` y `requirePermission` existen sin uso.
 
@@ -1650,7 +1651,7 @@ checkout, cobro automático ni proveedor de pago integrado. Migración `0010` ap
 - `service_catalog` es el catálogo global de servicios Vecidya (3 filas); los asigna solo `platform_admin`.
 - `integration_connection` guarda metadata genérica de conexión por tenant, no datos CRM ni credenciales.
 - `platform_member` modela la autoridad interna de Vecidya.
-- `business_profile_governance` y `platform_audit_log` modelan el poder de plataforma sobre un perfil (verificación, suspensión) y su rastro; viven separadas de `business_profile` para que ninguna escritura tenant (`saveBusinessProfileForOrganization`, `publishBusinessProfileForOrganization`) pueda tocarlas ni revertirlas. Toda mutación de gobierno sigue `sesión → requirePlatformAdmin → búsqueda del recurso → mutación → auditoría` (batch atómico).
+- `business_profile_governance` y `platform_audit_log` modelan el poder de plataforma sobre un perfil (verificación, suspensión) y su rastro; viven separadas de `business_profile` para que ninguna escritura tenant (`saveBusinessProfileForOrganization`, `publishBusinessProfileForOrganization`) pueda tocarlas ni revertirlas. Toda mutación de gobierno sigue `sesión → requirePlatformAdminAction(business_profile:governance) → búsqueda del recurso → mutación CAS → auditoría atómica`.
 
 ## Multi-organización
 

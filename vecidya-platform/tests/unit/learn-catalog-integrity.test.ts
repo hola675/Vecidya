@@ -464,4 +464,3 @@ test("La guía de IA para empresas define datos, responsables y escalamiento sin
   assert.ok(article.relatedSlugs?.includes("como-probar-un-asistente-de-ia-con-supervision-humana"));
   assert.ok(article.sections.some((section) => section.blocks?.some((block) => block.type === "sources")));
 });
-

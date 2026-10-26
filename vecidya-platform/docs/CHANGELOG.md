@@ -1,5 +1,84 @@
 # Changelog
 
+## 0.8.2 — candidato de release (2026-10-26; publicación pendiente)
+
+- Reúne los cambios integrados en `main` después del deployment 0.8.1 —aprobación editorial de las 18 guías de Aprende (48 publicables)— y los cambios propuestos en PR #139: auditoría funcional Admin, autorización explícita, control de concurrencia y unicidad de licencia por organización.
+- Las mutaciones de plataforma verifican una matriz explícita rol→acción (`platform_admin` tiene las acciones de la lista vigente; `staff` no tiene acciones de escritura). Suspender/reactivar licencia ahora usa ID y estado esperados en un CAS; las filas canceladas no se reactivan y conflictos no añaden auditoría.
+- Un conflicto CAS de MiniWeb conserva la revisión asociada al texto que sigue abierto en el formulario, por lo que un segundo intento continúa bloqueado hasta recargar y reconciliar el borrador; el E2E comprueba que no se sobrescribe la revisión ganadora. El navegador E2E Admin acepta Chromium de Playwright o `PLAYWRIGHT_CHROMIUM_EXECUTABLE`.
+- Añade la migración aditiva `0029_organization-license-single-current.sql`. El ledger productivo se verificó en `0000–0028`; el preflight confirmó cero licencias vigentes y cero grupos duplicados. La migración aún no se aplicó y el deploy aún no se ejecutó.
+- Versión de aplicación `0.8.1` → `0.8.2` (patch pre-1.0: cambios compatibles y correcciones/invariantes; sin ruptura de contrato). Este candidato se publicará solo después del merge autorizado, gates y despliegue. Typecheck/build y Worker/D1 E2E PASS tras las correcciones; faltan merge, migración remota, deploy y HTTP anónimo fechado. Ver `ENVIRONMENTS.md`.
+
+### Continuación de PR #139 — auditoría de integraciones y estado vacío (2026-10-26)
+
+- La pantalla de auditoría ahora comunica un estado vacío aplicable a todas las áreas administrativas, no solo a perfiles. El E2E confirma que el alta de integración aparece con etiqueta legible y clave técnica trazable.
+- El E2E reveló una carrera al filtrar auditoría de capacitación: la aserción leía antes de que React renderizara las dos coincidencias. El runner ahora espera ambas filas y sus etiquetas antes de comprobarlas.
+- Verificación: Worker/D1 E2E PASS, typecheck/build, `node --check` y diff-check PASS. La paginación de auditoría y el recorrido visual de todas las etiquetas siguen pendientes; no se declara la pantalla completamente certificada.
+
+### Continuación de PR #139 — autorización explícita de mutaciones Admin (2026-10-26)
+
+- Gobierno de perfiles, cambios de servicios y altas de integraciones ahora exigen acciones explícitas de la allowlist de `platform_admin`; la lectura mantiene su control de acceso previo. El E2E intenta mutar como staff activo y como administrador de plataforma inactivo: ambos reciben 403, sin cambios en filas ni auditoría D1.
+- Typecheck, build y E2E completo Worker/D1 local PASS. La suite unitaria 1719/1719 corresponde al corte anterior y no se repitió en este cambio. Sin cambio de esquema, migración remota, datos reales, GHL ni deploy.
+- La matriz expresa permisos por rol; actualmente todos los `platform_admin` comparten el grant completo y `staff` no recibe acciones de escritura. Separar capacidades entre distintos administradores sigue pendiente de decisión.
+
+## 2026-10-25 — VECIDYA-ADMIN-FUNCTIONAL-AUDIT (checkpoint parcial, PR #139)
+
+- La administración de servicios registra asignaciones/cambios con el actor, organización, valores anteriores/nuevos y timestamps de activación/finalización en el mismo batch. UI y API comparten la query de escritura; colisiones concurrentes de la asignación única producen un conflicto controlado.
+- La creación de integraciones responde `409` ante el índice único global duplicado y audita la inserción junto con la conexión. La pantalla de auditoría incluye etiquetas/filtros para acciones de control plane conocidas y muestra la clave técnica si no tiene etiqueta.
+- Typecheck/build y diff-check PASS; D1 local `0000–0028`. El E2E focal se detiene antes de las acciones porque su registro sintético no provee la invitación obligatoria. No se ejecutaron unitarias ni navegador; licencia duplicada por concurrencia y otros gaps administrativos quedan abiertos en `STATUS.md`/`TESTING.md`. Sin migración, datos remotos, GHL ni deploy.
+
+### Continuación de PR #139 — evidencia E2E y licencia única
+
+- El fixture de `platform-service-administration-check.mjs` crea invitaciones sintéticas dirigidas al correo, usa `X-Vecidya-Invitation` y conserva el guard. El E2E ahora ejecuta Worker+D1 efímeros `0000–0029`; PASS para las 14 rutas, permisos, servicios, auditoría/timestamps, duplicados de integración `409`, metadata no permitida, aislamiento tenant y unicidad/auditoría de licencias concurrentes.
+- Chromium local comprobó Admin Servicios/Auditoría en 1366×900 y 390×844, navegación por Enter, cierre del drawer, ausencia de overflow y errores JS. No equivale a axe/WCAG ni a un recorrido de todas las acciones UI.
+- `0029_organization-license-single-current.sql` añade la garantía de D1; cambios de plan exigen el ID observado y las asignaciones duplicadas responden `409`. Pendiente validar roll-out y datos remotos, que no se consultaron ni modificaron; la misión prohíbe aplicar la migración. Expiración/renovación automática no existen en el modelo.
+- Estado actualizado y deuda P1–P3 en `STATUS.md`, alcance/evidencia en `TESTING.md`, contrato/migración en `DATABASE.md` y matriz de rutas en `STRUCTURE.md`. Auditoría sigue parcial; PR #139 permanece draft hasta terminar checks críticos y resolver el gate de migración.
+
+### Continuación de PR #139 — mutaciones UI de organizaciones (2026-10-26)
+
+- Playwright en Worker/D1 efímeros recorre búsqueda → detalle, suspensión/reactivación de organización, cambio de rol member→admin, creación de organización con entrega fake confirmada y revocación de invitación. Se comprueba estado persistido y auditoría de cada operación; staff conserva UI de solo lectura.
+- E2E completo `platform-service-administration-check.mjs` PASS tras ampliar los fixtures; `node --check` y `git diff --check` PASS. Sin correo real, datos productivos, DB remota o deploy. La matriz de `TESTING.md`, estado/deuda de `STATUS.md` y gate futuro de `ROADMAP.md` se reconciliaron; quedan fuera del PASS las mutaciones de training, MiniWeb, negocios y el resto de estados/errores UI.
+
+### Continuación de PR #139 — publicar MiniWeb desde Admin (2026-10-26)
+
+- El E2E de navegador ahora prepara una organización sintética con licencia Cuadra activa y perfil borrador, guarda la configuración por UI y publica el snapshot. D1 comprueba incremento de revisión, módulo, snapshot schema v4, perfil publicado y eventos `organization.miniweb.save`/`organization.miniweb.publish`; staff recibe 403.
+- El recorrido reveló que `internal-organization-miniweb.tsx` devolvía `Response.redirect` crudo tras mutar. El servidor persistía la operación, pero React Router no resolvía correctamente la navegación; se cambió al helper `redirect` y el flujo vuelve a la vista con confirmación de publicado.
+- `pnpm run test:unit` (1719/1719), `pnpm run typecheck`, `pnpm run build`, `git diff --check` y `platform-service-administration-check.mjs` PASS en Worker/D1 efímeros. No datos productivos, migración remota, GHL, correo real ni deploy. La auditoría sigue parcial; ver deuda actualizada en `STATUS.md`, `TESTING.md` y `ROADMAP.md`.
+
+### Continuación de PR #139 — estados de licencia desde Admin (2026-10-26)
+
+- Chromium suspende y reactiva la licencia desde `/app/internal/licenses`; D1 verifica los estados `suspended`/`active` y un evento de auditoría por transición. El E2E completo `platform-service-administration-check.mjs` pasa con Worker y D1 aislados; no se usa información productiva.
+- Actualizados la matriz de rutas, la deuda de `ADMIN-FUNCTIONAL-AUDIT-001` y los gates pendientes. No hubo cambios de lógica/licencia, schema, migración, GHL ni deploy. La cobertura aún no prueba el conflicto obsoleto en su estado UI.
+
+### Continuación de PR #139 — capacitación y etiquetas de auditoría (2026-10-26)
+
+- La UI de capacitación confirma asignación y corrección de progreso. El E2E de navegador comprueba el vínculo de contenido, estado, historial, motivo y auditoría en D1 local; la pantalla Auditoría filtra ambos eventos con etiquetas comprensibles.
+- Se añadieron etiquetas para `training.assign` y `training.progress.correct`. `typecheck`, `build` y `platform-service-administration-check.mjs` PASS; siguen pendientes errores de formulario/concurrencia de progreso y paginación de auditoría. Sin DB remota, datos reales ni deploy.
+
+### Continuación de PR #139 — auditoría visible de MiniWeb (2026-10-26)
+
+- Admin Auditoría ahora presenta etiquetas para `organization.miniweb.save` y `organization.miniweb.publish`. El E2E guarda/publica desde Chromium y confirma que el filtro MiniWeb encuentra ambos registros, junto con las aserciones de snapshot y D1 del flujo.
+- Matriz y deuda de auditoría reconciliadas. La corrida Worker/D1 con Playwright se repite después del cambio; sin D1 remota, GHL ni deploy.
+
+### Continuación de PR #139 — conflicto CAS de MiniWeb (2026-10-26)
+
+- La action Admin convierte el `409` de revisión obsoleta en un mensaje recuperable en pantalla y mantiene intacta la respuesta de error del backend para otros fallos.
+- Playwright envía una revisión antigua y confirma la alerta, que la revisión D1 no cambia y que no se agrega auditoría por la operación rechazada; luego vuelve a cargar y publica normalmente. Typecheck, build y E2E Worker/D1 PASS.
+
+### Continuación de PR #139 — conflicto de cambio de plan de licencia (2026-10-26)
+
+- Playwright envía un identificador de licencia obsoleto desde la pantalla Admin y confirma el mensaje recuperable de conflicto. D1 conserva la misma licencia activa, el plan previo y el conteo de auditoría, sin registrar la mutación rechazada.
+- El recorrido completo Worker/D1 local aislada pasa; no se cambia lógica comercial ni esquema en este corte. Confirmaciones accesibles y otros errores siguen pendientes.
+
+### Continuación de PR #139 — feedback de reenvío de invitación (2026-10-26)
+
+- La pantalla de organización comunica si el proveedor aceptó el correo, si fue simulado localmente o si el resultado quedó sin confirmar; un error de envío no se presenta como éxito.
+- Playwright con proveedor fake confirma la entrega simulada y en D1 verifica rotación del digest/expiración, una invitación pendiente y auditoría `organization.owner_invitation.replace`. Typecheck, build y Worker E2E local PASS; no se contactó un proveedor real.
+
+### Continuación de PR #139 — gobierno de perfiles desde Admin (2026-10-26)
+
+- El E2E verifica desde Chromium, en D1 aislada, las transiciones verificar/retirar/suspender/reactivar y dos formularios con una misma revisión: una suspensión y su auditoría, más un conflicto visible en la otra pestaña. Cancelar la confirmación no escribe; los estados posteriores y sus auditorías también se comprueban.
+- La acción compara la versión enviada desde el formulario con la fila vigente y aplica compare-and-set; los reintentos de una transición ya aplicada no agregan auditoría. Los conflictos muestran un error recuperable y el éxito se expone como región viva accesible. Typecheck, build y Worker E2E PASS.
+
 ## 2026-10-26 — APRENDE-EDITORIAL-APPROVAL-01 — aprobación de las 18 guías
 
 - Revisión editorial individual de las 18 guías retenidas; se comprobaron claridad, estructura, ejemplos, pasos, fuentes, imágenes/alt y navegación.

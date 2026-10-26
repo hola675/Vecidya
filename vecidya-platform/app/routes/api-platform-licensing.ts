@@ -1,6 +1,7 @@
 import { createDatabase } from "../../db/client.server";
 import {
   LicensingError,
+  LicensingConflictError,
   assignOrganizationLicense,
   changeOrganizationLicensePlan,
   getBillingAccountPricing,
@@ -31,6 +32,7 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
 }
 
 function errorResponse(error: unknown) {
+  if (error instanceof LicensingConflictError) return Response.json({ error: error.message }, { status: 409 });
   if (error instanceof LicensingError) return Response.json({ error: error.message }, { status: 400 });
   throw error;
 }
@@ -41,7 +43,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   const database = createDatabase(env.DB);
   const organizationId = params.organizationId;
 
-  let body: { operation?: unknown; ownerUserId?: unknown; planCode?: unknown; activate?: unknown; status?: unknown; newOwnerUserId?: unknown };
+  let body: { operation?: unknown; ownerUserId?: unknown; planCode?: unknown; activate?: unknown; status?: unknown; newOwnerUserId?: unknown; currentLicenseId?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -68,8 +70,9 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 
   if (body.operation === "change-plan") {
     if (!isPlanCode(body.planCode)) return Response.json({ error: "A valid planCode is required" }, { status: 400 });
+    if (typeof body.currentLicenseId !== "string" || !body.currentLicenseId) return Response.json({ error: "currentLicenseId is required" }, { status: 400 });
     try {
-      const result = await changeOrganizationLicensePlan(database, { organizationId, newPlanCode: body.planCode, actorUserId: admin.userId });
+      const result = await changeOrganizationLicensePlan(database, { organizationId, expectedLicenseId: body.currentLicenseId, newPlanCode: body.planCode, actorUserId: admin.userId });
       return Response.json(result);
     } catch (error) {
       return errorResponse(error);
@@ -77,9 +80,12 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   }
 
   if (body.operation === "suspend" || body.operation === "reactivate") {
+    if (typeof body.currentLicenseId !== "string" || !body.currentLicenseId) return Response.json({ error: "currentLicenseId is required" }, { status: 400 });
     try {
       const result = await setOrganizationLicenseStatus(database, {
         organizationId,
+        expectedLicenseId: body.currentLicenseId,
+        expectedStatus: body.operation === "suspend" ? "active" : "suspended",
         status: body.operation === "suspend" ? "suspended" : "active",
         actorUserId: admin.userId,
       });

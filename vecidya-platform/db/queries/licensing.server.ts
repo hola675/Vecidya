@@ -13,6 +13,11 @@ export function isPlanCode(value: unknown): value is PlanCode {
 }
 
 export class LicensingError extends Error {}
+export class LicensingConflictError extends LicensingError {}
+
+function isUniqueConstraintError(error: unknown) {
+  return error instanceof Error && /unique constraint failed|constraint failed: organization_license/i.test(error.message);
+}
 
 // Un billing_account nunca se deriva de `member`; en V1 cada persona controla como máximo uno,
 // creado en el primer uso. No se audita: no es una acción de gobierno, es infraestructura implícita.
@@ -21,11 +26,18 @@ export async function getOrCreateBillingAccountForUser(database: Database, owner
   if (existing) return existing;
 
   const now = new Date();
-  const [created] = await database
-    .insert(billingAccount)
-    .values({ id: crypto.randomUUID(), ownerUserId, kind: "individual", createdAt: now, updatedAt: now })
-    .returning();
-  return created;
+  try {
+    const [created] = await database
+      .insert(billingAccount)
+      .values({ id: crypto.randomUUID(), ownerUserId, kind: "individual", createdAt: now, updatedAt: now })
+      .returning();
+    return created;
+  } catch (error) {
+    if (!isUniqueConstraintError(error)) throw error;
+    const winner = await database.query.billingAccount.findFirst({ where: eq(billingAccount.ownerUserId, ownerUserId) });
+    if (winner) return winner;
+    throw error;
+  }
 }
 
 export async function getCurrentLicensePrice(database: Database, planCode: PlanCode, now: Date) {
@@ -100,7 +112,7 @@ export async function assignOrganizationLicense(database: Database, input: {
   const now = input.now ?? new Date();
   const existing = await getOrganizationLicense(database, input.organizationId);
   if (existing && existing.status !== "cancelled") {
-    throw new LicensingError("Organization already has a license; use change-plan instead");
+    throw new LicensingConflictError("Organization already has a license; use change-plan instead");
   }
 
   const price = await getCurrentLicensePrice(database, input.planCode, now);
@@ -110,21 +122,26 @@ export async function assignOrganizationLicense(database: Database, input: {
   const id = crypto.randomUUID();
   const status: OrganizationLicenseStatus = input.activate ? "active" : "pending";
 
-  await database.batch([
-    database.insert(organizationLicense).values({
-      id,
-      organizationId: input.organizationId,
-      billingAccountId: account.id,
-      planCode: input.planCode,
-      priceId: price.id,
-      status,
-      startedAt: now,
-      activatedAt: input.activate ? now : null,
-      createdAt: now,
-      updatedAt: now,
-    }),
-    database.insert(platformAuditLog).values(auditEntry(input.actorUserId, "organization_license.assign", id, input.organizationId, null, input.planCode)),
-  ]);
+  try {
+    await database.batch([
+      database.insert(organizationLicense).values({
+        id,
+        organizationId: input.organizationId,
+        billingAccountId: account.id,
+        planCode: input.planCode,
+        priceId: price.id,
+        status,
+        startedAt: now,
+        activatedAt: input.activate ? now : null,
+        createdAt: now,
+        updatedAt: now,
+      }),
+      database.insert(platformAuditLog).values(auditEntry(input.actorUserId, "organization_license.assign", id, input.organizationId, null, input.planCode)),
+    ]);
+  } catch (error) {
+    if (isUniqueConstraintError(error)) throw new LicensingConflictError("Organization already has a license; use change-plan instead");
+    throw error;
+  }
 
   return { id, billingAccountId: account.id, planCode: input.planCode, status };
 }
@@ -133,6 +150,7 @@ export async function assignOrganizationLicense(database: Database, input: {
 // grandfathering, y nunca toca otras organizaciones del mismo billing_account.
 export async function changeOrganizationLicensePlan(database: Database, input: {
   organizationId: string;
+  expectedLicenseId: string;
   newPlanCode: PlanCode;
   actorUserId: string;
   now?: Date;
@@ -142,6 +160,9 @@ export async function changeOrganizationLicensePlan(database: Database, input: {
   if (!current || current.status !== "active") {
     throw new LicensingError("Organization has no active license to change");
   }
+  if (current.id !== input.expectedLicenseId) {
+    throw new LicensingConflictError("Organization license changed concurrently; reload and retry");
+  }
   if (current.planCode === input.newPlanCode) {
     throw new LicensingError("Organization already has this plan");
   }
@@ -150,42 +171,47 @@ export async function changeOrganizationLicensePlan(database: Database, input: {
   if (!price) throw new LicensingError(`No active price for plan ${input.newPlanCode}`);
 
   const newId = crypto.randomUUID();
-  await database.batch([
-    database.update(organizationLicense).set({ status: "cancelled", endsAt: now, updatedAt: now }).where(eq(organizationLicense.id, current.id)),
-    database.insert(organizationLicense).values({
-      id: newId,
-      organizationId: input.organizationId,
-      billingAccountId: current.billingAccountId,
-      planCode: input.newPlanCode,
-      priceId: price.id,
-      status: "active",
-      startedAt: now,
-      activatedAt: now,
-      createdAt: now,
-      updatedAt: now,
-    }),
-    database.insert(platformAuditLog).values(auditEntry(input.actorUserId, "organization_license.change_plan", newId, input.organizationId, current.planCode, input.newPlanCode)),
-  ]);
+  let results;
+  try {
+    results = await database.$client.batch([
+      database.$client.prepare("UPDATE organization_license SET status = 'cancelled', ends_at = ?, updated_at = ? WHERE id = ? AND organization_id = ? AND plan_code = ? AND status = 'active'")
+        .bind(now.getTime(), now.getTime(), current.id, input.organizationId, current.planCode),
+      database.$client.prepare("INSERT INTO organization_license (id, organization_id, billing_account_id, plan_code, price_id, status, started_at, activated_at, created_at, updated_at) SELECT ?, ?, ?, ?, ?, 'active', ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM organization_license WHERE id = ? AND organization_id = ? AND status = 'cancelled' AND ends_at = ?)")
+        .bind(newId, input.organizationId, current.billingAccountId, input.newPlanCode, price.id, now.getTime(), now.getTime(), now.getTime(), now.getTime(), current.id, input.organizationId, now.getTime()),
+      database.$client.prepare("INSERT INTO platform_audit_log (id, actor_user_id, action, entity_type, entity_id, organization_id, previous_value, new_value, metadata, created_at) SELECT ?, ?, 'organization_license.change_plan', 'organization_license', ?, ?, ?, ?, NULL, ? WHERE EXISTS (SELECT 1 FROM organization_license WHERE id = ? AND plan_code = ? AND status = 'active')")
+        .bind(crypto.randomUUID(), input.actorUserId, newId, input.organizationId, current.planCode, input.newPlanCode, now.getTime(), newId, input.newPlanCode),
+    ]);
+  } catch (error) {
+    if (isUniqueConstraintError(error)) throw new LicensingConflictError("Organization license changed concurrently; reload and retry");
+    throw error;
+  }
+  if (results[0]?.meta.changes !== 1) throw new LicensingConflictError("Organization license changed concurrently; reload and retry");
 
   return { id: newId, billingAccountId: current.billingAccountId, planCode: input.newPlanCode, status: "active" as const };
 }
 
 export async function setOrganizationLicenseStatus(database: Database, input: {
   organizationId: string;
-  status: "suspended" | "active" | "cancelled";
+  expectedLicenseId: string;
+  expectedStatus: "active" | "suspended";
+  status: "suspended" | "active";
   actorUserId: string;
   now?: Date;
 }) {
   const now = input.now ?? new Date();
-  const current = await getOrganizationLicense(database, input.organizationId);
-  if (!current) throw new LicensingError("Organization has no license");
+  const validTransition = (input.expectedStatus === "active" && input.status === "suspended") ||
+    (input.expectedStatus === "suspended" && input.status === "active");
+  if (!validTransition) throw new LicensingError("Only active licenses can be suspended and only suspended licenses can be reactivated");
 
-  await database.batch([
-    database.update(organizationLicense).set({ status: input.status, updatedAt: now }).where(eq(organizationLicense.id, current.id)),
-    database.insert(platformAuditLog).values(auditEntry(input.actorUserId, `organization_license.${input.status}`, current.id, input.organizationId, current.status, input.status)),
+  const results = await database.$client.batch([
+    database.$client.prepare("UPDATE organization_license SET status = ?, ends_at = CASE WHEN ? = 'active' THEN NULL ELSE ends_at END, updated_at = ? WHERE id = ? AND organization_id = ? AND status = ?")
+      .bind(input.status, input.status, now.getTime(), input.expectedLicenseId, input.organizationId, input.expectedStatus),
+    database.$client.prepare("INSERT INTO platform_audit_log (id, actor_user_id, action, entity_type, entity_id, organization_id, previous_value, new_value, metadata, created_at) SELECT ?, ?, ?, 'organization_license', ?, ?, ?, ?, NULL, ? WHERE changes() = 1")
+      .bind(crypto.randomUUID(), input.actorUserId, `organization_license.${input.status}`, input.expectedLicenseId, input.organizationId, input.expectedStatus, input.status, now.getTime()),
   ]);
+  if (results[0]?.meta.changes !== 1) throw new LicensingConflictError("Organization license changed concurrently; reload and retry");
 
-  return { id: current.id, status: input.status };
+  return { id: input.expectedLicenseId, status: input.status };
 }
 
 // «Una organización cambia de billing_account únicamente por operación autorizada» (§15): esta es

@@ -115,7 +115,7 @@ try {
   check(assignPending.status === 201, "Asignar sin activate: 201");
   const pendingBody = await assignPending.json();
   check(pendingBody.status === "pending", "Asignar sin activate: queda pending, no active");
-  check(await statusOf(platformAdmin.client, licensePath(orgA1), post({ operation: "assign", ownerUserId: ownerA1.userId, planCode: "cuadra" })) === 400, "Asignar dos veces a la misma organización → 400");
+  check(await statusOf(platformAdmin.client, licensePath(orgA1), post({ operation: "assign", ownerUserId: ownerA1.userId, planCode: "cuadra" })) === 409, "Asignar dos veces a la misma organización → 409");
 
   // --- 3. Portafolio: tres organizaciones del mismo billing_account (mismo owner) ------------
   const activateA1 = await platformAdmin.client.json(licensePath(orgA1), { operation: "assign", ownerUserId: ownerA1.userId, planCode: "cuadra" });
@@ -148,7 +148,7 @@ try {
   // --- 5. Cambio de plan solo afecta a esa organización -------------------------------------
   const beforeChange = await jsonOf(await platformAdmin.client.fetch(licensePath(orgA2)));
   check(beforeChange.license.planCode === "barrio", "orgA2 empieza en Barrio");
-  const changePlan = await platformAdmin.client.json(licensePath(orgA2), { operation: "change-plan", planCode: "ciudad" });
+  const changePlan = await platformAdmin.client.json(licensePath(orgA2), { operation: "change-plan", currentLicenseId: beforeChange.license.id, planCode: "ciudad" });
   check(changePlan.status === 200, "Cambiar de plan (Barrio → Ciudad) → 200");
   const afterChange = await jsonOf(await platformAdmin.client.fetch(licensePath(orgA2)));
   check(afterChange.license.planCode === "ciudad" && afterChange.license.status === "active", "orgA2 queda en Ciudad, activa");

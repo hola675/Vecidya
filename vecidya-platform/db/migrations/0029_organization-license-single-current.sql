@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `organization_license_one_current_unique` ON `organization_license` (`organization_id`) WHERE "organization_license"."status" <> 'cancelled';

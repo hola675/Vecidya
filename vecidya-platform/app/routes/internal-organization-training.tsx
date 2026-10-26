@@ -1,4 +1,4 @@
-import { Form, Link, useLoaderData } from "react-router";
+import { Form, Link, useActionData, useLoaderData } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
 import { correctOrganizationTrainingProgress, listOrganizationTraining, listOrganizationTrainingProgress, assignOrganizationTraining } from "../../db/queries/platform-training.server";
@@ -41,7 +41,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
     const trainingSlug = data.get("trainingSlug");
     if (typeof trainingSlug !== "string") throw new Response("Capacitación inválida", { status: 400 });
     await assignOrganizationTraining(database, { organizationId: params.organizationId, trainingSlug, actorUserId: actor.userId });
-    return { ok: true };
+    return { ok: true, operation: "assign" as const };
   }
   if (data.get("operation") === "correct") {
     const actor = await requirePlatformAdminAction(env, request, "training:progress:correct");
@@ -53,19 +53,21 @@ export async function action({ context, params, request }: Route.ActionArgs) {
       throw new Response("La corrección requiere un estado y un motivo de al menos 8 caracteres", { status: 400 });
     }
     await correctOrganizationTrainingProgress(database, { organizationId: params.organizationId, assignmentId, userId, status: status as TrainingStatus, reason: reason.trim().slice(0, 500), actorUserId: actor.userId });
-    return { ok: true };
+    return { ok: true, operation: "correct" as const };
   }
   throw new Response("Operación inválida", { status: 400 });
 }
 
 export default function InternalOrganizationTraining() {
   const { organization, assignments, progress, courses, workspaceUser } = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
   const assigned = new Set(assignments.map((item) => item.trainingSlug));
   const courseTitle = (slug: string) => courses.find((course) => course.slug === slug)?.title ?? slug;
   return <AdminShell active="organizations" workspaceUser={workspaceUser}>
     <main className="admin-main">
       <Link className="back-link" to={`/app/internal/organizations/${organization.id}`}>← Volver a {organization.name}</Link>
       <div className="page-heading"><div><p className="eyebrow">CAPACITACIÓN</p><h1>Aprendizaje asignado</h1><p>El progreso lo declara cada miembro. Las correcciones quedan registradas con motivo.</p></div></div>
+      {actionData?.ok ? <p className="alert alert--success" role="status">{actionData.operation === "assign" ? "Capacitación asignada a la organización." : "Progreso actualizado; motivo registrado en auditoría."}</p> : null}
       <section className="card admin-detail-card">
         <h2>Asignar contenido existente de Aprende</h2>
         <Form method="post" className="admin-toolbar">

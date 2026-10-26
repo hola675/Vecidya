@@ -73,6 +73,7 @@ export async function getPlatformBusinessProfileDetail(database: Database, busin
       verifiedAt: businessProfileGovernance.verifiedAt,
       platformStatus: businessProfileGovernance.platformStatus,
       suspendedAt: businessProfileGovernance.suspendedAt,
+      governanceUpdatedAt: businessProfileGovernance.updatedAt,
     })
     .from(businessProfile)
     .leftJoin(organization, eq(businessProfile.organizationId, organization.id))

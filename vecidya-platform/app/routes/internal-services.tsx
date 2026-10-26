@@ -1,11 +1,12 @@
 import { Form, useActionData, useLoaderData, useNavigation } from "react-router";
 import { useMemo, useState } from "react";
-import { and, asc, eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 
 import { createDatabase } from "../../db/client.server";
 import { organization, organizationService, serviceCatalog } from "../../db/schema";
+import { PlatformServiceAssignmentConflict, savePlatformServiceAssignment } from "../../db/queries/platform-services.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
-import { requirePlatformAdmin } from "../../server/platform-authorization.server";
+import { requirePlatformAdmin, requirePlatformAdminAction } from "../../server/platform-authorization.server";
 import { AdminShell } from "../components/admin-shell";
 
 import type { Route } from "./+types/internal-services";
@@ -39,7 +40,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 
 export async function action({ context, request }: Route.ActionArgs) {
   const { env } = context.get(cloudflareContext);
-  await requirePlatformAdmin(env, request);
+  const access = await requirePlatformAdminAction(env, request, "organization:service:update");
 
   const formData = await request.formData();
   const organizationId = formData.get("organizationId");
@@ -49,40 +50,13 @@ export async function action({ context, request }: Route.ActionArgs) {
     return { error: "No se pudo guardar: revisa la organización, el servicio y el estado seleccionados." };
   }
 
-  const database = createDatabase(env.DB);
-  const service = await database.query.serviceCatalog.findFirst({
-    where: eq(serviceCatalog.id, serviceId),
-  });
-  if (!service || service.status !== "active") {
-    return { error: "El servicio seleccionado ya no está disponible." };
+  try {
+    const assignment = await savePlatformServiceAssignment(createDatabase(env.DB), { organizationId, serviceId, status, actorUserId: access.userId });
+    return { success: `${assignment.serviceName}: estado actualizado a ${serviceStatusLabels[status]}.`, organizationId };
+  } catch (error) {
+    if (error instanceof PlatformServiceAssignmentConflict) return { error: `${error.message} Actualiza la página y vuelve a revisar.` };
+    throw error;
   }
-
-  const [existing] = await database
-    .select({ id: organizationService.id })
-    .from(organizationService)
-    .where(and(
-      eq(organizationService.organizationId, organizationId),
-      eq(organizationService.serviceId, serviceId),
-    ));
-  const now = new Date();
-
-  if (existing) {
-    await database
-      .update(organizationService)
-      .set({ status, updatedAt: now })
-      .where(eq(organizationService.id, existing.id));
-  } else {
-    await database.insert(organizationService).values({
-      id: crypto.randomUUID(),
-      organizationId,
-      serviceId,
-      status,
-      createdAt: now,
-      updatedAt: now,
-    });
-  }
-
-  return { success: `${service.name}: estado actualizado a ${serviceStatusLabels[status]}.`, organizationId };
 }
 
 export default function InternalServices() {

@@ -1,10 +1,16 @@
 # Base de datos
 
+## Preflight productivo para PR #139 / release 0.8.2 (2026-10-26)
+
+**RAN, solo lectura:** D1 `vecidya-prod` (ID `8edc3f04-258e-4c29-9f33-76fec3d25042`) tiene ledger `0000–0028`; la única pendiente en este candidato es `0029_organization-license-single-current.sql`. Conteos previos: 0 licencias `status <> 'cancelled'`, 0 grupos duplicados por organización y 0 filas canceladas históricas. Bookmark Time Travel observado antes de cualquier cambio: `000005d6-00000000-00005110-e126be1931ae402266769c42a3897da5`. Sin escrituras. `0029` crea un índice único parcial aditivo; rollback específico: `DROP INDEX IF EXISTS organization_license_one_current_unique`. No restaurar el bookmark salvo emergencia evaluada, ya que restaurar reemplaza escrituras posteriores. **Estado:** preflight completado, migración remota pendiente.
+
 ## PROD-RELEASE-0.8.1 — sin cambios D1 (2026-10-26)
 
 El release directo de `0.8.1` no contiene migraciones ni realizó lecturas/escrituras remotas D1. La última verificación documentada de producción, `2026-10-25`, registró ledger `0000–0028`; este release no lo altera. No se infiere una nueva verificación del ledger a partir del deploy de Worker.
 
 ## DIAG-D1-RELEASE-01 / APP-MINI-02C — ledger remoto vigente (última verificación 2026-10-24)
+
+**Actualización de PR #139:** se añadió `0029_organization-license-single-current.sql`; Drizzle journal/snapshot y una D1 limpia `0000–0029` se verificaron localmente. El corte histórico siguiente corresponde al 2026-10-24; el preflight productivo posterior está registrado arriba y confirma `0000–0028`, sin escrituras.
 
 **Resultado: `0000–0026` aplicadas en staging y producción.** Tras registrar bookmarks Time Travel previos, el 2026-10-24 se aplicaron las migraciones remotas `0024–0026`; el postflight Wrangler devolvió «No migrations to apply» para ambos D1 (`vecidya-staging`, `vecidya-prod`). Los bookmarks previos e IDs están en `ENVIRONMENTS.md`. El postflight SQL anterior de producción confirmó QA-03B con `changed_db=false` y cero filas escritas; `PRAGMA integrity_check`/`foreign_key_check` remotos siguen bloqueados por D1 API (`SQLITE_AUTH`), por lo que no se afirma esa validación remota. El Worker desplegado sigue en `0.7.0`; los cambios de #49/#50 no se publican hasta habilitar R2 y completar el deploy.
 
@@ -32,6 +38,7 @@ El release directo de `0.8.1` no contiene migraciones ni realizó lecturas/escri
 | 0026 | `0026_business-media-purpose.sql` | Clasifica medios como portada, galería, logo o icono; la operación de subida limita la portada vigente por organización. | Aditiva sobre `0025`, default `gallery`; sin backfill. Aplicada en D1 efímera `0000–0026` y en staging/producción el 2026-10-24. |
 | 0027 | `0027_business-media-draft-removal.sql` | Añade `is_active` para retirar medios del próximo snapshot sin borrar un objeto que aún usa la publicación vigente. | Aditiva, default `true` conserva todas las filas existentes. Aplicada solo en D1 local efímera en APP-MINI-02C; no aplicada en D1 remota. |
 | 0028 | `0028_miniweb-offering-image.sql` | Añade `business_offering.image_asset_id` nullable para referenciar una imagen tenant-scoped del negocio desde cada oferta. | Aditiva y sin backfill; las referencias solo pueden asignarse a imágenes activas de la organización por la API protegida. Aplicada solo en D1 local efímera de APP-MINI-02F; no aplicada en D1 remota. |
+| 0029 | `0029_organization-license-single-current.sql` | Índice único parcial sobre `organization_license(organization_id)` mientras `status <> 'cancelled'`. | Evita más de una licencia vigente por organización bajo concurrencia; aplicada solo en D1 local/efímera de PR #139. No aplicada remotamente; comprobar duplicados existentes antes de un gate autorizado. |
 
 No se detectan `DROP TABLE`, borrados de filas ni renombrados; `0019` es la única contracción (`DROP COLUMN`). `0010` contiene seeds de tres precios y cuatro tiers; las migraciones posteriores no los actualizan. Integridad de seeds, datos sintéticos, relaciones, índices y snapshot/token se verificó localmente.
 
@@ -308,9 +315,11 @@ plan de ninguna de ellas.
   `RAN` en `platform-licensing-check.mjs`.
 - **Un cambio de plan crea una fila nueva.** `changeOrganizationLicensePlan` no muta `plan_code` en
   la fila existente: la cancela (`status = 'cancelled'`, `ends_at`) y crea una fila `active` con el
-  nuevo plan y su precio vigente. Conserva historial completo y no exige una restricción `UNIQUE` de
-  "una sola fila activa por organización" a nivel de base de datos — es un invariante de aplicación,
-  igual que el resto de enums de este schema, protegido por `platform-licensing-check.mjs`.
+  nuevo plan y su precio vigente. `0029` impone `organization_license_one_current_unique`, índice
+  único parcial por organización sobre toda fila cuyo estado no sea `cancelled` (incluye `pending`,
+  `active` y `suspended`). La base, no una consulta previa/UI, arbitra asignaciones simultáneas. La
+  API devuelve `409` ante la carrera; el cambio de plan exige el ID observado para rechazar formularios
+  obsoletos. Creación/cambio y su audit row permanecen en un batch D1 atómico.
 - **Portafolio, no lógica repartida.** El descuento por cantidad de organizaciones vive en
   `portfolio_pricing_tier` (configuración); `db/pricing/calculator.ts` es una función pura,
   determinística y sin acceso a base de datos que recibe líneas ya resueltas + tiers + promociones y
@@ -334,9 +343,13 @@ de 1/2/3 organizaciones con los montos exactos aprobados por el usuario, aislami
 `billing_account`, cambio de plan sin afectar a las organizaciones hermanas, suspender/reactivar y
 grandfathering de precio. Ver [TESTING.md](TESTING.md).
 
+**Límite del modelo:** `ends_at` registra una finalización/cambio administrativo; no hay `expires_at`,
+renovación automática, checkout, cobro ni scheduler de licencias. La vigencia comercial por ciclo
+queda fuera de implementación hasta una decisión compatible con el catálogo y facturación.
+
 ## Migraciones
 
-`_journal.json` tiene 20 entradas (`0000`–`0019`), en secuencia, incluidos los checkpoints concurrentes `0016` Diagnóstico y `0017` MiniWeb. Drizzle generó `0019` y su snapshot con `prevId` de `0018`; el SQL incluye backfill explícito antes de `DROP COLUMN`.
+`_journal.json` tiene entradas consecutivas `0000`–`0029`, incluidos los checkpoints concurrentes `0016` Diagnóstico y `0017` MiniWeb. Drizzle generó `0029` y su snapshot a partir del schema; el ledger de D1 del checkpoint se aplicó solo en local.
 
 | # | Archivo | Propósito | Cambios |
 | --- | --- | --- | --- |
