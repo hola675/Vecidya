@@ -167,10 +167,12 @@ for (const key of ["platform", "inactive", "owner-a", "owner-b", "admin", "membe
 }
 const now = Date.now();
 const businessProfileId = crypto.randomUUID();
+const lifecycleRows = ["owner-a", "owner-b"].map((key) => `(${sqlLiteral(identities[key].organizationId)}, 'active', ${sqlLiteral(identities[key].email)}, ${sqlLiteral(identities[key].userId)}, ${sqlLiteral(identities.platform.userId)}, ${sqlLiteral(identities.platform.userId)}, ${now}, ${now})`).join(",");
 executeD1(`
   INSERT INTO platform_member (id, user_id, role, status, created_at, updated_at) VALUES
     ('${crypto.randomUUID()}', '${identities.platform.userId}', 'platform_admin', 'active', ${now}, ${now}),
-    ('${crypto.randomUUID()}', '${identities.inactive.userId}', 'platform_admin', 'inactive', ${now}, ${now});
+    ('${crypto.randomUUID()}', '${identities.inactive.userId}', 'platform_admin', 'inactive', ${now}, ${now}),
+    ('${crypto.randomUUID()}', '${identities.normal.userId}', 'staff', 'active', ${now}, ${now});
   INSERT INTO member (id, organization_id, user_id, role, created_at) VALUES
     ('${crypto.randomUUID()}', '${identities["owner-a"].organizationId}', '${identities.admin.userId}', 'admin', ${now}),
     ('${crypto.randomUUID()}', '${identities["owner-a"].organizationId}', '${identities.member.userId}', 'member', ${now}),
@@ -178,6 +180,7 @@ executeD1(`
     ('${crypto.randomUUID()}', '${identities["owner-b"].organizationId}', '${identities.platform.userId}', 'owner', ${now});
   INSERT INTO business_profile (id, organization_id, display_name, slug, status, created_at, updated_at) VALUES
     ('${businessProfileId}', '${identities["owner-a"].organizationId}', 'Portal A ${suffix}', 'portal-a-${suffix}', 'published', ${now}, ${now});
+  INSERT INTO platform_organization_lifecycle (organization_id, status, intended_owner_email, owner_user_id, created_by, updated_by, created_at, updated_at) VALUES ${lifecycleRows};
 `);
 const bootstrapPriceNow = Date.now();
 executeD1(`INSERT OR IGNORE INTO license_price (id, plan_code, currency, amount_cents, billing_interval, effective_from, status, created_at, updated_at) VALUES
@@ -232,6 +235,13 @@ const internalRoutes = [
   "/app/internal/diagnostic-analytics",
 ];
 for (const route of internalRoutes) await assertStatus(identities.platform.client, route, 200);
+const organizationsHtml = await (await assertStatus(identities.platform.client, "/app/internal/organizations", 200)).text();
+assert(organizationsHtml.includes('aria-label="Buscar negocios o clientes"') && organizationsHtml.includes("Publicado") && organizationsHtml.includes("Sin perfil"), "El listado no presentó búsqueda y estados de perfil del fixture.");
+const organizationDetailLink = `/app/internal/organizations/${identities["owner-a"].organizationId}`;
+const ownerDetailHtml = await (await assertStatus(identities.platform.client, organizationDetailLink, 200)).text();
+assert(ownerDetailHtml.includes("Suspender organización") && ownerDetailHtml.includes("Guardar rol") && ownerDetailHtml.includes("Administrar servicios de esta organización"), "El detalle Admin no expuso los controles esperados para la organización de prueba.");
+const staffDetailHtml = await (await assertStatus(identities.normal.client, organizationDetailLink, 200)).text();
+assert(!staffDetailHtml.includes("Suspender organización") && !staffDetailHtml.includes("Guardar rol") && !staffDetailHtml.includes("Administrar capacitación") && !staffDetailHtml.includes("Administrar MiniWeb"), "La UI de staff expuso mutaciones de plataforma.");
 await assertStatus(new SessionClient(), "/app/internal", 302);
 await assertStatus(identities.inactive.client, "/app/internal", 403);
 const browser = await chromium.launch({ headless: true, executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe" });

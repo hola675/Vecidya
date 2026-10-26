@@ -5,7 +5,7 @@
 | Ruta / componente | Control y evidencia de código | Estado de esta auditoría | Defecto / reparación | Verificación |
 | --- | --- | --- | --- | --- |
 | `/app/internal` | Resumen, navegación y shell; `requirePlatformAdmin` | GET admin 200; anónimo 302; admin inactivo 403 | Drawer cierra al navegar; no certifica todas las acciones de la página | 14 rutas HTTP PASS; Chromium 1366/390 px |
-| `/app/internal/organizations` | Búsqueda/filtro, alta/detalle; lectura permite staff activo | GET 200 | Sin orden/paginación; filtros no persisten en URL | HTTP PASS; acciones CRUD no recorridas en navegador |
+| `/app/internal/organizations` | Búsqueda/filtro, alta/detalle; lectura permite staff activo | GET 200; controles y datos sintéticos visibles; detalle staff read-only verificado | Sin orden/paginación; filtros no persisten en URL; mutaciones quedan sin replay UI | Chromium/HTTP PASS; CRUD histórico del runner Admin Global |
 | `/app/internal/organizations/new` | Organización+lifecycle+invitación+auditoría en batch | GET 200; invitación cubierta por Admin Global previo | No prueba envío real ni errores completos de UI | HTTP PASS; alta no repetida aquí |
 | `/app/internal/organizations/:id` | Owner-invitation, lifecycle, roles; staff read-only | GET 200 | Falta replay de todas las escrituras; último owner fuera del alcance autorizado | HTTP PASS; mutaciones parciales |
 | `/:id/training` | Asigna Aprende y corrige avance con motivo; admin | GET 200 | Faltan mensajes UI y concurrencia de progreso | HTTP PASS; sin interacción UI integral |
