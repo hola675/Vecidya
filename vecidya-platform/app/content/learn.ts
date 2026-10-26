@@ -611,41 +611,78 @@ export const learnArticles: LearnArticle[] = [
     imageAlt: "Sitio web, perfil de empresa y red social muestran de forma coherente la oferta, la zona de atención y el contacto.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
     editorialDraft: false,
-    cta: { label: "Revisar mi situación", to: "/diagnostico", copy: "Comprueba qué necesita tu negocio antes de contratar o publicar." },
     sections: [
-      { heading: "Qué aprenderás", paragraphs: ["Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.", "Ejercicio: elige un canal o servicio que ya utilizas, identifica qué debes comprobar y anota quién se encargará de revisarlo."] },
       {
-        heading: "Mantén los mismos datos en todos los canales",
-        paragraphs: ["Compara los puntos donde el público puede encontrar información: nombre comercial, descripción, servicios disponibles, ubicación o cobertura, horarios, precios o condiciones cuando se publiquen y formas de contacto. La información no tiene que estar redactada palabra por palabra igual, pero sí ser compatible y actual."],
-        blocks: [{ type: "steps", label: "Revisión de coherencia entre canales", items: [
-          { title: "Haz una lista de tus espacios públicos", detail: "Incluye el sitio, el perfil de empresa, las redes sociales, directorios relevantes y enlaces que siguen apareciendo en materiales impresos o mensajes." },
-          { title: "Compara datos que pueden causar una visita o una consulta equivocada", detail: "Revisa nombre, teléfono, enlace, horario, dirección, zona atendida, servicios y condiciones. Corrige primero lo que podría hacer perder una llamada, una cita o un desplazamiento." },
-          { title: "Comprueba que cada afirmación siga vigente", detail: "Quita servicios que ya no se ofrecen, promociones vencidas, precios desactualizados y fotos que ya no representan el lugar o el producto." },
-          { title: "Define cómo se actualizarán los cambios", detail: "Asigna una persona y un procedimiento para modificar los canales cuando cambien horarios, cobertura, personal, servicios o formas de contacto." },
-        ] }],
+        heading: "Qué información debe estar al día",
+        paragraphs: [
+          "No todos los canales tienen que usar exactamente las mismas palabras, pero los datos importantes deben ser compatibles. Si un sitio dice una cosa y una ficha pública dice otra, el visitante no sabe cuál creer."
+        ],
+        blocks: [
+          {
+            type: "list",
+            items: [
+              "Nombre comercial y una descripción clara de lo que haces.",
+              "Horario vigente, incluidas excepciones que ya conozcas.",
+              "Dirección o zona de servicio, según cómo atiendas.",
+              "Teléfono, correo, mensajería y enlaces que realmente utilizas.",
+              "Servicios, productos, precios o condiciones cuando los publiques."
+            ]
+          }
+        ]
       },
       {
-        heading: "Facilita que te encuentren y se comuniquen",
-        paragraphs: ["Una persona debe poder reconocer rápidamente que llegó al negocio correcto, entender si atiende su necesidad y elegir una forma de contacto que funcione. Prueba la ruta completa como visitante, no solo como administrador de la cuenta."],
-        blocks: [{ type: "list", items: [
-          "Usa el nombre público correcto y una descripción concreta, sin llenar perfiles de palabras clave o servicios no prestados.",
-          "Escribe enlaces completos y comprueba que abran el destino correcto, sobre todo el botón de llamada, reserva, mapa, mensaje o solicitud de cotización.",
-          "Revisa los canales desde un teléfono, con la sesión cerrada y una conexión móvil; confirma que el texto se lea y los controles se puedan usar.",
-          "Si recibes consultas por teléfono, mensajería o formulario, confirma que el equipo pueda recibirlas y que alguien sepa quién debe contestar.",
-          "Explica qué sucede después del contacto: qué datos básicos pedirás, quién responderá y si hace falta reservar o acudir al local.",
-        ] }, { type: "callout", tone: "tip", title: "La acción debe describir lo que ocurrirá", text: "Un botón «Solicitar una cotización» debe llevar a un medio que realmente permita pedirla. Evita botones que parecen activos, enlaces rotos y formularios que no confirman el envío." }],
+        heading: "Elige una referencia y una persona responsable",
+        paragraphs: [
+          "La información se mantiene mejor cuando sabes dónde consultar el dato correcto y quién comunica un cambio. No tiene que ser una plataforma compleja: puede ser una ficha interna controlada o una lista breve."
+        ],
+        blocks: [
+          {
+            type: "steps",
+            label: "Un procedimiento sencillo de actualización",
+            items: [
+              {
+                title: "Haz un inventario de los canales activos",
+                detail: "Incluye tu web, perfil de empresa, redes, directorios y enlaces que todavía compartes en tarjetas o mensajes."
+              },
+              {
+                title: "Registra el dato vigente",
+                detail: "Anota el horario, teléfono, dirección o zona de servicio y quién puede confirmar cada cambio."
+              },
+              {
+                title: "Actualiza los canales que mantienes",
+                detail: "Corrige primero los datos que pueden causar una llamada perdida, una visita equivocada o una consulta sin respuesta."
+              },
+              {
+                title: "Comprueba y deja constancia",
+                detail: "Abre cada destino como visitante y registra dónde se hizo el cambio, sobre todo si otra persona debe revisarlo."
+              }
+            ]
+          }
+        ]
       },
       {
-        heading: "Confianza sin reseñas o testimonios inventados",
-        paragraphs: ["La confianza no se construye simulando aprobación. Preséntate con claridad y utiliza únicamente información que puedas respaldar. No escribas reseñas ficticias, no atribuyas frases a clientes que no las dieron ni uses estrellas o cifras sin una fuente verificable."],
-        blocks: [{ type: "list", items: [
-          "Muestra quién presta el servicio y cómo contactar al negocio, dentro de lo que sea pertinente y seguro publicar.",
-          "Explica con precisión qué incluye un servicio, sus condiciones conocidas, límites, cobertura y pasos para solicitarlo.",
-          "Usa fotografías propias, actuales y representativas; pide autorización para publicar imágenes identificables y respeta derechos de terceros.",
-          "Si compartes comentarios o casos reales, confirma que sean auténticos, pertinentes, autorizados y presentados sin alterar su sentido. Identifica patrocinios o incentivos cuando corresponda según la normativa aplicable.",
-          "Atiende dudas y reclamaciones con respeto. No prometas resultados, certificaciones o garantías que no puedas demostrar.",
-          "Si aún no tienes reseñas, no es necesario inventarlas: ofrece información verificable y deja que cada cliente decida si desea compartir su experiencia en los espacios permitidos.",
-        ] }],
+        heading: "Prueba la experiencia como visitante",
+        paragraphs: [
+          "No basta con ver la información en el panel de administración. Recorre la ruta que seguiría una persona que todavía no conoce tu negocio."
+        ],
+        blocks: [
+          {
+            type: "list",
+            items: [
+              "Abre la página desde un teléfono y, cuando sea posible, sin iniciar sesión.",
+              "Pulsa los enlaces de llamada, mensaje, mapa, reserva o solicitud de presupuesto.",
+              "Comprueba que el destino corresponda con el texto del botón y que el formulario confirme el envío.",
+              "Lee el contenido en pantalla pequeña: usa títulos claros, texto legible y enlaces que expliquen adónde llevan.",
+              "Confirma que alguien pueda recibir y atender las consultas que el canal promete aceptar."
+            ]
+          },
+          {
+            type: "callout",
+            tone: "tip",
+            title: "Una comprobación vale más que un botón bonito",
+            text: "Si el botón dice «Solicitar presupuesto», debe permitir enviar una solicitud real. Corrige los destinos rotos y retira los canales que ya no puedes atender."
+          }
+        ]
       },
       {
         heading: "Accesibilidad, privacidad y seguridad básicas",
@@ -660,23 +697,20 @@ export const learnArticles: LearnArticle[] = [
         ] }, { type: "callout", tone: "caution", title: "Las reglas legales dependen del caso", text: "Las políticas de anuncios de Google o Meta son reglas de sus plataformas; no sustituyen la legislación sobre privacidad, cookies, accesibilidad, promociones o comunicaciones comerciales de tu país." }],
       },
       {
-        heading: "Ejemplo: corregir una información antes de abrir otro canal",
-        paragraphs: ["Caso hipotético para mostrar una revisión sencilla de presencia digital."],
-        blocks: [{
-          type: "example",
-          title: "Un taller cambia su horario de los sábados",
-          hypothetical: true,
-          context: "Un taller de reparación reduce su horario de los sábados. Su sitio web muestra el nuevo horario, pero una red social y una ficha pública conservan el anterior.",
-          problem: "Una persona puede desplazarse cuando el taller ya está cerrado y encontrar información distinta según el canal que consulte.",
-          approach: "El responsable identifica los canales que el taller mantiene de verdad, corrige primero los datos esenciales y anota dónde debe revisar el horario cuando vuelva a cambiar.",
-          actions: [
-            "Comparar nombre, teléfono, dirección o zona de servicio y horario en los canales activos.",
-            "Actualizar el horario incorrecto y comprobar cada cambio como lo vería un visitante.",
-            "Retirar o corregir enlaces a cuentas que el negocio ya no atiende.",
-            "Asignar quién revisará estos datos cuando cambien horarios, servicios o formas de contacto.",
-          ],
-          lesson: "La confianza empieza por información coherente y mantenida. Abrir otro canal no corrige los datos antiguos de los que ya existen.",
-        }],
+        heading: "Rutina de mantenimiento breve",
+        paragraphs: [
+          "Elige una frecuencia que puedas cumplir y vuelve a revisar los datos cuando ocurra un cambio importante, como un nuevo horario, teléfono, servicio o zona atendida. No existe un calendario universal que sirva para todos los negocios."
+        ],
+        blocks: [
+          {
+            type: "summary",
+            items: [
+              "Revisa los datos esenciales y los enlaces que el público usa para contactarte.",
+              "Actualiza primero los canales activos y retira los que ya no puedes mantener.",
+              "Asigna una persona responsable y comprueba los cambios como visitante."
+            ]
+          }
+        ]
       },
       {
         heading: "Qué puedes hacer ahora",
@@ -692,13 +726,47 @@ export const learnArticles: LearnArticle[] = [
       },
       {
         heading: "Fuentes y alcance",
-        paragraphs: ["Las fuentes siguientes se consultaron para preparar esta guía. Las recomendaciones editoriales y de organización son prácticas generales; los requisitos de plataforma se identifican como políticas y no deben confundirse con asesoría legal. Las reglas cambian y pueden variar por sector, formato o país: comprueba las versiones vigentes antes de actuar."],
-        blocks: [{ type: "sources", items: [
-          { label: "SEO Starter Guide — Google Search Central", url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide", scope: "Recomendaciones de Google Search sobre contenido útil, rastreo, títulos, enlaces e imágenes. La guía dice explícitamente que no hay una fórmula que garantice el primer puesto ni que toda recomendación aplique a todo sitio." },
-          { label: "Edit your Business Profile — Google Business Profile Help", url: "https://support.google.com/business/answer/3039617", scope: "Ayuda oficial para editar información como nombre, dirección o área de servicio, horarios, teléfono, web, descripción y servicios. Disponibilidad, elegibilidad, verificación y revisión pueden variar." },
-          { label: "WCAG 2.2 Quick Reference — W3C WAI", url: "https://www.w3.org/WAI/WCAG22/quickref/", scope: "Referencia rápida del W3C para consultar criterios WCAG 2.2 y técnicas. Esta guía no ha sido objeto de una evaluación completa y no declara conformidad ni certificación WCAG 2.2 AA." },
-        ] }],
-      },    ],
+        paragraphs: [
+          "Estas fuentes ayudan a mantener información pública útil y comprensible. La guía no es una auditoría técnica ni una evaluación formal de accesibilidad; los requisitos concretos dependen de la actividad y la jurisdicción."
+        ],
+        blocks: [
+          {
+            type: "sources",
+            items: [
+              {
+                label: "Google Business Profile Help — Edit your Business Profile",
+                url: "https://support.google.com/business/answer/3039617",
+                scope: "Ayuda oficial para editar información, horarios, teléfono, web, descripción y servicios. Elegibilidad y disponibilidad pueden variar."
+              },
+              {
+                label: "Google Search Central — SEO Starter Guide",
+                url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
+                scope: "Recomendaciones para que el contenido, los títulos y los enlaces sean comprensibles y útiles; no garantiza posiciones de búsqueda."
+              },
+              {
+                label: "W3C WAI — Writing for Web Accessibility",
+                url: "https://www.w3.org/WAI/tips/writing/",
+                scope: "Consejos para organizar la información, usar títulos claros y escribir instrucciones fáciles de comprender; no certifica la accesibilidad de un sitio."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        heading: "Qué puedes hacer ahora",
+        paragraphs: [],
+        blocks: [
+          {
+            type: "summary",
+            items: [
+              "Haz una lista de tus canales públicos y de los datos que podrían estar desactualizados.",
+              "Corrige nombre, horario, ubicación y contacto antes de ampliar tu presencia.",
+              "Comprueba los enlaces y asigna a alguien la siguiente revisión."
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     slug: "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -712,9 +780,22 @@ export const learnArticles: LearnArticle[] = [
       "La publicidad puede dar visibilidad, pero no arregla información contradictoria ni un contacto que no funciona.",
     ],
     image: "/assets/learn/diagram-presence-digital.svg",
-    imageAlt: "Tres canales digitales —sitio web, perfil de empresa y redes sociales— muestran de forma coherente una oferta, una zona de atención y opciones de contacto",
-    cta: { label: "Conocer el Diagnóstico", to: "/diagnostico", copy: "Si quieres ordenar prioridades, el Diagnóstico de presencia digital puede servir como punto de partida; no promete visibilidad, clientes ni resultados comerciales." },
-    relatedSlugs: ["publicidad-digital-como-preparar-una-primera-campana", "como-mantener-actualizada-y-confiable-tu-presencia-digital"],
+    imageAlt: "Lista de preparación que conecta una oferta clara, información correcta, contacto y capacidad de respuesta antes de invertir en anuncios.",
+    relatedSlugs: [
+      "publicidad-digital-como-preparar-una-primera-campana",
+      "como-mantener-actualizada-y-confiable-tu-presencia-digital",
+      "perfil-empresa-google-completar-y-mantener-actualizado",
+      "redes-sociales-o-pagina-web-que-necesita-tu-negocio",
+      "analitica-web-que-medir-en-tu-negocio",
+      "como-responder-la-primera-consulta-de-un-cliente",
+      "como-pedir-resenas-reales-y-responder-criticas"
+    ],
+    cta: {
+      label: "Revisar mi punto de partida",
+      to: "/diagnostico",
+      copy: "Usa esta lista para identificar qué necesitas corregir antes de invertir en anuncios."
+    },
+    editorialDraft: false,
     sections: [
       {
         heading: "Qué es una presencia digital útil",
@@ -1446,7 +1527,21 @@ export const learnArticles: LearnArticle[] = [
           ],
         }],
       },
-    ],
+      {
+        heading: "Lista de comprobación",
+        paragraphs: [],
+        blocks: [
+          {
+            type: "summary",
+            items: [
+              "Identifica quién administra DNS, web y correo antes de cambiar una configuración.",
+              "Conserva una copia de los registros y aplica solo valores confirmados.",
+              "Prueba por separado la página, la recepción y el envío de correo."
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     slug: "dominio-hosting-sitio-web-como-funcionan",
@@ -2269,19 +2364,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: elegir el primer paso digital",
         paragraphs: ["Al terminar, podrás elegir una primera mejora digital a partir de un problema real del negocio y evitar empezar comprando herramientas que todavía no necesitas.", "Práctica: escribe una tarea que hoy te hace perder tiempo o información. Propón la mejora más pequeña que podrías probar con lo que ya tienes."],
         blocks: [{ type: "callout", tone: "tip", title: "Empieza por una fricción concreta", text: "«Quiero digitalizarme» es demasiado amplio. «Quiero dejar de perder solicitudes de cita» ya permite pensar en una mejora comprobable." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Empieza por una necesidad concreta",
         "paragraphs": [
           "Anotas pedidos en papeles, contestas mensajes desde tu teléfono y publicas cuando tienes un rato. Te dicen que debes digitalizarte, pero nadie te explica qué significa.",
           "Digitalizar es usar herramientas para hacer más fácil una parte del trabajo: ordenar pedidos, encontrar documentos, compartir horarios o responder una pregunta."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres decisiones antes de empezar",
         "paragraphs": [
           "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
         ],
@@ -2454,19 +2549,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: preparar el trabajo digital",
         paragraphs: ["Al terminar, podrás relacionar una tarea digital con el equipo, la conexión y el plan alternativo que realmente necesita, sin asumir que debes comprar lo más potente.", "Práctica: elige una tarea —responder mensajes, cobrar, editar documentos o hacer videollamadas— y anota qué dispositivo, conexión y alternativa mínima necesita."],
         blocks: [{ type: "callout", tone: "tip", title: "Compra para la tarea", text: "El equipo adecuado es el que sostiene tu trabajo con fiabilidad. Más potencia o más aplicaciones no son una mejora si no resuelven una necesidad concreta." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué tareas necesitas resolver",
         "paragraphs": [
           "Un pequeño taller usa un teléfono para mensajes y fotos de sus trabajos. Una persona le recomienda comprar un equipo costoso para 'ponerse al día'.",
           "La pregunta útil no es cuál es el equipo más moderno, sino qué tareas necesitas cumplir: recibir pedidos, escribir presupuestos, guardar archivos o atender videollamadas."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Equipo, conexión y aplicaciones cumplen funciones distintas",
         "paragraphs": [
           "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
         ],
@@ -2639,19 +2734,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: ordenar el correo del negocio",
         paragraphs: ["Al terminar, podrás organizar el correo para encontrar conversaciones importantes, distinguir la versión vigente de un documento y dejar pendientes visibles.", "Práctica: imagina tres correos sobre una misma compra. Decide qué asunto usarías, dónde guardarías el documento vigente y cómo marcarías que todavía falta responder."],
         blocks: [{ type: "callout", tone: "tip", title: "El correo debe conservar contexto", text: "Si puedes encontrar la conversación correcta y saber qué falta hacer sin abrir decenas de mensajes, tu organización está ayudando." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué necesitas encontrar cuando llega un correo",
         "paragraphs": [
           "Un cliente envía un documento importante. Tres días después no lo encuentras porque quedó entre promociones y mensajes de aplicaciones.",
           "Un correo organizado te ayuda a responder y guardar pruebas de acuerdos. No hace falta escribir de manera complicada."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres hábitos para no perder mensajes",
         "paragraphs": [
           "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
         ],
@@ -2824,19 +2919,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: reconocer engaños y proteger cuentas",
         paragraphs: ["Al terminar, podrás reconocer señales comunes de suplantación, proteger cuentas importantes y verificar un aviso urgente sin entregar tu contraseña o un código de acceso.", "Práctica: imagina que recibes «tu cuenta se cerrará hoy». Escribe qué comprobarías desde la aplicación o sitio oficial antes de pulsar el enlace del mensaje."],
         blocks: [{ type: "callout", tone: "tip", title: "La urgencia no demuestra autenticidad", text: "Una petición inesperada de contraseña o código merece verificación por un canal conocido, aunque el mensaje parezca venir de una empresa real." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué señales pueden indicar un engaño",
         "paragraphs": [
           "Llega un mensaje que parece de un servicio conocido. Dice que perderás la cuenta en una hora y te pide contraseña o código.",
           "Las estafas suelen aprovechar la urgencia. Una cuenta protegida y un hábito de verificación reducen riesgos, aunque no los eliminan por completo."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres hábitos que protegen tus cuentas",
         "paragraphs": [
           "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
         ],
@@ -3009,19 +3104,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: recuperar archivos importantes",
         paragraphs: ["Al terminar, podrás decidir qué archivos no puedes permitirte perder, crear una copia separada y comprobar que realmente sabes recuperarla.", "Práctica: elige un archivo importante. Anota dónde está el original, dónde estaría la copia y qué pasos seguirías para recuperarlo si el dispositivo principal dejara de funcionar."],
         blocks: [{ type: "callout", tone: "tip", title: "Una copia sirve si puedes recuperarla", text: "Guardar archivos en otro lugar es solo la mitad del trabajo. Prueba periódicamente que la copia existe, se abre y contiene la versión que necesitas." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué archivos necesitas recuperar",
         "paragraphs": [
           "Una persona cambia de teléfono y descubre que las fotos de sus productos solo estaban en el equipo anterior.",
           "Guardar documentos en carpetas o en internet ayuda, pero una copia de seguridad es una segunda versión que puedas recuperar cuando algo falla."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Copia, sincronización y recuperación no son lo mismo",
         "paragraphs": [
           "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
         ],
@@ -3194,19 +3289,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: crear una hoja de cálculo útil",
         paragraphs: ["Al terminar, podrás decidir cuándo una hoja de cálculo basta para organizar un proceso sencillo y cómo estructurarla para que otra persona pueda mantenerla.", "Práctica: piensa en pedidos, citas o inventario. Define qué representa cada fila, qué cuatro columnas necesitas y quién actualizará el estado."],
         blocks: [{ type: "callout", tone: "tip", title: "Una tabla necesita una regla de uso", text: "La hoja no organiza el negocio por sí sola. Debe estar claro qué se registra, quién lo actualiza y cuál es la versión vigente." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué tarea puede resolver una hoja de cálculo",
         "paragraphs": [
           "En una libreta tienes encargos, pagos pendientes y una lista de materiales. Encontrar el estado de un pedido te lleva demasiado tiempo.",
           "Una hoja de cálculo es como una libreta organizada en casillas. Puedes buscar, ordenar y sumar sin tener que crear un programa."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres reglas para mantener la tabla confiable",
         "paragraphs": [
           "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
         ],
@@ -3380,19 +3475,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: elegir el canal adecuado",
         paragraphs: ["Al terminar, podrás decidir qué función cumple una red social, una página web o una ficha de negocio y elegir solo los canales que puedas mantener.", "Práctica: escribe tres necesidades —que te descubran, que entiendan tus servicios y que te contacten— y asigna a cada una el canal que hoy podría cumplirla mejor."],
         blocks: [{ type: "callout", tone: "tip", title: "Cada canal debe tener un trabajo", text: "Si no puedes explicar para qué mantienes un canal y quién lo actualiza, abrirlo puede añadir trabajo sin mejorar la experiencia de tus clientes." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué quieres que haga quien te encuentra",
         "paragraphs": [
           "Alguien ve una foto de tu trabajo. Le interesa, pero no encuentra qué ofreces, dónde atiendes ni cómo pedir información.",
           "El problema no siempre es la falta de una página web. Puede ser que los datos importantes estén escondidos entre publicaciones."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Qué aporta cada canal",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],
@@ -3565,19 +3660,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: explicar tu oferta con claridad",
         paragraphs: ["Al terminar, podrás explicar en una frase qué haces, para quién y cuál es el siguiente paso sin esconder la oferta detrás de eslóganes vagos.", "Práctica: completa «Ayudo a ___ a resolver ___ mediante ___». Después añade qué debe hacer la persona si quiere preguntar o comprar."],
         blocks: [{ type: "callout", tone: "tip", title: "La claridad vence al adjetivo", text: "Si alguien que no conoce tu negocio puede decir qué ofreces y para quién después de leer una frase, la explicación está haciendo su trabajo." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Empieza por la pregunta del cliente",
         "paragraphs": [
           "«Transformamos experiencias mediante soluciones innovadoras». Un cliente que no te conoce quizá no pueda imaginar qué vendes.",
           "«Reparamos computadoras y explicamos el problema antes de hacer cambios». La segunda frase es más directa y permite entender el trabajo."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres datos para explicar lo que ofreces",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],
@@ -3750,19 +3845,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: responder una primera consulta",
         paragraphs: ["Al terminar, podrás responder una primera consulta con lo que sabes, pedir solo la información que falta y cerrar con un siguiente paso claro.", "Práctica: responde a «¿cuánto cuesta?» sin inventar un precio. Incluye una respuesta útil, una pregunta necesaria y qué ocurrirá después."],
         blocks: [{ type: "callout", tone: "tip", title: "No necesitas fingir certeza", text: "Una respuesta útil puede reconocer lo que todavía no sabes. Pedir el dato correcto es mejor que prometer un precio o plazo sin información suficiente." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Entiende qué necesita saber la persona",
         "paragraphs": [
           "Te escriben: «Hola, ¿hacen reparaciones?». Un «sí» no ayuda mucho; enviar todo el catálogo puede cansar a la persona.",
           "Puedes contestar: «¡Hola! Sí, hacemos ese tipo de reparaciones. ¿Qué equipo tienes y qué le sucede? Así podemos orientarte»."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres partes de una respuesta útil",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],
@@ -3935,19 +4030,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: publicar información clara y útil",
         paragraphs: ["Al terminar, podrás preparar una publicación sencilla donde la imagen muestre algo real y el texto explique qué está viendo la persona y qué puede hacer después.", "Práctica: elige un servicio o producto real. Describe qué foto ayudaría a entenderlo, una frase concreta para acompañarla y una llamada a la acción proporcionada."],
         blocks: [{ type: "callout", tone: "tip", title: "La imagen debe aportar información", text: "Una foto útil muestra el trabajo, producto o contexto. El texto debe completar lo que la imagen no explica, no sustituirlo por adjetivos vacíos." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué debe entender quien ve la publicación",
         "paragraphs": [
           "Publicas una fotografía de un producto y la acompañas con «¡Lo mejor para ti!». Alguien interesado sigue sin saber tamaño, uso o cómo consultarlo.",
           "Una publicación útil puede mostrar el objeto con buena luz, contar para qué sirve y explicar el siguiente paso."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres piezas para comunicar con claridad",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],
@@ -4120,19 +4215,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: organizar pedidos de principio a fin",
         paragraphs: ["Al terminar, podrás describir un pedido desde la consulta hasta la confirmación del pago y dejar claros disponibilidad, total, entrega y comprobante.", "Práctica: simula un pedido sencillo. Escribe qué debes confirmar antes del pago, cómo comprobarías que se recibió y qué información conservarías para cumplirlo."],
         blocks: [{ type: "callout", tone: "tip", title: "Cobrar es una parte del pedido", text: "Antes de pedir un pago, confirma qué compra la persona, cuánto cuesta en total, qué disponibilidad existe y qué ocurrirá después." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "El recorrido completo de un pedido",
         "paragraphs": [
           "Alguien ve un producto y quiere comprarlo. Falta confirmar si está disponible, cuánto cuesta entregarlo y cómo pagarlo.",
           "Abrir una tienda no resuelve esas preguntas. Antes necesitas un proceso entendible para aceptar, preparar y completar un pedido."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres comprobaciones antes de vender en línea",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],
@@ -4305,19 +4400,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: pedir solo los datos necesarios",
         paragraphs: ["Al terminar, podrás revisar un formulario o conversación y distinguir los datos necesarios para atender la solicitud de los que estás pidiendo sin una finalidad clara.", "Práctica: imagina un formulario para preguntar por una clase. Tacha cualquier campo que no necesites para entender la consulta y responderla."],
         blocks: [{ type: "callout", tone: "tip", title: "Menos datos también puede ser mejor servicio", text: "Pedir solo lo necesario reduce trabajo, exposición y dudas para la persona. Cada dato debería tener una razón comprensible." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué necesitas saber para atender la consulta",
         "paragraphs": [
           "Un formulario para preguntar horarios pide fecha de nacimiento y dirección completa. ¿De verdad hacen falta?",
           "Los datos personales merecen cuidado. Antes de pedirlos, explica qué tarea realizarás con ellos y si podrías resolverla con menos información."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres reglas para pedir menos datos",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],
@@ -4490,19 +4585,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: gestionar opiniones auténticas",
         paragraphs: ["Al terminar, podrás pedir una opinión sin presionar por una valoración positiva y responder una crítica sin revelar información privada ni discutir públicamente.", "Práctica: redacta una solicitud neutral de reseña y una respuesta breve a una crítica por demora. Evita premios condicionados, datos del cliente y afirmaciones defensivas."],
         blocks: [{ type: "callout", tone: "tip", title: "Pide experiencia, no una puntuación", text: "Una solicitud honesta invita a contar lo ocurrido. No debe exigir una valoración positiva ni convertir un incentivo en pago por una opinión favorable." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué hace útil una reseña auténtica",
         "paragraphs": [
           "Un proveedor ofrece venderte cincuenta opiniones de cinco estrellas para mejorar tu perfil. Suena fácil, pero esas reseñas no describen experiencias reales.",
           "La confianza depende de lo que haces y de cómo respondes, también cuando algo sale mal."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres principios para solicitar y responder opiniones",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],

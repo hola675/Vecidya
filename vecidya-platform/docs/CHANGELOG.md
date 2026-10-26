@@ -54,6 +54,15 @@
 - Se añade un guard de pruebas para impedir que las seis guías madre vuelvan a crecer por encima de 10 secciones/1800 palabras serializadas y otro para las guías especializadas simplificadas (8 secciones/1500 palabras). HTTPS/TLS baja 1331→1128 palabras, Analítica 1346→984, supervisión de automatizaciones 1578→968, piloto IA 1407→904 y correo profesional 1528→1070.
 - Se separa además el correo profesional del mapa general DNS/HTTPS/correo: el mapa queda introductorio y una guía nueva explica MX, TXT, SPF, DKIM y DMARC con RFC 9989 vigente. El catálogo queda en 48 guías y 9 itinerarios. Sin cambios de DB, Auth, Diagnóstico, MiniWeb, GHL, precios o producción.
 
+## 2026-10-25 — APRENDE-EDITORIAL-04B — revisión semántica de Aprende (PR #121)
+
+- Revisión artículo por artículo del catálogo de 46 guías, con registro editorial en APRENDE_EDITORIAL_AUDIT_04B.md.
+- Se acotan las guías de CRM, preparación antes de publicidad, mantenimiento de presencia y DNS/web/correo; se elimina de la guía CRM una afirmación específica de retención/exportación que no estaba respaldada por una integración verificada.
+- Se diferencia la guía de IA empresarial hacia reglas, datos permitidos, responsables, aprobación y escalamiento, separada de la guía de piloto de asistentes.
+- Se personalizan los encabezados de trece guías introductorias y se conecta la selección de herramientas con el artículo de presupuesto.
+- Se conservan los 46 slugs, seis categorías, nueve itinerarios y los estados editoriales existentes. Sin DB, migraciones, cambios de GHL, fusión ni despliegue.
+
+
 ## 2026-10-25 — APRENDE-EDITORIAL-04A — criterio digital y claridad pedagógica (PR pendiente)
 
 - Amplía Aprende de 44 a 46 guías y de 8 a 9 itinerarios sin crear categorías nuevas. Las dos guías fundacionales cubren priorización digital y uso consciente de tecnología para personas y negocios; permanecen en revisión editorial.

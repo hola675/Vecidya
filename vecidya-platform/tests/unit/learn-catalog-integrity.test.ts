@@ -379,7 +379,7 @@ test("Las guías especializadas conservan sus temas pedagógicos esenciales", ()
     ["como-elegir-y-cambiar-proveedor-de-dominio-y-hosting", [/control administrativo/i, /costos/i, /renovar|renovación/i]],
     ["como-probar-y-supervisar-automatizaciones-sin-perder-datos", [/duplicados/i, /reintentos/i, /persona/i]],
     ["como-probar-un-asistente-de-ia-con-supervision-humana", [/respuestas inventadas/i, /datos/i, /prueba piloto/i]],
-    ["como-mantener-actualizada-y-confiable-tu-presencia-digital", [/canales/i, /reseñas|testimonios/i, /accesibilidad/i]],
+    ["como-mantener-actualizada-y-confiable-tu-presencia-digital", [/horarios|datos|contacto/i, /canales/i, /responsable|actualiz/i]],
     ["dns-https-y-correo-como-se-conecta-tu-dominio", [/DNS/i, /HTTPS/i, /correo/i]],
   ] as const;
   for (const [slug, topics] of requirements) {
@@ -428,3 +428,40 @@ test("Las bibliografías de presencia y DNS mantienen su alcance especializado",
   assert.ok(emailSources.some((source) => source.url.includes("rfc9989")), "Falta referencia DMARC vigente");
   assert.match(JSON.stringify(email), /MX|TXT|SPF|DKIM|DMARC/, "La guía de correo debe explicar sus mecanismos principales");
 });
+
+test("La guía de CRM se limita a explicar cuándo conviene y no promete un CRM de Vecidya no verificado", () => {
+  const article = getLearnArticle("que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo");
+  assert.ok(article);
+  const content = JSON.stringify(article);
+  assert.match(content, /depende del proveedor/i);
+  assert.ok(article.relatedSlugs?.includes("organizar-consultas-mensajes-llamadas-formularios"));
+  assert.ok(article.relatedSlugs?.includes("datos-de-clientes-que-puedes-pedir-y-como-protegerlos"));
+  assert.doesNotMatch(content, /subcuenta|30 días para copiar|Vecidya no conserva una copia paralela/i);
+});
+
+test("Las guías de presencia y DNS conservan objetivos diferenciados", () => {
+  const presence = getLearnArticle("como-mantener-actualizada-y-confiable-tu-presencia-digital");
+  const dns = getLearnArticle("dns-https-y-correo-como-se-conecta-tu-dominio");
+  assert.ok(presence && dns);
+  const presenceText = JSON.stringify(presence);
+  const dnsText = JSON.stringify(dns);
+  assert.match(presenceText, /horario|contacto|canales/i);
+  assert.match(presenceText, /responsable/i);
+  assert.doesNotMatch(presenceText, /WCAG 2\\.2 AA|autenticación multifactor/i);
+  assert.match(dnsText, /DNS/i);
+  assert.match(dnsText, /MX/i);
+  assert.match(dnsText, /SPF, DKIM ni DMARC/i);
+  assert.match(dnsText, /HTTPS/i);
+});
+
+test("La guía de IA para empresas define datos, responsables y escalamiento sin sustituir la guía de piloto", () => {
+  const article = getLearnArticle("como-usar-inteligencia-artificial-en-una-empresa-con-supervision");
+  assert.ok(article?.editorialDraft, "La guía de gobierno de IA debe permanecer en borrador");
+  const content = JSON.stringify(article);
+  assert.match(content, /Uso permitido/i);
+  assert.match(content, /Escalamiento/i);
+  assert.match(content, /datos|información/i);
+  assert.ok(article.relatedSlugs?.includes("como-probar-un-asistente-de-ia-con-supervision-humana"));
+  assert.ok(article.sections.some((section) => section.blocks?.some((block) => block.type === "sources")));
+});
+

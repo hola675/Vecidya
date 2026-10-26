@@ -397,7 +397,8 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
     "editorialDraft": true,
     "relatedSlugs": [
       "conectar-herramientas-digitales-sin-complicar-tu-negocio",
-      "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo"
+      "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo",
+      "como-preparar-presupuesto-para-herramientas-digitales"
     ],
     "cta": {
       "label": "Ver por dónde empezar",

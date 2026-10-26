@@ -4,6 +4,13 @@
 
 ## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
 
+## APRENDE-EDITORIAL-04B — revisión semántica de las 46 guías
+
+**Implementado en la rama del PR #121; CI se verifica en Actions del HEAD actual y la aceptación editorial sigue pendiente.** Se registran los dictámenes por guía en docs/APRENDE_EDITORIAL_AUDIT_04B.md. El trabajo reduce solapamientos en CRM, preparación publicitaria, mantenimiento de presencia y DNS; diferencia la política de IA empresarial de la prueba de asistentes; personaliza encabezados de trece guías introductorias y añade una relación hacia el artículo de presupuesto.
+
+Gate de salida: catálogo de 46 slugs únicos y nueve itinerarios intactos; ejemplos estructurados, enlaces y fuentes válidos; estados editoriales conservados; suites de Aprende y regresión principal PASS sobre el SHA actual. No fusionar ni desplegar como parte de este checkpoint.
+
+
 **Objetivo:** adaptar las referencias premium entregadas por el usuario a una experiencia coherente de Vecidya, preservando contenido, datos, permisos, funcionamiento móvil y límites comerciales. Las referencias guían composición e interacción; no se copian marcas, textos, layouts exactos ni assets. Este trabajo no incluye publicación ni despliegue.
 
 **Principios:** usar la identidad y componentes vigentes antes de añadir variantes; diferenciar la expresividad de la web pública de la claridad operativa de Mi Vecidya y Admin; mostrar solo datos y capacidades comprobables; WCAG 2.2 AA, teclado, foco visible, objetivos táctiles, zoom y `prefers-reduced-motion`; no incorporar WebGL donde perjudique carga o accesibilidad.
