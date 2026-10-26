@@ -18,7 +18,7 @@ La portada expresa el método **Comprende → Prioriza → Decide**, amplía el 
 
 Las cuatro guías pasan a `editorialDraft: false`. El catálogo queda en **48 guías: 41 revisadas y 7 borradores**. Los tests protegen aprobación, fuentes, ejemplos y el alcance de Eurostat.
 
-**Gate pendiente:** `Aprende quality` sobre el HEAD final.
+**RAN en GitHub Actions:** `Aprende quality` run `40247312756` PASS: typecheck, build e integridad Aprende.
 
 ## APRENDE-EDITORIAL-04F — revisión de migración y correo profesional (2026-10-25)
 
