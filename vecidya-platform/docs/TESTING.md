@@ -1,5 +1,18 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-04B — criterios de auditoría semántica
+
+La suite de integridad se actualiza para reflejar el alcance más preciso de la guía de preparación publicitaria, mantenimiento de presencia y DNS. Se añaden contratos para evitar promesas no verificadas de almacenamiento/exportación de un CRM de Vecidya, para conservar la separación entre las guías de DNS y presencia, y para exigir que la guía de IA empresarial cubra datos, responsables y escalamiento sin sustituir la guía de piloto.
+
+La validación que cierra este checkpoint es la de GitHub Actions asociada al HEAD actual de la rama del PR #121. Los PASS de APRENDE-EDITORIAL-04A sobre su SHA previo no certifican por sí solos estas modificaciones. No se ejecutan E2E visuales, pruebas de datos remotos ni deploy como parte de esta auditoría editorial.
+
+
+## APRENDE-EDITORIAL-04A — criterio digital y contrato de ejemplos (2026-10-25)
+
+**RAN en GitHub Actions sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`:** `Aprende quality` run `40242263335` PASS con instalación, typecheck, build y `Learn integrity tests`; `Main integration quality` run `40242263275` PASS con typecheck, build, regresión focal Diagnóstico/Aprende y suite unitaria completa **1721/1721 PASS, 0 fail**. Las pruebas de catálogo y currículo validan **46 guías** y **9 itinerarios**. El contrato transversal exige al menos un bloque `example` explícitamente hipotético por guía, con situación, problema, enfoque, pasos aplicables y aprendizaje suficientemente explicados; también verifica los dos nuevos slugs fundacionales, su categoría «Tecnología explicada», su estado de borrador y su relación recíproca.
+
+La comprobación estática de los 12 archivos cambiados no encontró marcadores de conflicto ni whitespace final. Sin D1 remota, navegador productivo, E2E visual nuevo ni deploy.
+
 ## DIAG-VISUAL-03 — resultado y entrada QA-03B (2026-10-25)
 
 `pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-visual-03-summary.test.ts tests/unit/diagnostic/qa03b-pro-rendered-summary.test.ts tests/unit/diagnostic/qa03b-funnel.test.ts tests/unit/diagnostic/qa03b-worker-replay.test.ts tests/unit/diagnostic/identified-report-contracts.test.ts`: **20/20 PASS**. Se verifican valor general/área 0, puntuación 37, ausencia de score como «Sin lectura» sin barra, estado preliminar, No evaluado/No aplica, y omisión de oportunidad/acción opcionales.

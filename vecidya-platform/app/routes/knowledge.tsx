@@ -29,7 +29,27 @@ export function loader({ request }: Route.LoaderArgs) {
     .filter((article) => {
       if (category && article.category !== category) return false;
       if (!needle) return true;
-      const summary = [article.title, article.intro, article.excerpt, article.category, ...article.sections.map((section) => section.heading)].join(" ");
+      const summary = [
+        article.title,
+        article.intro,
+        article.excerpt,
+        article.category,
+        ...article.enPocasPalabras,
+        ...article.sections.flatMap((section) => [
+          section.heading,
+          ...section.paragraphs,
+          ...(section.bullets ?? []),
+          ...((section.blocks ?? []).flatMap((block) =>
+            Object.values(block).flatMap((value) =>
+              typeof value === "string"
+                ? [value]
+                : Array.isArray(value)
+                  ? value.map((item) => typeof item === "string" ? item : JSON.stringify(item))
+                  : [],
+            ),
+          )),
+        ]),
+      ].join(" ");
       return searchable(summary).includes(needle);
     })
     .map(({ slug, title, excerpt, image, category: articleCategory, editorialDraft }) => ({
@@ -53,7 +73,7 @@ export function loader({ request }: Route.LoaderArgs) {
 export function meta({ location }: Route.MetaArgs) {
   return publicMeta(
     "Aprende",
-    "Guías para usar tecnología, organizar equipos y mejorar negocios y empresas de cualquier tamaño.",
+    "Guías claras para entender la tecnología, elegir prioridades y tomar mejores decisiones en tu vida digital y en tu negocio.",
     "/aprende",
     publicListingRobots(location.search),
   );
@@ -69,14 +89,14 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
           <div className="learn-atlas__masthead">
             <div className="learn-atlas__lead">
               <p className="learn-atlas__label">APRENDE</p>
-              <h1 id="learn-title">Aprende a usar la tecnología para mejorar tu negocio o empresa.</h1>
-              <p>Desde un negocio pequeño hasta empresas con equipos, sedes o varias marcas.</p>
+              <h1 id="learn-title">Aprende a entender y usar la tecnología con criterio.</h1>
+              <p>Para tu vida digital y para tu negocio: comprende primero, prioriza lo importante y decide qué herramienta realmente necesitas.</p>
             </div>
           </div>
           <form className="learn-discovery__form learn-atlas__form" method="get" action="/aprende#guias" role="search">
             <label htmlFor="learn-guide-search">Buscar en las guías</label>
             <div className="learn-discovery__search">
-              <input id="learn-guide-search" type="search" name="q" maxLength={100} defaultValue={search} placeholder="Ej. SEO, consultas, IA o hosting" />
+              <input id="learn-guide-search" type="search" name="q" maxLength={100} defaultValue={search} placeholder="Ej. contraseñas, IA, consultas o sitio web" />
               {category && <input type="hidden" name="tema" value={category} />}
               <button className="button button--primary" type="submit">Buscar</button>
             </div>
@@ -102,6 +122,18 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
           </nav>
         </section>
 
+        <section className="learn-why" aria-labelledby="learn-method-title">
+          <div>
+            <p className="learn-section-kicker">CÓMO APRENDEMOS</p>
+            <h2 id="learn-method-title">Comprende. Prioriza. Decide.</h2>
+          </div>
+          <ul>
+            <li><strong>Comprende:</strong> empieza por el problema y entiende lo suficiente para no depender de palabras complicadas.</li>
+            <li><strong>Prioriza:</strong> el que mucho abarca, poco aprieta. Elige pocas mejoras que puedas terminar y mantener.</li>
+            <li><strong>Decide:</strong> domina la tecnología; no dejes que ella decida por ti. Usa cada herramienta con un propósito y conserva el control.</li>
+          </ul>
+        </section>
+
         <section className="learn-resources" id="guias" aria-labelledby="learn-resources-title">
           <p className="learn-section-kicker">GUÍAS DE APRENDE</p>
           <h2 className="learn-resources__title" id="learn-resources-title">Empieza por una pregunta concreta.</h2>
@@ -121,7 +153,9 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
             <div className="learn-discovery__support">
               <p className="learn-discovery__note">Explora las guías por tema o busca una duda específica. No necesitas registrarte.</p>
               <p className="learn-discovery__note">Encuentra respuestas sencillas, ejemplos cotidianos y pasos que puedes aplicar sin aprender palabras complicadas.</p>
-              <p className="learn-editorial-note"><strong>Estado editorial</strong><span>Los materiales nuevos siguen identificados como borradores hasta su revisión editorial.</span></p>
+              {articles.some((article) => article.editorialDraft) && (
+                <p className="learn-editorial-note"><strong>Estado editorial</strong><span>Las guías que siguen en revisión se identifican de forma visible.</span></p>
+              )}
             </div>
           </div>
           {articles.length === 0 ? (
@@ -202,12 +236,12 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
         <section className="learn-why" aria-labelledby="learn-why-title">
           <div>
             <p className="learn-section-kicker">POR QUÉ APRENDER ESTO</p>
-            <h2 id="learn-why-title">Entender primero ayuda a construir mejor.</h2>
+            <h2 id="learn-why-title">Entender primero ayuda a elegir mejor.</h2>
           </div>
           <ul>
-            <li>Evitas sumar herramientas que no resuelven tu problema.</li>
-            <li>Puedes explicar mejor qué haces y para quién.</li>
-            <li>Identificas qué conviene ordenar antes de crecer.</li>
+            <li>Evitas sumar herramientas, cuentas y canales que no resuelven un problema real.</li>
+            <li>Puedes reconocer qué información necesitas comprender antes de actuar.</li>
+            <li>Distingues qué conviene hacer ahora, qué puede esperar y qué debes supervisar.</li>
           </ul>
         </section>
 

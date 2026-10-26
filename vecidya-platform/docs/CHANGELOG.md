@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-10-25 — APRENDE-EDITORIAL-04B — revisión semántica de Aprende (PR #121)
+
+- Revisión artículo por artículo del catálogo de 46 guías, con registro editorial en APRENDE_EDITORIAL_AUDIT_04B.md.
+- Se acotan las guías de CRM, preparación antes de publicidad, mantenimiento de presencia y DNS/web/correo; se elimina de la guía CRM una afirmación específica de retención/exportación que no estaba respaldada por una integración verificada.
+- Se diferencia la guía de IA empresarial hacia reglas, datos permitidos, responsables, aprobación y escalamiento, separada de la guía de piloto de asistentes.
+- Se personalizan los encabezados de trece guías introductorias y se conecta la selección de herramientas con el artículo de presupuesto.
+- Se conservan los 46 slugs, seis categorías, nueve itinerarios y los estados editoriales existentes. Sin DB, migraciones, cambios de GHL, fusión ni despliegue.
+
+
+## 2026-10-25 — APRENDE-EDITORIAL-04A — criterio digital y claridad pedagógica (PR pendiente)
+
+- Amplía Aprende de 44 a 46 guías y de 8 a 9 itinerarios sin crear categorías nuevas. Las dos guías fundacionales cubren priorización digital y uso consciente de tecnología para personas y negocios; permanecen en revisión editorial.
+- Introduce el método «Comprende → Prioriza → Decide» en la portada, mejora la búsqueda sobre el contenido completo y hace más humanas las etiquetas de todos los ejemplos.
+- Completa con ejemplos hipotéticos las seis guías especializadas que carecían del bloque estructurado y añade un contrato unitario que evita futuras guías sin caso práctico. Sin cambios de datos, autenticación, Diagnóstico, MiniWeb, GHL, precios o despliegue.
+
 ## 0.8.0 — producción (2026-10-25)
 
 - Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.

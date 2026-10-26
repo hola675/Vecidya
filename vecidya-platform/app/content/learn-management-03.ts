@@ -606,152 +606,174 @@ export const learnManagement03Articles: LearnArticle[] = [
   {
     "slug": "como-usar-inteligencia-artificial-en-una-empresa-con-supervision",
     "category": "Inteligencia Artificial",
-    "title": "¿Quién revisa lo que hace la IA? Úsala en tu empresa sin perder el control",
-    "intro": "Una herramienta redacta muy bien, pero puede inventar un precio, confundir clientes o usar información que no debió recibir. Para trabajar con IA no basta con activarla: necesitas definir una tarea y quién comprueba el resultado.",
-    "excerpt": "Aprende a establecer tareas permitidas, límites, revisiones humanas y reglas sencillas de IA para equipos y empresas.",
+    "title": "Reglas claras para usar IA en tu empresa: datos, responsables y revisión",
+    "intro": "Antes de permitir que un equipo use inteligencia artificial en su trabajo, acuerda qué tareas puede apoyar, qué información se puede compartir y quién revisa los resultados. Unas reglas claras evitan que cada persona tenga que adivinar los límites.",
+    "excerpt": "Una guía para definir usos permitidos, proteger información, asignar responsables y saber cuándo una persona debe detener o corregir una acción de IA.",
     "enPocasPalabras": [
-      "La IA propone o ayuda; una persona responsable confirma los hechos y decide.",
-      "Define qué información puede usar y qué acciones no debe ejecutar por su cuenta.",
-      "Prueba con ejemplos, registra errores y detén el uso si el riesgo supera el beneficio."
+      "Define primero qué tareas están permitidas y qué errores serían inaceptables.",
+      "No compartas datos solo porque una herramienta permita pegarlos; revisa su necesidad y las condiciones del proveedor.",
+      "Asigna quién prepara, revisa y aprueba el resultado antes de usarlo con clientes o procesos importantes."
     ],
     "image": "/assets/learn/diagram-gobierno-ia.svg",
     "imageAlt": "Tres tarjetas muestran una propuesta de IA, una revisión de una persona y una decisión controlada.",
     "editorialDraft": true,
     "relatedSlugs": [
+      "como-probar-un-asistente-de-ia-con-supervision-humana",
       "preparar-respuestas-publicaciones-ia-sin-perder-control",
-      "que-puede-hacer-una-inteligencia-artificial-por-un-negocio"
+      "como-saber-si-una-mejora-tecnologica-funciona-en-tu-empresa"
     ],
     "cta": {
-      "label": "Consultar una necesidad",
+      "label": "Revisar el proceso antes de activarlo",
       "to": "/contacto",
-      "copy": "Podemos ayudarte a identificar usos proporcionados, controles y límites antes de incorporar IA a tu operación."
+      "copy": "Si el uso afecta datos o decisiones importantes, identifica primero los límites y las personas responsables."
     },
     "sections": [
       {
-        "heading": "Una respuesta convincente también puede ser incorrecta",
+        "heading": "Empieza por definir la tarea permitida",
         "paragraphs": [
-          "La IA puede producir textos que parecen seguros aunque la información esté incompleta. No sabe automáticamente qué precios, políticas o existencias son vigentes en tu empresa.",
-          "En lugar de empezar preguntando «¿qué puede hacer la IA?», pregunta «¿qué tarea concreta queremos mejorar y qué error sería inaceptable?»."
-        ]
-      },
-      {
-        "heading": "Cuatro decisiones antes de usarla",
-        "paragraphs": [
-          "Sirven tanto para un negocio pequeño como para un departamento entero."
+          "No basta con decir que el equipo puede usar IA. Define para qué tareas se permite, qué resultado puede preparar y qué acciones no debe ejecutar por su cuenta.",
+          "Una tarea limitada podría ser resumir un documento público o preparar un borrador con información aprobada. Responder a una reclamación, confirmar un precio o cambiar un registro requiere controles distintos."
         ],
         "blocks": [
           {
             "type": "definitions",
             "items": [
               {
-                "term": "Tarea permitida",
-                "definition": "Trabajo concreto, como redactar un borrador usando información pública aprobada."
+                "term": "Uso permitido",
+                "definition": "Tarea concreta que la organización ha decidido que puede recibir ayuda de IA, con límites y responsable definidos."
               },
               {
-                "term": "Datos permitidos",
-                "definition": "Información que una persona autorizada puede compartir con la herramienta, atendiendo al proveedor y a la privacidad."
+                "term": "Revisión obligatoria",
+                "definition": "Situación en la que una persona comprueba hechos, tono, datos y consecuencias antes de utilizar el resultado."
               },
               {
-                "term": "Revisión humana",
-                "definition": "Persona identificada que contrasta datos, corrige y decide qué se publica o envía."
+                "term": "Uso no permitido",
+                "definition": "Tarea o dato que queda fuera de las reglas acordadas, por ejemplo introducir credenciales o dejar una decisión sensible sin revisión."
               },
               {
-                "term": "Límite de acción",
-                "definition": "Punto en el que la IA debe detenerse, pedir confirmación o transferir la tarea a una persona."
+                "term": "Escalamiento",
+                "definition": "Detener el flujo y pedir intervención a una persona cuando falta información, aparece un riesgo o el resultado contradice las reglas."
               }
             ]
           }
         ]
       },
       {
-        "heading": "Ejemplo: un equipo prepara respuestas frecuentes",
+        "heading": "Decide qué información puede recibir",
         "paragraphs": [
-          "Caso imaginario para entender la diferencia entre asistencia y autonomía."
-        ],
-        "blocks": [
-          {
-            "type": "example",
-            "title": "Un equipo comercial y una respuesta inventada",
-            "hypothetical": true,
-            "context": "Una empresa quiere acelerar las respuestas iniciales a preguntas habituales.",
-            "problem": "El asistente podría afirmar que hay disponibilidad o un descuento que nadie aprobó.",
-            "approach": "El equipo le permite redactar únicamente con horarios y servicios confirmados; las personas validan cualquier precio, plazo o compromiso.",
-            "actions": [
-              "Reúne preguntas frecuentes sin incluir conversaciones privadas reales.",
-              "Entrega solo hechos aprobados y pide que marque lo que no sabe.",
-              "Prueba preguntas confusas y comprueba que no prometa condiciones inventadas."
-            ],
-            "lesson": "Una respuesta rápida no es útil si compromete al negocio con algo falso."
-          }
-        ]
-      },
-      {
-        "heading": "Cómo hacer una prueba segura antes de ampliarla",
-        "paragraphs": [
-          "El mejor piloto tiene un comienzo, un final y una razón para detenerse si hace falta."
+          "El acceso de una persona a un dato no significa automáticamente que pueda copiarlo a cualquier servicio externo. Revisa el propósito, las políticas internas, las condiciones del proveedor y las reglas aplicables antes de compartir información.",
+          "Como regla inicial, utiliza datos públicos o ejemplos ficticios para aprender. Trata con mayor cuidado los datos de clientes, empleados, pagos, salud, credenciales, contratos o información comercial confidencial."
         ],
         "blocks": [
           {
             "type": "steps",
-            "label": "Prueba con límites claros",
+            "label": "Tres comprobaciones antes de introducir información",
             "items": [
               {
-                "title": "Elige una sola tarea",
-                "detail": "Por ejemplo, resumir documentos públicos o preparar borradores para revisión."
+                "title": "Pregunta si el dato hace falta",
+                "detail": "Si puedes completar la tarea sin un nombre, teléfono, documento o dato confidencial, no lo incluyas."
               },
               {
-                "title": "Clasifica los datos",
-                "detail": "No copies datos de salud, pagos, empleados o clientes sin autorización y evaluación previa."
+                "title": "Comprueba el servicio",
+                "detail": "Revisa las condiciones de uso, opciones de privacidad, conservación y acceso que declara el proveedor para el producto concreto."
               },
               {
-                "title": "Nombra a quien revisa",
-                "detail": "Aclara quién confirma nombres, fechas, enlaces, precios y respuestas sensibles."
-              },
-              {
-                "title": "Prepara ejemplos difíciles",
-                "detail": "Incluye preguntas ambiguas, información incompleta y solicitudes que debería rechazar."
-              },
-              {
-                "title": "Mide errores y utilidad",
-                "detail": "Comprueba cuánto trabajo ahorra, cuánto tiempo exige revisar y qué riesgos aparecieron."
-              },
-              {
-                "title": "Decide ampliar, corregir o parar",
-                "detail": "Documenta las decisiones y vuelve a revisar cuando cambien modelo, proveedor o proceso."
+                "title": "Consulta si hay dudas",
+                "detail": "Si el uso afecta información sensible, obligaciones contractuales o personas, detén la tarea hasta que la persona responsable confirme qué está permitido."
               }
             ]
           }
         ]
       },
       {
-        "heading": "Qué cambia en una empresa con varias áreas",
+        "heading": "Asigna quién prepara, revisa y aprueba",
         "paragraphs": [
-          "Cada área puede tener usos y riesgos distintos. Comunicación puede preparar borradores; recursos humanos puede manejar información sensible; soporte puede responder consultas específicas.",
-          "Las reglas comunes deberían explicar quién solicita un uso, quién lo aprueba, qué datos se permiten y cómo informar un fallo. El acceso de una persona a un sistema no implica autorización para copiar esos datos a una IA externa.",
-          "Una empresa que trabaja en varios países debe revisar normas y contratos relevantes. No existe una política única que cumpla por sí sola todos los requisitos."
+          "En un equipo pequeño, una misma persona puede cumplir varios papeles. Lo importante es que no quede implícito quién responde por el resultado ni quién puede autorizar una acción."
+        ],
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Quien solicita el trabajo describe la tarea, el resultado esperado y los datos permitidos.",
+              "Quien administra la herramienta configura los accesos y mantiene las instrucciones aprobadas.",
+              "Quien revisa contrasta nombres, fechas, cifras, condiciones y posibles errores antes de utilizar el resultado.",
+              "Quien tiene autoridad para comprometer al negocio aprueba precios, ofertas, mensajes sensibles o cambios importantes.",
+              "Todo el equipo sabe a quién avisar si detecta una respuesta incorrecta o una exposición de información."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Ejemplo hipotético: un equipo prepara respuestas frecuentes",
+        "paragraphs": [
+          "Este caso es inventado. Ilustra cómo unas reglas internas pueden limitar errores antes de que una respuesta llegue a una persona cliente."
+        ],
+        "blocks": [
+          {
+            "type": "example",
+            "title": "El asistente propone un descuento no aprobado",
+            "hypothetical": true,
+            "context": "Un negocio quiere preparar respuestas para preguntas habituales sobre horarios, servicios y disponibilidad.",
+            "problem": "El borrador generado menciona un descuento y una fecha de entrega que no aparecen en la información aprobada.",
+            "approach": "El equipo permite preparar borradores con una lista de datos públicos revisados, pero exige aprobación humana para precios, plazos y compromisos.",
+            "actions": [
+              "Reunir preguntas frecuentes sin copiar conversaciones privadas reales.",
+              "Marcar qué información está aprobada y qué debe quedar sin responder si no se conoce.",
+              "Probar preguntas ambiguas y comprobar que la herramienta no invente precios ni disponibilidad.",
+              "Nombrar a quien revisa el texto y autoriza su envío."
+            ],
+            "lesson": "La IA puede ayudar a redactar, pero las reglas de la organización y la aprobación de una persona determinan qué se comunica en nombre del negocio."
+          }
+        ]
+      },
+      {
+        "heading": "Qué hacer cuando aparece un error",
+        "paragraphs": [
+          "Un proceso responsable necesita una salida clara. Si aparece un dato inventado, una respuesta inadecuada o información que no debía compartirse, no sigas usando el mismo flujo como si nada hubiera ocurrido."
+        ],
+        "blocks": [
+          {
+            "type": "steps",
+            "label": "Respuesta inicial ante un problema",
+            "items": [
+              {
+                "title": "Detén la acción afectada",
+                "detail": "Pausa el envío o la automatización relacionada hasta comprender el alcance del error."
+              },
+              {
+                "title": "Informa al responsable",
+                "detail": "Describe qué ocurrió, qué herramienta intervino y qué información pudo verse afectada, sin difundirla más."
+              },
+              {
+                "title": "Corrige y comprueba",
+                "detail": "Verifica la información con una fuente autorizada y corrige el mensaje o el registro donde corresponda."
+              },
+              {
+                "title": "Ajusta las reglas",
+                "detail": "Documenta qué control faltó y decide si el flujo puede retomarse, necesita cambios o debe permanecer detenido."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Qué decisiones necesitan una evaluación especial",
+        "paragraphs": [
+          "No delegues sin controles decisiones con consecuencias importantes para personas, dinero, privacidad, seguridad o compromisos de la empresa. El riesgo depende de la tarea, los datos, el proveedor y el contexto."
         ],
         "blocks": [
           {
             "type": "callout",
             "tone": "caution",
-            "title": "Hay decisiones que no conviene automatizar sin control",
-            "text": "No delegues automáticamente decisiones de empleo, salud, crédito, datos sensibles ni acciones irreversibles en un texto generado. Evalúa requisitos específicos y mantén responsables claros."
-          }
-        ]
-      },
-      {
-        "heading": "Cómo saber si de verdad ayuda",
-        "paragraphs": [
-          "Observa el tiempo total, incluyendo revisión y correcciones. Si el equipo tarda más en corregir lo generado o los errores son peligrosos, quizá ese uso todavía no conviene.",
-          "Asegúrate de que cualquier persona afectada tenga un canal de atención o corrección apropiado."
-        ],
-        "blocks": [
+            "title": "No conviertas una sugerencia en una decisión automática",
+            "text": "Las decisiones sobre empleo, salud, crédito, datos sensibles o acciones difíciles de revertir requieren evaluación específica y responsables claros. Las obligaciones pueden variar por país y sector."
+          },
           {
             "type": "summary",
             "items": [
-              "Permite a la IA una tarea concreta con datos autorizados.",
-              "Nombra un responsable que revise hechos y límites.",
-              "Vuelve a evaluar el riesgo después de cada cambio importante."
+              "Define los usos permitidos antes de activar una herramienta.",
+              "Limita los datos y asigna quién revisa y quién aprueba.",
+              "Detén el flujo cuando aparezca un error o una situación fuera de las reglas."
             ]
           }
         ]
@@ -764,16 +786,16 @@ export const learnManagement03Articles: LearnArticle[] = [
             "type": "faq",
             "items": [
               {
-                "question": "¿Puedo usar IA gratuita para datos de clientes?",
-                "answer": "No asumas que es apropiado. Revisa el proveedor, las políticas de datos y la autorización; evita compartir información personal innecesaria."
+                "question": "¿Puede cada persona elegir cualquier herramienta de IA?",
+                "answer": "No conviene asumirlo. La organización debe indicar qué servicios están permitidos, qué información se puede compartir y a quién consultar ante una duda."
               },
               {
-                "question": "¿La IA puede responder sola a todo?",
-                "answer": "No es recomendable sin evaluar cada caso. Separa información simple confirmada de compromisos y situaciones que necesitan juicio humano."
+                "question": "¿Toda respuesta de IA necesita revisión?",
+                "answer": "La revisión depende de la tarea y sus consecuencias. Para un uso de bajo riesgo puede bastar una comprobación sencilla; los precios, compromisos, datos sensibles o decisiones importantes necesitan controles más estrictos."
               },
               {
-                "question": "¿Quién responde si la IA se equivoca?",
-                "answer": "La organización debe definir responsables y vías de corrección; una herramienta no reemplaza deberes legales ni contractuales."
+                "question": "¿Esta guía sustituye una política legal o de seguridad?",
+                "answer": "No. Es un punto de partida educativo. Las obligaciones concretas dependen de la actividad, el proveedor, los contratos y la jurisdicción."
               }
             ]
           }
@@ -782,27 +804,43 @@ export const learnManagement03Articles: LearnArticle[] = [
       {
         "heading": "Fuentes y contexto",
         "paragraphs": [
-          "NIST ofrece marcos voluntarios para identificar y gestionar riesgos de IA. No equivale a aprobación de un producto concreto."
+          "NIST ofrece marcos voluntarios para identificar y gestionar riesgos de IA. Son herramientas de trabajo, no certificaciones ni garantías de seguridad."
         ],
         "blocks": [
           {
             "type": "sources",
             "items": [
               {
-                "label": "NIST — Marco de gestión de riesgos de inteligencia artificial",
+                "label": "NIST — AI Risk Management Framework",
                 "url": "https://www.nist.gov/itl/ai-risk-management-framework",
-                "scope": "Marco voluntario para reconocer, evaluar y gestionar riesgos de IA. No es una certificación ni garantiza que una herramienta sea segura."
+                "scope": "Marco voluntario para identificar, evaluar y gestionar riesgos de sistemas de IA; no aprueba un producto específico."
               },
               {
-                "label": "NIST — Perfil para inteligencia artificial generativa",
+                "label": "NIST — Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile",
                 "url": "https://doi.org/10.6028/NIST.AI.600-1",
-                "scope": "Amplía riesgos específicos de IA generativa, como contenido incorrecto, privacidad y supervisión humana."
+                "scope": "Describe riesgos asociados a IA generativa, incluidos contenido incorrecto, privacidad, supervisión y uso en organizaciones."
               },
               {
-                "label": "W3C — Consejos para escribir contenido fácil de comprender",
+                "label": "W3C WAI — Writing for Web Accessibility",
                 "url": "https://www.w3.org/WAI/tips/writing/",
-                "scope": "Sugerencias para usar palabras sencillas, títulos claros y explicaciones comprensibles."
+                "scope": "Recomienda instrucciones claras y contenido fácil de comprender; se incluye como criterio de comunicación, no como norma de gobierno de IA."
               }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Qué hacer antes de ampliar el uso",
+        "paragraphs": [
+          "Escribe una regla de una página para la primera tarea: qué se permite, qué datos pueden utilizarse, quién revisa y cómo detener el proceso. Vuelve a revisarla cuando cambien el proveedor, la tarea o el riesgo."
+        ],
+        "blocks": [
+          {
+            "type": "summary",
+            "items": [
+              "Una tarea concreta es más fácil de controlar que un permiso general para usar IA.",
+              "Los datos y los responsables deben estar definidos antes de empezar.",
+              "Los errores deben poder detenerse, corregirse y aprenderse sin ocultarlos."
             ]
           }
         ]

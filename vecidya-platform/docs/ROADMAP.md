@@ -1,5 +1,12 @@
 ## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
 
+## APRENDE-EDITORIAL-04B — revisión semántica de las 46 guías
+
+**Implementado en la rama del PR #121; CI se verifica en Actions del HEAD actual y la aceptación editorial sigue pendiente.** Se registran los dictámenes por guía en docs/APRENDE_EDITORIAL_AUDIT_04B.md. El trabajo reduce solapamientos en CRM, preparación publicitaria, mantenimiento de presencia y DNS; diferencia la política de IA empresarial de la prueba de asistentes; personaliza encabezados de trece guías introductorias y añade una relación hacia el artículo de presupuesto.
+
+Gate de salida: catálogo de 46 slugs únicos y nueve itinerarios intactos; ejemplos estructurados, enlaces y fuentes válidos; estados editoriales conservados; suites de Aprende y regresión principal PASS sobre el SHA actual. No fusionar ni desplegar como parte de este checkpoint.
+
+
 **Objetivo:** adaptar las referencias premium entregadas por el usuario a una experiencia coherente de Vecidya, preservando contenido, datos, permisos, funcionamiento móvil y límites comerciales. Las referencias guían composición e interacción; no se copian marcas, textos, layouts exactos ni assets. Este trabajo no incluye publicación ni despliegue.
 
 **Principios:** usar la identidad y componentes vigentes antes de añadir variantes; diferenciar la expresividad de la web pública de la claridad operativa de Mi Vecidya y Admin; mostrar solo datos y capacidades comprobables; WCAG 2.2 AA, teclado, foco visible, objetivos táctiles, zoom y `prefers-reduced-motion`; no incorporar WebGL donde perjudique carga o accesibilidad.
@@ -41,6 +48,14 @@
 **Checkpoint UX-PREMIUM-02F — catálogo de complementos (2026-10-24, rama `feat/app-mini-ux-05-addons`):** `/addons` adelanta la advertencia de coste variable al encabezado, da prioridad visual a cada ficha detallada con consulta secundaria y alinea las acciones de las siete ofertas; conserva destinos y contenido comercial. Typecheck/build/diff-check PASS; Worker local confirmó HTTP 200 en el índice y siete fichas hijas, más revisión visual de escritorio. Sin revisión responsive móvil certificada, auditoría de accesibilidad, deploy o HTTP público fechado. Las demás fases/páginas de 2–6 siguen pendientes.
 
 **Checkpoint UX-PREMIUM-06A — accesibilidad pública (2026-10-24, rama `feat/app-mini-ux-06-public-a11y`):** una muestra de 13 rutas públicas pasó 94 reglas AccessLint por URL, sin reglas omitidas y con cero violaciones en los escaneos finales tras corregir landmarks, contraste, nombres accesibles y acceso por teclado al comparador. Se verificaron menús desktop/móvil, foco y tabla desplazable en Worker local; typecheck/build/diff-check PASS. No es certificación WCAG ni auditoría completa: quedan lector de pantalla, zoom real al 200 %, sitemap/robots y otras rutas; no publicado.
+
+### APRENDE-EDITORIAL-04A — alfabetización digital y claridad pedagógica (2026-10-25)
+
+**En implementación en `feat/aprende-editorial-04a`, sin autorización de merge o deploy.** Objetivo: extender Aprende desde educación empresarial hacia alfabetización digital útil para personas y negocios sin diluir las seis categorías existentes. El método editorial queda expresado como **Comprende → Prioriza → Decide**, con dos guías fundacionales nuevas y un noveno itinerario «Usa la tecnología con criterio».
+
+**Gate 04A:** 46 slugs únicos; 9 itinerarios válidos; todas las guías con ejemplo hipotético estructurado y accionable; nuevas fuentes institucionales verificadas; búsqueda de `/aprende` sobre contenido interno; typecheck/build/diff-check y suites focales PASS en el HEAD candidato. Las dos guías nuevas deben permanecer en borrador hasta revisión editorial explícita.
+
+**Siguiente checkpoint 04B, no iniciado:** lectura semántica uno por uno de los 46 artículos para simplificar ejemplos, analogías y términos todavía demasiado técnicos, manteniendo hechos, fuentes, slugs y enlaces. Separar un artículo solo cuando contenga objetivos educativos distintos; no ampliar el catálogo por volumen mientras existan guías pendientes de revisión.
 
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 

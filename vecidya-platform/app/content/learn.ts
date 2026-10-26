@@ -1,6 +1,7 @@
 import { learnBusinessOperationsArticles } from "./learn-business-operations";
 import { learnOperations02Articles } from "./learn-operations-02";
 import { learnManagement03Articles } from "./learn-management-03";
+import { learnDigitalLiteracyArticles } from "./learn-digital-literacy";
 
 export type LearnBlock =
   | { type: "paragraph"; text: string }
@@ -51,163 +52,227 @@ export const learnArticles: LearnArticle[] = [
     slug: "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
     category: "CRM y clientes",
     title: "¿Qué es un CRM y por qué un negocio pequeño puede necesitarlo?",
-    intro: "¿Te ha pasado que prometes responderle a alguien y luego no encuentras su mensaje? Un CRM ayuda a organizar consultas y próximos pasos, pero una lista sencilla puede bastar para empezar.",
-    excerpt: "Descubre cómo recordar pendientes, cuándo basta una tabla y en qué momento tiene sentido usar un CRM.",
-    enPocasPalabras: ["Empieza con una lista sencilla si todavía puedes llevar bien tus consultas.","Anota qué necesita la persona y qué harás después.","Un CRM ayuda cuando coordinar el seguimiento se vuelve difícil."],
+    intro: "Un CRM ayuda a mantener el contexto de las consultas y los próximos pasos. No todos los negocios lo necesitan desde el principio: una lista bien cuidada puede ser suficiente.",
+    excerpt: "Entiende qué hace un CRM, cuándo basta una lista y qué comprobar antes de elegir un sistema para gestionar consultas.",
+    enPocasPalabras: [
+      "Un CRM organiza el contexto de las consultas; no garantiza ventas ni respuestas automáticas.",
+      "Una agenda o una tabla pueden bastar cuando el volumen y la coordinación son sencillos.",
+      "Elige una herramienta solo cuando puedas nombrar el problema que resolverá y cómo conservarás tus datos."
+    ],
     image: "/assets/learn/diagram-crm.svg",
     imageAlt: "Una consulta se registra con contexto y puede continuar, retomarse después o cerrarse, según lo que ocurra",
-    cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no es un CRM ni crea una base de contactos." },
+    relatedSlugs: [
+      "organizar-consultas-mensajes-llamadas-formularios",
+      "como-responder-la-primera-consulta-de-un-cliente",
+      "datos-de-clientes-que-puedes-pedir-y-como-protegerlos"
+    ],
+    cta: {
+      label: "Revisar mi punto de partida digital",
+      to: "/diagnostico",
+      copy: "El Diagnóstico ayuda a revisar capacidades digitales; no es un CRM ni crea una base de contactos."
+    },
     editorialDraft: false,
     sections: [
       {
-        heading: "Qué podrás hacer al terminar",
-        paragraphs: ["Identificarás qué información mínima necesitas para seguir una consulta, distinguirás entre una lista sencilla y un CRM, y podrás elegir una primera mejora sin comprar una herramienta por impulso."],
-        blocks: [{ type: "steps", label: "Ejercicio de dos minutos", items: [
-          { title: "Recuerda una consulta pendiente", detail: "Sin escribir datos personales, piensa qué información te faltó para responderla." },
-          { title: "Formula la próxima acción", detail: "Completa mentalmente: «La persona necesita…, el siguiente paso es… y lo revisará…»." },
-          { title: "Elige el soporte más sencillo", detail: "Decide si una lista controlada basta o si necesitas coordinar a varias personas y canales." },
-        ] }],
-      },
-      {
         heading: "Qué significa CRM en el trabajo diario",
         paragraphs: [
-          "CRM viene de customer relationship management, que suele traducirse como gestión de las relaciones con clientes. Describe tanto una manera de organizar la relación con las personas como las herramientas que ayudan a llevarla a la práctica.",
-          "En un negocio pequeño, el propósito básico no es acumular datos ni automatizar cada conversación. Es poder recuperar el contexto: quién se comunicó, qué estaba buscando, qué se respondió y qué acción acordaron. Una agenda, una tabla o un software pueden servir; importa que el método sea comprensible y se mantenga actualizado.",
+          "CRM son las siglas en inglés de gestión de las relaciones con clientes. En la práctica, describe una forma de organizar el contexto de una relación: quién se comunicó, qué necesitaba, qué se respondió y qué paso quedó acordado.",
+          "También se llama CRM al software que ayuda a llevar ese trabajo. Una agenda o una tabla pueden cumplir parte de la función; un sistema especializado ofrece más opciones, pero también exige configuración, mantenimiento y cuidado de los datos."
         ],
-        blocks: [{ type: "callout", tone: "tip", title: "La herramienta no es el proceso", text: "Un CRM no responde por el negocio ni garantiza una venta. Ayuda a registrar y coordinar tareas que las personas responsables todavía deben definir y realizar." }],
+        blocks: [
+          {
+            type: "callout",
+            tone: "tip",
+            title: "El programa no sustituye el proceso",
+            text: "Un CRM no decide qué ofrecer, no garantiza una venta y no resuelve por sí solo las consultas. Ayuda a que las personas responsables encuentren el contexto y recuerden el siguiente paso."
+          }
+        ]
       },
       {
         heading: "Contacto, consulta/interesado, oportunidad y cliente",
-        paragraphs: ["Usar palabras distintas para momentos distintos evita tratar a toda persona como si estuviera lista para comprar. No todas las consultas se convierten en una oportunidad y no toda oportunidad termina en cliente."],
-        blocks: [{ type: "definitions", items: [
-          { term: "Contacto", definition: "Una persona o entidad con la que el negocio tiene o podría tener comunicación. Guardar un contacto no significa que haya solicitado una oferta." },
-          { term: "Consulta/interesado", definition: "Un contacto que manifestó interés al enviar una pregunta o solicitud concreta, por ejemplo mediante una llamada, un mensaje o un formulario. Requiere una respuesta, pero todavía no es necesariamente una oportunidad ni un cliente." },
-          { term: "Oportunidad", definition: "Una posibilidad de trabajo o compra que merece un siguiente paso acordado. Es un estado de seguimiento, no una venta segura." },
-          { term: "Cliente", definition: "Una persona o entidad que ya contrató, compró o recibió el servicio, según cómo el negocio defina esa relación." },
-        ] }],
+        paragraphs: [
+          "Distinguir estos momentos ayuda a no tratar a toda persona como si ya quisiera comprar. Las definiciones pueden variar entre negocios, así que acuerda qué significa cada estado antes de registrar información."
+        ],
+        blocks: [
+          {
+            type: "definitions",
+            items: [
+              {
+                term: "Contacto",
+                definition: "Persona o entidad con la que el negocio puede comunicarse. Guardar un contacto no significa que haya pedido información comercial."
+              },
+              {
+                term: "Consulta/interesado",
+                definition: "Pregunta o solicitud concreta que requiere una respuesta, por ejemplo por teléfono, mensaje o formulario."
+              },
+              {
+                term: "Oportunidad",
+                definition: "Posibilidad de trabajo o compra que tiene un siguiente paso razonable. No es una venta asegurada."
+              },
+              {
+                term: "Cliente",
+                definition: "Persona o entidad que ya compró, contrató o recibió un servicio, según el criterio del negocio."
+              }
+            ]
+          }
+        ]
       },
       {
-        heading: "Qué información conviene organizar",
-        paragraphs: ["Empieza por los datos que ayudan a responder o cumplir un acuerdo. Si un campo no sirve para una tarea concreta, probablemente no haga falta pedirlo ni guardarlo."],
-        blocks: [{ type: "list", items: [
-          "Nombre o identificador suficiente para reconocer la conversación.",
-          "Canal y dato de contacto que la persona proporcionó para esa comunicación.",
-          "Motivo de la consulta, expresado con notas breves y objetivas.",
-          "Estado actual y último contacto relevante, con fecha cuando sea útil.",
-          "Siguiente acción concreta, responsable y fecha acordada si corresponde.",
-        ] }, { type: "callout", tone: "caution", title: "Guarda lo necesario, no todo lo posible", text: "Evita registrar información sensible, opiniones subjetivas o detalles personales que no hagan falta para atender la solicitud. Limita quién puede ver los registros." }],
+        heading: "Cuándo basta una lista sencilla",
+        paragraphs: [
+          "No hay un número universal de contactos a partir del cual sea obligatorio usar un CRM. Si una persona puede encontrar el historial, revisar los pendientes y cumplir los acuerdos sin duplicar registros, quizá no necesite cambiar de herramienta."
+        ],
+        blocks: [
+          {
+            type: "list",
+            items: [
+              "Las consultas caben en una lista breve y protegida.",
+              "Está claro quién responde y cuál es el siguiente paso.",
+              "No se pierden mensajes entre canales ni se registran varias veces.",
+              "La revisión manual se puede mantener sin interrumpir el trabajo principal."
+            ]
+          }
+        ]
       },
       {
-        heading: "Cuándo basta una agenda o una hoja de cálculo",
-        paragraphs: ["Una herramienta sencilla puede ser suficiente si una sola persona gestiona pocas consultas, puede encontrar el contexto con facilidad y recuerda revisar los próximos pasos. No hay un número universal de contactos a partir del cual sea obligatorio adoptar un CRM."],
-        blocks: [{ type: "list", items: [
-          "La información cabe en una lista pequeña con acceso controlado.",
-          "No se duplican registros ni se pierden conversaciones entre canales.",
-          "Cada pendiente tiene una próxima acción comprensible.",
-          "La revisión manual es breve y no interrumpe otras tareas importantes.",
-        ] }, { type: "callout", tone: "tip", title: "Empieza por el problema observable", text: "Si una agenda compartida ya permite saber qué falta hacer, puedes mejorar primero ese hábito. Cambiar de herramienta sin acordar un proceso solo traslada el desorden." }],
+        heading: "Señales de que un CRM puede ayudar",
+        paragraphs: [
+          "Considera un sistema especializado cuando el método actual ya no permite coordinar el trabajo. La decisión debe responder a una dificultad que ocurre de verdad, no a la idea de que toda empresa necesita el mismo programa."
+        ],
+        blocks: [
+          {
+            type: "list",
+            items: [
+              "Varias personas atienden las mismas consultas y necesitan ver el historial autorizado.",
+              "El contexto queda repartido entre mensajes, archivos y cuadernos.",
+              "Los pendientes se olvidan porque no tienen responsable o próxima acción.",
+              "El equipo no puede saber con facilidad qué conversaciones siguen abiertas."
+            ]
+          }
+        ]
       },
       {
-        heading: "Cuándo puede justificarse un CRM",
-        paragraphs: ["Considera una herramienta especializada cuando el método actual ya no permite mantener el contexto o coordinar el trabajo. La decisión debe responder a un problema frecuente, no a la idea de que todo negocio necesita el mismo software."],
-        blocks: [{ type: "list", items: [
-          "Varias personas responden las mismas consultas y necesitan compartir el historial.",
-          "Hay que volver a buscar información en mensajes, cuadernos y archivos distintos.",
-          "Se acumulan pendientes porque no está claro quién hace el siguiente contacto.",
-          "El volumen o la complejidad hacen difícil revisar manualmente qué conversaciones siguen abiertas.",
-        ] }, { type: "paragraph", text: "Antes de elegir, comprueba el coste total, facilidad de uso, exportación y eliminación de datos, permisos, soporte, integraciones que realmente necesitas y cómo saldrías de la herramienta si deja de servirte." }],
+        heading: "Ejemplo hipotético: un taller de bicicletas pierde el hilo",
+        paragraphs: [
+          "Este escenario es inventado y sirve para comparar una lista sencilla con una herramienta especializada."
+        ],
+        blocks: [
+          {
+            type: "example",
+            title: "Una reparación queda esperando una pieza",
+            hypothetical: true,
+            context: "La persona que atiende un taller recibe preguntas por teléfono y mensajería mientras repara bicicletas.",
+            problem: "Al final del día no recuerda quién pidió una reparación, qué pieza falta o a quién prometió responder.",
+            approach: "El taller prueba una lista protegida donde cada consulta tiene un estado y un próximo paso, antes de contratar otro programa.",
+            actions: [
+              "Anotar el motivo de la consulta y el canal que la persona utilizó para comunicarse.",
+              "Escribir la acción pendiente, por ejemplo avisar cuando llegue la pieza.",
+              "Asignar a alguien para revisar el pendiente y actualizarlo cuando se resuelva.",
+              "Comprobar durante una semana si la lista evita olvidos y se puede mantener."
+            ],
+            lesson: "La primera mejora es acordar cómo registrar y revisar las consultas. Un CRM se justifica si esa práctica ya no basta para el volumen o la coordinación del taller."
+          }
+        ]
       },
       {
-        heading: "De consulta a próximo paso: un ejemplo hipotético",
-        paragraphs: ["Este escenario es ilustrativo: no describe un cliente real ni atribuye resultados a una herramienta."],
-        blocks: [{ type: "example", title: "Un pequeño taller de bicicletas", hypothetical: true,
-          context: "La persona que atiende el taller recibe consultas por teléfono y mensajería mientras repara bicicletas.",
-          problem: "Al final del día, cuesta recordar quién preguntó por una reparación, qué información se pidió y a quién había que responder cuando llegara una pieza.",
-          approach: "El taller prueba una lista sencilla, disponible solo para quien gestiona las consultas. Cada fila representa una conversación y el equipo acuerda usar pocos estados: nueva, esperando respuesta, pendiente de una pieza y cerrada.",
-          actions: [
-            "Anotar nombre, canal de respuesta, motivo breve de la consulta y fecha de entrada.",
-            "Registrar el último acuerdo y escribir el siguiente paso en forma de acción: por ejemplo, «avisar cuando llegue la pieza».",
-            "Asignar quién lo hará y cuándo revisarlo, si el paso depende de otra persona o de una fecha.",
-            "Al terminar el día, revisar pendientes; al cerrar la conversación, actualizar el estado y conservar solo la información que todavía haga falta.",
-          ],
-          lesson: "La mejora organizativa está en el acuerdo de registrar y revisar los pendientes. Si esa lista se vuelve difícil de mantener o compartir, el taller puede comparar herramientas; no necesita empezar por un CRM complejo.",
-        }],
-      },
-      {
-        heading: "Cómo empezar a organizar las consultas",
-        paragraphs: ["Primero prueba el flujo con un formato sencillo. Así descubrirás qué información utiliza de verdad el equipo antes de configurar campos y automatizaciones."],
-        blocks: [{ type: "steps", label: "Pasos para organizar las consultas", items: [
-          { title: "Define qué conversación vas a registrar", detail: "Por ejemplo, solicitudes de presupuesto que requieren una respuesta posterior. No mezcles de entrada consultas, clientes actuales y comunicaciones que no necesitan seguimiento." },
-          { title: "Elige dónde guardar el registro", detail: "Usa una agenda o tabla compartida con permisos adecuados si resuelve la necesidad. Si no, prueba un CRM que permita organizar contactos, notas y próximas acciones sin funciones innecesarias." },
-          { title: "Acuerda pocos estados", detail: "Usa nombres que el equipo entienda y que indiquen qué hacer, como «nueva», «esperando respuesta» o «cerrada». Define cuándo cambia cada estado." },
-          { title: "Registra la siguiente acción", detail: "Especifica una tarea que alguien pueda completar. «Hacer seguimiento» es ambiguo; «responder con disponibilidad el jueves» deja claro qué falta." },
-          { title: "Revisa y ajusta", detail: "Tras usar el método durante un periodo de prueba, elimina campos que nadie usa y resuelve dónde aparecen duplicados o pendientes sin responsable." },
-        ] }],
-      },
-      {
-        heading: "Una rutina sencilla de seguimiento",
-        paragraphs: ["El seguimiento útil depende de los acuerdos y del contexto de la conversación. No existe una frecuencia universal que sirva para todos los negocios o personas."],
-        blocks: [{ type: "steps", label: "Rutina de revisión de consultas", items: [
-          { title: "Al recibir una consulta", detail: "Registra el motivo y responde o acuerda cuándo volverás con una respuesta." },
-          { title: "Antes de terminar la jornada", detail: "Revisa los pendientes con fecha próxima y asigna dueño a los que no lo tengan." },
-          { title: "Cuando toque retomar", detail: "Lee el contexto antes de escribir. Comparte una respuesta o actualización útil, no un mensaje repetido sin información nueva." },
-          { title: "Si no hay respuesta", detail: "Respeta la preferencia de contacto y las reglas aplicables. Evita insistir indefinidamente; registra el cierre o la pausa según el proceso acordado." },
-          { title: "Al resolver o cerrar", detail: "Actualiza el estado y conserva el historial solo durante el tiempo y para los fines que correspondan." },
-        ] }],
-      },
-      {
-        heading: "Errores frecuentes que conviene evitar",
-        paragraphs: [],
-        blocks: [{ type: "list", items: [
-          "Comprar primero y decidir después qué proceso debería resolver el CRM.",
-          "Crear demasiados estados o campos que nadie mantiene.",
-          "Registrar la misma conversación en varios lugares sin definir cuál es la fuente vigente.",
-          "Dejar pendientes sin responsable, fecha o acción concreta.",
-          "Confundir un registro de interés con consentimiento para publicidad o con una venta probable.",
-          "Automatizar mensajes antes de revisar su contenido, destinatarios, frecuencia y mecanismo para detenerlos.",
-          "Guardar datos personales sin un propósito claro, acceso limitado o una regla de conservación.",
-        ] }],
-      },
-      {
-        heading: "Precauciones al manejar datos personales",
-        paragraphs: ["Un registro con nombre, teléfono, correo, mensajes u otros identificadores puede contener datos personales. Las obligaciones concretas dependen del país, del tipo de dato, del propósito y de la forma en que se trata; esta guía no sustituye asesoría legal."],
-        blocks: [{ type: "list", items: [
-          "Explica y define para qué necesitas cada dato; recoge solo lo pertinente.",
-          "Limita el acceso a quienes necesitan consultar o actualizar los registros.",
-          "Protege las cuentas y dispositivos, y revisa cómo el proveedor almacena, exporta y elimina la información.",
-          "Define cuánto tiempo conservarás cada tipo de registro y cómo eliminarás lo que ya no necesites.",
-          "Revisa las solicitudes de las personas y los requisitos de privacidad y marketing aplicables en tu jurisdicción antes de usar datos para nuevas finalidades.",
-        ] }, { type: "callout", tone: "caution", title: "Revisa las reglas de tu jurisdicción", text: "Las referencias siguientes ofrecen marcos de gestión y orientación publicados en otros contextos regulatorios; no determinan por sí solos las obligaciones legales de tu negocio." }],
+        heading: "Qué revisar antes de elegir",
+        paragraphs: [
+          "Compara herramientas para la misma tarea y con las personas que realmente las usarán. No compres primero y decidas después cómo debería trabajar el equipo."
+        ],
+        blocks: [
+          {
+            type: "steps",
+            label: "Cinco comprobaciones antes de contratar",
+            items: [
+              {
+                title: "Define el problema",
+                detail: "Escribe qué se pierde o retrasa hoy y qué resultado observable quieres mejorar."
+              },
+              {
+                title: "Comprueba quién lo usará",
+                detail: "Revisa cuántas personas necesitan acceder, qué podrán cambiar y quién mantendrá los registros."
+              },
+              {
+                title: "Evalúa el costo completo",
+                detail: "Incluye suscripción, preparación, formación, soporte, cargos por uso y tiempo de mantenimiento."
+              },
+              {
+                title: "Pregunta cómo se manejan los datos",
+                detail: "Revisa permisos, conservación, eliminación, exportación y condiciones del proveedor antes de cargar información real."
+              },
+              {
+                title: "Conserva una salida",
+                detail: "Comprueba cómo recuperarías los datos y continuarías trabajando si cambias de servicio."
+              }
+            ]
+          }
+        ]
       },
       {
         heading: "Preguntas frecuentes",
         paragraphs: [],
-        blocks: [{ type: "faq", items: [
-          { question: "¿Necesito un CRM si trabajo por mi cuenta?", answer: "No necesariamente. Si una agenda o lista simple te permite recuperar el contexto y atender los pendientes, puedes empezar ahí. Reevalúa cuando el método deje de ser confiable o fácil de sostener." },
-          { question: "¿Una hoja de cálculo es un CRM?", answer: "Puede cumplir algunas tareas de organización de contactos y seguimiento, pero no ofrece por sí sola todas las funciones de un sistema especializado. La diferencia práctica es si tu método resuelve el trabajo que realmente tienes." },
-          { question: "¿Un CRM hará el seguimiento automáticamente?", answer: "No por definición. Algunos productos ofrecen tareas o automatizaciones, pero alguien debe diseñarlas, revisar sus condiciones y atender excepciones. La disponibilidad depende del producto y su configuración." },
-          { question: "¿Cómo se guardan mis datos en el CRM de Vecidya?", answer: "Los contactos, conversaciones y demás registros del CRM se guardan en una subcuenta asignada a tu organización, accesible a las personas autorizadas para esa cuenta. Desde allí puedes importar y exportar tus contactos y otros datos. Al finalizar tu licencia, tienes 30 días para copiar o exportar la información que necesites; al vencer ese plazo, se elimina la subcuenta y los datos que contiene. Vecidya no conserva una copia paralela de esos registros ni los comparte con otros clientes." },
-        ] }],
+        blocks: [
+          {
+            type: "faq",
+            items: [
+              {
+                question: "¿Necesito un CRM si trabajo por mi cuenta?",
+                answer: "No necesariamente. Si una lista te permite recuperar el contexto y cumplir los pendientes, empieza por ahí y revisa de nuevo cuando el método deje de ser suficiente."
+              },
+              {
+                question: "¿Una hoja de cálculo puede cumplir la función de un CRM?",
+                answer: "Puede organizar contactos y próximos pasos, aunque no incluya todas las funciones de un sistema especializado. Lo importante es que resuelva el trabajo real y tenga acceso controlado."
+              },
+              {
+                question: "¿Un CRM responde o vende automáticamente?",
+                answer: "No por definición. Algunas herramientas incluyen automatizaciones, pero hay que configurarlas, probarlas y supervisar las excepciones. Ninguna garantiza una venta."
+              },
+              {
+                question: "¿Cómo se guardan mis datos en un CRM?",
+                answer: "Depende del proveedor y de la configuración. Antes de contratar, comprueba quién administra la cuenta, quién puede ver los registros, cuánto tiempo se conservan y cómo puedes exportarlos o pedir su eliminación."
+              }
+            ]
+          }
+        ]
       },
       {
-        heading: "Fuentes y orientación adicional",
-        paragraphs: ["Estas referencias ayudan a profundizar en la gestión del riesgo de privacidad. Sus marcos o normas se aplican en sus propios contextos; consulta la autoridad y legislación correspondiente a tu país."],
-        blocks: [{ type: "sources", items: [
-          { label: "NIST Privacy Framework", url: "https://www.nist.gov/privacy-framework", scope: "Instituto estadounidense NIST. Marco voluntario para identificar y gestionar riesgos de privacidad; no es una ley aplicable a todos los países." },
-          { label: "Advice for small and medium organisations", url: "https://ico.org.uk/for-organisations/advice-for-small-organisations/", scope: "Oficina del Comisionado de Información del Reino Unido (ICO). Orientación para organizaciones pequeñas bajo el contexto regulatorio británico." },
-        ] }],
+        heading: "Fuentes y alcance",
+        paragraphs: [
+          "Estas referencias ayudan a pensar en el riesgo de privacidad. Sus marcos y obligaciones pertenecen a contextos específicos; consulta la autoridad y las reglas aplicables en tu país."
+        ],
+        blocks: [
+          {
+            type: "sources",
+            items: [
+              {
+                label: "NIST Privacy Framework",
+                url: "https://www.nist.gov/privacy-framework",
+                scope: "Marco voluntario para identificar y gestionar riesgos de privacidad; no es una ley aplicable automáticamente a todos los países."
+              },
+              {
+                label: "ICO — Advice for small and medium organisations",
+                url: "https://ico.org.uk/for-organisations/advice-for-small-organisations/",
+                scope: "Orientación de la autoridad británica de protección de datos para organizaciones pequeñas dentro de su contexto regulatorio."
+              }
+            ]
+          }
+        ]
       },
       {
         heading: "Qué puedes hacer ahora",
         paragraphs: [],
-        blocks: [{ type: "summary", items: [
-          "Anota dónde llegan hoy las consultas y qué información necesitas para atenderlas.",
-          "Prueba una lista pequeña con estado, contexto y próximo paso; limita el acceso y los datos recopilados.",
-          "Revisa los pendientes con una frecuencia que el equipo pueda sostener.",
-          "Considera un CRM cuando puedas señalar qué problema de coordinación o seguimiento resolvería.",
-        ] }],
-      },
-    ],
+        blocks: [
+          {
+            type: "summary",
+            items: [
+              "Anota dónde llegan las consultas y qué información necesitas para atenderlas.",
+              "Prueba una lista sencilla con contexto y próxima acción antes de comprar un sistema.",
+              "Compara un CRM cuando puedas explicar qué problema de coordinación resolvería."
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     slug: "como-probar-un-asistente-de-ia-con-supervision-humana",
@@ -277,6 +342,25 @@ export const learnArticles: LearnArticle[] = [
           "Operación: fallos, quejas, costos observados y esfuerzo para mantener actualizada la fuente.",
           "Privacidad: qué datos se ingresaron, si respetaron la regla acordada y si hubo incidentes o accesos indebidos.",
         ] }, { type: "paragraph", text: "Guarda la muestra, el periodo, los criterios y las limitaciones de la prueba. Si no hay evidencia suficiente o los errores superan el límite que fijó el negocio, ajusta o detén el piloto en vez de presentar una mejora como comprobada." }],
+      },
+      {
+        heading: "Ejemplo: probar antes de atender a personas reales",
+        paragraphs: ["Caso hipotético para convertir los límites de una prueba de IA en decisiones fáciles de comprobar."],
+        blocks: [{
+          type: "example",
+          title: "Una academia prueba un asistente para preguntas frecuentes",
+          hypothetical: true,
+          context: "Una academia recibe muchas preguntas sobre horarios, ubicación y cómo solicitar información de los cursos.",
+          problem: "El equipo quiere responder más rápido, pero teme que el asistente invente precios, plazas disponibles o condiciones que cambian según el curso.",
+          approach: "Preparan una fuente corta con información pública revisada y prueban el asistente solo con preguntas de ensayo. Los precios, disponibilidad y decisiones de matrícula siguen en manos del equipo.",
+          actions: [
+            "Escribir diez preguntas frecuentes y sus respuestas confirmadas, con una persona responsable de mantenerlas.",
+            "Añadir preguntas ambiguas y fuera de alcance para comprobar que el asistente reconoce cuándo no sabe responder.",
+            "Revisar cada respuesta de la prueba y registrar los errores antes de permitir cualquier uso con personas reales.",
+            "Detener o reducir el alcance si aparecen respuestas inventadas, datos que no deberían compartirse o errores repetidos.",
+          ],
+          lesson: "Una prueba útil no intenta demostrar que la IA sirve para todo. Comprueba una tarea pequeña, sus límites y la capacidad del equipo para supervisarla.",
+        }],
       },
       { heading: "Resumen para aplicar", paragraphs: ["Usa información revisada y evita compartir datos sensibles.","Comprueba respuestas inventadas y errores con una persona responsable.","Evalúa una prueba pequeña antes de ampliar su uso."] },
       {
@@ -508,6 +592,25 @@ export const learnArticles: LearnArticle[] = [
         ] }],
       },
       {
+        heading: "Ejemplo: una campaña pequeña con una pregunta concreta",
+        paragraphs: ["Caso hipotético. Las cifras y resultados no representan una promesa comercial ni una campaña real."],
+        blocks: [{
+          type: "example",
+          title: "Una librería local quiere promocionar un club de lectura",
+          hypothetical: true,
+          context: "La librería ya publica el horario y recibe consultas por un canal que revisa cada día. Quiere saber si una campaña limitada puede generar solicitudes de información sobre un nuevo club de lectura.",
+          problem: "Si anuncia simplemente «visítanos» y mide solo clics, no sabrá si las personas entendieron la actividad ni si el equipo pudo responder las consultas.",
+          approach: "Define una sola actividad, un periodo y un presupuesto de prueba. El anuncio lleva a una página donde se explican fecha, lugar, condiciones y una forma de preguntar sin prometer cupos que todavía no estén confirmados.",
+          actions: [
+            "Comprobar que la página y el contacto funcionan desde un teléfono antes de activar el anuncio.",
+            "Definir qué contará como señal útil, por ejemplo una consulta sobre el club que el equipo pueda identificar sin recopilar datos innecesarios.",
+            "Registrar el gasto y revisar las consultas atendidas, además de impresiones o clics.",
+            "Pausar la prueba si la información cambia, el canal deja de atenderse o aparecen errores que impiden completar el contacto.",
+          ],
+          lesson: "La campaña sirve para observar una hipótesis limitada. Más clics no demuestran por sí solos ventas, rentabilidad ni que debas aumentar el presupuesto.",
+        }],
+      },
+      {
         heading: "Fuentes oficiales y alcance",
         paragraphs: ["Las fuentes siguientes se consultaron para preparar esta guía. Las recomendaciones editoriales y de organización son prácticas generales; los requisitos de plataforma se identifican como políticas y no deben confundirse con asesoría legal. Las reglas cambian y pueden variar por sector, formato o país: comprueba las versiones vigentes antes de actuar."],
         blocks: [{ type: "sources", items: [
@@ -530,243 +633,449 @@ export const learnArticles: LearnArticle[] = [
   {
     slug: "como-mantener-actualizada-y-confiable-tu-presencia-digital",
     category: "Negocios digitales",
-    title: "Cómo mantener actualizada y confiable tu presencia digital",
-    intro: "Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.",
-    excerpt: "Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.",
-    enPocasPalabras: ["Comprueba que horarios, servicios y contacto coincidan entre canales.","No inventes reseñas ni afirmaciones para ganar confianza.","Revisa accesibilidad, privacidad y seguridad antes de ampliar tu presencia."],
+    title: "Cómo mantener actualizada la información de tu negocio en internet",
+    intro: "Un horario antiguo, un teléfono equivocado o un enlace roto pueden hacer que una persona no consiga contactar contigo. Aprende a mantener correctos los datos que ya publicas antes de abrir más canales.",
+    excerpt: "Una rutina práctica para revisar horarios, servicios, ubicación y contacto en los espacios donde las personas encuentran tu negocio.",
+    enPocasPalabras: [
+      "Revisa primero nombre, horario, ubicación o zona de servicio y contacto.",
+      "Define quién actualiza la información y dónde comprobar cuál es la versión correcta.",
+      "Prueba los enlaces como visitante, desde un teléfono y sin iniciar sesión."
+    ],
     image: "/assets/learn/diagram-presence-digital.svg",
-    imageAlt: "Esquema educativo de servicios y canales digitales",
-    relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
+    imageAlt: "Lista de datos comerciales que se revisan antes de publicar cambios en los canales digitales.",
+    relatedSlugs: [
+      "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+      "perfil-empresa-google-completar-y-mantener-actualizado",
+      "como-pedir-resenas-reales-y-responder-criticas",
+      "como-proteger-cuentas-contrasenas-estafas-negocio"
+    ],
+    cta: {
+      label: "Revisar mi punto de partida",
+      to: "/diagnostico",
+      copy: "Antes de ampliar tus canales, comprueba que la información que ya publicas sea correcta."
+    },
     editorialDraft: false,
-    cta: { label: "Revisar mi situación", to: "/diagnostico", copy: "Comprueba qué necesita tu negocio antes de contratar o publicar." },
     sections: [
-      { heading: "Qué aprenderás", paragraphs: ["Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.", "Ejercicio: elige un canal o servicio que ya utilizas, identifica qué debes comprobar y anota quién se encargará de revisarlo."] },
       {
-        heading: "Mantén los mismos datos en todos los canales",
-        paragraphs: ["Compara los puntos donde el público puede encontrar información: nombre comercial, descripción, servicios disponibles, ubicación o cobertura, horarios, precios o condiciones cuando se publiquen y formas de contacto. La información no tiene que estar redactada palabra por palabra igual, pero sí ser compatible y actual."],
-        blocks: [{ type: "steps", label: "Revisión de coherencia entre canales", items: [
-          { title: "Haz una lista de tus espacios públicos", detail: "Incluye el sitio, el perfil de empresa, las redes sociales, directorios relevantes y enlaces que siguen apareciendo en materiales impresos o mensajes." },
-          { title: "Compara datos que pueden causar una visita o una consulta equivocada", detail: "Revisa nombre, teléfono, enlace, horario, dirección, zona atendida, servicios y condiciones. Corrige primero lo que podría hacer perder una llamada, una cita o un desplazamiento." },
-          { title: "Comprueba que cada afirmación siga vigente", detail: "Quita servicios que ya no se ofrecen, promociones vencidas, precios desactualizados y fotos que ya no representan el lugar o el producto." },
-          { title: "Define cómo se actualizarán los cambios", detail: "Asigna una persona y un procedimiento para modificar los canales cuando cambien horarios, cobertura, personal, servicios o formas de contacto." },
-        ] }],
+        heading: "Qué información debe estar al día",
+        paragraphs: [
+          "No todos los canales tienen que usar exactamente las mismas palabras, pero los datos importantes deben ser compatibles. Si un sitio dice una cosa y una ficha pública dice otra, el visitante no sabe cuál creer."
+        ],
+        blocks: [
+          {
+            type: "list",
+            items: [
+              "Nombre comercial y una descripción clara de lo que haces.",
+              "Horario vigente, incluidas excepciones que ya conozcas.",
+              "Dirección o zona de servicio, según cómo atiendas.",
+              "Teléfono, correo, mensajería y enlaces que realmente utilizas.",
+              "Servicios, productos, precios o condiciones cuando los publiques."
+            ]
+          }
+        ]
       },
       {
-        heading: "Facilita que te encuentren y se comuniquen",
-        paragraphs: ["Una persona debe poder reconocer rápidamente que llegó al negocio correcto, entender si atiende su necesidad y elegir una forma de contacto que funcione. Prueba la ruta completa como visitante, no solo como administrador de la cuenta."],
-        blocks: [{ type: "list", items: [
-          "Usa el nombre público correcto y una descripción concreta, sin llenar perfiles de palabras clave o servicios no prestados.",
-          "Escribe enlaces completos y comprueba que abran el destino correcto, sobre todo el botón de llamada, reserva, mapa, mensaje o solicitud de cotización.",
-          "Revisa los canales desde un teléfono, con la sesión cerrada y una conexión móvil; confirma que el texto se lea y los controles se puedan usar.",
-          "Si recibes consultas por teléfono, mensajería o formulario, confirma que el equipo pueda recibirlas y que alguien sepa quién debe contestar.",
-          "Explica qué sucede después del contacto: qué datos básicos pedirás, quién responderá y si hace falta reservar o acudir al local.",
-        ] }, { type: "callout", tone: "tip", title: "La acción debe describir lo que ocurrirá", text: "Un botón «Solicitar una cotización» debe llevar a un medio que realmente permita pedirla. Evita botones que parecen activos, enlaces rotos y formularios que no confirman el envío." }],
+        heading: "Elige una referencia y una persona responsable",
+        paragraphs: [
+          "La información se mantiene mejor cuando sabes dónde consultar el dato correcto y quién comunica un cambio. No tiene que ser una plataforma compleja: puede ser una ficha interna controlada o una lista breve."
+        ],
+        blocks: [
+          {
+            type: "steps",
+            label: "Un procedimiento sencillo de actualización",
+            items: [
+              {
+                title: "Haz un inventario de los canales activos",
+                detail: "Incluye tu web, perfil de empresa, redes, directorios y enlaces que todavía compartes en tarjetas o mensajes."
+              },
+              {
+                title: "Registra el dato vigente",
+                detail: "Anota el horario, teléfono, dirección o zona de servicio y quién puede confirmar cada cambio."
+              },
+              {
+                title: "Actualiza los canales que mantienes",
+                detail: "Corrige primero los datos que pueden causar una llamada perdida, una visita equivocada o una consulta sin respuesta."
+              },
+              {
+                title: "Comprueba y deja constancia",
+                detail: "Abre cada destino como visitante y registra dónde se hizo el cambio, sobre todo si otra persona debe revisarlo."
+              }
+            ]
+          }
+        ]
       },
       {
-        heading: "Confianza sin reseñas o testimonios inventados",
-        paragraphs: ["La confianza no se construye simulando aprobación. Preséntate con claridad y utiliza únicamente información que puedas respaldar. No escribas reseñas ficticias, no atribuyas frases a clientes que no las dieron ni uses estrellas o cifras sin una fuente verificable."],
-        blocks: [{ type: "list", items: [
-          "Muestra quién presta el servicio y cómo contactar al negocio, dentro de lo que sea pertinente y seguro publicar.",
-          "Explica con precisión qué incluye un servicio, sus condiciones conocidas, límites, cobertura y pasos para solicitarlo.",
-          "Usa fotografías propias, actuales y representativas; pide autorización para publicar imágenes identificables y respeta derechos de terceros.",
-          "Si compartes comentarios o casos reales, confirma que sean auténticos, pertinentes, autorizados y presentados sin alterar su sentido. Identifica patrocinios o incentivos cuando corresponda según la normativa aplicable.",
-          "Atiende dudas y reclamaciones con respeto. No prometas resultados, certificaciones o garantías que no puedas demostrar.",
-          "Si aún no tienes reseñas, no es necesario inventarlas: ofrece información verificable y deja que cada cliente decida si desea compartir su experiencia en los espacios permitidos.",
-        ] }],
+        heading: "Prueba la experiencia como visitante",
+        paragraphs: [
+          "No basta con ver la información en el panel de administración. Recorre la ruta que seguiría una persona que todavía no conoce tu negocio."
+        ],
+        blocks: [
+          {
+            type: "list",
+            items: [
+              "Abre la página desde un teléfono y, cuando sea posible, sin iniciar sesión.",
+              "Pulsa los enlaces de llamada, mensaje, mapa, reserva o solicitud de presupuesto.",
+              "Comprueba que el destino corresponda con el texto del botón y que el formulario confirme el envío.",
+              "Lee el contenido en pantalla pequeña: usa títulos claros, texto legible y enlaces que expliquen adónde llevan.",
+              "Confirma que alguien pueda recibir y atender las consultas que el canal promete aceptar."
+            ]
+          },
+          {
+            type: "callout",
+            tone: "tip",
+            title: "Una comprobación vale más que un botón bonito",
+            text: "Si el botón dice «Solicitar presupuesto», debe permitir enviar una solicitud real. Corrige los destinos rotos y retira los canales que ya no puedes atender."
+          }
+        ]
       },
       {
-        heading: "Accesibilidad, privacidad y seguridad básicas",
-        paragraphs: ["Una presencia útil debe poder consultarse y utilizarse en distintos dispositivos y por personas con distintas necesidades. La lista siguiente recoge comprobaciones iniciales inspiradas en las pautas W3C; no es una auditoría formal ni una certificación WCAG 2.2 AA."],
-        blocks: [{ type: "list", items: [
-          "Comprueba que el texto tenga tamaño legible, contraste suficiente y no dependa solo del color para indicar una acción o estado.",
-          "Usa títulos descriptivos, nombres comprensibles para enlaces y botones, texto alternativo útil para imágenes informativas y subtítulos cuando el video contenga información hablada relevante.",
-          "Prueba teclado y móvil: que los controles puedan enfocarse, no queden tapados y funcionen sin gestos difíciles; evita páginas que obliguen a desplazarse horizontalmente para leer texto normal.",
-          "Publica solo los datos personales necesarios para atender. No expongas documentos internos, listas de clientes, números privados ni información sensible en páginas o imágenes.",
-          "Usa conexiones seguras cuando se envíen datos, protege las cuentas con contraseñas únicas y autenticación disponible, limita permisos y elimina accesos que ya no se necesiten.",
-          "Antes de instalar analítica, píxeles o formularios, identifica qué datos recogen, qué proveedor los procesa, cuánto tiempo se guardan y qué avisos, opciones o base legal requiere tu jurisdicción.",
-        ] }, { type: "callout", tone: "caution", title: "Las reglas legales dependen del caso", text: "Las políticas de anuncios de Google o Meta son reglas de sus plataformas; no sustituyen la legislación sobre privacidad, cookies, accesibilidad, promociones o comunicaciones comerciales de tu país." }],
+        heading: "Ejemplo hipotético: un taller cambia su horario",
+        paragraphs: [
+          "Este escenario es inventado y muestra cómo corregir una diferencia entre canales."
+        ],
+        blocks: [
+          {
+            type: "example",
+            title: "El horario del sábado no coincide",
+            hypothetical: true,
+            context: "Un taller reduce su horario de los sábados. Su web muestra el cambio, pero una ficha pública y una red social conservan el horario anterior.",
+            problem: "Una persona puede desplazarse cuando el taller ya está cerrado y encontrar información diferente según el canal que consulte.",
+            approach: "La persona responsable revisa los canales activos, corrige el horario y comprueba cada destino como visitante.",
+            actions: [
+              "Anotar qué canales siguen recibiendo visitas o consultas.",
+              "Corregir el horario en cada canal activo y revisar si hay publicaciones antiguas que deban actualizarse.",
+              "Probar el teléfono y los enlaces de contacto desde un dispositivo distinto al de administración.",
+              "Guardar una nota de quién hizo el cambio y quién debe revisarlo la próxima vez."
+            ],
+            lesson: "La coherencia depende de una rutina y de responsables claros, no de abrir más perfiles ni confiar en que todos se actualicen solos."
+          }
+        ]
       },
-      { heading: "Lista de comprobación", paragraphs: ["Comprueba que horarios, servicios y contacto coincidan entre canales.","No inventes reseñas ni afirmaciones para ganar confianza.","Revisa accesibilidad, privacidad y seguridad antes de ampliar tu presencia."] },
+      {
+        heading: "Rutina de mantenimiento breve",
+        paragraphs: [
+          "Elige una frecuencia que puedas cumplir y vuelve a revisar los datos cuando ocurra un cambio importante, como un nuevo horario, teléfono, servicio o zona atendida. No existe un calendario universal que sirva para todos los negocios."
+        ],
+        blocks: [
+          {
+            type: "summary",
+            items: [
+              "Revisa los datos esenciales y los enlaces que el público usa para contactarte.",
+              "Actualiza primero los canales activos y retira los que ya no puedes mantener.",
+              "Asigna una persona responsable y comprueba los cambios como visitante."
+            ]
+          }
+        ]
+      },
       {
         heading: "Fuentes y alcance",
-        paragraphs: ["Las fuentes siguientes se consultaron para preparar esta guía. Las recomendaciones editoriales y de organización son prácticas generales; los requisitos de plataforma se identifican como políticas y no deben confundirse con asesoría legal. Las reglas cambian y pueden variar por sector, formato o país: comprueba las versiones vigentes antes de actuar."],
-        blocks: [{ type: "sources", items: [
-          { label: "SEO Starter Guide — Google Search Central", url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide", scope: "Recomendaciones de Google Search sobre contenido útil, rastreo, títulos, enlaces e imágenes. La guía dice explícitamente que no hay una fórmula que garantice el primer puesto ni que toda recomendación aplique a todo sitio." },
-          { label: "Edit your Business Profile — Google Business Profile Help", url: "https://support.google.com/business/answer/3039617", scope: "Ayuda oficial para editar información como nombre, dirección o área de servicio, horarios, teléfono, web, descripción y servicios. Disponibilidad, elegibilidad, verificación y revisión pueden variar." },
-          { label: "WCAG 2.2 Quick Reference — W3C WAI", url: "https://www.w3.org/WAI/WCAG22/quickref/", scope: "Referencia rápida del W3C para consultar criterios WCAG 2.2 y técnicas. Esta guía no ha sido objeto de una evaluación completa y no declara conformidad ni certificación WCAG 2.2 AA." },
-        ] }],
-      },    ],
+        paragraphs: [
+          "Estas fuentes ayudan a mantener información pública útil y comprensible. La guía no es una auditoría técnica ni una evaluación formal de accesibilidad; los requisitos concretos dependen de la actividad y la jurisdicción."
+        ],
+        blocks: [
+          {
+            type: "sources",
+            items: [
+              {
+                label: "Google Business Profile Help — Edit your Business Profile",
+                url: "https://support.google.com/business/answer/3039617",
+                scope: "Ayuda oficial para editar información, horarios, teléfono, web, descripción y servicios. Elegibilidad y disponibilidad pueden variar."
+              },
+              {
+                label: "Google Search Central — SEO Starter Guide",
+                url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
+                scope: "Recomendaciones para que el contenido, los títulos y los enlaces sean comprensibles y útiles; no garantiza posiciones de búsqueda."
+              },
+              {
+                label: "W3C WAI — Writing for Web Accessibility",
+                url: "https://www.w3.org/WAI/tips/writing/",
+                scope: "Consejos para organizar la información, usar títulos claros y escribir instrucciones fáciles de comprender; no certifica la accesibilidad de un sitio."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        heading: "Qué puedes hacer ahora",
+        paragraphs: [],
+        blocks: [
+          {
+            type: "summary",
+            items: [
+              "Haz una lista de tus canales públicos y de los datos que podrían estar desactualizados.",
+              "Corrige nombre, horario, ubicación y contacto antes de ampliar tu presencia.",
+              "Comprueba los enlaces y asigna a alguien la siguiente revisión."
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     slug: "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
     category: "Negocios digitales",
     title: "Antes de hacer publicidad, organiza tu presencia digital",
-    intro: "Antes de pagar anuncios, hazte una pregunta: si alguien llega hoy a tu perfil, ¿entiende qué haces y cómo contactarte? Empieza por ordenar esa información.",
-    excerpt: "Revisa tus datos, canales y contacto antes de decidir si vale la pena invertir en publicidad.",
-    enPocasPalabras: ["Antes de pagar anuncios, explica claramente qué ofreces.","Comprueba horarios, canales y datos en todos tus perfiles.","La publicidad no arregla una página confusa o difícil de contactar."],
+    intro: "Antes de pagar anuncios, comprueba que la oferta se entiende, la información es correcta y puedes atender las consultas que lleguen. Esta guía es una lista de preparación, no un manual para configurar campañas.",
+    excerpt: "Una comprobación breve para decidir si tu negocio está listo para probar publicidad pagada o si conviene corregir algo primero.",
+    enPocasPalabras: [
+      "Define a quién atiendes, qué ofreces y qué acción quieres que haga la persona.",
+      "Comprueba la página de destino, los datos públicos y la forma de contacto desde un teléfono.",
+      "Si no puedes atender las consultas o no sabes qué medir, corrige la base antes de gastar."
+    ],
     image: "/assets/learn/diagram-presence-digital.svg",
-    imageAlt: "Tres canales digitales —sitio web, perfil de empresa y redes sociales— muestran de forma coherente una oferta, una zona de atención y opciones de contacto",
-    cta: { label: "Conocer el Diagnóstico", to: "/diagnostico", copy: "Si quieres ordenar prioridades, el Diagnóstico de presencia digital puede servir como punto de partida; no promete visibilidad, clientes ni resultados comerciales." },
-    relatedSlugs: ["publicidad-digital-como-preparar-una-primera-campana", "como-mantener-actualizada-y-confiable-tu-presencia-digital"],
+    imageAlt: "Lista de preparación que conecta una oferta clara, información correcta, contacto y capacidad de respuesta antes de invertir en anuncios.",
+    relatedSlugs: [
+      "publicidad-digital-como-preparar-una-primera-campana",
+      "como-mantener-actualizada-y-confiable-tu-presencia-digital",
+      "perfil-empresa-google-completar-y-mantener-actualizado",
+      "redes-sociales-o-pagina-web-que-necesita-tu-negocio",
+      "analitica-web-que-medir-en-tu-negocio",
+      "como-responder-la-primera-consulta-de-un-cliente",
+      "como-pedir-resenas-reales-y-responder-criticas"
+    ],
+    cta: {
+      label: "Revisar mi punto de partida",
+      to: "/diagnostico",
+      copy: "Usa esta lista para identificar qué necesitas corregir antes de invertir en anuncios."
+    },
+    editorialDraft: false,
     sections: [
-      { heading: "Guía complementaria", paragraphs: ["Para ampliar este tema sin mezclar conceptos, continúa con «Cómo mantener actualizada y confiable tu presencia digital»." ] },
       {
-        heading: "¿Y si necesitas preparar anuncios?",
-        paragraphs: ["La preparación de campañas, presupuestos y medición de publicidad pagada se explica por separado en la guía «Publicidad digital: cuándo anunciarte y cómo preparar una primera campaña». Primero comprueba que tus canales y datos de contacto funcionan."],
-      },
-      {
-        heading: "Qué aprenderás y cómo practicarlo",
-        paragraphs: ["Al terminar, podrás explicar con tus palabras «Antes de hacer publicidad, organiza tu presencia digital», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
-        blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
-      },
-      {
-        heading: "Qué significa tener presencia digital",
+        heading: "La pregunta antes de pagar",
         paragraphs: [
-          "La presencia digital reúne los lugares y la información mediante los que una persona puede reconocer un negocio, entender qué hace y encontrar cómo comunicarse. Puede incluir un sitio web, un perfil en un directorio o buscador, páginas de redes sociales, mapas, una tienda en línea y contenido que el propio negocio publica.",
-          "No es un único perfil ni una campaña. Es el conjunto de información que controlas o mantienes en distintos canales y la experiencia que encuentra alguien al pasar de uno a otro. No tienes que estar en todas las plataformas: el punto de partida depende de cómo compran, consultan o reciben atención tus clientes y de quién podrá mantener cada canal actualizado.",
+          "La publicidad puede dar más visibilidad a una oferta, pero también puede amplificar una información confusa o un proceso de contacto que no funciona. Antes de pagar, describe qué quieres conseguir y qué debería hacer la persona después de ver el anuncio.",
+          "No necesitas dominar todas las plataformas para tomar esta decisión. Necesitas saber qué ofreces, a quién puedes atender, en qué zona y cómo responderás si alguien muestra interés."
         ],
-        blocks: [{ type: "definitions", items: [
-          { term: "Presencia digital", definition: "Los canales, datos y contenidos donde el negocio se presenta y ofrece formas de conocerlo o contactarlo." },
-          { term: "Visibilidad", definition: "La posibilidad de que una persona encuentre o vea información del negocio en un canal, búsqueda, recomendación o contenido. Depende de muchos factores; estar presente no asegura aparecer en un lugar específico." },
-          { term: "Reputación", definition: "Las impresiones y señales que otras personas forman a partir de su experiencia, información disponible y comunicación del negocio. No se puede fabricar con testimonios o reseñas inventados." },
-          { term: "Publicidad", definition: "Distribución pagada de un mensaje a través de una plataforma o medio, con presupuesto, segmentación y configuración determinados." },
-        ] }, { type: "callout", tone: "tip", title: "Son conceptos relacionados, no equivalentes", text: "Abrir un perfil crea un punto de presencia, no garantiza visibilidad. Tener alcance no demuestra confianza. Una campaña compra distribución según su configuración, no una venta ni una posición orgánica." }],
+        blocks: [
+          {
+            type: "definitions",
+            items: [
+              {
+                term: "Objetivo",
+                definition: "El resultado que quieres observar, por ejemplo recibir solicitudes de presupuesto o consultas sobre un servicio concreto."
+              },
+              {
+                term: "Oferta",
+                definition: "El producto o servicio que propones, con sus condiciones reales y los límites que el negocio puede cumplir."
+              },
+              {
+                term: "Página de destino",
+                definition: "El sitio al que llega una persona después de pulsar un anuncio. Debe explicar la oferta y permitir la acción prometida."
+              },
+              {
+                term: "Capacidad de respuesta",
+                definition: "El tiempo, las personas y el proceso disponibles para atender las consultas sin prometer más de lo que puedes cumplir."
+              }
+            ]
+          }
+        ]
       },
       {
-        heading: "Antes de elegir canales: define tu negocio con claridad",
-        paragraphs: ["Primero describe la actividad en palabras que una persona ajena al negocio pueda entender. Esa definición ayuda a mantener coherencia en el sitio, los perfiles y cualquier anuncio, y permite detectar promesas que el negocio no puede cumplir."],
-        blocks: [{ type: "steps", label: "Cuatro decisiones para aclarar tu oferta", items: [
-          { title: "Qué ofreces", detail: "Nombra productos o servicios concretos, qué incluyen y qué no. Separa lo disponible ahora de lo que podrías ofrecer más adelante. Si el precio depende de una evaluación, explica cómo pedirla sin publicar una tarifa ficticia." },
-          { title: "A quién atiendes", detail: "Describe a las personas o negocios para quienes la oferta es adecuada y qué necesidad resuelve. Evita afirmar que atiendes a todo el mundo si hay límites reales de capacidad, especialidad o elegibilidad." },
-          { title: "Dónde y cómo prestas el servicio", detail: "Indica si atiendes en un local, visitas zonas concretas, haces entregas, trabajas en línea o combinas modalidades. No publiques una dirección de atención si no recibes clientes allí." },
-          { title: "Cuál es el siguiente paso", detail: "Elige una acción realista: llamar, escribir, pedir una cotización, reservar o visitar. Explica qué información conviene compartir y en qué plazo habitual responderá el equipo, solo si puede sostenerlo." },
-        ] }],
+        heading: "Confirma a quién atiendes y qué ofreces",
+        paragraphs: [
+          "Una frase concreta ayuda más que un anuncio que intenta atraer a todo el mundo. Define qué necesidad resuelves, qué tipo de persona puede beneficiarse y en qué zona o condiciones puedes prestar el servicio."
+        ],
+        blocks: [
+          {
+            type: "list",
+            items: [
+              "Explica el servicio o producto con palabras que una persona ajena al negocio pueda entender.",
+              "Define a quién atiendes y qué solicitudes no puedes aceptar.",
+              "Aclara la zona de servicio, los horarios y cualquier condición importante.",
+              "Comprueba que el mensaje coincide con la información pública y con lo que el equipo puede cumplir."
+            ]
+          }
+        ]
       },
       {
-        heading: "Organiza la información comercial básica",
-        paragraphs: ["Reúne una fuente de referencia breve para que quien atiende, actualiza perfiles o prepara una página use los mismos datos. No hace falta redactar un plan de marketing: basta con acordar lo que debe ser correcto antes de publicarlo."],
-        blocks: [{ type: "list", items: [
-          "Nombre público del negocio y una descripción sencilla de su actividad.",
-          "Productos o servicios disponibles, alcance, condiciones relevantes y cómo pedir información adicional.",
-          "Tipo de cliente y necesidad atendida, sin promesas universales ni atributos no comprobados.",
-          "Dirección pública si corresponde, área real de servicio y modalidades de atención.",
-          "Horarios habituales, horarios especiales y fechas en las que el negocio estará cerrado.",
-          "Canales de contacto que sí funcionan, quién los revisa y cuándo suele responder.",
-          "Fotos propias y actuales, con permiso cuando aparezcan personas, propiedades o contenido de terceros.",
-          "Una persona responsable de confirmar cambios y retirar información vencida.",
-        ] }],
+        heading: "Comprueba el recorrido hasta el contacto",
+        paragraphs: [
+          "El anuncio no termina en el clic. La persona necesita entender qué sigue y poder completar la acción desde el dispositivo que utiliza."
+        ],
+        blocks: [
+          {
+            type: "steps",
+            label: "Cinco pruebas antes de invertir",
+            items: [
+              {
+                title: "Abre el destino desde un teléfono",
+                detail: "Comprueba que el contenido carga, se lee sin ampliar continuamente y muestra la oferta principal."
+              },
+              {
+                title: "Prueba la acción principal",
+                detail: "Pulsa llamar, enviar mensaje, pedir presupuesto o solicitar información y confirma que el destino es correcto."
+              },
+              {
+                title: "Comprueba los datos públicos",
+                detail: "Revisa nombre, horarios, zona de servicio, teléfono y enlaces para evitar contradicciones entre canales."
+              },
+              {
+                title: "Verifica la recepción",
+                detail: "Envía una consulta de prueba autorizada y confirma que llega al canal que alguien revisa."
+              },
+              {
+                title: "Anota una referencia inicial",
+                detail: "Registra cómo funciona hoy el proceso y qué dato te ayudaría a saber si la prueba merece continuar."
+              }
+            ]
+          }
+        ]
       },
       {
-        heading: "Qué canales convienen según el negocio",
-        paragraphs: ["Elige pocos canales que correspondan a la forma en que las personas buscan y compran tu oferta. Un negocio de atención por cita puede priorizar información local y reservas; una tienda puede necesitar catálogo, disponibilidad y compra; un servicio a domicilio debe aclarar su cobertura; una actividad de recomendación puede mantener una página social activa. Son ejemplos, no una receta universal."],
-        blocks: [{ type: "list", items: [
-          "Empieza por el lugar que tus clientes usan para informarse o contactarte y que alguien del equipo pueda atender con regularidad.",
-          "Para una operación local, un perfil de empresa en un servicio de mapas o búsqueda puede presentar datos del local o del área atendida si la plataforma y el tipo de actividad son elegibles.",
-          "Una red social tiene sentido cuando el formato ayuda a mostrar productos, procesos, novedades o responder preguntas y el negocio puede mantener esa actividad.",
-          "Un sitio web puede reunir información que controlas —servicios, cobertura, condiciones, preguntas y contacto—, pero no es requisito universal para vender ni reemplaza la atención o una oferta clara.",
-          "Si solo necesitas compartir un horario y un teléfono vigentes, comenzar con un perfil correcto puede ser más proporcionado que encargar un proyecto web completo.",
-        ] }, { type: "callout", tone: "caution", title: "No abras canales que nadie va a mantener", text: "Un perfil desactualizado o un mensaje sin atender puede crear confusión. Es mejor una presencia sencilla y consistente que muchas cuentas activas solo en apariencia." }],
+        heading: "Asegúrate de poder responder",
+        paragraphs: [
+          "Más consultas no siempre son mejores si nadie puede atenderlas. Antes de invertir, acuerda quién revisará los mensajes, en qué horario y qué hará cuando la pregunta no se pueda resolver de inmediato."
+        ],
+        blocks: [
+          {
+            type: "callout",
+            tone: "caution",
+            title: "No anuncies una promesa que no puedes cumplir",
+            text: "Si no hay capacidad para responder, el horario está desactualizado o el servicio no está disponible en la zona anunciada, corrige primero esa barrera."
+          },
+          {
+            type: "list",
+            items: [
+              "Asigna una persona responsable de revisar las consultas.",
+              "Prepara una respuesta inicial honesta y un modo de escalar las preguntas difíciles.",
+              "Define un presupuesto que puedas permitirte probar sin comprometer los gastos esenciales.",
+              "Asegúrate de que el equipo pueda cumplir las condiciones anunciadas."
+            ]
+          }
+        ]
       },
       {
-        heading: "Sitio web, perfil de empresa y redes sociales",
-        paragraphs: ["Cada canal cumple una función distinta; pueden complementarse, pero ninguno es obligatorio para todos los negocios ni garantiza por sí solo que te encuentren."],
-        blocks: [{ type: "definitions", items: [
-          { term: "Sitio web", definition: "Un conjunto de páginas bajo un dominio que el negocio puede organizar para explicar su propuesta, presentar información detallada y facilitar una acción. Requiere mantenimiento, seguridad y actualizaciones; publicar una web no implica posicionamiento ni tráfico." },
-          { term: "Perfil de empresa", definition: "Una ficha administrada dentro de una plataforma —por ejemplo, un servicio de búsqueda o mapas— con datos como nombre, categoría, ubicación o área, horario, teléfono, web y servicios compatibles. Su disponibilidad y campos dependen de las reglas de la plataforma, la elegibilidad y la verificación." },
-          { term: "Red social", definition: "Una cuenta o página dentro de una plataforma social para publicar contenido y comunicarse allí. El negocio depende de las funciones, normas y distribución de esa plataforma y debe revisar sus mensajes y datos con regularidad." },
-        ] }, { type: "paragraph", text: "La página web está bajo mayor control editorial del negocio, aunque depende del proveedor de alojamiento y del mantenimiento. El perfil vive dentro de un servicio ajeno con reglas propias. Las redes facilitan publicar y conversar en su entorno, pero no sustituyen una fuente de información estable. Escoge según el objetivo operativo y la capacidad de mantener cada espacio." }],
+        heading: "Ejemplo hipotético: un taller revisa su preparación",
+        paragraphs: [
+          "Este escenario es inventado y no representa una campaña real ni resultados de ventas."
+        ],
+        blocks: [
+          {
+            type: "example",
+            title: "El taller quiere promocionar reparaciones a domicilio",
+            hypothetical: true,
+            context: "Un taller quiere invertir un presupuesto pequeño para recibir consultas sobre reparaciones a domicilio.",
+            problem: "La información está incompleta y contradice el horario de una ficha pública; además, el enlace de contacto lleva a una cuenta que ya nadie revisa.",
+            approach: "Antes de lanzar la campaña, la persona responsable confirma la zona atendida, corrige los datos y prueba el contacto desde un teléfono.",
+            actions: [
+              "Aclarar qué reparaciones se ofrecen y en qué zona se pueden realizar.",
+              "Corregir el horario y el enlace en los canales activos.",
+              "Comprobar que una consulta de prueba llega al canal correcto.",
+              "Anotar el presupuesto máximo, el objetivo y la fecha para revisar lo ocurrido."
+            ],
+            lesson: "La preparación no garantiza que la campaña funcione; evita gastar en una oferta confusa o en un recorrido que no permite contactar al negocio."
+          }
+        ]
       },
       {
-        heading: "Ejemplo hipotético: un taller local que considera anunciarse",
-        paragraphs: ["Este caso es hipotético. No presenta resultados de ventas, estadísticas ni una configuración real de anuncios."],
-        blocks: [{ type: "example", title: "El taller de bicicletas Rueda Clara", hypothetical: true,
-          context: "El taller publica ocasionalmente en redes sociales, recibe consultas por mensajes y teléfono y está pensando pagar una campaña para atraer más solicitudes de reparación.",
-          problem: "Al revisar los canales, algunas publicaciones dicen que atiende con cita, el perfil antiguo muestra un horario distinto y no queda claro si hace reparaciones a domicilio. Un enlace de contacto abre una cuenta que ya no revisan. Si llegaran más visitas, las personas podrían no saber si el taller les sirve o cómo obtener respuesta.",
-          approach: "Antes de comprar alcance, el equipo reúne la información que puede confirmar, corrige los canales principales y prueba el recorrido de consulta desde un teléfono. No supone que una página web o una campaña sean obligatorias: primero resuelve la contradicción y el contacto fallido.",
-          actions: [
-            "Información mínima: servicios de reparación que realmente acepta, tipos de bicicleta que atiende, si trabaja con cita, dirección del local y si ofrece o no visitas a domicilio.",
-            "Público y zona: definir a quién puede atender y el área práctica que cubre, sin anunciarse en lugares donde no presta servicio.",
-            "Canales: elegir el perfil local y una red social que sí mantienen; valorar una página sencilla solo si necesitan explicar servicios, condiciones o reservas que no caben bien en esos perfiles.",
-            "Actualización: corregir horarios, teléfono, descripción y enlaces en los espacios que usan; retirar o actualizar el perfil viejo y las publicaciones que prometen servicios no confirmados.",
-            "Prueba: abrir cada enlace desde un teléfono sin sesión iniciada, llamar o enviar una consulta de prueba y comprobar quién recibe el mensaje y quién se hace cargo de responder.",
-            "Responsabilidad: acordar una persona y un horario realista para revisar llamadas y mensajes, y qué hará cuando una consulta no corresponda al servicio.",
-            "Decisión: si la información es coherente, la acción de contacto funciona y el taller puede atender solicitudes adicionales, puede considerar una prueba pequeña con objetivo, duración, zona, presupuesto y criterio de pausa definidos. Si todavía hay enlaces rotos o falta capacidad de respuesta, conviene seguir corrigiendo antes de pagar por más visitas.",
-          ],
-          lesson: "El caso no demuestra que los anuncios vayan a generar clientes. Muestra que primero se puede corregir una base operativa, y después decidir con cautela si medir una campaña responde a una necesidad concreta.",
-        }],
+        heading: "Checklist antes de invertir",
+        paragraphs: [
+          "Marca cada punto como listo, necesita corrección o no aplica. No sumes puntos ni conviertas la lista en una puntuación: sirve para detectar barreras, no para certificar que una campaña tendrá éxito."
+        ],
+        blocks: [
+          {
+            type: "list",
+            items: [
+              "¿Está claro a quién atiendes y en qué zona de servicio?",
+              "¿La oferta, las condiciones y los horarios son correctos?",
+              "¿La página de destino explica el servicio y funciona en móvil?",
+              "¿El contacto y el formulario llevan al canal que alguien revisa?",
+              "¿Hay una persona responsable de responder y resolver excepciones?",
+              "¿El presupuesto es limitado y asumible para el negocio?",
+              "¿Tienes un objetivo y una referencia inicial para comparar después?"
+            ]
+          }
+        ]
       },
       {
-        heading: "Cómo se relaciona esta guía con Vecidya",
-        paragraphs: ["Los conceptos anteriores aplican a cualquier negocio. En el producto Vecidya, el Diagnóstico de presencia digital ayuda a revisar información y prioridades; no publica anuncios ni garantiza alcance. MiniWeb organiza en un formato público los datos de perfil disponibles para el negocio, y Vecindario permite explorar perfiles públicos de negocios. Que una función exista en la plataforma no significa que toda licencia incluya el mismo alcance o que un perfil esté publicado: la disponibilidad depende del catálogo vigente, la configuración y los datos que el negocio mantenga."],
-        blocks: [{ type: "list", items: [
-          "Consulta el catálogo de Vecidya para distinguir licencias, capacidades, servicios profesionales y costes de uso; un servicio de web o publicidad puede contratarse de forma independiente según su alcance y condiciones.",
-          "Un diagnóstico puede ayudarte a ordenar preguntas y prioridades, pero no reemplaza la comprobación de la oferta, enlaces, políticas, privacidad o capacidad real de atender.",
-          "Antes de contratar apoyo, acuerda entregables, quién será propietario de cuentas y contenidos, presupuesto de medios, accesos, medición y criterios de cierre.",
-          "Una página, perfil o servicio de presencia digital no garantiza posición en buscadores, nuevos clientes ni ventas.",
-        ] }, { type: "faq", items: [
-          { question: "¿MiniWeb o Vecindario garantizan que me encuentren más personas?", answer: "No. MiniWeb y Vecindario ayudan a presentar información pública del negocio según las capacidades, configuración y datos disponibles. La visibilidad depende también de la plataforma, la consulta, la competencia y otros factores; no se garantizan impresiones, clientes ni ventas." },
-          { question: "¿El Diagnóstico crea o administra mis campañas?", answer: "No. El Diagnóstico de presencia digital ayuda a revisar capacidades y prioridades; no equivale a configurar ni gestionar campañas publicitarias." },
-          { question: "¿Qué licencia necesito para anunciarme?", answer: "La necesidad depende de los servicios y capacidades contratados, no de una regla general de publicidad. Revisa el catálogo vigente y acuerda el alcance del trabajo con quien prestará el servicio." },
-        ] }],
-      },
-      {
-        heading: "Checklist para revisar tu presencia digital",
-        paragraphs: ["Marca cada punto como «listo», «necesita corrección» o «no aplica» según el negocio. No sumes puntos ni conviertas la lista en una puntuación: sirve para ordenar acciones y no sustituye el Diagnóstico oficial de Vecidya."],
-        blocks: [{ type: "list", items: [
-          "□ Nombre e identidad: el nombre público es correcto y las fotos o marcas que usas están autorizadas.",
-          "□ Oferta y público: se entiende qué productos o servicios ofreces, para quién y con qué condiciones principales.",
-          "□ Ubicación o zona de servicio: la dirección se muestra solo si atiendes allí; la cobertura describe zonas que realmente puedes atender.",
-          "□ Horarios: las horas habituales, cambios temporales y cierres están actualizados donde el público consulta.",
-          "□ Contacto: teléfono, mensajería, formulario, reservas y enlaces funcionan desde un teléfono.",
-          "□ Descripción de servicios o productos: está completa, es comprensible y no promete algo no disponible.",
-          "□ Coherencia: nombre, horario, servicio, ubicación, condiciones y enlaces no se contradicen entre plataformas.",
-          "□ Experiencia móvil: el texto se lee, la página abre y la acción principal puede completarse sin pasos inesperados.",
-          "□ Accesibilidad básica: títulos claros, enlaces descriptivos, teclado, contraste y alternativas de imágenes se revisan; esto no acredita conformidad WCAG.",
-          "□ Privacidad y seguridad: publicas solo datos necesarios, proteges cuentas, revisas permisos y conoces qué miden formularios o herramientas instaladas.",
-          "□ Responsable: alguien sabe quién recibe las consultas, cuándo las revisa y qué hacer con una excepción.",
-          "□ Medición proporcional: observas una o pocas acciones útiles sin instalar herramientas o recopilar más datos de los necesarios.",
-        ] }, { type: "callout", tone: "tip", title: "Qué corregir primero", text: "Empieza por bloqueos que podrían desviar o perder a una persona: enlace roto, teléfono incorrecto, horario contradictorio, oferta que no se entiende o consulta que nadie atiende. Después prioriza lo demás según tu objetivo y capacidad." }],
+        heading: "Cuándo conviene esperar",
+        paragraphs: [
+          "No anunciarse todavía también es una decisión válida. Si la oferta cambia cada día, los datos públicos se contradicen, no puedes atender la demanda o no sabes qué pregunta quieres responder con la prueba, invierte primero tiempo en ordenar la base."
+        ],
+        blocks: [
+          {
+            type: "callout",
+            tone: "tip",
+            title: "No todos los negocios necesitan anuncios ahora",
+            text: "Puedes empezar por corregir horarios, explicar mejor un servicio, comprobar un enlace o mejorar la respuesta a consultas. Ningún canal garantiza ventas y ninguna campaña compensa por sí sola un proceso que no funciona."
+          }
+        ]
       },
       {
         heading: "Preguntas frecuentes",
         paragraphs: [],
-        blocks: [{ type: "faq", items: [
-          { question: "¿Necesito una página web para vender?", answer: "No necesariamente. El canal adecuado depende de tu oferta, tus clientes y cómo operas. Un perfil o una forma directa de contacto puede ser suficiente para ciertos negocios; una web es útil cuando necesitas organizar información o acciones que otros canales no cubren bien." },
-          { question: "¿Sin anuncios nadie puede encontrar mi negocio?", answer: "No. Las personas también pueden llegar por búsqueda orgánica, perfiles, recomendaciones, redes, comunidad, señalización y otros medios. Ningún canal garantiza que te encuentren; elige y mantén los que tengan sentido para tu actividad." },
-          { question: "¿La publicidad aumenta las ventas?", answer: "No se puede asegurar. La campaña distribuye un mensaje bajo ciertas condiciones; las ventas dependen de la oferta, el público, el momento, la experiencia, la atención y otros factores. Evalúa con una prueba acotada si tienes una pregunta concreta." },
-          { question: "¿Qué hago si todavía no tengo reseñas?", answer: "No las inventes ni compres testimonios. Presenta información verificable sobre el negocio, usa imágenes propias autorizadas y permite que las experiencias reales se compartan voluntariamente conforme a las políticas y reglas aplicables." },
-          { question: "¿Debo abrir una cuenta en cada red social?", answer: "No. Prioriza los espacios que tu público utiliza y que alguien puede mantener y atender. Revisa también las condiciones y funciones actuales de cada plataforma." },
-          { question: "¿Cuánto debo invertir en una primera campaña?", answer: "No hay una cifra universal. Define el límite según el presupuesto que puedas asumir, el coste total, el periodo, el objetivo y la capacidad para atender la demanda. No uses fondos necesarios para obligaciones esenciales como presupuesto de aprendizaje." },
-          { question: "¿Puedo medir campañas sin instalar analítica?", answer: "A veces sí: puedes registrar consultas recibidas, preguntar de forma neutral cómo conocieron el negocio o usar reportes básicos de la plataforma. Cada método tiene límites; recoge solo lo necesario y revisa requisitos de privacidad antes de instalar herramientas." },
-          { question: "¿Qué diferencia hay entre reglas de anuncios y obligaciones legales?", answer: "Las políticas de Google o Meta condicionan el uso de sus servicios y la revisión de anuncios. Las obligaciones legales dependen de tu país, sector, datos y actividad; cumplir la política de una plataforma no demuestra por sí solo cumplimiento legal." },
-        ] }],
+        blocks: [
+          {
+            type: "faq",
+            items: [
+              {
+                question: "¿Necesito una página web para anunciarme?",
+                answer: "No necesariamente. Necesitas un destino adecuado para la acción prometida. Puede ser una página, un perfil o un formulario, siempre que la información sea correcta y el contacto funcione."
+              },
+              {
+                question: "¿MiniWeb o Vecindario garantizan que me encuentren más personas?",
+                answer: "No. Son partes de la presencia digital de Vecidya; no garantizan visibilidad, consultas ni ventas."
+              },
+              {
+                question: "¿El Diagnóstico crea o administra mis campañas?",
+                answer: "No. El Diagnóstico revisa aspectos de presencia digital y ofrece orientación; no configura ni administra campañas publicitarias."
+              },
+              {
+                question: "¿Cuándo puedo probar una campaña?",
+                answer: "Cuando la oferta y el destino sean claros, puedas atender las consultas y tengas un objetivo, un presupuesto limitado y una forma de revisar los resultados."
+              }
+            ]
+          }
+        ]
       },
       {
-        heading: "Fuentes oficiales y alcance",
-        paragraphs: ["Las fuentes siguientes se consultaron para preparar esta guía. Las recomendaciones editoriales y de organización son prácticas generales; los requisitos de plataforma se identifican como políticas y no deben confundirse con asesoría legal. Las reglas cambian y pueden variar por sector, formato o país: comprueba las versiones vigentes antes de actuar."],
-        blocks: [{ type: "sources", items: [
-          { label: "SEO Starter Guide — Google Search Central", url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide", scope: "Recomendaciones de Google Search sobre contenido útil, rastreo, títulos, enlaces e imágenes. La guía dice explícitamente que no hay una fórmula que garantice el primer puesto ni que toda recomendación aplique a todo sitio." },
-          { label: "Edit your Business Profile — Google Business Profile Help", url: "https://support.google.com/business/answer/3039617", scope: "Ayuda oficial para editar información como nombre, dirección o área de servicio, horarios, teléfono, web, descripción y servicios. Disponibilidad, elegibilidad, verificación y revisión pueden variar." },
-          { label: "Destination requirements — Google Ads Policies", url: "https://support.google.com/adspolicy/answer/6368661", scope: "Política de Google Ads sobre destinos funcionales, accesibles, coherentes y fáciles de usar. Es una condición de la plataforma, no una garantía de aprobación ni un requisito legal universal." },
-          { label: "How to choose the right ad objective in Meta Ads Manager", url: "https://www.facebook.com/business/help/1438417719786914", scope: "Ayuda oficial de Meta que relaciona objetivos de campaña con metas como awareness, tráfico, leads o ventas. Describe opciones de configuración; no certifica el resultado que logrará una campaña." },
-          { label: "About Meta Advertising Standards", url: "https://www.facebook.com/business/help/488043719226449", scope: "Centro de ayuda de Meta para sus estándares publicitarios y políticas relacionadas. Las normas de la plataforma pueden cambiar y no sustituyen el marco legal aplicable." },
-          { label: "WCAG 2.2 Quick Reference — W3C WAI", url: "https://www.w3.org/WAI/WCAG22/quickref/", scope: "Referencia rápida del W3C para consultar criterios WCAG 2.2 y técnicas. Esta guía no ha sido objeto de una evaluación completa y no declara conformidad ni certificación WCAG 2.2 AA." },
-          { label: "Tutorial: Set up a key event — Google Analytics Help", url: "https://support.google.com/analytics/answer/12966437", scope: "Ejemplo técnico oficial de Google para registrar un evento clave en Analytics. Una configuración de medición no prueba por sí misma causalidad comercial; evalúa datos, consentimiento y obligaciones antes de implementarla." },
-          { label: "Privacy controls in Google Analytics — Google Analytics Help", url: "https://support.google.com/analytics/answer/9019185", scope: "Controles específicos del producto para configurar recopilación, retención y funciones publicitarias en Analytics. La página orienta sobre opciones técnicas, no decide qué base legal aplica a tu caso." },
-        ] }],
+        heading: "Fuentes y alcance",
+        paragraphs: [
+          "Estas fuentes sirven para comprobar la información pública, la claridad del destino y la facilidad de comprensión. La preparación descrita aquí es una lista editorial, no una garantía de rendimiento ni una configuración de anuncios."
+        ],
+        blocks: [
+          {
+            type: "sources",
+            items: [
+              {
+                label: "Google Search Central — SEO Starter Guide",
+                url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
+                scope: "Recomendaciones para presentar información y enlaces comprensibles; no garantiza tráfico ni resultados comerciales."
+              },
+              {
+                label: "Google Business Profile Help — Edit your Business Profile",
+                url: "https://support.google.com/business/answer/3039617",
+                scope: "Ayuda oficial para mantener correctos los datos públicos del negocio; elegibilidad y opciones disponibles pueden variar."
+              },
+              {
+                label: "Google Ads Help — Landing page",
+                url: "https://support.google.com/google-ads/answer/14086?hl=en",
+                scope: "Define la página de destino y su relación con la URL final del anuncio; no garantiza la aprobación ni el rendimiento de una campaña."
+              },
+              {
+                label: "W3C WAI — Writing for Web Accessibility",
+                url: "https://www.w3.org/WAI/tips/writing/",
+                scope: "Consejos para estructurar el contenido y escribir instrucciones claras; no certifica la accesibilidad de un sitio."
+              }
+            ]
+          }
+        ]
       },
       {
         heading: "Qué hacer ahora",
         paragraphs: [],
-        blocks: [{ type: "summary", items: [
-          "Escribe en una frase qué ofreces, a quién atiendes y dónde prestas el servicio.",
-          "Actualiza los datos comerciales y el canal principal que ya usas; comprueba sus enlaces desde móvil.",
-          "Corrige primero información contradictoria, contacto roto y consultas sin responsable.",
-          "Elige un indicador proporcional al objetivo y conserva sus límites y periodo de observación.",
-          "Invierte en anuncios solo si hay una hipótesis concreta, un destino listo, capacidad de atender y presupuesto acotado; si no, sigue mejorando la base sin anuncios.",
-        ] }],
-      },
-    ],
+        blocks: [
+          {
+            type: "summary",
+            items: [
+              "Aclara la oferta, el público y la zona antes de elegir una plataforma publicitaria.",
+              "Prueba el destino y el contacto desde un teléfono y confirma quién atenderá las consultas.",
+              "Si la base está lista, prepara una prueba limitada; si no, corrige primero lo que impide atender bien."
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     slug: "como-probar-y-supervisar-automatizaciones-sin-perder-datos",
@@ -839,6 +1148,25 @@ export const learnArticles: LearnArticle[] = [
           "Trabajo total: configuración, revisión, corrección y mantenimiento frente a los pasos manuales que permanecen.",
           "Impacto y coste: incidentes, quejas, uso de proveedores y esfuerzo de quien responde por el flujo.",
         ] }, { type: "paragraph", text: "Define de antemano una persona con permiso para pausar el flujo, cómo avisará al equipo y qué procedimiento manual lo sustituirá. Para revertir efectos, conserva una manera de localizar tareas o registros generados y deshacerlos solo cuando hacerlo sea seguro. Un mensaje enviado o una compra procesada no siempre se puede retirar: en esos casos, prepara una corrección y una respuesta humana." }, { type: "callout", tone: "tip", title: "Pausar también es un resultado válido", text: "Detén la automatización si aparecen errores repetidos, acciones duplicadas, datos expuestos, destinatarios incorrectos o excepciones sin atender. Investiga, corrige y repite las pruebas antes de reactivarla." }],
+      },
+      {
+        heading: "Ejemplo: detectar un recordatorio duplicado antes de automatizar más",
+        paragraphs: ["Caso hipotético para practicar supervisión, reintentos y salida manual."],
+        blocks: [{
+          type: "example",
+          title: "Una consulta genera dos recordatorios",
+          hypothetical: true,
+          context: "Un negocio crea una regla interna para avisar al equipo cuando una solicitud lleva un día sin respuesta.",
+          problem: "Si el sistema reintenta después de un fallo, podría crear dos tareas para la misma consulta y dos personas terminarían trabajando sobre el mismo pendiente.",
+          approach: "Antes de ampliar el flujo, el equipo prueba qué ocurre cuando el mismo evento llega dos veces y define una referencia única para reconocer la consulta ya registrada.",
+          actions: [
+            "Crear casos de ensayo con un evento normal, un evento repetido y un dato incompleto.",
+            "Comprobar que el segundo evento no crea otra tarea cuando ya existe una abierta para la misma referencia.",
+            "Registrar qué ocurrió y permitir que una persona resuelva manualmente los casos dudosos.",
+            "Mantener un interruptor o procedimiento para detener la regla sin perder la lista de pendientes existente.",
+          ],
+          lesson: "Supervisar una automatización significa comprobar también duplicados, errores y recuperación, no solo el caso perfecto.",
+        }],
       },
       { heading: "Resumen para aplicar", paragraphs: ["Prueba los casos normales y los errores antes de activar.","Define quién interviene cuando el proceso falla.","Conserva una forma segura de detener y revisar la automatización."] },
       {
@@ -1113,6 +1441,25 @@ export const learnArticles: LearnArticle[] = [
           { title: "Actualiza responsabilidades", detail: "Deja el acceso bajo control del negocio y proporciona permisos individuales a quienes apoyen el mantenimiento." },
         ] }],
       },
+      {
+        heading: "Ejemplo: cambiar de proveedor sin perder el dominio",
+        paragraphs: ["Caso hipotético. Los pasos exactos dependen del registrador, alojamiento y servicios que utilice cada negocio."],
+        blocks: [{
+          type: "example",
+          title: "Una pastelería descubre que el dominio está en una cuenta antigua",
+          hypothetical: true,
+          context: "La pastelería quiere cambiar el alojamiento de su web. El sitio lo preparó un colaborador hace años y los avisos de renovación del dominio llegan a una cuenta que casi nadie revisa.",
+          problem: "Cancelar el servicio anterior sin saber quién controla el dominio, el DNS y el correo podría dejar fuera de servicio la web o los mensajes del negocio.",
+          approach: "Antes de mover nada, la responsable identifica el registrador, recupera un acceso controlado por el negocio, documenta la zona DNS y separa qué proveedor mantiene cada servicio.",
+          actions: [
+            "Confirmar quién es el registrador, qué cuenta recibe los avisos y cuándo vence el dominio.",
+            "Guardar una copia de los registros DNS e identificar cuáles usa la web y cuáles necesita el correo.",
+            "Preparar y probar el nuevo alojamiento antes de cancelar el anterior.",
+            "Cambiar únicamente los registros necesarios y comprobar web y correo antes de cerrar el servicio viejo.",
+          ],
+          lesson: "Cambiar de proveedor es más seguro cuando primero recuperas el control y entiendes las dependencias. El dominio, la web, el DNS y el correo pueden estar en servicios distintos.",
+        }],
+      },
       { heading: "Resumen para aplicar", paragraphs: ["Comprueba quién administra el dominio y dónde están los accesos.","Compara el costo completo y las condiciones de renovación.","Planifica cualquier cambio con copia y verificación del servicio."] },
       {
         heading: "Fuentes y alcance",
@@ -1132,73 +1479,216 @@ export const learnArticles: LearnArticle[] = [
   },
   {
     slug: "dns-https-y-correo-como-se-conecta-tu-dominio",
-    category: "Negocios digitales",
-    title: "DNS, HTTPS y correo: cómo se conecta tu dominio",
-    intro: "Distingue los registros DNS, el alojamiento, el certificado HTTPS y el correo profesional sin confundir sus funciones.",
-    excerpt: "Distingue los registros DNS, el alojamiento, el certificado HTTPS y el correo profesional sin confundir sus funciones.",
-    enPocasPalabras: ["El DNS ayuda a localizar servicios asociados a un dominio.","HTTPS protege la conexión, pero no garantiza que el negocio sea legítimo.","El correo y la web pueden usar proveedores y configuraciones diferentes."],
+    category: "Tecnología explicada",
+    title: "DNS, web y correo: cómo se conectan",
+    intro: "Tu página puede abrir mientras el correo deja de recibir mensajes. Para entender por qué, conviene distinguir el DNS, el alojamiento web y el servicio de correo antes de cambiar una configuración.",
+    excerpt: "Aprende qué hacen los registros DNS y qué revisar para no interrumpir el correo al conectar o cambiar una web.",
+    enPocasPalabras: [
+      "El DNS dirige las consultas hacia los servicios asociados a un nombre de dominio.",
+      "La web y el correo pueden usar proveedores distintos y registros diferentes.",
+      "Antes de cambiar DNS, conserva los registros actuales y prueba cada servicio por separado."
+    ],
     image: "/assets/learn/diagram-domain-dns-hosting.svg",
-    imageAlt: "Esquema educativo de servicios y canales digitales",
-    relatedSlugs: ["dominio-hosting-sitio-web-como-funcionan"],
+    imageAlt: "Esquema que distingue el dominio, los registros DNS, la web y el correo profesional.",
+    relatedSlugs: [
+      "dominio-hosting-sitio-web-como-funcionan",
+      "como-elegir-y-cambiar-proveedor-de-dominio-y-hosting",
+      "https-certificados-tls-que-protegen-y-que-no",
+      "correo-para-mi-negocio-como-usarlo-sin-perder-mensajes"
+    ],
+    cta: {
+      label: "Revisar mi punto de partida",
+      to: "/diagnostico",
+      copy: "Antes de cambiar servicios, identifica quién administra el dominio, la web y el correo."
+    },
     editorialDraft: false,
-    cta: { label: "Revisar mi situación", to: "/diagnostico", copy: "Comprueba qué necesita tu negocio antes de contratar o publicar." },
     sections: [
-      { heading: "Qué aprenderás", paragraphs: ["Distingue los registros DNS, el alojamiento, el certificado HTTPS y el correo profesional sin confundir sus funciones.", "Ejercicio: elige un canal o servicio que ya utilizas, identifica qué debes comprobar y anota quién se encargará de revisarlo."] },
       {
-        heading: "DNS: cómo se conecta el nombre con el alojamiento",
+        heading: "DNS en palabras sencillas",
         paragraphs: [
-          "La zona DNS de un dominio contiene registros que indican qué resolver o servidor debe responder por cada tipo de consulta. El dominio puede registrarse con una empresa, delegar DNS en otra y alojar el sitio en una tercera. Cambiar una de estas relaciones no mueve automáticamente las otras.",
-          "Cuando un proveedor dice «conecta tu dominio», puede pedir que cambies los servidores de nombres (NS) para que su servicio DNS responda por el dominio, o que conserves los NS actuales y agregues registros específicos. Sigue los valores que indique el proveedor que aloja el sitio; los nombres y pantallas exactos dependen de cada servicio.",
+          "El DNS funciona como un directorio: ayuda a encontrar qué servicio debe responder cuando alguien usa un nombre de dominio. El dominio puede registrarse con una empresa, usar el DNS de otra y alojar la web en una tercera.",
+          "Los registros son instrucciones distintas. No necesitas memorizar todos los nombres, pero sí reconocer cuáles pueden afectar a la web y cuáles al correo antes de cambiar la zona DNS."
         ],
-        blocks: [{ type: "definitions", items: [
-          { term: "A y AAAA", definition: "Registros que asocian un nombre de host con una dirección IPv4 (A) o IPv6 (AAAA), según la configuración indicada por el alojamiento." },
-          { term: "CNAME", definition: "Un alias que hace que un nombre consulte otro nombre, en lugar de guardar directamente una dirección IP. Sus usos permitidos dependen de las reglas de DNS y del proveedor." },
-          { term: "NS", definition: "Indica qué servidores de nombres son autoritativos para una zona DNS. Cambiar los NS delega la administración de los registros a otro servicio DNS; no traslada los archivos del sitio." },
-          { term: "MX", definition: "Indica a qué servidores se debe dirigir el correo entrante para un dominio. Es distinto de los registros que hacen que una página web se cargue." },
-          { term: "TXT", definition: "Permite publicar texto asociado a un nombre. Puede usarse para verificar un servicio o publicar políticas de correo; conserva los valores que tus servicios activos necesitan." },
-        ] }],
+        blocks: [
+          {
+            type: "definitions",
+            items: [
+              {
+                term: "A y AAAA",
+                definition: "Asocian un nombre con una dirección IPv4 (A) o IPv6 (AAAA), según los valores que indique el proveedor."
+              },
+              {
+                term: "CNAME",
+                definition: "Hace que un nombre funcione como alias de otro nombre. Sus usos permitidos dependen de las reglas DNS y del proveedor."
+              },
+              {
+                term: "NS",
+                definition: "Indica qué servidores administran las respuestas DNS de una zona. Cambiar los NS no mueve por sí solo los archivos de la web."
+              },
+              {
+                term: "MX",
+                definition: "Indica a qué servidores se dirige el correo entrante de un dominio."
+              },
+              {
+                term: "TXT",
+                definition: "Permite publicar valores de texto que algunos servicios usan para verificar el dominio o aplicar políticas de correo."
+              }
+            ]
+          }
+        ]
       },
       {
-        heading: "Hosting: dónde funciona la web",
+        heading: "La web y el correo pueden tener proveedores distintos",
         paragraphs: [
-          "El alojamiento web proporciona infraestructura y, según el servicio, herramientas para publicar el sitio. Puede encargarse de parte del mantenimiento del servidor o dejar más tareas a quien lo administra. No hay un paquete universal: revisa qué incluye el plan y qué debes mantener tú.",
-          "Un mismo sitio puede cambiar de alojamiento sin cambiar de dominio. Para que las visitas lleguen al nuevo servidor, normalmente se prepara y prueba el sitio, se configura el nuevo servicio y luego se actualizan los registros DNS correspondientes. El plazo para que la nueva respuesta se vea en todas las redes depende de los TTL, cachés y configuración; no es una garantía de un número fijo de minutos.",
+          "El alojamiento web entrega las páginas y funciones del sitio. El servicio de correo gestiona los buzones y el envío o recepción de mensajes. Contratarlos con la misma empresa no significa que compartan la misma configuración.",
+          "Por eso, cambiar el registro de la web puede dejar el correo funcionando; sustituir toda la zona DNS sin copiar los registros necesarios puede interrumpirlo. Antes de seguir instrucciones de un proveedor, identifica si te pide cambiar los NS o añadir registros concretos."
         ],
-        blocks: [{ type: "list", items: [
-          "Pregunta quién actualiza el software del servidor y qué soporte está incluido.",
-          "Comprueba si hay copias de seguridad, cuánto tiempo se conservan y cómo puedes restaurarlas.",
-          "Aclara cómo exportar los archivos y datos del sitio si cambias de proveedor.",
-          "Verifica si el plan incluye un certificado TLS y si cubre todos los nombres que usarás.",
-        ] }],
+        blocks: [
+          {
+            type: "callout",
+            tone: "caution",
+            title: "No reemplaces la zona DNS a ciegas",
+            text: "Antes de borrar o sustituir registros, guarda una copia y confirma cuáles necesita cada servicio activo. No adivines valores de MX o TXT: usa las instrucciones actuales del proveedor de correo."
+          }
+        ]
       },
       {
-        heading: "HTTPS y el certificado TLS",
+        heading: "Qué revisar antes de cambiar la configuración",
         paragraphs: [
-          "HTTPS es HTTP transportado sobre TLS. TLS protege la comunicación entre el navegador y el servidor: cifra los datos durante el tránsito y permite comprobar que el servidor presenta un certificado válido para el nombre solicitado. El proveedor de alojamiento puede automatizar parte de la emisión y renovación del certificado, o puede pedir configuración adicional.",
-          "Ver HTTPS en la dirección no prueba que la empresa sea legítima, que el contenido sea correcto, que el sitio esté libre de software malicioso ni que una compra sea conveniente. Protege la conexión con el dominio comprobado; no sustituye revisar quién opera el sitio, cómo usa tus datos y qué ofrece.",
+          "Los nombres de las opciones varían según el proveedor, pero puedes seguir una secuencia segura sin conocer todos los detalles internos."
         ],
-        blocks: [{ type: "callout", tone: "tip", title: "Comprueba la dirección completa", text: "Después de publicar, verifica que la variante con https:// carga sin una advertencia del navegador, que los nombres que necesitas —con o sin www— apuntan al sitio esperado y que la versión segura se usa también en los enlaces y recursos de la página." }],
+        blocks: [
+          {
+            type: "steps",
+            label: "Comprobaciones antes de publicar cambios DNS",
+            items: [
+              {
+                title: "Identifica quién administra cada parte",
+                detail: "Anota quién gestiona el registro del dominio, los servidores DNS, el alojamiento web y el correo."
+              },
+              {
+                title: "Guarda los registros actuales",
+                detail: "Conserva una copia de la zona DNS y de las instrucciones de los servicios que ya utilizas."
+              },
+              {
+                title: "Aplica solo los valores confirmados",
+                detail: "Compara los datos con la documentación del proveedor al que conectas el dominio; no inventes direcciones ni registros."
+              },
+              {
+                title: "Prueba la web y el correo por separado",
+                detail: "Comprueba que la página carga, que puedes recibir un mensaje de prueba y que el envío funciona desde las cuentas necesarias."
+              },
+              {
+                title: "Documenta el resultado",
+                detail: "Anota qué se cambió, quién lo hizo y cómo restaurar la configuración anterior si aparece un fallo."
+              }
+            ]
+          }
+        ]
       },
       {
-        heading: "Correo profesional y hosting web no son lo mismo",
+        heading: "Ejemplo hipotético: la web abre, pero el correo falla",
         paragraphs: [
-          "El hosting web entrega páginas y funciones de un sitio. El correo profesional proporciona buzones y servicios para enviar o recibir mensajes con tu dominio. Se pueden contratar con la misma empresa o con proveedores distintos; pagar uno no implica necesariamente tener el otro.",
-          "El correo usa su propia configuración DNS. Los registros MX dirigen el correo entrante; otros registros, como TXT, pueden ayudar a publicar políticas de autenticación o verificar el servicio. Si cambias los servidores DNS o la zona, conserva los registros que el proveedor de correo necesita. Si solo cambias el registro de la web, el correo puede seguir funcionando siempre que sus registros continúen correctos.",
+          "Este caso es inventado y muestra por qué conviene comprobar cada servicio después de un cambio."
         ],
-        blocks: [{ type: "callout", tone: "caution", title: "No borres los registros del correo al conectar la web", text: "Antes de sustituir una zona DNS o cambiar los NS, guarda una copia de los registros actuales y confirma cuáles corresponden al correo. Una página puede cargar correctamente mientras el correo deja de recibir mensajes." }],
+        blocks: [
+          {
+            type: "example",
+            title: "Una tienda conecta su dominio a una nueva web",
+            hypothetical: true,
+            context: "Una tienda cambia de plataforma web y sustituye toda la configuración DNS sin copiar los registros que utilizaba el correo.",
+            problem: "La nueva página abre correctamente, pero el negocio deja de recibir mensajes en sus direcciones habituales.",
+            approach: "El equipo compara la configuración anterior con la actual y restaura los registros de correo confirmados por su proveedor.",
+            actions: [
+              "Revisar qué cambió en los NS y en los registros A, AAAA, CNAME, MX y TXT.",
+              "Consultar las instrucciones vigentes del proveedor de correo y no copiar valores de un tutorial ajeno.",
+              "Probar recepción y envío después de corregir los registros.",
+              "Guardar la configuración que funciona y dejar claro quién puede cambiarla."
+            ],
+            lesson: "Que la página cargue no demuestra que todos los servicios del dominio estén bien. La web y el correo deben comprobarse por separado."
+          }
+        ]
       },
-      { heading: "Lista de comprobación", paragraphs: ["El DNS ayuda a localizar servicios asociados a un dominio.","HTTPS protege la conexión, pero no garantiza que el negocio sea legítimo.","El correo y la web pueden usar proveedores y configuraciones diferentes."] },
+      {
+        heading: "Si la web funciona, pero el correo no",
+        paragraphs: [
+          "Evita cambiar muchos registros al mismo tiempo: dificulta descubrir qué causó el problema. Comprueba primero si cambió la delegación DNS, si faltan registros MX o TXT y si el proveedor informa de alguna incidencia."
+        ],
+        blocks: [
+          {
+            type: "list",
+            items: [
+              "Pregunta a la persona que hizo el cambio qué valores modificó y cuándo.",
+              "Compara la zona actual con la copia guardada antes del cambio.",
+              "Consulta la documentación del proveedor de correo para verificar los valores esperados.",
+              "Si no puedes confirmar qué hacer, pide ayuda al administrador del dominio antes de seguir editando registros."
+            ]
+          }
+        ]
+      },
+      {
+        heading: "Dónde encaja HTTPS",
+        paragraphs: [
+          "HTTPS protege la comunicación entre el navegador y el servidor mediante TLS. Es una capa distinta de los registros DNS: un dominio puede dirigir a la web correcta y aun así necesitar revisar el certificado o la configuración HTTPS.",
+          "Ver HTTPS no demuestra que el negocio sea legítimo ni que el contenido sea correcto. Para revisar certificados, advertencias del navegador y límites de esa protección, consulta la guía específica sobre HTTPS y TLS."
+        ],
+        blocks: [
+          {
+            type: "callout",
+            tone: "tip",
+            title: "DNS no es un certificado",
+            text: "DNS ayuda a localizar un servicio; TLS protege la conexión con el servidor. Son piezas diferentes y deben comprobarse por separado."
+          }
+        ]
+      },
       {
         heading: "Fuentes y alcance",
-        paragraphs: ["Estas referencias técnicas explican DNS y TLS. Los RFC del IETF describen registros y resolución de nombres; MDN explica TLS en la web. Esta guía introduce el correo a nivel de MX y TXT, pero no enseña a configurar SPF, DKIM ni DMARC: para esos mecanismos deben consultarse las instrucciones vigentes del proveedor de correo antes de cambiar registros."],
-        blocks: [{ type: "sources", items: [
-          { label: "RFC 1034: Domain Names — Concepts and Facilities", url: "https://datatracker.ietf.org/doc/html/rfc1034", scope: "Estándar del IETF que describe resolvers, servidores de nombres, datos autoritativos y caché/TTL en DNS. Consultado el 17 de octubre de 2026." },
-          { label: "RFC 1035: Domain Names — Implementation and Specification", url: "https://datatracker.ietf.org/doc/html/rfc1035", scope: "Especifica registros como A, NS, CNAME y MX. No es una guía de configuración para un proveedor concreto. Consultado el 17 de octubre de 2026." },
-          { label: "RFC 3596: DNS Extensions to Support IP Version 6", url: "https://datatracker.ietf.org/doc/html/rfc3596", scope: "Define la extensión de DNS para consultas y registros de direcciones IPv6 (AAAA). Consultado el 17 de octubre de 2026." },
-          { label: "Transport Layer Security (TLS) — MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Transport_Layer_Security", scope: "Explica cómo TLS protege conexiones HTTP y cómo el certificado participa en la autenticación del servidor. Consultado el 17 de octubre de 2026." },
-        ] }],
+        paragraphs: [
+          "Los RFC del IETF describen los registros y la resolución de nombres. MDN explica la función de TLS. Esta guía no enseña a configurar SPF, DKIM ni DMARC: para esos mecanismos consulta las instrucciones vigentes de tu proveedor de correo antes de cambiar registros."
+        ],
+        blocks: [
+          {
+            type: "sources",
+            items: [
+              {
+                label: "RFC 1034 — Domain Names: Concepts and Facilities",
+                url: "https://datatracker.ietf.org/doc/html/rfc1034",
+                scope: "Describe conceptos de DNS, servidores de nombres, resolución y caché; no es una guía de interfaz para un proveedor concreto."
+              },
+              {
+                label: "RFC 1035 — Domain Names: Implementation and Specification",
+                url: "https://datatracker.ietf.org/doc/html/rfc1035",
+                scope: "Especifica registros y comportamiento de DNS, incluidos A, NS, CNAME y MX."
+              },
+              {
+                label: "RFC 3596 — DNS Extensions to Support IP Version 6",
+                url: "https://datatracker.ietf.org/doc/html/rfc3596",
+                scope: "Define la extensión de DNS para consultas y registros de direcciones IPv6, incluidos los registros AAAA."
+              },
+              {
+                label: "MDN Web Docs — Transport Layer Security (TLS)",
+                url: "https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Transport_Layer_Security",
+                scope: "Explica cómo TLS protege conexiones web y cómo el certificado participa en la autenticación del servidor."
+              }
+            ]
+          }
+        ]
       },
-    ],
+      {
+        heading: "Lista de comprobación",
+        paragraphs: [],
+        blocks: [
+          {
+            type: "summary",
+            items: [
+              "Identifica quién administra DNS, web y correo antes de cambiar una configuración.",
+              "Conserva una copia de los registros y aplica solo valores confirmados.",
+              "Prueba por separado la página, la recepción y el envío de correo."
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     slug: "dominio-hosting-sitio-web-como-funcionan",
@@ -1694,6 +2184,7 @@ export const learnArticles: LearnArticle[] = [
           actions: [
             "Corrige la categoría, el teléfono, el horario y los servicios; añade fotos autorizadas.",
             "Al cambiar el horario especial, actualízalo y revisa la ficha como visitante.",
+            "Comprueba desde otro dispositivo que el teléfono, el enlace y el horario coinciden con lo que el negocio atiende realmente.",
           ],
           lesson: "La ficha comunica información que el negocio puede verificar; mantenerla ordenada no permite prometer una posición en Google ni un aumento de clientela.",
         }],
@@ -1935,19 +2426,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: elegir el primer paso digital",
         paragraphs: ["Al terminar, podrás explicar con tus palabras «Quiero llevar mi negocio a internet: ¿por dónde empiezo?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
         blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Empieza por una necesidad concreta",
         "paragraphs": [
           "Anotas pedidos en papeles, contestas mensajes desde tu teléfono y publicas cuando tienes un rato. Te dicen que debes digitalizarte, pero nadie te explica qué significa.",
           "Digitalizar es usar herramientas para hacer más fácil una parte del trabajo: ordenar pedidos, encontrar documentos, compartir horarios o responder una pregunta."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres decisiones antes de empezar",
         "paragraphs": [
           "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
         ],
@@ -2120,19 +2611,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: preparar el trabajo digital",
         paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué equipo e internet necesitas para trabajar en digital?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
         blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué tareas necesitas resolver",
         "paragraphs": [
           "Un pequeño taller usa un teléfono para mensajes y fotos de sus trabajos. Una persona le recomienda comprar un equipo costoso para 'ponerse al día'.",
           "La pregunta útil no es cuál es el equipo más moderno, sino qué tareas necesitas cumplir: recibir pedidos, escribir presupuestos, guardar archivos o atender videollamadas."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Equipo, conexión y aplicaciones cumplen funciones distintas",
         "paragraphs": [
           "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
         ],
@@ -2305,19 +2796,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: ordenar el correo del negocio",
         paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo usar el correo de tu negocio sin perder mensajes?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
         blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué necesitas encontrar cuando llega un correo",
         "paragraphs": [
           "Un cliente envía un documento importante. Tres días después no lo encuentras porque quedó entre promociones y mensajes de aplicaciones.",
           "Un correo organizado te ayuda a responder y guardar pruebas de acuerdos. No hace falta escribir de manera complicada."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres hábitos para no perder mensajes",
         "paragraphs": [
           "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
         ],
@@ -2490,19 +2981,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: reconocer engaños y proteger cuentas",
         paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo evitar que te roben una cuenta o te engañen por mensaje?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
         blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué señales pueden indicar un engaño",
         "paragraphs": [
           "Llega un mensaje que parece de un servicio conocido. Dice que perderás la cuenta en una hora y te pide contraseña o código.",
           "Las estafas suelen aprovechar la urgencia. Una cuenta protegida y un hábito de verificación reducen riesgos, aunque no los eliminan por completo."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres hábitos que protegen tus cuentas",
         "paragraphs": [
           "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
         ],
@@ -2675,19 +3166,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: recuperar archivos importantes",
         paragraphs: ["Al terminar, podrás explicar con tus palabras «Si se rompe tu teléfono, ¿cómo recuperas los archivos del negocio?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
         blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué archivos necesitas recuperar",
         "paragraphs": [
           "Una persona cambia de teléfono y descubre que las fotos de sus productos solo estaban en el equipo anterior.",
           "Guardar documentos en carpetas o en internet ayuda, pero una copia de seguridad es una segunda versión que puedas recuperar cuando algo falla."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Copia, sincronización y recuperación no son lo mismo",
         "paragraphs": [
           "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
         ],
@@ -2860,19 +3351,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: crear una hoja de cálculo útil",
         paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Para qué sirve una hoja de cálculo en un negocio pequeño?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
         blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué tarea puede resolver una hoja de cálculo",
         "paragraphs": [
           "En una libreta tienes encargos, pagos pendientes y una lista de materiales. Encontrar el estado de un pedido te lleva demasiado tiempo.",
           "Una hoja de cálculo es como una libreta organizada en casillas. Puedes buscar, ordenar y sumar sin tener que crear un programa."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres reglas para mantener la tabla confiable",
         "paragraphs": [
           "Estos conceptos sirven para tomar decisiones. No hace falta memorizar palabras difíciles."
         ],
@@ -3046,19 +3537,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: elegir el canal adecuado",
         paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Redes sociales o página web? Cómo elegir sin gastar de más», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
         blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué quieres que haga quien te encuentra",
         "paragraphs": [
           "Alguien ve una foto de tu trabajo. Le interesa, pero no encuentra qué ofreces, dónde atiendes ni cómo pedir información.",
           "El problema no siempre es la falta de una página web. Puede ser que los datos importantes estén escondidos entre publicaciones."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Qué aporta cada canal",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],
@@ -3231,19 +3722,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: explicar tu oferta con claridad",
         paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué vendes exactamente? Explícalo para que te entiendan», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
         blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Empieza por la pregunta del cliente",
         "paragraphs": [
           "«Transformamos experiencias mediante soluciones innovadoras». Un cliente que no te conoce quizá no pueda imaginar qué vendes.",
           "«Reparamos computadoras y explicamos el problema antes de hacer cambios». La segunda frase es más directa y permite entender el trabajo."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres datos para explicar lo que ofreces",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],
@@ -3416,19 +3907,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: responder una primera consulta",
         paragraphs: ["Al terminar, podrás explicar con tus palabras «Te escribieron por tu negocio: cómo responder sin sonar a robot», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
         blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Entiende qué necesita saber la persona",
         "paragraphs": [
           "Te escriben: «Hola, ¿hacen reparaciones?». Un «sí» no ayuda mucho; enviar todo el catálogo puede cansar a la persona.",
           "Puedes contestar: «¡Hola! Sí, hacemos ese tipo de reparaciones. ¿Qué equipo tienes y qué le sucede? Así podemos orientarte»."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres partes de una respuesta útil",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],
@@ -3601,19 +4092,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: publicar información clara y útil",
         paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué publicar de tu negocio si no eres diseñador?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
         blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué debe entender quien ve la publicación",
         "paragraphs": [
           "Publicas una fotografía de un producto y la acompañas con «¡Lo mejor para ti!». Alguien interesado sigue sin saber tamaño, uso o cómo consultarlo.",
           "Una publicación útil puede mostrar el objeto con buena luz, contar para qué sirve y explicar el siguiente paso."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres piezas para comunicar con claridad",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],
@@ -3786,19 +4277,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: organizar pedidos de principio a fin",
         paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo empezar a recibir pedidos por internet sin complicarte?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
         blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "El recorrido completo de un pedido",
         "paragraphs": [
           "Alguien ve un producto y quiere comprarlo. Falta confirmar si está disponible, cuánto cuesta entregarlo y cómo pagarlo.",
           "Abrir una tienda no resuelve esas preguntas. Antes necesitas un proceso entendible para aceptar, preparar y completar un pedido."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres comprobaciones antes de vender en línea",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],
@@ -3971,19 +4462,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: pedir solo los datos necesarios",
         paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Qué datos deberías pedir a un cliente y cuáles no?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
         blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué necesitas saber para atender la consulta",
         "paragraphs": [
           "Un formulario para preguntar horarios pide fecha de nacimiento y dirección completa. ¿De verdad hacen falta?",
           "Los datos personales merecen cuidado. Antes de pedirlos, explica qué tarea realizarás con ellos y si podrías resolverla con menos información."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres reglas para pedir menos datos",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],
@@ -4156,19 +4647,19 @@ export const learnArticles: LearnArticle[] = [
     },
     "sections": [
       {
-        heading: "Qué aprenderás y cómo practicarlo",
+        heading: "Tu objetivo: gestionar opiniones auténticas",
         paragraphs: ["Al terminar, podrás explicar con tus palabras «¿Cómo pedir opiniones reales sin comprar reseñas?», reconocer una situación en la que resulta útil y elegir un primer paso razonable.", "Ejercicio breve: identifica un problema real, propone una acción pequeña y decide qué señal observable te permitirá comprobar si mejoró. No incluyas datos personales ni asumas que necesitas contratar una herramienta."],
         blocks: [{ type: "callout", tone: "tip", title: "Autoevaluación", text: "Explica la idea central a alguien sin utilizar tecnicismos. Si necesitas ayuda, revisa el ejemplo y los pasos antes de tomar una decisión." }],
       },
       {
-        "heading": "La pregunta detrás del problema",
+        "heading": "Qué hace útil una reseña auténtica",
         "paragraphs": [
           "Un proveedor ofrece venderte cincuenta opiniones de cinco estrellas para mejorar tu perfil. Suena fácil, pero esas reseñas no describen experiencias reales.",
           "La confianza depende de lo que haces y de cómo respondes, también cuando algo sale mal."
         ]
       },
       {
-        "heading": "Tres ideas que conviene conocer",
+        "heading": "Tres principios para solicitar y responder opiniones",
         "paragraphs": [
           "No necesitas memorizar definiciones. Estos ejemplos te ayudan a decidir qué hacer."
         ],
@@ -4317,6 +4808,7 @@ export const learnArticles: LearnArticle[] = [
     ]
   },
 
+  ...learnDigitalLiteracyArticles,
   ...learnBusinessOperationsArticles,
   ...learnOperations02Articles,
   ...learnManagement03Articles,
@@ -4333,6 +4825,17 @@ export const learnPathways = [
       "correo-para-mi-negocio-como-usarlo-sin-perder-mensajes",
       "como-proteger-cuentas-contrasenas-estafas-negocio",
       "como-hacer-copias-de-seguridad-de-tu-negocio",
+    ],
+  },
+  {
+    title: "Usa la tecnología con criterio",
+    description: "Comprende primero, prioriza lo importante y conserva el control de tus herramientas y decisiones.",
+    slugs: [
+      "el-que-mucho-abarca-poco-aprieta-prioridades-digitales",
+      "domina-la-tecnologia-sin-que-te-domine",
+      "como-proteger-cuentas-contrasenas-estafas-negocio",
+      "como-hacer-copias-de-seguridad-de-tu-negocio",
+      "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
     ],
   },
   {

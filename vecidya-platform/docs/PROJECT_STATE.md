@@ -1,5 +1,12 @@
 ## Corte vigente — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
 
+## APRENDE-EDITORIAL-04B — estado de revisión editorial
+
+La rama del PR #121 contiene una revisión semántica de las 46 guías. El detalle de cada dictamen y los cambios se documenta en docs/APRENDE_EDITORIAL_AUDIT_04B.md. Los cambios acotan CRM, preparación antes de publicidad, mantenimiento de presencia, DNS/web/correo y reglas de IA empresarial; además personalizan encabezados repetidos y mejoran enlaces relacionados.
+
+El catálogo conserva 46 guías, seis categorías y nueve itinerarios. No se cambió editorialDraft: los artículos que estaban en borrador siguen sin aprobar. La integración, los checks del nuevo HEAD y la revisión editorial humana siguen siendo gates separados; no hay autorización de merge ni deploy derivada de este checkpoint.
+
+
 En `feat/diag-visual-03`, QA-03B presenta la lectura general y ocho áreas en un flujo visual de una columna; entrada, foco, estados preliminares y ausencia de score tienen tratamiento explícito. Las unitarias focales (20/20), E2E QA-03B local (6/6), typecheck y build constan como PASS en `TESTING.md`. No se modifican scoring ni contratos y no hay despliegue. El runner responsive DIAG-PRO-19 está obsoleto respecto a la clave activa y no se cuenta como evidencia multi-viewport; zoom real 200 % y lector de pantalla siguen pendientes.
 
 ## Corte de dependencias y URLs (2026-10-24 local / 2026-10-25 UTC)
@@ -383,11 +390,11 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 
 ### Aprende (`knowledge.tsx`, `learn-article.tsx`)
 
-- UX-001B.9 establece `/aprende` como ruta canónica y mantiene `/que-debes-saber` como alias. La página diferencia aprendizaje de Servicios y Diagnóstico: explica cómo entender y mejorar la presencia digital.
-- UX-002.6 mantiene `/aprende` como centro de conocimiento estático con cinco categorías y cinco artículos enlazados desde el índice. Los cuatro originales son CRM, IA, Automatización y Presencia Digital; VEC-APRENDE-04/05 modernizó los dos últimos sin cambiar sus slugs, canonical, categoría ni autoría.
-- VEC-APRENDE-06A llena «Tecnología explicada» con una guía de dominio/hosting, ejemplo hipotético y ocho fuentes primarias. Usa los bloques editoriales existentes, un SVG con descripción accesible y lectura relacionada a la guía de Presencia Digital.
-- Los artículos mantienen índice accesible, CTA contextual, metadata canonical/Open Graph y presencia en sitemap. La publicación sigue pendiente; el contenido no promete resultados, no usa CMS y no añade persistencia editorial. El byline sigue el renderer actual (Yoan Ortiz), sin modelo de autor nuevo.
-- El contenido se mantiene deliberadamente sin CMS, autores dinámicos, fechas editoriales inventadas, comentarios, newsletter, buscador avanzado o cursos.
+- `/aprende` es la ruta canónica y `/que-debes-saber` conserva su alias. El catálogo vigente en `main` ya superó el estado histórico de cinco guías; APRENDE-EDITORIAL-04A trabaja sobre esa biblioteca real sin reabrir arquitectura legacy.
+- En la rama 04A, Aprende contiene **46 guías, 9 itinerarios y 6 categorías**. Dos guías nuevas de «Tecnología explicada» amplían la audiencia a vida digital y negocio: priorización («el que mucho abarca, poco aprieta») y uso consciente («domina la tecnología»). Ambas siguen en revisión editorial.
+- La experiencia propone **Comprende → Prioriza → Decide**. La búsqueda cubre título, resumen y contenido interno; la plantilla de ejemplos explica situación, problema, forma sencilla de actuar, pasos y aprendizaje. El contrato unitario exige al menos un ejemplo hipotético accionable por guía.
+- Los artículos mantienen índice accesible, CTA contextual, metadata canonical/Open Graph, relaciones y fuentes. El contenido no usa CMS ni persistencia editorial y no atribuye a Vecidya funciones CRM de GHL.
+- El siguiente pase 04B debe revisar semánticamente las 46 guías una por una, simplificar jerga y separar contenidos solo cuando un artículo abarque objetivos educativos distintos. No retirar `editorialDraft` sin revisión explícita.
 
 ### Legal & Trust (`privacy.tsx`, `public-layout.tsx`)
 

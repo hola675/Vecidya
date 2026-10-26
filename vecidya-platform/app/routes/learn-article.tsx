@@ -47,12 +47,12 @@ function renderLearnBlock(block: LearnBlock, key: string) {
       return <section className="learn-block learn-block--example" key={key} aria-label={block.hypothetical ? "Ejemplo hipotético" : "Ejemplo práctico"}>
         {block.hypothetical && <p className="learn-block__eyebrow">Ejemplo hipotético</p>}
         <h3>{block.title}</h3>
-        <p><strong>Situación:</strong> {block.context}</p>
-        <p><strong>Problema:</strong> {block.problem}</p>
-        <p><strong>Enfoque proporcional:</strong> {block.approach}</p>
-        <h4>Cómo aplicarlo</h4>
+        <p><strong>Qué está pasando:</strong> {block.context}</p>
+        <p><strong>Qué se complica:</strong> {block.problem}</p>
+        <p><strong>Una forma sencilla de actuar:</strong> {block.approach}</p>
+        <h4>Pasos</h4>
         <ol>{block.actions.map((action) => <li key={action}>{action}</li>)}</ol>
-        <p><strong>Qué muestra:</strong> {block.lesson}</p>
+        <p><strong>Qué aprender de este ejemplo:</strong> {block.lesson}</p>
       </section>;
     case "callout":
       return <div className={`learn-block learn-block--callout learn-block--${block.tone}`} key={key}>

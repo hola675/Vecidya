@@ -1,8 +1,25 @@
 # Estado de implementación
 
+## APRENDE-EDITORIAL-04B — auditoría semántica de 46 guías (2026-10-25; PR #121)
+
+**Implementación editorial en la rama feat/aprende-editorial-04a; no fusionada ni desplegada.** Se revisaron el objetivo pedagógico, el alcance, los ejemplos, los solapamientos y los enlaces de las 46 guías. El registro artículo por artículo está en docs/APRENDE_EDITORIAL_AUDIT_04B.md.
+
+Cambios centrales: guía de CRM enfocada en decidir cuándo usarlo y sin afirmaciones no verificadas sobre retención de datos de un CRM de Vecidya; guía previa a publicidad reducida a una lista de preparación; guía de mantenimiento de presencia centrada en datos correctos y comprobación de enlaces; guía DNS centrada en web/correo con referencia breve a HTTPS; guía de IA empresarial centrada en reglas, datos permitidos, responsables y escalamiento; encabezados personalizados en trece guías introductorias y enlace a presupuesto desde selección de herramientas.
+
+Se conservan 46 slugs, seis categorías, nueve itinerarios y los estados editoriales previos. Las guías que estaban en borrador permanecen en borrador. Los checks 04A solo certifican su SHA original; la validación de 04B debe consultarse en GitHub Actions para el HEAD que contiene estos cambios. Sin cambios de base de datos, autenticación, Diagnóstico, MiniWeb, GHL, licencias, precios, ni despliegue.
+
+
 ## PROD-RELEASE-0.8.0 — publicado (2026-10-25)
 
 **GIT/CONFIG/HTTP:** PR #116 integrado en `main@0152eab6fad5e68336d66d69cbc1597a1f720111`; D1 producción migrada a `0000–0028`; Worker `vecidya-platform` desplegado con Version ID `320eefe0-343c-431f-987f-cf9b92df0c8e`. GET anónimo TLS 2026-10-25T18:38:23Z a `/`, `/cookies`, `/informacion-legal` y `/diagnostico`: todas `200`, versión `0.8.0`, `© 2026 Vecidya`. Typecheck/build/diff-check PASS; pruebas automatizadas omitidas por solicitud del usuario. Evidencia detallada en [ENVIRONMENTS.md](ENVIRONMENTS.md).
+
+## APRENDE-EDITORIAL-04A — criterio digital y ejemplos comprensibles (2026-10-25)
+
+**CODE/TEST versionado en `feat/aprende-editorial-04a`; sin merge, deploy ni publicación atribuida a este checkpoint.** Aprende amplía el catálogo de 44 a **46 guías** y de 8 a **9 itinerarios**. Se añaden dos guías fundacionales en «Tecnología explicada»: prioridades digitales a partir de «el que mucho abarca, poco aprieta» y uso consciente bajo «domina la tecnología; no dejes que la tecnología te domine». Ambas permanecen `editorialDraft: true` hasta revisión humana.
+
+La portada expresa el método **Comprende → Prioriza → Decide**, amplía el lenguaje a vida digital y negocio, y la búsqueda consulta también resúmenes, párrafos y bloques internos. La plantilla de ejemplo sustituye etiquetas técnicas por «Qué está pasando», «Qué se complica», «Una forma sencilla de actuar», «Pasos» y «Qué aprender de este ejemplo». Las seis guías especializadas que no tenían bloque `example` reciben un caso hipotético completo; se conserva el estado editorial existente de las demás guías.
+
+**RAN en GitHub Actions:** sobre `abd334eb05c3ef763ea33b038715c64f28f8c448`, workflow `Aprende quality` run `40242263335` PASS (typecheck, build e integridad Aprende) y `Main integration quality` run `40242263275` PASS: typecheck, build, regresión Diagnóstico/Aprende y **1721/1721 unitarias**. La revisión estática de los 12 archivos modificados quedó sin marcadores de conflicto ni whitespace final. Fuentes nuevas verificadas contra OCDE 2026, NIST CSF 2.0, CISA y W3C. No cambia DB, Auth, Diagnóstico, MiniWeb, GHL, licencias, precios ni producción.
 
 ## DIAG-VISUAL-03 — refinamiento del resultado y entrada QA-03B (2026-10-25)
 
@@ -33,7 +50,7 @@
 
 **GIT/CODE:** PR #105 fue integrado en `origin/main@f1b8ad3` y permanece en la base actual `origin/main@952f06e`. Incluye el editor de cinco pasos (Diseño, Secciones, Contenido, Vista previa y Publicar), estados de completitud y CTA, tarjetas de servicios/productos y FAQ plegables, biblioteca visual compatible con APP-MINI-02F, previsualización de cabecera/pie y diseño público de negocio independiente. También incluye compactación del sidebar de `/app` y reorganización inicial de la administración.
 
-**RAN en GitHub Actions:** PR #105, run `40151659894` sobre `d5a8e92977ed0cb372ca49839a732be20166e03f`: `typecheck`, `build`, regresión focal Diagnóstico/Aprende **16/16 PASS** y unitarias **1696/1696 PASS**. No acredita E2E de esta nueva UI ni la compatibilidad visual manual. La migración `0028` procede del PR #103 ya integrado en `main`; NO se aplicó a D1 remota. 
+**RAN en GitHub Actions:** PR #105, run `40151659894` sobre `d5a8e92977ed0cb372ca49839a732be20166e03f`: `typecheck`, `build`, regresión focal Diagnóstico/Aprende **16/16 PASS** y unitarias **1696/1696 PASS**. No acredita E2E de esta nueva UI ni la compatibilidad visual manual. La migración `0028` procede del PR #103 ya integrado en `main`; NO se aplicó a D1 remota.
 
 **Open Debt:** E2E de MiniWeb actualizado a los botones y paneles del nuevo editor, no ejecutado contra esta rama; falta revisión visual/accesible en 360/390/768/1024/1366/1920 px, prevención de pérdidas de edición durante uploads/409, snapshot v4 con D1 aislada, y aceptación. No se afirma deploy ni HTTP anónimo fechado de este checkpoint.
 
