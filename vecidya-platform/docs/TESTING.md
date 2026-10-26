@@ -1,5 +1,11 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-FINAL-02 — aprobación explícita y regresión general (2026-10-25)
+
+El run `40248565700` falló con **1739/1740** pruebas: `learn-management-03.test.ts` esperaba `editorialDraft: true` para las cinco guías de Gestión, pero el candidato final las había marcado como aprobadas. La causa era un cambio de estado editorial no autorizado, no un defecto del guard. Se restaura `editorialDraft: true` para 18 guías y se actualizan los contratos para exigir **18 borradores / 30 no marcadas como borrador**. La aprobación de contenido, el merge y el deploy son decisiones separadas.
+
+**Gate del nuevo HEAD:** `Aprende quality` (typecheck, build, integridad editorial) y `Main integration quality` (typecheck, build, regresión Diagnóstico/Aprende y unitarias completas). Los resultados de este nuevo HEAD se registrarán cuando terminen los workflows; no se reutiliza evidencia de un SHA anterior.
+
 ## APRENDE-EDITORIAL-04J — consolidación transversal (2026-10-25)
 
 **RAN en GitHub Actions:** `Aprende quality` run `40248368767` PASS: typecheck, build e integridad Aprende. Contratos: 48/48 guías revisadas; 0 borradores; cobertura total de itinerarios; al menos una relación editorial y dos fuentes HTTPS distintas por guía; sin plantilla genérica antigua; alt descriptivos; intro ≠ extracto; summaries no duplicados; fuentes OpenAI/ITU/SBA vigentes; terminología Analytics actual; jerga prioritaria explicada en contexto.

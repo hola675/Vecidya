@@ -15,7 +15,7 @@ export const learnEmail04BArticles: LearnArticle[] = [
     ],
     image: "/assets/learn/diagram-correo-para.svg",
     imageAlt: "Un dominio conecta buzones de correo mediante registros DNS separados de la configuración de la página web.",
-    editorialDraft: false,
+    editorialDraft: true,
     relatedSlugs: [
       "dns-https-y-correo-como-se-conecta-tu-dominio",
       "dominio-hosting-sitio-web-como-funcionan",

@@ -15,7 +15,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-presupuesto-digital.svg",
     "imageAlt": "Tres tarjetas amplias representan la cuota del servicio, el tiempo de trabajo y una revisión del presupuesto total.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
       "como-saber-si-una-mejora-tecnologica-funciona-en-tu-empresa"
@@ -217,7 +217,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-compras-proveedores.svg",
     "imageAlt": "Tres tarjetas muestran una solicitud, una aprobación y una recepción comprobada.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo",
       "quien-puede-ver-cambiar-y-publicar-en-tu-empresa"
@@ -418,7 +418,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-continuidad-digital.svg",
     "imageAlt": "Tres tarjetas representan una interrupción, un modo alternativo de trabajo y la recuperación comprobada.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "como-hacer-copias-de-seguridad-de-tu-negocio",
       "como-proteger-cuentas-contrasenas-estafas-negocio"
@@ -616,7 +616,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-gobierno-ia.svg",
     "imageAlt": "Tres tarjetas muestran una propuesta de IA, una revisión de una persona y una decisión controlada.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "preparar-respuestas-publicaciones-ia-sin-perder-control",
       "que-puede-hacer-una-inteligencia-artificial-por-un-negocio"
@@ -822,7 +822,7 @@ export const learnManagement03Articles: LearnArticle[] = [
     ],
     "image": "/assets/learn/diagram-evaluar-mejora.svg",
     "imageAlt": "Tres tarjetas muestran la situación inicial, una prueba limitada y una decisión basada en lo aprendido.",
-    "editorialDraft": false,
+    "editorialDraft": true,
     "relatedSlugs": [
       "analitica-web-que-medir-en-tu-negocio",
       "como-preparar-presupuesto-para-herramientas-digitales"

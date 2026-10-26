@@ -72,7 +72,7 @@ test("La selección y la migración de proveedor quedan como decisiones separada
   const migration = getLearnArticle("como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo");
   assert.ok(choosing && migration);
   assert.equal(choosing.editorialDraft, false, "La guía histórica conserva su aprobación editorial");
-  assert.equal(migration.editorialDraft, false, "La guía de migración debe conservar su aprobación editorial");
+  assert.equal(migration.editorialDraft, true, "La guía de migración queda en borrador hasta aprobación explícita");
   assert.match(choosing.title, /elegir proveedor/i);
   assert.match(migration.title, /cambiar de proveedor/i);
   assert.ok(choosing.relatedSlugs?.includes(migration.slug));
@@ -81,7 +81,7 @@ test("La selección y la migración de proveedor quedan como decisiones separada
   assert.match(JSON.stringify(migration), /DNS|correo|cancelar|comprobar/i);
 });
 
-test("Las cinco guías de Operaciones aprobadas conservan fuentes y límites editoriales", () => {
+test("Las cinco guías de Operaciones revisadas permanecen en borrador hasta aprobación explícita", () => {
   const approved = [
     "como-organizar-tareas-y-responsables-en-tu-equipo",
     "como-controlar-inventario-sin-perder-productos-ni-datos",
@@ -92,7 +92,7 @@ test("Las cinco guías de Operaciones aprobadas conservan fuentes y límites edi
   for (const slug of approved) {
     const article = getLearnArticle(slug);
     assert.ok(article, `Falta guía revisada: ${slug}`);
-    assert.equal(article.editorialDraft, false, `La aprobación editorial debe conservarse: ${slug}`);
+    assert.equal(article.editorialDraft, true, `La aprobación editorial debe conservarse: ${slug}`);
     const blocks = article.sections.flatMap((section) => section.blocks ?? []);
     const sources = blocks.flatMap((block) => block.type === "sources" ? block.items : []);
     assert.ok(sources.length >= 2, `Fuentes insuficientes en ${slug}`);
@@ -113,12 +113,12 @@ test("Las cinco guías de Operaciones aprobadas conservan fuentes y límites edi
   assert.match(JSON.stringify(project), /service-manual\/agile-delivery\/how-the-beta-phase-works/);
 });
 
-test("Las dos guías técnicas nuevas conservan la aprobación y sus fuentes primarias", () => {
+test("Las dos guías técnicas nuevas permanecen en borrador y conservan sus fuentes primarias", () => {
   const migration = getLearnArticle("como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo");
   const email = getLearnArticle("correo-profesional-dominio-registros-mx-txt");
   assert.ok(migration && email);
-  assert.equal(migration.editorialDraft, false);
-  assert.equal(email.editorialDraft, false);
+  assert.equal(migration.editorialDraft, true, "Migración pendiente de aprobación explícita");
+  assert.equal(email.editorialDraft, true, "Correo profesional pendiente de aprobación explícita");
 
   const migrationText = JSON.stringify(migration);
   for (const expected of [/icann\.org\/registrants/, /domain-name-registration-process/, /rfc1034/, /rfc1035/, /Transport_Layer_Security/]) {
@@ -132,7 +132,7 @@ test("Las dos guías técnicas nuevas conservan la aprobación y sus fuentes pri
   assert.match(emailText, /MX|TXT|SPF|DKIM|DMARC/);
 });
 
-test("Las cuatro guías de coordinación empresarial conservan aprobación y alcance", () => {
+test("Las cuatro guías de coordinación empresarial permanecen en borrador y conservan su alcance", () => {
   const approved = [
     "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo",
     "quien-puede-ver-cambiar-y-publicar-en-tu-empresa",
@@ -142,7 +142,7 @@ test("Las cuatro guías de coordinación empresarial conservan aprobación y alc
   for (const slug of approved) {
     const article = getLearnArticle(slug);
     assert.ok(article, `Falta guía empresarial revisada: ${slug}`);
-    assert.equal(article.editorialDraft, false, `Debe conservar aprobación editorial: ${slug}`);
+    assert.equal(article.editorialDraft, true, `Debe conservar aprobación editorial: ${slug}`);
     const blocks = article.sections.flatMap((section) => section.blocks ?? []);
     const sources = blocks.flatMap((block) => block.type === "sources" ? block.items : []);
     assert.ok(sources.length >= 2, `Fuentes insuficientes: ${slug}`);
@@ -158,7 +158,7 @@ test("Las cuatro guías de coordinación empresarial conservan aprobación y alc
   assert.match(JSON.stringify(access), /csrc\.nist\.gov\/pubs\/sp\/1300\/final/);
 });
 
-test("Las cinco guías de Gestión conservan aprobación, fuentes y límites", () => {
+test("Las cinco guías de Gestión permanecen en borrador y conservan fuentes y límites", () => {
   const approved = [
     "como-preparar-presupuesto-para-herramientas-digitales",
     "como-ordenar-compras-proveedores-y-aprobaciones-en-una-empresa",
@@ -169,7 +169,7 @@ test("Las cinco guías de Gestión conservan aprobación, fuentes y límites", (
   for (const slug of approved) {
     const article = getLearnArticle(slug);
     assert.ok(article, `Falta guía de Gestión revisada: ${slug}`);
-    assert.equal(article.editorialDraft, false, `Debe conservar aprobación editorial: ${slug}`);
+    assert.equal(article.editorialDraft, true, `Debe conservar aprobación editorial: ${slug}`);
     const blocks = article.sections.flatMap((section) => section.blocks ?? []);
     const sources = blocks.flatMap((block) => block.type === "sources" ? block.items : []);
     assert.ok(sources.length >= 2, `Fuentes insuficientes: ${slug}`);
@@ -189,12 +189,12 @@ test("Las cinco guías de Gestión conservan aprobación, fuentes y límites", (
   assert.match(JSON.stringify(continuity), /cisa\.gov\/small-and-medium-sized-business-resources/);
 });
 
-test("Las dos guías fundacionales conservan aprobación y fuentes vigentes", () => {
+test("Las dos guías fundacionales permanecen en borrador y conservan fuentes vigentes", () => {
   const priorities = getLearnArticle("el-que-mucho-abarca-poco-aprieta-prioridades-digitales");
   const control = getLearnArticle("domina-la-tecnologia-sin-que-te-domine");
   assert.ok(priorities && control);
-  assert.equal(priorities.editorialDraft, false);
-  assert.equal(control.editorialDraft, false);
+  assert.equal(priorities.editorialDraft, true, "Pendiente de aprobación explícita");
+  assert.equal(control.editorialDraft, true, "Pendiente de aprobación explícita");
   assert.ok(priorities.relatedSlugs?.includes(control.slug));
   assert.ok(control.relatedSlugs?.includes(priorities.slug));
 
@@ -209,9 +209,9 @@ test("Las dos guías fundacionales conservan aprobación y fuentes vigentes", ()
   assert.match(controlText, /w3\.org\/WAI\/tips\/writing/);
 });
 
-test("El catálogo editorial completo queda sin borradores", () => {
-  assert.equal(learnArticles.filter((article) => article.editorialDraft).length, 0);
-  assert.equal(learnArticles.filter((article) => !article.editorialDraft).length, 48);
+test("El catálogo conserva borradores pendientes de aprobación explícita", () => {
+  assert.equal(learnArticles.filter((article) => article.editorialDraft).length, 18);
+  assert.equal(learnArticles.filter((article) => !article.editorialDraft).length, 30);
 });
 
 test("Todos los itinerarios enlazan a artículos reales sin duplicados internos", () => {
@@ -421,7 +421,7 @@ test("Las bibliografías de presencia y DNS mantienen su alcance especializado",
   assert.ok(dnsSources.some((source) => source.url.includes("Transport_Layer_Security")), "Falta referencia TLS");
   assert.ok(!dnsSources.some((source) => /renewal|registration-process|lookup.icann/.test(source.url)), "Fuentes registrales ajenas a DNS");
   const email = getLearnArticle("correo-profesional-dominio-registros-mx-txt");
-  assert.equal(email?.editorialDraft, false, "La guía separada de correo debe conservar su aprobación editorial");
+  assert.equal(email?.editorialDraft, true, "La guía separada de correo permanece en borrador hasta aprobación explícita");
   const emailSources = sources(email);
   assert.ok(emailSources.some((source) => source.url.includes("rfc7208")), "Falta referencia SPF");
   assert.ok(emailSources.some((source) => source.url.includes("rfc6376")), "Falta referencia DKIM");

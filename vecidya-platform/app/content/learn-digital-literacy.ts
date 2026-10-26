@@ -19,7 +19,7 @@ export const learnDigitalLiteracyArticles: LearnArticle[] = [
     ],
     image: "/assets/learn/diagram-como-empezar.svg",
     imageAlt: "Tres pasos sencillos representan comprender un problema, elegir una prioridad y comprobar el resultado antes de añadir más tecnología.",
-    editorialDraft: false,
+    editorialDraft: true,
     relatedSlugs: [
       "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
@@ -253,7 +253,7 @@ export const learnDigitalLiteracyArticles: LearnArticle[] = [
     ],
     image: "/assets/learn/diagram-como-proteger.svg",
     imageAlt: "Una persona mantiene el control de sus cuentas, decisiones y copias mientras utiliza distintas herramientas digitales.",
-    editorialDraft: false,
+    editorialDraft: true,
     relatedSlugs: [
       "el-que-mucho-abarca-poco-aprieta-prioridades-digitales",
       "como-proteger-cuentas-contrasenas-estafas-negocio",

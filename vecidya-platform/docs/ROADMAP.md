@@ -1,3 +1,7 @@
+## APRENDE-EDITORIAL-FINAL-02 — preservar la frontera de aprobación (2026-10-25)
+
+**Activo en `feat/aprende-editorial-final` / PR #138; sin merge ni deploy.** El catálogo se ha auditado en 48 guías y 9 itinerarios, pero la auditoría no autoriza a quitar estados de borrador. La integración candidata debe conservar **18 borradores** (14 existentes en `main` + cuatro guías nuevas de 04A/04B) y 30 guías con estado previo no-borrador. No se marcará un artículo como aprobado ni se publicará sin autorización explícita. Gate: CI de Aprende y Main integration en el HEAD final, revisión del diff y actualización de la documentación antes de solicitar integración.
+
 ## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
 
 **Objetivo:** adaptar las referencias premium entregadas por el usuario a una experiencia coherente de Vecidya, preservando contenido, datos, permisos, funcionamiento móvil y límites comerciales. Las referencias guían composición e interacción; no se copian marcas, textos, layouts exactos ni assets. Este trabajo no incluye publicación ni despliegue.
