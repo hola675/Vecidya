@@ -25,14 +25,14 @@ const common = {
 } as const;
 
 test("four experiments are contract-valid but only the two evidence-positive pilots enter the candidate bank", () => {
-  assert.equal(experiments.length, 4);
-  assert.equal(pilot.length, 2);
+  assert.equal(experiments.length, 5);
+  assert.equal(pilot.length, 3);
   assert.deepEqual([...rejectedIds].sort(), [
     "q2_specialty_marketplace_balance",
     "q2_specialty_software_activation",
   ]);
-  assert.equal(bank.length, 76);
-  assert.equal(new Set(bank.map((q) => q.id)).size, 76);
+  assert.equal(bank.length, 77);
+  assert.equal(new Set(bank.map((q) => q.id)).size, 77);
   assert.deepEqual(validateQuestionCopyV2(experiments), []);
   assert.deepEqual(validateEvidenceMigrationsV3(experiments), []);
   assert.deepEqual(validateQuestionCopyV2(bank), []);
@@ -176,7 +176,7 @@ test("retained specialty pilots measure cost and evidence delta against the 74-q
   const withoutPilot = bank.filter((q) => !pilotIds.has(q.id));
   assert.equal(withoutPilot.length, 74);
 
-  for (const profile of ["impuestos", "seguros"]) {
+  for (const profile of ["impuestos", "seguros", "taller-mecanico-presupuestos"]) {
     const before = walkImpact(profile, withoutPilot);
     const after = walkImpact(profile, bank);
     if (profile === "seguros") console.log(`QA03B_INSURANCE_REPLACEMENT ${JSON.stringify({
