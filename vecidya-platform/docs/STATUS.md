@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## DIAG-V9-UX-03 — mejoras de selección (2026-10-26; rama, no publicada)
+
+**CODE/GIT — V9 experimental, no publicado:** la pregunta visible y la copia editorial de `q2_sector` pasan a «¿A qué se dedica principalmente tu negocio o emprendimiento?» (con alternativa de organización), y el prototipo V9 añade búsqueda de sector con sinónimos, muestra progresiva y opción «No lo tengo claro». No cambia las claves sectoriales históricas: su sustitución por la taxonomía compartida Vecindario está pendiente de migración versionada. V9 recompone la cola de preguntas tras cada respuesta/edición utilizando el plan actual, en vez de conservar preguntas técnicamente elegibles pero ya innecesarias. Se versionaron las identidades candidatas de banco y motor para rechazar sesiones experimentales anteriores. V8 público no se modifica.
+
 ## DIAG-V9-RECOVERY-01 — recuperación técnica aislada (2026-10-26; rama, no publicada)
 
 **CODE/GIT, sin suites nuevas ejecutadas:** se recuperó el experimento cerrado sin merge del PR #131 en `feat/diagnostic-v9-recovery-01`. La colección candidata contiene 77 definiciones (45 preguntas revisadas, ocho selectores de especialidad, seis preguntas piloto recuperadas, 15 de recuperación adicional y tres sustituciones especializadas). Los 45 textos editoriales se aplican solo en el banco candidato; `qa03b/bank.ts`, `qa03b/qbv2-candidate-planner.ts`, `qa03b/qbv2-candidate-scoring.ts` y las regresiones V8 conservan el blob de `main` de la base. El planificador/sistema de puntuación experimentales residen en `qa03b/v9-candidate-planner.ts` y `qa03b/v9-candidate-scoring.ts`. Las identidades V9 (sesión 9, replay candidato v7) no autorizan compatibilidad con V8. La vista y el replay core-only de V9 se registran exclusivamente como ruta de desarrollo `/__dev/diagnostico/qa03b/v9`; no sirven resumen/informe/comercial y no modifican `/diagnostico` ni sus endpoints públicos.

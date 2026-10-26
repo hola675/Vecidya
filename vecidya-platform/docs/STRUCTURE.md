@@ -1,5 +1,9 @@
 # Estructura del código
 
+## DIAG-V9-UX-03 — mejoras de selección (2026-10-26; rama, no publicada)
+
+**DIAG-V9-UX-03:** `qa03b-v9-classification-step.tsx` pregunta por negocio o emprendimiento y filtra hasta siete sugerencias del banco histórico V9, sin respuesta automática. `qa03b/editorial-copy.ts` revisa únicamente el copy candidato. `qa03b/v9-session-prototype.ts` usa un nuevo identificador de motor y banco, y recalcula `queue` desde `buildCandidateQuestionPlanV9Prototype` en cada replan; Worker usa dichas identidades para fallar cerrado ante sesiones incompatibles. Migración al catálogo común pendiente; no modifica los 45 contratos V8.
+
 ## DIAG-V9-RECOVERY-01 — ruta candidata aislada (2026-10-26; no publicada)
 
 `/__dev/diagnostico/qa03b/v9` → `routes/dev-diagnostic-qa03b-v9.tsx`: registrada solo en el bloque `isDevelopmentServer`, con comprobación `import.meta.env.DEV`, `noindex`, `no-store` y POST JSON same-origin; permite visualizar clasificación sector+especialidad y probar replay core-only. No entra en rutas públicas de producción. `qa03b/v9-candidate-{planner,scoring}.ts` y el banco especializado dependen de un contrato candidato separado; `qa03b/bank.ts` y archivos públicos V8 permanecen idénticos a `main` en la rama. Requiere typecheck/build, tests y prueba de aislamiento de bundle antes de cualquier integración.

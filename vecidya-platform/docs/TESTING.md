@@ -1,5 +1,9 @@
 # Pruebas
 
+## DIAG-V9-UX-03 — mejoras de selección (2026-10-26; rama, no publicada)
+
+**TESTS/CI V9-UX-03:** `qa03b-v9-classification-step.test.ts` cubre pregunta negocio/emprendimiento, pantalla con búsqueda progresiva, sugerencias y selector de especialidad; `qa03b-editorial-copy.test.ts` verifica que copy V9 no afecta V8; `qa03b-v9-session-prototype.test.ts` verifica que la cola es idéntica al plan recompuesto tras respuestas y revisiones. Typecheck, build, suite y replay Worker deben certificar HEAD actual antes de integración; no publicar V9 ni mutar esquemas V8.
+
 ## DIAG-V9-RECOVERY-01 — pruebas recuperadas, ejecución pendiente (2026-10-26)
 
 **CODE/TEST (fuentes), NO RAN:** se rescataron las pruebas editoriales (45 copias), la selección de ocho especialidades, el banco de 74 definiciones y sus tres sustituciones (77), las rutas sintéticas, la selección `utility_first`, la clasificación compuesta sector + especialidad, la sesión V9 y su replay aislado en Worker. Tras la recuperación se restauró el banco, planificador y scorer de V8 desde `main`, se añadieron módulos `v9-candidate-planner.ts` / `v9-candidate-scoring.ts`, se adecuaron imports y pruebas y se añadió una comprobación de que los cambios de copy no afectan contratos públicos. Esas modificaciones **no tienen todavía resultado de ejecución**.
