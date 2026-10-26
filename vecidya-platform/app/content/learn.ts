@@ -678,7 +678,18 @@ export const learnArticles: LearnArticle[] = [
           lesson: "La confianza empieza por información coherente y mantenida. Abrir otro canal no corrige los datos antiguos de los que ya existen.",
         }],
       },
-      { heading: "Lista de comprobación", paragraphs: ["Comprueba que horarios, servicios y contacto coincidan entre canales.","No inventes reseñas ni afirmaciones para ganar confianza.","Revisa accesibilidad, privacidad y seguridad antes de ampliar tu presencia."] },
+      {
+        heading: "Qué puedes hacer ahora",
+        paragraphs: [],
+        blocks: [{
+          type: "summary",
+          items: [
+            "Haz una lista de los canales que realmente mantienes y asigna quién actualiza cada uno.",
+            "Corrige primero los datos que pueden provocar una visita, llamada o consulta equivocada.",
+            "Prueba contacto, accesibilidad y seguridad como visitante antes de abrir otro canal.",
+          ],
+        }],
+      },
       {
         heading: "Fuentes y alcance",
         paragraphs: ["Las fuentes siguientes se consultaron para preparar esta guía. Las recomendaciones editoriales y de organización son prácticas generales; los requisitos de plataforma se identifican como políticas y no deben confundirse con asesoría legal. Las reglas cambian y pueden variar por sector, formato o país: comprueba las versiones vigentes antes de actuar."],
@@ -1756,7 +1767,8 @@ export const learnArticles: LearnArticle[] = [
           items: [
             { term: "Visita o sesión", definition: "Actividad agrupada según las reglas de la herramienta. No equivale necesariamente a una persona única." },
             { term: "Interacción", definition: "Una acción observada, como pulsar un botón o abrir una página." },
-            { term: "Conversión", definition: "Una acción que decides marcar como relevante, por ejemplo enviar una solicitud. No significa automáticamente una venta." },
+            { term: "Evento clave", definition: "En Google Analytics, un evento que marca una acción especialmente importante para el negocio, como una solicitud válida según tu configuración." },
+            { term: "Conversión publicitaria", definition: "Una acción importante utilizada para medir el rendimiento de campañas. Puede partir de un evento clave y no significa necesariamente una venta." },
             { term: "Resultado confirmado", definition: "Algo que el negocio puede verificar fuera de la herramienta, como una reserva atendida o un pedido válido." },
           ],
         }],
@@ -1806,7 +1818,7 @@ export const learnArticles: LearnArticle[] = [
           type: "list",
           items: [
             "Muestra también el volumen: una tasa puede cambiar mucho cuando hay pocos casos.",
-            "No atribuyas una venta a una campaña solo porque ocurrió después de un clic.",
+            "Origen incierto (atribución): que una venta ocurra después de un clic no demuestra que la campaña haya causado la compra.",
             "Anota cambios de temporada, precio, horario o disponibilidad antes de comparar.",
             "Usa la misma definición durante la comparación; dos herramientas pueden contar visitas de manera distinta.",
           ],
@@ -1842,7 +1854,7 @@ export const learnArticles: LearnArticle[] = [
           type: "sources",
           items: [
             { label: "About events — Google Analytics Help", url: "https://support.google.com/analytics/answer/9322688", scope: "Explica eventos e interacciones en Google Analytics; la configuración determina qué se registra." },
-            { label: "About conversions — Google Analytics Help", url: "https://support.google.com/analytics/answer/9267568", scope: "Describe cómo se marcan eventos relevantes como conversiones; el negocio debe decidir qué resultado tiene valor." },
+            { label: "Conversions vs. key events — Google Analytics Help", url: "https://support.google.com/analytics/answer/13965727", scope: "Distingue los eventos clave usados para analizar acciones importantes de las conversiones utilizadas para medir campañas publicitarias." },
             { label: "Google Analytics policies", url: "https://support.google.com/analytics/answer/6004245", scope: "Políticas publicadas por Google Analytics, incluidas restricciones sobre información de identificación personal." },
             { label: "ICO — Cookies and similar technologies", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/cookies-and-similar-technologies/", scope: "Orientación británica sobre cookies; comprueba las reglas aplicables a tu ubicación y actividad." },
           ],
