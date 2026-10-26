@@ -171,9 +171,11 @@ test("retained specialty pilots measure cost and evidence delta against the 74-q
     console.log(`QA03B_SPECIALTY_IMPACT ${JSON.stringify({
       profile,
       before: { count: before.asked.length, terminal: before.terminal,
-        evidence: before.evidence.length, unresolved: before.unresolved, insufficient: before.insufficient },
+        evidence: before.evidence.length, unresolved: before.unresolved, insufficient: before.insufficient,
+        asked: before.asked },
       after: { count: after.asked.length, terminal: after.terminal,
-        evidence: after.evidence.length, unresolved: after.unresolved, insufficient: after.insufficient },
+        evidence: after.evidence.length, unresolved: after.unresolved, insufficient: after.insufficient,
+        asked: after.asked },
       specialtyAsked: after.asked.filter((id) => pilotIds.has(id)),
       addedQuestions: after.asked.filter((id) => !before.asked.includes(id)),
       removedQuestions: before.asked.filter((id) => !after.asked.includes(id)),
