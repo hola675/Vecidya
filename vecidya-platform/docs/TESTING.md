@@ -1,8 +1,8 @@
 # Pruebas
 
-## APRENDE-EDITORIAL-APPROVAL-01 — revisión de catálogo (checkpoint local)
+## APRENDE-EDITORIAL-APPROVAL-01 — validación de catálogo (PR #147 sincronizado)
 
-La revisión aprobó las 18 guías previamente en borrador: objetivo/alcance, claridad, resumen, estructura, ejemplo hipotético, definiciones/pasos/FAQ, imagen/alt, enlaces relacionados y fuentes con alcance declarado. Unitarias focales: 51/51 PASS; typecheck/build y Playwright local: PASS; la regresión completa no finalizó y queda para CI.
+La revisión aprobó las 18 guías previamente en borrador: objetivo/alcance, claridad, resumen, estructura, ejemplo hipotético, definiciones/pasos/FAQ, imagen/alt, enlaces relacionados y fuentes con alcance declarado. Unitarias focales: 51/51 PASS; typecheck/build y Playwright local: PASS. En el HEAD sincronizado `3350bed9`, `Aprende quality` run `40360164171`, `Aprende public QA` run `40360164331` y `Main integration quality` run `40360164020` terminaron PASS; el último incluye typecheck, build, regresión Diagnóstico/Aprende y suite unitaria completa. El workflow público usó Chromium y subió el artefacto de capturas/reporte.
 
 **Fuentes — RAN local 2026-10-26:** `node scripts/audit-learn-links.mjs` inspeccionó 73 URL de siete módulos: 16 respuestas 404 automatizadas y 12 no concluyentes (403/timeout); el resto respondió 200 o redirección. El DOI NIST AI 600-1 dio falso 404 automatizado aunque NIST publica registro y PDF. Se reemplazó una URL archivada de CISA en una de las guías aprobadas por la página vigente de recursos para pequeñas y medianas empresas. Las demás referencias 404 pertenecen a artículos preexistentes y requieren un checkpoint posterior de saneamiento. Los 403/timeouts no se clasifican como rotos sin corroboración.
 

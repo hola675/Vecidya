@@ -8,7 +8,7 @@
 
 El catálogo tipado contiene 48 guías, seis categorías y nueve itinerarios. Se revisaron individualmente y aprobaron las 18 guías que estaban marcadas como borrador; quedan 48 con estado público aprobado y 0 borradores. La revisión cubre alcance y solapamientos, claridad, estructura, ejemplos hipotéticos, pasos, FAQ, resúmenes, imágenes/alt, relaciones y fuentes con alcance explícito. Ver el dictamen histórico de las 46 guías en `docs/APRENDE_EDITORIAL_AUDIT_04B.md` y el checkpoint presente en `STATUS.md`.
 
-La suite unitaria y el QA público ahora exigen 48 artículos públicos, nueve itinerarios y preservan el bloqueo de un borrador sintético como regresión. PR #147 contiene este cambio y sigue sin integrarse ni desplegarse. `editorialDraft` continúa siendo la frontera para nuevas guías que requieran revisión.
+La suite unitaria y el QA público ahora exigen 48 artículos públicos, nueve itinerarios y preservan el bloqueo de un borrador sintético como regresión. PR #147 contiene este cambio, está sincronizado con `origin/main@040f2fff` y tiene los tres workflows CI PASS en `3350bed9`; sigue sin integrarse ni desplegarse. `editorialDraft` continúa siendo la frontera para nuevas guías que requieran revisión.
 
 La nota APRENDE-EDITORIAL-FINAL-02 en el snapshot histórico de abajo describe el corte 2026-10-25 y queda superada por esta aprobación editorial en PR #147; hasta integrar y publicar el cambio, producción conserva el estado de 30 guías públicas y 18 borradores.
 
