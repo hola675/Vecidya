@@ -1,5 +1,5 @@
 import type { QuestionDefinitionV2, QuestionVersionV2 } from "../qbv2-contract";
-import { andV2, eqV2 } from "../qbv2-rules";
+import { andV2, eqV2, inV2 } from "../qbv2-rules";
 import type { MigratedAnswerStateV3, QuestionEvidenceV3 } from "../qbv2-evidence-v3";
 
 /**
@@ -133,6 +133,42 @@ export const QA03B_SPECIALTY_EVIDENCE_EXPERIMENTS_V1: readonly QuestionDefinitio
       { value: "reactive", label: "No, normalmente reacciono cuando el cliente me contacta" },
       { value: "not_applicable", label: "No aplica a los productos o servicios que gestiono", kind: "not_applicable" },
       { value: "unknown", label: "No estoy seguro", kind: "unknown" },
+    ],
+  },
+,
+  // q2_service_quote_followup is limited to local_service + an explicit quote-practice
+  // answer. A repair shop is a local business, not a mobile/local_service archetype;
+  // test the missing estimate-approval process without broadening the generic rule.
+  {
+    id: "q2_specialty_auto_repair_estimate_followup",
+    version: 1,
+    module: "follow_up",
+    type: "single",
+    routingRole: "adaptive",
+    prompt: "Cuando un cliente recibe un presupuesto de reparación y no lo aprueba enseguida, ¿qué suele ocurrir después?",
+    hint: "Piensa en presupuestos reales que quedaron pendientes; no cuentes reparaciones autorizadas en el momento.",
+    purpose: ["diagnostic"],
+    priority: "normal",
+    evidenceMigration: "migrated",
+    appliesWhen: andV2(
+      operatingWithHistory,
+      eqV2("q2_niche_automotive", "auto_repair"),
+      inV2("q2_friction", ["follow_up", "conversion"]),
+    ),
+    scoringReadiness: { candidateDimensions: [], signalDirection: "neutral", allowsUnknown: true, allowsNotApplicable: true },
+    evidenceV3: evidence("q2_specialty_auto_repair_estimate_followup", "relationship_recurrence", {
+      systematic: "established",
+      partial: "partial",
+      reactive: "weak",
+      not_applicable: "not_applicable",
+      unknown: "uncertainty",
+    }),
+    options: [
+      { value: "systematic", label: "Cada presupuesto pendiente queda registrado y tiene un siguiente paso definido" },
+      { value: "partial", label: "Hacemos seguimiento en algunos casos, pero no de forma constante" },
+      { value: "reactive", label: "Normalmente esperamos a que el cliente vuelva a contactar" },
+      { value: "not_applicable", label: "No suelen quedar presupuestos pendientes: se autoriza la reparación en el momento", kind: "not_applicable" },
+      { value: "unknown", label: "No tengo información suficiente para saberlo", kind: "unknown" },
     ],
   },
 ];
