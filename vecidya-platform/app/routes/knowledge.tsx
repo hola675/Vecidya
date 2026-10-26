@@ -2,6 +2,7 @@ import { Link } from "react-router";
 
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { learnArticles, learnCategories, learnPathways } from "../content/learn";
+import { getPublicLearnArticles } from "../content/learn-publication";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 import { publicListingRobots } from "../lib/public-seo";
 
@@ -25,7 +26,7 @@ export function loader({ request }: Route.LoaderArgs) {
   const requestedCategory = params.get("tema");
   const category = learnCategories.find((topic) => topic.name === requestedCategory)?.name ?? null;
   const needle = searchable(search);
-  const publicArticles = learnArticles.filter((article) => !article.editorialDraft);
+  const publicArticles = getPublicLearnArticles(learnArticles);
   const articles = publicArticles
     .filter((article) => {
       if (category && article.category !== category) return false;
