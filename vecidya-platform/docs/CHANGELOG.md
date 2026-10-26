@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-25 — VECIDYA-ADMIN-FUNCTIONAL-AUDIT (checkpoint parcial, PR #139)
+
+- La administración de servicios registra asignaciones/cambios con el actor, organización, valores anteriores/nuevos y timestamps de activación/finalización en el mismo batch. UI y API comparten la query de escritura; colisiones concurrentes de la asignación única producen un conflicto controlado.
+- La creación de integraciones responde `409` ante el índice único global duplicado y audita la inserción junto con la conexión. La pantalla de auditoría incluye etiquetas/filtros para acciones de control plane conocidas y muestra la clave técnica si no tiene etiqueta.
+- Typecheck/build y diff-check PASS; D1 local `0000–0028`. El E2E focal se detiene antes de las acciones porque su registro sintético no provee la invitación obligatoria. No se ejecutaron unitarias ni navegador; licencia duplicada por concurrencia y otros gaps administrativos quedan abiertos en `STATUS.md`/`TESTING.md`. Sin migración, datos remotos, GHL ni deploy.
+
 ## 0.8.0 — producción (2026-10-25)
 
 - Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.
