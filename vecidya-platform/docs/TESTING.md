@@ -1,5 +1,9 @@
 # Pruebas
 
+## SECTOR-TAXONOMY-02 — nueva taxonomía y elección en perfil (2026-10-26)
+
+**CODE/TEST, todavía no RAN:** `tests/unit/business-sectors.test.ts` protege el recuento (15 familias + Otra), unicidad de ID/etiqueta, ejemplos, cobertura de los 20 sectores NAICS 2022 como referencias, separación sector/canal/comprador y preservación de categoría legacy. Deben ejecutarse `pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/business-sectors.test.ts tests/unit/miniweb/neighborhood.test.ts`, `pnpm run typecheck`, `pnpm run build`, `pnpm run test:unit` y el E2E de perfil/Vecindario con categorías preexistentes en snapshots. CI pendiente. La codificación actual en `business_profile.category` guarda la etiqueta exacta y no requiere migración D1. No declarar QA de campo ni compatibilidad de V9 sin pruebas de integración adicionales.
+
 ## APP-MINI-02B — horarios, identidad y retículas (2026-10-26)
 
 `business-profile-experience-check.mjs` protege valores de horario tras rechazo, navegación por foco, guardado y ausencia del campo URL heredado del logo. Ejecución solo contra Worker Cloudflare local y D1 local: **PASS**. `miniweb-core-check.mjs`: **134/134 PASS**; protege logo/portada publicados en el marco, editor y su cabecera, Vecindario y layout responsive sin overflow, y ausencia de exposición prematura de medios. Fixtures limpiadas. Typecheck, build y `git diff --check`: PASS. Sin pruebas contra producción.

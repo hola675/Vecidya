@@ -1,5 +1,11 @@
 # Changelog
 
+## SECTOR-TAXONOMY-02 — candidato no publicado (2026-10-26)
+
+- Propuesta de 15 familias sectoriales más «Otra actividad» basada en cobertura de actividades económicas y lenguaje para negocios locales; catálogo en `app/content/business-sectors.ts`.
+- Editor de perfil Vecindario: nueva selección finita de categoría principal, con valor legacy explícito y sin reclasificación silenciosa, persistida en la columna de texto existente.
+- Contratos públicos V8, banco candidato V9, precios, ofertas, D1 y rutas públicas conservados sin cambios en este checkpoint. Validación pendiente; no publicado.
+
 ## 0.8.3 — producción (2026-10-26)
 
 - Se preservan los valores de horarios tras un error de validación y se mantiene sincronizado el foco/indicador de navegación.
