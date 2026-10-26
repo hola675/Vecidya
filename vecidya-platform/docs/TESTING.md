@@ -8,7 +8,7 @@
 
 **Cómo ejecutar en local:** desde vecidya-platform/, instalar dependencias con pnpm install; tener Chromium instalado con pnpm exec playwright install chromium; levantar un servidor con pnpm dev --host 127.0.0.1 --port 5173, y en otra consola ejecutar BASE_URL=http://127.0.0.1:5173 pnpm test:e2e:aprende-public (en PowerShell establecer BASE_URL como variable de entorno antes del comando). Produce test-results/aprende-public-qa/report.json y capturas *.png. En CI, .github/workflows/aprende-public-qa.yml instala dependencias y Chromium, inicia servidor local, ejecuta la prueba y publica un artefacto de evidencia por 14 días con report.json, capturas y server.log. El ejecutor completo tests/e2e/run-local-e2e.mjs utiliza esta prueba en sustitución de learn-experience-check.mjs, cuya expectativa de 38 guías / 7 itinerarios / borradores visibles quedó obsoleta.
 
-**Condición de cierre:** los tres workflows anteriores pasaron en el mismo HEAD; las capturas fueron revisadas y no presentan problemas visuales evidentes. No certifica WCAG integral. El cambio ya está integrado mediante PR #143; **la publicación sigue pendiente** de deploy y HTTP anónimo fechado sobre producción.
+**Condición de cierre:** los tres workflows anteriores pasaron en el mismo HEAD; las capturas fueron revisadas y no presentan problemas visuales evidentes. No certifica WCAG integral. El cambio ya está integrado mediante PR #143 y publicado por PR #144; la verificación HTTP anónima fechada consta en `ENVIRONMENTS.md`.
 
 **Exclusiones:** sin aprobación editorial, cambios en banderas editorialDraft, credenciales, D1/R2, despliegue, GHL ni cambios de motor del Diagnóstico. El chequeo independiente de fuentes HTTPS remotas sigue en el workflow manual Aprende external links audit.
 
@@ -18,6 +18,8 @@
 El run `40248565700` falló con **1739/1740** pruebas: `learn-management-03.test.ts` esperaba `editorialDraft: true` para las cinco guías de Gestión, pero el candidato final las había marcado como aprobadas. La causa era un cambio de estado editorial no autorizado, no un defecto del guard. Se restaura `editorialDraft: true` para 18 guías y se actualizan los contratos para exigir **18 borradores / 30 no marcadas como borrador**. La aprobación de contenido, el merge y el deploy son decisiones separadas.
 
 **RAN en GitHub Actions sobre el HEAD de código `322850f`:** `Aprende quality` run `40254782673` PASS (typecheck, build e integridad Aprende); `Main integration quality` run `40254782671` PASS (typecheck, build, regresión Diagnóstico/Aprende y **1740/1740 unitarias, 0 fallos**). El commit posterior de documentación no cambia código ni contenido.
+
+**Reconciliación:** PR #138 integró este contrato en `main` preservando 18 borradores; PR #143 certificó la superficie pública y sus tres workflows PASS; PR #144 publicó 0.8.1 con verificación HTTP fechada. Las secciones 04E–04J que siguen registran ejecuciones históricas de ramas candidatas y no representan el estado editorial integrado.
 
 ## APRENDE-EDITORIAL-04J — consolidación transversal (2026-10-25)
 
@@ -53,13 +55,13 @@ Sin Main integration mientras este checkpoint permanezca paralelo y apilado sobr
 
 **TEST versionado / RAN pendiente en HEAD final.** El contrato de catálogo espera **47 guías** y mantiene 9 itinerarios. La prueba nueva exige que la guía histórica de proveedor siga aprobada y enfocada en elegir/renovar, mientras la migración nueva permanece en revisión y contiene DNS, correo, cancelación segura y comprobaciones. Ambas deben enlazarse entre sí. Las pruebas históricas de Presencia, Automatizaciones, Dominio/hosting, CRM e IA permanecen como contrato de contenido durante su reducción. Un guard adicional protege seis guías madre (CRM, IA, Presencia, primera campaña, Automatizaciones y Dominio/hosting) contra regresión editorial: máximo 10 secciones y 1800 palabras serializadas por guía.
 
-**RAN:** `Aprende quality` run `40243511349` sobre `619f25ad2ebbaf0f76e2655975fb6a424f8598fe` PASS: instalación, typecheck, build e integridad Aprende. El PR #123 tiene base `feat/aprende-editorial-04a`, por lo que GitHub no ejecutó `Main integration quality` en este checkpoint dependiente; ese gate queda requerido cuando 04B se retargete a `main` o se integre la cadena. Sin D1 remota, E2E visual ni deploy.
+**RAN:** `Aprende quality` run `40243511349` sobre `619f25ad2ebbaf0f76e2655975fb6a424f8598fe` PASS: instalación, typecheck, build e integridad Aprende. El PR #123 se integró dentro de #138; los checks de integración final se ejecutaron en los HEADs indicados arriba y en PR #143/#144. Sin D1 remota ni deploy en el alcance de este checkpoint histórico.
 
 ## APRENDE-EDITORIAL-04B — separación semántica de guías técnicas (2026-10-25)
 
 **RAN en GitHub Actions:** `Aprende quality` run `40246463847` sobre `7a6c044c5ddee8e94a146cbd1febc3c9e29ab76c` PASS: typecheck, build e integridad Aprende. El catálogo esperado queda en **48 guías** y 9 itinerarios. El contrato comprueba que el mapa `dns-https-y-correo-como-se-conecta-tu-dominio` derive el detalle hacia `correo-profesional-dominio-registros-mx-txt`, que ambas guías se relacionen, que el mapa no vuelva a crecer por encima de 8 secciones y que la guía nueva conserve fuentes específicas para SPF (RFC 7208), DKIM (RFC 6376) y DMARC vigente (RFC 9989).
 
-La guía nueva sigue `editorialDraft: true`. El guard de densidad cubre DNS/mapa, HTTPS, analítica, supervisión de automatizaciones, piloto de IA y correo profesional con máximo 8 secciones y 1500 palabras serializadas. PR #123 continúa apilado sobre 04A; el gate general contra `main` corresponderá al retarget o integración final.
+La guía nueva sigue `editorialDraft: true`. El guard de densidad cubre DNS/mapa, HTTPS, analítica, supervisión de automatizaciones, piloto de IA y correo profesional con máximo 8 secciones y 1500 palabras serializadas. PR #123, con el contenido correspondiente, quedó integrado por PR #138; esta ejecución describe solo la evidencia de su checkpoint histórico.
 
 ## APRENDE-EDITORIAL-04B — criterios de auditoría semántica
 

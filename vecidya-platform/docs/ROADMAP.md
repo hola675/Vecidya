@@ -1,15 +1,8 @@
-## APRENDE-EDITORIAL-FINAL-02 — preservar la frontera de aprobación (2026-10-25)
+## APRENDE-PUBLIC-QA-01-A11Y — auditoría integral pendiente
 
-**Activo en `feat/aprende-editorial-final` / PR #138; sin merge ni deploy.** El catálogo se ha auditado en 48 guías y 9 itinerarios, pero la auditoría no autoriza a quitar estados de borrador. La integración candidata debe conservar **18 borradores** (14 existentes en `main` + cuatro guías nuevas de 04A/04B) y 30 guías con estado previo no-borrador. No se marcará un artículo como aprobado ni se publicará sin autorización explícita. Gate técnico superado en `322850f`: `Aprende quality` run `40254782673` y `Main integration quality` run `40254782671` PASS; 1740/1740 unitarias. Quedan la aprobación explícita de las guías en borrador y la decisión del usuario sobre merge/deploy.
+La certificación pública integrada verifica rutas, navegación por teclado y viewports seleccionados, pero no sustituye una auditoría WCAG integral ni pruebas con lector de pantalla. Definir y ejecutar ese alcance antes de declarar accesibilidad completa; registrar resultados y remediación en los documentos canónicos. No cambiar estados editoriales ni publicar contenido como parte de esta deuda.
 
 ## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
-
-## APRENDE-EDITORIAL-04B — revisión semántica de las 46 guías
-
-**Implementado en la rama del PR #121; CI se verifica en Actions del HEAD actual y la aceptación editorial sigue pendiente.** Se registran los dictámenes por guía en docs/APRENDE_EDITORIAL_AUDIT_04B.md. El trabajo reduce solapamientos en CRM, preparación publicitaria, mantenimiento de presencia y DNS; diferencia la política de IA empresarial de la prueba de asistentes; personaliza encabezados de trece guías introductorias y añade una relación hacia el artículo de presupuesto.
-
-Gate de salida: catálogo de 46 slugs únicos y nueve itinerarios intactos; ejemplos estructurados, enlaces y fuentes válidos; estados editoriales conservados; suites de Aprende y regresión principal PASS sobre el SHA actual. No fusionar ni desplegar como parte de este checkpoint.
-
 
 **Objetivo:** adaptar las referencias premium entregadas por el usuario a una experiencia coherente de Vecidya, preservando contenido, datos, permisos, funcionamiento móvil y límites comerciales. Las referencias guían composición e interacción; no se copian marcas, textos, layouts exactos ni assets. Este trabajo no incluye publicación ni despliegue.
 
@@ -53,30 +46,6 @@ Gate de salida: catálogo de 46 slugs únicos y nueve itinerarios intactos; ejem
 
 **Checkpoint UX-PREMIUM-06A — accesibilidad pública (2026-10-24, rama `feat/app-mini-ux-06-public-a11y`):** una muestra de 13 rutas públicas pasó 94 reglas AccessLint por URL, sin reglas omitidas y con cero violaciones en los escaneos finales tras corregir landmarks, contraste, nombres accesibles y acceso por teclado al comparador. Se verificaron menús desktop/móvil, foco y tabla desplazable en Worker local; typecheck/build/diff-check PASS. No es certificación WCAG ni auditoría completa: quedan lector de pantalla, zoom real al 200 %, sitemap/robots y otras rutas; no publicado.
 
-### APRENDE-EDITORIAL-04A — alfabetización digital y claridad pedagógica (2026-10-25)
-
-**En implementación en `feat/aprende-editorial-04a`, sin autorización de merge o deploy.** Objetivo: extender Aprende desde educación empresarial hacia alfabetización digital útil para personas y negocios sin diluir las seis categorías existentes. El método editorial queda expresado como **Comprende → Prioriza → Decide**, con dos guías fundacionales nuevas y un noveno itinerario «Usa la tecnología con criterio».
-
-**Gate 04A:** 46 slugs únicos; 9 itinerarios válidos; todas las guías con ejemplo hipotético estructurado y accionable; nuevas fuentes institucionales verificadas; búsqueda de `/aprende` sobre contenido interno; typecheck/build/diff-check y suites focales PASS en el HEAD candidato. Las dos guías nuevas deben permanecer en borrador hasta revisión editorial explícita.
-
-**Checkpoint 04B implementado, pendiente de CI final:** la auditoría semántica separa proveedor (elegir/renovar vs migrar) y deja 47 guías. Se reducen seis guías madre que habían acumulado detalle ya cubierto por especializadas: Presencia 3291→1420, Automatizaciones 2707→1146, Dominio/hosting 2413→1179, primera campaña 2346→1120, CRM 2142→1075 e IA general 1743→982 palabras. Un guard unitario limita esas seis piezas a ≤10 secciones y ≤1800 palabras serializadas. **Siguiente checkpoint 04C:** recorrer las 47 guías por jerga y comprensión (término → explicación cotidiana → ejemplo), sin separar por longitud salvo que existan objetivos educativos realmente distintos.
-
-### APRENDE-EDITORIAL-04B — separación semántica de guías técnicas
-
-**En curso:** 48 guías y 9 itinerarios. Selección/migración de proveedor y mapa DNS/correo profesional ya están separados por objetivo educativo. Mantener slugs históricos cuando funcionen como puerta de entrada; los detalles nuevos quedan en borrador hasta revisión editorial.
-
-### APRENDE-EDITORIAL-04E — revisión de borradores de Operaciones (2026-10-25)
-
-**En revisión técnica:** cinco guías de Operaciones fueron auditadas una por una y promovidas tras verificar fuentes, lenguaje, ejemplos y límites. Quedan 13 borradores en el catálogo de 48 guías. Este checkpoint se mantiene separado de 04C/04D porque esas ramas parten de un HEAD anterior de 04B; la reconciliación deberá preservar ambos conjuntos de cambios sin force-push destructivo.
-
-### APRENDE-EDITORIAL-04I — cierre editorial del catálogo (2026-10-25)
-
-**Checkpoint en certificación:** la cadena 04E→04I revisó los 18 borradores que permanecían sobre el HEAD final de 04B. Estado candidato: **48/48 guías revisadas, 0 borradores**. Antes de integrar se requiere CI del HEAD, auditoría transversal de fuentes/rutas/relaciones y reconciliación no destructiva con los PR #125/#126, que contienen mejoras de lenguaje/fuentes sobre una base anterior.
-
-### APRENDE-EDITORIAL-04J — consolidación final de contenido (2026-10-25)
-
-**Candidato editorial completo:** 48 guías revisadas, 0 borradores, 9 itinerarios y 6 categorías. La deuda de 04C/04D se reconcilió de forma no destructiva: lenguaje específico, fuentes vigentes, cobertura total de itinerarios y relaciones editoriales. `Aprende quality` PASS; falta el PR de integración contra `main` y su gate general. No autoriza deploy.
-
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 
 ### APP-PROFILE-SEO-ORIGIN-001 — revisión puntual con propietario MiniWeb (hallazgo 2026-10-20)
@@ -114,16 +83,16 @@ La primera extensión de operaciones cubre **organización de tareas**, **movimi
 
 ## CONSOLIDACIÓN-DIAG-2026-10-18 — roadmap de unificación (propuesto, sin cutover)
 
-### APRENDE — próxima certificación editorial de la biblioteca
+### APRENDE — seguimiento editorial
 
-Después de APRENDE-EDITORIAL-02: revisar y aprobar cada uno de los 13 nuevos borradores educativos (hechos, lenguaje sin jerga, fuentes, ejemplos hipotéticos, imágenes móviles y autoría), ejecutar los gates de `TESTING.md`, y retirar `editorialDraft` solo de guías aprobadas individualmente. La eliminación del estado de borrador modifica exposición/indexación y no debe hacerse sin revisión editorial explícita. Realizar seguimiento de temas por sector o jurisdicción (normas de pagos/consentimiento, costos y herramientas regionales) solo con evidencia y contexto; no inventar leyes generales. No es un permiso de publicar o desplegar.
+La biblioteca pública conserva 18 borradores por decisión editorial. Revisar y retirar `editorialDraft` solo en guías aprobadas individualmente; el cambio de estado modifica exposición e indexación y requiere revisión explícita. El seguimiento de temas por sector o jurisdicción requiere fuentes y contexto vigentes.
 
 
-**Estado reconciliado al 2026-10-26; HTTP RAN 2026-10-25T18:38Z:** producción sirvió `0.8.0`; staging `0.7.0` según corte HTTP anterior. `origin/main@4dcc27f` integra PR #138. Cloudflare API 2026-10-26 confirma buckets R2 de staging y producción; Worker staging aún no tiene el binding R2, producción sí. La última verificación de ledger D1 documentada sigue en `0000–0026` (2026-10-24); no se consultó D1 en este corte. No hubo deploy ni escritura remota; entrega Gmail y ciclo de purga no se revalidaron.
+**Estado al corte del 2026-10-26:** el catálogo editorial se integró por PR #138 y se publicó como 0.8.1 en PR #144; producción y la evidencia HTTP fechada constan en `ENVIRONMENTS.md`. Cloudflare API 2026-10-26 confirma buckets R2 de staging y producción; Worker staging aún no tiene el binding R2, producción sí. La última verificación de ledger D1 documentada sigue en `0000–0026` (2026-10-24); no se consultó D1 en este corte. Entrega Gmail y ciclo de purga no se revalidaron.
 
 **Estado actual reconciliado al 2026-10-23:** el código integrado en `origin/main@03a0158` sirve `/diagnostico` y `/diagnostico/metodologia` con QA-03B y replay autoritativo en Worker. Contrato de `main`: banco `reviewed-evidence-v7`, respuestas `qbv2-answers-v5`, sesión schema/key 6 y replay `qa03b-worker-replay-v4`. El endpoint anónimo conserva el adaptador V3 para rollback y las sesiones V3 históricas no se migran. ACT-04 está integrado (PR #42); no está publicado. **Checkpoint local successor `feat/diagnostic-qa03b-engine-02`:** pregunta de medición directa, salida con evidencia directa y matriz de 20 casos; contrato candidato v8/v6/session 7/replay v5/metodología 3.1. Unitarias 1659/1659, typecheck, build y diff-check PASS; PR pendiente. Este checkpoint no cambia por sí solo lo publicado ni autoriza activación/despliegue. Informe identificado/correo y purga siguen cerrados por flags; sin autorización legal de retención ni HTTP anónimo fechado no hay certificación de publicación.
 
-**Estado de Diagnóstico al corte HTTP 2026-10-25T18:38Z / Cloudflare API 2026-10-26:** producción mostró versión `0.8.0`; Cloudflare confirma Worker prod Version ID `320eefe0-343c-431f-987f-cf9b92df0c8e`, staging `39ffd6e1-4d20-4c39-9338-653b41340085`. R2 está habilitado y ambos buckets existen, aunque falta el binding staging. No se ejecutó replay ni se consultó ledger D1 en esta verificación; la evidencia de ledger `0000–0026` del 2026-10-24 no se actualiza por inferencia. V3 y sus sesiones históricas deben conservarse durante la ventana de rollback. Funnel/purga están configurados como activos en producción e inactivos en staging; entrega Gmail y ejecución posterior de purga no se revalidaron aquí.
+**Estado de Diagnóstico al corte de Cloudflare API 2026-10-26:** producción está en 0.8.1 (HTTP fechado en `ENVIRONMENTS.md`); Cloudflare confirma Worker prod Version ID `320eefe0-343c-431f-987f-cf9b92df0c8e`, staging `39ffd6e1-4d20-4c39-9338-653b41340085`. R2 está habilitado y ambos buckets existen, aunque falta el binding staging. No se ejecutó replay ni se consultó ledger D1 en esta verificación; la evidencia de ledger `0000–0026` del 2026-10-24 no se actualiza por inferencia. V3 y sus sesiones históricas deben conservarse durante la ventana de rollback. Funnel/purga están configurados como activos en producción e inactivos en staging; entrega Gmail y ejecución posterior de purga no se revalidaron aquí.
 
 **Release directo 0.8.1 completado (2026-10-26):** PR #144 integrado y desplegado en producción con autorización explícita del usuario. Version ID `9497bda3-dc65-4a8d-a976-cfb89925da5d`; GET anónimo fechado confirma 0.8.1, las rutas de Aprende y la barrera de borradores. No se aplicaron migraciones ni se envió correo. Staging permanece en `0.7.0`; su Worker aún no tiene binding R2 efectivo y requiere un checkpoint de release separado antes de usarlo para validar MiniWeb. Mantener V3 para rollback durante la ventana acordada; después abrir un checkpoint separado para escanear consumidores y retirar solo código legacy sin uso demostrado. La carpeta `legacy/` no existe en este checkout.
 
