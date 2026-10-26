@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { learnArticles, learnPathways } from "../../../app/content/learn";
-import { getPublicLearnArticle, getPublicLearnArticles } from "../../../app/content/learn-publication";
+import { getPublicLearnArticle, getPublicLearnArticles, getPublicLearnPathways } from "../../../app/content/learn-publication";
 
 test("el catálogo público excluye borradores y conserva el conteo aprobado", () => {
   const publicArticles = getPublicLearnArticles(learnArticles);
@@ -22,12 +22,16 @@ test("la frontera editorial bloquea borradores por slug y conserva artículos ap
   assert.equal(getPublicLearnArticle(learnArticles, published.slug)?.slug, published.slug);
 });
 
-test("los itinerarios públicos solo resuelven artículos aprobados y conservan pasos útiles", () => {
-  const publicSlugs = new Set(getPublicLearnArticles(learnArticles).map((article) => article.slug));
-  assert.equal(learnPathways.length, 9);
-  for (const pathway of learnPathways) {
-    const available = pathway.slugs.filter((slug) => publicSlugs.has(slug));
-    assert(available.length >= 3, `El itinerario queda demasiado corto: ${pathway.title}`);
-    assert.equal(new Set(available).size, available.length, `Pasos duplicados: ${pathway.title}`);
+test("los itinerarios públicos solo incluyen guías aprobadas y mantienen al menos tres pasos", () => {
+  const pathways = getPublicLearnPathways(learnPathways, learnArticles);
+  assert.equal(learnPathways.length, 9, "El catálogo editorial conserva los nueve itinerarios originales");
+  assert(pathways.length > 0, "Debe quedar al menos un itinerario público útil");
+  for (const pathway of pathways) {
+    assert(pathway.slugs.length >= 3, `El itinerario queda demasiado corto: ${pathway.title}`);
+    assert.equal(new Set(pathway.slugs).size, pathway.slugs.length, `Pasos duplicados: ${pathway.title}`);
+    for (const slug of pathway.slugs) {
+      assert.equal(getPublicLearnArticle(learnArticles, slug)?.slug, slug, `El itinerario expone un borrador: ${pathway.title} -> ${slug}`);
+    }
   }
+  assert(pathways.length < learnPathways.length, "Los itinerarios formados solo por borradores no deben publicarse como caminos vacíos");
 });
