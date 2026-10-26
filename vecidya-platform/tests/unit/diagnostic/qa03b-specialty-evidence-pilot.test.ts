@@ -24,7 +24,7 @@ const common = {
   q2_other_staff: "no",
 } as const;
 
-test("four experiments are contract-valid but only the two evidence-positive pilots enter the candidate bank", () => {
+test("five experiments are contract-valid but only the three retained pilots enter the candidate bank", () => {
   assert.equal(experiments.length, 5);
   assert.equal(pilot.length, 3);
   assert.deepEqual([...rejectedIds].sort(), [
@@ -225,7 +225,7 @@ test("insurance renewal replaces generic pending-task review only in utility-fir
   assert.notEqual(neutral.trace.find((item) => item.questionId === "q2_followup_status_visibility")?.skipReason, "replaced_by_specialty");
 });
 
-test("retained specialty pilots measure cost and evidence delta against the 74-question bank", () => {
+test("retained specialty pilots measure cost and evidence delta against the 74-question base bank", () => {
   const pilotIds = new Set(pilot.map((q) => q.id));
   const withoutPilot = bank.filter((q) => !pilotIds.has(q.id));
   assert.equal(withoutPilot.length, 74);
