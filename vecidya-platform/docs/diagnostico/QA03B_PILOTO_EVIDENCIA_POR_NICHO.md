@@ -100,3 +100,28 @@ La siguiente fase no debe crear más preguntas al azar. Debe:
 **Aceptado con límite explícito:** seguros (24 preguntas, cinco dimensiones aplicables sin score y dos con contexto insuficiente).  
 **Rechazados del banco candidato:** software y marketplace.  
 **Producción:** sin cambios.
+
+
+## 8. Comparación independiente del planificador: 12 recorridos
+
+La certificación del planificador `baseline` frente a `utility_first` es un experimento distinto del A/B que decidió qué preguntas especializadas conservar. Sobre los mismos doce perfiles sintéticos:
+
+| Perfil | Baseline | Utility-first | Diferencia |
+|---|---:|---:|---:|
+| Proyecto de software en preparación | 14 | 13 | -1 |
+| Dentista en pausa | 11 | 10 | -1 |
+| Clínica dental activa | 23 | 23 | 0 |
+| Restaurante con reservas | 23 | 22 | -1 |
+| Comercio híbrido | 24 | 24 | 0 |
+| Agencia de marketing B2B | 21 | 21 | 0 |
+| Creador de audiencia | 19 | 18 | -1 |
+| Organización con donaciones | 22 | 21 | -1 |
+| SaaS activo | 21 | 21 | 0 |
+| Marketplace activo | 24 | 24 | 0 |
+| Preparación de impuestos | 23 | 23 | 0 |
+| Agencia de seguros | 24 | 24 | 0 |
+| **Total** | **249** | **244** | **-5** |
+
+Cinco recorridos se acortan, siete mantienen la duración y ninguno se alarga. Los doce mantienen iguales sus cantidades de evidencia directa/score y sus dimensiones sin resolver o con contexto insuficiente. Por tanto, el planificador `utility_first` ahorra cinco preguntas en esta matriz, pero **no demuestra por sí solo una mejora de suficiencia diagnóstica**. Los cambios de motivo terminal no deben interpretarse como una mejora de score.
+
+La comparación es sintética y determinista; no representa tiempos ni resultados de clientes reales. El resultado no cambia la decisión de mantener el planificador aislado del flujo público.
