@@ -295,6 +295,32 @@ try {
   assert(roleState?.role === "admin" && Number(roleState.audit_count) === 1, "El cambio de rol desde UI no persistió ni dejó una sola auditoría.");
   assert(lifecycleState?.status === "active" && Number(lifecycleState.suspend_audit) === 1 && Number(lifecycleState.active_audit) === 1, "Suspender/reactivar desde UI no dejó el estado final y las auditorías esperadas.");
 
+  const trainingPath = `/app/internal/organizations/${identities["owner-a"].organizationId}/training`;
+  await page.goto(`${baseUrl}${trainingPath}`);
+  const trainingSlug = "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo";
+  await page.getByLabel("Artículo").selectOption(trainingSlug);
+  await page.getByRole("button", { name: "Asignar" }).click();
+  await page.getByRole("status").getByText("Capacitación asignada a la organización.").waitFor();
+  const trainingAssignmentState = executeD1(`SELECT a.id,a.training_slug,(SELECT count(*) FROM platform_audit_log l WHERE l.organization_id=a.organization_id AND l.action='training.assign') AS audit_count FROM organization_training_assignment a WHERE a.organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND a.training_slug=${sqlLiteral(trainingSlug)};`)[0];
+  assert(trainingAssignmentState?.id && Number(trainingAssignmentState.audit_count) === 1, "Asignar capacitación desde UI no persistió el vínculo y su auditoría.");
+  const progressId = crypto.randomUUID();
+  executeD1(`INSERT INTO organization_training_progress (id,assignment_id,user_id,status,updated_at) VALUES (${sqlLiteral(progressId)},${sqlLiteral(trainingAssignmentState.id)},${sqlLiteral(identities.member.userId)},'in_progress',${now});
+    INSERT INTO organization_training_progress_history (id,progress_id,actor_user_id,previous_status,new_status,reason,created_at) VALUES (${sqlLiteral(crypto.randomUUID())},${sqlLiteral(progressId)},${sqlLiteral(identities.member.userId)},'not_started','in_progress',NULL,${now});`);
+  await page.goto(`${baseUrl}${trainingPath}`);
+  const progressRow = page.locator("tbody tr").filter({ hasText: identities.member.email });
+  await progressRow.getByRole("combobox", { name: "Nuevo estado para 4B member" }).selectOption("completed");
+  await progressRow.getByRole("textbox", { name: "Motivo de corrección" }).fill("Corrección verificada por administración");
+  await progressRow.getByRole("button", { name: "Guardar" }).click();
+  await page.getByRole("status").getByText("Progreso actualizado; motivo registrado en auditoría.").waitFor();
+  const correctedProgress = executeD1(`SELECT p.status,h.previous_status,h.new_status,h.reason,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND a.action='training.progress.correct') AS audit_count FROM organization_training_progress p JOIN organization_training_progress_history h ON h.progress_id=p.id WHERE p.id=${sqlLiteral(progressId)} ORDER BY h.created_at DESC LIMIT 1;`)[0];
+  assert(correctedProgress?.status === "completed" && correctedProgress.previous_status === "in_progress" && correctedProgress.new_status === "completed" && correctedProgress.reason === "Corrección verificada por administración" && Number(correctedProgress.audit_count) === 1, "La corrección de capacitación UI no persistió progreso, historial, motivo y auditoría.");
+  await page.goto(`${baseUrl}/app/internal/audit`);
+  const trainingAuditSearch = page.getByRole("searchbox", { name: "Buscar en auditoría" });
+  await trainingAuditSearch.fill("capacitación");
+  const trainingAuditRows = page.locator("tbody tr");
+  const trainingAuditText = (await trainingAuditRows.allInnerTexts()).join("\n");
+  assert(await trainingAuditRows.count() === 2 && trainingAuditText.includes("Asignó capacitación a la organización") && trainingAuditText.includes("Corrigió el progreso de capacitación"), `El historial de Admin no etiquetó ni filtró los eventos de capacitación: ${trainingAuditText}.`);
+
   await page.goto(`${baseUrl}/app/internal/organizations/new`);
   await page.getByLabel("Nombre").fill(`Admin UI ${suffix}`);
   await page.getByLabel("Slug").fill(`admin-ui-${suffix}`);

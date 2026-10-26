@@ -29,6 +29,11 @@
 - Chromium suspende y reactiva la licencia desde `/app/internal/licenses`; D1 verifica los estados `suspended`/`active` y un evento de auditoría por transición. El E2E completo `platform-service-administration-check.mjs` pasa con Worker y D1 aislados; no se usa información productiva.
 - Actualizados la matriz de rutas, la deuda de `ADMIN-FUNCTIONAL-AUDIT-001` y los gates pendientes. No hubo cambios de lógica/licencia, schema, migración, GHL ni deploy. La cobertura aún no prueba el conflicto obsoleto en su estado UI.
 
+### Continuación de PR #139 — capacitación y etiquetas de auditoría (2026-10-26)
+
+- La UI de capacitación confirma asignación y corrección de progreso. El E2E de navegador comprueba el vínculo de contenido, estado, historial, motivo y auditoría en D1 local; la pantalla Auditoría filtra ambos eventos con etiquetas comprensibles.
+- Se añadieron etiquetas para `training.assign` y `training.progress.correct`. `typecheck`, `build` y `platform-service-administration-check.mjs` PASS; siguen pendientes errores de formulario/concurrencia de progreso y paginación de auditoría. Sin DB remota, datos reales ni deploy.
+
 ## 0.8.0 — producción (2026-10-25)
 
 - Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.

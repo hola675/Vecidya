@@ -16,6 +16,8 @@ export const platformAuditActionLabels: Record<string, string> = {
   "organization_license.active": "Activó una licencia",
   "organization_license.cancelled": "Canceló una licencia",
   "organization_license.transfer_billing_account": "Transfirió la cuenta de facturación",
+  "training.assign": "Asignó capacitación a la organización",
+  "training.progress.correct": "Corrigió el progreso de capacitación",
   "organization_service.assign": "Asignó un servicio",
   "organization_service.update": "Actualizó un servicio",
   "organization_service.end": "Finalizó un servicio",
