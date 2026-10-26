@@ -1,5 +1,21 @@
 # Pruebas
 
+## DIAG-V9-RECOVERY-01 — pruebas recuperadas, ejecución pendiente (2026-10-26)
+
+**CODE/TEST (fuentes), NO RAN:** se rescataron las pruebas editoriales (45 copias), la selección de ocho especialidades, el banco de 74 definiciones y sus tres sustituciones (77), las rutas sintéticas, la selección `utility_first`, la clasificación compuesta sector + especialidad, la sesión V9 y su replay aislado en Worker. Tras la recuperación se restauró el banco, planificador y scorer de V8 desde `main`, se añadieron módulos `v9-candidate-planner.ts` / `v9-candidate-scoring.ts`, se adecuaron imports y pruebas y se añadió una comprobación de que los cambios de copy no afectan contratos públicos. Esas modificaciones **no tienen todavía resultado de ejecución**.
+
+Desde `vecidya-platform/`, cuando exista un checkout con dependencias disponibles, ejecutar inicialmente:
+
+```bash
+pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-editorial-copy.test.ts tests/unit/diagnostic/qa03b-specialty-candidate.test.ts tests/unit/diagnostic/qa03b-recovery-wave2.test.ts tests/unit/diagnostic/qa03b-specialty-branches-wave1.test.ts tests/unit/diagnostic/qa03b-planner-utility-shadow.test.ts tests/unit/diagnostic/qa03b-specialty-journey-certification.test.ts tests/unit/diagnostic/qa03b-v9-classification-bundle.test.ts tests/unit/diagnostic/qa03b-v9-classification-step.test.ts tests/unit/diagnostic/qa03b-v9-session-prototype.test.ts tests/unit/diagnostic/qa03b-worker-replay-v9.test.ts
+pnpm run test:unit
+pnpm run typecheck
+pnpm run build
+git diff --check
+```
+
+Además verificar por build/HTTP local que `/__dev/diagnostico/qa03b/v9` existe exclusivamente en desarrollo y que `/diagnostico` continúa aceptando solo su sesión V8, con replay idéntico. Validar ausencia de import del código candidato V9 en el bundle productivo. No usar migraciones ni desplegar Worker/D1/Gmail en esta etapa. Los perfiles y matrices sintéticos prueban regresiones de código, no calibración humana ni fiabilidad empírica.
+
 ## APP-MINI-02B — horarios, identidad y retículas (2026-10-26)
 
 `business-profile-experience-check.mjs` protege valores de horario tras rechazo, navegación por foco, guardado y ausencia del campo URL heredado del logo. Ejecución solo contra Worker Cloudflare local y D1 local: **PASS**. `miniweb-core-check.mjs`: **134/134 PASS**; protege logo/portada publicados en el marco, editor y su cabecera, Vecindario y layout responsive sin overflow, y ausencia de exposición prematura de medios. Fixtures limpiadas. Typecheck, build y `git diff --check`: PASS. Sin pruebas contra producción.
