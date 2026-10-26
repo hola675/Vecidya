@@ -93,13 +93,11 @@ export function PublicBusinessHeader({
   profile,
   preview = false,
   showContactActions = true,
-  iconUrl,
   cover,
 }: {
   profile: PublicBusinessProfile;
   preview?: boolean;
   showContactActions?: boolean;
-  iconUrl?: string;
   cover?: { publicUrl: string; altText: string };
 }) {
   const location = [profile.city, profile.country].filter(Boolean).join(", ");
@@ -111,7 +109,7 @@ export function PublicBusinessHeader({
   return (
     <section aria-labelledby="public-business-title" className="public-business-profile__header">
       <div className={`public-business-profile__identity${cover ? " public-business-profile__identity--cover" : ""}`}>
-        {cover ? <div aria-label={cover.altText} className="miniweb-cover" role="img" style={{ backgroundImage: `url(${JSON.stringify(cover.publicUrl)})` }} /> : null}
+        {cover ? <img alt={cover.altText} className="miniweb-cover" decoding="async" src={cover.publicUrl} /> : null}
         {imageUrl ? (
           <img alt={`Logo de ${profile.displayName}`} decoding="async" height={256} src={imageUrl} width={256} />
         ) : (
@@ -120,7 +118,6 @@ export function PublicBusinessHeader({
       </div>
       <div className="public-business-profile__intro">
         <h1 id="public-business-title">{profile.displayName}</h1>
-        {iconUrl ? <img alt="" className="public-business-profile__icon" decoding="async" height={48} src={iconUrl} width={48} /> : null}
         {profile.verificationStatus === "verified" ? (
           <p className="public-business-profile__verified"><span aria-hidden="true">✓</span> Perfil verificado por Vecidya</p>
         ) : null}

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.4 — candidato local (2026-10-26)
+
+- La portada se renderiza como imagen dentro del marco de identidad para que cargue con `object-fit: cover` también al imprimir; el logo permanece encima y desaparece el icono redundante junto al nombre.
+- Las secciones siguen el orden guardado en el editor y ocupan un flujo vertical uniforme, sin asignaciones CSS por tipo de sección que generen huecos. La cabecera de Secciones aclara que las flechas determinan el orden que verá el público; títulos y contenido quedan visualmente agrupados.
+- MiniWeb E2E 138/138, typecheck, build y diff-check PASS en Worker/D1 locales; capturas 1366/390 revisadas. Las fixtures son imágenes blancas de 1×1 px, por lo que no certifican la calidad visual de fotos reales.
+- Candidato en `fix/miniweb-cover-sections`, basado en `origin/main@853e1961`; no integrado, sin deploy ni HTTP a producción. Fixtures de prueba limpias; no se tocaron datos remotos.
+
 ## 0.8.3 — producción (2026-10-26)
 
 - Se preservan los valores de horarios tras un error de validación y se mantiene sincronizado el foco/indicador de navegación.

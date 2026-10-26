@@ -1,6 +1,6 @@
-## Corte vigente — producción 0.8.2 (2026-10-26)
+## Corte vigente — producción 0.8.3 y candidato 0.8.4 local (2026-10-26)
 
-`origin/main@c03c3bab7610a327db9926cd7aee0275a3dbb8a7` integra PR #139. Producción `0.8.2`, Worker Version ID `d9042b45-7c24-4da6-991c-38533c1f2f95` (deployment `805dbb77-e90a-4dc8-a40f-efa1deb3111a`, 2026-10-26T17:26:21Z). D1 prod registra migración `0029`; el índice único parcial existe. Aprende ofrece 48 guías, 9 itinerarios y 6 temas. GET anónimo posterior al deploy cargó `/` y `/aprende`; ambas páginas muestran el footer `0.8.2`. Typecheck/build, E2E local y checks CI PASS. Staging no se modificó.
+`origin/main@853e1961100dd851361ccb1712235a7d1c03d4be` integra PR #153 y #154. Producción `0.8.3`, Worker Version ID `a9ee55c5-f346-49a2-8f74-b8c6e45db36a` (deploy 2026-10-26T20:43:15Z); GET anónimo de `/` respondió 200 a las 20:43:33Z y mostró `0.8.3` + `© 2026 Vecidya`. La rama `feat/app-mini-02c-portada` declara candidato `0.8.4` para corregir portada/duplicación visual y flujo de secciones; aún no está integrado ni publicado. Evidencia local y estado de pruebas: `TESTING.md`; estado remoto sin cambios: `ENVIRONMENTS.md`.
 
 ## Corte histórico — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
 

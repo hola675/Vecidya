@@ -17,7 +17,7 @@ type ModuleProps = { profile: PublicBusinessProfile; hours: BusinessHoursEntry[]
 type ModuleRenderer = (props: ModuleProps) => ReactNode;
 
 const moduleRenderers: Partial<Record<MiniWebModuleConfig["type"], ModuleRenderer>> = {
-  hero: ({ profile, preview, contactEnabled, media }) => <HeroModule profile={profile} preview={preview} contactEnabled={contactEnabled} iconUrl={media.find((asset) => asset.purpose === "icon" && asset.mediaType === "image")?.publicUrl} logoUrl={media.find((asset) => asset.purpose === "logo" && asset.mediaType === "image")?.publicUrl} cover={media.find((asset) => asset.purpose === "cover" && asset.mediaType === "image")} />,
+  hero: ({ profile, preview, contactEnabled, media }) => <HeroModule profile={profile} preview={preview} contactEnabled={contactEnabled} logoUrl={media.find((asset) => asset.purpose === "logo" && asset.mediaType === "image")?.publicUrl} cover={media.find((asset) => asset.purpose === "cover" && asset.mediaType === "image")} />,
   about: ({ profile }) => <AboutModule profile={profile} />,
   contact: ({ profile, preview }) => <ContactModule profile={profile} preview={preview} />,
   hours: ({ hours }) => <HoursModule hours={hours} />,

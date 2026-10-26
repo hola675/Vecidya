@@ -466,7 +466,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                 <div><p className="eyebrow">2 · ESTRUCTURA</p><h2 id="miniweb-sections-title">Secciones</h2></div>
                 <span className="miniweb-editor__count">{readyModuleCount} listas de {enabledModuleCount} activas</span>
               </div>
-              <p className="miniweb-editor__note">Activa solo lo que necesitas. Una sección sin información suficiente no aparece en la página pública.</p>
+              <p className="miniweb-editor__note">Activa solo lo que necesitas. Usa las flechas para cambiar el orden: la vista previa y la página publicada seguirán esta misma secuencia. La portada queda al inicio.</p>
               <p className="miniweb-editor__note">Los datos generales se actualizan en <Link to="/app/business-profile">Mi negocio</Link>; los servicios, productos, preguntas y medios se completan en el paso Contenido.</p>
               <ol className="miniweb-module-list">
                 {orderedModules.map((module, position) => {
@@ -502,7 +502,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                       </label>
                       <div className="miniweb-module-list__order" aria-label={`Orden de ${definition.label}`}>
                         <Button aria-label={`Subir ${definition.label}`} disabled={!data.canEdit || busy || !definition.reorderable || position <= 1} onClick={() => moveModule(type, -1)} tone="ghost">↑</Button>
-                        <span>{module.sortOrder + 1}</span>
+                        <span>Posición {module.sortOrder + 1}</span>
                         <Button aria-label={`Bajar ${definition.label}`} disabled={!data.canEdit || busy || !definition.reorderable || position < 1 || position >= orderedModules.length - 1} onClick={() => moveModule(type, 1)} tone="ghost">↓</Button>
                       </div>
                     </li>
