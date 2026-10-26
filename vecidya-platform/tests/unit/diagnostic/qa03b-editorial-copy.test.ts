@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as bank } from "../../../app/features/diagnostic/qa03b/bank.ts";
+import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as publicBank } from "../../../app/features/diagnostic/qa03b/bank.ts";
+import { QA03B_EDITORIAL_BASE_QUESTIONS_V9 as bank } from "../../../app/features/diagnostic/qa03b/specialty-candidate-bank.ts";
 import { applyQA03BEditorialCopy, QA03B_EDITORIAL_COPY } from "../../../app/features/diagnostic/qa03b/editorial-copy.ts";
 import { validateQuestionCopyV2 } from "../../../app/features/diagnostic/qa03b/copy.ts";
 
-test("QA-03B has exactly 45 uniquely identified questions covered by the editorial catalog", () => {
+test("V9 editorial base has exactly 45 uniquely identified questions covered by the editorial catalog", () => {
   const ids = bank.map((q) => q.id);
   assert.equal(ids.length, 45);
   assert.equal(new Set(ids).size, 45);
@@ -58,6 +59,23 @@ test("editorial application cannot mutate IDs, answer options, routing, signals 
   }
 });
 
-test("canonical QA-03B editorial copy passes the question copy contract", () => {
+test("V9 editorial copy passes the question copy contract", () => {
   assert.deepEqual(validateQuestionCopyV2(bank), []);
+});
+
+
+test("V9 editorial text cannot replace the public V8 question bank", () => {
+  const byId = new Map(publicBank.map((question) => [question.id, question] as const));
+  assert.equal(byId.size, 45);
+  let revised = 0;
+  for (const candidate of bank) {
+    const original = byId.get(candidate.id);
+    assert.ok(original, candidate.id);
+    const { prompt: _oldPrompt, hint: _oldHint, variants: oldVariants, ...oldContract } = original;
+    const { prompt: _newPrompt, hint: _newHint, variants: newVariants, ...newContract } = candidate;
+    assert.deepEqual(newContract, oldContract, candidate.id);
+    assert.deepEqual(newVariants?.map(({ prompt: _p, ...rest }) => rest), oldVariants?.map(({ prompt: _p, ...rest }) => rest), candidate.id);
+    if (candidate.prompt !== original.prompt || candidate.hint !== original.hint) revised++;
+  }
+  assert.ok(revised > 0, "Editorial review should be present only in V9");
 });

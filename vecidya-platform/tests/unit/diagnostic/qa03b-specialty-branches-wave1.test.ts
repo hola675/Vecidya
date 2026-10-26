@@ -7,10 +7,10 @@ import {
   QA03B_SPECIALTY_BRANCH_QUESTIONS_V1 as branchQuestions,
 } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { resolveEligibleQuestionsV2 } from "../../../app/features/diagnostic/qa03b/engine";
-import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-planner";
+import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-planner";
 import { validateEvidenceMigrationsV3 } from "../../../app/features/diagnostic/qbv2-evidence-v3";
 import { validateQuestionCopyV2 } from "../../../app/features/diagnostic/qa03b/copy";
-import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
+import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-scoring";
 import { validateCandidateAnswerV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-session";
 import type { QuestionDefinitionV2 } from "../../../app/features/diagnostic/qbv2-contract";
 import { AUTHORED_UNKNOWN_CAPABILITIES } from "./qa03b-fixtures";

@@ -4,8 +4,8 @@ import test from "node:test";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as publicBank } from "../../../app/features/diagnostic/qa03b/bank";
 import { QA03B_CANDIDATE_SECTOR_V4, QA03B_RECOVERY_PILOT_V1, QA03B_SPECIALTY_CANDIDATE_BANK_V1, QA03B_SPECIALTY_SELECTORS_V1 } from "../../../app/features/diagnostic/qa03b/specialty-candidate-bank";
 import { resolveEligibleQuestionsV2 } from "../../../app/features/diagnostic/qa03b/engine";
-import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-planner";
-import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
+import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-planner";
+import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-scoring";
 import { validateEvidenceMigrationsV3 } from "../../../app/features/diagnostic/qbv2-evidence-v3";
 import { validateQuestionCopyV2 } from "../../../app/features/diagnostic/qa03b/copy";
 import { NICHE_REGISTRY } from "../../../app/features/diagnostic/taxonomy";
@@ -37,7 +37,11 @@ test("specialty bank is isolated from the public 45 and preserves their contract
       assert.equal(proposed.version, 4);
       assert.deepEqual(proposed.options.slice(0, -6), question.options.slice(0, -2));
     } else {
-      assert.deepEqual(proposed, question, question.id);
+      // Solo se editan enunciado, ayuda y variantes textuales: las respuestas y la evaluación no cambian.
+      const { prompt: _oldPrompt, hint: _oldHint, variants: oldVariants, ...oldContract } = question;
+      const { prompt: _newPrompt, hint: _newHint, variants: newVariants, ...newContract } = proposed;
+      assert.deepEqual(newContract, oldContract, question.id);
+      assert.deepEqual(newVariants?.map(({ prompt: _p, ...rest }) => rest), oldVariants?.map(({ prompt: _p, ...rest }) => rest), question.id);
     }
   }
   assert.deepEqual(validateEvidenceMigrationsV3(candidate), []);

@@ -9,10 +9,8 @@ import {
   type ClassificationInteractionEventV9,
 } from "../../../app/features/diagnostic/qa03b/v9-classification-bundle";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
-import {
-  buildCandidateQuestionPlanFromBankV3,
-  buildCandidateQuestionPlanV3,
-} from "../../../app/features/diagnostic/qa03b/qbv2-candidate-planner";
+import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-planner";
+import { buildCandidateQuestionPlanV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-planner";
 import { QUESTION_BANK_ID, SESSION_SCHEMA, SESSION_KEY } from "../../../app/features/diagnostic/qa03b/contract";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 

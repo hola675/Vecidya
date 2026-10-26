@@ -20,7 +20,7 @@ import {
   QA03B_V9_WORKER_TTL_MS,
   replayQa03bSessionV9Core,
 } from "../../../app/features/diagnostic/qa03b/worker-replay-v9.server";
-import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
+import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-scoring";
 import { CANDIDATE_RESULT_IDENTITY_V3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-pipeline";
 import { ANSWER_SCHEMA_ID, QUESTION_BANK_ID, SESSION_KEY, SESSION_SCHEMA, WORKER_REPLAY_VERSION } from "../../../app/features/diagnostic/qa03b/contract";
 import { createCandidateSessionV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-session";

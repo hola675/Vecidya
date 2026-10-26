@@ -5,8 +5,8 @@ import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as production } from "../../..
 import { QA03B_RECOVERY_PILOT_V1 as pilot, QA03B_SPECIALTY_CANDIDATE_BANK_V1 as candidate } from "../../../app/features/diagnostic/qa03b/specialty-candidate-bank";
 import { QA03B_RECOVERY_WAVE2_QUESTIONS as recovered } from "../../../app/features/diagnostic/qa03b/recovery-wave2";
 import { resolveEligibleQuestionsV2 } from "../../../app/features/diagnostic/qa03b/engine";
-import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-planner";
-import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
+import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-planner";
+import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-scoring";
 import { validateEvidenceMigrationsV3 } from "../../../app/features/diagnostic/qbv2-evidence-v3";
 import { renderQuestionV2, validateQuestionCopyV2 } from "../../../app/features/diagnostic/qa03b/copy";
 import { QA03B_AUTHORED_CASES } from "./qa03b-case-matrix";

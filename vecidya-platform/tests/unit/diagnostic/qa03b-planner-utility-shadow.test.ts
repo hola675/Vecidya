@@ -3,9 +3,9 @@ import test from "node:test";
 
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as productionBank } from "../../../app/features/diagnostic/qa03b/bank";
 import { QA03B_SPECIALTY_CANDIDATE_BANK_V1 as candidateBank } from "../../../app/features/diagnostic/qa03b/specialty-candidate-bank";
-import { buildCandidateQuestionPlanFromBankV3, type CandidateShadowSelectionPolicyV1 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-planner";
+import { buildCandidateQuestionPlanFromBankV3, type CandidateShadowSelectionPolicyV1 } from "../../../app/features/diagnostic/qa03b/v9-candidate-planner";
 import { validateCandidateAnswerV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-session";
-import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-scoring";
+import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-scoring";
 import { eqV2, type AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import { QA03B_SPECIALTY_PERSONAS, authoredSpecialtyAnswers, declaredSpecialtyContextAnswers } from "./qa03b-specialty-journeys";
 
