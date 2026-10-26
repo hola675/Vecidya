@@ -532,10 +532,15 @@ const dashboardB = await (await assertStatus(identities.platform.client, "/app",
 assert(!dashboardB.includes(`Portal A ${suffix}`), "El dashboard conservó el perfil de la organización A después del cambio.");
 
 const licensePath = `/api/platform/organizations/${identities["owner-a"].organizationId}/license`;
+const missingBillingOwnerId = `missing-billing-owner-${suffix}`;
 let currentLicenseId;
+const rejectedAssignment = await identities.platform.client.json(licensePath, { operation: "assign", ownerUserId: missingBillingOwnerId, planCode: "cuadra", activate: true });
+assert(rejectedAssignment.status === 400, `Asignar a usuario inexistente devolvió ${rejectedAssignment.status}, se esperaba 400.`);
+const rejectedAssignmentState = executeD1(`SELECT (SELECT count(*) FROM organization_license WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled') AS licenses,(SELECT count(*) FROM billing_account WHERE owner_user_id=${sqlLiteral(missingBillingOwnerId)}) AS accounts,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.assign') AS audit_count;`)[0];
+assert(Number(rejectedAssignmentState?.licenses) === 0 && Number(rejectedAssignmentState?.accounts) === 0 && Number(rejectedAssignmentState?.audit_count) === 0, "Asignación a usuario inexistente dejó licencia, billing_account o auditoría.");
 const concurrentAssignments = await Promise.all([
-  identities.platform.client.json(licensePath, { operation: "assign", ownerUserId: identities["owner-a"].userId, planCode: "cuadra", activate: true }),
-  identities.platform.client.json(licensePath, { operation: "assign", ownerUserId: identities["owner-a"].userId, planCode: "cuadra", activate: true }),
+  identities.platform.client.json(licensePath, { operation: "assign", ownerUserId: identities["owner-b"].userId, planCode: "cuadra", activate: true }),
+  identities.platform.client.json(licensePath, { operation: "assign", ownerUserId: identities["owner-b"].userId, planCode: "cuadra", activate: true }),
 ]);
 const assignmentStatuses = concurrentAssignments.map(({ status }) => status).sort((a, b) => a - b);
 assert(assignmentStatuses[0] === 201 && assignmentStatuses[1] === 409, `Asignación simultánea produjo ${assignmentStatuses.join(", ")}; se esperaba un éxito y un conflicto 409.`);
@@ -543,6 +548,34 @@ const activeLicense = await (await identities.platform.client.fetch(licensePath)
 const assignmentCount = executeD1(`SELECT count(*) AS count FROM organization_license WHERE organization_id = ${sqlLiteral(identities["owner-a"].organizationId)} AND status <> 'cancelled';`)[0]?.count;
 const assignmentAuditCount = executeD1(`SELECT count(*) AS count FROM platform_audit_log WHERE organization_id = ${sqlLiteral(identities["owner-a"].organizationId)} AND action = 'organization_license.assign';`)[0]?.count;
 assert(Number(assignmentCount) === 1 && Number(assignmentAuditCount) === 1 && activeLicense.license?.status === "active", "La asignación concurrente dejó filas vigentes o auditoría duplicada/incompleta.");
+const assignedBillingOwner = executeD1(`SELECT u.owner_user_id FROM organization_license l JOIN billing_account u ON u.id=l.billing_account_id WHERE l.organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND l.status <> 'cancelled';`)[0]?.owner_user_id;
+assert(assignedBillingOwner === identities["owner-b"].userId, "Admin no pudo asignar la licencia a un usuario existente ajeno a la organización.");
+
+const rejectedTransfer = await identities.platform.client.json(licensePath, {
+  operation: "transfer-billing-account",
+  newOwnerUserId: missingBillingOwnerId,
+  expectedLicenseId: activeLicense.license.id,
+  expectedBillingAccountId: activeLicense.billingAccountId,
+});
+assert(rejectedTransfer.status === 400, `Transferir a usuario inexistente devolvió ${rejectedTransfer.status}, se esperaba 400.`);
+const rejectedTransferState = executeD1(`SELECT l.billing_account_id,(SELECT count(*) FROM billing_account WHERE owner_user_id=${sqlLiteral(missingBillingOwnerId)}) AS accounts,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.transfer_billing_account') AS audit_count FROM organization_license l WHERE l.organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND l.status <> 'cancelled';`)[0];
+assert(rejectedTransferState?.billing_account_id === activeLicense.billingAccountId && Number(rejectedTransferState.accounts) === 0 && Number(rejectedTransferState.audit_count) === 0, "Transferencia a usuario inexistente alteró la cuenta o dejó cuenta/auditoría.");
+
+const staleTransfer = await identities.platform.client.json(licensePath, {
+  operation: "transfer-billing-account",
+  newOwnerUserId: identities["owner-a"].userId,
+  expectedLicenseId: activeLicense.license.id,
+  expectedBillingAccountId: "stale-billing-account",
+});
+assert(staleTransfer.status === 409, `Transferencia con billing_account obsoleto devolvió ${staleTransfer.status}, se esperaba 409.`);
+const concurrentTransfers = await Promise.all([
+  identities.platform.client.json(licensePath, { operation: "transfer-billing-account", newOwnerUserId: identities["owner-a"].userId, expectedLicenseId: activeLicense.license.id, expectedBillingAccountId: activeLicense.billingAccountId }),
+  identities.platform.client.json(licensePath, { operation: "transfer-billing-account", newOwnerUserId: identities["owner-a"].userId, expectedLicenseId: activeLicense.license.id, expectedBillingAccountId: activeLicense.billingAccountId }),
+]);
+const transferStatuses = concurrentTransfers.map(({ status }) => status).sort((a, b) => a - b);
+assert(transferStatuses[0] === 200 && transferStatuses[1] === 409, `Transferencias concurrentes produjeron ${transferStatuses.join(", ")}; se esperaba un éxito y un conflicto 409.`);
+const transferState = executeD1(`SELECT l.billing_account_id,u.owner_user_id,(SELECT count(*) FROM platform_audit_log WHERE organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND action='organization_license.transfer_billing_account') AS audit_count FROM organization_license l JOIN billing_account u ON u.id=l.billing_account_id WHERE l.organization_id=${sqlLiteral(identities["owner-a"].organizationId)} AND l.status <> 'cancelled';`)[0];
+assert(transferState?.owner_user_id === identities["owner-a"].userId && Number(transferState.audit_count) === 1, "Transferencia concurrente no conservó una sola cuenta ganadora y una auditoría.");
 
 const licenseBrowser = await chromium.launch({ headless: true, ...(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {}) });
 try {

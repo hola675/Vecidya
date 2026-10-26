@@ -10,7 +10,7 @@ El release directo de `0.8.1` no contiene migraciones ni realizó lecturas/escri
 
 ## DIAG-D1-RELEASE-01 / APP-MINI-02C — ledger remoto vigente (última verificación 2026-10-24)
 
-**Actualización de PR #139:** se añadió `0029_organization-license-single-current.sql`; Drizzle journal/snapshot y una D1 limpia `0000–0029` se verificaron localmente. El corte histórico siguiente corresponde al 2026-10-24; el preflight productivo posterior está registrado arriba y confirma `0000–0028`, sin escrituras.
+**Actualización de PR #139:** se añadió `0029_organization-license-single-current.sql`; Drizzle journal/snapshot y una D1 limpia `0000–0029` se verificaron localmente. El corte histórico siguiente corresponde al 2026-10-24; la aplicación productiva posterior del 2026-10-26 está registrada arriba.
 
 **Resultado: `0000–0026` aplicadas en staging y producción.** Tras registrar bookmarks Time Travel previos, el 2026-10-24 se aplicaron las migraciones remotas `0024–0026`; el postflight Wrangler devolvió «No migrations to apply» para ambos D1 (`vecidya-staging`, `vecidya-prod`). Los bookmarks previos e IDs están en `ENVIRONMENTS.md`. El postflight SQL anterior de producción confirmó QA-03B con `changed_db=false` y cero filas escritas; `PRAGMA integrity_check`/`foreign_key_check` remotos siguen bloqueados por D1 API (`SQLITE_AUTH`), por lo que no se afirma esa validación remota. El Worker desplegado sigue en `0.7.0`; los cambios de #49/#50 no se publican hasta habilitar R2 y completar el deploy.
 
@@ -36,9 +36,9 @@ El release directo de `0.8.1` no contiene migraciones ni realizó lecturas/escri
 | 0024 | `0024_business-offerings-faq.sql` | MiniWeb: tablas tenant-scoped `business_offering` (servicios/productos) y `business_faq`, con orden, estado activo e índices por organización. | Aditiva, sin seed/backfill; FK con cascade de organización. Aplicada en D1 efímera `0000–0024` y en staging/producción el 2026-10-24. |
 | 0025 | `0025_business-media-assets.sql` | Metadatos tenant-scoped de medios (object key único, tipo, MIME permitido, tamaño, texto alternativo y fecha); blobs quedan en R2. | Aditiva, FK con cascade de organización, sin backfill. Aplicada en D1 efímera `0000–0025` y en staging/producción el 2026-10-24. Buckets R2 aún no provisionados. |
 | 0026 | `0026_business-media-purpose.sql` | Clasifica medios como portada, galería, logo o icono; la operación de subida limita la portada vigente por organización. | Aditiva sobre `0025`, default `gallery`; sin backfill. Aplicada en D1 efímera `0000–0026` y en staging/producción el 2026-10-24. |
-| 0027 | `0027_business-media-draft-removal.sql` | Añade `is_active` para retirar medios del próximo snapshot sin borrar un objeto que aún usa la publicación vigente. | Aditiva, default `true` conserva todas las filas existentes. Aplicada solo en D1 local efímera en APP-MINI-02C; no aplicada en D1 remota. |
-| 0028 | `0028_miniweb-offering-image.sql` | Añade `business_offering.image_asset_id` nullable para referenciar una imagen tenant-scoped del negocio desde cada oferta. | Aditiva y sin backfill; las referencias solo pueden asignarse a imágenes activas de la organización por la API protegida. Aplicada solo en D1 local efímera de APP-MINI-02F; no aplicada en D1 remota. |
-| 0029 | `0029_organization-license-single-current.sql` | Índice único parcial sobre `organization_license(organization_id)` mientras `status <> 'cancelled'`. | Evita más de una licencia vigente por organización bajo concurrencia; aplicada solo en D1 local/efímera de PR #139. No aplicada remotamente; comprobar duplicados existentes antes de un gate autorizado. |
+| 0027 | `0027_business-media-draft-removal.sql` | Añade `is_active` para retirar medios del próximo snapshot sin borrar un objeto que aún usa la publicación vigente. | Aditiva, default `true` conserva todas las filas existentes. Producción confirmó ledger `0000–0028` el 2026-10-25; staging sin evidencia de aplicación. |
+| 0028 | `0028_miniweb-offering-image.sql` | Añade `business_offering.image_asset_id` nullable para referenciar una imagen tenant-scoped del negocio desde cada oferta. | Aditiva y sin backfill; las referencias solo pueden asignarse a imágenes activas de la organización por la API protegida. Aplicada a producción el 2026-10-25; staging no se modificó. |
+| 0029 | `0029_organization-license-single-current.sql` | Índice único parcial sobre `organization_license(organization_id)` mientras `status <> 'cancelled'`. | Evita más de una licencia vigente por organización bajo concurrencia; aplicada en D1 local y producción el 2026-10-26 tras preflight sin duplicados. Staging no se modificó. |
 
 No se detectan `DROP TABLE`, borrados de filas ni renombrados; `0019` es la única contracción (`DROP COLUMN`). `0010` contiene seeds de tres precios y cuatro tiers; las migraciones posteriores no los actualizan. Integridad de seeds, datos sintéticos, relaciones, índices y snapshot/token se verificó localmente.
 
@@ -308,6 +308,11 @@ plan de ninguna de ellas.
   organización (incluida una invitación aceptada) nunca hace que su licencia cuente para el
   portafolio de otra persona: la consulta que arma el portafolio (`getLicenseLinesForBillingAccount`)
   filtra por `organization_license.billing_account_id`, no por `member`.
+- **Titular elegido por Admin.** Un `platform_admin` activo puede asignar o transferir la facturación
+  a cualquier usuario existente; no se infiere la cuenta desde la membresía ni se restringe al dueño
+  operativo de la organización. La API valida la existencia de organización y usuario. Las
+  transferencias requieren los IDs observados de licencia y cuenta, y actualizan la licencia junto
+  con una sola auditoría únicamente si gana el CAS; un estado obsoleto devuelve `409`.
 - **Grandfathering real, no solo documental.** `organization_license.price_id` referencia una fila
   concreta de `license_price`. Cuando se publica un precio nuevo para un plan (`effective_from`
   posterior, el anterior pasa a `status = 'retired'`), las licencias ya contratadas siguen

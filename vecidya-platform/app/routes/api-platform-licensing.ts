@@ -43,7 +43,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   const database = createDatabase(env.DB);
   const organizationId = params.organizationId;
 
-  let body: { operation?: unknown; ownerUserId?: unknown; planCode?: unknown; activate?: unknown; status?: unknown; newOwnerUserId?: unknown; currentLicenseId?: unknown };
+  let body: { operation?: unknown; ownerUserId?: unknown; planCode?: unknown; activate?: unknown; status?: unknown; newOwnerUserId?: unknown; currentLicenseId?: unknown; expectedLicenseId?: unknown; expectedBillingAccountId?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -96,9 +96,21 @@ export async function action({ context, params, request }: Route.ActionArgs) {
   }
 
   if (body.operation === "transfer-billing-account") {
-    if (typeof body.newOwnerUserId !== "string") return Response.json({ error: "newOwnerUserId is required" }, { status: 400 });
+    if (
+      typeof body.newOwnerUserId !== "string" || !body.newOwnerUserId ||
+      typeof body.expectedLicenseId !== "string" || !body.expectedLicenseId ||
+      typeof body.expectedBillingAccountId !== "string" || !body.expectedBillingAccountId
+    ) {
+      return Response.json({ error: "newOwnerUserId, expectedLicenseId and expectedBillingAccountId are required" }, { status: 400 });
+    }
     try {
-      const result = await reassignOrganizationLicenseBillingAccount(database, { organizationId, newOwnerUserId: body.newOwnerUserId, actorUserId: admin.userId });
+      const result = await reassignOrganizationLicenseBillingAccount(database, {
+        organizationId,
+        newOwnerUserId: body.newOwnerUserId,
+        expectedLicenseId: body.expectedLicenseId,
+        expectedBillingAccountId: body.expectedBillingAccountId,
+        actorUserId: admin.userId,
+      });
       return Response.json(result);
     } catch (error) {
       return errorResponse(error);
