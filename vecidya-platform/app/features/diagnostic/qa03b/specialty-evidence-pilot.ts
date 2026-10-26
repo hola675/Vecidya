@@ -135,7 +135,6 @@ export const QA03B_SPECIALTY_EVIDENCE_EXPERIMENTS_V1: readonly QuestionDefinitio
       { value: "unknown", label: "No estoy seguro", kind: "unknown" },
     ],
   },
-,
   // q2_service_quote_followup is limited to local_service + an explicit quote-practice
   // answer. A repair shop is a local business, not a mobile/local_service archetype;
   // test the missing estimate-approval process without broadening the generic rule.
