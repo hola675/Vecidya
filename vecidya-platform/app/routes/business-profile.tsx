@@ -28,6 +28,7 @@ import {
 import { Alert, Badge, Button, Card } from "../components/ui";
 import { ClientAreaShell } from "../components/client-area-shell";
 import { PublicBusinessProfilePreview, type PublicBusinessProfile } from "../components/public-business-profile-view";
+import { businessCategoryOptions } from "../content/business-sectors";
 
 import type { Route } from "./+types/business-profile";
 
@@ -365,7 +366,20 @@ export default function BusinessProfilePage() {
               <legend>Identidad del negocio</legend>
               <div className="form-grid">
                 <label>Nombre visible<input defaultValue={value(profile?.displayName)} name="displayName" onChange={(event) => { if (suggestsSlug && !slugTouchedRef.current && slugInputRef.current) slugInputRef.current.value = slugifyBusinessName(event.currentTarget.value); }} required maxLength={120} /></label>
-                <label>Categoría<input defaultValue={value(profile?.category)} name="category" maxLength={100} /></label>
+                <label>Categoría principal
+                  <select defaultValue={value(profile?.category)} name="category">
+                    <option value="">Selecciona tu actividad</option>
+                    {businessCategoryOptions(profile?.category).canonical.map((sector) => (
+                      <option key={sector.id} value={sector.label}>{sector.label}</option>
+                    ))}
+                    {businessCategoryOptions(profile?.category).legacy ? (
+                      <option value={businessCategoryOptions(profile?.category).legacy!}>
+                        {businessCategoryOptions(profile?.category).legacy} (categoría anterior)
+                      </option>
+                    ) : null}
+                  </select>
+                </label>
+                <p className="form-grid__full form-help">Elige a qué se dedica principalmente tu actividad. Vender por internet o atender a empresas no cambia, por sí solo, el sector. Si tenías una categoría anterior, puedes conservarla sin modificarla.</p>
                 <label className="form-grid__full">Enlace público<input defaultValue={value(profile?.slug)} name="slug" onChange={(event) => { slugTouchedRef.current = event.currentTarget.value.trim() !== ""; }} ref={slugInputRef} required maxLength={businessProfileSlugMaxLength} pattern="[a-z0-9]+(-[a-z0-9]+)*" spellCheck={false} /></label>
                 <p className="form-grid__full form-help">Este enlace identifica tu negocio en Vecindario y permanece estable después del primer guardado.</p>
               </div>
