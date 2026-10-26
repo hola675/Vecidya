@@ -1,7 +1,7 @@
 import { and, eq, gt, isNull, lte, or } from "drizzle-orm";
 
 import type { Database } from "../client.server";
-import { billingAccount, licensePrice, organizationLicense, platformAuditLog, portfolioPricingTier } from "../schema";
+import { billingAccount, licensePrice, organization, organizationLicense, platformAuditLog, portfolioPricingTier, user } from "../schema";
 import { calculateLicensePricing, type LicenseLine, type PlanCode, type PortfolioTier } from "../pricing/calculator";
 
 export const planCodes = ["cuadra", "barrio", "ciudad"] as const;
@@ -98,6 +98,15 @@ function auditEntry(actorUserId: string, action: string, entityId: string, organ
   return { id: crypto.randomUUID(), actorUserId, action, entityType: "organization_license", entityId, organizationId, previousValue, newValue, metadata: null, createdAt: new Date() };
 }
 
+async function assertLicenseAssignmentTargetsExist(database: Database, organizationId: string, ownerUserId: string) {
+  const [targetOrganization, billingOwner] = await Promise.all([
+    database.query.organization.findFirst({ where: eq(organization.id, organizationId) }),
+    database.query.user.findFirst({ where: eq(user.id, ownerUserId) }),
+  ]);
+  if (!targetOrganization) throw new LicensingError("Organization does not exist");
+  if (!billingOwner) throw new LicensingError("Billing account owner does not exist");
+}
+
 // Crear una organización NO activa una licencia pagada por sí sola (§13): esta función es la única
 // vía, y solo la usa una operación autorizada (hoy, la ruta platform_admin). `activate` decide si
 // la fila nace `active` o `pending`.
@@ -110,6 +119,7 @@ export async function assignOrganizationLicense(database: Database, input: {
   now?: Date;
 }) {
   const now = input.now ?? new Date();
+  await assertLicenseAssignmentTargetsExist(database, input.organizationId, input.ownerUserId);
   const existing = await getOrganizationLicense(database, input.organizationId);
   if (existing && existing.status !== "cancelled") {
     throw new LicensingConflictError("Organization already has a license; use change-plan instead");
@@ -230,18 +240,30 @@ export async function getBillingAccountPricing(database: Database, billingAccoun
 export async function reassignOrganizationLicenseBillingAccount(database: Database, input: {
   organizationId: string;
   newOwnerUserId: string;
+  expectedLicenseId: string;
+  expectedBillingAccountId: string;
   actorUserId: string;
   now?: Date;
 }) {
   const now = input.now ?? new Date();
   const current = await getOrganizationLicense(database, input.organizationId);
-  if (!current) throw new LicensingError("Organization has no license");
+  if (!current || current.status === "cancelled") throw new LicensingError("Organization has no current license");
+  if (current.id !== input.expectedLicenseId || current.billingAccountId !== input.expectedBillingAccountId) {
+    throw new LicensingConflictError("Organization license changed concurrently; reload and retry");
+  }
+
+  await assertLicenseAssignmentTargetsExist(database, input.organizationId, input.newOwnerUserId);
 
   const account = await getOrCreateBillingAccountForUser(database, input.newOwnerUserId);
-  await database.batch([
-    database.update(organizationLicense).set({ billingAccountId: account.id, updatedAt: now }).where(eq(organizationLicense.id, current.id)),
-    database.insert(platformAuditLog).values(auditEntry(input.actorUserId, "organization_license.transfer_billing_account", current.id, input.organizationId, current.billingAccountId, account.id)),
+  if (account.id === current.billingAccountId) return { id: current.id, billingAccountId: current.billingAccountId };
+
+  const results = await database.$client.batch([
+    database.$client.prepare("UPDATE organization_license SET billing_account_id = ?, updated_at = ? WHERE id = ? AND organization_id = ? AND billing_account_id = ? AND status <> 'cancelled'")
+      .bind(account.id, now.getTime(), input.expectedLicenseId, input.organizationId, input.expectedBillingAccountId),
+    database.$client.prepare("INSERT INTO platform_audit_log (id, actor_user_id, action, entity_type, entity_id, organization_id, previous_value, new_value, metadata, created_at) SELECT ?, ?, 'organization_license.transfer_billing_account', 'organization_license', ?, ?, ?, ?, NULL, ? WHERE changes() = 1")
+      .bind(crypto.randomUUID(), input.actorUserId, current.id, input.organizationId, current.billingAccountId, account.id, now.getTime()),
   ]);
+  if (results[0]?.meta.changes !== 1) throw new LicensingConflictError("Organization license changed concurrently; reload and retry");
 
   return { id: current.id, billingAccountId: account.id };
 }
