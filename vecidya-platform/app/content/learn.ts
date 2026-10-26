@@ -63,7 +63,7 @@ export const learnArticles: LearnArticle[] = [
     ],
     image: "/assets/learn/diagram-crm.svg",
     imageAlt: "Una consulta se registra con contexto y puede continuar, retomarse después o cerrarse, según lo que ocurra",
-    relatedSlugs: ["organizar-consultas-mensajes-llamadas-formularios", "como-responder-la-primera-consulta-de-un-cliente"],
+    relatedSlugs: ["organizar-consultas-mensajes-llamadas-formularios", "como-responder-la-primera-consulta-de-un-cliente", "datos-de-clientes-que-puedes-pedir-y-como-protegerlos"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no es un CRM ni crea una base de contactos." },
     editorialDraft: false,
     sections: [
@@ -165,7 +165,7 @@ export const learnArticles: LearnArticle[] = [
             { question: "¿Todo negocio necesita un CRM?", answer: "No. Si una agenda o lista simple permite recuperar el contexto y atender los pendientes, puedes empezar ahí y reevaluar cuando deje de ser fiable." },
             { question: "¿Una hoja de cálculo es un CRM?", answer: "Puede resolver parte del seguimiento, aunque no tenga las funciones de un sistema especializado. Lo importante es si sostiene el proceso real." },
             { question: "¿Un CRM hará el seguimiento automáticamente?", answer: "No por definición. Algunas herramientas permiten tareas o automatizaciones, pero alguien debe configurar reglas, revisar excepciones y mantener los datos." },
-            { question: "¿Cómo se guardan mis datos en el CRM de Vecidya?", answer: "Los registros se guardan en una subcuenta asignada a tu organización. Puedes importar y exportar datos. Al finalizar la licencia tienes 30 días para copiarlos; después se elimina la subcuenta. Vecidya no conserva una copia paralela." },
+            { question: "¿Cómo se guardan mis datos en un CRM?", answer: "Depende del proveedor y del contrato. Antes de elegir un CRM, pregunta dónde se guardan los datos, quién puede acceder, cómo exportarlos y qué procedimiento de eliminación se aplica. No presupongas condiciones iguales entre servicios." },
           ],
         }],
       },
@@ -613,77 +613,39 @@ export const learnArticles: LearnArticle[] = [
     editorialDraft: false,
     cta: { label: "Revisar mi situación", to: "/diagnostico", copy: "Comprueba qué necesita tu negocio antes de contratar o publicar." },
     sections: [
+      { heading: "Qué aprenderás", paragraphs: ["Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.", "Ejercicio: elige un canal o servicio que ya utilizas, identifica qué debes comprobar y anota quién se encargará de revisarlo."] },
       {
-        heading: "Qué información debe estar al día",
-        paragraphs: [
-          "No todos los canales tienen que usar exactamente las mismas palabras, pero los datos importantes deben ser compatibles. Si un sitio dice una cosa y una ficha pública dice otra, el visitante no sabe cuál creer."
-        ],
-        blocks: [
-          {
-            type: "list",
-            items: [
-              "Nombre comercial y una descripción clara de lo que haces.",
-              "Horario vigente, incluidas excepciones que ya conozcas.",
-              "Dirección o zona de servicio, según cómo atiendas.",
-              "Teléfono, correo, mensajería y enlaces que realmente utilizas.",
-              "Servicios, productos, precios o condiciones cuando los publiques."
-            ]
-          }
-        ]
+        heading: "Mantén los mismos datos en todos los canales",
+        paragraphs: ["Compara los puntos donde el público puede encontrar información: nombre comercial, descripción, servicios disponibles, ubicación o cobertura, horarios, precios o condiciones cuando se publiquen y formas de contacto. La información no tiene que estar redactada palabra por palabra igual, pero sí ser compatible y actual."],
+        blocks: [{ type: "steps", label: "Revisión de coherencia entre canales", items: [
+          { title: "Haz una lista de tus espacios públicos", detail: "Incluye el sitio, el perfil de empresa, las redes sociales, directorios relevantes y enlaces que siguen apareciendo en materiales impresos o mensajes." },
+          { title: "Compara datos que pueden causar una visita o una consulta equivocada", detail: "Revisa nombre, teléfono, enlace, horario, dirección, zona atendida, servicios y condiciones. Corrige primero lo que podría hacer perder una llamada, una cita o un desplazamiento." },
+          { title: "Comprueba que cada afirmación siga vigente", detail: "Quita servicios que ya no se ofrecen, promociones vencidas, precios desactualizados y fotos que ya no representan el lugar o el producto." },
+          { title: "Define cómo se actualizarán los cambios", detail: "Asigna una persona y un procedimiento para modificar los canales cuando cambien horarios, cobertura, personal, servicios o formas de contacto." },
+        ] }],
       },
       {
-        heading: "Elige una referencia y una persona responsable",
-        paragraphs: [
-          "La información se mantiene mejor cuando sabes dónde consultar el dato correcto y quién comunica un cambio. No tiene que ser una plataforma compleja: puede ser una ficha interna controlada o una lista breve."
-        ],
-        blocks: [
-          {
-            type: "steps",
-            label: "Un procedimiento sencillo de actualización",
-            items: [
-              {
-                title: "Haz un inventario de los canales activos",
-                detail: "Incluye tu web, perfil de empresa, redes, directorios y enlaces que todavía compartes en tarjetas o mensajes."
-              },
-              {
-                title: "Registra el dato vigente",
-                detail: "Anota el horario, teléfono, dirección o zona de servicio y quién puede confirmar cada cambio."
-              },
-              {
-                title: "Actualiza los canales que mantienes",
-                detail: "Corrige primero los datos que pueden causar una llamada perdida, una visita equivocada o una consulta sin respuesta."
-              },
-              {
-                title: "Comprueba y deja constancia",
-                detail: "Abre cada destino como visitante y registra dónde se hizo el cambio, sobre todo si otra persona debe revisarlo."
-              }
-            ]
-          }
-        ]
+        heading: "Facilita que te encuentren y se comuniquen",
+        paragraphs: ["Una persona debe poder reconocer rápidamente que llegó al negocio correcto, entender si atiende su necesidad y elegir una forma de contacto que funcione. Prueba la ruta completa como visitante, no solo como administrador de la cuenta."],
+        blocks: [{ type: "list", items: [
+          "Usa el nombre público correcto y una descripción concreta, sin llenar perfiles de palabras clave o servicios no prestados.",
+          "Escribe enlaces completos y comprueba que abran el destino correcto, sobre todo el botón de llamada, reserva, mapa, mensaje o solicitud de cotización.",
+          "Revisa los canales desde un teléfono, con la sesión cerrada y una conexión móvil; confirma que el texto se lea y los controles se puedan usar.",
+          "Si recibes consultas por teléfono, mensajería o formulario, confirma que el equipo pueda recibirlas y que alguien sepa quién debe contestar.",
+          "Explica qué sucede después del contacto: qué datos básicos pedirás, quién responderá y si hace falta reservar o acudir al local.",
+        ] }, { type: "callout", tone: "tip", title: "La acción debe describir lo que ocurrirá", text: "Un botón «Solicitar una cotización» debe llevar a un medio que realmente permita pedirla. Evita botones que parecen activos, enlaces rotos y formularios que no confirman el envío." }],
       },
       {
-        heading: "Prueba la experiencia como visitante",
-        paragraphs: [
-          "No basta con ver la información en el panel de administración. Recorre la ruta que seguiría una persona que todavía no conoce tu negocio."
-        ],
-        blocks: [
-          {
-            type: "list",
-            items: [
-              "Abre la página desde un teléfono y, cuando sea posible, sin iniciar sesión.",
-              "Pulsa los enlaces de llamada, mensaje, mapa, reserva o solicitud de presupuesto.",
-              "Comprueba que el destino corresponda con el texto del botón y que el formulario confirme el envío.",
-              "Lee el contenido en pantalla pequeña: usa títulos claros, texto legible y enlaces que expliquen adónde llevan.",
-              "Confirma que alguien pueda recibir y atender las consultas que el canal promete aceptar."
-            ]
-          },
-          {
-            type: "callout",
-            tone: "tip",
-            title: "Una comprobación vale más que un botón bonito",
-            text: "Si el botón dice «Solicitar presupuesto», debe permitir enviar una solicitud real. Corrige los destinos rotos y retira los canales que ya no puedes atender."
-          }
-        ]
+        heading: "Confianza sin reseñas o testimonios inventados",
+        paragraphs: ["La confianza no se construye simulando aprobación. Preséntate con claridad y utiliza únicamente información que puedas respaldar. No escribas reseñas ficticias, no atribuyas frases a clientes que no las dieron ni uses estrellas o cifras sin una fuente verificable."],
+        blocks: [{ type: "list", items: [
+          "Muestra quién presta el servicio y cómo contactar al negocio, dentro de lo que sea pertinente y seguro publicar.",
+          "Explica con precisión qué incluye un servicio, sus condiciones conocidas, límites, cobertura y pasos para solicitarlo.",
+          "Usa fotografías propias, actuales y representativas; pide autorización para publicar imágenes identificables y respeta derechos de terceros.",
+          "Si compartes comentarios o casos reales, confirma que sean auténticos, pertinentes, autorizados y presentados sin alterar su sentido. Identifica patrocinios o incentivos cuando corresponda según la normativa aplicable.",
+          "Atiende dudas y reclamaciones con respeto. No prometas resultados, certificaciones o garantías que no puedas demostrar.",
+          "Si aún no tienes reseñas, no es necesario inventarlas: ofrece información verificable y deja que cada cliente decida si desea compartir su experiencia en los espacios permitidos.",
+        ] }],
       },
       {
         heading: "Accesibilidad, privacidad y seguridad básicas",
@@ -698,20 +660,23 @@ export const learnArticles: LearnArticle[] = [
         ] }, { type: "callout", tone: "caution", title: "Las reglas legales dependen del caso", text: "Las políticas de anuncios de Google o Meta son reglas de sus plataformas; no sustituyen la legislación sobre privacidad, cookies, accesibilidad, promociones o comunicaciones comerciales de tu país." }],
       },
       {
-        heading: "Rutina de mantenimiento breve",
-        paragraphs: [
-          "Elige una frecuencia que puedas cumplir y vuelve a revisar los datos cuando ocurra un cambio importante, como un nuevo horario, teléfono, servicio o zona atendida. No existe un calendario universal que sirva para todos los negocios."
-        ],
-        blocks: [
-          {
-            type: "summary",
-            items: [
-              "Revisa los datos esenciales y los enlaces que el público usa para contactarte.",
-              "Actualiza primero los canales activos y retira los que ya no puedes mantener.",
-              "Asigna una persona responsable y comprueba los cambios como visitante."
-            ]
-          }
-        ]
+        heading: "Ejemplo: corregir una información antes de abrir otro canal",
+        paragraphs: ["Caso hipotético para mostrar una revisión sencilla de presencia digital."],
+        blocks: [{
+          type: "example",
+          title: "Un taller cambia su horario de los sábados",
+          hypothetical: true,
+          context: "Un taller de reparación reduce su horario de los sábados. Su sitio web muestra el nuevo horario, pero una red social y una ficha pública conservan el anterior.",
+          problem: "Una persona puede desplazarse cuando el taller ya está cerrado y encontrar información distinta según el canal que consulte.",
+          approach: "El responsable identifica los canales que el taller mantiene de verdad, corrige primero los datos esenciales y anota dónde debe revisar el horario cuando vuelva a cambiar.",
+          actions: [
+            "Comparar nombre, teléfono, dirección o zona de servicio y horario en los canales activos.",
+            "Actualizar el horario incorrecto y comprobar cada cambio como lo vería un visitante.",
+            "Retirar o corregir enlaces a cuentas que el negocio ya no atiende.",
+            "Asignar quién revisará estos datos cuando cambien horarios, servicios o formas de contacto.",
+          ],
+          lesson: "La confianza empieza por información coherente y mantenida. Abrir otro canal no corrige los datos antiguos de los que ya existen.",
+        }],
       },
       {
         heading: "Qué puedes hacer ahora",
@@ -727,47 +692,13 @@ export const learnArticles: LearnArticle[] = [
       },
       {
         heading: "Fuentes y alcance",
-        paragraphs: [
-          "Estas fuentes ayudan a mantener información pública útil y comprensible. La guía no es una auditoría técnica ni una evaluación formal de accesibilidad; los requisitos concretos dependen de la actividad y la jurisdicción."
-        ],
-        blocks: [
-          {
-            type: "sources",
-            items: [
-              {
-                label: "Google Business Profile Help — Edit your Business Profile",
-                url: "https://support.google.com/business/answer/3039617",
-                scope: "Ayuda oficial para editar información, horarios, teléfono, web, descripción y servicios. Elegibilidad y disponibilidad pueden variar."
-              },
-              {
-                label: "Google Search Central — SEO Starter Guide",
-                url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
-                scope: "Recomendaciones para que el contenido, los títulos y los enlaces sean comprensibles y útiles; no garantiza posiciones de búsqueda."
-              },
-              {
-                label: "W3C WAI — Writing for Web Accessibility",
-                url: "https://www.w3.org/WAI/tips/writing/",
-                scope: "Consejos para organizar la información, usar títulos claros y escribir instrucciones fáciles de comprender; no certifica la accesibilidad de un sitio."
-              }
-            ]
-          }
-        ]
-      },
-      {
-        heading: "Qué puedes hacer ahora",
-        paragraphs: [],
-        blocks: [
-          {
-            type: "summary",
-            items: [
-              "Haz una lista de tus canales públicos y de los datos que podrían estar desactualizados.",
-              "Corrige nombre, horario, ubicación y contacto antes de ampliar tu presencia.",
-              "Comprueba los enlaces y asigna a alguien la siguiente revisión."
-            ]
-          }
-        ]
-      }
-    ]
+        paragraphs: ["Las fuentes siguientes se consultaron para preparar esta guía. Las recomendaciones editoriales y de organización son prácticas generales; los requisitos de plataforma se identifican como políticas y no deben confundirse con asesoría legal. Las reglas cambian y pueden variar por sector, formato o país: comprueba las versiones vigentes antes de actuar."],
+        blocks: [{ type: "sources", items: [
+          { label: "SEO Starter Guide — Google Search Central", url: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide", scope: "Recomendaciones de Google Search sobre contenido útil, rastreo, títulos, enlaces e imágenes. La guía dice explícitamente que no hay una fórmula que garantice el primer puesto ni que toda recomendación aplique a todo sitio." },
+          { label: "Edit your Business Profile — Google Business Profile Help", url: "https://support.google.com/business/answer/3039617", scope: "Ayuda oficial para editar información como nombre, dirección o área de servicio, horarios, teléfono, web, descripción y servicios. Disponibilidad, elegibilidad, verificación y revisión pueden variar." },
+          { label: "WCAG 2.2 Quick Reference — W3C WAI", url: "https://www.w3.org/WAI/WCAG22/quickref/", scope: "Referencia rápida del W3C para consultar criterios WCAG 2.2 y técnicas. Esta guía no ha sido objeto de una evaluación completa y no declara conformidad ni certificación WCAG 2.2 AA." },
+        ] }],
+      },    ],
   },
   {
     slug: "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -781,22 +712,9 @@ export const learnArticles: LearnArticle[] = [
       "La publicidad puede dar visibilidad, pero no arregla información contradictoria ni un contacto que no funciona.",
     ],
     image: "/assets/learn/diagram-presence-digital.svg",
-    imageAlt: "Lista de preparación que conecta una oferta clara, información correcta, contacto y capacidad de respuesta antes de invertir en anuncios.",
-    relatedSlugs: [
-      "publicidad-digital-como-preparar-una-primera-campana",
-      "como-mantener-actualizada-y-confiable-tu-presencia-digital",
-      "perfil-empresa-google-completar-y-mantener-actualizado",
-      "redes-sociales-o-pagina-web-que-necesita-tu-negocio",
-      "analitica-web-que-medir-en-tu-negocio",
-      "como-responder-la-primera-consulta-de-un-cliente",
-      "como-pedir-resenas-reales-y-responder-criticas"
-    ],
-    cta: {
-      label: "Revisar mi punto de partida",
-      to: "/diagnostico",
-      copy: "Usa esta lista para identificar qué necesitas corregir antes de invertir en anuncios."
-    },
-    editorialDraft: false,
+    imageAlt: "Tres canales digitales —sitio web, perfil de empresa y redes sociales— muestran de forma coherente una oferta, una zona de atención y opciones de contacto",
+    cta: { label: "Conocer el Diagnóstico", to: "/diagnostico", copy: "Si quieres ordenar prioridades, el Diagnóstico de presencia digital puede servir como punto de partida; no promete visibilidad, clientes ni resultados comerciales." },
+    relatedSlugs: ["publicidad-digital-como-preparar-una-primera-campana", "como-mantener-actualizada-y-confiable-tu-presencia-digital", "perfil-empresa-google-completar-y-mantener-actualizado", "redes-sociales-o-pagina-web-que-necesita-tu-negocio", "analitica-web-que-medir-en-tu-negocio"],
     sections: [
       {
         heading: "Qué es una presencia digital útil",
@@ -870,7 +788,7 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
-        heading: "Checklist para revisar tu presencia digital",
+        heading: "Checklist antes de invertir",
         paragraphs: ["Haz esta revisión cada vez que cambie una información importante y antes de una campaña."],
         blocks: [{
           type: "list",
@@ -886,7 +804,9 @@ export const learnArticles: LearnArticle[] = [
             "Accesibilidad: usa texto legible, estructura clara y alternativas para información visual importante.",
             "Privacidad: pide solo los datos necesarios y explica el uso cuando corresponda.",
             "Responsable: deja claro quién actualiza la información y quién responde consultas.",
-            "Medición: decide qué señal observarás, sin confundir visitas con clientes o resultados garantizados.",
+            "Objetivo y medición: decide qué acción útil observarás, sin confundir visitas con clientes o resultados garantizados.",
+            "Oferta: confirma qué puedes ofrecer, a quién atiendes y qué condiciones debes explicar.",
+            "Presupuesto: define un límite de prueba sostenible antes de anunciarte.",
           ],
         }],
       },
@@ -1459,7 +1379,7 @@ export const learnArticles: LearnArticle[] = [
         heading: "Por qué el correo puede fallar aunque la web funcione",
         paragraphs: [
           "La página y el correo pueden compartir el mismo dominio y, aun así, depender de registros y proveedores diferentes. Una web puede abrir correctamente mientras los mensajes dejan de llegar.",
-          "El correo utiliza registros como MX y TXT y puede incorporar mecanismos como SPF, DKIM y DMARC. Esta guía solo presenta el mapa; la guía especializada explica qué hace cada uno y cómo cambiar su configuración con menos riesgo.",
+          "El correo utiliza registros como MX y TXT y puede incorporar mecanismos como SPF, DKIM y DMARC. Este mapa no explica la configuración de SPF, DKIM ni DMARC; la guía especializada desarrolla estos mecanismos y cómo cambiarlos con menos riesgo.",
         ],
         blocks: [{
           type: "callout",
@@ -1528,21 +1448,7 @@ export const learnArticles: LearnArticle[] = [
           ],
         }],
       },
-      {
-        heading: "Lista de comprobación",
-        paragraphs: [],
-        blocks: [
-          {
-            type: "summary",
-            items: [
-              "Identifica quién administra DNS, web y correo antes de cambiar una configuración.",
-              "Conserva una copia de los registros y aplica solo valores confirmados.",
-              "Prueba por separado la página, la recepción y el envío de correo."
-            ]
-          }
-        ]
-      }
-    ]
+    ],
   },
   {
     slug: "dominio-hosting-sitio-web-como-funcionan",
