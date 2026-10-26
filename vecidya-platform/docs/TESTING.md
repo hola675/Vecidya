@@ -1,5 +1,9 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-04I — catálogo sin borradores (2026-10-25)
+
+**TEST versionado / RAN pendiente.** El contrato editorial exige **48 guías revisadas / 0 borradores**. Las dos guías fundacionales deben conservar aprobación, relación recíproca y fuentes OCDE 2026, NIST CSF 2.0, CISA Secure Our World y W3C WAI.
+
 ## APRENDE-EDITORIAL-04H — Gestión revisada (2026-10-25)
 
 **RAN en GitHub Actions:** `Aprende quality` run `40247532519` PASS: typecheck, build e integridad Aprende. El catálogo se mantiene en 48 guías y pasa a **46 revisadas / 2 borradores**. Los contratos exigen aprobación de las cinco guías de Gestión, ausencia de `legacy.sba.gov`, referencia SBA vigente, nota de revisión de AI RMF 1.0, y fuentes Ready.gov/CISA para continuidad.
