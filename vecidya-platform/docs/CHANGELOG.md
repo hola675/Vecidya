@@ -18,6 +18,12 @@
 - Playwright en Worker/D1 efímeros recorre búsqueda → detalle, suspensión/reactivación de organización, cambio de rol member→admin, creación de organización con entrega fake confirmada y revocación de invitación. Se comprueba estado persistido y auditoría de cada operación; staff conserva UI de solo lectura.
 - E2E completo `platform-service-administration-check.mjs` PASS tras ampliar los fixtures; `node --check` y `git diff --check` PASS. Sin correo real, datos productivos, DB remota o deploy. La matriz de `TESTING.md`, estado/deuda de `STATUS.md` y gate futuro de `ROADMAP.md` se reconciliaron; quedan fuera del PASS las mutaciones de training, MiniWeb, negocios y el resto de estados/errores UI.
 
+### Continuación de PR #139 — publicar MiniWeb desde Admin (2026-10-26)
+
+- El E2E de navegador ahora prepara una organización sintética con licencia Cuadra activa y perfil borrador, guarda la configuración por UI y publica el snapshot. D1 comprueba incremento de revisión, módulo, snapshot schema v4, perfil publicado y eventos `organization.miniweb.save`/`organization.miniweb.publish`; staff recibe 403.
+- El recorrido reveló que `internal-organization-miniweb.tsx` devolvía `Response.redirect` crudo tras mutar. El servidor persistía la operación, pero React Router no resolvía correctamente la navegación; se cambió al helper `redirect` y el flujo vuelve a la vista con confirmación de publicado.
+- `pnpm run test:unit` (1719/1719), `pnpm run typecheck`, `pnpm run build`, `git diff --check` y `platform-service-administration-check.mjs` PASS en Worker/D1 efímeros. No datos productivos, migración remota, GHL, correo real ni deploy. La auditoría sigue parcial; ver deuda actualizada en `STATUS.md`, `TESTING.md` y `ROADMAP.md`.
+
 ## 0.8.0 — producción (2026-10-25)
 
 - Agrupa los cambios integrados desde el deployment productivo activo del 2026-10-24: transparencia legal y preferencias de cookies; mejoras de Mi Vecidya/MiniWeb y medios R2 por negocio; y refinamientos del Diagnóstico QA-03B, con auditoría responsive documentada.

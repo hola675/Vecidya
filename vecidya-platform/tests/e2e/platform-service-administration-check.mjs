@@ -187,6 +187,15 @@ executeD1(`INSERT OR IGNORE INTO license_price (id, plan_code, currency, amount_
   ('audit-price-cuadra', 'cuadra', 'USD', 1000, 'monthly', ${bootstrapPriceNow}, 'active', ${bootstrapPriceNow}, ${bootstrapPriceNow}),
   ('audit-price-barrio', 'barrio', 'USD', 2000, 'monthly', ${bootstrapPriceNow}, 'active', ${bootstrapPriceNow}, ${bootstrapPriceNow}),
   ('audit-price-ciudad', 'ciudad', 'USD', 3000, 'monthly', ${bootstrapPriceNow}, 'active', ${bootstrapPriceNow}, ${bootstrapPriceNow});`);
+const miniwebProfileId = crypto.randomUUID();
+const miniwebBillingAccountId = crypto.randomUUID();
+executeD1(`INSERT INTO billing_account (id, owner_user_id, kind, name, created_at, updated_at)
+  VALUES (${sqlLiteral(miniwebBillingAccountId)}, ${sqlLiteral(identities["owner-b"].userId)}, 'individual', 'Synthetic MiniWeb audit', ${now}, ${now})
+  ON CONFLICT(owner_user_id) DO NOTHING;
+  INSERT INTO organization_license (id, organization_id, billing_account_id, plan_code, price_id, status, started_at, activated_at, ends_at, created_at, updated_at)
+  VALUES (${sqlLiteral(crypto.randomUUID())}, ${sqlLiteral(identities["owner-b"].organizationId)}, (SELECT id FROM billing_account WHERE owner_user_id=${sqlLiteral(identities["owner-b"].userId)}), 'cuadra', 'audit-price-cuadra', 'active', ${now}, ${now}, NULL, ${now}, ${now});
+  INSERT INTO business_profile (id, organization_id, display_name, slug, short_description, description, category, city, country, status, created_at, updated_at)
+  VALUES (${sqlLiteral(miniwebProfileId)}, ${sqlLiteral(identities["owner-b"].organizationId)}, 'MiniWeb owner-b ${suffix}', 'miniweb-owner-b-${suffix}', 'Synthetic profile', 'Synthetic description', 'Certification category', 'Test city', 'Test country', 'draft', ${now}, ${now});`);
 
 const apiA = `/api/platform/organizations/${identities["owner-a"].organizationId}/services`;
 const apiB = `/api/platform/organizations/${identities["owner-b"].organizationId}/services`;
@@ -235,6 +244,7 @@ const internalRoutes = [
   "/app/internal/diagnostic-analytics",
 ];
 for (const route of internalRoutes) await assertStatus(identities.platform.client, route, 200);
+await assertStatus(identities.normal.client, `/app/internal/organizations/${identities["owner-b"].organizationId}/miniweb`, 403);
 const organizationsHtml = await (await assertStatus(identities.platform.client, "/app/internal/organizations", 200)).text();
 assert(organizationsHtml.includes('aria-label="Buscar negocios o clientes"') && organizationsHtml.includes("Publicado") && organizationsHtml.includes("Sin perfil"), "El listado no presentó búsqueda y estados de perfil del fixture.");
 const organizationDetailLink = `/app/internal/organizations/${identities["owner-a"].organizationId}`;
@@ -299,6 +309,28 @@ try {
   await page.getByRole("heading", { name: "pending_owner" }).waitFor();
   const revokedInvitationState = executeD1(`SELECT l.status,i.status AS invitation_status,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=l.organization_id AND a.action='organization.owner_invitation.revoke') AS audit_count FROM platform_organization_lifecycle l JOIN platform_owner_invitation i ON i.organization_id=l.organization_id WHERE l.organization_id=${sqlLiteral(createdOrganizationId)};`)[0];
   assert(revokedInvitationState?.status === "pending_owner" && revokedInvitationState.invitation_status === "revoked" && Number(revokedInvitationState.audit_count) === 1, "Revocar invitación UI no actualizó lifecycle, token ni auditoría.");
+
+  const miniwebPath = `/app/internal/organizations/${identities["owner-b"].organizationId}/miniweb`;
+  await page.goto(`${baseUrl}${miniwebPath}`);
+  await page.getByRole("heading", { name: `Configuración de Organización owner-b ${suffix}` }).waitFor();
+  const miniwebConfiguration = { templateKey: "vecidya-default", templateVersion: 1, layoutVariant: "standard", modules: [{ type: "hero", moduleVersion: 1, enabled: true, sortOrder: 0, layoutVariant: "standard", settings: null }] };
+  const miniwebRevisionBefore = Number(await page.locator('input[name="draftRevision"]').first().inputValue());
+  await page.getByRole("textbox", { name: "Configuración JSON" }).fill(JSON.stringify(miniwebConfiguration, null, 2));
+  const savedMiniwebAction = page.waitForResponse((response) => response.url().startsWith(`${baseUrl}${miniwebPath}.data`) && response.request().method() === "POST" && response.status() === 202);
+  await page.getByRole("button", { name: "Guardar borrador" }).click();
+  await savedMiniwebAction;
+  const miniwebDraftState = executeD1(`SELECT p.draft_revision,s.template_key,(SELECT count(*) FROM miniweb_module m WHERE m.miniweb_site_id=s.id AND m.module_type='hero' AND m.enabled=1) AS hero_count,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(identities["owner-b"].organizationId)} AND a.action='organization.miniweb.save') AS audit_count FROM business_profile_publication p JOIN miniweb_site s ON s.organization_id=p.organization_id WHERE p.organization_id=${sqlLiteral(identities["owner-b"].organizationId)};`)[0];
+  assert(Number(miniwebDraftState?.draft_revision) === miniwebRevisionBefore + 1 && miniwebDraftState.template_key === miniwebConfiguration.templateKey && Number(miniwebDraftState.hero_count) === 1 && Number(miniwebDraftState.audit_count) === 1, "Guardar borrador MiniWeb desde UI no persistió la revisión/configuración ni una auditoría.");
+  await page.goto(`${baseUrl}${miniwebPath}`);
+  const publishedMiniwebAction = page.waitForResponse((response) => response.url().startsWith(`${baseUrl}${miniwebPath}.data`) && response.request().method() === "POST" && response.status() === 202);
+  await page.getByRole("button", { name: "Publicar MiniWeb" }).click();
+  await publishedMiniwebAction;
+  const miniwebPublishedState = executeD1(`SELECT p.published_version,p.snapshot_schema_version,p.snapshot_json,b.status AS profile_status,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(identities["owner-b"].organizationId)} AND a.action='organization.miniweb.publish') AS publish_audit_count FROM business_profile_publication p JOIN business_profile b ON b.organization_id=p.organization_id WHERE p.organization_id=${sqlLiteral(identities["owner-b"].organizationId)};`)[0];
+  const miniwebSnapshot = miniwebPublishedState?.snapshot_json ? JSON.parse(miniwebPublishedState.snapshot_json) : null;
+  const miniwebPublishChecks = [Number(miniwebPublishedState?.published_version) === 1, Number(miniwebPublishedState?.snapshot_schema_version) === 4, miniwebPublishedState?.profile_status === "published", miniwebSnapshot?.configuration?.templateKey === miniwebConfiguration.templateKey, Number(miniwebPublishedState?.publish_audit_count) === 1];
+  assert(miniwebPublishChecks.every(Boolean), `Publicar MiniWeb desde UI no confirmó snapshot, estado del perfil y auditoría persistidos: ${JSON.stringify({ checks: miniwebPublishChecks, state: miniwebPublishedState, snapshot: miniwebSnapshot })}.`);
+  await page.goto(`${baseUrl}${miniwebPath}`);
+  await page.getByText("El perfil, los horarios y la configuración coinciden con la versión publicada.").waitFor();
   assert(pageErrors.length === 0, `El navegador reportó errores de página: ${pageErrors.join("; ")}`);
 } finally {
   await browser.close();

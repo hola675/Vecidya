@@ -1,4 +1,4 @@
-import { Form, Link, useLoaderData } from "react-router";
+import { Form, Link, redirect, useLoaderData } from "react-router";
 import { createDatabase } from "../../db/client.server";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
@@ -61,7 +61,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
     if (!await hasActiveLicenseForOrganizationOwner(database, organization.id)) throw new Response("La organización requiere una licencia activa para publicar.", { status: 400 });
     await publishBusinessPublicationForOrganization(database, organization.id, expectedRevision, { actorUserId: actor.userId });
   } else throw new Response("Acción inválida", { status: 400 });
-  return Response.redirect(new URL(`/app/internal/organizations/${organization.id}/miniweb`, request.url), 303);
+  return redirect(`/app/internal/organizations/${organization.id}/miniweb`);
 }
 
 export default function InternalOrganizationMiniWeb() {
