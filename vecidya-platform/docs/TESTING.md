@@ -1,5 +1,11 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-04J — consolidación transversal (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40248368767` PASS: typecheck, build e integridad Aprende. Contratos: 48/48 guías revisadas; 0 borradores; cobertura total de itinerarios; al menos una relación editorial y dos fuentes HTTPS distintas por guía; sin plantilla genérica antigua; alt descriptivos; intro ≠ extracto; summaries no duplicados; fuentes OpenAI/ITU/SBA vigentes; terminología Analytics actual; jerga prioritaria explicada en contexto.
+
+**Pendiente de integración:** ejecutar `Main integration quality` sobre un PR contra `main` para acreditar regresión Diagnóstico/Aprende y suite unitaria completa sobre el conjunto final.
+
 ## APRENDE-EDITORIAL-04I — catálogo sin borradores (2026-10-25)
 
 **RAN en GitHub Actions:** `Aprende quality` run `40247742516` PASS: typecheck, build e integridad Aprende. El contrato editorial exige **48 guías revisadas / 0 borradores**. Las dos guías fundacionales deben conservar aprobación, relación recíproca y fuentes OCDE 2026, NIST CSF 2.0, CISA Secure Our World y W3C WAI.
