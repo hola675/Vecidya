@@ -1048,9 +1048,9 @@ export const learnArticles: LearnArticle[] = [
                 scope: "Ayuda oficial para mantener correctos los datos públicos del negocio; elegibilidad y opciones disponibles pueden variar."
               },
               {
-                label: "Google Ads Help — About landing page experience",
-                url: "https://support.google.com/google-ads/answer/2404197",
-                scope: "Explica la experiencia de la página de destino en Google Ads; no garantiza la aprobación ni el rendimiento de una campaña."
+                label: "Google Ads Help — Landing page",
+                url: "https://support.google.com/google-ads/answer/14086?hl=en",
+                scope: "Define la página de destino y su relación con la URL final del anuncio; no garantiza la aprobación ni el rendimiento de una campaña."
               },
               {
                 label: "W3C WAI — Writing for Web Accessibility",
