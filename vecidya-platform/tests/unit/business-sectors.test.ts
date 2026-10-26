@@ -51,3 +51,24 @@ test("categorías antiguas no se reclasifican en silencio y siguen editables", (
   assert.equal(getBusinessSectorById("legal_professional")?.label, "Servicios profesionales y legales");
   assert.equal(getBusinessSectorById("invalid"), undefined);
 });
+
+test("Vecindario filtra por la misma etiqueta sectorial y conserva los filtros legacy", async () => {
+  const { matchesNeighborhoodFilters } = await import("../../app/features/miniweb/neighborhood.ts");
+  const category = getBusinessSectorById("agro_nature")?.label;
+  assert.ok(category);
+  const base = {
+    displayName: "Actividad de prueba",
+    shortDescription: "Cultivo y producción agrícola.",
+    category,
+    city: "Las Tunas",
+    country: "Cuba",
+    serviceArea: null,
+    serviceMode: "in_person",
+    offerings: [],
+    modules: [],
+  };
+  assert.equal(matchesNeighborhoodFilters(base, { category }), true);
+  assert.equal(matchesNeighborhoodFilters(base, { category: getBusinessSectorById("commerce")!.label }), false);
+  assert.equal(matchesNeighborhoodFilters({ ...base, category: "Alimentos y bebidas" }, { category: "Alimentos y bebidas" }), true);
+  assert.equal(matchesNeighborhoodFilters(base, { q: "agrícola" }), true);
+});
