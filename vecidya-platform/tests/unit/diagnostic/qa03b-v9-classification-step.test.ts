@@ -106,6 +106,7 @@ test("búsqueda de sectores V9 sugiere sin responder ni puntuar automáticamente
   assert.deepEqual(searchV9LegacySectors(""), []);
   assert.equal(searchV9LegacySectors("dentista")[0]?.value, "health_wellness");
   assert.equal(searchV9LegacySectors("taller")[0]?.value, "automotive");
+  assert.equal(searchV9LegacySectors("mecánico")[0]?.value, "automotive");
   assert.equal(searchV9LegacySectors("abogado")[0]?.value, "legal");
   assert.deepEqual(searchV9LegacySectors("no-existe-123"), []);
   assert.ok(searchV9LegacySectors("a").length <= 7);

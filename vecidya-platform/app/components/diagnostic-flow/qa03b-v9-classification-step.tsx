@@ -61,7 +61,7 @@ const SEARCH_HINTS_V9: Readonly<Record<string, readonly string[]>> = {
   education_coaching: ["profesor", "academia", "curso", "escuela"],
 };
 const normalizeSectorSearchV9 = (text: string) =>
-  text.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLocaleLowerCase("es").trim().replace(/\\s+/g, " ");
+  text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es").trim().replace(/\s+/g, " ");
 
 export function searchV9LegacySectors(query: string) {
   const normalized = normalizeSectorSearchV9(query);
