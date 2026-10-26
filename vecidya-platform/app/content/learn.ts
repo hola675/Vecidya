@@ -102,7 +102,7 @@ export const learnArticles: LearnArticle[] = [
                 definition: "Persona o entidad con la que el negocio puede comunicarse. Guardar un contacto no significa que haya pedido información comercial."
               },
               {
-                term: "Consulta",
+                term: "Consulta/interesado",
                 definition: "Pregunta o solicitud concreta que requiere una respuesta, por ejemplo por teléfono, mensaje o formulario."
               },
               {
