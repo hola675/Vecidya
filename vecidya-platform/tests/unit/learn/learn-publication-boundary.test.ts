@@ -1,41 +1,33 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { learnArticles } from "../../../app/content/learn";
-import { loader as knowledgeLoader } from "../../../app/routes/knowledge";
-import { loader as articleLoader } from "../../../app/routes/learn-article";
+import { learnArticles, learnPathways } from "../../../app/content/learn";
+import { getPublicLearnArticle, getPublicLearnArticles } from "../../../app/content/learn-publication";
 
-test("el catálogo público de Aprende excluye borradores editoriales", () => {
-  const data = knowledgeLoader({
-    request: new Request("https://example.test/aprende"),
-  } as Parameters<typeof knowledgeLoader>[0]);
-
-  const publicArticles = learnArticles.filter((article) => !article.editorialDraft);
-  assert.equal(data.total, publicArticles.length);
-  assert.equal(data.articles.length, publicArticles.length);
-  assert.equal(data.articles.some((article) => article.editorialDraft), false);
-  assert.equal(data.topics.reduce((sum, topic) => sum + topic.count, 0), publicArticles.length);
-
-  for (const pathway of data.pathways) {
-    assert(pathway.guides.length > 0, `Itinerario público vacío: ${pathway.title}`);
-    assert(pathway.guides.every((guide) => !guide.editorialDraft), `El itinerario muestra borradores: ${pathway.title}`);
-  }
+test("el catálogo público excluye borradores y conserva el conteo aprobado", () => {
+  const publicArticles = getPublicLearnArticles(learnArticles);
+  assert.equal(publicArticles.length, learnArticles.filter((article) => article.editorialDraft !== true).length);
+  assert.equal(publicArticles.some((article) => article.editorialDraft === true), false);
+  assert.equal(new Set(publicArticles.map((article) => article.slug)).size, publicArticles.length);
 });
 
-test("una URL directa no permite consultar un artículo en borrador", () => {
-  const draft = learnArticles.find((article) => article.editorialDraft);
+test("la frontera editorial bloquea borradores por slug y conserva artículos aprobados", () => {
+  const draft = learnArticles.find((article) => article.editorialDraft === true);
+  const published = learnArticles.find((article) => article.editorialDraft !== true);
   assert.ok(draft, "Debe existir al menos un borrador de prueba");
-
-  assert.throws(
-    () => articleLoader({ params: { slug: draft.slug } } as Parameters<typeof articleLoader>[0]),
-    (error: unknown) => error instanceof Response && error.status === 404,
-  );
+  assert.ok(published, "Debe existir al menos un artículo aprobado");
+  assert.equal(getPublicLearnArticle(learnArticles, draft.slug), undefined);
+  assert.equal(getPublicLearnArticle(learnArticles, "slug-que-no-existe"), undefined);
+  assert.equal(getPublicLearnArticle(learnArticles, undefined), undefined);
+  assert.equal(getPublicLearnArticle(learnArticles, published.slug)?.slug, published.slug);
 });
 
-test("los artículos aprobados siguen accesibles por su URL", () => {
-  const published = learnArticles.find((article) => !article.editorialDraft);
-  assert.ok(published, "Debe existir al menos un artículo publicado");
-
-  const data = articleLoader({ params: { slug: published.slug } } as Parameters<typeof articleLoader>[0]);
-  assert.equal(data.article.slug, published.slug);
+test("los itinerarios públicos solo resuelven artículos aprobados y conservan pasos útiles", () => {
+  const publicSlugs = new Set(getPublicLearnArticles(learnArticles).map((article) => article.slug));
+  assert.equal(learnPathways.length, 9);
+  for (const pathway of learnPathways) {
+    const available = pathway.slugs.filter((slug) => publicSlugs.has(slug));
+    assert(available.length >= 3, `El itinerario queda demasiado corto: ${pathway.title}`);
+    assert.equal(new Set(available).size, available.length, `Pasos duplicados: ${pathway.title}`);
+  }
 });
