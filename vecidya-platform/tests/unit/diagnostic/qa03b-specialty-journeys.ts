@@ -267,6 +267,21 @@ export const QA03B_SPECIALTY_PERSONAS: readonly QA03BSpecialtyPersona[] = [
     "friction": "operations"
   },
   {
+    "id": "taller-mecanico-presupuestos",
+    "entity": "business",
+    "status": "operating",
+    "sector": "automotive",
+    "monetization": "services",
+    "delivery": [
+      "physical_location"
+    ],
+    "buyer": "b2c",
+    "history": "yes",
+    "niche": "auto_repair",
+    "goal": "stop_losing",
+    "friction": "follow_up"
+  },
+  {
     "id": "detallado-movil",
     "entity": "individual",
     "status": "operating",
@@ -548,6 +563,7 @@ export function authoredSpecialtyAnswers(persona: QA03BSpecialtyPersona): Answer
     q2_specialty_marketplace_balance: persona.id === "marketplace-activo" ? "sometimes_clear" : "unknown",
     q2_specialty_tax_return_cycle: persona.id === "impuestos" ? "systematic" : "unknown",
     q2_specialty_insurance_renewal: persona.id === "seguros" ? "partial" : "unknown",
+    q2_specialty_auto_repair_estimate_followup: persona.id === "taller-mecanico-presupuestos" ? "partial" : "unknown",
   };
   if (persona.niche !== null) {
     answers[`q2_niche_${persona.sector}`] = persona.niche;
