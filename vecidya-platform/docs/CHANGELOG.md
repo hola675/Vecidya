@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-25 — APRENDE-EDITORIAL-04I — catálogo editorial 48/48 revisado
+
+- Se aprueban las dos guías fundacionales de alfabetización digital tras verificar OCDE 2026, NIST CSF 2.0, CISA y W3C.
+- El catálogo alcanza 48 guías revisadas y 0 borradores; tests impiden reintroducir estados de borrador sin cambiar explícitamente el contrato editorial.
+- Cierre sujeto a CI del HEAD y auditoría transversal final; sin merge ni deploy.
+
 ## 2026-10-25 — APRENDE-EDITORIAL-04H — Gestión revisada
 
 - Se aprueban cinco guías de Gestión: presupuesto, compras, continuidad, IA supervisada y evaluación de mejoras.
