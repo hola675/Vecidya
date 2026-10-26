@@ -414,7 +414,7 @@ export const learnOperations02Articles: LearnArticle[] = [
                 "scope": "Encuesta comparativa sobre necesidades de habilidades digitales y adopción en empresas participantes; no representa a todos los países ni garantiza un ahorro."
               },
               {
-                "label": "NIST — Guía de ciberseguridad para pequeñas organizaciones",
+                "label": "NIST SP 1300 — Guía rápida de ciberseguridad para pequeñas empresas",
                 "url": "https://csrc.nist.gov/pubs/sp/1300/final",
                 "scope": "Referencia voluntaria para considerar riesgos, accesos y recuperación; debe adaptarse a la actividad y las normas aplicables."
               }
@@ -631,7 +631,7 @@ export const learnOperations02Articles: LearnArticle[] = [
                 "scope": "Orientaciones sobre títulos claros, párrafos breves y palabras comprensibles; no garantiza una certificación."
               },
               {
-                "label": "NIST — Guía de ciberseguridad para pequeñas organizaciones",
+                "label": "NIST SP 1300 — Guía rápida de ciberseguridad para pequeñas empresas",
                 "url": "https://csrc.nist.gov/pubs/sp/1300/final",
                 "scope": "Referencia voluntaria para considerar riesgos, accesos y recuperación; debe adaptarse a la actividad y las normas aplicables."
               }
@@ -675,7 +675,7 @@ export const learnOperations02Articles: LearnArticle[] = [
       {
         "heading": "ERP sin palabras complicadas",
         "paragraphs": [
-          "ERP son las siglas en inglés de un sistema para planificar y organizar recursos de una empresa. Puedes pensarlo como un conjunto de herramientas que comparten reglas y datos de trabajo."
+          "ERP significa «planificación de recursos empresariales» (enterprise resource planning). Puedes pensarlo como un sistema o conjunto de módulos que comparte reglas y datos entre procesos de la empresa."
         ],
         "blocks": [
           {
@@ -853,7 +853,7 @@ export const learnOperations02Articles: LearnArticle[] = [
                 "scope": "Encuesta comparativa sobre necesidades de habilidades digitales y adopción en empresas participantes; no representa a todos los países ni garantiza un ahorro."
               },
               {
-                "label": "NIST — Guía de ciberseguridad para pequeñas organizaciones",
+                "label": "NIST SP 1300 — Guía rápida de ciberseguridad para pequeñas empresas",
                 "url": "https://csrc.nist.gov/pubs/sp/1300/final",
                 "scope": "Referencia voluntaria para considerar riesgos, accesos y recuperación; debe adaptarse a la actividad y las normas aplicables."
               }

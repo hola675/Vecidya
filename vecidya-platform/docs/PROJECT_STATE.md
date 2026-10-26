@@ -390,11 +390,13 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 
 ### Aprende (`knowledge.tsx`, `learn-article.tsx`)
 
-- `/aprende` es la ruta canónica y `/que-debes-saber` conserva su alias. El catálogo vigente en `main` ya superó el estado histórico de cinco guías; APRENDE-EDITORIAL-04A trabaja sobre esa biblioteca real sin reabrir arquitectura legacy.
-- En la rama 04A, Aprende contiene **46 guías, 9 itinerarios y 6 categorías**. Dos guías nuevas de «Tecnología explicada» amplían la audiencia a vida digital y negocio: priorización («el que mucho abarca, poco aprieta») y uso consciente («domina la tecnología»). Ambas siguen en revisión editorial.
-- La experiencia propone **Comprende → Prioriza → Decide**. La búsqueda cubre título, resumen y contenido interno; la plantilla de ejemplos explica situación, problema, forma sencilla de actuar, pasos y aprendizaje. El contrato unitario exige al menos un ejemplo hipotético accionable por guía.
-- Los artículos mantienen índice accesible, CTA contextual, metadata canonical/Open Graph, relaciones y fuentes. El contenido no usa CMS ni persistencia editorial y no atribuye a Vecidya funciones CRM de GHL.
-- El siguiente pase 04B debe revisar semánticamente las 46 guías una por una, simplificar jerga y separar contenidos solo cuando un artículo abarque objetivos educativos distintos. No retirar `editorialDraft` sin revisión explícita.
+- `/aprende` es la ruta canónica y `/que-debes-saber` conserva el alias legado.
+- Estado candidato APRENDE-EDITORIAL-FINAL-02: **48 guías auditadas, 18 borradores pendientes de aprobación explícita, 30 no marcadas como borrador, 9 itinerarios y 6 categorías**. La revisión editorial no equivale a autorización de publicación; se preservan las 14 banderas de borrador existentes y se mantienen en borrador las cuatro guías nuevas de 04A/04B. El método visible es **Comprende → Prioriza → Decide** y la búsqueda cubre título, resumen y contenido interno.
+- CI del HEAD de código `322850f`: `Aprende quality` #123 PASS; `Main integration quality` #189 PASS; 1740/1740 unitarias. PR #138 abierto, sin merge ni deploy.
+- Todas las guías tienen ejemplo hipotético estructurado, al menos dos fuentes HTTPS distintas, una continuación editorial relacionada y pertenencia a uno o más itinerarios. Se mantienen límites explícitos para afirmaciones comerciales, legales, privacidad, seguridad e IA.
+- Las guías madre densas se redujeron y selección/migración de proveedor, mapa DNS/correo y correo profesional se separaron cuando tenían objetivos educativos distintos. HTTPS, analítica, supervisión de automatizaciones y piloto de IA se simplificaron sin crear URLs innecesarias.
+- La consolidación recupera las mejoras útiles de #125/#126: sin aperturas genéricas, alt descriptivos, intro y extracto diferenciados, cierres no copiados, fuentes OpenAI/ITU/SBA vigentes y terminología Analytics actual.
+- El contenido sigue estático y tipado; no añade CMS, persistencia editorial, perfiles de aprendizaje ni funciones CRM de GHL. `Aprende quality` PASS; el gate general contra `main` permanece pendiente antes de integración.
 
 ### Legal & Trust (`privacy.tsx`, `public-layout.tsx`)
 

@@ -184,9 +184,9 @@ export const learnManagement03Articles: LearnArticle[] = [
             "type": "sources",
             "items": [
               {
-                "label": "SBA — Administre las finanzas de su empresa",
-                "url": "https://legacy.sba.gov/es/guia-de-negocios/administre-su-empresa/administre-sus-finanzas",
-                "scope": "Explica cómo registrar gastos e ingresos y pensar en costos y flujo de efectivo. Es orientación general de EE. UU., no asesoría contable o tributaria para todos los países."
+                "label": "SBA — Manage your business: manage your finances",
+                "url": "https://www.sba.gov/counseling/manage-your-business/",
+                "scope": "La página actual de SBA incluye orientación sobre registro financiero, costos y análisis costo-beneficio. Es orientación general de EE. UU., no asesoría contable o tributaria para otros países."
               },
               {
                 "label": "OCDE — Digitalización de pequeñas y medianas empresas",
@@ -385,9 +385,9 @@ export const learnManagement03Articles: LearnArticle[] = [
             "type": "sources",
             "items": [
               {
-                "label": "SBA — Administre las finanzas de su empresa",
-                "url": "https://legacy.sba.gov/es/guia-de-negocios/administre-su-empresa/administre-sus-finanzas",
-                "scope": "Explica cómo registrar gastos e ingresos y pensar en costos y flujo de efectivo. Es orientación general de EE. UU., no asesoría contable o tributaria para todos los países."
+                "label": "SBA — Manage your business: manage your finances",
+                "url": "https://www.sba.gov/counseling/manage-your-business/",
+                "scope": "La página actual de SBA incluye orientación sobre registro financiero, costos y análisis costo-beneficio. Es orientación general de EE. UU., no asesoría contable o tributaria para otros países."
               },
               {
                 "label": "OCDE — Digitalización de pequeñas y medianas empresas",
@@ -813,7 +813,7 @@ export const learnManagement03Articles: LearnArticle[] = [
               {
                 "label": "NIST — AI Risk Management Framework",
                 "url": "https://www.nist.gov/itl/ai-risk-management-framework",
-                "scope": "Marco voluntario para identificar, evaluar y gestionar riesgos de sistemas de IA; no aprueba un producto específico."
+                "scope": "Marco voluntario para reconocer, evaluar y gestionar riesgos de IA. AI RMF 1.0 continúa publicado, aunque NIST indica que está en revisión en 2026; no es una certificación ni garantiza que una herramienta sea segura."
               },
               {
                 "label": "NIST — Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile",

@@ -197,7 +197,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
       "Revisa permisos cuando alguien cambia de función, sale del equipo o se incorpora a otra sede."
     ],
     "image": "/assets/learn/diagram-crm.svg",
-    "imageAlt": "Diagrama ilustrativo de información y responsabilidades que deben mantenerse organizadas.",
+    "imageAlt": "Una consulta se registra con contexto y pasa a la persona que tiene permiso y responsabilidad para completar el siguiente paso.",
     "editorialDraft": true,
     "relatedSlugs": [
       "como-proteger-cuentas-contrasenas-estafas-negocio",
@@ -366,7 +366,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
                 "scope": "Marco de referencia adaptable para definir responsabilidades, proteger información, detectar problemas y recuperarse; no equivale a una certificación."
               },
               {
-                "label": "NIST — Guía de inicio de ciberseguridad",
+                "label": "NIST SP 1300 — Guía rápida de ciberseguridad para pequeñas empresas",
                 "url": "https://csrc.nist.gov/pubs/sp/1300/final",
                 "scope": "Explica cómo empezar a manejar riesgos digitales con medios proporcionales al negocio."
               },
@@ -754,7 +754,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
               {
                 "label": "Eurostat — Digitalización de empresas (2026)",
                 "url": "https://ec.europa.eu/eurostat/en/web/interactive-publications/digitalisation-2026",
-                "scope": "Presenta indicadores y diferencias de adopción de tecnología entre empresas europeas de distintos tamaños; los datos no describen necesariamente tu país."
+                "scope": "Presenta indicadores de digitalización de empresas de la UE; la encuesta empresarial cubre organizaciones con 10 o más personas ocupadas, por lo que no describe microempresas más pequeñas ni necesariamente tu país."
               },
               {
                 "label": "OCDE — Digitalización para la competitividad (2025)",

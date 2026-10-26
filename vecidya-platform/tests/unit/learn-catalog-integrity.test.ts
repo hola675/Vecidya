@@ -14,7 +14,7 @@ const splitPairs = [
 
 test("Aprende conserva slugs únicos, categorías y campos esenciales", () => {
   const slugs = learnArticles.map((article) => article.slug);
-  assert.equal(slugs.length, 46, "APRENDE-EDITORIAL-04A debe conservar las 44 guías y añadir las dos fundacionales.");
+  assert.equal(slugs.length, 48, "APRENDE-EDITORIAL-04B debe conservar las 46 guías y separar migración y correo profesional.");
   assert.equal(new Set(slugs).size, slugs.length, "Hay slugs duplicados.");
   const categories = new Set(learnCategories.map(({ name }) => name));
   for (const article of learnArticles) {
@@ -67,6 +67,153 @@ test("Cada guía incluye al menos un ejemplo hipotético comprensible y accionab
   }
 });
 
+test("La selección y la migración de proveedor quedan como decisiones separadas", () => {
+  const choosing = getLearnArticle("como-elegir-y-cambiar-proveedor-de-dominio-y-hosting");
+  const migration = getLearnArticle("como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo");
+  assert.ok(choosing && migration);
+  assert.equal(choosing.editorialDraft, false, "La guía histórica conserva su aprobación editorial");
+  assert.equal(migration.editorialDraft, true, "La guía de migración queda en borrador hasta aprobación explícita");
+  assert.match(choosing.title, /elegir proveedor/i);
+  assert.match(migration.title, /cambiar de proveedor/i);
+  assert.ok(choosing.relatedSlugs?.includes(migration.slug));
+  assert.ok(migration.relatedSlugs?.includes(choosing.slug));
+  assert.match(JSON.stringify(choosing), /renovaci[oó]n|costo|control administrativo/i);
+  assert.match(JSON.stringify(migration), /DNS|correo|cancelar|comprobar/i);
+});
+
+test("Las cinco guías de Operaciones revisadas permanecen en borrador hasta aprobación explícita", () => {
+  const approved = [
+    "como-organizar-tareas-y-responsables-en-tu-equipo",
+    "como-controlar-inventario-sin-perder-productos-ni-datos",
+    "como-capacitar-al-equipo-en-herramientas-digitales",
+    "cuando-necesita-tu-empresa-un-sistema-erp",
+    "como-empezar-proyecto-digital-sin-detener-negocio",
+  ];
+  for (const slug of approved) {
+    const article = getLearnArticle(slug);
+    assert.ok(article, `Falta guía revisada: ${slug}`);
+    assert.equal(article.editorialDraft, true, `La aprobación editorial debe conservarse: ${slug}`);
+    const blocks = article.sections.flatMap((section) => section.blocks ?? []);
+    const sources = blocks.flatMap((block) => block.type === "sources" ? block.items : []);
+    assert.ok(sources.length >= 2, `Fuentes insuficientes en ${slug}`);
+    assert.ok(sources.every((source) => source.url.startsWith("https://")), `Fuente no HTTPS en ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "example"), `Falta ejemplo en ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "faq"), `Falta FAQ en ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "summary"), `Falta cierre accionable en ${slug}`);
+  }
+
+  const inventory = getLearnArticle("como-controlar-inventario-sin-perder-productos-ni-datos");
+  assert.match(JSON.stringify(inventory), /business\.gov\.au\/products-and-services\/inventory-management\/manage-your-inventory/);
+
+  const erp = getLearnArticle("cuando-necesita-tu-empresa-un-sistema-erp");
+  assert.match(JSON.stringify(erp), /planificaci[oó]n de recursos empresariales/i);
+  assert.match(JSON.stringify(erp), /learn\.microsoft\.com\/en-us\/training\/modules\/dynamics-365-introduction/);
+
+  const project = getLearnArticle("como-empezar-proyecto-digital-sin-detener-negocio");
+  assert.match(JSON.stringify(project), /service-manual\/agile-delivery\/how-the-beta-phase-works/);
+});
+
+test("Las dos guías técnicas nuevas permanecen en borrador y conservan sus fuentes primarias", () => {
+  const migration = getLearnArticle("como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo");
+  const email = getLearnArticle("correo-profesional-dominio-registros-mx-txt");
+  assert.ok(migration && email);
+  assert.equal(migration.editorialDraft, true, "Migración pendiente de aprobación explícita");
+  assert.equal(email.editorialDraft, true, "Correo profesional pendiente de aprobación explícita");
+
+  const migrationText = JSON.stringify(migration);
+  for (const expected of [/icann\.org\/registrants/, /domain-name-registration-process/, /rfc1034/, /rfc1035/, /Transport_Layer_Security/]) {
+    assert.match(migrationText, expected);
+  }
+
+  const emailText = JSON.stringify(email);
+  for (const expected of [/rfc1035/, /rfc7208/, /rfc6376/, /rfc9989/]) {
+    assert.match(emailText, expected);
+  }
+  assert.match(emailText, /MX|TXT|SPF|DKIM|DMARC/);
+});
+
+test("Las cuatro guías de coordinación empresarial permanecen en borrador y conservan su alcance", () => {
+  const approved = [
+    "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo",
+    "quien-puede-ver-cambiar-y-publicar-en-tu-empresa",
+    "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones",
+    "como-comparar-resultados-de-sedes-sin-mezclar-las-cifras",
+  ];
+  for (const slug of approved) {
+    const article = getLearnArticle(slug);
+    assert.ok(article, `Falta guía empresarial revisada: ${slug}`);
+    assert.equal(article.editorialDraft, true, `Debe conservar aprobación editorial: ${slug}`);
+    const blocks = article.sections.flatMap((section) => section.blocks ?? []);
+    const sources = blocks.flatMap((block) => block.type === "sources" ? block.items : []);
+    assert.ok(sources.length >= 2, `Fuentes insuficientes: ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "example"), `Falta ejemplo: ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "faq"), `Falta FAQ: ${slug}`);
+  }
+
+  const comparison = getLearnArticle("como-comparar-resultados-de-sedes-sin-mezclar-las-cifras");
+  assert.match(JSON.stringify(comparison), /digitalisation-2026/);
+  assert.match(JSON.stringify(comparison), /10 o más personas ocupadas/);
+
+  const access = getLearnArticle("quien-puede-ver-cambiar-y-publicar-en-tu-empresa");
+  assert.match(JSON.stringify(access), /csrc\.nist\.gov\/pubs\/sp\/1300\/final/);
+});
+
+test("Las cinco guías de Gestión permanecen en borrador y conservan fuentes y límites", () => {
+  const approved = [
+    "como-preparar-presupuesto-para-herramientas-digitales",
+    "como-ordenar-compras-proveedores-y-aprobaciones-en-una-empresa",
+    "que-hacer-si-falla-internet-o-el-sistema-de-tu-negocio",
+    "como-usar-inteligencia-artificial-en-una-empresa-con-supervision",
+    "como-saber-si-una-mejora-tecnologica-funciona-en-tu-empresa",
+  ];
+  for (const slug of approved) {
+    const article = getLearnArticle(slug);
+    assert.ok(article, `Falta guía de Gestión revisada: ${slug}`);
+    assert.equal(article.editorialDraft, true, `Debe conservar aprobación editorial: ${slug}`);
+    const blocks = article.sections.flatMap((section) => section.blocks ?? []);
+    const sources = blocks.flatMap((block) => block.type === "sources" ? block.items : []);
+    assert.ok(sources.length >= 2, `Fuentes insuficientes: ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "example"), `Falta ejemplo: ${slug}`);
+    assert.ok(blocks.some((block) => block.type === "faq"), `Falta FAQ: ${slug}`);
+  }
+
+  const budget = getLearnArticle("como-preparar-presupuesto-para-herramientas-digitales");
+  assert.match(JSON.stringify(budget), /sba\.gov\/counseling\/manage-your-business/);
+  assert.doesNotMatch(JSON.stringify(budget), /legacy\.sba\.gov/);
+
+  const ai = getLearnArticle("como-usar-inteligencia-artificial-en-una-empresa-con-supervision");
+  assert.match(JSON.stringify(ai), /AI RMF 1\.0 continúa publicado, aunque NIST indica que está en revisión en 2026/);
+
+  const continuity = getLearnArticle("que-hacer-si-falla-internet-o-el-sistema-de-tu-negocio");
+  assert.match(JSON.stringify(continuity), /ready\.gov\/business\/emergency-plans/);
+  assert.match(JSON.stringify(continuity), /cisa\.gov\/small-and-medium-sized-business-resources/);
+});
+
+test("Las dos guías fundacionales permanecen en borrador y conservan fuentes vigentes", () => {
+  const priorities = getLearnArticle("el-que-mucho-abarca-poco-aprieta-prioridades-digitales");
+  const control = getLearnArticle("domina-la-tecnologia-sin-que-te-domine");
+  assert.ok(priorities && control);
+  assert.equal(priorities.editorialDraft, true, "Pendiente de aprobación explícita");
+  assert.equal(control.editorialDraft, true, "Pendiente de aprobación explícita");
+  assert.ok(priorities.relatedSlugs?.includes(control.slug));
+  assert.ok(control.relatedSlugs?.includes(priorities.slug));
+
+  const prioritiesText = JSON.stringify(priorities);
+  assert.match(prioritiesText, /empowering-smes-in-the-age-of-ai_bf5a9816-en/);
+  assert.match(prioritiesText, /nist-cybersecurity-framework-csf-20/);
+  assert.match(prioritiesText, /w3\.org\/WAI\/tips\/writing/);
+
+  const controlText = JSON.stringify(control);
+  assert.match(controlText, /cisa\.gov\/resources-tools\/resources\/secure-our-world/);
+  assert.match(controlText, /nist-cybersecurity-framework-csf-20/);
+  assert.match(controlText, /w3\.org\/WAI\/tips\/writing/);
+});
+
+test("El catálogo conserva borradores pendientes de aprobación explícita", () => {
+  assert.equal(learnArticles.filter((article) => article.editorialDraft).length, 18);
+  assert.equal(learnArticles.filter((article) => !article.editorialDraft).length, 30);
+});
+
 test("Todos los itinerarios enlazan a artículos reales sin duplicados internos", () => {
   const titles = new Set<string>();
   for (const pathway of learnPathways) {
@@ -91,6 +238,141 @@ test("Las seis guías especializadas aprobadas mantienen sus enlaces y fuentes",
   }
 });
 
+test("Las guías madre revisadas no vuelven a convertirse en monolitos", () => {
+  const focusedSlugs = [
+    "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
+    "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
+    "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
+    "publicidad-digital-como-preparar-una-primera-campana",
+    "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio",
+    "dominio-hosting-sitio-web-como-funcionan",
+  ];
+  for (const slug of focusedSlugs) {
+    const article = getLearnArticle(slug);
+    assert.ok(article, `Falta guía madre: ${slug}`);
+    const words = JSON.stringify(article).replace(/https?:\/\/[^"\s]+/g, " ").split(/\s+/u).filter(Boolean).length;
+    assert.ok(words <= 1800, `La guía madre ${slug} volvió a crecer demasiado: ${words} palabras serializadas`);
+    assert.ok(article.sections.length <= 10, `La guía madre ${slug} volvió a acumular demasiadas secciones`);
+  }
+});
+
+test("Las guías especializadas simplificadas conservan un tamaño pedagógico acotado", () => {
+  const focusedSlugs = [
+    "dns-https-y-correo-como-se-conecta-tu-dominio",
+    "https-certificados-tls-que-protegen-y-que-no",
+    "analitica-web-que-medir-en-tu-negocio",
+    "como-probar-y-supervisar-automatizaciones-sin-perder-datos",
+    "como-probar-un-asistente-de-ia-con-supervision-humana",
+    "correo-profesional-dominio-registros-mx-txt",
+  ];
+  for (const slug of focusedSlugs) {
+    const article = getLearnArticle(slug);
+    assert.ok(article, `Falta guía especializada: ${slug}`);
+    const words = JSON.stringify(article).replace(/https?:\/\/[^"\s]+/g, " ").split(/\s+/u).filter(Boolean).length;
+    assert.ok(words <= 1500, `La guía especializada ${slug} volvió a crecer demasiado: ${words} palabras serializadas`);
+    assert.ok(article.sections.length <= 8, `La guía especializada ${slug} volvió a acumular demasiadas secciones`);
+  }
+});
+
+test("La consolidación editorial mantiene lenguaje comprensible", () => {
+  const ai = getLearnArticle("que-puede-hacer-una-inteligencia-artificial-por-un-negocio");
+  const campaign = getLearnArticle("publicidad-digital-como-preparar-una-primera-campana");
+  const presence = getLearnArticle("como-mantener-actualizada-y-confiable-tu-presencia-digital");
+  const control = getLearnArticle("domina-la-tecnologia-sin-que-te-domine");
+  const migration = getLearnArticle("como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo");
+  const provider = getLearnArticle("como-elegir-y-cambiar-proveedor-de-dominio-y-hosting");
+  const analytics = getLearnArticle("analitica-web-que-medir-en-tu-negocio");
+  assert.ok(ai && campaign && presence && control && migration && provider && analytics);
+
+  assert.match(JSON.stringify(ai), /tokens \(unidades de texto procesado\)/i);
+  assert.match(JSON.stringify(campaign), /conversi[oó]n publicitaria.{0,180}acci[oó]n importante.{0,120}campa[nñ]a/i);
+  assert.match(JSON.stringify(presence), /herramientas de medici[oó]n \(anal[ií]tica\)/i);
+  assert.match(JSON.stringify(control), /autenticaci[oó]n multifactor.{0,140}adem[aá]s de la contrase[nñ]a/i);
+  assert.match(JSON.stringify(migration), /MX.{0,100}dirigir los mensajes/i);
+  assert.match(JSON.stringify(migration), /TXT.{0,100}verificaciones y pol[ií]ticas/i);
+  assert.match(JSON.stringify(migration), /conexi[oó]n segura \(HTTPS\)/i);
+  assert.match(JSON.stringify(provider), /certificado de seguridad de la web \(TLS\)/i);
+  assert.match(JSON.stringify(analytics), /Origen incierto \(atribuci[oó]n\)/i);
+});
+
+test("Las aperturas educativas no reutilizan la plantilla genérica anterior", () => {
+  for (const article of learnArticles) {
+    const text = JSON.stringify(article);
+    assert.doesNotMatch(text, /Al terminar, podr[aá]s explicar con tus palabras/i, article.slug);
+    assert.doesNotMatch(text, /Ejercicio breve: identifica un problema real/i, article.slug);
+    assert.doesNotMatch(text, /Explica la idea central a alguien sin utilizar tecnicismos/i, article.slug);
+  }
+});
+
+test("Los textos alternativos explican la imagen y evitan etiquetas genéricas", () => {
+  for (const article of learnArticles) {
+    assert.ok(article.imageAlt.trim().split(/\s+/u).length >= 7, `Texto alternativo demasiado breve: ${article.slug}`);
+    assert.doesNotMatch(article.imageAlt, /ilustraci[oó]n conceptual|esquema educativo|tema de esta gu[ií]a|diagrama ilustrativo/i, article.slug);
+  }
+});
+
+test("La introducción y el extracto cumplen funciones distintas", () => {
+  for (const article of learnArticles) {
+    assert.notEqual(article.intro.trim(), article.excerpt.trim(), `Intro y extracto duplicados: ${article.slug}`);
+  }
+});
+
+test("El resumen final no repite literalmente En pocas palabras", () => {
+  for (const article of learnArticles) {
+    const summaries = article.sections.flatMap((section) =>
+      (section.blocks ?? []).flatMap((block) => block.type === "summary" ? [block.items] : []));
+    for (const summary of summaries) {
+      assert.notDeepEqual(summary, [...article.enPocasPalabras], `Resumen duplicado en ${article.slug}`);
+    }
+  }
+});
+
+test("Las fuentes renovadas usan destinos vigentes y terminología actual", () => {
+  const analytics = getLearnArticle("analitica-web-que-medir-en-tu-negocio");
+  const aiDrafts = getLearnArticle("preparar-respuestas-publicaciones-ia-sin-perder-control");
+  const start = getLearnArticle("como-empezar-a-digitalizar-un-negocio-desde-cero");
+  const budget = getLearnArticle("como-preparar-presupuesto-para-herramientas-digitales");
+  assert.ok(analytics && aiDrafts && start && budget);
+
+  const analyticsText = JSON.stringify(analytics);
+  assert.match(analyticsText, /Evento clave/i);
+  assert.match(analyticsText, /Conversi[oó]n publicitaria/i);
+  assert.match(analyticsText, /answer\/13965727/);
+
+  const aiSources = JSON.stringify(aiDrafts);
+  assert.match(aiSources, /developers\.openai\.com\/api\/docs\/guides\/prompt-engineering/);
+  assert.match(aiSources, /7730893-data-controls-in-chatgpt/);
+  assert.doesNotMatch(aiSources, /platform\.openai\.com\/docs\/guides\/prompt-engineering|data-controls-faq/);
+
+  assert.match(JSON.stringify(start), /global-connectivity-report-2025/);
+  assert.doesNotMatch(JSON.stringify(budget), /legacy\.sba\.gov/);
+  assert.match(JSON.stringify(budget), /sba\.gov\/counseling\/manage-your-business/);
+});
+
+test("Cada guía conserva al menos dos fuentes HTTPS distintas", () => {
+  for (const article of learnArticles) {
+    const sources = article.sections.flatMap((section) =>
+      (section.blocks ?? []).flatMap((block) => block.type === "sources" ? block.items : []));
+    assert.ok(sources.length >= 2, `Faltan fuentes suficientes en ${article.slug}`);
+    const urls = sources.map(({ url }) => url);
+    assert.equal(new Set(urls).size, urls.length, `Fuente duplicada en ${article.slug}`);
+    assert.ok(urls.every((url) => /^https:\/\//i.test(url)), `Fuente no HTTPS en ${article.slug}`);
+  }
+});
+
+test("Ninguna guía queda fuera de los itinerarios de aprendizaje", () => {
+  const routed = new Set(learnPathways.flatMap((pathway) => [...pathway.slugs]));
+  const orphan = learnArticles.map(({ slug }) => slug).filter((slug) => !routed.has(slug));
+  assert.deepEqual(orphan, [], `Guías fuera de itinerarios: ${orphan.join(", ")}`);
+});
+
+test("Cada guía ofrece al menos una continuación editorial relacionada", () => {
+  for (const article of learnArticles) {
+    assert.ok((article.relatedSlugs ?? []).length >= 1, `Falta continuación relacionada en ${article.slug}`);
+    for (const related of article.relatedSlugs ?? []) assert.ok(getLearnArticle(related), `Relacionado inexistente: ${article.slug} → ${related}`);
+  }
+});
+
 test("Las guías especializadas conservan sus temas pedagógicos esenciales", () => {
   const requirements = [
     ["publicidad-digital-como-preparar-una-primera-campana", [/Google Ads|Meta Ads/i, /página de destino/i, /indicadores/i]],
@@ -107,6 +389,18 @@ test("Las guías especializadas conservan sus temas pedagógicos esenciales", ()
       [heading, ...paragraphs, JSON.stringify(blocks ?? [])].join(" ")).join(" ");
     for (const topic of topics) assert.match(content, topic, `Tema ausente en ${slug}: ${topic}`);
   }
+});
+
+test("La guía DNS queda como mapa y deriva el detalle de correo a una guía propia", () => {
+  const dns = getLearnArticle("dns-https-y-correo-como-se-conecta-tu-dominio");
+  const email = getLearnArticle("correo-profesional-dominio-registros-mx-txt");
+  assert.ok(dns && email);
+  assert.ok(dns.relatedSlugs?.includes(email.slug));
+  assert.ok(email.relatedSlugs?.includes(dns.slug));
+  assert(dns.sections.length <= 8, "El mapa DNS no debe volver a crecer como manual técnico");
+  const dnsText = JSON.stringify(dns);
+  assert.match(dnsText, /mapa|piezas|separado|por separado/i);
+  assert.match(JSON.stringify(email), /proveedor|MX|TXT|SPF|DKIM|DMARC/i);
 });
 
 test("Las bibliografías de presencia y DNS mantienen su alcance especializado", () => {
@@ -126,7 +420,13 @@ test("Las bibliografías de presencia y DNS mantienen su alcance especializado",
   assert.ok(dnsSources.some((source) => source.url.includes("rfc1035")), "Falta referencia técnica de registros DNS");
   assert.ok(dnsSources.some((source) => source.url.includes("Transport_Layer_Security")), "Falta referencia TLS");
   assert.ok(!dnsSources.some((source) => /renewal|registration-process|lookup.icann/.test(source.url)), "Fuentes registrales ajenas a DNS");
-  assert.match(dns.sections.map((section) => section.paragraphs.join(" ")).join(" "), /SPF, DKIM ni DMARC/, "Falta delimitar alcance de autenticación de correo");
+  const email = getLearnArticle("correo-profesional-dominio-registros-mx-txt");
+  assert.equal(email?.editorialDraft, true, "La guía separada de correo permanece en borrador hasta aprobación explícita");
+  const emailSources = sources(email);
+  assert.ok(emailSources.some((source) => source.url.includes("rfc7208")), "Falta referencia SPF");
+  assert.ok(emailSources.some((source) => source.url.includes("rfc6376")), "Falta referencia DKIM");
+  assert.ok(emailSources.some((source) => source.url.includes("rfc9989")), "Falta referencia DMARC vigente");
+  assert.match(JSON.stringify(email), /MX|TXT|SPF|DKIM|DMARC/, "La guía de correo debe explicar sus mecanismos principales");
 });
 
 test("La guía de CRM se limita a explicar cuándo conviene y no promete un CRM de Vecidya no verificado", () => {

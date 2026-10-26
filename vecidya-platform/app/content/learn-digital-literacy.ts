@@ -372,8 +372,8 @@ export const learnDigitalLiteracyArticles: LearnArticle[] = [
                 detail: "Evita reutilizar la misma contraseña en servicios importantes. Un gestor de contraseñas puede ayudarte a mantener credenciales únicas.",
               },
               {
-                title: "Activa autenticación multifactor cuando esté disponible",
-                detail: "Añade una comprobación adicional al inicio de sesión. Guarda los métodos de recuperación de forma segura.",
+                title: "Activa una segunda comprobación de acceso",
+                detail: "Cuando el servicio la ofrezca, usa autenticación multifactor: además de la contraseña, pide otra comprobación. Guarda los métodos de recuperación de forma segura.",
               },
               {
                 title: "Desconfía de la urgencia inesperada",
@@ -472,7 +472,7 @@ export const learnDigitalLiteracyArticles: LearnArticle[] = [
               {
                 label: "CISA — Secure Our World resources",
                 url: "https://www.cisa.gov/resources-tools/resources/secure-our-world-cybersecurity-awareness-month-resources",
-                scope: "Recursos de la agencia estadounidense CISA para individuos, familias y pequeñas empresas sobre phishing, contraseñas, autenticación multifactor y actualizaciones. Algunas páginas relacionadas pueden figurar como contenido archivado.",
+                scope: "Recursos activos de CISA para individuos, familias y pequeñas y medianas empresas sobre phishing, contraseñas, autenticación multifactor, actualizaciones y otras prácticas de seguridad digital.",
               },
               {
                 label: "NIST — Cybersecurity Framework 2.0",

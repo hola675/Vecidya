@@ -5,14 +5,14 @@ import { join } from "node:path";
 
 import { learnArticles, learnCategories, learnPathways } from "../../../app/content/learn.ts";
 
-test("Aprende conserva once guías originales y amplía el catálogo con operaciones y gestión", () => {
-  assert.equal(learnArticles.length, 46);
+test("Aprende conserva el catálogo y registra la revisión editorial de Operaciones", () => {
+  assert.equal(learnArticles.length, 48);
   assert.equal(new Set(learnArticles.map((article) => article.slug)).size, learnArticles.length);
   const drafts = learnArticles.filter((article) => article.editorialDraft);
-  const reviewed = learnArticles.filter((article) => !article.editorialDraft);
-  assert.equal(drafts.length + reviewed.length, learnArticles.length);
-  assert(drafts.length >= 14, "Se conservan los borradores educativos del catálogo ampliado");
-  assert(reviewed.length >= 11, "Se conservan al menos las once guías originales revisadas");
+  const nonDraft = learnArticles.filter((article) => !article.editorialDraft);
+  assert.equal(drafts.length + nonDraft.length, learnArticles.length);
+  assert.equal(drafts.length, 18, "Los borradores no se retiran sin aprobación explícita");
+  assert.equal(nonDraft.length, 30, "Se conservan las 30 guías aprobadas previamente o legadas sin bandera de borrador");
   for (const slug of [
     "como-organizar-tareas-y-responsables-en-tu-equipo",
     "como-controlar-inventario-sin-perder-productos-ni-datos",
@@ -21,16 +21,17 @@ test("Aprende conserva once guías originales y amplía el catálogo con operaci
     "como-empezar-proyecto-digital-sin-detener-negocio",
   ]) {
     const article = learnArticles.find((candidate) => candidate.slug === slug);
-    assert(article?.editorialDraft, `Guía operativa ausente o publicada prematuramente: ${slug}`);
+    assert.ok(article, `Guía operativa ausente: ${slug}`);
+    assert.equal(article.editorialDraft, true, `La guía operativa debe permanecer en borrador hasta aprobación explícita: ${slug}`);
     assert.equal(article.sections.length, 9, `La guía operativa debe ofrecer nueve secciones: ${slug}`);
   }
 });
 
-test("las guías fundacionales de criterio digital quedan en revisión y conectadas entre sí", () => {
+test("las guías fundacionales de criterio digital quedan en borrador y conectadas entre sí", () => {
   const priorities = learnArticles.find((article) => article.slug === "el-que-mucho-abarca-poco-aprieta-prioridades-digitales");
   const control = learnArticles.find((article) => article.slug === "domina-la-tecnologia-sin-que-te-domine");
-  assert(priorities?.editorialDraft, "La guía de prioridades debe permanecer en revisión hasta aprobación");
-  assert(control?.editorialDraft, "La guía de control digital debe permanecer en revisión hasta aprobación");
+  assert.equal(priorities?.editorialDraft, true, "La guía de prioridades espera aprobación explícita");
+  assert.equal(control?.editorialDraft, true, "La guía de control digital espera aprobación explícita");
   assert.equal(priorities.category, "Tecnología explicada");
   assert.equal(control.category, "Tecnología explicada");
   assert(priorities.relatedSlugs?.includes(control.slug));

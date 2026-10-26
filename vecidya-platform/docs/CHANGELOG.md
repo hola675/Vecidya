@@ -1,5 +1,59 @@
 # Changelog
 
+## 2026-10-25 — APRENDE-EDITORIAL-FINAL-02 — preservar borradores pendientes
+
+- Restaura `editorialDraft: true` para 14 guías que ya eran borradores en `main` y para las cuatro guías nuevas de 04A/04B.
+- Cambia los contratos de integridad para exigir 48 guías auditadas, 18 borradores y 30 artículos con estado previo no-borrador; la revisión no sustituye la aprobación explícita.
+- Corrige el guard de Gestión que detectó la regresión en la integración final. Sin cambios de contenido comercial, DB, Auth, Diagnóstico, MiniWeb, GHL ni producción.
+- CI sobre el HEAD de código `322850f`: Aprende quality #123 PASS; Main integration quality #189 PASS; 1740/1740 unitarias.
+
+## 2026-10-25 — APRENDE-EDITORIAL-04J — consolidación 48/48
+
+- Consolida las mejoras de lenguaje, itinerarios y fuentes de #125/#126 sobre el catálogo actual, sin fusionar sus ramas antiguas.
+- Las 48 guías quedan revisadas, cubiertas por 9 itinerarios y enlazadas editorialmente; 0 borradores.
+- Se eliminan aperturas de plantilla, se refuerzan cierres accionables y se actualizan OpenAI, ITU, SBA y terminología de Google Analytics.
+- Nuevos contratos evitan regresiones de jerga, alt, fuentes, rutas educativas y duplicación editorial. Sin deploy.
+
+## 2026-10-25 — APRENDE-EDITORIAL-04I — catálogo editorial 48/48 revisado
+
+- Se aprueban las dos guías fundacionales de alfabetización digital tras verificar OCDE 2026, NIST CSF 2.0, CISA y W3C.
+- El catálogo alcanza 48 guías revisadas y 0 borradores; tests impiden reintroducir estados de borrador sin cambiar explícitamente el contrato editorial.
+- Cierre sujeto a CI del HEAD y auditoría transversal final; sin merge ni deploy.
+
+## 2026-10-25 — APRENDE-EDITORIAL-04H — Gestión revisada
+
+- Se aprueban cinco guías de Gestión: presupuesto, compras, continuidad, IA supervisada y evaluación de mejoras.
+- Se elimina `legacy.sba.gov` en favor de la página vigente de SBA y se aclara la revisión 2026 de NIST AI RMF 1.0.
+- Catálogo: 48 guías, 46 revisadas y 2 borradores. Sin cambios de producto o producción.
+
+## 2026-10-25 — APRENDE-EDITORIAL-04G — coordinación empresarial revisada
+
+- Se aprueban cuatro guías sobre sedes, permisos, herramientas y comparación de resultados.
+- Eurostat 2026 queda delimitado a empresas con 10 o más personas ocupadas; NIST se nombra como SP 1300 cuando corresponde.
+- Catálogo: 48 guías, 41 revisadas y 7 borradores. Sin cambios de producto o producción.
+
+## 2026-10-25 — APRENDE-EDITORIAL-04F — migración y correo profesional revisados
+
+- Revisión editorial individual de las dos guías técnicas nuevas de 04B.
+- Se validan ICANN, MDN e IETF; correo mantiene RFC 9989 para DMARC vigente y evita valores específicos de proveedor.
+- Ambas guías dejan `editorialDraft`; catálogo: 48 guías, 37 revisadas y 11 borradores.
+- Sin cambios de DB, Auth, Diagnóstico, MiniWeb, GHL, precios o producción.
+
+## 2026-10-25 — APRENDE-EDITORIAL-04E — cinco guías de Operaciones revisadas
+
+- Revisión editorial individual de tareas/responsables, inventario, capacitación digital, ERP y proyectos piloto.
+- Se validan fuentes institucionales vigentes y se corrigen dos precisiones: ERP = planificación de recursos empresariales; NIST se referencia como SP 1300/CSF 2.0.
+- Las cinco guías dejan `editorialDraft` tras la revisión; el catálogo queda en 48 guías, 35 revisadas y 13 borradores.
+- Sin cambios de DB, Auth, Diagnóstico, MiniWeb, GHL, precios o producción. Rama paralela a 04C/04D; requiere reconciliación posterior.
+
+## 2026-10-25 — APRENDE-EDITORIAL-04B — proveedor sin monolito (PR dependiente pendiente)
+
+- Separa dos decisiones que estaban mezcladas: elegir/renovar proveedor y ejecutar una migración.
+- La guía histórica conserva su URL y aprobación editorial, pero reduce el alcance a comparación, control, renovación y salida; una guía nueva en borrador cubre inventario, DNS, web, correo, pruebas y cancelación segura.
+- Se condensan seis guías madre para eliminar introducciones y detalle duplicado: Presencia 3291→1420, Automatizaciones 2707→1146, Dominio/hosting 2413→1179, primera campaña 2346→1120, CRM 2142→1075 e IA general 1743→982 palabras, manteniendo ejemplos, conceptos y fuentes esenciales.
+- Se añade un guard de pruebas para impedir que las seis guías madre vuelvan a crecer por encima de 10 secciones/1800 palabras serializadas y otro para las guías especializadas simplificadas (8 secciones/1500 palabras). HTTPS/TLS baja 1331→1128 palabras, Analítica 1346→984, supervisión de automatizaciones 1578→968, piloto IA 1407→904 y correo profesional 1528→1070.
+- Se separa además el correo profesional del mapa general DNS/HTTPS/correo: el mapa queda introductorio y una guía nueva explica MX, TXT, SPF, DKIM y DMARC con RFC 9989 vigente. El catálogo queda en 48 guías y 9 itinerarios. Sin cambios de DB, Auth, Diagnóstico, MiniWeb, GHL, precios o producción.
+
 ## 2026-10-25 — APRENDE-EDITORIAL-04B — revisión semántica de Aprende (PR #121)
 
 - Revisión artículo por artículo del catálogo de 46 guías, con registro editorial en APRENDE_EDITORIAL_AUDIT_04B.md.

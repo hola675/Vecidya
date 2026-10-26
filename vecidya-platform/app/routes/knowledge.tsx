@@ -2,6 +2,8 @@ import { Link } from "react-router";
 
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { learnArticles, learnCategories, learnPathways } from "../content/learn";
+import { getPublicLearnPathways } from "../content/learn-publication";
+import { getPublicLearnArticles } from "../content/learn-publication";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 import { publicListingRobots } from "../lib/public-seo";
 
@@ -25,7 +27,8 @@ export function loader({ request }: Route.LoaderArgs) {
   const requestedCategory = params.get("tema");
   const category = learnCategories.find((topic) => topic.name === requestedCategory)?.name ?? null;
   const needle = searchable(search);
-  const articles = learnArticles
+  const publicArticles = getPublicLearnArticles(learnArticles);
+  const articles = publicArticles
     .filter((article) => {
       if (category && article.category !== category) return false;
       if (!needle) return true;
@@ -57,17 +60,18 @@ export function loader({ request }: Route.LoaderArgs) {
     }));
   const topics = learnCategories.map((topic) => ({
     ...topic,
-    count: learnArticles.filter((article) => article.category === topic.name).length,
+    count: publicArticles.filter((article) => article.category === topic.name).length,
   }));
-  const pathways = learnPathways.map((path) => ({
-    title: path.title, description: path.description,
+  const pathways = getPublicLearnPathways(learnPathways, publicArticles).map((path) => ({
+    title: path.title,
+    description: path.description,
     guides: path.slugs.map((slug) => {
-      const guide = learnArticles.find((article) => article.slug === slug);
-      if (!guide) throw new Error("Guía del itinerario no encontrada: " + slug);
-      return { slug: guide.slug, title: guide.title, editorialDraft: guide.editorialDraft ?? false };
+      const guide = publicArticles.find((article) => article.slug === slug);
+      if (!guide) throw new Error("Guía pública del itinerario no encontrada: " + slug);
+      return { slug: guide.slug, title: guide.title, editorialDraft: false };
     }),
   }));
-  return { articles, topics, pathways, search, category, total: learnArticles.length };
+  return { articles, topics, pathways, search, category, total: publicArticles.length };
 }
 
 export function meta({ location }: Route.MetaArgs) {

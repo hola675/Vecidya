@@ -1,5 +1,53 @@
 # Pruebas
 
+## APRENDE-EDITORIAL-FINAL-02 — aprobación explícita y regresión general (2026-10-25)
+
+El run `40248565700` falló con **1739/1740** pruebas: `learn-management-03.test.ts` esperaba `editorialDraft: true` para las cinco guías de Gestión, pero el candidato final las había marcado como aprobadas. La causa era un cambio de estado editorial no autorizado, no un defecto del guard. Se restaura `editorialDraft: true` para 18 guías y se actualizan los contratos para exigir **18 borradores / 30 no marcadas como borrador**. La aprobación de contenido, el merge y el deploy son decisiones separadas.
+
+**RAN en GitHub Actions sobre el HEAD de código `322850f`:** `Aprende quality` run `40254782673` PASS (typecheck, build e integridad Aprende); `Main integration quality` run `40254782671` PASS (typecheck, build, regresión Diagnóstico/Aprende y **1740/1740 unitarias, 0 fallos**). El commit posterior de documentación no cambia código ni contenido.
+
+## APRENDE-EDITORIAL-04J — consolidación transversal (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40248368767` PASS: typecheck, build e integridad Aprende. Contratos: 48/48 guías revisadas; 0 borradores; cobertura total de itinerarios; al menos una relación editorial y dos fuentes HTTPS distintas por guía; sin plantilla genérica antigua; alt descriptivos; intro ≠ extracto; summaries no duplicados; fuentes OpenAI/ITU/SBA vigentes; terminología Analytics actual; jerga prioritaria explicada en contexto.
+
+**Pendiente de integración:** ejecutar `Main integration quality` sobre un PR contra `main` para acreditar regresión Diagnóstico/Aprende y suite unitaria completa sobre el conjunto final.
+
+## APRENDE-EDITORIAL-04I — catálogo sin borradores (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40247742516` PASS: typecheck, build e integridad Aprende. El contrato editorial exige **48 guías revisadas / 0 borradores**. Las dos guías fundacionales deben conservar aprobación, relación recíproca y fuentes OCDE 2026, NIST CSF 2.0, CISA Secure Our World y W3C WAI.
+
+## APRENDE-EDITORIAL-04H — Gestión revisada (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40247532519` PASS: typecheck, build e integridad Aprende. El catálogo se mantiene en 48 guías y pasa a **46 revisadas / 2 borradores**. Los contratos exigen aprobación de las cinco guías de Gestión, ausencia de `legacy.sba.gov`, referencia SBA vigente, nota de revisión de AI RMF 1.0, y fuentes Ready.gov/CISA para continuidad.
+
+## APRENDE-EDITORIAL-04G — coordinación empresarial revisada (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40247312756` PASS: typecheck, build e integridad Aprende. El catálogo queda en 48 guías con **41 revisadas / 7 borradores**. Las cuatro guías de `learn-business-operations.ts` deben conservar aprobación, ejemplo y FAQ; la comparación entre sedes mantiene la fuente Eurostat 2026 y explicita que la encuesta empresarial cubre organizaciones con 10 o más personas ocupadas.
+
+## APRENDE-EDITORIAL-04F — revisión de guías técnicas nuevas (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40247108403` PASS: typecheck, build e integridad Aprende. El catálogo esperado se mantiene en 48 guías y pasa a **37 revisadas / 11 borradores**. Los contratos exigen `editorialDraft: false` para migración de proveedor y correo profesional; además preservan fuentes ICANN/MDN/RFC 1034/1035 para migración y RFC 1035/7208/6376/9989 para correo.
+
+El gate específico de Aprende queda certificado en el run indicado; la integración general se reserva para la reconciliación final.
+
+## APRENDE-EDITORIAL-04E — revisión de Operaciones (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40246857214` PASS: typecheck, build e integridad Aprende. Se fija el catálogo en 48 guías con **35 revisadas / 13 borradores**. Las cinco guías de `learn-operations-02.ts` deben conservar `editorialDraft: false`, nueve secciones, ejemplo hipotético, FAQ, cierre accionable y al menos dos fuentes HTTPS. Los contratos comprueban además la referencia de inventario de business.gov.au, la definición de ERP y la fuente oficial de Microsoft Learn, y la guía de beta de GOV.UK para el piloto digital.
+
+Sin Main integration mientras este checkpoint permanezca paralelo y apilado sobre 04B; el gate general corresponderá a la reconciliación final.
+
+## APRENDE-EDITORIAL-04B — separación selección/migración de proveedor (2026-10-25)
+
+**TEST versionado / RAN pendiente en HEAD final.** El contrato de catálogo espera **47 guías** y mantiene 9 itinerarios. La prueba nueva exige que la guía histórica de proveedor siga aprobada y enfocada en elegir/renovar, mientras la migración nueva permanece en revisión y contiene DNS, correo, cancelación segura y comprobaciones. Ambas deben enlazarse entre sí. Las pruebas históricas de Presencia, Automatizaciones, Dominio/hosting, CRM e IA permanecen como contrato de contenido durante su reducción. Un guard adicional protege seis guías madre (CRM, IA, Presencia, primera campaña, Automatizaciones y Dominio/hosting) contra regresión editorial: máximo 10 secciones y 1800 palabras serializadas por guía.
+
+**RAN:** `Aprende quality` run `40243511349` sobre `619f25ad2ebbaf0f76e2655975fb6a424f8598fe` PASS: instalación, typecheck, build e integridad Aprende. El PR #123 tiene base `feat/aprende-editorial-04a`, por lo que GitHub no ejecutó `Main integration quality` en este checkpoint dependiente; ese gate queda requerido cuando 04B se retargete a `main` o se integre la cadena. Sin D1 remota, E2E visual ni deploy.
+
+## APRENDE-EDITORIAL-04B — separación semántica de guías técnicas (2026-10-25)
+
+**RAN en GitHub Actions:** `Aprende quality` run `40246463847` sobre `7a6c044c5ddee8e94a146cbd1febc3c9e29ab76c` PASS: typecheck, build e integridad Aprende. El catálogo esperado queda en **48 guías** y 9 itinerarios. El contrato comprueba que el mapa `dns-https-y-correo-como-se-conecta-tu-dominio` derive el detalle hacia `correo-profesional-dominio-registros-mx-txt`, que ambas guías se relacionen, que el mapa no vuelva a crecer por encima de 8 secciones y que la guía nueva conserve fuentes específicas para SPF (RFC 7208), DKIM (RFC 6376) y DMARC vigente (RFC 9989).
+
+La guía nueva sigue `editorialDraft: true`. El guard de densidad cubre DNS/mapa, HTTPS, analítica, supervisión de automatizaciones, piloto de IA y correo profesional con máximo 8 secciones y 1500 palabras serializadas. PR #123 continúa apilado sobre 04A; el gate general contra `main` corresponderá al retarget o integración final.
+
 ## APRENDE-EDITORIAL-04B — criterios de auditoría semántica
 
 La suite de integridad se actualiza para reflejar el alcance más preciso de la guía de preparación publicitaria, mantenimiento de presencia y DNS. Se añaden contratos para evitar promesas no verificadas de almacenamiento/exportación de un CRM de Vecidya, para conservar la separación entre las guías de DNS y presencia, y para exigir que la guía de IA empresarial cubra datos, responsables y escalamiento sin sustituir la guía de piloto.

@@ -1,3 +1,7 @@
+## APRENDE-EDITORIAL-FINAL-02 — preservar la frontera de aprobación (2026-10-25)
+
+**Activo en `feat/aprende-editorial-final` / PR #138; sin merge ni deploy.** El catálogo se ha auditado en 48 guías y 9 itinerarios, pero la auditoría no autoriza a quitar estados de borrador. La integración candidata debe conservar **18 borradores** (14 existentes en `main` + cuatro guías nuevas de 04A/04B) y 30 guías con estado previo no-borrador. No se marcará un artículo como aprobado ni se publicará sin autorización explícita. Gate técnico superado en `322850f`: `Aprende quality` run `40254782673` y `Main integration quality` run `40254782671` PASS; 1740/1740 unitarias. Quedan la aprobación explícita de las guías en borrador y la decisión del usuario sobre merge/deploy.
+
 ## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
 
 ## APRENDE-EDITORIAL-04B — revisión semántica de las 46 guías
@@ -55,7 +59,23 @@ Gate de salida: catálogo de 46 slugs únicos y nueve itinerarios intactos; ejem
 
 **Gate 04A:** 46 slugs únicos; 9 itinerarios válidos; todas las guías con ejemplo hipotético estructurado y accionable; nuevas fuentes institucionales verificadas; búsqueda de `/aprende` sobre contenido interno; typecheck/build/diff-check y suites focales PASS en el HEAD candidato. Las dos guías nuevas deben permanecer en borrador hasta revisión editorial explícita.
 
-**Siguiente checkpoint 04B, no iniciado:** lectura semántica uno por uno de los 46 artículos para simplificar ejemplos, analogías y términos todavía demasiado técnicos, manteniendo hechos, fuentes, slugs y enlaces. Separar un artículo solo cuando contenga objetivos educativos distintos; no ampliar el catálogo por volumen mientras existan guías pendientes de revisión.
+**Checkpoint 04B implementado, pendiente de CI final:** la auditoría semántica separa proveedor (elegir/renovar vs migrar) y deja 47 guías. Se reducen seis guías madre que habían acumulado detalle ya cubierto por especializadas: Presencia 3291→1420, Automatizaciones 2707→1146, Dominio/hosting 2413→1179, primera campaña 2346→1120, CRM 2142→1075 e IA general 1743→982 palabras. Un guard unitario limita esas seis piezas a ≤10 secciones y ≤1800 palabras serializadas. **Siguiente checkpoint 04C:** recorrer las 47 guías por jerga y comprensión (término → explicación cotidiana → ejemplo), sin separar por longitud salvo que existan objetivos educativos realmente distintos.
+
+### APRENDE-EDITORIAL-04B — separación semántica de guías técnicas
+
+**En curso:** 48 guías y 9 itinerarios. Selección/migración de proveedor y mapa DNS/correo profesional ya están separados por objetivo educativo. Mantener slugs históricos cuando funcionen como puerta de entrada; los detalles nuevos quedan en borrador hasta revisión editorial.
+
+### APRENDE-EDITORIAL-04E — revisión de borradores de Operaciones (2026-10-25)
+
+**En revisión técnica:** cinco guías de Operaciones fueron auditadas una por una y promovidas tras verificar fuentes, lenguaje, ejemplos y límites. Quedan 13 borradores en el catálogo de 48 guías. Este checkpoint se mantiene separado de 04C/04D porque esas ramas parten de un HEAD anterior de 04B; la reconciliación deberá preservar ambos conjuntos de cambios sin force-push destructivo.
+
+### APRENDE-EDITORIAL-04I — cierre editorial del catálogo (2026-10-25)
+
+**Checkpoint en certificación:** la cadena 04E→04I revisó los 18 borradores que permanecían sobre el HEAD final de 04B. Estado candidato: **48/48 guías revisadas, 0 borradores**. Antes de integrar se requiere CI del HEAD, auditoría transversal de fuentes/rutas/relaciones y reconciliación no destructiva con los PR #125/#126, que contienen mejoras de lenguaje/fuentes sobre una base anterior.
+
+### APRENDE-EDITORIAL-04J — consolidación final de contenido (2026-10-25)
+
+**Candidato editorial completo:** 48 guías revisadas, 0 borradores, 9 itinerarios y 6 categorías. La deuda de 04C/04D se reconcilió de forma no destructiva: lenguaje específico, fuentes vigentes, cobertura total de itinerarios y relaciones editoriales. `Aprende quality` PASS; falta el PR de integración contra `main` y su gate general. No autoriza deploy.
 
 ### APRENDE-OPERACIONES-02 — alcance editorial implementado como borrador (2026-10-20)
 

@@ -1,14 +1,15 @@
 import { Link } from "react-router";
 
-import { getLearnArticle, learnArticles } from "../content/learn";
+import { learnArticles } from "../content/learn";
+import { getPublicLearnArticle, getPublicLearnArticles } from "../content/learn-publication";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 
 import type { LearnBlock } from "../content/learn";
 import type { Route } from "./+types/learn-article";
 
 export function loader({ params }: Route.LoaderArgs) {
-  const article = params.slug ? getLearnArticle(params.slug) : undefined;
-  if (!article) throw new Response("Artículo no encontrado", { status: 404 });
+  const article = getPublicLearnArticle(learnArticles, params.slug);
+  if (!article || article.editorialDraft) throw new Response("Artículo no encontrado", { status: 404 });
   const readingText = [
     article.title, article.intro, ...article.enPocasPalabras,
     ...article.sections.flatMap((section) => [
@@ -82,12 +83,13 @@ function renderLearnBlock(block: LearnBlock, key: string) {
 
 export default function LearnArticle({ loaderData }: Route.ComponentProps) {
   const { article, readingMinutes } = loaderData;
+  const publicArticles = getPublicLearnArticles(learnArticles);
   const related = article.relatedSlugs
     ? article.relatedSlugs.flatMap((slug) => {
-      const candidate = getLearnArticle(slug);
-      return candidate && candidate.slug !== article.slug ? [candidate] : [];
+      const candidate = publicArticles.find((item) => item.slug === slug);
+      return candidate && !candidate.editorialDraft && candidate.slug !== article.slug ? [candidate] : [];
     }).slice(0, 2)
-    : learnArticles.filter((candidate) => candidate.slug !== article.slug).slice(0, 2);
+    : publicArticles.filter((candidate) => candidate.slug !== article.slug).slice(0, 2);
 
   return (
     <PublicLayout>
