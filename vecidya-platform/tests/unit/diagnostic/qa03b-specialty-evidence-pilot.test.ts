@@ -91,6 +91,60 @@ test("tax and insurance lifecycle evidence is mutually exclusive by declared nic
   );
 });
 
+test("auto-repair estimate follow-up fills the local-shop gap without activating for mobile services or operations-only profiles", () => {
+  const repair = {
+    ...common, q2_sector: "automotive", q2_monetization: "services",
+    q2_delivery: ["physical_location"], q2_customer_buyer: "b2c",
+    q2_goal: "stop_losing", q2_friction: "follow_up",
+    q2_niche_automotive: "auto_repair",
+  };
+  const active = resolveEligibleQuestionsV2(repair, bank);
+  assert.ok(active.eligibleQuestionIds.includes("q2_specialty_auto_repair_estimate_followup"));
+  assert.ok(!active.eligibleQuestionIds.includes("q2_service_quote_followup"),
+    "the generic quote question remains scoped to local_service + quote-practice");
+
+  const mobile = resolveEligibleQuestionsV2({
+    ...repair, q2_delivery: ["travels"], q2_niche_automotive: "mobile_detailing",
+  }, bank);
+  assert.ok(!mobile.eligibleQuestionIds.includes("q2_specialty_auto_repair_estimate_followup"));
+  const operationsOnly = resolveEligibleQuestionsV2({ ...repair, q2_friction: "operations" }, bank);
+  assert.ok(!operationsOnly.eligibleQuestionIds.includes("q2_specialty_auto_repair_estimate_followup"));
+  const preparing = resolveEligibleQuestionsV2({
+    ...repair, q2_operational_status: "preparing", q2_has_customers: "no",
+  }, bank);
+  assert.ok(!preparing.eligibleQuestionIds.includes("q2_specialty_auto_repair_estimate_followup"));
+
+  const scored = scoreCandidateContextualDimensionsV3({ answers: {
+    ...repair, q2_specialty_auto_repair_estimate_followup: "partial",
+  } }, bank);
+  assert.equal(
+    scored.dimensions.find((d) => d.id === "relationship_recurrence")
+      ?.evidence.find((e) => e.questionId === "q2_specialty_auto_repair_estimate_followup")?.state,
+    "partial",
+  );
+
+  const beforeNiche = buildCandidateQuestionPlanFromBankV3({
+    answers: Object.fromEntries(Object.entries(repair).filter(([id]) => id !== "q2_niche_automotive")),
+  }, bank, "utility_first");
+  assert.ok(beforeNiche.eligibleQuestionIds.includes("q2_niche_automotive"));
+  assert.ok(beforeNiche.evidenceSufficiency.usefulContextQuestionIds.includes("q2_niche_automotive"));
+  assert.ok(beforeNiche.selectedQuestionIds.includes("q2_niche_automotive"));
+
+  const afterNiche = buildCandidateQuestionPlanFromBankV3({ answers: repair }, bank, "utility_first");
+  assert.ok(afterNiche.eligibleQuestionIds.includes("q2_specialty_auto_repair_estimate_followup"));
+  assert.ok(afterNiche.selectedQuestionIds.includes("q2_specialty_auto_repair_estimate_followup"));
+  assert.ok(!afterNiche.selectedQuestionIds.includes("q2_followup_status_visibility"));
+  assert.equal(afterNiche.trace.find((item) => item.questionId === "q2_followup_status_visibility")?.skipReason, "replaced_by_specialty");
+
+  for (const neutral of ["unknown", "not_applicable"] as const) {
+    const fallback = buildCandidateQuestionPlanFromBankV3({
+      answers: { ...repair, q2_specialty_auto_repair_estimate_followup: neutral },
+    }, bank, "utility_first");
+    assert.ok(fallback.eligibleQuestionIds.includes("q2_followup_status_visibility"), neutral);
+    assert.notEqual(fallback.trace.find((item) => item.questionId === "q2_followup_status_visibility")?.skipReason, "replaced_by_specialty", neutral);
+  }
+});
+
 test("utility-first spends a financial niche question only because it unlocks real recurrence evidence", () => {
   const finance = {
     ...common, q2_sector: "financial_tax_insurance", q2_monetization: "services",
