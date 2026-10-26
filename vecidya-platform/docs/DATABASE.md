@@ -1,8 +1,10 @@
 # Base de datos
 
-## DIAG-D1-RELEASE-01 / APP-MINI-02C — ledger remoto vigente (2026-10-24)
+## DIAG-D1-RELEASE-01 / APP-MINI-02C — ledger remoto vigente (última verificación 2026-10-24)
 
 **Resultado: `0000–0026` aplicadas en staging y producción.** Tras registrar bookmarks Time Travel previos, el 2026-10-24 se aplicaron las migraciones remotas `0024–0026`; el postflight Wrangler devolvió «No migrations to apply» para ambos D1 (`vecidya-staging`, `vecidya-prod`). Los bookmarks previos e IDs están en `ENVIRONMENTS.md`. El postflight SQL anterior de producción confirmó QA-03B con `changed_db=false` y cero filas escritas; `PRAGMA integrity_check`/`foreign_key_check` remotos siguen bloqueados por D1 API (`SQLITE_AUTH`), por lo que no se afirma esa validación remota. El Worker desplegado sigue en `0.7.0`; los cambios de #49/#50 no se publican hasta habilitar R2 y completar el deploy.
+
+**Vigencia:** Cloudflare API confirmó el 2026-10-26 la existencia de ambos buckets R2 y que staging ya tiene un binding D1, pero no se consultó el ledger D1 en esta revalidación. Los datos `0000–0026` anteriores son DOC/RAN históricos, no acreditan el ledger actual ni el estado de `0027–0028`. Reconciliar ambos ledgers con el release owner antes de cualquier migración o despliegue; no aplicar ni reaplicar migraciones en este checkpoint.
 
 ### Matriz de migraciones versionadas
 
