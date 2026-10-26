@@ -2,7 +2,7 @@ import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 import { AUTHORED_UNKNOWN_CAPABILITIES } from "./qa03b-fixtures";
 
 /**
- * Human-authored scenario matrix for the isolated 74-question bank.
+ * Human-authored scenario matrix for the 74-question base plus isolated specialty pilots.
  * The baseline unknown-capability answers are deliberately visible here:
  * tests never fabricate a positive capability because a sector/niche suggests it.
  * Only a *known* profile answer or an explicit neutral option may be submitted.
