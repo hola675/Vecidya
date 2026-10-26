@@ -41,7 +41,7 @@ test("five experiments are contract-valid but only the three retained pilots ent
   for (const question of experiments) {
     assert.equal(question.evidenceMigration, "migrated", question.id);
     assert.ok(question.evidenceV3, question.id);
-    assert.ok(question.prompt.includes("¿") && question.prompt.endsWith("?"), question.id);
+    assert.ok(question.prompt.startsWith("¿") && question.prompt.endsWith("?"), question.id);
     assert.ok(question.hint && question.hint.length <= 140, question.id);
     assert.equal(question.evidenceV3!.dimensions.length, 1, question.id);
     assert.deepEqual(
