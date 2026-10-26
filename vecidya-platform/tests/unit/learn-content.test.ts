@@ -51,13 +51,12 @@ test("CRM article exposes practical typed editorial blocks and respects commerci
   assert.deepEqual(definitions.items.map(({ term }) => term), ["Contacto", "Consulta/interesado", "Oportunidad", "Cliente"]);
   assert.ok(crmArticle.sections.some((section) => section.heading === "Contacto, consulta/interesado, oportunidad y cliente"));
 
-  const privacyFaq = blocks.find((block) => block.type === "faq" && block.items.some(({ question }) => question.includes("mis datos en el CRM de Vecidya")));
+  const privacyFaq = blocks.find((block) => block.type === "faq" && block.items.some(({ question }) => question === "¿Cómo se guardan mis datos en un CRM?"));
   assert.ok(privacyFaq && privacyFaq.type === "faq");
-  const privacyAnswer = privacyFaq.items.find(({ question }) => question.includes("mis datos en el CRM de Vecidya"))?.answer ?? "";
-  assert.match(privacyAnswer, /importar y exportar/i);
-  assert.match(privacyAnswer, /30 días/);
-  assert.match(privacyAnswer, /copia paralela/i);
-  assert.doesNotMatch(privacyAnswer, /HighLevel|GHL/i);
+  const privacyAnswer = privacyFaq.items.find(({ question }) => question === "¿Cómo se guardan mis datos en un CRM?")?.answer ?? "";
+  assert.match(privacyAnswer, /depende del proveedor/i);
+  assert.match(privacyAnswer, /exportarlos|eliminación/i);
+  assert.doesNotMatch(privacyAnswer, /30 días|copia paralela|HighLevel|GHL|Vecidya/i);
 
 });
 

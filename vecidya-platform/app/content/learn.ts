@@ -89,7 +89,7 @@ export const learnArticles: LearnArticle[] = [
         ]
       },
       {
-        heading: "No confundas contacto, consulta, oportunidad y cliente",
+        heading: "Contacto, consulta/interesado, oportunidad y cliente",
         paragraphs: [
           "Distinguir estos momentos ayuda a no tratar a toda persona como si ya quisiera comprar. Las definiciones pueden variar entre negocios, así que acuerda qué significa cada estado antes de registrar información."
         ],
