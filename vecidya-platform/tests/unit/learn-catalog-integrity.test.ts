@@ -189,6 +189,31 @@ test("Las cinco guías de Gestión conservan aprobación, fuentes y límites", (
   assert.match(JSON.stringify(continuity), /cisa\.gov\/small-and-medium-sized-business-resources/);
 });
 
+test("Las dos guías fundacionales conservan aprobación y fuentes vigentes", () => {
+  const priorities = getLearnArticle("el-que-mucho-abarca-poco-aprieta-prioridades-digitales");
+  const control = getLearnArticle("domina-la-tecnologia-sin-que-te-domine");
+  assert.ok(priorities && control);
+  assert.equal(priorities.editorialDraft, false);
+  assert.equal(control.editorialDraft, false);
+  assert.ok(priorities.relatedSlugs?.includes(control.slug));
+  assert.ok(control.relatedSlugs?.includes(priorities.slug));
+
+  const prioritiesText = JSON.stringify(priorities);
+  assert.match(prioritiesText, /empowering-smes-in-the-age-of-ai_bf5a9816-en/);
+  assert.match(prioritiesText, /nist-cybersecurity-framework-csf-20/);
+  assert.match(prioritiesText, /w3\.org\/WAI\/tips\/writing/);
+
+  const controlText = JSON.stringify(control);
+  assert.match(controlText, /cisa\.gov\/resources-tools\/resources\/secure-our-world/);
+  assert.match(controlText, /nist-cybersecurity-framework-csf-20/);
+  assert.match(controlText, /w3\.org\/WAI\/tips\/writing/);
+});
+
+test("El catálogo editorial completo queda sin borradores", () => {
+  assert.equal(learnArticles.filter((article) => article.editorialDraft).length, 0);
+  assert.equal(learnArticles.filter((article) => !article.editorialDraft).length, 48);
+});
+
 test("Todos los itinerarios enlazan a artículos reales sin duplicados internos", () => {
   const titles = new Set<string>();
   for (const pathway of learnPathways) {
