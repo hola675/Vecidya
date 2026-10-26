@@ -9,7 +9,8 @@ import type { Route } from "./+types/diagnostic";
 
 /**
  * ACT-04 — cuestionario adaptativo QA-03B. Mantiene sesiones V3 históricas en su clave anterior;
- * las nuevas sesiones usan schema/key 7 y replay v5; el Worker reconstruye el resumen anónimo.
+ * las nuevas usan banco reviewed-evidence-v8, sesión schema/key 8 y replay qa03b-worker-replay-v6.
+ * El Worker reconstruye el resumen anónimo.
  */
 
 export function meta(_: Route.MetaArgs) {

@@ -46,6 +46,8 @@ Typecheck/build PASS; suite unitaria completa **1689/1689 PASS**, incluyendo lec
 
 **CI del PR #97:** run `40105749133` terminó `success`; typecheck, build, regresión focal Diagnóstico/Aprende y regresión unitaria completa PASS en el SHA `2b6a45d4be745f342ca8e5e168bfb0b1b454d522`. PR #97 integrado en `main@62822ee`. Sin migración ni deploy; R2 sigue pendiente. Los fixtures sintéticos no prueban calibración empírica, validez predictiva ni aceptación humana.
 
+**Revalidación del PR #128 (2026-10-26):** el CI de la integración temporal del HEAD `ca1a4367` (run [`40259080649`](https://github.com/hola675/Vecidya/actions/runs/40259080649)) pasó typecheck, build, regresiones Diagnóstico/Aprende y **1.760/1.760** unitarias. En Worker Wrangler local construido, `pnpm run test:e2e:diagnostic-act04` pasó **3/3** con D1 local, `APP_ENV=staging` y flags locales de informe/purga apagados. Verificó sesión pública schema 8, replay anónimo, rechazo de identidades incompatibles, conservación byte por byte de la clave V3 histórica y ausencia de CTA de informe mientras el funnel está apagado; viewport 320/390/768/1366 sin overflow. No se usó D1 remota ni se desplegó. Este E2E solo confirma el límite V8; el banco candidato sigue desconectado del Worker y V9 continúa sin implementar.
+
 
 ## DIAG-VISUAL-ACCESSIBILITY-03B — semántica del cuestionario (2026-10-24)
 

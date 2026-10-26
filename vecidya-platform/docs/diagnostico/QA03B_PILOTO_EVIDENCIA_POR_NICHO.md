@@ -2,6 +2,7 @@
 
 **Estado:** experimento aislado; no está conectado al banco público, sesiones V8 ni Worker.  
 **Certificación observada:** [GitHub Actions run `40254444782`](https://github.com/hola675/Vecidya/actions/runs/40254444782), commit `5157a27e03aff6a967c8b7f0d5c1340ce94669c3`: suite **1.760/1.760**, 0 fallos; typecheck, build y regresión Diagnóstico/Aprende PASS.  
+**CI más reciente:** [run `40259080649`](https://github.com/hola675/Vecidya/actions/runs/40259080649), sobre la integración temporal del HEAD `ca1a4367`: typecheck, build, regresiones Diagnóstico/Aprende y **1.760/1.760** unitarias PASS.
 **Banco público:** 45 preguntas.  
 **Banco candidato tras esta fase:** **76 preguntas** = 74 de la fase anterior + 2 especializadas retenidas.
 
@@ -125,3 +126,11 @@ La certificación del planificador `baseline` frente a `utility_first` es un exp
 Cinco recorridos se acortan, siete mantienen la duración y ninguno se alarga. Los doce mantienen iguales sus cantidades de evidencia directa/score y sus dimensiones sin resolver o con contexto insuficiente. Por tanto, el planificador `utility_first` ahorra cinco preguntas en esta matriz, pero **no demuestra por sí solo una mejora de suficiencia diagnóstica**. Los cambios de motivo terminal no deben interpretarse como una mejora de score.
 
 La comparación es sintética y determinista; no representa tiempos ni resultados de clientes reales. El resultado no cambia la decisión de mantener el planificador aislado del flujo público.
+
+## 9. Revalidación del límite V8 en Worker local (2026-10-26)
+
+**RAN local:** `pnpm run test:e2e:diagnostic-act04` → **3/3 PASS** contra un Worker Wrangler construido (`build/server/wrangler.json`) en `--local`, con `BASE_URL=http://127.0.0.1:8787`, `APP_ENV=staging` y flags locales del funnel/purga desactivados. La D1 usada por Wrangler fue local; no se accedió a una base remota.
+
+El recorrido completó el replay anónimo QA-03B con sesión schema 8, comprobó el rechazo de identidades incompatibles, preservó la clave histórica V3 byte por byte y confirmó que con el funnel apagado no aparece CTA de informe completo. El resumen no expuso identificadores internos y no hubo overflow a 320/390/768/1366 px.
+
+Esta prueba confirma el límite del runtime público V8 en esta configuración local. **No conecta ni ejecuta el banco candidato en Worker, no implementa V9 y no certifica compatibilidad V9 ni activación.** El resultado se registra también en [TESTING.md](../TESTING.md).
