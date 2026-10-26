@@ -1,6 +1,6 @@
-## Corte vigente — candidato de producción 0.8.1 (2026-10-26)
+## Corte vigente — producción 0.8.1 (2026-10-26)
 
-`origin/main@cafe8537` integra PR #141 (revalidación R2) y PR #143 (QA público de Aprende). Producción permanece en `0.8.0` hasta deploy; el release candidate eleva `package.json` a `0.8.1`. Contenido y guardas de Aprende preservan 18 borradores; nueva prueba Playwright verifica 30 páginas públicas, 18 rutas bloqueadas, sitemap y viewports. CI PASS; sin migraciones D1 ni cambios Cloudflare. El usuario autorizó deploy directo a producción tras completar typecheck/build y la PR de versión. Publicación pendiente de evidencia HTTP anónima fechada.
+`origin/main@c8d52c8` integra PR #141 (revalidación R2), #143 (QA público de Aprende) y #144 (release). Producción `0.8.1`, Worker Version ID `9497bda3-dc65-4a8d-a976-cfb89925da5d`. Aprende preserva 18 borradores y sirve 30 guías; HTTP anónimo TLS confirma rutas, sitemap y footer. CI/typecheck/build PASS. Sin migraciones D1 ni cambios Cloudflare; ledger D1 permanece `0000–0028`. Staging sigue en `0.7.0` y no se desplegó en este release directo.
 
 ## Corte histórico — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
 

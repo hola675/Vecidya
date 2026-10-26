@@ -1,14 +1,14 @@
 # Estado de implementación
 
-## PROD-RELEASE-0.8.1 — candidato autorizado a producción (2026-10-26)
+## PROD-RELEASE-0.8.1 — publicado (2026-10-26)
 
-Código integrado hasta `main@cafe8537`; versión candidata `0.8.1`. Se incluyen las mejoras editoriales de Aprende y la protección de borradores, más la certificación Playwright incorporada por PR #143. CI PASS y capturas revisadas. Sin migraciones D1 ni cambios de bindings/configuración Worker. El usuario autorizó el deploy directo a producción tras aumentar la versión; aún no se declara publicado. Gate actual: typecheck/build de la versión candidata, PR de release integrado, deploy y HTTP anónimo fechado.
+PR #144 integrado en `main@c8d52c8`; versión `0.8.1`. Typecheck/build, unitarias de integración y tres workflows del release PASS; capturas revisadas. Deploy productivo `2026-10-26T15:48:05Z`, Version ID `9497bda3-dc65-4a8d-a976-cfb89925da5d`. HTTP anónimo TLS 2026-10-26T15:48Z confirma versión/footer, Aprende, página pública 200, borrador 404 y sitemap sin borradores. Sin migraciones D1 ni cambios de bindings/configuración Worker. Producción publicada; staging no se desplegó en este release.
 
 ## APRENDE-PUBLIC-QA-01 — control de experiencia pública (2026-10-26)
 
-**CODE/TEST — integrado en `main@cafe8537`, sin deploy:** Playwright y workflow de certificación anónima en localhost cubren 30 guías públicas y 18 borradores protegidos del catálogo de 48. Verifica rutas individuales, sitemap/robots, búsqueda, filtros, itinerarios, imágenes, navegación y 320/390/768/1366 px. El sitemap usa la selección central `getPublicLearnArticles`; el E2E anterior con expectativas obsoletas deja de ejecutarse por defecto. Ver `TESTING.md` para comando y evidencia.
+**CODE/TEST — integrado en `main@c8d52c8`, publicado como 0.8.1:** Playwright y workflow de certificación anónima en localhost cubren 30 guías públicas y 18 borradores protegidos del catálogo de 48. Verifica rutas individuales, sitemap/robots, búsqueda, filtros, itinerarios, imágenes, navegación y 320/390/768/1366 px. El sitemap usa la selección central `getPublicLearnArticles`; el E2E anterior con expectativas obsoletas deja de ejecutarse por defecto. Ver `TESTING.md` para comando y evidencia.
 
-**RAN:** `Aprende quality` run `40348781678`, `Aprende public QA` run `40348781683` y `Main integration quality` run `40348781704`: PASS sobre el HEAD de PR #143; las cinco capturas se revisaron y no muestran problemas visuales evidentes en los viewports probados. **Open Debt — APRENDE-PUBLIC-QA-01-A11Y:** no sustituye auditoría integral WCAG ni lector de pantalla. **Open Debt — APRENDE-PUBLIC-QA-01-HTTP:** falta deploy y GET anónimo fechado en `vecidya.com`. Sin cambios de aprobación editorial, DB, autenticación, GHL o Diagnóstico.
+**RAN:** `Aprende quality` run `40348781678`, `Aprende public QA` run `40348781683` y `Main integration quality` run `40348781704`: PASS sobre PR #143; las cinco capturas se revisaron sin problemas visuales evidentes en los viewports probados. HTTP anónimo TLS 2026-10-26T15:48Z confirmó una guía pública 200, borrador 404 y sitemap que excluye borradores; deuda de publicación HTTP resuelta. **Open Debt — APRENDE-PUBLIC-QA-01-A11Y:** no sustituye auditoría integral WCAG ni lector de pantalla. Sin cambios de aprobación editorial, DB, autenticación, GHL o Diagnóstico.
 
 
 ## APRENDE-EDITORIAL-04B — auditoría semántica de 46 guías (2026-10-25; PR #121)
