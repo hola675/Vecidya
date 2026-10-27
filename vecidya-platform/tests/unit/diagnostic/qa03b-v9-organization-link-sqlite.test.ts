@@ -7,6 +7,8 @@ import { linkOwnedDiagnosticRunToOrganizationV9, type V9IdentityDb } from "../..
 const migrations = [
   readFileSync(new URL("../../../db/migrations/0030_diagnostic_v9_audit.sql", import.meta.url), "utf8"),
   readFileSync(new URL("../../../db/migrations/0031_diagnostic_v9_identity_ownership.sql", import.meta.url), "utf8"),
+  readFileSync(new URL("../../../db/migrations/0032_diagnostic_v9_claim_guards.sql", import.meta.url), "utf8"),
+  readFileSync(new URL("../../../db/migrations/0033_diagnostic_v9_owner_assignment_guards.sql", import.meta.url), "utf8"),
 ];
 
 function adapter(sqlite: DatabaseSync): V9IdentityDb {
