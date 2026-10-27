@@ -1,5 +1,9 @@
 # Pruebas
 
+## ADMIN-ORG-PAGINATION-001 — búsqueda, filtros, orden y páginas (checkpoint local)
+
+`/app/internal/organizations` carga el recuento y las filas filtradas en servidor; query string conserva búsqueda, estado de perfil, orden y página, con 50 organizaciones por página y orden estable por nombre/fecha + ID. El E2E agrega 55 organizaciones sintéticas, comprueba 50 + 5, orden ascendente/descendente, filtros `published`/`none` y enlaces que preservan el criterio. **RAN 2026-10-27:** `platform-service-administration-check.mjs` PASS con Worker Wrangler, D1 efímera y Chrome local; `pnpm run typecheck`, `pnpm run build`, `node --check` y `git diff --check` PASS. Sin cambio de esquema, migración ni acceso remoto.
+
 ## ADMIN-AUDIT-PAGINATION-001 — filtros y paginación (2026-10-26)
 
 `/app/internal/audit` ahora filtra en servidor por texto/acción, conserva filtros en query string y pagina 50 resultados con orden estable por fecha e ID. La búsqueda incluye claves técnicas, valores auditados, actor/organización/perfil y etiquetas traducidas. El E2E sintético inserta 55 eventos y comprueba 50 + 5, avance/retroceso con filtros conservados, además de las búsquedas existentes de Capacitación y MiniWeb. **RAN:** `platform-service-administration-check.mjs` PASS contra Worker Wrangler, D1 efímera `0000–0029` y Chrome local; `pnpm run typecheck`, `pnpm run build`, `node --check` y `git diff --check` PASS. Sin migración ni acceso remoto. Organizaciones y otras listas continúan pendientes de evaluar/paginar.
@@ -13,7 +17,7 @@
 | Ruta / componente | Control y evidencia de código | Estado de esta auditoría | Defecto / reparación | Verificación |
 | --- | --- | --- | --- | --- |
 | `/app/internal` | Resumen, navegación y shell; `requirePlatformAdmin` | GET admin 200; anónimo 302; admin inactivo 403 | Drawer cierra al navegar; no certifica todas las acciones de la página | 14 rutas HTTP PASS; Chromium 1366/390 px |
-| `/app/internal/organizations` | Búsqueda/filtro, alta/detalle; lectura permite staff activo | GET 200; búsqueda → detalle por navegador; staff ve detalle read-only | Sin orden/paginación; filtros no persisten en URL | Playwright local PASS |
+| `/app/internal/organizations` | Búsqueda/filtro, alta/detalle; lectura permite staff activo | GET 200; búsqueda → detalle por navegador; staff ve detalle read-only; listado ordenado y paginado server-side | Paginación/filtros cubiertos por HTTP; staff read-only conservado | Worker/D1/Chrome local PASS |
 | `/app/internal/organizations/new` | Organización+lifecycle+invitación+auditoría en batch | Creación por UI y entrega fake (`simulated`) comprobadas; invitación pending y auditoría persistidas | No prueba correo real; errores UI invalid-form y fallo proveedor pendientes | Playwright + D1 local PASS |
 | `/app/internal/organizations/:id` | Owner-invitation, lifecycle, roles; staff read-only | UI suspender/reactivar, cambio rol member→admin, crear, reenviar y revocar; reenvío muestra entrega simulada, rota token/expiración, mantiene una pendiente y audita; staff read-only | Último owner fuera del alcance autorizado; fallo de proveedor no simulado desde UI | Playwright + D1 local PASS; matriz de permiso staff PASS |
 | `/:id/training` | Asigna Aprende y corrige avance con motivo; admin | Playwright asigna un artículo y corrige avance; D1 conserva historial, motivo y auditoría; Auditoría filtra y etiqueta ambos eventos | Concurrencia de correcciones y mensajes UI de error pendientes | Worker + Playwright + D1 local aislada PASS |
