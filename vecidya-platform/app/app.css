@@ -143,6 +143,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .admin-filter { display: flex; align-items: center; gap: .5rem; color: var(--muted); font-size: .85rem; font-weight: 700; }
 .admin-filter select { border: 1px solid var(--line); border-radius: .6rem; padding: .5rem .6rem; color: var(--ink); background: #fff; font: inherit; }
 .admin-result-count { margin: 0; color: var(--muted); font-size: .85rem; white-space: nowrap; }
+.admin-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-top: 1rem; }
+.admin-pagination [aria-disabled="true"] { opacity: .55; pointer-events: none; }
 .admin-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-md); background: #fff; }
 .admin-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
 .admin-table th { padding: .75rem 1rem; color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
@@ -6854,7 +6856,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .miniweb-standalone__navigation span { min-height: 2.75rem; display: inline-flex; align-items: center; }
 }
 
-
 /* V9 personal diagnostic history: readable, responsive structured result data. */
 .diagnostic-json-list {
   display: grid;
@@ -6888,3 +6889,4 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     gap: .25rem;
   }
 }
+
