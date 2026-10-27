@@ -44,6 +44,21 @@ No se ejecutaron pruebas automatizadas por indicación del usuario. La inspecci�
 
 `/app/internal/organizations` carga el recuento y las filas filtradas en servidor; query string conserva búsqueda, estado de perfil, orden y página, con 50 organizaciones por página y orden estable por nombre/fecha + ID. El E2E agrega 55 organizaciones sintéticas, comprueba 50 + 5, orden ascendente/descendente, filtros `published`/`none` y enlaces que preservan el criterio. **RAN 2026-10-27:** `platform-service-administration-check.mjs` PASS con Worker Wrangler, D1 efímera y Chrome local; `pnpm run typecheck`, `pnpm run build`, `node --check` y `git diff --check` PASS. Sin cambio de esquema, migración ni acceso remoto.
 
+## DIAG-V9-RUN-FINALIZATION-001 — replay, propiedad y resultado atómico (2026-10-27)
+
+**CODE/TEST; CI pendiente en el HEAD actual:** `qa03b-worker-replay-v9.test.ts` añade el recorrido SQLite completo: ejecución propiedad de usuario, eventos persistidos, rechazo de otro propietario, replay desde D1, paridad del scoring con el banco V9 fijado, resultado inmutable y reintento idempotente. La ruta `POST /api/diagnostic/v9/runs/:runId/finalize` no acepta puntuación ni recomendaciones del navegador; valida identidad, versiones, secuencia y estado antes de guardar el resultado y completar la ejecución en una operación D1 atómica. El runtime público sigue sujeto a la bandera y las cinco versiones.
+
+Desde `vecidya-platform/`:
+
+```bash
+node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-worker-replay-v9.test.ts tests/unit/diagnostic/qa03b-v9-result-finalization-sqlite.test.ts
+pnpm typecheck
+pnpm build
+pnpm test:unit
+```
+
+No declarar PASS hasta ver el workflow del HEAD exacto. Sin migraciones aplicadas ni despliegue público.
+
 ## ADMIN-AUDIT-PAGINATION-001 — filtros y paginación (2026-10-26)
 
 `/app/internal/audit` ahora filtra en servidor por texto/acción, conserva filtros en query string y pagina 50 resultados con orden estable por fecha e ID. La búsqueda incluye claves técnicas, valores auditados, actor/organización/perfil y etiquetas traducidas. El E2E sintético inserta 55 eventos y comprueba 50 + 5, avance/retroceso con filtros conservados, además de las búsquedas existentes de Capacitación y MiniWeb. **RAN:** `platform-service-administration-check.mjs` PASS contra Worker Wrangler, D1 efímera `0000–0029` y Chrome local; `pnpm run typecheck`, `pnpm run build`, `node --check` y `git diff --check` PASS. Sin migración ni acceso remoto. Organizaciones y otras listas continúan pendientes de evaluar/paginar.
