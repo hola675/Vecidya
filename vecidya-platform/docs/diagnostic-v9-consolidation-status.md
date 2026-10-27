@@ -54,3 +54,7 @@ No fusionar PR #162 ni desplegar producción hasta aceptación. No borrar ramas 
 5. **P5 — Motor autónomo:** contratos, banco, grafo, sesión, selección adaptativa, scoring, recomendaciones e informe V9 sin imports de QBV2; pruebas end-to-end y aceptación antes de corte productivo.
 
 **Bloqueos reales:** CI del HEAD no confirmado; aprobación editorial de preguntas pendiente; banco y motor V9 todavía acoplados a componentes QBV2. No confundir tests escritos con tests ejecutados.
+
+### CI focalizada — corrección del 2026-10-27
+
+Se detectó que el job `diagnostic-v9-focused` no ejecutaba `tests/unit/diagnostic/qa03b-v9-classification-bundle.test.ts`, aunque este archivo cubre replay, identidad del sector, cambios de nicho y conservación/eliminación de respuestas. Se añadió explícitamente al comando `node --test` del workflow. **La incorporación al workflow no equivale a ejecución PASS**; revisar el run del PR y sus logs antes de cerrar P2.
