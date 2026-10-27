@@ -76,3 +76,7 @@ Se agrego una regresion que comprueba que el conteo visible no descuente una int
 ### Seguimiento P2 — replay y contrato de clasificacion
 
 Se hizo explicita la presencia de las dos respuestas sector/especialidad para el conteo conjunto (`c27df15`) y se agrego una prueba de replay que rechaza un nicho perteneciente a otro sector (`98c8e49`). Estas modificaciones no sustituyen la verificacion de CI ni completan la autonomia del motor V9. Mantener P2 abierto.
+
+### Lote P2: control de calidad y presupuesto visible
+
+El job V9 ejecutara `pnpm typecheck` antes de los tests focalizados (36c9702). Se agrego regresion para asegurar que el piso historico de 24 interacciones no se reduzca por agrupar sector y especialidad (8355d72). El plan maestro ahora organiza el trabajo en lotes L1-L5 con puertas de salida (0535b37). Todo sigue pendiente de ejecucion CI verificable; no equivale a aprobacion de P2.
