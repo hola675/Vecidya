@@ -293,7 +293,7 @@ export async function finalizeDiagnosticRunV9(
     "SELECT COALESCE(MAX(result_version),0)+1 AS next_version FROM diagnostic_v9_results WHERE workspace_id=? AND run_id=?",
   ).bind(input.workspaceId, input.runId).first<{ next_version: number }>();
   const resultVersion = version?.next_version;
-  if (!Number.isSafeInteger(resultVersion) || !resultVersion || resultVersion < 1) {
+  if (typeof resultVersion !== "number" || !Number.isSafeInteger(resultVersion) || resultVersion < 1) {
     throw new Error("v9_finalize_version_unavailable");
   }
 
