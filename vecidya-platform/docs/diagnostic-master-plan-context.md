@@ -36,3 +36,24 @@ Consolidar el diagnóstico en un sistema único, comprensible, adaptativo, basad
 3. Implementar y probar motor V9 completo: planificación, elegibilidad, evidencia, evaluación, recomendaciones e informe.
 4. Certificar escenarios de negocios y recorridos completos sobre el nuevo motor; reemplazar el anterior mediante corte controlado.
 5. Tratar importación histórica únicamente como módulo opcional externo, nunca como condición de cierre.
+
+## Auditoría de dependencias — 2026-10-27
+Inspección de código sobre esta rama; no certifica runtime ni producción.
+
+| Archivo | Evidencia observada | Consecuencia |
+|---|---|---|
+| qa03b/specialty-candidate-bank.ts | Importa qbv2-contract, qbv2-rules y lotes QBV2 C/D/F | El banco V9 aún no es autónomo; migrar definiciones revisadas a contratos propios. |
+| qa03b/specialty-branches-wave1.ts | Importa qbv2-contract, qbv2-rules y el banco candidato anterior; construye 77 preguntas | Revisar sustituciones de preguntas genéricas y reglas de elegibilidad en un grafo V9 propio. |
+| qbv2-session.ts | Banco por defecto QUESTION_BANK_V2; utiliza motor, planificador, scoring, narrativa y ofertas QBV2 | No sirve como núcleo definitivo del motor nuevo. |
+| qa03b/v9-food-menu-v2-proposal.ts | Sustituye not_applicable por not_published y cambia evidencia a weak | Revisar editorialmente y probar en V9, sin depender de restaurar respuestas históricas. |
+| docs/diagnostic-v9-p1e-session-audit.md | Exige compatibilidad histórica para sustituir la pregunta | Recomendación histórica supersedida para el objetivo actual; la importación antigua será opcional y externa. |
+
+### Orden de trabajo corregido, centrado en preguntas y respuestas
+1. **Catálogo de preguntas**: extraer cada pregunta, versión, módulo, contexto, ayudas y opciones del candidato; detectar duplicados, respuestas ambiguas y huecos.
+2. **Matriz editorial KEEP/REMOVE/REWRITE/DEFER**: justificar cada decisión por utilidad diagnóstica y calidad de evidencia; conservar trazabilidad de versiones.
+3. **Grafo de preguntas**: documentar condiciones, rutas, preguntas sustitutivas y sectores; comprobar alcanzabilidad, contradicciones y límite de interacciones.
+4. **Contrato de banco V9**: especificación nueva independiente de QBV2, con validador estático, identificadores estables y evidencias explícitas.
+5. **Motor V9**: selección adaptativa, estado de sesión propio, scoring basado en evidencia, recomendaciones y reporte; sin importaciones de QBV2.
+6. **Certificación funcional**: escenarios de negocios y recorridos end-to-end sobre V9; sustitución controlada del motor anterior.
+
+**No bloquear** el trabajo de banco/motor por P1e, PR #172 o replay de sesiones antiguas. No fusionar ni desplegar antes de certificar. Mantener CI focalizada sobre los archivos modificados.
