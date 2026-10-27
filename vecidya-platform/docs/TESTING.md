@@ -1,5 +1,21 @@
 # Pruebas
 
+## DIAG-V9-LEX-GRAPH-P0P1 — certificación de inventario léxico/grafo (2026-10-26)
+
+**CODE/TEST; RAN pendiente del CI de HEAD:** `tests/unit/diagnostic/qa03b-v9-editorial-graph-audit.test.ts` verifica inventario de 77 definiciones incluyendo variantes, opciones, respuestas no puntuables, dimensiones, aristas de dependencias y grafos sintéticos con ciclos, referencias faltantes, valores inexistentes y opciones duplicadas. Su salida `DIAG_V9_P0_INVENTORY`, `DIAG_V9_P0_REVIEW_IDS` y `DIAG_V9_P0_BLOCKERS` será la línea base observacional; los flags de revisión no prueban defectos cognitivos y los posibles bloqueos se deben inspeccionar antes de aprobar. `qa03b-editorial-copy.test.ts` agrega regresión de cuatro enunciados acordados sin mutación semántica. No se cambia el número de interacciones ni se promete mejora cuantitativa todavía.
+
+Desde `vecidya-platform/`:
+
+```bash
+pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-v9-editorial-graph-audit.test.ts tests/unit/diagnostic/qa03b-editorial-copy.test.ts
+pnpm run typecheck
+pnpm run build
+pnpm run test:unit
+git diff --check
+```
+
+También revisar CI, comparar respuestas/rutas y ejecutar E2E de Diagnóstico/Worker y pruebas cognitivas humanas antes de certificar P1 y cualquier cambio semántico P2/P3. El test sintético de grafo no implica que todos los contextos derivados estén libres de ciclos. Sin deploy ni merge.
+
 ## DIAG-V9-UX-03 — mejoras de selección (2026-10-26; rama, no publicada)
 
 **TESTS/CI V9-UX-03:** `qa03b-v9-classification-step.test.ts` cubre pregunta negocio/emprendimiento, pantalla con búsqueda progresiva, sugerencias y selector de especialidad; `qa03b-editorial-copy.test.ts` verifica que copy V9 no afecta V8; `qa03b-v9-session-prototype.test.ts` verifica que la cola es idéntica al plan recompuesto tras respuestas y revisiones. Typecheck, build, suite y replay Worker deben certificar HEAD actual antes de integración; no publicar V9 ni mutar esquemas V8.

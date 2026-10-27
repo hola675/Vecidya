@@ -1,5 +1,11 @@
 # Estado de implementación
 
+## DIAG-V9-LEX-GRAPH-P0P1 — inventario automatizado y primera pasada editorial (2026-10-26; PR en borrador)
+
+**CODE/GIT, previo a certificación:** se añadió el auditor privado `qa03b/v9-editorial-graph-audit.ts` y su prueba `qa03b-v9-editorial-graph-audit.test.ts`. Procesa las 77 definiciones del candidato de PR #156 e inventaría cada ID, versión, grada G0–G6, pregunta, ayuda, opciones (valor/kind/señal), variantes, referencias de respuesta/contexto y dimensiones de evidencia; emite un resumen y advertencias para revisión humana. Detecta IDs/opciones duplicadas, referencias huérfanas, valores de opciones inexistentes y ciclos sintácticos AnswerRef. **No afirma alcanzabilidad de ramas ni validez lingüística humana**: esos son gates P2/P5 independientes. No modifica el motor ni los contratos públicos V8.
+
+**P1 parcial CODE:** solo se armonizan los cuatro enunciados `q2_entity`, `q2_operational_status`, `q2_goal` y `q2_friction` con «negocio, emprendimiento u organización». No cambian IDs, versiones, opciones, aplicabilidad, señales, evidencia, puntuaciones ni replay. Los 73 enunciados restantes y todas sus respuestas, variantes y ayudas quedan como inventario para revisión editorial posterior; no marcarlos aprobados. Taxonomía sectorial del PR #157 aún no está integrada al replay V9. El plan de fases aprobado consta en PR #159. **Gates RAN pendientes** hasta resultado CI del SHA final.
+
 ## DIAG-V9-UX-03 — mejoras de selección (2026-10-26; rama, no publicada)
 
 **CODE/GIT — V9 experimental, no publicado:** la pregunta visible y la copia editorial de `q2_sector` pasan a «¿A qué se dedica principalmente tu negocio o emprendimiento?» (con alternativa de organización), y el prototipo V9 añade búsqueda de sector con sinónimos, muestra progresiva y opción «No lo tengo claro». No cambia las claves sectoriales históricas: su sustitución por la taxonomía compartida Vecindario está pendiente de migración versionada. V9 recompone la cola de preguntas tras cada respuesta/edición utilizando el plan actual, en vez de conservar preguntas técnicamente elegibles pero ya innecesarias. Se versionaron las identidades candidatas de banco y motor para rechazar sesiones experimentales anteriores. V8 público no se modifica.
