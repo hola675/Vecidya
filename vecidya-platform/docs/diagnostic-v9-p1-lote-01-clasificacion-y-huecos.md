@@ -1,0 +1,28 @@
+# P1 lote 01 — clasificación y cobertura de preguntas
+
+Estado: revisión técnica inicial, no aprobación editorial humana.
+
+## Hallazgos
+
+- HUECO-V9-001: `q2_food_menu_visibility` etiqueta `not_applicable` como «Todavía no muestro la oferta en ese lugar». La respuesta puede describir falta de publicación, no verdadera no aplicabilidad. Existe propuesta `not_published` con evidencia `weak`, aún no aprobada ni activada.
+- HUECO-V9-002: `q2_presence_offer_clarity` se excluía para nichos gastronómicos y agencias aun cuando las preguntas especializadas tenían restricciones adicionales. Se corrigió la exclusión para que dependa de la misma elegibilidad que la pregunta especializada. Se añadió prueba focalizada con variantes de etapa, objetivo, compradores, clientes y presencia.
+
+## Preguntas de clasificación para revisar una por una
+
+| Pregunta | Qué comprobar | Estado |
+|---|---|---|
+| `q2_entity` | Opciones de negocio, emprendimiento y organización | Pendiente editorial |
+| `q2_operational_status` | Operando, preparando, en pausa y posibles huecos | Pendiente editorial |
+| `q2_has_customers` | Uso real, clientes y beneficiarios | Pendiente editorial |
+| `q2_sector` | Solapamiento de sectores y cobertura | Pendiente editorial |
+| `q2_goal` | Que la prioridad no suprima evidencia importante | Pendiente editorial |
+| `q2_niche_food_hospitality` | Restaurante, cafetería, food truck, otros y desconocidos | Pendiente editorial |
+
+## Próximas comprobaciones
+
+1. Inspeccionar todas las opciones, `kind`, evidencia y variantes de las seis preguntas.
+2. Ejecutar CI focalizada de `qa03b-specialty-branches-wave1.test.ts` y comprobar el resultado antes de afirmar PASS.
+3. Decidir el contrato semántico de `q2_food_menu_visibility` sin cambiar la puntuación por intuición.
+4. Seguir con la matriz completa de 77 preguntas y 387 respuestas.
+
+No se ha alterado V8 ni desplegado el candidato.
