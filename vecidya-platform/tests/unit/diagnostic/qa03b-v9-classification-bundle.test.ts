@@ -226,3 +226,24 @@ test("visible interaction count does not reuse an old matching sector event", ()
     Object.keys(first.answers).length - 1,
   );
 });
+
+test("visible interaction count rejects mismatched specialty selector in latest event", () => {
+  const applied = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(applied.ok, true);
+  if (!applied.ok) return;
+  const forged = {
+    ...applied.event,
+    nicheQuestionId: "q2_niche_b2b_services",
+  } as ClassificationInteractionEventV9;
+  const answers: AnswersV2 = {
+    ...applied.answers,
+    q2_niche_b2b_services: "restaurant",
+  };
+  assert.equal(countVisibleInteractionsV9(answers, [forged]), Object.keys(answers).length);
+  assert.equal(
+    countVisibleInteractionsV9(applied.answers, [applied.event]),
+    Object.keys(applied.answers).length - 1,
+  );
+});
