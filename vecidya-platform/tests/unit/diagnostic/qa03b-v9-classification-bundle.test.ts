@@ -600,3 +600,20 @@ test("P2: recorrido completo de clasificación, respuesta y reclasificación man
   assert.ok(agencyPlan.visibleInteractionCount >= 16);
   assert.ok(agencyPlan.plan.routeLength <= 24);
 });
+
+test("P2: el contador histórico inválido nunca contamina la planificación", () => {
+  const classified = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(classified.ok, true);
+  if (!classified.ok) return;
+  const baseline = buildCandidateQuestionPlanV9Prototype(classified.answers, [classified.event]);
+  for (const invalid of [Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, -10]) {
+    const result = buildCandidateQuestionPlanV9Prototype(classified.answers, [classified.event], invalid);
+    assert.equal(result.visibleInteractionCount, baseline.visibleInteractionCount);
+    assert.deepEqual(result.plan, baseline.plan);
+  }
+  const fractional = buildCandidateQuestionPlanV9Prototype(classified.answers, [classified.event], 19.9);
+  assert.equal(fractional.visibleInteractionCount, 19);
+  assert.ok(fractional.plan.routeLength <= 24);
+});
