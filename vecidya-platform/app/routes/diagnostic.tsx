@@ -3,6 +3,8 @@ import { ANONYMOUS_START_COPY } from "../components/diagnostic-flow/flow-copy";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { DIAGNOSTIC_PATH } from "../features/diagnostic/deep-link";
 import { cloudflareContext } from "../../server/cloudflare-context";
+import { getSession } from "../../server/auth/session.server";
+import { Link } from "react-router";
 import { isIdentifiedReportJourneyAvailable } from "../features/diagnostic/identified-report-availability.server";
 
 import type { Route } from "./+types/diagnostic";
@@ -20,9 +22,13 @@ export function meta(_: Route.MetaArgs) {
   );
 }
 
-export function loader({ context }: Route.LoaderArgs) {
+export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  return { identifiedReportAvailable: isIdentifiedReportJourneyAvailable(env) };
+  const session = await getSession(env, request);
+  return {
+    identifiedReportAvailable: isIdentifiedReportJourneyAvailable(env),
+    authenticatedUser: session ? { name: session.user.name } : null,
+  };
 }
 
 export default function Diagnostic({ loaderData }: Route.ComponentProps) {
