@@ -15,7 +15,12 @@ export async function saveVerifiedDiagnosticSnapshotV9(
     createdAt: string;
   },
 ): Promise<"created" | "duplicate"> {
-  const stateJson = JSON.stringify(input.state);
+  let stateJson: string | undefined;
+  try {
+    stateJson = JSON.stringify(input.state);
+  } catch {
+    throw new Error("v9_snapshot_invalid_state");
+  }
   if (stateJson === undefined) throw new Error("v9_snapshot_invalid_state");
   const stateHash = await hashDiagnosticSnapshotV9(stateJson);
   return saveDiagnosticSnapshotV9(db, {
