@@ -73,6 +73,10 @@ test("V9 owner assignment derives user ownership server-side and returns anonymo
     assert.equal((sqlite.prepare("SELECT assignment_source FROM diagnostic_v9_run_ownership WHERE run_id='anon-run'").get() as {assignment_source:string}).assignment_source, "anonymous_session");
     assert.equal((sqlite.prepare("SELECT user_id FROM diagnostic_v9_identities WHERE identity_id=?").get(user.identityId) as {user_id:string}).user_id, "authenticated-user-7");
     assert.notEqual((sqlite.prepare("SELECT credential_hash FROM diagnostic_v9_identities WHERE identity_id='anon-identity'").get() as {credential_hash:string}).credential_hash, anonymous.recoveryCredential);
+    await assert.rejects(() => assignDiagnosticRunToAnonymousVisitorV9(db, {
+      workspaceId: "public", runId: "missing-run", identityId: "orphan-test", assignedAt: "2026-10-27T00:00:02Z",
+    }));
+    assert.equal((sqlite.prepare("SELECT COUNT(*) AS n FROM diagnostic_v9_identities WHERE identity_id='orphan-test'").get() as {n:number}).n, 0);
   } finally {
     sqlite.close();
   }
