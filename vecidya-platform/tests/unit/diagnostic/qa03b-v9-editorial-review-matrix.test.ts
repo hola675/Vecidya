@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as publicBank } from "../../../app/features/diagnostic/qa03b/bank";
-import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, buildEditorialReviewBatchesV9, countEditorialReviewPrioritiesV9, classifyEditorialReviewPriorityV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
+import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, buildEditorialReviewBatchesV9, countEditorialReviewPrioritiesV9, listHighPriorityEditorialQuestionsV9, classifyEditorialReviewPriorityV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
 
 test("P1b: matriz completa de 77 preguntas / 387 opciones / 15 variantes, sin considerar pendientes aprobadas", () => {
   const matrix = buildCandidateEditorialMatrixV9();
@@ -193,4 +193,22 @@ test("P1: los totales de prioridad cubren exactamente las opciones con alertas",
   }
   assert.deepEqual(countEditorialReviewPrioritiesV9(matrix), totals);
   assert.deepEqual(countEditorialReviewPrioritiesV9(buildEditorialMatrixV9([])), { high: 0, medium: 0, low: 0 });
+});
+
+test("P1: preguntas prioritarias identifican exclusivamente opciones sin mapeo de evidencia", () => {
+  const matrix = buildCandidateEditorialMatrixV9();
+  const questions = listHighPriorityEditorialQuestionsV9(matrix);
+  const queue = buildEditorialReviewQueueV9(matrix);
+  assert.equal(new Set(questions.map((item) => item.questionId)).size, questions.length);
+  assert.equal(questions.reduce((sum, item) => sum + item.optionValues.length, 0),
+    queue.filter((item) => item.priority === "high").length);
+  for (const item of questions) {
+    assert.ok(item.optionValues.length > 0);
+    for (const value of item.optionValues) {
+      assert.ok(queue.some((candidate) =>
+        candidate.questionId === item.questionId && candidate.optionValue === value &&
+        candidate.flags.includes("missing_evidence_mapping")));
+    }
+  }
+  assert.deepEqual(listHighPriorityEditorialQuestionsV9(buildEditorialMatrixV9([])), []);
 });
