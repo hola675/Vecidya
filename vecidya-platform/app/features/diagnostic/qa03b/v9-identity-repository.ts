@@ -1,4 +1,4 @@
-import type { V9RunVersions } from "./v9-audit-repository";
+import { appendDiagnosticEventV9, type V9RunVersions } from "./v9-audit-repository";
 
 /**
  * V9 identity/ownership persistence primitives.
@@ -388,4 +388,53 @@ export async function createOwnedDiagnosticRunV9(
     throw new Error("v9_run_owner_create_failed");
   }
   return { runId: input.runId, identityId, ownerType };
+}
+
+/** Appends a client event only after verifying the authenticated owner or anonymous proof. */
+export async function appendOwnedDiagnosticEventV9(
+  db: V9IdentityDb,
+  input: {
+    workspaceId: string;
+    runId: string;
+    userId?: string;
+    identityId?: string;
+    recoveryCredential?: string;
+    eventId: string;
+    expectedSeq: number;
+    kind: string;
+    payload: unknown;
+    occurredAt: string;
+  },
+): Promise<{ status: "created" | "duplicate" | "conflict"; seq?: number }> {
+  if (!input.workspaceId || !input.runId || !input.eventId) throw new Error("v9_invalid_event");
+  if (input.userId) {
+    const owner = await db.prepare(
+      "SELECT o.run_id FROM diagnostic_v9_run_ownership o JOIN diagnostic_v9_identities i ON i.identity_id=o.identity_id WHERE o.workspace_id=? AND o.run_id=? AND i.identity_type='user' AND i.user_id=?",
+    ).bind(input.workspaceId, input.runId, input.userId).first<{ run_id: string }>();
+    if (!owner) throw new Error("v9_run_not_owned");
+  } else {
+    if (!input.identityId || !input.recoveryCredential) throw new Error("v9_anonymous_proof_required");
+    const identity = await db.prepare(
+      "SELECT identity_type,credential_hash,claimed_by_user_id FROM diagnostic_v9_identities WHERE identity_id=?",
+    ).bind(input.identityId).first<{ identity_type: string; credential_hash: string | null; claimed_by_user_id: string | null }>();
+    if (!identity || identity.identity_type !== "anonymous" || !identity.credential_hash) throw new Error("v9_identity_not_claimable");
+    if (identity.claimed_by_user_id) throw new Error("v9_identity_already_claimed");
+    if (!await verifyAnonymousIdentityCredentialV9(input.recoveryCredential, identity.credential_hash)) {
+      throw new Error("v9_identity_proof_invalid");
+    }
+    const owner = await db.prepare(
+      "SELECT run_id FROM diagnostic_v9_run_ownership WHERE workspace_id=? AND run_id=? AND identity_id=? AND assignment_source='anonymous_session'",
+    ).bind(input.workspaceId, input.runId, input.identityId).first<{ run_id: string }>();
+    if (!owner) throw new Error("v9_run_not_owned");
+  }
+  return appendDiagnosticEventV9(db, {
+    workspaceId: input.workspaceId,
+    runId: input.runId,
+    eventId: input.eventId,
+    expectedSeq: input.expectedSeq,
+    kind: input.kind,
+    payload: input.payload,
+    occurredAt: input.occurredAt,
+    actorType: "client",
+  });
 }
