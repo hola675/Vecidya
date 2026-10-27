@@ -5,6 +5,7 @@ import { buildDiagnosticNarrative, type DiagnosticNarrative } from "./qbv2-candi
 import { buildDigitalPresenceStatus, computeOverallConfidence, type DigitalPresenceStatus } from "../qbv2-overall";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
 import type { AnswersV2 } from "../qbv2-rules";
+import type { QuestionDefinitionV2 } from "../qbv2-contract";
 import { CANDIDATE_CALIBRATION_V3, type CandidateCalibrationV3 } from "../qbv2-candidate-calibration";
 
 /**
@@ -21,7 +22,7 @@ const CANDIDATE_QUESTION_TOPICS_V3: Readonly<Record<string, string>> = {
   q2_measurement_practice: "la forma de registrar y revisar los resultados",
 };
 
-export type CandidateNarrativeAndOverallInputV3 = { readonly answers: AnswersV2; readonly calibration?: CandidateCalibrationV3 };
+export type CandidateNarrativeAndOverallInputV3 = { readonly answers: AnswersV2; readonly calibration?: CandidateCalibrationV3; readonly bank?: readonly QuestionDefinitionV2[] };
 
 export type CandidateNarrativeAndOverallV3 = CandidateInterpretationCoreV3 & {
   readonly narrative: DiagnosticNarrative;
@@ -46,13 +47,14 @@ function hasCandidateObservability(index: DigitalPresenceStatus["index"]): index
  */
 export function buildCandidateNarrativeAndOverallV3(input: CandidateNarrativeAndOverallInputV3): CandidateNarrativeAndOverallV3 {
   const calibration = input.calibration ?? CANDIDATE_CALIBRATION_V3;
-  const core = buildCandidateInterpretationCoreV3({ answers: input.answers, calibration });
+  const bank = input.bank ?? REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3;
+  const core = buildCandidateInterpretationCoreV3({ answers: input.answers, calibration, bank });
   const narrative = buildDiagnosticNarrative({
     answers: core.activeAnswers,
     scoring: core.scoring,
     priorities: core.priorities,
     semanticFacts: core.semanticFacts,
-    bank: REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3,
+    bank,
     questionTopics: CANDIDATE_QUESTION_TOPICS_V3,
   });
   const overall = buildDigitalPresenceStatus({
