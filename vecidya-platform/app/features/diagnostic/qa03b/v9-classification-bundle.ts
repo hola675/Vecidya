@@ -93,6 +93,10 @@ export function replayClassificationInteractionsV9(
     // Replayed events must carry the same canonical classification payload.
     // A selector without a niche (or an injected niche) must not be silently normalized.
     if (result.event.niche !== event.niche) return null;
+    // Reject extra event properties: replay must not accept unrecognized metadata.
+    const canonicalKeys = Object.keys(result.event).sort();
+    const receivedKeys = Object.keys(event).sort();
+    if (canonicalKeys.length !== receivedKeys.length || canonicalKeys.some((key, index) => key !== receivedKeys[index])) return null;
     answers = result.answers;
   }
   return answers;
