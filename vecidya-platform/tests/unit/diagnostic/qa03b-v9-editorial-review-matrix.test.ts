@@ -94,3 +94,26 @@ test("P1 classification: real customer history does not infer activity status", 
   assert.ok(status.options.some((option) => option.value === "preparing"));
   assert.ok(customerHistory.options.some((option) => option.value === "no"));
 });
+
+test("P1: la matriz identifica opciones sin lectura de evidencia en preguntas migradas", () => {
+  const source = bank.find((q) => q.evidenceMigration === "migrated" && (q.evidenceV3?.dimensions.length ?? 0) > 0);
+  assert.ok(source);
+  const dimension = source.evidenceV3!.dimensions[0];
+  const option = source.options[0];
+  const modified = {
+    ...source,
+    evidenceV3: {
+      ...source.evidenceV3!,
+      dimensions: source.evidenceV3!.dimensions.map((item, index) =>
+        index === 0
+          ? { ...item, answers: Object.fromEntries(Object.entries(dimension.answers).filter(([value]) => value !== option.value)) }
+          : item,
+      ),
+    },
+  };
+  const matrix = buildEditorialMatrixV9([modified]);
+  const answer = matrix.rows[0].options.find((item) => item.value === option.value);
+  assert.ok(answer);
+  assert.ok(answer.reviewFlags.includes("missing_evidence_mapping"));
+  assert.ok(matrix.summary.reviewFlags > 0);
+});
