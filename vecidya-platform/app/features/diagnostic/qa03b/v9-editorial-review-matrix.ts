@@ -256,6 +256,22 @@ export function buildHighPriorityEditorialReportV9(matrix: EditorialMatrixResult
   });
 }
 
+/** Registro detallado de las dimensiones cuya respuesta no está mapeada. */
+export function buildMissingEvidenceDetailsV9(matrix: EditorialMatrixResultV9): readonly {
+  questionId: string;
+  optionValue: string;
+  dimension: string;
+}[] {
+  return matrix.rows.flatMap((row) =>
+    row.options.filter((option) => option.reviewFlags.includes("missing_evidence_mapping"))
+      .flatMap((option) => option.readsAs.length === 0
+        ? [{ questionId: row.id, optionValue: option.value, dimension: "requires_source_review" }]
+        : option.readsAs.map((reading) => ({
+            questionId: row.id, optionValue: option.value, dimension: reading.dimension,
+          }))),
+  );
+}
+
 export function buildCandidateEditorialMatrixV9(): EditorialMatrixResultV9 {
   return buildEditorialMatrixV9(QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
 }
