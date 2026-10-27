@@ -4,7 +4,7 @@
  * authenticated server session; never pass browser-supplied identity claims here.
  */
 export type V9IdentityDb = {
-  batch<T = unknown>(statements: Array<{ bind(...values: unknown[]): unknown }>): Promise<Array<{ success: boolean; meta?: { changes?: number }; results?: T[] }>>;
+  batch<T = unknown>(statements: unknown[]): Promise<Array<{ success: boolean; meta?: { changes?: number }; results?: T[] }>>;
   prepare(sql: string): {
     bind(...values: unknown[]): {
       run(): Promise<{ success: boolean; meta?: { changes?: number } }>;
