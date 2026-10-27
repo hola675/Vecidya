@@ -104,3 +104,7 @@ El prototipo requiere sector y especialidad explicitos para descontar una intera
 **CI:** el job focalizado V9 ahora incluye el archivo de pruebas de clasificación y un paso de `pnpm typecheck` antes de los contratos. No se ha confirmado ejecución PASS. El plan requiere cerrar cada lote con código, pruebas ejecutadas, resultados y riesgos; commits por sí solos no cierran etapas.
 
 **Política de corte:** mantener PR #162 como draft, V8 intacto, sin merge ni despliegue hasta certificación y autorización.
+
+### L3 P1 editorial — deteccion de evidencia incompleta (2026-10-27)
+
+La matriz editorial V9 ahora marca `missing_evidence_mapping` cuando una opcion de una pregunta migrada no tiene lectura en alguna dimension declarada (`63def58`). Se incorporo prueba sintetica que retira una lectura para exigir el flag (`b693fed`). Esta alerta es diagnostica: no altera el banco, las puntuaciones ni las decisiones editoriales; no equivale a aprobacion humana. Pendiente: ejecutar el job focalizado y revisar sus resultados antes de cerrar el lote.
