@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as publicBank } from "../../../app/features/diagnostic/qa03b/bank";
-import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, classifyEditorialReviewPriorityV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
+import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, buildEditorialReviewBatchesV9, classifyEditorialReviewPriorityV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
 
 test("P1b: matriz completa de 77 preguntas / 387 opciones / 15 variantes, sin considerar pendientes aprobadas", () => {
   const matrix = buildCandidateEditorialMatrixV9();
@@ -163,4 +163,22 @@ test("P1: prioridades editoriales distinguen evidencia incompleta, neutralidad y
   for (const item of buildEditorialReviewQueueV9(buildCandidateEditorialMatrixV9())) {
     assert.equal(item.priority, classifyEditorialReviewPriorityV9(item.flags));
   }
+});
+
+test("P1: lotes editoriales agrupan alertas por pregunta y prioridad estable", () => {
+  const matrix = buildCandidateEditorialMatrixV9();
+  const queue = buildEditorialReviewQueueV9(matrix);
+  const batches = buildEditorialReviewBatchesV9(matrix);
+  assert.equal(batches.reduce((total, batch) => total + batch.items.length, 0), queue.length);
+  assert.equal(new Set(batches.map((batch) => batch.questionId)).size, batches.length);
+  const rank = { high: 0, medium: 1, low: 2 };
+  for (let index = 1; index < batches.length; index++) {
+    assert.ok(rank[batches[index - 1].priority] <= rank[batches[index].priority]);
+  }
+  for (const batch of batches) {
+    assert.ok(batch.items.length > 0);
+    assert.ok(batch.items.every((item) => item.questionId === batch.questionId));
+    assert.equal(rank[batch.priority], Math.min(...batch.items.map((item) => rank[item.priority])));
+  }
+  assert.deepEqual(buildEditorialReviewBatchesV9(matrix), batches);
 });
