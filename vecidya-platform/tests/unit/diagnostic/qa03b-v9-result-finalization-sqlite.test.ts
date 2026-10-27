@@ -46,6 +46,7 @@ function adapter(sqlite: DatabaseSync): V9FinalizationDb {
       return {
         bind(...values: unknown[]) {
           return {
+            sql, values,
             async run() {
               const result = sqlite.prepare(sql).run(...values as []) as { changes?: number };
               return { success: true, meta: { changes: result.changes ?? 0 } };
@@ -85,10 +86,10 @@ test("V9 persists trusted results and completes the run atomically", async () =>
       finishedAt: "2026-10-27T18:10:00.000Z",
     });
     assert.deepEqual(result, { status: "completed", resultVersion: 1 });
-    assert.deepEqual(
-      sqlite.prepare("SELECT status,finished_at,last_seq FROM diagnostic_v9_runs WHERE run_id='result-run'").get(),
-      { status: "completed", finished_at: "2026-10-27T18:10:00.000Z", last_seq: 0 },
-    );
+    const run = sqlite.prepare("SELECT status,finished_at,last_seq FROM diagnostic_v9_runs WHERE run_id='result-run'").get() as { status: string; finished_at: string; last_seq: number };
+    assert.equal(run.status, "completed");
+    assert.equal(run.finished_at, "2026-10-27T18:10:00.000Z");
+    assert.equal(run.last_seq, 0);
     assert.deepEqual(
       sqlite.prepare("SELECT result_version,score_json,evidence_json,recommendations_json FROM diagnostic_v9_results WHERE run_id='result-run'").get(),
       {
