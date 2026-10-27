@@ -7,6 +7,7 @@ import {
   countVisibleInteractionsV9,
   replayClassificationInteractionsV9,
   planDiagnosticClassificationStateV9,
+  resolveActiveDiagnosticAnswersV9,
   type ClassificationInteractionEventV9,
 } from "../../../app/features/diagnostic/qa03b/v9-classification-bundle";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
@@ -707,4 +708,22 @@ test("P3: contrato de estado V9 produce el mismo plan que el adaptador candidato
   const fromState = planDiagnosticClassificationStateV9(state);
   assert.deepEqual(fromState, direct);
   assert.ok(fromState.plan.routeLength <= 24);
+});
+
+test("P3: frontera de elegibilidad V9 mantiene paridad con resolvedor candidato", () => {
+  const scenarios = [
+    { sector: "food_hospitality", niche: "restaurant" },
+    { sector: "health_wellness", niche: "dentist" },
+    { sector: "b2b_services", niche: "marketing_agency" },
+    { sector: "ecommerce" },
+  ];
+  for (const scenario of scenarios) {
+    const classified = applyClassificationInteractionV9(restaurantContext, scenario);
+    assert.equal(classified.ok, true, scenario.sector);
+    if (!classified.ok) continue;
+    const direct = resolveEligibleQuestionsV2(
+      classified.answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2,
+    ).activeAnswers;
+    assert.deepEqual(resolveActiveDiagnosticAnswersV9(classified.answers), direct);
+  }
 });
