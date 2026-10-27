@@ -342,7 +342,7 @@ test("P2: escenarios sectoriales sustituyen elegibilidad genérica y respetan pr
       name: "odontología",
       sector: "health_wellness",
       niche: "dentist",
-      context: { q2_goal: "stop_losing", q2_friction: "follow_up", q2_delivery: ["onsite"] },
+      context: { q2_goal: "stop_losing", q2_monetization: "services", q2_delivery: ["appointment"] },
       specialized: "q2_dental_care_continuation",
       generic: "q2_appointments_rebooking",
     },
