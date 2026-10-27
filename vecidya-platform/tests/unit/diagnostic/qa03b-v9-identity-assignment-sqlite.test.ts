@@ -15,10 +15,25 @@ const migrations = [
 
 function adapter(sqlite: DatabaseSync): V9IdentityDb {
   return {
-    async batch() { return []; },
+    async batch(statements: unknown[]) {
+      sqlite.exec("BEGIN");
+      try {
+        const results = statements.map((raw) => {
+          const statement = raw as { sql: string; values: unknown[] };
+          const result = sqlite.prepare(statement.sql).run(...statement.values as []) as { changes?: number };
+          return { success: true, meta: { changes: result.changes ?? 0 } };
+        });
+        sqlite.exec("COMMIT");
+        return results;
+      } catch (error) {
+        sqlite.exec("ROLLBACK");
+        throw error;
+      }
+    },
     prepare(sql: string) {
       return { bind(...values: unknown[]) {
         return {
+          sql, values,
           async first<T>() { return (sqlite.prepare(sql).get(...values as []) ?? null) as T | null; },
           async all<T>() { return { results: sqlite.prepare(sql).all(...values as []) as T[] }; },
           async run() {
