@@ -661,3 +661,18 @@ test("P2: el historial acumulado no retrocede al descartar respuestas de otra es
   assert.equal(countVisibleInteractionsV9(switched.answers, [restaurant.event, switched.event]),
     Object.keys(switched.answers).length);
 });
+
+test("P2: replay rechaza propiedades extra no reconocidas en eventos", () => {
+  const classified = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(classified.ok, true);
+  if (!classified.ok) return;
+
+  const forged = {
+    ...classified.event,
+    arbitraryMetadata: "should-not-be-accepted",
+  } as ClassificationInteractionEventV9;
+  assert.equal(replayClassificationInteractionsV9(restaurantContext, [forged]), null);
+  assert.deepEqual(replayClassificationInteractionsV9(restaurantContext, [classified.event]), classified.answers);
+});
