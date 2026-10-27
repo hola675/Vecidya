@@ -10,6 +10,7 @@ const migrations = [
   readFileSync(new URL("../../../db/migrations/0032_diagnostic_v9_claim_guards.sql", import.meta.url), "utf8"),
   readFileSync(new URL("../../../db/migrations/0033_diagnostic_v9_owner_assignment_guards.sql", import.meta.url), "utf8"),
   readFileSync(new URL("../../../db/migrations/0034_diagnostic_v9_identity_claim_integrity.sql", import.meta.url), "utf8"),
+  readFileSync(new URL("../../../db/migrations/0035_diagnostic_v9_result_finalization_guards.sql", import.meta.url), "utf8"),
 ];
 
 function adapter(sqlite: DatabaseSync): V9IdentityDb {
