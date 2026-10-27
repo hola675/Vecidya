@@ -83,6 +83,7 @@ export function replayClassificationInteractionsV9(
   let answers = initialAnswers;
   for (const event of events) {
     if (event.kind !== QA03B_V9_CLASSIFICATION_INTERACTION_ID) return null;
+    if (event.sectorQuestionId !== "q2_sector") return null;
     const result = applyClassificationInteractionV9(answers, {
       sector: event.sector,
       ...(event.niche === undefined ? {} : { niche: event.niche }),
