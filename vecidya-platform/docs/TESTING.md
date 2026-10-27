@@ -1,6 +1,6 @@
 ## DIAG-V9-LEX-GRAPH-P1B — matriz de revisión y paridad semántica (2026-10-26)
 
-**CODE/TEST, RAN pendiente:** `tests/unit/diagnostic/qa03b-v9-editorial-review-matrix.test.ts` comprueba fichas 77/387/15, fidelidad de `readsAs` a cada respuesta de `evidenceV3`, preservación de IDs, orden y opciones, notas de ocho decisiones (cuatro textos revisados, cuatro casos semánticos retenidos) y ausencia de mutación del banco. `qa03b-editorial-copy.test.ts` añade regresión estricta de invariancia contractual para cuatro correcciones léxicas. No interpretar flag/ausencia de flag como aceptación humana. Ejecutar:
+**CODE/TEST — pruebas incorporadas y PASS:** `tests/unit/diagnostic/qa03b-v9-editorial-review-matrix.test.ts` comprueba fichas 77/387/15, fidelidad de `readsAs` a cada respuesta de `evidenceV3`, preservación de IDs, orden y opciones, notas de ocho decisiones (cuatro textos revisados, cuatro casos semánticos retenidos) y ausencia de mutación del banco. `qa03b-editorial-copy.test.ts` añade regresión estricta de invariancia contractual para cuatro correcciones léxicas. No interpretar flag/ausencia de flag como aceptación humana. Ejecutar:
 
 ```bash
 node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-v9-editorial-review-matrix.test.ts tests/unit/diagnostic/qa03b-editorial-copy.test.ts
@@ -10,6 +10,8 @@ pnpm typecheck
 pnpm build
 pnpm test:unit
 ```
+
+**Evidencia ejecutada (sin cambiar motor ni Worker):** GitHub Actions `Main integration quality` **40436155971** sobre SHA `1bd364fd94ba13da9053ae225568c5ca17bacac7` → typecheck PASS, build PASS, regresión Diagnóstico/Aprende PASS, suite unitaria **1.827/1.827 PASS**. Línea `DIAG_V9_P1_MATRIX` del log: `{"questions":77,"options":387,"variants":15,"revised":4,"semanticReview":4,"pendingHumanReview":69,"answersWithEvidence":180,"answersWithoutEvidence":207,"reviewFlags":48}`. `DIAG_V9_P0_INVENTORY`: 77/387/15, 40 migradas, 34 pendientes, 0 flags P0, 0 bloqueos sintácticos. La desaparición de los dos flags de texto P0 tras correcciones no certifica la semántica de las 77 preguntas. No se ha ejecutado ni certificado el exportador CLI en este workflow: requiere ejecutar el comando mostrado para generar su JSON. El actual commit documental no cambia los tests ni los cálculos reportados.
 
 El archivo exportado `audit-v9-p1.json` es una salida local bajo demanda y **NO** se versiona ni contiene datos de clientes. El CI contra `main` debe ejecutarse desde PR temporal; PR apilado contra #160 no activa automáticamente `Main integration quality`. Revisar la salida antes de declarar PASS. P2 requiere rutas y replays reales, no solo referencias de respuesta.
 
