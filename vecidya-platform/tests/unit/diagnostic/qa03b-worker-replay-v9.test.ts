@@ -24,6 +24,8 @@ import {
 } from "../../../app/features/diagnostic/qa03b/worker-replay-v9.server";
 import { replayDiagnosticAuditEventsV9, type V9StoredAuditEvent } from "../../../app/features/diagnostic/qa03b/v9-audit-replay.server";
 import { appendDiagnosticEventV9, createDiagnosticRunV9, loadDiagnosticEventHistoryV9, type V9AuditDb, type V9RunVersions } from "../../../app/features/diagnostic/qa03b/v9-audit-repository";
+import { appendOwnedDiagnosticEventV9, createOwnedDiagnosticRunV9, type V9IdentityDb } from "../../../app/features/diagnostic/qa03b/v9-identity-repository";
+import { finalizeOwnedDiagnosticRunV9 } from "../../../app/features/diagnostic/qa03b/v9-finalization.server";
 import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-scoring";
 import { CANDIDATE_RESULT_IDENTITY_V3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-pipeline";
 import { ANSWER_SCHEMA_ID, QUESTION_BANK_ID, SESSION_KEY, SESSION_SCHEMA, WORKER_REPLAY_VERSION } from "../../../app/features/diagnostic/qa03b/contract";
@@ -309,6 +311,131 @@ test("V9 SQLite audit persistence round-trips into authoritative replay", async 
     assert.equal(replayed.session.status, "completed");
     assert.equal(replayed.core.interactionCount, session.interactionCount);
     assert.equal(replayed.core.dimensions.length, 8);
+  } finally {
+    sqlite.close();
+  }
+});
+
+
+test("V9 finalization verifies ownership, replays D1, persists one trusted result and is idempotent", async () => {
+  const sqlite = new DatabaseSync(":memory:");
+  try {
+    sqlite.exec("PRAGMA foreign_keys=ON");
+    for (const migrationName of [
+      "0030_diagnostic_v9_audit.sql",
+      "0031_diagnostic_v9_identity_ownership.sql",
+      "0032_diagnostic_v9_claim_guards.sql",
+      "0033_diagnostic_v9_owner_assignment_guards.sql",
+      "0034_diagnostic_v9_identity_claim_integrity.sql",
+      "0035_diagnostic_v9_result_finalization_guards.sql",
+    ]) {
+      sqlite.exec(readFileSync(new URL(`../../../db/migrations/${migrationName}`, import.meta.url), "utf8"));
+    }
+    const db: V9IdentityDb = {
+      async batch(statements: unknown[]) {
+        sqlite.exec("BEGIN");
+        try {
+          const results = statements.map((raw) => {
+            const statement = raw as { sql: string; values: unknown[] };
+            const result = sqlite.prepare(statement.sql).run(...statement.values as []) as { changes?: number };
+            return { success: true, meta: { changes: result.changes ?? 0 } };
+          });
+          sqlite.exec("COMMIT");
+          return results;
+        } catch (error) {
+          sqlite.exec("ROLLBACK");
+          throw error;
+        }
+      },
+      prepare(sql: string) {
+        return {
+          bind(...values: unknown[]) {
+            return {
+              async run() {
+                const result = sqlite.prepare(sql).run(...values as []) as { changes?: number };
+                return { success: true, meta: { changes: result.changes ?? 0 } };
+              },
+              async first<T>() {
+                return (sqlite.prepare(sql).get(...values as []) ?? null) as T | null;
+              },
+              async all<T>() {
+                return { results: sqlite.prepare(sql).all(...values as []) as T[] };
+              },
+            };
+          },
+        };
+      },
+    };
+    const session = completingV9();
+    const versions: V9RunVersions = {
+      bank: QA03B_V9_QUESTION_BANK_ID,
+      engine: QA03B_V9_ENGINE_ID,
+      scoring: "candidate-scoring-test-v1",
+      recommendations: "recommendations-test-v1",
+      consent: "consent-test-v1",
+    };
+    const startedAt = new Date(session.startedAt).toISOString();
+    await createOwnedDiagnosticRunV9(db, {
+      workspaceId: "public",
+      runId: session.sessionId,
+      identityId: "user-identity-1",
+      userId: "user-1",
+      startedAt,
+      versions,
+    });
+    for (const [index, event] of session.replayTranscript.entries()) {
+      await appendOwnedDiagnosticEventV9(db, {
+        workspaceId: "public",
+        runId: session.sessionId,
+        userId: "user-1",
+        eventId: `owned-event-${index + 1}`,
+        expectedSeq: index,
+        kind: event.kind === "classification" ? event.classification.kind : "answer",
+        payload: event.kind === "classification"
+          ? { ...event.classification, mode: event.mode }
+          : { questionId: event.questionId, value: event.value, mode: event.mode },
+        occurredAt: new Date(NOW + index + 1).toISOString(),
+      });
+    }
+
+    await assert.rejects(() => finalizeOwnedDiagnosticRunV9(db, {
+      workspaceId: "public",
+      runId: session.sessionId,
+      userId: "different-user",
+      expectedVersions: versions,
+      now: NOW + 100,
+    }), /v9_run_not_owned/);
+
+    const result = await finalizeOwnedDiagnosticRunV9(db, {
+      workspaceId: "public",
+      runId: session.sessionId,
+      userId: "user-1",
+      expectedVersions: versions,
+      now: NOW + 100,
+    });
+    assert.equal(result.status, "completed");
+    assert.equal(result.resultVersion, 1);
+    assert.ok(Array.isArray((result.evidence as { dimension: string }[])));
+    assert.ok(Array.isArray((result.recommendations as { items: unknown[] }).items));
+    const persisted = sqlite.prepare("SELECT status,last_seq,finished_at FROM diagnostic_v9_runs WHERE run_id=?")
+      .get(session.sessionId) as { status: string; last_seq: number; finished_at: string };
+    assert.equal(persisted.status, "completed");
+    assert.equal(persisted.last_seq, session.replayTranscript.length);
+    assert.equal(persisted.finished_at, new Date(NOW + 100).toISOString());
+    assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM diagnostic_v9_results WHERE run_id=?")
+      .get(session.sessionId) as { count: number }).count, 1);
+
+    const retry = await finalizeOwnedDiagnosticRunV9(db, {
+      workspaceId: "public",
+      runId: session.sessionId,
+      userId: "user-1",
+      expectedVersions: versions,
+      now: NOW + 200,
+    });
+    assert.equal(retry.resultVersion, result.resultVersion);
+    assert.deepEqual(retry.score, result.score);
+    assert.deepEqual(retry.evidence, result.evidence);
+    assert.deepEqual(retry.recommendations, result.recommendations);
   } finally {
     sqlite.close();
   }
