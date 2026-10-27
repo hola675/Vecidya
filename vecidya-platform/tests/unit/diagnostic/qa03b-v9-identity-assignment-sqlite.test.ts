@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   assignDiagnosticRunToAnonymousVisitorV9,
   assignDiagnosticRunToAuthenticatedUserV9,
+  assignDiagnosticRunToExistingAnonymousIdentityV9,
   type V9IdentityDb,
 } from "../../../app/features/diagnostic/qa03b/v9-identity-repository";
 
@@ -57,7 +58,9 @@ test("V9 owner assignment derives user ownership server-side and returns anonymo
     sqlite.exec("PRAGMA foreign_keys=ON");
     for (const migration of migrations) sqlite.exec(migration);
     insertRun(sqlite, "user-run");
+    insertRun(sqlite, "user-run-2");
     insertRun(sqlite, "anon-run");
+    insertRun(sqlite, "anon-run-2");
     const db = adapter(sqlite);
     const user = await assignDiagnosticRunToAuthenticatedUserV9(db, {
       workspaceId: "public", runId: "user-run", identityId: "user-identity",
@@ -67,6 +70,20 @@ test("V9 owner assignment derives user ownership server-side and returns anonymo
       workspaceId: "public", runId: "anon-run", identityId: "anon-identity",
       assignedAt: "2026-10-27T00:00:01Z",
     });
+    const userSecondRun = await assignDiagnosticRunToAuthenticatedUserV9(db, {
+      workspaceId: "public", runId: "user-run-2", identityId: "different-user-identity",
+      userId: "authenticated-user-7", assignedAt: "2026-10-27T00:00:02Z",
+    });
+    const anonymousSecondRun = await assignDiagnosticRunToExistingAnonymousIdentityV9(db, {
+      workspaceId: "public", runId: "anon-run-2", identityId: anonymous.identityId,
+      recoveryCredential: anonymous.recoveryCredential, assignedAt: "2026-10-27T00:00:03Z",
+    });
+    assert.equal(userSecondRun.identityId, user.identityId);
+    assert.equal(anonymousSecondRun.identityId, anonymous.identityId);
+    await assert.rejects(() => assignDiagnosticRunToExistingAnonymousIdentityV9(db, {
+      workspaceId: "public", runId: "anon-run-2", identityId: anonymous.identityId,
+      recoveryCredential: "0".repeat(64), assignedAt: "2026-10-27T00:00:04Z",
+    }), /UNIQUE constraint failed|v9_identity_proof_invalid/);
     assert.notEqual(user.identityId, anonymous.identityId);
     assert.match(anonymous.recoveryCredential, /^[a-f0-9]{64}$/);
     assert.equal((sqlite.prepare("SELECT assignment_source FROM diagnostic_v9_run_ownership WHERE run_id='user-run'").get() as {assignment_source:string}).assignment_source, "authenticated_session");
