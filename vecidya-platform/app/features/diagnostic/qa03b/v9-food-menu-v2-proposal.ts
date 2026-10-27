@@ -3,8 +3,8 @@ import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "./specialty-branches-w
 
 /**
  * P1d experimental contract ONLY. Not included in the public bank or V9 candidate
- * registry. Historical v1 answers must be interpreted with the v1 definition.
- * Activation requires a version-aware session migration and approval.
+ * registry. This proposal is evaluated on its own V9 semantics; historical
+ * session restoration is not a prerequisite for the autonomous V9 engine.
  */
 const legacy = QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2.find(
   (question) => question.id === "q2_food_menu_visibility",
