@@ -143,7 +143,7 @@ export async function prepareAnonymousIdentityClaimV9(
   if (!identity || identity.identity_type !== "anonymous" || !identity.credential_hash) {
     throw new Error("v9_claim_identity_not_claimable");
   }
-  if (identity.claimed_by_user_id && identity.claimed_by_user_id !== input.targetUserId) {
+  if (identity.claimed_by_user_id) {
     throw new Error("v9_claim_already_claimed");
   }
   const valid = await verifyAnonymousIdentityCredentialV9(input.recoveryCredential, identity.credential_hash);
@@ -182,11 +182,11 @@ export async function finalizeAnonymousIdentityClaimV9(
       "UPDATE diagnostic_v9_identities SET claimed_by_user_id=?,claimed_at=? WHERE identity_id=? AND identity_type='anonymous' AND claimed_by_user_id IS NULL",
     ).bind(input.targetUserId, input.completedAt, input.identityId),
     db.prepare(
-      "UPDATE diagnostic_v9_run_ownership SET identity_id=?,assignment_source='verified_claim',assigned_at=? WHERE identity_id=? AND EXISTS (SELECT 1 FROM diagnostic_v9_identity_claims WHERE claim_id=? AND status='pending' AND target_user_id=?)",
-    ).bind(target.identity_id, input.completedAt, input.identityId, input.claimId, input.targetUserId),
+      "UPDATE diagnostic_v9_run_ownership SET identity_id=?,assignment_source='verified_claim',assigned_at=? WHERE identity_id=? AND EXISTS (SELECT 1 FROM diagnostic_v9_identity_claims WHERE claim_id=? AND status='pending' AND target_user_id=?) AND EXISTS (SELECT 1 FROM diagnostic_v9_identities WHERE identity_id=? AND claimed_by_user_id=? AND claimed_at=?)",
+    ).bind(target.identity_id, input.completedAt, input.identityId, input.claimId, input.targetUserId, input.identityId, input.targetUserId, input.completedAt),
     db.prepare(
-      "UPDATE diagnostic_v9_identity_claims SET status='completed',completed_at=? WHERE claim_id=? AND status='pending' AND target_user_id=?",
-    ).bind(input.completedAt, input.claimId, input.targetUserId),
+      "UPDATE diagnostic_v9_identity_claims SET status='completed',completed_at=? WHERE claim_id=? AND status='pending' AND target_user_id=? AND EXISTS (SELECT 1 FROM diagnostic_v9_identities WHERE identity_id=? AND claimed_by_user_id=? AND claimed_at=?)",
+    ).bind(input.completedAt, input.claimId, input.targetUserId, input.identityId, input.targetUserId, input.completedAt),
   ]);
   if (batch.length !== 3 || batch.some((item) => !item.success)) throw new Error("v9_claim_finalize_failed");
   if ((batch[0]?.meta?.changes ?? 0) !== 1 || (batch[2]?.meta?.changes ?? 0) !== 1) {
