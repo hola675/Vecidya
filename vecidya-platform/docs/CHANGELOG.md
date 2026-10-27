@@ -1,5 +1,10 @@
 # Changelog
 
+## Checkpoint local — paginación de Organizaciones (2026-10-27, sin publicar)
+
+- `/app/internal/organizations` mueve búsqueda y filtros de perfil al servidor, añade orden estable por nombre/fecha y paginación de 50 resultados. Búsqueda, filtro, orden y página se representan en query string; el E2E cubre 55 organizaciones sintéticas.
+- Worker/D1/Chrome E2E, typecheck, build, `node --check` y diff-check PASS. Sin cambio de versión, esquema, migración, D1 remota ni deploy.
+
 ## Checkpoint local — paginación de Auditoría (2026-10-26, sin publicar)
 
 - `/app/internal/audit` ahora filtra por texto y acción desde query string y pagina 50 eventos por vista con orden estable por fecha/ID. La búsqueda conserva la coincidencia por etiquetas traducidas y claves técnicas.
