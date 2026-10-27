@@ -492,3 +492,39 @@ test("P2: un evento antiguo o manipulado no descuenta una interacción actual", 
     ...classified.event, nicheQuestionId: "q2_niche_health_wellness",
   }]), null);
 });
+
+test("P2: un historial de 24 interacciones no permite ampliar el presupuesto por reclasificar", () => {
+  const first = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(first.ok, true);
+  if (!first.ok) return;
+  const second = applyClassificationInteractionV9(first.answers, {
+    sector: "b2b_services", niche: "marketing_agency",
+  });
+  assert.equal(second.ok, true);
+  if (!second.ok) return;
+
+  const events = [first.event, second.event];
+  const exhausted = buildCandidateQuestionPlanV9Prototype(second.answers, events, 24);
+  assert.equal(exhausted.visibleInteractionCount, 24);
+  assert.ok(exhausted.plan.routeLength <= 24);
+  const overBudget = buildCandidateQuestionPlanV9Prototype(second.answers, events, 30);
+  assert.equal(overBudget.visibleInteractionCount, 30);
+  assert.ok(overBudget.plan.routeLength <= 24);
+  assert.equal(countVisibleInteractionsV9(second.answers, events),
+    Object.keys(second.answers).length - 1);
+});
+
+test("P2: especialidad desconocida no activa preguntas sectoriales especializadas", () => {
+  const unknown = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "unknown",
+  });
+  assert.equal(unknown.ok, true);
+  if (!unknown.ok) return;
+  const eligible = resolveEligibleQuestionsV2(unknown.answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
+  assert.ok(!eligible.eligibleQuestionIds.includes("q2_food_menu_visibility"));
+  const plan = buildCandidateQuestionPlanV9Prototype(unknown.answers, [unknown.event]);
+  assert.equal(plan.visibleInteractionCount, Object.keys(plan.activeAnswers).length - 1);
+  assert.ok(plan.plan.routeLength <= 24);
+});
