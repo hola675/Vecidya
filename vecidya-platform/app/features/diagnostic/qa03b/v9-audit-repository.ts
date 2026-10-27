@@ -63,14 +63,14 @@ export async function readDiagnosticEventsV9(
   workspaceId: string,
   runId: string,
   afterSeq = 0,
-): Promise<readonly { seq: number; event_id: string; kind: string; payload_json: string; schema_version: number }[]> {
+): Promise<readonly { seq: number; event_id: string; kind: string; payload_json: string; occurred_at: string; schema_version: number; actor_type: string }[]> {
   if (!workspaceId || !runId || !Number.isSafeInteger(afterSeq) || afterSeq < 0) {
     throw new Error("v9_event_invalid_scope_or_cursor");
   }
   const result = await db.prepare(
-    "SELECT seq,event_id,kind,payload_json,schema_version FROM diagnostic_v9_events WHERE workspace_id = ? AND run_id = ? AND seq > ? ORDER BY seq ASC LIMIT 500",
+    "SELECT seq,event_id,kind,payload_json,occurred_at,schema_version,actor_type FROM diagnostic_v9_events WHERE workspace_id = ? AND run_id = ? AND seq > ? ORDER BY seq ASC LIMIT 500",
   ).bind(workspaceId, runId, afterSeq).all<{
-    seq: number; event_id: string; kind: string; payload_json: string; schema_version: number;
+    seq: number; event_id: string; kind: string; payload_json: string; occurred_at: string; schema_version: number; actor_type: string;
   }>();
   return result.results;
 }
@@ -145,14 +145,14 @@ export async function loadDiagnosticEventHistoryV9(
   db: V9AuditDb,
   workspaceId: string,
   runId: string,
-): Promise<readonly { seq: number; event_id: string; kind: string; payload_json: string; schema_version: number }[]> {
+): Promise<readonly { seq: number; event_id: string; kind: string; payload_json: string; occurred_at: string; schema_version: number; actor_type: string }[]> {
   if (!workspaceId || !runId) throw new Error("v9_history_invalid_scope");
   const run = await db.prepare(
     "SELECT last_seq FROM diagnostic_v9_runs WHERE workspace_id = ? AND run_id = ?",
   ).bind(workspaceId, runId).first<{ last_seq: number }>();
   if (!run) throw new Error("v9_run_not_found");
   if (!Number.isSafeInteger(run.last_seq) || run.last_seq < 0) throw new Error("v9_history_invalid_sequence");
-  const history: { seq: number; event_id: string; kind: string; payload_json: string; schema_version: number }[] = [];
+  const history: { seq: number; event_id: string; kind: string; payload_json: string; occurred_at: string; schema_version: number; actor_type: string }[] = [];
   let cursor = 0;
   while (cursor < run.last_seq) {
     const page = await readDiagnosticEventsV9(db, workspaceId, runId, cursor);
