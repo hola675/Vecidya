@@ -225,6 +225,13 @@
       "when": 1793135280000,
       "tag": "0031_diagnostic_v9_identity_ownership",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "6",
+      "when": 1793135340000,
+      "tag": "0032_diagnostic_v9_claim_guards",
+      "breakpoints": true
     }
   ]
 }
