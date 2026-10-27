@@ -90,6 +90,9 @@ export function replayClassificationInteractionsV9(
     });
     if (!result.ok) return null;
     if (result.event.nicheQuestionId !== event.nicheQuestionId) return null;
+    // Replayed events must carry the same canonical classification payload.
+    // A selector without a niche (or an injected niche) must not be silently normalized.
+    if (result.event.niche !== event.niche) return null;
     answers = result.answers;
   }
   return answers;
