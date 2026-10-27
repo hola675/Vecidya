@@ -58,3 +58,33 @@ test("V9 recovery replays only events after a verified SQLite snapshot", async (
     sqlite.close();
   }
 });
+
+test("V9 recovery keeps identical run identifiers isolated by workspace", async () => {
+  const sqlite = new DatabaseSync(":memory:");
+  try {
+    sqlite.exec("PRAGMA foreign_keys = ON");
+    sqlite.exec(migration);
+    const run = sqlite.prepare("INSERT INTO diagnostic_v9_runs (workspace_id,run_id,started_at,bank_version,engine_version,scoring_version,recommendation_version,consent_version) VALUES (?,?,?,?,?,?,?,?)");
+    const event = sqlite.prepare("INSERT INTO diagnostic_v9_events (workspace_id,run_id,seq,event_id,kind,payload_json,occurred_at,schema_version,actor_type) VALUES (?,?,?,?,?,?,?,1,'client')");
+    for (const [workspace, value] of [["org-a", 7], ["org-b", 19]] as const) {
+      run.run(workspace, "shared-run", "2026-10-27", "b1", "e1", "s1", "r1", "c1");
+      event.run(workspace, "shared-run", 1, "shared-event", "increment", JSON.stringify({ value }), "2026-10-27");
+    }
+    for (const [workspace, expected] of [["org-a", 7], ["org-b", 19]] as const) {
+      const result = await recoverDiagnosticStateV9(adapter(sqlite), {
+        workspaceId: workspace,
+        runId: "shared-run",
+        initialState: { total: 0 },
+        validateSnapshot: (value): value is { total: number } =>
+          typeof value === "object" && value !== null && "total" in value && typeof value.total === "number",
+        applyEvent: (state, entry) => ({
+          total: state.total + (entry.payload as { value: number }).value,
+        }),
+      });
+      assert.equal(result.state.total, expected);
+      assert.equal(result.lastSeq, 1);
+    }
+  } finally {
+    sqlite.close();
+  }
+});
