@@ -255,6 +255,8 @@ test("V9 SQLite audit persistence round-trips into authoritative replay", async 
         return {
           bind(...values: unknown[]) {
             return {
+              sql,
+              values,
               async run() {
                 const result = sqlite.prepare(sql).run(...values as []) as { changes?: number };
                 return { success: true, meta: { changes: result.changes ?? 0 } };
