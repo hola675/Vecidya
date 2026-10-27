@@ -35,6 +35,7 @@ El secreto de la cookie autoriza acciones de esa identidad. Nunca registrarlo en
 
 - `POST /api/diagnostic/v9/runs` crea una ejecución y su propiedad en una única operación D1 por lotes. El endpoint permanece desactivado si falta la bandera o alguna versión certificada.
 - `POST /api/diagnostic/v9/runs/:runId/events` valida el contrato del evento, el orden de secuencia y la propiedad antes de escribir. Las solicitudes se limitan por tamaño; las fechas de evento no pueden estar más de 5 minutos en el futuro ni ser anteriores a 30 días, para permitir reintentos tras desconexiones.
+- `POST /api/diagnostic/v9/runs/:runId/finalize` comprueba la propiedad, reconstruye la sesión desde D1, ejecuta replay autoritativo, exige paridad de puntuación entre el Worker y el pipeline de resultados y persiste puntuación/evidencia/recomendaciones junto con el estado `completed` en una operación atómica. No acepta resultados calculados por el navegador.
 - `replayDiagnosticAuditEventsV9` reconstruye la sesión desde eventos D1, comprueba secuencias, actor, esquema, marcas de tiempo y respuestas canónicas, y vuelve a ejecutar la validación autoritativa del Worker.
 - Las escrituras de eventos no aceptan `workspaceId`, `userId` ni `identityId` desde el cuerpo de la petición.
 
@@ -53,9 +54,9 @@ Las migraciones `0031`–`0035` establecen propiedad, unicidad de reclamaciones 
 
 ## Pendientes antes de producción
 
-1. Ejecutar CI focalizada y typecheck/build completos para el último conjunto de rutas y componentes.
+1. Cerrar CI focalizada y typecheck/build completos para las nuevas rutas y pruebas de finalización.
 2. Aplicar las migraciones 0031–0035 únicamente en un entorno de pruebas y validar upgrade desde el esquema actual.
-3. Integrar el motor V9 certificado con los endpoints de creación y eventos. El cuestionario público existente sigue en contrato V8; no se debe cambiar a V9 solo por tener estos endpoints.
+3. Conectar la interfaz V9 con creación, eventos y finalización; certificar la paridad del pipeline de recomendaciones y el contrato de consentimiento. El cuestionario público existente sigue en contrato V8; no se debe cambiar a V9 solo por tener estos endpoints.
 4. Añadir pruebas E2E para login posterior, reclamación, permisos, pérdida de cookie, conflictos de secuencia y vinculación organizacional.
 5. Certificar versiones de banco, motor, puntuación, recomendaciones y consentimiento; mantener la bandera desactivada hasta entonces.
 6. Validar política de retención y limpieza de identidades anónimas abandonadas antes de habilitar el bootstrap para todo el tráfico.
