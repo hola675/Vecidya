@@ -273,3 +273,30 @@ test("full anonymous journeys keep zero selector cost when specialty evidence is
   }
 });
 
+
+test("specialty replacement never suppresses an otherwise eligible generic question without a specialist", () => {
+  const cases: readonly { name: string; base: AnswersV2; nicheKey: string; niche: string; specialist: string }[] = [
+    { name: "restaurant", base: restaurantBase, nicheKey: "q2_niche_food_hospitality", niche: "restaurant", specialist: "q2_food_menu_visibility" },
+    { name: "agency", base: agencyBase, nicheKey: "q2_niche_b2b_services", niche: "marketing_agency", specialist: "q2_marketing_agency_scope_clarity" },
+  ];
+  for (const scenario of cases) {
+    for (const override of [
+      { q2_goal: "stop_losing" },
+      { q2_operational_status: "preparing" },
+      { q2_has_customers: "no" },
+      { q2_presence_digital_base: "unknown" },
+      { q2_customer_buyer: "b2c" },
+    ]) {
+      const answers = { ...scenario.base, ...override, [scenario.nicheKey]: scenario.niche };
+      const original = resolveEligibleQuestionsV2(answers, bank74);
+      const updated = resolveEligibleQuestionsV2(answers, bank77);
+      if (original.eligibleQuestionIds.includes("q2_presence_offer_clarity")) {
+        assert.ok(
+          updated.eligibleQuestionIds.includes("q2_presence_offer_clarity") ||
+            updated.eligibleQuestionIds.includes(scenario.specialist),
+          scenario.name + ": missing generic and specialist for " + JSON.stringify(override),
+        );
+      }
+    }
+  }
+});
