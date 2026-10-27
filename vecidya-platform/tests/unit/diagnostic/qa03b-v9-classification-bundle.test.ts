@@ -528,3 +528,40 @@ test("P2: especialidad desconocida no activa preguntas sectoriales especializada
   assert.equal(plan.visibleInteractionCount, Object.keys(plan.activeAnswers).length - 1);
   assert.ok(plan.plan.routeLength <= 24);
 });
+
+test("P2: la clasificación inválida no altera las respuestas originales", () => {
+  const original: AnswersV2 = {
+    ...restaurantContext,
+    q2_sector: "food_hospitality",
+    q2_niche_food_hospitality: "restaurant",
+    q2_food_menu_visibility: "clear",
+  };
+  const snapshot = JSON.stringify(original);
+  const rejected = applyClassificationInteractionV9(original, {
+    sector: "health_wellness", niche: "restaurant",
+  });
+  assert.deepEqual(rejected, { ok: false, reason: "invalid_niche" });
+  assert.equal(JSON.stringify(original), snapshot);
+  assert.equal(original.q2_food_menu_visibility, "clear");
+});
+
+test("P2: reclasificar la misma especialidad conserva evidencia compatible", () => {
+  const first = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(first.ok, true);
+  if (!first.ok) return;
+  const answered: AnswersV2 = {
+    ...first.answers,
+    q2_food_menu_visibility: "partial",
+  };
+  const repeated = applyClassificationInteractionV9(answered, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(repeated.ok, true);
+  if (!repeated.ok) return;
+  assert.equal(repeated.answers.q2_food_menu_visibility, "partial");
+  assert.equal(repeated.answers.q2_niche_food_hospitality, "restaurant");
+  const eligible = resolveEligibleQuestionsV2(repeated.answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
+  assert.ok(!eligible.eligibleQuestionIds.includes("q2_food_menu_visibility"));
+});
