@@ -26,3 +26,9 @@ Estado: revisión técnica inicial, no aprobación editorial humana.
 4. Seguir con la matriz completa de 77 preguntas y 387 respuestas.
 
 No se ha alterado V8 ni desplegado el candidato.
+
+## Seguimiento P1 — evaluación de la propuesta gastronómica
+
+El candidato de 77 preguntas conserva por ahora `q2_food_menu_visibility` v1. La propuesta v2 introduce `not_published` y lectura `weak`, manteniendo `unknown` como `uncertainty`. Es una mejora semántica plausible porque no publicar la oferta no equivale a «no aplica». No se integra sin comprobar todos los escenarios de restaurantes, cafeterías y food trucks. Se retiró de la documentación del prototipo la exigencia obsoleta de migración histórica: el motor V9 nuevo no dependerá de sesiones V8.
+
+La cobertura genérica/especializada fue corregida en `specialty-branches-wave1.ts` y se agregó una prueba de regresión focalizada. El resultado de CI sigue sin verificación; no se declara PASS.
