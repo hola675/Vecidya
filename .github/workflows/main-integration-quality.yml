@@ -46,7 +46,7 @@ jobs:
         run: pnpm test:unit
 
   diagnostic-v9-focused:
-    # Candidate V9 PRs: only the edited question contracts and editorial audit.
+    # Candidate V9 PRs: question/answer matrix, graph, sector journeys and candidate contracts.
     # No full build, Aprende tests, or unrelated unit suites.
     if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'feat/diagnostic-v9-') }}
     name: Diagnostic V9 focused contracts
@@ -67,11 +67,12 @@ jobs:
           cache-dependency-path: vecidya-platform/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: V9 editorial and versioned evidence contracts
+      - name: V9 question bank, graph and adaptive journey contracts
         run: >-
           node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test
           tests/unit/diagnostic/qa03b-v9-editorial-review-matrix.test.ts
-          tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
+          tests/unit/diagnostic/qa03b-v9-editorial-graph-audit.test.ts
+          tests/unit/diagnostic/qa03b-specialty-candidate.test.ts
+          tests/unit/diagnostic/qa03b-specialty-branches-wave1.test.ts
+          tests/unit/diagnostic/qa03b-specialty-journey-certification.test.ts
           tests/unit/diagnostic/qa03b-v9-menu-v2-proposal.test.ts
-          tests/unit/diagnostic/qa03b-v9-menu-version-identity.test.ts
-          tests/unit/diagnostic/qa03b-v9-session-restore-compat.test.ts
