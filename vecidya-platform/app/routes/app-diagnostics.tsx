@@ -1,4 +1,4 @@
-import { Form, Link, redirect, useLoaderData } from "react-router";
+import { Form, Link, redirect, useLoaderData, useSearchParams } from "react-router";
 
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getActiveOrganization, requireMembership, requireSession } from "../../server/auth/session.server";
@@ -93,7 +93,8 @@ const statusLabels: Record<OwnedRun["status"], string> = {
 
 export default function AppDiagnosticsPage() {
   const { workspaceUser, organizations, isPlatformAdmin, activeOrganization, runs, available } = useLoaderData<typeof loader>();
-  const linked = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("linked") === "1";
+  const [searchParams] = useSearchParams();
+  const linked = searchParams.get("linked") === "1";
   return (
     <ClientAreaShell active="diagnostics" workspaceUser={workspaceUser} organizations={organizations} activeOrganization={activeOrganization} isPlatformAdmin={isPlatformAdmin}>
       <main className="app-main account-page" id="client-page-content">
@@ -105,9 +106,9 @@ export default function AppDiagnosticsPage() {
           </div>
           <Link className="button button--primary" to="/diagnostico">Nuevo diagnóstico</Link>
         </div>
-        {linked ? <Alert tone="success">La organización quedó vinculada al diagnóstico.</Alert> : null}
+        {linked ? <Alert>La organización quedó vinculada al diagnóstico.</Alert> : null}
         {!available ? (
-          <Alert tone="info">El historial V9 todavía no está disponible en este entorno. No se han modificado ni eliminado diagnósticos.</Alert>
+          <Alert>El historial V9 todavía no está disponible en este entorno. No se han modificado ni eliminado diagnósticos.</Alert>
         ) : runs.length === 0 ? (
           <Card>
             <h2>Aún no hay diagnósticos en tu historial</h2>
