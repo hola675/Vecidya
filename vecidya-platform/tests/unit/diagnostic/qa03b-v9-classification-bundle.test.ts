@@ -165,3 +165,18 @@ test("interaction budgeting can recover one visible slot while the public V8 pla
   assert.equal(SESSION_SCHEMA, 8);
   assert.equal(SESSION_KEY, "vecidya.diagnostic.v3.candidate.session.8");
 });
+
+test("classification replay validates sector question identity", () => {
+  const applied = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality",
+    niche: "restaurant",
+  });
+  assert.equal(applied.ok, true);
+  if (!applied.ok) return;
+  const invalidEvent = {
+    ...applied.event,
+    sectorQuestionId: "q2_goal",
+  } as unknown as ClassificationInteractionEventV9;
+  assert.equal(replayClassificationInteractionsV9(restaurantContext, [invalidEvent]), null);
+  assert.deepEqual(replayClassificationInteractionsV9(restaurantContext, [applied.event]), applied.answers);
+});
