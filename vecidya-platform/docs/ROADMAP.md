@@ -1,3 +1,23 @@
+## DIAG-V9-LEX-GRAPH-P1B — acciones tras matriz de respuestas (2026-10-26)
+
+**Alcance en progreso:** ampliación P1 de inventario estructural a matriz completa 77 preguntas × 387 opciones × 15 variantes con estados explícitos. El generador y exportador preparan la lectura humana por ficha, no conceden automáticamente A/B/C. Cuatro copys acordados se reformulan sin romper contratos. Revisión semántica pendiente especialmente para `q2_demand_trend` (indicador variable), `q2_capacity_signal` (respuestas compuestas), `q2_food_menu_visibility` (posible confusión de not_applicable) y `q2_ecommerce_cart_followup` (contacto consentido).
+
+**Próximo bloque:** revisar individualmente las 69 restantes y las cuatro semánticas con ejemplos de usuario; identificar qué `pending` consume presupuesto sin evidencia, revisar opciones `unknown/none/not_applicable`, producir decisiones A/B/C con razones y pruebas cognitivas. En paralelo P2 debe vincular relaciones `requires/enables/excludes/replaces` con recorridos realmente alcanzables mediante fixtures de sector y etapa, no solo referencias sintácticas. Cualquier modificación de `value/kind/readsAs/appliesWhen` exige nueva identidad de banco/sesión/replay V9 y pruebas Worker; no modificar V8 público. No incorporar GHL/Aprende/ofertas durante preguntas.
+
+## DIAG-V9-LEX-GRAPH-P0P1 — primer checkpoint en ejecución (2026-10-26)
+
+**P0 implementado como instrumentación, no certificado:** auditor reproducible para las 77 definiciones candidatas, toda opción/variante y referencias de regla a pregunta/contexto; clasificación G0–G6 descriptiva y reporte de alertas. **P1 iniciado:** cuatro enunciados de entrada corregidos editorialmente sin alterar contrato de respuestas, y regla de detectar ambigüedades potenciales antes de proponer más preguntas. PR de código apilado sobre el PR #156 para disponer del banco privado; PR #159 contiene el plan completo; PR #157 aporta los futuros sectores transversales.
+
+**Después del cierre P0:** inspeccionar la salida exacta de CI, priorizar flags manuales y construir matriz individual de las 77 preguntas y cada respuesta, comenzando por las rutas más frecuentes y las de `pending` sin evidencia. **P2:** clasificar edges semánticas (no asumir que una referencia sintáctica es `requires`), verificar contexto/arquetipos, exclusiones, reemplazos y ruta de edición; detectar ramas inalcanzables mediante fixtures. **P3:** corregir copy/options/gates con versiones explícitas al cambiar significado, añadir sustituciones justificadas y enlazar la nueva taxonomía mediante un nuevo contrato V9. **P4/P5:** comparar perfiles representativos por sector y etapa, interacción mediana/p90, evidencia directa y abstenciones contra baseline, pruebas humanas y Worker replay. Evitar scoring por sector y no exponer ofertas/Aprende en el cuestionario. No alterar V8 público ni desplegar.
+
+## DIAG-V9-SECTORS-02 — simplificación sectorial y pulido del cuestionario (siguiente bloque, pendiente)
+
+**Punto de partida:** el banco V9 recuperado representa 77 definiciones, pero reutiliza la taxonomía histórica de grupos muy específicos. El registro actual agrupa ámbitos como legal, salud, retail, comercio electrónico y hotelería; no presenta todavía Agropecuario ni Producción como sectores generales propios, y mezcla en la misma lista el sector económico con el canal comercial (ecommerce) y el comprador (B2B). No convertir esos nombres heredados en la taxonomía definitiva.
+
+**Diseño a contrastar antes de versionar:** primer nivel de sector amplio, por ejemplo **Legal, Agropecuario, Comercial, Digital, Servicios, Producción, Turismo**, junto con Salud, Educación y otros sectores que resulten necesarios. Segundo nivel opcional de actividad específica **solo si cambia la aplicabilidad de preguntas reales**; capturar separadamente modo de entrega, compradores, estado operativo y otros procesos. Evitar duplicados por diferencias de profesión sin impacto en el diagnóstico. Mantener `Otro` y `No sé` sin forzar una clasificación. No confundir sector con capacidad demostrada ni inventar evidencia.
+
+**Criterios de salida:** (1) matriz explícita de sectores→modalidades→preguntas habilitadas y sustituidas; (2) revisión editorial de cada pregunta y opciones con vocabulario neutral, lecturas `unknown/not_applicable` y variantes válidas; (3) número de interacciones visibles reducido frente a la línea base sin ocultar preguntas necesarias, tope 24 hasta prueba y decisión; (4) scoring/Worker replay reproducibles con identidad nueva cuando cambien definiciones; (5) regresiones V8 sin diferencias, rutas de estado anterior sin migración implícita; (6) suites, typecheck, build, E2E y QA con perfiles diversos PASS antes de solicitar activación. La relación con Aprende/ofertas corresponde al informe posterior, **no** al diagnóstico.
+
 ## APRENDE-PUBLIC-QA-01-A11Y — auditoría integral pendiente
 
 La certificación pública integrada verifica rutas, navegación por teclado y viewports seleccionados, pero no sustituye una auditoría WCAG integral ni pruebas con lector de pantalla. Definir y ejecutar ese alcance antes de declarar accesibilidad completa; registrar resultados y remediación en los documentos canónicos. No cambiar estados editoriales ni publicar contenido como parte de esta deuda.
@@ -17,6 +37,84 @@ La certificación pública integrada verifica rutas, navegación por teclado y v
 | 2. Web pública — servicios, planes, Aprende, Vecindario y MiniWeb | Vercel/Assemble/Gusto, Mintlify y catálogo visual aplicados por página, una ruta/segmento por checkpoint | Contenido y enlaces existentes; sin datos comerciales ficticios; móvil, accesibilidad y rendimiento revisados |
 | 3. Diagnóstico e informe | Continuar desde `DIAG-VISUAL-ASSETS-01` y DIAG-VISUAL-03; interacción y narrativa claras, gráfica fiel al contrato vigente | Scores sin recálculo, `null`/cobertura/confianza legibles, privacidad intacta, PDF revisado |
 | 4. Mi Vecidya y editor MiniWeb | Linear para shell y estados; Framer para edición contextual por secciones, coordinado con `APP-MINI-02D` | Draft/publicado distinguibles; preview y guards existentes preservados; experiencia móvil y teclado revisados |
+| 5. Vecidya Admin | Vercel/Supabase Studio como referencias visuales para tablas, filtros, inspector y actividad | Datos existentes solamente; organización objetivo, permisos y auditoría preservados en toda acción |
+| 6. Acabado y certificación | Microinteracciones, profundidad y assets puntuales; revisión de consistencia entre superficies | `typecheck`, `build`, diff-check, validación Worker local y revisión visual/accesible por viewport; deuda restante anotada en STATUS |
+
+**UX-PREMIUM-01 fase 5 — auditoría funcional Admin (PR #139, release 0.8.2, 2026-10-26):** se inspeccionaron 14 rutas y PR #139 quedó integrado y publicado; `0029` se aplicó a producción tras un preflight sin duplicados (evidencia en `ENVIRONMENTS.md`). El E2E local con Worker/D1 cubre permisos, servicios, integraciones, organizaciones, capacitación, MiniWeb, gobierno de perfiles y licencias. Los gaps P2/P3 siguen en `STATUS.md`: errores/concurrencia de progreso, paginación/orden, sesión/red, etiquetas restantes y fallo del proveedor de invitaciones desde UI; axe/lector/zoom 200 %/tablet. El modelo no implementa expiración ni renovación automática.
+
+**LICENSE-BILLING-OWNER-001 — validación de titular de facturación (checkpoint local, 2026-10-26):** regla confirmada: `platform_admin` puede asignar o transferir a cualquier usuario existente; la membresía no determina `billing_account`. API valida organización/usuario; la transferencia usa CAS con IDs observados y audita solo al ganador. `platform-service-administration-check.mjs`, typecheck, build y diff-check PASS con Worker/D1 local. Sin cambio de esquema, D1 remota ni deploy. La transferencia en UI se cerró después en `LICENSE-ADMIN-UI-001`; cancelación e historial se decidieron y cerraron mediante `LICENSE-CANCEL-HISTORY-001`.
+
+## APRENDE-PUBLIC-QA-01-A11Y — auditoría integral pendiente
+
+La certificación pública integrada verifica rutas, navegación por teclado y viewports seleccionados, pero no sustituye una auditoría WCAG integral ni pruebas con lector de pantalla. Definir y ejecutar ese alcance antes de declarar accesibilidad completa; registrar resultados y remediación en los documentos canónicos. No cambiar estados editoriales ni publicar contenido como parte de esta deuda.
+
+## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
+
+**APP-MINI-02B (2026-10-26):** corrección focal del perfil MiniWeb y tarjetas Vecindario guiada por las capturas del usuario. Logo administrado en medios de MiniWeb; tarjeta toma logo/portada publicados; secciones organizadas en retícula común. Candidato local; resultado de E2E, PR e integración se registra en `STATUS.md`.
+
+**Objetivo:** adaptar las referencias premium entregadas por el usuario a una experiencia coherente de Vecidya, preservando contenido, datos, permisos, funcionamiento móvil y límites comerciales. Las referencias guían composición e interacción; no se copian marcas, textos, layouts exactos ni assets. Este trabajo no incluye publicación ni despliegue.
+
+**Principios:** usar la identidad y componentes vigentes antes de añadir variantes; diferenciar la expresividad de la web pública de la claridad operativa de Mi Vecidya y Admin; mostrar solo datos y capacidades comprobables; WCAG 2.2 AA, teclado, foco visible, objetivos táctiles, zoom y `prefers-reduced-motion`; no incorporar WebGL donde perjudique carga o accesibilidad.
+
+| Fase | Alcance | Gate de salida |
+| --- | --- | --- |
+| 0. Inventario y dirección | Rutas, componentes, estado de implementación, capturas escritorio/móvil y mapa referencia→patrón→pantalla; reutilizar activos vigentes | Alcance de pantalla y dirección aprobados; no se duplican assets ni capacidades |
+| 1. Web pública — Inicio | Jerarquía del hero y CTA al Diagnóstico, entrada al Vecindario y composición responsive propia | Worker local; CTA/rutas reales, vista en 320/390/768/1024/1366, navegación por teclado y reduced motion |
+| 2. Web pública — servicios, planes, Aprende, Vecindario y MiniWeb | Vercel/Assemble/Gusto, Mintlify y catálogo visual aplicados por página, una ruta/segmento por checkpoint | Contenido y enlaces existentes; sin datos comerciales ficticios; móvil, accesibilidad y rendimiento revisados |
+| 3. Diagnóstico e informe | Continuar desde `DIAG-VISUAL-ASSETS-01` y DIAG-VISUAL-03; interacción y narrativa claras, gráfica fiel al contrato vigente | Scores sin recálculo, `null`/cobertura/confianza legibles, privacidad intacta, PDF revisado |
+| 4. Mi Vecidya y editor MiniWeb | Linear para shell y estados; Framer para edición contextual por secciones, coordinado con `APP-MINI-02D` | Draft/publicado distinguibles; preview y guards existentes preservados; experiencia móvil y teclado revisados |
+| 5. Vecidya Admin | Vercel/Supabase Studio como referencias visuales para tablas, filtros, inspector y actividad | Datos existentes solamente; organización objetivo, permisos y auditoría preservados en toda acción |
+| 6. Acabado y certificación | Microinteracciones, profundidad y assets puntuales; revisión de consistencia entre superficies | `typecheck`, `build`, diff-check, validación Worker local y revisión visual/accesible por viewport; deuda restante anotada en STATUS |
+
+**UX-PREMIUM-01 fase 5 — auditoría funcional Admin (PR #139, release 0.8.2, 2026-10-26):** se inspeccionaron 14 rutas y PR #139 quedó integrado y publicado; `0029` se aplicó a producción tras un preflight sin duplicados (evidencia en `ENVIRONMENTS.md`). El E2E local con Worker/D1 cubre permisos, servicios, integraciones, organizaciones, capacitación, MiniWeb, gobierno de perfiles y licencias. Los gaps P2/P3 siguen en `STATUS.md`: errores/concurrencia de progreso, paginación/orden, sesión/red, etiquetas restantes y fallo del proveedor de invitaciones desde UI; axe/lector/zoom 200 %/tablet. El modelo no implementa expiración ni renovación automática.
+
+**LICENSE-BILLING-OWNER-001 — validación de titular de facturación (checkpoint local, 2026-10-26):** regla confirmada: `platform_admin` puede asignar o transferir a cualquier usuario existente; la membresía no determina `billing_account`. API valida organización/usuario; la transferencia usa CAS con IDs observados y audita solo al ganador. `platform-service-administration-check.mjs`, typecheck, build y diff-check PASS con Worker/D1 local. Sin cambio de esquema, D1 remota ni deploy. La transferencia en UI se cerró después en `LICENSE-ADMIN-UI-001`; cancelación e historial se decidieron y cerraron mediante `LICENSE-CANCEL-HISTORY-001`.
+
+## APRENDE-PUBLIC-QA-01-A11Y — auditoría integral pendiente
+
+La certificación pública integrada verifica rutas, navegación por teclado y viewports seleccionados, pero no sustituye una auditoría WCAG integral ni pruebas con lector de pantalla. Definir y ejecutar ese alcance antes de declarar accesibilidad completa; registrar resultados y remediación en los documentos canónicos. No cambiar estados editoriales ni publicar contenido como parte de esta deuda.
+
+## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
+
+**APP-MINI-02B (2026-10-26):** corrección focal del perfil MiniWeb y tarjetas Vecindario guiada por las capturas del usuario. Logo administrado en medios de MiniWeb; tarjeta toma logo/portada publicados; secciones organizadas en retícula común. Candidato local; resultado de E2E, PR e integración se registra en `STATUS.md`.
+
+**Objetivo:** adaptar las referencias premium entregadas por el usuario a una experiencia coherente de Vecidya, preservando contenido, datos, permisos, funcionamiento móvil y límites comerciales. Las referencias guían composición e interacción; no se copian marcas, textos, layouts exactos ni assets. Este trabajo no incluye publicación ni despliegue.
+
+**Principios:** usar la identidad y componentes vigentes antes de añadir variantes; diferenciar la expresividad de la web pública de la claridad operativa de Mi Vecidya y Admin; mostrar solo datos y capacidades comprobables; WCAG 2.2 AA, teclado, foco visible, objetivos táctiles, zoom y `prefers-reduced-motion`; no incorporar WebGL donde perjudique carga o accesibilidad.
+
+| Fase | Alcance | Gate de salida |
+| --- | --- | --- |
+| 0. Inventario y dirección | Rutas, componentes, estado de implementación, capturas escritorio/móvil y mapa referencia→patrón→pantalla; reutilizar activos vigentes | Alcance de pantalla y dirección aprobados; no se duplican assets ni capacidades |
+| 1. Web pública — Inicio | Jerarquía del hero y CTA al Diagnóstico, entrada al Vecindario y composición responsive propia | Worker local; CTA/rutas reales, vista en 320/390/768/1024/1366, navegación por teclado y reduced motion |
+| 2. Web pública — servicios, planes, Aprende, Vecindario y MiniWeb | Vercel/Assemble/Gusto, Mintlify y catálogo visual aplicados por página, una ruta/segmento por checkpoint | Contenido y enlaces existentes; sin datos comerciales ficticios; móvil, accesibilidad y rendimiento revisados |
+| 3. Diagnóstico e informe | Continuar desde `DIAG-VISUAL-ASSETS-01` y DIAG-VISUAL-03; interacción y narrativa claras, gráfica fiel al contrato vigente | Scores sin recálculo, `null`/cobertura/confianza legibles, privacidad intacta, PDF revisado |
+| 4. Mi Vecidya y editor MiniWeb | Linear para shell y estados; Framer para edición contextual por secciones, coordinado con `APP-MINI-02D` | Draft/publicado distinguibles; preview y guards existentes preservados; experiencia móvil y teclado revisados |
+| 5. Vecidya Admin | Vercel/Supabase Studio como referencias visuales para tablas, filtros, inspector y actividad | Datos existentes solamente; organización objetivo, permisos y auditoría preservados en toda acción |
+| 6. Acabado y certificación | Microinteracciones, profundidad y assets puntuales; revisión de consistencia entre superficies | `typecheck`, `build`, diff-check, validación Worker local y revisión visual/accesible por viewport; deuda restante anotada en STATUS |
+
+**UX-PREMIUM-01 fase 5 — auditoría funcional Admin (PR #139, release 0.8.2, 2026-10-26):** se inspeccionaron 14 rutas y PR #139 quedó integrado y publicado; `0029` se aplicó a producción tras un preflight sin duplicados (evidencia en `ENVIRONMENTS.md`). El E2E local con Worker/D1 cubre permisos, servicios, integraciones, organizaciones, capacitación, MiniWeb, gobierno de perfiles y licencias. Los gaps P2/P3 siguen en `STATUS.md`: errores/concurrencia de progreso, paginación/orden, sesión/red, etiquetas restantes y fallo del proveedor de invitaciones desde UI; axe/lector/zoom 200 %/tablet. El modelo no implementa expiración ni renovación automática.
+
+**LICENSE-BILLING-OWNER-001 — validación de titular de facturación (checkpoint local, 2026-10-26):** regla confirmada: `platform_admin` puede asignar o transferir a cualquier usuario existente; la membresía no determina `billing_account`. API valida organización/usuario; la transferencia usa CAS con IDs observados y audita solo al ganador. `platform-service-administration-check.mjs`, typecheck, build y diff-check PASS con Worker/D1 local. Sin cambio de esquema, D1 remota ni deploy. La transferencia en UI se cerró después en `LICENSE-ADMIN-UI-001`; cancelación e historial se decidieron y cerraron mediante `LICENSE-CANCEL-HISTORY-001`.
+
+## APRENDE-PUBLIC-QA-01-A11Y — auditoría integral pendiente
+
+La certificación pública integrada verifica rutas, navegación por teclado y viewports seleccionados, pero no sustituye una auditoría WCAG integral ni pruebas con lector de pantalla. Definir y ejecutar ese alcance antes de declarar accesibilidad completa; registrar resultados y remediación en los documentos canónicos. No cambiar estados editoriales ni publicar contenido como parte de esta deuda.
+
+## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
+
+**APP-MINI-02B (2026-10-26):** corrección focal del perfil MiniWeb y tarjetas Vecindario guiada por las capturas del usuario. Logo administrado en medios de MiniWeb; tarjeta toma logo/portada publicados; secciones organizadas en retícula común. Candidato local; resultado de E2E, PR e integración se registra en `STATUS.md`.
+
+**Objetivo:** adaptar las referencias premium entregadas por el usuario a una experiencia coherente de Vecidya, preservando contenido, datos, permisos, funcionamiento móvil y límites comerciales. Las referencias guían composición e interacción; no se copian marcas, textos, layouts exactos ni assets. Este trabajo no incluye publicación ni despliegue.
+
+**Principios:** usar la identidad y componentes vigentes antes de añadir variantes; diferenciar la expresividad de la web pública de la claridad operativa de Mi Vecidya y Admin; mostrar solo datos y capacidades comprobables; WCAG 2.2 AA, teclado, foco visible, objetivos táctiles, zoom y `prefers-reduced-motion`; no incorporar WebGL donde perjudique carga o accesibilidad.
+
+| Fase | Alcance | Gate de salida |
+| --- | --- | --- |
+| 0. Inventario y dirección | Rutas, componentes, estado de implementación, capturas escritorio/móvil y mapa referencia→patrón→pantalla; reutilizar activos vigentes | Alcance de pantalla y dirección aprobados; no se duplican assets ni capacidades |
+| 1. Web pública — Inicio | Jerarquía del hero y CTA al Diagnóstico, entrada al Vecindario y composición responsive propia | Worker local; CTA/rutas reales, vista en 320/390/768/1024/1366, navegación por teclado y reduced motion |
+| 2. Web pública — servicios, planes, Aprende, Vecindario y MiniWeb | Vercel/Assemble/Gusto, Mintlify y catálogo visual aplicados por página, una ruta/segmento por checkpoint | Contenido y enlaces existentes; sin datos comerciales ficticios; móvil, accesibilidad y rendimiento revisados |
+| 3. Diagnóstico e informe | Continuar desde `DIAG-VISUAL-ASSETS-01` y DIAG-VISUAL-03; interacción y narrativa claras, gráfica fiel al contrato vigente | Scores sin recálculo, `null`/cobertura/confianza legibles, privacidad intacta, PDF revisado |
+| 4. Editor MiniWeb y página pública | Linear para shell de escritorio/tablet; Framer para edición contextual y revisión de la página pública, incluyendo preview móvil | Draft/publicado distinguibles; preview y guards preservados; responsive de la MiniWeb pública revisado; no adaptar `/app` ni `/app/internal` como producto móvil |
 | 5. Vecidya Admin | Vercel/Supabase Studio como referencias visuales para tablas, filtros, inspector y actividad | Datos existentes solamente; organización objetivo, permisos y auditoría preservados en toda acción |
 | 6. Acabado y certificación | Microinteracciones, profundidad y assets puntuales; revisión de consistencia entre superficies | `typecheck`, `build`, diff-check, validación Worker local y revisión visual/accesible por viewport; deuda restante anotada en STATUS |
 
