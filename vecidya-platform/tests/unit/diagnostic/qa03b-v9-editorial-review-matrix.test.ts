@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as publicBank } from "../../../app/features/diagnostic/qa03b/bank";
-import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, buildEditorialReviewBatchesV9, countEditorialReviewPrioritiesV9, listHighPriorityEditorialQuestionsV9, buildHighPriorityEditorialReportV9, classifyEditorialReviewPriorityV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
+import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, buildEditorialReviewBatchesV9, countEditorialReviewPrioritiesV9, listHighPriorityEditorialQuestionsV9, buildHighPriorityEditorialReportV9, listMissingEvidenceOptionsV9, classifyEditorialReviewPriorityV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
 
 test("P1b: matriz completa de 77 preguntas / 387 opciones / 15 variantes, sin considerar pendientes aprobadas", () => {
   const matrix = buildCandidateEditorialMatrixV9();
@@ -231,4 +231,13 @@ test("P1: informe legible de prioridad alta conserva textos y alertas originales
     }
   }
   assert.deepEqual(buildHighPriorityEditorialReportV9(buildEditorialMatrixV9([])), []);
+});
+
+test("P1: opciones con evidencia incompleta conservan identificadores verificables", () => {
+  const matrix = buildCandidateEditorialMatrixV9();
+  const expected = buildEditorialReviewQueueV9(matrix)
+    .filter((item) => item.flags.includes("missing_evidence_mapping"))
+    .map((item) => ({ questionId: item.questionId, optionValue: item.optionValue }));
+  assert.deepEqual(listMissingEvidenceOptionsV9(matrix), expected);
+  assert.deepEqual(listMissingEvidenceOptionsV9(buildEditorialMatrixV9([])), []);
 });
