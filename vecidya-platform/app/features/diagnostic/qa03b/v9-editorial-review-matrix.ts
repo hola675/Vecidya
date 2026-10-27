@@ -219,6 +219,12 @@ export function buildEditorialReviewBatchesV9(matrix: EditorialMatrixResultV9): 
   return batches.sort((a, b) => rank[a.priority] - rank[b.priority]);
 }
 
+export function countEditorialReviewPrioritiesV9(matrix: EditorialMatrixResultV9): Record<EditorialReviewPriorityV9, number> {
+  const counts: Record<EditorialReviewPriorityV9, number> = { high: 0, medium: 0, low: 0 };
+  for (const item of buildEditorialReviewQueueV9(matrix)) counts[item.priority] += 1;
+  return counts;
+}
+
 export function buildCandidateEditorialMatrixV9(): EditorialMatrixResultV9 {
   return buildEditorialMatrixV9(QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
 }
