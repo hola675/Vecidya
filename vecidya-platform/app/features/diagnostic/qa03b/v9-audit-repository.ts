@@ -97,13 +97,15 @@ export async function appendDiagnosticEventV9(
   const payload = JSON.stringify(input.payload);
   if (payload === undefined || payload.length > 16384) throw new Error("v9_invalid_payload");
   const existing = await db.prepare(
-    "SELECT run_id,seq,kind,payload_json FROM diagnostic_v9_events WHERE workspace_id=? AND event_id=?",
+    "SELECT run_id,seq,kind,payload_json,occurred_at,actor_type,schema_version FROM diagnostic_v9_events WHERE workspace_id=? AND event_id=?",
   ).bind(input.workspaceId, input.eventId).first<{
-    run_id: string; seq: number; kind: string; payload_json: string;
+    run_id: string; seq: number; kind: string; payload_json: string; occurred_at: string; actor_type: string; schema_version: number;
   }>();
   const match = (row: typeof existing) =>
     row?.run_id === input.runId && row.seq === input.expectedSeq + 1 &&
-    row.kind === input.kind && row.payload_json === payload;
+    row.kind === input.kind && row.payload_json === payload &&
+    row.occurred_at === input.occurredAt && row.actor_type === input.actorType &&
+    row.schema_version === 1;
   if (existing) return match(existing) ? { status: "duplicate", seq: existing.seq } : { status: "conflict" };
   try {
     const result = await db.prepare(
@@ -114,9 +116,9 @@ export async function appendDiagnosticEventV9(
     return { status: "created", seq: input.expectedSeq + 1 };
   } catch (error) {
     const retry = await db.prepare(
-      "SELECT run_id,seq,kind,payload_json FROM diagnostic_v9_events WHERE workspace_id=? AND event_id=?",
+      "SELECT run_id,seq,kind,payload_json,occurred_at,actor_type,schema_version FROM diagnostic_v9_events WHERE workspace_id=? AND event_id=?",
     ).bind(input.workspaceId, input.eventId).first<{
-      run_id: string; seq: number; kind: string; payload_json: string;
+      run_id: string; seq: number; kind: string; payload_json: string; occurred_at: string; actor_type: string; schema_version: number;
     }>();
     if (match(retry)) return { status: "duplicate", seq: retry!.seq };
     if (retry || (error instanceof Error &&
