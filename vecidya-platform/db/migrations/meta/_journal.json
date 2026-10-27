@@ -246,6 +246,13 @@
       "when": 1793140000000,
       "tag": "0034_diagnostic_v9_identity_claim_integrity",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "6",
+      "when": 1793140200000,
+      "tag": "0035_diagnostic_v9_result_finalization_guards",
+      "breakpoints": true
     }
   ]
 }
