@@ -59,7 +59,7 @@ export default function Diagnostic({ loaderData }: Route.ComponentProps) {
           {loaderData.authStatus === "unavailable" ? (
             <>No pudimos comprobar el estado de tu sesión. El diagnóstico sigue disponible, pero no se asociará a una cuenta en esta visita. <Link to="/login?redirectTo=%2Fdiagnostico">Iniciar sesión</Link></>
           ) : loaderData.authenticatedUser ? (
-            <>Sesión iniciada{loaderData.authenticatedUser.name ? ` como ${loaderData.authenticatedUser.name}` : ""}. La asociación automática al historial se está activando. <Link to="/app/diagnosticos">Ver mis diagnósticos</Link></>
+            <>Sesión iniciada{loaderData.authenticatedUser.name ? ` como ${loaderData.authenticatedUser.name}` : ""}. La asociación automática al historial se está activando. Si antes diagnosticabas como visitante en este navegador, puedes intentar recuperar ese historial desde <Link to="/app/diagnosticos">Mis diagnósticos</Link>.</>
           ) : (
             <>Estás como visitante. <Link to="/login?redirectTo=%2Fdiagnostico">Inicia sesión</Link> para acceder a tu cuenta. La recuperación de diagnósticos anónimos estará disponible cuando termine la activación del historial V9.</>
           )}
