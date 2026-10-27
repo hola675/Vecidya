@@ -70,9 +70,17 @@ test("V9 claim finalization atomically transfers run ownership and rejects repla
       claimId: "claim-1", identityId: anon.identityId, recoveryCredential: anon.recoveryCredential,
       targetUserId: "user-1", createdAt: "2026-10-27",
     });
-    const result = await finalizeAnonymousIdentityClaimV9(db, {
-      claimId: "claim-1", identityId: anon.identityId, targetUserId: "user-1", completedAt: "2026-10-28",
-    });
+    const attempts = await Promise.allSettled([
+      finalizeAnonymousIdentityClaimV9(db, {
+        claimId: "claim-1", identityId: anon.identityId, targetUserId: "user-1", completedAt: "2026-10-28",
+      }),
+      finalizeAnonymousIdentityClaimV9(db, {
+        claimId: "claim-1", identityId: anon.identityId, targetUserId: "user-1", completedAt: "2026-10-28",
+      }),
+    ]);
+    const successful = attempts.filter((attempt): attempt is PromiseFulfilledResult<{ transferredRuns: number }> => attempt.status === "fulfilled");
+    assert.equal(successful.length, 1, "only one concurrent finalization may succeed");
+    const result = successful[0]!.value;
     assert.deepEqual(result, { transferredRuns: 1 });
     assert.equal((sqlite.prepare("SELECT identity_id FROM diagnostic_v9_run_ownership WHERE run_id='run-anon'").get() as {identity_id:string}).identity_id, userIdentityId);
     assert.equal((sqlite.prepare("SELECT status FROM diagnostic_v9_identity_claims WHERE claim_id='claim-1'").get() as {status:string}).status, "completed");
