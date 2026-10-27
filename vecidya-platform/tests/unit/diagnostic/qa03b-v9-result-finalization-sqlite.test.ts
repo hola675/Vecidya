@@ -90,15 +90,12 @@ test("V9 persists trusted results and completes the run atomically", async () =>
     assert.equal(run.status, "completed");
     assert.equal(run.finished_at, "2026-10-27T18:10:00.000Z");
     assert.equal(run.last_seq, 0);
-    assert.deepEqual(
-      sqlite.prepare("SELECT result_version,score_json,evidence_json,recommendations_json FROM diagnostic_v9_results WHERE run_id='result-run'").get(),
-      {
-        result_version: 1,
-        score_json: JSON.stringify({ overall: 72, confidence: "medium" }),
-        evidence_json: JSON.stringify([{ dimension: "clarity_positioning", state: "supported" }]),
-        recommendations_json: JSON.stringify([{ id: "next-step-1", priority: 1 }]),
-      },
-    );
+    const saved = sqlite.prepare("SELECT result_version,score_json,evidence_json,recommendations_json FROM diagnostic_v9_results WHERE run_id='result-run'").get() as { result_version: number; score_json: string; evidence_json: string; recommendations_json: string };
+    assert.equal(saved.result_version, 1);
+    assert.equal(saved.score_json, JSON.stringify({ overall: 72, confidence: "medium" }));
+    assert.equal(saved.evidence_json, JSON.stringify([{ dimension: "clarity_positioning", state: "supported" }]));
+    assert.equal(saved.recommendations_json, JSON.stringify([{ id: "next-step-1", priority: 1 }]));
+
     await assert.rejects(() => finalizeDiagnosticRunV9(db, {
       workspaceId: "public", runId: "result-run", expectedSeq: 0,
       score: {}, evidence: [], recommendations: [], finishedAt: "2026-10-27T18:11:00.000Z",
