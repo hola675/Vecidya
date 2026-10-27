@@ -89,7 +89,7 @@ test("P1 classification: real customer history does not infer activity status", 
   assert.ok(customerHistory);
   assert.ok(status);
   assert.match(customerHistory.hint ?? "", /pausa/i);
-  assert.match(status.hint ?? "", /independiente/i);
+  assert.match(status.hint ?? "", /aunque hayas atendido personas antes/i);
   assert.ok(status.options.some((option) => option.value === "paused"));
   assert.ok(status.options.some((option) => option.value === "preparing"));
   assert.ok(customerHistory.options.some((option) => option.value === "no"));
