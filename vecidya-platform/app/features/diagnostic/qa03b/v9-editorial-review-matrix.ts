@@ -240,6 +240,22 @@ export function listHighPriorityEditorialQuestionsV9(matrix: EditorialMatrixResu
     }));
 }
 
+/** Vista para revisión humana: conserva la pregunta y el texto de cada opción señalada. */
+export function buildHighPriorityEditorialReportV9(matrix: EditorialMatrixResultV9): readonly {
+  questionId: string;
+  prompt: string;
+  options: readonly { value: string; label: string; flags: EditorialAnswerMatrixV9["reviewFlags"] }[];
+}[] {
+  const high = new Set(buildEditorialReviewQueueV9(matrix)
+    .filter((item) => item.priority === "high")
+    .map((item) => JSON.stringify([item.questionId, item.optionValue])));
+  return matrix.rows.flatMap((row) => {
+    const options = row.options.filter((option) => high.has(JSON.stringify([row.id, option.value])))
+      .map((option) => ({ value: option.value, label: option.label, flags: option.reviewFlags }));
+    return options.length ? [{ questionId: row.id, prompt: row.prompt, options }] : [];
+  });
+}
+
 export function buildCandidateEditorialMatrixV9(): EditorialMatrixResultV9 {
   return buildEditorialMatrixV9(QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
 }
