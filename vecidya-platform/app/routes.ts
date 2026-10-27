@@ -82,6 +82,7 @@ export default [
   route("reset-password", "routes/reset-password.tsx"),
   route("verify-email", "routes/verify-email.tsx"),
   route("app", "routes/app.tsx"),
+  route("app/diagnosticos", "routes/app-diagnostics.tsx"),
   route("app/account", "routes/account.tsx"),
   route("app/organization", "routes/organization.tsx"),
   route("app/training", "routes/organization-training.tsx"),
