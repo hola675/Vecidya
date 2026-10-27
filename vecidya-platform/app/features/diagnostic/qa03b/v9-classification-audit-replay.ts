@@ -18,7 +18,7 @@ export function isDiagnosticClassificationStateV9(value: unknown): value is Diag
       (value.historicalInteractionCount as number) < 0) return false;
   if (!Object.values(value.answers).every((answer) =>
     typeof answer === "string" || (Array.isArray(answer) && answer.every((v) => typeof v === "string")))) return false;
-  if (value.historicalInteractionCount < value.events.length) return false;
+  if ((value.historicalInteractionCount as number) < value.events.length) return false;
   const events = value.events as unknown[];
   if (!events.every((event) => isObject(event) &&
     event.kind === QA03B_V9_CLASSIFICATION_INTERACTION_ID &&
