@@ -1,6 +1,10 @@
 # Estructura del código
 
-**APP-MINI-02B (candidato local):** `app/routes/business-profile.tsx` mantiene el formulario de perfil sin campo URL de logo; `app/routes/miniweb-editor.tsx` administra el logo en Archivos e identidad. `app/routes/public-business-profile.tsx`, `app/components/miniweb/miniweb-renderer.tsx` y `db/queries/business-profile.server.ts` resuelven medios desde el snapshot publicado para cabecera, identidad y tarjeta Vecindario. Sin rutas nuevas ni cambios a guardas.
+**APP-MINI-02B (integrado en 0.8.3):** `app/routes/business-profile.tsx` mantiene el formulario de perfil sin campo URL de logo; `app/routes/miniweb-editor.tsx` administra el logo en Archivos e identidad. `app/routes/public-business-profile.tsx`, `app/components/miniweb/miniweb-renderer.tsx` y `db/queries/business-profile.server.ts` resuelven medios desde el snapshot publicado para cabecera, identidad y tarjeta Vecindario. Sin rutas nuevas ni cambios a guardas.
+
+**APP-MINI-02C (candidato 0.8.4):** `DefaultMiniWebTemplate` presenta las secciones en flujo vertical uniforme, en el orden persistido; la cabecera muestra la portada como imagen dentro del marco y el logo por encima, sin repetir el icono junto al título. La vista previa comparte la plantilla pública y los controles ↑/↓ de Secciones.
+
+**APP-MINI-02D (ajuste local del editor):** `miniweb-editor.tsx` presenta errores y confirmaciones antes del título de página; la barra sticky mantiene visible el último aviso y los enlaces públicos navegan en la pestaña actual. `ClientAreaShell` asigna `app-shell--miniweb` para compactar el espacio vertical del sidebar en escritorio y mantener ancho de drawer móvil fluido; la regla queda aislada de las demás rutas. Cada paso abre un diálogo contextual; Contenido muestra los módulos activos y mantiene accesos contextuales a sus dependencias. La vista de entrada resume la publicación y ofrece acceso directo a Diseño y Vista previa. La ruta Mi negocio compacta grupos de formulario y horarios con reglas scoped, conservando el guardado conjunto del perfil y el guardado independiente de horarios. No modifica rutas, loaders, guardas ni persistencia.
 
 ## UX-COHERENCE-03 — componentes compartidos (2026-10-19)
 

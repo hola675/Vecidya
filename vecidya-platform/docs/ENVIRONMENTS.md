@@ -1,5 +1,9 @@
 # Entornos y release de producción 0.8.3 (2026-10-26)
 
+## Candidato de aplicación 0.8.4 — local (2026-10-26)
+
+La rama `fix/miniweb-cover-sections` presenta una composición vertical que respeta el orden de secciones, usa la portada como imagen dentro del marco de identidad, elimina el icono duplicado bajo el nombre y mejora el peso/espaciado de encabezados. Versión `package.json`: `0.8.4`. MiniWeb E2E 138/138, typecheck, build y diff-check PASS localmente. Sin deploy, migraciones, uso de D1/R2 remotas ni solicitudes HTTP a producción. La última publicación confirmada continúa en 0.8.3, con Version ID `a9ee55c5-f346-49a2-8f74-b8c6e45db36a`.
+
 ## Release de producción 0.8.3 — publicado (2026-10-26)
 
 PR #153 integrado en `main@ede3f187fc06e6b89f84c9f37830db4bcdfd415d`; `package.json` establece `0.8.3`. Wrangler 4.152.0 desplegó el Worker `vecidya-platform` en la cuenta Soporte `8a13de3ea584f9055f78565b9860c125`.

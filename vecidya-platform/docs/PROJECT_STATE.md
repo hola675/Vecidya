@@ -4,9 +4,9 @@
 
 PR #173 integró la búsqueda por nombre/slug/titular, filtro de perfil, orden y paginación de Organizaciones; Worker/D1/Chrome E2E, typecheck, build, `node --check` y diff-check pasaron antes de integrar. Servicios e Integraciones conservan gaps de escala. Sin cambio de esquema ni deploy.
 
-## Corte histórico — producción 0.8.2 (2026-10-26)
+## Corte vigente — producción 0.8.3 y candidato 0.8.4 local (2026-10-26)
 
-`origin/main@c03c3bab7610a327db9926cd7aee0275a3dbb8a7` integra PR #139. Producción `0.8.2`, Worker Version ID `d9042b45-7c24-4da6-991c-38533c1f2f95` (deployment `805dbb77-e90a-4dc8-a40f-efa1deb3111a`, 2026-10-26T17:26:21Z). D1 prod registra migración `0029`; el índice único parcial existe. Aprende ofrece 48 guías, 9 itinerarios y 6 temas. GET anónimo posterior al deploy cargó `/` y `/aprende`; ambas páginas muestran el footer `0.8.2`. Typecheck/build, E2E local y checks CI PASS. Staging no se modificó.
+`origin/main@b8b255a4` integra PR #153/#154 y #155, con checkpoint de paginación Admin local documentado arriba. Producción `0.8.3`, Worker Version ID `a9ee55c5-f346-49a2-8f74-b8c6e45db36a`; GET anónimo fechado confirmó el footer y versión. Esta rama unifica el candidato de portada/secciones y refina el editor MiniWeb: pasos compactos, panel acotado, lateral con espacio vertical compacto y drawer móvil de ancho fluido, avisos persistentes y navegación pública en la misma pestaña. Inspección visual autenticada manual con D1 local temporal y capturas escritorio/móvil; sin automatizadas por petición del usuario. Typecheck/build/diff-check PASS. No está integrada ni publicada. Evidencia y límites: `TESTING.md`; estado remoto sin cambios: `ENVIRONMENTS.md`.
 
 ## Corte histórico — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
 

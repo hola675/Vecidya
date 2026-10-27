@@ -1,5 +1,8 @@
 # Pruebas
 
+## APP-MINI-02D — refinamiento de configuración (2026-10-27)
+
+No se ejecutaron pruebas automatizadas por indicación del usuario. La inspección visual autenticada con D1 local temporal y capturas 1366×768/390×844 revisó el sidebar y el flujo del editor. La inspección interactiva revisó Diseño, Secciones, Contenido, la transición a Vista previa y los ejemplos de tarjetas aportados; se ajustaron ancho del diálogo, espaciado y tipografía. Las pestañas visibles dependen de los módulos activos. La cuenta sintética no contiene un perfil con datos para generar una MiniWeb previa real. No se ejecutaron pruebas automatizadas, no se probaron datos remotos ni se hizo deploy.
 ## ADMIN-ORG-PAGINATION-001 — búsqueda, filtros, orden y páginas (PR #173 integrado)
 
 `/app/internal/organizations` carga el recuento y las filas filtradas en servidor; query string conserva búsqueda, estado de perfil, orden y página, con 50 organizaciones por página y orden estable por nombre/fecha + ID. El E2E agrega 55 organizaciones sintéticas, comprueba 50 + 5, orden ascendente/descendente, filtros `published`/`none` y enlaces que preservan el criterio. **RAN 2026-10-27:** `platform-service-administration-check.mjs` PASS con Worker Wrangler, D1 efímera y Chrome local; `pnpm run typecheck`, `pnpm run build`, `node --check` y `git diff --check` PASS. Sin cambio de esquema, migración ni acceso remoto.
@@ -11,6 +14,10 @@
 ## APP-MINI-02B — horarios, identidad y retículas (2026-10-26)
 
 `business-profile-experience-check.mjs` protege valores de horario tras rechazo, navegación por foco, guardado y ausencia del campo URL heredado del logo. Ejecución solo contra Worker Cloudflare local y D1 local: **PASS**. `miniweb-core-check.mjs`: **134/134 PASS**; protege logo/portada publicados en el marco, editor y su cabecera, Vecindario y layout responsive sin overflow, y ausencia de exposición prematura de medios. Fixtures limpiadas. Typecheck, build y `git diff --check`: PASS. Sin pruebas contra producción.
+
+### Seguimiento local 0.8.4 — portada y orden de módulos
+
+`pnpm exec node tests/e2e/miniweb-core-check.mjs`: **138/138 PASS** (2026-10-26), en Worker Vite local `127.0.0.1:5174` con secreto efímero de desarrollo y D1 local migrada `0000–0029`. Fixtures limpias. Cubre que la portada cargue en el marco de identidad detrás del logo, no haya icono redundante bajo el nombre, el DOM de módulos mantenga el orden persistido y el espaciado vertical no exceda 32 px en 1366/768/390/360. No hubo overflow en perfil 1366/768/390/360 ni en Vecindario 1366/768/390/320. Capturas `.playwright-mcp/app-mini-02a-public-{1366,390}.png` revisadas. Typecheck, build y `git diff --check`: **PASS**. Las imágenes E2E son fixtures sintéticas blancas de 1×1 px; estas capturas validan geometría y estados, no la apariencia de fotografía real. Sin Worker/DB remotos, pruebas de producción ni deploy.
 
 ## Vecidya Admin — VECIDYA-ADMIN-FUNCTIONAL-AUDIT (2026-10-25)
 
@@ -2198,3 +2205,4 @@ Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.m
 8. Pruebas unitarias de módulos puros (`db/business-hours-rules.ts`, el resto de `db/business-profile-rules.ts` —la generación de slug ya está cubierta por `unit-bp`—, validaciones, autorización).
 9. `test:e2e` ya existe; queda pendiente una decisión sobre CI y sustituir `agent-browser` por Playwright.
 10. Extender `rp001a` únicamente cuando se resuelvan nombre, identidad y marca; cualquier publicación remota requiere un bloque separado y autorización explícita.
+
