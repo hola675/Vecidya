@@ -68,3 +68,7 @@ Se detectó que el job `diagnostic-v9-focused` no ejecutaba `tests/unit/diagnost
 - El workflow focalizado incluye el archivo de pruebas de clasificacion (37f792e).
 
 **Pendiente:** ejecutar y revisar CI del HEAD; completar auditoria editorial P1 y recorridos P2. No declarar PASS, merge ni despliegue sin evidencia.
+
+### P2 — prueba de valor de especialidad (2026-10-27)
+
+Se agrego una regresion que comprueba que el conteo visible no descuente una interaccion cuando el ultimo evento contiene un valor de especialidad inexistente, aun si el selector corresponde al sector (commit `9bc97ec`). Queda pendiente comprobar la ejecucion del workflow; P2 no esta certificado.
