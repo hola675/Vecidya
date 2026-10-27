@@ -6,7 +6,6 @@ import {
 } from "../features/diagnostic/qa03b/v9-identity-repository";
 import {
   buildV9AnonymousIdentityCookie,
-  clearV9AnonymousIdentityCookie,
   readV9AnonymousIdentityCookie,
 } from "../features/diagnostic/qa03b/anonymous-identity-cookie.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
@@ -69,7 +68,6 @@ export async function action({ context, request }: Route.ActionArgs) {
     });
     const responseHeaders = new Headers(headers);
     responseHeaders.append("Set-Cookie", buildV9AnonymousIdentityCookie(request, identity));
-    if (existing) responseHeaders.append("Set-Cookie", clearV9AnonymousIdentityCookie(request));
     return Response.json({ ok: true, authenticated: false, reused: false }, { headers: responseHeaders });
   } catch {
     return failure(503, "No pudimos preparar la identidad anónima.");
