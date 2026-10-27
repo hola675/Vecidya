@@ -86,3 +86,23 @@ test("la categoría V9 se pregunta sobre negocio o emprendimiento, nunca sobre u
   assert.equal(q.prompt, "¿A qué se dedica principalmente tu negocio o emprendimiento?");
   assert.doesNotMatch(q.prompt, /tu actividad/i);
 });
+
+test("P1: primeras cuatro preguntas de entrada/propósito usan el léxico acordado sin cambiar contratos", () => {
+  const expected: Record<string, string> = {
+    q2_entity: "¿Qué opción describe mejor tu negocio, emprendimiento u organización?",
+    q2_operational_status: "¿En qué situación está hoy tu negocio, emprendimiento u organización?",
+    q2_goal: "¿Qué te gustaría mejorar primero en tu negocio, emprendimiento u organización?",
+    q2_friction: "¿Qué dificultad afecta más a tu negocio, emprendimiento u organización en este momento?",
+  };
+  for (const [id, prompt] of Object.entries(expected)) {
+    const candidate = bank.find((item) => item.id === id);
+    const original = publicBank.find((item) => item.id === id);
+    assert.ok(candidate && original, id);
+    assert.equal(candidate.prompt, prompt, id);
+    assert.deepEqual(candidate.options, original.options, id);
+    assert.equal(candidate.version, original.version, id);
+    assert.deepEqual(candidate.appliesWhen, original.appliesWhen, id);
+    assert.deepEqual(candidate.materialAppliesWhen, original.materialAppliesWhen, id);
+    assert.deepEqual(candidate.evidenceV3, original.evidenceV3, id);
+  }
+});

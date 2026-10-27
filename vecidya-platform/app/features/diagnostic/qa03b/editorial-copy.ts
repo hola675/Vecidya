@@ -15,7 +15,7 @@ type EditorialCopy = {
 
 export const QA03B_EDITORIAL_COPY = {
   "q2_entity": {
-    "prompt": "¿Qué describe mejor el negocio, trabajo profesional, organización o proyecto que quieres evaluar?",
+    "prompt": "¿Qué opción describe mejor tu negocio, emprendimiento u organización?",
     "hint": "Elige la opción que mejor represente lo que haces o estás preparando, aunque todavía no hayas comenzado."
   },
   "q2_other_staff": {
@@ -27,7 +27,7 @@ export const QA03B_EDITORIAL_COPY = {
     "hint": "Cuenta experiencias anteriores, incluso si ahora estás en pausa. Los seguidores o interesados no cuentan por sí solos."
   },
   "q2_operational_status": {
-    "prompt": "¿En qué situación se encuentra actualmente tu negocio, trabajo profesional, organización o proyecto?",
+    "prompt": "¿En qué situación está hoy tu negocio, emprendimiento u organización?",
     "hint": "Indica si ya está disponible, todavía lo preparas o está en pausa, aunque hayas atendido personas antes."
   },
   "q2_sector": {
@@ -69,11 +69,11 @@ export const QA03B_EDITORIAL_COPY = {
     }
   },
   "q2_goal": {
-    "prompt": "¿Qué te gustaría mejorar primero en tu negocio, trabajo, organización o proyecto?",
+    "prompt": "¿Qué te gustaría mejorar primero en tu negocio, emprendimiento u organización?",
     "hint": "Elige tu prioridad principal, aunque también haya otras áreas que necesiten mejoras."
   },
   "q2_friction": {
-    "prompt": "¿Cuál de estas dificultades afecta más a tu negocio, trabajo u organización actualmente?",
+    "prompt": "¿Qué dificultad afecta más a tu negocio, emprendimiento u organización en este momento?",
     "hint": "Elige la situación que más te preocupa o limita, aunque también tengas otras dificultades.",
     "variantPrompts": {
       "0": "¿Cuál de estas dificultades afecta más a tu organización actualmente?"
