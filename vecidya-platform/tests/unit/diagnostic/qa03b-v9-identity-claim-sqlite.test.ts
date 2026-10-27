@@ -108,3 +108,48 @@ test("V9 claim guard migration rejects a second pending claim for one anonymous 
     sqlite.close();
   }
 });
+
+test("V9 identity claim integrity rejects malformed and reassigned claim markers", () => {
+  const sqlite = new DatabaseSync(":memory:");
+  try {
+    sqlite.exec("PRAGMA foreign_keys=ON");
+    for (const migration of migrations) sqlite.exec(migration);
+    sqlite.prepare("INSERT INTO diagnostic_v9_identities (identity_id,identity_type,user_id,created_at) VALUES (?,'user',?,?)")
+      .run("user-1-identity", "user-1", "2026-10-27");
+    sqlite.prepare("INSERT INTO diagnostic_v9_identities (identity_id,identity_type,user_id,created_at) VALUES (?,'user',?,?)")
+      .run("user-2-identity", "user-2", "2026-10-27");
+
+    const insert = sqlite.prepare("INSERT INTO diagnostic_v9_identities (identity_id,identity_type,credential_hash,created_at,claimed_by_user_id,claimed_at) VALUES (?,'anonymous',?,?,?,?)");
+    assert.throws(() => insert.run("anon-no-date", "a".repeat(64), "2026-10-27", "user-1", null), /v9_identity_claim_state_invalid/);
+    assert.throws(() => insert.run("anon-no-user", "b".repeat(64), "2026-10-27", "missing-user", "2026-10-27"), /v9_identity_claim_state_invalid/);
+
+    insert.run("anon-claimed", "c".repeat(64), "2026-10-27", "user-1", "2026-10-28");
+    assert.throws(() => sqlite.prepare("UPDATE diagnostic_v9_identities SET claimed_by_user_id=?,claimed_at=? WHERE identity_id=?")
+      .run("user-2", "2026-10-29", "anon-claimed"), /v9_identity_claim_immutable/);
+    assert.throws(() => sqlite.prepare("UPDATE diagnostic_v9_identities SET claimed_by_user_id=NULL,claimed_at=NULL WHERE identity_id=?")
+      .run("anon-claimed"), /v9_identity_claim_immutable/);
+    assert.equal((sqlite.prepare("SELECT claimed_by_user_id FROM diagnostic_v9_identities WHERE identity_id='anon-claimed'").get() as {claimed_by_user_id:string}).claimed_by_user_id, "user-1");
+  } finally {
+    sqlite.close();
+  }
+});
+
+test("V9 claim completion guard requires a completion timestamp only for completed claims", () => {
+  const sqlite = new DatabaseSync(":memory:");
+  try {
+    sqlite.exec("PRAGMA foreign_keys=ON");
+    for (const migration of migrations) sqlite.exec(migration);
+    sqlite.prepare("INSERT INTO diagnostic_v9_identities (identity_id,identity_type,user_id,created_at) VALUES (?,'user',?,?)")
+      .run("user-identity", "user-1", "2026-10-27");
+    sqlite.prepare("INSERT INTO diagnostic_v9_identities (identity_id,identity_type,credential_hash,created_at) VALUES (?,'anonymous',?,?)")
+      .run("anon-identity", "d".repeat(64), "2026-10-27");
+    const insert = sqlite.prepare("INSERT INTO diagnostic_v9_identity_claims (claim_id,identity_id,target_user_id,proof_type,status,created_at,completed_at) VALUES (?,?,?,'anonymous_credential',?,?,?)");
+    assert.throws(() => insert.run("claim-invalid", "anon-identity", "user-1", "completed", "2026-10-27", null), /v9_claim_completion_timestamp_invalid/);
+    insert.run("claim-valid", "anon-identity", "user-1", "pending", "2026-10-27", null);
+    assert.throws(() => sqlite.prepare("UPDATE diagnostic_v9_identity_claims SET status='completed',completed_at=NULL WHERE claim_id='claim-valid'").run(), /v9_claim_completion_timestamp_invalid/);
+    sqlite.prepare("UPDATE diagnostic_v9_identity_claims SET status='completed',completed_at='2026-10-28' WHERE claim_id='claim-valid'").run();
+    assert.equal((sqlite.prepare("SELECT status FROM diagnostic_v9_identity_claims WHERE claim_id='claim-valid'").get() as {status:string}).status, "completed");
+  } finally {
+    sqlite.close();
+  }
+});
