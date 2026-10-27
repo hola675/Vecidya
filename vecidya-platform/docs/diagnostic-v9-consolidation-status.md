@@ -72,3 +72,7 @@ Se detectó que el job `diagnostic-v9-focused` no ejecutaba `tests/unit/diagnost
 ### P2 — prueba de valor de especialidad (2026-10-27)
 
 Se agrego una regresion que comprueba que el conteo visible no descuente una interaccion cuando el ultimo evento contiene un valor de especialidad inexistente, aun si el selector corresponde al sector (commit `9bc97ec`). Queda pendiente comprobar la ejecucion del workflow; P2 no esta certificado.
+
+### Seguimiento P2 — replay y contrato de clasificacion
+
+Se hizo explicita la presencia de las dos respuestas sector/especialidad para el conteo conjunto (`c27df15`) y se agrego una prueba de replay que rechaza un nicho perteneciente a otro sector (`98c8e49`). Estas modificaciones no sustituyen la verificacion de CI ni completan la autonomia del motor V9. Mantener P2 abierto.
