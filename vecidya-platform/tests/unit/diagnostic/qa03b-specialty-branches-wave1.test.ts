@@ -319,3 +319,23 @@ test("specialty replacement never suppresses an otherwise eligible generic quest
     }
   }
 });
+
+test("specialist gates preserve generic evidence across ineligible dental contexts", () => {
+  const scenarios: AnswersV2[] = [
+    { ...dentistBase, q2_niche_health_wellness: "dentist", q2_goal: "explain", q2_friction: "conversion" },
+    { ...dentistBase, q2_niche_health_wellness: "dentist", q2_delivery: ["remote_service"] },
+    { ...dentistBase, q2_niche_health_wellness: "dentist", q2_operational_status: "preparing" },
+    { ...dentistBase, q2_niche_health_wellness: "dentist", q2_has_customers: "no" },
+  ];
+  for (const answers of scenarios) {
+    const before = resolveEligibleQuestionsV2(answers, bank74);
+    const after = resolveEligibleQuestionsV2(answers, bank77);
+    if (before.eligibleQuestionIds.includes("q2_appointments_rebooking")) {
+      assert.ok(
+        after.eligibleQuestionIds.includes("q2_appointments_rebooking") ||
+          after.eligibleQuestionIds.includes("q2_dental_care_continuation"),
+        "missing rebooking coverage for " + JSON.stringify(answers),
+      );
+    }
+  }
+});
