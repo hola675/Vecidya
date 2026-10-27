@@ -74,3 +74,55 @@ export async function readDiagnosticEventsV9(
   }>();
   return result.results;
 }
+
+/** Requires migration 0030: triggers atomically check and advance last_seq. */
+export async function appendDiagnosticEventV9(
+  db: V9AuditDb,
+  input: {
+    workspaceId: string;
+    runId: string;
+    eventId: string;
+    expectedSeq: number;
+    kind: string;
+    payload: unknown;
+    occurredAt: string;
+    actorType: "client" | "system" | "operator";
+  },
+): Promise<{ status: "created" | "duplicate" | "conflict"; seq?: number }> {
+  if (!input.workspaceId || !input.runId || !input.eventId || !input.kind ||
+      !Number.isSafeInteger(input.expectedSeq) || input.expectedSeq < 0 ||
+      input.expectedSeq >= Number.MAX_SAFE_INTEGER) {
+    throw new Error("v9_invalid_event");
+  }
+  const payload = JSON.stringify(input.payload);
+  if (payload === undefined || payload.length > 16384) throw new Error("v9_invalid_payload");
+  const existing = await db.prepare(
+    "SELECT run_id,seq,kind,payload_json FROM diagnostic_v9_events WHERE workspace_id=? AND event_id=?",
+  ).bind(input.workspaceId, input.eventId).first<{
+    run_id: string; seq: number; kind: string; payload_json: string;
+  }>();
+  const match = (row: typeof existing) =>
+    row?.run_id === input.runId && row.seq === input.expectedSeq + 1 &&
+    row.kind === input.kind && row.payload_json === payload;
+  if (existing) return match(existing) ? { status: "duplicate", seq: existing.seq } : { status: "conflict" };
+  try {
+    const result = await db.prepare(
+      "INSERT INTO diagnostic_v9_events (workspace_id,run_id,seq,event_id,kind,payload_json,occurred_at,schema_version,actor_type) VALUES (?,?,?,?,?,?,?,1,?)",
+    ).bind(input.workspaceId, input.runId, input.expectedSeq + 1, input.eventId,
+      input.kind, payload, input.occurredAt, input.actorType).run();
+    if (!result.success) throw new Error("v9_write_failed");
+    return { status: "created", seq: input.expectedSeq + 1 };
+  } catch (error) {
+    const retry = await db.prepare(
+      "SELECT run_id,seq,kind,payload_json FROM diagnostic_v9_events WHERE workspace_id=? AND event_id=?",
+    ).bind(input.workspaceId, input.eventId).first<{
+      run_id: string; seq: number; kind: string; payload_json: string;
+    }>();
+    if (match(retry)) return { status: "duplicate", seq: retry!.seq };
+    if (retry || (error instanceof Error &&
+      /v9_sequence_conflict|UNIQUE constraint failed/.test(error.message))) {
+      return { status: "conflict" };
+    }
+    throw error;
+  }
+}
