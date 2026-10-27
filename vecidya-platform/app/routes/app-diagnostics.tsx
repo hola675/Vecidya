@@ -54,6 +54,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 
 export async function action({ context, request }: Route.ActionArgs) {
   if (request.method !== "POST") throw new Response("Método no permitido", { status: 405 });
+  if (request.headers.get("origin") !== new URL(request.url).origin) throw new Response("Origen no permitido", { status: 403 });
   const { env } = context.get(cloudflareContext);
   const session = await requireSession(env, request);
   const form = await request.formData();
