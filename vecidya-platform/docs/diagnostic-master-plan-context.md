@@ -57,3 +57,26 @@ Inspección de código sobre esta rama; no certifica runtime ni producción.
 6. **Certificación funcional**: escenarios de negocios y recorridos end-to-end sobre V9; sustitución controlada del motor anterior.
 
 **No bloquear** el trabajo de banco/motor por P1e, PR #172 o replay de sesiones antiguas. No fusionar ni desplegar antes de certificar. Mantener CI focalizada sobre los archivos modificados.
+
+## Plan de ejecución actualizado — 2026-10-27
+
+**Estado comprobado:** PR maestro #162, rama `feat/diagnostic-v9-lex-graph-p1b` hacia `main`; 50 commits ahead / 0 behind al verificar, antes de los commits de esta actualización. V8 productivo intacto. CI actual sin resultado verificable.
+
+### Secuencia obligatoria y definición de terminado
+
+| Orden | Entregable | Criterio de cierre |
+|---|---|---|
+| 1 — P1 clasificación | Fichas completas de entidad, clientes/beneficiarios, estado, sector, objetivo y nicho | Cada opción y variante revisada, decisión KEEP/REWRITE/REMOVE/ADD/DEFER registrada; casos sin ventas y en pausa cubiertos |
+| 2 — P2 sustituciones | Rutas dental, restaurante/café/food truck y agencia | Elegibilidad genérica/especializada sin pérdidas ni duplicados; pruebas focalizadas ejecutadas y verificadas |
+| 3 — P1 banco | 77 preguntas / 387 respuestas / 15 variantes como inventario inicial | Recuento actualizado y auditoría editorial por opción; resolver `not_applicable` frente a `not_published`; sin aprobaciones inferidas |
+| 4 — P3/P4 optimización | Simplificación y huecos justificados | Evidencia conservada; no añadir preguntas sin necesidad; recorridos dentro de 24 interacciones donde aplique |
+| 5 — P5 autonomía | Contrato, banco, motor, sesión, evaluación, recomendaciones e informe V9 | Sin dependencias QBV2 en el núcleo; pruebas end-to-end, seguridad, comprensión y aceptación verificables |
+| 6 — Corte controlado | Reemplazo del flujo anterior | Solo tras certificación y autorización; rollback previsto, V8 preservado hasta entonces |
+
+### Cambios confirmados desde el corte anterior
+- Corrección de exclusión genérica para preguntas especializadas gastronómicas, B2B y odontológicas en `specialty-branches-wave1.ts`.
+- Nuevos tests de cobertura contextual y de opciones/semántica básica de clasificación, todavía sin CI confirmada.
+- Primer registro de huecos editoriales en `diagnostic-v9-p1-lote-01-clasificacion-y-huecos.md`.
+- La propuesta gastronómica v2 permanece aislada; no se exige migración de sesiones históricas como requisito del motor V9.
+
+**Política:** un solo PR de trabajo, commits pequeños, pruebas focalizadas, evidencia antes de declarar PASS, no merge ni despliegue prematuro. Este plan no constituye certificación.
