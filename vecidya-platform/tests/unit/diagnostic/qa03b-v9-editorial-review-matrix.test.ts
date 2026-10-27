@@ -65,3 +65,32 @@ test("P1b: la matriz puede auditar banco sintético sin reclamar todas las pregu
   assert.equal(matrix.summary.questions, 1);
   assert.equal(matrix.summary.options, original.options.length);
 });
+
+test("P1 classification: entity, activity and customer history preserve explicit neutral answers", () => {
+  const cases = [
+    { id: "q2_entity", expected: ["individual", "business", "organization", "project", "unknown"] },
+    { id: "q2_operational_status", expected: ["preparing", "operating", "paused", "unknown"] },
+    { id: "q2_has_customers", expected: ["yes", "no", "unknown"] },
+  ] as const;
+  for (const { id, expected } of cases) {
+    const question = bank.find((q) => q.id === id);
+    assert.ok(question, id);
+    assert.equal(question.type, "single", id);
+    assert.deepEqual(question.options.map((option) => option.value), [...expected], id);
+    assert.equal(question.options.find((option) => option.value === "unknown")?.kind, "unknown", id);
+    assert.ok(question.options.every((option) => option.label.trim().length > 0), id);
+    assert.equal(new Set(question.options.map((option) => option.value)).size, question.options.length, id);
+  }
+});
+
+test("P1 classification: real customer history does not infer activity status", () => {
+  const customerHistory = bank.find((q) => q.id === "q2_has_customers");
+  const status = bank.find((q) => q.id === "q2_operational_status");
+  assert.ok(customerHistory);
+  assert.ok(status);
+  assert.match(customerHistory.hint ?? "", /pausa/i);
+  assert.match(status.hint ?? "", /independiente/i);
+  assert.ok(status.options.some((option) => option.value === "paused"));
+  assert.ok(status.options.some((option) => option.value === "preparing"));
+  assert.ok(customerHistory.options.some((option) => option.value === "no"));
+});
