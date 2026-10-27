@@ -138,6 +138,20 @@ export function countVisibleInteractionsV9(
   return Math.max(0, count - 1);
 }
 
+/**
+ * V9 state adapter: a single entrypoint for classification, history and planning.
+ * The underlying QBV2 resolver is retained until parity tests permit its replacement.
+ */
+export function planDiagnosticClassificationStateV9(
+  state: DiagnosticClassificationStateV9,
+): ReturnType<typeof buildCandidateQuestionPlanV9Prototype> {
+  return buildCandidateQuestionPlanV9Prototype(
+    state.answers,
+    state.events,
+    state.historicalInteractionCount,
+  );
+}
+
 export function buildCandidateQuestionPlanV9Prototype(
   answers: AnswersV2,
   classificationEvents: readonly ClassificationInteractionEventV9[],
