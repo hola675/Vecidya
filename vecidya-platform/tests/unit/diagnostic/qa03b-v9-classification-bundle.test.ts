@@ -415,3 +415,35 @@ test("P2: cambiar de odontología a restaurante elimina la evidencia anterior y 
   const plan = buildCandidateQuestionPlanV9Prototype(switched.answers, [dental.event, switched.event]);
   assert.ok(plan.plan.routeLength <= 24);
 });
+
+test("P2: cambiar de agencia a comercio electrónico descarta el alcance B2B anterior", () => {
+  const agency = applyClassificationInteractionV9({
+    ...restaurantContext,
+    q2_monetization: "services",
+    q2_goal: "explain",
+    q2_customer_buyer: "b2b",
+  }, { sector: "b2b_services", niche: "marketing_agency" });
+  assert.equal(agency.ok, true);
+  if (!agency.ok) return;
+
+  const withEvidence: AnswersV2 = {
+    ...agency.answers,
+    q2_marketing_agency_scope_clarity: "clear",
+  };
+  const ecommerce = applyClassificationInteractionV9({
+    ...withEvidence,
+    q2_monetization: "goods",
+    q2_customer_buyer: "b2c",
+  }, { sector: "ecommerce" });
+  assert.equal(ecommerce.ok, true);
+  if (!ecommerce.ok) return;
+
+  assert.equal(ecommerce.answers.q2_sector, "ecommerce");
+  assert.equal(ecommerce.answers.q2_niche_b2b_services, undefined);
+  assert.equal(ecommerce.answers.q2_marketing_agency_scope_clarity, undefined);
+  const eligible = resolveEligibleQuestionsV2(ecommerce.answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
+  assert.ok(!eligible.eligibleQuestionIds.includes("q2_marketing_agency_scope_clarity"));
+  const plan = buildCandidateQuestionPlanV9Prototype(ecommerce.answers, [agency.event, ecommerce.event]);
+  assert.equal(plan.visibleInteractionCount, Object.keys(plan.activeAnswers).length);
+  assert.ok(plan.plan.routeLength <= 24);
+});
