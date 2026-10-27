@@ -1,5 +1,10 @@
 # Changelog
 
+## Checkpoint local — paginación de Auditoría (2026-10-26, sin publicar)
+
+- `/app/internal/audit` ahora filtra por texto y acción desde query string y pagina 50 eventos por vista con orden estable por fecha/ID. La búsqueda conserva la coincidencia por etiquetas traducidas y claves técnicas.
+- Worker/D1/Chrome local comprueba 55 resultados (50 + 5), filtros al cambiar página y búsquedas previas de Capacitación/MiniWeb. Typecheck, build, `node --check` y diff-check PASS. No cambia versión, esquema, D1 remota ni deploy.
+
 ## 0.8.3 — producción (2026-10-26)
 
 - Se preservan los valores de horarios tras un error de validación y se mantiene sincronizado el foco/indicador de navegación.
