@@ -72,8 +72,20 @@ export async function action({ context, request, params }: Route.ActionArgs) {
   if (request.headers.get("origin") !== new URL(request.url).origin) return failure(403, "Origen no permitido.");
   if (!/^application\/json(?:\s*;|$)/i.test(request.headers.get("content-type") ?? "")) return failure(415, "Formato no permitido.");
   const { env } = context.get(cloudflareContext);
-  const runtime = env as typeof env & { DIAGNOSTIC_V9_PUBLIC_ENABLED?: string };
-  if (runtime.DIAGNOSTIC_V9_PUBLIC_ENABLED !== "true") return failure(503, "El diagnóstico V9 aún no está habilitado para el público.");
+  const runtime = env as typeof env & {
+    DIAGNOSTIC_V9_PUBLIC_ENABLED?: string;
+    DIAGNOSTIC_V9_BANK_VERSION?: string;
+    DIAGNOSTIC_V9_ENGINE_VERSION?: string;
+    DIAGNOSTIC_V9_SCORING_VERSION?: string;
+    DIAGNOSTIC_V9_RECOMMENDATION_VERSION?: string;
+    DIAGNOSTIC_V9_CONSENT_VERSION?: string;
+  };
+  if (runtime.DIAGNOSTIC_V9_PUBLIC_ENABLED !== "true" ||
+      !runtime.DIAGNOSTIC_V9_BANK_VERSION || !runtime.DIAGNOSTIC_V9_ENGINE_VERSION ||
+      !runtime.DIAGNOSTIC_V9_SCORING_VERSION || !runtime.DIAGNOSTIC_V9_RECOMMENDATION_VERSION ||
+      !runtime.DIAGNOSTIC_V9_CONSENT_VERSION) {
+    return failure(503, "El diagnóstico V9 aún no está habilitado con versiones certificadas.");
+  }
   if (!env.DIAGNOSTIC_PUBLIC_RATE_LIMITER) return failure(503, "El servicio no está disponible temporalmente.");
   if (!await allowRateLimitedRequest(env.DIAGNOSTIC_PUBLIC_RATE_LIMITER, request, "diagnostic-v9-append-event")) {
     return failure(429, "Espera un momento antes de volver a intentarlo.");
@@ -94,7 +106,7 @@ export async function action({ context, request, params }: Route.ActionArgs) {
       (input.expectedSeq as number) < 0 || (input.expectedSeq as number) > 100000 ||
       typeof input.occurredAt !== "string") return failure(400, "El evento no cumple el contrato V9.");
   const occurredMs = Date.parse(input.occurredAt);
-  if (!Number.isFinite(occurredMs) || Math.abs(Date.now() - occurredMs) > 15 * 60 * 1000) {
+  if (!Number.isFinite(occurredMs) || occurredMs > Date.now() + 5 * 60 * 1000 || occurredMs < Date.now() - 30 * 24 * 60 * 60 * 1000) {
     return failure(400, "La fecha del evento está fuera del intervalo permitido.");
   }
   const normalized = normalizeEvent(input.kind, input.payload);
