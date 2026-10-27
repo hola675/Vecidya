@@ -115,3 +115,44 @@ export async function verifyAnonymousIdentityCredentialV9(
   for (let index = 0; index < actual.length; index++) difference |= actual[index]! ^ expected[index]!;
   return difference === 0;
 }
+
+/**
+ * Verifies possession and records a pending claim. This deliberately does not
+ * transfer ownership: finalization must run in a transactional D1 batch.
+ * targetUserId must come from the authenticated server session, never the body.
+ */
+export async function prepareAnonymousIdentityClaimV9(
+  db: V9IdentityDb,
+  input: {
+    claimId: string;
+    identityId: string;
+    recoveryCredential: string;
+    targetUserId: string;
+    createdAt: string;
+  },
+): Promise<"pending"> {
+  if (!input.claimId || !input.identityId || !input.targetUserId || !input.createdAt) {
+    throw new Error("v9_claim_invalid_input");
+  }
+  const identity = await db.prepare(
+    "SELECT identity_id,identity_type,credential_hash,claimed_by_user_id FROM diagnostic_v9_identities WHERE identity_id=?",
+  ).bind(input.identityId).first<{
+    identity_id: string; identity_type: string; credential_hash: string | null; claimed_by_user_id: string | null;
+  }>();
+  if (!identity || identity.identity_type !== "anonymous" || !identity.credential_hash) {
+    throw new Error("v9_claim_identity_not_claimable");
+  }
+  if (identity.claimed_by_user_id && identity.claimed_by_user_id !== input.targetUserId) {
+    throw new Error("v9_claim_already_claimed");
+  }
+  const valid = await verifyAnonymousIdentityCredentialV9(input.recoveryCredential, identity.credential_hash);
+  if (!valid) throw new Error("v9_claim_proof_invalid");
+  const target = await db.prepare(
+    "SELECT identity_id FROM diagnostic_v9_identities WHERE identity_type='user' AND user_id=?",
+  ).bind(input.targetUserId).first<{ identity_id: string }>();
+  if (!target) throw new Error("v9_claim_user_identity_missing");
+  await db.prepare(
+    "INSERT INTO diagnostic_v9_identity_claims (claim_id,identity_id,target_user_id,proof_type,status,created_at) VALUES (?,?,?,'anonymous_credential','pending',?)",
+  ).bind(input.claimId, input.identityId, input.targetUserId, input.createdAt).run();
+  return "pending";
+}
