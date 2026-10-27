@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.4 — candidato local, APP-MINI-02D (2026-10-27)
+
+- MiniWeb: los cinco pasos abren diálogos de edición, con resumen de publicación y orientación en la vista principal; las tarjetas, descripciones y campos usan menor densidad vertical y ancho de lectura controlado. En Contenido solo aparecen pestañas de módulos activos; los accesos contextuales desde Secciones siguen llevando al contenido correspondiente. «Mi negocio» también compacta tarjetas, campos y horarios, limita el ancho de lectura y conserva el formulario conjunto con guardado independiente de horarios. El sidebar de escritorio queda compacto y el drawer móvil mantiene ancho fluido.
+- Inspección visual manual con navegador in-app, D1 local temporal nueva y cuenta sintética `@vecidya.test`; escritorio 1366×768 y móvil 390×844. No se ejecutaron pruebas automatizadas por indicación del usuario. Typecheck, build y diff-check PASS.
+- Sin integración, publicación, petición a producción ni cambio de D1/R2 remota. La verificación de correo quedó limitada a la D1 temporal, sin Gmail.
 ## ADMIN-ORG-PAGINATION-001 — integrado (2026-10-27, sin publicar)
 
 - `/app/internal/organizations` mueve búsqueda y filtros de perfil al servidor, añade orden estable por nombre/fecha y paginación de 50 resultados. Búsqueda, filtro, orden y página se representan en query string; el E2E cubre 55 organizaciones sintéticas.
@@ -9,6 +14,14 @@
 
 - `/app/internal/audit` ahora filtra por texto y acción desde query string y pagina 50 eventos por vista con orden estable por fecha/ID. La búsqueda conserva la coincidencia por etiquetas traducidas y claves técnicas.
 - Worker/D1/Chrome local comprueba 55 resultados (50 + 5), filtros al cambiar página y búsquedas previas de Capacitación/MiniWeb. Typecheck, build, `node --check` y diff-check PASS. No cambia versión, esquema, D1 remota ni deploy.
+
+## 0.8.4 — candidato local (2026-10-26)
+
+- La portada se renderiza como imagen dentro del marco de identidad para que cargue con `object-fit: cover` también al imprimir; el logo permanece encima y desaparece el icono redundante junto al nombre.
+- Las secciones siguen el orden guardado en el editor y ocupan un flujo vertical uniforme, sin asignaciones CSS por tipo de sección que generen huecos. La cabecera de Secciones aclara que las flechas determinan el orden que verá el público; títulos y contenido quedan visualmente agrupados.
+- La configuración del editor usa pasos compactos, un panel con ancho controlado y una navegación lateral compacta solo en MiniWeb. En escritorio caben navegación y pie; en móvil el drawer mantiene ancho fluido. Los avisos quedan fijos bajo la barra superior y antes del título; los enlaces a la publicación conservan la misma pestaña.
+- MiniWeb E2E 138/138, typecheck, build y diff-check PASS en Worker/D1 locales; capturas 1366/390 revisadas. Las fixtures son imágenes blancas de 1×1 px, por lo que no certifican la calidad visual de fotos reales.
+- Candidato integrado para continuar el checkpoint en `feat/app-mini-02c-cover-sections`, basado en `origin/main@b8b255a4`; inspección visual manual autenticada del editor y sidebar con D1 local temporal. Sin E2E ni pruebas automatizadas en esta actualización. Sin PR, deploy ni HTTP a producción; no se tocaron datos remotos.
 
 ## 0.8.3 — producción (2026-10-26)
 
@@ -2582,3 +2595,4 @@ Reconciliación de trazabilidad del release ya publicado. No modifica producto: 
 - `DIAG-RUNTIME-001` implementó `/diagnostico` como autodiagnóstico anónimo y efímero; el estado vigente está reconciliado en la entrada `PUBLIC-WEB-CONTENT-001 Bloque A`.
 - `/privacidad`, `/sobre-nosotros`, `/que-debes-saber` y la navegación pública están implementadas.
 - `7B.2` invitaciones sigue bloqueada por configuración externa de correo y demostración de delivery real.
+

@@ -684,10 +684,11 @@ try {
         frameHeight: frame.clientHeight,
         coverWidth: coverRect?.width ?? 0,
         coverHeight: coverRect?.height ?? 0,
-        coverFit: cover ? getComputedStyle(cover).backgroundSize : "missing",
+        coverFit: cover ? getComputedStyle(cover).objectFit : "missing",
         coverStack: cover ? getComputedStyle(cover).zIndex : "missing",
         logoStack: logo ? getComputedStyle(logo).zIndex : "missing",
-        coverAccessible: cover?.getAttribute("role") === "img" && Boolean(cover.getAttribute("aria-label")),
+        coverAccessible: Boolean(cover?.getAttribute("alt")),
+        coverLoaded: cover instanceof HTMLImageElement && cover.complete && cover.naturalWidth > 0,
         logoPresent: Boolean(logo),
       };
     });
@@ -695,8 +696,16 @@ try {
       `la portada publicada llena el marco de identidad a ${width}px (${JSON.stringify(coverLayout)})`);
     check(coverLayout.coverFit === "cover" && Number(coverLayout.coverStack) < Number(coverLayout.logoStack) && coverLayout.logoPresent,
       `el logo queda delante de la portada a ${width}px`);
-    check(coverLayout.coverAccessible && await page.locator(".public-business-profile__icon").isVisible(),
-      `portada accesible e icono del negocio visible a ${width}px`);
+    check(coverLayout.coverAccessible && coverLayout.coverLoaded && await page.locator(".public-business-profile__icon").count() === 0,
+      `portada cargada con texto alternativo y sin icono duplicado a ${width}px`);
+    const sectionLayout = await page.locator(".miniweb-template__sections > .miniweb-template__module").evaluateAll((modules) => modules.map((module) => {
+      const rect = module.getBoundingClientRect();
+      return { type: module.getAttribute("data-miniweb-module"), top: rect.top, bottom: rect.bottom };
+    }));
+    check(sectionLayout.every((module, index) => index === 0 || module.top >= sectionLayout[index - 1].bottom),
+      `las secciones publicadas respetan el orden seleccionado sin superponerse a ${width}px (${JSON.stringify(sectionLayout)})`);
+    check(sectionLayout.every((module, index) => index === 0 || module.top - sectionLayout[index - 1].bottom <= 32),
+      `las secciones mantienen una separación regular sin huecos grandes a ${width}px`);
     await page.screenshot({ fullPage: true, path: join(captureDirectory, `app-mini-02a-public-${width}.png`) });
   }
 } catch (error) {

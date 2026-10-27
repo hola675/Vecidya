@@ -1,0 +1,128 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as publicBank } from "../../../app/features/diagnostic/qa03b/bank.ts";
+import { QA03B_EDITORIAL_BASE_QUESTIONS_V9 as bank } from "../../../app/features/diagnostic/qa03b/specialty-candidate-bank.ts";
+import { applyQA03BEditorialCopy, QA03B_EDITORIAL_COPY } from "../../../app/features/diagnostic/qa03b/editorial-copy.ts";
+import { validateQuestionCopyV2 } from "../../../app/features/diagnostic/qa03b/copy.ts";
+
+test("V9 editorial base has exactly 45 uniquely identified questions covered by the editorial catalog", () => {
+  const ids = bank.map((q) => q.id);
+  assert.equal(ids.length, 45);
+  assert.equal(new Set(ids).size, 45);
+  assert.deepEqual([...Object.keys(QA03B_EDITORIAL_COPY)].sort(), [...ids].sort());
+
+  for (const question of bank) {
+    const copy = QA03B_EDITORIAL_COPY[question.id as keyof typeof QA03B_EDITORIAL_COPY];
+    assert.equal(question.prompt, copy.prompt, question.id);
+    assert.equal(question.hint, copy.hint, question.id);
+    assert.ok(copy.prompt.includes("¿") && copy.prompt.endsWith("?"), question.id);
+    assert.ok(copy.hint.trim().length > 0 && copy.hint.length <= 140, question.id);
+
+    const variants: Readonly<Record<number, string>> | undefined = "variantPrompts" in copy
+      ? copy.variantPrompts
+      : undefined;
+    for (const [indexText, prompt] of Object.entries(variants ?? {})) {
+      const index = Number(indexText);
+      assert.ok(index >= 0 && index < (question.variants?.length ?? 0), `${question.id}: variant index ${index}`);
+      assert.equal(question.variants?.[index]?.prompt, prompt);
+    }
+  }
+});
+
+test("editorial application cannot mutate IDs, answer options, routing, signals or evidence", () => {
+  for (const question of bank) {
+    const original = {
+      ...question,
+      prompt: "__old_prompt__",
+      hint: "__old_hint__",
+      ...(question.variants ? {
+        variants: question.variants.map((variant) => ({ ...variant, prompt: "__old_variant_prompt__" })),
+      } : {}),
+    };
+    const revised = applyQA03BEditorialCopy(original);
+    const { prompt: _beforePrompt, hint: _beforeHint, variants: beforeVariants, ...beforeContract } = original;
+    const { prompt: _afterPrompt, hint: _afterHint, variants: afterVariants, ...afterContract } = revised;
+    assert.deepEqual(afterContract, beforeContract, question.id);
+
+    assert.equal(revised.options, original.options, `${question.id}: options remain referentially identical`);
+    assert.equal(revised.appliesWhen, original.appliesWhen, `${question.id}: appliesWhen unchanged`);
+    assert.equal(revised.materialAppliesWhen, original.materialAppliesWhen, `${question.id}: materialAppliesWhen unchanged`);
+    assert.equal(revised.evidenceV3, original.evidenceV3, `${question.id}: evidence unchanged`);
+
+    assert.equal(afterVariants?.length, beforeVariants?.length, question.id);
+    for (let index = 0; index < (afterVariants?.length ?? 0); index++) {
+      const { prompt: _beforeVariantPrompt, ...beforeVariantContract } = beforeVariants![index]!;
+      const { prompt: _afterVariantPrompt, ...afterVariantContract } = afterVariants![index]!;
+      assert.deepEqual(afterVariantContract, beforeVariantContract, `${question.id}: variant ${index} preserved`);
+    }
+  }
+});
+
+test("V9 editorial copy passes the question copy contract", () => {
+  assert.deepEqual(validateQuestionCopyV2(bank), []);
+});
+
+
+test("V9 editorial text cannot replace the public V8 question bank", () => {
+  const byId = new Map(publicBank.map((question) => [question.id, question] as const));
+  assert.equal(byId.size, 45);
+  let revised = 0;
+  for (const candidate of bank) {
+    const original = byId.get(candidate.id);
+    assert.ok(original, candidate.id);
+    const { prompt: _oldPrompt, hint: _oldHint, variants: oldVariants, ...oldContract } = original;
+    const { prompt: _newPrompt, hint: _newHint, variants: newVariants, ...newContract } = candidate;
+    assert.deepEqual(newContract, oldContract, candidate.id);
+    assert.deepEqual(newVariants?.map(({ prompt: _p, ...rest }) => rest), oldVariants?.map(({ prompt: _p, ...rest }) => rest), candidate.id);
+    if (candidate.prompt !== original.prompt || candidate.hint !== original.hint) revised++;
+  }
+  assert.ok(revised > 0, "Editorial review should be present only in V9");
+});
+
+test("la categoría V9 se pregunta sobre negocio o emprendimiento, nunca sobre una actividad ambigua", () => {
+  const q = bank.find((candidate) => candidate.id === "q2_sector");
+  assert.ok(q);
+  assert.equal(q.prompt, "¿A qué se dedica principalmente tu negocio o emprendimiento?");
+  assert.doesNotMatch(q.prompt, /tu actividad/i);
+});
+
+test("P1: primeras cuatro preguntas de entrada/propósito usan el léxico acordado sin cambiar contratos", () => {
+  const expected: Record<string, string> = {
+    q2_entity: "¿Qué opción describe mejor tu negocio, emprendimiento u organización?",
+    q2_operational_status: "¿En qué situación está hoy tu negocio, emprendimiento u organización?",
+    q2_goal: "¿Qué te gustaría mejorar primero en tu negocio, emprendimiento u organización?",
+    q2_friction: "¿Qué dificultad afecta más a tu negocio, emprendimiento u organización en este momento?",
+  };
+  for (const [id, prompt] of Object.entries(expected)) {
+    const candidate = bank.find((item) => item.id === id);
+    const original = publicBank.find((item) => item.id === id);
+    assert.ok(candidate && original, id);
+    assert.equal(candidate.prompt, prompt, id);
+    assert.deepEqual(candidate.options, original.options, id);
+    assert.equal(candidate.version, original.version, id);
+    assert.deepEqual(candidate.appliesWhen, original.appliesWhen, id);
+    assert.deepEqual(candidate.materialAppliesWhen, original.materialAppliesWhen, id);
+    assert.deepEqual(candidate.evidenceV3, original.evidenceV3, id);
+  }
+});
+
+test("P1b: copy de frecuencia, ingresos, destinatario y reputación cambia solo textos, no contratos", () => {
+  const updates: Record<string, string> = {
+    q2_monetization: "¿Cuál es o será la principal fuente de ingresos o aportes de tu negocio, emprendimiento u organización?",
+    q2_regularity: "En los últimos meses, ¿con qué frecuencia recibiste pedidos, atendiste personas o realizaste ventas?",
+    q2_buyer_recipient_relation: "¿La persona u organización que paga o contrata también recibe o utiliza lo que ofreces?",
+    q2_reputation_flow: "¿Las personas que buscan lo que ofreces pueden encontrar reseñas, opiniones o testimonios públicos?",
+  };
+  for (const [id, prompt] of Object.entries(updates)) {
+    const previous = publicBank.find((item) => item.id === id);
+    const revised = bank.find((item) => item.id === id);
+    assert.ok(previous && revised, id);
+    assert.equal(revised.prompt, prompt);
+    const { prompt: _oldPrompt, hint: _oldHint, variants: oldVariants, ...oldContract } = previous;
+    const { prompt: _newPrompt, hint: _newHint, variants: newVariants, ...newContract } = revised;
+    assert.deepEqual(newContract, oldContract, id);
+    assert.deepEqual(newVariants?.map(({ prompt: _p, ...rest }) => rest),
+      oldVariants?.map(({ prompt: _p, ...rest }) => rest), id);
+  }
+});
