@@ -238,3 +238,80 @@ export async function loadLatestDiagnosticSnapshotV9(
     throw new Error("v9_snapshot_integrity_failure");
   }
 }
+
+
+export type V9FinalizationDb = V9AuditDb & {
+  batch(statements: unknown[]): Promise<Array<{ success: boolean; meta?: { changes?: number } }>>;
+};
+
+/**
+ * Persist the trusted server-computed result and complete its run atomically.
+ * This primitive deliberately is not an HTTP handler: browser-supplied scores
+ * must never be accepted as authoritative diagnostic results.
+ */
+export async function finalizeDiagnosticRunV9(
+  db: V9FinalizationDb,
+  input: {
+    workspaceId: string;
+    runId: string;
+    expectedSeq: number;
+    score: unknown;
+    evidence: unknown;
+    recommendations: unknown;
+    finishedAt: string;
+    reportRef?: string;
+  },
+): Promise<{ status: "completed"; resultVersion: number }> {
+  if (!input.workspaceId || !input.runId || !input.finishedAt ||
+      !Number.isSafeInteger(input.expectedSeq) || input.expectedSeq < 0 ||
+      !Number.isFinite(Date.parse(input.finishedAt)) ||
+      (input.reportRef !== undefined && (typeof input.reportRef !== "string" || input.reportRef.length > 2048))) {
+    throw new Error("v9_finalize_invalid_input");
+  }
+
+  const encode = (value: unknown): string => {
+    let serialized: string | undefined;
+    try { serialized = JSON.stringify(value); } catch { throw new Error("v9_finalize_invalid_result"); }
+    if (serialized === undefined || serialized.length > 65536) throw new Error("v9_finalize_invalid_result");
+    return serialized;
+  };
+  const scoreJson = encode(input.score);
+  const evidenceJson = encode(input.evidence);
+  const recommendationsJson = encode(input.recommendations);
+  if (scoreJson.length + evidenceJson.length + recommendationsJson.length > 131072) {
+    throw new Error("v9_finalize_invalid_result");
+  }
+
+  const run = await db.prepare(
+    "SELECT status,last_seq FROM diagnostic_v9_runs WHERE workspace_id=? AND run_id=?",
+  ).bind(input.workspaceId, input.runId).first<{ status: string; last_seq: number }>();
+  if (!run) throw new Error("v9_run_not_found");
+  if (run.status !== "active") throw new Error("v9_run_not_active");
+  if (run.last_seq !== input.expectedSeq) throw new Error("v9_sequence_conflict");
+
+  const version = await db.prepare(
+    "SELECT COALESCE(MAX(result_version),0)+1 AS next_version FROM diagnostic_v9_results WHERE workspace_id=? AND run_id=?",
+  ).bind(input.workspaceId, input.runId).first<{ next_version: number }>();
+  const resultVersion = version?.next_version;
+  if (!Number.isSafeInteger(resultVersion) || !resultVersion || resultVersion < 1) {
+    throw new Error("v9_finalize_version_unavailable");
+  }
+
+  const batch = await db.batch([
+    db.prepare(
+      "INSERT INTO diagnostic_v9_results (workspace_id,run_id,result_version,score_json,evidence_json,recommendations_json,report_ref,created_at) SELECT ?,?,?,?,?,?,?,? WHERE EXISTS (SELECT 1 FROM diagnostic_v9_runs WHERE workspace_id=? AND run_id=? AND status='active' AND last_seq=?)",
+    ).bind(input.workspaceId, input.runId, resultVersion, scoreJson, evidenceJson,
+      recommendationsJson, input.reportRef ?? null, input.finishedAt,
+      input.workspaceId, input.runId, input.expectedSeq),
+    db.prepare(
+      "UPDATE diagnostic_v9_runs SET status='completed',finished_at=? WHERE workspace_id=? AND run_id=? AND status='active' AND last_seq=? AND EXISTS (SELECT 1 FROM diagnostic_v9_results WHERE workspace_id=? AND run_id=? AND result_version=? AND created_at=?)",
+    ).bind(input.finishedAt, input.workspaceId, input.runId, input.expectedSeq,
+      input.workspaceId, input.runId, resultVersion, input.finishedAt),
+  ]);
+
+  if (batch.length !== 2 || batch.some((item) => !item.success) ||
+      (batch[0]?.meta?.changes ?? 0) !== 1 || (batch[1]?.meta?.changes ?? 0) !== 1) {
+    throw new Error("v9_finalize_conflict");
+  }
+  return { status: "completed", resultVersion };
+}
