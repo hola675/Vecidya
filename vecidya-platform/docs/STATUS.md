@@ -1,11 +1,3 @@
-## DIAG-V9-LEX-GRAPH-P1B — segunda pasada editorial del candidato (2026-10-26; PR apilado en borrador)
-
-**CODE/GIT — P1b implementada; CI del código PASS:** a partir del inventario aprobado P0 (77 definiciones, 387 opciones, 15 variantes, cero bloqueos sintácticos), se añadió `qa03b/v9-editorial-review-matrix.ts`, generador no productivo de fichas **individuales** que enumeran enunciado, ayuda, ID/version, grada, todas las opciones con `value/kind/exclusive`, señales, lecturas por dimensión de evidencia, variantes, referencias de contexto/respuestas y alertas. Exportador opcional `scripts/diagnostic-v9-editorial-matrix.mjs` permite consultar el JSON completo sin cambiar el motor. **No equivale a 77 revisiones humanas**: cuatro enunciados tienen intervención editorial explícita, cuatro preguntas requieren análisis semántico específico y 69 conservan estado pendiente de revisión humana.
-
-**CI RAN (PR temporal #163, HEAD previo `1bd364fd`):** `Main integration quality` run **40436155971** completó **PASS**, con typecheck, build, regresión de Diagnóstico/Aprende y **1.827/1.827 tests unitarios**. El inventario final registra **77 preguntas, 387 opciones, 15 variantes, 40 preguntas con evidencia migrada, 34 pendientes, cero bloqueos sintácticos** en los chequeos P0. La matriz P1b contabiliza **180 opciones con alguna lectura de evidencia, 207 sin ella y 48 marcas heurísticas editoriales por opción**; esta cifra no equivale a 48 fallos probados ni a aprobación humana. El CI de ese HEAD no verifica ejecución manual del comando CLI exportador, entrevistas ni rutas P2/P5.
-
-**COPY-only:** `q2_monetization`, `q2_regularity`, `q2_buyer_recipient_relation` y `q2_reputation_flow` reciben formulaciones más legibles. Sin mutar etiquetas, `value`, `kind`, evidencia, rutas, señales, scores ni V8 público. Los expedientes `q2_demand_trend`, `q2_capacity_signal`, `q2_food_menu_visibility`, `q2_ecommerce_cart_followup` quedan etiquetados **semantics-review**, nunca autorreparados. El PR #157 de taxonomía permanece aislado; V9 sigue con IDs sectoriales históricos hasta cambio versionado. No fusionar ni desplegar en este checkpoint.
-
 # Estado de implementación
 
 ## APP-MINI-02B — horarios, identidad MiniWeb y consistencia visual (2026-10-26)

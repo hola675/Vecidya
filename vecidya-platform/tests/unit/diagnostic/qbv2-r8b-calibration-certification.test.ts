@@ -61,7 +61,7 @@ test("R8-B-CERT: candidate calibration stays private — no barrel export, impor
   const appRoot = new URL("../../../app/", import.meta.url);
   const files = (readdirSync(appRoot, { recursive: true }) as string[]).map((f) => f.replaceAll("\\", "/")).filter((f) => /\.tsx?$/.test(f));
   const importers = files.filter((file) => readFileSync(new URL(file, appRoot), "utf8").includes("qbv2-candidate-calibration"));
-  assert.ok(importers.length > 0 && importers.every((file) => (/(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file) || file === "features/diagnostic/qa03b/v9-candidate-scoring.ts")), importers.join(", "));
+  assert.ok(importers.length > 0 && importers.every((file) => /(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file)), importers.join(", "));
 });
 
 test("R8-B-CERT: the calibration-contingent gates keep their historical v1 assertion next to the current contract", () => {

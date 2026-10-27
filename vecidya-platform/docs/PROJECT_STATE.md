@@ -1,8 +1,8 @@
-## Código integrado y checkpoint Admin local (2026-10-26)
+## Código integrado y estado Admin (2026-10-27)
 
-`origin/main@b80385da24e61947ba02ade6cec138649a6e075b` integra PR #155: cancelación manual inmediata de licencias, reactivación auditada de la misma fila restaurando el estado previo e historial por negocio. No requiere migración y no está desplegado; producción continúa en `0.8.3` (evidencia HTTP fechada en `ENVIRONMENTS.md`).
+`origin/main@19653199893cfcce1d276db9e1fab6f1bf0937e7` integra PR #173 sobre PR #158 y PR #155: Organizaciones pagina 50 filas con búsqueda/filtros server-side, orden estable y estado en URL; Auditoría filtra por texto/acción y pagina 50 filas; las licencias conservan cancelación manual inmediata, reactivación auditada de la misma fila y cronología por negocio, sin vencimiento ni renovación automática. PR #173 también incorpora la base de A Team y roster verificado. No hay migración ni deploy de estos cambios Admin; producción continúa en `0.8.3` (evidencia HTTP fechada en `ENVIRONMENTS.md`).
 
-Sobre ese SHA, `fix/admin-audit-pagination` implementa filtros server-side por texto/acción en URL y paginación de 50 eventos con orden fecha/ID estable en `/app/internal/audit`. E2E Worker/D1/Chrome, typecheck, build, `node --check` y diff-check PASS localmente. El checkpoint sigue local y sin deploy; el siguiente gap del plan Admin es paginar/ordenar Organizaciones y conservar sus filtros en URL.
+PR #173 integró la búsqueda por nombre/slug/titular, filtro de perfil, orden y paginación de Organizaciones; Worker/D1/Chrome E2E, typecheck, build, `node --check` y diff-check pasaron antes de integrar. Servicios e Integraciones conservan gaps de escala. Sin cambio de esquema ni deploy.
 
 ## Corte histórico — producción 0.8.2 (2026-10-26)
 

@@ -211,48 +211,6 @@
       "when": 1792981400440,
       "tag": "0029_organization-license-single-current",
       "breakpoints": true
-    },
-    {
-      "idx": 30,
-      "version": "6",
-      "when": 1793131200000,
-      "tag": "0030_diagnostic_v9_audit",
-      "breakpoints": true
-    },
-    {
-      "idx": 31,
-      "version": "6",
-      "when": 1793135280000,
-      "tag": "0031_diagnostic_v9_identity_ownership",
-      "breakpoints": true
-    },
-    {
-      "idx": 32,
-      "version": "6",
-      "when": 1793135340000,
-      "tag": "0032_diagnostic_v9_claim_guards",
-      "breakpoints": true
-    },
-    {
-      "idx": 33,
-      "version": "6",
-      "when": 1793135400000,
-      "tag": "0033_diagnostic_v9_owner_assignment_guards",
-      "breakpoints": true
-    },
-    {
-      "idx": 34,
-      "version": "6",
-      "when": 1793140000000,
-      "tag": "0034_diagnostic_v9_identity_claim_integrity",
-      "breakpoints": true
-    },
-    {
-      "idx": 35,
-      "version": "6",
-      "when": 1793140200000,
-      "tag": "0035_diagnostic_v9_result_finalization_guards",
-      "breakpoints": true
     }
   ]
 }

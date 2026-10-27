@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
-import { Link, useLoaderData } from "react-router";
+import { Form, Link, useLoaderData } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
-import { listPlatformOrganizations } from "../../db/queries/platform-organizations.server";
+import { listPlatformOrganizationsPage } from "../../db/queries/platform-organizations.server";
+import type { OrganizationProfileFilter, OrganizationSort } from "../../db/queries/platform-organizations.server";
 import { AdminShell } from "../components/admin-shell";
 import { Badge, Icon } from "../components/ui";
 import { publicAssets } from "../assets/public-assets";
@@ -11,14 +11,31 @@ import { requirePlatformReadAccess } from "../../server/platform-authorization.s
 
 import type { Route } from "./+types/internal-organizations";
 
-export function meta({}: Route.MetaArgs) { return [{ title: "Espacios de trabajo | Administración Vecidya" }]; }
+const organizationPageSize = 50;
+const profileFilters: readonly OrganizationProfileFilter[] = ["all", "published", "draft", "none"];
+const organizationSorts: readonly OrganizationSort[] = ["name-asc", "name-desc", "created-desc", "created-asc"];
 
-type ProfileFilter = "all" | "published" | "draft" | "none";
+export function meta({}: Route.MetaArgs) { return [{ title: "Espacios de trabajo | Administración Vecidya" }]; }
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   const access = await requirePlatformReadAccess(env, request);
-  return { organizations: await listPlatformOrganizations(createDatabase(env.DB)), workspaceUser: access.workspaceUser, platformRole: access.role };
+  const url = new URL(request.url);
+  const search = (url.searchParams.get("q") ?? "").trim().slice(0, 100);
+  const requestedProfile = url.searchParams.get("profile");
+  const profileFilter = profileFilters.find((filter) => filter === requestedProfile) ?? "all";
+  const requestedSort = url.searchParams.get("order");
+  const sort = organizationSorts.find((option) => option === requestedSort) ?? "name-asc";
+  const parsedPage = Number(url.searchParams.get("page") ?? "1");
+  const page = Number.isSafeInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+  const result = await listPlatformOrganizationsPage(createDatabase(env.DB), {
+    search,
+    profile: profileFilter,
+    sort,
+    page,
+    pageSize: organizationPageSize,
+  });
+  return { ...result, search, profileFilter, sort, workspaceUser: access.workspaceUser, platformRole: access.role };
 }
 
 function profileLabel(profile: { status: string } | null) {
@@ -30,75 +47,91 @@ function profileTone(profile: { status: string } | null): "success" | "neutral" 
   return profile?.status === "published" ? "success" : "neutral";
 }
 
-export default function InternalOrganizations() {
-  const { organizations, workspaceUser, platformRole } = useLoaderData<typeof loader>();
-  const [search, setSearch] = useState("");
-  const [profileFilter, setProfileFilter] = useState<ProfileFilter>("all");
+function organizationPageHref(page: number, search: string, profile: OrganizationProfileFilter, sort: OrganizationSort) {
+  const params = new URLSearchParams();
+  if (search) params.set("q", search);
+  if (profile !== "all") params.set("profile", profile);
+  params.set("order", sort);
+  params.set("page", String(page));
+  return `/app/internal/organizations?${params.toString()}#organizations-results`;
+}
 
-  const filtered = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return organizations.filter((item) => {
-      if (profileFilter === "published" && item.profile?.status !== "published") return false;
-      if (profileFilter === "draft" && (!item.profile || item.profile.status === "published")) return false;
-      if (profileFilter === "none" && item.profile) return false;
-      if (!query) return true;
-      return [item.name, item.slug, item.owner?.name, item.owner?.email].some((value) => value?.toLowerCase().includes(query));
-    });
-  }, [organizations, search, profileFilter]);
+export default function InternalOrganizations() {
+  const { organizations, page, pageCount, pageSize, total, search, profileFilter, sort, workspaceUser, platformRole } = useLoaderData<typeof loader>();
+  const hasFilters = Boolean(search || profileFilter !== "all");
+  const firstResult = total ? (page - 1) * pageSize + 1 : 0;
+  const lastResult = Math.min(page * pageSize, total);
 
   return (
     <AdminShell active="organizations" workspaceUser={workspaceUser} platformRole={platformRole}>
       <main className="admin-main">
         <Link className="back-link" to="/app/internal">← Volver a administración</Link>
-        <div className="page-heading"><div><p className="eyebrow">ESPACIOS DE TRABAJO</p><h1>Datos internos de los negocios</h1><p>Cada fila muestra el espacio donde se gestionan miembros, permisos y servicios de un negocio. Para administrar licencias, usa «Licencias de negocios».</p></div><Badge tone="neutral">{organizations.length} espacios</Badge>{platformRole === "platform_admin" ? <Link className="button button--primary" to="/app/internal/organizations/new">Crear espacio de trabajo</Link> : null}</div>
+        <div className="page-heading"><div><p className="eyebrow">ESPACIOS DE TRABAJO</p><h1>Datos internos de los negocios</h1><p>Cada fila muestra el espacio donde se gestionan miembros, permisos y servicios de un negocio. Para administrar licencias, usa «Licencias de negocios».</p></div><Badge tone="neutral">{total} espacios</Badge>{platformRole === "platform_admin" ? <Link className="button button--primary" to="/app/internal/organizations/new">Crear espacio de trabajo</Link> : null}</div>
 
-        {organizations.length ? (
+        {total || hasFilters ? (
           <>
-            <div className="admin-toolbar">
+            <Form action="/app/internal/organizations" className="admin-toolbar" method="get">
               <label className="admin-search">
                 <Icon name="eye" />
                 <input
                   aria-label="Buscar negocios o clientes"
-                  onChange={(event) => setSearch(event.target.value)}
+                  defaultValue={search}
+                  maxLength={100}
+                  name="q"
                   placeholder="Buscar por negocio, cliente o slug…"
                   type="search"
-                  value={search}
                 />
               </label>
               <label className="admin-filter">
                 Perfil
-                <select onChange={(event) => setProfileFilter(event.target.value as ProfileFilter)} value={profileFilter}>
+                <select defaultValue={profileFilter} name="profile">
                   <option value="all">Todos</option>
                   <option value="published">Publicado</option>
                   <option value="draft">Borrador</option>
                   <option value="none">Sin perfil</option>
                 </select>
               </label>
-              <p className="admin-result-count">{filtered.length} de {organizations.length}</p>
-            </div>
+              <label className="admin-filter">
+                Ordenar
+                <select aria-label="Ordenar organizaciones" defaultValue={sort} name="order">
+                  <option value="name-asc">Nombre A–Z</option>
+                  <option value="name-desc">Nombre Z–A</option>
+                  <option value="created-desc">Más recientes</option>
+                  <option value="created-asc">Más antiguas</option>
+                </select>
+              </label>
+              <button className="button button--secondary" type="submit">Aplicar filtros</button>
+              {hasFilters || sort !== "name-asc" ? <Link className="button button--ghost" to="/app/internal/organizations">Limpiar</Link> : null}
+            </Form>
 
-            {filtered.length ? (
-              <div className="admin-table-wrap">
-                <table className="admin-table">
-                  <thead>
-                    <tr><th>Espacio de trabajo</th><th>Cliente responsable</th><th>Estado</th><th>Miembros</th><th>Perfil</th><th>Servicios</th><th>Integraciones</th><th className="admin-table__action">Acción</th></tr>
-                  </thead>
-                  <tbody>
-                    {filtered.map((item) => (
+            <p className="admin-result-count" aria-live="polite">Mostrando {firstResult}–{lastResult} de {total} espacios</p>
+            {organizations.length ? (
+              <>
+                <div className="admin-table-wrap" id="organizations-results">
+                  <table className="admin-table">
+                    <thead>
+                      <tr><th>Espacio de trabajo</th><th>Cliente responsable</th><th>Estado</th><th>Miembros</th><th>Perfil</th><th>Servicios</th><th>Integraciones</th><th className="admin-table__action">Acción</th></tr>
+                    </thead>
+                    <tbody>{organizations.map((item) => (
                       <tr key={item.id}>
                         <td><strong>{item.name}</strong><span className="admin-table__meta">{item.slug}</span></td>
                         <td>{item.owner ? <>{item.owner.name}<span className="admin-table__meta">{item.owner.email}</span></> : <span className="admin-table__meta">Sin owner registrado</span>}</td>
-                        <td><Badge tone={item.lifecycleStatus === "active" ? "success" : item.lifecycleStatus === "suspended" ? "neutral" : "neutral"}>{item.lifecycleStatus}</Badge></td>
+                        <td><Badge tone={item.lifecycleStatus === "active" ? "success" : "neutral"}>{item.lifecycleStatus}</Badge></td>
                         <td>{item.membersCount}</td>
                         <td><Badge tone={profileTone(item.profile)}>{profileLabel(item.profile)}</Badge></td>
                         <td>{item.servicesCount}</td>
                         <td>{item.integrationsCount}</td>
                         <td className="admin-table__action"><Link className="button button--secondary" to={`/app/internal/organizations/${item.id}`}>Ver</Link></td>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    ))}</tbody>
+                  </table>
+                </div>
+                {pageCount > 1 ? <nav aria-label="Paginación de organizaciones" className="admin-pagination">
+                  {page > 1 ? <Link className="button button--secondary" to={organizationPageHref(page - 1, search, profileFilter, sort)}>Anterior</Link> : <span aria-disabled="true" className="button button--secondary">Anterior</span>}
+                  <span aria-current="page">Página {page} de {pageCount}</span>
+                  {page < pageCount ? <Link className="button button--secondary" to={organizationPageHref(page + 1, search, profileFilter, sort)}>Siguiente</Link> : <span aria-disabled="true" className="button button--secondary">Siguiente</span>}
+                </nav> : null}
+              </>
             ) : (
               <section className="empty-state card"><img alt="" height="320" src={publicAssets.illustrations.adminEmptySearch} width="320" /><div><p className="eyebrow">SIN RESULTADOS</p><h2>Ninguna organización coincide</h2><p>Ajusta la búsqueda o el filtro de perfil.</p></div></section>
             )}
