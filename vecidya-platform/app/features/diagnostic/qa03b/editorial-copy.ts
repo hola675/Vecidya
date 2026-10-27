@@ -49,7 +49,7 @@ export const QA03B_EDITORIAL_COPY = {
     "hint": "Piensa en quien realiza la compra o contratación, aunque otra persona utilice o reciba el producto o servicio."
   },
   "q2_buyer_recipient_relation": {
-    "prompt": "¿Quien paga o contrata es también quien recibe o utiliza lo que ofreces?",
+    "prompt": "¿La persona u organización que paga o contrata también recibe o utiliza lo que ofreces?",
     "hint": "Por ejemplo, una empresa puede contratar un servicio para sus empleados o una entidad financiarlo para beneficiarios."
   },
   "q2_customer_reach": {
@@ -62,7 +62,7 @@ export const QA03B_EDITORIAL_COPY = {
     }
   },
   "q2_monetization": {
-    "prompt": "¿Cuál es la principal fuente de ingresos o aportes de tu negocio, trabajo, organización o proyecto?",
+    "prompt": "¿Cuál es o será la principal fuente de ingresos o aportes de tu negocio, emprendimiento u organización?",
     "hint": "Si está en pausa, piensa en la fuente anterior. Si todavía lo preparas, indica la que esperas tener.",
     "variantPrompts": {
       "0": "Si comienzas a operar, ¿de dónde esperas obtener principalmente ingresos o aportes?"
@@ -80,7 +80,7 @@ export const QA03B_EDITORIAL_COPY = {
     }
   },
   "q2_regularity": {
-    "prompt": "En los últimos meses, ¿con qué regularidad has tenido clientes, ventas, citas, pedidos o personas atendidas?",
+    "prompt": "En los últimos meses, ¿con qué frecuencia recibiste pedidos, atendiste personas o realizaste ventas?",
     "hint": "Piensa en el comportamiento habitual, no solo en una semana especialmente buena o mala."
   },
   "q2_demand_trend": {
@@ -124,7 +124,7 @@ export const QA03B_EDITORIAL_COPY = {
     "hint": "Considera teléfono, WhatsApp, dirección y horarios, solo cuando correspondan a tu negocio."
   },
   "q2_reputation_flow": {
-    "prompt": "¿Quien busca lo que ofreces puede encontrar reseñas, opiniones o testimonios de personas con experiencia contigo?",
+    "prompt": "¿Las personas que buscan lo que ofreces pueden encontrar reseñas, opiniones o testimonios públicos?",
     "hint": "Incluye reseñas de Google, testimonios públicos y opiniones en tu web u otros lugares visibles."
   },
   "q2_service_response_speed": {

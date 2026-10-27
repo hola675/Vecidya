@@ -106,3 +106,23 @@ test("P1: primeras cuatro preguntas de entrada/propósito usan el léxico acorda
     assert.deepEqual(candidate.evidenceV3, original.evidenceV3, id);
   }
 });
+
+test("P1b: copy de frecuencia, ingresos, destinatario y reputación cambia solo textos, no contratos", () => {
+  const updates: Record<string, string> = {
+    q2_monetization: "¿Cuál es o será la principal fuente de ingresos o aportes de tu negocio, emprendimiento u organización?",
+    q2_regularity: "En los últimos meses, ¿con qué frecuencia recibiste pedidos, atendiste personas o realizaste ventas?",
+    q2_buyer_recipient_relation: "¿La persona u organización que paga o contrata también recibe o utiliza lo que ofreces?",
+    q2_reputation_flow: "¿Las personas que buscan lo que ofreces pueden encontrar reseñas, opiniones o testimonios públicos?",
+  };
+  for (const [id, prompt] of Object.entries(updates)) {
+    const previous = publicBank.find((item) => item.id === id);
+    const revised = bank.find((item) => item.id === id);
+    assert.ok(previous && revised, id);
+    assert.equal(revised.prompt, prompt);
+    const { prompt: _oldPrompt, hint: _oldHint, variants: oldVariants, ...oldContract } = previous;
+    const { prompt: _newPrompt, hint: _newHint, variants: newVariants, ...newContract } = revised;
+    assert.deepEqual(newContract, oldContract, id);
+    assert.deepEqual(newVariants?.map(({ prompt: _p, ...rest }) => rest),
+      oldVariants?.map(({ prompt: _p, ...rest }) => rest), id);
+  }
+});
