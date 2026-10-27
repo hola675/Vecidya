@@ -64,7 +64,7 @@ export type EditorialAnswerMatrixV9 = {
   readonly exclusive: boolean;
   readonly produces: readonly string[];
   readonly readsAs: readonly { readonly dimension: string; readonly directness: "direct" | "supporting" | "contextual"; readonly state: string }[];
-  readonly reviewFlags: readonly ("long_label" | "ambiguous_choice" | "needs_neutral_check")[];
+  readonly reviewFlags: readonly ("long_label" | "ambiguous_choice" | "needs_neutral_check" | "missing_evidence_mapping")[];
 };
 
 export type EditorialMatrixRowV9 = {
@@ -124,6 +124,7 @@ export function buildEditorialMatrixV9(bank: readonly QuestionDefinitionV2[]): E
         });
         const flags: EditorialAnswerMatrixV9["reviewFlags"][number][] = [];
         if (option.label.length > 110) flags.push("long_label");
+        if (q.evidenceMigration === "migrated" && (q.evidenceV3?.dimensions ?? []).some((dimension) => dimension.answers[option.value] === undefined)) flags.push("missing_evidence_mapping");
         if (/\b(?:siempre|nunca|normalmente|frecuentemente)\b/i.test(option.label)) flags.push("ambiguous_choice");
         if ((option.kind === "none" || option.kind === "not_applicable") && q.evidenceMigration !== "migrated") flags.push("needs_neutral_check");
         return {
