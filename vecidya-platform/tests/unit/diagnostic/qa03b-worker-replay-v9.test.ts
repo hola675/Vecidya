@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFileSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
 
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank77 } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import {
@@ -21,6 +23,7 @@ import {
   replayQa03bSessionV9Core,
 } from "../../../app/features/diagnostic/qa03b/worker-replay-v9.server";
 import { replayDiagnosticAuditEventsV9, type V9StoredAuditEvent } from "../../../app/features/diagnostic/qa03b/v9-audit-replay.server";
+import { appendDiagnosticEventV9, createDiagnosticRunV9, loadDiagnosticEventHistoryV9, type V9AuditDb, type V9RunVersions } from "../../../app/features/diagnostic/qa03b/v9-audit-repository";
 import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-scoring";
 import { CANDIDATE_RESULT_IDENTITY_V3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-pipeline";
 import { ANSWER_SCHEMA_ID, QUESTION_BANK_ID, SESSION_KEY, SESSION_SCHEMA, WORKER_REPLAY_VERSION } from "../../../app/features/diagnostic/qa03b/contract";
@@ -228,4 +231,85 @@ test("V9 D1 audit replay fails closed on sequence gaps, actor changes and malfor
   assert.deepEqual(replayDiagnosticAuditEventsV9({ ...base, events: events.map((event, index) => index === 0 ? { ...event, seq: 2 } : event) }), { ok: false, reason: "route" });
   assert.deepEqual(replayDiagnosticAuditEventsV9({ ...base, events: events.map((event, index) => index === 0 ? { ...event, actor_type: "operator" } : event) }), { ok: false, reason: "route" });
   assert.deepEqual(replayDiagnosticAuditEventsV9({ ...base, events: events.map((event, index) => index === 0 ? { ...event, payload_json: "not-json" } : event) }), { ok: false, reason: "session" });
+});
+
+
+test("V9 SQLite audit persistence round-trips into authoritative replay", async () => {
+  const sqlite = new DatabaseSync(":memory:");
+  try {
+    sqlite.exec("PRAGMA foreign_keys=ON");
+    for (const migrationName of [
+      "0030_diagnostic_v9_audit.sql",
+      "0031_diagnostic_v9_identity_ownership.sql",
+      "0032_diagnostic_v9_claim_guards.sql",
+      "0033_diagnostic_v9_owner_assignment_guards.sql",
+      "0034_diagnostic_v9_identity_claim_integrity.sql",
+      "0035_diagnostic_v9_result_finalization_guards.sql",
+    ]) {
+      sqlite.exec(readFileSync(new URL(`../../../db/migrations/${migrationName}`, import.meta.url), "utf8"));
+    }
+    const db: V9AuditDb = {
+      prepare(sql) {
+        return {
+          bind(...values: unknown[]) {
+            return {
+              async run() {
+                const result = sqlite.prepare(sql).run(...values as []) as { changes?: number };
+                return { success: true, meta: { changes: result.changes ?? 0 } };
+              },
+              async first<T>() {
+                return (sqlite.prepare(sql).get(...values as []) ?? null) as T | null;
+              },
+              async all<T>() {
+                return { results: sqlite.prepare(sql).all(...values as []) as T[] };
+              },
+            };
+          },
+        };
+      },
+    };
+    const session = completingV9();
+    const versions: V9RunVersions = {
+      bank: QA03B_V9_QUESTION_BANK_ID,
+      engine: QA03B_V9_ENGINE_ID,
+      scoring: "candidate-scoring-test-v1",
+      recommendations: "recommendations-not-certified",
+      consent: "consent-test-v1",
+    };
+    await createDiagnosticRunV9(db, {
+      workspaceId: "public",
+      runId: session.sessionId,
+      versions,
+      now: new Date(session.startedAt).toISOString(),
+    });
+    for (const [index, event] of session.replayTranscript.entries()) {
+      await appendDiagnosticEventV9(db, {
+        workspaceId: "public",
+        runId: session.sessionId,
+        eventId: `audit-event-${index + 1}`,
+        expectedSeq: index,
+        kind: event.kind === "classification" ? event.classification.kind : "answer",
+        payload: event.kind === "classification" ? { ...event.classification, mode: event.mode } : event,
+        occurredAt: new Date(NOW + index + 1).toISOString(),
+        actorType: "client",
+      });
+    }
+    const history = await loadDiagnosticEventHistoryV9(db, "public", session.sessionId);
+    assert.equal(history.length, session.replayTranscript.length);
+    assert.equal(history[0]?.occurred_at, new Date(NOW + 1).toISOString());
+    assert.equal(history[0]?.actor_type, "client");
+    const replayed = replayDiagnosticAuditEventsV9({
+      runId: session.sessionId,
+      startedAt: session.startedAt,
+      events: history,
+      now: NOW + 100,
+    });
+    assert.equal(replayed.ok, true);
+    if (!replayed.ok) return;
+    assert.equal(replayed.session.status, "completed");
+    assert.equal(replayed.core.interactionCount, session.interactionCount);
+    assert.equal(replayed.core.dimensions.length, 8);
+  } finally {
+    sqlite.close();
+  }
 });
