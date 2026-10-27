@@ -86,3 +86,7 @@ Inspección de código sobre esta rama; no certifica runtime ni producción.
 P2 clasificacion: implementada la validacion del replay, la limpieza de respuestas especializadas al cambiar de nicho y la proteccion del conteo visible contra eventos antiguos, selectores incorrectos y valores de especialidad no validos. Pruebas de regresion incorporadas al workflow focalizado. **Pendiente ejecucion CI verificable; P2 no cerrado.**
 
 Proximo cierre: obtener resultados de pruebas focalizadas, resolver fallos, revisar recorridos por sector y continuar la matriz editorial por respuesta. Mantener V8 intacto y PR #162 sin fusionar.
+
+### Control P2: clasificacion incompleta — 2026-10-27
+
+El prototipo requiere sector y especialidad explicitos para descontar una interaccion conjunta. Se agrego una comprobacion de presencia del sector (c9a9c6a) y una prueba para respuestas incompletas (90590bb). El criterio de salida sigue siendo CI focalizada ejecutada y revisada, no solo tests registrados. No activar V9 ni modificar V8.
