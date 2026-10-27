@@ -223,3 +223,44 @@ export async function linkOwnedDiagnosticRunToOrganizationV9(
   if ((result.meta?.changes ?? 0) !== 1) throw new Error("v9_run_not_owned");
   return "created";
 }
+
+/** Assigns a newly created run to the server-authenticated account. */
+export async function assignDiagnosticRunToAuthenticatedUserV9(
+  db: V9IdentityDb,
+  input: { workspaceId: string; runId: string; identityId: string; userId: string; assignedAt: string },
+): Promise<{ identityId: string }> {
+  if (!input.userId) throw new Error("v9_authenticated_user_required");
+  const identityId = await ensureUserIdentityV9(db, {
+    identityId: input.identityId,
+    userId: input.userId,
+    createdAt: input.assignedAt,
+  });
+  await assignDiagnosticOwnerV9(db, {
+    workspaceId: input.workspaceId,
+    runId: input.runId,
+    identityId,
+    assignedAt: input.assignedAt,
+    source: "authenticated_session",
+  });
+  return { identityId };
+}
+
+/** Creates an anonymous identity, assigns a run, and returns the secret once. */
+export async function assignDiagnosticRunToAnonymousVisitorV9(
+  db: V9IdentityDb,
+  input: { workspaceId: string; runId: string; identityId: string; assignedAt: string },
+): Promise<{ identityId: string; recoveryCredential: string }> {
+  if (!input.workspaceId || !input.runId) throw new Error("v9_owner_invalid_input");
+  const identity = await createAnonymousIdentityCredentialV9(db, {
+    identityId: input.identityId,
+    createdAt: input.assignedAt,
+  });
+  await assignDiagnosticOwnerV9(db, {
+    workspaceId: input.workspaceId,
+    runId: input.runId,
+    identityId: identity.identityId,
+    assignedAt: input.assignedAt,
+    source: "anonymous_session",
+  });
+  return identity;
+}
