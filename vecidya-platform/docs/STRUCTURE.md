@@ -172,7 +172,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/app/internal/businesses` | `internal-businesses.tsx` | perfiles | — | `admin-bp` | sí |
 | `/app/internal/businesses/:businessProfileId` | `internal-business-profile-detail.tsx` | detalle + gobierno + auditoría | `business_profile:governance`; CAS + auditoría atómica | `admin-bp`, `d1` | sí |
 | `/app/internal/integrations` | `internal-integrations.tsx` | conexiones | — | `admin-int` (stale) | sí |
-| `/app/internal/audit` | `internal-audit.tsx` | `platform_audit_log` (últimas 200) | — | `platform-service-administration-check.mjs` | sí (local comprobado) |
+| `/app/internal/audit` | `internal-audit.tsx` | `platform_audit_log` (filtros URL, 50 por página, orden fecha/ID) | — | `platform-service-administration-check.mjs` | sí (local comprobado) |
 
 **Certificación funcional Admin (PR #139, local):** `platform-service-administration-check.mjs` carga las 14 rutas internas con una identidad sintética `platform_admin`, y comprueba anónimo `302`, plataforma inactiva `403`, cambios de servicio/auditoría, integración duplicada `409`, aislamiento tenant y concurrencia de licencias. Chromium cubre shell Servicios/Auditoría a 1366 y 390 px. No certifica aún cada mutación UI, lector de pantalla/axe, zoom 200 %, fallos de red ni versión/esquema remoto. Ver matriz por ruta en `TESTING.md` y deuda en `STATUS.md`.
 
