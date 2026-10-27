@@ -58,6 +58,16 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function visibleText(html) {
+  return html.replace(/<!--.*?-->/gs, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function mainVisibleText(html) {
+  const start = html.indexOf("<main");
+  const end = html.indexOf("</main>", start);
+  return visibleText(start >= 0 && end >= 0 ? html.slice(start, end) : html).slice(0, 600);
+}
+
 class SessionClient {
   #cookies = new Map();
 
@@ -186,6 +196,14 @@ executeD1(`
     (${sqlLiteral(crypto.randomUUID())}, ${sqlLiteral(businessProfileId)}, 'unverified', 'active', ${now}, ${now});
   INSERT INTO platform_organization_lifecycle (organization_id, status, intended_owner_email, owner_user_id, created_by, updated_by, created_at, updated_at) VALUES ${lifecycleRows};
 `);
+const organizationPaginationNow = Date.now();
+const organizationPaginationRows = Array.from({ length: 55 }, (_, index) => {
+  const number = String(index + 1).padStart(2, "0");
+  return `(${sqlLiteral(crypto.randomUUID())},${sqlLiteral(`Org pagination ${number} ${suffix}`)},${sqlLiteral(`org-pagination-${suffix}-${number}`)},${organizationPaginationNow + index})`;
+});
+executeD1(`INSERT INTO organization (id,name,slug,created_at) VALUES ${organizationPaginationRows.join(",")};`);
+const organizationSearchLiteral = sqlLiteral("Org pagination");
+const organizationFixtureCounts = executeD1(`SELECT count(*) AS total, sum(CASE WHEN instr(lower(name), lower(${organizationSearchLiteral})) > 0 THEN 1 ELSE 0 END) AS search_count FROM organization WHERE name LIKE 'Org pagination %';`)[0];
 const bootstrapPriceNow = Date.now();
 executeD1(`INSERT OR IGNORE INTO license_price (id, plan_code, currency, amount_cents, billing_interval, effective_from, status, created_at, updated_at) VALUES
   ('audit-price-cuadra', 'cuadra', 'USD', 1000, 'monthly', ${bootstrapPriceNow}, 'active', ${bootstrapPriceNow}, ${bootstrapPriceNow}),
@@ -279,7 +297,23 @@ const auditFixtureNow = Date.now();
 const auditPaginationRows = Array.from({ length: 55 }, (_, index) => `(${sqlLiteral(crypto.randomUUID())},${sqlLiteral(identities.platform.userId)},'test.audit.pagination','audit_test',${sqlLiteral(`audit-pagination-${index}`)},${sqlLiteral(identities["owner-a"].organizationId)},${sqlLiteral(`audit-pagination-fixture-${index}`)},'registro',NULL,${auditFixtureNow + index})`);
 executeD1(`INSERT INTO platform_audit_log (id,actor_user_id,action,entity_type,entity_id,organization_id,previous_value,new_value,metadata,created_at) VALUES ${auditPaginationRows.join(",")};`);
 const organizationsHtml = await (await assertStatus(identities.platform.client, "/app/internal/organizations", 200)).text();
-assert(organizationsHtml.includes('aria-label="Buscar negocios o clientes"') && organizationsHtml.includes("Publicado") && organizationsHtml.includes("Sin perfil"), "El listado no presentó búsqueda y estados de perfil del fixture.");
+assert(organizationsHtml.includes('aria-label="Buscar negocios o clientes"') && organizationsHtml.includes("Perfil") && organizationsHtml.includes("Sin perfil") && organizationsHtml.includes("Ordenar"), "El listado no presentó los filtros y orden del fixture.");
+const organizationPaginationSearch = encodeURIComponent("Org pagination");
+const organizationSearchOnly = await (await assertStatus(identities.platform.client, `/app/internal/organizations?q=${organizationPaginationSearch}&order=name-asc`, 200)).text();
+const organizationNoneOnly = await (await assertStatus(identities.platform.client, "/app/internal/organizations?profile=none&order=name-asc", 200)).text();
+assert(visibleText(organizationSearchOnly).includes("55 espacios") && organizationSearchOnly.includes(`Org pagination 01 ${suffix}`), `La búsqueda server-side no encontró las 55 organizaciones sintéticas: fixtures=${JSON.stringify(organizationFixtureCounts)}; page=${mainVisibleText(organizationSearchOnly)}`);
+assert(organizationNoneOnly.includes(`Org pagination 01 ${suffix}`), "El filtro Sin perfil no devolvió las organizaciones sin perfil del fixture.");
+const ownerAOrganizationSearch = encodeURIComponent(`Organización owner-a ${suffix}`);
+const publishedOwnerOrganization = await (await assertStatus(identities.platform.client, `/app/internal/organizations?q=${ownerAOrganizationSearch}&profile=published`, 200)).text();
+const noProfileOwnerOrganization = await (await assertStatus(identities.platform.client, `/app/internal/organizations?q=${ownerAOrganizationSearch}&profile=none`, 200)).text();
+const ownerAProfileFixture = executeD1(`SELECT o.name,bp.status FROM organization o LEFT JOIN business_profile bp ON bp.organization_id=o.id WHERE o.id=${sqlLiteral(identities["owner-a"].organizationId)};`)[0];
+assert(mainVisibleText(publishedOwnerOrganization).includes(`Organización owner-a ${suffix}`) && mainVisibleText(noProfileOwnerOrganization).includes("Ninguna organización coincide") && !mainVisibleText(noProfileOwnerOrganization).includes(`Organización owner-a ${suffix}`), `Los filtros de perfil publicado/sin perfil no excluyeron el perfil publicado del owner: fixture=${JSON.stringify(ownerAProfileFixture)}; published=${mainVisibleText(publishedOwnerOrganization)}; none=${mainVisibleText(noProfileOwnerOrganization)}`);
+const organizationPageOne = await (await assertStatus(identities.platform.client, `/app/internal/organizations?q=${organizationPaginationSearch}&profile=none&order=name-asc`, 200)).text();
+assert(visibleText(organizationPageOne).includes("Mostrando 1 – 50 de 55 espacios") && organizationPageOne.includes(`Org pagination 01 ${suffix}`) && organizationPageOne.includes(`Org pagination 50 ${suffix}`) && !organizationPageOne.includes(`Org pagination 51 ${suffix}`), `La primera página de organizaciones no limita 55 resultados a 50 en orden estable: ${visibleText(organizationPageOne).slice(0, 300)}`);
+const organizationPageTwo = await (await assertStatus(identities.platform.client, `/app/internal/organizations?q=${organizationPaginationSearch}&profile=none&order=name-asc&page=2`, 200)).text();
+assert(visibleText(organizationPageTwo).includes("Mostrando 51 – 55 de 55 espacios") && organizationPageTwo.includes(`Org pagination 51 ${suffix}`) && organizationPageTwo.includes(`Org pagination 55 ${suffix}`) && !organizationPageTwo.includes(`Org pagination 01 ${suffix}`) && organizationPageTwo.includes("q=Org+pagination&amp;profile=none&amp;order=name-asc&amp;page=1"), `La segunda página no mantiene el filtro y el orden en el enlace de retroceso: ${visibleText(organizationPageTwo).slice(0, 300)}`);
+const organizationDescendingPage = await (await assertStatus(identities.platform.client, `/app/internal/organizations?q=${organizationPaginationSearch}&profile=none&order=name-desc`, 200)).text();
+assert(organizationDescendingPage.includes(`Org pagination 55 ${suffix}`) && !organizationDescendingPage.includes(`Org pagination 01 ${suffix}`), "El orden descendente de organizaciones no coloca primero el nombre mayor.");
 const organizationDetailLink = `/app/internal/organizations/${identities["owner-a"].organizationId}`;
 const ownerDetailHtml = await (await assertStatus(identities.platform.client, organizationDetailLink, 200)).text();
 assert(ownerDetailHtml.includes("Suspender organización") && ownerDetailHtml.includes("Guardar rol") && ownerDetailHtml.includes("Administrar servicios de esta organización"), "El detalle Admin no expuso los controles esperados para la organización de prueba.");
@@ -301,7 +335,7 @@ try {
   assert(await menuButton.isVisible(), "El menú administrativo móvil no está visible a 390 px.");
   await menuButton.focus();
   await page.keyboard.press("Enter");
-  assert(await page.getByRole("dialog", { name: "Navegación administrativa" }).isVisible(), "El drawer móvil no expuso un diálogo accesible.");
+  await page.getByRole("dialog", { name: "Navegación administrativa" }).waitFor({ state: "visible" });
   await page.getByRole("link", { name: "Auditoría" }).click();
   await page.waitForURL("**/app/internal/audit");
   await page.getByRole("button", { name: "Abrir navegación administrativa" }).waitFor({ state: "visible" });
@@ -392,7 +426,11 @@ try {
   await page.goto(`${baseUrl}/app/internal/organizations`);
   const organizationSearch = page.getByRole("searchbox", { name: "Buscar negocios o clientes" });
   await organizationSearch.fill(`Organización owner-a ${suffix}`);
+  await page.getByLabel("Perfil").selectOption("all");
+  await page.getByRole("button", { name: "Aplicar filtros" }).click();
+  await page.waitForURL((url) => url.pathname === "/app/internal/organizations" && url.searchParams.get("q") === `Organización owner-a ${suffix}`);
   const organizationRow = page.locator("tr").filter({ hasText: `Organización owner-a ${suffix}` });
+  await organizationRow.waitFor({ state: "visible" });
   assert(await organizationRow.count() === 1, "La búsqueda UI no redujo la lista al espacio de trabajo esperado.");
   await organizationRow.getByRole("link", { name: "Ver" }).click();
   await page.waitForURL(`**/app/internal/organizations/${identities["owner-a"].organizationId}`);

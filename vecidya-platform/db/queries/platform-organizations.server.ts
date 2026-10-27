@@ -1,4 +1,4 @@
-import { and, asc, count, eq, ne } from "drizzle-orm";
+import { and, asc, count, desc, eq, exists, inArray, isNull, ne, or, sql } from "drizzle-orm";
 
 import type { Database } from "../client.server";
 import { businessProfile, integrationConnection, member, organization, organizationService, platformOrganizationLifecycle, serviceCatalog, user } from "../schema";
@@ -14,6 +14,106 @@ export async function updatePlatformTeamRole(database: Database, input: { organi
     database.$client.prepare("INSERT INTO platform_audit_log (id, actor_user_id, action, entity_type, entity_id, organization_id, previous_value, new_value, metadata, created_at) SELECT ?, ?, 'organization.team_role.update', 'member', ?, ?, ?, ?, ?, ? WHERE changes() = 1").bind(crypto.randomUUID(), input.actorUserId, input.memberId, input.organizationId, target.role, input.role, JSON.stringify({ targetUserId: target.userId }), now.getTime()),
   ]);
   if (results[0]?.meta.changes !== 1) throw new Response("El rol cambió mientras se procesaba; vuelve a intentarlo", { status: 409 });
+}
+
+export type OrganizationProfileFilter = "all" | "published" | "draft" | "none";
+export type OrganizationSort = "name-asc" | "name-desc" | "created-asc" | "created-desc";
+
+export async function listPlatformOrganizationsPage(database: Database, options: {
+  search: string;
+  profile: OrganizationProfileFilter;
+  sort: OrganizationSort;
+  page: number;
+  pageSize: number;
+}) {
+  const conditions = [];
+  if (options.profile === "published") conditions.push(eq(businessProfile.status, "published"));
+  if (options.profile === "draft") conditions.push(eq(businessProfile.status, "draft"));
+  if (options.profile === "none") conditions.push(isNull(businessProfile.id));
+
+  if (options.search) {
+    const ownerMatch = exists(database.select({ id: member.id }).from(member)
+      .innerJoin(user, eq(member.userId, user.id))
+      .where(and(
+        eq(member.organizationId, organization.id),
+        eq(member.role, "owner"),
+        or(
+          sql`instr(lower(${user.name}), lower(${options.search})) > 0`,
+          sql`instr(lower(${user.email}), lower(${options.search})) > 0`,
+        ),
+      )));
+    conditions.push(or(
+      sql`instr(lower(${organization.name}), lower(${options.search})) > 0`,
+      sql`instr(lower(${organization.slug}), lower(${options.search})) > 0`,
+      ownerMatch,
+    ));
+  }
+
+  const where = and(...conditions);
+  const [countRows] = await database.select({ total: count() }).from(organization)
+    .leftJoin(businessProfile, eq(businessProfile.organizationId, organization.id))
+    .where(where);
+  const total = countRows?.total ?? 0;
+  const pageCount = Math.max(1, Math.ceil(total / options.pageSize));
+  const page = Math.min(Math.max(1, options.page), pageCount);
+  const orderBy = {
+    "name-asc": [asc(sql`lower(${organization.name})`), asc(organization.id)],
+    "name-desc": [desc(sql`lower(${organization.name})`), desc(organization.id)],
+    "created-asc": [asc(organization.createdAt), asc(organization.id)],
+    "created-desc": [desc(organization.createdAt), desc(organization.id)],
+  }[options.sort];
+  const organizations = await database.select({
+    id: organization.id,
+    name: organization.name,
+    slug: organization.slug,
+    profile: {
+      displayName: businessProfile.displayName,
+      status: businessProfile.status,
+      slug: businessProfile.slug,
+    },
+  }).from(organization)
+    .leftJoin(businessProfile, eq(businessProfile.organizationId, organization.id))
+    .where(where)
+    .orderBy(...orderBy)
+    .limit(options.pageSize)
+    .offset((page - 1) * options.pageSize);
+
+  const organizationIds = organizations.map(({ id }) => id);
+  if (!organizationIds.length) return { organizations: [], page, pageCount, pageSize: options.pageSize, total };
+
+  const [owners, memberCounts, serviceCounts, integrationCounts, lifecycles] = await Promise.all([
+    database.select({ organizationId: member.organizationId, id: user.id, name: user.name, email: user.email })
+      .from(member).innerJoin(user, eq(member.userId, user.id))
+      .where(and(eq(member.role, "owner"), inArray(member.organizationId, organizationIds))),
+    database.select({ organizationId: member.organizationId, total: count() }).from(member)
+      .where(inArray(member.organizationId, organizationIds)).groupBy(member.organizationId),
+    database.select({ organizationId: organizationService.organizationId, total: count() }).from(organizationService)
+      .where(inArray(organizationService.organizationId, organizationIds)).groupBy(organizationService.organizationId),
+    database.select({ organizationId: integrationConnection.organizationId, total: count() }).from(integrationConnection)
+      .where(inArray(integrationConnection.organizationId, organizationIds)).groupBy(integrationConnection.organizationId),
+    database.select({ organizationId: platformOrganizationLifecycle.organizationId, status: platformOrganizationLifecycle.status })
+      .from(platformOrganizationLifecycle).where(inArray(platformOrganizationLifecycle.organizationId, organizationIds)),
+  ]);
+  const ownerByOrganization = new Map(owners.map((owner) => [owner.organizationId, owner]));
+  const memberCountByOrganization = new Map(memberCounts.map(({ organizationId, total: value }) => [organizationId, value]));
+  const serviceCountByOrganization = new Map(serviceCounts.map(({ organizationId, total: value }) => [organizationId, value]));
+  const integrationCountByOrganization = new Map(integrationCounts.map(({ organizationId, total: value }) => [organizationId, value]));
+  const lifecycleByOrganization = new Map(lifecycles.map(({ organizationId, status }) => [organizationId, status]));
+
+  return {
+    organizations: organizations.map((item) => ({
+      ...item,
+      lifecycleStatus: lifecycleByOrganization.get(item.id) ?? "legacy",
+      owner: ownerByOrganization.get(item.id) ?? null,
+      membersCount: memberCountByOrganization.get(item.id) ?? 0,
+      servicesCount: serviceCountByOrganization.get(item.id) ?? 0,
+      integrationsCount: integrationCountByOrganization.get(item.id) ?? 0,
+    })),
+    page,
+    pageCount,
+    pageSize: options.pageSize,
+    total,
+  };
 }
 
 export async function listPlatformOrganizations(database: Database) {

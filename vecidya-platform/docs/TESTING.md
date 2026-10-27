@@ -3,6 +3,9 @@
 ## APP-MINI-02D — refinamiento de configuración (2026-10-27)
 
 No se ejecutaron pruebas automatizadas por indicación del usuario. La inspección visual autenticada con D1 local temporal y capturas 1366×768/390×844 revisó el sidebar y el flujo del editor. La inspección interactiva revisó Diseño, Secciones, Contenido, la transición a Vista previa y los ejemplos de tarjetas aportados; se ajustaron ancho del diálogo, espaciado y tipografía. Las pestañas visibles dependen de los módulos activos. La cuenta sintética no contiene un perfil con datos para generar una MiniWeb previa real. No se ejecutaron pruebas automatizadas, no se probaron datos remotos ni se hizo deploy.
+## ADMIN-ORG-PAGINATION-001 — búsqueda, filtros, orden y páginas (PR #173 integrado)
+
+`/app/internal/organizations` carga el recuento y las filas filtradas en servidor; query string conserva búsqueda, estado de perfil, orden y página, con 50 organizaciones por página y orden estable por nombre/fecha + ID. El E2E agrega 55 organizaciones sintéticas, comprueba 50 + 5, orden ascendente/descendente, filtros `published`/`none` y enlaces que preservan el criterio. **RAN 2026-10-27:** `platform-service-administration-check.mjs` PASS con Worker Wrangler, D1 efímera y Chrome local; `pnpm run typecheck`, `pnpm run build`, `node --check` y `git diff --check` PASS. Sin cambio de esquema, migración ni acceso remoto.
 
 ## ADMIN-AUDIT-PAGINATION-001 — filtros y paginación (2026-10-26)
 
@@ -21,7 +24,7 @@ No se ejecutaron pruebas automatizadas por indicación del usuario. La inspecci�
 | Ruta / componente | Control y evidencia de código | Estado de esta auditoría | Defecto / reparación | Verificación |
 | --- | --- | --- | --- | --- |
 | `/app/internal` | Resumen, navegación y shell; `requirePlatformAdmin` | GET admin 200; anónimo 302; admin inactivo 403 | Drawer cierra al navegar; no certifica todas las acciones de la página | 14 rutas HTTP PASS; Chromium 1366/390 px |
-| `/app/internal/organizations` | Búsqueda/filtro, alta/detalle; lectura permite staff activo | GET 200; búsqueda → detalle por navegador; staff ve detalle read-only | Sin orden/paginación; filtros no persisten en URL | Playwright local PASS |
+| `/app/internal/organizations` | Búsqueda/filtro, alta/detalle; lectura permite staff activo | GET 200; búsqueda → detalle por navegador; staff ve detalle read-only; listado ordenado y paginado server-side | Paginación/filtros cubiertos por HTTP; staff read-only conservado | Worker/D1/Chrome local PASS |
 | `/app/internal/organizations/new` | Organización+lifecycle+invitación+auditoría en batch | Creación por UI y entrega fake (`simulated`) comprobadas; invitación pending y auditoría persistidas | No prueba correo real; errores UI invalid-form y fallo proveedor pendientes | Playwright + D1 local PASS |
 | `/app/internal/organizations/:id` | Owner-invitation, lifecycle, roles; staff read-only | UI suspender/reactivar, cambio rol member→admin, crear, reenviar y revocar; reenvío muestra entrega simulada, rota token/expiración, mantiene una pendiente y audita; staff read-only | Último owner fuera del alcance autorizado; fallo de proveedor no simulado desde UI | Playwright + D1 local PASS; matriz de permiso staff PASS |
 | `/:id/training` | Asigna Aprende y corrige avance con motivo; admin | Playwright asigna un artículo y corrige avance; D1 conserva historial, motivo y auditoría; Auditoría filtra y etiqueta ambos eventos | Concurrencia de correcciones y mensajes UI de error pendientes | Worker + Playwright + D1 local aislada PASS |
@@ -2202,3 +2205,4 @@ Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.m
 8. Pruebas unitarias de módulos puros (`db/business-hours-rules.ts`, el resto de `db/business-profile-rules.ts` —la generación de slug ya está cubierta por `unit-bp`—, validaciones, autorización).
 9. `test:e2e` ya existe; queda pendiente una decisión sobre CI y sustituir `agent-browser` por Playwright.
 10. Extender `rp001a` únicamente cuando se resuelvan nombre, identidad y marca; cualquier publicación remota requiere un bloque separado y autorización explícita.
+
