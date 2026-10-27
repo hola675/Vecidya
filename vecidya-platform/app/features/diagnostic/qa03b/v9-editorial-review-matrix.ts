@@ -163,6 +163,29 @@ export function buildEditorialMatrixV9(bank: readonly QuestionDefinitionV2[]): E
   };
 }
 
+export type EditorialReviewItemV9 = {
+  readonly questionId: string;
+  readonly optionValue: string;
+  readonly flags: EditorialAnswerMatrixV9["reviewFlags"];
+  readonly decision: EditorialDecisionV9;
+  readonly nextAction: string;
+};
+
+/** Cola editorial reproducible: solo opciones con alertas, sin alterar el banco. */
+export function buildEditorialReviewQueueV9(matrix: EditorialMatrixResultV9): readonly EditorialReviewItemV9[] {
+  return matrix.rows.flatMap((row) =>
+    row.options
+      .filter((option) => option.reviewFlags.length > 0)
+      .map((option) => ({
+        questionId: row.id,
+        optionValue: option.value,
+        flags: option.reviewFlags,
+        decision: row.decision,
+        nextAction: row.nextAction,
+      })),
+  );
+}
+
 export function buildCandidateEditorialMatrixV9(): EditorialMatrixResultV9 {
   return buildEditorialMatrixV9(QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
 }
