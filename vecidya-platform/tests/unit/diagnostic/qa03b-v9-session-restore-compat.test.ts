@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import { QUESTION_BANK_V2 } from "../../../app/features/diagnostic/qbv2-bank";
 import { parseSessionV3, DIAGNOSTIC_SESSION_V3_SCHEMA } from "../../../app/features/diagnostic/qbv2-session";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as candidate } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { QA03B_FOOD_MENU_VISIBILITY_V2_PROPOSAL as proposed } from "../../../app/features/diagnostic/qa03b/v9-food-menu-v2-proposal";
@@ -54,8 +55,9 @@ test("P1e: eligible historical restaurant response survives v1 and cannot be rea
     answers: { ...context, [legacy.id]: "not_applicable" },
     answeredQuestionIds: [legacy.id],
   });
-  const v1 = parseSessionV3(historical, now, { bank: [legacy] });
+  const contextBank = QUESTION_BANK_V2.filter((question) => question.id !== legacy.id);
+  const v1 = parseSessionV3(historical, now, { bank: [...contextBank, legacy] });
   assert.ok(v1);
   assert.equal(v1.answers[legacy.id], "not_applicable");
-  assert.equal(parseSessionV3(historical, now, { bank: [proposed] }), null);
+  assert.equal(parseSessionV3(historical, now, { bank: [...contextBank, proposed] }), null);
 });
