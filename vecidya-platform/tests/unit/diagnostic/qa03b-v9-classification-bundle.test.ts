@@ -565,3 +565,38 @@ test("P2: reclasificar la misma especialidad conserva evidencia compatible", () 
   const eligible = resolveEligibleQuestionsV2(repeated.answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
   assert.ok(!eligible.eligibleQuestionIds.includes("q2_food_menu_visibility"));
 });
+
+test("P2: recorrido completo de clasificación, respuesta y reclasificación mantiene evidencia pertinente", () => {
+  const first = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(first.ok, true);
+  if (!first.ok) return;
+  const foodAnswered: AnswersV2 = {
+    ...first.answers,
+    q2_food_menu_visibility: "clear",
+  };
+  const foodPlan = buildCandidateQuestionPlanV9Prototype(foodAnswered, [first.event]);
+  assert.equal(foodPlan.activeAnswers.q2_food_menu_visibility, "clear");
+  assert.ok(foodPlan.plan.routeLength <= 24);
+
+  const second = applyClassificationInteractionV9(foodAnswered, {
+    sector: "b2b_services", niche: "marketing_agency",
+  });
+  assert.equal(second.ok, true);
+  if (!second.ok) return;
+  assert.equal(second.answers.q2_food_menu_visibility, undefined);
+
+  const agencyAnswered: AnswersV2 = {
+    ...second.answers,
+    q2_customer_buyer: "b2b",
+    q2_marketing_agency_scope_clarity: "partial",
+  };
+  const agencyPlan = buildCandidateQuestionPlanV9Prototype(
+    agencyAnswered, [first.event, second.event], 16,
+  );
+  assert.equal(agencyPlan.activeAnswers.q2_marketing_agency_scope_clarity, "partial");
+  assert.equal(agencyPlan.activeAnswers.q2_food_menu_visibility, undefined);
+  assert.ok(agencyPlan.visibleInteractionCount >= 16);
+  assert.ok(agencyPlan.plan.routeLength <= 24);
+});
