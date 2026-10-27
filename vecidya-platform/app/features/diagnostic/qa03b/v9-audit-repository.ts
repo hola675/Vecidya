@@ -126,3 +126,32 @@ export async function appendDiagnosticEventV9(
     throw error;
   }
 }
+
+/**
+ * Loads the complete audit stream in bounded pages and checks for missing or
+ * reordered events. A gap is an integrity error, not a recoverable partial run.
+ */
+export async function loadDiagnosticEventHistoryV9(
+  db: V9AuditDb,
+  workspaceId: string,
+  runId: string,
+): Promise<readonly { seq: number; event_id: string; kind: string; payload_json: string; schema_version: number }[]> {
+  if (!workspaceId || !runId) throw new Error("v9_history_invalid_scope");
+  const run = await db.prepare(
+    "SELECT last_seq FROM diagnostic_v9_runs WHERE workspace_id = ? AND run_id = ?",
+  ).bind(workspaceId, runId).first<{ last_seq: number }>();
+  if (!run) throw new Error("v9_run_not_found");
+  if (!Number.isSafeInteger(run.last_seq) || run.last_seq < 0) throw new Error("v9_history_invalid_sequence");
+  const history: { seq: number; event_id: string; kind: string; payload_json: string; schema_version: number }[] = [];
+  let cursor = 0;
+  while (cursor < run.last_seq) {
+    const page = await readDiagnosticEventsV9(db, workspaceId, runId, cursor);
+    if (!page.length) throw new Error("v9_history_incomplete");
+    for (const event of page) {
+      if (event.seq !== cursor + 1 || event.seq > run.last_seq) throw new Error("v9_history_sequence_gap");
+      history.push(event);
+      cursor = event.seq;
+    }
+  }
+  return history;
+}
