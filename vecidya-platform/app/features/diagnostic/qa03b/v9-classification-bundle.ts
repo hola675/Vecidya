@@ -1,5 +1,6 @@
 import type { AnswersV2 } from "../qbv2-rules";
 import { NICHE_REGISTRY } from "../taxonomy";
+import { filterValidDiagnosticAnswersV9 } from "./v9-answer-validation";
 import { resolveEligibleQuestionsV2 } from "./engine";
 import { buildCandidateQuestionPlanFromBankV3, type CandidateQuestionPlanV3 } from "./v9-candidate-planner";
 import { QA03B_CANDIDATE_SECTOR_V4, QA03B_SPECIALTY_SELECTORS_V1 } from "./specialty-candidate-bank";
@@ -53,7 +54,10 @@ const selectorBySector = new Map(
  * this contract and the classification/plan parity tests.
  */
 export function resolveActiveDiagnosticAnswersV9(answers: DiagnosticAnswersV9): DiagnosticAnswersV9 {
-  return resolveEligibleQuestionsV2(answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2).activeAnswers;
+  return resolveEligibleQuestionsV2(
+    filterValidDiagnosticAnswersV9(answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2),
+    QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2,
+  ).activeAnswers;
 }
 
 export function applyClassificationInteractionV9(
