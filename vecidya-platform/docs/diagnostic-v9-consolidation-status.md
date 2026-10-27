@@ -58,3 +58,13 @@ No fusionar PR #162 ni desplegar producción hasta aceptación. No borrar ramas 
 ### CI focalizada — corrección del 2026-10-27
 
 Se detectó que el job `diagnostic-v9-focused` no ejecutaba `tests/unit/diagnostic/qa03b-v9-classification-bundle.test.ts`, aunque este archivo cubre replay, identidad del sector, cambios de nicho y conservación/eliminación de respuestas. Se añadió explícitamente al comando `node --test` del workflow. **La incorporación al workflow no equivale a ejecución PASS**; revisar el run del PR y sus logs antes de cerrar P2.
+
+## Avance P2 — clasificación y conteo (2026-10-27)
+
+- Replay rechaza identificadores de sector incorrectos (9149212); prueba focalizada añadida (597b2c6).
+- Prueba de cambio de especialidad conserva contexto general y exige eliminar respuestas especializadas obsoletas (a19f46a).
+- El conteo de interacciones solo descuenta sector y especialidad si el ultimo evento coincide con la clasificacion activa (18c7d1b; prueba cc5f63f).
+- Se verifica ademas que el selector y el valor de especialidad del evento sean validos antes de descontar (d56a63f; prueba 9516a47).
+- El workflow focalizado incluye el archivo de pruebas de clasificacion (37f792e).
+
+**Pendiente:** ejecutar y revisar CI del HEAD; completar auditoria editorial P1 y recorridos P2. No declarar PASS, merge ni despliegue sin evidencia.
