@@ -4,9 +4,10 @@ import { candidateSolutionContextOfV3, matchCandidateSolutionV3 } from "./qbv2-c
 import { buildDiagnosticRecommendations, type DiagnosticRecommendations } from "../qbv2-recommendations";
 import type { SolutionMatch } from "../qbv2-solutions";
 import type { AnswersV2 } from "../qbv2-rules";
+import type { QuestionDefinitionV2 } from "../qbv2-contract";
 import { CANDIDATE_CALIBRATION_V3, type CandidateCalibrationV3 } from "../qbv2-candidate-calibration";
 
-export type CandidateRecommendationsAndSolutionsInputV3 = { readonly answers: AnswersV2; readonly calibration?: CandidateCalibrationV3 };
+export type CandidateRecommendationsAndSolutionsInputV3 = { readonly answers: AnswersV2; readonly calibration?: CandidateCalibrationV3; readonly bank?: readonly QuestionDefinitionV2[] };
 
 export type CandidateRecommendationsAndSolutionsV3 = CandidateNarrativeAndOverallV3 & {
   readonly recommendations: DiagnosticRecommendations;
@@ -24,7 +25,7 @@ export type CandidateRecommendationsAndSolutionsV3 = CandidateNarrativeAndOveral
  */
 export function buildCandidateRecommendationsAndSolutionsV3(input: CandidateRecommendationsAndSolutionsInputV3): CandidateRecommendationsAndSolutionsV3 {
   const calibration = input.calibration ?? CANDIDATE_CALIBRATION_V3;
-  const base = buildCandidateNarrativeAndOverallV3({ answers: input.answers, calibration });
+  const base = buildCandidateNarrativeAndOverallV3({ answers: input.answers, calibration, bank: input.bank });
   // R8-A: a prerequisite is "sound" under the same candidate severity bands the priorities used.
   const recommendations = buildDiagnosticRecommendations({ scoring: base.scoring, priorities: base.priorities, semanticFacts: base.semanticFacts, narrative: base.narrative, severity: calibration.severity });
   // R6-C.1: candidate process authority (q2_process_systemization), never the legacy PROCESS_SIGNALS heuristic.
