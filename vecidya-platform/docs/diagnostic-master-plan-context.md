@@ -108,3 +108,7 @@ El prototipo requiere sector y especialidad explicitos para descontar una intera
 ### L3 P1 editorial — deteccion de evidencia incompleta (2026-10-27)
 
 La matriz editorial V9 ahora marca `missing_evidence_mapping` cuando una opcion de una pregunta migrada no tiene lectura en alguna dimension declarada (`63def58`). Se incorporo prueba sintetica que retira una lectura para exigir el flag (`b693fed`). Esta alerta es diagnostica: no altera el banco, las puntuaciones ni las decisiones editoriales; no equivale a aprobacion humana. Pendiente: ejecutar el job focalizado y revisar sus resultados antes de cerrar el lote.
+
+### L3 — cola editorial trazable (2026-10-27)
+
+Se implemento `buildEditorialReviewQueueV9` (`53e2683`) para convertir las alertas por opcion en una cola con `questionId`, `optionValue`, `flags`, decision editorial y proxima accion. Se agrego una prueba de trazabilidad y determinismo (`f0a0a36`). La cola no aprueba contenido, no cambia puntuaciones y no ordena por severidad todavia. Pendiente: ejecutar CI y clasificar las alertas para priorizar la revision humana.
