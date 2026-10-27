@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as publicBank } from "../../../app/features/diagnostic/qa03b/bank";
-import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, buildEditorialReviewBatchesV9, countEditorialReviewPrioritiesV9, listHighPriorityEditorialQuestionsV9, buildHighPriorityEditorialReportV9, listMissingEvidenceOptionsV9, auditMissingEvidenceDimensionsV9, classifyEditorialReviewPriorityV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
+import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, buildEditorialReviewBatchesV9, countEditorialReviewPrioritiesV9, listHighPriorityEditorialQuestionsV9, buildHighPriorityEditorialReportV9, listMissingEvidenceOptionsV9, auditMissingEvidenceDimensionsV9, groupMissingEvidenceByDimensionV9, classifyEditorialReviewPriorityV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
 
 test("P1b: matriz completa de 77 preguntas / 387 opciones / 15 variantes, sin considerar pendientes aprobadas", () => {
   const matrix = buildCandidateEditorialMatrixV9();
@@ -257,4 +257,16 @@ test("P1: dimensiones ausentes provienen del banco y coinciden con las alertas a
     }
   }
   assert.deepEqual(auditMissingEvidenceDimensionsV9([]), []);
+});
+
+test("P1: agrupación por dimensión preserva todos los huecos reales sin duplicarlos", () => {
+  const details = auditMissingEvidenceDimensionsV9(bank);
+  const grouped = groupMissingEvidenceByDimensionV9(bank);
+  const expected = details.flatMap((item) => item.missingDimensions.map((dimension) =>
+    JSON.stringify([dimension, item.questionId, item.optionValue])));
+  const actual = grouped.flatMap((group) => group.affectedOptions.map((item) =>
+    JSON.stringify([group.dimension, item.questionId, item.optionValue])));
+  assert.deepEqual(actual.slice().sort(), expected.slice().sort());
+  assert.equal(new Set(grouped.map((item) => item.dimension)).size, grouped.length);
+  assert.deepEqual(groupMissingEvidenceByDimensionV9([]), []);
 });
