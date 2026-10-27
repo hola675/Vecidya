@@ -278,3 +278,20 @@ test("visible count does not discount a missing sector answer", () => {
     Object.keys(incomplete).length,
   );
 });
+
+test("classification replay rejects an event with a mismatched specialty value", () => {
+  const applied = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(applied.ok, true);
+  if (!applied.ok) return;
+  const invalid: ClassificationInteractionEventV9 = {
+    ...applied.event,
+    niche: "dentist",
+  };
+  assert.equal(replayClassificationInteractionsV9(restaurantContext, [invalid]), null);
+  assert.deepEqual(
+    replayClassificationInteractionsV9(restaurantContext, [applied.event]),
+    applied.answers,
+  );
+});
