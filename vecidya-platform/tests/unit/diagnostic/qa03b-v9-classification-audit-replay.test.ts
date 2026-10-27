@@ -60,3 +60,18 @@ test("V9 rejects malformed classification snapshots", () => {
   assert.equal(isDiagnosticClassificationStateV9({ version: 9, answers: { q2_sector: 4 }, events: [], historicalInteractionCount: 0 }), false);
   assert.equal(isDiagnosticClassificationStateV9({ version: 8, answers: {}, events: [], historicalInteractionCount: 0 }), false);
 });
+
+test("V9 rejects a classification snapshot whose answers contradict its events", () => {
+  assert.equal(isDiagnosticClassificationStateV9({
+    version: 9,
+    answers: { q2_sector: "other" },
+    events: [],
+    historicalInteractionCount: 0,
+  }), false);
+  assert.equal(isDiagnosticClassificationStateV9({
+    version: 9,
+    answers: {},
+    events: [{ kind: QA03B_V9_CLASSIFICATION_INTERACTION_ID, sector: "other", sectorQuestionId: "q2_sector" }],
+    historicalInteractionCount: 1,
+  }), false);
+});
