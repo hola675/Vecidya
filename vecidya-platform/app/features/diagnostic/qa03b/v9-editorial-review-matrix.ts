@@ -225,6 +225,21 @@ export function countEditorialReviewPrioritiesV9(matrix: EditorialMatrixResultV9
   return counts;
 }
 
+/** Lista concreta de preguntas con alertas de evidencia de máxima prioridad. */
+export function listHighPriorityEditorialQuestionsV9(matrix: EditorialMatrixResultV9): readonly {
+  questionId: string;
+  optionValues: readonly string[];
+  nextAction: string;
+}[] {
+  return buildEditorialReviewBatchesV9(matrix)
+    .filter((batch) => batch.priority === "high")
+    .map((batch) => ({
+      questionId: batch.questionId,
+      optionValues: batch.items.filter((item) => item.priority === "high").map((item) => item.optionValue),
+      nextAction: batch.nextAction,
+    }));
+}
+
 export function buildCandidateEditorialMatrixV9(): EditorialMatrixResultV9 {
   return buildEditorialMatrixV9(QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
 }
