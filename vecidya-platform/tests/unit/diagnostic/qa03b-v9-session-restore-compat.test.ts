@@ -40,3 +40,22 @@ test("P1e: historical saved payload does not encode a per-answer question versio
   assert.deepEqual(saved.answeredQuestionIds, [legacy.id]);
   assert.equal(Object.hasOwn(saved, "answerVersions"), false);
 });
+
+test("P1e: eligible historical restaurant response survives v1 and cannot be read as v2", () => {
+  const context = {
+    q2_operational_status: "operating",
+    q2_has_customers: "yes",
+    q2_niche_food_hospitality: "restaurant",
+    q2_goal: "explain",
+    q2_presence_digital_base: "reliable_presence",
+  };
+  const historical = JSON.stringify({
+    ...JSON.parse(raw),
+    answers: { ...context, [legacy.id]: "not_applicable" },
+    answeredQuestionIds: [legacy.id],
+  });
+  const v1 = parseSessionV3(historical, now, { bank: [legacy] });
+  assert.ok(v1);
+  assert.equal(v1.answers[legacy.id], "not_applicable");
+  assert.equal(parseSessionV3(historical, now, { bank: [proposed] }), null);
+});
