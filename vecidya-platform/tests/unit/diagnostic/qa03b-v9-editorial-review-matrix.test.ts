@@ -117,3 +117,20 @@ test("P1: la matriz identifica opciones sin lectura de evidencia en preguntas mi
   assert.ok(answer.reviewFlags.includes("missing_evidence_mapping"));
   assert.ok(matrix.summary.reviewFlags > 0);
 });
+
+test("P1: las respuestas neutrales con lectura de evidencia se señalan sin alterar el banco", () => {
+  const source = bank.find((q) => q.evidenceMigration === "migrated" && (q.evidenceV3?.dimensions.length ?? 0) > 0);
+  assert.ok(source);
+  const option = source.options[0];
+  const modified = {
+    ...source,
+    options: source.options.map((item, index) => index === 0 ? { ...item, kind: "unknown" as const } : item),
+  };
+  const before = JSON.stringify(modified);
+  const matrix = buildEditorialMatrixV9([modified]);
+  const answer = matrix.rows[0].options.find((item) => item.value === option.value);
+  assert.ok(answer);
+  assert.ok(answer.readsAs.length > 0);
+  assert.ok(answer.reviewFlags.includes("neutral_with_evidence"));
+  assert.equal(JSON.stringify(modified), before);
+});
