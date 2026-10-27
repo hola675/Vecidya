@@ -14,6 +14,7 @@ const migrations = [
   readFileSync(new URL("../../../db/migrations/0031_diagnostic_v9_identity_ownership.sql", import.meta.url), "utf8"),
   readFileSync(new URL("../../../db/migrations/0032_diagnostic_v9_claim_guards.sql", import.meta.url), "utf8"),
   readFileSync(new URL("../../../db/migrations/0033_diagnostic_v9_owner_assignment_guards.sql", import.meta.url), "utf8"),
+  readFileSync(new URL("../../../db/migrations/0034_diagnostic_v9_identity_claim_integrity.sql", import.meta.url), "utf8"),
 ];
 const versions = {
   bank: "bank-v9-test", engine: "engine-v9-test", scoring: "scoring-v9-test",
@@ -111,6 +112,8 @@ test("V9 database guard rejects anonymous ownership after identity has been clai
     for (const migration of migrations) sqlite.exec(migration);
     sqlite.prepare("INSERT INTO diagnostic_v9_runs (workspace_id,run_id,started_at,bank_version,engine_version,scoring_version,recommendation_version,consent_version) VALUES (?,?,?,?,?,?,?,?)")
       .run("public", "race-run", "2026-10-27", "b1", "e1", "s1", "r1", "c1");
+    sqlite.prepare("INSERT INTO diagnostic_v9_identities (identity_id,identity_type,user_id,created_at) VALUES (?,'user',?,?)")
+      .run("user-identity-claimed", "user-1", "2026-10-27");
     sqlite.prepare("INSERT INTO diagnostic_v9_identities (identity_id,identity_type,credential_hash,created_at,claimed_by_user_id,claimed_at) VALUES (?,'anonymous',?,?,?,?)")
       .run("anon-claimed", "a".repeat(64), "2026-10-27", "user-1", "2026-10-27");
     assert.throws(() => sqlite.prepare("INSERT INTO diagnostic_v9_run_ownership (workspace_id,run_id,identity_id,assigned_at,assignment_source) VALUES (?,?,?,?,?)")
