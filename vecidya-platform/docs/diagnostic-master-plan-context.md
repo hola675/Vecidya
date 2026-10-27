@@ -116,3 +116,7 @@ Se implemento `buildEditorialReviewQueueV9` (`53e2683`) para convertir las alert
 ### L3 — priorizacion editorial automatica (2026-10-27)
 
 La cola editorial ahora expone prioridad `high`, `medium` o `low` por opcion (`975203f`): falta de mapeo de evidencia migrada = alta; lecturas neutrales o neutralidad pendiente = media; alertas de redaccion = baja. La regresion (`471e116`) verifica las reglas y la correspondencia con cada elemento de cola. La prioridad es operativa, no puntuacion ni aprobacion editorial. Pendiente ejecutar CI focalizada y revisar resultados antes de cerrar L3.
+
+### L3 — lotes editoriales por pregunta (2026-10-27)
+
+`buildEditorialReviewBatchesV9` agrupa las alertas por pregunta y ordena grupos por maxima prioridad (alta, media, baja), con orden estable del banco en empates (`00f24e3`). Una prueba valida que no se pierden alertas, que cada pregunta forma un unico grupo y que el orden es determinista (`1727d41`). Pendiente: ejecucion real CI y revision de los lotes; no se consideran aprobados.
