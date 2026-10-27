@@ -48,7 +48,7 @@ test("P1e: eligible historical restaurant response survives v1 and cannot be rea
     q2_has_customers: "yes",
     q2_niche_food_hospitality: "restaurant",
     q2_goal: "explain",
-    q2_presence_digital_base: "own_updated",
+    q2_presence_digital_base: "reliable_presence",
   };
   const historical = JSON.stringify({
     ...JSON.parse(raw),
