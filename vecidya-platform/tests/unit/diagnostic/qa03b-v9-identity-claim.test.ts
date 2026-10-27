@@ -11,6 +11,7 @@ test("V9 claim preparation requires credential proof and existing authenticated 
   const identities = new Map<string, { identity_id: string; identity_type: string; credential_hash: string | null; claimed_by_user_id: string | null; user_id?: string }>();
   const claims: unknown[][] = [];
   const db: V9IdentityDb = {
+    async batch() { return []; },
     prepare(sql) {
       return { bind(...values: unknown[]) {
         return {
