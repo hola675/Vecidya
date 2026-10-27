@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as publicBank } from "../../../app/features/diagnostic/qa03b/bank";
-import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
+import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
 
 test("P1b: matriz completa de 77 preguntas / 387 opciones / 15 variantes, sin considerar pendientes aprobadas", () => {
   const matrix = buildCandidateEditorialMatrixV9();
@@ -133,4 +133,22 @@ test("P1: las respuestas neutrales con lectura de evidencia se señalan sin alte
   assert.ok(answer.readsAs.length > 0);
   assert.ok(answer.reviewFlags.includes("neutral_with_evidence"));
   assert.equal(JSON.stringify(modified), before);
+});
+
+test("P1: cola editorial conserva trazabilidad de preguntas, opciones y alertas", () => {
+  const matrix = buildCandidateEditorialMatrixV9();
+  const queue = buildEditorialReviewQueueV9(matrix);
+  assert.equal(queue.length, matrix.rows.reduce(
+    (total, row) => total + row.options.filter((option) => option.reviewFlags.length > 0).length, 0,
+  ));
+  for (const item of queue) {
+    const row = matrix.rows.find((candidate) => candidate.id === item.questionId);
+    assert.ok(row);
+    const option = row.options.find((candidate) => candidate.value === item.optionValue);
+    assert.ok(option);
+    assert.deepEqual(item.flags, option.reviewFlags);
+    assert.equal(item.decision, row.decision);
+    assert.equal(item.nextAction, row.nextAction);
+  }
+  assert.deepEqual(buildEditorialReviewQueueV9(matrix), queue);
 });
