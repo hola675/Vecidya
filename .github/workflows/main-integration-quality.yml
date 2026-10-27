@@ -69,6 +69,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Typecheck V9 candidate and tests
         run: pnpm typecheck
+      - name: Build V9 candidate routes and client bundles
+        run: pnpm build
       - name: V9 question bank, graph and adaptive journey contracts
         run: >-
           node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test
