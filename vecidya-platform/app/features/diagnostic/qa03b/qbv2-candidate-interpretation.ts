@@ -5,6 +5,7 @@ import { deriveSemanticFacts, type SemanticDiagnosticFacts, type SemanticEvidenc
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
 import type { DigitalDimensionId } from "../qbv2-dimensions";
 import type { AnswersV2 } from "../qbv2-rules";
+import type { QuestionDefinitionV2 } from "../qbv2-contract";
 import { CANDIDATE_CALIBRATION_V3, type CandidateCalibrationV3 } from "../qbv2-candidate-calibration";
 
 /**
@@ -14,20 +15,25 @@ import { CANDIDATE_CALIBRATION_V3, type CandidateCalibrationV3 } from "../qbv2-c
  * R3 V3 mappings do not define legacy `subcriteria`; `facet` falls back to the question ID rather than
  * inventing a semantic topic.
  */
-export const CANDIDATE_SEMANTIC_EVIDENCE_CATALOG_V3: SemanticEvidenceCatalog = {
-  directness: (questionId, dimension) => {
-    const question = REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3.find((item) => item.id === questionId);
-    if (!question || question.evidenceMigration !== "migrated" || !question.evidenceV3) return undefined;
-    return question.evidenceV3.dimensions.find((item) => item.dimension === dimension)?.directness;
-  },
-  directQuestionIds: (dimension: DigitalDimensionId) =>
-    REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3
-      .filter((question) => question.evidenceMigration === "migrated" && question.evidenceV3?.dimensions.some((item) => item.dimension === dimension && item.directness === "direct"))
-      .map((question) => question.id),
-  facet: (questionId) => questionId,
-};
+function candidateSemanticEvidenceCatalogForBank(bank: readonly QuestionDefinitionV2[]): SemanticEvidenceCatalog {
+  return {
+    directness: (questionId, dimension) => {
+      const question = bank.find((item) => item.id === questionId);
+      if (!question || question.evidenceMigration !== "migrated" || !question.evidenceV3) return undefined;
+      return question.evidenceV3.dimensions.find((item) => item.dimension === dimension)?.directness;
+    },
+    directQuestionIds: (dimension: DigitalDimensionId) =>
+      bank
+        .filter((question) => question.evidenceMigration === "migrated" && question.evidenceV3?.dimensions.some((item) => item.dimension === dimension && item.directness === "direct"))
+        .map((question) => question.id),
+    facet: (questionId) => questionId,
+  };
+}
 
-export type CandidateInterpretationCoreInputV3 = { readonly answers: AnswersV2; readonly calibration?: CandidateCalibrationV3 };
+export const CANDIDATE_SEMANTIC_EVIDENCE_CATALOG_V3: SemanticEvidenceCatalog =
+  candidateSemanticEvidenceCatalogForBank(REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3);
+
+export type CandidateInterpretationCoreInputV3 = { readonly answers: AnswersV2; readonly calibration?: CandidateCalibrationV3; readonly bank?: readonly QuestionDefinitionV2[] };
 
 export type CandidateInterpretationCoreV3 = {
   readonly activeAnswers: AnswersV2;
@@ -48,7 +54,8 @@ export function buildCandidateInterpretationCoreV3(input: CandidateInterpretatio
   // R8-A: one candidate calibration drives scoring, priority severity and the fact readings, so the three can
   // never disagree about where "material"/"moderate"/"strength" begin.
   const calibration = input.calibration ?? CANDIDATE_CALIBRATION_V3;
-  const scoring = scoreCandidateContextualDimensionsV3({ answers: input.answers, calibration });
+  const bank = input.bank ?? REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3;
+  const scoring = scoreCandidateContextualDimensionsV3({ answers: input.answers, calibration }, bank);
   const priorities = deriveConstraintsAndPriorities(scoring, calibration.severity);
   // Semantic facts must read the resolved active answers, never the caller's raw/stale ones: an earlier
   // answer that routing invalidated must not resurrect stale evidence, constraints, or provenance.
@@ -56,8 +63,10 @@ export function buildCandidateInterpretationCoreV3(input: CandidateInterpretatio
     answers: scoring.activeAnswers,
     scoring,
     priorities,
-    bank: REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3,
-    evidenceCatalog: CANDIDATE_SEMANTIC_EVIDENCE_CATALOG_V3,
+    bank,
+    evidenceCatalog: bank === REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3
+      ? CANDIDATE_SEMANTIC_EVIDENCE_CATALOG_V3
+      : candidateSemanticEvidenceCatalogForBank(bank),
     severity: calibration.severity,
   });
   return { activeAnswers: scoring.activeAnswers, context: scoring.context, scoring, priorities, semanticFacts };
