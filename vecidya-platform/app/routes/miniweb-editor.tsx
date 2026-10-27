@@ -120,6 +120,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   });
   const [media, setMedia] = useState(data.media);
   const leaveDialogRef = useRef<HTMLDialogElement>(null);
+  const stepDialogRef = useRef<HTMLDialogElement>(null);
+  const [stepDialogOpen, setStepDialogOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [removingMediaId, setRemovingMediaId] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(true);
@@ -138,6 +140,12 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
     isDirty && currentLocation.pathname !== nextLocation.pathname,
   );
   const orderedModules = [...configuration.modules].sort((left, right) => left.sortOrder - right.sortOrder || left.type.localeCompare(right.type));
+  const contentTabOptions = ([
+    ["services", "Servicios", offerings.filter((item) => item.kind === "service").length, "services"],
+    ["products", "Productos", offerings.filter((item) => item.kind === "product").length, "products"],
+    ["faq", "Preguntas frecuentes", faqs.length, "faq"],
+    ["media", "Archivos e identidad", media.length, "gallery"],
+  ] as const).filter(([, , , moduleType]) => orderedModules.some((module) => module.type === moduleType && module.enabled));
   const steps = [
     { key: "design", title: "Diseño", help: "Comprueba la plantilla y la identidad de tu negocio." },
     { key: "sections", title: "Secciones", help: "Elige qué mostrar y en qué orden." },
@@ -148,21 +156,19 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
   const stepIndex = steps.findIndex((step) => step.key === activeTab);
   const currentStep = steps[stepIndex];
   function goToContent(type: MiniWebModuleType) {
-    setContentTab(type === "faq" ? "faq" : type === "gallery" ? "media" : type === "products" ? "products" : "services");
     goToStep(2);
+    setContentTab(type === "faq" ? "faq" : type === "gallery" ? "media" : type === "products" ? "products" : "services");
   }
 
   function goToStep(index: number) {
     const step = steps[index];
     if (!step) return;
     setActiveTab(step.key);
-    window.requestAnimationFrame(() => {
-      document.getElementById("miniweb-step-title")?.focus({ preventScroll: true });
-      document.getElementById("miniweb-step-guide")?.scrollIntoView({
-        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-        block: "start",
-      });
-    });
+    if (step.key === "content") {
+      const firstActive = orderedModules.find((module) => module.enabled && ["services", "products", "faq", "gallery"].includes(module.type));
+      if (firstActive) setContentTab(firstActive.type === "gallery" ? "media" : firstActive.type === "faq" ? "faq" : firstActive.type === "products" ? "products" : "services");
+    }
+    setStepDialogOpen(true);
   }
 
 
@@ -174,6 +180,13 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
     if (blocker.state === "blocked" && !dialog.open) dialog.showModal();
     if (blocker.state !== "blocked" && dialog.open) dialog.close();
   }, [blocker.state]);
+
+  useEffect(() => {
+    const dialog = stepDialogRef.current;
+    if (!dialog) return;
+    if (stepDialogOpen && !dialog.open) dialog.showModal();
+    if (!stepDialogOpen && dialog.open) dialog.close();
+  }, [stepDialogOpen]);
 
   useEffect(() => {
     if (!isDirty) return;
@@ -375,6 +388,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
       workspaceUser={data.workspaceUser}
     >
       <main className="client-page miniweb-editor" id="client-page-content">
+        {message ? <p aria-atomic="true" className={`alert miniweb-editor__message miniweb-editor__message--${message.kind}`} role={message.kind === "error" ? "alert" : "status"}>{message.text}</p> : null}
         <header className="page-header miniweb-editor__header">
           <div>
             <p className="eyebrow">TU PRESENCIA DIGITAL</p>
@@ -384,49 +398,67 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
           <div className="miniweb-editor__header-actions">
             <Link className="button button--secondary" to="/app/business-profile">Editar Mi negocio</Link>
             {data.profileStatus === "published" && data.profile?.slug ? (
-              <Link className="button button--secondary" rel="noopener noreferrer" target="_blank" to={`/vecindario/${data.profile.slug}`}>Ver MiniWeb pública</Link>
+              <Link className="button button--secondary" to={`/vecindario/${data.profile.slug}`}>Ver MiniWeb pública</Link>
             ) : null}
           </div>
         </header>
 
-        <nav aria-label="Pasos para preparar tu MiniWeb" className="miniweb-editor__steps miniweb-editor__tabs">
-          {([
-            ["design", "1", "Diseño"],
-            ["sections", "2", "Secciones"],
-            ["content", "3", "Contenido"],
-            ["preview", "4", "Vista previa"],
-            ["publish", "5", "Publicar"],
-          ] as const).map(([key, number, label]) => (
-            <button
-              aria-current={activeTab === key ? "step" : undefined}
-              aria-pressed={activeTab === key}
-              className={activeTab === key ? "miniweb-editor__tab--active" : ""}
-              key={key}
-              onClick={() => goToStep(steps.findIndex((step) => step.key === key))}
-              type="button"
-            >
-              <span>{number}</span> {label}
-            </button>
-          ))}
-        </nav>
-        <p className="miniweb-editor__note">Configura un apartado a la vez. Los cambios de los demás apartados se conservan mientras editas. Guarda el borrador antes de salir.</p>
-        {message ? <p className={`alert miniweb-editor__message miniweb-editor__message--${message.kind}`} role={message.kind === "error" ? "alert" : "status"}>{message.text}</p> : null}
-        <section aria-labelledby="miniweb-step-title" className="miniweb-editor__guide" id="miniweb-step-guide">
-          <p className="eyebrow">PASO {stepIndex + 1} DE {steps.length}</p>
-          <h2 id="miniweb-step-title" tabIndex={-1}>{currentStep.title}</h2>
-          <p>{currentStep.help}</p>
-          <div className="miniweb-editor__guide-navigation">
-            <Button disabled={stepIndex === 0} onClick={() => goToStep(stepIndex - 1)} tone="ghost">Paso anterior</Button>
-            <Button disabled={stepIndex === steps.length - 1} onClick={() => goToStep(stepIndex + 1)} tone="secondary">Siguiente paso</Button>
+        <div className="miniweb-editor__workspace">
+          <nav aria-label="Pasos para preparar tu MiniWeb" className="miniweb-editor__steps miniweb-editor__tabs">
+            {([
+              ["design", "1", "Diseño"],
+              ["sections", "2", "Secciones"],
+              ["content", "3", "Contenido"],
+              ["preview", "4", "Vista previa"],
+              ["publish", "5", "Publicar"],
+            ] as const).map(([key, number, label]) => (
+              <button
+                aria-current={activeTab === key ? "step" : undefined}
+                className={activeTab === key ? "miniweb-editor__tab--active" : ""}
+                key={key}
+                onClick={() => goToStep(steps.findIndex((step) => step.key === key))}
+                type="button"
+              >
+                <span>{number}</span><span className="miniweb-editor__step-copy"><strong>{label}</strong><small>{steps.find((step) => step.key === key)?.help}</small></span>
+              </button>
+            ))}
+            <p className="miniweb-editor__step-note">Elige un paso para editarlo sin cargar la página completa.</p>
+          </nav>
+          <div className="miniweb-editor__workspace-content">
+        <Card aria-label="Resumen de publicación" className="miniweb-editor__overview">
+          <div>
+            <p className="eyebrow">PUBLICACIÓN</p>
+            <strong className="miniweb-editor__status-value">{publicStatusLabel}</strong>
+            <p>{publicationStatusLabel}</p>
           </div>
-        </section>
-        <div className="miniweb-editor__tab-actions">
-          <span role="status">{editorStatusLabel}</span>
-          <Button disabled={!data.canEdit || busy || !isDirty} onClick={handleSave} tone="secondary">{busy ? "Guardando…" : "Guardar borrador"}</Button>
-          <Button onClick={() => goToStep(3)} tone="ghost">Revisar vista previa</Button>
+          <div className="miniweb-editor__overview-actions">
+            <span role="status">{editorStatusLabel}</span>
+            <Button disabled={!data.canEdit || busy || !isDirty} onClick={handleSave} tone="secondary">{busy ? "Guardando…" : "Guardar borrador"}</Button>
+            {data.profileStatus === "published" && data.profile?.slug ? <Link className="text-link" to={`/vecindario/${data.profile.slug}`}>Ver MiniWeb</Link> : null}
+          </div>
+        </Card>
+        <Card aria-labelledby="miniweb-start-title" className="miniweb-editor__start-card">
+          <div className="miniweb-editor__start-copy">
+            <p className="eyebrow">SIGUIENTE PASO</p>
+            <h2 id="miniweb-start-title">Prepara tu MiniWeb paso a paso</h2>
+            <p>Configura la identidad, elige las secciones y completa su contenido. En Vista previa podrás revisar cómo se verá antes de publicar.</p>
+            <ol aria-label="Flujo de configuración" className="miniweb-editor__start-flow">
+              <li><span>1</span> Configura</li><li><span>2</span> Revisa</li><li><span>3</span> Publica</li>
+            </ol>
+          </div>
+          <div className="miniweb-editor__start-actions">
+            <Button onClick={() => goToStep(0)} tone="primary">Empezar por Diseño</Button>
+            <Button onClick={() => goToStep(3)} tone="ghost">Abrir vista previa</Button>
+          </div>
+        </Card>
+          </div>
         </div>
-
-        <div className="miniweb-editor__layout">
+        <dialog aria-labelledby="miniweb-dialog-title" className="miniweb-editor__step-dialog" onClose={() => setStepDialogOpen(false)} ref={stepDialogRef}>
+          <header className="miniweb-editor__step-dialog-header">
+            <div><p className="eyebrow">PASO {stepIndex + 1} DE {steps.length}</p><h2 id="miniweb-dialog-title">{currentStep.title}</h2><p>{currentStep.help}</p></div>
+            <button aria-label="Cerrar configuración del paso" className="miniweb-editor__dialog-close" onClick={() => setStepDialogOpen(false)} type="button">×</button>
+          </header>
+        <div className={`miniweb-editor__layout${activeTab === "preview" || activeTab === "publish" ? " miniweb-editor__layout--single" : ""}`}>
           <div className="miniweb-editor__controls">
             <div hidden={activeTab !== "design"}>
             <Card aria-labelledby="miniweb-template-title" className="miniweb-editor__template" id="miniweb-design">
@@ -515,13 +547,8 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
 
             </div>
             <div hidden={activeTab !== "content"}>
-              <nav aria-label="Apartados del contenido MiniWeb" className="miniweb-editor__content-nav">
-                {([
-                  ["services", "Servicios", offerings.filter((item) => item.kind === "service").length],
-                  ["products", "Productos", offerings.filter((item) => item.kind === "product").length],
-                  ["faq", "Preguntas frecuentes", faqs.length],
-                  ["media", "Archivos e identidad", media.length],
-                ] as const).map(([key, label, count]) => (
+              {contentTabOptions.length > 0 ? <nav aria-label="Secciones activas del contenido MiniWeb" className="miniweb-editor__content-nav">
+                {contentTabOptions.map(([key, label, count]) => (
                   <button
                     aria-pressed={contentTab === key}
                     className={contentTab === key ? "miniweb-editor__content-nav--active" : ""}
@@ -530,7 +557,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
                     type="button"
                   >{label} <span>{count}</span></button>
                 ))}
-              </nav>
+              </nav> : null}
               <div hidden={contentTab !== "services" && contentTab !== "products"}>
             <Card aria-labelledby="miniweb-offerings-title" className="miniweb-content-editor" id="miniweb-content">
               <div className="miniweb-editor__section-heading">
@@ -732,7 +759,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
             <p>Guardar conserva tus cambios como borrador. Publicar actualiza juntos el perfil, horarios, secciones, contenido y medios aprobados.</p>
             <p className="miniweb-editor__note">La vista pública no cambia hasta que elijas publicar. Revisa el resultado anterior antes de confirmar.</p>
             {data.profileStatus === "published" && data.profile?.slug ? (
-              <p className="miniweb-editor__note">Tu versión actual sigue visible en <Link rel="noopener noreferrer" target="_blank" to={`/vecindario/${data.profile.slug}`}>la página pública del negocio</Link> mientras editas el borrador.</p>
+              <p className="miniweb-editor__note">Tu versión actual sigue visible en <Link to={`/vecindario/${data.profile.slug}`}>la página pública del negocio</Link> mientras editas el borrador.</p>
             ) : null}
             <section aria-label="Comprobación de la MiniWeb" className="miniweb-editor__checklist">
               <h3>Comprobación antes de publicar</h3>
@@ -760,6 +787,12 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
           </div>
           </div>
         </div>
+          <footer className="miniweb-editor__step-dialog-footer">
+            <Button disabled={stepIndex === 0} onClick={() => goToStep(stepIndex - 1)} tone="ghost">Anterior</Button>
+            <span role="status">{editorStatusLabel}</span>
+            {activeTab === "publish" ? <Button onClick={() => setStepDialogOpen(false)} tone="ghost">Cerrar</Button> : <Button onClick={() => goToStep(Math.min(stepIndex + 1, steps.length - 1))} tone="secondary">Siguiente</Button>}
+          </footer>
+        </dialog>
       </main>
       <dialog
         aria-describedby="miniweb-leave-description"

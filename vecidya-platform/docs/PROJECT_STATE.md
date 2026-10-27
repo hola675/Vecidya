@@ -6,7 +6,7 @@ Sobre ese SHA, `fix/admin-audit-pagination` implementa filtros server-side por t
 
 ## Corte vigente — producción 0.8.3 y candidato 0.8.4 local (2026-10-26)
 
-`origin/main@b8b255a4` integra PR #153/#154 y #155, con checkpoint de paginación Admin local documentado arriba. Producción `0.8.3`, Worker Version ID `a9ee55c5-f346-49a2-8f74-b8c6e45db36a`; GET anónimo fechado confirmó el footer y versión. Esta rama unifica el candidato de portada/secciones con `main` actual; el código candidato aún no está integrado ni publicado. Evidencia local y estado de pruebas: `TESTING.md`; estado remoto sin cambios: `ENVIRONMENTS.md`.
+`origin/main@b8b255a4` integra PR #153/#154 y #155, con checkpoint de paginación Admin local documentado arriba. Producción `0.8.3`, Worker Version ID `a9ee55c5-f346-49a2-8f74-b8c6e45db36a`; GET anónimo fechado confirmó el footer y versión. Esta rama unifica el candidato de portada/secciones y refina el editor MiniWeb: pasos compactos, panel acotado, lateral con espacio vertical compacto y drawer móvil de ancho fluido, avisos persistentes y navegación pública en la misma pestaña. Inspección visual autenticada manual con D1 local temporal y capturas escritorio/móvil; sin automatizadas por petición del usuario. Typecheck/build/diff-check PASS. No está integrada ni publicada. Evidencia y límites: `TESTING.md`; estado remoto sin cambios: `ENVIRONMENTS.md`.
 
 ## Corte histórico — dependencias, interfaz DIAG-VISUAL-03 y URLs (2026-10-25)
 

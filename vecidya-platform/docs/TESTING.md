@@ -1,5 +1,9 @@
 # Pruebas
 
+## APP-MINI-02D — refinamiento de configuración (2026-10-27)
+
+No se ejecutaron pruebas automatizadas por indicación del usuario. La inspección visual autenticada con D1 local temporal y capturas 1366×768/390×844 revisó el sidebar y el flujo del editor. La inspección interactiva revisó Diseño, Secciones, Contenido, la transición a Vista previa y los ejemplos de tarjetas aportados; se ajustaron ancho del diálogo, espaciado y tipografía. Las pestañas visibles dependen de los módulos activos. La cuenta sintética no contiene un perfil con datos para generar una MiniWeb previa real. No se ejecutaron pruebas automatizadas, no se probaron datos remotos ni se hizo deploy.
+
 ## ADMIN-AUDIT-PAGINATION-001 — filtros y paginación (2026-10-26)
 
 `/app/internal/audit` ahora filtra en servidor por texto/acción, conserva filtros en query string y pagina 50 resultados con orden estable por fecha e ID. La búsqueda incluye claves técnicas, valores auditados, actor/organización/perfil y etiquetas traducidas. El E2E sintético inserta 55 eventos y comprueba 50 + 5, avance/retroceso con filtros conservados, además de las búsquedas existentes de Capacitación y MiniWeb. **RAN:** `platform-service-administration-check.mjs` PASS contra Worker Wrangler, D1 efímera `0000–0029` y Chrome local; `pnpm run typecheck`, `pnpm run build`, `node --check` y `git diff --check` PASS. Sin migración ni acceso remoto. Organizaciones y otras listas continúan pendientes de evaluar/paginar.

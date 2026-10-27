@@ -75,7 +75,7 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
   }
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell app-shell--${active}`}>
       <a
         aria-hidden={isMobileNavigation && navigationOpen ? true : undefined}
         className="skip-link"
