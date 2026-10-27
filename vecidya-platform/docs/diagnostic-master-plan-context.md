@@ -80,3 +80,9 @@ Inspección de código sobre esta rama; no certifica runtime ni producción.
 - La propuesta gastronómica v2 permanece aislada; no se exige migración de sesiones históricas como requisito del motor V9.
 
 **Política:** un solo PR de trabajo, commits pequeños, pruebas focalizadas, evidencia antes de declarar PASS, no merge ni despliegue prematuro. Este plan no constituye certificación.
+
+### Seguimiento del plan — 2026-10-27
+
+P2 clasificacion: implementada la validacion del replay, la limpieza de respuestas especializadas al cambiar de nicho y la proteccion del conteo visible contra eventos antiguos, selectores incorrectos y valores de especialidad no validos. Pruebas de regresion incorporadas al workflow focalizado. **Pendiente ejecucion CI verificable; P2 no cerrado.**
+
+Proximo cierre: obtener resultados de pruebas focalizadas, resolver fallos, revisar recorridos por sector y continuar la matriz editorial por respuesta. Mantener V8 intacto y PR #162 sin fusionar.
