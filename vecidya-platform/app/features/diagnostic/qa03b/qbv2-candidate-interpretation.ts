@@ -1,5 +1,6 @@
 // Orquestador aislado QA-03B; el original certificado permanece reproducible.
 import { scoreCandidateContextualDimensionsV3, type CandidateContextualScoringResultV3 } from "./qbv2-candidate-scoring";
+import { scoreCandidateContextualDimensionsV3 as scorePinnedCandidateContextualDimensionsV3 } from "./v9-candidate-scoring";
 import { deriveConstraintsAndPriorities, type ConstraintPriorityResult } from "../qbv2-priorities";
 import { deriveSemanticFacts, type SemanticDiagnosticFacts, type SemanticEvidenceCatalog } from "./qbv2-candidate-semantic-facts";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
@@ -55,7 +56,9 @@ export function buildCandidateInterpretationCoreV3(input: CandidateInterpretatio
   // never disagree about where "material"/"moderate"/"strength" begin.
   const calibration = input.calibration ?? CANDIDATE_CALIBRATION_V3;
   const bank = input.bank ?? REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3;
-  const scoring = scoreCandidateContextualDimensionsV3({ answers: input.answers, calibration }, bank);
+  const scoring = input.bank === undefined
+    ? scoreCandidateContextualDimensionsV3({ answers: input.answers, calibration })
+    : scorePinnedCandidateContextualDimensionsV3({ answers: input.answers, calibration }, bank);
   const priorities = deriveConstraintsAndPriorities(scoring, calibration.severity);
   // Semantic facts must read the resolved active answers, never the caller's raw/stale ones: an earlier
   // answer that routing invalidated must not resurrect stale evidence, constraints, or provenance.
