@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { appendDiagnosticEventV9, type V9AuditDb } from "../../../app/features/diagnostic/qa03b/v9-audit-repository";
 
-type EventRow = { run_id: string; seq: number; kind: string; payload_json: string };
+type EventRow = { run_id: string; seq: number; kind: string; payload_json: string; occurred_at: string; actor_type: string; schema_version: number };
 function fakeDb() {
   const events = new Map<string, EventRow>();
   let seq = 0;
@@ -21,7 +21,7 @@ function fakeDb() {
               if (events.has(String(id))) throw new Error("UNIQUE constraint failed");
               if (nextSeq !== seq + 1) throw new Error("v9_sequence_conflict");
               seq = Number(nextSeq);
-              events.set(String(id), { run_id: String(values[1]), seq, kind: String(kind), payload_json: String(payload) });
+              events.set(String(id), { run_id: String(values[1]), seq, kind: String(kind), payload_json: String(payload), occurred_at: String(values[6]), actor_type: String(values[7]), schema_version: 1 });
               return { success: true, meta: { changes: 1 } };
             },
             async all<T>() { return { results: [] as T[] }; },
@@ -56,4 +56,11 @@ test("V9 append rejects invalid cursors and oversized payloads", async () => {
   const { db } = fakeDb();
   await assert.rejects(() => appendDiagnosticEventV9(db, { ...base, expectedSeq: -1 }), /v9_invalid_event/);
   await assert.rejects(() => appendDiagnosticEventV9(db, { ...base, payload: "x".repeat(16385) }), /v9_invalid_payload/);
+});
+
+test("V9 event retry rejects changed actor and timestamp", async () => {
+  const { db } = fakeDb();
+  await appendDiagnosticEventV9(db, base);
+  assert.deepEqual(await appendDiagnosticEventV9(db, { ...base, actorType: "operator" }), { status: "conflict" });
+  assert.deepEqual(await appendDiagnosticEventV9(db, { ...base, occurredAt: "2026-10-27T00:01:00Z" }), { status: "conflict" });
 });
