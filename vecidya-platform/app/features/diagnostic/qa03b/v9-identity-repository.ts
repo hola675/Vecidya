@@ -250,17 +250,25 @@ export async function assignDiagnosticRunToAnonymousVisitorV9(
   db: V9IdentityDb,
   input: { workspaceId: string; runId: string; identityId: string; assignedAt: string },
 ): Promise<{ identityId: string; recoveryCredential: string }> {
-  if (!input.workspaceId || !input.runId) throw new Error("v9_owner_invalid_input");
-  const identity = await createAnonymousIdentityCredentialV9(db, {
-    identityId: input.identityId,
-    createdAt: input.assignedAt,
-  });
-  await assignDiagnosticOwnerV9(db, {
-    workspaceId: input.workspaceId,
-    runId: input.runId,
-    identityId: identity.identityId,
-    assignedAt: input.assignedAt,
-    source: "anonymous_session",
-  });
-  return identity;
+  if (!input.workspaceId || !input.runId || !input.identityId || !input.assignedAt) {
+    throw new Error("v9_owner_invalid_input");
+  }
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  const recoveryCredential = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(recoveryCredential));
+  const credentialHash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  const result = await db.batch([
+    db.prepare(
+      "INSERT INTO diagnostic_v9_identities (identity_id,identity_type,credential_hash,created_at) VALUES (?,'anonymous',?,?)",
+    ).bind(input.identityId, credentialHash, input.assignedAt),
+    db.prepare(
+      "INSERT INTO diagnostic_v9_run_ownership (workspace_id,run_id,identity_id,assigned_at,assignment_source) VALUES (?,?,?,?,'anonymous_session')",
+    ).bind(input.workspaceId, input.runId, input.identityId, input.assignedAt),
+  ]);
+  if (result.length !== 2 || result.some((item) => !item.success) ||
+      (result[0]?.meta?.changes ?? 0) !== 1 || (result[1]?.meta?.changes ?? 0) !== 1) {
+    throw new Error("v9_anonymous_assignment_failed");
+  }
+  return { identityId: input.identityId, recoveryCredential };
 }
