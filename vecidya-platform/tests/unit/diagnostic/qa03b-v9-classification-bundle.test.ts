@@ -631,3 +631,33 @@ test("P2: replay rechaza especialidad inyectada en sector sin selector", () => {
   assert.equal(replayClassificationInteractionsV9(restaurantContext, [forged]), null);
   assert.deepEqual(replayClassificationInteractionsV9(restaurantContext, [classified.event]), classified.answers);
 });
+
+test("P2: el historial acumulado no retrocede al descartar respuestas de otra especialidad", () => {
+  const restaurant = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(restaurant.ok, true);
+  if (!restaurant.ok) return;
+
+  const withFoodEvidence: AnswersV2 = {
+    ...restaurant.answers,
+    q2_food_menu_visibility: "clear",
+  };
+  const before = buildCandidateQuestionPlanV9Prototype(withFoodEvidence, [restaurant.event], 21);
+  assert.equal(before.visibleInteractionCount, 21);
+
+  const switched = applyClassificationInteractionV9(withFoodEvidence, {
+    sector: "ecommerce",
+  });
+  assert.equal(switched.ok, true);
+  if (!switched.ok) return;
+  assert.equal(switched.answers.q2_food_menu_visibility, undefined);
+
+  const after = buildCandidateQuestionPlanV9Prototype(
+    switched.answers, [restaurant.event, switched.event], before.visibleInteractionCount,
+  );
+  assert.equal(after.visibleInteractionCount, before.visibleInteractionCount);
+  assert.ok(after.plan.routeLength <= 24);
+  assert.equal(countVisibleInteractionsV9(switched.answers, [restaurant.event, switched.event]),
+    Object.keys(switched.answers).length);
+});
