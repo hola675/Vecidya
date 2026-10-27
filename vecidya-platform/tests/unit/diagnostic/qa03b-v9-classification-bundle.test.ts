@@ -6,6 +6,7 @@ import {
   buildCandidateQuestionPlanV9Prototype,
   countVisibleInteractionsV9,
   replayClassificationInteractionsV9,
+  planDiagnosticClassificationStateV9,
   type ClassificationInteractionEventV9,
 } from "../../../app/features/diagnostic/qa03b/v9-classification-bundle";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
@@ -688,4 +689,22 @@ test("P2: un historial finito enorme se limita al máximo entero seguro", () => 
   );
   assert.equal(result.visibleInteractionCount, Number.MAX_SAFE_INTEGER);
   assert.ok(result.plan.routeLength <= 24);
+});
+
+test("P3: contrato de estado V9 produce el mismo plan que el adaptador candidato", () => {
+  const classified = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(classified.ok, true);
+  if (!classified.ok) return;
+  const state = {
+    version: 9 as const,
+    answers: classified.answers,
+    events: [classified.event],
+    historicalInteractionCount: 18,
+  };
+  const direct = buildCandidateQuestionPlanV9Prototype(state.answers, state.events, 18);
+  const fromState = planDiagnosticClassificationStateV9(state);
+  assert.deepEqual(fromState, direct);
+  assert.ok(fromState.plan.routeLength <= 24);
 });
