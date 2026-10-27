@@ -67,6 +67,8 @@ jobs:
           cache-dependency-path: vecidya-platform/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Typecheck V9 candidate and tests
+        run: pnpm typecheck
       - name: V9 question bank, graph and adaptive journey contracts
         run: >-
           node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test
