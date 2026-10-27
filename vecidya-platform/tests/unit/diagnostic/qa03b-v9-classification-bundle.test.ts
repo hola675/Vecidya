@@ -447,3 +447,48 @@ test("P2: cambiar de agencia a comercio electrónico descarta el alcance B2B ant
   assert.equal(plan.visibleInteractionCount, Object.keys(plan.activeAnswers).length);
   assert.ok(plan.plan.routeLength <= 24);
 });
+
+test("P2: historial de cambios conserva únicamente la última clasificación activa", () => {
+  const first = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(first.ok, true);
+  if (!first.ok) return;
+  const second = applyClassificationInteractionV9(first.answers, { sector: "ecommerce" });
+  assert.equal(second.ok, true);
+  if (!second.ok) return;
+  const third = applyClassificationInteractionV9(second.answers, {
+    sector: "b2b_services", niche: "marketing_agency",
+  });
+  assert.equal(third.ok, true);
+  if (!third.ok) return;
+
+  const events = [first.event, second.event, third.event];
+  const replayed = replayClassificationInteractionsV9(restaurantContext, events);
+  assert.deepEqual(replayed, third.answers);
+  assert.equal(third.answers.q2_niche_food_hospitality, undefined);
+  assert.equal(third.answers.q2_niche_b2b_services, "marketing_agency");
+  assert.equal(countVisibleInteractionsV9(third.answers, events), Object.keys(third.answers).length - 1);
+
+  const plan = buildCandidateQuestionPlanV9Prototype(third.answers, events, 20);
+  assert.ok(plan.visibleInteractionCount >= 20);
+  assert.ok(plan.plan.routeLength <= 24);
+});
+
+test("P2: un evento antiguo o manipulado no descuenta una interacción actual", () => {
+  const classified = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(classified.ok, true);
+  if (!classified.ok) return;
+
+  const oldEvent: ClassificationInteractionEventV9 = {
+    ...classified.event, sector: "health_wellness",
+    niche: "dentist", nicheQuestionId: "q2_niche_health_wellness",
+  };
+  assert.equal(countVisibleInteractionsV9(classified.answers, [classified.event, oldEvent]),
+    Object.keys(classified.answers).length);
+  assert.equal(replayClassificationInteractionsV9(restaurantContext, [{
+    ...classified.event, nicheQuestionId: "q2_niche_health_wellness",
+  }]), null);
+});
