@@ -285,6 +285,22 @@ export function auditMissingEvidenceDimensionsV9(bank: readonly QuestionDefiniti
   });
 }
 
+/** Agrupa los huecos reales por dimensión para organizar la revisión semántica. */
+export function groupMissingEvidenceByDimensionV9(bank: readonly QuestionDefinitionV2[]): readonly {
+  dimension: string;
+  affectedOptions: readonly { questionId: string; optionValue: string }[];
+}[] {
+  const groups = new Map<string, { questionId: string; optionValue: string }[]>();
+  for (const item of auditMissingEvidenceDimensionsV9(bank)) {
+    for (const dimension of item.missingDimensions) {
+      const affected = groups.get(dimension) ?? [];
+      affected.push({ questionId: item.questionId, optionValue: item.optionValue });
+      groups.set(dimension, affected);
+    }
+  }
+  return [...groups].map(([dimension, affectedOptions]) => ({ dimension, affectedOptions }));
+}
+
 export function buildCandidateEditorialMatrixV9(): EditorialMatrixResultV9 {
   return buildEditorialMatrixV9(QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
 }
