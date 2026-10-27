@@ -30,6 +30,20 @@ export async function action({ context, request }: Route.ActionArgs) {
     return failure(415, "Formato no permitido.");
   }
   const { env } = context.get(cloudflareContext);
+  const runtime = env as typeof env & {
+    DIAGNOSTIC_V9_PUBLIC_ENABLED?: string;
+    DIAGNOSTIC_V9_BANK_VERSION?: string;
+    DIAGNOSTIC_V9_ENGINE_VERSION?: string;
+    DIAGNOSTIC_V9_SCORING_VERSION?: string;
+    DIAGNOSTIC_V9_RECOMMENDATION_VERSION?: string;
+    DIAGNOSTIC_V9_CONSENT_VERSION?: string;
+  };
+  if (runtime.DIAGNOSTIC_V9_PUBLIC_ENABLED !== "true" ||
+      !runtime.DIAGNOSTIC_V9_BANK_VERSION || !runtime.DIAGNOSTIC_V9_ENGINE_VERSION ||
+      !runtime.DIAGNOSTIC_V9_SCORING_VERSION || !runtime.DIAGNOSTIC_V9_RECOMMENDATION_VERSION ||
+      !runtime.DIAGNOSTIC_V9_CONSENT_VERSION) {
+    return failure(503, "El historial V9 todavía no está habilitado.");
+  }
   if (!env.DIAGNOSTIC_PUBLIC_RATE_LIMITER) return failure(503, "El servicio no está disponible temporalmente.");
   if (!await allowRateLimitedRequest(env.DIAGNOSTIC_PUBLIC_RATE_LIMITER, request, "anonymous-diagnostic-identity")) {
     return failure(429, "Espera un momento antes de volver a intentarlo.");
