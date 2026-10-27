@@ -284,3 +284,39 @@ export async function expirePendingDiagnosticIdentityClaimV9(
   ).bind(input.claimId).run();
   return (result.meta?.changes ?? 0) === 1;
 }
+
+/** Reuses a visitor identity across multiple runs only with proof of its secret. */
+export async function assignDiagnosticRunToExistingAnonymousIdentityV9(
+  db: V9IdentityDb,
+  input: {
+    workspaceId: string;
+    runId: string;
+    identityId: string;
+    recoveryCredential: string;
+    assignedAt: string;
+  },
+): Promise<{ identityId: string }> {
+  if (!input.workspaceId || !input.runId || !input.identityId || !input.assignedAt) {
+    throw new Error("v9_owner_invalid_input");
+  }
+  const identity = await db.prepare(
+    "SELECT identity_id,identity_type,credential_hash,claimed_by_user_id FROM diagnostic_v9_identities WHERE identity_id=?",
+  ).bind(input.identityId).first<{
+    identity_id: string; identity_type: string; credential_hash: string | null; claimed_by_user_id: string | null;
+  }>();
+  if (!identity || identity.identity_type !== "anonymous" || !identity.credential_hash) {
+    throw new Error("v9_identity_not_claimable");
+  }
+  if (identity.claimed_by_user_id) throw new Error("v9_identity_already_claimed");
+  if (!await verifyAnonymousIdentityCredentialV9(input.recoveryCredential, identity.credential_hash)) {
+    throw new Error("v9_identity_proof_invalid");
+  }
+  await assignDiagnosticOwnerV9(db, {
+    workspaceId: input.workspaceId,
+    runId: input.runId,
+    identityId: input.identityId,
+    assignedAt: input.assignedAt,
+    source: "anonymous_session",
+  });
+  return { identityId: input.identityId };
+}
