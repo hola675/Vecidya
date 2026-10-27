@@ -5,6 +5,7 @@ import { DIAGNOSTIC_PATH } from "../features/diagnostic/deep-link";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getSession } from "../../server/auth/session.server";
 import { Link } from "react-router";
+import { useEffect } from "react";
 import { isIdentifiedReportJourneyAvailable } from "../features/diagnostic/identified-report-availability.server";
 
 import type { Route } from "./+types/diagnostic";
@@ -41,6 +42,16 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 }
 
 export default function Diagnostic({ loaderData }: Route.ComponentProps) {
+  useEffect(() => {
+    if (loaderData.authStatus !== "anonymous") return;
+    void fetch("/api/diagnostic/anonymous-identity", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{}",
+      credentials: "same-origin",
+    }).catch(() => undefined);
+  }, [loaderData.authStatus]);
+
   return (
     <PublicLayout>
       <main className="df-page">
