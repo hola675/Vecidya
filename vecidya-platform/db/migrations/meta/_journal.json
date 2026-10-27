@@ -218,6 +218,13 @@
       "when": 1793131200000,
       "tag": "0030_diagnostic_v9_audit",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "6",
+      "when": 1793135280000,
+      "tag": "0031_diagnostic_v9_identity_ownership",
+      "breakpoints": true
     }
   ]
 }
