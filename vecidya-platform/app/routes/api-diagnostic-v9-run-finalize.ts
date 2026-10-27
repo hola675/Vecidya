@@ -43,7 +43,8 @@ export async function action({ context, request, params }: Route.ActionArgs) {
     return failure(429, "Espera un momento antes de volver a intentarlo.");
   }
 
-  if (!validUuid(params.runId)) return failure(400, "El identificador del diagnóstico no es válido.");
+  const runId = params.runId;
+  if (!validUuid(runId)) return failure(400, "El identificador del diagnóstico no es válido.");
   let raw: string;
   try {
     raw = await readRequestBodyLimited(request, 1024);
@@ -69,7 +70,7 @@ export async function action({ context, request, params }: Route.ActionArgs) {
   try {
     const result = await finalizeOwnedDiagnosticRunV9(env.DB as unknown as V9IdentityDb, {
       workspaceId: DIAGNOSTIC_V9_PUBLIC_WORKSPACE_ID,
-      runId: params.runId,
+      runId,
       ...(session ? { userId: session.user.id } : {
         identityId: anonymous!.identityId,
         recoveryCredential: anonymous!.recoveryCredential,
